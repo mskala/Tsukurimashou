@@ -1,0 +1,22 @@
+#!/bin/sh
+
+echo ab |./idsgrep b > bm-out.$$
+echo '.c.d.e.f' |./idsgrep '.e.<f>(;)' >> bm-out.$$
+echo '[g]hi[j]kl' |./idsgrep '[j]<k>;l' >> bm-out.$$
+echo '{m}nop{q}rst' |./idsgrep '{q}rst' >> bm-out.$$
+echo '<u>(v)<w>[x]yz' |./idsgrep w >> bm-out.$$
+
+if diff bm-out.$$ - <<EOF
+b
+.e.f
+[j]kl
+{q}rst
+<w>[x]yz
+EOF
+then
+  rm -f bm-out.$$
+  exit 0
+else
+  rm -f bm-out.$$
+  exit 1
+fi

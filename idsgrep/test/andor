@@ -1,0 +1,81 @@
+#!/bin/sh
+
+cat <<EOF > ao-in.$$
+⿰日日
+【明】⿰日月
+⿰月日
+【朋】⿰月月
+⿱口口
+【呆】⿱口木
+【杏】⿱木口
+⿱木木
+EOF
+
+./idsgrep '&⿰日?⿰?月' ao-in.$$ > ao-out.$$
+echo === >> ao-out.$$
+
+./idsgrep '|⿰日?⿰?月' < ao-in.$$ >> ao-out.$$
+echo === >> ao-out.$$
+
+./idsgrep '⿰&日木?' ao-in.$$ >> ao-out.$$
+echo === >> ao-out.$$
+
+./idsgrep '⿰?|日月' < ao-in.$$ >> ao-out.$$
+echo === >> ao-out.$$
+
+./idsgrep '[and](anything)[tb]木(anything)' ao-in.$$ >> ao-out.$$
+echo === >> ao-out.$$
+
+./idsgrep '|[lr]月?[tb]?口' < ao-in.$$ >> ao-out.$$
+echo === >> ao-out.$$
+
+./idsgrep '⿱?|口人' ao-in.$$ >> ao-out.$$
+echo === >> ao-out.$$
+
+./idsgrep '&杏⿰??' < ao-in.$$ >> ao-out.$$
+echo === >> ao-out.$$
+
+./idsgrep '|杏⿰??' < ao-in.$$ >> ao-out.$$
+echo === >> ao-out.$$
+
+if diff -c ao-out.$$ - <<EOF
+【明】⿰日月
+===
+⿰日日
+【明】⿰日月
+【朋】⿰月月
+===
+===
+⿰日日
+【明】⿰日月
+⿰月日
+【朋】⿰月月
+===
+【杏】⿱木口
+⿱木木
+===
+⿰月日
+【朋】⿰月月
+⿱口口
+【杏】⿱木口
+===
+⿱口口
+【杏】⿱木口
+===
+===
+⿰日日
+【明】⿰日月
+⿰月日
+【朋】⿰月月
+【杏】⿱木口
+===
+EOF
+then
+  rm -f ao-in.$$
+  rm -f ao-out.$$
+  exit 0
+else
+  rm -f ao-in.$$
+  rm -f ao-out.$$
+  exit 1
+fi

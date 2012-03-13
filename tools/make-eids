@@ -1,0 +1,243 @@
+#!/usr/bin/perl -CDS
+
+$copyright=<<'EOF';
+EIDS decomposition dictionary generator for Tsukurimashou
+$Id: make-eids 1169 2012-01-31 17:53:02Z mskala $
+Copyright (C) 2012  Matthew Skala
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3.
+
+As a special exception, if you create a document which uses this font, and
+embed this font or unaltered portions of this font into the document, this
+font does not by itself cause the resulting document to be covered by the
+GNU General Public License. This exception does not however invalidate any
+other reasons why the document might be covered by the GNU General Public
+License. If you modify this font, you may extend this exception to your
+version of the font, but you are not obligated to do so. If you do not
+wish to do so, delete this exception statement from your version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Matthew Skala
+http://ansuz.sooke.bc.ca/
+mskala@ansuz.sooke.bc.ca
+EOF
+
+use utf8;
+
+$copyright=~s/\(C\)/©/;
+$copyright=~s/generator for/based on/;
+
+print "〖$copyright〗;\n";
+
+# load structure data
+while (<>) {
+  eval $1 if /^PERL_STRUCTURE\s+(.*)$/;
+}
+
+foreach $glyph (sort keys %structure) {
+  next unless $glyph=~/^uni(2E|4[EF]|[5-9][0-9A-F])[0-9A-F][0-9A-F]$/i
+    || $glyph=~/^uni2F[0-9A-E][0-9A-F]$/i;
+  $glstruct=[@{$structure{$glyph}}[1..$#{$structure{$glyph}}]];
+  $structure{$glyph}=&crunch($glstruct);
+  $glyph=~/^u(ni)?([0-9A-F]+)$/;
+  $literal=chr(hex("0x$2"));
+  $head{&struct_canon($structure{$glyph})}=$literal
+    unless $literal eq '囗';
+}
+
+sub crunch {
+  my($x)=@_;
+  my($flag)=1;
+  my($i);
+  
+  if (ref($x) eq 'ARRAY') {
+    for ($i=0;$i<=$#$x;$i++) {
+      $x->[$i]=&crunch($x->[$i]);
+    }
+  }
+  
+  while ($flag) {
+    if ((ref($x) eq 'ARRAY') && ($#$x==0)) {
+      $x=$x->[0];
+    } elsif ((ref($x) eq 'ARRAY') && ($#$x==1) &&
+        ($x->[0]=~/^kanji\./) && (ref($x->[1]) eq 'ARRAY') &&
+        ($x->[1]->[0]=~/^build_kanji\./)) {
+      $x=$x->[1];
+    } elsif ((($x->[0] eq 'build_kanji.tb') || ($x->[0] eq 'build_kanji.lr'))
+          && ($#{$x->[2]}==-1)) {
+      $x=$x->[3];
+    } elsif ((($x->[0] eq 'build_kanji.tb') || ($x->[0] eq 'build_kanji.lr'))
+          && ($#{$x->[3]}==-1)) {
+      $x=$x->[2];
+    } else {
+      $flag=0;
+    }
+  }
+
+  return $x;
+}
+
+sub struct_canon {
+  my($inp)=@_;
+  
+  while ((ref($inp) eq 'ARRAY') && ($#$inp==0)) {
+    $inp=$inp->[0];
+  }
+  
+  if (ref($inp) eq 'ARRAY') {
+    return '['.join(',',map { &struct_canon($_) } @$inp).']';
+  } else {
+    return $inp;
+  }
+}
+
+# write EIDSes
+foreach $glyph (sort keys %structure) {
+  next unless $glyph=~/^uni((2E|4[EF]|[5-9][0-9A-F])[0-9A-F][0-9A-F])$/i
+    || $glyph=~/^uni(2F[0-9A-E][0-9A-F])$/i;
+  $globhead=chr(hex("0x$1"));
+  $glstruct=$structure{$glyph};
+  print "【$globhead】".&struct_eids($glstruct,1,1)."\n";
+}
+
+sub struct_eids {
+  my($struct,$istop,$hashead)=@_;
+  my($canon)=&struct_canon($struct);
+
+  if ((defined $head{$canon}) && (!$hashead)) {
+    my($sub)=&struct_eids($struct,0,1);
+    if (($sub eq ';') || ($sub eq '?')) {
+      return $head{$canon};
+    } else {
+      return "<$head{$canon}>$sub";
+    }
+  }
+  
+  my($todo,$failed,$instrs,$instrs,$done);
+  if (ref($struct) eq 'ARRAY') {
+    if ($#$struct==0) {
+      return &struct_eids($struct->[0],$istop,$hashead);
+    }
+    $failed=0;
+    if ($struct->[0]=~/^eids\.(.*)$/) {
+      $todo=[@{$struct}[1..$#$struct]];
+      $instrs=$1;
+    } elsif ($struct->[1]=~/^eids\.(.*)$/) {
+      $todo=[@{$struct}[2..$#$struct]];
+      $instrs=$1;
+    } else {
+      $failed=1;
+    }
+    
+    if (!$failed) {
+      $done='';
+      my($lockout)=0;
+      foreach (split('\.',$instrs)) {
+        if (/^u(ni)?([0-9a-f]+)$/i) {
+          $done.=chr(hex("0x$2"));
+        } elsif (/^(\d*)_(\d*)$/) {
+          my($left,$right)=(0+$1,0+$2);
+          $done.=&struct_eids([@{$todo}[$left..($#$todo-$right)]],0,0);
+        } elsif ($_ eq 'softhead') {
+          $lockout=1 if $hashead;
+        } else {
+          $done.='ERROR';
+        }
+      }
+      $done=$hashead?';':$1 if $done=~/^[\x{2FF0}-\x{2FFB}](.)\(\[\]\)$/;
+      return $done unless $lockout;
+    }
+  }
+  
+  my($init,$content,$box,$nadd,$nsub,$nrep,$i)=('','','',0,0,0,0);
+  $failed=0;
+  my($build)='';
+  if (ref($struct) eq 'ARRAY') {
+    for ($i=0;$i<=$#$struct;$i++) {
+      if (ref($struct->[$i]) eq 'ARRAY') {
+        if ($struct->[$i]->[0] eq 'build_kanji.box') {
+          if ($box) {
+            $failed=1;
+            last;
+          } else {
+            $box=$struct->[$i];
+          }
+        } else {
+          if ($content) {
+            $failed=1;
+            last;
+          } else {
+            $content=$struct->[$i];
+          }
+        }
+      } elsif ($struct->[$i] eq 'push_stroke') {
+        $nadd++;
+      } elsif ($struct->[$i] eq 'replace_strokep') {
+        $nrep++;
+      } elsif ($struct->[$i] eq 'bosize0') {
+        $nsub++;
+      } elsif ($i==0) {
+        $init=$struct->[0];
+      } else {
+        $failed=1;
+        last;
+      }
+    }
+    if ($box && !$content) {
+      $content=$box;
+      $box='';
+    }
+    if ($init && !content) {
+      $content=$init;
+      $init='';
+    }
+    if (($nrep>0) && ($nadd==0) && ($nsub==0) && !$box) {
+      return &struct_eids($content,0,$hashead);
+    }
+    if (($init eq 'build_kanji.tb') || ($init eq 'build_kanji.lr')) {
+      $content='';
+    }
+    if (($content ne '') && (($nadd+$nrep+$nsub>0) || $box)) {
+      $build=&struct_eids($content,0,0);
+      $build="⿻${build}口" if $box;
+      if ($nadd+$nrep+$nsub>0) {
+        $build="⿻$build(";
+        $build.="+$nadd" if $nadd>0;
+        $build.="-$nsub" if $nsub>0;
+        $build.="*$nrep" if $nrep>0;
+        $build.=')';
+      }
+      return $build;
+    }
+  }
+  
+  if ((ref($struct) eq 'ARRAY') && ($#{$struct}==1) &&
+      ($struct->[0]=~/^kanji\./)) {
+    return &struct_eids($struct->[1],$istop,$hashead);
+  }
+  
+  if ($canon=~/^[a-z0-9_\.]+$/) {
+    return $hashead?';':'?';
+  }
+  my($proccanon)=$canon;
+  $proccanon=~s/\bpush_stroke\b/X/g;
+  $proccanon=~s/\breplace_strokep\b/X/g;
+  $proccanon=~s/\bbuild_kanji\.box\b/X/g;
+  $proccanon=~s/\bbuild_kanji\.cup\b/X/g;
+  $proccanon=~s/\bkanji\.[a-z0-9_\.]+\b/X/g;
+  if ($proccanon=~/^\[(build_kanji\.[a-z0-9_\.]+,)?(X,)*X\]$/) {
+    return $hashead?';':'?';
+  }
+
+#  return $hashead?';':'?';
+  return "($canon)";
+}

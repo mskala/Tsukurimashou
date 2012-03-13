@@ -1,0 +1,295 @@
+#!/usr/bin/perl -CDS
+
+#
+# Kanji chart generator for Tsukurimashou
+# Copyright (C) 2011, 2012  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# In order to run this program, you will need to provide a copy of the
+# KANJIDIC2 file, or some equivalent, as input.  The KANJIDIC2 file is
+# distributed under the Creative Commons Attribution-Sharealike license.  I
+# assert that the output of this program will not be covered by that license
+# because the only information from KANJIDIC2 appearing in the output will
+# be the status (jouyou grade, inclusion in standards, etc.) of each
+# character.  That is factual information not subject to copyright; and the
+# decisions on what characters to include in the jouyou lists and standards
+# documents were made by the Japanese government, not by the compilers of
+# KANJIDIC2, so if a copyright existed - which it does not - the copyright
+# would not be KANJIDIC2's because none of the original work of the
+# KANJIDIC2 compilers is present in the output of this program.
+#
+# You can obtain KANJIDIC2 from:
+#    http://www.csse.monash.edu.au/~jwb/kanjidic2/index.html  
+#
+# I also disclaim any copyright claim of my own on the output of this
+# program, for the same reasons.  Notwithstanding that some parts of the
+# source code of this program are included verbatim in the output, those
+# parts are not substantive enough to invoke the automatic claim on derived
+# works in the GNU General Public License.  The important content of this
+# program's output is pure factual information and not subject to copyright. 
+# This disclaimer applies only to the actual output of this program, which
+# is in TeX format; once the output is further processed, for instance, to
+# create a PDF file, such processing may well create other claims, for
+# instance as a result of font embedding.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+use utf8;
+
+print <<'EOF';
+\documentclass[14pt]{extarticle}
+
+% This is a generated file.  Edit the source code in make-kchart instead.
+
+% This file (the TeX source code) is not subject to copyright because
+% it is factual information lacking originality.  The input and software
+% that generate it, as well as the typeset results of feeding it into
+% XeTeX, may well be subject to copyright.
+
+\input{version.tex}
+
+\usepackage{fontspec}
+\usepackage[margin=0.85in,top=0.85in]{geometry}
+\usepackage{tocloft}
+\usepackage{xltxtra}
+
+\usepackage{hyperref}
+
+\defaultfontfeatures{Mapping=tex-text,Path=../otf/}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+\newcommand{\kaku}{\setmainfont{TsukurimashouKakuPS}}
+\newcommand{\mono}{\setmainfont{TsukurimashouKaku}}
+
+\setlength{\cftbeforesecskip}{0pt}
+
+\begin{document}
+\pagestyle{plain}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\kaku
+\begin{center}\LARGE
+{\Huge 作りましょう~\TsukurimashouVWide}\\
+{\huge 漢字のカバレッジチャート}
+
+\vspace*{0.333in}
+
+{\Huge Tsukurimashou~\TsukurimashouVersion}\\
+{\huge Kanji Coverage Chart}
+\end{center}
+
+\renewcommand\contentsname{目次　Contents}
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+EOF
+
+# find characters in the font
+%in_font=();
+open(ASS,shift(@ARGV));
+while (<ASS>) {
+  next unless
+     /Open\(.*\);Select\(0u([0-9a-fA-F]{4,}),0u([0-9a-fA-F]{4,})\);Paste\(\);/;
+  ($start,$end)=(hex("0x$1"),hex("0x$2"));
+  for ($i=$start;$i<=$end;$i++) { $in_font{$i}=1; }
+}
+close(ASS);
+
+while (<STDIN>) {
+  if (/<character>/) {
+    $ucs=-1;
+    $in208=0;
+    $in212=0;
+    $in213=0;
+    $literal='';
+    $grade=-1;
+  } elsif (m!<cp_value cp_type="ucs">([0-9a-f]+)</cp_value>!i) {
+    $ucs=hex("0x$1");
+  } elsif (/<cp_value cp_type="jis208">/) {
+    $in208=1;
+  } elsif (/<cp_value cp_type="jis212">/) {
+    $in212=1;
+  } elsif (/<cp_value cp_type="jis213">/) {
+    $in213=1;
+  } elsif (m!<grade>(\d+)</grade>!) {
+    $grade=$1;
+  } elsif (m!<literal>(.*)</literal>!) {
+    $literal=$1;
+  } elsif(m!</character>!) {
+    if (($grade<0) && $in208) {$grade=11;}
+    if (($grade<0) && $in212) {$grade=12;}
+    if (($grade<0) && $in213) {$grade=13;}
+    if ($grade>=1) {
+      $chargrade{$ucs}=$grade;
+      $in_grade[$grade]++;
+      if ($in_font{$ucs}) {
+        $charlit{$ucs}=$literal;
+        $font_and_grade[$grade]++;
+        $totinfont++;
+      }
+    }
+  }
+}
+
+foreach $char (qw(墸 壥 妛 彁 挧 暃 椢 槞 蟐 袮 閠 駲)) {
+  $i=ord($char);
+  $chargrade{$i}=15;
+  $in_grade[11]--;
+  $in_grade[15]++;
+  if ($in_font{$i}) {
+    $charlit{$i}=chr($i);
+    $font_and_grade[15]++;
+    $totinfont++;
+  }
+}
+
+for ($i=0x4E00;$i<0x9FD0;$i++) {
+  next if $chargrade{$i}>0;
+  $chargrade{$i}=14;
+  $in_grade[14]++;
+  if ($in_font{$i}) {
+    $charlit{$i}=chr($i);
+    $font_and_grade[14]++;
+    $totinfont++;
+  }
+}
+
+for ($i=0x2F00;$i<0x2FD6;$i++) {
+  next if $chargrade{$i}>0;
+  $chargrade{$i}=16;
+  $in_grade[16]++;
+  if ($in_font{$i}) {
+    $charlit{$i}=chr($i);
+    $font_and_grade[16]++;
+    $totinfont++;
+  }
+}
+
+for ($i=0x2E80;$i<0x2EF4;$i++) {
+  next if $chargrade{$i}>0;
+  next if $i==0x2E9A;
+  $chargrade{$i}=17;
+  $in_grade[17]++;
+  if ($in_font{$i}) {
+    $charlit{$i}=chr($i);
+    $font_and_grade[17]++;
+    $totinfont++;
+  }
+}
+
+sub make_list {
+  ($title,$grade)=@_;
+  $title.=('　'.(0+$font_and_grade[$grade]).'/'.$in_grade[$grade]);
+  print (('%'x72)."\n\n\\kaku\n\n");
+  print "\\section*{$title}\n\\addcontentsline{toc}{section}{$title}\n\n";
+  print "\\mono\n\n";
+  $on_line=0;
+  foreach $char (sort keys %in_font) {
+    next unless $chargrade{$char}==$grade;
+    print $charlit{$char};
+    $on_line++;
+    if ($on_line>=40) {
+      print "\\\\\n";
+      $on_line=0;
+    }
+  }
+  print "\n";
+}
+
+print "フォントのトータル： $totinfont　Total in font: $totinfont\n\n";
+
+print "\\mono\\clearpage\n\n";
+
+&make_list('第\,１\,学年の教育漢字　Grade 1 daily-use',1);
+&make_list('第\,２\,学年の教育漢字　Grade 2 daily-use',2);
+&make_list('第\,３\,学年の教育漢字　Grade 3 daily-use',3);
+&make_list('第\,４\,学年の教育漢字　Grade 4 daily-use',4);
+&make_list('第\,５\,学年の教育漢字　Grade 5 daily-use',5);
+&make_list('第\,６\,学年の教育漢字　Grade 6 daily-use',6);
+&make_list('教育外の常用漢字　Other daily-use',8);
+&make_list('第\,９\,学年の人名用漢字　Grade 9 name-only',9);
+&make_list('第\,１０\,学年の人名用漢字　Grade 10 name-only',10);
+&make_list('幽霊漢字　Mysterious kanji of questionable origin that remain in the standards for compatibility reasons',15);
+&make_list('外の\,ＪＩＳ ０２０８\,漢字　Other JIS 0208 kanji',11);
+&make_list('外の\,ＪＩＳ ０２１２\,漢字　Other JIS 0212 kanji',12);
+&make_list('外の\,ＪＩＳ ０２１３\,漢字　Other JIS 0213 kanji',13);
+&make_list('外の\,Ｕｎｉｃｏｄｅ\,漢字　Other Unicode kanji',14);
+&make_list('FIXME Kangxi Radicals',16);
+&make_list('FIXME CJK Supplement Radicals',17);
+
+print <<'EOF';
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\kaku
+
+\section*{FIXME Character decomposition dictionary}
+\addcontentsline{toc}{section}{FIXME Character decomposition dictionary}
+
+\mono
+
+\begin{tabbing}
+\hspace*{1.7in}\=\hspace*{1.7in}\=\hspace*{1.7in}\=\kill
+EOF
+
+$col=0;
+open(EIDS,'txt/tsukurimashou.eids');
+while (<EIDS>) {
+  chomp;
+  next unless /^【/;
+  next if /^【.】;/;
+  s/\([^)]*[a-z][^)]*\)/\?/g;
+  s/_/\\_/g;
+  $width=0;
+  foreach (split('')) {
+    $width++;
+    $width++ if ord($_)>=256;
+  }
+  $width=int(($width*4/80)+1.08);
+  if ($col+$width>4) {
+    print "\\\\\n";
+    $col=0;
+    $ow=0;
+  }
+  if ($col>0) {
+    print ('\>'x$ow) if $ow;
+    print '\>';
+  }
+  $col+=$width;
+  print;
+  if ($width>1) {
+    $ow=$width-1;
+    $ow=2 if $ow>2;
+  } else {
+    $ow=0;
+  }
+}
+close(EIDS);
+
+print "\\end{tabbing}\n\n\\end{document}\n";

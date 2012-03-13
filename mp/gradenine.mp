@@ -1,0 +1,233 @@
+%
+% Grade Nine kanji used on more than one page
+% Copyright (C) 2011, 2012  Matthew Skala
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, version 3.
+%
+% As a special exception, if you create a document which uses this font, and
+% embed this font or unaltered portions of this font into the document, this
+% font does not by itself cause the resulting document to be covered by the
+% GNU General Public License. This exception does not however invalidate any
+% other reasons why the document might be covered by the GNU General Public
+% License. If you modify this font, you may extend this exception to your
+% version of the font, but you are not obligated to do so. If you do not
+% wish to do so, delete this exception statement from your version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Matthew Skala
+% http://ansuz.sooke.bc.ca/
+% mskala@ansuz.sooke.bc.ca
+%
+
+inclusion_lock(gradenine);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grnine.again =
+  push_pbox_toexpand("kanji.grnine.again");
+  push_stroke((500,810)--(500,560),(1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  push_stroke((50,560)--(950,560),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((240,410)..tension 1.3..(150,210)..(40,70),
+    (1.6,1.6)--(1.5,1.5)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((400,560){down}..tension 1.3..(380,200)..(190,-40),
+    (1.6,1.6)--(1.5,1.5)--(1,1));
+  push_stroke((600,560),(1.6,1.6));
+  build_kanji.add_jtail(0);
+  push_stroke((740,410)..tension 1.3..(820,260)..(880,80),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.barbarian =
+  push_pbox_toexpand("kanji.grnine.barbarian");
+  build_kanji.level(build_kanji.lr(480,0)
+    (kanji.grtwo.old)
+    (kanji.grone.moon));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.boy =
+  push_pbox_toexpand("kanji.grnine.boy");
+  build_kanji.level(build_kanji.tb(480,0)
+    (kanji.grone.stand_up)
+    (build_kanji.sscale(xscaled 0.9 shifted (50,20))
+       (kanji.rightrad.short_hair)));
+  replace_strokep(-3)((50,-50)..(120,80)..(160,200)..tension 1.2..
+    (180,ypart point 0 of oldp)--(880,ypart point 1 of oldp));
+  replace_strokeq(-3)((1,1)--(1.3,1.3)--(1.5,1.5)--(1.6,1.6)--(1.6,1.6));
+  set_botip(-3,3,1);
+  set_boserif(-3,1,whatever);
+  set_boserif(-3,3,4);
+  set_boserif(-3,4,9);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.declaim =
+  push_pbox_toexpand("kanji.grnine.declaim");
+  build_kanji.level(build_kanji.tb(480,0)
+    (push_stroke((170,420)--(830,420),
+       (1.6,1.6)--(1.6,1.6));
+     set_boserif(0,1,9);
+     )
+    (kanji.radical.mu_bar));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.deliverance =
+  push_pbox_toexpand("kanji.grthree.deliverance");
+  kanji.radical.box_on_side;
+  build_kanji.sscale(scaled 0.75 shifted (40,0))(kanji.grone.king);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.kyoto =
+  push_pbox_toexpand("kanji.grnine.kyoto");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.water)
+    (kanji.grfour.every);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.ladle =
+  push_pbox_toexpand("kanji.grnine.ladle");
+  kanji.radical.wrapping;
+  push_stroke((340,400)..tension 1.2..(430,340)..(490,230),
+    (1.1,1.1)--(1.4,1.4)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.must_not =
+  push_pbox_toexpand("kanji.grnine.must_not");
+  kanji.radical.wrapping;
+  push_stroke(
+    (480,610)..tension 1.2..(380,430)..(160,270),
+    (1.6,1.6)--(1.4,1.4)--(1.0,1.0));
+  push_stroke(
+    (680,610)..tension 1.2..(540,300)..(180,80),
+    (1.6,1.6)--(1.4,1.4)--(1.0,1.0));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.my =
+  push_pbox_toexpand("kanji.grnine.my");
+  build_kanji.level(build_kanji.tb(400,-30)
+    (kanji.grone.five)
+    (kanji.grone.mouth));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.only =
+  push_pbox_toexpand("kanji.grnine.only");
+  build_kanji.tb(400,30)
+    (kanji.grone.mouth)
+    (kanji.radical.eight);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.page =
+  push_pbox_toexpand("kanji.grnine.page");
+  build_kanji.level(build_kanji.tb(120,20)
+    (push_stroke((120,810)--(880,810),
+       (1.6,1.6)--(1.6,1.6));
+     set_boserif(0,1,9);
+     push_stroke((500,810)..(480,700)..(440,610),
+       (1.7,1.7)--(1.3,1.3)--(1,1));
+     tsu_xform(identity yscaled (610/760))(kanji.grone.eye))
+    (build_kanji.sscale(xscaled 0.85)(kanji.radical.eight)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.permission =
+  push_pbox_toexpand("kanji.grnine.permission");
+  build_kanji.level(build_kanji.tb(440,-30)
+    (kanji.radical.mu)
+    (kanji.radical.legs));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.snake_sign =
+  push_pbox_toexpand("kanji.grnine.snake_sign");
+  push_stroke((750,380)--(750,740)--(150,740),
+    (1.5,1.5)--(1.6,1.6)--(1.6,1.6));
+  set_botip(0,1,1);
+  set_botip(0,2,1);
+  set_boserif(0,1,4);
+  set_boserif(0,2,4);
+  build_kanji.add_ltail(0);
+  push_stroke((150,450)--(750,450),
+    (1.5,1.5)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.square_jewel =
+  push_pbox_toexpand("kanji.grnine.square_jewel");
+  build_kanji.tb(440,10)
+    (kanji.grone.earth)
+    (kanji.grone.earth);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.suffocate =
+  push_pbox_toexpand("kanji.grnine.suffocate");
+  build_kanji.tb(420,130)
+    (build_kanji.spread_legs(110)
+       (kanji.grone.big))
+    (build_kanji.sscale(xyscaled (0.95,0.6) shifted (0,150))
+       (kanji.grone.day);
+     push_stroke(((0,130)+point 1.5 of get_strokep(-2)),(1.6,1.6));
+     build_kanji.add_ltail(0);
+     set_boserif(0,0,10));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.to_be =
+  push_pbox_toexpand("kanji.grnine.to_be");
+  tsu_xform(identity shifted (0,250))(
+    push_stroke((100,150)--(740,350),
+      (1.4,1.4)--(1.6,1.6));
+    set_botip(0,1,0);
+    set_boserif(0,1,4);
+    build_kanji.add_jtail(0);
+  );
+  push_stroke((220,740),(1.6,1.6));
+  build_kanji.add_ltail(0);
+  set_boserif(0,0,10);
+  push_stroke((460,810)--(460,160),
+    (1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.tomoe =
+  push_pbox_toexpand("kanji.grnine.tomoe");
+  kanji.grnine.snake_sign;
+  push_stroke((450,740)--(450,450),(1.6,1.6)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.twenty =
+  push_pbox_toexpand("kanji.grnine.twenty");
+  push_stroke((100,440)--(900,440),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  build_kanji.cup((320,760),(680,0));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.two_branch_tree =
+  push_pbox_toexpand("kanji.grnine.two_branch_tree");
+  tsu_xform(identity shifted (0,-50))
+    (build_kanji.add_beret(kanji.grone.wood));
+  expand_pbox;
+enddef;

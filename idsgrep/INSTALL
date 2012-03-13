@@ -1,0 +1,10 @@
+This is IDSgrep 0.1.
+
+Quick start:
+   ./configure ; make ; make install
+
+Summary of configuration options:
+   ./configure --help
+
+For more details, see idsgrep.pdf , or (after configuration)
+the man page idsgrep.1 .

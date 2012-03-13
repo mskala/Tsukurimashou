@@ -1,0 +1,200 @@
+%
+% Rare kanji needed to build others
+% Copyright (C) 2011, 2012  Matthew Skala
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, version 3.
+%
+% As a special exception, if you create a document which uses this font, and
+% embed this font or unaltered portions of this font into the document, this
+% font does not by itself cause the resulting document to be covered by the
+% GNU General Public License. This exception does not however invalidate any
+% other reasons why the document might be covered by the GNU General Public
+% License. If you modify this font, you may extend this exception to your
+% version of the font, but you are not obligated to do so. If you do not
+% wish to do so, delete this exception statement from your version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Matthew Skala
+% http://ansuz.sooke.bc.ca/
+% mskala@ansuz.sooke.bc.ca
+%
+
+inclusion_lock(rare);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.rare.bald =
+  push_pbox_toexpand("kanji.rare.bald");
+  build_kanji.level(build_kanji.tb(690,180)
+    (kanji.grone.one)
+    (kanji.radical.legs));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.big_brother =
+  push_pbox_toexpand("kanji.rare.big_brother");
+  build_kanji.tb(440,0)
+    (kanji.grfive.passable)
+    (build_kanji.sscale(xscaled 1.03)(kanji.grfive.passable));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.centurion =
+  push_pbox_toexpand("kanji.rare.centurion");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (build_kanji.sscale(yscaled 0.9)(kanji.grone.hundred));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.decide =
+  push_pbox_toexpand("kanji.rare.decide");
+  kanji.grfour.husband;
+  replace_strokep(-3)((210,610)--(760,610)--(760,360));
+  replace_strokeq(-3)((1.5,1.5)--(1.5,1.5)--(1.4,1.4));
+  set_boserif(-3,1,4);
+  set_botip(-3,1,1);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.early_death =
+  push_pbox_toexpand("kanji.rare.early_death");
+  build_kanji.add_beret(kanji.grone.big);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.merger =
+  push_pbox_toexpand("kanji.rare.merger");
+  build_kanji.level(build_kanji.tb(620,110)
+    (build_kanji.spread_legs(-220)(kanji.toprad.sparkle_two))
+    (kanji.radical.topped_aitch));
+  expand_pbox;
+enddef;
+
+% This obscure form of the "grass" radical seems to be used only in U+83D0,
+% an obscure kanji that doesn't seem to have a meaning of its own but forms
+% the right-hand side of the fairly common kanji for the masculine
+% first-person pronoun "boku," which we need in order to spell the type
+% style name "Bokukko." It's not even clear that it really is a form of the
+% "grass" radical at all, but that's how Unicode seems to classify it.
+
+vardef kanji.rare.obscure_grass_toprad =
+  push_pbox_toexpand("kanji.rare.obscure_grass_toprad");
+  kanji.toprad.sparkle_four;
+  push_stroke((110,-20)--(890,-20),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.eight_three_dee_zero =
+  push_pbox_toexpand("kanji.rare.eight_three_dee_zero");
+  build_kanji.tb(620,0)
+    (kanji.rare.obscure_grass_toprad)
+    (kanji.radical.twin_tailed_sheep);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.mosquito_larva =
+  push_pbox_toexpand("kanji.rare.mosquito_larva");
+  kanji.grone.child;
+  replace_strokep(0)((110,290)..tension 1.2..(500,350)..(890,530));
+  replace_strokeq(0)((1.9,1.9)--(1.6,1.6)--(0.9,0.9));
+  set_boserif(0,1,whatever);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.notwithstanding =
+  push_pbox_toexpand("kanji.rare.notwithstanding");
+  push_stroke((370,790){curl 0.1}..(250,580)..(60,350),
+    (1.7,1.7)--(1.4,1.4)--(1.1,1.1));
+  set_boserif(0,0,10);
+  push_stroke(
+    (((0,620)--(1000,620)) intersectionpoint get_strokep(0))--(890,620),
+    (1.4,1.4)--(1.5,1.5));
+  set_boserif(0,1,9);
+  push_stroke((420,620)--(420,-20),
+    (1.6,1.6)--(1.4,1.4));
+  push_stroke((420,410)--(790,410),
+    (1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
+  push_stroke((420,200)--(840,200),
+    (1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.other =
+  push_pbox_toexpand("kanji.rare.other");
+  build_kanji.tb(450,200)
+    (kanji.radical.silly_hat)
+    (build_kanji.sscale(xscaled 0.79)
+       (kanji.radical.spoon));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.roll_of_cloth =
+  push_pbox_toexpand("kanji.rare.roll_of_cloth");
+  build_kanji.level(build_kanji.tb(360,20)
+    (build_kanji.tb(460,180)
+       (kanji.grone.one)
+       (build_kanji.sscale(scaled 0.8)(kanji.grone.mouth)))
+    (kanji.grone.paddy));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.sacred =
+  push_pbox_toexpand("kanji.rare.sacred");
+  build_kanji.level(build_kanji.tb(380,100)
+    (kanji.greight.otoh)
+    (kanji.grone.earth));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.smash =
+  push_pbox_toexpand("kanji.rare.smash");
+  build_kanji.level(build_kanji.lr(500,-70)
+    (tsu_xform(identity shifted (0,100))(kanji.grone.mouth))
+    (kanji.radical.seal));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.sun =
+  push_pbox_toexpand("kanji.rare.sun");
+  build_kanji.tb(510,-30)
+    (tsu_xform(identity shifted (30,0))(kanji.grone.day))
+    (kanji.grnine.must_not;
+     set_boserif(-3,0,whatever);
+     push_stroke((100,780)--(900,780),(1.6,1.6)--(1.6,1.6));
+     set_boserif(0,1,9));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.walled_road =
+  push_pbox_toexpand("kanji.rare.walled_road");
+  push_stroke((200,740)--(770,740)..tension 1.2..(630,650)..(490,590),
+    (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  set_botip(0,1,0);
+  set_boserif(0,1,4);
+  push_stroke((320,660)..tension 1.2..(490,590)..(520,560),
+    (1.1,1.1)--(1.5,1.5)--(1.8,1.8));
+  push_stroke((170,-40)--(170,530)--(830,530),
+    (1.5,1.5)--(1.6,1.6)--(1.6,1.6));
+  build_kanji.add_jtail(0);
+  set_botip(0,1,1);
+  set_botip(0,2,1);
+  set_boserif(0,1,4);
+  set_boserif(0,2,4);
+  push_stroke((500,530)--(500,-20),(1.6,1.6)--(1.5,1.5));
+  push_stroke((170,370)--(830,370),(1.5,1.5)--(1.5,1.5));
+  push_stroke((170,210)--(830,210),(1.5,1.5)--(1.5,1.5));
+  expand_pbox;
+enddef;

@@ -1,0 +1,5 @@
+Documentation for this package is in doc/usermanual.pdf.  If you want to get
+started immediately, try the OpenType files in the otf subdirectory.
+
+If you're feeling adventurous you can try typing "./configure" and seeing
+what happens.

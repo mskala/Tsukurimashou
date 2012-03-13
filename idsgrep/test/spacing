@@ -1,0 +1,23 @@
+#!/bin/sh
+
+./idsgrep y <<EOF > sp-out.$$
+xxyyx
+
+y
+
+x y y x
+y	x
+y<y> [p]  q  q
+EOF
+if diff sp-out.$$ - <<EOF
+yyy
+
+y y y	y<y> [p]  q  q
+EOF
+then
+  rm -f sp-out.$$
+  exit 0
+else
+  rm -f sp-out.$$
+  exit 1
+fi

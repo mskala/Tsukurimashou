@@ -1,0 +1,57 @@
+#!/bin/sh
+
+cat <<EOF > eq-in.$$
+&ab
+<x>|ab
+a
+b
+=;
+EOF
+
+./idsgrep '&ab' eq-in.$$ > eq-out.$$
+echo === >> eq-out.$$
+
+./idsgrep '=&ab' < eq-in.$$ >> eq-out.$$
+echo === >> eq-out.$$
+
+./idsgrep '.equal.|ab' < eq-in.$$ >> eq-out.$$
+echo === >> eq-out.$$
+
+./idsgrep '|ab' eq-in.$$ >> eq-out.$$
+echo === >> eq-out.$$
+
+./idsgrep '=;' < eq-in.$$ >> eq-out.$$
+echo === >> eq-out.$$
+
+./idsgrep '=<x>;' < eq-in.$$ >> eq-out.$$
+echo === >> eq-out.$$
+
+./idsgrep '==<x>;' < eq-in.$$ >> eq-out.$$
+echo === >> eq-out.$$
+
+if diff -c eq-out.$$ - <<EOF
+===
+&ab
+===
+<x>|ab
+===
+a
+b
+===
+a
+b
+===
+<x>|ab
+===
+=;
+===
+EOF
+then
+  rm -f eq-in.$$
+  rm -f eq-out.$$
+  exit 0
+else
+  rm -f eq-in.$$
+  rm -f eq-out.$$
+  exit 1
+fi

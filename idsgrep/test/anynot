@@ -1,0 +1,106 @@
+#!/bin/sh
+
+cat <<EOF > an-in.$$
+(a)
+.b.x
+.b.p
+[c]xy
+[c]pq
+<h>{d}xyz
+{d}pqr
+⿱口口
+【呆】⿱口木
+【杏】⿱木口
+⿱木木
+EOF
+
+./idsgrep '?' an-in.$$ > an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '!?' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '.b.?' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '.b.!x' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '[c]?y' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '[c]!pq' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '[c]?!q' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '{d}???' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '{d}?!y?' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '{d}!f!g!h' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '【呆】!?' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+./idsgrep '【杏】?' an-in.$$ >> an-out.$$
+echo === >> an-out.$$
+
+if diff -c an-out.$$ - <<EOF
+(a)
+.b.x
+.b.p
+[c]xy
+[c]pq
+<h>{d}xyz
+{d}pqr
+⿱口口
+【呆】⿱口木
+【杏】⿱木口
+⿱木木
+===
+===
+.b.x
+.b.p
+===
+.b.p
+===
+[c]xy
+===
+===
+[c]xy
+===
+<h>{d}xyz
+{d}pqr
+===
+{d}pqr
+===
+<h>{d}xyz
+{d}pqr
+===
+【呆】⿱口木
+===
+(a)
+.b.x
+.b.p
+[c]xy
+[c]pq
+{d}pqr
+⿱口口
+【杏】⿱木口
+⿱木木
+===
+EOF
+then
+  rm -f an-in.$$
+  rm -f an-out.$$
+  exit 0
+else
+  rm -f an-in.$$
+  rm -f an-out.$$
+  exit 1
+fi

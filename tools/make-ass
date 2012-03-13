@@ -1,0 +1,407 @@
+#!/usr/bin/perl -CDS
+
+$cpynotice=<<EOF;
+#
+# Font assembly script generator for Tsukurimashou
+# Copyright (C) 2011, 2012  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+EOF
+
+$prefix=$0;
+$prefix=~s!/tools/make-ass$!!;
+
+$cpynotice=~s/script generator/script/;
+print <<EOF.$cpynotice;
+#!/usr/local/bin/fontforge
+
+#
+# This is a GENERATED FILE.
+# Edit the source code in make-ass instead!
+EOF
+
+# parameters to the script we are creating:
+#    $1 filename with hyphens (like "tsuku-bk-ps")
+#    $2 basic family name (may contain spaces!) (like "Tsukurimashou")
+#    $3 full name, with spaces (like "Tsukurimashou Bokukko PS")
+
+if (-r "$prefix/makefile-maint.inc") {
+   $svnversion=`cd $prefix; svnversion`;
+   chomp $svnversion;
+} else {
+   $svnversion='3rd-party';
+}
+
+$tsuversion='UNKNOWN';
+open(MAKEFILE,'Makefile');
+while (<MAKEFILE>) {
+  $tsuversion=$1 if /^VERSION\s*=\s*(\S+)/;
+}
+close(MAKEFILE);
+
+# read character list
+open(CHARLIST,'chars.lst');
+while (<CHARLIST>) {
+   if (/(u|uni)([0-9a-f]+)/i) {
+     $n=hex("0x$2");
+     $charlist{$n}=1;
+     $charpage{$n>>8}=1;
+   }
+}
+close(CHARLIST);
+
+# prepare to generate name list
+open(NL,'>tsukurimashou.nam');
+print NL "Based: AGL with PUA\n";
+
+# scan source code
+foreach $numpage (keys %charpage) {
+  $page=sprintf('%02x',$numpage);
+  $fname="$prefix/mp/tsuku-$page.mp";
+  if (!-r $fname) {
+    while (<$prefix/mp/*-$page.mp>) {
+      if (-r $_) {
+        $fname=$_;
+      }
+    }
+    while (<./mp/*-$page.mp>) {
+      if (-r $_) {
+        $fname=$_;
+      }
+    }
+  }
+  next if !-r $fname;
+  open(PAGE,$fname);
+  while (<PAGE>) {
+    if (/% BACKGROUND ([0-9a-fA-F]{4,})/) {
+      $backgroundhex=$1;
+    } elsif (/begintsuglyph\("([A-Z0-9a-z_\.]+)",\s*(\d+)\s*\)/) {
+      $n=$numpage*256+$2;
+      $havechar{$n}=1 if $charlist{$n};
+      $gname=$1;
+      if (($numpage!=0) && ($numpage!=0xf7)
+        && (($numpage==1) || ($n==0x2015) ||
+            ($gname!~/^u(ni)?([A-Fa-f0-9]{4,})$/))) {
+        printf NL "0x%04X $1\n",$n if $charlist{$n};
+      }
+      if ($backgroundhex) {
+        $to_invert{$backgroundhex}.="$n\n" if $charlist{$n};
+        $backgroundhex=undef;
+      }
+    }
+  }
+  close(PAGE);
+}
+
+# also scan pseudo-source for glyphs that won't be detected by source scan
+foreach $n (0x20,0xa0,0xad,0xbc..0xbe,
+  0x115f,0x1160,
+  0x2000..0x2002,0x2004..0x2006,0x2009..0x200a,0x202f,0x205f,
+  0x2150..0x215f,0x3000,0x3131..0x318e,0x4dc0..0x4dff,0xac00..0xd7a3,
+  0xfeff,
+  0xff25f,0xff260,0xff35f,0xff45f,0xff55f,0xff65f) {
+  $havechar{$n}=1 if $charlist{$n};
+}
+for ($n=1;$n<=64;$n++) {
+  if ($havechar{0x4DBF+$n}) {
+    printf NL "0x%04X iching%02d\n",0x4DBF+$n,$n;
+  }
+}
+foreach $digser (split(/\n/,<<EOF)) {
+ff01 num1
+ff02 num21
+ff03 num22
+ff04 num31
+ff05 num32
+ff06 num33
+ff07 num41
+ff08 num42
+ff09 num43
+ff0a num44
+ff0b numlatn
+ff11 den1
+ff12 den21
+ff13 den22
+ff14 den31
+ff15 den32
+ff16 den33
+ff17 den41
+ff18 den42
+ff19 den43
+ff1a den44
+ff1b denlatn
+EOF
+  ($series,$suffix)=split(/ /,$digser);
+  $series=hex("0x$series");
+  foreach $digit (split(/\n/,<<EOF)) {
+0 zero
+1 one
+2 two
+3 three
+4 four
+5 five
+6 six
+7 seven
+8 eight
+9 nine
+EOF
+    ($dignum,$digname)=split(/ /,$digit);
+    printf NL "0x%04X %s.%s\n",($series*16+$dignum),$digname,$suffix
+      if $charlist{$series*16+$dignum};
+    $havechar{$series*16+$dignum}=1 if $charlist{$series*16+$dignum};
+  }
+}
+print NL "0xFF25F uni115F.bug\n" if $charlist{0xff25f};
+print NL "0xFF260 uni1160.nt\n" if $charlist{0xff260};
+print NL "0xFF35F uni115F.l1\n" if $charlist{0xff35f};
+print NL "0xFF45F uni115F.l2\n" if $charlist{0xff45f};
+print NL "0xFF55F uni115F.l4\n" if $charlist{0xff55f};
+print NL "0xFF65F uni115F.l5\n" if $charlist{0xff65f};
+
+close(NL);
+
+# init and create a new font
+print <<EOF;
+
+_CCFileName=StrJoin(StrSplit(StrJoin(StrSplit(\$3," "),""),"-"),"");
+
+Open("sfd/flogged.sfd");
+ScaleToEm(920,280);
+Reencode("UnicodeFull");
+SetFontOrder(3);
+SetFontNames(_CCFileName,\$2,\$3,"","Copyright 2011, 2012 Matthew Skala.  Licensed under the GNU GPL version 3 with font-embedding clarification.  Note that this generally does NOT permit distribution on \\"free font\\" Web sites, because of the requirement to make source code available.","$tsuversion ($svnversion)");
+MergeFeature("fea/"+\$1+"-name.fea");
+LoadNamelist("tsukurimashou.nam");
+RenameGlyphs("tsukurimashou");
+Save("sfd/"+\$1+".sfd");
+EOF
+
+# create space chars
+%space_char=(
+  0x20=>500,0xa0=>500,0x2000=>500,0x2002=>500,
+  0x1160=>1000,0x2001=>1000,0x3000=>1000,0x3164=>1000,0xff260=>1000,
+  0xad=>0,0x115f=>0,0x200b=>0,0xfeff=>0,
+  0xff25f=>0,0xff35f=>0,0xff45f=>0,0xff55f=>0,0xff65f=>0,
+  0x2004=>333,0x202f=>333,
+  0x2005=>250,
+  0x2006=>167,
+  0x2009=>200,
+  0x200a=>100,
+  0x205f=>222,
+);
+foreach $code (sort keys %space_char) {
+  printf "Select(0u%04x);SetWidth(%d);\n",$code,$space_char{$code}
+    if $havechar{$code};
+}
+print "Save(\"sfd/\"+\$1+\".sfd\");\n";
+
+$in_page=-1;
+
+# do simple copying
+sub simple_copy {
+  my($start,$realend)=@_;
+  
+  while ($start<=$realend) {
+    my($page)=$start>>8;
+    
+    if ($in_page!=$page) {
+      if ($in_page>=0) {
+        print "  _ProgCount=_ProgCount+$progacc;\nendif\n";
+        $actual_copies.="Print(\"PROGRESS ADD $progacc\");\nendif\n";
+        $progacc=0;
+      }
+      printf('if (FileAccess("pfb/"+$1+"-%02x.pfb")==0)'."\n",$page);
+      $actual_copies.=
+        sprintf('if (FileAccess("pfb/"+$1+"-%02x.pfb")==0)'."\n",$page);
+      $in_page=$page;
+    }
+    
+    if ($realend>255+($page<<8)) {
+      $end=255+($page<<8);
+    } else {
+      $end=$realend;
+    }
+    $actual_copies.=sprintf('  Open("pfb/"+$1+"-%02x.pfb");',$page);
+    $actual_copies.=
+      sprintf("\n  Select(%d);if (WorthOutputting())\n",$start%256);
+    $actual_copies.=
+      sprintf('    Select(%d,%d);',$start%256,$start%256+($end-$start));
+    $actual_copies.='Copy();Close();Open("sfd/"+$1+".sfd");';
+    $actual_copies.=
+      sprintf('Select(0u%04x,0u%04x);Paste();',$start,$end);
+    $actual_copies.='Save("sfd/"+$1+".sfd");';
+    $actual_copies.=
+      sprintf("\n    Print(\"%04x,%04x\");\n  endif\n",$start,$end);
+    $progacc+=($end-$start+1);
+    $start=$end+1;
+  }
+}
+
+print "_ProgCount=0;\n";
+
+$progacc=0;
+$actual_copies='';
+$lo=-1;
+$hi=-1;
+foreach $n (sort {$a<=>$b} keys %havechar) {
+  next if $space_char{$n};
+  if ($n==$hi+1) {
+    $hi=$hi+1;
+  } else {
+    if ($hi>=0) {
+      &simple_copy($lo,$hi);
+    }
+    $lo=$n;
+    $hi=$n;
+  }
+}
+if ($hi>=0) {
+  &simple_copy($lo,$hi);
+}
+if ($in_page>=0) {
+  print "  _ProgCount=_ProgCount+$progacc;\nendif\n";
+  $actual_copies.="Print(\"PROGRESS ADD $progacc\");\nendif\n";
+  $progacc=0;
+}
+
+print "Print(\"PROGRESS START \"+ToString(_ProgCount));\n";
+print $actual_copies;
+
+# make precomposed combinations
+print <<'EOF';
+Print(102);
+Open("sfd/"+$1+".sfd");
+EOF
+sub precompose {
+   ($dest,$base,@other)=@_;
+   if ($havechar{$dest}) {
+     printf "Select(0u%04x);CopyReference();Select(0u%04x);Paste();\n",
+        $base,$dest;
+     foreach $add (@other) {
+        printf "  Select(0u%04x);CopyReference();Select(0u%04x);PasteInto();\n",
+           $add,$dest;
+     }
+   }
+}
+
+# fractions
+&precompose(0x00bc,0xff1b4,0xff0b1,0xff005);
+&precompose(0x00bd,0xff1b2,0xff0b1,0xff005);
+&precompose(0x00be,0xff1b4,0xff0b3,0xff005);
+&precompose(0x2150,0xff1b7,0xff0b1,0xff005);
+&precompose(0x2151,0xff1b9,0xff0b1,0xff005);
+&precompose(0x2152,0xff130,0xff011,0xff002,0xff121);
+&precompose(0x2153,0xff1b3,0xff0b1,0xff005);
+&precompose(0x2154,0xff1b3,0xff0b2,0xff005);
+&precompose(0x2155,0xff1b5,0xff0b1,0xff005);
+&precompose(0x2156,0xff1b5,0xff0b2,0xff005);
+&precompose(0x2157,0xff1b5,0xff0b3,0xff005);
+&precompose(0x2158,0xff1b5,0xff0b4,0xff005);
+&precompose(0x2159,0xff1b6,0xff0b1,0xff005);
+&precompose(0x215a,0xff1b6,0xff0b5,0xff005);
+&precompose(0x215b,0xff1b8,0xff0b1,0xff005);
+&precompose(0x215c,0xff1b8,0xff0b3,0xff005);
+&precompose(0x215d,0xff1b8,0xff0b5,0xff005);
+&precompose(0x215e,0xff1b8,0xff0b7,0xff005);
+&precompose(0x215f,0x0020,0xff0b1,0xff005);
+
+# do hinting
+print <<'EOF';
+Save("sfd/"+$1+".sfd");
+EOF
+
+# do some cleaning
+print <<'EOF';
+Print(99);
+Open("sfd/"+$1+".sfd");
+Print(98);
+SelectAll();SetTeXParams(1,12,0,800,0,0,440,800,0);
+Print(97);
+ScaleToEm(1000);
+Print(96);
+SelectAll();RemoveOverlap();
+Print(1);
+EOF
+
+# create inverted glyphs - must happen after overlap removal
+while (($k,$v)=each %to_invert) {
+  printf "Select(0u%04x);Copy();\n",hex("0x$k");
+  foreach $vv (split("\n",$v)) {
+    printf "  Select(0u%04x);PasteInto();CorrectDirection();\n",$vv
+      if $havechar{$vv};
+  }
+}
+
+# do more cleaning
+print <<'EOF';
+SelectAll();RoundToCluster(2,2);
+Print(1);
+SelectAll();AddExtrema();
+Print(2);
+SelectAll();Simplify(196,3);
+Print(3);
+SelectAll();RoundToInt();
+Print(4);
+SelectAll();Simplify(196,3);
+Print(5);
+SelectAll();AddExtrema();
+Print(6);
+SelectAll();RoundToInt();
+Print(7);
+SelectAll();CorrectDirection();
+Print(8);
+SelectAll();CanonicalStart();
+SelectAll();CanonicalContours();
+EOF
+
+# do hinting
+print <<'EOF';
+Print(101);
+SelectAll();AutoHint();
+SelectAll();AutoCounter();
+Save("sfd/"+$1+".sfd");
+EOF
+
+# load feature info, if applicable
+print <<'EOF';
+if (Strstr($1,"-ps")<0)
+  Print(100);
+  Open("sfd/"+$1+".sfd");
+  MergeFeature("fea/"+Strsub($1,0,Strstr($1,"-"))+".fea");
+  _MFV=LoadStringFromFile("makefile-vars.inc");
+  _MFV=Strsub(_MFV,Strstr(_MFV,"OT_FEATURES="));
+  _MFV=Strsub(_MFV,0,Strstr(_MFV,Chr(10)));
+  if (Strstr(_MFV,"pfed")>=0)
+    Generate("otf/"+_CCFileName+".otf","",0x10000020);
+  else
+    Generate("otf/"+_CCFileName+".otf");
+  endif
+endif
+EOF
+
+# quit
+print "Quit(0);\n";

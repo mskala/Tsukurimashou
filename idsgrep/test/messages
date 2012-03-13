@@ -1,0 +1,13 @@
+#!/bin/sh
+
+./idsgrep
+./idsgrep 'u cant parse dis'
+echo '<a><b>' | ./idsgrep '?'
+echo '<a>b' | ./idsgrep '?'
+./idsgrep -V
+./idsgrep -h
+rm -f nofile.$$
+./idsgrep '?' nofile.$$
+./idsgrep -d
+./idsgrep -d '?' > /dev/null
+./idsgrep '-d?' '?' > /dev/null

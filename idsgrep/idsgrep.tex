@@ -1,0 +1,1022 @@
+\documentclass[twocolumn]{report}
+
+\usepackage{fontspec}
+
+\usepackage{calc}
+\usepackage[rigidchapters]{titlesec}
+\usepackage{tocloft}
+\usepackage{url}
+
+\title{IDSgrep, version \idsgrepversion}
+\author{Matthew Skala}
+
+\input{config.tex}
+
+\setsansfont{Nimbus Sans L}
+
+\setlength{\topmargin}{0.25in}
+\setlength{\headheight}{0pt}
+\setlength{\headsep}{0pt}
+
+\setlength{\oddsidemargin}{\paperwidth/17-0.5in}
+\setlength{\columnsep}{1em}
+\setlength{\textwidth}{\paperwidth*15/17-1in}
+\setlength{\textheight}{8.5in}
+
+\setlength{\parindent}{1.5em}
+
+\makeatletter
+\dimen@=\f@size\p@\dimen@6\dimen@\divide\dimen@5\edef\l@rgesize{\the\dimen@}
+\dimen@=\f@size\p@\dimen@2\dimen@\edef\@hugesize{\the\dimen@}
+
+\renewcommand\maketitle{%
+  \begin{titlepage}%
+    \let\footnotesize\small
+    \let\footnoterule\relax
+    \let \footnote \thanks
+    \vspace*{\fill}
+    \vspace*{\fill}
+    {\sffamily\bfseries\huge \hfill\@title\hfill\null\par}
+    \vspace{\fill}
+    {\sffamily\bfseries\Large \hfill\@author\hfill\null\par}
+    \vspace{\fill}
+    \vspace{\fill}
+    \vspace{\fill}
+    \vspace{\fill}
+    \vspace{\fill}
+    {\sffamily\bfseries\Large \hfill\@date\par}
+    \vspace*{\fill}
+    \@thanks\par
+    \null
+  \end{titlepage}%
+  \setcounter{footnote}{0}%
+  \global\let\thanks\relax
+  \global\let\maketitle\relax
+  \global\let\@thanks\@empty
+  \global\let\@author\@empty
+  \global\let\@date\@empty
+  \global\let\@title\@empty
+  \global\let\title\relax
+  \global\let\author\relax
+  \global\let\date\relax
+  \global\let\and\relax
+}
+
+\def\@maketitle{%
+  \newpage\noindent
+  \null
+  \begingroup
+    \let\footnote\thanks
+    {\fontsize{\@hugesize}{2\baselineskip}\sffamily\bfseries\selectfont
+      \@title\,\leaders\hrule height 0.2ex\hfill\null}\par\noindent
+    {\fontsize{\l@rgesize}{\baselineskip}\sffamily\bfseries
+      \@author\hfill\@date}\par
+  \endgroup
+  \dimen@=0.5\baselineskip\relax\advance\dimen@-0.5\p@\relax
+  \vspace{\dimen@}\noindent
+}
+
+\newcommand{\ch@pterform@t}[1]{%
+  \begin{@twocolumnfalse}%
+    \fontsize{\@hugesize}{3\baselineskip}\sffamily\bfseries\selectfont
+    #1\,\leaders\hrule height 0.2ex\hfill\null
+  \end{@twocolumnfalse}%
+}%
+\titlespacing*{\chapter}{0pt}{6\baselineskip}{2\baselineskip}
+\titleformat{\chapter}[hang]{}{}{0pt}{\ch@pterform@t}
+
+\titleformat{\section}[runin]%
+   {\fontsize{\l@rgesize}{\baselineskip}\sffamily\bfseries}{}{0pt}{}%
+   [\,\leaders\hrule height 0.16ex\hfill\null\\]
+\titlespacing*{\section}{0pt}{\baselineskip}{0pt}
+
+\titleformat{\subsection}[runin]{\sffamily\bfseries}{}{0pt}{}
+\titlespacing*{\subsection}{0pt}{\baselineskip}{0.666em}
+
+\titleformat{\subsubsection}[runin]{\rmfamily\scshape}{}{0pt}{}
+\titlespacing*{\subsubsection}{0pt}{\baselineskip}{0.666em}
+
+\titleformat{\paragraph}[runin]{\rmfamily\itshape}{}{0pt}{}
+\titlespacing*{\paragraph}{\parindent}{0pt}{0.666em}
+
+\raggedbottom
+\makeatother
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\renewcommand{\cfttoctitlefont}{%
+  \huge\sffamily\bfseries}
+\renewcommand{\cftaftertoctitle}{%
+  {\huge\,\leaders\hrule height 0.2ex\hfill\null\vspace*{-4ex}}}
+
+\def\gobbtohfil#1{%
+  \begingroup\if#1\hfil\else\aftergroup\gobbtohfil\fi\endgroup}
+
+\renewcommand{\cftchappresnum}{\gobbtohfil}
+\renewcommand{\cftchapnumwidth}{0pt}
+\renewcommand{\cftchapfont}{\sffamily\bfseries}
+\renewcommand{\cftchappagefont}{\sffamily\bfseries}
+
+\renewcommand{\cftsecpresnum}{\gobbtohfil}
+\renewcommand{\cftsecnumwidth}{0pt}
+
+\renewcommand{\cftsubsecpresnum}{\gobbtohfil}
+\renewcommand{\cftsubsecnumwidth}{0pt}
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Quick start}
+
+\noindent
+Use \texttt{idsgrep} much as you would use \texttt{grep}:
+
+\begin{quotation}
+  \texttt{idsgrep}
+    \textit{$[\langle$options$\rangle]$}
+    \textit{$\langle$pattern$\rangle$}
+    \textit{$[\langle$file$\rangle\ldots ]$}
+\end{quotation}
+
+Its general function is to search one or more files for items matching a
+pattern, like \texttt{grep}~\cite{grep} but with a different pattern
+syntax.  Although potentially usable for an unlimited range of tasks,
+\texttt{idsgrep}'s motivating application is to searching databases of Han
+script (Chinese, Japanese, etc.)\ character descriptions.  It provides a
+much more powerful replacement for the ``radical search'' feature of
+dictionaries like Kiten~\cite{Kiten} and WWWJDIC~\cite{WWWJDIC}.
+
+The syntax for matching patterns, and the range of command-line options
+available, are complicated.  Later sections of this document explain those
+things in detail; for now, here are some examples.
+
+\begin{description}
+\item[\texttt{idsgrep 萌 dictionary}]~\\
+  A literal character searches for the decomposition of that character,
+  exact match only.
+\item[\texttt{idsgrep -d 萌}]~\\
+  The \texttt{-d} option with empty argument searches a default collection
+  of dictionaries.
+\item[\texttt{idsgrep -dtsuku 萌}]~\\
+  The \texttt{-d} option can be given an argument to choose a specific
+  default dictionary.  Note the argument must be given in the same
+  \texttt{argv}-element with the \texttt{-d}; the syntax \texttt{-d tsuku}
+  with a space would mean ``Use the default dictionaries and search for the
+  (syntactically invalid) pattern `\texttt{tsuku}.'\,''
+\item[\texttt{othersoft | idsgrep 萌}]~\\
+  Standard input will be used if no other input source is specified.
+\item[\texttt{idsgrep -d ...日}]~\\
+  Three dots match their argument anywhere, so this will match \texttt{日},
+  \texttt{早}, and \texttt{萌}.
+\item[\texttt{idsgrep -d '?'}]~\\
+  A question mark, which will probably require shell escaping, matches
+  anything.  This is most useful as part of a more complex pattern.
+\item[\texttt{idsgrep -d '⿱?心'}]~\\
+  Unicode Ideographic Description Characters can be used to build up
+  sequences that also
+  incorporate the wildcards; this example matches characters
+  consisting of something above \texttt{心}, such as \texttt{忽} and
+  \texttt{恋} but not \texttt{応}.
+\item[\texttt{idsgrep -d '[tb](anything)心'}]~\\
+  There are ASCII aliases
+  for operators that may be inconvenient to type; this query is
+  functionally the same as the previous one.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Introduction}
+
+\noindent
+The Han character set is open-ended.  Although a few thousand characters
+suffice to write the languages most commonly written in Han script languages
+(namely Chinese and Japanese) most of the time, popular standards define
+tens of thousands of less-popular characters, and there are at least
+hundreds of thousands of rare characters known to occur in names, historical
+contexts, and in languages like Korean and Vietnamese that may still use Han
+script occasionally despite now being written primarily in other scripts.
+
+Computer text processing systems that use fixed lists of characters will
+inevitably find themselves unable to represent some text.  As a result,
+there is a need to \emph{describe} characters in a standard way that may
+have no standard code points of their own.  A similar need for descriptions
+of characters arises when looking up characters in a dictionary; a user may
+recognize some or all the visual features of a character (such as its parts
+and the way they are laid out) without knowing how to enter the character as
+a whole.
+
+IDSgrep's main function is to query character description databases in a
+flexible way.  This need was identified during development of the
+Tsukurimashou font family~\cite{Tsukurimashou}; there, the visual appearance
+of Han character glyphs corresponds directly to the MetaPost code
+implementing them, and the desire for code re-use and consistency often
+motivates a close examination of the existing work to answer questions like
+``What other characters contain this shape, and how did we implement it last
+time?'' Standard tools like \texttt{grep}~\cite{grep} can sometimes be
+applied to answer such questions by searching for subroutine names in the
+source code, but the related question of ``What other characters, not yet
+implemented, could we build that would use this shape?''\ requires comparing
+with some external database of the characters commonly used in the language. 
+How can we run \texttt{grep} on the writing system itself?
+
+Someone confronted with an unknown character and wanting to look it up in a
+more ordinary dictionary to find the meaning may, similarly, want to search
+for characters based on specific features while leaving others unspecified,
+with questions like ``What characters exist that have the common \texttt{心}
+shape at the bottom, with the upper part divided into two things side by
+side?  The two things at the top are shapes I don't recognize, printed too
+small for me to identify them more precisely.'' Existing dictionary-query
+methods are not adequate for some reasonable queries of this nature.
+
+For instance, the radical-and-stroke-count method of traditional character
+dictionaries requires identifying the head radical and counting strokes,
+both of which may be difficult; dictionary codes like SKIP and Four Corners
+key on some layout attributes but not all; multi-radical search allows the
+user to choose whichever radicals they recognize, but it ignores layout
+entirely; and computer handwriting recognition generally works well if and
+only if the user is sure of the writing of the first few strokes in the
+character.  Furthermore, these search schemes often are implemented only in
+heavy, non-portable, GUI software that cannot be automated and mixes poorly
+with standard computing environments.  IDSgrep, even in its current alpha
+version with most features unimplemented, can answer the example query
+correctly with a single, simple command line (\texttt{idsgrep -d
+'[tb][lr]??心'}).  This software is intended to bring the user-friendliness
+of \texttt{grep} to Han character dictionaries.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Download, build, and install}
+
+IDSgrep is distributed under the umbrella of the Tsukurimashou project on
+Sourceforge.JP~\cite{Tsukurimashou},
+\url{http://en.sourceforge.jp/projects/tsukurimashou/}.  Releases of IDSgrep
+will appear on the project download page; development versions are available
+by SVN checkout from the \texttt{trunk/idsgrep} subdirectory of the
+repository.
+
+A minimal default build and install could run something like this:
+\begin{verbatim}
+tar -xzvf idsgrep-0.2.tar.gz
+cd idsgrep-0.2
+./configure
+make
+su -c 'make install'
+\end{verbatim}
+
+IDSgrep as such does not include a dictionary, but it can build dictionaries
+from the Tsukurimashou font package, which is available through the same
+Sourceforge.JP project as IDSgrep, or from the KanjiVG database available at
+\url{http://kanjivg.tagaini.net/}~\cite{KanjiVG}.  For an ideal complete
+installation of IDSgrep, one would download both these packages, build
+Tsukurimashou first, and make it and KanjiVG available to the IDSgrep
+\texttt{configure} script.  The \texttt{configure} script will by default
+make a reasonable effort to find KanjiVG and Tsukurimashou; in many common
+cases it is not necessary to specify them on the command line.  Here is a
+more complete installation process relying on \texttt{configure} to find
+KanjiVG in the current directory and Tsukurimashou in a sibling directory:
+\begin{verbatim} unzip tsukurimashou-0.6.zip cd tsukurimashou-0.6
+./configure
+make
+# install of Tsukurimashou not needed by IDSgrep
+cd ..
+tar -xzvf idsgrep-0.2.tar.gz
+cd idsgrep-0.2
+ln -s /some/where/else/kanjivg-20111029.xml.gz .
+./configure
+make
+su -c 'make install'
+\end{verbatim}
+
+If the default search fails, the filename of KanjiVG (\texttt{.xml} or
+\texttt{.xml.gz}) and the top directory of Tsukurimashou can be specified on
+the \texttt{configure} command line with the \texttt{--with-kanjivg} and
+\texttt{--with-tsuku-build} options.  For other options, run
+\texttt{configure --help}.  It's a reasonably standard GNU
+Autotools~\cite{Autotools} configuration script, albeit with a lot of
+options for inapplicable installation directories removed to simplify the
+help message.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Interface to KanjiVG}
+
+The KanjiVG project~\cite{KanjiVG} maintains a database of kanji (Han
+characters as used by Japanese) in an extended SVG format, which implies
+that it is XML.  The \texttt{kvg2eids} Perl script, included as part of
+IDSgrep, is capable of reading this database and converting it to Extended
+Ideographic Description Sequences (EIDSes).  As described above, if a
+reasonably recent version of KanjiVG's compressed XML file is available to
+\texttt{configure}, then IDSgrep's build will create such a dictionary and
+\texttt{make install} will install it.
+
+KanjiVG describes characters primarily in terms of strokes, not radicals,
+and it attempts to follow the official stroke order and etymological
+radical breakdown.  That approach results in some peculiarities from the
+point of view of dictionary searching.  For instance, in the kanji
+\texttt{園}, the official stroke order is to write two strokes of the
+enclosing box, then the central glyph, then the bottom of the box. 
+KanjiVG's XML file lists two ``elements'' identified with the kanji
+\texttt{囗}, one for the first two strokes and one for the final stroke,
+with additional attributes specifying that they are actually two parts of
+the same element.  KanjiVG has changed its own standard for how to represent
+this information in the recent past, and not all entries have been updated
+to the latest standard yet.  The current version of \texttt{kvg2eids} does
+not correctly process \texttt{園} nor some other characters with parts
+written in nonsequential order.  On that particular one it generates a
+special functor containing debugging information; for some others, it may
+actually generate an EIDS with the same radical appearing multiple times,
+following the structure described in KanjiVG whether it's what was intended
+or not.  As a result, not all entries in the dictionary will be right. 
+However, only a few are affected by this issue.
+
+With the current versions of IDSgrep and KanjiVG, the KanjiVG-derived
+dictionary contains 6660 entries covering all the popularly-used Japanese
+kanji.  Note that the KanjiVG input file, and presumably the resulting
+format-converted dictionary, are covered by a Creative Commons
+Attribution--ShareAlike license, distinct from the GNU GPL applicable to
+IDSgrep itself.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Interface to Tsukurimashou}
+
+IDSgrep is closely connected with the Tsukuimashou font
+family~\cite{Tsukurimashou}.  They have the same author; it was largely for
+use in Tsukurimashou development that IDSgrep was developed at all; and
+IDSgrep's source control system is a subdirectory within Tsukurimashou's. 
+Building IDSgrep in conjunction with Tsukurimashou allows IDSgrep to extract
+from the Tsukurimashou build system a dictionary of character decompositions
+as they appear in Tsukurimashou.  The Tsukurimashou fonts are also necessary
+to build this IDSgrep user manual. However, IDSgrep and Tsukurimashou
+are distributed as separate packages, because they have very different
+audiences and build prerequisites.  Many people who can use one will be
+unable to use the other, so it seems inappropriate to force all users to
+download both.
+
+When IDSgrep's \texttt{configure} script runs, it looks for a valid
+Tsukurimashou build directory.  Ideally, that would be one in which
+Tsukurimashou has actually been fully built; but a directory where the
+Tsukurimashou \texttt{configure} script has been executed is enough.  If a
+valid Tsukurimashou build directory is found automatically or specified with
+the \texttt{--with-tsuku-build} option to \texttt{configure}, then when
+\texttt{make} is run on IDSgrep, it will recursively go call \texttt{make
+eids} in the Tsukurimashou build.  That is a hook that causes
+Tsukurimashou's build system to generate the EIDS decomposition dictionary,
+which is then copied or linked back into IDSgrep's build directory and can
+be installed with IDSgrep's \texttt{make install}.  IDSgrep's build will
+also look in Tsukurimashou's build directory for the font ``Tsukurimashou
+Mincho'' which is needed to build this user manual, and will make
+recursive calls to \texttt{make} for Tsukurimashou to build that if
+necessary.
+
+Note that neither Tsukurimashou nor IDSgrep is a true ``sub-package'' of the
+other in the sense of Autotools~\cite{Autotools}, as mediated by the
+\texttt{SUBDIRS} Automake variable and so on, notwithstanding that a
+checked-out SVN working copy of Tsukurimashou will contain a working copy of
+IDSgrep in a subdirectory.  Running the Tsukurimashou build will not invoke
+the IDSgrep build at all; and running the IDSgrep build is not a good way to
+trigger a full Tsukurimashou build, because it won't use the preferred
+\texttt{-j} option, track all dependencies in detail, nor generate anything
+that doesn't happen to be a prerequisite for the files IDSgrep needs.  If
+you want to build both systems, it's best to build Tsukurimashou first and
+then build IDSgrep pointing at Tsukurimashou.  Also, these two packages do
+not necessarily have the same portability considerations, and it's possible
+that the link between them may fail even on systems where each package
+builds correctly by itself (for instance, possibly on some systems where GNU
+Make is installed but non-default).  The link between Tsukurimashou and
+IDSgrep provides some convenience for my own frequent case of making changes
+to both packages at once.
+
+In order for IDSgrep to work together with Tsukurimashou, it is necessary
+that the Tsukurimashou build be one that supports the \texttt{make eids}
+target in the first place.  No released version contains such support yet,
+but it is planned for Tsukurimashou~0.6.  Development versions of
+Tsukurimashou in the SVN repository have included EIDS support since early
+January 2012.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Unicode IDSes}
+
+Although \texttt{idsgrep} uses a more elaborate syntax, it is well to know
+about the Unicode Consortium's ``Ideographic Description Sequences''
+(IDSes), which are a subset of \texttt{idsgrep}'s.  These are documented
+more fully in the Unicode standard~\cite{Unicode:IDS}.
+
+\begin{itemize}
+
+\item A character from one of the Unified Han or CJK Radical ranges is a
+complete IDS and simply represents itself.  For instance, ``\texttt{大}'' is
+a complete IDS.
+
+\item The Ideographic Description Characer (IDC) code points U+2FF0, U+2FF1,
+and U+2FF4 through U+2FFB, whose graphic images look like
+\texttt{⿰⿱⿴⿵⿶⿷⿸⿹⿺⿻}, are prefix binary operators.
+One of these characters followed by two complete IDSes
+forms another complete IDS, representing a character formed by joining the
+two smaller characters in a way suggested by the name and graphical image
+of the IDC.  For instance, ``\texttt{⿰日月}'' describes the
+character \texttt{明}.  These structures may be nested; for instance,
+``\texttt{⿰言⿱五口}'' describes the character \texttt{語}.
+
+\item The IDC code points U+2FF2 and U+2FF3, which look like \texttt{⿲⿳},
+are prefix ternary operators. (Unicode uses the less-standard word
+``trinary'' to describe them.) One of them can be followed by three complete
+IDSes to form an IDS that describes a character made of three parts, much in
+the same manner as the binary operators.  For instance,
+``\texttt{⿱⿲糸言糸夂}'' describes the character \texttt{變}.
+
+\item An IDS may not be more than 16 code points long overall nor contain more
+than six consecutive non-operator characters.
+This rule appears to be intended to make things easier for systems that need
+to be able to jump into the middle of text and quickly find the starts and
+ends of IDSes.
+
+\item IDSes non-bindingly ``should'' be as short as possible.
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Invoking \texttt{idsgrep}}
+
+The command-line \texttt{idsgrep} utility works much like most other
+command-line programs, and like \texttt{grep}~\cite{grep} in particular.  It
+takes options and other arguments.  The first non-option argument is an EIDS
+representing the matching pattern, and any remaining non-option arguments
+are taken as filenames to read.  If there are no filenames, \texttt{idsgrep}
+will read from standard input.  Output always goes to standard output.
+
+When there is more than one file being read (either by direct specification
+or indirectly with the \texttt{-d} dictionary option), \texttt{idsgrep} will
+preface each EIDS in its output with
+``\texttt{:}$\langle$\textit{filename}$\rangle$\texttt{:}'' to indicate
+in which file the EIDS was found.  Note that under the EIDS syntax rules,
+that creates a unary node senior to the entire tree, so that the output
+remains in valid EIDS format, except in the case of filenames containing
+colons, which will be handled via backslash escapes in the future when those
+are implemented.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Command-line options}
+
+\begin{description}
+
+\item[\texttt{-d}, \texttt{--dictionary}]
+Read a dictionary
+from the standard location.  There is a pathname for dictionaries hardcoded
+into the \texttt{idsgrep} binary, generally
+\{\emph{prefix}\}\texttt{/share/dict}, and if this option is given, its
+argument (which may be empty) will be appended to the dictionary directory
+path, followed by ``\texttt{*.eids},'' and then treated as a shell glob
+pattern.  Any matching files are then searched in addition to those
+otherwise specified on the command line.  A small added wrinkle is that when
+more than one file is searched (resulting in
+\texttt{:}\textit{filename}\texttt{:} tags on the output lines), any of them
+that came from the \texttt{-d} option will be abbreviated by omitting the
+hardcoded path name.  The purpose of this option is to cover the common case
+of searching the installed dictionaries.  Just specifying ``\texttt{-d}''
+will search all the installed dictionaries; specifying an abbreviation of
+the dictionary name, as ``\texttt{-dt}'' or ``\texttt{-dk},'' will search
+just the matching one; and it remains possible to specify a file exactly or
+use standard input in the usual \texttt{grep}-like way.
+
+\item[\texttt{-V}, \texttt{--version}] Display the version and license
+information for IDSgrep.
+
+\item[\texttt{-h}, \texttt{--help}] Display a short summary of these
+options.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Environment variables}
+
+The \texttt{idsgrep} utility recognizes just one environment variable,
+\texttt{IDSGREP\_DICTDIR}, which if present specifies a directory for the
+\texttt{-d} option to search instead of its hardcoded default.
+
+Note that \texttt{idsgrep} does not pay attention to any other environment
+variables, and in particular, not \texttt{LC\_ALL} and company.  The input
+and output of this program are always UTF-8 encoded Unicode \emph{regardless
+of locale settings}.  Since the basic function of this program is closely
+tied to the Unicode-specific ``ideographic description characters,'' it
+would be difficult if not impossible for it to work in any non-Unicode
+locale.  Predictability is also important because of the likely usefulness
+of this software in automated contexts; if it followed locale environment
+variables, many users would have to carefully override those all the time to
+be sure of portability.  Instead of creating that situation,
+\texttt{idsgrep} by design has a consistent input and output format on all
+systems and users are welcome to pipe things through
+a conversion program if necessary.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Technical details}
+
+\noindent
+
+This section is intended to describe IDSgrep's syntax and matching procedure
+in complete detail; and those things are, in turn, designed to be powerful
+rather than easy.  As a result, the description may be confusing for some
+users.  See the examples in the ``Quick start'' section for a more
+accessible introduction to how to use the utility.
+
+The system is best understood in terms of three interconnected major
+concepts:
+\begin{itemize}
+  \item an abstract data structure;
+  \item a syntax for expressing instances of the data structure as
+    ``Extended Ideographic Description Sequences'' (EIDSes);
+  \item a function for determining whether two instances of the data
+    structure ``match.''
+\end{itemize}
+
+Then the basic function of \texttt{idsgrep} is to take one EIDS as a
+matching pattern, scan a file containing many more, and write out the ones
+that match the matching pattern.  The three major concepts are described,
+one each, in the following sections.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The data structure}
+
+An \emph{EIDS tree} consists of the following:
+
+\begin{itemize}
+  \item An optional \emph{head}, which if present consists of a nonempty
+    string of Unicode characters.
+  \item A required \emph{functor}, which is a nonempty string of Unicode
+    characters.
+  \item A required \emph{arity}, which is an integer from 0 to 3 inclusive.
+  \item A sequence of \emph{children}, of length equal to the arity (no
+    children if arity is zero).  Each child is, recursively, an EIDS tree.
+\end{itemize}
+
+Trees with arity zero, one, two, and three are called, respectively,
+nullary, unary, binary, and ternary.
+
+Note that these ``nonempty strings of Unicode characters'' will very often
+tend to be of length one (single characters) but that is not a requirement. 
+They cannot be empty (length zero); the case of a tree without a head is
+properly described by ``there is no head,'' not by ``the head is the empty
+string.'' \emph{At present} no Unicode canonicalization is performed, that
+being left to the user, but this may change in the future.  Zero bytes
+(U+0000) are in principle permitted to occur in EIDS trees, but at present
+there is no way to enter them in matching patterns because Unix passes
+command-line arguments as null-terminated C strings.
+
+Typically, these trees are used to describe kanji characters.  The literal
+Unicode character being described will be the head, if there is a code point
+for it; the functor will be either an ideographic description character like
+\texttt{⿱} if the character can be subdivided, or else nullary \texttt{;}
+if not.  Then the children will correspond to the parts into which it can be
+decomposed.  Some parts of the character may also be available as
+characters with Unicode code points in their own right; in that case, they
+will have heads of their own.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{EIDS syntax}
+
+Unicode's IDS syntax serves a similar purpose to IDSgrep's extended IDS
+syntax, but it lacks sufficient expressive power to cover some of IDSgrep's
+needs.  Nonetheless, EIDS syntax is noticeably derived from that of Unicode
+IDSes.  Broadly speaking, EIDSes are IDSes extended to include heads (which
+we need for partial-character lookup); bracketed strings as functors (which
+we need for capturing arbitrary data); and with arbitrary limits on allowed
+characters and length relaxed (needed for complex characters and so that
+matching patterns can be expressed in the same syntax).
+
+Here are some sample EIDSes:
+\begin{verbatim}
+大
+⿱田⿰虫⿱土土
+⿸厂⿱今止
+【萌】⿱艹<明>⿰日月
+【店】⿸广<占>⿱卜口 
+⿱艹⿰日?
+&...男...女
+[tb]艹[or][lr]?日[lr]日?
+\end{verbatim}
+
+The first three of these examples are valid in the Unicode IDS syntax.  The
+next two contain heads, and are typical of what might exist in a dictionary
+designed to be searched by the \texttt{idsgrep} command-line utility.  The
+last three might be matching patterns a user would enter.
+
+EIDS trees are written in a simple prefix notation that could be called
+``Polish notation'' inasmuch as it is the reverse of ``reverse Polish
+notation.'' To write a tree, simply write the head if there is one, the
+functor, and then if the tree is not nullary, write each of the children. 
+Heads and the functors of trees of different arity are (unless otherwise
+specified below) written enclosed in different kinds of brackets that
+indicate the difference between heads and functors, and the arity of the
+tree when writing a functor.
+
+The basic ASCII brackets for heads and functors are as follows:
+
+\hspace*{\fill}
+\begin{tabular}{cccc}
+  head & \texttt{<} & \texttt{>} & \texttt{<example>} \\
+  nullary functor (0) & \texttt{(} & \texttt{)} & \texttt{(example)} \\
+  unary functor (1) & \texttt{.} & \texttt{.} & \texttt{.example.} \\
+  binary functor (2) & \texttt{[} & \texttt{]} & \texttt{[example]} \\
+  ternary functor (3) & \texttt{\{} & \texttt{\}} & \texttt{\{example\}}
+\end{tabular}
+\hspace*{\fill}\par
+
+Note that the opening and closing brackets for unary functors are both equal
+to the ASCII period, U+002E.
+
+Parsing of bracketed strings has a few features worth noting.  First, there
+is no special treatment of nested brackets.  After the ``\texttt{<}'' that
+begins a head, for instance, the next ``\texttt{>}'' will end the head,
+regardless of how many other instances of ``\texttt{<}'' have been seen. 
+However, because no head or functor can be less than one character long, a
+closing bracket immediately after the opening bracket (which would otherwise
+create an illegal empty string) is specially treated as the first character
+of the string and \emph{not} as a closing bracket.  Thus, ``\texttt{())}''
+is legal syntax for a functor equal to a closing parenthesis, in a nullary
+tree; and ``\texttt{...}'' is a functor equal to a single ASCII period in a
+unary tree, an important example because it is the commonly-used
+match-anywhere operator.
+
+Each pair of ASCII brackets also has two pairs of generally
+non-ASCII synonyms, as
+follows:
+
+{\ttfamily\hspace*{\fill}
+\begin{tabular}{cccccc}
+  <&>&【&】&〖&〗\\
+  (&)&（&）&｟&｠\\
+  .&.&:&:&・&・\\\relax
+  [&]&［&］&〚&〛\\
+  \{&\}&〔&〕&〘&〙
+\end{tabular}
+\hspace*{\fill}\par}
+
+The closing synonymous brackets for functors of unary trees are always
+identical to the opening brackets.  A string may be opened by any of the
+three opening bracket characters for its type of string; but then it must be
+closed by the closing bracket character that goes with the opening bracket. 
+Brackets from other pairs are taken literally and do not end the string.
+For instance,
+``\texttt{【<example>】}'' is a head whose value consists of
+``\texttt{<example>}'' including the ASCII angle brackets.  There are
+several reasons for the existence of the synonyms:
+
+\begin{itemize}
+  \item They look cool.
+  \item There is an established tradition of using \texttt{【}lenticular
+    brackets\texttt{】} for heads in printed dictionaries, which is exactly
+    their meaning here.
+  \item Allowing ASCII colons to bracket unary-node functors makes possible
+    a more appealing and \texttt{grep}-like syntax for \texttt{idsgrep}'s
+    output in the case of processing multiple input files.
+  \item Allowing more than one way to bracket each kind of string makes it
+    easier to express bracket characters that may occur literally in a string.
+  \item The non-ASCII brackets may be easier to type without switching modes
+    in some input methods.
+  \item On the other hand, keeping an ASCII option for every bracket type
+    allows matching patterns to be entered on ASCII-only terminals.
+  \item Multiple bracket types allow for creating human-visible
+    computer-invisible distinctions in dictionary files, for instance to
+    flag pseudo-entries that contain metadata, without needing to create a
+    special syntax for comments.
+\end{itemize}
+
+If a character other than an opening bracket occurs in an EIDS where an
+opening bracket would be expected, it is treated in one of three ways.
+
+\begin{itemize}
+  \item ASCII whitespace and control characters, U+0000 to U+0020 inclusive,
+    are ignored.  In the future, this treatment might be extended to
+    non-ASCII Unicode whitespace characters, which are best avoided because
+    of the uncertainty.
+  \item Some special characters, such as ``\texttt{⿰},'' have ``sugary
+    implicit brackets.''  If one of these characters appears outside of
+    brackets, it will be interpreted as a functor whose value is a
+    single-character string equal to the literal character, and a fixed
+    arity that depends on which character it is.  For instance,
+    ``\texttt{⿰}'' and ``\texttt{[⿰]}'' will be parsed identically.
+    A list of characters getting this treatment is below.
+  \item Any other non-bracket character has a ``syrupy implicit semicolon.''
+    That means it will be interpreted as a complete nullary tree with
+    a single-character head equal to the literal character, and a
+    single semicolon as the functor.  For instance, ``\texttt{x}'' and
+    ``\texttt{<x>(;)}'' will be parsed identically.  Because semicolon
+    itself has sugary implicit nullary brackets, we could also write
+    ``\texttt{<x>;}'' for the same effect.
+\end{itemize}
+
+Here are all the characters that have sugary implicit brackets, with the
+brackets they imply:  {\ttfamily (;) (?) .!. ./. .=. .*. .@. [\&] [|] [⿰]
+[⿱] [⿴] [⿵] [⿶] [⿷] [⿸] [⿹] [⿺] [⿻] \{⿲\} \{⿳\}}
+
+Note that the sugary and syrupy implications of a character are only
+relevant when the character occurs where an opening bracket of some
+type would otherwise be required; inside a bracketed string,
+characters behave normally.
+
+It is planned that in the future, \texttt{idsgrep}'s parser will also
+recognize some backslash escape sequences.  This is not yet
+implemented.
+
+It is a consequence of these rules that all syntactically valid Unicode
+IDSes are syntactically valid EIDSes, but the converse is not true.
+
+Although it is technically not a parsing issue but rather a
+transformation applied to the tree after parsing, there is one more
+issue to mention: some functors have aliases.  If a functor and arity
+matches one of the aliases on the following list, it will be replaced
+with the indicated single-character functor.  The idea is to provide
+verbose ASCII names for single-character functors of special
+importance to the matching algorithm.  Note that the single-character
+versions are always the canonical ones, and although the brackets are
+shown explicitly for clarity, they are nearly all characters from the
+``sugary implicit'' list.
+
+\texttt{\begin{tabular}{cccccc}
+  (anything) & $\Rightarrow$ & (?) & .anywhere. & $\Rightarrow$ & ... \\
+  .not. & $\Rightarrow$ & .!. & .regex. & $\Rightarrow$ & ./. \\
+  .equal. & $\Rightarrow$ & .=. & .unord. & $\Rightarrow$ & .*. \\
+  .assoc. & $\Rightarrow$ & .@. & [and] & $\Rightarrow$ & [\&] \\\relax
+  [or] & $\Rightarrow$ & [|] & [lr] & $\Rightarrow$ & [⿰] \\\relax
+  [tb] & $\Rightarrow$ & [⿱] & [enclose] & $\Rightarrow$ & [⿴] \\\relax
+  [wrapu] & $\Rightarrow$ & [⿵] & [wrapd] & $\Rightarrow$ & [⿶] \\\relax
+  [wrapl] & $\Rightarrow$ & [⿷] & [wrapul] & $\Rightarrow$ & [⿸] \\\relax
+  [wrapur] & $\Rightarrow$ & [⿹] & [wrapll] & $\Rightarrow$ & [⿺] \\\relax
+  [overlap] & $\Rightarrow$ & [⿻] & \{lcr\} & $\Rightarrow$ & \{⿲\} \\\relax
+  \{tcb\} & $\Rightarrow$ & \{⿳\}
+\end{tabular}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Matching}
+
+The basic function of the \texttt{idsgrep} command-line utility is to
+evaluate each item in the database against a matching pattern.  The matching
+patterns are similar in spirit to the ``regular expressions'' common
+throughout the Unix world; however, for theoretical and practical reasons
+standard regular expressions would be unsuitable for the applications
+considered by IDSgrep.
+
+The main theoretical issue is that IDSes, whether IDSgrep-style ``extended''
+or Unicode-style traditional ones, belong to the class of
+\emph{context-free} languages.  They describe tree-like structures nested to
+arbitrary depth, similar in nature to programming-language expressions
+containing balanced parentheses although balanced parantheses as such are
+not actually part of EIDS syntax.  The natural way to parse these involves
+an abstract machine with a stack-like memory that can assume an infinite
+number of different states.  Regular expressions can only be used to
+recognize the smaller, simpler class of \emph{regular} languages, parsable
+by an abstract machine with a finite-state memory.  It is not possible to
+write a correct regular expression that will match balanced parentheses. 
+Some advanced software implementations of so-called ``regular expressions''
+(for instance, Perl's) contain special features that make them more powerful
+than the standard theoretical model, so that they are capable of recognizing
+some languages that are non-regular, including balanced parentheses.  It is
+also possible to fake a stack with a finite depth limit by writing a
+complicated regular expression, and that may be good enough in some
+practical cases.  Some users may also settle for just doing a substring
+query with \texttt{grep} and calling the result close enough.  But IDSgrep
+tries to do it in a way that is really right, and that is described
+precisely in this section.
+
+We will define a function $\textit{match}(x,y)$ which takes two EIDS trees
+as input and returns a Boolean value of true or false.  We
+call $x$ the \emph{pattern} or \emph{needle} and $y$ the \emph{subject} or
+\emph{haystack}.  The \texttt{idsgrep} command-line utility generally takes
+$x$ from its command line and repeatedly evaluates this function for each
+EIDS it reads from its input; it then writes out all the values of $y$ for
+which $\textit{match}(x,y)$ is true.
+
+The $\textit{match}(x,y)$ function is defined as follows:
+\begin{itemize}
+  \item If $x$ and $y$ both have heads, then $\textit{match}(x,y)$ is true
+    if and only if their heads are identical.  Nothing else is examined (in
+    particular, not the children).  Then the two cases below do not apply.
+  \item If $x$ and $y$ do not both have heads, then
+    $\textit{match}(x,y)=\textit{match}'(x,y)$, whose value
+    generally depends on the functor and arity of $x$.  The
+    $\textit{match}'$ function has many special cases described in the
+    subsections below, expressing different kinds of special matching
+    operations.  These operations roughly correspond to the ASCII
+    characters with sugary implicit brackets in EIDS syntax.  They are
+    shown with brackets for clarity in the discussion below, but users
+    would generally type them without the brackets and depend on the
+    sugar in actual use.
+  \item If none of the subsections below applies, then
+    $\textit{match}'(x,y)$ is true if and only if $x$ and $y$ have identical
+    functors, identical arities, and $\textit{match}(x_i,y_i)$ is true
+    recursively for all their corresponding children $x_i,y_i$.  Note that
+    $\textit{match}'$ recurses to $\textit{match}$, not itself, so
+    there is a chance for head matching on the children even if it was
+    not relevant to the parent nodes.
+\end{itemize}
+
+Very few of the features below actually exist in the alpha version 0.2.  The
+others are documented to give readers some idea of planned future
+development.
+
+\subsection{Match anything}
+
+The value of $\textit{match}'(\texttt{(?)},y)$ is always true.  Thus,
+\texttt{?}\ can be used as a wildcard in \texttt{idsgrep} patterns to match
+an entire subtree regardless of its structure.  Mnemonic:  question mark
+is a shell wildcard for matching a single character.
+The verbose ASCII name for ``\texttt{(?)}'' is ``\texttt{(anything)}.''
+
+\subsection{Match anywhere}
+
+The value of $\textit{match}'(\texttt{...}x,y)$ is true if and only if there
+exists any subtree of $y$ (including the entirety of $y$) for which
+$\textit{match}'(x,y)$ is true.  In other words, this will look for an
+instance of $x$ anywhere inside $y$ regardless of nesting level.  Mnemonic:
+three dots suggest omitting a variable-length sequence, in this case the
+variable-length chain of ancestors above $x$.
+The verbose ASCII name for ``\texttt{...}'' is ``\texttt{.anywhere.}.''
+
+\subsection{Match children in any order}
+
+The value of $\textit{match}'(\texttt{.*.}x,y)$ is true if and only if there
+exists a permutation of the children of $y$ such that $\textit{match}(x,y')$
+is true of the resulting modified $y'$.  For instance, \texttt{*[a]bc}
+matches both \texttt{[a]bc} and \texttt{[a]cb}.  This is obviously a
+no-operation (matches simply if $x$ matches $y$, as if the asterisk were not
+applied) for trees of arity less than two.  Mnemonic: asterisk is a general
+wildcard, and this is a general matching operation.
+The verbose ASCII name for ``\texttt{.*.}'' is ``\texttt{.unord.}.''
+
+\subsection{NOT}
+
+The value of $\textit{match}'(\texttt{.!.}x,y)$ is true if and only if
+$\textit{match}(x,y)$ is false.  It matches any tree \emph{not} matched by
+$x$ alone.  Mnemonic:  prefix exclamation point is logical NOT in many
+programming languages.
+The verbose ASCII name for ``\texttt{.!.}'' is ``\texttt{.not.}.''
+
+\subsection{AND}
+
+The value of $\textit{match}'(\texttt{[\&]}xy,z)$ is true if and only if
+$\textit{match}(x,z) \wedge \textit{match}(y,z)$.  In other words, it
+matches all trees that are matched by both $x$ and $y$; the set of strings
+matched by $\texttt{[\&]}xy$ is the intersection of the sets matched by $x$
+and by $y$.  Mnemonic: ampersand is logical or bitwise AND in many
+programming languages.
+The verbose ASCII name for ``\texttt{[\&]}'' is ``\texttt{[and]}.''
+
+\subsection{OR}
+
+The value of $\textit{match}'(\texttt{[|]}xy,z)$ is true if and only if
+$\textit{match}(x,z) \vee \textit{match}(y,z)$.  In other words, it matches
+all trees that are matched by at least one of $x$ or $y$; the set of strings
+matched by $\texttt{[|]}xy$ is the union of the sets matched by $x$ and by
+$y$.  Mnemonic: ASCII vertical bar is logical or bitwise OR in many
+programming languages.
+The verbose ASCII name for ``\texttt{[|]}'' is ``\texttt{[or]}.''
+
+\subsection{Literal tree matching}
+
+If $x$ and $y$ both have heads, then the value of
+$\textit{match}'(\texttt{.=.}x,y)$ is true if and only if those heads are
+identical.  Otherwise, it is true if and only if $x$ and $y$ have identical
+functors, identical arity, and $\textit{match}(x_i,y_i)$ is true for each of
+their corresponding children.
+
+The effect of this operation is to ignore any special $\textit{match}'()$
+semantics of $x$'s functor; the trees are compared as if that functor were
+just an ordinary string, regardless of whether it might normally be special. 
+Note that the full $\textit{match}()$ is still done on the children with
+only the root taken literally; to do a completely literal match of the
+entire trees it is necessary to insert an additional copy of \texttt{.=.}
+above every node in the matching pattern, or at least every node that would
+otherwise have a special meaning for $\textit{match}'()$, and even then
+heads will continue to have their usual effect of overriding
+recursion.\footnote{It may be interesting to consider how one could write a
+pattern to test absolute identity of trees, with each node matching if and
+only if its head or lack thereof is identical to the desired target as well
+as the functors and arities matching and the same being true of all
+children.} Mnemonic: equals sign suggests the literal equality that is being
+tested rather than the more complicated comparisons that might otherwise be
+used.
+The verbose ASCII name for ``\texttt{.=.}'' is ``\texttt{.equal.}.''
+
+For instance, this feature could allow searching for a unary tree whose
+functor actually is \texttt{!}, where just specifying such a tree directly
+as the matching pattern would instead (under the rule for ``NOT'' above)
+search for trees that do not match the only child of \texttt{!}.  In the
+original application of searching kanji decomposition databases this
+operation is unlikely to be used because the special functors do not occur
+anyway, but it seems important for potential applications of IDSgrep to more
+general tree-querying, because otherwise some reasonable things people might
+want to look for could not be found at all.
+
+\subsection{Associative matching}
+
+The value of $\textit{match}'(\texttt{.@.}x,y)$ is calculated as follows. 
+Create a new EIDS tree $x'$, initially equal to $x$, which has the property
+that its root may be of unlimited arity.  Then for every child of $x'$ whose
+functor and arity are identical to the functor and arity of $x$, replace
+that child in $x'$ with its children, in order.  Repeat that operation until
+no more children of $x'$ have functor and arity identical to the
+functor and arity of $x$.  Compute $y'$ from $y$ by the same process.  Then
+$\textit{match}'(\texttt{.@.}x,y)=\textit{match}(\texttt{.=.}x',y')$.
+
+This matching operator is intended for the case of three or more
+things combined using a binary operator that has, or can be said to sometimes
+have, an associative law.  For instance, the kanji \texttt{怠} could be
+described by ``\texttt{⿱⿱厶口心}'' (\texttt{⿱厶口} over \texttt{心}) or
+by ``\texttt{⿱厶⿱口心}'' (\texttt{厶} over \texttt{⿱口心}).  Unicode
+might encourage use of the ternary operator \texttt{⿳} for this particular
+case instead, but that does not cover all reasonably-occurring cases, and
+the default databases seldom if ever use the Unicode ternary operators.
+
+The difference between the representations is sometimes useful information
+that the database \emph{should} retain; for instance, in the case of
+Tsukurimashou, ``\texttt{⿱⿱厶口心},'' ``\texttt{⿱厶⿱口心},'' and
+``\texttt{⿳厶口心}'' would correspond to three very different
+stanzas of MetaPost source code, and the user might want a query
+that separates them.  On the other hand, the user might instead have a more
+general query along the lines of ``find three things stacked vertically with
+\texttt{心} at the bottom'' and intend that that should match both cases of
+binary decomposition.  The at-sign matching operation is meant for queries
+that don't care about the order of binary operators; without it, matching
+will by default follow the tree structure strictly.
+
+Note that even with \texttt{.@.}, IDSgrep will not consider binary operators
+in any way interchangeable with ternary ones; users must still use
+\texttt{.|.} to achieve such an effect if desired.  Although the at-sign is
+fully defined for all arities, it is only intended for use with binary
+trees.  Note also that \texttt{.@.} and \texttt{.*.} behave according to
+their definitions.  Incautious attempts to use them together will often fail
+to have the desired effects, because the definitions do not include special
+exceptions that some users might intuitively expect for these two operators
+happening to occur near each other.  In a pattern like
+``\texttt{*@[a][a]bcd},'' \texttt{.*.} will recognize \texttt{.@.} as the
+functor of a unary tree and expand the single permutation of its one child,
+and so that pattern will match the same things as if the asterisk had not
+been present, namely ``\texttt{[a][a]bcd}'' and ``\texttt{[a]b[a]cd]}'' but
+not, for instance, ``\texttt{[a][a]dcb}.'' In a pattern like
+``\texttt{@[a]b*[a]cd},'' \texttt{.@.} will recognize \texttt{.*.} as a
+different arity and functor from \texttt{[a]} and choose not to expand it in
+$x'$, with the result that that pattern matches the same things as if the
+at-sign had not been present, namely ``\texttt{[a]b[a]cd}'' and
+``\texttt{[a]b[a]dc}'' but not ``\texttt{[a][a]bcd}'' nor
+``\texttt{[a][a]bdc}.''
+
+When considered as an operation on trees, what \texttt{.@.} does is
+fundamentally the same thing as the algebraic operation that considers
+$(a+b)+c$ equivalent to $a+(b+c)$, and for that reason it is called
+``associative'' matching.  The mnemonic for at-sign is that it is a fancy
+``a'' for ``associative.''
+The verbose ASCII name for ``\texttt{.@.}'' is ``\texttt{.assoc.}.''
+
+This feature is not yet implemented in version 0.1.
+
+\subsection{Regular expression matching}
+
+It is planned that some future version (likely version 0.3) will support
+special behaviour for $\textit{match}'(\texttt{./.}x,y)$ to call a regular
+expression library and do string matching within heads or functors, but
+the detailed semantics of how that will work are not yet decided.  The
+mnemonic is that slash is Perl's regular-expression match operator; the
+motivating application is to further development of IDSgrep's own
+dictionary-generating programs, which tend to create long nullary functors
+full of debugging information when they encounter constructs they don't
+understand in the other-format dictionaries they read.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{idsgrep}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

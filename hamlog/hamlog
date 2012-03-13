@@ -1,0 +1,242 @@
+#!/usr/bin/perl
+
+#
+# Hamlog, a simple logic programming language
+# Copyright (C) 2011  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+
+%database=();
+
+$template=shift;
+
+if (($template eq '--version') || ($template eq '-e')) {
+  print "Hamlog from Tsukurimashou 0.4\n";
+  exit(0);
+}
+
+$debug=0;
+if ($template eq '--debug') {
+    $debug=1;
+    $template=shift;
+}
+
+$initial_query=shift;
+
+sub fatal_error {
+    my($msg,$ctxt)=(@_);
+    print STDERR "hamlog: $msg: ".substr($ctxt,0,50).
+      (length($ctxt)>50?'...':'')."\n";
+    exit(1);
+}
+
+# parse the program
+
+$clause='';
+$serial=1;
+while (<>) {
+
+    chomp;
+    s/%.*$//;
+    next unless /\S/;
+    s/\s//g;
+    $clause.=$_;
+
+    while ($clause=~/^([a-z0-9_]+)(\(([A-Za-z0-9_,]+)\))?(:-)?(.*?)\.(.*)$/) {
+	$functor=$1;
+	$arguments=$3;
+	$body=$5;
+	if (($4 eq '') && ($5 ne '')) {
+	    &fatal_error('syntax error',$clause);
+	}
+	$clause=$6;
+	
+	$arguments=~s/\b([A-Z_][A-Z0-9_]*)\b/$1_$serial/g;
+	$body=~s/\b([A-Z_][A-Z0-9_]*)\b/$1_$serial/g;
+	
+        $arity=0+split(',',$arguments);
+	$database{"$functor/$arity"}="\n"
+	  if $database{"$functor/$arity"} eq '';
+	$database{"$functor/$arity"}.="$serial:$arguments:$body\n";
+	print "$functor/$arity:$serial:$arguments:$body\n" if $debug;
+	$serial++;
+    }
+}
+
+if ($clause ne '') {
+    &fatal_error('garbage in script',$clause);
+}
+
+# parse the query
+
+if ($initial_query=~/^([a-z0-9_!=]+)(\(([A-Za-z0-9_,]+)\))?
+    ((,([a-z0-9_!=]+)(\(([A-Za-z0-9_,]+)\))?)*)$/x) {
+	push @stiq,$template;
+	push @stip,0;
+	push @stfu,("$1/".(0+split(',',$3)));
+	push @star,$3;
+	push @strg,substr($4,1);
+	
+} else {
+    &fatal_error('bad initial query',$initial_query);
+}
+
+# attempt to satisfy the query
+
+%solutions=();
+
+sub ge_regex {
+    my($n)=(@_);
+    my($i,$j,$rval);
+    
+    $rval='[1-9]'.('[0-9]'x length($n)).'+';
+    for ($i=0;$i<length($n);$i++) {
+	next if substr($n,$i,1) eq '9';
+	$rval.=('|'.substr($n,0,$i).'['.(substr($n,$i,1)+1).'-9]'
+	    .'[0-9]'x(length($n)-$i-1));
+    }
+    $rval.="|$n";
+    $rval;
+}
+
+while (@stip) {
+    $iq=pop @stiq;
+    $ip=pop @stip;
+    $fu=pop @stfu;
+    $ar=pop @star;
+    $rg=pop @strg;
+    
+    print (("  "x($#stiq+1))."Searching $ip:$fu($ar)  $rg\n") if $debug;
+    
+    $satisfied=1;
+    $newip=-1;
+    if ($fu eq '!/1') {
+	while ($#stiq>$ar) {
+	    pop @stiq;pop @stip;pop @stfu;pop @star;pop @strg;
+	}
+    } elsif ($fu eq 'fail/0') {
+	# force a backtrack
+	$satisfied=0;
+    } elsif ($fu eq 'true/0') {
+	# nothing to see here, move along
+    } elsif ($fu eq 'var/1') {
+	$satisfied=($ar=~/^[A-Z_]/);
+    } else {
+    
+        $choicepoint=0;
+
+	if ($fu eq 'atom/1') {
+	    if ($ar=~/^[a-z0-9!=]/) {
+		$database{$fu}="\n1:$ar:\n";
+	    } else {
+		$database{$fu}='';
+	    }
+
+	} elsif ($fu eq 'atom_final/3') {
+	    ($atomf,$atom,$f)=split(',',$ar);
+	    if ($atomf=~/^([a-z0-9!=].*)(.)$/) {
+		$database{$fu}="\n1:$atomf,$1,$2:\n";
+	    } elsif ($atomf=~/^[a-z0-9!=].*$/) {
+		$database{$fu}='';
+	    } elsif (($atom=~/^[a-z0-9!=]/)
+		&& ($f=~/^[a-z0-9!=]/)) {
+		    $database{$fu}="\n1:$atom$f,$atom,$f:\n";
+	    } else {
+		&fatal_error('atom_final',$ar);
+	    }
+	    
+	} elsif ($fu eq '=/2') {
+	    ($left,$right)=split(',',$ar);
+	    if (($left=~/^[a-z0-9!=]/) || ($right=~/^[a-z0-9!=]/)) {
+                $database{$fu}="\n1:$right,$left:\n";
+	    } else {
+	        &fatal_error('var=var',$ar);
+	    }
+	    
+	} else {
+	    $choicepoint=1;
+	}
+	    
+	$serre=&ge_regex($ip);
+	$headre=join(',',
+	    map {
+		/\b[A-Z_]/?'[^,:\n]+':"(?:$_|[A-Z_][A-Z0-9_]*)"
+	    } split(',',$ar));
+
+	if ($database{$fu}=~/\n($serre):($headre):(.*)\n/) {
+	    ($matchser,$matchhead,$matchbody)=($1,$2,$3);
+	    
+	    print "matched $matchser:$matchhead:$matchbody\n" if $debug;
+	    
+	    $matchbody=~s/!(,|$)/!($#stiq)$1/g;
+
+	    if ($choicepoint) {
+	        push @stiq,$iq;
+	        push @stip,$matchser+1;
+	        push @stfu,$fu;
+	        push @star,$ar;
+	        push @strg,$rg;
+            }
+	    
+	    @qhead=split(',',$ar);
+	    @mhead=split(',',$matchhead);
+	    for ($i=0;$i<=$#qhead;$i++) {
+		$q=$qhead[$i];
+		$m=$mhead[$i];
+		
+		if ($q=~/^[A-Z_]/) {
+		    $iq=~s/\b$q\b/$m/g;
+		    $ar=~s/\b$q\b/$m/g;
+		    $rg=~s/\b$q\b/$m/g;
+		} elsif ($m=~/^[A-Z_]/) {
+		    $matchbody=~s/\b$m\b/$q/g;
+		} elsif ($q ne $m) {
+		    &fatal_error('atomic accident',"$q/$m");
+		}
+		
+	    }
+	    $rg="$matchbody,$rg";
+
+	} else {
+	    $satisfied=0;
+	}
+    }
+    
+    if ($satisfied) {
+	if ($rg=~/^,*([a-z0-9!=][a-z0-9_]*)(\(([A-Za-z0-9_,\-]+)\))?(.*)$/) {
+	    push @stiq,$iq;
+	    push @stip,0;
+	    push @stfu,("$1/".(0+split(',',$3)));
+	    push @star,$3;
+	    push @strg,substr($4,1);
+	} elsif (!$solutions{$iq}) {
+	    $solutions{$iq}=1;
+	    print "$iq\n";
+	}
+    }
+}

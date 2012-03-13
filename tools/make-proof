@@ -1,0 +1,718 @@
+#!/usr/bin/perl -CDS
+
+#
+# Font proof generator for Tsukurimashou
+# Copyright (C) 2011, 2012  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+use utf8;
+
+# set this nonzero to generate a stub proofs file for debugging
+$proof_debug_chop=0;
+
+$prefix=$0;
+$prefix=~s!/tools/make-proof$!!;
+
+%priority=(
+  'preintro'=>100,
+
+  'tsuku-at'=>200,
+  'tsuku-bk'=>200,
+  'tsuku-kg'=>200,
+  'tsuku-mg'=>200,
+  'tsuku-mi'=>200,
+  'tsuku-tn'=>200,
+  'tsuku-ps'=>210,
+
+  'intro'=>300,
+
+  'frac-intro'=>400,
+  'latin-intro'=>400,
+
+  'buildkanji'=>800,
+  'leftrad'=>800,
+  'radical'=>800,
+  'toprad'=>800,
+  'gradeone'=>801,
+  'gradetwo'=>802,
+  'gradethree'=>803,
+  'gradefour'=>804,
+  'gradefive'=>805,
+  'gradesix'=>806,
+  'gradeseven'=>807,
+  'gradeeight'=>808,
+  'gradenine'=>809,
+  'gradeten'=>810,
+  'rare'=>850,
+  
+  'hangul'=>5900,
+  'jamo-basic'=>5910,
+  'jamo-extra'=>5910,
+  'jieub-bt'=>5920,
+  'jieub-do'=>5920,
+  'jieub-sm'=>5920,
+  'hglpage'=>5950,
+  
+  'bll'=>15900,
+  'bll-co'=>15920,
+  'pentacross'=>15950,
+);
+
+%partbefore=(
+  100=>'Resources',
+  1000=>'U+0000 to U+2FFF',
+  1048=>'U+3000 to U+4DFF',
+  1078=>'U+4E00 to U+61FF',
+  1098=>'U+6200 to U+75FF',
+  1118=>'U+7600 to U+89FF',
+  1138=>'U+8A00 to U+9FFF',
+  1247=>'U+A000 to U+10FFFF',
+  5900=>'Jieubsida core',
+  10082=>'Jieubsida alternates',
+  15900=>'Blackletter Lolita',
+);
+
+%partprefix=(
+  100=>'tsuku',
+  5900=>'jieub',
+  10900=>'tsuita',
+  15900=>'bll',
+);
+
+%srcfiles=();
+while (<$prefix/mp/*.mp>) {
+  $srcfiles{$_}=1;
+}
+while (<./mp/*.mp>) {
+  $srcfiles{$_}=1;
+}
+
+foreach (sort keys %srcfiles) {
+  m!mp/(.*)\.mp!;
+  $base=$1;
+  if ($base=~/^tsuku-([0-9a-f]{2,3})$/) {
+    $pri=1000+hex("0x$1");
+    $priority{$base}=$pri;
+  } elsif ($base=~/^jieub-(a[d-f]|[bc][0-9a-f]|d[0-7])$/) {
+    next;
+  } elsif ($base=~/^jieub-([0-9a-f]{2,3})$/) {
+    $pri=6000+hex("0x$1");
+    $priority{$base}=$pri;
+  } elsif ($base=~/^tsuita-([0-9a-f]{2,3})$/) {
+    $pri=11000+hex("0x$1");
+    $priority{$base}=$pri;
+  } elsif ($base=~/^bll-([0-9a-f]{2,3})$/) {
+    $pri=16000+hex("0x$1");
+    $priority{$base}=$pri;
+  } elsif (defined $priority{$base}) {
+    $pri=$priority{$base};
+  } else {
+    $pri=500;
+    $priority{$base}=500;
+  }
+  $filelist{$pri}.="$base\n";
+}
+
+$_='';
+foreach $key (sort {$a<=>$b} keys %filelist) {
+  $_.=$filelist{$key};
+}
+@files=split("\n",$_);
+
+sub read_kaku_proof {
+  my($fname,$glp)=@_;
+  open(PRF,$fname);
+  while (<PRF>) {
+    chomp;
+    if (/^ANCHOR ((-?\d+)( \S+){8})$/) {
+      $anchors{$glname}.="$1\n";
+    } elsif (/^BEGINGLYPH '(.*)' \d+$/) {
+      $glname="$glp.$1";
+      $glnames{$glname}=1;
+    } elsif (/^BLOBCENTRE (\d+) (\S+) (\S+)$/) {
+      $kg_blob{$glname}{$1}=sprintf('%.04f,%.04f',$2/100,$3/100);
+    } elsif (/^DEFAULTANCHOR .*/) {
+      # ignore for both
+    } elsif (/^SEGMENT (\d+) (\S+) (\S+)$/) {
+      $prev=-1;
+      for ($i=$2;;$i=int($i+1)) {
+        $i=$3 if $i>$3;
+        $kg_segment{$glname}{$1*1000+$prev}=$1*1000+$i if $prev>=0;
+        last if $i==$3;
+        $prev=$i;
+      }
+    } elsif (/^POINT (\d+) (\S+) (\S+) (\S+)$/) {
+      $kg_points{$glname}{1000*$1+$2}=sprintf('%.04f,%.04f',$3/100,$4/100);
+      $any_points{$glname}{1000*$1+$2}=1;
+    } elsif (/^PBOX (\d+) ((\S+ ){8}'.+')$/) {
+      $pboxes{$glname}.="$2\n";
+    } elsif (/^PERL_STRUCTURE/) {
+      # ignore for both
+    } elsif (/^SERIF (\S+) (\S+)/) {
+      # ignore for Kaku
+    } elsif (/^ENDGLYPH (\S+) (\S+)$/) {
+      $leftside{$glname}=$1/100;
+      $rightside{$glname}=$2/100;
+    } else {
+      print STDERR "Bad line in proof file: $_\n";
+    }
+  }
+  close(PRF);
+}
+
+sub read_mincho_proof {
+  my($fname,$glp)=@_;
+  open(PRF,$fname);
+  while (<PRF>) {
+    chomp;
+    if (/^ANCHOR ((-?\d+)( \S+){8})$/) {
+      # ignore for Mincho
+    } elsif (/^BEGINGLYPH '(.*)' \d+$/) {
+      $glname="$glp.$1";
+      $glnames{$glname}=1;
+    } elsif (/^BLOBCENTRE (\d+) (\S+) (\S+)$/) {
+      $mi_blob{$glname}{$1}=sprintf('%.04f,%.04f',$2/100,$3/100);
+    } elsif (/^DEFAULTANCHOR .*/) {
+      # ignore for both
+    } elsif (/^SEGMENT (\d+) (\S+) (\S+)$/) {
+      $prev=-1;
+      for ($i=$2;;$i=int($i+1)) {
+        $i=$3 if $i>$3;
+        $mi_segment{$glname}{$1*1000+$prev}=$1*1000+$i if $prev>=0;
+        last if $i==$3;
+        $prev=$i;
+      }
+    } elsif (/^POINT (\d+) (\S+) (\S+) (\S+)$/) {
+      $mi_points{$glname}{1000*$1+$2}=sprintf('%.04f,%.04f',$3/100,$4/100);
+      $any_points{$glname}{1000*$1+$2}=1;
+    } elsif (/^PBOX (\d+) (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) '(.+)'$/) {
+      # ignore for Mincho
+    } elsif (/^PERL_STRUCTURE/) {
+      # ignore for both
+    } elsif (/^SERIF (\S+) (\S+),(\S+)/) {
+      $mi_serif{$glname}{sprintf('%.03f,%.03f',$2/100,$3/100)}=$1;
+    } elsif (/^ENDGLYPH (\S+) (\S+)$/) {
+      $leftside{$glname}=$1/100;
+      $rightside{$glname}=$2/100;
+    } else {
+      print STDERR "Bad line in proof file: $_\n";
+    }
+  }
+  close(PRF);
+}
+
+foreach $style ('tsuku-kg','jieub-do','bll-co') {
+  ($glp,$dummy)=split('-',$style);
+  while (<prf/$style-*.prf>) {
+    next if /-ps/;
+    &read_kaku_proof($_,$glp);
+  }
+}
+
+foreach $style ('tsuku-mi','jieub-bt') {
+  ($glp,$dummy)=split('-',$style);
+  while (<prf/$style-*.prf>) {
+    next if /-ps/;
+    &read_mincho_proof($_,$glp);
+  }
+}
+
+foreach $glyph (keys %glnames) {
+  $xpicture='';
+  $bpicture='';
+  $lpicture='';
+  $ppicture='';
+  $lox=-0.1;
+  $lox=$leftside{$glyph} if $leftside{$glyph}<$lox;
+  $hix=0.1;
+  $hix=$rightside{$glyph} if $rightside{$glyph}>$hix;
+  $loy=-1;
+  $hiy=9;
+  foreach $_ (split("\n",$pboxes{$glyph})) {
+    s/'//g;
+    s/_/\\_/g;
+    @x=split(/ /);
+    $x=pop @x;
+    $xpicture.=("\\PBx{$x}{".join('}{',map {sprintf('%.04f',$_/100)} @x)."}");
+    $lox=$x[0]/100 if $x[0]/100<$lox;
+    $lox=$x[2]/100 if $x[2]/100<$lox;
+    $lox=$x[4]/100 if $x[4]/100<$lox;
+    $lox=$x[6]/100 if $x[6]/100<$lox;
+    $loy=$x[1]/100 if $x[1]/100<$loy;
+    $loy=$x[3]/100 if $x[3]/100<$loy;
+    $loy=$x[5]/100 if $x[5]/100<$loy;
+    $loy=$x[7]/100 if $x[7]/100<$loy;
+    $hix=$x[0]/100 if $x[0]/100>$hix;
+    $hix=$x[2]/100 if $x[2]/100>$hix;
+    $hix=$x[4]/100 if $x[4]/100>$hix;
+    $hix=$x[6]/100 if $x[6]/100>$hix;
+    $hiy=$x[1]/100 if $x[1]/100>$hiy;
+    $hiy=$x[3]/100 if $x[3]/100>$hiy;
+    $hiy=$x[5]/100 if $x[5]/100>$hiy;
+    $hiy=$x[7]/100 if $x[7]/100>$hiy;
+  }
+  foreach $_ (split("\n",$anchors{$glyph})) {
+    @x=split(/ /);
+    $x=shift @x;
+    if ($x<0) {
+      $xpicture.=("\\MAn{".(-$x)."}{".join('}{',map
+        {sprintf('%.04f',$_/100)} @x)."}")
+        if $rightside{$glyph}<=0;
+    } else {
+      $xpicture.=("\\BAn{$x}{".join('}{',map
+        {sprintf('%.04f',$_/100)} @x)."}");
+    }
+    $lox=$x[0]/100 if $x[0]/100<$lox;
+    $lox=$x[2]/100 if $x[2]/100<$lox;
+    $lox=$x[4]/100 if $x[4]/100<$lox;
+    $lox=$x[6]/100 if $x[6]/100<$lox;
+    $loy=$x[1]/100 if $x[1]/100<$loy;
+    $loy=$x[3]/100 if $x[3]/100<$loy;
+    $loy=$x[5]/100 if $x[5]/100<$loy;
+    $loy=$x[7]/100 if $x[7]/100<$loy;
+    $hix=$x[0]/100 if $x[0]/100>$hix;
+    $hix=$x[2]/100 if $x[2]/100>$hix;
+    $hix=$x[4]/100 if $x[4]/100>$hix;
+    $hix=$x[6]/100 if $x[6]/100>$hix;
+    $hiy=$x[1]/100 if $x[1]/100>$hiy;
+    $hiy=$x[3]/100 if $x[3]/100>$hiy;
+    $hiy=$x[5]/100 if $x[5]/100>$hiy;
+    $hiy=$x[7]/100 if $x[7]/100>$hiy;
+  }
+  foreach $blob (sort {$a<=>$b} keys %{$kg_blob{$glyph}}) {
+    $blwide=$blob;
+    $blwide=~tr/0123456789/０１２３４５６７８９/ if length($blwide)==1;
+    if ($kg_blob{$glyph}{$blob} eq $mi_blob{$glyph}{$blob}) {
+      $bpicture.="\\BBl{$kg_blob{$glyph}{$blob}}{$blwide}";
+    } else {
+      $bpicture.="\\Lkr{$kg_blob{$glyph}{$blob}}{$mi_blob{$glyph}{$blob}}";
+      $bpicture.="\\KBl{$kg_blob{$glyph}{$blob}}{$blwide}";
+      $bpicture.="\\MBl{$mi_blob{$glyph}{$blob}}{$blwide}";
+    }
+    @x=split(',',$kg_blob{$glyph}{$blob});
+    $lox=$x[0]-0.3 if $x[0]-0.3<$lox;
+    $loy=$x[1]-0.3 if $x[1]-0.3<$loy;
+    $hix=$x[0]+0.3 if $x[0]+0.3>$hix;
+    $hiy=$x[1]+0.3 if $x[1]+0.3>$hiy;
+    @x=split(',',$mi_blob{$glyph}{$blob});
+    $lox=$x[0]-0.3 if $x[0]-0.3<$lox;
+    $loy=$x[1]-0.3 if $x[1]-0.3<$loy;
+    $hix=$x[0]+0.3 if $x[0]+0.3>$hix;
+    $hiy=$x[1]+0.3 if $x[1]+0.3>$hiy;
+  }
+  foreach $idx (sort {$a<=>$b} keys %{$any_points{$glyph}}) {
+    $idwide=int($idx/1000);
+    $idwide=~tr/0123456789/０１２３４５６７８９/ if length($idwide)==1;
+    if ((defined $kg_points{$glyph}{$idx})
+     && (defined $mi_points{$glyph}{$idx})) {
+      if ($kg_points{$glyph}{$idx} eq $mi_points{$glyph}{$idx}) {
+        $ppicture.="\\BPt{$kg_points{$glyph}{$idx}}{$idwide}";
+      } else {
+        $ppicture.="\\Lkr{$kg_points{$glyph}{$idx}}{$mi_points{$glyph}{$idx}}";
+        $ppicture.="\\KPt{$kg_points{$glyph}{$idx}}{$idwide}";
+        $ppicture.="\\MPt{$mi_points{$glyph}{$idx}}{$idwide}";
+      }
+      if ((defined $kg_segment{$glyph}{$idx})
+       && (defined $mi_segment{$glyph}{$idx})
+       && ($kg_segment{$glyph}{$idx} eq $mi_segment{$glyph}{$idx})
+       && ($kg_points{$glyph}{$idx}
+        eq $mi_points{$glyph}{$idx})
+       && ($kg_points{$glyph}{$kg_segment{$glyph}{$idx}}
+        eq $mi_points{$glyph}{$mi_segment{$glyph}{$idx}})) {
+        $lpicture.=("\\BSg{$kg_points{$glyph}{$idx}}"
+                   ."{$kg_points{$glyph}{$kg_segment{$glyph}{$idx}}}");
+      } else {
+        if (defined $kg_segment{$glyph}{$idx}) {
+          $lpicture.=("\\KSg{$kg_points{$glyph}{$idx}}"
+                     ."{$kg_points{$glyph}{$kg_segment{$glyph}{$idx}}}");
+        }
+        if (defined $mi_segment{$glyph}{$idx}) {
+          $lpicture.=("\\MSg{$mi_points{$glyph}{$idx}}"
+                     ."{$mi_points{$glyph}{$mi_segment{$glyph}{$idx}}}");
+        }
+      }
+    } else {
+      if (defined $kg_points{$glyph}{$idx}) {
+        $bpicture.="\\KPt{$kg_points{$glyph}{$idx}}{$idwide}";
+        if (defined $kg_segment{$glyph}{$idx}) {
+          $lpicture.=("\\KSg{$kg_points{$glyph}{$idx}}"
+                     ."{$kg_points{$glyph}{$kg_segment{$glyph}{$idx}}}");
+        }
+      }
+      if (defined $mi_points{$glyph}{$idx}) {
+        $bpicture.="\\MPt{$mi_points{$glyph}{$idx}}{$idwide}";
+        if (defined $mi_segment{$glyph}{$idx}) {
+          $lpicture.=("\\MSg{$mi_points{$glyph}{$idx}}"
+                     ."{$mi_points{$glyph}{$mi_segment{$glyph}{$idx}}}");
+        }
+      }
+    }
+    if (defined $kg_points{$glyph}{$idx}) {
+      @x=split(',',$kg_points{$glyph}{$idx});
+      $lox=$x[0]-0.1 if $x[0]-0.1<$lox;
+      $loy=$x[1]-0.1 if $x[1]-0.1<$loy;
+      $hix=$x[0]+0.1 if $x[0]+0.1>$hix;
+      $hiy=$x[1]+0.1 if $x[1]+0.1>$hiy;
+    }
+    if (defined $mi_points{$glyph}{$idx}) {
+      @x=split(',',$mi_points{$glyph}{$idx});
+      $lox=$x[0]-0.1 if $x[0]-0.1<$lox;
+      $loy=$x[1]-0.1 if $x[1]-0.1<$loy;
+      $hix=$x[0]+0.1 if $x[0]+0.1>$hix;
+      $hiy=$x[1]+0.1 if $x[1]+0.1>$hiy;
+    }
+    foreach $coords (sort {$a<=>$b} keys %{$mi_serif{$glyph}}) {
+      $serifwide=$mi_serif{$glyph}{$coords};
+      $serifwide=~tr/0123456789/０１２３４５６７８９/;
+      $lpicture.="\\Srf{$coords}{$serifwide}";
+    }
+  }
+  $picture{$glyph}=$xpicture.$lpicture.$bpicture.$ppicture;
+  $plox{$glyph}=$lox;
+  $phix{$glyph}=$hix;
+  $ploy{$glyph}=$loy;
+  $phiy{$glyph}=$hiy;
+}
+
+%deflbls=();
+$nxtlbl='aaa';
+foreach $file (@files) {
+  if ($file=~/^(tsuku|tsuita|jieub|bll)-([0-9a-f]+)$/) {
+    $page=hex("0x$2");
+    $glp=$1;
+  } else {
+    while (($k,$v)=each %partprefix) {
+      if (($k>$hipri) && ($k<=$priority{$file})) {
+        $hipri=$k;
+        $glp=$v;
+      }
+    }
+  }
+  open(MP,"./mp/$file.mp") || open(MP,"$prefix/mp/$file.mp");
+  $state=4;
+  while (<MP>) {
+    chomp;
+    $state++;
+    if (/^(var)?def\s+([a-z0-9_\.]+)\b/ && !defined $deflbls{"$glp.$2"}) {
+      $deflbls{"$glp.$2"}="md:$nxtlbl";
+      $nxtlbl++;
+    }
+    if (/^\s*begintsuglyph\("(.*)",(\d+)\);$/) {
+      $cname="$glp.$1";
+      $state=0;
+      $codepoint{$cname}=($page<<8)+$2;
+    }
+    if ($state==1) {
+      if (/^\s+([a-z0-9\_\.]+);$/) {
+        $mname="$glp.$1";
+      } else {
+        $state=4;
+      }
+    }
+    $state=4 if ($state==2) && !/^\s+tsu_render;$/;
+    if ($state==3) {
+      if (/^\s*endtsuglyph;$/ &&
+          (($rightside{$cname}>6) || !defined $moved_picture{$mname})) {
+        delete $moved_picture{$moved_picture{$mname}}
+          if defined $moved_picture{$mname};
+        $moved_picture{$mname}=$cname;
+        $moved_picture{$cname}=$mname;
+      }
+    }
+  }
+  close(MP);
+}
+
+print "% GENERATED FILE - edit the source in make-proof instead!\n\n";
+
+$partarab=1;
+$countpictures=0;
+
+foreach $file (@files) {
+  $newsubsec='';
+  $hipri=0;
+  while (($k,$v)=each %partprefix) {
+    if (($k>$hipri) && ($k<=$priority{$file})) {
+      $hipri=$k;
+      $glp=$v;
+    }
+  }
+  if (defined $partbefore{$priority{$file}}) {
+    print "\n\\fi\n\n" if $partarab!=1;
+    print "\n\\FileGroup{$partbefore{$priority{$file}}}{$partarab}\n";
+    print '\\'.$glp."DemoFonts\n";
+    print "\\def\\tmpmac{$partarab}\\ifx\\tmpmac\\partarab\\relax\n\n";
+    $partarab++;
+  }
+  print "\\File{$file.mp}\n\n";
+  if ($file=~/-([0-9a-f]+)/) {
+    $page=$1;
+    $page=~tr/a-f/A-F/;
+    $pnum=hex("0x$page");
+  }
+  open(MP,"./mp/$file.mp") || open(MP,"$prefix/mp/$file.mp");
+  $lineno=0;
+  $firstblank=-1;
+  while (<MP>) {
+    chomp;
+    $lineno++;
+    
+    if ($countpictures-$lastprog>=10) {
+      $lastprog=$countpictures;
+      print "\\ProgressCheckpoint\n";
+      $progress_count++;
+    }
+    
+    if (/^begintsuglyph\("(.*)",(\d+)\)/) {
+      if (!defined $moved_picture{"$glp.$1"}) {
+        printf "\n\\Picture{%s}{%s%02X}","$glp.$1",$page,$2;
+        if ($pnum>=256) {
+          printf "{%c}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
+            ($pnum<<8)+$2,$leftside{"$glp.$1"},$rightside{"$glp.$1"},
+            $plox{"$glp.$1"},$ploy{"$glp.$1"},
+            $phix{"$glp.$1"},$phiy{"$glp.$1"},
+            $picture{"$glp.$1"};
+        } else {
+          printf "{\\char\"%04X}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
+            ($pnum<<8)+$2,$leftside{"$glp.$1"},$rightside{"$glp.$1"},
+            $plox{"$glp.$1"},$ploy{"$glp.$1"},
+            $phix{"$glp.$1"},$phiy{"$glp.$1"},
+            $picture{"$glp.$1"};
+        }
+        $countpictures++;
+      }
+    }
+    if (/^make_hexagram\((\d+),/) {
+      printf "\n\\Picture{tsuku.iching%02d}{%s%02X}",$1,$page,191+$1;
+      printf "{\\char\"%04X}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
+        ($pnum<<8)+191+$1,0,10,
+        $plox{sprintf('tsuku.iching%02d',$1)},
+        $ploy{sprintf('tsuku.iching%02d',$1)},
+        $phix{sprintf('tsuku.iching%02d',$1)},
+        $phiy{sprintf('tsuku.iching%02d',$1)},
+        $picture{sprintf('tsuku.iching%02d',$1)};
+      $countpictures++;
+    }
+    if (/^vardef ([a-z0-9\_\.]+) =/ && defined $moved_picture{"$glp.$1"}) {
+      $mp=$moved_picture{"$glp.$1"};
+      if ($codepoint{$mp}>=0x10000) {
+        printf "\n\\Picture{%s}{%04X}{%c}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
+          $mp,$codepoint{$mp},$codepoint{$mp},$leftside{$mp},
+          $rightside{$mp},$plox{$mp},$ploy{$mp},$phix{$mp},$phiy{$mp},
+          $picture{$mp};
+      } else {
+        printf "\n\\Picture{%s}{%04X}{\\char\"%04X}{%d}{%d}{%s,%s}{%s,%s}%%\n"
+          ."  {%s}\n\n",
+          $mp,$codepoint{$mp},$codepoint{$mp},$leftside{$mp},
+          $rightside{$mp},$plox{$mp},$ploy{$mp},$phix{$mp},$phiy{$mp},
+          $picture{$mp};
+      }
+      $countpictures++;
+    }
+    
+    if (!/^%/) {
+      if ($comments=~
+          /\\Comment\{\d+\}\{\ This\ program\ is\ free\ software:.*
+           \\Comment\{\d+\}\{\ mskala\@ansuz\.sooke\.bc\.ca\}\n
+           \\Comment\{\d+\}\{\}/sx) {
+        if ($seen_copyright_flag) {
+          $comments=~
+          s/\\Comment\{(\d+)\}\{\ This\ program\ is\ free\ software:[^}]+\}.*
+            \\Comment\{\d+\}\{\ mskala\@ansuz\.sooke\.bc\.ca\}\n
+            \\Comment\{(\d+)\}\{\}/\\CopyrightNotice{$1}{$2}/sx;
+        } else {
+          $comments=~
+            s/\\Comment\{(\d+)\}\{\ (This\ program\ is\ free\ software):
+              ([^}]+)\}
+             /\\Comment\{$1\}\{\ \\hypertarget\{cpynotice\}\{$2\}:$3\}/sx;
+          $seen_copyright_flag=1;
+        }
+      }
+      if ($newsubsec ne '') {
+        print "\\Subhead{$newsubsec}{sh:$newsublbl}\n";
+        $newsubsec='';
+      }
+      print $comments;
+      $comments='';
+    }
+    if (/\S/) {
+      if ($firstblank>0) {
+        if ($firstblank<$lastblank) {
+          print "\\BlankLines{$firstblank}{$lastblank}\n";
+        } else {
+          print "\\BlankLine{$firstblank}\n";
+        }
+        $firstblank=-1;
+      }
+    }
+
+    if (!/\S/) {
+      $firstblank=$lineno unless $firstblank>0;
+      $lastblank=$lineno;
+      next;
+    }
+    if (/^%{20,}$/) {
+      print "\\PercentLine{$lineno}\n";
+      next;
+    }
+    if (/^%(.*)$/) {
+      $_=$1;
+      if (/^[ %]*([^%a-z]+?)[ %]*$/ && (length($1)>2) &&
+        ($1 ne 'AUTODEPS') && !/^\s*BACKGROUND /) {
+        $newsubsec=$1;
+        $newsubsec=~s/\b([A-Z]+)\b/ucfirst(lc($1))/ge;
+        $newsublbl=$nxtlbl;
+        $nxtlbl++;
+      }
+      s/\\/\\textbackslash{}/g;
+      s/_/\\_/g;
+      s/%/\\%/g;
+      s/#/\\#/g;
+      s/&/\\&/g;
+      s/\$/\\\$/g;
+      s/\{/\\{/g;
+      s/\}/\\}/g;
+      $comments.="\\Comment{$lineno}{$_}\n";
+      next;
+    }
+    
+    s/\\/\\textbackslash{}/g;
+    s/%/\\%/g;
+    s/#/\\#/g;
+    s/&/\\&/g;
+    s/\$/\\\$/g;
+    s/\{/\\{/g;
+    s/\}/\\}/g;
+    if (/^((var)?def ([a-z0-9_\.]+))\b/ && !defined $linked{"$glp.$3"}) {
+      $linked{"$glp.$3"}=1;
+      s/def ([a-z0-9_\.]+)\b/
+        defined($deflbls{"$glp.$1"})?
+          "def \\phantomsection\\label{".$deflbls{"$glp.$1"}."}$1":
+          "def $1"/ge;
+    } else {
+      s/\b([a-z0-9_\.]+)\b/
+        defined($deflbls{"$glp.$1"})?
+          "\\hyperref[".$deflbls{"$glp.$1"}."]{$1}":
+        defined($deflbls{"tsuku.$1"})?
+          "\\hyperref[".$deflbls{"tsuku.$1"}."]{$1}":
+        $1/ge;
+    }
+    s/_/\\_/g;
+    s/^( +)/"~"x(length($1))/e;
+    if (/begintsuglyph\}?\("(.*)",\d+\)/
+      && defined $moved_picture{"$glp.$1"}) {
+      $_.=("\\IlR{".$deflbls{$moved_picture{"$glp.$1"}}."}");
+    }
+    print "\\CodeLine{$lineno}{$_}\n";
+  }
+  print "\n";
+  close(MP);
+  last if $proof_debug_chop && ($countpictures>=3);
+
+  if ($file eq 'jieub-ac') {
+    print <<'EOF';
+
+\vspace*{\fill}
+PLEASE NOTE:  The files jieub-ac.mp through jieub-d7.mp are algorithmically
+generated, and identical except for the four variable assignments defining
+the start of each file's coverage range.  They define a total of 11172
+glyphs for precomposed hangul syllables, which all consist of the same few
+jamo in systematically varying arrangements.  It seems that generating a
+proof page for every one of these files and glyphs would not be a good use
+of resources.  Instead, we give an example of one MetaPost file above,
+and on the following pages, detailed proofs for 28 syllable glyphs covering
+at least one example of every lead, vowel, and tail jamo.  After that is a
+table of all the precomposed syllables printed 480 per page.
+
+EOF
+    @hgpcp=();
+    for ($i=0;$i<28;$i++) {
+      push @hgpcp,(($i*617)%11172+0xAC00);
+    }
+    foreach $cp (sort @hgpcp) {
+      printf "\n\\clearpage\\Picture{jieub.uni%04X}{%04X}",$cp,$cp;
+      printf "{\\char\"%04X}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
+        $cp,0,10,
+        $plox{sprintf('jieub.uni%04X',$cp)},
+        $ploy{sprintf('jieub.uni%04X',$cp)},
+        $phix{sprintf('jieub.uni%04X',$cp)},
+        $phiy{sprintf('jieub.uni%04X',$cp)},
+        $picture{sprintf('jieub.uni%04X',$cp)};
+      $countpictures++;
+      if ($countpictures-$lastprog>=10) {
+        $lastprog=$countpictures;
+        print "\\ProgressCheckpoint\n";
+        $progress_count++;
+      }
+    }
+    for ($cp=0xAC00;$cp<=0xD7A3;$cp+=480) {
+      print <<'EOF';
+
+\clearpage
+\hfill
+\begin{tikzpicture}[scale=0.75,>=latex']
+\iftsukudraft
+  \node at (0,0) {DRAFT, TABLE OMITTED};
+\else
+EOF
+      if ($cp<0xD720) {
+        print "  \\draw[color=black!50!white] (0,0) grid (16,30);\n"
+      } else {
+        print "  \\draw[color=black!50!white] (0,21) grid (16,30);\n"
+      }
+      print <<'EOF';
+  \foreach \x/\lbl in {0/0,1/1,2/2,3/3,4/4,5/5,6/6,7/7,8/8,9/9,
+    10/A,11/B,12/C,13/D,14/E,15/F}
+    \node[anchor=south] at (\x.5,30.1) {\scriptsize\lbl};
+EOF
+      for ($y=29;$y>=0;$y--) {
+        printf "  \\node[anchor=east] at (-0.1,%d.5) {\\scriptsize %04X};\n",
+          $y,$cp+(29-$y)*16 if $cp+(29-$y)*16<=0xD7A3;
+        for ($x=0;$x<16;$x++) {
+          $ccp=$cp+(29-$y)*16+$x;
+          printf <<'EOF',$x,$y,$ccp,$x,$y,$ccp
+  \draw[inner sep=0pt,anchor=base west,color=green!80!white]
+    (%d,%d.1) node{\scalebox{1.778}{\normalsize\MDF \char"%04X}};
+  \draw[inner sep=0pt,anchor=base west,color=black]
+    (%d,%d.1) node{\scalebox{1.778}{\normalsize\KDF \char"%04X}};
+EOF
+            if $ccp<=0xD7A3;
+        }
+      }
+      print <<'EOF';
+\fi
+\end{tikzpicture}%
+\hspace*{\fill}\par
+EOF
+    }
+  }
+}
+
+print "\\fi\n\n" if $partarab!=1;
+
+print "\\def\\ProgressCount{$progress_count}\n\n";

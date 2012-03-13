@@ -1,0 +1,104 @@
+#
+# OpenType feature "stylistic set 2: enclosed letters and numerals"
+# Copyright (C) 2011  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+BEGINFEATURE ss02
+feature ss02 {
+  featureNames { name "Enclosed letters and numerals"; };
+
+WITH I=one-nine
+WITH J=uni24F5-uni24FD
+  sub parenleft parenleft I parenright parenright by J;
+END
+  sub parenleft parenleft one zero parenright parenright by uni24FE;
+
+WITH I=zero-nine
+WITH J=uni24EA uni2460-uni2468
+  sub parenleft I parenright by J;
+END
+WITH I=zero-nine
+WITH J=uni2469-uni2472
+  sub parenleft one I parenright by J;
+END
+WITH I=zero-nine
+WITH J=uni2473 uni3251-uni3259
+  sub parenleft two I parenright by J;
+END
+WITH I=zero-nine
+WITH J=uni325A-uni325F uni32B1-uni32B4
+  sub parenleft three I parenright by J;
+END
+WITH I=zero-nine
+WITH J=uni32B5-uni32BE
+  sub parenleft four I parenright by J;
+END
+  sub parenleft five zero parenright by uni32BF;
+
+WITH I=A-Z a-z
+WITH J=uni24B6-uni24E9
+  sub parenleft I parenright by J;
+END
+
+WITH I=uni30A2 uni30A4 uni30A6 uni30A8 uni30AA uni30AB uni30AD \
+  uni30AF uni30B1 uni30B3 uni30B5 uni30B7 uni30B9 uni30BB uni30BD \
+  uni30BF uni30C1 uni30C4 uni30C6 uni30C8 uni30CA-uni30CF uni30D2 \
+  uni30D5 uni30D8 uni30DB uni30DE-uni30E2 uni30E4 uni30E6 \
+  uni30E8-uni30ED uni30EF-uni30F3
+WITH J=uni32D0-uni32FE uF1711
+  sub parenleft I parenright by J;
+  sub uniFF08 I uniFF09 by J;
+END
+
+WITH I=zero-nine
+WITH J=uni24FF uni2776-uni277E
+  sub braceleft I braceright by J;
+END
+WITH I=zero-nine
+WITH J=uni277F uni24EB-uni24F3
+  sub braceleft one I braceright by J;
+END
+  sub braceleft two zero braceright by uni24F4;
+
+WITH I=A-Z
+WITH J=u1F150-u1F169
+  sub braceleft I braceright by J;
+END
+
+WITH I=A-Z
+WITH J=u1F130-u1F149
+  sub bracketleft I bracketright by J;
+END
+
+WITH I=A-Z
+WITH J=u1F170-u1F189
+  sub less I greater by J;
+END
+
+} ss02;
+ENDFEATURE

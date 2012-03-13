@@ -1,0 +1,168 @@
+#
+# OpenType feature "alternate fractions"
+# Copyright (C) 2011  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+BEGINFEATURE afrc
+@digits=[zero one two three four five six seven eight nine];
+@widedigits=[uniFF10-uniFF19];
+@any_digits=[@digits @widedigits];
+
+@num_one=[zero.num1 one.num1 two.num1 three.num1
+  four.num1 five.num1 six.num1 seven.num1 eight.num1 nine.num1];
+@num_two_one=[zero.num21 one.num21 two.num21 three.num21
+  four.num21 five.num21 six.num21 seven.num21 eight.num21 nine.num21];
+@num_two_two=[zero.num22 one.num22 two.num22 three.num22
+  four.num22 five.num22 six.num22 seven.num22 eight.num22 nine.num22];
+@num_three_one=[zero.num31 one.num31 two.num31 three.num31
+  four.num31 five.num31 six.num31 seven.num31 eight.num31 nine.num31];
+@num_three_two=[zero.num32 one.num32 two.num32 three.num32
+  four.num32 five.num32 six.num32 seven.num32 eight.num32 nine.num32];
+@num_three_three=[zero.num33 one.num33 two.num33 three.num33
+  four.num33 five.num33 six.num33 seven.num33 eight.num33 nine.num33];
+@num_four_one=[zero.num41 one.num41 two.num41 three.num41
+  four.num41 five.num41 six.num41 seven.num41 eight.num41 nine.num41];
+@num_four_two=[zero.num42 one.num42 two.num42 three.num42
+  four.num42 five.num42 six.num42 seven.num42 eight.num42 nine.num42];
+@num_four_three=[zero.num43 one.num43 two.num43 three.num43
+  four.num43 five.num43 six.num43 seven.num43 eight.num43 nine.num43];
+@num_four_four=[zero.num44 one.num44 two.num44 three.num44
+  four.num44 five.num44 six.num44 seven.num44 eight.num44 nine.num44];
+@num_latin=[zero.numlatn one.numlatn two.numlatn three.numlatn
+  four.numlatn five.numlatn six.numlatn seven.numlatn eight.numlatn
+  nine.numlatn];
+
+@denom_one=[zero.den1 one.den1 two.den1 three.den1
+  four.den1 five.den1 six.den1 seven.den1 eight.den1 nine.den1];
+@denom_two_one=[zero.den21 one.den21 two.den21 three.den21
+  four.den21 five.den21 six.den21 seven.den21 eight.den21 nine.den21];
+@denom_two_two=[zero.den22 one.den22 two.den22 three.den22
+  four.den22 five.den22 six.den22 seven.den22 eight.den22 nine.den22];
+@denom_three_one=[zero.den31 one.den31 two.den31 three.den31
+  four.den31 five.den31 six.den31 seven.den31 eight.den31 nine.den31];
+@denom_three_two=[zero.den32 one.den32 two.den32 three.den32
+  four.den32 five.den32 six.den32 seven.den32 eight.den32 nine.den32];
+@denom_three_three=[zero.den33 one.den33 two.den33 three.den33
+  four.den33 five.den33 six.den33 seven.den33 eight.den33 nine.den33];
+@denom_four_one=[zero.den41 one.den41 two.den41 three.den41
+  four.den41 five.den41 six.den41 seven.den41 eight.den41 nine.den41];
+@denom_four_two=[zero.den42 one.den42 two.den42 three.den42
+  four.den42 five.den42 six.den42 seven.den42 eight.den42 nine.den42];
+@denom_four_three=[zero.den43 one.den43 two.den43 three.den43
+  four.den43 five.den43 six.den43 seven.den43 eight.den43 nine.den43];
+@denom_four_four=[zero.den44 one.den44 two.den44 three.den44
+  four.den44 five.den44 six.den44 seven.den44 eight.den44 nine.den44];
+@denom_latin=[zero.denlatn one.denlatn two.denlatn three.denlatn
+  four.denlatn five.denlatn six.denlatn seven.denlatn eight.denlatn
+  nine.denlatn];
+
+@in_slash=[slash uniFF0F];
+@any_slash=[fraction.1-fraction.4 fraction.latn]; 
+
+feature afrc {
+  # numerator and fraction bar, 4-digit
+  sub @digits' @any_digits @any_digits @any_digits @in_slash
+    by @num_four_one;
+  sub @widedigits' @any_digits @any_digits @any_digits @in_slash
+    by @num_four_one;
+  sub @num_four_one @digits' by @num_four_two;
+  sub @num_four_one @widedigits' by @num_four_two;
+  sub @num_four_two @digits' by @num_four_three;
+  sub @num_four_two @widedigits' by @num_four_three;
+  sub @num_four_three @digits' by @num_four_four;
+  sub @num_four_three @widedigits' by @num_four_four;
+  sub @num_four_four @in_slash' by fraction.4;
+  sub @num_one @in_slash'
+    @any_digits @any_digits @any_digits @any_digits
+    by fraction.4;
+  sub @num_two_two @in_slash'
+    @any_digits @any_digits @any_digits @any_digits
+    by fraction.4;
+  sub @num_three_three @in_slash'
+    @any_digits @any_digits @any_digits @any_digits
+    by fraction.4;
+  
+  # numerator and fraction bar, 3-digit
+  sub @digits' @any_digits @any_digits @in_slash by @num_three_one;
+  sub @widedigits' @any_digits @any_digits @in_slash by @num_three_one;
+  sub @num_three_one @digits' by @num_three_two;
+  sub @num_three_one @widedigits' by @num_three_two;
+  sub @num_three_two @digits' by @num_three_three;
+  sub @num_three_two @widedigits' by @num_three_three;
+  sub @num_three_three @in_slash' by fraction.3;
+  sub @num_one @in_slash' @any_digits @any_digits @any_digits
+    by fraction.3;
+  sub @num_two_two @in_slash' @any_digits @any_digits @any_digits
+    by fraction.3;
+
+  # numerator and fraction bar, 2-digit
+  sub @digits' @any_digits @in_slash by @num_two_one;
+  sub @widedigits' @any_digits @in_slash by @num_two_one;
+  sub @num_two_one @digits' by @num_two_two;
+  sub @num_two_one @widedigits' by @num_two_two;
+  sub @num_two_two @in_slash' by fraction.2;
+  sub @num_one @in_slash' @any_digits @any_digits by fraction.2;
+
+  # distinguish wide and narrow 1-digit fractions
+  sub @widedigits' @in_slash by @num_one;
+  sub @digits' @in_slash @any_digits @any_digits by @num_one;
+  sub @digits' slash @digits by @num_latin;
+  sub @digits' @in_slash @any_digits by @num_one;
+  
+  # fraction bar, one-digit fractions
+  sub @num_one @in_slash' by fraction.1;
+  sub @num_latin @in_slash' by fraction.latn;
+
+  # start denominator
+  sub @any_slash @digits' @any_digits @any_digits @any_digits
+    by @denom_four_one;
+  sub @any_slash @widedigits' @any_digits @any_digits @any_digits
+    by @denom_four_one;
+  sub @any_slash @digits' @any_digits @any_digits by @denom_three_one;
+  sub @any_slash @widedigits' @any_digits @any_digits by @denom_three_one;
+  sub @any_slash @digits' @any_digits by @denom_two_one;
+  sub @any_slash @widedigits' @any_digits by @denom_two_one;
+  sub [fraction.1-fraction.4] @digits' by @denom_one;
+  sub [fraction.1-fraction.4] @widedigits' by @denom_one;
+  sub fraction.latn @digits' by @denom_latin;
+  
+  # rest of denominator
+  sub @denom_four_one @digits' by @denom_four_two;
+  sub @denom_four_one @widedigits' by @denom_four_two;
+  sub @denom_four_two @digits' by @denom_four_three;
+  sub @denom_four_two @widedigits' by @denom_four_three;
+  sub @denom_four_three @digits' by @denom_four_four;
+  sub @denom_four_three @widedigits' by @denom_four_four;
+  sub @denom_three_one @digits' by @denom_three_two;
+  sub @denom_three_one @widedigits' by @denom_three_two;
+  sub @denom_three_two @digits' by @denom_three_three;
+  sub @denom_three_two @widedigits' by @denom_three_three;
+  sub @denom_two_one @digits' by @denom_two_two;
+  sub @denom_two_one @widedigits' by @denom_two_two;
+} afrc;
+ENDFEATURE

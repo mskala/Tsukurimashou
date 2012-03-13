@@ -1,0 +1,623 @@
+\documentclass[14pt]{extarticle}
+
+%
+% Demo for Tsukurimashou
+% Copyright (C) 2011  Matthew Skala
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, version 3.
+%
+% As a special exception, if you create a document which uses this font, and
+% embed this font or unaltered portions of this font into the document, this
+% font does not by itself cause the resulting document to be covered by the
+% GNU General Public License. This exception does not however invalidate any
+% other reasons why the document might be covered by the GNU General Public
+% License. If you modify this font, you may extend this exception to your
+% version of the font, but you are not obligated to do so. If you do not
+% wish to do so, delete this exception statement from your version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Matthew Skala
+% http://ansuz.sooke.bc.ca/
+% mskala@ansuz.sooke.bc.ca
+%
+
+\input{version.tex}
+
+\usepackage{fontspec}
+\usepackage[margin=1.25in,top=0.85in]{geometry}
+\usepackage{wrapfig}
+\usepackage{xltxtra}
+
+\usepackage{hyperref}
+
+\defaultfontfeatures{Mapping=tex-text,Path=../otf/}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Just because all these are conditional doesn't mean all invocations of
+% them are conditional.  If you really disable core fonts, you'll lose.
+% The main point is just to allow people to build a demo without
+% Jieubsida, since that's the default configuration.
+
+\expandafter\ifx\csname haveTsukurimashouKakuPS\endcsname\relax\else
+  \newfontface\kaku{TsukurimashouKakuPS}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouMaruPS\endcsname\relax\else
+  \newfontface\maru{TsukurimashouMaruPS}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouMinchoPS\endcsname\relax\else
+  \newfontface\mincho{TsukurimashouMinchoPS}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouAnbirutekiPS\endcsname\relax\else
+  \newfontface\anbiruteki{TsukurimashouAnbirutekiPS}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouTenshinoKamiPS\endcsname\relax\else
+  \newfontface\tenshinokami{TsukurimashouTenshinoKamiPS}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouBokukkoPS\endcsname\relax\else
+  \newfontface\bokukko{TsukurimashouBokukkoPS}
+\fi
+
+\expandafter\ifx\csname haveJieubsidaBatangPS\endcsname\relax\else
+  \newfontface\batang[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaBatangPS}
+\fi
+
+\expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax\else
+  \newfontface\dodum[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaDodumPS}
+\fi
+
+\expandafter\ifx\csname haveJieubsidaSunMoonPS\endcsname\relax\else
+  \newfontface\sunmoon[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaSunMoonPS}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouKaku\endcsname\relax\else
+  \newfontface\kakumono[WordSpace={1,0,0},PunctuationSpace=3]{TsukurimashouKaku}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouMaru\endcsname\relax\else
+  \newfontface\marumono[WordSpace={1,0,0},PunctuationSpace=3]{TsukurimashouMaru}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouMincho\endcsname\relax\else
+  \newfontface\minchomono[WordSpace={1,0,0},PunctuationSpace=3]{TsukurimashouMincho}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouAnbiruteki\endcsname\relax\else
+  \newfontface\anbirutekimono[WordSpace={1,0,0},PunctuationSpace=3]{TsukurimashouAnbiruteki}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouTenshinoKami\endcsname\relax\else
+  \newfontface\tenshinokamimono[WordSpace={1,0,0},PunctuationSpace=3]{TsukurimashouTenshinoKami}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouBokukko\endcsname\relax\else
+  \newfontface\bokukkomono[WordSpace={1,0,0},PunctuationSpace=3]{TsukurimashouBokukko}
+\fi
+
+\expandafter\ifx\csname haveTsukurimashouKakuPS\endcsname\relax\else
+\expandafter\ifx\csname haveTsukurimashouMinchoPS\endcsname\relax\else
+  \setmainfont[Mapping=tex-text,ItalicFont=TsukurimashouMinchoPS]{TsukurimashouKakuPS}
+\fi\fi
+
+\expandafter\ifx\csname haveTsukurimashouBokukko\endcsname\relax\else
+  \setmonofont{TsukurimashouBokukko}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\iroha}{%
+いろはにほへとち~~~~イロハニホヘトチ\\
+りぬるをわかよた~~~~リヌルヲワカヨタ\\
+れそつねならむう~~~~レソツネナラムウ\\
+ゐのおくやまけふ~~~~ヰノオクヤマケフ\\
+こえてあさきゆめ~~~~コエテアサキユメ\\
+みしゑひもせす。~~~~ミシヱヒモセス。\par
+}
+
+\newcommand{\gojuuonzu}{%
+わらやまはなたさかあ~~~~ワラヤマハナタサカア\\
+ゐり~~みひにちしきい~~~~ヰリ~~ミヒニチシキイ\\
+~~るゆむふぬつすくう~~~~~~ルユムフヌツスクウ\\
+ゑれ~~めへねてせけえ~~~~ヱレ~~メヘネテセケエ\\
+をろよもほのとそこおん~~ヲロヨモホノトソコオン\par
+}
+
+\newcommand{\undecl}{%
+모든 인류 구성원의 천부의 존엄성과 동등하고 양도할 수 없는 권리를 인정하는
+것이 세계의 자유 、 정의 및 평화의 기초이며 、
+
+인권에 대한 무시와 경멸이 인류의 양심을 격분시키는 만행을 초래하였으며 、
+인간이 언론과 신앙의 자유、 그리고 공포와 결핍으로부터의 자유를 누릴 수 있는
+세계의 도래가 모든 사람들의 지고한 열망으로서 천명되어 왔으며 、
+
+인간이 폭정과 억압에 대항하는 마지막 수단으로서 반란을 일으키도록 강요받지
+않으려면 、 법에 의한 통치에 의하여 인권이 보호되어야 하는 것이 필수적이며 、
+
+국가간에 우호관계의 발전을 증진하는 것이 필수적이며 、
+
+국제연합의 모든 사람들은 그 헌장에서 기본적 인권、 인간의 존엄과 가치 、
+그리고 남녀의 동등한 권리에 대한 신념을 재확인하였으며、 보다 폭넓은
+자유속에서 사회적 진보와 보다 나은 생활수준을 증진하기로 다짐하였고、
+
+회원국들은 국제연합과 협력하여 인권과 기본적 자유의 보편적 존중과 준수를
+증진할 것을 스스로 서약하였으며 、
+
+이러한 권리와 자유에 대한 공통의 이해가 이 서약의 완전한 이행을 위하여 가장
+중요하므로 、
+
+이에、
+
+국제연합총회는、
+
+모든 개인과 사회 각 기관이 이 선언을 항상 유념하면서 학습 및 교육을 통하여
+이러한 권리와 자유에 대한 존중을 증진하기 위하여 노력하며 、 국내적 그리고
+국제적인 점진적 조치를 통하여 회원국 국민들 자신과 그 관할 영토의 국민들
+사이에서 이러한 권리와 자유가 보편적이고 효과적으로 인식되고 준수되도록
+노력하도록 하기 위하여 、 모든 사람과 국가가 성취하여야 할 공통의 기준으로서
+이 세계인권선언을 선포한다。 
+\par
+}
+
+\renewcommand{\labelitemi}{{\fontspec[RawFeature=+ornm]{TsukurimashouKaku}C}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\pagestyle{plain}\thispagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\kaku
+\begin{center}\LARGE
+
+\vspace*{\fill}
+
+{\Huge 作りましょう~\TsukurimashouVWide}\\
+{\huge パラメタほうしきフォントファミリ\\
+デモ}
+
+\vspace*{0.75in}
+
+{\Huge Tsukurimashou~\TsukurimashouVersion}\\
+{\huge Parametric Font Family\\
+Demo}
+
+\vspace*{1.5in}
+
+Matthew Skala\\
+mskala@ansuz.sooke.bc.ca\\
+\TsukurimashouRDWide\qquad\TsukurimashouReleaseDate
+
+\vspace*{\fill}
+
+\end{center}
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\vspace*{\fill}
+
+Demo for Tsukurimashou\\
+Copyright © 2011~~Matthew Skala
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3.
+
+As a special exception, if you create a document which uses this font, and
+embed this font or unaltered portions of this font into the document, this
+font does not by itself cause the resulting document to be covered by the
+GNU General Public License. This exception does not however invalidate any
+other reasons why the document might be covered by the GNU General Public
+License. If you modify this font, you may extend this exception to your
+version of the font, but you are not obligated to do so. If you do not
+wish to do so, delete this exception statement from your version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see \url{http://www.gnu.org/licenses/}.
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\kaku
+
+\Large
+作りましょう角\\
+Tsukurimashou Kaku [Square Gothic]
+
+\normalsize
+
+The most popular Japanese text typefaces may be classified into ``Goshikku''
+(transliterated from ``Gothic'' and inspired by sans-serif Latin typefaces)
+and ``Mincho'' (inspired by Chinese handwriting standards of the Ming
+Dynasty, 1368--1644~\textsc{ce}.) Goshikku typefaces are often further
+divided into ``Kaku'' (``square,'' referring to the ends of the strokes) and
+``Maru'' (``rounded'').  As is common with Goshikku faces, the standard
+weight of Tsukurimashou Kaku is a little darker than the standard weight of
+the corresponding Mincho face.  Its simple, readable characters form the
+core of the Tsukurimashou family, and are then modified to create the other
+styles.
+
+\kakumono
+\iroha
+\gojuuonzu
+
+ＡＢＣＤＥＦＧＨＩＪＫＬＭ~~~~ａｂｃｄｅｆｇｈｉｊｋｌｍ\\
+ＮＯＰＱＲＳＴＵＶＷＸＹＺ~~~~ｎｏｐｑｒｓｔｕｖｗｘｙｚ\\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maru
+
+\Large
+作りましょう丸\\
+Tsukurimashou Maru [Round Gothic]
+
+\normalsize
+
+Tsukurimashou Maru is closely connected to Tsukurimashou Kaku, but its
+rounded stroke ends make it somewhat less formal. 
+There is also a little more variation in stroke width, inspired by the
+``humanist'' category of Latin sans serif typefaces.
+
+\marumono
+\iroha
+\gojuuonzu
+
+ＡＢＣＤＥＦＧＨＩＪＫＬＭ~~~~ａｂｃｄｅｆｇｈｉｊｋｌｍ\\
+ＮＯＰＱＲＳＴＵＶＷＸＹＺ~~~~ｎｏｐｑｒｓｔｕｖｗｘｙｚ\\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\anbiruteki
+
+\Large
+作りましょうアンビル的\\
+Tsukurimashou Anbiruteki [Anvilicious]
+
+\normalsize
+
+The Web site TV Tropes coined the term ``anvilicious'' to describe any work
+of art that attempts to Make a Point (for instance, about politics or
+morality) in such a heavy-handed manner that the message overwhelms any
+other attribute of the work; it's like dropping an anvil on the viewer.  A
+similarly-constructed adjective in Japanese might be rendered as
+``Anibiruteki.'' Tsukurimashou Anbiruteki is so heavy that fine details of
+the letters are obscured, though they generally remain recognizable in
+silhouette.  Punctuation marks are also enlarged until they sometimes
+overlap nearby characters.
+
+\anbirutekimono
+\iroha
+\gojuuonzu
+
+ＡＢＣＤＥＦＧＨＩＪＫＬＭ~~~~ａｂｃｄｅｆｇｈｉｊｋｌｍ\\
+ＮＯＰＱＲＳＴＵＶＷＸＹＺ~~~~ｎｏｐｑｒｓｔｕｖｗｘｙｚ\\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tenshinokami
+
+\Large
+作りましょう天使の髪\\
+Tsukurimashou Tenshi no Kami [Angel Hair]
+
+\normalsize
+
+Tsukurimashou Tenshi no Kami reduces the letter forms to fine hairlines.  It
+might be most suitably used in large size for display purposes.
+
+\tenshinokamimono
+\iroha
+\gojuuonzu
+
+ＡＢＣＤＥＦＧＨＩＪＫＬＭ~~~~ａｂｃｄｅｆｇｈｉｊｋｌｍ\\
+ＮＯＰＱＲＳＴＵＶＷＸＹＺ~~~~ｎｏｐｑｒｓｔｕｖｗｘｙｚ\\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bokukko
+
+\Large
+作りましょう僕っ娘\\
+Tsukurimashou Bokukko [Tomboy]
+
+\normalsize
+
+The slang term ``bokukko'' could reasonably be glossed ``tomboy,'' but
+it refers more specifically to a girl or woman who
+uses the traditionally masculine pronoun ``boku'' in her speech.  One often
+hears that mannerism from fictional characters and in song lyrics.  It's
+typically more a statement of personal aggressiveness than any kind of
+transgender identity, though the two may be linked. It is not so common in
+real life.  Tsukurimashou Bokkuko originated in an experiment with
+Metafont's path expansion features, not meant to be kept, but the results
+looked good enough to be worth giving it a name and some further development
+work.  The visual style is defined in abstract terms, but resembles
+characters written with a chisel-tip felt marker.
+
+\bokukkomono
+\iroha
+\gojuuonzu
+
+ＡＢＣＤＥＦＧＨＩＪＫＬＭ~~~~ａｂｃｄｅｆｇｈｉｊｋｌｍ\\
+ＮＯＰＱＲＳＴＵＶＷＸＹＺ~~~~ｎｏｐｑｒｓｔｕｖｗｘｙｚ\\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mincho
+
+\Large
+作りましょう明朝\\
+Tsukurimashou Mincho [Ming Dynasty]
+
+\normalsize
+
+Mincho type features less abstract forms than Goshikku, closer to the
+handwritten roots of the Japanese writing system.  This style is often
+treated as equivalent to serif Latin typefaces.  Tsukurimashou Mincho is
+somewhat experimental: it draws heavily on the Goshikku face, with just a
+few shape modifications.  Mincho character shapes are controlled by a
+variable representing the amount of ``minchoviality,'' which is 1 for this
+style and 0 for most of the others.  (It is 0.3 for Tsukurimashou Bokukko.)
+Further modifications come from adding serifs, and a more complicated
+parameterization of whether a given style is more like ``print'' or
+``handwriting''; the code actually simulates moving a brush through
+four-dimensional space, and different styles convert that movement into two
+dimensions via differing linear projections and threshold functions. Since
+it is largely based on Tsukurimashou Kaku, Tsukurimashou Mincho has a more
+modern and stylized look than would an independently-designed Mincho face
+drawn directly from brush strokes.  Accordingly, a Modern style was chosen
+for the associated Latin alphabet.
+
+\minchomono
+\iroha
+\gojuuonzu
+
+ＡＢＣＤＥＦＧＨＩＪＫＬＭ~~~~ａｂｃｄｅｆｇｈｉｊｋｌｍ\\
+ＮＯＰＱＲＳＴＵＶＷＸＹＺ~~~~ｎｏｐｑｒｓｔｕｖｗｘｙｚ\\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax\else
+
+\dodum
+
+\Large
+지읍시다돋움\\
+Jieubsida Dodum
+
+\normalsize
+
+``Dodum'' means ``stand out'' and is the Korean typographic term equivalent
+to ``Goshikku.''  This font uses the same style parameters as Tsukurimashou
+Kaku, but it covers Korean letter and syllable glyphs.
+
+\undecl
+
+\clearpage
+
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\expandafter\ifx\csname haveJieubsidaBatangPS\endcsname\relax\else
+
+\batang
+
+\Large
+지읍시다바탕\\
+Jieubsida Batang
+
+\normalsize
+
+This typeface shares the style parameters of Tsukurimashou Mincho, with
+Korean glyph coverage.  The name ``Batang'' translates as ``background''
+(roughly opposite to ``dodum'') and is the currently-popular term for basic
+serif type in Korean.
+
+\undecl
+
+\clearpage
+
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\expandafter\ifx\csname haveJieubsidaSunMoonPS\endcsname\relax\else
+
+\sunmoon
+
+\Large
+지읍시다선문\\
+Jieubsida Sun-Moon
+
+\normalsize
+
+Jieubsida Sun-Moon has a similar look to Tsukurimashou Bokukko, reminiscent
+of hand lettering with a felt-tip marker.  It is named after a character
+from the Web comic Bonobo Conspiracy.
+
+\undecl
+
+\clearpage
+
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\kaku
+
+\Large
+Special OpenType and Unicode features
+
+\normalsize
+
+This is a quick sample of some of the OpenType features in the font; all of
+them should be considered experimental.
+
+Combining sound marks, precomposed and
+on-the-fly:  {\kakumono ぎき{\char"3099}~~ぱは{\char"309A}%
+~~ゴコ{\char"3099}~~プフ{\char"309A}}\\
+Can you spot the difference?
+
+へんなひらがなを作れます：~~{\kakumono ら{\char"3099}め{\char"309A}%
+え{\char"309A}ぬ{\char"3099}}。\\
+カタカナも：~~{\kakumono ユ{\char"309A}ン{\char"3099}モ{\char"3099}リ%
+{\char"309A}}。
+
+{\fontspec[Letters=SmallCaps]{TsukurimashouKakuPS}
+Optical small caps are available via the appropriate OpenType feature and
+Adobe's deprecated PUA encoding.
+}
+
+{\fontspec[RawFeature=+ornm]{TsukurimashouKakuPS}
+Tomoe ornaments: \Large A B C D E F G H
+}
+
+げんじもん：{\Large 󱟁󱟆󱟓󱟢}
+
+I Ching: {\Large ䷂䷉䷙䷓}
+
+{\fontspec[StylisticSet=1,StylisticSet=2]{TsukurimashouKakuPS}
+Stylistic substitutions (heavy metal umlaut, enclosed chars):\\
+ (1) Motörhead\\
+ ((2)) Mötley Crüe\\
+ \{3\} Mormoñ Tabärnacle Choïr}
+
+{\fontspec[StylisticSet=2]{TsukurimashouKakuPS}
+More enclosed chars: (A) (b) (シ) [D] <E>}
+
+{\fontspec[Fractions=Alternate]{TsukurimashouKaku}
+Fractions 1/2~~3/4~~１／２~~３／４~~12/34~~123/45~~9876/4321\\
+フラクショ~~~~4/769~~8123/6~~93/401~~1001/11
+}
+
+{\fontspec[Fractions=Alternate]{TsukurimashouKakuPS}
+Fractions 1/2~~3/4~~１／２~~３／４~~12/34~~123/45~~9876/4321\\
+フラクショ~~~~4/769~~8123/6~~93/401~~1001/11
+}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\kaku
+
+\Large
+Multilingual support
+
+\normalsize
+
+Here is a familiar text in some of the many languages these
+fonts cover:
+
+And the LORD said, ``Behold, the people are one and they have all one
+language, and this they begin to do; and now nothing will be withheld from
+them which they have imagined to do.  Come, let Us go down, and there
+confound their language, that they may not understand one another's
+speech.''\footnote{English, KJ21---21st Century King James Version, Deuel
+Enterprises, Inc.}
+
+神様は、 「ほら、 人間は統一的です。 言語も、 統一的です。
+これが始めてだから、 人間は何で
+も思い描く事が出来ますよ。」
+と言いました。 「じゃあ、 下りましょう！ 分かり合わない事のために、
+あそこで言語の変態をしましょう！」。%
+\footnote{日本語 (Japanese), Tsukurimashou Project.}
+
+\expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax\else
+{\dodum%
+여호와께서 가라사대 이 무리가 한 족속이요, 언어도 하나이므로 이같이
+시작하였으니 이후로는 그 경영하는 일을 금지할 수 없으리로다.
+자, 우리가 내려가서 거기서 그들의 언어를 혼잡케 하여 그
+들로 서로 알아듣지 못하게 하자 하시고.\footnote{{\dodum 한국말} (Korean),
+Unbound Bible, Biola University.}
+\fi
+
+Und der HERR sprach: Siehe, es ist einerlei Volk und einerlei Sprache unter
+ihnen allen, und haben das angefangen zu tun; sie werden nicht ablassen von
+allem, was sie sich vorgenommen haben zu tun.
+Wohlauf, laßt uns herniederfahren und ihre Sprache daselbst verwirren,
+daß keiner des andern Sprache verstehe!\footnote{Deutsch (German),
+Luther Bibel 1545}
+
+Y dijo Jehová: «El pueblo es uno, y todos estos tienen un solo lenguaje; han
+comenzado la obra y nada los hará desistir ahora de lo que han pensado
+hacer.  Ahora, pues, descendamos y confundamos allí su lengua, para que
+ninguno entienda el habla de su compañero».\footnote{Español (Spanish),
+Reina-Valera 1995, United Bible Societies}
+
+Epi li di. Koulye a, gade! Yo tout fè yon sèl pèp. Yo tout yo pale yon sèl
+lang. Gade sa yo konmanse ap fè. Talè konsa y'ap pare pou yo fè sa yo vle.
+Bon. N'ap desann, n'ap mele lang yo. Konsa, yonn p'ap ka konprann sa lòt ap
+di.\footnote{Kreyol (Haitian Creole), United Bible Societies}
+
+og han sagde: ``Se, de er eet Folk og har alle eet Tungemål; og når de nu
+først er begyndt således, er intet, som de sætter sig for, umuligt for dem;
+lad os derfor stige ned og forvirre deres Tungemål der, så de ikke
+forstår hverandres Tungemål!''\footnote{Dansk
+(Danish), unidentified public domain version from Bible Gateway}
+
+Et l'Éternel dit: Voici, ils forment un seul peuple et ont tous une même
+langue, et c'est là ce qu'ils ont entrepris; maintenant rien ne les
+empêcherait de faire tout ce qu'ils auraient projeté.
+Allons! descendons, et là confondons leur langage, afin qu'ils
+n'entendent plus la langue, les uns des autres.\footnote{Français (French),
+Louis Segond}
+
+Og Drottinn mælti: ``Sjá, þeir eru ein þjóð og hafa allir sama tungumál, og
+þetta er hið fyrsta fyrirtæki þeirra. Og nú mun þeim ekkert ófært verða, sem
+þeir taka sér fyrir hendur að gjöra.
+Gott og vel, stígum niður og ruglum þar tungumál þeirra, svo að enginn
+skilji framar annars mál.''\footnote{Íslenska (Icelandic), unidentified
+public domain version from Bible Gateway}
+
+Il Signore disse: «Ecco, essi sono un solo popolo e hanno tutti una lingua
+sola; questo è l'inizio della loro opera e ora quanto avranno in progetto di
+fare non sarà loro impossibile. Scendiamo dunque e confondiamo la loro
+lingua, perché non comprendano più l'uno la lingua
+dell'altro».\footnote{Italiano (Italian), Conferenza Episcopale Italiana}
+
+\end{document}

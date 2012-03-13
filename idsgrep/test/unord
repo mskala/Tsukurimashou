@@ -1,0 +1,78 @@
+#!/bin/sh
+
+cat <<EOF > uo-in.$$
+[a]xy
+[a]yx
+{b}xyz
+{b}xzy
+{b}yxz
+<h>{b}yzx
+{b}zxy
+{b}zyx
+<h>.c.p
+.c.q
+<h>.c.q
+h
+EOF
+
+./idsgrep '[a]xy' uo-in.$$ > uo-out.$$
+echo === >> uo-out.$$
+
+./idsgrep '*[a]xy' uo-in.$$ >> uo-out.$$
+echo === >> uo-out.$$
+
+./idsgrep '.unord.[a]xy' uo-in.$$ >> uo-out.$$
+echo === >> uo-out.$$
+
+./idsgrep '{b}xyz' uo-in.$$ >> uo-out.$$
+echo === >> uo-out.$$
+
+./idsgrep '*{b}xyz' uo-in.$$ >> uo-out.$$
+echo === >> uo-out.$$
+
+./idsgrep '.c.p' uo-in.$$ >> uo-out.$$
+echo === >> uo-out.$$
+
+./idsgrep '*.c.p' uo-in.$$ >> uo-out.$$
+echo === >> uo-out.$$
+
+./idsgrep '*h' uo-in.$$ >> uo-out.$$
+echo === >> uo-out.$$
+
+if diff -c uo-out.$$ - <<EOF
+[a]xy
+===
+[a]xy
+[a]yx
+===
+[a]xy
+[a]yx
+===
+{b}xyz
+===
+{b}xyz
+{b}xzy
+{b}yxz
+<h>{b}yzx
+{b}zxy
+{b}zyx
+===
+<h>.c.p
+===
+<h>.c.p
+===
+<h>{b}yzx
+<h>.c.p
+<h>.c.q
+h
+===
+EOF
+then
+  rm -f uo-in.$$
+  rm -f uo-out.$$
+  exit 0
+else
+  rm -f uo-in.$$
+  rm -f uo-out.$$
+  exit 1
+fi

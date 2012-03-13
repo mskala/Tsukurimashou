@@ -1,0 +1,114 @@
+#!/usr/bin/perl -CDS
+
+#
+# Progress display for Tsukurimashou build system
+# Copyright (C) 2011  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+# usage:
+#  export PROGRESS_MESSAGE=text for the message
+#  progress <command> <jobname> [<maxcount>]
+
+($command,$jobname,$maxcount)=@ARGV;
+
+$clreol=$maxcount;
+$clreol=~s/\\e/\e/g;
+
+$reftime=time;
+
+$progmsg=$ENV{'PROGRESS_MESSAGE'};
+
+sub process_update {
+  $pct=100*($count/$maxcount);
+  $pct=100 if $pct>100;
+  $pct=0 if $pct<0;
+  if (($count>0) && ($count<$maxcount) && ($reftime>$starttime)) {
+    $remain='';
+    $rsec=($reftime-$starttime)*($maxcount-$count)/$count;
+    if ($rsec>=3600) {
+      $rhr=int($rsec/3600);
+      $rsec=$rsec-3600*$rhr;
+      $rmin=int($rsec/60);
+      $rsec=$rsec-60*$rmin;
+      $remain=sprintf("%d:%02d:%02d",$rhr,$rmin,int($rsec));
+    } elsif ($rsec>=60) {
+      $rmin=int($rsec/60);
+      $rsec=$rsec-60*$rmin;
+      $remain=sprintf("%d:%02d",$rmin,int($rsec));
+    } else {
+      $remain=int($rsec);
+    }
+  } else {
+    undef $remain;
+  }
+  printf "  %3d%%   %s%s",
+    int($pct),$progmsg,defined($remain)?" ETA $remain":'';
+}
+
+if ($command eq 'start') {
+  open(DATA,">$jobname.prog");
+  print DATA "0,$maxcount,$reftime\n";
+  close(DATA);
+} elsif ($command eq 'count') {
+  open(DATA,"<$jobname.prog");
+  $_=<DATA>;
+  close(DATA);
+  chomp;
+  ($count,$maxcount,$starttime)=split(',');
+  $count++;
+  open(DATA,">$jobname.prog");
+  print DATA "$count,$maxcount,$starttime\n";
+  close(DATA);
+  if ($reftime-$starttime<10) {
+    exit(0);
+  }
+  print 'PROGRESS:';
+  &process_update;
+  print "\n";
+} elsif ($command eq 'stdin') {
+  $|=1;
+  $progmsg=$jobname;
+  while (<STDIN>) {
+    chomp;
+    $reftime=time;
+    if (/^PROGRESS START (\d+)$/) {
+      $starttime=$reftime;
+      $lastref=$reftime;
+      $maxcount=$1;
+      $count=0;
+    } elsif (/^PROGRESS ADD (\d+)$/) {
+      $count+=$1;
+      if (($reftime-$lastref>5) && ($reftime-$starttime>10)) {
+        print $clreol;
+        &process_update;
+        print "\r";
+        $lastref=$reftime;
+      }
+    }
+  }
+}

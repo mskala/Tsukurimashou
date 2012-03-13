@@ -1,0 +1,44 @@
+#!/usr/bin/perl -CDS
+
+#
+# Hangul syllable page file generator for Jieubsida
+# Copyright (C) 2011  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+for ($page=0xAC;$page<=0xD7;$page++) {
+  open(PF,sprintf(">mp/jieub-%02x.mp",$page));
+  print PF "% GENERATED FILE - edit the source in make-hglpages instead!\n\n";
+  printf PF "string hgls_page; hgls_page=\"%02X\";\n",$page;
+  printf PF "hgls_lead=%d;\n",int(($page*256-0xAC00)/588);
+  printf PF "hgls_vowel=%d;\n",int(($page*256-0xAC00)/28)%21;
+  printf PF "hgls_tail=%d;\n\n",($page*256-0xAC00)%28;
+  printf PF "input hglpage.mp;\n";
+  close(PF);
+}
+
+print "Made hangul syllable page files.\n";

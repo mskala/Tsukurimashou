@@ -1,0 +1,23 @@
+#!/bin/sh
+
+perl -e 'print "\x81";' \
+  -e 'print "\xC0\xB0\xC0a";' \
+  -e 'print "\xE0\x80\xB1\xE0bc";' \
+  -e 'print "\xF0\x80\x80\xB2\xF0def";' \
+  -e 'print "\xF8\x80\x80\x80\xB3";' \
+  -e 'print "\xFC\x80\x80\x80\x80\xB4\n";' \
+  | ./idsgrep '?' > ut-out.$$
+perl -e 'print "\xC0"' | ./idsgrep '?' >> ut-out.$$
+perl -e 'print "\xE0"' | ./idsgrep '?' >> ut-out.$$
+perl -e 'print "\xF0"' | ./idsgrep '?' >> ut-out.$$
+perl -e 'print "\xF8"' | ./idsgrep '?' >> ut-out.$$
+perl -e 'print "\xFC"' | ./idsgrep '?' >> ut-out.$$
+
+if diff ut-out.$$ /dev/null
+then
+  rm -f ut-out.$$
+  exit 0
+else
+  rm -f ut-out.$$
+  exit 1
+fi

@@ -1,0 +1,51 @@
+#!/usr/bin/perl -CDS
+
+# EDICT2 to IDSgrep EIDS translator
+# Copyright (C) 2012  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+
+use utf8;
+
+$svnid='$Id: ed22eids 1223 2012-02-21 16:52:10Z mskala $';
+
+# FIXME pass through copyright notices
+
+# characters that are special to EIDS and must be quoted
+$kvg{'・'}='<・>;';
+
+open(KVG,'kanjivg.eids');
+while (<KVG>) {
+  chomp;
+  if (/^【(.*)】(.*)$/ && ($2 ne ';')) {
+    $kvg{$1}="<$1>$2";
+  }
+}
+close(KVG);
+
+while (<>) {
+  chomp;
+  s!/EntL[^/]+/!/!;
+  if (m!^([^ ]+) ([^ ]+) /(.*)/$!) {
+    ($kanji,$kana,$defn)=($1,$2,$3);
+    foreach $ksub (split(';',$kanji)) {
+      print "【$ksub】,".join(',',
+            map {(defined $kvg{$_})?$kvg{$_}:$_;} split('',$ksub)).
+        "｟$kana $defn｠\n";
+    }
+  }
+}

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if test '!' -r kanjivg.eids
+then
+  exit 77
+fi
+
+./idsgrep '...&⿰日?⿰?月' kanjivg.eids > dem-out1.$$
+echo === >> dem-out1.$$
+./idsgrep '...|⿰日?⿰?月' kanjivg.eids >> dem-out1.$$
+
+./idsgrep '...!|!⿰日?!⿰?月' kanjivg.eids > dem-out2.$$
+echo === >> dem-out2.$$
+./idsgrep '...!&!⿰日?!⿰?月' kanjivg.eids >> dem-out2.$$
+
+if diff dem-out1.$$ dem-out2.$$
+then
+  rm -f dem-out?.$$
+  exit 0
+else
+  rm -f dem-out?.$$
+  exit 1
+fi

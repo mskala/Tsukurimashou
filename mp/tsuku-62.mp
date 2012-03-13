@@ -1,0 +1,155 @@
+%
+% Unicode page 62 (Kanji) for Tsukurimashou
+% Copyright (C) 2011, 2012  Matthew Skala
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, version 3.
+%
+% As a special exception, if you create a document which uses this font, and
+% embed this font or unaltered portions of this font into the document, this
+% font does not by itself cause the resulting document to be covered by the
+% GNU General Public License. This exception does not however invalidate any
+% other reasons why the document might be covered by the GNU General Public
+% License. If you modify this font, you may extend this exception to your
+% version of the font, but you are not obligated to do so. If you do not
+% wish to do so, delete this exception statement from your version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Matthew Skala
+% http://ansuz.sooke.bc.ca/
+% mskala@ansuz.sooke.bc.ca
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+beginfont
+
+% AUTODEPS
+input buildkanji.mp;
+input gradeeight.mp;
+input gradeone.mp;
+input gradethree.mp;
+input gradetwo.mp;
+input leftrad.mp;
+input radical.mp;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grtwo.door =
+  push_pbox_toexpand("kanji.grtwo.door");
+  tsu_xform(identity yscaled (600/730))(kanji.radical.flag);
+  push_stroke((120,760)--(880,760),(1.6,1.6));
+  set_boserif(0,1,9);
+  set_bosize(0,95);
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.genius =
+  push_pbox_toexpand("kanji.grtwo.genius");
+  push_stroke((500,810),(1.6,1.6));
+  build_kanji.add_jtail(0);
+  set_boserif(0,0,10);
+  push_stroke((80,580)--(810,580),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((750,470)..tension 1.2..(420,210)..(110,70),
+    (1.5,1.5)--(1.2,1.2)--(1,1));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.gather =
+  push_pbox_toexpand("kanji.grthree.gather");
+  build_kanji.level(build_kanji.lr(420,50)
+    (kanji.leftrad.hand)
+    (kanji.grtwo.join));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.hit =
+  push_pbox_toexpand("kanji.grthree.hit");
+  build_kanji.level(build_kanji.lr(420,-20)
+    (kanji.leftrad.hand)
+    (kanji.grthree.thumbtack));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.place =
+  push_pbox_toexpand("kanji.grthree.place");
+  build_kanji.level(build_kanji.lr(480,20)
+    (kanji.grtwo.door)
+    (kanji.greight.axe));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.throw =
+  push_pbox_toexpand("kanji.grthree.throw");
+  build_kanji.level(build_kanji.lr(420,30)
+    (kanji.leftrad.hand)
+    (kanji.radical.windy_again));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ko/to "door"
+begintsuglyph("uni6238",56);
+  kanji.grtwo.door;
+  tsu_render;
+endtsuglyph;
+
+% sho/tokoro "place"
+begintsuglyph("uni6240",64);
+  kanji.grthree.place;
+  tsu_render;
+endtsuglyph;
+
+% te "hand"
+begintsuglyph("uni624B",75);
+  kanji.grone.hand;
+  tsu_render;
+endtsuglyph;
+
+% hand radical
+begintsuglyph("uni624C",76);
+  build_kanji.sscale(xscaled 0.7)(kanji.leftrad.hand);
+  tsu_render;
+endtsuglyph;
+
+% sai "genius" or "years of age"
+begintsuglyph("uni624D",77);
+  kanji.grtwo.genius;
+  tsu_render;
+endtsuglyph;
+
+% da/u "hit"
+begintsuglyph("uni6253",83);
+  kanji.grthree.hit;
+  tsu_render;
+endtsuglyph;
+
+% tou/na "throw"
+begintsuglyph("uni6295",149);
+  kanji.grthree.throw;
+  tsu_render;
+endtsuglyph;
+
+% shuu/hiro "gather"
+begintsuglyph("uni62FE",254);
+  kanji.grthree.gather;
+  tsu_render;
+endtsuglyph;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+endfont;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

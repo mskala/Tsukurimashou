@@ -1,0 +1,182 @@
+#!/usr/bin/perl -n -CDS
+
+#
+# OpenType feature file generator for Tsukurimashou
+# Copyright (C) 2011  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+$prefix=$0;
+$prefix=~s!/tools/make-fea$!!;
+
+BEGIN {
+  print "#\n# This is a GENERATED FILE.\n"
+    ."# Edit make-fea and its input in fsc/*.fsc instead!\n#\n";
+  foreach $feature (split(/\s+/,shift)) {
+    $want_feature{$feature}=1;
+  }
+
+  # read character list
+  open(CHARLIST,'chars.lst');
+  while (<CHARLIST>) {
+     if (/(u|uni)([0-9a-f]+)/i) {
+       $n=hex("0x$2");
+       $charlist{$n}=1;
+     }
+  }
+  close(CHARLIST);
+
+  %dton=(
+    'zero'=>0,
+    'one'=>1,
+    'two'=>2,
+    'three'=>3,
+    'four'=>4,
+    'five'=>5,
+    'six'=>6,
+    'seven'=>7,
+    'eight'=>8,
+    'nine'=>9
+  );
+  @ntod=qw{zero one two three four five six seven eight nine};
+  
+  @inlines=();
+}
+
+push @inlines,$_;
+
+while (@inlines) {
+$_=shift @inlines;
+
+while (/^(.*)\\\n/) {
+  if (@inlines) {
+    $_=$1.shift @inlines;
+  } else {
+    $_=$1.<>;
+  }
+}
+
+if (/^\s*#/) {
+  # skip comments
+} elsif (/BEGINFEATURE (\S+)/) {
+  $iuf=!$want_feature{$1};
+} elsif (/^ENDFEATURE/) {
+  $iuf=0;
+} elsif (/WITH ([A-Z])=(.*)/) {
+  $capturing=1;
+  $key=$1;
+  $values=$2;
+  $values=~s/\b(zero|one|two|three|four|five|six|seven|eight|nine)-(zero|one|two|three|four|five|six|seven|eight|nine)\b/
+    join(' ',map {$ntod[$_]} $dton{$1}..$dton{$2})/ge;
+  $values=~s/\b([a-z])-([a-z])\b/join(' ',$1..$2)/gie;
+  $values=~s/\buni([0-9a-f]+)-uni([0-9a-f]+)\b/'uni'.
+    join(' uni',map { sprintf('%04X',$_)} hex("0x$1")..hex("0x$2"))/gie;
+  $values=~s/\bu([0-9a-f]+)-u([0-9a-f]+)\b/'u'.
+    join(' u',map { sprintf('%04X',$_)} hex("0x$1")..hex("0x$2"))/gie;
+  $items{$key}=$values;
+#  print STDERR "$key=[$values] $_";
+} elsif (/^END/) {
+  $flag=0;
+  while (1) {
+    $thisone=$captured;
+    foreach $k (keys %items) {
+      if ($items{$k} eq '') { $flag=1; last; }
+      if ($items{$k}=~/^(\S+?)\s+(.*)$/) {
+        $var=$1;
+        $items{$k}=$2;
+      } else {
+        $var=$items{$k};
+        $items{$k}='';
+      }
+      $thisone=~s/\b$k\b/$var/g;
+    }
+    last if $flag;
+    $badinstance=0;
+    while ($thisone=~/\bu(ni)?([0-9a-fA-F]+)\b/g) {
+      if (!$charlist{hex("0x$2")}) {
+        $badinstance=1;
+        last;
+      }
+    }
+    print $thisone unless ($iuf || $badinstance);
+  }
+  $capturing=0;
+  $captured='';
+  %items=();
+} elsif (/^INCLUDE (\S+)/) {
+  open(INF,"$prefix/fsc/$1.fsc");
+  unshift @inlines,<INF>;
+  close(INF);
+} elsif (/KLUDGE NT_DECOMPOSE/) {
+  @newtable=();
+  for ($lead=0;$lead<19;$lead++) {
+    for ($vowel=0;$vowel<21;$vowel++) {
+      push @newtable,sprintf("  sub uni%04X by uni%04X uni%04X;\n",
+        0xAC00+588*$lead+28*$vowel,0x1100+$lead,0x1161+$vowel);
+    }
+  }
+  unshift @inlines,@newtable;
+  @newtable=();
+} elsif (/KLUDGE PC_COMPOSE/) {
+  @newtable=();
+  @vowel_layout=(
+    'l1 l4','l1 l4','l1 l4','l1 l4',
+    'l1 l4','l1 l4','l1 l4','l1 l4',
+    'l2 l5','bug l1','bug l1','bug l1',
+    'l2 l5','l2 l5','bug l1','bug l1',
+    'bug l1','l2 l5','l2 l5','bug l1',
+    'l1 l4');
+  for ($lead=0;$lead<19;$lead++) {
+    for ($vowel=0;$vowel<21;$vowel++) {
+      ($lsa,$lsb)=split(' ',$vowel_layout[$vowel]);
+      push @newtable,sprintf("  sub uni%04X.%s uni%04X.nt by uni%04X;\n",
+        0x1100+$lead,$lsb,0x1161+$vowel,0xAC00+588*$lead+28*$vowel);
+      for ($tail=1;$tail<28;$tail++) {
+        push @newtable,
+          sprintf("  sub uni%04X.%s uni%04X uni%04X by uni%04X;\n",
+            0x1100+$lead,$lsa,0x1161+$vowel,0x11A7+$tail,
+            0xAC00+588*$lead+28*$vowel+$tail);
+      }
+    }
+    push @newtable,"  subtable;\n" if $lead%7==6;
+  }
+  unshift @inlines,@newtable;
+  @newtable=();
+} elsif ($capturing) {
+  $captured.=$_;
+} else {
+  $badinstance=0;
+  while ($_=~/\bu(ni)?([0-9a-fA-F]+)\b/g) {
+    if (!$charlist{hex("0x$2")}) {
+      $badinstance=1;
+      last;
+    }
+  }
+  print unless ($iuf || $badinstance);
+}
+
+}

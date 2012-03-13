@@ -1,0 +1,476 @@
+%
+% Config file processor for Tsukurimashou
+% Copyright (C) 2011  Matthew Skala
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, version 3.
+%
+% As a special exception, if you create a document which uses this font, and
+% embed this font or unaltered portions of this font into the document, this
+% font does not by itself cause the resulting document to be covered by the
+% GNU General Public License. This exception does not however invalidate any
+% other reasons why the document might be covered by the GNU General Public
+% License. If you modify this font, you may extend this exception to your
+% version of the font, but you are not obligated to do so. If you do not
+% wish to do so, delete this exception statement from your version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Matthew Skala
+% http://ansuz.sooke.bc.ca/
+% mskala@ansuz.sooke.bc.ca
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% BEWARE!  This code is written in Hamlog, an extremely limited subset of
+% Prolog created for this purpose.  It looks like Prolog, and a Prolog
+% environment with appropriate libraries should be able to run it, but it
+% is not really Prolog and if you try to run general Prolog programs with
+% a Hamlog interpreter, you can expect results.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Here we define the families, styles, weights, and spacings that exist
+
+family(tsukurimashou).
+
+family(jieubsida).
+family(blackletter_lolita).
+
+style(tsukurimashou,kaku).
+style(tsukurimashou,maru).
+style(tsukurimashou,mincho).
+style(tsukurimashou,bokukko).
+style(tsukurimashou,anbiruteki).
+style(tsukurimashou,tenshinokami).
+
+style(jieubsida,dodum).
+style(jieubsida,batang).
+style(jieubsida,sunmoon).
+
+style(blackletter_lolita,cosette).
+
+weight(extralight):-fail.
+weight(light):-fail.
+weight(normal).
+weight(demibold):-fail.
+weight(bold):-fail.
+weight(extrabold):-fail.
+
+spacing(monospace).
+spacing(proportional):-proportional_enabled.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% styles needed for proofs
+
+proof_style(F,S,W,proportional):-
+  family(F),style(F,S),weight(W),want_style(F,S,W,proportional).
+proof_style(tsukurimashou,kaku,normal,monospace).
+proof_style(tsukurimashou,mincho,normal,monospace).
+proof_style(jieubsida,dodum,normal,monospace).
+proof_style(jieubsida,batang,normal,monospace).
+proof_style(blackletter_lolita,cosette,normal,monospace).
+
+proof_style_short(F,S,W,P):-
+  proof_style(FA,SA,WA,PA),
+  short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Long and short names for Hamlog atoms.  The "long" ones are human-readable;
+% the "short" ones are intended for use in filenames.  Capital letters are
+% encoded by adding two underscores, so that "c__amelc__ase" is the encoding
+% of "CamelCase".  The special atom "l___da" is used to encode the empty
+% string, and the sequence "s___e" is used to encode a space.
+
+long_name(tsukurimashou,t__sukurimashou).
+
+long_name(jieubsida,j__ieubsida).
+long_name(blackletter_lolita,b__lackletters___el__olita).
+
+long_name(kaku,k__aku).
+long_name(maru,m__aru).
+long_name(dodum,d__odum).
+long_name(batang,b__atang).
+long_name(mincho,m__incho).
+long_name(bokukko,b__okukko).
+long_name(cosette,c__osette).
+long_name(sunmoon,s__unh___enm__oon).
+long_name(anbiruteki,a__nbiruteki).
+long_name(tenshinokami,t__enshis___enos___ek__ami).
+
+long_name(extralight,e__xtras___el__ight).
+long_name(light,l__ight).
+long_name(normal,l___da).
+long_name(demibold,d__emibold).
+long_name(bold,b__old).
+long_name(extrabold,e__xtras___eb__old).
+
+long_name(monospace,l___da).
+long_name(proportional,p__s__).
+
+short_name(jieubsida,jieub).
+short_name(tsukurimashou,tsuku).
+short_name(blackletter_lolita,bll).
+
+short_name(kaku,kg).
+short_name(maru,mg).
+short_name(dodum,do).
+short_name(batang,bt).
+short_name(mincho,mi).
+short_name(bokukko,bk).
+short_name(cosette,co).
+short_name(sunmoon,sm).
+short_name(anbiruteki,at).
+short_name(tenshinokami,tn).
+
+short_name(extralight,el).
+short_name(light,lw).
+short_name(normal,l___da).
+short_name(demibold,db).
+short_name(bold,bd).
+short_name(extrabold,eb).
+
+short_name(monospace,l___da).
+short_name(proportional,ps).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% filename overlay system
+
+default_fname(T):-short_name(tsukurimashou,T).
+
+overlay_fname(T):-short_name(jieubsida,T).
+overlay_fname(T):-short_name(blackletter_lolita,T).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% configuration - character sets
+
+cfg_char(all,C,P):-char_page(C,P).
+cfg_char(none,_C,_P):-fail.
+
+cfg_char(ascii,C,page00):-hd(X),atom_final(C,uni002,X).
+cfg_char(ascii,C,page00):-hd(X),atom_final(C,uni003,X).
+cfg_char(ascii,C,page00):-hd(X),atom_final(C,uni004,X).
+cfg_char(ascii,C,page00):-hd(X),atom_final(C,uni005,X).
+cfg_char(ascii,C,page00):-hd(X),atom_final(C,uni006,X).
+cfg_char(ascii,C,page00):-hd(X),not_equal(X,f),atom_final(C,uni007,X).
+
+cfg_char(latin1,C,page00):-cfg_char(ascii,C,page00).
+cfg_char(latin1,C,page00):-hd(X),atom_final(C,uni00a,X).
+cfg_char(latin1,C,page00):-hd(X),atom_final(C,uni00b,X).
+cfg_char(latin1,C,page00):-hd(X),atom_final(C,uni00c,X).
+cfg_char(latin1,C,page00):-hd(X),atom_final(C,uni00d,X).
+cfg_char(latin1,C,page00):-hd(X),atom_final(C,uni00e,X).
+cfg_char(latin1,C,page00):-hd(X),atom_final(C,uni00f,X).
+
+cfg_char(mes1,C,page00):-cfg_char(latin1,C,page00).
+cfg_char(mes1,C,page01):-hd(X),atom_final(C,uni010,X).
+cfg_char(mes1,C,page01):-
+  hd(X),not_equal(X,4),not_equal(X,5),atom_final(C,uni011,X).
+cfg_char(mes1,C,page01):-
+  hd(X),not_equal(X,c),not_equal(X,d),atom_final(C,uni012,X).
+cfg_char(mes1,C,page01):-hd(X),atom_final(C,uni013,X).
+cfg_char(mes1,C,page01):-
+  hd(X),not_equal(X,e),not_equal(X,f),atom_final(C,uni014,X).
+cfg_char(mes1,C,page01):-hd(X),atom_final(C,uni015,X).
+cfg_char(mes1,C,page01):-hd(X),atom_final(C,uni016,X).
+cfg_char(mes1,C,page01):-hd(X),not_equal(X,f),atom_final(C,uni017,X).
+cfg_char(mes1,uni02c7,page02).
+cfg_char(mes1,uni02d8,page02).
+cfg_char(mes1,uni02d9,page02).
+cfg_char(mes1,uni02da,page02).
+cfg_char(mes1,uni02db,page02).
+cfg_char(mes1,uni02dd,page02).
+cfg_char(mes1,uni2015,page20).
+cfg_char(mes1,uni2018,page20).
+cfg_char(mes1,uni2019,page20).
+cfg_char(mes1,uni201c,page20).
+cfg_char(mes1,uni201d,page20).
+cfg_char(mes1,uni20ac,page20).
+cfg_char(mes1,uni2122,page21).
+cfg_char(mes1,uni2126,page21).
+cfg_char(mes1,uni215b,page21).
+cfg_char(mes1,uni215c,page21).
+cfg_char(mes1,uni215d,page21).
+cfg_char(mes1,uni215e,page21).
+cfg_char(mes1,uni2190,page21).
+cfg_char(mes1,uni2191,page21).
+cfg_char(mes1,uni2192,page21).
+cfg_char(mes1,uni2193,page21).
+cfg_char(mes1,uni266a,page26).
+
+cfg_char(grade1,C,P):-grade_one(C),char_page(C,P).
+cfg_char(grade2,C,P):-grade_two(C),char_page(C,P).
+cfg_char(grade3,C,P):-grade_three(C),char_page(C,P).
+cfg_char(grade4,C,P):-grade_four(C),char_page(C,P).
+cfg_char(grade5,C,P):-grade_five(C),char_page(C,P).
+cfg_char(grade6,C,P):-grade_six(C),char_page(C,P).
+cfg_char(grade8,C,P):-grade_eight(C),char_page(C,P).
+cfg_char(grade9,C,P):-grade_nine(C),char_page(C,P).
+cfg_char(grade10,C,P):-grade_ten(C),char_page(C,P).
+
+cfg_char(to_grade1,C,P):-cfg_char(grade1,C,P).
+cfg_char(to_grade2,C,P):-cfg_char(to_grade1,C,P).
+cfg_char(to_grade2,C,P):-cfg_char(grade2,C,P).
+cfg_char(to_grade3,C,P):-cfg_char(to_grade2,C,P).
+cfg_char(to_grade3,C,P):-cfg_char(grade3,C,P).
+cfg_char(to_grade4,C,P):-cfg_char(to_grade3,C,P).
+cfg_char(to_grade4,C,P):-cfg_char(grade4,C,P).
+cfg_char(to_grade5,C,P):-cfg_char(to_grade4,C,P).
+cfg_char(to_grade5,C,P):-cfg_char(grade5,C,P).
+cfg_char(to_grade6,C,P):-cfg_char(to_grade5,C,P).
+cfg_char(to_grade6,C,P):-cfg_char(grade6,C,P).
+cfg_char(to_grade8,C,P):-cfg_char(to_grade6,C,P).
+cfg_char(to_grade8,C,P):-cfg_char(grade8,C,P).
+cfg_char(to_grade9,C,P):-cfg_char(to_grade8,C,P).
+cfg_char(to_grade9,C,P):-cfg_char(grade9,C,P).
+cfg_char(to_grade10,C,P):-cfg_char(to_grade9,C,P).
+cfg_char(to_grade10,C,P):-cfg_char(grade10,C,P).
+
+cfg_char(jis208,C,P):-jis208(C),char_page(C,P).
+cfg_char(jis212,C,P):-jis212(C),char_page(C,P).
+cfg_char(jis213,C,P):-jis213(C),char_page(C,P).
+
+cfg_char(yuurei,C,P):-yuurei_kanji(C),char_page(C,P).
+
+cfg_char(O,C,P):-page(O),=(O,P),char_page(C,P).
+cfg_char(O,C,P):- =(O,C),char_page(C,P).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% configuration - styles
+
+want_style_short(F,S,W,P):-
+  family(FA),style(FA,SA),weight(WA),spacing(PA),
+%  lock_out_korean_kerning(FA,PA),
+  want_style(FA,SA,WA,PA),
+  short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P).
+
+% uncomment the call to this above if using an unpatched FontForge
+lock_out_korean_kerning(jieubsida,proportional):-!,fail.
+lock_out_korean_kerning(_FA,_PA).
+
+style_xlat(F,S,W,P,_X,FX,SX,WX,PX):-
+  family(FA),style(FA,SA),weight(WA),spacing(PA),
+  short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P),
+  long_name(FA,FX),long_name(SA,SX),long_name(WA,WX),long_name(PA,PX).
+
+style_jkxlat(F,S,W,P,_X,FX,SX,WX,PX):-
+  family(FA),style(FA,SA),weight(WA),spacing(PA),
+  short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P),
+  jk_name(FA,FX),jk_name(SA,SX),jk_name(WA,WX),jk_name(PA,PX).
+
+cfg_style(all,_F,_S,_W,_P).
+cfg_style(none,_F,_S,_W,_P):-fail.
+
+cfg_style(N,F,_S,_W,_P):-family(N), =(N,F).
+cfg_style(N,F,S,_W,_P):-style(F,N), =(N,S).
+
+cfg_style(T,F,S,W,P):-short_name(N,T),cfg_style(N,F,S,W,P).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% configuration - features
+
+cfg_feature(all,F):-feature_available(F).
+cfg_feature(none,_F):-fail.
+
+cfg_feature(T,F):- =(T,F),feature_available(F).
+
+feature_available(afrc):-
+  ten_available(uni003,page00),ten_available(uniff1,pageff).
+
+feature_available(c2sc).
+
+feature_available(ccmp).
+
+feature_available(kern):-proportional_enabled.
+
+feature_available(liga).
+
+feature_available(ljmo).
+
+feature_available(mark):-proportional_enabled.
+
+feature_available(mkmk):-proportional_enabled.
+
+feature_available(name).
+
+feature_available(ornm):-
+  want_char(uni0041,page00),want_char(uni0042,page00),
+  want_char(uni0043,page00),want_char(uni0044,page00),
+  want_char(uni0045,page00),want_char(uni0046,page00),
+  want_char(uni0047,page00),want_char(uni0048,page00),
+  want_char(uf1731,pagef17),want_char(uf1732,pagef17),
+  want_char(uf1733,pagef17),want_char(uf1734,pagef17),
+  want_char(uf1735,pagef17),want_char(uf1736,pagef17),
+  want_char(uf1737,pagef17),want_char(uf1738,pagef17).
+
+feature_available(pfed).
+
+feature_available(size).
+
+feature_available(smcp):-
+  sixteen_except(uni006,page00,0),want_char(uni0070,page00),
+  want_char(uni0071,page00),want_char(uni0072,page00),
+  want_char(uni0073,page00),want_char(uni0074,page00),
+  want_char(uni0075,page00),want_char(uni0076,page00),
+  want_char(uni0077,page00),want_char(uni0078,page00),
+  want_char(uni0079,page00),want_char(uni007a,page00),
+  sixteen_except(unif76,pagef7,0),want_char(unif770,pagef7),
+  want_char(unif771,pagef7),want_char(unif772,pagef7),
+  want_char(unif773,pagef7),want_char(unif774,pagef7),
+  want_char(unif775,pagef7),want_char(unif776,pagef7),
+  want_char(unif777,pagef7),want_char(unif778,pagef7),
+  want_char(unif779,pagef7),want_char(unif77a,pagef7).
+
+feature_available(ss01):-
+  sixteen_except(uf174,pagef17,0),
+  want_char(uni00c4,page00),want_char(uni00cb,page00),
+  want_char(uni00cf,page00),want_char(uni00d6,page00),
+  want_char(uni00dc,page00),want_char(uni0178,page01),
+  want_char(uni00e4,page00),want_char(uni00a8,page00),
+  want_char(uni00eb,page00),want_char(uni00ef,page00),
+  want_char(uni00f6,page00),want_char(uni00fc,page00),
+  want_char(uni00ff,page00).
+
+% feature ss02 is also subject to line deletion in the make-fea script
+feature_available(ss02):-
+  ten_available(uni003,page00),
+  want_char(uni0028,page00),want_char(uni0029,page00),
+  want_char(uni003c,page00),want_char(uni003e,page00),
+  want_char(uni005b,page00),want_char(uni005d,page00),
+  want_char(uni007b,page00),want_char(uni007d,page00),
+  sixteen_except(uni004,page00,0),ten_available(uni005,page00),
+  want_char(uni005a,page00),
+  sixteen_except(uni006,page00,0),ten_available(uni007,page00),
+  want_char(uni007a,page00),
+  want_char(uni25cf,page25),want_char(uf1712,pagef17).
+
+feature_available(vjmo).
+
+ten_available(CR,P):-
+  dec(X),atom_final(C,CR,X),char_unavailable(C,P),!,fail.
+ten_available(_A,_B).
+
+sixteen_available(CR,P):-
+  hd(X),atom_final(C,CR,X),char_unavailable(C,P),!,fail.
+sixteen_available(_A,_B).
+
+sixteen_except(CR,P,F):-
+  hd(X),not_equal(X,F),atom_final(C,CR,X),char_unavailable(C,P),!,fail.
+sixteen_except(_A,_B,_F).
+
+char_unavailable(C,P):-want_char(C,P),!,fail.
+char_unavailable(_C,_P).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+want_page(P):-
+  page(P),want_char_on_page(P).
+
+want_char_on_page(P):-
+  char_page(C,P),want_char(C,P),!.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% low-level definitions of characters and pages
+
+not_equal(X,Y):-var(X),var(Y),!,fail.
+not_equal(X,Y):- =(X,Y),!,fail.
+not_equal(_X,_Y).
+
+% dec(?X) - X is a decimal digit
+dec(0). dec(1). dec(2). dec(3). dec(4).
+dec(5). dec(6). dec(7). dec(8). dec(9).
+
+% hd(?X) - X is a hex digit
+hd(0). hd(1). hd(2). hd(3). hd(4). hd(5). hd(6). hd(7).
+hd(8). hd(9). hd(a). hd(b). hd(c). hd(d). hd(e). hd(f).
+
+% page(?P) - P is an atom identifying a 256-character Unicode page
+page(P):-lo_page(P).
+page(P):-hi_page(P).
+
+% lo_page(?P) - P is in the Basic Multilingual Plane
+lo_page(P):-
+   var(P),
+   hd(X),atom_final(PX,page,X),
+   hd(Y),atom_final(P,PX,Y).
+lo_page(P):-
+   atom(P),
+   atom_final(P,PX,Y),hd(Y),
+   atom_final(PX,page,X),hd(X).
+
+% hi_page(?P) - P is one of the few pages we care about outside the BMP
+hi_page(page1f1).
+hi_page(pagef17).
+hi_page(pagef5c).
+hi_page(pageff0).
+hi_page(pageff1).
+hi_page(pageff2).
+hi_page(pageff3).
+hi_page(pageff4).
+hi_page(pageff5).
+hi_page(pageff6).
+
+% char_page(?C,?P) - C is an atom following the Adobe glyph naming
+% convention, except in lowercase, for a character on page P.  Note that
+% "character" is defined rather loosely (there are exactly 256 of them on
+% every page) and includes some code points that Unicode explicitly
+% declares to be Not Characters.  Note also that "character" is the
+% correct term for them; at this point we are dealing with abstract
+% characters, not glyphs.
+
+% the complexity of this predicate is due to a desire to be efficient with
+% all instantiation patterns
+
+char_page(C,P):-
+   atom(C),!,
+   atom_final(C,CWXY,_Z),atom_final(CWXY,CWX,_Y),
+   atom_final(CWX,CW,X),atom_final(CW,CQ,W),
+   char_page_i(CQ,P,W,X).
+
+char_page(C,P):-
+   atom(P),lo_page(P),
+   atom_final(P,PW,X),atom_final(PW,_P,W),
+   atom_final(CW,uni,W),atom_final(CWX,CW,X),
+   hd(Y),atom_final(CWXY,CWX,Y),
+   hd(Z),atom_final(C,CWXY,Z).
+char_page(C,P):-
+   atom(P),hi_page(P),
+   atom_final(P,PVW,X),atom_final(PVW,PV,W),atom_final(PV,_P,V),
+   atom_final(CV,u,V),atom_final(CVW,CV,W),atom_final(CVWX,CVW,X),
+   hd(Y),atom_final(CVWXY,CVWX,Y),
+   hd(Z),atom_final(C,CVWXY,Z).
+
+char_page(C,P):-
+   var(P),var(C),
+   hd(W),atom_final(PW,page,W),atom_final(CW,uni,W),
+   hd(X),atom_final(P,PW,X),atom_final(CWX,CW,X),
+   hd(Y),atom_final(CWXY,CWX,Y),
+   hd(Z),atom_final(C,CWXY,Z).
+char_page(C,P):-
+   var(P),var(C),
+   hi_page(P),
+   atom_final(P,PVW,X),atom_final(PVW,PV,W),atom_final(PV,_P,V),
+   atom_final(CV,u,V),atom_final(CVW,CV,W),atom_final(CVWX,CVW,X),
+   hd(Y),atom_final(CVWXY,CVWX,Y),
+   hd(Z),atom_final(C,CVWXY,Z).
+
+char_page_i(uni,P,W,X):-
+   !,atom_final(PW,page,W),atom_final(P,PW,X).
+char_page_i(UV,P,W,X):-
+   atom_final(UV,u,V),
+   atom_final(PV,page,V),atom_final(PW,PV,W),atom_final(P,PW,X).

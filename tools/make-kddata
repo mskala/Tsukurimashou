@@ -1,0 +1,89 @@
+#!/usr/bin/perl -CDS
+
+#
+# KANJIDIC2 to Hamlog translator for Tsukurimashou
+# Copyright (C) 2011  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# In order to run this program, you will need to provide a copy of the
+# KANJIDIC2 file, or some equivalent, as input.  The KANJIDIC2 file is
+# distributed under the Creative Commons Attribution-Sharealike license.  I
+# assert that the output of this program will not be covered by that license
+# because the only information from KANJIDIC2 appearing in the output will
+# be the status (jouyou grade, inclusion in standards, etc.) of each
+# character.  That is factual information not subject to copyright; and the
+# decisions on what characters to include in the jouyou lists and standards
+# documents were made by the Japanese government, not by the compilers of
+# KANJIDIC2, so if a copyright existed - which it does not - the copyright
+# would not be KANJIDIC2's because none of the original work of the
+# KANJIDIC2 compilers is present in the output of this program.
+#
+# You can obtain KANJIDIC2 from:
+#    http://www.csse.monash.edu.au/~jwb/kanjidic2/index.html
+#
+# I also disclaim any copyright claim of my own on the output of this
+# program, for the same reasons.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+use utf8;
+
+@grxl=qw(zero one two three four five six seven eight nine ten);
+
+while (<>) {
+  if (/<character>/) {
+    $ucs=-1;
+  } elsif (m!<cp_value cp_type="ucs">([0-9a-f]+)</cp_value>!i) {
+    $ucs=$1;
+  } elsif (/<cp_value cp_type="jis208">/) {
+    $divert{'jis208'}.="$ucs\n";
+  } elsif (/<cp_value cp_type="jis212">/) {
+    $divert{'jis212'}.="$ucs\n";
+  } elsif (/<cp_value cp_type="jis213">/) {
+    $divert{'jis213'}.="$ucs\n";
+  } elsif (m!<grade>(\d+)</grade>!) {
+    $divert{'grade_'.$grxl[$1]}.="$ucs\n";
+  } elsif(m!</character>!) {
+    undef $ucs;
+  }
+}
+
+foreach $k (sort keys %divert) {
+  $v=$divert{$k};
+  foreach $u (sort split("\n",$v)) {
+    if (length($u)==4) {
+      print "$k(uni$u).\n";
+    } else {
+      print "$k(u$u).\n";
+    }
+  }
+  print "\n";
+}
+
+foreach $char (qw(墸 壥 妛 彁 挧 暃 椢 槞 蟐 袮 閠 駲)) {
+  $i=ord($char);
+  printf "yuurei_kanji(uni%04X).\n",$i;
+}

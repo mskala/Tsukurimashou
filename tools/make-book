@@ -1,0 +1,136 @@
+#!/usr/bin/perl -CDS
+
+#
+# Proof splitter for Tsukurimashou
+# Copyright (C) 2011  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+use utf8;
+
+$prefix=$0;
+$prefix=~s!/tools/make-book$!!;
+
+# usage:
+#  make-book <prefix> <target> <tocfile>
+
+$texprefix=shift;
+$target=shift;
+
+$partnum=1;
+while (<>) {
+  if (/^\\contentsline \{part\}\{([IVXLC]+)\\hspace \{1em\}(.*)\}\{(\d+)\}/) {
+    push @{$seclast{$part}},($3-1) if $#{$secfirst{$part}}>=0;
+    $part=$1;
+    push @partrom,$part;
+    $partnum{$part}=$partnum;
+    $partnum++;
+    push @partname,$2;
+    push @partlast,($3-1) if $#partfirst>=0;
+    push @partfirst,$3;
+  } elsif (/^\\contentsline \{section\}\{(.*)\}\{(\d+)\}/) {
+    push @{$secname{$part}},$1;
+    push @{$seclast{$part}},($2-1) if $#{$secfirst{$part}}>=0;
+    push @{$secfirst{$part}},$2;
+    $_=$1;
+    s/\.mp$//;
+    s/^(tsuku|tsuita|jieub|bll)-//;
+    s/^grade//;
+    s/-?intro$// unless $_ eq 'intro';
+    $_=substr($_,0,4);
+    tr/a-z/A-Z/;
+    push @{$secshort{$part}},$_;
+  } elsif (/^\\ProgressCLine/) {
+    $pcount{$part}++;
+  }
+}
+
+push @partlast,'last';
+push @{$seclast{$part}},'last';
+
+sub make_page_range {
+  my($first,$last)=@_;
+  $last='' if $last eq 'last';
+  $prnum++;
+}
+
+$partarab=0;
+
+foreach $part (@partrom) {
+  $partarab++;
+  next unless $target eq "$texprefix$part.tex";
+
+  open(OUT,">$texprefix$part.tex");
+  
+  $pcp=$pcount{$part};
+
+  print OUT <<EOF;
+\\documentclass[14pt,twoside]{extarticle}
+
+% This is a generated file.  Edit the source code in make-book instead.
+
+\\def\\partarab{$partarab}
+\\def\\ProgressCount{$pcp}
+\\input{bkstyle.tex}
+\\renewcommand{\\partname}{Volume}
+EOF
+
+  print OUT "\\cleardoublepage\\setcounter{part}{".($partnum{$part}-1)."}"
+    ."\\part{".($partname[$partnum{$part}-1])."}\n";
+  print OUT "\\setcounter{page}{".($partfirst[$partnum{$part}-1])."}\n";
+  print OUT "\\checkoddpage\n";
+  print OUT "\\begin{tikzpicture}[remember picture,overlay]\n";
+  for ($j=0;$j<=$#{$secname{$part}};$j++) {
+    print OUT "\\DrawOneTab{".($j+1)
+        ."}{".($#{$secname{$part}}<8?9:$#{$secname{$part}}+1)
+        ."}{$secshort{$part}[$j]}{"
+        .($#{$secname{$part}}>12?144/$#{$secname{$part}}+1:12)."}\n";
+    print OUT "\\DrawOneLabel{".($j+1)
+        ."}{".($#{$secname{$part}}<8?9:$#{$secname{$part}}+1)
+        ."}{$secname{$part}[$j]}\n";
+  }
+  print OUT "\\end{tikzpicture}\\cleardoublepage\n\n";
+  
+  $secletr='a';
+  for ($j=0;$j<=$#{$secname{$part}};$j++) {
+    print OUT "\\def\\StartTabSec${secletr}{%\n";
+    print OUT "  \\def\\CurrentTab{\\OneTab{".($j+1)
+        ."}{".($#{$secname{$part}}<8?9:$#{$secname{$part}}+1)
+        ."}{$secshort{$part}[$j]}{"
+        .($#{$secname{$part}}>12?144/$#{$secname{$part}}+1:12)."}}%\n";
+    $secletr++;
+    print OUT "  \\let\\StartTabSec\\StartTabSec$secletr\\relax\n"
+      unless $j==$#{$secname{$part}};
+    print OUT "}\n\n";
+  }
+  
+  print OUT "\\let\\StartTabSec\\StartTabSeca\\relax\n\n";
+
+  print OUT "\\input{pprinted.tex}\n\n\\end{document}\n";
+
+  close(OUT);
+}

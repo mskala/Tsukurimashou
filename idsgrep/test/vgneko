@@ -1,0 +1,19 @@
+#!/bin/sh
+if which valgrind > /dev/null 2> /dev/null
+then
+echo '【猥】⿰⺨<畏>⿱田?【猫】⿰⺨<苗>⿱艹田' > vgneko-in.$$.eids
+valgrind --leak-check=full \
+  ./idsgrep  '&!⿰?畏&⿰?*⿱?田...⺨' *.eids 2> vgneko-out.$$
+cat vgneko-out.$$
+if test "x`grep 'ERROR SUMMARY: 0 errors' vgneko-out.$$`" = x
+then
+  rm -f vgneko-in.$$.eids vgneko-out.$$
+  exit 1
+else
+  rm -f vgneko-in.$$.eids vgneko-out.$$
+  exit 0
+fi
+else
+  echo "Can't find valgrind, skipping test."
+  exit 77
+fi

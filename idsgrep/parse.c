@@ -1,0 +1,476 @@
+/*
+ * Parser for IDSgrep
+ * Copyright (C) 2012  Matthew Skala
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Matthew Skala
+ * http://ansuz.sooke.bc.ca/
+ * mskala@ansuz.sooke.bc.ca
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "idsgrep.h"
+
+/**********************************************************************/
+
+NODE **parse_stack=NULL;
+int stack_size=0,stack_ptr=0;
+char *partstr=NULL;
+int partstr_size=0,partstr_len=0;
+PARSE_STATE parse_state=PS_SEEKING_HEAD;
+int echoing_whitespace=0;
+HASHED_STRING *close_bracket,*semicolon=NULL,*socked_head=NULL;
+
+size_t parse(size_t len,char *inp) {
+   int offs=0,clen,escaped,flag;
+   char ebuf[4];
+   HASHED_STRING *hchar,*newstr,*tmps;
+   
+   /* can't parse if we are in an error state */
+   if (parse_state==PS_ERROR)
+     return 0; /* SNH */
+   
+   /* reset state if the tree has been consumed */
+   if ((stack_ptr==0) && (parse_state==PS_COMPLETE_TREE))
+     parse_state=PS_SEEKING_HEAD;
+   
+   /* make sure we have a buffer */
+   if (partstr==NULL) {
+      partstr_size=1024;
+      partstr=(char *)malloc(partstr_size);
+   }
+   
+   /* make sure we have a stack */
+   if (parse_stack==NULL) {
+      stack_size=16;
+      parse_stack=(NODE **)malloc(sizeof(NODE *)*stack_size);
+   }
+   
+   /* while we have input and no other reason to stop */
+   while (offs<len) {
+      
+      /* make sure stack is big enough */
+      if (stack_size<=stack_ptr) {
+	 stack_size=stack_ptr+8;
+	 parse_stack=(NODE **)realloc(parse_stack,sizeof(NODE *)*stack_size);
+      }
+
+      /* validate UTF-8 or escaped character */
+      escaped=0;
+/*      if (inp[offs]=='\\') {
+	 if (len-offs<2)
+	   return offs;
+	 
+FIXME	 
+	 
+      } else */ if ((inp[offs]&0x80)==0) {
+	 /* single-byte ASCII */
+	 clen=1;
+	 
+      } else if ((inp[offs]&0xC0)==0x80) {
+	 /* continuation byte, should never be first */
+	 offs++;
+	 continue;
+	 
+      } else if ((inp[offs]&0xE0)==0xC0) {
+	 /* first of two */
+	 
+	 /* check for rest of char */
+	 if (len-offs<2)
+	   return offs;
+	 
+	 /* check for continuation */
+	 if ((inp[offs+1]&0xC0)!=0x80) {
+	    offs+=2;
+	    continue;
+	 }
+	 
+	 /* check for overlong */
+	 if ((inp[offs]&0xFE)==0xC0) {
+	    offs+=2;
+	    continue;
+	 }
+	 clen=2;
+      
+      } else if ((inp[offs]&0xF0)==0xE0) {
+	 /* first of three bytes */
+	 
+	 /* check for rest of char */
+	 if (len-offs<3)
+	   return offs;
+	 
+	 /* check for continuation */
+	 if (((inp[offs+1]&0xC0)!=0x80)
+	     || ((inp[offs+2]&0xC0)!=0x80)) {
+	    offs+=3;
+	    continue;
+	 }
+	 
+	 /* check for overlong */
+	 if (((inp[offs]&0xFF)==0xE0) && ((inp[offs+1]&0xE0)==0x80)) {
+	    offs+=3;
+	    continue;
+	 }
+	 clen=3;
+	 
+      } else if ((inp[offs]&0xF8)==0xF0) {
+	 /* first of four bytes */
+	 
+	 /* check for rest of char */
+	 if (len-offs<4)
+	   return offs;
+	 
+	 /* check for continuation */
+	 if (((inp[offs+1]&0xC0)!=0x80)
+	     || ((inp[offs+2]&0xC0)!=0x80)
+	     || ((inp[offs+3]&0xC0)!=0x80)) {
+	    offs+=4;
+	    continue;
+	 }
+	 
+	 /* check for overlong */
+	 if (((inp[offs]&0xFF)==0xF0) && ((inp[offs+1]&0xF0)==0x80)) {
+	    offs+=4;
+	    continue;
+	 }
+	 clen=4;
+
+      } else {
+	 /* invalid byte */
+	 offs++;
+	 continue;
+      }
+      
+      /* see if we are waiting for an opening bracket */
+      if (parse_state<PS_READING_HEAD) {
+	 
+	 /* skip unescaped whitespace in this context */
+	 if ((clen==1) && (((unsigned char )inp[offs])<=0x20) && !escaped) {
+	    if (echoing_whitespace)
+	      putchar(inp[offs]);
+	    offs++;
+	    continue;
+	 }
+	 echoing_whitespace=0;
+
+	 /* look up the character */
+	 hchar=new_string(clen,inp+offs);
+	 
+	 /* can't open a head if we aren't looking for one */
+	 if ((parse_state!=PS_SEEKING_HEAD) && (hchar->arity==-1) &&
+	     !escaped) {
+	    parse_state=PS_ERROR;
+	    delete_string(hchar);
+	    return offs;
+	 }
+	 
+	 /* can we open a string? */
+	 if ((hchar->arity>=-1) && (hchar->mate!=NULL) && !escaped) {
+	    
+	    /* yes; open the string */
+	    close_bracket=hchar->mate;
+	    offs+=clen;
+	    parse_state=(PARSE_STATE)hchar->arity;
+	    delete_string(hchar);
+	    
+	    /* is this a special character that makes its own functor? */
+	 } else if ((hchar->arity>=-1) && !escaped) {
+	    
+	    /* put it in the string, then re-read it as closing bracket */
+	    close_bracket=hchar;
+	    parse_state=(PARSE_STATE)hchar->arity;
+	    memcpy(partstr,inp+offs,clen);
+	    partstr_len=clen;
+	    delete_string(hchar);
+	    continue;
+
+	 } else {
+	    /* no; this becomes head of nullary semicolon */
+	    if (!semicolon)
+	      semicolon=new_string(1,";");
+
+	    /* and we had better be in state -2 */
+	    if (parse_state!=PS_SEEKING_HEAD) {
+	       parse_state=PS_ERROR;
+	       delete_string(hchar);
+	       return offs;
+	    }
+	    
+	    /* create a new node */
+	    parse_stack[stack_ptr]=new_node();
+	    parse_stack[stack_ptr]->head=hchar;
+	    parse_stack[stack_ptr]->functor=semicolon;
+	    parse_stack[stack_ptr]->arity=0;
+	    parse_stack[stack_ptr]->complete=1;
+	    semicolon->refs++;
+	    stack_ptr++;
+	    
+	    /* and now we can look for a new head */
+	    offs+=clen;
+	    if (stack_ptr==1) {
+	       parse_state=PS_COMPLETE_TREE;
+	       return offs;
+	    } else
+	      parse_state=PS_SEEKING_HEAD;
+	 }
+
+      } else {
+	 /* we are waiting for a closing bracket */
+	 
+	 /* look up the character */
+	 hchar=new_string(clen,inp+offs);
+	 
+	 /* unescaped matching bracket ends it */
+	 if ((hchar==close_bracket) && (!escaped) && (partstr_len>0)) {
+
+	    /* hash the partial string */
+	    newstr=new_string(partstr_len,partstr);
+	    partstr_len=0;
+	    
+	    /* replace with canonical if any */
+	    while (newstr->canonical!=NULL) {
+	       tmps=newstr->canonical;
+	       delete_string(newstr);
+	       newstr=tmps;
+	    }
+	    
+	    /* if that was a head, sock it away, look for a functor */
+	    if (parse_state==-1) {
+	       socked_head=newstr;
+	       parse_state=PS_SEEKING_FUNCTOR;
+
+	    } else {
+	       /* it was a functor */
+	       parse_stack[stack_ptr]=new_node();
+	       parse_stack[stack_ptr]->head=socked_head;
+	       parse_stack[stack_ptr]->functor=newstr;
+	       parse_stack[stack_ptr]->arity=parse_state;
+	       if (parse_state==0)
+		 parse_stack[stack_ptr]->complete=1;
+	       socked_head=NULL;
+	       stack_ptr++;
+	       parse_state=PS_SEEKING_HEAD;
+	    }
+	    
+	    offs+=clen;
+	    close_bracket=NULL;
+	    
+	 } else {
+	    /* add the char to the partial string */
+	    
+	    /* there must be enough space for it */
+	    if (partstr_len+clen>partstr_size) {
+	       partstr_size*=2;
+	       partstr=(char *)realloc(partstr,partstr_size);
+	    }
+	    
+	    /* append the data */
+	    memcpy(partstr+partstr_len,inp+offs,clen);
+	    partstr_len+=clen;
+	    offs+=clen;
+	 }
+	 
+	 delete_string(hchar);
+      }
+      
+      /* try to hook up children to parent */
+      flag=(stack_ptr>0) && (parse_stack[stack_ptr-1]->complete);
+      while (flag) {
+	 flag=0;
+	 
+	 /* return if we're done */
+	 if (stack_ptr==1) {
+	    parse_state=PS_COMPLETE_TREE;
+	    return offs;
+	 }
+	 
+	 /* handle unary nodes */
+	 if ((stack_ptr>=2) &&
+	     (parse_stack[stack_ptr-2]->arity==1) &&
+	     (!parse_stack[stack_ptr-2]->complete)) {
+	    parse_stack[stack_ptr-2]->child[0]=parse_stack[stack_ptr-1];
+	    parse_stack[stack_ptr-2]->complete=1;
+	    stack_ptr--;
+	    flag=1;
+	 }
+	 
+	 /* handle binary nodes */
+	 if ((stack_ptr>=3) &&
+	     (parse_stack[stack_ptr-3]->arity==2) &&
+	     (parse_stack[stack_ptr-2]->complete) &&
+	     (!parse_stack[stack_ptr-3]->complete)) {
+	    parse_stack[stack_ptr-3]->child[0]=parse_stack[stack_ptr-2];
+	    parse_stack[stack_ptr-3]->child[1]=parse_stack[stack_ptr-1];
+	    parse_stack[stack_ptr-3]->complete=1;
+	    stack_ptr-=2;
+	    flag=1;
+	 }
+	 
+	 /* handle ternary nodes */
+	 if ((stack_ptr>=4) &&
+	     (parse_stack[stack_ptr-4]->arity==3) &&
+	     (parse_stack[stack_ptr-2]->complete) &&
+	     (parse_stack[stack_ptr-3]->complete) &&
+	     (!parse_stack[stack_ptr-4]->complete)) {
+	    parse_stack[stack_ptr-4]->child[0]=parse_stack[stack_ptr-3];
+	    parse_stack[stack_ptr-4]->child[1]=parse_stack[stack_ptr-2];
+	    parse_stack[stack_ptr-4]->child[2]=parse_stack[stack_ptr-1];
+	    parse_stack[stack_ptr-4]->complete=1;
+	    stack_ptr-=3;
+	    flag=1;
+	 }
+      }
+   }
+   return offs;
+}
+
+
+/**********************************************************************/
+
+void register_bracket_pair(char *opb,char *clb,int arity) {
+   HASHED_STRING *oph,*clh;
+   
+   oph=new_string(strlen(opb),opb);
+   clh=new_string(strlen(clb),clb);
+   
+   oph->arity=arity;
+   oph->mate=clh;
+   oph->refs++;
+   clh->mate=oph;
+   if (clh!=oph) clh->refs++;
+}
+
+void register_special_functor(char *fctr,int arity,MATCH_FN mf) {
+   HASHED_STRING *hs;
+   
+   hs=new_string(strlen(fctr),fctr);
+   
+   if ((hs->arity>-2) && (hs->arity!=arity)) {
+      puts("attempt to register conflicting arities for functor"); /* SNH */
+      exit(1); /* SNH */
+   }
+
+   hs->arity=arity;
+   hs->match_fn=mf;
+}
+
+void register_alias(char *fctr,char *canon) {
+   HASHED_STRING *hs,*cs;
+   
+   hs=new_string(strlen(fctr),fctr);
+   cs=new_string(strlen(canon),canon);
+   
+   if ((hs->arity>-2) && (cs->arity!=hs->arity)) {
+      puts("attempt to register conflicting arities for functor"); /* SNH */
+      exit(1); /* SNH */
+   }
+
+   hs->arity=cs->arity;
+   hs->match_fn=cs->match_fn;
+   hs->canonical=cs;
+}
+
+/**********************************************************************/
+
+void register_syntax(void) {
+   register_bracket_pair("<",">",-1);
+   register_bracket_pair("\xE3\x80\x90","\xE3\x80\x91",-1); /* b lenticular */
+   register_bracket_pair("\xE3\x80\x96","\xE3\x80\x97",-1); /* w lenticular */
+
+   register_bracket_pair("(",")",0);
+   register_bracket_pair("\xEF\xBC\x88","\xEF\xBC\x89",0); /* wide paren */
+   register_bracket_pair("\xEF\xBD\x9F","\xEF\xBD\xA0",0); /* dblwide paren */
+
+   register_bracket_pair(".",".",1);
+   register_bracket_pair(":",":",1);
+   register_bracket_pair("\xE3\x83\xBB","\xE3\x83\xBB",1); /* centre dot */
+
+   register_bracket_pair("[","]",2);
+   register_bracket_pair("\xEF\xBC\xBB","\xEF\xBC\xBD",2); /* wide sqb */
+   register_bracket_pair("\xE3\x80\x9A","\xE3\x80\x9B",2); /* dblwide sqb */
+
+   register_bracket_pair("{","}",3);
+   register_bracket_pair("\xE3\x80\x94","\xE3\x80\x95",3); /* b tortoise */
+   register_bracket_pair("\xE3\x80\x98","\xE3\x80\x99",3); /* w tortoise */
+   
+   register_special_functor(";",0,default_match_fn);
+
+   register_special_functor(",",2,default_match_fn);
+
+   register_special_functor("?",0,anything_match_fn);
+   register_alias("anything","?");
+
+   register_special_functor(".",1,anywhere_match_fn);
+   register_alias("anywhere",".");
+
+   register_special_functor("&",2,and_or_match_fn);
+   register_alias("and","&");  
+
+   register_special_functor("|",2,and_or_match_fn);
+   register_alias("or","|");
+   
+   register_special_functor("!",1,not_match_fn);
+   register_alias("not","!");
+
+   register_special_functor("*",1,unord_match_fn);
+   register_alias("unord","*");
+
+   register_special_functor("=",1,equal_match_fn);
+   register_alias("equal","=");
+
+   register_special_functor("@",1,assoc_match_fn);
+   register_alias("assoc","@");
+
+   register_special_functor("/",1,regex_match_fn);
+   register_alias("regex","/");
+
+   register_special_functor("\xE2\xBF\xB0",2,default_match_fn);
+   register_alias("lr","\xE2\xBF\xB0");
+
+   register_special_functor("\xE2\xBF\xB1",2,default_match_fn);
+   register_alias("tb","\xE2\xBF\xB1");
+
+   register_special_functor("\xE2\xBF\xB2",3,default_match_fn);
+   register_alias("lcr","\xE2\xBF\xB2");
+
+   register_special_functor("\xE2\xBF\xB3",3,default_match_fn);
+   register_alias("tcb","\xE2\xBF\xB3");
+
+   register_special_functor("\xE2\xBF\xB4",2,default_match_fn);
+   register_alias("enclose","\xE2\xBF\xB4");
+
+   register_special_functor("\xE2\xBF\xB5",2,default_match_fn);
+   register_alias("wrapu","\xE2\xBF\xB5");
+
+   register_special_functor("\xE2\xBF\xB6",2,default_match_fn);
+   register_alias("wrapd","\xE2\xBF\xB6");
+
+   register_special_functor("\xE2\xBF\xB7",2,default_match_fn);
+   register_alias("wrapl","\xE2\xBF\xB7");
+
+   register_special_functor("\xE2\xBF\xB8",2,default_match_fn);
+   register_alias("wrapul","\xE2\xBF\xB8");
+
+   register_special_functor("\xE2\xBF\xB9",2,default_match_fn);
+   register_alias("wrapur","\xE2\xBF\xB9");
+
+   register_special_functor("\xE2\xBF\xBA",2,default_match_fn);
+   register_alias("wrapll","\xE2\xBF\xBA");
+
+   register_special_functor("\xE2\xBF\xBB",2,default_match_fn);
+   register_alias("overlap","\xE2\xBF\xBB");
+}

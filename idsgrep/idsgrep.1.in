@@ -1,0 +1,399 @@
+.TH IDSGREP 1 "@release_date@" "@PACKAGE_STRING@" "User Commands"
+.SH NAME
+@PACKAGE@ \- match Extended Ideographic Description Sequences
+.
+.SH SYNOPSIS
+.B @PACKAGE@
+.RI [ OPTIONS ]
+.I PATTERN
+.RI [ FILE .\|.\|.]
+.
+.SH DESCRIPTION
+The
+.B @PACKAGE@
+program parses the input files, or standard input if no filename is
+specified, into Extended Ideographic Description Sequences
+(EIDSes, described
+in more detail below) separated by whitespace.
+Any EIDS in the input that matches
+.I PATTERN
+is echoed through to standard output, along with its trailing whitespace
+until the next EIDS in the input.
+This is like
+.BR grep (1)
+except that it operates on EIDSes instead of text lines, and it follows the
+rules of EIDS matching instead of regular expression matching.
+.PP
+The function of this program is deliberately general in nature, and it
+could concievably be applied to many different purposes, but the
+application motivating development is to descriptions of Han
+characters (as used to write Chinese, Japanese, and some other languages)
+in terms of their decomposition into smaller parts.
+For instance, the character <U+840C> can be described as <U+8279> above
+<U+660E>, which in turn can be described as <U+65E5> next to <U+6708>.
+With
+.B @PACKAGE@
+it is possible to match a partial description against those in a database;
+such an operation may be useful in looking up an unfamiliar character or in
+certain font development contexts.
+.PP
+Please note that
+.B @PACKAGE@
+is somewhat unusual in being a command-line utility, for which a
+.B man
+page in English and ASCII would be the preferred form of documentation, whose
+operation nonetheless revolves around certain non-ASCII characters, namely
+the so-called Ideographic Description Characters in the range <U+2FF0> to
+<U+2FFB>.
+Those are not included in many fonts, and cannot be included in portable
+.B man
+pages.
+Most users are likely to be native English speakers working with East
+Asian languages,
+and so Chinese or Japanese characters are also necessary to document
+typical usage examples.
+In this document, the notation <U+xxxx> denotes a Unicode character by
+its hexadecimal code point; for a
+more detailed description of
+.B @PACKAGE@
+that shows the characters in their proper forms, consult the PDF
+documentation in
+.IR @flat_docdir@/@PACKAGE@.pdf .
+.
+.SH OPTIONS
+.TP
+.BI \-d "NAME\fR,\fP " "\-\^\-dictionary=" NAME
+Choose one or more dictionaries from the default dictionary directory, using
+shell glob pattern
+.IR NAME .
+To be precise, this will cause
+.I @PACKAGE@
+to search all files that match
+.RI \(lq@flat_dictdir@/ "NAME" *.eids\(rq.
+Note that
+.IR NAME ","
+if non-empty, must be typed as part of the same argument as
+.B \-d
+(i.e. no space between them on the command line),
+because if
+.B \-d
+is in an argument by itself, it will be interpreted as the valid and
+commonly-used case of
+.I NAME
+being empty.
+.TP
+.BR \-h ", " \-\^\-help
+Display a brief help message.
+.TP
+.BR \-V ", " \-\^\-version
+Display the version and license information.
+.
+.SH EXTENDED IDEOGRAPHIC DESCRIPTION SEQUENCES
+The Han character set is open-ended.
+Although a few thousand characters suffice to write the most popular
+Han-script languages most of the time,
+popular standards define tens of thousands of less-popular characters,
+and there are at least hundreds of thousands of rare characters known to
+occur in names and historical contexts.
+Computer text processing systems that use fixed lists of characters will
+inevitably find themselves unable to represent some text.
+As a result, there is a need to
+.I describe
+characters in a standard way that may have no standard code
+points of their own.
+A similar need for descriptions of characters arises when looking up
+characters in a dictionary; a user may recognize some or all the visual
+features of a character (such as its parts and the way they are laid out)
+without knowing how to enter the character as a whole.
+.PP
+The Unicode standard offers a partial solution to some of these issues by
+defining a series of \(lqIdeographic Descripion Characters\(rq (IDCs),
+<U+2FF0> to <U+2FFB>, and a syntax for using them to construct
+\(lqIdeographic Description Sequences\(rq (IDSes).
+.PP
+Here are the rules of Unicode IDSes:
+.IP \(bu 4
+A character from the one of the Unified Han or CJK Radical ranges
+is a complete IDS and simply represents itself.
+.IP \(bu 4
+The IDC code points <U+2FF0>, <U+2FF1>, and <U+2FF4> through <U+2FFB>
+are prefix binary operators.
+One of these characters followed by two complete IDSes
+forms another complete IDS, representing a character formed by joining the
+two smaller characters in a way suggested by the name and graphical image
+of the IDC.
+.IP \(bu 4
+The IDCs <U+2FF2> and <U+2FF3> are prefix ternary operators.
+(Unicode uses the less-standard word \(lqtrinary.\(rq)
+One of them can be followed by three complete IDSes to form an IDS that
+describes a
+character made of three parts, much in the same manner as the binary
+operators.
+.IP \(bu 4
+An IDS may not be more than 16 code points long overall nor contain more
+than six consecutive non-operator characters.
+This rule appears to be intended to make things easier for systems that need
+to be able to jump into the middle of text and quickly find the start and
+end of IDSes.
+.IP \(bu 4
+IDSes non-bindingly \(lqshould\(rq be as short as possible.
+.PP
+To create a dictionary of character decompositions for
+.BR @PACKAGE@ ,
+we need to be able to describe characters in a little more detail than
+provided by standard Unicode IDSes, and in particular, we need to be able to
+specify a code point for a
+character or part of one while also specifying that code point's
+further decomposition.
+There is also a need for specifying
+.I partial
+descriptions, similar in spirit to
+.BR grep (1)'s
+regular expressions.
+Both these needs are served by the
+.I Extended
+Ideographic Description Sequence (EIDS) syntax of
+.BR @PACKAGE@ .
+Thorough discussion of the syntax, with visual examples, is reserved for the
+PDF documentation, but the following rules are an outline.
+.IP \(bu 4
+An EIDS represents a tree in which each node has an optional
+.IR head ,
+a required
+.IR functor ,
+and between zero and three
+.IR children ,
+each of which is a similar tree, recursively.
+Heads and functors are nonempty unlimited-length strings of Unicode code
+points.
+In the current implementation, no Unicode canonicalization is performed.
+The number of children of a node is called its
+.IR arity .
+Nodes with arity zero through three are called
+.IR nullary ,
+.IR unary ,
+.IR binary ,
+and
+.I ternary
+respectively.
+.IP \(bu 4
+To write an EIDS, write down the head if any of the root,
+the functor of the root, and then the EIDSes for its children.
+.IP \(bu 4
+Heads and functors, in their most explicit form, are written as bracketed
+strings, where the choice of
+opening bracket indicates whether the string is a head or
+a functor, and if a functor, the arity of the node.
+.IP \(bu 4
+A head may be opened by < (ASCII angle bracket) in which case it is closed
+by >; it may be opened by <U+3010> and closed by <U+3011> (black lenticular
+brackets); or it may be opened by <U+3016> and closed by <U+3017> (white
+lenticular brackets).
+.IP \(bu 4
+The opening and closing brackets for the functor of a nullary node may be (
+with ) (ASCII parentheses); <U+FF08> with <U+FF09> (fullwidth parentheses);
+or <U+FF5F> with
+<U+FF60> (fullwidth \(lqwhite\(rq [usually double] parentheses).
+.IP \(bu 4
+For the functor of a unary node, the closing bracket is always the same as
+the opening bracket.
+Three characters may be used to open and close a unary node's
+functor: . (ASCII period); : (ASCII colon); and <U+30FB> (katakana middle dot).
+.IP \(bu 4
+The opening and closing brackets for the functor of a binary node may be [
+with ] (ASCII square brackets);
+<U+FF3B> with <U+FF3D> (fullwidth square brackets); or <U+301A> with
+<U+301B> (white square brackets).
+.IP \(bu 4
+The opening and closing brackets for the functor of a ternary node may be {
+with } (ASCII curly braces);
+<U+3014> with <U+3015> (tortoiseshell brackets); or <U+3018> with
+<U+3019> (white tortoiseshell brackets).
+.IP \(bu 4
+The closing bracket of a bracketed string must be the one that
+corresponds to the opening bracket.
+For instance, a head opened by < must be closed by >.
+Any occurrence of <U+3011> is
+taken literally and does not close the string.
+.IP \(bu 4
+Nested brackets are not detected nor specially processed.
+For instance, in a nullary node's functor opened by (,
+the first ) ends the string regardless of how many other copies of ( may
+have been included in the string.
+However, in no case may a bracketed string be empty.
+If what would otherwise be a matching closing bracket
+appears immediately after the opening bracket, then it is taken literally as
+the first character of the string and does
+.I not
+close the string.
+One frequently-used case is that three ASCII periods in a row are valid
+syntax for a unary node functor containing a single ASCII period.
+The first opens the string, the second is the literal first character, and
+the third closes the string.
+.IP \(bu 4
+It is likely that some backslash escapes will be implemented in the future.
+.IP \(bu 4
+ASCII control characters and whitespace characters, <U+0000> through
+<U+0020> (notably including <U+0000>), are ignored outside bracketed
+strings and taken
+literally inside bracketed strings.
+Non-ASCII Unicode whitespace characters, such as <U+3000>, may be
+treated this way in the future but currently are not.
+.IP \(bu 4
+Some characters have
+.IR "sugary implicit brackets" .
+That means that if one of these characters occurs where an opening bracket
+would otherwise be expected, it will be treated as a one-character bracketed
+string with brackets that depend on what character it is.
+For instance, ASCII semicolon will be interpreted as if it appeared in ASCII
+parentheses, and will thus become the functor of a nullary node.
+The complete list of characters that have sugary implicit brackets, with
+the brackets they imply, is:
+(;) (?) .!. ./. .=. .*. .@. [&] [|]
+[<U+2FF0>] [<U+2FF1>] [<U+2FF4>] [<U+2FF5>] [<U+2FF6>] [<U+2FF7>]
+[<U+2FF8>] [<U+2FF9>] [<U+2FFA>] [<U+2FFB>]
+{<U+2FF2>} {<U+2FF3>}.
+.IP \(bu 4
+All remaining characters (those without other dispositions specified above,
+and notably including the Unified Han characters) have
+.IR "syrupy implicit semicolons" .
+That means when one occurs outside a bracketed string,
+it not only becomes a single-character head
+(sugary implicit angle brackets) but it also receives arity zero and a
+functor consisting of a single semicolon.
+For instance, the lone character x is equivalent to <x>(;) or (because
+semicolon itself has implicit parentheses) <x>;.
+.IP \(bu 4
+After parsing, EIDSes are subjected to a \(lqcanonicalization\(rq
+transformation in which certain functor and arity combinations (generally
+relatively verbose ASCII alphabetic strings) are replaced by
+single-character forms.
+The idea is to provide human-readable pure-ASCII alternate forms for
+the IDCs and matching operators.
+In the future there may be options to skip this transformation
+on input, or perform its reverse on output.
+The list of replacements is:  (anything) to (?); .anywhere. to ...; [and] to
+[&]; [or] to [|]; .not. to .!.; .regex. to ./.; .equal. to .=.; [lr] to
+[<U+2FF0>]; [tb] to [<U+2FF1>]; {lcr} to {<U+2FF2>}; {tcb} to {<U+2FF3>};
+[enclose] to [<U+2FF4>]; [wrapu] to [<U+2FF5>]; [wrapd] to [<U+2FF6>];
+[wrapl] to [<U+2FF7>]; [wrapul] to [<U+2FF8>]; [wrapur] to [<U+2FF9>];
+[wrapll] to [<U+2FFA>]; and [overlap] to [<U+2FFB>].
+.
+.IP \(bu 4
+Total length, and number of consecutive nullary nodes (which are like
+the non-operator characters in Unicode IDSes), are unlimited.
+In the case of a dictionary entry it may be desirable to make the EIDS as
+.I long
+as possible (contrary to Unicode's recommendation)
+in order to offer a detailed decomposition and many query strategies to
+the user.
+.IP \(bu 4
+It is a consequence of these rules that all syntactically valid Unicode
+IDSes are syntactically valid EIDSes, but the reverse is not true.
+.
+.SH EIDS MATCHING
+The matching pattern and the input are parsed as described above to generate
+trees, and then the trees are matched as follows.
+.IP \(bu 4
+If the pattern and input both have heads, then they match if and only if the
+heads are identical.
+This overrides the other rules below.
+.IP \(bu 4
+If the pattern's functor and arity are (?), it always matches.
+.IP \(bu 4
+If the pattern is
+.RI ... "x"
+(unary, functor is a single ASCII period, and
+.I x
+is its only child), then it matches if and only if
+.I x
+matches some subtree of the input.
+.IP \(bu 4
+Otherwise, the pattern matches the input if and only if its functor and
+arity are the same as the input's, and all the children of the pattern match
+the corresponding children of the input recursively.
+.
+.SH FILES
+Individual sites may well have a different set of dictionaries installed,
+but these are some popular ones.
+The paths shown are those that were specified during configuration of
+this package and built into the
+.BR idsgrep (1)
+binary; site admins who think they are too cool for
+.B configure
+may possibly have installed the files elsewhere.
+.PP
+.I @flat_dictdir@/tsukurimashou.eids
+.RS
+Japanese kanji decompositions from the Tsukurimashou font project.
+These are relatively clean in terms of accurately reflecting the visual
+construction of each character, but they only cover the glyphs included in
+the fonts, and they are based on the visual appearance of the glyphs
+(and, specifically, their appearance
+.IR "in the Tsukurimashou fonts" )
+rather than traditional etymology.
+.RE
+.I @flat_dictdir@/kanjivg.eids
+.RS
+Japanese kanji decompositions from the KanjiVG database.
+Basically complete coverage of about 6700 characters.
+However, KanjiVG decomposes glyphs according to stroke order and traditional
+etymology, even to
+the point of listing a single radical more than once in the decomposition if
+its strokes are written non-consecutively,
+and the format translator that generates this file only sort
+of works.
+As a result, decompositions in this database may be incomplete,
+idiosyncratic, or even flat-out wrong.
+.
+.SH ENVIRONMENT
+.IP IDSGREP_DICTDIR
+If specified, this will be used as the path for default dictionaries
+as used by the -d option, instead of the value
+.I @flat_dictdir@
+which was specified at build time.
+.PP
+Note that locale-related environment variables are
+.I not
+recognized.
+Input and output are in UTF-8 regardless of locale.
+.
+.SH BUGS
+Non-ASCII characters are essential to documenting this software, and
+.B man
+can't handle them portably, so this document is less useful than it should
+be.
+.
+.SH AUTHOR
+Matthew Skala <mskala@ansuz.sooke.bc.ca>
+.
+.SH COPYRIGHT
+Copyright \(co
+2012
+Matthew Skala
+.PP
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3.
+.PP
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+.PP
+You should have received a copy of the GNU General Public License
+along with this program.
+If not, see <http://www.gnu.org/licenses/>.
+.PP
+Please note that dictionaries prepared for use with IDSgrep may be subject to
+their own copyright terms differing from those of IDSgrep itself.
+In particular, the IDSgrep distribution contains code to build a dictionary
+based on Ulrich Apel's KanjiVG project.
+That dictionary would be subject to his copyright and the Creative Commons 
+Attribution-Share Alike 3.0 Licence.
+The Tsukurimashou project also builds an EIDS-format dictionary for
+use with IDSgrep, but happens to use the same copyright and GPL 3 licensing
+terms as IDSgrep anyway.
+.
+.SH "SEE ALSO"
+.BR grep (1)
