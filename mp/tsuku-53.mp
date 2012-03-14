@@ -128,6 +128,21 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.accept =
+  push_pbox_toexpand("kanji.grthree.accept");
+  build_kanji.tb(640,80)
+    (tsu_xform(identity yscaled 0.6)
+       (push_stroke(
+          (170,880)..(500,1060)..tension 1.1..(830,1380),
+          (1.1,1.1)--(1.6,1.6)--(2.0,2.0));
+        build_kanji.sscale(rotated 90 slanted -0.35 rotated -90)
+          (kanji.toprad.alt_sparkle_three)))
+    (build_kanji.tb(540,70)
+       (kanji.radical.conservative_hat)
+       (kanji.greight.otoh));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.doctor =
   push_pbox_toexpand("kanji.grthree.doctor");
   kanji.radical.box_on_side;
@@ -140,6 +155,14 @@ vardef kanji.grthree.take =
   build_kanji.lr(520,50)
     (kanji.grone.ear)
     (tsu_xform(identity yscaled 0.83)(kanji.greight.otoh));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.ward =
+  push_pbox_toexpand("kanji.grthree.ward");
+  kanji.radical.box_on_side;
+  build_kanji.sscale(scaled 0.75 shifted (40,0))
+    (kanji.radical.cut_the_grass);
   expand_pbox;
 enddef;
 
@@ -178,6 +201,12 @@ endtsuglyph;
 % kyou/suku "deliverance"
 begintsuglyph("uni5321",33);
   kanji.grnine.deliverance;
+  tsu_render;
+endtsuglyph;
+
+% ku "ward" (as in postal addresses)
+begintsuglyph("uni533A",58);
+  kanji.grthree.ward;
   tsu_render;
 endtsuglyph;
 
@@ -306,6 +335,12 @@ endtsuglyph;
 % shu/tori "take"
 begintsuglyph("uni53D6",214);
   kanji.grthree.take;
+  tsu_render;
+endtsuglyph;
+
+% shu/u "accept"
+begintsuglyph("uni53D7",215);
+  kanji.grthree.accept;
   tsu_render;
 endtsuglyph;
 

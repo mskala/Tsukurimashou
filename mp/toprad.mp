@@ -32,6 +32,17 @@ inclusion_lock(toprad);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.toprad.alt_sparkle_three =
+  push_pbox_toexpand("kanji.toprad.alt_sparkle_three");
+  push_stroke((220,810)..(270,450)..(300,90),
+    (1.2,1.2)--(1.5,1.5)--(1.7,1.7));
+  push_stroke((420,900)..(470,540)..(500,180),
+    (1.2,1.2)--(1.5,1.5)--(1.7,1.7));
+  push_stroke((780,870)--(670,0),(1.7,1.7)--(1.3,1.3));
+  set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
 vardef kanji.toprad.bamboo =
   push_pbox_toexpand("kanji.toprad.bamboo");
   push_stroke((250,780)..(190,590)..(70,420),
@@ -159,4 +170,3 @@ vardef kanji.toprad.sparkle_two =
   set_boserif(0,0,10);
   expand_pbox;
 enddef;
-

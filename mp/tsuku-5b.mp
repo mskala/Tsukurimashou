@@ -43,6 +43,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -51,22 +52,13 @@ vardef kanji.grone.study =
   begingroup
     save saved_path;
     path saved_path;
-    build_kanji.tb(580,150)
-      (kanji.radical.silly_hat;
-       replace_strokep(-1)((220,770)..(270,650)..(300,530));
-       replace_strokeq(-1)((1.2,1.2)--(1.5,1.5)--(1.7,1.7));
-       set_bosize(-1)(95);
-       set_boserif(-1,0,whatever);
-       push_stroke((420,800)..(470,680)..(500,560),
-         (1.2,1.2)--(1.5,1.5)--(1.7,1.7));
-       set_bosize(0,95);
-       push_stroke((780,790)--(670,500),(1.7,1.7)--(1.3,1.3));
-       set_bosize(0,95);
-       set_boserif(0,0,10);
-      )
-      (build_kanji.sscale(xscaled 0.75)
-         (kanji.grone.child;saved_path:=get_strokep(0));
-         replace_strokep(0)(saved_path));
+    build_kanji.tb(740,100)
+      (kanji.toprad.alt_sparkle_three)
+      (build_kanji.tb(580,150)
+         (kanji.radical.conservative_hat)
+         (build_kanji.sscale(xscaled 0.75)
+            (kanji.grone.child;saved_path:=get_strokep(0));
+             replace_strokep(0)(saved_path)));
   endgroup;
   expand_pbox;
 enddef;
