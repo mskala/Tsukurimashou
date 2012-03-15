@@ -172,6 +172,15 @@ vardef kanji.leftrad.person =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.sentence =
+  push_pbox_toexpand("kanji.leftrad.sentence");
+  build_kanji.level(build_kanji.tb(580,30)
+    (kanji.radical.kettle_lid)
+    (kanji.radical.cut_the_grass;
+     replace_strokep(-1)(oldp shifted (0,-400) yscaled 0.7 shifted (0,400))));
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.seven =
   push_pbox_toexpand("kanji.leftrad.seven");
   build_kanji.sscale(shifted (0,-300) yscaled 0.7 shifted (0,300))

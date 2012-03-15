@@ -85,6 +85,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.counterpart =
+  push_pbox_toexpand("kanji.grthree.counterpart");
+  build_kanji.lr(420,0)
+    (kanji.leftrad.sentence)
+    (kanji.grsix.inch);
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.inn =
   push_pbox_toexpand("kanji.grthree.protect");
   build_kanji.tb(600,110)
@@ -303,6 +311,12 @@ endtsuglyph;
 % tera/ji "temple"
 begintsuglyph("uni5BFA",250);
   kanji.grtwo.temple;
+  tsu_render;
+endtsuglyph;
+
+% tai/aite "counterpart"
+begintsuglyph("uni5BFE",255);
+  kanji.grthree.counterpart;
   tsu_render;
 endtsuglyph;
 
