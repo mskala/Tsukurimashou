@@ -170,3 +170,22 @@ vardef kanji.toprad.sparkle_two =
   set_boserif(0,0,10);
   expand_pbox;
 enddef;
+
+vardef kanji.toprad.stand_up =
+  push_pbox_toexpand("kanji.toprad.stand_up");
+  push_stroke((500,810)--(500,510),
+    (1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  push_stroke((120,510)--(880,510),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((250,430)..tension 1.2..(320,220)..(380,90),
+    (1.2,1.2)--(1.4,1.4)--(1.7,1.7));
+  push_stroke((750,450)..tension 1.2..(660,220)..(580,60),
+    (1.6,1.6)--(1.5,1.5)--(1.3,1.3));
+  set_boserif(0,0,10);
+  push_stroke((70,0)--(930,0),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;

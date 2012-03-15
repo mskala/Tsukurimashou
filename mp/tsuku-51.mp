@@ -207,6 +207,12 @@ begintsuglyph("uni5186",134);
   tsu_render;
 endtsuglyph;
 
+% kei/akiraka "clear"
+begintsuglyph("uni518F",143);
+  kanji.rare.clear;
+  tsu_render;
+endtsuglyph;
+
 % like silly-hat minus the upper bobble
 begintsuglyph("uni5196",150);
   kanji.radical.conservative_hat;

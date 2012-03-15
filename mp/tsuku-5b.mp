@@ -315,7 +315,7 @@ begintsuglyph("uni5BFA",250);
 endtsuglyph;
 
 % tai/aite "counterpart"
-begintsuglyph("uni5BFE",255);
+begintsuglyph("uni5BFE",254);
   kanji.grthree.counterpart;
   tsu_render;
 endtsuglyph;

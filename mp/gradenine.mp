@@ -61,7 +61,7 @@ enddef;
 vardef kanji.grnine.boy =
   push_pbox_toexpand("kanji.grnine.boy");
   build_kanji.level(build_kanji.tb(480,0)
-    (kanji.grone.stand_up)
+    (kanji.toprad.stand_up)
     (build_kanji.sscale(xscaled 0.9 shifted (50,20))
        (kanji.rightrad.short_hair)));
   replace_strokep(-3)((50,-50)..(120,80)..(160,200)..tension 1.2..

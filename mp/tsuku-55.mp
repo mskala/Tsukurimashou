@@ -1,6 +1,6 @@
 %
 % Unicode page 55 (Kanji) for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,8 +36,20 @@ beginfont
 input buildkanji.mp;
 input gradeone.mp;
 input gradetwo.mp;
+input radical.mp;
+input rare.mp;
+input toprad.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.commerce =
+  push_pbox_toexpand("kanji.grthree.commerce");
+  build_kanji.level(build_kanji.tb(620,60)
+    (kanji.toprad.stand_up;
+     pop_stroke)
+    (kanji.rare.clear));
+  expand_pbox;
+enddef;
 
 vardef kanji.grthree.question =
   push_pbox_toexpand("kanji.grthree.question");
@@ -47,6 +59,12 @@ vardef kanji.grthree.question =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% mon/to "question"
+begintsuglyph("uni5546",70);
+  kanji.grthree.commerce;
+  tsu_render;
+endtsuglyph;
 
 % mon/to "question"
 begintsuglyph("uni554F",79);

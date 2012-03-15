@@ -56,6 +56,15 @@ vardef kanji.rare.centurion =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.clear =
+  push_pbox_toexpand("kanji.rare.clear");
+  kanji.radical.gmm;
+  build_kanji.sscale(xyscaled (0.7,0.84))(build_kanji.tb(520,40)
+    (kanji.radical.legs)
+    (build_kanji.sscale(scaled 0.7)(kanji.grone.mouth)));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.decide =
   push_pbox_toexpand("kanji.rare.decide");
   kanji.grfour.husband;
@@ -63,6 +72,16 @@ vardef kanji.rare.decide =
   replace_strokeq(-3)((1.5,1.5)--(1.5,1.5)--(1.4,1.4));
   set_boserif(-3,1,4);
   set_botip(-3,1,1);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.director =
+  push_pbox_toexpand("kanji.rare.director");
+  tsu_xform(identity yscaled 0.5 shifted (0,400))
+    (kanji.radical.pigs_snout);
+  push_stroke(
+    (point 0.5 of get_strokep(-2))..tension 1.4..(340,360)..(60,100),
+    (1.6,1.6)--(1.4,1.4)--(0.9,0.9));
   expand_pbox;
 enddef;
 

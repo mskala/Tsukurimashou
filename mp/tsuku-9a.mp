@@ -38,6 +38,7 @@ input gradeone.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rightrad.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

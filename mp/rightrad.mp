@@ -1,6 +1,6 @@
 %
-% Unicode page 61 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Right-side radicals
+% Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -28,54 +28,37 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+inclusion_lock(rightrad);
 
-beginfont
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% AUTODEPS
-input bottomrad.mp;
-input buildkanji.mp;
-input gradefive.mp;
-input gradeone.mp;
-input radical.mp;
-input toprad.mp;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grthree.intention =
-  push_pbox_toexpand("kanji.grthree.intention");
-  build_kanji.level(build_kanji.tb(210,0)
-    (kanji.grone.noise)
-    (kanji.bottomrad.heart));
+vardef kanji.rightrad.beta =
+  push_pbox_toexpand("kanji.rightrad.beta");
+  kanji.radical.beta;
+  replace_strokep(0)
+    (oldp shifted (-250,-760) xyscaled (1.2,630/550) shifted (300,760));
+  replace_strokep(0)((300,-60)--(subpath (1,infinity) of oldp));
   expand_pbox;
 enddef;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfive.manner =
-  push_pbox_toexpand("kanji.grfive.manner");
-  build_kanji.level(build_kanji.tb(230,0)
-    (kanji.grfive.talent)
-    (kanji.bottomrad.heart));
+vardef kanji.rightrad.short_hair =
+  push_pbox_toexpand("kanji.rightrad.short_hair");
+  push_stroke((780,750)..tension 1.2..(580,620)..(180,500),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  push_stroke((880,220)..tension 1.2..(600,60)..(100,-70),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  push_stroke(interpath(0.52,get_strokep(0),get_strokep(-1)),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
   expand_pbox;
 enddef;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% i/moto "intention"
-begintsuglyph("uni610F",15);
-  kanji.grthree.intention;
-  tsu_render;
-endtsuglyph;
-
-% tai/waza "manner"
-begintsuglyph("uni614B",75);
-  kanji.grfive.manner;
-  tsu_render;
-endtsuglyph;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-endfont;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+vardef kanji.rightrad.sword =
+  push_pbox_toexpand("kanji.rightrad.sword");
+  push_stroke((260,720)--(260,120),(1.6,1.6)--(1.4,1.4));
+  set_boserif(0,0,10);
+  push_stroke((740,760),(1.6,1.6));
+  set_boserif(0,0,10);
+  build_kanji.add_jtail(0);
+  replace_strokep(0)(oldp shifted (-740,0) xscaled 2.3 shifted (740,0));
+  expand_pbox;
+enddef;

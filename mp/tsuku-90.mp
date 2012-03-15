@@ -41,6 +41,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,7 +103,7 @@ vardef kanji.grthree.section =
   push_pbox_toexpand("kanji.grthree.section");
   build_kanji.lr(580,0)
     (build_kanji.tb(340,-60+20*mincho)
-       (kanji.grone.stand_up)
+       (kanji.toprad.stand_up)
        (kanji.grone.mouth))
     (kanji.rightrad.beta);
   expand_pbox;

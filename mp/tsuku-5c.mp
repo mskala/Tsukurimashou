@@ -215,6 +215,12 @@ begintsuglyph("uni5C38",56);
   tsu_render;
 endtsuglyph;
 
+% in/osa "a particular official rank"
+begintsuglyph("uni5C39",57);
+  kanji.rare.director;
+  tsu_render;
+endtsuglyph;
+
 % shaku "foot (unit of measure)," "bamboo flute," or "blowjob"
 begintsuglyph("uni5C3A",58);
   kanji.grsix.blowjob;

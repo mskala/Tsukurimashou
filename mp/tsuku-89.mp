@@ -38,6 +38,7 @@ input gradeone.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input toprad.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -45,7 +46,7 @@ vardef kanji.grtwo.parent =
   push_pbox_toexpand("kanji.grtwo.parent");
   build_kanji.level(build_kanji.lr(460,50)
     (build_kanji.tb(470,20)
-      (kanji.grone.stand_up)
+      (kanji.toprad.stand_up)
       (kanji.leftrad.wood))
     (kanji.grone.see));
   expand_pbox;

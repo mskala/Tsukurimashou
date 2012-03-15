@@ -505,7 +505,7 @@ vardef kanji.grone.noise =
   push_pbox_toexpand("kanji.grone.noise");
   build_kanji.level(build_kanji.sscale(xscaled 0.93)(
     build_kanji.tb(430,-80)
-      (kanji.grone.stand_up)
+      (kanji.toprad.stand_up)
       (kanji.grone.day)));
   expand_pbox;
 enddef;

@@ -42,6 +42,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -49,7 +50,7 @@ vardef kanji.grtwo.new =
   push_pbox_toexpand("kanji.grtwo.new");
   build_kanji.level(build_kanji.lr(480,20)
     (build_kanji.tb(470,20)
-       (kanji.grone.stand_up)
+       (kanji.toprad.stand_up)
        (kanji.leftrad.wood))
     (kanji.greight.axe));
   expand_pbox;
@@ -85,6 +86,14 @@ vardef kanji.grthree.organize =
   build_kanji.level(build_kanji.tb(280,0)
     (kanji.rare.imperial_decree)
     (kanji.grone.correct));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.release =
+  push_pbox_toexpand("kanji.grthree.release");
+  build_kanji.level(build_kanji.lr(480,60)
+    (kanji.grtwo.direction)
+    (kanji.radical.folding_chair));
   expand_pbox;
 enddef;
 
@@ -141,6 +150,18 @@ enddef;
 % shi/sasa "support"
 begintsuglyph("uni652F",47);
   kanji.grfive.support;
+  tsu_render;
+endtsuglyph;
+
+% "folding chair" radical
+begintsuglyph("uni6535",53);
+  kanji.radical.folding_chair;
+  tsu_render;
+endtsuglyph;
+
+% hou/hana "release"
+begintsuglyph("uni653E",62);
+  kanji.grthree.release;
   tsu_render;
 endtsuglyph;
 

@@ -45,6 +45,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rightrad.mp;
 input toprad.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -48,7 +48,7 @@ vardef kanji.grthree.double =
   build_kanji.lr(360,-30)
     (kanji.leftrad.person)
     (build_kanji.tb(340,-60+20*mincho)
-       (kanji.grone.stand_up)
+       (kanji.toprad.stand_up)
        (kanji.grone.mouth));
   expand_pbox;
 enddef;
