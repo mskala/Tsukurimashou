@@ -130,7 +130,7 @@ endtsuglyph;
 
 % water radical variant
 begintsuglyph("uni2EA2",162);
-  kanji.radical.water_variant;
+  kanji.radical.alt_water;
   tsu_render;
 endtsuglyph;
 

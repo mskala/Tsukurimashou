@@ -1,6 +1,6 @@
 %
 % Unicode page 74 (Kanji) for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,9 +34,11 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradetwo.mp;
 input leftrad.mp;
+input radical.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -49,6 +51,22 @@ vardef kanji.grtwo.principle =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.ball =
+  push_pbox_toexpand("kanji.grthree.ball");
+  build_kanji.lr(400,0)
+    (kanji.leftrad.king)
+    (kanji.grfour.request);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% kyuu/tama "ball" (as in baseball)
+begintsuglyph("uni7403",3);
+  kanji.grthree.ball;
+  tsu_render;
+endtsuglyph;
 
 % ri/kotowari "principle"
 begintsuglyph("uni7406",6);

@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradefour.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -63,6 +64,14 @@ vardef kanji.grthree.prefecture =
      set_boserif(0,0,10);
      push_stroke((630,680)..tension 1.3..(760,370)..(860,0),
        (1,1)--(1.5,1.5)--(1.8,1.8))));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.short =
+  push_pbox_toexpand("kanji.grhree.short");
+  build_kanji.level(build_kanji.lr(550,-20)
+    (kanji.leftrad.arrow)
+    (tsu_xform(identity shifted (0,-20))(kanji.grthree.bean)));
   expand_pbox;
 enddef;
 
@@ -124,6 +133,12 @@ endtsuglyph;
 % chi/shi "to know"
 begintsuglyph("uni77E5",229);
   kanji.grtwo.know;
+  tsu_render;
+endtsuglyph;
+
+% tan/mijika "short"
+begintsuglyph("uni77ED",237);
+  kanji.grthree.short;
   tsu_render;
 endtsuglyph;
 

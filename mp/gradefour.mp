@@ -254,6 +254,18 @@ vardef kanji.grfour.perfect =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.request =
+  push_pbox_toexpand("kanji.grfour.request");
+  tsu_xform(identity yscaled 0.9)(kanji.radical.alt_water);
+  replace_strokep(-4)((510,810)--(subpath (1,infinity) of oldp));
+  push_stroke((100,620)--(900,620),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((690,790)..tension 1.2..(780,730)..(810,690),
+    (1,1)--(1.4,1.4)--(1.6,1.6));
+  set_bosize(0,90);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.revelation =
   push_pbox_toexpand("kanji.grfour.revelation");
   build_kanji.level(build_kanji.tb(440,-30)
@@ -261,4 +273,3 @@ vardef kanji.grfour.revelation =
     (kanji.grone.mouth));
   expand_pbox;
 enddef;
-

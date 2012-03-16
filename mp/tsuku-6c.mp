@@ -242,7 +242,7 @@ endtsuglyph;
 
 % water radical variant
 begintsuglyph("uni6C3A",58);
-  kanji.radical.water_variant;
+  kanji.radical.alt_water;
   tsu_render;
 endtsuglyph;
 
@@ -271,6 +271,12 @@ endtsuglyph;
 % juu/shiru "juice" or "soup"
 begintsuglyph("uni6C41",65);
   kanji.greight.juice;
+  tsu_render;
+endtsuglyph;
+
+% gyuu/moto "request"
+begintsuglyph("uni6C42",66);
+  kanji.grfour.request;
   tsu_render;
 endtsuglyph;
 

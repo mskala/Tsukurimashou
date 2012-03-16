@@ -44,6 +44,23 @@ vardef kanji.radical.aitch =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.alt_water =
+  push_pbox_toexpand("kanji.radical.alt_water");
+  push_stroke((510,810),(1.6,1.6));
+  build_kanji.add_jtail(0);
+  set_boserif(0,0,10);
+  push_stroke((130,600)..tension 1.2..(210,520)..(270,400),
+    (1,1)--(1.4,1.4)--(1.6,1.6));
+  push_stroke((410,420)..tension 1.2..(300,270)..(120,100),
+    (1.2,1.2)--(1.4,1.4)--(1.6,1.6));
+  push_stroke((510,570)..tension 1.2..(640,300)..(880,100),
+    (1,1)--(1.3,1.3)--(1.7,1.7));
+  push_stroke((860,590)..(720,410)..(point 0.9 of get_strokep(0)),
+    (1.6,1.6)--(1.4,1.4)--(1,1));
+  set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.beta =
   push_pbox_toexpand("kanji.radical.beta");
   push_stroke((250,-80)--(250,760)--(650,760)..tension 1.2..
@@ -549,23 +566,6 @@ enddef;
 vardef kanji.radical.vline =
   push_pbox_toexpand("kanji.radical.vline");
   push_stroke((500,780)--(500,-20),(1.7,1.7)--(1.3,1.3));
-  set_boserif(0,0,10);
-  expand_pbox;
-enddef;
-
-vardef kanji.radical.water_variant =
-  push_pbox_toexpand("kanji.radical.water_variant");
-  push_stroke((510,810),(1.6,1.6));
-  build_kanji.add_jtail(0);
-  set_boserif(0,0,10);
-  push_stroke((130,600)..tension 1.2..(210,520)..(270,400),
-    (1,1)--(1.4,1.4)--(1.6,1.6));
-  push_stroke((410,420)..tension 1.2..(300,270)..(120,100),
-    (1.2,1.2)--(1.4,1.4)--(1.6,1.6));
-  push_stroke((510,570)..tension 1.2..(640,300)..(880,100),
-    (1,1)--(1.3,1.3)--(1.7,1.7));
-  push_stroke((860,590)..(720,410)..(point 0.9 of get_strokep(0)),
-    (1.6,1.6)--(1.4,1.4)--(1,1));
   set_boserif(0,0,10);
   expand_pbox;
 enddef;

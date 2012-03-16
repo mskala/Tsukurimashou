@@ -53,7 +53,7 @@ vardef kanji.grthree.appearance =
     (build_kanji.level(build_kanji.sscale(yscaled 0.95)(
        build_kanji.tb(420,240)
          (build_kanji.sscale(shifted (10,0))(kanji.grthree.sheep))
-         (kanji.radical.water_variant);
+         (kanji.radical.alt_water);
        replace_strokep(-4)
          ((point 0 of get_strokep(-5))--subpath (1,infinity) of oldp);
        set_boserif(-4,0,whatever);
