@@ -1,6 +1,6 @@
 %
 % Shared code for Tsukurimashou latin
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -80,8 +80,11 @@ accent_default[anc_lower_accent]=identity shifted (520,vmetric(-0.21));
 accent_default[anc_centre_accent]=identity
   scaled ((latin_wide_high_r-latin_wide_low_r)/200) shifted centre_pt;
 anchor_parent[anc_upper_left]=anc_upper_accent;
+accent_default[anc_upper_left]=accent_default[anc_upper_accent];
 anchor_parent[anc_upper_right]=anc_upper_accent;
+accent_default[anc_upper_right]=accent_default[anc_upper_accent];
 anchor_parent[anc_upper_ring]=anc_upper_accent;
+accent_default[anc_upper_ring]=accent_default[anc_upper_accent];
 accent_default[anc_caron_comma]=identity shifted (730,vmetric(0.94));
 
 % this one is for capitals that have NOT been shrunk

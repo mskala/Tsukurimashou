@@ -214,8 +214,10 @@ EOF
   0x205f=>222,
 );
 foreach $code (sort keys %space_char) {
-  printf "Select(0u%04x);SetWidth(%d);\n",$code,$space_char{$code}
-    if $havechar{$code};
+  if ($havechar{$code}) {
+    printf('if (FileAccess("pfb/"+$1+"-%02x.pfb")==0)'."\n",$code>>8);
+    printf "  Select(0u%04x);SetWidth(%d);\nendif\n",$code,$space_char{$code}
+  }
 }
 print "Save(\"sfd/\"+\$1+\".sfd\");\n";
 

@@ -1,6 +1,6 @@
 %
 % Unicode page F17 (Tsukurimashou-specific extensions) for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -302,8 +302,8 @@ endtsuglyph;
 
 % 6-tsudomoe ornament
 begintsuglyph("tomoe6",54);
-  make_tomoe(3,154,450,104,47,2,12,4,false);
-  make_tomoe(3,115,450,95,110,22,53,4,false);
+  make_tomoe(4,248,450,104,47,2,8,4,false);
+  make_tomoe(2,17,231,98,0,15,15,4,true);
 endtsuglyph;
 
 % 7-tsudomoe ornament

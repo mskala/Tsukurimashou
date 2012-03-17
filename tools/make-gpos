@@ -2,7 +2,7 @@
 
 #
 # OpenType anchor position generator for Tsukurimashou
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,6 +29,11 @@
 # http://ansuz.sooke.bc.ca/
 # mskala@ansuz.sooke.bc.ca
 #
+
+# workaround for "Windows insists on em=1000" issue
+$original_em=1200;
+$final_em=1000;
+$em_ratio=$final_em/$original_em;
 
 $otfeatures=shift;
 $oldbfile=shift;
@@ -99,8 +104,8 @@ foreach $fname (@ARGV) {
         while (($k,$v)=each %default_anchor) {
           if (!$hasanc{"$n $k"}) {
             ($x,$y)=split(' ',$v);
-            $ancx{"$n $k"}=$x+&bearing_adjustment($n);
-            $ancy{"$n $k"}=$y;
+            $ancx{"$n $k"}=$em_ratio*$x+&bearing_adjustment($n);
+            $ancy{"$n $k"}=$em_ratio*$y;
             $markclass{$k}=1;
             $hasanc{"$n $k"}=1;
           }
@@ -114,8 +119,8 @@ foreach $fname (@ARGV) {
       }
     } elsif (/^ANCHOR\ (-?\d+)\ (-?[0-9\.]+)\ (-?[0-9\.]+)
              \ (-?[0-9\.]+)\ (-?[0-9\.]+) /x) {
-      $ancx{"$n $1"}=($2+$4)/2+&bearing_adjustment($n);
-      $ancy{"$n $1"}=($3+$5)/2;
+      $ancx{"$n $1"}=$em_ratio*($2+$4)/2+&bearing_adjustment($n);
+      $ancy{"$n $1"}=$em_ratio*($3+$5)/2;
       $markclass{$1}=1;
       if ($1<0) {
         $ismark{$n}=-$1;

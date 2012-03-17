@@ -1,6 +1,6 @@
 %
 % Accents for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -147,7 +147,7 @@ vardef tsu_accent.macron =
 enddef;
 
 vardef tsu_accent.ringabove =
-  push_anchor(-anc_upper_accent,accent_default[anc_upper_accent]);
+  push_anchor(-anc_upper_ring,accent_default[anc_upper_ring]);
   push_lcblob(fullcircle rotated 45
     scaled (2*tsu_punct_size+20*tsu_brush_max)
     shifted ((500,vmetric(0.83-0.03*mincho)-10)
@@ -221,7 +221,11 @@ vardef tsu_accent.apply(text basecurves)(text markcurves) =
       fi;
       exitif killflag;
     endfor;
-    bmt:=accent_default[-obstackn[mbi]];
+    if known accent_default[-obstackn[mbi]]:
+      bmt:=accent_default[-obstackn[mbi]];
+    else:
+      bmt:=accent_default[anchor_parent[-obstackn[mbi]]];
+    fi;
     killflag:=false;
     for i:=xsp-1 downto 1:
       if obstacktype[i]=otanchor:
@@ -233,6 +237,18 @@ vardef tsu_accent.apply(text basecurves)(text markcurves) =
       fi;
       exitif killflag;
     endfor;
+    if (not killflag) and (known anchor_parent[-obstackn[mbi]]):
+      for i:=xsp-1 downto 1:
+        if obstacktype[i]=otanchor:
+          if obstackn[i]=anchor_parent[-obstackn[mbi]]:
+            bmi:=i;
+            bmt:=obstackt[i];
+            killflag:=true;
+          fi;
+        fi;
+        exitif killflag;
+      endfor;
+    fi;
     obstacktype[mbi]:=otnull;
     if known bmi:
       obstacktype[bmi]:=otnull;
