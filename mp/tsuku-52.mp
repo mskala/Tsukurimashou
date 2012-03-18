@@ -69,6 +69,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.column =
+  push_pbox_toexpand("kanji.grthree.column");
+  build_kanji.level(build_kanji.lr(560,20)
+    (build_kanji.sscale(yscaled 0.92)(kanji.leftrad.bare_bone))
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.exertion =
   push_pbox_toexpand("kanji.grthree.exertion");
   build_kanji.extend_ltail_enclose(520,30)
@@ -261,6 +269,12 @@ begintsuglyph("uni5216",22);
   build_kanji.level(build_kanji.lr(560,30)
      (kanji.grone.moon)
      (kanji.rightrad.sword));
+  tsu_render;
+endtsuglyph;
+
+% retsu "column"
+begintsuglyph("uni5217",23);
+  kanji.grthree.column;
   tsu_render;
 endtsuglyph;
 

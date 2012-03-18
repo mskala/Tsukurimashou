@@ -65,6 +65,19 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.die =
+  push_pbox_toexpand("kanji.grthree.die");
+  build_kanji.level(build_kanji.lr(570,0)
+    (tsu_xform(identity shifted (0,-800) yscaled 0.95 shifted (0,800))
+       (kanji.leftrad.bare_bone))
+    (kanji.radical.spoon));
+  set_boserif(-1,0,whatever);
+  set_boserif(0,0,whatever);
+  replace_strokep(-5)((point 0 of oldp)--
+    (1000-xpart point 0 of oldp,ypart point 1 of oldp));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.next =
   push_pbox_toexpand("kanji.grthree.next");
   build_kanji.lr(360,0)
@@ -114,6 +127,18 @@ endtsuglyph;
 % shi/ha "tooth"
 begintsuglyph("uni6B6F",111);
   kanji.grthree.tooth;
+  tsu_render;
+endtsuglyph;
+
+% gatsu "bare bone radical"
+begintsuglyph("uni6B79",121);
+  kanji.leftrad.bare_bone;
+  tsu_render;
+endtsuglyph;
+
+% shi "die"
+begintsuglyph("uni6B7B",123);
+  kanji.grthree.die;
   tsu_render;
 endtsuglyph;
 

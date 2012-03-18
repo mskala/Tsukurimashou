@@ -123,7 +123,7 @@ enddef;
 vardef kanji.leftrad.bundle =
   push_pbox_toexpand("kanji.leftrad.bundle");
   kanji.grfour.bundle;
-  replace_strokep(0)((520,230)..(750,170)..(870,60));
+  replace_strokep(0)((520,230)..(750,150)..(870,60));
   expand_pbox;
 enddef;
 

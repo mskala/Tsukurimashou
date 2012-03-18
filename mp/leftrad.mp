@@ -32,6 +32,25 @@ inclusion_lock(leftrad);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.leftrad.bare_bone =
+  push_pbox_toexpand("kanji.leftrad.bare_bone");
+  push_stroke((120,790)--(880,790),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((420,790)..tension 1.2..(300,530)..(120,320),
+    (1.6,1.6)--(1.5,1.5)--(1.2,1.2));
+  push_stroke(
+    (get_strokep(0) intersectionpoint ((-infinity,560)--(infinity,560)))--
+      (740,564)..tension 1.2..(500,130)..(170,-70),
+    (1.5,1.5)--(1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+  set_botip(0,1,0);
+  set_boserif(0,1,4);
+  push_stroke(
+    (point 1.6 of get_strokep(-1))..(400,340)..(point 1.8 of get_strokep(0)),
+    (1.2,1.2)--(1.4,1.4)--(1.8,1.8));
+  replace_strokep(0)(subpath (0,1.7) of oldp);
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.boat =
   push_pbox_toexpand("kanji.leftrad.boat");
   push_stroke((560,850)..tension 1.2..(500,750)..(450,700),
