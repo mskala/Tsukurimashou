@@ -159,7 +159,7 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 #
 AC_PREREQ([2.63])
 AC_INIT([IDSgrep],
-	[0.1], [mskala@ansuz.sooke.bc.ca], [idsgrep],
+	[0.2], [mskala@ansuz.sooke.bc.ca], [idsgrep],
 	[[http://ansuz.sooke.bc.ca/]])
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign parallel-tests color-tests])
@@ -168,7 +168,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_REVISION([$Id: configure.ac 1015 2011-12-15 22:24:32Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2012 Matthew Skala])
-AC_SUBST([release_date],["January 26, 2012"])
+AC_SUBST([release_date],["March 17, 2012"])
 #
 ############################################################################
 #

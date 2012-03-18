@@ -250,22 +250,38 @@ entirely; and computer handwriting recognition generally works well if and
 only if the user is sure of the writing of the first few strokes in the
 character.  Furthermore, these search schemes often are implemented only in
 heavy, non-portable, GUI software that cannot be automated and mixes poorly
-with standard computing environments.  IDSgrep, even in its current alpha
-version with most features unimplemented, can answer the example query
+with standard computing environments.  IDSgrep can answer the example query
 correctly with a single, simple command line (\texttt{idsgrep -d
 '[tb][lr]??心'}).  This software is intended to bring the user-friendliness
 of \texttt{grep} to Han character dictionaries.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Download, build, and install}
+\section{What's new}
+
+The main new features in version 0.2 are:
+\begin{itemize}
+\item implementations of all the planned matching operators except
+  \texttt{@} (associative) and \texttt{/} (regular expression);
+\item a full test suite and some fixes for bugs found while creating it; and
+\item the EDICT2-derived dictionary, and the binary comma sugar
+  character to support it.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Download, build, test, and install}
 
 IDSgrep is distributed under the umbrella of the Tsukurimashou project on
 Sourceforge.JP~\cite{Tsukurimashou},
 \url{http://en.sourceforge.jp/projects/tsukurimashou/}.  Releases of IDSgrep
 will appear on the project download page; development versions are available
 by SVN checkout from the \texttt{trunk/idsgrep} subdirectory of the
-repository.
+repository.  For the convenience of Github users, the Tsukurimashou (and
+thus IDSgrep) repository is also mirrored into a Github
+repository~\cite{TsukuGithub}, but the project on Sourceforge.JP and its SVN
+repository remain the main public locations for IDSgrep development and all
+bug-tracker items should be filed there.
 
 A minimal default build and install could run something like this:
 \begin{verbatim}
@@ -278,36 +294,59 @@ su -c 'make install'
 
 IDSgrep as such does not include a dictionary, but it can build dictionaries
 from the Tsukurimashou font package, which is available through the same
-Sourceforge.JP project as IDSgrep, or from the KanjiVG database available at
-\url{http://kanjivg.tagaini.net/}~\cite{KanjiVG}.  For an ideal complete
-installation of IDSgrep, one would download both these packages, build
-Tsukurimashou first, and make it and KanjiVG available to the IDSgrep
-\texttt{configure} script.  The \texttt{configure} script will by default
-make a reasonable effort to find KanjiVG and Tsukurimashou; in many common
-cases it is not necessary to specify them on the command line.  Here is a
-more complete installation process relying on \texttt{configure} to find
-KanjiVG in the current directory and Tsukurimashou in a sibling directory:
-\begin{verbatim} unzip tsukurimashou-0.6.zip cd tsukurimashou-0.6
+Sourceforge.JP project as IDSgrep, from the KanjiVG database available at
+\url{http://kanjivg.tagaini.net/}~\cite{KanjiVG}, or (only if KanjiVG is
+also available) from the EDICT2 database available at
+\url{http://www.csse.monash.edu.au/~jwb/edict.html}~\cite{EDICT2}.  For an
+ideal complete installation of IDSgrep, one would download all those
+packages, build Tsukurimashou first, and make it and the dictionaries
+available to the IDSgrep \texttt{configure} script.  The \texttt{configure}
+script will by default make a reasonable effort to find the dependencies; in
+many common cases it is not necessary to specify them on the command line. 
+Here is a more complete installation process relying on \texttt{configure}
+to find KanjiVG and EDICT2 in the current directory and Tsukurimashou in a
+sibling directory:
+\begin{verbatim}
+unzip tsukurimashou-0.6.zip
+cd tsukurimashou-0.6
 ./configure
 make
 # install of Tsukurimashou not needed by IDSgrep
 cd ..
 tar -xzvf idsgrep-0.2.tar.gz
 cd idsgrep-0.2
-ln -s /some/where/else/kanjivg-20111029.xml.gz .
+ln -s /some/where/else/kanjivg-20120219.xml.gz .
+ln -s /some/where/else/edict2.gz .
 ./configure
 make
+make check
 su -c 'make install'
 \end{verbatim}
 
-If the default search fails, the filename of KanjiVG (\texttt{.xml} or
-\texttt{.xml.gz}) and the top directory of Tsukurimashou can be specified on
-the \texttt{configure} command line with the \texttt{--with-kanjivg} and
-\texttt{--with-tsuku-build} options.  For other options, run
-\texttt{configure --help}.  It's a reasonably standard GNU
-Autotools~\cite{Autotools} configuration script, albeit with a lot of
+If the default search fails, the filenames of KanjiVG (\texttt{.xml} or
+\texttt{.xml.gz}), EDICT2 (\texttt{.gz}), and the top directory of
+Tsukurimashou can be specified on the \texttt{configure} command line with
+the \texttt{--with-kanjivg}, \texttt{--with-edict2},
+and \texttt{--with-tsuku-build} options.  For
+other options, run \texttt{configure --help}.  It's a reasonably standard
+GNU Autotools~\cite{Autotools} configuration script, albeit with a lot of
 options for inapplicable installation directories removed to simplify the
 help message.
+
+The ``\texttt{check}'' Makefile target runs the IDSgrep test suite.  Some
+tests require the dictionary files and will be skipped if those are not
+present.  There is also a test that will use Valgrind~\cite{Valgrind} if
+available, to check for memory-related problems; if Valgrind is not found in
+the \texttt{PATH}, this test will be skipped.
+
+The \texttt{configure} script supports an \texttt{--enable-gcov} switch to
+enable meta-testing of the test suite's coverage.  This feature requires
+that the Gcov coverage analyser be installed.  To do a coverage analysis,
+run \texttt{configure} with \texttt{--enable-gcov} and any other desired
+options, then do \texttt{make clean} (necessary to be sure all object
+files are rebuilt with the coverage instrumentation) followed by
+\texttt{make check}.  Most people would not want to install an
+IDSgrep binary built under this option.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -342,12 +381,69 @@ following the structure described in KanjiVG whether it's what was intended
 or not.  As a result, not all entries in the dictionary will be right. 
 However, only a few are affected by this issue.
 
+As of March 2012, I (Matthew Skala, the author of IDSgrep) have become a
+member of the KanjiVG project and there is some possibility that KanjiVG's
+database design will change in a way that makes it easier to recover spatial
+organization for searching with IDSgrep.
+
 With the current versions of IDSgrep and KanjiVG, the KanjiVG-derived
 dictionary contains 6660 entries covering all the popularly-used Japanese
 kanji.  Note that the KanjiVG input file, and presumably the resulting
 format-converted dictionary, are covered by a Creative Commons
 Attribution--ShareAlike license, distinct from the GNU GPL applicable to
 IDSgrep itself.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Interface to EDICT2}
+
+Jim Breen's JMdict/EDICT project maintains a file called
+EDICT2~\cite{EDICT2} which is more like a traditional dictionary, with words
+and meanings, than a database of kanji.  Such dictionaries are not the
+primary target of IDSgrep and IDSgrep's query syntax is not perfectly suited
+to them.  However, planned future regular-expression matching features may
+make it more practical to search EDICT2 with IDSgrep, and even in the
+current version, there is some value in being able to do sub-character
+structural searches on multi-character words.
+
+If both EDICT2 and KanjiVG are available to the IDSgrep build system, it
+will invoke the \texttt{ed22eids} script and generate and install a
+dictionary file called \texttt{edict.eids}, which represents a database
+join of the two dictionaries.  A sample entry might look like this:
+\begin{verbatim}
+【明】,<明>⿰日月｟[みん] (n) Ming (dynasty of China)｠
+\end{verbatim}
+
+The head for the entire entry is the head from the EDICT2 entry.  Then the
+tree is a binary tree with a comma as the functor and the first child
+being the entire \texttt{kanjivg.eids} entry for the first character.  The
+second child represents the rest of the entry.  With a two-character or
+longer head, this child would also be a binary comma with the second
+character of the entry head as its first child.  In this way the characters
+of the entry head are all represented as left children of commas, forming a
+linked-list structure (much like a Prolog linked-list with commas instead of
+dots as the functors).  The final child at the bottom is a nullary node
+containing as its functor simply the rest of the EDICT2 entry.
+
+The rationale for this syntax is that it allows a relatively simple way of
+querying multi-character words in EDICT2 using the existing IDSgrep query
+types.  To find an exact match, just query the head (which will require head
+brackets and a semicolon if the query is more than one character long), as
+in \texttt{idsgrep -ded '<教育>;'}.  To search for the first few characters,
+commas can be imagined as separators (though their actual function is quite
+different) with a comma at the start and a question mark at the end, as in
+\texttt{idsgrep -ded ',教,育?'}.  These queries can be combined with the
+sub-character breakdown queries already supported by the KanjiVG-based
+dictionary.  For instance, \texttt{idsgrep -ded ',教,...|日月!,??'} will
+search for, and give definitions of, words of exactly two characters in
+which the first is \texttt{教} and the second character contains \texttt{日}
+or \texttt{月} anywhere.  The restriction to exactly two characters is
+accomplished by the sub-query ``\texttt{!,??}'', which fails to match on the
+binary comma that would be present at that point in a longer word.
+
+Since both EDICT2 and KanjiVG are under the Creative Commons
+Attribution--ShareAlike license, that license presumably also applies to the
+combined dictionary made from them.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -730,8 +826,8 @@ opening bracket would be expected, it is treated in one of three ways.
 \end{itemize}
 
 Here are all the characters that have sugary implicit brackets, with the
-brackets they imply:  {\ttfamily (;) (?) .!. ./. .=. .*. .@. [\&] [|] [⿰]
-[⿱] [⿴] [⿵] [⿶] [⿷] [⿸] [⿹] [⿺] [⿻] \{⿲\} \{⿳\}}
+brackets they imply:  {\ttfamily (;) (?) .!. ./. .=. .*. .@. [\&] [,]
+[|] [⿰] [⿱] [⿴] [⿵] [⿶] [⿷] [⿸] [⿹] [⿺] [⿻] \{⿲\} \{⿳\}}
 
 Note that the sugary and syrupy implications of a character are only
 relevant when the character occurs where an opening bracket of some
@@ -992,7 +1088,7 @@ $(a+b)+c$ equivalent to $a+(b+c)$, and for that reason it is called
 ``a'' for ``associative.''
 The verbose ASCII name for ``\texttt{.@.}'' is ``\texttt{.assoc.}.''
 
-This feature is not yet implemented in version 0.1.
+This feature is not yet implemented in version 0.2.
 
 \subsection{Regular expression matching}
 

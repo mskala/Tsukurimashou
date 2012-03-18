@@ -249,7 +249,7 @@ For instance, ASCII semicolon will be interpreted as if it appeared in ASCII
 parentheses, and will thus become the functor of a nullary node.
 The complete list of characters that have sugary implicit brackets, with
 the brackets they imply, is:
-(;) (?) .!. ./. .=. .*. .@. [&] [|]
+(;) (?) .!. ./. .=. .*. .@. [&] [,] [|]
 [<U+2FF0>] [<U+2FF1>] [<U+2FF4>] [<U+2FF5>] [<U+2FF6>] [<U+2FF7>]
 [<U+2FF8>] [<U+2FF9>] [<U+2FFA>] [<U+2FFB>]
 {<U+2FF2>} {<U+2FF3>}.
@@ -309,9 +309,58 @@ is its only child), then it matches if and only if
 .I x
 matches some subtree of the input.
 .IP \(bu 4
+If the pattern is
+.RI .*. "x" ,
+then it matches if and only if some permutation of the children of
+.I x
+(at the root level only) will cause it to match the input; that is, the
+children are allowed to match in any order.
+.IP \(bu 4
+If the pattern is
+.RI .!. "x" ,
+then it matches if and only if
+.I x
+does
+.I not
+match the input.
+.IP \(bu 4
+If the pattern is
+.RI [&] "xy" ,
+then it matches if and only if both
+.I x
+and
+.I y
+match the input.
+.IP \(bu 4
+If the pattern is
+.RI [|] "xy" ,
+then it matches if and only if
+.I x
+matches the input or
+.I y
+matches the input.
+.IP \(bu 4
+If the pattern is
+.RI .=. "x"
+and if
+.I x
+and the input both have heads, then it matches if and only if those heads
+are identical.
+Otherwise,
+.RI .=. "x"
+matches if and only if
+.I x
+and the input have identical functors, identical arity, and all their
+corresponding children match.
+The effect of this operation is to ignore any
+special matching semantics of
+.IR x 's
+functor, should it happen to be one of the special values mentioned in these
+rules.
+.IP \(bu 4
 Otherwise, the pattern matches the input if and only if its functor and
-arity are the same as the input's, and all the children of the pattern match
-the corresponding children of the input recursively.
+arity are the same as the input's and all the children of the pattern match
+the corresponding children of the input.
 .
 .SH FILES
 Individual sites may well have a different set of dictionaries installed,
@@ -345,6 +394,23 @@ and the format translator that generates this file only sort
 of works.
 As a result, decompositions in this database may be incomplete,
 idiosyncratic, or even flat-out wrong.
+.RE
+.I @flat_dictdir@/edict.eids
+.RS
+Japanese-English dictionary of words and their meanings, based on
+EDICT2, with character decompositions from KanjiVG.
+This allows searching for multi-character words using partial descriptions
+of the individual characters.
+The EDICT2 entries are translated to EIDS format such that the EDICT2 head
+(typically the word being defined) is the head of the EIDS; below that there
+follows a chain of binary comma nodes each having a character of the word as
+its left child and the rest of the chain as the right child.
+These left children are decomposed according to the KanjiVG database.
+The final right child is a nullary node containing the remainder of the
+EDICT2 entry, including pronunciation, part of speech, definition, and any
+other tags.
+For example, an entry that defined \(lqXYZ\(rq as \(lqdefinition\(rq might
+be encoded as \(lq<XYZ>,X,Y,Z(definition)\(rq.
 .
 .SH ENVIRONMENT
 .IP IDSGREP_DICTDIR
@@ -387,10 +453,11 @@ If not, see <http://www.gnu.org/licenses/>.
 .PP
 Please note that dictionaries prepared for use with IDSgrep may be subject to
 their own copyright terms differing from those of IDSgrep itself.
-In particular, the IDSgrep distribution contains code to build a dictionary
-based on Ulrich Apel's KanjiVG project.
-That dictionary would be subject to his copyright and the Creative Commons 
-Attribution-Share Alike 3.0 Licence.
+In particular, the IDSgrep distribution contains code to build dictionaries
+based on KanjiVG and EDICT2.
+The input files for those are subject to the Creative Commons 
+Attribution-Share Alike 3.0 Licence, and their authors might make a
+copyright claim on the resulting dictionaries.
 The Tsukurimashou project also builds an EIDS-format dictionary for
 use with IDSgrep, but happens to use the same copyright and GPL 3 licensing
 terms as IDSgrep anyway.

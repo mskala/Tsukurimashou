@@ -7,4 +7,4 @@ Summary of configuration options:
    ./configure --help
 
 For more details, see idsgrep.pdf , or (after configuration)
-the man page idsgrep.1 .
+the man page idsgrep.1.

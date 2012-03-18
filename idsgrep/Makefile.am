@@ -53,7 +53,9 @@ MAINTAINERCLEANFILES = idsgrep.pdf
 
 dict_DATA = $(MAYBE_EDICTDATA) $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)
 
-dist_noinst_SCRIPTS = ed22eids kvg2eids
+dist_noinst_SCRIPTS = \
+  ed22eids kvg2eids \
+  $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
 
 dist_pdf_DATA = $(MAYBE_DOCS)
 

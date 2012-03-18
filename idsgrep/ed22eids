@@ -21,7 +21,7 @@
 
 use utf8;
 
-$svnid='$Id: ed22eids 1223 2012-02-21 16:52:10Z mskala $';
+$svnid='$Id: ed22eids 1263 2012-03-17 23:50:47Z mskala $';
 
 # FIXME pass through copyright notices
 
@@ -42,6 +42,7 @@ while (<>) {
   s!/EntL[^/]+/!/!;
   if (m!^([^ ]+) ([^ ]+) /(.*)/$!) {
     ($kanji,$kana,$defn)=($1,$2,$3);
+    $kanji=~s/\(P\)$//;
     foreach $ksub (split(';',$kanji)) {
       print "【$ksub】,".join(',',
             map {(defined $kvg{$_})?$kvg{$_}:$_;} split('',$ksub)).

@@ -41,6 +41,8 @@ vardef tsu_accent.acute =
   replace_strokep(0)(insert_nodes(oldp)(0.5));
   set_bosize(0,80);
   set_botip(0,1,1);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (-20,150));
 enddef;
 
 vardef tsu_accent.breve =
@@ -49,6 +51,8 @@ vardef tsu_accent.breve =
       (500,vmetric(0.82))..
       {up}(500+1.3*tsu_punct_size,vmetric(0.95)),
     (1,1)--(1.9,1.9)--(1,1));
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,150));
 enddef;
 
 vardef tsu_accent.caron =
@@ -59,6 +63,8 @@ vardef tsu_accent.caron =
   (2,2)--(1.4,1.4)--(1.4,1.4));
   set_bosize(0,80);
   set_botip(0,1,1);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,150));
 enddef;
 
 vardef tsu_accent.caron_comma =
@@ -84,6 +90,8 @@ vardef tsu_accent.circumflex =
     (1.6,1.6)--(2,2)--(1.6,1.6));
   set_bosize(0,80);
   set_botip(0,1,1);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,150));
 enddef;
 
 vardef tsu_accent.commabelow =
@@ -97,6 +105,8 @@ vardef tsu_accent.dotabove =
     shifted ((500,vmetric(0.88))
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,150));
 enddef;
 
 vardef tsu_accent.grave =
@@ -107,6 +117,8 @@ vardef tsu_accent.grave =
   replace_strokep(0)(insert_nodes(oldp)(0.5));
   set_bosize(0,80);
   set_botip(0,1,1);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (20,150));
 enddef;
 
 vardef tsu_accent.heavy_metal_umlaut =
@@ -119,6 +131,8 @@ vardef tsu_accent.heavy_metal_umlaut =
     shifted ((520+1.5*tsu_punct_size,vmetric(0.88))
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,210));
 enddef;
 
 vardef tsu_accent.hungarian_umlaut =
@@ -136,6 +150,8 @@ vardef tsu_accent.hungarian_umlaut =
   replace_strokep(0)(insert_nodes(oldp)(0.5));
   set_bosize(0,80);
   set_botip(0,1,1);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,180));
 enddef;
 
 vardef tsu_accent.macron =
@@ -144,6 +160,8 @@ vardef tsu_accent.macron =
       (500+1.75*tsu_punct_size,vmetric(0.82)),
     (2,2)--(2,2));
   set_bosize(0,80);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,120));
 enddef;
 
 vardef tsu_accent.ringabove =
@@ -158,6 +176,8 @@ vardef tsu_accent.ringabove =
     shifted ((500,vmetric(0.83-0.03*mincho)-10)
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,170));
 enddef;
 
 vardef tsu_accent.slash =
@@ -177,6 +197,8 @@ vardef tsu_accent.tilde =
       (1.7,1.7)--(0.7,2.7));
   replace_strokep(0)(insert_nodes(oldp)(0.5,3.5));
   set_bosize(0,80);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,150));
 enddef;
 
 vardef tsu_accent.umlaut =
@@ -189,6 +211,8 @@ vardef tsu_accent.umlaut =
     shifted ((520+1.5*tsu_punct_size,vmetric(0.88))
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  push_anchor(anc_upper_accent,
+    accent_default[anc_upper_accent] shifted (0,150));
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
