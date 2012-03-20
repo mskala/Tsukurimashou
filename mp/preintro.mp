@@ -1,6 +1,6 @@
 %
 % Early shared code for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TSUKURIMASHOU PRE-INTRO
+% INFRASTRUCTURE
 
 % When I say nonstopmode I mean nonstopmode, dammit!
 nonstopmode;
@@ -47,6 +47,27 @@ vardef inclusion_lock(suffix fn) =
   boolean already_included.fn;
   already_included.fn:=true;
 enddef;
+
+% late inclusion
+numeric late_include_count;
+late_include_count:=0;
+string late_include[];
+
+vardef include_late(expr fn) =
+  late_include_count:=late_include_count+1;
+  late_include[late_include_count]:=fn;
+enddef;
+
+vardef do_late_includes =
+  for i:=1 upto late_include_count:
+    scantokens ("input " & late_include[i]);
+  endfor;
+  late_include_count:=0;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% FONT PARAMETER DEFAULTS
 
 % basic brush definition
 transform tsu_brush_xf;

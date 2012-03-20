@@ -44,6 +44,8 @@ input radical.mp;
 input rare.mp;
 input toprad.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grtwo.new =

@@ -41,6 +41,8 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grtwo.door =

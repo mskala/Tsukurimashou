@@ -1,6 +1,6 @@
 %
 % Unicode page 32 (Enclosed Alpha and Katakana) for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ input latin-intro.mp;
 input enclosed.mp;
 input katakana.mp;
 input numerals.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

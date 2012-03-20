@@ -1,5 +1,5 @@
 %
-% Unicode page 2f (Radicals and IDCs) for Tsukurimashou
+% Unicode page 2F (Radicals and IDCs) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -47,6 +47,8 @@ input leftrad.mp;
 input radical.mp;
 input rightrad.mp;
 input toprad.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

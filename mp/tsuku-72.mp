@@ -40,6 +40,8 @@ input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grthree.thing =

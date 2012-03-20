@@ -1,5 +1,5 @@
 %
-% Unicode page 6e (Kanji) for Tsukurimashou
+% Unicode page 6E (Kanji) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -42,6 +42,8 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

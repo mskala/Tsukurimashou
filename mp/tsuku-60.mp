@@ -47,6 +47,8 @@ input leftrad.mp;
 input radical.mp;
 input rare.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grtwo.think =

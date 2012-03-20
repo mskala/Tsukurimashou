@@ -1,5 +1,5 @@
 %
-% Unicode page 8e (Kanji) for Tsukurimashou
+% Unicode page 8E (Kanji) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -40,6 +40,8 @@ input gradenine.mp;
 input gradeone.mp;
 input radical.mp;
 input rare.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

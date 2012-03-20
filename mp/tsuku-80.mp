@@ -45,6 +45,8 @@ input gradetwo.mp;
 input radical.mp;
 input toprad.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grtwo.consider =

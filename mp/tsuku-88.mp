@@ -38,6 +38,8 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % kou/i(ku) "go"

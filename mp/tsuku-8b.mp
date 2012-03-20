@@ -1,6 +1,6 @@
 %
-% Unicode page 8b (Kanji) for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Unicode page 8B (Kanji) for Tsukurimashou
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ input buildkanji.mp;
 input gradeone.mp;
 input gradetwo.mp;
 input radical.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -1,5 +1,5 @@
 %
-% Unicode page 2e (Radicals Supplement) for Tsukurimashou
+% Unicode page 2E (Radicals Supplement) for Tsukurimashou
 % Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -45,6 +45,8 @@ input leftrad.mp;
 input radical.mp;
 input rightrad.mp;
 input toprad.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -1,5 +1,5 @@
 %
-% Unicode page 7d (Kanji) for Tsukurimashou
+% Unicode page 7D (Kanji) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -41,6 +41,8 @@ input gradeone.mp;
 input gradesix.mp;
 input gradetwo.mp;
 input radical.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

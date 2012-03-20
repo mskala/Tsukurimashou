@@ -37,6 +37,8 @@ input buildkanji.mp;
 input gradeone.mp;
 input radical.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grthree.sharpen =

@@ -1,6 +1,6 @@
 %
-% Unicode page 5d (Kanji) for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Unicode page 5D (Kanji) for Tsukurimashou
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

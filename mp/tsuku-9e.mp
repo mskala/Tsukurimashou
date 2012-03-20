@@ -1,5 +1,5 @@
 %
-% Unicode page 9e (Kanji) for Tsukurimashou
+% Unicode page 9E (Kanji) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -40,6 +40,8 @@ input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
 input toprad.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

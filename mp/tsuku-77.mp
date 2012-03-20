@@ -39,6 +39,8 @@ input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grtwo.know =

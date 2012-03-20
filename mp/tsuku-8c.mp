@@ -1,5 +1,5 @@
 %
-% Unicode page 8c (Kanji) for Tsukurimashou
+% Unicode page 8C (Kanji) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -38,6 +38,8 @@ input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

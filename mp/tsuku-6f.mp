@@ -1,6 +1,6 @@
 %
-% Unicode page 6f (Kanji) for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Unicode page 6F (Kanji) for Tsukurimashou
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ input buildkanji.mp;
 input gradefour.mp;
 input leftrad.mp;
 input toprad.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

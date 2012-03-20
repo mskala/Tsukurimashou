@@ -44,6 +44,8 @@ input katakana.mp;
 input latin.mp;
 input leftrad.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % COMBINING DOTS FOR I CHING

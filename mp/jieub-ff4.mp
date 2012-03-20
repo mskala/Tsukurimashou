@@ -1,6 +1,6 @@
 %
 % Unicode page FF4 (alternate lead jamo) for Jieubsida
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@ beginfont
 input hangul.mp;
 input jamo-basic.mp;
 input jamo-extra.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

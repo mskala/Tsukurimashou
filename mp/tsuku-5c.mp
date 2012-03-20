@@ -1,5 +1,5 @@
 %
-% Unicode page 5c (Kanji) for Tsukurimashou
+% Unicode page 5C (Kanji) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -44,6 +44,8 @@ input gradetwo.mp;
 input radical.mp;
 input rare.mp;
 input toprad.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

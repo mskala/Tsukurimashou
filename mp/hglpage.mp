@@ -1,6 +1,6 @@
 %
 % Generic Unicode page (precomposed hangul syllables) for Jieubsida
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input hangul.mp;
+
+do_late_includes;
 
 % non-auto dep (accessed through code table)
 input jamo-basic.mp;

@@ -1,5 +1,5 @@
 %
-% Unicode page 9b (Kanji) for Tsukurimashou
+% Unicode page 9B (Kanji) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -37,6 +37,8 @@ input bottomrad.mp;
 input buildkanji.mp;
 input gradeone.mp;
 input gradetwo.mp;
+
+do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

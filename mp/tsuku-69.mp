@@ -43,6 +43,8 @@ input radical.mp;
 input rare.mp;
 input toprad.mp;
 
+do_late_includes;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % this is "sama," the honorific, also "you" as in "you ni"
