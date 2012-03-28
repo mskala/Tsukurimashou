@@ -198,7 +198,7 @@ AM_INIT_AUTOMAKE([foreign check-news dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1230 2012-02-26 03:25:25Z mskala $])
+AC_REVISION([$Id: configure.ac 1288 2012-03-28 02:43:07Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["February 25, 2012"])
 AM_SILENT_RULES
@@ -231,7 +231,8 @@ AC_ARG_VAR([MPOST],[MetaPost])
 AC_PATH_PROG([MPOST],[mpost])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
-AC_PATH_PROGS([PROLOG],[pl swipl eclipse gprolog],[no])
+AC_PATH_PROGS([PROLOG],[pl swipl eclipse gprolog],[])
+AC_PATH_PROG([T1ASM],[t1asm])
 AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
 AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
@@ -476,6 +477,9 @@ AS_IF([test "x$MPOST" = "x"],
 AS_IF([test "x$PERL" = "x"],
   [missing_perl=yes
    can_core=no])
+AS_IF([test "x$T1ASM" = "x"],
+  [missing_t1asm=yes
+   can_core=no])
 AS_IF([test "$tsu_prolog_style" = "unknown"],
   [missing_prolog=yes
    can_core=no])
@@ -684,6 +688,8 @@ AS_IF([test "$can_core" = "no"],
      [AS_ECHO(["   Perl                  http://www.perl.org/"])])
    AS_IF([test "$missing_prolog" = "yes"],
      [AS_ECHO(["   logic programming     (should be built-in, did you override?)"])])
+   AS_IF([test "$missing_t1asm" = "yes"],
+     [AS_ECHO(["   T1 Utils              http://www.lcdf.org/~eddietwo/type/#t1utils"])])
    AS_IF([test '!' "$ac_cv_sys_long_file_names" = "yes"],
      [AS_ECHO(["   long filename support"])])
    AS_ECHO(["Without the above it is not possible to build Tsukurimashou at all."])
