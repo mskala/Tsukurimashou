@@ -214,7 +214,12 @@ EXTRA_DIST:=README.en README.jp \
   $(filter-out $(wildcard $(mvp)/mp/jieub-[a-d][0-9a-f].mp),\
     $(wildcard $(mvp)/mp/*.mp))
 
-noinst_PROGRAMS = kerner/kerner
+noinst_PROGRAMS = kerner/kerner t1asm/t1asm
+
+kerner_kerner_SOURCES = kerner/kerner.c
+t1asm_t1asm_SOURCES = \
+  t1asm/t1asm.c t1asm/clp.c t1asm/clp.h t1asm/t1lib.c t1asm/t1lib.h
+
 dist_noinst_SCRIPTS = \
   hamlog/hamlog \
   hamlog/select.hl hamlog/swi-ham.pl hamlog/ecl-ham.ecl hamlog/gp-ham.pl \
@@ -244,7 +249,7 @@ genjimon/genjimon.zip:
 # MAKE CLEAN
 
 MOSTLYCLEANFILES = \
-  *~ doc/*~ fea/*~ kerner/*~ m4/*~ mp/*~ pe/*~ \
+  *~ doc/*~ fea/*~ kerner/*~ m4/*~ mp/*~ pe/*~ t1asm/*~ \
   bdf/*.bdf \
   doc/*.aux doc/*.log doc/*.out doc/*-draft.tex doc/*.toc doc/*.xdv \
   doc/kanjichart.tex \
@@ -576,7 +581,7 @@ ALLPSFONTS=$(FWPSFONTS) $(PSPSFONTS)
 ALLPRFS=$(foreach st,$(PROOF_STYLES),$(call PAGEFILES,prf/,$(st),.prf))
 
 pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
-  tools/livecode tools/mp2pf
+  tools/livecode tools/mp2pf t1asm/t1asm
 	$(AM_V_at)CODESTAMP=`$(PERL) -CSD $(mvp)/tools/livecode \
 	  $(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),$(mvp)/mp/$(fn)) \
 	  | $(CHECKSUM)` ; \
@@ -595,7 +600,7 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	  (cd $*.tmp ; $(expect_start)$(MPOST) $*.mp$(expect_end) ) ; \
 	  $(TSU_V_NAPERL) \
 	  $(PERL) -CSD $(mvp)/tools/mp2pf $*.tmp/$* 2> /dev/null ; \
-	  (cd $*.tmp ; $(T1ASM) -b $*.p $*.pfb ) ; \
+	  (cd $*.tmp ; ../t1asm/t1asm -b $*.p $*.pfb ) ; \
 	  if test -r $*.tmp/$*.pfb ; then \
 	    mv -f $*.tmp/$*.pfb pfbtmp/ ; \
 	    echo "$$CODESTAMP" > sum/$*.sum ; \
@@ -611,7 +616,6 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	    rm -rf $*.tmp ; \
 	  fi ; \
 	fi
-
 
 pfb/%.pfb: pfbtmp/%.pfb pfb/.dirstamp sum/.dirstamp pe/rmo.pe tools/livecode
 	$(AM_V_at)CODESTAMP=`$(PERL) -CSD $(mvp)/tools/livecode \

@@ -438,8 +438,15 @@ sub flush_pfb {
 
 # Main program
 
-&mess('This is mp2pf, ver. 0.40 '
-  .'(a converter from MP EPSes to PS Type 1 font)');
+$tsuversion='UNKNOWN';
+open(MAKEFILE,'Makefile');
+while (<MAKEFILE>) {
+  $tsuversion=$1 if /^VERSION\s*=\s*(\S+)/;
+}
+close(MAKEFILE);
+
+&mess("This is mp2pf from Tsukurimashou $tsuversion "
+  .'(converts MP EPSes to PS Type 1 fonts)');
 
 $NAME=shift;
 

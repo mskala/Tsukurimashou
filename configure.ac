@@ -198,7 +198,7 @@ AM_INIT_AUTOMAKE([foreign check-news dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1293 2012-03-29 02:06:26Z mskala $])
+AC_REVISION([$Id: configure.ac 1294 2012-03-29 04:08:55Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["February 25, 2012"])
 AM_SILENT_RULES
@@ -209,6 +209,7 @@ AM_SILENT_RULES
 #
 AC_PROG_CC
 AC_PROG_CC_C_O
+AC_PROG_CPP
 AC_PROG_GREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
@@ -230,7 +231,6 @@ AC_PATH_PROG([MPOST],[mpost])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
 AC_PATH_PROGS([PROLOG],[pl swipl eclipse gprolog],[])
-AC_PATH_PROG([T1ASM],[t1asm])
 AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
 AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
@@ -246,21 +246,25 @@ AC_CHECK_LIB([m], [pow])
 #
 # Checks for header files.
 #
-AC_CHECK_HEADERS([limits.h stdlib.h string.h])
+AC_CHECK_HEADERS([fcntl.h limits.h stdlib.h string.h])
+AX_CREATE_STDINT_H
 #
 ############################################################################
 #
 # Checks for typedefs, structures, and compiler characteristics.
 #
+AC_TYPE_INT64_T
 AC_FUNC_OBSTACK
+AC_TYPE_UINT16_T
+AC_TYPE_UINT64_T
 #
 ############################################################################
 #
 # Checks for library functions.
 #
+AC_CHECK_FUNCS([memmove])
 AC_CHECK_FUNCS([pow])
-AC_CHECK_FUNCS([strdup])
-AC_CHECK_FUNCS([strstr])
+AC_CHECK_FUNCS([strchr strdup strerror strrchr strstr strtol strtoul])
 #
 ############################################################################
 #
@@ -472,9 +476,6 @@ AS_IF([test "x$MPOST" = "x"],
 AS_IF([test "x$PERL" = "x"],
   [missing_perl=yes
    can_core=no])
-AS_IF([test "x$T1ASM" = "x"],
-  [missing_t1asm=yes
-   can_core=no])
 AS_IF([test "$tsu_prolog_style" = "unknown"],
   [missing_prolog=yes
    can_core=no])
@@ -681,8 +682,6 @@ AS_IF([test "$can_core" = "no"],
      [AS_ECHO(["   Perl                  http://www.perl.org/"])])
    AS_IF([test "$missing_prolog" = "yes"],
      [AS_ECHO(["   logic programming     (should be built-in, did you override?)"])])
-   AS_IF([test "$missing_t1asm" = "yes"],
-     [AS_ECHO(["   T1 Utils              http://www.lcdf.org/~eddietwo/type/#t1utils"])])
    AS_IF([test '!' "$ac_cv_sys_long_file_names" = "yes"],
      [AS_ECHO(["   long filename support"])])
    AS_ECHO(["Without the above it is not possible to build Tsukurimashou at all."])

@@ -1,0 +1,17 @@
+This directory contains a copy of the t1asm utility, originally by
+I. Lee Hetherington, with further development by Eddie Kohler.  This is
+part of version 1.37 the t1utils package, which is available from:
+   http://www.lcdf.org/~eddietwo/type/#t1utils
+
+For general use, I recommend getting and installing that package.  This
+bundled copy of t1asm is intended just for building Tsukurimashou, so that
+there'll be one less dependency for Tsukurimashou builders to worry about.
+Accordingly, it's integrated into the Tsukurimashou build system, and the
+Tsukurimashou build will not install it when Tsukurimashou is installed.
+
+Files in this directory have their own copyrights separate from
+Tsukurimashou's; see the individual files for more information on
+licensing, and contact information for the authors.
+
+Matthew Skala
+mskala@ansuz.sooke.bc.ca
