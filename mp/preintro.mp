@@ -36,8 +36,11 @@
 nonstopmode;
 def errorstopmode = nonstopmode enddef;
 
-% load library
-input type1.mp;
+% in fact we are *never* "generating"
+generating:=0;
+
+% load library from METATYPE1
+input tsufb.mp;
 
 % file inclusion gatekeeper
 vardef inclusion_lock(suffix fn) =

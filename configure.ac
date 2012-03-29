@@ -198,7 +198,7 @@ AM_INIT_AUTOMAKE([foreign check-news dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1288 2012-03-28 02:43:07Z mskala $])
+AC_REVISION([$Id: configure.ac 1293 2012-03-29 02:06:26Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["February 25, 2012"])
 AM_SILENT_RULES
@@ -225,8 +225,6 @@ AC_PATH_PROG([FONTFORGE],[fontforge])
 AC_PATH_TOOL([GDB],[gdb])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
-AC_ARG_VAR([MKFONT1],[MetaType1 (mkfont1 utility from mtype13 distribution)])
-AC_PATH_PROG([MKFONT1],[mkfont1])
 AC_ARG_VAR([MPOST],[MetaPost])
 AC_PATH_PROG([MPOST],[mpost])
 AC_ARG_VAR([PERL],[Perl])
@@ -464,9 +462,6 @@ AS_IF([test "x$FONTFORGE" = "x" || test '!' -r "$FONTFORGE"],
 AS_IF([test "x$_cv_gnu_make_command" = "x"],
   [missing_gmake=yes
    can_core=no])
-AS_IF([test "x$MKFONT1" = "x"],
-  [missing_mkfont1=yes
-   can_core=no])
 AS_IF([test "x$MPOST" = "x"],
   [missing_mpost=yes
    can_core=no],
@@ -680,8 +675,6 @@ AS_IF([test "$can_core" = "no"],
      [AS_ECHO(["   Fontforge             http://fontforge.sourceforge.net/"])])
    AS_IF([test "$missing_gmake" = "yes"],
      [AS_ECHO(["   GNU make (others won't work)   http://www.gnu.org/software/make/"])])
-   AS_IF([test "$missing_mkfont1" = "yes"],
-     [AS_ECHO(["   MetaType1 (mtype13)   http://www.ctan.org/tex-archive/systems/unix/mtype13"])])
    AS_IF([test "$missing_mpost" = "yes"],
      [AS_ECHO(["   MetaPost              http://foundry.supelec.fr/gf/project/metapost/"])])
    AS_IF([test "$missing_perl" = "yes"],

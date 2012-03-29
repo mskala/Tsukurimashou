@@ -4,7 +4,7 @@
 # appear above this note in the generated Makefile.in, applies to the
 # portions of the generated Makefile.in that come from automake.
 # Matthew Skala's copyright notice, below, applies to the portions that are
-# his work.  Users of the composite file must comply with both notices.
+# his work.  Distributors of the composite file must comply with both.
 
 #
 # Makefile for Tsukurimashou
@@ -223,7 +223,7 @@ dist_noinst_SCRIPTS = \
   tools/make-ass tools/make-book tools/make-cfghl tools/make-fea \
   tools/make-flog tools/make-gpos tools/make-hglpages tools/make-kchart \
   tools/make-kddata tools/make-name tools/make-proof \
-  tools/mpdep tools/progress \
+  tools/mp2pf tools/mpdep tools/progress \
   txt/jnames.txt
 
 dist_otf_DATA = \
@@ -576,7 +576,7 @@ ALLPSFONTS=$(FWPSFONTS) $(PSPSFONTS)
 ALLPRFS=$(foreach st,$(PROOF_STYLES),$(call PAGEFILES,prf/,$(st),.prf))
 
 pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
-  tools/livecode
+  tools/livecode tools/mp2pf
 	$(AM_V_at)CODESTAMP=`$(PERL) -CSD $(mvp)/tools/livecode \
 	  $(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),$(mvp)/mp/$(fn)) \
 	  | $(CHECKSUM)` ; \
@@ -592,7 +592,10 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	  echo \
 	    "$(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),input $(fn);)" \
 	    > $*.tmp/$*.mp ; \
-	  (cd $*.tmp ; $(expect_start)$(MKFONT1) -s $*$(expect_end) ) ; \
+	  (cd $*.tmp ; $(expect_start)$(MPOST) $*.mp$(expect_end) ) ; \
+	  $(TSU_V_NAPERL) \
+	  $(PERL) -CSD $(mvp)/tools/mp2pf $*.tmp/$* 2> /dev/null ; \
+	  (cd $*.tmp ; $(T1ASM) -b $*.p $*.pfb ) ; \
 	  if test -r $*.tmp/$*.pfb ; then \
 	    mv -f $*.tmp/$*.pfb pfbtmp/ ; \
 	    echo "$$CODESTAMP" > sum/$*.sum ; \
@@ -604,8 +607,11 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	    && ( test '!' x$(findstring $*,$(ALLPRFS)) = x) ; then \
 	    mv -f $*.tmp/proof.prf prf/$*.prf ; \
 	  fi ; \
-	  rm -rf $*.tmp ; \
+	  if test "x$(KEEPTMP)" = "x" ; then \
+	    rm -rf $*.tmp ; \
+	  fi ; \
 	fi
+
 
 pfb/%.pfb: pfbtmp/%.pfb pfb/.dirstamp sum/.dirstamp pe/rmo.pe tools/livecode
 	$(AM_V_at)CODESTAMP=`$(PERL) -CSD $(mvp)/tools/livecode \
