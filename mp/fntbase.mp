@@ -4410,10 +4410,10 @@ enddef;
 def complete_pf_info =
  if unknown pf_info_set.DESIGN_SIZE: pf_info_designsize designsize; fi
  if unknown pf_info_set.VERSION: pf_info_version "0.000"; fi
- if unknown pf_info_set.AUTHOR: pf_info_author "Sam Body"; fi
+ if unknown pf_info_set.AUTHOR: pf_info_author "Unknown"; fi
  if unknown pf_info_set.CREATION_DATE: pf_info_creationdate; fi
- if unknown pf_info_set.FAMILY_NAME: pf_info_familyname "FontAnna"; fi
- if unknown pf_info_set.FONT_NAME: pf_info_fontname "FontAnna"; fi
+ if unknown pf_info_set.FAMILY_NAME: pf_info_familyname "Untitled"; fi
+ if unknown pf_info_set.FONT_NAME: pf_info_fontname "Untitled"; fi
  if unknown pf_info_set.ASCENDER: pf_info_ascender ascender; fi
  if unknown pf_info_set.DESCENDER: pf_info_descender descender; fi
  if unknown pf_info_set.ADL_ASCENDER:

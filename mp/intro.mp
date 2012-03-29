@@ -40,7 +40,10 @@ slang:=0;
 
 pf_info_quad 1000;
 pf_info_space 1000, 0, 0;
-pf_info_familyname "Tsukurimashou" & stylename;
+pf_info_familyname familyname;
+pf_info_fontname
+  (familyname & stylename & "Subfont"),
+  (familyname & " " & stylename & " Subfont");
 pf_info_fixedpitch true;
 pf_info_capheight 900;
 pf_info_xheight 585;

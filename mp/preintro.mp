@@ -40,7 +40,7 @@ def errorstopmode = nonstopmode enddef;
 generating:=0;
 
 % load library from METATYPE1
-input tsufb.mp;
+input fntbase.mp;
 
 % file inclusion gatekeeper
 vardef inclusion_lock(suffix fn) =
@@ -95,7 +95,8 @@ boolean sharp_corners;
 sharp_corners:=false;
 
 % for naming the font
-string stylename;
+string familyname,stylename;
+familyname:="Tsukurimashou";
 stylename:="";
 
 % brush option override
