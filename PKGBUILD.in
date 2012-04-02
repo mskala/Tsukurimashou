@@ -1,0 +1,37 @@
+# Maintainer: Matthew Skala <@PACKAGE_BUGREPORT@>
+pkgname=@PACKAGE_TARNAME@
+pkgver=@pkgbuild_version@
+pkgrel=1
+pkgdesc="A family of OpenType fonts for Japanese, English, and Korean, made with METAFONT."
+arch=('any')
+url="@PACKAGE_URL@"
+license=('GPL3')
+groups=()
+depends=()
+makedepends=('expect' 'fontforge' 'grep' 'perl' 'swi-prolog' 'texlive-core')
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+# install=
+# changelog=
+source=("https://github.com/downloads/mskala/@PACKAGE_NAME@/$pkgname-$pkgver.zip"
+  'http://www.csse.monash.edu.au/~jwb/kanjidic2/kanjidic2.xml.gz')
+noextract=(kanjidic2.xml.gz)
+@checksum_type@s=('@distsum_tsuku@' '@distsum_kd@')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  ./configure --prefix=/usr --disable-ff-debug \
+    --enable-styles=all --enable-ot-features=all \
+    --with-kanjidic2=../kanjidic2.xml.gz
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}

@@ -95,6 +95,12 @@ vardef kanji.grthree.metropolis =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.play =
+  push_pbox_toexpand("kanji.grthree.play");
+  build_kanji.road_enclose(kanji.rare.swim);
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.proceed =
   push_pbox_toexpand("kanji.grthree.proceed");
   build_kanji.road_enclose(kanji.radical.old_bird);
@@ -134,6 +140,12 @@ endtsuglyph;
 % sin/susu "proceed"
 begintsuglyph("uni9032",50);
   kanji.grthree.proceed;
+  tsu_render;
+endtsuglyph;
+
+% aso "play"
+begintsuglyph("uni904A",74);
+  kanji.grthree.play;
   tsu_render;
 endtsuglyph;
 

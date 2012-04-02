@@ -198,7 +198,7 @@ AM_INIT_AUTOMAKE([foreign check-news dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1294 2012-03-29 04:08:55Z mskala $])
+AC_REVISION([$Id: configure.ac 1297 2012-03-29 20:31:15Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["February 25, 2012"])
 AM_SILENT_RULES
@@ -415,7 +415,7 @@ esac;
 AS_IF([test "$tsu_prolog_style" = "unknown" \
   && test '!' "x$with_prolog" = "x$PROLOG"],[
 case "$PROLOG" in #(
-  *eclipse*)
+  *eclipse*) :
     PROLOG="$PERL ./hamlog"
     tsu_prolog_style=hamlog
     eclipse_prolog_warn=yes
@@ -426,13 +426,13 @@ AS_IF([test "$tsu_prolog_style" = "unknown"],[
   prolog_version_result="`echo halt. | \
     $PROLOG -e 'get_flag(version,X),write(eclipse),write(X),halt.' 2>&1`"
   case "x$prolog_version_result" in #(((
-    *SWI-Prolog*)
+    *SWI-Prolog*) :
       tsu_prolog_style=swi ;;
-    *eclipse*)
+    *eclipse*) :
       tsu_prolog_style=eclipse ;;
-    *GNU\ Prolog*)
+    *GNU\ Prolog*) :
       tsu_prolog_style=gnu ;;
-    *Hamlog*)
+    *Hamlog*) :
       tsu_prolog_style=hamlog ;;
   esac;
 ])
@@ -449,7 +449,50 @@ AM_CONDITIONAL([COND_PROPORTIONAL], [test '!' "$enable_proportional" = no])
 AC_SUBST([enable_proportional])
 #
 AC_SUBST([enable_styles])
-
+#
+############################################################################
+#
+# Arch packaging
+#
+AC_MSG_CHECKING([whether we can make a PKGBUILD])
+know_distsums=yes
+case "x$CHECKSUM" in #((((
+  *sha256sum) :
+    checksum_type=sha256sum ;;
+  *sha1sum) :
+    checksum_type=sha1sum ;;
+  *md5sum) :
+    checksum_type=md5sum ;;
+  no) :
+    know_distsums=no ;;
+  esac;
+AS_IF([test '!' "x$know_distsums" = "xno"],
+  [AS_IF([test "x$with_kanjidic2" = "xno"],
+     [know_distsums=no],
+     [distsum_kd=`$CHECKSUM $with_kanjidic2 | sed 's/[ ]\+.*$//'`])
+   know_distsums=no
+   m4_foreach_w([tsucheckver],m4_expand([dnl
+0.1pre 0.1 0.2pre 0.2 0.3pre 0.3 0.4pre 0.4 0.5pre 0.5 dnl
+0.6pre 0.6 0.7pre 0.7 0.8pre 0.8 0.9pre 0.9 0.10pre 0.10 dnl
+0.11pre 0.11 0.12pre 0.12 0.13pre 0.13 0.14pre 0.14 0.15pre 0.15 dnl
+1.1pre 1.1 1.2pre 1.2 1.3pre 1.3 1.4pre 1.4 1.5pre 1.5 dnl
+1.6pre 1.6 1.7pre 1.7 1.8pre 1.8 1.9pre 1.9 1.10pre 1.10 dnl
+1.11pre 1.11 1.12pre 1.12 1.13pre 1.13 1.14pre 1.14 1.15pre 1.15 dnl
+2.1pre 2.1 2.2pre 2.2 2.3pre 2.3 2.4pre 2.4 2.5pre 2.5 dnl
+2.6pre 2.6 2.7pre 2.7 2.8pre 2.8 2.9pre 2.9 2.10pre 2.10 dnl
+2.11pre 2.11 2.12pre 2.12 2.13pre 2.13 2.14pre 2.14 2.15pre 2.15]),[
+   AS_IF([test -s tsukurimashou-tsucheckver.zip],
+     [pkgbuild_version=tsucheckver
+      distsum_tsuku=`$CHECKSUM tsukurimashou-tsucheckver.zip \
+        | sed 's/[ ]\+.*$//'`
+      know_distsums="yes, tsucheckver"])
+   ])])
+AC_SUBST([checksum_type])
+AC_SUBST([distsum_tsuku])
+AC_SUBST([distsum_kd])
+AC_SUBST([pkgbuild_version])
+AS_IF([test '!' "x$know_distsums" = "xno"],[AC_CONFIG_FILES([PKGBUILD])])
+AC_MSG_RESULT([$know_distsums])
 #
 ############################################################################
 #

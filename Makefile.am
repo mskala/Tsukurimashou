@@ -208,11 +208,14 @@ endif
 # FILENAMES FOR AUTOTOOLS
 
 EXTRA_DIST:=README.en README.jp \
+  PKGBUILD.in \
   doc/demo.tex doc/proofs.tex doc/usermanual.tex doc/bkstyle.tex \
   $(wildcard $(mvp)/fsc/*.fsc) \
   genjimon/genjimon.zip \
+  t1asm/README t1asm/t1asm.1 \
   $(filter-out $(wildcard $(mvp)/mp/jieub-[a-d][0-9a-f].mp),\
-    $(wildcard $(mvp)/mp/*.mp))
+    $(wildcard $(mvp)/mp/*.mp)) \
+  t1asm/README t1asm/t1asm.1
 
 noinst_PROGRAMS = kerner/kerner t1asm/t1asm
 
@@ -598,10 +601,12 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	    "$(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),input $(fn);)" \
 	    > $*.tmp/$*.mp ; \
 	  (cd $*.tmp ; $(expect_start)$(MPOST) $*.mp$(expect_end) ) ; \
+	  if $(GREP) -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
 	  $(TSU_V_NAPERL) \
-	  $(PERL) -CSD $(mvp)/tools/mp2pf $*.tmp/$* 2> /dev/null ; \
+	  $(PERL) -CSD $(mvp)/tools/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
 	  (cd $*.tmp ; ../t1asm/t1asm -b $*.p $*.pfb ) ; \
-	  if test -r $*.tmp/$*.pfb ; then \
+	  if test -r $*.tmp/$*.pfb \
+	    && $(GREP) -q 'output files written' $*.tmp/$*.log; then \
 	    mv -f $*.tmp/$*.pfb pfbtmp/ ; \
 	    echo "$$CODESTAMP" > sum/$*.sum ; \
 	  else \

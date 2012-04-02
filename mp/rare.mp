@@ -197,6 +197,13 @@ vardef kanji.rare.sun =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.swim =
+  push_pbox_toexpand("kanji.rare.swim");
+  build_kanji.level(build_kanji.flag_enclose(0.72,0.7)(
+    kanji.grone.child));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.walled_road =
   push_pbox_toexpand("kanji.rare.walled_road");
   push_stroke((200,740)--(770,740)..tension 1.2..(630,650)..(490,590),

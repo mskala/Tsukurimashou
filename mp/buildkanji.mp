@@ -279,6 +279,24 @@ vardef build_kanji.dotcliff_enclose(text contents) =
   expand_pbox;
 enddef;
 
+vardef build_kanji.flag_enclose(expr xs,ys)(text contents) =
+  push_pbox_toexpand("build_kanji.dotcliff_enclose");
+  % FIXME perl structure
+  build_kanji.lr(480,60)
+    (kanji.grtwo.direction)
+    (push_stroke((300,810)..tension 1.2..(220,600)..(110,480),
+       (1.6,1.6)--(1.4,1.4)--(1,1));
+     set_boserif(0,0,10);
+     push_stroke((100,680)--(780,680),(1.6,1.6)--(1.6,1.6));
+     set_boserif(0,1,9);
+     replace_strokep(0)(subpath
+       (0.01+xpart (oldp intersectiontimes get_strokep(-1)),1) of oldp);
+     tsu_xform(identity shifted (-500,0) xyscaled (xs,ys)
+         shifted (500,-20))
+       (contents));
+  expand_pbox;
+enddef;
+
 vardef build_kanji.gate_enclose(text contents) =
   perl_structure:=perl_structure&"['build_kanji.gate_enclose',";
   perl_structure:=perl_structure&"'eids.u2FF5.u9580.1_',";

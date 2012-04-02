@@ -183,6 +183,7 @@ AC_PROG_MAKE_SET
 AC_PROG_MKDIR_P
 AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
+AC_PATH_PROGS([CHECKSUM],[sha256sum sha1sum md5sum cksum wc],[no])
 AC_PATH_PROG([GZIP],[gzip])
 AC_PATH_PROG([ICONV],[iconv])
 AC_ARG_VAR([PERL],[Perl])
@@ -307,6 +308,80 @@ AC_MSG_RESULT([$with_tsuku_build])
 ])
 AM_CONDITIONAL([COND_TSUKU_BUILD], [test '!' "$with_tsuku_build" = no])
 AC_SUBST([with_tsuku_build])
+#
+############################################################################
+#
+# Arch packaging
+#
+AC_MSG_CHECKING([whether we can make a PKGBUILD])
+know_distsums=yes
+case "x$CHECKSUM" in #((((
+  *sha256sum) :
+    checksum_type=sha256sum ;;
+  *sha1sum) :
+    checksum_type=sha1sum ;;
+  *md5sum) :
+    checksum_type=md5sum ;;
+  no) :
+    know_distsums=no ;;
+  esac;
+AS_IF([test '!' "x$know_distsums" = "xno"],
+  [AS_IF([test "x$with_edict2" = "xno"],
+     [know_distsums=no],
+     [distsum_ed=`$CHECKSUM $with_edict2 | sed 's/[ ]\+.*$//'`])])
+AS_IF([test '!' "x$know_distsums" = "xno"],
+  [AS_IF([test "x$with_kanjivg" = "xno"],
+     [know_distsums=no],
+     [distsum_kvg=`$CHECKSUM $with_kanjivg | sed 's/[ ]\+.*$//'`])])
+AS_IF([test '!' "x$know_distsums" = "xno"],
+  [AS_IF([test "x$with_tsuku_build" = "xno"],
+     [know_distsums=no],
+     [know_distsums=no
+      m4_foreach_w([tsucheckver],m4_expand([dnl
+0.1pre 0.1 0.2pre 0.2 0.3pre 0.3 0.4pre 0.4 0.5pre 0.5 dnl
+0.6pre 0.6 0.7pre 0.7 0.8pre 0.8 0.9pre 0.9 0.10pre 0.10 dnl
+0.11pre 0.11 0.12pre 0.12 0.13pre 0.13 0.14pre 0.14 0.15pre 0.15 dnl
+1.1pre 1.1 1.2pre 1.2 1.3pre 1.3 1.4pre 1.4 1.5pre 1.5 dnl
+1.6pre 1.6 1.7pre 1.7 1.8pre 1.8 1.9pre 1.9 1.10pre 1.10 dnl
+1.11pre 1.11 1.12pre 1.12 1.13pre 1.13 1.14pre 1.14 1.15pre 1.15 dnl
+2.1pre 2.1 2.2pre 2.2 2.3pre 2.3 2.4pre 2.4 2.5pre 2.5 dnl
+2.6pre 2.6 2.7pre 2.7 2.8pre 2.8 2.9pre 2.9 2.10pre 2.10 dnl
+2.11pre 2.11 2.12pre 2.12 2.13pre 2.13 2.14pre 2.14 2.15pre 2.15]),[
+      AS_IF([test -s $with_tsuku_build/tsukurimashou-tsucheckver.zip],
+        [pkgbuild_tsu_version=tsucheckver
+  distsum_tsuku=`$CHECKSUM $with_tsuku_build/tsukurimashou-tsucheckver.zip \
+           | sed 's/[ ]\+.*$//'`
+         know_distsums="yes"])
+   ])])])
+AS_IF([test '!' "x$know_distsums" = "xno"],
+  [know_distsums=no
+   m4_foreach_w([idscheckver],m4_expand([dnl
+0.1pre 0.1 0.2pre 0.2 0.3pre 0.3 0.4pre 0.4 0.5pre 0.5 dnl
+0.6pre 0.6 0.7pre 0.7 0.8pre 0.8 0.9pre 0.9 0.10pre 0.10 dnl
+0.11pre 0.11 0.12pre 0.12 0.13pre 0.13 0.14pre 0.14 0.15pre 0.15 dnl
+1.1pre 1.1 1.2pre 1.2 1.3pre 1.3 1.4pre 1.4 1.5pre 1.5 dnl
+1.6pre 1.6 1.7pre 1.7 1.8pre 1.8 1.9pre 1.9 1.10pre 1.10 dnl
+1.11pre 1.11 1.12pre 1.12 1.13pre 1.13 1.14pre 1.14 1.15pre 1.15 dnl
+2.1pre 2.1 2.2pre 2.2 2.3pre 2.3 2.4pre 2.4 2.5pre 2.5 dnl
+2.6pre 2.6 2.7pre 2.7 2.8pre 2.8 2.9pre 2.9 2.10pre 2.10 dnl
+2.11pre 2.11 2.12pre 2.12 2.13pre 2.13 2.14pre 2.14 2.15pre 2.15]),[
+   AS_IF([test -s idsgrep-idscheckver.tar.gz],
+     [pkgbuild_version=idscheckver
+  distsum_idsgrep=`$CHECKSUM idsgrep-idscheckver.tar.gz \
+        | sed 's/[ ]\+.*$//'`
+      know_distsums="yes, idscheckver/$pkgbuild_tsu_version"])
+   ])])
+AC_SUBST([checksum_type])
+AC_SUBST([distsum_ed])
+AC_SUBST([distsum_kvg])
+AC_SUBST([distsum_tsuku])
+AC_SUBST([distsum_idsgrep])
+AC_SUBST([pkgbuild_tsu_version])
+AC_SUBST([pkgbuild_version])
+kanjivg_filename=`basename $with_kanjivg`
+AC_SUBST([kanjivg_filename])
+AS_IF([test '!' "x$know_distsums" = "xno"],[AC_CONFIG_FILES([PKGBUILD])])
+AC_MSG_RESULT([$know_distsums])
 #
 ############################################################################
 #

@@ -99,6 +99,17 @@ vardef kanji.grthree.release =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.tribe =
+  push_pbox_toexpand("kanji.grthree.tribe");
+  build_kanji.level(build_kanji.flag_enclose(0.8,0.8)(
+    kanji.grtwo.arrow;
+    replace_strokep(-4)(oldp shifted (-500,0)
+      xscaled 0.86 shifted (500,0));
+    replace_strokep(-3)(oldp shifted (-500,0)
+      xscaled 0.86 shifted (500,0))));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.decapitate =
@@ -232,6 +243,18 @@ endtsuglyph;
 % hou/kata "direction" or "how to do it"
 begintsuglyph("uni65B9",185);
   kanji.grtwo.direction;
+  tsu_render;
+endtsuglyph;
+
+% needed for "play"
+begintsuglyph("uni65BF",191);
+  kanji.rare.swim;
+  tsu_render;
+endtsuglyph;
+
+% zoku "tribe"
+begintsuglyph("uni65CF",207);
+  kanji.grthree.tribe;
   tsu_render;
 endtsuglyph;
 
