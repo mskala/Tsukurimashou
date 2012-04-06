@@ -590,6 +590,7 @@ foreach $file (@files) {
         $nxtlbl++;
       }
       s/\\/\\textbackslash{}/g;
+      s/\^/\\textasciicircum{}/g;
       s/_/\\_/g;
       s/%/\\%/g;
       s/#/\\#/g;
@@ -602,6 +603,7 @@ foreach $file (@files) {
     }
     
     s/\\/\\textbackslash{}/g;
+    s/\^/\\textasciicircum{}/g;
     s/%/\\%/g;
     s/#/\\#/g;
     s/&/\\&/g;
