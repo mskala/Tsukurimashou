@@ -253,13 +253,8 @@ cfg_char(O,C,P):- =(O,C),char_page(C,P).
 
 want_style_short(F,S,W,P):-
   family(FA),style(FA,SA),weight(WA),spacing(PA),
-%  lock_out_korean_kerning(FA,PA),
   want_style(FA,SA,WA,PA),
   short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P).
-
-% uncomment the call to this above if using an unpatched FontForge
-lock_out_korean_kerning(jieubsida,proportional):-!,fail.
-lock_out_korean_kerning(_FA,_PA).
 
 style_xlat(F,S,W,P,_X,FX,SX,WX,PX):-
   family(FA),style(FA,SA),weight(WA),spacing(PA),
@@ -377,8 +372,32 @@ char_unavailable(_C,_P).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-want_page(P):-
-  page(P),want_char_on_page(P).
+% configuration - pages
+
+% pages A0 through DF are only for Jieubsida
+want_page(jieubsida,P):-atom_final(P,pagea,_X),!.
+want_page(jieubsida,P):-atom_final(P,pageb,_X),!.
+want_page(jieubsida,P):-atom_final(P,pagec,_X),!.
+want_page(jieubsida,P):-atom_final(P,paged,_X),!.
+want_page(_F,P):-atom_final(P,pagea,_X),!,fail.
+want_page(_F,P):-atom_final(P,pageb,_X),!,fail.
+want_page(_F,P):-atom_final(P,pagec,_X),!,fail.
+want_page(_F,P):-atom_final(P,paged,_X),!,fail.
+
+% pages 2E, 2F, and 4E through 9F are for all but Jieubsida
+want_page(jieubsida,page2e):- !,fail.
+want_page(jieubsida,page2f):- !,fail.
+want_page(jieubsida,page4e):- !,fail.
+want_page(jieubsida,page4f):- !,fail.
+want_page(jieubsida,P):-atom_final(P,page5,_X),!,fail.
+want_page(jieubsida,P):-atom_final(P,page6,_X),!,fail.
+want_page(jieubsida,P):-atom_final(P,page7,_X),!,fail.
+want_page(jieubsida,P):-atom_final(P,page8,_X),!,fail.
+want_page(jieubsida,P):-atom_final(P,page9,_X),!,fail.
+
+% otherwise want any page that is defined for us or generic
+want_page(F,P):-page_exists(F,P),!.
+want_page(_F,P):-generic_family(G),page_exists(G,P),!.
 
 want_char_on_page(P):-
   char_page(C,P),want_char(C,P),!.

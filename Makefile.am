@@ -330,9 +330,14 @@ hamlog/config.hl: tools/make-cfghl \
 	  else \
 	    echo proportional_enabled:-fail. >> hamlog/config.hl ; \
 	  fi ; \
-	  ls $(mvp)/mp/ mp/ | \
-	  $(PERL) -CSD -ne \
-	    'print "page_exists(page$$1).\n" if /^[a-z]+-([0-9a-f]+)\.mp$$/' \
+	  echo 'generic_family($(DEFAULT_TOK)).' >> hamlog/config.hl ; \
+	  ( for a in a b c d; \
+	    do for b in 0 1 2 3 4 5 6 7 8 9 a b c d e f ; do \
+	      echo jieub-$$a$$b.mp ; done ; done ; \
+	    ls $(mvp)/mp/ mp/ ) | \
+	  $(PERL) -CSD -n \
+	    -e 'print "page_exists($$1,page$$2).\n"' \
+	    -e 'if /^([a-z]{3,7})-([0-9a-f]{2,3})\.mp$$/' \
 	    | sort | uniq >> hamlog/config.hl ; \
 	  $(PERL) -CSD -ne \
 	    'print "feature_exists($$1).\n" if /BEGINFEATURE ([a-z0-9_]+)/' \
@@ -387,11 +392,23 @@ jkstyle_xlat_script:=\
 makefile-vars.inc: \
   hamlog/config.hl hamlog/select.hl hamlog/jnames.hl $(HAMLOG_DEPS)
 	$(TSU_V_HAM)
+	$(AM_V_at)FAMILIES=`$(HAMLOG) 'FS' \
+	  'family(FL),short_name(FL,FS)' \
+	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER) \
+	  | sed s/page//` ; \
+	  echo FAMILIES=$$FAMILIES > makefile-vars.inc ; \
+	for f in $$FAMILIES; do \
+	  echo PAGES_$$f=`$(HAMLOG) 'P' \
+	    "short_name(F,$$f),page(P),want_char_on_page(P),want_page(F,P)" \
+	    hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER) \
+	    | sed s/page//` \
+	    >> makefile-vars.inc ; \
+	done
 	$(AM_V_at)echo PAGES=`$(HAMLOG) 'P' \
-	  'page_exists(P),want_page(P)' \
+	  "page_exists(Q,P),want_char_on_page(P)" \
 	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER) \
 	  | sed s/page//` \
-	  > makefile-vars.inc
+	  >> makefile-vars.inc
 	$(AM_V_at)echo OT_FEATURES=`$(HAMLOG) 'F' \
 	  'feature_exists(F),want_feature(F)' \
 	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER)` \
@@ -440,13 +457,13 @@ PFBDEPS=$(foreach term,\
 KANJIPAGES:=$(strip 2e 2f 4e 4f $(foreach hinib,5 6 7 8 9,\
   $(foreach lonib,0 1 2 3 4 5 6 7 8 9 a b c d e f,$(hinib)$(lonib) )))
 
-PAGEFILES=$(strip $(foreach page,$(PAGES),\
-  $(if $(filter-out jieub%,$(2))$(filter-out $(KANJIPAGES),$(page)),\
+PAGEFILES=$(strip $(foreach page,\
+  $(PAGES_$(firstword $(subst _,$(space),$(2)))),\
   $(if $(or $(wildcard $(mvp)/mp/$(DEFAULT_TOK)-$(page).mp),\
     $(wildcard $(mvp)/mp/$(firstword $(subst _,$(space),$(2)))-$(page).mp),\
     $(wildcard ./mp/$(DEFAULT_TOK)-$(page).mp),\
     $(wildcard ./mp/$(firstword $(subst _,$(space),$(2)))-$(page).mp)),\
-    $(1)$(subst _,-,$(2))-$(page)$(3)))))
+    $(1)$(subst _,-,$(2))-$(page)$(3))))
 
 makefile-pfb.inc: \
   makefile-vars.inc tools/mpdep mp/.hglstamp \
@@ -649,7 +666,7 @@ pfb: $(subst pfbtmp/,pfb/,$(ALLPSFONTS))
 chars.lst: hamlog/config.hl hamlog/select.hl $(HAMLOG_DEPS) $(MAYBE_KDDATA)
 	$(TSU_V_HAM)
 	$(AM_V_at)$(HAMLOG) 'C' \
-	  'page_exists(P),char_page(C,P),want_char(C,P)' \
+	  'page_exists(Q,P),char_page(C,P),want_char(C,P)' \
 	  hamlog/config.hl $(MAYBE_KDDATA) $(mvp)/hamlog/select.hl \
 	  $(HAMLOG_AFTER) > chars.lst
 
