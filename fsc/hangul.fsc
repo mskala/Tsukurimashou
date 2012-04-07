@@ -1,6 +1,6 @@
 #
 # OpenType features to support hangul
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,75 +59,75 @@
   uni1153.bug uni1154.bug uni1155.bug uni1156.bug uni1157.bug uni1158.bug
   uni1159.bug uni115A.bug uni115B.bug uni115C.bug uni115D.bug uni115E.bug
   uni115F.bug];
-@l1_lead_jamo=[uni1100.l1 uni1101.l1 uni1102.l1 uni1103.l1 uni1104.l1
-  uni1105.l1 uni1106.l1 uni1107.l1 uni1108.l1 uni1109.l1 uni110A.l1
-  uni110B.l1 uni110C.l1 uni110D.l1 uni110E.l1 uni110F.l1 uni1110.l1
-  uni1111.l1 uni1112.l1 uni1113.l1 uni1114.l1 uni1115.l1 uni1116.l1
-  uni1117.l1 uni1118.l1 uni1119.l1 uni111A.l1 uni111B.l1 uni111C.l1
-  uni111D.l1 uni111E.l1 uni111F.l1 uni1120.l1 uni1121.l1 uni1122.l1
-  uni1123.l1 uni1124.l1 uni1125.l1 uni1126.l1 uni1127.l1 uni1128.l1
-  uni1129.l1 uni112A.l1 uni112B.l1 uni112C.l1 uni112D.l1 uni112E.l1
-  uni112F.l1 uni1130.l1 uni1131.l1 uni1132.l1 uni1133.l1 uni1134.l1
-  uni1135.l1 uni1136.l1 uni1137.l1 uni1138.l1 uni1139.l1 uni113A.l1
-  uni113B.l1 uni113C.l1 uni113D.l1 uni113E.l1 uni113F.l1 uni1140.l1
-  uni1141.l1 uni1142.l1 uni1143.l1 uni1144.l1 uni1145.l1 uni1146.l1
-  uni1147.l1 uni1148.l1 uni1149.l1 uni114A.l1 uni114B.l1 uni114C.l1
-  uni114D.l1 uni114E.l1 uni114F.l1 uni1150.l1 uni1151.l1 uni1152.l1
-  uni1153.l1 uni1154.l1 uni1155.l1 uni1156.l1 uni1157.l1 uni1158.l1
-  uni1159.l1 uni115A.l1 uni115B.l1 uni115C.l1 uni115D.l1 uni115E.l1
-  uni115F.l1];
-@l2_lead_jamo=[uni1100.l2 uni1101.l2 uni1102.l2 uni1103.l2 uni1104.l2
-  uni1105.l2 uni1106.l2 uni1107.l2 uni1108.l2 uni1109.l2 uni110A.l2
-  uni110B.l2 uni110C.l2 uni110D.l2 uni110E.l2 uni110F.l2 uni1110.l2
-  uni1111.l2 uni1112.l2 uni1113.l2 uni1114.l2 uni1115.l2 uni1116.l2
-  uni1117.l2 uni1118.l2 uni1119.l2 uni111A.l2 uni111B.l2 uni111C.l2
-  uni111D.l2 uni111E.l2 uni111F.l2 uni1120.l2 uni1121.l2 uni1122.l2
-  uni1123.l2 uni1124.l2 uni1125.l2 uni1126.l2 uni1127.l2 uni1128.l2
-  uni1129.l2 uni112A.l2 uni112B.l2 uni112C.l2 uni112D.l2 uni112E.l2
-  uni112F.l2 uni1130.l2 uni1131.l2 uni1132.l2 uni1133.l2 uni1134.l2
-  uni1135.l2 uni1136.l2 uni1137.l2 uni1138.l2 uni1139.l2 uni113A.l2
-  uni113B.l2 uni113C.l2 uni113D.l2 uni113E.l2 uni113F.l2 uni1140.l2
-  uni1141.l2 uni1142.l2 uni1143.l2 uni1144.l2 uni1145.l2 uni1146.l2
-  uni1147.l2 uni1148.l2 uni1149.l2 uni114A.l2 uni114B.l2 uni114C.l2
-  uni114D.l2 uni114E.l2 uni114F.l2 uni1150.l2 uni1151.l2 uni1152.l2
-  uni1153.l2 uni1154.l2 uni1155.l2 uni1156.l2 uni1157.l2 uni1158.l2
-  uni1159.l2 uni115A.l2 uni115B.l2 uni115C.l2 uni115D.l2 uni115E.l2
-  uni115F.l2];
+@l1_lead_jamo=[uni1100.lj1 uni1101.lj1 uni1102.lj1 uni1103.lj1 uni1104.lj1
+  uni1105.lj1 uni1106.lj1 uni1107.lj1 uni1108.lj1 uni1109.lj1 uni110A.lj1
+  uni110B.lj1 uni110C.lj1 uni110D.lj1 uni110E.lj1 uni110F.lj1 uni1110.lj1
+  uni1111.lj1 uni1112.lj1 uni1113.lj1 uni1114.lj1 uni1115.lj1 uni1116.lj1
+  uni1117.lj1 uni1118.lj1 uni1119.lj1 uni111A.lj1 uni111B.lj1 uni111C.lj1
+  uni111D.lj1 uni111E.lj1 uni111F.lj1 uni1120.lj1 uni1121.lj1 uni1122.lj1
+  uni1123.lj1 uni1124.lj1 uni1125.lj1 uni1126.lj1 uni1127.lj1 uni1128.lj1
+  uni1129.lj1 uni112A.lj1 uni112B.lj1 uni112C.lj1 uni112D.lj1 uni112E.lj1
+  uni112F.lj1 uni1130.lj1 uni1131.lj1 uni1132.lj1 uni1133.lj1 uni1134.lj1
+  uni1135.lj1 uni1136.lj1 uni1137.lj1 uni1138.lj1 uni1139.lj1 uni113A.lj1
+  uni113B.lj1 uni113C.lj1 uni113D.lj1 uni113E.lj1 uni113F.lj1 uni1140.lj1
+  uni1141.lj1 uni1142.lj1 uni1143.lj1 uni1144.lj1 uni1145.lj1 uni1146.lj1
+  uni1147.lj1 uni1148.lj1 uni1149.lj1 uni114A.lj1 uni114B.lj1 uni114C.lj1
+  uni114D.lj1 uni114E.lj1 uni114F.lj1 uni1150.lj1 uni1151.lj1 uni1152.lj1
+  uni1153.lj1 uni1154.lj1 uni1155.lj1 uni1156.lj1 uni1157.lj1 uni1158.lj1
+  uni1159.lj1 uni115A.lj1 uni115B.lj1 uni115C.lj1 uni115D.lj1 uni115E.lj1
+  uni115F.lj1];
+@l2_lead_jamo=[uni1100.lj2 uni1101.lj2 uni1102.lj2 uni1103.lj2 uni1104.lj2
+  uni1105.lj2 uni1106.lj2 uni1107.lj2 uni1108.lj2 uni1109.lj2 uni110A.lj2
+  uni110B.lj2 uni110C.lj2 uni110D.lj2 uni110E.lj2 uni110F.lj2 uni1110.lj2
+  uni1111.lj2 uni1112.lj2 uni1113.lj2 uni1114.lj2 uni1115.lj2 uni1116.lj2
+  uni1117.lj2 uni1118.lj2 uni1119.lj2 uni111A.lj2 uni111B.lj2 uni111C.lj2
+  uni111D.lj2 uni111E.lj2 uni111F.lj2 uni1120.lj2 uni1121.lj2 uni1122.lj2
+  uni1123.lj2 uni1124.lj2 uni1125.lj2 uni1126.lj2 uni1127.lj2 uni1128.lj2
+  uni1129.lj2 uni112A.lj2 uni112B.lj2 uni112C.lj2 uni112D.lj2 uni112E.lj2
+  uni112F.lj2 uni1130.lj2 uni1131.lj2 uni1132.lj2 uni1133.lj2 uni1134.lj2
+  uni1135.lj2 uni1136.lj2 uni1137.lj2 uni1138.lj2 uni1139.lj2 uni113A.lj2
+  uni113B.lj2 uni113C.lj2 uni113D.lj2 uni113E.lj2 uni113F.lj2 uni1140.lj2
+  uni1141.lj2 uni1142.lj2 uni1143.lj2 uni1144.lj2 uni1145.lj2 uni1146.lj2
+  uni1147.lj2 uni1148.lj2 uni1149.lj2 uni114A.lj2 uni114B.lj2 uni114C.lj2
+  uni114D.lj2 uni114E.lj2 uni114F.lj2 uni1150.lj2 uni1151.lj2 uni1152.lj2
+  uni1153.lj2 uni1154.lj2 uni1155.lj2 uni1156.lj2 uni1157.lj2 uni1158.lj2
+  uni1159.lj2 uni115A.lj2 uni115B.lj2 uni115C.lj2 uni115D.lj2 uni115E.lj2
+  uni115F.lj2];
 # layout 3 is aliased to layout 1 for lead jamo, hence no class of its own
-@l4_lead_jamo=[uni1100.l4 uni1101.l4 uni1102.l4 uni1103.l4 uni1104.l4
-  uni1105.l4 uni1106.l4 uni1107.l4 uni1108.l4 uni1109.l4 uni110A.l4
-  uni110B.l4 uni110C.l4 uni110D.l4 uni110E.l4 uni110F.l4 uni1110.l4
-  uni1111.l4 uni1112.l4 uni1113.l4 uni1114.l4 uni1115.l4 uni1116.l4
-  uni1117.l4 uni1118.l4 uni1119.l4 uni111A.l4 uni111B.l4 uni111C.l4
-  uni111D.l4 uni111E.l4 uni111F.l4 uni1120.l4 uni1121.l4 uni1122.l4
-  uni1123.l4 uni1124.l4 uni1125.l4 uni1126.l4 uni1127.l4 uni1128.l4
-  uni1129.l4 uni112A.l4 uni112B.l4 uni112C.l4 uni112D.l4 uni112E.l4
-  uni112F.l4 uni1130.l4 uni1131.l4 uni1132.l4 uni1133.l4 uni1134.l4
-  uni1135.l4 uni1136.l4 uni1137.l4 uni1138.l4 uni1139.l4 uni113A.l4
-  uni113B.l4 uni113C.l4 uni113D.l4 uni113E.l4 uni113F.l4 uni1140.l4
-  uni1141.l4 uni1142.l4 uni1143.l4 uni1144.l4 uni1145.l4 uni1146.l4
-  uni1147.l4 uni1148.l4 uni1149.l4 uni114A.l4 uni114B.l4 uni114C.l4
-  uni114D.l4 uni114E.l4 uni114F.l4 uni1150.l4 uni1151.l4 uni1152.l4
-  uni1153.l4 uni1154.l4 uni1155.l4 uni1156.l4 uni1157.l4 uni1158.l4
-  uni1159.l4 uni115A.l4 uni115B.l4 uni115C.l4 uni115D.l4 uni115E.l4
-  uni115F.l4];
-@l5_lead_jamo=[uni1100.l5 uni1101.l5 uni1102.l5 uni1103.l5 uni1104.l5
-  uni1105.l5 uni1106.l5 uni1107.l5 uni1108.l5 uni1109.l5 uni110A.l5
-  uni110B.l5 uni110C.l5 uni110D.l5 uni110E.l5 uni110F.l5 uni1110.l5
-  uni1111.l5 uni1112.l5 uni1113.l5 uni1114.l5 uni1115.l5 uni1116.l5
-  uni1117.l5 uni1118.l5 uni1119.l5 uni111A.l5 uni111B.l5 uni111C.l5
-  uni111D.l5 uni111E.l5 uni111F.l5 uni1120.l5 uni1121.l5 uni1122.l5
-  uni1123.l5 uni1124.l5 uni1125.l5 uni1126.l5 uni1127.l5 uni1128.l5
-  uni1129.l5 uni112A.l5 uni112B.l5 uni112C.l5 uni112D.l5 uni112E.l5
-  uni112F.l5 uni1130.l5 uni1131.l5 uni1132.l5 uni1133.l5 uni1134.l5
-  uni1135.l5 uni1136.l5 uni1137.l5 uni1138.l5 uni1139.l5 uni113A.l5
-  uni113B.l5 uni113C.l5 uni113D.l5 uni113E.l5 uni113F.l5 uni1140.l5
-  uni1141.l5 uni1142.l5 uni1143.l5 uni1144.l5 uni1145.l5 uni1146.l5
-  uni1147.l5 uni1148.l5 uni1149.l5 uni114A.l5 uni114B.l5 uni114C.l5
-  uni114D.l5 uni114E.l5 uni114F.l5 uni1150.l5 uni1151.l5 uni1152.l5
-  uni1153.l5 uni1154.l5 uni1155.l5 uni1156.l5 uni1157.l5 uni1158.l5
-  uni1159.l5 uni115A.l5 uni115B.l5 uni115C.l5 uni115D.l5 uni115E.l5
-  uni115F.l5];
+@l4_lead_jamo=[uni1100.lj4 uni1101.lj4 uni1102.lj4 uni1103.lj4 uni1104.lj4
+  uni1105.lj4 uni1106.lj4 uni1107.lj4 uni1108.lj4 uni1109.lj4 uni110A.lj4
+  uni110B.lj4 uni110C.lj4 uni110D.lj4 uni110E.lj4 uni110F.lj4 uni1110.lj4
+  uni1111.lj4 uni1112.lj4 uni1113.lj4 uni1114.lj4 uni1115.lj4 uni1116.lj4
+  uni1117.lj4 uni1118.lj4 uni1119.lj4 uni111A.lj4 uni111B.lj4 uni111C.lj4
+  uni111D.lj4 uni111E.lj4 uni111F.lj4 uni1120.lj4 uni1121.lj4 uni1122.lj4
+  uni1123.lj4 uni1124.lj4 uni1125.lj4 uni1126.lj4 uni1127.lj4 uni1128.lj4
+  uni1129.lj4 uni112A.lj4 uni112B.lj4 uni112C.lj4 uni112D.lj4 uni112E.lj4
+  uni112F.lj4 uni1130.lj4 uni1131.lj4 uni1132.lj4 uni1133.lj4 uni1134.lj4
+  uni1135.lj4 uni1136.lj4 uni1137.lj4 uni1138.lj4 uni1139.lj4 uni113A.lj4
+  uni113B.lj4 uni113C.lj4 uni113D.lj4 uni113E.lj4 uni113F.lj4 uni1140.lj4
+  uni1141.lj4 uni1142.lj4 uni1143.lj4 uni1144.lj4 uni1145.lj4 uni1146.lj4
+  uni1147.lj4 uni1148.lj4 uni1149.lj4 uni114A.lj4 uni114B.lj4 uni114C.lj4
+  uni114D.lj4 uni114E.lj4 uni114F.lj4 uni1150.lj4 uni1151.lj4 uni1152.lj4
+  uni1153.lj4 uni1154.lj4 uni1155.lj4 uni1156.lj4 uni1157.lj4 uni1158.lj4
+  uni1159.lj4 uni115A.lj4 uni115B.lj4 uni115C.lj4 uni115D.lj4 uni115E.lj4
+  uni115F.lj4];
+@l5_lead_jamo=[uni1100.lj5 uni1101.lj5 uni1102.lj5 uni1103.lj5 uni1104.lj5
+  uni1105.lj5 uni1106.lj5 uni1107.lj5 uni1108.lj5 uni1109.lj5 uni110A.lj5
+  uni110B.lj5 uni110C.lj5 uni110D.lj5 uni110E.lj5 uni110F.lj5 uni1110.lj5
+  uni1111.lj5 uni1112.lj5 uni1113.lj5 uni1114.lj5 uni1115.lj5 uni1116.lj5
+  uni1117.lj5 uni1118.lj5 uni1119.lj5 uni111A.lj5 uni111B.lj5 uni111C.lj5
+  uni111D.lj5 uni111E.lj5 uni111F.lj5 uni1120.lj5 uni1121.lj5 uni1122.lj5
+  uni1123.lj5 uni1124.lj5 uni1125.lj5 uni1126.lj5 uni1127.lj5 uni1128.lj5
+  uni1129.lj5 uni112A.lj5 uni112B.lj5 uni112C.lj5 uni112D.lj5 uni112E.lj5
+  uni112F.lj5 uni1130.lj5 uni1131.lj5 uni1132.lj5 uni1133.lj5 uni1134.lj5
+  uni1135.lj5 uni1136.lj5 uni1137.lj5 uni1138.lj5 uni1139.lj5 uni113A.lj5
+  uni113B.lj5 uni113C.lj5 uni113D.lj5 uni113E.lj5 uni113F.lj5 uni1140.lj5
+  uni1141.lj5 uni1142.lj5 uni1143.lj5 uni1144.lj5 uni1145.lj5 uni1146.lj5
+  uni1147.lj5 uni1148.lj5 uni1149.lj5 uni114A.lj5 uni114B.lj5 uni114C.lj5
+  uni114D.lj5 uni114E.lj5 uni114F.lj5 uni1150.lj5 uni1151.lj5 uni1152.lj5
+  uni1153.lj5 uni1154.lj5 uni1155.lj5 uni1156.lj5 uni1157.lj5 uni1158.lj5
+  uni1159.lj5 uni115A.lj5 uni115B.lj5 uni115C.lj5 uni115D.lj5 uni115E.lj5
+  uni115F.lj5];
 
 @vowel_jamo=[uni1160 uni1161 uni1162 uni1163 uni1164 uni1165 uni1166 uni1167
   uni1168 uni1169 uni116A uni116B uni116C uni116D uni116E uni116F uni1170

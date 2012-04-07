@@ -2,7 +2,7 @@
 
 #
 # OpenType feature file generator for Tsukurimashou
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -144,12 +144,12 @@ if (/^\s*#/) {
 } elsif (/KLUDGE PC_COMPOSE/) {
   @newtable=();
   @vowel_layout=(
-    'l1 l4','l1 l4','l1 l4','l1 l4',
-    'l1 l4','l1 l4','l1 l4','l1 l4',
-    'l2 l5','bug l1','bug l1','bug l1',
-    'l2 l5','l2 l5','bug l1','bug l1',
-    'bug l1','l2 l5','l2 l5','bug l1',
-    'l1 l4');
+    'lj1 lj4','lj1 lj4','lj1 lj4','lj1 lj4',
+    'lj1 lj4','lj1 lj4','lj1 lj4','lj1 lj4',
+    'lj2 lj5','bug lj1','bug lj1','bug lj1',
+    'lj2 lj5','lj2 lj5','bug lj1','bug lj1',
+    'bug lj1','lj2 lj5','lj2 lj5','bug lj1',
+    'lj1 lj4');
   for ($lead=0;$lead<19;$lead++) {
     for ($vowel=0;$vowel<21;$vowel++) {
       ($lsa,$lsb)=split(' ',$vowel_layout[$vowel]);

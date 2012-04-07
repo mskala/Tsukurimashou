@@ -199,8 +199,8 @@ Because this is a parametrized design built with Metafont, users can
 generate a potentially unlimited number of typeface designs from the source
 code; but I've provided parameters for several ready-made faces, each of
 which can be drawn in monospace or proportional forms.  The mainline
-Tsukurimashou fonts are intended for Japanese, but (new in version 0.5)
-there is also a series of fonts called Jieubsida, designed for Korean
+Tsukurimashou fonts are intended for Japanese, but version 0.5 also
+introduced a series of fonts called Jieubsida, designed for Korean
 hangul.  There is also some experimental code intended to eventually become
 a set of blackletter fonts, but it is disabled by default and not currently
 usable.
@@ -285,8 +285,8 @@ Some other notes:
 
 The Tsukurimashou fonts are distributed under the GNU General Public
 License, version 3, with an added paragraph clarifying that they may be
-embedded in documents.  See the file named LICENSE and note the
-following addition:
+embedded in documents.  See the files COPYING and COPYING.GPL3, and
+note the following addition:
 
 \begin{quotation}
 As a special exception, if you create a document which uses this font, and
@@ -336,14 +336,14 @@ encode the characters to replace the Latin alphabet) or using the full
 Tsukurimashou fonts, which encode the Genjimon characters in the
 Supplemental Private Use Area and also include a lot of other characters.
 
-This documentation file gives some notes on the build system, which is much
-enhanced in this version, and on how to use the OpenType features built into
-the fonts.  Other documentation files included in the package demonstrate
-what the fonts look like and list the current kanji coverage.  Better
-documentation (and some day, Japanese-language documentation) will probably
-appear in a later version; at the moment, I'm just more interested in
-designing fonts than in writing about them.  Of course, all the typesetting
-in this manual is done with fonts from this package.
+This documentation file gives some notes on the build system and on how
+to use the OpenType features built into the fonts.  Other documentation
+files included in the package demonstrate what the fonts look like and
+list the current kanji coverage.  Better documentation (and some day,
+Japanese-language documentation) will probably appear in a later
+version; at the moment, I'm just more interested in designing fonts
+than in writing about them.  Of course, all the typesetting in this
+manual is done with fonts from this package.
 
 The name ``Tsukurimashou'' could be translated as ``Let's make something!''
 
@@ -373,44 +373,100 @@ Matthew Skala\\mskala@ansuz.sooke.bc.ca\\\TsukurimashouReleaseDate
 \blsubsection{\TsukurimashouVWide
 のニュース}{What's new in \TsukurimashouVersion?}
 
-The big news for version 0.5 is the introduction of the Jieubsida series of
-fonts, covering Korean hangul.  I decided to build these even though I don't
-actually know the language, because the writing system seemed simple and I
-thought it would be easy to add, providing a lot of bang for the buck in
-terms of increasing the potential user base for Tsukuimashou.  I was wrong
-about it being easy to implement hangul; but doing the work had several
-important side benefits.  In particular, because of creating some
-drastically larger fonts than this project has generated before, the Korean
-fonts gave me the opportunity to find out about some problems in third-party
-software that would if unfixed eventually cause big trouble for the Japanese
-fonts too.
+The main visible content of the fonts hasn't changed much in version
+\TsukurimashouVersion; I'm simply continuing the slog through the
+kyouiku kanji.  This version contains the completion of Grade Three.
 
-The Jieubsida fonts should be of usable quality (comparable to the Latin
-range) already.  All the 11172 Unicode precomposed syllables are included,
-as well as all the Unicode ``hangul compatibility jamo'' and ``hangul jamo''
-code points---but only the main sequence, not the ``extended A and B''
-ranges.  (The extensions may arrive in a later version.) There are extensive
-OpenType features that should, if used correctly, allow all the
-Unicode-defined combining behaviour as well as all of Microsoft's.
+There's been a lot of less-visible work done, however.  This version
+contains its own bundled copy of the METAFONT-language portion of
+METATYPE1, and a Perl script that replaces the Awk portion of METATYPE1
+and the wrapper provided by the mtype13 distribution.  There's a story
+behind that.
 
-One of the side effects of implementing the OpenType features for the Korean
-fonts was that I discovered a pretty serious bug in \XeTeX's implementation
-of glyph substitution; and, unfortunately, earlier versions of the
-Tsukurimashou vertical fractions feature were actually written to depend on
-the bug.  In this version those tables have been rewritten in such a way
-that they should work both in \XeTeX\ and in any correct implementations of
-the standard.  The bug has been reported to the appropriate authorities.
+I reinstalled the operating system on my laptop and so, in order to
+continue developing Tsukurimashou there, I had to also reinstall all
+Tsukurimashou's dependencies.  I installed \TeX{}Live, then tried to
+install mtype13 according to its instructions.  Bear in mind that
+mtype13 is about ten years old and its installation process is designed
+for \TeX\ distributions of that vintage, not present-day \TeX{}Live. 
+When invoked as directed, mtype13's Makefile automatically overwrote
+the master configuration that allows \TeX\ and related programs to find
+their data.  My entire \TeX\ installation was rendered unusable.  After
+reinstalling the entirety of \TeX, I dug through the directory
+structure to figure out the actually correct place to put mtype13, and
+that fortunately wasn't hard.  Thinking that I'd rather not lead
+Tsukurimashou users into making the same mistake I made, I figured I
+would add detailed instructions for installing mtype13 on a modern
+\TeX, in this document.
 
-There are also a number of behind-the-scenes changes to the infrastructure. 
-The build system has been rearranged to avoid doing in-place modification of
-files wherever possible, because that was making it hard for make to
-properly track changes.  The kerning recipes have been split into smaller
-chunks, the better to debug FontForge bugs that turn up during kerning. 
-It's not included in the distribution because by nature it depends on
-outside fonts, but I now have a ``missing kanji'' maintainer tool that makes
-a chart of kanji used in the documentation and not yet included in the font,
-so as to make planning easier.  And the documentation itself has expanded
-considerably.
+But while researching that, I discovered that mtype13, although
+obviously intended to be free software, did not actually contain any
+license at all, making its status questionable.  It also contained an
+outdated version of METATYPE1, and since I've been having trouble with
+METATYPE1 bugs right from the start of Tsukurimashou, it seemed like
+switching to a new version might be desirable.
+
+I contacted the author of mtype13 and he very graciously released his
+decade-old code under an MIT-style free software license; but I wanted
+the updated METATYPE1, and in digging through that, I discovered that
+it was doing a lot of things not needed by Tsukurimashou, such as
+re-compiling all fonts twice, the second pass solely to create the
+*.tfm files that I was throwing out anyway.  Meanwhile mtype13 was
+doing things like writing output to /dev/tty, which was what drove me
+in an earlier version to put the whole works inside Expect so I could
+keep the build system output clean-looking.  And METATYPE1 is public
+domain, and the parts used by Tsukurimashou amounted to just two files
+of METAFONT code plus an Awk script to process the output---the rest of
+the package is all about encodings, Latin Modern, back-translation from
+Postscript to METAFONT, and other things not used by Tsukurimashou. 
+Then the only part of mtype13 really used by Tsukurimashou was a shell
+script that would run the Awk script.
+
+All in all it seemed the logical thing to do was bundle an entire copy
+of METATYPE1's METAFONT code, and a script with function similar to
+mtype13 but with modifications appropriate to Tsukurimashou.  That way
+I eliminate the dependencies on separately installed METATYPE1 and
+mtype13, and I have the opportunity to modify any features of those
+packages that aren't ideal for Tsukurimashou.
+
+I combined the two METAFONT-language files into one and ripped out the
+second pass of font compilation; that alone doubles the speed of
+Postscript subfont generation.  I also translated the Awk script into
+Perl, and removed all the hinting code from it.  People who have
+the other dependencies of this package almost certainly have GNU Awk
+anyway, but I don't really want to try to maintain code in Awk, a
+language I barely know, and have that dependency for installation when
+I've already got a lot of Perl in the project.  The automated
+Awk-to-Perl translator didn't work, for reasons unknown.  Most of the
+Awk code seemed to be all about properly handling hints, which
+Tsukurimashou doesn't use at that stage of processing, so by removing
+all that stuff I ended up with a much shorter and cleaner Perl script
+than the original Awk.
+
+Also worth mentioning is the ``t1asm'' utility, another previously
+unknown-to-me dependency of the mtype13/METATYPE1 complex.  This is
+part of the popular ``t1utils'' package; I could have simply declared
+that package to be a new dependency, but there again, given that t1asm
+is just one small thing needed out of a larger package, and distributed
+under a permissive license, I decided to bundle it too.  The C code for
+this utility is in the t1asm/ subdirectory.
+
+This version of Tsukurimashou is the first one designed to work with
+IDSgrep.  IDSgrep is a separate, new project, with its own
+documentation and distribution packages, but its source code is checked
+into the Tsukurimashou SVN repository and so if you're following that
+respository, you should already have a copy of the IDSgrep code. 
+IDSgrep brings the user-friendliness of grep to kanji search.  It
+allows querying databases of kanji by partial descriptions of visual
+structure, such as ``all kanji with 月 at the right.’’ Tsukurimashou's
+build system now supports a ``make eids'' target, which will generate a
+database file suitable for querying with IDSgrep based on the visual
+structure of Tsukurimashou glyphs.  Note that that may explicitly not
+be the same as their etymological origins; databases from other sources
+may be more useful for general dictionary purposes, but I've found that
+in Tsururimashou's own development a need exists for querying what
+is in the font as such, and IDSgrep exists in large part to serve that
+need.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -420,7 +476,7 @@ Maybe you shouldn't use this package!  It is designed for specific purposes
 that are relevant to its designer, and although I certainly hope others will
 find it useful, my goals may or may not be in line with yours.  Also,
 although I sometimes describe Tsukurimashou as the first parameterized
-MetaFont family with Japanese-language coverage, that claim requires careful
+METAFONT family with Japanese-language coverage, that claim requires careful
 qualification because many projects with similar aims have existed in some
 form for a long time.  Here are some others, going back a few decades, that
 you might want to check out.
@@ -511,9 +567,9 @@ and one of the main compatibility targets for Tsukurimashou.
 \url{http://scripts.sil.org/xetex}
 
 \item Hóng Zì project by Javier R.\ Laguna.  Aimed to be a parameterized
-MetaFont family for Chinese.  The last release, which was in 2006,
+METAFONT family for Chinese.  The last release, which was in 2006,
 contained 125 characters.  No infrastructure for addressing issues
-like MetaFont's 256-glyph limit, or radicals changing shape depending
+like METAFONT's 256-glyph limit, or radicals changing shape depending
 on their context.  Probably abandoned.  However, it did make several
 releases of code that you can still download and compile.
 \url{http://hongzi.sourceforge.net/}
@@ -552,23 +608,23 @@ would be in the converter rather than in the resulting MetaPost.
 \blsubsection{デベロップメントロードマップ}{Development roadmap}
 
 This version contains all the kyouiku kanji (the ones taught in Japanese
-elementary school) through Grade 2 and half of them for Grade 3.  The
-current plan is to release a minor version after each grade level of kyouiku
-kanji and one halfway through each grade level, which will take us up to
-version 0.12 at the end of Grade 6.  Version 1.0 will probably be a separate
-version released shortly after 0.12, with a general clean-up and renovation,
-but it's possible I might skip directly from 0.11 to 1.0.
+elementary school) through Grade 3.  The current plan is to release a minor
+version after each grade level of kyouiku kanji and one halfway through each
+grade level, which will take us up to version 0.12 at the end of Grade 6. 
+Version 1.0 will probably be a separate version released shortly after 0.12,
+with a general clean-up and renovation, but it's possible I might skip
+directly from 0.11 to 1.0.
 
-There are 1006 kyouiku kanji, though my expectation is that by that point
-the fonts will probably contain more than that number of kanji
-glyphs because my general practice is to add other glyphs that are
-convenient to add whenever they come up, regardless of their level.  For
-instance, when I added the ``gate'' radical 門 it was easy to add many other
-kanji that consist of that wrapped around an easy pre-existing kanji, even
-though some of those are not in common use and one, 閠, isn't even a real
-kanji at all, having been created by an error in the standards process.  But
-having just over a thousand in the main-line roadmap makes the end of the
-kyouiku kanji a good milestone for the first major version number.
+There are 1006 kyouiku kanji, though the fonts already contain more than
+that number of kanji glyphs because my general practice is to add other
+glyphs that are convenient to add whenever they come up, regardless of their
+level.  For instance, when I added the ``gate'' radical 門 it was easy to
+add many other kanji that consist of that wrapped around an easy
+pre-existing kanji, even though some of those are not in common use and one,
+閠, isn't even a real kanji at all, having been created by an error in the
+standards process.  But having just over a thousand in the main-line roadmap
+makes the end of the kyouiku kanji a good milestone for the first major
+version number.
 
 That may be a few years from now.  Progress past that point will be somewhat
 dependent on how I feel about the project by then and what my personal
@@ -593,14 +649,11 @@ contains 12202 (probably aiming to cover JIS~212).  Those might be
 reasonable milestones for 4.0 and 5.0.
 
 Figure~\ref{fig:glyph-counts} is a chart of the progress to date.  Note the
-horizontal axis is labelled by version but scaled by time.  There was a long
-gap between 0.3 and 0.4, which I hope won't be typical of future minor
-versions.  The last half of Grade 2 turned out to include some really hard
-characters, and I did a lot of infrastructure work during this time that
-isn't shown in the numbers but will become important for speeding up future
-work.  All the glyph counts in these charts are for the Tsukurimashou
-(Japanese) fonts alone.  The Jieubsida (Korean) fonts contain the
-11172-glyph block of precomposed syllables, which because they are
+horizontal axis is labelled by version but scaled by time.  Even-numbered
+versions tend to take more time because I tend to do the easier characters
+in each grade level first.  All the glyph counts in these charts are for the
+Tsukurimashou (Japanese) fonts alone.  The Jieubsida (Korean) fonts contain
+the 11172-glyph block of precomposed syllables, which because they are
 algorithmically generated cannot be well compared to the more
 manually-created kanji and other glyphs.  The Jieubsida fonts also contain a
 few hundred non-precomposed glyphs, beyond the core they share with
@@ -662,8 +715,9 @@ progress: the number of lines of code (total lines in mp/*.mp, including
 comments and blanks but not including code in other languages and locations;
 also excluding jieub-*.mp, but still including a few other files from
 Jieubsida) plotted against the total number of glyphs in the main
-Tsukurimashou family.  This version's significant increase in code per glyph
-is probably an artifact of the 
+Tsukurimashou family.  In version 0.6, there are a few thousand lines of
+code added due to the bundling of METATYPE1, which may skew the numbers a
+bit.
 
 \begin{figure}
 \tikzset{horizontal axis/.style={xscale=0.4}}
@@ -715,11 +769,11 @@ as of the current version, such bugs have become so numerous that it makes
 sense to also have a central list.
 
 \begin{itemize}
-  \item MetaPost (maybe even MetaFont) issue propagated to MetaType1:
+  \item Metapost (maybe even METAFONT) issue propagated to METATYPE1:
     the equation solver has a non-renewable resource of ``independent
     variable instance serial numbers'' which are consumed as code executes. 
     Basically, one is used up permanently every time an assignment statement
-    executes.  Very old versions of MetaPost either did not have these, or
+    executes.  Very old versions of Metapost either did not have these, or
     allowed the counter to wrap around, and so the solver would produce
     incorrect results in long-running programs.  At some time before
     version 0.641, the solver
@@ -727,46 +781,56 @@ sense to also have a central list.
     serial numbers would run out and cause a fatal error when they reached
     $\textrm{2}^\textrm{\small 25}$.  In version 1.501, the limit was
     increased to $\textrm{2}^\textrm{\small 31}$.  Any sufficiently
-    long-running MetaPost program will eventually die as the limit is
+    long-running Metapost program will eventually die as the limit is
     exceeded.  Some experimental versions of the Blackletter Lolita
     curve-fitter would exceed the $\textrm{2}^\textrm{\small 25}$ limit; the
     current experimental version is less computation-intensive, probably
     wouldn't exceed $\textrm{2}^\textrm{\small 25}$, and certainly fits
     comfortably in $\textrm{2}^\textrm{\small 31}$, but it seems like the
     limit should not exist at all.  Debugging is hindered by some currently
-    in progress redesign work on MetaPost's data structures, such that (as
+    in progress redesign work on Metapost's data structures, such that (as
     of October 2011) the cutting-edge development version leaks memory and
     crashes for that reason long before the serial numbers can run out
-    anyway.  Memory leaks acknowledged and planned to be fixed by MetaPost
+    anyway.  Memory leaks acknowledged and planned to be fixed by Metapost
     maintainer Taco Hoekwater, but it may take a while.  I've posted a link
     target to track this issue at \url{http://ansuz.sooke.bc.ca/entry/213}.
 
-  \item MetaType1 apparently removes the dot from glyph names that contain
-    a decimal digit followed by a dot, such as ``uni1100.bug'' which becomes
-    ``uni1100bug''; this is not really a problem for us at the moment (and
-    so not much debugging work done on it) because we rename glyphs in
-    FontForge later anyway, using a name list extracted by Perl directly
-    from the *.mp files instead of depending on correct propagation of glyph
-    names through MetaType1.  Noting it here as a reminder for future
-    caution if our data flow changes.
+  \item METATYPE1 sometimes runs glyph names through the METAFONT
+    tokenizer.  At this point, I don't know how essential that is to
+    the operation of METATYPE1 or whether it can be changed.  It has
+    subtle effects that can cause problems.  One issue shows up in
+    glyph names that contain a decimal digit followed by a dot, as in
+    ``uni1100.bug''; then what gets written into the Postscript output
+    is ``uni1100bug'' because that is equivalent but more canonical in
+    METAFONT syntax.  A more serious issue shows up with the glyph name
+    ``uni1100.l1'' from Tsukurimashou 0.5; in the new METATYPE1 version
+    0.55, that gets tokenized in a context where the token ``l'' is a
+    ``spark,'' and so the whole compilation fails.  The workaround
+    is to change ``l'' to ``lj'' (for ``lead jamo'').  We are not
+    actually using the glyph names written into the Postscript files,
+    so it doesn't matter if they are incorrect, but compilation must
+    not fail.  In the longer term it would be nice to make METATYPE1
+    not exhibit this behaviour, and pass the strings intact into the
+    Postscript file.
 
-  \item MetaType1 pen\_stroke\_edge macro: if left to its own devices, it
-    will sometimes attempt to evaluate the ``turning angle'' of a zero vector,
-    and then blow up.  This seems to happen most often when stroking a
-    vector in a direction of approximately 290 degrees.  Workaround is a
-    slightly modified replacement version of this macro at the bottom of
-    intro.mp, which checks for the bad case and avoids doing the operation
-    that would fail; adding additional points to the stroke path also seems
-    to help.
+  \item METATYPE1 pen\_stroke\_edge macro: as of METATYPE1 version
+    0.44, if left to its own devices it will sometimes attempt to
+    evaluate the ``turning angle'' of a zero vector, and then blow up. 
+    This seems to happen most often when stroking a vector in a
+    direction of approximately 290 degrees.  As of Tsukurimashou 0.6,
+    we are bundling METATYPE1 version 0.55, which seems to have fixed
+    this bug; the workaround in previous versions of Tsukurimashou has
+    been removed.
 
-  \item MetaType1 infrastructure in general: sometimes generates paths that
-    MetaFont calls ``degenerate,'' triggering a fatal error.  Workaround is
-    to filter things, before rendering, through the regenerate macro in
-    intro.mp, which removes any very short path segments.  Possibly
-    related: the Fill macro will sometimes abort in response to some
-    conditions on ``turning number'' that do not appear to actually be
-    harmful.  Workaround is to use our dangerousFill in intro.mp instead,
-    which is just a copy of Fill with the error checking removed.
+  \item METATYPE1 infrastructure in general: sometimes generates paths that
+    METAFONT calls ``degenerate,'' triggering a fatal error. 
+    Workaround is to filter things, before rendering, through the
+    regenerate macro in intro.mp, which removes any very short path
+    segments.  Possibly related: the Fill macro will sometimes abort in
+    response to some conditions on ``turning number'' that do not
+    appear to actually be harmful.  Workaround is to use our
+    dangerousFill in intro.mp instead, which is just a copy of Fill
+    with the error checking removed.
 
   \item FontForge spline geometry operations, such as overlap removal and
     simplification: these have historically tended to be very numerically
@@ -795,8 +859,7 @@ sense to also have a central list.
 
   \item FontForge can segfault while writing a feature file because of
     dereferencing a pointer first and checking whether it was null
-    afterward.  Reported on mailing list November 2011, no response,
-    but we're avoiding writing feature files for other reasons anyway.
+    afterward.  Fixed by developers in December 2011.
 
   \item FontForge does not apply features of the ``DFLT'' language system as
     a default to Unicode ranges that have no explicit mention in the font
@@ -811,13 +874,15 @@ sense to also have a central list.
     be monospace and thus won't also have per-glyph non-default advance
     widths.  Fix: change the limit to 22.  Patch offered on FontForge
     mailing list in November 2011
-    (\url{http://sourceforge.net/mailarchive/forum.php?thread_name=alpine.LNX.2.00.1111231635070.28210\%40tetsu.ansuz.sooke.bc.ca&forum_name=fontforge-devel}).
+    (\url{http://sourceforge.net/mailarchive/forum.php?thread_name=alpine.LNX.2.00.1111231635070.28210\%40tetsu.ansuz.sooke.bc.ca&forum_name=fontforge-devel}),
+    applied by FontForge developers in December 2011.
 
   \item FontForge save and then load of an SFD file has the effect of
     renaming the ``clig'' feature to ``rtla'' on only one of the three
     machines where I've tried it.  May be related to the x86-64
     architecture.  Reported on mailing list November 2011,
-    no responses, resolution or workaround unknown.
+    mentioned in a developer's commit message December 2011, whether it
+    is in fact fixed is unknown.
 
   \item FontForge rasterization to BDF via FreeType as opposed to whatever
     other code FontForge would use:  sometimes produces corrupt results. 
@@ -831,7 +896,8 @@ sense to also have a central list.
     support; from GUI it is possible to just turn off FreeType rasterization
     on individual bitmap-creation operations, but that option doesn't seem
     to be available from the scripting language and so the package has to
-    actually be built without FreeType.
+    actually be built without FreeType.  As of April 2012, seems not to
+    be an issue with Arch Linux's packaged versions.
 
   \item \XeTeX\ fails to advance glyph pointer after a successful match in a
     GSUB table, which has complicated consequences for chaining
@@ -996,7 +1062,7 @@ digits, a slash, and up to four more digits becomes a vertical fraction:
 }
 
 This feature works with both the ``narrow'' digits and slash
-(ASCII 47--57, Unicode U+002F--U+0039) and the ``wide'' ones (Unicode
+(ASCII code 47--57, Unicode U+002F--U+0039) and the ``wide'' ones (Unicode
 U+FF0F--U+FF19).  If the input digits are narrow, and the fraction is one
 digit over one digit, then the resulting glyph will be narrow (the same
 width as monospaced Latin characters).  Otherwise---with wide input or more
@@ -1085,7 +1151,7 @@ their own.  For instance, U+0071 U+0306 will generate ``\,q\char"0306\,,'' a
 lowercase q with a breve, which does not correspond to any Unicode code
 point and would not otherwise be available.
 
-As of version 0.5, support for this feature is limited.  Not every base
+As of version 0.6, support for this feature is limited.  Not every base
 letter you might want will necessarily be available; all the most popular
 combining diacritical marks exist, but it's easy to imagine others you might
 want that are not included; in many cases (especially when capital letters
@@ -1106,12 +1172,9 @@ to add more marks to glyphs that already have some marks; in particular,
 this should allow stacking up more than one accent on the same letter to
 create many glyphs that would be impossible by other means.
 
-As of version 0.5, this feature only works with I Ching combining dots in
-Tsukurimashou's private-use range, and it is used to replicate functionality
-of the monospace fonts which can already position multiple I Ching dots
-without needing an OpenType feature because of their different
-implementation.  More thorough support of mark to mark---for instance, to
-allow multiple accents on a letter---is planned for some future version.
+In version 0.6, this feature has been expanded to cover a few more of the
+Latin accents than before, allowing the construction of such characters as
+x\char"0308\char"030C.  It is still somewhat experimental, however.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1145,6 +1208,62 @@ substitution but I'm not quite sure yet what the best practice actually is.
 
 These ornaments look the same in all the fonts; they do not change from one
 style to the next.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\blsubsection{FIXME}{FontForge-specific Metadata (pfed)}
+
+This is not the usual kind of OpenType feature, but it can be turned on and
+off through the same build-system interface.  When selected, it causes the
+build system to add a ``pfed'' table with a ``flog'' subtable in the
+generated OpenType fonts, containing verbose information about the
+installation on which the fonts were built.  This table is a
+FontForge-specific extension of OpenType format; the name ``pfed'' refers to
+PfaEdit, an earlier name of the software that later became FontForge.  Other
+software will ignore this table; but users with FontForge can examine the
+verbose metadata under the ``FONTLOG'' heading in the ``Font Info...''
+dialog.  The data is also visible as a chunk of plain text near the end of
+the file when the OTF file is examined with a general-purpose file viewer
+such as ``less.''  The main interesting content is the command line that was
+given to configure, and a dump of most of the variables known to Make. 
+There's also a copy of the copyright notice and URLs for the project home
+pages, giving in more verbose detail some of the same information included
+in the ``name'' table.
+
+I recommend activating this feature, especially if you will be building
+fonts for distribution to others.  It may make bug reporting easier, because
+it means that anyone who gets a copy of the font also gets some information
+on where that font came from; if someone builds a font and then has trouble
+with it, it'll be easier to help if the font contains this debugging
+information.  It also improves the chances that should a font file get
+separated from its context, someone stumbling upon it will be able to figure
+out what to do with it.  The Net is full of inaccurately labelled fonts with
+unknown authorship, often being sold by shady commercial enterprises that
+have no legal right to do so, and we all ought to do what we can to stamp
+that out.  Detailed human-readable metadata, in general, is a Good Thing.
+
+But the font log contains information like software version numbers, user
+account names, and installation directory names.  Some people have funny
+ideas about the sensitivity of such information in relation to system
+security; they may think that revealing it creates a real risk, not
+otherwise present, of people breaking into their computers.  They might also
+think it could be used to trace the origins of anonymously written PDF files
+and that forensic investigators don't have many other ways to do that.
+
+Such people are wrong.  However, my saying so won't cause them to change
+their minds.  If I distributed software that attached this information to
+generated fonts by default, then someone who didn't read the documentation
+would eventually ``discover'' it and make a big fuss about it supposedly
+being a security hole.  Who needs that?  The feature is therefore turned off
+by default.  I recommend turning it on by passing the
+``--enable-ot-features=all'' option to configure.  The default is
+``--enable-ot-features=all,!pfed,'' which enables everything else.
+
+Regardless of the setting chosen, the build system will place the same
+information in a file called ``fontlog.txt'' in the txt/ subdirectory of the
+build tree.  After doing a build you can read that file to see what would
+have been put in the fonts.  The option setting just controls whether or not
+the fontlog file will be added to the OTFs during the final packaging step.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1284,12 +1403,23 @@ Unicode defines a set of special code points (U+2FF0 to U+2FFB) and a syntax
 for using them to describe what Han-script characters look like.  For
 instance, 「歯」 might be described by the string 「⿱止⿶凵米」, which
 expresses that 歯 consists of 止 written above a composite sub-glyph that
-itself consists of 凵 wrapped around 米. 
-Tsukurimashou includes glyphs for the special characters.  It is planned
-that at some point in the future, there may be some automatic generation of
-the description strings, to support advanced searching features.
+itself consists of 凵 wrapped around 米.  Unicode's scheme for character
+description appears to have been inherited more or less unmodified from a
+similar scheme in the Chinese GBK standard.
 
-The glyphs look like this: \char"2FF0\char"2FF1\char"2FF2\char"2FF3%
+Tsukurimashou includes glyphs for the special characters.  There is also
+support in the build system for a ``make eids'' target, which generates a
+file called tsukurimashou.eids in the txt/ directory.  That file is a
+collection of Extended Ideographic Description Sequences (EIDSes) describing
+the construction of the kanji in the font.  This is the interface to
+IDSgrep, a program for searching kanji according to powerful
+criteria on their visual structure.  IDSgrep is available from the same
+SourceForge.JP project that hosts Tsukurimashou; see that package and its
+documentation for more information on EIDS format and how to use it.
+
+With or without IDSgrep, Tsukurimashou may be used to typeset the special
+characters for the descriptions.  The glyphs look like this:
+\char"2FF0\char"2FF1\char"2FF2\char"2FF3%
 \char"2FF4\char"2FF5\char"2FF6\char"2FF7\char"2FF8\char"2FF9%
 \char"2FFA\char"2FFB
 
@@ -1384,7 +1514,7 @@ which is not otherwise allowed as the lead; thus
 the lead is always written with at least one jamo, and in the relatively
 standardized present-day language, at most two.  Also, two-jamo leads on the
 list of 19 always consist of one jamo repeated twice (not two different
-ones); two-jamo tails may contain two different jamo.  Combinations of more
+ones); some two-jamo tails contain two different jamo.  Combinations of more
 than two jamo, and other single and double jamo not on those lists, occur in
 archaic contexts, less-popular dialects, and so on; but there are very many
 of those longer, or merely other, combinations defined by Unicode.
@@ -1676,7 +1806,7 @@ First, I will use the term ``font'' to refer to an OTF or similar file with
 a complete glyph set (or as many glyphs as have been selected with
 configure).  This will generally be a few thousand glyphs for the
 Tsukurimashou family and about 13 thousand for the Jieubsida family. 
-Because MetaType1 is limited to producing Postscript font files with at most
+Because METATYPE1 is limited to producing Postscript font files with at most
 256 glyphs each, the system builds ``subfonts'' each corresponding to a
 ``page'' of the Unicode character set---that is, an aligned 256-code-point
 block.  For instance, the range U+0000 to U+00FF is the page containing
@@ -1796,13 +1926,13 @@ will need at least the following:
 
 \begin{itemize}
   \item A reasonably standard Unix command-line environment.  I use
-  Slackware Linux.  Anything branded as ``Unix'' should work.  MacOS X
-  might work.  Windows with Cygwin might work.  
+    Arch Linux.  Anything branded as ``Unix'' should work.  MacOS X
+    might work.  Windows with Cygwin might work.  
+  \item A standard C-language tool chain (normally comes with Linux).
   \item Perl.
-  \item GNU Make.
-  \item MetaType1, specifically the \texttt{mtype13} distribution.
-  \item A version of FontForge that actually works.  This will probably
-  require local patching, and possibly local debugging; see below.
+  \item GNU Make (non-GNU versions will not work).
+  \item Metapost (this comes with most \TeX/\LaTeX\ installations)
+  \item A version of FontForge that actually works.
 \end{itemize}
 
 Other things that might also be useful include:
@@ -1823,45 +1953,30 @@ Other things that might also be useful include:
 \end{itemize}
 
 If you have a current version of \TeX{}Live, then you probably have
-MetaType1 and \XeLaTeX\ already.  Note that it does have to be fairly
-up-to-date.  The version that came with Slackware on my laptop had a bug
-that caused ``{\fontspec[StylisticSet=2]{TsukurimashouKakuPS}\{3\}}'' to
-appear as ``\{3\},'' where it should be a white ``3'' in a black circle. 
-(It appears that the issue was with the braces being treated as ``math''
-characters and substituted from Latin Modern instead of the specified
-Tsukurimashou font, so that as a result the OpenType substitution wasn't
-being triggered.)
+Metapost and \XeLaTeX\ already.  Note that it does have to be fairly
+up-to-date.  Tsukurimashou now bundles its own version of the public domain
+METATYPE1 code, so the dependency of previous versions
+on the mtype13 distribution of that has been removed from the list.  In
+preparing METATYPE1 code for bundling I discovered a previously unknown
+dependency of previous versions on the t1asm package from t1utils; that has
+now been bundled as well.
 
 I mentioned a requirement for a version of FontForge ``that actually
 works.'' FontForge is plagued by many bugs and numerical instabilities in
 its spline geometry code, and stock, distributed ``stable'' versions tend to
-hang and/or segfault when they are used to compile Tsukurimashou. 
-As of December 2011, rasterization using FreeType seems to produce corrupt
-results, and the best workaround seems to be to compile FontForge without
-FreeType support.  Since a binary distributed version is likely to include
-FreeType, you will probably need to compile your own.  Using the latest
-development sources from the FontForge Git repository is probably a good
-idea.  Spline geometry is a
-moving target and it may be necessary to experiment with different settings
-for numeric precision in the build (most recently I've gotten best results
-with plain floats, but it does seem to vary).
-The excessive hinting bug
-reported in the mailing list thread at 
-\url{http://sourceforge.net/mailarchive/forum.php?thread_name=alpine.LNX.2.00.1111231635070.28210\%40tetsu.ansuz.sooke.bc.ca&forum_name=fontforge-devel}
-is, as far as I know, not yet fixed even in the development Git repository,
-and so may require local patching.
-
-Turning off FreeType support also means you won't be surprised by the
-FontForge configure script's ridiculous policy of invoking ``find /'' to
-search for FreeType headers.
-
-I can't promise that using the latest patched version will be
-enough to keep FontForge from crashing; what I do myself is go in with gdb
-after each sufficiently annoying crash, find the line that is segfaulting,
-and try to fix it.  I'm not sure that I have reported or recorded all the
-changes I've made as a result of this procedure.  But, hey, if you're lucky,
-maybe FontForge will have fixed all its own bugs by the time you read this
-and you'll get along all right with a distributed version!
+hang and/or segfault when they are used to compile Tsukurimashou.  As of
+April 2012, the version distributed by Arch Linux x86\_64 seems to work.  In
+the recent past there've been bugs relevant to Tsukurimashou fixed in the
+interface to FreeType for rasterization; spline geometry; and hinting.  I
+can't promise that using the latest patched version will be enough to keep
+FontForge from crashing; what I do myself is go in with gdb after each
+sufficiently annoying crash, find the line that is segfaulting, and try to
+fix it.  I'm not sure that I have reported or recorded all the changes I've
+made as a result of this procedure.  Because of all this,
+Tsukurimashou's configure script will check that your FontForge has been
+compiled with debugging symbols, and generate a warning message if not.  You
+can either get a debuggable version, or disable the message if you feel like
+living dangerously.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1915,14 +2030,18 @@ expensive dependency rebuilds unless those are really needed, while
 triggering them automatically when I add new source files.
 
 One important tip is that if things are failing, you can add ``V=1'' to the
-``make'' command line (note no hyphen, because this is a variable setting
-instead of an option; and you will probably also want to specify a target
-filename, which implicitly overrides the default ``-j'' multi-CPU option) to
-temporarily disable the silent build rules and see what's going on.  The
-third-party font-building programs unconfigurably produce large quantities
-of verbose messages, some sent inexcusibly to /dev/tty instead of standard
-output or error, and the build system will go to heroic lengths with Expect
-(if available) to filter those out by default.
+``make'' command line, as in ``make V=1 pfbtmp/tsuku-kg-00.pfb'' to
+temporarily disable the silent build rules and see what's going on.  Note no
+hyphen, because this is a variable setting instead of an option, and you
+will probably also want to specify a target filename, which implicitly
+overrides the default ``-j'' multi-CPU option.  In version 0.6, Expect was
+rendered less necessary by the replacement of mtype13 with a homegrown and
+less chatty Perl script; but the support remains in place to handle \TeX's
+lesser jubilations.
+
+You can also add ``KEEPTMP=1'' to prevent deletion of the temporary
+directories created while running Metapost.  This feature is primarily
+useful for debugging the pfb-generating scripts themselves.
 
 You can turn subsets of the character set on and off with the
 ``-{}-enable-chars'' option to configure.  Give it a parameter consisting of
@@ -1952,7 +2071,7 @@ fractions or enclosed numerals if you have disabled the numeral
 characters---though you {\anbiruteki can} build a font with enclosed and not
 regular numeric glyphs, because glyphs are mostly independent of each
 other.\footnote{Mostly.  In the case of white-on-black reversed glyphs and
-some fractions precomposed by FontForge instead of by MetaType1, you
+some fractions precomposed by FontForge instead of by METATYPE1, you
 must include all the parts that FontForge will assemble in order to get the
 combined glyph made by assembling those parts.  This is a sufficiently
 arcane scenario that the build system will not check for it.}
@@ -1987,25 +2106,27 @@ said at the hamburger stand, before trying to build a distribution.
 The ``make clean'' target and its variations probably do not really make
 things as clean as they should.
 
-Don't bother with ``-{}-disable-dependency-tracking''; that is an Autotools
-thing meant for much larger and more softwary packages.  It applies only
-to code in languages supported by Autotools, which at present means only the C
-kerning program whose dependency is trivial.  The dependency tracking for
-MetaType1 code is completely separate, unaffected by this option, and trying
-to disable it would be a bad idea.
+Don't bother with ``-{}-disable-dependency-tracking''; that is an
+Autotools thing meant for much larger and more softwary packages.  It
+applies only to code in languages supported by Autotools, which at
+present means only the C kerning program whose dependency is trivial. 
+The dependency tracking for METATYPE1 code is completely separate,
+unaffected by this option, and trying to disable it would be a bad
+idea.
 
-Autotools encourages the use of a separate build directory, with the sources
-remaining inviolate elsewhere, but that is not really recommended for
-Tsukurimashou.  I try to make it pass ``make dist-check'' right before each
-release, which implies making separate build directories work, but if you
-are building Tsukurimashou from a checked-out SVN version, chances of that
-working are slim.  It's safer to build right in the main directory.  Even if
-VPATH builds work, they are only intended for the case of having an
-untouched set of sources in one directory and a build in another.  If you
-try to do the overlay thing, with modified versions of some source files in
-your build directory, it is unlikely to work, because of the large amount of
-bolted-on filename and path logic that doesn't go through GNU Make for name
-resolution.
+Autotools encourages the use of a separate build directory, with the
+sources remaining inviolate elsewhere, but that is not really
+recommended for Tsukurimashou.  I try to make it pass ``make
+dist-check'' right before each release, which implies making separate
+build directories work, but if you are building Tsukurimashou from a
+checked-out SVN version, chances of that working are slim.  It's safer
+to build right in the main directory.  Even if VPATH builds work, they
+are only intended for the case of having an untouched set of sources in
+one directory and a build in another.  If you try to do the overlay
+thing, with modified versions of some source files in your build
+directory, it is unlikely to work, because of the large amount of
+bolted-on filename and path logic that doesn't go through GNU Make for
+name resolution.
 
 If you look in the source of the build system, specifically files like
 configure.ac, you'll see that I did a whole lot of work ripping out sections
