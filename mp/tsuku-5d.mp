@@ -35,12 +35,14 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -146,6 +148,12 @@ endtsuglyph;
 % ha/tomoe "tomoe"
 begintsuglyph("uni5DF4",244);
   kanji.grnine.tomoe;
+  tsu_render;
+endtsuglyph;
+
+% kou/chimata "fork in the road"
+begintsuglyph("uni5DF7",247);
+  kanji.grnine.fork_in_the_road;
   tsu_render;
 endtsuglyph;
 

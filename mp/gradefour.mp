@@ -273,3 +273,12 @@ vardef kanji.grfour.revelation =
     (kanji.grone.mouth));
   expand_pbox;
 enddef;
+
+vardef kanji.grfour.together =
+  push_pbox_toexpand("kanji.grfour.together");
+  build_kanji.level(build_kanji.tb(290,46)
+    (build_kanji.sscale(xscaled 0.8)(kanji.toprad.grass);
+     tsu_xform(identity shifted (0,-420))(kanji.grone.one))
+    (tsu_xform(identity shifted (20,0))(kanji.radical.eight)));
+  expand_pbox;
+enddef;

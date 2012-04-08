@@ -92,6 +92,14 @@ vardef kanji.grnine.deliverance =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.fork_in_the_road =
+  push_pbox_toexpand("kanji.grnine.fork_in_the_road");
+  build_kanji.tb(400,120)
+    (kanji.grfour.together)
+    (build_kanji.sscale(xscaled 0.77 shifted (20,0))(kanji.grsix.self));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.kyoto =
   push_pbox_toexpand("kanji.grnine.kyoto");
   build_kanji.lr(360,0)
@@ -189,6 +197,23 @@ vardef kanji.grnine.suffocate =
      push_stroke(((0,130)+point 1.5 of get_strokep(-2)),(1.6,1.6));
      build_kanji.add_ltail(0);
      set_boserif(0,0,10));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.that =
+  push_pbox_toexpand("kanji.grnine.that");
+  build_kanji.level(build_kanji.tb(160,-20+20*mincho)
+    (push_stroke((330,810)--(330,0),(1.6,1.6)--(1.5,1.5));
+     set_boserif(0,0,10);
+     push_stroke((670,810)--(670,0),(1.6,1.6)--(1.5,1.5));
+     set_boserif(0,0,10);
+     push_stroke((130,640)--(870,640),(1.5,1.5)--(1.5,1.5));
+     set_boserif(0,1,9);
+     push_stroke((330,430)--(670,430),(1.5,1.5)--(1.5,1.5));
+     push_stroke((330,210)--(670,210),(1.5,1.5)--(1.5,1.5));
+     push_stroke((120,0)--(880,0),(1.6,1.6)--(1.6,1.6));
+     set_boserif(0,1,9))
+    (kanji.radical.eight));
   expand_pbox;
 enddef;
 

@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -42,10 +43,19 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.harbour =
+  push_pbox_toexpand("kanji.grthree.harbour");
+  build_kanji.lr(290,20)
+    (kanji.leftrad.water)
+    (kanji.grnine.fork_in_the_road);
+  expand_pbox;
+enddef;
 
 vardef kanji.grthree.hot_water =
   push_pbox_toexpand("kanji.grthree.hot_water");
@@ -78,6 +88,12 @@ enddef;
 % on/atata "warm"
 begintsuglyph("uni6E29",41);
   kanji.grthree.warm;
+  tsu_render;
+endtsuglyph;
+
+% kou/minato "harbour"
+begintsuglyph("uni6E2F",47);
+  kanji.grthree.harbour;
   tsu_render;
 endtsuglyph;
 

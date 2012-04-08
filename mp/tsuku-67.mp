@@ -37,6 +37,7 @@ input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefour.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
@@ -124,6 +125,14 @@ vardef kanji.grthree.plank =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.term =
+  push_pbox_toexpand("kanji.grthree.term");
+  build_kanji.lr(580,-10)
+    (build_kanji.sscale(yscaled 0.96)(kanji.grnine.that))
+    (kanji.grone.moon);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % tsuki/getsu "moon"
@@ -147,6 +156,12 @@ endtsuglyph;
 % chou/asa "morning"
 begintsuglyph("uni671D",29);
   kanji.grtwo.morning;
+  tsu_render;
+endtsuglyph;
+
+% ki "term" (limited time)
+begintsuglyph("uni671F",31);
+  kanji.grthree.term;
   tsu_render;
 endtsuglyph;
 

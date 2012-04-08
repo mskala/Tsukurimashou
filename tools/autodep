@@ -43,6 +43,7 @@ $/=undef;
 while (<$dir/*.mp>) {
   next if m!/(tsuku|bll|jieub)-!;
   next if m!intro\.!;
+  next if m!fntbase\.!;
   m!/([^/]+)\.mp$!;
   $file=$1;
   open(MPFILE,$_);

@@ -127,6 +127,18 @@ vardef kanji.grthree.protect =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.reality =
+  push_pbox_toexpand("kanji.grthree.reality");
+  build_kanji.tb(600,170-50*mincho)
+    (kanji.radical.silly_hat)
+    (kanji.grfour.husband;
+     replace_strokep(-3)(oldp shifted (0,60));
+     push_stroke((130,510)--(870,510),
+       (1.55,1.55)--(1.55,1.55));
+     set_boserif(0,1,9));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.filial_piety =
@@ -263,6 +275,12 @@ endtsuglyph;
 % "cave"
 begintsuglyph("uni5B95",149);
   kanji.grnine.cave;
+  tsu_render;
+endtsuglyph;
+
+% jitsu/mi "reality"
+begintsuglyph("uni5B9F",159);
+  kanji.grthree.reality;
   tsu_render;
 endtsuglyph;
 

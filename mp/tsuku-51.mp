@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradetwo.mp;
@@ -182,6 +183,18 @@ endtsuglyph;
 % roku/mui "six"
 begintsuglyph("uni516D",109);
   kanji.grone.six;
+  tsu_render;
+endtsuglyph;
+
+% kyou/tomo "together"
+begintsuglyph("uni5171",113);
+  kanji.grfour.together;
+  tsu_render;
+endtsuglyph;
+
+% ki/so "that" (as in sore and sono)
+begintsuglyph("uni5176",118);
+  kanji.grnine.that;
   tsu_render;
 endtsuglyph;
 
