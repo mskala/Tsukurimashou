@@ -616,6 +616,8 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	  $(LN_S) -f $(realpath $(mvp))/mp/*.mp $*.tmp/ ; \
 	  $(LN_S) -f $(realpath .)/mp/*.mp $*.tmp/ ; \
 	  echo \
+	    "string pagename; " \
+	    "pagename=\"$(lastword $(subst -,$(space),$*))\"; " \
 	    "$(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),input $(fn);)" \
 	    > $*.tmp/$*.mp ; \
 	  (cd $*.tmp ; $(expect_start)$(MPOST) $*.mp$(expect_end) ) ; \

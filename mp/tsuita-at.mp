@@ -1,6 +1,6 @@
 %
-% Japanese and Korean name translations for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% TsuIta Atama
+% Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -28,37 +28,23 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-% This file gets translated into jnames.hl, which has the Unicode code
-% points expressed in a form Hamlog can process.
+% TSUITA ATAMA
 
-tsukurimashou	作りましょう
-tsuita	ツイタ
-blackletter_lolita	ＢＬロリータ
+input preintro.mp;
 
-kaku	角
-maru	丸
-mincho	明朝
-bokukko	僕女
-anbiruteki	アンビル的
-tenshinokami	天使の髪
+familyname:="TsuIta";
+stylename:="Atama";
 
-soku	足
-atama	頭
+rescale_slant:=170;
 
-cosette	♥コセット♥
+(0,4) transformed tsu_brush_xf = (4,0.77);
+(1,1) transformed tsu_brush_xf = (1,0.73);
+(4,0) transformed tsu_brush_xf = (0,0.77);
 
-extralight	？
-light	？
-normal	l___da
-demibold	？
-bold	？
-extrabold	？
+tsu_brush_min:=0.73;
+tsu_brush_max:=0.77;
 
-monospace	l___da
-proportional	ＰＳ
+def tsu_brush_opt(expr n,l) = cut(n,rel 90)(l) enddef;
+sharp_corners:=true;
 
-jieubsida	지읍시다
-
-dodum	돋움
-batang	바탕
-sunmoon	선문
+input intro.mp;

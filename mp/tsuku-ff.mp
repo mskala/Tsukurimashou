@@ -146,22 +146,30 @@ endtsuglyph;
 % asterisk
 begintsuglyph("uniFF0A",10);
    begingroup
-     path lobe,glyph[];
+     save lobe,glyph,nlobes;
+     path lobe,glyph;
+     numeric nlobes;
 
-     lobe:=(1,0){up}..(tsu_brush_max*tsu_punct_size/2,280){up}
-       ..{curl 1}(0,350){curl 1}..(-tsu_brush_max*tsu_punct_size/2,280){down};
-     lobe:=(lobe..(lobe rotated 180)..cycle) scaled (tsu_punct_size/100);
+     lobe:=(1,0){up}..((1+tsu_brush_max)*tsu_punct_size/2,280){up}
+       ..{curl 1}(0,350){curl 1}
+       ..(-(1+tsu_brush_max)*tsu_punct_size/2,280){down};
+     if rescale_slant>50:
+       lobe:=(lobe..(-1,0){down}..(0,-1)..cycle) scaled (tsu_punct_size/90);
+       nlobes:=5;
+     else:
+       lobe:=(lobe..(lobe rotated 180)..cycle) scaled (tsu_punct_size/100);
+       nlobes:=3;
+     fi;
 
      default_nib:=fix_nib(50*tsu_brush_max,
        50*tsu_brush_max*tsu_brush_shape,
        tsu_brush_angle);
-     pen_stroke()(lobe shifted centre_pt)(glyph1);
-     pen_stroke()(lobe rotated 60 shifted centre_pt)(glyph2);
-     pen_stroke()(lobe rotated 120 shifted centre_pt)(glyph3);
-
-     dangerousFill glyph1.r;
-     dangerousFill glyph2.r;
-     dangerousFill glyph3.r;
+     
+     for i:=0 upto nlobes-1:
+       pen_stroke()(lobe rotated (i*360/nlobes)
+                         shifted (centre_pt+(-250,0)))(glyph);
+       dangerousFill glyph.r;
+     endfor;
    endgroup;
 endtsuglyph;
 

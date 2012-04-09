@@ -90,6 +90,9 @@ handakuten_outer:=200;
 % general shape tweaker
 mincho:=0;
 
+% slant during rescaling, for italics
+rescale_slant:=0;
+
 % control appearance of corners
 boolean sharp_corners;
 sharp_corners:=false;

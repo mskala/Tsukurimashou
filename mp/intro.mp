@@ -310,11 +310,29 @@ enddef;
 
 tsu_rescale_full;
 
+vardef tsu_slant_xform =
+  begingroup
+    save st;
+    transform st;
+    centre_pt transformed st=centre_pt;
+    centre_pt+(100,0) transformed st=centre_pt+(100,0);
+    if rescale_to.right>rescale_to.left:
+      centre_pt+(0,1000) transformed st=centre_pt+
+        (rescale_slant*((rescale_from.right-rescale_from.left)
+                       /(rescale_to.right-rescale_to.left)),1000);
+    else:
+      centre_pt+(0,1000) transformed st=centre_pt+(rescale_slant,1000);
+    fi;
+    st
+  endgroup
+enddef;
+
 vardef tsu_rescale_xform =
   begingroup
-    save t;
-    transform t;
-    t:=identity;
+    save t,st;
+    transform t,st;
+    st:=tsu_slant_xform;
+    t:=st;
     % check if rescaling is active
     if (rescale_from.left<>rescale_to.left)
     or (rescale_from.right<>rescale_to.right): begingroup
@@ -362,6 +380,7 @@ vardef tsu_rescale_xform =
         (rescale_from.left+lf+1,rescale_from.bottom) transformed t=
           (rescale_to.left+lt+1,rescale_to.bottom);
       fi;
+      t:=st transformed t;
     endgroup; fi;
     t
   endgroup

@@ -1,6 +1,6 @@
 %
-% Japanese and Korean name translations for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% TsuIta Soku
+% Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -28,37 +28,40 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-% This file gets translated into jnames.hl, which has the Unicode code
-% points expressed in a form Hamlog can process.
+% TSUITA SOKU
 
-tsukurimashou	作りましょう
-tsuita	ツイタ
-blackletter_lolita	ＢＬロリータ
+input preintro.mp;
 
-kaku	角
-maru	丸
-mincho	明朝
-bokukko	僕女
-anbiruteki	アンビル的
-tenshinokami	天使の髪
+familyname:="TsuIta";
+stylename:="Soku";
 
-soku	足
-atama	頭
+mincho:=0.8;
 
-cosette	♥コセット♥
+rescale_slant:=170;
 
-extralight	？
-light	？
-normal	l___da
-demibold	？
-bold	？
-extrabold	？
+(0,4) transformed tsu_brush_xf = (0.0,0.80);
+(1,1) transformed tsu_brush_xf = (1.2,0.45);
+(4,0) transformed tsu_brush_xf = (4.8,0.80);
 
-monospace	l___da
-proportional	ＰＳ
+tsu_brush_min:=0.45;
+tsu_brush_max:=0.80;
 
-jieubsida	지읍시다
+tsu_brush_shape:=0.60;
+tsu_brush_angle:=1;
 
-dodum	돋움
-batang	바탕
-sunmoon	선문
+tsu_pbrush_size:=60;
+tsu_pbrush_shape:=1;
+tsu_pbrush_angle:=1;
+
+input serif.mp;
+
+for i=1 upto 10:
+  tsu_do_serif[i]:=true;
+endfor;
+
+do_alternation:=true;
+
+genji_outline:=true;
+genji_hw:=0.2;
+
+input intro.mp;

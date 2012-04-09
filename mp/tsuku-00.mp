@@ -148,23 +148,30 @@ tsu_rescale_native_conditional;
 % asterisk
 begintsuglyph("asterisk",42);
    begingroup
-     path lobe,glyph[];
+     save lobe,glyph,nlobes;
+     path lobe,glyph;
+     numeric nlobes;
 
      lobe:=(1,0){up}..((1+tsu_brush_max)*tsu_punct_size/8,140){up}
        ..{curl 1}(0,175){curl 1}
        ..(-(1+tsu_brush_max)*tsu_punct_size/8,140){down};
-     lobe:=(lobe..(lobe rotated 180)..cycle) scaled (tsu_punct_size/80);
+     if rescale_slant>50:
+       lobe:=(lobe..(-1,0){down}..(0,-1)..cycle) scaled (tsu_punct_size/70);
+       nlobes:=5;
+     else:
+       lobe:=(lobe..(lobe rotated 180)..cycle) scaled (tsu_punct_size/80);
+       nlobes:=3;
+     fi;
 
      default_nib:=fix_nib(35*tsu_brush_max,
        35*tsu_brush_max*tsu_brush_shape,
        tsu_brush_angle);
-     pen_stroke()(lobe shifted centre_pt shifted (-250,0))(glyph1);
-     pen_stroke()(lobe rotated 60 shifted centre_pt shifted (-250,0))(glyph2);
-     pen_stroke()(lobe rotated 120 shifted centre_pt shifted (-250,0))(glyph3);
-
-     dangerousFill glyph1.r;
-     dangerousFill glyph2.r;
-     dangerousFill glyph3.r;
+     
+     for i:=0 upto nlobes-1:
+       pen_stroke()(lobe rotated (i*360/nlobes)
+                         shifted (centre_pt+(-250,0)))(glyph);
+       dangerousFill glyph.r;
+     endfor;
    endgroup;
 endtsuglyph;
 

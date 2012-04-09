@@ -49,18 +49,26 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newfontfamily\kaku{TsukurimashouKakuPS}
 \newfontface\maru{TsukurimashouMaruPS}
 \newfontface\mincho{TsukurimashouMinchoPS}
 \newfontface\anbiruteki{TsukurimashouAnbirutekiPS}
 \newfontface\tenshinokami{TsukurimashouTenshinoKamiPS}
 \newfontface\bokukko{TsukurimashouBokukkoPS}
+
 \expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax\else
   \newfontface\dodum[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaDodumPS}
 \fi
 
-\kaku
-\setmainfont{TsukurimashouKakuPS}
+\expandafter\ifx\csname haveTsuItaSokuPS\endcsname\relax
+  \newfontfamily\kaku[ItalicFont={TsukurimashouAnbirutekiPS}]{TsukurimashouKakuPS}
+  \kaku
+  \setmainfont[ItalicFont={TsukurimashouAnbirutekiPS}]{TsukurimashouKakuPS}
+\else
+  \newfontfamily\kaku[ItalicFont={TsuItaSokuPS}]{TsukurimashouKakuPS}
+  \kaku
+  \setmainfont[ItalicFont={TsuItaSokuPS}]{TsukurimashouKakuPS}
+\fi
+
 \setmonofont[WordSpace={1,0,0},PunctuationSpace=3]{TsukurimashouMincho}
 
 \renewcommand{\labelitemi}{{\fontspec[RawFeature=+ornm]{TsukurimashouKaku}C}}
@@ -189,7 +197,7 @@ to remember that character a lot better than if I just see it a few times on
 a flash card.  And as a highly proficient user of computer automation, I
 have access to a number of efficiency-increasing techniques that most font
 designers don't.  So the deal is, I think if I study the language
-{\anbiruteki and also design a typeface family for it,} I might be able to
+\emph{and also design a typeface family for it,} I might be able to
 finish both big projects with less, or not much more, effort than just
 completing the one big project of learning the language alone.  And then I'd
 also end up with a custom-made Japanese-language typeface family, which
@@ -2068,7 +2076,7 @@ disabled in whole or in part, overriding this setting, if you have used the
 previous setting to disable characters necessary to implement the features. 
 For instance, you can't have OpenType contextual substitution support of
 fractions or enclosed numerals if you have disabled the numeral
-characters---though you {\anbiruteki can} build a font with enclosed and not
+characters---though you \emph{can} build a font with enclosed and not
 regular numeric glyphs, because glyphs are mostly independent of each
 other.\footnote{Mostly.  In the case of white-on-black reversed glyphs and
 some fractions precomposed by FontForge instead of by METATYPE1, you
@@ -2382,20 +2390,20 @@ ground terms turn into literal text; and then when there's a match,
 parenthesized sub-expressions are used to extract the body of that clause.
 
 It is because of the use of regular expressions that Hamlog doesn't do
-compound terms, and in turn is likely not Turing-complete (though I
-haven't thought carefully through all the possibilities of using recursive
-predicates to build data structures on the stack).  As all the world
-knows, it is impossible to write a regular expression to match balanced
+compound terms, and in turn is likely not Turing-complete (though I haven't
+thought carefully through all the possibilities of using recursive
+predicates to build data structures on the stack).  As all the world knows,
+it is impossible to write a regular expression to match balanced
 parentheses.  Current versions of Perl actually bend the theory with
 experimental extensions that do allow the matching of balanced parentheses,
-so that in a certain important sense Perl regular expressions {\anbiruteki
-are not regular expressions anymore at all}, but even I am not quite twisted
-enough to actually deploy such code. Things in Hamlog that look like
-compound terms (such as the sub-goals in a clause body) are handled as
-special cases; but the point is that arguments to a functor that will be
-used as a goal have to be either atoms or variables.  This also means Hamlog
-doesn't do Prolog syntactic sugar things that expand to compound terms, such
-as square brackets for lists.
+so that in a certain important sense Perl regular expressions \emph{are not
+regular expressions anymore at all}, but even I am not quite twisted enough
+to actually deploy such code.  Things in Hamlog that look like compound
+terms (such as the sub-goals in a clause body) are handled as special cases;
+but the point is that arguments to a functor that will be used as a goal
+have to be either atoms or variables.  This also means Hamlog doesn't do
+Prolog syntactic sugar things that expand to compound terms, such as square
+brackets for lists.
 
 Once there's a match, it does string substitution on the matching head, the
 current partially-completed goal, and the body, to get a new modified body
@@ -2517,7 +2525,7 @@ command-line arguments as a template and a query.  The template ought to be
 a valid Prolog compound term for compatibility with other interpreters, but
 Hamlog actually treats it as a string.  Then it backtracks through all
 solutions to the query, attempting to instantiate all variables, and writes
-(newline separated to standard out) all the {\anbiruteki distinct} values
+(newline separated to standard out) all the \emph{distinct} values
 assumed by the template.  This is basically the same operation as Prolog
 findall/3 followed by sort/2, which is how the Prolog shell for Hamlog
 implements it.  Any remaining command-line arguments, and standard input if
@@ -2573,7 +2581,7 @@ common bounding box big enough to contain any of them, and finds the left
 and right contours---basically, the x-coordinates of the leftmost and
 rightmost black pixels on each row---for each glyph, as well as the margins,
 which are defined as the x-coordinates of the leftmost and rightmost pixels
-on {\anbiruteki any} row of the glyph.
+on \emph{any} row of the glyph.
 
 There is some special processing applied to the contours to make them more
 suitable. Consider what happens in a glyph like ``='': many horizontal rows,
@@ -2595,7 +2603,7 @@ fully define where the contour should be.
   \item The right contour cannot be more than 10 font units (one pixel)
   further left than its value in the next or the previous row.
   \item If the right contour in the next or previous row is left of the
-  {\anbiruteki left} margin, then the right contour in this row cannot be
+  \emph{left} margin, then the right contour in this row cannot be
   more than 3 font units further left than in the next or
   previous row.
   \item Subject to the above rules, the right contour is as far left
@@ -2776,7 +2784,7 @@ kern adjustment to zero.  If we were to throw away the kerning table at this
 point and just use the bearings, then in some sense these bearings would
 give the best possible approximation of the discarded kerning table.
 
-Then for each left-class (which is actually a class of {\anbiruteki right}
+Then for each left-class (which is actually a class of \emph{right}
 contours: it is a class of glyphs that can appear on the left in a kerning
 pair) the program finds the maximum, that is farthest apart, amount of
 kerning between that left-class and any right-class.  Two thirds of that

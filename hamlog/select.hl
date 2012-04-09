@@ -42,6 +42,7 @@
 
 family(tsukurimashou).
 
+family(tsuita).
 family(jieubsida).
 family(blackletter_lolita).
 
@@ -51,6 +52,9 @@ style(tsukurimashou,mincho).
 style(tsukurimashou,bokukko).
 style(tsukurimashou,anbiruteki).
 style(tsukurimashou,tenshinokami).
+
+style(tsuita,soku).
+style(tsuita,atama).
 
 style(jieubsida,dodum).
 style(jieubsida,batang).
@@ -94,11 +98,14 @@ proof_style_short(F,S,W,P):-
 
 long_name(tsukurimashou,t__sukurimashou).
 
+long_name(tsuita,t__sui__ta).
 long_name(jieubsida,j__ieubsida).
 long_name(blackletter_lolita,b__lackletters___el__olita).
 
 long_name(kaku,k__aku).
 long_name(maru,m__aru).
+long_name(soku,s__oku).
+long_name(atama,a__tama).
 long_name(dodum,d__odum).
 long_name(batang,b__atang).
 long_name(mincho,m__incho).
@@ -119,11 +126,14 @@ long_name(monospace,l___da).
 long_name(proportional,p__s__).
 
 short_name(jieubsida,jieub).
+short_name(tsuita,tsuita).
 short_name(tsukurimashou,tsuku).
 short_name(blackletter_lolita,bll).
 
 short_name(kaku,kg).
 short_name(maru,mg).
+short_name(soku,so).
+short_name(atama,at).
 short_name(dodum,do).
 short_name(batang,bt).
 short_name(mincho,mi).
@@ -149,6 +159,7 @@ short_name(proportional,ps).
 
 default_fname(T):-short_name(tsukurimashou,T).
 
+overlay_fname(T):-short_name(tsuita,T).
 overlay_fname(T):-short_name(jieubsida,T).
 overlay_fname(T):-short_name(blackletter_lolita,T).
 
