@@ -122,6 +122,10 @@ tsu_rescale_full;
 
 % MISCELLANEOUS
 
+begingroup
+save rescale_slant;
+rescale_slant:=0;
+
 begintsuglyph("Euro.official",16);
   z25=(fullcircle scaled 10) intersectionpoint ((0,0)--(10*dir 40));
   z11=(0,-6);
@@ -320,6 +324,8 @@ begintsuglyph("tomoe8",56);
   make_tomoe(3,40,231,92,75,15,25,4,true);
 endtsuglyph;
 
+endgroup;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % HEAVY METAL UMLAUT
@@ -437,6 +443,10 @@ endtsuglyph;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % GENJI-MON
+
+begingroup
+save rescale_slant;
+rescale_slant:=0;
 
 % WARNING, setting rescale
 tsu_rescale_full;
@@ -1054,6 +1064,8 @@ begintsuglyph("genjimon54",246);
   gbk(0,0);
   gb(1);gf(1);gr;gr;gf(1);gl;gl;gf(1);gr;gr;gf(1);gl;gl;gf(1);ge;
 endtsuglyph;
+
+endgroup;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -161,32 +161,56 @@ enddef;
 
 % dagger
 begintsuglyph("dagger",32);
-  dangerousFill dagger_spur rotated 90 shifted (250,650);
-  dangerousFill dagger_spur shifted (250,650);
-  dangerousFill dagger_spur rotated -90 shifted (250,650);
-  dangerousFill fullcircle scaled (20+mincho*50) shifted (250,650);
-  dangerousFill 
-    (246,650){curl 1}..(mincho[(223,550),(230,535)])..
-      {curl 1}(200,450){curl 1}..(mincho[(223,250),(230,280)])..
-      {curl 0}(246,-50)--
-    (254,-50){curl 0}..(mincho[(277,250),(270,280)])..
-      {curl 1}(300,450){curl 1}..(mincho[(277,550),(270,535)])..
-      {curl 1}(254,650)--cycle;
+  begingroup
+    save tsx;
+    transform tsx;
+  
+    tsx:=tsu_slant_xform;
+  
+    dangerousFill (dagger_spur rotated 90 shifted (250,650)
+      transformed tsx);
+    dangerousFill (dagger_spur shifted (250,650)
+      transformed tsx);
+    dangerousFill (dagger_spur rotated -90 shifted (250,650)
+      transformed tsx);
+    dangerousFill (fullcircle scaled (20+mincho*50) shifted (250,650)
+      transformed tsx);
+    dangerousFill 
+      (((246,650){curl 1}..(mincho[(223,550),(230,535)])..
+          {curl 1}(200,450){curl 1}..(mincho[(223,250),(230,280)])..
+          {curl 0}(246,-50)--
+        (254,-50){curl 0}..(mincho[(277,250),(270,280)])..
+          {curl 1}(300,450){curl 1}..(mincho[(277,550),(270,535)])..
+          {curl 1}(254,650)--cycle)
+      transformed tsx);
+  endgroup;
 endtsuglyph;
 
 % double dagger
 begintsuglyph("daggerdbl",33);
-  dangerousFill dagger_spur rotated 90 shifted (250,650);
-  dangerousFill dagger_spur shifted (250,650);
-  dangerousFill dagger_spur rotated -90 shifted (250,650);
-  dangerousFill fullcircle scaled (20+mincho*50) shifted (250,650);
-  dangerousFill dagger_spur rotated -90 shifted (250,150);
-  dangerousFill dagger_spur rotated 180 shifted (250,150);
-  dangerousFill dagger_spur rotated 90 shifted (250,150);
-  dangerousFill fullcircle scaled (20+mincho*50) shifted (250,150);
   begingroup
-    save x,y;
+    save x,y,tsx;
     numeric x[],y[];
+    transform tsx;
+
+    tsx:=tsu_slant_xform;
+
+    dangerousFill (dagger_spur rotated 90 shifted (250,650)
+      transformed tsx);
+    dangerousFill (dagger_spur shifted (250,650)
+      transformed tsx);
+    dangerousFill (dagger_spur rotated -90 shifted (250,650)
+      transformed tsx);
+    dangerousFill (fullcircle scaled (20+mincho*50) shifted (250,650)
+      transformed tsx);
+    dangerousFill (dagger_spur rotated -90 shifted (250,150)
+      transformed tsx);
+    dangerousFill (dagger_spur rotated 180 shifted (250,150)
+      transformed tsx);
+    dangerousFill (dagger_spur rotated 90 shifted (250,150)
+      transformed tsx);
+    dangerousFill (fullcircle scaled (20+mincho*50) shifted (250,150)
+      transformed tsx);
 
     x1=x4=x7=246;
     x3=x5=200;
@@ -202,19 +226,20 @@ begintsuglyph("daggerdbl",33);
     y5=y10=800-y3;
     y6=y9=800-y2;
     y7=y8=800-y1;
-    
+
     x15=x16=x2+7*mincho;
     x17=x18=500-x15;
     
     y15=y18=y2-20*mincho;
     y16=y17=800-y15;
     
-    dangerousFill interpath(mincho,
+    dangerousFill (interpath(mincho,
       z1--z2--z3--z4--z5--z6--z7--z8--z9--z10--z11--z12--z13--z14--cycle,
       z1{curl 1}..z15..{curl 1}z3{curl 1}..z4..
         {curl 1}z5{curl 1}..z16..{curl 1}z7--
         z8{curl 1}..z17..{curl 1}z10{curl 1}..z11..
-        {curl 1}z12{curl 1}..z18..{curl 1}z14--cycle);
+        {curl 1}z12{curl 1}..z18..{curl 1}z14--cycle)
+      transformed tsx);
   endgroup;
 endtsuglyph;
 

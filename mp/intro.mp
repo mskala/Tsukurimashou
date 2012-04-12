@@ -66,7 +66,7 @@ input obstack.mp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % get rid of degeneracies
-vardef regenerate(expr p) =
+def regenerate(expr p) =
   begingroup
     save q;
     path q;
@@ -172,7 +172,7 @@ enddef;
 
 path width_curve;
 
-vardef tsu_rescale_full =
+def tsu_rescale_full =
   rescale_from.left:=wide_margin;
   rescale_from.right:=1000-wide_margin;
   rescale_from.top:=ypart centre_pt;
@@ -188,7 +188,7 @@ vardef tsu_rescale_full =
   width_curve:=(-1,-1)--(2000,2000);
 enddef;
 
-vardef tsu_rescale_half =
+def tsu_rescale_half =
   rescale_from.left:=wide_margin;
   rescale_from.right:=1000-wide_margin;
   rescale_from.top:=ypart centre_pt;
@@ -204,7 +204,7 @@ vardef tsu_rescale_half =
   width_curve:=((-1,-1)--(100,100))..(940,410)..{right}(2000,1000);
 enddef;
 
-vardef tsu_rescale_half_lc =
+def tsu_rescale_half_lc =
   rescale_from.left:=wide_margin*3.5;
   rescale_from.right:=1000-wide_margin*3.5;
   rescale_from.top:=ypart centre_pt;
@@ -220,7 +220,7 @@ vardef tsu_rescale_half_lc =
   width_curve:=((-1,-1)--(100,100))..(780,410)..{right}(2000,1000);
 enddef;
 
-vardef tsu_rescale_half_katakana =
+def tsu_rescale_half_katakana =
   rescale_from.left:=wide_margin;
   rescale_from.right:=1000-wide_margin;
   rescale_from.top:=700;
@@ -236,7 +236,7 @@ vardef tsu_rescale_half_katakana =
   width_curve:=((-1,-1)--(100,100))..(860,440)..{right}(2000,1000);
 enddef;
 
-vardef tsu_rescale_double =
+def tsu_rescale_double =
   rescale_from.left:=narrow_margin;
   rescale_from.right:=500-narrow_margin;
   rescale_from.top:=latin_vcentre;
@@ -252,7 +252,7 @@ vardef tsu_rescale_double =
   width_curve:=(-1,-1)--(2000,2000);
 enddef;
 
-vardef tsu_rescale_decenter =
+def tsu_rescale_decenter =
   rescale_from.left:=300;
   rescale_from.right:=700;
   rescale_from.top:=ypart centre_pt;
@@ -268,7 +268,7 @@ vardef tsu_rescale_decenter =
   width_curve:=(-1,-1)--(2000,2000);
 enddef;
 
-vardef tsu_rescale_native_narrow =
+def tsu_rescale_native_narrow =
   rescale_from.left:=narrow_margin;
   rescale_from.right:=500-narrow_margin;
   rescale_from.top:=latin_vcentre;
@@ -284,7 +284,7 @@ vardef tsu_rescale_native_narrow =
   width_curve:=(-1,-1)--(2000,2000);
 enddef;
 
-vardef tsu_rescale_native_zero =
+def tsu_rescale_native_zero =
   rescale_from.left:=0;
   rescale_from.right:=0;
   rescale_from.top:=1000;
@@ -300,7 +300,7 @@ vardef tsu_rescale_native_zero =
   width_curve:=(-1,-1)--(2000,2000);
 enddef;
 
-vardef tsu_rescale_native_conditional =
+def tsu_rescale_native_conditional =
   if is_proportional:
     tsu_rescale_full;
   else:
@@ -310,26 +310,23 @@ enddef;
 
 tsu_rescale_full;
 
-vardef tsu_slant_xform =
+def tsu_slant_xform =
   begingroup
-    save st;
+    save st,cp;
     transform st;
-    centre_pt transformed st=centre_pt;
-    centre_pt+(100,0) transformed st=centre_pt+(100,0);
-    if rescale_to.right>rescale_to.left:
-      centre_pt+(0,1000) transformed st=centre_pt+
-        (rescale_slant*((rescale_from.right-rescale_from.left)
-                       /(rescale_to.right-rescale_to.left)),1000);
-    else:
-      centre_pt+(0,1000) transformed st=centre_pt+(rescale_slant,1000);
-    fi;
+    pair cp;
+    
+    cp:=((rescale_from.left+rescale_from.right)/2,rescale_from.bottom);
+    cp transformed st=cp;
+    cp+(100,0) transformed st=cp+(100,0);
+    cp+(0,100) transformed st=cp+(rescale_slant/10,100);
     st
   endgroup
 enddef;
 
-vardef tsu_rescale_xform =
+def tsu_rescale_xform =
   begingroup
-    save t,st;
+    save t,st,cp;
     transform t,st;
     st:=tsu_slant_xform;
     t:=st;
@@ -380,14 +377,20 @@ vardef tsu_rescale_xform =
         (rescale_from.left+lf+1,rescale_from.bottom) transformed t=
           (rescale_to.left+lt+1,rescale_to.bottom);
       fi;
-      t:=st transformed t;
+      pair cp;
+      transform st;
+      cp:=((rescale_to.left+rescale_to.right)/2,rescale_to.bottom);
+      cp transformed st=cp;
+      cp+(100,0) transformed st=cp+(100,0);
+      cp+(0,100) transformed st=cp+(rescale_slant/10,100);
+      t:=t transformed st;
     endgroup; fi;
     t
   endgroup
 enddef;
 
 % render a single segment - pulled out to make it easier to override
-vardef tsu_render_segment(expr i,p,q) =
+def tsu_render_segment(expr i,p,q) =
   if do_alternation and obstackba.boalternate[i]:
     default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max
                            *tsu_brush_shape,
@@ -637,7 +640,7 @@ transform tsu_xf.smallkana;
 
 tsu_xf.smallkana = identity shifted (-500,0) scaled 5.5/8 shifted (500,0);
 
-vardef tsu_xform(expr xform)(text curves) =
+def tsu_xform(expr xform)(text curves) =
   begingroup
     save txfsp;
     txfsp:=sp;
@@ -670,12 +673,12 @@ def anc_upper_right = 5 enddef;
 def anc_upper_ring = 6 enddef;
 def anc_caron_comma = 7 enddef;
 def anc_dakuten = 8 enddef;
-vardef anc_iching_line(expr lnum) = (8+lnum) enddef;
+def anc_iching_line(expr lnum) = (8+lnum) enddef;
 
 transform accent_default[];
 numeric anchor_parent[];
 
-vardef tsu_default_anchor(expr aindex,avalue) =
+def tsu_default_anchor(expr aindex,avalue) =
   if numeric avalue:
     write ("DEFAULTANCHOR "&(decimal aindex)&" FALSE") to "proof.prf";
   elseif transform avalue:

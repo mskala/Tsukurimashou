@@ -128,3 +128,7 @@ is_blackletter:=false;
 % prepare to detect fine IDCs
 boolean fine_idcs;
 fine_idcs:=false;
+
+% prepare to detect italic hook shapes
+boolean do_italic_hook;
+do_italic_hook:=false;

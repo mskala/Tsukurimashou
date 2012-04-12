@@ -48,135 +48,135 @@ do_late_includes;
 % 21
 begintsuglyph("uni3251",81);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.one);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.one);
   tsu_render;
 endtsuglyph;
 
 % 22
 begintsuglyph("uni3252",82);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.two);
   tsu_render;
 endtsuglyph;
 
 % 23
 begintsuglyph("uni3253",83);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.three);
   tsu_render;
 endtsuglyph;
 
 % 24
 begintsuglyph("uni3254",84);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.four);
   tsu_render;
 endtsuglyph;
 
 % 25
 begintsuglyph("uni3255",85);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.five);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.five);
   tsu_render;
 endtsuglyph;
 
 % 26
 begintsuglyph("uni3256",86);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.six);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.six);
   tsu_render;
 endtsuglyph;
 
 % 27
 begintsuglyph("uni3257",87);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.seven);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.seven);
   tsu_render;
 endtsuglyph;
 
 % 28
 begintsuglyph("uni3258",88);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.eight);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.eight);
   tsu_render;
 endtsuglyph;
 
 % 29
 begintsuglyph("uni3259",89);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.two);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.nine);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.nine);
   tsu_render;
 endtsuglyph;
 
 % 30
 begintsuglyph("uni325A",90);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.zero);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.zero);
   tsu_render;
 endtsuglyph;
 
 % 31
 begintsuglyph("uni325B",91);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.one);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.one);
   tsu_render;
 endtsuglyph;
 
 % 32
 begintsuglyph("uni325C",92);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.two);
   tsu_render;
 endtsuglyph;
 
 % 33
 begintsuglyph("uni325D",93);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.three);
   tsu_render;
 endtsuglyph;
 
 % 34
 begintsuglyph("uni325E",94);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.four);
   tsu_render;
 endtsuglyph;
 
 % 35
 begintsuglyph("uni325F",95);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.five);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.five);
   tsu_render;
 endtsuglyph;
 
@@ -185,141 +185,143 @@ endtsuglyph;
 % 36
 begintsuglyph("uni32B1",177);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.six);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.six);
   tsu_render;
 endtsuglyph;
 
 % 37
 begintsuglyph("uni32B2",178);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.seven);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.seven);
   tsu_render;
 endtsuglyph;
 
 % 38
 begintsuglyph("uni32B3",179);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.eight);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.eight);
   tsu_render;
 endtsuglyph;
 
 % 39
 begintsuglyph("uni32B4",180);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.three);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.nine);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.nine);
   tsu_render;
 endtsuglyph;
 
 % 40
 begintsuglyph("uni32B5",181);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.zero);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.zero);
   tsu_render;
 endtsuglyph;
 
 % 41
 begintsuglyph("uni32B6",182);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.one);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.one);
   tsu_render;
 endtsuglyph;
 
 % 42
 begintsuglyph("uni32B7",183);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.two);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.two);
   tsu_render;
 endtsuglyph;
 
 % 43
 begintsuglyph("uni32B8",184);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.three);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.three);
   tsu_render;
 endtsuglyph;
 
 % 44
 begintsuglyph("uni32B9",185);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.right)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   tsu_render;
 endtsuglyph;
 
 % 45
 begintsuglyph("uni32BA",186);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.five);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.five);
   tsu_render;
 endtsuglyph;
 
 % 46
 begintsuglyph("uni32BB",187);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.six);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.six);
   tsu_render;
 endtsuglyph;
 
 % 47
 begintsuglyph("uni32BC",188);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.seven);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.seven);
   tsu_render;
 endtsuglyph;
 
 % 48
 begintsuglyph("uni32BD",189);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.eight);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.eight);
   tsu_render;
 endtsuglyph;
 
 % 49
 begintsuglyph("uni32BE",190);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.four);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.four);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.nine);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.nine);
   tsu_render;
 endtsuglyph;
 
 % 50
 begintsuglyph("uni32BF",191);
   circle.single;
-  tsu_xform(tsu_xf.ctwo.left)(numeral.five);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.five);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.zero);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.zero);
   tsu_render;
 endtsuglyph;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % CIRCLED KATAKANA
+
+rescale_slant:=0;
 
 % circled "a"
 begintsuglyph("uni32D0",208);

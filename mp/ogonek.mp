@@ -147,7 +147,7 @@ vardef latin.loweogonek =
   push_pbox_toexpand("latin.loweogonek");
   latin.lowe;
 
-  z7=point 4.5 of get_strokep(0);
+  z7=point (-0.5+length get_strokep(0)) of get_strokep(0);
 
   y8=0.4[y9,y7];
   y9=latin_wide_desc_r;
@@ -157,7 +157,8 @@ vardef latin.loweogonek =
   x9=0.4[x8,x10];
   x10=x6;
 
-  push_stroke(z7{-direction 4.5 of get_strokep(0)}..z8..z9{right}..z10,
+  push_stroke(z7{-direction (-0.5+length get_strokep(0)) of get_strokep(0)}
+      ..z8..z9{right}..z10,
     (1.1,1.1)--(1.4,1.4)--(1.3,1.3)--(1.4,1.4)--(1,1));
   replace_strokep(0,insert_nodes(oldp)(length(oldp)-2.5));
   expand_pbox;

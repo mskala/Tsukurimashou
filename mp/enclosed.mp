@@ -45,9 +45,10 @@ vardef circle.double =
 enddef;
 
 vardef square.single(text curves) =
-  tsu_xform(tsu_xf.sletter)(curves);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(curves);
   push_stroke(
-    (500,790)--(100,790)--(100,-10)--(900,-10)--(900,790)--cycle,
+    ((500,790)--(100,790)--(100,-10)--(900,-10)--(900,790)--cycle)
+      transformed inverse tsu_slant_xform,
     (2,2)--(2,2)--(2,2)--(2,2)--(2,2)--cycle);
   set_bosize(0,80);
   set_botip(0,1,1);
@@ -82,6 +83,10 @@ transform tsu_xf.sletter;
 xxpart tsu_xf.sletter=yypart tsu_xf.sletter=0.71;
 xypart tsu_xf.sletter=yxpart tsu_xf.sletter=0;
 centre_pt transformed tsu_xf.sletter=centre_pt+10*up;
+
+vardef tsu_xf.circ_slant_shift =
+  (centre_pt-(centre_pt transformed tsu_slant_xform))
+enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

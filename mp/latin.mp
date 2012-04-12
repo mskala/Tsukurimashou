@@ -844,7 +844,7 @@ vardef latin.lowb =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0,4.97) of oldp);
   set_botip(0,1,1);
-  set_boserif(0,0,1);
+  set_boserif(0,0,if do_italic_hook: 11 else: 1 fi);
   expand_pbox;
 enddef;
 
@@ -879,7 +879,7 @@ vardef latin.lowd =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0,4.97) of oldp);
   set_botip(0,1,1);
-  set_boserif(0,0,1);
+  set_boserif(0,0,if do_italic_hook: 11 else: 1 fi);
   set_boserif(0,1,2);
   expand_pbox;
 enddef;
@@ -1038,13 +1038,13 @@ vardef latin.lowh =
   y5=0.60[y2,y4];
 
   push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,0,1);
-  set_boserif(0,1,3);
+  set_boserif(0,0,if do_italic_hook: 11 else: 1 fi);
+  if not do_italic_hook: set_boserif(0,1,3); fi;
 
   push_stroke(z3..z4{right}..z5{dir 273}--z6,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.03,3) of oldp);
-  set_boserif(0,3,2);
+  set_boserif(0,3,if do_italic_hook: 11 else: 2 fi);
   expand_pbox;
 enddef;
 
@@ -1120,13 +1120,13 @@ vardef latin.lowk =
   z5=(670,0.5[latin_wide_low_h,latin_wide_low_v]);
 
   push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,0,1);
-  set_boserif(0,1,3);
+  set_boserif(0,0,if do_italic_hook: 11 else: 1 fi);
+  if not do_italic_hook: set_boserif(0,1,3); fi;
 
   push_stroke(z3--z4--z5,(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   set_botip(0,1,1);
-  set_boserif(0,0,3);
-  set_boserif(0,2,3);
+  set_boserif(0,0,if do_italic_hook: 2 else: 3 fi);
+  set_boserif(0,2,if do_italic_hook: 11 else: 3 fi);
   set_boalternate(0);
   expand_pbox;
 enddef;
@@ -1141,6 +1141,7 @@ vardef latin.lowl =
   y3=latin_wide_low_r;
 
   push_stroke(z1--z2{down}..{right}z3,(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+  if do_italic_hook: set_boserif(0,0,11); fi;
   expand_pbox;
 enddef;
 
@@ -1162,8 +1163,8 @@ vardef latin.lowm =
   y5=y9=0.66[y2,y4];
 
   push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,0,1);
-  set_boserif(0,1,3);
+  set_boserif(0,0,if do_italic_hook: 11 else: 1 fi);
+  if not do_italic_hook: set_boserif(0,1,3); fi;
 
   push_stroke(z3..z4{right}..z5{dir 275}--z6,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
@@ -1174,7 +1175,7 @@ vardef latin.lowm =
   push_stroke(z7..z8{right}..z9{dir 271}--z10,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.04,3) of oldp);
-  set_boserif(0,3,2);
+  set_boserif(0,3,if do_italic_hook: 11 else: 2 fi);
   expand_pbox;
 enddef;
 
@@ -1193,13 +1194,13 @@ vardef latin.lown =
   y5=0.60[y2,y4];
 
   push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,0,1);
-  set_boserif(0,1,3);
+  set_boserif(0,0,if do_italic_hook: 11 else: 1 fi);
+  if not do_italic_hook: set_boserif(0,1,3); fi;
 
   push_stroke(z3..z4{right}..z5{dir 273}--z6,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.03,3) of oldp);
-  set_boserif(0,3,2);
+  set_boserif(0,3,if do_italic_hook: 11 else: 2 fi);
   expand_pbox;
 enddef;
 
@@ -1260,7 +1261,7 @@ vardef latin.lowp =
       (1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0,4.97) of oldp);
   set_botip(0,1,1);
-  set_boserif(0,0,3);
+  set_boserif(0,0,if do_italic_hook: 1 else: 3 fi);
   set_boserif(0,1,1);
   expand_pbox;
 enddef;
@@ -1306,8 +1307,8 @@ vardef latin.lowr =
   y5=0.60[y2,y4];
 
   push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,0,1);
-  set_boserif(0,1,3);
+  set_boserif(0,0,if do_italic_hook: 11 else: 1 fi);
+  if not do_italic_hook: set_boserif(0,1,3); fi;
 
   push_stroke(z3..z4{right}..{dir 273}z5,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
@@ -1462,12 +1463,13 @@ vardef latin.lowu =
   y4=latin_wide_low_h;
   y5=0.60[y2,y4];
 
-  push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,0,2);
+  push_stroke(z2--z1,(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,if do_italic_hook: 11 else: 2 fi);
 
-  push_stroke(z3..z4{left}..z5{dir 93}--z6,
+  push_stroke(reverse(z3..z4{left}..z5{dir 93}--z6),
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
-  replace_strokep(0)(subpath (0.03,3) of oldp);
+  replace_strokep(0)(subpath (0,2.97) of oldp);
+  if do_italic_hook: set_boserif(0,0,11); fi;
   expand_pbox;
 enddef;
 
@@ -1476,7 +1478,7 @@ vardef latin.lowv =
   (x1+x3)/2=x2=500;
 
   y1=y3=latin_wide_xheight_v;
-  y2=latin_wide_low_v;
+  y2=latin_wide_low_h;
 
   (x3-x1)=(y1-y2)*0.9;
 
@@ -1501,7 +1503,7 @@ vardef latin.loww =
   (x3-x2)=(x2-x1);
 
   y1=y3=y5=latin_wide_xheight_v;
-  y2=y4=latin_wide_low_v;
+  y2=y4=latin_wide_low_h;
 
   (x5-x1)=(y1-y2)*1.45;
 
@@ -1543,19 +1545,19 @@ vardef latin.lowx =
   y2=y4=latin_wide_low_v;
 
   push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,0,3);
-  set_boserif(0,1,3);
+  set_boserif(0,0,if do_italic_hook: 11 else: 3 fi);
+  set_boserif(0,1,if do_italic_hook: 11 else: 3 fi);
 
   if do_alternation:
     push_stroke(z3--(0.5[z3,z4]+alternate_adjust*right/6)
       --(0.5[z3,z4]+alternate_adjust*left/6)--z4,
       (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
-    set_boserif(0,0,3);
-    set_boserif(0,3,3);
+    set_boserif(0,0,if do_italic_hook: 2 else: 3 fi);
+    set_boserif(0,3,if do_italic_hook: 1 else: 3 fi);
   else:
     push_stroke(z3--z4,(1.6,1.6)--(1.6,1.6));
-    set_boserif(0,0,3);
-    set_boserif(0,1,3);
+    set_boserif(0,0,if do_italic_hook: 2 else: 3 fi);
+    set_boserif(0,1,if do_italic_hook: 1 else: 3 fi);
   fi;
   set_boalternate(0);
   expand_pbox;
@@ -1587,8 +1589,8 @@ vardef latin.lowy =
   replace_strokep(0)(subpath (0,xchgtime) of oldp);
   replace_strokeq(0)(subpath (0,xchgtime) of oldq);
 
-  set_boserif(-1,0,3);
-  set_boserif(0,0,3);
+  set_boserif(-1,0,if do_italic_hook: 11 else: 3 fi);
+  set_boserif(0,0,if do_italic_hook: 2 else: 3 fi);
   set_botip(0,1,1);
   set_boalternate(0);
 

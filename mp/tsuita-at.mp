@@ -32,10 +32,7 @@
 
 input preintro.mp;
 
-familyname:="TsuIta";
 stylename:="Atama";
-
-rescale_slant:=170;
 
 (0,4) transformed tsu_brush_xf = (4,0.77);
 (1,1) transformed tsu_brush_xf = (1,0.73);
@@ -44,7 +41,27 @@ rescale_slant:=170;
 tsu_brush_min:=0.73;
 tsu_brush_max:=0.77;
 
-def tsu_brush_opt(expr n,l) = cut(n,rel 90)(l) enddef;
-sharp_corners:=true;
+def tsu_brush_opt(expr n,l) =
+  if rescale_slant>10: cut(n,rel 90)(l) fi enddef;
+def sharp_corners = (rescale_slant>10) enddef;
 
 input intro.mp;
+
+let old_rescale_half = tsu_rescale_half;
+
+def tsu_rescale_half =
+  old_rescale_half;
+  width_curve:=((-1,-1)--(100,100))..(480,330)..{right}(2000,440);
+enddef;
+
+let old_rescale_half_lc = tsu_rescale_half_lc;
+
+def tsu_rescale_half_lc =
+  old_rescale_half_lc;
+  width_curve:=((-1,-1)--(100,100))..(610,330)..{right}(2000,420);
+enddef;
+
+include_late("tsuita-common.mp");
+
+% overridden per-page later
+rescale_slant:=190;

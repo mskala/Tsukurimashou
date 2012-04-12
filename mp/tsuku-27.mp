@@ -47,7 +47,7 @@ do_late_includes;
 % 1
 % BACKGROUND 25CF
 begintsuglyph("uni2776",118);
-  tsu_xform(tsu_xf.circled)(numeral.one);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.one);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -56,7 +56,7 @@ endtsuglyph;
 % 2
 % BACKGROUND 25CF
 begintsuglyph("uni2777",119);
-  tsu_xform(tsu_xf.circled)(numeral.two);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.two);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -65,7 +65,7 @@ endtsuglyph;
 % 3
 % BACKGROUND 25CF
 begintsuglyph("uni2778",120);
-  tsu_xform(tsu_xf.circled)(numeral.three);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.three);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -74,7 +74,7 @@ endtsuglyph;
 % 4
 % BACKGROUND 25CF
 begintsuglyph("uni2779",121);
-  tsu_xform(tsu_xf.circled)(numeral.four);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.four);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -83,7 +83,7 @@ endtsuglyph;
 % 5
 % BACKGROUND 25CF
 begintsuglyph("uni277A",122);
-  tsu_xform(tsu_xf.circled)(numeral.five);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.five);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -92,7 +92,7 @@ endtsuglyph;
 % 6
 % BACKGROUND 25CF
 begintsuglyph("uni277B",123);
-  tsu_xform(tsu_xf.circled)(numeral.six);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.six);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -101,7 +101,7 @@ endtsuglyph;
 % 7
 % BACKGROUND 25CF
 begintsuglyph("uni277C",124);
-  tsu_xform(tsu_xf.circled)(numeral.seven);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.seven);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -110,7 +110,7 @@ endtsuglyph;
 % 8
 % BACKGROUND 25CF
 begintsuglyph("uni277D",125);
-  tsu_xform(tsu_xf.circled)(numeral.eight);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.eight);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -119,7 +119,7 @@ endtsuglyph;
 % 9
 % BACKGROUND 25CF
 begintsuglyph("uni277E",126);
-  tsu_xform(tsu_xf.circled)(numeral.nine);
+  tsu_xform(tsu_xf.circled shifted tsu_xf.circ_slant_shift)(numeral.nine);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -128,9 +128,9 @@ endtsuglyph;
 % 10
 % BACKGROUND 25CF
 begintsuglyph("uni277F",127);
-  tsu_xform(tsu_xf.ctwo.left)(numeral.one);
+  tsu_xform(tsu_xf.ctwo.left shifted tsu_xf.circ_slant_shift)(numeral.one);
   numeric x[],y[];
-  tsu_xform(tsu_xf.ctwo.right)(numeral.zero);
+  tsu_xform(tsu_xf.ctwo.right shifted tsu_xf.circ_slant_shift)(numeral.zero);
   i:=0; forever: exitif find_stroke(i)<1;
     set_bosize(i,107); i:=i-1; endfor;
   tsu_render;

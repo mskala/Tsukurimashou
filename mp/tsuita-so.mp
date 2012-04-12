@@ -32,12 +32,9 @@
 
 input preintro.mp;
 
-familyname:="TsuIta";
 stylename:="Soku";
 
 mincho:=0.8;
-
-rescale_slant:=170;
 
 (0,4) transformed tsu_brush_xf = (0.0,0.80);
 (1,1) transformed tsu_brush_xf = (1.2,0.45);
@@ -49,15 +46,15 @@ tsu_brush_max:=0.80;
 tsu_brush_shape:=0.60;
 tsu_brush_angle:=1;
 
-tsu_pbrush_size:=60;
+tsu_pbrush_size:=45;
 tsu_pbrush_shape:=1;
 tsu_pbrush_angle:=1;
 
 input serif.mp;
 
-for i=1 upto 10:
-  tsu_do_serif[i]:=true;
-endfor;
+tsu_do_serif[1]:=true;
+tsu_do_serif[2]:=true;
+tsu_do_serif[3]:=true;
 
 do_alternation:=true;
 
@@ -65,3 +62,36 @@ genji_outline:=true;
 genji_hw:=0.2;
 
 input intro.mp;
+
+let old_render_segment = tsu_render_segment;
+
+def tsu_render_segment(expr i,p,q) =
+  begingroup
+    save start_time,end_time;
+    numeric start_time,end_time;
+  endgroup;
+  old_render_segment(i,p,q);
+enddef;
+
+let old_rescale_half = tsu_rescale_half;
+
+def tsu_rescale_half =
+  old_rescale_half;
+  width_curve:=((-1,-1)--(100,100))..(560,310)..{right}(2000,400);
+enddef;
+
+let old_rescale_half_lc = tsu_rescale_half_lc;
+
+def tsu_rescale_half_lc =
+  old_rescale_half_lc;
+  width_curve:=((-1,-1)--(100,100))..(610,310)..{right}(2000,400);
+enddef;
+
+do_italic_hook:=true;
+italic_hook_radius:=170;
+italic_hook_dir:=25;
+
+include_late("tsuita-common.mp");
+
+% overridden per-page later
+rescale_slant:=190;

@@ -61,6 +61,7 @@ while (@files) {
       open(MP,"$prefix/$_") || open(MP,"./$_");
       while (<MP>) {
          push @files,$1 if /^\s*input\s+(\S+)\s*;/;
+         push @files,$1 if /^\s*include_late\s*\("(\S+)"\)\s*;/;
          $used_serif=1 if /^\s*bo_serif.*:=/;
       }
       close(MP);

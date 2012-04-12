@@ -702,6 +702,10 @@ begintsuglyph("uniFF5E",94);
    tsu_render;
 endtsuglyph;
 
+begingroup
+save rescale_slant;
+rescale_slant:=0;
+
 % left and right white parentheses
 begintsuglyph("uniFF5F",95);
   punct.wparen_left;
@@ -1104,6 +1108,8 @@ begintsuglyph("uniFF9F",159);
    Fill fullcircle scaled (handakuten_outer*0.75) shifted (-90,780);
    unFill reverse fullcircle scaled (handakuten_inner*0.75) shifted (-90,780);
 endtsuglyph;
+
+endgroup;
 
 % WARNING changing rescale setting
 tsu_rescale_full;

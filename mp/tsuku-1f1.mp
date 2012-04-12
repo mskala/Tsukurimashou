@@ -207,7 +207,7 @@ endtsuglyph;
 % A
 % BACKGROUND 25CF
 begintsuglyph("u1F150",80);
-  tsu_xform(tsu_xf.cletter)(latin.upa);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upa);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -215,7 +215,7 @@ endtsuglyph;
 % B
 % BACKGROUND 25CF
 begintsuglyph("u1F151",81);
-  tsu_xform(tsu_xf.cletter)(latin.upb);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upb);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -223,7 +223,7 @@ endtsuglyph;
 % C
 % BACKGROUND 25CF
 begintsuglyph("u1F152",82);
-  tsu_xform(tsu_xf.cletter)(latin.upc);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upc);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -231,7 +231,7 @@ endtsuglyph;
 % D
 % BACKGROUND 25CF
 begintsuglyph("u1F153",83);
-  tsu_xform(tsu_xf.cletter)(latin.upd);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upd);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -239,7 +239,7 @@ endtsuglyph;
 % E
 % BACKGROUND 25CF
 begintsuglyph("u1F154",84);
-  tsu_xform(tsu_xf.cletter)(latin.upe);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upe);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -247,7 +247,7 @@ endtsuglyph;
 % F
 % BACKGROUND 25CF
 begintsuglyph("u1F155",85);
-  tsu_xform(tsu_xf.cletter)(latin.upf);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upf);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -255,7 +255,7 @@ endtsuglyph;
 % G
 % BACKGROUND 25CF
 begintsuglyph("u1F156",86);
-  tsu_xform(tsu_xf.cletter)(latin.upg);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upg);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -263,7 +263,7 @@ endtsuglyph;
 % H
 % BACKGROUND 25CF
 begintsuglyph("u1F157",87);
-  tsu_xform(tsu_xf.cletter)(latin.uph);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.uph);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -271,7 +271,7 @@ endtsuglyph;
 % I
 % BACKGROUND 25CF
 begintsuglyph("u1F158",88);
-  tsu_xform(tsu_xf.cletter)(latin.upi);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upi);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -279,7 +279,7 @@ endtsuglyph;
 % J
 % BACKGROUND 25CF
 begintsuglyph("u1F159",89);
-  tsu_xform(tsu_xf.cletter)(latin.upj);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upj);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -287,7 +287,7 @@ endtsuglyph;
 % K
 % BACKGROUND 25CF
 begintsuglyph("u1F15A",90);
-  tsu_xform(tsu_xf.cletter)(latin.upk);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upk);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -295,7 +295,7 @@ endtsuglyph;
 % L
 % BACKGROUND 25CF
 begintsuglyph("u1F15B",91);
-  tsu_xform(tsu_xf.cletter)(latin.upl);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upl);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -303,7 +303,7 @@ endtsuglyph;
 % M
 % BACKGROUND 25CF
 begintsuglyph("u1F15C",92);
-  tsu_xform(tsu_xf.cletter)(latin.upm);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upm);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -311,7 +311,7 @@ endtsuglyph;
 % N
 % BACKGROUND 25CF
 begintsuglyph("u1F15D",93);
-  tsu_xform(tsu_xf.cletter)(latin.upn);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upn);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -319,7 +319,7 @@ endtsuglyph;
 % O
 % BACKGROUND 25CF
 begintsuglyph("u1F15E",94);
-  tsu_xform(tsu_xf.cletter)(latin.upo);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upo);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -327,7 +327,7 @@ endtsuglyph;
 % P
 % BACKGROUND 25CF
 begintsuglyph("u1F15F",95);
-  tsu_xform(tsu_xf.cletter)(latin.upp);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upp);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -335,7 +335,7 @@ endtsuglyph;
 % Q
 % BACKGROUND 25CF
 begintsuglyph("u1F160",96);
-  tsu_xform(tsu_xf.cletter)(latin.upq);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upq);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -343,7 +343,7 @@ endtsuglyph;
 % R
 % BACKGROUND 25CF
 begintsuglyph("u1F161",97);
-  tsu_xform(tsu_xf.cletter)(latin.upr);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upr);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -351,7 +351,7 @@ endtsuglyph;
 % S
 % BACKGROUND 25CF
 begintsuglyph("u1F162",98);
-  tsu_xform(tsu_xf.cletter)(latin.ups);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.ups);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -359,7 +359,7 @@ endtsuglyph;
 % T
 % BACKGROUND 25CF
 begintsuglyph("u1F163",99);
-  tsu_xform(tsu_xf.cletter)(latin.upt);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upt);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -367,7 +367,7 @@ endtsuglyph;
 % U
 % BACKGROUND 25CF
 begintsuglyph("u1F164",100);
-  tsu_xform(tsu_xf.cletter)(latin.upu);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upu);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -375,7 +375,7 @@ endtsuglyph;
 % V
 % BACKGROUND 25CF
 begintsuglyph("u1F165",101);
-  tsu_xform(tsu_xf.cletter)(latin.upv);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upv);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -383,7 +383,7 @@ endtsuglyph;
 % W
 % BACKGROUND 25CF
 begintsuglyph("u1F166",102);
-  tsu_xform(tsu_xf.cletter)(latin.upw);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upw);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -391,7 +391,7 @@ endtsuglyph;
 % X
 % BACKGROUND 25CF
 begintsuglyph("u1F167",103);
-  tsu_xform(tsu_xf.cletter)(latin.upx);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upx);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -399,7 +399,7 @@ endtsuglyph;
 % Y
 % BACKGROUND 25CF
 begintsuglyph("u1F168",104);
-  tsu_xform(tsu_xf.cletter)(latin.upy);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upy);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -407,7 +407,7 @@ endtsuglyph;
 % Z
 % BACKGROUND 25CF
 begintsuglyph("u1F169",105);
-  tsu_xform(tsu_xf.cletter)(latin.upz);
+  tsu_xform(tsu_xf.cletter shifted tsu_xf.circ_slant_shift)(latin.upz);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -419,7 +419,7 @@ endtsuglyph;
 % A
 % BACKGROUND F1712
 begintsuglyph("u1F170",112);
-  tsu_xform(tsu_xf.sletter)(latin.upa);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upa);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -427,7 +427,7 @@ endtsuglyph;
 % B
 % BACKGROUND F1712
 begintsuglyph("u1F171",113);
-  tsu_xform(tsu_xf.sletter)(latin.upb);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upb);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -435,7 +435,7 @@ endtsuglyph;
 % C
 % BACKGROUND F1712
 begintsuglyph("u1F172",114);
-  tsu_xform(tsu_xf.sletter)(latin.upc);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upc);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -443,7 +443,7 @@ endtsuglyph;
 % D
 % BACKGROUND F1712
 begintsuglyph("u1F173",115);
-  tsu_xform(tsu_xf.sletter)(latin.upd);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upd);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -451,7 +451,7 @@ endtsuglyph;
 % E
 % BACKGROUND F1712
 begintsuglyph("u1F174",116);
-  tsu_xform(tsu_xf.sletter)(latin.upe);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upe);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -459,7 +459,7 @@ endtsuglyph;
 % F
 % BACKGROUND F1712
 begintsuglyph("u1F175",117);
-  tsu_xform(tsu_xf.sletter)(latin.upf);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upf);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -467,7 +467,7 @@ endtsuglyph;
 % G
 % BACKGROUND F1712
 begintsuglyph("u1F176",118);
-  tsu_xform(tsu_xf.sletter)(latin.upg);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upg);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -475,7 +475,7 @@ endtsuglyph;
 % H
 % BACKGROUND F1712
 begintsuglyph("u1F177",119);
-  tsu_xform(tsu_xf.sletter)(latin.uph);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.uph);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -483,7 +483,7 @@ endtsuglyph;
 % I
 % BACKGROUND F1712
 begintsuglyph("u1F178",120);
-  tsu_xform(tsu_xf.sletter)(latin.upi);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upi);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -491,7 +491,7 @@ endtsuglyph;
 % J
 % BACKGROUND F1712
 begintsuglyph("u1F179",121);
-  tsu_xform(tsu_xf.sletter)(latin.upj);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upj);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -499,7 +499,7 @@ endtsuglyph;
 % K
 % BACKGROUND F1712
 begintsuglyph("u1F17A",122);
-  tsu_xform(tsu_xf.sletter)(latin.upk);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upk);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -507,7 +507,7 @@ endtsuglyph;
 % L
 % BACKGROUND F1712
 begintsuglyph("u1F17B",123);
-  tsu_xform(tsu_xf.sletter)(latin.upl);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upl);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -516,10 +516,10 @@ endtsuglyph;
 % BACKGROUND F1712
 begintsuglyph("u1F17C",124);
   if do_alternation:
-    tsu_xform(tsu_xf.sletter
+    tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift
       shifted -centre_pt xscaled 0.95 shifted centre_pt)(latin.upm);
   else:
-    tsu_xform(tsu_xf.sletter)(latin.upm);
+    tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upm);
   fi;
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -528,7 +528,7 @@ endtsuglyph;
 % N
 % BACKGROUND F1712
 begintsuglyph("u1F17D",125);
-  tsu_xform(tsu_xf.sletter)(latin.upn);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upn);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -536,7 +536,7 @@ endtsuglyph;
 % O
 % BACKGROUND F1712
 begintsuglyph("u1F17E",126);
-  tsu_xform(tsu_xf.sletter)(latin.upo);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upo);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -544,7 +544,7 @@ endtsuglyph;
 % P
 % BACKGROUND F1712
 begintsuglyph("u1F17F",127);
-  tsu_xform(tsu_xf.sletter)(latin.upp);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upp);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -552,7 +552,7 @@ endtsuglyph;
 % Q
 % BACKGROUND F1712
 begintsuglyph("u1F180",128);
-  tsu_xform(tsu_xf.sletter)(latin.upq);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upq);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -560,7 +560,7 @@ endtsuglyph;
 % R
 % BACKGROUND F1712
 begintsuglyph("u1F181",129);
-  tsu_xform(tsu_xf.sletter)(latin.upr);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upr);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -568,7 +568,7 @@ endtsuglyph;
 % S
 % BACKGROUND F1712
 begintsuglyph("u1F182",130);
-  tsu_xform(tsu_xf.sletter)(latin.ups);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.ups);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -576,7 +576,7 @@ endtsuglyph;
 % T
 % BACKGROUND F1712
 begintsuglyph("u1F183",131);
-  tsu_xform(tsu_xf.sletter)(latin.upt);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upt);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -584,7 +584,7 @@ endtsuglyph;
 % U
 % BACKGROUND F1712
 begintsuglyph("u1F184",132);
-  tsu_xform(tsu_xf.sletter)(latin.upu);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upu);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -592,7 +592,7 @@ endtsuglyph;
 % V
 % BACKGROUND F1712
 begintsuglyph("u1F185",133);
-  tsu_xform(tsu_xf.sletter)(latin.upv);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upv);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -601,10 +601,10 @@ endtsuglyph;
 % BACKGROUND F1712
 begintsuglyph("u1F186",134);
   if do_alternation:
-    tsu_xform(tsu_xf.sletter
+    tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift
       shifted -centre_pt xscaled 0.95 shifted centre_pt)(latin.upw);
   else:
-    tsu_xform(tsu_xf.sletter)(latin.upw);
+    tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upw);
   fi;
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
@@ -613,7 +613,7 @@ endtsuglyph;
 % X
 % BACKGROUND F1712
 begintsuglyph("u1F187",135);
-  tsu_xform(tsu_xf.sletter)(latin.upx);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upx);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -621,7 +621,7 @@ endtsuglyph;
 % Y
 % BACKGROUND F1712
 begintsuglyph("u1F188",136);
-  tsu_xform(tsu_xf.sletter)(latin.upy);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upy);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
@@ -629,7 +629,7 @@ endtsuglyph;
 % Z
 % BACKGROUND F1712
 begintsuglyph("u1F189",137);
-  tsu_xform(tsu_xf.sletter)(latin.upz);
+  tsu_xform(tsu_xf.sletter shifted tsu_xf.circ_slant_shift)(latin.upz);
   i:=0; forever: exitif find_stroke(i)<1; set_bosize(i,107); i:=i-1; endfor;
   tsu_render;
 endtsuglyph;
