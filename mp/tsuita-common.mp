@@ -59,6 +59,9 @@ fi;
 
 tsu_punct_size:=85;
 
+boolean genji_rounded;
+genji_rounded:=true;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef latin.lowa =
@@ -157,27 +160,97 @@ vardef latin.lowe =
   y4=0.49[y5,y3];
   y5=latin_wide_low_r;
   y6=0.35[y5,y2];
-  y0=0.8[y2,y3];
+  y0=0.7[y2,y3];
 
   (x2+x4)/2=500;
   (x2-x4)=0.86*(y3-y5);
   x3=0.49[x4,x2];
   x5=0.52[x4,x2];
   x6=1.04[x4,x2]-(if sharp_corners: 0 else: (mbrush_width/3) fi);
-  x0=0.7[x3,x2];
+  x0=0.74[x3,x2];
 
   push_stroke(z0..z3{left}..z4{down}..z5{right}..z6,
-    (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--
+    (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.6,1.6)--
       (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
-  z1=get_strokep(0) intersectionpoint ((z2+(-500,-110))--z2+(-10,0));
+  z1=get_strokep(0) intersectionpoint ((z2+(-500,-120))--z2+(-10,0));
   replace_strokep(0)(insert_nodes((z1+(2,2)){curl 0}..
-    tension 1.3..oldp)(0.6));
+    tension 1.3..oldp)(0.5));
+  replace_strokep(0)((point 0 of oldp){curl 0}..
+    ((0,-20)+point 1 of oldp)..
+    (subpath (2,infinity) of oldp));
   expand_pbox;
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if do_italic_hook:
+
+vardef latin.lowf =
+  push_pbox_toexpand("latin.lowf");
+  (x2-x1)=290;
+  x5=x6=490=0.52[x1,x2];
+  x3-x5=2*(y4-y5);
+  x4=0.38[x5,x3];
+  x6-x7=1.15*(x4-x5);
+  x6-x8=1.15*(x3-x5);
+
+  y1=y2=0.75[latin_wide_low_h,latin_wide_xheight_h];
+  y5=0.52[latin_wide_xheight_h,y4];
+  y3=0.73[latin_wide_xheight_h,y4];
+  y4=latin_wide_high_r;
+  y7=latin_wide_desc_r;
+  y6-y7=1.10*(y4-y5);
+  y8-y7=1.10*(y4-y3);
+
+  push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
+
+  push_stroke(z3{curl 0.6}..z4{left}..
+      {dir 268}z5{down}--z6{dir 268}..
+      {left}z7..{curl 0.6}z8,
+    (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+  replace_strokep(0)(subpath (0.23,4.77) of oldp);
+  expand_pbox;
+enddef;
+
+vardef latin.lowi =
+  push_pbox_toexpand("latin.lowi");
+  x4=450;
+  (x2-x4)=(x4-x3)=0.4*italic_hook_radius;
+
+  y2=latin_wide_xheight_r;
+  y3=latin_wide_low_r;
+  y4=0.5[y2,latin_wide_high_r]+mbrush_width;
+
+  push_stroke(z2--z3,(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,0,11);
+  set_boserif(0,1,11);
+
+  push_lcblob(fullcircle rotated 45 scaled (mbrush_width*2.7+15)
+    shifted (z4 transformed tsu_rescale_xform)
+    transformed inverse tsu_rescale_xform);
+  expand_pbox;
+enddef;
+
+vardef latin.lowj =
+  push_pbox_toexpand("latin.lowj");
+  x3=x5=450;
+  (x2-x5)=0.25*italic_hook_radius;
+
+  y2=latin_wide_xheight_r;
+  y3=latin_wide_low_v;
+  y5=0.5[y2,latin_wide_high_r]+mbrush_width;
+
+  z4=z3+(-210,-140);
+
+  push_stroke((z2--(z3+(0,55)))..{curl 0.8}z4,
+    (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,0,11);
+
+  push_lcblob(fullcircle scaled (mbrush_width*2.7+15)
+    shifted (z5 transformed tsu_rescale_xform)
+    transformed inverse tsu_rescale_xform);
+  expand_pbox;
+enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
