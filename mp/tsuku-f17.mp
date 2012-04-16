@@ -525,6 +525,18 @@ vardef gb(expr f,gp) =
               (subpath ((length mybk)-2+y6,infinity) of mybk)
           fi;
         fi;
+        if (length mybk)>3:
+          z7=((point (length mybk)-4 of mybk)
+            -(precontrol (length mybk)-4 of mybk));
+          z8=((postcontrol (length mybk)-3 of mybk)
+            -(point (length mybk)-3 of mybk));
+          if (abs(z7)>0) and (abs(z8)>0):
+            if (z7/abs(z7)) dotprod (z8/abs(z8))<-0.1:
+              mybk:=(subpath (0,(length mybk)-4) of mybk)--
+                (subpath ((length mybk)-3,infinity) of mybk);
+            fi;
+          fi;
+        fi;
         old_dir:=z4;
       endfor;
       mybk:=regenerate(mybk{old_dir}..{right}cycle);
@@ -960,8 +972,9 @@ endtsuglyph;
 
 % #51 Ukifune
 begintsuglyph("genjimon51",243);
-  gb(1,gf(2,gr(2,gf(1,gt(gf(3,ge(3)),gr(0,gf(3,ge(3))))))));
+  gb(1,gf(2,gr(2,gf(1,gf(0.5,gr(1,gf(2.5,ge(3))))))));
   gb(2,gf(2,gr(0,gr(-1,gf(2,ge(3))))));
+  gb(4,gf(2,ge(1)));
 endtsuglyph;
 
 % #52 Kagerou

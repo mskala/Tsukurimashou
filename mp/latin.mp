@@ -738,8 +738,8 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef latin.lowa =
-  push_pbox_toexpand("latin.lowa");
+vardef latin.double_lowa =
+  push_pbox_toexpand("latin.double_lowa");
   x1=(-0.12)[x6,x3];
   x3=x4=x5=x8;
   0.51[x6,x3]=500;
@@ -768,6 +768,38 @@ vardef latin.lowa =
   expand_pbox;
 enddef;
 
+vardef latin.single_lowa =
+  push_pbox_toexpand("latin.single_lowa");
+  (x1+x4)/2=520;
+  (x1-x4)=(y3-y1)*0.81;
+  x1=x6-8;
+  x3=0.4[x1,x4];
+  x5=0.36[x4,x1];
+
+  y1=latin_wide_low_v;
+  y3=latin_wide_xheight_h;
+  y4=0.47[y5,y3];
+  y5=latin_wide_low_h;
+  y6=0.37[y1,y3];
+
+  z7=(x1,y3);
+  z2=0.3[z7,0.5[z3,z1]];
+  
+  push_stroke(interpath(0.5)
+      (z1{up}..{up}z7{left}..{left}z3..{down}z4..{right}z5..z6,
+       z1{up}..z2..{left}z3..{down}z4..{right}z5..z6),
+    (1.3,1.3)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+  replace_strokep(0)(reverse(insert_nodes(oldp)(0.5)));
+  set_boserif(0,6,if do_italic_hook: 11 else: 2 fi);
+  set_botip(0,4,1);
+  expand_pbox;
+enddef;
+
+vardef latin.lowa =
+  latin.double_lowa;
+enddef;
+
 vardef latin.lowae =
   push_pbox_toexpand("latin.lowae");
   begingroup
@@ -776,7 +808,7 @@ vardef latin.lowae =
     path astem,abowl,astroke,estroke,etop,ebot;
     saved_sp:=sp;
     
-    latin.lowa;
+    latin.double_lowa;
     set_boserif(-1,3,whatever);
     astem:=get_strokep(-1);
     abowl:=get_strokep(0);
@@ -1238,9 +1270,10 @@ vardef latin.lowoe =
     scaled ((latin_wide_xheight_r-latin_wide_low_r)/2)
     shifted (340,0.5[latin_wide_xheight_r,latin_wide_low_r]),
     (1.2,1.2)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.2,1.2));
-  replace_strokep(0)(subpath (xpart (oldp intersectiontimes
+  replace_strokep(0)(subpath (0.03+xpart (oldp intersectiontimes
                        (subpath (2,infinity) of get_strokep(-1))),
-                   4-xpart ((reverse oldp) intersectiontimes get_strokep(-1)))
+                   3.97-xpart ((reverse oldp) intersectiontimes
+                            reverse get_strokep(-1)))
           of oldp);
   expand_pbox;
 enddef;

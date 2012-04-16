@@ -65,74 +65,8 @@ genji_rounded:=true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef latin.lowa =
-  push_pbox_toexpand("latin.lowa");
-  (x1+x4)/2=520;
-  (x1-x4)=(y3-y1)*0.81;
-  x1=x6-8;
-  x3=0.4[x1,x4];
-  x5=0.36[x4,x1];
-
-  y1=latin_wide_low_v;
-  y3=latin_wide_xheight_h;
-  y4=0.47[y5,y3];
-  y5=latin_wide_low_h;
-  y6=0.37[y1,y3];
-
-  z7=(x1,y3);
-  z2=0.3[z7,0.5[z3,z1]];
-  
-  push_stroke(interpath(0.5)
-      (z1{up}..{up}z7{left}..{left}z3..{down}z4..{right}z5..z6,
-       z1{up}..z2..{left}z3..{down}z4..{right}z5..z6),
-    (1.3,1.3)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--
-      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
-  replace_strokep(0)(reverse(insert_nodes(oldp)(0.5)));
-  set_boserif(0,6,if do_italic_hook: 11 else: 2 fi);
-  set_botip(0,4,1);
-  expand_pbox;
+  latin.single_lowa;
 enddef;
-
-vardef punct.atsign =
-  push_pbox_toexpand("punct.atsign");
-  begingroup
-    save xsp,ysp;
-    xsp:=sp;
-    latin.lowa;
-    set_boserif(0,6,whatever);
-    set_botip(0,6,0);
-    ysp:=sp;
-
-    numeric x[],y[];
-    x1-x2=x2-x3=y2-y1;
-    x2=x4=500;
-    y1=y3=0.49[y4,y2];
-    y2=latin_wide_high_r;
-    y4=latin_wide_low_r;
-
-    transform shrinka;
-    (0.5[llcorner get_strokep(0),urcorner get_strokep(0)])
-      transformed shrinka=0.5[z3,z1];
-    (0.5[lrcorner get_strokep(0),urcorner get_strokep(0)])
-      transformed shrinka=0.71[z3,z1];
-    (0.5[ulcorner get_strokep(0),urcorner get_strokep(0)])
-      transformed shrinka=z2+(0.07,-1)*0.29*(x1-x3);
-    sp:=xsp;
-    tsu_xform(shrinka shifted (-10,0))(sp:=ysp);
-
-    z5=point infinity of get_strokep(0);
-    y6=ypart lrcorner get_strokep(0);
-    x6=0.8[x2,x1];
-    replace_strokep(0)((subpath (0,length(oldp)-1) of oldp)
-       ..{curl 1}z5{curl 1}..z6..
-       (subpath (0,3.85) of (z1..z2..z3..z4..cycle)));
-    replace_strokep(0)(insert_nodes(oldp)((length oldp-4.5)));
-    replace_strokeq(0)(oldq--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--
-      (1.6,1.6)--(1.6,1.6)--(0,0));
-  endgroup;
-  expand_pbox;
-enddef;
-
-vardef latin.lowae = enddef;
 
 vardef latin.lowaogonek =
   push_pbox_toexpand("latin.lowaogonek");
@@ -181,6 +115,46 @@ vardef latin.lowe =
   expand_pbox;
 enddef;
 
+vardef punct.atsign =
+  push_pbox_toexpand("punct.atsign");
+  begingroup
+    save xsp,ysp;
+    xsp:=sp;
+    latin.lowa;
+    set_boserif(0,6,whatever);
+    set_botip(0,6,0);
+    ysp:=sp;
+
+    numeric x[],y[];
+    x1-x2=x2-x3=y2-y1;
+    x2=x4=500;
+    y1=y3=0.49[y4,y2];
+    y2=latin_wide_high_r;
+    y4=latin_wide_low_r;
+
+    transform shrinka;
+    (0.5[llcorner get_strokep(0),urcorner get_strokep(0)])
+      transformed shrinka=0.5[z3,z1];
+    (0.5[lrcorner get_strokep(0),urcorner get_strokep(0)])
+      transformed shrinka=0.71[z3,z1];
+    (0.5[ulcorner get_strokep(0),urcorner get_strokep(0)])
+      transformed shrinka=z2+(0.07,-1)*0.29*(x1-x3);
+    sp:=xsp;
+    tsu_xform(shrinka shifted (-10,0))(sp:=ysp);
+
+    z5=point infinity of get_strokep(0);
+    y6=ypart lrcorner get_strokep(0);
+    x6=0.8[x2,x1];
+    replace_strokep(0)((subpath (0,length(oldp)-1) of oldp)
+       ..{curl 1}z5{curl 1}..z6..
+       (subpath (0,3.85) of (z1..z2..z3..z4..cycle)));
+    replace_strokep(0)(insert_nodes(oldp)((length oldp-4.5)));
+    replace_strokeq(0)(oldq--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--
+      (1.6,1.6)--(1.6,1.6)--(0,0));
+  endgroup;
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if do_italic_hook:
@@ -214,15 +188,13 @@ enddef;
 
 vardef latin.lowi =
   push_pbox_toexpand("latin.lowi");
-  x4=450;
-  (x2-x4)=(x4-x3)=0.4*italic_hook_radius;
+  x2=x3=x4=450;
 
   y2=latin_wide_xheight_r;
   y3=latin_wide_low_r;
   y4=0.5[y2,latin_wide_high_r]+mbrush_width;
 
   push_stroke(z2--z3,(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,0,11);
   set_boserif(0,1,11);
 
   push_lcblob(fullcircle rotated 45 scaled (mbrush_width*2.7+15)
