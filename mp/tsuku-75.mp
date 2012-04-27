@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
@@ -161,6 +162,12 @@ endtsuglyph;
 % ban/tsuga "ordinal number"
 begintsuglyph("uni756A",106);
   kanji.grtwo.ordinal;
+  tsu_render;
+endtsuglyph;
+
+% hiki/ashi "head" (counter for animals)
+begintsuglyph("uni758B",139);
+  kanji.grnine.animal_counter;
   tsu_render;
 endtsuglyph;
 

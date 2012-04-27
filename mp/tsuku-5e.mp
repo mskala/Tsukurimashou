@@ -121,6 +121,16 @@ vardef kanji.grthree.degree =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.level =
+  push_pbox_toexpand("kanji.grthree.level");
+  build_kanji.level(
+    kanji.grsix.dry;
+    replace_strokep(-1)(oldp shifted (0,-90));
+    build_kanji.sscale(xyscaled (0.8,0.52) shifted (0,190))
+      (kanji.toprad.sparkle_two));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.register =
   push_pbox_toexpand("kanji.grthree.register");
   build_kanji.level(build_kanji.lr(420,50)
@@ -269,6 +279,12 @@ endtsuglyph;
 % kan/ho "dry"
 begintsuglyph("uni5E72",114);
   kanji.grsix.dry;
+  tsu_render;
+endtsuglyph;
+
+% hei/tai "level" or "even
+begintsuglyph("uni5E73",115);
+  kanji.grthree.level;
   tsu_render;
 endtsuglyph;
 

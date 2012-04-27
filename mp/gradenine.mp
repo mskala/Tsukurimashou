@@ -50,6 +50,20 @@ vardef kanji.grnine.again =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.animal_counter =
+  push_pbox_toexpand("kanji.grnine.animal_counter");
+  tsu_xform(identity yscaled (780/460))
+    (push_stroke((150,460)--(830,460)..tension 1.2..(790,390)..(760,360),
+       (1.6,1.6)--(1.7,1.7)--(1.6,1.6)--(1.4,1.4));
+     set_botip(0,1,1);
+     set_boserif(0,1,4);
+     push_stroke((500,460)--(500,40),(1.6,1.6)--(1.5,1.5));
+     push_stroke((500,250)--(820,250),(1.5,1.5)--(1.6,1.6));
+     set_boserif(0,1,9);
+     kanji.grone_helper.foot);
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.barbarian =
   push_pbox_toexpand("kanji.grnine.barbarian");
   build_kanji.level(build_kanji.lr(480,0)

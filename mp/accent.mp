@@ -109,6 +109,14 @@ vardef tsu_accent.dotabove =
     accent_default[anc_upper_accent] shifted (0,150));
 enddef;
 
+vardef tsu_accent.dotbelow =
+  push_anchor(-anc_lower_accent,accent_default[anc_lower_accent]);
+  push_lcblob(fullcircle rotated 45 scaled (mbrush_width*1.72+50)
+    shifted ((0,0) transformed accent_default[anc_lower_accent]
+      transformed tsu_rescale_xform)
+    transformed inverse tsu_rescale_xform);
+enddef;
+
 vardef tsu_accent.grave =
   push_anchor(-anc_upper_accent,accent_default[anc_upper_accent]);
   push_stroke((500-1.5*tsu_punct_size,vmetric(0.95))--

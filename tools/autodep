@@ -2,7 +2,7 @@
 
 #
 # Automatic dependency maintainer for Tsukurimashou
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ if ($dir eq '-mkpl') {
 $/=undef;
 
 while (<$dir/*.mp>) {
-  next if m!/(tsuku|bll|jieub)-!;
+  next if m!/(tsuku|bll|jieub|tsuita)-!;
   next if m!intro\.!;
   next if m!fntbase\.!;
   m!/([^/]+)\.mp$!;

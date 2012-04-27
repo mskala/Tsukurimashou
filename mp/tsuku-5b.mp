@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefour.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
@@ -136,6 +137,17 @@ vardef kanji.grthree.reality =
      push_stroke((130,510)--(870,510),
        (1.55,1.55)--(1.55,1.55));
      set_boserif(0,1,9));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.regular =
+  push_pbox_toexpand("kanji.grthree.regular");
+  build_kanji.tb(580,80)
+    (kanji.radical.silly_hat)
+    (kanji.grnine.animal_counter;
+     replace_strokep(-4)(subpath (0.12,0.88) of oldp);
+     replace_strokeq(-4)((1.6,1.6)--(1.6,1.6));
+     set_boserif(-4,1,9));
   expand_pbox;
 enddef;
 
@@ -275,6 +287,12 @@ endtsuglyph;
 % "cave"
 begintsuglyph("uni5B95",149);
   kanji.grnine.cave;
+  tsu_render;
+endtsuglyph;
+
+% tei/sada "regular"
+begintsuglyph("uni5B9A",154);
+  kanji.grthree.regular;
   tsu_render;
 endtsuglyph;
 

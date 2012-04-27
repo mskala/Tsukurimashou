@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradefour.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
@@ -43,6 +44,16 @@ input radical.mp;
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.arouse =
+  push_pbox_toexpand("kanji.grthree.arouse");
+  build_kanji.level(build_kanji.lr(540,-20)
+    (kanji.grtwo.run)
+    (build_kanji.sscale(yscaled 0.8 shifted (0,70))(kanji.grsix.self)));
+  replace_strokep(-3)((subpath (0,1) of oldp)..(610,-20)..(890,-10));
+  replace_strokeq(-3)(insert_nodes(oldq)(1.5));
+  expand_pbox;
+enddef;
 
 vardef kanji.grthree.road =
   push_pbox_toexpand("kanji.grthree.road");
@@ -63,6 +74,12 @@ endtsuglyph;
 % sou/hashi "run"
 begintsuglyph("uni8D70",112);
   kanji.grtwo.run;
+  tsu_render;
+endtsuglyph;
+
+% ki/o "arouse"
+begintsuglyph("uni8D77",119);
+  kanji.grthree.arouse;
   tsu_render;
 endtsuglyph;
 

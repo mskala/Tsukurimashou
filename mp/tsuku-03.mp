@@ -121,7 +121,11 @@ begintsuglyph("uni030C",12);
   tsu_render;
 endtsuglyph;
 
-% 0323;dotbelowcomb;COMBINING DOT BELOW
+% dot below
+begintsuglyph("dotbelowcomb",35);
+  tsu_xform(tsu_xf.backspace)(tsu_accent.dotbelow);
+  tsu_render;
+endtsuglyph;
 
 % comma below
 begintsuglyph("uni0326",38);

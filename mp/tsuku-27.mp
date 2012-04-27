@@ -33,9 +33,9 @@
 beginfont
 
 input latin-intro.mp;
-input enclosed.mp;
 
 % AUTODEPS
+input enclosed.mp;
 input numerals.mp;
 
 do_late_includes;
