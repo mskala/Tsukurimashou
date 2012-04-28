@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input bottomrad.mp;
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -107,6 +108,14 @@ vardef kanji.grthree.pour =
   build_kanji.lr(360,30)
     (kanji.leftrad.water)
     (kanji.grthree.master);
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.wave =
+  push_pbox_toexpand("kanji.grthree.wave");
+  build_kanji.lr(360,-20)
+    (kanji.leftrad.water)
+    (tsu_xform(identity shifted (0,20))(kanji.grthree.pelt));
   expand_pbox;
 enddef;
 
@@ -467,6 +476,12 @@ endtsuglyph;
 % sen/izumi "spring" or "fountain" (not the season)
 begintsuglyph("uni6CC9",201);
   kanji.grsix.fountain;
+  tsu_render;
+endtsuglyph;
+
+% ha/nami "wave" (or Poland)
+begintsuglyph("uni6CE2",226);
+  kanji.grthree.wave;
   tsu_render;
 endtsuglyph;
 

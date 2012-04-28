@@ -230,6 +230,24 @@ vardef kanji.grthree.other =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.pelt =
+  push_pbox_toexpand("kanji.grthree.pelt");
+  build_kanji.level(
+    tsu_xform(identity yscaled 0.8)(
+      build_kanji.cliff_enclose(
+        tsu_xform(identity xyscaled (1.1,0.8) shifted (-120,-30))
+          (kanji.greight.otoh));
+      replace_strokep(-2)(oldp{curl 1}..(830,680)..(780,610));
+      replace_strokeq(-2)(oldq..(1.5,1.5)..(1.3,1.3));
+      set_boserif(-2,4,4);
+      set_botip(-2,4,0));
+    push_stroke((500,810)--(500,200),(1.6,1.6)--(1.5,1.5));
+    set_boserif(0,0,10);
+    replace_strokep(0)((point 0 of oldp)--
+      (oldp intersectionpoint get_strokep(-2))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.person =
   push_pbox_toexpand("kanji.grthree.person");
   kanji.radical.old_man(

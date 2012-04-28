@@ -82,6 +82,12 @@ begintsuglyph("uni7686",134);
   tsu_render;
 endtsuglyph;
 
+% hi/kawa "pelt"
+begintsuglyph("uni76AE",174);
+  kanji.grthree.pelt;
+  tsu_render;
+endtsuglyph;
+
 % bei/sara "dish"
 begintsuglyph("uni76BF",191);
   kanji.grthree.dish;
