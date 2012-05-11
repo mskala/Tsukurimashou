@@ -34,16 +34,26 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.bridge =
+  push_pbox_toexpand("kanji.grthree.bridge");
+  build_kanji.lr(380,30)
+    (build_kanji.sscale(yscaled 1.11)(kanji.leftrad.wood))
+    (kanji.grnine.boast);
+  expand_pbox;
+enddef;
 
 vardef kanji.grthree.sideways =
   push_pbox_toexpand("kanji.grthree.sideways");
@@ -58,6 +68,12 @@ enddef;
 % ou/yoku "sideways"
 begintsuglyph("uni6A2A",42);
   kanji.grthree.sideways;
+  tsu_render;
+endtsuglyph;
+
+% kyou/hashi "bridge"
+begintsuglyph("uni6A4B",75);
+  kanji.grthree.bridge;
   tsu_render;
 endtsuglyph;
 

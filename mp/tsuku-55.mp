@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradetwo.mp;
 input radical.mp;
@@ -71,6 +72,12 @@ endtsuglyph;
 % mon/to "question"
 begintsuglyph("uni554F",79);
   kanji.grthree.question;
+  tsu_render;
+endtsuglyph;
+
+% kyou/taka "boast"
+begintsuglyph("uni55AC",172);
+  kanji.grnine.boast;
   tsu_render;
 endtsuglyph;
 

@@ -109,6 +109,24 @@ vardef kanji.grthree.motion =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.victory =
+  push_pbox_toexpand("kanji.grthree.victory");
+  build_kanji.level(build_kanji.lr(380,30*(1-mincho))
+    (kanji.grone.moon)
+    (build_kanji.tb(320,100)
+       (build_kanji.sscale(yscaled 0.4 shifted (0,230))
+          (kanji.toprad.sparkle_two);
+        kanji.grone.person;
+        build_kanji.sscale(xyscaled (1,0.37) shifted (0,-40))
+          (kanji.grone.two);
+        replace_strokep(-2)
+          (subpath (xpart (oldp intersectiontimes get_strokep(-1)),infinity)
+           of oldp))
+    (build_kanji.sscale(xscaled 0.8 shifted (20,0))
+      (kanji.grone.power))));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.addition =
@@ -382,6 +400,12 @@ endtsuglyph;
 % dou/ugo "motion"
 begintsuglyph("uni52D5",213);
   kanji.grthree.motion;
+  tsu_render;
+endtsuglyph;
+
+% shou/ka "victory"
+begintsuglyph("uni52DD",221);
+  kanji.grthree.victory;
   tsu_render;
 endtsuglyph;
 

@@ -182,6 +182,12 @@ begintsuglyph("uni544A",74);
   tsu_render;
 endtsuglyph;
 
+% ton/no "drink" (rare form used as part of other things)
+begintsuglyph("uni5451",81);
+  kanji.rare.drink;
+  tsu_render;
+endtsuglyph;
+
 % shuu/mawa "circuit"
 begintsuglyph("uni5468",104);
   kanji.grfour.circuit;

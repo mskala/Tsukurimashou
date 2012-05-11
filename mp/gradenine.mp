@@ -72,6 +72,15 @@ vardef kanji.grnine.barbarian =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.boast =
+  push_pbox_toexpand("kanji.grnine.boast");
+  build_kanji.tb(340,0)
+    (kanji.rare.drink)
+    (kanji.radical.gmm;
+     build_kanji.box((350,480),(650,190)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.boy =
   push_pbox_toexpand("kanji.grnine.boy");
   build_kanji.level(build_kanji.tb(480,0)

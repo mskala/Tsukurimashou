@@ -91,6 +91,16 @@ vardef kanji.rare.early_death =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.drink =
+  push_pbox_toexpand("kanji.rare.early_death");
+  build_kanji.level(build_kanji.tb(420,290)
+    (build_kanji.spread_legs(160)
+       (kanji.rare.early_death))
+    (build_kanji.sscale(xyscaled (0.8,0.7) shifted (0,-50))
+       (kanji.grone.mouth)));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.merger =
   push_pbox_toexpand("kanji.rare.merger");
   build_kanji.level(build_kanji.tb(620,110)
