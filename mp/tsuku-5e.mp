@@ -50,6 +50,59 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% note special calling convention - extra boolean for inclusion of "tick"
+% seen in some Japanese and Korean characters
+vardef build_kanji.long_stride_enclose(expr do_tick)(text contents) =
+  push_pbox_toexpand("build_kanji.long_stride_enclose");
+  perl_structure:=perl_structure&"'eids.u2FFA.u5EF4._3',";
+  begingroup
+    save myxf;
+    transform myxf;
+    (50,850) transformed myxf=(350,810);
+    (50,-50) transformed myxf=(350,80);
+    (950,-50) transformed myxf=(950,80);
+    tsu_xform(myxf)(contents);
+    save x,y;
+    numeric x[],y[];
+    x1=80;
+    x2=260;
+    x4=120;
+    y1=y2=780;
+    y4=460;
+    z3=0.4[z4,z2]+mincho*(30,0);
+    z5=(0.3-0.5*mincho)[z4,z2];
+    push_stroke(z1--z2..tension 1.2..z3..z5,
+      (1.6,1.6)--(1.6,1.6)--(1.6-0.1*mincho,1.6-0.1*mincho)--
+        (1.6-0.2*mincho,1.6-0.2*mincho));
+    set_boserif(0,1,4);
+    set_botip(0,1,0);
+    x7=0;
+    x9=300;
+    x10=220;
+    x11=100;
+    y7=y9=y4;
+    y10=80;
+    y11=-70;
+    z6=point 2.2 of get_strokep(0);
+    z8=(z7--z9) intersectionpoint (get_strokep(0)--((-1)[z4,z2]));
+    push_stroke(z6--z8--z9..tension 1.2..z10..z11,
+      (1.6-0.5*mincho,1.6-0.5*mincho)--(1.5-0.1*mincho,1.5-0.1*mincho)--
+      (1.6,1.6)--(1.4,1.4)--(1,1));
+    set_boserif(0,2,4);
+    set_botip(0,1,1);
+    set_botip(0,2,0);
+    if do_tick:
+      push_stroke((150,330)..(120,290)..(60,220),
+        (1.2,1.2)--(1.1,1.1)--(1.6,1.6));
+    fi;
+    push_stroke((130,300)..(390,30)..tension 1.6..(900,-50),
+      (1,1)--(1.6,1.6)--(1.9,1.9));
+  endgroup;
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grone.year =
   push_pbox_toexpand("kanji.grone.year");
   push_stroke((220,790){curl 0.1}..(180,650)..(60,470),
@@ -112,6 +165,13 @@ vardef kanji.grthree.blessing =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.courtyard =
+  push_pbox_toexpand("kanji.grthree.courtyard");
+  build_kanji.dotcliff_enclose(
+    build_kanji.sscale(yscaled 0.97 shifted (0,-30))(kanji.greight.court));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.degree =
   push_pbox_toexpand("kanji.grthree.degree");
   build_kanji.dotcliff_enclose(build_kanji.level(
@@ -147,6 +207,21 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.urban_prefecture =
+  push_pbox_toexpand("kanji.grfour.urban_prefecture");
+  build_kanji.dotcliff_enclose(kanji.grfour.attach);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.build =
+  push_pbox_toexpand("kanji.grfour.build");
+  build_kanji.long_stride_enclose(false)
+    (build_kanji.sscale(yscaled 1.1 shifted (0,30))(kanji.radical.brush));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.normal =
   push_pbox_toexpand("kanji.grfive.normal");
   build_kanji.level(build_kanji.tb(340,90)
@@ -164,11 +239,10 @@ vardef kanji.grsix.government_office =
   expand_pbox;
 enddef;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfour.urban_prefecture =
-  push_pbox_toexpand("kanji.grfour.urban_prefecture");
-  build_kanji.dotcliff_enclose(kanji.grfour.attach);
+vardef kanji.grsix.prolong =
+  push_pbox_toexpand("kanji.grsix.prolong");
+  build_kanji.long_stride_enclose(false)
+    (build_kanji.add_beret(kanji.grtwo.cease));
   expand_pbox;
 enddef;
 
@@ -177,6 +251,15 @@ enddef;
 vardef kanji.greight.bed =
   push_pbox_toexpand("kanji.greight.bed");
   build_kanji.dotcliff_enclose(kanji.grone.wood);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.court =
+  push_pbox_toexpand("kanji.greight.court");
+  build_kanji.long_stride_enclose(false)
+    (build_kanji.sscale(xscaled 0.84)
+       (build_kanji.add_beret(kanji.grfour.gentleman;
+        replace_strokep(-1)(oldp shifted (0,-70)))));
   expand_pbox;
 enddef;
 
@@ -193,6 +276,13 @@ vardef kanji.greight.seclude =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grnine.go_around =
+  push_pbox_toexpand("kanji.grnine.go_around");
+  build_kanji.long_stride_enclose(true)
+    (build_kanji.sscale(xyscaled (0.85,0.9))(kanji.grtwo.occurrences));
+  expand_pbox;
+enddef;
 
 vardef kanji.grnine.hermitage =
   push_pbox_toexpand("kanji.grnine.hermitage");
@@ -404,6 +494,12 @@ begintsuglyph("uni5EAB",171);
   tsu_render;
 endtsuglyph;
 
+% tei/niwa "courtyard
+begintsuglyph("uni5EAD",173);
+  kanji.grthree.courtyard;
+  tsu_render;
+endtsuglyph;
+
 % an/iori "hermitage"
 begintsuglyph("uni5EB5",181);
   kanji.grnine.hermitage;
@@ -414,6 +510,63 @@ endtsuglyph;
 begintsuglyph("uni5EBF",191);
   build_kanji.dotcliff_enclose(
     tsu_xform(identity yscaled 0.94)(kanji.greight.seedling));
+  tsu_render;
+endtsuglyph;
+
+% "long stride" radical
+begintsuglyph("uni5EF4",244);
+  build_kanji.long_stride_enclose(true)();
+  tsu_render;
+endtsuglyph;
+
+% en/no "prolong"
+begintsuglyph("uni5EF6",246);
+  kanji.grsix.prolong;
+  tsu_render;
+endtsuglyph;
+
+% tei "court"
+begintsuglyph("uni5EF7",247);
+  kanji.greight.court;
+  tsu_render;
+endtsuglyph;
+
+% extra "path" or "way"
+begintsuglyph("uni5EF8",248);
+  build_kanji.long_stride_enclose(true)(kanji.grthree.reason);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni5EF9",249);
+  build_kanji.long_stride_enclose(true)(kanji.grone.white);
+  tsu_render;
+endtsuglyph;
+
+% ken/ta "build"
+begintsuglyph("uni5EFA",250);
+  kanji.grfour.build;
+  tsu_render;
+endtsuglyph;
+
+% kai/mawa "go around"
+begintsuglyph("uni5EFB",251);
+  kanji.grnine.go_around;
+  tsu_render;
+endtsuglyph;
+
+% extra "in other words," "thou," etc.
+begintsuglyph("uni5EFC",252);
+  build_kanji.long_stride_enclose(true)(kanji.grtwo.west);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni5EFD",253);
+  build_kanji.long_stride_enclose(true)(
+    build_kanji.sscale(yscaled 1.35 shifted (0,180))(kanji.grthree.face);
+    obstacktype[find_whatever(otstroke,-6)]:=otnull;
+    obstacktype[find_whatever(otstroke,-6)]:=otnull);
   tsu_render;
 endtsuglyph;
 
