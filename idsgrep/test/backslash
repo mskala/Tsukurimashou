@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+# this is in Perl to control for shell echo backslash misbehaviour
+
+$/=undef;
+$incorrect=0;
+
+sub test_match {
+  my($haystack,$needle,$result)=@_;
+  
+  open(BSI,">bs-in.$$");
+  print BSI $haystack;
+  close(BSI);
+  open(IDSG,'-|','./idsgrep',$needle,"bs-in.$$");
+  $_=<IDSG>;
+  close(IDSG);
+  system 'rm','-f',"bs-in.$$";
+  $incorrect=1 if $result ne $_;
+  print "$_\n";
+}
+
+test_match("(a)(\\a)(\\\\a)(\a)",'(\a)',"(\\a)(\a)");
+test_match("(a)(\\a)(\\\\a)(\a)","(\a)","(\\a)(\a)");
+
+test_match("(b)(\\b)(\\\\b)(\b)",'(\b)',"(\\b)(\b)");
+test_match("(b)(\\b)(\\\\b)(\b)","(\b)","(\\b)(\b)");
+
+test_match("(a)(\\a)(\\\\a)(\ca)(\\ca)",'(\ca)',"(\ca)(\\ca)");
+test_match("(q)(\\c:q)(\\\\q)(\cq)(\\cq)",'(\cq)',"(\cq)(\\cq)");
+test_match("(z)(\\z)(\\\\z)(\cz)(\\cz)",'(z)','(z)(\z)');
+
+test_match("(e)(\\e)(\\\\e)(\e)",'(\e)',"(\\e)(\e)");
+test_match("(e)(\\e)(\\\\e)(\e)","(\e)","(\\e)(\e)");
+
+test_match("(f)(\\f)(\\\\f)(\f)",'(\f)',"(\\f)(\f)");
+test_match("(f)(\\f)(\\\\f)(\f)","(\f)","(\\f)(\f)");
+
+test_match("(n)(\\n)(\\\\n)(\n)",'(\n)',"(\\n)(\n)");
+test_match("(n)(\\n)(\\\\n)(\n)","(\n)","(\\n)(\n)");
+
+test_match("(r)(\\r)(\\\\r)(\r)",'(\r)',"(\\r)(\r)");
+test_match("(r)(\\r)(\\\\r)(\r)","(\r)","(\\r)(\r)");
+
+test_match("(t)(\\t)(\\\\t)(\t)",'(\t)',"(\\t)(\t)");
+test_match("(t)(\\t)(\\\\t)(\t)","(\t)","(\\t)(\t)");
+
+test_match('%\x25\X0025\x{25}','%','%\x25\X0025\x{25}');
+test_match('(\XXXXX)(\xxx)(\x{012q})','?','(\XXXXX)(\xxx)(\x{012q})');
+test_match('(\x{58}\x{134}\x{840C}\x{1f4a9}\x{200000})','(XĴ萌💩�)',
+  '(\x{58}\x{134}\x{840C}\x{1f4a9}\x{200000})');
+
+exit $incorrect;

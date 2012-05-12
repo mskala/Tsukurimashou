@@ -106,8 +106,8 @@ size_t parse(size_t len,char *inp) {
 	      return offs;
 	    if (((eptr[2]>='A') && (eptr[2]<='Z'))
 		|| ((eptr[2]>='a') && (eptr[2]<='z'))) {
-	       eptr[2]|=0x20;
-	       eptr[2]^=0x60;
+	       ebuf[0]=(eptr[2]|0x20)^0x60;
+	       eptr=ebuf;
 	       offs+=2;
 	       clen=1;
 	    } else {
