@@ -35,9 +35,14 @@ PARSE_STATE parse_state=PS_SEEKING_HEAD;
 int echoing_whitespace=0;
 HASHED_STRING *close_bracket,*semicolon=NULL,*socked_head=NULL;
 
+#define MYXDIGIT(x) ((((x)>='0') && ((x)<='9')) \
+		     || (((x)>='a') && ((x)<='f')) \
+		     || (((x)>='A') && ((x)<='F')))
+#define MYXVAL(x) (((x)&0x40)?(((x)&0xF)+9):((x)&0xF))
+
 size_t parse(size_t len,char *inp) {
-   int offs=0,clen,escaped,flag;
-   char ebuf[4];
+   int offs=0,clen,escaped,flag,xval,i;
+   char ebuf[4],*eptr;
    HASHED_STRING *hchar,*newstr,*tmps;
    
    /* can't parse if we are in an error state */
@@ -69,81 +74,237 @@ size_t parse(size_t len,char *inp) {
 	 parse_stack=(NODE **)realloc(parse_stack,sizeof(NODE *)*stack_size);
       }
 
-      /* validate UTF-8 or escaped character */
+      /* handle escape sequences */
       escaped=0;
-/*      if (inp[offs]=='\\') {
+      clen=0;
+      eptr=inp+offs;
+      if (eptr[0]=='\\') {
+	 escaped=1;
 	 if (len-offs<2)
 	   return offs;
+	 switch (eptr[1]) {
+	    
+	  case 'a':
+	    /* alarm */
+	    ebuf[0]='\a';
+	    eptr=ebuf;
+	    offs++;
+	    clen=1;
+	    break;
+	    
+	  case 'b':
+	    /* backspace */
+	    ebuf[0]='\b';
+	    eptr=ebuf;
+	    offs++;
+	    clen=1;
+	    break;
+	    
+	  case 'c':
+	    /* control character */
+	    if (len-offs<3)
+	      return offs;
+	    if (((eptr[2]>='A') && (eptr[2]<='Z'))
+		|| ((eptr[2]>='a') && (eptr[2]<='z'))) {
+	       eptr[2]|=0x20;
+	       eptr[2]^=0x60;
+	       offs+=2;
+	       clen=1;
+	    } else {
+	       offs++;
+	       continue;
+	    }
+	    break;
+	    
+	  case 'e':
+	    /* escape */
+	    ebuf[0]='\e';
+	    eptr=ebuf;
+	    offs++;
+	    clen=1;
+	    break;
+	    
+	  case 'f':
+	    /* form feed */
+	    ebuf[0]='\f';
+	    eptr=ebuf;
+	    offs++;
+	    clen=1;
+	    break;
+	    
+	  case 'n':
+	    /* newline */
+	    ebuf[0]='\n';
+	    eptr=ebuf;
+	    offs++;
+	    clen=1;
+	    break;
+	    
+	  case 'r':
+	    /* carriage return */
+	    ebuf[0]='\r';
+	    eptr=ebuf;
+	    offs++;
+	    clen=1;
+	    break;
+	    
+	  case 't':
+	    /* tab */
+	    ebuf[0]='\t';
+	    eptr=ebuf;
+	    offs++;
+	    clen=1;
+	    break;
+	    
+	  case 'x':
+	  case 'X':
+	    /* hexadecimal */
+	    if (len-offs<3)
+	      return offs;
+	    if (eptr[2]=='{') {
+	       /* variable-length bracketed hex */
+	       i=3;
+	       xval=0;
+	       while (1) {
+		  if (len-offs<i+1)
+		    return offs;
+		  if (MYXDIGIT(eptr[i])) {
+		     xval<<=4;
+		     xval+=MYXVAL(eptr[i]);
+		     i++;
+		  } else
+		    break;
+	       }
+	       offs+=(i+1);
+	       if (eptr[i]!='}')
+		 continue;
+
+	    } else if (eptr[1]=='x') {
+	       /* two-digit hex */
+	       if (len-offs<4)
+		 return offs;
+	       offs+=4;
+	       if (MYXDIGIT(eptr[2]) && MYXDIGIT(eptr[3]))
+		 xval=(MYXVAL(eptr[2])<<4)+MYXVAL(eptr[3]);
+	       else
+		 continue;
+
+	    } else {
+	       /* four-digit hex */
+	       if (len-offs<6)
+		 return offs;
+	       offs+=6;
+	       if (MYXDIGIT(eptr[2]) && MYXDIGIT(eptr[3])
+		   && MYXDIGIT(eptr[4]) && MYXDIGIT(eptr[5]))
+		 xval=(MYXVAL(eptr[2])<<12)+(MYXVAL(eptr[3])<<8)
+		   +(MYXVAL(eptr[4])<<4)+MYXVAL(eptr[5]);
+	       else
+		 continue;
+	    }
+	    eptr=ebuf;
+	    if (xval>=0x200000)
+	      xval=0xFFFD;
+	    if (xval<0x80) {
+	       clen=1;
+	       ebuf[0]=xval;
+	    } else if (xval<0x800) {
+	       clen=2;
+	       ebuf[0]=0xC0|(xval>>6);
+	       ebuf[1]=0x80|(xval&0x3F);
+	    } else if (xval<0x10000) {
+	       clen=3;
+	       ebuf[0]=0xE0|(xval>>12);
+	       ebuf[1]=0x80|((xval>>6)&0x3F);
+	       ebuf[2]=0x80|(xval&0x3F);
+	    } else {
+	       clen=4;
+	       ebuf[0]=0xF0|(xval>>18);
+	       ebuf[1]=0x80|((xval>>12)&0x3F);
+	       ebuf[2]=0x80|((xval>>6)&0x3F);
+	       ebuf[3]=0x80|(xval&0x3F);
+	    }
+	    offs-=clen;
+	    break;
+
+	  default:
+	    /* will take next char literally */
+	    eptr++;
+	    offs++;
+	    break;
+	 }
+      }
+	  
+      /* validate UTF-8 */
+      if (clen>0) {
+	 /* already have a char from escape sequence - do nothing */
 	 
-FIXME	 
-	 
-      } else */ if ((inp[offs]&0x80)==0) {
+      } else if ((eptr[0]&0x80)==0) {
 	 /* single-byte ASCII */
 	 clen=1;
 	 
-      } else if ((inp[offs]&0xC0)==0x80) {
+      } else if ((eptr[0]&0xC0)==0x80) {
 	 /* continuation byte, should never be first */
 	 offs++;
 	 continue;
 	 
-      } else if ((inp[offs]&0xE0)==0xC0) {
+      } else if ((eptr[0]&0xE0)==0xC0) {
 	 /* first of two */
 	 
 	 /* check for rest of char */
 	 if (len-offs<2)
-	   return offs;
+	   return offs-escaped;
 	 
 	 /* check for continuation */
-	 if ((inp[offs+1]&0xC0)!=0x80) {
+	 if ((eptr[1]&0xC0)!=0x80) {
 	    offs+=2;
 	    continue;
 	 }
 	 
 	 /* check for overlong */
-	 if ((inp[offs]&0xFE)==0xC0) {
+	 if ((eptr[0]&0xFE)==0xC0) {
 	    offs+=2;
 	    continue;
 	 }
 	 clen=2;
       
-      } else if ((inp[offs]&0xF0)==0xE0) {
+      } else if ((eptr[0]&0xF0)==0xE0) {
 	 /* first of three bytes */
 	 
 	 /* check for rest of char */
 	 if (len-offs<3)
-	   return offs;
+	   return offs-escaped;
 	 
 	 /* check for continuation */
-	 if (((inp[offs+1]&0xC0)!=0x80)
-	     || ((inp[offs+2]&0xC0)!=0x80)) {
+	 if (((eptr[1]&0xC0)!=0x80)
+	     || ((eptr[2]&0xC0)!=0x80)) {
 	    offs+=3;
 	    continue;
 	 }
 	 
 	 /* check for overlong */
-	 if (((inp[offs]&0xFF)==0xE0) && ((inp[offs+1]&0xE0)==0x80)) {
+	 if (((eptr[0]&0xFF)==0xE0) && ((eptr[1]&0xE0)==0x80)) {
 	    offs+=3;
 	    continue;
 	 }
 	 clen=3;
 	 
-      } else if ((inp[offs]&0xF8)==0xF0) {
+      } else if ((eptr[0]&0xF8)==0xF0) {
 	 /* first of four bytes */
 	 
 	 /* check for rest of char */
 	 if (len-offs<4)
-	   return offs;
+	   return offs-escaped;
 	 
 	 /* check for continuation */
-	 if (((inp[offs+1]&0xC0)!=0x80)
-	     || ((inp[offs+2]&0xC0)!=0x80)
-	     || ((inp[offs+3]&0xC0)!=0x80)) {
+	 if (((eptr[1]&0xC0)!=0x80)
+	     || ((eptr[2]&0xC0)!=0x80)
+	     || ((eptr[3]&0xC0)!=0x80)) {
 	    offs+=4;
 	    continue;
 	 }
 	 
 	 /* check for overlong */
-	 if (((inp[offs]&0xFF)==0xF0) && ((inp[offs+1]&0xF0)==0x80)) {
+	 if (((eptr[0]&0xFF)==0xF0) && ((eptr[1]&0xF0)==0x80)) {
 	    offs+=4;
 	    continue;
 	 }
@@ -159,16 +320,16 @@ FIXME
       if (parse_state<PS_READING_HEAD) {
 	 
 	 /* skip unescaped whitespace in this context */
-	 if ((clen==1) && (((unsigned char )inp[offs])<=0x20) && !escaped) {
+	 if ((clen==1) && (((unsigned char )eptr[0])<=0x20) && !escaped) {
 	    if (echoing_whitespace)
-	      putchar(inp[offs]);
+	      putchar(eptr[0]);
 	    offs++;
 	    continue;
 	 }
 	 echoing_whitespace=0;
 
 	 /* look up the character */
-	 hchar=new_string(clen,inp+offs);
+	 hchar=new_string(clen,eptr);
 	 
 	 /* can't open a head if we aren't looking for one */
 	 if ((parse_state!=PS_SEEKING_HEAD) && (hchar->arity==-1) &&
@@ -193,7 +354,7 @@ FIXME
 	    /* put it in the string, then re-read it as closing bracket */
 	    close_bracket=hchar;
 	    parse_state=(PARSE_STATE)hchar->arity;
-	    memcpy(partstr,inp+offs,clen);
+	    memcpy(partstr,eptr,clen);
 	    partstr_len=clen;
 	    delete_string(hchar);
 	    continue;
@@ -232,7 +393,7 @@ FIXME
 	 /* we are waiting for a closing bracket */
 	 
 	 /* look up the character */
-	 hchar=new_string(clen,inp+offs);
+	 hchar=new_string(clen,eptr);
 	 
 	 /* unescaped matching bracket ends it */
 	 if ((hchar==close_bracket) && (!escaped) && (partstr_len>0)) {
@@ -279,7 +440,7 @@ FIXME
 	    }
 	    
 	    /* append the data */
-	    memcpy(partstr+partstr_len,inp+offs,clen);
+	    memcpy(partstr+partstr_len,eptr,clen);
 	    partstr_len+=clen;
 	    offs+=clen;
 	 }

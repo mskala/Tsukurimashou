@@ -566,7 +566,7 @@ in which file the EIDS was found.  Note that under the EIDS syntax rules,
 that creates a unary node senior to the entire tree, so that the output
 remains in valid EIDS format, except in the case of filenames containing
 colons, which will be handled via backslash escapes in the future when those
-are implemented.
+are fully implemented.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -668,7 +668,7 @@ An \emph{EIDS tree} consists of the following:
     children if arity is zero).  Each child is, recursively, an EIDS tree.
 \end{itemize}
 
-Trees with arity zero, one, two, and three are called, respectively,
+Trees with arity zero, one, two, and three are respectively called
 nullary, unary, binary, and ternary.
 
 Note that these ``nonempty strings of Unicode characters'' will very often
@@ -677,9 +677,9 @@ They cannot be empty (length zero); the case of a tree without a head is
 properly described by ``there is no head,'' not by ``the head is the empty
 string.'' \emph{At present} no Unicode canonicalization is performed, that
 being left to the user, but this may change in the future.  Zero bytes
-(U+0000) are in principle permitted to occur in EIDS trees, but at present
-there is no way to enter them in matching patterns because Unix passes
-command-line arguments as null-terminated C strings.
+(U+0000) are in principle permitted to occur in EIDS trees, but because
+Unix passes command-line arguments as null-terminated C strings, they can
+only be entered in matching patterns via backslash escape sequences.
 
 Typically, these trees are used to describe kanji characters.  The literal
 Unicode character being described will be the head, if there is a code point
@@ -744,18 +744,74 @@ The basic ASCII brackets for heads and functors are as follows:
 Note that the opening and closing brackets for unary functors are both equal
 to the ASCII period, U+002E.
 
+Some sequences of Unicode characters beginning with
+``\texttt{\textbackslash}'' (ASCII backslash, U+005C) are treated specially. 
+Backslash followed by a character from a short list of ASCII Latin letters
+introduces an escape sequence used to substitute for a character that would
+otherwise be hard to type; backslash followed by any other character
+(including a second backslash) is equivalent to the other character, but
+without any special meaning it would otherwise have had.  Thus, backslash
+can be used for instance to include literally in a bracketed string the
+closing bracket that otherwise would mark the end of the string.
+
+The backslash-letter escapes are listed below.  Note that the letters
+identifying the type of escape sequence are case-sensitive, and all are
+lower-case except ``\texttt{\textbackslash X}.''  However, for sequences
+that take a parameter, the parameters are not case-sensitive.  Note that all
+characters inside an escape sequence must be literal ASCII, except in the
+``default'' case of a single backslash used to escape a single non-ASCII
+character.  It is not permitted to use recursive backslash escapes to create
+some of the characters that make up a multi-character escape sequence like
+``\texttt{\textbackslash x\{\}}.''
+
+\hspace*{\fill}
+\begin{tabular}{ll}
+  \texttt{\textbackslash a} & ASCII BEL (U+0007) \\
+  \texttt{\textbackslash b} & ASCII BS (U+0008) \\
+  \texttt{\textbackslash c}$X$ & ASCII control character $X$ \\
+  \texttt{\textbackslash e} & ASCII ESC (U+001B) \\
+  \texttt{\textbackslash f} & ASCII FF (U+000C) \\
+  \texttt{\textbackslash t} & ASCII HT (U+0009) \\
+  \texttt{\textbackslash n} & ASCII LF (U+000A) \\
+  \texttt{\textbackslash r} & ASCII CR (U+000D) \\
+  \texttt{\textbackslash x}$HH$ & two-digit Unicode hex \\
+  \texttt{\textbackslash X}$HHHH$ & four-digit Unicode hex \\
+  \texttt{\textbackslash x\{}$Hx$\texttt{\}}
+    \texttt{\textbackslash X\{}$Hx$\texttt{\}} &
+    variable-length Unicode hex
+\end{tabular}
+\hspace*{\fill}\par
+
+The \texttt{\textbackslash c} escape takes a parameter consisting of a
+single ASCII Latin letter character (only); it is equivalent to typing Ctrl
+plus that letter (case insensitive) on a standard keyboard, that is the
+ASCII control code in the range U+0001 to U+001A obtained by subtracting 64
+from the uppercase letter's ASCII code or 96 from the lowercase letter's
+ASCII code.
+
+The hexadecimal escapes \texttt{\textbackslash x} and \texttt{\textbackslash
+X} offer a choice of two-digit, four-digit, or variable-length (enclosed by
+curly braces) hexadecimal specification of Unicode code points.  The hex
+codes are case-insensitive.  Values greater than 1FFFFF, and therefore
+outside the Unicode range, will be replaced by the Unicode replacement
+character U+FFFD.
+
 Parsing of bracketed strings has a few features worth noting.  First, there
 is no special treatment of nested brackets.  After the ``\texttt{<}'' that
-begins a head, for instance, the next ``\texttt{>}'' will end the head,
-regardless of how many other instances of ``\texttt{<}'' have been seen. 
-However, because no head or functor can be less than one character long, a
-closing bracket immediately after the opening bracket (which would otherwise
-create an illegal empty string) is specially treated as the first character
-of the string and \emph{not} as a closing bracket.  Thus, ``\texttt{())}''
-is legal syntax for a functor equal to a closing parenthesis, in a nullary
-tree; and ``\texttt{...}'' is a functor equal to a single ASCII period in a
-unary tree, an important example because it is the commonly-used
-match-anywhere operator.
+begins a head, for instance, the next unescaped ``\texttt{>}'' will end the
+head, regardless of how many other instances of ``\texttt{<}'' have been
+seen.  However, because no head or functor can be less than one character
+long, a closing bracket immediately after the opening bracket (which would
+otherwise create an illegal empty string) is specially treated as the first
+character of the string and \emph{not} as a closing bracket.  Thus,
+``\texttt{())}'' is legal syntax for a functor equal to a closing
+parenthesis, in a nullary tree; and ``\texttt{...}'' is a functor equal to a
+single ASCII period in a unary tree, an important example because it is the
+commonly-used match-anywhere operator.  A bracket character specified via a
+backslash escape, whether by preceding the literal character with a
+backslash or by giving its hexadecimal code in a ``\texttt{\textbackslash
+x}'' or ``\texttt{\textbackslash X}'' construction, is never taken to start
+or end a bracketed string.
 
 Each pair of ASCII brackets also has two pairs of generally
 non-ASCII synonyms, as
@@ -801,8 +857,9 @@ several reasons for the existence of the synonyms:
     special syntax for comments.
 \end{itemize}
 
-If a character other than an opening bracket occurs in an EIDS where an
-opening bracket would be expected, it is treated in one of three ways.
+If a character other than an opening bracket occurs unescaped
+in an EIDS where an opening bracket would be expected, it is treated
+in one of three ways.
 
 \begin{itemize}
   \item ASCII whitespace and control characters, U+0000 to U+0020 inclusive,
@@ -830,16 +887,15 @@ brackets they imply:  {\ttfamily (;) (?) .!. ./. .=. .*. .@. [\&] [,]
 [|] [⿰] [⿱] [⿴] [⿵] [⿶] [⿷] [⿸] [⿹] [⿺] [⿻] \{⿲\} \{⿳\}}
 
 Note that the sugary and syrupy implications of a character are only
-relevant when the character occurs where an opening bracket of some
-type would otherwise be required; inside a bracketed string,
-characters behave normally.
+relevant when the character occurs where an opening bracket of some type
+would otherwise be required; inside a bracketed string, characters are taken
+literally unless they end the string.  Characters accessed through escape
+sequences are always syrupy outside a string and always literal inside a
+string; they never start or end bracketed strings nor have any special
+sugary meaning they would otherwise have.
 
-It is planned that in the future, \texttt{idsgrep}'s parser will also
-recognize some backslash escape sequences.  This is not yet
-implemented.
-
-It is a consequence of these rules that all syntactically valid Unicode
-IDSes are syntactically valid EIDSes, but the converse is not true.
+It is an intentional consequence of these rules that all syntactically valid
+Unicode IDSes are syntactically valid EIDSes, but the converse is not true.
 
 Although it is technically not a parsing issue but rather a
 transformation applied to the tree after parsing, there is one more

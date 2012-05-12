@@ -96,7 +96,8 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 	    }
 	    free_node(to_match);
 	    if (parse_ptr<inbuf_used)
-	      memmove(input_buffer,input_buffer+parse_ptr,inbuf_used-parse_ptr);
+	      memmove(input_buffer,input_buffer+parse_ptr,
+		      inbuf_used-parse_ptr);
 	    inbuf_used-=parse_ptr;
 	    parse_ptr=0;
 	 } else
