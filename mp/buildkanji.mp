@@ -165,6 +165,35 @@ vardef build_kanji.attach_fishhook(expr scaleamt)(text curves) =
   perl_structure:=perl_structure&"],";
 enddef;
 
+vardef build_kanji.attach_tick(expr newtop)(text curves) =
+  % FIXME perl structure
+  begingroup
+    save osp,nsp;
+    numeric osp;
+    osp:=sp;
+    curves;
+    nsp:=sp;
+    save i,thisy,maxy;
+    maxy:=-infinity;
+    i:=0;
+    forever:
+      exitif find_stroke(i)<osp;
+      if (xpart (get_strokep(i) intersectiontimes
+            ((400,900)--(500,200)--(600,900))))>=0:
+        thisy:=ypart urcorner get_strokep(i);
+        if thisy>maxy:
+          maxy:=thisy;
+        fi;
+      fi;
+      i:=i-1;
+    endfor;
+    sp:=osp;
+    tsu_xform(identity yscaled (newtop/maxy))(sp:=nsp);
+    push_stroke((500,190+newtop)--(440,newtop),(1.7,1.7)--(1,1));
+    set_boserif(0,0,10);
+  endgroup;
+enddef;
+
 vardef hook.box_bottom(expr sides_i,bottom_i) =
   if (obstacktype[sides_i]=otstroke) and (obstacktype[bottom_i]=otstroke):
     if (3=length obstackp[sides_i]) and (1=length obstackp[bottom_i]):

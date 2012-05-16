@@ -358,6 +358,14 @@ begintsuglyph("uni5F8C",140);
   tsu_render;
 endtsuglyph;
 
+% extra "wander"
+begintsuglyph("uni5F98",152);
+  build_kanji.level(build_kanji.lr(310,-30)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.grfive.mistake));
+  tsu_render;
+endtsuglyph;
+
 % shin/kokoro "heart"
 begintsuglyph("uni5FC3",195);
   kanji.grtwo.heart;

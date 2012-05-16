@@ -843,10 +843,7 @@ enddef;
 
 vardef kanji.grone.white =
   push_pbox_toexpand("kanji.grone.white");
-  push_stroke((500,810)--(440,620),
-    (1.7,1.7)--(1,1));
-  set_boserif(0,0,10);
-  tsu_xform(identity yscaled (620/770))(kanji.grone.day);
+  build_kanji.attach_tick(620)(kanji.grone.day);
   expand_pbox;
 enddef;
 

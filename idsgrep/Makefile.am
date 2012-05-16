@@ -62,7 +62,7 @@ dist_pdf_DATA = $(MAYBE_DOCS)
 EXTRA_DIST = PKGBUILD.in gnugetopt.h idsgrep.tex idsgrep.bib
 
 AM_CFLAGS := $(MAYBE_COVERAGE) $(AM_CFLAGS)
-idsgrep_SOURCES = hash.c idsgrep.c idsgrep.h match.c parse.c
+idsgrep_SOURCES = assoc.c hash.c idsgrep.c idsgrep.h match.c parse.c
 
 LDADD = @LIBOBJS@
 

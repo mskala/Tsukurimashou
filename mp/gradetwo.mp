@@ -603,8 +603,7 @@ vardef kanji.grtwo.neck =
        yscaled 1.25 shifted (point 0 of oldp) shifted (0,-60));
      push_stroke((100,0)--(900,0),(1.6,1.6)--(1.6,1.6));
      set_boserif(0,1,9))
-    (push_stroke((500,850)--(440,660),(1.7,1.7)--(1,1));
-     tsu_xform(identity yscaled (660/770))(kanji.grone.eye)));
+    (build_kanji.attach_tick(660)(kanji.grone.eye)));
   expand_pbox;
 enddef;
 
@@ -723,9 +722,7 @@ enddef;
 
 vardef kanji.grtwo.self =
   push_pbox_toexpand("kanji.grtwo.self");
-  push_stroke((500,850)--(440,660),(1.7,1.7)--(1,1));
-  set_boserif(0,0,10);
-  tsu_xform(identity yscaled (660/770))(kanji.grone.eye);
+  build_kanji.attach_tick(660)(kanji.grone.eye);
   expand_pbox;
 enddef;
 

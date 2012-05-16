@@ -94,6 +94,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.haiku =
+  push_pbox_toexpand("kanji.grsix.haiku");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grfive.mistake);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.assistant =
   push_pbox_toexpand("kanji.greight.assistant");
   build_kanji.lr(300,40)
@@ -318,6 +328,12 @@ begintsuglyph("uni4FC9",201);
     (kanji.leftrad.person)
     (build_kanji.sscale(yscaled 0.9 shifted (0,-40))
        (kanji.grnine.my));
+  tsu_render;
+endtsuglyph;
+
+% hai "haiku"
+begintsuglyph("uni4FF3",243);
+  kanji.grsix.haiku;
   tsu_render;
 endtsuglyph;
 

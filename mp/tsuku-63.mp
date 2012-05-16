@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradeeight.mp;
 input gradeone.mp;
+input gradefive.mp;
 input gradesix.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -72,6 +73,14 @@ vardef kanji.greight.depict =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.discharge =
+  push_pbox_toexpand("kanji.greight.discharge");
+  build_kanji.level(build_kanji.lr(420,-30)
+    (kanji.leftrad.hand)
+    (kanji.grfive.mistake));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ji/mo "have"
@@ -83,6 +92,12 @@ endtsuglyph;
 % shi/yubi "finger"
 begintsuglyph("uni6307",7);
   kanji.grthree.finger;
+  tsu_render;
+endtsuglyph;
+
+% hai "discharge"
+begintsuglyph("uni6392",146);
+  kanji.greight.discharge;
   tsu_render;
 endtsuglyph;
 

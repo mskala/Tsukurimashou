@@ -63,6 +63,12 @@ typedef enum _PARSE_STATE {
 
 /**********************************************************************/
 
+/* assoc.c */
+
+NODE *assoc_match_fn(NODE *);
+
+/**********************************************************************/
+
 /* hash.c */
 
 HASHED_STRING *new_string(size_t,char *);
@@ -79,7 +85,6 @@ NODE *default_match_fn(NODE *);
 NODE *and_or_match_fn(NODE *);
 NODE *anything_match_fn(NODE *);
 NODE *anywhere_match_fn(NODE *);
-NODE *assoc_match_fn(NODE *);
 NODE *equal_match_fn(NODE *);
 NODE *not_match_fn(NODE *);
 NODE *regex_match_fn(NODE *);

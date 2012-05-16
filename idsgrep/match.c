@@ -363,12 +363,6 @@ NODE *unord_match_fn(NODE *ms) {
 
 /**********************************************************************/
 
-NODE *assoc_match_fn(NODE *ms) { /* SNH */
-   /* FIXME */
-   ms->match_result=MR_TRUE; /* SNH */
-   return ms; /* SNH */
-}
-
 NODE *regex_match_fn(NODE *ms) { /* SNH */
    /* FIXME */
    ms->match_result=MR_TRUE; /* SNH */

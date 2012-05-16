@@ -95,6 +95,14 @@ vardef kanji.grthree.hurry =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.sad =
+  push_pbox_toexpand("kanji.grthree.sad");
+  build_kanji.level(build_kanji.tb(300,20)
+    (kanji.grfive.mistake)
+    (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.gender =
@@ -479,6 +487,12 @@ endtsuglyph;
 % aku/waru "evil"
 begintsuglyph("uni60AA",170);
   kanji.grthree.evil;
+  tsu_render;
+endtsuglyph;
+
+% hi/kana "sad"
+begintsuglyph("uni60B2",178);
+  kanji.grthree.sad;
   tsu_render;
 endtsuglyph;
 

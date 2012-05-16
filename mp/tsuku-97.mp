@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input bottomrad.mp;
 input buildkanji.mp;
+input gradefive.mp;
 input gradeone.mp;
 input gradethree.mp;
 input rare.mp;
@@ -67,6 +68,12 @@ endtsuglyph;
 % ao "blue"
 begintsuglyph("uni9752",82);
   kanji.grone.blue;
+  tsu_render;
+endtsuglyph;
+
+% hi/ara "mistake"
+begintsuglyph("uni975E",94);
+  kanji.grfive.mistake;
   tsu_render;
 endtsuglyph;
 

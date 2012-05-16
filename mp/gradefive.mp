@@ -45,6 +45,26 @@ vardef kanji.grfive.compare =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.mistake =
+  push_pbox_toexpand("kanji.grfive.mistake");
+  push_stroke((380,810)--(370,240){dir 266}..tension 1.2..(300,70)..(80,-50),
+    (1.7,1.7)--(1.55,1.55)--(1.44,1.44)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((620,810)--(620,-40),(1.7,1.7)--(1.6,1.6));
+  set_boserif(0,0,10);
+  push_stroke((90,600)--(378,600),(1.6,1.6)--(1.6,1.6));
+  push_stroke((110,400)--(372,400),(1.6,1.6)--(1.6,1.6));
+  push_stroke((80,170)..tension 1.2..(300,200)..(460,240),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  push_stroke((620,600)--(910,600),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((620,400)--(890,400),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((620,200)--(920,200),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.passable =
   push_pbox_toexpand("kanji.grfive.passable");
   push_stroke((80,720)--(920,720),

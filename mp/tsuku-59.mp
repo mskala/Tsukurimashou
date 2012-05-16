@@ -113,8 +113,7 @@ vardef kanji.grtwo.summer =
   build_kanji.level(build_kanji.tb(350,0)
     (push_stroke((100,855)--(900,855),(1.6,1.6));
      set_boserif(0,1,9);
-     push_stroke((500,850)--(440,660),(1.7,1.7)--(1,1));
-     tsu_xform(identity yscaled (660/770))(kanji.grone.eye))
+     build_kanji.attach_tick(660)(kanji.grone.eye))
     (kanji.radical.winter));
   expand_pbox;
 enddef;

@@ -111,11 +111,34 @@ vardef kanji.grthree.pour =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.swim =
+  push_pbox_toexpand("kanji.grthree.swim");
+  build_kanji.lr(360,30)
+    (kanji.leftrad.water)
+    (kanji.grfive.long);
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.wave =
   push_pbox_toexpand("kanji.grthree.wave");
   build_kanji.lr(360,-20)
     (kanji.leftrad.water)
     (tsu_xform(identity shifted (0,20))(kanji.grthree.pelt));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.long =
+  push_pbox_toexpand("kanji.grfive.long");
+  push_stroke((360,790)..tension 1.2..(480,740)..(560,680),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  tsu_xform(identity yscaled 0.87)(kanji.grone.water);
+  replace_strokep(-3)(oldp shifted (0,-40));
+  replace_strokep(-1)((280,580)--(510,580)--(subpath (1,infinity) of oldp));
+  replace_strokeq(-1)((1.6,1.6)--oldq);
+  set_boserif(-1,0,whatever);
+  set_botip(-1,1,1);
   expand_pbox;
 enddef;
 
@@ -248,6 +271,12 @@ endtsuglyph;
 % hyou/koori "ice"
 begintsuglyph("uni6C37",55);
   kanji.grthree.ice;
+  tsu_render;
+endtsuglyph;
+
+% ei/naga "long"
+begintsuglyph("uni6C38",56);
+  kanji.grfive.long;
   tsu_render;
 endtsuglyph;
 
@@ -488,6 +517,12 @@ endtsuglyph;
 % chuu/soso "pour"
 begintsuglyph("uni6CE8",232);
   kanji.grthree.pour;
+  tsu_render;
+endtsuglyph;
+
+% ei/oyo "swim"
+begintsuglyph("uni6CF3",243);
+  kanji.grthree.swim;
   tsu_render;
 endtsuglyph;
 
