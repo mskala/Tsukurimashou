@@ -160,6 +160,31 @@ vardef kanji.radical.cut_the_grass =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.dotted_tent =
+  perl_structure:=perl_structure&"'eids.u2FF1.u7676.1_',";
+  push_pbox_toexpand("kanji.radical.dotted_tent");
+  push_stroke((210,800)--(510,800)..(450,700)..(300,540)..(60,360),
+    (1.5,1.5)--(1.6,1.6)--(1.5,1.5)--(1.3,1.3)--(0.85,0.9));
+  set_boserif(0,1,4);
+  set_botip(0,1,0);
+  push_stroke((110,710)..tension 1.2..(190,680)..(260,620),
+    (1,1)--(1.4,1.4)--(1.7,1.7));
+  push_stroke(
+    (point 1.2 of get_strokep(-1))..tension 1.2..(640,620)..(920,400),
+    (1,1)--(1.3,1.3)--(2.25,0.95));
+  push_stroke(((190,120)..tension 1.2..(120,60)..(0,0))
+      shifted (point 0.7 of get_strokep(0)),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke(((190,120)..tension 1.2..(120,60)..(0,0))
+      shifted (point 1.3 of get_strokep(-1)),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((330,470)--(660,470),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.eight =
   push_pbox_toexpand("kanji.radical.eight");
   push_stroke((610,760)..tension 1.3..(760,240)..(880,-10),

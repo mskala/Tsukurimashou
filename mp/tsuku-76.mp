@@ -47,6 +47,18 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.climb =
+  push_pbox_toexpand("kanji.grthree.climb");
+  kanji.radical.dotted_tent;
+  tsu_xform(identity shifted (-500,50) xyscaled (0.7,0.54) shifted (500,-50))
+    (kanji.grthree.bean);
+  obstacktype[find_whatever(otstroke,-5)]:=otnull;
+  replace_strokep(0)(oldp shifted (-500,0) xscaled 1.2 shifted (500,0));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfour.target =
   push_pbox_toexpand("kanji.grfour.target");
   build_kanji.level(build_kanji.lr(440,80)
@@ -57,6 +69,18 @@ vardef kanji.grfour.target =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% "dotted tent" radical (macro includes floor inside tent)
+begintsuglyph("uni7676",118);
+  kanji.radical.dotted_tent;
+  tsu_render;
+endtsuglyph;
+
+% tou/nobo "climb"
+begintsuglyph("uni767B",123);
+  kanji.grthree.climb;
+  tsu_render;
+endtsuglyph;
 
 % shiro "white"
 begintsuglyph("uni767D",125);

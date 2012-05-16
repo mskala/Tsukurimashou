@@ -168,16 +168,16 @@ enddef;
 vardef build_kanji.attach_tick(expr newtop)(text curves) =
   % FIXME perl structure
   begingroup
-    save osp,nsp;
-    numeric osp;
-    osp:=sp;
+    save atosp,atnsp;
+    numeric atosp,atnsp;
+    atosp:=sp;
     curves;
-    nsp:=sp;
+    atnsp:=sp;
     save i,thisy,maxy;
     maxy:=-infinity;
     i:=0;
     forever:
-      exitif find_stroke(i)<osp;
+      exitif find_stroke(i)<atosp;
       if (xpart (get_strokep(i) intersectiontimes
             ((400,900)--(500,200)--(600,900))))>=0:
         thisy:=ypart urcorner get_strokep(i);
@@ -187,8 +187,8 @@ vardef build_kanji.attach_tick(expr newtop)(text curves) =
       fi;
       i:=i-1;
     endfor;
-    sp:=osp;
-    tsu_xform(identity yscaled (newtop/maxy))(sp:=nsp);
+    sp:=atosp;
+    tsu_xform(identity yscaled (newtop/maxy))(sp:=atnsp);
     push_stroke((500,190+newtop)--(440,newtop),(1.7,1.7)--(1,1));
     set_boserif(0,0,10);
   endgroup;

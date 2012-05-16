@@ -96,6 +96,24 @@ vardef kanji.grthree.counterpart =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.cold =
+  push_pbox_toexpand("kanji.grthree.cold");
+  build_kanji.level(build_kanji.tb(640,150)
+    (kanji.radical.silly_hat)
+    (build_kanji.sscale(yscaled 0.7 shifted (0,100))
+       (build_kanji.tb(290,46)
+          (build_kanji.sscale(xscaled 0.8)(kanji.toprad.grass);
+           replace_strokep(0)(oldp shifted (0,140));
+           build_kanji.sscale(xscaled 0.77 shifted (0,-130))(kanji.grone.one);
+           tsu_xform(identity shifted (0,-420))(kanji.grone.one))
+          (tsu_xform(identity shifted (20,0))(kanji.radical.eight)));
+     push_stroke((430,260)..tension 1.2..(570,220)..(660,180),
+       (1.2,1.2)--(1.5,1.5)--(1.8,1.8));
+     push_stroke((300,130)..tension 1.2..(580,40)..(690,-10),
+       (1.2,1.2)--(1.5,1.5)--(1.8,1.8))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.inn =
   push_pbox_toexpand("kanji.grthree.protect");
   build_kanji.tb(600,110)
@@ -337,6 +355,12 @@ endtsuglyph;
 % shuku/yado "inn"
 begintsuglyph("uni5BBF",191);
   kanji.grthree.inn;
+  tsu_render;
+endtsuglyph;
+
+% kan/samu "cold"
+begintsuglyph("uni5BD2",210);
+  kanji.grthree.cold;
   tsu_render;
 endtsuglyph;
 

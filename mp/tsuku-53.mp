@@ -60,13 +60,13 @@ vardef kanji.grtwo.field =
   begingroup
     save myxf;
     transform myxf;
-    point 2 of get_strokep(-6) transformed myxf=point 2 of get_strokep(-6);
-    ypart (point 0 of get_strokep(-6) transformed myxf)=760;
+    point 2 of get_strokep(-3) transformed myxf=point 2 of get_strokep(-3);
+    ypart (point 0 of get_strokep(-3) transformed myxf)=760;
     xpart myxf=yxpart myxf=0;
     xxpart myxf=1;
-    replace_strokep(-6)(oldp transformed myxf);
+    replace_strokep(-3)(oldp transformed myxf);
   endgroup;
-  set_boserif(-6,0,whatever);
+  set_boserif(-3,0,whatever);
   set_boserif(-1,0,whatever);
   expand_pbox;
 enddef;
