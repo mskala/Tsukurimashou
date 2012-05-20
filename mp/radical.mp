@@ -475,8 +475,9 @@ enddef;
 % name is mine - it has bottom horizontal line lengthened, vertical clipped
 vardef kanji.radical.pigs_tail =
   push_pbox_toexpand("kanji.radical.pigs_tail");
-  kanji.radical.pigs_head;
-  replace_strokep(-2)((150,760)--(830,760)--(830,30));
+  build_kanji.sscale(xscaled 0.9)
+    (kanji.radical.pigs_head;
+     replace_strokep(-2)((150,760)--(830,760)--(830,30)));
   replace_strokep(0)((150,30)--(920,30));
   set_boserif(0,1,9);
   expand_pbox;

@@ -41,6 +41,15 @@ vardef kanji.rightrad.beta =
   expand_pbox;
 enddef;
 
+% KanjiVG lists this as U+5F54, but it's a little different visually
+vardef kanji.rightrad.carve_wood =
+  push_pbox_toexpand("kanji.rightrad.carve_wood");
+  build_kanji.tb(420,60)
+    (kanji.radical.pigs_tail)
+    (kanji.radical.alt_water);
+  expand_pbox;
+enddef;
+
 vardef kanji.rightrad.short_hair =
   push_pbox_toexpand("kanji.rightrad.short_hair");
   push_stroke((780,750)..tension 1.2..(580,620)..(180,500),

@@ -57,6 +57,16 @@ vardef kanji.grthree.climb =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.departure =
+  push_pbox_toexpand("kanji.grthree.departure");
+  build_kanji.level(
+    kanji.radical.dotted_tent;
+    tsu_xform(identity shifted (-500,50) xyscaled (0.83,0.6) shifted (500,-50))
+      (kanji.radical.legs);
+    build_kanji.sscale(xscaled 0.9 shifted (0,-130))(kanji.grone.one));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.target =
@@ -73,6 +83,12 @@ enddef;
 % "dotted tent" radical (macro includes floor inside tent)
 begintsuglyph("uni7676",118);
   kanji.radical.dotted_tent;
+  tsu_render;
+endtsuglyph;
+
+% hatsu/ta "departure"
+begintsuglyph("uni767A",122);
+  kanji.grthree.departure;
   tsu_render;
 endtsuglyph;
 

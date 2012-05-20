@@ -42,6 +42,20 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.blood =
+  push_pbox_toexpand("kanji.grthree.blood");
+  build_kanji.attach_tick(620)(kanji.grthree.dish);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ketsu/chi "blood"
+begintsuglyph("uni8840",64);
+  kanji.grthree.blood;
+  tsu_render;
+endtsuglyph;
+
 % kou/i(ku) "go"
 begintsuglyph("uni884C",76);
   kanji.grtwo.go;

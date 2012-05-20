@@ -41,6 +41,7 @@ input gradeone.mp;
 input gradesix.mp;
 input gradetwo.mp;
 input radical.mp;
+input rightrad.mp;
 
 do_late_includes;
 
@@ -97,6 +98,14 @@ vardef kanji.grthree.final =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.green =
+  push_pbox_toexpand("kanji.grthree.green");
+  build_kanji.lr(450,0)
+    (build_kanji.lift_skirt(300,100)(kanji.grone.thread))
+    (kanji.rightrad.carve_wood);
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.knead =
   push_pbox_toexpand("kanji.grthree.final");
   build_kanji.lr(420,20)
@@ -150,6 +159,12 @@ endtsuglyph;
 % kai/e "picture"
 begintsuglyph("uni7D75",117);
   kanji.grtwo.drawing;
+  tsu_render;
+endtsuglyph;
+
+% ryoku/midori "green"
+begintsuglyph("uni7DD1",209);
+  kanji.grthree.green;
   tsu_render;
 endtsuglyph;
 
