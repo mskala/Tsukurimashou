@@ -35,8 +35,8 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
-input gradeone.mp;
 input gradefive.mp;
+input gradeone.mp;
 input gradesix.mp;
 input gradetwo.mp;
 input leftrad.mp;

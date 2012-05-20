@@ -2159,6 +2159,132 @@ article ``Recursive Make Considered Harmful,'' available at
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\blsubsection{FIXME}{Tool documentation}
+
+There are a number of scripts included in the \texttt{tools/} subdirectory. 
+Most of these are intended only to be invoked automatically by the build
+system, but two intended to be invoked by hand are described below.
+
+\begin{itemize}
+
+\item \texttt{autodep}: automatically maintain the header inclusion lines in
+METAFONT files, so that each file will include the files that define macros
+it uses, and only those.  Files intended for use with \texttt{autodep}
+should include a comment line consisting of the case-sensitive text
+``\texttt{\%\ AUTODEPS}'' and any automatically-maintained input lines
+following that, terminating with a blank line.  When the tool is invoked
+with the command line ``\texttt{autodep mp/ mp/*.mp}'' from the root of the
+source tree, it will scan all the METAFONT-language sources, find
+definitions of macros, and where necessary rewrite the blocks of includes
+tagged with the special comment line in order to ensure that every file
+includes the definitions of all needed macros.  There are a number of
+exceptions and special cases included to make it do the write thing with
+macros defined in multiple places as a result of style overrides, and so on. 
+
+\item \texttt{udcpyright}: check that all years in which a file was modified
+are included in its copyright notice.  This assumes one has an SVN checkout
+in the current directory---intended to be a checkout from my private SVN
+repository, but it would probably work with one from the SourceForge
+repository as well.  It scans all SVN-controlled files for anything that
+looks like a standard copyright notice, and then reports on any files for
+which the set of years mentioned in the notice does not match the set of
+years in which SVN has log entries for that file.  The idea is that once a
+modified version of the file has been checked into SVN in a given year, it
+has been ``published'' in that year and the year should be mentioned in the
+copyright notice; but when a new year comes we don't want to just go through
+and modify all files solely to insert another year in the copyright notice. 
+By running this every so often, and manually updating the notices when
+appropriate, the hundreds of copyright notices in the project should
+painlessly converge on correctly reflecting the years in which files were
+actually changed.
+
+\end{itemize}
+
+For completeness, here is a summary of the functions of all the other
+scripts in the \texttt{tools/} subdirectory.  Most of them are written in
+Perl.
+
+\begin{itemize}
+
+\item \texttt{add-flog}: attach the ``font log'' file to a FontForge
+SFD-format font; this requires re-encoding it to UTF-7 format.
+
+\item \texttt{livecode}: chase file inclusions and determine all the
+``live'' (that is, actually invoked) macro defintions in a list of
+METAFONT-language files.  The output of this is not (because lines may
+appear in the wrong order) actually code one could run; but it is intended
+to have the property that it will change if and only if changes in the input
+necessitate recompilation.  If you modify a macro that is not actually
+called, \texttt{livecode}'s output should not change because it won't
+include that macro.  Then the build system can use a checksum of
+\texttt{livecode}'s output for fine-grained change detection, to skip
+recompiling some files that (under GNU Make's timestamp-based scheme) would
+otherwise appear to require recompilation.
+
+\item \texttt{make-ass}: generate the \texttt{assemble-font.pe} script,
+which in turn does most of the work of assembling 256-glyph subfonts to
+create full-coverage OTFs.
+
+\item \texttt{make-book}: make decisions on how to split the
+multi-thousand-page proof document into smaller ``books.''  The output
+is a set of \TeX\ files which then get processed further to generate the
+actual PDFs.
+
+\item \texttt{make-cfghl}: translate \texttt{configure} command-line strings
+into Hamlog for inclusion in \texttt{config.hl}, which then feeds back to
+control the build system.
+
+\item \texttt{make-eids}: scan the proof files
+and generates an EIDS-format dictionary of character decompositions.
+
+\item \texttt{make-fea}: perform text substitutions on ``feature source
+code'' (fsc) files to generate Adobe-format ``feature'' (fea) files
+expressing code-like font metadata.
+
+\item \texttt{make-flog}: collect a bunch of debugging information and
+generate a font log file (see \texttt{add-flog} above).
+
+\item \texttt{make-gpos}: compute information for GPOS features ``mark'' and
+``mkmk'' by scanning the proof files (to determine anchor locations and
+compatibility) and some generated FontForge scripts (to determine bearing
+adjustments made during kerning).
+
+\item \texttt{make-hglpages}: generate METAFONT source code for the hangul
+precomposed syllable subfonts, which are all identical except for their
+starting indices and generated from a template.
+
+\item \texttt{make-kchart}: generate \TeX\ code for the kanji coverage
+chart.
+
+\item \texttt{make-kddata}: extract KANJIDIC2 data in Hamlog form.
+
+\item \texttt{make-name}: generate a font's NAME metadata table.
+
+\item \texttt{make-proof}: generate \TeX\ code for proofs and pretty-printed
+source code.
+
+\item \texttt{mp2pf}: stripped-down translation from Awk to Perl of a
+similar program in METATYPE1; this invokes Metapost in the appropriate way
+to generate something that can be processed into a Postscript font, and then
+does process the result into a Postscript font.  Note that hinting support
+has been \emph{removed} from this code, and the resulting Postscript fonts
+may not really be good or entirely format-valid; they are only intended as a
+way of getting the outline data into FontForge for later stages of
+processing.
+
+\item \texttt{mpdep}: generates a list of the dependencies of a
+METAFONT-language file (or set of them), for automated Makefile generation. 
+Compare with \texttt{autodep}, which actually edits the files to include the
+other files they should based on the macros they use; \texttt{mpdep} only
+looks at what other files each file does include, and reports that.
+
+\item \texttt{progress}: invoked during build to give progress reports and
+completion-time estimates.
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \blsubsection{ブリドのシステムの図示}{Build system diagrams}
 
 This section is still under construction, but it is
@@ -2169,13 +2295,13 @@ process by which fonts are built.  Proportional fonts go through additional
 processing to generate the kern tables and so on, as shown in
 Figure~\ref{fig:kern-fonts}.
 
-Be aware that these diagrams are
-meant to clarify, not to formally describe, the code; this is {\anbiruteki
-not} a formal modelling language like UML, and the semantics of the symbols
-are not necessarily entirely consistent.  Also left out of the diagrams are
-language interpreters like Perl, and a great deal of information flow to and
-from the main Makefile itself.  It passes configuration information, mostly
-in command-line arguments, to pretty much all parts of the system.
+Be aware that these diagrams are meant to clarify, not to formally describe,
+the code; this is \emph{not} a formal modelling language like UML, and the
+semantics of the symbols are not necessarily entirely consistent.  Also left
+out of the diagrams are language interpreters like Perl, and a great deal of
+information flow to and from the main Makefile itself.  It passes
+configuration information, mostly in command-line arguments, to pretty much
+all parts of the system.
 
 \tikzset{distributed file/.style={draw,rectangle}}
 \tikzset{generated file/.style={}}

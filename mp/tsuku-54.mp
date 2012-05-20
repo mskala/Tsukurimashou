@@ -44,6 +44,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -209,6 +210,14 @@ endtsuglyph;
 % wa/yawa "wa" (supposedly-untranslatable term equated with Japanese spirit)
 begintsuglyph("uni548C",140);
   kanji.grthree.wa;
+  tsu_render;
+endtsuglyph;
+
+% rare character in the name of Shirayama Hime shrine
+begintsuglyph("uni54A9",169);
+  build_kanji.lr(380,10)
+    (build_kanji.sscale(shifted (0,-50))(kanji.leftrad.mouth))
+    (kanji.grthree.sheep);
   tsu_render;
 endtsuglyph;
 

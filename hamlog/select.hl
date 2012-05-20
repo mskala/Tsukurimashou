@@ -407,7 +407,7 @@ want_page(jieubsida,P):-atom_final(P,page8,_X),!,fail.
 want_page(jieubsida,P):-atom_final(P,page9,_X),!,fail.
 
 % otherwise want any page that is defined for us or generic
-want_page(F,P):-page_exists(F,P),!.
+want_page(F,P):-short_name(F,S),page_exists(S,P),!.
 want_page(_F,P):-generic_family(G),page_exists(G,P),!.
 
 want_char_on_page(P):-
