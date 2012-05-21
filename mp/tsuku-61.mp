@@ -38,11 +38,20 @@ input buildkanji.mp;
 input gradefive.mp;
 input gradeone.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.feeling =
+  push_pbox_toexpand("kanji.grthree.feeling");
+  build_kanji.level(build_kanji.tb(250,0)
+    (kanji.rare.the_same)
+    (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
 
 vardef kanji.grthree.intention =
   push_pbox_toexpand("kanji.grthree.intention");
@@ -67,6 +76,12 @@ enddef;
 % i/moto "intention"
 begintsuglyph("uni610F",15);
   kanji.grthree.intention;
+  tsu_render;
+endtsuglyph;
+
+% kan "feeling"
+begintsuglyph("uni611F",31);
+  kanji.grthree.feeling;
   tsu_render;
 endtsuglyph;
 

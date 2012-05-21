@@ -166,12 +166,14 @@ vardef build_kanji.attach_fishhook(expr scaleamt)(text curves) =
 enddef;
 
 vardef build_kanji.attach_tick(expr newtop)(text curves) =
-  % FIXME perl structure
+  perl_structure:=
+    perl_structure&"['build_kanji.attach_fishhook','eids.u2FF1.u31D2._1',[";
   begingroup
     save atosp,atnsp;
     numeric atosp,atnsp;
     atosp:=sp;
     curves;
+    perl_structure:=perl_structure&"],";
     atnsp:=sp;
     save i,thisy,maxy;
     maxy:=-infinity;
@@ -192,6 +194,7 @@ vardef build_kanji.attach_tick(expr newtop)(text curves) =
     push_stroke((500,190+newtop)--(440,newtop),(1.7,1.7)--(1,1));
     set_boserif(0,0,10);
   endgroup;
+  perl_structure:=perl_structure&"],";
 enddef;
 
 vardef hook.box_bottom(expr sides_i,bottom_i) =
@@ -310,10 +313,13 @@ enddef;
 
 vardef build_kanji.flag_enclose(expr xs,ys)(text contents) =
   push_pbox_toexpand("build_kanji.dotcliff_enclose");
-  % FIXME perl structure
+  perl_structure:=perl_structure&"'eids.u2FF8.u5C38.1_',";
+  string flag_enclose.ps;
+  flag_enclose.ps:=perl_structure;
   build_kanji.lr(480,60)
-    (kanji.grtwo.direction)
-    (push_stroke((300,810)..tension 1.2..(220,600)..(110,480),
+    (kanji.grtwo.direction;)
+    (perl_structure:=flag_enclose.ps;
+     push_stroke((300,810)..tension 1.2..(220,600)..(110,480),
        (1.6,1.6)--(1.4,1.4)--(1,1));
      set_boserif(0,0,10);
      push_stroke((100,680)--(780,680),(1.6,1.6)--(1.6,1.6));
@@ -322,8 +328,10 @@ vardef build_kanji.flag_enclose(expr xs,ys)(text contents) =
        (0.01+xpart (oldp intersectiontimes get_strokep(-1)),1) of oldp);
      tsu_xform(identity shifted (-500,0) xyscaled (xs,ys)
          shifted (500,-20))
-       (contents));
+       (contents);
+     flag_enclose.ps:=perl_structure);
   expand_pbox;
+  perl_structure:=flag_enclose.ps&"],";
 enddef;
 
 vardef build_kanji.gate_enclose(text contents) =
@@ -378,7 +386,6 @@ vardef build_kanji.harmonic(expr gap,sval,lspread)(text curves) =
 enddef;
 
 vardef build_kanji.lean_to(expr lr) =
-  % FIXME perl structure
   push_stroke((120,620)--(880,620),(1.6,1.6)--(1.6,1.6));
   set_boserif(0,1,9);
   begingroup

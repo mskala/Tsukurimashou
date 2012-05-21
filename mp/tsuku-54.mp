@@ -221,6 +221,12 @@ begintsuglyph("uni54A9",169);
   tsu_render;
 endtsuglyph;
 
+% needed for "feeling"
+begintsuglyph("uni54B8",184);
+  kanji.rare.the_same;
+  tsu_render;
+endtsuglyph;
+
 % hin.shina "goods"
 begintsuglyph("uni54C1",193);
   kanji.grthree.goods;

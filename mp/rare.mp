@@ -214,6 +214,29 @@ vardef kanji.rare.swim =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.the_same =
+  push_pbox_toexpand("kanji.rare.the_same");
+  tsu_xform(identity yscaled (830/760))
+    (kanji.radical.ceremony;
+     replace_strokep(-2)
+       ((50,-50)..(120,100)..(150,300)..tension 1.2..(160,540)--(880,540));
+     replace_strokeq(-2)
+       ((1,1)--(1.3,1.3)--(1.5,1.5)--(1.6,1.6)--(1.6,1.6)));
+  set_botip(-2,3,1);
+  set_boserif(-2,1,whatever);
+  replace_strokep(-1)(oldp shifted (-950,0) xscaled 0.6 shifted (950,0));
+  replace_strokep(0)(oldp shifted (-950,0) xscaled 0.6 shifted (950,0));
+  push_stroke((if sharp_corners: 240 else: 270 fi,440)--
+      (if sharp_corners: 570 else: 540 fi,440),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  build_kanji.box((280,310),(530,50));
+  push_stroke((830,420)..tension 1.2..(700,150)..(480,-70),
+    (1.6,1.6)--(1.4,1.4)--(0.9,0.9));
+  set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.walled_road =
   push_pbox_toexpand("kanji.rare.walled_road");
   push_stroke((200,740)--(770,740)..tension 1.2..(630,650)..(490,590),

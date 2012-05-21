@@ -241,16 +241,16 @@ print "\\mono\\clearpage\n\n";
 &make_list('外の\,ＪＩＳ ０２１２\,漢字　Other JIS 0212 kanji',12);
 &make_list('外の\,ＪＩＳ ０２１３\,漢字　Other JIS 0213 kanji',13);
 &make_list('外の\,Ｕｎｉｃｏｄｅ\,漢字　Other Unicode kanji',14);
-&make_list('FIXME Kangxi Radicals',16);
-&make_list('FIXME CJK Supplement Radicals',17);
+&make_list('康熙部首　Kangxi Radicals',16);
+&make_list('ＣＪＫ追加の部首　CJK Supplement Radicals',17);
 
 print <<'EOF';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \kaku
 
-\section*{FIXME Character decomposition dictionary}
-\addcontentsline{toc}{section}{FIXME Character decomposition dictionary}
+\section*{漢字の分解の字典　Character decomposition dictionary}
+\addcontentsline{toc}{section}{漢字の分解の字典　Character decomposition dictionary}
 
 \mono
 
