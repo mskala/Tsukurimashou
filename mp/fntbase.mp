@@ -64,7 +64,7 @@ if known fontbase_ver: expandafter endinput else: fontbase_ver:=0.55; fi
 
 % from plain_ex.mp
 
-%%%% THIS FILE IS DISTRIBUTED WITH THE METATYPE1 PACKAGE
+%%%% This file is distributed with the METATYPE1 package
 %%%%
 %%%% It is an extension of plain.mp
 %% \raggedbottom
@@ -1126,7 +1126,7 @@ enddef;
 %% \-
 %% \centering \bf MODU/L ZNAJDUJ/ACY OBWIEDNI/E POJEDYNCZEJ
 %% /SCIE/ZKI CYKLICZNEJ (SAMOPRZECINAJ/ACEJ SI/E)
-%% LUB PARY /SCIE/ZEK CYKLICZNYCH
+%% LUB PARY /SCIE/ZEK~CYKLICZNYCH
 %%
 %% \LINE{\leaders\hrule\hfill}
 %%
@@ -1342,7 +1342,7 @@ enddef;
 %% WITH AN ELLIPTICAL OR A ONE-DIMENSIONAL (``RAZOR'') PEN
 %% \-
 %% \centering \bf MODU/L ZNAJDUJ/ACY OBRYS OBSZARU ZAMALOWYWANEGO
-%% PRZEZ PI/ORKO ELIPTYCZNE LUB JEDNOWYMIAROWE (,,/ZYLETKOWE'')
+%% PRZEZ PI/ORKO ELIPTYCZNE LUB JEDNOWYMIAROWE~(,,/ZYLETKOWE'')
 %%
 %% \LINE{\leaders\hrule\hfill}
 %%
@@ -2881,9 +2881,9 @@ def set_stem(expr stem_kind) text hint_data =
  endgroup
 enddef;
 %% \--------------------------------------------------------------------
-%% FIND STEM
+%% FIND~STEM
 %% \-
-%% FIND STEM
+%% FIND~STEM
 %% \--------------------------------------------------------------------
 newinternal hint_node_tolerance, hint_angle_tolerance;
 newinternal finding_triple_hstems, finding_triple_vstems;

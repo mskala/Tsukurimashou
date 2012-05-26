@@ -478,6 +478,7 @@ foreach $file (@files) {
   open(MP,"./mp/$file.mp") || open(MP,"$prefix/mp/$file.mp");
   $lineno=0;
   $firstblank=-1;
+  $plflag=0;
   while (<MP>) {
     chomp;
     $lineno++;
@@ -578,12 +579,14 @@ foreach $file (@files) {
     }
     if (/^%{20,}$/) {
       print "\\PercentLine{$lineno}\n";
+      $plflag=1;
       next;
     }
     if (/^%(.*)$/) {
       $_=$1;
-      if (/^[ %]*([^%a-z]+?)[ %]*$/ && (length($1)>2) &&
-        ($1 ne 'AUTODEPS') && !/^\s*BACKGROUND /) {
+       if ($plflag && /[A-Z]/ &&
+         /^[% ]*([^%a-z\{\}]+?)[ %]*$/ && (length($1)>2) &&
+        ($1 ne 'AUTODEPS') && (!/^\s*BACKGROUND /)) {
         $newsubsec=$1;
         $newsubsec=~s/\b([A-Z]+)\b/ucfirst(lc($1))/ge;
         $newsublbl=$nxtlbl;

@@ -1003,6 +1003,14 @@ which see.  Here's a brief summary:
   Bokukko (``Tomboy''): felt marker style.}
   \item {\mincho 作りましょう明朝~~Tsukurimashou
   Mincho (``Ming Dynasty''): modern serif.}
+\expandafter\ifx\csname haveTsuItaAtamaPS\endcsname\relax\else
+  \item {\fontspec{TsuItaAtamaPS}ツイタ頭~~TsuIta Atama (``Head''):
+    italics to go with Tsukurimashou Kaku.}
+\fi
+\expandafter\ifx\csname haveTsuItaSokuPS\endcsname\relax\else
+  \item \emph{ツイタ足~~TsuIta Soku (``Foot''): italics to go with
+    Tsukurimashou Mincho.}
+\fi
 \end{itemize} 
 
 The remainder of this document is reference material describing the special
@@ -1219,7 +1227,7 @@ style to the next.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{FIXME}{FontForge-specific Metadata (pfed)}
+\blsubsection{ＦｏｎｔＦｏｒｇｅだけのメタデータ}{FontForge-specific Metadata (pfed)}
 
 This is not the usual kind of OpenType feature, but it can be turned on and
 off through the same build-system interface.  When selected, it causes the
@@ -1830,20 +1838,22 @@ The family represents the broad category of the font.  Generally, all fonts
 sharing the same family value will have basically the same glyph set and the
 same shapes for all glyphs, though some fine details will vary.  If there
 are significant differences in shapes, they will be put in a separate
-family.  At present the supported values for the family are
-``tsukurimashou'' and ``jieubsida,'' though some experimental (less than
-alpha status) code exists for a family to be called ``blackletter\_lolita,''
-and a planned future possibility (for a family with italic letterforms)
-might be called ``tsuita.''
+family.  At present the fully supported values for the family are
+``tsukurimashou'' and ``jieubsida,'' though there is also alpha code for an
+italic family called ``tsuita'' and some experimental (less than
+alpha status) code exists for a family to be called ``blackletter\_lolita.''
 
-The possible values for style will depend on the family.  At present the
-allowed style values for the tsukurimashou family are ``kaku,'' ``maru,''
-``mincho,'' ``bokukko,'' ``anbiruteki,'' and ``tenshinokami,'' though this
-list may be subject to a lot of change and could be out of date.  For the
-jieubsida family the standard style values are ``batang,'' ``dodum,'' and
-``sunmoon.''  Styles generally
+The possible values for style will depend on the family.  Styles generally
 correspond to sets of preset values for the adjustable parameters of a
-family's letter-drawing code.
+family's letter-drawing code.  The style values currently allowed, per
+family, are as follows:
+\begin{description}
+  \item{tsukurimashou} kaku, maru, mincho, bokukko, anbiruteki,
+    tenshinokami.
+  \item{jieubsida} dodum, batang, sunmoon.
+  \item{tsuita} soku, atama.
+  \item{blackletter\_lolita} cosette.
+\end{description}
 
 The weight is not presently used; the only implemented value is
 ``normal.''  The plan is that in future it will be allowed to take six
@@ -2159,7 +2169,7 @@ article ``Recursive Make Considered Harmful,'' available at
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{FIXME}{Tool documentation}
+\blsubsection{ツールの文書化}{Tool documentation}
 
 There are a number of scripts included in the \texttt{tools/} subdirectory. 
 Most of these are intended only to be invoked automatically by the build
@@ -2173,30 +2183,30 @@ it uses, and only those.  Files intended for use with \texttt{autodep}
 should include a comment line consisting of the case-sensitive text
 ``\texttt{\%\ AUTODEPS}'' and any automatically-maintained input lines
 following that, terminating with a blank line.  When the tool is invoked
-with the command line ``\texttt{autodep mp/ mp/*.mp}'' from the root of the
-source tree, it will scan all the METAFONT-language sources, find
+with the command line ``\texttt{tools/autodep mp/ mp/*.mp}'' from the root
+of the source tree, it will scan all the METAFONT-language sources, find
 definitions of macros, and where necessary rewrite the blocks of includes
 tagged with the special comment line in order to ensure that every file
 includes the definitions of all needed macros.  There are a number of
 exceptions and special cases included to make it do the write thing with
-macros defined in multiple places as a result of style overrides, and so on. 
+macros defined in multiple places as a result of style overrides, and so on.
 
 \item \texttt{udcpyright}: check that all years in which a file was modified
 are included in its copyright notice.  This assumes one has an SVN checkout
 in the current directory---intended to be a checkout from my private SVN
 repository, but it would probably work with one from the SourceForge
 repository as well.  It scans all SVN-controlled files for anything that
-looks like a standard copyright notice, and then reports on any files for
-which the set of years mentioned in the notice does not match the set of
-years in which SVN has log entries for that file.  The idea is that once a
-modified version of the file has been checked into SVN in a given year, it
-has been ``published'' in that year and the year should be mentioned in the
-copyright notice; but when a new year comes we don't want to just go through
-and modify all files solely to insert another year in the copyright notice. 
-By running this every so often, and manually updating the notices when
-appropriate, the hundreds of copyright notices in the project should
-painlessly converge on correctly reflecting the years in which files were
-actually changed.
+looks like the project's standard copyright notice, and then reports on any
+files for which the set of years mentioned in the notice does not match the
+set of years in which SVN has log entries for that file.  The idea is that
+once a modified version of the file has been checked into SVN in a given
+year, it has been ``published'' in that year and the year should be
+mentioned in the copyright notice; but when a new year comes we don't want
+to just go through and modify all files solely to insert another year in the
+copyright notice.  By running this every so often, and manually updating the
+notices when appropriate, the hundreds of copyright notices in the project
+should painlessly converge on correctly reflecting the years in which files
+were actually changed.
 
 \end{itemize}
 

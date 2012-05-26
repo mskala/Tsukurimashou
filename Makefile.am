@@ -471,7 +471,7 @@ makefile-pfb.inc: \
 	$(AM_V_at)if ( test "x$(PFBSTAMP)" = "x`cat pfb-stamp`" ) \
 	  && ( test -s makefile-pfb.inc ) ; then \
 	  $(TSU_V_NASKIP) \
-	  touch makefile-pfb.inc ; \
+	  true ; \
 	else \
 	  $(TSU_V_NAPERL) \
 	  for style in $(subst _,-,$(SHORT_STYLES)); do \

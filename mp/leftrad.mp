@@ -115,6 +115,13 @@ vardef kanji.leftrad.foot =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.gold =
+  push_pbox_toexpand("kanji.leftrad.gold");
+  build_kanji.lift_skirt(250,120)(kanji.grone.gold);
+  replace_strokep(-6)(subpath (0,1.7) of oldp);
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.hand =
   push_pbox_toexpand("kanji.leftrad.hand");
   build_kanji.sscale(xscaled 1.5)

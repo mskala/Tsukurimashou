@@ -1,6 +1,6 @@
 %
-% Unicode page 92 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Unicode page 93 (Kanji) for Tsukurimashou
+% Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,42 +34,28 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
-input gradefour.mp;
 input gradeone.mp;
 input leftrad.mp;
 input radical.mp;
+input rightrad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.iron =
-  push_pbox_toexpand("kanji.grthree.iron");
-  build_kanji.level(build_kanji.lr(480,20)
+vardef kanji.grfour.record =
+  push_pbox_toexpand("kanji.grfour.record");
+  build_kanji.lr(480,20)
     (kanji.leftrad.gold)
-    (kanji.grfour.disappear));
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.silver =
-  push_pbox_toexpand("kanji.grthree.silver");
-  build_kanji.level(build_kanji.lr(480,90-20*mincho)
-    (kanji.leftrad.gold)
-    (kanji.radical.northeast));
+    (kanji.rightrad.carve_wood);
   expand_pbox;
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% tetsu/kurogane "iron"
-begintsuglyph("uni9244",68);
-  kanji.grthree.iron;
-  tsu_render;
-endtsuglyph;
-
-% gin/shirogane "silver"
-begintsuglyph("uni9280",128);
-  kanji.grthree.silver;
+% roku/shiru "record"
+begintsuglyph("uni9332",50);
+  kanji.grfour.record;
   tsu_render;
 endtsuglyph;
 
