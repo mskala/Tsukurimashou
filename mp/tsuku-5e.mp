@@ -220,6 +220,16 @@ vardef kanji.grfour.build =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.peace =
+  push_pbox_toexpand("kanji.grfour.peace");
+  build_kanji.dotcliff_enclose(build_kanji.tb(520,0)
+      (tsu_xform(identity shifted (10,-270))
+         (kanji.radical.pigs_snout))
+      (kanji.radical.alt_water);
+    replace_strokep(-4)((500,810)--subpath (1,infinity) of oldp));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.normal =
@@ -503,6 +513,12 @@ endtsuglyph;
 % an/iori "hermitage"
 begintsuglyph("uni5EB5",181);
   kanji.grnine.hermitage;
+  tsu_render;
+endtsuglyph;
+
+% kou "peace"
+begintsuglyph("uni5EB7",183);
+  kanji.grfour.peace;
   tsu_render;
 endtsuglyph;
 

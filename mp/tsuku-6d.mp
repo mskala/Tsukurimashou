@@ -44,6 +44,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -73,6 +74,14 @@ vardef kanji.grthree.cancel =
   build_kanji.lr(360,30)
     (kanji.leftrad.water)
     (kanji.greight.resemblance);
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.current =
+  push_pbox_toexpand("kanji.grthree.current");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.water)
+    (kanji.rare.uncultivated);
   expand_pbox;
 enddef;
 
@@ -112,6 +121,12 @@ endtsuglyph;
 % katsu/i "correct"
 begintsuglyph("uni6D3B",59);
   kanji.grtwo.vitality;
+  tsu_render;
+endtsuglyph;
+
+% ryuu/naga "current"
+begintsuglyph("uni6D41",65);
+  kanji.grthree.current;
   tsu_render;
 endtsuglyph;
 

@@ -38,6 +38,7 @@ input gradeeight.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
 input rare.mp;
@@ -97,6 +98,21 @@ vardef kanji.grthree.ingredient =
     (build_kanji.tb(600,0)
        (kanji.grone.one)
        (kanji.radical.eight)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.rule =
+  push_pbox_toexpand("kanji.grfour.rule");
+  build_kanji.level(build_kanji.tb(180,0)
+   (build_kanji.sscale(xscaled 0.84)
+      (kanji.grthree.melody;
+       replace_strokep(-4)((140,30)--(140,600)--(860,600)--(860,30)));
+    pop_hook;
+    replace_strokep(-3)((80,30)--(920,30));
+    set_boserif(-3,1,9))
+   (kanji.radical.eight));
   expand_pbox;
 enddef;
 
@@ -201,6 +217,12 @@ endtsuglyph;
 % gu/sona "ingredient"
 begintsuglyph("uni5177",119);
   kanji.grthree.ingredient;
+  tsu_render;
+endtsuglyph;
+
+% ten/suke "rule"
+begintsuglyph("uni5178",120);
+  kanji.grfour.rule;
   tsu_render;
 endtsuglyph;
 

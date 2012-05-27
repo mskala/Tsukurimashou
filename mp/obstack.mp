@@ -179,6 +179,10 @@ vardef get_strokeq(expr idx) =
   obstackq[find_whatever(otstroke,idx)]
 enddef;
 
+vardef pop_hook =
+  obstacktype[find_whatever(othook,0)]:=otnull;
+enddef;
+
 vardef pop_lcblob =
   obstacktype[find_whatever(otlcblob,0)]:=otnull;
 enddef;

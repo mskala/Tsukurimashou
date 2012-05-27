@@ -395,9 +395,10 @@ want_page(_F,P):-atom_final(P,pageb,_X),!,fail.
 want_page(_F,P):-atom_final(P,pagec,_X),!,fail.
 want_page(_F,P):-atom_final(P,paged,_X),!,fail.
 
-% pages 2E, 2F, and 4E through 9F are for all but Jieubsida
+% pages 2E, 2F, 34, and 4E through 9F are for all but Jieubsida
 want_page(jieubsida,page2e):- !,fail.
 want_page(jieubsida,page2f):- !,fail.
+want_page(jieubsida,page34):- !,fail.
 want_page(jieubsida,page4e):- !,fail.
 want_page(jieubsida,page4f):- !,fail.
 want_page(jieubsida,P):-atom_final(P,page5,_X),!,fail.

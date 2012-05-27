@@ -237,6 +237,20 @@ vardef kanji.rare.the_same =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.uncultivated =
+  push_pbox_toexpand("kanji.rare.uncultivated");
+  build_kanji.level(build_kanji.tb(650,70)
+    (kanji.radical.kettle_lid)
+    (build_kanji.tb(520,-30)
+       (kanji.radical.mu)
+       (tsu_xform(identity shifted (40,0))
+          (tsu_xform(identity xscaled 0.84)(kanji.grone.river);
+           replace_strokep(0)((point 0 of oldp));
+           replace_strokeq(0)((point 0 of oldq));
+           build_kanji.add_ltail(0)))));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.walled_road =
   push_pbox_toexpand("kanji.rare.walled_road");
   push_stroke((200,740)--(770,740)..tension 1.2..(630,650)..(490,590),
