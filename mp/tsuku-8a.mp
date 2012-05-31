@@ -95,6 +95,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.discuss =
+  push_pbox_toexpand("kanji.grthree.discuss");
+  build_kanji.level(build_kanji.lr(450,-10-20*mincho)
+    (kanji.grtwo.word)
+    (kanji.greight.inflammation));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.poem =
   push_pbox_toexpand("kanji.grthree.poem");
   build_kanji.level(build_kanji.lr(450,0)
@@ -500,6 +508,12 @@ endtsuglyph;
 % chou/shira "tune"
 begintsuglyph("uni8ABF",191);
   kanji.grthree.tune;
+  tsu_render;
+endtsuglyph;
+
+% dan "discuss"
+begintsuglyph("uni8AC7",199);
+  kanji.grthree.discuss;
   tsu_render;
 endtsuglyph;
 

@@ -102,6 +102,19 @@ vardef kanji.leftrad.eat =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.fire =
+  push_pbox_toexpand("kanji.leftrad.fire");
+  kanji.grone.person;
+  pop_stroke;
+  push_stroke((510,270)..tension 1.2..(750,180)..(900,60),
+    (0.9,0.9)--(1.3,1.3)--(1.8,1.8));
+  push_stroke((360,600)..(270,480)..(140,360),
+    (0.9,0.9)--(1.3,1.3)--(1.8,1.8));
+  push_stroke((860,640)..(790,550)..(680,440),
+    (1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.foot =
   push_pbox_toexpand("kanji.leftrad.foot");
   build_kanji.box((210,730),(790,460));

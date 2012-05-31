@@ -39,6 +39,7 @@ input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input rare.mp;
 input toprad.mp;
@@ -82,6 +83,14 @@ vardef kanji.grtwo.ordinal =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.farm =
+  push_pbox_toexpand("kanji.grthree.farm");
+  build_kanji.level(build_kanji.lr(440,0)
+    (kanji.leftrad.fire)
+    (kanji.grone.paddy));
+  expand_pbox;
+enddef;
 
 vardef kanji.grthree.realm =
   push_pbox_toexpand("kanji.grthree.realm");
@@ -156,6 +165,12 @@ endtsuglyph;
 % fuku "roll of cloth"
 begintsuglyph("uni7550",80);
   kanji.rare.roll_of_cloth;
+  tsu_render;
+endtsuglyph;
+
+% hata "farm"
+begintsuglyph("uni7551",81);
+  kanji.grthree.farm;
   tsu_render;
 endtsuglyph;
 

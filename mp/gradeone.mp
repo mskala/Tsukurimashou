@@ -264,7 +264,6 @@ enddef;
 vardef kanji.grone.fire =
   push_pbox_toexpand("kanji.grone.fire");
   kanji.grone.person;
-  set_boserif(0,0,10);
   push_stroke((360,600)..(270,480)..(140,360),
     (0.9,0.9)--(1.3,1.3)--(1.8,1.8));
   push_stroke((860,600)..(790,500)..(680,380),

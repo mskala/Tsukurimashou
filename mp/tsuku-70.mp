@@ -37,6 +37,7 @@ input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradeone.mp;
+input leftrad.mp;
 
 do_late_includes;
 
@@ -81,6 +82,12 @@ endtsuglyph;
 % kai/hai "ash"
 begintsuglyph("uni7070",112);
   kanji.grsix.ash;
+  tsu_render;
+endtsuglyph;
+
+% en/honoo "inflammation"
+begintsuglyph("uni708E",142);
+  kanji.greight.inflammation;
   tsu_render;
 endtsuglyph;
 

@@ -175,6 +175,14 @@ vardef kanji.greight.guy =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.inflammation =
+  push_pbox_toexpand("kanji.greight.inflammation");
+  build_kanji.level(build_kanji.tb(420,50)
+    (kanji.leftrad.fire)
+    (kanji.grone.fire));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.mediate =
   push_pbox_toexpand("kanji.greight.mediate");
   build_kanji.level(
