@@ -38,6 +38,7 @@ input gradeeight.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input rare.mp;
 
 do_late_includes;
 
@@ -50,6 +51,12 @@ vardef kanji.grtwo.near =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grthree.pursue =
+  push_pbox_toexpand("kanji.grthree.pursue");
+  build_kanji.road_enclose(kanji.rare.mound);
+  expand_pbox;
+enddef;
 
 vardef kanji.grthree.return =
   push_pbox_toexpand("kanji.grthree.return");
@@ -122,6 +129,12 @@ endtsuglyph;
 % hen/kae "return"
 begintsuglyph("uni8FD4",212);
   kanji.grthree.return;
+  tsu_render;
+endtsuglyph;
+
+% tsui/o "pursue"
+begintsuglyph("uni8FFD",253);
+  kanji.grthree.pursue;
   tsu_render;
 endtsuglyph;
 

@@ -308,6 +308,12 @@ begintsuglyph("uni5B95",149);
   tsu_render;
 endtsuglyph;
 
+% kan "bureaucracy"
+begintsuglyph("uni5B98",152);
+  kanji.grfour.bureaucracy;
+  tsu_render;
+endtsuglyph;
+
 % tei/sada "regular"
 begintsuglyph("uni5B9A",154);
   kanji.grthree.regular;

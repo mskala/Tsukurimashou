@@ -1,6 +1,6 @@
 %
-% Unicode page 99 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Unicode page 200 (Kanji) for Tsukurimashou
+% Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,59 +34,15 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
-input gradefour.mp;
-input gradeone.mp;
-input gradesix.mp;
-input gradetwo.mp;
-input leftrad.mp;
-input radical.mp;
 input rare.mp;
-input toprad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.building =
-  push_pbox_toexpand("kanji.grthree.building");
-  build_kanji.lr(480,20)
-    (kanji.leftrad.eat)
-    (kanji.grfour.bureaucracy);
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.station =
-  push_pbox_toexpand("kanji.grthree.station");
-  build_kanji.lr(480,0)
-    (kanji.grtwo.horse)
-    (build_kanji.sscale(yscaled 1.11)
-       (kanji.grsix.blowjob));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% kan/yukata "building"
-begintsuglyph("uni9928",40);
-  kanji.grthree.building;
-  tsu_render;
-endtsuglyph;
-
-% shu/kubi "neck"
-begintsuglyph("uni9996",150);
-  kanji.grtwo.neck;
-  tsu_render;
-endtsuglyph;
-
-% ba/uma "horse"
-begintsuglyph("uni99AC",172);
-  kanji.grtwo.horse;
-  tsu_render;
-endtsuglyph;
-
-% eki "station"
-begintsuglyph("uni99C5",197);
-  kanji.grthree.station;
+% dui "mound"
+begintsuglyph("uni200A4",164);
+  kanji.rare.mound;
   tsu_render;
 endtsuglyph;
 

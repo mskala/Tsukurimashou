@@ -66,6 +66,15 @@ vardef kanji.grfour.bundle =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.bureaucracy =
+  push_pbox_toexpand("kanji.grfour.bureaucracy");
+  build_kanji.level(build_kanji.tb(570,100)
+    (kanji.radical.silly_hat)
+    (build_kanji.sscale(xscaled 0.8 shifted (30,0))
+       (kanji.rare.mound_helper)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.circuit =
   push_pbox_toexpand("kanji.grfour.circuit");
   push_stroke((80,-20)..(150,100)..{up}(200,760){right}--(820,760),

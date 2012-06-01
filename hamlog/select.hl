@@ -446,6 +446,7 @@ lo_page(P):-
 
 % hi_page(?P) - P is one of the few pages we care about outside the BMP
 hi_page(page1f1).
+hi_page(page200).
 hi_page(pagef17).
 hi_page(pagef5c).
 hi_page(pageff0).

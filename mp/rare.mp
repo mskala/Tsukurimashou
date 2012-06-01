@@ -141,6 +141,95 @@ vardef kanji.rare.mosquito_larva =
   expand_pbox;
 enddef;
 
+vardef hook.mound_bottoms(expr left_i,right_i,bottom_i) =
+  if (obstacktype[left_i]=otstroke)
+    and (obstacktype[right_i]=otstroke)
+    and (obstacktype[bottom_i]=otstroke):
+    if (3=length obstackp[left_i])
+      and (2=length obstackp[right_i])
+      and (1=length obstackp[bottom_i]):
+      begingroup;
+        save x,y,p,e;
+        numeric x[],y[],e[];
+        path p[];
+        
+        p1=obstackp[left_i];
+        p2=obstackp[bottom_i];
+        p3=obstackp[right_i];
+
+        z1=-(direction 0 of p1)/abs(direction 0 of p1);
+        z2=(direction 0.5 of p2)/abs(direction 0.5 of p2);
+        z3=(direction 2 of p3)/abs(direction 2 of p3);
+
+        e3=obstackna.bosize[bottom_i]*tsu_brush_max*tsu_brush_shape*0.5;
+        if abs(z1 dotprod z2)<0.1:
+          point 0 of p1=z4+e1*z1;
+          z4=(point 0.5 of p2)+whatever*z2;
+
+          if e1<e3:
+            p1:=(z4+e3*z1)--(subpath (1,3) of p1);
+            obstackp[left_i]:=p1;
+          fi;
+        fi;
+        if abs(z3 dotprod z2)<0.1:
+          point 0 of p1=z5+e2*z3;
+          z5=(point 0.5 of p2)+whatever*z2;
+
+          if e2<e3:
+            p3:=(subpath (0,1) of p2)--(z5+e3*z2);
+            obstackp[right_i]:=p3;
+          fi;
+        fi;
+      endgroup;
+    fi;
+  fi;
+enddef;
+
+vardef kanji.rare.mound_helper =
+  push_pbox_toexpand("kanji.rare.mound_helper");
+  begingroup
+    save x,y;
+    numeric x[],y[];
+
+    x1=x2=x5=x7=x10=180;
+    x3=x4=x6=0.87[x1,x8];
+    x8=x9=x11=1000-x1;
+
+    y1=y9=(-0.2)[y10,y7];
+    y2=y3=780;
+    y4=(-0.2)[y5,y2];
+    y5=y6=530;
+    y7=y8=290;
+    y10=y11=0;
+    
+    push_stroke(z1--z2--z3--z4,(1.5,1.5)--(1.7,1.7)--(1.7,1.7)--(1.5,1.5));
+    set_botip(0,1,1);
+    set_botip(0,2,1);
+    set_boserif(0,1,4);
+    set_boserif(0,2,4);
+    push_stroke(z5--z6,(1.5,1.5)--(1.5,1.5));
+    push_stroke(z7--z8--z9,(1.5,1.5)--(1.6,1.6)--(1.5,1.5));
+    set_botip(0,1,1);
+    set_boserif(0,1,4);
+    push_stroke(z10--z11,(1.5,1.5)--(1.5,1.5));
+
+    push_hook(hsmain_render,
+      "hook.box_bottom("&(decimal find_stroke(-3))&","
+                        &(decimal find_stroke(-2))&");" );
+    push_hook(hsmain_render,
+      "hook.mound_bottoms("&(decimal find_stroke(-3))&","
+                           &(decimal find_stroke(-1))&","
+                           &(decimal find_stroke(0))&");" );
+  endgroup;
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.mound =
+  push_pbox_toexpand("kanji.rare.mound");
+  build_kanji.attach_tick(660)(kanji.rare.mound_helper);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.notwithstanding =
   push_pbox_toexpand("kanji.rare.notwithstanding");
   push_stroke((370,790){curl 0.1}..(250,580)..(60,350),
