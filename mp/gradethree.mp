@@ -312,6 +312,35 @@ vardef kanji.grthree.tooth =
   expand_pbox;
 enddef;
 
+vardef hook.world_corner(expr side_i,bottom_i) =
+  if (obstacktype[side_i]=otstroke) and (obstacktype[bottom_i]=otstroke):
+    if (1=length obstackp[side_i]) and (1=length obstackp[bottom_i]):
+      begingroup;
+        save x,y,p,e;
+        numeric x[],y[],e[];
+        path p[];
+        
+        p1=obstackp[side_i];
+        p2=obstackp[bottom_i];
+
+        z2=(direction 0.5 of p2)/abs(direction 0.5 of p2);
+        z3=(direction 1 of p1)/abs(direction 1 of p1);
+
+        if abs(z3 dotprod z2)<0.1:
+          point 1 of p1=z5+e2*z3;
+          z5=(point 1 of p2)+whatever*z2;
+          e3=obstackna.bosize[bottom_i]*tsu_brush_max*tsu_brush_shape*0.5;
+
+          if e2<e3:
+            p1:=(point 0 of p1)--(z5+e3*z3);
+            obstackp[side_i]:=p1;
+          fi;
+        fi;
+      endgroup;
+    fi;
+  fi;
+enddef;
+
 vardef kanji.grthree.world =
   push_pbox_toexpand("kanji.grthree.world");
   build_kanji.box((200,780),(840,20));
@@ -320,6 +349,10 @@ vardef kanji.grthree.world =
   set_boserif(-1,0,10);
   set_boserif(-1,1,whatever);
   set_botip(-1,1,whatever);
+  pop_hook;
+  push_hook(hsmain_render,
+    "hook.world_corner("&(decimal find_stroke(-1))&","
+                        &(decimal find_stroke(0))&");" );
   push_stroke((40,520)--(900,520),
     (1.6,1.6)--(1.6,1.6));
   set_boserif(0,1,9);

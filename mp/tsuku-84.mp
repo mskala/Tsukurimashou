@@ -37,6 +37,7 @@ input buildkanji.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
@@ -51,6 +52,16 @@ vardef kanji.grthree.fall =
   build_kanji.tb(630,-20)
     (kanji.toprad.grass)
     (kanji.grnine.kyoto);
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.leaf =
+  push_pbox_toexpand("kanji.grthree.leaf");
+  build_kanji.tb(630,0)
+    (kanji.toprad.grass)
+    (build_kanji.tb(480,60)
+       (tsu_xform(identity shifted (30,0))(kanji.grthree.world))
+       (kanji.grone.wood));
   expand_pbox;
 enddef;
 
@@ -75,6 +86,12 @@ endtsuglyph;
 % raku/o "fall" or "drop"
 begintsuglyph("uni843D",61);
   kanji.grthree.fall;
+  tsu_render;
+endtsuglyph;
+
+% you/ha "leaf"
+begintsuglyph("uni8449",73);
+  kanji.grthree.leaf;
   tsu_render;
 endtsuglyph;
 
