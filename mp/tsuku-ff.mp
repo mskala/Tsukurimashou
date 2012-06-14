@@ -311,7 +311,7 @@ begintsuglyph("uniFF1F",31);
         shifted (480,10));
      r:=tsu_pbrush_size;
    else:
-     push_stroke(fullcircle scaled tsu_punct_size shifted (480,10),
+     push_stroke(fullcircle scaled tsu_punct_size rotated 5 shifted (480,10),
        (2,2)--(2,2)--(2,2)--(2,2)--cycle);
      if tsu_pbrush_size>=30:
        push_lcblob(get_strokep(0));

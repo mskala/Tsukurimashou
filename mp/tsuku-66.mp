@@ -204,6 +204,12 @@ begintsuglyph("uni662D",45);
   tsu_render;
 endtsuglyph;
 
+% ze/kore "righteousness"
+begintsuglyph("uni662F",47);
+  kanji.greight.righteousness;
+  tsu_render;
+endtsuglyph;
+
 % chuu/hiro "daytime"
 begintsuglyph("uni663C",60);
   kanji.grtwo.daytime;

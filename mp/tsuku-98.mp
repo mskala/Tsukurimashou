@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -74,6 +75,17 @@ vardef kanji.grthree.drink =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.topic =
+  push_pbox_toexpand("kanji.grthree.topic");
+  build_kanji.lr(500,40)
+    (kanji.greight.righteousness)
+    (build_kanji.sscale(yscaled 0.88 shifted (0,40))
+       (kanji.grnine.page));
+  replace_strokep(-8)((point 0 of oldp)..(point 1 of oldp)..
+    tension 1.5..{curl 0.2}(920,-40));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ketsu/peeji "page"
@@ -85,6 +97,12 @@ endtsuglyph;
 % tou/atama "head"
 begintsuglyph("uni982D",45);
   kanji.grtwo.head;
+  tsu_render;
+endtsuglyph;
+
+% dai "topic"
+begintsuglyph("uni984C",76);
+  kanji.grthree.topic;
   tsu_render;
 endtsuglyph;
 

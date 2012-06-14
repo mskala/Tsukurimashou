@@ -248,6 +248,18 @@ vardef kanji.greight.resemblance =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.righteousness =
+  push_pbox_toexpand("kanji.greight.righteousness");
+  build_kanji.tb(420,-40)
+    (kanji.grone.day)
+    (kanji.grnine.animal_counter;
+     replace_strokep(-4)(subpath (0,1) of oldp);
+     set_botip(-4,1,whatever);
+     replace_strokeq(-4)((1.6,1.6)--(1.6,1.6));
+     set_boserif(-4,1,9));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.seedling =
   push_pbox_toexpand("kanji.greight.seedling");
   build_kanji.tb(600,40)
