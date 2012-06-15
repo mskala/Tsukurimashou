@@ -117,7 +117,28 @@ vardef kanji.grthree.section =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.send =
+  push_pbox_toexpand("kanji.grthree.send");
+  build_kanji.road_enclose(build_kanji.level(
+    build_kanji.tb(600,220)
+      (kanji.toprad.sparkle_two)
+      (kanji.grfour.husband);
+    replace_strokep(-1)(subpath
+      (xpart (oldp intersectiontimes get_strokep(-3)),infinity) of oldp);
+    set_boserif(-1,0,whatever);
+    replace_strokep(0)((point 1.7 of get_strokep(-1))..(690,100)..(850,-40));
+    replace_strokeq(0)((0.9,0.9)--(1.5,1.5)--(1.8,1.8));
+  ));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% sou/oku "send"
+begintsuglyph("uni9001",1);
+  kanji.grthree.send;
+  tsu_render;
+endtsuglyph;
 
 % tsuu/too "distant"
 begintsuglyph("uni901A",26);

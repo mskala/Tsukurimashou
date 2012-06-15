@@ -38,6 +38,7 @@ input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -93,6 +94,21 @@ vardef kanji.grthree.truth =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.wear_clothes =
+  push_pbox_toexpand("kanji.grthree.wear_clothes");
+  build_kanji.level(
+    build_kanji.tb(370,70)
+      (build_kanji.sscale(xscaled 1.08)
+          (kanji.grthree.sheep;
+           replace_strokep(0)((point 0 of oldp)
+             --(oldp intersectionpoint get_strokep(-3)))))
+      (tsu_xform(identity shifted (15,0))(kanji.grone.eye));
+    push_stroke(
+      (point 0.30 of get_strokep(-7))..tension 1.2..(190,280)..(80,200),
+      (1.6,1.6)--(1.4,1.4)--(1,1)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.leftrad.arrow =
@@ -114,6 +130,12 @@ endtsuglyph;
 % shin/ma "truth"
 begintsuglyph("uni771F",31);
   kanji.grthree.truth;
+  tsu_render;
+endtsuglyph;
+
+% chaku/ki/tsu "wear clothes"
+begintsuglyph("uni7740",64);
+  kanji.grthree.wear_clothes;
   tsu_render;
 endtsuglyph;
 
