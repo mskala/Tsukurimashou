@@ -99,6 +99,21 @@ vardef kanji.grthree.release =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.travel =
+  push_pbox_toexpand("kanji.grthree.travel");
+  build_kanji.level(build_kanji.flag_enclose(0.8,0.8)(
+    push_stroke((720,810)..tension 1.2..(380,610)..(80,510),
+      (1.7,1.7)--(1.5,1.5)--(1,1));
+    push_stroke((320,570)--(320,-60),(1.6,1.6)--(1.5,1.5));
+    push_stroke((point 0.7 of get_strokep(-1))..
+        tension 1.2..(650,240)..(850,0),
+      (1,1)--(1.4,1.4)--(1.7,1.7));
+    push_stroke((770,490)..tension 1.2..(680,420)..
+        (point 0.65 of get_strokep(0)),
+      (1.7,1.7)--(1.4,1.4)--(1.2,1.2))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.tribe =
   push_pbox_toexpand("kanji.grthree.tribe");
   build_kanji.level(build_kanji.flag_enclose(0.8,0.8)(
@@ -249,6 +264,12 @@ endtsuglyph;
 % needed for "play"
 begintsuglyph("uni65BF",191);
   kanji.rare.swim;
+  tsu_render;
+endtsuglyph;
+
+% ryo/tabi "travel"
+begintsuglyph("uni65C5",197);
+  kanji.grthree.travel;
   tsu_render;
 endtsuglyph;
 

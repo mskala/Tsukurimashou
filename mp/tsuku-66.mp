@@ -101,7 +101,7 @@ enddef;
 
 vardef kanji.grtwo.day_of_week =
   push_pbox_toexpand("kanji.grtwo.day_of_week");
-  build_kanji.lr(330,0)
+  build_kanji.level(build_kanji.lr(330,0)
     (kanji.leftrad.day)
     (build_kanji.tb(480,0)
        (build_kanji.lr(520,-10)
@@ -109,7 +109,7 @@ vardef kanji.grtwo.day_of_week =
              (kanji.radical.pigs_head))
           (build_kanji.sscale(scaled 0.9)
              (kanji.radical.pigs_head)))
-       (kanji.radical.old_bird));
+       (kanji.radical.old_bird)));
   expand_pbox;
 enddef;
 

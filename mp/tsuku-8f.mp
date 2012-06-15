@@ -52,6 +52,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.farming =
+  push_pbox_toexpand("kanji.grthree.farming");
+  build_kanji.level(build_kanji.tb(480,-20)
+    (kanji.grthree.melody)
+    (kanji.grnine.dragon_sign));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.pursue =
   push_pbox_toexpand("kanji.grthree.pursue");
   build_kanji.road_enclose(kanji.rare.mound);
@@ -88,6 +96,25 @@ vardef kanji.grnine.crossroads =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.dragon_sign =
+  push_pbox_toexpand("kanji.grnine.dragon_sign");
+  build_kanji.cliff_enclose(build_kanji.sscale(xscaled 1.12)
+    (build_kanji.tb(540,100)
+      (kanji.grone.two;
+       replace_strokep(-1)
+         (oldp shifted (-500,-100) xscaled 0.8 shifted (500,0)))
+      (push_stroke((340,780)--(340,0),(1.6,1.6)--(1.5,1.5));
+       push_stroke((620,140)..tension 1.2..
+           (point 1 of get_strokep(0))..(130,-40),
+         (1,1)--(1.5,1.5)--(1.8,1.8));
+       push_stroke((500,780)..tension 1.2..(700,240)..(890,0),
+         (1,1)--(1.4,1.4)--(1.7,1.7));
+       push_stroke((820,540)..tension 1.2..(720,460)..
+           (point 0.69 of get_strokep(0)),
+         (1.7,1.7)--(1.4,1.4)--(1.2,1.2)))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.grope_along =
   push_pbox_toexpand("kanji.grnine.grope_along");
   build_kanji.road_enclose(kanji.grone.mountain);
@@ -95,6 +122,18 @@ vardef kanji.grnine.grope_along =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% shin/tatsu "zodiac sign of the dragon"
+begintsuglyph("uni8FB0",176);
+  kanji.grnine.dragon_sign;
+  tsu_render;
+endtsuglyph;
+
+% nou/na "farming"
+begintsuglyph("uni8FB2",178);
+  kanji.grthree.farming;
+  tsu_render;
+endtsuglyph;
 
 % hen/ata "vicinity"
 begintsuglyph("uni8FBA",186);

@@ -37,6 +37,7 @@ input buildkanji.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -45,6 +46,25 @@ do_late_includes;
 vardef kanji.grthree.blood =
   push_pbox_toexpand("kanji.grthree.blood");
   build_kanji.attach_tick(620)(kanji.grthree.dish);
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.surface =
+  push_pbox_toexpand("kanji.grthree.surface");
+  build_kanji.level(build_kanji.tb(400,60)
+    (kanji.toprad.blue)
+    (push_stroke((470,810)..tension 1.2..(340,650)..(80,510),
+       (1.7,1.7)--(1.5,1.5)--(1,1));
+     push_stroke((point 1 of get_strokep(0))--
+         (xpart point 1 of get_strokep(0),0),
+       (1.5,1.5)--(1.4,1.4));
+     push_stroke((510,80)..tension 1.2..(point 1 of get_strokep(0))..(130,-40),
+       (1,1)--(1.4,1.4)--(1.8,1.8));
+     push_stroke((540,810)..tension 1.2..(700,240)..(890,0),
+       (1,1)--(1.4,1.4)--(1.7,1.7));
+     push_stroke((820,540)..tension 1.2..(720,460)..
+         (point 0.69 of get_strokep(0)),
+       (1.7,1.7)--(1.4,1.4)--(1.2,1.2))));
   expand_pbox;
 enddef;
 
@@ -59,6 +79,12 @@ endtsuglyph;
 % kou/i(ku) "go"
 begintsuglyph("uni884C",76);
   kanji.grtwo.go;
+  tsu_render;
+endtsuglyph;
+
+% hyou/omote "surface"
+begintsuglyph("uni8868",104);
+  kanji.grthree.surface;
   tsu_render;
 endtsuglyph;
 
