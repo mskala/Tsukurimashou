@@ -335,6 +335,12 @@ begintsuglyph("uni53C8",200);
   tsu_render;
 endtsuglyph;
 
+% kyuu/oyo "reach"
+begintsuglyph("uni53CA",202);
+  kanji.greight.reach;
+  tsu_render;
+endtsuglyph;
+
 % yuu/tomo "friend"
 begintsuglyph("uni53CB",203);
   kanji.grtwo.friend;

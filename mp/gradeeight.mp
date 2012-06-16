@@ -240,6 +240,48 @@ vardef kanji.greight.prefix_sub =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.reach =
+  push_pbox_toexpand("kanji.greight.reach");
+  begingroup
+    save x,y;
+    numeric x[],y[];
+    x1=140;
+    x2=680;
+    x4=540;
+    y1=y2=780;
+    y4=460;
+    z3=0.4[z4,z2]+mincho*(30,0);
+    z5=(0.3-0.5*mincho)[z4,z2];
+    push_stroke(z1--z2..tension 1.2..z3..z5,
+      (1.6,1.6)--(1.6,1.6)--(1.6-0.1*mincho,1.6-0.1*mincho)--
+        (1.6-0.2*mincho,1.6-0.2*mincho));
+    set_boserif(0,1,4);
+    set_botip(0,1,0);
+    x7=0;
+    x9=880;
+    x10=660;
+    x11=280;
+    y7=y9=y4;
+    y10=110;
+    y11=-70;
+    z6=point 2.2 of get_strokep(0);
+    z8=(z7--z9) intersectionpoint (get_strokep(0)--((-1)[z4,z2]));
+    push_stroke(z6--z8--z9..tension 1.2..z10..z11,
+      (1.6-0.5*mincho,1.6-0.5*mincho)--(1.5-0.1*mincho,1.5-0.1*mincho)--
+      (1.6,1.6)--(1.4,1.4)--(1,1));
+    set_boserif(0,2,4);
+    set_botip(0,1,1);
+    set_botip(0,2,0);
+  endgroup;
+  push_stroke((point 0.4 of get_strokep(-1))..tension 1.2..
+      (240,290)..(60,-60),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  push_stroke((point 0.08 of get_strokep(0))..tension 1.2..
+      (480,270)..(870,-60),
+    (1.2,1.2)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.resemblance =
   push_pbox_toexpand("kanji.greight.resemblance");
   build_kanji.tb(620,77)

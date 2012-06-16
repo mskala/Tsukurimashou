@@ -98,6 +98,18 @@ vardef kanji.grthree.final =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.grade =
+  push_pbox_toexpand("kanji.grthree.grade");
+  build_kanji.lr(450,50)
+    (build_kanji.lift_skirt(300,100)
+       (kanji.grone.thread;
+        replace_strokep(0)(subpath (0,1.6) of oldp)))
+    (kanji.greight.reach);
+  replace_strokep(-1)((point 0 of oldp)..tension 1.2..
+    ((0,-90)+point 1 of oldp)..((-50,0)+point 2 of oldp));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.green =
   push_pbox_toexpand("kanji.grthree.green");
   build_kanji.lr(450,0)
@@ -129,6 +141,12 @@ enddef;
 % shi/kami "paper"
 begintsuglyph("uni7D19",25);
   kanji.grtwo.paper;
+  tsu_render;
+endtsuglyph;
+
+% kyuu "grade"
+begintsuglyph("uni7D1A",26);
+  kanji.grthree.grade;
   tsu_render;
 endtsuglyph;
 
