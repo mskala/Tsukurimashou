@@ -220,6 +220,12 @@ begintsuglyph("uni758B",139);
   tsu_render;
 endtsuglyph;
 
+% extra: sickness enclosure radical
+begintsuglyph("uni7592",146);
+  build_kanji.sickness_enclose();
+  tsu_render;
+endtsuglyph;
+
 % byou/ya "ill"
 begintsuglyph("uni75C5",197);
   kanji.grthree.ill;
