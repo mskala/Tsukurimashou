@@ -92,11 +92,45 @@ vardef kanji.grthree.farm =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.ill =
+  push_pbox_toexpand("kanji.grthree.ill");
+  build_kanji.sickness_enclose(tsu_xform(identity yscaled 0.88)
+    (kanji.greight.third));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.realm =
   push_pbox_toexpand("kanji.grthree.realm");
   build_kanji.level(build_kanji.tb(460,80)
     (kanji.grone.paddy)
     (kanji.greight.mediate));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef build_kanji.sickness_enclose(text contents) =
+  push_pbox_toexpand("build_kanji.sickness_enclose");
+  perl_structure:=perl_structure&"'eids.u2FF8.u7592.2_',";
+  push_stroke((570,810)--(570,660),
+    (1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  push_stroke(
+    (80,-50)..(170,100)..(210,300)..tension 1.2..(230,660)--(850,660),
+    (1,1)--(1.3,1.3)--(1.5,1.5)--(1.6,1.6)--(1.6,1.6));
+  set_botip(0,3,1);
+  push_stroke((70,580)..tension 1.2..(100,510)..(120,440),
+    (1,1)--(1.4,1.4)--(1.6,1.6));
+  push_stroke((40,260)..tension 1.2..(110,300)..(150,330),
+    (1.7,1.7)--(1.5,1.5)--(1.1,1.1));
+  begingroup
+    save t;
+    transform t;
+    (50,-50) transformed t=(280,-60);
+    (500,-50) transformed t=(570,-60);
+    (500,850) transformed t=(570,630);
+    tsu_xform(t)(contents);
+  endgroup;
   expand_pbox;
 enddef;
 
@@ -183,6 +217,12 @@ endtsuglyph;
 % hiki/ashi "head" (counter for animals)
 begintsuglyph("uni758B",139);
   kanji.grnine.animal_counter;
+  tsu_render;
+endtsuglyph;
+
+% byou/ya "ill"
+begintsuglyph("uni75C5",197);
+  kanji.grthree.ill;
   tsu_render;
 endtsuglyph;
 

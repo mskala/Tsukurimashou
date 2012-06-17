@@ -319,6 +319,15 @@ vardef kanji.greight.spine =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.third =
+  push_pbox_toexpand("kanji.greight.third");
+  push_stroke((80,800)--(920,800),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  kanji.grtwo.home;
+  set_boserif(-2,0,whatever);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.towel =
   push_pbox_toexpand("kanji.greight.towel");
   build_kanji.sscale(xyscaled (0.9,0.6) shifted (0,-50))

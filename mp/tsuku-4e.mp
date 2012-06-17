@@ -252,6 +252,12 @@ begintsuglyph("uni4E16",22);
   tsu_render;
 endtsuglyph;
 
+% hei/hinoe "third class or calendar sign"
+begintsuglyph("uni4E19",25);
+  kanji.greight.third;
+  tsu_render;
+endtsuglyph;
+
 % ryo/teru "both," also a couple of different units of measure
 begintsuglyph("uni4E21",33);
   kanji.grthree.both;
