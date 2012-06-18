@@ -204,6 +204,27 @@ for ($i=0x2E80;$i<0x2EF4;$i++) {
   }
 }
 
+for ($i=0x3400;$i<0x4DBF;$i++) {
+  next if $chargrade{$i}>0;
+  $chargrade{$i}=14;
+  $in_grade[14]++;
+  if ($in_font{$i}) {
+    $charlit{$i}=chr($i);
+    $font_and_grade[14]++;
+    $totinfont++;
+  }
+}
+for ($i=0x20000;$i<0x2B81F;$i++) {
+  next if $chargrade{$i}>0;
+  $chargrade{$i}=14;
+  $in_grade[14]++;
+  if ($in_font{$i}) {
+    $charlit{$i}=chr($i);
+    $font_and_grade[14]++;
+    $totinfont++;
+  }
+}
+
 sub make_list {
   ($title,$grade)=@_;
   $title.=('　'.(0+$font_and_grade[$grade]).'/'.$in_grade[$grade]);
@@ -211,7 +232,7 @@ sub make_list {
   print "\\section*{$title}\n\\addcontentsline{toc}{section}{$title}\n\n";
   print "\\mono\n\n";
   $on_line=0;
-  foreach $char (sort keys %in_font) {
+  foreach $char (sort {$a<=>$b} keys %in_font) {
     next unless $chargrade{$char}==$grade;
     print $charlit{$char};
     $on_line++;
@@ -237,10 +258,10 @@ print "\\mono\\clearpage\n\n";
 &make_list('第\,９\,学年の人名用漢字　Grade 9 name-only',9);
 &make_list('第\,１０\,学年の人名用漢字　Grade 10 name-only',10);
 &make_list('幽霊漢字　Mysterious kanji of questionable origin that remain in the standards for compatibility reasons',15);
-&make_list('外の\,ＪＩＳ ０２０８\,漢字　Other JIS 0208 kanji',11);
-&make_list('外の\,ＪＩＳ ０２１２\,漢字　Other JIS 0212 kanji',12);
-&make_list('外の\,ＪＩＳ ０２１３\,漢字　Other JIS 0213 kanji',13);
-&make_list('外の\,Ｕｎｉｃｏｄｅ\,漢字　Other Unicode kanji',14);
+&make_list('外の\,ＪＩＳ ０２０８\,漢字　Other JIS 0208',11);
+&make_list('外の\,ＪＩＳ ０２１２\,漢字　Other JIS 0212',12);
+&make_list('外の\,ＪＩＳ ０２１３\,漢字　Other JIS 0213',13);
+&make_list('外の\,Ｕｎｉｃｏｄｅ\,漢字　Other Unicode',14);
 &make_list('康熙部首　Kangxi Radicals',16);
 &make_list('ＣＪＫ追加の部首　CJK Supplement Radicals',17);
 

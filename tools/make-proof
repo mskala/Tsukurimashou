@@ -585,7 +585,7 @@ foreach $file (@files) {
     if (/^%(.*)$/) {
       $_=$1;
        if ($plflag && /[A-Z]/ &&
-         /^[% ]*([^%a-z\{\}]+?)[ %]*$/ && (length($1)>2) &&
+         /^[% ]*([^%a-z\{\}~,]+?)[ %]*$/ && (length($1)>2) &&
         ($1 ne 'AUTODEPS') && (!/^\s*BACKGROUND /)) {
         $newsubsec=$1;
         $newsubsec=~s/\b([A-Z]+)\b/ucfirst(lc($1))/ge;
