@@ -160,14 +160,15 @@ while (<STDIN>) {
 
 foreach $char (qw(墸 壥 妛 彁 挧 暃 椢 槞 蟐 袮 閠 駲)) {
   $i=ord($char);
-  $chargrade{$i}=15;
-  $in_grade[11]--;
-  $in_grade[15]++;
+  $in_grade[$chargrade{$i}]--;
   if ($in_font{$i}) {
     $charlit{$i}=chr($i);
+    $font_and_grade[$chargrade{$i}]--;
     $font_and_grade[15]++;
     $totinfont++;
   }
+  $chargrade{$i}=15;
+  $in_grade[15]++;
 }
 
 for ($i=0x4E00;$i<0x9FD0;$i++) {

@@ -357,14 +357,23 @@ The name ``Tsukurimashou'' could be translated as ``Let's make something!''
 
 From time to time, people ask how they can help with the project.  I'm
 hesitant to accept contributions to the coding, because of the pedagogical
-goal:  I need to do it myself in order to learn by doing it.  I also don't
-have much need for monetary donations.  If you are in a position to
-actually offer me full-time employment appropriate to my skills and
-experience, I might like to hear from you, but as far as the Tsukurimashou
-project is concerned, the one thing that would really help a lot would be
-publicity.  Share the link on social networks; write about it on your Web
-log (or invite me to write a guest posting); or even just do a ``review'' or
-a ``rating'' on the Sourceforge.JP project page.
+goal: I need to do it myself in order to learn by doing it.  I also don't
+have much need for monetary donations.  If you are in a position to actually
+offer me full-time employment appropriate to my skills and experience, I
+might like to hear from you, but as far as the Tsukurimashou project is
+concerned, the one thing that would really help a lot would be publicity. 
+Share the link on social networks; write about it on your Web log (or invite
+me to write a guest posting); or even just do a ``review'' or a ``rating''
+on the Sourceforge.JP project page.  Tsukurimashou is also registered on
+Github, Ohloh, and CIA.vc; if you use one of those systems, you're
+encouraged to ``follow'' or ``subscribe'' to it as appropriate, both to keep
+yourself updated and to raise the project's profile.
+
+There is some possibility that I may actually be able to get funding in the
+near future to work on kanji fonts and dictionaries full-time for a while. 
+Exactly what that would mean for Tsukurimashou is unknown, because the
+project under discussion would have goals to but not exactly the same as the
+current Tsukurimashou/IDSgrep, and it's too soon to announce anything.
 
 The home pages for this project, where you can download the latest releases,
 browse the source-control repository, and so on, are:\\
@@ -385,11 +394,11 @@ The main visible content of the fonts hasn't changed much in version
 \TsukurimashouVersion; I'm simply continuing the slog through the
 kyouiku kanji.  This version contains the completion of Grade Three.
 
-There's been a lot of less-visible work done, however.  This version
-contains its own bundled copy of the METAFONT-language portion of
-METATYPE1, and a Perl script that replaces the Awk portion of METATYPE1
-and the wrapper provided by the mtype13 distribution.  There's a story
-behind that.
+There's been a lot of less-visible work done, however, and that's one reason
+that this version has been so long in the making.  This version contains its
+own bundled copy of the METAFONT-language portion of METATYPE1, and a Perl
+script that replaces the Awk portion of METATYPE1 and the wrapper provided
+by the mtype13 distribution.  There's a story behind that.
 
 I reinstalled the operating system on my laptop and so, in order to
 continue developing Tsukurimashou there, I had to also reinstall all
@@ -675,27 +684,30 @@ Tsukurimashou.
 %   0.3    20110510   2455692     348      1797   24799
 %   0.4    20111016   2455851     573      2021   30148
 %   0.5    20111216   2455911     776      2260   36479
+%   0.6    20120618   2456096    1110      2586   46635
 
 \begin{figure}
-\tikzset{horizontal axis/.style={xscale=0.33,xshift=1.5cm}}
-\tikzset{vertical axis/.style={yscale=0.33}}
+\tikzset{horizontal axis/.style={xscale=0.2,xshift=1.5cm}}
+\tikzset{vertical axis/.style={yscale=0.2}}
 \centering
 \begin{tikzpicture}
   \begin{scope}[vertical axis]
-    \draw[arrows=-triangle 60] (0,-1) -- (0,27);
-    \foreach \y/\ylbl in {0/0,5/500,10/1000,15/1500,20/2000,25/2500} {
+    \draw[arrows=-triangle 60] (0,-1) -- (0,32);
+    \foreach \y/\ylbl in
+      {0/0,5/500,10/1000,15/1500,20/2000,25/2500,30/3000} {
       \draw (-0.2,\y) -- (0.2,\y);
       \node[anchor=east] at (-0.2,\y) {\ylbl};
     }
-    \node[rotate=90] at (-2,12.5) {glyphs};
+    \node[rotate=90] at (-2,16) {glyphs};
   \end{scope}
   \begin{scope}[horizontal axis]
-    \draw[arrows=-triangle 60] (-2,0) -- (33.1,0);
-    \foreach \x/\xlbl in {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5} {
+    \draw[arrows=-triangle 60] (-2,0) -- (51.6,0);
+    \foreach \x/\xlbl in
+      {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5,49.6/0.6} {
       \draw (\x,-0.2) -- (\x,0.2);
       \node[anchor=north] at (\x,-0.2) {\xlbl};
     }
-    \node at (20,-1) {version and time};
+    \node at (25,-1) {version and time};
   \end{scope}
   \begin{scope}[horizontal axis,vertical axis]
     \node (v1k) at (1.2,0) {漢};
@@ -703,15 +715,17 @@ Tsukurimashou.
     \node (v3k) at (9.2,3.48) {漢};
     \node (v4k) at (25.1,5.73) {漢};
     \node (v5k) at (31.1,7.76) {漢};
+    \node (v6k) at (49.6,11.10) {漢};
     \node (v1t) at (1.2,13.07) {\labelitemi};
     \node (v2t) at (5.8,16.46) {\labelitemi};
     \node (v3t) at (9.2,17.97) {\labelitemi};
     \node (v4t) at (25.1,20.21) {\labelitemi};
-    \node (v5t) at (31.1,26.60) {\labelitemi};
+    \node (v5t) at (31.1,22.60) {\labelitemi};
+    \node (v6t) at (49.6,25.86) {\labelitemi};
     \draw (v1k) -- (v2k) -- (v3k) -- (v4k) 
-      node[sloped,above,midway] {kanji} -- (v5k);
+      -- (v5k) -- (v6k) node[sloped,above,midway] {kanji};
     \draw (v1t) -- (v2t) -- (v3t) -- (v4t)
-      node[sloped,above,midway] {total} -- (v5t);
+      -- (v5t) -- (v6t) node[sloped,above,midway] {total};
   \end{scope}
 \end{tikzpicture}
 \caption{Growth of glyph counts}
@@ -724,29 +738,30 @@ comments and blanks but not including code in other languages and locations;
 also excluding jieub-*.mp, but still including a few other files from
 Jieubsida) plotted against the total number of glyphs in the main
 Tsukurimashou family.  In version 0.6, there are a few thousand lines of
-code added due to the bundling of METATYPE1, which may skew the numbers a
-bit.
+code added due to the new bundling of METATYPE1, which may skew the numbers
+a bit.
 
 \begin{figure}
-\tikzset{horizontal axis/.style={xscale=0.4}}
+\tikzset{horizontal axis/.style={xscale=0.3}}
 \tikzset{vertical axis/.style={yscale=0.3}}
 \centering
 \begin{tikzpicture}
   \begin{scope}[vertical axis]
-    \draw[arrows=-triangle 60] (0,0) -- (0,39);
-    \foreach \y/\ylbl in {0/0,10/10000,20/20000,30/30000} {
+    \draw[arrows=-triangle 60] (0,0) -- (0,49);
+    \foreach \y/\ylbl in {0/0,10/10000,20/20000,30/30000,40/40000} {
       \draw (-0.2,\y) -- (0.2,\y);
       \node[anchor=east] at (-0.2,\y) {\ylbl};
     }
-    \node[rotate=90] at (-2.2,19) {lines of code};
+    \node[rotate=90] at (-2.2,25) {lines of code};
   \end{scope}
   \begin{scope}[horizontal axis]
-    \draw[arrows=-triangle 60] (0,0) -- (27,0);
-    \foreach \x/\xlbl in {0/0,5/500,10/1000,15/1500,20/2000,25/2500} {
+    \draw[arrows=-triangle 60] (0,0) -- (32,0);
+    \foreach \x/\xlbl in
+      {0/0,5/500,10/1000,15/1500,20/2000,25/2500,30/3000} {
       \draw (\x,-0.2) -- (\x,0.2);
       \node[anchor=north] at (\x,-0.2) {\xlbl};
     }
-    \node at (12.5,-1.3) {glyphs};
+    \node at (15,-1.3) {glyphs};
   \end{scope}
   \begin{scope}[horizontal axis,vertical axis]
     \node (v1) at (13.07,14.944) {\labelitemi};
@@ -754,7 +769,8 @@ bit.
     \node (v3) at (17.97,24.799) {\labelitemi};
     \node (v4) at (20.21,30.148) {\labelitemi};
     \node (v5) at (22.60,36.479) {\labelitemi};
-    \draw (v1) -- (v2) -- (v3) -- (v4) -- (v5);
+    \node (v6) at (25.86,46.635) {\labelitemi};
+    \draw (v1) -- (v2) -- (v3) -- (v4) -- (v5) -- (v6);
   \end{scope}
 \end{tikzpicture}
 \caption{Lines of code per glyph}

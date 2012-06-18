@@ -229,9 +229,9 @@ dist_noinst_SCRIPTS = \
   hamlog/select.hl hamlog/swi-ham.pl hamlog/ecl-ham.ecl hamlog/gp-ham.pl \
   pe/bdf.pe pe/getbearings.pe pe/kern-font.pe pe/rmo.pe \
   tools/add-flog tools/autodep tools/livecode \
-  tools/make-ass tools/make-book tools/make-cfghl tools/make-fea \
-  tools/make-flog tools/make-gpos tools/make-hglpages tools/make-kchart \
-  tools/make-kddata tools/make-name tools/make-proof \
+  tools/make-ass tools/make-book tools/make-cfghl tools/make-eids \
+  tools/make-fea tools/make-flog tools/make-gpos tools/make-hglpages \
+  tools/make-kchart tools/make-kddata tools/make-name tools/make-proof \
   tools/mp2pf tools/mpdep tools/progress \
   txt/jnames.txt
 
@@ -265,7 +265,7 @@ MOSTLYCLEANFILES = \
   pfb/*.afm pfb/*.pfb \
   pfbtmp/*.pfb prf/*.prf sfd/*.sfd sum/*.sum \
   tsukurimashou.nam \
-  txt/fontlog.txt
+  txt/fontlog.txt txt/tsukurimashou.eids
 
 CLEANFILES = \
   otf/Tsukurimashou*.otf otf/BlackletterLolita*.otf otf/Jieubsida*.otf \
@@ -274,6 +274,7 @@ CLEANFILES = \
 DISTCLEANFILES = \
   makefile-pdf.inc makefile-pfb.inc makefile-vars.inc \
   chl-stamp pfb-stamp \
+  _stdint.h \
   aminclude.am chars.lst hamlog/config.hl doc/version.tex \
   */.dirstamp
 
