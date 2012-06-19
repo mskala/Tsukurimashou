@@ -284,7 +284,7 @@ DISTCLEANFILES = \
 
 DEFAULT_TOK = tsuku
 
-PFBSTAMP:=$(strip $(shell $(GREP) 'AUTODEPS|input|BEGINFEATURE' \
+PFBSTAMP:=$(strip $(shell $(GREP) 'AUTODEPS\|input\|BEGINFEATURE' \
   $(mvp)/mp/*.mp ./mp/*.mp $(mvp)/fsc/*.fsc | \
   cat - config.status | $(CHECKSUM)))
 
@@ -310,10 +310,18 @@ if COND_PROLOG_SWI
   HAMLOG_DEPS=hamlog/swi-ham.pl
 endif
 
+MAYBE_CHL_TICKLER:=\
+  $(if $(filter-out x$(PFBSTAMP),x$(shell cat chl-stamp)),chl-tickler)
+
+chl-tickler:
+
+.PHONY: chl-tickler
+
 hamlog/config.hl: tools/make-cfghl \
   config.status $(wildcard $(mvp)/fsc/*.fsc) \
   hamlog/.dirstamp mp/.dirstamp mp/.hglstamp \
-  $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp))
+  $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp)) \
+  $(MAYBE_CHL_TICKLER)
 	$(AM_V_at)if ( test "x$(PFBSTAMP)" = "x`cat chl-stamp`" ) \
 	  && ( test -s hamlog/config.hl ) ; then \
 	  $(TSU_V_NASKIP) \
@@ -466,24 +474,38 @@ PAGEFILES=$(strip $(foreach page,\
     $(wildcard ./mp/$(firstword $(subst _,$(space),$(2)))-$(page).mp)),\
     $(1)$(subst _,-,$(2))-$(page)$(3))))
 
+MAYBE_PFB_TICKLER:=\
+  $(if $(filter-out x$(PFBSTAMP),x$(shell cat pfb-stamp)),pfb-tickler)
+
+pfb-tickler:
+
+.PHONY: pfb-tickler
+
 makefile-pfb.inc: \
   makefile-vars.inc tools/mpdep mp/.hglstamp \
-  $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp))
+  $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp)) \
+  $(MAYBE_PFB_TICKLER)
 	$(AM_V_at)if ( test "x$(PFBSTAMP)" = "x`cat pfb-stamp`" ) \
 	  && ( test -s makefile-pfb.inc ) ; then \
 	  $(TSU_V_NASKIP) \
 	  true ; \
 	else \
 	  $(TSU_V_NAPERL) \
-	  for style in $(subst _,-,$(SHORT_STYLES)); do \
-	    for page in `ls $(mvp)/mp/*.mp ./mp/*.mp | \
-	      $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
-	      sort | uniq`; do \
+	  export PROGRESS_MESSAGE="$(ansi_cleareol)@@@$@" ; \
+	  $(PERL) -CSD $(mvp)/tools/progress start makefile-pfb \
+	    `ls $(mvp)/mp/*.mp ./mp/*.mp | \
+	    $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
+	    sort | uniq |  wc -l` ; \
+	  for page in `ls $(mvp)/mp/*.mp ./mp/*.mp | \
+	    $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
+	    sort | uniq`; do \
+	    for style in $(subst _,-,$(SHORT_STYLES)); do \
 	      echo pfbtmp/$$style-$$page.pfb prf/$$style-$$page.prf: \
 	`$(PERL) -CSD $(mvp)/tools/mpdep $(DEFAULT_TOK) $$style-$$page` \
 	        >> makefile-pfb.inc ; \
 	      echo >> makefile-pfb.inc ; \
 	    done ; \
+	    $(PERL) -CSD $(mvp)/tools/progress count makefile-pfb ; \
 	  done ; \
 	  echo $(PFBSTAMP) > pfb-stamp ; \
 	fi

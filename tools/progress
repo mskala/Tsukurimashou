@@ -2,7 +2,7 @@
 
 #
 # Progress display for Tsukurimashou build system
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,7 +41,13 @@ $clreol=~s/\\e/\e/g;
 
 $reftime=time;
 
+$progprefix='PROGRESS:';
 $progmsg=$ENV{'PROGRESS_MESSAGE'};
+
+if ($progmsg=~/^(.*)@@@(.*)$/) {
+  ($progprefix,$progmsg)=($1,$2);
+  $progprefix=~s/\\e/\e/g;
+}
 
 sub process_update {
   $pct=100*($count/$maxcount);
@@ -87,9 +93,9 @@ if ($command eq 'start') {
   if ($reftime-$starttime<10) {
     exit(0);
   }
-  print 'PROGRESS:';
+  print $progprefix;
   &process_update;
-  print "\n";
+  print (($progprefix eq 'PROGRESS:')?"\n":"\r");
 } elsif ($command eq 'stdin') {
   $|=1;
   $progmsg=$jobname;
