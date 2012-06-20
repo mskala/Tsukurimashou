@@ -628,6 +628,180 @@ begintsuglyph("uni115E.lj4",94);
   tsu_render;
 endtsuglyph;
 
+% hangul lead tikeut-mieum
+begintsuglyph("uniA960.lj4",96);
+  hangul.combine.lr(203,106)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead tikeut-pieup
+begintsuglyph("uniA961.lj4",97);
+  hangul.combine.lr(203,107)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead tikeut-sios
+begintsuglyph("uniA962.lj4",98);
+  hangul.combine.lr(203,109)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead tikeut-cieuc
+begintsuglyph("uniA963.lj4",99);
+  hangul.combine.lr(203,112)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-kiyeok
+begintsuglyph("uniA964.lj4",100);
+  hangul.combine.lr(205,100)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-ssangkiyeok
+begintsuglyph("uniA965.lj4",101);
+  hangul.combine.lcr(205,100,100)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-tikeut
+begintsuglyph("uniA966.lj4",102);
+  hangul.combine.lr(205,103)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-ssangtikeut
+begintsuglyph("uniA967.lj4",103);
+  hangul.combine.lcr(205,203,103)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-mieum
+begintsuglyph("uniA968.lj4",104);
+  hangul.combine.lr(205,106)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-pieup
+begintsuglyph("uniA969.lj4",105);
+  hangul.combine.lr(205,107)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-ssangpieup
+begintsuglyph("uniA96A.lj4",106);
+  hangul.combine.lcr(205,207,107)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-kapyeounpieup
+begintsuglyph("uniA96B.lj4",107);
+  hangul.combine.lr(205,231)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-sios
+begintsuglyph("uniA96C.lj4",108);
+  hangul.combine.lr(205,109)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-cieuc
+begintsuglyph("uniA96D.lj4",109);
+  hangul.combine.lr(205,112)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead rieul-khieukh
+begintsuglyph("uniA96E.lj4",110);
+  hangul.combine.lr(205,115)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead mieum-kiyeok
+begintsuglyph("uniA96F.lj4",111);
+  hangul.combine.lr(106,100)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead mieum-tikeut
+begintsuglyph("uniA970.lj4",112);
+  hangul.combine.lr(106,103)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead mieum-sios
+begintsuglyph("uniA971.lj4",113);
+  hangul.combine.lr(106,109)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead pieup-sios-thieuth
+begintsuglyph("uniA972.lj4",114);
+  hangul.combine.lcr(207,209,116)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead pieup-khieukh
+begintsuglyph("uniA973.lj4",115);
+  hangul.combine.lr(207,115)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead pieup-hieuh
+begintsuglyph("uniA974.lj4",116);
+  hangul.combine.lr(207,118)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead ssangsios-pieup
+begintsuglyph("uniA975.lj4",117);
+  hangul.combine.lcr(209,209,107)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead ieung-rieul
+begintsuglyph("uniA976.lj4",118);
+  hangul.combine.lr(111,105)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead ieung-hieuh
+begintsuglyph("uniA977.lj4",119);
+  hangul.combine.lr(111,118)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead ssangcieuc-hieuh
+begintsuglyph("uniA978.lj4",120);
+  hangul.combine.lcr(212,212,118)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead ssangthieuth
+begintsuglyph("uniA979.lj4",121);
+  hangul.combine.lr(216,116)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead phieuph-hieuh
+begintsuglyph("uniA97A.lj4",122);
+  hangul.combine.lr(117,118)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead hieuh-sios
+begintsuglyph("uniA97B.lj4",123);
+  hangul.combine.lr(118,109)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul lead ssangyeorinhieuh
+begintsuglyph("uniA97C.lj4",124);
+  hangul.combine.lr(221,221)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 endfont;

@@ -258,6 +258,10 @@ hangul.jamo[229]rb=700;
 
 % KAPYEOUN VARIANTS
 
+% 231 lead kapyeounpieup
+hangul.jamo[231]code="combine.tb(107,111)";
+hangul.jamo[231]h=6;
+
 % 630 tail kapyeounpieup
 hangul.jamo[630]code="combine.tb(517,521)";
 hangul.jamo[630]h=6;

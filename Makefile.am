@@ -254,6 +254,7 @@ genjimon/genjimon.zip:
 
 MOSTLYCLEANFILES = \
   *~ doc/*~ fea/*~ kerner/*~ m4/*~ mp/*~ pe/*~ t1asm/*~ \
+  *.prog \
   bdf/*.bdf \
   doc/*.aux doc/*.log doc/*.out doc/*-draft.tex doc/*.toc doc/*.xdv \
   doc/kanjichart.tex \

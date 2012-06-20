@@ -41,7 +41,11 @@
   uni113D uni113E uni113F uni1140 uni1141 uni1142 uni1143 uni1144 uni1145
   uni1146 uni1147 uni1148 uni1149 uni114A uni114B uni114C uni114D uni114E
   uni114F uni1150 uni1151 uni1152 uni1153 uni1154 uni1155 uni1156 uni1157
-  uni1158 uni1159 uni115A uni115B uni115C uni115D uni115E uni115F];
+  uni1158 uni1159 uni115A uni115B uni115C uni115D uni115E uni115F
+  uniA960 uniA961 uniA962 uniA963 uniA964 uniA965 uniA966 uniA967 uniA968
+  uniA969 uniA96A uniA96B uniA96C uniA96D uniA96E uniA96F uniA970 uniA971
+  uniA972 uniA973 uniA974 uniA975 uniA976 uniA977 uniA978 uniA979 uniA97A
+  uniA97B uniA97C];
 @bug_lead_jamo=[uni1100.bug uni1101.bug uni1102.bug uni1103.bug uni1104.bug
   uni1105.bug uni1106.bug uni1107.bug uni1108.bug uni1109.bug uni110A.bug
   uni110B.bug uni110C.bug uni110D.bug uni110E.bug uni110F.bug uni1110.bug
@@ -58,7 +62,12 @@
   uni114D.bug uni114E.bug uni114F.bug uni1150.bug uni1151.bug uni1152.bug
   uni1153.bug uni1154.bug uni1155.bug uni1156.bug uni1157.bug uni1158.bug
   uni1159.bug uni115A.bug uni115B.bug uni115C.bug uni115D.bug uni115E.bug
-  uni115F.bug];
+  uni115F.bug
+  uniA960.bug uniA961.bug uniA962.bug uniA963.bug uniA964.bug uniA965.bug
+  uniA966.bug uniA967.bug uniA968.bug uniA969.bug uniA96A.bug uniA96B.bug
+  uniA96C.bug uniA96D.bug uniA96E.bug uniA96F.bug uniA970.bug uniA971.bug
+  uniA972.bug uniA973.bug uniA974.bug uniA975.bug uniA976.bug uniA977.bug
+  uniA978.bug uniA979.bug uniA97A.bug uniA97B.bug uniA97C.bug];
 @l1_lead_jamo=[uni1100.lj1 uni1101.lj1 uni1102.lj1 uni1103.lj1 uni1104.lj1
   uni1105.lj1 uni1106.lj1 uni1107.lj1 uni1108.lj1 uni1109.lj1 uni110A.lj1
   uni110B.lj1 uni110C.lj1 uni110D.lj1 uni110E.lj1 uni110F.lj1 uni1110.lj1
@@ -75,7 +84,12 @@
   uni114D.lj1 uni114E.lj1 uni114F.lj1 uni1150.lj1 uni1151.lj1 uni1152.lj1
   uni1153.lj1 uni1154.lj1 uni1155.lj1 uni1156.lj1 uni1157.lj1 uni1158.lj1
   uni1159.lj1 uni115A.lj1 uni115B.lj1 uni115C.lj1 uni115D.lj1 uni115E.lj1
-  uni115F.lj1];
+  uni115F.lj1
+  uniA960.lj1 uniA961.lj1 uniA962.lj1 uniA963.lj1 uniA964.lj1 uniA965.lj1
+  uniA966.lj1 uniA967.lj1 uniA968.lj1 uniA969.lj1 uniA96A.lj1 uniA96B.lj1
+  uniA96C.lj1 uniA96D.lj1 uniA96E.lj1 uniA96F.lj1 uniA970.lj1 uniA971.lj1
+  uniA972.lj1 uniA973.lj1 uniA974.lj1 uniA975.lj1 uniA976.lj1 uniA977.lj1
+  uniA978.lj1 uniA979.lj1 uniA97A.lj1 uniA97B.lj1 uniA97C.lj1];
 @l2_lead_jamo=[uni1100.lj2 uni1101.lj2 uni1102.lj2 uni1103.lj2 uni1104.lj2
   uni1105.lj2 uni1106.lj2 uni1107.lj2 uni1108.lj2 uni1109.lj2 uni110A.lj2
   uni110B.lj2 uni110C.lj2 uni110D.lj2 uni110E.lj2 uni110F.lj2 uni1110.lj2
@@ -92,7 +106,12 @@
   uni114D.lj2 uni114E.lj2 uni114F.lj2 uni1150.lj2 uni1151.lj2 uni1152.lj2
   uni1153.lj2 uni1154.lj2 uni1155.lj2 uni1156.lj2 uni1157.lj2 uni1158.lj2
   uni1159.lj2 uni115A.lj2 uni115B.lj2 uni115C.lj2 uni115D.lj2 uni115E.lj2
-  uni115F.lj2];
+  uni115F.lj2
+  uniA960.lj2 uniA961.lj2 uniA962.lj2 uniA963.lj2 uniA964.lj2 uniA965.lj2
+  uniA966.lj2 uniA967.lj2 uniA968.lj2 uniA969.lj2 uniA96A.lj2 uniA96B.lj2
+  uniA96C.lj2 uniA96D.lj2 uniA96E.lj2 uniA96F.lj2 uniA970.lj2 uniA971.lj2
+  uniA972.lj2 uniA973.lj2 uniA974.lj2 uniA975.lj2 uniA976.lj2 uniA977.lj2
+  uniA978.lj2 uniA979.lj2 uniA97A.lj2 uniA97B.lj2 uniA97C.lj2];
 # layout 3 is aliased to layout 1 for lead jamo, hence no class of its own
 @l4_lead_jamo=[uni1100.lj4 uni1101.lj4 uni1102.lj4 uni1103.lj4 uni1104.lj4
   uni1105.lj4 uni1106.lj4 uni1107.lj4 uni1108.lj4 uni1109.lj4 uni110A.lj4
@@ -110,7 +129,12 @@
   uni114D.lj4 uni114E.lj4 uni114F.lj4 uni1150.lj4 uni1151.lj4 uni1152.lj4
   uni1153.lj4 uni1154.lj4 uni1155.lj4 uni1156.lj4 uni1157.lj4 uni1158.lj4
   uni1159.lj4 uni115A.lj4 uni115B.lj4 uni115C.lj4 uni115D.lj4 uni115E.lj4
-  uni115F.lj4];
+  uni115F.lj4
+  uniA960.lj4 uniA961.lj4 uniA962.lj4 uniA963.lj4 uniA964.lj4 uniA965.lj4
+  uniA966.lj4 uniA967.lj4 uniA968.lj4 uniA969.lj4 uniA96A.lj4 uniA96B.lj4
+  uniA96C.lj4 uniA96D.lj4 uniA96E.lj4 uniA96F.lj4 uniA970.lj4 uniA971.lj4
+  uniA972.lj4 uniA973.lj4 uniA974.lj4 uniA975.lj4 uniA976.lj4 uniA977.lj4
+  uniA978.lj4 uniA979.lj4 uniA97A.lj4 uniA97B.lj4 uniA97C.lj4];
 @l5_lead_jamo=[uni1100.lj5 uni1101.lj5 uni1102.lj5 uni1103.lj5 uni1104.lj5
   uni1105.lj5 uni1106.lj5 uni1107.lj5 uni1108.lj5 uni1109.lj5 uni110A.lj5
   uni110B.lj5 uni110C.lj5 uni110D.lj5 uni110E.lj5 uni110F.lj5 uni1110.lj5
@@ -127,7 +151,12 @@
   uni114D.lj5 uni114E.lj5 uni114F.lj5 uni1150.lj5 uni1151.lj5 uni1152.lj5
   uni1153.lj5 uni1154.lj5 uni1155.lj5 uni1156.lj5 uni1157.lj5 uni1158.lj5
   uni1159.lj5 uni115A.lj5 uni115B.lj5 uni115C.lj5 uni115D.lj5 uni115E.lj5
-  uni115F.lj5];
+  uni115F.lj5
+  uniA960.lj5 uniA961.lj5 uniA962.lj5 uniA963.lj5 uniA964.lj5 uniA965.lj5
+  uniA966.lj5 uniA967.lj5 uniA968.lj5 uniA969.lj5 uniA96A.lj5 uniA96B.lj5
+  uniA96C.lj5 uniA96D.lj5 uniA96E.lj5 uniA96F.lj5 uniA970.lj5 uniA971.lj5
+  uniA972.lj5 uniA973.lj5 uniA974.lj5 uniA975.lj5 uniA976.lj5 uniA977.lj5
+  uniA978.lj5 uniA979.lj5 uniA97A.lj5 uniA97B.lj5 uniA97C.lj5];
 
 @vowel_jamo=[uni1160 uni1161 uni1162 uni1163 uni1164 uni1165 uni1166 uni1167
   uni1168 uni1169 uni116A uni116B uni116C uni116D uni116E uni116F uni1170
@@ -194,6 +223,21 @@ feature ccmp {
   # burst tail-less precomposed syllables
   KLUDGE NT_DECOMPOSE
   subtable;
+  
+  # three-letter leads
+  sub uni1107 uni1109 uni1100 by uni1122;
+  sub uni1107 uni1109 uni1103 by uni1123;
+  sub uni1107 uni1109 uni1107 by uni1124;
+  sub uni1107 uni1109 uni1109 by uni1125;
+  sub uni1107 uni1109 uni110C by uni1126;
+  sub uni1109 uni1107 uni1100 by uni1133;
+  sub uni1109 uni1109 uni1109 by uni1134;
+  sub uni1105 uni1100 uni1100 by uniA965;
+  sub uni1105 uni1103 uni1103 by uniA967;
+  sub uni1105 uni1107 uni1107 by uniA96A;
+  sub uni1107 uni1109 uni1110 by uniA972;
+  sub uni1109 uni1109 uni1107 by uniA975;
+  sub uni110C uni110C uni1112 by uniA978;
 
   # precomp-syllable leads
   sub uni1100 uni1100 by uni1101;
@@ -216,11 +260,6 @@ feature ccmp {
   sub uni1107 uni1102 by uni111F;
   sub uni1107 uni1103 by uni1120;
   sub uni1107 uni1109 by uni1121;
-  sub uni1107 uni1109 uni1100 by uni1122;
-  sub uni1107 uni1109 uni1103 by uni1123;
-  sub uni1107 uni1109 uni1107 by uni1124;
-  sub uni1107 uni1109 uni1109 by uni1125;
-  sub uni1107 uni1109 uni110C by uni1126;
   sub uni1107 uni110C by uni1127;
   sub uni1107 uni110E by uni1128;
   sub uni1107 uni1110 by uni1129;
@@ -231,8 +270,6 @@ feature ccmp {
   sub uni1109 uni1105 by uni1130;
   sub uni1109 uni1106 by uni1131;
   sub uni1109 uni1107 by uni1132;
-  sub uni1109 uni1107 uni1100 by uni1133;
-  sub uni1109 uni1109 uni1109 by uni1134;
   sub uni1109 uni110B by uni1135;
   sub uni1109 uni110C by uni1136;
   sub uni1109 uni110E by uni1137;
@@ -265,6 +302,31 @@ feature ccmp {
   sub uni1102 uni110C by uni115C;
   sub uni1102 uni1112 by uni115D;
   sub uni1103 uni1105 by uni115E;
+
+  # other leads - extended A
+  sub uni1103 uni1106 by uniA960;
+  sub uni1103 uni1107 by uniA961;
+  sub uni1103 uni1109 by uniA962;
+  sub uni1103 uni110C by uniA963;
+  sub uni1105 uni1100 by uniA964;
+  sub uni1105 uni1103 by uniA966;
+  sub uni1105 uni1106 by uniA968;
+  sub uni1105 uni1107 by uniA969;
+  sub uni1105 uni112B by uniA96B;
+  sub uni1105 uni1109 by uniA96C;
+  sub uni1105 uni110C by uniA96D;
+  sub uni1105 uni110F by uniA96E;
+  sub uni1106 uni1100 by uniA96F;
+  sub uni1106 uni1103 by uniA970;
+  sub uni1106 uni1109 by uniA971;
+  sub uni1107 uni110F by uniA973;
+  sub uni1107 uni1112 by uniA974;
+  sub uni110B uni1105 by uniA976;
+  sub uni110B uni1112 by uniA977;
+  sub uni1110 uni1110 by uniA979;
+  sub uni1111 uni1112 by uniA97A;
+  sub uni1112 uni1109 by uniA97B;
+  sub uni1159 uni1159 by uniA97C;
 
   # precomp-syllable vowel combinations
   sub uni1161 uni1175 by uni1162;
