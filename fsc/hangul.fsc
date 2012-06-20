@@ -328,15 +328,27 @@ feature ccmp {
   sub uni1112 uni1109 by uniA97B;
   sub uni1159 uni1159 by uniA97C;
 
+  # three-letter vowels
+  sub uni1169 uni1161 uni1175 by uni116B;
+  sub uni116E uni1165 uni1175 by uni1170;
+  sub uni1169 uni1165 uni1175 by uni1180;
+  sub uni1169 uni1167 uni1175 by uni1181;
+  sub uni116D uni1163 uni1175 by uni1185;
+  sub uni116E uni1161 uni1175 by uni118A;
+  sub uni116E uni1165 uni1173 by uni118B;
+  sub uni116E uni1167 uni1175 by uni118C;
+  sub uni1172 uni1165 uni1175 by uni1190;
+  sub uni1172 uni1167 uni1175 by uni1192;
+  sub uni1173 uni1175 uni116E by uni1197;
+  sub uni1169 uni1163 uni1175 by uni11A7;
+
   # precomp-syllable vowel combinations
   sub uni1161 uni1175 by uni1162;
   sub uni1163 uni1175 by uni1164;
   sub uni1165 uni1175 by uni1166;
   sub uni1167 uni1175 by uni1168;
-  sub uni1169 uni1161 uni1175 by uni116B;
   sub uni1169 uni1161 by uni116A;
   sub uni1169 uni1175 by uni116C;
-  sub uni116E uni1165 uni1175 by uni1170; 
   sub uni116E uni1165 by uni116F;
   sub uni116E uni1175 by uni1171;
   sub uni1173 uni1175 by uni1174;
@@ -351,31 +363,22 @@ feature ccmp {
   sub uni1165 uni1173 by uni117C;
   sub uni1167 uni1169 by uni117D;
   sub uni1167 uni116E by uni117E;
-  sub uni1169 uni1165 uni1175 by uni1180;
   sub uni1169 uni1165 by uni117F;
-  sub uni1169 uni1167 uni1175 by uni1181;
   sub uni1169 uni1169 by uni1182;
   sub uni1169 uni116E by uni1183;
-  sub uni116D uni1163 uni1175 by uni1185;
   sub uni116D uni1163 by uni1184;
   sub uni116D uni1167 by uni1186;
   sub uni116D uni1169 by uni1187;
   sub uni116D uni1175 by uni1188;
-  sub uni116E uni1161 uni1175 by uni118A;
   sub uni116E uni1161 by uni1189;
-  sub uni116E uni1165 uni1173 by uni118B;
-  sub uni116E uni1167 uni1175 by uni118C;
   sub uni116E uni116E by uni118D;
   sub uni1172 uni1161 by uni118E;
-  sub uni1172 uni1165 uni1175 by uni1190;
   sub uni1172 uni1165 by uni118F;
-  sub uni1172 uni1167 uni1175 by uni1192;
   sub uni1172 uni1167 by uni1191;
   sub uni1172 uni116E by uni1193;
   sub uni1172 uni1175 by uni1194;
   sub uni1173 uni116E by uni1195;
   sub uni1173 uni1173 by uni1196;
-  sub uni1173 uni1175 uni116E by uni1197;
   sub uni1175 uni1161 by uni1198;
   sub uni1175 uni1163 by uni1199;
   sub uni1175 uni1169 by uni119A;
@@ -389,7 +392,6 @@ feature ccmp {
   sub uni1161 uni1173 by uni11A3;
   sub uni1163 uni116E by uni11A4;
   sub uni1167 uni1163 by uni11A5;
-  sub uni1169 uni1163 uni1175 by uniA7;
   sub uni1169 uni1163 by uni11A6;
   
   # these are "extended B" vowels from Microsoft spec, not yet supported
@@ -417,6 +419,18 @@ feature ccmp {
   # sub uni119E uni1161 by uniD7C5;
   # sub uni119E uni1165 uni1175 by uniD7C6;
 
+  # three-letter tails
+  sub uni11A8 uni11BA uni11A8 by uni11C4;
+  sub uni11AF uni11A8 uni11BA by uni11CC;
+  sub uni11AF uni11AE uni11C2 by uni11CF;
+  sub uni11AF uni11B7 uni11A8 by uni11D1;
+  sub uni11AF uni11B7 uni11BA by uni11D2;
+  sub uni11AF uni11B8 uni11BA by uni11D3;
+  sub uni11AF uni11B8 uni11C2 by uni11D4;
+  sub uni11AF uni11BA uni11BA by uni11D6;
+  sub uni11B7 uni11BA uni11BA by uni11DE;
+  sub uni11F0 uni11A8 uni11A8 by uni11ED;
+
   # precomp-syllable tails
   sub uni11A8 uni11A8 by uni11A9;
   sub uni11A8 uni11BA by uni11AA;
@@ -434,7 +448,6 @@ feature ccmp {
 
   # other tails
   sub uni11A8 uni11AF by uni11C3;
-  sub uni11A8 uni11BA uni11A8 by uni11C4;
   sub uni11AB uni11A8 by uni11C5;
   sub uni11AB uni11AE by uni11C6;
   sub uni11AB uni11BA by uni11C7;
@@ -442,24 +455,16 @@ feature ccmp {
   sub uni11AB uni11C0 by uni11C9;
   sub uni11AE uni11A8 by uni11CA;
   sub uni11AE uni11AF by uni11CB;
-  sub uni11AF uni11A8 uni11BA by uni11CC;
   sub uni11AF uni11AB by uni11CD;
-  sub uni11AF uni11AE uni11C2 by uni11CF;
   sub uni11AF uni11AE by uni11CE;
   sub uni11AF uni11AF by uni11D0;
-  sub uni11AF uni11B7 uni11A8 by uni11D1;
-  sub uni11AF uni11B7 uni11BA by uni11D2;
-  sub uni11AF uni11B8 uni11BA by uni11D3;
-  sub uni11AF uni11B8 uni11C2 by uni11D4;
   sub uni11AF uni11E6 by uni11D5;
-  sub uni11AF uni11BA uni11BA by uni11D6;
   sub uni11AF uni11EB by uni11D7;
   sub uni11AF uni11BF by uni11D8;
   sub uni11AF uni11F9 by uni11D9;
   sub uni11B7 uni11A8 by uni11DA;
   sub uni11B7 uni11AF by uni11DB;
   sub uni11B7 uni11B8 by uni11DC;
-  sub uni11B7 uni11BA uni11BA by uni11DE;
   sub uni11B7 uni11BA by uni11DD;
   sub uni11B7 uni11EB by uni11DF;
   sub uni11B7 uni11BE by uni11E0;
@@ -471,7 +476,6 @@ feature ccmp {
   sub uni11BA uni11AE by uni11E8;
   sub uni11BA uni11AF by uni11E9;
   sub uni11BA uni11B8 by uni11EA;
-  sub uni11F0 uni11A8 uni11A8 by uni11ED;
   sub uni11F0 uni11A8 by uni11EC;
   sub uni11F0 uni11F0 by uni11EE;
   sub uni11F0 uni11BF by uni11EF;
