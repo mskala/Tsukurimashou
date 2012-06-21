@@ -79,18 +79,26 @@ open(NL,'>tsukurimashou.nam');
 print NL "Based: AGL with PUA\n";
 
 # scan source code
-foreach $numpage (keys %charpage) {
+foreach $pnumpage (keys %charpage,'hglextb') {
+  $numpage=$pnumpage;
   $page=sprintf('%02x',$numpage);
-  $fname="$prefix/mp/tsuku-$page.mp";
-  if (!-r $fname) {
-    while (<$prefix/mp/*-$page.mp>) {
-      if (-r $_) {
-        $fname=$_;
+  if ($numpage eq 'hglextb') {
+    $fname="$prefix/mp/hglextb.mp";
+    $fname='./mp/hglextb.mp' if !-r $fname;
+    $page='d7';
+    $numpage=0xD7;
+  } else {
+    $fname="$prefix/mp/tsuku-$page.mp";
+    if (!-r $fname) {
+      while (<$prefix/mp/*-$page.mp>) {
+        if (-r $_) {
+          $fname=$_;
+        }
       }
-    }
-    while (<./mp/*-$page.mp>) {
-      if (-r $_) {
-        $fname=$_;
+      while (<./mp/*-$page.mp>) {
+        if (-r $_) {
+          $fname=$_;
+        }
       }
     }
   }
@@ -175,12 +183,12 @@ EOF
     $havechar{$series*16+$dignum}=1 if $charlist{$series*16+$dignum};
   }
 }
-print NL "0xFF25F uni115F.bug\n" if $charlist{0xff25f};
 print NL "0xFF260 uni1160.nt\n" if $charlist{0xff260};
 print NL "0xFF35F uni115F.lj1\n" if $charlist{0xff35f};
 print NL "0xFF45F uni115F.lj2\n" if $charlist{0xff45f};
 print NL "0xFF55F uni115F.lj4\n" if $charlist{0xff55f};
 print NL "0xFF65F uni115F.lj5\n" if $charlist{0xff65f};
+print NL "0xFF75F uni115F.bug\n" if $charlist{0xff75f};
 
 close(NL);
 

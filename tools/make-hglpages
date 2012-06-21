@@ -2,7 +2,7 @@
 
 #
 # Hangul syllable page file generator for Jieubsida
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ for ($page=0xAC;$page<=0xD7;$page++) {
   printf PF "hgls_vowel=%d;\n",int(($page*256-0xAC00)/28)%21;
   printf PF "hgls_tail=%d;\n\n",($page*256-0xAC00)%28;
   printf PF "input hglpage.mp;\n";
-#  printf PF "input hglextb.mp;\n" if $page==0xD7;
+  printf PF "input hglextb.mp;\n" if $page==0xD7;
   printf PF "endfont;\n";
   close(PF);
 }

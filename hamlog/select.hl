@@ -457,6 +457,7 @@ hi_page(pageff3).
 hi_page(pageff4).
 hi_page(pageff5).
 hi_page(pageff6).
+hi_page(pageff7).
 
 % char_page(?C,?P) - C is an atom following the Adobe glyph naming
 % convention, except in lowercase, for a character on page P.  Note that

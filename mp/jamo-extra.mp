@@ -56,6 +56,31 @@ inclusion_lock(jamoextra);
 % 441 i-araea
 % 442 o-ya
 % 443 o-yae
+% 444 o-yeo
+% 445 o-o-i
+% 446 yo-a
+% 447 yo-ae
+% 448 yo-eo
+% 449 u-yeo
+% 450 u-i-i
+% 451 yu-ae
+% 452 yu-o
+% 453 eu -a
+% 454 eu-eo
+% 455 eu-e
+% 456 eu-o
+% 457 i-ya-o
+% 458 i-yae
+% 459 i-yeo
+% 460 i-ye
+% 461 i-o-i
+% 462 i-yo
+% 463 i-yu
+% 464 i-i
+% 465 araea-a
+% 466 araea-e
+% 467 i-ya
+% 468 o-i
 
 % 428 vowel ARAEA
 hangul.jamo[428]code="jamo.araea";
@@ -75,6 +100,64 @@ vardef hangul.jamo.araea(expr vow,ixf,oxf) =
     push_lcblob(fullcircle
       scaled ((140+40*mincho)*sqrt(sqrt(xxpart tmpxf*yypart tmpxf)))
       shifted ((if vow=441: 500 else: 540 fi,390) transformed tmpxf));
+  endgroup;
+enddef;
+
+% 445 vowel O-O-I
+hangul.jamo[445]code="jamo.ooi";
+hangul.jamo[445]w=0;
+hangul.jamo[445]h=5;
+hangul.jamo[445]invokes_alternate=false;
+
+vardef hangul.jamo.ooi(expr vow,ixf,oxf) =
+  begingroup
+    save xfa,xfb;
+    transform xfa,xfb;
+
+    (50,-50) transformed xfa=(50,450) transformed hxf_inout(5,ixf,oxf);
+    (950,-50) transformed xfa=(950,450) transformed hxf_inout(5,ixf,oxf);
+    (50,850) transformed xfa=(50,1050) transformed hxf_inout(5,ixf,oxf);
+    hangul.combine.tb(308,308)(vow,xfa,xfa);
+
+    (50,-50) transformed xfb=(90,-50) transformed hxf_inout(5,ixf,oxf);
+    (950,-50) transformed xfb=(990,-50) transformed hxf_inout(5,ixf,oxf);
+    (50,850) transformed xfb=(90,350) transformed hxf_inout(5,ixf,oxf);
+    hangul.jamo.i(vow,xfb,xfb);
+  endgroup;
+enddef;
+
+% 464 vowel I-I
+hangul.jamo[464]code="combine.lr(320,320)";
+hangul.jamo[464]w=3;
+hangul.jamo[464]h=0;
+hangul.jamo[464]invokes_alternate=false;
+
+% 467 vowel I-YA
+hangul.jamo[467]code="combine.lr(320,302)";
+hangul.jamo[467]w=4;
+hangul.jamo[467]h=0;
+hangul.jamo[467]invokes_alternate=false;
+
+% 468 vowel O-I (for I-O-I)
+hangul.jamo[468]code="jamo.oi";
+hangul.jamo[468]w=0;
+hangul.jamo[468]h=5;
+hangul.jamo[468]invokes_alternate=false;
+
+vardef hangul.jamo.oi(expr vow,ixf,oxf) =
+  begingroup
+    save xfa,xfb;
+    transform xfa,xfb;
+
+    (50,-50) transformed xfa=(50,450) transformed hxf_inout(5,ixf,oxf);
+    (950,-50) transformed xfa=(950,450) transformed hxf_inout(5,ixf,oxf);
+    (50,850) transformed xfa=(50,1050) transformed hxf_inout(5,ixf,oxf);
+    hangul.jamo.o(vow,xfa,xfa);
+
+    (50,-50) transformed xfb=(90,-50) transformed hxf_inout(5,ixf,oxf);
+    (950,-50) transformed xfb=(990,-50) transformed hxf_inout(5,ixf,oxf);
+    (50,850) transformed xfb=(90,350) transformed hxf_inout(5,ixf,oxf);
+    hangul.jamo.i(vow,xfb,xfb);
   endgroup;
 enddef;
 

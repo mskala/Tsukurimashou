@@ -166,16 +166,23 @@
   uni118C uni118D uni118E uni118F uni1190 uni1191 uni1192 uni1193 uni1194
   uni1195 uni1196 uni1197 uni1198 uni1199 uni119A uni119B uni119C uni119D
   uni119E uni119F uni11A0 uni11A1 uni11A2 uni11A3 uni11A4 uni11A5 uni11A6
-  uni11A7];
+  uni11A7
+  uniD7B0 uniD7B1 uniD7B2 uniD7B4 uniD7B4 uniD7B5 uniD7B6 uniD7B7 uniD7B8
+  uniD7B9 uniD7BA uniD7BB uniD7BC uniD7BD uniD7BE uniD7BF uniD7C0 uniD7C1
+  uniD7C2 uniD7C3 uniD7C4 uniD7C5 uniD7C6];
 @hv_vowel_jamo=[uni116A uni116B uni116C uni116F uni1170 uni1171 uni1174
   uni1176 uni1177 uni1178 uni1179 uni117A uni117B uni117C uni117D uni117E
   uni117F uni1180 uni1181 uni1184 uni1185 uni1186 uni1188 uni1189 uni118A
   uni118B uni118C uni118E uni118F uni1190 uni1191 uni1192 uni1194 uni1197
-  uni119A uni119B uni119C uni119F uni11A1 uni11A3 uni11A4 uni11A6 uni11A7];
+  uni119A uni119B uni119C uni119F uni11A1 uni11A3 uni11A4 uni11A6 uni11A7
+  uniD7B0 uniD7C2 uniD7B3 uniD7B4 uniD7B5 uniD7B6 uniD7B7 uniD7B9 uniD7BA
+  uniD7BB uniD7BD uniD7C1 uniD7C2 uniD7C3 uniD7C5 uniD7C6];
 @v_vowel_jamo=[uni1161 uni1162 uni1163 uni1164 uni1165 uni1166 uni1167
-  uni1168 uni1175 uni1198 uni1199 uni119D uni11A5];
+  uni1168 uni1175 uni1198 uni1199 uni119D uni11A5
+  uniD7BE uniD7BF uniD7C0 uniD7C4];
 @h_vowel_jamo=[uni1160 uni1169 uni116D uni116E uni1172 uni1173 uni1182
-  uni1183 uni1187 uni118D uni1193 uni1195 uni1196 uni119E uni11A0 uni11A2];
+  uni1183 uni1187 uni118D uni1193 uni1195 uni1196 uni119E uni11A0 uni11A2
+  uniD7B1 uniD7B8 uniD7BC];
 
 @nt_vowel_jamo=[uni1160.nt uni1161.nt uni1162.nt uni1163.nt uni1164.nt
   uni1165.nt uni1166.nt uni1167.nt uni1168.nt uni1169.nt uni116A.nt
@@ -189,7 +196,11 @@
   uni1195.nt uni1196.nt uni1197.nt uni1198.nt uni1199.nt uni119A.nt
   uni119B.nt uni119C.nt uni119D.nt uni119E.nt uni119F.nt uni11A0.nt
   uni11A1.nt uni11A2.nt uni11A3.nt uni11A4.nt uni11A5.nt uni11A6.nt
-  uni11A7.nt];
+  uni11A7.nt
+  uniD7B0.nt uniD7B1.nt uniD7B2.nt uniD7B4.nt uniD7B4.nt uniD7B5.nt
+  uniD7B6.nt uniD7B7.nt uniD7B8.nt uniD7B9.nt uniD7BA.nt uniD7BB.nt
+  uniD7BC.nt uniD7BD.nt uniD7BE.nt uniD7BF.nt uniD7C0.nt uniD7C1.nt
+  uniD7C2.nt uniD7C3.nt uniD7C4.nt uniD7C5.nt uniD7C6.nt];
 @nt_hv_vowel_jamo=[uni116A.nt uni116B.nt uni116C.nt uni116F.nt uni1170.nt
   uni1171.nt uni1174.nt uni1176.nt uni1177.nt uni1178.nt uni1179.nt
   uni117A.nt uni117B.nt uni117C.nt uni117D.nt uni117E.nt uni117F.nt
@@ -197,13 +208,18 @@
   uni1189.nt uni118A.nt uni118B.nt uni118C.nt uni118E.nt uni118F.nt
   uni1190.nt uni1191.nt uni1192.nt uni1194.nt uni1197.nt uni119A.nt
   uni119B.nt uni119C.nt uni119F.nt uni11A1.nt uni11A3.nt uni11A4.nt
-  uni11A6.nt uni11A7.nt];
+  uni11A6.nt uni11A7.nt
+  uniD7B0.nt uniD7C2.nt uniD7B3.nt uniD7B4.nt uniD7B5.nt uniD7B6.nt
+  uniD7B7.nt uniD7B9.nt uniD7BA.nt uniD7BB.nt uniD7BD.nt uniD7C1.nt
+  uniD7C2.nt uniD7C3.nt uniD7C5.nt uniD7C6.nt];
 @nt_v_vowel_jamo=[uni1161.nt uni1162.nt uni1163.nt uni1164.nt uni1165.nt
   uni1166.nt uni1167.nt uni1168.nt uni1175.nt uni1198.nt uni1199.nt
-  uni119D.nt uni11A5.nt];
+  uni119D.nt uni11A5.nt
+  uniD7BE.nt uniD7BF.nt uniD7C0.nt uniD7C4.nt];
 @nt_h_vowel_jamo=[uni1160.nt uni1169.nt uni116D.nt uni116E.nt uni1172.nt
   uni1173.nt uni1182.nt uni1183.nt uni1187.nt uni118D.nt uni1193.nt
-  uni1195.nt uni1196.nt uni119E.nt uni11A0.nt uni11A2.nt];
+  uni1195.nt uni1196.nt uni119E.nt uni11A0.nt uni11A2.nt
+  uniD7B1.nt uniD7B8.nt uniD7BC.nt];
 
 @tail_jamo=[uni11A8 uni11A9 uni11AA uni11AB uni11AC uni11AD uni11AE uni11AF
   uni11B0 uni11B1 uni11B2 uni11B3 uni11B4 uni11B5 uni11B6 uni11B7 uni11B8
@@ -341,6 +357,16 @@ feature ccmp {
   sub uni1172 uni1167 uni1175 by uni1192;
   sub uni1173 uni1175 uni116E by uni1197;
   sub uni1169 uni1163 uni1175 by uni11A7;
+  sub uni1169 uni1169 uni1175 by uniD7B1;
+  sub uni116D uni1161 uni1175 by uniD7B3;
+  sub uni116E uni1175 uni1175 by uniD7B6;
+  sub uni1172 uni1161 uni1175 by uniD7B7;
+  sub uni1173 uni1165 uni1175 by uniD7BB;
+  sub uni1175 uni1163 uni1169 by uniD7BD;
+  sub uni1175 uni1163 uni1175 by uniD7BE;
+  sub uni1175 uni1167 uni1175 by uniD7C0;
+  sub uni1175 uni1169 uni1175 by uniD7C1;
+  sub uni119E uni1165 uni1175 by uniD7C6;
 
   # precomp-syllable vowel combinations
   sub uni1161 uni1175 by uni1162;
@@ -394,30 +420,20 @@ feature ccmp {
   sub uni1167 uni1163 by uni11A5;
   sub uni1169 uni1163 by uni11A6;
   
-  # these are "extended B" vowels from Microsoft spec, not yet supported
-  # sub uni1169 uni1167 by uniD7B0;
-  # sub uni1169 uni1169 uni1175 by uniD7B1;
-  # sub uni116D uni1161 uni1175 by uniD7B3;
-  # sub uni116D uni1161 by uniD7B2;
-  # sub uni116D uni1165 by uniD7B4;
-  # sub uni116E uni1167 by uniD7B5;
-  # sub uni116E uni1175 uni1175 by uniD7B6;
-  # sub uni1172 uni1161 uni1175 by uniD7B7;
-  # sub uni1172 uni1169 by uniD7B8;
-  # sub uni1173 uni1161 by uniD7B9;
-  # sub uni1173 uni1165 uni1175 by uniD7BB;
-  # sub uni1173 uni1165 by uniD7BA;
-  # sub uni1173 uni1169 by uniD7BC;
-  # sub uni1175 uni1163 uni1169 by uniD7BD;
-  # sub uni1175 uni1163 uni1175 by uniD7BE;
-  # sub uni1175 uni1167 uni1175 by uniD7C0;
-  # sub uni1175 uni1167 by uniD7BF;
-  # sub uni1175 uni1169 uni1175 by uniD7C1;
-  # sub uni1175 uni116D by uniD7C2;
-  # sub uni1175 uni1172 by uniD7C3;
-  # sub uni1175 uni1175 by uniD7C4;
-  # sub uni119E uni1161 by uniD7C5;
-  # sub uni119E uni1165 uni1175 by uniD7C6;
+  # other vowels - extended B
+  sub uni1169 uni1167 by uniD7B0;
+  sub uni116D uni1161 by uniD7B2;
+  sub uni116D uni1165 by uniD7B4;
+  sub uni116E uni1167 by uniD7B5;
+  sub uni1172 uni1169 by uniD7B8;
+  sub uni1173 uni1161 by uniD7B9;
+  sub uni1173 uni1165 by uniD7BA;
+  sub uni1173 uni1169 by uniD7BC;
+  sub uni1175 uni1167 by uniD7BF;
+  sub uni1175 uni116D by uniD7C2;
+  sub uni1175 uni1172 by uniD7C3;
+  sub uni1175 uni1175 by uniD7C4;
+  sub uni119E uni1161 by uniD7C5;
 
   # three-letter tails
   sub uni11A8 uni11BA uni11A8 by uni11C4;

@@ -786,7 +786,7 @@ endtsuglyph;
 
 % hangul lead phieuph-hieuh
 begintsuglyph("uniA97A.lj2",122);
-  hangul.combine.lr(117,118)(whatever,lixf,loxf);
+  hangul.combine.lcr(117,230,118)(whatever,lixf,loxf);
   tsu_render;
 endtsuglyph;
 
@@ -798,7 +798,7 @@ endtsuglyph;
 
 % hangul lead ssangyeorinhieuh
 begintsuglyph("uniA97C.lj2",124);
-  hangul.combine.lr(221,221)(whatever,lixf,loxf);
+  hangul.combine.lcr(221,230,221)(whatever,lixf,loxf);
   tsu_render;
 endtsuglyph;
 

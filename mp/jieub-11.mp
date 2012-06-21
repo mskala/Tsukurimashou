@@ -848,7 +848,7 @@ endtsuglyph;
 
 % hangul vowel o-o
 begintsuglyph("uni1182",130);
-  hangul.combine.tb(308,308)(whatever,vixf,voxf);
+  hangul.combine.tb(308,308)(444,vixf,voxf);
   tsu_render;
 endtsuglyph;
 
@@ -1517,7 +1517,7 @@ endtsuglyph;
 
 % hangul tail yesieung
 begintsuglyph("uni11F0",240);
-  hangul.jamo.yesieung(whatever,lixf,loxf);
+  hangul.jamo.yesieung(whatever,tixf,toxf);
   tsu_render;
 endtsuglyph;
 

@@ -1025,7 +1025,10 @@ vardef hangul.jamo.eo(expr vow,ixf,oxf) =
     if vow=435:
       push_stroke((70+100*mincho,110)--(550,110+10*mincho),
         (1.7,1.7)--(1.5,1.5));
-    elseif vow>=308:
+    elseif vow=448:
+      push_stroke((70+100*mincho,410)--(550,410+10*mincho),
+        (1.7,1.7)--(1.5,1.5));
+    elseif (vow>=308) and (vow<454):
       push_stroke((70+100*mincho,210)--(550,210+10*mincho),
         (1.7,1.7)--(1.5,1.5));
     else:
