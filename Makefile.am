@@ -326,7 +326,7 @@ hamlog/config.hl: tools/make-cfghl \
 	$(AM_V_at)if ( test "x$(PFBSTAMP)" = "x`cat chl-stamp`" ) \
 	  && ( test -s hamlog/config.hl ) ; then \
 	  $(TSU_V_NASKIP) \
-	  touch hamlog/config.hl ; \
+	  true ; \
 	else \
 	  $(TSU_V_NAPERL) \
 	  $(PERL) -CSD $(mvp)/tools/make-cfghl char '@enable_chars@' \

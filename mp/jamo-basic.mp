@@ -632,6 +632,11 @@ hangul.jamo[212]code="jamo.sjc(1,0,true)";
 hangul.jamo[212]lb=250;
 hangul.jamo[212]rb=700;
 
+% 622 tail alt-J
+hangul.jamo[622]code="jamo.sjc(1,0,true)";
+hangul.jamo[622]lb=250;
+hangul.jamo[622]rb=700;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % CHIEUCH

@@ -1597,6 +1597,13 @@ for input methods, among other things), then you may end up dealing with the
 possible lead; one for every possible vowel; and one for every possible
 tail, including separate lead and tail code points in the fairly common case
 of the same combination of jamo being allowed as both a lead and a tail. 
+The main sequence of Unicode jamo code points is in U+1100 through U+11FF;
+then there are ``extension'' blocks in U+A960 through U+A97C (extension A,
+for leads) and U+D7B0 through U+D7FB (extension B, for vowels and tails). 
+As of version 0.6, Jieubsida supports them all, although some rare vowels
+that pose visual layout problems (such as U+D7BE {\dodum 「\char"D7BE」})
+may not look as good as you might hope.
+
 You are supposed to be able to write your documents using those code points,
 and then magic beyond the scope of Unicode is supposed to typeset them
 properly.  Unicode defines a ``canonical equivalence'' between the
@@ -1707,17 +1714,20 @@ workaround for a bug in \XeTeX's handling of GSUB substitutions.  Tail jamo
 do not need alternate forms, because they only appear in layouts 0, 1, and
 2, and have the same space allocation in all three layouts.  All these extra
 glyphs are coded into the private use Unicode code points between U+FF200
-and U+FF6FF, and can dangerously be turned off with the configuration code
+and U+FF7FF, and can dangerously be turned off with the configuration code
 point controls, but it is not intended that they actually be accessed
 through the private-use code points; instead, the OpenType substitutions
-will put them in in place of the layout 0 forms from U+1100 through U+11FF,
-where necessary.
+will put them in in place of the layout 0 forms from U+1100 through U+11FF
+and its supplements, where necessary.
 
 With the alternate forms chosen by the substitution rules, but no
 precomposed syllables, the font
 family name is rendered as
 {\fontspec[RawFeature={+ccmp,+ljmo,+vjmo,-liga}]{JieubsidaDodumPS}
-「󿔌󿉵󿐋ᅳᆸ󿔉󿉵󿔃󿉡」}.  
+「\char"110C\char"1175%
+\char"110B\char"1173\char"11B8%
+\char"1109\char"1175%
+\char"1103\char"1161」}.
 Note that is almost identical to the
 precomposed-syllable version, {\dodum 「지읍시다」}.  There are some minor
 differences in the size and spacing of the jamo, because the

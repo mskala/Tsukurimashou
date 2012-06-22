@@ -1,6 +1,6 @@
 %
 % Hangul Extension B for Jieubsida
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -191,5 +191,305 @@ endtsuglyph;
 % hangul vowel araea-e
 begintsuglyph("uniD7C6",198);
   hangul.combine.lr(428,305)(466,vixf,voxf);
+  tsu_render;
+endtsuglyph;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% HANGUL JONGSEONG (TAIL) JAMO EXTENSION B
+
+tsu_rescale_native_zero;
+
+% hangul tail nieun-rieul
+begintsuglyph("uniD7CB",203);
+  hangul.combine.lr(604,508)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail nieun-chieuch
+begintsuglyph("uniD7CC",204);
+  hangul.combine.lr(604,523)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail ssangtikeut
+begintsuglyph("uniD7CD",205);
+  hangul.combine.lr(607,507)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail ssangtikeut-pieup
+begintsuglyph("uniD7CE",206);
+  hangul.combine.lcr(607,607,517)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail tikeut-pieup
+begintsuglyph("uniD7CF",207);
+  hangul.combine.lr(607,517)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail tikeut-sios
+begintsuglyph("uniD7D0",208);
+  hangul.combine.lr(607,519)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail tikeut-sios-kiyeok
+begintsuglyph("uniD7D1",209);
+  hangul.combine.lcr(607,519,501)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail tikeut-cieuc
+begintsuglyph("uniD7D2",210);
+  hangul.combine.lcr(607,500,522)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail tikeut-chieuch
+begintsuglyph("uniD7D3",211);
+  hangul.combine.lcr(607,500,523)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail tikeut-thieuth
+begintsuglyph("uniD7D4",212);
+  hangul.combine.lr(607,525)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail rieul-ssangkiyeok
+begintsuglyph("uniD7D5",213);
+  hangul.combine.lcr(608,501,501)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail rieul-kiyeok-hieuh
+begintsuglyph("uniD7D6",214);
+  hangul.combine.lcr(608,501,527)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail ssangrieul-khieukh
+begintsuglyph("uniD7D7",215);
+  hangul.combine.lcr(608,608,524)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail rieul-mieum-hieuh
+begintsuglyph("uniD7D8",216);
+  hangul.combine.lcr(608,516,527)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail rieul-pieup-tikeut
+begintsuglyph("uniD7D9",217);
+  hangul.combine.lcr(608,517,507)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail rieul-pieup-phieuph
+begintsuglyph("uniD7DA",218);
+  hangul.combine.lcr(608,517,526)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail rieul-yesieung
+begintsuglyph("uniD7DB",219);
+  hangul.combine.lr(608,629)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail rieul-yeorinhieuh-hieuh
+begintsuglyph("uniD7DC",220);
+  hangul.combine.lcr(608,631,527)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail kapyeounrieul
+begintsuglyph("uniD7DD",221);
+  hangul.combine.tb(508,521)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail mieum-nieun
+begintsuglyph("uniD7DE",222);
+  hangul.combine.lr(516,504)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail mieum-ssangnieun
+begintsuglyph("uniD7DF",223);
+  hangul.combine.lcr(516,604,504)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail ssangmieum
+begintsuglyph("uniD7E0",224);
+  hangul.combine.lr(516,516)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail mieum-pieup-sios
+begintsuglyph("uniD7E1",225);
+  hangul.combine.lcr(516,517,519)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail mieum-cieuc
+begintsuglyph("uniD7E2",226);
+  hangul.combine.lr(516,522)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail pieup-tikeut
+begintsuglyph("uniD7E3",227);
+  hangul.combine.lr(517,507)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail pieup-rieul-phieuph
+begintsuglyph("uniD7E4",228);
+  hangul.combine.lcr(517,608,526)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail pieup-mieum
+begintsuglyph("uniD7E5",229);
+  hangul.combine.lr(517,516)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail ssangpieup
+begintsuglyph("uniD7E6",230);
+  hangul.combine.lr(517,517)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail pieup-sios-tikeut
+begintsuglyph("uniD7E7",231);
+  hangul.combine.lcr(517,619,507)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail pieup-cieuc
+begintsuglyph("uniD7E8",232);
+  hangul.combine.lr(517,522)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail pieup-chieuch
+begintsuglyph("uniD7E9",233);
+  hangul.combine.lcr(517,500,523)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail sios-mieum
+begintsuglyph("uniD7EA",234);
+  hangul.combine.lr(619,516)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail sios-kapyeounpieup
+begintsuglyph("uniD7EB",235);
+  hangul.combine.lr(619,630)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail ssangsios-kiyeok
+begintsuglyph("uniD7EC",236);
+  hangul.combine.lcr(619,519,501)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail ssangsios-tikeut
+begintsuglyph("uniD7ED",237);
+  hangul.combine.lcr(619,519,507)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail sios-pansios
+begintsuglyph("uniD7EE",238);
+  hangul.combine.lr(619,628)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail sios-cieuc
+begintsuglyph("uniD7EF",239);
+  hangul.combine.lr(619,522)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail sios-chieuch
+begintsuglyph("uniD7F0",240);
+  hangul.combine.lr(619,523)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail sios-thieuth
+begintsuglyph("uniD7F1",241);
+  hangul.combine.lr(619,525)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail sios-hieuh
+begintsuglyph("uniD7F2",242);
+  hangul.combine.lr(619,527)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail pansios-pieup
+begintsuglyph("uniD7F3",243);
+  hangul.combine.lr(628,517)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail pansios-kapyeounpieup
+begintsuglyph("uniD7F4",244);
+  hangul.combine.lr(628,630)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail yesieung-mieum
+begintsuglyph("uniD7F5",245);
+  hangul.combine.lr(629,516)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail yesieung-hieuh
+begintsuglyph("uniD7F6",246);
+  hangul.combine.lr(629,527)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail cieuc-pieup
+begintsuglyph("uniD7F7",247);
+  hangul.combine.lr(522,517)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail cieuc-ssangpieup
+begintsuglyph("uniD7F8",248);
+  hangul.combine.lcr(522,517,517)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail ssangcieuc
+begintsuglyph("uniD7F9",249);
+  hangul.combine.lr(622,522)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail phieuph-sios
+begintsuglyph("uniD7FA",250);
+  hangul.combine.lr(526,519)(whatever,tixf,toxf);
+  tsu_render;
+endtsuglyph;
+
+% hangul tail phieuph-thieuth
+begintsuglyph("uniD7FB",251);
+  hangul.combine.lcr(526,500,525)(whatever,tixf,toxf);
   tsu_render;
 endtsuglyph;

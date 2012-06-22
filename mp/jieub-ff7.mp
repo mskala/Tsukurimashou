@@ -639,6 +639,12 @@ endtsuglyph;
 
 % HANGUL CHOSEONG (LEAD) JAMO EXTENDED A
 
+% hangul lead tikeut-mieum
+begintsuglyph("uniA960.bug",96);
+  hangul.combine.lr(203,106)(whatever,lixf,loxf);
+  tsu_render;
+endtsuglyph;
+
 % hangul lead tikeut-pieup
 begintsuglyph("uniA961.bug",97);
   hangul.combine.lr(203,107)(whatever,lixf,loxf);

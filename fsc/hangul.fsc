@@ -230,7 +230,13 @@
   uni11DD uni11DE uni11DF uni11E0 uni11E1 uni11E2 uni11E3 uni11E4 uni11E5
   uni11E6 uni11E7 uni11E8 uni11E9 uni11EA uni11EB uni11EC uni11ED uni11EE
   uni11EF uni11F0 uni11F1 uni11F2 uni11F3 uni11F4 uni11F5 uni11F6 uni11F7
-  uni11F8 uni11F9 uni11FA uni11FB uni11FC uni11FD uni11FE uni11FF];
+  uni11F8 uni11F9 uni11FA uni11FB uni11FC uni11FD uni11FE uni11FF
+  uniD7CB uniD7CC uniD7CD uniD7CE uniD7CF uniD7D0 uniD7D1 uniD7D2 uniD7D3
+  uniD7D4 uniD7D5 uniD7D6 uniD7D7 uniD7D8 uniD7D9 uniD7DA uniD7DB uniD7DC
+  uniD7DD uniD7DE uniD7DF uniD7E0 uniD7E1 uniD7E2 uniD7E3 uniD7E4 uniD7E5
+  uniD7E6 uniD7E7 uniD7E8 uniD7E9 uniD7EA uniD7EB uniD7EC uniD7ED uniD7EE
+  uniD7EF uniD7F0 uniD7F1 uniD7F2 uniD7F3 uniD7F4 uniD7F5 uniD7F6 uniD7F7
+  uniD7F8 uniD7F9 uniD7FA uniD7FB];
 
 # after ccmp: we are guaranteed all jamo clustered, or tailful precomps
 BEGINFEATURE ccmp
@@ -446,6 +452,22 @@ feature ccmp {
   sub uni11AF uni11BA uni11BA by uni11D6;
   sub uni11B7 uni11BA uni11BA by uni11DE;
   sub uni11F0 uni11A8 uni11A8 by uni11ED;
+  sub uni11AE uni11AE uni11B8 by uniD7CE;
+  sub uni11AE uni11BA uni11A8 by uniD7D1;
+  sub uni11AF uni11A8 uni11A8 by uniD7D5;
+  sub uni11AF uni11A8 uni11C2 by uniD7D6;
+  sub uni11AF uni11AF uni11BF by uniD7D7;
+  sub uni11AF uni11B7 uni11C2 by uniD7D8;
+  sub uni11AF uni11B8 uni11AE by uniD7D9;
+  sub uni11AF uni11B8 uni1111 by uniD7DA;
+  sub uni11AF uni11F9 uni11C2 by uniD7DC;
+  sub uni11B7 uni11AB uni11AB by uniD7DF;
+  sub uni11B7 uni11B8 uni11BA by uniD7E1;
+  sub uni11B8 uni11AF uni1111 by uniD7E4;
+  sub uni11B8 uni11BA uni11AE by uniD7E7;
+  sub uni11BA uni11BA uni11A8 by uniD7EC;
+  sub uni11BA uni11BA uni11AE by uniD7ED;
+  sub uni11BD uni11B8 uni11B8 by uniD7F8;
 
   # precomp-syllable tails
   sub uni11A8 uni11A8 by uni11A9;
@@ -508,6 +530,40 @@ feature ccmp {
   sub uni11A8 uni11BF by uni11FD;
   sub uni11A8 uni11C2 by uni11FE;
   sub uni11AB uni11AB by uni11FF;
+
+  # other tails - extended B
+  sub uni11AB uni11AF by uniD7CB;
+  sub uni11AB uni11BE by uniD7CC;
+  sub uni11AE uni11AE by uniD7CD;
+  sub uni11AE uni11B8 by uniD7CF;
+  sub uni11AE uni11BA by uniD7D0;
+  sub uni11AE uni11BD by uniD7D2;
+  sub uni11AE uni11BE by uniD7D3;
+  sub uni11AE uni11C0 by uniD7D4;
+  sub uni11AF uni11F0 by uniD7DB;
+  sub uni11B7 uni11AB by uniD7DE;
+  sub uni11B7 uni11B7 by uniD7E0;
+  sub uni11B7 uni11BD by uniD7E2;
+  sub uni11B8 uni11AE by uniD7E3;
+  sub uni11B8 uni11B7 by uniD7E5;
+  sub uni11B8 uni11B8 by uniD7E6;
+  sub uni11B8 uni11BD by uniD7E8;
+  sub uni11B8 uni11BE by uniD7E9;
+  sub uni11BA uni11B7 by uniD7EA;
+  sub uni11BA uni11E6 by uniD7EB;
+  sub uni11BA uni11EB by uniD7EE;
+  sub uni11BA uni11BD by uniD7EF;
+  sub uni11BA uni11BE by uniD7F0;
+  sub uni11BA uni11C0 by uniD7F1;
+  sub uni11BA uni11C2 by uniD7F2;
+  sub uni11EB uni11B8 by uniD7F3;
+  sub uni11EB uni11E6 by uniD7F4;
+  sub uni11F0 uni11B7 by uniD7F5;
+  sub uni11F0 uni11C2 by uniD7F6;
+  sub uni11BD uni11B8 by uniD7F7;
+  sub uni11BD uni11BD by uniD7F9;
+  sub uni1111 uni11BA by uniD7FA;
+  sub uni1111 uni11C0 by uniD7FB;
 
 } ccmp;
 ENDFEATURE
