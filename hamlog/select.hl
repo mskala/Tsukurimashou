@@ -366,6 +366,8 @@ feature_available(ss02):-
 
 feature_available(vjmo).
 
+feature_available(xpua).
+
 ten_available(CR,P):-
   dec(X),atom_final(C,CR,X),char_unavailable(C,P),!,fail.
 ten_available(_A,_B).

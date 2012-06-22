@@ -1077,6 +1077,14 @@ simply have no effect.  Specific languages are nonetheless mentioned in the
 font tables for the benefit of FontForge, which doesn't seem to handle
 defaults very well, and any other software that behaves like FontForge.
 
+Some of the features mentioned in this section are not actually OpenType
+features in the technical sense; they are instead options that configure the
+Tsukurimashou build system to control things that should or shouldn't appear
+in the OpenType font file output.  They are given customized four-letter
+tags and configured through the same interface as true OpenType features
+because they are somewhat related and it's more convenient than having to
+have some other interface just for them.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \blsubsection{外の分すう}{Alternate Fractions (afrc)}
@@ -1243,7 +1251,8 @@ style to the next.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{ＦｏｎｔＦｏｒｇｅだけのメタデータ}{FontForge-specific Metadata (pfed)}
+\blsubsection{ＦｏｎｔＦｏｒｇｅだけのメタデータ}%
+{FontForge-specific Metadata (pfed)}
 
 This is not the usual kind of OpenType feature, but it can be turned on and
 off through the same build-system interface.  When selected, it causes the
@@ -1375,6 +1384,66 @@ that will be used by ``vjmo'' is actually chosen during execution of the
 Microsoft's specification) for ``vjmo'' to work properly.  Note that
 Microsoft also describes, but we don't use, a similar ``tjmo'' feature for
 reshaping the tail.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\blsubsection{FIXME}{Limit Private Use Area Code Points (xpua)}
+
+This is not the usual kind of OpenType feature, but is configured through
+the same interface as the others.
+
+For software engineering purposes it is
+convenient to have a unique Unicode-like code point for every glyph in the
+font family.  However, some of those glyphs are not intended to be accessed
+directly by users, and more than one of them may correspond to the same
+Unicode character in ordinary text.  This feature removes the private-use
+code points from many such glyphs.
+
+For instance, in Jieubsida there is a glyph named ``uni112A'' for code point
+U+112A, but there is also a glyph named ``uni112A.bug'' which looks
+identical but is referenced in the substitution table in order to work
+around a bug in the ICU library used by \XeTeX.  The uni112A.bug glyph, as
+its name implies, is used to typeset the character U+112A, but it is
+referred to internally using the code point U+FF72A.  That is a code point
+in one of the Unicode Private Use Areas (PUAs), which are special ranges of
+code points reserved by Unicode for purposes like this.  The U+FF72A code
+point is the one that could, for instance, be used to enable or disable the
+uni112A.bug glyph in the -{}-enable-chars option to the configure script.
+
+The Tsukurimashou package uses hundreds of these PUA code points.  They are
+necessary for keeping track of things during the compilation and assembly of
+the fonts.  However, most of the glyphs with PUA code points are not
+intended to be directly accessed through their code points, only indirectly
+through glyph substitution.  Having an unnecessary PUA mapping in the font
+for any given glyph may cause some buggy software to ignore the glyph's
+name, resulting, for instance, in incorrect text when cutting and pasting
+from a PDF file.  Encoding glyphs to PUA code points could also possibly
+conflict with other uses of the same PUA code points by other software.  So
+all in all it is usually preferable that these glyphs should not have any
+code point mappings at all in the finished fonts.  On the other hand, removing
+their code point mappings means it is no longer possible to access the
+glyphs directly by code point; then users \emph{must} use the glyph
+substitution features instead, which means both that the glyphs are only
+available in the contexts where the substitution features are designed to
+provide them, and that the users must have OpenType rendering software that
+at least sort of works (which is not necessarily common in the field).
+
+The ``xpua'' feature allows a configuration choice between these two
+situations.  With it turned on, which is the default, most of
+Tsukurimashou's PUA glyphs will have their code points stripped in a late
+stage of font packaging.  It is not universal: some glyphs that do not
+correspond directly to any Unicode character remain accessible at PUA code
+points because that's relatively harmless and they may be difficult to
+invoke in other ways.  But glyphs that exist only to support OpenType
+features (such as the ones needed for vertical fractions and Korean syllable
+layout) end up as unencoded glyphs in the final fonts.  As of version 0.7,
+the Tsukurimashou PUA-encoded characters that keep their encodings in the
+final fonts notwithstanding ``xpua'' are exactly the glyphs in the U+F17xx
+range.
+
+Turning off ``xpua'' causes every glyph to be encoded at its internal code
+point.  That was the state of affairs in versions of Tsukurimashou prior to
+0.7, which didn't offer a choice.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

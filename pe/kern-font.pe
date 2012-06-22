@@ -1,7 +1,7 @@
 #!/usr/local/bin/fontforge
 
 # Script to apply glyph bearings
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,6 +43,15 @@ SetRBearing(80,1);
 _MFV=LoadStringFromFile("makefile-vars.inc");
 _MFV=Strsub(_MFV,Strstr(_MFV,"OT_FEATURES="));
 _MFV=Strsub(_MFV,0,Strstr(_MFV,Chr(10)));
+if (Strstr(_MFV,"xpua")>=0)
+  SelectWorthOutputting();
+  foreach
+    _U=GlyphInfo("Unicode");
+    if (((_U>=0xE000) && (_U<0xF900)) || (_U>=0xF1800))
+      SetUnicodeValue(-1,0);
+    endif
+  endloop
+endif
 if (Strstr(_MFV,"pfed")>=0)
   Generate("otf/"+_CCFileName+".otf","",0x10000020);
 else

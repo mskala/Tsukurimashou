@@ -1,6 +1,6 @@
 #
 # Miscellaneous OpenType features for Tsukurimashou
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,4 +66,8 @@ BEGINFEATURE smcp
 feature smcp {
   sub [a-z] by [a.sc-z.sc];
 } smcp;
+ENDFEATURE
+
+BEGINFEATURE xpua
+# Stub - feature is actually defined by code in make-ass
 ENDFEATURE
