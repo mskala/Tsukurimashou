@@ -195,7 +195,7 @@ begintsuglyph("uni4F1A",26);
 endtsuglyph;
 
 % den/tsuta "tradition"
-begintsuglyph("uni4F1D",28);
+begintsuglyph("uni4F1D",29);
   kanji.grfour.tradition;
   tsu_render;
 endtsuglyph;

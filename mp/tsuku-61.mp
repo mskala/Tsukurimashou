@@ -37,6 +37,7 @@ input bottomrad.mp;
 input buildkanji.mp;
 input gradefive.mp;
 input gradeone.mp;
+input gradethree.mp;
 input radical.mp;
 input rare.mp;
 input toprad.mp;
@@ -49,14 +50,6 @@ vardef kanji.grthree.feeling =
   push_pbox_toexpand("kanji.grthree.feeling");
   build_kanji.level(build_kanji.tb(250,0)
     (kanji.rare.the_same)
-    (kanji.bottomrad.heart));
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.intention =
-  push_pbox_toexpand("kanji.grthree.intention");
-  build_kanji.level(build_kanji.tb(210,0)
-    (kanji.grone.noise)
     (kanji.bottomrad.heart));
   expand_pbox;
 enddef;

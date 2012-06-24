@@ -45,6 +45,14 @@ vardef kanji.grfive.compare =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.conform =
+  push_pbox_toexpand("kanji.grfive.conform");
+  build_kanji.level(build_kanji.lr(560,30)
+    (kanji.grone.shell)
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.mistake =
   push_pbox_toexpand("kanji.grfive.mistake");
   push_stroke((380,810)--(370,240){dir 266}..tension 1.2..(300,70)..(80,-50),
@@ -62,6 +70,14 @@ vardef kanji.grfive.mistake =
   set_boserif(0,1,9);
   push_stroke((620,200)--(920,200),(1.6,1.6)--(1.6,1.6));
   set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.old_times =
+  push_pbox_toexpand("kanji.grfive.old_times");
+  build_kanji.lr(340,-20)
+    (kanji.radical.vline)
+    (kanji.grone.day);
   expand_pbox;
 enddef;
 

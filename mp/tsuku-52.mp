@@ -36,6 +36,7 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -101,14 +102,6 @@ vardef kanji.grthree.help =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.motion =
-  push_pbox_toexpand("kanji.grthree.motion");
-  build_kanji.lr(520,30)
-    (kanji.leftrad.heap_big)
-    (kanji.grone.power);
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.victory =
   push_pbox_toexpand("kanji.grthree.victory");
   build_kanji.level(build_kanji.lr(380,30*(1-mincho))
@@ -139,16 +132,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfive.conform =
-  push_pbox_toexpand("kanji.grfive.conform");
-  build_kanji.level(build_kanji.lr(560,30)
-    (kanji.grone.shell)
-    (kanji.rightrad.sword));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 vardef kanji.greight.cut_the_grass =
   push_pbox_toexpand("kanji.greight.cut_the_grass");
   build_kanji.level(build_kanji.lr(560,30)
@@ -172,21 +155,6 @@ vardef kanji.greight.whittle =
   build_kanji.level(build_kanji.lr(560,30)
     (kanji.greight.resemblance)
     (kanji.rightrad.sword));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.leftrad.heap_big =
-  push_pbox_toexpand("kanji.leftrad.heap_big");
-  build_kanji.sscale(scaled 0.88)
-    (kanji.grthree.heap_big;
-     replace_strokep(0)(get_strokep(-6));
-     replace_strokep(0)
-       (get_strokep(-1) shifted ((point 1 of oldp)-(point 0 of oldp))
-        shifted (-500,0) xscaled 1.1 shifted (500,0));
-     replace_strokeq(0)(reverse get_strokeq(-1));
-     set_boserif(0,1,whatever));
   expand_pbox;
 enddef;
 

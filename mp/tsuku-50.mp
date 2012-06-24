@@ -34,12 +34,14 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -60,9 +62,25 @@ enddef;
 
 vardef kanji.grfour.healthy =
   push_pbox_toexpand("kanji.grfour.healthy");
-  build_kanji.lr(220,0)
+  build_kanji.lr(260,0)
     (kanji.leftrad.person)
-    (kanji.grfour.build);
+    (build_kanji.sscale(scaled 0.94)(kanji.grfour.build));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.side =
+  push_pbox_toexpand("kanji.grfour.side");
+  build_kanji.lr(280,0)
+    (kanji.leftrad.person)
+    (kanji.grfive.conform);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.work =
+  push_pbox_toexpand("kanji.grfour.work");
+  build_kanji.lr(260,0)
+    (kanji.leftrad.person)
+    (kanji.grthree.motion);
   expand_pbox;
 enddef;
 
@@ -95,6 +113,18 @@ endtsuglyph;
 % ken/shita "healthy"
 begintsuglyph("uni5065",101);
   kanji.grfour.healthy;
+  tsu_render;
+endtsuglyph;
+
+% soku/kawa "side"
+begintsuglyph("uni5074",116);
+  kanji.grfour.side;
+  tsu_render;
+endtsuglyph;
+
+% dou/hatara "work"
+begintsuglyph("uni50CD",205);
+  kanji.grfour.work;
   tsu_render;
 endtsuglyph;
 

@@ -285,6 +285,12 @@ begintsuglyph("uni65E5",229);
   tsu_render;
 endtsuglyph;
 
+% kyuu/furu "old times"
+begintsuglyph("uni65E7",231);
+  kanji.grfive.old_times;
+  tsu_render;
+endtsuglyph;
+
 % shi/mune/uma "vaguely good" or "uma" in "umami"
 begintsuglyph("uni65E8",232);
   kanji.greight.glutamate;

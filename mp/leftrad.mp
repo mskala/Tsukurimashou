@@ -148,6 +148,19 @@ vardef kanji.leftrad.hand =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.heap_big =
+  push_pbox_toexpand("kanji.leftrad.heap_big");
+  build_kanji.sscale(scaled 0.88)
+    (kanji.grthree.heap_big;
+     replace_strokep(0)(get_strokep(-6));
+     replace_strokep(0)
+       (get_strokep(-1) shifted ((point 1 of oldp)-(point 0 of oldp))
+        shifted (-500,0) xscaled 1.1 shifted (500,0));
+     replace_strokeq(0)(reverse get_strokeq(-1));
+     set_boserif(0,1,whatever));
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.heart =
   push_pbox_toexpand("kanji.leftrad.heart");
   kanji.radical.vline;

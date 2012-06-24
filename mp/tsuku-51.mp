@@ -33,13 +33,16 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input rare.mp;
 input toprad.mp;
@@ -103,6 +106,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.child =
+  push_pbox_toexpand("kanji.grfour.child");
+  build_kanji.tb(360,0)
+    (kanji.grfive.old_times)
+    (kanji.radical.legs);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.rule =
   push_pbox_toexpand("kanji.grfour.rule");
   build_kanji.level(build_kanji.tb(180,0)
@@ -116,7 +127,21 @@ vardef kanji.grfour.rule =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.hundred_million =
+  push_pbox_toexpand("kanji.grfour.healthy");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.person)
+    (kanji.grthree.intention);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% oku "one hundred million"
+begintsuglyph("uni5104",4);
+  kanji.grfour.hundred_million;
+  tsu_render;
+endtsuglyph;
 
 % legs radical
 begintsuglyph("uni513F",63);
@@ -169,6 +194,12 @@ endtsuglyph;
 % men/manu "dismiss"
 begintsuglyph("uni514D",77);
   kanji.greight.dismiss;
+  tsu_render;
+endtsuglyph;
+
+% ko/ji "child"
+begintsuglyph("uni5150",80);
+  kanji.grfour.child;
   tsu_render;
 endtsuglyph;
 

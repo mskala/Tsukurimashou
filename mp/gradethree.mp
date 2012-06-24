@@ -180,6 +180,14 @@ vardef kanji.grthree.heap_big =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.intention =
+  push_pbox_toexpand("kanji.grthree.intention");
+  build_kanji.level(build_kanji.tb(210,0)
+    (kanji.grone.noise)
+    (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.master =
   push_pbox_toexpand("kanji.grthree.master");
   build_kanji.level(
@@ -200,6 +208,14 @@ vardef kanji.grthree.melody =
   set_boserif(0,0,10);
   push_stroke((140,320)--(860,320),
     (1.6,1.6)--(1.6,1.6));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.motion =
+  push_pbox_toexpand("kanji.grthree.motion");
+  build_kanji.lr(520,30)
+    (kanji.leftrad.heap_big)
+    (kanji.grone.power);
   expand_pbox;
 enddef;
 
