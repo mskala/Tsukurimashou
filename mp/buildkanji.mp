@@ -432,6 +432,57 @@ vardef build_kanji.level(text curves) =
   endgroup;
 enddef;
 
+% note special calling convention - extra boolean for inclusion of "tick"
+% seen in some Japanese and Korean characters
+vardef build_kanji.long_stride_enclose(expr do_tick)(text contents) =
+  push_pbox_toexpand("build_kanji.long_stride_enclose");
+  perl_structure:=perl_structure&"'eids.u2FFA.u5EF4._3',";
+  begingroup
+    save myxf;
+    transform myxf;
+    (50,850) transformed myxf=(350,810);
+    (50,-50) transformed myxf=(350,80);
+    (950,-50) transformed myxf=(950,80);
+    tsu_xform(myxf)(contents);
+    save x,y;
+    numeric x[],y[];
+    x1=80;
+    x2=260;
+    x4=120;
+    y1=y2=780;
+    y4=460;
+    z3=0.4[z4,z2]+mincho*(30,0);
+    z5=(0.3-0.5*mincho)[z4,z2];
+    push_stroke(z1--z2..tension 1.2..z3..z5,
+      (1.6,1.6)--(1.6,1.6)--(1.6-0.1*mincho,1.6-0.1*mincho)--
+        (1.6-0.2*mincho,1.6-0.2*mincho));
+    set_boserif(0,1,4);
+    set_botip(0,1,0);
+    x7=0;
+    x9=300;
+    x10=220;
+    x11=100;
+    y7=y9=y4;
+    y10=80;
+    y11=-70;
+    z6=point 2.2 of get_strokep(0);
+    z8=(z7--z9) intersectionpoint (get_strokep(0)--((-1)[z4,z2]));
+    push_stroke(z6--z8--z9..tension 1.2..z10..z11,
+      (1.6-0.5*mincho,1.6-0.5*mincho)--(1.5-0.1*mincho,1.5-0.1*mincho)--
+      (1.6,1.6)--(1.4,1.4)--(1,1));
+    set_boserif(0,2,4);
+    set_botip(0,1,1);
+    set_botip(0,2,0);
+    if do_tick:
+      push_stroke((150,330)..(120,290)..(60,220),
+        (1.2,1.2)--(1.1,1.1)--(1.6,1.6));
+    fi;
+    push_stroke((130,300)..(390,30)..tension 1.6..(900,-50),
+      (1,1)--(1.6,1.6)--(1.9,1.9));
+  endgroup;
+  expand_pbox;
+enddef;
+
 vardef build_kanji.lstransform(expr thresh,dist,mypt) =
   if ypart mypt>thresh:
     mypt

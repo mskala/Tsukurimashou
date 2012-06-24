@@ -103,6 +103,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.dispute =
+  push_pbox_toexpand("kanji.grfour.dispute");
+  build_kanji.attach_fishhook(0.77)(
+    build_kanji.sscale(yscaled 0.6 shifted (0,150))
+      (kanji.radical.pigs_snout);
+    push_stroke((point 0.5 of get_strokep(-2)),((1.6,1.6)));
+    build_kanji.add_jtail(0));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.go_between =
   push_pbox_toexpand("kanji.grfour.go_between");
   build_kanji.lr(300,20)
@@ -329,6 +339,12 @@ endtsuglyph;
 % yo/arakaji "before"
 begintsuglyph("uni4E88",136);
   kanji.grthree.before;
+  tsu_render;
+endtsuglyph;
+
+% sou/ika "dispute"
+begintsuglyph("uni4E89",137);
+  kanji.grfour.dispute;
   tsu_render;
 endtsuglyph;
 

@@ -94,6 +94,32 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.believe =
+  push_pbox_toexpand("kanji.grfour.believe");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.person)
+    (kanji.grtwo.word);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.rank =
+  push_pbox_toexpand("kanji.grfour.rank");
+  build_kanji.lr(300,10)
+    (kanji.leftrad.person)
+    (kanji.grone.stand_up);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.tradition =
+  push_pbox_toexpand("kanji.grfour.tradition");
+  build_kanji.lr(300,10)
+    (kanji.leftrad.person)
+    (kanji.grnine.declaim);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.haiku =
   push_pbox_toexpand("kanji.grsix.haiku");
   build_kanji.lr(300,20)
@@ -168,6 +194,12 @@ begintsuglyph("uni4F1A",26);
   tsu_render;
 endtsuglyph;
 
+% den/tsuta "tradition"
+begintsuglyph("uni4F1D",28);
+  kanji.grfour.tradition;
+  tsu_render;
+endtsuglyph;
+
 % haku "earl"
 begintsuglyph("uni4F2F",47);
   kanji.greight.earl;
@@ -203,6 +235,12 @@ endtsuglyph;
 % ten/tsukuda "cultivated paddy"
 begintsuglyph("uni4F43",67);
   kanji.grnine.paddy;
+  tsu_render;
+endtsuglyph;
+
+% i/kurai "rank"
+begintsuglyph("uni4F4D",77);
+  kanji.grfour.rank;
   tsu_render;
 endtsuglyph;
 
@@ -328,6 +366,12 @@ begintsuglyph("uni4FC9",201);
     (kanji.leftrad.person)
     (build_kanji.sscale(yscaled 0.9 shifted (0,-40))
        (kanji.grnine.my));
+  tsu_render;
+endtsuglyph;
+
+% shin "believe"
+begintsuglyph("uni4FE1",225);
+  kanji.grfour.believe;
   tsu_render;
 endtsuglyph;
 

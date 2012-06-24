@@ -34,6 +34,8 @@ beginfont
 
 % AUTODEPS
 input hangul.mp;
+
+% non-auto dependencies
 input jamo-basic.mp;
 input jamo-extra.mp;
 

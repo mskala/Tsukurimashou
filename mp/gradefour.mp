@@ -49,6 +49,13 @@ vardef kanji.grfour.attach =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.build =
+  push_pbox_toexpand("kanji.grfour.build");
+  build_kanji.long_stride_enclose(false)
+    (build_kanji.sscale(yscaled 1.1 shifted (0,30))(kanji.radical.brush));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.bundle =
   push_pbox_toexpand("kanji.grfour.bundle");
   push_stroke((500,810)--(500,-60),

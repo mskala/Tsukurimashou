@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
 input leftrad.mp;
@@ -52,6 +53,16 @@ vardef kanji.grthree.double =
     (build_kanji.tb(340,-60+20*mincho)
        (kanji.toprad.stand_up)
        (kanji.grone.mouth));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.healthy =
+  push_pbox_toexpand("kanji.grfour.healthy");
+  build_kanji.lr(220,0)
+    (kanji.leftrad.person)
+    (kanji.grfour.build);
   expand_pbox;
 enddef;
 
@@ -78,6 +89,12 @@ begintsuglyph("uni5058",88);
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.grthree.goods);
+  tsu_render;
+endtsuglyph;
+
+% ken/shita "healthy"
+begintsuglyph("uni5065",101);
+  kanji.grfour.healthy;
   tsu_render;
 endtsuglyph;
 
