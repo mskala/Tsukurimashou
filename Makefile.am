@@ -214,7 +214,9 @@ EXTRA_DIST:=COPYING.GPL3 \
   $(wildcard $(mvp)/fsc/*.fsc) \
   genjimon/genjimon.zip \
   t1asm/README t1asm/t1asm.1 \
-  $(filter-out $(wildcard $(mvp)/mp/jieub-[a-d][0-9a-f].mp),\
+  $(filter-out \
+    $(wildcard $(mvp)/mp/jieub-a[c-f].mp) \
+    $(wildcard $(mvp)/mp/jieub-[b-d][0-9a-f].mp),\
     $(wildcard $(mvp)/mp/*.mp)) \
   t1asm/README t1asm/t1asm.1
 
@@ -261,7 +263,7 @@ MOSTLYCLEANFILES = \
   doc/pgflibraryshapes.callouts.code.tex \
   fea/*.fea \
   hamlog/kddata.hl hamlog/jnames.hl \
-  mp/jieub-[a-d][0-9a-f].mp mp/.hglstamp \
+  mp/jieub-a[c-f].mp mp/jieub-[b-d][0-9a-f].mp mp/.hglstamp \
   pe/assemble-font.pe pe/make-empty.pe pe/*-bearing.pe \
   pfb/*.afm pfb/*.pfb \
   pfbtmp/*.pfb prf/*.prf sfd/*.sfd sum/*.sum \
