@@ -159,7 +159,7 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 #
 AC_PREREQ([2.63])
 AC_INIT([IDSgrep],
-	[0.2], [mskala@ansuz.sooke.bc.ca], [idsgrep],
+	[0.3pre], [mskala@ansuz.sooke.bc.ca], [idsgrep],
 	[[http://ansuz.sooke.bc.ca/]])
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign parallel-tests color-tests])
@@ -234,6 +234,31 @@ AC_ARG_ENABLE([gcov],
     [],
     [enable_gcov=no])
 AM_CONDITIONAL([COND_GCOV],[test '!' "$enable_gcov" = no])
+#
+AC_ARG_WITH([chise-ids],
+  [AS_HELP_STRING([--with-chise-ids=PATH],
+     [CHISE IDS database [auto]])],
+     [],
+     [with_chise_ids=auto])
+AS_IF([test "x$with_chise_ids" = "xauto"],[
+AC_MSG_CHECKING([for CHISE IDS database])
+m4_foreach_w([cicheckpath],m4_expand([$srcdir $srcdir/.. $srcdir/../.. dnl
+$prefix/src /src /usr/src /usr/local/src dnl
+$HOME $HOME/src]),[
+       AS_IF([test "$with_chise_ids" = "auto"],
+             [for cicheckdir in cicheckpath/chise-ids-*
+do
+  AS_IF([test -r "$cicheckdir/Makefile"],[
+check_line=x`grep 'Makefile for CHISE IDS' "$cicheckdir/Makefile"`
+              AS_IF([test "$check_line" = "x# Makefile for CHISE IDS."],
+                    [with_chise_ids=$cicheckdir])])
+done
+])])
+AS_IF([test "$with_chise_ids" = "auto"],[with_chise_ids=no])
+AC_MSG_RESULT([$with_chise_ids])
+])
+AM_CONDITIONAL([COND_CHISE_IDS], [test '!' "$with_chise_ids" = no])
+AC_SUBST([with_chise_ids])
 #
 AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AC_ARG_WITH([edict2],

@@ -25,6 +25,9 @@ ACLOCAL_AMFLAGS = -I m4
 
 mvp:=$(if $(VPATH),$(VPATH),.)
 
+if COND_CHISE_IDS
+   MAYBE_CIDATA=chise.eids
+endif
 if COND_GCOV
    MAYBE_COVERAGE=--coverage --no-inline
 endif
@@ -51,10 +54,12 @@ DISTCLEANFILES = $(if $(VPATH),idsgrep.pdf,)
 
 MAINTAINERCLEANFILES = idsgrep.pdf
 
+dist_dict_DATA = $(MAYBE_CIDATA)
+
 dict_DATA = $(MAYBE_EDICTDATA) $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)
 
 dist_noinst_SCRIPTS = \
-  ed22eids kvg2eids \
+  chise2eids ed22eids kvg2eids \
   $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
 
 dist_pdf_DATA = $(MAYBE_DOCS)
@@ -74,6 +79,11 @@ idsgrep.pdf: idsgrep.tex config.tex idsgrep.bib \
 	export BIBINPUTS=$(mvp) ; bibtex idsgrep.aux
 	$(XELATEX) $(mvp)/idsgrep.tex
 	$(XELATEX) $(mvp)/idsgrep.tex
+
+chise.eids: $(wildcard @with_chise_ids@/IDS-*.txt) chise2eids
+	$(PERL) -CDS $(mvp)/chise2eids \
+	  @with_chise_ids@ @with_chise_ids@/IDS-*.txt \
+	  > chise.eids
 
 edict.eids: @with_edict2@ kanjivg.eids ed22eids
 	$(GZIP) -cd @with_edict2@ \
