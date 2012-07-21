@@ -334,6 +334,32 @@ AC_MSG_RESULT([$with_tsuku_build])
 AM_CONDITIONAL([COND_TSUKU_BUILD], [test '!' "$with_tsuku_build" = no])
 AC_SUBST([with_tsuku_build])
 #
+AC_ARG_ENABLE([edict-decomp],
+  [AS_HELP_STRING([--enable-edict-decomp[[=chise|kanjivg|tsuku|auto]]],
+    [dictionary for EDICT2 decomposition [auto]])],
+    [],
+    [enable_edict_decomp=auto])
+AS_IF([test '!' "$with_edict2" = "no"],[
+AC_MSG_CHECKING([EDICT2 decompositions])
+AS_IF(
+  [test "$enable_edict_decomp" = "auto"],
+      [AS_IF([test "$with_chise_ids" = "no"],
+             AS_IF([test "$with_kanjivg" = "no"],
+                   AS_IF([test "$with_tsuku_build" = "no"],
+                         [enable_edict_decomp=no],
+                         [enable_edict_decomp=tsuku]),
+                   [enable_edict_decomp=kanjivg]),
+             [enable_edict_decomp=chise])])
+AC_MSG_RESULT([$enable_edict_decomp])
+])
+AS_IF([test "$enable_edict_decomp" = "chise"],[edict_decomp=chise.eids])
+AS_IF([test "$enable_edict_decomp" = "kanjivg"],[edict_decomp=kanjivg.eids])
+AS_IF([test "$enable_edict_decomp" = "tsuku"],
+      [edict_decomp=tsukurimashou.eids])
+AS_IF([test "$enable_edict_decomp" = "no"],
+      [edict_decomp=])
+AC_SUBST([edict_decomp])
+#
 ############################################################################
 #
 # Arch packaging

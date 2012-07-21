@@ -49,4 +49,29 @@ test_match('(\XXXXX)(\xxx)(\x{012q})','?','(\XXXXX)(\xxx)(\x{012q})');
 test_match('(\x{58}\x{134}\x{840C}\x{1f4a9}\x{200000})','(XĴ萌💩�)',
   '(\x{58}\x{134}\x{840C}\x{1f4a9}\x{200000})');
 
+sub test_badseq {
+  my($sequence)=@_;
+  
+  open(IDSG,'-|','./idsgrep',$sequence,"bs-in.$$");
+  $_=<IDSG>;
+  close(IDSG);
+  if (!/can\'t parse/) {
+    $incorrect=1;
+    print "$_\n";
+  }
+}
+
+open(BSI,">bs-in.$$");
+print BSI "x\n";
+close(BSI);
+
+test_badseq("\\");
+test_badseq("\\c");
+test_badseq("\\x");
+test_badseq("\\x1");
+test_badseq("\\X123");
+test_badseq("\\X{1234");
+
+system 'rm','-f',"bs-in.$$";
+
 exit $incorrect;

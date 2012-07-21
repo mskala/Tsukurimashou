@@ -285,27 +285,34 @@ bug-tracker items should be filed there.
 
 A minimal default build and install could run something like this:
 \begin{verbatim}
-tar -xzvf idsgrep-0.2.tar.gz
-cd idsgrep-0.2
+tar -xzvf idsgrep-0.3.tar.gz
+cd idsgrep-0.3
 ./configure
 make
 su -c 'make install'
 \end{verbatim}
 
-IDSgrep as such does not include a dictionary, but it can build dictionaries
+IDSgrep can build dictionaries
 from the Tsukurimashou font package, which is available through the same
-Sourceforge.JP project as IDSgrep, from the KanjiVG database available at
-\url{http://kanjivg.tagaini.net/}~\cite{KanjiVG}, or (only if KanjiVG is
-also available) from the EDICT2 database available at
+Sourceforge.JP project as IDSgrep; from the KanjiVG database available at
+\url{http://kanjivg.tagaini.net/}~\cite{KanjiVG}; from the CHISE IDS
+database available at
+\url{http://chise.zinbun.kyoto-u.ac.jp/dist/ids/}~\cite{CHISE};
+or from the EDICT2 database available at
 \url{http://www.csse.monash.edu.au/~jwb/edict.html}~\cite{EDICT2}.  For an
 ideal complete installation of IDSgrep, one would download all those
 packages, build Tsukurimashou first, and make it and the dictionaries
-available to the IDSgrep \texttt{configure} script.  The \texttt{configure}
+available to the IDSgrep \texttt{configure} script.
+A precompiled version of the CHISE IDS-derived dictionary is bundled
+in the IDSgrep distribution tarball, so that one should be available (though
+not necessarily up-to-date) without any dependencies.
+
+The \texttt{configure}
 script will by default make a reasonable effort to find the dependencies; in
 many common cases it is not necessary to specify them on the command line. 
 Here is a more complete installation process relying on \texttt{configure}
-to find KanjiVG and EDICT2 in the current directory and Tsukurimashou in a
-sibling directory:
+to find Tsukurimashou in a
+sibling directory and the others in the current directory:
 \begin{verbatim}
 unzip tsukurimashou-0.6.zip
 cd tsukurimashou-0.6
@@ -317,21 +324,40 @@ tar -xzvf idsgrep-0.2.tar.gz
 cd idsgrep-0.2
 ln -s /some/where/else/kanjivg-20120219.xml.gz .
 ln -s /some/where/else/edict2.gz .
+ln -s /some/where/else/chise-ids-0.25 .
 ./configure
 make
 make check
 su -c 'make install'
 \end{verbatim}
 
+It is necessary to at least configure Tsukurimashou, if not fully build it,
+before building IDSgrep.  The IDSgrep build will then invoke the
+Tsukurimashou build to create just the files needed by IDSgrep.  It is not
+necessary to configure or build CHISE IDS (which would require first
+installing other parts of the larger CHISE system and probably XEmacs as
+well); IDSgrep only needs to look at the CHISE IDS data files.
+
 If the default search fails, the filenames of KanjiVG (\texttt{.xml} or
-\texttt{.xml.gz}), EDICT2 (\texttt{.gz}), and the top directory of
-Tsukurimashou can be specified on the \texttt{configure} command line with
+\texttt{.xml.gz}), EDICT2 (\texttt{.gz}), and the directories containing
+extracted distributions of Tsukurimashou and CHISE IDS can be
+specified on the \texttt{configure} command line with
 the \texttt{--with-kanjivg}, \texttt{--with-edict2},
-and \texttt{--with-tsuku-build} options.  For
+\texttt{--with-tsuku-build}, and \texttt{--with-chise-ids} options.  For
 other options, run \texttt{configure --help}.  It's a reasonably standard
 GNU Autotools~\cite{Autotools} configuration script, albeit with a lot of
 options for inapplicable installation directories removed to simplify the
 help message.
+
+The EDICT2-based dictionary should preferably include
+character decompositions from some other dictionary; which one is
+selectable by the \texttt{--enable-edict-decomp} option.  Allowed values
+include \texttt{chise}, \texttt{kanjivg}, \texttt{tsuku}, and \texttt{no};
+the default of \texttt{auto} will try all of those in that order and use the
+first that works.  The value \texttt{no} corresponds to simply mapping every
+character to itself without further decomposition; that is obviously not as
+informative as might be desired, but it will still allow for regular
+expression searches.
 
 The ``\texttt{check}'' Makefile target runs the IDSgrep test suite.  Some
 tests require the dictionary files and will be skipped if those are not
@@ -343,10 +369,11 @@ The \texttt{configure} script supports an \texttt{--enable-gcov} switch to
 enable meta-testing of the test suite's coverage.  This feature requires
 that the Gcov coverage analyser be installed.  To do a coverage analysis,
 run \texttt{configure} with \texttt{--enable-gcov} and any other desired
-options, then do \texttt{make clean} (necessary to be sure all object
-files are rebuilt with the coverage instrumentation) followed by
-\texttt{make check}.  Most people would not want to install an
-IDSgrep binary built under this option.
+options, then do \texttt{make clean} (necessary to be sure all object files
+are rebuilt with the coverage instrumentation) followed by \texttt{make
+check}.  Full coverage can only be attained if the dictionary files are
+installed (not just built).  Most people would not want to install the
+IDSgrep binary itself when built under this option.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -406,17 +433,21 @@ make it more practical to search EDICT2 with IDSgrep, and even in the
 current version, there is some value in being able to do sub-character
 structural searches on multi-character words.
 
-If both EDICT2 and KanjiVG are available to the IDSgrep build system, it
-will invoke the \texttt{ed22eids} script and generate and install a
+If another dictionary besides EDICT2 is available
+(subject to configuration by \texttt{--enable-edict-decomp}), then the
+build system will generate and install a
 dictionary file called \texttt{edict.eids}, which represents a database
-join of the two dictionaries.  A sample entry might look like this:
+join of EDICT2 with the other dictionary.  With no other dictionary,
+the file can still be generated but will contain no character decomposition
+information.
+A sample entry might look like this:
 \begin{verbatim}
 【明】,<明>⿰日月｟[みん] (n) Ming (dynasty of China)｠
 \end{verbatim}
 
 The head for the entire entry is the head from the EDICT2 entry.  Then the
-tree is a binary tree with a comma as the functor and the first child
-being the entire \texttt{kanjivg.eids} entry for the first character.  The
+tree is a binary tree with a comma as the functor and the first child being
+the entire decomposition dictionary entry for the first character.  The
 second child represents the rest of the entry.  With a two-character or
 longer head, this child would also be a binary comma with the second
 character of the entry head as its first child.  In this way the characters
@@ -433,17 +464,22 @@ in \texttt{idsgrep -ded '<教育>;'}.  To search for the first few characters,
 commas can be imagined as separators (though their actual function is quite
 different) with a comma at the start and a question mark at the end, as in
 \texttt{idsgrep -ded ',教,育?'}.  These queries can be combined with the
-sub-character breakdown queries already supported by the KanjiVG-based
-dictionary.  For instance, \texttt{idsgrep -ded ',教,...|日月!,??'} will
+sub-character breakdown queries already supported by the decomposition
+dictionaries.  For instance, \texttt{idsgrep -ded ',教,...|日月!,??'} will
 search for, and give definitions of, words of exactly two characters in
 which the first is \texttt{教} and the second character contains \texttt{日}
 or \texttt{月} anywhere.  The restriction to exactly two characters is
 accomplished by the sub-query ``\texttt{!,??}'', which fails to match on the
 binary comma that would be present at that point in a longer word.
 
-Since both EDICT2 and KanjiVG are under the Creative Commons
-Attribution--ShareAlike license, that license presumably also applies to the
-combined dictionary made from them.
+EDICT2 is under the Creative Commons Attribution--ShareAlike license.  Since
+KanjiVG is as well, that license would presumably also apply to a combined
+dictionary made from EDICT2 and KanjiVG.  An EDICT2-only dictionary with no
+decompositions from other sources should similarly be under Creative Commons
+Attribution--ShareAlike.  It might not be legal to distribute outside one's
+own organization a dictionary formed by joining EDICT2 with CHISE IDS or
+Tsukurimashou, because those sources are covered by versions of the GNU GPL,
+which is not compatible with the Creative Commons license.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -498,10 +534,9 @@ to both packages at once.
 
 In order for IDSgrep to work together with Tsukurimashou, it is necessary
 that the Tsukurimashou build be one that supports the \texttt{make eids}
-target in the first place.  No released version contains such support yet,
-but it is planned for Tsukurimashou~0.6.  Development versions of
-Tsukurimashou in the SVN repository have included EIDS support since early
-January 2012.
+target in the first place.  Packaged versions of Tsukurimashou from 0.6
+onward include EIDS support, and development versions of Tsukurimashou in
+the SVN repository have included EIDS support since early January 2012.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -566,7 +601,7 @@ in which file the EIDS was found.  Note that under the EIDS syntax rules,
 that creates a unary node senior to the entire tree, so that the output
 remains in valid EIDS format, except in the case of filenames containing
 colons, which will be handled via backslash escapes in the future when those
-are fully implemented.
+are fully implemented for output.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -632,9 +667,9 @@ a conversion program if necessary.
 \noindent
 
 This section is intended to describe IDSgrep's syntax and matching procedure
-in complete detail; and those things are, in turn, designed to be powerful
-rather than easy.  As a result, the description may be confusing for some
-users.  See the examples in the ``Quick start'' section for a more
+in complete precise detail; and those things are, in turn, designed to be
+powerful rather than easy.  As a result, the description may be confusing
+for some users.  See the examples in the ``Quick start'' section for a more
 accessible introduction to how to use the utility.
 
 The system is best understood in terms of three interconnected major
@@ -1003,7 +1038,7 @@ The verbose ASCII name for ``\texttt{(?)}'' is ``\texttt{(anything)}.''
 
 The value of $\textit{match}'(\texttt{...}x,y)$ is true if and only if there
 exists any subtree of $y$ (including the entirety of $y$) for which
-$\textit{match}'(x,y)$ is true.  In other words, this will look for an
+$\textit{match}(x,y)$ is true.  In other words, this will look for an
 instance of $x$ anywhere inside $y$ regardless of nesting level.  Mnemonic:
 three dots suggest omitting a variable-length sequence, in this case the
 variable-length chain of ancestors above $x$.
@@ -1143,8 +1178,6 @@ $(a+b)+c$ equivalent to $a+(b+c)$, and for that reason it is called
 ``associative'' matching.  The mnemonic for at-sign is that it is a fancy
 ``a'' for ``associative.''
 The verbose ASCII name for ``\texttt{.@.}'' is ``\texttt{.assoc.}.''
-
-This feature is not yet implemented in version 0.2.
 
 \subsection{Regular expression matching}
 

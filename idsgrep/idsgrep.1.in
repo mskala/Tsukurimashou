@@ -231,7 +231,45 @@ syntax for a unary node functor containing a single ASCII period.
 The first opens the string, the second is the literal first character, and
 the third closes the string.
 .IP \(bu 4
-It is likely that some backslash escapes will be implemented in the future.
+Backslash can be used for escape sequences.
+The sequences \ea, \eb, \ee, \ef, \et, \en, and \er have the same meanings
+as in the C programming language under Unix, with \en always corresponding 
+to <U+000A>, a single line feed, not a localized end-of-line sequence which
+might be different from that.
+The \ec sequence followed by a case-insensitive ASCII Latin letter (only)
+corresponds to an ASCII control character, equivalent to typing Ctrl plus
+that letter on a standard ASCII keyboard.
+There are also three hexadecimal escapes:
+.RI \ex HH
+(where
+.I HH
+is two hexadecimal digits);
+.RI \eX HHHH
+(where
+.I HHHH
+is four hexadecimal digits);
+and
+.RI \eX{ Hx }
+(where
+.I Hx
+is a variable-length sequence of hexadecimal digits).
+These allow entering arbitrary code points.
+In all backslash-letter escape sequences, the letter after the backslash is
+case-sensitive but the parameter, if applicable, is not.
+Backslash sequences may not be nested; parameters must be given as literal
+ASCII.
+.IP \(bu 4
+Backslash, if not used with a letter to form one of the sequences above,
+causes the next character (which could even be a second backslash) to be
+taken literally and lose any special meaning.
+Inside a bracketed string, it can be used for instance to escape a closing
+bracket that would otherwise end the string.
+Outside a bracketed string, a backslash-escaped character will always be
+taken as a head with a syrupy semicolon (as described below) instead of
+having sugary, opening-bracket, or skipped-whitespace behaviour.
+That also applies to characters created by backslash-letter sequences, for
+instance with \eX: after decoding the escape sequence, the result is always
+literal inside a bracketed string and syrupy outside a bracketed string.
 .IP \(bu 4
 ASCII control characters and whitespace characters, <U+0000> through
 <U+0020> (notably including <U+0000>), are ignored outside bracketed
@@ -372,15 +410,43 @@ binary; site admins who think they are too cool for
 .B configure
 may possibly have installed the files elsewhere.
 .PP
-.I @flat_dictdir@/tsukurimashou.eids
+.I @flat_dictdir@/chise.eids
 .RS
-Japanese kanji decompositions from the Tsukurimashou font project.
-These are relatively clean in terms of accurately reflecting the visual
-construction of each character, but they only cover the glyphs included in
-the fonts, and they are based on the visual appearance of the glyphs
-(and, specifically, their appearance
-.IR "in the Tsukurimashou fonts" )
-rather than traditional etymology.
+Character decompositions from the CHISE EIDS database.
+Coverage of approximately 130000 Han-script characters, spanning multiple
+languages.
+Non-Unicode characters are expressed using symbolic names apparently invented
+by the CHISE project, or possibly by the affiliated UTF-2000 initiative.
+This dictionary is generally of high quality because the original source
+provides it more or less in IDS format already (actually an extended
+IDS format of their own, distinct from IDSgrep's extended IDS); as a result
+there is very little guesswork involved in the conversion to IDSgrep's EIDS.
+Its broad coverage is hard to beat.
+However, about 6% of the entries in the CHISE IDS database are
+syntactically invalid, and are therefore excluded from IDSgrep's
+converted dictionary.
+What that implies about the quality of the remaining entries is an
+open question.
+Because this dictionary has GPL 2+ licensing, it can be bundled with the
+IDSgrep source package (the majority of which is GPL 3).
+.RE
+.I @flat_dictdir@/edict.eids
+.RS
+Japanese-English dictionary of words and their meanings, based on
+EDICT2 with character decompositions from one of the other dictionaries
+selected at build time, most likely CHISE IDS.
+This allows searching for multi-character words using partial descriptions
+of the individual characters.
+The EDICT2 entries are translated to EIDS format such that the EDICT2 head
+(typically the word being defined) is the head of the EIDS; below that there
+follows a chain of binary comma nodes each having a character of the word as
+its left child and the rest of the chain as the right child.
+These left children are decomposed according to whichever dictionary was used.
+The final right child is a nullary node containing the remainder of the
+EDICT2 entry, including pronunciation, part of speech, definition, and any
+other tags.
+For example, an entry that defined \(lqXYZ\(rq as \(lqdefinition\(rq might
+be encoded as \(lq<XYZ>,X,Y,Z(definition)\(rq.
 .RE
 .I @flat_dictdir@/kanjivg.eids
 .RS
@@ -395,22 +461,15 @@ of works.
 As a result, decompositions in this database may be incomplete,
 idiosyncratic, or even flat-out wrong.
 .RE
-.I @flat_dictdir@/edict.eids
+.I @flat_dictdir@/tsukurimashou.eids
 .RS
-Japanese-English dictionary of words and their meanings, based on
-EDICT2, with character decompositions from KanjiVG.
-This allows searching for multi-character words using partial descriptions
-of the individual characters.
-The EDICT2 entries are translated to EIDS format such that the EDICT2 head
-(typically the word being defined) is the head of the EIDS; below that there
-follows a chain of binary comma nodes each having a character of the word as
-its left child and the rest of the chain as the right child.
-These left children are decomposed according to the KanjiVG database.
-The final right child is a nullary node containing the remainder of the
-EDICT2 entry, including pronunciation, part of speech, definition, and any
-other tags.
-For example, an entry that defined \(lqXYZ\(rq as \(lqdefinition\(rq might
-be encoded as \(lq<XYZ>,X,Y,Z(definition)\(rq.
+Japanese kanji decompositions from the Tsukurimashou font project.
+These are relatively clean in terms of accurately reflecting the visual
+construction of each character, but they only cover the glyphs included in
+the fonts, and they are based on the visual appearance of the glyphs
+(and, specifically, their appearance
+.IR "in the Tsukurimashou fonts" )
+rather than traditional etymology.
 .
 .SH ENVIRONMENT
 .IP IDSGREP_DICTDIR
@@ -458,6 +517,8 @@ based on KanjiVG and EDICT2.
 The input files for those are subject to the Creative Commons 
 Attribution-Share Alike 3.0 Licence, and their authors might make a
 copyright claim on the resulting dictionaries.
+The input files for the CHISE IDS dictionary are subject to GPL 2 or any
+later version.
 The Tsukurimashou project also builds an EIDS-format dictionary for
 use with IDSgrep, but happens to use the same copyright and GPL 3 licensing
 terms as IDSgrep anyway.

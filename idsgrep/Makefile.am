@@ -32,14 +32,14 @@ if COND_GCOV
    MAYBE_COVERAGE=--coverage --no-inline
 endif
 if COND_KANJIVG
-if COND_EDICT2
-      MAYBE_EDICTDATA=edict.eids
-endif
    MAYBE_KVDATA=kanjivg.eids
 endif
 if COND_TSUKU_BUILD
    MAYBE_DOCS=idsgrep.pdf
    MAYBE_TSUKUDATA=tsukurimashou.eids
+endif
+if COND_EDICT2
+   MAYBE_EDICTDATA=edict.eids
 endif
 
 bin_PROGRAMS = idsgrep
@@ -48,11 +48,11 @@ MOSTLYCLEANFILES = \
   idsgrep.aux idsgrep.log idsgrep.blg idsgrep.bbl idsgrep.toc \
   *.gcda *.gcno *.gcov
 
-CLEANFILES = edict.eids kanjivg.eids tsukurimashou.eids
+CLEANFILES = chise.errs edict.eids kanjivg.eids tsukurimashou.eids
 
-DISTCLEANFILES = $(if $(VPATH),idsgrep.pdf,)
+DISTCLEANFILES = $(if $(VPATH),idsgrep.pdf chise.eids,)
 
-MAINTAINERCLEANFILES = idsgrep.pdf
+MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
 
 dist_dict_DATA = $(MAYBE_CIDATA)
 
@@ -83,12 +83,19 @@ idsgrep.pdf: idsgrep.tex config.tex idsgrep.bib \
 chise.eids: $(wildcard @with_chise_ids@/IDS-*.txt) chise2eids
 	$(PERL) -CDS $(mvp)/chise2eids \
 	  @with_chise_ids@ @with_chise_ids@/IDS-*.txt \
-	  > chise.eids
+	  > chise.eids 2> chise.errs
+	echo `wc -l < chise.errs` errors detected in CHISE IDS
 
-edict.eids: @with_edict2@ kanjivg.eids ed22eids
-	$(GZIP) -cd @with_edict2@ \
+# this if is for the case of chise.eids distributed and not locally built
+edict.eids: @with_edict2@ @edict_decomp@ ed22eids
+	if test -r @edict_decomp@ ; \
+	then $(GZIP) -cd @with_edict2@ \
 	  | $(ICONV) -feuc-jp -tutf-8 \
-	  | $(PERL) -CDS $(mvp)/ed22eids > edict.eids
+	  | $(PERL) -CDS $(mvp)/ed22eids @edict_decomp@ > edict.eids ; \
+	else $(GZIP) -cd @with_edict2@ \
+	  | $(ICONV) -feuc-jp -tutf-8 \
+	  | $(PERL) -CDS $(mvp)/ed22eids $(mvp)/@edict_decomp@ \
+	  > edict.eids ; fi
 
 kanjivg.eids: @with_kanjivg@ kvg2eids
 	if $(PERL) \
