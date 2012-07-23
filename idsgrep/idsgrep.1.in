@@ -113,8 +113,9 @@ defining a series of \(lqIdeographic Descripion Characters\(rq (IDCs),
 .PP
 Here are the rules of Unicode IDSes:
 .IP \(bu 4
-A character from the one of the Unified Han or CJK Radical ranges
-is a complete IDS and simply represents itself.
+A character from the the Unified Han or CJK Radical ranges (including
+their extensions) is a complete IDS and simply represents itself.
+Unicode 6.1 added permission for the use of private-use characters.
 .IP \(bu 4
 The IDC code points <U+2FF0>, <U+2FF1>, and <U+2FF4> through <U+2FFB>
 are prefix binary operators.
@@ -130,13 +131,24 @@ describes a
 character made of three parts, much in the same manner as the binary
 operators.
 .IP \(bu 4
-An IDS may not be more than 16 code points long overall nor contain more
-than six consecutive non-operator characters.
-This rule appears to be intended to make things easier for systems that need
-to be able to jump into the middle of text and quickly find the start and
-end of IDSes.
+As of Unicode 6.1, IDS length is unlimited.
+Earlier versions specified that an IDS could not be more than 16 code
+points long overall nor contain more than six consecutive non-operator
+characters.
 .IP \(bu 4
-IDSes non-bindingly \(lqshould\(rq be as short as possible.
+IDSes non-bindingly \(lqshould\(rq be as short as possible and should
+reflect \(lqthe natural radical-phonetic division for an ideograph if it has
+one.\(rq
+.IP \(bu 4
+The Unicode standard does not mention variation selectors in any IDS-related
+context, except that it offers the possibility of prefixing <U+303E>,
+the \(lqideographic variation mark,\(rq to the entire sequence to indicate
+a variation.
+Such a prefix is explicitly defined not to be part of the IDS.
+It is the opinion of the IDSgrep author that Unicode did not
+intend to permit variation selectors
+.I inside
+IDS syntax.
 .PP
 To create a dictionary of character decompositions for
 .BR @PACKAGE@ ,
@@ -301,6 +313,14 @@ it not only becomes a single-character head
 functor consisting of a single semicolon.
 For instance, the lone character x is equivalent to <x>(;) or (because
 semicolon itself has implicit parentheses) <x>;.
+.IP \(bu 4
+Characters, for the purposes of EIDS parsing, are strictly single Unicode
+code points.
+Such things as combining accents and variation selectors are parsed as
+separate characters from the bases to which they may be applied.
+The sugary and syrupy parsing rules apply only to single characters.
+Thus, appropriate brackets are necessary whenever a sequence containing
+more than one code point is to be treated as a single head or functor.
 .IP \(bu 4
 After parsing, EIDSes are subjected to a \(lqcanonicalization\(rq
 transformation in which certain functor and arity combinations (generally

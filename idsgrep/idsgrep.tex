@@ -377,6 +377,180 @@ IDSgrep binary itself when built under this option.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Unicode IDSes}
+
+Although IDSgrep uses a more elaborate syntax, it is well to know
+about the Unicode Consortium's ``Ideographic Description Sequences''
+(IDSes), which are a subset of IDSgrep's.  These are documented
+more fully in the Unicode standard~\cite{Unicode:IDS}.
+
+\begin{itemize}
+
+\item A character from one of the Unified Han or CJK Radical ranges is a
+complete IDS and simply represents itself.  For instance, ``\texttt{大}'' is
+a complete IDS.
+
+\item The Ideographic Description Characer (IDC) code points U+2FF0, U+2FF1,
+and U+2FF4 through U+2FFB, whose graphic images look like
+\texttt{⿰⿱⿴⿵⿶⿷⿸⿹⿺⿻}, are prefix binary operators.
+One of these characters followed by two complete IDSes
+forms another complete IDS, representing a character formed by joining the
+two smaller characters in a way suggested by the name and graphical image
+of the IDC.  For instance, ``\texttt{⿰日月}'' describes the
+character \texttt{明}.  These structures may be nested; for instance,
+``\texttt{⿰言⿱五口}'' describes the character \texttt{語}.
+
+\item The IDC code points U+2FF2 and U+2FF3, which look like \texttt{⿲⿳},
+are prefix ternary operators. (Unicode uses the less-standard word
+``trinary'' to describe them.) One of them can be followed by three complete
+IDSes to form an IDS that describes a character made of three parts, much in
+the same manner as the binary operators.  For instance,
+``\texttt{⿱⿲糸言糸夂}'' describes the character \texttt{變}.
+
+\item As of Unicode 6.1, IDS length is unlimited.  Earlier versions
+specified that an IDS could not be more than 16 code points long overall
+nor contain more than six consecutive non-operator characters.
+This rule appears to be have been intended to make things easier for systems
+that need to be able to jump into the middle of text and quickly find the
+starts and ends of IDSes.
+
+\item IDSes non-bindingly ``should'' be as short as possible and should
+reflect ``the natural radical-phonetic division for an ideograph if it has
+one.''
+\end{itemize}
+
+The Unicode standard does not mention variation selectors in any IDS-related
+context, except that it offers the possibility of prefixing U+303E, the
+``ideographic variation mark,'' to the entire sequence to indicate a
+variation.  Such a prefix is explicitly defined not to be counted as part of
+the IDS.
+
+My opinion is that Unicode did not intend to permit variation selectors
+inside IDS syntax.  Variation selectors arguably exist to patch over
+encoding inadequacies resulting from Unicode's internal politics.  When a
+code point is not really specific enough, because it refers to two or more
+things which you think are not actually the same thing, then you can add a
+variation selector to indicate which thing you really mean.  IDSes, on the
+other hand, bearing in mind that they are imported from GBK, operate at a
+lower level to specify characters in terms of parts that are assumed to be
+adequately encoded.  If a code point to be used in an IDS is not specific
+enough, then that element should be described with a smaller fragment of IDS
+syntax instead of by using the ambiguous code point.  If the closest match
+possible is still not perfect, then it is time to use U+303E.  The fact they
+offer the U+303E mechanism for specifying variations offers further support
+to the idea that they did not intend to allow variation selectors
+\emph{inside} IDSes.
+
+However, it's a difficult question because IDSes, by addressing the visual
+appearance of characters instead of their semantics, fundamentally challenge
+the basic Unicode principle that code points specify characters and not
+glyphs.  The distinction between characters and glyphs simply cannot be made
+perfectly in all cases.  For use in cases where variation selectors appear
+to be appropriate, both CHISE IDS and IDSgrep extend IDS syntax in
+such a way as to allow them in some way.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Interface to CHISE IDS}
+
+The CHISE project~\cite{CHISE} maintains a database of Han characters
+covering multiple languages as part of a larger processing environment that
+also includes a version of XEmacs~\cite{XEmacs} modified to follow the
+principles of the UTF-2000 initiative~\cite{UTF2000}.  It also has
+connections to GlyphWiki~\cite{GlyphWiki} and the KAGE~\cite{KAGE} project. 
+These systems are documented primarily in Japanese; English-language
+documentation is sparse and not necessarily up to date.
+
+For IDSgrep's purposes, the most interesting part of CHISE is a module
+called CHISE IDS, which includes a database of about 140000 characters
+(exact count depending on the version), with decompositions in its own
+extension of Unicode IDS syntax.  The main purpose of this IDS database is
+to provide a search capability within the modified XEmacs; there is also
+code for a Web search form.  From examination of the database files it
+appears that the rules for CHISE IDS's extended IDS syntax are more or less
+as follows.
+
+\begin{itemize}
+\item Generally, Unicode IDS rules apply.
+\item An XML entity-like sequence of the form \texttt{\&NAME;} counts as a
+single ideograph.  The field indicated by \texttt{NAME} is a symbolic
+identifier or database key defined internally by the project.  Such
+identifiers have been observed to contain uppercase ASCII letters, numerals,
+hyphens, and plus signs; they usually consist of a short alphabetic
+prefix, a hyphen, and a number.  These entity references are usually used to
+refer to characters for which CHISE has an encoding and Unicode doesn't.
+\item A Unicode variation sequence (an ideograph followed by a variation
+selector) counts as a single character.
+\end{itemize}
+
+Although CHISE IDS's extensions to IDS permit strings that would not be
+valid IDSgrep EIDS syntax, it is easy to convert them into EIDS format. 
+IDSgrep includes a \texttt{chise2eids} Perl script for that purpose.  The
+\texttt{configure} script will look for CHISE IDS in a directory named
+\texttt{chise-ids-*} in a short list of likely places, or use the value
+of the \texttt{--enable-chise-ids} command-line option if one is given. 
+This directory should simply be an unpacked CHISE IDS distribution tarball,
+or a checkout from the CHISE IDS Git repository.  It is not necessary to run
+the Makefile, which would require also having and installing other parts of
+the larger system.
+
+CHISE IDS distribution tarballs are available from
+\url{http://chise.zinbun.kyoto-u.ac.jp/dist/ids/}, and the Git repository
+URL is \url{http://git.chise.org/git/chise/ids.git}.  As of this writing,
+the latest distribution tarball was version 0.25, dated June 2010.  The Git
+version is more recent and may be preferable.  The directory created by
+checking out the Git version will probably not have a name recognized
+automatically by the build system, so it should be given on the
+\texttt{configure} command line with \texttt{--enable-chise-ids}.
+
+As of this writing, roughly 6\% of the entries in the CHISE IDS database
+include invalid extended IDS syntax---most often in the form of too many
+children for the operators used, or less often, too few.  Most but not all
+of the errors occur in the \texttt{IDS-HZK??.txt} files, which are no longer
+officially maintained.  It appears that the native search tools for the
+database generally work on the basis of pure substring searches, where the
+higher-level syntax errors that would be detected by the IDSgrep parser can
+go unnoticed.  The \texttt{chise2eids} program generates a
+\texttt{chise.errs} file during build, listing all the syntax errors it
+finds (11748 of them in the current Git version as of this writing); invalid
+entries are otherwise ignored and will not appear in the main output file
+\texttt{chise.eids}.  Although 6\% may sound like a lot of errors, the
+invalid entries are generally in sufficiently obscure character components
+that it should have little practical effect on the quality of dictionary
+lookups: at worst, some character components may end up not broken down into
+pieces as small as would otherwise be possible.
+
+CHISE IDS refers to individual characters in a more general way than just by
+single Unicode code point: sometimes it uses a variation sequence consisting
+of a kanji code point followed by a variation selector in the U+FE00 to
+U+FE0F or U+E0100 to U+E01EF ranges, and sometimes it uses a string that
+looks like an XML character entity reference, along the lines of
+``\texttt{\&NAME;}.'' Both of these map naturally to IDSgrep's concept of a
+multi-character head.  The two-code-point sequence U+840C U+E0101 is
+translated to the IDSgrep syntax ``\texttt{<\textbackslash%
+X840c\textbackslash X\{E0101\}>;},'' and the XML-like syntax
+``\texttt{\&FU-123;}'' is translated to ``\texttt{<FU-123>;}.'' CHISE IDS
+does not seem to refer to the same character in different ways (for
+instance, a code point with no variation selector somehow matching as a
+default to the same code point with a variation selector, which might be
+plausible under Unicode's definition of what variation selectors signify)
+and \texttt{chise2eids} does not attempt to accomodate anything like that.
+
+The CHISE IDS database is covered by the GNU GPL version 2 or later, which
+is basically compatible with the GNU GPL version 3 used by IDSgrep.  So
+distributions of IDSgrep can reasonably include a bundled copy of
+\texttt{chise.eids} for the benefit of users who don't want to download the
+separate package and generate their own.  Without taking a position on
+whether the \texttt{chise.eids} file constitutes ``object code'' for the
+purposes of the GNU GPL as opposed to being modified source code in itself,
+I am willing to provide a copy of the CHISE IDS checkout I used to generate
+my version of \texttt{chise.eids}, to anyone who contacts me about it at
+\url{mskala@ansuz.sooke.bc.ca}.  Going directly to the original distribution
+points at the URLs given above is probably a more convenient option for most
+users.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Interface to KanjiVG}
 
 The KanjiVG project~\cite{KanjiVG} maintains a database of kanji (Han
@@ -388,12 +562,12 @@ reasonably recent version of KanjiVG's compressed XML file is available to
 \texttt{configure}, then IDSgrep's build will create such a dictionary and
 \texttt{make install} will install it.
 
-KanjiVG describes characters primarily in terms of strokes, not radicals,
-and it attempts to follow the official stroke order and etymological
-radical breakdown.  That approach results in some peculiarities from the
-point of view of dictionary searching.  For instance, in the kanji
-\texttt{園}, the official stroke order is to write two strokes of the
-enclosing box, then the central glyph, then the bottom of the box. 
+KanjiVG describes characters primarily in terms of strokes, not multi-stroke
+components, and it attempts to follow the official stroke order and
+etymological component breakdown.  That approach results in some
+peculiarities from the point of view of dictionary searching.  For instance,
+in the kanji \texttt{園}, the official stroke order is to write two strokes
+of the enclosing box, then the central glyph, then the bottom of the box. 
 KanjiVG's XML file lists two ``elements'' identified with the kanji
 \texttt{囗}, one for the first two strokes and one for the final stroke,
 with additional attributes specifying that they are actually two parts of
@@ -436,7 +610,7 @@ structural searches on multi-character words.
 If another dictionary besides EDICT2 is available
 (subject to configuration by \texttt{--enable-edict-decomp}), then the
 build system will generate and install a
-dictionary file called \texttt{edict.eids}, which represents a database
+dictionary file called \texttt{edict.eids} which represents a database
 join of EDICT2 with the other dictionary.  With no other dictionary,
 the file can still be generated but will contain no character decomposition
 information.
@@ -537,48 +711,6 @@ that the Tsukurimashou build be one that supports the \texttt{make eids}
 target in the first place.  Packaged versions of Tsukurimashou from 0.6
 onward include EIDS support, and development versions of Tsukurimashou in
 the SVN repository have included EIDS support since early January 2012.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Unicode IDSes}
-
-Although \texttt{idsgrep} uses a more elaborate syntax, it is well to know
-about the Unicode Consortium's ``Ideographic Description Sequences''
-(IDSes), which are a subset of \texttt{idsgrep}'s.  These are documented
-more fully in the Unicode standard~\cite{Unicode:IDS}.
-
-\begin{itemize}
-
-\item A character from one of the Unified Han or CJK Radical ranges is a
-complete IDS and simply represents itself.  For instance, ``\texttt{大}'' is
-a complete IDS.
-
-\item The Ideographic Description Characer (IDC) code points U+2FF0, U+2FF1,
-and U+2FF4 through U+2FFB, whose graphic images look like
-\texttt{⿰⿱⿴⿵⿶⿷⿸⿹⿺⿻}, are prefix binary operators.
-One of these characters followed by two complete IDSes
-forms another complete IDS, representing a character formed by joining the
-two smaller characters in a way suggested by the name and graphical image
-of the IDC.  For instance, ``\texttt{⿰日月}'' describes the
-character \texttt{明}.  These structures may be nested; for instance,
-``\texttt{⿰言⿱五口}'' describes the character \texttt{語}.
-
-\item The IDC code points U+2FF2 and U+2FF3, which look like \texttt{⿲⿳},
-are prefix ternary operators. (Unicode uses the less-standard word
-``trinary'' to describe them.) One of them can be followed by three complete
-IDSes to form an IDS that describes a character made of three parts, much in
-the same manner as the binary operators.  For instance,
-``\texttt{⿱⿲糸言糸夂}'' describes the character \texttt{變}.
-
-\item An IDS may not be more than 16 code points long overall nor contain more
-than six consecutive non-operator characters.
-This rule appears to be intended to make things easier for systems that need
-to be able to jump into the middle of text and quickly find the starts and
-ends of IDSes.
-
-\item IDSes non-bindingly ``should'' be as short as possible.
-
-\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -924,13 +1056,23 @@ brackets they imply:  {\ttfamily (;) (?) .!. ./. .=. .*. .@. [\&] [,]
 Note that the sugary and syrupy implications of a character are only
 relevant when the character occurs where an opening bracket of some type
 would otherwise be required; inside a bracketed string, characters are taken
-literally unless they end the string.  Characters accessed through escape
-sequences are always syrupy outside a string and always literal inside a
-string; they never start or end bracketed strings nor have any special
-sugary meaning they would otherwise have.
+literally unless they end the string or make up escape sequences. 
+Characters created by escape sequences are always syrupy outside a
+string and always literal inside a string; they never start or end bracketed
+strings nor have any special sugary meaning they would otherwise have.
+
+Characters, for the purposes of EIDS parsing, are strictly single Unicode
+code points.
+Such things as combining accents and variation selectors are parsed as
+separate characters from the bases to which they may be applied.
+The sugary and syrupy parsing rules apply only to single characters.
+Thus, appropriate brackets are necessary whenever a sequence containing
+more than one code point is to be treated as a single head or functor.
 
 It is an intentional consequence of these rules that all syntactically valid
-Unicode IDSes are syntactically valid EIDSes, but the converse is not true.
+Unicode IDSes are syntactically valid EIDSes, but the converse is not true. 
+CHISE IDS extended IDSes can easily be converted to this syntax but in
+general are not valid IDSgrep EIDSes in themselves.
 
 Although it is technically not a parsing issue but rather a
 transformation applied to the tree after parsing, there is one more
