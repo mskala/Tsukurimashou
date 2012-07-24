@@ -210,6 +210,7 @@ AC_CHECK_HEADERS([libintl.h stdlib.h string.h wchar.h])
 #
 AC_CHECK_SIZEOF([int])
 AC_TYPE_SIZE_T
+TSU_C_ANON_UNION_STRUCT
 #
 ############################################################################
 #

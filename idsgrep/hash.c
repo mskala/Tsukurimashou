@@ -183,7 +183,7 @@ NODE *new_node(void) {
 
    if (free_nodes) {
       rval=free_nodes;
-      free_nodes=rval->child[0];
+      free_nodes=rval->nc_next;
    } else {
       rval=(NODE *)malloc(sizeof(NODE));
    }
@@ -220,7 +220,7 @@ void free_node(NODE *n) {
       if (tmpn->functor!=NULL)
 	delete_string(tmpn->functor);
 
-      tmpn->child[0]=free_nodes;
+      tmpn->nc_next=free_nodes;
       free_nodes=tmpn;
    }
 }

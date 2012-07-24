@@ -44,7 +44,18 @@ typedef struct _HASHED_STRING {
 
 typedef struct _NODE {
    HASHED_STRING *head,*functor;
-   struct _NODE *child[3],*match_parent;
+#ifdef ANON_UNION_STRUCT
+   union {
+      struct _NODE *child[3];
+      struct { struct _NODE *nc_next,*nc_needle,*nc_haystack; };
+   };
+#else
+   struct _NODE *child[3];
+#define nc_next child[0]
+#define nc_needle child[1]
+#define nc_haystack child[2]
+#endif
+   struct _NODE *match_parent;
    int refs,arity,complete;
    MATCH_RESULT match_result;
 } NODE;
