@@ -1,6 +1,9 @@
 #!/bin/sh
 
-( gcov -r *.c || gcov *.c ) > /dev/null 2> /dev/null
+for srcfile in *.c
+do
+  ( gcov -r $srcfile || gcov $srcfile ) > /dev/null 2> /dev/null
+done
 if perl -CS ./check-coverage *.gcov
 then
   exit 0

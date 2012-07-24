@@ -1,0 +1,124 @@
+#!/bin/sh
+
+cat <<EOF > as-in.$$
+(nullary one)
+(nullary two)
+,x(zero)
+.u.,x(one)
+.u..u.,x(two)
+.u..u..u.,x(three)
+.u..u..u..u.,x(four)
+,a,b,c,de
+,a,b,,cde
+,a,,bc,de
+,a,,b,cde
+,a,,,bcde
+,,ab,c,de
+,,ab,,cde
+,,a,bc,de
+,,,abc,de
+,,a,b,cde
+,,a,,bcde
+,,,ab,cde
+,,,a,bcde
+,,,,abcde
+{t}{t}abcde
+{t}a{t}bcde
+{t}ab{t}cde
+EOF
+
+./idsgrep '@(nullary one)' as-in.$$ > as-out.$$
+echo === >> as-out.$$
+
+./idsgrep '@.u.,x?' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+./idsgrep '@,a,b,c,de' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+./idsgrep '@,,,,abcde' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+./idsgrep '@,,??,??' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+./idsgrep ',?@,,cde' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+./idsgrep '@{t}???' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+./idsgrep '@{t}{t}abcde' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+./idsgrep '@{t}a{t}bcde' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+./idsgrep '@{t}ab{t}cde' as-in.$$ >> as-out.$$
+echo === >> as-out.$$
+
+if diff -c as-out.$$ - <<EOF
+(nullary one)
+===
+.u.,x(one)
+.u..u.,x(two)
+.u..u..u.,x(three)
+.u..u..u..u.,x(four)
+===
+,a,b,c,de
+,a,b,,cde
+,a,,bc,de
+,a,,b,cde
+,a,,,bcde
+,,ab,c,de
+,,ab,,cde
+,,a,bc,de
+,,,abc,de
+,,a,b,cde
+,,a,,bcde
+,,,ab,cde
+,,,a,bcde
+,,,,abcde
+===
+,a,b,c,de
+,a,b,,cde
+,a,,bc,de
+,a,,b,cde
+,a,,,bcde
+,,ab,c,de
+,,ab,,cde
+,,a,bc,de
+,,,abc,de
+,,a,b,cde
+,,a,,bcde
+,,,ab,cde
+,,,a,bcde
+,,,,abcde
+===
+===
+,,ab,c,de
+,,ab,,cde
+===
+===
+{t}{t}abcde
+{t}a{t}bcde
+{t}ab{t}cde
+===
+{t}{t}abcde
+{t}a{t}bcde
+{t}ab{t}cde
+===
+{t}{t}abcde
+{t}a{t}bcde
+{t}ab{t}cde
+===
+EOF
+then
+  rm -f as-in.$$
+  rm -f as-out.$$
+  exit 0
+else
+  rm -f as-in.$$
+  rm -f as-out.$$
+  exit 1
+fi

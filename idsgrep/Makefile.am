@@ -117,9 +117,9 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 	  tsukurimashou.eids
 
 GCOV_TESTS = \
-  test/andor test/anynot test/basicmatch test/backslash test/bighash \
-  test/demorgan test/equal test/kvg-grone test/messages test/spacing \
-  test/tsu-grone test/unord test/utf8
+  test/andor test/anynot test/assoc test/basicmatch test/backslash \
+  test/bighash test/demorgan test/equal test/kvg-grone test/messages \
+  test/spacing test/tsu-grone test/unord test/utf8
 
 define GCDEP_RECIPE
 $1.log: test/rmgcda.log

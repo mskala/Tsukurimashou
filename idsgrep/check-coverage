@@ -87,6 +87,7 @@ foreach $fn (@ARGV) {
 if ($totshouldexec==0) {
   $totgoodexecp=1;
   $totshouldexecp=1;
+  $snherror=1;
 } else {
   $totgoodexecp=$totgoodexec;
   $totshouldexecp=$totshouldexec;
