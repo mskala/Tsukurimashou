@@ -1323,15 +1323,79 @@ The verbose ASCII name for ``\texttt{.@.}'' is ``\texttt{.assoc.}.''
 
 \subsection{Regular expression matching}
 
-It is planned that some future version (likely version 0.3) will support
-special behaviour for $\textit{match}'(\texttt{./.}x,y)$ to call a regular
-expression library and do string matching within heads or functors, but
-the detailed semantics of how that will work are not yet decided.  The
-mnemonic is that slash is Perl's regular-expression match operator; the
-motivating application is to further development of IDSgrep's own
-dictionary-generating programs, which tend to create long nullary functors
-full of debugging information when they encounter constructs they don't
-understand in the other-format dictionaries they read.
+If $x$ and $y$ both have heads, then $\textit{match}'(\texttt{./.}x,y)$
+is true if and only if the head of $x$, considered as a regular
+expression, matches the head of $y$. If $x$ and $y$ do not both have
+heads, then $\textit{match}'(\texttt{./.}x,y)$ is true if and only if
+$x$ and $y$ have the same arity, the functor of $x$ considered as a
+regular expression matches the functor of $y$, and
+$\textit{match}(x_i,y_i)$ is true for each of their corresponding
+children.  This operation is basically the same as the default
+matching operation, except that regular expression matching is used
+instead of strict equality for testing the heads and functors.
+Mnemonic: slash means regular expression matching in Perl.
+Verbose ASCII name: ``\texttt{.regex.}.''
+
+Regular expression matching for the purposes of this operator is as
+defined by the Perl Compatible Regular Expressions library, in
+whichever version was linked with the \texttt{idsgrep} utility.
+Strings are passed into PCRE as UTF-8, and are guaranteed (because the
+EIDS parser decodes and re-encodes \texttt{idsgrep}'s input for
+internal use) to be valid UTF-8 when PCRE sees them regardless of user
+input; as such, PCRE is given the option flags that make it read UTF-8
+without doing its own validity check.  Use of the PCRE
+``\texttt{\textbackslash C}'' syntax for matching individual octets
+within UTF-8 is strongly not recommended. All other PCRE options are
+left to the defaults chosen when PCRE was compiled, even if those are
+silly.  The character tables are PCRE's ``C locale'' defaults, not
+generated at runtime from the current locale. Things like case
+sensitivity can be controlled within the pattern using PCRE's syntax
+for doing so.  In the event that \texttt{idsgrep} was compiled without
+the PCRE library (which is not recommended, but is possible), or that
+PCRE was compiled without UTF-8 support, then an attempt to evaluate
+the slash operator will trigger a fatal error.
+
+A matching pattern given to PCRE will have already passed through the
+EIDS parser, which removes one level of backslash escaping.  The
+pattern may also have been passed as a command-line argument to
+\texttt{idsgrep} by a shell, which may have undone another level of
+backslash escaping.  Thus, it may be necessary to escape characters as
+many as three times in order to match them literally with the slash
+operator.  Each of these levels may differ from the others in terms of
+the escape sequences it supports and their exact meanings.  In many
+cases it doesn't really matter which level of processing
+evaluates the escaping.  For instance, ``\texttt{idsgrep
+"/(\textbackslash t)"},'' (shell
+evaluates ``\texttt{\textbackslash t},'' EIDS and PCRE see a literal tab);
+``\texttt{idsgrep "/(\textbackslash\textbackslash
+t)"},'' (shell removes one backslash, EIDS evaluates
+``\texttt{\textbackslash t},'' PCRE sees a literal tab); and ``\texttt{idsgrep
+"/(\textbackslash\textbackslash\textbackslash\textbackslash
+t)"},'' (shell removes two backslashes, EIDS removes
+one, PCRE evaluates ``\texttt{\textbackslash t}'') will all match the same
+things.  If it matters, however, then caution is necessary.
+
+PCRE because of the limitations of its API effectively forbids zero
+bytes (U+0000) in its matching patterns, whereas EIDS allows them to
+exist within strings in general.  The complexities of PCRE pattern
+syntax make it impractical for \texttt{idsgrep} to automatically
+escape zero bytes before passing the strings to PCRE; there are too
+many different cases possible for the context in which a zero byte
+might occur.  Note that Python, which like EIDS allows strings to
+contain zero bytes and so faces the same issue, briefly attempted to
+work around this PCRE API limitation by auto-escaping, and they
+eventually gave it up as too complicated and confusing.  As a result
+of PCRE's API, if the string given as a matching pattern contains a
+literal zero byte, then the regular expression to be matched will
+consist of the prefix of the string up to but not including the first
+zero byte; anything after that will be ignored. Zero bytes are,
+nonetheless, permitted in the matching subject, and PCRE can search
+for them, provided the pattern does not actually contain literal zero
+bytes. For instance, the PCRE syntax ``\texttt{\textbackslash000}''
+(or just ``\texttt{\textbackslash0}'' if you can be sure the next
+character will not be an octal digit) will match a zero byte.  As
+discussed above, additional escaping might be needed to ensure that
+PCRE, and not EIDS nor the shell, interprets the backslash escape.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

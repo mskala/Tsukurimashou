@@ -21,6 +21,10 @@
 
 #include "config.h"
 
+#ifdef HAVE_PCRE
+#include <pcre.h>
+#endif
+
 /**********************************************************************/
 
 typedef struct _NODE *(*MATCH_FN)(struct _NODE *);
@@ -40,6 +44,10 @@ typedef struct _HASHED_STRING {
    size_t length;
    int refs,arity;
    MATCH_FN match_fn;
+#ifdef HAVE_PCRE
+   pcre *pcre_compiled;
+   pcre_extra *pcre_studied;
+#endif
 } HASHED_STRING;
 
 typedef struct _NODE {
@@ -98,7 +106,6 @@ NODE *anything_match_fn(NODE *);
 NODE *anywhere_match_fn(NODE *);
 NODE *equal_match_fn(NODE *);
 NODE *not_match_fn(NODE *);
-NODE *regex_match_fn(NODE *);
 NODE *unord_match_fn(NODE *);
 
 int tree_match(NODE *,NODE *);
@@ -114,3 +121,9 @@ extern int echoing_whitespace;
 
 size_t parse(size_t,char *);
 void register_syntax(void);
+
+/**********************************************************************/
+
+/* regex.c */
+
+NODE *regex_match_fn(NODE *);

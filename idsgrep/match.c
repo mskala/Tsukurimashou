@@ -158,8 +158,10 @@ NODE *equal_match_fn(NODE *ms) {
    NODE *rval,*tmpn;
    int i;
    
-   if ((ms->nc_needle->child[0]->head!=NULL) && (ms->nc_haystack->head!=NULL)) {
-      ms->match_result=(ms->nc_needle->child[0]->head==ms->nc_haystack->head)?
+   if ((ms->nc_needle->child[0]->head!=NULL) &&
+       (ms->nc_haystack->head!=NULL)) {
+      ms->match_result=
+	(ms->nc_needle->child[0]->head==ms->nc_haystack->head)?
 	MR_TRUE:MR_FALSE;
       return ms;
    }
@@ -359,14 +361,6 @@ NODE *unord_match_fn(NODE *ms) {
    }
 
    return rval;
-}
-
-/**********************************************************************/
-
-NODE *regex_match_fn(NODE *ms) { /* SNH */
-   /* FIXME */
-   ms->match_result=MR_TRUE; /* SNH */
-   return ms; /* SNH */
 }
 
 /**********************************************************************/

@@ -53,7 +53,7 @@ HASHED_STRING *alloc_string(size_t len) {
    HASHED_STRING *rval;
    char *save_data;
 
-   while ((((size_t)1)<<i)<len) i++;
+   while ((((size_t)1)<<i)<=len) i++;
    if (free_strings[i]==NULL) {
       rval=(HASHED_STRING *)malloc(sizeof(HASHED_STRING));
       memset(rval,0,sizeof(HASHED_STRING));
@@ -68,14 +68,24 @@ HASHED_STRING *alloc_string(size_t len) {
    rval->length=len;
    rval->arity=-2;
    rval->match_fn=default_match_fn;
+   rval->pcre_compiled=NULL;
+   rval->pcre_studied=NULL;
    return rval;
 }
 
 void free_string(HASHED_STRING *s) {
    int i=1;
    
-   while ((((size_t)1)<<i)<s->length) i++;
+   while ((((size_t)1)<<i)<=s->length) i++;
    s->next=free_strings[i];
+   if (s->pcre_compiled) {
+      free(s->pcre_compiled);
+      s->pcre_compiled=NULL;
+   }
+   if (s->pcre_studied) {
+      free(s->pcre_studied);
+      s->pcre_studied=NULL;
+   }
    free_strings[i]=s;
 }
 
@@ -144,6 +154,7 @@ HASHED_STRING *new_string(size_t len,char *s) {
       /* actually add the new entry */
       tmps=alloc_string(len);
       memcpy(tmps->data,s,len);
+      tmps->data[len]='\0';
       tmps->length=len;
       tmps->refs=1;
       tmps->next=hash_table[h%hash_table_size];

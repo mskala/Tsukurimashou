@@ -33,5 +33,5 @@ AC_CACHE_CHECK(
    [tsu_cv_c_anon_union_struct=yes],[tsu_cv_c_anon_union_struct=no])])
 AS_IF([test "x$tsu_cv_c_anon_union_struct" = xyes],
       [AC_DEFINE([ANON_UNION_STRUCT],[1],
-                 [if anonymous unions and structs can be members])])
+         [Define to 1 if anonymous unions and structs can be members])])
 ])

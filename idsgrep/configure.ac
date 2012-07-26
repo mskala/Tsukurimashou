@@ -196,7 +196,15 @@ AC_PATH_PROG([XELATEX],[xelatex])
 # Checks for libraries.
 #
 AX_PERL_MODULE_VERSION([XML::Parser 2.36],[],
-  [AC_MSG_ERROR([Required Perl modules are missing])])
+  [AC_MSG_WARN([XML::Parser, needed for KanjiVG dictionary, is missing])])
+PKG_CHECK_MODULES([PCRE],[libpcre],[
+  have_pcre=yes
+  AC_DEFINE([HAVE_PCRE],[1],
+    [Define to 1 if Perl Compatible Regular Expressions library is available])
+  ],[
+  have_pcre=no
+  AC_MSG_WARN([PCRE is missing, regular expression search won't be built])])
+AM_CONDITIONAL([COND_PCRE],[test '!' "$have_pcre" = no])
 #
 ############################################################################
 #
