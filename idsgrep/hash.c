@@ -79,12 +79,12 @@ void free_string(HASHED_STRING *s) {
    while ((((size_t)1)<<i)<=s->length) i++;
    s->next=free_strings[i];
    if (s->pcre_compiled) {
-      free(s->pcre_compiled);
-      s->pcre_compiled=NULL;
+      free(s->pcre_compiled); /* SNH */
+      s->pcre_compiled=NULL; /* SNH */
    }
    if (s->pcre_studied) {
-      free(s->pcre_studied);
-      s->pcre_studied=NULL;
+      free(s->pcre_studied); /* SNH */
+      s->pcre_studied=NULL; /* SNH */
    }
    free_strings[i]=s;
 }

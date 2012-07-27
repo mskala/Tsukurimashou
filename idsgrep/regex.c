@@ -49,8 +49,8 @@ NODE *regex_match_fn(NODE *ms) {
 	   pcre_study(ms->nc_needle->child[0]->head->pcre_compiled,
 		      0,&errptr);
 	 if (errptr) {
-	    printf("PCRE error: %s.\n",errptr);
-	    exit(1);
+	    printf("PCRE error: %s.\n",errptr); /* SNH */
+	    exit(1); /* SNH */
 	 }
       }
       ms->match_result=
@@ -81,19 +81,19 @@ NODE *regex_match_fn(NODE *ms) {
 	pcre_study(ms->nc_needle->child[0]->functor->pcre_compiled,
 		   0,&errptr);
       if (errptr) {
-	 printf("PCRE error: %s.\n",errptr);
-	 exit(1);
-      }
-      if (pcre_exec(ms->nc_needle->child[0]->functor->pcre_compiled,
-		    ms->nc_needle->child[0]->functor->pcre_studied,
-		    ms->nc_haystack->head->data,
-		    ms->nc_haystack->head->length,
-		    0,PCRE_NO_UTF8_CHECK,NULL,0)<0) {
-	 ms->match_result=MR_FALSE;
-	 return ms;
+	 printf("PCRE error: %s.\n",errptr); /* SNH */
+	 exit(1); /* SNH */
       }
    }
-
+   if (pcre_exec(ms->nc_needle->child[0]->functor->pcre_compiled,
+		 ms->nc_needle->child[0]->functor->pcre_studied,
+		 ms->nc_haystack->functor->data,
+		 ms->nc_haystack->functor->length,
+		 0,PCRE_NO_UTF8_CHECK,NULL,0)<0) {
+      ms->match_result=MR_FALSE;
+      return ms;
+   }
+   
    if (ms->nc_needle->child[0]->arity==0) {
       ms->match_result=MR_TRUE;
       return ms;

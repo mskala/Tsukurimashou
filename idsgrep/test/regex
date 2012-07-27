@@ -1,0 +1,79 @@
+#!/bin/sh
+
+cat <<EOF > re-in.$$
+<banana>;
+<banana>;
+<bananana>[foo]xy
+<banananana>;
+(abracadabra)
+(abracadababaradabaraba)
+.i.;
+.iv.(4)
+.xiii.,13
+[mississippi]xy
+[mississippippissippi]xz
+.a.{auioau}xyz
+.c..d.{uiaiaoioauaaieu}abc
+EOF
+
+./idsgrep '/)' re-in.$$ > re-out.$$
+echo === >> re-out.$$
+
+./idsgrep '/(x\))' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
+./idsgrep '/<ana>;' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
+./idsgrep '/<bananana>[foo]xy' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
+./idsgrep '/<banana$>(barad)' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
+./idsgrep '/(.)' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
+./idsgrep '/[is+issi]?y' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
+./idsgrep '.../{i.*i}???' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
+if diff -c re-out.$$ - <<EOF
+PCRE error: unmatched parentheses at 0.
+===
+PCRE error: unmatched parentheses at 1.
+===
+<banana>;
+<banana>;
+<bananana>[foo]xy
+<banananana>;
+===
+<bananana>[foo]xy
+<banananana>;
+===
+<banana>;
+<banana>;
+(abracadababaradabaraba)
+===
+<banana>;
+<banana>;
+<banananana>;
+(abracadabra)
+(abracadababaradabaraba)
+===
+[mississippi]xy
+===
+.c..d.{uiaiaoioauaaieu}abc
+===
+EOF
+then
+  rm -f re-in.$$
+  rm -f re-out.$$
+  exit 0
+else
+  rm -f re-in.$$
+  rm -f re-out.$$
+  exit 1
+fi
