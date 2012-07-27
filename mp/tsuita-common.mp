@@ -224,6 +224,84 @@ vardef latin.lowj =
   expand_pbox;
 enddef;
 
+vardef latin.lowv =
+  push_pbox_toexpand("latin.lowv");
+  0.4[x1,x4]=x3=480;
+  x1=x2;
+  x5=0.8[x1,x4];
+
+  y1=y5=latin_wide_xheight_v;
+  y3=latin_wide_low_h;
+  y2=0.333[y3,y1];
+  y4=0.45[y3,y5];
+
+  (x4-x1)=(y1-y3)*0.65;
+
+  if do_alternation:
+    push_stroke(z1..z2..{dir -30}z3,(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,0,11);
+
+    push_stroke((z3+0.5*alternate_adjust*right){dir 30}..z4..z5,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boalternate(0);
+  else:
+    push_stroke(z1..z2..{dir -30}z3{dir 30}..z4..z5,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_botip(0,2,0);
+    set_boserif(0,0,11);
+  fi;
+  expand_pbox;
+enddef;
+
+vardef latin.loww =
+  push_pbox_toexpand("latin.loww");
+  0.4[x1,x4]=x3;
+  x1=x2;
+  x5=x4;
+  0.4[x5,x8]=x7;
+  x5=x6;
+  x9=0.8[x5,x8];
+  0.5[x1,x8]=500;
+
+  y1=y5=y9=latin_wide_xheight_v;
+  y3=y7=latin_wide_low_h;
+  y2=y6=0.333[y3,y1];
+  y4=y8=0.45[y3,y5];
+
+  (x4-x1)=(y1-y3)*0.55;
+  (x8-x5)=(y1-y3)*0.60;
+
+  if do_alternation:
+    push_stroke(z1..z2..{dir -30}z3,(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,0,11);
+
+    push_stroke((z3+0.5*alternate_adjust*right){dir 30}..z4..z5,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boalternate(0);
+
+    push_stroke((z5..z6..{dir -30}z7) shifted (0.5*alternate_adjust*left),
+      (1.6,1.6)--(1.6,1.6));
+    replace_strokep(0)(subpath (xpart
+      (oldp intersectiontimes get_strokep(-1)),infinity) of oldp);
+    set_boalternate(0);
+
+    push_stroke(z7{dir 30}..z8..z9,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boalternate(0);
+  else:
+    push_stroke(z1..z2..{dir -30}z3{dir 30}..z4..z5,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_botip(0,2,0);
+    set_boserif(0,0,11);
+
+    push_stroke(z5..z6..{dir -30}z7{dir 30}..z8..z9,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    replace_strokep(0)(subpath (xpart
+      (oldp intersectiontimes get_strokep(-1)),infinity) of oldp);
+  fi;
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 def tsu_render_segment(expr i,p,q) =
