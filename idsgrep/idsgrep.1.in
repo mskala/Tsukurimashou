@@ -404,7 +404,9 @@ and if
 .I x
 and the input both have heads, then it matches if and only if those heads
 are identical.
-Otherwise,
+If
+.I x
+and the input do not both have heads, then
 .RI .=. "x"
 matches if and only if
 .I x
@@ -415,6 +417,46 @@ special matching semantics of
 .IR x 's
 functor, should it happen to be one of the special values mentioned in these
 rules.
+.IP \(bu 4
+If the pattern is
+.RI .@. "x" ,
+its root will be matched in an associative way.
+That means any children of
+.I x
+whose functor and arity match the root will be replaced in the sequence of
+children by their own children, recursively as long as the functor and
+arity continue to match.
+This process could easily result in the root having more than three
+children.
+The same thing is done to the root of the input pattern.
+Finally, if the resulting functor, expanded arity, and all corresponding
+children match, then the pattern is considered to match.
+The effect is to ignore the parenthesization of a binary (or ternary, but
+that makes less sence) operator that has an associative law: +a+bc
+and ++abc will be treated the same.
+.IP \(bu 4
+If the pattern is
+.RI ./. "x"
+and if
+.I x
+and the input both have heads, then it matches if and only if the head of
+.IR x ,
+considered as a regular expression, matches the head of the input.
+If
+.I x
+and the input do not both have heads, then it matches if and only if
+.I x
+and the input have identical arity, all their corresponding children match
+recursively, and the functor of
+.IR x ,
+considered as a regular expression, matches the functor of the input.
+The effect of this operation is to do the usual matching on trees except
+with equality replaced (at the root) by a regular expression test.
+Regular expression matching is performed using the PCRE library.
+Patterns given to PCRE have already passed through
+.BR idsgrep 's
+parser and so an additional level of escaping may be necessary if
+backslash escapes are desired in a pattern.
 .IP \(bu 4
 Otherwise, the pattern matches the input if and only if its functor and
 arity are the same as the input's and all the children of the pattern match
@@ -508,6 +550,13 @@ Non-ASCII characters are essential to documenting this software, and
 .B man
 can't handle them portably, so this document is less useful than it should
 be.
+.PP
+PCRE, due to the use of C-strings in its API, cannot accept literal zero
+bytes (<U+0000>) in matching patterns, in even though EIDS syntax would
+otherwise allow them.
+Zero bytes are allowed in matching subjects, and may be matched
+by writing them in the pattern with PCRE's escape syntax instead of
+literally.
 .
 .SH AUTHOR
 Matthew Skala <mskala@ansuz.sooke.bc.ca>
@@ -544,4 +593,5 @@ use with IDSgrep, but happens to use the same copyright and GPL 3 licensing
 terms as IDSgrep anyway.
 .
 .SH "SEE ALSO"
-.BR grep (1)
+.BR grep (1),
+.BR pcrepattern (3)
