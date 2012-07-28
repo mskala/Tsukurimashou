@@ -88,6 +88,15 @@ NODE *assoc_match_fn(NODE *);
 
 /**********************************************************************/
 
+/* cook.c */
+
+extern int cook_output;
+
+void set_output_recipe(char *);
+void write_cooked_tree(NODE *);
+
+/**********************************************************************/
+
 /* hash.c */
 
 HASHED_STRING *new_string(size_t,char *);
@@ -113,6 +122,8 @@ int tree_match(NODE *,NODE *);
 /**********************************************************************/
 
 /* parse.c */
+
+extern HASHED_STRING *hashed_bracket[15];
 
 extern NODE **parse_stack;
 extern int stack_ptr;

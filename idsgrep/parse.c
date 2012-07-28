@@ -27,6 +27,8 @@
 
 /**********************************************************************/
 
+HASHED_STRING *hashed_bracket[15];
+
 NODE **parse_stack=NULL;
 int stack_size=0,stack_ptr=0;
 char *partstr=NULL;
@@ -403,7 +405,9 @@ size_t parse(size_t len,char *inp) {
 	    partstr_len=0;
 	    
 	    /* replace with canonical if any */
-	    while (newstr->canonical!=NULL) {
+	    if ((newstr->canonical!=NULL) &&
+		(newstr->data[0]>='a') &&
+		(newstr->data[0]<='z')) {
 	       tmps=newstr->canonical;
 	       delete_string(newstr);
 	       newstr=tmps;
@@ -502,7 +506,7 @@ size_t parse(size_t len,char *inp) {
 
 /**********************************************************************/
 
-void register_bracket_pair(char *opb,char *clb,int arity) {
+void register_brackets(char *opb,char *clb,int arity,int idx) {
    HASHED_STRING *oph,*clh;
    
    oph=new_string(strlen(opb),opb);
@@ -513,6 +517,7 @@ void register_bracket_pair(char *opb,char *clb,int arity) {
    oph->refs++;
    clh->mate=oph;
    if (clh!=oph) clh->refs++;
+   hashed_bracket[idx]=oph;
 }
 
 void register_special_functor(char *fctr,int arity,MATCH_FN mf) {
@@ -543,30 +548,31 @@ void register_alias(char *fctr,char *canon) {
    hs->arity=cs->arity;
    hs->match_fn=cs->match_fn;
    hs->canonical=cs;
+   cs->canonical=hs;
 }
 
 /**********************************************************************/
 
 void register_syntax(void) {
-   register_bracket_pair("<",">",-1);
-   register_bracket_pair("\xE3\x80\x90","\xE3\x80\x91",-1); /* b lenticular */
-   register_bracket_pair("\xE3\x80\x96","\xE3\x80\x97",-1); /* w lenticular */
+   register_brackets("<",">",-1,0);
+   register_brackets("\xE3\x80\x90","\xE3\x80\x91",-1,1); /* b lenticular */
+   register_brackets("\xE3\x80\x96","\xE3\x80\x97",-1,2); /* w lenticular */
 
-   register_bracket_pair("(",")",0);
-   register_bracket_pair("\xEF\xBC\x88","\xEF\xBC\x89",0); /* wide paren */
-   register_bracket_pair("\xEF\xBD\x9F","\xEF\xBD\xA0",0); /* dblwide paren */
+   register_brackets("(",")",0,3);
+   register_brackets("\xEF\xBC\x88","\xEF\xBC\x89",0,4);  /* wide paren */
+   register_brackets("\xEF\xBD\x9F","\xEF\xBD\xA0",0,5);  /* dblwide paren */
 
-   register_bracket_pair(".",".",1);
-   register_bracket_pair(":",":",1);
-   register_bracket_pair("\xE3\x83\xBB","\xE3\x83\xBB",1); /* centre dot */
+   register_brackets(".",".",1,6);
+   register_brackets(":",":",1,7);
+   register_brackets("\xE3\x83\xBB","\xE3\x83\xBB",1,8);  /* centre dot */
 
-   register_bracket_pair("[","]",2);
-   register_bracket_pair("\xEF\xBC\xBB","\xEF\xBC\xBD",2); /* wide sqb */
-   register_bracket_pair("\xE3\x80\x9A","\xE3\x80\x9B",2); /* dblwide sqb */
+   register_brackets("[","]",2,9);
+   register_brackets("\xEF\xBC\xBB","\xEF\xBC\xBD",2,10); /* wide sqb */
+   register_brackets("\xE3\x80\x9A","\xE3\x80\x9B",2,11); /* dblwide sqb */
 
-   register_bracket_pair("{","}",3);
-   register_bracket_pair("\xE3\x80\x94","\xE3\x80\x95",3); /* b tortoise */
-   register_bracket_pair("\xE3\x80\x98","\xE3\x80\x99",3); /* w tortoise */
+   register_brackets("{","}",3,12);
+   register_brackets("\xE3\x80\x94","\xE3\x80\x95",3,13); /* b tortoise */
+   register_brackets("\xE3\x80\x98","\xE3\x80\x99",3,14); /* w tortoise */
    
    register_special_functor(";",0,default_match_fn);
 

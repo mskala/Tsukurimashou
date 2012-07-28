@@ -68,7 +68,7 @@ EXTRA_DIST = PKGBUILD.in gnugetopt.h idsgrep.tex idsgrep.bib
 
 AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 idsgrep_SOURCES = \
-  assoc.c hash.c idsgrep.c idsgrep.h match.c parse.c regex.c
+  assoc.c cook.c hash.c idsgrep.c idsgrep.h match.c parse.c regex.c
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS)
 

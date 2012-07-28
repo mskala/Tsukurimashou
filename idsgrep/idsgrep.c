@@ -90,9 +90,12 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 	       for (i=0;((unsigned char)input_buffer[i])<=0x20;i++);
 	       if (fn_flag>=0)
 		 printf(":%s:",fn+fn_flag);
-	       fwrite(input_buffer+i,1,parse_ptr-i,stdout);
-	       echoing_whitespace=1;
-	       
+	       if (cook_output)
+		 write_cooked_tree(to_match);
+	       else {
+		  fwrite(input_buffer+i,1,parse_ptr-i,stdout);
+		  echoing_whitespace=1;
+	       }
 	    }
 	    free_node(to_match);
 	    if (parse_ptr<inbuf_used)
@@ -116,6 +119,7 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 static struct option long_opts[] = {
    {"dictionary",optional_argument,NULL,'d'},
    {"help",no_argument,NULL,'h'},
+   {"output-format",required_argument,NULL,'o'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
 };
@@ -142,7 +146,7 @@ int main(int argc,char **argv) {
    register_syntax();
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"Vd::h",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"Vd::ho:",long_opts,NULL))!=-1) {
       switch (c) {
 
        case 'V':
@@ -158,6 +162,10 @@ int main(int argc,char **argv) {
 	 
        case 'h':
 	 show_help=1;
+	 break;
+	 
+       case 'o':
+	 set_output_recipe(optarg);
 	 break;
 	 
        default:
@@ -179,7 +187,8 @@ int main(int argc,char **argv) {
 	  "Options:\n"
 	  "  -V, --version             display version and license\n"
 	  "  -d, --dictionary=NAME     search standard dictionary\n"
-	  "  -h, --help                display this help");
+	  "  -h, --help                display this help\n"
+	  "  -o, --output-format=FMT   set output processing");
    
    if (show_version || show_help)
      exit(0);
@@ -209,7 +218,7 @@ int main(int argc,char **argv) {
       sprintf(dictglob,"%s/%s*.eids",dictdir,dictname);
       if (glob(dictglob,0,NULL,&globres)==0) {
 	 num_files+=globres.gl_pathc;
-	 for(c=0;c<globres.gl_pathc;c++)
+	 for (c=0;c<globres.gl_pathc;c++)
 	   process_file(match_pattern,globres.gl_pathv[c],
 			num_files>1?strlen(dictdir)+1:-1);
 	 globfree(&globres);
