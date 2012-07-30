@@ -36,13 +36,43 @@ int cook_output=0;
 
 #define NUM_OUTPUT_SETTINGS 6
 
-static char output_recipe[6]="111111";
+static char output_recipe[NUM_OUTPUT_SETTINGS]="111111";
+
+#define NUM_PRESET_RECIPES 1
+
+static struct {char *name,*recipe} preset_recipe[NUM_PRESET_RECIPES]={
+   {"",""},
+};
 
 /**********************************************************************/
 
 void set_output_recipe(char *r) {
-   /* FIXME */
+   int i;
+
+   if (strcmp(r,"raw")==0) {
+      cook_output=0;
+      return;
+   }
+   
    cook_output=1;
+   
+   for (i=0;i<NUM_PRESET_RECIPES;i++)
+     if (strcmp(r,preset_recipe[i].name)==0)
+       r=preset_recipe[i].recipe;
+   
+   for (i=0;i<NUM_OUTPUT_SETTINGS;i++) {
+      if ((r[i]>='0') && (r[i]<='9'))
+	output_recipe[i]=r[i];
+      if (r[i]=='\0')
+	break;
+   }
+}
+
+/**********************************************************************/
+
+void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br) {
+   /* FIXME */
+   printf("%s%s%s",br->data,hs->data,br->mate->data);
 }
 
 /**********************************************************************/
@@ -50,35 +80,39 @@ void set_output_recipe(char *r) {
 void write_cooked_tree(NODE *ms) {
    NODE *tail;
    int i;
+   
+   ms->complete=0;
 
    while (ms) {
       tail=ms->match_parent;
       
       for (i=ms->arity-1;i>=0;i--) {
 	 ms->child[i]->match_parent=tail;
+	 ms->child[i]->complete=ms->complete+1;
 	 tail=ms->child[i];
       }
       
-      if (ms->head)
-	printf("<%s>",ms->head->data);
-      switch (ms->arity) {
-       case 3:
-	 printf("{%s}",ms->functor->data);
-	 break;
-
-       case 2:
-	 printf("[%s]",ms->functor->data);
-	 break;
-       
-       case 1:
-	 printf(".%s.",ms->functor->data);
-	 break;
-       
-       case 0:
-       default:
-	 printf("(%s)",ms->functor->data);
-	 break;
+      if (ms->head) {
+	 if (ms->complete==0) {
+	    if (output_recipe[OS_TOP_HEAD_BRACKET_TYPE]<'2')
+	      write_bracketed_string(ms->head,hashed_bracket
+				     [output_recipe
+				      [OS_TOP_HEAD_BRACKET_TYPE]-'0']);
+	    else
+	      write_bracketed_string(ms->head,hashed_bracket[2]);
+	 } else {
+	    if (output_recipe[OS_INNER_HEAD_BRACKET_TYPE]<'2')
+	      write_bracketed_string(ms->head,hashed_bracket
+				     [output_recipe
+				      [OS_INNER_HEAD_BRACKET_TYPE]-'0']);
+	    else
+	      write_bracketed_string(ms->head,hashed_bracket[2]);
+	 }
       }
+      
+      i=output_recipe[OS_NULLARY_BRACKET_TYPE+ms->arity]-'0';
+      if (i>2) i=2;
+      write_bracketed_string(ms->functor,hashed_bracket[3*(ms->arity+1)+i]);
       
       ms->match_parent=NULL;
       ms=tail;

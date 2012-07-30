@@ -1,0 +1,216 @@
+#!/usr/bin/perl
+
+use utf8;
+
+$update_time=`date`;
+
+open(REL,'releases.rss');
+$release_news='';
+while (<REL>) {
+  $date=$1 if /<pubDate>.* (\d+ [A-Z][a-z][a-z] 20\d\d) /;
+  $link=$1 if m!<link>(.*?)</link>!;
+  $heading=$2 if m!<title>(\([A-Z]\)\s+)?(.*?)</title>!;
+  if (m!</item>!) {
+    $release_news.=<<EOF;
+<a href="$link" class="newsHeading">$heading</a>
+<p class="newsDate">$date</p>
+EOF
+  }
+}
+close(REL);
+
+open(REL,'release-dump.txt');
+while (<REL>) {
+  $demourl=$1 if m!(http://sourceforge\S+demo.pdf/)!;
+  $kcurl=$1 if m!(http://sourceforge\S+kanjichart.pdf/)!;
+}
+close(REL);
+
+open(KC,'../doc/kanjichart.tex');
+$kcstat_en="<table>\n";
+$kcstat_jp="<table>\n";
+while (<KC>) {
+  $flag=1 if /Mysterious/;
+  if (/^\\section\*\{(.*)　(.*)　(\d+)\/(\d+)\}$/) {
+    if ($flag) {
+      $otherkanji+=$3;
+    } else {
+      $kcstat_en.="  <tr><td>$2</td><td>$3&nbsp;/&nbsp;$4</td></tr>\n";
+      $kcstat_jp.="  <tr><td>$1</td><td>$3&nbsp;/&nbsp;$4</td></tr>\n";
+    }
+  }
+}
+$kcstat_en.="<tr><td>Other</td><td>$otherkanji</td></tr>\n</table>\n";
+$kcstat_jp.="<tr><td>外の漢字</td><td>$otherkanji</td></tr>\n</table>\n";
+close(KC);
+
+open(EN,'>ul/index.html.en');
+
+print EN <<EOF;
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-CA">
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="author" content="mskala@ansuz.sooke.bc.ca" />
+
+    <link rel="stylesheet" type="text/css" href="./prosimii-screen.css" media="screen, tv, projection" title="Default" />
+    <link rel="stylesheet alternative" type="text/css" href="./prosimii-print.css" media="screen" title="Print Preview" />
+    <link rel="stylesheet" type="text/css" href="./prosimii-print.css" media="print" />
+
+    <title>Tsukurimashou Font Family and IDSgrep</title>
+  </head>
+
+  <body>
+    <!-- For non-visual user agents: -->
+      <div id="top"><a href="#main-copy" class="doNotDisplay doNotPrint">Skip to main content.</a></div>
+
+    <!-- ##### Header ##### -->
+
+    <div id="header">
+      <div class="superHeader">
+        <a href="http://sourceforge.jp/" title="Hosted by SourceForge.JP">SourceForge.JP</a> |
+        <a href="./index.html.jp" title="日本語のページ"><img src="flag-jp.png" />&nbsp;日本語のページ</a>
+      </div>
+
+      <div class="midHeader">
+        <h1 class="headerTitle" lang="la">Tsukurimashou and IDSgrep</h1>
+        <div class="headerSubTitle">
+          Parametric Font Family and Structural Kanji Search
+        </div>
+
+        <br class="doNotDisplay doNotPrint" />
+
+      </div>
+
+      <div class="subHeader">
+        <span class="doNotDisplay">Navigation:</span>
+        <a href="./index.html">Home</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/devel/">Developer Dashboard</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/releases/">Downloads</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/images">Screenshots</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/scm/">SVN</a> |
+        <a href="https://github.com/mskala/Tsukurimashou">Github</a> |
+        <a href="https://www.ohloh.net/p/tsukurimashou">Ohloh</a>
+      </div>
+    </div>
+
+    <!-- ##### Main Copy ##### -->
+
+    <div id="main-copy">
+      <div class="rowOfBoxes">
+        <div class="twoThirds noBorderOnLeft">
+<h1>Let's make something!</h1>
+
+<p>Tsukurimashou is a font meta-family, covering multiple styles, for
+Japanese, English, and Korean, made with METAFONT and released under the GPL
+v3 with embedding exception.  At present, we have full coverage of hiragana,
+katakana, hangul, and Latin.  There is also partial coverage of grade-school
+kanji.</P>
+
+<p>This project also includes IDSgrep, a tool for querying kanji databases
+by partial layout, like a more advanced version of the popular "radical
+search." IDSgrep comes with code to generate dictionaries from
+Tsukurimashou, CHISE IDS, EDICT2, and KanjiVG.</p>
+
+<p>Documentation is primarily in English.</p>
+
+        </div>
+
+        <div class="oneThird">
+          <h1><a href="http://sourceforge.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> Latest Releases</h1>
+
+$release_news
+
+          <p class="filler"><!-- Filler para to extend left vertical line --></p>
+        </div>
+      </div>
+
+      <div class="rowOfBoxes dividingBorderAbove">
+        <div class="quarter noBorderOnLeft">
+          <h1>Sample</h2>
+          <p><img src="demo200.png" alt="Demonstration of Tsukurimashou fonts" /></p>
+
+          <div class="more"><a href="$demourl">PDF demo &raquo;</a></div>
+        </div>
+
+        <div class="quarter">
+<p>(todo)</p>
+          <p class="filler"><!-- Filler para to extend left vertical line --></p>
+        </div>
+
+        <div class="quarter">
+          <h1>Kanji Coverage</h1>
+          $kcstat_en
+
+          <div class="more"><a href="$kcurl">PDF chart &raquo;</a></div>
+
+          <p class="filler"><!-- Filler para to extend left vertical line --></p>
+        </div>
+
+        <div class="quarter">
+          <h1>Links</h1>
+<ul>
+<li><a href="http://ansuz.sooke.bc.ca/">mskala's home page</a></li>
+<li><a href="http://kanjivg.tagaini.net/">KanjiVG</a></li>
+<li><a href="http://www.chise.org/">CHISE</a></li>
+<li><a href="http://www.csse.monash.edu.au/~jwb/edict.html">EDICT</a></li>
+</ul>
+
+<p><a href="http://sourceforge.jp/"><img
+src="http://sourceforge.jp/sflogo.php?group_id=5643&type=2" width="125"
+height="39" border="0" alt="SourceForge.JP"></a></p>
+
+          <p class="filler"><!-- Filler para to extend left vertical line --></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ##### Footer ##### -->
+
+    <div id="footer">
+      <span class="doNotPrint">
+        For comments or questions about this website, please send email to
+        <a href="mailto:mskala@ansuz.sooke.bc.ca">Matthew Skala</a><br />
+      </span>
+
+      <strong>URI</strong> http://tsukurimashou.sourceforge.jp/
+      &bull; <strong>Updated</strong> $update_time
+    </div>
+  </body>
+</html>
+EOF
+
+close(EN);
+
+open(JP,'>ul/index.html.jp');
+
+print JP <<EOF;
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-CA">
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="author" content="mskala@ansuz.sooke.bc.ca" />
+
+    <link rel="stylesheet" type="text/css" href="./prosimii-screen.css" media="screen, tv, projection" title="Default" />
+    <link rel="stylesheet alternative" type="text/css" href="./prosimii-print.css" media="screen" title="Print Preview" />
+    <link rel="stylesheet" type="text/css" href="./prosimii-print.css" media="print" />
+
+    <title>Tsukurimashou Font Family and IDSgrep</title>
+  </head>
+
+  <body>
+<p>ごめんなさい。今でも、作りませんでした。</p>
+<p><a href="index.html.en">Try the English version.</a></p>
+<p><a href="http://sourceforge.jp/"><img
+src="http://sourceforge.jp/sflogo.php?group_id=5643&type=2" width="125"
+height="39" border="0" alt="SourceForge.JP"></a></p>
+  </body>
+
+</html>
+EOF
+
+close(JP);

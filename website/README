@@ -1,0 +1,12 @@
+Checking this into SVN to share it, but it's not directly part of
+Tsukurimashou and shouldn't be included in source distributions:
+this directory contains scripts and templates for maintaining the
+project's Web pages on SourceForge.JP.  Some make targets are only
+expected to work on the maintainer's installation.
+
+The public domain Web page template "Promsimii" by Haran Sivakumaran
+is available from:
+  http://haran.freeshell.org/oswd/
+
+Matthew Skala
+July 29, 2012

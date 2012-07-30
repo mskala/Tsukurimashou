@@ -141,6 +141,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.i =
+  push_pbox_toexpand("kanji.grsix.i");
+  build_kanji.lr(520,60)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.radical.mu);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ji/shime "show" (also older radical form)
 begintsuglyph("uni793A",58);
   kanji.grfive.showing;
@@ -186,6 +196,12 @@ endtsuglyph;
 % ka/ine little meaning by itself, called "two-branch tree" as a radical
 begintsuglyph("uni79BE",190);
   kanji.grnine.two_branch_tree;
+  tsu_render;
+endtsuglyph;
+
+% shi/watashi "first person pronoun"
+begintsuglyph("uni79C1",193);
+  kanji.grsix.i;
   tsu_render;
 endtsuglyph;
 
