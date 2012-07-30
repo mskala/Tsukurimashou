@@ -128,6 +128,14 @@ vardef kanji.grsix.haiku =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.offer =
+  push_pbox_toexpand("kanji.grsix.offer");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grfour.together);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.assistant =
@@ -335,6 +343,12 @@ begintsuglyph("uni4F88",136);
   build_kanji.level(build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.grtwo.many));
+  tsu_render;
+endtsuglyph;
+
+% kyuu/domo "offer"
+begintsuglyph("uni4F9B",155);
+  kanji.grsix.offer;
   tsu_render;
 endtsuglyph;
 

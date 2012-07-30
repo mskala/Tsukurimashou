@@ -136,7 +136,8 @@ $release_news
         </div>
 
         <div class="quarter">
-<p>(todo)</p>
+          <h1>Random</h1>
+          <p><img src="rglyph.php" alt="Random glyph"></p>
           <p class="filler"><!-- Filler para to extend left vertical line --></p>
         </div>
 
