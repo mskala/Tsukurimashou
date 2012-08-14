@@ -121,11 +121,11 @@ print "table name {\n";
 &windows_name(4,$is_korean?kr:jp,$fullname_jk);
 &windows_name(5,en,"$tsuversion ($svnversion)");
 &windows_name(9,en,"Matthew Skala");
-&windows_name(11,en,"http://en.sourceforge.jp/projects/tsukurimashou/");
+&windows_name(11,en,"http://tsukurimashou.sourceforge.jp/index.html.en");
 if ($is_korean) {
   &windows_name(11,kr,"http://ko.sourceforge.jp/projects/tsukurimashou/");
 } else {
-  &windows_name(11,jp,"http://tsukurimashou.sourceforge.jp/");
+  &windows_name(11,jp,"http://tsukurimashou.sourceforge.jp/index.html.jp");
 }
 &windows_name(12,en,"http://ansuz.sooke.bc.ca/");
 if (!$is_korean) {
@@ -139,11 +139,11 @@ if (!$is_korean) {
 &mac_name(4,en,$fullname_en);
 &mac_name(5,en,"$tsuversion ($svnversion)");
 &mac_name(9,en,"Matthew Skala");
-&mac_name(11,en,"http://en.sourceforge.jp/projects/tsukurimashou/");
+&mac_name(11,en,"http://tsukurimashou.sourceforge.jp/index.html.en");
 if ($is_korean) {
   &mac_name(11,kr,"http://ko.sourceforge.jp/projects/tsukurimashou/");
 } else {
-  &mac_name(11,jp,"http://tsukurimashou.sourceforge.jp/");
+  &mac_name(11,jp,"http://tsukurimashou.sourceforge.jp/index.html.jp");
 }
 &mac_name(12,en,"http://ansuz.sooke.bc.ca/");
 if (!$is_korean) {

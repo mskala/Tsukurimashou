@@ -190,15 +190,15 @@ Fine tuning of the installation directories:\
 #
 AC_PREREQ([2.63])
 AC_INIT([Tsukurimashou],
-	[0.6], [mskala@ansuz.sooke.bc.ca], [tsukurimashou],
-	[[http://en.sourceforge.jp/projects/tsukurimashou/]])
+	[0.7pre], [mskala@ansuz.sooke.bc.ca], [tsukurimashou],
+	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign check-news dist-zip no-dist-gzip
   silent-rules subdir-objects])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1459 2012-06-18 12:44:00Z mskala $])
+AC_REVISION([$Id: configure.ac 1595 2012-07-31 19:56:54Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["June 18, 2012"])
 AM_SILENT_RULES

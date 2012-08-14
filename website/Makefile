@@ -1,6 +1,6 @@
 all: \
   ul/.htaccess \
-  ul/index.html.en ul/index.html.jp \
+  ul/index.html.en ul/index.html.ja \
   ul/prosimii-print.css ul/prosimii-screen.css \
   ul/demo200.png ul/flag-jp.png ul/flag-en.png ul/rss.png \
   ul/rg00.png ul/rglyph.php
@@ -12,7 +12,7 @@ ul/.htaccess: dot-htaccess
 ul/rglyph.php: ul/.htaccess rglyph.php
 	cp rglyph.php ul/rglyph.php
 
-ul/index.html.en ul/index.html.jp: \
+ul/index.html.en ul/index.html.ja: \
   ul/.htaccess mkindex ../doc/kanjichart.tex
 	lynx -source \
 	  'http://sourceforge.jp/projects/tsukurimashou/releases/rss' \
@@ -27,6 +27,20 @@ ul/%.png: %.png url/.htaccess
 
 ul/%.css: %.css url/.htaccess
 	cp $< $@
+
+ul/prosimii-print.css: prosimii-print.css
+
+ul/prosimii-screen.css: prosimii-screen.css
+
+ul/demo200.png: demo200.png
+
+ul/flag-jp.png: flag-jp.png
+
+ul/flag-en.png: flag-en.png
+
+ul/rss.png: rss.png
+
+ul/rglyph.php: rglyph.php
 
 glyphgrid.pdf: glyphgrid.tex
 	xelatex glyphgrid

@@ -204,7 +204,7 @@ size_t parse(size_t len,char *inp) {
 		 continue;
 	    }
 	    eptr=ebuf;
-	    if (xval>=0x200000)
+	    if (xval>=0x110000)
 	      xval=0xFFFD;
 	    if (xval<0x80) {
 	       clen=1;
@@ -283,6 +283,12 @@ size_t parse(size_t len,char *inp) {
 	    continue;
 	 }
 	 
+	 /* check for surrogate */
+	 if (((eptr[0]&0xFF)==0xED) && ((eptr[1]&0xE0)==0xA0)) {
+	    offs+=3;
+	    continue;
+	 }
+	 
 	 /* check for overlong */
 	 if (((eptr[0]&0xFF)==0xE0) && ((eptr[1]&0xE0)==0x80)) {
 	    offs+=3;
@@ -301,6 +307,13 @@ size_t parse(size_t len,char *inp) {
 	 if (((eptr[1]&0xC0)!=0x80)
 	     || ((eptr[2]&0xC0)!=0x80)
 	     || ((eptr[3]&0xC0)!=0x80)) {
+	    offs+=4;
+	    continue;
+	 }
+	 
+	 /* check for non-Unicode */
+	 if (((eptr[0]==0xF4) && (eptr[2]&0xF0)>0x80) ||
+	     ((eptr[0]&0xFF)>0xF4)) {
 	    offs+=4;
 	    continue;
 	 }
