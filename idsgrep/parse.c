@@ -418,9 +418,11 @@ size_t parse(size_t len,char *inp) {
 	    partstr_len=0;
 	    
 	    /* replace with canonical if any */
-	    if ((newstr->canonical!=NULL) &&
+	    if (canonicalize_input &&
+		(newstr->canonical!=NULL) &&
 		(newstr->data[0]>='a') &&
-		(newstr->data[0]<='z')) {
+		(newstr->data[0]<='z') &&
+		(parse_state==newstr->arity)) {
 	       tmps=newstr->canonical;
 	       delete_string(newstr);
 	       newstr=tmps;

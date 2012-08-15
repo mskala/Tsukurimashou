@@ -1393,20 +1393,27 @@ PCRE because of the limitations of its API effectively forbids zero bytes
 strings in general.  The complexities of PCRE pattern syntax make it
 impractical for \texttt{idsgrep} to automatically escape zero bytes before
 passing the strings to PCRE; there are too many different cases possible for
-the context in which a zero byte might occur.  Note that Python, which like
-EIDS allows strings to contain zero bytes and so faces the same issue,
-briefly attempted to work around this PCRE API limitation by auto-escaping,
-and they eventually gave it up as too complicated and confusing.  As a
-result of PCRE's API, if the string given as a matching pattern contains a
-literal zero byte, then the regular expression to be matched will consist of
-the prefix of the string up to but not including the first zero byte;
-anything after that will be ignored.  Zero bytes are, nonetheless, permitted
-in the matching subject, and PCRE can search for them, but not by means of
-literal zero bytes in the pattern.  For instance, the PCRE syntax
-``\texttt{\textbackslash000}'' (or just ``\texttt{\textbackslash0}'' if you
-can be sure the next character will not be an octal digit) will match a zero
-byte.  As discussed above, additional escaping might be needed to ensure
-that PCRE, and not EIDS nor the shell, interprets the backslash escape.
+the context in which a zero byte might occur.  Since the \texttt{idsgrep}
+utility takes its matching patterns from the Unix command line anyway, and
+Unix itself forbids literal zero bytes in command-line arguments, the case
+of literal zero bytes in a matching pattern can only occur when they are
+created deliberately by escape sequences at the level of the EIDS parser;
+and the simplest advice to users is ``don't do that!''
+
+Python, which like EIDS allows strings to contain zero bytes but has PCRE
+bindings and so faces the same issue, briefly attempted to work around this
+PCRE API limitation by auto-escaping.  They eventually gave it up as too
+complicated and confusing.  The conseqeunce of PCRE's API design is that if
+the string given as a matching pattern contains a literal zero byte then the
+regular expression to be matched will consist of the prefix of the string up
+to but not including the first zero byte; anything after that will be
+ignored.  Zero bytes are, nonetheless, permitted in the matching subject,
+and PCRE can search for them, but not by means of literal zero bytes in the
+pattern.  For instance, the PCRE syntax ``\texttt{\textbackslash000}'' (or
+just ``\texttt{\textbackslash0}'' if the next character will
+not be an octal digit) matches a zero byte.  As discussed above,
+additional escaping might be needed to ensure that PCRE, and not EIDS nor
+the shell, interprets the backslash escape.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

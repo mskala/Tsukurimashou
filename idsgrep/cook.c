@@ -1,5 +1,5 @@
 /*
- * Output translations for IDSgrep
+ * I/O translations for IDSgrep
  * Copyright (C) 2012  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include "idsgrep.h"
 
 int cook_output=0;
+int canonicalize_input=1;
 
 #define OS_TOP_HEAD_BRACKET_TYPE 0
 #define OS_INNER_HEAD_BRACKET_TYPE 1
@@ -38,10 +39,11 @@ int cook_output=0;
 #define OS_SUGAR 8
 #define OS_ESCAPE_WHAT 9
 #define OS_ESCAPE_HOW 10
+#define OS_CANONICAL 11
 
-#define NUM_OUTPUT_SETTINGS 11
+#define NUM_OUTPUT_SETTINGS 12
 
-static char output_recipe[NUM_OUTPUT_SETTINGS]="11111111111";
+static char output_recipe[NUM_OUTPUT_SETTINGS]="111111111111";
 
 #define NUM_PRESET_RECIPES 1
 
@@ -54,12 +56,7 @@ static struct {char *name,*recipe;} preset_recipe[NUM_PRESET_RECIPES]={
 void set_output_recipe(char *r) {
    int i;
 
-   if (strcmp(r,"raw")==0) {
-      cook_output=0;
-      return;
-   }
-   
-   cook_output=1;
+   cook_output=(strlen(r)>=3) && (strncmp(r,"raw",3)!=0);
    
    for (i=0;i<NUM_PRESET_RECIPES;i++)
      if (strcmp(r,preset_recipe[i].name)==0)
@@ -71,6 +68,8 @@ void set_output_recipe(char *r) {
       if (r[i]=='\0')
 	break;
    }
+   
+   canonicalize_input=((output_recipe[OS_CANONICAL]&4)==0);
 }
 
 /**********************************************************************/
@@ -98,7 +97,7 @@ int char_length(char *c) {
 /**********************************************************************/
 
 void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br) {
-   int i,do_esc;
+   int i,do_esc,c;
 
    fwrite(br->data,1,br->length,stdout);
    for (i=0;i<hs->length;i+=char_length(hs->data+i)) {
@@ -119,17 +118,100 @@ void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br) {
 	do_esc=output_recipe[OS_ESCAPE_WHAT]>='3';
       else if (((unsigned char)hs->data[i])<=0x20) /* ASCII controls */
 	do_esc=output_recipe[OS_ESCAPE_WHAT]>='5';
+      else
+	do_esc=output_recipe[OS_ESCAPE_WHAT]>='7'; /* all others */
       
       if (do_esc) {
+	 switch (char_length(hs->data+i)) {
+	  case 1:
+	    c=(unsigned char)hs->data[i];
+	    break;
+	  case 2:
+	    c=(((unsigned char)hs->data[i]&0x1F)<<6)|
+	      ((unsigned char)hs->data[i+1]&0x3F);
+	    break;
+	  case 3:
+	    c=(((unsigned char)hs->data[i]&0x0F)<<12)|
+	      (((unsigned char)hs->data[i+1]&0x3F)<<6)|
+	      ((unsigned char)hs->data[i+2]&0x3F);
+	    break;
+	  case 4:
+	    c=(((unsigned char)hs->data[i]&0x07)<<18)|
+	      (((unsigned char)hs->data[i+1]&0x3F)<<12)|
+	      (((unsigned char)hs->data[i+2]&0x3F)<<6)|
+	      ((unsigned char)hs->data[i+3]&0x3F);
+	    break;
+	  default:
+	    puts("internal error, inconsistent char length"); /* SNH */
+	    exit(1); /* SNH */
+	 }
+	 
 	 switch (output_recipe[OS_ESCAPE_HOW]) {
+	    
+	  case '5':
+	  case '4':
+	    if (((output_recipe[OS_ESCAPE_HOW]=='4') || (c>0xFF)) &&
+		(c<=0xFFFF)) {
+	       printf("\\X%04X",c);
+	       break;
+	    }
+	    /* FALL THROUGH */
+	    
+	  case '3':
+	    if (((output_recipe[OS_ESCAPE_HOW]=='3') || (c>0x7F)) &&
+		(c<=0xFF)) {
+	       printf("\\x%02X",c);
+	       break;
+	    }
+	    /* FALL THROUGH */
+	    
+	  case '2':
+	    if ((output_recipe[OS_ESCAPE_HOW]=='2') || (c>0xFFFF)) {
+	       printf("\\x{%X}",c);
+	       break;
+	    }
+	    /* FALL THROUGH */
+	    
+	  case '1':
+	    if ((c>=1) && (c<=27)) {
+	       fputc('\\',stdout);
+	       switch (c) {
+		case 7:
+		  fputc('a',stdout);
+		  break;
+		case 8:
+		  fputc('b',stdout);
+		  break;
+		case 27:
+		  fputc('e',stdout);
+		  break;
+		case 12:
+		  fputc('f',stdout);
+		  break;
+		case 9:
+		  fputc('t',stdout);
+		  break;
+		case 10:
+		  fputc('n',stdout);
+		  break;
+		case 13:
+		  fputc('r',stdout);
+		  break;
+		default:
+		  fputc('c',stdout);
+		  fputc(c+'A'-1,stdout);
+		  break;
+	       }
+	       break;
+	    }
+	    /* FALL THROUGH */
 
 	  case '0':
 	  default:
-	    fputc('\\',stdout);
+	      if (((c|0x20)<'a') || ((c|0x20)>'z'))
+		fputc('\\',stdout);
 	    fwrite(hs->data+i,1,char_length(hs->data+i),stdout);
 	    break;
-	    
-	    /* FIXME add other escape forms */
 	 }
       } else
 	fwrite(hs->data+i,1,char_length(hs->data+i),stdout);
@@ -141,7 +223,7 @@ void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br) {
 
 void write_cooked_tree(NODE *ms) {
    NODE *tail;
-   HASHED_STRING *semicolon;
+   HASHED_STRING *semicolon,*mf;
    int i;
    
    ms->complete=0;
@@ -195,16 +277,23 @@ void write_cooked_tree(NODE *ms) {
 	    }
 	 }
 	 
+	 if ((ms->functor->canonical!=NULL) &&
+	     (ms->arity==ms->functor->canonical->arity) &&
+	     (output_recipe[OS_CANONICAL]&
+		 ((ms->functor->data[0]&0x80)?1:2)!=0))
+	   mf=ms->functor->canonical;
+	 else
+	   mf=ms->functor;
+	 
 	 if ((output_recipe[OS_SUGAR]&1) &&
 	     (ms->functor->arity==ms->arity) &&
-	     (char_length(ms->functor->data)==ms->functor->length)) {
-	    fwrite(ms->functor->data,ms->functor->length,1,stdout);
+	     (char_length(mf->data)==mf->length)) {
+	    fwrite(mf->data,mf->length,1,stdout);
 	    
 	 } else {
 	    i=output_recipe[OS_NULLARY_BRACKET_TYPE+ms->arity]-'0';
 	    if (i>2) i=2;
-	    write_bracketed_string(ms->functor,
-				   hashed_bracket[3*(ms->arity+1)+i]);
+	    write_bracketed_string(mf,hashed_bracket[3*(ms->arity+1)+i]);
 	 }
       }
       

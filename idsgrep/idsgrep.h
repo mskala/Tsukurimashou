@@ -90,7 +90,7 @@ NODE *assoc_match_fn(NODE *);
 
 /* cook.c */
 
-extern int cook_output;
+extern int cook_output,canonicalize_input;
 
 void set_output_recipe(char *);
 void write_cooked_tree(NODE *);

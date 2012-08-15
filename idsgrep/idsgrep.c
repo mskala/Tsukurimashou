@@ -117,9 +117,9 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 /**********************************************************************/
 
 static struct option long_opts[] = {
+   {"cooking",required_argument,NULL,'c'},
    {"dictionary",optional_argument,NULL,'d'},
    {"help",no_argument,NULL,'h'},
-   {"output-format",required_argument,NULL,'o'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
 };
@@ -146,13 +146,17 @@ int main(int argc,char **argv) {
    register_syntax();
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"Vd::ho:",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"Vc:d::h",long_opts,NULL))!=-1) {
       switch (c) {
 
        case 'V':
 	 show_version=1;
 	 break;
 
+       case 'c':
+	 set_output_recipe(optarg);
+	 break;
+	 
        case 'd':
 	 if (optarg==NULL)
 	   dictname="";
@@ -162,10 +166,6 @@ int main(int argc,char **argv) {
 	 
        case 'h':
 	 show_help=1;
-	 break;
-	 
-       case 'o':
-	 set_output_recipe(optarg);
 	 break;
 	 
        default:
@@ -186,9 +186,9 @@ int main(int argc,char **argv) {
 	  "PATTERN should be an Extended Ideographic Description Sequence\n\n"
 	  "Options:\n"
 	  "  -V, --version             display version and license\n"
+	  "  -c, --cooking=FMT         set input/output cooking\n"
 	  "  -d, --dictionary=NAME     search standard dictionary\n"
-	  "  -h, --help                display this help\n"
-	  "  -o, --output-format=FMT   set output processing");
+	  "  -h, --help                display this help");
    
    if (show_version || show_help)
      exit(0);
