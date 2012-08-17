@@ -49,6 +49,9 @@ test_match('(\XXXXX)(\xxx)(\x{012q})','?','(\XXXXX)(\xxx)(\x{012q})');
 test_match('(\x{58}\x{134}\x{840C}\x{1f4a9}\x{200000})','(XĴ萌💩�)',
   '(\x{58}\x{134}\x{840C}\x{1f4a9}\x{200000})');
 
+test_match("a\xED\xA6\x99b".'\x{123456789ABCDEF}c\XD999d','\XFFFD',
+           '\x{123456789ABCDEF}\XD999');
+
 sub test_badseq {
   my($sequence)=@_;
   

@@ -28,27 +28,31 @@
 int cook_output=0;
 int canonicalize_input=1;
 
-#define OS_TOP_HEAD_BRACKET_TYPE 0
-#define OS_INNER_HEAD_BRACKET_TYPE 1
-#define OS_NULLARY_BRACKET_TYPE 2
-#define OS_UNARY_BRACKET_TYPE 3
-#define OS_BINARY_BRACKET_TYPE 4
-#define OS_TERNARY_BRACKET_TYPE 5
-#define OS_INDENTATION 6
-#define OS_SEPARATOR 7
-#define OS_SUGAR 8
-#define OS_ESCAPE_WHAT 9
-#define OS_ESCAPE_HOW 10
-#define OS_CANONICAL 11
+#define OS_TOP_HEAD_BRACKET_TYPE 0    /* 0 ASCII, 1 B lentic., 2 W lentic. */
+#define OS_INNER_HEAD_BRACKET_TYPE 1  /* like OS_TOP_HEAD_BRACKET_TYPE */
+#define OS_NULLARY_BRACKET_TYPE 2     /* 0 paren, 1 wide paren, 2 dbl wide */
+#define OS_UNARY_BRACKET_TYPE 3       /* 0 period, 1 colon, 2 centre dot */
+#define OS_BINARY_BRACKET_TYPE 4      /* 0 square bckt, 1 wide, 2 dbl wide */
+#define OS_TERNARY_BRACKET_TYPE 5     /* 0 curly brace, 1 B tort, 2 W tort */
+#define OS_INDENTATION 6              /* 8=tab, else # of spaces */
+#define OS_SEPARATOR 7                /* 0 null, 1 \n, 2 \n\n, 3 nothing */
+#define OS_SUGAR 8                    /* 4 syrup @top +2 not @top +1 sugar */
+#define OS_ESCAPE_WHAT 9              /* increasing subsets from 0 to 7 */
+#define OS_ESCAPE_HOW 10              /* 0-5: \ \alpha \x{} \x \X smart */
+#define OS_CANONICAL 11               /* 4 don't on input +2 a->u +1 u->a */
 
 #define NUM_OUTPUT_SETTINGS 12
 
-static char output_recipe[NUM_OUTPUT_SETTINGS]="111111111111";
+static char output_recipe[NUM_OUTPUT_SETTINGS]="100000013250";
 
-#define NUM_PRESET_RECIPES 1
+#define NUM_PRESET_RECIPES 5
 
 static struct {char *name,*recipe;} preset_recipe[NUM_PRESET_RECIPES]={
-   {"",""},
+   {"ascii", "000000013551"},
+   {"cooked","100000013250"},
+   {"indent","100000223250"},
+   {"raw",   "000000000000"},
+   {"rawnc", "000000000004"},
 };
 
 /**********************************************************************/
@@ -96,125 +100,137 @@ int char_length(char *c) {
 
 /**********************************************************************/
 
+void write_maybe_escaped_char(char *cp,HASHED_STRING *br) {
+   int c,do_esc;
+
+   switch (char_length(cp)) {
+    case 1:
+      c=(unsigned char)cp[0];
+      break;
+    case 2:
+      c=(((unsigned char)cp[0]&0x1F)<<6)|
+	((unsigned char)cp[1]&0x3F);
+      break;
+    case 3:
+      c=(((unsigned char)cp[0]&0x0F)<<12)|
+	(((unsigned char)cp[1]&0x3F)<<6)|
+	((unsigned char)cp[2]&0x3F);
+      break;
+    case 4:
+      c=(((unsigned char)cp[0]&0x07)<<18)|
+	(((unsigned char)cp[1]&0x3F)<<12)|
+	(((unsigned char)cp[2]&0x3F)<<6)|
+	((unsigned char)cp[3]&0x3F);
+      break;
+    default:
+      puts("internal error, inconsistent char length"); /* SNH */
+      exit(1); /* SNH */
+   }
+   
+   if (c=='\\') /* backslash - always escape */
+     do_esc=1;
+   else if ((br!=NULL) && (strncmp(cp,br->data,br->length)==0))
+     /* must escape closing bracket if we were told about it  */
+     do_esc=1;
+   else if (c>0xFFFF) /* astral planes */
+     do_esc=output_recipe[OS_ESCAPE_WHAT]>='1';
+   else if ((c>=0x4E00) && (c<=0x9FFF)) /* mainline CJK */
+     do_esc=output_recipe[OS_ESCAPE_WHAT]>='4';
+   else if ((c>=0xE000) && (c<=0xF8FF)) /* low PUA */
+     do_esc=output_recipe[OS_ESCAPE_WHAT]>='2';
+   else if (c>=0x80) /* non-ASCII */
+     do_esc=output_recipe[OS_ESCAPE_WHAT]>='3';
+   else if (c<0x20) /* ASCII controls */
+     do_esc=output_recipe[OS_ESCAPE_WHAT]>='5';
+   else /* all others */
+     do_esc=output_recipe[OS_ESCAPE_WHAT]>='7';
+   
+   if (do_esc) {
+      switch (output_recipe[OS_ESCAPE_HOW]) {
+	 
+       case '5':
+       case '3':
+	 if (((output_recipe[OS_ESCAPE_HOW]=='3') || (c>=0x7F)) &&
+	     (c<=0xFF)) {
+	    printf("\\x%02X",c);
+	    break;
+	 }
+	 /* FALL THROUGH */
+	 
+       case '4':
+	 if (((output_recipe[OS_ESCAPE_HOW]=='4') || (c>0xFF)) &&
+	     (c<=0xFFFF)) {
+	    printf("\\X%04X",c);
+	    break;
+	 }
+	 /* FALL THROUGH */
+	 
+       case '2':
+	 if ((output_recipe[OS_ESCAPE_HOW]=='2') || (c>0xFFFF)) {
+	    printf("\\x{%X}",c);
+	    break;
+	 }
+	 /* FALL THROUGH */
+	 
+       case '1':
+	 if ((c>=1) && (c<=27)) {
+	    fputc('\\',stdout);
+	    switch (c) {
+	     case 7:
+	       fputc('a',stdout);
+	       break;
+	     case 8:
+	       fputc('b',stdout);
+	       break;
+	     case 27:
+	       fputc('e',stdout);
+	       break;
+	     case 12:
+	       fputc('f',stdout);
+	       break;
+	     case 9:
+	       fputc('t',stdout);
+	       break;
+	     case 10:
+	       fputc('n',stdout);
+	       break;
+	     case 13:
+	       fputc('r',stdout);
+	       break;
+	     default:
+	       fputc('c',stdout);
+	       fputc(c+'A'-1,stdout);
+	       break;
+	    }
+	    break;
+	 }
+	 /* FALL THROUGH */
+	 
+       case '0':
+       default:
+	   if ((output_recipe[OS_ESCAPE_HOW]=='5') &&
+	       ((c<=0x1F) || (c==0x7F))) {
+	      printf("\\x%02X",c);
+	   } else {	      
+	      if (((c|0x20)<'a') || ((c|0x20)>'z'))
+		fputc('\\',stdout);
+	      fwrite(cp,1,char_length(cp),stdout);
+	   }
+	 break;
+      }
+   } else
+     fwrite(cp,1,char_length(cp),stdout);
+}
+
 void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br) {
-   int i,do_esc,c;
+   int i;
 
    fwrite(br->data,1,br->length,stdout);
    for (i=0;i<hs->length;i+=char_length(hs->data+i)) {
-
-      if (hs->data[i]=='\\') /* backslash - always escape */
-	do_esc=1;
-      else if ((i+br->mate->length<=hs->length) &&
-	       (strncmp(hs->data+i,br->mate->data,br->mate->length)==0))
-	do_esc=((i>0) || (output_recipe[OS_ESCAPE_WHAT]>='6'));
-      else if (((unsigned char)hs->data[i])>=0xF0) /* astral planes */
-	do_esc=output_recipe[OS_ESCAPE_WHAT]>='1';
-      else if ((((unsigned char)hs->data[i])>=0xE3) &&
-	       (((unsigned char)hs->data[i])<=0xED)) /* mainline CJK */
-	do_esc=output_recipe[OS_ESCAPE_WHAT]>='4';
-      else if (((unsigned char)hs->data[i])==0xEE) /* low PUA */
-	do_esc=output_recipe[OS_ESCAPE_WHAT]>='2';
-      else if (((unsigned char)hs->data[i])>=0x80) /* non-ASCII */
-	do_esc=output_recipe[OS_ESCAPE_WHAT]>='3';
-      else if (((unsigned char)hs->data[i])<=0x20) /* ASCII controls */
-	do_esc=output_recipe[OS_ESCAPE_WHAT]>='5';
+      if ((i==0) && (output_recipe[OS_ESCAPE_WHAT]<'6'))
+	write_maybe_escaped_char(hs->data+i,NULL);
       else
-	do_esc=output_recipe[OS_ESCAPE_WHAT]>='7'; /* all others */
-      
-      if (do_esc) {
-	 switch (char_length(hs->data+i)) {
-	  case 1:
-	    c=(unsigned char)hs->data[i];
-	    break;
-	  case 2:
-	    c=(((unsigned char)hs->data[i]&0x1F)<<6)|
-	      ((unsigned char)hs->data[i+1]&0x3F);
-	    break;
-	  case 3:
-	    c=(((unsigned char)hs->data[i]&0x0F)<<12)|
-	      (((unsigned char)hs->data[i+1]&0x3F)<<6)|
-	      ((unsigned char)hs->data[i+2]&0x3F);
-	    break;
-	  case 4:
-	    c=(((unsigned char)hs->data[i]&0x07)<<18)|
-	      (((unsigned char)hs->data[i+1]&0x3F)<<12)|
-	      (((unsigned char)hs->data[i+2]&0x3F)<<6)|
-	      ((unsigned char)hs->data[i+3]&0x3F);
-	    break;
-	  default:
-	    puts("internal error, inconsistent char length"); /* SNH */
-	    exit(1); /* SNH */
-	 }
-	 
-	 switch (output_recipe[OS_ESCAPE_HOW]) {
-	    
-	  case '5':
-	  case '4':
-	    if (((output_recipe[OS_ESCAPE_HOW]=='4') || (c>0xFF)) &&
-		(c<=0xFFFF)) {
-	       printf("\\X%04X",c);
-	       break;
-	    }
-	    /* FALL THROUGH */
-	    
-	  case '3':
-	    if (((output_recipe[OS_ESCAPE_HOW]=='3') || (c>0x7F)) &&
-		(c<=0xFF)) {
-	       printf("\\x%02X",c);
-	       break;
-	    }
-	    /* FALL THROUGH */
-	    
-	  case '2':
-	    if ((output_recipe[OS_ESCAPE_HOW]=='2') || (c>0xFFFF)) {
-	       printf("\\x{%X}",c);
-	       break;
-	    }
-	    /* FALL THROUGH */
-	    
-	  case '1':
-	    if ((c>=1) && (c<=27)) {
-	       fputc('\\',stdout);
-	       switch (c) {
-		case 7:
-		  fputc('a',stdout);
-		  break;
-		case 8:
-		  fputc('b',stdout);
-		  break;
-		case 27:
-		  fputc('e',stdout);
-		  break;
-		case 12:
-		  fputc('f',stdout);
-		  break;
-		case 9:
-		  fputc('t',stdout);
-		  break;
-		case 10:
-		  fputc('n',stdout);
-		  break;
-		case 13:
-		  fputc('r',stdout);
-		  break;
-		default:
-		  fputc('c',stdout);
-		  fputc(c+'A'-1,stdout);
-		  break;
-	       }
-	       break;
-	    }
-	    /* FALL THROUGH */
-
-	  case '0':
-	  default:
-	      if (((c|0x20)<'a') || ((c|0x20)>'z'))
-		fputc('\\',stdout);
-	    fwrite(hs->data+i,1,char_length(hs->data+i),stdout);
-	    break;
-	 }
-      } else
-	fwrite(hs->data+i,1,char_length(hs->data+i),stdout);
+	write_maybe_escaped_char(hs->data+i,br->mate);
    }
    fwrite(br->mate->data,1,br->mate->length,stdout);
 }
@@ -255,7 +271,7 @@ void write_cooked_tree(NODE *ms) {
 	  (ms->head->arity==-2) &&
 	  (ms->arity==0) &&
 	  (ms->functor==semicolon)) {
-	 fwrite(ms->head->data,ms->head->length,1,stdout);
+	 write_maybe_escaped_char(ms->head->data,NULL);
 	 
       } else {
 	 
@@ -286,7 +302,8 @@ void write_cooked_tree(NODE *ms) {
 	   mf=ms->functor;
 	 
 	 if ((output_recipe[OS_SUGAR]&1) &&
-	     (ms->functor->arity==ms->arity) &&
+	     (mf->arity==ms->arity) &&
+	     (mf->mate==NULL) &&
 	     (char_length(mf->data)==mf->length)) {
 	    fwrite(mf->data,mf->length,1,stdout);
 	    

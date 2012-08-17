@@ -1,0 +1,142 @@
+#!/bin/sh
+
+cat <<EOF > co-in.$$
+【萌え】,<萌>⿱艹<明>⿰日月,え
+｟[もえ] (n)
+  (1) sprouting/budding/
+  (2) (m-sl) (also written 萌ゑ) crush (anime, manga term)/fascination/infatuation
+｠
+<萌>⿱艹<明>[lr]日月
+【萌】[tb]艹<明>⿰<日>⿻口(+1)月
+()\\\\)
+(()
+.􏿽.;
+(anything)
+EOF
+
+./idsgrep '(anything)' co-in.$$ > co-out.$$
+echo === >> co-out.$$
+
+./idsgrep -c raw '?' co-in.$$ >> co-out.$$
+echo === >> co-out.$$
+
+./idsgrep -c rawnc '?' co-in.$$ >> co-out.$$
+echo === >> co-out.$$
+
+./idsgrep -c rawnc '(anything)' co-in.$$ >> co-out.$$
+echo === >> co-out.$$
+
+./idsgrep -c cooked '?' co-in.$$ >> co-out.$$
+echo === >> co-out.$$
+
+./idsgrep -c ascii '?' co-in.$$ >> co-out.$$
+echo === >> co-out.$$
+
+./idsgrep -c indent '?' co-in.$$ >> co-out.$$
+echo === >> co-out.$$
+
+if diff -c co-out.$$ - <<EOF
+【萌え】,<萌>⿱艹<明>⿰日月,え
+｟[もえ] (n)
+  (1) sprouting/budding/
+  (2) (m-sl) (also written 萌ゑ) crush (anime, manga term)/fascination/infatuation
+｠
+<萌>⿱艹<明>[lr]日月
+【萌】[tb]艹<明>⿰<日>⿻口(+1)月
+()\\\\)
+(()
+.􏿽.;
+(anything)
+===
+【萌え】,<萌>⿱艹<明>⿰日月,え
+｟[もえ] (n)
+  (1) sprouting/budding/
+  (2) (m-sl) (also written 萌ゑ) crush (anime, manga term)/fascination/infatuation
+｠
+<萌>⿱艹<明>[lr]日月
+【萌】[tb]艹<明>⿰<日>⿻口(+1)月
+()\\\\)
+(()
+.􏿽.;
+(anything)
+===
+【萌え】,<萌>⿱艹<明>⿰日月,え
+｟[もえ] (n)
+  (1) sprouting/budding/
+  (2) (m-sl) (also written 萌ゑ) crush (anime, manga term)/fascination/infatuation
+｠
+<萌>⿱艹<明>[lr]日月
+【萌】[tb]艹<明>⿰<日>⿻口(+1)月
+()\\\\)
+(()
+.􏿽.;
+(anything)
+===
+(anything)
+===
+【萌え】,<萌>⿱艹<明>⿰日月,え([もえ] (n\\)
+  (1\\) sprouting/budding/
+  (2\\) (m-sl\\) (also written 萌ゑ\\) crush (anime, manga term\\)/fascination/infatuation
+)
+【萌】⿱艹<明>⿰日月
+【萌】⿱艹<明>⿰<日>⿻口(+1)月
+()\\\\)
+(()
+.\\XE001\\x{10FFFD}.;
+?
+===
+<\\X840C\\X3048>,<\\X840C>[tb]\\X8279<\\X660E>[lr]\\X65E5\\X6708,\\X3048([\\X3082\\X3048] (n\\)\\n  (1\\) sprouting/budding/\\n  (2\\) (m-sl\\) (also written \\X840C\\X3091\\) crush (anime, manga term\\)/fascination/infatuation\\n)
+<\\X840C>[tb]\\X8279<\\X660E>[lr]\\X65E5\\X6708
+<\\X840C>[tb]\\X8279<\\X660E>[lr]<\\X65E5>[overlap]\\X53E3(+1)\\X6708
+()\\\\)
+(()
+.\\XE001\\x{10FFFD}.;
+(anything)
+===
+【萌え】,
+  <萌>⿱
+    艹
+    <明>⿰
+      日
+      月
+  ,
+    え
+    ([もえ] (n\\)
+  (1\\) sprouting/budding/
+  (2\\) (m-sl\\) (also written 萌ゑ\\) crush (anime, manga term\\)/fascination/infatuation
+)
+
+【萌】⿱
+  艹
+  <明>⿰
+    日
+    月
+
+【萌】⿱
+  艹
+  <明>⿰
+    <日>⿻
+      口
+      (+1)
+    月
+
+()\\\\)
+
+(()
+
+.\\XE001\\x{10FFFD}.
+  ;
+
+?
+
+===
+EOF
+then
+  rm -f co-in.$$
+  rm -f co-out.$$
+  exit 0
+else
+  rm -f co-in.$$
+  rm -f co-out.$$
+  exit 1
+fi

@@ -178,6 +178,8 @@ size_t parse(size_t len,char *inp) {
 		    break;
 	       }
 	       offs+=(i+1);
+	       if (i>9)
+		 xval=0xFFFD;
 	       if (eptr[i]!='}')
 		 continue;
 
@@ -205,6 +207,8 @@ size_t parse(size_t len,char *inp) {
 	    }
 	    eptr=ebuf;
 	    if (xval>=0x110000)
+	      xval=0xFFFD;
+	    if ((xval>=0xD800) && (xval<=0xDFFF))
 	      xval=0xFFFD;
 	    if (xval<0x80) {
 	       clen=1;
@@ -312,7 +316,7 @@ size_t parse(size_t len,char *inp) {
 	 }
 	 
 	 /* check for non-Unicode */
-	 if (((eptr[0]==0xF4) && (eptr[2]&0xF0)>0x80) ||
+	 if ((((eptr[0]&0xFF)==0xF4) && (eptr[1]&0xF0)>0x80) ||
 	     ((eptr[0]&0xFF)>0xF4)) {
 	    offs+=4;
 	    continue;
@@ -561,7 +565,6 @@ void register_alias(char *fctr,char *canon) {
    }
 
    hs->arity=cs->arity;
-   hs->match_fn=cs->match_fn;
    hs->canonical=cs;
    cs->canonical=hs;
 }

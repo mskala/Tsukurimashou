@@ -1,11 +1,13 @@
 #!/bin/sh
 
-perl -e 'print "\x81";' \
-  -e 'print "\xC0\xB0\xC0a";' \
-  -e 'print "\xE0\x80\xB1\xE0bc";' \
-  -e 'print "\xF0\x80\x80\xB2\xF0def";' \
-  -e 'print "\xF8\x80\x80\x80\xB3";' \
+perl -e 'print "\x81\n";' \
+  -e 'print "\xC0\xB0\xC0a\n";' \
+  -e 'print "\xE0\x80\xB1\xE0bc\n";' \
+  -e 'print "\xF0\x80\x80\xB2\xF0def\n";' \
+  -e 'print "\xF4\x91\x82\x83\xF5\x84\x85\x86\n";' \
+  -e 'print "\xF8\x80\x80\x80\xB3\n";' \
   -e 'print "\xFC\x80\x80\x80\x80\xB4\n";' \
+  -e 'print "\xED\xA9\x99\n";' \
   | ./idsgrep '?' > ut-out.$$
 perl -e 'print "\xC0"' | ./idsgrep '?' >> ut-out.$$
 perl -e 'print "\xE0"' | ./idsgrep '?' >> ut-out.$$
