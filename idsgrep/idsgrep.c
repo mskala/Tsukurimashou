@@ -229,9 +229,13 @@ int main(int argc,char **argv) {
    while (optind<argc)
      process_file(match_pattern,argv[optind++],num_files>1?0:-1);
 
-   /* read stdin if no other choices */
-   if ((num_files==0) && (dictname==NULL))
-     process_file(match_pattern,"-",-1);
+   /* read stdin or complain */
+   if (num_files==0) {
+      if (dictname==NULL)
+	process_file(match_pattern,"-",-1);
+      else
+	puts("(no dictionaries were searched)");
+   }
    
    exit(0);
 }
