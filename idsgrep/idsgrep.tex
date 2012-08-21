@@ -211,6 +211,8 @@ things in detail; for now, here are some examples.
 \item[\texttt{idsgrep -d '\textbackslash X840C'}]~\\
   Several kinds of backslash escapes allow entering characters that might
   not otherwise be available.
+\item[\texttt{idsgrep -d -c indent 萌}]~\\
+  The \texttt{-c} option selects ``cooked'' or pretty-printed output modes.
 \end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -280,9 +282,10 @@ of \texttt{grep} to Han character dictionaries.
 
 The main new features in version 0.3 are:
 \begin{itemize}
-\item associative and regular-expression matching; and
+\item associative and regular-expression matching;
 \item the CHISE IDS-derived dictionary, and related support such as
-offering a choice of which dictionary to join with EDICT2.
+offering a choice of which dictionary to join with EDICT2; and
+\item cooked output modes.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -651,12 +654,12 @@ The rationale for this syntax is that it allows a relatively simple way of
 querying multi-character words in EDICT2 using the existing IDSgrep query
 types.  To find an exact match, just query the head (which will require head
 brackets and a semicolon if the query is more than one character long), as
-in \texttt{idsgrep -ded '<教育>;'}.  To search for the first few characters,
+in \texttt{idsgrep -de '<教育>;'}.  To search for the first few characters,
 commas can be imagined as separators (though their actual function is quite
 different) with a comma at the start and a question mark at the end, as in
-\texttt{idsgrep -ded ',教,育?'}.  These queries can be combined with the
+\texttt{idsgrep -de ',教,育?'}.  These queries can be combined with the
 sub-character breakdown queries already supported by the decomposition
-dictionaries.  For instance, \texttt{idsgrep -ded ',教,...|日月!,??'} will
+dictionaries.  For instance, \texttt{idsgrep -de ',教,...|日月!,??'} will
 search for, and give definitions of, words of exactly two characters in
 which the first is \texttt{教} and the second character contains \texttt{日}
 or \texttt{月} anywhere.  The restriction to exactly two characters is
@@ -776,6 +779,14 @@ will search all the installed dictionaries; specifying an abbreviation of
 the dictionary name, as ``\texttt{-dt}'' or ``\texttt{-dk},'' will search
 just the matching one; and it remains possible to specify a file exactly or
 use standard input in the usual \texttt{grep}-like way.
+
+\item[\texttt{-c}, \texttt{--cooking}]
+Select the output generation and input canonicalization mode.  Requires one
+argument, which may be one of the keywords \texttt{raw}, \texttt{rawnc},
+\texttt{ascii}, \texttt{cooked}, or \texttt{indent}, to specify a preset
+mode; or a string of up to twelve decimal digits to control the output in
+more detail.  The default mode is \texttt{raw}.  See the
+section on ``cooked output'' in this manual for more details.
 
 \item[\texttt{-V}, \texttt{--version}] Display the version and license
 information for IDSgrep.
@@ -1612,11 +1623,13 @@ follows.
 \begin{description}
   \item[0] Use a single backslash followed by the literal character, only.
     The ASCII Latin alphabet
-    cannot be escaped in this way and (under this option, or options 1 or 5,
-    which fall through to this case) will not be escaped at all.  Since the
+    cannot be escaped in this way and under this option, or options 1 or 5
+    which fall through to this case, will not be escaped at all.  Since the
     literal characters remain in the text, this option is not
-    suitable for sending output through any channel that is not fully
-    UTF-8-clean.
+    suitable for sending output through any channel that is not clean
+    for the full range of UTF-8 characters.  However, unlike raw mode, this
+    and all other cooked modes do guarantee to produce valid UTF-8, not
+    arbitrary byte sequences.
   \item[1] Use a backslash-letter sequence for ASCII control characters
     U+0001 to U+001B, and otherwise follow option 0.
   \item[2] Use variable-length hexadecimal ``\texttt{\textbackslash x\{\}}''

@@ -34,13 +34,17 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -65,6 +69,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.report =
+  push_pbox_toexpand("kanji.grfive.report");
+  build_kanji.level(build_kanji.lr(520,0)
+    (kanji.grthree.blessing)
+    (kanji.rightrad.clothing));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.legal_one =
   push_pbox_toexpand("kanji.greight.legal_one");
   build_kanji.level(build_kanji.tb(550,0)
@@ -75,6 +89,12 @@ vardef kanji.greight.legal_one =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% hou/muku "report"
+begintsuglyph("uni5831",49);
+  kanji.grfive.report;
+  tsu_render;
+endtsuglyph;
 
 % shou/ba "place"
 begintsuglyph("uni5834",52);

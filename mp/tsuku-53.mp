@@ -183,6 +183,18 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grnine.divination =
+  push_pbox_toexpand("kanji.grnine.divination");
+  push_stroke((400,780)--(400,-20),
+    (1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  push_stroke((400,500)..tension 1.1..(640,405)..(780,300),
+    (1.3,1.3)--(1.6,1.6)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % by itself means "be flustered"
 begintsuglyph("uni5306",6);
   kanji.radical.crossed_must_not;
@@ -258,6 +270,12 @@ endtsuglyph;
 % nan/minami "south"
 begintsuglyph("uni5357",87);
   kanji.grtwo.south;
+  tsu_render;
+endtsuglyph;
+
+% boku/urana "divination"
+begintsuglyph("uni535C",92);
+  kanji.grnine.divination;
   tsu_render;
 endtsuglyph;
 

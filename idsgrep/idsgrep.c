@@ -36,6 +36,14 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
    char *input_buffer=NULL;
    int inbuf_size=0,inbuf_used=0,parse_ptr=0;
    FILE *infile;
+   HASHED_STRING *hfn,*colon;
+   
+   /* wrap the filename in a string so we can escape-print it */
+   if (fn_flag>=0)
+     hfn=new_string(strlen(fn+fn_flag),fn+fn_flag);
+   else
+     hfn=new_string(strlen(fn),fn);
+   colon=new_string(1,":");
    
    /* open input file */
    if (strcmp(fn,"-")) {
@@ -89,7 +97,7 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 	    if (tree_match(match_pattern,to_match)) {
 	       for (i=0;((unsigned char)input_buffer[i])<=0x20;i++);
 	       if (fn_flag>=0)
-		 printf(":%s:",fn+fn_flag);
+		 write_bracketed_string(hfn,colon);
 	       if (cook_output)
 		 write_cooked_tree(to_match);
 	       else {
@@ -112,6 +120,8 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
      fclose(infile);
    
    free(input_buffer);
+   delete_string(hfn);
+   delete_string(colon);
 }
 
 /**********************************************************************/

@@ -138,6 +138,19 @@ vardef kanji.greight.buttocks =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.hill =
+  push_pbox_toexpand("kanji.greight.hill");
+  kanji.radical.gmm;
+  build_kanji.sscale(xyscaled (0.6,0.7))
+    (build_kanji.level(build_kanji.tb(480,110)
+       (kanji.toprad.sparkle_two)
+       (kanji.grone.mountain;
+        set_boserif(0,0,whatever);
+        push_stroke((120,780)--(880,780),(1.6,1.6)--(1.6,1.6));
+        set_boserif(0,1,9))));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.tail =
   push_pbox_toexpand("kanji.greight.tail");
   build_kanji.level(
@@ -337,6 +350,12 @@ endtsuglyph;
 % yama/san "mountain"
 begintsuglyph("uni5C71",113);
   kanji.grone.mountain;
+  tsu_render;
+endtsuglyph;
+
+% kou/oka "hill"
+begintsuglyph("uni5CA1",161);
+  kanji.greight.hill;
   tsu_render;
 endtsuglyph;
 

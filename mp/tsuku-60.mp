@@ -46,6 +46,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -104,6 +105,14 @@ vardef kanji.grthree.sad =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.feelings =
+  push_pbox_toexpand("kanji.grfive.feelings");
+  build_kanji.level(build_kanji.lr(330,-30)
+    (kanji.leftrad.heart)
+    (kanji.grone.blue));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfive.gender =
   push_pbox_toexpand("kanji.grfive.gender");
@@ -493,6 +502,12 @@ endtsuglyph;
 % hi/kana "sad"
 begintsuglyph("uni60B2",178);
   kanji.grthree.sad;
+  tsu_render;
+endtsuglyph;
+
+% jou/nasa "feelings"
+begintsuglyph("uni60C5",197);
+  kanji.grfive.feelings;
   tsu_render;
 endtsuglyph;
 

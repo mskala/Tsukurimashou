@@ -101,17 +101,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.blessing =
-  push_pbox_toexpand("kanji.grthree.blessing");
-  build_kanji.level(build_kanji.tb(480,0)
-    (kanji.grone.earth)
-    (build_kanji.sscale(xyscaled (1.2,1.4) shifted (0,-140))
-       (kanji.grthree.sheep);
-     obstacktype[find_stroke(-3)]:=otnull;
-     replace_strokep(0)((point 0 of oldp)--(500,-50))));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.courtyard =
   push_pbox_toexpand("kanji.grthree.courtyard");
   build_kanji.dotcliff_enclose(

@@ -50,6 +50,22 @@ vardef kanji.rightrad.carve_wood =
   expand_pbox;
 enddef;
 
+% named for the most common character to contain it
+vardef kanji.rightrad.clothing =
+  push_pbox_toexpand("kanji.rightrad.clothing");
+  tsu_xform(identity yscaled 0.92)(build_kanji.tb(440,60)
+    (kanji.radical.seal)
+    (tsu_xform(identity shifted (50,0))
+       (kanji.greight.otoh)));
+  replace_strokep(-2)
+    ((xpart point 0 of oldp,-40)--subpath (1,infinity) of oldp);
+  replace_strokep(-1)
+    (oldp shifted (-900,0) xscaled 0.78 shifted (900,0));
+  replace_strokep(-1)
+    (((-170,0)+point 0 of oldp)--subpath (1,infinity) of oldp);
+  expand_pbox;
+enddef;
+
 vardef kanji.rightrad.short_hair =
   push_pbox_toexpand("kanji.rightrad.short_hair");
   push_stroke((780,750)..tension 1.2..(580,620)..(180,500),

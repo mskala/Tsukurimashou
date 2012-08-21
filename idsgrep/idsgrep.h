@@ -93,6 +93,7 @@ NODE *assoc_match_fn(NODE *);
 extern int cook_output,canonicalize_input;
 
 void set_output_recipe(char *);
+void write_bracketed_string(HASHED_STRING *,HASHED_STRING *);
 void write_cooked_tree(NODE *);
 
 /**********************************************************************/
