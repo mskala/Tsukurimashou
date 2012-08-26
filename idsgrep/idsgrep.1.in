@@ -62,6 +62,41 @@ documentation in
 .
 .SH OPTIONS
 .TP
+.BI \-c "FMT\fR,\fP " "\-\^\-cooking=" FMT
+Specify a mode for cooking of input and output.
+The
+.I FMT
+parameter may be
+.BR raw ", " rawnc ", " ascii ", " cooked ", " indent ", "
+or a string of up to 12 decimal digits.
+By default, or in
+.B raw
+or
+.B rawnc
+mode,
+.I @PACKAGE@
+will write out for each matching tree the exact sequence of bytes that were
+read and parsed to generate that tree.
+In the case of invalid input (for instance, malformed UTF-8), that sequence
+of bytes could be bad.
+Even with perfectly valid input, the sequence could be unusual, because EIDS
+syntax in general permits many different strings to have the same semantic
+value.
+Setting a non-raw mode for output cooking will cause
+.I @PACKAGE@
+to generate its own EIDS syntax, in a guaranteed consistent form, for each
+matching tree.
+The
+.B rawnc
+mode is identical to
+.B raw
+save that it disables canonicalization (ascii-to-symbolic) processing on
+input.
+That modification to the syntax is also available in conjunction with output
+cooking by means of the advanced decimal-string syntax.
+See the PDF documentation for details of
+.BR -c "."
+.TP
 .BI \-d "NAME\fR,\fP " "\-\^\-dictionary=" NAME
 Choose one or more dictionaries from the default dictionary directory, using
 shell glob pattern
@@ -328,8 +363,10 @@ relatively verbose ASCII alphabetic strings) are replaced by
 single-character forms.
 The idea is to provide human-readable pure-ASCII alternate forms for
 the IDCs and matching operators.
-In the future there may be options to skip this transformation
-on input, or perform its reverse on output.
+The
+.B -c
+command-line option makes it possibile to skip this transformation on
+input, or perform its inverse on output.
 The list of replacements is:  (anything) to (?); .anywhere. to ...; [and] to
 [&]; [or] to [|]; .not. to .!.; .regex. to ./.; .equal. to .=.; [lr] to
 [<U+2FF0>]; [tb] to [<U+2FF1>]; {lcr} to {<U+2FF2>}; {tcb} to {<U+2FF3>};
@@ -552,11 +589,21 @@ can't handle them portably, so this document is less useful than it should
 be.
 .PP
 PCRE, due to the use of C-strings in its API, cannot accept literal zero
-bytes (<U+0000>) in matching patterns, in even though EIDS syntax would
+bytes (<U+0000>) in matching patterns, even though EIDS syntax would
 otherwise allow them.
 Zero bytes are allowed in matching subjects, and may be matched
 by writing them in the pattern with PCRE's escape syntax instead of
 literally.
+.PP
+If used on a system that permits non-UTF-8 byte sequences as filenames, it
+is possible that
+.I @PACKAGE@
+may fail when it attempts to write out such a filename, because of
+trying to pass the filename through escape-generation logic designed for
+UTF-8.
+This issue is hard to test because all modern systems use UTF-8 or some
+restriction thereof for filenames, but it will probably be revisited, and
+if it's a problem, fixed, in some future version.
 .
 .SH AUTHOR
 Matthew Skala <mskala@ansuz.sooke.bc.ca>
