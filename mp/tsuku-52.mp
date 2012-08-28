@@ -130,6 +130,38 @@ vardef kanji.grfour.addition =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.courage =
+  push_pbox_toexpand("kanji.grfour.courage");
+  build_kanji.level(build_kanji.tb(640,80)
+    (push_stroke((220,740)--(750,740)..tension 1.2..(620,380)..(490,140),
+       (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+     set_botip(0,1,0);
+     set_boserif(0,1,4);
+     push_stroke((340,410)..tension 1.2..(490,140)..(520,20),
+       (1.1,1.1)--(1.5,1.5)--(1.8,1.8)))
+    (kanji.grone.man));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.labour =
+  push_pbox_toexpand("kanji.grfour.labour");
+  build_kanji.tb(740,100)
+    (kanji.toprad.alt_sparkle_three)
+    (build_kanji.tb(580,150)
+       (kanji.radical.conservative_hat)
+       (kanji.grone.power));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.merit =
+  push_pbox_toexpand("kanji.grfour.merit");
+  build_kanji.level(build_kanji.lr(380,60)
+    (tsu_xform(identity shifted (0,50))(build_kanji.lift_skirt(400,250)
+       (kanji.grtwo.craft)))
+    (kanji.grone.power));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.cut_the_grass =
@@ -338,6 +370,12 @@ begintsuglyph("uni529B",155);
   tsu_render;
 endtsuglyph;
 
+% kou/isao "merit"
+begintsuglyph("uni529F",159);
+  kanji.grfour.merit;
+  tsu_render;
+endtsuglyph;
+
 % kuwa "addition", also "Canada"
 begintsuglyph("uni52A0",160);
   kanji.grfour.addition;
@@ -356,6 +394,18 @@ endtsuglyph;
 % jo/tasu "help"
 begintsuglyph("uni52A9",169);
   kanji.grthree.help;
+  tsu_render;
+endtsuglyph;
+
+% rou/ita "labour"
+begintsuglyph("uni52B4",180);
+  kanji.grfour.labour;
+  tsu_render;
+endtsuglyph;
+
+% yuu/isa "courage"
+begintsuglyph("uni52C7",199);
+  kanji.grfour.courage;
   tsu_render;
 endtsuglyph;
 
