@@ -66,6 +66,15 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.hard =
+  push_pbox_toexpand("kanji.grfour.hard");
+  kanji.radical.box;
+  build_kanji.sscale(scaled 0.75)(kanji.grtwo.old);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % box radical
 begintsuglyph("uni56D7",215);
   kanji.radical.box;
@@ -100,6 +109,12 @@ endtsuglyph;
 % zu/haka "map"
 begintsuglyph("uni56F3",243);
   kanji.grtwo.map;
+  tsu_render;
+endtsuglyph;
+
+% ko/kata "hard"
+begintsuglyph("uni56FA",250);
+  kanji.grfour.hard;
   tsu_render;
 endtsuglyph;
 

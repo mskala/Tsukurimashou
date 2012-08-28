@@ -44,6 +44,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input rightrad.mp;
 input toprad.mp;
 
@@ -127,6 +128,22 @@ vardef kanji.grfour.addition =
   build_kanji.level(build_kanji.lr(500,0)
     (kanji.grone.power)
     (kanji.grone.mouth));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.advantage =
+  push_pbox_toexpand("kanji.grfour.advantage");
+  build_kanji.level(build_kanji.lr(560,30)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.auxilliary =
+  push_pbox_toexpand("kanji.grfour.auxilliary");
+  build_kanji.level(build_kanji.lr(620,10)
+    (kanji.rare.roll_of_cloth)
+    (kanji.rightrad.sword));
   expand_pbox;
 enddef;
 
@@ -308,6 +325,12 @@ begintsuglyph("uni5218",24);
   tsu_render;
 endtsuglyph;
 
+% ri/ki "advantage"
+begintsuglyph("uni5229",39);
+  kanji.grfour.advantage;
+  tsu_render;
+endtsuglyph;
+
 % extra: punishment by cutting off the ears
 begintsuglyph("uni5235",53);
   build_kanji.level(build_kanji.lr(560,30)
@@ -353,6 +376,12 @@ begintsuglyph("uni5260",96);
   build_kanji.level(build_kanji.lr(650,0)
     (kanji.grtwo.capital)
     (kanji.rightrad.sword));
+  tsu_render;
+endtsuglyph;
+
+% fuku/soi "auxilliary" (also "adverb")
+begintsuglyph("uni526F",111);
+  kanji.grfour.auxilliary;
   tsu_render;
 endtsuglyph;
 

@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -166,6 +167,16 @@ vardef kanji.grthree.regular =
      replace_strokep(-4)(subpath (0.12,0.88) of oldp);
      replace_strokeq(-4)((1.6,1.6)--(1.6,1.6));
      set_boserif(-4,1,9));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.guess =
+  push_pbox_toexpand("kanji.grfour.guess");
+  build_kanji.tb(600,70)
+    (kanji.radical.silly_hat)
+    (kanji.grthree.festival);
   expand_pbox;
 enddef;
 
@@ -367,6 +378,12 @@ endtsuglyph;
 % kan/samu "cold"
 begintsuglyph("uni5BD2",210);
   kanji.grthree.cold;
+  tsu_render;
+endtsuglyph;
+
+% satsu "guess"
+begintsuglyph("uni5BDF",223);
+  kanji.grfour.guess;
   tsu_render;
 endtsuglyph;
 

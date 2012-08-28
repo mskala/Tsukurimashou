@@ -60,6 +60,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.borrow =
+  push_pbox_toexpand("kanji.grfour.borrow");
+  build_kanji.lr(320,20)
+    (kanji.leftrad.person)
+    (kanji.grthree.once_upon_a_time);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.healthy =
   push_pbox_toexpand("kanji.grfour.healthy");
   build_kanji.lr(260,0)
@@ -99,6 +107,12 @@ enddef;
 % bai/be "double"
 begintsuglyph("uni500D",13);
   kanji.grthree.double;
+  tsu_render;
+endtsuglyph;
+
+% shaku/ka "borrow"
+begintsuglyph("uni501F",31);
+  kanji.grfour.borrow;
   tsu_render;
 endtsuglyph;
 

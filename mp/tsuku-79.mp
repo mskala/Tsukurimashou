@@ -94,34 +94,6 @@ vardef kanji.grthree.deity =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.festival =
-  push_pbox_toexpand("kanji.grthree.festival");
-  build_kanji.level(
-    push_stroke((230,810)..tension 1.2..(170,670)..(50,540),
-      (1.5,1.5)--(1.3,1.3)--(0.85,0.9));
-    set_boserif(0,0,10);
-    push_stroke((240,780)--(460,780)..(410,680)..(300,540)..(60,370),
-      (1.5,1.5)--(1.6,1.6)--(1.5,1.5)--(1.3,1.3)--(0.85,0.9));
-    set_boserif(0,1,4);
-    set_botip(0,1,0);
-    push_stroke((210,700)..tension 1.2..(270,670)..(320,620),
-      (1,1)--(1.4,1.4)--(1.7,1.7));
-    push_stroke((140,590)..tension 1.2..(200,560)..(250,510),
-      (1,1)--(1.4,1.4)--(1.7,1.7));
-    push_stroke((540,810)..tension 1.2..(680,570)..(920,400),
-      (1,1)--(1.3,1.3)--(2.25,0.95));
-    push_stroke((575,780)--(880,780)..(830,700)..(780,650)..(670,580),
-      (1.5,1.5)--(1.6,1.6)--(1.5,1.5)--(1.3,1.3)--(0.85,0.9));
-    set_boserif(0,1,4);
-    set_botip(0,1,0);
-    push_stroke((330,470)--(660,470),(1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,9);
-    build_kanji.sscale(yscaled 0.6 shifted (0,-150))(kanji.grfive.showing);
-    obstacktype[find_whatever(otstroke,-4)]:=otnull;
-  );
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.good_luck =
   push_pbox_toexpand("kanji.grthree.deity");
   build_kanji.lr(450,20)
