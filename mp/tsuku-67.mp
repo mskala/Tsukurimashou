@@ -127,6 +127,24 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.pine =
+  push_pbox_toexpand("kanji.grfour.pine");
+  build_kanji.lr(480,20)
+    (build_kanji.sscale(yscaled 1.07)(kanji.leftrad.wood))
+    (kanji.grtwo.public);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.tip =
+  push_pbox_toexpand("kanji.grfour.tip");
+  kanji.grfour.not_yet;
+  replace_strokep(-3)((70,610)--(930,610));
+  replace_strokep(-4)((160,360)--(840,360));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % tsuki/getsu "moon"
 begintsuglyph("uni6708",8);
   kanji.grone.moon;
@@ -169,6 +187,12 @@ begintsuglyph("uni672A",42);
   tsu_render;
 endtsuglyph;
 
+% matsu/sue "tip"
+begintsuglyph("uni672B",43);
+  kanji.grfour.tip;
+  tsu_render;
+endtsuglyph;
+
 % hon "book"
 begintsuglyph("uni672C",44);
   kanji.grone.book;
@@ -196,6 +220,12 @@ endtsuglyph;
 % tou/higashi "east"
 begintsuglyph("uni6771",113);
   kanji.grtwo.east;
+  tsu_render;
+endtsuglyph;
+
+% shou/matsu "pine"
+begintsuglyph("uni677E",126);
+  kanji.grfour.pine;
   tsu_render;
 endtsuglyph;
 

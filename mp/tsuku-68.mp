@@ -35,9 +35,11 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -73,6 +75,32 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.plan =
+  push_pbox_toexpand("kanji.grfour.plan");
+  build_kanji.tb(320,10)
+    (kanji.grthree.easy)
+    (kanji.grone.wood);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.prosperity =
+  push_pbox_toexpand("kanji.grfour.prosperity");
+  build_kanji.tb(740,100)
+    (kanji.toprad.alt_sparkle_three)
+    (build_kanji.tb(580,180)
+       (kanji.radical.conservative_hat)
+       (kanji.grone.wood));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ei/saka "prosperity"
+begintsuglyph("uni6804",4);
+  kanji.grfour.prosperity;
+  tsu_render;
+endtsuglyph;
+
 % kou "school"
 begintsuglyph("uni6821",33);
   kanji.grone.school;
@@ -82,6 +110,12 @@ endtsuglyph;
 % kon/ne "root"
 begintsuglyph("uni6839",57);
   kanji.grthree.root;
+  tsu_render;
+endtsuglyph;
+
+% an/tsukue "plan"
+begintsuglyph("uni6848",52);
+  kanji.grfour.plan;
   tsu_render;
 endtsuglyph;
 
