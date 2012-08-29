@@ -326,7 +326,7 @@ begintsuglyph("uni5218",24);
 endtsuglyph;
 
 % ri/ki "advantage"
-begintsuglyph("uni5229",39);
+begintsuglyph("uni5229",41);
   kanji.grfour.advantage;
   tsu_render;
 endtsuglyph;

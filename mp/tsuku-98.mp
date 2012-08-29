@@ -88,9 +88,42 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.cooked_rice =
+  push_pbox_toexpand("kanji.grfour.cooked_rice");
+  build_kanji.lr(520,0)
+    (kanji.leftrad.eat)
+    (kanji.grthree.anti);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.order =
+  push_pbox_toexpand("kanji.grfour.order");
+  build_kanji.level(build_kanji.lr(440,20)
+    (kanji.grone.river)
+    (kanji.grnine.page));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.prayer =
+  push_pbox_toexpand("kanji.grfour.prayer");
+  build_kanji.level(build_kanji.lr(540,50)
+    (tsu_xform(identity shifted (0,40) yscaled (857/800) shifted (0,-40))
+       (kanji.grtwo.field))
+    (kanji.grnine.page));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ketsu/peeji "page"
 begintsuglyph("uni9801",1);
   kanji.grnine.page;
+  tsu_render;
+endtsuglyph;
+
+% shun/aya "order"
+begintsuglyph("uni9806",6);
+  kanji.grfour.order;
   tsu_render;
 endtsuglyph;
 
@@ -112,6 +145,12 @@ begintsuglyph("uni9854",84);
   tsu_render;
 endtsuglyph;
 
+% gan/nega "prayer" (as in onegai, "please," literally "I pray you")
+begintsuglyph("uni9858",88);
+  kanji.grfour.prayer;
+  tsu_render;
+endtsuglyph;
+
 % fuu/kaze "wind"
 begintsuglyph("uni98A8",168);
   kanji.grtwo.wind;
@@ -127,6 +166,12 @@ endtsuglyph;
 % simplified "eat" for use as radical
 begintsuglyph("uni98E0",224);
   build_kanji.sscale(xscaled 0.6)(kanji.leftrad.eat);
+  tsu_render;
+endtsuglyph;
+
+% han/meshi "cooked rice"
+begintsuglyph("uni98EF",239);
+  kanji.grfour.cooked_rice;
   tsu_render;
 endtsuglyph;
 

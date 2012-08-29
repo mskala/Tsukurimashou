@@ -47,8 +47,8 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.field =
-  push_pbox_toexpand("kanji.grtwo.field");
+vardef kanji.grtwo.plains =
+  push_pbox_toexpand("kanji.grtwo.plains");
   build_kanji.level(build_kanji.lr(520,50)
     (build_kanji.lift_skirt(250,150)(kanji.grtwo.neighbourhood))
     (kanji.grthree.before));
@@ -173,7 +173,7 @@ endtsuglyph;
 
 % ya/no "field"
 begintsuglyph("uni91CE",206);
-  kanji.grtwo.field;
+  kanji.grtwo.plains;
   tsu_render;
 endtsuglyph;
 

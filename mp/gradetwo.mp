@@ -281,6 +281,26 @@ vardef kanji.grtwo_helper.feather =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.field =
+  push_pbox_toexpand("kanji.grtwo.field");
+  build_kanji.level(build_kanji.cliff_enclose(
+    build_kanji.tb(380,67)
+      (kanji.grone.white)
+      (kanji.grone.small)));
+  begingroup
+    save myxf;
+    transform myxf;
+    point 2 of get_strokep(-3) transformed myxf=point 2 of get_strokep(-3);
+    ypart (point 0 of get_strokep(-3) transformed myxf)=760;
+    xpart myxf=yxpart myxf=0;
+    xxpart myxf=1;
+    replace_strokep(-3)(oldp transformed myxf);
+  endgroup;
+  set_boserif(-3,0,whatever);
+  set_boserif(-1,0,whatever);
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.fish =
   push_pbox_toexpand("kanji.grtwo.fish");
   build_kanji.level(build_kanji.tb(190,0)
