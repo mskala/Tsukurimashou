@@ -429,6 +429,7 @@ size_t parse(size_t len,char *inp) {
 		(parse_state==newstr->arity)) {
 	       tmps=newstr->canonical;
 	       delete_string(newstr);
+	       tmps->refs++;
 	       newstr=tmps;
 	    }
 	    

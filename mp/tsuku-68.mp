@@ -114,7 +114,7 @@ begintsuglyph("uni6839",57);
 endtsuglyph;
 
 % an/tsukue "plan"
-begintsuglyph("uni6848",52);
+begintsuglyph("uni6848",72);
   kanji.grfour.plan;
   tsu_render;
 endtsuglyph;
