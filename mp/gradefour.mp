@@ -32,6 +32,14 @@ inclusion_lock(gradefour);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.addition =
+  push_pbox_toexpand("kanji.grfour.addition");
+  build_kanji.level(build_kanji.lr(500,0)
+    (kanji.grone.power)
+    (kanji.grone.mouth));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.army =
   push_pbox_toexpand("kanji.grfour.army");
   build_kanji.level(build_kanji.tb(640,300)

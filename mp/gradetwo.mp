@@ -267,6 +267,29 @@ vardef kanji.grtwo.feather =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.half =
+  push_pbox_toexpand("kanji.grtwo.half");
+  build_kanji.level(begingroup
+    save saved_path,mytr;
+    path saved_path;
+    transform mytr;
+    xpart mytr=xypart mytr=yxpart mytr=0;
+    xxpart mytr=1;
+    (500,160) transformed mytr=(500,540);
+    (500,780) transformed mytr=(500,780);
+    tsu_xform(mytr)
+      (kanji.toprad.sparkle_three;saved_path:=get_strokep(0));
+    replace_strokep(0)(saved_path);
+    push_stroke((170,460)--(830,460),
+      (1.6,1.6)--(1.6,1.6));
+    set_boserif(0,1,9);
+    push_stroke((120,260)--(880,260),
+      (1.6,1.6)--(1.6,1.6));
+    set_boserif(0,1,9);
+  endgroup);
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo_helper.feather =
   push_pbox_toexpand("kanji.grtwo_helper.feather");
   push_stroke((60,720)--(410,720),(1.6,1.6)--(1.6,1.6));

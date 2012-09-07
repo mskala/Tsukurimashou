@@ -33,17 +33,20 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -102,6 +105,14 @@ vardef kanji.grfour.believe =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.example =
+  push_pbox_toexpand("kanji.grfour.example");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grthree.column);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.rank =
   push_pbox_toexpand("kanji.grfour.rank");
   build_kanji.lr(300,10)
@@ -138,6 +149,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.accompany =
+  push_pbox_toexpand("kanji.greight.accompany");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grtwo.half);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.assistant =
   push_pbox_toexpand("kanji.greight.assistant");
   build_kanji.lr(300,40)
@@ -154,11 +173,59 @@ vardef kanji.greight.earl =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.elongate =
+  push_pbox_toexpand("kanji.greight.elongate");
+  build_kanji.lr(300,40)
+    (kanji.leftrad.person)
+    (kanji.grthree.have_honour);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.excellent =
+  push_pbox_toexpand("kanji.greight.excellent");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grnine.square_jewel);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.inquiry =
+  push_pbox_toexpand("kanji.greight.inquiry");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.person)
+    (kanji.grfour.director);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.me_macho =
   push_pbox_toexpand("kanji.greight.me_macho");
   build_kanji.lr(270,40*(1-mincho))
     (kanji.leftrad.person)
     (kanji.grnine.suffocate);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.prostrate =
+  push_pbox_toexpand("kanji.greight.prostrate");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grone.dog);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.samurai =
+  push_pbox_toexpand("kanji.greight.samurai");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grtwo.temple);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.skill =
+  push_pbox_toexpand("kanji.greight.skill");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grfive.support);
   expand_pbox;
 enddef;
 
@@ -180,6 +247,31 @@ vardef kanji.grnine.assistant =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.five =
+  push_pbox_toexpand("kanji.grnine.five");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grone.five);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.italy =
+  push_pbox_toexpand("kanji.grnine.italy");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.person)
+    (tsu_xform(identity shifted (0,-900) yscaled 1.17 shifted (0,900))
+       (kanji.rare.director));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.nurse =
+  push_pbox_toexpand("kanji.grnine.nurse");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grfour.addition);
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.paddy =
   push_pbox_toexpand("kanji.grnine.paddy");
   build_kanji.lr(300,20)
@@ -188,7 +280,39 @@ vardef kanji.grnine.paddy =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.urge_to_eat =
+  push_pbox_toexpand("kanji.grnine.urge_to_eat");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grthree.existence);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% i/kare "Italy"
+begintsuglyph("uni4F0A",10);
+  kanji.grnine.italy;
+  tsu_render;
+endtsuglyph;
+
+% go/itsutsu "five"
+begintsuglyph("uni4F0D",13);
+  kanji.grnine.five;
+  tsu_render;
+endtsuglyph;
+
+% gi/waza "skill"
+begintsuglyph("uni4F0E",14);
+  kanji.greight.skill;
+  tsu_render;
+endtsuglyph;
+
+% fuku/fu "prostrate"
+begintsuglyph("uni4F0F",15);
+  kanji.greight.prostrate;
+  tsu_render;
+endtsuglyph;
 
 % yasu "vacation"
 begintsuglyph("uni4F11",17);
@@ -224,11 +348,35 @@ begintsuglyph("uni4F31",49);
   tsu_render;
 endtsuglyph;
 
+% han/tomona "accompany"
+begintsuglyph("uni4F34",52);
+  kanji.greight.accompany;
+  tsu_render;
+endtsuglyph;
+
 % extra
 begintsuglyph("uni4F35",53);
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (build_kanji.sscale(scaled 0.95)(kanji.grone.four));
+  tsu_render;
+endtsuglyph;
+
+% shin/no "elongate"
+begintsuglyph("uni4F38",56);
+  kanji.greight.elongate;
+  tsu_render;
+endtsuglyph;
+
+% shi/ukaga "inquiry"
+begintsuglyph("uni4F3A",58);
+  kanji.greight.inquiry;
+  tsu_render;
+endtsuglyph;
+
+% ka/togi "nurse"
+begintsuglyph("uni4F3D",61);
+  kanji.grnine.nurse;
   tsu_render;
 endtsuglyph;
 
@@ -318,6 +466,12 @@ begintsuglyph("uni4F72",114);
   tsu_render;
 endtsuglyph;
 
+% ka "excellent"
+begintsuglyph("uni4F73",115);
+  kanji.greight.excellent;
+  tsu_render;
+endtsuglyph;
+
 % hei/awa "unite"
 begintsuglyph("uni4F75",117);
   kanji.greight.unite;
@@ -346,11 +500,32 @@ begintsuglyph("uni4F88",136);
   tsu_render;
 endtsuglyph;
 
+% rei/tato "example"
+begintsuglyph("uni4F8B",139);
+  kanji.grfour.example;
+  tsu_render;
+endtsuglyph;
+
+% ji/samurai "samurai"
+begintsuglyph("uni4F8D",141);
+  kanji.greight.samurai;
+  tsu_render;
+endtsuglyph;
+
+% yuu/susu "urge [another] to eat"
+begintsuglyph("uni4F91",145);
+  kanji.grnine.urge_to_eat;
+  tsu_render;
+endtsuglyph;
+
 % kyuu/domo "offer"
 begintsuglyph("uni4F9B",155);
   kanji.grsix.offer;
   tsu_render;
 endtsuglyph;
+
+% TODO 4FAE\quad 【侮】[lr]⺅<每>[tb]<\textbackslash x\{20089\}>[lr]丿一母\\
+% TODO 4FB6\quad 【侶】[lr]⺅<呂>\{tcb\}口丿口\\
 
 % extra
 begintsuglyph("uni4FBD",189);
@@ -365,6 +540,8 @@ begintsuglyph("uni4FC2",194);
   kanji.grthree.duty_officer;
   tsu_render;
 endtsuglyph;
+
+% TODO 4FC3\quad 【促】[lr]⺅<足>[tb]口龰\\
 
 % extra
 begintsuglyph("uni4FC8",200);
@@ -383,17 +560,27 @@ begintsuglyph("uni4FC9",201);
   tsu_render;
 endtsuglyph;
 
+% TODO 4FD0\quad 【俐】[lr]⺅<利>[lr]禾刂\\
+% TODO 4FD7\quad 【俗】[lr]⺅谷\\
+% TODO 4FDD\quad 【保】[lr]⺅<呆>[tb]口木\\
+
 % shin "believe"
 begintsuglyph("uni4FE1",225);
   kanji.grfour.believe;
   tsu_render;
 endtsuglyph;
 
+% TODO 4FE3\quad 【俣】[lr]⺅<吴>[tb]口<天>[tb]一大\\
+% TODO 4FEE\quad 【修】[wrapul][lr]<CDP-8B7A>[lr]⺅丨夂彡\\
+% TODO 4FF1\quad 【俱】[lr]⺅<具>[tb]<CDP-8BA5>;<GT-K00059>;\\
+
 % hai "haiku"
 begintsuglyph("uni4FF3",243);
   kanji.grsix.haiku;
   tsu_render;
 endtsuglyph;
+
+% TODO 4FF5\quad 【俵】[lr]⺅<表>[tb]龶<CDP-8B67>;\\
 
 % en/ore "me" (masculine, aggressive, more so than "boku")
 begintsuglyph("uni4FFA",250);

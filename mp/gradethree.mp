@@ -107,6 +107,14 @@ vardef kanji.grthree.change =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.column =
+  push_pbox_toexpand("kanji.grthree.column");
+  build_kanji.level(build_kanji.lr(560,20)
+    (build_kanji.sscale(yscaled 0.92)(kanji.leftrad.bare_bone))
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.correlation =
   push_pbox_toexpand("kanji.grthree.correlation");
   build_kanji.level(build_kanji.lr(440,80)
@@ -136,6 +144,14 @@ vardef kanji.grthree.easy =
     (kanji.radical.silly_hat)
     (kanji.grone.woman);
   expand_pbox;
+enddef;
+
+vardef kanji.grthree.existence =
+  push_pbox_toexpand("kanji.grthree.existence");
+  build_kanji.lean_to((430,240));
+  build_kanji.sscale(xyscaled (0.76,0.63) shifted (30,-170))
+    (kanji.bottomrad.moon);
+  expand_pbox;  
 enddef;
 
 vardef kanji.grthree.face =

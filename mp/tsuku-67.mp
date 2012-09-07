@@ -93,14 +93,6 @@ vardef kanji.grthree.clothing =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.have =
-  push_pbox_toexpand("kanji.grthree.have");
-  build_kanji.lean_to((430,240));
-  build_kanji.sscale(xyscaled (0.76,0.63) shifted (30,-170))
-    (kanji.bottomrad.moon);
-  expand_pbox;  
-enddef;
-
 vardef kanji.grthree.pillar =
   push_pbox_toexpand("kanji.grthree.pillar");
   build_kanji.lr(480,-10)
@@ -153,7 +145,7 @@ endtsuglyph;
 
 % yuu/a "to have"
 begintsuglyph("uni6709",9);
-  kanji.grthree.have;
+  kanji.grthree.existence;
   tsu_render;
 endtsuglyph;
 

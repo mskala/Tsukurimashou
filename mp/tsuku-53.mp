@@ -51,29 +51,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.half =
-  push_pbox_toexpand("kanji.grtwo.half");
-  build_kanji.level(begingroup
-    save saved_path,mytr;
-    path saved_path;
-    transform mytr;
-    xpart mytr=xypart mytr=yxpart mytr=0;
-    xxpart mytr=1;
-    (500,160) transformed mytr=(500,540);
-    (500,780) transformed mytr=(500,780);
-    tsu_xform(mytr)
-      (kanji.toprad.sparkle_three;saved_path:=get_strokep(0));
-    replace_strokep(0)(saved_path);
-    push_stroke((170,460)--(830,460),
-      (1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,9);
-    push_stroke((120,260)--(880,260),
-      (1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,9);
-  endgroup);
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.north =
   push_pbox_toexpand("kanji.grtwo.north");
   push_stroke((390,800)--(390,-20),(1.6,1.6)--(1.5,1.5));
@@ -426,15 +403,15 @@ begintsuglyph("uni53F4",244);
   tsu_render;
 endtsuglyph;
 
-% shi/tsukasado "director" or "official (person)"
-begintsuglyph("uni53F8",248);
-  kanji.grfour.director;
-  tsu_render;
-endtsuglyph;
-
 % gou/sake "number"
 begintsuglyph("uni53F7",247);
   kanji.grthree.number;
+  tsu_render;
+endtsuglyph;
+
+% shi/tsukasado "director" or "official (person)"
+begintsuglyph("uni53F8",248);
+  kanji.grfour.director;
   tsu_render;
 endtsuglyph;
 

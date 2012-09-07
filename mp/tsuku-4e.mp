@@ -123,6 +123,32 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.affair =
+  push_pbox_toexpand("kanji.grfive.affair");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grtwo.cow);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.france =
+  push_pbox_toexpand("kanji.grfive.france");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.radical.mu);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.temporary =
+  push_pbox_toexpand("kanji.grfive.temporary");
+  build_kanji.lr(300,-10)
+    (kanji.leftrad.person)
+    (kanji.grthree.anti);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.benevolence =
   push_pbox_toexpand("kanji.grsix.benevolence");
   build_kanji.lr(300,20)
@@ -499,6 +525,12 @@ begintsuglyph("uni4ECB",203);
   tsu_render;
 endtsuglyph;
 
+% futsu/hotoke "France" or "Buddha"
+begintsuglyph("uni4ECF",207);
+  kanji.grfive.france;
+  tsu_render;
+endtsuglyph;
+
 % ko "offspring"
 begintsuglyph("uni4ED4",212);
   kanji.grnine.offspring;
@@ -552,6 +584,12 @@ begintsuglyph("uni4EE9",233);
   tsu_render;
 endtsuglyph;
 
+% ka/kari "temporary"
+begintsuglyph("uni4EEE",238);
+  kanji.grfive.temporary;
+  tsu_render;
+endtsuglyph;
+
 % extra
 begintsuglyph("uni4EEF",239);
   build_kanji.lr(300,20)
@@ -571,6 +609,12 @@ begintsuglyph("uni4EF4",244);
   build_kanji.lr(300,-20)
     (kanji.leftrad.person)
     (kanji.grone.moon);
+  tsu_render;
+endtsuglyph;
+
+% ken/kudan "affair"
+begintsuglyph("uni4EF6",246);
+  kanji.grfive.affair;
   tsu_render;
 endtsuglyph;
 

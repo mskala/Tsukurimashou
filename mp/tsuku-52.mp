@@ -37,6 +37,7 @@ input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -72,14 +73,6 @@ vardef kanji.grtwo.cut =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grthree.column =
-  push_pbox_toexpand("kanji.grthree.column");
-  build_kanji.level(build_kanji.lr(560,20)
-    (build_kanji.sscale(yscaled 0.92)(kanji.leftrad.bare_bone))
-    (kanji.rightrad.sword));
-  expand_pbox;
-enddef;
 
 vardef kanji.grthree.exertion =
   push_pbox_toexpand("kanji.grthree.exertion");
@@ -122,14 +115,6 @@ vardef kanji.grthree.victory =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfour.addition =
-  push_pbox_toexpand("kanji.grfour.addition");
-  build_kanji.level(build_kanji.lr(500,0)
-    (kanji.grone.power)
-    (kanji.grone.mouth));
-  expand_pbox;
-enddef;
 
 vardef kanji.grfour.advantage =
   push_pbox_toexpand("kanji.grfour.advantage");
