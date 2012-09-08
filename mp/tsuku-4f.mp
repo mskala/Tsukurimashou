@@ -131,6 +131,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.protect =
+  push_pbox_toexpand("kanji.grfive.protect");
+  build_kanji.lr(300,30)
+    (kanji.leftrad.person)
+    (kanji.rare.befuddled);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.haiku =
   push_pbox_toexpand("kanji.grsix.haiku");
   build_kanji.lr(300,20)
@@ -162,6 +172,22 @@ vardef kanji.greight.assistant =
   build_kanji.lr(300,40)
     (kanji.leftrad.person)
     (kanji.grone.left);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.clever =
+  push_pbox_toexpand("kanji.greight.clever");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grfour.advantage);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.companion =
+  push_pbox_toexpand("kanji.greight.companion");
+  build_kanji.lr(300,40)
+    (kanji.leftrad.person)
+    (kanji.greight.spine);
   expand_pbox;
 enddef;
 
@@ -221,6 +247,14 @@ vardef kanji.greight.samurai =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.scorn =
+  push_pbox_toexpand("kanji.greight.scorn");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.person)
+    (kanji.grtwo.every);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.skill =
   push_pbox_toexpand("kanji.greight.skill");
   build_kanji.lr(300,20)
@@ -234,6 +268,22 @@ vardef kanji.greight.unite =
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (build_kanji.sscale(shifted (0,30))(kanji.rare.merger));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.urge =
+  push_pbox_toexpand("kanji.greight.urge");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grone.foot);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.worldly =
+  push_pbox_toexpand("kanji.greight.worldly");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grtwo.valley);
   expand_pbox;
 enddef;
 
@@ -524,8 +574,17 @@ begintsuglyph("uni4F9B",155);
   tsu_render;
 endtsuglyph;
 
-% TODO 4FAE\quad 【侮】[lr]⺅<每>[tb]<\textbackslash x\{20089\}>[lr]丿一母\\
-% TODO 4FB6\quad 【侶】[lr]⺅<呂>\{tcb\}口丿口\\
+% bu/anado "scorn"
+begintsuglyph("uni4FAE",174);
+  kanji.greight.scorn;
+  tsu_render;
+endtsuglyph;
+
+% ryo/tomo "companion"
+begintsuglyph("uni4FB6",182);
+  kanji.greight.companion;
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni4FBD",189);
@@ -541,7 +600,11 @@ begintsuglyph("uni4FC2",194);
   tsu_render;
 endtsuglyph;
 
-% TODO 4FC3\quad 【促】[lr]⺅<足>[tb]口龰\\
+% soku/unaga "urge"
+begintsuglyph("uni4FC3",195);
+  kanji.greight.urge;
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni4FC8",200);
@@ -560,9 +623,23 @@ begintsuglyph("uni4FC9",201);
   tsu_render;
 endtsuglyph;
 
-% TODO 4FD0\quad 【俐】[lr]⺅<利>[lr]禾刂\\
-% TODO 4FD7\quad 【俗】[lr]⺅谷\\
-% TODO 4FDD\quad 【保】[lr]⺅<呆>[tb]口木\\
+% ri/kashiko "clever"
+begintsuglyph("uni4FD0",208);
+  kanji.greight.clever;
+  tsu_render;
+endtsuglyph;
+
+% zoku "worldly"
+begintsuglyph("uni4FD7",215);
+  kanji.greight.worldly;
+  tsu_render;
+endtsuglyph;
+
+% ho/tamo "protect"
+begintsuglyph("uni4FDD",222);
+  kanji.grfive.protect;
+  tsu_render;
+endtsuglyph;
 
 % shin "believe"
 begintsuglyph("uni4FE1",225);

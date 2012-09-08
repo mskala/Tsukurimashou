@@ -40,6 +40,14 @@ vardef kanji.grfour.addition =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.advantage =
+  push_pbox_toexpand("kanji.grfour.advantage");
+  build_kanji.level(build_kanji.lr(560,30)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.army =
   push_pbox_toexpand("kanji.grfour.army");
   build_kanji.level(build_kanji.tb(640,300)

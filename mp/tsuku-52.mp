@@ -116,14 +116,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfour.advantage =
-  push_pbox_toexpand("kanji.grfour.advantage");
-  build_kanji.level(build_kanji.lr(560,30)
-    (kanji.leftrad.two_branch_tree)
-    (kanji.rightrad.sword));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.auxilliary =
   push_pbox_toexpand("kanji.grfour.auxilliary");
   build_kanji.level(build_kanji.lr(620,10)

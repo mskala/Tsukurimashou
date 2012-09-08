@@ -40,6 +40,14 @@ vardef kanji.rare.bald =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.befuddled =
+  push_pbox_toexpand("kanji.rare.befuddled");
+  build_kanji.level(build_kanji.tb(460,120)
+    (build_kanji.sscale(scaled 0.9)(kanji.grone.mouth))
+    (kanji.grone.wood));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.big_brother =
   push_pbox_toexpand("kanji.rare.big_brother");
   build_kanji.tb(440,0)

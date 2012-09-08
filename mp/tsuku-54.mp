@@ -177,6 +177,12 @@ begintsuglyph("uni5442",66);
   tsu_render;
 endtsuglyph;
 
+% bou/boke "befuddled" (funny man in a Kansai comedy duo)
+begintsuglyph("uni5446",70);
+  kanji.rare.befuddled;
+  tsu_render;
+endtsuglyph;
+
 % koku "revelation"
 begintsuglyph("uni544A",74);
   kanji.grfour.revelation;
