@@ -182,9 +182,55 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.face =
+  push_pbox_toexpand("kanji.grfive.face");
+  build_kanji.tb(600,130)
+    (kanji.radical.silly_hat)
+    (kanji.grtwo.valley);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.wealth =
+  push_pbox_toexpand("kanji.grfive.wealth");
+  build_kanji.tb(600,200)
+    (kanji.radical.silly_hat)
+    (kanji.rare.roll_of_cloth;
+     replace_strokep(-6)(oldp shifted (-500,0) xscaled (0.8-0.1*mincho)
+                         shifted (500,0)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.filial_piety =
   push_pbox_toexpand("kanji.grsix.filial_piety");
   kanji.radical.old_man(kanji.grone.child);
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.religion =
+  push_pbox_toexpand("kanji.grsix.religion");
+  build_kanji.tb(600,100)
+    (kanji.radical.silly_hat)
+    (build_kanji.sscale(xscaled 0.94)(kanji.grfive.showing));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.space =
+  push_pbox_toexpand("kanji.grsix.space");
+  build_kanji.tb(570,150)
+    (kanji.radical.silly_hat)
+    (kanji.grthree.reason);
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.treasure =
+  push_pbox_toexpand("kanji.grsix.treasure");
+  build_kanji.tb(600,150)
+    (kanji.radical.silly_hat)
+    (kanji.grone.ball;
+     replace_strokep(-4)(oldp shifted (-500,0) xscaled (0.8-0.1*mincho)
+                         shifted (500,0)));
   expand_pbox;
 enddef;
 
@@ -319,15 +365,33 @@ begintsuglyph("uni5B95",149);
   tsu_render;
 endtsuglyph;
 
+% shuu/mune "religion"
+begintsuglyph("uni5B97",151);
+  kanji.grsix.religion;
+  tsu_render;
+endtsuglyph;
+
 % kan "bureaucracy"
 begintsuglyph("uni5B98",152);
   kanji.grfour.bureaucracy;
   tsu_render;
 endtsuglyph;
 
+% chuu "space"
+begintsuglyph("uni5B99",153);
+  kanji.grsix.space;
+  tsu_render;
+endtsuglyph;
+
 % tei/sada "regular"
 begintsuglyph("uni5B9A",154);
   kanji.grthree.regular;
+  tsu_render;
+endtsuglyph;
+
+% hou/takara "treasure"
+begintsuglyph("uni5B9D",157);
+  kanji.grsix.treasure;
   tsu_render;
 endtsuglyph;
 
@@ -369,9 +433,21 @@ begintsuglyph("uni5BB6",182);
   tsu_render;
 endtsuglyph;
 
+% you/i "face"
+begintsuglyph("uni5BB9",185);
+  kanji.grfive.face;
+  tsu_render;
+endtsuglyph;
+
 % shuku/yado "inn"
 begintsuglyph("uni5BBF",191);
   kanji.grthree.inn;
+  tsu_render;
+endtsuglyph;
+
+% fu/to "wealth"
+begintsuglyph("uni5BCC",204);
+  kanji.grfive.wealth;
   tsu_render;
 endtsuglyph;
 

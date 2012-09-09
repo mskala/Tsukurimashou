@@ -235,6 +235,16 @@ vardef kanji.grthree.heap_big =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.ingredient =
+  push_pbox_toexpand("kanji.grthree.ingredient");
+  build_kanji.level(build_kanji.tb(260,-50)
+    (kanji.grone.eye)
+    (build_kanji.tb(600,0)
+       (kanji.grone.one)
+       (kanji.radical.eight)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.intention =
   push_pbox_toexpand("kanji.grthree.intention");
   build_kanji.level(build_kanji.tb(210,0)
@@ -345,6 +355,25 @@ vardef kanji.grthree.sheep =
   build_kanji.sscale(xyscaled (0.7,0.35) shifted (0,350))
     (kanji.toprad.sparkle_two);
   push_stroke((500,615)--(500,-50),(1.6,1.6)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.surface =
+  push_pbox_toexpand("kanji.grthree.surface");
+  build_kanji.level(build_kanji.tb(400,60)
+    (kanji.toprad.blue)
+    (push_stroke((470,810)..tension 1.2..(340,650)..(80,510),
+       (1.7,1.7)--(1.5,1.5)--(1,1));
+     push_stroke((point 1 of get_strokep(0))--
+         (xpart point 1 of get_strokep(0),0),
+       (1.5,1.5)--(1.4,1.4));
+     push_stroke((510,80)..tension 1.2..(point 1 of get_strokep(0))..(130,-40),
+       (1,1)--(1.4,1.4)--(1.8,1.8));
+     push_stroke((540,810)..tension 1.2..(700,240)..(890,0),
+       (1,1)--(1.4,1.4)--(1.7,1.7));
+     push_stroke((820,540)..tension 1.2..(720,460)..
+         (point 0.69 of get_strokep(0)),
+       (1.7,1.7)--(1.4,1.4)--(1.2,1.2))));
   expand_pbox;
 enddef;
 

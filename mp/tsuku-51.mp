@@ -94,16 +94,6 @@ vardef kanji.grthree.copy =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.ingredient =
-  push_pbox_toexpand("kanji.grthree.ingredient");
-  build_kanji.level(build_kanji.tb(260,-50)
-    (kanji.grone.eye)
-    (build_kanji.tb(600,0)
-       (kanji.grone.one)
-       (kanji.radical.eight)));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.child =

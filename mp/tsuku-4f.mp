@@ -330,6 +330,14 @@ vardef kanji.grnine.paddy =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.straw_bags =
+  push_pbox_toexpand("kanji.grnine.straw_bags");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grthree.surface);
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.urge_to_eat =
   push_pbox_toexpand("kanji.grnine.urge_to_eat");
   build_kanji.lr(300,20)
@@ -636,7 +644,7 @@ begintsuglyph("uni4FD7",215);
 endtsuglyph;
 
 % ho/tamo "protect"
-begintsuglyph("uni4FDD",222);
+begintsuglyph("uni4FDD",221);
   kanji.grfive.protect;
   tsu_render;
 endtsuglyph;
@@ -647,9 +655,13 @@ begintsuglyph("uni4FE1",225);
   tsu_render;
 endtsuglyph;
 
-% TODO 4FE3\quad 【俣】[lr]⺅<吴>[tb]口<天>[tb]一大\\
-% TODO 4FEE\quad 【修】[wrapul][lr]<CDP-8B7A>[lr]⺅丨夂彡\\
-% TODO 4FF1\quad 【俱】[lr]⺅<具>[tb]<CDP-8BA5>;<GT-K00059>;\\
+% extra
+begintsuglyph("uni4FF1",241);
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grthree.ingredient);
+  tsu_render;
+endtsuglyph;
 
 % hai "haiku"
 begintsuglyph("uni4FF3",243);
@@ -657,7 +669,11 @@ begintsuglyph("uni4FF3",243);
   tsu_render;
 endtsuglyph;
 
-% TODO 4FF5\quad 【俵】[lr]⺅<表>[tb]龶<CDP-8B67>;\\
+% hyou/tawara "counter for straw bags"
+begintsuglyph("uni4FF5",245);
+  kanji.grnine.straw_bags;
+  tsu_render;
+endtsuglyph;
 
 % en/ore "me" (masculine, aggressive, more so than "boku")
 begintsuglyph("uni4FFA",250);

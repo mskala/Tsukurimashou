@@ -75,6 +75,22 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.brigade =
+  push_pbox_toexpand("kanji.grfive.brigade");
+  kanji.radical.box;
+  build_kanji.sscale(scaled 0.75)(kanji.grsix.inch);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.cause =
+  push_pbox_toexpand("kanji.grfive.cause");
+  kanji.radical.box;
+  build_kanji.sscale(scaled 0.75)(kanji.grone.big);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % box radical
 begintsuglyph("uni56D7",215);
   kanji.radical.box;
@@ -90,6 +106,18 @@ endtsuglyph;
 % kai "counter for occurrences"
 begintsuglyph("uni56DE",222);
   kanji.grtwo.occurrences;
+  tsu_render;
+endtsuglyph;
+
+% in/yo "cause"
+begintsuglyph("uni56E0",224);
+  kanji.grfive.cause;
+  tsu_render;
+endtsuglyph;
+
+% dan/katamari "group or association" (as in SOS Brigade)
+begintsuglyph("uni56E3",227);
+  kanji.grfive.brigade;
   tsu_render;
 endtsuglyph;
 
