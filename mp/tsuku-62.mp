@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
@@ -102,6 +103,61 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.fold =
+  push_pbox_toexpand("kanji.grfour.fold");
+  build_kanji.level(build_kanji.lr(420,20)
+    (kanji.leftrad.hand)
+    (kanji.greight.axe));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.beckon =
+  push_pbox_toexpand("kanji.grfive.beckon");
+  build_kanji.level(build_kanji.lr(420,-10)
+    (kanji.leftrad.hand)
+    (kanji.greight.call));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.technique =
+  push_pbox_toexpand("kanji.grfive.technique");
+  build_kanji.level(build_kanji.lr(420,20)
+    (kanji.leftrad.hand)
+    (kanji.grfive.support));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grsix.carry =
+  push_pbox_toexpand("kanji.grsix.carry");
+  build_kanji.level(build_kanji.lr(420,20)
+    (kanji.leftrad.hand)
+    (kanji.greight.daybreak));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.criticize =
+  push_pbox_toexpand("kanji.grsix.criticize");
+  build_kanji.level(build_kanji.lr(420,10)
+    (kanji.leftrad.hand)
+    (build_kanji.sscale(yscaled 1.04 shifted (0,20))
+       (kanji.grfive.compare)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.spread =
+  push_pbox_toexpand("kanji.grsix.spread");
+  build_kanji.level(build_kanji.lr(420,-10)
+    (kanji.leftrad.hand)
+    (kanji.grtwo.wide));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ko/to "door"
 begintsuglyph("uni6238",56);
   kanji.grtwo.door;
@@ -138,9 +194,45 @@ begintsuglyph("uni6253",83);
   tsu_render;
 endtsuglyph;
 
+% hi "criticize"
+begintsuglyph("uni6279",121);
+  kanji.grsix.criticize;
+  tsu_render;
+endtsuglyph;
+
+% gi/waza "technique"
+begintsuglyph("uni6280",128);
+  kanji.grfive.technique;
+  tsu_render;
+endtsuglyph;
+
 % tou/na "throw"
 begintsuglyph("uni6295",149);
   kanji.grthree.throw;
+  tsu_render;
+endtsuglyph;
+
+% satsu/o "fold" (o as in origami)
+begintsuglyph("uni6298",152);
+  kanji.grfour.fold;
+  tsu_render;
+endtsuglyph;
+
+% tan/katsu "carry"
+begintsuglyph("uni62C5",197);
+  kanji.grsix.carry;
+  tsu_render;
+endtsuglyph;
+
+% shou/mane "beckon" (as in manekineko)
+begintsuglyph("uni62DB",219);
+  kanji.grfive.beckon;
+  tsu_render;
+endtsuglyph;
+
+% kaku/hiro "spread"
+begintsuglyph("uni62E1",225);
+  kanji.grsix.spread;
   tsu_render;
 endtsuglyph;
 

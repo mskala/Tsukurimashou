@@ -285,6 +285,12 @@ begintsuglyph("uni65E5",229);
   tsu_render;
 endtsuglyph;
 
+% tan/aki "daybreak"
+begintsuglyph("uni65E6",230);
+  kanji.greight.daybreak;
+  tsu_render;
+endtsuglyph;
+
 % kyuu/furu "old times"
 begintsuglyph("uni65E7",231);
   kanji.grfive.old_times;

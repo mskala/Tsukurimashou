@@ -158,6 +158,24 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.judge =
+  push_pbox_toexpand("kanji.grfive.judge");
+  build_kanji.level(build_kanji.lr(560,20)
+    (kanji.grtwo.half)
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.publication =
+  push_pbox_toexpand("kanji.grfive.publication");
+  build_kanji.level(build_kanji.lr(560,0)
+    (kanji.grsix.dry)
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.cut_the_grass =
   push_pbox_toexpand("kanji.greight.cut_the_grass");
   build_kanji.level(build_kanji.lr(560,30)
@@ -261,6 +279,12 @@ begintsuglyph("uni5208",8);
   tsu_render;
 endtsuglyph;
 
+% kan "publication"
+begintsuglyph("uni520A",10);
+  kanji.grfive.publication;
+  tsu_render;
+endtsuglyph;
+
 % extra
 begintsuglyph("uni520C",12);
   build_kanji.level(build_kanji.lr(560,0)
@@ -299,6 +323,12 @@ begintsuglyph("uni5218",24);
         (kanji.radical.kettle_lid)
         (kanji.radical.cut_the_grass))
      (kanji.rightrad.sword));
+  tsu_render;
+endtsuglyph;
+
+% han/kawa "judge"
+begintsuglyph("uni5224",36);
+  kanji.grfive.judge;
   tsu_render;
 endtsuglyph;
 

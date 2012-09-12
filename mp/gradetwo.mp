@@ -869,6 +869,12 @@ vardef kanji.grtwo.wheat =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.wide =
+  push_pbox_toexpand("kanji.grtwo.wide");
+  build_kanji.dotcliff_enclose(kanji.radical.mu);
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.wind =
   push_pbox_toexpand("kanji.grtwo.wind");
   build_kanji.wind_enclose(build_kanji.add_beret(kanji.grone.bug));

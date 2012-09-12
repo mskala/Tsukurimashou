@@ -93,12 +93,6 @@ vardef kanji.grtwo.shop =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.wide =
-  push_pbox_toexpand("kanji.grtwo.wide");
-  build_kanji.dotcliff_enclose(kanji.radical.mu);
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grthree.courtyard =

@@ -62,6 +62,15 @@ vardef kanji.greight.call =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.daybreak =
+  push_pbox_toexpand("kanji.greight.daybreak");
+  build_kanji.sscale(yscaled 1.05 shifted (0,-30))
+    (build_kanji.level(build_kanji.tb(120,20)
+      (kanji.grone.day)
+      (kanji.grone.one)));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.demolish =
   push_pbox_toexpand("kanji.greight.demolish");
   build_kanji.tb(650,0)
