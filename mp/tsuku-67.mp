@@ -68,23 +68,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.morning =
-  push_pbox_toexpand("kanji.grtwo.morning");
-  tsu_xform(identity shifted (50,0))
-    (build_kanji.level(build_kanji.lr(480,30)
-      (build_kanji.tb(280,40)
-         (build_kanji.tb(460,50)
-            (kanji.grone.ten)
-            (kanji.grone.day))
-         (build_kanji.sscale(xscaled 1.1)
-            (kanji.grone.ten;
-             set_boserif(-1,0,whatever))))
-      (kanji.grone.moon)));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 vardef kanji.grthree.clothing =
   push_pbox_toexpand("kanji.grthree.clothing");
   build_kanji.level(build_kanji.lr(480,20)

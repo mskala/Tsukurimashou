@@ -36,6 +36,7 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -129,6 +130,40 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.cure =
+  push_pbox_toexpand("kanji.grfour.cure");
+  build_kanji.lr(360,30)
+    (kanji.leftrad.water)
+    (kanji.grtwo.pedestal);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.law =
+  push_pbox_toexpand("kanji.grfour.law");
+  build_kanji.lr(360,-30)
+    (kanji.leftrad.water)
+    (kanji.grthree.go_away);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.weep =
+  push_pbox_toexpand("kanji.grfour.weep");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.water)
+    (kanji.grone.stand_up);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.river =
+  push_pbox_toexpand("kanji.grfive.river");
+  build_kanji.lr(360,-30)
+    (kanji.leftrad.water)
+    (kanji.grfive.passable);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.long =
   push_pbox_toexpand("kanji.grfive.long");
   push_stroke((360,790)..tension 1.2..(480,740)..(560,680),
@@ -139,6 +174,18 @@ vardef kanji.grfive.long =
   replace_strokeq(-1)((1.6,1.6)--oldq);
   set_boserif(-1,0,whatever);
   set_botip(-1,1,1);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grsix.along =
+  push_pbox_toexpand("kanji.grsix.along");
+  build_kanji.level(build_kanji.lr(360,-30)
+    (kanji.leftrad.water)
+    (build_kanji.tb(420,0)
+       (kanji.radical.eight)
+       (kanji.grone.mouth)));
   expand_pbox;
 enddef;
 
@@ -496,9 +543,27 @@ begintsuglyph("uni6C83",131);
   tsu_render;
 endtsuglyph;
 
+% ka/kawa "river"
+begintsuglyph("uni6CB3",179);
+  kanji.grfive.river;
+  tsu_render;
+endtsuglyph;
+
 % yu/abura "oil"
 begintsuglyph("uni6CB9",185);
   kanji.grthree.oil;
+  tsu_render;
+endtsuglyph;
+
+% ji/osa "cure"
+begintsuglyph("uni6CBB",187);
+  kanji.grfour.cure;
+  tsu_render;
+endtsuglyph;
+
+% en/so "along"
+begintsuglyph("uni6CBF",191);
+  kanji.grsix.along;
   tsu_render;
 endtsuglyph;
 
@@ -508,9 +573,21 @@ begintsuglyph("uni6CC9",201);
   tsu_render;
 endtsuglyph;
 
+% hou/nori "law"
+begintsuglyph("uni6CD5",213);
+  kanji.grfour.law;
+  tsu_render;
+endtsuglyph;
+
 % ha/nami "wave" (or Poland)
 begintsuglyph("uni6CE2",226);
   kanji.grthree.wave;
+  tsu_render;
+endtsuglyph;
+
+% kyuu/na "weep"
+begintsuglyph("uni6CE3",227);
+  kanji.grfour.weep;
   tsu_render;
 endtsuglyph;
 

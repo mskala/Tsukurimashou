@@ -348,6 +348,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grten.all_together =
+  push_pbox_toexpand("kanji.grten.all_together");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grthree.ingredient);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % i/kare "Italy"
 begintsuglyph("uni4F0A",10);
   kanji.grnine.italy;
@@ -655,11 +665,9 @@ begintsuglyph("uni4FE1",225);
   tsu_render;
 endtsuglyph;
 
-% extra
+% ku/tamomi "all together"
 begintsuglyph("uni4FF1",241);
-  build_kanji.lr(300,20)
-    (kanji.leftrad.person)
-    (kanji.grthree.ingredient);
+  kanji.grten.all_together;
   tsu_render;
 endtsuglyph;
 

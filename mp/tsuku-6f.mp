@@ -33,14 +33,43 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
 input gradefour.mp;
+input gradeone.mp;
+input gradetwo.mp;
 input leftrad.mp;
 input toprad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.go_fish =
+  push_pbox_toexpand("kanji.grfour.go_fish");
+  build_kanji.lr(270,-10)
+    (kanji.leftrad.water)
+    (kanji.grtwo.fish);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grsix.tide =
+  push_pbox_toexpand("kanji.grsix.tide");
+  build_kanji.lr(300,30)
+    (kanji.leftrad.water)
+    (kanji.grtwo.morning);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% gyo/asa "go fish"
+begintsuglyph("uni6F01",1);
+  kanji.grfour.go_fish;
+  tsu_render;
+endtsuglyph;
 
 % kan "Chinese"
 begintsuglyph("uni6F22",34);
@@ -54,6 +83,12 @@ begintsuglyph("uni6F22",34);
         replace_strokep(-1)((500,800)--oldp);
         replace_strokeq(-1)((1.6,1.6)--oldq);
         set_boserif(-1,0,whatever))));
+  tsu_render;
+endtsuglyph;
+
+% chou/shio "tide" (or "opportunity")
+begintsuglyph("uni6F6E",110);
+  kanji.grsix.tide;
   tsu_render;
 endtsuglyph;
 
