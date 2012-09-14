@@ -72,20 +72,6 @@ vardef kanji.grtwo.big_sister =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.evening =
-  push_pbox_toexpand("kanji.grtwo.evening");
-  build_kanji.level(build_kanji.tb(650,0)
-    (kanji.radical.kettle_lid)
-    (build_kanji.lr(300,20)
-      (kanji.leftrad.person)
-      (kanji.radical.winter;
-       push_stroke(
-         (430,600)..tension 1.2..(480,570)..(510,520),
-         (1.1,1.1)--(1.4,1.4)--(1.6,1.6)))));
-  set_bosize(0,73);
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.little_sister =
   push_pbox_toexpand("kanji.grtwo.little_sister");
   build_kanji.lr(380,20)

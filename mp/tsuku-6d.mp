@@ -106,9 +106,45 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.bathe =
+  push_pbox_toexpand("kanji.grfour.bathe");
+  build_kanji.lr(360,20)
+    (kanji.leftrad.water)
+    (kanji.grtwo.valley);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.liquid =
+  push_pbox_toexpand("kanji.grfive.liquid");
+  build_kanji.lr(320,-20)
+    (kanji.leftrad.water)
+    (kanji.grtwo.evening);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grsix.wash =
+  push_pbox_toexpand("kanji.grsix.wash");
+  build_kanji.lr(360,10)
+    (kanji.leftrad.water)
+    (kanji.grone.ahead);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % you "ocean"
 begintsuglyph("uni6D0B",11);
   kanji.grthree.ocean;
+  tsu_render;
+endtsuglyph;
+
+% sen/ara "wash"
+begintsuglyph("uni6D17",23);
+  kanji.grsix.wash;
   tsu_render;
 endtsuglyph;
 
@@ -130,6 +166,12 @@ begintsuglyph("uni6D41",65);
   tsu_render;
 endtsuglyph;
 
+% yoku/a "bathe"
+begintsuglyph("uni6D74",116);
+  kanji.grfour.bathe;
+  tsu_render;
+endtsuglyph;
+
 % kai/umi "ocean"
 begintsuglyph("uni6D77",119);
   kanji.grtwo.ocean;
@@ -139,6 +181,12 @@ endtsuglyph;
 % shou/ki "cancel"
 begintsuglyph("uni6D88",136);
   kanji.grthree.cancel;
+  tsu_render;
+endtsuglyph;
+
+% eki "liquid"
+begintsuglyph("uni6DB2",178);
+  kanji.grfive.liquid;
   tsu_render;
 endtsuglyph;
 
