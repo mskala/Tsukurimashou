@@ -111,16 +111,6 @@ vardef kanji.grthree.degree =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.level =
-  push_pbox_toexpand("kanji.grthree.level");
-  build_kanji.level(
-    kanji.grsix.dry;
-    replace_strokep(-1)(oldp shifted (0,-90));
-    build_kanji.sscale(xyscaled (0.8,0.52) shifted (0,190))
-      (kanji.toprad.sparkle_two));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.register =
   push_pbox_toexpand("kanji.grthree.register");
   build_kanji.level(build_kanji.lr(420,50)
@@ -169,13 +159,6 @@ vardef kanji.grsix.government_office =
   push_pbox_toexpand("kanji.grsix.government_office");
   build_kanji.dotcliff_enclose(tsu_xform(identity yscaled 0.85)
                                (kanji.grthree.thumbtack));
-  expand_pbox;
-enddef;
-
-vardef kanji.grsix.prolong =
-  push_pbox_toexpand("kanji.grsix.prolong");
-  build_kanji.long_stride_enclose(false)
-    (build_kanji.add_beret(kanji.grtwo.cease));
   expand_pbox;
 enddef;
 

@@ -33,6 +33,7 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
@@ -45,6 +46,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -129,13 +131,37 @@ vardef kanji.grfour.kunyomi =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.test =
+  push_pbox_toexpand("kanji.grfour.test");
+  build_kanji.level(build_kanji.lr(450,30)
+    (kanji.grtwo.word)
+    (kanji.grthree.formula));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.evaluate =
+  push_pbox_toexpand("kanji.grfive.evaluate");
+  build_kanji.level(build_kanji.lr(450,20)
+    (kanji.grtwo.word)
+    (kanji.grthree.level));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfive.permit =
   push_pbox_toexpand("kanji.grfive.permit");
   build_kanji.level(build_kanji.lr(450,0)
     (kanji.grtwo.word)
     (kanji.grtwo.noon));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.preparation =
+  push_pbox_toexpand("kanji.grfive.preparation");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.radical.windy_again));
   expand_pbox;
 enddef;
 
@@ -149,11 +175,51 @@ vardef kanji.grsix.attack =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.magazine =
+  push_pbox_toexpand("kanji.grsix.magazine");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grfive.intention));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.nativity =
+  push_pbox_toexpand("kanji.grsix.nativity");
+  build_kanji.level(build_kanji.lr(330,0)
+    (kanji.grtwo.word)
+    (kanji.grsix.prolong));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.part_of_speech =
   push_pbox_toexpand("kanji.grsix.part_of_speech");
   build_kanji.level(build_kanji.lr(450,30)
     (kanji.grtwo.word)
     (kanji.grfour.director));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.translate =
+  push_pbox_toexpand("kanji.grsix.translate");
+  build_kanji.level(build_kanji.lr(450,-10)
+    (kanji.grtwo.word)
+    (kanji.grsix.blowjob));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.various =
+  push_pbox_toexpand("kanji.grsix.various");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grthree.person));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.visit =
+  push_pbox_toexpand("kanji.grsix.visit");
+  build_kanji.level(build_kanji.lr(450,-30)
+    (kanji.grtwo.word)
+    (kanji.grtwo.direction));
   expand_pbox;
 enddef;
 
@@ -326,11 +392,23 @@ begintsuglyph("uni8A28",40);
   tsu_render;
 endtsuglyph;
 
+% hou/otazu "visit"
+begintsuglyph("uni8A2A",42);
+  kanji.grsix.visit;
+  tsu_render;
+endtsuglyph;
+
 % extra
 begintsuglyph("uni8A2C",44);
   build_kanji.level(build_kanji.lr(450,0)
     (kanji.grtwo.word)
     (kanji.grtwo.little));
+  tsu_render;
+endtsuglyph;
+
+% satsu/mou "preparation"
+begintsuglyph("uni8A2D",45);
+  kanji.grfive.preparation;
   tsu_render;
 endtsuglyph;
 
@@ -345,6 +423,12 @@ begintsuglyph("uni8A32",50);
   build_kanji.level(build_kanji.lr(450,0)
     (kanji.grtwo.word)
     (kanji.grone.middle));
+  tsu_render;
+endtsuglyph;
+
+% yaku/wake "translate"
+begintsuglyph("uni8A33",51);
+  kanji.grsix.translate;
   tsu_render;
 endtsuglyph;
 
@@ -442,6 +526,12 @@ begintsuglyph("uni8A54",84);
   tsu_render;
 endtsuglyph;
 
+% hyou "evaluate"
+begintsuglyph("uni8A55",85);
+  kanji.grfive.evaluate;
+  tsu_render;
+endtsuglyph;
+
 % extra
 begintsuglyph("uni8A57",87);
   build_kanji.level(build_kanji.lr(450,0)
@@ -481,6 +571,12 @@ begintsuglyph("uni8A63",99);
   tsu_render;
 endtsuglyph;
 
+% shi/kokoro "test"
+begintsuglyph("uni8A66",102);
+  kanji.grfour.test;
+  tsu_render;
+endtsuglyph;
+
 % shi/uta "poem"
 begintsuglyph("uni8A69",105);
   kanji.grthree.poem;
@@ -490,6 +586,18 @@ endtsuglyph;
 % wa/hana "talk"
 begintsuglyph("uni8A71",113);
   kanji.grtwo.talk;
+  tsu_render;
+endtsuglyph;
+
+% shi "magazine"
+begintsuglyph("uni8A8C",140);
+  kanji.grsix.magazine;
+  tsu_render;
+endtsuglyph;
+
+% tan "nativity"
+begintsuglyph("uni8A95",149);
+  kanji.grsix.nativity;
   tsu_render;
 endtsuglyph;
 
@@ -514,6 +622,12 @@ endtsuglyph;
 % dan "discuss"
 begintsuglyph("uni8AC7",199);
   kanji.grthree.discuss;
+  tsu_render;
+endtsuglyph;
+
+% sho/moro "various"
+begintsuglyph("uni8AF8",248);
+  kanji.grsix.various;
   tsu_render;
 endtsuglyph;
 

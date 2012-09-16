@@ -53,6 +53,14 @@ vardef kanji.grfive.conform =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.intention =
+  push_pbox_toexpand("kanji.grfive.intention");
+  build_kanji.level(build_kanji.tb(420,10)
+    (kanji.grfour.gentleman)
+    (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.mistake =
   push_pbox_toexpand("kanji.grfive.mistake");
   push_stroke((380,810)--(370,240){dir 266}..tension 1.2..(300,70)..(80,-50),

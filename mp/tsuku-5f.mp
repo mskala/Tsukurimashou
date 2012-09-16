@@ -134,16 +134,6 @@ vardef kanji.grthree.duty =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.formula =
-  push_pbox_toexpand("kanji.grthree.formula");
-  kanji.radical.ceremony;
-  replace_strokep(-1)(oldp shifted (-950,0) xscaled 0.6 shifted (950,0));
-  replace_strokep(0)(oldp shifted (-950,0) xscaled 0.6 shifted (950,0));
-  build_kanji.sscale(xyscaled (0.6,0.7) shifted (-150,-200))
-    (build_kanji.lift_skirt(400,250)(kanji.grtwo.craft));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.wait =
   push_pbox_toexpand("kanji.grthree.wait");
   build_kanji.level(build_kanji.lr(310,0)
@@ -440,11 +430,9 @@ begintsuglyph("uni5FD6",214);
   tsu_render;
 endtsuglyph;
 
-% extra
+% shi/kokoroza "intention"
 begintsuglyph("uni5FD7",215);
-  build_kanji.level(build_kanji.tb(420,10)
-    (kanji.grfour.gentleman)
-    (kanji.bottomrad.heart));
+  kanji.grfive.intention;
   tsu_render;
 endtsuglyph;
 

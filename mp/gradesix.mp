@@ -91,6 +91,13 @@ vardef kanji.grsix.inch =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.prolong =
+  push_pbox_toexpand("kanji.grsix.prolong");
+  build_kanji.long_stride_enclose(false)
+    (build_kanji.add_beret(kanji.grtwo.cease));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.self =
   push_pbox_toexpand("kanji.grsix.self");
   push_stroke((160,740)--(750,740)--(750,380),

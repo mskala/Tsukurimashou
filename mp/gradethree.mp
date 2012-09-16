@@ -198,6 +198,16 @@ vardef kanji.grthree.festival =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.formula =
+  push_pbox_toexpand("kanji.grthree.formula");
+  kanji.radical.ceremony;
+  replace_strokep(-1)(oldp shifted (-950,0) xscaled 0.6 shifted (950,0));
+  replace_strokep(0)(oldp shifted (-950,0) xscaled 0.6 shifted (950,0));
+  build_kanji.sscale(xyscaled (0.6,0.7) shifted (-150,-200))
+    (build_kanji.lift_skirt(400,250)(kanji.grtwo.craft));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.go_away =
   push_pbox_toexpand("kanji.grthree.go_away");
   build_kanji.tb(340,20)
@@ -250,6 +260,16 @@ vardef kanji.grthree.intention =
   build_kanji.level(build_kanji.tb(210,0)
     (kanji.grone.noise)
     (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.level =
+  push_pbox_toexpand("kanji.grthree.level");
+  build_kanji.level(
+    kanji.grsix.dry;
+    replace_strokep(-1)(oldp shifted (0,-90));
+    build_kanji.sscale(xyscaled (0.8,0.52) shifted (0,190))
+      (kanji.toprad.sparkle_two));
   expand_pbox;
 enddef;
 
