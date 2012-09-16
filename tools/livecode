@@ -32,6 +32,12 @@
 
 $maincode='';
 
+$find_unused=0;
+if ($ARGV[0] eq '-d') {
+  $find_unused=1;
+  shift;
+}
+
 @fns=@ARGV;
 $inmac='';
 while (@fns) {
@@ -83,4 +89,10 @@ while ($maincode ne '') {
   $maincode=$newdefs;
 }
 
-print $towrite;
+if ($find_unused) {
+  foreach (sort keys %macdef) {
+    print "$_\n" if !$seen{$_};
+  }
+} else {
+  print $towrite;
+}

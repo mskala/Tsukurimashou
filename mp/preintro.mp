@@ -36,9 +36,6 @@
 nonstopmode;
 def errorstopmode = nonstopmode enddef;
 
-% in fact we are *never* "generating"
-generating:=0;
-
 % load library from METATYPE1
 input fntbase.mp;
 

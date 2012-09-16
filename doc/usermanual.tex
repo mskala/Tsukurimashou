@@ -2325,7 +2325,12 @@ called, \texttt{livecode}'s output should not change because it won't
 include that macro.  Then the build system can use a checksum of
 \texttt{livecode}'s output for fine-grained change detection, to skip
 recompiling some files that (under GNU Make's timestamp-based scheme) would
-otherwise appear to require recompilation.
+otherwise appear to require recompilation.  As a special feature, intended
+for maintainer use only, \texttt{livecode} also supports a ``find dead code''
+mode.  If its first command-line argument is ``\texttt{-d},'' then instead
+of its usual output, it will print a list of names of macros it thinks are
+\emph{not} invoked.  Running this against the entire code base may be a way
+to find superfluous METATYPE1 infrastructure that could be removed.
 
 \item \texttt{make-ass}: generate the \texttt{assemble-font.pe} script,
 which in turn does most of the work of assembling 256-glyph subfonts to

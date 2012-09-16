@@ -42,18 +42,9 @@
 
 % from fontbase.mp
 
-%%%%
-%%%% It is a basic set of macros for generating Type 1 fonts
-%% \raggedbottom
-%% \--------------------------------------------------------------------
-%% \centering\bf A \MP{}-to-Type 1 converter:\break
-%% BASIC MACROS ver. 0.55
-%% \-
-%% \centering\bf Konwerter \MP{}$\;\rightarrow\;$Type 1:\break
-%% MAKRA PODSTAWOWE wer. 0.55
-%% \--------------------------------------------------------------------
+% BASIC MACROS
+
 if known fontbase_ver: expandafter endinput else: fontbase_ver:=0.55; fi
-% ---
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -64,30 +55,16 @@ if known fontbase_ver: expandafter endinput else: fontbase_ver:=0.55; fi
 
 % from plain_ex.mp
 
-%%%% This file is distributed with the METATYPE1 package
-%%%%
-%%%% It is an extension of plain.mp
-%% \raggedbottom
-%% \edef\illusname{plain\string_e\string_}
-%% \--------------------------------------------------------------------
-%% \centering \BF EXTENSION OF \MP{} plain FORMAT (ver. 0.46)
-%% \-
-%% \centering \BF ROZSZERZENIE \MP{}-owego FORMATU plain (wer. 0.46)
-%% \--------------------------------------------------------------------
+% EXTENSION OF PLAIN FORMAT
+
 if known plain_ex_ver: expandafter endinput else: plain_ex_ver:=.45; fi
 def killtext text t = enddef; % absent from older versions of plain.mf
-%% \--------------------------------------------------------------------
-%% Knuthian tradition:
-%% \-
-%% Knuthowa tradycja:
-%% \--------------------------------------------------------------------
+
+% Knuthian tradition:
 mm#=2.84528; pt#=1; dd#=1.07001; bp#=1.00375; cm#=28.45276; pc#=12;
 cc#=12.84010; in#=72.27;
-%% \--------------------------------------------------------------------
-%% A patch for bugs in \MP{} |turningnumber| functionality
-%% \-
-%% Makra /lataj/ace wadliwe funkcjonowanie operacji |turningnumber|
-%% \--------------------------------------------------------------------
+
+% A patch for bugs in turningnumber functionality
 let original_turningnumber = turningnumber;
 vardef straighten_path(expr r) =
  for k=0 upto length r - 1: point k of r -- endfor
@@ -101,11 +78,8 @@ enddef;
 def use_original_turningnumber =
  def turningnumber = original_turningnumber enddef;
 enddef;
-%% \--------------------------------------------------------------------
-%% Loading a file optionally
-%% \-
-%% Opcjonalne czytanie pliku
-%% \--------------------------------------------------------------------
+
+% Loading a file optionally
 boolean maybeinput_ok; string maybedir;
 vardef maybename(text name) =
  if known maybedir: maybedir & fi if string name: name else: str name fi
@@ -119,17 +93,11 @@ def maybeinput text name =
   maybeinput_ok:=true;
  fi
 enddef;
-%% \--------------------------------------------------------------------
-%%   A few colours more:
-%% \-
-%%   Par/e dodatkowych kolor/ow:
-%% \--------------------------------------------------------------------
+
+% A few colours more
 color cyan, magenta, yellow; cyan=(0,1,1); magenta=(1,0,1); yellow=(1,1,0);
-%% \--------------------------------------------------------------------
-%% A few functions more:
-%% \-
-%% Par/e dodatkowych funkcji:
-%% \--------------------------------------------------------------------
+
+% A few functions more
 vardef gen_whatever(text type) = save ?; type ?; ? enddef; % 1-argument func.
 vardef whatever_pair = gen_whatever(pair) enddef; % 0-argument function
 vardef tand primary a = sind(a)/cosd(a) enddef;
@@ -143,7 +111,7 @@ primarydef w dotnorm z =
   (xpart w_ * xpart z_ + ypart w_ * ypart z_)
  endgroup
 enddef;
-%
+
 let ori_decimal=decimal;
 def decimal primary n = 
  (
@@ -158,8 +126,7 @@ def decimal primary n =
   else: ori_decimal(n) fi
  )
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % The definition of |postdir| and |predir| given below is
 % based on the following observation, being the consequence
 % of the de~l'H\^ospital's rule: consider a~B\'ezier segment
@@ -171,25 +138,12 @@ enddef;
 % coincides with~$a$, the B\'ezier segment is degenerated,
 % and can be removed (a~similar argumentation can be provided
 % for the ``pre'' direction at node~$d$).
-%% \-
-%% \descriptioncomments
-% Definicje makr |postdir| i~|predir| wykorzystuj/a nast/epuj/ac/a
-% obserwacj/e, b/ed/ac/a prost/a konsekwencj/a regu/ly de~l'H\^ospitala:
-% rozwa/zmy segment |a .. controls b and c .. d|; w~normalnej sytuacji
-% kierunek ,,post'' w~punkcie~$a$ jest okre/slony przez
-% wektor $\vec{ab}$; je/zeli punkty $a$ i~$b$ si/e pokrywaj/a,
-% kierunek ,,post'' w~punkcie~$a$ jest okre/slony przez
-% wektor $\vec{ac}$; je/zeli tak/ze punkty $a$ i~$c$ si/e pokrywaj/a,
-% ostatni/a szans/a na wyznaczenie kierunku ,,post'' w~punkcie~$a$
-% jest wektor $\vec{ad}$; je/zeli wszystkie punkty $a$, $b$, $c$, i~$d$
-% si/e pokrywaj/a, to oznacza, /ze segment jest zdegenerowany i~mo/ze
-% by/c w zasadzie usuni/ety (analogiczn/a argumentacj/e mo/zna przedstawi/c
-% dla kierunku ,,pre'' w punkcie~$d$).
-%% \--------------------------------------------------------------------
+
 % Previous, insufficiently robust definitions:
 % |vardef predir expr t of p = (point t of p)-(precontrol t of p) enddef;|
 % |vardef postdir expr t of p = (postcontrol t of p)-(point t of p) enddef;|
 % |vardef udir expr t of p = unitvector(direction t of p) enddef;|
+
 % New, more general definitions:
 vardef gendir expr t of p =
  predir t of p + postdir t of p % |direction|-compatible definition
@@ -208,6 +162,7 @@ vardef predir expr t of p =
   else:       (0,0)
  fi
 enddef;
+
 vardef postdir expr t of p =
  save a_,b_,c_,d_,s_,t_; pair a_,b_,c_,d_; path s_; t_:=t;
  if not cycle p: if t<0: t_:=0; elseif t>length(p): t_:=length(p); fi fi
@@ -222,11 +177,8 @@ vardef postdir expr t of p =
   else:       (0,0)
  fi
 enddef;
-%% \--------------------------------------------------------------------
-% Definitions related to ``pre-'' and ``post-'':
-%% \-
-% Definicje jako/s zwi/azane z~,,pre-'' i~,,post-'':
-%% \--------------------------------------------------------------------
+
+% Definitions related to ``pre-'' and ``post-''
 vardef udir expr t of p = unitvector(gendir t of p) enddef;
 vardef upredir expr t of p = unitvector(predir t of p) enddef;
 vardef upostdir expr t of p = unitvector(postdir t of p) enddef;
@@ -236,7 +188,7 @@ vardef pos_subpath expr z of p =
   else: subpath (xpart(z),ypart(z)+length(p)) of p fi
  fi
 enddef;
-%
+
 vardef posttension expr t of p = % ``The \MF{}book'', ex. 14.15
  save q_; path q_;
  q_=point t of p {direction t of p} .. {direction t+1 of p} point t+1 of p;
@@ -249,8 +201,7 @@ vardef pretension expr t of p = % ditto
  length(precontrol 1 of q_ - point 1 of q_)/
  length(precontrol t of p - point t of p)% doesn't work for ``straight lines''
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % The two macros below, |path_eq| and |inside| macros, might have been
 % primitives. The macro |path_eq| is obvious; |a inside b| returns true
 % if the bounding box of |a| is inside the bounding box of |b|, which
@@ -258,17 +209,6 @@ enddef;
 % |fullcircle inside unitsquare shifted (-1/2,-1/2) scaled .9 rotated 45|.
 % For most curves occuring in fonts, however, one can safely infere
 % that if |a inside b| holds, then |a| is inside |b|.
-%% \-
-%% \descriptioncomments
-% Poni/zsze dwa makra mog/lyby by/c w~zasadzie instrukcjami podstawowymi.
-% Makro |path_eq| jest oczywiste. Wynikiem operacji |a inside b| jest
-% ,,true'' je/zeli prostok/at ograniczaj/acy |a| le/zy wewn/atrz prostok/ata
-% ograniczaj/acego |b|, co mo/ze dawa/c wynik myl/acy, np.~w~wypadku
-% |fullcircle inside unitsquare shifted (-1/2,-1/2) scaled. 9 rotated 45|.
-% Jednak/ze w~wi/ekszo/sci sytuacji wyst/epuj/acych fontach
-% mo/zna /smia/lo zak/lada/c, /ze z~|a inside b| wynika, i/z |a| le/zy
-% wewn/atrz~|b|.
-%% \--------------------------------------------------------------------
 vardef path_eq(expr a,b)=
  save i_,l_,r_; boolean r_;
  r_:=(length(a)=length(b)) and (cycle a= cycle b);
@@ -282,7 +222,7 @@ vardef path_eq(expr a,b)=
  endfor fi
  r_
 enddef;
-%
+
 tertiarydef a inside b =
  if path a: % |and path b|
   (xpart llcorner b < xpart llcorner a) and
@@ -293,11 +233,8 @@ tertiarydef a inside b =
   (a>=xpart b) and (a<=ypart b)
  fi
 enddef;
-%% \--------------------------------------------------------------------
-%  Two convenient macros more:
-%% \-
-%  Jeszcze dwa wygodne makra:
-%% \--------------------------------------------------------------------
+
+% Two convenient macros more
 vardef x_time expr x of p = % obsolete
  xpart(p intersectiontimes ((x,-infinity)--(x,infinity)))
 enddef;
@@ -310,37 +247,26 @@ enddef;
 vardef ytime expr y of p = % preferable alias
  xpart(p intersectiontimes ((-infinity,y)--(infinity,y)))
 enddef;
-%% \--------------------------------------------------------------------
-%%   A few figures more:
-%% \-
-%%   Par/e dodatkowych figur:
-%% \--------------------------------------------------------------------
+
+% A few figures more:
 vardef triangle =
  (0,-1/2)--(0.866,0)--(0,1/2)--cycle % |1/2sqrt(3)| $\approx$ |0.866025...|
 enddef;
 vardef vpolygon(expr n) =
  for i:=0 upto n-1: (1/2right rotated ((360/n)*(i+1/2))) -- endfor cycle
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % A method, entangled a bit and not particularly robust, of testing whether
 % a parameter is a {\it string\/} expression or a {\it suffix}.
 % (Remark: |is_suffix((a))| or |is_suffix(a+b)| returns |true|;
 % |is_suffix(((a)))| causes \MP{} to report an error).
-%% \-
-%% \descriptioncomments
-% Nieco pokr/etna i niezbyt og/olna metoda sprawdzania, czy parametr
-% jest wyra/zeniem typu {\it string\/} czy {\it sufiksem}.
-% (Uwaga: |is_suffix((a))| b/ad/x |is_suffix(a+b)| zwraca |true|,
-% za/s |is_suffix(((a)))| powoduje, /ze \MP{} zg/lasza b/l/ad).
-%% \--------------------------------------------------------------------
 vardef is_suffix(text suffix_or_not_suffix) =
  save the_suffix_; string the_suffix_; is_suffix_ suffix_or_not_suffix;
  the_suffix_<>""
 enddef;
 def is_suffix_ suffix $ = the_suffix_:= str $; killtext enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
+
 % The macro |&&| is to be used instead of the |&| operator if the respective
 % ends of paths coincide only approximately; using |..| instead would add
 % unwanted tiny B\'ezier segments. The macro is somewhat ``left-handed,''
@@ -348,17 +274,6 @@ def is_suffix_ suffix $ = the_suffix_:= str $; killtext enddef;
 % it can be used before the `|cycle|' command; if the argument |p| of the
 % macro |amp_amp_| is a |pair|, it is just ignored which may be
 % considered hardly intuitive.
-%% \-
-%% \descriptioncomments
-% Makra |&&| nale/zy u/zywa/c zamiast operatora |&| je/sli ko/nce /scie/zek
-% nie pokrywaj/a si/e idealnie; u/zycie operatora |..| zamiast |&|
-% spowodowa/loby dodanie do /scie/zki zb/ednych (ma/lych) segment/ow
-% B\'eziera. Makro to jest nieco ,,lewor/eczne'', tzn.~nie analizuje
-% wyra/zenia, kt/ore si/e po nim pojawi, dzi/eki czemu mo/ze by/c u/zyte
-% przed operatorem ,|cycle|'; argument |p| makra |amp_amp_| b/ed/acy
-% punktem (|pair|) jest pomijany, co mo/zna uzna/c za zachowanie ma/lo
-% intuicyjne.
-%% \--------------------------------------------------------------------
 def && = amp_amp_ whatever enddef;
 tertiarydef p amp_amp_ q =
  if not pair p:
@@ -366,20 +281,17 @@ tertiarydef p amp_amp_ q =
    and (precontrol length(p) of p) ..
  fi
 enddef;
-%% \--------------------------------------------------------------------
-%% A few postfix and infix path operators:
-%% \-
-%% Par/e postfiksowych i~infiksowych operator/ow /scie/zkowych:
-%% \--------------------------------------------------------------------
+
+% A few postfix and infix path operators:
 primarydef a mirr b = a reflectedabout(origin,b) enddef;
-%
+
 def store_prec_obj = store_prec_obj_ whatever enddef;
 primarydef a store_prec_obj_ b = hide(def prec_obj = a enddef) enddef;
-%
+
 primarydef a sub b =
  if path a: (pos_subpath b of a) elseif string a: (substring b of a) fi
 enddef;
-%
+
 def node = store_prec_obj node_ enddef;
 vardef node_@# primary a =
  if str @#="x": xpart(point a of prec_obj)
@@ -390,7 +302,7 @@ vardef node_@# primary a =
   errmessage "PX: improper usage of `node'";
  fi
 enddef;
-%
+
 def first suffix $ =
  if str $="at": % moves the first point of a path to a specified location
   store_prec_obj prec_obj shifted -(point 0 of prec_obj) shifted
@@ -402,7 +314,7 @@ def last suffix $ =
    -(point if cycle prec_obj: 0 else: infinity fi of prec_obj) shifted
  else: node$(if cycle prec_obj: 0 else: infinity fi) fi
 enddef;
-%
+
 % node-governed flipping:
 def nflipped = nflipped_ whatever enddef;
 primarydef a nflipped_ b =
@@ -410,35 +322,33 @@ primarydef a nflipped_ b =
  else: reverse(a reflectedabout (point 0 of a, point infinity of a))
  fi
 enddef;
-%
+
 def xflipped = xflipped_ whatever enddef;
 primarydef a xflipped_ b =
  reverse(a reflectedabout
    (1/2[llcorner a, lrcorner a], 1/2[ulcorner a, urcorner a]))
 enddef;
-%
+
 def yflipped = yflipped_ whatever enddef;
 primarydef a yflipped_ b =
  reverse(a reflectedabout
    (1/2[llcorner a, ulcorner a], 1/2[lrcorner a, urcorner a]))
 enddef;
-%
+
 % node-governed rotating (infix operator):
 primarydef a nrotated b =
  if cycle a: a
  else: a rotatedaround(1/2[point 0 of a,point infinity of a], b)
  fi
 enddef;
-%
+
 % center-governed rotating (infix operator):
 primarydef a crotated b =
  a rotatedaround(1/2[llcorner a, urcorner a], b)
 enddef;
-%% \--------------------------------------------------------------------
-%% Neat macros excerpted from John D. Hobby's boxes.mp macro package:
-%% \-
-%% Zgrabne makra zaczerpni/ete z zestawu makr boxes.mp Johna D. Hobby'ego:
-%% \--------------------------------------------------------------------
+
+% Neat macros excerpted from John D. Hobby's boxes.mp macro package:
+
 % Find the length of the prefix of string |s| for which |cond| is true for
 % each character |c| of the prefix
 vardef generisize_prefix(expr s)(text cond) =
@@ -450,7 +360,7 @@ vardef generisize_prefix(expr s)(text cond) =
  endfor
  i_
 enddef;
-%
+
 % Take a string returned by the |str| operator and return the same string
 % with explicit numeric subscripts replaced by generic subscript symbols []:
 vardef generisize(expr s) =
@@ -470,74 +380,12 @@ vardef generisize(expr s) =
  endfor
  res_
 enddef;
-%%\vfill\eject
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % The macro |extrapolate| computes a ``superpath'' (as opposed to
 % ``subpath'') for a single B\'ezier segment in such a way
 % that the following identity holds
 % (for 0${}\le{}$|t1|${}\le{}$|t2|${}\le{}$1):
-%% \-
-%% \descriptioncomments
-% Makro |extrapolate| wyznacza ,,nad/scie/zk/e'' (w~odr/o/znieniu od
-% ,,pod/scie/zki'') dla pojedynczego /luku B\'eziera w~taki spos/ob,
-% /ze poni/zsza r/owno/s/c jest spe/lniona (dla
-% 0${}\xle{}$|t1|${}\xle{}$|t2|${}\xle{}$1):
-%% %
-%% \LINE{%
-%% \descriptioncomments
-%   |subpath (t1,t2) of (extrapolate (t1,t2) of b) = b|
-%% \unskip}
-%% %
-%% \descriptioncomments
-% Below, there are the results of the command |extrapolate (.3,.7) of p|
-% for three similarly defined paths. The black line denotes the source
-% path, the gray one---its~extrapolation.
-%% \-
-%% \descriptioncomments
-% Poni/zsza ilustracja przedstawia wynik polecenia |extrapolate (.3,.7) of p|
-% dla trzech podobnie zdefiniowanych /scie/zek. Czarn/a lini/a zaznaczona
-% zosta/la /scie/zka oryginalna, szar/a~--~ekstrapolowana.
-%% %
-%% \LINE{\valign{#\vss\cr
-%%   \hbox{\epsfbox{\illusname.100}}\cr\noalign{\hfil}
-%%   \hbox{\epsfbox{\illusname.101}}\cr\noalign{\hfil}
-%%   \hbox{\epsfbox{\illusname.102}}\cr
-%% }}
-%% %
-%% \descriptioncomments
-% Exercise 1. What happens if the relation
-% 0${}\le{}$|t1|${}\le{}$|t2|${}\le{}$1
-% is not fulfilled? (Hint: there are~a~few
-% possible cases.)\vadjust{\smallskip}\break
-% Exercise 2. True or false:
-%% \-
-%% \descriptioncomments
-% Zadanie 1. Co by si/e sta/lo, gdyby warunek
-% 0${}\xle{}$|t1|${}\xle{}$|t2|${}\xle{}$1 nie by/l spe/lniony?
-% (Wskaz/owka: mo/zliwych jest kilka r/o/znych
-% przypadk/ow.)\vadjust{\smallskip}\break
-% Zadanie 2. Prawda czy fa/lsz:
-%% %
-%% \LINE{%
-%% \descriptioncomments
-%  |point 1 of (extrapolate (t.a,t) of b) = point 1 of (extrapolate (t.b,t) of b)|
-% \quad for\quad |t.a<>t.b|
-%% \unskip}
-%% %
-%% \descriptioncomments
-% Exercise 3. Try to imagine the result of the extrapolation for
-% such weird (yet trivial) paths~as:%
-%% \-
-%% \descriptioncomments
-% Zadanie 3. Spr/obuj przewidzie/c wynik ekstrapolacji dla tak dziwnych
-% (chocia/z trywialnych) /scie/zek~jak:%
-%% \LINE{%
-%% \descriptioncomments
-%  |(0,0) .. controls (0,0) and (100,0) .. (100,0)| \quad or\quad
-%  |(0,0) .. controls (100,0) and (0,0) .. (100,0)|
-%% \unskip}
-%% \--------------------------------------------------------------------
+
 vardef extrapolate expr t of b = % |t| pair, |b| B\'ezier segment
  clearxy;
  Casteljau(xpart(t)) = point 0 of b;
@@ -546,40 +394,30 @@ vardef extrapolate expr t of b = % |t| pair, |b| B\'ezier segment
  Casteljau(ypart(t)) = point 1 of b;
  z0 .. controls z1 and z2 .. z3
 enddef;
-%
+
 def Casteljau(expr t) =
  t[t[t[z0,z1], t[z1,z2] ], t[t[z1,z2], t[z2,z3] ] ]
 enddef;
-%
+
 vardef elongation_to_times(expr ea,eb) =
  % negative parameter values are admissible; they are meant for |pen_stroke|
  (if ea<0: - fi 1/(abs(ea)+1), eb/(abs(eb)+1))
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % A~numerical function `|point_line_dist|' takes as a~parameter
 % three |pair| expressions and returns a~(signed) value of the distance
 % of the first parameter from the line defined by the other two.
 % It is referred to in the `|is_line|' function.
-%% \-
-%% \descriptioncomments
-% Funkcja ,|point_line_dist|', zale/zna od trzech wyra/ze/n typu |pair|,
-% oblicza odleg/l/o/s/c (dodatni/a lub ujemn/a) pierwszego z~parametr/ow
-% od linii okre/slonej przez dwa pozosta/le parametry. Do funkcji
-% ,|point_line_dist|' odwo/luje si/e funkcja ,|is_line|'.
-%% \--------------------------------------------------------------------
+
 vardef point_line_dist(expr a,b,c) =
  clearxy; save d_; d_=sqrt(length(b-c));
  z0=a/d_; z1=b/d_; z2=c/d_;
  (x2-x1)*(y1-y0)-(x1-x0)*(y2-y1)
 enddef;
-%% \--------------------------------------------------------------------
-%% The following code (its idea is due to Dan Luecking and Larry Siebenmann)
-%% computes the area surrounded by a cyclic path.
-%% \-
-%% Poni/zszy kod (pomys/l podsun/eli Dan Luecking i~Larry Siebenmann)
-%% oblicza pole obszaru ograniczonego zamkni/et/a krzyw/a B\'eziera.
-%% \--------------------------------------------------------------------
+
+% The following code (its idea is due to Dan Luecking and Larry Siebenmann)
+% computes the area surrounded by a cyclic path.
+
 newinternal area_scale;
 area_scale:=1; % decrease if the result is going to be too large
 vardef area(expr p) = % |p| is a B\'ezier segment; result = $\int y\, dx$
@@ -596,50 +434,22 @@ vardef Area(expr P) = % |P| is a cyclic path
  area(subpath (0,1) of P)
   for t=1 upto length(P)-1: + area(subpath (t,t+1) of P) endfor
 enddef;
-%% \--------------------------------------------------------------------
-%% The idea of calculation of a turning angle
-%% between two vectors, employed in the definition of the function
-%% `turn_ang,' is based on the following observation:
-%% \-
-%% Idea obliczania k/ata (skierowanego) mi/edzy dwoma wektorami,
-%% wykorzystana w~funkcji ,turn_ang', zasadza si/e na nast/epuj/acej
-%% obserwacji:
-%% %
-%% \LINE{%
-%% \descriptioncomments
-%   |z reflectedabout(origin,right)=1/z|
-%% \unskip}
-%% %
-%% for a complex number $z$ such that $\vbar z\vbar=1$;
-%% recall also that multiplication of complex numbers
-%% (`zscaled' operation) implies addition of their angle arguments.
-%% \-
-%% dla liczby zespolonej $z$ takiej, /ze $\vbar z\vbar=1$; przypomnijmy
-%% tak/ze, /ze mno/zeniu liczb zespolonych (operacja ,zscaled')
-%% odpowiada dodawanie argument/ow k/atowych.
-%% \--------------------------------------------------------------------
+
+% The idea of calculation of a turning angle
+% between two vectors, employed in the definition of the function
+% `turn_ang,' is based on the following observation:
 vardef turn_ang(expr za,zb) =
  if (abs(za)>=1/1000) and (abs(zb)>=1/1000): % |eps| may be not enough
   angle(unitvector(za) zscaled (unitvector(zb) reflectedabout (origin,right)))
  else: whatever fi
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % A~Boolean function `|is_line|' checks whether a~given B\'ezier segment
 % is a~straight line. For large segments (fonts) it makes sense to specify
 % a~numerical parameter |is_line_off>=0|; it defines a~maximal acceptable
 % distance of the control points of a~B\'ezier arc from its secant
 % (which corresponds to the distance between the arc and the secant
 % circa |3/4is_line_off| for a symmetric, inflexionless arcs).
-%% \-
-%% \descriptioncomments
-% Boole'owska funkcja, ,|is_line|' sprawdza, czy dany segment B\'eziera
-% jest lini/a prost/a. Dla du/zych segment/ow (fonty) mo/ze mie/c sens zadanie
-% parametru numerycznego |is_line_off>=0|; okre/sla on maksymalne dopuszczalne
-% odchylenie naci/ag/ow krzywej B\'eziera od siecznej (co odpowiada
-% odleg/lo/sci krzywej od siecznej wynosz/acej ok.~|3/4is_line_off|
-% dla symetrycznych /luk/ow bez punkt/ow przegi/ecia).
-%% \--------------------------------------------------------------------
 vardef is_line(expr B) =
  save r_; boolean r_;
  if known is_line_off:
@@ -662,11 +472,8 @@ vardef is_line(expr B) =
  fi
  r_
 enddef;
-%% \--------------------------------------------------------------------
-%% Abbreviations for a few simple yet useful phrases:
-%% \-
-%% Skr/oty dla kilku prostych acz przydatnych fraz:
-%% \--------------------------------------------------------------------
+
+% Abbreviations for a few simple yet useful phrases
 def xyscaled primary p = xscaled xpart(p) yscaled ypart(p) enddef;
 def yxscaled primary p = yscaled xpart(p) xscaled ypart(p) enddef;
 primarydef a xscaledto b =
@@ -685,7 +492,7 @@ primarydef a yxscaledto b =
  hide(lastscale:=b/(ypart(urcorner(a))-ypart(llcorner(a))))
  a scaled lastscale
 enddef;
-%
+
 pair lastshift;
 primarydef a llshiftedto b =
  hide(lastshift:=-llcorner(a)+b) a shifted lastshift
@@ -702,23 +509,16 @@ enddef;
 primarydef a ccshiftedto b =
  hide(lastshift:=-center(a)+b) a shifted lastshift
 enddef;
-%% \--------------------------------------------------------------------
-%% Joining two paths at their intersection point:
-%% \-
-%% /L/aczenie dw/och scie/zek w punkcie ich przeci/ecia:
-%% \--------------------------------------------------------------------
+
+% Joining two paths at their intersection point:
 tertiarydef a intersection_join b = % like |softjoin|
  begingroup save t_;
   (t_1,t_2)=a intersectiontimes b; a.sub(0,t_1)&&b.sub(t_2,infinity)
  endgroup
 enddef;
-%% \--------------------------------------------------------------------
-%% Changing locally non-internal variables (sometimes we want to set locally
-%% not only numeric variables):
-%% \-
-%% Lokalna zmiana warto/sci zwyk/lych zmiennych (czasami zachodzi potrzeba
-%% lokalnej zmiany nie tylko zmiennych numerycznych):
-%% \--------------------------------------------------------------------
+
+% Changing locally non-internal variables (sometimes we want to set locally
+% not only numeric variables):
 def local suffix s =
  begingroup
   save local_stack_value_, local_stack_name_;
@@ -732,113 +532,54 @@ def local suffix s =
 enddef;
 def local_ expr x = local_stack_name_:=x enddef;
 def endlocal = local_stack_name_:=local_stack_value_; endgroup; enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % The following abbreviation is roughly equivalent to the Knuthian
 % {\it of-the-way function}, namely, to the |whatever[z1,z2]|
 % operator; observe, however, that this construction requires that
 % both |z1| and |z2| should be known, while |z1| the in
 % the construction |z1^z2| can be unknown.
-%% \-
-%% \descriptioncomments
-% Poni/zszy skr/ot jest z grubsza r/ownowa/zny Knuthowej funkcji
-% {\it w-p/o/l-drogi}, tzn. operatorowi |whatever[z1,z2]|;
-% odnotujmy wszak/ze, /ze konstrukcja ta wymaga, by zar/owno
-% |z1| jak i~|z2| by/ly znane, natomiast konstrukcja |z1^z2|
-% pozwala, by |z1| by/lo nieznane.
-%% \--------------------------------------------------------------------
 primarydef a ^ b = a + whatever * b enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % The macro `leg' computes the leg of a right-angled triangle,
 % given a hypotenuse (vector, parameter~|c|) and a length
 % of one leg (parameter~|b|).
-%% \-
-%% \descriptioncomments
-% Makro ,leg' oblicza przyprostok/atn/a tr/ojk/ata prostok/atnego
-% przy za/lo/zeniu, /ze znana jest przeciwprostok/atna (wektor,
-% parametr~|c|) i~przyprostok/atna (parametr~|b|).
-%% \--------------------------------------------------------------------
 primarydef c leg b =
  begingroup save a_; pair a_;
   a_+b/(length(c)+-+b)*(a_ rotated -90)=c; % |(length(c)+-+b)=length(a_)|
   a_
  endgroup
 enddef;
-%% \--------------------------------------------------------------------
-%% This extremely simple macro is particularly
-%% useful for constructing sloped objects. Assume, for example, that
-%% we want to draw the following parallelogram:
-%% \-
-%% To pro/sciutkie makro jest szczeg/olnie u/zyteczne przy konstruowaniu
-%% uko/snych obiekt/ow. Za/l/o/zmy, /ze chcemy narysowa/c nast/epuj/acy
-%% r/ownoleg/lobok:
-%% %
-%% \LINE{\epsfbox{\illusname.103}}
-%% %
-%% \descriptioncomments
+
+% This extremely simple macro is particularly
+% useful for constructing sloped objects. Assume, for example, that
+% we want to draw the following parallelogram:
+
 % (given |h|, |w| and |b|). This is exactly the situation, where
 % the macro `leg' comes handy in. Given |z0| and |z2|, the remaining
 % points |z1| and |z3| can be easily determined from the following
 % relations:
-%% \-
-%% \descriptioncomments
-% dla zadanych wielko/sci |h|, |w| i~|b|. To jest w/la/snie
-% ta~sytuacja, w~kt/orej makro ,leg' okazuje si/e u/zyteczne.
-% Maj/ac dane punkty |z0| i~|z2|, punkty |z1| i~|z3| wyznaczy/c
-% mo/zna z~relacji:
-%% %
-%% \LINE{%
-%% \descriptioncomments
+
 %   |z1=z0+whatever*((z2-z0) leg (-b));|\quad
 %   |y1=y2;|\quad |z1-z2=z0-z3;|
-%% \unskip}
-%% %
-%% Note the minus preceding the second argument to~the~`leg';
-%% the positive value means ``leftwards,'' negative---``rightwards''
-%% (with respect to hypotenuse vector).
-%% \-
-%% Odnotujmy obecno/s/c minusa przed drugim argumentem makra ,leg';
-%% warto/s/c dodatnia oznacza ,,po~lewej'', ujemna~--~,,po prawej''
-%% (wzgl/edem wektora przeciwprostok/atnej).
-%% \--------------------------------------------------------------------
-%% \medskip
-%% \--------------------------------------------------------------------
-%% {\descriptioncomments
+
+% Note the minus preceding the second argument to~the~`leg';
+% the positive value means ``leftwards,'' negative---``rightwards''
+% (with respect to hypotenuse vector).
+
 % The macro |quicksort| sorts |@#||s.i ... @#||s.j| along with
 % |@#|.|$i ... @#|.|$j| for |$| $\in$ |t|, using Tony Hoare's ``quick sort''
 % method; suffix |s| must must not occur in the |t| list (no checking
 % is performed); if both |s| and |t| are empty, |t| is ignored.
-%% }
-%% \bull Remark 1: the algorithm has no explicit recursion, because of
-%%  \MF{}//\MP{} limits on recursion level.
-%% \bull Remark 2: the algorithm is not stable, i.e., it does not
-%%  preserve the order of equal items.
-%% \bull {\descriptioncomments
+% }
+% \bull Remark 1: the algorithm has no explicit recursion, because of
+%  \MF{}//\MP{} limits on recursion level.
+% \bull Remark 2: the algorithm is not stable, i.e., it does not
+%  preserve the order of equal items.
+% \bull {\descriptioncomments
 %    Sample usage: |quicksort| |A(1,100)()(x,y)| will sort |A1|,
 %    |A2,...|$\,$|,A100| (comparing |A.i| with |A.j|) and, moreover,
 %    |A.x1, A.y1,...|$\,$|,A.x100, A.y100| will be reordered simultaneously.
-%% }
-%% \-
-%% {\descriptioncomments
-% Makro |quicksort| sortuje |@#||s.i ... @#||s.j| wraz
-% z~|@#|.|$i ... @#|.|$j| dla |$| $\in$ |t|, z~u/zyciem algorytmu
-% ``quick sort'', kt/orego autorem jest Tony Hoare;
-% sufiks |s| nie mo/ze wyst/api/c w~li/scie |t| list (za/lo/zenie to
-% nie jest sprawdzane); je/sli parametry |s| i~|t| s/a r/ownocze/snie
-% puste, parametr |t| ignorowany.
-%% }
-%% \bull Uwaga 1: algorytm nie korzysta z~jawnej rekursji ze wzgl/edu
-%%  na ograniczenia implementacyjne \MF{}//\MP{}.
-%% \bull Uwaga 2: algorytm jest niestabilny, tzn. nie zachowuje
-%%  kolejno/sci r/ownych obiekt/ow.
-%% \bull {\descriptioncomments
-%    Przyk/ladowe u/zycie: |quicksort| |A(1,100)()(x,y)| posortuje |A1|,
-%    |A2,...|$\,$|,A100| (por/ownuj/ac |A.i| z~|A.j|), ponadto
-%    |A.x1, A.y1,...|$\,$|,A.x100, A.y100| zostan/a r/ownocze/snie
-%    odpowiednio przestawione.
-%% }
-%% \--------------------------------------------------------------------
+% }
 vardef quicksort@#(expr i,j)(suffix s)(text t) =
  save i_,j_,k_,l_,cell_,stack_,incl_t_; boolean incl_t_;
  pair stack_[\\]; stack_.lev:=0; stack_[incr stack_.lev]:=(i,j);
@@ -870,66 +611,13 @@ vardef quicksort@#(expr i,j)(suffix s)(text t) =
  endfor
 enddef;
 vardef is_less(expr a,b) = (a<b) enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
-% The macro |soften_path| rounds all corners of a path |p|;
-% |r| is the radius. Use |soften_nodes| for rounding corners at
-% a given set of nodes; its text parameter |t| is a comma-separated
-% list of either numbers or pairs: a number means the number
-% of a node, a pair means the number of a node and a local
-% radius, to be used instead of~|r|; prior to insertion
-% the list of nodes is sorted.
-%% \-
-%% \descriptioncomments
-% Macro |soften_path| zaokr/agla naro/za /scie/zki |p|;
-% |r|~oznacza promie/n. Aby zaokr/agli/c naro/za w~wybranych w/ez/lach
-% nale/zy u/zy/c makra |soften_nodes|; parametr tekstowy~|t| tego
-% makra jest list/a (separowan/a przecinkami) liczb lub par:
-% liczba oznacza numer w/ez/la, para~-- numer w/ez/la i~lokalny
-% promie/n zaokr/aglenia (zamiast~|r|); lista w/ez/l/ow przed
-% wstawieniem jest sortowana.
-%% \--------------------------------------------------------------------
-vardef soften_node(expr p,r,t) = % path, radius, node (i.e., time)
- save q_; path q_; interim join_radius:=r;
- if cycle p:
-  q_=(subpath (t-1,t) of p) softjoin (subpath (t,t+length(p)-1) of p) & cycle;
-   (subpath(1-t, 1+length(q_)-t) of q_) & cycle % re-position origin
- else: (subpath (0,t) of p) softjoin (subpath (t,length(p)) of p) fi
-enddef;
-%
-vardef soften_nodes(expr p,r) (text t) =
- save j_, n_, p_, r_, t_; path p_; p_:=p;
- t_:=0; for i_:=t: (n_[incr t_],r_[t_])=if pair i_: i_ else: (i_,r) fi; endfor
- quicksort(1,t_)(n_)(r_);
- j_:=-1; for i_:=1 upto t_: p_:=soften_node(p_,r_[i_],n_[i_]+incr j_); endfor;
- p_
-enddef;
-%
-vardef soften_path(expr p,r) = % path, radius
- save p_; path p_; p_:=p;
- if r>0:
-  for i_:=if cycle p: 0 else: 1 fi step 2 until 2(length(p)-1):
-   p_:=soften_node(p_,r,i_);
-  endfor;
- fi
- p_
-enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % The macro |insert_nodes| inserts additional nodes at given non-integer
 % non-repeating times~|t| into a given path |p|.
 % The code would be a bit longer without `|arclength|' and `|arctime|.'
 % The macro can be useful in some cases in the context of finding
 % the envelopes of pen-stroked paths (avoiding inflection
 % points---see below).
-%% \-
-%% \descriptioncomments
-% Macro |insert_nodes| wstawia w~/scie/zce~|p| dodatkowe
-% w/ez/ly w~punktach odpowiadaj/acych czasom~|t| (nieca/lkowitym,
-% niepowtarzaj/acym si/e). Bez funkcji ,|arclength|' i~,|arctime|'
-% kod by/lby nieco d/lu/zszy. Makro to mo/ze by/c przydatne przy
-% wyznaczaniu obrysu pi/orka (unikanie punkt/ow przegi/ecia -- p.~ni/zej).
-%% \--------------------------------------------------------------------
 vardef insert_nodes(expr p)(text t) =
  save j_, p_, s_, t_; path p_; p_:=p;
  t_:=0;
@@ -947,8 +635,7 @@ vardef insert_nodes(expr p)(text t) =
  endfor;
  p_
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % The macro |delete_nodes| removes, as the name suggests, selected nodes
 % from a given (cyclic) path. The macro can be useful for removing
 % superfluous nodes, e.g., in case of improving fonts converted
@@ -984,45 +671,6 @@ enddef;
 % |delete_nodes(p)((1,0), (3,0), (5,0), (7,0))|,
 % right lower one---by
 % |delete_nodes(p)((1,1), (3,1), (5,1), (7,1))|.
-%% \-
-%% \descriptioncomments
-% Makro |delete_nodes|, jak sama nazwa wskazuje, usuwa wskazane w/ez/ly
-% z~danej (cyklicznej) /scie/zki. Makro mo/ze si/e przyda/c do usuwania
-% zb/ednych w/ez/l/ow, na przyk/lad przy poprawianiu font/ow zamienionych
-% z~postaci PFB na posta/c \MP{}-ow/a. W/ez/ly s/a usuwane na trzy mo/zliwe
-% sposoby: wraz z~obydwoma przyleg/lymi naci/agami, z~poprzedzaj/acym
-% lub z~nast/epuj/acym naci/agiem. W~ka/zdym z~przypadk/ow mog/a zosta/c
-% te/z usuni/ete s/asiaduj/ace naci/agi.
-% Dok/ladniej: dla danej /scie/zki |p| niech |z_[i_]| oznacza |i_|-ty w/eze/l,
-% |z_[i_]b| -- jego naci/ag poprzedzaj/acy, |z_[i_]a| -- jego naci/ag
-% nast/epuj/acy. Makro |delete_nodes| usuwa elementy (poprzez nadanie
-% warto/sci nieokre/slonej) z~tablic |z_[\\]|, |z_[\\]b|
-% i~|z_[\\]a| w~taki spos/ob, by zachowany by/l nast/epuj/acy
-% niezmiennik: dla dowolnej pary s/asiaduj/acych w/ez/l/ow
-% |z_[i_]| i~|z_[j_]|, |i_<j_|, istniej/a dok/ladnie dwa indeksy
-% |u_| i~|v_|, takie /ze |i_<=u_<v_<=j_| i~zar/owno |z_[u_]a|,
-% jak i~|z_[v_]b| s/a znane; ponadto |z_[w_]a| i~|z_[w_]b| s/a
-% nieokre/slone dla pozosta/lych indeks/ow~|w_|, |i_<=w_<=j_|.
-% Z element/ow, kt/ore pozostaj/a w~tablicy, budowana jest
-% /scie/zka wynikowa.\break
-% W/ez/ly, kt/ore maj/a by/c usuni/ete, s/a podawane jako lista par
-% (parametr tekstowy |node_list|): |(indeks,rodzaj)|, gdzie |indeks| oznacza
-% czas odpowiadaj/acy danemu w/ez/lowi na /scie/zce, a~|rodzaj|
-% jest liczb/a; je/sli |rodzaj=0|, to usuwane s/a oba naci/agi,
-% je/sli |rodzaj<0|, to usuwany jest naci/ag poprzedzaj/acy,
-% je/sli |rodzaj>0|, to usuwany jest naci/ag nast/epuj/acy.\break
-% Efekt dzia/lania makra dla przyk/ladowej /scie/zki |p| (|p=fullcircle|)
-% jest przedstawiony na poni/zszym rysunku: g/orna ilustracja przedstawia
-% /scie/zk/e /xr/od/low/a z~numeracj/a w/ez/l/ow, lewa dolna ilustracja
-% to rezultat u/zycia operacji
-% |delete_nodes(p)((1,-1), (3,-1), (5,-1), (7,-1))|
-% /srodkowa dolna -- operacji
-% |delete_nodes(p)((1,0), (3,0), (5,0), (7,0))|,
-% prawa dolna -- operacji
-% |delete_nodes(p)((1,1), (3,1), (5,1), (7,1))|.
-%% %
-%% \LINE{\vbox{\kern3mm\hbox{\epsfbox{\illusname.104}}}}
-%% \--------------------------------------------------------------------
 vardef delete_nodes(expr p)(text node_list) = % |p| is cyclic
  save o_,i_,j_,j__,l_,n_,z_; pair z_[\\],z_[\\]a,z_[\\]b;
  n_=length(p);
@@ -1063,125 +711,33 @@ vardef delete_nodes(expr p)(text node_list) = % |p| is cyclic
   if known z_[j__]b: and \\ z_[j__]b .. fi
  endfor \\ z_[o_] & cycle
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
-% The macros |insert_extreme| and |insert_extremes| insert additional
-% nodes at extremes into a given path |p|. They make use of |unslant_stroke|
-% operation in order to provide valid extremes after slanting the path~|p|.
-% The first parameter (optional, of type |text|, i.e, it the list
-% of numbers or pairs) defines either the minimal acceptable length
-% of a~resulting subpath (if its value is of the |numeric| type) or
-% a~subpath to be excluded from the process of the insertion of extremes
-% (if its value is of the |pair| type).
-%% \-
-%% \descriptioncomments
-% Makra |insert_extreme| i~|insert_extremes| wstawiaj/a dodatkowe w/ez/ly
-% w~ekstremach w~/scie/zce~|p|. Makra robi u/zytek z~operacji |unslant_stroke|
-% aby zapewni/c w/la/sciwe po/lo/zenie ekstrm/ow po pochyleniu s/cie/zki~|p|.
-% Pierwszy, opcjonalny parametr (typu |text|; tzn. jest to lista liczb lub
-% par) pozwala poda/c d/lugo/s/c minimalnej akceptowalnej (wynikowej)
-% pod/scie/zki oraz pod/scie/zki nieuwzgl/edniane przy wstawianiu
-% ekstrem/ow; decyduje o~tym typ warto/sci parametru: |integer|
-% oznacza d/lugo/s/c, |pair|~-- pod/scie/zk/e.
-%% \--------------------------------------------------------------------
-vardef insert_extremes(text opt)(expr p) = % far from being optimal...
- save p_; path p_;
- p_:=insert_extreme(opt)(up)(p);
- p_:=insert_extreme(opt)(left)(p_);
- p_:=insert_extreme(opt)(down)(p_);
- insert_extreme(opt)(right)(p_)
-enddef;
-%
-vardef insert_extreme(text opt)(expr d,p) = 
- save ignored_size_,ignored_segments_,a_,b_,found_,p_,t_,t__; path p_;
- ignored_size_:=ignore_nib_limit;
- for opt_:=opt:
-  if numeric opt_: ignored_size_:=opt_; fi
-  if pair opt_:
-   a_:=floor (xpart opt_); b_:=ceiling (ypart opt_)-1; if b_<a_: b_:=a_; fi
-   for t_:=a_ upto b_: ignored_segments_[t_]:=1; endfor
-  fi
- endfor
- for t_:=0 upto length(p)-1:
-  hide(found_:=whatever)
-  if unknown ignored_segments_[t_]:
-   hide (p_:=subpath (t_,t_+1) of p)
-   if arclength(p_)>ignored_size_:
-    hide(t__:=directiontime d unslant_stroke of p_)
-    if (arclength(subpath (0,t__) of p_)>ignored_size_) and
-       (arclength(subpath (t__,1) of p_)>ignored_size_): hide(found_:=1)
-    fi
-   fi
-  fi
-  if known found_: ((subpath (0,t__) of p_) && (subpath (t__,1) of p_)) else: p_ fi
-  &
- endfor
- if cycle p: cycle fi
-enddef;
-%% \vfill\eject
-%% \--------------------------------------------------------------------
-%% \centering \bf A MODULE THAT FINDS AN~OUTLINE FOR
-%% A SINGLE (SELF-INTERSECTING) CYCLIC PATH
-%% OR~A~PAIR OF~CYCLIC~PATHS
-%% \-
-%% \centering \bf MODU/L ZNAJDUJ/ACY OBWIEDNI/E POJEDYNCZEJ
-%% /SCIE/ZKI CYKLICZNEJ (SAMOPRZECINAJ/ACEJ~SI/E)
-%% LUB PARY /SCIE/ZEK~CYKLICZNYCH
-%%
-%% \LINE{\leaders\hrule\hfill}
-%%
-%% The problem can be stated as follows: two paths are given (precisely:
-%% expressions of type {\bf path}); assume that the positively directed
-%% (anti-clockwise) path accomplishes filling, and negatively directed
-%% (clockwise)---erasing; the task is to find the outline of the resulting
-%% (visible) figure. Such a task is known as ``removing overlaps''
-%% which seems too narrow for such a complex operation. Actually,
-%% the basic macro of that part, i.e., `find_outlines,' accomplishes
-%% set-theory operations: sum, difference and product, depending on the
-%% turning number of the input paths. The illustration below demonstrates
-%% the results yielded by the macro `find_outlines.' There are four
-%% cases since there are four combinations of turning numbers for two
-%% ``regular'' paths. Each case shows the initial situation (left)
-%% and the resulting one (right). Filling is omitted, the outline colour
-%% shows the turning number: blue---positive, red---negative.
-%% \-
-%% Problem mo/zna postawi/c w~nast/epuj/acy spos/ob: dane s/a dwie /scie/zki
-%% (dok/ladniej wyra/zenia typu {\bf path}); zak/ladamy, /ze dodatnio
-%% skierowane /scie/zki (przeciwnie do ruchu wskaz/owek zegara) zaczerniaj/a
-%% obszar, a~ujemnie -- odczerniaj/a. Nale/zy znale/x/c obwiedni/e
-%% tak powsta/lej (widocznej) figury. Operacja ta nosi nazw/e
-%% ,,usuwanie cz/e/sci wsp/olnej'', co niezbyt dobrze oddaje z/lo/zony
-%% charakter operacji. W~istocie podstawowa operacja tego modu/lu,
-%% tj.~,find_outlines', realizuje operacje teoriomnogo/sciowe:
-%% sum/e, iloczyn i~r/o/znic/e, w~zale/zno/sci od kierunk/ow wej/sciowych
-%% /scie/zek. Poni/zsza ilustracja przedstawia wyniki dzia/lania makra
-%% ,find_outlines'. Ka/zdy z~czterech przypadk/ow pokazuje stan
-%% pocz/atkowy (lewa strona) i~ko/ncowy (prawa strona). Wype/lnienie nie
-%% zosta/lo naniesione, zaznaczony jedynie zosta/l kierunek /scie/zek: kolor
-%% niebieski -- kierunek dodatni, kolor czerwony -- kierunek ujemny.
-%% %
-%% \LINE{\epsfbox{\illusname.105}}
-%% %
-%% \descriptioncomments
+
+% A MODULE THAT FINDS AN OUTLINE FOR CYCLIC PATHS
+
+% The problem can be stated as follows: two paths are given (precisely:
+% expressions of type {\bf path}); assume that the positively directed
+% (anti-clockwise) path accomplishes filling, and negatively directed
+% (clockwise)---erasing; the task is to find the outline of the resulting
+% (visible) figure. Such a task is known as ``removing overlaps''
+% which seems too narrow for such a complex operation. Actually,
+% the basic macro of that part, i.e., `find_outlines,' accomplishes
+% set-theory operations: sum, difference and product, depending on the
+% turning number of the input paths. The illustration below demonstrates
+% the results yielded by the macro `find_outlines.' There are four
+% cases since there are four combinations of turning numbers for two
+% ``regular'' paths. Each case shows the initial situation (left)
+% and the resulting one (right). Filling is omitted, the outline colour
+% shows the turning number: blue---positive, red---negative.
+
 % A single (cyclic) curve can be supplied as an input argument to
 % |find_outlines|; in this case it {\it should have\/} self-intersections.
 % Depending on the orientation of the input path, there are possible
 % two sets of resulting paths:
-%% \-
-%% \descriptioncomments
-% Argumentem wej/sciowym makra |find_outlines| mo/ze by/c pojedyncza
-% (cykliczna) /scie/zka; w takim przypadku {\it powinna\/} ona mie/c
-% samoprzeci/ecia. Makro |find_outlines| -- w~zale/zno/sci od kierunku
-% wej/sciowej /scie/zki -- znajduje dwa mo/zliwe zestawy /scie/zek
-% wynikowych:
-%% %
-%% \LINE{\epsfbox{\illusname.106}}
-%% \--------------------------------------------------------------------
 vardef feasible_cross(suffix p,q,v)(expr c,s) =
  if v[c]: (s*turn_ang(gendir p[c] of p, gendir q[c] of q)>0)
  else: false fi
 enddef;
-%
+
 vardef recombine(expr self_intersection)(suffix p, r) =
  save s_,e_,v_,n_; boolean v_[\\];
  if not path r0: scantokens("path " & generisize(str r) & "[]"); fi
@@ -1214,7 +770,7 @@ vardef recombine(expr self_intersection)(suffix p, r) =
    cycle;
  endfor
 enddef;
-%
+
 vardef next_time(suffix p)(expr t) =
  save c_;
  for i_:=1 upto p.num:
@@ -1227,7 +783,7 @@ vardef next_time(suffix p)(expr t) =
  fi
  c_
 enddef;
-%
+
 vardef feasible_time(suffix p)(expr t) =
  save b_,i_; boolean b_; b_:=true; i_:=0;
  forever:
@@ -1240,7 +796,7 @@ vardef feasible_time(suffix p)(expr t) =
  endfor
  b_
 enddef;
-%
+
 vardef intersect_curves(expr self_intersection)(suffix p) =
  save l_,p_; l_:=0;
  for i_:=0 upto length(p1)-1:
@@ -1262,7 +818,7 @@ vardef intersect_curves(expr self_intersection)(suffix p) =
  endfor
  p.num:=p1num:=p2num:=l_;
 enddef;
-%
+
 vardef intersect_segments(expr a,b)(suffix p) =
  save ta_,tb_; (ta_,tb_)=a intersectiontimes b;
  if ta_>=0:
@@ -1274,50 +830,27 @@ vardef intersect_segments(expr a,b)(suffix p) =
  else: 0 fi
 enddef;
 newinternal acc_eps; acc_eps:=.5;
-%% \--------------------------------------------------------------------
-%% As was mentioned, the input argument to `find_outlines' can be either
-%% a single path or a pair of paths. The paths must comply with
-%% the following assumptions:
-%% \bull paths are cyclic;
-%% \bull if two paths are passed as an argument, each of them should
-%% contain no self-intersection;
-%% \bull if a single path is passed as an argument, its adjacent segments
-%% do not intersect;
-%% \bull no tangent touching occur;
-%% \bull no inflection points occur (because the applied algorithm
-%% assumes that two B\'ezier segments can cross at at most two points)
-%% \bull segments are long enough (minimal length of a segment after the
-%% process of intersection is controlled by the variable
-%% {\descriptioncomments
+
+% As was mentioned, the input argument to `find_outlines' can be either
+% a single path or a pair of paths. The paths must comply with
+% the following assumptions:
+% \bull paths are cyclic;
+% \bull if two paths are passed as an argument, each of them should
+% contain no self-intersection;
+% \bull if a single path is passed as an argument, its adjacent segments
+% do not intersect;
+% \bull no tangent touching occur;
+% \bull no inflection points occur (because the applied algorithm
+% assumes that two B\'ezier segments can cross at at most two points)
+% \bull segments are long enough (minimal length of a segment after the
+% process of intersection is controlled by the variable
+% {\descriptioncomments
 % |acc_eps|---see above).
-%% }
-%% \-
-%% Jak zosta/lo wspomniane, wej/sciowym argumentem makra ,find_outlines'
-%% mo/ze by/c albo pojedyncza /scie/zka, albo para /scie/zek.
-%% Nast/epuj/ace warunki musz/a by/c spe/lnione:
-%% \bull /scie/zki powinny by/c cykliczne
-%% \bull je/sli argumentem jest para /scie/zek, /zadna z~nich nie powinna
-%% mie/c punkt/ow samoprzeci/ecia;
-%% \bull je/sli argumentem jest pojedyncza /scie/zka, to jej s/asiednie
-%% segmenty B\'eziera nie powinny si/e przecina/c;
-%% \bull nie powinny wyst/epowa/c punkty styczno/sci;
-%% \bull nie powinny wyst/epowa/c punkty przegi/ecia (gdy/z
-%% zastosowany algorytm zak/lada, /ze dwa segmenty B\'eziera
-%% przecinaj/a si/e co najwy/zej w~dw/och punktach);
-%% \bull poszczeg/olne segmenty powinny by/c dostatecznie d/lugie (minimalna
-%% d/lugo/s/c segmentu po procesie znajdowania przeci/e/c jest okre/slona
-%% {\descriptioncomments
-% przez zmienn/a |acc_eps| -- p.~wy/zej).
-%% }
-%% \LINE{}
-%% Further improvements:
-%% \bull intersection points nearly coinciding with
-%%    nodes should be replaced by the nodes, i.e., by an integer time.
-%% \-
-%% Przewidywane udoskonalenie:
-%% \bull je/sli punkt przeci/ecia niemal/ze pokrywa si/e z~w/ez/lem
-%% kt/orej/s z~krzywych, to do oblicze/n powinien by/c brany ten/ze w/eze/l.
-%% \--------------------------------------------------------------------
+% }
+
+% Further improvements:
+% \bull intersection points nearly coinciding with
+%    nodes should be replaced by the nodes, i.e., by an integer time.
 vardef find_outlines(text a)(suffix r) = % |a| -- input, |r| -- output
  save auto_,i_,q_;
  boolean auto_; numeric q_.num; numeric q_[\\][\\]; path q_[\\];
@@ -1336,17 +869,9 @@ vardef find_outlines(text a)(suffix r) = % |a| -- input, |r| -- output
   else: r.num:=-2; r1:=q_1; r2:=q_2; fi
  else: recombine(auto_,q_,r); fi
 enddef;
-%% \vfill\eject
-%% \--------------------------------------------------------------------
-%% \centering \bf A MODULE THAT FINDS AN~ENVELOPE OF A PATH BEING DRAWN
-%% WITH AN ELLIPTICAL OR A ONE-DIMENSIONAL (``RAZOR'')~PEN
-%% \-
-%% \centering \bf MODU/L ZNAJDUJ/ACY OBRYS OBSZARU ZAMALOWYWANEGO
-%% PRZEZ PI/ORKO ELIPTYCZNE LUB JEDNOWYMIAROWE~(,,/ZYLETKOWE'')
-%%
-%% \LINE{\leaders\hrule\hfill}
-%%
-%% \descriptioncomments
+
+% A MODULE THAT FINDS AN ENVELOPE OF A PATH DRAWN WITH A PEN
+
 % The following macros approximate the envelope of an elliptical or a razor
 % pen. The exact solution is impossible---in general, the envelope is not
 % a B\'ezier curve, therefore some heuristics is, in general, unavoidable.
@@ -1357,22 +882,7 @@ enddef;
 % method of finding an approximation of a pen envelope). If the latter
 % condition is not fulfilled, one may expect weird results (see the usage
 % of the |...| operator in the code of |pen_stroke_edge|).
-%% \-
-%% \descriptioncomments
-% Poni/zsze makra przybli/zaj/a brzeg /scie/zki kre/slonej eliptycznym lub
-% ,,/zyletkowym'' pi/orkiem. Dok/ladne rozwi/azanie nie jest mo/zliwe~--
-% w~og/olno/sci brzeg nie jest krzyw/a B\'eziera, zatem heurystyki
-% w~og/olno/sci unikn/a/c si/e nie da. Za/lo/zyli/smy, /ze szkielet
-% figury jest tak skonstruowany, /ze przy g/ladko po/l/aczonych w/ez/lach
-% kraw/ed/x pi/orka nie rysuje p/etli. Ponadto krzywe pojawiaj/ace si/e
-% w~trakcie przetwarzania {\bf nie~powinny~mie/c} punkt/ow przegi/ecia (co
-% wi/a/ze si/e z~zastosowanym sposobem aproksymacji obrysu pi/orka). Je/sli
-% to za/lo/zenie nie jest spe/lnione, mo/zna oczekiwa/c dziwacznych efekt/ow
-% (p.~u/zycie operatora |...| w~kodzie makra |pen_stroke_edge|).
-%% \--------------------------------------------------------------------
-%% \bigskip
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % We assume that slanting should not distort a pen. Therefore, if
 % a glyph is to be slanted {\it after\/} expanding a stroke, which
 % usually is the case, the envelope should be constructed with
@@ -1380,18 +890,6 @@ enddef;
 % and |unslant_angle| are devised to facilitate handling this
 % situation. These macros refer to the variable |slant_stroke_val|;
 % it should be assigned a definite value prior to expanding stroke.
-%% \-
-%% \descriptioncomments
-% Zak/ladamy, /ze pochylenie ({\it slanting\/}) nie powinno wp/lywa/c
-% na kszta/lt pi/orka. Zatem je/sli obrys konstruujemy w~taki spos/ob,
-% /ze pochylenie jest wykonywane po wyznaczeniu obrysu pi/orka, co
-% zwykle ma miejsce, to obrys powinnien by/c znajdowany dla pi/orka
-% poddanego pochyleniu odwrotnemu ({\it unslanting\/}).
-% Makra |slant_stroke|, |unslant_stroke| oraz |unslant_angle|
-% zosta/ly wprowadzone po to, aby u/latwi/c obs/lug/e takiego zabiegu.
-% Zmiennej |slant_stroke_val|, do kt/orej te makra si/e odwo/luj/a,
-% nale/zy nada/c stosown/a warto/s/c przed wyznaczaniem obrysu pi/orka.
-%% \--------------------------------------------------------------------
 def slant_stroke =
  if known slant_stroke_val: slanted slant_stroke_val fi
 enddef;
@@ -1399,8 +897,7 @@ def unslant_stroke =
  if known slant_stroke_val: slanted -slant_stroke_val fi
 enddef;
 vardef unslant_angle(expr a) = angle(dir(a) unslant_stroke) enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % Macro |fix_nib| returns a path. If |y_diam| parameter
 % is~0, a ``razor'' pen (a segment) is returned, otherwise it is
 % an approximation of an ellipse. We do our best to avoid unnecessary
@@ -1411,20 +908,6 @@ vardef unslant_angle(expr a) = angle(dir(a) unslant_stroke) enddef;
 % {\it Note\/}: So far, there is no explicit relation between a built-in
 % \MP{} pen mechanism and the |fix_nib| operation, in particular,
 % |beginfig| does not alter the setting of |default_nib|. Needs rethinking.
-%% \-
-%% \descriptioncomments
-% Makro |fix_nib| zwraca /scie/zk/e. Je/sli parametr |y_diam|
-% jest r/owny~0, zwracane jest pi/orko ,,/zyletkowe'' (odcinek),
-% w~przeciwnym razie wynikiem jest (przybli/zona) elipsa. Poniewa/z
-% chcemy w~miar/e mo/zliwo/sci unika/c zb/ednych w/ez/l/ow, konstrukcja
-% przybli/zenia jest nieco skomplikowana. Dodatkowym czynnikiem komplikuj/acym
-% jest to, /ze interpolacja nie jest przemienna wzgl/edem przekszta/lce/n
-% afinicznych, dlatego najpierw wyznaczane s/a stosowne w/ez/ly na
-% niezdeformowanym pi/orku, a dopiero potem pi/orko jest przekszta/lcane.
-% {\it Uwaga\/}: Nie ma bezpo/sredniego powi/azania mi/edzy operacj/a
-% |fix_nib| a~wbudowanym w~\MP{}-a mechanizmem pi/orek, w~szczeg/olno/sci
-% |beginfig| nie zmienia ustawienia |default_nib|. Rzecz wymaga przemy/slenia.
-%% \--------------------------------------------------------------------
 
 vardef fix_nib(expr x_diam, y_diam, rot_angle) =
  if (x_diam<>0) and (y_diam<>0): fix_elliptic_nib(x_diam, y_diam, rot_angle)
@@ -1460,18 +943,10 @@ vardef fix_elliptic_nib(expr x_diam, y_diam, rot_angle) =
    {direction (directiontime d of p_) of fullcircle}...
  endfor cycle) xscaled x_diam yscaled y_diam rotated rot_angle unslant_stroke
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % Arcs of a pen shorter than |ignore_nib_limit| will be joined together
 % to form larger ones. Remember to adjust the parameter |ignore_nib_limit|
 % if the size of |default_nib| is significantly changed.
-%% \-
-%% \descriptioncomments
-% /Luki pi/orka kr/otsze ni/z |ignore_nib_limit| zostan/a po/l/aczone
-% w~wi/eksze segmenty. Nale/zy pami/eta/c o~zmianie parametru
-% |ignore_nib_limit| przy znacz/acej zmianie rozmiaru pi/orka
-% (|default_nib|).
-%% \--------------------------------------------------------------------
 newinternal ignore_nib_limit; ignore_nib_limit:=5;
 
 path default_nib;
@@ -1486,15 +961,9 @@ default_join:=1;
 default_cap:=1;
   % 0 -- cut 90 rel
   % 1 -- pen end
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % |tangent_point|, |pen_join|, |pen_stroke_edge_|, and |pen_stroke_edge|
 % are auxiliary macros, exploited by the main macro, i.e., |pen_stroke|.
-%% \-
-%% \descriptioncomments
-% |tangent_point|, |pen_join|, |pen_stroke_edge_| i~|pen_stroke_edge| to
-% makra pomocnicze, u/zyte w~g/l/ownym makrze, tj.~|pen_stroke|.
-%% \--------------------------------------------------------------------
 vardef tangent_point(expr d,nib) = % |d| -- direction of pen movement
  save a_;
  point if cycle nib: (directiontime d of nib) else:
@@ -1503,7 +972,7 @@ vardef tangent_point(expr d,nib) = % |d| -- direction of pen movement
   elseif a_<0: 0 else: 1 fi
  fi of nib
 enddef;
-%
+
 vardef pen_join(expr a,b,c,nib)=
  % deleting superfluous nodes is based on the |arclength| operation
  % which, obviously, is not preserved after slanting,  but let's hope
@@ -1542,8 +1011,7 @@ vardef pen_join(expr a,b,c,nib)=
  fi
  p_
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % The finding of a~pen envelope for a~given B\'ezier segment,
 % defined by nodes |a|, |b|, |c|, and |d|, begins with
 % the placing the pen at the ends of the B\'ezier segment
@@ -1564,29 +1032,6 @@ enddef;
 % |force_convex_edge| instead; for |pen_stroke_method=1| the convex edges
 % are forced (i.e, inflexion points are being removed),
 % for |pen_stroke_method=2| no forcing of convex edges takes place.
-%% \-
-%% \descriptioncomments
-% Wyznaczanie brzegu obszaru rysowanego pi/orkiem
-% dla segmentu B\'eziera okre/slonego przez w/ez/ly
-% |a|, |b|, |c| i~|d|, rozpoczyna si/e od umieszczenia
-% pi/orka w~w/ez/lach ko/ncowych (tj.~|a| i~|d|) znalezienia
-% odpowiadaj/acych im punkt/ow |a'| i~|d'| w~kt/orych obwiednia
-% pi/orka jest r/ownoleg/la do oryginalnej /scie/zki. Nast/epnie
-% konstruowana jest kraw/ed/x brzegu obszaru rysowanego pi/orkiem.
-% Dla metody domy/slnej (|pen_stroke_method=0|) /scie/zka jest
-% budowana na podstawie kierunku pocz/atkowego i~ko/ncowego.
-% Dla metody alternatywnej (|pen_stroke_method=1| lub~2) /scie/zka jest
-% wyznaczana przez jawne wyliczenie naci/ag/ow
-% (|b'|~i~|c'|) na podstawie heurystycznego za/lo/zenia
-%  |length(b'-a')/length(b-a)|~$\approx$
-%  |length(c'-d')/length(c-d)|~$\approx$
-%  |length(a'-d')/length(a-d)|.\break
-% Pierwsza z metod (tzn. domy/slna) nie daje w~wyniku /scie/zki wkl/es/lej,
-% gdy/z u/zywany jest zawsze operator |...|~; w~wypadku metody alternatywnej
-% stosowany jest operator |force_convex_edge|, kt/ory wymusza wypuk/lo/s/c
-% (tzn. usuwa punkty przegi/ecia) dla |pen_stroke_method=1|, natomiast
-% nie wymusza dla |pen_stroke_method=2|.
-%% \--------------------------------------------------------------------
 vardef extrapoline expr t of B = % the result may be not a single segment
  save l_, t_;
  (t_.a,t_.b)=t; % |0<=ta_<tb_<=1|!
@@ -1595,7 +1040,7 @@ vardef extrapoline expr t of B = % the result may be not a single segment
   B
  if t_.b<1:  -- ((point 1 of B) + l_.b*(upredir 1 of B)) fi
 enddef;
-%
+
 vardef force_convex_edge(expr za, zb, zc, zd) =
  save a_, b_, c_, d_, z_;
  a_:=length(zd-za); b_:=length(zb-za); c_:=length(zc-zb); d_:=length(zd-zc);
@@ -1625,7 +1070,7 @@ vardef force_convex_edge(expr za, zb, zc, zd) =
   za -- zd
  fi
 enddef;
-%
+
 vardef pen_stroke_edge_(expr b,b_nib,e_nib) = % |b| -- B\'ezier segment
  save pa_,pb_,qa_,qb_,ra_,rb_,sa_,sb_;
  pair pa_,pb_,qa_,qb_,ra_,rb_,sa_,sb_;
@@ -1649,7 +1094,7 @@ vardef pen_stroke_edge_(expr b,b_nib,e_nib) = % |b| -- B\'ezier segment
    decimal(pen_stroke_method) & ")";
  fi
 enddef;
-%
+
 vardef pen_stroke_edge@#(expr p) =
  save e_,l_,i_,i__; path e_[\\];
  l_:=length(p);
@@ -1745,8 +1190,7 @@ vardef pen_stroke_edge@#(expr p) =
  if cycle p: cycle else: (point 1 of e_[l_-1]) fi
 enddef;
 newinternal pen_stroke_method;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % Macro |pen_stroke| performs an operation known as ``expanding stroke'';
 % we'll call the result of the operation a ``pen envelope'' (for
 % a given path). The macro has one optional parameter, |opts| (|text|),
@@ -1760,41 +1204,14 @@ newinternal pen_stroke_method;
 % is cyclic, then |result.e| and |result.b| are undefined,
 % otherwise the variable |result| contains additionally the complete
 % expanded stroke.
-%% \-
-%% \descriptioncomments
-% Makro |pen_stroke| realizuje operacj/e znan/a jako ,,ekspansja /scie/zki''
-% ({\it expanding stroke\/}); wynik tej operacji b/edziemy okre/sla/c mianem
-% ,,obrysu pi/orka'' (dla danej /scie/zki).
-% Makro |pen_stroke| ma jeden parametr opcjonalny |opts| (typu |text|)
-% oraz dwa parametry obowi/azkowe: /scie/zk/e wej/sciow/a~|p| (typu |expr|)
-% i~wynik |result| (typu |suffix|). U/zytkownik ma dost/ep do pod/scie/zek
-% obrysu, mianowicie: |result.r| to prawa kraw/ed/x obrysu, |result.l| --
-% lewa, |result.b| -- fragment obwiedni pi/orka /l/acz/acy lew/a i~praw/a
-% kraw/ed/x w~pocz/atkowym punkcie /scie/zki, |result.e| -- analogiczny
-% fragment na ko/ncu /scie/zki (p.~rysunek poni/zej). Je/sli /scie/zka~|p|
-% jest zamkni/eta, to |result.e| oraz |result.b| s/a niezdefiniowane,
-% je/sli otwarta -- zmienna |result| zawiera dodatkowo kompletny
-% obrys /scie/zki.
-%% \LINE{\epsfbox{\illusname.109}}
-%% \descriptioncomments
+
 % For finding an envelope, a default path (|default_nib|, returned
 % by |fix_nib|) is used except nodes for which the parameter |opts|
 % sets another pen. Mastering the usage of the parameter |opts| allows
 % a user to achieve nontrivial effects. The parameter |opts| is a list
 % (space-separated or semicolon-separated) of the following
 % operators: (1)~|nib|, (2)~|cut|, (3)~|tip|, and (4)~|ignore_directions|.
-%% \-
-%% \descriptioncomments
-% Do wyznaczenia obrysu wykorzystywane jest pi/orko |default_nib|
-% (zdefiniowane za pomoc/a makra |fix_nib|), za wyj/atkiem
-% w/ez/l/ow, dla kt/orych parametr |opts| definiuje inne
-% pi/orko. Bieg/le wykorzystanie parametru |opts|
-% pozwala na uzyskiwanie nietrywialnych efekt/ow. Parametr |opts| jest
-% list/a nast/epuj/acych polece/n (separowan/a spacjami lub /srednikami,
-% jak kto woli):
-% (1)~|nib|, (2)~|cut|, (3)~|tip| oraz (4)~|ignore_directions|.
-%% \LINE{}
-%% \descriptioncomments
+
 % Ad 1. The macro |nib| has two parameters:
 % |nib|(pen)(list_of_nodes), where ``pen'' is a path returned by
 % macro |fix_nib|, and ``list_of_nodes'' contains comma-separated numbers
@@ -1806,31 +1223,14 @@ newinternal pen_stroke_method;
 % (the setting |linecap:=rounded|). Such a method of joining is also applied
 % by |pen_stroke| to nodes not mentioned in the parameter |opts|.
 % The result of the following statement
-%% \-
-%% \descriptioncomments
-% Ad 1. Wywo/lanie makra |nib| ma posta/c
-% |nib|(pi/orko)(lista_w/ez/l/ow), gdzie ,,pi/orko'' jest /scie/zk/a
-% zdefiniowan/a za pomoc/a makra |fix_nib|, a~,,lista_w/ez/l/ow'' zawiera
-% rozdzielone przecinkami numery (czasy) w/ez/l/ow /scie/zki~|p|, w~kt/orych
-% dane pi/orko ma by/c u/zyte. W~punktach naro/znych obrys jest
-% w~razie potrzeby uzupe/lniany fragmentem /scie/zki pi/orka. Odpowiada
-% to \MP{}-owemu ustawieniu |linejoin:=rounded|. W przypadku /scie/zki
-% otwartej tak/ze jej ko/nce s/a uzupe/lnianie fragmentem pi/orka
-% (|linecap:=rounded|). Taki spos/ob /l/aczenia stosowany jest r/ownie/z
-% przez makro |pen_stroke| w~w/ez/lach niewymienionych w~parametrze
-% |opts|. Wynik u/zycia polecenia
-%% \LINE{\descriptioncomments
+% \LINE{\descriptioncomments
 % |pen_stroke(nib(default_nib xyscaled (1,2))(infinity))(p)(q)|
-%% \unskip}
-%% \descriptioncomments
+% \unskip}
+% \descriptioncomments
 % that changes the pen at the last node of the path,
 % is shown in the following picture:
-%% \-
-%% \descriptioncomments
-% powoduj/acego zmian/e pi/orka w ostatnim w/e/xle /scie/zki
-% przedstawia poni/zszy rysunek:
-%% \LINE{\epsfbox{\illusname.110}}
-%% \descriptioncomments
+% \LINE{\epsfbox{\illusname.110}}
+
 % Ad 2. The call of the macro |cut| has the form: |cut|(angle,
 % pen)(list_of_nodes) or |cut|(pen,~angle)(list_of_nodes),
 % where ``pen'' and ``list_of_nodes'' are defined as
@@ -1847,41 +1247,16 @@ newinternal pen_stroke_method;
 % line. This operation is particularly useful at the ends of a path and
 % corresponds to the setting |linecap:=butt| in \MP{}, except that in \MP{}
 % one cannot specify angles. The result of the statement
-%% \-
-%% \descriptioncomments
-% Ad 2. Wywo/lanie makra |cut| ma posta/c |cut|(k/at,
-% pi/orko)(lista_w/ez/l/ow) lub |cut|(pi/orko,~k/at)(lista_w/ez/l/ow),
-% gdzie ,,pi/orko'' i~,,lista_w/ez/l/ow'' s/a
-% zdefiniowane jak wy/zej. Parametr okre/slaj/acy pi/orko mo/zna pomin/a/c,
-% co oznacza u/zycie pi/orka domy/slnego (|default_nib|). Makro powoduje
-% u/zycie w~zadanych punktach specjalnego pi/orka ,,/zyletkowego'',
-% b/ed/acego rzutem danego pi/orka w~kierunku zgodnym z~kierunkiem
-% scie/zki |p| w~danym w/e/xle na prost/a, przechodz/ac/a przez ten w/eze/l
-% pod k/atem okre/slonym przez parametr ,,k/at''. Uf\/f\/f\dots\ K/at prostej
-% mo/ze by/c okre/slany wzgl/edem osi |x|, lub~-- po dodaniu przedrostka
-% ,|rel|'~-- wzgl/edem kierunku /scie/zki w~danym w/e/xle. Z~punktu widzenia
-% u/zytkownika efektem dzia/lania makra |cut| jest ,,przeci/ecie'' obwiedni
-% w~danym w/e/xle zadan/a prost/a~-- jest to u/zyteczne g/l/ownie na
-% ko/ncach /scie/zki. Makro to odpowiada \MP{}-owemu ustawieniu
-% |linecap:=butt|, z~tym /ze \MP{} nie pozwala na dowolne zadanie
-% k/ata /sci/ecia. Wynik u/zycia polecenia
-%% \LINE{\descriptioncomments
+% \LINE{\descriptioncomments
 % |pen_stroke(cut(45)(0)|
 % |cut(default_nib xyscaled (1,2), rel 90)(infinity))(p)(q)|
-%% \unskip}
-%% \descriptioncomments
+% \unskip}
+% \descriptioncomments
 % that cuts both ends and, moreover, changes a pen
 % at the ending node is shown in the figure below
 % (at the beginning node, the absolute angle of 45 degrees is specified,
 % at the ending one---the relative angle of 90~degrees):
-%% \-
-%% \descriptioncomments
-% definiuj/acego /sci/ecia na ko/ncach /scie/zki wraz ze zmian/a
-% pi/orka w~punkcie ko/ncowym przedstawia poni/zszy rysunek
-% (w~punkcie pocz/atkowym zadany jest k/at bezwzgl/edny 45~stopni,
-% w~ko/ncowym~-- 90~stopni wzgl/edem kierunku /scie/zki):
-%% \LINE{\epsfbox{\illusname.111}}
-%% \descriptioncomments
+
 % Ad 3. The call of the macro |tip| has the form |tip|(pen,
 % pre_elongate, post_elongate)(list_of_nodes), where ``pen''
 % and ``list_of_nodes'' have the same meaning as previously.
@@ -1890,30 +1265,11 @@ newinternal pen_stroke_method;
 % are not joined with an appropriate subpath of a pen; instead, they
 % are elongated (extrapolated) until they intersect. This process corresponds
 % (roughly) to the \MP{} setting |linejoin:=mitered|:
-%% \-
-%% \descriptioncomments
-% Ad 3. Wywo/lanie makra |tip| ma posta/c |tip|(pi/orko,
-% przed_wyd/lu/zenie, po_wyd/lu/zenie)(lista_w/ez/l/ow), gdzie ,,pi/orko''
-% i~,,lista_w/ez/l/ow'' maj/a posta/c jak w~poprzednich makrach,
-% w~szczeg/olno/sci pi/orko r/ownie/z mo/zna pomin/a/c. W~w/ez/lach
-% naro/znych, wyspecyfikowanych za pomoc/a tego makra, s/asiednie segmenty
-% nie s/a /laczone fragmentem /scie/zki pi/orka, tylko s/a przed/lu/zane
-% (ekstrapolowane) i~jest znajdowany ich punkt przeci/ecia. Procedura ta
-% odpowiada z~grubsza \MP{}-owemu ustawieniu |linejoin:=mitered|:
-%% \LINE{\epsfbox{\illusname.112}}
-%% \descriptioncomments
+
 % The illustration above is the result of the following call
 % of the macro |pen_stroke| (the macro |tip| is invoked with default
 % settings, only the number of a node is specified):
-%% \-
-%% \descriptioncomments
-% Powy/zsza ilustracja to rezultat wywo/lania makra |pen_stroke|
-% w~nast/epuj/acy (u/zycie makra |tip| bazuje na ustawieniach domy/slnych,
-% wyspecyfikowany jest jedynie numer w/ez/la) spos/ob:
-%% \LINE{\descriptioncomments
 % |pen_stroke(tip()(3))(p)(q); draw q;|
-%% \unskip}
-%% \descriptioncomments
 % The optional parameters |pre_elongation| and |post_elongation| define how
 % far the consecutive edges (segments) should be elongated in order to make
 % them intersect each other (the measure is the time). If one parameter is
@@ -1933,30 +1289,7 @@ newinternal pen_stroke_method;
 % |tip|(0)(list_of_nodes). Changing the first (empty) parameter
 % of the |tip| macro in the previous example would yield the following
 % result:
-%% \-
-%% \descriptioncomments
-% Parametry opcjonalne ,,przed_wyd/lu/zenie''
-% i~,,po_wyd/lu/zenie'' okre/slaj/a, jak daleko maj/a by/c
-% przed/lu/zane kraw/edzie (segmenty)~-- miar/a jest tu czas~--
-% aby mo/zna by/lo wyznaczy/c ich punkt przeci/ecia. W~przypadku
-% pomini/ecia jednego z~tych~parametr/ow oba otrzymuj/a t/e sam/a
-% warto/s/c; je/sli oba zostan/a pomini/ete, u/zyta b/edzie warto/s/c
-% domy/slna, tj.~|(0.5,0.5)|, odpowiadaj/aca wyd/lu/zeniu mniej
-% wi/ecej o~50\%. /Sci/sle bior/ac: dla danej ,,przed-kraw/edzi''
-% |e1|, ,,po-kraw/edzi'' |e2|, ,,przed-wyd/lu/zenia''~|v1| oraz
-% ,,po-wyd/lu/zenia''~|v2| wyznaczane s/a /scie/zki
-%   |extrapolate (0, 1/(1+v1) of e1| oraz
-%   |extrapolate (v2/(1+v2), 1) of e2|
-% (tzn.~dla~wyd/lu/zenia domy/slnego odpowiednio
-% |extrapolate (0, 2/3) of s1| oraz |extrapolate (1/3, 1) of s2|).
-% Je/sli przed/lu/zenia nie~przetn/a si/e, w/ez/ly obrysu
-% /l/aczone s/a odcinkiem prostym. Ostatnia w/lasno/s/c umo/zliwia
-% osi/agni/ecie efektu analogicznego do skutk/ow ustawienia
-% |linejoin:=beveled|. W~tym celu nale/zy u/zy/c zerowego wyd/lu/zenia:
-% |tip|(0)(lista_w/ez/l/ow). U/zycie w~poprzednim przyk/ladzie zera zamiast
-% pierwszego (pustego) parametru makra |tip| da/loby nast/epuj/acy~efekt:
-%% \LINE{\epsfbox{\illusname.113}}
-%% \descriptioncomments
+
 % Ad 4. The macro |ignore_directions| has a different character. It is
 % invoked with one parameter being a comma-separated list of nodes:
 % |ignore_directions|(list_of_nodes). The numbers {\it must be\/} followed
@@ -1968,25 +1301,9 @@ newinternal pen_stroke_method;
 % respect to the direction of the path~|p|). This heuristic
 % trick can be used to improve the appearence of the outline
 % if the ``inner'' part of the envelope has too tight arcs.
-%%%% The examples of the usage of this macro can be found in the \MP{} version
-%%%% of D.~E.~Knuth's `logo' font (letters `P'~and~,S').
-%% \-
-%% \descriptioncomments
-% Ad 4. Wywo/lanie makra |ignore_directions| ma posta/c
-% |ignore_directions|(lista_w/ez/l/ow), gdzie ,,lista w/ez/l/ow'' zawiera
-% rozdzielone przecinkami numery (czasy) w/ez/l/ow /scie/zki~|p|
-% z~{\it obowi/azkowymi\/} sufiksami |l| albo |r|. Makro to spe/lnia nieco
-% inn/a rol/e ni/z poprzednie~-- powoduje mianowicie, /ze w~zadanych
-% w/ez/lach kierunek krzywej tworz/acej obrys nie jest wymuszany (normalnie
-% jest on r/ownoleg/ly do kierunku /scie/zki~|p| w~odpowiadaj/acym punkcie).
-% Sufiksy okre/slaj/a, czy~niewymuszanie kierunku ma~dotyczy/c prawej~(|r|)
-% czy te/z lewej~(|l|) strony obrysu (patrz/ac zgodnie z~kierunkiem
-% /scie/zki). Taki heurystyczny zabieg poprawia na og/o/l wygl/ad obrysu,
-% gdy jego ,,wewn/etrzna'' cz/e/s/c ma zbyt ciasne /luki.
-%%%% Przyk/lad u/zycia
-%%%% tego sposobu korygowania kszta/ltu /scie/zki mo/zna znale/x/c w~\MP{}-owej
-%%%% wersji fontu ,logo' D.~E.~Knutha (litery ,P'~i~,S').
-%% \--------------------------------------------------------------------
+%% The examples of the usage of this macro can be found in the \MP{} version
+%% of D.~E.~Knuth's `logo' font (letters `P'~and~,S').
+
 vardef pen_stroke(text opts)(expr p)(suffix result) =
  forsuffixes $=,r,l,b,e:
   if not path result$: scantokens("path " & generisize(str result$)); fi
@@ -1998,7 +1315,7 @@ vardef pen_stroke(text opts)(expr p)(suffix result) =
  numeric ignore_dir__[\\]; pair default_tip_, local_tip__[\\];
  path local_nib__[\\];
  pair a_, d_, z_[\\]; path p_;
-%%% xpart norm_ norml_ normr_ normlr_
+%% xpart norm_ norml_ normr_ normlr_
  vardef norm_ primary n =
   if cycle p: n mod last else: if n<0: 0 elseif n>last: last else: n fi fi
  enddef;
@@ -2019,7 +1336,7 @@ vardef pen_stroke(text opts)(expr p)(suffix result) =
   $0 for i_:=1 upto last if cycle p: -1 fi: , $i_ endfor
  enddef;
  vardef fixopts_(suffix optname)(text nodes) text val =
-%%% intersectiontimes lcont_ rcont_
+%% intersectiontimes lcont_ rcont_
   save l, r, lcont_, rcont_;
   def l = lcont_ whatever enddef; primarydef a lcont_ b = (norml_ a,0) enddef;
   def r = rcont_ whatever enddef; primarydef a rcont_ b = (normr_ a,0) enddef;
@@ -2073,7 +1390,7 @@ vardef pen_stroke(text opts)(expr p)(suffix result) =
   errmessage "PX: improper `default_cap' value ("&decimal(default_cap)&")";
  fi
  opts;
-%
+
  if default_join=0:
   default_tip_:=elongation_to_times(default_elongation, default_elongation);
  elseif default_join=1: % no tip setting, do nothing
@@ -2104,95 +1421,34 @@ vardef pen_cap(expr a,b,c,p,niba,nibb)=
  else: pen_join(a,c rotated 90,p,niba)--pen_join(c rotated 90,b,p,nibb)
  fi
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
-% Sometimes the results yielded by |find_outlines| can be further
-% improved, although it is not advisable to relay on fully
-% automatic approach. Macro |correct_close_triplets|
-% replaces three close nodes by a single (central) one:
-%% \-
-%% \descriptioncomments
-% W~niekt/orych przypadkach wyniki generowane przez makro
-% |find_outlines| mo/zna nieco poprawi/c, aczkolwiek nie
-% nale/za/loby polega/c na~w~pe/lni automatycznym przetwarzaniu.
-% Makro |correct_close_triplets| zast/epuje trzy bliskie
-% w/ez/ly pojedynczym (centralnym):
-%% %
-%% \LINE{\epsfbox{\illusname.107}}
-%% %
-%% \descriptioncomments
-% while macro |correct_close_doublets| replaces two close nodes
-% by a single one (of two nodes of the short segment remains
-% the node at which the change of direction is less abrupt):
-%% \-
-%% \descriptioncomments
-% natomiast |correct_close_doublets| zast/epuje dwa bliskie w/ez/ly
-% jednym (pozostawiany jest ten koniec kr/otkiego segmentu, w~kt/orym
-% /scie/zka zmienia kierunek mniej gwa/ltownie):
-%% %
-%% \LINE{\epsfbox{\illusname.108}}
-%% %
-%% Red colour denotes the points that are being removed;
-%% filled circles denote nodes, outlined ones---control points.
-%% \-
-%% Kolor czerwony oznacza punkty usuwane; wype/lnione k/o/lka
-%% oznaczaj/a w/ez/ly, natomiast obrysowane k/o/lka -- naci/agi.
-%% \--------------------------------------------------------------------
-vardef correct_close_triplets(expr p, acc) =
- save i_; i_:=1;
- forever:
-  if arclength(subpath(i_-1,i_+1) of p)<=acc:
-   (point i_ of p) ..
-    controls (postcontrol incr(i_) of p) and (precontrol incr(i_) of p) ..
-  else:
-   (point i_-1 of p) ..
-    controls (postcontrol i_-1 of p) and (precontrol  i_ of p) ..
-  fi
-  exitif incr(i_)=length(p)+1;
- endfor
- (point length(p) of p) & cycle
-enddef;
-%
-vardef correct_close_doublets(expr p, acc) =
- save p_,was_item_; path p_; p_:=p;
- p_:=delete_nodes(p_)(
-  for i_:=0 upto length(p)-1:
-   if arclength(subpath(i_,i_+1) of p)<=acc:
-    if known was_item_: , fi (i_,1) hide(was_item_:=1)
-   fi
-  endfor);
- p_
-enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % from fontbase.mp
 
-% ---
 % define somehow |use_eps|, if epsincl.mp is not used (commented out),
 % i.e., if stencils are definitely not to be used
 vardef use_eps(expr dummy) = nullpicture enddef;
 input epsincl.mp;
-% ---
+
 vardef enc_file = jobname & ".enc" enddef;
 vardef map_file = jobname & ".map" enddef;
 vardef kpx_file = jobname & ".kpx" enddef;
 vardef pfi_file = jobname & ".pfi" enddef;
 vardef pic_file = "piclist" enddef;
 vardef dim_file = jobname & ".dim" enddef;
-% ---
+
 errorstopmode; warningcheck:=-1;
 ignore:=whatever; process:=0; utilize:=1; store:=2; % constants for introducing
 let semicolon_=; ; % stores original meaning of a semicolon
 newinternal tracingdimens; % if |tracingdimens>0| then |dim_file| is generated
-% ---
+
 def write_special = % additional info to be processed by AWK
  special "%GLYNFO: " &
 enddef;
 vardef mtone_glyph_pfx = "MT1: glyph " & str glyph_name & ": " enddef;
 def mtone_message = message mtone_glyph_pfx & enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % Macros |write_tex| and |write_commands| provide contact with the
 % outer world. The former macro contains the information about EPSes that is
 % used for proofing and assembling the font; must be consistent with
@@ -2200,16 +1456,6 @@ def mtone_message = message mtone_glyph_pfx & enddef;
 % The latter macro provides a DOS-batch interface to the `epscinl'
 % package which is used for including background bitmaps
 % (in EPS form), i.e., stencils, into the resulting EPSes.
-%% \-
-%% \descriptioncomments
-% Makra |write_tex| i~|write_commands| zapewniaj/a kontakt ze /swiatem
-% zewn/etrznym. Pierwsze z~nich zawiera informacj/e o~p[likach EPS
-% wykorzystywan/a przy tworzeniu dokumentacji i~zestawianiu fontu;
-% musi by/c zgodne z~definicjami w plikach ,mpform.sty' i ,mp2pf.awk'.
-% Drugie przygotowuje DOS-owy plik wsadowy wykorzystuj/acy pakiet ,epscinl'
-% wykorzystywany przy umieszczaniu w~tle wygenerowanego EPS-a mapy bitowej
-% (tak/ze w~postaci EPS-owej) jako podk/ladu ({\it stencil\/}).
-%% \--------------------------------------------------------------------
 vardef write_tex(expr name, num) =
  write "\EPSNAMEandNUMBER{" & name & "}{" & decimal(num) & "}"
   to pic_file & ".tex"
@@ -2217,15 +1463,10 @@ enddef;
 vardef write_commands(expr num) =
  write "call epsincl " & jobname & "." & decimal(num) to pic_file & ".bat";
 enddef;
-%% \--------------------------------------------------------------------
-%% The following macros are related to the operation of slanting.
-%% In particular, they enable to keep a fixed width of a stem
-%% after slanting.
-%% \-
-%% Poni/zsze makra s/a zwi/azane z operacj/a pochylania. Mi/edzy innymi
-%% pozwalaj/a one na zachowanie zadanej grubo/sci stem/ow (/lody/zek?)
-%% po pochyleniu.
-%% \--------------------------------------------------------------------
+
+% The following macros are related to the operation of slanting.
+% In particular, they enable to keep a fixed width of a stem
+% after slanting.
 vardef slant_ang = % should be rather called ``local_slant_angle''
  slang \\ if known glyph_slanting.glyph_name: * glyph_slanting.glyph_name fi
 enddef;
@@ -2239,9 +1480,9 @@ vardef slant_preadjust(expr slope, slang) =
  length(unitvector(slope) slanted tand(slang))
 enddef;
 vardef slant_stroke_val = slant_val enddef; % compatibility with plain_ex.mp
-% ---
+
 vardef stem_corr (expr slope) = slant_preadjust(slope, slant_ang) enddef;
-% ---
+
 def italicized = % fairly complex operation
  if slang<>0:
   if known glyph_slanting.glyph_name:
@@ -2251,11 +1492,11 @@ def italicized = % fairly complex operation
   slanted slant_val % and slanting
  fi
 enddef;
-% ---
+
 primarydef b || c =
  whatever*b + c*stem_corr(b)*unitvector(b rotated 90)
 enddef;
-% ---
+
 primarydef c /\ b =
 % A variant of the |leg| procedure that iteratively counteracts slant
 % deformation; as with |leg|, given: |c| -- hypotenuse (vector) of
@@ -2277,41 +1518,21 @@ primarydef c /\ b =
   endgroup
  fi
 enddef;
-% ---
+
 % Obsolete?
 vardef rib(expr t,p,r) text u = % |u| is either empty or a vector
  save k_; pair k_; for i_:=u: k_:=u; endfor
  if unknown k_: k_=((udir t of p) rotated 90); fi
  (point t of p) + r * k_ * stem_corr(k_ rotated 90)
 enddef;
-%% \--------------------------------------------------------------------
-%% The operation {\it compose_path\/} is useful in \MP{} programs
-%% automatically generated from PFB sources (pf2mt1 utility). Suffixes
-%% $a$ and $b$ of control nodes stand for `after' and `before', respectively;
-%% The operation {\it compose_path\/} makes use of the operation
-%% {\it compose_segment\/} that serves for constructing non-cyclic
-%% paths. Undefined nodes are ignored.
-%% \-
-%% Operacja {\it compose_path\/} jest przydatna w~programach \MP{}-owych
-%% automatycznie wygenerowanych z~plik/ow PFB (narz/edzie pf2mt1). Przyrostki
-%% $a$ i~$b$ naci/ag/ow mnemonicznie mo/zna kojarzy/c z~angielskimi
-%% okre/sleniami ,,after'' i~,,before''; operacja {\it compose_path\/}
-%% wykorzystuje operacj/e {\it compose_segment\/} pozwalaj/ac/a konstruowa/c
-%% /scie/zki niecykliczne. W/ez/ly o nieokre/slonych warto/sciach
-%% s/a ignorowane.
-%% \--------------------------------------------------------------------
+
+% The operation {\it compose_path\/} is useful in \MP{} programs
+% automatically generated from PFB sources (pf2mt1 utility). Suffixes
+% $a$ and $b$ of control nodes stand for `after' and `before', respectively;
+% The operation {\it compose_path\/} makes use of the operation
+% {\it compose_segment\/} that serves for constructing non-cyclic
+% paths. Undefined nodes are ignored.
 vardef compose_segment@#(expr m,n) = % |m<=n|, not checked
- if unknown generating: if show_labels_>0:
-  for i_:=m upto n:
-   if show_compose_>0:
-    if known @#[i_]: just_label(str @#[i_], @#[i_]); fi
-   fi
-   if show_compose_>1:
-    if known @#[i_]a: just_label(str @#[i_]a, @#[i_]a); fi
-    if known @#[i_+1]b: just_label(str @#[i_+1]b, @#[i_+1]b); fi
-   fi
-  endfor
- fi fi
  if unknown inside_compose_path_: save idx_, n_; n_:=-1; fi
  save n__; n__=n_+1;
  for i_:=m upto n: if known @#[i_]: idx_[incr(n_)]=i_; fi endfor
@@ -2328,40 +1549,8 @@ vardef compose_path@#(expr n) =
  compose_segment@#(0,n)
   if @#[idx_[0]]=@#[idx_[n_]]: & else: -- fi \\ cycle
 enddef;
-%% \--------------------------------------------------------------------
-%% Automatically generated \MP{} programs often has improper
-%% path directions. The macro {\it correct_path_directions\/}
-%% fixes the problem (in most cases).
-%% \-
-%% Automatycznie generowane programy \MP{}-owe maj/a cz/estokro/c
-%% nieprawid/lowe kierunki /scie/zek. Makro {\it correct_path_directions\/}
-%% leczy problem (w~wi/ekszo/sci wypadk/ow).
-%% \--------------------------------------------------------------------
-def correct_path_directions(text t)(suffix s) =
- begingroup
-  save s_, s__, i_, j_, idx_; path s_[];
-  if not path s0: scantokens("path " & generisize(str s0)); fi
-  if not numeric s.num: scantokens("numeric " & generisize(str s.num)); fi
-  s.num:=0;
-  for s__:=t: s_[s.num]:=s__; idx_[s.num]:=0; s.num:=s.num+1; endfor;
-  for i_:=0 upto s.num-1:
-   for j_:=i_+1 upto s.num-1:
-    if s_[i_] inside s_[j_]: idx_[i_]:=idx_[i_]+1; fi
-    if s_[j_] inside s_[i_]: idx_[j_]:=idx_[j_]+1; fi
-   endfor
-  endfor
-  for i_:=0 upto s.num-1:
-   if odd idx_[i_]: s[i_]:=if turningnumber s_[i_]>0: reverse fi s_[i_];
-   else: s[i_]:=if turningnumber s_[i_]<0: reverse fi s_[i_];
-   fi
-  endfor
- endgroup
-enddef;
-%% \--------------------------------------------------------------------
-%% Basic macros for building character glyphs:
-%% \-
-%% Podstawowe makra do tworzenia obrys/ow znak/ow:
-%% \--------------------------------------------------------------------
+
+% Basic macros for building character glyphs:
 vardef round_node_values(expr p) =
  save d_; % candidates for Flex -- no checking for ``straightlinessness''
  if known dish_size: % default is |unknown dish_size|
@@ -2385,7 +1574,7 @@ vardef round_node_values(expr p) =
  endfor
  round(point length(p) of p) \\ if cycle p: & cycle fi
 enddef;
-%
+
 vardef is_dish(expr t,p) =
 % returns |true| if |point t of p| is a good candidate for a center
 % of a dish (suitable for Type~1 Flex option)
@@ -2448,14 +1637,14 @@ enddef;
 def flex_checking_off = % locally, flex checking can be switched off
  save dish_incise, dish_size;
 enddef;
-% ---
+
 primarydef a start b =
  if cycle a:
   if b=default: default_start_(a)
   else: ((subpath (b,length(a)+b) of a) & cycle) fi
  else: a fi
 enddef;
-%
+
 newinternal default; default:=infinity;
 vardef default_start_(expr p) =
  save i_,j_,pi_,pj_; pair pi_,pj_;
@@ -2469,7 +1658,7 @@ vardef default_start_(expr p) =
  endfor
  (subpath (j_, length(p)+j_) of p) & cycle
 enddef;
-% ---
+
 def Fill text glist =
  begingroup
   save h_; path h_;
@@ -2488,7 +1677,7 @@ def Fill text glist =
   endfor;
  endgroup
 enddef;
-%
+
 def unFill text glist =
  begingroup
   save h_; path h_;
@@ -2506,7 +1695,7 @@ def unFill text glist =
   endfor;
  endgroup
 enddef;
-% ---
+
 def fix_hsbw (expr xr,ml,mr) =
  glyph_shift:=round(ml); % shift = left margin
  glyph_width:=round(xr+ml+mr); % declared width plus margins
@@ -2514,7 +1703,7 @@ def fix_hsbw (expr xr,ml,mr) =
   glyph_shift.glyph_name:=glyph_shift; glyph_width.glyph_name:=glyph_width;
  fi
 enddef;
-% ---
+
 def fix_exact_hsbw(expr xr,ml,mr) =
  glyph_shift:=round(ml); % shift = left margin
  glyph_width:=xr+ml+mr; % declared width plus margins
@@ -2522,43 +1711,27 @@ def fix_exact_hsbw(expr xr,ml,mr) =
   glyph_shift.glyph_name:=glyph_shift; glyph_width.glyph_name:=glyph_width;
  fi
 enddef;
-% ---
+
 def sym_hsbw (expr wd_fig, wd_gl) = % abbreviation
  fix_hsbw(wd_gl,1/2(wd_fig-wd_gl),1/2(wd_fig-wd_gl));
 enddef;
-% ---
+
 vardef is_stored(text name) =
  known glyph_stored.uni_name(name).num
 enddef;
-%% \--------------------------------------------------------------------
-%% The procedure {\it fix\_tfm\_data\/} computes and stores basic TFM data
-%% for a given character ({\it wd}, {\it ht}, {\it dp}, and {\it ic\/}). If
-%% ${\it fontmaking}=1$, the character dimensions will be written to the
-%% TFM file (the {\it charcode\/} parameter is supposed to be appropriately
-%% set); otherwise, they can be written out to the {\it dim\_file}, provided
-%% ${\it tracingdimens}>0$. The parameters {\it tipx\/} and {\it tipy\/}
-%% are used for heuristic computing the italic correction for the
-%% character (see \MF{\/}book, p.~105); they are simply coordinates of the
-%% the upper-right corner of the glyph (for italic font they refer to the
-%% slanted glyph). It should be emphasized, however, that character
-%% dimensions should be given explicitly, if possible. After all, a font
-%% designer is expected to know them better than \MP{}\dots
-%% \-
-%% Procedura {\it fix\_tfm\_data\/} wyznacza i~zapami/etuje
-%% podstawowe dane metryczne znaku ({\it wd}, {\it ht}, {\it dp}
-%% i~{\it ic\/}). Je/sli ${\it fontmaking}=1$, wyznaczone warto/sci zostan/a
-%% zapisane w~pliku TFM (zak/lada si/e, /ze parametr {\it charcode\/} ma
-%% stosownie nadan/a warto/s/c); w~przeciwnym razie dane te mog/a zosta/c
-%% zapisane do pliku {\it dim\_file}, o~ile ${\it tracingdimens}>0$.
-%% Parametry {\it tipx\/} i~{\it tipy\/} s/a wykorzystywane do do
-%% heurystycznego wyznaczenia korekty kursywy (por.~\MF{\/}book, p.~105);
-%% oznaczaj/a one po prostu wsp/o/lrz/edne prawego
-%% g/ornego naro/znika prostok/ata ograniczaj/acego obrys znaku
-%% (w~kursywie odnosz/a si/e do obrysu po pochyleniu). Nale/zy jednak/ze
-%% podkre/sli/c, /ze dane metryczne powinny by/c w~miar/e mo/zno/sci
-%% podane jawnie. W~ko/ncu projektant fontu powinien lepiej si/e
-%% orientowa/c w~tej materii ni/z \MP{}\dots
-%% \--------------------------------------------------------------------
+
+% The procedure {\it fix\_tfm\_data\/} computes and stores basic TFM data
+% for a given character ({\it wd}, {\it ht}, {\it dp}, and {\it ic\/}). If
+% ${\it fontmaking}=1$, the character dimensions will be written to the
+% TFM file (the {\it charcode\/} parameter is supposed to be appropriately
+% set); otherwise, they can be written out to the {\it dim\_file}, provided
+% ${\it tracingdimens}>0$. The parameters {\it tipx\/} and {\it tipy\/}
+% are used for heuristic computing the italic correction for the
+% character (see \MF{\/}book, p.~105); they are simply coordinates of the
+% the upper-right corner of the glyph (for italic font they refer to the
+% slanted glyph). It should be emphasized, however, that character
+% dimensions should be given explicitly, if possible. After all, a font
+% designer is expected to know them better than \MP{}\dots
 def fix_tfm_data(expr tipx, tipy) = % to improve or not to improve?
  if unknown wd.glyph_name: wd.glyph_name:=glyph_width; fi
  if unknown ht.glyph_name:
@@ -2594,31 +1767,22 @@ def fix_tfm_data(expr tipx, tipy) = % to improve or not to improve?
   fi
  fi
 enddef;
-%
-%% \--------------------------------------------------------------------
-%% Macros below set PostScript and \TeX{} units; a trick with `\#'
-%% in {\it tfm\_units\/} proves useful in achieving compatibility
-%% with the Knuthian fonts (e.g., it is employed in {\it logo\/} font).
-%% Old versions of {\it tfm\_units\/} and {\it ps\_units\/} are less
-%% accurate, but are kept because of backward compatibility reasons.
-%% \-
-%% Poni/zsze makra definiuj/a postscriptowe i~\TeX-/owe jednostki; trick
-%% z~symbolem~,,\#'' w~{\it tfm\_units\/} jest u/zyteczny dla uzyskania
-%% kompatybilno/sci z~Knuthowymi fontami (np.~wykorzystany zosta/l
-%% w~foncie {\it logo\/}). Stare wersje makr {\it tfm\_units\/}
-%% i~{\it ps\_units\/} s/a mniej dok/ladne, ale zosta/ly zachowane
-%% ze~wzgl/edu na kompatybilno/s/c wstecz.
-%% \--------------------------------------------------------------------
+
+% Macros below set PostScript and \TeX{} units; a trick with `\#'
+% in {\it tfm\_units\/} proves useful in achieving compatibility
+% with the Knuthian fonts (e.g., it is employed in {\it logo\/} font).
+% Old versions of {\it tfm\_units\/} and {\it ps\_units\/} are less
+% accurate, but are kept because of backward compatibility reasons.
 vardef tfm_units(text x) =
  save #; if known (x#): x# else: x/(1000/designsize) fi
 enddef;
 vardef old_tfm_units(text x) =
  save #; if known (x#): x# else: x/1000*designsize fi
 enddef;
-%
+
 vardef ps_units(expr x) = x*(1000/designsize) enddef;
 vardef old_ps_units(expr x) = x/designsize*1000 enddef;
-%
+
 def define_ps_units(text t) =
  forsuffixes $:=t: $:=ps_units($.#); endfor
 enddef;
@@ -2628,29 +1792,25 @@ enddef;
 def define_even_ps_units(text t) =
  forsuffixes $:=t: $:=2round(1/2ps_units($.#)); endfor
 enddef;
-%% \--------------------------------------------------------------------
-%% Kerns and ligatures: you need to be careful if you don't want to produce
-%% a malformed TFM:
-%% \-
-%% Podci/ecia i ligatury: nale/zy zachowa/c ostro/zno/s/c, /zeby nie powsta/l
-%% nieopoprawny TFM
-%% \--------------------------------------------------------------------
+
+% Kerns and ligatures: you need to be careful if you don't want to produce
+% a malformed TFM:
 def start_or_cont =
 % we postpone starting |ligtable| until a legal pair is encountered
  if unknown already_started: already_started:=1; ligtable LK_code: else: , fi
 enddef;
-%
+
 def skip_LK =
  let ; = end_skip_LK \\ semicolon_
  let KL = fi \\ semicolon_
  if false:
 enddef;
-%
+
 def end_skip_LK =
  let ; = semicolon_ semicolon_
  let KL = relax;
 enddef;
-%
+
 def LK(text name) = % start ligature-kern table
  numeric LK_code,code,code',already_started; string LK_name;
  code:=name_to_code(name);
@@ -2658,7 +1818,7 @@ def LK(text name) = % start ligature-kern table
  else: let next_to_do = skip_LK; fi
  next_to_do \\ LK_code:=code; LK_name:=glyph_ps_name.uni_name(name);
 enddef;
-%
+
 def LP(text name_a, name_b) = % ligature pair
  if name_used(name_a) and name_used(name_b):
   if fontmaking=1:
@@ -2670,7 +1830,7 @@ def LP(text name_a, name_b) = % ligature pair
   fi
  fi
 enddef;
-%
+
 def KP(text name)(text kern_val) = % kern pair
  if name_used(name):
   if fontmaking=1:
@@ -2682,19 +1842,16 @@ def KP(text name)(text kern_val) = % kern pair
  fi
 enddef;
 let KL = relax;
-% ---
+
 def out_kpx (expr l, r, v) =
  write "KPX " & l & " " & r & " " & decimal(v) to kpx_file
 enddef;
-% ---
+
 def out_lig (expr l, r, s) =
  write "L " & l & " " & r & " " & s to kpx_file
 enddef;
-%% \--------------------------------------------------------------------
-%% Macros for handling hints:
-%% \-
-%% Makra do wyznaczania ,,hint/ow'':
-%% \--------------------------------------------------------------------
+
+% Macros for handling hints:
 vardef feasible_node(text apart)(expr t, p)(text constraints)=
  save b_,z_; pair z_, z_.it;
  % |constraints| are not italicized, while |p| is (in |fix_stem|),
@@ -2728,7 +1885,7 @@ vardef feasible_node(text apart)(expr t, p)(text constraints)=
   else: true fi
  else: false fi
 enddef;
-% ---
+
 vardef covering@#(expr s,ds) =
  save res_; res_=0;
  for i_:=1 upto @#num:
@@ -2743,7 +1900,7 @@ vardef covering@#(expr s,ds) =
 % |2| -- overlapping edges, |3| -- general overlapping
  res_
 enddef;
-% ---
+
 def add_to_stem_list(expr stem_kind, base, delta) =
  begingroup
 % |base| and |delta| are expected to be integers
@@ -2770,7 +1927,7 @@ def add_to_stem_list(expr stem_kind, base, delta) =
   fi
  endgroup
 enddef;
-% ---
+
 def fix_stem(expr stem_kind)(expr delta)(text path_list) text constraints =
  begingroup
   if unknown old_hinting_scheme and known new_hinting_scheme:
@@ -2802,8 +1959,7 @@ def fix_stem(expr stem_kind)(expr delta)(text path_list) text constraints =
   endfor
  endgroup
 enddef;
-%% \--------------------------------------------------------------------
-%% \descriptioncomments
+
 % Macro |set_stem| allows for forcing user-defined stem positions.
 % The macro can be invoked in one of the three forms:
 %    |set_stem (stem_kind) (a,b), (c,d), ... ;| (``low-level'' call)
@@ -2818,26 +1974,6 @@ enddef;
 % nodes are taken into account (i.e., |x| for |stem_kind="vstem"|
 % and |y| for |stem_kind="hstem"|). Path are subjected to the
 % operation |italicizes| and |round_node_values| prior to processing.
-%
-%% \-
-%% \descriptioncomments
-% Makro |set_stem| pozwala na zadawanie warto/sci ,,hint/ow'' w~spos/ob
-% kontrolowany przez u/zytkownika.
-% Makro to mo/ze by/c wywo/lywane na trzy sposoby:
-%  |set_stem (stem_kind) (a,b), (c,d), ...;|
-%  (wywo/lanie ,,niskiego poziomu'')
-%  |set_stem (stem_kind) px, (a,b), (c,d), ...; |
-%  |set_stem (stem_kind) px, py, (a,b), (c,d), ...; |
-% W~pierwszym przypadku wsp/o/lrz/edne poszczeg/olnych par oznaczaj/a
-% po/lo/zenie lewej i~prawej b/ad/x g/ornej i~dolnej kraw/edzi ,,hintu''
-% (warto/sci powinny by/c zaokr/aglone, ale wszelki wypadek zaokr/aglanie
-% jest i~tak wykonywane; kolejno/s/c nie gra roli), podczas gdy
-% w~przypadku drugim i~trzecim s/a to numery w/ez/l/ow /scie/zek |px| i~|py|.
-% Do oblicze/n brane s/a wsp/o/lrz/edne tych w/ez/l/ow (|x| je/sli
-% |stem_kind="vstem"|, |y| je/sli |stem_kind="hstem"|), przy czym
-% /scie/zki poddawane s/a uprzednio operacji |italicized|
-% i~|round_node_values|.
-%% \--------------------------------------------------------------------
 def set_stem(expr stem_kind) text hint_data =
  begingroup
   if unknown old_hinting_scheme and known new_hinting_scheme:
@@ -2880,11 +2016,8 @@ def set_stem(expr stem_kind) text hint_data =
   fi
  endgroup
 enddef;
-%% \--------------------------------------------------------------------
-%% FIND~STEM
-%% \-
-%% FIND~STEM
-%% \--------------------------------------------------------------------
+
+% FIND STEM
 newinternal hint_node_tolerance, hint_angle_tolerance;
 newinternal finding_triple_hstems, finding_triple_vstems;
 newinternal finding_flex_hstems, finding_flex_vstems;
@@ -2900,9 +2033,7 @@ def find_stem_(expr stem_kind)(expr base_delta) text constraints =
    abs(ypart(base_delta))) constraints;
  else: find_stem_free(stem_kind)(abs(base_delta)) constraints; fi
 enddef;
-def find_hstem = find_stem("hstem") enddef;
-def find_vstem = find_stem("vstem") enddef;
-% ---
+
 def find_stem_firm(expr stem_kind)(expr base,delta) text constraints =
  begingroup
   save apart_, stem_tab_, segm_, edge_, base_, delta_;
@@ -2943,7 +2074,7 @@ def find_stem_firm(expr stem_kind)(expr base,delta) text constraints =
   fi
  endgroup
 enddef;
-% ---
+
 def find_stem_free(expr stem_kind)(expr delta) text constraints =
  begingroup
   save apart_, stem_tab_, segm_, edge_, delta_;
@@ -2977,7 +2108,7 @@ def find_stem_free(expr stem_kind)(expr delta) text constraints =
   endfor
  endgroup
 enddef;
-% ---
+
 def fix_ghost_new =
  begingroup
   if known glyph.ghost_num:
@@ -3001,7 +2132,7 @@ def fix_ghost_new =
   fi
  endgroup
 enddef;
-% ---
+
 vardef viable_node(expr stem_kind)(expr pnum, nnum)(text constraints)=
  % returns: |0| -- not viable; |1| -- viable as left or bottom edge;
  %          |2| -- viable as right or top edge; |3 = 1+2|
@@ -3043,7 +2174,7 @@ vardef viable_node(expr stem_kind)(expr pnum, nnum)(text constraints)=
   if min(abs(prea_-90),abs(posta_-90))<=hint_angle_tolerance: +2 fi
  else: 0 fi
 enddef;
-% ---
+
 def add_to_stem_xlist(expr stem_kind, base, delta, node_list) =
  begingroup
 % |base| and |delta| are expected to be integers; |node_list| is a path
@@ -3095,7 +2226,7 @@ def add_to_stem_xlist(expr stem_kind, base, delta, node_list) =
   fi
  endgroup
 enddef;
-% ---
+
 vardef xcovering@#(expr s,ds) =
  save lc_, rc_, s_, sds_, li_, ri_, res_; res_:=0;
  lc_:=min(s,s+ds); rc_:=max(s,s+ds);
@@ -3115,17 +2246,15 @@ vardef xcovering@#(expr s,ds) =
 % |2| -- general overlapping
  res_
 enddef;
-% ---
-def fix_hstem = fix_stem("hstem") enddef;
-def fix_vstem = fix_stem("vstem") enddef;
+
 def set_hstem = set_stem("hstem") enddef;
 def set_vstem = set_stem("vstem") enddef;
-% ---
+
 newinternal candidate_precision;
 vardef candidate_list(text xy)(text cand_list) = % useful in constraints
  false for l_=cand_list: or (abs(xy-l_)<=candidate_precision) endfor
 enddef;
-% ---
+
 def ghost_stem text t = % |t=bot| or |top| or |lft| or |rt|
  begingroup
   save top, bot, lft, rt;
@@ -3139,7 +2268,7 @@ def ghost_stem text t = % |t=bot| or |top| or |lft| or |rt|
   for s_:=t: glyph.ghost[incr glyph.ghost_num]:=s_; endfor
  endgroup
 enddef;
-%
+
 def fix_ghost_old =
  begingroup
   if known glyph.ghost_num:
@@ -3163,7 +2292,7 @@ def fix_ghost_old =
   fi
  endgroup
 enddef;
-% ---
+
 def use_stems(text name) text offset =
  begingroup
   save base_,delta_,offset_; pair offset_; offset_=(0,0);
@@ -3208,16 +2337,11 @@ def use_stems(text name) text offset =
   endfor
  endgroup
 enddef;
-%% \--------------------------------------------------------------------
-%% In general, all objects are supposed to be drawn by the
-%% {\bf endglyph} macro, i.e., all drawing operations are deferred.
-%% The same concerns labelling, which necessitates redefinition
-%% of labelling macros.
-%% \-
-%% Zak/lada si/e, /ze wszelkie operacje rysowania s/a ,,odraczane''
-%% i~realizowane dopiero przez makro {\bf endglyph}. To samo dotyczy
-%% etykietowania, sk/ad konieczno/s/c przedefiniowania makr etykietuj/acych.
-%% \--------------------------------------------------------------------
+
+% In general, all objects are supposed to be drawn by the
+% {\bf endglyph} macro, i.e., all drawing operations are deferred.
+% The same concerns labelling, which necessitates redefinition
+% of labelling macros.
 newinternal path_label_len; path_label_len:=1;
 vardef path_labels@#(text suffix_list) text label_length =
  save s_;
@@ -3232,7 +2356,7 @@ vardef path_labels@#(text suffix_list) text label_length =
   fi
  endfor
 enddef;
-% ---
+
 vardef node_labels@#(text suffix_list)(expr idx_min, idx_max) =
  save s_;
  forsuffixes l_:=suffix_list:
@@ -3246,52 +2370,36 @@ vardef node_labels@#(text suffix_list)(expr idx_min, idx_max) =
   endfor
  endfor
 enddef;
-% ---
+
 vardef just_labels@#(text t) =
  forsuffixes $=t: if known z$: just_label@#(str$,z$); fi endfor
 enddef;
-%
+
 vardef just_label@#(expr s,z) = label_(@#)(s,z)(false); enddef;
-%
+
 vardef dot_labels@#(text t) =
  forsuffixes $=t: if known z$: dot_label@#(str$,z$); fi endfor
 enddef;
-%
+
 vardef dot_label@#(expr s,z) = label_(@#)(s,z)(true); enddef;
-%
+
 def label_(suffix pos)(expr s,z, dot_or_not) =
 % should be more complex if overlapping labels are to be avoided
- if unknown generating: if show_labels_>0:
-  begingroup
-   save defaultfont; string defaultfont; defaultfont:=label_defaultfont;
-   interim defaultscale:=label_defaultscale;
-   label_list[incr label_list.num]:=thelabel.pos(s,z italicized);
-  endgroup;
-  if dot_or_not: label_list.dot[label_list.num]:=z italicized; fi
- fi fi
 enddef;
 string label_defaultfont; label_defaultfont:="cmr10";
 newinternal label_defaultscale; label_defaultscale:=magstep 5;
-%% \--------------------------------------------------------------------
-%% If the {\it project\/} variable is assigned value greater than~0,
-%% proofing mode is assumed; the following macros display then
-%% the details of the construction of glyphs for proofing purposes.
-%% The larger value of the variable {\it project}, the more details
-%% are visualised.
-%% \-
-%% Je/sli zmienna {\it project\/} ma warto/s/c wi/eksz/a ni/z~0, zak/lada
-%% si/e, /ze przetwarzanie zwi/azane jest z~przygotowywaniem dokumentacji.
-%% Poni/zsze makra uwidoczniaj/a w/owczas szczeg/o/ly konstrukcji
-%% obrys/ow w~celach dokumentacyjnych. Im wy/zsza warto/s/c zmiennej
-%% {\it project}, tym wi/ecej szczeg/o/l/ow zawieraj/a ilustracje.
-%% \--------------------------------------------------------------------
-% ---
+
+% If the {\it project\/} variable is assigned value greater than~0,
+% proofing mode is assumed; the following macros display then
+% the details of the construction of glyphs for proofing purposes.
+% The larger value of the variable {\it project}, the more details
+% are visualised.
 def local_drawoptions (text t) = % to be used within a group, see below
-%% \begingroup \def\\#1{{\it#1}}% local: no underscore hacks
+% \begingroup \def\\#1{{\it#1}}% local: no underscore hacks
  save _op_; drawoptions(t);
-%% \endgroup
+% \endgroup
 enddef;
-% ---
+
 color stem_color; stem_color=1/10[white,1/2red+1/2green];
 def replstem_spec =
  withpen pencircle scaled 1 dashed withdots withcolor red
@@ -3299,46 +2407,7 @@ enddef;
 def fontdim_spec = withpen pencircle scaled 2 withcolor magenta enddef;
 def fontmath_spec = withpen pencircle scaled 2 withcolor cyan enddef;
 def chardim_spec = withpen pencircle scaled 2 withcolor 3/4green enddef;
-% ---
-vardef draw_vhint@#(expr a,b) =
- if str @#="cov":
-  draw (a,bot_line)--(a,top_line) replstem_spec;
-  draw (a+b,bot_line)--(a+b,top_line) replstem_spec;
- else:
-  fill (a,bot_line)--(a+b,bot_line)--(a+b,top_line)--(a,top_line)--cycle
-   withcolor stem_color;
- fi;
-enddef;
-% ---
-vardef draw_hhint@#(expr a,b) =
- if str @#="cov":
-  draw (0,a)--(glyph_width,a) replstem_spec;
-  draw (0,a+b)--(glyph_width,a+b) replstem_spec;
- else:
-  fill (0,a)--(glyph_width,a)--(glyph_width,a+b)--(0,a+b)--cycle
-   withcolor stem_color;
- fi
-enddef;
-def do_show_hints =
- if show_stems_>0:
-  for h_:=1 upto hstem_list.num:
-   draw_hhint(xpart(hstem_list[h_]), ypart(hstem_list[h_]));
-  endfor
-  if hstem_list.cov=1:
-   for h_:=1 upto hstem_list.num:
-    draw_hhint.cov(xpart(hstem_list[h_]), ypart(hstem_list[h_]));
-   endfor
-  fi
-  for v_:=1 upto vstem_list.num:
-   draw_vhint(xpart(vstem_list[v_])+glyph_shift, ypart(vstem_list[v_]));
-  endfor
-  if vstem_list.cov=1:
-   for v_:=1 upto vstem_list.num:
-    draw_vhint.cov(xpart(vstem_list[v_])+glyph_shift, ypart(vstem_list[v_]));
-   endfor
-  fi
- fi
-enddef;
+
 def ship_hints =
  write_special "HINT-TRIPLE " &
   decimal(finding_triple_hstems, finding_triple_vstems);
@@ -3383,30 +2452,6 @@ def update_glyph_bb(expr p) =
   if ypart(urcorner(p))>glyph_ury: glyph_ury:=ypart(urcorner(p)); fi
  fi
 enddef;
-def do_show_stencils =
- begingroup
-  if show_stencils_>0:
-   if known glyph_stencil.glyph_name and
-    (known bitmap_scale or known glyph_llx):
-    save s_; picture s_;
-    s_:=use_eps(if known stencil_dir: stencil_dir & fi
-     glyph_stencil.glyph_name);
-    if length s_ > 0: % |use_eps| returns |nullpicture| in the case of emergency
-     draw (s_ if known bitmap_scale: scaled bitmap_scale
-      else: yxscaledto (glyph_ury-glyph_lly) fi)
-     if known absolute_stencils:
-      if known bitmap_offset: shifted (bitmap_offset+(glyph_shift,0))
-      else: llshiftedto (glyph_llx+glyph_shift,glyph_lly) fi
-     else:
-      ccshiftedto
-       (1/2[glyph_llx,glyph_urx]+glyph_shift, 1/2[glyph_lly,glyph_ury])
-       if known bitmap_offset: shifted (bitmap_offset) fi
-     fi;
-    fi
-   fi
-  fi
- endgroup
-enddef;
 string stencil_dir;
 def ship_glyphs =
  begingroup
@@ -3417,119 +2462,13 @@ def ship_glyphs =
   endfor
  endgroup
 enddef;
-def do_show_glyphs =
- begingroup
-  save p_; path p_;
-  for g_:=1 upto glyph_list.num:
-   p_:=glyph_list[g_] shifted (glyph_shift,0);
-   if show_fills_>0: if turningnumber p_>0: fill else: unfill fi p_; fi
-   if show_strokes_>0:
-    draw p_ if show_strokes_>1:
-     withpen pencircle scaled show_stroke_size withcolor show_stroke_color
-    fi;
-   fi
-   if show_paths_>0: draw_controls(p_); fi
-  endfor
- endgroup
-enddef;
 newinternal show_stroke_size; show_stroke_size:=1.5;
 color show_stroke_color; show_stroke_color:=red;
-% ---
-vardef visible_control_node =
- unitsquare shifted (-1/2,-1/2) rotated 45 scaled 4.5bp
-enddef;
-vardef visible_node = fullcircle scaled 7bp enddef;
-vardef visible_first_node = triangle scaled 12bp enddef;
-vardef visible_direction =
- triangle shifted (-1/6sqrt(3),0) yscaled 3/5 scaled 10bp
-enddef;
-def draw_controls (expr p) =
- begingroup
-  save c_,d_,e_,f_; path c_,d_,e_,f_;
-  c_=visible_control_node;
-  d_=visible_node;
-  e_=visible_direction;
-  f_=visible_first_node;
-  local_drawoptions (withcolor blue);
-  for t_=0 upto length(p) if cycle p: -1 fi:
-   if arclength(subpath (t_,t_+1) of p)>5xpart((point 1 of e_)-(point 0 of e_)):
-    draw e_ rotated angle(direction t_+1/2 of p) shifted point t_+1/2 of p;
-   fi
-   if t_>0: fill d_ shifted point t_ of p; fi
-   if show_paths_>1:
-    if (point t_ of p)<>(precontrol t_ of p):
-     draw (point t_ of p) -- (precontrol t_ of p) dashed evenly;
-     fill c_ rotated angle(predir t_ of p) shifted precontrol t_ of p
-      withcolor white;
-     draw c_ rotated angle(predir t_ of p) shifted precontrol t_ of p
-      withpen pencircle scaled .3bp;
-    fi
-    if (postcontrol t_ of p)<>(point t_ of p):
-     draw (postcontrol t_ of p) -- (point t_ of p) dashed evenly;
-     fill c_ rotated angle(postdir t_ of p) shifted postcontrol t_ of p
-      withcolor white;
-     draw c_ rotated angle(postdir t_ of p) shifted postcontrol t_ of p
-      withpen pencircle scaled .3bp;
-    fi
-   fi
-  endfor
-  fill f_ rotated
-   if (point 0 of p)<>(postcontrol 0 of p): angle(postdir 0 of p)
-   else: angle((point 1 of p)-(point 0 of p)) fi
-   shifted point 0 of p withcolor red;
- endgroup
-enddef;
-% ---
-def do_show_labels =
- for l_:=1 upto label_list.num:
-  draw label_list[l_] shifted (glyph_shift,0) withcolor label_text_color;
- endfor
- for l_:=1 upto label_list.num: % dots always on top
-  if known label_list.dot[l_]:
-   fill fullcircle scaled label_dot_size
-     shifted label_list.dot[l_] shifted (glyph_shift,0)
-     withcolor label_dot_color;
-  fi
- endfor
-enddef;
+
 color label_dot_color, label_text_color;
 label_dot_color:=.8white; label_text_color:=black;
 newinternal label_dot_size; label_dot_size:=3bp;
-%
-def do_show_boxes =
- if show_boxes_>0:
-  draw (0,bot_line)--(glyph_width,bot_line)--
-   (glyph_width,top_line)--(0,top_line)--cycle;
-  draw (0,0)--(glyph_width,0) dashed evenly;
-  if known glyph_axis.glyph_name:
-   draw ((glyph_axis.glyph_name+glyph_shift,bot_line)--
-    (glyph_axis.glyph_name+glyph_shift,top_line)) italicized dashed evenly;
-  fi
-  draw (0,uc_height)--(glyph_width,uc_height) fontdim_spec;
-  draw (0,lc_height)--(glyph_width,lc_height) fontdim_spec;
-  draw (0,depth)--(glyph_width,depth) fontdim_spec;
-  if known math_axis:
-    draw (0,math_axis)--(glyph_width,math_axis) fontmath_spec;
-  fi
-  if known ht.glyph_name:
-   draw (0,ht.glyph_name)--(glyph_width,ht.glyph_name) chardim_spec;
-  fi
-  if known dp.glyph_name:
-   draw (0,dp.glyph_name)--(glyph_width,dp.glyph_name) chardim_spec;
-  fi
-  if known ic.glyph_name:
-   draw (glyph_width+ic.glyph_name,top_line)--
-    (glyph_width+ic.glyph_name,top_line-250) chardim_spec;
-  elseif known glyph_urx:
-   save ital_corr; ital_corr:=glyph_urx+glyph_shift-glyph_width+1000/36;
-   if ital_corr>0:
-    draw (glyph_width+ital_corr,top_line)--(glyph_width+ital_corr,top_line-250)
-     chardim_spec dashed evenly;
-   fi
-  fi
- fi
-enddef;
-%
+
 def force_bbox =
  begingroup
  % circumventing the fragility of dvips prologues and inaccuracy of epsf:
@@ -3538,11 +2477,8 @@ def force_bbox =
   (glyph_width+corr_,bot_line)--(0,top_line)--(-corr_,bot_line)--cycle;
  endgroup;
 enddef;
-%% \--------------------------------------------------------------------
-%% Begin and end of the definitions of a character glyph:
-%% \-
-%% Rozpocz/ecie i zako/nczenie definicji obrysu znaku:
-%% \--------------------------------------------------------------------
+
+% Begin and end of the definitions of a character glyph:
 def begin_skip =
  let endglyph = fi;
  let ; = end_skip semicolon_
@@ -3591,17 +2527,9 @@ def beginglyph(text name) =
  beginfig(glyph_num)
  if glyph_usage mod store = 1: % utilizing
   write_special "NAME " & ps_name & " " & decimal(glyph_code);
-  if (if known generating: generating=0 else: true fi):
    % mpform.sty and mp2pf.awk interface
 %  |write_tex(glyph_name, glyph_num);|
    write_tex(ps_name, glyph_num);
-  fi
-  if unknown generating:
-   if show_stencils_>0: if known glyph_stencil.glyph_name:
-    % `epsincl' interface
-    write_commands(glyph_num);
-   fi fi
-  fi
  fi;
  glyph_list.num:=label_list.num:=0;
  path glyph_list[\\];
@@ -3627,7 +2555,7 @@ def beginglyph(text name) =
  fi
  scantokens extra_beginglyph;
 enddef;
-% ---
+
 picture endglyph_picture;
 def endglyph =
  scantokens extra_endglyph;
@@ -3645,22 +2573,10 @@ def endglyph =
 % independently of |glyph_usage| (|dim_file|)
  fix_tfm_data(glyph_urx+glyph_shift, glyph_ury);
  if glyph_usage mod store = 1: % utilizing
-  if known generating:
-   if generating=0:
     write_special "HSBW * " & decimal(glyph_width);
     ship_hints;
     write_special "BEGINCHAR";
     ship_glyphs;
-   else: % |fontmaking=1|
-    message "{" & ps_name & " " & decimal(glyph_code) & "}";
-   fi
-  else:
-   ship_hints; % debugging!!!
-   do_show_hints; do_show_stencils; do_show_boxes;
-   draw endglyph_picture;
-   do_show_glyphs; do_show_labels; 
-   force_bbox;
-  fi
   endfig;
  else:
   endgroup; % ends figure without shipping it out
@@ -3668,11 +2584,8 @@ def endglyph =
 enddef;
 let endglyph_=endglyph;
 string extra_beginglyph, extra_endglyph; extra_beginglyph=extra_endglyph="";
-%% \--------------------------------------------------------------------
-%% Additional macros:
-%% \-
-%% Makra dodatkowe:
-%% \--------------------------------------------------------------------
+
+% Additional macros
 vardef fix_name_list text t =
  string name_list[]; numeric name_list.num; name_list.num:=0;
  save , ; let , = fix_name_list_; fix_name_list_ t
@@ -3684,57 +2597,6 @@ enddef;
 def fix_name_list_s_ suffix s_name = fix_name_list_e_ (str s_name) enddef;
 def fix_name_list_e_ expr e_name = % name is expected to be of the string type
  name_list[incr name_list.num]=e_name
-enddef;
-
-newinternal uc_accent_drop; % zero by default
-newinternal ht_accent_limit;
-ht_accent_limit:=50; % supposedly bottom accent |ht.acc < ht_accent_limit|
-def use_accent(text name_char_acc) text offsets =
- begingroup
-  save name_char_, name_acc_; save name_list; fix_name_list name_char_acc;
-  def name_char_ = scantokens(name_list[1]) enddef;
-  def name_acc_ = scantokens(name_list[2]) enddef;
-  save off_acc_, off_char_; pair off_acc_, off_char_;
-  off_char_:=off_acc_:=(0,0);
-  for t_:=offsets: % syntactic sugar
-   if pair t_: off_acc_:=t_; fi
-   if numeric t_: off_char_:=(t_, 0); fi
-   if color t_: off_char_:=(redpart t_, greenpart t_); fi
-  endfor
-  if (is_stored(name_acc_)) and (is_stored(name_char_)):
-   if (unknown glyph_axis.glyph_name) and (known glyph_axis.name_char_):
-    glyph_axis.glyph_name=glyph_axis.name_char_;
-   fi
-   off_acc_:=off_acc_+
-    (if known glyph_axis.name_char_: glyph_axis.name_char_
-     else: (1/2wd.name_char_-glyph_shift.name_char_) fi
-     -if known glyph_axis.name_acc_: glyph_axis.name_acc_
-     else: 1/2wd.name_acc_ fi, 0) +
-    (0,if ht.name_acc_>ht_accent_limit:
-        ht.name_char_-lc_height if ht.name_char_-lc_height>0: -uc_accent_drop fi
-      else: -dp.name_char_ fi);
-   off_acc_:=round(off_acc_ slanted slant_val) slanted -slant_val;
-   off_char_:=round(off_char_ slanted slant_val) slanted -slant_val;
-   glyph_shift:=glyph_shift.name_char_;
-   glyph_width:=glyph_width.name_char_; % can be overwritten in |fix_hsbw|
-   if glyph_usage div store = 1: % storing
-    glyph_shift.glyph_name:=glyph_shift; glyph_width.glyph_name:=glyph_width;
-   fi
-   for g_:=1 upto glyph_stored.name_char_.num:
-    if turningnumber glyph_stored.name_char_[g_]>0: Fill else: unFill fi
-     glyph_stored.name_char_[g_] shifted off_char_;
-   endfor;
-   for g_:=1 upto glyph_stored.name_acc_.num:
-    if turningnumber glyph_stored.name_acc_[g_]>0: Fill else: unFill fi
-     glyph_stored.name_acc_[g_] shifted off_acc_;
-   endfor;
-   write_special("ACC " & decimal(glyph_stored.name_char_.num+1));
-   use_stems(name_char_) off_char_; use_stems(name_acc_) off_acc_;
-  else:
-   mtone_message "attempt to use not stored glyph " & str name_acc_ &
-    " or " & str name_char_ & " (`use_accent' ignored)";
-  fi
- endgroup
 enddef;
 
 def use_dimens(text name) =
@@ -3828,26 +2690,18 @@ vardef introduce__@#(expr usage, slanting)(text stencil) =
   fi
  fi
 enddef;
-% ---
+
 vardef assign_name@#(expr ps_name) =
  if not string glyph_ps_name @#:
   scantokens("string " & generisize(str glyph_ps_name@#));
  fi
  glyph_ps_name@#:=ps_name;
 enddef;
-% ---
+
 def standard_introduce(expr name) =
  introduce name (utilize+store)(1)();
 enddef;
-% ---
-def standard_hsbw(expr name) =
- fix_hsbw(wd.scantokens("_" & name),0,0);
-enddef;
-% ---
-def standard_exact_hsbw(expr name) =
- fix_exact_hsbw(wd.scantokens("_" & name),0,0);
-enddef;
-% ---
+
 vardef name_to_code(text name) =
  save res_, name_; string name_;
  name_:=substring (1,infinity) of str uni_name(name); res_=-1;
@@ -3882,7 +2736,7 @@ def uncode(expr glyph_code)=
  fi
 enddef;
 string code_to_name_[\\];
-% ---
+
 vardef name_used(text name) =
  save res_, name_; boolean res_; string name_;
  name_:=substring (1,infinity) of str uni_name(name); res_:=false;
@@ -3894,13 +2748,12 @@ def mark_name_used(text name)=
 enddef;
 string name_used_[\\]; newinternal max_name_used;
 
-% ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===
 vardef string_date =
  if day<10: "0" & fi decimal(day) & "." &
  if month<10: "0" & fi decimal(month) & "." &
  decimal(year)
 enddef;
-% ---
+
 def set_pfi (suffix kind) (expr val) =
  if known val:
   if (numeric val) or (string val) or (boolean val):
@@ -3912,14 +2765,12 @@ def set_pfi (suffix kind) (expr val) =
     scantokens ("boolean " & generisize(str pf_info_set.kind));
    fi
    pf_info_set.kind:=val;
-   if known generating: if generating=0:
     write str kind & " : " &
      if string val: val
      elseif numeric val: decimal(val)
      elseif boolean val: if val: "true" else: "false" fi
      fi
      to pfi_file;
-   fi fi
   else:
    errhelp "Proceed, I'll just ignore the setting.";
    errmessage "MT1: pf_info keys can only be of numeric, string " &
@@ -3927,9 +2778,9 @@ def set_pfi (suffix kind) (expr val) =
   fi
  fi
 enddef;
-% ---
+
 def pf_info_version expr v = set_pfi(VERSION,v); enddef;
-%
+
 def pf_info_creationdate text t =
  begingroup
   save k_; k_:=0;
@@ -3937,7 +2788,7 @@ def pf_info_creationdate text t =
   if k_=0: set_pfi(CREATION_DATE, string_date); fi
  endgroup
 enddef;
-%
+
 def pf_info_fontname text t =
  begingroup
   save k_; k_:=0;
@@ -3949,27 +2800,18 @@ def pf_info_fontname text t =
   if k_=1: set_pfi(FULL_NAME, pf_info_set.FONT_NAME); fi
  endgroup
 enddef;
-%
+
 % useful short-cuts:
 vardef family_name = pf_info_set.FAMILY_NAME enddef;
 vardef font_name = pf_info_set.FONT_NAME enddef;
 vardef full_name = pf_info_set.FULL_NAME enddef;
-%
+
 def pf_info_author expr v = set_pfi(AUTHOR,v); enddef;
-%% \--------------------------------------------------------------------
-%% There is `much ado about nothing,' i.e., about the sign of descender:
-%% in a PFB file in an `ADL' comment, descender is positive, while in an AFM
-%% in a `Descender' comment -- negative; we will distinguish between
-%% the two, the more so as `ADL' comment is not mentioned in
-%% in the Adobe documentation {\it Adobe Type~1 Font Format}.
-%% \-
-%% ,,Wiele ha/lasu o~nic'' jest spowodowane dwoma konwencjami ustalania
-%% znaku parametru, descender': w~pliku PFB w~komentarzu, ADL' jego warto/s/c
-%% jest dodatnia, natomiast w~pliku AFM w~komentarzu, Descender' -- ujemna.
-%% Zdecydowali/smy si/e na odr/o/znienie tych dw/och przypadk/ow
-%% tum bardziej, /ze komentarz, ADL' nie jest wzmiankowany
-%% w~dokumentacji pt.~{\it Adobe Type~1 Font Format}.
-%% \--------------------------------------------------------------------
+% There is `much ado about nothing,' i.e., about the sign of descender:
+% in a PFB file in an `ADL' comment, descender is positive, while in an AFM
+% in a `Descender' comment -- negative; we will distinguish between
+% the two, the more so as `ADL' comment is not mentioned in
+% in the Adobe documentation {\it Adobe Type~1 Font Format}.
 
 def pf_info_ascender expr v = ascender:=v; set_pfi(ASCENDER,v); enddef;
 def pf_info_descender expr v = descender:=v; set_pfi(DESCENDER,v); enddef;
@@ -3985,7 +2827,7 @@ def pf_info_adl text t =
   endfor
  endgroup
 enddef;
-%
+
 def pf_info_underline text t =
  begingroup
   save k_; k_:=0;
@@ -3996,7 +2838,7 @@ def pf_info_underline text t =
   endfor
  endgroup
 enddef;
-%
+
 def pf_info_pfm text t =
 % parameters: name, bold (0 or 1), italic (0 or 1), char set;
 % each of them can be either known or unknown or "*" (which means unknown);
@@ -4013,7 +2855,7 @@ def pf_info_pfm text t =
   endfor
  endgroup
 enddef;
-%
+
 def pf_info_fixedpitch expr v = set_pfi(FIXED_PITCH,v); enddef;
 def pf_info_capheight expr v = uc_height:=v; set_pfi(CAPHEIGHT,v); enddef;
 def pf_info_weight expr v = set_pfi(WEIGHT,v); enddef;
@@ -4226,13 +3068,13 @@ def pf_info_familyname text t =
   if k_=1: pf_info_headerbyte 49, pf_info_set.FAMILY_NAME; fi
  endgroup
 enddef;
-%
+
 % bluezz forever...
 newinternal blue_fuzz, blue_scale, blue_shift;
 blue_fuzz:=0; % Adobe Type 1 Font Format, p. 41
 blue_scale:=0.0454545;
 blue_shift:=7;
-%
+
 def pf_info_overshoots text t =
  begingroup
   save i_, j_, b_, c_, r_; pair b_[\\], c_[\\];
@@ -4263,7 +3105,7 @@ def pf_info_overshoots text t =
   set_pfi(BLUE_SHIFT, blue_shift);
  endgroup
 enddef;
-%
+
 def ins_blue (suffix m) (expr p) (suffix b) =
  begingroup
   save p_, bad; boolean bad; pair p_;
@@ -4276,7 +3118,7 @@ def ins_blue (suffix m) (expr p) (suffix b) =
   fi
  endgroup
 enddef;
-%
+
 def ins_other_blue (suffix m,n) (expr p) (suffix b,c) =
  begingroup
   save p_, bad; boolean bad; pair p_;
@@ -4292,7 +3134,7 @@ def ins_other_blue (suffix m,n) (expr p) (suffix b,c) =
   fi
  endgroup
 enddef;
-%
+
 def flush_blues (suffix kind) (expr n) (suffix v) =
  begingroup
   save r_; string r_; r_:="";
@@ -4305,7 +3147,7 @@ def flush_blues (suffix kind) (expr n) (suffix v) =
   set_pfi(kind, r_);
  endgroup
 enddef;
-%
+
 vardef infeasible_blue(expr p,q) = % Adobe Type 1 Font Format, p. 41, Note
  ((ypart p + 2blue_fuzz+1)>=xpart q) and ((ypart q + 2blue_fuzz+1)>=xpart p)
 enddef;
@@ -4326,18 +3168,6 @@ def beginfont =
  min_glyph_code=max_glyph_code=0;
  finding_triple_hstems:=1; finding_triple_vstems:=1;
 % |finding_flex_hstems:=1; finding_flex_vstems:=1;|
- if known generating:
-  if generating<>0: fontmaking:=1; fi
- else:
-  if unknown show_compose_: show_compose(1); fi % upward compatibility
-  if unknown show_fills_: show_fills(0); fi
-  if unknown show_strokes_: show_strokes(2); fi
-  if unknown show_paths_: show_paths(1); fi
-  if unknown show_labels_: show_labels(1); fi
-  if unknown show_boxes_: show_boxes(1); fi
-  if unknown show_stems_: show_stems(1); fi
-  if unknown show_stencils_: show_stencils(0); fi
- fi
  complete_param_setting;
  scantokens extra_beginfont;
 enddef;
@@ -4398,7 +3228,7 @@ def complete_param_setting =
   if unknown big_op_spacing_five:  big_op_spacing_five:=36/36pt_; fi;
  endgroup;
 enddef;
-% ---
+
 def endfont =
  scantokens extra_endfont;
  complete_pf_info;
@@ -4406,7 +3236,7 @@ def endfont =
  complete_tfm_info;
  scantokens "end";
 enddef;
-% ---
+
 def complete_pf_info =
  if unknown pf_info_set.DESIGN_SIZE: pf_info_designsize designsize; fi
  if unknown pf_info_set.VERSION: pf_info_version "0.000"; fi
@@ -4462,13 +3292,13 @@ def complete_pf_info =
   fi
  fi
 enddef;
-% ---
+
 % Johannes K\"uster's naming convention:
 vardef CreateSymbolFont = known create_symbol_font enddef;
 vardef CreateExtensionFont = known create_extension_font enddef;
 vardef CreateQuasiMathFont = known create_quasi_math_font enddef;
 create_quasi_math_font:=1; % upward compatibility
-%
+
 def complete_tfm_info =
  % complete fontdimen info:
  % |designsize| is expected to be known
@@ -4514,13 +3344,13 @@ def complete_tfm_info =
  pf_info_headerbyte 72, max(0, 254 - round 2designsize);
  completing_tfm_info:=whatever;
 enddef;
-% ---
+
 def BCPL_string(expr s,n)= % string |s| becomes an |n|-byte BCPL string
  for l:=if length(s)>=n: n-1 else: length(s) fi: l
   for k:=1 upto l: , substring (k-1,k) of s endfor
   for k:=l+2 upto n: , 0 endfor endfor
 enddef;
-%
+
 def write_dvips_info = % this macro is invoked only if |fontmaking=1|
  begingroup
   save enc_name_; string enc_name_; enc_name_:="enc" & jobname;
@@ -4550,7 +3380,7 @@ def write_dvips_info = % this macro is invoked only if |fontmaking=1|
    " <" & enc_file & " <" & jobname & ".pfb" to map_file;
  endgroup
 enddef;
-% ---
+
 % The Old Tradition...
 def font_size expr x = designsize:=x enddef;
 def font_slant expr x = fontdimen 1: x enddef;
@@ -4560,7 +3390,7 @@ def font_normal_shrink expr x = fontdimen 4: x enddef;
 def font_x_height expr x = fontdimen 5: x enddef;
 def font_quad expr x = fontdimen 6: x enddef;
 def font_extra_space expr x = fontdimen 7: x enddef;
-%
+
 % A New Tradition...
 def def_font_param (suffix param_name)(expr param_num, param_desc) =
  def param_name text x =
@@ -4571,10 +3401,10 @@ def def_font_param (suffix param_name)(expr param_num, param_desc) =
   endgroup
  enddef;
 enddef;
-% ---
+
 def_font_param (font_math_rule, 8, "math rule");
 def_font_param (font_math_axis, 22, "math axis");
-% --- symbol fonts
+% symbol fonts
 def_font_param (font_num_one,    8, "num1");
 def_font_param (font_num_two,    9, "num2");
 def_font_param (font_num_three, 10, "num3");
@@ -4589,7 +3419,7 @@ def_font_param (font_sup_drop,  18, "sup_drop");
 def_font_param (font_sub_drop,  19, "sub_drop");
 def_font_param (font_delim_one, 20, "delim1");
 def_font_param (font_delim_two, 21, "delim2");
-% --- extension fonts
+% extension fonts
 def_font_param (font_big_op_spacing_one,    9, "big_op_spacing1");
 def_font_param (font_big_op_spacing_two,   10, "big_op_spacing2");
 def_font_param (font_big_op_spacing_three, 11, "big_op_spacing3");
@@ -4597,5 +3427,3 @@ def_font_param (font_big_op_spacing_four,  12, "big_op_spacing4");
 def_font_param (font_big_op_spacing_five,  13, "big_op_spacing5");
 
 endinput
-%%\end
-
