@@ -50,7 +50,7 @@ while (@fns) {
   open(MP,$_);
   while (<MP>) {
     next if $_ eq "\n";
-    if (/^(var)?def\s+([a-z0-9_.]+)\s*(\(|=)/) {
+    if (/^(var)?def\s+([A-Za-z0-9_.]+)\s*(\(|=| text )/) {
       $macdef{$2}.=$_;
       $inmac=$2 unless /enddef/;
     } elsif (($inmac ne '') && /^enddef/) {

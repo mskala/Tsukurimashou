@@ -36,6 +36,9 @@
 nonstopmode;
 def errorstopmode = nonstopmode enddef;
 
+% no chars we don't define, please
+no_implicit_spaces:=1;
+
 % load library from METATYPE1
 input fntbase.mp;
 

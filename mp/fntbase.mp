@@ -64,39 +64,6 @@ def killtext text t = enddef; % absent from older versions of plain.mf
 mm#=2.84528; pt#=1; dd#=1.07001; bp#=1.00375; cm#=28.45276; pc#=12;
 cc#=12.84010; in#=72.27;
 
-% A patch for bugs in turningnumber functionality
-let original_turningnumber = turningnumber;
-vardef straighten_path(expr r) =
- for k=0 upto length r - 1: point k of r -- endfor
-if cycle r: cycle else: point infinity of r fi enddef;
-vardef emergency_turningnumber primary r =
- original_turningnumber(straighten_path(r))
-enddef;
-def use_emergency_turningnumber =
- def turningnumber = emergency_turningnumber enddef;
-enddef;
-def use_original_turningnumber =
- def turningnumber = original_turningnumber enddef;
-enddef;
-
-% Loading a file optionally
-boolean maybeinput_ok; string maybedir;
-vardef maybename(text name) =
- if known maybedir: maybedir & fi if string name: name else: str name fi
-enddef;
-def maybeinput text name =
- if (readfrom maybename(name))=EOF:
-  message "PX: file " & maybename(name) & " cannot be read";
-  maybeinput_ok:=false;
- else:
-  closefrom maybename(name); scantokens ("input " & maybename(name));
-  maybeinput_ok:=true;
- fi
-enddef;
-
-% A few colours more
-color cyan, magenta, yellow; cyan=(0,1,1); magenta=(1,0,1); yellow=(1,1,0);
-
 % A few functions more
 vardef gen_whatever(text type) = save ?; type ?; ? enddef; % 1-argument func.
 vardef whatever_pair = gen_whatever(pair) enddef; % 0-argument function
@@ -251,9 +218,6 @@ enddef;
 % A few figures more:
 vardef triangle =
  (0,-1/2)--(0.866,0)--(0,1/2)--cycle % |1/2sqrt(3)| $\approx$ |0.866025...|
-enddef;
-vardef vpolygon(expr n) =
- for i:=0 upto n-1: (1/2right rotated ((360/n)*(i+1/2))) -- endfor cycle
 enddef;
 
 % A method, entangled a bit and not particularly robust, of testing whether
@@ -566,52 +530,6 @@ enddef;
 % the positive value means ``leftwards,'' negative---``rightwards''
 % (with respect to hypotenuse vector).
 
-% The macro |quicksort| sorts |@#||s.i ... @#||s.j| along with
-% |@#|.|$i ... @#|.|$j| for |$| $\in$ |t|, using Tony Hoare's ``quick sort''
-% method; suffix |s| must must not occur in the |t| list (no checking
-% is performed); if both |s| and |t| are empty, |t| is ignored.
-% }
-% \bull Remark 1: the algorithm has no explicit recursion, because of
-%  \MF{}//\MP{} limits on recursion level.
-% \bull Remark 2: the algorithm is not stable, i.e., it does not
-%  preserve the order of equal items.
-% \bull {\descriptioncomments
-%    Sample usage: |quicksort| |A(1,100)()(x,y)| will sort |A1|,
-%    |A2,...|$\,$|,A100| (comparing |A.i| with |A.j|) and, moreover,
-%    |A.x1, A.y1,...|$\,$|,A.x100, A.y100| will be reordered simultaneously.
-% }
-vardef quicksort@#(expr i,j)(suffix s)(text t) =
- save i_,j_,k_,l_,cell_,stack_,incl_t_; boolean incl_t_;
- pair stack_[\\]; stack_.lev:=0; stack_[incr stack_.lev]:=(i,j);
- i_:=0; for $:=t: i_:=i_+1; endfor % ``measure'' |t|-list
- incl_t_:=(str s <> "") or ((str s = "") and (i_<>0));
- forsuffixes $:= s if incl_t_: , t fi:
-  if numeric @#.$[i]: numeric cell_.$;
-  elseif string @#.$[i]: string cell_.$;
-  elseif boolean @#.$[i]: boolean cell_.$;
-  fi
- endfor
- forever:
- exitif stack_.lev<=0;
-  numeric i_,j_; (i_,j_)=stack_[stack_.lev]; stack_.lev:=stack_.lev-1;
-  if i_<j_:
-   forsuffixes $:= s if incl_t_: , t fi: cell_.$:=@#.$[i_]; endfor
-   l_:=i_;
-   for k_:=i_+1 upto j_:
-    if is_less(@#.s[k_],cell_.s):
-     forsuffixes $:=s if incl_t_: , t fi:
-      @#.$[l_]:=@#.$[k_]; @#.$[k_]:=@#.$[l_+1];
-     endfor
-     l_:=l_+1;
-    fi
-   endfor
-   forsuffixes $:= s if incl_t_: , t fi: @#.$[l_]:=cell_.$; endfor
-   stack_[incr stack_.lev]:=(i_,l_-1); stack_[incr stack_.lev]:=(l_+1,j_);
-  fi
- endfor
-enddef;
-vardef is_less(expr a,b) = (a<b) enddef;
-
 % The macro |insert_nodes| inserts additional nodes at given non-integer
 % non-repeating times~|t| into a given path |p|.
 % The code would be a bit longer without `|arclength|' and `|arctime|.'
@@ -634,240 +552,6 @@ vardef insert_nodes(expr p)(text t) =
   fi
  endfor;
  p_
-enddef;
-
-% The macro |delete_nodes| removes, as the name suggests, selected nodes
-% from a given (cyclic) path. The macro can be useful for removing
-% superfluous nodes, e.g., in case of improving fonts converted
-% from PFB to \MP{}. The nodes can be removed in three possible
-% ways: with both control nodes, with the precontrol node, or with
-% the postcontrol one.
-% During the process of removal, additional control
-% nodes may be removed. More precisely: given a path |p|, let
-% |z_[i_]| denothes its |i_|-th node, |z_[i_]b|---the respective
-% precontrol node (``before''), |z_[i_]a|---the respective postcontrol
-% node (``after''). Macro |delete_nodes| removes elements (by assigning
-% an undefined value) from the tables |z_[\\]|, |z_[\\]b| and |z_[\\]a|
-% in such a way that the following invariant holds for the main loop:
-% for any pair of consecutive known nodes |z_[i_]| and |z_[j_]|,
-% |i_<j_|, there exist exactly two indices |u_| and |v_| such that
-% |i_<=u_<v_<=j_| and both |z_[u_]a| and |z_[v_]b| are known; moreover,
-% |z_[w_]a| and |z_[w_]b| are unknown for the remaining indices |w_|,
-% |i_<=w_<=j_|. The resulting path is constructed from the elements
-% that remain in the table.\break
-% Nodes to be removed are passed as the list of pairs
-% (text parameter |node_list|):
-% |(index,kind)|, where |index| denotes the time of
-% the path corresponding to a given node, and |kind|
-% is a number. If |kind=0|, both control nodes are to be removed;
-% if~|kind<0|, a~precontrol node is to be removed;
-% if~|kind>0|, a~postcontrol node is to be removed.\break
-% The figure below shows the results of the |delete_nodes|
-% applied to a sample path |p| (|p=fullcircle|): the topmost picture depicts
-% the source path and the numbering of nodes, the left lower picture
-% is the path returned by
-% |delete_nodes(p)((1,-1), (3,-1), (5,-1), (7,-1))|
-% middle lower one---by
-% |delete_nodes(p)((1,0), (3,0), (5,0), (7,0))|,
-% right lower one---by
-% |delete_nodes(p)((1,1), (3,1), (5,1), (7,1))|.
-vardef delete_nodes(expr p)(text node_list) = % |p| is cyclic
- save o_,i_,j_,j__,l_,n_,z_; pair z_[\\],z_[\\]a,z_[\\]b;
- n_=length(p);
- for i_:=0 upto n_:
-   z_[i_]:=point i_ of p;
-   z_[i_]a:=postcontrol i_ of p;
-   z_[i_]b:=precontrol i_ of p;
- endfor
- for l_:=node_list:
-  % here the above-mentioned invariant holds (the result may depend
-  % on the order of the nodes to be deleted, if neighbouring nodes
-  % are being deleted)
-  i_:=xpart(l_) mod n_; % to |mod| or not to |mod|?
-  % to ignore (with a |message|) or to apply the |mod| operation?
-  z_[i_]:=whatever_pair;
-  if ypart(l_)=0: % delete predecessing |b|-node and successing |a|-node
-   j_:=i_; forever: exitif known z_[j_]b; j_:=(j_-1) mod n_; endfor
-   z_[j_]b:=whatever_pair;
-   j_:=i_; forever: exitif known z_[j_]a; j_:=(j_+1) mod n_; endfor
-   z_[j_]a:=whatever_pair;
-  elseif ypart(l_)>0: % delete successing |a|-node and |b|-node
-   j_:=i_; forever: exitif known z_[j_]a; j_:=(j_+1) mod n_; endfor
-   z_[j_]a:=whatever_pair;
-   j_:=i_; forever: j_:=(j_+1) mod n_; exitif known z_[j_]b; endfor
-   z_[j_]b:=whatever_pair;
-  else: % |ypart(l_)<0|; delete predecessing |a|-node and |b|-node
-   j_:=i_; forever: j_:=(j_-1) mod n_; exitif known z_[j_]a; endfor
-   z_[j_]a:=whatever_pair;
-   j_:=i_; forever: exitif known z_[j_]b; j_:=(j_-1) mod n_; endfor
-   z_[j_]b:=whatever_pair;
-  fi
- endfor
- i_:=0; forever: exitif known z_[i_]; i_:=i_+1; endfor; o_:=i_;
- for i_:=o_ upto n_-1+o_:
-  hide(j_:=i_ mod n_; j__:=(i_+1) mod n_)
-  if known z_[j_]: z_[j_] fi
-  if known z_[j_]a: .. controls z_[j_]a fi
-  if known z_[j__]b: and \\ z_[j__]b .. fi
- endfor \\ z_[o_] & cycle
-enddef;
-
-% A MODULE THAT FINDS AN OUTLINE FOR CYCLIC PATHS
-
-% The problem can be stated as follows: two paths are given (precisely:
-% expressions of type {\bf path}); assume that the positively directed
-% (anti-clockwise) path accomplishes filling, and negatively directed
-% (clockwise)---erasing; the task is to find the outline of the resulting
-% (visible) figure. Such a task is known as ``removing overlaps''
-% which seems too narrow for such a complex operation. Actually,
-% the basic macro of that part, i.e., `find_outlines,' accomplishes
-% set-theory operations: sum, difference and product, depending on the
-% turning number of the input paths. The illustration below demonstrates
-% the results yielded by the macro `find_outlines.' There are four
-% cases since there are four combinations of turning numbers for two
-% ``regular'' paths. Each case shows the initial situation (left)
-% and the resulting one (right). Filling is omitted, the outline colour
-% shows the turning number: blue---positive, red---negative.
-
-% A single (cyclic) curve can be supplied as an input argument to
-% |find_outlines|; in this case it {\it should have\/} self-intersections.
-% Depending on the orientation of the input path, there are possible
-% two sets of resulting paths:
-vardef feasible_cross(suffix p,q,v)(expr c,s) =
- if v[c]: (s*turn_ang(gendir p[c] of p, gendir q[c] of q)>0)
- else: false fi
-enddef;
-
-vardef recombine(expr self_intersection)(suffix p, r) =
- save s_,e_,v_,n_; boolean v_[\\];
- if not path r0: scantokens("path " & generisize(str r) & "[]"); fi
- if not numeric r.num: scantokens("numeric " & generisize(str r.num); fi
- r.num:=0;
- s_:=if self_intersection: 1 else: turningnumber(p1)*turningnumber(p2) fi;
- for i_:=1 upto p.num: v_[i_]:=true; endfor
- forever:
-  save c_; c_:=0;
-  forever:
-   c_:=c_+1; exitif c_>p.num; exitif feasible_cross(p1,p2,v_,c_,s_);
-  endfor
-  exitif c_>p.num;
-  e_:=1;
-  r[incr r.num]:=
-   forever:
-    hide(e_:=3-e_; v_[c_]:=false;
-    if self_intersection: % identify the same crossings as ``visited''
-     for i_:=1 upto p.num:
-      % |intersectiontime| is not a comutative operation:
-      if abs(p[e_][c_]-p[3-e_][i_])<=16epsilon: % |1epsilon|? |2epsilon|?
-       v_[i_]:=false;
-      fi
-     endfor
-    fi
-    n_:=next_time(p[e_])(c_))
-    (pos_subpath (p[e_][c_],p[e_][n_]) of p[e_]) hide(c_:=n_) &&
-    exitif not v_[n_];
-   endfor
-   cycle;
- endfor
-enddef;
-
-vardef next_time(suffix p)(expr t) =
- save c_;
- for i_:=1 upto p.num:
-  if (p[i_]>p[t]):
-   if known c_: if p[i_]<p[c_]: c_:=i_; fi else: c_:=i_; fi
-  fi
- endfor
- if unknown c_:
-  c_=1; for i_:=2 upto p.num: if p[i_]<p[c_]: c_:=i_; fi endfor
- fi
- c_
-enddef;
-
-vardef feasible_time(suffix p)(expr t) =
- save b_,i_; boolean b_; b_:=true; i_:=0;
- forever:
-  i_:=i_+1;
-  exitif (unknown p[i_]) or (not b_);
-  b_:=b_ if (abs(p[i_]-t)<1) or (abs(p[i_]-t)>length(p)-1): % optimization?
-   and (arclength( pos_subpath(p[i_],t) of p ) > acc_eps)
-   and (arclength( pos_subpath(t,p[i_]) of p ) > acc_eps)
-  fi;
- endfor
- b_
-enddef;
-
-vardef intersect_curves(expr self_intersection)(suffix p) =
- save l_,p_; l_:=0;
- for i_:=0 upto length(p1)-1:
-  for j_:=0 upto length(p2)-1:
-% if a curve is being self-intersected, we demand that its neighbouring
-% B\'ezier segments do not intersect (could be circumvent at the cost
-% of the increased complexity of computation):
-   if if self_intersection: (abs(i_-j_) mod (length(p1)-1))>1 else: true fi:
-   for k_:=1 upto
-    intersect_segments(subpath (i_,i_+1) of p1, subpath (j_,j_+1) of p2)(p_):
-% assuming that there are no self-intersections of single B\'ezier segments,
-% it suffices to check feasibility only for |p1|:
-    if feasible_time(p1, p_1[k_]+i_):
-     p1[incr l_]=p_1[k_]+i_; p2[l_]=p_2[k_]+j_;
-    fi
-   endfor
-   fi
-  endfor
- endfor
- p.num:=p1num:=p2num:=l_;
-enddef;
-
-vardef intersect_segments(expr a,b)(suffix p) =
- save ta_,tb_; (ta_,tb_)=a intersectiontimes b;
- if ta_>=0:
-  p1[1]:=ta_; p2[1]:=tb_;
-  save tc_,td_; (tc_,td_)=reverse a intersectiontimes reverse b;
-  if length(1/2[point ta_ of a, point tb_ of b]
-   -1/2[point tc_ of reverse a, point td_ of reverse b])>acc_eps:
-   p1[2]:=1-tc_; p2[2]:=1-td_; 1+ \\ fi \\ 1
- else: 0 fi
-enddef;
-newinternal acc_eps; acc_eps:=.5;
-
-% As was mentioned, the input argument to `find_outlines' can be either
-% a single path or a pair of paths. The paths must comply with
-% the following assumptions:
-% \bull paths are cyclic;
-% \bull if two paths are passed as an argument, each of them should
-% contain no self-intersection;
-% \bull if a single path is passed as an argument, its adjacent segments
-% do not intersect;
-% \bull no tangent touching occur;
-% \bull no inflection points occur (because the applied algorithm
-% assumes that two B\'ezier segments can cross at at most two points)
-% \bull segments are long enough (minimal length of a segment after the
-% process of intersection is controlled by the variable
-% {\descriptioncomments
-% |acc_eps|---see above).
-% }
-
-% Further improvements:
-% \bull intersection points nearly coinciding with
-%    nodes should be replaced by the nodes, i.e., by an integer time.
-vardef find_outlines(text a)(suffix r) = % |a| -- input, |r| -- output
- save auto_,i_,q_;
- boolean auto_; numeric q_.num; numeric q_[\\][\\]; path q_[\\];
- i_:=0;
- for a_:=a: q_[incr i_]:=a_; endfor
- if i_>2: % presumably, a user never tries to intersect no paths
-  errhelp "I'll ignore superfluous paths.";
-  errmessage "PX: too many paths (" & decimal(i_) & ")";
- fi
- auto_:=unknown q_2; if auto_: q_2=q_1; fi;
- intersect_curves(auto_,q_);
- if q_.num=0: % emergency?
-  if not path r[0]: scantokens("path " & generisize(str r) & "[]"); fi
-  if not numeric r.num: scantokens("numeric " & generisize(str r.num); fi
-  if auto_: r.num:=-1; r1:=q_1;
-  else: r.num:=-2; r1:=q_1; r2:=q_2; fi
- else: recombine(auto_,q_,r); fi
 enddef;
 
 % A MODULE THAT FINDS AN ENVELOPE OF A PATH DRAWN WITH A PEN
@@ -1426,14 +1110,6 @@ enddef;
 
 % from fontbase.mp
 
-% define somehow |use_eps|, if epsincl.mp is not used (commented out),
-% i.e., if stencils are definitely not to be used
-vardef use_eps(expr dummy) = nullpicture enddef;
-input epsincl.mp;
-
-vardef enc_file = jobname & ".enc" enddef;
-vardef map_file = jobname & ".map" enddef;
-vardef kpx_file = jobname & ".kpx" enddef;
 vardef pfi_file = jobname & ".pfi" enddef;
 vardef pic_file = "piclist" enddef;
 vardef dim_file = jobname & ".dim" enddef;
@@ -1712,62 +1388,6 @@ def fix_exact_hsbw(expr xr,ml,mr) =
  fi
 enddef;
 
-def sym_hsbw (expr wd_fig, wd_gl) = % abbreviation
- fix_hsbw(wd_gl,1/2(wd_fig-wd_gl),1/2(wd_fig-wd_gl));
-enddef;
-
-vardef is_stored(text name) =
- known glyph_stored.uni_name(name).num
-enddef;
-
-% The procedure {\it fix\_tfm\_data\/} computes and stores basic TFM data
-% for a given character ({\it wd}, {\it ht}, {\it dp}, and {\it ic\/}). If
-% ${\it fontmaking}=1$, the character dimensions will be written to the
-% TFM file (the {\it charcode\/} parameter is supposed to be appropriately
-% set); otherwise, they can be written out to the {\it dim\_file}, provided
-% ${\it tracingdimens}>0$. The parameters {\it tipx\/} and {\it tipy\/}
-% are used for heuristic computing the italic correction for the
-% character (see \MF{\/}book, p.~105); they are simply coordinates of the
-% the upper-right corner of the glyph (for italic font they refer to the
-% slanted glyph). It should be emphasized, however, that character
-% dimensions should be given explicitly, if possible. After all, a font
-% designer is expected to know them better than \MP{}\dots
-def fix_tfm_data(expr tipx, tipy) = % to improve or not to improve?
- if unknown wd.glyph_name: wd.glyph_name:=glyph_width; fi
- if unknown ht.glyph_name:
-  ht.glyph_name:=if known glyph_ury: glyph_ury else: 0 fi;
- fi
- if unknown dp.glyph_name:
-  dp.glyph_name:=if known glyph_lly: glyph_lly else: 0 fi;
-  if dp.glyph_name>0: dp.glyph_name:=0; fi
- fi
- charwd:=tfm_units(glyph_width);
- charht:=tfm_units(ht.glyph_name);
- chardp:=tfm_units(-dp.glyph_name); % reverse Polish convention
- % |tipx| and |tipy| are also valid for slanted font.
- if unknown ic.glyph_name:
-  if known tipx and known tipy:
-   ic.glyph_name:=round(tipx-glyph_width+1000/36);
-   if ic.glyph_name<=2: % PSt's obstinacy
-    ic.glyph_name:=0;
-   fi
-  else: ic.glyph_name:=0; fi
- fi
- charic:=tfm_units(ic.glyph_name);
- if tracingdimens>0:
-  write "wd." & str glyph_name & ":=" & decimal glyph_width & "; " &
-   "ht." & str glyph_name & ":=" & decimal ht.glyph_name & "; " &
-   "dp." & str glyph_name & ":=" & decimal dp.glyph_name & "; " &
-   "ic." & str glyph_name & ":=" & decimal ic.glyph_name & ";" to dim_file;
- fi
- if tracingdimens>1:
-  if known glyph_axis.glyph_name:
-   write "glyph_axis." & str glyph_name & ":=" &
-    decimal glyph_axis.glyph_name & "; " to dim_file;
-  fi
- fi
-enddef;
-
 % Macros below set PostScript and \TeX{} units; a trick with `\#'
 % in {\it tfm\_units\/} proves useful in achieving compatibility
 % with the Knuthian fonts (e.g., it is employed in {\it logo\/} font).
@@ -1793,595 +1413,10 @@ def define_even_ps_units(text t) =
  forsuffixes $:=t: $:=2round(1/2ps_units($.#)); endfor
 enddef;
 
-% Kerns and ligatures: you need to be careful if you don't want to produce
-% a malformed TFM:
-def start_or_cont =
-% we postpone starting |ligtable| until a legal pair is encountered
- if unknown already_started: already_started:=1; ligtable LK_code: else: , fi
-enddef;
-
-def skip_LK =
- let ; = end_skip_LK \\ semicolon_
- let KL = fi \\ semicolon_
- if false:
-enddef;
-
-def end_skip_LK =
- let ; = semicolon_ semicolon_
- let KL = relax;
-enddef;
-
-def LK(text name) = % start ligature-kern table
- numeric LK_code,code,code',already_started; string LK_name;
- code:=name_to_code(name);
- if name_used(name): let next_to_do = relax;
- else: let next_to_do = skip_LK; fi
- next_to_do \\ LK_code:=code; LK_name:=glyph_ps_name.uni_name(name);
-enddef;
-
-def LP(text name_a, name_b) = % ligature pair
- if name_used(name_a) and name_used(name_b):
-  if fontmaking=1:
-   hide(code:=name_to_code(name_a); code':=name_to_code(name_b))
-   start_or_cont \\ code=:(code') % braces are crucial for delimiting suffix
-  else:
-   out_lig(LK_name,
-    glyph_ps_name.uni_name(name_a), glyph_ps_name.uni_name(name_b));
-  fi
- fi
-enddef;
-
-def KP(text name)(text kern_val) = % kern pair
- if name_used(name):
-  if fontmaking=1:
-   hide(code:=name_to_code(name))
-   start_or_cont \\ code kern tfm_units(kern_val)
-  else:
-   out_kpx(LK_name,glyph_ps_name.uni_name(name),kern_val);
-  fi
- fi
-enddef;
-let KL = relax;
-
-def out_kpx (expr l, r, v) =
- write "KPX " & l & " " & r & " " & decimal(v) to kpx_file
-enddef;
-
-def out_lig (expr l, r, s) =
- write "L " & l & " " & r & " " & s to kpx_file
-enddef;
-
-% Macros for handling hints:
-vardef feasible_node(text apart)(expr t, p)(text constraints)=
- save b_,z_; pair z_, z_.it;
- % |constraints| are not italicized, while |p| is (in |fix_stem|),
- % hence anti-italicizing; actually, |constraints| are not rounded
- % while the nodes of |p| are, but this seems unimportant.
- % Sometimes, we may want to acces |z1|, |z2|, etc., hence |clearxy|
- % cannot be used here; hence the following trick (the variables |z|
- % and |z.it| are ``reserved'' for constraints):
- z_=(x,y); z_.it=(x.it,y.it); % store the old values
- x:=whatever; y:=whatever; x.it:=whatever; y.it:=whatever;
- z.it=point t of p; z italicized=z.it;
- boolean b_; b_:=true;
- for c_:=constraints: b_:=b_ and c_; endfor % |constraints| can be empty
- % restore the old values:
- x:=xpart(z_); y:=ypart(z_); x.it:=xpart(z_.it); y.it:=ypart(z_.it);
- if b_ :
-  if unknown loose_fix_stem : % for non-cyclic path, end-points are always considered OK
-   % check the situation earlier than |t|
-   (if origin<>predir t of p: apart(predir t of p)=0
-    else: (apart(point t-1 of p)=apart(point t of p))
-%    |and (apart(postcontrol t-1 of p)=apart(point t of p))%| shouldn't occur
-    fi
-   )
-   or
-   % check the situation later than |t|
-   (if origin<>postdir t of p: apart(postdir t of p)=0
-    else: (apart(point t+1 of p)=apart(point t of p))
-%    |and (apart(precontrol t+1 of p)=apart(point t of p)) %| shouldn't occur
-    fi
-   )
-  else: true fi
- else: false fi
-enddef;
-
-vardef covering@#(expr s,ds) =
- save res_; res_=0;
- for i_:=1 upto @#num:
-  if (xpart(@#[i_])+ypart(@#[i_])>=s) and (xpart(@#[i_])<=s+ds):
-   if res_=0: res_:=3; fi
-   if (xpart(@#[i_])=s) or (xpart(@#[i_])+ypart(@#[i_])=s+ds): res_:=2; fi
-   if (xpart(@#[i_])=s) and (ypart(@#[i_])=ds): res_:=1; fi
-  fi
-  exitif res_=1;
- endfor
-% |0| -- no overlapping, |1| -- exact overlapping,
-% |2| -- overlapping edges, |3| -- general overlapping
- res_
-enddef;
-
-def add_to_stem_list(expr stem_kind, base, delta) =
- begingroup
-% |base| and |delta| are expected to be integers
-  save stem_list_, stem_stored_, covering_;
-  if stem_kind = "hstem":
-   def stem_list_ = hstem_list enddef; def stem_stored_ = hstem_stored enddef;
-  fi
-  if stem_kind = "vstem":
-   def stem_list_ = vstem_list enddef; def stem_stored_ = vstem_stored enddef;
-  fi
-  covering_:=covering.stem_list_(base,delta);
-  if (covering_<>1) if delta<0: and (covering_=0) fi:
-   stem_list_[incr stem_list_.num]:=(base,delta);
-   if glyph_usage div store = 1: % storing
-    stem_stored_.glyph_name[incr stem_stored_.glyph_name.num]:=(base,delta);
-   fi
-   if covering_>=2:
-    stem_list_.cov:=1;
-    if known overlapping_info: % a sort of debugging
-     mtone_message "overlapping " & stem_kind & " (" & decimal(base) &
-      "," & decimal(delta) & ").";
-    fi
-   fi
-  fi
- endgroup
-enddef;
-
-def fix_stem(expr stem_kind)(expr delta)(text path_list) text constraints =
- begingroup
-  if unknown old_hinting_scheme and known new_hinting_scheme:
-    mtone_message "old hinting scheme mixed up with the new one.";
-  fi; old_hinting_scheme:=1;
-  save apart_, stem_tab_, base_, delta_, p__; path p__;
-  if stem_kind="hstem": let apart_=ypart; fi
-  if stem_kind="vstem": let apart_=xpart; fi
-  delta_:=round(delta);
-  for p_:=path_list: p__:=round_node_values(p_ italicized);
-   for t_:=0 upto length(p__):
-    if feasible_node(apart_)(t_, p__)(constraints):
-     base_:=apart_(point t_ of p__);
-     if unknown stem_tab_[base_]: stem_tab_[base_]:=1; fi
-     if known stem_tab_[base_+delta_]:
-      if stem_tab_[base_]=1:
-        stem_tab_[base_]:=2;
-        add_to_stem_list(stem_kind, base_, delta_);
-      fi
-     fi
-     if known stem_tab_[base_-delta_]:
-      if stem_tab_[base_-delta_]=1:
-        stem_tab_[base_-delta_]:=2;
-        add_to_stem_list(stem_kind, base_-delta_, delta_);
-      fi
-     fi
-    fi
-   endfor
-  endfor
- endgroup
-enddef;
-
-% Macro |set_stem| allows for forcing user-defined stem positions.
-% The macro can be invoked in one of the three forms:
-%    |set_stem (stem_kind) (a,b), (c,d), ... ;| (``low-level'' call)
-%    |set_stem (stem_kind) px, (a,b), (c,d), ... ;|
-%    |set_stem (stem_kind) px, py, (a,b), (c,d), ... ;|
-% In~the~first~case, pairs |(a,b)|, |(c,d)|, etc., are expected to be
-% the rounded coordinates (anyway, rounding is performed) of edges of
-% a stem (left and right for vstem and top and bottom for hstem;
-% order does not matter); in the second and third cases, |px| and
-% |py| are paths, and the following pairs denote ordering numbers
-% of nodes of the respective paths. Relevant coordinates of the
-% nodes are taken into account (i.e., |x| for |stem_kind="vstem"|
-% and |y| for |stem_kind="hstem"|). Path are subjected to the
-% operation |italicizes| and |round_node_values| prior to processing.
-def set_stem(expr stem_kind) text hint_data =
- begingroup
-  if unknown old_hinting_scheme and known new_hinting_scheme:
-    mtone_message "old hinting scheme mixed up with the new one.";
-  fi; old_hinting_scheme:=1;
-  save p_, i_; path p_[];
-  i_:=0;
-  for h_:=hint_data:
-   i_:=i_+1;
-   if (path h_):
-    if i_=1: p_1=round_node_values(h_ italicized); fi
-    if i_=2: p_2=round_node_values(h_ italicized); fi
-   fi
-  endfor
-  if known p_1:
-   if unknown p_2: p_2=p_1; fi
-   save q_; pair q_;
-   for h_:=hint_data:
-    if pair h_:
-     if stem_kind="hstem":
-      q_:=(ypart(point xpart(h_) of p_1), ypart(point ypart(h_) of p_2));
-     fi
-     if stem_kind="vstem":
-      q_:=(xpart(point xpart(h_) of p_1), xpart(point ypart(h_) of p_2));
-     fi
-     % a single-level recursion below makes the code a bit simpler:
-     set_stem(stem_kind) q_;
-    fi
-   endfor
-  else:
-   pair i_;
-   for h_:=hint_data:
-    i_:=round(h_); % just in case...
-    if ypart(i_)>xpart(i_):
-     add_to_stem_list(stem_kind, xpart(i_), ypart(i_)-xpart(i_));
-    else:
-     add_to_stem_list(stem_kind, ypart(i_), xpart(i_)-ypart(i_));
-    fi
-  endfor
-  fi
- endgroup
-enddef;
-
-% FIND STEM
-newinternal hint_node_tolerance, hint_angle_tolerance;
-newinternal finding_triple_hstems, finding_triple_vstems;
-newinternal finding_flex_hstems, finding_flex_vstems;
-def find_stem (expr stem_kind) primary base_delta = % syntactic sugar
- find_stem_(stem_kind)(base_delta)
-enddef;
-def find_stem_(expr stem_kind)(expr base_delta) text constraints =
- if unknown new_hinting_scheme and known old_hinting_scheme:
-   mtone_message "new hinting scheme mixed up with the old one.";
- fi; new_hinting_scheme:=1;
- if pair base_delta: find_stem_firm(stem_kind)
-  (xpart(base_delta) if ypart(base_delta)<0: + ypart(base_delta) fi,
-   abs(ypart(base_delta))) constraints;
- else: find_stem_free(stem_kind)(abs(base_delta)) constraints; fi
-enddef;
-
-def find_stem_firm(expr stem_kind)(expr base,delta) text constraints =
- begingroup
-  save apart_, stem_tab_, segm_, edge_, base_, delta_;
-  path segm_, stem_tab_.b, stem_tab_.e;
-  if stem_kind="hstem": let apart_=ypart; fi
-  if stem_kind="vstem": let apart_=xpart; fi
-  base_:=round(base); delta_:=round(delta);
-  for i_:=1 upto glyph_list.num:
-   for t_:=1 upto length(glyph_list[i_]):
-    edge_:=apart_(point t_ of glyph_list[i_]);
-    segm_:=subpath (t_-1,t_) of glyph_list[i_];
-    if (abs(base_-edge_)<=hint_node_tolerance) and
-     ((delta_>0) or (delta_=-20)):
-     if viable_node(stem_kind)(i_,t_)(constraints)
-      if delta<0: > 1 else: mod 2 > 0 fi: % = if ghost 2 or 3 else 1 or 3
-      if unknown stem_tab_.b: stem_tab_.b:=segm_;
-      else: stem_tab_.b:=stem_tab_.b--segm_; fi
-     fi
-    elseif (abs(base_+delta_-edge_)<=hint_node_tolerance) and
-     ((delta_>0) or (delta_=-21)):
-     if viable_node(stem_kind)(i_,t_)(constraints)
-      if delta<0: mod 2 > 0 else: > 1 fi: % = if ghost 1 or 3 else 2 or 3
-      if unknown stem_tab_.e: stem_tab_.e:=segm_;
-      else: stem_tab_.e:=stem_tab_.e--segm_; fi
-     fi
-    fi
-   endfor
-  endfor
-  if (delta_=-20) and  known stem_tab_.b:
-   add_to_stem_xlist(stem_kind, base_, delta_, stem_tab_.b);
-  elseif (delta_=-21) and  known stem_tab_.e:
-   add_to_stem_xlist(stem_kind, base_, delta_, stem_tab_.e);
-  elseif (delta_>0) and known stem_tab_.b and known stem_tab_.e:
-   add_to_stem_xlist(stem_kind, base_, delta_, stem_tab_.b--stem_tab_.e);
-  else:
-   mtone_message "no viable node found for " & stem_kind & ": (" &
-    decimal(base_) & "," & decimal(delta_) & "), hint ignored.";
-  fi
- endgroup
-enddef;
-
-def find_stem_free(expr stem_kind)(expr delta) text constraints =
- begingroup
-  save apart_, stem_tab_, segm_, edge_, delta_;
-  stem_tab_.num:=0; numeric stem_tab_[]n;
-  path segm_, stem_tab_[]b, stem_tab_[]e;
-  if stem_kind="vstem": let apart_=xpart;
-  elseif stem_kind="hstem": let apart_=ypart; fi
-  delta_:=round(delta);
-  for i_:=1 upto glyph_list.num:
-   for t_:=1 upto length(glyph_list[i_]):
-    edge_:=apart_(point t_ of glyph_list[i_]);
-    segm_:=subpath (t_-1,t_) of glyph_list[i_];
-    v_:=viable_node(stem_kind)(i_,t_)(constraints);
-    if v_ mod 2 > 0: % = 1 or 3
-     if unknown stem_tab_[edge_]b: stem_tab_[edge_]b:=segm_;
-      stem_tab_[incr stem_tab_.num]n=edge_;
-     else: stem_tab_[edge_]b:=stem_tab_[edge_]b--segm_; fi
-    fi
-    if v_ > 1: % = 2 or 3
-     if unknown stem_tab_[edge_]e: stem_tab_[edge_]e:=segm_;
-     else: stem_tab_[edge_]e:=stem_tab_[edge_]e--segm_; fi
-    fi
-   endfor
-  endfor
-  for n_:=1 upto stem_tab_.num:
-   edge_:=stem_tab_[n_]n;
-   if known stem_tab_[edge_+delta_]e:
-    add_to_stem_xlist(stem_kind, edge_, delta_,
-     stem_tab_[edge_]b--stem_tab_[edge_+delta_]e);
-   fi
-  endfor
- endgroup
-enddef;
-
-def fix_ghost_new =
- begingroup
-  if known glyph.ghost_num:
-   save base_, delta_;
-   for i_:=1 upto glyph.ghost_num:
-    base_:=xpart(glyph.ghost[i_]); delta_:=ypart(glyph.ghost[i_]);
-    if delta_>0:
-     if base_=infinity:
-      base_:=round(if delta_=20: glyph_ury else: glyph_lly fi);
-     fi
-     if delta_=21: base_:=base_+21; fi
-     find_stem_firm("hstem")(base_, -delta_);
-    else:
-     if base_=infinity:
-      base_:=round(if delta_=-20: glyph_urx else: glyph_llx fi);
-     fi
-     if delta_=-21: base_:=base_+21; fi
-     find_stem_firm("vstem")(base_, delta_);
-    fi
-   endfor
-  fi
- endgroup
-enddef;
-
-vardef viable_node(expr stem_kind)(expr pnum, nnum)(text constraints)=
- % returns: |0| -- not viable; |1| -- viable as left or bottom edge;
- %          |2| -- viable as right or top edge; |3 = 1+2|
- save p, n, b_, z_, pred_, postd_, prea_, posta_;
- pair z_, z_.it, pred_, postd_;
- % |constraints| are not italicized, while |p| is (in |fix_stem|),
- % hence anti-italicizing; actually, |constraints| are not rounded
- % while the nodes of |p| are, but this seems unimportant.
- % Sometimes, we may want to acces |z1|, |z2|, etc., hence |clearxy|
- % cannot be used here; hence the following trick (the variables |z|
- % and |z.it| are ``reserved'' for constraints, i.e., are ``exported''):
- z_=(x,y); z_.it=(x.it,y.it); % store the old values
- x:=whatever; y:=whatever; x.it:=whatever; y.it:=whatever;
- z.it=point nnum of glyph_list[pnum]; z italicized=z.it;
- % moreover, exported are |p| -- path number, |n| -- node number (time)
- p:=pnum; n:=nnum;
- boolean b_; b_:=true;
- for c_:=constraints: b_:=b_ and c_; endfor % |constraints| can be empty
- % restore the old values:
- x:=xpart(z_); y:=ypart(z_); x.it:=xpart(z_.it); y.it:=ypart(z_.it);
- if b_ :
-  if stem_kind="vstem":
-   pred_:=predir n of glyph_list[p];
-   postd_:=postdir n of glyph_list[p];
-  elseif stem_kind="hstem":
-   pred_:=(predir n of glyph_list[p]) rotated -90;
-   postd_:=(postdir n of glyph_list[p]) rotated -90;
-  fi
-  if pred_<>origin: prea_:=angle(pred_); else: prea_:=0;
-   errhelp "Degenerated bezier in viable_node procedure.";
-   errmessage mtone_glyph_pfx & " This shouldn't happen";
-  fi
-  if postd_<>origin: posta_:=angle(postd_); else: posta_:=0;
-   errhelp "Degenerated bezier in viable_node procedure.";
-   errmessage mtone_glyph_pfx & " This shouldn't happen";
-  fi
-  0
-  if min(abs(prea_+90),abs(posta_+90))<=hint_angle_tolerance: +1 fi
-  if min(abs(prea_-90),abs(posta_-90))<=hint_angle_tolerance: +2 fi
- else: 0 fi
-enddef;
-
-def add_to_stem_xlist(expr stem_kind, base, delta, node_list) =
- begingroup
-% |base| and |delta| are expected to be integers; |node_list| is a path
-  save stem_list_, stem_list_segms_, stem_stored_, stem_stored_segms_,
-   covering_;
-  if stem_kind = "hstem":
-   def stem_list_ = hstem_list enddef;
-   def stem_stored_ = hstem_stored enddef;
-   def stem_list_segms_ = hstem_list_segms enddef;
-   def stem_stored_segms_ = hstem_stored_segms enddef;
-  fi
-  if stem_kind = "vstem":
-   def stem_list_ = vstem_list enddef;
-   def stem_stored_ = vstem_stored enddef;
-   def stem_list_segms_ = vstem_list_segms enddef;
-   def stem_stored_segms_ = vstem_stored_segms enddef;
-  fi
-  covering_:=xcovering.stem_list_(base,delta);
-  if covering_=1: % a ghost stem with an edge matching existing stem
-   mtone_message "ghost stem overlaps with " & stem_kind & ", ghost ignored.";
-  elseif covering_<0: % exact covering -- only extend node_list
-   if known stem_list_segms_[-covering_]:
-    stem_list_segms_[-covering_]:=stem_list_segms_[-covering_]--node_list;
-   else:
-    stem_list_segms_[-covering_]:=node_list;
-   fi
-   if glyph_usage div store = 1: % storing
-    if known stem_stored_segms_.glyph_name[-covering_]:
-     stem_stored_segms_.glyph_name[-covering_]:=
-      stem_stored_segms_.glyph_name[-covering_]--node_list;
-    else:
-     stem_stored_segms_.glyph_name[-covering_]:=node_list;
-    fi
-   fi
-  else: % |covering_=0| or |covering_=2|
-   stem_list_[incr stem_list_.num]:=(base,delta);
-   stem_list_segms_[stem_list_.num]:=node_list;
-   if glyph_usage div store = 1: % storing
-    stem_stored_.glyph_name[incr stem_stored_.glyph_name.num]:=(base,delta);
-    stem_stored_segms_.glyph_name[stem_stored_.glyph_name.num]:=node_list;
-   fi
-   if covering_=2: % general overlapping
-    stem_list_.cov:=1;
-    if known overlapping_info: % a sort of debugging
-     mtone_message "overlapping " & stem_kind & " (" & decimal(base) &
-      "," & decimal(delta) & ").";
-    fi
-   fi
-  fi
- endgroup
-enddef;
-
-vardef xcovering@#(expr s,ds) =
- save lc_, rc_, s_, sds_, li_, ri_, res_; res_:=0;
- lc_:=min(s,s+ds); rc_:=max(s,s+ds);
- for i_:=1 upto @#num:
-  s_:=xpart(@#[i_]); sds_:=xpart(@#[i_])+ypart(@#[i_]);
-  li_:=min(s_, sds_); ri_:=max(s_, sds_);
-  if (ri_>=lc_) and (li_<=rc_):
-   if res_=0: res_:=2; fi
-   if ((li_=lc_) and (ds=-21)) or ((ri_=rc_) and (ds=-20)): res_:=1; fi
-   if (xpart(@#[i_])=s) and (ypart(@#[i_])=ds): res_:=-i_; fi
-  fi
-  exitif res_<0;
- endfor
-% |0| -- no overlapping, 
-% |<0| -- exact overlapping (|-res_| = matching hint number),
-% |1| -- overlapping `ghost' edges,
-% |2| -- general overlapping
- res_
-enddef;
-
-def set_hstem = set_stem("hstem") enddef;
-def set_vstem = set_stem("vstem") enddef;
-
-newinternal candidate_precision;
-vardef candidate_list(text xy)(text cand_list) = % useful in constraints
- false for l_=cand_list: or (abs(xy-l_)<=candidate_precision) endfor
-enddef;
-
-def ghost_stem text t = % |t=bot| or |top| or |lft| or |rt|
- begingroup
-  save top, bot, lft, rt;
-  if unknown glyph.ghost_num: glyph.ghost_num:=0; pair glyph.ghost[]; fi
-  % little trickery:
-  def top suffix s_ = (if str s_="": infinity else: s_ fi,20) enddef;
-  def bot suffix s_ = (if str s_="": infinity else: s_ fi,21) enddef;
-  def rt  suffix s_ = (if str s_="": infinity else: s_ fi,-20) enddef;
-  def lft suffix s_ = (if str s_="": infinity else: s_ fi,-21) enddef;
-  % deferred action:
-  for s_:=t: glyph.ghost[incr glyph.ghost_num]:=s_; endfor
- endgroup
-enddef;
-
-def fix_ghost_old =
- begingroup
-  if known glyph.ghost_num:
-   save base_, delta_;
-   for i_:=1 upto glyph.ghost_num:
-    base_:=xpart(glyph.ghost[i_]); delta_:=ypart(glyph.ghost[i_]);
-    if delta_>0:
-     if base_=infinity:
-      base_:=round(if delta_=20: glyph_ury else: glyph_lly fi);
-     fi
-     if delta_=21: base_:=base_+21; fi
-     add_to_stem_list("hstem", base_, -delta_);
-    else:
-     if base_=infinity:
-      base_:=round(if delta_=-20: glyph_urx else: glyph_llx fi);
-     fi
-     if delta_=-21: base_:=base_+21; fi
-     add_to_stem_list("vstem", base_, delta_);
-    fi
-   endfor
-  fi
- endgroup
-enddef;
-
-def use_stems(text name) text offset =
- begingroup
-  save base_,delta_,offset_; pair offset_; offset_=(0,0);
-  for t_:=offset: % syntactic sugar
-   if pair t_: offset_:=t_; fi
-   if numeric t_: offset_:=(t_,0); fi
-  endfor
-  % |offset_| must not be rounded prematurely;
-  % if |use_stems| is invoked from |use_accent|, the argument
-  % |offset_ slanted slant_val| of the |round| operation below
-  % is (nearly) rounded
-  for i_:=1 upto hstem_stored.uni_name(name).num:
-   base_:=round(xpart(hstem_stored.uni_name(name)[i_])+ypart(offset_));
-   delta_:=ypart(hstem_stored.uni_name(name)[i_]);
-   if delta_=-20: ghost_stem top[base_];
-   elseif delta_=-21: ghost_stem bot[base_-21];
-   else:
-    if known hstem_list_segms_stored.uni_name(name)[i_]:
-     add_to_stem_xlist("hstem",base_,delta_,
-      hstem_list_segms_stored.uni_name(name)[i_] shifted
-       round(offset_ slanted slant_val));
-    else:
-     add_to_stem_list("hstem",base_,delta_);
-    fi
-   fi
-  endfor
-  for i_:=1 upto vstem_stored.uni_name(name).num:
-   base_:=round(xpart(vstem_stored.uni_name(name)[i_])+
-    xpart(offset_ slanted slant_val));
-   delta_:=ypart(vstem_stored.uni_name(name)[i_]);
-   if delta_=-20: ghost_stem rt[base_];
-   elseif delta_=-21: ghost_stem lft[base_-21];
-   else:
-    if known vstem_list_segms_stored.uni_name(name)[i_]:
-     add_to_stem_xlist("vstem",base_,delta_,
-      vstem_list_segms_stored.uni_name(name)[i_] shifted
-       round(offset_ slanted slant_val));
-    else:
-     add_to_stem_list("vstem",base_,delta_);
-    fi
-   fi
-  endfor
- endgroup
-enddef;
-
 % In general, all objects are supposed to be drawn by the
 % {\bf endglyph} macro, i.e., all drawing operations are deferred.
 % The same concerns labelling, which necessitates redefinition
 % of labelling macros.
-newinternal path_label_len; path_label_len:=1;
-vardef path_labels@#(text suffix_list) text label_length =
- save s_;
- for l_:=label_length: interim path_label_len:=l_; endfor
- forsuffixes l_:=suffix_list:
-  string s_; s_=str l_;
-  if (known l_) and (path l_):
-   for t_:=0 upto length(l_) if cycle l_: -1 fi: dot_label@#(
-     decimal(t_) & substring (length(s_)-path_label_len,length(s_)) of s_,
-    point t_ of l_);
-   endfor
-  fi
- endfor
-enddef;
-
-vardef node_labels@#(text suffix_list)(expr idx_min, idx_max) =
- save s_;
- forsuffixes l_:=suffix_list:
-  string s_; s_=str l_;
-  for i_:=idx_min upto idx_max:
-   if pair l_[i_]:
-    if known l_[i_]:
-     dot_label@#(s_ & " " & decimal(i_), l_[i_]);
-    fi
-   fi
-  endfor
- endfor
-enddef;
-
-vardef just_labels@#(text t) =
- forsuffixes $=t: if known z$: just_label@#(str$,z$); fi endfor
-enddef;
-
-vardef just_label@#(expr s,z) = label_(@#)(s,z)(false); enddef;
-
-vardef dot_labels@#(text t) =
- forsuffixes $=t: if known z$: dot_label@#(str$,z$); fi endfor
-enddef;
-
-vardef dot_label@#(expr s,z) = label_(@#)(s,z)(true); enddef;
 
 def label_(suffix pos)(expr s,z, dot_or_not) =
 % should be more complex if overlapping labels are to be avoided
@@ -2400,47 +1435,6 @@ def local_drawoptions (text t) = % to be used within a group, see below
 % \endgroup
 enddef;
 
-color stem_color; stem_color=1/10[white,1/2red+1/2green];
-def replstem_spec =
- withpen pencircle scaled 1 dashed withdots withcolor red
-enddef;
-def fontdim_spec = withpen pencircle scaled 2 withcolor magenta enddef;
-def fontmath_spec = withpen pencircle scaled 2 withcolor cyan enddef;
-def chardim_spec = withpen pencircle scaled 2 withcolor 3/4green enddef;
-
-def ship_hints =
- write_special "HINT-TRIPLE " &
-  decimal(finding_triple_hstems, finding_triple_vstems);
- write_special "HINT-FLEX " &
-  decimal(finding_flex_hstems, finding_flex_vstems);
- ship_vhints; ship_hhints;
-enddef;
-def ship_vhints =
- for v_:=1 upto vstem_list.num:
-  if known vstem_list_segms[v_]:
-   write_special "VHINTX " & decimal(vstem_list[v_] + (glyph_shift,0));
-   for i_:=0 step 2 until length(vstem_list_segms[v_]):
-    write_special "VHINTN " &
-     decimal(subpath (i_,i_+1) of vstem_list_segms[v_] shifted(glyph_shift,0));
-   endfor
-  else:
-   write_special "VHINT " & decimal(vstem_list[v_] + (glyph_shift,0));
-  fi
- endfor
-enddef;
-def ship_hhints =
- for h_:=1 upto hstem_list.num:
-  if known hstem_list_segms[h_]:
-   write_special "HHINTX " & decimal(hstem_list[h_]);
-   for i_:=0 step 2 until length(hstem_list_segms[h_]):
-    write_special "HHINTN " &
-     decimal(subpath (i_,i_+1) of hstem_list_segms[h_]);
-   endfor
-  else:
-   write_special "HHINT " & decimal(hstem_list[h_]);
-  fi
- endfor
-enddef;
 def update_glyph_bb(expr p) =
  if unknown glyph_llx:
   glyph_llx:=xpart(llcorner(p)); glyph_lly:=ypart(llcorner(p));
@@ -2500,9 +1494,6 @@ def beginglyph(text name) =
  numeric glyph_usage; glyph_usage:=glyph_usage.glyph_name;
  if unknown glyph_usage: expandafter begin_skip fi
  string ps_name; ps_name:=glyph_ps_name.glyph_name;
- if (fontmaking=1) and (name_to_code(glyph_name)<0):
-  glyph_usage:=glyph_usage-glyph_usage mod store;
- fi
  if unknown ps_name:
   errhelp "Use macro `introduce' or `assign_name' prior to `beginglyph.'";
   errmessage "MT1: PS name not assigned to " & str glyph_name;
@@ -2515,14 +1506,10 @@ def beginglyph(text name) =
   mark_name_used(glyph_name);
  fi
  numeric glyph_code, glyph_num; glyph_code:=name_to_code(glyph_name);
- if fontmaking=0:
   if glyph_code<0: glyph_num:=500-decr(min_glyph_code); else:
    glyph_num:=100+glyph_code;
    if glyph_code>max_glyph_code: max_glyph_code:=glyph_code; fi
   fi
- else:
-  glyph_num:=glyph_code-256;
- fi
  %
  beginfig(glyph_num)
  if glyph_usage mod store = 1: % utilizing
@@ -2563,18 +1550,14 @@ def endglyph =
  % extra objects have been drawn), the picture must be shifted:
  endglyph_picture:=currentpicture shifted (glyph_shift,0);
  currentpicture:=nullpicture;
- if fontmaking=0:
-  if known new_hinting_scheme: fix_ghost_new; else: fix_ghost_old; fi
- fi
  if known glyph_axis: % actually, used only with stored chars
   glyph_axis.glyph_name:=glyph_axis;
  fi
 % fix char dimensions and write them to TFM and/or |dim_file|
 % independently of |glyph_usage| (|dim_file|)
- fix_tfm_data(glyph_urx+glyph_shift, glyph_ury);
+% fix_tfm_data(glyph_urx+glyph_shift, glyph_ury);
  if glyph_usage mod store = 1: % utilizing
     write_special "HSBW * " & decimal(glyph_width);
-    ship_hints;
     write_special "BEGINCHAR";
     ship_glyphs;
   endfig;
@@ -2597,65 +1580,6 @@ enddef;
 def fix_name_list_s_ suffix s_name = fix_name_list_e_ (str s_name) enddef;
 def fix_name_list_e_ expr e_name = % name is expected to be of the string type
  name_list[incr name_list.num]=e_name
-enddef;
-
-def use_dimens(text name) =
- wd.glyph_name:=wd.uni_name(name);
- ht.glyph_name:=ht.uni_name(name);
- dp.glyph_name:=dp.uni_name(name);
- ic.glyph_name:=ic.uni_name(name);
-enddef;
-
-def use_glyph(text name) text offset =
- begingroup
-  save gly_off_; pair gly_off_; gly_off_:=(0,0);
-  for t_:=offset: % syntactic sugar
-   if pair t_: gly_off_:=round(t_); fi
-   if numeric t_: gly_off_:=(round(t_),0); fi
-  endfor
-  if is_stored(name):
-   glyph_shift:=glyph_shift.uni_name(name);
-   glyph_width:=glyph_width.uni_name(name); % can be overwritten in |fix_hsbw|
-   if glyph_usage div store = 1: % storing
-    glyph_shift.glyph_name:=glyph_shift; glyph_width.glyph_name:=glyph_width;
-   fi
-   for g_:=1 upto glyph_stored.uni_name(name).num:
-    if turningnumber glyph_stored.uni_name(name)[g_]>0: Fill else: unFill fi
-     glyph_stored.uni_name(name)[g_] shifted gly_off_;
-   endfor;
-   use_stems(name) gly_off_;
-  else:
-   mtone_message "attempt to use not stored glyph " & str uni_name(name) &
-    " (`use_glyph' ignored)";
-  fi
- endgroup
-enddef;
-
-def reset_selected = save process_selected; save ignore_selected; enddef;
-def introduce_selected text t =
- begingroup
-  save name_list; fix_name_list t;
-  process_selected:=1; % multi-step selection is legal
-  for i_:=1 upto name_list.num:
-   if known process_selected.scantokens(name_list[i_]):
-    errhelp "Proceed, I'll just ignore the repeated selection.";
-    errmessage "MT1: character `" & (substring(1, infinity) of name_list[i_])
-     & "' introduced again";
-   else: process_selected.scantokens(name_list[i_])=1; fi
-  endfor;
- endgroup
-enddef;
-def exclude_selected text t =
- begingroup
-  save name_list; fix_name_list t;
-  for i_:=1 upto name_list.num:
-   if known ignore_selected.scantokens(name_list[i_]):
-    errhelp "Proceed, I'll just ignore the repeated exclusion.";
-    errmessage "MT1: character `" & (substring(1, infinity) of name_list[i_])
-     & "' excluded again";
-   else: ignore_selected.scantokens(name_list[i_])=1; fi
-  endfor;
- endgroup
 enddef;
 
 def introduce suffix name =
@@ -2711,7 +1635,6 @@ vardef name_to_code(text name) =
  endfor
  res_
 enddef;
-newinternal select_encoded;
 def encode(text name)(expr glyph_code)=
  if (glyph_code<0) or (glyph_code>255):
   errhelp "The code must be within the range 0..255.";
@@ -2723,16 +1646,6 @@ def encode(text name)(expr glyph_code)=
     " (" & decimal(glyph_code) & "; `encode' ignored)";
  else:
   code_to_name_[glyph_code]:=substring (1,infinity) of str uni_name(name);
- fi
- if select_encoded>0: introduce_selected uni_name(name); fi
-enddef;
-def uncode(expr glyph_code)=
- if (glyph_code<0) or (glyph_code>255):
-  errhelp "The code must be within the range 0..255.";
-  errmessage "MT1: improper code " & decimal(glyph_code) &
-   " (`uncode' ignored)";
- else:
-  code_to_name_[glyph_code]:=gen_whatever(string);
  fi
 enddef;
 string code_to_name_[\\];
@@ -2800,11 +1713,6 @@ def pf_info_fontname text t =
   if k_=1: set_pfi(FULL_NAME, pf_info_set.FONT_NAME); fi
  endgroup
 enddef;
-
-% useful short-cuts:
-vardef family_name = pf_info_set.FAMILY_NAME enddef;
-vardef font_name = pf_info_set.FONT_NAME enddef;
-vardef full_name = pf_info_set.FULL_NAME enddef;
 
 def pf_info_author expr v = set_pfi(AUTHOR,v); enddef;
 % There is `much ado about nothing,' i.e., about the sign of descender:
@@ -3075,83 +1983,6 @@ blue_fuzz:=0; % Adobe Type 1 Font Format, p. 41
 blue_scale:=0.0454545;
 blue_shift:=7;
 
-def pf_info_overshoots text t =
- begingroup
-  save i_, j_, b_, c_, r_; pair b_[\\], c_[\\];
-  i_:=0; j_:=0;
-  for t_:=t:
-   if (xpart t_=0) and (ypart t_<0): b_[incr i_]=(ypart t_, xpart t_); fi
-  endfor
-  if i_=0:
-   errhelp "No blue values will be written.";
-   errmessage "MT1: wrong overshoot info: no baseline ``blue value'' found";
-  else:
-   if i_>1:
-    message "MT1: improper overshoot info: multiple baseline ``blue values'' found";
-    i_:=1;
-   fi
-   for t_:=t: if ypart t_>0: ins_blue(i_, t_, b_); fi endfor
-   for t_:=t:
-    if (xpart t_<>0) and (ypart t_<0): ins_other_blue(i_, j_, t_, b_, c_); fi
-   endfor
-  fi
-  %
-  flush_blues(BLUE_VALUES, min(7, i_), b_); % not more than 14 blue values
-  if j_>0: % other blues are optional, while blue values are obligatory
-   flush_blues(OTHER_BLUES, min(5, j_), c_); % not more than 10 other blues
-  fi
-  set_pfi(BLUE_FUZZ, blue_fuzz);
-  set_pfi(BLUE_SCALE, blue_scale);
-  set_pfi(BLUE_SHIFT, blue_shift);
- endgroup
-enddef;
-
-def ins_blue (suffix m) (expr p) (suffix b) =
- begingroup
-  save p_, bad; boolean bad; pair p_;
-  bad:=false; p_=(xpart p, xpart p+ypart p);
-  for i_:=1 upto m: bad:=infeasible_blue(b[i_],p_); exitif bad; endfor
-  if not bad: b[incr m]=p_;
-  else:
-   message "MT1: improper overshoot info: ``blue value'' (" &
-    decimal(xpart p) & "," & decimal(ypart p) & ") ignored.";
-  fi
- endgroup
-enddef;
-
-def ins_other_blue (suffix m,n) (expr p) (suffix b,c) =
- begingroup
-  save p_, bad; boolean bad; pair p_;
-  bad:=false; p_=(xpart p+ypart p,xpart p);
-  for i_:=1 upto m: bad:=infeasible_blue(b[i_], p_); exitif bad; endfor
-  if not bad:
-   for i_:=1 upto n: bad:=infeasible_blue(c[i_], p_); exitif bad; endfor
-   if not bad: c[incr n]=p_; fi
-  fi
-  if bad:
-   message "MT1: improper overshoot info: ``other blue'' (" &
-    decimal(xpart p) & "," & decimal(ypart p) & ") ignored.";
-  fi
- endgroup
-enddef;
-
-def flush_blues (suffix kind) (expr n) (suffix v) =
- begingroup
-  save r_; string r_; r_:="";
-  if n>0:
-   r_:=decimal(xpart v[1]) & " " & decimal(ypart v[1]);
-   for i_:=2 upto n:
-    r_:=r_ & " " & decimal(xpart v[i_]) & " " & decimal(ypart v[i_]);
-   endfor
-  fi
-  set_pfi(kind, r_);
- endgroup
-enddef;
-
-vardef infeasible_blue(expr p,q) = % Adobe Type 1 Font Format, p. 41, Note
- ((ypart p + 2blue_fuzz+1)>=xpart q) and ((ypart q + 2blue_fuzz+1)>=xpart p)
-enddef;
-
 % it is advisable to avoid typso whenever possible:
 def show_compose  expr x = show_compose_  :=x; enddef;
 def show_fills    expr x = show_fills_    :=x; enddef;
@@ -3166,8 +1997,6 @@ string extra_beginfont, extra_endfont; extra_beginfont=extra_endfont="";
 
 def beginfont =
  min_glyph_code=max_glyph_code=0;
- finding_triple_hstems:=1; finding_triple_vstems:=1;
-% |finding_flex_hstems:=1; finding_flex_vstems:=1;|
  complete_param_setting;
  scantokens extra_beginfont;
 enddef;
@@ -3232,7 +2061,6 @@ enddef;
 def endfont =
  scantokens extra_endfont;
  complete_pf_info;
- if fontmaking=1: write_dvips_info; fi
  complete_tfm_info;
  scantokens "end";
 enddef;
@@ -3293,12 +2121,6 @@ def complete_pf_info =
  fi
 enddef;
 
-% Johannes K\"uster's naming convention:
-vardef CreateSymbolFont = known create_symbol_font enddef;
-vardef CreateExtensionFont = known create_extension_font enddef;
-vardef CreateQuasiMathFont = known create_quasi_math_font enddef;
-create_quasi_math_font:=1; % upward compatibility
-
 def complete_tfm_info =
  % complete fontdimen info:
  % |designsize| is expected to be known
@@ -3313,33 +2135,8 @@ def complete_tfm_info =
  pf_info_space_shrink space_shrink if known space_shrink#: , space_shrink# fi;
  pf_info_quad quad if known quad#: , quad# fi;
  pf_info_extra_space extra_space if known extra_space#: , extra_space# fi;
- if CreateSymbolFont:
-  font_num_one   num_one;
-  font_num_two   num_two;
-  font_num_three num_three;
-  font_denom_one denom_one;
-  font_denom_two denom_two;
-  font_sup_one   sup_one;
-  font_sup_two   sup_two;
-  font_sup_three sup_three;
-  font_sub_one   sub_one;
-  font_sub_two   sub_two;
-  font_sup_drop  sup_drop;
-  font_sub_drop  sub_drop;
-  font_delim_one delim_one;
-  font_delim_two delim_two;
-  font_math_axis math_axis;
- elseif CreateExtensionFont:
-  font_math_rule            math_rule;
-  font_big_op_spacing_one   big_op_spacing_one;
-  font_big_op_spacing_two   big_op_spacing_two;
-  font_big_op_spacing_three big_op_spacing_three;
-  font_big_op_spacing_four  big_op_spacing_four;
-  font_big_op_spacing_five  big_op_spacing_five;
- elseif CreateQuasiMathFont: % non-standard
   font_math_rule math_rule;
   font_math_axis math_axis;
- fi
  % complete header info:
  pf_info_headerbyte 72, max(0, 254 - round 2designsize);
  completing_tfm_info:=whatever;
@@ -3349,36 +2146,6 @@ def BCPL_string(expr s,n)= % string |s| becomes an |n|-byte BCPL string
  for l:=if length(s)>=n: n-1 else: length(s) fi: l
   for k:=1 upto l: , substring (k-1,k) of s endfor
   for k:=l+2 upto n: , 0 endfor endfor
-enddef;
-
-def write_dvips_info = % this macro is invoked only if |fontmaking=1|
- begingroup
-  save enc_name_; string enc_name_; enc_name_:="enc" & jobname;
-  write "/" & enc_name_ & "[" to enc_file;
-  for i_:=0 upto 255:
-   write "/" &
-     if unknown code_to_name_[i_]
-       if known rigorous_encoding: or not charexists i_ fi:
-      ".notdef"
-     else:
-      % |glyph_ps_name.uni_name(begingroup code_to_name_[i_] endgroup))|
-      % may be undefined (it is an undefined numeric then) if a character
-      % is encoded but not introduced; allowing this may be useful at the
-      % initial stage of a font development (if one starts with a complete
-      % encoding); the construction |begingroup|\dots|endgroup| is essential:
-      if known glyph_ps_name.uni_name(begingroup code_to_name_[i_] endgroup):
-       glyph_ps_name.uni_name(begingroup code_to_name_[i_] endgroup)
-      else:
-       ".notdef"
-      fi
-     fi
-    to enc_file;
-  endfor
-  write "] def" to enc_file;
-  write jobname & " " & pf_info_set.FONT_NAME & " " &
-   ditto & enc_name_ & " ReEncodeFont" & ditto &
-   " <" & enc_file & " <" & jobname & ".pfb" to map_file;
- endgroup
 enddef;
 
 % The Old Tradition...

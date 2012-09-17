@@ -652,7 +652,7 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	  $(PERL) -CSD $(mvp)/tools/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
 	  (cd $*.tmp ; ../t1asm/t1asm -b $*.p $*.pfb ) ; \
 	  if test -r $*.tmp/$*.pfb \
-	    && $(GREP) -q 'output files written' $*.tmp/$*.log; then \
+	    && $(GREP) -q 'output files\? written' $*.tmp/$*.log; then \
 	    mv -f $*.tmp/$*.pfb pfbtmp/ ; \
 	    echo "$$CODESTAMP" > sum/$*.sum ; \
 	  else \
