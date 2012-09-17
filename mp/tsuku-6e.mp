@@ -33,7 +33,9 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -43,6 +45,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -85,9 +88,65 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.pure =
+  push_pbox_toexpand("kanji.grfour.pure");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.water)
+    (kanji.grone.blue);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.measure =
+  push_pbox_toexpand("kanji.grfive.measure");
+  build_kanji.lr(290,10)
+    (kanji.leftrad.water)
+    (kanji.grfive.conform);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.reduce =
+  push_pbox_toexpand("kanji.grfive.reduce");
+  build_kanji.lr(290,-30)
+    (kanji.leftrad.water)
+    (kanji.rare.the_same);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grsix.source =
+  push_pbox_toexpand("kanji.grsix.source");
+  build_kanji.lr(270,-10)
+    (kanji.leftrad.water)
+    (kanji.grtwo.field);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% sei/kiyo "pure"
+begintsuglyph("uni6E05",5);
+  kanji.grfour.pure;
+  tsu_render;
+endtsuglyph;
+
+% gen/he "reduce"
+begintsuglyph("uni6E1B",27);
+  kanji.grfive.reduce;
+  tsu_render;
+endtsuglyph;
+
 % on/atata "warm"
 begintsuglyph("uni6E29",41);
   kanji.grthree.warm;
+  tsu_render;
+endtsuglyph;
+
+% soku/haka "measure"
+begintsuglyph("uni6E2C",44);
+  kanji.grfive.measure;
   tsu_render;
 endtsuglyph;
 
@@ -114,6 +173,12 @@ begintsuglyph("uni6E76",118);
   build_kanji.lr(360,0)
     (kanji.leftrad.water)
     (kanji.grsix.fountain);
+  tsu_render;
+endtsuglyph;
+
+% gen/minamoto "source" (also "gen" as in "Genji Monogatari")
+begintsuglyph("uni6E90",144);
+  kanji.grsix.source;
   tsu_render;
 endtsuglyph;
 
