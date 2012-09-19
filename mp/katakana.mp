@@ -1,6 +1,6 @@
 %
 % Katakana for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -496,14 +496,14 @@ vardef kata.ho_centre(expr pta,ptb) =
     z2=ptb+(-200,40);
     z3=0.85[z2,z1];
     ripx:=pta{down}..tension 1.6..z3..{curl 0}z2;
-    ripx:=insert_nodes(ripx)(0.95);
+    ripx:=pta{down}...(point 0.95 of ripx)..z3..{curl 0}z2;
     z4=1.5[z1,ptb];
     z5=ptb+(-170,90);
     ripy:=pta--z4{z3-z4}..{curl 0}z5;
-    ripy:=insert_nodes(ripy)(0.90);
+    ripy:=pta--(point 0.90 of ripy)--z4{z3-z4}..{curl 0}z5;;
     interpath(mincho,ripx,ripy)
   endgroup,
-    (1.7,1.7)--(1.4,1.4)--(1.6,1.6)--(0.9,1.6));
+    (1.7,1.7)--(1.5,1.5)--(1.6,1.6)--(0.9,1.6));
   set_botip(0,2,0);
   set_boserif(0,0,8);
 enddef;

@@ -408,11 +408,11 @@ def tsu_render_segment(expr i,p,q) =
     mytip[l]:=tsu_brush_tip(l,p,q,obstackna.bosize[i],s<1,
       t>(length obstackp[i])-1,obstackba.boalternate[i]);
   endfor;
-  pen_stroke(for l=0 step 1 until length(p):
-      if sharp_corners and known obstacknaa.botip[i][ltime[l]]:
-        tip(obstacknaa.botip[i][ltime[l]])(l)
+  pen_stroke(for ell=0 step 1 until length(p):
+      if sharp_corners and known obstacknaa.botip[i][ltime[ell]]:
+        tip(obstacknaa.botip[i][ltime[ell]])(ell)
       else:
-        tsu_brush_opt(mytip[l])(l)
+        tsu_brush_opt(mytip[ell])(ell)
       fi
     endfor)(p)(glyph);
   glstk[ngls]:=regenerate(glyph);
@@ -494,16 +494,34 @@ def tsu_render_in_circle(expr fitcircle) =
              is_cycle:=((point s of obstackp[i])=(point t of obstackp[i]));
              p:=subpath (s,t) of obstackp[i];
              q:=subpath (s,t) of bqi;
-% message "ltiming...";
              numeric ltime[];
              ltime[0]:=s;
-% message decimal s;
              for l=1 step 1 until (length p)-1:
                ltime[l]:=floor (s+l);
-% message decimal floor (s+l);
              endfor;
              ltime[length p]:=t;
-% message decimal t;
+             l:=0;
+             forever:
+               exitif l=length p;
+               begingroup
+                 save x,y;
+                 numeric x[],y[];
+                 z0=(point l of p)/100;
+                 z1=(postcontrol l of p)/100;
+                 z2=(precontrol (l+1) of p)/100;
+                 z3=(point (l+1) of p)/100;
+                 if ((z1-z0) dotprod (z3-z2))/((z2-z1) dotprod (z2-z1))<0.5:
+                   p:=insert_nodes(p)(l+0.5);
+                   q:=insert_nodes(q)(l+0.5);
+                   for ll=length p step -1 until l+1:
+                     ltime[ll]:=ltime[ll-1];
+                   endfor;
+                   ltime[l+1]:=0.5[ltime[l],ltime[l+2]];
+                 else:
+                   l:=l+1;
+                 fi;
+               endgroup;
+             endfor;
              write ("SEGMENT "&(decimal flati)&" "&(decimal s)&" "&(decimal t))
                to "proof.prf";
              for lcbj=0 upto length p:

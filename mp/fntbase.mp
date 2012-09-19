@@ -40,33 +40,23 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% from fontbase.mp
+% GENERAL LIBRARY FUNCTIONS
 
-% BASIC MACROS
+% inclusion lock written explicitly so as not to depend on preintro.mp
+if known already_included.fntbase:
+  endinput;
+fi;
+boolean already_included.fntbase;
+already_included.fntbase:=true;
 
-if known fontbase_ver: expandafter endinput else: fontbase_ver:=0.55; fi
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% at this point fontbase.mp includes plain_ex.mp; I'm inlining that
-% to help with namespace issues - MS
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% from plain_ex.mp
-
-% EXTENSION OF PLAIN FORMAT
-
-if known plain_ex_ver: expandafter endinput else: plain_ex_ver:=.45; fi
+% gobble a text argument
 def killtext text t = enddef; % absent from older versions of plain.mf
 
-% Knuthian tradition:
+% Knuthian tradition unit definitions
 mm#=2.84528; pt#=1; dd#=1.07001; bp#=1.00375; cm#=28.45276; pc#=12;
 cc#=12.84010; in#=72.27;
 
-% A few functions more
-vardef gen_whatever(text type) = save ?; type ?; ? enddef; % 1-argument func.
-vardef whatever_pair = gen_whatever(pair) enddef; % 0-argument function
+% numeric functions
 vardef tand primary a = sind(a)/cosd(a) enddef;
 vardef cotd primary a = cosd(a)/sind(a) enddef;
 vardef signum primary x = if x>0: 1 elseif x<0: -1 else: 0 fi enddef;
@@ -79,6 +69,7 @@ primarydef w dotnorm z =
  endgroup
 enddef;
 
+% expand "decimal" to cover some other data types
 let ori_decimal=decimal;
 def decimal primary n = 
  (
@@ -96,7 +87,7 @@ enddef;
 
 % The definition of |postdir| and |predir| given below is
 % based on the following observation, being the consequence
-% of the de~l'H\^ospital's rule: consider a~B\'ezier segment
+% of l'H\^opital's rule: consider a~B\'ezier segment
 % |a .. controls b and c .. d|; normally, the vector $\vec{ab}$
 % determines the ``post'' direction at node~$a$; if $b$
 % coincides with $a$, then the vector $\vec{ac}$ determines
@@ -201,36 +192,6 @@ tertiarydef a inside b =
  fi
 enddef;
 
-% Two convenient macros more
-vardef x_time expr x of p = % obsolete
- xpart(p intersectiontimes ((x,-infinity)--(x,infinity)))
-enddef;
-vardef y_time expr y of p = % obsolete
- xpart(p intersectiontimes ((-infinity,y)--(infinity,y)))
-enddef;
-vardef xtime expr x of p = % preferable alias
- xpart(p intersectiontimes ((x,-infinity)--(x,infinity)))
-enddef;
-vardef ytime expr y of p = % preferable alias
- xpart(p intersectiontimes ((-infinity,y)--(infinity,y)))
-enddef;
-
-% A few figures more:
-vardef triangle =
- (0,-1/2)--(0.866,0)--(0,1/2)--cycle % |1/2sqrt(3)| $\approx$ |0.866025...|
-enddef;
-
-% A method, entangled a bit and not particularly robust, of testing whether
-% a parameter is a {\it string\/} expression or a {\it suffix}.
-% (Remark: |is_suffix((a))| or |is_suffix(a+b)| returns |true|;
-% |is_suffix(((a)))| causes \MP{} to report an error).
-vardef is_suffix(text suffix_or_not_suffix) =
- save the_suffix_; string the_suffix_; is_suffix_ suffix_or_not_suffix;
- the_suffix_<>""
-enddef;
-def is_suffix_ suffix $ = the_suffix_:= str $; killtext enddef;
-
-
 % The macro |&&| is to be used instead of the |&| operator if the respective
 % ends of paths coincide only approximately; using |..| instead would add
 % unwanted tiny B\'ezier segments. The macro is somewhat ``left-handed,''
@@ -245,110 +206,6 @@ tertiarydef p amp_amp_ q =
    and (precontrol length(p) of p) ..
  fi
 enddef;
-
-% A few postfix and infix path operators:
-primarydef a mirr b = a reflectedabout(origin,b) enddef;
-
-def store_prec_obj = store_prec_obj_ whatever enddef;
-primarydef a store_prec_obj_ b = hide(def prec_obj = a enddef) enddef;
-
-primarydef a sub b =
- if path a: (pos_subpath b of a) elseif string a: (substring b of a) fi
-enddef;
-
-def node = store_prec_obj node_ enddef;
-vardef node_@# primary a =
- if str @#="x": xpart(point a of prec_obj)
- elseif str @#="y": ypart(point a of prec_obj)
- elseif str @#="": point a of prec_obj
- else:
-  errhelp "The operator `node' works only with `x', `y' or an empty suffixes.";
-  errmessage "PX: improper usage of `node'";
- fi
-enddef;
-
-def first suffix $ =
- if str $="at": % moves the first point of a path to a specified location
-  store_prec_obj prec_obj shifted -(point 0 of prec_obj) shifted
- else: node$(0) fi
-enddef;
-def last suffix $ =
- if str $="at": % moves the last point of a path to a specified location
-  store_prec_obj prec_obj shifted
-   -(point if cycle prec_obj: 0 else: infinity fi of prec_obj) shifted
- else: node$(if cycle prec_obj: 0 else: infinity fi) fi
-enddef;
-
-% node-governed flipping:
-def nflipped = nflipped_ whatever enddef;
-primarydef a nflipped_ b =
- if cycle a: a
- else: reverse(a reflectedabout (point 0 of a, point infinity of a))
- fi
-enddef;
-
-def xflipped = xflipped_ whatever enddef;
-primarydef a xflipped_ b =
- reverse(a reflectedabout
-   (1/2[llcorner a, lrcorner a], 1/2[ulcorner a, urcorner a]))
-enddef;
-
-def yflipped = yflipped_ whatever enddef;
-primarydef a yflipped_ b =
- reverse(a reflectedabout
-   (1/2[llcorner a, ulcorner a], 1/2[lrcorner a, urcorner a]))
-enddef;
-
-% node-governed rotating (infix operator):
-primarydef a nrotated b =
- if cycle a: a
- else: a rotatedaround(1/2[point 0 of a,point infinity of a], b)
- fi
-enddef;
-
-% center-governed rotating (infix operator):
-primarydef a crotated b =
- a rotatedaround(1/2[llcorner a, urcorner a], b)
-enddef;
-
-% Neat macros excerpted from John D. Hobby's boxes.mp macro package:
-
-% Find the length of the prefix of string |s| for which |cond| is true for
-% each character |c| of the prefix
-vardef generisize_prefix(expr s)(text cond) =
- save i_, c_; string c_;
- i_ = 0;
- forever:
-  c_ := substring (i_,i_+1) of s;
-  exitunless cond; exitif incr i_=length s;
- endfor
- i_
-enddef;
-
-% Take a string returned by the |str| operator and return the same string
-% with explicit numeric subscripts replaced by generic subscript symbols []:
-vardef generisize(expr s) =
- save res_, s_, l_; string res_, s_;
- res_=""; % result so far
- s_ =s; % left to process
- forever: exitif s_="";
-  l_:=generisize_prefix(s_, (c_<>"[") and ((c_<"0") or (c_>"9")));
-  res_:=res_ & substring (0,l_) of s_;
-  s_:=substring (l_,infinity) of s_;
-  if s_<>"":
-   res_ := res_ & "[]";
-   l_ :=if s_>="[": 1+generisize_prefix(s_, c_<>"]")
-    else: generisize_prefix(s_, (c_=".") or ("0"<=c_) and (c_<="9")) fi;
-   s_:=substring(l_,infinity) of s_;
-  fi
- endfor
- res_
-enddef;
-
-% The macro |extrapolate| computes a ``superpath'' (as opposed to
-% ``subpath'') for a single B\'ezier segment in such a way
-% that the following identity holds
-% (for 0${}\le{}$|t1|${}\le{}$|t2|${}\le{}$1):
 
 vardef extrapolate expr t of b = % |t| pair, |b| B\'ezier segment
  clearxy;
@@ -377,26 +234,6 @@ vardef point_line_dist(expr a,b,c) =
  clearxy; save d_; d_=sqrt(length(b-c));
  z0=a/d_; z1=b/d_; z2=c/d_;
  (x2-x1)*(y1-y0)-(x1-x0)*(y2-y1)
-enddef;
-
-% The following code (its idea is due to Dan Luecking and Larry Siebenmann)
-% computes the area surrounded by a cyclic path.
-
-newinternal area_scale;
-area_scale:=1; % decrease if the result is going to be too large
-vardef area(expr p) = % |p| is a B\'ezier segment; result = $\int y\, dx$
- save xa, xb, xc, xd, ya, yb, yc, yd;
- (xa,20ya)=point 0 of p;
- (xb,20yb)=postcontrol 0 of p;
- (xc,20yc)=precontrol 1 of p;
- (xd,20yd)=point 1 of p;
-   area_scale*(xb-xa)*(10ya + 6yb + 3yc +   yd)
-  +area_scale*(xc-xb)*( 4ya + 6yb + 6yc +  4yd)
-  +area_scale*(xd-xc)*(  ya + 3yb + 6yc + 10yd)
-enddef;
-vardef Area(expr P) = % |P| is a cyclic path
- area(subpath (0,1) of P)
-  for t=1 upto length(P)-1: + area(subpath (t,t+1) of P) endfor
 enddef;
 
 % The idea of calculation of a turning angle
@@ -440,95 +277,6 @@ enddef;
 % Abbreviations for a few simple yet useful phrases
 def xyscaled primary p = xscaled xpart(p) yscaled ypart(p) enddef;
 def yxscaled primary p = yscaled xpart(p) xscaled ypart(p) enddef;
-primarydef a xscaledto b =
- hide(lastscale:=b/(xpart(urcorner(a))-xpart(llcorner(a))))
- a xscaled lastscale
-enddef;
-primarydef a xyscaledto b =
- hide(lastscale:=b/(xpart(urcorner(a))-xpart(llcorner(a))))
- a scaled lastscale
-enddef;
-primarydef a yscaledto b =
- hide(lastscale:=b/(ypart(urcorner(a))-ypart(llcorner(a))))
- a yscaled lastscale
-enddef;
-primarydef a yxscaledto b =
- hide(lastscale:=b/(ypart(urcorner(a))-ypart(llcorner(a))))
- a scaled lastscale
-enddef;
-
-pair lastshift;
-primarydef a llshiftedto b =
- hide(lastshift:=-llcorner(a)+b) a shifted lastshift
-enddef;
-primarydef a lrshiftedto b =
- hide(lastshift:=-lrcorner(a)+b) a shifted lastshift
-enddef;
-primarydef a urshiftedto b =
- hide(lastshift:=-urcorner(a)+b) a shifted lastshift
-enddef;
-primarydef a ulshiftedto b =
- hide(lastshift:=-ulcorner(a)+b) a shifted lastshift
-enddef;
-primarydef a ccshiftedto b =
- hide(lastshift:=-center(a)+b) a shifted lastshift
-enddef;
-
-% Joining two paths at their intersection point:
-tertiarydef a intersection_join b = % like |softjoin|
- begingroup save t_;
-  (t_1,t_2)=a intersectiontimes b; a.sub(0,t_1)&&b.sub(t_2,infinity)
- endgroup
-enddef;
-
-% Changing locally non-internal variables (sometimes we want to set locally
-% not only numeric variables):
-def local suffix s =
- begingroup
-  save local_stack_value_, local_stack_name_;
-  if pair s: pair local_stack_value_; fi
-  if path s: path local_stack_value_; fi
-  if picture s: picture local_stack_value_; fi
-  if string s: string local_stack_value_; fi
-  if color s: color local_stack_value_; fi
-  local_stack_value_ = s; def local_stack_name_ = s enddef;
-  local_
-enddef;
-def local_ expr x = local_stack_name_:=x enddef;
-def endlocal = local_stack_name_:=local_stack_value_; endgroup; enddef;
-
-% The following abbreviation is roughly equivalent to the Knuthian
-% {\it of-the-way function}, namely, to the |whatever[z1,z2]|
-% operator; observe, however, that this construction requires that
-% both |z1| and |z2| should be known, while |z1| the in
-% the construction |z1^z2| can be unknown.
-primarydef a ^ b = a + whatever * b enddef;
-
-% The macro `leg' computes the leg of a right-angled triangle,
-% given a hypotenuse (vector, parameter~|c|) and a length
-% of one leg (parameter~|b|).
-primarydef c leg b =
- begingroup save a_; pair a_;
-  a_+b/(length(c)+-+b)*(a_ rotated -90)=c; % |(length(c)+-+b)=length(a_)|
-  a_
- endgroup
-enddef;
-
-% This extremely simple macro is particularly
-% useful for constructing sloped objects. Assume, for example, that
-% we want to draw the following parallelogram:
-
-% (given |h|, |w| and |b|). This is exactly the situation, where
-% the macro `leg' comes handy in. Given |z0| and |z2|, the remaining
-% points |z1| and |z3| can be easily determined from the following
-% relations:
-
-%   |z1=z0+whatever*((z2-z0) leg (-b));|\quad
-%   |y1=y2;|\quad |z1-z2=z0-z3;|
-
-% Note the minus preceding the second argument to~the~`leg';
-% the positive value means ``leftwards,'' negative---``rightwards''
-% (with respect to hypotenuse vector).
 
 % The macro |insert_nodes| inserts additional nodes at given non-integer
 % non-repeating times~|t| into a given path |p|.
@@ -553,6 +301,88 @@ vardef insert_nodes(expr p)(text t) =
  endfor;
  p_
 enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% PREFIX AND SUFFIX HANDLING
+
+% A method, entangled a bit and not particularly robust, of testing whether
+% a parameter is a {\it string\/} expression or a {\it suffix}.
+% (Remark: |is_suffix((a))| or |is_suffix(a+b)| returns |true|;
+% |is_suffix(((a)))| causes \MP{} to report an error).
+vardef is_suffix(text suffix_or_not_suffix) =
+ save the_suffix_; string the_suffix_; is_suffix_ suffix_or_not_suffix;
+ the_suffix_<>""
+enddef;
+def is_suffix_ suffix $ = the_suffix_:= str $; killtext enddef;
+
+% suffix munging
+
+def store_prec_obj = store_prec_obj_ whatever enddef;
+primarydef a store_prec_obj_ b = hide(def prec_obj = a enddef) enddef;
+
+% primarydef a sub b =
+%  if path a: (pos_subpath b of a) elseif string a: (substring b of a) fi
+% enddef;
+
+def node = store_prec_obj node_ enddef;
+vardef node_@# primary a =
+ if str @#="x": xpart(point a of prec_obj)
+ elseif str @#="y": ypart(point a of prec_obj)
+ elseif str @#="": point a of prec_obj
+ else:
+  errhelp "The operator `node' works only with `x', `y' or an empty suffixes.";
+  errmessage "PX: improper usage of `node'";
+ fi
+enddef;
+
+def first suffix $ =
+ if str $="at": % moves the first point of a path to a specified location
+  store_prec_obj prec_obj shifted -(point 0 of prec_obj) shifted
+ else: node$(0) fi
+enddef;
+def last suffix $ =
+ if str $="at": % moves the last point of a path to a specified location
+  store_prec_obj prec_obj shifted
+   -(point if cycle prec_obj: 0 else: infinity fi of prec_obj) shifted
+ else: node$(if cycle prec_obj: 0 else: infinity fi) fi
+enddef;
+ 
+% Neat macros excerpted from John D. Hobby's boxes.mp macro package
+
+% Find the length of the prefix of string |s| for which |cond| is true for
+% each character |c| of the prefix
+vardef genericize_prefix(expr s)(text cond) =
+ save i_, c_; string c_;
+ i_ = 0;
+ forever:
+  c_ := substring (i_,i_+1) of s;
+  exitunless cond; exitif incr i_=length s;
+ endfor
+ i_
+enddef;
+
+% Take a string returned by the |str| operator and return the same string
+% with explicit numeric subscripts replaced by generic subscript symbols []:
+vardef genericize(expr s) =
+ save res_, s_, l_; string res_, s_;
+ res_=""; % result so far
+ s_ =s; % left to process
+ forever: exitif s_="";
+  l_:=genericize_prefix(s_, (c_<>"[") and ((c_<"0") or (c_>"9")));
+  res_:=res_ & substring (0,l_) of s_;
+  s_:=substring (l_,infinity) of s_;
+  if s_<>"":
+   res_ := res_ & "[]";
+   l_ :=if s_>="[": 1+genericize_prefix(s_, c_<>"]")
+    else: genericize_prefix(s_, (c_=".") or ("0"<=c_) and (c_<="9")) fi;
+   s_:=substring(l_,infinity) of s_;
+  fi
+ endfor
+ res_
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % A MODULE THAT FINDS AN ENVELOPE OF A PATH DRAWN WITH A PEN
 
@@ -990,7 +820,7 @@ newinternal pen_stroke_method;
 
 vardef pen_stroke(text opts)(expr p)(suffix result) =
  forsuffixes $=,r,l,b,e:
-  if not path result$: scantokens("path " & generisize(str result$)); fi
+  if not path result$: scantokens("path " & genericize(str result$)); fi
  endfor
  save a_, a__, d_, i_, k_, n_, p_, z_, norm_, norml_, normr_, normlr_,
   fix_opts_, ignore_dir_, ignore_dir__, local_nib_, local_nib__,
@@ -1108,7 +938,12 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% from fontbase.mp
+% POSTSCRIPT FONT GENERATION
+
+% Note that this has been stripped down a lot from the METATYPE1
+% original code; most of the stuff for hinting, ligature tables,
+% METAFONT-style proof generation, and so on has been removed
+% because it's irrelevant to Tsukurimashou.
 
 vardef pfi_file = jobname & ".pfi" enddef;
 vardef pic_file = "piclist" enddef;
@@ -1125,19 +960,13 @@ enddef;
 vardef mtone_glyph_pfx = "MT1: glyph " & str glyph_name & ": " enddef;
 def mtone_message = message mtone_glyph_pfx & enddef;
 
-% Macros |write_tex| and |write_commands| provide contact with the
-% outer world. The former macro contains the information about EPSes that is
+% Macro write_tex provides contact with the
+% outer world. The macro contains the information about EPSes that is
 % used for proofing and assembling the font; must be consistent with
 % the definitions contained in the files `mpform.sty' and `mp2pf.awk'.
-% The latter macro provides a DOS-batch interface to the `epscinl'
-% package which is used for including background bitmaps
-% (in EPS form), i.e., stencils, into the resulting EPSes.
 vardef write_tex(expr name, num) =
  write "\EPSNAMEandNUMBER{" & name & "}{" & decimal(num) & "}"
   to pic_file & ".tex"
-enddef;
-vardef write_commands(expr num) =
- write "call epsincl " & jobname & "." & decimal(num) to pic_file & ".bat";
 enddef;
 
 % The following macros are related to the operation of slanting.
@@ -1229,9 +1058,6 @@ enddef;
 % Basic macros for building character glyphs:
 vardef round_node_values(expr p) =
  save d_; % candidates for Flex -- no checking for ``straightlinessness''
- if known dish_size: % default is |unknown dish_size|
-  for t_=0 upto length(p)-1: if is_dish(t_,p): d_[t_]=0; fi endfor;
- fi
  for t_=0 upto length(p)-1:
   if round(point t_ of p)=round(point t_+1 of p):
    hide(mtone_message "degenerated bezier " & ", length=" &
@@ -1249,69 +1075,6 @@ vardef round_node_values(expr p) =
   fi
  endfor
  round(point length(p) of p) \\ if cycle p: & cycle fi
-enddef;
-
-vardef is_dish(expr t,p) =
-% returns |true| if |point t of p| is a good candidate for a center
-% of a dish (suitable for Type~1 Flex option)
- if known dish_size:
-  save b_; boolean b_; b_:=false;
-  if xpart(predir t of p)=0:
-   b_:=true;
-   if b_: b_:=b_ and (xpart(postdir t of p)=0); fi
-   if b_: b_:=b_ and (ypart(predir t of p)<>0); fi
-   if b_: b_:=b_ and (ypart(postdir t of p)<>0); fi
-   if b_: b_:=b_ and (xpart(point (t-1) of p)=xpart(point (t+1) of p)); fi
-   if b_:
-    save u_; u_:=ypart(point (t-1) of p)-ypart(point t of p);
-    b_:=b_ and (abs(u_)>dish_size);
-   fi
-   if b_:
-    save v_; v_:=-signum(u_)*(xpart(point (t-1) of p)-xpart(point t of p));
-    b_:=b_ and (abs(v_)<=dish_incise);
-   fi
-   if b_:
-    save p_; path p_; p_:=subpath (t-1,t+1) of p;
-    u_:=xpart(urcorner p_)-xpart(llcorner p_);
-    b_:=b_ and (u_=v_);
-   fi;
-   % |if b_: show "VER",(t,u_,v_); fi|
-  elseif ypart(predir t of p)=0:
-   b_:=true;
-   if b_: b_:=b_ and (ypart(postdir t of p)=0); fi
-   if b_: b_:=b_ and (xpart(predir t of p)<>0); fi
-   if b_: b_:=b_ and (xpart(postdir t of p)<>0); fi
-   if b_: b_:=b_ and (ypart(point (t-1) of p)=ypart(point (t+1) of p)); fi
-   if b_:
-    save u_; u_:=xpart(point (t-1) of p)-xpart(point t of p);
-    b_:=b_ and (abs(u_)>dish_size);
-   fi
-   if b_:
-    save v_; v_:=signum(u_)*(ypart(point (t-1) of p)-ypart(point t of p));
-    b_:=b_ and (abs(v_)<=dish_incise);
-   fi
-   if b_:
-    save p_; path p_; p_:=subpath (t-1,t+1) of p;
-    u_:=ypart(urcorner p_)-ypart(llcorner p_);
-    b_:=b_ and (u_=v_);
-   fi;
-   % |if b_: show "HOR",(t,u_,v_); fi|
-  fi 
-  b_
- else:
-  errhelp "Proceed, I'll return the value `false'.";
-  errmessage mtone_glyph_pfx & "`is_dish' used without initialization";
-  false
- fi 
-enddef;
-% by default, dishes are not considered candidates for Flex;
-% instead, they may be converted to (pairs of) straight lines
-def flex_checking_on = % no forcing straight lines when a dish is encountered
- newinternal dish_incise, dish_size;
- dish_incise:=5; dish_size:=10; % defaults; Adobe says that |dish_incise<=20|
-enddef;
-def flex_checking_off = % locally, flex checking can be switched off
- save dish_incise, dish_size;
 enddef;
 
 primarydef a start b =
@@ -1463,15 +1226,6 @@ color label_dot_color, label_text_color;
 label_dot_color:=.8white; label_text_color:=black;
 newinternal label_dot_size; label_dot_size:=3bp;
 
-def force_bbox =
- begingroup
- % circumventing the fragility of dvips prologues and inaccuracy of epsf:
- save corr_; corr_:=if glyph_width<100: 1/2(100-glyph_width) else: 0 fi;
- setbounds currentpicture to
-  (glyph_width+corr_,bot_line)--(0,top_line)--(-corr_,bot_line)--cycle;
- endgroup;
-enddef;
-
 % Begin and end of the definitions of a character glyph:
 def begin_skip =
  let endglyph = fi;
@@ -1531,11 +1285,11 @@ def beginglyph(text name) =
  numeric old_hinting_scheme, new_hinting_scheme;
  if glyph_usage div store = 1: % storing
   if not path glyph_stored.glyph_name[0]: % glyph_name may contain digits
-   scantokens("path " & generisize(str glyph_stored.glyph_name) & "[]");
-   scantokens("pair " & generisize(str hstem_stored.glyph_name) & "[]");
-   scantokens("path " & generisize(str hstem_stored_segms.glyph_name) & "[]");
-   scantokens("pair " & generisize(str vstem_stored.glyph_name) & "[]");
-   scantokens("path " & generisize(str vstem_stored_segms.glyph_name) & "[]");
+   scantokens("path " & genericize(str glyph_stored.glyph_name) & "[]");
+   scantokens("pair " & genericize(str hstem_stored.glyph_name) & "[]");
+   scantokens("path " & genericize(str hstem_stored_segms.glyph_name) & "[]");
+   scantokens("pair " & genericize(str vstem_stored.glyph_name) & "[]");
+   scantokens("path " & genericize(str vstem_stored_segms.glyph_name) & "[]");
   fi
   glyph_stored.glyph_name.num:=0;
   hstem_stored.glyph_name.num:=0; vstem_stored.glyph_name.num:=0;
@@ -1608,7 +1362,7 @@ vardef introduce__@#(expr usage, slanting)(text stencil) =
   fi
   if r_<>"":
    if not string glyph_stencil@#:
-    scantokens("string " & generisize(str glyph_stencil@#));
+    scantokens("string " & genericize(str glyph_stencil@#));
    fi
    glyph_stencil@# = r_;
   fi
@@ -1617,7 +1371,7 @@ enddef;
 
 vardef assign_name@#(expr ps_name) =
  if not string glyph_ps_name @#:
-  scantokens("string " & generisize(str glyph_ps_name@#));
+  scantokens("string " & genericize(str glyph_ps_name@#));
  fi
  glyph_ps_name@#:=ps_name;
 enddef;
@@ -1671,11 +1425,11 @@ def set_pfi (suffix kind) (expr val) =
  if known val:
   if (numeric val) or (string val) or (boolean val):
    if (numeric val) and (not numeric pf_info_set.kind):
-    scantokens ("numeric " & generisize(str pf_info_set.kind));
+    scantokens ("numeric " & genericize(str pf_info_set.kind));
    elseif (string val) and (not string pf_info_set.kind):
-    scantokens ("string " & generisize(str pf_info_set.kind));
+    scantokens ("string " & genericize(str pf_info_set.kind));
    elseif (boolean val) and (not boolean pf_info_set.kind):
-    scantokens ("boolean " & generisize(str pf_info_set.kind));
+    scantokens ("boolean " & genericize(str pf_info_set.kind));
    fi
    pf_info_set.kind:=val;
     write str kind & " : " &
