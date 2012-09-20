@@ -389,6 +389,90 @@ def tsu_rescale_xform =
   endgroup
 enddef;
 
+% solve the quadratic equation ax^2+bx+c=0, including pathological cases
+vardef solve_quadratic(expr a,b,c) =
+  if a=0:
+    if b=0:
+      if c=0:
+        (0,whatever)
+      else:
+        (whatever,whatever)
+      fi
+    else:
+      (-c/b,whatever)
+    fi
+  else:
+    save d;
+    numeric d;
+    d=b*b-4*a*c;
+    if d>0:
+      ((-b-sqrt(d),-b+sqrt(d))/(2*a))
+    elseif d=0:
+      (-b/(2*a),whatever)
+    else:
+      (whatever,whatever)
+    fi
+  fi
+enddef;
+
+% find the t-values of any inflection points of subpath (0,1) of p
+vardef segment_inflections(expr p) =
+  save x,y,c;
+  numeric x[],y[],c[];
+  
+  % normalize to prevent numerical misbehaviour
+  z10=(point 0 of p)+z22;
+  z11=(postcontrol 0 of p)+z22;
+  z12=(precontrol 1 of p)+z22;
+  z13=(point 1 of p)+z22;
+  z10+z11+z12+z13=(0,0);
+  c10=(abs(z10)+abs(z11)+abs(z12)+abs(z13))/4;
+  z0=z10/c10;
+  z1=z11/c10;
+  z2=z12/c10;
+  z3=z13/c10;
+
+  % abort if points are close enough to collinear
+  if (abs(x0*y1-x1*y0)<0.01) and (abs(x2*y3-x3*y2)<0.01):
+    (whatever,whatever)
+  else:
+
+    % find t-values at which |z'(t) cross z''(t)|=0
+    c2=y0*(      -1*x1 +2*x2   -x3)
+      +y1*(   x0       -3*x2 +2*x3)
+      +y2*(-2*x0 +3*x1         -x3)
+      +y3*(   x0 -2*x1   +x2      );
+
+    c1=y0*(       2*x1 -3*x2   +x3)
+      +y1*(-2*x0       +3*x2   -x3)
+      +y2*( 3*x0 -3*x1            )
+      +y3*(  -x0   +x1            );
+
+    c0=y0*(        -x1   +x2)
+      +y1*(   x0         -x2)
+      +y2*(  -x0   +x1      );
+
+    z20=solve_quadratic(c2,c1,c0);
+
+    % filter and sort to find points properly within the segment
+    if known x20:
+      if (x20>0.01) and (x20<0.99):
+        x21=x20;
+      fi;
+    fi;
+    if known y20:
+      if (y20>0.01) and (y20<0.99):
+        y21=y20;
+      fi;
+    fi;
+    if known x21:
+      z21
+    else:
+      (y21,x21)
+    fi
+  fi
+enddef;
+
 % render a single segment - pulled out to make it easier to override
 def tsu_render_segment(expr i,p,q) =
   if do_alternation and obstackba.boalternate[i]:
@@ -419,7 +503,7 @@ def tsu_render_segment(expr i,p,q) =
   ngls:=ngls+1;
   for l=0 step 1 until length(p):
     si:=floor (ltime[l]+0.5);
-    if known obstacknaa.boserif[i][si]:
+    if (abs(ltime[l]-si)<0.1) and known obstacknaa.boserif[i][si]:
       tsu_serif.choose(obstacknaa.boserif[i][si],
         point l of p,direction l of p,l,
         obstackna.bosize[i],tsu_brush_tip_size(l,q));
@@ -506,19 +590,31 @@ def tsu_render_in_circle(expr fitcircle) =
                begingroup
                  save x,y;
                  numeric x[],y[];
-                 z0=(point l of p)/100;
-                 z1=(postcontrol l of p)/100;
-                 z2=(precontrol (l+1) of p)/100;
-                 z3=(point (l+1) of p)/100;
-                 if ((z1-z0) dotprod (z3-z2))/((z2-z1) dotprod (z2-z1))<0.5:
-                   p:=insert_nodes(p)(l+0.5);
-                   q:=insert_nodes(q)(l+0.5);
+                 z10=segment_inflections(subpath (l,l+1) of p);
+                 if known x10:
+                   p:=insert_nodes(p)(l+x10);
+                   q:=subpath(0,l+x10) of q & subpath(l+x10,infinity) of q;
                    for ll=length p step -1 until l+1:
                      ltime[ll]:=ltime[ll-1];
                    endfor;
-                   ltime[l+1]:=0.5[ltime[l],ltime[l+2]];
+                   ltime[l+1]:=x10[ltime[l],ltime[l+2]];
                  else:
-                   l:=l+1;
+                   z0=(point l of p)/100;
+                   z1=(postcontrol l of p)/100;
+                   z2=(precontrol (l+1) of p)/100;
+                   z3=(point (l+1) of p)/100;
+                   if if abs(z2-z1)>2: ((z1-z0) dotprod (z3-z2))
+                                      /((z2-z1) dotprod (z2-z1))
+                      else: 1 fi<0.5:
+                     p:=insert_nodes(p)(l+0.5);
+                     q:=subpath(0,l+0.5) of q & subpath(l+0.5,infinity) of q;
+                     for ll=length p step -1 until l+1:
+                       ltime[ll]:=ltime[ll-1];
+                     endfor;
+                     ltime[l+1]:=0.5[ltime[l],ltime[l+2]];
+                   else:
+                     l:=l+1;
+                   fi;
                  fi;
                endgroup;
              endfor;

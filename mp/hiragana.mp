@@ -1,6 +1,6 @@
 %
 % Hiragana for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -268,12 +268,12 @@ vardef hira.se =
 
   push_stroke((660,780)..(660,370){down}..(640,260-20*mincho)..
       {curl 0.2}(520,280),
-    (1.7,1.7)..(1.5,1.5)..(1.5,1.5)..(1,1));
+    (1.7,1.7)--(1.5,1.5)--(1.5,1.5)--(1,1));
   set_boserif(0,0,8);
 
   push_stroke((290,710)..(290,170){down}..(500,30)..
       {direction infinity of get_strokep(-1)}(800,50),
-    (1.8,1.8)..(1.5,1.5)..(1.7,1.7)..(1.8,1.8));
+    (1.8,1.8)--(1.5,1.5)--(1.7,1.7)--(1.8,1.8));
   set_boserif(0,0,8);
   set_boserif(0,3,6);
   expand_pbox;
