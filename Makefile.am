@@ -55,6 +55,8 @@ comma:=,
 ZZZZHACKZZZZ=include makefile-vars.inc
 $(error This Makefile must be edited by Perl code in config.status before use)
 
+SUBDIRS = . $(PARASITES)
+
 ############################################################################
 
 # SILENT BUILD BLINKENLIGHTS
@@ -337,6 +339,8 @@ hamlog/config.hl: tools/make-cfghl \
 	    >> hamlog/config.hl ; \
 	  $(PERL) -CSD $(mvp)/tools/make-cfghl feature \
 	    '@enable_ot_features@' >> hamlog/config.hl ; \
+	  $(PERL) -CSD $(mvp)/tools/make-cfghl parasite \
+	    '@enable_parasites@' >> hamlog/config.hl ; \
 	  if test "x$(enable_proportional)" = "xyes" ; then \
 	    echo proportional_enabled. >> hamlog/config.hl ; \
 	  else \
@@ -427,6 +431,10 @@ makefile-vars.inc: \
 	  >> makefile-vars.inc
 	$(AM_V_at)echo OVERLAY_TOKS=`$(HAMLOG) 'T' \
 	  'overlay_fname(T)' \
+	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER)` \
+	  >> makefile-vars.inc
+	$(AM_V_at)echo PARASITES=`$(HAMLOG) 'P' \
+	  'parasite_available(P),want_parasite(P)' \
 	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER)` \
 	  >> makefile-vars.inc
 	$(AM_V_at)echo SHORT_STYLES=`$(HAMLOG) 'want_style_short(F,S,W,P)' \

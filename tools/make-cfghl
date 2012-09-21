@@ -35,6 +35,8 @@ if ($type eq "char") {
     $tail='C,P';
 } elsif ($type eq "feature") {
     $tail='F';
+} elsif ($type eq "parasite") {
+    $tail='P';
 } elsif ($type eq "style") {
     $tail='F,S,W,P';
 } else {

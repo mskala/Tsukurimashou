@@ -442,7 +442,7 @@ endtsuglyph;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% GENJI-MON
+% GENJIMON
 
 begingroup
 save rescale_slant;
@@ -451,548 +451,276 @@ rescale_slant:=0;
 % WARNING, setting rescale
 tsu_rescale_full;
 
-genji_grid:=150;
-if unknown genji_hw:
-  genji_hw:=tsu_brush_max/1.5;
-  if genji_hw>0.85: genji_hw:=0.85; fi;
-fi;
-if genji_outline: genji_hw:=1-genji_hw; fi;
-if unknown genji_rounded:
-  boolean genji_rounded;
-  genji_rounded:=false;
-fi;
-
-path genji_background;
-
-% gb(f) - start a line at the bottom in file f
-vardef gb(expr f,gp) =
-  begingroup
-    save myxf,mygl;
-    transform myxf;
-    path mygl;
-    myxf=identity scaled (genji_grid/2) shifted (whatever,whatever);
-    ((3-f)*2,4) transformed myxf=centre_pt;
-    if genji_rounded:
-      mygl:=((0,-genji_hw){right}..(genji_hw,0){up}..
-          {up}(gp shifted (0,1)){down}..
-          {down}(-genji_hw,0)..{right}cycle) transformed myxf;
-    else:
-      mygl:=((0,-genji_hw)--(genji_hw,-genji_hw)--
-          (gp shifted (0,1))--
-          (-genji_hw,-genji_hw)--cycle) transformed myxf;
-    fi;
-    if genji_outline:
-      unFill reverse mygl;
-      save mybk,x,y,old_dir;
-      path mybk;
-      pair old_dir;
-      mybk:=(0,genji_hw-1.99) transformed myxf;
-      old_dir:=right;
-      for i:=1 upto (length mygl)-1:
-        numeric x[],y[];
-        z1=(point i of mygl)-(precontrol i of mygl);
-        z2=(postcontrol i of mygl)-(point i of mygl);
-        z3=z1/abs(z1);
-        z4=z2/abs(z2);
-        if z3=z4:
-          mybk:=mybk{old_dir}..
-            {z3}((0.99-genji_hw)*genji_grid*(z4 rotated -90)
-                +point i of mygl);
-        else:
-          mybk:=mybk{old_dir}..
-            {z3}((0.99-genji_hw)*genji_grid*((z3+z4) rotated -90)
-                +point i of mygl);
-        fi;
-        if (((point i of mybk)-(point (i-1) of mybk)) dotprod z3<0)
-        or (((point i of mybk)-(point (i-1) of mybk)) dotprod old_dir<0):
-          mybk:=(subpath (0,i-1) of mybk)--(point i of mybk);
-        fi;
-        if (length mybk)>3:
-          z5=(subpath ((length mybk)-4,(length mybk)-3) of mybk)
-              intersectiontimes
-            (subpath ((length mybk)-1,(length mybk)) of mybk);
-          if x5>0:
-            mybk:=(subpath (0,(length mybk)-4+x5) of mybk)..
-              (subpath ((length mybk)-1+y5,infinity) of mybk)
-          fi;
-        fi;
-        if (length mybk)>3:
-          z6=(subpath ((length mybk)-4,(length mybk)-3) of mybk)
-              intersectiontimes
-            (subpath ((length mybk)-2,(length mybk)-1) of mybk);
-          if x6>0:
-            mybk:=(subpath (0,(length mybk)-4+x6) of mybk)..
-              (subpath ((length mybk)-2+y6,infinity) of mybk)
-          fi;
-        fi;
-        if (length mybk)>3:
-          z7=((point (length mybk)-4 of mybk)
-            -(precontrol (length mybk)-4 of mybk));
-          z8=((postcontrol (length mybk)-3 of mybk)
-            -(point (length mybk)-3 of mybk));
-          if (abs(z7)>0) and (abs(z8)>0):
-            if (z7/abs(z7)) dotprod (z8/abs(z8))<-0.1:
-              mybk:=(subpath (0,(length mybk)-4) of mybk)--
-                (subpath ((length mybk)-3,infinity) of mybk);
-            fi;
-          fi;
-        fi;
-        old_dir:=z4;
-      endfor;
-      mybk:=regenerate(mybk{old_dir}..{right}cycle);
-      dangerousFill mybk;
-    else:
-      Fill mygl;
-    fi;
-  endgroup;
-enddef;
-
-path ge_path[];
-ge_path[0]=(genji_hw,0)--(genji_hw,genji_hw)--
-  (-genji_hw,genji_hw)--(-genji_hw,0);
-ge_path[1]=(genji_hw,0){up}..(0,genji_hw){left}..
-  (-genji_hw,genji_hw)--(-genji_hw,0);
-ge_path[2]=(genji_hw,0)--(genji_hw,genji_hw)--
-  (0,genji_hw){left}..{down}(-genji_hw,0);
-ge_path[3]=(genji_hw,0){up}..(0,genji_hw){left}..{down}(-genji_hw,0);
-
-% ge(t) - end a line, style t
-vardef ge(expr t) =
-  if genji_rounded:
-    ((genji_hw,0)..(ge_path[t] shifted (0,1))..(-genji_hw,0))
-  else:
-    ((genji_hw,0)..(ge_path[0] shifted (0,1))..(-genji_hw,0))
-  fi
-enddef;
-
-% gf(d) - go forward d steps
-vardef gf(expr d,gp) =
-  ((genji_hw,0)--(gp shifted (0,2*d))--(-genji_hw,0))
-enddef;
-
-% gr(r) - turn to right, radius r
-vardef gr(expr r,gp) =
-  if genji_rounded and (r>=0):
-    ((genji_hw,0){up}..
-     (gp shifted (0,r+1) rotated -90 shifted (0,r+1))..
-     {down}(-genji_hw,0))
-  else:
-    ((genji_hw,0)--(genji_hw,max(r,0)+1-genji_hw)--
-     (gp shifted (0,max(r,0)+1) rotated -90 shifted (0,max(r,0)+1))--
-     (-genji_hw,max(r,0)+1+genji_hw)--(-genji_hw,0))
-  fi
-enddef;
-
-% gl(r) - turn to left, radius r
-vardef gl(expr r,gp) =
-  if genji_rounded and (r>=0):
-    ((genji_hw,0)..
-     (gp shifted (0,r+1) rotated 90 shifted (0,r+1))..
-     (-genji_hw,0))
-  else:
-    ((genji_hw,0)--(genji_hw,max(r,0)+1+genji_hw)--
-     (gp shifted (0,max(r,0)+1) rotated 90 shifted (0,max(r,0)+1))--
-     (-genji_hw,max(r,0)+1-genji_hw)--(-genji_hw,0))
-  fi
-enddef;
-
-% gt(gpa,gpb) - make a T-junction
-vardef gt(expr gpa,gpb) =
-  ((genji_hw,0)--(genji_hw,1-genji_hw)--
-   (gpa shifted (0,1) rotated -90 shifted (0,1))--
-   (genji_hw,1+genji_hw)--(gpb shifted (0,2))--(-genji_hw,0))
-enddef;
-
-% gx(gpa,gpb,gpc) - make an X-junction
-vardef gx(expr gpa,gpb,gpc) =
-  ((genji_hw,0)--(genji_hw,1-genji_hw)--
-   (gpa shifted (0,1) rotated -90 shifted (0,1))--
-   (genji_hw,1+genji_hw)--(gpb shifted (0,2))--(-genji_hw,1+genji_hw)--
-   (gpc shifted (0,1) rotated 90 shifted (0,1))--
-   (-genji_hw,1-genji_hw)--(-genji_hw,0))
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+input genjimon.mp;
 
 % #1 Kiritsubo
 begintsuglyph("genjimon01",193);
-  gb(1,gf(2.5,gr(1,gr(1,gf(2.5,ge(3))))));
-  gb(2,gf(2,ge(3)));
-  gb(4,gf(3,gr(0,gr(0,gf(3,ge(3))))));
+  genjimon.kiritsubo;
 endtsuglyph;
 
 % #2 Hahakigi
 begintsuglyph("genjimon02",194);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,ge(3)));
-  gb(3,gf(3,ge(3)));
-  gb(4,gf(3,ge(3)));
-  gb(5,gf(3,ge(3)));
+  genjimon.hahakigi;
 endtsuglyph;
 
 % #3 Utsusemi
 begintsuglyph("genjimon03",195);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,ge(3)));
-  gb(3,gf(3,ge(3)));
-  gb(4,gf(3,gr(0,gr(0,gf(3,ge(3))))));
+  genjimon.utsusemi;
 endtsuglyph;
 
 % #4 Yuugao
 begintsuglyph("genjimon04",196);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,ge(3)));
-  gb(3,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(5,gf(3,ge(3)));
+  genjimon.yuugao;
 endtsuglyph;
 
 % #5 Wakamurasaki
 begintsuglyph("genjimon05",197);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(4,gf(3,gr(0,gr(0,gf(3,ge(3))))));
+  genjimon.wakamurasaki;
 endtsuglyph;
 
 % #6 Suetsumuhana
 begintsuglyph("genjimon06",198);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gt(gf(3,ge(3)),
-    gr(0,gf(3,ge(3))))))));
-  gb(5,gf(3,ge(3)));
+  genjimon.suetsumuhana;
 endtsuglyph;
 
 % #7 Momiji no Ga
 begintsuglyph("genjimon07",199);
-  gb(1,gf(3,ge(3)));
-  gb(4,gf(2,ge(1)));
-  gb(2,gf(3,gr(0,gt(gf(3,ge(3)),gf(0.5,gr(1,gf(2.5,ge(3))))))));
+  genjimon.momiji_no_ga;
 endtsuglyph;
 
 % #8 Hana no En
 begintsuglyph("genjimon08",200);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,ge(3)));
-  gb(3,gf(2.5,gr(1,gr(1,gf(2.5,ge(3))))));
-  gb(4,gf(2,ge(3)));
+  genjimon.hana_no_en;
 endtsuglyph;
 
 % #9 Aoi
 begintsuglyph("genjimon09",201);
-  gb(1,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(3,gf(3,ge(3)));
-  gb(4,gf(3,ge(3)));
-  gb(5,gf(3,ge(3)));
+  genjimon.aoi;
 endtsuglyph;
 
 % #10 Sakaki
 begintsuglyph("genjimon10",202);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gr(0,gf(3,ge(3)))))));
-  gb(4,gf(3,gr(0,gr(0,gf(3,ge(3))))));
+  genjimon.sakaki;
 endtsuglyph;
 
 % #11 Hana Chiru Sato
 begintsuglyph("genjimon11",203);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(2,gr(2,gr(0,gx(gl(0,gf(2,ge(3))),
-    gf(2,ge(3)),gr(0,gf(2,ge(3))))))));
+  genjimon.hana_chiru_sato;
 endtsuglyph;
 
 % #12 Suma
 begintsuglyph("genjimon12",204);
-  gb(1,gf(2,gr(0,gx(gf(2,ge(3)),gt(gf(2,ge(3)),
-    gr(0,gf(2,ge(3)))),gr(0,gf(1,gr(2,gf(2,ge(3)))))))));
+  genjimon.suma;
 endtsuglyph;
 
 % #13 Akashi
 begintsuglyph("genjimon13",205);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(4,gf(3,ge(3)));
-  gb(5,gf(3,ge(3)));
+  genjimon.akashi;
 endtsuglyph;
 
 % #14 Miotsukushi
 begintsuglyph("genjimon14",206);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(2.5,gr(1,gf(0.5,gt(gf(3,ge(3)),gr(0,gf(3,ge(3))))))));
-  gb(3,gf(2,ge(2)));
+  genjimon.miotsukushi;
 endtsuglyph;
 
 % #15 Yomogyuu
 begintsuglyph("genjimon15",207);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gr(0,gf(3,ge(3)))))));
-  gb(4,gf(3,ge(3)));
-  gb(5,gf(3,ge(3)));
+  genjimon.yomogyuu;
 endtsuglyph;
 
 % #16 Sekiya
 begintsuglyph("genjimon16",208);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,gr(0,gt(gf(3,ge(3)),gr(0,gf(3,ge(3)))))));
-  gb(5,gf(3,ge(3)));
+  genjimon.sekiya;
 endtsuglyph;
 
 % #17 Eawase
 begintsuglyph("genjimon17",209);
-  gb(1,gf(2,gr(0,gx(gf(2,ge(3)),gr(-1,gf(2,ge(3))),
-    gr(0,gf(1.5,gr(1,gf(2.5,ge(3)))))))));
-  gb(4,gf(2,ge(1)));
+  genjimon.eawase;
 endtsuglyph;
 
 % #18 Matsukaze
 begintsuglyph("genjimon18",210);
-  gb(1,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(3,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(5,gf(3,ge(3)));
+  genjimon.matsukaze;
 endtsuglyph;
 
 % #19 Usugumo
 begintsuglyph("genjimon19",211);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,gr(0,gt(gf(3,ge(3)),gt(gf(3,ge(3)),
-    gr(0,gf(3,ge(3))))))));
+  genjimon.usugumo;
 endtsuglyph;
 
 % #20 Asagao
 begintsuglyph("genjimon20",212);
-  gb(1,gf(2.5,gr(1,gf(0.5,gt(gf(3,ge(3)),gr(0,gf(3,ge(3))))))));
-  gb(2,gf(2,ge(2)));
-  gb(5,gf(3,ge(3)));
+  genjimon.asagao;
 endtsuglyph;
 
 % #21 Otome
 begintsuglyph("genjimon21",213);
-  gb(1,gf(2.5,gr(1,gr(1,gf(2.5,ge(3))))));
-  gb(2,gf(2,ge(3)));
-  gb(4,gf(3,ge(3)));
-  gb(5,gf(3,ge(3)));
+  genjimon.otome;
 endtsuglyph;
 
 % #22 Tamakazura
 begintsuglyph("genjimon22",214);
-  gb(1,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(3,gf(3,gr(0,gt(gf(3,ge(3)),gr(0,gf(3,ge(3)))))));
+  genjimon.tamakazura;
 endtsuglyph;
 
 % #23 Hatsune
 begintsuglyph("genjimon23",215);
-  gb(1,gf(2,gr(0,gx(gf(2,ge(3)),gr(0,gf(2,ge(3))),
-    gr(0,gr(2,gf(2,ge(3))))))));
-  gb(5,gf(3,ge(3)));
+  genjimon.hatsune;
 endtsuglyph;
 
 % #24 Kochou
 begintsuglyph("genjimon24",216);
-  gb(1,gf(2,gr(2,gf(1,gr(0,gx(reverse gt(gf(2,ge(3)),
-    gr(0,gf(2,ge(3)))) xscaled -1,gf(2,ge(3)),
-    gr(0,gf(2,ge(3)))))))));
+  genjimon.kochou;
 endtsuglyph;
 
 % #25 Hotaru
 begintsuglyph("genjimon25",217);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gf(0.5,gr(1,gf(2.5,ge(3))))))));
-  gb(3,gf(2,ge(1)));
-  gb(5,gf(3,ge(3)));
+  genjimon.hotaru;
 endtsuglyph;
 
 % #26 Tokonatsu
 begintsuglyph("genjimon26",218);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(3,ge(3)));
-  gb(3,gf(3,gr(0,gt(gf(3,ge(3)),gr(0,gf(3,ge(3)))))));
+  genjimon.tokonatsu;
 endtsuglyph;
 
 % #27 Kagaribi
 begintsuglyph("genjimon27",219);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(2.5,gr(1,gr(1,gf(2.5,ge(3))))));
-  gb(3,gf(2,ge(3)));
-  gb(5,gf(3,ge(3)));
+  genjimon.kagaribi;
 endtsuglyph;
 
 % #28 Nowaki
 begintsuglyph("genjimon28",220);
-  gb(1,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(3,gf(3,ge(3)));
-  gb(4,gf(3,gr(0,gr(0,gf(3,ge(3))))));
+  genjimon.nowaki;
 endtsuglyph;
 
 % #29 Miyuki
 begintsuglyph("genjimon29",221);
-  gb(1,gf(2,gr(2,gr(0,gx(gl(0,gf(2,ge(3))),
-    gf(2,ge(3)),gt(gf(2,ge(3)),gr(0,gf(2,ge(3)))))))));
+  genjimon.miyuki;
 endtsuglyph;
 
 % #30 Fujibakama
 begintsuglyph("genjimon30",222);
-  gb(1,gf(2.5,gr(1,gf(1,gr(1,gf(2.5,ge(3)))))));
-  gb(2,gf(2,ge(2)));
-  gb(3,gf(2,ge(1)));
-  gb(5,gf(3,ge(3)));
+  genjimon.fujibakama;
 endtsuglyph;
 
 % #31 Makibashira
 begintsuglyph("genjimon31",223);
-  gb(1,gf(1.5,gr(3,gr(3,gf(1.5,ge(3))))));
-  gb(2,gf(1.5,gr(1,gr(1,gf(1.5,ge(3))))));
-  gb(3,gf(1,ge(3)));
+  genjimon.makibashira;
 endtsuglyph;
 
 % #32 Umegae
 begintsuglyph("genjimon32",224);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gt(gf(3,ge(3)),gf(0.5,
-    gr(1,gf(2.5,ge(3)))))))));
-  gb(4,gf(2,ge(1)));
+  genjimon.umegae;
 endtsuglyph;
 
 % #33 Fuji no Uraba
 begintsuglyph("genjimon33",225);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(2,gr(2,gr(2,gf(2,ge(3))))));
-  gb(3,gf(2,gr(0,gr(0,gf(2,ge(3))))));
+  genjimon.fuji_no_uraba;
 endtsuglyph;
 
 % #34 Wakana no Jou
 begintsuglyph("genjimon34",226);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gf(1,
-    gr(2,gf(2,ge(3))))))));
-  gb(3,gf(2,gr(-1,gr(0,gf(2,ge(3))))));
+  genjimon.wakana_no_jou;
 endtsuglyph;
 
 % #35 Wakana no Ge
 begintsuglyph("genjimon35",227);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gf(1,
-    gr(0,gx(gl(-1,gf(2,ge(3))),gf(2,ge(3)),gr(0,gf(2,ge(3))))))))));
+  genjimon.wakana_no_ge;
 endtsuglyph;
 
 % #36 Kashiwagi
 begintsuglyph("genjimon36",228);
-  gb(1,gf(2.5,gr(1,gf(0.5,gt(gf(3,ge(3)),
-    gf(0.5,gr(1,gf(2.5,ge(3)))))))));
-  gb(2,gf(2,ge(2)));
-  gb(4,gf(2,ge(1)));
+  genjimon.kashiwagi;
 endtsuglyph;
 
 % #37 Yokobue
 begintsuglyph("genjimon37",229);
-  gb(1,gf(2.5,gr(1,gf(1.5,gt(gf(3,ge(3)),
-    gr(0,gf(3,ge(3))))))));
-  gb(2,gf(2,ge(2)));
-  gb(3,gf(2,ge(0)));
+  genjimon.yokobue;
 endtsuglyph;
 
 % #38 Suzumushi
 begintsuglyph("genjimon38",230);
-  gb(1,gf(2.5,gr(1,gf(1.5,gr(2,gf(2,ge(3)))))));
-  gb(2,gf(2,ge(2)));
-  gb(3,gf(2,gr(-1,gr(0,gf(2,ge(3))))));
+  genjimon.suzumushi;
 endtsuglyph;
 
 % #39 Yuugiri
 begintsuglyph("genjimon39",231);
-  gb(1,gf(1.5,gr(1,gf(0.5,gx(gf(2,ge(3)),gr(0,gf(2,ge(3))),
-    gr(0,gr(2,gf(2,ge(3)))))))));
-  gb(2,gf(1,ge(2)));
+  genjimon.yuugiri;
 endtsuglyph;
 
 % #40 Minori
 begintsuglyph("genjimon40",232);
-  gb(1,gf(1.5,gr(3,gf(0.5,gr(0,gx(gf(0.5,gl(1,gf(1.5,ge(3)))),
-    gf(2,ge(3)),gr(0,gf(2,ge(3)))))))));
-  gb(3,gf(1,ge(2)));
+  genjimon.minori;
 endtsuglyph;
 
 % #41 Maboroshi
 begintsuglyph("genjimon41",233);
-  gb(1,gf(2.5,gr(1,gf(2,gr(1,gf(2.5,ge(3)))))));
-  gb(2,gf(2,ge(2)));
-  gb(3,gf(2,ge(0)));
-  gb(4,gf(2,ge(1)));
+  genjimon.maboroshi;
 endtsuglyph;
 
 % #42 Ninounomiya
 begintsuglyph("genjimon42",234);
-  gb(1,gf(2,gr(0,gt(gf(2,ge(3)),gx(gf(2,ge(3)),gr(0,gf(2,ge(3))),
-    gr(0,gr(2,gf(2,ge(3)))))))));
+  genjimon.ninounomiya;
 endtsuglyph;
 
 % #43 Koubai
 begintsuglyph("genjimon43",235);
-  gb(1,gf(3,ge(3)));
-  gb(2,gf(2.5,gr(1,gf(1,gr(1,gf(2.5,ge(3)))))));
-  gb(3,gf(2,ge(2)));
-  gb(4,gf(2,ge(1)));
+  genjimon.koubai;
 endtsuglyph;
 
 % #44 Takegawa
 begintsuglyph("genjimon44",236);
-  gb(1,gf(2,gr(2,gf(1,gr(2,gf(2,ge(3)))))));
-  gb(2,gf(2,gr(0,gt(gf(2,ge(3)),gr(0,gf(2,ge(3)))))));
+  genjimon.takegawa;
 endtsuglyph;
 
 % #45 Hashihime
 begintsuglyph("genjimon45",237);
-  gb(1,gf(2.5,gr(1,gf(0.5,gt(gf(3,ge(3)),gt(gf(3,ge(3)),
-    gr(0,gf(3,ge(3)))))))));
-  gb(2,gf(2,ge(2)));
+  genjimon.hashihime;
 endtsuglyph;
 
 % #46 Shii ga Moto
 begintsuglyph("genjimon46",238);
-  gb(1,gf(2,gr(2,gr(2,gf(2,ge(3))))));
-  gb(2,gf(2,gr(0,gr(0,gf(2,ge(3))))));
-  gb(5,gf(3,ge(3)));
+  genjimon.shii_ga_moto;
 endtsuglyph;
 
 % #47 Agemaki
 begintsuglyph("genjimon47",239);
-  gb(1,gf(2,gr(2,gf(1,gt(gf(3,ge(3)),gr(0,gf(3,ge(3))))))));
-  gb(2,gf(2,gr(0,gr(-1,gf(2,ge(3))))));
+  genjimon.agemaki;
 endtsuglyph;
 
 % #48 Sawarabi
 begintsuglyph("genjimon48",240);
-  gb(1,gf(3,gr(0,gr(0,gf(3,ge(3))))));
-  gb(3,gf(2.5,gr(1,gr(1,gf(2.5,ge(3))))));
-  gb(4,gf(2,ge(3)));
+  genjimon.sawarabi;
 endtsuglyph;
 
 % #49 Yadorigi
 begintsuglyph("genjimon49",241);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gf(1,gt(gf(3,ge(3)),
-    gr(0,gf(3,ge(3)))))))));
-  gb(3,gf(2,ge(0)));
+  genjimon.yadorigi;
 endtsuglyph;
 
 % #50 Azumaya
 begintsuglyph("genjimon50",242);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gf(1.5,gr(1,gf(2.5,ge(3))))))));
-  gb(3,gf(2,ge(0)));
-  gb(4,gf(2,ge(1)));
+  genjimon.azumaya;
 endtsuglyph;
 
 % #51 Ukifune
 begintsuglyph("genjimon51",243);
-  gb(1,gf(2,gr(2,gf(1,gf(0.5,gr(1,gf(2.5,ge(3))))))));
-  gb(2,gf(2,gr(0,gr(-1,gf(2,ge(3))))));
-  gb(4,gf(2,ge(1)));
+  genjimon.ukifune;
 endtsuglyph;
 
 % #52 Kagerou
 begintsuglyph("genjimon52",244);
-  gb(2,gf(2,gr(2,gt(gx(gl(0,gf(2,ge(3))),
-    gf(2,ge(3)),gr(0,gf(2,ge(3)))),gr(2,gf(2,ge(3)))))));
+  genjimon.kagerou;
 endtsuglyph;
 
 % #53 Tenarai
 begintsuglyph("genjimon53",245);
-  gb(1,gf(3,gr(0,gt(gf(3,ge(3)),gt(gf(3,ge(3)),gt(gf(3,ge(3)),
-    gr(0,gf(3,ge(3)))))))));
+  genjimon.tenarai;
 endtsuglyph;
 
 % #54 Yume no Ukihashi
 begintsuglyph("genjimon54",246);
-  gb(1,gf(3,gr(0,gr(0,gf(3,gl(0,gl(0,gf(3,gr(0,gr(0,gf(3,
-    gl(0,gl(0,gf(3,ge(3)))))))))))))));
+  genjimon.yume_no_ukihashi;
 endtsuglyph;
 
 endgroup;

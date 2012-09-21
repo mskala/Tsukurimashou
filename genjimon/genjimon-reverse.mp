@@ -1,6 +1,6 @@
 %
 % Genjimon Reverse font driver file
-% Copyright (C) 2010  Matthew Skala
+% Copyright (C) 2010, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-input type1.mp;
+input fntbase.mp;
 
 boolean genji_outline;
 genji_outline:=true;
 brush_max:=0.5;
 
-input genjimon.mp;
+input genfont.mp;

@@ -159,6 +159,9 @@ AS_HELP_STRING([--$1dir=DIR],m4_expand([$4 @<:@m4_toupper([$2])/$3@:>@]))\
 # Add our new directories
 TSUKU_ADD_INSTDIR_OPTION([font],[datarootdir],[fonts],[fonts],
   [f],[obsolete gas option])
+TSUKU_ADD_INSTDIR_OPTION([ttf],[fontdir],[TTF],
+  [TrueType fonts (parasite only)],
+  [tt],[ --prefix ])
 TSUKU_ADD_INSTDIR_OPTION([otf],[fontdir],[OTF],[OpenType fonts],
   [ot],[ --prefix ])
 
@@ -198,7 +201,7 @@ AM_INIT_AUTOMAKE([foreign check-news dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1595 2012-07-31 19:56:54Z mskala $])
+AC_REVISION([$Id: configure.ac 1698 2012-09-21 17:20:23Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["June 18, 2012"])
 AM_SILENT_RULES
@@ -316,6 +319,11 @@ AC_ARG_ENABLE([ot-features],
     [],
     [ot_feature_default_warn=yes
      enable_ot_features='all,-pfed'])
+AC_ARG_ENABLE([parasites],
+  [AS_HELP_STRING([--enable-parasites[=TAGS]],
+    [Parasite package(s) to build [none]])],
+    [],
+    [enable_parasites='none'])
 AC_ARG_ENABLE([proofs],
   [AS_HELP_STRING([--enable-proofs=[yes|no|book]],
     [proofs and pretty-printed source [no]])],
@@ -357,6 +365,10 @@ AM_CONDITIONAL([COND_DOCS],[test '!' "$enable_docs" = no])
 AC_SUBST([enable_docs])
 #
 AC_SUBST([enable_ot_features])
+#
+AC_SUBST([enable_parasites])
+AS_IF([test "x$enable_parasites" = "xnone"],[],
+      [AC_CONFIG_SUBDIRS([genjimon])])
 #
 AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AS_IF([test "$with_kanjidic2" = "auto"],[
@@ -707,6 +719,8 @@ AS_ECHO_N(["Type style selection   "])
 TSU_COLOURISE([$enable_styles],[6])AS_ECHO([])
 AS_ECHO_N(["OpenType features      "])
 TSU_COLOURISE([$enable_ot_features],[6])AS_ECHO([])
+AS_ECHO_N(["Parasite packages      "])
+TSU_COLOURISE([$enable_parasites],[6])AS_ECHO([])
 
 #
 # Warn about missing prerequisites

@@ -385,6 +385,17 @@ char_unavailable(_C,_P).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% configuration - parasites
+
+cfg_parasite(all,P):-parasite_available(P).
+cfg_parasite(none,_P):-fail.
+
+cfg_parasite(T,P):- =(T,P),parasite_available(P).
+
+parasite_available(genjimon).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % configuration - pages
 
 % pages A0 through DF are only for Jieubsida

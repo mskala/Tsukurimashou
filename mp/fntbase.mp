@@ -302,6 +302,56 @@ vardef insert_nodes(expr p)(text t) =
  p_
 enddef;
 
+% get rid of degeneracies
+def regenerate(expr p) =
+  begingroup
+    save q;
+    path q;
+    for t=1 step 1 until length p:
+      if abs((point t of p)-(point (t-1) of p))>3:
+        if unknown q:
+          q:=subpath (t-1,t) of p;
+        elseif length(q)=1:
+          q:=(point 0 of q)..
+              controls (postcontrol 0 of q) and (precontrol 1 of q)..
+            (0.5[point 1 of q,point t-1 of p])..
+              controls (postcontrol t-1 of p) and (precontrol t of p)..
+            (point t of p);
+        else:
+          q:=(subpath (0,length(q)-1) of q)..
+              controls (postcontrol length(q)-1 of q)
+                and (precontrol length(q) of q)..
+            (0.5[point length(q) of q,point t-1 of p])..
+              controls (postcontrol t-1 of p) and (precontrol t of p)..
+            (point t of p);
+        fi;
+      fi;
+    endfor;
+    if cycle p:
+      q:=subpath (0,length(q)-1) of q..
+           controls (postcontrol length(q)-1 of q)
+             and (precontrol length(q) of q)..
+         cycle;
+    fi;
+    q
+  endgroup
+enddef;
+
+% like Fill, but doesn't complain about turning number
+def dangerousFill text glist =
+ begingroup
+  save h_; path h_;
+  for g_:=glist:
+   h_:=g_ start.default; % JMN's suggestion
+   if glyph_usage div store = 1: % storing
+    glyph_stored.glyph_name[incr glyph_stored.glyph_name.num]=h_;
+   fi
+   glyph_list[incr glyph_list.num]:=round_node_values(h_ italicized);
+   update_glyph_bb(glyph_list[glyph_list.num]);
+  endfor;
+ endgroup
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % PREFIX AND SUFFIX HANDLING

@@ -1,6 +1,6 @@
 %
-% Genjimon Black font driver file
-% Copyright (C) 2010, 2012  Matthew Skala
+% Genjimon Round Outline font driver file
+% Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -31,7 +31,10 @@
 input fntbase.mp;
 
 boolean genji_outline;
-genji_outline:=false;
-brush_max:=1.35;
+genji_outline:=true;
+genji_hw:=0.2;
+brush_max:=0.80;
+boolean genji_rounded;
+genji_rounded:=true;
 
 input genfont.mp;

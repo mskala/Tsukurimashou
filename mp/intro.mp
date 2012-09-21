@@ -65,56 +65,6 @@ input obstack.mp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% get rid of degeneracies
-def regenerate(expr p) =
-  begingroup
-    save q;
-    path q;
-    for t=1 step 1 until length p:
-      if abs((point t of p)-(point (t-1) of p))>3:
-        if unknown q:
-          q:=subpath (t-1,t) of p;
-        elseif length(q)=1:
-          q:=(point 0 of q)..
-              controls (postcontrol 0 of q) and (precontrol 1 of q)..
-            (0.5[point 1 of q,point t-1 of p])..
-              controls (postcontrol t-1 of p) and (precontrol t of p)..
-            (point t of p);
-        else:
-          q:=(subpath (0,length(q)-1) of q)..
-              controls (postcontrol length(q)-1 of q)
-                and (precontrol length(q) of q)..
-            (0.5[point length(q) of q,point t-1 of p])..
-              controls (postcontrol t-1 of p) and (precontrol t of p)..
-            (point t of p);
-        fi;
-      fi;
-    endfor;
-    if cycle p:
-      q:=subpath (0,length(q)-1) of q..
-           controls (postcontrol length(q)-1 of q)
-             and (precontrol length(q) of q)..
-         cycle;
-    fi;
-    q
-  endgroup
-enddef;
-
-% like Fill, but doesn't complain about turning number
-def dangerousFill text glist =
- begingroup
-  save h_; path h_;
-  for g_:=glist:
-   h_:=g_ start.default; % JMN's suggestion
-   if glyph_usage div store = 1: % storing
-    glyph_stored.glyph_name[incr glyph_stored.glyph_name.num]=h_;
-   fi
-   glyph_list[incr glyph_list.num]:=round_node_values(h_ italicized);
-   update_glyph_bb(glyph_list[glyph_list.num]);
-  endfor;
- endgroup
-enddef;
-
 default_nib:=fix_nib(100,100,0);
 
 def begintsuglyph(expr name,code) =
@@ -473,6 +423,22 @@ vardef segment_inflections(expr p) =
   fi
 enddef;
 
+% version of insert_nodes modified to *always* insert, which is needed
+% to keep node numbers in sync on pen-size-control paths
+vardef really_insert_nodes(expr p)(text t) =
+ save j_, p_, s_, t_; path p_; p_:=p;
+ t_:=0;
+ for i_:=t:
+   t_[incr t_]=arclength(subpath(0,i_ mod length(p_)) of p_);
+ endfor
+ for i_:=1 upto t_:
+  s_:=arctime t_[i_] of p_;
+  p_:=(subpath (0, s_) of p_) && (subpath (s_,length p_) of p_)
+    if cycle p_: & cycle fi;
+ endfor;
+ p_
+enddef;
+
 % render a single segment - pulled out to make it easier to override
 def tsu_render_segment(expr i,p,q) =
   if do_alternation and obstackba.boalternate[i]:
@@ -592,8 +558,8 @@ def tsu_render_in_circle(expr fitcircle) =
                  numeric x[],y[];
                  z10=segment_inflections(subpath (l,l+1) of p);
                  if known x10:
-                   p:=insert_nodes(p)(l+x10);
-                   q:=subpath(0,l+x10) of q & subpath(l+x10,infinity) of q;
+                   p:=really_insert_nodes(p)(l+x10);
+                   q:=really_insert_nodes(q)(l+x10);
                    for ll=length p step -1 until l+1:
                      ltime[ll]:=ltime[ll-1];
                    endfor;
@@ -603,11 +569,11 @@ def tsu_render_in_circle(expr fitcircle) =
                    z1=(postcontrol l of p)/100;
                    z2=(precontrol (l+1) of p)/100;
                    z3=(point (l+1) of p)/100;
-                   if if abs(z2-z1)>2: ((z1-z0) dotprod (z3-z2))
+                   if if abs(z2-z1)>0.1: ((z1-z0) dotprod (z3-z2))
                                       /((z2-z1) dotprod (z2-z1))
                       else: 1 fi<0.5:
-                     p:=insert_nodes(p)(l+0.5);
-                     q:=subpath(0,l+0.5) of q & subpath(l+0.5,infinity) of q;
+                     p:=really_insert_nodes(p)(l+0.5);
+                     q:=really_insert_nodes(q)(l+0.5);
                      for ll=length p step -1 until l+1:
                        ltime[ll]:=ltime[ll-1];
                      endfor;
