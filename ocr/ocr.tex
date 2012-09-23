@@ -1,0 +1,182 @@
+\documentclass{article}
+
+\usepackage{fontspec}
+\usepackage[margin=1.25in,top=0.85in]{geometry}
+\usepackage{wrapfig}
+\usepackage{xltxtra}
+
+\usepackage{hyperref}
+
+\defaultfontfeatures{WordSpace={1,0,0},PunctuationSpace={3}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+\raggedright
+
+\title{OCR-A and OCR-B fonts\\in MetaType1 format}
+\author{Matthew Skala}
+
+\begin{document}
+\setmainfont{OCRB.otf}
+\setmonofont{OCRB.otf}
+
+\maketitle
+
+\section{Introduction}
+
+In the mid-2000s I had a reason to need the fonts "OCR A" and "OCR B," and I
+found it much more difficult than it should have been to obtain copies and
+get them working with my software.  There are commercial versions on the
+market; but these fonts, being defined in and required by public standards
+documents, really ought to be available in the free world.  There were free
+versions available but only in the semi-obsolete MetaFont format, designed
+to produce bitmap output for use with TeX\@.  I ended up getting a bunch of
+conversion and tracing software and semi-manually converting the fonts to
+TrueType format.  The results were just barely good enough for my own
+purposes; but I posted them on my Web site anyway just in case they might be
+of use to others.
+
+It turns out that in the years since then, those fonts have been among the
+most-requested resources on my Web site.  Dozens if not hundreds of people
+have downloaded them and used them - and suffered the consequences of the
+crummy conversion job, and complained about the bad encoding, and so on.  In
+the time since then I've also learned a lot more about how fonts work, and
+have designed a few of my own.  I'm no longer thrilled to have my name on
+the old, poor-quality converted OCR fonts; and with my improved knowledge,
+I'm now in a position to write better ones.
+
+This package contains those better fonts.  More work still needs to be done,
+but it's already a significant improvement on the older packages.  In this
+version I've also merged the OCR A and OCR B packages into one, and updated
+the description of licensing terms to take into account Norbert Schwarz's
+gracious release of his work to commercial users (which had also been a
+frequently-asked question among users of my older packages).
+
+Each font is provided in three ready-made forms:  PostScript (.pfb and .afm
+files), TrueType (.ttf files), and OpenType (.otf files).  Almost any
+computer typesetting or word processing system should be able to read at
+least one of these formats.  OpenType is probably best if you have a choice.
+
+Please note that by definition these fonts have limited glyph sets - and
+if you actually want to use these fonts for OCR applications (their original
+purpose) then you should be very careful about which glyphs you use, because
+both typefaces have been extended by others (not me) to contain nonstandard
+glyphs beyond the official ones.
+
+Please note that although the Metafont definitions for both OCR A and OCR B
+purport to support "optical size," they actually just scale the outlines
+linearly for the different sizes, so when converting to a scaleable format
+there's no point treating the different sizes separately.
+
+My email address is \url{mailto:mskala@ansuz.sooke.bc.ca}~.  The Web point of
+contact for this and my other font projects is (English language)
+\url{http://ansuz.sooke.bc.ca/page/fonts} and (Japanese language)
+\url{http://ansuz.sooke.bc.ca/page/fonts-jp/_1}~.
+
+\setmainfont{OCRA.otf}
+\setmonofont{OCRA.otf}
+\section{OCR A}
+
+Text in this section of this document is set in OCR A; the other sections
+are OCR B.
+
+OCR A is the standard font for the human-readable ISBN printed above the bar
+code on most books.  It has an old-fashioned computerish feel, evoking the
+mythos of "big iron" data processing for which it was originally designed.
+
+The version in this package originates with ANSI Standard X3.17-1977,
+approved January 20, 1977.  Tor Lillqvist of the Technical Research Centre
+of Finland created a Metafont definition and added some semi-official
+characters for writing Nordic languages, based on an appendix of the
+standard.  There is a "bang path" email address (no longer routable on the
+vast majority of Internet email systems) for Lillqvist in the source code
+comments, but little other information about this stage of the font's
+development is available to me.  Richard B. Wales of UCLA picked up the
+project in 1988 and his copyright assertion and notes are in the code
+comments as well.  It is not clear to me how much of the original content of
+the font actually belongs to Wales.  In his copyright notice he states that
+the font may be used freely, but cannot be distributed for profit (see the
+notices at the start of msk-ocra.mp for details).
+I released an earlier version in 2006
+but that is now obsolete; the present version is newly derived in 2011 from
+the Wales version.  I make no copyright claim on it myself.
+
+The Metafont package I worked from is available at
+\url{http://www.ctan.org/tex-archive/fonts/ocr-a}~.
+
+This font includes alternate versions for some characters.  The alternates
+are available in the OpenType version via the "stylistic set" and "all
+alternates" features.  In each case I have let the default versions of the
+characters be the ones that were default in the Wales version; in some cases
+those are actually the more recently revised versions of the glyphs.  See
+the source code or experiment with the OpenType features for more
+information.  The alternates should also be available through the TrueType
+and PostScript versions, but I can't comment on exactly how to access them.
+
+\setmainfont{OCRB.otf}
+\setmonofont{OCRB.otf}
+\section{OCR B}
+
+OCR B is the standard font for the human-readable number printed along the
+bottom edge of a UPC/EAN bar code.  That means that a standard book, if it's
+really using the correct fonts, needs both OCR A and OCR B in its bar code
+block.  Many UPC codes do not actually use OCR B, however; often they fudge
+it with Courier, Helvetica, or even Arial.  Unlike the ISBN (which is
+human-readable but meant to also be machine-readable), the number
+along the bottom of the bar code is only for human beings, and a computer
+would only scan the bars themselves.
+
+The version in this package descends from a set of Metafont definitions by
+Norbert Schwarz of Ruhr-Universitaet Bochum, bearing dates ranging from 1986
+to 2010.  He originally distributed it under a "non-commercial use only"
+restriction but has since released it for unrestricted use and distribution. 
+See the README file for more details.
+
+The Metafont definitions include a number of variants for things like
+"sharp ends" and "reverse video." It's not clear how valuable those
+alternate fonts are; they aren't suitable for actual OCR use, and there are
+some problems in the outlines (for instance, with poor overlapping of
+sharp-ended strokes) that make them less than optimal for human use too. 
+Making the alternate versions work with MetaType1 is going to require a fair
+bit of effort working around bugs in MetaType1 and Fontforge, as well as
+correcting the problems in the originals; I plan to do that eventually, but
+it's not done in this version.
+
+Just as with the OCR A font, there are alternate glyphs for a
+few characters.  In the OpenType version, these are available through the
+"stylistic set" and "all alternates" features.
+
+The current version of the Schwarz package is available from CTAN at this
+address:  \url{http://www.ctan.org/tex-archive/fonts/ocr-b}
+
+There is also a package by Zdenˇ\hspace{-0.1in}ek Wagner that is similar
+in general nature to this one:
+\url{http://www.ctan.org/tex-archive/fonts/ocr-b-outline}
+
+Like my earlier package, Wagner's was derived by tracing the outlines from
+the Metafont originals in a semi-automated way.  The fonts in my current
+package are probably cleaner.
+
+\section{Compiling the fonts}
+
+If you want to recompile these fonts, you will need MetaType1, Fontforge
+(which in turn should be compiled with the "--enable-longdouble"
+configuration option), GNU Make, and a command-line environment that
+reasonably resembles Slackware Linux.  Current Mac installations should
+work.  To recompile this document, you will also need XeLaTeX\@.  Once all the
+needed software is in place, it should work by just typing "make".  The
+compilation process will produce a large number of error messages; most of
+these are associated with bugs in Fontforge's spline geometry code, and are
+unavoidable.
+
+Most of the MetaType1 source code files in this package
+have had their names changed by prefixing "msk-"; that is to prevent a
+collision with the filenames used by the original TeX packages.  If, like
+me, you try to compile these fonts on a system that also has the original
+TeX packages installed, there would otherwise be a danger of getting the
+original MetaFont files mixed with these MetaType1 files in a way that would
+cause it to fail.  I couldn't figure out how to force MetaType1 to really
+use a specified pathname instead of going through TeX's filename search; it
+appears to strip off all specified path information.
+
+\end{document}

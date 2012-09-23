@@ -570,7 +570,7 @@ enddef;
 
 % #52 Kagerou
 vardef genjimon.kagerou =
-  gb(2,gf(2,gr(2,gt(gx(gl(0,gf(2,ge(3))),
+  gb(1,gf(2,gr(2,gt(gx(gl(0,gf(2,ge(3))),
     gf(2,ge(3)),gr(0,gf(2,ge(3)))),gr(2,gf(2,ge(3)))))));
 enddef;
 

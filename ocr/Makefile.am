@@ -1,29 +1,15 @@
 ## Process this file with automake to produce Makefile.in
 
 #
-# Makefile for Genjimon
-# Copyright (C) 2011, 2012  Matthew Skala
+# Makefile source for OCR fonts
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, version 3.
-#
-# As a special exception, if you create a document which uses this font, and
-# embed this font or unaltered portions of this font into the document, this
-# font does not by itself cause the resulting document to be covered by the
-# GNU General Public License. This exception does not however invalidate any
-# other reasons why the document might be covered by the GNU General Public
-# License. If you modify this font, you may extend this exception to your
-# version of the font, but you are not obligated to do so. If you do not
-# wish to do so, delete this exception statement from your version.
+# This file (Makefile.am) is released to the public domain by its author,
+# Matthew Skala, but be aware that the generated Makefile may be subject
+# to claims by the Free Software Foundation or others.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 # Matthew Skala
 # http://ansuz.sooke.bc.ca/
@@ -98,6 +84,16 @@ TSU_V_NAPERL_=$(TSU_V_NAPERL_$(AM_DEFAULT_VERBOSITY))
 TSU_V_NAPERL_0=$(ECHO_ANSI) \
   "$(ansi_cleareol)  $(ansi_magenta)PERL$(ansi_default)  " $@;
 
+TSU_V_OTF=$(TSU_V_OTF_$(V))
+TSU_V_OTF_=$(TSU_V_OTF_$(AM_DEFAULT_VERBOSITY))
+TSU_V_OTF_0=$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_cyan)OTF$(ansi_default)   " $@;
+
+TSU_V_RMO=$(TSU_V_RMO_$(V))
+TSU_V_RMO_=$(TSU_V_RMO_$(AM_DEFAULT_VERBOSITY))
+TSU_V_RMO_0=$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_cyan)RMO$(ansi_default)   " $@;
+
 TSU_V_TEX=$(TSU_V_TEX_$(V))
 TSU_V_TEX_=$(TSU_V_TEX_$(AM_DEFAULT_VERBOSITY))
 TSU_V_TEX_0=@$(ECHO_ANSI) \
@@ -108,17 +104,12 @@ TSU_V_TEXL_=$(TSU_V_TEXL_$(AM_DEFAULT_VERBOSITY))
 TSU_V_TEXL_0=$(ECHO_ANSI) \
   "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " "$@($$I)";
 
-TSU_V_TTF=$(TSU_V_TTF_$(V))
-TSU_V_TTF_=$(TSU_V_TTF_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TTF_0=$(ECHO_ANSI) \
-  "$(ansi_cleareol)  $(ansi_cyan)TTF$(ansi_default)   " $@;
-
 ############################################################################
 
 # CONDITIONAL OPTIONS
 
 if COND_DOCS
-    MAYBE_DOCS=genjimon.pdf
+    MAYBE_DOCS=ocr.pdf
 endif
 if COND_EXPECT
   expect_start= $(if $(AM_V_at),$(EXPECT) -c \
@@ -145,26 +136,28 @@ BUILT_SOURCES=Makefile
 # QVFG and FPEVCGF are DIST and SCRIPTS in ROT13, to keep Automake
 # from recognizing them
 
-STANDALONE_QVFG:=fntbase.mp genjimon.mp
+STANDALONE_QVFG:=fntbase.mp
 EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  genfont.mp $(wildcard genjimon-*.mp) genjimon.tex
+  ocr.tex
 
 STANDALONE_FPEVCGF:=mp2pf
 dist_noinst_SCRIPTS:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
-  makettf.pe
+  ocra.pe ocrb.pe ocrbnames.pe rmo.pe
 
 dist_pdf_DATA = $(MAYBE_DOCS)
 
-dist_ttf_DATA = \
-  GenjimonMedium.ttf GenjimonReverse.ttf \
-  GenjimonWhite.ttf GenjimonBlack.ttf \
-  GenjimonRound.ttf GenjimonRoundOutline.ttf
+dist_otf_DATA = OCRA.otf \
+  OCRB.otf OCRBE.otf OCRBF.otf OCRBL.otf OCRBS.otf OCRBX.otf
 
 ############################################################################
 
 # MAKE CLEAN
+
+MOSTLYCLEANFILES = \
+  *.afm *.otf *.pfb *.rmo *.ttf \
+  ocr.aux ocr.log ocr.out
 
 ############################################################################
 
@@ -172,7 +165,7 @@ dist_ttf_DATA = \
 
 %.pfb: %.mp \
   mp2pf @T1ASM@ \
-  fntbase.mp genfont.mp genjimon.mp
+  fntbase.mp
 	$(AM_V_at)$(TSU_V_MT1) \
 	$(MKDIR_P) $*.tmp ; \
 	$(LN_S) -f $(realpath $(mvp))/*.mp $*.tmp/ ; \
@@ -193,53 +186,101 @@ dist_ttf_DATA = \
 	  rm -rf $*.tmp ; \
 	fi
 
-genjimon-black.pfb: genjimon-black.mp
+msk-ocra10.pfb: msk-ocra10.mp msk-ocra.mp
 
-genjimon-white.pfb: genjimon-white.mp
+msk-ocrb10.pfb: msk-ocrb10.mp msk-ocrbdef.mp msk-ocrbmac.mp
 
-genjimon-medium.pfb: genjimon-medium.mp
+msk-ocrb10efg.pfb: msk-ocrb10efg.mp msk-ocrbdef.mp msk-ocrbmac.mp
 
-genjimon-reverse.pfb: genjimon-reverse.mp
+msk-ocrb10ebg.pfb: msk-ocrb10ebg.mp msk-ocrbdef.mp msk-ocrbmac.mp
 
-genjimon-round.pfb: genjimon-round.mp
+msk-ocrb10ffg.pfb: msk-ocrb10ffg.mp msk-ocrbdef.mp msk-ocrbmac.mp
 
-genjimon-routline.pfb: genjimon-routline.mp
+msk-ocrb10fbg.pfb: msk-ocrb10fbg.mp msk-ocrbdef.mp msk-ocrbmac.mp
+
+msk-ocrb10g.pfb: msk-ocrb10g.mp msk-ocrbdef.mp msk-ocrbmac.mp
+
+msk-ocrb10l.pfb: msk-ocrb10l.mp msk-ocrbdef.mp msk-ocrbmac.mp
+
+msk-ocrb10s.pfb: msk-ocrb10s.mp msk-ocrbdef.mp msk-ocrbmac.mp
+
+msk-ocrb10xfg.pfb: msk-ocrb10xfg.mp msk-ocrbdef.mp msk-ocrbmac.mp
+
+msk-ocrb10xbg.pfb: msk-ocrb10xbg.mp msk-ocrbdef.mp msk-ocrbmac.mp
+
+%.rmo: %.pfb rmo.pe
+	$(AM_V_at)$(TSU_V_RMO)$(FONTFORGE) rmo.pe $*.pfb $(TSU_V_REDIR)
+	$(AM_V_at)touch $*.rmo
+
+msk-ocra10.rmo: msk-ocra10.pfb
+
+msk-ocrb10.rmo: msk-ocrb10.pfb
+
+msk-ocrb10ebg.rmo: msk-ocrb10ebg.pfb
+
+msk-ocrb10efg.rmo: msk-ocrb10efg.pfb
+
+msk-ocrb10fbg.rmo: msk-ocrb10fbg.pfb
+
+msk-ocrb10ffg.rmo: msk-ocrb10ffg.pfb
+
+msk-ocrb10l.rmo: msk-ocrb10l.pfb
+
+msk-ocrb10s.rmo: msk-ocrb10s.pfb
+
+msk-ocrb10xbg.rmo: msk-ocrb10xbg.pfb
+
+msk-ocrb10xfg.rmo: msk-ocrb10xfg.pfb
 
 ############################################################################
 
-# TRUETYPE FONTS
+# FONTS
 
-GenjimonMedium.ttf: genjimon-medium.pfb makettf.pe
-	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe medium Medium $(TSU_V_REDIR)
+OCRA.pfb OCRA.afm OCRA.ttf OCRA.otf: msk-ocra10.rmo ocra.pe ocra.fea
+	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
+	  ocra.pe $(TSU_V_REDIR)
 
-GenjimonReverse.ttf: genjimon-reverse.pfb makettf.pe
-	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe reverse Reverse $(TSU_V_REDIR)
+OCRB.pfb OCRB.afm OCRB.ttf OCRB.otf: \
+  msk-ocrb10.rmo ocrb.pe ocrbnames.pe ocrb.fea
+	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
+	  ocrb.pe '' '' "Regular" 0 $(TSU_V_REDIR)
 
-GenjimonWhite.ttf: genjimon-white.pfb makettf.pe
-	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe white White $(TSU_V_REDIR)
+OCRBE.pfb OCRBE.afm OCRBE.ttf OCRBE.otf: \
+  msk-ocrb10efg.rmo msk-ocrb10ebg.rmo ocrb.pe ocrbnames.pe ocrb.fea
+	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
+	  ocrb.pe 'e' 'E' "Inverted Sharp" 1 $(TSU_V_REDIR)
 
-GenjimonBlack.ttf: genjimon-black.pfb makettf.pe
-	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe black Black $(TSU_V_REDIR)
+OCRBF.pfb OCRBF.afm OCRBF.ttf OCRBF.otf: \
+  msk-ocrb10ffg.rmo msk-ocrb10fbg.rmo ocrb.pe ocrbnames.pe ocrb.fea
+	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
+	  ocrb.pe 'f' 'F' "Outline" 1 $(TSU_V_REDIR)
 
-GenjimonRound.ttf: genjimon-round.pfb makettf.pe
-	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe round Round $(TSU_V_REDIR)
+OCRBG.pfb OCRBG.afm OCRBG.ttf OCRBG.otf: \
+  msk-ocrb10g.rmo ocrb.pe ocrbnames.pe ocrb.fea
+	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
+	  ocrb.pe 'g' 'G' "Slanted Outline" 0 $(TSU_V_REDIR)
 
-GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
-	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe routline RoundOutline $(TSU_V_REDIR)
+OCRBL.pfb OCRBL.afm OCRBL.ttf OCRBL.otf: \
+  msk-ocrb10l.rmo ocrb.pe ocrbnames.pe ocrb.fea
+	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
+	  ocrb.pe 'l' 'L' "Slanted" 0 $(TSU_V_REDIR)
+
+OCRBS.pfb OCRBS.afm OCRBS.ttf OCRBS.otf: \
+  msk-ocrb10s.rmo ocrb.pe ocrbnames.pe ocrb.fea
+	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
+	  ocrb.pe 's' 'S' "Sharp" 0 $(TSU_V_REDIR)
+
+OCRBX.pfb OCRBX.afm OCRBX.ttf OCRBX.otf: \
+  msk-ocrb10xfg.rmo msk-ocrb10xbg.rmo ocrb.pe ocrbnames.pe ocrb.fea
+	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
+	  ocrb.pe 'x' 'X' "Inverted" 1 $(TSU_V_REDIR)
 
 ############################################################################
 
 # PDF DOCUMENTATION
 
-genjimon.pdf: genjimon.tex \
-  GenjimonMedium.ttf GenjimonReverse.ttf GenjimonWhite.ttf GenjimonBlack.ttf
-	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) genjimon$(expect_end)
+ocr.pdf: OCRA.otf OCRB.otf ocr.tex
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) ocr$(expect_end)
 
 ############################################################################
 
@@ -248,9 +289,6 @@ genjimon.pdf: genjimon.tex \
 if COND_PARASITE
 
 fntbase.mp: ../mp/fntbase.mp
-	$(TSU_V_CP) cp $< $@
-
-genjimon.mp: ../mp/genjimon.mp
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_add_am_macro.m4: ../m4/ax_add_am_macro.m4

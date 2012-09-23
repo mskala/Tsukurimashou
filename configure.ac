@@ -201,7 +201,7 @@ AM_INIT_AUTOMAKE([foreign check-news dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1698 2012-09-21 17:20:23Z mskala $])
+AC_REVISION([$Id: configure.ac 1709 2012-09-23 15:32:08Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["June 18, 2012"])
 AM_SILENT_RULES
@@ -368,7 +368,7 @@ AC_SUBST([enable_ot_features])
 #
 AC_SUBST([enable_parasites])
 AS_IF([test "x$enable_parasites" = "xnone"],[],
-      [AC_CONFIG_SUBDIRS([genjimon])])
+      [AC_CONFIG_SUBDIRS([genjimon ocr])])
 #
 AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AS_IF([test "$with_kanjidic2" = "auto"],[

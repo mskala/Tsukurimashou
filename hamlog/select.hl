@@ -393,6 +393,7 @@ cfg_parasite(none,_P):-fail.
 cfg_parasite(T,P):- =(T,P),parasite_available(P).
 
 parasite_available(genjimon).
+parasite_available(ocr).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

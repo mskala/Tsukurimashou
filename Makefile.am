@@ -214,7 +214,6 @@ EXTRA_DIST:=COPYING.GPL3 \
   PKGBUILD.in \
   doc/demo.tex doc/proofs.tex doc/usermanual.tex doc/bkstyle.tex \
   $(wildcard $(mvp)/fsc/*.fsc) \
-  genjimon/genjimon.zip \
   t1asm/README t1asm/t1asm.1 \
   $(filter-out \
     $(wildcard $(mvp)/mp/jieub-a[c-f].mp) \
@@ -247,10 +246,6 @@ otf_DATA = $(filter-out $(dist_otf_DATA),\
     otf/$(subst -,,$(subst $(space),,$(XLAT_$(st)))).otf))
 dist_pdf_DATA = $(MAYBE_DOCS) $(MAYBE_KANJI_CHART)
 nodist_pdf_DATA = $(MAYBE_MDOCS) $(MAYBE_PROOFS) $(MAYBE_BOOKPROOFS)
-
-genjimon/genjimon.zip:
-	$(AM_V_GEN)
-	$(AM_V_at)(cd genjimon ; make dist ; cd ..)
 
 ############################################################################
 

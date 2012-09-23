@@ -3,29 +3,15 @@
 #
 
 #
-# Configuration source for Genjimon fonts
-# Copyright (C) 2011, 2012  Matthew Skala
+# Configuration source for OCR fonts
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, version 3.
-#
-# As a special exception, if you create a document which uses this font, and
-# embed this font or unaltered portions of this font into the document, this
-# font does not by itself cause the resulting document to be covered by the
-# GNU General Public License. This exception does not however invalidate any
-# other reasons why the document might be covered by the GNU General Public
-# License. If you modify this font, you may extend this exception to your
-# version of the font, but you are not obligated to do so. If you do not
-# wish to do so, delete this exception statement from your version.
+# This file (configure.ac) is released to the public domain by its author,
+# Matthew Skala, but be aware that the generated configure script may be
+# subject to claims by the Free Software Foundation or others.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 # Matthew Skala
 # http://ansuz.sooke.bc.ca/
@@ -159,6 +145,9 @@ AS_HELP_STRING([--$1dir=DIR],m4_expand([$4 @<:@m4_toupper([$2])/$3@:>@]))\
 # Add our new directories
 TSUKU_ADD_INSTDIR_OPTION([font],[datarootdir],[fonts],[fonts],
   [f],[obsolete gas option])
+TSUKU_ADD_INSTDIR_OPTION([otf],[fontdir],[OTF],
+  [OpenType fonts],
+  [ot],[ --prefix ])
 TSUKU_ADD_INSTDIR_OPTION([ttf],[fontdir],[TTF],
   [TrueType fonts],
   [tt],[ --prefix ])
@@ -190,17 +179,17 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.63])
-AC_INIT([Genjimon],
-	[0.2pre], [mskala@ansuz.sooke.bc.ca], [genjimon],
+AC_INIT([OCR],
+	[0.2pre], [mskala@ansuz.sooke.bc.ca], [ocr],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign dist-zip no-dist-gzip silent-rules])
-AC_CONFIG_SRCDIR([genjimon-black.mp])
+AC_CONFIG_SRCDIR([msk-ocra.mp])
 AC_CONFIG_MACRO_DIR([m4])
 AC_REVISION([$Id: configure.ac 1709 2012-09-23 15:32:08Z mskala $])
-AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
-AC_SUBST([release_date],["September 21, 2012"])
+AC_COPYRIGHT([public domain])
+AC_SUBST([release_date],["September 22, 2012"])
 AM_SILENT_RULES
 #
 ############################################################################
