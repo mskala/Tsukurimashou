@@ -196,12 +196,12 @@ AC_INIT([Tsukurimashou],
 	[0.7pre], [mskala@ansuz.sooke.bc.ca], [tsukurimashou],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
-AM_INIT_AUTOMAKE([foreign check-news dist-zip no-dist-gzip
-  silent-rules subdir-objects])
+AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
+  parallel-tests silent-rules subdir-objects])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1709 2012-09-23 15:32:08Z mskala $])
+AC_REVISION([$Id: configure.ac 1712 2012-09-24 00:33:17Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["June 18, 2012"])
 AM_SILENT_RULES
@@ -368,7 +368,7 @@ AC_SUBST([enable_ot_features])
 #
 AC_SUBST([enable_parasites])
 AS_IF([test "x$enable_parasites" = "xnone"],[],
-      [AC_CONFIG_SUBDIRS([genjimon ocr])])
+      [AC_CONFIG_SUBDIRS([genjimon idsgrep ocr])])
 #
 AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AS_IF([test "$with_kanjidic2" = "auto"],[
@@ -662,6 +662,14 @@ AS_IF([test "x$PERL" = "x" || test "x$AUTOCONF" = "x"],[],
      [excessive_autoconf_version=yes
       can_bshack=no])])
 AC_MSG_RESULT([$can_bshack])
+
+AC_MSG_CHECKING([whether FontForge accepts AddExtrema(1)])
+echo '#!/usr/local/bin/fontforge' > ffaetest.pe
+echo 'New();AddExtrema(1);' >> ffaetest.pe
+AS_IF([$FONTFORGE ffaetest.pe >& /dev/null],
+  [ae_arg_okay=yes],[ae_arg_okay=no])
+AC_SUBST([ae_arg_okay])
+AC_MSG_RESULT([$ae_arg_okay])
 #
 ############################################################################
 #
@@ -877,6 +885,15 @@ AS_IF([test '!' "x$enable_build_hacking" = "xno" && test "$can_bshack" = "no"],
    AS_ECHO(["Unless you intend to hack the build system, and know what that means,"])
    AS_ECHO(["this condition is harmless.  Use --disable-build-hacking to turn off"])
    AS_ECHO(["this message."])
+   ])
+
+AS_IF([test '!' "x$ae_arg_okay" = "xyes"],
+  [AS_ECHO([])
+   AS_ECHO(["The installed version of FontForge does not accept an optional"])
+   AS_ECHO(["argument to force AddExtrema() to really add all extrema.  Generated"])
+   AS_ECHO(["fonts may be missing some extrema as a result; this is probably harmless"])
+   AS_ECHO(["for most purposes, but it means that make check and any offline calls to"])
+   AS_ECHO(["fontlint are likely to report errors."])
    ])
 
 #

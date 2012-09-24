@@ -997,3 +997,11 @@ txt/tsukurimashou.eids: tools/make-eids $(EIDSPRFS)
 eids: txt/tsukurimashou.eids
 
 .PHONY: eids
+
+############################################################################
+
+# TESTING
+
+TESTS = $(dist_otf_DATA)
+TEST_EXTENSIONS = .otf
+OTF_LOG_COMPILER = true || fontlint

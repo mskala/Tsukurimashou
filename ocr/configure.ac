@@ -184,10 +184,11 @@ AC_INIT([OCR],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
-AM_INIT_AUTOMAKE([foreign dist-zip no-dist-gzip silent-rules])
+AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
+  parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([msk-ocra.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1709 2012-09-23 15:32:08Z mskala $])
+AC_REVISION([$Id: configure.ac 1712 2012-09-24 00:33:17Z mskala $])
 AC_COPYRIGHT([public domain])
 AC_SUBST([release_date],["September 22, 2012"])
 AM_SILENT_RULES
@@ -277,6 +278,14 @@ AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AS_IF([test "x$enable_silent_rules" = "x"],
   [enable_silent_rules=yes
    AM_DEFAULT_VERBOSITY=0])
+#
+AC_MSG_CHECKING([whether FontForge accepts AddExtrema(1)])
+echo '#!/usr/local/bin/fontforge' > ffaetest.pe
+echo 'New();AddExtrema(1);' >> ffaetest.pe
+AS_IF([$FONTFORGE ffaetest.pe >& /dev/null],
+  [ae_arg_okay=yes],[ae_arg_okay=no])
+AC_SUBST([ae_arg_okay])
+AC_MSG_RESULT([$ae_arg_okay])
 #
 ############################################################################
 #

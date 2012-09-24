@@ -159,16 +159,18 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 #
 AC_PREREQ([2.63])
 AC_INIT([IDSgrep],
-	[0.3], [mskala@ansuz.sooke.bc.ca], [idsgrep],
+	[0.4pre], [mskala@ansuz.sooke.bc.ca], [idsgrep],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
-AM_INIT_AUTOMAKE([foreign parallel-tests color-tests])
+AC_CONFIG_AUX_DIR([.])
+AM_INIT_AUTOMAKE([foreign color-tests parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([idsgrep.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_REVISION([$Id: configure.ac 1015 2011-12-15 22:24:32Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2012 Matthew Skala])
 AC_SUBST([release_date],["August 26, 2012"])
+AM_SILENT_RULES
 #
 ############################################################################
 #
@@ -184,12 +186,27 @@ AC_PROG_MKDIR_P
 AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
 AC_PATH_PROGS([CHECKSUM],[sha256sum sha1sum md5sum cksum wc],[no])
+AC_ARG_VAR([EXPECT],[Expect])
+AC_PATH_PROG([EXPECT],[expect])
+AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
+AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
 AC_PATH_PROG([ICONV],[iconv])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
 AC_PATH_PROG([XELATEX],[xelatex])
+#
+############################################################################
+#
+# Check for parasite build
+#
+AC_MSG_CHECKING([whether we are building as a parasite])
+AM_CONDITIONAL([COND_PARASITE],
+  [grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null])
+AM_COND_IF([COND_PARASITE],
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])])
 #
 ############################################################################
 #
@@ -232,6 +249,7 @@ AC_CHECK_FUNCS([memmove memset strchr])
 # Checks for system services
 #
 AC_SYS_LONG_FILE_NAMES
+AX_AM_JOBSERVER
 #
 ############################################################################
 #
@@ -343,6 +361,19 @@ AC_MSG_RESULT([$with_tsuku_build])
 AM_CONDITIONAL([COND_TSUKU_BUILD], [test '!' "$with_tsuku_build" = no])
 AC_SUBST([with_tsuku_build])
 #
+AC_ARG_ENABLE([colour-build],
+  [AS_HELP_STRING([--disable-colour-build],
+    [turn off ANSI colour in build scripts])],
+    [],
+    [enable_colour_build=yes])
+AC_ARG_ENABLE([color-build],[dnl],[],[enable_color_build=yes])
+#
+AC_ARG_ENABLE([docs],
+  [AS_HELP_STRING([--disable-docs],
+    [turn off PDF documentation])],
+    [],
+    [enable_docs=yes])
+#
 AC_ARG_ENABLE([edict-decomp],
   [AS_HELP_STRING([--enable-edict-decomp[[=chise|kanjivg|tsuku|auto]]],
     [dictionary for EDICT2 decomposition [auto]])],
@@ -368,6 +399,25 @@ AS_IF([test "$enable_edict_decomp" = "tsuku"],
 AS_IF([test "$enable_edict_decomp" = "no"],
       [edict_decomp=])
 AC_SUBST([edict_decomp])
+#
+# Process user options
+#
+tsu_colour=yes
+AS_IF([test "x$enable_colour_build" = "xyes"],
+  [],[tsu_colour=no])
+AS_IF([test "x$enable_color_build" = "xyes"],
+  [],[tsu_colour=no])
+AM_CONDITIONAL([COND_COLOUR],[test '!' "$tsu_colour" = no])
+#
+AM_CONDITIONAL([COND_DOCS],[test '!' "$enable_docs" = no])
+AC_SUBST([enable_docs])
+#
+#
+AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
+#
+AS_IF([test "x$enable_silent_rules" = "x"],
+  [enable_silent_rules=yes
+   AM_DEFAULT_VERBOSITY=0])
 #
 ############################################################################
 #
@@ -459,5 +509,6 @@ eval flat_docdir=${flat_docdir}
 AC_DEFINE_UNQUOTED([DICTDIR],["$flat_dictdir"],
   [Default location of dictionaries])
 #
+AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile idsgrep.1 config.tex])
 AC_OUTPUT

@@ -1,7 +1,7 @@
 #!/usr/local/bin/fontforge
 
 #
-# Fontforge script for OCR A
+# Fontforge script for OCR B
 #
 
 # This file is released to the public domain by its author, Matthew Skala.
@@ -30,8 +30,6 @@ SelectAll();SetWidth(723);
 #  Select("oe");Cut();
 #endif
 SelectAll();RoundToCluster(2,2);
-SelectAll();AddExtrema();
-SelectAll();Simplify(212,3);
 SelectAll();RoundToInt();
 SelectAll();Simplify(212,3);
 SelectAll();AddExtrema();

@@ -243,6 +243,14 @@ genjimon.pdf: genjimon.tex \
 
 ############################################################################
 
+# TESTING
+
+TESTS = $(dist_ttf_DATA)
+TEST_EXTENSIONS = .ttf
+TTF_LOG_COMPILER = fontlint
+
+############################################################################
+
 # PARASITE BUILD
 
 if COND_PARASITE

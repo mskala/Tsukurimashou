@@ -259,11 +259,6 @@ dup/Private 19 dict dup begin
 /RD{string currentfile exch readstring pop}executeonly def
 /ND{noaccess def}executeonly def
 /NP{noaccess put}executeonly def
-/BlueValues[##BLUE_VALUES##]def
-/OtherBlues[##OTHER_BLUES##]def
-/BlueScale ##BLUE_SCALE## def
-/BlueShift ##BLUE_SHIFT## def
-/BlueFuzz ##BLUE_FUZZ## def
 /MinFeature{16 16}ND
 %/UniqueID 0 def
 /StdHW[##STDHW##]def

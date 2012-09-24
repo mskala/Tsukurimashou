@@ -21,12 +21,112 @@
 # mskala@ansuz.sooke.bc.ca
 #
 
+############################################################################
+
+# BASIC AUTOTOOLS STUFF
+
 ACLOCAL_AMFLAGS = -I m4
+@SET_MAKE@
+@INC_AMINCLUDE@
 
 mvp:=$(if $(VPATH),$(VPATH),.)
 
+empty:=
+space:=$(empty) $(empty)
+comma:=,
+
+############################################################################
+
+# SILENT BUILD BLINKENLIGHTS
+
+TSU_V_REDIR=$(if $(AM_V_at),>& /dev/null)
+
+if COND_COLOUR
+  ECHO_ANSI=echo -e
+  ansi_default=\e[0m
+  ansi_red=\e[31m
+  ansi_green=\e[32m
+  ansi_yellow=\e[33m
+  ansi_blue=\e[34m
+  ansi_magenta=\e[35m
+  ansi_cyan=\e[36m
+  ansi_pink=\e[35;1m
+  ansi_white=\e[37;1m
+  ansi_cleareol=\e[K
+  ansi_clearescaped=\033\[K
+  ansi_home=\e[1G
+  am__@andt@v_CC_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CC    " $@;
+  am__@andt@v_CCLD_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
+  am__@andt@v_GEN_0=@echo -e "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
+else
+  ECHO_ANSI=echo
+  ansi_default=
+  ansi_red=
+  ansi_green=
+  ansi_yellow=
+  ansi_blue=
+  ansi_magenta=
+  ansi_cyan=
+  ansi_pink=
+  ansi_white=
+  ansi_cleareol=
+  ansi_clearescaped=
+  ansi_home=
+endif
+
+TSU_V_CP =$(TSU_V_CP_$(V))
+TSU_V_CP_=$(TSU_V_CP_$(AM_DEFAULT_VERBOSITY))
+TSU_V_CP_0=@$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_default)CP$(ansi_default)    " $@;
+
+TSU_V_MT1=$(TSU_V_MT1_$(V))
+TSU_V_MT1_=$(TSU_V_MT1_$(AM_DEFAULT_VERBOSITY))
+TSU_V_MT1_0=$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_blue)MT1$(ansi_default)   " $@;
+
+TSU_V_NAPERL=$(TSU_V_NAPERL_$(V))
+TSU_V_NAPERL_=$(TSU_V_NAPERL_$(AM_DEFAULT_VERBOSITY))
+TSU_V_NAPERL_0=$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_magenta)PERL$(ansi_default)  " $@;
+
+TSU_V_TEX=$(TSU_V_TEX_$(V))
+TSU_V_TEX_=$(TSU_V_TEX_$(AM_DEFAULT_VERBOSITY))
+TSU_V_TEX_0=@$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " $@;
+
+TSU_V_TEXL=$(TSU_V_TEXL_$(V))
+TSU_V_TEXL_=$(TSU_V_TEXL_$(AM_DEFAULT_VERBOSITY))
+TSU_V_TEXL_0=$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " "$@($$I)";
+
+TSU_V_TTF=$(TSU_V_TTF_$(V))
+TSU_V_TTF_=$(TSU_V_TTF_$(AM_DEFAULT_VERBOSITY))
+TSU_V_TTF_0=$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_cyan)TTF$(ansi_default)   " $@;
+
+############################################################################
+
+# CONDITIONAL OPTIONS
+
 if COND_CHISE_IDS
    MAYBE_CIDATA=chise.eids
+endif
+if COND_DOCS
+    MAYBE_DOCS=idsgrep.pdf
+endif
+if COND_EXPECT
+  expect_start= $(if $(AM_V_at),$(EXPECT) -c \
+    'log_user 0 ; spawn -noecho sh -c ")
+  expect_end= $(if $(AM_V_at), " ; \
+    expect -timeout -1 \
+    -re "\n! " {exit 1} \
+    -re "PROGRESS:(\[^\n\]*)\n" \
+      {puts -nonewline \
+         "$(ansi_clearescaped)$$expect_out(1,string)\r"; \
+       flush stdout;exp_continue} \
+    eof' )
+else
+  expect_end=$(TSU_V_REDIR)
 endif
 if COND_GCOV
    MAYBE_COVERAGE=--coverage --no-inline
@@ -42,7 +142,43 @@ if COND_EDICT2
    MAYBE_EDICTDATA=edict.eids
 endif
 
+############################################################################
+
+# FILENAMES FOR AUTOTOOLS
+
+# QVFG and FPEVCGF are DIST and SCRIPTS in ROT13, to keep Automake
+# from recognizing them
+
+STANDALONE_QVFG:=
+EXTRA_DIST:= \
+  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
+  PKGBUILD.in gnugetopt.h idsgrep.tex idsgrep.bib
+
+STANDALONE_FPEVCGF:=
+dist_noinst_SCRIPTS:= \
+  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
+  chise2eids ed22eids kvg2eids \
+  $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
+
 bin_PROGRAMS = idsgrep
+
+dist_dict_DATA = $(MAYBE_CIDATA)
+
+dict_DATA = $(MAYBE_EDICTDATA) $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)
+
+dist_pdf_DATA = $(MAYBE_DOCS)
+
+AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
+idsgrep_SOURCES = \
+  assoc.c cook.c hash.c idsgrep.c idsgrep.h match.c parse.c regex.c
+
+LDADD = @LIBOBJS@ $(PCRE_LIBS)
+
+man1_MANS = idsgrep.1
+
+############################################################################
+
+# MAKE CLEAN
 
 MOSTLYCLEANFILES = \
   idsgrep.aux idsgrep.log idsgrep.blg idsgrep.bbl idsgrep.toc \
@@ -54,32 +190,23 @@ DISTCLEANFILES = $(if $(VPATH),idsgrep.pdf chise.eids,)
 
 MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
 
-dist_dict_DATA = $(MAYBE_CIDATA)
+############################################################################
 
-dict_DATA = $(MAYBE_EDICTDATA) $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)
-
-dist_noinst_SCRIPTS = \
-  chise2eids ed22eids kvg2eids \
-  $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
-
-dist_pdf_DATA = $(MAYBE_DOCS)
-
-EXTRA_DIST = PKGBUILD.in gnugetopt.h idsgrep.tex idsgrep.bib
-
-AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
-idsgrep_SOURCES = \
-  assoc.c cook.c hash.c idsgrep.c idsgrep.h match.c parse.c regex.c
-
-LDADD = @LIBOBJS@ $(PCRE_LIBS)
-
-man1_MANS = idsgrep.1
+# PDF DOCUMENTATION
 
 idsgrep.pdf: idsgrep.tex config.tex idsgrep.bib \
   @with_tsuku_build@/otf/TsukurimashouMincho.otf
-	$(XELATEX) $(mvp)/idsgrep.tex
-	export BIBINPUTS=$(mvp) ; bibtex idsgrep.aux
-	$(XELATEX) $(mvp)/idsgrep.tex
-	$(XELATEX) $(mvp)/idsgrep.tex
+	$(AM_V_at)I=1;$(TSU_V_TEXL) \
+	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end) ; \
+	export BIBINPUTS=$(mvp) ; bibtex idsgrep.aux $(TSU_V_REDIR) ; \
+	I=2;$(TSU_V_TEXL) \
+	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end) ; \
+	I=3;$(TSU_V_TEXL) \
+	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end)
+
+############################################################################
+
+# DICTIONARIES
 
 chise.eids: $(wildcard @with_chise_ids@/IDS-*.txt) chise2eids
 	$(PERL) -CDS $(mvp)/chise2eids \
@@ -117,6 +244,10 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 	$(LN_S) -f @with_tsuku_build@/txt/tsukurimashou.eids \
 	  tsukurimashou.eids
 
+############################################################################
+
+# TESTING
+
 GCOV_TESTS = \
   test/andor test/anynot test/assoc test/basicmatch test/backslash \
   test/bighash test/cooked test/demorgan test/equal test/kvg-grone \
@@ -138,4 +269,36 @@ if COND_GCOV
 
 else
   TESTS = $(GCOV_TESTS) test/vgneko
+endif
+
+############################################################################
+
+# PARASITE BUILD
+
+if COND_PARASITE
+
+m4/ax_add_am_macro.m4: ../m4/ax_add_am_macro.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_am_jobserver.m4: ../m4/ax_am_jobserver.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_am_macros.m4: ../m4/ax_am_macros.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_append_to_file.m4: ../m4/ax_append_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_check_gnu_make.m4: ../m4/ax_check_gnu_make.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_count_cpus.m4: ../m4/ax_count_cpus.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
 endif

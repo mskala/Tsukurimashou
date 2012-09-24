@@ -195,10 +195,11 @@ AC_INIT([Genjimon],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
-AM_INIT_AUTOMAKE([foreign dist-zip no-dist-gzip silent-rules])
+AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
+  parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([genjimon-black.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1709 2012-09-23 15:32:08Z mskala $])
+AC_REVISION([$Id: configure.ac 1712 2012-09-24 00:33:17Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["September 21, 2012"])
 AM_SILENT_RULES

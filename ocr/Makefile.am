@@ -144,7 +144,7 @@ EXTRA_DIST:= \
 STANDALONE_FPEVCGF:=mp2pf
 dist_noinst_SCRIPTS:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
-  ocra.pe ocrb.pe ocrbnames.pe rmo.pe
+  ocra-no.pe ocra-yes.pe ocrb-no.pe ocrb-yes.pe ocrbnames.pe rmo.pe
 
 dist_pdf_DATA = $(MAYBE_DOCS)
 
@@ -236,44 +236,48 @@ msk-ocrb10xfg.rmo: msk-ocrb10xfg.pfb
 
 # FONTS
 
-OCRA.pfb OCRA.afm OCRA.ttf OCRA.otf: msk-ocra10.rmo ocra.pe ocra.fea
+OCRA.pfb OCRA.afm OCRA.ttf OCRA.otf: msk-ocra10.rmo \
+  ocra-@ae_arg_okay@.pe ocra.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocra.pe $(TSU_V_REDIR)
+	  ocra-@ae_arg_okay@.pe $(TSU_V_REDIR)
 
 OCRB.pfb OCRB.afm OCRB.ttf OCRB.otf: \
-  msk-ocrb10.rmo ocrb.pe ocrbnames.pe ocrb.fea
+  msk-ocrb10.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb.pe '' '' "Regular" 0 $(TSU_V_REDIR)
+	  ocrb-@ae_arg_okay@.pe '' '' "Regular" 0 $(TSU_V_REDIR)
 
 OCRBE.pfb OCRBE.afm OCRBE.ttf OCRBE.otf: \
-  msk-ocrb10efg.rmo msk-ocrb10ebg.rmo ocrb.pe ocrbnames.pe ocrb.fea
+  msk-ocrb10efg.rmo msk-ocrb10ebg.rmo \
+  ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb.pe 'e' 'E' "Inverted Sharp" 1 $(TSU_V_REDIR)
+	  ocrb-@ae_arg_okay@.pe 'e' 'E' "Inverted Sharp" 1 $(TSU_V_REDIR)
 
 OCRBF.pfb OCRBF.afm OCRBF.ttf OCRBF.otf: \
-  msk-ocrb10ffg.rmo msk-ocrb10fbg.rmo ocrb.pe ocrbnames.pe ocrb.fea
+  msk-ocrb10ffg.rmo msk-ocrb10fbg.rmo \
+  ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb.pe 'f' 'F' "Outline" 1 $(TSU_V_REDIR)
+	  ocrb-@ae_arg_okay@.pe 'f' 'F' "Outline" 1 $(TSU_V_REDIR)
 
 OCRBG.pfb OCRBG.afm OCRBG.ttf OCRBG.otf: \
-  msk-ocrb10g.rmo ocrb.pe ocrbnames.pe ocrb.fea
+  msk-ocrb10g.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb.pe 'g' 'G' "Slanted Outline" 0 $(TSU_V_REDIR)
+	  ocrb-@ae_arg_okay@.pe 'g' 'G' "Slanted Outline" 0 $(TSU_V_REDIR)
 
 OCRBL.pfb OCRBL.afm OCRBL.ttf OCRBL.otf: \
-  msk-ocrb10l.rmo ocrb.pe ocrbnames.pe ocrb.fea
+  msk-ocrb10l.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb.pe 'l' 'L' "Slanted" 0 $(TSU_V_REDIR)
+	  ocrb-@ae_arg_okay@.pe 'l' 'L' "Slanted" 0 $(TSU_V_REDIR)
 
 OCRBS.pfb OCRBS.afm OCRBS.ttf OCRBS.otf: \
-  msk-ocrb10s.rmo ocrb.pe ocrbnames.pe ocrb.fea
+  msk-ocrb10s.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb.pe 's' 'S' "Sharp" 0 $(TSU_V_REDIR)
+	  ocrb-@ae_arg_okay@.pe 's' 'S' "Sharp" 0 $(TSU_V_REDIR)
 
 OCRBX.pfb OCRBX.afm OCRBX.ttf OCRBX.otf: \
-  msk-ocrb10xfg.rmo msk-ocrb10xbg.rmo ocrb.pe ocrbnames.pe ocrb.fea
+  msk-ocrb10xfg.rmo msk-ocrb10xbg.rmo \
+  ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb.pe 'x' 'X' "Inverted" 1 $(TSU_V_REDIR)
+	  ocrb-@ae_arg_okay@.pe 'x' 'X' "Inverted" 1 $(TSU_V_REDIR)
 
 ############################################################################
 
@@ -281,6 +285,14 @@ OCRBX.pfb OCRBX.afm OCRBX.ttf OCRBX.otf: \
 
 ocr.pdf: OCRA.otf OCRB.otf ocr.tex
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) ocr$(expect_end)
+
+############################################################################
+
+# TESTING
+
+TESTS = $(dist_otf_DATA)
+TEST_EXTENSIONS = .otf
+OTF_LOG_COMPILER = fontlint
 
 ############################################################################
 
