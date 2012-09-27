@@ -302,7 +302,18 @@ def dofinishing =
                ( 0.5*SYMBWIDTH/scalefak , 1.2maxy)--
                (-0.5*SYMBWIDTH/scalefak , 1.2maxy)--cycle;
 %              (-0.5*SYMBWIDTH/scalefak ,-0.35maxy)..cycle;
-        dangerousFill  (negpath shifted (shiftfak,0) scaled scalefak);
+        negpath:=negpath shifted (shiftfak,0) scaled scalefak;
+        if known glyph_llx:
+          negpath:=(min(glyph_llx-10,xpart llcorner negpath),
+                    min(glyph_lly-10,ypart llcorner negpath))--
+                   (max(glyph_urx+10,xpart urcorner negpath),
+                    min(glyph_lly-10,ypart llcorner negpath))--
+                   (max(glyph_urx+10,xpart urcorner negpath),
+                    max(glyph_ury+10,ypart urcorner negpath))--
+                   (min(glyph_llx-10,xpart llcorner negpath),
+                    max(glyph_ury+10,ypart urcorner negpath))--cycle;
+        fi;
+        dangerousFill negpath;
 %       cullit;
        bildb := currentpicture;
        clearit;

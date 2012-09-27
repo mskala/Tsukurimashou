@@ -464,7 +464,9 @@ def tsu_render_segment(expr i,p,q) =
       else:
         tsu_brush_opt(mytip[ell])(ell)
       fi
-    endfor)(p)(glyph);
+    endfor)(p if abs((point infinity of p)-(point 0 of p))<1:
+      --(point 0.001 of p)
+    fi)(glyph);
   glstk[ngls]:=regenerate(glyph);
   ngls:=ngls+1;
   for l=0 step 1 until length(p):

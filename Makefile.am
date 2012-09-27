@@ -49,6 +49,7 @@ mvp:=$(if $(VPATH),$(VPATH),.)
 empty:=
 space:=$(empty) $(empty)
 comma:=,
+percent=%
 
 # This is a nasty hack, but seems to be needed to get the variables
 # included soon enough for them to be useful in Automake's recipes
@@ -1004,4 +1005,4 @@ eids: txt/tsukurimashou.eids
 
 TESTS = $(dist_otf_DATA)
 TEST_EXTENSIONS = .otf
-OTF_LOG_COMPILER = true || fontlint
+OTF_LOG_COMPILER = fontlint

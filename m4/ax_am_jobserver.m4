@@ -24,6 +24,14 @@
 #
 #   to your Makefile.am files.
 #
+# MODIFIED
+#
+#   By Matthew Skala, <mskala@ansuz.sooke.bc.ca>, 24 September 2012, to
+#   make the -j flag conditional, removing a "-jN forced in submake"
+#   warning when used in nested packages.  This probably requires GNU Make,
+#   but that was likely required already.  It also requires a variable named
+#   percent, because literal percent signs seem to break things here.
+#
 # LICENSE
 #
 #   Copyright (c) 2008 Michael Paul Bailey <jinxidoru@byu.net>
@@ -33,7 +41,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 7
+#serial 8
 
 AC_DEFUN([AX_AM_JOBSERVER], [
     AC_REQUIRE([AX_COUNT_CPUS])
@@ -46,5 +54,6 @@ AC_DEFUN([AX_AM_JOBSERVER], [
        ((enable_jobserver++))])
     m4_pattern_allow(AM_MAKEFLAGS)
     AS_IF([test "x$enable_jobserver" != "xno"],
-      [AX_ADD_AM_MACRO( AM_MAKEFLAGS += -j$enable_jobserver )])
+      [AX_ADD_AM_MACRO([AM_MAKEFLAGS += \$(if \$(filter -j\$(percent),\$(MAKEFLAGS)),,-j$enable_jobserver )
+])])
 ])

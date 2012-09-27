@@ -7,7 +7,7 @@
 # This file is released to the public domain by its author, Matthew Skala.
 
 Open("msk-ocra10.pfb");
-SetFontNames("OCRA","OCRA","OCR A","Regular","Matthew Skala (2011); based on code by Richard B. Wales (1988-89) and Tor Lillqvist","2");
+SetFontNames("OCRA","OCRA","OCR A","Regular","Matthew Skala (2011-12); based on code by Richard B. Wales (1988-89) and Tor Lillqvist","2");
 SelectAll();SetWidth(723);
 SelectAll();RoundToCluster(2,2);
 SelectAll();RoundToInt();
@@ -19,7 +19,7 @@ SelectAll();CanonicalStart();
 SelectAll();CanonicalContours();
 SelectAll();AutoHint();
 SelectAll();AutoCounter();
-MergeFeature("ocra.fea");
+MergeFeature($1);
 Generate("OCRA.pfb");
 Generate("OCRA.otf");
 SetFontOrder(2);

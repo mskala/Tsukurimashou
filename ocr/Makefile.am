@@ -29,6 +29,7 @@ mvp:=$(if $(VPATH),$(VPATH),.)
 empty:=
 space:=$(empty) $(empty)
 comma:=,
+percent=%
 
 ############################################################################
 
@@ -139,7 +140,8 @@ BUILT_SOURCES=Makefile
 STANDALONE_QVFG:=fntbase.mp
 EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  ocr.tex
+  $(wildcard $(mvp)/*.mp) \
+  ocr.tex ocra.fea ocrb.fea
 
 STANDALONE_FPEVCGF:=mp2pf
 dist_noinst_SCRIPTS:= \
@@ -150,6 +152,11 @@ dist_pdf_DATA = $(MAYBE_DOCS)
 
 dist_otf_DATA = OCRA.otf \
   OCRB.otf OCRBE.otf OCRBF.otf OCRBL.otf OCRBS.otf OCRBX.otf
+dist_ttf_DATA = OCRA.ttf \
+  OCRB.ttf OCRBE.ttf OCRBF.ttf OCRBL.ttf OCRBS.ttf OCRBX.ttf
+dist_type1_DATA =  OCRA.pfb \
+  OCRB.pfb OCRBE.pfb OCRBF.pfb OCRBL.pfb OCRBS.pfb OCRBX.pfb
+dist_afm_DATA = $(patsubst %.pfb,%.afm,$(dist_type1_DATA))
 
 ############################################################################
 
@@ -157,7 +164,10 @@ dist_otf_DATA = OCRA.otf \
 
 MOSTLYCLEANFILES = \
   *.afm *.otf *.pfb *.rmo *.ttf \
-  ocr.aux ocr.log ocr.out
+  ocr.aux ocr.log ocr.out ocr.pdf
+
+DISTCLEANFILES = \
+  aminclude.am ffaetest.pe
 
 ############################################################################
 
@@ -209,7 +219,7 @@ msk-ocrb10xfg.pfb: msk-ocrb10xfg.mp msk-ocrbdef.mp msk-ocrbmac.mp
 msk-ocrb10xbg.pfb: msk-ocrb10xbg.mp msk-ocrbdef.mp msk-ocrbmac.mp
 
 %.rmo: %.pfb rmo.pe
-	$(AM_V_at)$(TSU_V_RMO)$(FONTFORGE) rmo.pe $*.pfb $(TSU_V_REDIR)
+	$(AM_V_at)$(TSU_V_RMO)$(FONTFORGE) $(mvp)/rmo.pe $*.pfb $(TSU_V_REDIR)
 	$(AM_V_at)touch $*.rmo
 
 msk-ocra10.rmo: msk-ocra10.pfb
@@ -239,60 +249,67 @@ msk-ocrb10xfg.rmo: msk-ocrb10xfg.pfb
 OCRA.pfb OCRA.afm OCRA.ttf OCRA.otf: msk-ocra10.rmo \
   ocra-@ae_arg_okay@.pe ocra.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocra-@ae_arg_okay@.pe $(TSU_V_REDIR)
+	  $(mvp)/ocra-@ae_arg_okay@.pe \
+	  $(mvp)/ocra.fea $(TSU_V_REDIR)
 
 OCRB.pfb OCRB.afm OCRB.ttf OCRB.otf: \
   msk-ocrb10.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb-@ae_arg_okay@.pe '' '' "Regular" 0 $(TSU_V_REDIR)
+	  $(mvp)/ocrb-@ae_arg_okay@.pe '' '' "Regular" 0 \
+	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBE.pfb OCRBE.afm OCRBE.ttf OCRBE.otf: \
   msk-ocrb10efg.rmo msk-ocrb10ebg.rmo \
   ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb-@ae_arg_okay@.pe 'e' 'E' "Inverted Sharp" 1 $(TSU_V_REDIR)
+	  $(mvp)/ocrb-@ae_arg_okay@.pe 'e' 'E' "Inverted Sharp" 1 \
+	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBF.pfb OCRBF.afm OCRBF.ttf OCRBF.otf: \
   msk-ocrb10ffg.rmo msk-ocrb10fbg.rmo \
   ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb-@ae_arg_okay@.pe 'f' 'F' "Outline" 1 $(TSU_V_REDIR)
+	  $(mvp)/ocrb-@ae_arg_okay@.pe 'f' 'F' "Outline" 1 \
+	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBG.pfb OCRBG.afm OCRBG.ttf OCRBG.otf: \
   msk-ocrb10g.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb-@ae_arg_okay@.pe 'g' 'G' "Slanted Outline" 0 $(TSU_V_REDIR)
+	  $(mvp)/ocrb-@ae_arg_okay@.pe 'g' 'G' "Slanted Outline" 0 \
+	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBL.pfb OCRBL.afm OCRBL.ttf OCRBL.otf: \
   msk-ocrb10l.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb-@ae_arg_okay@.pe 'l' 'L' "Slanted" 0 $(TSU_V_REDIR)
+	  $(mvp)/ocrb-@ae_arg_okay@.pe 'l' 'L' "Slanted" 0 \
+	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBS.pfb OCRBS.afm OCRBS.ttf OCRBS.otf: \
   msk-ocrb10s.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb-@ae_arg_okay@.pe 's' 'S' "Sharp" 0 $(TSU_V_REDIR)
+	  $(mvp)/ocrb-@ae_arg_okay@.pe 's' 'S' "Sharp" 0 \
+	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBX.pfb OCRBX.afm OCRBX.ttf OCRBX.otf: \
   msk-ocrb10xfg.rmo msk-ocrb10xbg.rmo \
   ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
 	$(AM_V_at)$(TSU_V_OTF)$(FONTFORGE) \
-	  ocrb-@ae_arg_okay@.pe 'x' 'X' "Inverted" 1 $(TSU_V_REDIR)
+	  $(mvp)/ocrb-@ae_arg_okay@.pe 'x' 'X' "Inverted" 1 \
+	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 ############################################################################
 
 # PDF DOCUMENTATION
 
 ocr.pdf: OCRA.otf OCRB.otf ocr.tex
-	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) ocr$(expect_end)
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) $(mvp)/ocr$(expect_end)
 
 ############################################################################
 
 # TESTING
 
-TESTS = $(dist_otf_DATA)
-TEST_EXTENSIONS = .otf
-OTF_LOG_COMPILER = fontlint
+TESTS = $(dist_otf_DATA) $(dist_ttf_DATA) $(dist_type1_DATA)
+LOG_COMPILER = fontlint
 
 ############################################################################
 

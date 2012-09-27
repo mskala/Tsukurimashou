@@ -4,10 +4,11 @@
 # Overlap removal script
 #
 
-# This is copied from the current version of the Tsukurimashou project,
-# but relicensed as public domain because it's so trivial.
-
 Open($1);
 SelectAll();
+RoundToCluster(2,2);
+RoundToInt();
+Simplify(212,3);
+FindIntersections();
 RemoveOverlap();
 Generate($1);

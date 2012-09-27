@@ -13,8 +13,9 @@
 \setlength{\parskip}{\baselineskip}
 \raggedright
 
-\title{OCR-A and OCR-B fonts\\in MetaType1 format}
+\title{OCR-A and OCR-B fonts\\version 0.2}
 \author{Matthew Skala}
+\date{September 27, 2012}
 
 \begin{document}
 \setmainfont{OCRB.otf}
@@ -46,11 +47,7 @@ the old, poor-quality converted OCR fonts; and with my improved knowledge,
 I'm now in a position to write better ones.
 
 This package contains those better fonts.  More work still needs to be done,
-but it's already a significant improvement on the older packages.  In this
-version I've also merged the OCR A and OCR B packages into one, and updated
-the description of licensing terms to take into account Norbert Schwarz's
-gracious release of his work to commercial users (which had also been a
-frequently-asked question among users of my older packages).
+but it's already a significant improvement on the older packages.
 
 Each font is provided in three ready-made forms:  PostScript (.pfb and .afm
 files), TrueType (.ttf files), and OpenType (.otf files).  Almost any
@@ -61,17 +58,24 @@ Please note that by definition these fonts have limited glyph sets - and
 if you actually want to use these fonts for OCR applications (their original
 purpose) then you should be very careful about which glyphs you use, because
 both typefaces have been extended by others (not me) to contain nonstandard
-glyphs beyond the official ones.
+glyphs beyond the official ones.  Similarly, this package contains some
+nonstandard styles for OCR B (italic, reverse video, and outline) which
+may be visually appealing but are probably not appropriate for actual
+OCR use.
 
 Please note that although the Metafont definitions for both OCR A and OCR B
 purport to support "optical size," they actually just scale the outlines
 linearly for the different sizes, so when converting to a scaleable format
 there's no point treating the different sizes separately.
 
-My email address is \url{mailto:mskala@ansuz.sooke.bc.ca}~.  The Web point of
-contact for this and my other font projects is (English language)
-\url{http://ansuz.sooke.bc.ca/page/fonts} and (Japanese language)
-\url{http://ansuz.sooke.bc.ca/page/fonts-jp/_1}~.
+My email address is \url{mailto:mskala@ansuz.sooke.bc.ca}~.  As of this
+version, this package has become part of the Tsukurimashou Project at
+\url{http://tsukurimashou.sourceforge.jp/}~.  That is a bilingual page,
+English and Japanese; you can select the other one in the upper right corner
+if your browser's language preferences are misconfigured.  All bug reports
+and feature and support requests for these OCR fonts should be filed in the
+Tsukurimashou Project's ticket tracker, with the component set to "Parasite
+font packages."
 
 \setmainfont{OCRA.otf}
 \setmonofont{OCRA.otf}
@@ -159,24 +163,71 @@ package are probably cleaner.
 
 \section{Compiling the fonts}
 
-If you want to recompile these fonts, you will need MetaType1, Fontforge
-(which in turn should be compiled with the "--enable-longdouble"
-configuration option), GNU Make, and a command-line environment that
-reasonably resembles Slackware Linux.  Current Mac installations should
-work.  To recompile this document, you will also need XeLaTeX\@.  Once all the
-needed software is in place, it should work by just typing "make".  The
-compilation process will produce a large number of error messages; most of
-these are associated with bugs in Fontforge's spline geometry code, and are
-unavoidable.
+Note that the binary font files are included in the package.  Most users
+will have no reason to recompile them, and can safely ignore this section.
 
-Most of the MetaType1 source code files in this package
+As of this version, this package builds using a stripped-down version of
+MetaType1 with some bugs fixed, inherited from the Tsukurimashou Project. 
+The relevant code is bundled with this package, and (where applicable)
+relicensed to public domain.  MetaType1 is no longer a dependency; Perl,
+Metapost (which should be included in a standard TeX distribution) and t1asm
+(part of the t1utils package) are now dependencies.  FontForge is a
+dependency.  Recompiling this document will also require XeLaTeX (which
+should be included in a standard TeX distribution); and there are additional
+considerations relevant to the test suite, for which see the "Testing the
+fonts" section below.  Having "expect" is recommended but not required.
+
+This package includes a standard GNU Autotools build system; if you have the
+prerequisites, it should work by running "./configure" followed by "make". 
+If you turn off the default feature that hides them, the compilation process
+will produce a large number of error messages; most of these are associated
+with bugs in Fontforge's spline geometry code, and are unavoidable.
+
+The build system supports a "make install" target; however, you might not
+want to use it, because it will install all the different styles and
+formats of the fonts and quite possibly install them in places other than
+where you expect.  Most users will probably only want one format and a
+limited selection of styles, and would be better served by manually copying
+the files they want after building.  Note that all the finished fonts
+intended for installation and use have filenames starting with capitalized
+"OCR"; there are intermediate Postscript files created during the build
+under names that start with lowercase "msk-ocr," but those are lacking
+important metadata and should not be installed and used directly.
+
+Most of the Metapost source code files in this package
 have had their names changed by prefixing "msk-"; that is to prevent a
 collision with the filenames used by the original TeX packages.  If, like
 me, you try to compile these fonts on a system that also has the original
 TeX packages installed, there would otherwise be a danger of getting the
-original MetaFont files mixed with these MetaType1 files in a way that would
-cause it to fail.  I couldn't figure out how to force MetaType1 to really
+original MetaFont files mixed with these Metapost files in a way that would
+cause it to fail.  I couldn't figure out how to force Metapost to really
 use a specified pathname instead of going through TeX's filename search; it
 appears to strip off all specified path information.
+
+\section{Testing the fonts}
+
+The build system supports a "make check" target, which will run FontForge's
+"fontlint" program on all the installable fonts.  This is a very demanding
+test.  It will report a failure on anything that FontForge's developers (and
+even though I have sometimes been credited as one of these, I do not take
+responsibility for this point) think is against the rules or even vaguely
+questionable.  Most fontlint validation errors are harmless in actual
+practice; so if you run "make check" and see nothing but red, Don't Panic.
+
+At the very least, "make check" will almost certainly fail if your fonts
+were built with a version of FontForge that did not support my proposed
+optional argument to AddExtrema(); and as of this writing the only version
+of FontForge that supports that is the one in my Github fork at
+\url{https://github.com/mskala/fontforge}~.  The issue, for those
+interested, is that FontForge's "add extrema" operation has several
+different operating modes, including one that adds all possible extrema and
+one that only adds them in cases where it's considered "safe" to do so.  The
+scripting language by default can only invoke the "safe" version; but
+fontlint demands all extrema whether safe or not, so without a patched
+version that makes the other modes available to the scripting language, it's
+not possible for scripts to generate fonts that can pass fontlint.
+
+Please do not report validation errors as bugs if you are not using the
+version of FontForge from my Github fork.
 
 \end{document}

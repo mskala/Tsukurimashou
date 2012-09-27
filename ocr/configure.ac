@@ -145,12 +145,18 @@ AS_HELP_STRING([--$1dir=DIR],m4_expand([$4 @<:@m4_toupper([$2])/$3@:>@]))\
 # Add our new directories
 TSUKU_ADD_INSTDIR_OPTION([font],[datarootdir],[fonts],[fonts],
   [f],[obsolete gas option])
-TSUKU_ADD_INSTDIR_OPTION([otf],[fontdir],[OTF],
-  [OpenType fonts],
-  [ot],[ --prefix ])
+TSUKU_ADD_INSTDIR_OPTION([afm],[fontdir],[afm],
+  [Adobe Font Metrics],
+  [afm],[ --prefix ])
+TSUKU_ADD_INSTDIR_OPTION([type1],[fontdir],[type1],
+  [Postscript Type 1 fonts],
+  [ty],[ --prefix ])
 TSUKU_ADD_INSTDIR_OPTION([ttf],[fontdir],[TTF],
   [TrueType fonts],
   [tt],[ --prefix ])
+TSUKU_ADD_INSTDIR_OPTION([otf],[fontdir],[OTF],
+  [OpenType fonts],
+  [ot],[ --prefix ])
 
 # Reduce the ridiculous verbosity of Autoconf's help message
 TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
@@ -180,7 +186,7 @@ Fine tuning of the installation directories:\
 #
 AC_PREREQ([2.63])
 AC_INIT([OCR],
-	[0.2pre], [mskala@ansuz.sooke.bc.ca], [ocr],
+	[0.2], [mskala@ansuz.sooke.bc.ca], [ocr],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
@@ -188,9 +194,9 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([msk-ocra.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1712 2012-09-24 00:33:17Z mskala $])
+AC_REVISION([$Id: configure.ac 1724 2012-09-27 16:51:05Z mskala $])
 AC_COPYRIGHT([public domain])
-AC_SUBST([release_date],["September 22, 2012"])
+AC_SUBST([release_date],["September 27, 2012"])
 AM_SILENT_RULES
 #
 ############################################################################
