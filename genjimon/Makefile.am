@@ -167,6 +167,12 @@ dist_ttf_DATA = \
 
 # MAKE CLEAN
 
+MOSTLYCLEANFILES = \
+  *.pfb *.sfd *.ttf \
+  genjimon.aux genjimon.log genjimon.out genjimon.pdf
+
+DISTCLEANFILES = aminclude.am
+
 ############################################################################
 
 # POSTSCRIPT FONTS
@@ -212,27 +218,27 @@ genjimon-routline.pfb: genjimon-routline.mp
 
 GenjimonMedium.ttf: genjimon-medium.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe medium Medium $(TSU_V_REDIR)
+	$(FONTFORGE) $(mvp)/makettf.pe medium Medium $(TSU_V_REDIR)
 
 GenjimonReverse.ttf: genjimon-reverse.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe reverse Reverse $(TSU_V_REDIR)
+	$(FONTFORGE) $(mvp)/makettf.pe reverse Reverse $(TSU_V_REDIR)
 
 GenjimonWhite.ttf: genjimon-white.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe white White $(TSU_V_REDIR)
+	$(FONTFORGE) $(mvp)/makettf.pe white White $(TSU_V_REDIR)
 
 GenjimonBlack.ttf: genjimon-black.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe black Black $(TSU_V_REDIR)
+	$(FONTFORGE) $(mvp)/makettf.pe black Black $(TSU_V_REDIR)
 
 GenjimonRound.ttf: genjimon-round.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe round Round $(TSU_V_REDIR)
+	$(FONTFORGE) $(mvp)/makettf.pe round Round $(TSU_V_REDIR)
 
 GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) makettf.pe routline RoundOutline $(TSU_V_REDIR)
+	$(FONTFORGE) $(mvp)/makettf.pe routline RoundOutline $(TSU_V_REDIR)
 
 ############################################################################
 
@@ -240,7 +246,8 @@ GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
 
 genjimon.pdf: genjimon.tex \
   GenjimonMedium.ttf GenjimonReverse.ttf GenjimonWhite.ttf GenjimonBlack.ttf
-	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) genjimon$(expect_end)
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) \
+	  $(mvp)/genjimon$(expect_end)
 
 ############################################################################
 

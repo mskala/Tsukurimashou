@@ -5,9 +5,9 @@
 \usepackage{hyperref}
 \usepackage{url}
 
-\title{Genjimon fonts, v0.1}
+\title{Genjimon fonts, v0.2}
 \author{Matthew Skala}
-\date{December 8, 2010}
+\date{October 1, 2012}
 
 \newfontface\genjiface[Scale=1.1,ExternalLocation]{GenjimonMedium.ttf}
 \newcommand\genji[1]{{\genjiface #1}}
@@ -66,34 +66,52 @@ recognize; the other is much harder.
 Is there any structure in the chapter sequence of crests?  Is there any
 connection or similarity to the sequence of hexagrams of the I~Ching?
 
+\section{What's new?}
+
+New in version 0.2:
+\begin{itemize}
+\item Autotools build system, integrated with the Tsukurimashou build.
+\item Bundled METATYPE1 derivative, making it easier to build on a system
+that just has a standard \TeX\ installation (no mtype13 needed anymore).
+\item Two new ``round'' font styles.
+\end{itemize}
+
 \section{About the fonts}
 
-This package contains four TrueType fonts (illustrated on the following
-pages) for printing the Genjimon in four different styles.  The glyphs are
+This package contains six TrueType fonts (illustrated on the following
+pages) for printing the Genjimon in six different styles.  The glyphs are
 mapped, in Genji chapter order, to ASCII codes 65 to 91 (A to Z followed by
 [), and 97 to 123 (a to z plus \{).  The intention is to make them easy to
 type.  As far as I know, there is no standard encoding for the Genjimon; in
-the bigger project from which these are spun off, I'm actually putting them
-in the Unicode Private Use Area at code points uf17c1 to uf17f6, but if
-they're going to be in a font by themselves, it makes sense to me to map
-them into the ASCII range.
+the Tsukurimashou Project, from which this package descends, Genjimon glyphs
+are mapped into the Unicode Private Use Area at code points U+F17C1 to
+U+F17F6, but if they're going to be in a font by themselves, it makes sense
+to me to map them into the ASCII range.
 
-The fonts are written in the Metafont language, intended to be processed by
-MetaType1 to create Postscript files and then by FontForge to further clean
-up the Postscript and generate TrueType output (which seems to be what the
-largest number of nonprofessional users want).  If you actually want
-Postscript or OpenType as the final form, it should be easy to edit the
-FontForge script to produce that; but don't just skip FontForge, because the
-output of MetaType1 is \emph{not} well-behaved; the clean-up steps are
-necessary.  I'm not enthusiastic about writing up a lengthy description of
-how to compile the fonts; just run the Makefile, make sure you have anything
-it complains about needing, and it should probably work.
+The fonts are written in the METAFONT language, intended to be processed by
+Tsukurimashou's customized version of METATYPE1 to create Postscript files
+and then by FontForge to further clean up the Postscript and generate
+TrueType output (which seems to be what the largest number of
+nonprofessional users want).  If you actually want Postscript or OpenType as
+the final form, it should be easy to edit the FontForge script to produce
+that; but don't just skip FontForge, because the output of METATYPE1 is
+\emph{not} well-behaved; the clean-up steps are necessary.
 
-As mentioned, these fonts are a spin-off from another project of mine.  I am
-providing them as a separate package because I think many people may find
-them interesting outside the context of the larger project; but I don't plan
-to spend a lot of time supporting or documenting them beyond this.  What you
-see is basically what you get.
+As of version 0.2, these fonts are packaged as a ``parasite'' of the
+Tsukurimashou Project.  See the Web site at
+\url{http://tsukurimashou.sourceforge.jp/} for more information.  All bug
+and support requests should be filed in the Tsukurimashou Project's ticket
+tracker, using the ``Parasite font packages'' component selection.
+
+When distributed as an independent package, Genjimon comes with a standard
+GNU Autotools build system.  Type ``./configure'' to set it up, and ``make''
+to build it.  The ``make install'' target is supported, but because font
+installation is often quite system-specific, that target may not really do
+what you want, and you might be better served by just copying the font files
+out of the build directory after running plain ``make.''  There is also a
+``make check'' target, which runs FontForge's fontlint program on all the
+installable fonts.  How well it works, however, may be questionable, because
+fontlint sometimes flags harmless conditions as errors.
 
 These are released under the GNU General Public License, version 3, with
 font-embedding clarification.  See the file named LICENSE and note the
@@ -144,7 +162,7 @@ something interesting or unusual to do with them.
 \noindent Matthew Skala\\
 \url{http://ansuz.sooke.bc.ca/}\\
 \url{mailto:mskala@ansuz.sooke.bc.ca}\\
-\textit{December 8, 2010}
+\textit{October 1, 2012}
 
 \clearpage
 
@@ -229,6 +247,44 @@ stuvwxyz\{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Genjimon Round}
+
+{\fontspec[Scale=3.5,ExternalLocation]{GenjimonRound.ttf}
+ABCDEFGHI
+
+JKLMNOPQR
+
+STUVWXYZ[
+
+abcdefghi
+
+jklmnopqr
+
+stuvwxyz\{}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Genjimon Round Outline}
+
+{\fontspec[Scale=3.5,ExternalLocation]{GenjimonRoundOutline.ttf}
+ABCDEFGHI
+
+JKLMNOPQR
+
+STUVWXYZ[
+
+abcdefghi
+
+jklmnopqr
+
+stuvwxyz\{}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Encoding table}
 
 \begin{tabular}{rrccl}
@@ -290,7 +346,7 @@ stuvwxyz\{}
   120 & 78 & x & \genji{\large x} & \#51 Ukifune \\
   121 & 79 & y & \genji{\large y} & \#52 Kagerou \\
   122 & 7a & z & \genji{\large z} & \#53 Tenarai \\
-  123 & 7b & \{ & \genji{\large \{} & \#54 Yumi no Ukihashi
+  123 & 7b & \{ & \genji{\large \{} & \#54 Yume no Ukihashi
 \end{tabular}
 
 \end{document}
