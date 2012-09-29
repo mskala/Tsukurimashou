@@ -1,6 +1,6 @@
 %
-% Tsukurimashou Tenshi no Kami
-% Copyright (C) 2011  Matthew Skala
+% Bold font weight
+% Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -28,23 +28,18 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-% TSUKURIMASHOU TENSHI NO KAMI
+% BOLD WEIGHT
 
-input preintro.mp;
+transform weight_xf;
+(0,0.62) transformed weight_xf = (0,1.082);
+(1,0.62) transformed weight_xf = (1,1.082);
+(0,0.75) transformed weight_xf = (0,1.191);
 
-stylename:="TenshinoKami";
+tsu_brush_xf:=tsu_brush_xf transformed weight_xf;
+tsu_brush_min:=ypart ((0,tsu_brush_min) transformed weight_xf);
+tsu_brush_max:=ypart ((0,tsu_brush_max) transformed weight_xf);
 
-(0,4) transformed tsu_brush_xf = (4,0.15);
-(1,1) transformed tsu_brush_xf = (1,0.15);
-(4,0) transformed tsu_brush_xf = (0,0.15);
+tsu_pbrush_size:=115;
+tsu_punct_size:=130;
 
-tsu_brush_min:=0.15;
-tsu_brush_max:=0.15;
-
-tsu_pbrush_size:=15;
-
-handakuten_inner:=170;
-
-fine_idcs:=true;
-
-input intro.mp;
+handakuten_outer:=260;

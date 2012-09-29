@@ -50,8 +50,6 @@ style(tsukurimashou,kaku).
 style(tsukurimashou,maru).
 style(tsukurimashou,mincho).
 style(tsukurimashou,bokukko).
-style(tsukurimashou,anbiruteki).
-style(tsukurimashou,tenshinokami).
 
 style(tsuita,soku).
 style(tsuita,atama).
@@ -62,12 +60,12 @@ style(jieubsida,sunmoon).
 
 style(blackletter_lolita,cosette).
 
-weight(extralight):-fail.
-weight(light):-fail.
+weight(extralight).
+weight(light).
 weight(normal).
-weight(demibold):-fail.
-weight(bold):-fail.
-weight(extrabold):-fail.
+weight(demibold).
+weight(bold).
+weight(extrabold).
 
 spacing(monospace).
 spacing(proportional):-proportional_enabled.
@@ -146,9 +144,9 @@ short_name(tenshinokami,tn).
 short_name(extralight,el).
 short_name(light,lw).
 short_name(normal,l___da).
-short_name(demibold,db).
-short_name(bold,bd).
-short_name(extrabold,eb).
+short_name(demibold,dq).
+short_name(bold,bq).
+short_name(extrabold,eq).
 
 short_name(monospace,l___da).
 short_name(proportional,ps).
@@ -270,6 +268,17 @@ want_style_short(F,S,W,P):-
 style_xlat(F,S,W,P,_X,FX,SX,WX,PX):-
   family(FA),style(FA,SA),weight(WA),spacing(PA),
   short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P),
+  do_style_xlat(FA,SA,WA,PA,FX,SX,WX,PX).
+
+do_style_xlat(tsukurimashou,maru,extralight,P,FX,SX,WX,PX):-
+  long_name(tsukurimashou,FX),long_name(tenshinokami,SX),
+  long_name(normal,WX),long_name(P,PX),!.
+
+do_style_xlat(tsukurimashou,maru,extrabold,P,FX,SX,WX,PX):-
+  long_name(tsukurimashou,FX),long_name(anbiruteki,SX),
+  long_name(normal,WX),long_name(P,PX),!.
+
+do_style_xlat(FA,SA,WA,PA,FX,SX,WX,PX):-
   long_name(FA,FX),long_name(SA,SX),long_name(WA,WX),long_name(PA,PX).
 
 style_jkxlat(F,S,W,P,_X,FX,SX,WX,PX):-
@@ -282,6 +291,7 @@ cfg_style(none,_F,_S,_W,_P):-fail.
 
 cfg_style(N,F,_S,_W,_P):-family(N), =(N,F).
 cfg_style(N,F,S,_W,_P):-style(F,N), =(N,S).
+cfg_style(N,_F,_S,W,_P):-weight(W), =(N,W).
 
 cfg_style(T,F,S,W,P):-short_name(N,T),cfg_style(N,F,S,W,P).
 

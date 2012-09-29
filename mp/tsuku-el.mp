@@ -1,6 +1,6 @@
 %
-% Tsukurimashou Anbiruteki
-% Copyright (C) 2011  Matthew Skala
+% Extra-Light font weight (Tenshi no Kami when added to Maru)
+% Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -28,22 +28,19 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-% TSUKURIMASHOU ANBIRUTEKI
+% EXTRA-LIGHT WEIGHT
 
-input preintro.mp;
+transform weight_xf;
+(0,0.62) transformed weight_xf = (0,0.15);
+(1,0.62) transformed weight_xf = (1,0.15);
+(0,0.75) transformed weight_xf = (0,0.15);
 
-stylename:="Anbiruteki";
+tsu_brush_xf:=tsu_brush_xf transformed weight_xf;
+tsu_brush_min:=ypart ((0,tsu_brush_min) transformed weight_xf);
+tsu_brush_max:=ypart ((0,tsu_brush_max) transformed weight_xf);
 
-(0,4) transformed tsu_brush_xf = (4,1.5);
-(1,1) transformed tsu_brush_xf = (1,1.5);
-(4,0) transformed tsu_brush_xf = (0,1.5);
+tsu_pbrush_size:=15;
 
-tsu_brush_min:=1.5;
-tsu_brush_max:=1.5;
+handakuten_inner:=170;
 
-tsu_pbrush_size:=115;
-tsu_punct_size:=130;
-
-handakuten_outer:=260;
-
-input intro.mp;
+fine_idcs:=true;

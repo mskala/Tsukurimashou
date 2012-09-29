@@ -717,7 +717,7 @@ fea/%.fea: \
 	  $(mvp)/fsc/$*.fsc > fea/$*.fea
 
 define NAME_RECIPE
-fea/$(subst _,-,$1)-name.fea: fea/.dirstamp tools/make-name
+fea/$(subst _,-,$1)-name.fea: fea/.dirstamp tools/make-name makefile-vars.inc
 	$$(TSU_V_PERL)
 	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-name "$(OT_FEATURES)" \
 	  "$(XLAT_$(word 1,$(subst _,$(space),$1)))" \

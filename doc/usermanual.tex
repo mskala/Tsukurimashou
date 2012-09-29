@@ -1980,6 +1980,12 @@ number.  For instance, ``tsuku-mi-ps-00'' might be the short name of a
 subfont.  These are often used in constructing filenames for intermediate
 files during build.
 
+Anyone contemplating modification of this system should be aware that
+short-name tokens must not be hexadecimal numbers that the build system
+could confuse with page numbers.  To prevent terms like ``extra bold'' and
+``demibold'' from abbreviating to valid hexadecimal numbers, the word
+``bold'' shall be considered to include the letter ``q.''
+
 Fragments of short names are also used to name source code files.  Files
 following this scheme (not all source files do) have names consisting of one
 family token, a hyphen, and one other token, followed by the appropriate

@@ -179,11 +179,13 @@ vardef tsu_accent.ringabove =
     shifted ((500,vmetric(0.83-0.03*mincho)-10)
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
-  push_lcblob(reverse fullcircle rotated 45
-    scaled (2*tsu_punct_size-110*tsu_brush_max)
-    shifted ((500,vmetric(0.83-0.03*mincho)-10)
-      transformed tsu_rescale_xform)
-    transformed inverse tsu_rescale_xform);
+  if 2*tsu_punct_size-110*tsu_brush_max>10:
+    push_lcblob(reverse fullcircle rotated 45
+      scaled (2*tsu_punct_size-110*tsu_brush_max)
+      shifted ((500,vmetric(0.83-0.03*mincho)-10)
+        transformed tsu_rescale_xform)
+      transformed inverse tsu_rescale_xform);
+  fi;
   push_anchor(anc_upper_accent,
     accent_default[anc_upper_accent] shifted (0,170));
 enddef;

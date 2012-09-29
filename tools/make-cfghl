@@ -46,8 +46,12 @@ if ($type eq "char") {
 
 foreach $_ (reverse split (/[, ]+/,shift)) {
     if (/^(-|!)(.*)$/) {
-	print "want_$type($tail):-cfg_${type}($2,$tail),!,fail.\n";
+	print "want_$type($tail):-cfg_$type(".
+	  join(",$tail),cfg_$type(",split(/[:&]+/,$2)).
+	  ",$tail),!,fail.\n";
     } elsif (/^\+?(.*)$/) {
-	print "want_$type($tail):-cfg_$type($1,$tail),!.\n";
+	print "want_$type($tail):-cfg_$type(".
+	  join(",$tail),cfg_$type(",split(/[:&]+/,$1)).
+	  ",$tail),!.\n";
     }
 }

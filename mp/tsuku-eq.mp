@@ -1,5 +1,5 @@
 %
-% Japanese and Korean name translations for Tsukurimashou
+% Extra-Bold font weight (Anbiruteki when added to Maru)
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -28,37 +28,18 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-% This file gets translated into jnames.hl, which has the Unicode code
-% points expressed in a form Hamlog can process.
+% EXTRA-BOLD WEIGHT
 
-tsukurimashou	作りましょう
-tsuita	ツイタ
-blackletter_lolita	ＢＬロリータ
+transform weight_xf;
+(0,0.62) transformed weight_xf = (0,1.5);
+(1,0.62) transformed weight_xf = (1,1.5);
+(0,0.75) transformed weight_xf = (0,1.5);
 
-kaku	角
-maru	丸
-mincho	明朝
-bokukko	僕女
-anbiruteki	アンビル的
-tenshinokami	天使の髪
+tsu_brush_xf:=tsu_brush_xf transformed weight_xf;
+tsu_brush_min:=ypart ((0,tsu_brush_min) transformed weight_xf);
+tsu_brush_max:=ypart ((0,tsu_brush_max) transformed weight_xf);
 
-soku	足
-atama	頭
+tsu_pbrush_size:=115;
+tsu_punct_size:=130;
 
-cosette	♥コセット♥
-
-extralight	白字
-light	軽字
-normal	l___da
-demibold	半太字
-bold	太字
-extrabold	黒字
-
-monospace	l___da
-proportional	ＰＳ
-
-jieubsida	지읍시다
-
-dodum	돋움
-batang	바탕
-sunmoon	선문
+handakuten_outer:=260;
