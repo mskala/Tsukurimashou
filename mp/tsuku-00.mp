@@ -1284,7 +1284,9 @@ endtsuglyph;
 % a with ring above
 begintsuglyph("aring",229);
   tsu_accent.apply(latin.lowa)(tsu_accent.ringabove);
-  replace_lcblob(-1)(oldblob shifted (30,-20));
+  if find_whatever(otlcblob,-1)>0:
+    replace_lcblob(-1)(oldblob shifted (30,-20));
+  fi;
   replace_lcblob(0)(oldblob shifted (30,-20));
   tsu_render;
 endtsuglyph;

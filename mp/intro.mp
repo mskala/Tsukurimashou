@@ -377,6 +377,9 @@ vardef segment_inflections(expr p) =
   z13=(point 1 of p)+z22;
   z10+z11+z12+z13=(0,0);
   c10=(abs(z10)+abs(z11)+abs(z12)+abs(z13))/4;
+  if c10<0.1:
+    c10:=0.1;
+  fi;
   z0=z10/c10;
   z1=z11/c10;
   z2=z12/c10;

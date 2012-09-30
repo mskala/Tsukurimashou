@@ -300,6 +300,7 @@ if ($in_page>=0) {
   $progacc=0;
 }
 
+print "_ProgCount=_ProgCount+1000;\n";
 print "Print(\"PROGRESS START \"+ToString(_ProgCount));\n";
 print $actual_copies;
 
@@ -341,8 +342,9 @@ sub precompose {
 &precompose(0x215e,0xff1b8,0xff0b7,0xff005);
 &precompose(0x215f,0x0020,0xff0b1,0xff005);
 
-# do hinting
+# save a checkpoint
 print <<'EOF';
+Print("PROGRESS ADD 100");
 Save("sfd/"+$1+".sfd");
 EOF
 
@@ -357,6 +359,7 @@ ScaleToEm(1000);
 Print(96);
 SelectAll();RemoveOverlap();
 Print(1);
+Print("PROGRESS ADD 200");
 EOF
 
 # create inverted glyphs - must happen after overlap removal
@@ -380,6 +383,7 @@ Print(4);
 SelectAll();Simplify(196,3);
 Print(5);
 SelectAll();AddExtrema($ae_arg);
+Print("PROGRESS ADD 200");
 Print(6);
 SelectAll();RoundToInt();
 Print(7);
@@ -387,6 +391,7 @@ SelectAll();CorrectDirection();
 Print(8);
 SelectAll();CanonicalStart();
 SelectAll();CanonicalContours();
+Print("PROGRESS ADD 100");
 EOF
 
 # do hinting
@@ -395,6 +400,7 @@ Print(101);
 SelectAll();AutoHint();
 SelectAll();AutoCounter();
 Save("sfd/"+$1+".sfd");
+Print("PROGRESS ADD 100");
 EOF
 
 # load feature info, if applicable
@@ -424,4 +430,4 @@ endif
 EOF
 
 # quit
-print "Quit(0);\n";
+print "Print(\"PROGRESS ADD 300\");\nQuit(0);\n";

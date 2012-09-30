@@ -780,7 +780,9 @@ endtsuglyph;
 % u with ring above
 begintsuglyph("uring",111);
   tsu_accent.apply(latin.lowu)(tsu_accent.ringabove);
-  replace_lcblob(-1)(oldblob shifted (-50,-40));
+  if find_whatever(otlcblob,-1)>0:
+    replace_lcblob(-1)(oldblob shifted (-50,-40));
+  fi;
   replace_lcblob(0)(oldblob shifted (-50,-40));
   tsu_render;
 endtsuglyph;

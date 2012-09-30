@@ -391,14 +391,14 @@ inc@andt@lude makefile-pdf.inc
 -inc@andt@lude makefile-maint.inc
 
 family_xlat_script:=\
-  's/, +/,/g;s/l___da//g;/\((.*),(.*)\)/;($$a,$$b)=($$1,$$2);\
+  's/, +/,/g;s/l___da//g;s/ +$$//;/\((.*),(.*)\)/;($$a,$$b)=($$1,$$2);\
     $$_="XLAT_$$a=$$b\n";s/s___e/ /g;s/h___en/-/g;s/([a-z])__/uc($$1)/ge;'
 style_xlat_script:=\
-  's/, +/,/g;s/l___da//g;s/,+/,/g;/\((.*),x___x,(.*)\)/;\
+  's/, +/,/g;s/l___da//g;s/,+/,/g;s/ +$$//;/\((.*),x___x,(.*)\)/;\
   ($$a,$$b)=($$1,$$2);$$a=~s/,+/_/g;$$a=~s/_$$//;$$b=~s/,+/ /g;\
   $$_="XLAT_$$a=$$b\n";s/s___e/ /g;s/h___en/-/g;s/([a-z])__/uc($$1)/ge;'
 jkstyle_xlat_script:=\
-  's/, +/,/g;s/l___da//g;s/,+/,/g;/\((.*),x___x,(.*)\)/;\
+  's/, +/,/g;s/l___da//g;s/,+/,/g;s/ +$$//;/\((.*),x___x,(.*)\)/;\
   ($$a,$$b)=($$1,$$2);$$a=~s/,+/_/g;$$a=~s/_$$//;$$b=~s/,+$$//;\
   $$_="JKXLAT_$$a=$$b\n";'
 makefile-vars.inc: \
