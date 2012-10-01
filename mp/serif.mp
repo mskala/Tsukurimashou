@@ -112,7 +112,7 @@ vardef tsu_serif.mincho.corner(expr bst,plp,dlp,l,bts,bos) =
     serif:=(-1,-0.3)..(0.25,-1.3)..(1,-1.2)..tension 1.2..
       (1,0.6)..(-0.25,1.3)..(-1,1.2)..tension 1.2..cycle;
     serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
-      scaled (bts*0.43);
+      scaled (bts*0.43*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted plp);
     ngls:=ngls+1;
   endgroup;
@@ -125,7 +125,7 @@ vardef tsu_serif.mincho.ulpoint(expr bst,plp,dlp,l,bts,bos) =
     serif:=(-1.5,2.7)..tension 2..(-1,0)..(-0.4,-0.3)..tension 1.5..
       (0.707,0)..(0.2,0.6)..(-0.1,1.1)..tension 2..(-1.2,2.9)..cycle;
     serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
-      scaled (bts*0.5);
+      scaled (bts*0.5*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted
        (plp+(-1,0)*0.25*bts*(xpart dlp/abs(dlp))));
     ngls:=ngls+1;
@@ -139,7 +139,7 @@ vardef tsu_serif.mincho.triangle(expr bst,plp,dlp,l,bts,bos) =
     serif:=(-1.2,0)..(0,-0.8)..(1.2,0.4)..tension 2..(0.2,1.3)..
       (-0.2,1.3)..tension 2..cycle;
     serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
-      scaled (bts*0.5);
+      scaled (bts*0.5*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted (plp+0.25*bts*dlp/abs(dlp)));
     ngls:=ngls+1;
   endgroup;
@@ -152,7 +152,7 @@ vardef tsu_serif.mincho.llpoint(expr bst,plp,dlp,l,bts,bos) =
     serif:=(-2.1,-1.9)..(-1.8,-2.1)..tension 2..(-0.1,-1.2)..(0.2,-1.1)..
       (0.707,0.707)..(-1,-0.3)..tension 2..cycle;
     serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
-      scaled (bts*0.5);
+      scaled (bts*0.5*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted plp);
     ngls:=ngls+1;
   endgroup;
@@ -167,7 +167,7 @@ vardef tsu_serif.mincho.lpoint(expr bst,plp,dlp,l,bts,bos) =
     serif:=reverse serif reflectedabout ((-1,1),(1,-1))
       xyscaled (0.7,0.9) shifted (0.3,-0.3);
     serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
-      scaled bts;
+      scaled (bts*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted plp);
     ngls:=ngls+1;
   endgroup;
@@ -194,7 +194,7 @@ vardef tsu_serif.mincho.ktriangle(expr bst,plp,dlp,l,bts,bos) =
       --z3--z4--cycle)
       transformed t yscaled tsu_brush_shape
       rotated tsu_brush_angle
-      scaled (bts*bos*0.98) shifted plp;
+      scaled (bts*bos*0.98*mincho_blob_size) shifted plp;
     if (xxpart t)*(yypart t)<0: serif:=reverse serif; fi;
     glstk[ngls]:=regenerate(serif);
     ngls:=ngls+1;
@@ -211,7 +211,8 @@ vardef tsu_serif.mincho.khellipse(expr bst,plp,dlp,l,bts,bos) =
     z1=(dlp/abs(dlp)) rotated 90;
     up transformed t=z1;
     t:=t rotated -tsu_brush_angle yscaled tsu_brush_shape
-      rotated tsu_brush_angle scaled (bts*bos*0.99) shifted plp;
+      rotated tsu_brush_angle scaled (bts*bos*0.99*mincho_blob_size)
+      shifted plp;
     z2=(0.5[x3,x4],1);
     if l=0:
       z3=(-0.5,0);
@@ -296,4 +297,3 @@ enddef;
 vardef tsu_serif.choose(expr bst,plp,dlp,l,bts,bos) =
   tsu_serif.standard(bst,plp,dlp,l,bts,bos);
 enddef;
-

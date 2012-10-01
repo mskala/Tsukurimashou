@@ -784,11 +784,20 @@ enddef;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % figure out size of brush
-(mbrush_width,mbrush_height)=urcorner (
-   fullcircle xscaled (tsu_brush_max*100)
-   yscaled (tsu_brush_max*tsu_brush_shape*100)
-   rotated tsu_brush_angle
-);
-alternate_adjust:=abs(mbrush_height-mbrush_width);
+vardef calc_mbrush_size =
+  numeric mbrush_width,mbrush_height,alternate_adjust;
+  (mbrush_width,mbrush_height)=urcorner (
+     fullcircle xscaled (tsu_brush_max*100)
+     yscaled (tsu_brush_max*tsu_brush_shape*100)
+     rotated tsu_brush_angle
+  );
+  alternate_adjust:=abs(mbrush_height-mbrush_width);
+  if tsu_brush_max>0.75:
+    serif_size:=2;
+  else:
+    serif_size:=2*((tsu_brush_max/0.75)**(1/3));
+  fi;
+  mincho_blob_size:=sqrt(tsu_brush_max/0.75);
+enddef;
 
-serif_size:=2;
+calc_mbrush_size;

@@ -43,3 +43,5 @@ tsu_pbrush_size:=115;
 tsu_punct_size:=130;
 
 handakuten_outer:=260;
+
+calc_mbrush_size;

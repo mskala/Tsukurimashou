@@ -1087,7 +1087,7 @@ vardef latin.lowi =
   x2=x3;
   0.85[x1,x2]=450;
   (x2-x1)=0.3(y2-y3);
-  x4=x2-mbrush_width*0.6;
+  x4=x2-15;
 
   y1=y2=latin_wide_xheight_h;
   y3=latin_wide_low_v;
@@ -1108,7 +1108,7 @@ vardef latin.lowj =
   x2=x3;
   0.85[x1,x2]=450;
   (x2-x1)=0.3(y2-y3);
-  x5=x2-mbrush_width*0.6;
+  x5=x2-15;
 
   y1=y2=latin_wide_xheight_h;
   y3=latin_wide_low_v;

@@ -44,3 +44,5 @@ tsu_pbrush_size:=35;
 handakuten_inner:=170;
 
 fine_idcs:=true;
+
+calc_mbrush_size;
