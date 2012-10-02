@@ -304,37 +304,42 @@ enddef;
 
 % get rid of degeneracies
 def regenerate(expr p) =
-  begingroup
-    save q;
-    path q;
-    for t=1 step 1 until length p:
-      if abs((point t of p)-(point (t-1) of p))>3:
-        if unknown q:
-          q:=subpath (t-1,t) of p;
-        elseif length(q)=1:
-          q:=(point 0 of q)..
-              controls (postcontrol 0 of q) and (precontrol 1 of q)..
-            (0.5[point 1 of q,point t-1 of p])..
-              controls (postcontrol t-1 of p) and (precontrol t of p)..
-            (point t of p);
-        else:
-          q:=(subpath (0,length(q)-1) of q)..
-              controls (postcontrol length(q)-1 of q)
-                and (precontrol length(q) of q)..
-            (0.5[point length(q) of q,point t-1 of p])..
-              controls (postcontrol t-1 of p) and (precontrol t of p)..
-            (point t of p);
+  if (xpart urcorner p-xpart ulcorner p<5)
+    and (ypart ulcorner p-ypart llcorner p<5):
+    p
+  else:
+    begingroup
+      save q;
+      path q;
+      for t=1 step 1 until length p:
+        if abs((point t of p)-(point (t-1) of p))>3:
+          if unknown q:
+            q:=subpath (t-1,t) of p;
+          elseif length(q)=1:
+            q:=(point 0 of q)..
+                controls (postcontrol 0 of q) and (precontrol 1 of q)..
+              (0.5[point 1 of q,point t-1 of p])..
+                controls (postcontrol t-1 of p) and (precontrol t of p)..
+              (point t of p);
+          else:
+            q:=(subpath (0,length(q)-1) of q)..
+                controls (postcontrol length(q)-1 of q)
+                  and (precontrol length(q) of q)..
+              (0.5[point length(q) of q,point t-1 of p])..
+                controls (postcontrol t-1 of p) and (precontrol t of p)..
+              (point t of p);
+          fi;
         fi;
+      endfor;
+      if cycle p:
+        q:=subpath (0,length(q)-1) of q..
+             controls (postcontrol length(q)-1 of q)
+               and (precontrol length(q) of q)..
+           cycle;
       fi;
-    endfor;
-    if cycle p:
-      q:=subpath (0,length(q)-1) of q..
-           controls (postcontrol length(q)-1 of q)
-             and (precontrol length(q) of q)..
-         cycle;
-    fi;
-    q
-  endgroup
+      q
+    endgroup
+  fi
 enddef;
 
 % like Fill, but doesn't complain about turning number
@@ -511,7 +516,7 @@ enddef;
 % Arcs of a pen shorter than |ignore_nib_limit| will be joined together
 % to form larger ones. Remember to adjust the parameter |ignore_nib_limit|
 % if the size of |default_nib| is significantly changed.
-newinternal ignore_nib_limit; ignore_nib_limit:=5;
+newinternal ignore_nib_limit; ignore_nib_limit:=1;
 
 path default_nib;
 default_nib:=fix_nib(50,50,0); % hundred times as large as a default plain pen

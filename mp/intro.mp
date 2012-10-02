@@ -351,6 +351,8 @@ vardef solve_quadratic(expr a,b,c) =
     else:
       (-c/b,whatever)
     fi
+  elseif abs(a)<abs(b)/500:
+    (whatever,whatever)
   else:
     save d;
     numeric d;

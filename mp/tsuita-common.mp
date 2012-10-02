@@ -439,12 +439,12 @@ def tsu_rescale_xform =
       wt=ypart (width_curve intersectionpoint ((wf,-infinity)--(wf,infinity)));
       % find transformation
       if wf>0:
+        (rescale_from.right-rf,rescale_from.bottom) transformed t=
+          (rescale_to.right-rt,rescale_to.bottom+rescale_skew);
         (rescale_from.left+lf,rescale_from.bottom) transformed t=
           (rescale_to.left+lt,rescale_to.bottom-rescale_skew);
         (rescale_from.left+lf,rescale_from.top) transformed t=
           (rescale_to.left+lt,rescale_to.top-rescale_skew);
-        (rescale_from.right-rf,rescale_from.bottom) transformed t=
-          (rescale_to.right-rt,rescale_to.bottom+rescale_skew);
       else:
         (rescale_from.left+lf,rescale_from.bottom) transformed t=
           (rescale_to.left+lt,rescale_to.bottom);
