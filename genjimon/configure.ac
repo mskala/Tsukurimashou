@@ -199,9 +199,9 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([genjimon-black.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1725 2012-09-27 19:03:23Z mskala $])
+AC_REVISION([$Id: configure.ac 1740 2012-10-02 16:33:49Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
-AC_SUBST([release_date],["September 27, 2012"])
+AC_SUBST([release_date],["October 2, 2012"])
 AM_SILENT_RULES
 #
 ############################################################################

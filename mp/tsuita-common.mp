@@ -375,7 +375,7 @@ def tsu_render_segment(expr i,p,q) =
     ngls:=ngls+1;
     for l=0 step 1 until length(myp):
       si:=floor (ltime[l]+0.5);
-      if known obstacknaa.boserif[i][si]:
+      if (abs(ltime[l]-si)<0.1) and known obstacknaa.boserif[i][si]:
         tsu_serif.choose(obstacknaa.boserif[i][si],
           point l of myp,direction l of myp,l,
           obstackna.bosize[i],tsu_brush_tip_size(l,q));

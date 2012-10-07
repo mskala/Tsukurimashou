@@ -359,7 +359,7 @@ ScaleToEm(1000);
 Print(96);
 SelectAll();RemoveOverlap();
 Print(1);
-Print("PROGRESS ADD 200");
+Print("PROGRESS ADD 50");
 EOF
 
 # create inverted glyphs - must happen after overlap removal
@@ -383,7 +383,7 @@ Print(4);
 SelectAll();Simplify(196,3);
 Print(5);
 SelectAll();AddExtrema($ae_arg);
-Print("PROGRESS ADD 200");
+Print("PROGRESS ADD 50");
 Print(6);
 SelectAll();RoundToInt();
 Print(7);
@@ -391,7 +391,7 @@ SelectAll();CorrectDirection();
 Print(8);
 SelectAll();CanonicalStart();
 SelectAll();CanonicalContours();
-Print("PROGRESS ADD 100");
+Print("PROGRESS ADD 200");
 EOF
 
 # do hinting
@@ -400,7 +400,7 @@ Print(101);
 SelectAll();AutoHint();
 SelectAll();AutoCounter();
 Save("sfd/"+$1+".sfd");
-Print("PROGRESS ADD 100");
+Print("PROGRESS ADD 300");
 EOF
 
 # load feature info, if applicable
