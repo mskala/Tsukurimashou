@@ -1297,7 +1297,7 @@ vardef latin.lowp =
       (1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0,4.97) of oldp);
   set_botip(0,1,1);
-  set_boserif(0,0,if do_italic_hook: 1 else: 3 fi);
+  if not do_italic_hook: set_boserif(0,0,3); fi;
   set_boserif(0,1,1);
   expand_pbox;
 enddef;
@@ -1325,7 +1325,7 @@ vardef latin.lowq =
   replace_strokep(0)(subpath (0,6.97) of oldp);
   set_botip(0,2,0);
   set_botip(0,3,1);
-  set_boserif(0,3,2);
+  if not do_italic_hook: set_boserif(0,3,2); fi;
   expand_pbox;
 enddef;
 
@@ -1612,7 +1612,7 @@ vardef latin.lowy =
 
   set_boserif(-1,0,if do_italic_hook: 11 else: 3 fi);
   set_boserif(0,0,if do_italic_hook: 2 else: 3 fi);
-  set_botip(0,1,1);
+  set_botip(-1,1,1);
   set_boalternate(0);
 
   if do_alternation:

@@ -276,6 +276,68 @@ vardef latin.loww =
   expand_pbox;
 enddef;
 
+vardef latin.lowy =
+  push_pbox_toexpand("latin.lowy");
+  (x1+x3)/2=(x2+x4)/2=510;
+  (x2+x3-x1-x4)=((y1-y2)*0.58)*2;
+  (x3-x1)=(x2-x4)*0.93;
+  x5=x4-0.1*(x2-x4);
+
+  y1=y3=latin_wide_xheight_v;
+  y2=y4;
+  y5=0.5[y4,latin_wide_low_h]=latin_wide_desc_h;
+
+  z6=0.66[z1,z3];
+
+  push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
+
+  push_stroke(z6..
+      (0.3[z3,z4])..tension 5..(0.6[z3,z4])..tension 0.8 and 3..{left}z5,
+    (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+
+  numeric xchgtime;
+  xchgtime:=ypart (get_strokep(-1) intersectiontimes get_strokep(0));
+
+  replace_strokep(-1)(z1--subpath (xchgtime,infinity) of get_strokep(0));
+  replace_strokeq(-1)
+    ((1.6,1.6)--subpath (xchgtime,infinity) of get_strokeq(0));
+
+  replace_strokep(0)(subpath (0,xchgtime) of oldp);
+  replace_strokeq(0)(subpath (0,xchgtime) of oldq);
+
+  set_boserif(-1,0,11);
+  set_botip(-1,1,1);
+  set_boalternate(0);
+
+  if do_alternation:
+    replace_strokep(-1)(oldp shifted (alternate_adjust*left/2));
+    replace_strokep(0)(oldp shifted (alternate_adjust*right/2));
+  fi;
+  expand_pbox;
+enddef;
+
+vardef latin.lowz =
+  push_pbox_toexpand("latin.lowz");
+  y2=y4=latin_wide_xheight_h;
+  y5=y7=latin_wide_low_h;
+  y2-y1=y8-y7=0.15*(y4-y5);
+  y4-y3=y6-y5=0.09*(y4-y5);
+
+  x1=x5;
+  x4=x8;
+  (x1+x4)/2=500;
+  (x4-x1)=(y4-y5)*0.92;
+  x2=x6=0.25[x1,x4];
+  x3=x7=0.75[x1,x4];
+
+  push_stroke(z1..z2..z3..z4--z5..z6..z7..z8,
+    (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--
+    (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+  set_botip(0,4,0);
+  set_botip(0,5,0);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 def tsu_render_segment(expr i,p,q) =
