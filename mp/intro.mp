@@ -771,14 +771,16 @@ def tsu_default_anchor(expr aindex,avalue) =
   elseif transform avalue:
     write ("DEFAULTANCHOR "&
            (decimal aindex)&" "&
-           (decimal xpart ((0,0) transformed avalue))&" "&
-           (decimal ypart ((0,0) transformed avalue)))
+           (decimal xpart ((0,0) transformed avalue
+                           transformed tsu_rescale_xform))&" "&
+           (decimal ypart ((0,0) transformed avalue
+                           transformed tsu_rescale_xform)))
             to "proof.prf";
   elseif pair avalue:
     write ("DEFAULTANCHOR "&
            (decimal aindex)&" "&
-           (decimal xpart avalue)&" "&
-           (decimal ypart avalue))
+           (decimal xpart (avalue transformed tsu_rescale_xform))&" "&
+           (decimal ypart (avalue transformed tsu_rescale_xform))
             to "proof.prf";
   fi;
 enddef;

@@ -1,5 +1,5 @@
 %
-% Unicode page 24 (Geometric Shapes) for Tsukurimashou
+% Unicode page 25 (Geometric Shapes) for Tsukurimashou
 % Copyright (C) 2011, 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
