@@ -245,16 +245,24 @@ Some other notes:
 \begin{itemize}
   \item Since my learning the kanji is a big part of the goal of this
   project, ``labour-saving'' approaches that would relieve me of having to
-  look at all the kanji individually myself (for instance, by feeding
-  a pre-existing database of kanji shapes into my existing general font
-  technology) are not really of interest.
+  look at all the kanji individually myself (for instance, by feeding a
+  pre-existing database of kanji shapes into my existing general font
+  technology) are not appropriate to the original intention of the project. 
+  Nonetheless, as of Fall 2012 I have become involved in a proposed research
+  project to more or less exactly feed a pre-existing database of kanji
+  shapes into my existing general font technology.  Most likely,
+  Tsukurimashou itself will continue to be manually maintained by me alone
+  in support of my own language learning, and some future version of this
+  document will also contain information about the database-driven system,
+  which will also be free, will involve other maintainers besides me, and
+  will share technology with Tsukurimashou.
 
   \item Proportional spacing and kerning still require some work.  Be aware
   that future versions will change the spacing of some characters, so if you
   are one of those people to whom any changes in line breaking are anathema,
   you should not expect to be able to upgrade the proportionally spaced
   versions of these fonts in archived documents.  The monospace
-  versions have more long-term stability.
+  versions have more, but still not complete, long-term stability.
 
   \item I would like to include at least some support for vertical script,
   but it is not a high priority.  One obstacle is that I don't have access
@@ -266,7 +274,7 @@ Some other notes:
   other Han-script languages (such as any dialect of Chinese) nor put a
   lot of effort into tweaking the fine details of characters only intended
   for use in occasional foreign words.
-  
+
   \item Support of Korean is limited because of my limited knowledge
   of that language; and learning it is not a high priority for me.  At
   this point the Jieubsida fonts only support Korean hangul, not hanja
@@ -788,10 +796,10 @@ a bit.
 Building Tsukurimashou (and, especially, its documentation) requires the use
 of some fairly advanced features of third-party software.  Some of those
 features are not often used; as a result, I've become an unintentional
-beta-tester for the third-party packages.  I've previously noted bugs when
-they come up, in code comments and the relevant parts of this document, but
-as of the current version, such bugs have become so numerous that it makes
-sense to also have a central list.
+beta-tester, and in some cases a maintainer, for the third-party packages. 
+I've previously noted bugs when they come up, in code comments and the
+relevant parts of this document, but as of the current version, such bugs
+have become so numerous that it makes sense to also have a central list.
 
 \begin{itemize}
   \item Metapost (maybe even METAFONT) issue propagated to METATYPE1:
@@ -814,8 +822,8 @@ sense to also have a central list.
     comfortably in $\textrm{2}^\textrm{\small 31}$, but it seems like the
     limit should not exist at all.  Debugging is hindered by some currently
     in progress redesign work on Metapost's data structures, such that (as
-    of October 2011) the cutting-edge development version leaks memory and
-    crashes for that reason long before the serial numbers can run out
+    of October 2011) the cutting-edge development version leaks memory fast
+    and crashes for that reason long before the serial numbers can run out
     anyway.  Memory leaks acknowledged and planned to be fixed by Metapost
     maintainer Taco Hoekwater, but it may take a while.  I've posted a link
     target to track this issue at \url{http://ansuz.sooke.bc.ca/entry/213}.
@@ -839,36 +847,67 @@ sense to also have a central list.
     Postscript file.
 
   \item METATYPE1 pen\_stroke\_edge macro: as of METATYPE1 version
-    0.44, if left to its own devices it will sometimes attempt to
-    evaluate the ``turning angle'' of a zero vector, and then blow up. 
-    This seems to happen most often when stroking a vector in a
-    direction of approximately 290 degrees.  As of Tsukurimashou 0.6,
-    we are bundling METATYPE1 version 0.55, which seems to have fixed
-    this bug; the workaround in previous versions of Tsukurimashou has
-    been removed.
+    0.44, for reasons unknown to me if left to its own devices it will
+    sometimes attempt to evaluate the ``turning angle'' of a zero vector,
+    and then blow up.  This seems to happen most often when stroking a
+    vector in a direction of approximately 290 degrees.  As of Tsukurimashou
+    0.6, we are bundling a macro derived from METATYPE1 version 0.55, which
+    seems to have fixed this bug; the workaround in previous versions of
+    Tsukurimashou has been removed.
+
+  \item Not really a bug, because they warn about it in the documentation
+    and it is a reasonable consequence of design decisions made for good
+    reasons, but: in some cases the METATYPE1 pen\_stroke\_edge macro's
+    output does not well approximate the theoretical ideal shape that would
+    be obtained by stroking the specified pen along the specified path.  A
+    perfect result is not possible because the theoretical perfect curve is
+    not, in general, a cubic spline curve, and there are tricky topological
+    considerations in play too.  Some approximation is necessary, and the
+    one chosen by METATYPE1 basically uses one control point in the output
+    envelope for each control point in the input path.  That may or may not
+    be enough control points to produce a visually nice result.  It seems to
+    especially often be a problem when there is a tight curve and not
+    actually a sharp corner in the input path, so curvature is great but not
+    infinite, or when there is an inflection point in the input path.  These
+    cases are best simply avoided, but Tsukurimashou's bundled version of
+    METATYPE1 now contains added code that attempts to detect tight curves
+    and inflection points and add extra control points automatically to
+    reduce the likelihood of visual problems.  The detection rule the code
+    uses was chosen by trial and error educated by dimensional analysis, not
+    by solid theoretical results, and it will probably be incorrect in some
+    cases.  The extra points and resulting topological weirdness necessitate
+    FontForge postprocessing, and may tend to trigger bugs in FontForge, but
+    FontForge postprocessing was already a dangerous necessity in this
+    project for other reasons anyway.  Thanks to Shriramana Sharma and the
+    Metapost mailing list for discussion encouraging me to work on this
+    issue.
 
   \item METATYPE1 infrastructure in general: sometimes generates paths that
-    METAFONT calls ``degenerate,'' triggering a fatal error. 
-    Workaround is to filter things, before rendering, through the
-    regenerate macro in intro.mp, which removes any very short path
-    segments.  Possibly related: the Fill macro will sometimes abort in
-    response to some conditions on ``turning number'' that do not
-    appear to actually be harmful.  Workaround is to use our
-    dangerousFill in intro.mp instead, which is just a copy of Fill
+    some software layer (possibly METATYPE1's own code) flags as
+    ``degenerate,'' triggering a fatal error.  Workaround is to filter
+    things, before rendering, through the regenerate macro in intro.mp,
+    which removes any very short path segments.  Possibly related: the Fill
+    macro will sometimes abort in response to some conditions on ``turning
+    number'' that do not appear to actually be harmful.  Workaround is to
+    use our dangerousFill in intro.mp instead, which is just a copy of Fill
     with the error checking removed.
 
   \item FontForge spline geometry operations, such as overlap removal and
     simplification: these have historically tended to be very numerically
     unstable, and subject to some combination of infinite loops,
     segmentation faults, unexplained floating-point exceptions, bizarre
-    error messages, incorrect output and so on.  The most recent development
-    versions seem to be relatively good; best advice is to switch to one of
-    those, turn debugging on, and hope.  It is also sometimes possible to
-    get past individual problems by switching between the different
-    floating-point formats offered by FontForge's compile-time
+    error messages, incorrect output, and so on.  The most recent
+    development versions seem to be relatively good; best advice is to
+    switch to one of those, turn debugging on, and hope.  It is also
+    sometimes possible to get past individual problems by switching between
+    the different floating-point formats offered by FontForge's compile-time
     configuration: float, double, and long double.  But which of those is
-    the best choice isn't always predictable.  Some numerical tweaks in
-    actual glyph outlines also exist to try to work around these issues.
+    the best choice isn't always predictable, and as of October 2012 some
+    FontForge developers are attempting to remove the option to choose
+    between them (which should improve stability in the long term by
+    improving maintainability, but may harm stability in the short term). 
+    Some numerical tweaks in actual glyph outlines also exist to try to work
+    around these issues.
 
   \item FontForge usually fails to automatically insert appropriate
     subtable breaks when it reads a feature file describing a large
@@ -880,11 +919,13 @@ sense to also have a central list.
     particular, cannot subsequently be loaded by FontForge (sometimes cannot
     be loaded at all, other times can be loaded but the loaded tables behave
     differently from the ones that were saved).  Workaround:  do not save
-    feature files from FontForge.
+    feature files from FontForge.  As of October 2012 there has been some
+    interest shown by FontForge developers in addressing this issue, but it
+    will likely be a gradual process instead of a single complete fix.
 
   \item FontForge can segfault while writing a feature file because of
     dereferencing a pointer first and checking whether it was null
-    afterward.  Fixed by developers in December 2011.
+    afterward.  Fixed by the FontForge developers in December 2011.
 
   \item FontForge does not apply features of the ``DFLT'' language system as
     a default to Unicode ranges that have no explicit mention in the font
@@ -897,17 +938,15 @@ sense to also have a central list.
     Went undetected for a long time apparently because only CJK fonts are
     likely to have so many horizontal stems, and CJK fonts are likely to
     be monospace and thus won't also have per-glyph non-default advance
-    widths.  Fix: change the limit to 22.  Patch offered on FontForge
-    mailing list in November 2011
-    (\url{http://sourceforge.net/mailarchive/forum.php?thread_name=alpine.LNX.2.00.1111231635070.28210\%40tetsu.ansuz.sooke.bc.ca&forum_name=fontforge-devel}),
-    applied by FontForge developers in December 2011.
+    widths.  Fixed by changing the limit to 22, with a patch I wrote that
+    the FontForge developers accepted in December 2011.
 
   \item FontForge save and then load of an SFD file has the effect of
     renaming the ``clig'' feature to ``rtla'' on only one of the three
     machines where I've tried it.  May be related to the x86-64
-    architecture.  Reported on mailing list November 2011,
-    mentioned in a developer's commit message December 2011, whether it
-    is in fact fixed is unknown.
+    architecture.  Not reliably reproducible.  Reported on mailing list
+    November 2011, mentioned in a developer's commit message December 2011,
+    not observed recently and probably fixed by now.
 
   \item FontForge rasterization to BDF via FreeType as opposed to whatever
     other code FontForge would use:  sometimes produces corrupt results. 
@@ -929,14 +968,16 @@ sense to also have a central list.
     substitutions, most notably that ``ignore sub'' rules have no effect.
     This is actually a bug in the third-party ICU library which \XeTeX\ uses.
     Reported to \XeTeX\ mailing list in November 2011; after discussion there
-    (\url{http://tug.org/pipermail/xetex/2011-November/022298.html}) found
-    existing issue in ICU's bug tracker dating from June 2010
+    (\url{http://tug.org/pipermail/xetex/2011-November/022298.html}) I found
+    an existing issue in ICU's bug tracker dating from June 2010
     (\url{http://bugs.icu-project.org/trac/ticket/7753}).  Poor
     workaround is to carefully write all substitution features to work
     regardless of whether the pointer advances; one useful technique is to
     make what would be an ``ignore sub'' rule instead substitute to a
     series of identical-looking glyphs that are never matched on input to
-    subsequent rules.
+    subsequent rules.  As of mid-2012 there was interest expressed by
+    \XeTeX\ developers in replacing ICU with HarfBuzz, which is known to
+    handle this case correctly and may have other advantages too.
 
   \item \XeTeX\ fontspec package: in some versions has trouble with treating
     its WordSpace configuration option as a multiplier when font size
@@ -960,7 +1001,8 @@ sense to also have a central list.
   \item \XeTeX\ and fontspec do not apply by default some OpenType features
     that are supposed to be applied by default (in particular, ``ljmo'' and
     ``vjmo'').  Workaround: manually request them with the RawFeature
-    option.
+    option.  It is possible that more careful language tagging (specifically
+    of Korean text) in the \TeX\ input might reduce or eliminate this issue.
 
   \item \LaTeX\ tocloft package:  as of May 2011, it sets an entry without a
     dot leader by actually requesting an entry with a leader, but with a
@@ -978,14 +1020,14 @@ sense to also have a central list.
 
   \item PGF (lower layer of TikZ) shapes.callouts library: in version 2.10
     only, ellipse callouts just don't work (causing fatal \TeX\ errors if
-    attempted), apparently because a macro name was changed in PGF
-    development process and the change not propagated to all files. 
+    attempted), apparently because a macro name was changed in the PGF
+    development process and the change was not propagated to all files. 
     Workaround implemented in our build system consists of detecting version
     2.10 and making a local modified copy of the buggy file with the macro
-    name corrected.  Problem is apparently known to the maintainers and
-    already fixed in their source code repository before I noticed it,
+    name corrected.  The problem was apparently known to the maintainers and
+    already fixed in their source code repository before I noticed it.  It
     presumably will not be an issue in any future releases, but buggy 2.10
-    is latest release and widely used as of late 2011; it will probably
+    is the latest release and widely used as of late 2011; it will probably
     remain in the wild for a long time.
 
 \end{itemize}
@@ -1133,9 +1175,51 @@ feature.  Similar limitations apply.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\blsubsection{FIXME}{Contextual Alternates (calt)}
+
+The ``calt'' feature in general replaces glyphs with other glyphs that look
+better in certain contexts.  In the Tsukurimashou family, it is used only by
+monospace fonts, to replace Latin capital letters with small caps when they
+are followed by combining accents.  The accents (which do not shift
+vertically) would otherwise usually collide with the upper part of the
+letters.  Accents in proportionally-spaced fonts are positioned using the
+GPOS table and will shift vertically when applied to capital letters.  Small
+caps in monospace Tsukurimashou fonts are the same height as lowercase
+letters (a little shorter than small caps in proportionally spaced fonts) to
+make this substitution work nicely.
+
+When the ``ccmp'' feature is enabled, as is default, precomposed accented
+capitals (which are taller than small cap plus combining accent
+combinations) will be used wherever possible, and the ``calt'' feature will
+only affect unusual combinations not covered by precomposed glyphs.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \blsubsection{グリフの併合と分解}{Glyph (De)Composition (ccmp)}
 
-This feature, which only exists in the Jieubsida fonts, breaks precomposed
+This feature's general function is to join and split glyphs that can be
+thought of as combinations of other glyphs.  Exactly what that means depends
+on the script and the particular font.  Often, the results of ``ccmp'' are
+needed as input for other features.  It is recommended that this feature
+should be turned on by default in fonts that have it, and that is required
+by Microsoft's spec.
+
+In all fonts, this feature will substitute precomposed accented Latin letter
+glyphs for combinations of letter plus combining accent, wherever
+precomposed glyphs exist.  The precomposed glyphs generally look better
+because the accent in the precomposed glyph may change shape or size to work
+better with its base letter; this issue is especially significant in the
+case of monospace fonts and capital letters, because the generic accent
+would usually be too low and is not subject to GPOS positioning.  When no
+precomposed glyph exists, rendering will fall back on the unaccented letter
+and a generic accent, with the capital-letter issue in monospace fonts
+partially mitigated by the ``calt'' feature's substitutions, if those are
+enabled.
+
+Similarly, this feature will substitute precomposed voiced kana glyphs for
+combinations of unvoiced kana plus combining dakuten.
+
+In the Jieubside fonts, this feature breaks precomposed
 syllables that don't have final consonants into their component jamo, and
 combines sequences of jamo for single vowels and consonants into jamo
 representing the sequences, where possible.  Splitting tail-less precomposed
@@ -1143,9 +1227,7 @@ syllables is necessary to support the Unicode behaviour of adding a tail to
 a precomposed syllable that doesn't have one; the splitting is later undone
 by the ``liga'' feature.  Combining single jamo into multiples does not seem
 to be required by Unicode, but is vaguely described in Microsoft's spec, and
-it seems like a reasonable thing to do.  It is recommended that this feature
-should be turned on by default in fonts that have it, and that is required
-by Microsoft's spec.
+it seems like a reasonable thing to do.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1184,8 +1266,8 @@ Korean support.
 \blsubsection{文字に付け方}{Mark to Base Positioning (mark)}
 
 This feature only exists in the proportionally spaced fonts; a similar
-effect is achieved in monospace fonts as a consequence of the way the glyph
-side-bearings work.  It should be turned on by default.  The feature
+effect is achieved in monospace fonts via the ``calt'' feature and
+zero-width glyphs.  It should be turned on by default.  The feature
 stores data for OpenType renderers to attach accents to letters, allowing
 for combinations of letter and accent that do not have precomposed glyphs of
 their own.  For instance, U+0071 U+0306 will generate ``\,q\char"0306\,,'' a
@@ -1319,6 +1401,11 @@ by Adobe for this purpose:  U+F761 to U+F77A.  At some point in the future,
 other glyphs may be added to support small cap letters other than the 26
 ASCII ones, and I may start using unencoded glyphs rather than mapping them
 into the PUA.
+
+In monospace fonts, these small caps are about the same height as most
+lowercase letters, in order to allow their use as substitutes when combining
+accents are applied to uppercase letters.  In proportionally spaced fonts,
+small caps are a little taller than lowercase letters.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1924,108 +2011,149 @@ Because METATYPE1 is limited to producing Postscript font files with at most
 block.  For instance, the range U+0000 to U+00FF is the page containing
 ASCII and Latin-1 characters.
 
+The division into pages provides some advantages for the build system: when
+something is changed on one page it may be possible to avoid re-compiling
+the others, and if there are many pages to be compiled then they can be
+compiled simultaneously on a multi-core computer.  So we would probably
+choose to keep this design feature even if some future version of the system
+were no longer bound by the Postscript 8-bit limit that originally made it
+necessary.
+
 The most authoritative form of the name of a font is the ``Hamlog name,''
-which is an ordered quadruple of Hamlog atoms.  These names are manipulated
+which is an ordered quadruple of Hamlog atoms.  (The Hamlog language is
+described elsewhere in this document.)  Hamlog names are manipulated
 by, for instance, the code in select.hl.  The items in the quadruple are
 called the family, the style, the weight, and the spacing.  An example
 Hamlog name might be ``(tsukurimashou, bokukko, demibold, monospace).''
 
 The family represents the broad category of the font.  Generally, all fonts
 sharing the same family value will have basically the same glyph set and the
-same shapes for all glyphs, though some fine details will vary.  If there
-are significant differences in shapes, they will be put in a separate
-family.  At present the fully supported values for the family are
-``tsukurimashou'' and ``jieubsida,'' though there is also alpha code for an
-italic family called ``tsuita'' and some experimental (less than
-alpha status) code exists for a family to be called ``blackletter\_lolita.''
+same overall shapes for all glyphs, though the visual style of the strokes
+will vary.  If there are significant differences in shapes or glyph sets,
+they will be put in a separate family.  At present the supported values for
+the family are ``tsukurimashou,'' ``tsuita,'' and ``jieubsida,'' though
+there is also some experimental (less than alpha status) code for a
+family to be called ``blackletter\_lolita.''
 
 The possible values for style will depend on the family.  Styles generally
 correspond to sets of preset values for the adjustable parameters of a
 family's letter-drawing code.  The style values currently allowed, per
-family, are as follows:
+family, are as follows.  Style names marked with an asterisk are not allowed
+as part of the basic Hamlog name but may be introduced via rewriting, as
+explained below.
 \begin{description}
-  \item{tsukurimashou} kaku, maru, mincho, bokukko, anbiruteki,
-    tenshinokami.
-  \item{jieubsida} dodum, batang, sunmoon.
+  \item{tsukurimashou} kaku, maru, mincho, bokukko, anbiruteki$^*$,
+    tenshinokami$^*$.
   \item{tsuita} soku, atama.
+  \item{jieubsida} dodum, batang, sunmoon.
   \item{blackletter\_lolita} cosette.
 \end{description}
 
-The weight is not presently used; the only implemented value is
-``normal.''  The plan is that in future it will be allowed to take six
-different values ranging from ``light'' to ``extrabold,'' and corresponding
-to different levels of boldness.  Still to be determined is how this will
-interact with style values that imply something about boldness, such as
-``tenshinokami.''
+The weight may be ``extralight,'' ``light,'' ``normal,'' ``demibold,''
+``bold,'' or ``extrabold.''  The spacing may be ``monospace'' or
+``proportional.''
 
-The spacing may be ``monospace'' or ``proportional.''
+The Hamlog name may be subject to rewriting according to rules in the
+select.hl file, specifically the ``do\_style\_xlat/8'' predicate.  These
+rules support a few style/weight combinations that have been given unique
+style names of their own, both because that's fun and as a legacy of earlier
+versions in which the weight parameter was not fully implemented.  This code
+is also meant to support future per-language localization of name components
+like ``demibold,'' in particular so that Korean fonts won't end up with
+Japanese in their names, though that aspect is not yet fully implemented.
+At present, there are just two rewriting rules:
+\begin{itemize}
+  \item (tsukurimashou, maru, extralight, $X$) is rewritten to
+    (tsukurimashou, tenshinokami, normal, $X$).
+  \item (tsukurimashou, maru, extrabold, $X$) is rewritten to
+    (tsukurimashou, anbiruteki, normal, $X$).
+\end{itemize}
 
 The Hamlog name is translated into a few other kinds of names, by a
-combination of Hamlog code in select.hl and Perl code in the Makefile.  One
-important translated name is the ``short name,'' which is a sequence of two,
-three, or (never occurring in the current version, but allowed in principle)
-four short ASCII tokens, which in different parts of the code may be
-separated by either hyphens or underscores.  An example short name is
-``tsuku-mi-ps,'' corresponding to the Hamlog name ``(tsukurimashou, mincho,
-normal, proportional).'' Each element in the Hamlog name is translated into
-a token for the short name, according to the table given by the short\_name/2
-predicate in select.hl, but some Hamlog atoms (namely ``normal'' and
-``monospace'') translate to the special value ``l\_\_\_da'' (for ``lambda,''
-meaning empty string) and are removed, usually leaving fewer than four
-tokens in the result.
+combination of Hamlog code in select.hl and Perl code embedded in
+Makefile.am.  One important translated name is the ``short name,'' which is
+a sequence of two, three, or four short ASCII tokens, which in different
+parts of the code may be separated by either hyphens or underscores.  An
+example short name is ``tsuku-mi-ps,'' corresponding to the Hamlog name
+``(tsukurimashou, mincho, normal, proportional).'' Each element in the
+Hamlog name is translated into a token for the short name, according to the
+table given by the short\_name/2 predicate in select.hl, but some Hamlog
+atoms (namely ``normal'' and ``monospace'') translate to the special value
+``l\_\_\_da'' (for ``lambda,'' meaning empty string; triple underscore marks
+it as requiring special handling in the Perl wrapper) and are removed,
+often leaving fewer than four tokens in the result.  Short names are always
+derived from the Hamlog name \emph{before} rewriting.
 
-Subfonts also have short names, formed by adding an extra token at the end
-which is the two- or three-digit hexadecimal representation of the page
-number.  For instance, ``tsuku-mi-ps-00'' might be the short name of a
-subfont.  These are often used in constructing filenames for intermediate
-files during build.
+Subfonts also have short names of their own, formed by adding an extra token
+at the end which is the two- or three-digit hexadecimal representation of
+the page number.  For instance, ``tsuku-mi-ps-00'' would be the short name
+of the subfont covering U+0000 to U+00FF of ``tsuku-mi-ps''.  These names
+are often used in constructing filenames for intermediate files during
+build.
 
 Anyone contemplating modification of this system should be aware that
-short-name tokens must not be hexadecimal numbers that the build system
-could confuse with page numbers.  To prevent terms like ``extra bold'' and
-``demibold'' from abbreviating to valid hexadecimal numbers, the word
-``bold'' shall be considered to include the letter ``q.''
+short-name tokens other than page numbers must \emph{not} be valid
+hexadecimal digit sequences that could be mistaken for page numbers; the
+build system needs to be able to distinguish subfont and full-font short
+names from each other by testing for a hexadecimal number as the last
+token.  To prevent terms like ``extra bold'' and ``demibold'' from
+abbreviating to valid hexadecimal numbers, terms derived from the word
+``bold'' are abbreviated as if it were spelled ``qold'' or ``bqld.''
 
 Fragments of short names are also used to name source code files.  Files
-following this scheme (not all source files do) have names consisting of one
-family token, a hyphen, and one other token, followed by the appropriate
+that follow this scheme (not all source files do) have names consisting of
+one family token, a hyphen, and one other token, followed by the appropriate
 extension.  Building a subfont involves creating a temporary driver file
 that includes all the relevant source files for that font's short name.  For
-instance, to build ``tsuku-mi-ps-00.pfb'' the build system would create a
-driver file that loads ``tsuku-mi.mp,'' ``tsuku-ps.mp,'' and
-``tsuku-00.mp,'' in that order.  Some of those files might then go and load
-other files outside this naming scheme.
+instance, to build ``tsuku-mi-ps-00.pfb'' the build system would create and
+execute a driver file that loads ``tsuku-mi.mp,'' ``tsuku-ps.mp,'' and
+``tsuku-00.mp,'' in that order.  Some of those files might themselves load
+other files outside this naming scheme.  Almost all file inclusion is done
+via conditionals in METAFONT to prevent any file from being included more
+than once, but double inclusion should also be both avoided by design and
+usually harmless should it occur by accident.  The file inclusion macros in
+preintro.mp also support a queue of ``late'' includes, which will be
+processed after the others to allow (for instance) code associated with a
+style to override code associated with a weight.
 
-In the case of the family token not being ``tsuku,'' the build system will
-use source files that match the subfont's family token where those exist,
-and default to ``tsuku'' when such files don't exist.  For instance, to
-build ``bll-co-01.pfb'' (Blackletter Lolita Cosette, page 01) it might load
-``bll-co.mp'' (which exists), but then load ``tsuku-01.mp'' because
-``bll-01.mp'' doesn't exist.  Thus, the ``tsukurimashou'' family can be
-thought of as a generic ancestor from which any others inherit.
+In the case of the family short name token not being ``tsuku,'' the build
+system will use source files that match the subfont's family token where
+those exist, and default to ``tsuku'' when such files don't exist.  For
+instance, to build ``bll-co-01.pfb'' (Blackletter Lolita Cosette, page 01)
+it might load ``bll-co.mp'' (which exists), but then load ``tsuku-01.mp''
+because ``bll-01.mp'' doesn't exist.  Thus, the ``tsukurimashou'' family can
+be thought of as a generic ancestor from which any others inherit.
 
 Fonts also have ``long names,'' which are created by a similar translation
-process.  Long names are generally mixed case ASCII, and the elements are
+process.  Long names are always derived from the Hamlog name \emph{after}
+rewriting.  Long names are generally mixed-case ASCII, and the elements are
 separated by spaces and may also contain internal spaces.  As with short
 names, normal weight and monospace translate to nothing and are removed when
 forming the long name.  An example long name might be ``Tsukurimashou Tenshi
-no Kami PS.'' There are also some places, notably in the filenames of final
-OTF fonts, where a long name is used with all the spaces and hyphens removed.
+no Kami PS''; note that that would correspond to the short name
+``tsuku-mg-el-ps'' (as if ``Tsukurimashou Maru Extra Light PS'') because of
+rewriting.  There are also some places, notably in the filenames of final
+OTF fonts, where a long name is used with all the spaces and hyphens
+removed.
 
 There are also ``JK names,'' which are constructed just like long names but
 with elements written in Japanese or Korean, and thus generally in non-ASCII
-Unicode characters.  For Jieubsida fonts these are in Korean and have spaces
-between the elements; otherwise they are in Japanese and have no spaces. 
-The main use of JK names is to create font metadata.  An example Japanese
-name might be 「作りましょう天使の髪ＰＳ」, corresponding to ``Tsukurimashou
-Tenshi no Kami PS.'' Since there is some information loss in transliteration
-to English, and many of the names come from Japanese and Korean words
-anyway, it may be best to think of the JK name as the truest name of the
-font for human purposes, even though from the code's perspective both are
-derived from the authoritative Hamlog name.  The source of the translation
-table for JK names is in txt/jnames.txt, which is processed by Perl to
-change the UTF-8 into a hexadecimal form that Hamlog can handle, the result
-going into hamlog/jnames.hl.
+Unicode characters.  For Jieubsida fonts these should be in Korean (but the
+occasional Japanese or English word may appear because of a
+yet-unimplemented translation feature) and have spaces between the elements;
+otherwise JK names are in Japanese and have no spaces.  The main use of JK
+names is for populating the font metadata tables.  An example Japanese name
+might be 「作りましょう天使の髪ＰＳ」, corresponding to ``Tsukurimashou
+Tenshi no Kami PS.''
+
+Since there is some information loss in transliteration to English, and many
+of the names come from Japanese and Korean words anyway, it may be best to
+think of the JK name as the truest name of the font for human purposes, even
+though from the code's perspective the unrewritten Hamlog name is the true
+name of the font and all others are derived from it.  The source of the
+translation table for JK names is in txt/jnames.txt, which is processed by
+Perl to change the UTF-8 into a hexadecimal form that Hamlog can handle, the
+result going into hamlog/jnames.hl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2036,10 +2164,11 @@ going into hamlog/jnames.hl.
 Please note that if you just unpack the Tsukurimashou distribution and look
 in the ``otf'' subdirectory, you will find some ready-made font files there. 
 If you are content with them, then those are the only files you need; you
-can safely delete everything else in the package (save the PDF documentation
-files, if you want) and ignore this sub-section.  These notes on building
-Tsukurimashou are only for expert users who want the greater control, wider
-style coverage, and intellectual challenge of doing custom compilation.
+can safely delete everything else in the package (maybe save the PDF
+documentation files, if you want) and ignore this sub-section.  These notes
+on building Tsukurimashou are only for expert users who want the greater
+control, wider style coverage, and intellectual challenge of doing custom
+compilation.
 
 Assuming you wish to embark on the adventure of compiling Tsukurimashou, you
 will need at least the following:
@@ -2048,7 +2177,7 @@ will need at least the following:
   \item A reasonably standard Unix command-line environment.  I use
     Arch Linux.  Anything branded as ``Unix'' should work.  MacOS X
     might work.  Windows with Cygwin might work.  
-  \item A standard C-language tool chain (normally comes with Linux).
+  \item A standard C-language tool-chain (normally comes with Linux).
   \item Perl.
   \item GNU Make (non-GNU versions will not work).
   \item Metapost (this comes with most \TeX/\LaTeX\ installations)
@@ -2060,16 +2189,17 @@ Other things that might also be useful include:
 \begin{itemize}
   \item \XeLaTeX\ (needed for compiling the documentation).
   \item Expect (makes the build system work better---exactly why is
-  explained in more detail in the warning you will get if you don't have it).
+    explained in more detail in the warning message
+    you will get if you don't have it).
   \item The KANJIDIC2 database (needed for the kanji coverage chart and
-  a planned future fine-grained character subset selection feature).
+    a planned future fine-grained character subset selection feature).
   \item A supported Prolog interpreter (not necessary, but if one is
-  available then the build system will use it and run more efficiently).
+    available then the build system will use it and run more efficiently).
   \item A multi-CPU computer (the build system will by default detect and
-  use all your CPUs; since some stages of compilation require a lot of
-  processing, it's nice to have several).
+    use all your CPUs; since some stages of compilation require a lot of
+    processing, it's nice to have several).
   \item A checksum program, preferably sha256sum (used for some subtle
-  build-system optimizations).
+    build-system optimizations).
 \end{itemize}
 
 If you have a current version of \TeX{}Live, then you probably have
@@ -2085,8 +2215,27 @@ I mentioned a requirement for a version of FontForge ``that actually
 works.'' FontForge is plagued by many bugs and numerical instabilities in
 its spline geometry code, and stock, distributed ``stable'' versions tend to
 hang and/or segfault when they are used to compile Tsukurimashou.  As of
-April 2012, the version distributed by Arch Linux x86\_64 seems to work.  In
-the recent past there've been bugs relevant to Tsukurimashou fixed in the
+October 2012, the version distributed by Arch Linux x86\_64 seems to work
+pretty well for default configurations.  However, a really full build of all
+weights of all styles involves tens of thousands of invocations of FontForge
+and is likely to cause at least one or two segfaults or infinite loops with
+any widely-available binary package.
+
+There is also an issue relating to the syntax of the AddExtrema() command in
+the FontForge native scripting language; until recently, no version of
+FontForge was capable of generating (under native-script control) extrema
+that would pass FontForge's own validation checks, and so ``make check''
+would almost always fail despite the fonts being in fairly clean
+condition.  A patch I merged into FontForge's GitHub repository\footnote{I
+never asked for write access, but this is what they do to people who
+complain.} on September 30, 2012 adds an optional argument to
+AddExtrema() to get around this issue, and the Tsukurimashou build system
+will check for an appropriately modified version of FontForge and use it if
+possible, otherwise generating a warning during configuration.  As of this
+writing, I think the only way to get a fully patched version of FontForge is
+to check it out of GitHub.
+
+In the recent past there've been bugs relevant to Tsukurimashou fixed in the
 interface to FreeType for rasterization; spline geometry; and hinting.  I
 can't promise that using the latest patched version will be enough to keep
 FontForge from crashing; what I do myself is go in with gdb after each
@@ -2257,17 +2406,25 @@ of this type, and I took out most of the support for those to reduce the
 cognitive load for users who would otherwise have to think about their
 inapplicability.  This package doesn't install any executables, libraries, C
 header files, or similar, at all.  Cross-compilation and executable name
-munging were removed for the same reason; a C program does get compiled to
-do the kerning, but it is only meant to run on the host system during build,
-with all the installable files being architecture-independent.  The hacking
-I did on Autotools means that if you modify the build system such that you
-would be re-running Autotools, it's likely to break unless your version of
-Autotools is close to the 2.65 version I used.  The configure script will
-try to detect such a situation and warn you.
+munging were removed for the same reason; some C programs are compiled for
+kerning and Type 1 opcode assembly, but these are only meant to run on the
+host system during build, with all the installable files being
+architecture-independent.  The hacking I did on Autotools means that if you
+modify the build system such that you would be re-running Autotools, it's
+likely to break unless your version of Autotools is close to the 2.65
+version I used.  The configure script will try to detect such a situation
+and warn you.
 
 The design of this build system was influenced by Peter Miller's interesting
 article ``Recursive Make Considered Harmful,'' available at
-\url{http://miller.emu.id.au/pmiller/books/rmch/}.
+\url{http://miller.emu.id.au/pmiller/books/rmch/}.  The fonts as such are
+all built from a single large Makefile.  However, in the current
+version there is also some use of recursive Make and recursive Autotools
+to support the parasite packages, should those be enabled (by default, they
+are not).  Some notes on the design of the build (prior to the introduction
+of parasites) are in my Web log article at
+\url{http://ansuz.sooke.bc.ca/entry/226}.  I will probably write a similar
+article about the parasite mechanism at some point in the future.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2290,7 +2447,7 @@ of the source tree, it will scan all the METAFONT-language sources, find
 definitions of macros, and where necessary rewrite the blocks of includes
 tagged with the special comment line in order to ensure that every file
 includes the definitions of all needed macros.  There are a number of
-exceptions and special cases included to make it do the write thing with
+exceptions and special cases included to make it do the right thing with
 macros defined in multiple places as a result of style overrides, and so on.
 
 \item \texttt{udcpyright}: check that all years in which a file was modified
@@ -2324,19 +2481,19 @@ SFD-format font; this requires re-encoding it to UTF-7 format.
 \item \texttt{livecode}: chase file inclusions and determine all the
 ``live'' (that is, actually invoked) macro defintions in a list of
 METAFONT-language files.  The output of this is not (because lines may
-appear in the wrong order) actually code one could run; but it is intended
-to have the property that it will change if and only if changes in the input
-necessitate recompilation.  If you modify a macro that is not actually
-called, \texttt{livecode}'s output should not change because it won't
-include that macro.  Then the build system can use a checksum of
-\texttt{livecode}'s output for fine-grained change detection, to skip
-recompiling some files that (under GNU Make's timestamp-based scheme) would
-otherwise appear to require recompilation.  As a special feature, intended
-for maintainer use only, \texttt{livecode} also supports a ``find dead code''
-mode.  If its first command-line argument is ``\texttt{-d},'' then instead
-of its usual output, it will print a list of names of macros it thinks are
-\emph{not} invoked.  Running this against the entire code base may be a way
-to find superfluous METATYPE1 infrastructure that could be removed.
+appear in the wrong order) actually valid code one could run; but the output
+of \texttt{livecode} is intended to have the property that its checksum will
+almost always change when changes in the input necessitate recompilation,
+and will seldom change otherwise.  Therefore the build system can use the
+checksum of \texttt{livecode}'s output for fine-grained change detection, to
+skip recompiling some files that (under GNU Make's timestamp-based scheme)
+would otherwise appear to require recompilation.  As a special feature,
+intended for maintainer use only, \texttt{livecode} also supports a ``find
+dead code'' mode.  If its first command-line argument is ``\texttt{-d},''
+then instead of its usual output, it will print a list of names of macros it
+thinks are \emph{not} invoked.  Running the dead code check against the
+entire code base may be a way to find superfluous METATYPE1 infrastructure
+that could be removed.
 
 \item \texttt{make-ass}: generate the \texttt{assemble-font.pe} script,
 which in turn does most of the work of assembling 256-glyph subfonts to
@@ -2352,7 +2509,7 @@ into Hamlog for inclusion in \texttt{config.hl}, which then feeds back to
 control the build system.
 
 \item \texttt{make-eids}: scan the proof files
-and generates an EIDS-format dictionary of character decompositions.
+and generate an EIDS-format dictionary of character decompositions.
 
 \item \texttt{make-fea}: perform text substitutions on ``feature source
 code'' (fsc) files to generate Adobe-format ``feature'' (fea) files
@@ -2390,7 +2547,7 @@ way of getting the outline data into FontForge for later stages of
 processing.
 
 \item \texttt{mpdep}: generates a list of the dependencies of a
-METAFONT-language file (or set of them), for automated Makefile generation. 
+METAFONT-language file (or a set of them), for automated Makefile generation. 
 Compare with \texttt{autodep}, which actually edits the files to include the
 other files they should based on the macros they use; \texttt{mpdep} only
 looks at what other files each file does include, and reports that.
@@ -2635,18 +2792,18 @@ parenthesized sub-expressions are used to extract the body of that clause.
 It is because of the use of regular expressions that Hamlog doesn't do
 compound terms, and in turn is likely not Turing-complete (though I haven't
 thought carefully through all the possibilities of using recursive
-predicates to build data structures on the stack).  As all the world knows,
-it is impossible to write a regular expression to match balanced
-parentheses.  Current versions of Perl actually bend the theory with
-experimental extensions that do allow the matching of balanced parentheses,
-so that in a certain important sense Perl regular expressions \emph{are not
-regular expressions anymore at all}, but even I am not quite twisted enough
-to actually deploy such code.  Things in Hamlog that look like compound
-terms (such as the sub-goals in a clause body) are handled as special cases;
-but the point is that arguments to a functor that will be used as a goal
-have to be either atoms or variables.  This also means Hamlog doesn't do
-Prolog syntactic sugar things that expand to compound terms, such as square
-brackets for lists.
+predicates or atom splitting to build stack-like data structures).  As
+all the world knows, it is impossible to write a regular expression to match
+balanced parentheses.  Current versions of Perl actually bend the theory
+with experimental extensions that do allow the matching of balanced
+parentheses, so that in a certain important sense Perl regular expressions
+\emph{are not regular expressions anymore at all}, but even I am not quite
+twisted enough to actually deploy such code.  Things in Hamlog that look
+like compound terms (such as the sub-goals in a clause body) are handled as
+special cases; but the point is that arguments to a functor that will be
+used as a goal have to be either atoms or variables.  This also means Hamlog
+doesn't do Prolog syntactic sugar things that expand to compound terms, such
+as square brackets for lists.
 
 Once there's a match, it does string substitution on the matching head, the
 current partially-completed goal, and the body, to get a new modified body
@@ -2696,15 +2853,15 @@ functors, not as an infix operator (see above).
 
 Variable names starting with, and especially the unique variable name
 consisting entirely of, an underscore, are not special in Hamlog.  Beware,
-that means ``foo(\_,\_)'' contains only one variable occurring twice, not
-two distinct variables as it would in Prolog, and it violates the ``only one
-appearance of each variable in a head'' guideline.  The unique variable name
-consisting of one underscore is probably best avoided entirely.  But it may
-be desirable to use variable names starting with underscores anyway in some
-cases, because of their specialness to Prolog interpreters.  I was really
-tempted to allow and use arbitrary UTF-8 (in particular, kanji) in atoms but
-refrained because of the desire for Hamlog code to be easily readable by
-nearly all Prolog interpreters.
+that means ``foo(\_,\_)'' contains only one variable occurring twice when
+interpreted as Hamlog, not two distinct variables as in Prolog, and it
+violates the ``only one appearance of each variable in a head'' guideline. 
+The unique variable name consisting of one underscore is probably best
+avoided entirely.  But it may be desirable to use variable names starting
+with underscores anyway in some cases, because of their specialness to
+Prolog interpreters.  I was really tempted to allow and use arbitrary UTF-8
+(in particular, kanji) in atoms but refrained because of the desire for
+Hamlog code to be easily readable by nearly all Prolog interpreters.
 
 I tried to keep the number of built-in predicates to an absolute minimum,
 partly because any that are not standard Prolog have to be re-implemented in
@@ -3050,7 +3207,7 @@ Kern table entries are dropped if they are less than ten font units; that
 cuts the size of the table considerably.  In a change from earlier versions,
 the kern values are not otherwise rounded (beyond being integers).  The
 table is written to a fragment of an Adobe .fea file, with subtable breaks
-(on left-class boundaries) each time a subtable grows past 5000 entries;
+on left-class boundaries each time a subtable grows past 5000 entries;
 that means subtables actually end up a little over 5000 entries each.  That
 seems to be how big they can get without overflowing the OTF table-size
 limits.  Bearings are written to a FontForge .pe script.

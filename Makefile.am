@@ -711,10 +711,18 @@ pe/assemble-font.pe tsukurimashou.nam: \
 
 fea/%.fea: \
   fea/.dirstamp fsc/%.fsc tools/make-fea \
-  makefile-vars.inc chars.lst
+  makefile-vars.inc chars.lst \
+  fsc/afrc.fsc fsc/misc.fsc fsc/ss01.fsc fsc/ss02.fsc \
+  fsc/hangul.fsc fsc/kanapc.fsc fsc/latinpc.fsc
 	$(TSU_V_PERL)
 	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-fea "$(OT_FEATURES)" \
 	  $(mvp)/fsc/$*.fsc > fea/$*.fea
+
+fea/bll.fea: fsc/tsuku.fsc
+
+fea/jieub.fea: fsc/hangul.fsc
+
+fea/tsuita.fea: fsc/tsuku.fsc
 
 define NAME_RECIPE
 fea/$(subst _,-,$1)-name.fea: fea/.dirstamp tools/make-name makefile-vars.inc
@@ -735,7 +743,7 @@ otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf: otf/.dirstamp \
   sfd/flogged.sfd \
   pe/assemble-font.pe fea/$(word 1,$(subst _,$(space),$1)).fea \
   tsukurimashou.nam \
-  fea/$(subst _,-,$1)-name.fea \
+  fea/monospace.fea fea/$(subst _,-,$1)-name.fea \
   $(call PAGEFILES,pfb/,$(1),.pfb)
 	$(TSU_V_OTF) otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf
 	$(AM_V_at)$(FONTFORGE) pe/assemble-font.pe \

@@ -409,6 +409,7 @@ if (Strstr($1,"-ps")<0)
   Print(100);
   Open("sfd/"+$1+".sfd");
   MergeFeature("fea/"+Strsub($1,0,Strstr($1,"-"))+".fea");
+  MergeFeature("fea/monospace.fea");
   _MFV=LoadStringFromFile("makefile-vars.inc");
   _MFV=Strsub(_MFV,Strstr(_MFV,"OT_FEATURES="));
   _MFV=Strsub(_MFV,0,Strstr(_MFV,Chr(10)));

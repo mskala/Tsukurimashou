@@ -78,15 +78,19 @@ def begintsuglyph(expr name,code) =
 enddef;
 
 def endtsuglyph =
-    fix_hsbw((rescale_to.left+rescale_to.right),0,0);
+    if rescale_to.right>0:
+      fix_hsbw((rescale_to.left+rescale_to.right),0,0);
+    else:
+      fix_hsbw(0,0,0);
+    fi;
   endglyph;
   perl_structure:=perl_structure&"];";
   write "PERL_STRUCTURE "&perl_structure to "proof.prf";
-  if rescale_to.right=0:
-    write "ENDGLYPH -10 0" to "proof.prf";
-  else:
+  if rescale_to.right>0:
     write ("ENDGLYPH 0 "&decimal (rescale_to.left+rescale_to.right))
       to "proof.prf";
+  else:
+    write "ENDGLYPH -10 0" to "proof.prf";
   fi;
 enddef;
 
@@ -255,6 +259,46 @@ def tsu_rescale_native_conditional =
     tsu_rescale_full;
   else:
     tsu_rescale_native_narrow;
+  fi;
+enddef;
+
+def tsu_rescale_combining_full =
+  rescale_from.left:=wide_margin;
+  rescale_from.right:=1000-wide_margin;
+  rescale_from.top:=ypart centre_pt;
+  rescale_from.bottom:=latin_wide_baseline;
+
+  rescale_to.left:=wide_margin-1000;
+  rescale_to.right:=-wide_margin;
+  rescale_to.top:=ypart centre_pt;
+  rescale_to.bottom:=latin_wide_baseline;
+
+  rescale_skew:=0;
+
+  width_curve:=(-1,-1)--(2000,2000);
+enddef;
+
+def tsu_rescale_combining_half =
+  rescale_from.left:=wide_margin;
+  rescale_from.right:=1000-wide_margin;
+  rescale_from.top:=ypart centre_pt;
+  rescale_from.bottom:=latin_wide_baseline;
+
+  rescale_to.left:=narrow_margin-500;
+  rescale_to.right:=-narrow_margin;
+  rescale_to.top:=latin_vcentre;
+  rescale_to.bottom:=0;
+
+  rescale_skew:=0;
+
+  width_curve:=((-1,-1)--(100,100))..(940,410)..{right}(2000,1000);
+enddef;
+
+def tsu_rescale_combining_accent =
+  if is_proportional:
+    tsu_rescale_combining_full;
+  else:
+    tsu_rescale_combining_half;
   fi;
 enddef;
 

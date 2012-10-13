@@ -309,6 +309,8 @@ feature_available(afrc):-
 
 feature_available(c2sc).
 
+feature_available(calt).
+
 feature_available(ccmp).
 
 feature_available(kern):-proportional_enabled.

@@ -31,6 +31,93 @@
 BEGINFEATURE c2sc
 feature c2sc {
   sub [A-Z] by [a.sc-z.sc];
+
+  sub Agrave by a.sc gravecomb;
+  sub Egrave by e.sc gravecomb;
+  sub Igrave by i.sc gravecomb;
+  sub Ograve by o.sc gravecomb;
+  sub Ugrave by u.sc gravecomb;
+
+  sub Aacute by a.sc acutecomb;
+  sub Eacute by e.sc acutecomb;
+  sub Iacute by i.sc acutecomb;
+  sub Oacute by o.sc acutecomb;
+  sub Uacute by u.sc acutecomb;
+  sub Yacute by y.sc acutecomb;
+  sub Cacute by c.sc acutecomb;
+  sub Lacute by l.sc acutecomb;
+  sub Racute by r.sc acutecomb;
+  sub Zacute by z.sc acutecomb;
+
+  sub Acircumflex by a.sc uni0302;
+  sub Ecircumflex by e.sc uni0302;
+  sub Icircumflex by i.sc uni0302;
+  sub Ocircumflex by o.sc uni0302;
+  sub Ucircumflex by u.sc uni0302;
+  sub Ccircumflex by c.sc uni0302;
+  sub Gcircumflex by g.sc uni0302;
+  sub Hcircumflex by h.sc uni0302;
+  sub Jcircumflex by j.sc uni0302;
+  sub Scircumflex by s.sc uni0302;
+  sub Wcircumflex by w.sc uni0302;
+  sub Ycircumflex by y.sc uni0302;
+
+  sub Atilde by a.sc tildecomb;
+  sub Ntilde by n.sc tildecomb;
+  sub Otilde by o.sc tildecomb;
+  sub Itilde by i.sc tildecomb;
+  sub Utilde by u.sc tildecomb;
+
+  sub Adieresis by a.sc uni0308;
+  sub Edieresis by e.sc uni0308;
+  sub Idieresis by i.sc uni0308;
+  sub Odieresis by o.sc uni0308;
+  sub Udieresis by u.sc uni0308;
+  sub Ydieresis by y.sc uni0308;
+
+  sub Aring by a.sc uni030A;
+  sub Uring by u.sc uni030A;
+
+  sub Ccedilla by c.sc uni0327;
+  sub Scedilla by s.sc uni0327;
+  sub uni0162 by t.sc uni0327;
+
+  sub Amacron by a.sc uni0304;
+  sub Emacron by e.sc uni0304;
+  sub Imacron by i.sc uni0304;
+  sub Omacron by o.sc uni0304;
+  sub Umacron by u.sc uni0304;
+
+  sub Abreve by a.sc uni0306;
+  sub Ebreve by e.sc uni0306;
+  sub Ibreve by i.sc uni0306;
+  sub Obreve by o.sc uni0306;
+  sub Ubreve by u.sc uni0306;
+
+  sub Cdotaccent by c.sc uni0307;
+  sub Edotaccent by e.sc uni0307;
+  sub Gdotaccent by g.sc uni0307;
+  sub Idotaccent by i.sc uni0307;
+  sub Zdotaccent by z.sc uni0307;
+
+  sub Ccaron by c.sc uni030C;
+  sub Dcaron by d.sc uni030C;
+  sub Ecaron by e.sc uni030C;
+  sub Lcaron by l.sc uni030C;
+  sub Ncaron by n.sc uni030C;
+  sub Rcaron by r.sc uni030C;
+  sub Scaron by s.sc uni030C;
+  sub Tcaron by t.sc uni030C;
+  sub Zcaron by z.sc uni030C;
+
+  sub uni0122 by g.sc uni0326;
+  sub uni0136 by k.sc uni0326;
+  sub uni013B by l.sc uni0326;
+  sub uni0145 by n.sc uni0326;
+  sub uni0156 by r.sc uni0326;
+
+  sub Ohungarumlaut by o.sc uni030B;
+  sub Uhungarumlaut by u.sc uni030B;
 } c2sc;
 ENDFEATURE
 
@@ -65,6 +152,92 @@ ENDFEATURE
 BEGINFEATURE smcp
 feature smcp {
   sub [a-z] by [a.sc-z.sc];
+
+  sub agrave by a.sc gravecomb;
+  sub egrave by e.sc gravecomb;
+  sub igrave by i.sc gravecomb;
+  sub ograve by o.sc gravecomb;
+  sub ugrave by u.sc gravecomb;
+
+  sub aacute by a.sc acutecomb;
+  sub eacute by e.sc acutecomb;
+  sub iacute by i.sc acutecomb;
+  sub oacute by o.sc acutecomb;
+  sub uacute by u.sc acutecomb;
+  sub yacute by y.sc acutecomb;
+  sub cacute by c.sc acutecomb;
+  sub lacute by l.sc acutecomb;
+  sub racute by r.sc acutecomb;
+  sub zacute by z.sc acutecomb;
+
+  sub acircumflex by a.sc uni0302;
+  sub ecircumflex by e.sc uni0302;
+  sub icircumflex by i.sc uni0302;
+  sub ocircumflex by o.sc uni0302;
+  sub ucircumflex by u.sc uni0302;
+  sub ccircumflex by c.sc uni0302;
+  sub gcircumflex by g.sc uni0302;
+  sub hcircumflex by h.sc uni0302;
+  sub jcircumflex by j.sc uni0302;
+  sub scircumflex by s.sc uni0302;
+  sub wcircumflex by w.sc uni0302;
+  sub ycircumflex by y.sc uni0302;
+
+  sub atilde by a.sc tildecomb;
+  sub ntilde by n.sc tildecomb;
+  sub otilde by o.sc tildecomb;
+  sub itilde by i.sc tildecomb;
+  sub utilde by u.sc tildecomb;
+
+  sub adieresis by a.sc uni0308;
+  sub edieresis by e.sc uni0308;
+  sub idieresis by i.sc uni0308;
+  sub odieresis by o.sc uni0308;
+  sub udieresis by u.sc uni0308;
+  sub ydieresis by y.sc uni0308;
+
+  sub aring by a.sc uni030A;
+  sub uring by u.sc uni030A;
+
+  sub ccedilla by c.sc uni0327;
+  sub scedilla by s.sc uni0327;
+  sub uni0163 by t.sc uni0327;
+
+  sub amacron by a.sc uni0304;
+  sub emacron by e.sc uni0304;
+  sub imacron by i.sc uni0304;
+  sub omacron by o.sc uni0304;
+  sub umacron by u.sc uni0304;
+
+  sub abreve by a.sc uni0306;
+  sub ebreve by e.sc uni0306;
+  sub ibreve by i.sc uni0306;
+  sub obreve by o.sc uni0306;
+  sub ubreve by u.sc uni0306;
+
+  sub cdotaccent by c.sc uni0307;
+  sub edotaccent by e.sc uni0307;
+  sub gdotaccent by g.sc uni0307;
+  sub zdotaccent by z.sc uni0307;
+
+  sub ccaron by c.sc uni030C;
+  sub dcaron by d.sc uni030C;
+  sub ecaron by e.sc uni030C;
+  sub lcaron by l.sc uni030C;
+  sub ncaron by n.sc uni030C;
+  sub rcaron by r.sc uni030C;
+  sub scaron by s.sc uni030C;
+  sub tcaron by t.sc uni030C;
+  sub zcaron by z.sc uni030C;
+
+  sub uni0123 by g.sc uni0326;
+  sub uni0137 by k.sc uni0326;
+  sub uni013C by l.sc uni0326;
+  sub uni0146 by n.sc uni0326;
+  sub uni0157 by r.sc uni0326;
+
+  sub ohungarumlaut by o.sc uni030B;
+  sub uhungarumlaut by u.sc uni030B;
 } smcp;
 ENDFEATURE
 

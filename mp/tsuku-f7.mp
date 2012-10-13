@@ -39,7 +39,11 @@ input latin.mp;
 
 do_late_includes;
 
-latin_wide_sc_top:=0.4[latin_wide_xheight,latin_wide_top];
+if is_proportional:
+  latin_wide_sc_top:=0.4[latin_wide_xheight,latin_wide_top];
+else:
+  latin_wide_sc_top=0.1[latin_wide_xheight,latin_wide_top];
+fi;
 
 transform tsu_xf.sc;
 

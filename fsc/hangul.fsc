@@ -242,6 +242,11 @@
 BEGINFEATURE ccmp
 feature ccmp {
 
+  # handle Latin and kana precomposed glyphs
+  INCLUDE latinpc
+  INCLUDE kanapc
+  subtable;
+
   # burst tail-less precomposed syllables
   KLUDGE NT_DECOMPOSE
   subtable;

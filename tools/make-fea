@@ -127,7 +127,7 @@ if (/^\s*#/) {
   $capturing=0;
   $captured='';
   %items=();
-} elsif (/^INCLUDE (\S+)/) {
+} elsif (/^\s*INCLUDE (\S+)/) {
   open(INF,"$prefix/fsc/$1.fsc");
   unshift @inlines,<INF>;
   close(INF);

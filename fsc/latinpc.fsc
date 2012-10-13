@@ -1,0 +1,193 @@
+#
+# OpenType substitutions for Latin precomposed glyphs
+# Copyright (C) 2012  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+# note this lists substitution rules only - the table wrapper must be
+# supplied by the caller, because in some fonts there are other
+# rules added besides these ones
+
+sub A gravecomb by Agrave;
+sub E gravecomb by Egrave;
+sub I gravecomb by Igrave;
+sub O gravecomb by Ograve;
+sub U gravecomb by Ugrave;
+sub a gravecomb by agrave;
+sub e gravecomb by egrave;
+sub i gravecomb by igrave;
+sub o gravecomb by ograve;
+sub u gravecomb by ugrave;
+
+sub A acutecomb by Aacute;
+sub E acutecomb by Eacute;
+sub I acutecomb by Iacute;
+sub O acutecomb by Oacute;
+sub U acutecomb by Uacute;
+sub Y acutecomb by Yacute;
+sub a acutecomb by aacute;
+sub e acutecomb by eacute;
+sub i acutecomb by iacute;
+sub o acutecomb by oacute;
+sub u acutecomb by uacute;
+sub y acutecomb by yacute;
+sub C acutecomb by Cacute;
+sub c acutecomb by cacute;
+sub L acutecomb by Lacute;
+sub l acutecomb by lacute;
+sub R acutecomb by Racute;
+sub r acutecomb by racute;
+sub Z acutecomb by Zacute;
+sub z acutecomb by zacute;
+
+sub A uni0302 by Acircumflex;
+sub E uni0302 by Ecircumflex;
+sub I uni0302 by Icircumflex;
+sub O uni0302 by Ocircumflex;
+sub U uni0302 by Ucircumflex;
+sub a uni0302 by acircumflex;
+sub e uni0302 by ecircumflex;
+sub i uni0302 by icircumflex;
+sub o uni0302 by ocircumflex;
+sub u uni0302 by ucircumflex;
+sub C uni0302 by Ccircumflex;
+sub c uni0302 by ccircumflex;
+sub G uni0302 by Gcircumflex;
+sub g uni0302 by gcircumflex;
+sub H uni0302 by Hcircumflex;
+sub h uni0302 by hcircumflex;
+sub J uni0302 by Jcircumflex;
+sub j uni0302 by jcircumflex;
+sub S uni0302 by Scircumflex;
+sub s uni0302 by scircumflex;
+sub W uni0302 by Wcircumflex;
+sub w uni0302 by wcircumflex;
+sub Y uni0302 by Ycircumflex;
+sub y uni0302 by ycircumflex;
+
+sub A tildecomb by Atilde;
+sub N tildecomb by Ntilde;
+sub O tildecomb by Otilde;
+sub a tildecomb by atilde;
+sub n tildecomb by ntilde;
+sub o tildecomb by otilde;
+sub I tildecomb by Itilde;
+sub i tildecomb by itilde;
+sub U tildecomb by Utilde;
+sub u tildecomb by utilde;
+
+sub A uni0308 by Adieresis;
+sub E uni0308 by Edieresis;
+sub I uni0308 by Idieresis;
+sub O uni0308 by Odieresis;
+sub U uni0308 by Udieresis;
+sub a uni0308 by adieresis;
+sub e uni0308 by edieresis;
+sub i uni0308 by idieresis;
+sub o uni0308 by odieresis;
+sub u uni0308 by udieresis;
+sub y uni0308 by ydieresis;
+sub Y uni0308 by Ydieresis;
+
+sub A uni030A by Aring;
+sub a uni030A by aring;
+sub U uni030A by Uring;
+sub u uni030A by uring;
+
+sub C uni0327 by Ccedilla;
+sub c uni0327 by ccedilla;
+sub S uni0327 by Scedilla;
+sub s uni0327 by scedilla;
+sub T uni0327 by uni0162;
+sub t uni0327 by uni0163;
+
+sub A uni0304 by Amacron;
+sub a uni0304 by amacron;
+sub E uni0304 by Emacron;
+sub e uni0304 by emacron;
+sub I uni0304 by Imacron;
+sub i uni0304 by imacron;
+sub O uni0304 by Omacron;
+sub o uni0304 by omacron;
+sub U uni0304 by Umacron;
+sub u uni0304 by umacron;
+
+sub A uni0306 by Abreve;
+sub a uni0306 by abreve;
+sub E uni0306 by Ebreve;
+sub e uni0306 by ebreve;
+sub I uni0306 by Ibreve;
+sub i uni0306 by ibreve;
+sub O uni0306 by Obreve;
+sub o uni0306 by obreve;
+sub U uni0306 by Ubreve;
+sub u uni0306 by ubreve;
+
+sub C uni0307 by Cdotaccent;
+sub c uni0307 by cdotaccent;
+sub E uni0307 by Edotaccent;
+sub e uni0307 by edotaccent;
+sub G uni0307 by Gdotaccent;
+sub g uni0307 by gdotaccent;
+sub I uni0307 by Idotaccent;
+sub Z uni0307 by Zdotaccent;
+sub z uni0307 by zdotaccent;
+
+sub C uni030C by Ccaron;
+sub c uni030C by ccaron;
+sub D uni030C by Dcaron;
+sub d uni030C by dcaron;
+sub E uni030C by Ecaron;
+sub e uni030C by ecaron;
+sub L uni030C by Lcaron;
+sub l uni030C by lcaron;
+sub N uni030C by Ncaron;
+sub n uni030C by ncaron;
+sub R uni030C by Rcaron;
+sub r uni030C by rcaron;
+sub S uni030C by Scaron;
+sub s uni030C by scaron;
+sub T uni030C by Tcaron;
+sub t uni030C by tcaron;
+sub Z uni030C by Zcaron;
+sub z uni030C by zcaron;
+
+sub G uni0326 by uni0122;
+sub g uni0326 by uni0123;
+sub K uni0326 by uni0136;
+sub k uni0326 by uni0137;
+sub L uni0326 by uni013B;
+sub l uni0326 by uni013C;
+sub N uni0326 by uni0145;
+sub n uni0326 by uni0146;
+sub R uni0326 by uni0156;
+sub r uni0326 by uni0157;
+
+sub O uni030B by Ohungarumlaut;
+sub o uni030B by ohungarumlaut;
+sub U uni030B by Uhungarumlaut;
+sub u uni030B by uhungarumlaut;

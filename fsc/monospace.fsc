@@ -1,6 +1,6 @@
 #
-# OpenType feature definitions for Tsukurimashou
-# Copyright (C) 2011  Matthew Skala
+# OpenType features to support monospace
+# Copyright (C) 2012  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,19 +28,16 @@
 # mskala@ansuz.sooke.bc.ca
 #
 
+# in fact the only feature specific to monospace is calt
+
 languagesystem DFLT dflt;
 languagesystem latn dflt;
-languagesystem kana dflt;
-languagesystem hani dflt;
 
-INCLUDE afrc
-INCLUDE misc
-INCLUDE ss01
-INCLUDE ss02
+BEGINFEATURE calt
+@combining_mark=[gravecomb acutecomb uni0302 tildecomb uni0304 uni0306
+  uni0307 uni0308 uni030B uni030C dotbelowcomb uni0326 uni0327 uni030A];
 
-BEGINFEATURE ccmp
-feature ccmp {
-  INCLUDE latinpc
-  INCLUDE kanapc
-} ccmp;
+feature calt {
+  sub [A-Z]' @combining_mark by [a.sc-z.sc];
+} calt;
 ENDFEATURE

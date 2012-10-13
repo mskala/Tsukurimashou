@@ -44,60 +44,53 @@ do_late_includes;
 
 % COMBINING DIACRITICAL MARKS
 
-tsu_rescale_native_zero;
-
-transform tsu_xf.backspace;
-if is_proportional:
-  tsu_xf.backspace:=identity shifted (-1000,0);
-else:
-  tsu_xf.backspace:=identity xscaled 0.5 shifted (-500,0);
-fi;
+tsu_rescale_combining_accent;
 
 % grave accent
 begintsuglyph("gravecomb",0);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.grave);
+  tsu_accent.grave;
   tsu_render;
 endtsuglyph;
 
 % acute accent
 begintsuglyph("acutecomb",1);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.acute);
+  tsu_accent.acute;
   tsu_render;
 endtsuglyph;
 
 % circumflex accent
 begintsuglyph("uni0302",2);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.circumflex);
+  tsu_accent.circumflex;
   tsu_render;
 endtsuglyph;
 
 % tilde accent
 begintsuglyph("tildecomb",3);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.tilde);
+  tsu_accent.tilde;
   tsu_render;
 endtsuglyph;
 
 % macron
 begintsuglyph("uni0304",4);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.macron);
+  tsu_accent.macron;
   tsu_render;
 endtsuglyph;
 
 % breve
 begintsuglyph("uni0306",6);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.breve);
+  tsu_accent.breve;
   tsu_render;
 endtsuglyph;
 
 % dot above
 begintsuglyph("uni0307",7);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.dotabove);
+  tsu_accent.dotabove;
   tsu_render;
 endtsuglyph;
 
 % umlaut/diaeresis
 begintsuglyph("uni0308",8);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.umlaut);
+  tsu_accent.umlaut;
   tsu_render;
 endtsuglyph;
 
@@ -105,37 +98,37 @@ endtsuglyph;
 
 % ring above
 begintsuglyph("uni030A",10);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.ringabove);
+  tsu_accent.ringabove;
   tsu_render;
 endtsuglyph;
 
 % double acute/hungarian umlaut
 begintsuglyph("uni030B",11);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.hungarian_umlaut);
+  tsu_accent.hungarian_umlaut;
   tsu_render;
 endtsuglyph;
 
 % caron/hacek
 begintsuglyph("uni030C",12);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.caron);
+  tsu_accent.caron;
   tsu_render;
 endtsuglyph;
 
 % dot below
 begintsuglyph("dotbelowcomb",35);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.dotbelow);
+  tsu_accent.dotbelow;
   tsu_render;
 endtsuglyph;
 
 % comma below
 begintsuglyph("uni0326",38);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.commabelow);
+  tsu_accent.commabelow;
   tsu_render;
 endtsuglyph;
 
 % cedilla
 begintsuglyph("uni0327",39);
-  tsu_xform(tsu_xf.backspace)(tsu_accent.cedilla);
+  tsu_accent.cedilla;
   tsu_render;
 endtsuglyph;
 
