@@ -67,6 +67,7 @@ vardef latin.upa =
 
     push_stroke(z4--z5,(1.6,1.6)--(1.6,1.6));
   fi;
+
   expand_pbox;
 enddef;
 
@@ -189,6 +190,7 @@ vardef latin.upe =
   set_boserif(0,2,1);
 
   push_stroke(z5--z6,(1.6,1.6)--(1.6,1.6));
+
   expand_pbox;
 enddef;
 
@@ -265,6 +267,7 @@ vardef latin.upi =
 
   push_stroke((300,latin_wide_low_h)--(700,latin_wide_low_h),
     (1.6,1.6)--(1.6,1.6));
+
   expand_pbox;
 enddef;
 
@@ -433,6 +436,7 @@ vardef latin.upo =
     scaled ((latin_wide_high_r-latin_wide_low_r)/2)
     shifted centre_pt,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--cycle);
+
   expand_pbox;
 enddef;
 
@@ -592,6 +596,7 @@ vardef latin.upu =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   set_boserif(0,0,3);
   set_boserif(0,4,3);
+
   expand_pbox;
 enddef;
 
@@ -882,7 +887,7 @@ enddef;
 
 vardef latin.lowc =
   push_pbox_toexpand("latin.lowc");
-  push_anchor(anc_centre_accent,identity
+  push_anchor(anc_centre,identity
     scaled ((latin_wide_xheight_r-latin_wide_low_r)/200)
     shifted (xpart centre_pt,(latin_wide_xheight_r+latin_wide_low_r)/2));
   push_stroke((subpath (0.5,3.5) of ((1,0)..(0,1)..(-1,0)..(0,-1)..cycle))
@@ -1253,7 +1258,7 @@ enddef;
 
 vardef latin.lowo =
   push_pbox_toexpand("latin.lowo");
-  push_anchor(anc_centre_accent,identity
+  push_anchor(anc_centre,identity
     scaled ((latin_wide_xheight_r-latin_wide_low_r)/200)
     shifted (xpart centre_pt,(latin_wide_xheight_r+latin_wide_low_r)/2));
   push_stroke(((1,0)..(0,1)..(-1,0)..(0,-1)..cycle)

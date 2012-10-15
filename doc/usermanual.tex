@@ -1217,7 +1217,7 @@ partially mitigated by the ``calt'' feature's substitutions, if those are
 enabled.
 
 Similarly, this feature will substitute precomposed voiced kana glyphs for
-combinations of unvoiced kana plus combining dakuten.
+combinations of unvoiced kana plus combining dakuten or handakuten.
 
 In the Jieubside fonts, this feature breaks precomposed
 syllables that don't have final consonants into their component jamo, and
@@ -1248,7 +1248,7 @@ the ``ccmp'' feature will stand, leaving those syllables looking poorly
 designed; and syllables written out as individual jamo will be approximated
 with on-the-fly composition even when a precomposed glyph would be
 available.  In order for the ligature table to operate correctly, the
-``ljmo'' and ``vjmo'' features should be turned on.  See the section on
+``ljmo'' and ``vjmo'' features should also be turned on.  See the section on
 Korean language support for more details of how this feature works.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1380,8 +1380,8 @@ generated fonts by default, then someone who didn't read the documentation
 would eventually ``discover'' it and make a big fuss about it supposedly
 being a security hole.  Who needs that?  The feature is therefore turned off
 by default.  I recommend turning it on by passing the
-``--enable-ot-features=all'' option to configure.  The default is
-``--enable-ot-features=all,!pfed,'' which enables everything else.
+``-{}-enable-ot-features=all'' option to configure.  The default is
+``-{}-enable-ot-features=all,!pfed,'' which enables everything else.
 
 Regardless of the setting chosen, the build system will place the same
 information in a file called ``fontlog.txt'' in the txt/ subdirectory of the
@@ -1405,14 +1405,15 @@ into the PUA.
 In monospace fonts, these small caps are about the same height as most
 lowercase letters, in order to allow their use as substitutes when combining
 accents are applied to uppercase letters.  In proportionally spaced fonts,
-small caps are a little taller than lowercase letters.
+small caps are a little taller than lowercase letters, but shorter than
+ordinary caps.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \blsubsection{ヘビーメタルウムラウト}{Heavy Metal Umlaut (ss01)}
 
 With Stylistic Set 1 (OpenType feature ``ss01'') turned on, umlaut or
-dieresis over the vowels ÄËÏÖÜŸäëïöüÿ as well as tilde over Ñ and ñ is
+dieresis over the vowels ÄËÏÖÜŸäëïöüÿ and tilde over Ñ and ñ are
 replaced by a ``heavy metal'' umlaut intended for spelling musical names
 like {\fontspec[RawFeature=+ss01]{TsukurimashouKakuPS}``Motörhead,''
 ``Spıñal Tap,'' and ``Mormoñ Tabärnacle Choïr.''} The heavy metal umlaut

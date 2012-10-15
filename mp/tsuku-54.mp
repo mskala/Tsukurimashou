@@ -82,13 +82,6 @@ vardef kanji.grthree.facing =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.junior =
-  push_pbox_toexpand("kanji.grthree.junior");
-  kanji.rare.director;
-  build_kanji.box((320,240),(810,0));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.member =
   push_pbox_toexpand("kanji.grthree.member");
   build_kanji.level(build_kanji.tb(620,0)

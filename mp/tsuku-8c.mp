@@ -37,6 +37,7 @@ input buildkanji.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 
 do_late_includes;
@@ -73,6 +74,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.freight =
+  push_pbox_toexpand("kanji.grfour.freight");
+  build_kanji.level(build_kanji.tb(560,-50)
+    (kanji.grthree.change)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % koku/tani "valley"
 begintsuglyph("uni8C37",55);
   kanji.grtwo.valley;
@@ -100,6 +111,12 @@ endtsuglyph;
 % fu/ma "undertake
 begintsuglyph("uni8CA0",160);
   kanji.grthree.undertake;
+  tsu_render;
+endtsuglyph;
+
+% ka/takara "freight"
+begintsuglyph("uni8CA8",168);
+  kanji.grfour.freight;
   tsu_render;
 endtsuglyph;
 

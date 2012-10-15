@@ -132,6 +132,29 @@ foreach $fname (@ARGV) {
   close(PRF);
 }
 
+# friendly names for mark classes - should match mp/intro.mp but
+# reasonably harmless if it doesn't, so probably not worth the
+# extra data-passing to make that happen automagically
+%mclassname=(
+  1=>'MC_UPPER',
+  2=>'MC_GRAVE',
+  3=>'MC_ACUTE',
+  4=>'MC_WIDE',
+  5=>'MC_TILDE',
+  6=>'MC_RING',
+  7=>'MC_CARON_COMMA',
+  8=>'MC_DAKUTEN',
+  9=>'MC_LOWER',
+  10=>'MC_LOWER_CONNECT',
+  11=>'MC_CENTRE',
+  12=>'MC_ICHING1',
+  13=>'MC_ICHING2',
+  14=>'MC_ICHING3',
+  15=>'MC_ICHING4',
+  16=>'MC_ICHING5',
+  17=>'MC_ICHING6',
+);
+
 # mark feature
 if ($otfeatures=~/mark/) {
   print "feature mark {\n";
@@ -155,7 +178,7 @@ if ($otfeatures=~/mark/) {
         if ($printed) {
           print "\n    ";
         } else {
-          print "  position base [$glname{$n}] ";
+          print "  position base [$glname{$n}]\n    ";
           $printed=1;
         }
         printf "<anchor %d %d> mark @%s",
@@ -191,7 +214,7 @@ if ($otfeatures=~/mkmk/) {
         if ($printed) {
           print "\n    ";
         } else {
-          print "  position mark [$glname{$n}] ";
+          print "  position mark [$glname{$n}]\n    ";
           $printed=1;
         }
         printf "<anchor %d %d> mark @%s",

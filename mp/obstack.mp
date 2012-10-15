@@ -157,7 +157,7 @@ vardef get_anchor_with_default(expr atype,default_anchor) =
       j:=find_whatever(otanchor,i);
       exitif j<=0;
       exitif obstackn[j]=atype;
-      j:=j-1;
+      i:=i-1;
     endfor;
     if j<=0: default_anchor else: obstackt[j] fi
   endgroup

@@ -796,18 +796,20 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-def anc_upper_accent = 1 enddef;
-def anc_lower_accent = 2 enddef;
-def anc_centre_accent = 3 enddef;
-def anc_upper_left = 4 enddef;
-def anc_upper_right = 5 enddef;
-def anc_upper_ring = 6 enddef;
+def anc_upper = 1 enddef;
+def anc_grave = 2 enddef;
+def anc_acute = 3 enddef;
+def anc_wide = 4 enddef;
+def anc_tilde = 5 enddef;
+def anc_ring = 6 enddef;
 def anc_caron_comma = 7 enddef;
 def anc_dakuten = 8 enddef;
-def anc_iching_line(expr lnum) = (8+lnum) enddef;
+def anc_lower = 9 enddef;
+def anc_lower_connect = 10 enddef;
+def anc_centre = 11 enddef;
+def anc_iching_line(expr lnum) = (11+lnum) enddef;
 
 transform accent_default[];
-numeric anchor_parent[];
 
 def tsu_default_anchor(expr aindex,avalue) =
   if numeric avalue:

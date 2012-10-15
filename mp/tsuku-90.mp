@@ -134,6 +134,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.county =
+  push_pbox_toexpand("kanji.grfour.county");
+  build_kanji.lr(580,0)
+    (kanji.grthree.junior)
+    (kanji.rightrad.beta);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % sou/oku "send"
 begintsuglyph("uni9001",1);
   kanji.grthree.send;
@@ -185,6 +195,12 @@ endtsuglyph;
 % en/too "distant"
 begintsuglyph("uni9060",96);
   kanji.grtwo.distant;
+  tsu_render;
+endtsuglyph;
+
+% gen/koori "county"
+begintsuglyph("uni90E1",225);
+  kanji.grfour.county;
   tsu_render;
 endtsuglyph;
 

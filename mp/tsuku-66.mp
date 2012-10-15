@@ -152,6 +152,17 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.yesterday =
+  push_pbox_toexpand("kanji.grfour.yesterday");
+  build_kanji.lr(380,0)
+    (tsu_xform(identity shifted (0,-600) yscaled 0.75 shifted (0,600))
+       (kanji.grone.day))
+    (kanji.rare.notwithstanding);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.easy =
   push_pbox_toexpand("kanji.grfive.easy");
   build_kanji.tb(480,0)
@@ -195,6 +206,12 @@ endtsuglyph;
 % shun/haru "spring (season)"
 begintsuglyph("uni6625",37);
   kanji.grtwo.spring;
+  tsu_render;
+endtsuglyph;
+
+% saku "yesterday"
+begintsuglyph("uni6628",40);
+  kanji.grfour.yesterday;
   tsu_render;
 endtsuglyph;
 

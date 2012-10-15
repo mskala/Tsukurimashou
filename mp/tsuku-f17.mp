@@ -38,6 +38,7 @@ input latin-intro.mp;
 input accent.mp;
 input buildkanji.mp;
 input enclosed.mp;
+input genjimon.mp;
 input gradeone.mp;
 input iching.mp;
 input katakana.mp;

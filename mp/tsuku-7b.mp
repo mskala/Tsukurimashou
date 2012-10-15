@@ -40,6 +40,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -115,6 +116,22 @@ vardef kanji.grthree.writing_brush =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.laugh =
+  push_pbox_toexpand("kanji.grfour.laugh");
+  build_kanji.level(build_kanji.tb(480,150)
+    (kanji.toprad.bamboo)
+    (kanji.rare.early_death));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% shou/wara "laugh"
+begintsuglyph("uni7B11",17);
+  kanji.grfour.laugh;
+  tsu_render;
+endtsuglyph;
 
 % teki/fue "flute"
 begintsuglyph("uni7B1B",27);

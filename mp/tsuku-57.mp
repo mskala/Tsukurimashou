@@ -75,6 +75,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.pressure =
+  push_pbox_toexpand("kanji.grfive.pressure");
+  build_kanji.cliff_enclose(kanji.grone.earth);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % en/zono "garden"
 begintsuglyph("uni5712",18);
   kanji.grtwo.garden;
@@ -98,6 +106,12 @@ endtsuglyph;
 % extra: "sacred"
 begintsuglyph("uni5723",35);
   kanji.rare.sacred;
+  tsu_render;
+endtsuglyph;
+
+% atsu/o "pressure"
+begintsuglyph("uni5727",39);
+  kanji.grfive.pressure;
   tsu_render;
 endtsuglyph;
 

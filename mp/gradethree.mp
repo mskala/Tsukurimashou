@@ -100,7 +100,7 @@ enddef;
 
 vardef kanji.grthree.change =
   push_pbox_toexpand("kanji.grthree.change");
-  build_kanji.level(build_kanji.lr(470,-150)
+  build_kanji.level(build_kanji.lr(470,-100)
     (tsu_xform(identity yscaled 0.98)(kanji.leftrad.person))
     (kanji.radical.spoon));
   set_boserif(0,0,10);
@@ -260,6 +260,13 @@ vardef kanji.grthree.intention =
   build_kanji.level(build_kanji.tb(210,0)
     (kanji.grone.noise)
     (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.junior =
+  push_pbox_toexpand("kanji.grthree.junior");
+  kanji.rare.director;
+  build_kanji.box((320,240),(810,0));
   expand_pbox;
 enddef;
 

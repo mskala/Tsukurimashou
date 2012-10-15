@@ -55,7 +55,7 @@ vardef latin.upaogonek =
     replace_strokep(-1)(insert_nodes(oldp)(length(oldp)-2.5));
     replace_strokeq(-1)(oldq--(1.4,1.4)--(1.3,1.3)--(1.4,1.4)--(1,1));
     set_boserif(-1,1,2);
-    set_botip(-1,length(get_strokep(0))-4,1);
+    set_botip(-1,length(get_strokep(-1))-4,1);
   fi;
   expand_pbox;
 enddef;
@@ -139,7 +139,7 @@ vardef latin.lowaogonek =
   replace_strokep(-1)(oldp{dir 210}..z9..z10{right}..z11);
   replace_strokep(-1)(insert_nodes(oldp)(length(oldp)-2.5));
   replace_strokeq(-1)(oldq--(1.4,1.4)--(1.3,1.3)--(1.4,1.4)--(1,1));
-  set_botip(0,length(get_strokep(-1))-4,1);
+  set_botip(-1,length(get_strokep(-1))-4,1);
   expand_pbox;
 enddef;
 

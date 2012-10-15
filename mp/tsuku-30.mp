@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input dakuten.mp;
+input genjimon.mp;
 input hiragana.mp;
 input katakana.mp;
 input punct.mp;

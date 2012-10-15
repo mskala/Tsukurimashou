@@ -127,6 +127,17 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.failure =
+  push_pbox_toexpand("kanji.grfour.failure");
+  build_kanji.level(build_kanji.lr(500,40)
+    (kanji.grone.shell)
+    (kanji.radical.folding_chair;
+     replace_strokep(-1)(subpath (0,length(oldp)-0.17) of oldp)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.decapitate =
   push_pbox_toexpand("kanji.greight.decapitate");
   build_kanji.lr(480,20)
@@ -196,6 +207,12 @@ endtsuglyph;
 % choku/imashi "imperial decree"
 begintsuglyph("uni6555",85);
   kanji.rare.imperial_decree;
+  tsu_render;
+endtsuglyph;
+
+% hai/yabu "failure"
+begintsuglyph("uni6557",87);
+  kanji.grfour.failure;
   tsu_render;
 endtsuglyph;
 

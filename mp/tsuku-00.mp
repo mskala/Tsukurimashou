@@ -349,14 +349,22 @@ begintsuglyph("at",64);
   tsu_render;
 endtsuglyph;
 
-tsu_default_anchor(anc_upper_accent,tsu_xf.cap_upper_accent);
-tsu_default_anchor(anc_lower_accent,accent_default[anc_lower_accent]);
-tsu_default_anchor(anc_centre_accent,tsu_xf.low_centre_accent);
-tsu_default_anchor(anc_upper_left,tsu_xf.cap_upper_accent);
-tsu_default_anchor(anc_upper_right,tsu_xf.cap_upper_accent);
-tsu_default_anchor(anc_upper_ring,tsu_xf.cap_upper_accent);
+tsu_default_anchor(anc_upper,accent_default[anc_upper]
+  shifted (0,vmetric(1.10)-vmetric(0.75)));
+tsu_default_anchor(anc_grave,accent_default[anc_grave]
+  shifted (0,vmetric(1.10)-vmetric(0.75)));
+tsu_default_anchor(anc_acute,accent_default[anc_acute]
+  shifted (0,vmetric(1.10)-vmetric(0.75)));
+tsu_default_anchor(anc_wide,identity xscaled 1.2
+  transformed accent_default[anc_wide]
+  shifted (0,vmetric(1.10)-vmetric(0.75)));
+tsu_default_anchor(anc_ring,accent_default[anc_ring]
+  shifted (0,vmetric(1.10)-vmetric(0.75)));
 tsu_default_anchor(anc_caron_comma,
   accent_default[anc_caron_comma] shifted (200,0));
+tsu_default_anchor(anc_lower,accent_default[anc_lower]);
+tsu_default_anchor(anc_lower_connect,accent_default[anc_lower_connect]);
+tsu_default_anchor(anc_centre,accent_default[anc_centre]);
 
 % A
 begintsuglyph("A",65);
@@ -514,13 +522,16 @@ begintsuglyph("Z",90);
   tsu_render;
 endtsuglyph;
 
-tsu_default_anchor(anc_upper_accent,0);
-tsu_default_anchor(anc_lower_accent,0);
-tsu_default_anchor(anc_centre_accent,0);
-tsu_default_anchor(anc_upper_left,0);
-tsu_default_anchor(anc_upper_right,0);
-tsu_default_anchor(anc_upper_ring,0);
+tsu_default_anchor(anc_upper,0);
+tsu_default_anchor(anc_grave,0);
+tsu_default_anchor(anc_acute,0);
+tsu_default_anchor(anc_wide,0);
+tsu_default_anchor(anc_tilde,0);
+tsu_default_anchor(anc_ring,0);
 tsu_default_anchor(anc_caron_comma,0);
+tsu_default_anchor(anc_lower,0);
+tsu_default_anchor(anc_lower_connect,0);
+tsu_default_anchor(anc_centre,0);
 
 % left and right square brackets, backslash between
 begintsuglyph("bracketleft",91);
@@ -559,13 +570,16 @@ endtsuglyph;
 % WARNING changing rescale setting
 tsu_rescale_half_lc;
 
-tsu_default_anchor(anc_upper_accent,accent_default[anc_upper_accent]);
-tsu_default_anchor(anc_lower_accent,accent_default[anc_lower_accent]);
-tsu_default_anchor(anc_centre_accent,tsu_xf.low_centre_accent);
-tsu_default_anchor(anc_upper_left,accent_default[anc_upper_accent]);
-tsu_default_anchor(anc_upper_right,accent_default[anc_upper_accent]);
-tsu_default_anchor(anc_upper_ring,accent_default[anc_upper_accent]);
+tsu_default_anchor(anc_upper,accent_default[anc_upper]);
+tsu_default_anchor(anc_grave,accent_default[anc_grave]);
+tsu_default_anchor(anc_acute,accent_default[anc_acute]);
+tsu_default_anchor(anc_wide,accent_default[anc_wide]);
+tsu_default_anchor(anc_tilde,accent_default[anc_tilde]);
+tsu_default_anchor(anc_ring,accent_default[anc_ring]);
 tsu_default_anchor(anc_caron_comma,accent_default[anc_caron_comma]);
+tsu_default_anchor(anc_lower,accent_default[anc_lower]);
+tsu_default_anchor(anc_lower_connect,accent_default[anc_lower_connect]);
+tsu_default_anchor(anc_centre,tsu_xf.low_centre_accent);
 
 % a
 begintsuglyph("a",97);
@@ -723,13 +737,16 @@ begintsuglyph("z",122);
   tsu_render;
 endtsuglyph;
 
-tsu_default_anchor(anc_upper_accent,0);
-tsu_default_anchor(anc_lower_accent,0);
-tsu_default_anchor(anc_centre_accent,0);
-tsu_default_anchor(anc_upper_left,0);
-tsu_default_anchor(anc_upper_right,0);
-tsu_default_anchor(anc_upper_ring,0);
+tsu_default_anchor(anc_upper,0);
+tsu_default_anchor(anc_grave,0);
+tsu_default_anchor(anc_acute,0);
+tsu_default_anchor(anc_wide,0);
+tsu_default_anchor(anc_tilde,0);
+tsu_default_anchor(anc_ring,0);
 tsu_default_anchor(anc_caron_comma,0);
+tsu_default_anchor(anc_lower,0);
+tsu_default_anchor(anc_lower_connect,0);
+tsu_default_anchor(anc_centre,0);
 
 % WARNING changing rescale setting
 tsu_rescale_half;
