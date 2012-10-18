@@ -336,6 +336,8 @@ begintsuglyph("uniFF20",32);
   tsu_render;
 endtsuglyph;
 
+tsu_accent.up_default_anchors;
+
 % A
 begintsuglyph("uniFF21",33);
   latin.upa;
@@ -492,6 +494,8 @@ begintsuglyph("uniFF3A",58);
   tsu_render;
 endtsuglyph;
 
+tsu_accent.clear_default_anchors;
+
 % left and right square brackets
 begintsuglyph("uniFF3B",59);
   punct.sqb_left;
@@ -525,6 +529,8 @@ begintsuglyph("uniFF40",64);
   tsu_accent.grave;
   tsu_render;
 endtsuglyph;
+
+tsu_accent.low_default_anchors;
 
 % a
 begintsuglyph("uniFF41",65);
@@ -681,6 +687,8 @@ begintsuglyph("uniFF5A",90);
   latin.lowz;
   tsu_render;
 endtsuglyph;
+
+tsu_accent.clear_default_anchors;
 
 % left and right square brackets, around vertical line
 begintsuglyph("uniFF5B",91);

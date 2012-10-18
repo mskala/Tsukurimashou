@@ -202,6 +202,16 @@ vardef kanji.grnine.snake_sign =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.southeast =
+  push_pbox_toexpand("kanji.grnine.southeast");
+  build_kanji.level(build_kanji.tb(460,-30)
+    (build_kanji.lr(480,0)
+       (kanji.grsix.self)
+       (kanji.grsix.self))
+    (kanji.grfour.together));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.square_jewel =
   push_pbox_toexpand("kanji.grnine.square_jewel");
   build_kanji.tb(440,10)

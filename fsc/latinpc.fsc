@@ -191,3 +191,7 @@ sub O uni030B by Ohungarumlaut;
 sub o uni030B by ohungarumlaut;
 sub U uni030B by Uhungarumlaut;
 sub u uni030B by uhungarumlaut;
+
+subtable;
+
+sub i' [uni0307 uni030A uni030B uni030C] by dotlessi;

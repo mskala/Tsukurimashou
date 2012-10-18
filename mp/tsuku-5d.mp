@@ -157,6 +157,12 @@ begintsuglyph("uni5DF7",247);
   tsu_render;
 endtsuglyph;
 
+% son/tatsumi "southeast"
+begintsuglyph("uni5DFD",253);
+  kanji.grnine.southeast;
+  tsu_render;
+endtsuglyph;
+
 % kin/oo/haba "towel" or "hanging scroll"
 begintsuglyph("uni5DFE",254);
   kanji.greight.towel;

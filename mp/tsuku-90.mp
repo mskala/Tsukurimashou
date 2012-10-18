@@ -36,7 +36,9 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradefour.mp;
+input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
@@ -134,6 +136,12 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.choose =
+  push_pbox_toexpand("kanji.grfour.county");
+  build_kanji.road_enclose(kanji.grnine.southeast);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.county =
   push_pbox_toexpand("kanji.grfour.county");
   build_kanji.lr(580,0)
@@ -195,6 +203,12 @@ endtsuglyph;
 % en/too "distant"
 begintsuglyph("uni9060",96);
   kanji.grtwo.distant;
+  tsu_render;
+endtsuglyph;
+
+% sen/era "choose"
+begintsuglyph("uni9078",120);
+  kanji.grfour.choose;
   tsu_render;
 endtsuglyph;
 

@@ -39,6 +39,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -78,6 +79,14 @@ vardef kanji.grfour.freight =
   push_pbox_toexpand("kanji.grfour.freight");
   build_kanji.level(build_kanji.tb(560,-50)
     (kanji.grthree.change)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.prize =
+  push_pbox_toexpand("kanji.grfour.prize");
+  build_kanji.level(build_kanji.tb(460,-10)
+    (build_kanji.sscale(xscaled 0.87)(kanji.toprad.ridiculous_hat))
     (kanji.grone.shell));
   expand_pbox;
 enddef;
@@ -123,6 +132,12 @@ endtsuglyph;
 % gai/ka "buy"
 begintsuglyph("uni8CB7",183);
   kanji.grtwo.buy;
+  tsu_render;
+endtsuglyph;
+
+% shuu/ho "prize"
+begintsuglyph("uni8CDE",222);
+  kanji.grfour.prize;
   tsu_render;
 endtsuglyph;
 

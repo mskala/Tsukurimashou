@@ -165,6 +165,16 @@ vardef kanji.grfour.disappear =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.dispute =
+  push_pbox_toexpand("kanji.grfour.dispute");
+  build_kanji.attach_fishhook(0.77)(
+    build_kanji.sscale(yscaled 0.6 shifted (0,150))
+      (kanji.radical.pigs_snout);
+    push_stroke((point 0.5 of get_strokep(-2)),((1.6,1.6)));
+    build_kanji.add_jtail(0));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.every =
   push_pbox_toexpand("kanji.grfour.every");
   build_kanji.level(build_kanji.tb(300,80)

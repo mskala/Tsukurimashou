@@ -35,8 +35,8 @@ inclusion_lock(accent);
 vardef tsu_accent.acute =
   push_anchor(-anc_acute,accent_default[anc_acute]);
   push_stroke(
-    (500+1.5*tsu_punct_size,vmetric(0.95))--
-      (500-0.5*tsu_punct_size,vmetric(0.78)),
+    (500+1.1*tsu_punct_size,vmetric(0.95))--
+      (500-0.9*tsu_punct_size,vmetric(0.78)),
     (2,2)--(1.6,1.6)--(1.3,1.3));
   replace_strokep(0)(insert_nodes(oldp)(0.5));
   set_bosize(0,80);
@@ -45,7 +45,7 @@ vardef tsu_accent.acute =
 enddef;
 
 vardef tsu_accent.breve =
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   push_stroke((500-1.3*tsu_punct_size,vmetric(0.95)){down}..
       (500,vmetric(0.82))..
       {up}(500+1.3*tsu_punct_size,vmetric(0.95)),
@@ -54,7 +54,7 @@ vardef tsu_accent.breve =
 enddef;
 
 vardef tsu_accent.caron =
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   push_stroke((500-1.5*tsu_punct_size,vmetric(0.95))--
     (500,vmetric(0.80))--
     (500+1.5*tsu_punct_size,vmetric(0.95)),
@@ -80,7 +80,7 @@ vardef tsu_accent.cedilla =
 enddef;
 
 vardef tsu_accent.circumflex =
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   push_stroke((500-1.5*tsu_punct_size,vmetric(0.80))--
       (500,vmetric(0.95))--
       (500+1.5*tsu_punct_size,vmetric(0.80)),
@@ -114,8 +114,8 @@ enddef;
 
 vardef tsu_accent.grave =
   push_anchor(-anc_grave,accent_default[anc_grave]);
-  push_stroke((500-1.5*tsu_punct_size,vmetric(0.95))--
-      (500+0.5tsu_punct_size,vmetric(0.78)),
+  push_stroke((500-1.1*tsu_punct_size,vmetric(0.95))--
+      (500+0.9*tsu_punct_size,vmetric(0.78)),
     (2,2)--(1.6,1.6)--(1.3,1.3));
   replace_strokep(0)(insert_nodes(oldp)(0.5));
   set_bosize(0,80);
@@ -124,7 +124,7 @@ vardef tsu_accent.grave =
 enddef;
 
 vardef tsu_accent.heavy_metal_umlaut =
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   push_lcblob((up--left--down--right--cycle) scaled (mbrush_width*1.5+30)
     shifted ((500-1.5*tsu_punct_size,vmetric(0.88))
       transformed tsu_rescale_xform)
@@ -137,7 +137,7 @@ vardef tsu_accent.heavy_metal_umlaut =
 enddef;
 
 vardef tsu_accent.hungarian_umlaut =
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   push_stroke((500+1.7*tsu_punct_size,vmetric(0.95))--
       (500+0.7*tsu_punct_size,vmetric(0.78)),
     (2,2)--(1.6,1.6)--(1.3,1.3));
@@ -155,7 +155,7 @@ vardef tsu_accent.hungarian_umlaut =
 enddef;
 
 vardef tsu_accent.macron =
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   push_stroke((500-1.75*tsu_punct_size,vmetric(0.82))--
       (500+1.75*tsu_punct_size,vmetric(0.82)),
     (2,2)--(2,2));
@@ -201,7 +201,7 @@ vardef tsu_accent.tilde =
 enddef;
 
 vardef tsu_accent.umlaut =
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   push_lcblob(fullcircle rotated 45 scaled (mbrush_width*1.72+50)
     shifted ((500-1.5*tsu_punct_size,vmetric(0.88))
       transformed tsu_rescale_xform)
@@ -216,12 +216,12 @@ enddef;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef tsu_accent.capital(text curves) =
-  tsu_xform(tsu_xf.accentedcap)(curves);
-  if get_anchor_with_default(anc_upper,identity)=identity:
-    push_anchor(anc_upper,
-      accent_default[anc_upper]
-        shifted (0,vmetric(0.98)-vmetric(0.8)));
-  fi;
+  tsu_xform(tsu_xf.accentedcap)
+    (curves;
+     tsu_accent.shift_anchors(true)((0,0)));
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.3))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
 enddef;
 
 vardef tsu_accent.apply(text basecurves)(text markcurves) =
@@ -243,26 +243,16 @@ vardef tsu_accent.apply(text basecurves)(text markcurves) =
       fi;
       exitif killflag;
     endfor;
-    if known accent_default[-obstackn[mbi]]:
-      bmt:=accent_default[-obstackn[mbi]];
-    else:
-      bmt:=accent_default[anchor_parent[-obstackn[mbi]]];
-    fi;
-    killflag:=false;
-    for i:=xsp-1 downto 1:
-      if obstacktype[i]=otanchor:
-        if obstackn[i]=-obstackn[mbi]:
-          bmi:=i;
-          bmt:=obstackt[i];
-          killflag:=true;
-        fi;
+    if known mbi:
+      if known accent_default[-obstackn[mbi]]:
+        bmt:=accent_default[-obstackn[mbi]];
+      else:
+        bmt:=accent_default[anchor_parent[-obstackn[mbi]]];
       fi;
-      exitif killflag;
-    endfor;
-    if (not killflag) and (known anchor_parent[-obstackn[mbi]]):
+      killflag:=false;
       for i:=xsp-1 downto 1:
         if obstacktype[i]=otanchor:
-          if obstackn[i]=anchor_parent[-obstackn[mbi]]:
+          if obstackn[i]=-obstackn[mbi]:
             bmi:=i;
             bmt:=obstackt[i];
             killflag:=true;
@@ -270,13 +260,25 @@ vardef tsu_accent.apply(text basecurves)(text markcurves) =
         fi;
         exitif killflag;
       endfor;
+      if (not killflag) and (known anchor_parent[-obstackn[mbi]]):
+        for i:=xsp-1 downto 1:
+          if obstacktype[i]=otanchor:
+            if obstackn[i]=anchor_parent[-obstackn[mbi]]:
+              bmi:=i;
+              bmt:=obstackt[i];
+              killflag:=true;
+            fi;
+          fi;
+          exitif killflag;
+        endfor;
+      fi;
+      obstacktype[mbi]:=otnull;
+      if known bmi:
+        obstacktype[bmi]:=otnull;
+      fi;
+      ysp:=sp;
+      sp:=xsp;
+      tsu_xform((inverse obstackt[mbi]) transformed bmt)(sp:=ysp);
     fi;
-    obstacktype[mbi]:=otnull;
-    if known bmi:
-      obstacktype[bmi]:=otnull;
-    fi;
-    ysp:=sp;
-    sp:=xsp;
-    tsu_xform((inverse obstackt[mbi]) transformed bmt)(sp:=ysp);
   endgroup;
 enddef;

@@ -31,10 +31,10 @@
 BEGINFEATURE ss01
 feature ss01 {
   featureNames { name "Heavy metal umlaut"; };
-  sub [dieresis Adieresis Edieresis Idieresis Ntilde Odieresis Udieresis
-       adieresis edieresis idieresis ntilde odieresis udieresis
-       ydieresis] by [dieresis.hmu Adieresis.hmu Edieresis.hmu Idieresis.hmu
-       Ndieresis.hmu Odieresis.hmu Udieresis.hmu adieresis.hmu
+  sub [dieresis uni0308 Adieresis Edieresis Idieresis Ntilde Odieresis
+       Udieresis adieresis edieresis idieresis ntilde odieresis udieresis
+       ydieresis] by [dieresis.hmu uni0308.hmu Adieresis.hmu Edieresis.hmu
+       Idieresis.hmu Ndieresis.hmu Odieresis.hmu Udieresis.hmu adieresis.hmu
        edieresis.hmu idieresis.hmu ndieresis.hmu odieresis.hmu udieresis.hmu
        ydieresis.hmu];
 } ss01;

@@ -48,49 +48,57 @@ tsu_rescale_combining_accent;
 
 % grave accent
 begintsuglyph("gravecomb",0);
-  tsu_accent.grave;
+  tsu_accent.apply()(tsu_accent.grave);
+  push_anchor(-anc_grave,accent_default[anc_grave]);
   tsu_render;
 endtsuglyph;
 
 % acute accent
 begintsuglyph("acutecomb",1);
-  tsu_accent.acute;
+  tsu_accent.apply()(tsu_accent.acute);
+  push_anchor(-anc_acute,accent_default[anc_acute]);
   tsu_render;
 endtsuglyph;
 
 % circumflex accent
 begintsuglyph("uni0302",2);
-  tsu_accent.circumflex;
+  tsu_accent.apply()(tsu_accent.circumflex);
+  push_anchor(-anc_upper,accent_default[anc_upper]);
   tsu_render;
 endtsuglyph;
 
 % tilde accent
 begintsuglyph("tildecomb",3);
-  tsu_accent.tilde;
+  tsu_accent.apply()(tsu_accent.tilde);
+  push_anchor(-anc_tilde,accent_default[anc_tilde]);
   tsu_render;
 endtsuglyph;
 
 % macron
 begintsuglyph("uni0304",4);
-  tsu_accent.macron;
+  tsu_accent.apply()(tsu_accent.macron);
+  push_anchor(-anc_upper,accent_default[anc_upper]);
   tsu_render;
 endtsuglyph;
 
 % breve
 begintsuglyph("uni0306",6);
-  tsu_accent.breve;
+  tsu_accent.apply()(tsu_accent.breve);
+  push_anchor(-anc_upper,accent_default[anc_upper]);
   tsu_render;
 endtsuglyph;
 
 % dot above
 begintsuglyph("uni0307",7);
-  tsu_accent.dotabove;
+  tsu_accent.apply()(tsu_accent.dotabove);
+  push_anchor(-anc_upper,accent_default[anc_upper]);
   tsu_render;
 endtsuglyph;
 
 % umlaut/diaeresis
 begintsuglyph("uni0308",8);
-  tsu_accent.umlaut;
+  tsu_accent.apply()(tsu_accent.umlaut);
+  push_anchor(-anc_upper,accent_default[anc_upper]);
   tsu_render;
 endtsuglyph;
 
@@ -98,40 +106,45 @@ endtsuglyph;
 
 % ring above
 begintsuglyph("uni030A",10);
-  tsu_accent.ringabove;
+  tsu_accent.apply()(tsu_accent.ringabove);
+  push_anchor(-anc_ring,accent_default[anc_ring]);
   tsu_render;
 endtsuglyph;
 
 % double acute/hungarian umlaut
 begintsuglyph("uni030B",11);
-  tsu_accent.hungarian_umlaut;
+  tsu_accent.apply()(tsu_accent.hungarian_umlaut);
+  push_anchor(-anc_upper,accent_default[anc_upper]);
   tsu_render;
 endtsuglyph;
 
 % caron/hacek
 begintsuglyph("uni030C",12);
-  tsu_accent.caron;
+  tsu_accent.apply()(tsu_accent.caron);
+  push_anchor(-anc_upper,accent_default[anc_upper]);
   tsu_render;
 endtsuglyph;
 
 % dot below
 begintsuglyph("dotbelowcomb",35);
-  tsu_accent.dotbelow;
+  tsu_accent.apply()(tsu_accent.dotbelow);
+  push_anchor(-anc_lower,accent_default[anc_lower]);
   tsu_render;
 endtsuglyph;
 
 % comma below
 begintsuglyph("uni0326",38);
-  tsu_accent.commabelow;
+  tsu_accent.apply()(tsu_accent.commabelow);
+  push_anchor(-anc_lower,accent_default[anc_lower]);
   tsu_render;
 endtsuglyph;
 
 % cedilla
 begintsuglyph("uni0327",39);
-  tsu_accent.cedilla;
+  tsu_accent.apply()(tsu_accent.cedilla);
+  push_anchor(-anc_lower_connect,accent_default[anc_lower_connect]);
   tsu_render;
 endtsuglyph;
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

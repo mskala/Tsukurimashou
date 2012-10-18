@@ -770,6 +770,8 @@ vardef latin.double_lowa =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0,2.97) of oldp);
   replace_strokep(0)(insert_nodes(oldp)(0.5));
+
+  tsu_accent.shift_anchors(true)((9,0));
   expand_pbox;
 enddef;
 
@@ -940,6 +942,9 @@ vardef latin.lowe =
   z1=get_strokep(0) intersectionpoint ((z2+(-1000,0))--z2+(-10,0));
   replace_strokep(0)((z1+2*right)--oldp);
   set_botip(0,1,1);
+
+  tsu_accent.shift_anchors(ypart olda<vmetric(0.05))((13,0));
+  tsu_accent.shift_anchors(ai=anc_ring)((-12,0));
   expand_pbox;
 enddef;
 
@@ -1105,6 +1110,12 @@ vardef latin.lowi =
   push_lcblob(fullcircle rotated 45 scaled (mbrush_width*2.7+15)
     shifted (z4 transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+
+  tsu_accent.shift_anchors(true)((x4-500,0));
+  tsu_accent.shift_anchors(ai=anc_acute)((-55,0));
+  tsu_accent.shift_anchors(ai=anc_wide)((-40,0));
+  tsu_accent.shift_anchors(ai=anc_tilde)((10,0));
+  tsu_accent.shift_anchors(ai=anc_ring)((-10,55));
   expand_pbox;
 enddef;
 
@@ -1496,6 +1507,8 @@ vardef latin.lowu =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0,2.97) of oldp);
   if do_italic_hook: set_boserif(0,0,11); fi;
+
+  tsu_accent.shift_anchors(true)((-50,0));
   expand_pbox;
 enddef;
 
@@ -1624,6 +1637,9 @@ vardef latin.lowy =
     replace_strokep(-1)(oldp shifted (alternate_adjust*left/2));
     replace_strokep(0)(oldp shifted (alternate_adjust*right/2));
   fi;
+
+  tsu_accent.shift_anchors(ai=anc_lower)((90,0));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((-75,-105));
   expand_pbox;
 enddef;
 

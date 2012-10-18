@@ -336,110 +336,123 @@ tsu_rescale_half;
 
 % naked heavy metal umlaut
 begintsuglyph("dieresis.hmu",64);
-  tsu_accent.heavy_metal_umlaut;
+  tsu_accent.apply()(tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
+% WARNING, setting rescale
+tsu_rescale_combining_accent;
+
+% combining heavy metal umlaut
+begintsuglyph("uni0308.hmu",65);
+  tsu_accent.apply()(tsu_accent.heavy_metal_umlaut);
+  push_anchor(-anc_upper,accent_default[anc_upper]);
+  tsu_render;
+endtsuglyph;
+
+% WARNING, setting rescale
+tsu_rescale_half;
+
+tsu_accent.up_default_anchors;
+
 % A with heavy metal umlaut
-begintsuglyph("Adieresis.hmu",65);
+begintsuglyph("Adieresis.hmu",66);
   tsu_accent.apply(tsu_accent.capital(latin.upa))
     (tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % E with heavy metal umlaut
-begintsuglyph("Edieresis.hmu",66);
+begintsuglyph("Edieresis.hmu",67);
   tsu_accent.apply(tsu_accent.capital(latin.upe))
     (tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % I with heavy metal umlaut
-begintsuglyph("Idieresis.hmu",67);
+begintsuglyph("Idieresis.hmu",68);
   tsu_accent.apply(tsu_accent.capital(latin.upi))
     (tsu_accent.heavy_metal_umlaut);
-  replace_lcblob(-1)(oldblob shifted (-15,0));
-  replace_lcblob(0)(oldblob shifted (-15,0));
   tsu_render;
 endtsuglyph;
 
 % N with heavy metal umlaut
-begintsuglyph("Ndieresis.hmu",68);
+begintsuglyph("Ndieresis.hmu",69);
   tsu_accent.apply(tsu_accent.capital(latin.upn))
     (tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % O with heavy metal umlaut
-begintsuglyph("Odieresis.hmu",69);
+begintsuglyph("Odieresis.hmu",70);
   tsu_accent.apply(tsu_accent.capital(latin.upo))
     (tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % U with heavy metal umlaut
-begintsuglyph("Udieresis.hmu",70);
+begintsuglyph("Udieresis.hmu",71);
   tsu_accent.apply(tsu_accent.capital(latin.upu))
     (tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % Y with heavy metal umlaut
-begintsuglyph("Ydieresis.hmu",71);
+begintsuglyph("Ydieresis.hmu",72);
   tsu_accent.apply(tsu_accent.capital(latin.upy))
     (tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
+tsu_accent.low_default_anchors;
+
 % a with heavy metal umlaut
-begintsuglyph("adieresis.hmu",72);
+begintsuglyph("adieresis.hmu",73);
   tsu_accent.apply(latin.lowa)(tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % e with heavy metal umlaut
-begintsuglyph("edieresis.hmu",73);
+begintsuglyph("edieresis.hmu",74);
   tsu_accent.apply(latin.lowe)(tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % i with heavy metal umlaut
-begintsuglyph("idieresis.hmu",74);
+begintsuglyph("idieresis.hmu",75);
   tsu_accent.apply(
-    latin.lowi;
-    replace_strokep(0)(oldp shifted (70*right));
+    tsu_xform(identity shifted (70,0))(latin.lowi;
+      tsu_accent.shift_anchors(true)((0,0)));
     pop_lcblob;
   )(tsu_accent.heavy_metal_umlaut);
-  replace_lcblob(-1)(oldblob shifted (50*right));
-  replace_lcblob(0)(oldblob shifted (50*left));
   tsu_render;
 endtsuglyph;
 
 % n with heavy metal umlaut
-begintsuglyph("ndieresis.hmu",75);
+begintsuglyph("ndieresis.hmu",76);
   tsu_accent.apply(latin.lown)(tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % o with heavy metal umlaut
-begintsuglyph("odieresis.hmu",76);
+begintsuglyph("odieresis.hmu",77);
   tsu_accent.apply(latin.lowo)(tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
 
 % u with heavy metal umlaut
-begintsuglyph("udieresis.hmu",77);
+begintsuglyph("udieresis.hmu",78);
   tsu_accent.apply(latin.lowu)(tsu_accent.heavy_metal_umlaut);
-  replace_lcblob(-1)(oldblob shifted (-60,0));
-  replace_lcblob(0)(oldblob shifted (-60,0));
   tsu_render;
 endtsuglyph;
 
 % y with heavy metal umlaut
-begintsuglyph("ydieresis.hmu",78);
+begintsuglyph("ydieresis.hmu",79);
   tsu_accent.apply(latin.lowy)(tsu_accent.heavy_metal_umlaut);
   tsu_render;
 endtsuglyph;
+
+tsu_accent.clear_default_anchors;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

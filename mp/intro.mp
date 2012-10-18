@@ -92,6 +92,7 @@ def endtsuglyph =
   else:
     write "ENDGLYPH -10 0" to "proof.prf";
   fi;
+  sp:=0;
 enddef;
 
 def tsu_brush_tip_size(expr l,q) =
@@ -788,7 +789,14 @@ def tsu_xform(expr xform)(text curves) =
         obstackna.bosize[i]:=obstackna.bosize[i]*size_scale;
       fi;
       if known obstackt[i]:
-        obstackt[i]:=obstackt[i] transformed xform;
+        if (xxpart obstackt[i]=1) and (yypart obstackt[i]=1)
+          and (xypart obstackt[i]=0) and (yxpart obstackt[i]=0):
+          obstackt[i]:=obstackt[i]
+            shifted (((0,0) transformed obstackt[i] transformed xform)-
+                     ((0,0) transformed obstackt[i]));
+        else:
+          obstackt[i]:=obstackt[i] transformed xform;
+        fi;
       fi;
     endfor;
   endgroup;
@@ -810,10 +818,13 @@ def anc_centre = 11 enddef;
 def anc_iching_line(expr lnum) = (11+lnum) enddef;
 
 transform accent_default[];
+boolean accent_has_default[];
+max_accent_seen:=0;
 
 def tsu_default_anchor(expr aindex,avalue) =
   if numeric avalue:
     write ("DEFAULTANCHOR "&(decimal aindex)&" FALSE") to "proof.prf";
+    accent_has_default[aindex]:=false;
   elseif transform avalue:
     write ("DEFAULTANCHOR "&
            (decimal aindex)&" "&
@@ -822,12 +833,17 @@ def tsu_default_anchor(expr aindex,avalue) =
            (decimal ypart ((0,0) transformed avalue
                            transformed tsu_rescale_xform)))
             to "proof.prf";
+    accent_has_default[aindex]:=true;
   elseif pair avalue:
     write ("DEFAULTANCHOR "&
            (decimal aindex)&" "&
            (decimal xpart (avalue transformed tsu_rescale_xform))&" "&
            (decimal ypart (avalue transformed tsu_rescale_xform))
             to "proof.prf";
+    accent_has_default[aindex]:=true;
+  fi;
+  if aindex>max_accent_seen:
+    max_accent_seen:=aindex;
   fi;
 enddef;
 

@@ -36,8 +36,10 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
+input radical.mp;
 input rare.mp;
 input toprad.mp;
 
@@ -59,6 +61,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.quiet =
+  push_pbox_toexpand("kanji.grfour.quiet");
+  build_kanji.lr(460,-40)
+    (kanji.grone.blue)
+    (kanji.grfour.dispute);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % rei/tama "spirit"
 begintsuglyph("uni970A",10);
   kanji.greight.spirit;
@@ -68,6 +80,12 @@ endtsuglyph;
 % ao "blue"
 begintsuglyph("uni9752",82);
   kanji.grone.blue;
+  tsu_render;
+endtsuglyph;
+
+% sei/shizu "quiet"
+begintsuglyph("uni9759",89);
+  kanji.grfour.quiet;
   tsu_render;
 endtsuglyph;
 

@@ -349,22 +349,7 @@ begintsuglyph("at",64);
   tsu_render;
 endtsuglyph;
 
-tsu_default_anchor(anc_upper,accent_default[anc_upper]
-  shifted (0,vmetric(1.10)-vmetric(0.75)));
-tsu_default_anchor(anc_grave,accent_default[anc_grave]
-  shifted (0,vmetric(1.10)-vmetric(0.75)));
-tsu_default_anchor(anc_acute,accent_default[anc_acute]
-  shifted (0,vmetric(1.10)-vmetric(0.75)));
-tsu_default_anchor(anc_wide,identity xscaled 1.2
-  transformed accent_default[anc_wide]
-  shifted (0,vmetric(1.10)-vmetric(0.75)));
-tsu_default_anchor(anc_ring,accent_default[anc_ring]
-  shifted (0,vmetric(1.10)-vmetric(0.75)));
-tsu_default_anchor(anc_caron_comma,
-  accent_default[anc_caron_comma] shifted (200,0));
-tsu_default_anchor(anc_lower,accent_default[anc_lower]);
-tsu_default_anchor(anc_lower_connect,accent_default[anc_lower_connect]);
-tsu_default_anchor(anc_centre,accent_default[anc_centre]);
+tsu_accent.up_default_anchors;
 
 % A
 begintsuglyph("A",65);
@@ -522,16 +507,7 @@ begintsuglyph("Z",90);
   tsu_render;
 endtsuglyph;
 
-tsu_default_anchor(anc_upper,0);
-tsu_default_anchor(anc_grave,0);
-tsu_default_anchor(anc_acute,0);
-tsu_default_anchor(anc_wide,0);
-tsu_default_anchor(anc_tilde,0);
-tsu_default_anchor(anc_ring,0);
-tsu_default_anchor(anc_caron_comma,0);
-tsu_default_anchor(anc_lower,0);
-tsu_default_anchor(anc_lower_connect,0);
-tsu_default_anchor(anc_centre,0);
+tsu_accent.clear_default_anchors;
 
 % left and right square brackets, backslash between
 begintsuglyph("bracketleft",91);
@@ -570,16 +546,7 @@ endtsuglyph;
 % WARNING changing rescale setting
 tsu_rescale_half_lc;
 
-tsu_default_anchor(anc_upper,accent_default[anc_upper]);
-tsu_default_anchor(anc_grave,accent_default[anc_grave]);
-tsu_default_anchor(anc_acute,accent_default[anc_acute]);
-tsu_default_anchor(anc_wide,accent_default[anc_wide]);
-tsu_default_anchor(anc_tilde,accent_default[anc_tilde]);
-tsu_default_anchor(anc_ring,accent_default[anc_ring]);
-tsu_default_anchor(anc_caron_comma,accent_default[anc_caron_comma]);
-tsu_default_anchor(anc_lower,accent_default[anc_lower]);
-tsu_default_anchor(anc_lower_connect,accent_default[anc_lower_connect]);
-tsu_default_anchor(anc_centre,tsu_xf.low_centre_accent);
+tsu_accent.low_default_anchors;
 
 % a
 begintsuglyph("a",97);
@@ -737,16 +704,7 @@ begintsuglyph("z",122);
   tsu_render;
 endtsuglyph;
 
-tsu_default_anchor(anc_upper,0);
-tsu_default_anchor(anc_grave,0);
-tsu_default_anchor(anc_acute,0);
-tsu_default_anchor(anc_wide,0);
-tsu_default_anchor(anc_tilde,0);
-tsu_default_anchor(anc_ring,0);
-tsu_default_anchor(anc_caron_comma,0);
-tsu_default_anchor(anc_lower,0);
-tsu_default_anchor(anc_lower_connect,0);
-tsu_default_anchor(anc_centre,0);
+tsu_accent.clear_default_anchors;
 
 % WARNING changing rescale setting
 tsu_rescale_half;
@@ -1064,6 +1022,7 @@ endtsuglyph;
 
 % WARNING, setting rescale
 tsu_rescale_half;
+tsu_accent.up_default_anchors;
 
 % A with grave
 begintsuglyph("Agrave",192);
@@ -1163,8 +1122,6 @@ endtsuglyph;
 % I with dieresis/umlaut
 begintsuglyph("Idieresis",207);
   tsu_accent.apply(tsu_accent.capital(latin.upi))(tsu_accent.umlaut);
-  replace_lcblob(-1)(oldblob shifted (15*left));
-  replace_lcblob(0)(oldblob shifted (15*left));
   tsu_render;
 endtsuglyph;
 
@@ -1211,12 +1168,14 @@ begintsuglyph("Odieresis",214);
 endtsuglyph;
 
 % times
+tsu_accent.clear_default_anchors;
 tsu_rescale_native_conditional;
 begintsuglyph("multiply",215);
   punct.times(ascii_punct_xf);
   tsu_render;
 endtsuglyph;
 tsu_rescale_half;
+tsu_accent.up_default_anchors;
 
 % O with stroke
 begintsuglyph("Oslash",216);
@@ -1262,6 +1221,8 @@ begintsuglyph("Thorn",222);
   tsu_render;
 endtsuglyph;
 
+tsu_accent.low_default_anchors;
+
 % eszett
 begintsuglyph("germandbls",223);
   latin.loweszett;
@@ -1301,10 +1262,6 @@ endtsuglyph;
 % a with ring above
 begintsuglyph("aring",229);
   tsu_accent.apply(latin.lowa)(tsu_accent.ringabove);
-  if find_whatever(otlcblob,-1)>0:
-    replace_lcblob(-1)(oldblob shifted (30,-20));
-  fi;
-  replace_lcblob(0)(oldblob shifted (30,-20));
   tsu_render;
 endtsuglyph;
 
@@ -1347,8 +1304,8 @@ endtsuglyph;
 % i with grave
 begintsuglyph("igrave",236);
   tsu_accent.apply(
-    latin.lowi;
-    replace_strokep(0)(oldp shifted (70*right));
+    tsu_xform(identity shifted (70,0))(latin.lowi;
+      tsu_accent.shift_anchors(true)((0,0)));
     pop_lcblob;
   )(tsu_accent.grave);
   tsu_render;
@@ -1363,8 +1320,8 @@ endtsuglyph;
 % i with circumflex
 begintsuglyph("icircumflex",238);
   tsu_accent.apply(
-    latin.lowi;
-    replace_strokep(0)(oldp shifted (70*right));
+    tsu_xform(identity shifted (70,0))(latin.lowi;
+      tsu_accent.shift_anchors(true)((0,0)));
     pop_lcblob;
   )(tsu_accent.circumflex);
   tsu_render;
@@ -1373,12 +1330,10 @@ endtsuglyph;
 % i with dieresis/umlaut
 begintsuglyph("idieresis",239);
   tsu_accent.apply(
-    latin.lowi;
-    replace_strokep(0)(oldp shifted (70*right));
+    tsu_xform(identity shifted (70,0))(latin.lowi;
+      tsu_accent.shift_anchors(true)((0,0)));
     pop_lcblob;
   )(tsu_accent.umlaut);
-  replace_lcblob(-1)(oldblob shifted (50*right));
-  replace_lcblob(0)(oldblob shifted (50*left));
   tsu_render;
 endtsuglyph;
 
@@ -1425,12 +1380,14 @@ begintsuglyph("odieresis",246);
 endtsuglyph;
 
 % division sign
+tsu_accent.clear_default_anchors;
 tsu_rescale_native_conditional;
 begintsuglyph("divide",247);
   punct.dividedby(ascii_punct_xf);
   tsu_render;
 endtsuglyph;
 tsu_rescale_half;
+tsu_accent.low_default_anchors;
 
 % o with stroke
 begintsuglyph("oslash",248);
@@ -1453,15 +1410,12 @@ endtsuglyph;
 % u with circumflex
 begintsuglyph("ucircumflex",251);
   tsu_accent.apply(latin.lowu)(tsu_accent.circumflex);
-  replace_strokep(0)(oldp shifted (-30,0));
   tsu_render;
 endtsuglyph;
 
 % u with dieresis/umlaut
 begintsuglyph("udieresis",252);
   tsu_accent.apply(latin.lowu)(tsu_accent.umlaut);
-  replace_lcblob(-1)(oldblob shifted (-60,0));
-  replace_lcblob(0)(oldblob shifted (-60,0));
   tsu_render;
 endtsuglyph;
 

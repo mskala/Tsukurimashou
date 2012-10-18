@@ -239,19 +239,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.toprad.ridiculous_hat =
-  push_pbox_toexpand("kanji.toprad.ridiculous_hat");
-  build_kanji.level(build_kanji.tb(620,156)
-    (kanji.toprad.sparkle_three)
-    (build_kanji.tb(600,410)
-       (kanji.radical.conservative_hat)
-       (build_kanji.sscale(xyscaled (0.8,0.64) shifted (0,-120))
-         (kanji.grone.mouth))));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % shi/ichi "market"
 begintsuglyph("uni5E02",2);
   kanji.grtwo.market;
@@ -288,7 +275,7 @@ begintsuglyph("uni5E72",114);
   tsu_render;
 endtsuglyph;
 
-% hei/tai "level" or "even
+% hei/tai "level" or "even"
 begintsuglyph("uni5E73",115);
   kanji.grthree.level;
   tsu_render;

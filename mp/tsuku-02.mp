@@ -49,31 +49,31 @@ tsu_rescale_half;
 
 % circumflex accent
 begintsuglyph("circumflex",198);
-  tsu_accent.circumflex;
+  tsu_accent.apply()(tsu_accent.circumflex);
   tsu_render;
 endtsuglyph;
 
 % caron
 begintsuglyph("caron",199);
-  tsu_accent.caron;
+  tsu_accent.apply()(tsu_accent.caron);
   tsu_render;
 endtsuglyph;
 
 % breve
 begintsuglyph("breve",216);
-  tsu_accent.breve;
+  tsu_accent.apply()(tsu_accent.breve);
   tsu_render;
 endtsuglyph;
 
 % dot above
 begintsuglyph("dotaccent",217);
-  tsu_accent.dotabove;
+  tsu_accent.apply()(tsu_accent.dotabove);
   tsu_render;
 endtsuglyph;
 
 % ring above
 begintsuglyph("ring",218);
-  tsu_accent.ringabove;
+  tsu_accent.apply()(tsu_accent.ringabove);
   tsu_render;
 endtsuglyph;
 
@@ -86,13 +86,13 @@ endtsuglyph;
 
 % small tilde
 begintsuglyph("tilde",220);
-  tsu_accent.tilde;
+  tsu_accent.apply()(tsu_accent.tilde);
   tsu_render;
 endtsuglyph;
 
 % double acute accent
 begintsuglyph("hungarumlaut",221);
-  tsu_accent.hungarian_umlaut;
+  tsu_accent.apply()(tsu_accent.hungarian_umlaut);
   tsu_render;
 endtsuglyph;
 

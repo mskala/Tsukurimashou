@@ -56,6 +56,18 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.remember =
+  push_pbox_toexpand("kanji.grtwo.remember");
+    build_kanji.tb(740,100)
+      (kanji.toprad.alt_sparkle_three)
+      (build_kanji.tb(580,110)
+         (kanji.radical.conservative_hat)
+         (build_kanji.sscale(xscaled 0.93)(kanji.grone.see)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.solve =
   push_pbox_toexpand("kanji.grfive.solve");
   build_kanji.lr(520,50)
@@ -77,6 +89,12 @@ endtsuglyph;
 % ken/mi "see"
 begintsuglyph("uni898B",139);
   kanji.grone.see;
+  tsu_render;
+endtsuglyph;
+
+% kaku/obo "remember"
+begintsuglyph("uni899A",154);
+  kanji.grfour.remember;
   tsu_render;
 endtsuglyph;
 

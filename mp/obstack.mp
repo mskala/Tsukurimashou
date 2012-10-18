@@ -57,6 +57,8 @@ vardef init_obstack =
   sp:=1;
 enddef;
 
+sp:=0;
+
 % numeric values, needed for syntax reasons
 
 def boalternate = 1924 enddef;

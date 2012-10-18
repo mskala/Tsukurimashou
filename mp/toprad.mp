@@ -128,6 +128,17 @@ vardef kanji.toprad.rain =
   expand_pbox;
 enddef;
 
+vardef kanji.toprad.ridiculous_hat =
+  push_pbox_toexpand("kanji.toprad.ridiculous_hat");
+  build_kanji.level(build_kanji.tb(620,156)
+    (kanji.toprad.sparkle_three)
+    (build_kanji.tb(600,410)
+       (kanji.radical.conservative_hat)
+       (build_kanji.sscale(xyscaled (0.8,0.64) shifted (0,-120))
+         (kanji.grone.mouth))));
+  expand_pbox;
+enddef;
+
 vardef kanji.toprad.sheep =
   push_pbox_toexpand("kanji.toprad.sheep");
   kanji.grthree.sheep;
