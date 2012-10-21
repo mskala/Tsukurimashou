@@ -287,7 +287,7 @@ DEFAULT_TOK = tsuku
 
 PFBSTAMP:=$(strip $(shell $(GREP) 'AUTODEPS\|input\|BEGINFEATURE' \
   $(mvp)/mp/*.mp ./mp/*.mp $(mvp)/fsc/*.fsc | \
-  cat - config.status | $(CHECKSUM)))
+  cat - config.log | $(CHECKSUM)))
 
 if COND_PROLOG_ECLIPSE
   HAMLOG=$(PROLOG) -b $(mvp)/hamlog/ecl-ham.ecl -e ecl_run_hamlog_program --

@@ -40,17 +40,19 @@ input latin.mp;
 
 do_late_includes;
 
-if is_proportional:
-  latin_wide_sc_top:=0.4[latin_wide_xheight,latin_wide_top];
-else:
-  latin_wide_sc_top=0.1[latin_wide_xheight,latin_wide_top];
-fi;
-
 transform tsu_xf.sc;
 
-(0,latin_wide_low_h) transformed tsu_xf.sc = (20,latin_wide_low_h);
-(1000,latin_wide_low_h) transformed tsu_xf.sc = (980,latin_wide_low_h);
-(0,latin_wide_top) transformed tsu_xf.sc = (20,latin_wide_sc_top);
+if is_proportional:
+  latin_wide_sc_top:=0.4[latin_wide_xheight,latin_wide_top];
+  (0,latin_wide_low_h) transformed tsu_xf.sc = (120,latin_wide_low_h);
+  (1000,latin_wide_low_h) transformed tsu_xf.sc = (880,latin_wide_low_h);
+  (0,latin_wide_top) transformed tsu_xf.sc = (120,latin_wide_sc_top);
+else:
+  latin_wide_sc_top=0.1[latin_wide_xheight,latin_wide_top];
+  (0,latin_wide_low_h) transformed tsu_xf.sc = (20,latin_wide_low_h);
+  (1000,latin_wide_low_h) transformed tsu_xf.sc = (980,latin_wide_low_h);
+  (0,latin_wide_top) transformed tsu_xf.sc = (20,latin_wide_sc_top);
+fi;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

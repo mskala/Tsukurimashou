@@ -150,9 +150,9 @@ begintsuglyph("uniFF0A",10);
      path lobe,glyph;
      numeric nlobes;
 
-     lobe:=(1,0){up}..((1+tsu_brush_max)*tsu_punct_size/2,280){up}
+     lobe:=(1,0){up}..((1+tsu_brush_max)*tsu_punct_size/4,280){up}
        ..{curl 1}(0,350){curl 1}
-       ..(-(1+tsu_brush_max)*tsu_punct_size/2,280){down};
+       ..(-(1+tsu_brush_max)*tsu_punct_size/4,280){down};
      if rescale_slant>50:
        lobe:=(lobe..(-1,0){down}..(0,-1)..cycle) scaled (tsu_punct_size/90);
        nlobes:=5;

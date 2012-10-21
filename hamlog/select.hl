@@ -292,7 +292,9 @@ cfg_style(none,_F,_S,_W,_P):-fail.
 cfg_style(N,F,_S,_W,_P):-family(N), =(N,F).
 cfg_style(N,F,S,_W,_P):-style(F,N), =(N,S).
 cfg_style(N,_F,_S,W,_P):-weight(W), =(N,W).
+cfg_style(N,_F,_S,_W,P):-spacing(P), =(N,P).
 
+cfg_style(T,_F,_S,_W,_P):-short_name(N,T), =(N,T),!,fail.
 cfg_style(T,F,S,W,P):-short_name(N,T),cfg_style(N,F,S,W,P).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

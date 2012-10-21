@@ -68,6 +68,9 @@ vardef latin.upa =
     push_stroke(z4--z5,(1.6,1.6)--(1.6,1.6));
   fi;
 
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -105,6 +108,10 @@ vardef latin.upae =
   set_boserif(0,1,1);
 
   push_stroke(z5--z6,(1.6,1.6)--(1.6,1.6));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -129,6 +136,10 @@ vardef latin.upb =
   set_botip(0,5,1);
   set_boserif(0,4,1);
   set_boserif(0,5,1);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -139,6 +150,10 @@ vardef latin.upc =
        scaled ((latin_wide_high_r-latin_wide_low_r)/2)
        shifted (centre_pt+(50,0)),
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper])+(46,0));
   expand_pbox;
 enddef;
 
@@ -159,6 +174,10 @@ vardef latin.upd =
   set_botip(0,3,1);
   set_boserif(0,2,1);
   set_boserif(0,3,1);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -167,6 +186,10 @@ vardef latin.upeth =
   latin.upd;
   push_stroke((0.5[z1,z2]+(-170,0))--(0.5[z1,z2]+(220,0)),
     (1.6,1.6)--(1.6,1.6));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -191,6 +214,9 @@ vardef latin.upe =
 
   push_stroke(z5--z6,(1.6,1.6)--(1.6,1.6));
 
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -212,6 +238,10 @@ vardef latin.upf =
   set_boserif(0,2,3);
 
   push_stroke(z4--z5,(1.6,1.6)--(1.6,1.6));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -231,6 +261,11 @@ vardef latin.upg =
   replace_strokep(0)(oldp--z1--z2);
   set_botip(0,4,1);
   set_botip(0,5,1);
+
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper])+(44,0));
   expand_pbox;
 enddef;
 
@@ -254,6 +289,10 @@ vardef latin.uph =
   set_boserif(0,1,3);
 
   push_stroke(z5--z6,(1.6,1.6)--(1.6,1.6));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -268,6 +307,9 @@ vardef latin.upi =
   push_stroke((300,latin_wide_low_h)--(700,latin_wide_low_h),
     (1.6,1.6)--(1.6,1.6));
 
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -283,6 +325,12 @@ vardef latin.upj =
 
   push_stroke((365,latin_wide_high_h)--(710,latin_wide_high_h),
     (1.6,1.6)--(1.6,1.6));
+
+  tsu_accent.shift_anchors(true)((50,0));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -290,6 +338,10 @@ vardef latin.upij =
   push_pbox_toexpand("latin.upij");
   tsu_xform(identity shifted (-250,0))(latin.upi);
   tsu_xform(identity shifted (200,0))(latin.upj);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -314,6 +366,10 @@ vardef latin.upk =
     set_boserif(0,0,3);
     set_boserif(0,3,3);
   fi;
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -329,6 +385,10 @@ vardef latin.upl =
   set_botip(0,1,1);
   set_boserif(0,0,1);
   set_boserif(0,1,3);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -376,6 +436,10 @@ vardef latin.upm =
     set_boserif(0,1,1);
     set_boserif(0,4,3);
   fi;
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -409,6 +473,10 @@ vardef latin.upn =
     set_boserif(0,1,1);
     set_boserif(0,3,3);
   fi;
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -426,6 +494,10 @@ vardef latin.upeng =
     push_stroke(z3{dir 268}..{curl 0.8}z5,(1.6,1.6)--(1.6,1.6));
     replace_strokep(0)(insert_nodes(oldp)(0.3));
   fi;
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -437,6 +509,9 @@ vardef latin.upo =
     shifted centre_pt,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--cycle);
 
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -454,6 +529,10 @@ vardef latin.upoe =
     subpath (xpart (oldp intersectiontimes get_strokep(-2)),
              4-xpart ((reverse oldp) intersectiontimes get_strokep(-2)))
     of oldp);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -479,6 +558,10 @@ vardef latin.upp =
   set_botip(0,4,1);
   set_boserif(0,4,1);
   set_boserif(0,5,3);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -495,6 +578,10 @@ vardef latin.upq =
   push_stroke(subpath (0.02,2) of (z1{curl 0}..z2..z3),
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(insert_nodes(oldp)(0.4));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -512,6 +599,10 @@ vardef latin.upr =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(insert_nodes(oldp)(1.95));
   set_boserif(0,3,3);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -548,6 +639,10 @@ vardef latin.ups =
   push_stroke((mycurve transformed ta)..z4..(reverse mycurve transformed tb),
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)
       --(1.6,1.6));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -562,6 +657,10 @@ vardef latin.upt =
 
   push_stroke(z2--z4,(1.6,1.6)--(1.6,1.6));
   set_boserif(0,1,3);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -576,6 +675,10 @@ vardef latin.upthorn =
     (1.6,1.6)--(1.6,1.6));
   set_boserif(0,0,3);
   set_boserif(0,1,3);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -597,6 +700,9 @@ vardef latin.upu =
   set_boserif(0,0,3);
   set_boserif(0,4,3);
 
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -623,6 +729,10 @@ vardef latin.upv =
     set_boserif(0,0,3);
     set_boserif(0,3,3);
   fi;
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -668,6 +778,10 @@ vardef latin.upw =
     set_boserif(0,0,3);
     set_boserif(0,4,3);
   fi;
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -697,6 +811,10 @@ vardef latin.upx =
     set_boserif(0,1,3);
   fi;
   set_boalternate(0);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -722,6 +840,10 @@ vardef latin.upy =
   fi;
   set_boserif(0,1,3);
   set_boalternate(0);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -738,6 +860,10 @@ vardef latin.upz =
   push_stroke(z1--z2--z3--z4,(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   set_botip(0,1,0);
   set_botip(0,2,0);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
   expand_pbox;
 enddef;
 
@@ -771,7 +897,8 @@ vardef latin.double_lowa =
   replace_strokep(0)(subpath (0,2.97) of oldp);
   replace_strokep(0)(insert_nodes(oldp)(0.5));
 
-  tsu_accent.shift_anchors(true)((9,0));
+  tsu_accent.shift_anchors(true)((12,0));
+  tsu_accent.shift_anchors(ai=anc_ring)((28,0));
   expand_pbox;
 enddef;
 
@@ -889,14 +1016,15 @@ enddef;
 
 vardef latin.lowc =
   push_pbox_toexpand("latin.lowc");
-  push_anchor(anc_centre,identity
-    scaled ((latin_wide_xheight_r-latin_wide_low_r)/200)
-    shifted (xpart centre_pt,(latin_wide_xheight_r+latin_wide_low_r)/2));
   push_stroke((subpath (0.5,3.5) of ((1,0)..(0,1)..(-1,0)..(0,-1)..cycle))
     scaled ((latin_wide_xheight_r-latin_wide_low_r)/2)
     shifted ((xpart centre_pt,(latin_wide_xheight_r+latin_wide_low_r)/2)
       +(35,0)),
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+  tsu_accent.shift_anchors(true)((35,0));
+  push_anchor(anc_centre,identity
+    scaled ((latin_wide_xheight_r-latin_wide_low_r)/200)
+    shifted (xpart centre_pt,(latin_wide_xheight_r+latin_wide_low_r)/2));
   expand_pbox;
 enddef;
 
@@ -1111,6 +1239,8 @@ vardef latin.lowi =
     shifted (z4 transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
 
+  push_anchor(anc_wide,
+    identity xscaled 0.7 transformed accent_default[anc_wide]);
   tsu_accent.shift_anchors(true)((x4-500,0));
   tsu_accent.shift_anchors(ai=anc_acute)((-55,0));
   tsu_accent.shift_anchors(ai=anc_wide)((-40,0));
@@ -1139,6 +1269,14 @@ vardef latin.lowj =
   push_lcblob(fullcircle scaled (mbrush_width*2.7+15)
     shifted (z5 transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+
+  push_anchor(anc_wide,
+    identity xscaled 0.7 transformed accent_default[anc_wide]);
+  tsu_accent.shift_anchors(true)((x5-500,0));
+  tsu_accent.shift_anchors(ai=anc_acute)((-55,0));
+  tsu_accent.shift_anchors(ai=anc_wide)((-40,0));
+  tsu_accent.shift_anchors(ai=anc_tilde)((10,0));
+  tsu_accent.shift_anchors(ai=anc_ring)((-10,55));
   expand_pbox;
 enddef;
 
@@ -1365,6 +1503,8 @@ vardef latin.lowr =
   push_stroke(z3..z4{right}..{dir 273}z5,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.03,1.6) of oldp);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.05))((0.5[x3,x5]-500,0));
   expand_pbox;
 enddef;
 

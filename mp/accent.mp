@@ -101,6 +101,7 @@ vardef tsu_accent.dotabove =
     shifted ((500,vmetric(0.88))
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  set_bokeepshape(0);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,150));
 enddef;
 
@@ -110,6 +111,7 @@ vardef tsu_accent.dotbelow =
     shifted ((0,0) transformed accent_default[anc_lower]
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  set_bokeepshape(0);
 enddef;
 
 vardef tsu_accent.grave =
@@ -133,6 +135,8 @@ vardef tsu_accent.heavy_metal_umlaut =
     shifted ((500+1.5*tsu_punct_size,vmetric(0.88))
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  set_bokeepshape(-1);
+  set_bokeepshape(0);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,210));
 enddef;
 
@@ -170,12 +174,14 @@ vardef tsu_accent.ringabove =
     shifted ((500,vmetric(0.83-0.03*mincho)-10)
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  set_bokeepshape(0);
   if 2*tsu_punct_size-110*tsu_brush_max>10:
     push_lcblob(reverse fullcircle rotated 45
       scaled (2*tsu_punct_size-110*tsu_brush_max)
       shifted ((500,vmetric(0.83-0.03*mincho)-10)
         transformed tsu_rescale_xform)
       transformed inverse tsu_rescale_xform);
+    set_bokeepshape(0);
   fi;
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,170));
 enddef;
@@ -210,6 +216,8 @@ vardef tsu_accent.umlaut =
     shifted ((500+1.5*tsu_punct_size,vmetric(0.88))
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
+  set_bokeepshape(-1);
+  set_bokeepshape(0);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,150));
 enddef;
 
@@ -217,11 +225,7 @@ enddef;
 
 vardef tsu_accent.capital(text curves) =
   tsu_xform(tsu_xf.accentedcap)
-    (curves;
-     tsu_accent.shift_anchors(true)((0,0)));
-  tsu_accent.shift_anchors(ypart olda>vmetric(0.3))
-    (((0,0) transformed tsu_xf.cap_upper_accent)-
-     ((0,0) transformed accent_default[anc_upper]));
+    (curves;tsu_accent.shift_anchors(true)((0,0)));
 enddef;
 
 vardef tsu_accent.apply(text basecurves)(text markcurves) =

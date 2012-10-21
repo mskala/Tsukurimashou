@@ -774,16 +774,29 @@ tsu_xf.smallkana = identity shifted (-500,0) scaled 5.5/8 shifted (500,0);
 
 def tsu_xform(expr xform)(text curves) =
   begingroup
-    save txfsp;
+    save txfsp,zc,zs;
     txfsp:=sp;
     curves;
-    size_scale:=(abs(((0,0) transformed xform)
-                    -((1,0) transformed xform))
-                *abs(((0,0) transformed xform)
-                    -((0,1) transformed xform)))**0.16667;
+    numeric zs;
+    zs:=abs(((0,0) transformed xform)
+            -((1,0) transformed xform))
+       *abs(((0,0) transformed xform)
+           -((0,1) transformed xform));
+    size_scale:=zs**0.16667;
     for i=txfsp upto sp-1:
       if known obstackp[i]:
-        obstackp[i]:=obstackp[i] transformed xform;
+        if known obstackba.bokeepshape[i]:
+          if obstackba.bokeepshape[i]:
+            pair zc;
+            zc:=0.5[llcorner obstackp[i],urcorner obstackp[i]];
+            obstackp[i]:=obstackp[i] shifted (-zc) scaled (yypart xform)
+              shifted (zc transformed xform);
+          else:
+            obstackp[i]:=obstackp[i] transformed xform;
+          fi;
+        else:
+          obstackp[i]:=obstackp[i] transformed xform;
+        fi;
       fi;
       if known obstackna.bosize[i]:
         obstackna.bosize[i]:=obstackna.bosize[i]*size_scale;

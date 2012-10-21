@@ -130,6 +130,7 @@ foreach $fname (@ARGV) {
     }
   }
   close(PRF);
+  %default_anchor=();
 }
 
 # friendly names for mark classes - should match mp/intro.mp but

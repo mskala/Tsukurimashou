@@ -59,7 +59,6 @@ tsu_do_serif[3]:=true;
 do_alternation:=true;
 
 genji_outline:=true;
-genji_hw:=0.2;
 
 input intro.mp;
 

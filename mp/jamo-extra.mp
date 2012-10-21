@@ -181,11 +181,13 @@ vardef hangul.jamo.pansios(expr vow,ixf,oxf) =
     push_pbox_toexpand("jamo.pansios");
     push_stroke((675,375+20*mincho)--(500,660+40*mincho)--
         (150,90+10*mincho)--(850,90)--cycle,
-      (1.4,1.4)--(1.2,1.2)--(1.6,1.6)--(1.6,1.6)--cycle);
+      (1.4,1.4)--(1.2,1.2)--(1.6,1.6)--(1.6,1.6)--(1.4,1.4));
     set_boserif(0,1,8);
     set_botip(0,1,1);
     set_botip(0,2,1);
     set_botip(0,3,1);
+    replace_strokep(0)(oldp--(point 0.05 of oldp));
+    replace_strokeq(0)(oldq--(point 0.05 of oldq));
     expand_pbox);
 enddef;
 

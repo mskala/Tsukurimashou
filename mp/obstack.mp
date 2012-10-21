@@ -62,6 +62,7 @@ sp:=0;
 % numeric values, needed for syntax reasons
 
 def boalternate = 1924 enddef;
+def bokeepshape = 1838 enddef;
 def boserif = 1746 enddef;
 def bosize = 1393 enddef;
 def botip = 1322 enddef;
@@ -280,6 +281,10 @@ enddef;
 
 vardef set_boalternate(expr idx) =
   obstackba.boalternate[find_stroke(idx)]:=true;
+enddef;
+
+vardef set_bokeepshape(expr idx) =
+  obstackba.bokeepshape[find_whatever(otlcblob,idx)]:=true;
 enddef;
 
 vardef set_boserif(expr idx,t,srf) =
