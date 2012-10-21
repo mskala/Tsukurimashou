@@ -57,7 +57,7 @@ or (pagename="ff1"):
   rescale_slant:=190;
 fi;
 
-tsu_punct_size:=85;
+tsu_punct_size:=tsu_punct_size*0.85;
 
 boolean genji_rounded;
 genji_rounded:=true;

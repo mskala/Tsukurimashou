@@ -211,7 +211,7 @@ if ($otfeatures=~/mkmk/) {
   foreach $n (sort {$a <=> $b} keys %ismark) {
     $printed=0;
     foreach $markclass (sort keys %mkmk_exists) {
-      if ($hasanc{"$n $markclass"}) {
+      if ($hasanc{"$n $markclass"} && $mark_exists{$markclass}) {
         if ($printed) {
           print "\n    ";
         } else {

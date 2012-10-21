@@ -224,21 +224,15 @@ begintsuglyph("Lacute",57);
   tsu_render;
 endtsuglyph;
 
+% l with acute
+begintsuglyph("lacute",58);
+  tsu_accent.apply(tsu_accent.capital(latin.lowl))(tsu_accent.acute);
+  tsu_render;
+endtsuglyph;
+
 % L with comma below
 begintsuglyph("uni013B",59);
   tsu_accent.apply(latin.upl)(tsu_accent.commabelow);
-  tsu_render;
-endtsuglyph;
-
-% L with apostrophe caron
-begintsuglyph("Lcaron",61);
-  tsu_accent.apply(latin.upl)(tsu_accent.caron_comma);
-  tsu_render;
-endtsuglyph;
-
-% L with dot
-begintsuglyph("Ldot",63);
-  tsu_accent.apply(latin.upl)(tsu_accent.dotabove);
   tsu_render;
 endtsuglyph;
 
@@ -627,15 +621,15 @@ begintsuglyph("kgreenlandic",56);
   tsu_render;
 endtsuglyph;
 
-% l with acute
-begintsuglyph("lacute",58);
-  tsu_accent.apply(tsu_accent.capital(latin.lowl))(tsu_accent.acute);
-  tsu_render;
-endtsuglyph;
-
 % l with comma below
 begintsuglyph("uni013C",60);
   tsu_accent.apply(latin.lowl)(tsu_accent.commabelow);
+  tsu_render;
+endtsuglyph;
+
+% L with apostrophe caron
+begintsuglyph("Lcaron",61);
+  tsu_accent.apply(latin.upl)(tsu_accent.caron_comma);
   tsu_render;
 endtsuglyph;
 
@@ -645,11 +639,17 @@ begintsuglyph("lcaron",62);
   tsu_render;
 endtsuglyph;
 
+% L with dot
+begintsuglyph("Ldot",63);
+  tsu_accent.apply(latin.upl)(tsu_accent.dotcentred);
+  tsu_render;
+endtsuglyph;
+
 % l with dot
 begintsuglyph("ldot",64);
   tsu_accent.apply(tsu_xform(identity shifted (-120,0))
     (latin.lowl;
-      tsu_accent.shift_anchors(true)((0,0))))(tsu_accent.dotabove);
+      tsu_accent.shift_anchors(true)((0,0))))(tsu_accent.dotcentred);
   tsu_render;
 endtsuglyph;
 

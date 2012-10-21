@@ -39,7 +39,8 @@ tsu_brush_xf:=tsu_brush_xf transformed weight_xf;
 tsu_brush_min:=ypart ((0,tsu_brush_min) transformed weight_xf);
 tsu_brush_max:=ypart ((0,tsu_brush_max) transformed weight_xf);
 
-tsu_pbrush_size:=15;
+tsu_pbrush_size:=tsu_pbrush_size*(15/100);
+tsu_punct_size:=80;
 
 handakuten_inner:=170;
 

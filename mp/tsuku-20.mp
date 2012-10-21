@@ -145,16 +145,21 @@ tsu_rescale_native_narrow;
 
 vardef dagger_spur =
   if sharp_corners:
+    dagger_x:=(tsu_punct_size-60)*1.25;
+    if dagger_x<12: dagger_x:=15; fi;
     (4,mincho*30){curl 0}..
-      (0.5[(0,mincho*20),(50,222-mincho*72)]+mincho*(-7,4))..
-    {curl 1}(50,222-mincho*72)--(0,200)--(-50,222-mincho*72){curl 1}..
-      (0.5[(0,mincho*20),(-50,222-mincho*72)]+mincho*(7,4))..
+      (0.5[(0,mincho*20),(dagger_x,222-mincho*72)]+mincho*(-7,4))..
+    {curl 1}(dagger_x,222-mincho*72)--(0,200)--
+      (-dagger_x,222-mincho*72){curl 1}..
+      (0.5[(0,mincho*20),(-dagger_x,222-mincho*72)]+mincho*(7,4))..
     {curl 0}(-4,mincho*30)--cycle
   else:
+    dagger_x:=tsu_punct_size-60;
+    if dagger_x<12: dagger_x:=15; fi;
     (4,mincho*30){curl 0}..
-      (0.5[(0,mincho*20),(40,160)]+mincho*(-7,4))..
-    (40,160)..(0,200)..(-40,160)..
-      (0.5[(0,mincho*20),(-40,160)]+mincho*(7,4))..
+      (0.5[(0,mincho*20),(dagger_x,160)]+mincho*(-7,4))..
+    (dagger_x,160)..(0,200)..(-dagger_x,160)..
+      (0.5[(0,mincho*20),(-dagger_x,160)]+mincho*(7,4))..
     {curl 0}(-4,mincho*30)--cycle
   fi
 enddef;
@@ -175,13 +180,28 @@ begintsuglyph("dagger",32);
       transformed tsx);
     dangerousFill (fullcircle scaled (20+mincho*50) shifted (250,650)
       transformed tsx);
-    dangerousFill 
-      (((246,650){curl 1}..(mincho[(223,550),(230,535)])..
-          {curl 1}(200,450){curl 1}..(mincho[(223,250),(230,280)])..
-          {curl 0}(246,-50)--
-        (254,-50){curl 0}..(mincho[(277,250),(270,280)])..
-          {curl 1}(300,450){curl 1}..(mincho[(277,550),(270,535)])..
-          {curl 1}(254,650)--cycle)
+
+    x1=x5=246;
+    x3=250-(tsu_punct_size-60)*1.25;
+    x2=x4=0.5[x1,x3];
+    x6=x10=500-x1;
+    x7=x9=500-x2;
+    x8=500-x3;
+    x11=x12=0.4[250,x3];
+    x13=x14=500-x11;
+
+    y1=y10=650;
+    y2=y9=550;
+    y3=y8=450;
+    y4=y7=250;
+    y5=y6=-50;
+    y11=y14=535;
+    y12=y13=280;
+
+    dangerousFill (interpath(mincho,
+      z1--z2--z3--z4--z5--z6--z7--z8--z9--z10--cycle,
+      z1{curl 1}..z11..{curl 1}z3{curl 1}..z12..{curl 0}z5--
+        z6{curl 0}..z13..{curl 1}z8{curl 1}..z14..{curl 1}z10--cycle)
       transformed tsx);
   endgroup;
 endtsuglyph;
@@ -213,7 +233,7 @@ begintsuglyph("daggerdbl",33);
       transformed tsx);
 
     x1=x4=x7=246;
-    x3=x5=200;
+    x3=x5=250-(tsu_punct_size-60)*1.25;
     x2=x6=0.5[x1,x3];
     x8=x11=x14=500-x1;
     x9=x13=500-x2;

@@ -42,6 +42,13 @@ vardef tsu_accent.acute =
   set_bosize(0,80);
   set_botip(0,1,1);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (-20,150));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (-20,150));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (-20,150));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (-20,150));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (-20,150));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (-20,150));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (-20,150));
 enddef;
 
 vardef tsu_accent.breve =
@@ -51,6 +58,13 @@ vardef tsu_accent.breve =
       {up}(500+1.3*tsu_punct_size,vmetric(0.95)),
     (1,1)--(1.9,1.9)--(1,1));
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,150));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,150));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,150));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,150));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,150));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,150));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,150));
 enddef;
 
 vardef tsu_accent.caron =
@@ -62,6 +76,13 @@ vardef tsu_accent.caron =
   set_bosize(0,80);
   set_botip(0,1,1);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,150));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,150));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,150));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,150));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,150));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,150));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,150));
 enddef;
 
 vardef tsu_accent.caron_comma =
@@ -88,6 +109,13 @@ vardef tsu_accent.circumflex =
   set_bosize(0,80);
   set_botip(0,1,1);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,150));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,150));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,150));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,150));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,150));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,150));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,150));
 enddef;
 
 vardef tsu_accent.commabelow =
@@ -103,12 +131,28 @@ vardef tsu_accent.dotabove =
     transformed inverse tsu_rescale_xform);
   set_bokeepshape(0);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,150));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,150));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,150));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,150));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,150));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,150));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,150));
 enddef;
 
 vardef tsu_accent.dotbelow =
   push_anchor(-anc_lower,accent_default[anc_lower]);
   push_lcblob(fullcircle rotated 45 scaled (mbrush_width*1.72+50)
     shifted ((0,0) transformed accent_default[anc_lower]
+      transformed tsu_rescale_xform)
+    transformed inverse tsu_rescale_xform);
+  set_bokeepshape(0);
+enddef;
+
+vardef tsu_accent.dotcentred =
+  push_anchor(-anc_centre,accent_default[anc_centre]);
+  push_lcblob(fullcircle rotated 45 scaled (mbrush_width*1.72+50)
+    shifted ((0,0) transformed accent_default[anc_centre]
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
   set_bokeepshape(0);
@@ -123,6 +167,13 @@ vardef tsu_accent.grave =
   set_bosize(0,80);
   set_botip(0,1,1);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (20,150));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (20,150));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (20,150));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (20,150));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (20,150));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (20,150));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (20,150));
 enddef;
 
 vardef tsu_accent.heavy_metal_umlaut =
@@ -137,7 +188,14 @@ vardef tsu_accent.heavy_metal_umlaut =
     transformed inverse tsu_rescale_xform);
   set_bokeepshape(-1);
   set_bokeepshape(0);
-  push_anchor(anc_upper,accent_default[anc_upper] shifted (0,210));
+  push_anchor(anc_upper,accent_default[anc_upper] shifted (0,220));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,220));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,220));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,220));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,220));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,220));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,220));
 enddef;
 
 vardef tsu_accent.hungarian_umlaut =
@@ -156,6 +214,13 @@ vardef tsu_accent.hungarian_umlaut =
   set_bosize(0,80);
   set_botip(0,1,1);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,180));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,180));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,180));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,180));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,180));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,180));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,180));
 enddef;
 
 vardef tsu_accent.macron =
@@ -165,6 +230,13 @@ vardef tsu_accent.macron =
     (2,2)--(2,2));
   set_bosize(0,80);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,120));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,120));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,120));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,120));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,120));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,120));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,120));
 enddef;
 
 vardef tsu_accent.ringabove =
@@ -184,6 +256,13 @@ vardef tsu_accent.ringabove =
     set_bokeepshape(0);
   fi;
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,170));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,170));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,170));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,170));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,170));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,170));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,170));
 enddef;
 
 vardef tsu_accent.slash =
@@ -204,6 +283,13 @@ vardef tsu_accent.tilde =
   replace_strokep(0)(insert_nodes(oldp)(0.5,3.5));
   set_bosize(0,80);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,150));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,150));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,150));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,150));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,150));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,150));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,150));
 enddef;
 
 vardef tsu_accent.umlaut =
@@ -219,6 +305,13 @@ vardef tsu_accent.umlaut =
   set_bokeepshape(-1);
   set_bokeepshape(0);
   push_anchor(anc_upper,accent_default[anc_upper] shifted (0,150));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,150));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,150));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,150));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,150));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,150));
+  push_anchor(anc_caron_comma,
+              accent_default[anc_caron_comma] shifted (0,150));
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

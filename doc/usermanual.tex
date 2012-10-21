@@ -35,10 +35,17 @@
 \usepackage{fontspec}
 \usepackage[margin=1.25in,top=0.85in]{geometry}
 \usepackage{tikz}
+\usepackage{tocloft}
 \usepackage{wrapfig}
+\usepackage{xcolor}
 \usepackage{xltxtra}
 
-\usepackage{hyperref}
+% colors
+\definecolor{darkgreen}{rgb}{0,0.35,0}
+\definecolor{purplish}{rgb}{0.4,0,0.6}
+
+\usepackage[letterpaper,breaklinks,bookmarks,plainpages=false,
+   colorlinks,citecolor=darkgreen,linkcolor=purplish]{hyperref}
 
 \defaultfontfeatures{Mapping=tex-text,Path=../otf/}
 
@@ -99,7 +106,7 @@
 
 \vspace*{\fill}
 
-\phantomsection\addcontentsline{toc}{section}{とびら Title Page}
+\phantomsection\belowpdfbookmark{とびら Title Page}{bkm:title}
 
 {\Huge 作りましょう~\TsukurimashouVWide}\\
 {\huge パラメタほうしきフォントファミリ\\
@@ -127,7 +134,7 @@ mskala@ansuz.sooke.bc.ca\\
 
 \vspace*{\fill}
 
-\phantomsection\addcontentsline{toc}{section}{コピーライト Copyright}
+\phantomsection\belowpdfbookmark{コピーライト Copyright}{bkm:copyright}
 
 This project's English-language home page is at\\
 \hspace*{1em}\url{http://tsukurimashou.sourceforge.jp/index.html.en}.\\
@@ -159,6 +166,17 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see \url{http://www.gnu.org/licenses/}.
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\phantomsection\belowpdfbookmark{目次 Contents}{bkm:contents}
+\renewcommand\contentsname{目次　Contents}
+\renewcommand{\cftbeforesubsecskip}{0pt}
+
+\tableofcontents
 
 \clearpage
 
@@ -1219,7 +1237,7 @@ enabled.
 Similarly, this feature will substitute precomposed voiced kana glyphs for
 combinations of unvoiced kana plus combining dakuten or handakuten.
 
-In the Jieubside fonts, this feature breaks precomposed
+In the Jieubsida fonts, this feature breaks precomposed
 syllables that don't have final consonants into their component jamo, and
 combines sequences of jamo for single vowels and consonants into jamo
 representing the sequences, where possible.  Splitting tail-less precomposed

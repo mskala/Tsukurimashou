@@ -386,9 +386,11 @@ vardef latin.upl =
   set_boserif(0,0,1);
   set_boserif(0,1,3);
 
-  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+  tsu_accent.shift_anchors((ypart olda>vmetric(0.52))
+                           and not (ai=anc_caron_comma))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_caron_comma)((-200,0));
   expand_pbox;
 enddef;
 
@@ -1043,11 +1045,14 @@ vardef latin.lowd =
   y6=0.91[y3,y5];
 
   push_stroke(z1--z2{left}..{left}z3..{up}z4..{right}z5..z6,
-    (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--
+      (1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0,4.97) of oldp);
   set_botip(0,1,1);
   if not do_italic_hook: set_boserif(0,0,1); fi;
   set_boserif(0,1,2);
+  
+  tsu_accent.shift_anchors(ai=anc_caron_comma)((90,0));
   expand_pbox;
 enddef;
 
@@ -1190,6 +1195,10 @@ vardef latin.lowg =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.13,1.87) of oldp);
   set_bosize(0,85);
+  
+  push_anchor(anc_caron_comma,
+    identity rotated 180 shifted (0,90)
+    transformed accent_default[anc_upper]);
   expand_pbox;
 enddef;
 
@@ -1217,6 +1226,10 @@ vardef latin.lowh =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.03,3) of oldp);
   set_boserif(0,3,if do_italic_hook: 11 else: 2 fi);
+
+  push_anchor(anc_wide,identity xscaled 0.75
+    transformed accent_default[anc_wide]);
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))((40,0));
   expand_pbox;
 enddef;
 
@@ -1331,6 +1344,12 @@ vardef latin.lowl =
   y3=latin_wide_low_r;
 
   push_stroke(z1--z2{down}..{right}z3,(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+
+  tsu_accent.shift_anchors((ypart olda>vmetric(0.52))
+                           and not (ai=anc_caron_comma))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_centre)((180,0));
   expand_pbox;
 enddef;
 
