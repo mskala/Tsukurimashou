@@ -111,6 +111,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.ministry =
+  push_pbox_toexpand("kanji.grfour.ministry");
+  build_kanji.level(build_kanji.tb(420,50)
+    (kanji.grtwo.little)
+    (build_kanji.sscale(xscaled 0.84 shifted (40,0))(kanji.grone.eye)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.leftrad.arrow =
   push_pbox_toexpand("kanji.leftrad.arrow");
   kanji.grtwo.arrow;
@@ -120,6 +130,12 @@ vardef kanji.leftrad.arrow =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% sei/kaeri "ministry"
+begintsuglyph("uni7701",1);
+  kanji.grfour.ministry;
+  tsu_render;
+endtsuglyph;
 
 % ken/ka "prefecture"
 begintsuglyph("uni770C",12);

@@ -34,11 +34,13 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefive.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -93,6 +95,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.fortune =
+  push_pbox_toexpand("kanji.grfive.fortune");
+  build_kanji.level(build_kanji.lr(480,0)
+    (kanji.grone.shell)
+    (kanji.rightrad.genius));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % koku/tani "valley"
 begintsuglyph("uni8C37",55);
   kanji.grtwo.valley;
@@ -117,15 +129,27 @@ begintsuglyph("uni8C9D",157);
   tsu_render;
 endtsuglyph;
 
-% fu/ma "undertake
+% fu/ma "undertake"
 begintsuglyph("uni8CA0",160);
   kanji.grthree.undertake;
+  tsu_render;
+endtsuglyph;
+
+% zai/takara "fortune"
+begintsuglyph("uni8CA1",161);
+  kanji.grfive.fortune;
   tsu_render;
 endtsuglyph;
 
 % ka/takara "freight"
 begintsuglyph("uni8CA8",168);
   kanji.grfour.freight;
+  tsu_render;
+endtsuglyph;
+
+% seki/se "blame"
+begintsuglyph("uni8CAC",172);
+  kanji.grfive.blame;
   tsu_render;
 endtsuglyph;
 

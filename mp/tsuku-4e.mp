@@ -334,6 +334,12 @@ begintsuglyph("uni4E57",87);
   tsu_render;
 endtsuglyph;
 
+% extra (needed as component)
+begintsuglyph("uni4E5A",90);
+  kanji.rare.mysterious;
+  tsu_render;
+endtsuglyph;
+
 % kyuu/kokono "nine"
 begintsuglyph("uni4E5D",93);
   kanji.grone.nine;

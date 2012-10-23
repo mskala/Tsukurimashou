@@ -190,11 +190,13 @@ vardef tsu_serif.mincho.ktriangle(expr bst,plp,dlp,l,bts,bos) =
     z2=(0,q1);
     z3=(-q3,q5);
     z4=(q3,q5);
-    serif:=((0.1[z2,z4]){z2-z4}..{z3-z2}(0.1[z2,z3])
-      --z3--z4--cycle)
+    serif:=((0.1[z2,z4]){z2-z4}..{z3-z2}(0.1[z2,z3])--
+      (0.1[z3,z2]){z3-z2}..{z4-z3}(0.1[z3,z4])--
+      (0.1[z4,z3]){z4-z3}..{z2-z4}(0.1[z4,z2])--cycle)
+      shifted (0,-0.19)
       transformed t yscaled tsu_brush_shape
       rotated tsu_brush_angle
-      scaled (bts*bos*0.98*mincho_blob_size) shifted plp;
+      scaled (bts*bos*0.94*mincho_blob_size) shifted plp;
     if (xxpart t)*(yypart t)<0: serif:=reverse serif; fi;
     glstk[ngls]:=regenerate(serif);
     ngls:=ngls+1;

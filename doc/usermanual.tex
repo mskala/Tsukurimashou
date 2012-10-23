@@ -1100,6 +1100,7 @@ precompiled form.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \blsection{ＯｐｅｎＴｙｐｅのフィーチャー}{OpenType Features}
+\label{sec:opentype-features}
 
 OpenType contains a mechanism for defining what are called ``features'' in
 a specific technical sense rather than the more general usage of that word. 
@@ -2331,24 +2332,45 @@ You can also add ``KEEPTMP=1'' to prevent deletion of the temporary
 directories created while running Metapost.  This feature is primarily
 useful for debugging the pfb-generating scripts themselves.
 
-You can turn subsets of the character set on and off with the
-``-{}-enable-chars'' option to configure.  Give it a parameter consisting of
-a comma-separated list of tags with optional plusses and minuses.  The idea
-is that each tag represents a subset of the character set, and they are
-evaluated in the order specified.  The default is ``all,'' meaning all
-characters defined in the source code will be included in the fonts.  Other
-tags currently supported are ``none'' (which actually has no effect but is
-included for readability purposes), ``ascii,'' ``latin1,'' ``mes1,'' and
-families of tags named like ``page12,'' ``uni1234,'' and ``u123ab,'' with
-lowercase hexadecimal digits, which correspond to 256-character blocks of
-Unicode code points and to individual code points.  For example, the
-specifier ``all,-page02'' would include every character it can except none
-in the range U+0200--U+02FF; the specifier ``uni0041'' would create very
-small fonts containing only the uppercase A from the ASCII range.  The
-default is ``all.'' The point of this system is to make it easier to
-generate stripped-down fonts for Web embedding and to reduce compile time
-during maintenance, when I may want to focus on just one subrange of the
-character space for a while.
+Several options to configure share a common argument syntax under which you
+can specify a comma-separated list of commands to include and exclude
+subsets of things.  This syntax is actually translated into Hamlog code and
+evaluated by the logic-programming system during build.  It may be easier
+to understand by example than to explain rigorously, but here is an attempt
+at a precise explanation: a specification consists of a sequence of commands
+separated by commas or spaces.  Each command either adds or subtracts some
+subset of the things being configured, to or from the currently selected
+subset which is initially empty.  A command consists of one or more
+alphanumeric tags representing subsets, separated (if more than one) by
+ampersands or colons, which mean ``AND,'' and optionally prefixed by plus,
+minus, or exclamation point.  If the prefix is ``-'' or ``!'' then the AND
+of all the tags will be \emph{subtracted} from the current selection;
+otherwise it will be \emph{added}.  The allowed values of the tags depend on
+which option we are considering, but typically include ``all'' and ``none.''
+
+For example, the specification ``mushroom\&purple'' would select purple
+mushrooms.  The specification ``fungi,-mushroom\&purple'' would select all
+fungi that are not purple mushrooms.  The specification
+``mushroom,-red,tomato'' would select all mushrooms that are not red as well
+as all tomatoes \emph{including red tomatoes}; tags are evaluated left to
+right and each one overrides the results of all previous tags.
+
+The ``-{}-enable-chars'' option uses the above syntax to describe which
+characters (Unicode code points extended by internal private-use allocations
+for some unencoded glyphs) should be included in the fonts.  The default is
+``all,'' meaning all characters defined in the source code will be included
+in the fonts.  Other tags currently supported are ``none,'' ``ascii,''
+``latin1,'' ``mes1,'' and families of tags named like ``page12,''
+``uni1234,'' and ``u123ab,'' with lowercase hexadecimal digits, which
+correspond to 256-character blocks of Unicode code points and to individual
+code points.  For example, the specifier ``all,-page02'' would include every
+character it can except none in the range U+0200--U+02FF; the specifier
+``uni0041'' would create very small fonts containing only the uppercase A
+from the ASCII range.  The default is ``all.'' It is planned that in some
+future version this option should also be able to use KANJIDIC2 data to
+allow selection of kanji characters by criteria like school grade level, and
+some support for that exists already, and some of the code for this already
+exists, but it probably doesn't work yet.
 
 The ``-{}-enable-ot-features'' option works the same way for OpenType
 features; note that OpenType features may also be automatically and silently
@@ -2369,15 +2391,23 @@ and in that case FontForge may create an empty glyph for the character even
 though you disabled it.  That shouldn't happen unless you attempt something
 very unusual and non-standard, however. Currently supported tags are
 ``all,'' ``none,'' and a four-character tag corresponding to the OpenType
-name of each feature that exists: ``afrc'' (alternate, that is, vertical or
-nut, fractions), ``ornm'' (ornaments), ``smcp'' (small caps), ``ss01''
-(stylistic set one, heavy metal umlaut), and ``ss02'' (stylistic set two,
-enclosed characters).
+name of each feature that exists, and a few that don't.  See
+Section~\ref{sec:opentype-features} for a detailed list.
 
-The configure script is designed to accept an option for a similar
-plus/minus selection of font styles, but the code in other places to
-support that option does not exist yet and if specified it will have no
-effect on what really gets built.
+The ``-{}-enable-styles'' option allows similar selection of type styles,
+For instance, ``tsuku\&kg,-el'' would enable all
+Tsukurimashou Kaku fonts, in all weights and both monospace and
+proportional, \emph{except} no ``Extra Light'' fonts.  The atomic tokens for
+this selection include the standard ``all'' and ``none,'' and the short
+name tokens and Hamlog atoms for all the families, styles, weights, and
+spacings currently supported.  See Section~\ref{sec:fontnames} for more
+about the naming of fonts, and note that these are the pre-rewriting names,
+so that for instance Anbiruteki might be selected via ``tsuku\&mg\&eq.''
+
+The ``-{}-enable-parasites'' option allows this kind of include/exclude
+selection for parasite packages (see next subsection).  The supported tokens
+are ``all,'' ``none,'' and the names of the parasites, currently
+``genjimon,'' ``idsgrep,'' and ``ocr.''
 
 The ``make dist'' target defaults to building a ZIP file only, instead of
 GNU's recommended tar-gzip.  This decision was made in order to be
@@ -2391,8 +2421,21 @@ should if you have disabled optional features with the above options to
 configure.  Please ``make me one with everything,'' as the Buddhist master
 said at the hamburger stand, before trying to build a distribution.
 
-The ``make clean'' target and its variations probably do not really make
-things as clean as they should.
+The ``make clean'' target and its variations should make things pretty
+clean, now that we're attempting to make the system pass ``make distcheck''
+before each release.  Use them with caution, however.
+
+There is a ``make check'' target, which will run FontForge's fontlint
+program on all the OTF files.  This is a very stringent test and it's quite
+likely that fonts will fail despite really being in pretty good shape;
+fontlint flags a lot of things that I am not convinced are actually errors
+at all; so if you run it and get nothing but complaints, don't panic.  At
+the very least, you will need a FontForge with my all-extrema patch
+(discussed in the previous section) to have much hope of building fonts that
+can pass fontlint.  Running ``make check'' at the top will also recursively
+run ``make check'' on any parasite packages that have been enabled, and the
+parasite package test suites (in particular, the one for IDSgrep) may be of
+more practical use than the main Tsukurimashou fontlint tests.
 
 Don't bother with ``-{}-disable-dependency-tracking''; that is an
 Autotools thing meant for much larger and more softwary packages.  It
@@ -2437,13 +2480,17 @@ and warn you.
 The design of this build system was influenced by Peter Miller's interesting
 article ``Recursive Make Considered Harmful,'' available at
 \url{http://miller.emu.id.au/pmiller/books/rmch/}.  The fonts as such are
-all built from a single large Makefile.  However, in the current
-version there is also some use of recursive Make and recursive Autotools
-to support the parasite packages, should those be enabled (by default, they
-are not).  Some notes on the design of the build (prior to the introduction
-of parasites) are in my Web log article at
+all built from a single large Makefile.  However, in the current version
+there is also some use of recursive Make and recursive Autotools to support
+the parasite packages (next section), should those be enabled (by default,
+they are not).  Some notes on the design of the build (prior to the
+introduction of parasites) are in my Web log article at
 \url{http://ansuz.sooke.bc.ca/entry/226}.  I will probably write a similar
 article about the parasite mechanism at some point in the future.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\blsubsection{FIXME}{Parasite packages}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

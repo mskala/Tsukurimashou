@@ -32,6 +32,14 @@ inclusion_lock(gradefive);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.blame =
+  push_pbox_toexpand("kanji.grfive.blame");
+  build_kanji.level(build_kanji.tb(520,-20)
+    (kanji.toprad.blue)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.compare =
   push_pbox_toexpand("kanji.grfive.compare");
   build_kanji.level(build_kanji.lr(540,-20)
@@ -83,9 +91,9 @@ enddef;
 
 vardef kanji.grfive.old_times =
   push_pbox_toexpand("kanji.grfive.old_times");
-  build_kanji.lr(340,-20)
+  build_kanji.level(build_kanji.lr(340,-20)
     (kanji.radical.vline)
-    (kanji.grone.day);
+    (kanji.grone.day));
   expand_pbox;
 enddef;
 

@@ -34,8 +34,11 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefive.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input toprad.mp;
 
@@ -79,7 +82,37 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% kyuu/kiwa "research
+vardef kanji.grfour.load =
+  push_pbox_toexpand("kanji.grfour.load");
+  build_kanji.lr(420,-20*mincho)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfive.blame);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.seed =
+  push_pbox_toexpand("kanji.grfour.seed");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(yscaled 0.91)(kanji.grthree.heap_big));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% shu/tane "seed"
+begintsuglyph("uni7A2E",46);
+  kanji.grfour.seed;
+  tsu_render;
+endtsuglyph;
+
+% seki/tsu "load"
+begintsuglyph("uni7A4D",77);
+  kanji.grfour.load;
+  tsu_render;
+endtsuglyph;
+
+% kyuu/kiwa "research"
 begintsuglyph("uni7A76",118);
   kanji.grthree.research;
   tsu_render;

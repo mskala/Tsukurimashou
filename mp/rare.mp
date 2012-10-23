@@ -238,6 +238,14 @@ vardef kanji.rare.mound =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.mysterious =
+  push_pbox_toexpand("kanji.rare.mysterious");
+  push_stroke((200,810))((1.7,1.7));
+  build_kanji.add_ltail(0);
+  set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.notwithstanding =
   push_pbox_toexpand("kanji.rare.notwithstanding");
   push_stroke((370,790){curl 0.1}..(250,580)..(60,350),

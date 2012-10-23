@@ -66,6 +66,18 @@ vardef kanji.rightrad.clothing =
   expand_pbox;
 enddef;
 
+vardef kanji.rightrad.genius =
+  push_pbox_toexpand("kanji.rightrad.genius");
+  push_stroke((600,800),(1.6,1.6));
+  build_kanji.add_jtail(0);
+  set_boserif(0,0,10);
+  push_stroke((110+30*mincho,580)--(860,580),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((520,580)..tension 1.2..(360,260)..(110,90),
+    (1.6,1.6)--(1.4,1.4)--(1,1));
+  expand_pbox;
+enddef;
+
 vardef kanji.rightrad.short_hair =
   push_pbox_toexpand("kanji.rightrad.short_hair");
   push_stroke((780,750)..tension 1.2..(580,620)..(180,500),

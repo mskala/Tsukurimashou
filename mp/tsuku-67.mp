@@ -44,6 +44,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input rightrad.mp;
 
 do_late_includes;
@@ -101,6 +102,22 @@ vardef kanji.grthree.term =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.banknote =
+  push_pbox_toexpand("kanji.grfour.banknote");
+  build_kanji.lr(540+20*mincho,-30)
+    (kanji.leftrad.wood)
+    (build_kanji.sscale(yscaled 0.94)(kanji.rare.mysterious));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.lumber =
+  push_pbox_toexpand("kanji.grfour.lumber");
+  build_kanji.lr(480,20)
+    (kanji.leftrad.wood)
+    (kanji.rightrad.genius);
+  expand_pbox;
+enddef;
 
 vardef kanji.grfour.pine =
   push_pbox_toexpand("kanji.grfour.pine");
@@ -174,9 +191,21 @@ begintsuglyph("uni672C",44);
   tsu_render;
 endtsuglyph;
 
+% setsu/fuda "banknote"
+begintsuglyph("uni672D",45);
+  kanji.grfour.banknote;
+  tsu_render;
+endtsuglyph;
+
 % son/mura "village"
 begintsuglyph("uni6751",81);
   kanji.grone.village;
+  tsu_render;
+endtsuglyph;
+
+% zai/ki "lumber"
+begintsuglyph("uni6750",80);
+  kanji.grfour.lumber;
   tsu_render;
 endtsuglyph;
 
