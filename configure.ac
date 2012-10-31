@@ -201,7 +201,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1715 2012-09-25 13:58:51Z mskala $])
+AC_REVISION([$Id: configure.ac 1783 2012-10-23 19:51:50Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["June 18, 2012"])
 AM_SILENT_RULES
@@ -229,6 +229,7 @@ AC_PATH_PROG([FONTFORGE],[fontforge])
 AC_PATH_TOOL([GDB],[gdb])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
+AC_PATH_PROG([MAKE],[make])
 AC_ARG_VAR([MPOST],[MetaPost])
 AC_PATH_PROG([MPOST],[mpost])
 AC_ARG_VAR([PERL],[Perl])
@@ -238,6 +239,17 @@ AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
 AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
 AC_PATH_PROG([XELATEX],[xelatex])
+#
+gmake_version=unknown
+missing_gmake_version=yes
+AC_MSG_CHECKING([GNU Make version])
+AS_IF([test "x$PERL" = "x" || test "x$MAKE" = "x"],[],
+  [missing_gmake_version=no
+gmake_version=dnl
+`$MAKE --version | perl -ne 'print $1 if /^GNU Make.*(\d+\.\d+)/'`
+   AS_VERSION_COMPARE([$gmake_version],[3.82],
+     [missing_gmake_version=yes])])
+AC_MSG_RESULT([$gmake_version])
 #
 ############################################################################
 #
@@ -521,6 +533,9 @@ AS_IF([test "x$FONTFORGE" = "x" || test '!' -r "$FONTFORGE"],
 AS_IF([test "x$_cv_gnu_make_command" = "x"],
   [missing_gmake=yes
    can_core=no])
+AS_IF([test '!' "x$missing_gmake_version" = "xno"],
+  [missing_gmake=yes
+   can_core=no])
 AS_IF([test "x$MPOST" = "x"],
   [missing_mpost=yes
    can_core=no],
@@ -741,7 +756,7 @@ AS_IF([test "$can_core" = "no"],
    AS_IF([test "$missing_fontforge" = "yes"],
      [AS_ECHO(["   Fontforge             http://fontforge.sourceforge.net/"])])
    AS_IF([test "$missing_gmake" = "yes"],
-     [AS_ECHO(["   GNU make (others won't work)   http://www.gnu.org/software/make/"])])
+     [AS_ECHO(["   GNU Make >=3.82       http://www.gnu.org/software/make/"])])
    AS_IF([test "$missing_mpost" = "yes"],
      [AS_ECHO(["   MetaPost              http://foundry.supelec.fr/gf/project/metapost/"])])
    AS_IF([test "$missing_perl" = "yes"],

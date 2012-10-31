@@ -2199,7 +2199,8 @@ will need at least the following:
     might work.  Windows with Cygwin might work.  
   \item A standard C-language tool-chain (normally comes with Linux).
   \item Perl.
-  \item GNU Make (non-GNU versions will not work).
+  \item GNU Make 3.82 or later (non-GNU versions will not work;
+    earlier versions will not work).
   \item Metapost (this comes with most \TeX/\LaTeX\ installations)
   \item A version of FontForge that actually works.
 \end{itemize}
@@ -2407,7 +2408,7 @@ so that for instance Anbiruteki might be selected via ``tsuku\&mg\&eq.''
 The ``-{}-enable-parasites'' option allows this kind of include/exclude
 selection for parasite packages (see next subsection).  The supported tokens
 are ``all,'' ``none,'' and the names of the parasites, currently
-``genjimon,'' ``idsgrep,'' and ``ocr.''
+``genjimon,'' ``idsgrep,'' and ``ocr.''  The default is ``none.''
 
 The ``make dist'' target defaults to building a ZIP file only, instead of
 GNU's recommended tar-gzip.  This decision was made in order to be
@@ -2450,7 +2451,7 @@ sources remaining inviolate elsewhere, but that is not really
 recommended for Tsukurimashou.  I try to make it pass ``make
 dist-check'' right before each release, which implies making separate
 build directories work, but if you are building Tsukurimashou from a
-checked-out SVN version, chances of that working are slim.  It's safer
+checked-out SVN version, it may or may not work.  It's safer
 to build right in the main directory.  Even if VPATH builds work, they
 are only intended for the case of having an untouched set of sources in
 one directory and a build in another.  If you try to do the overlay
@@ -2491,6 +2492,74 @@ article about the parasite mechanism at some point in the future.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \blsubsection{FIXME}{Parasite packages}
+
+Some of the technology developed to support Tsukurimashou has more general
+applicability.  For instance, the stripped-down version of METATYPE1 bundled
+with Tsukruimashou may be useful for other fonts that build from
+METAFONT-language source files to produce modern vector file formats.  It
+would be nice to be able to manage these kinds of associated packages in a
+way that maintains their link to Tsukurimashou---so that for instance
+updates in the shared code will propagate to all packages that use it---but
+nonetheless allows the other packages to be distributed as separate entities
+to users who don't want a copy of the entire Tsukurimashou system.  There
+are relevant side issues, too, such as a hope for attention directed at one
+package to attract interest to other packages.
+
+One possibile approach might be to attempt to factor out code that will be
+shared into some kind of ``Tsukurimashou library'' package that could then
+be distributed separately and made a dependency of all the other packages
+that use it.  A problem with doing that is that which code is or isn't
+shared will vary a lot due to the wide range of different packages that
+might want to share some part of the system.  Instead, the approach taken as
+of Tsukurimashou 0.7 is to introduce what I call ``parasite packages.''
+These are sub-packages for Autotools purposes.
+
+Each parasite appears in its own subdirectory of the full Tsukurimashou
+Project distribution tree or SVN checkout.  By default, they are distributed
+in distribution packages of the full project, but not built by a top-level
+build.  They can be activated using the -{}-enable-parasites option to the
+top-level configure script, but each one in its own subdirectory is also a
+potentially standalone Autotools package, with its own configure script and
+capable of building a standalone distribution of itself with the ``make
+dist'' target.  Parasites will generally look for a Tsukrimashou Project
+build in the parent directory and connect to it if one is found.
+
+The current parasites are Genjimon, IDSgrep, and OCR.  Each of these has its
+own detailed documentation, which see; the notes here are just a summary to
+give some idea of what the packages are all about.  All of these existed in
+some form prior to the introduction of the parasite build mechanism, and in
+some cases vestiges still exist of their old, less systematic, ways of
+connecting to Tsukurimashou.  In the future, the connections will be more
+streamlined and normalized.
+
+Note that parasite packages generally have their own version numbers which
+are not necessarily synchronized to specific Tsukurimashou releases; in some
+cases a Tsukurimashou release will contain a pre-release or even a broken
+version of a parasite.  But it should usually be reasonably safe to mix and
+match parasites and Tsukurimashou versions of reasonably similar vintage. 
+Parasite packages may also have their own license terms, but must always
+have license terms that allow them to be distributed within the GPL3
+top-level project distribution.
+
+\begin{description}
+  \item{Genjimon} This is a set of standalone fonts for the Genjimon
+    symbols, which in the main Tsukurimashou fonts occupy the private-use
+    code points U+F17C1 to U+F17F6.  In the standalone fonts, they are
+    mapped into the ASCII range for easier access.  GPLv3 with font
+    embedding exception.
+  \item{IDSgrep} A program for searching databases of tree structures stored
+    in ``extended ideographic description sequence'' (EIDS) format.  This is
+    intended for searching kanji databases according to spatial structure
+    using a powerful query syntax inspired by regular expressions.  The need
+    for such queries came up during Tsukurimashou development, but the
+    package may well be useful in other contexts as well.  Includes code to
+    interface to several different character dictionaries, including
+    structural data extracted from Tsukruimashou.  GPL3.
+  \item{OCR} Freely usable vector versions of the standard OCR A and OCR B
+    fonts, based on the work of Tor Lillqvist, Richard B.\ Wales, and
+    Norbert Schwarz.  License terms vary, but the fonts should all be
+    freely usable.
+\end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
