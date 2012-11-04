@@ -152,6 +152,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.scenery =
+  push_pbox_toexpand("kanji.grfour.scenery");
+  build_kanji.level(build_kanji.tb(560,30)
+    (kanji.grone.day)
+    (kanji.grtwo.capital));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.yesterday =
   push_pbox_toexpand("kanji.grfour.yesterday");
   build_kanji.lr(380,0)
@@ -236,6 +244,12 @@ endtsuglyph;
 % jo/toki "time"
 begintsuglyph("uni6642",66);
   kanji.grtwo.time;
+  tsu_render;
+endtsuglyph;
+
+% kei "scenery"
+begintsuglyph("uni666F",111);
+  kanji.grfour.scenery;
   tsu_render;
 endtsuglyph;
 

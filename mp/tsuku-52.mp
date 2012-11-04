@@ -156,6 +156,14 @@ vardef kanji.grfour.merit =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.toil =
+  push_pbox_toexpand("kanji.grfour.toil");
+  build_kanji.level(build_kanji.tb(400,0)
+    (kanji.greight.guy)
+    (kanji.grone.power));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.judge =
@@ -430,6 +438,12 @@ endtsuglyph;
 % jo/tasu "help"
 begintsuglyph("uni52A9",169);
   kanji.grthree.help;
+  tsu_render;
+endtsuglyph;
+
+% do/tsuto "toil"
+begintsuglyph("uni52AA",170);
+  kanji.grfour.toil;
   tsu_render;
 endtsuglyph;
 

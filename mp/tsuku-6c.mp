@@ -258,6 +258,12 @@ begintsuglyph("uni6C0F",15);
   tsu_render;
 endtsuglyph;
 
+% tai/fumoto "name of an ancient tribe"
+begintsuglyph("uni6C10",16);
+  kanji.rare.cruithne;
+  tsu_render;
+endtsuglyph;
+
 % sei/tada/machi "correct"
 begintsuglyph("uni6C14",20);
   build_kanji.steam_enclose((700,400))();

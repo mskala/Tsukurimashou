@@ -73,6 +73,17 @@ vardef kanji.rare.clear =
   expand_pbox;
 enddef;
 
+% dictionary says "name of an ancient tribe"; needed for grfour.low
+vardef kanji.rare.cruithne =
+  push_pbox_toexpand("kanji.rare.cruithne");
+  kanji.grfour.clan;
+  replace_strokep(-3)((250,730)--(250,120));
+  replace_strokep(-2)(oldp shifted (0,130));
+  push_stroke((180,-10)--(600,-10),(1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.decide =
   push_pbox_toexpand("kanji.rare.decide");
   kanji.grfour.husband;

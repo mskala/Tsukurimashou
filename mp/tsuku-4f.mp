@@ -113,6 +113,14 @@ vardef kanji.grfour.example =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.low =
+  push_pbox_toexpand("kanji.grfour.low");
+  build_kanji.lr(300,50)
+    (kanji.leftrad.person)
+    (kanji.rare.cruithne);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.rank =
   push_pbox_toexpand("kanji.grfour.rank");
   build_kanji.lr(300,10)
@@ -465,6 +473,12 @@ endtsuglyph;
 % i/kurai "rank"
 begintsuglyph("uni4F4D",77);
   kanji.grfour.rank;
+  tsu_render;
+endtsuglyph;
+
+% tei/hiku "low" or "humble"
+begintsuglyph("uni4F4E",78);
+  kanji.grfour.low;
   tsu_render;
 endtsuglyph;
 
