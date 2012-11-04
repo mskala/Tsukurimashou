@@ -1,0 +1,88 @@
+#!/usr/bin/perl
+
+#
+# Nelson code table generator for Beikaitoru
+# Copyright (C) 2012  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala.sooke.bc.ca
+#
+
+########################################################################
+
+# This program is not run automatically by the build system.  It is
+# intended for one-off manual use to generate some commands that can
+# be cut and pasted into merge.pe.  These commands represent the mapping
+# between Hershey's kanji character set, Nelson's dictionary numbers, and
+# Unicode.  That mapping is never expected to change in the future, and
+# the output of this program will require further manual editing to
+# handle Hershey characters that do not correspond to Nelson dictionary
+# entries.  Running this program also requires resources (namely,
+# KANJIDIC2) that would have licensing consequences were I to distribute
+# them.  As a result, it seems better not to embed it into the build
+# system for Beikaitoru.  Nonetheless, it's being included in the
+# package for the benefit of the curious who might some day want to use
+# it as a resource for building something else.
+
+# Invoke with unpacked KANJIDIC2 XML on standard input.  The file
+# "oriental.dat" in the current directory will also be read.  Mapping
+# table is written to standard output.
+
+open(HD,'./oriental.dat');
+while (<HD>) {
+  if (substr($_,0,5)=~/^ *(\d+)$/) {
+    $char_exists{$1}=1;
+  }
+}
+close(HD);
+
+while (<>) {
+  if (/<character>/) {
+    $nelson='';
+    $unicode='';
+  } elsif (m!<dic_ref dr_type="nelson_c">(\d+)</dic_ref>!) {
+    $nelson=$1;
+  } elsif (m!<cp_value cp_type="ucs">([0-9a-f]+)</cp_value>!) {
+    $unicode=$1;
+  } elsif (m!</character>!) {
+    if ($nelson && $unicode && $char_exists{$nelson}) {
+      $oldname='ori'.substr($nelson,0,-1);
+      $oldname='ori0' if $nelson<10;
+      if ($nelson!~/0$/) {
+        $n=$nelson;
+        $oldname.='.'.chop($n);
+      }
+      $newname='uni'.uc($unicode);
+      $line{$nelson}="Select(\"$oldname\");SetGlyphName(\"$newname\");\n";
+    }
+  }
+}
+
+foreach (sort {$a <=> $b} keys %line) {
+  print $line{$_} unless ($_%10)==0;
+}
+foreach (sort {$a <=> $b} keys %line) {
+  print $line{$_} if ($_%10)==0;
+}

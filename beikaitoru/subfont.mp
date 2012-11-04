@@ -105,7 +105,7 @@ string line_buffer,glname;
 
 default_nib:=fix_nib(32*wmult,32*wmult,0);
 transform coord_xform;
-coord_xform:=identity xyscaled (32,-32) shifted (500,304);
+coord_xform:=identity xyscaled (32,-32) shifted (0,304);
 
 vardef hchar_start(expr name,code) =
   encode(name) (code); standard_introduce(name);
@@ -113,7 +113,7 @@ vardef hchar_start(expr name,code) =
 enddef;
 
 vardef hchar_end =
-  fix_hsbw(1000,0,0);
+  fix_hsbw((rmarg-lmarg)*32,0,0);
   endglyph;
 enddef;
 
@@ -129,6 +129,10 @@ forever:
     hchar_start(glname,current_char);
 
       path current_stroke;
+      numeric lmarg,rmarg;
+      
+      lmarg:=ASCII(substring (8,9) of line_buffer)-ASCII("R");
+      rmarg:=ASCII(substring (9,10) of line_buffer)-ASCII("R");
 
       for i:=10 step 2 until length line_buffer:
         if substring (i,i+2) of (line_buffer&" R")=" R":
@@ -150,7 +154,7 @@ forever:
                     x6=abs(z3-z2);
                     y6=if x6<8: 8-x6 else: -1 fi;
                   )
-                  if (y4>0) and (y5>0) and (y6>0) and (y4+y5+y6>12):
+                  if (y4>0) and (y5>0) and (y6>0) and (y4+y5+y6>13):
                     z2..
                   else:
                     {curl 1}z2{curl 1}..
@@ -160,7 +164,8 @@ forever:
             fi;
           
             path g;
-            pen_stroke()(current_stroke transformed coord_xform)(g);
+            pen_stroke()(current_stroke
+              shifted (-lmarg,0) transformed coord_xform)(g);
             dangerousFill g;
             path current_stroke;
           fi;

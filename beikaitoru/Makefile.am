@@ -118,7 +118,7 @@ TSU_V_RMO_0=$(ECHO_ANSI) \
 TSU_V_SFD=$(TSU_V_SFD_$(V))
 TSU_V_SFD_=$(TSU_V_SFD_$(AM_DEFAULT_VERBOSITY))
 TSU_V_SFD_0=$(ECHO_ANSI) \
-  "$(ansi_cleareol)  $(ansi_cyan)SFD$(ansi_default)   " $@;
+  "$(ansi_cleareol)  $(ansi_yellow)SFD$(ansi_default)   " $@;
 
 TSU_V_TEX=$(TSU_V_TEX_$(V))
 TSU_V_TEX_=$(TSU_V_TEX_$(AM_DEFAULT_VERBOSITY))
@@ -135,7 +135,7 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 # CONDITIONAL OPTIONS
 
 if COND_DOCS
-    MAYBE_DOCS=ocr.pdf
+    MAYBE_DOCS=
 endif
 if COND_EXPECT
   expect_start= $(if $(AM_V_at),$(EXPECT) -c \
@@ -165,22 +165,18 @@ BUILT_SOURCES=Makefile
 STANDALONE_QVFG:=fntbase.mp
 EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  $(wildcard $(mvp)/*.mp) \
-  ocr.tex ocra.fea ocrb.fea
+  $(wildcard $(mvp)/*.mp)
 
-STANDALONE_FPEVCGF:=mp2pf
+STANDALONE_FPEVCGF:=mp2pf pe/rmo.pe
 dist_noinst_SCRIPTS:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
-  ocra-no.pe ocra-yes.pe ocrb-no.pe ocrb-yes.pe ocrbnames.pe rmo.pe
+  nelson
 
 dist_pdf_DATA = $(MAYBE_DOCS)
 
-dist_otf_DATA = OCRA.otf \
-  OCRB.otf OCRBE.otf OCRBF.otf OCRBL.otf OCRBS.otf OCRBX.otf
-dist_ttf_DATA = OCRA.ttf \
-  OCRB.ttf OCRBE.ttf OCRBF.ttf OCRBL.ttf OCRBS.ttf OCRBX.ttf
-dist_type1_DATA =  OCRA.pfb \
-  OCRB.pfb OCRBE.pfb OCRBF.pfb OCRBL.pfb OCRBS.pfb OCRBX.pfb
+dist_otf_DATA = otf/Beikaitoru156.otf
+dist_ttf_DATA =
+dist_type1_DATA =
 dist_afm_DATA = $(patsubst %.pfb,%.afm,$(dist_type1_DATA))
 
 ############################################################################
@@ -188,8 +184,7 @@ dist_afm_DATA = $(patsubst %.pfb,%.afm,$(dist_type1_DATA))
 # MAKE CLEAN
 
 MOSTLYCLEANFILES = \
-  *.afm *.otf *.pfb *.rmo *.ttf \
-  ocr.aux ocr.log ocr.out ocr.pdf
+  *.afm *.otf *.pfb *.ttf
 
 DISTCLEANFILES = \
   aminclude.am ffaetest.pe
@@ -202,6 +197,11 @@ merged/.dirstamp:
 	$(AM_V_GEN)
 	$(AM_V_at)$(MKDIR_P) merged
 	$(AM_V_at)echo directory created > merged/.dirstamp
+
+otf/.dirstamp:
+	$(AM_V_GEN)
+	$(AM_V_at)$(MKDIR_P) otf
+	$(AM_V_at)echo directory created > otf/.dirstamp
 
 pfb/.dirstamp:
 	$(AM_V_GEN)
@@ -244,22 +244,80 @@ pfbtmp/%.pfb: pfbtmp/.dirstamp subfont.mp \
 	  rm -rf $*.tmp ; \
 	fi
 
-pfb/%.pfb: pfbtmp/%.pfb pfb/.dirstamp rmo.pe
+pfb/%.pfb: pfbtmp/%.pfb pfb/.dirstamp pe/rmo.pe
 	$(AM_V_at)$(TSU_V_RMO) \
-	$(FONTFORGE) $(mvp)/rmo.pe pfbtmp/$*.pfb pfb/$*.pfb \
+	$(FONTFORGE) $(mvp)/pe/rmo.pe pfbtmp/$*.pfb pfb/$*.pfb \
 	  $(TSU_V_REDIR)
 
 ############################################################################
 
 # MERGED FONTS
 
-merged/%.sfd: merge.pe merged/.dirstamp \
+.PRECIOUS: merged/%.sfd
+
+merged/%.sfd: pe/merge.pe merged/.dirstamp \
   pfb/%.0.pfb pfb/%.1.pfb pfb/%.2.pfb pfb/%.3.pfb \
   pfb/%.4.pfb pfb/%.5.pfb pfb/%.6.pfb pfb/%.7.pfb \
   pfb/%.8.pfb pfb/%.9.pfb
 	$(AM_V_at)$(TSU_V_SFD) \
-	  $(FONTFORGE) $(mvp)/merge.pe $* @ae_arg_okay@ \
+	  $(FONTFORGE) $(mvp)/pe/merge.pe $* @ae_arg_okay@ \
 	  $(TSU_V_REDIR)
+
+define OTF_RECIPES
+otf/Beikaitoru$(1)0%.otf: otf/.dirstamp merged/%.sfd pe/otf-$(1)00.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe $$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)1%.otf: otf/.dirstamp merged/1%.sfd pe/otf-$(1)00.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe 1$$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)2%.otf: otf/.dirstamp merged/2%.sfd pe/otf-$(1)00.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe 2$$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)3%.otf: otf/.dirstamp merged/3%.sfd pe/otf-$(1)00.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe 3$$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)4%.otf: otf/.dirstamp merged/4%.sfd pe/otf-$(1)00.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe 4$$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)5%.otf: otf/.dirstamp merged/%.sfd pe/otf-$(1)50.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe $$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)6%.otf: otf/.dirstamp merged/1%.sfd pe/otf-$(1)50.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe 1$$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)7%.otf: otf/.dirstamp merged/2%.sfd pe/otf-$(1)50.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe 2$$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)8%.otf: otf/.dirstamp merged/3%.sfd pe/otf-$(1)50.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe 3$$* \
+	  $(TSU_V_REDIR)
+
+otf/Beikaitoru$(1)9%.otf: otf/.dirstamp merged/4%.sfd pe/otf-$(1)50.pe
+	$(AM_V_at)$$(TSU_V_OTF) \
+	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe 4$$* \
+	  $(TSU_V_REDIR)
+
+endef
+
+$(foreach hun,1 2 3 4 5 6 7 8,\
+$(eval $(call OTF_RECIPES,$(hun))))
 
 ############################################################################
 
@@ -308,7 +366,7 @@ m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
 mp2pf: ../tools/mp2pf
 	$(TSU_V_CP) cp $< $@
 
-rmo.pe: ../pe/rmo.pe
+pe/rmo.pe: ../pe/rmo.pe
 	$(TSU_V_CP) cp $< $@
 
 endif

@@ -2505,7 +2505,7 @@ to users who don't want a copy of the entire Tsukurimashou system.  There
 are relevant side issues, too, such as a hope for attention directed at one
 package to attract interest to other packages.
 
-One possibile approach might be to attempt to factor out code that will be
+One possible approach might be to attempt to factor out code that will be
 shared into some kind of ``Tsukurimashou library'' package that could then
 be distributed separately and made a dependency of all the other packages
 that use it.  A problem with doing that is that which code is or isn't
@@ -2524,13 +2524,13 @@ capable of building a standalone distribution of itself with the ``make
 dist'' target.  Parasites will generally look for a Tsukrimashou Project
 build in the parent directory and connect to it if one is found.
 
-The current parasites are Genjimon, IDSgrep, and OCR.  Each of these has its
-own detailed documentation, which see; the notes here are just a summary to
-give some idea of what the packages are all about.  All of these existed in
-some form prior to the introduction of the parasite build mechanism, and in
-some cases vestiges still exist of their old, less systematic, ways of
-connecting to Tsukurimashou.  In the future, the connections will be more
-streamlined and normalized.
+The current parasites are Beikaitoru, Genjimon, IDSgrep, and OCR.  Each of
+these has its own detailed documentation, which see; the notes here are just
+a summary to give some idea of what the packages are all about.  All of
+these existed in some form prior to the introduction of the parasite build
+mechanism, and in some cases vestiges still exist of their old, less
+systematic, ways of connecting to Tsukurimashou.  In the future, the
+connections will be more streamlined and normalized.
 
 Note that parasite packages generally have their own version numbers which
 are not necessarily synchronized to specific Tsukurimashou releases; in some
@@ -2542,11 +2542,18 @@ have license terms that allow them to be distributed within the GPL3
 top-level project distribution.
 
 \begin{description}
-  \item{Genjimon} This is a set of standalone fonts for the Genjimon
-    symbols, which in the main Tsukurimashou fonts occupy the private-use
-    code points U+F17C1 to U+F17F6.  In the standalone fonts, they are
-    mapped into the ASCII range for easier access.  GPLv3 with font
-    embedding exception.
+  \item{Beikaitoru} A modern revival of the historic plotter fonts
+    ``digitalized'' [sic] by A.\ V.\ Hershey of the U.\ S.\ Naval
+    Weapons Laboratory during the 1960s, and subsequently distributed by the
+    National Bureau of Standards and on Usenet.  This version includes the
+    rarely-seen Japanese character range.  GPLv3 with font embedding
+    exception.
+
+  \item{Genjimon} A set of standalone fonts for the Genjimon symbols, which
+    in the main Tsukurimashou fonts occupy the private-use code points
+    U+F17C1 to U+F17F6.  In the standalone fonts, they are mapped into the
+    ASCII range for easier access.  GPLv3 with font embedding exception.
+
   \item{IDSgrep} A program for searching databases of tree structures stored
     in ``extended ideographic description sequence'' (EIDS) format.  This is
     intended for searching kanji databases according to spatial structure
@@ -2555,6 +2562,7 @@ top-level project distribution.
     package may well be useful in other contexts as well.  Includes code to
     interface to several different character dictionaries, including
     structural data extracted from Tsukruimashou.  GPL3.
+
   \item{OCR} Freely usable vector versions of the standard OCR A and OCR B
     fonts, based on the work of Tor Lillqvist, Richard B.\ Wales, and
     Norbert Schwarz.  License terms vary, but the fonts should all be
