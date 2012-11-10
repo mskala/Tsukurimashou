@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
@@ -125,6 +126,14 @@ vardef kanji.grfour.laugh =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.pipe =
+  push_pbox_toexpand("kanji.grfour.pipe");
+  build_kanji.level(build_kanji.tb(490,210)
+    (kanji.toprad.bamboo)
+    (kanji.grfour.bureaucracy));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % shou/wara "laugh"
@@ -166,6 +175,12 @@ endtsuglyph;
 % sen/soru "calculate"
 begintsuglyph("uni7B97",151);
   kanji.grtwo.calculate;
+  tsu_render;
+endtsuglyph;
+
+% kan/kuda "pipe" or "jurisdiction"
+begintsuglyph("uni7BA1",161);
+  kanji.grfour.pipe;
   tsu_render;
 endtsuglyph;
 

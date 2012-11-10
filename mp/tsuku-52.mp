@@ -156,6 +156,14 @@ vardef kanji.grfour.merit =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.print =
+  push_pbox_toexpand("kanji.grfour.print");
+  build_kanji.level(build_kanji.lr(650,30)
+    (kanji.rare.ancient_pig)
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.toil =
   push_pbox_toexpand("kanji.grfour.toil");
   build_kanji.level(build_kanji.tb(400,0)
@@ -351,6 +359,12 @@ begintsuglyph("uni5235",53);
   build_kanji.level(build_kanji.lr(560,30)
      (tsu_xform(identity yscaled (760/720))(kanji.grone.ear))
      (kanji.rightrad.sword));
+  tsu_render;
+endtsuglyph;
+
+% satsu/su "print"
+begintsuglyph("uni5237",55);
+  kanji.grfour.print;
   tsu_render;
 endtsuglyph;
 

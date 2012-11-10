@@ -645,11 +645,17 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	  $(MKDIR_P) $*.tmp ; \
 	  $(LN_S) -f $(realpath $(mvp))/mp/*.mp $*.tmp/ ; \
 	  $(LN_S) -f $(realpath .)/mp/*.mp $*.tmp/ ; \
-	  echo \
-	    "string pagename; " \
-	    "pagename=\"$(lastword $(subst -,$(space),$*))\"; " \
-	    "$(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),input $(fn);)" \
-	    > $*.tmp/$*.mp ; \
+	  if test -r $(realpath $(mvp))/mp/$*.mp \
+	    || test -r $(realpath .)/mp/$*.mp; then \
+	    echo "STUB MP FILE ALREADY EXISTS BUILDING" $@ ; \
+	    exit 1 ; \
+	  else \
+	    echo \
+	      "string pagename; " \
+	      "pagename=\"$(lastword $(subst -,$(space),$*))\"; " \
+	      "$(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),input $(fn);)" \
+	      > $*.tmp/$*.mp ; \
+	  fi ; \
 	  (cd $*.tmp ; $(expect_start)$(MPOST) $*.mp$(expect_end) ) ; \
 	  if $(GREP) -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
 	  $(TSU_V_NAPERL) \

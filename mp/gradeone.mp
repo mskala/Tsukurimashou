@@ -444,7 +444,7 @@ enddef;
 
 vardef kanji.grone.moon =
   push_pbox_toexpand("kanji.grone.moon");
-  push_stroke((80,-20)..(200,100)..{up}(250,760)--(750,760),
+  push_stroke((80,-20)..(200,100)...{up}(250,760)--(750,760),
     (1,1)--(1.4,1.4)--(1.6,1.6)--(1.6,1.6));
   build_kanji.add_jtail(0);
   set_botip(0,2,1);

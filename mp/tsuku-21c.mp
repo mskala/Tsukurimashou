@@ -1,5 +1,5 @@
 %
-% Unicode page 200 (Kanji) for Tsukurimashou
+% Unicode page 21C (Kanji) for Tsukurimashou
 % Copyright (C) 2012  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -34,15 +34,17 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
+input radical.mp;
 input rare.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% dui "mound"
-begintsuglyph("u200A4",164);
-  kanji.rare.mound;
+% "ancient form of 'pig' radical" needed for grfour.print
+begintsuglyph("u21C2F",47);
+  kanji.rare.ancient_pig;
   tsu_render;
 endtsuglyph;
 

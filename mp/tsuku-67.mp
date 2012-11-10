@@ -245,6 +245,12 @@ begintsuglyph("uni6797",151);
   tsu_render;
 endtsuglyph;
 
+% ka/ha "fruit" or "result"
+begintsuglyph("uni679C",156);
+  kanji.grfour.fruit;
+  tsu_render;
+endtsuglyph;
+
 % chuu/hashira "pillar"
 begintsuglyph("uni67F1",241);
   kanji.grthree.pillar;

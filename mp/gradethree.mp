@@ -107,6 +107,14 @@ vardef kanji.grthree.change =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.chapter =
+  push_pbox_toexpand("kanji.grthree.chapter");
+  build_kanji.level(build_kanji.tb(480,-70)
+    (kanji.toprad.stand_up)
+    (kanji.grone.early));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.column =
   push_pbox_toexpand("kanji.grthree.column");
   build_kanji.level(build_kanji.lr(560,20)

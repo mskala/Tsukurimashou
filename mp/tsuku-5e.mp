@@ -127,6 +127,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.bottom =
+  push_pbox_toexpand("kanji.grfour.bottom");
+  build_kanji.dotcliff_enclose
+    (build_kanji.sscale(xyscaled (1.1,0.9) shifted (-70,0))
+       (kanji.rare.cruithne));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.peace =
   push_pbox_toexpand("kanji.grfour.peace");
   build_kanji.dotcliff_enclose(build_kanji.tb(520,0)
@@ -358,6 +366,12 @@ endtsuglyph;
 % toko/yuka "bed"
 begintsuglyph("uni5E8A",138);
   kanji.greight.bed;
+  tsu_render;
+endtsuglyph;
+
+% tei/soko "bottom"
+begintsuglyph("uni5E95",149);
+  kanji.grfour.bottom;
   tsu_render;
 endtsuglyph;
 

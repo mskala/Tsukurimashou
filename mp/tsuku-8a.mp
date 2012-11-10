@@ -131,6 +131,14 @@ vardef kanji.grfour.kunyomi =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.lesson =
+  push_pbox_toexpand("kanji.grfour.lesson");
+  build_kanji.level(build_kanji.lr(450,20)
+    (kanji.grtwo.word)
+    (kanji.grfour.fruit));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.test =
   push_pbox_toexpand("kanji.grfour.test");
   build_kanji.level(build_kanji.lr(450,30)
@@ -610,6 +618,12 @@ endtsuglyph;
 % goku/yo "read"
 begintsuglyph("uni8AAD",173);
   kanji.grtwo.read;
+  tsu_render;
+endtsuglyph;
+
+% ka "lesson"
+begintsuglyph("uni8AB2",178);
+  kanji.grfour.lesson;
   tsu_render;
 endtsuglyph;
 

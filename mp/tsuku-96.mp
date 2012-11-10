@@ -112,6 +112,26 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.brink =
+  push_pbox_toexpand("kanji.grfive.brink");
+  build_kanji.lr(390,80)
+    (kanji.radical.beta)
+    (kanji.grthree.festival);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grsix.hinder =
+  push_pbox_toexpand("kanji.grsix.hinder");
+  build_kanji.lr(420,100)
+    (kanji.radical.beta)
+    (kanji.grthree.chapter);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.heights =
   push_pbox_toexpand("kanji.greight.heights");
   build_kanji.level(build_kanji.lr(420,60)
@@ -213,6 +233,18 @@ endtsuglyph;
 % kai/kizahashi "storey"
 begintsuglyph("uni968E",142);
   kanji.grthree.storey;
+  tsu_render;
+endtsuglyph;
+
+% sai/kiwa "brink"
+begintsuglyph("uni969B",155);
+  kanji.grfive.brink;
+  tsu_render;
+endtsuglyph;
+
+% shou/sawa "hinder"
+begintsuglyph("uni969C",156);
+  kanji.grsix.hinder;
   tsu_render;
 endtsuglyph;
 

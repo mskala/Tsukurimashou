@@ -56,14 +56,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.chapter =
-  push_pbox_toexpand("kanji.grthree.chapter");
-  build_kanji.level(build_kanji.tb(480,-70)
-    (kanji.toprad.stand_up)
-    (kanji.grone.early));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.child =
   push_pbox_toexpand("kanji.grthree.child");
   build_kanji.level(build_kanji.tb(480,-30)

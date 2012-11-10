@@ -298,6 +298,8 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\expandafter\ifx\csname haveTsukurimashouAnbirutekiPS\endcsname\relax\else
+
 \anbiruteki
 
 \Large
@@ -326,7 +328,11 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
 
 \clearpage
 
+\fi
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\expandafter\ifx\csname haveTsukurimashouTenshinoKamiPS\endcsname\relax\else
 
 \tenshinokami
 
@@ -348,6 +354,8 @@ might be most suitably used in large size for display purposes.
 ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
 
 \clearpage
+
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

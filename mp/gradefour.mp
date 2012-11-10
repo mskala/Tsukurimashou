@@ -208,6 +208,17 @@ vardef kanji.grfour.fancy =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.fruit =
+  push_pbox_toexpand("kanji.grfour.fruit");
+  build_kanji.tb(420,100)
+    (build_kanji.sscale(xscaled 0.9)(kanji.grone.paddy))
+    (kanji.grone.wood);
+  replace_strokep(-5)
+    ((point 0 of oldp)--(point infinity of get_strokep(-3)));
+  obstacktype[find_whatever(otstroke,-3)]:=otnull;
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.gentleman =
   push_pbox_toexpand("kanji.grfour.gentleman");
   push_stroke((500,780)--(500,0),

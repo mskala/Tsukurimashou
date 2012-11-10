@@ -32,6 +32,15 @@ inclusion_lock(rare);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.rare.ancient_pig =
+  push_pbox_toexpand("kanji.rare.ancient_pig");
+  build_kanji.level(
+    kanji.radical.narrow_flag;
+    build_kanji.sscale(xyscaled (0.63,0.66) shifted (30,-120))
+      (kanji.greight.towel));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.bald =
   push_pbox_toexpand("kanji.rare.bald");
   build_kanji.level(build_kanji.tb(690,180)
@@ -325,8 +334,8 @@ enddef;
 
 vardef kanji.rare.swim =
   push_pbox_toexpand("kanji.rare.swim");
-  build_kanji.level(build_kanji.flag_enclose(0.72,0.7)(
-    kanji.grone.child));
+  build_kanji.level(build_kanji.flag_enclose(0.72,0.7)
+    (kanji.grone.child));
   expand_pbox;
 enddef;
 
