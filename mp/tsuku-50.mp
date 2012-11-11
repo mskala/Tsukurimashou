@@ -38,6 +38,7 @@ input gradefive.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
+input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
@@ -94,6 +95,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.individual =
+  push_pbox_toexpand("kanji.grfive.individual");
+  build_kanji.lr(280,-50)
+    (kanji.leftrad.person)
+    (build_kanji.sscale(scaled 0.87)(kanji.grfour.hard));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.manservant =
   push_pbox_toexpand("kanji.greight.manservant");
   build_kanji.lr(300,-40*mincho)
@@ -103,6 +114,12 @@ vardef kanji.greight.manservant =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ko "individual" or "counter for things"
+begintsuglyph("uni500B",11);
+  kanji.grfive.individual;
+  tsu_render;
+endtsuglyph;
 
 % bai/be "double"
 begintsuglyph("uni500D",13);

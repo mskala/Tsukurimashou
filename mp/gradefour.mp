@@ -242,6 +242,13 @@ vardef kanji.grfour.good =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.hard =
+  push_pbox_toexpand("kanji.grfour.hard");
+  kanji.radical.box;
+  build_kanji.sscale(scaled 0.75)(kanji.grtwo.old);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.husband =
   push_pbox_toexpand("kanji.grfour.husband");
   push_stroke((170,610)--(830,610),

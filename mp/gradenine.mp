@@ -159,6 +159,14 @@ vardef kanji.grnine.my =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.ninth =
+  push_pbox_toexpand("kanji.grnine.ninth");
+  build_kanji.add_beret(
+    kanji.grfour.gentleman;
+    replace_strokep(-1)(oldp shifted (0,-60)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.only =
   push_pbox_toexpand("kanji.grnine.only");
   build_kanji.tb(400,30)

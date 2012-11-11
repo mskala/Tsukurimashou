@@ -108,6 +108,12 @@ begintsuglyph("uni58EB",235);
   tsu_render;
 endtsuglyph;
 
+% jin/mizunoe "ninth"
+begintsuglyph("uni58EC",236);
+  kanji.grnine.ninth;
+  tsu_render;
+endtsuglyph;
+
 % ichi/hitotsu "one" (formal, also first musical scale degree)
 begintsuglyph("uni58F1",241);
   kanji.greight.legal_one;

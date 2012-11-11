@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -129,6 +130,14 @@ vardef kanji.grfive.france =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.responsibility =
+  push_pbox_toexpand("kanji.grfive.responsibility");
+  build_kanji.lr(300,-10)
+    (kanji.leftrad.person)
+    (tsu_xform(identity yscaled 0.93)(kanji.grnine.ninth));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.temporary =
   push_pbox_toexpand("kanji.grfive.temporary");
   build_kanji.lr(300,-10)
@@ -144,6 +153,14 @@ vardef kanji.grsix.benevolence =
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.grone.two);
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.riot =
+  push_pbox_toexpand("kanji.grsix.riot");
+  build_kanji.lr(540,-10)
+    (tsu_xform(identity yscaled 0.94 shifted (0,-7))(kanji.grfive.tongue))
+    (kanji.rare.mysterious);
   expand_pbox;
 enddef;
 
@@ -349,6 +366,12 @@ endtsuglyph;
 % ya/nari "to be" (archaic)
 begintsuglyph("uni4E5F",95);
   kanji.grnine.to_be;
+  tsu_render;
+endtsuglyph;
+
+% ran/mida "riot"
+begintsuglyph("uni4E71",113);
+  kanji.grsix.riot;
   tsu_render;
 endtsuglyph;
 
@@ -611,6 +634,12 @@ endtsuglyph;
 % ken/kudan "affair"
 begintsuglyph("uni4EF6",246);
   kanji.grfive.affair;
+  tsu_render;
+endtsuglyph;
+
+% nin/maka "responsibility"
+begintsuglyph("uni4EFB",251);
+  kanji.grfive.responsibility;
   tsu_render;
 endtsuglyph;
 

@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradetwo.mp;
@@ -61,15 +62,6 @@ vardef kanji.grtwo.map =
     (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
   push_stroke((240,430)..tension 1.2..(460,310)..(710,80),
     (1.2,1.2)--(1.4,1.4)--(1.5,1.5));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfour.hard =
-  push_pbox_toexpand("kanji.grfour.hard");
-  kanji.radical.box;
-  build_kanji.sscale(scaled 0.75)(kanji.grtwo.old);
   expand_pbox;
 enddef;
 
