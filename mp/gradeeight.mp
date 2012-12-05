@@ -203,6 +203,19 @@ vardef kanji.greight.mediate =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.night_watch =
+  push_pbox_toexpand("kanji.greight.night_watch");
+  push_stroke((90,760)--(910,760),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  build_kanji.box((220,610),(780,310));
+  push_stroke((220,460)--(780,460),(1.5,1.5)--(1.5,1.5));
+  push_stroke((500,760)--(500,300){down}..(370,70)..{curl 0.5}(90,-40),
+    (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  push_stroke((310,260)..tension 1.2..(640,40)..(840,-10),
+    (0.9,0.9)--(1.5,1.5)--(2,2));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.nun =
   push_pbox_toexpand("kanji.greight.nun");
   build_kanji.level(

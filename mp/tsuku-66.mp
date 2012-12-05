@@ -283,6 +283,12 @@ begintsuglyph("uni66F2",242);
   tsu_render;
 endtsuglyph;
 
+% kou/sara "night watch"
+begintsuglyph("uni66F4",244);
+  kanji.greight.night_watch;
+  tsu_render;
+endtsuglyph;
+
 % sho/ka "writing"
 begintsuglyph("uni66F8",248);
   kanji.grtwo.writing;
