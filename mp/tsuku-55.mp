@@ -37,6 +37,7 @@ input buildkanji.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input rare.mp;
 input toprad.mp;
@@ -63,7 +64,23 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% mon/to "question"
+vardef kanji.grfour.chant =
+  push_pbox_toexpand("kanji.grfour.chant");
+  build_kanji.lr(320,30)
+    (kanji.leftrad.mouth)
+    (kanji.grnine.prosperity);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% shou/tona "chant"
+begintsuglyph("uni5531",49);
+  kanji.grfour.chant;
+  tsu_render;
+endtsuglyph;
+
+% shou/akina
 begintsuglyph("uni5546",70);
   kanji.grthree.commerce;
   tsu_render;

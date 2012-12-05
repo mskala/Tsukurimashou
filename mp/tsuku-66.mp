@@ -181,6 +181,12 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% shou/sakan "prosperity"
+begintsuglyph("uni660C",12);
+  kanji.grnine.prosperity;
+  tsu_render;
+endtsuglyph;
+
 % mei/aka "light"
 begintsuglyph("uni660E",14);
   kanji.grtwo.light;

@@ -388,6 +388,12 @@ begintsuglyph("uni53F0",240);
   tsu_render;
 endtsuglyph;
 
+% shi "history"
+begintsuglyph("uni53F2",242);
+  kanji.grfour.history;
+  tsu_render;
+endtsuglyph;
+
 % migi "right"
 begintsuglyph("uni53F3",243);
   kanji.grone.right;

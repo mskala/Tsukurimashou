@@ -196,6 +196,14 @@ vardef kanji.grnine.permission =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.prosperity =
+  push_pbox_toexpand("kanji.grnine.prosperity");
+  build_kanji.level(build_kanji.tb(380,-40)
+    (build_kanji.sscale(xscaled 0.76)(kanji.grone.day))
+    (kanji.grone.day));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.snake_sign =
   push_pbox_toexpand("kanji.grnine.snake_sign");
   push_stroke((750,380)--(750,740)--(150,740),

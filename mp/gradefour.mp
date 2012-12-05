@@ -249,6 +249,17 @@ vardef kanji.grfour.hard =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.history =
+  push_pbox_toexpand("kanji.grfour.history");
+  build_kanji.box((220,610),(780,370));
+  push_stroke((500,810)--(500,300){down}..(370,70)..{curl 0.5}(90,-40),
+    (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  set_boserif(0,0,10);
+  push_stroke((340,260)..tension 1.2..(670,40)..(840,-10),
+    (0.9,0.9)--(1.5,1.5)--(2,2));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.husband =
   push_pbox_toexpand("kanji.grfour.husband");
   push_stroke((170,610)--(830,610),
