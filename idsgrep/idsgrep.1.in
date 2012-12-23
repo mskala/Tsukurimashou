@@ -469,7 +469,7 @@ The same thing is done to the root of the input pattern.
 Finally, if the resulting functor, expanded arity, and all corresponding
 children match, then the pattern is considered to match.
 The effect is to ignore the parenthesization of a binary (or ternary, but
-that makes less sence) operator that has an associative law: +a+bc
+that makes less sense) operator that has an associative law: +a+bc
 and ++abc will be treated the same.
 .IP \(bu 4
 If the pattern is

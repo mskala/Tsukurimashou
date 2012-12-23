@@ -1476,7 +1476,7 @@ and the simplest advice to users is ``don't do that!''
 Python, which like EIDS allows strings to contain zero bytes but has PCRE
 bindings and so faces the same issue, briefly attempted to work around this
 PCRE API limitation by auto-escaping.  They eventually gave it up as too
-complicated and confusing.  The conseqeunce of PCRE's API design is that if
+complicated and confusing.  The consequence of PCRE's API design is that if
 the string given as a matching pattern contains a literal zero byte then the
 regular expression to be matched will consist of the prefix of the string up
 to but not including the first zero byte; anything after that will be

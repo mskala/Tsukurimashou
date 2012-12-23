@@ -177,6 +177,16 @@ Select("occ74.4");SetGlyphName("uni2667");
 Select("occ74.5");SetGlyphName("uni2618");
 Select("occ74.6");SetGlyphName("uni269C");
 Select("occ75.1");SetGlyphName("bullet");
+Select("occ75.2");SetGlyphName("uni2217");
+Select("occ75.3");SetGlyphName("uni25B4");
+
+Select("occ75.5");SetGlyphName("uni25E3");
+
+Select("occ75.7");SetGlyphName("uni2312");
+Select("occ75.8");SetGlyphName("uni25E0");
+
+Select("occ76.7");SetGlyphName("uni2608");
+Select("occ76.8");SetGlyphName("u1F300");
 
 Select("occ81.1");SetGlyphName("uni25DF");
 Select("occ81.2");SetGlyphName("uni25DE");
@@ -188,6 +198,11 @@ Select("occ85.2");SetGlyphName("triagup");
 Select("occ85.3");SetGlyphName("triaglf");
 Select("occ85.4");SetGlyphName("triagdn");
 Select("occ85.5");SetGlyphName("triagrt");
+
+Select("occ86.2");SetGlyphName("uni2692");
+
+Select("occ87.1");SetGlyphName("u1F332");
+Select("occ87.2");SetGlyphName("u1F333");
 
 Select("occ89.9");SetGlyphName("bullet.md");
 
@@ -214,6 +229,8 @@ Select("occ75");SetGlyphName("uni2E34");
 Select("occ81");SetGlyphName("uni25DC");
 
 Select("occ85");SetGlyphName("bullet.xl");
+Select("occ86");SetGlyphName("uni2693");
+Select("occ87");SetGlyphName("u1F334");
 
 SelectAll();
 Move(0,5);

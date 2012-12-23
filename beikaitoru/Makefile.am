@@ -266,7 +266,7 @@ merged/$(1).sfd: pe/merge.pe merged/.dirstamp \
   pfb/$(1).0.pfb pfb/$(1).1.pfb pfb/$(1).2.pfb pfb/$(1).3.pfb \
   pfb/$(1).4.pfb pfb/$(1).5.pfb pfb/$(1).6.pfb pfb/$(1).7.pfb \
   pfb/$(1).8.pfb pfb/$(1).9.pfb
-	$(AM_V_at)$(TSU_V_SFD) \
+	$(AM_V_at)$$(TSU_V_SFD) \
 	  $(FONTFORGE) $(mvp)/pe/merge.pe $(1) @ae_arg_okay@ \
 	  $(TSU_V_REDIR)
 endef

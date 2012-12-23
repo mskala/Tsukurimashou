@@ -136,6 +136,12 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.bring =
+  push_pbox_toexpand("kanji.grfour.bring");
+  build_kanji.road_enclose(kanji.grone.wheel);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.choose =
   push_pbox_toexpand("kanji.grfour.county");
   build_kanji.road_enclose(kanji.grnine.southeast);
@@ -167,6 +173,12 @@ endtsuglyph;
 % soku/haya "fast"
 begintsuglyph("uni901F",31);
   kanji.grthree.fast;
+  tsu_render;
+endtsuglyph;
+
+% ren/tsura "bring"
+begintsuglyph("uni9023",35);
+  kanji.grfour.bring;
   tsu_render;
 endtsuglyph;
 
