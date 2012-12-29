@@ -101,6 +101,14 @@ vardef kanji.toprad.grass =
   expand_pbox;
 enddef;
 
+vardef kanji.toprad.pleasure =
+  push_pbox_toexpand("kanji.toprad.pleasure");
+  build_kanji.level(build_kanji.tb(540,32)
+    (kanji.grone.ten)
+    (build_kanji.sscale(xscaled 0.9)(kanji.grthree.bean)));
+  expand_pbox;
+enddef;
+
 vardef kanji.toprad.rain =
   push_pbox_toexpand("kanji.toprad.rain");
   push_stroke((120,720)--(880,720),(1.6,1.6)--(1.6,1.6));

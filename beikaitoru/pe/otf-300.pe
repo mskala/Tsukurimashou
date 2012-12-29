@@ -31,7 +31,7 @@
 #
 
 Open("merged/"+ToString($1)+".sfd");
-Select("occ100.1","occ105","occ110.1","occ129.5");
+Select("occ100.1","occ105","occ110.1","occ115","occ117.7","occ129.5");
 SelectInvert();
 DetachAndRemoveGlyphs();
 
@@ -107,6 +107,28 @@ Select("occ112.4");SetGlyphName("x");
 Select("occ112.5");SetGlyphName("y");
 Select("occ112.6");SetGlyphName("z");
 
+Select("occ112.7");SetGlyphName("alpha");
+Select("occ112.8");SetGlyphName("beta");
+Select("occ112.9");SetGlyphName("gamma");
+Select("occ113.1");SetGlyphName("epsilon");
+Select("occ113.2");SetGlyphName("zeta");
+Select("occ113.3");SetGlyphName("eta");
+Select("occ113.4");SetGlyphName("theta");
+Select("occ113.5");SetGlyphName("iota");
+Select("occ113.6");SetGlyphName("kappa");
+Select("occ113.7");SetGlyphName("lambda");
+Select("occ113.8");SetGlyphName("mu");
+Select("occ113.9");SetGlyphName("nu");
+Select("occ114.1");SetGlyphName("omicron");
+Select("occ114.2");SetGlyphName("pi");
+Select("occ114.3");SetGlyphName("rho");
+Select("occ114.4");SetGlyphName("sigma");
+Select("occ114.5");SetGlyphName("tau");
+Select("occ114.6");SetGlyphName("upsilon");
+Select("occ114.7");SetGlyphName("phi");
+Select("occ114.8");SetGlyphName("chi");
+Select("occ114.9");SetGlyphName("psi");
+
 Select("occ120.1");SetGlyphName("one");
 Select("occ120.2");SetGlyphName("two");
 Select("occ120.3");SetGlyphName("three");
@@ -150,10 +172,13 @@ Select("occ104");SetGlyphName("Xi");
 Select("occ105");SetGlyphName("uni03A9");
 Select("occ111");SetGlyphName("j");
 Select("occ112");SetGlyphName("t");
+Select("occ113");SetGlyphName("delta");
+Select("occ114");SetGlyphName("xi");
+Select("occ115");SetGlyphName("omega");
 Select("occ120");SetGlyphName("zero");
 Select("occ121");SetGlyphName("period");
 Select("occ122");SetGlyphName("slash");
-Select("occ123");SetGlyphName("quoteleft");
+Select("occ123");SetGlyphName("uni2225");
 
 SelectAll();
 Move(0,-155);

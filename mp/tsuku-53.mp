@@ -45,6 +45,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -140,6 +141,29 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.cooperation =
+  push_pbox_toexpand("kanji.grfour.cooperation");
+  build_kanji.lr(340,50)
+    (kanji.grone.ten;
+     replace_strokep(0)(oldp shifted (0,180)))
+    (build_kanji.level(build_kanji.tricluster(0.85)
+       (kanji.grone.power)
+       (kanji.grone.power)
+       (kanji.grone.power)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.professional =
+  push_pbox_toexpand("kanji.grfour.professional");
+  build_kanji.lr(340,60-20*mincho)
+    (kanji.grone.ten;
+     replace_strokep(0)(oldp shifted (0,80)))
+    (kanji.rightrad.professional);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grnine.divination =
   push_pbox_toexpand("kanji.grnine.divination");
   push_stroke((400,780)--(400,-20),
@@ -224,9 +248,21 @@ begintsuglyph("uni5348",72);
   tsu_render;
 endtsuglyph;
 
+% kyou "cooperation"
+begintsuglyph("uni5354",84);
+  kanji.grfour.cooperation;
+  tsu_render;
+endtsuglyph;
+
 % nan/minami "south"
 begintsuglyph("uni5357",87);
   kanji.grtwo.south;
+  tsu_render;
+endtsuglyph;
+
+% haku "professional"
+begintsuglyph("uni5C5A",90);
+  kanji.grfour.professional;
   tsu_render;
 endtsuglyph;
 

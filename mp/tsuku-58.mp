@@ -132,6 +132,12 @@ begintsuglyph("uni58F2",242);
   tsu_render;
 endtsuglyph;
 
+% needed for grfour.pleasure
+begintsuglyph("uni58F4",244);
+  kanji.toprad.pleasure;
+  tsu_render;
+endtsuglyph;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 endfont;

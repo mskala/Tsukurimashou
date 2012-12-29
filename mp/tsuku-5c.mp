@@ -43,6 +43,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -189,6 +190,12 @@ vardef kanji.grnine.pointed =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% not in dictionaries by itself, but appears as right of "professional"
+begintsuglyph("uni5C03",3);
+  kanji.rightrad.professional;
+  tsu_render;
+endtsuglyph;
 
 % shuu/chii "small"
 begintsuglyph("uni5C0F",15);

@@ -78,6 +78,19 @@ vardef kanji.rightrad.genius =
   expand_pbox;
 enddef;
 
+vardef kanji.rightrad.professional =
+  push_pbox_toexpand("kanji.rightrad.professional");
+  build_kanji.tb(300,0)
+    (build_kanji.tb(420,80)
+       (kanji.grone.ten)
+       (kanji.grone.day);
+     replace_strokep(-4)((point 0 of oldp)--(point 0.5 of get_strokep(-1)));
+     push_stroke((670,820)..(730,780)..(780,710),
+       (1,1)--(1.4,1.4)--(1.8,1.8)))
+    (kanji.grsix.inch);
+  expand_pbox;
+enddef;
+
 vardef kanji.rightrad.short_hair =
   push_pbox_toexpand("kanji.rightrad.short_hair");
   push_stroke((780,750)..tension 1.2..(580,620)..(180,500),

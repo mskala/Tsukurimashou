@@ -45,7 +45,7 @@ vardef kanji.grthree.bean =
   push_stroke((120,810)--(880,810),
     (1.6,1.6)--(1.6,1.6));
   set_boserif(0,1,9);
-  build_kanji.box((180,670),(840,420));
+  build_kanji.box((180,650),(840,400));
   push_stroke((250,280)..tension 1.2..(350,140)..(380,60),
     (1.2,1.2)--(1.4,1.4)--(1.7,1.7));
   push_stroke((750,290)..tension 1.2..(660,130)..(580,40),

@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
@@ -72,6 +73,14 @@ vardef kanji.grfour.chant =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.pleasure =
+  push_pbox_toexpand("kanji.grfour.pleasure");
+  build_kanji.level(build_kanji.tb(190,-30)
+    (kanji.toprad.pleasure)
+    (build_kanji.sscale(xscaled 0.85)(kanji.grone.mouth)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % shou/tona "chant"
@@ -89,6 +98,12 @@ endtsuglyph;
 % mon/to "question"
 begintsuglyph("uni554F",79);
   kanji.grthree.question;
+  tsu_render;
+endtsuglyph;
+
+% ki/yoroko "pleasure"
+begintsuglyph("uni559C",156);
+  kanji.grfour.pleasure;
   tsu_render;
 endtsuglyph;
 
