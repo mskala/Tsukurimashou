@@ -38,6 +38,7 @@ input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -46,6 +47,14 @@ do_late_includes;
 % bi/hana "nose"
 begintsuglyph("uni9F3B",59);
   kanji.grthree.nose;
+  tsu_render;
+endtsuglyph;
+
+% extra: top radical from "once upon a time"
+begintsuglyph("uni9FB7",183);
+  build_kanji.tb(420,-100)
+    (kanji.toprad.once_upon_a_time)
+    ();
   tsu_render;
 endtsuglyph;
 

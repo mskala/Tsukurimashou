@@ -67,7 +67,7 @@ endtsuglyph;
 % Unicode calls it "knife one"
 begintsuglyph("uni2E88",136);
   build_kanji.attach_fishhook(0.8)(
-    perl_structure:=perl_structure&"'eids.u003F',";
+    perl_structure:=perl_structure&"'eids._2',";
     push_stroke((200,0)--(200,800)--(800,800),
       (1.5,1.5)--(1.6,1.6)--(1.6,1.6));
     set_bosize(0,0));

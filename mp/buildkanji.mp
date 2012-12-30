@@ -349,7 +349,8 @@ vardef build_kanji.gate_enclose(text contents) =
 enddef;
 
 vardef build_kanji.harmonic(expr gap,sval,lspread)(text curves) =
-  perl_structure:=perl_structure&"['build_kanji.harmonic',[";
+  perl_structure:=perl_structure
+    &"['build_kanji.harmonic','eids.u2FF1.u003F._1',[";
   begingroup
     save myxf;
     transform myxf;
@@ -357,13 +358,16 @@ vardef build_kanji.harmonic(expr gap,sval,lspread)(text curves) =
     (950,-50) transformed myxf=(950,-50);
     (50,850) transformed myxf=(50,850-gap);
     tsu_xform(myxf)(curves);
+    perl_structure:=perl_structure&"],[";
     save hsp;
     hsp:=sp;
     tsu_xform(myxf)(build_kanji.spread_legs(lspread)(curves));
-    save i,tp;
-    numeric i;
+    save i,tp,toclip,nadded;
+    numeric i,toclip,nadded;
     path tp;
     i:=0;
+    toclip:=0;
+    nadded:=0;
     forever:
       tp:=get_strokep(i);
       if (ypart ulcorner tp<450)
@@ -371,12 +375,15 @@ vardef build_kanji.harmonic(expr gap,sval,lspread)(text curves) =
         or (abs(ypart (direction infinity of tp)/
           abs(direction infinity of tp))>0.95):
         set_bosize(i,0);
+        toclip:=toclip+1;
       else:
         replace_strokep(i)
           (tp shifted -(0.5[ulcorner tp,lrcorner tp])
               scaled sval
               shifted ((0,gap)+0.5[ulcorner tp,lrcorner tp]));
         set_bosize(i)(get_bosize(i)*sqrt(sval));
+        toclip:=toclip+2;
+        nadded:=nadded+1;
       fi;
       i:=i-1;
       exitif find_stroke(i)<hsp;

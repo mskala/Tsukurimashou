@@ -101,6 +101,14 @@ vardef kanji.toprad.grass =
   expand_pbox;
 enddef;
 
+vardef kanji.toprad.once_upon_a_time =
+  push_pbox_toexpand("kanji.toprad.once_upon_a_time");
+  perl_structure:=perl_structure&"'eids.u2FF1.u8279.u4E00',";
+  build_kanji.sscale(xscaled 0.8)(kanji.toprad.grass);
+  tsu_xform(identity shifted (0,-420))(kanji.grone.one);
+  expand_pbox;
+enddef;
+
 vardef kanji.toprad.pleasure =
   push_pbox_toexpand("kanji.toprad.pleasure");
   build_kanji.level(build_kanji.tb(540,32)

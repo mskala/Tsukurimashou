@@ -332,8 +332,7 @@ enddef;
 vardef kanji.grthree.once_upon_a_time =
   push_pbox_toexpand("kanji.grthree.once_upon_a_time");
   build_kanji.level(build_kanji.tb(420,-100)
-    (build_kanji.sscale(xscaled 0.8)(kanji.toprad.grass);
-     tsu_xform(identity shifted (0,-420))(kanji.grone.one))
+    (kanji.toprad.once_upon_a_time)
     (kanji.grone.day));
   expand_pbox;
 enddef;

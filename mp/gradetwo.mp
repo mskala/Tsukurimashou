@@ -576,6 +576,7 @@ enddef;
 
 vardef kanji.grtwo.many =
   push_pbox_toexpand("kanji.grtwo.many");
+  perl_structure:=perl_structure&"'eids.u2FF1._1.1_',";
   tsu_xform(identity shifted (-50,-850) xyscaled (0.8,0.65) shifted (30,870))
     (kanji.grone.evening);
   tsu_xform(identity shifted (-50,50)
