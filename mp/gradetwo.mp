@@ -496,6 +496,12 @@ vardef kanji.grtwo.horse =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.interval =
+  push_pbox_toexpand("kanji.grtwo.interval");
+  build_kanji.gate_enclose(kanji.grone.day);
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.job =
   push_pbox_toexpand("kanji.grtwo.job");
   push_stroke((80,-20)..(150,100)..{up}(200,760){right}--(820,760),

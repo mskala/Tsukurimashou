@@ -45,14 +45,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.interval =
-  push_pbox_toexpand("kanji.grtwo.interval");
-  build_kanji.gate_enclose(kanji.grone.day);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 vardef kanji.grthree.open =
   push_pbox_toexpand("kanji.grthree.open");
   build_kanji.gate_enclose(kanji.radical.topped_aitch);

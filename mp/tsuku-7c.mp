@@ -44,6 +44,22 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.simplicity =
+  push_pbox_toexpand("kanji.grsix.simplicity");
+  build_kanji.level(build_kanji.tb(510,180)
+    (kanji.toprad.bamboo)
+    (kanji.grtwo.interval));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% kan/era "simplicity"
+begintsuglyph("uni7C21",33);
+  kanji.grsix.simplicity;
+  tsu_render;
+endtsuglyph;
+
 % bei/kome "rice", also "USA" and "metre"
 begintsuglyph("uni7C73",115);
   kanji.grtwo.rice;

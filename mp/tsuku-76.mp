@@ -80,6 +80,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.emperor =
+  push_pbox_toexpand("kanji.grsix.emperor");
+  build_kanji.tb(350,-20)
+    (kanji.grone.white)
+    (kanji.grone.king);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % "dotted tent" radical (macro includes floor inside tent)
 begintsuglyph("uni7676",118);
   kanji.radical.dotted_tent;
@@ -119,6 +129,12 @@ endtsuglyph;
 % kai/minna "everybody"
 begintsuglyph("uni7686",134);
   kanji.greight.everybody;
+  tsu_render;
+endtsuglyph;
+
+% kou "emperor"
+begintsuglyph("uni7687",135);
+  kanji.grsix.emperor;
   tsu_render;
 endtsuglyph;
 
