@@ -201,7 +201,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1815 2012-11-13 13:24:19Z mskala $])
+AC_REVISION([$Id: configure.ac 1843 2012-12-30 18:29:33Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["June 18, 2012"])
 AM_SILENT_RULES
@@ -657,7 +657,7 @@ AC_CONFIG_COMMANDS([fix-makefile],
 'config.status \$\@ fix-makefile \$(am__depfiles_maybe)#;'\
 's#TESTS = #TESTS = \$(otf_DATA) #;' \
    Makefile
-   rm -f pfb-stamp chl-stamp],
+   rm -f pfb-stamp* chl-stamp],
   [PERL=$PERL])
 AC_OUTPUT
 #

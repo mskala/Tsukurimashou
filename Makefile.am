@@ -272,8 +272,8 @@ CLEANFILES = \
   doc/*.pdf
 
 DISTCLEANFILES = \
-  makefile-pdf.inc makefile-pfb.inc makefile-vars.inc \
-  chl-stamp pfb-stamp \
+  makefile-pdf.inc makefile-pfb*.inc makefile-vars.inc \
+  chl-stamp pfb-stamp* \
   _stdint.h \
   aminclude.am chars.lst hamlog/config.hl doc/version.tex \
   */.dirstamp
@@ -328,8 +328,10 @@ hamlog/config.hl: tools/make-cfghl \
 	  true ; \
 	else \
 	  $(TSU_V_NAPERL) \
-	  $(PERL) -CSD $(mvp)/tools/make-cfghl char '@enable_chars@' \
+	  echo '% GENERATED FILE, edit Makefile.am instead' \
 	    > hamlog/config.hl ; \
+	  $(PERL) -CSD $(mvp)/tools/make-cfghl char '@enable_chars@' \
+	    >> hamlog/config.hl ; \
 	  $(PERL) -CSD $(mvp)/tools/make-cfghl style '@enable_styles@' \
 	    >> hamlog/config.hl ; \
 	  $(PERL) -CSD $(mvp)/tools/make-cfghl feature \
@@ -403,11 +405,13 @@ jkstyle_xlat_script:=\
 makefile-vars.inc: \
   hamlog/config.hl hamlog/select.hl hamlog/jnames.hl $(HAMLOG_DEPS)
 	$(TSU_V_HAM)
-	$(AM_V_at)FAMILIES=`$(HAMLOG) 'FS' \
+	$(AM_V_at)echo '# GENERATED FILE, edit Makefile.am instead' \
+	  > makefile-vars.inc ; \
+	FAMILIES=`$(HAMLOG) 'FS' \
 	  'family(FL),short_name(FL,FS)' \
 	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER) \
 	  | sed s/page//` ; \
-	  echo FAMILIES=$$FAMILIES > makefile-vars.inc ; \
+	  echo FAMILIES=$$FAMILIES >> makefile-vars.inc ; \
 	for f in $$FAMILIES; do \
 	  echo PAGES_$$f=`$(HAMLOG) 'P' \
 	    "short_name(F,$$f),page(P),want_char_on_page(P),want_page(F,P)" \
@@ -481,7 +485,8 @@ PAGEFILES=$(strip $(foreach page,\
     $(1)$(subst _,-,$(2))-$(page)$(3))))
 
 MAYBE_PFB_TICKLER:=\
-  $(if $(filter-out x$(PFBSTAMP),x$(shell cat pfb-stamp)),pfb-tickler)
+  $(if $(filter-out x$(PFBSTAMP),x$(shell cat pfb-stamp* | sort | uniq)),\
+    pfb-tickler)
 
 pfb-tickler:
 
@@ -491,29 +496,45 @@ makefile-pfb.inc: \
   makefile-vars.inc tools/mpdep mp/.hglstamp \
   $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp)) \
   $(MAYBE_PFB_TICKLER)
-	$(AM_V_at)if ( test "x$(PFBSTAMP)" = "x`cat pfb-stamp`" ) \
-	  && ( test -s makefile-pfb.inc ) ; then \
+	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -o makefile-pfb.inc \
+	  makefile-pfb-0.inc makefile-pfb-1.inc \
+	  makefile-pfb-2.inc makefile-pfb-3.inc \
+	  makefile-pfb-4.inc makefile-pfb-5.inc \
+	  makefile-pfb-6.inc makefile-pfb-7.inc
+	$(AM_V_at)cat makefile-pfb-?.inc > makefile-pfb.inc
+
+makefile-pfb-%.inc: \
+  makefile-vars.inc tools/mpdep mp/.hglstamp \
+  $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp)) \
+  $(MAYBE_PFB_TICKLER)
+	$(AM_V_at)if ( test "x$(PFBSTAMP)" = "x`cat pfb-stamp-$*`" ) \
+	  && ( test -s makefile-pfb-$*.inc ) ; then \
 	  $(TSU_V_NASKIP) \
 	  true ; \
 	else \
 	  $(TSU_V_NAPERL) \
 	  export PROGRESS_MESSAGE="$(ansi_cleareol)@@@$@" ; \
-	  $(PERL) -CSD $(mvp)/tools/progress start makefile-pfb \
+	  echo '# GENERATED FILE, edit Makefile.am instead' \
+	    > makefile-pfb-$*.inc ; \
+	  $(PERL) -CSD $(mvp)/tools/progress start makefile-pfb-$* \
 	    `ls $(mvp)/mp/*.mp ./mp/*.mp | \
 	    $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
-	    sort | uniq |  wc -l` ; \
+	    sort | uniq | \
+	    $(PERL) -ne 'print if int(sqrt(($$i++)%132+25))-5==$*' | \
+	    wc -l` ; \
 	  for page in `ls $(mvp)/mp/*.mp ./mp/*.mp | \
 	    $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
-	    sort | uniq`; do \
+	    sort | uniq | \
+	    $(PERL) -ne 'print if int(sqrt(($$i++)%132+25))-5==$*'`; do \
 	    for style in $(subst _,-,$(SHORT_STYLES)); do \
 	      echo pfbtmp/$$style-$$page.pfb prf/$$style-$$page.prf: \
 	`$(PERL) -CSD $(mvp)/tools/mpdep $(DEFAULT_TOK) $$style-$$page` \
-	        >> makefile-pfb.inc ; \
-	      echo >> makefile-pfb.inc ; \
+	        >> makefile-pfb-$*.inc ; \
+	      echo >> makefile-pfb-$*.inc ; \
 	    done ; \
-	    $(PERL) -CSD $(mvp)/tools/progress count makefile-pfb ; \
+	    $(PERL) -CSD $(mvp)/tools/progress count makefile-pfb-$* ; \
 	  done ; \
-	  echo $(PFBSTAMP) > pfb-stamp ; \
+	  echo $(PFBSTAMP) > pfb-stamp-$* ; \
 	fi
 
 ############################################################################
