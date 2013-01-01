@@ -35,36 +35,44 @@ use utf8;
 # set this nonzero to generate a stub proofs file for debugging
 $proof_debug_chop=0;
 
+# figure out where we are
 $prefix=$0;
 $prefix=~s!/tools/make-proof$!!;
 
+# priority numbers for different filenames (default for others is 500)
 %priority=(
   'preintro'=>100,
 
-  'tsuku-at'=>200,
   'tsuku-bk'=>200,
   'tsuku-kg'=>200,
   'tsuku-mg'=>200,
   'tsuku-mi'=>200,
-  'tsuku-tn'=>200,
   'tsuku-ps'=>210,
+  'tsuku-bq'=>220,
+  'tsuku-dq'=>220,
+  'tsuku-el'=>220,
+  'tsuku-eq'=>220,
+  'tsuku-lw'=>220,
 
   'intro'=>300,
+  'fntbase'=>310,
+  'obstack'=>310,
 
   'frac-intro'=>400,
   'latin-intro'=>400,
 
-  'buildkanji'=>800,
-  'leftrad'=>800,
-  'radical'=>800,
-  'toprad'=>800,
   'gradeone'=>801,
   'gradetwo'=>802,
   'gradethree'=>803,
   'gradefour'=>804,
   'gradefive'=>805,
   'gradesix'=>806,
-  'gradeseven'=>807,
+  # there are no "grade seven," but this marks an educational boundary
+  'bottomrad'=>807,
+  'leftrad'=>807,
+  'radical'=>807,
+  'rightrad'=>807,
+  'toprad'=>807,
   'gradeeight'=>808,
   'gradenine'=>809,
   'gradeten'=>810,
@@ -73,18 +81,31 @@ $prefix=~s!/tools/make-proof$!!;
   'hangul'=>5900,
   'jamo-basic'=>5910,
   'jamo-extra'=>5910,
+  'hglextb'=>5911,
   'jieub-bt'=>5920,
   'jieub-do'=>5920,
   'jieub-sm'=>5920,
   'hglpage'=>5950,
+  
+  'tsuita-common'=>10900,
+  'tsuita-at'=>10910,
+  'tsuita-so'=>10910,
+  'tsuita-bq'=>10910,
+  'tsuita-dq'=>10910,
+  'tsuita-el'=>10910,
+  'tsuita-eq'=>10910,
+  'tsuita-lw'=>10910,
   
   'bll'=>15900,
   'bll-co'=>15920,
   'pentacross'=>15950,
 );
 
+# place a part break before the first file at each of these priority numbers
 %partbefore=(
-  100=>'Resources',
+  100=>'Infrastructure',
+  801=>'Shared Kanji (Grades One to Six)',
+  807=>'Shared Kanji (Grade Eight and Beyond)',
   1000=>'U+0000 to U+2FFF',
   1048=>'U+3000 to U+4DFF',
   1078=>'U+4E00 to U+61FF',
@@ -94,9 +115,11 @@ $prefix=~s!/tools/make-proof$!!;
   1247=>'U+A000 to U+10FFFF',
   5900=>'Jieubsida core',
   10082=>'Jieubsida alternates',
+  10900=>'TsuIta',
   15900=>'Blackletter Lolita',
 );
 
+# prefix for page files (low ends of intervals)
 %partprefix=(
   100=>'tsuku',
   5900=>'jieub',
@@ -104,6 +127,7 @@ $prefix=~s!/tools/make-proof$!!;
   15900=>'bll',
 );
 
+# get a list of all source files to scan
 %srcfiles=();
 while (<$prefix/mp/*.mp>) {
   $srcfiles{$_}=1;
@@ -112,6 +136,7 @@ while (<./mp/*.mp>) {
   $srcfiles{$_}=1;
 }
 
+# assign priorities to the source files
 foreach (sort keys %srcfiles) {
   m!mp/(.*)\.mp!;
   $base=$1;
@@ -138,12 +163,14 @@ foreach (sort keys %srcfiles) {
   $filelist{$pri}.="$base\n";
 }
 
+# make a list of all filenames, in order
 $_='';
 foreach $key (sort {$a<=>$b} keys %filelist) {
   $_.=$filelist{$key};
 }
 @files=split("\n",$_);
 
+# read a proof file in Kaku (or "basic") mode
 sub read_kaku_proof {
   my($fname,$glp)=@_;
   open(PRF,$fname);
@@ -185,6 +212,7 @@ sub read_kaku_proof {
   close(PRF);
 }
 
+# read a proof file in Mincho (or "alternate") mode
 sub read_mincho_proof {
   my($fname,$glp)=@_;
   open(PRF,$fname);
@@ -226,6 +254,7 @@ sub read_mincho_proof {
   close(PRF);
 }
 
+# read all the basic proofs
 foreach $style ('tsuku-kg','jieub-do','bll-co') {
   ($glp,$dummy)=split('-',$style);
   while (<prf/$style-*.prf>) {
@@ -234,6 +263,7 @@ foreach $style ('tsuku-kg','jieub-do','bll-co') {
   }
 }
 
+# read all the alternate proofs
 foreach $style ('tsuku-mi','jieub-bt') {
   ($glp,$dummy)=split('-',$style);
   while (<prf/$style-*.prf>) {
@@ -242,6 +272,7 @@ foreach $style ('tsuku-mi','jieub-bt') {
   }
 }
 
+# create a picture for each glyph
 foreach $glyph (keys %glnames) {
   $xpicture='';
   $bpicture='';
@@ -399,6 +430,7 @@ foreach $glyph (keys %glnames) {
   $phiy{$glyph}=$hiy;
 }
 
+# scan files for macro definitions and assign label names
 %deflbls=();
 $nxtlbl='aaa';
 foreach $file (@files) {
@@ -412,12 +444,18 @@ foreach $file (@files) {
         $glp=$v;
       }
     }
+    undef $page;
   }
   open(MP,"./mp/$file.mp") || open(MP,"$prefix/mp/$file.mp");
   $state=4;
   while (<MP>) {
     chomp;
     $state++;
+    if ((!defined $page)
+     && (/^\s*begintsuglyph\("u(ni)?([0-9A-F]+)[0-9A-F][0-9A-F]",/)) {
+      # special hack for recognizing code points outside page files
+      $page=$2;
+    }
     if (/^(var)?def\s+([a-z0-9_\.]+)\b/ && !defined $deflbls{"$glp.$2"}) {
       $deflbls{"$glp.$2"}="md:$nxtlbl";
       $nxtlbl++;
@@ -452,6 +490,7 @@ print "% GENERATED FILE - edit the source in make-proof instead!\n\n";
 
 $partarab=1;
 $countpictures=0;
+$lastpart=-1;
 
 foreach $file (@files) {
   $newsubsec='';
@@ -462,18 +501,23 @@ foreach $file (@files) {
       $glp=$v;
     }
   }
-  if (defined $partbefore{$priority{$file}}) {
+  if ((defined $partbefore{$priority{$file}})
+   && ($priority{$file}>$lastpart)) {
     print "\n\\fi\n\n" if $partarab!=1;
     print "\n\\FileGroup{$partbefore{$priority{$file}}}{$partarab}\n";
     print '\\'.$glp."DemoFonts\n";
     print "\\def\\tmpmac{$partarab}\\ifx\\tmpmac\\partarab\\relax\n\n";
     $partarab++;
+    $lastpart=$priority{$file};
   }
   print "\\File{$file.mp}\n\n";
   if ($file=~/-([0-9a-f]+)/) {
     $page=$1;
     $page=~tr/a-f/A-F/;
     $pnum=hex("0x$page");
+  } else {
+    undef $page;
+    undef $pnum;
   }
   open(MP,"./mp/$file.mp") || open(MP,"$prefix/mp/$file.mp");
   $lineno=0;
@@ -489,6 +533,12 @@ foreach $file (@files) {
       $progress_count++;
     }
     
+    if ((!defined $page)
+     && (/^\s*begintsuglyph\("u(ni)?([0-9A-F]+)[0-9A-F][0-9A-F]",/)) {
+      # special hack for recognizing code points outside page files
+      $page=$2;
+      $pnum=hex("0x$page");
+    }
     if (/^begintsuglyph\("(.*)",(\d+)\)/) {
       if (!defined $moved_picture{"$glp.$1"}) {
         printf "\n\\Picture{%s}{%s%02X}","$glp.$1",$page,$2;
@@ -592,6 +642,8 @@ foreach $file (@files) {
         $newsublbl=$nxtlbl;
         $nxtlbl++;
       }
+      s/\{/󱈴/g;
+      s/\}/󱈵/g;
       s/\\/\\textbackslash{}/g;
       s/\^/\\textasciicircum{}/g;
       s/_/\\_/g;
@@ -599,20 +651,22 @@ foreach $file (@files) {
       s/#/\\#/g;
       s/&/\\&/g;
       s/\$/\\\$/g;
-      s/\{/\\{/g;
-      s/\}/\\}/g;
+      s/󱈴/\\{/g;
+      s/󱈵/\\}/g;
       $comments.="\\Comment{$lineno}{$_}\n";
       next;
     }
     
+    s/\{/󱈴/g;
+    s/\}/󱈵/g;
     s/\\/\\textbackslash{}/g;
     s/\^/\\textasciicircum{}/g;
     s/%/\\%/g;
     s/#/\\#/g;
     s/&/\\&/g;
     s/\$/\\\$/g;
-    s/\{/\\{/g;
-    s/\}/\\}/g;
+    s/󱈴/\\{/g;
+    s/󱈵/\\}/g;
     if (/^((var)?def ([a-z0-9_\.]+))\b/ && !defined $linked{"$glp.$3"}) {
       $linked{"$glp.$3"}=1;
       s/def ([a-z0-9_\.]+)\b/
@@ -643,15 +697,16 @@ foreach $file (@files) {
     print <<'EOF';
 
 \vspace*{\fill}
-PLEASE NOTE:  The files jieub-ac.mp through jieub-d7.mp are algorithmically
+PLEASE NOTE:  The files jieub-ac.mp through jieub-d6.mp are algorithmically
 generated, and identical except for the four variable assignments defining
-the start of each file's coverage range.  They define a total of 11172
-glyphs for precomposed hangul syllables, which all consist of the same few
-jamo in systematically varying arrangements.  It seems that generating a
-proof page for every one of these files and glyphs would not be a good use
-of resources.  Instead, we give an example of one MetaPost file above,
-and on the following pages, detailed proofs for 28 syllable glyphs covering
-at least one example of every lead, vowel, and tail jamo.  After that is a
+the start of each file's coverage range.  The file jieub-d7.mp is similar,
+but also includes hglextb.mp.  They define a total of 11172 glyphs for
+precomposed hangul syllables, which all consist of the same few jamo in
+systematically varying arrangements.  It seems that generating a proof page
+for every one of these files and glyphs would not be a good use of
+resources.  Instead, we give an example of one MetaPost file above, and on
+the following pages, detailed proofs for 28 syllable glyphs covering at
+least one example of every lead, vowel, and tail jamo.  After that is a
 table of all the precomposed syllables printed 480 per page.
 
 EOF

@@ -173,7 +173,7 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 KANJIDIC2=@with_kanjidic2@
 if COND_BOOKPROOFS
     MAYBE_BOOKPROOFS=$(foreach \
-      rn,I II III IV V VI VII VIII IX X,doc/book$(rn).pdf)
+      rn,I II III IV V VI VII VIII IX X XI XII XIII XIV,doc/book$(rn).pdf)
     PROOF_ND_PASS=4
 else
     PROOF_ND_PASS=3
@@ -520,12 +520,12 @@ makefile-pfb-%.inc: \
 	    `ls $(mvp)/mp/*.mp ./mp/*.mp | \
 	    $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
 	    sort | uniq | \
-	    $(PERL) -ne 'print if int(sqrt(($$i++)%132+25))-5==$*' | \
+	    $(PERL) -ne 'print if ($$i++%16%14%8)==$*' | \
 	    wc -l` ; \
 	  for page in `ls $(mvp)/mp/*.mp ./mp/*.mp | \
 	    $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
 	    sort | uniq | \
-	    $(PERL) -ne 'print if int(sqrt(($$i++)%132+25))-5==$*'`; do \
+	    $(PERL) -ne 'print if ($$i++%16%14%8)==$*'`; do \
 	    for style in $(subst _,-,$(SHORT_STYLES)); do \
 	      echo pfbtmp/$$style-$$page.pfb prf/$$style-$$page.prf: \
 	`$(PERL) -CSD $(mvp)/tools/mpdep $(DEFAULT_TOK) $$style-$$page` \
