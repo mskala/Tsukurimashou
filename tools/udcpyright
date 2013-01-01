@@ -2,7 +2,7 @@
 
 #
 # Copyright notice checker
-# Copyright (C) 2012  Matthew Skala
+# Copyright (C) 2012, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,24 +44,37 @@ foreach $file (split("\n",$files)) {
   next if $file=~m!\.pfb$!;
   next if $file=~m!\.png$!;
   next if $file=~m!genjimon/!;
-  $earliest=($file=~/idsgrep\//)?2012:2011;
   %years=();
   $_=`svn log $file`;
-  while (/^r\d+ \| [a-z0-9]+ \| (\d{4})-\d+-\d+ /mg) {
-    $years{$1}=1 if $1>=$earliest;
+  while (/^r\d+ \| [a-z0-9]+ \| (\d{4})-\d+-\d+ (.*?)----/msg) {
+    $thisyear=$1;
+    $message=$2;
+    $years{$thisyear}=1 if ($message!~/copyright/i)
+      || ($message=~/small but global/);
   }
   $ylist=join(', ',sort keys %years);
   $flagged=0;
 # print "$file\n";
   open(F,$file);
   while (<F>) {
-    if (/^([ !-\/:-@[-`{-~]*)Copyright (\(C\)|\x{00A9})([0-9, ]+)$bywhom/
-      && ($3 ne " $ylist  ")) {
-      if (!$flagged) {
-        print "$file:\n";
-        $flagged=1;
+    if (/^([ !-\/:-@[-`{-~]*)Copyright (\(C\)|\x{00A9})([0-9, ]+)$bywhom/) {
+      $nylist=$3;
+      $earliest=9999; # beware the Y10K problem
+      foreach $year (split(/, /,$nylist)) {
+        $earliest=$year if $year<$earliest;
       }
-      print;
+      %myyears=();
+      foreach $year (keys %years) {
+        $myyears{$year}=1 if $year>=$earliest;
+      }
+      $ylist=join(', ',sort keys %myyears);
+      if ($nylist ne " $ylist  ") {
+        if (!$flagged) {
+          print "$file:\n";
+          $flagged=1;
+        }
+        print;
+      }
     }
   }
   close(F);

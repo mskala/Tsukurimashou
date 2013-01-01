@@ -2,7 +2,7 @@
 
 #
 # Font proof generator for Tsukurimashou
-# Copyright (C) 2011, 2012  Matthew Skala
+# Copyright (C) 2011, 2012, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -104,8 +104,8 @@ $prefix=~s!/tools/make-proof$!!;
 # place a part break before the first file at each of these priority numbers
 %partbefore=(
   100=>'Infrastructure',
-  801=>'Shared Kanji (Grades One to Six)',
-  807=>'Shared Kanji (Grade Eight and Beyond)',
+  801=>'Shared kyouiku kanji',
+  807=>'Other shared kanji',
   1000=>'U+0000 to U+2FFF',
   1048=>'U+3000 to U+4DFF',
   1078=>'U+4E00 to U+61FF',
@@ -255,7 +255,7 @@ sub read_mincho_proof {
 }
 
 # read all the basic proofs
-foreach $style ('tsuku-kg','jieub-do','bll-co') {
+foreach $style ('tsuku-kg','jieub-do','bll-co','tsuita-at') {
   ($glp,$dummy)=split('-',$style);
   while (<prf/$style-*.prf>) {
     next if /-ps/;
@@ -264,7 +264,7 @@ foreach $style ('tsuku-kg','jieub-do','bll-co') {
 }
 
 # read all the alternate proofs
-foreach $style ('tsuku-mi','jieub-bt') {
+foreach $style ('tsuku-mi','jieub-bt','tsuita-so') {
   ($glp,$dummy)=split('-',$style);
   while (<prf/$style-*.prf>) {
     next if /-ps/;
@@ -341,9 +341,11 @@ foreach $glyph (keys %glnames) {
     if ($kg_blob{$glyph}{$blob} eq $mi_blob{$glyph}{$blob}) {
       $bpicture.="\\BBl{$kg_blob{$glyph}{$blob}}{$blwide}";
     } else {
-      $bpicture.="\\Lkr{$kg_blob{$glyph}{$blob}}{$mi_blob{$glyph}{$blob}}";
-      $bpicture.="\\KBl{$kg_blob{$glyph}{$blob}}{$blwide}";
-      $bpicture.="\\MBl{$mi_blob{$glyph}{$blob}}{$blwide}";
+#     $bpicture.="\\Lkr{$kg_blob{$glyph}{$blob}}{$mi_blob{$glyph}{$blob}}";
+      $bpicture.="\\KBl{$kg_blob{$glyph}{$blob}}{$blwide}"
+        if $kg_blob{$glyph}{$blob} ne '';
+      $bpicture.="\\MBl{$mi_blob{$glyph}{$blob}}{$blwide}"
+        if $mi_blob{$glyph}{$blob} ne '';
     }
     @x=split(',',$kg_blob{$glyph}{$blob});
     $lox=$x[0]-0.3 if $x[0]-0.3<$lox;
@@ -364,9 +366,11 @@ foreach $glyph (keys %glnames) {
       if ($kg_points{$glyph}{$idx} eq $mi_points{$glyph}{$idx}) {
         $ppicture.="\\BPt{$kg_points{$glyph}{$idx}}{$idwide}";
       } else {
-        $ppicture.="\\Lkr{$kg_points{$glyph}{$idx}}{$mi_points{$glyph}{$idx}}";
-        $ppicture.="\\KPt{$kg_points{$glyph}{$idx}}{$idwide}";
-        $ppicture.="\\MPt{$mi_points{$glyph}{$idx}}{$idwide}";
+#       $ppicture.="\\Lkr{$kg_points{$glyph}{$idx}}{$mi_points{$glyph}{$idx}}";
+        $ppicture.="\\KPt{$kg_points{$glyph}{$idx}}{$idwide}"
+          if $kg_points{$glyph}{$idx} ne '';
+        $ppicture.="\\MPt{$mi_points{$glyph}{$idx}}{$idwide}"
+          if $mi_points{$glyph}{$idx} ne '';
       }
       if ((defined $kg_segment{$glyph}{$idx})
        && (defined $mi_segment{$glyph}{$idx})
@@ -769,6 +773,40 @@ EOF
 \end{tikzpicture}%
 \hspace*{\fill}\par
 EOF
+    }
+  }
+
+  if ($file eq 'tsuita-so') {
+    print <<'EOF';
+
+\File{Additional Proofs}
+
+Most glyphs in TsuIta are drawn by code inherited from
+Tsukurimashou, and proof images for those glyphs are shown with the
+corresponding Tsukurimashou code.  However, different parameters
+between Tsukurimashou and TsuIta, and overriding code in the
+tsuita-common.mp file above, cause many of the glyphs to change in
+appearance.  The following pages give additional proof images for the
+uppercase and lowercase Latin alphabets, commercial at sign, and
+a-ogonek, which are the glyphs that differ most from the Tsukurimashou
+versions.
+\vspace*{\fill}
+
+EOF
+    foreach $gln ('at','A'..'Z','a'..'z','aogonek') {
+      $mp="tsuku.$gln";
+      $imp="tsuita.$gln";
+      printf "\n\\Picture{%s}{%04X}{\\char\"%04X}"
+            ."{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
+        $imp,$codepoint{$mp},$codepoint{$mp},$leftside{$imp},
+        $rightside{$imp},$plox{$imp},$ploy{$imp},$phix{$imp},$phiy{$imp},
+        $picture{$imp};
+      $countpictures++;
+      if ($countpictures-$lastprog>=10) {
+        $lastprog=$countpictures;
+        print "\\ProgressCheckpoint\n";
+        $progress_count++;
+      }
     }
   }
 }

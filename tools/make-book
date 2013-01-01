@@ -2,7 +2,7 @@
 
 #
 # Proof splitter for Tsukurimashou
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ while (<>) {
     s/\.mp$//;
     s/^(tsuku|tsuita|jieub|bll)-//;
     s/^grade//;
+    s/^([^ ]+ )+//;
     s/-?intro$// unless $_ eq 'intro';
     $_=substr($_,0,4);
     tr/a-z/A-Z/;

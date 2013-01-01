@@ -1,6 +1,6 @@
 %
 % Config file processor for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -80,6 +80,8 @@ proof_style(tsukurimashou,kaku,normal,monospace).
 proof_style(tsukurimashou,mincho,normal,monospace).
 proof_style(jieubsida,dodum,normal,monospace).
 proof_style(jieubsida,batang,normal,monospace).
+proof_style(tsuita,atama,normal,monospace).
+proof_style(tsuita,soku,normal,monospace).
 proof_style(blackletter_lolita,cosette,normal,monospace).
 
 proof_style_short(F,S,W,P):-
