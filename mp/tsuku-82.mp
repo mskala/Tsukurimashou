@@ -1,6 +1,6 @@
 %
 % Unicode page 82 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -81,6 +81,14 @@ vardef kanji.grthree.suffering =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.art =
+  push_pbox_toexpand("kanji.grfour.art");
+  build_kanji.tb(540,50)
+    (kanji.toprad.grass)
+    (kanji.grnine.declaim);
+  expand_pbox;
+enddef;
 
 vardef kanji.grfour.english =
   push_pbox_toexpand("kanji.grfour.english");
@@ -259,6 +267,12 @@ endtsuglyph;
 % hana "flower"
 begintsuglyph("uni82B1",177);
   kanji.grone.flower;
+  tsu_render;
+endtsuglyph;
+
+% gei/u "art"
+begintsuglyph("uni82B8",184);
+  kanji.grfour.art;
   tsu_render;
 endtsuglyph;
 

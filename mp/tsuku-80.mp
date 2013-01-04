@@ -1,6 +1,6 @@
 %
 % Unicode page 80 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -86,6 +86,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.stomach =
+  push_pbox_toexpand("kanji.grfour.stomach");
+  build_kanji.level(build_kanji.tb(420,0)
+    (kanji.grone.paddy)
+    (kanji.bottomrad.moon));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % rou/o "old man"
 begintsuglyph("uni8001",1);
   kanji.grfour.old_man;
@@ -143,6 +153,12 @@ endtsuglyph;
 % iku/soda "raise"
 begintsuglyph("uni80B2",178);
   kanji.grthree.raise;
+  tsu_render;
+endtsuglyph;
+
+% i "stomach"
+begintsuglyph("uni80C3",195);
+  kanji.grfour.stomach;
   tsu_render;
 endtsuglyph;
 

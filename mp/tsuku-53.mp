@@ -1,6 +1,6 @@
 %
 % Unicode page 53 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -261,7 +261,7 @@ begintsuglyph("uni5357",87);
 endtsuglyph;
 
 % haku "professional"
-begintsuglyph("uni5C5A",90);
+begintsuglyph("uni535A",90);
   kanji.grfour.professional;
   tsu_render;
 endtsuglyph;

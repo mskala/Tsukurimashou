@@ -1,6 +1,6 @@
 %
 % Unicode page 81 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,12 +34,24 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradetwo.mp;
 input radical.mp;
+input rare.mp;
 
 do_late_includes;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.guts =
+  push_pbox_toexpand("kanji.grfour.guts");
+  build_kanji.level(build_kanji.lr(420,30)
+    (kanji.grone.moon)
+    (kanji.rare.sun));
+  expand_pbox;
+enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -52,6 +64,12 @@ vardef kanji.greight.gland =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% chou/harawata "guts"
+begintsuglyph("uni8178",120);
+  kanji.grfour.guts;
+  tsu_render;
+endtsuglyph;
 
 % sen "gland"
 begintsuglyph("uni817A",122);
