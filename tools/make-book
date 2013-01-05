@@ -98,10 +98,13 @@ foreach $part (@partrom) {
 \\def\\ProgressCount{$pcp}
 \\input{bkstyle.tex}
 \\renewcommand{\\partname}{Volume}
+\\message{THIS IS PART $part.}
 EOF
 
   print OUT "\\cleardoublepage\\setcounter{part}{".($partnum{$part}-1)."}"
     ."\\part{".($partname[$partnum{$part}-1])."}\n";
+  print OUT "\\message{THIS PART'S NAME IS "
+    .($partname[$partnum{$part}-1]).".}\n";
   print OUT "\\setcounter{page}{".($partfirst[$partnum{$part}-1])."}\n";
   print OUT "\\checkoddpage\n";
   print OUT "\\begin{tikzpicture}[remember picture,overlay]\n";

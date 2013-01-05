@@ -173,7 +173,8 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 KANJIDIC2=@with_kanjidic2@
 if COND_BOOKPROOFS
     MAYBE_BOOKPROOFS=$(foreach \
-      rn,I II III IV V VI VII VIII IX X XI XII XIII XIV,doc/book$(rn).pdf)
+      rn,I II III IV V VI VII VIII IX X XI XII XIII XIV, \
+      doc/book$(rn).pdf doc/cover$(rn).pdf)
     PROOF_ND_PASS=4
 else
     PROOF_ND_PASS=3
@@ -232,9 +233,10 @@ dist_noinst_SCRIPTS = \
   hamlog/select.hl hamlog/swi-ham.pl hamlog/ecl-ham.ecl hamlog/gp-ham.pl \
   pe/bdf.pe pe/getbearings.pe pe/kern-font.pe pe/rmo.pe \
   tools/add-flog tools/autodep tools/livecode \
-  tools/make-ass tools/make-book tools/make-cfghl tools/make-eids \
-  tools/make-fea tools/make-flog tools/make-gpos tools/make-hglpages \
-  tools/make-kchart tools/make-kddata tools/make-name tools/make-proof \
+  tools/make-ass tools/make-book tools/make-cfghl tools/make-cover \
+  tools/make-eids tools/make-fea tools/make-flog tools/make-gpos \
+  tools/make-hglpages tools/make-kchart tools/make-kddata tools/make-name \
+  tools/make-proof \
   tools/mp2pf tools/mpdep tools/progress \
   txt/jnames.txt
 
@@ -929,6 +931,15 @@ makefile-pdf.inc: makefile-vars.inc \
 	  echo doc/book$$rn.pdf: doc/book$$rn.xdv $$FDEPS \
 	    >> makefile-pdf.inc ; \
 	  echo >> makefile-pdf.inc ; \
+	  echo doc/cover$$rn.tex: doc/book$$rn.log \
+	    >> makefile-pdf.inc ; \
+	  echo >> makefile-pdf.inc ; \
+	  echo doc/cover$$rn.xdv: doc/cover$$rn.tex $$FDEPS \
+	    >> makefile-pdf.inc ; \
+	  echo >> makefile-pdf.inc ; \
+	  echo doc/cover$$rn.pdf: doc/cover$$rn.xdv $$FDEPS \
+	    >> makefile-pdf.inc ; \
+	  echo >> makefile-pdf.inc ; \
 	done
 
 nocomma_date:=$(subst $(comma),,@release_date@)
@@ -952,7 +963,8 @@ doc/version.tex: hamlog/config.hl
 	  echo '\def\have'$$st'{Y}' >> doc/version.tex ; \
 	done
 
-doc/%.xdv doc/%.toc doc/%.aux: doc/%.tex doc/.dirstamp doc/version.tex
+doc/%.xdv doc/%.toc doc/%.aux doc/%.log: \
+  doc/%.tex doc/.dirstamp doc/version.tex
 	$(TSU_V_TEX)
 	$(AM_V_at)(cd doc ; \
 	  rm -f $*.aux $*.out ; \
@@ -1019,6 +1031,11 @@ doc/book%.tex: tools/make-book doc/cooked.aux
 	$(TSU_V_PERL)
 	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-book \
 	  doc/book $@ doc/proofs.toc
+
+doc/cover%.tex: tools/make-cover doc/book%.log
+	$(TSU_V_PERL)
+	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-cover \
+	  doc/book$*.log > $@
 
 EIDSPRFS=$(foreach page,$(KANJIPAGES),\
   $(if $(wildcard $(mvp)/mp/tsuku-$(page).mp),\

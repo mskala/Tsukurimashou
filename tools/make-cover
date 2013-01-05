@@ -1,0 +1,278 @@
+#!/usr/bin/perl -CDS
+
+#
+# Make a cover for Tsukurimashou book proofs
+# Copyright (C) 2013  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+use utf8;
+
+while (<>) {
+  if (/THIS IS PART ([IVX]+)\./) {
+    $partrom=$1;
+  } elsif (/THIS PART'S NAME IS (.+?)\./) {
+    $partname=$1;
+  } elsif (/Output written.*\(([0-9]+) pages/) {
+    $npages=$1;
+  }
+}
+
+$spinewidth=int(($npages+3)/4)*4*0.0018871;
+$paperwidth=17.25+$spinewidth;
+
+print <<EOF;
+\\documentclass{article}
+
+% GENERATED FILE, edit tools/make-cover instead
+
+\\usepackage{fontspec}
+\\usepackage[papersize={${paperwidth}in,11.25in}]{geometry}
+\\usepackage{tikz}
+\\usepackage{xcolor}
+
+\\usetikzlibrary{calc}
+
+\\input{version.tex}
+
+\\colorlet{topband}{blue!50!black}
+\\colorlet{midband}{yellow!20!red!10!white}
+EOF
+
+$bbgtop='3.125';
+if ($partname=~/Blackletter/) {
+  print <<'EOF';
+\colorlet{bottombg}{black}
+\colorlet{tartanbg}{magenta!80!red!20!white}
+\colorlet{tartanone}{magenta!30!black}
+\colorlet{tartanfive}{magenta!80!red}
+\colorlet{tartanten}{magenta!40!white}
+EOF
+} elsif ($partname=~/Jieubsida/) {
+  print <<'EOF';
+\colorlet{bottombg}{green!20!black}
+\colorlet{tartanbg}{green!30!black}
+\colorlet{tartanone}{white!80!yellow}
+\colorlet{tartanfive}{green!60!white}
+\colorlet{tartanten}{green!30!red}
+EOF
+} elsif ($partname=~/TsuIta/) {
+  $bbgtop='1.125';
+  print <<'EOF';
+\colorlet{bottombg}{white}
+\colorlet{tartanbg}{white!90!cyan!80!black}
+\colorlet{tartanone}{black}
+\colorlet{tartanfive}{blue!60!black}
+\colorlet{tartanten}{blue!30!red}
+EOF
+} else {
+  print <<'EOF';
+\colorlet{bottombg}{white!20!black}
+\colorlet{tartanbg}{black}
+\colorlet{tartanone}{white}
+\colorlet{tartanfive}{blue!60!white}
+\colorlet{tartanten}{blue!30!red}
+EOF
+}
+
+print <<EOF;
+\\setmainfont[Mapping=tex-text]{TsukurimashouKakuPS}
+
+\\begin{document}
+\\pagestyle{empty}
+
+\\begin{tikzpicture}[remember picture,overlay,scale=2.54]
+  \\node (backref)
+    at (\$(current page.south west)+(0.125,0.125)\$) {};
+  \\node (spineref)
+    at (\$(current page.north west)+(8.625+$spinewidth/2,-0.125)\$) {};
+  \\node (frontref)
+    at (\$(current page.south west)+($spinewidth+8.625,0.125)\$) {};
+  \\node (tartanref)
+    at (\$(current page.south west)+(0,3.5)\$) {};
+
+  \\fill[color=topband] (\$(current page.north west)+(0,-1.375)\$)
+    rectangle (\$(current page.north east)+(0,-2)\$);
+  \\fill[color=midband] (tartanref)
+    rectangle (\$(current page.south east)+(0,$bbgtop)\$);
+  \\fill[color=bottombg] (current page.south west)
+    rectangle (\$(current page.south east)+(0,$bbgtop)\$);
+
+  \\node at (\$(spineref)+(0,-0.625)\$) {\\Huge 作};
+  \\node[rotate=-90] at (\$(spineref)+(0,-2.375)\$)
+    {\\huge $partrom};
+  \\node[anchor=west,rotate=-90] at (\$(spineref)+(0,-2.75)\$)
+    {\\huge $partname};
+  
+  \\node at (\$(frontref)+(2.125,10.375)\$)
+  {\\huge\\begin{minipage}{4.5in}\\centering
+     {\\Huge 作りましょう~\\TsukurimashouVWide}\\\\
+     {パラメタ方式フォントファミ}
+   \\end{minipage}};
+
+  \\node at (\$(frontref)+(6.375,10.375)\$)
+  {\\huge\\begin{minipage}{4.5in}\\centering
+     {\\Huge Tsukurimashou~\\TsukurimashouVersion}\\\\
+     {Parametric Font Family}
+   \\end{minipage}};
+
+  \\node at (\$(frontref)+(4.25,7.75)\$)
+  {\\huge\\begin{minipage}{6.5in}\\centering
+     校とプリティプリントのソース
+
+     Proofs and pretty-printed source code
+     
+     \\vspace{0.75in}
+     
+     Volume $partrom
+     
+     {\\Huge $partname}
+   \\end{minipage}};
+EOF
+
+%newone=(
+  'I'=>'tartanfive!40!tartanone',
+  'II'=>"tartanfive!60!tartanone",
+  'III'=>"tartanfive!80!tartanone",
+  'IV'=>'tartanone',
+  'V'=>"tartanten!20!tartanone",
+  'VI'=>"tartanten!40!tartanone",
+  'VII'=>"tartanten!60!tartanone",
+  'VIII'=>"tartanten!80!tartanone",
+  'IX'=>'tartanone',
+  'X'=>"tartanfive!20!tartanone",
+  'XI'=>"tartanfive!40!tartanone",
+  'XII'=>"tartanfive!60!tartanone",
+  'XIII'=>"tartanfive!80!tartanone",
+  'XIV'=>'tartanone',
+  'XV'=>"tartanten!20!tartanone",
+  'XVI'=>"tartanten!40!tartanone",
+  'XVII'=>"tartanten!60!tartanone",
+  'XVIII'=>"tartanten!80!tartanone",
+  'XIX'=>'tartanone',
+  'XX'=>"tartanfive!20!tartanone",
+  'XXI'=>"tartanfive!40!tartanone",
+  'XXII'=>"tartanfive!60!tartanone",
+  'XXIII'=>"tartanfive!80!tartanone",
+);
+
+$one=$newone{$partrom} if defined $newone{$partrom};
+if ($partrom=~/VIII$/) {
+  $five='tartanfive!60!tartanone';
+} else {
+  $five='tartanfive';
+}
+
+$swidth=0;
+$sett='';
+
+$_=$partrom;
+
+while ($_ ne '') {
+  if (/^(I+)(.*)$/) {
+    $str="$one 0.1".("/tartanbg 0.1/$one 0.1"x(length($1)-1));
+    $spl=0.2*length($1)-0.1;
+  } elsif (/^(V+)(.*)$/) {
+    $str="$five 0.4".("/tartanbg 0.1/$five 0.4"x(length($1)-1));
+    $spl=0.5*length($1)-0.1;
+  } elsif (/^(X+)(.*)$/) {
+    $str="tartanten 0.2/tartanone 0.1/tartanten 0.2"
+      .("/tartanbg 0.1/tartanten 0.2/tartanone 0.1/tartanten 0.2"x(length($1)-1));
+    $spl=0.6*length($1)-0.1;
+  } else {
+    die "bad character in code";
+  }
+  if ($swidth==0) {
+    $sett=$str;
+    $swidth=$spl;
+  } else {
+    $sett="$str/$sett/$str";
+    $swidth+=(2*$spl);
+  }
+  $sett="tartanbg 0.1/$sett/tartanbg 0.1";
+  $swidth+=0.2;
+  $_=$2;
+}
+$sett="tartanbg 0.2/$sett/tartanbg 0.2";
+$swidth+=0.4;
+
+$xcoord=0.125;
+$oldx=0;
+$oldcol='tartanbg';
+$spineflag=0;
+while ($xcoord<$paperwidth-0.125) {
+  foreach $_ (split('/',$sett)) {
+    ($col,$wid)=split(' ',$_);
+    $newx=$xcoord+($wid*1.7/$swidth);
+    $newx=$paperwidth if $newx>$paperwidth;
+    if ($oldcol eq $col) {
+    } else {
+      print "\\fill[color=$oldcol] (\$(tartanref)+($oldx,0)\$) "
+           ."rectangle (\$(tartanref)+($xcoord,1.7)\$);\n"
+        unless $xcoord<=0;
+      $oldx=$xcoord;
+      $oldcol=$col;
+    }
+    $xcoord=$newx;
+    last if $xcoord>=$paperwidth-0.125;
+  }
+  if (($xcoord>=8.623) && !$spineflag) {
+    $xcoord=8.625+$spinewidth;
+    $spineflag=1;
+  }
+}
+print "\\fill[color=$col] (\$(tartanref)+($oldx,0)\$) "
+     ."rectangle (\$(tartanref)+($paperwidth,1.7)\$);\n";
+
+$ycoord=0;
+$oldy=0;
+$oldcol='';
+while ($ycoord<1.7) {
+  foreach $_ (split('/',$sett)) {
+    ($col,$wid)=split(' ',$_);
+    $newy=$ycoord+($wid*1.7/$swidth);
+    $newy=1.7 if $newy>1.7;
+    if ($oldcol eq $col) {
+    } else {
+      print "\\fill[color=$oldcol,opacity=0.5] "
+           ."(\$(tartanref)+(0,$oldy)\$) rectangle "
+           ."(\$(tartanref)+($paperwidth,$ycoord)\$);\n"
+        unless $ycoord==0;
+      $oldy=$ycoord;
+      $oldcol=$col;
+    }
+    $ycoord=$newy;
+    last if $ycoord>=1.7;
+  }
+}
+print "\\fill[color=$col,opacity=0.5] (\$(tartanref)+(0,$oldy)\$) "
+     ."rectangle (\$(tartanref)+($paperwidth,1.7)\$);\n";
+
+print <<EOF;
+\\end{tikzpicture}
+\\end{document}
+EOF
