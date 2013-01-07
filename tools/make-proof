@@ -39,6 +39,14 @@ $proof_debug_chop=0;
 $prefix=$0;
 $prefix=~s!/tools/make-proof$!!;
 
+# figure out whether xpua is active
+$xpua_mode=0;
+open(MV,'./makefile-vars.inc') || open(MV,"$prefix/makefile-vars.inc");
+while (<MV>) {
+  $xpua_mode=1 if /^OT_FEATURES=.*xpua/;
+}
+close(MV);
+
 # priority numbers for different filenames (default for others is 500)
 %priority=(
   'preintro'=>100,
@@ -125,6 +133,14 @@ $prefix=~s!/tools/make-proof$!!;
   5900=>'jieub',
   10900=>'tsuita',
   15900=>'bll',
+);
+
+# files to read for glyph numbers, depending on family
+%glnumfile=(
+  'tsuku'=>'tsuku-kg',
+  'jieub'=>'jieub-do',
+  'tsuita'=>'tsuita-at',
+  'bll'=>'bll-co',
 );
 
 # get a list of all source files to scan
@@ -505,6 +521,7 @@ foreach $file (@files) {
       $glp=$v;
     }
   }
+  $partslant=($glp eq 'tsuita')?0.19:0;
   if ((defined $partbefore{$priority{$file}})
    && ($priority{$file}>$lastpart)) {
     print "\n\\fi\n\n" if $partarab!=1;
@@ -513,6 +530,32 @@ foreach $file (@files) {
     print "\\def\\tmpmac{$partarab}\\ifx\\tmpmac\\partarab\\relax\n\n";
     $partarab++;
     $lastpart=$priority{$file};
+
+    %setgl=();
+    $num_unicode_glyphs=0;
+    @non_unicode_glyphs=();
+    open(GNF,"./sfd/$glnumfile{$glp}.sfd")
+      || open(GNF,"$prefix/sfd/$glnumfile{$glp}.sfd");
+    while (<GNF>) {
+      chomp;
+      if (/^Encoding: \d+ (\d+) (\d+)$/) {
+        if ($xpua_mode && ((($1>=0xE000) && ($1<0xF900)) || ($1>=0xF1800))) {
+          push @non_unicode_glyphs,$1;
+        } elsif ($1<0x10000) {
+          $num_unicode_glyphs++;
+          $setgl{$1}=sprintf("\\char\"%04X",$1);
+        } else {
+          $num_unicode_glyphs++;
+          $setgl{$1}=chr($1);
+        }
+      }
+    }
+    close(GNF);
+    @non_unicode_glyphs=sort {$a<=>$b} @non_unicode_glyphs;
+    for ($i=0;$i<=$#non_unicode_glyphs;$i++) {
+      $setgl{$non_unicode_glyphs[$i]}=
+        '\XeTeXglyph '.($num_unicode_glyphs+$i+1);
+    }
   }
   print "\\File{$file.mp}\n\n";
   if ($file=~/-([0-9a-f]+)/) {
@@ -546,47 +589,32 @@ foreach $file (@files) {
     if (/^begintsuglyph\("(.*)",(\d+)\)/) {
       if (!defined $moved_picture{"$glp.$1"}) {
         printf "\n\\Picture{%s}{%s%02X}","$glp.$1",$page,$2;
-        if ($pnum>=256) {
-          printf "{%c}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
-            ($pnum<<8)+$2,$leftside{"$glp.$1"},$rightside{"$glp.$1"},
-            $plox{"$glp.$1"},$ploy{"$glp.$1"},
-            $phix{"$glp.$1"},$phiy{"$glp.$1"},
-            $picture{"$glp.$1"};
-        } else {
-          printf "{\\char\"%04X}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
-            ($pnum<<8)+$2,$leftside{"$glp.$1"},$rightside{"$glp.$1"},
-            $plox{"$glp.$1"},$ploy{"$glp.$1"},
-            $phix{"$glp.$1"},$phiy{"$glp.$1"},
-            $picture{"$glp.$1"};
-        }
+        printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
+          $setgl{($pnum<<8)+$2},$leftside{"$glp.$1"},$rightside{"$glp.$1"},
+          $plox{"$glp.$1"},$ploy{"$glp.$1"},
+          $phix{"$glp.$1"},$phiy{"$glp.$1"},$partslant,
+          $picture{"$glp.$1"};
         $countpictures++;
       }
     }
     if (/^make_hexagram\((\d+),/) {
       printf "\n\\Picture{tsuku.iching%02d}{%s%02X}",$1,$page,191+$1;
-      printf "{\\char\"%04X}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
-        ($pnum<<8)+191+$1,0,10,
+      printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
+        $setgl{($pnum<<8)+191+$1},0,10,
         $plox{sprintf('tsuku.iching%02d',$1)},
         $ploy{sprintf('tsuku.iching%02d',$1)},
         $phix{sprintf('tsuku.iching%02d',$1)},
-        $phiy{sprintf('tsuku.iching%02d',$1)},
+        $phiy{sprintf('tsuku.iching%02d',$1)},$partslant,
         $picture{sprintf('tsuku.iching%02d',$1)};
       $countpictures++;
     }
     if (/^vardef ([a-z0-9\_\.]+) =/ && defined $moved_picture{"$glp.$1"}) {
       $mp=$moved_picture{"$glp.$1"};
-      if ($codepoint{$mp}>=0x10000) {
-        printf "\n\\Picture{%s}{%04X}{%c}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
-          $mp,$codepoint{$mp},$codepoint{$mp},$leftside{$mp},
-          $rightside{$mp},$plox{$mp},$ploy{$mp},$phix{$mp},$phiy{$mp},
-          $picture{$mp};
-      } else {
-        printf "\n\\Picture{%s}{%04X}{\\char\"%04X}{%d}{%d}{%s,%s}{%s,%s}%%\n"
-          ."  {%s}\n\n",
-          $mp,$codepoint{$mp},$codepoint{$mp},$leftside{$mp},
-          $rightside{$mp},$plox{$mp},$ploy{$mp},$phix{$mp},$phiy{$mp},
-          $picture{$mp};
-      }
+      printf "\n\\Picture{%s}{%04X}{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n"
+            ."  {%s}\n\n",
+        $mp,$codepoint{$mp},$setgl{$codepoint{$mp}},$leftside{$mp},
+        $rightside{$mp},$plox{$mp},$ploy{$mp},$phix{$mp},$phiy{$mp},
+        $partslant,$picture{$mp};
       $countpictures++;
     }
     
@@ -720,12 +748,12 @@ EOF
     }
     foreach $cp (sort @hgpcp) {
       printf "\n\\clearpage\\Picture{jieub.uni%04X}{%04X}",$cp,$cp;
-      printf "{\\char\"%04X}{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
-        $cp,0,10,
+      printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
+        $setgl{$cp},0,10,
         $plox{sprintf('jieub.uni%04X',$cp)},
         $ploy{sprintf('jieub.uni%04X',$cp)},
         $phix{sprintf('jieub.uni%04X',$cp)},
-        $phiy{sprintf('jieub.uni%04X',$cp)},
+        $phiy{sprintf('jieub.uni%04X',$cp)},$partslant,
         $picture{sprintf('jieub.uni%04X',$cp)};
       $countpictures++;
       if ($countpictures-$lastprog>=10) {
@@ -797,10 +825,10 @@ EOF
       $mp="tsuku.$gln";
       $imp="tsuita.$gln";
       printf "\n\\Picture{%s}{%04X}{\\char\"%04X}"
-            ."{%d}{%d}{%s,%s}{%s,%s}%%\n  {%s}\n\n",
+            ."{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
         $imp,$codepoint{$mp},$codepoint{$mp},$leftside{$imp},
         $rightside{$imp},$plox{$imp},$ploy{$imp},$phix{$imp},$phiy{$imp},
-        $picture{$imp};
+        $partslant,$picture{$imp};
       $countpictures++;
       if ($countpictures-$lastprog>=10) {
         $lastprog=$countpictures;

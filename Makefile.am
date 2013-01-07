@@ -282,6 +282,21 @@ DISTCLEANFILES = \
 
 ############################################################################
 
+# KILL EMPTY FILES
+
+kill_empty=@$(PERL) \
+  -e 'while (<$(1)>) { if (-f && -z _) {' \
+  -e 'print "DELETING EMPTY FILE $$_\n"; `rm $$_`; } }'
+
+kill-empty:
+	$(call kill_empty,pfb/*.pfb)
+	$(call kill_empty,sfd/*.sfd)
+	$(call kill_empty,otf/*.otf)
+
+.PHONY: kill-empty
+
+############################################################################
+
 # HAMLOG
 
 DEFAULT_TOK = tsuku
@@ -922,6 +937,8 @@ makefile-pdf.inc: makefile-vars.inc \
 	  >> makefile-pdf.inc ; \
 	echo >> makefile-pdf.inc
 	$(AM_V_at)FDEPS=`$(doc_font_script) $(mvp)/doc/bkstyle.tex` ; \
+	echo doc/pprinted.tex: $$FDEPS >> makefile-pdf.inc ; \
+	echo >> makefile-pdf.inc ; \
 	for rn in I II III IV V VI VII VIII IX X \
 	  XI XII XIII XIV XV XVI XVII XVIII XIX XX ; do \
 	  echo doc/book$$rn.xdv: doc/book$$rn.tex doc/bkstyle.tex \
