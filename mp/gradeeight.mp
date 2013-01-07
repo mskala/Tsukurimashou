@@ -1,6 +1,6 @@
 %
 % Grade Eight kanji used on more than one page
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -173,6 +173,14 @@ vardef kanji.greight.glutamate =
   build_kanji.level(build_kanji.tb(410,-50)
     (kanji.radical.spoon)
     (kanji.grone.day));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.good_luck =
+  push_pbox_toexpand("kanji.greight.good_luck");
+  build_kanji.level(build_kanji.tb(440,-50)
+    (kanji.grfour.gentleman)
+    (kanji.grone.mouth));
   expand_pbox;
 enddef;
 

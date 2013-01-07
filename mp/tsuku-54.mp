@@ -1,6 +1,6 @@
 %
 % Unicode page 54 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -117,6 +117,12 @@ endtsuglyph;
 % gou/a "meet"
 begintsuglyph("uni5408",8);
   kanji.grtwo.join;
+  tsu_render;
+endtsuglyph;
+
+% kichi/yoshi "good luck"
+begintsuglyph("uni5409",9);
+  kanji.greight.good_luck;
   tsu_render;
 endtsuglyph;
 

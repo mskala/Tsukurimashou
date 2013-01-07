@@ -1,6 +1,6 @@
 %
 % Unicode page 7D (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -128,6 +128,33 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% both "shrink" and "agreement"!
+vardef kanji.grfour.contract =
+  push_pbox_toexpand("kanji.grfour.contract");
+  build_kanji.lr(420,40)
+    (build_kanji.lift_skirt(300,20)(kanji.grone.thread))
+    (kanji.grsix.inch);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.journal =
+  push_pbox_toexpand("kanji.grfour.journal");
+  build_kanji.lr(420,-40)
+    (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
+    (kanji.grsix.self);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.tie =
+  push_pbox_toexpand("kanji.grfour.tie");
+  build_kanji.lr(420,20)
+    (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
+    (kanji.greight.good_luck);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.unified =
   push_pbox_toexpand("kanji.grfive.unified");
   build_kanji.lr(450,30-20*mincho)
@@ -137,6 +164,18 @@ vardef kanji.grfive.unified =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ki "journal"
+begintsuglyph("uni7D00",0);
+  kanji.grfour.journal;
+  tsu_render;
+endtsuglyph;
+
+% yaku/tsudzu "contract"
+begintsuglyph("uni7D04",4);
+  kanji.grfour.contract;
+  tsu_render;
+endtsuglyph;
 
 % shi/kami "paper"
 begintsuglyph("uni7D19",25);
@@ -165,6 +204,12 @@ endtsuglyph;
 % so/ku "assemble"
 begintsuglyph("uni7D44",68);
   kanji.grtwo.assemble;
+  tsu_render;
+endtsuglyph;
+
+% ketsu/musu "tie"
+begintsuglyph("uni7D50",80);
+  kanji.grfour.tie;
   tsu_render;
 endtsuglyph;
 
