@@ -1,0 +1,129 @@
+#!/usr/local/bin/fontforge
+
+#
+# Script to create Beikaitoru 600 series (triplex Roman)
+# Copyright (C) 2013  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala.sooke.bc.ca
+#
+
+Open("merged/"+ToString($1)+".sfd");
+Select("occ300.1","occ302.6","occ310.1","occ312.6","occ319.9","occ322.9");
+SelectInvert();
+DetachAndRemoveGlyphs();
+
+Select("occ300.1");SetGlyphName("A");
+Select("occ300.2");SetGlyphName("B");
+Select("occ300.3");SetGlyphName("C");
+Select("occ300.4");SetGlyphName("D");
+Select("occ300.5");SetGlyphName("E");
+Select("occ300.6");SetGlyphName("F");
+Select("occ300.7");SetGlyphName("G");
+Select("occ300.8");SetGlyphName("H");
+Select("occ300.9");SetGlyphName("I");
+Select("occ301.1");SetGlyphName("K");
+Select("occ301.2");SetGlyphName("L");
+Select("occ301.3");SetGlyphName("M");
+Select("occ301.4");SetGlyphName("N");
+Select("occ301.5");SetGlyphName("O");
+Select("occ301.6");SetGlyphName("P");
+Select("occ301.7");SetGlyphName("Q");
+Select("occ301.8");SetGlyphName("R");
+Select("occ301.9");SetGlyphName("S");
+Select("occ302.1");SetGlyphName("U");
+Select("occ302.2");SetGlyphName("V");
+Select("occ302.3");SetGlyphName("W");
+Select("occ302.4");SetGlyphName("X");
+Select("occ302.5");SetGlyphName("Y");
+Select("occ302.6");SetGlyphName("Z");
+
+Select("occ310.1");SetGlyphName("a");
+Select("occ310.2");SetGlyphName("b");
+Select("occ310.3");SetGlyphName("c");
+Select("occ310.4");SetGlyphName("d");
+Select("occ310.5");SetGlyphName("e");
+Select("occ310.6");SetGlyphName("f");
+Select("occ310.7");SetGlyphName("g");
+Select("occ310.8");SetGlyphName("h");
+Select("occ310.9");SetGlyphName("i");
+Select("occ311.1");SetGlyphName("k");
+Select("occ311.2");SetGlyphName("l");
+Select("occ311.3");SetGlyphName("m");
+Select("occ311.4");SetGlyphName("n");
+Select("occ311.5");SetGlyphName("o");
+Select("occ311.6");SetGlyphName("p");
+Select("occ311.7");SetGlyphName("q");
+Select("occ311.8");SetGlyphName("r");
+Select("occ311.9");SetGlyphName("s");
+Select("occ312.1");SetGlyphName("u");
+Select("occ312.2");SetGlyphName("v");
+Select("occ312.3");SetGlyphName("w");
+Select("occ312.4");SetGlyphName("x");
+Select("occ312.5");SetGlyphName("y");
+Select("occ312.6");SetGlyphName("z");
+
+Select("occ320.1");SetGlyphName("one");
+Select("occ320.2");SetGlyphName("two");
+Select("occ320.3");SetGlyphName("three");
+Select("occ320.4");SetGlyphName("four");
+Select("occ320.5");SetGlyphName("five");
+Select("occ320.6");SetGlyphName("six");
+Select("occ320.7");SetGlyphName("seven");
+Select("occ320.8");SetGlyphName("eight");
+Select("occ320.9");SetGlyphName("nine");
+
+Select("occ321.1");SetGlyphName("comma");
+Select("occ321.2");SetGlyphName("colon");
+Select("occ321.3");SetGlyphName("semicolon");
+Select("occ321.4");SetGlyphName("exclam");
+Select("occ321.5");SetGlyphName("question");
+Select("occ321.9");SetGlyphName("dollar");
+Select("occ322.1");SetGlyphName("parenleft");
+Select("occ322.2");SetGlyphName("parenright");
+Select("occ322.3");SetGlyphName("asterisk");
+Select("occ322.4");SetGlyphName("hyphen");
+Select("occ322.5");SetGlyphName("plus");
+Select("occ322.6");SetGlyphName("equals");
+Select("occ322.7");SetGlyphName("quotesingle");
+Select("occ322.8");SetGlyphName("quotedbl");
+Select("occ322.9");SetGlyphName("degree");
+
+Select("occ319.9");SetGlyphName("space");
+
+Select("occ301");SetGlyphName("J");
+Select("occ302");SetGlyphName("T");
+Select("occ311");SetGlyphName("j");
+Select("occ312");SetGlyphName("t");
+Select("occ320");SetGlyphName("zero");
+Select("occ321");SetGlyphName("period");
+Select("occ322");SetGlyphName("slash");
+
+SelectAll();
+Move(0,12);
+Scale(91.7,0,0);
+ScaleToEm(667,333);
+
+Generate("otf/Beikaitoru"+ToString(600+Strtol($1))+".otf");

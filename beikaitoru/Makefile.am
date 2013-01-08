@@ -135,7 +135,7 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 # CONDITIONAL OPTIONS
 
 if COND_DOCS
-    MAYBE_DOCS=
+    MAYBE_DOCS=beikaitoru.pdf
 endif
 if COND_EXPECT
   expect_start= $(if $(AM_V_at),$(EXPECT) -c \
@@ -337,6 +337,11 @@ $(eval $(call OTF_RECIPES,$(hun),$(uni)))))
 ############################################################################
 
 # PDF DOCUMENTATION
+
+beikaitoru.pdf: beikaitoru.tex \
+  otf/Beikaitoru407.otf otf/Beikaitoru507.otf
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) \
+	  $(mvp)/beikaitoru$(expect_end)
 
 ############################################################################
 
