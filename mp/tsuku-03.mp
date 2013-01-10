@@ -1,6 +1,6 @@
 %
 % Unicode page 03 (Combining Diacritical Marks) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ endtsuglyph;
 % circumflex accent
 begintsuglyph("uni0302",2);
   tsu_accent.apply()(tsu_accent.circumflex);
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   tsu_render;
 endtsuglyph;
 
@@ -77,14 +77,14 @@ endtsuglyph;
 % macron
 begintsuglyph("uni0304",4);
   tsu_accent.apply()(tsu_accent.macron);
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   tsu_render;
 endtsuglyph;
 
 % breve
 begintsuglyph("uni0306",6);
   tsu_accent.apply()(tsu_accent.breve);
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   tsu_render;
 endtsuglyph;
 
@@ -98,7 +98,7 @@ endtsuglyph;
 % umlaut/diaeresis
 begintsuglyph("uni0308",8);
   tsu_accent.apply()(tsu_accent.umlaut);
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   tsu_render;
 endtsuglyph;
 
@@ -114,14 +114,14 @@ endtsuglyph;
 % double acute/hungarian umlaut
 begintsuglyph("uni030B",11);
   tsu_accent.apply()(tsu_accent.hungarian_umlaut);
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   tsu_render;
 endtsuglyph;
 
 % caron/hacek
 begintsuglyph("uni030C",12);
   tsu_accent.apply()(tsu_accent.caron);
-  push_anchor(-anc_upper,accent_default[anc_upper]);
+  push_anchor(-anc_wide,accent_default[anc_wide]);
   tsu_render;
 endtsuglyph;
 

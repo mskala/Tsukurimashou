@@ -4,7 +4,7 @@
 
 #
 # Configuration source for Tsukurimashou
-# Copyright (C) 2011, 2012  Matthew Skala
+# Copyright (C) 2011, 2012, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -201,7 +201,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1866 2013-01-07 13:47:52Z mskala $])
+AC_REVISION([$Id: configure.ac 1876 2013-01-10 20:40:40Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["June 18, 2012"])
 AM_SILENT_RULES

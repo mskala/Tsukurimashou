@@ -1,6 +1,6 @@
 %
 % Latin and related letters for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -140,6 +140,7 @@ vardef latin.upb =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors((ai=anc_ring) or (ai=anc_upper))((-27,0));
   expand_pbox;
 enddef;
 
@@ -178,6 +179,7 @@ vardef latin.upd =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(true)((-50,0));
   expand_pbox;
 enddef;
 
@@ -241,7 +243,8 @@ vardef latin.upf =
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
-     ((0,0) transformed accent_default[anc_upper]));
+     ((0,0) transformed accent_default[anc_upper])+(-20,0));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((-220,0));
   expand_pbox;
 enddef;
 
@@ -266,6 +269,7 @@ vardef latin.upg =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper])+(44,0));
+  tsu_accent.shift_anchors(ypart olda<vmetric(0.52))((100,0));
   expand_pbox;
 enddef;
 
@@ -293,6 +297,7 @@ vardef latin.uph =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((220,0));
   expand_pbox;
 enddef;
 
@@ -330,7 +335,9 @@ vardef latin.upj =
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
-     ((0,0) transformed accent_default[anc_upper]));
+     ((0,0) transformed accent_default[anc_upper])+(-10,0));
+  tsu_accent.shift_anchors(ai=anc_lower)((30,0));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((-100,-120));
   expand_pbox;
 enddef;
 
@@ -369,7 +376,8 @@ vardef latin.upk =
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
-     ((0,0) transformed accent_default[anc_upper]));
+     ((0,0) transformed accent_default[anc_upper])+(-30,0));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((170,0));
   expand_pbox;
 enddef;
 
@@ -390,7 +398,7 @@ vardef latin.upl =
                            and not (ai=anc_caron_comma))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
-  tsu_accent.shift_anchors(ai=anc_caron_comma)((-200,0));
+  tsu_accent.shift_anchors(ai=anc_caron_comma)((-160,40));
   expand_pbox;
 enddef;
 
@@ -442,6 +450,7 @@ vardef latin.upm =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((350,0));
   expand_pbox;
 enddef;
 
@@ -479,6 +488,7 @@ vardef latin.upn =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((250,0));
   expand_pbox;
 enddef;
 
@@ -563,7 +573,8 @@ vardef latin.upp =
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
-     ((0,0) transformed accent_default[anc_upper]));
+     ((0,0) transformed accent_default[anc_upper])+(-20,0));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((-180,0));
   expand_pbox;
 enddef;
 
@@ -584,6 +595,8 @@ vardef latin.upq =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_lower)((-80,0));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((100,-140));
   expand_pbox;
 enddef;
 
@@ -605,6 +618,7 @@ vardef latin.upr =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((-200,0));
   expand_pbox;
 enddef;
 
@@ -644,7 +658,7 @@ vardef latin.ups =
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
-     ((0,0) transformed accent_default[anc_upper]));
+     ((0,0) transformed accent_default[anc_upper])+(10,0));
   expand_pbox;
 enddef;
 
@@ -784,6 +798,7 @@ vardef latin.upw =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((230,0));
   expand_pbox;
 enddef;
 
@@ -817,6 +832,7 @@ vardef latin.upx =
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
      ((0,0) transformed accent_default[anc_upper]));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((260,0));
   expand_pbox;
 enddef;
 
