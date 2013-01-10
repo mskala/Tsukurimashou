@@ -339,7 +339,7 @@ $(eval $(call OTF_RECIPES,$(hun),$(uni)))))
 # PDF DOCUMENTATION
 
 beikaitoru.pdf: beikaitoru.tex \
-  otf/Beikaitoru407.otf otf/Beikaitoru507.otf
+  otf/Beikaitoru406.otf otf/Beikaitoru506.otf
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) \
 	  $(mvp)/beikaitoru$(expect_end)
 

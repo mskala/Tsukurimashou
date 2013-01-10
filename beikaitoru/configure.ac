@@ -200,7 +200,7 @@ Fine tuning of the installation directories:\
 #
 AC_PREREQ([2.63])
 AC_INIT([Beikaitoru],
-	[0.1], [mskala@ansuz.sooke.bc.ca], [beikaitoru],
+	[0.1pre], [mskala@ansuz.sooke.bc.ca], [beikaitoru],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
@@ -208,9 +208,9 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([subfont.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1787 2012-10-26 14:06:40Z mskala $])
-AC_COPYRIGHT([Copyright (C) 2012 Matthew Skala])
-AC_SUBST([release_date],["October 27, 2012"])
+AC_REVISION([$Id: configure.ac 1874 2013-01-10 17:38:18Z mskala $])
+AC_COPYRIGHT([Copyright (C) 2013 Matthew Skala])
+AC_SUBST([release_date],["April 1, 2013"])
 AM_SILENT_RULES
 #
 ############################################################################

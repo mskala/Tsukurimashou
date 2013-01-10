@@ -80,7 +80,7 @@ elseif subfontno=9:
 fi;
 
 weight:=floor(fontno) mod 10;
-wmult:=2*2**((weight-5)/if weight<5: 3 else: 5 fi);
+wmult:=4**((weight-4)/if weight<4: 2 else: 6 fi);
 
 boolean do_smooth_curves;
 do_smooth_curves:=((floor(fontno) mod 20)>=10);
@@ -183,8 +183,8 @@ forever:
     hchar_end;
 
     current_char:=current_char+1;
-    exitif current_char>255;
   fi;
+  exitif current_char>255;
 endfor;
 closefrom (hershey_file&".dat");
 
