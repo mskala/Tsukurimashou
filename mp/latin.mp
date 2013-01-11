@@ -1029,6 +1029,12 @@ vardef latin.lowb =
   replace_strokep(0)(subpath (0,4.97) of oldp);
   set_botip(0,1,1);
   if not do_italic_hook: set_boserif(0,0,1); fi;
+
+  push_anchor(anc_wide,identity xscaled 0.9
+    transformed accent_default[anc_wide] shifted (30,10));
+  push_anchor(anc_tilde,identity xscaled 0.8
+    transformed accent_default[anc_tilde] shifted (30,10));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (-10,-10));
   expand_pbox;
 enddef;
 
@@ -1039,7 +1045,8 @@ vardef latin.lowc =
     shifted ((xpart centre_pt,(latin_wide_xheight_r+latin_wide_low_r)/2)
       +(35,0)),
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
-  tsu_accent.shift_anchors(true)((35,0));
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))((20,0));
+  tsu_accent.shift_anchors(ypart olda<=vmetric(0.52))((35,0));
   push_anchor(anc_centre,identity
     scaled ((latin_wide_xheight_r-latin_wide_low_r)/200)
     shifted (xpart centre_pt,(latin_wide_xheight_r+latin_wide_low_r)/2));
@@ -1068,7 +1075,14 @@ vardef latin.lowd =
   if not do_italic_hook: set_boserif(0,0,1); fi;
   set_boserif(0,1,2);
   
-  tsu_accent.shift_anchors(ai=anc_caron_comma)((90,0));
+  push_anchor(anc_wide,identity xscaled 0.9
+    transformed accent_default[anc_wide] shifted (-30,0));
+  push_anchor(anc_tilde,identity xscaled 0.8
+    transformed accent_default[anc_tilde] shifted (-30,0));
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))((-50,0));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,-30));
+  push_anchor(anc_caron_comma,accent_default[anc_caron_comma] shifted (120,0));
   expand_pbox;
 enddef;
 
@@ -1176,6 +1190,10 @@ vardef latin.lowf =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.23,3) of oldp);
   set_boserif(0,3,3);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    (((0,0) transformed tsu_xf.cap_upper_accent)-
+     ((0,0) transformed accent_default[anc_upper])+(70,0));
   expand_pbox;
 enddef;
 
@@ -1215,6 +1233,10 @@ vardef latin.lowg =
   push_anchor(anc_caron_comma,
     identity rotated 180 shifted (0,90)
     transformed accent_default[anc_upper]);
+  push_anchor(anc_lower,
+    accent_default[anc_lower] shifted (0,53));
+  push_anchor(anc_lower_connect,
+    accent_default[anc_lower_connect] shifted (0,-190));
   expand_pbox;
 enddef;
 
@@ -1243,9 +1265,14 @@ vardef latin.lowh =
   replace_strokep(0)(subpath (0.03,3) of oldp);
   set_boserif(0,3,if do_italic_hook: 11 else: 2 fi);
 
-  push_anchor(anc_wide,identity xscaled 0.75
-    transformed accent_default[anc_wide]);
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))((40,0));
+  push_anchor(anc_wide,identity xscaled 0.8
+    transformed accent_default[anc_wide] shifted (50,10));
+  push_anchor(anc_tilde,identity xscaled 0.7
+    transformed accent_default[anc_tilde] shifted (40,10));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (20,-10));
+  push_anchor(anc_lower_connect,
+    accent_default[anc_lower_connect] shifted (170,0));
   expand_pbox;
 enddef;
 
@@ -1306,6 +1333,8 @@ vardef latin.lowj =
   tsu_accent.shift_anchors(ai=anc_wide)((-40,0));
   tsu_accent.shift_anchors(ai=anc_tilde)((10,0));
   tsu_accent.shift_anchors(ai=anc_ring)((-10,55));
+  tsu_accent.shift_anchors(ai=anc_lower)((80,-10));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((-40,-80));
   expand_pbox;
 enddef;
 
@@ -1347,6 +1376,15 @@ vardef latin.lowk =
   set_boserif(0,0,if do_italic_hook: 1 else: 3 fi);
   if not do_italic_hook: set_boserif(0,2,3); fi;
   set_boalternate(0);
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))((40,0));
+  push_anchor(anc_wide,identity xscaled 0.8
+    transformed accent_default[anc_wide] shifted (50,10));
+  push_anchor(anc_tilde,identity xscaled 0.7
+    transformed accent_default[anc_tilde] shifted (40,10));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (20,-10));
+  push_anchor(anc_lower_connect,
+    accent_default[anc_lower_connect] shifted (170,0));
   expand_pbox;
 enddef;
 
@@ -1425,6 +1463,9 @@ vardef latin.lown =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.03,3) of oldp);
   set_boserif(0,3,if do_italic_hook: 11 else: 2 fi);
+
+  push_anchor(anc_lower_connect,
+    accent_default[anc_lower_connect] shifted (150,0));
   expand_pbox;
 enddef;
 
@@ -1488,6 +1529,9 @@ vardef latin.lowp =
   set_botip(0,1,1);
   if not do_italic_hook: set_boserif(0,0,3); fi;
   set_boserif(0,1,1);
+
+
+  tsu_accent.shift_anchors(ypart olda<vmetric(0.52))((30,0));
   expand_pbox;
 enddef;
 
@@ -1515,6 +1559,9 @@ vardef latin.lowq =
   set_botip(0,2,0);
   set_botip(0,3,1);
   if not do_italic_hook: set_boserif(0,3,2); fi;
+
+  tsu_accent.shift_anchors(ypart olda<vmetric(0.52))((-30,0));
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))((50,0));
   expand_pbox;
 enddef;
 
@@ -1540,6 +1587,7 @@ vardef latin.lowr =
   replace_strokep(0)(subpath (0.03,1.6) of oldp);
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.05))((0.5[x3,x5]-500,0));
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((-20,0));
   expand_pbox;
 enddef;
 
@@ -1643,6 +1691,11 @@ vardef latin.lowt =
       replace_lcblob(0)(oldblob transformed inverse t);
     endgroup;
   fi;
+
+  tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
+    ((0,vmetric(0.12)-vmetric(0)));
+  tsu_accent.shift_anchors(ypart olda<vmetric(0.52))
+    ((20,0));
   expand_pbox;
 enddef;
 
@@ -1745,6 +1798,8 @@ vardef latin.loww =
     set_botip(0,3,0);
     set_boserif(0,0,1);
   fi;
+
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((180,0));
   expand_pbox;
 enddef;
 
@@ -1774,6 +1829,8 @@ vardef latin.lowx =
     set_boserif(0,1,if do_italic_hook: 1 else: 3 fi);
   fi;
   set_boalternate(0);
+
+  tsu_accent.shift_anchors(ai=anc_lower_connect)((240,0));
   expand_pbox;
 enddef;
 

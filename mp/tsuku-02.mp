@@ -1,6 +1,6 @@
 %
 % Unicode page 02 (Spacing Modifier Letters) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -40,6 +40,22 @@ input latin.mp;
 input ogonek.mp;
 
 do_late_includes;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LATIN EXTENDED B
+
+tsu_accent.low_default_anchors;
+
+% j without dot
+begintsuglyph("uni0237",55);
+  tsu_xform(identity shifted (70,0))(latin.lowj;
+     tsu_accent.shift_anchors(true)((0,0)));
+  pop_lcblob;
+  tsu_render;
+endtsuglyph;
+
+tsu_accent.clear_default_anchors;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
