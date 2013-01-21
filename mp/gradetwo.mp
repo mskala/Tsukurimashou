@@ -1,6 +1,6 @@
 %
 % Grade Two kanji used on more than one page
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ vardef kanji.grtwo.capital =
   build_kanji.level(build_kanji.tb(650,-20)
     (kanji.radical.kettle_lid)
     (build_kanji.tb(500,110)
-      (build_kanji.sscale(xscaled 0.9)(kanji.grone.mouth))
+      (build_kanji.sscale(xscaled 0.82)(kanji.grone.mouth))
       (kanji.grone.small)));
   set_boserif(0,0,whatever);
   expand_pbox;

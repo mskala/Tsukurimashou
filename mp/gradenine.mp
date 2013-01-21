@@ -1,6 +1,6 @@
 %
 % Grade Nine kanji used on more than one page
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -178,12 +178,13 @@ enddef;
 vardef kanji.grnine.page =
   push_pbox_toexpand("kanji.grnine.page");
   build_kanji.level(build_kanji.tb(120,20)
-    (push_stroke((120,810)--(880,810),
-       (1.6,1.6)--(1.6,1.6));
-     set_boserif(0,1,9);
-     push_stroke((500,810)..(480,700)..(440,610),
-       (1.7,1.7)--(1.3,1.3)--(1,1));
-     tsu_xform(identity yscaled (610/760))(kanji.grone.eye))
+    (kanji.toprad.summer)
+%    (push_stroke((120,810)--(880,810),
+%       (1.6,1.6)--(1.6,1.6));
+%     set_boserif(0,1,9);
+%     push_stroke((500,810)..(480,700)..(440,610),
+%       (1.7,1.7)--(1.3,1.3)--(1,1));
+%     tsu_xform(identity yscaled (610/760))(kanji.grone.eye))
     (build_kanji.sscale(xscaled 0.85)(kanji.radical.eight)));
   expand_pbox;
 enddef;

@@ -1,6 +1,6 @@
 %
 % Unicode page 59 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -97,9 +98,7 @@ enddef;
 vardef kanji.grtwo.summer =
   push_pbox_toexpand("kanji.grtwo.summer");
   build_kanji.level(build_kanji.tb(350,0)
-    (push_stroke((100,855)--(900,855),(1.6,1.6));
-     set_boserif(0,1,9);
-     build_kanji.attach_tick(660)(kanji.grone.eye))
+    (kanji.toprad.summer)
     (kanji.radical.winter));
   expand_pbox;
 enddef;

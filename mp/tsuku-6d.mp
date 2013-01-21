@@ -1,6 +1,6 @@
 %
 % Unicode page 6D (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -136,6 +136,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.refreshing =
+  push_pbox_toexpand("kanji.greight.refreshing");
+  build_kanji.lr(360,30)
+    (kanji.leftrad.water)
+    (kanji.grtwo.capital);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % you "ocean"
 begintsuglyph("uni6D0B",11);
   kanji.grthree.ocean;
@@ -187,6 +197,12 @@ endtsuglyph;
 % eki "liquid"
 begintsuglyph("uni6DB2",178);
   kanji.grfive.liquid;
+  tsu_render;
+endtsuglyph;
+
+% ryou/suzu "refreshing"
+begintsuglyph("uni6DBC",188);
+  kanji.greight.refreshing;
   tsu_render;
 endtsuglyph;
 

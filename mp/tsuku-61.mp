@@ -1,6 +1,6 @@
 %
 % Unicode page 61 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -66,6 +66,20 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.melancholy =
+  push_pbox_toexpand("kanji.greight.melancholy");
+  build_kanji.level(build_kanji.tb(400,115)
+    (build_kanji.tb(260,193)
+       (kanji.toprad.summer)
+       (kanji.radical.conservative_hat))
+    (build_kanji.tb(480,-40)
+       (build_kanji.sscale(xscaled 0.8)(kanji.bottomrad.heart))
+       (kanji.radical.winter)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % i/moto "intention"
 begintsuglyph("uni610F",15);
   kanji.grthree.intention;
@@ -81,6 +95,12 @@ endtsuglyph;
 % tai/waza "manner"
 begintsuglyph("uni614B",75);
   kanji.grfive.manner;
+  tsu_render;
+endtsuglyph;
+
+% yuu/ure "melancholy"
+begintsuglyph("uni6182",130);
+  kanji.greight.melancholy;
   tsu_render;
 endtsuglyph;
 

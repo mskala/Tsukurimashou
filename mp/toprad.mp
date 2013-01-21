@@ -1,6 +1,6 @@
 %
 % Radicals for top (often special forms of other radicals)
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -214,5 +214,13 @@ vardef kanji.toprad.stand_up =
   push_stroke((70,0)--(930,0),
     (1.6,1.6)--(1.6,1.6));
   set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
+vardef kanji.toprad.summer =
+  push_pbox_toexpand("kanji.toprad.summer");
+  push_stroke((100,855)--(900,855),(1.6,1.6));
+  set_boserif(0,1,9);
+  build_kanji.attach_tick(660)(kanji.grone.eye);
   expand_pbox;
 enddef;
