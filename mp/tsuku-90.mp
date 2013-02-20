@@ -158,6 +158,21 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.expel =
+  push_pbox_toexpand("kanji.grfive.expel");
+  build_kanji.road_enclose(build_kanji.sscale(yscaled 0.91)
+    (kanji.radical.northeast));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% tai/shirizo "expel"
+begintsuglyph("uni9000",0);
+  kanji.grfive.expel;
+  tsu_render;
+endtsuglyph;
+
 % sou/oku "send"
 begintsuglyph("uni9001",1);
   kanji.grthree.send;

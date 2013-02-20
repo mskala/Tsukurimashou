@@ -1,6 +1,6 @@
 %
 % Radicals that are not common kanji in themselves
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -211,6 +211,22 @@ vardef kanji.radical.flag =
       intersectionpoint reverse get_strokep(0))--(800,490),
     (1.5,1.5)--(1.5,1.5));
   set_bosize(0,93);
+  expand_pbox;
+enddef;
+
+vardef kanji.radical.folding_chair =
+  push_pbox_toexpand("kanji.radical.folding_chair");
+  push_stroke((420,830)..tension 1.2..(270,570)..(120,460),
+    (1.7,1.7)--(1.4,1.4)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke(
+    (get_strokep(0) intersectionpoint ((0,650)--(1000,650)))--(820,650),
+    (1.5,1.5)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((680,650)..tension 1.1..(490,280)..(60,-20),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  push_stroke((point 0.95 of get_strokep(-2))..(520,200)..(920,-20),
+    (1,1)--(1.3,1.3)--(1.8,1.8));
   expand_pbox;
 enddef;
 

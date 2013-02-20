@@ -1,6 +1,6 @@
 %
 % Unicode page 9A (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,11 +34,15 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefive.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input rightrad.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -52,7 +56,21 @@ vardef kanji.greight.hair =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.surprise =
+  push_pbox_toexpand("kanji.greight.surprise");
+  build_kanji.thickness(0.9)(build_kanji.level(build_kanji.tb(420,0)
+    (kanji.grsix.respect)
+    (kanji.grtwo.horse)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% kyou/odoro "surprise"
+begintsuglyph("uni9A5A",90);
+  kanji.greight.surprise;
+  tsu_render;
+endtsuglyph;
 
 % kou/taka "high"
 begintsuglyph("uni9AD8",216);

@@ -1,6 +1,6 @@
 %
 % Unicode page 75 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -135,6 +135,12 @@ vardef build_kanji.sickness_enclose(text contents) =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% kan/ama "sweet"
+begintsuglyph("uni7518",24);
+  kanji.greight.sweet;
+  tsu_render;
+endtsuglyph;
 
 % sei/ki "life"
 begintsuglyph("uni751F",31);

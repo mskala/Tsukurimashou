@@ -1074,3 +1074,11 @@ eids: txt/tsukurimashou.eids
 TESTS = $(dist_otf_DATA)
 TEST_EXTENSIONS = .otf
 OTF_LOG_COMPILER = fontlint
+
+############################################################################
+
+# AUTOMAKE'S RULES WILL GO HERE
+
+automake_rules = here
+
+############################################################################

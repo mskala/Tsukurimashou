@@ -1,6 +1,6 @@
 %
 % Unicode page 8B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradetwo.mp;
 input radical.mp;
@@ -41,6 +43,22 @@ input radical.mp;
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.greight.conspire =
+  push_pbox_toexpand("kanji.greight.conspire");
+  build_kanji.level(build_kanji.lr(420,0)
+    (kanji.grtwo.word)
+    (kanji.greight.a_certain));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% bou/haka "conspire"
+begintsuglyph("uni8B00",0);
+  kanji.greight.conspire;
+  tsu_render;
+endtsuglyph;
 
 % extra: alternate "hen"
 begintsuglyph("uni8B8A",138);

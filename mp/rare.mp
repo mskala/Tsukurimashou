@@ -1,6 +1,6 @@
 %
 % Rare kanji needed to build others
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -103,6 +103,16 @@ vardef kanji.rare.decide =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.decorate =
+  push_pbox_toexpand("kanji.rare.decorate");
+  build_kanji.level(build_kanji.tb(480,-10)
+    (build_kanji.tb(390,150)
+     (kanji.grone.ten)
+     (kanji.toprad.grass))
+    (kanji.grone.shell));  
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.director =
   push_pbox_toexpand("kanji.rare.director");
   tsu_xform(identity yscaled 0.5 shifted (0,400))
@@ -157,6 +167,15 @@ vardef kanji.rare.eight_three_dee_zero =
   build_kanji.tb(620,0)
     (kanji.rare.obscure_grass_toprad)
     (kanji.radical.twin_tailed_sheep);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.in_the_least =
+  push_pbox_toexpand("kanji.rare.in_the_least");
+  build_kanji.tb(620,90)
+    (kanji.toprad.grass;
+     replace_strokep(-2)(oldp shifted (70,0)))
+    (kanji.grfive.phrase);
   expand_pbox;
 enddef;
 

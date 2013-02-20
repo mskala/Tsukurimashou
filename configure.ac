@@ -191,17 +191,15 @@ Fine tuning of the installation directories:\
 #
 # Autoconf initialization
 #
-AC_PREREQ([2.63])
-AC_INIT([Tsukurimashou],
-	[0.7pre], [mskala@ansuz.sooke.bc.ca], [tsukurimashou],
-	[[http://tsukurimashou.sourceforge.jp/]])
+AC_PREREQ([2.67])
+AC_INIT([Tsukurimashou],[0.7pre],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules subdir-objects])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1876 2013-01-10 20:40:40Z mskala $])
+AC_REVISION([$Id: configure.ac 1968 2013-02-20 15:37:55Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["June 18, 2012"])
 AM_SILENT_RULES
@@ -380,7 +378,7 @@ AC_SUBST([enable_ot_features])
 #
 AC_SUBST([enable_parasites])
 AS_IF([test "x$enable_parasites" = "xnone"],[],
-      [AC_CONFIG_SUBDIRS([genjimon idsgrep ocr])])
+      [AC_CONFIG_SUBDIRS([beikaitoru genjimon idsgrep ocr])])
 #
 AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AS_IF([test "$with_kanjidic2" = "auto"],[
@@ -656,7 +654,7 @@ AC_CONFIG_COMMANDS([fix-makefile],
 's#config\.status \$\@ \$\(am__depfiles_maybe\)#'\
 'config.status \$\@ fix-makefile \$(am__depfiles_maybe)#;'\
 's#TESTS = #TESTS = \$(otf_DATA) #;'\
-'s#^all: config.h#^all: kill-empty config.h#;' \
+'s#^all: config.h#all: kill-empty config.h#;' \
    Makefile
    rm -f pfb-stamp* chl-stamp],
   [PERL=$PERL])

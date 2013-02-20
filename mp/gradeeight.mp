@@ -32,6 +32,14 @@ inclusion_lock(gradeeight);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.a_certain =
+  push_pbox_toexpand("kanji.greight.a_certain");
+  build_kanji.tb(440,10)
+    (kanji.greight.sweet)
+    (kanji.grone.wood);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.axe =
   push_pbox_toexpand("kanji.greight.axe");
   push_stroke((770,810)..tension 1.2..(550,740)..(250,700),
@@ -346,6 +354,13 @@ vardef kanji.greight.spine =
   push_stroke((480,495)..(450,360)..(400,275),
     (1.7,1.7)--(1.4,1.4)--(1,1));
   build_kanji.box((200,270),(800,0));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.sweet =
+  push_pbox_toexpand("kanji.greight.sweet");
+  kanji.grnine.twenty;
+  push_stroke((320,222)--(680,222),(1.5,1.5)--(1.5,1.5));
   expand_pbox;
 enddef;
 

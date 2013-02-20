@@ -1,6 +1,6 @@
 %
 % Grade Six kanji used on more than one page
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -88,6 +88,14 @@ vardef kanji.grsix.inch =
   set_boserif(0,0,10);
   push_stroke((180,420)..tension 1.2..(350,310)..(420,200),
     (0.9,0.9)--(1.5,1.5)--(1.7,1.7));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.respect =
+  push_pbox_toexpand("kanji.grsix.respect");
+  build_kanji.lr(540,20)
+    (kanji.rare.in_the_least)
+    (kanji.radical.folding_chair);
   expand_pbox;
 enddef;
 

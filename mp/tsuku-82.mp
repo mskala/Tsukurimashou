@@ -314,6 +314,12 @@ begintsuglyph("uni82DC",220);
   tsu_render;
 endtsuglyph;
 
+% kou/iyashiku "in the least"
+begintsuglyph("uni82DF",223);
+  kanji.rare.in_the_least;
+  tsu_render;
+endtsuglyph;
+
 % waka "young master"
 begintsuglyph("uni82E5",229);
   kanji.grsix.young_master;

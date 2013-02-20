@@ -38,6 +38,7 @@ input buildkanji.mp;
 input gradefive.mp;
 input gradeone.mp;
 input gradethree.mp;
+input leftrad.mp;
 input radical.mp;
 input rare.mp;
 input toprad.mp;
@@ -65,6 +66,15 @@ vardef kanji.grfive.manner =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.greight.indignation =
+  push_pbox_toexpand("kanji.greight.indignation");
+  build_kanji.level(build_kanji.lr(320,50)
+    (kanji.leftrad.heart;
+     replace_strokep(0)(oldp shifted (0,-50)))
+    (kanji.rare.decorate));
+  expand_pbox;
+enddef;
 
 vardef kanji.greight.melancholy =
   push_pbox_toexpand("kanji.greight.melancholy");
@@ -101,6 +111,12 @@ endtsuglyph;
 % yuu/ure "melancholy"
 begintsuglyph("uni6182",130);
   kanji.greight.melancholy;
+  tsu_render;
+endtsuglyph;
+
+% fun/ikidoo "indignation"
+begintsuglyph("uni61A4",164);
+  kanji.greight.indignation;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 8C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input rightrad.mp;
 input toprad.mp;
 
@@ -156,6 +157,12 @@ endtsuglyph;
 % gai/ka "buy"
 begintsuglyph("uni8CB7",183);
   kanji.grtwo.buy;
+  tsu_render;
+endtsuglyph;
+
+% fun "decorate" (needed for greight.indignation)
+begintsuglyph("uni8CC1",193);
+  kanji.rare.decorate;
   tsu_render;
 endtsuglyph;
 

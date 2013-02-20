@@ -157,7 +157,7 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 #
 # Autoconf initialization
 #
-AC_PREREQ([2.63])
+AC_PREREQ([2.67])
 AC_INIT([IDSgrep],
 	[0.4pre], [mskala@ansuz.sooke.bc.ca], [idsgrep],
 	[[http://tsukurimashou.sourceforge.jp/]])
