@@ -727,7 +727,7 @@ vardef build_kanji.wind_enclose(text contents) =
   push_pbox_toexpand("build_kanji.wind_enclose");
   push_stroke((50,-50)..(120,100)..(160,300)..tension 1.2..(180,760)
       --interpath(mincho,
-      (770,760){down}..tension 1.2 and 1.6..(810,0)..(860,0)..tension 1.5..
+      (770,760){down}..{dir -72}(810,-20)..(860,-10)..tension 1.5..
         (890,100)..(910,200),
       (760,760){down}..(780,100)..{right}(910,-40){curl 1}..
         (890,60)..(890,160)),

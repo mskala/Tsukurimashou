@@ -1,6 +1,6 @@
 %
 % Unicode page 5D (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -60,6 +61,17 @@ vardef kanji.grthree.province =
   push_stroke((620,530)..(700,390)..(710,290),
     (1,1)--(1.5,1.5)--(1.8,1.8));
   set_bosize(0,82);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.greight.adroit =
+  push_pbox_toexpand("kanji.greight.adroit");
+  build_kanji.level(build_kanji.lr(380,60)
+    (build_kanji.lift_skirt(400,250)
+       (kanji.grtwo.craft))
+    (kanji.rare.obstruction));
   expand_pbox;
 enddef;
 
@@ -124,6 +136,12 @@ endtsuglyph;
 % hidari "left"
 begintsuglyph("uni5DE6",230);
   kanji.grone.left;
+  tsu_render;
+endtsuglyph;
+
+% kou/taku "adroit"
+begintsuglyph("uni5DE7",231);
+  kanji.greight.adroit;
   tsu_render;
 endtsuglyph;
 

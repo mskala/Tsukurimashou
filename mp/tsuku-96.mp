@@ -140,6 +140,14 @@ vardef kanji.greight.heights =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.yin =
+  push_pbox_toexpand("kanji.greight.yin");
+  build_kanji.level(build_kanji.lr(460,140)
+    (kanji.radical.beta)
+    (kanji.rare.yin));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % kozato "left village" (beta-looking) radical
@@ -221,6 +229,12 @@ endtsuglyph;
 % in "institution" (often "house")
 begintsuglyph("uni9662",98);
   kanji.grthree.institution;
+  tsu_render;
+endtsuglyph;
+
+% in/kage "yin"
+begintsuglyph("uni9670",112);
+  kanji.greight.yin;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 4E (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -247,6 +247,12 @@ begintsuglyph("uni4E01",1);
   tsu_render;
 endtsuglyph;
 
+% kou/samata "obstruction of breath"
+begintsuglyph("uni4E02",2);
+  kanji.rare.obstruction;
+  tsu_render;
+endtsuglyph;
+
 % nana/shichi "seven"
 begintsuglyph("uni4E03",3);
   kanji.grone.seven;
@@ -402,6 +408,12 @@ endtsuglyph;
 % ni/futa "two"
 begintsuglyph("uni4E8C",140);
   kanji.grone.two;
+  tsu_render;
+endtsuglyph;
+
+% u "deficient"
+begintsuglyph("uni4E8F",143);
+  kanji.rare.deficient;
   tsu_render;
 endtsuglyph;
 

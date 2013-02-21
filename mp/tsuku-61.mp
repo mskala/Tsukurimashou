@@ -96,6 +96,14 @@ begintsuglyph("uni610F",15);
   tsu_render;
 endtsuglyph;
 
+% gaku/odoro "surprised"
+begintsuglyph("uni6115",21);
+  build_kanji.level(build_kanji.lr(320,50)
+    (kanji.leftrad.heart)
+    (kanji.rare.outspokenly));
+  tsu_render;
+endtsuglyph;
+
 % kan "feeling"
 begintsuglyph("uni611F",31);
   kanji.grthree.feeling;

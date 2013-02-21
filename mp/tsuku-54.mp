@@ -218,6 +218,12 @@ begintsuglyph("uni548C",140);
   tsu_render;
 endtsuglyph;
 
+% gaku/odoroku "outspokenly"
+begintsuglyph("uni54A2",162);
+  kanji.rare.outspokenly;
+  tsu_render;
+endtsuglyph;
+
 % rare character in the name of Shirayama Hime shrine
 begintsuglyph("uni54A9",169);
   build_kanji.lr(380,10)

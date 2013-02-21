@@ -113,6 +113,15 @@ vardef kanji.rare.decorate =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.deficient =
+  push_pbox_toexpand("kanji.rare.deficient");
+  build_kanji.level(build_kanji.sscale(yscaled 1.1 shifted (0,40))
+    (build_kanji.tb(500,100)
+       (build_kanji.sscale(xscaled 0.8)(kanji.grone.one))
+       (kanji.rare.obstruction)));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.director =
   push_pbox_toexpand("kanji.rare.director");
   tsu_xform(identity yscaled 0.5 shifted (0,400))
@@ -305,12 +314,35 @@ vardef kanji.rare.notwithstanding =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.obstruction =
+  push_pbox_toexpand("kanji.rare.obstruction");
+  push_stroke((90,740)--(910,740),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((320,736)..tension 1.2..(290,550)..(230,360),
+    (1.7,1.7)--(1.6,1.6)--(1.6,1.6));
+  push_stroke((get_strokep(0) intersectionpoint ((0,500)--(1000,500)))--
+      (780,500)..tension 1.7..(750,250)..(600,-10)..{curl 0.1}(390,0),
+    (1.6,1.6)--(1.6,1.6)--(1.5,1.5)--(1.7,1.7)--(1.8,1.8));
+  set_botip(0,1,1);
+  set_boserif(0,1,4);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.other =
   push_pbox_toexpand("kanji.rare.other");
   build_kanji.tb(450,200)
     (kanji.radical.silly_hat)
     (build_kanji.sscale(xscaled 0.79)
        (kanji.radical.spoon));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.outspokenly =
+  push_pbox_toexpand("kanji.rare.outspokenly");
+  build_kanji.level(build_kanji.tb(540,40)
+    (build_kanji.sscale(scaled 0.84)(build_kanji.lr(480,0)
+       (kanji.grone.mouth)(kanji.grone.mouth)))
+    (kanji.rare.deficient));
   expand_pbox;
 enddef;
 
@@ -413,5 +445,13 @@ vardef kanji.rare.walled_road =
   push_stroke((500,530)--(500,-20),(1.6,1.6)--(1.5,1.5));
   push_stroke((170,370)--(830,370),(1.5,1.5)--(1.5,1.5));
   push_stroke((170,210)--(830,210),(1.5,1.5)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.yin =
+  push_pbox_toexpand("kanji.rare.yin");
+  build_kanji.tb(380,100)
+    (kanji.grtwo.now)
+    (kanji.grnine.declaim);
   expand_pbox;
 enddef;

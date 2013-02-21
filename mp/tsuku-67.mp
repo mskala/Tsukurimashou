@@ -137,6 +137,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.die_in_obscurity =
+  push_pbox_toexpand("kanji.greight.die_in_obscurity");
+  build_kanji.lr(480,40)
+    (kanji.leftrad.wood)
+    (kanji.rare.obstruction);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % tsuki/getsu "moon"
 begintsuglyph("uni6708",8);
   kanji.grone.moon;
@@ -194,6 +204,12 @@ endtsuglyph;
 % setsu/fuda "banknote"
 begintsuglyph("uni672D",45);
   kanji.grfour.banknote;
+  tsu_render;
+endtsuglyph;
+
+% kyuu/ku "die in obscurity"
+begintsuglyph("uni673D",61);
+  kanji.greight.die_in_obscurity;
   tsu_render;
 endtsuglyph;
 

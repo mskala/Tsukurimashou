@@ -1,6 +1,6 @@
 %
 % Unicode page 4F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -593,6 +593,12 @@ endtsuglyph;
 % rei/tato "example"
 begintsuglyph("uni4F8B",139);
   kanji.grfour.example;
+  tsu_render;
+endtsuglyph;
+
+% Chinese character needed for "yin"
+begintsuglyph("uni4F8C",140);
+  kanji.rare.yin;
   tsu_render;
 endtsuglyph;
 

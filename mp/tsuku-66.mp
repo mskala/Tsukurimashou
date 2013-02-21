@@ -1,6 +1,6 @@
 %
 % Unicode page 66 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -179,6 +180,18 @@ vardef kanji.grfive.easy =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.outrage =
+  push_pbox_toexpand("kanji.grfive.outrage");
+  build_kanji.level(build_kanji.tb(540,30)
+    (kanji.grone.day)
+    (build_kanji.tb(380,120)
+       (kanji.grfour.together)
+       (build_kanji.sscale(xscaled 0.86)(kanji.radical.alt_water);
+        replace_strokep(-3)(oldp shifted (70,90));
+        replace_strokep(0)(oldp shifted (-50,90)))));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % shou/sakan "prosperity"
@@ -274,6 +287,12 @@ endtsuglyph;
 % an/kura "dark"
 begintsuglyph("uni6697",151);
   kanji.grthree.dark;
+  tsu_render;
+endtsuglyph;
+
+% bou/aba "outrage"
+begintsuglyph("uni66B4",180);
+  kanji.grfive.outrage;
   tsu_render;
 endtsuglyph;
 
