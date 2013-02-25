@@ -228,6 +228,7 @@ AM_CONDITIONAL([COND_PCRE],[test '!' "$have_pcre" = no])
 # Checks for header files.
 #
 AC_CHECK_HEADERS([libintl.h stdlib.h string.h wchar.h])
+AX_CREATE_STDINT_H
 #
 ############################################################################
 #
@@ -235,14 +236,16 @@ AC_CHECK_HEADERS([libintl.h stdlib.h string.h wchar.h])
 #
 AC_CHECK_SIZEOF([int])
 AC_TYPE_SIZE_T
+AX_C___ATTRIBUTE__
 TSU_C_ANON_UNION_STRUCT
+TSU_C_GCC_BUILTIN_BSWAP
 #
 ############################################################################
 #
 # Checks for library functions.
 #
 AX_FUNC_GETOPT_LONG
-AC_CHECK_FUNCS([memmove memset strchr])
+AC_CHECK_FUNCS_ONCE([memmove memset strchr])
 #
 ############################################################################
 #

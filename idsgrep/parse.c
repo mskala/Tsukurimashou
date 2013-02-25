@@ -1,6 +1,6 @@
 /*
  * Parser for IDSgrep
- * Copyright (C) 2012  Matthew Skala
+ * Copyright (C) 2012, 2013  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,35 @@ HASHED_STRING *close_bracket,*semicolon=NULL,*socked_head=NULL;
 		     || (((x)>='a') && ((x)<='f')) \
 		     || (((x)>='A') && ((x)<='F')))
 #define MYXVAL(x) (((x)&0x40)?(((x)&0xF)+9):((x)&0xF))
+
+int construct_utf8(int xval,char *ebuf) {
+   int clen;
+   
+   if (xval>=0x110000)
+     xval=0xFFFD;
+   if ((xval>=0xD800) && (xval<=0xDFFF))
+     xval=0xFFFD;
+   if (xval<0x80) {
+      clen=1;
+      ebuf[0]=xval;
+   } else if (xval<0x800) {
+      clen=2;
+      ebuf[0]=0xC0|(xval>>6);
+      ebuf[1]=0x80|(xval&0x3F);
+   } else if (xval<0x10000) {
+      clen=3;
+      ebuf[0]=0xE0|(xval>>12);
+      ebuf[1]=0x80|((xval>>6)&0x3F);
+      ebuf[2]=0x80|(xval&0x3F);
+   } else {
+      clen=4;
+      ebuf[0]=0xF0|(xval>>18);
+      ebuf[1]=0x80|((xval>>12)&0x3F);
+      ebuf[2]=0x80|((xval>>6)&0x3F);
+      ebuf[3]=0x80|(xval&0x3F);
+   }
+   return clen;
+}
 
 size_t parse(size_t len,char *inp) {
    int offs=0,clen,escaped,flag,xval,i;
@@ -206,29 +235,7 @@ size_t parse(size_t len,char *inp) {
 		 continue;
 	    }
 	    eptr=ebuf;
-	    if (xval>=0x110000)
-	      xval=0xFFFD;
-	    if ((xval>=0xD800) && (xval<=0xDFFF))
-	      xval=0xFFFD;
-	    if (xval<0x80) {
-	       clen=1;
-	       ebuf[0]=xval;
-	    } else if (xval<0x800) {
-	       clen=2;
-	       ebuf[0]=0xC0|(xval>>6);
-	       ebuf[1]=0x80|(xval&0x3F);
-	    } else if (xval<0x10000) {
-	       clen=3;
-	       ebuf[0]=0xE0|(xval>>12);
-	       ebuf[1]=0x80|((xval>>6)&0x3F);
-	       ebuf[2]=0x80|(xval&0x3F);
-	    } else {
-	       clen=4;
-	       ebuf[0]=0xF0|(xval>>18);
-	       ebuf[1]=0x80|((xval>>12)&0x3F);
-	       ebuf[2]=0x80|((xval>>6)&0x3F);
-	       ebuf[3]=0x80|(xval&0x3F);
-	    }
+	    clen=construct_utf8(xval,ebuf);
 	    offs-=clen;
 	    break;
 
@@ -623,6 +630,9 @@ void register_syntax(void) {
 
    register_special_functor("/",1,regex_match_fn);
    register_alias("regex","/");
+   
+   register_special_functor("#",1,user_match_fn);
+   register_alias("user","#");
 
    register_special_functor("\xE2\xBF\xB0",2,default_match_fn);
    register_alias("lr","\xE2\xBF\xB0");

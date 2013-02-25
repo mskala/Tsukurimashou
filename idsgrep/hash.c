@@ -1,6 +1,6 @@
 /*
  * String hash table for IDSgrep
- * Copyright (C) 2012  Matthew Skala
+ * Copyright (C) 2012, 2013  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,8 +68,11 @@ HASHED_STRING *alloc_string(size_t len) {
    rval->length=len;
    rval->arity=-2;
    rval->match_fn=default_match_fn;
+#ifdef HAVE_PCRE
    rval->pcre_compiled=NULL;
    rval->pcre_studied=NULL;
+#endif
+   rval->userpreds=UINTMAX_C(0);
    return rval;
 }
 
@@ -78,6 +81,7 @@ void free_string(HASHED_STRING *s) {
    
    while ((((size_t)1)<<i)<=s->length) i++;
    s->next=free_strings[i];
+#ifdef HAVE_PCRE
    if (s->pcre_compiled) {
       free(s->pcre_compiled); /* SNH */
       s->pcre_compiled=NULL; /* SNH */
@@ -86,6 +90,7 @@ void free_string(HASHED_STRING *s) {
       free(s->pcre_studied); /* SNH */
       s->pcre_studied=NULL; /* SNH */
    }
+#endif
    free_strings[i]=s;
 }
 

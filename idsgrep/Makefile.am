@@ -171,7 +171,8 @@ dist_pdf_DATA = $(MAYBE_DOCS)
 
 AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 idsgrep_SOURCES = \
-  assoc.c cook.c hash.c idsgrep.c idsgrep.h match.c parse.c regex.c
+  assoc.c cook.c hash.c idsgrep.c idsgrep.h match.c parse.c \
+  regex.c userpred.c
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS)
 
@@ -297,6 +298,9 @@ m4/ax_append_to_file.m4: ../m4/ax_append_to_file.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_check_gnu_make.m4: ../m4/ax_check_gnu_make.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_create_stdint_h.m4: ../m4/ax_create_stdint_h.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_count_cpus.m4: ../m4/ax_count_cpus.m4

@@ -129,6 +129,7 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 static struct option long_opts[] = {
    {"cooking",required_argument,NULL,'c'},
    {"dictionary",optional_argument,NULL,'d'},
+   {"font-chars",required_argument,NULL,'f'},
    {"help",no_argument,NULL,'h'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
@@ -156,7 +157,7 @@ int main(int argc,char **argv) {
    register_syntax();
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"Vc:d::h",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"Vc:d::f:h",long_opts,NULL))!=-1) {
       switch (c) {
 
        case 'V':
@@ -172,6 +173,10 @@ int main(int argc,char **argv) {
 	   dictname="";
 	 else
 	   dictname=optarg;
+	 break;
+	 
+       case 'f':
+	 font_file_userpred(optarg);
 	 break;
 	 
        case 'h':
@@ -198,6 +203,8 @@ int main(int argc,char **argv) {
 	  "  -V, --version             display version and license\n"
 	  "  -c, --cooking=FMT         set input/output cooking\n"
 	  "  -d, --dictionary=NAME     search standard dictionary\n"
+	  "  -f, --font-chars=FONT     use chars in FONT as a user-defined"
+	                             " predicate\n"
 	  "  -h, --help                display this help");
    
    if (show_version || show_help)
@@ -233,6 +240,7 @@ int main(int argc,char **argv) {
 			num_files>1?strlen(dictdir)+1:-1);
 	 globfree(&globres);
       }
+      free(dictglob);
    }
    
    /* loop on explicit filenames */

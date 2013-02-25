@@ -1,6 +1,6 @@
 /*
- * General header file IDSgrep
- * Copyright (C) 2012  Matthew Skala
+ * General header file for IDSgrep
+ * Copyright (C) 2012, 2013  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
  */
 
 #include "config.h"
+#include "_stdint.h"
 
 #ifdef HAVE_PCRE
 #include <pcre.h>
@@ -48,6 +49,7 @@ typedef struct _HASHED_STRING {
    pcre *pcre_compiled;
    pcre_extra *pcre_studied;
 #endif
+   uintmax_t userpreds;
 } HASHED_STRING;
 
 typedef struct _NODE {
@@ -131,6 +133,7 @@ extern int stack_ptr;
 extern PARSE_STATE parse_state;
 extern int echoing_whitespace;
 
+int construct_utf8(int,char *);
 size_t parse(size_t,char *);
 void register_syntax(void);
 
@@ -139,3 +142,11 @@ void register_syntax(void);
 /* regex.c */
 
 NODE *regex_match_fn(NODE *);
+
+/**********************************************************************/
+
+/* userpred.c */
+
+void font_file_userpred(char *);
+
+NODE *user_match_fn(NODE *);
