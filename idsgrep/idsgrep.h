@@ -145,6 +145,12 @@ NODE *regex_match_fn(NODE *);
 
 /**********************************************************************/
 
+/* unilist.c */
+
+void generate_unicode_list(NODE *,char *);
+
+/**********************************************************************/
+
 /* userpred.c */
 
 void font_file_userpred(char *);

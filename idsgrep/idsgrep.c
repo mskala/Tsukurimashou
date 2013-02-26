@@ -1,6 +1,6 @@
 /*
  * Extended IDS matcher
- * Copyright (C) 2012  Matthew Skala
+ * Copyright (C) 2012, 2013  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,8 +85,8 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 	 /* complain about errors */
 	 if (parse_state==PS_ERROR) {
 	    puts("can't parse input pattern");
-	       fwrite(input_buffer,1,parse_ptr,stdout);
-	       putchar('\n');
+	    fwrite(input_buffer,1,parse_ptr,stdout);
+	    putchar('\n');
 	    exit(1);
 	 }
 	 
@@ -131,6 +131,7 @@ static struct option long_opts[] = {
    {"dictionary",optional_argument,NULL,'d'},
    {"font-chars",required_argument,NULL,'f'},
    {"help",no_argument,NULL,'h'},
+   {"unicode-list",no_argument,NULL,'U'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
 };
@@ -145,9 +146,9 @@ static void usage_message(void) {
 int main(int argc,char **argv) {
    NODE *match_pattern;
    int c,num_files=0;
-   char *dictdir,*dictname=NULL,*dictglob;
+   char *dictdir,*dictname=NULL,*dictglob,*unilist_cfg=NULL;
    glob_t globres;
-   int show_version=0,show_help=0;
+   int show_version=0,show_help=0,generate_list=0;
    
    /* quick usage message */
    if (argc<2)
@@ -157,8 +158,13 @@ int main(int argc,char **argv) {
    register_syntax();
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"Vc:d::f:h",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"U::Vc:d::f:h",long_opts,NULL))!=-1) {
       switch (c) {
+	 
+       case 'U':
+	 generate_list=1;
+	 unilist_cfg=optarg;
+	 break;
 
        case 'V':
 	 show_version=1;
@@ -200,6 +206,7 @@ int main(int argc,char **argv) {
      puts("Usage: " PACKAGE_TARNAME " [OPTION]... PATTERN [FILE]...\n"
 	  "PATTERN should be an Extended Ideographic Description Sequence\n\n"
 	  "Options:\n"
+	  "  -U, --unicode-list=CFG    generate Unicode list\n"
 	  "  -V, --version             display version and license\n"
 	  "  -c, --cooking=FMT         set input/output cooking\n"
 	  "  -d, --dictionary=NAME     search standard dictionary\n"
@@ -226,6 +233,10 @@ int main(int argc,char **argv) {
    /* count explicit filenames */
    num_files=argc-optind;
    
+   /* generate Unicode list if requested */
+   if (generate_list)
+     generate_unicode_list(match_pattern,unilist_cfg);
+
    /* loop on default dictionaries */
    if (dictname!=NULL) {
       dictdir=getenv("IDSGREP_DICTDIR");
@@ -248,7 +259,7 @@ int main(int argc,char **argv) {
      process_file(match_pattern,argv[optind++],num_files>1?0:-1);
 
    /* read stdin or complain */
-   if (num_files==0) {
+   if ((num_files==0) && (generate_list==0)) {
       if (dictname==NULL)
 	process_file(match_pattern,"-",-1);
       else

@@ -160,8 +160,10 @@ void scan_format2_table(FILE *fontfile,int swap_votes,
    }
    
    /* do swapping up front - works because entire table is 16-bit entries */
-   for (i=2;i<(length/2);i++)
-     ((uint16_t *)format2_table)[i]=BSWAP16(((uint16_t *)format2_table)[i]);
+   if (swap_votes>0)
+     for (i=2;i<(length/2);i++)
+       ((uint16_t *)format2_table)[i]
+     =BSWAP16(((uint16_t *)format2_table)[i]);
    
    /* scan through high bytes */
    for (i=0;i<256;i++)
@@ -249,8 +251,10 @@ void scan_format4_table(FILE *fontfile,int swap_votes,
    }
    
    /* do swapping up front - works because entire table is 16-bit entries */
-   for (i=2;i<(length/2);i++)
-     ((uint16_t *)format4_table)[i]=BSWAP16(((uint16_t *)format4_table)[i]);
+   if (swap_votes>0)
+     for (i=2;i<(length/2);i++)
+       ((uint16_t *)format4_table)[i]
+     =BSWAP16(((uint16_t *)format4_table)[i]);
    
    /* set up the pointers */
    start_count=&(format4_table->end_count[0])
@@ -300,6 +304,83 @@ void scan_format4_table(FILE *fontfile,int swap_votes,
    }
    
    free(format4_table);
+}
+
+/**********************************************************************/
+
+/* note that the code for format 12 also works for format 13; glyph
+ * indices are calculated differently between the two, but here we
+ * are only interested in the question of whether they are defined at
+ * all, so the exact values don't matter matter. */
+
+typedef struct _FORMAT12_GROUP {
+   uint32_t start_char_code PACKED;
+   uint32_t end_char_code PACKED;
+   uint32_t start_glyph_id PACKED;
+} FORMAT12_GROUP;
+
+typedef struct _FORMAT12_TABLE {
+   uint16_t format PACKED;
+   uint16_t reserved PACKED;
+   uint32_t length PACKED;
+   uint32_t language PACKED;
+   uint32_t n_groups PACKED;
+   FORMAT12_GROUP groups[];
+} FORMAT12_TABLE;
+
+void scan_format12_table(FILE *fontfile,int swap_votes,
+			char *fn,int table_number) {
+   FORMAT12_TABLE *format12_table;
+   int i,j,k;
+   uint16_t reserved;
+   uint32_t length;
+   
+   /* read the table */
+   if (fread(&reserved,sizeof(reserved),1,fontfile)!=1) {
+      fprintf(stderr,"error reading %s (format 12 cmap subtable %d "
+	      "reserved field)\n",fn,table_number);
+      return;
+   }
+   if (fread(&length,sizeof(length),1,fontfile)!=1) {
+      fprintf(stderr,"error reading %s (format 12 cmap subtable %d length)\n",
+	      fn,table_number);
+      return;
+   }
+   if (swap_votes>0)
+     length=BSWAP32(length);
+   format12_table=malloc(length);
+   format12_table->format=12;
+   format12_table->length=length;
+   if (fread(((uint8_t *)format12_table)+8,length-8,1,fontfile)!=1) {
+      fprintf(stderr,"error reading %s (format 12 cmap subtable %d)\n",
+	      fn,table_number);
+      free(format12_table);
+      return;
+   }
+   
+   /* do swapping up front - works because entire table is 32-bit entries */
+   if (swap_votes>0)
+     for (i=2;i<(length/4);i++)
+       ((uint32_t *)format12_table)[i]
+     =BSWAP32(((uint32_t *)format12_table)[i]);
+
+   /* check that table is big enough */
+   if (16+12*format12_table->n_groups>format12_table->length) {
+      fprintf(stderr,"subtable too small in %s "
+	      "(format 12 cmap subtable %d)\n",fn,table_number);
+      free(format12_table);
+      return;
+   }
+   
+   /* scan through character codes */
+   for (i=0;i<format12_table->n_groups;i++)
+     if (format12_table->groups[i].start_glyph_id!=0)
+       for (j=format12_table->groups[i].start_char_code;
+	    j<=format12_table->groups[i].end_char_code;
+	    j++)
+	 add_userpred_character(j);
+   
+   free(format12_table);
 }
 
 /**********************************************************************/
@@ -547,9 +628,8 @@ void font_file_userpred(char *fn) {
 	    break;
 	    
 	  case 12: /* Microsoft segmented */
-	    break;
-	    
-	  case 13: /* many-to-one */
+	  case 13: /* many-to-one - can be handled by format 12 code */
+	    scan_format12_table(fontfile,swap_votes,fn,table_number);
 	    break;
 	    
 	  default:
@@ -595,9 +675,9 @@ NODE *user_match_fn(NODE *ms) {
      i=atoi(ms->nc_needle->child[0]->head->data);
    else
      i=1;
-   if (i==0)
+   if (i<=0)
      i=1;
-   ms->match_result=((i<=num_userpreds) && (i>0) &&
+   ms->match_result=((i<=num_userpreds) &&
 		     ((ms->nc_haystack->head->userpreds&(1<<(i-1)))!=0))?
      MR_TRUE:MR_FALSE;
    return ms;

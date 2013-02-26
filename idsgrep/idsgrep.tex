@@ -209,12 +209,25 @@ things in detail; for now, here are some examples.
   useful for the EDICT2-based meaning dictionary.
 \item[\texttt{idsgrep -d '...=?'}]~\\
   Equals escapes matching operators; this example searches for a literal
-  question mark anywhere in the tree. 
+  question mark anywhere in the tree.
 \item[\texttt{idsgrep -d '\textbackslash X840C'}]~\\
   Several kinds of backslash escapes allow entering characters that might
   not otherwise be available.
 \item[\texttt{idsgrep -d -c indent 萌}]~\\
   The \texttt{-c} option selects ``cooked'' or pretty-printed output modes.
+\item[\texttt{idsgrep -d -f FontFile.otf '\#1'}]~\\
+  The \texttt{-f} option reads the character set of an OpenType font
+  and makes it available as a user-defined matching predicate accessed
+  with the hash-mark; in the example, it looks up each character in the
+  default dictionaries.
+\item[\texttt{idsgrep -U '?'}]~\\
+  The \texttt{-U} option generates a list of Unicode characters.
+\item[\texttt{idsgrep -Uxdb '?'}]~\\
+  An optional argument to \texttt{-U} specifies information to include
+  in the generated list entries: \texttt{x} for hexadecimal
+  value, \texttt{d} for decimal, \texttt{b} for block name.
+\item[\texttt{idsgrep -U -f FontFile.otf '\#1'}]~\\
+  Combine \texttt{-U} and \texttt{-f} to list the characters in a font.
 \end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -282,12 +295,15 @@ of \texttt{grep} to Han character dictionaries.
 
 \section{What's new}
 
-The main new features in version 0.3 are:
+The main new features in version 0.4 are:
 \begin{itemize}
-\item associative and regular-expression matching;
-\item the CHISE IDS-derived dictionary, and related support such as
-offering a choice of which dictionary to join with EDICT2; and
-\item cooked output modes.
+  \item changes to the build system for better integration with
+    Tsukurimashou;
+  \item support for user-defined matching predicates, and in particular, the
+    ability to match against the list of characters defined by a font file
+    (``\texttt{-f}'' option);
+  \item built-in generation of Unicode character lists (``\texttt{-U}''
+    option).
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -621,13 +637,13 @@ IDSgrep itself.
 \section{Interface to EDICT2}
 
 Jim Breen's JMdict/EDICT project maintains a file called
-EDICT2~\cite{EDICT2} which is more like a traditional dictionary, with words
-and meanings, than a database of kanji.  Such dictionaries are not the
-primary target of IDSgrep and IDSgrep's query syntax is not perfectly suited
-to them.  However, planned future regular-expression matching features may
-make it more practical to search EDICT2 with IDSgrep, and even in the
-current version, there is some value in being able to do sub-character
-structural searches on multi-character words.
+EDICT2~\cite{EDICT2} which is more like a traditional dictionary, with
+words and meanings, than a database of kanji.  Such dictionaries are
+not the primary target of IDSgrep and IDSgrep's query syntax is not
+perfectly suited to them.  However, the regular-expression matching
+features may make it practical to search EDICT2 with IDSgrep, and
+there is some value in being able to do sub-character structural
+searches on multi-character words.
 
 If another dictionary besides EDICT2 is available
 (subject to configuration by \texttt{--enable-edict-decomp}), then the
@@ -688,51 +704,168 @@ IDSgrep's source control system is a subdirectory within Tsukurimashou's.
 Building IDSgrep in conjunction with Tsukurimashou allows IDSgrep to extract
 from the Tsukurimashou build system a dictionary of character decompositions
 as they appear in Tsukurimashou.  The Tsukurimashou fonts are also necessary
-to build this IDSgrep user manual. However, IDSgrep and Tsukurimashou
-are distributed as separate packages, because they have very different
-audiences and build prerequisites.  Many people who can use one will be
-unable to use the other, so it seems inappropriate to force all users to
-download both.
+to build this IDSgrep user manual.  However, IDSgrep is also distributed as a
+separate package, because it will be of use to non-users of Tsukurimashou,
+and the Tsukurimashou build system will not recurse into IDSgrep's directory
+and build IDSgrep by default; only if requested.
 
-When IDSgrep's \texttt{configure} script runs, it looks for a valid
-Tsukurimashou build directory.  Ideally, that would be one in which
-Tsukurimashou has actually been fully built; but a directory where the
-Tsukurimashou \texttt{configure} script has been executed is enough.  If a
-valid Tsukurimashou build directory is found automatically or specified with
-the \texttt{--with-tsuku-build} option to \texttt{configure}, then when
-\texttt{make} is run on IDSgrep, it will recursively go call \texttt{make
-eids} in the Tsukurimashou build.  That is a hook that causes
-Tsukurimashou's build system to generate the EIDS decomposition dictionary,
-which is then copied or linked back into IDSgrep's build directory and can
-be installed with IDSgrep's \texttt{make install}.  IDSgrep's build will
-also look in Tsukurimashou's build directory for the font ``Tsukurimashou
-Mincho'' which is needed to build this user manual, and will make
-recursive calls to \texttt{make} for Tsukurimashou to build that if
-necessary.
+IDSgrep is one of several parasite packages of Tsukurimashou, using a
+mechanism introduced in Tsukurimashou 0.7 and IDSgrep 0.4.  Previous
+versions used a different interface.
 
-Note that neither Tsukurimashou nor IDSgrep is a true ``sub-package'' of the
-other in the sense of Autotools~\cite{Autotools}, as mediated by the
-\texttt{SUBDIRS} Automake variable and so on, notwithstanding that a
-checked-out SVN working copy of Tsukurimashou will contain a working copy of
-IDSgrep in a subdirectory.  Running the Tsukurimashou build will not invoke
-the IDSgrep build at all; and running the IDSgrep build is not a good way to
-trigger a full Tsukurimashou build, because it won't use the preferred
-\texttt{-j} option, track all dependencies in detail, nor generate anything
-that doesn't happen to be a prerequisite for the files IDSgrep needs.  If
-you want to build both systems, it's best to build Tsukurimashou first and
-then build IDSgrep pointing at Tsukurimashou.  Also, these two packages do
-not necessarily have the same portability considerations, and it's possible
-that the link between them may fail even on systems where each package
-builds correctly by itself (for instance, possibly on some systems where GNU
-Make is installed but non-default).  The link between Tsukurimashou and
-IDSgrep provides some convenience for my own frequent case of making changes
-to both packages at once.
+To build Tsukurimashou with IDSgrep:  specify the
+``\texttt{-{}-enable-parasites}'' option to Tsukurimashou's
+\texttt{configure} script with an appropriate value, such as
+``\texttt{-{}-enable-parasites=idsgrep}''.  See the Tsukurimashou
+documentation for other possible values of this option.  Building
+Tsukurimashou will then implicitly build IDSgrep.  It should be possible to
+pass IDSgrep \texttt{configure} options to Tsukurimashou's
+\texttt{configure} script and have them automatically passed down the chain
+(in the standard Autotools sub-package fashion) but that is not well-tested.
 
-In order for IDSgrep to work together with Tsukurimashou, it is necessary
-that the Tsukurimashou build be one that supports the \texttt{make eids}
-target in the first place.  Packaged versions of Tsukurimashou from 0.6
-onward include EIDS support, and development versions of Tsukurimashou in
-the SVN repository have included EIDS support since early January 2012.
+To build Tsukurimashou without IDSgrep:  this is the default when you run
+the Tsukurimashou build from the root of the Tsukurimashou distribution. 
+The IDSgrep source is included as a subdirectory in distributions of
+Tsukurimashou, but only built on request.
+
+For a more customized build of IDSgrep, with or without Tsukurimashou:  you
+can also run IDSgrep's \texttt{configure} in its own directory, and then do
+\texttt{make} (and the usual targets) there.  It will look for Tsukurimashou
+(specifically, a build directory in which Tsukurimashou's \texttt{configure}
+has \emph{already been executed}) as the parent directory and in a few other
+places, or you can specify the location of a Tsukurimashou build with the
+``\texttt{--with-tsuku-build}'' option to IDSgrep's \texttt{configure}.  If
+Tsukurimashou is not available, IDSgrep will build without creating
+the Tsukurimashou-derived dictionary file.
+
+During IDSgrep's build, if it can access a Tsukurimashou build directory, it
+will recursively call \texttt{make eids} on Tsukurimashou's build system. 
+That is a hook that causes Tsukurimashou's build system to generate the EIDS
+decomposition dictionary, which is then copied or linked back into IDSgrep's
+build directory and can be installed with IDSgrep's \texttt{make install}. 
+IDSgrep's build will also look in Tsukurimashou's build directory for the
+font ``Tsukurimashou Mincho'' which is needed to build this user manual, and
+will make recursive calls to \texttt{make} for Tsukurimashou to build that
+if necessary.  This kind of upward-callback \texttt{make} invocation is a
+little inefficient (in particular, it does not handle jobserver mode well)
+so it is better, if you want both packages, to use the centralized
+Tsukurimashou build system, which will do its own thing first and then call
+IDSgrep's build near the end in a better-integrated way.  If you want to
+run ``\texttt{make install}'' just on IDSgrep and not on Tsukurimashou
+(which might be a reasonable thing to want because of operating system font
+installation issues), you should run just ``\texttt{make}'' in
+Tsukurimashou's directory, then \texttt{cd} to IDSgrep's directory and run
+``\texttt{make install}.''
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{A note on TrueType/OpenType}
+
+This version of IDSgrep is designed to read TrueType or OpenType files
+(the distinction between the two is not relevant at this level) for
+character map information.  The specification for the
+TrueType/OpenType file format reads like a parody.  I'd like to take a
+moment to complain about a few things.
+
+\begin{itemize}
+  \item Although the format contains binary fields which must be read
+    in a specific byte order, one of the two magic numbers that can
+    identify the file format (for a single font as opposed to a
+    ``collection'') is 0x4F54544F, which is a palindrome at the byte
+    level and thus useless for detecting byte order problems.
+  \item The other possible magic number for non-collection files
+    is 0x00010000, which is quite likely to occur in files that are
+    not TrueType/OpenType files, making it harder to detect when one
+    may have been passed a bad file.
+  \item Many decades of research on error detection codes were ignored
+    in the design of the OpenType checksum algorithm, which (among
+    other issues) cannot detect any reordering of 32-bit words unless
+    it crosses a table boundary.  At least the algorithm produces its
+    meaningless results fast; yay, efficiency!
+  \item There are 32-bit byte offsets referenced to the start of the file.
+    There are 32- and 16-bit byte offsets referenced to the start of
+    the current table.  There are 32- and 16-bit byte offsets
+    referenced to the \emph{locations of the offset fields themselves}, so a
+    field at offset 0x1234 referring to another field at offset 0x5678
+    will contain 0x4444.  There are also indices measured in units
+    other than bytes.
+  \item There are variable-length objects not tagged
+    with their lengths except indirectly: they are presumably
+    contained entirely within larger objects that are tagged with lengths.
+  \item Consider the cmap format 4 subtable, which Microsoft
+    says is their preferred format.  It includes four
+    variable-length arrays each containing segCount
+    number of two-byte entries.  The value of segCount is not directly
+    recorded anywhere, but these values are all required
+    in the header:
+    \begin{itemize}
+      \item[$\circ$] $2 \cdot \textrm{segCount}$;
+      \item[$\circ$] $2 \cdot 2^{\lfloor \log_2 \textrm{segCount} \rfloor}$;
+      \item[$\circ$] $\log_2 (2 \cdot 2^{\lfloor \log_2 \textrm{segCount}
+        \rfloor}/2)$ (which is described like that in the spec);
+        and of course
+      \item[$\circ$] $2 \cdot \textrm{segCount}-2 \cdot 2^{\lfloor \log_2
+        \textrm{segCount} \rfloor}$.
+    \end{itemize}
+  \item The bizarre length-derived values in the format 4 header (and
+    other similar sets of table-size-logarithm numbers that occur
+    elsewhere in the file format) appear to be designed to support
+    someone's binary search code.  Instead of computing those numbers
+    itself starting from the length, the search code can just use
+    values straight from the table to initialize its variables.
+    Consider what would happen if someone actually did that as the
+    designers apparently intended, and the numbers happened to be incorrect
+    in the file.  If, for instance, numbers in the file were swapped
+    around on 32-bit boundaries, the checksums wouldn't detect a problem; and
+    the speed demons who think they need precomputed logarithms
+    probably aren't wasting time checking checksums anyway.
+    The code isn't checking whether the numbers are consistent (because
+    to do that you would have to calculate them fresh, and then why bother
+    storing them in the first place?), so it will end up ``searching'' into
+    random areas of the file, or into uninitialized memory beyond.  Now
+    think about the relative costs of disk reads, network transfer, and
+    arithmetic, and consider whether having those values precalculated
+    and stored in the file would actually save any time even if they
+    could be trusted.
+  \item The cmap format 4 subtable consists of, in this order: fixed-length
+    stuff totalling 14 bytes; one variable-length array of length $2
+    \cdot \textrm{segCount}$ bytes; \emph{one more two-byte
+    fixed-length field}; three more variable-length arrays each of
+    length $2 \cdot \textrm{segCount}$ bytes; and finally, one more
+    variable-length array whose length is not directly specified
+    anywhere but could presumably be inferred by subtracting from the
+    known size of the overall table. The four $2 \cdot
+    \textrm{segCount}$-byte arrays are actually the rearranged slices
+    of a single logical array whose elements are four-field
+    structures; but the extra reserved two bytes
+    stuck in the middle of the table make a straightforward transposition
+    impossible.  Four-tuples of the same kind with the same four fields
+    also occur in the format 2 subtable; but there, they occur as a single
+    array with each record written in an 8-byte block.
+  \item It is an intended, documented feature that some of the
+    variable-length arrays in TrueType/OpenType may overlap with each other. 
+    As a result, bounds-checking, in addition to being intrinsically
+    difficult because of the lack of information, would cause the
+    reader to reject some files that the specification claims are
+    legitimate.
+  \item Code-injection bugs allowing execution of arbitrary
+    code in a privileged context have been reported in software
+    that implemented this file format without bounds-checking.  This should
+    surprise no one.
+\end{itemize}
+
+IDSgrep attempts to do all reasonable bounds-checking on the fields it
+needs, and to ignore fields it does not need; given a bad TrueType/OpenType
+file, it is intended that IDSgrep should be able to make the best of it and
+at worst fail gracefully with an error message.  It should not be possible
+to crash IDSgrep by giving it a bad font file to read.
+
+However, the nature of the file format means that at least in the
+current version, we can't be confident all possible problems have
+been foreseen and excluded.  Let me know if you find a font file that
+makes IDSgrep crash and I'll try to fix it. IDSgrep probably should not be
+allowed to read font files supplied by untrusted sources such as Web
+users.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -789,6 +922,34 @@ argument, which may be one of the keywords \texttt{raw}, \texttt{rawnc},
 mode; or a string of up to twelve decimal digits to control the output in
 more detail.  The default mode is \texttt{raw}.  See the
 section on ``cooked output'' in this manual for more details.
+
+\item[\texttt{-f}, \texttt{--font-chars}]
+Read a font file and make its character coverage available as a
+user-defined matching predicate through the ``\texttt{\#}'' matching
+operator.  In the current version, this feature can only read TrueType
+and OpenType files that contain Unicode (or near equivalent) mappings
+described with cmap subtable types 0, 2, 4, 12, or 13.  This option may
+be specified multiple times, with successive invocations corresponding
+to user-defined predicates 1, 2, 3, and so on.
+
+\item[\texttt{-U}, \texttt{--unicode-list}]
+Generate a dictionary of Unicode code points, and read that before
+reading any other dictionaries or input files that may be specified.
+The generated dictionary consists of a single line for each of the
+code points U+0000 through U+10FFFF in ascending order, excluding the
+surrogates but not any other invalid or non-character code points; on
+each line, there is a tree whose head is the character and whose body
+is either a nullary semicolon or (if the optional argument to
+\texttt{-U} was specified) a nullary functor containing
+semicolon-separated pieces of information selected by the characters of the
+optional argument.  Characters permitted in the argument
+are ``\texttt{b}'' for the Unicode block name; ``\texttt{d}'' for the
+decimal value of the code point; and ``\texttt{x}'' for the
+hexadecimal value with ``U+.''  For example, specifying
+``\texttt{-Uxdb}'' will generate and scan a dictionary that includes
+the line ``\texttt{<A>(U+0041;65;Basic Latin)}.''
+This option is intended to be used together with \texttt{-f} to produce
+font coverage lists.
 
 \item[\texttt{-V}, \texttt{--version}] Display the version and license
 information for IDSgrep.
@@ -1082,7 +1243,7 @@ in one of three ways.
 \end{itemize}
 
 Here are all the characters that have sugary implicit brackets, with the
-brackets they imply:  {\ttfamily (;) (?) .!. ./. .=. .*. .@. [\&] [,]
+brackets they imply:  {\ttfamily (;) (?) .!. ./. .=. .*. .@. .\#. [\&] [,]
 [|] [⿰] [⿱] [⿴] [⿵] [⿶] [⿷] [⿸] [⿹] [⿺] [⿻] \{⿲\} \{⿳\}}
 
 Note that the sugary and syrupy implications of a character are only
@@ -1123,14 +1284,14 @@ on output cooking for more information.
   (anything) & $\Rightarrow$ & (?) & .anywhere. & $\Rightarrow$ & ... \\
   .not. & $\Rightarrow$ & .!. & .regex. & $\Rightarrow$ & ./. \\
   .equal. & $\Rightarrow$ & .=. & .unord. & $\Rightarrow$ & .*. \\
-  .assoc. & $\Rightarrow$ & .@. & [and] & $\Rightarrow$ & [\&] \\\relax
-  [or] & $\Rightarrow$ & [|] & [lr] & $\Rightarrow$ & [⿰] \\\relax
-  [tb] & $\Rightarrow$ & [⿱] & [enclose] & $\Rightarrow$ & [⿴] \\\relax
-  [wrapu] & $\Rightarrow$ & [⿵] & [wrapd] & $\Rightarrow$ & [⿶] \\\relax
-  [wrapl] & $\Rightarrow$ & [⿷] & [wrapul] & $\Rightarrow$ & [⿸] \\\relax
-  [wrapur] & $\Rightarrow$ & [⿹] & [wrapll] & $\Rightarrow$ & [⿺] \\\relax
-  [overlap] & $\Rightarrow$ & [⿻] & \{lcr\} & $\Rightarrow$ & \{⿲\} \\\relax
-  \{tcb\} & $\Rightarrow$ & \{⿳\}
+  .assoc. & $\Rightarrow$ & .@. & .user. & $\Rightarrow$ & .\#. \\\relax
+  [and] & $\Rightarrow$ & [\&] & [or] & $\Rightarrow$ & [|] \\\relax
+  [lr] & $\Rightarrow$ & [⿰] & [tb] & $\Rightarrow$ & [⿱] \\\relax
+  [enclose] & $\Rightarrow$ & [⿴] & [wrapu] & $\Rightarrow$ & [⿵] \\\relax
+  [wrapd] & $\Rightarrow$ & [⿶] & [wrapl] & $\Rightarrow$ & [⿷] \\\relax
+  [wrapul] & $\Rightarrow$ & [⿸] & [wrapur] & $\Rightarrow$ & [⿹] \\\relax
+  [wrapll] & $\Rightarrow$ & [⿺] & [overlap] & $\Rightarrow$ & [⿻] \\
+  \{lcr\} & $\Rightarrow$ & \{⿲\} & \{tcb\} & $\Rightarrow$ & \{⿳\}
 \end{tabular}}
 
 The \texttt{idsgrep} command-line utility attempts to follow Postel's Law
@@ -1487,6 +1648,32 @@ just ``\texttt{\textbackslash0}'' if the next character will
 not be an octal digit) matches a zero byte.  As discussed above,
 additional escaping might be needed to ensure that PCRE, and not EIDS nor
 the shell, interprets the backslash escape.
+
+\subsection{User-defined matching predicates}
+
+It is assumed that by some out-of-band means, we have defined a
+family of functions $U_i()$ for $i$ from $1$ up to some $k$.  These
+functions take EIDS trees as input and return Boolean values (hence
+``predicates'').
+
+Then the value of $\textit{match}'(\texttt{.\#.}x,y)$ is determined as
+follows.  First, an integer $i$ is computed.  If $x$ has a head, its
+initial characters will be parsed as an ASCII decimal number using the
+C library's \texttt{atoi(3)} function; $i$ is the resulting value, if
+it is positive.  If $x$ has no head, the head of $x$ cannot be parsed,
+or the head of $x$ is parsed as zero or negative, then $i$ is
+defined to be $1$.  Having defined $i$, if $U_i()$ exists then
+$\textit{match}'=U_i(y)$.  If $U_i()$
+does not exist then $\textit{match}'$ is false.  Mnemonic: hash-mark
+is used for parameter substitution in languages such as \TeX, and this
+matching operation causes the matching pattern to take something
+external (the user-defined predicate) as a parameter.
+
+In the current version, the functions $U_i()$ are always defined using
+the ``\texttt{-f}'' command-line option (or its long-named equivalent)
+and correspond to the character coverage of TrueType or OpenType
+fonts.  The predicate returns true if and only if $y$ has a head
+consisting of a single Unicode character that is covered by the font.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
