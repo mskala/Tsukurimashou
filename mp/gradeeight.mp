@@ -357,6 +357,14 @@ vardef kanji.greight.spine =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.strange =
+  push_pbox_toexpand("kanji.greight.strange");
+  build_kanji.tb(420,0)
+    (build_kanji.sscale(xscaled 0.78)(kanji.leftrad.big))
+    (kanji.grfive.passable);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.sweet =
   push_pbox_toexpand("kanji.greight.sweet");
   kanji.grnine.twenty;

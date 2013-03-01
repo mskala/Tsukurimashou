@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -226,6 +227,12 @@ endtsuglyph;
 % en/oo "suffocate"
 begintsuglyph("uni5944",68);
   kanji.grnine.suffocate;
+  tsu_render;
+endtsuglyph;
+
+% ki/ku "strange"
+begintsuglyph("uni5947",71);
+  kanji.greight.strange;
   tsu_render;
 endtsuglyph;
 

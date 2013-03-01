@@ -1,6 +1,6 @@
 %
-% Unicode page 7C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Unicode page 7B (Kanji) for Tsukurimashou
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -136,6 +136,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.code =
+  push_pbox_toexpand("kanji.greight.code");
+  build_kanji.level(build_kanji.tb(520,210)
+    (kanji.toprad.bamboo)
+    (kanji.grfour.attach));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % shou/wara "laugh"
 begintsuglyph("uni7B11",17);
   kanji.grfour.laugh;
@@ -145,6 +155,12 @@ endtsuglyph;
 % teki/fue "flute"
 begintsuglyph("uni7B1B",27);
   kanji.grthree.flute;
+  tsu_render;
+endtsuglyph;
+
+% fu "code"
+begintsuglyph("uni7B26",38);
+  kanji.greight.code;
   tsu_render;
 endtsuglyph;
 

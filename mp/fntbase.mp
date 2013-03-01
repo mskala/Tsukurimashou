@@ -1293,28 +1293,40 @@ def end_skip =
 enddef;
 
 def uni_name(text name) = % name is either a suffix or a string expression
- if is_suffix(name): name else: scantokens("_" & name) fi
+  if is_suffix(name):
+    name
+  else:
+    scantokens (begingroup
+      save rval;
+      string rval;
+      rval:="" for i=1 upto length (name):
+        & "_" & (substring (i-1,i) of (name))
+      endfor;
+      rval
+    endgroup)
+  fi
 enddef;
 
 def glyph_name_ext = enddef;
 def beginglyph(text name) =
  %
+ def original_glyph_name = name enddef;
  def glyph_name = uni_name(name) glyph_name_ext enddef; % to use in |endglyph|
  numeric glyph_usage; glyph_usage:=glyph_usage.glyph_name;
  if unknown glyph_usage: expandafter begin_skip fi
- string ps_name; ps_name:=glyph_ps_name.glyph_name;
+ string ps_name; ps_name:=original_glyph_name;
  if unknown ps_name:
   errhelp "Use macro `introduce' or `assign_name' prior to `beginglyph.'";
   errmessage "MT1: PS name not assigned to " & str glyph_name;
  fi
- if name_used(glyph_name):
+ if name_used(original_glyph_name):
   errhelp "Proceed if you wish, I'll use the second glyph description.";
   errmessage "MT1: double output: name " & (str glyph_name);
  fi
  if glyph_usage mod store = 1: % utilizing
-  mark_name_used(glyph_name);
+  mark_name_used(original_glyph_name);
  fi
- numeric glyph_code, glyph_num; glyph_code:=name_to_code(glyph_name);
+ numeric glyph_code, glyph_num; glyph_code:=name_to_code(original_glyph_name);
   if glyph_code<0: glyph_num:=500-decr(min_glyph_code); else:
    glyph_num:=100+glyph_code;
    if glyph_code>max_glyph_code: max_glyph_code:=glyph_code; fi
@@ -1397,7 +1409,7 @@ def introduce suffix name =
  else: introduce__ name fi
 enddef;
 def introduce_ expr name = % name is expected to be a string expression
- introduce__ scantokens("_" & name)
+ introduce__ uni_name(name)
 enddef;
 vardef introduce__@#(expr usage, slanting)(text stencil) =
  if (unknown process_selected or known process_selected@#)
@@ -1437,7 +1449,7 @@ enddef;
 
 vardef name_to_code(text name) =
  save res_, name_; string name_;
- name_:=substring (1,infinity) of str uni_name(name); res_=-1;
+ name_:=name; res_=-1;
  for i:=0 upto 255: % 1-to-1 coding presumed
   if known code_to_name_[i]: if code_to_name_[i]=name_: res_:=i; fi fi
   exitif res_>-1;
@@ -1454,19 +1466,19 @@ def encode(text name)(expr glyph_code)=
   errmessage "MT1: repeated code for " & code_to_name_[glyph_code] &
     " (" & decimal(glyph_code) & "; `encode' ignored)";
  else:
-  code_to_name_[glyph_code]:=substring (1,infinity) of str uni_name(name);
+  code_to_name_[glyph_code]:=name;
  fi
 enddef;
 string code_to_name_[\\];
 
 vardef name_used(text name) =
  save res_, name_; boolean res_; string name_;
- name_:=substring (1,infinity) of str uni_name(name); res_:=false;
+ name_:=name; res_:=false;
  for i:=1 upto max_name_used: res_:=(name_used_[i]=name_); exitif res_; endfor
  res_
 enddef;
 def mark_name_used(text name)=
- name_used_[incr max_name_used]:=substring (1,infinity) of str uni_name(name);
+ name_used_[incr max_name_used]:=name;
 enddef;
 string name_used_[\\]; newinternal max_name_used;
 

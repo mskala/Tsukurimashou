@@ -51,6 +51,19 @@ vardef kanji.leftrad.bare_bone =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.big =
+  push_pbox_toexpand("kanji.grone.big");
+  push_stroke((90,500)--(910,500),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((510,780){down}..(370,200)..{curl 0.5}(50,-20),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  push_stroke(((60,-60)+point 0.6 of get_strokep(0))..tension 1.1..
+      (750,190)..(860,0),
+    (0.9,1)--(1.3,1.3)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.boat =
   push_pbox_toexpand("kanji.leftrad.boat");
   push_stroke((560,850)..tension 1.2..(500,750)..(450,700),
@@ -168,6 +181,16 @@ vardef kanji.leftrad.heart =
     (1,1)--(1.4,1.4)--(1.7,1.7));
   push_stroke((660,660)..tension 1.2..(840,530)..(890,470),
     (1,1)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
+vardef kanji.leftrad.husband =
+  push_pbox_toexpand("kanji.leftrad.husband");
+  kanji.grfour.husband;
+  pop_stroke;
+  push_stroke(((get_strokep(-1) intersectionpoint get_strokep(0))+(0,-40))..
+      (720,170)..(870,30),
+    (1.1,1.1)--(1.4,1.4)--(1.7,1.7));
   expand_pbox;
 enddef;
 

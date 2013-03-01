@@ -1,6 +1,6 @@
 %
 % Unicode page 7F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -61,6 +61,22 @@ vardef kanji.grthree.learn =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.leave_behind =
+  push_pbox_toexpand("kanji.grfour.leave_behind");
+  build_kanji.tb(640,40)
+    (build_kanji.sscale(scaled 0.84)(kanji.toprad.eye))
+    (kanji.grtwo.straight);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% chi/o "desert" or "leave behind"
+begintsuglyph("uni7F6E",110);
+  kanji.grfour.leave_behind;
+  tsu_render;
+endtsuglyph;
 
 % you/hitsuji "sheep"
 begintsuglyph("uni7F8A",138);

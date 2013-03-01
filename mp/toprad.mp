@@ -87,6 +87,14 @@ vardef kanji.toprad.cave =
   expand_pbox;
 enddef;
 
+vardef kanji.toprad.eye =
+  push_pbox_toexpand("kanji.toprad.eye");
+  build_kanji.box((130,800),(870,120));
+  push_stroke((376,800)--(376,120),(1.6,1.6)--(1.5,1.5));
+  push_stroke((624,800)--(624,120),(1.6,1.6)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
 vardef kanji.toprad.grass =
   push_pbox_toexpand("kanji.toprad.grass");
   push_stroke((350,800)--(350,-30),

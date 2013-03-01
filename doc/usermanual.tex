@@ -1194,7 +1194,7 @@ feature.  Similar limitations apply.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{FIXME}{Contextual Alternates (calt)}
+\blsubsection{文脈代替字}{Contextual Alternates (calt)}
 
 The ``calt'' feature in general replaces glyphs with other glyphs that look
 better in certain contexts.  In the Tsukurimashou family, it is used only by
@@ -1495,7 +1495,7 @@ reshaping the tail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{FIXME}{Limit Private Use Area Code Points (xpua)}
+\blsubsection{私用符号位置を避けて}{Limit Private Use Area Code Points (xpua)}
 
 This is not the usual kind of OpenType feature, but is configured through
 the same interface as the others.
@@ -1528,13 +1528,15 @@ name, resulting, for instance, in incorrect text when cutting and pasting
 from a PDF file.  Encoding glyphs to PUA code points could also possibly
 conflict with other uses of the same PUA code points by other software.  So
 all in all it is usually preferable that these glyphs should not have any
-code point mappings at all in the finished fonts.  On the other hand, removing
-their code point mappings means it is no longer possible to access the
-glyphs directly by code point; then users \emph{must} use the glyph
-substitution features instead, which means both that the glyphs are only
-available in the contexts where the substitution features are designed to
-provide them, and that the users must have OpenType rendering software that
-at least sort of works (which is not necessarily common in the field).
+code point mappings at all in the finished fonts.  On the other hand,
+removing their code point mappings means it is no longer possible to access
+the glyphs directly by code point; then short of using third-party software
+to bypass the mapping tables and access glyphs by raw glyph numbers, users
+\emph{must} use the glyph substitution features instead, which means both
+that the glyphs are only available in the contexts where the substitution
+features are designed to provide them, and that the users must have OpenType
+rendering software that at least sort of works (which is not necessarily
+common in the field).
 
 The ``xpua'' feature allows a configuration choice between these two
 situations.  With it turned on, which is the default, most of
@@ -2492,7 +2494,7 @@ article about the parasite mechanism at some point in the future.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{FIXME}{Parasite packages}
+\blsubsection{寄生パッケージ}{Parasite packages}
 
 Some of the technology developed to support Tsukurimashou has more general
 applicability.  For instance, the stripped-down version of METATYPE1 bundled

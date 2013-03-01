@@ -51,19 +51,7 @@ do_late_includes;
 vardef kanji.grtwo.buy =
   push_pbox_toexpand("kanji.grtwo.buy");
   build_kanji.level(build_kanji.tb(610,0)
-    (begingroup
-       save x,y;
-       numeric x[],y[];
-       x1=x5=130;
-       x2=x6=0.333[x1,x4];
-       x3=x7=0.667[x1,x4];
-       x4=x8=1000-x1;
-       y1=y2=y3=y4=700;
-       y5=y6=y7=y8=120;
-       build_kanji.box(z1,z8);
-       push_stroke(z2--z6,(1.6,1.6)--(1.5,1.5));
-       push_stroke(z3--z7,(1.6,1.6)--(1.5,1.5));
-     endgroup)
+    (kanji.toprad.eye)
     (kanji.grone.shell));
   expand_pbox;
 enddef;
