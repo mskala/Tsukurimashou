@@ -359,6 +359,15 @@ vardef kanji.rare.outspokenly =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.punish =
+  push_pbox_toexpand("kanji.rare.punish");
+  build_kanji.level(build_kanji.lr(420,0)
+    (kanji.radical.flag;
+     build_kanji.box((280,280),(780,0)))
+    (kanji.greight.acrid));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.roll_of_cloth =
   push_pbox_toexpand("kanji.rare.roll_of_cloth");
   build_kanji.level(build_kanji.tb(360,20)

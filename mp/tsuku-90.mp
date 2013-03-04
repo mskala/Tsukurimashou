@@ -1,6 +1,6 @@
 %
 % Unicode page 90 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input bottomrad.mp;
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -167,6 +168,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.avoid =
+  push_pbox_toexpand("kanji.greight.avoid");
+  build_kanji.road_enclose(kanji.rare.punish);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % tai/shirizo "expel"
 begintsuglyph("uni9000",0);
   kanji.grfive.expel;
@@ -236,6 +245,12 @@ endtsuglyph;
 % sen/era "choose"
 begintsuglyph("uni9078",120);
   kanji.grfour.choose;
+  tsu_render;
+endtsuglyph;
+
+% hi/sa "avoid"
+begintsuglyph("uni907F",127);
+  kanji.greight.avoid;
   tsu_render;
 endtsuglyph;
 

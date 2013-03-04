@@ -40,6 +40,17 @@ vardef kanji.greight.a_certain =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.acrid =
+  push_pbox_toexpand("kanji.greight.acrid");
+  build_kanji.level(build_kanji.tb(520,50)
+    (kanji.radical.kettle_lid)
+    (build_kanji.sscale(xyscaled (1.2,1.4) shifted (0,-140))
+       (kanji.grthree.sheep);
+     obstacktype[find_stroke(-3)]:=otnull;
+     replace_strokep(0)((point 0 of oldp)--(500,-50))));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.axe =
   push_pbox_toexpand("kanji.greight.axe");
   push_stroke((770,810)..tension 1.2..(550,740)..(250,700),

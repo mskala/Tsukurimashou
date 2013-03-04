@@ -1,6 +1,6 @@
 %
 % Unicode page 8F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -38,7 +38,9 @@ input gradeeight.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -122,6 +124,18 @@ vardef kanji.grnine.grope_along =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% shin/kara "acrid"
+begintsuglyph("uni8F9B",155);
+  kanji.greight.acrid;
+  tsu_render;
+endtsuglyph;
+
+% heki/kimu "punish"
+begintsuglyph("uni8F9F",159);
+  kanji.rare.punish;
+  tsu_render;
+endtsuglyph;
 
 % shin/tatsu "zodiac sign of the dragon"
 begintsuglyph("uni8FB0",176);
