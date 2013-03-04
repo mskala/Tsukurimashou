@@ -11,10 +11,9 @@
 .SH DESCRIPTION
 The
 .B @PACKAGE@
-program parses the input files, or standard input if no filename is
-specified, into Extended Ideographic Description Sequences
-(EIDSes, described
-in more detail below) separated by whitespace.
+program parses the input files, or standard input if no other source of
+data is specified, into Extended Ideographic Description Sequences
+(EIDSes, described in more detail below) separated by whitespace.
 Any EIDS in the input that matches
 .I PATTERN
 is echoed through to standard output, along with its trailing whitespace
@@ -117,8 +116,42 @@ commonly-used case of
 .I NAME
 being empty.
 .TP
+.BR \-f "FONT\fR,\fP " "\-\^\-font-chars=" FONT
+Create a user-defined matching predicate that will match a tree if and only
+if its head is a single character covered by the font in the file named
+.IR FONT .
+The font should be an OpenType font with appropriate encoding tables for
+Unicode, ASCII, or some near equivalent.
+Windows TrueType will probably work; it is unknown to what extent Macintosh
+fonts that are not recent OpenType fonts may work.
+The first use of this option creates the matching predicate #1; the next
+creates #2, and so on, up to a limit determined by host word size (32
+or 64 on most hosts).
+.TP
 .BR \-h ", " \-\^\-help
 Display a brief help message.
+.TP
+.BR \-U "CFG\fR,\fP " "\-\^\-unicode-list=" CFG
+Generate a list of Unicode characters and use that as a dictionary, before
+and in addition to any others that may have been specified.
+The generated dictionary contains 1112064 entries, one for every Unicode
+code point excluding surrogates; the head of the entry is the single
+character, and the tail is (by default) a nullary semicolon, or (if a
+.I CFG
+string has been specified) a nullary functor containing some information
+about the character.
+The
+.I CFG
+string should be some combination of the following characters, each of which
+will cause the inclusion of something in the dictionary entries:
+.B b
+to include the Unicode block name for characters that have it, using block
+names according to Unicode 6.2;
+.B d
+to include the decimal value of the Unicode code point; and
+.B x
+to include the hexadecimal value of the Unicode code point, with a
+preceding \(lqU+\(rq.
 .TP
 .BR \-V ", " \-\^\-version
 Display the version and license information.
@@ -334,7 +367,7 @@ For instance, ASCII semicolon will be interpreted as if it appeared in ASCII
 parentheses, and will thus become the functor of a nullary node.
 The complete list of characters that have sugary implicit brackets, with
 the brackets they imply, is:
-(;) (?) .!. ./. .=. .*. .@. [&] [,] [|]
+(;) (?) .!. ./. .=. .*. .@. .#. [&] [,] [|]
 [<U+2FF0>] [<U+2FF1>] [<U+2FF4>] [<U+2FF5>] [<U+2FF6>] [<U+2FF7>]
 [<U+2FF8>] [<U+2FF9>] [<U+2FFA>] [<U+2FFB>]
 {<U+2FF2>} {<U+2FF3>}.
@@ -367,12 +400,14 @@ The
 .B -c
 command-line option makes it possibile to skip this transformation on
 input, or perform its inverse on output.
-The list of replacements is:  (anything) to (?); .anywhere. to ...; [and] to
-[&]; [or] to [|]; .not. to .!.; .regex. to ./.; .equal. to .=.; [lr] to
-[<U+2FF0>]; [tb] to [<U+2FF1>]; {lcr} to {<U+2FF2>}; {tcb} to {<U+2FF3>};
+The list of replacements is:
+(anything) to (?); .anywhere. to ...; .not. to .!.; .regex. to
+./.; .equal. to .=.; .unord. to .*.; .assoc. to .@.; .user. to .#.;
+[and] to [&]; [or] to [|]; [lr] to [<U+2FF0>]; [tb] to [<U+2FF1>];
 [enclose] to [<U+2FF4>]; [wrapu] to [<U+2FF5>]; [wrapd] to [<U+2FF6>];
 [wrapl] to [<U+2FF7>]; [wrapul] to [<U+2FF8>]; [wrapur] to [<U+2FF9>];
-[wrapll] to [<U+2FFA>]; and [overlap] to [<U+2FFB>].
+[wrapll] to [<U+2FFA>]; [overlap] to [<U+2FFB>]; {lcr} to {<U+2FF2>};
+and {tcb} to {<U+2FF3>}.
 .
 .IP \(bu 4
 Total length, and number of consecutive nullary nodes (which are like
@@ -495,6 +530,25 @@ Patterns given to PCRE have already passed through
 parser and so an additional level of escaping may be necessary if
 backslash escapes are desired in a pattern.
 .IP \(bu 4
+If the pattern is
+.RI .#. "x"
+then the head of
+.I x
+is parsed as a decimal index to select a user-defined matching predicate.
+If
+.I x
+has no head, the head cannot be parsed by the C library's
+.BR atoi (3)
+function, or it can be parsed and produces a number that is zero or
+negative, then the index is deemed to be equal to 1.
+Then the user-defined predicate at that index is invoked.
+If that many user-defined predicates have not been defined, then the
+pattern matches nothing.
+In this version, user-defined matching predicates always test the
+Unicode character coverage of font files:
+the match succeeds if and only if the head of the input exists and is a
+single Unicode character covered by the font.
+.IP \(bu 4
 Otherwise, the pattern matches the input if and only if its functor and
 arity are the same as the input's and all the children of the pattern match
 the corresponding children of the input.
@@ -610,7 +664,7 @@ Matthew Skala <mskala@ansuz.sooke.bc.ca>
 .
 .SH COPYRIGHT
 Copyright \(co
-2012
+2012, 2013
 Matthew Skala
 .PP
 This program is free software: you can redistribute it and/or modify

@@ -924,13 +924,15 @@ more detail.  The default mode is \texttt{raw}.  See the
 section on ``cooked output'' in this manual for more details.
 
 \item[\texttt{-f}, \texttt{--font-chars}]
-Read a font file and make its character coverage available as a
-user-defined matching predicate through the ``\texttt{\#}'' matching
-operator.  In the current version, this feature can only read TrueType
-and OpenType files that contain Unicode (or near equivalent) mappings
-described with cmap subtable types 0, 2, 4, 12, or 13.  This option may
-be specified multiple times, with successive invocations corresponding
-to user-defined predicates 1, 2, 3, and so on.
+Read a font file and make its character coverage available as a user-defined
+matching predicate through the ``\texttt{\#}'' matching operator.  In the
+current version, this feature can only read TrueType and OpenType files that
+contain Unicode (or near equivalent) mappings described with cmap subtable
+types 0, 2, 4, 12, or 13.  This option may be specified multiple times, with
+successive invocations corresponding to user-defined predicates 1, 2, 3, and
+so on.  The maximum number of user-defined predicates is limited to the
+number of bits in the largest integer type available to the C compiler; 32
+or 64 on many systems.
 
 \item[\texttt{-U}, \texttt{--unicode-list}]
 Generate a dictionary of Unicode code points, and read that before
@@ -1152,7 +1154,7 @@ ASCII code.
 The hexadecimal escapes \texttt{\textbackslash x} and \texttt{\textbackslash
 X} offer a choice of two-digit, four-digit, or variable-length (enclosed by
 curly braces) hexadecimal specification of Unicode code points.  The hex
-codes are case-insensitive.  Values greater than 1FFFFF, and therefore
+codes are case-insensitive.  Values greater than 10FFFF, and therefore
 outside the Unicode range, will be replaced by the Unicode replacement
 character U+FFFD.
 

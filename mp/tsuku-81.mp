@@ -53,6 +53,14 @@ vardef kanji.grfour.guts =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.pulse =
+  push_pbox_toexpand("kanji.grfour.pulse");
+  build_kanji.level(build_kanji.lr(420,10)
+    (kanji.grone.moon)
+    (kanji.rare.branch));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.gland =
@@ -64,6 +72,12 @@ vardef kanji.greight.gland =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% myaku/suji "pulse"
+begintsuglyph("uni8108",8);
+  kanji.grfour.pulse;
+  tsu_render;
+endtsuglyph;
 
 % chou/harawata "guts"
 begintsuglyph("uni8178",120);

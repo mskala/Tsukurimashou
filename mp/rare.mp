@@ -65,6 +65,19 @@ vardef kanji.rare.big_brother =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.branch =
+  push_pbox_toexpand("kanji.rare.branch");
+  push_stroke((770,810)..tension 1.2..(550,740)..(250,700),
+    (1.8,1.8)--(1.5,1.5)--(1,1));
+  push_stroke((250,730){down}..(160,180)..(50,30),
+    (1.6,1.6)--(1.3,1.3)--(1,1));
+  set_boserif(0,0,10);
+  build_kanji.sscale(rotated 90 slanted 0.1 rotated -90
+       xyscaled (0.8,0.75) shifted (80,-50))
+    (kanji.radical.travel_inside);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.centurion =
   push_pbox_toexpand("kanji.rare.centurion");
   build_kanji.lr(300,20)

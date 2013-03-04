@@ -1932,12 +1932,12 @@ def complete_pf_info =
    if (name_to_code("space")<0) and (unknown code_to_name_32):
     encode("space") (32);
    fi
-   beginglyph(_space) fix_hsbw(space,0,0); endglyph;
+   beginglyph("_space") fix_hsbw(space,0,0); endglyph;
   fi
   if not name_used("nbspace"):
    if unknown glyph_usage._nbspace: introduce _nbspace (utilize)(0)(); fi;
    %
-   beginglyph(_nbspace) fix_hsbw(space,0,0); endglyph; % normal space width
+   beginglyph("_nbspace") fix_hsbw(space,0,0); endglyph; % normal space width
   fi
  fi
 enddef;

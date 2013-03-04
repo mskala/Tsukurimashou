@@ -33,10 +33,13 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
+input radical.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -46,6 +49,26 @@ do_late_includes;
 vardef kanji.grthree.blood =
   push_pbox_toexpand("kanji.grthree.blood");
   build_kanji.attach_tick(620)(kanji.grthree.dish);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.clothes =
+  push_pbox_toexpand("kanji.grfour.clothes");
+  build_kanji.level(build_kanji.tb(540,80)
+    (kanji.radical.kettle_lid)
+    (kanji.bottomrad.clothes));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.greight.rend =
+  push_pbox_toexpand("kanji.greight.rend");
+  build_kanji.tb(420,70)
+    (kanji.grthree.column)
+    (kanji.grfour.clothes);
   expand_pbox;
 enddef;
 
@@ -63,9 +86,21 @@ begintsuglyph("uni884C",76);
   tsu_render;
 endtsuglyph;
 
+% i/koromo "clothes"
+begintsuglyph("uni8863",99);
+  kanji.grfour.clothes;
+  tsu_render;
+endtsuglyph;
+
 % hyou/omote "surface"
 begintsuglyph("uni8868",104);
   kanji.grthree.surface;
+  tsu_render;
+endtsuglyph;
+
+% retsu/sa "rend"
+begintsuglyph("uni88C2",194);
+  kanji.greight.rend;
   tsu_render;
 endtsuglyph;
 

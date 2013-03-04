@@ -1,6 +1,6 @@
 %
 % Unicode page 200 (Kanji) for Tsukurimashou
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,11 +34,18 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input radical.mp;
 input rare.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% "branch"
+begintsuglyph("u200A2",162);
+  kanji.rare.branch;
+  tsu_render;
+endtsuglyph;
 
 % dui "mound"
 begintsuglyph("u200A4",164);
