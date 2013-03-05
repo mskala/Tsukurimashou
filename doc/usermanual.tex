@@ -358,17 +358,12 @@ them yourself or get them from someone who has done so.  This limitation is
 deliberate: with the fonts in their current partial form, I'd rather limit
 their circulation to hobbyists.
 
-Prior to releasing this package of source for the entire Tsukurimashou
-project, I released a smaller package of fonts covering just the Genjimon
-characters, in a different encoding.  That package is now included in this
-one, but remains a separate entity.  You will find it in the ``genjimon''
-directory.  It has its own, independent, documentation and build system.  My
-plan is not to do much further maintenance on it; my hope is that not much
-further maintenance will be needed.  If you want to use Genjimon characters,
-you have the choice of using the fonts from the Genjimon package (which
-encode the characters to replace the Latin alphabet) or using the full
-Tsukurimashou fonts, which encode the Genjimon characters in the
-Supplemental Private Use Area and also include a lot of other characters.
+I maintain several other free font projects, which as of version 0.7 have
+largely been merged into the Tsukurimashou packaging and build system
+because they share code.  These ``parasite'' packages appear as
+subdirectories of the Tsukurimashou source distribution, and may also be
+available as separate packages.  See the discussion in
+Subsection~\ref{sub:parasites} for more information about parasite packages.
 
 This documentation file gives some notes on the build system and on how
 to use the OpenType features built into the fonts.  Other documentation
@@ -396,10 +391,11 @@ encouraged to ``follow'' or ``subscribe'' to it as appropriate, both to keep
 yourself updated and to raise the project's profile.
 
 There is some possibility that I may actually be able to get funding in the
-near future to work on kanji fonts and dictionaries full-time for a while. 
+future to work on kanji fonts and dictionaries full-time for a while. 
 Exactly what that would mean for Tsukurimashou is unknown, because the
-project under discussion would have goals to but not exactly the same as the
-current Tsukurimashou/IDSgrep, and it's too soon to announce anything.
+project under discussion would have goals similar to but not exactly the
+same as the current Tsukurimashou/IDSgrep, and it's too soon to announce
+anything.
 
 The home pages for this project, where you can download the latest releases,
 browse the source-control repository, and so on, are:\\
@@ -417,100 +413,66 @@ Matthew Skala\\mskala@ansuz.sooke.bc.ca\\\TsukurimashouReleaseDate
 \blsubsection{\TsukurimashouVWide
 のニュース}{What's new in \TsukurimashouVersion?}
 
-The main visible content of the fonts hasn't changed much in version
-\TsukurimashouVersion; I'm simply continuing the slog through the
-kyouiku kanji.  This version contains the completion of Grade Three.
+This version extends the kanji coverage to roughly halfway through Grade
+Four.  There have also been a lot of infrastructure changes, some of them
+with important visible effects.  This version has taken a long time to bring
+to release, and the rate of kanji per unit time is a fair bit below what I'd
+like it to be.  That's partly because of issues outside the project that
+have limited my available time to work on defining kanji.  There's a lot of
+important material here other than kanji, however, and my hope is that the
+infrastructure improvements in 0.7 will help improve the rate of kanji
+addition further in the future and keep the project sustainable long enough
+that it can reach full coverage.  Here's a summary of the new stuff.
 
-There's been a lot of less-visible work done, however, and that's one reason
-that this version has been so long in the making.  This version contains its
-own bundled copy of the METAFONT-language portion of METATYPE1, and a Perl
-script that replaces the Awk portion of METATYPE1 and the wrapper provided
-by the mtype13 distribution.  There's a story behind that.
-
-I reinstalled the operating system on my laptop and so, in order to
-continue developing Tsukurimashou there, I had to also reinstall all
-Tsukurimashou's dependencies.  I installed \TeX{}Live, then tried to
-install mtype13 according to its instructions.  Bear in mind that
-mtype13 is about ten years old and its installation process is designed
-for \TeX\ distributions of that vintage, not present-day \TeX{}Live. 
-When invoked as directed, mtype13's Makefile automatically overwrote
-the master configuration that allows \TeX\ and related programs to find
-their data.  My entire \TeX\ installation was rendered unusable.  After
-reinstalling the entirety of \TeX, I dug through the directory
-structure to figure out the actually correct place to put mtype13, and
-that fortunately wasn't hard.  Thinking that I'd rather not lead
-Tsukurimashou users into making the same mistake I made, I figured I
-would add detailed instructions for installing mtype13 on a modern
-\TeX, in this document.
-
-But while researching that, I discovered that mtype13, although
-obviously intended to be free software, did not actually contain any
-license at all, making its status questionable.  It also contained an
-outdated version of METATYPE1, and since I've been having trouble with
-METATYPE1 bugs right from the start of Tsukurimashou, it seemed like
-switching to a new version might be desirable.
-
-I contacted the author of mtype13 and he very graciously released his
-decade-old code under an MIT-style free software license; but I wanted
-the updated METATYPE1, and in digging through that, I discovered that
-it was doing a lot of things not needed by Tsukurimashou, such as
-re-compiling all fonts twice, the second pass solely to create the
-*.tfm files that I was throwing out anyway.  Meanwhile mtype13 was
-doing things like writing output to /dev/tty, which was what drove me
-in an earlier version to put the whole works inside Expect so I could
-keep the build system output clean-looking.  And METATYPE1 is public
-domain, and the parts used by Tsukurimashou amounted to just two files
-of METAFONT code plus an Awk script to process the output---the rest of
-the package is all about encodings, Latin Modern, back-translation from
-Postscript to METAFONT, and other things not used by Tsukurimashou. 
-Then the only part of mtype13 really used by Tsukurimashou was a shell
-script that would run the Awk script.
-
-All in all it seemed the logical thing to do was bundle an entire copy
-of METATYPE1's METAFONT code, and a script with function similar to
-mtype13 but with modifications appropriate to Tsukurimashou.  That way
-I eliminate the dependencies on separately installed METATYPE1 and
-mtype13, and I have the opportunity to modify any features of those
-packages that aren't ideal for Tsukurimashou.
-
-I combined the two METAFONT-language files into one and ripped out the
-second pass of font compilation; that alone doubles the speed of
-Postscript subfont generation.  I also translated the Awk script into
-Perl, and removed all the hinting code from it.  People who have
-the other dependencies of this package almost certainly have GNU Awk
-anyway, but I don't really want to try to maintain code in Awk, a
-language I barely know, and have that dependency for installation when
-I've already got a lot of Perl in the project.  The automated
-Awk-to-Perl translator didn't work, for reasons unknown.  Most of the
-Awk code seemed to be all about properly handling hints, which
-Tsukurimashou doesn't use at that stage of processing, so by removing
-all that stuff I ended up with a much shorter and cleaner Perl script
-than the original Awk.
-
-Also worth mentioning is the ``t1asm'' utility, another previously
-unknown-to-me dependency of the mtype13/METATYPE1 complex.  This is
-part of the popular ``t1utils'' package; I could have simply declared
-that package to be a new dependency, but there again, given that t1asm
-is just one small thing needed out of a larger package, and distributed
-under a permissive license, I decided to bundle it too.  The C code for
-this utility is in the t1asm/ subdirectory.
-
-This version of Tsukurimashou is the first one designed to work with
-IDSgrep.  IDSgrep is a separate, new project, with its own
-documentation and distribution packages, but its source code is checked
-into the Tsukurimashou SVN repository and so if you're following that
-respository, you should already have a copy of the IDSgrep code. 
-IDSgrep brings the user-friendliness of grep to kanji search.  It
-allows querying databases of kanji by partial descriptions of visual
-structure, such as ``all kanji with 月 at the right.’’ Tsukurimashou's
-build system now supports a ``make eids'' target, which will generate a
-database file suitable for querying with IDSgrep based on the visual
-structure of Tsukurimashou glyphs.  Note that that may explicitly not
-be the same as their etymological origins; databases from other sources
-may be more useful for general dictionary purposes, but I've found that
-in Tsururimashou's own development a need exists for querying what
-is in the font as such, and IDSgrep exists in large part to serve that
-need.
+\begin{itemize}
+\item Font weight (bold, light, and so on) has been added, along with what
+  I think
+  is a reasonable if idiosyncratic way of handling ``style'' definitions like
+  ``Anbiruteki'' that are actually weight-related.  This feature basically
+  multiplies by six the number of fonts the package can generate.  It
+  was gratifying that almost all the code I wrote a long time ago to support
+  font weight in the future and never really tested, actually worked when I
+  added the missing parts and flipped the switch.
+\item ``Anchors,'' which are primarily used for attaching combining accents
+  in Latin, have been reworked almost completely.  They were broken in the
+  previous version and should at least be less broken now.
+\item A general mechanism for ``parasite'' packages was added to the build
+  system, and several of my other projects were reorganized to use this
+  mechanism.  They now come included with full distributions of
+  Tsukurimashou.  Genjimon and IDSgrep were already affiliated with
+  Tsukurimashou, but I've made their interfaces to Tsukurimashou's build
+  system more consistent and have added OCR and Beikaitoru.
+\item Dependency scanning for PFB files has been split into smaller
+  chunks that can run simultaneously; this significantly speeds up some
+  common scenarios when running the build system on a multicore computer.
+\item Build-system dependency handling should have been improved in the case
+  of a brand-new Metapost source file being added.  This is difficult to
+  test, however, and may require further work in the future.
+\item IDSgrep has many new features.  I
+  released a version 0.3 of it in late 2012, but Tsukurimashou 0.7 now ships
+  with a pre-release of version IDSgrep 0.4, containing some interesting
+  features beyond those of IDSgrep 0.3.
+\item Some lowercase Latin letters in TsuIta have been redrawn.  This was
+  a to-do list item; the last released version of TsuIta was experimental
+  and this version is less so.
+\item There is more support for ``Hangul Extension'' Unicode blocks, covering
+  rare, historical, and dialect vowels and consonants in Korean.
+\item The ``xpua'' feature was added, to remove private-use code points from
+  glyphs meant to be accessed via OpenType features.  This may improve the
+  ability to cut and paste from PDF documents made with Tsukurimashou fonts.
+\item The bundled version of METATYPE1 has diverged further from GUST's
+  distributed version; many features not used by Tsukurimashou have been
+  removed, and the hope is that this stripped-down version will be easier to
+  maintain.
+\item Low-level shape-drawing operations in Tsukurimashou have been modified
+  to insert extra nodes in some curves in order to produce more accurate
+  shapes and line widths, especially when a stroke turns a tight corner. 
+  This has necessitated some changes to the definitions some shapes
+  (especially in the hiragana, which contain some of the oldest code still in
+  use) because of unexpected dependence on the old, broken behaviour.  It is
+  possible that some glyphs may have visibly changed shape, but the goal is
+  for that not to have happened to any significant degree.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -652,12 +614,12 @@ would be in the converter rather than in the resulting MetaPost.
 \blsubsection{デベロップメントロードマップ}{Development roadmap}
 
 This version contains all the kyouiku kanji (the ones taught in Japanese
-elementary school) through Grade 3.  The current plan is to release a minor
-version after each grade level of kyouiku kanji and one halfway through each
-grade level, which will take us up to version 0.12 at the end of Grade 6. 
-Version 1.0 will probably be a separate version released shortly after 0.12,
-with a general clean-up and renovation, but it's possible I might skip
-directly from 0.11 to 1.0.
+elementary school) through Grade 3 and half of Grade 4.  The current plan is
+to release a minor version after each grade level of kyouiku kanji and one
+halfway through each grade level, which will take us up to version 0.12 at
+the end of Grade 6.  Version 1.0 will probably be a separate version
+released shortly after 0.12, with a general clean-up and renovation, but
+it's possible I might skip directly from 0.11 to 1.0.
 
 There are 1006 kyouiku kanji, though the fonts already contain more than
 that number of kanji glyphs because my general practice is to add other
@@ -712,9 +674,10 @@ Tsukurimashou.
 %   0.4    20111016   2455851     573      2021   30148
 %   0.5    20111216   2455911     776      2260   36479
 %   0.6    20120618   2456096    1110      2586   46635
+%   0.7    20130304   2456355    1291      2770   48879
 
 \begin{figure}
-\tikzset{horizontal axis/.style={xscale=0.2,xshift=1.5cm}}
+\tikzset{horizontal axis/.style={xscale=0.14,xshift=1.5cm}}
 \tikzset{vertical axis/.style={yscale=0.2}}
 \centering
 \begin{tikzpicture}
@@ -728,13 +691,13 @@ Tsukurimashou.
     \node[rotate=90] at (-2,16) {glyphs};
   \end{scope}
   \begin{scope}[horizontal axis]
-    \draw[arrows=-triangle 60] (-2,0) -- (51.6,0);
+    \draw[arrows=-triangle 60] (-2,0) -- (77.7,0);
     \foreach \x/\xlbl in
-      {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5,49.6/0.6} {
+      {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5,49.6/0.6,75.7/0.7} {
       \draw (\x,-0.2) -- (\x,0.2);
-      \node[anchor=north] at (\x,-0.2) {\xlbl};
+      \node[anchor=north] at (\x,-0.2) {\scriptsize\xlbl};
     }
-    \node at (25,-1) {version and time};
+    \node at (37.5,-1) {version and time};
   \end{scope}
   \begin{scope}[horizontal axis,vertical axis]
     \node (v1k) at (1.2,0) {漢};
@@ -743,16 +706,20 @@ Tsukurimashou.
     \node (v4k) at (25.1,5.73) {漢};
     \node (v5k) at (31.1,7.76) {漢};
     \node (v6k) at (49.6,11.10) {漢};
+    \node (v7k) at (75.7,12.91) {漢};
     \node (v1t) at (1.2,13.07) {\labelitemi};
     \node (v2t) at (5.8,16.46) {\labelitemi};
     \node (v3t) at (9.2,17.97) {\labelitemi};
     \node (v4t) at (25.1,20.21) {\labelitemi};
     \node (v5t) at (31.1,22.60) {\labelitemi};
     \node (v6t) at (49.6,25.86) {\labelitemi};
+    \node (v7t) at (75.7,27.70) {\labelitemi};
     \draw (v1k) -- (v2k) -- (v3k) -- (v4k) 
       -- (v5k) -- (v6k) node[sloped,above,midway] {kanji};
+    \draw (v6k) -- (v7k);
     \draw (v1t) -- (v2t) -- (v3t) -- (v4t)
       -- (v5t) -- (v6t) node[sloped,above,midway] {total};
+    \draw (v6t) -- (v7t);
   \end{scope}
 \end{tikzpicture}
 \caption{Growth of glyph counts}
@@ -764,18 +731,16 @@ progress: the number of lines of code (total lines in mp/*.mp, including
 comments and blanks but not including code in other languages and locations;
 also excluding jieub-*.mp, but still including a few other files from
 Jieubsida) plotted against the total number of glyphs in the main
-Tsukurimashou family.  In version 0.6, there are a few thousand lines of
-code added due to the new bundling of METATYPE1, which may skew the numbers
-a bit.
+Tsukurimashou family.
 
 \begin{figure}
 \tikzset{horizontal axis/.style={xscale=0.3}}
-\tikzset{vertical axis/.style={yscale=0.3}}
+\tikzset{vertical axis/.style={yscale=0.18}}
 \centering
 \begin{tikzpicture}
   \begin{scope}[vertical axis]
-    \draw[arrows=-triangle 60] (0,0) -- (0,49);
-    \foreach \y/\ylbl in {0/0,10/10000,20/20000,30/30000,40/40000} {
+    \draw[arrows=-triangle 60] (0,0) -- (0,52);
+    \foreach \y/\ylbl in {0/0,10/10000,20/20000,30/30000,40/40000,50/50000} {
       \draw (-0.2,\y) -- (0.2,\y);
       \node[anchor=east] at (-0.2,\y) {\ylbl};
     }
@@ -797,7 +762,8 @@ a bit.
     \node (v4) at (20.21,30.148) {\labelitemi};
     \node (v5) at (22.60,36.479) {\labelitemi};
     \node (v6) at (25.86,46.635) {\labelitemi};
-    \draw (v1) -- (v2) -- (v3) -- (v4) -- (v5) -- (v6);
+    \node (v7) at (27.70,48.879) {\labelitemi};
+    \draw (v1) -- (v2) -- (v3) -- (v4) -- (v5) -- (v6) -- (v7);
   \end{scope}
 \end{tikzpicture}
 \caption{Lines of code per glyph}
@@ -1495,7 +1461,7 @@ reshaping the tail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{私用符号位置を避けて}{Limit Private Use Area Code Points (xpua)}
+\blsubsection{私用符号位置を避けて}{Limit PUA Code Points (xpua)}
 
 This is not the usual kind of OpenType feature, but is configured through
 the same interface as the others.
@@ -2187,7 +2153,7 @@ Please note that if you just unpack the Tsukurimashou distribution and look
 in the ``otf'' subdirectory, you will find some ready-made font files there. 
 If you are content with them, then those are the only files you need; you
 can safely delete everything else in the package (maybe save the PDF
-documentation files, if you want) and ignore this sub-section.  These notes
+documentation files, if you want) and ignore this section.  These notes
 on building Tsukurimashou are only for expert users who want the greater
 control, wider style coverage, and intellectual challenge of doing custom
 compilation.
@@ -2197,9 +2163,9 @@ will need at least the following:
 
 \begin{itemize}
   \item A reasonably standard Unix command-line environment.  I use
-    Arch Linux.  Anything branded as ``Unix'' should work.  MacOS X
+    Slackware Linux.  Anything branded as ``Unix'' should work.  MacOS X
     might work.  Windows with Cygwin might work.  
-  \item A standard C-language tool-chain (normally comes with Linux).
+  \item A standard C-language tool-chain (normally comes included with Linux).
   \item Perl.
   \item GNU Make 3.82 or later (non-GNU versions will not work;
     earlier versions will not work).
@@ -2238,11 +2204,11 @@ I mentioned a requirement for a version of FontForge ``that actually
 works.'' FontForge is plagued by many bugs and numerical instabilities in
 its spline geometry code, and stock, distributed ``stable'' versions tend to
 hang and/or segfault when they are used to compile Tsukurimashou.  As of
-October 2012, the version distributed by Arch Linux x86\_64 seems to work
-pretty well for default configurations.  However, a really full build of all
-weights of all styles involves tens of thousands of invocations of FontForge
-and is likely to cause at least one or two segfaults or infinite loops with
-any widely-available binary package.
+March 2013, the mainline development version distributed as source seems to
+work well.  However, a really full build of all weights of all styles
+involves tens of thousands of invocations of FontForge and is likely to
+cause at least one or two segfaults or infinite loops with any
+widely-available precompiled binary package.
 
 There is also an issue relating to the syntax of the AddExtrema() command in
 the FontForge native scripting language; until recently, no version of
@@ -2372,8 +2338,7 @@ character it can except none in the range U+0200--U+02FF; the specifier
 from the ASCII range.  The default is ``all.'' It is planned that in some
 future version this option should also be able to use KANJIDIC2 data to
 allow selection of kanji characters by criteria like school grade level, and
-some support for that exists already, and some of the code for this already
-exists, but it probably doesn't work yet.
+some support for that exists already, but it probably doesn't work yet.
 
 The ``-{}-enable-ot-features'' option works the same way for OpenType
 features; note that OpenType features may also be automatically and silently
@@ -2471,15 +2436,15 @@ installation directories, almost none of which are applicable to a package
 of this type, and I took out most of the support for those to reduce the
 cognitive load for users who would otherwise have to think about their
 inapplicability.  This package doesn't install any executables, libraries, C
-header files, or similar, at all.  Cross-compilation and executable name
-munging were removed for the same reason; some C programs are compiled for
-kerning and Type 1 opcode assembly, but these are only meant to run on the
-host system during build, with all the installable files being
-architecture-independent.  The hacking I did on Autotools means that if you
-modify the build system such that you would be re-running Autotools, it's
-likely to break unless your version of Autotools is close to the 2.65
-version I used.  The configure script will try to detect such a situation
-and warn you.
+header files, or similar, at all.  (Although some of the parasites may...)
+Cross-compilation and executable name munging were removed for the same
+reason; some C programs are compiled for kerning and Type 1 opcode assembly,
+but these are only meant to run on the host system during build, with all
+the installable files being architecture-independent.  The hacking I did on
+Autotools means that if you modify the build system such that you would be
+re-running Autotools, it's likely to break unless your version of Autotools
+is close to the 2.65 version I used.  The configure script will try to
+detect such a situation and warn you.
 
 The design of this build system was influenced by Peter Miller's interesting
 article ``Recursive Make Considered Harmful,'' available at
@@ -2494,7 +2459,7 @@ article about the parasite mechanism at some point in the future.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{寄生パッケージ}{Parasite packages}
+\blsubsection{寄生パッケージ}{Parasite packages}\label{sub:parasites}
 
 Some of the technology developed to support Tsukurimashou has more general
 applicability.  For instance, the stripped-down version of METATYPE1 bundled
@@ -2529,7 +2494,7 @@ build in the parent directory and connect to it if one is found.
 
 The current parasites are Beikaitoru, Genjimon, IDSgrep, and OCR.  Each of
 these has its own detailed documentation, which see; the notes here are just
-a summary to give some idea of what the packages are all about.  All of
+a summary to give some idea of what the packages are all about.  Most of
 these existed in some form prior to the introduction of the parasite build
 mechanism, and in some cases vestiges still exist of their old, less
 systematic, ways of connecting to Tsukurimashou.  In the future, the
@@ -2564,7 +2529,7 @@ top-level project distribution.
     for such queries came up during Tsukurimashou development, but the
     package may well be useful in other contexts as well.  Includes code to
     interface to several different character dictionaries, including
-    structural data extracted from Tsukruimashou.  GPL3.
+    structural data extracted from Tsukruimashou.  GPLv3.
 
   \item{OCR} Freely usable vector versions of the standard OCR A and OCR B
     fonts, based on the work of Tor Lillqvist, Richard B.\ Wales, and
