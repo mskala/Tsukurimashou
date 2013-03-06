@@ -203,7 +203,7 @@ Open("sfd/flogged.sfd");
 ScaleToEm(920,280);
 Reencode("UnicodeFull");
 SetFontOrder(3);
-SetFontNames(_CCFileName,\$2,\$3,"","Copyright 2011, 2012 Matthew Skala.  Licensed under the GNU GPL version 3 with font-embedding clarification.  Note that this generally does NOT permit distribution on \\"free font\\" Web sites, because of the requirement to make source code available.","$tsuversion ($svnversion)");
+SetFontNames(_CCFileName,\$2,\$3,"","Copyright 2011, 2012, 2013 Matthew Skala.  Licensed under the GNU GPL version 3 with font-embedding clarification.  Note that this generally does NOT permit distribution on \\"free font\\" Web sites, because of the requirement to make source code available.","$tsuversion ($svnversion)");
 MergeFeature("fea/"+\$1+"-name.fea");
 LoadNamelist("tsukurimashou.nam");
 RenameGlyphs("tsukurimashou");

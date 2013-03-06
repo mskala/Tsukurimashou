@@ -143,7 +143,7 @@ EXTRA_DIST:= \
   $(wildcard $(mvp)/*.mp) \
   ocr.tex ocra.fea ocrb.fea
 
-STANDALONE_FPEVCGF:=mp2pf
+STANDALONE_FPEVCGF:=fontlint.pe mp2pf
 dist_noinst_SCRIPTS:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
   ocra-no.pe ocra-yes.pe ocrb-no.pe ocrb-yes.pe ocrbnames.pe rmo.pe
@@ -309,7 +309,7 @@ ocr.pdf: OCRA.otf OCRB.otf ocr.tex
 # TESTING
 
 TESTS = $(dist_otf_DATA) $(dist_ttf_DATA) $(dist_type1_DATA)
-LOG_COMPILER = fontlint
+LOG_COMPILER = $(FONTFORGE) fontlint.pe
 
 ############################################################################
 
@@ -351,6 +351,9 @@ m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
 	$(TSU_V_CP) cp $< $@
 
 mp2pf: ../tools/mp2pf
+	$(TSU_V_CP) cp $< $@
+
+fontlint.pe: ../pe/fontlint.pe
 	$(TSU_V_CP) cp $< $@
 
 endif

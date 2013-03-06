@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1999 2013-03-04 22:40:26Z mskala $])
+AC_REVISION([$Id: configure.ac 2001 2013-03-05 15:59:16Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
 AC_SUBST([release_date],["March 4, 2013"])
 AM_SILENT_RULES
@@ -347,9 +347,9 @@ AC_ARG_ENABLE([proportional],
     [enable_proportional=yes])
 AC_ARG_ENABLE([styles],
   [AS_HELP_STRING([--enable-styles[=TAGS]],
-    [type style(s) to build [tsuku]])],
+    [type style(s) to build [tsuku&normal,mg&el,mg&eq]])],
     [],
-    [enable_styles=tsuku])
+    [enable_styles="tsuku&normal,mg&el,mg&eq"])
 AC_ARG_WITH([kanjidic2],
   [AS_HELP_STRING([--with-kanjidic2=PATH],
     [gzipped KANJIDIC2 database [auto]])],

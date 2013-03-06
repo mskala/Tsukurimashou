@@ -151,7 +151,7 @@ EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
   genfont.mp $(wildcard genjimon-*.mp) genjimon.tex
 
-STANDALONE_FPEVCGF:=mp2pf
+STANDALONE_FPEVCGF:=fontlint.pe mp2pf
 dist_noinst_SCRIPTS:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
   makettf.pe
@@ -255,7 +255,7 @@ genjimon.pdf: genjimon.tex \
 
 TESTS = $(dist_ttf_DATA)
 TEST_EXTENSIONS = .ttf
-TTF_LOG_COMPILER = fontlint
+TTF_LOG_COMPILER = $(FONTFORGE) fontlint.pe
 
 ############################################################################
 
@@ -300,6 +300,9 @@ m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
 	$(TSU_V_CP) cp $< $@
 
 mp2pf: ../tools/mp2pf
+	$(TSU_V_CP) cp $< $@
+
+fontlint.pe: ../pe/fontlint.pe
 	$(TSU_V_CP) cp $< $@
 
 endif

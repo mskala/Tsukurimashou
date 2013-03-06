@@ -231,7 +231,7 @@ t1asm_t1asm_SOURCES = \
 dist_noinst_SCRIPTS = \
   hamlog/hamlog \
   hamlog/select.hl hamlog/swi-ham.pl hamlog/ecl-ham.ecl hamlog/gp-ham.pl \
-  pe/bdf.pe pe/getbearings.pe pe/kern-font.pe pe/rmo.pe \
+  pe/bdf.pe pe/fontlint.pe pe/getbearings.pe pe/kern-font.pe pe/rmo.pe \
   tools/add-flog tools/autodep tools/livecode \
   tools/make-ass tools/make-book tools/make-cfghl tools/make-cover \
   tools/make-eids tools/make-fea tools/make-flog tools/make-gpos \
@@ -1073,7 +1073,7 @@ eids: txt/tsukurimashou.eids
 
 TESTS = $(dist_otf_DATA)
 TEST_EXTENSIONS = .otf
-OTF_LOG_COMPILER = fontlint
+OTF_LOG_COMPILER = $(FONTFORGE) $(mvp)/pe/fontlint.pe -w 2,3,5
 
 ############################################################################
 

@@ -167,7 +167,7 @@ EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
   $(wildcard $(mvp)/*.mp)
 
-STANDALONE_FPEVCGF:=mp2pf pe/rmo.pe
+STANDALONE_FPEVCGF:=mp2pf pe/fontlint.pe pe/rmo.pe
 dist_noinst_SCRIPTS:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
   nelson
@@ -348,7 +348,7 @@ beikaitoru.pdf: beikaitoru.tex \
 # TESTING
 
 TESTS = $(dist_otf_DATA) $(dist_ttf_DATA) $(dist_type1_DATA)
-LOG_COMPILER = fontlint
+LOG_COMPILER = $(FONTFORGE) pe/fontlint.pe
 
 ############################################################################
 
@@ -393,6 +393,9 @@ mp2pf: ../tools/mp2pf
 	$(TSU_V_CP) cp $< $@
 
 pe/rmo.pe: ../pe/rmo.pe
+	$(TSU_V_CP) cp $< $@
+
+pe/fontlint.pe: ../pe/fontlint.pe
 	$(TSU_V_CP) cp $< $@
 
 endif
