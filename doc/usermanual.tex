@@ -472,6 +472,15 @@ that it can reach full coverage.  Here's a summary of the new stuff.
   use) because of unexpected dependence on the old, broken behaviour.  It is
   possible that some glyphs may have visibly changed shape, but the goal is
   for that not to have happened to any significant degree.
+\item FontForge's fontlint script has been replaced.  This was a last-minute
+  addition and detailed documentation isn't written yet, but there's a
+  strong chance that Tsukurimashou's replacement for fontlint will end up
+  being adopted by FontForge mainline anyway.  Shipping it with
+  Tsukurimashou is still worthwhile for the benefit of people who aren't
+  using cutting-edge FontForge.
+\item Another thing that came up at the last minute:  CHISE's servers appear
+  to be shutting down, and I have posted a snapshot of the part of their
+  Git repository that is relevant to IDSgrep, in my own Github account.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -674,7 +683,7 @@ Tsukurimashou.
 %   0.4    20111016   2455851     573      2021   30148
 %   0.5    20111216   2455911     776      2260   36479
 %   0.6    20120618   2456096    1110      2586   46635
-%   0.7    20130304   2456355    1291      2770   48879
+%   0.7    20130307   2456358    1291      2770   48879
 
 \begin{figure}
 \tikzset{horizontal axis/.style={xscale=0.14,xshift=1.5cm}}
@@ -691,9 +700,9 @@ Tsukurimashou.
     \node[rotate=90] at (-2,16) {glyphs};
   \end{scope}
   \begin{scope}[horizontal axis]
-    \draw[arrows=-triangle 60] (-2,0) -- (77.7,0);
+    \draw[arrows=-triangle 60] (-2,0) -- (78.0,0);
     \foreach \x/\xlbl in
-      {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5,49.6/0.6,75.7/0.7} {
+      {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5,49.6/0.6,76.0/0.7} {
       \draw (\x,-0.2) -- (\x,0.2);
       \node[anchor=north] at (\x,-0.2) {\scriptsize\xlbl};
     }
@@ -713,7 +722,7 @@ Tsukurimashou.
     \node (v4t) at (25.1,20.21) {\labelitemi};
     \node (v5t) at (31.1,22.60) {\labelitemi};
     \node (v6t) at (49.6,25.86) {\labelitemi};
-    \node (v7t) at (75.7,27.70) {\labelitemi};
+    \node (v7t) at (76.0,27.70) {\labelitemi};
     \draw (v1k) -- (v2k) -- (v3k) -- (v4k) 
       -- (v5k) -- (v6k) node[sloped,above,midway] {kanji};
     \draw (v6k) -- (v7k);

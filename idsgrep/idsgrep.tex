@@ -532,31 +532,41 @@ checkout from the CHISE IDS Git repository.  It is not necessary to run
 CHISE's Makefile, which would require also having and installing other parts
 of the larger system.
 
-CHISE IDS distribution tarballs are available from
-\url{http://chise.zinbun.kyoto-u.ac.jp/dist/ids/}, and the Git repository
-URL is \url{http://git.chise.org/git/chise/ids.git}.  As of this writing,
-the latest distribution tarball was version 0.25, dated June 2010.  The Git
-version is more recent and may be preferable.  The directory created by
-checking out the Git version will probably not have a name recognized
-automatically by the build system, so it should be given on the
+As of this writing (March 6, 2013), the CHISE IDS distribution tarballs are
+available from \url{http://chise.zinbun.kyoto-u.ac.jp/dist/ids/}, and there
+is a Git repository at \url{http://git.chise.org/git/chise/ids.git}. 
+However, on March 5, there was an announcement posted to the CHISE Project's
+mailing lists in English and Japanese saying that on March 11 all the
+servers at chise.org (which includes the mailing lists themselves) will
+cease to operate.  It is not clear to me whether that is intended to be
+something temporary, or the permanent end of the project, but given that
+nothing seems to have happened in CHISE in years, I fear the worst.  I have
+posted a snapshot of the current CHISE IDS Git repository in my own Github
+account at \url{https://github.com/mskala/chise-ids}; that should be a
+long-term stable source of the data used by IDSgrep.
+
+The last distribution tarball of CHISE-IDS was version 0.25 dated June 2010. 
+The Git versions are more recent and may be preferable.  The directory
+created by checking out a Git version will probably not have a name
+recognized automatically by the build system, so it should be given on the
 \texttt{configure} command line with \texttt{--enable-chise-ids}.
 
-As of this writing, roughly 6\% of the entries in the CHISE IDS database
-include invalid extended IDS syntax---most often in the form of too many
-children for the operators used, or less often, too few.  Most but not all
-of the errors occur in the \texttt{IDS-HZK??.txt} files, which are no longer
-officially maintained.  It appears that the native search tools for the
-database generally work on the basis of pure substring searches, where the
-higher-level syntax errors that would be detected by the IDSgrep parser can
-go unnoticed.  The \texttt{chise2eids} program generates a
-\texttt{chise.errs} file during build, listing all the syntax errors it
-finds (11748 of them in the current Git version as of this writing); invalid
-entries are otherwise ignored and will not appear in the main output file
-\texttt{chise.eids}.  Although 6\% may sound like a lot of errors, the
-invalid entries are generally in sufficiently obscure character components
-that it should have little practical effect on the quality of dictionary
-lookups: at worst, some character components may end up not broken down into
-pieces as small as would otherwise be possible.
+Roughly 6\% of the entries in the CHISE IDS database include invalid
+extended IDS syntax---most often in the form of too many children for the
+operators used, or less often, too few.  Most but not all of the errors
+occur in the \texttt{IDS-HZK??.txt} files, which are unmaintained.  It
+appears that the native search tools for the database generally work on the
+basis of pure substring searches, where the higher-level syntax errors that
+would be detected by the IDSgrep parser can go unnoticed.  The
+\texttt{chise2eids} program generates a \texttt{chise.errs} file during
+build, listing all the syntax errors it finds (11748 of them in the current
+Git version as of this writing); invalid entries are otherwise ignored and
+will not appear in the main output file \texttt{chise.eids}.  Although 6\%
+may sound like a lot of errors, the invalid entries are generally in
+sufficiently obscure character components that it should have little
+practical effect on the quality of dictionary lookups: at worst, some
+character components may end up not broken down into pieces as small as
+would otherwise be possible.
 
 CHISE IDS refers to individual characters in a more general way than just by
 single Unicode code point: sometimes it uses a variation sequence consisting

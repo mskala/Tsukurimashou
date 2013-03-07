@@ -4,7 +4,7 @@
 
 #
 # Configuration source for IDSgrep
-# Copyright (C) 2012  Matthew Skala
+# Copyright (C) 2012, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_REVISION([$Id: configure.ac 1015 2011-12-15 22:24:32Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2012, 2013 Matthew Skala])
-AC_SUBST([release_date],["March 3, 2013"])
+AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
 #
 ############################################################################

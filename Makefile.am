@@ -1073,7 +1073,7 @@ eids: txt/tsukurimashou.eids
 
 TESTS = $(dist_otf_DATA)
 TEST_EXTENSIONS = .otf
-OTF_LOG_COMPILER = $(FONTFORGE) $(mvp)/pe/fontlint.pe -w 2,3,5
+OTF_LOG_COMPILER = $(FONTFORGE) $(mvp)/pe/fontlint.pe $(FONTLINT_FLAGS)
 
 ############################################################################
 

@@ -200,14 +200,14 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2001 2013-03-05 15:59:16Z mskala $])
+AC_REVISION([$Id: configure.ac 2006 2013-03-07 01:28:42Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
-AC_SUBST([release_date],["March 4, 2013"])
+AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
 #
 ############################################################################
 #
-# Checks for programs.
+# Checks for programs (and other things controlled by environment variables)
 #
 AC_PROG_CC
 AC_PROG_CC_C_O
@@ -225,6 +225,7 @@ AC_PATH_PROG([EXPECT],[expect])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AC_ARG_VAR([FONTFORGE],[Fontforge])
 AC_PATH_PROG([FONTFORGE],[fontforge])
+AC_ARG_VAR([FONTLINT_FLAGS],[Flags for fontlint])
 AC_PATH_TOOL([GDB],[gdb])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
@@ -369,6 +370,8 @@ AS_IF([test "x$enable_colour_build" = "xyes"],
 AS_IF([test "x$enable_color_build" = "xyes"],
   [],[tsu_colour=no])
 AM_CONDITIONAL([COND_COLOUR],[test '!' "$tsu_colour" = no])
+#
+AS_IF([test "x$FONTLINT_FLAGS" = "x"],[FONTLINT_FLAGS="-w 2"])
 #
 AC_SUBST([enable_chars])
 #
@@ -638,6 +641,7 @@ echo '#!/usr/local/bin/fontforge' > ffaetest.pe
 echo 'New();AddExtrema(1);' >> ffaetest.pe
 AS_IF([$FONTFORGE ffaetest.pe >& /dev/null],
   [ae_arg_okay=yes],[ae_arg_okay=no])
+rm ffaetest.pe
 AC_SUBST([ae_arg_okay])
 AC_MSG_RESULT([$ae_arg_okay])
 #

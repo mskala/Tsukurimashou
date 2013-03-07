@@ -186,7 +186,7 @@ Fine tuning of the installation directories:\
 #
 AC_PREREQ([2.67])
 AC_INIT([OCR],
-	[0.2], [mskala@ansuz.sooke.bc.ca], [ocr],
+	[0.3pre], [mskala@ansuz.sooke.bc.ca], [ocr],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
@@ -194,9 +194,9 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([msk-ocra.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 1891 2013-01-23 16:47:50Z mskala $])
+AC_REVISION([$Id: configure.ac 2006 2013-03-07 01:28:42Z mskala $])
 AC_COPYRIGHT([public domain])
-AC_SUBST([release_date],["September 27, 2012"])
+AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
 #
 ############################################################################
@@ -290,6 +290,7 @@ echo '#!/usr/local/bin/fontforge' > ffaetest.pe
 echo 'New();AddExtrema(1);' >> ffaetest.pe
 AS_IF([$FONTFORGE ffaetest.pe >& /dev/null],
   [ae_arg_okay=yes],[ae_arg_okay=no])
+rm ffaetest.pe
 AC_SUBST([ae_arg_okay])
 AC_MSG_RESULT([$ae_arg_okay])
 #
