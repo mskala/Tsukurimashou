@@ -40,6 +40,7 @@
 
 # BASIC AUTOTOOLS STUFF
 
+
 ACLOCAL_AMFLAGS = -I m4
 @SET_MAKE@
 @INC_AMINCLUDE@
@@ -56,6 +57,7 @@ percent=%
 ZZZZHACKZZZZ=include makefile-vars.inc
 $(error This Makefile must be edited by Perl code in config.status before use)
 
+SHELL=@KLEKNEV@
 SUBDIRS = . $(PARASITES)
 
 ############################################################################
@@ -172,19 +174,19 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 
 KANJIDIC2=@with_kanjidic2@
 if COND_BOOKPROOFS
-    MAYBE_BOOKPROOFS=$(foreach \
-      rn,I II III IV V VI VII VIII IX X XI XII XIII XIV, \
-      doc/book$(rn).pdf doc/cover$(rn).pdf)
-    PROOF_ND_PASS=4
+  MAYBE_BOOKPROOFS=$(foreach \
+    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV, \
+    doc/book$(rn).pdf doc/cover$(rn).pdf)
+  PROOF_ND_PASS=4
 else
-    PROOF_ND_PASS=3
+  PROOF_ND_PASS=3
 if COND_PROOFS
-    MAYBE_PROOFS=doc/proofs.pdf
+  MAYBE_PROOFS=doc/proofs.pdf
 endif
 endif
 if COND_DOCS
-    MAYBE_DOCS=doc/demo.pdf doc/usermanual.pdf
-    MAYBE_MDOCS=$(foreach doc,$(MAINTAINER_DOCS),doc/$(doc).pdf)
+  MAYBE_DOCS=doc/demo.pdf doc/usermanual.pdf
+  MAYBE_MDOCS=$(foreach doc,$(MAINTAINER_DOCS),doc/$(doc).pdf)
 endif
 if COND_EXPECT
   expect_start= $(if $(AM_V_at),$(EXPECT) -c \
@@ -201,10 +203,10 @@ else
   expect_end=$(TSU_V_REDIR)
 endif
 if COND_KANJIDIC2
-    MAYBE_KDDATA=hamlog/kddata.hl
+  MAYBE_KDDATA=hamlog/kddata.hl
 endif
 if COND_KANJI_CHART
-    MAYBE_KANJI_CHART=doc/kanjichart.pdf
+  MAYBE_KANJI_CHART=doc/kanjichart.pdf
 endif
 
 ############################################################################

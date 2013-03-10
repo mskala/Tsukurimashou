@@ -3,15 +3,20 @@
 #
 
 #
-# Configuration source for OCR fonts
+# Configuration source for Kleknev
+# Copyright (C) 2013  Matthew Skala
 #
-# This file (configure.ac) is released to the public domain by its author,
-# Matthew Skala, but be aware that the generated configure script may be
-# subject to claims by the Free Software Foundation or others.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Matthew Skala
 # http://ansuz.sooke.bc.ca/
@@ -24,6 +29,9 @@
 # Override Autoconf's argument parsing - must be done here,
 # before AC_INIT has a chance to run
 #
+
+# Much of this code is copied from the Tsukurimashou project, but since it
+# has the same copyright holder, there's no licensing problem.
 
 # General macro for editing a definition
 m4_define([TSUKU_DEFINITION_SUBST],
@@ -55,20 +63,7 @@ m4_define([TSUKU_DELETE_CMDLINE_OPTION],
 ])
            ])
 
-# exec-prefix is special because it's an install dir option without "dir"
-TSUKU_DELETE_CMDLINE_OPTION([exec-prefix])
-TSUKU_DEFINITION_SUBST([_AC_INIT_PARSE_ARGS],
-                         [for ac_var in\([^#]*\)\bexec_prefix\b],
-                         [for ac_var in\1])
-
 # Delete unwanted non-install-dir options
-TSUKU_DELETE_CMDLINE_OPTION([gas])
-TSUKU_DELETE_CMDLINE_OPTION([nfp])
-TSUKU_DELETE_CMDLINE_OPTION([program-prefix])
-TSUKU_DELETE_CMDLINE_OPTION([program-suffix])
-TSUKU_DELETE_CMDLINE_OPTION([program-transform-name])
-# may as well do this now - removes some processing and a help stanza
-AC_DEFUN([AC_ARG_PROGRAM],[])
 TSUKU_DELETE_CMDLINE_OPTION([-x])
 TSUKU_DELETE_CMDLINE_OPTION([x-includes])
 TSUKU_DELETE_CMDLINE_OPTION([x-libraries])
@@ -84,8 +79,7 @@ m4_define([TSUKU_DELETE_INSTDIR_OPTION],
 ],
                                   [])])
 
-# Delete nearly all of the default install dirs
-TSUKU_DELETE_INSTDIR_OPTION([bin])
+# Delete many of the default install dirs
 TSUKU_DELETE_INSTDIR_OPTION([data])
 TSUKU_DELETE_INSTDIR_OPTION([dvi])
 TSUKU_DELETE_INSTDIR_OPTION([html])
@@ -96,67 +90,11 @@ TSUKU_DELETE_INSTDIR_OPTION([libexec])
 TSUKU_DELETE_INSTDIR_OPTION([info])
 TSUKU_DELETE_INSTDIR_OPTION([locale])
 TSUKU_DELETE_INSTDIR_OPTION([localstate])
-TSUKU_DELETE_INSTDIR_OPTION([man])
 TSUKU_DELETE_INSTDIR_OPTION([oldinclude])
 TSUKU_DELETE_INSTDIR_OPTION([ps])
 TSUKU_DELETE_INSTDIR_OPTION([sbin])
 TSUKU_DELETE_INSTDIR_OPTION([sharedstate])
 TSUKU_DELETE_INSTDIR_OPTION([sysconf])
-
-# generate a "case" pattern matching chunk
-#   TSUKU_CASE_PATTERN_CHUNK(option,shortest,before,after)
-m4_define([TSUKU_CASE_PATTERN_CHUNK],
-  [$3$1$4[]m4_if([$1],[$2],[],
-  [TSUKU_CASE_PATTERN_CHUNK(m4_substr($1,0,m4_eval(m4_len($1)-1)),
-      [$2],[$3],[$4])])])
-
-# Add a new installation directory
-#   TSUKU_ADD_INSTDIR_OPTION(dirname,under,default,help,abbrev,casebefore)
-m4_define([TSUKU_ADD_INSTDIR_OPTION],
-          [TSUKU_DEFINITION_SUBST([_AC_INIT_PARSE_ARGS],
-                                  [AC_SUBST(\[$2\].*)dnl\
-],
-                                  [\&AC_SUBST([$1dir],['${$2}/$3'])dnl\
-])
-           TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
-                                  [\
-\(.*--$2=.*\)\
-],
-                                  m4_expand([\
-\1\
-AS_HELP_STRING([--$1dir=DIR],m4_expand([$4 @<:@m4_toupper([$2])/$3@:>@]))\
-]))
-           TSUKU_DEFINITION_SUBST([_AC_INIT_PARSE_ARGS],
-                                  [\
-\(.*$6.*\)\
-],
-                                  [\
-  -$1dir[]TSUKU_CASE_PATTERN_CHUNK([$1dir],[$5],[ | --],[])@:}@
-    ac_prev=$1dir ;;
-  -$1dir=*TSUKU_CASE_PATTERN_CHUNK([$1dir],[$5],[ | --],[=*])@:}@
-    $1dir=$ac_optarg ;;\
-\
-\1\
-])
-           TSUKU_DEFINITION_SUBST([_AC_INIT_PARSE_ARGS],
-                                  [for ac_var in\([^#]*.\b$2\)\b],
-                                  [for ac_var in\1 $1dir])])
-
-# Add our new directories
-TSUKU_ADD_INSTDIR_OPTION([font],[datarootdir],[fonts],[fonts],
-  [f],[obsolete gas option])
-TSUKU_ADD_INSTDIR_OPTION([afm],[fontdir],[afm],
-  [Adobe Font Metrics],
-  [afm],[ --prefix ])
-TSUKU_ADD_INSTDIR_OPTION([type1],[fontdir],[type1],
-  [Postscript Type 1 fonts],
-  [ty],[ --prefix ])
-TSUKU_ADD_INSTDIR_OPTION([ttf],[fontdir],[TTF],
-  [TrueType fonts],
-  [tt],[ --prefix ])
-TSUKU_ADD_INSTDIR_OPTION([otf],[fontdir],[OTF],
-  [OpenType fonts],
-  [ot],[ --prefix ])
 
 # Reduce the ridiculous verbosity of Autoconf's help message
 TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
@@ -170,14 +108,6 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
                        [\barch.*-independent \b],
                        [])
-TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
-                       [\
-.*(\[--exec-prefix=EPREFIX.*\
-.*\])\(.\)[^:]*\
-Fine tuning of the installation directories:\
-],
-                       [\1\
-])
 
 #
 ############################################################################
@@ -185,17 +115,17 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.67])
-AC_INIT([OCR],
-	[0.3pre], [mskala@ansuz.sooke.bc.ca], [ocr],
+AC_INIT([Kleknev],
+	[0.1pre], [mskala@ansuz.sooke.bc.ca], [kleknev],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
-AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
-  parallel-tests silent-rules])
-AC_CONFIG_SRCDIR([msk-ocra.mp])
+AM_INIT_AUTOMAKE([foreign color-tests parallel-tests silent-rules])
+AC_CONFIG_SRCDIR([kleknev.c])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2019 2013-03-09 21:44:02Z mskala $])
-AC_COPYRIGHT([public domain])
+AC_REVISION([$Id: configure.ac 1015 2011-12-15 22:24:32Z mskala $])
+AC_COPYRIGHT([Copyright (C) 2013 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
 #
@@ -203,6 +133,8 @@ AM_SILENT_RULES
 #
 # Checks for programs.
 #
+AC_PROG_CC
+AC_PROG_CC_C_O
 AC_PROG_GREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
@@ -213,20 +145,15 @@ AC_PATH_PROG([AUTOMAKE],[automake])
 AC_ARG_VAR([EXPECT],[Expect])
 AC_PATH_PROG([EXPECT],[expect])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
-AC_ARG_VAR([FONTFORGE],[Fontforge])
-AC_PATH_PROG([FONTFORGE],[fontforge])
 AX_CHECK_GNU_MAKE
+AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
-AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])
-AC_ARG_VAR([MPOST],[MetaPost])
-AC_PATH_PROG([MPOST],[mpost])
+AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh])
+AS_IF([dname=`AS_DIRNAME(["$KLEKNEV"])`; test `cd "$dname"; pwd` = `pwd`],
+  [KLEKNEV=/bin/sh
+   AC_MSG_WARN([Can't profile build using the very binary we're building])])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
-AC_ARG_VAR([T1ASM],[t1asm])
-AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
-AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])
-AC_ARG_VAR([XELATEX],[XeLaTeX])
-AC_PATH_PROG([XELATEX],[xelatex])
 #
 ############################################################################
 #
@@ -236,12 +163,36 @@ AC_MSG_CHECKING([whether we are building as a parasite])
 AM_CONDITIONAL([COND_PARASITE],
   [grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null])
 AM_COND_IF([COND_PARASITE],
-  [AC_MSG_RESULT([yes])
-   T1ASM=../t1asm/t1asm],
-  [AC_MSG_RESULT([no])
-   AC_PATH_PROG([T1ASM],[t1asm])
-  ])
-AC_SUBST([T1ASM])
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])])
+#
+############################################################################
+#
+# Checks for libraries.
+#
+AX_PERL_MODULE_VERSION([XML::Parser 2.36],[],
+  [AC_MSG_WARN([XML::Parser is missing])])
+#
+############################################################################
+#
+# Checks for header files.
+#
+# AC_CHECK_HEADERS([libintl.h stdlib.h string.h wchar.h])
+AX_CREATE_STDINT_H
+#
+############################################################################
+#
+# Checks for typedefs, structures, and compiler characteristics.
+#
+AC_CHECK_SIZEOF([int])
+AC_TYPE_SIZE_T
+#
+############################################################################
+#
+# Checks for library functions.
+#
+AX_FUNC_GETOPT_LONG
+# AC_CHECK_FUNCS_ONCE([])
 #
 ############################################################################
 #
@@ -254,7 +205,12 @@ AX_AM_JOBSERVER
 #
 # User-settable options
 #
-# Define user options
+AC_ARG_ENABLE([gcov],
+  [AS_HELP_STRING([--enable-gcov],
+    [use Gcov to test the test suite])],
+    [],
+    [enable_gcov=no])
+AM_CONDITIONAL([COND_GCOV],[test '!' "$enable_gcov" = no])
 #
 AC_ARG_ENABLE([colour-build],
   [AS_HELP_STRING([--disable-colour-build],
@@ -262,6 +218,7 @@ AC_ARG_ENABLE([colour-build],
     [],
     [enable_colour_build=yes])
 AC_ARG_ENABLE([color-build],[dnl],[],[enable_color_build=yes])
+#
 AC_ARG_ENABLE([docs],
   [AS_HELP_STRING([--disable-docs],
     [turn off PDF documentation])],
@@ -281,20 +238,9 @@ AM_CONDITIONAL([COND_DOCS],[test '!' "$enable_docs" = no])
 AC_SUBST([enable_docs])
 #
 #
-AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
-#
 AS_IF([test "x$enable_silent_rules" = "x"],
   [enable_silent_rules=yes
    AM_DEFAULT_VERBOSITY=0])
-#
-AC_MSG_CHECKING([whether FontForge accepts AddExtrema(1)])
-echo '#!/usr/local/bin/fontforge' > ffaetest.pe
-echo 'New();AddExtrema(1);' >> ffaetest.pe
-AS_IF([$FONTFORGE ffaetest.pe >& /dev/null],
-  [ae_arg_okay=yes],[ae_arg_okay=no])
-rm ffaetest.pe
-AC_SUBST([ae_arg_okay])
-AC_MSG_RESULT([$ae_arg_okay])
 #
 ############################################################################
 #

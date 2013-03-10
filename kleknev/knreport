@@ -1,0 +1,478 @@
+#!/usr/bin/perl
+
+#
+# Kleknev log file analyser
+# Copyright (C) 2013  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+use XML::Parser;
+
+########################################################################
+
+sub categorize {
+  if ($process_argv[0] eq '/bin/sh') {
+    if ($process_argv[2]=~m!MT1.*mpost !s) {
+      $category[0]='mt1';
+    } elsif ($process_argv[2]=~m!RMO.*rmo.pe !s) {
+      $category[0]='rmo';
+    } elsif ($process_argv[2]=~m!TEX.*latex !s) {
+      $category[0]='latex';
+    } elsif ($process_argv[2]=~m!^([a-zA-Z0-9\-_\./]*)/([^ /]+) !) {
+      $category[0]=$2;
+    }
+  }
+  
+  $category[1]=$1 if $workingdir=~m!/([^/]+)$!;
+}
+
+@schemata=('CATEGORY','WORKING DIRECTORY');
+
+########################################################################
+
+sub accumulate_stats {
+  for ($schema=0;$schema<=$#category;$schema++) {
+    next if ($category[$schema] eq '') || ($category[$schema] eq 'IGNORE');
+    $stats{"$schema:$category[$schema]:count"}++;
+    $stats{"$schema:TOTAL:count"}++;
+    $stats{"$schema:$category[$schema]:user"}+=
+      ($rusage{'userSec'}+1e-6*$rusage{'userUSec'});
+    $stats{"$schema:TOTAL:user"}+=
+      ($rusage{'userSec'}+1e-6*$rusage{'userUSec'});
+    $stats{"$schema:$category[$schema]:system"}+=
+      ($rusage{'systemSec'}+1e-6*$rusage{'systemUSec'});
+    $stats{"$schema:TOTAL:system"}+=
+      ($rusage{'systemSec'}+1e-6*$rusage{'systemUSec'});
+    $stats{"$schema:$category[$schema]:wallinc"}+=
+      ($walltime-$start_time{$longpid});
+    $stats{"$schema:TOTAL:wallinc"}+=
+      ($walltime-$start_time{$longpid});
+    $stats{"$schema:$category[$schema]:start"}=$start_time{$longpid}
+      if ($start_time{$longpid}<$stats{"$schema:$category[$schema]:start"})
+        || !defined $stats{"$schema:$category[$schema]:start"};
+    $stats{"$schema:TOTAL:start"}=$start_time{$longpid}
+      if ($start_time{$longpid}<$stats{"$schema:TOTAL:start"})
+        || !defined $stats{"$schema:TOTAL:start"};
+    $stats{"$schema:$category[$schema]:end"}=$walltime
+      if $walltime>$stats{"$schema:$category[$schema]:end"};
+    $stats{"$schema:TOTAL:end"}=$walltime
+      if $walltime>$stats{"$schema:TOTAL:end"};
+  }
+}
+
+########################################################################
+
+@queued_lines=();
+
+sub queue_lines {
+  my(@lines)=split("\n",$_[0]);
+  my($i,$j);
+  my(%dtop)=();
+  my(%dbot)=();
+  
+  my($longest)=1;
+  foreach (@lines,@queued_lines) {
+    $longest=length($_) if length($_)>$longest;
+  }
+  foreach (@queued_lines) {
+    $longest=length($_) if length($_)>$longest;
+  }
+  
+  for ($i=0;$i<=$#queued_lines;$i++) {
+    $queued_lines[$i].=("\0"x($longest-length $queued_lines[$i]));
+    for ($j=0;$j<$longest;$j++) {
+      $dtop{$j}=$#queued_lines-$i
+        if substr($queued_lines[$i],$j,1) ne "\0";
+    }
+  }
+
+  for ($i=0;$i<=$#lines;$i++) {
+    $lines[$i].=("\0"x($longest-length $lines[$i]));
+    for ($j=0;$j<$longest;$j++) {
+      $dbot{$j}=$i
+        if (substr($lines[$i],$j,1) ne "\0") && !defined $dbot{$j};
+    }
+  }
+  
+  my($overlap)=$#lines+1;
+  $overlap=$#queued_lines+1 if $#queued_lines<$#lines;
+  while (($k,$v)=each %dtop) {
+    if (defined $dbot{$k}) {
+      $overlap=$v+$dbot{$k} if $v+$dbot{$k}<$overlap;
+    }
+  }
+
+  my($qlc)=$#queued_lines;  
+  for ($i=0;$i<=$#lines;$i++) {
+    for ($j=0;$j<length($lines[$i]);$j++) {
+      if ($j<length($queued_lines[$qlc-$overlap+$i+1])) {
+        $oldc=substr($queued_lines[$qlc-$overlap+$i+1],$j,1);
+      } else {
+        $oldc="\0";
+      }
+      $oldc=substr($lines[$i],$j,1) if $oldc eq "\0";
+      $fill_char{$j}=' ' unless defined $fill_char{$j};
+      $oldc=$fill_char{$j} if ($oldc eq "\0") && (defined $dbot{$j})
+        && ($i<$dbot{$j});
+      if ($j<length($queued_lines[$qlc-$overlap+$i+1])) {
+        substr($queued_lines[$qlc-$overlap+$i+1],$j,1)=$oldc;
+      } else {
+        $queued_lines[$qlc-$overlap+$i+1].=$oldc;
+      }
+    }
+  }
+  
+  for ($i=0;$i<=$qlc-$overlap;$i++) {
+    for ($j=0;$j<length($queued_lines[$i]);$j++) {
+      $oldc=substr($queued_lines[$i],$j,1);
+      if (($oldc eq "\0") && ((defined $dbot{$j}) || ($qlc-$1>30))) {
+        $fill_char{$j}=' ' unless defined $fill_char{$j};
+        substr($queued_lines[$i],$j,1)=$fill_char{$j};
+      }
+    }
+  }
+  
+  while (($#queued_lines>0) && ($queued_lines[0]!~/\x00/)) {
+    $_=shift @queued_lines;
+    s/ +$//;
+    print "$_\n";
+  }
+}
+
+sub empty_queued_lines {
+  while ($#queued_lines>=0) {
+    $_=shift @queued_lines;
+    s/\x00/ /g;
+    s/ +$//;
+    print "$_\n";
+  }
+}
+
+########################################################################
+
+sub concat_btob {
+  my($margin,$left,$right)=@_;
+  
+  my(@leftlines)=split("\n",$left);
+  my(@rightlines)=split("\n",$right);
+  unshift(@leftlines,'') while $#leftlines<$#rightlines;
+  unshift(@rightlines,'') while $#rightlines<$#leftlines;
+  for (my $i=0;$i<=$#leftlines;$i++) {
+    $leftlines[$i]=substr($leftlines[$i].("\0"x$margin),0,$margin)
+                  .$rightlines[$i];
+  }
+  join("\n",@leftlines,'');
+}
+
+sub concat_btot {
+  my($margin,$left,$right)=@_;
+  
+  my(@leftlines)=split("\n",$left);
+  my(@rightlines)=split("\n",$right);
+  my($a)=pop @leftlines;
+  push @leftlines,substr($a.("\0"x$margin),0,$margin).(shift @rightlines);
+  join("\n",@leftlines).join("\n".("\0"x$margin),'',@rightlines)."\n";
+}
+
+$old_wt_year=-1;
+$old_wt_month=-1;
+$old_wt_day=-1;
+$old_wt_hour=-1;
+$old_wt_minute=-1;
+$old_wt_second=-1;
+$old_wt_hund=-1;
+@monthabbr=('Jan','Feb','Mar','Apr','May','Jun',
+            'Jul','Aug','Sep','Oct','Nov','Dec');
+
+sub time_marker {
+  my($sec,$min,$hour,$mday,$mon,$year)=localtime($_[0]);
+  my($hund)=int(100*($_[0]-int($_[0])));
+  my($rval)='';
+
+  if ($year!=$old_wt_year) {
+    $rval=sprintf("*%04d*\n",$year+1900);
+    $old_wt_year=$year;
+    $old_wt_month=-1;
+  }
+  if (($mon!=$old_wt_month) || ($mday!=$old_wt_day)) {
+    $rval.=sprintf("%s%02d\n",$monthabbr[$mon],$mday);
+    $old_wt_month=$mon;
+    $old_wt_day=$mday;
+    $old_wt_hour=-1;
+  }
+  if (($hour!=$old_wt_hour) || ($min!=$old_wt_minute)) {
+    $rval.=sprintf("%02d:%02d\n",$hour,$min);
+    $old_wt_hour=$hour;
+    $old_wt_minute=$min;
+    $old_wt_second=-1;
+  }
+  if (($sec!=$old_wt_second) || ($hund!=$old_wt_hund)) {
+    $rval.=sprintf(":%02d.%02d \n",$sec,$hund);
+    $old_wt_second=$sec;
+    $old_wt_hund=$hund;
+  } else {
+    $rval="      \n";
+  }
+  return $rval;
+}
+
+########################################################################
+
+$leaf_node_width=14;
+$internal_node_width=2;
+
+%node_columns=('SPONTANEOUS'=>5);
+
+sub max {
+  my($a,$b)=@_;
+  $a>$b?$a:$b;
+}
+
+$scan=new XML::Parser(Handlers=>{
+  Start=>\&scan_start,
+  End=>\&scan_end,
+  Char=>\&scan_char,
+});
+
+sub scan_char {
+  my($expat,$string)=@_;
+  
+  $process_argv[$#process_argv].=$string if $capturing_arg;
+}
+
+sub scan_start {
+  my($expat,$element,%attributes)=@_;
+
+  if ($element eq 'a') {
+    $capturing_arg=1;
+    push @process_argv,'';
+  } elsif ($element eq 'e') {
+    $pid=undef;
+    $pidserial=0;
+    $parentpid=undef;
+    $exitstatus=undef;
+    %rusage=();
+    @process_argv=();
+    @category=('UNKNOWN');
+    $workingdir=undef;
+  } elsif ($element eq 'exitStatus') {
+    $exitstatus=$attributes{'value'};
+  } elsif ($element eq 'hostName') {
+    $hostname=$attributes{'name'};
+  } elsif ($element eq 'parentPid') {
+    $parentpid=$attributes{'value'};
+  } elsif ($element eq 'pid') {
+    $pid=$attributes{'value'};
+  } elsif ($element eq 'resourceUsage') {
+    $exitstatus=0+$exitstatus;
+    %rusage=%attributes;
+  } elsif ($element eq 'wallTime') {
+    $walltime=$attributes{'sec'}+1e-9*$attributes{'nSec'};
+  } elsif ($element eq 'workingDir') {
+    $workingdir=$attributes{'path'};
+  }
+}
+
+sub scan_end {
+  my($expat,$element)=@_;
+  
+  if ($element eq 'a') {
+    $capturing_arg=0;
+
+  } elsif ($element eq 'e') {
+    $pidserial=0+$seen_pids{"$hostname:$pid"};
+    $seen_pids{"$hostname:$pid"}=$pidserial;
+    $longpid="$hostname:$pid:$pidserial";
+    if (defined $active_parents{$longpid}) {
+      $longparent=$active_parents{$longpid};
+    } elsif (defined $parentpid) {
+      $longparent="$hostname:$parentpid:".
+        (0+$seen_pids{"$hostname:$parentpid"});
+    } else {
+      $longparent="SPONTANEOUS";
+    }
+
+    if (defined $exitstatus) {
+    
+      @category=split("\n",$process_categories{$longpid});
+      &accumulate_stats();
+
+      $botblock="| $category[0]\n" 
+        .substr(sprintf("| %#-0.05gu            ",
+           $rusage{'userSec'}+1e-6*$rusage{'userUSec'}),0,14)."\n"
+        .substr(sprintf("| %#-0.05gs            ",
+           $rusage{'systemSec'}+1e-6*$rusage{'systemUSec'}),0,14)."\n"
+        .substr(sprintf("\\=%#-0.05gr            ",
+           $walltime-$start_time{$longpid}),0,14)."\n";
+      &queue_lines(&concat_btob($node_columns{$longpid},
+        &time_marker($walltime),$botblock)
+        .("\0"x$node_columns{$longpid}).(' 'x14)."\n");
+      for ($i=0;$i<14;$i++) { $fill_char{$node_columns{$longpid}+$i}=' '; }
+      $last_queued=$longpid;
+
+      $seen_pids{"$hostname:$pid"}++;
+      delete $active_parents{$longpid};
+      delete $node_columns{$longpid};
+      delete $start_time{$longpid};
+      delete $process_categories{$longpid};
+
+    } else {
+      $active_parents{$longpid}=$longparent;
+      %tried=();
+      $newcol=0;
+      $test=$longpid;
+      while (1) {
+        $test=$active_parents{$test};
+        $newcol=max($newcol,$node_columns{$test}+$internal_node_width);
+        $tried{$test}=1;
+        last if $test eq 'SPONTANEOUS';
+      }
+      while (1) {
+        $badcol=0;
+        while (($k,$v)=each %node_columns) {
+          next if $tried{$k};
+          if (abs($newcol-$v)<$leaf_node_width) {
+            $badcol=1;
+          }
+        }
+        if ($badcol) {
+          $newcol+=$internal_node_width;
+        } else {
+          last;
+        }
+      }
+      $node_columns{$longpid}=$newcol;
+      $start_time{$longpid}=$walltime;
+      
+      &categorize;
+      $process_categories{$longpid}=join("\n",@category);
+      
+      if ($longparent eq 'SPONTANEOUS') {
+        $topblock=substr(">=$pid:$pidserial            ",0,14)."\n"
+                 .substr("| $hostname            ",0,14)."\n";
+        &queue_lines(&concat_btot($node_columns{$longpid},
+          &time_marker($walltime),$topblock));
+      } else {
+        &queue_lines(("\0"x$node_columns{$longparent}).'|             ')
+          if $last_queued eq $longparent;
+        $topblock=substr("<=$pid:$pidserial            ",0,14)."\n"
+                 .substr("| $hostname            ",0,14)."\n";
+        $gapsize=$node_columns{$longpid}-$node_columns{$longparent};
+        &queue_lines(&concat_btot($node_columns{$longparent},
+          &time_marker($walltime),
+          &concat_btot($gapsize,'+'.('-'x($gapsize-1)),$topblock)));
+      }
+      $fill_char{$node_columns{$longpid}}='|';
+      $last_queued=$longpid;
+      for ($i=0;$i<11;$i++) {
+        last if $i>=length($category[0]);
+        if ($category[0] eq 'UNKNOWN') {
+          $fill_char{$node_columns{$longpid}+2+$i}=' ';
+        } else {
+          $fill_char{$node_columns{$longpid}+2+$i}=
+            substr($category[0],$i,1);
+        }
+      }
+    }
+  }
+}
+
+print <<EOF;
+==============================================================================
+  KLEKNEV 0.1 PROFILING REPORT
+==============================================================================
+EOF
+
+%seen_pids=();
+%active_parents=();
+open(LOG,"kn.log");
+$parser=$scan->parse_start();
+$parser->parse_more("<?xml version=\"1.0\" ?>\n<logfile>\n");
+while (<LOG>) { $parser->parse_more($_); }
+$parser->parse_more("</logfile>\n");
+$parser->parse_done();
+close(LOG);
+
+if (0<scalar %active_parents) {
+  &queue_lines(&concat_btob(31,'',<<EOF));
+****************
+* interrupted! *
+****************
+EOF
+}
+
+&empty_queued_lines();
+
+sub form_f8 {
+  my($f)=@_;
+  
+  if ($f>9999.999) {
+    return sprintf('%8.02E',$f);
+  } elsif ($f>0.009) {
+    return sprintf('%8.03f',$f);
+  } elsif ($f>1e-9) {
+    return sprintf('%8.02e',$f);
+  } elsif ($f>-1e-9) {
+    return '   0    ';
+  } elsif ($f>-0.001) {
+    return sprintf('%8.01e',$f);
+  } elsif ($f>-1000) {
+    return sprintf('%8.03f',$f);
+  } else {
+    return sprintf('%8.01E',$f);
+  }
+}
+
+for ($schema=0;$schema<=$#schemata;$schema++) {
+  print (('='x78)."\n");
+  print "  STATISTICS BY $schemata[$schema]\n\n";
+  
+  @categories=();
+  foreach (keys %stats) {
+    push @categories,$1 if (/^$schema:(.*):count$/) && ($1 ne 'TOTAL');
+  }
+  @categories=sort
+    {$stats{"$schema:$a:start"}<=>$stats{"$schema:$b:start"}} @categories;
+  push @categories,'TOTAL';
+
+  $globalstart=$stats{"$schema:TOTAL:start"};
+  $globalspan=$stats{"$schema:TOTAL:end"}-$globalstart;
+  print "Overall real time (start of first to end of last)\n";
+  foreach (@categories) {
+    $barstart=int(50.4*($stats{"$schema:$_:start"}-$globalstart)/$globalspan);
+    $barend=int(50.4*($stats{"$schema:$_:end"}-$globalstart)/$globalspan);
+    $bar=(' 'x$barstart).'|';
+    $bar.=(($_ eq 'TOTAL'?'=':'-')x($barend-$barstart-2)).'|'
+      if $barend-$barstart>=2;
+    substr($bar,$barstart+int(($barend-$barstart-length($_))/2),length($_))=$_
+      if $barend-$barstart>length($_)+4;
+    printf "%s %s %6s %s\n",substr("$_           ",0,11),
+      &form_f8($stats{"$schema:$_:end"}-$stats{"$schema:$_:start"}),
+      '('.int(100.1*($stats{"$schema:$_:end"}-$stats{"$schema:$_:start"})/
+         $globalspan).'%)',$bar;
+  }
+  
+  print "\n";
+}
+
+print <<EOF;
+==============================================================================
+  END
+==============================================================================
+EOF
+

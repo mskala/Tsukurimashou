@@ -192,6 +192,8 @@ AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
 AC_PATH_PROG([ICONV],[iconv])
+AC_ARG_VAR([KLEKNEV],[Kleknev])
+AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
 AC_ARG_VAR([XELATEX],[XeLaTeX])

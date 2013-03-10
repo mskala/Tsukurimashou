@@ -31,6 +31,8 @@ space:=$(empty) $(empty)
 comma:=,
 percent=%
 
+SHELL=@KLEKNEV@
+
 ############################################################################
 
 # SILENT BUILD BLINKENLIGHTS

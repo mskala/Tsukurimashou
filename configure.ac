@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2006 2013-03-07 01:28:42Z mskala $])
+AC_REVISION([$Id: configure.ac 2019 2013-03-09 21:44:02Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -229,6 +229,8 @@ AC_ARG_VAR([FONTLINT_FLAGS],[Flags for fontlint])
 AC_PATH_TOOL([GDB],[gdb])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
+AC_ARG_VAR([KLEKNEV],[Kleknev])
+AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])
 AC_PATH_PROG([MAKE],[make])
 AC_ARG_VAR([MPOST],[MetaPost])
 AC_PATH_PROG([MPOST],[mpost])
@@ -250,6 +252,8 @@ gmake_version=dnl
    AS_VERSION_COMPARE([$gmake_version],[3.82],
      [missing_gmake_version=yes])])
 AC_MSG_RESULT([$gmake_version])
+#
+AS_IF([test "x$KLEKNEV" = "x"],[KLEKNEV=/bin/sh])
 #
 ############################################################################
 #

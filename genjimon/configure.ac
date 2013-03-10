@@ -199,7 +199,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([genjimon-black.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2006 2013-03-07 01:28:42Z mskala $])
+AC_REVISION([$Id: configure.ac 2019 2013-03-09 21:44:02Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -221,6 +221,8 @@ AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AC_ARG_VAR([FONTFORGE],[Fontforge])
 AC_PATH_PROG([FONTFORGE],[fontforge])
 AX_CHECK_GNU_MAKE
+AC_ARG_VAR([KLEKNEV],[Kleknev])
+AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])
 AC_ARG_VAR([MPOST],[MetaPost])
 AC_PATH_PROG([MPOST],[mpost])
 AC_ARG_VAR([PERL],[Perl])

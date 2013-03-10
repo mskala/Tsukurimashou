@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
 #
-# Makefile source for IDSgrep
-# Copyright (C) 2012, 2013  Matthew Skala
+# Makefile source for Kleknev
+# Copyright (C) 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -91,12 +91,6 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 
 # CONDITIONAL OPTIONS
 
-if COND_CHISE_IDS
-   MAYBE_CIDATA=chise.eids
-endif
-if COND_DOCS
-    MAYBE_DOCS=idsgrep.pdf
-endif
 if COND_EXPECT
   expect_start= $(if $(AM_V_at),$(EXPECT) -c \
     'log_user 0 ; spawn -noecho sh -c ")
@@ -114,16 +108,6 @@ endif
 if COND_GCOV
    MAYBE_COVERAGE=--coverage --no-inline
 endif
-if COND_KANJIVG
-   MAYBE_KVDATA=kanjivg.eids
-endif
-if COND_TSUKU_BUILD
-   MAYBE_DOCS=idsgrep.pdf
-   MAYBE_TSUKUDATA=tsukurimashou.eids
-endif
-if COND_EDICT2
-   MAYBE_EDICTDATA=edict.eids
-endif
 
 ############################################################################
 
@@ -134,109 +118,48 @@ endif
 
 STANDALONE_QVFG:=
 EXTRA_DIST:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  gnugetopt.h idsgrep.tex idsgrep.bib
+  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG))
+
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
-  chise2eids ed22eids kvg2eids \
-  $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
+  $(GCOV_TESTS)
 
-bin_PROGRAMS = idsgrep
-
-dist_dict_DATA = $(MAYBE_CIDATA)
-
-dict_DATA = $(MAYBE_EDICTDATA) $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)
+bin_PROGRAMS = kleknev kleknev-argo
 
 dist_pdf_DATA = $(MAYBE_DOCS)
 
-AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
-idsgrep_SOURCES = \
-  assoc.c cook.c hash.c idsgrep.c idsgrep.h match.c parse.c \
-  regex.c unilist.c userpred.c
+AM_CFLAGS := $(MAYBE_COVERAGE) $(AM_CFLAGS)
 
-LDADD = @LIBOBJS@ $(PCRE_LIBS)
+kleknev_SOURCES = kleknev.c kleknev.h
+kleknev_LDADD = -lrt
 
-man1_MANS = idsgrep.1
+kleknev_argo_SOURCES =
+
+# man1_MANS = kleknev.1 kleknev-argo.1
 
 ############################################################################
 
 # MAKE CLEAN
 
-MOSTLYCLEANFILES = \
-  idsgrep.aux idsgrep.log idsgrep.blg idsgrep.bbl idsgrep.toc \
-  *.gcda *.gcno *.gcov
+MOSTLYCLEANFILES =
 
-CLEANFILES = chise.errs edict.eids kanjivg.eids tsukurimashou.eids
+CLEANFILES =
 
-DISTCLEANFILES = $(if $(VPATH),idsgrep.pdf chise.eids,)
+DISTCLEANFILES =
 
-MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
+MAINTAINERCLEANFILES =
 
 ############################################################################
 
 # PDF DOCUMENTATION
 
-idsgrep.pdf: idsgrep.tex config.tex idsgrep.bib \
-  @with_tsuku_build@/otf/TsukurimashouMincho.otf
-	$(AM_V_at)I=1;$(TSU_V_TEXL) \
-	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end) ; \
-	export BIBINPUTS=$(mvp) ; bibtex idsgrep.aux $(TSU_V_REDIR) ; \
-	I=2;$(TSU_V_TEXL) \
-	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end) ; \
-	I=3;$(TSU_V_TEXL) \
-	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end)
-
-############################################################################
-
-# DICTIONARIES
-
-chise.eids: $(wildcard @with_chise_ids@/IDS-*.txt) chise2eids
-	$(PERL) -CDS $(mvp)/chise2eids \
-	  @with_chise_ids@ @with_chise_ids@/IDS-*.txt \
-	  > chise.eids 2> chise.errs
-	echo `wc -l < chise.errs` errors detected in CHISE IDS
-
-# this if is for the case of chise.eids distributed and not locally built
-edict.eids: @with_edict2@ @edict_decomp@ ed22eids
-	if test -r @edict_decomp@ ; \
-	then $(GZIP) -cd @with_edict2@ \
-	  | $(ICONV) -feuc-jp -tutf-8 \
-	  | $(PERL) -CDS $(mvp)/ed22eids @edict_decomp@ > edict.eids ; \
-	else $(GZIP) -cd @with_edict2@ \
-	  | $(ICONV) -feuc-jp -tutf-8 \
-	  | $(PERL) -CDS $(mvp)/ed22eids $(mvp)/@edict_decomp@ \
-	  > edict.eids ; fi
-
-kanjivg.eids: @with_kanjivg@ kvg2eids
-	if $(PERL) \
-	  -e 'read STDIN,$$_,2;exit 1 if unpack("n",$$_)!=8075' \
-	  < @with_kanjivg@ ; \
-	then $(GZIP) -cd @with_kanjivg@ \
-	  | $(PERL) -CS $(mvp)/kvg2eids > kanjivg.eids ; \
-	else $(PERL) -CS $(mvp)/kvg2eids < @with_kanjivg@ > kanjivg.eids ; fi
-
-@with_tsuku_build@/otf/TsukurimashouMincho.otf:
-	cd @with_tsuku_build@ ; \
-	  $(MAKE) $(AM_MAKEFLAGS) otf/TsukurimashouMincho.otf
-
-@with_tsuku_build@/txt/tsukurimashou.eids: Makefile
-	cd @with_tsuku_build@ ; $(MAKE) $(AM_MAKEFLAGS) eids
-
-tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
-	$(LN_S) -f @with_tsuku_build@/txt/tsukurimashou.eids \
-	  tsukurimashou.eids
-
 ############################################################################
 
 # TESTING
 
-GCOV_TESTS = \
-  test/andor test/anynot test/assoc test/basicmatch test/backslash \
-  test/bighash test/cooked test/demorgan test/equal test/kvg-grone \
-  test/messages test/regex test/spacing test/tsu-grone test/unord \
-  test/utf8
+GCOV_TESTS =
 
 define GCDEP_RECIPE
 $1.log: test/rmgcda.log
@@ -252,7 +175,7 @@ if COND_GCOV
   test/gcov.log: $(foreach test,$(GCOV_TESTS),$(test).log)
 
 else
-  TESTS = $(GCOV_TESTS) test/vgneko
+  TESTS = $(GCOV_TESTS)
 endif
 
 ############################################################################
