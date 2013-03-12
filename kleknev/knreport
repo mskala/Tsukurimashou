@@ -26,52 +26,82 @@ use XML::Parser;
 ########################################################################
 
 sub categorize {
+  $category[1]=$1 if $workingdir=~m!/([^/]+)$!;
+
   if ($process_argv[0] eq '/bin/sh') {
-    if ($process_argv[2]=~m!MT1.*mpost !s) {
+    if ($process_argv[2]=~m!MT1.*mpost +([a-z]+)-!s) {
       $category[0]='mt1';
+      $savecat=$1;
+      $category[2]=$savecat if $category[1]=~/^tsuku/;
     } elsif ($process_argv[2]=~m!RMO.*rmo.pe !s) {
       $category[0]='rmo';
     } elsif ($process_argv[2]=~m!TEX.*latex !s) {
       $category[0]='latex';
+    } elsif ($process_argv[2]=~m!fontforge.*assemble-font.pe +([a-z]+)-!s) {
+      $category[0]='assembly';
+      $category[3]=$1;
     } elsif ($process_argv[2]=~m!^([a-zA-Z0-9\-_\./]*)/([^ /]+) !) {
       $category[0]=$2;
     }
   }
-  
-  $category[1]=$1 if $workingdir=~m!/([^/]+)$!;
 }
 
-@schemata=('CATEGORY','WORKING DIRECTORY');
+@schemata=('CATEGORY','WORKING DIRECTORY',
+  'FAMILY (TSUKURIMASHOU MT1)',
+  'FAMILY (TSUKURIMASHOU FONT ASSEMBLY)');
 
 ########################################################################
+
+sub accumulate_stat_add {
+  my($s,$c,$t,$v)=@_;
+  
+  $stats{"$s:$c:$t"}+=$v;
+  $stats{"$s:TOTAL:$t"}+=$v;
+}
+
+sub accumulate_stat_min {
+  my($s,$c,$t,$v)=@_;
+  
+  $stats{"$s:$c:$t"}=$v
+    if (!defined $stats{"$s:$c:$t"})
+    || ($v<$stats{"$s:$c:$t"});
+  $stats{"$s:TOTAL:$t"}=$v
+    if (!defined $stats{"$s:TOTAL:$t"})
+    || ($v<$stats{"$s:TOTAL:$t"});
+}
+
+sub accumulate_stat_max {
+  my($s,$c,$t,$v)=@_;
+  
+  $stats{"$s:$c:$t"}=$v
+    if (!defined $stats{"$s:$c:$t"})
+    || ($v>$stats{"$s:$c:$t"});
+  $stats{"$s:TOTAL:$t"}=$v
+    if (!defined $stats{"$s:TOTAL:$t"})
+    || ($v>$stats{"$s:TOTAL:$t"});
+}
+
+sub accumulate_stat_limits {
+  my($s,$c,$t,$v)=@_;
+
+  &accumulate_stat_add($s,$c,$t,$v);
+  &accumulate_stat_min($s,$c,$t.'_min',$v);
+  &accumulate_stat_max($s,$c,$t.'_max',$v);
+}
 
 sub accumulate_stats {
   for ($schema=0;$schema<=$#category;$schema++) {
     next if ($category[$schema] eq '') || ($category[$schema] eq 'IGNORE');
-    $stats{"$schema:$category[$schema]:count"}++;
-    $stats{"$schema:TOTAL:count"}++;
-    $stats{"$schema:$category[$schema]:user"}+=
-      ($rusage{'userSec'}+1e-6*$rusage{'userUSec'});
-    $stats{"$schema:TOTAL:user"}+=
-      ($rusage{'userSec'}+1e-6*$rusage{'userUSec'});
-    $stats{"$schema:$category[$schema]:system"}+=
-      ($rusage{'systemSec'}+1e-6*$rusage{'systemUSec'});
-    $stats{"$schema:TOTAL:system"}+=
-      ($rusage{'systemSec'}+1e-6*$rusage{'systemUSec'});
-    $stats{"$schema:$category[$schema]:wallinc"}+=
-      ($walltime-$start_time{$longpid});
-    $stats{"$schema:TOTAL:wallinc"}+=
-      ($walltime-$start_time{$longpid});
-    $stats{"$schema:$category[$schema]:start"}=$start_time{$longpid}
-      if ($start_time{$longpid}<$stats{"$schema:$category[$schema]:start"})
-        || !defined $stats{"$schema:$category[$schema]:start"};
-    $stats{"$schema:TOTAL:start"}=$start_time{$longpid}
-      if ($start_time{$longpid}<$stats{"$schema:TOTAL:start"})
-        || !defined $stats{"$schema:TOTAL:start"};
-    $stats{"$schema:$category[$schema]:end"}=$walltime
-      if $walltime>$stats{"$schema:$category[$schema]:end"};
-    $stats{"$schema:TOTAL:end"}=$walltime
-      if $walltime>$stats{"$schema:TOTAL:end"};
+    &accumulate_stat_add($schema,$category[$schema],'count',1);
+    &accumulate_stat_limits($schema,$category[$schema],'user',
+      $rusage{'userSec'}+1e-6*$rusage{'userUSec'});
+    &accumulate_stat_limits($schema,$category[$schema],'system',
+      $rusage{'systemSec'}+1e-6*$rusage{'systemUSec'});
+    &accumulate_stat_limits($schema,$category[$schema],'wallinc',
+      $walltime-$start_time{$longpid});
+    &accumulate_stat_min($schema,$category[$schema],'start',
+      $start_time{$longpid});
+    &accumulate_stat_max($schema,$category[$schema],'end',$walltime);
   }
 }
 
@@ -439,6 +469,8 @@ sub form_f8 {
 }
 
 for ($schema=0;$schema<=$#schemata;$schema++) {
+  next if $stats{"$schema:TOTAL:count"}==0;
+
   print (('='x78)."\n");
   print "  STATISTICS BY $schemata[$schema]\n\n";
   
@@ -454,8 +486,8 @@ for ($schema=0;$schema<=$#schemata;$schema++) {
   $globalspan=$stats{"$schema:TOTAL:end"}-$globalstart;
   print "Overall real time (start of first to end of last)\n";
   foreach (@categories) {
-    $barstart=int(50.4*($stats{"$schema:$_:start"}-$globalstart)/$globalspan);
-    $barend=int(50.4*($stats{"$schema:$_:end"}-$globalstart)/$globalspan);
+    $barstart=int(50.1*($stats{"$schema:$_:start"}-$globalstart)/$globalspan);
+    $barend=int(50.1*($stats{"$schema:$_:end"}-$globalstart)/$globalspan);
     $bar=(' 'x$barstart).'|';
     $bar.=(($_ eq 'TOTAL'?'=':'-')x($barend-$barstart-2)).'|'
       if $barend-$barstart>=2;
@@ -466,8 +498,46 @@ for ($schema=0;$schema<=$#schemata;$schema++) {
       '('.int(100.1*($stats{"$schema:$_:end"}-$stats{"$schema:$_:start"})/
          $globalspan).'%)',$bar;
   }
-  
   print "\n";
+
+  print <<EOF;
+User CPU time per process, including children
+class              n            total          minimum     mean  maximum
+EOF
+  foreach (@categories) {
+    printf "%s %8g %6s  %s %6s  %s %s %s\n",
+      substr("$_           ",0,11),
+      $stats{"$schema:$_:count"},
+      '('.int(100.1*$stats{"$schema:$_:count"}/
+          $stats{"$schema:TOTAL:count"}).'%)',
+      &form_f8($stats{"$schema:$_:user"}),
+      '('.int(100.1*$stats{"$schema:$_:user"}/
+          $stats{"$schema:TOTAL:user"}).'%)',
+      &form_f8($stats{"$schema:$_:user_min"}),
+      &form_f8($stats{"$schema:$_:user"}/$stats{"$schema:$_:count"}),
+      &form_f8($stats{"$schema:$_:user_max"});
+  }
+  print "\n";
+
+  print <<EOF;
+System CPU time per process, including children
+class              n            total          minimum     mean  maximum
+EOF
+  foreach (@categories) {
+    printf "%s %8g %6s  %s %6s  %s %s %s\n",
+      substr("$_           ",0,11),
+      $stats{"$schema:$_:count"},
+      '('.int(100.1*$stats{"$schema:$_:count"}/
+          $stats{"$schema:TOTAL:count"}).'%)',
+      &form_f8($stats{"$schema:$_:system"}),
+      '('.int(100.1*$stats{"$schema:$_:system"}/
+          $stats{"$schema:TOTAL:system"}).'%)',
+      &form_f8($stats{"$schema:$_:system_min"}),
+      &form_f8($stats{"$schema:$_:system"}/$stats{"$schema:$_:count"}),
+      &form_f8($stats{"$schema:$_:system_max"});
+  }
+  print "\n";
+
 }
 
 print <<EOF;

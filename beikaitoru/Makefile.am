@@ -149,7 +149,7 @@ if COND_EXPECT
       {puts -nonewline \
          "$(ansi_clearescaped)$$expect_out(1,string)\r"; \
        flush stdout;exp_continue} \
-    eof' )
+    eof ; wait' )
 else
   expect_end=$(TSU_V_REDIR)
 endif
