@@ -21,9 +21,12 @@
 # mskala@ansuz.sooke.bc.ca
 #
 
+use Getopt::Long;
 use XML::Parser;
 
 ########################################################################
+
+# Categorization - needs to be made generic and configurable
 
 sub categorize {
   $category[1]=$1 if $workingdir=~m!/([^/]+)$!;
@@ -51,6 +54,25 @@ sub categorize {
   'FAMILY (TSUKURIMASHOU FONT ASSEMBLY)');
 
 ########################################################################
+
+# Command line options
+
+$opt_histogram=0;
+$opt_timeline=1;
+$opt_toggle_timeline=0;
+
+Getopt::Long::Configure ("bundling");
+GetOptions(
+  'histogram-samples|h=i'=>\$opt_histogram,
+  't'=>\$opt_toggle_timeline,
+  'timeline!'=>\$opt_timeline,
+);
+
+$opt_timeline=!$opt_timeline if $opt_toggle_timeline;
+
+########################################################################
+
+# Summary-statistics accumulation
 
 sub accumulate_stat_add {
   my($s,$c,$t,$v)=@_;
@@ -81,12 +103,33 @@ sub accumulate_stat_max {
     || ($v>$stats{"$s:TOTAL:$t"});
 }
 
+sub accumulate_stat_sample {
+  my($s,$c,$t,$v)=@_;
+  
+  return unless $opt_histogram;
+  if (!defined $stats{"$s:$c:$t"}) {
+    $stats{"$s:$c:$t"}=[$v];
+  } elsif ($stats{"$s:$c:count"}<=$opt_histogram) {
+    push @{$stats{"$s:$c:$t"}},$v;
+  } elsif (rand(1)<($opt_histogram/$stats{"$s:$c:count"})) {
+    $stats{"$s:$c:$t"}->[int(rand($opt_histogram))]=$v;
+  }
+  if (!defined $stats{"$s:TOTAL:$t"}) {
+    $stats{"$s:TOTAL:$t"}=[$v];
+  } elsif ($stats{"$s:TOTAL:count"}<=$opt_histogram) {
+    push @{$stats{"$s:TOTAL:$t"}},$v;
+  } elsif (rand(1)<($opt_histogram/$stats{"$s:TOTAL:count"})) {
+    $stats{"$s:TOTAL:$t"}->[int(rand($opt_histogram))]=$v;
+  }
+}
+
 sub accumulate_stat_limits {
   my($s,$c,$t,$v)=@_;
 
   &accumulate_stat_add($s,$c,$t,$v);
   &accumulate_stat_min($s,$c,$t.'_min',$v);
   &accumulate_stat_max($s,$c,$t.'_max',$v);
+  &accumulate_stat_sample($s,$c,$t.'_sample',$v);
 }
 
 sub accumulate_stats {
@@ -99,13 +142,19 @@ sub accumulate_stats {
       $rusage{'systemSec'}+1e-6*$rusage{'systemUSec'});
     &accumulate_stat_limits($schema,$category[$schema],'wallinc',
       $walltime-$start_time{$longpid});
-    &accumulate_stat_min($schema,$category[$schema],'start',
+    &accumulate_stat_min($schema,$category[$schema],'wall_min',
       $start_time{$longpid});
-    &accumulate_stat_max($schema,$category[$schema],'end',$walltime);
+    &accumulate_stat_max($schema,$category[$schema],'wall_max',$walltime);
+    &accumulate_stat_sample($schema,$category[$schema],
+      'wall_sample',$walltime);
+    &accumulate_stat_sample($schema,$category[$schema],
+      'wall_sample',$start_time{$longpid});
   }
 }
 
 ########################################################################
+
+# Tetris-style graphics
 
 @queued_lines=();
 
@@ -195,6 +244,8 @@ sub empty_queued_lines {
 
 ########################################################################
 
+# Lay out labels for use in timeline
+
 sub concat_btob {
   my($margin,$left,$right)=@_;
   
@@ -263,6 +314,8 @@ sub time_marker {
 
 ########################################################################
 
+# XML parser
+
 $leaf_node_width=14;
 $internal_node_width=2;
 
@@ -271,6 +324,11 @@ $internal_node_width=2;
 sub max {
   my($a,$b)=@_;
   $a>$b?$a:$b;
+}
+
+sub min {
+  my($a,$b)=@_;
+  $a>$b?$b:$a;
 }
 
 $scan=new XML::Parser(Handlers=>{
@@ -349,10 +407,12 @@ sub scan_end {
            $rusage{'systemSec'}+1e-6*$rusage{'systemUSec'}),0,14)."\n"
         .substr(sprintf("\\=%#-0.05gr            ",
            $walltime-$start_time{$longpid}),0,14)."\n";
-      &queue_lines(&concat_btob($node_columns{$longpid},
-        &time_marker($walltime),$botblock)
-        .("\0"x$node_columns{$longpid}).(' 'x14)."\n");
-      for ($i=0;$i<14;$i++) { $fill_char{$node_columns{$longpid}+$i}=' '; }
+      if ($opt_timeline) {
+        &queue_lines(&concat_btob($node_columns{$longpid},
+          &time_marker($walltime),$botblock)
+          .("\0"x$node_columns{$longpid}).(' 'x14)."\n");
+        for ($i=0;$i<14;$i++) { $fill_char{$node_columns{$longpid}+$i}=' '; }
+      }
       $last_queued=$longpid;
 
       $seen_pids{"$hostname:$pid"}++;
@@ -392,22 +452,24 @@ sub scan_end {
       &categorize;
       $process_categories{$longpid}=join("\n",@category);
       
-      if ($longparent eq 'SPONTANEOUS') {
-        $topblock=substr(">=$pid:$pidserial            ",0,14)."\n"
-                 .substr("| $hostname            ",0,14)."\n";
-        &queue_lines(&concat_btot($node_columns{$longpid},
-          &time_marker($walltime),$topblock));
-      } else {
-        &queue_lines(("\0"x$node_columns{$longparent}).'|             ')
-          if $last_queued eq $longparent;
-        $topblock=substr("<=$pid:$pidserial            ",0,14)."\n"
-                 .substr("| $hostname            ",0,14)."\n";
-        $gapsize=$node_columns{$longpid}-$node_columns{$longparent};
-        &queue_lines(&concat_btot($node_columns{$longparent},
-          &time_marker($walltime),
-          &concat_btot($gapsize,'+'.('-'x($gapsize-1)),$topblock)));
+      if ($opt_timeline) {
+        if ($longparent eq 'SPONTANEOUS') {
+          $topblock=substr(">=$pid:$pidserial            ",0,14)."\n"
+                   .substr("| $hostname            ",0,14)."\n";
+          &queue_lines(&concat_btot($node_columns{$longpid},
+            &time_marker($walltime),$topblock));
+        } else {
+          &queue_lines(("\0"x$node_columns{$longparent}).'|             ')
+            if $last_queued eq $longparent;
+          $topblock=substr("<=$pid:$pidserial            ",0,14)."\n"
+                   .substr("| $hostname            ",0,14)."\n";
+          $gapsize=$node_columns{$longpid}-$node_columns{$longparent};
+          &queue_lines(&concat_btot($node_columns{$longparent},
+            &time_marker($walltime),
+            &concat_btot($gapsize,'+'.('-'x($gapsize-1)),$topblock)));
+        }
+        $fill_char{$node_columns{$longpid}}='|';
       }
-      $fill_char{$node_columns{$longpid}}='|';
       $last_queued=$longpid;
       for ($i=0;$i<11;$i++) {
         last if $i>=length($category[0]);
@@ -422,31 +484,41 @@ sub scan_end {
   }
 }
 
-print <<EOF;
-==============================================================================
-  KLEKNEV 0.1 PROFILING REPORT
-==============================================================================
-EOF
+########################################################################
+
+# XML scan and timeline generation
+
+print (('='x78)."\n");
+print "  KLEKNEV 0.1 PROFILING REPORT\n";
+print (('='x78)."\n") if $opt_timeline;
+
+@saved_argv=@ARGV;
 
 %seen_pids=();
 %active_parents=();
-open(LOG,"kn.log");
 $parser=$scan->parse_start();
 $parser->parse_more("<?xml version=\"1.0\" ?>\n<logfile>\n");
-while (<LOG>) { $parser->parse_more($_); }
+while (<>) { $parser->parse_more($_); }
 $parser->parse_more("</logfile>\n");
 $parser->parse_done();
-close(LOG);
 
 if (0<scalar %active_parents) {
-  &queue_lines(&concat_btob(31,'',<<EOF));
+  &queue_lines(&concat_btob(31,'',<<EOF)) if $opt_timeline;
 ****************
 * interrupted! *
 ****************
 EOF
+  &empty_queued_lines() if $opt_timeline;
+  print "  Histograms cannot be generated without a complete log file.\n"
+    if $opt_histogram;
+  $opt_histogram=0;
+} else {
+  &empty_queued_lines() if $opt_timeline;
 }
 
-&empty_queued_lines();
+########################################################################
+
+# Summary report generation
 
 sub form_f8 {
   my($f)=@_;
@@ -468,6 +540,32 @@ sub form_f8 {
   }
 }
 
+sub form_histogram {
+  my($s,$c,$t,$w)=@_;
+  my($i,$lo,$hi,$histmax,$rval,@histogram)=();
+  
+  $lo=$stats{"$s:$c:${t}_min"};
+  $hi=$stats{"$s:$c:${t}_max"};
+  foreach (@{$stats{"$s:$c:${t}_sample"}}) {
+    $i=int(($_-$lo)*($w-0.01)/($hi-$lo));
+    $histogram[$i]++;
+    $histmax=$histogram[$i] if $histogram[$i]>$histmax;
+  }
+  return ' 'x$w if $histmax==0;
+  $rval='';
+  for ($i=0;$i<$w;$i++) {
+    if ($histogram[$i]==0) {
+      $rval.=' ';
+    } elsif (($histogram[$i]==$histmax) && ($histmax>=5)) {
+      $rval.='$';
+    } else {
+      $rval.=substr(' .oO@',
+        min($histogram[$i],1+int($histogram[$i]*4/$histmax)),1);
+    }
+  }
+  $rval;
+}
+
 for ($schema=0;$schema<=$#schemata;$schema++) {
   next if $stats{"$schema:TOTAL:count"}==0;
 
@@ -479,23 +577,28 @@ for ($schema=0;$schema<=$#schemata;$schema++) {
     push @categories,$1 if (/^$schema:(.*):count$/) && ($1 ne 'TOTAL');
   }
   @categories=sort
-    {$stats{"$schema:$a:start"}<=>$stats{"$schema:$b:start"}} @categories;
+    {$stats{"$schema:$a:wall_min"}<=>$stats{"$schema:$b:wall_min"}} @categories;
   push @categories,'TOTAL';
 
-  $globalstart=$stats{"$schema:TOTAL:start"};
-  $globalspan=$stats{"$schema:TOTAL:end"}-$globalstart;
+  $globalstart=$stats{"$schema:TOTAL:wall_min"};
+  $globalspan=$stats{"$schema:TOTAL:wall_max"}-$globalstart;
   print "Overall real time (start of first to end of last)\n";
   foreach (@categories) {
-    $barstart=int(50.1*($stats{"$schema:$_:start"}-$globalstart)/$globalspan);
-    $barend=int(50.1*($stats{"$schema:$_:end"}-$globalstart)/$globalspan);
-    $bar=(' 'x$barstart).'|';
-    $bar.=(($_ eq 'TOTAL'?'=':'-')x($barend-$barstart-2)).'|'
-      if $barend-$barstart>=2;
-    substr($bar,$barstart+int(($barend-$barstart-length($_))/2),length($_))=$_
-      if $barend-$barstart>length($_)+4;
+    $barstart=int(50.1*($stats{"$schema:$_:wall_min"}-$globalstart)/$globalspan);
+    $barend=int(50.1*($stats{"$schema:$_:wall_max"}-$globalstart)/$globalspan);
+    if (($_ eq 'TOTAL') || !$opt_histogram) {
+      $bar=(' 'x$barstart).'|';
+      $bar.=(($_ eq 'TOTAL'?'=':'-')x($barend-$barstart-2)).'|'
+        if $barend-$barstart>=2;
+      substr($bar,$barstart+int(($barend-$barstart-length($_))/2),
+        length($_))=$_ if $barend-$barstart>length($_)+4;
+    } else {
+      $bar=(' 'x$barstart).
+        &form_histogram($schema,$_,'wall',$barend-$barstart);
+    }
     printf "%s %s %6s %s\n",substr("$_           ",0,11),
-      &form_f8($stats{"$schema:$_:end"}-$stats{"$schema:$_:start"}),
-      '('.int(100.1*($stats{"$schema:$_:end"}-$stats{"$schema:$_:start"})/
+      &form_f8($stats{"$schema:$_:wall_max"}-$stats{"$schema:$_:wall_min"}),
+      '('.int(100.1*($stats{"$schema:$_:wall_max"}-$stats{"$schema:$_:wall_min"})/
          $globalspan).'%)',$bar;
   }
   print "\n";
@@ -505,7 +608,7 @@ User CPU time per process, including children
 class              n            total          minimum     mean  maximum
 EOF
   foreach (@categories) {
-    printf "%s %8g %6s  %s %6s  %s %s %s\n",
+    printf "%s %8g %6s  %s %6s  %s %s %s",
       substr("$_           ",0,11),
       $stats{"$schema:$_:count"},
       '('.int(100.1*$stats{"$schema:$_:count"}/
@@ -516,6 +619,8 @@ EOF
       &form_f8($stats{"$schema:$_:user_min"}),
       &form_f8($stats{"$schema:$_:user"}/$stats{"$schema:$_:count"}),
       &form_f8($stats{"$schema:$_:user_max"});
+    print '  '.&form_histogram($schema,$_,'user',30) if $opt_histogram;
+    print "\n";
   }
   print "\n";
 
@@ -524,7 +629,7 @@ System CPU time per process, including children
 class              n            total          minimum     mean  maximum
 EOF
   foreach (@categories) {
-    printf "%s %8g %6s  %s %6s  %s %s %s\n",
+    printf "%s %8g %6s  %s %6s  %s %s %s",
       substr("$_           ",0,11),
       $stats{"$schema:$_:count"},
       '('.int(100.1*$stats{"$schema:$_:count"}/
@@ -535,10 +640,14 @@ EOF
       &form_f8($stats{"$schema:$_:system_min"}),
       &form_f8($stats{"$schema:$_:system"}/$stats{"$schema:$_:count"}),
       &form_f8($stats{"$schema:$_:system_max"});
+    print '  '.&form_histogram($schema,$_,'system',30) if $opt_histogram;
+    print "\n";
   }
   print "\n";
 
 }
+
+########################################################################
 
 print <<EOF;
 ==============================================================================
