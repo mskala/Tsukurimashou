@@ -51,14 +51,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grone.grove =
-  push_pbox_toexpand("kanji.grone.grove");
-  build_kanji.lr(480,0)
-    (kanji.leftrad.wood)
-    (kanji.grone.wood);
-  expand_pbox;
-enddef;
-
 vardef kanji.grone.village =
   push_pbox_toexpand("kanji.grone.village");
   build_kanji.lr(480,0)

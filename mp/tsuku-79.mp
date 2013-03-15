@@ -113,6 +113,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.celebrate =
+  push_pbox_toexpand("kanji.grfour.celebrate");
+  build_kanji.lr(450,20)
+    (kanji.leftrad.showing)
+    (kanji.grtwo.big_brother);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.i =
   push_pbox_toexpand("kanji.grsix.i");
   build_kanji.lr(520,60)
@@ -150,6 +160,12 @@ endtsuglyph;
 % shin/kami "deity"
 begintsuglyph("uni795E",94);
   kanji.grthree.deity;
+  tsu_render;
+endtsuglyph;
+
+% shuku/iwa "celebrate"
+begintsuglyph("uni795D",93);
+  kanji.grfour.celebrate;
   tsu_render;
 endtsuglyph;
 

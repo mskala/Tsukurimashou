@@ -161,6 +161,14 @@ vardef kanji.rare.drink =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.history_inside =
+  push_pbox_toexpand("kanji.rare.history_inside");
+  build_kanji.tb(420,80)
+    (kanji.grone.grove)
+    (kanji.grtwo.cease);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.merger =
   push_pbox_toexpand("kanji.rare.merger");
   build_kanji.level(build_kanji.tb(620,110)

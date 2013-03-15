@@ -1,6 +1,6 @@
 %
 % Grade One kanji used on more than one page
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -344,6 +344,14 @@ vardef kanji.grone.gold =
     (1.6,1.6)--(1.3,1.3)--(1,1));
   set_boserif(0,0,10);
   for i=-4 upto 0: set_bosize(i,93); endfor;
+  expand_pbox;
+enddef;
+
+vardef kanji.grone.grove =
+  push_pbox_toexpand("kanji.grone.grove");
+  build_kanji.lr(480,0)
+    (kanji.leftrad.wood)
+    (kanji.grone.wood);
   expand_pbox;
 enddef;
 

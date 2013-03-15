@@ -90,6 +90,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.history =
+  push_pbox_toexpand("kanji.grfour.history");
+  build_kanji.cliff_enclose(kanji.rare.history_inside);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ketsu/ka/akubi "fail" or "yawn"
 begintsuglyph("uni6B20",32);
   kanji.grfour.fail;
@@ -135,6 +143,12 @@ endtsuglyph;
 % gatsu "bare bone radical"
 begintsuglyph("uni6B79",121);
   kanji.leftrad.bare_bone;
+  tsu_render;
+endtsuglyph;
+
+% reki "history"
+begintsuglyph("uni6B7A",116);
+  kanji.grfour.history;
   tsu_render;
 endtsuglyph;
 
