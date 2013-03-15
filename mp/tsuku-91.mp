@@ -1,6 +1,6 @@
 %
 % Unicode page 91 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -70,6 +71,17 @@ vardef kanji.grthree.distribute =
   build_kanji.lr(520,-20)
     (build_kanji.sscale(yscaled 0.96)(kanji.grnine.bird_sign))
     (kanji.grsix.self);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.quantity =
+  push_pbox_toexpand("kanji.grfour.quantity");
+  build_kanji.level(build_kanji.tb(460,-60)
+   (kanji.greight.daybreak;
+    replace_strokep(0)(oldp shifted (0,-70)))
+   (kanji.grtwo.neighbourhood));
   expand_pbox;
 enddef;
 
@@ -174,6 +186,12 @@ endtsuglyph;
 % ya/no "field"
 begintsuglyph("uni91CE",206);
   kanji.grtwo.plains;
+  tsu_render;
+endtsuglyph;
+
+% ryou/haka "quantity"
+begintsuglyph("uni91CF",207);
+  kanji.grfour.quantity;
   tsu_render;
 endtsuglyph;
 
