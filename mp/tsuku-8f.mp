@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
@@ -75,6 +76,14 @@ vardef kanji.grthree.return =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.resign =
+  push_pbox_toexpand("kanji.grfour.resign");
+  build_kanji.level(build_kanji.lr(480,-10)
+    (tsu_xform(identity yscaled 0.92 shifted (0,-20))(kanji.grfive.tongue))
+    (tsu_xform(identity yscaled 1.02 shifted (0,0))(kanji.greight.acrid)));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfour.vicinity =
   push_pbox_toexpand("kanji.grfour.vicinity");
@@ -128,6 +137,12 @@ enddef;
 % shin/kara "acrid"
 begintsuglyph("uni8F9B",155);
   kanji.greight.acrid;
+  tsu_render;
+endtsuglyph;
+
+% ji/ya "resign" or "dictionary"
+begintsuglyph("uni8F9E",158);
+  kanji.grfour.resign;
   tsu_render;
 endtsuglyph;
 

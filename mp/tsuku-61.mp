@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input bottomrad.mp;
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefive.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -73,18 +74,6 @@ vardef kanji.greight.indignation =
     (kanji.leftrad.heart;
      replace_strokep(0)(oldp shifted (0,-50)))
     (kanji.rare.decorate));
-  expand_pbox;
-enddef;
-
-vardef kanji.greight.melancholy =
-  push_pbox_toexpand("kanji.greight.melancholy");
-  build_kanji.level(build_kanji.tb(400,115)
-    (build_kanji.tb(260,193)
-       (kanji.toprad.summer)
-       (kanji.radical.conservative_hat))
-    (build_kanji.tb(480,-40)
-       (build_kanji.sscale(xscaled 0.8)(kanji.bottomrad.heart))
-       (kanji.radical.winter)));
   expand_pbox;
 enddef;
 

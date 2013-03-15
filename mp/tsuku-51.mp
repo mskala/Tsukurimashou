@@ -1,6 +1,6 @@
 %
 % Unicode page 51 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -127,9 +127,26 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.gentle =
+  push_pbox_toexpand("kanji.grsix.gentle");
+  build_kanji.lr(270,0)
+    (kanji.leftrad.person)
+    (build_kanji.sscale(yscaled 0.96 shifted (0,-30))
+       (kanji.greight.melancholy));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % oku "one hundred million"
 begintsuglyph("uni5104",4);
   kanji.grfour.hundred_million;
+  tsu_render;
+endtsuglyph;
+
+% yuu/yasa "gentle"
+begintsuglyph("uni512A",42);
+  kanji.grsix.gentle;
   tsu_render;
 endtsuglyph;
 

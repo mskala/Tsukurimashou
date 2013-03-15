@@ -230,6 +230,18 @@ vardef kanji.greight.mediate =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.melancholy =
+  push_pbox_toexpand("kanji.greight.melancholy");
+  build_kanji.level(build_kanji.tb(400,115)
+    (build_kanji.tb(260,193)
+       (kanji.toprad.summer)
+       (kanji.radical.conservative_hat))
+    (build_kanji.tb(480,-40)
+       (build_kanji.sscale(xscaled 0.8)(kanji.bottomrad.heart))
+       (kanji.radical.winter)));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.night_watch =
   push_pbox_toexpand("kanji.greight.night_watch");
   push_stroke((90,760)--(910,760),(1.6,1.6)--(1.6,1.6));

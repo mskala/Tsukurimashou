@@ -58,17 +58,22 @@ sub categorize {
 # Command line options
 
 $opt_histogram=0;
+$opt_linear=2;
+$opt_logarithmic=0;
 $opt_timeline=1;
 $opt_toggle_timeline=0;
 
 Getopt::Long::Configure ("bundling");
 GetOptions(
   'histogram-samples|h=i'=>\$opt_histogram,
+  'linear|i!'=>\$opt_linear,
+  'logarithmic|l!'=>\$opt_logarithmic,
   't'=>\$opt_toggle_timeline,
   'timeline!'=>\$opt_timeline,
 );
 
 $opt_timeline=!$opt_timeline if $opt_toggle_timeline;
+$opt_linear=!$opt_logarithmic if $opt_linear==2;
 
 ########################################################################
 
@@ -508,13 +513,8 @@ if (0<scalar %active_parents) {
 * interrupted! *
 ****************
 EOF
-  &empty_queued_lines() if $opt_timeline;
-  print "  Histograms cannot be generated without a complete log file.\n"
-    if $opt_histogram;
-  $opt_histogram=0;
-} else {
-  &empty_queued_lines() if $opt_timeline;
 }
+&empty_queued_lines() if $opt_timeline;
 
 ########################################################################
 
@@ -544,8 +544,10 @@ sub form_histogram {
   my($s,$c,$t,$w)=@_;
   my($i,$lo,$hi,$histmax,$rval,@histogram)=();
   
+  return '' if $w==0;
   $lo=$stats{"$s:$c:${t}_min"};
   $hi=$stats{"$s:$c:${t}_max"};
+  return $w==1?'|':' 'x$w if $hi==$lo;
   foreach (@{$stats{"$s:$c:${t}_sample"}}) {
     $i=int(($_-$lo)*($w-0.01)/($hi-$lo));
     $histogram[$i]++;
@@ -566,6 +568,74 @@ sub form_histogram {
   $rval;
 }
 
+sub form_log_histogram {
+  my($s,$c,$t,$w)=@_;
+  my($i,$lo,$hi,$histmax,$rval,@histogram)=();
+  
+  return '' if $w==0;
+  $lo=$stats{"$s:$c:${t}_min"};
+  $hi=$stats{"$s:$c:${t}_max"};
+  $lo=$hi/1000 if $lo==0;
+  $lo=log($lo);
+  $hi=log($hi);
+  return $w==1?'|':' 'x$w if $hi==$lo;
+  foreach (@{$stats{"$s:$c:${t}_sample"}}) {
+    if ($_<=0) {
+      $i=0;
+    } else {
+      $i=int((log($_)-$lo)*($w-0.01)/($hi-$lo));
+      $i=0 if $i<0;
+      $i=$w-1 if $i>=$w;
+    }
+    $histogram[$i]++;
+    $histmax=$histogram[$i] if $histogram[$i]>$histmax;
+  }
+  return ' 'x$w if $histmax==0;
+  $rval='';
+  for ($i=0;$i<$w;$i++) {
+    if ($histogram[$i]==0) {
+      $rval.=' ';
+    } elsif (($histogram[$i]==$histmax) && ($histmax>=5)) {
+      $rval.='$';
+    } else {
+      $rval.=substr(' .oO@',
+        min($histogram[$i],1+int($histogram[$i]*4/$histmax)),1);
+    }
+  }
+  $rval;
+}
+
+sub form_table {
+  my($headline,$tag)=@_;
+  
+  print "$headline\n";
+  print 'class              n            total      '
+       .'    minimum     mean  maximum';
+  print '                linear histogram' if $opt_linear;
+  print '           logarithmic histogram' if $opt_logarithmic;
+  print "\n";
+
+  foreach (@categories) {
+    printf "%s %8g %6s  %s %6s  %s %s %s",
+      substr("$_           ",0,11),
+      $stats{"$schema:$_:count"},
+      '('.int(100.1*$stats{"$schema:$_:count"}/
+          $stats{"$schema:TOTAL:count"}).'%)',
+      &form_f8($stats{"$schema:$_:$tag"}),
+      '('.int(100.1*$stats{"$schema:$_:$tag"}/
+          $stats{"$schema:TOTAL:$tag"}).'%)',
+      &form_f8($stats{"$schema:$_:${tag}_min"}),
+      &form_f8($stats{"$schema:$_:$tag"}/$stats{"$schema:$_:count"}),
+      &form_f8($stats{"$schema:$_:${tag}_max"});
+    print '  '.&form_histogram($schema,$_,$tag,30)
+      if $opt_histogram && $opt_linear;
+    print '  '.&form_log_histogram($schema,$_,$tag,30)
+      if $opt_histogram && $opt_logarithmic;
+    print "\n";
+  }
+  print "\n";
+}
+
 for ($schema=0;$schema<=$#schemata;$schema++) {
   next if $stats{"$schema:TOTAL:count"}==0;
 
@@ -584,17 +654,17 @@ for ($schema=0;$schema<=$#schemata;$schema++) {
   $globalspan=$stats{"$schema:TOTAL:wall_max"}-$globalstart;
   print "Overall real time (start of first to end of last)\n";
   foreach (@categories) {
-    $barstart=int(50.1*($stats{"$schema:$_:wall_min"}-$globalstart)/$globalspan);
-    $barend=int(50.1*($stats{"$schema:$_:wall_max"}-$globalstart)/$globalspan);
+    $barstart=int(50.01*($stats{"$schema:$_:wall_min"}-$globalstart)/$globalspan);
+    $barend=int(50.01*($stats{"$schema:$_:wall_max"}-$globalstart)/$globalspan);
     if (($_ eq 'TOTAL') || !$opt_histogram) {
       $bar=(' 'x$barstart).'|';
-      $bar.=(($_ eq 'TOTAL'?'=':'-')x($barend-$barstart-2)).'|'
-        if $barend-$barstart>=2;
+      $bar.=(($_ eq 'TOTAL'?'=':'-')x($barend-$barstart-1)).'|'
+        if $barend-$barstart>=1;
       substr($bar,$barstart+int(($barend-$barstart-length($_))/2),
         length($_))=$_ if $barend-$barstart>length($_)+4;
     } else {
       $bar=(' 'x$barstart).
-        &form_histogram($schema,$_,'wall',$barend-$barstart);
+        &form_histogram($schema,$_,'wall',$barend-$barstart+1);
     }
     printf "%s %s %6s %s\n",substr("$_           ",0,11),
       &form_f8($stats{"$schema:$_:wall_max"}-$stats{"$schema:$_:wall_min"}),
@@ -603,48 +673,8 @@ for ($schema=0;$schema<=$#schemata;$schema++) {
   }
   print "\n";
 
-  print <<EOF;
-User CPU time per process, including children
-class              n            total          minimum     mean  maximum
-EOF
-  foreach (@categories) {
-    printf "%s %8g %6s  %s %6s  %s %s %s",
-      substr("$_           ",0,11),
-      $stats{"$schema:$_:count"},
-      '('.int(100.1*$stats{"$schema:$_:count"}/
-          $stats{"$schema:TOTAL:count"}).'%)',
-      &form_f8($stats{"$schema:$_:user"}),
-      '('.int(100.1*$stats{"$schema:$_:user"}/
-          $stats{"$schema:TOTAL:user"}).'%)',
-      &form_f8($stats{"$schema:$_:user_min"}),
-      &form_f8($stats{"$schema:$_:user"}/$stats{"$schema:$_:count"}),
-      &form_f8($stats{"$schema:$_:user_max"});
-    print '  '.&form_histogram($schema,$_,'user',30) if $opt_histogram;
-    print "\n";
-  }
-  print "\n";
-
-  print <<EOF;
-System CPU time per process, including children
-class              n            total          minimum     mean  maximum
-EOF
-  foreach (@categories) {
-    printf "%s %8g %6s  %s %6s  %s %s %s",
-      substr("$_           ",0,11),
-      $stats{"$schema:$_:count"},
-      '('.int(100.1*$stats{"$schema:$_:count"}/
-          $stats{"$schema:TOTAL:count"}).'%)',
-      &form_f8($stats{"$schema:$_:system"}),
-      '('.int(100.1*$stats{"$schema:$_:system"}/
-          $stats{"$schema:TOTAL:system"}).'%)',
-      &form_f8($stats{"$schema:$_:system_min"}),
-      &form_f8($stats{"$schema:$_:system"}/$stats{"$schema:$_:count"}),
-      &form_f8($stats{"$schema:$_:system_max"});
-    print '  '.&form_histogram($schema,$_,'system',30) if $opt_histogram;
-    print "\n";
-  }
-  print "\n";
-
+  &form_table('User CPU time per process, including children','user');
+  &form_table('System CPU time per process, including children','system');
 }
 
 ########################################################################
