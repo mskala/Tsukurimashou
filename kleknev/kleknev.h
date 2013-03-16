@@ -22,14 +22,6 @@
 #ifndef KLEKNEV_H
 #define KLEKNEV_H
 
-#define LF_MAGIC 0xF66E6C4B
-
-#define LF_PID 1
-#define LF_WALLTIME 2
-#define LF_HOST 4
-#define LF_PPID 8
-#define LF_RUSAGE 16
-#define LF_STATUS 32
-#define LF_ARGV 64
+int to_wrap(char *,int,char **);
 
 #endif /* KLEKNEV_H */

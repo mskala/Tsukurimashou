@@ -131,11 +131,10 @@ bin_PROGRAMS = kleknev kleknev-argo
 dist_pdf_DATA = $(MAYBE_DOCS)
 
 AM_CFLAGS := $(MAYBE_COVERAGE) $(AM_CFLAGS)
+LDADD = -lrt
 
-kleknev_SOURCES = kleknev.c kleknev.h
-kleknev_LDADD = -lrt
-
-kleknev_argo_SOURCES =
+kleknev_SOURCES = kleknev.c kleknev.h wrapper.c
+kleknev_argo_SOURCES = kleknev-argo.c kleknev.h wrapper.c
 
 # man1_MANS = kleknev.1 kleknev-argo.1
 
