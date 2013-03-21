@@ -1,0 +1,564 @@
+.TH KLEKNEV 1 "March 17, 2013" "Kleknev 0.1pre" "User Commands"
+.SH NAME
+kleknev \- profiling wrapper for /bin/sh and build systems that use it
+.
+.SH SYNOPSIS
+.B kleknev
+.RI [ "same options as /bin/sh" ]
+.
+.SH DESCRIPTION
+The
+.B kleknev
+wrapper invokes the shell
+.I /bin/sh
+while optionally appending resource consumption records to a log
+file named in the KLEKNEV_LOG environment variable.
+The
+.BR knreport (1)
+program can generate a human-readable report from the
+.B kleknev
+log file.
+A very similar wrapper called
+.BR kleknev-argo (1)
+also exists, which looks at its own
+.B argv[0]
+value to get the name of the program to wrap instead of using the shell
+unconditionally.
+.PP
+Command line arguments given to the wrapper 
+are passed through to the shell, and the shell's
+return value is returned as the return value of the wrapper.
+This wrapper is designed to be used in place of
+.I /bin/sh
+during large computations that invoke the shell a lot; in particular, a
+path to
+.B kleknev
+can be used as the value of the SHELL environment variable in a
+.IR Makefile ,
+to allow for profiling a build system.
+If no logging has been requested,
+.B kleknev
+just
+.BR exec s
+the shell.
+It is intended that that fall-through case should be efficient enough that
+using the wrapper unconditionally, even when not profiling, will entail no
+appreciable performance loss.
+.
+.SH OPTIONS
+Options are exactly the same ones accepted by
+.IR /bin/sh ,
+because
+.B kleknev
+passes them through without interpretation.
+.
+.SH FILES
+.I /bin/sh
+.RS
+This version of the
+.B kleknev
+wrapper unconditionally wraps the Bourne shell,
+.IR /bin/sh .
+That pathname is hardcoded, unless some other hardcoded path was configured
+at build time.
+For a similar wrapper that can wrap other things selected at run time, see
+.BR kleknev-argo (1).
+.
+.SH ENVIRONMENT
+.IP KLEKNEV_LOG
+If this variable exists, it will activate
+.BR kleknev 's
+profiling mode.
+Before and after running the shell,
+.B kleknev
+writes a record to the log in the format described in the
+.B LOG FILE FORMAT
+section.
+The log will be created, and a <kleknevMagicNumber /> tag written to it as
+the first item, if it does not already exist.
+.IP KLEKNEV_PID
+Process ID of the parent
+.B kleknev
+process.
+If the profiling mode has been activated by KLEKNEV_LOG, then the value
+of this variable (should it exist) will
+be saved in the process-initial log entry, and the wrapper's own process ID
+will be placed in
+this variable in the environment handed down to child processes.
+.IP SHELL
+The SHELL variable is not directly used by
+.BR kleknev ,
+but the usual way of invoking
+.B kleknev
+is to set the SHELL variable in a
+.I Makefile
+to point at a copy of the
+.B kleknev
+wrapper.
+Be aware that this variable has special semantics in most versions of
+.BR make (1).
+Unlike other environment variables, the value of SHELL used by
+.BR make (1)
+must come from the
+.I Makefile
+or the command line.
+It will not be taken from the actual environment, and although it may be
+passed into the environment of child processes, recursive invocations of
+.BR make (1)
+will similarly look in their own
+.IR Makefile s
+instead of taking the value of SHELL from their parents.
+There appears to be no way to invoke the top-level
+.BR make (1)
+in a way that will cause it to override SHELL for all recursive invocations
+all the way down the tree with no changes to the 
+.IR Makefile s.
+.IP
+Attempting to place a SHELL= definition in the MAKEFLAGS variable did not
+appear to work in limited testing, at least not in the context of the
+recursive
+.IR Makefile s
+created by GNU Autotools, which do some strange things of their own
+regarding the passage of information down the tree.
+Placing a SHELL= definition pointing at
+.B kleknev
+in every
+.I Makefile
+is probably the easiest thing to do, and
+.B kleknev
+is designed to be as nonintrusive as possible for regular non-profiling
+builds when
+.B kleknev
+is set as the shell unconditionally.
+Autotools objects to having a SHELL= definition inside an Automake
+conditional construct; it does need to be set unconditionally.
+.
+.SH DIAGNOSTICS
+The
+.B kleknev
+wrapper does not issue any error messages.
+It is intended that executing
+.B kleknev
+should be as much like executing
+.I /bin/sh
+as possible, except for the possibility of recording log entries as
+controlled by the KLEKNEV_LOG variable.
+Any messages produced come from
+.I /bin/sh
+or its children.
+Any I/O errors opening and writing to the log file will result in the
+abandonment of further
+attempts to do so (even mid-entry) with no other complaint, and a switch
+to a straight
+.BR exec (2)
+of the shell if that is still meaningful.
+In the event that
+.B kleknev
+is unable to execute the shell, for instance because
+.I /bin/sh
+is not an executable file, it will return the
+.B EXIT_FAILURE
+return code, which is probably 1.
+.
+.SH SECURITY
+It is seldom, if ever, appropriate for the
+.B kleknev
+wrapper to be setuid; in such a case it will function as a setuid shell,
+which is usually a very bad idea.
+Even if
+.I /bin/sh
+is designed to refuse to run when setuid, such a check would be circumvented
+by running it from a setuid wrapper.
+With profiling enabled,
+.B kleknev
+will also write to a user-controllable file,
+using the privilege level at which it is executing.
+Making
+.B kleknev
+setuid is not much different, however, from creating a setuid copy of
+.IR /bin/sh ,
+so it is just another example of the basic principle that
+.B kleknev
+functions as if it were
+.IR /bin/sh .
+.PP
+Using a non-setuid
+.B kleknev
+wrapper to wrap a setuid program, which may be more relevant in the case of
+.BR kleknev-argo (1),
+should be no more dangerous
+than using the setuid program in the first place.
+.PP
+Since
+.B kleknev
+is meant to function exactly like
+.IR /bin/sh ,
+some poorly-administered systems that rely on locked-down
+PATH variables and similar things to prevent users from having access to
+general-purpose tools like
+.I /bin/sh
+will also want to prevent users from having access to
+.BR kleknev .
+.PP
+When profiling is enabled, which can be controlled via environment
+variables,
+.B kleknev
+will write profiling records (notably including all command-line arguments)
+to the log file.
+The log file is necessarily a file to which the user running
+.B kleknev
+has the ability to write, but in some configurations it may not be one
+that they have the ability to empty or delete.
+Command-line arguments may include things like passwords, and even if the
+child process rewrites its arguments to keep them out of the process table,
+.B kleknev
+saves its arguments before the child has a chance to do that.
+As a result, the contents of the profiling log may contain sensitive data
+and could be seen as a privacy threat.
+The profiling log can also grow without limit, creating the possiblity for
+malicious users to implement denial of service attacks.
+Users who can run
+.B kleknev
+would usually also be able to just write large files directly, creating the
+same level of threat, but it is possible to imagine a case where
+.B kleknev
+wrappers are spawned by something like a Web server, allowing users to mount
+this kind of denial of service without filesystem access.
+Any server that keeps a log faces fundamentally the same issue even without
+.BR kleknev .
+.
+.SH LOG FILE FORMAT
+The log file is an XML fragment.
+That means the tags balance, but it has no
+.BR <?xml " ... " ?>
+declaration and no document-level tag.
+Appropriate provision for inserting these things must be made in any
+software that attempts to parse it using a standard XML parser.
+.PP
+An early proof-of-concept version of
+.B kleknev
+used a simple binary format based on dumping items like
+.B struct rusage
+directly into the log file.
+Then to avoid needing to decode the C compiler's structure formatting
+portably in
+the Perl reporting program, there was a separate filter written in C
+to translate the
+binary file into XML, which could be conveniently parsed with a library.
+The filter would communicate with the report generator over a pipe to avoid
+storing the large XML file on disk.
+But it turned out that the XML was only slightly larger than the binary
+format, possibly because most of its bytes were saved command-line
+arguments that did not expand much when escaped to pass the XML parser.
+So the current version of
+.B kleknev
+doesn't bother with the filter but writes the XML fragment format directly
+to disk; that has portability advantages.
+.PP
+In general,
+.B kleknev
+writes two
+.BR <e> " ... " </e>
+tags for each invocation of the wrapper: one initial entry
+immediately before invoking the shell and one final entry immediately after.
+Each tag includes a high-resolution real-time time stamp, as well as other
+information about the process that is starting or stopping.
+Note that these starting and ending entries may not be nicely nested.
+A parent process may well start a new child before an older one terminates,
+and in (for instance) GNU Make \(lqjobserver\(rq mode there may be multiple
+parents spawning and reaping children asynchronously to each other.
+However, as long as no zombie processes exist sandwiched between nested
+invocations of the wrapper, all child wrappers of a given
+parent wrapper should start after the parent starts and end before the
+parent ends.
+The initial and final entries for a wrapper invocation
+can be distinguished by the presence of the
+.BI "<exitStatus value=" x " />"
+tag, which is included in and only in the final entry.
+.PP
+Here is a list of XML tags that may be written to the log file.
+XML syntax requires attribute values to be written
+inside quotation marks, not shown here explicitly due to
+.BR troff (1)
+limitations.
+.PP
+.B <kleknevMagicNumber />
+.RS
+Should be the first thing in the log file; used as a sanity check by the
+reporting program to make sure it really is looking at a
+.B kleknev
+log file.
+.PP
+.RE
+.BR <e> " ... " </e>
+.RS
+Each log entry is inside one of these.
+.PP
+.RE
+.BI "<pid value=" x " />
+.RS
+Process ID of the wrapper (not of the shell it invokes).
+Note that
+.B kleknev
+is expected to be used in circumstances where the process ID space wraps
+around several times during the coverage of a single log file.
+As a result, the process ID should
+.I not
+be expected to uniquely identify an invocation of a wrapper within a single
+log.
+Process IDs may also be duplicated across hosts.
+However, it is guaranteed that at any fixed time on a single host, there
+will be only one process with a given ID.
+Thus, the combination of process ID, host name, and starting
+time may be used to uniquely identify a process in the log file.
+This appears in both the initial and the final entries.
+.PP
+.RE
+.BI "<wallTime sec=" x " nSec=" x " />"
+.RS
+Wall time (physical real time) of the entry in seconds and
+nanoseconds from the epoch, as returned by
+.BR clock_gettime (2)
+for the
+.B CLOCK_REALTIME
+clock.
+The total real time consumption of the process may be found by subtracting
+this value at the start from this value at the end.
+This appears in both the initial and the final entries.
+.PP
+.RE
+.BI "<hostName name=" x " />"
+.RS
+Name of the current host, as returned by
+.BR gethostname (2).
+This appears in both the initial and the final entries.
+.PP
+.RE
+.BI "<parentPid value=" x " />"
+.RS
+Process ID of the parent wrapper, extracted from the KLEKNEV_PID environment
+variable.
+This tag is only written if the variable exists, and only to the initial
+entry.
+.PP
+.RE
+.BI "<workingDir name=" x " />"
+.RS
+Current working directory, as returned by
+.BR getcwd (3).
+Appears only in the initial entry.
+.PP
+.RE
+.BR "<argv> <a>" " ... " "</a> <a>" " ... " </a> " ... " </argv>
+.RS
+The
+.BR <argv> " ... " </argv>
+tag, which appears only in the initial entry, contains a sequence of
+.BR <a> " ... " </a>
+tags recording (as text inside the tags) the contents of
+.B argv
+for the process that
+.B kleknev
+wraps.
+With this variant of the wrapper, the first such tag will always be
+.BR <a>/bin/sh</a> .
+The
+.BR kleknev-argo (1)
+wrapper is capable of recording other values.
+The wrapper will escape bytes in
+.B argv
+values as follows, which should (and seems to, in informal testing) result
+in their survival and eventual unescaping when parsed by a standard XML
+parser.
+This escaping may have some undesirable effects if command-line arguments
+are in an encoding like UTF-8, but it has the big advantage of allowing
+arbitrary byte sequences (except for zero bytes, which Unix forbids)
+to pass losslessly through XML tools without needing the
+.B kleknev
+wrapper to understand what encoding the local system may or may
+not actually use for command-line arguments.
+.IP \(bu 4
+.B <
+becomes
+.B &lt;
+.IP \(bu 4
+.B >
+becomes
+.B &gt;
+.IP \(bu 4
+.B &
+becomes
+.B &amp;
+.IP \(bu 4
+A single space character (ASCII 32) is passed through unchanged, but in any
+run of two or more, all except the first become
+.B &#32;
+.IP \(bu 4
+Byte values less than 32 or greater than 127 become decimal escape sequences
+of the form
+.BI &# nn ;
+.IP \(bu 4
+Any other byte values are passed through literally.
+.PP
+.RE
+.BI "<exitStatus value=" x " />"
+.RS
+Records the exit status of the shell.
+This appears only in, and is diagnostic of, the final entry.
+.PP
+.RE
+.BI "<resourceUsage userSec=" x
+.BI userUSec= x
+.BI systemSec= x
+.BI systemUSec= x
+.BI maxRSS= x
+.BI dataMemUsed= x
+.BI stackMemUsed= x
+.BI minorFaults= x
+.BI majorFaults= x
+.BI nSwaps= x
+.BI blocksIn= x
+.BI blocksOut= x
+.BI msgSent= x
+.BI msgReceived= x
+.BI signals= x
+.BI voluntarySwitches= x
+.BI involuntarySwitches= x " />"
+.RS
+Resource usage, from the
+.B struct rusage
+returned by
+.BR wait4 (2).
+These numbers are just as
+.BR wait4 (2)
+returns them, which is why (for instance) CPU time is in seconds and
+microseconds despite wall time being in seconds and nanoseconds.
+Also, on many systems including Linux, many of the fields are not actually
+populated and will appear as zeros unconditionally.
+See also the comments in the
+.B BUGS
+section regarding zombie processes.
+This tag appears only in the final entry.
+.
+.SH BUGS
+Access to the log file is controlled by
+.BR flock (2).
+It will not work correctly over NFS.
+This will probably change in the future, but making
+.B kleknev
+work correctly in a distributed environment is not just as simple as
+switching to
+.BR fcntl (2);
+much more complicated issues related to the synchronization of
+high-resolution real time clocks and tracking process invocation across
+multiple hosts would need to be addressed.
+.PP
+The wrapper itself won't care, but there may be trouble generating reports
+from the resulting log file if
+.BR clock_gettime(CLOCK_REALTIME, ... )
+is not monotonic.
+Calls to the clock are serialized by the file lock, so at least
+there should be no non-monotonicity created by race conditions between
+measuring the time and writing it to the log on a single host.
+.PP
+Because
+.B kleknev
+unconditionally executes
+.IR /bin/sh ,
+horrible consequences will ensue if
+.IR /bin/sh
+itself is a copy of
+.BR kleknev .
+After careful thought it was decided not to attempt to check for this
+condition.
+Although it may sound like a simple thing to test, there are actually a
+number of ways it could occur indirectly, for instance by varying
+combinations of soft and hard links,
+.BR chroot s,
+multiple copies of (possibly differing versions of) the
+.B kleknev
+package installed in different places, other wrappers and wrapper-like
+things that may be in place for various reasons, and so on.
+It is not practical to check for all cases, and attempting to check for the
+most obvious cases of
+.I /bin/sh
+equal to
+.B kleknev
+might interfere with some legitimate uses and could create a false sense of
+security for incautious users.
+It is also not clear what
+.B kleknev
+could sensibly do if it detected this error condition:
+there is no default shell it could invoke as a fallback because
+.I /bin/sh
+is supposed to be that already.
+Having a
+.I /bin/sh
+that is actually
+.B kleknev
+and fails unconditionally is not much better than having it
+fork-bomb, and might even be worse because it might take longer for an
+administrator to notice.
+So
+.B kleknev
+will not prevent you from doing this.
+Don't do it.
+.PP
+If you want to use
+.BR kleknev -style
+profiling on a system-wide basis, which is what might go through someone's
+head just before copying
+.B kleknev
+to
+.IR /bin/sh ,
+you should consider using
+.BR kleknev-argo (1),
+which can be placed in the PATH or even in
+.I /bin/sh
+with some degree of safety provided the thing it wraps is also somewhere
+in the PATH.
+.PP
+Because
+.B kleknev
+gets resource consumption statistics from the
+.B struct rusage
+returned by
+.BR wait4 (2),
+it will not record resources such as brains and CPU time that may have
+been consumed by zombie processes.
+The
+.B kleknev
+wrapper waits on its child to avoid creating a zombie, but if the
+child or deeper descendants create zombies, then the zombies' resource
+consumption will go uncounted.
+This condition is uncommon as an accidental occurrence, but it can
+be deliberately created.
+Profiling with
+.B kleknev
+should not be attempted in an adversarial situation where the creator of
+the software under test has an interest in distorting the statistics.
+.
+.SH AUTHOR
+Matthew Skala <mskala@ansuz.sooke.bc.ca>
+.
+.SH COPYRIGHT
+Copyright \(co
+2013
+Matthew Skala
+.PP
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3.
+.PP
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+.PP
+You should have received a copy of the GNU General Public License
+along with this program.
+If not, see <http://www.gnu.org/licenses/>.
+.
+.SH "SEE ALSO"
+.BR bash (1),
+.BR kleknev-argo (1)
