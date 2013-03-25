@@ -233,7 +233,8 @@ t1asm_t1asm_SOURCES = \
 dist_noinst_SCRIPTS = \
   hamlog/hamlog \
   hamlog/select.hl hamlog/swi-ham.pl hamlog/ecl-ham.ecl hamlog/gp-ham.pl \
-  pe/bdf.pe pe/fontlint.pe pe/getbearings.pe pe/kern-font.pe pe/rmo.pe \
+  pe/bdf.pe pe/fontlint.pe pe/getbearings.pe pe/kern-font.pe \
+  pe/makepngs.pe pe/rmo.pe \
   tools/add-flog tools/autodep tools/livecode \
   tools/make-ass tools/make-book tools/make-cfghl tools/make-cover \
   tools/make-eids tools/make-fea tools/make-flog tools/make-gpos \
@@ -559,6 +560,11 @@ makefile-pfb-%.inc: \
 ############################################################################
 
 # DIRSTAMPS
+
+area/.dirstamp:
+	$(AM_V_GEN)
+	$(AM_V_at)$(MKDIR_P) area
+	$(AM_V_at)echo directory created > area/.dirstamp
 
 bdf/.dirstamp:
 	$(AM_V_GEN)
@@ -1068,6 +1074,59 @@ txt/tsukurimashou.eids: tools/make-eids $(EIDSPRFS)
 eids: txt/tsukurimashou.eids
 
 .PHONY: eids
+
+############################################################################
+
+# BEFORE/AFTER PROCESSING AREA VERIFICATION
+
+area/%-before.area: area/.dirstamp pfbtmp/%.pfb pe/makepngs.pe
+	$(AM_V_GEN)
+	$(AM_V_at)$(MKDIR_P) $*.tmp ; \
+	(cd $*.tmp ; \
+	  $(FONTFORGE) $(realpath $(mvp))/pe/makepngs.pe \
+	     $(realpath .)/pfbtmp/$*.pfb $(TSU_V_REDIR) ; \
+	  for f in *.png ; do echo -n "$$f" ; pngtopnm $$f | \
+	    pgmtopbm -threshold | pgmhist | \
+	    grep '^    0' ; echo ' 0 0' ; done | \
+	    $(PERL) -pe \
+	'$$_="$*-$$_"; s/-([0-9a-f]+)-(.*)\.png\s+0\s+(\d+).*/-$$2 $$3/;' \
+	  | sort -u > $(realpath .)/area/$*-before.area \
+	) ; \
+	if test "x$(KEEPTMP)" = "x" ; then \
+	  rm -rf $*.tmp ; \
+	fi
+
+area/%-after.area: area/.dirstamp sfd/%.sfd pe/makepngs.pe
+	$(AM_V_GEN)
+	$(AM_V_at)$(MKDIR_P) $*.tmp ; \
+	(cd $*.tmp ; \
+	  $(FONTFORGE) $(realpath $(mvp))/pe/makepngs.pe \
+	     $(realpath .)/sfd/$*.sfd $(TSU_V_REDIR) ; \
+	  for f in *.png ; do echo -n "$$f" ; pngtopnm $$f | \
+	    pgmtopbm -threshold | pgmhist | \
+	    grep '^    0' ; echo ' 0 0' ; done | \
+	    $(PERL) -pe \
+	'$$_="$*-$$_"; s/\.png\s+0\s+(\d+).*/ $$1/;' \
+	  | sort -u > $(realpath .)/area/$*-after.area \
+	) ; \
+	if test "x$(KEEPTMP)" = "x" ; then \
+	  rm -rf $*.tmp ; \
+	fi
+
+txt/area-problems.txt: \
+  $(foreach style,$(SHORT_STYLES), area/$(subst _,-,$(style))-after.area \
+    $(call PAGEFILES,area/,$(style),-before.area))
+	$(AM_V_GEN)
+	$(AM_V_at)( for style in \
+	  $(foreach style,$(SHORT_STYLES), $(subst _,-,$(style))) ; do \
+	  cat area/$$style-before.area | sort | \
+	  join - area/$$style-after.area | \
+	  perl -nae 'print if $$F[2]>0.8*$$F[1]' ; \
+	done | sort > txt/area-problems.txt
+
+check-areas: txt/area-problems.txt
+
+.PHONY: check-areas
 
 ############################################################################
 
