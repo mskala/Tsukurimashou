@@ -172,11 +172,32 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.grandchild =
+  push_pbox_toexpand("kanji.grfour.grandchild");
+  build_kanji.lr(480,110)
+    (kanji.rare.mosquito_larva)
+    (kanji.grfour.lineage);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.guess =
   push_pbox_toexpand("kanji.grfour.guess");
   build_kanji.tb(600,70)
     (kanji.radical.silly_hat)
     (kanji.grthree.festival);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.season =
+  push_pbox_toexpand("kanji.grfour.season");
+  build_kanji.tb(340,100)
+    (kanji.grnine.two_branch_tree;
+     replace_strokep(-4)(subpath (0,0.78) of oldp))
+    (path charsvp;
+     build_kanji.sscale(xscaled 0.75)
+       (kanji.grone.child;
+        charsvp:=get_strokep(0));
+     replace_strokep(0)(charsvp));
   expand_pbox;
 enddef;
 
@@ -286,9 +307,21 @@ begintsuglyph("uni5B5D",93);
   tsu_render;
 endtsuglyph;
 
+% ki "season"
+begintsuglyph("uni5B63",99);
+  kanji.grfour.season;
+  tsu_render;
+endtsuglyph;
+
 % gaku "school"
 begintsuglyph("uni5B66",102);
   kanji.grone.study;
+  tsu_render;
+endtsuglyph;
+
+% son/mago "grandchild"
+begintsuglyph("uni5B6B",107);
+  kanji.grfour.grandchild;
   tsu_render;
 endtsuglyph;
 

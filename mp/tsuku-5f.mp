@@ -223,6 +223,12 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% "topped aitch radical"
+begintsuglyph("uni5F00",0);
+  kanji.radical.topped_aitch;
+  tsu_render;
+endtsuglyph;
+
 % yoku/iguromi "ceremony radical"
 begintsuglyph("uni5F0B",11);
   kanji.radical.ceremony;

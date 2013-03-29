@@ -1,6 +1,6 @@
 %
 % Unicode page 68 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -83,6 +83,14 @@ vardef kanji.grfour.plan =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.plum =
+  push_pbox_toexpand("kanji.grfour.plum");
+  build_kanji.lr(370,20)
+    (kanji.leftrad.wood)
+    (kanji.grtwo.every);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.prosperity =
   push_pbox_toexpand("kanji.grfour.prosperity");
   build_kanji.tb(740,100)
@@ -116,6 +124,12 @@ endtsuglyph;
 % an/tsukue "plan"
 begintsuglyph("uni6848",72);
   kanji.grfour.plan;
+  tsu_render;
+endtsuglyph;
+
+% bai/ume "plum"
+begintsuglyph("uni6885",133);
+  kanji.grfour.plum;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 52 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -306,6 +306,12 @@ begintsuglyph("uni520C",12);
   build_kanji.level(build_kanji.lr(560,0)
     (kanji.grsix.inch)
     (kanji.rightrad.sword));
+  tsu_render;
+endtsuglyph;
+
+% kei "punish"
+begintsuglyph("uni5211",17);
+  kanji.greight.punish;
   tsu_render;
 endtsuglyph;
 

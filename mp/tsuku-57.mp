@@ -42,6 +42,7 @@ input gradethree.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 
 do_late_includes;
 
@@ -70,6 +71,16 @@ vardef kanji.grthree.slope =
   build_kanji.level(build_kanji.lr(370,0)
     (kanji.leftrad.earth)
     (kanji.grthree.anti));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.model =
+  push_pbox_toexpand("kanji.grfour.model");
+  build_kanji.level(build_kanji.tb(390,30)
+    (kanji.greight.punish)
+    (kanji.grone.earth));
   expand_pbox;
 enddef;
 
@@ -130,6 +141,12 @@ endtsuglyph;
 % han/saka "slope"
 begintsuglyph("uni5742",66);
   kanji.grthree.slope;
+  tsu_render;
+endtsuglyph;
+
+% kei/kata "model"
+begintsuglyph("uni578B",139);
+  kanji.grfour.model;
   tsu_render;
 endtsuglyph;
 

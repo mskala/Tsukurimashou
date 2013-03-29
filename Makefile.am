@@ -1079,7 +1079,7 @@ eids: txt/tsukurimashou.eids
 
 # BEFORE/AFTER PROCESSING AREA VERIFICATION
 
-area/%-before.area: area/.dirstamp pfbtmp/%.pfb pe/makepngs.pe
+area/%-before.area: area/.dirstamp pfbtmp/%.pfb pe/makepngs.pe sfd/empty.sfd
 	$(AM_V_GEN)
 	$(AM_V_at)$(MKDIR_P) $*.tmp ; \
 	(cd $*.tmp ; \
@@ -1096,7 +1096,7 @@ area/%-before.area: area/.dirstamp pfbtmp/%.pfb pe/makepngs.pe
 	  rm -rf $*.tmp ; \
 	fi
 
-area/%-after.area: area/.dirstamp sfd/%.sfd pe/makepngs.pe
+area/%-after.area: area/.dirstamp sfd/%.sfd pe/makepngs.pe sfd/empty.sfd
 	$(AM_V_GEN)
 	$(AM_V_at)$(MKDIR_P) $*.tmp ; \
 	(cd $*.tmp ; \
@@ -1119,10 +1119,11 @@ txt/area-problems.txt: \
 	$(AM_V_GEN)
 	$(AM_V_at)( for style in \
 	  $(foreach style,$(SHORT_STYLES), $(subst _,-,$(style))) ; do \
-	  cat area/$$style-before.area | sort | \
+	  cat area/$$style-[0-9a-f][0-9a-f]-before.area \
+	    area/$$style-[0-9a-f][0-9a-f][0-9a-f]-before.area | sort | \
 	  join - area/$$style-after.area | \
-	  perl -nae 'print if $$F[2]>0.8*$$F[1]' ; \
-	done | sort > txt/area-problems.txt
+	  perl -nae 'print if $$F[2]>0.8*$$F[1]+100' ; \
+	done ) | sort > txt/area-problems.txt
 
 check-areas: txt/area-problems.txt
 

@@ -30,6 +30,10 @@
 # mskala.sooke.bc.ca
 #
 
+# keep a small font open throughout so we don't trigger a memory leak
+# see https://github.com/fontforge/fontforge/pull/480
+Open("../sfd/empty.sfd");
+
 Open($1);
 Reencode("compacted");
 a=CharCnt();

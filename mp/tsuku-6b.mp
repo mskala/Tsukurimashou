@@ -1,6 +1,6 @@
 %
 % Unicode page 6B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -140,15 +140,15 @@ begintsuglyph("uni6B6F",111);
   tsu_render;
 endtsuglyph;
 
-% gatsu "bare bone radical"
-begintsuglyph("uni6B79",121);
-  kanji.leftrad.bare_bone;
+% reki "history"
+begintsuglyph("uni6B74",116);
+  kanji.grfour.history;
   tsu_render;
 endtsuglyph;
 
-% reki "history"
-begintsuglyph("uni6B7A",116);
-  kanji.grfour.history;
+% gatsu "bare bone radical"
+begintsuglyph("uni6B79",121);
+  kanji.leftrad.bare_bone;
   tsu_render;
 endtsuglyph;
 
