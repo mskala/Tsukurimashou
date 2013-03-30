@@ -1,6 +1,6 @@
 %
 % Unicode page 71 (Kanji) for Tsukurimashou
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,9 +36,23 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradenine.mp;
+input gradeone.mp;
+input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
+input rare.mp;
 
 do_late_includes;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.heat =
+  push_pbox_toexpand("kanji.grfour.heat");
+  build_kanji.tb(190,-30)
+    (kanji.rare.art)
+    (kanji.bottomrad.four_ticks);
+  expand_pbox;
+enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -58,9 +72,15 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% ki/tanoshi
+% ki/tanoshi "prosperous"
 begintsuglyph("uni7199",153);
   kanji.grnine.prosperous;
+  tsu_render;
+endtsuglyph;
+
+% netsu/atsu "heat"
+begintsuglyph("uni71B1",177);
+  kanji.grfour.heat;
   tsu_render;
 endtsuglyph;
 

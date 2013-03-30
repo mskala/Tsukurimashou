@@ -41,6 +41,16 @@ vardef kanji.rare.ancient_pig =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.art =
+  push_pbox_toexpand("kanji.rare.art");
+  build_kanji.level(build_kanji.lr(420,10)
+    (build_kanji.sscale(yscaled 0.94 shifted (0,-40))(build_kanji.tb(330,40)
+       (kanji.rare.mushroom)
+       (kanji.leftrad.earth)))
+    (kanji.grtwo.circle));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.bald =
   push_pbox_toexpand("kanji.rare.bald");
   build_kanji.level(build_kanji.tb(690,180)

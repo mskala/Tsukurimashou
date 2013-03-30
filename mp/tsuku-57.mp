@@ -39,6 +39,7 @@ input gradeeight.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
+input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
@@ -159,6 +160,12 @@ endtsuglyph;
 % kei/kata "model"
 begintsuglyph("uni578B",139);
   kanji.grfour.model;
+  tsu_render;
+endtsuglyph;
+
+% gei/u "art"
+begintsuglyph("uni57F6",246);
+  kanji.rare.art;
   tsu_render;
 endtsuglyph;
 
