@@ -179,6 +179,16 @@ vardef kanji.rare.drink =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.finally =
+  push_pbox_toexpand("kanji.rare.finally");
+  build_kanji.tb(480,-70)
+    (kanji.grone.stand_up)
+    (build_kanji.level(build_kanji.tb(440,70)
+       (kanji.grone.day)
+       (kanji.radical.legs)));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.history_inside =
   push_pbox_toexpand("kanji.rare.history_inside");
   build_kanji.tb(420,80)

@@ -1,6 +1,6 @@
 %
 % Unicode page 93 (Kanji) for Tsukurimashou
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,11 +37,20 @@ input buildkanji.mp;
 input gradeone.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input rightrad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.mirror =
+  push_pbox_toexpand("kanji.grfour.mirror");
+  build_kanji.lr(420,20)
+    (kanji.leftrad.gold)
+    (kanji.rare.finally);
+  expand_pbox;
+enddef;
 
 vardef kanji.grfour.record =
   push_pbox_toexpand("kanji.grfour.record");
@@ -56,6 +65,12 @@ enddef;
 % roku/shiru "record"
 begintsuglyph("uni9332",50);
   kanji.grfour.record;
+  tsu_render;
+endtsuglyph;
+
+% kyou/kagami "mirror"
+begintsuglyph("uni93E1",225);
+  kanji.grfour.mirror;
   tsu_render;
 endtsuglyph;
 

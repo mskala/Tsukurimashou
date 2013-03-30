@@ -1,6 +1,6 @@
 %
 % Unicode page 7A (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -74,6 +75,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.contest =
+  push_pbox_toexpand("kanji.grfour.contest");
+  build_kanji.lr(480,-50)
+    (kanji.leftrad.contend)
+    (kanji.rare.contend);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.load =
   push_pbox_toexpand("kanji.grfour.load");
   build_kanji.lr(420,-20*mincho)
@@ -87,6 +96,39 @@ vardef kanji.grfour.seed =
   build_kanji.lr(360,0)
     (kanji.leftrad.two_branch_tree)
     (build_kanji.sscale(yscaled 0.91)(kanji.grthree.heap_big));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.leftrad.contend =
+  push_pbox_toexpand("kanji.leftrad.contend");
+  kanji.rare.contend;
+  begingroup
+    save myxf,myp;
+    transform myxf;
+    path myp;
+    myp=get_strokep(0);
+    (0,0) transformed myxf=llcorner myp;
+    (1,0) transformed myxf=lrcorner myp;
+    (0,1) transformed myxf=ulcorner myp;
+    replace_strokep(0)(((0.05,1)--(0.07,0.07)) transformed myxf);
+    replace_strokeq(0)((1.7,1.7)--(1.5,1.5));
+    push_stroke(((-0.46,0)..tension 1.2..(0.07,0.07)..(1,0.27))
+        transformed myxf,
+      (1.7,1.7)--(1.5,1.5)--(1,1));
+    set_bosize(0)(get_bosize(-1));
+  endgroup;
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.rare.contend =
+  push_pbox_toexpand("kanji.rare.contend");
+  build_kanji.tb(480,-60)
+    (kanji.grone.stand_up)
+    (kanji.grtwo.big_brother);
   expand_pbox;
 enddef;
 
@@ -122,6 +164,18 @@ begintsuglyph("uni7ACB",203);
   tsu_render;
 endtsuglyph;
 
+% extra: "contend"
+begintsuglyph("uni7ADE",222);
+  kanji.rare.contend;
+  tsu_render;
+endtsuglyph;
+
+% kyou/owa "finally"
+begintsuglyph("uni7ADF",223);
+  kanji.rare.finally;
+  tsu_render;
+endtsuglyph;
+
 % shou/aki "chapter"
 begintsuglyph("uni7AE0",224);
   kanji.grthree.chapter;
@@ -137,6 +191,12 @@ endtsuglyph;
 % chiku/take "bamboo"
 begintsuglyph("uni7AF9",249);
   kanji.grone.bamboo;
+  tsu_render;
+endtsuglyph;
+
+% kyou/kiso "contest"
+begintsuglyph("uni7AF6",246);
+  kanji.grfour.contest;
   tsu_render;
 endtsuglyph;
 
