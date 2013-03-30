@@ -134,6 +134,14 @@ begintsuglyph("uni6B69",105);
   tsu_render;
 endtsuglyph;
 
+% extra: wai/iga "warp"
+begintsuglyph("uni6B6A",106);
+  build_kanji.tb(440,70)
+    (kanji.grfour.non)
+    (kanji.grone.correct);
+  tsu_render;
+endtsuglyph;
+
 % shi/ha "tooth"
 begintsuglyph("uni6B6F",111);
   kanji.grthree.tooth;

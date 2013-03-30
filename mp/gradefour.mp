@@ -1,6 +1,6 @@
 %
 % Grade Four kanji used on more than one page
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -290,6 +290,20 @@ enddef;
 vardef kanji.grfour.lineage =
   push_pbox_toexpand("kanji.grfour.lineage");
   build_kanji.add_beret(kanji.grone.thread);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.non =
+  push_pbox_toexpand("kanji.grfour.non");
+  push_stroke((120,760)--(880,760),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((520,760)..tension 1.2..(320,400)..(100,210),
+    (1.6,1.6)--(1.4,1.4)--(1,1));
+  push_stroke((((480,1000)--(480,0)) intersectionpoint get_strokep(0))--
+      (480,-50),
+    (1.5,1.5)--(1.4,1.4));
+  push_stroke((580,580)..tension 1.2..(780,400)..(870,250),
+    (1,1)--(1.4,1.4)--(1.7,1.7));
   expand_pbox;
 enddef;
 

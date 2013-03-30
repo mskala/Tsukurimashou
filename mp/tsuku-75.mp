@@ -35,8 +35,10 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -235,6 +237,14 @@ endtsuglyph;
 % byou/ya "ill"
 begintsuglyph("uni75C5",197);
   kanji.grthree.ill;
+  tsu_render;
+endtsuglyph;
+
+% extra: hi/tsukae "constipation"
+begintsuglyph("uni75DE",222);
+  build_kanji.sickness_enclose(build_kanji.sscale
+    (yscaled 0.96 shifted (0,-30))
+    (kanji.grsix.noes));
   tsu_render;
 endtsuglyph;
 

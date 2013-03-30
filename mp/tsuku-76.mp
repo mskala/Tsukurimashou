@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -85,6 +86,16 @@ vardef kanji.grsix.emperor =
   build_kanji.tb(350,-20)
     (kanji.grone.white)
     (kanji.grone.king);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grten.sake_cup =
+  push_pbox_toexpand("kanji.grten.sake_cup");
+  build_kanji.tb(360,40)
+    (kanji.grfour.non)
+    (kanji.grthree.dish);
   expand_pbox;
 enddef;
 
@@ -147,6 +158,12 @@ endtsuglyph;
 % bei/sara "dish"
 begintsuglyph("uni76BF",191);
   kanji.grthree.dish;
+  tsu_render;
+endtsuglyph;
+
+% hai/sakazuki "sake cup"
+begintsuglyph("uni76C3",195);
+  kanji.grten.sake_cup;
   tsu_render;
 endtsuglyph;
 

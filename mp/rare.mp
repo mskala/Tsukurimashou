@@ -189,6 +189,14 @@ vardef kanji.rare.finally =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.glorious =
+  push_pbox_toexpand("kanji.rare.glorious");
+  kanji.grfour.non;
+  push_stroke((130,-70)--(870,-70),(1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.history_inside =
   push_pbox_toexpand("kanji.rare.history_inside");
   build_kanji.tb(420,80)

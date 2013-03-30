@@ -137,6 +137,15 @@ vardef kanji.greight.die_in_obscurity =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.sake_cup =
+  push_pbox_toexpand("kanji.greight.sake_cup");
+  build_kanji.lr(480,50)
+    (kanji.leftrad.wood)
+    (build_kanji.sscale(shifted (0,-60))(kanji.grfour.non));
+  replace_strokep(-1)(subpath (0,0.85) of oldp);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % tsuki/getsu "moon"
@@ -226,6 +235,12 @@ endtsuglyph;
 % ku/rai "come"
 begintsuglyph("uni6765",101);
   kanji.grtwo.come;
+  tsu_render;
+endtsuglyph;
+
+% hai/sakazuki "sake cup"
+begintsuglyph("uni676F",111);
+  kanji.greight.sake_cup;
   tsu_render;
 endtsuglyph;
 

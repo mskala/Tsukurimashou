@@ -283,6 +283,12 @@ begintsuglyph("uni4E0B",11);
   tsu_render;
 endtsuglyph;
 
+% fu "non-"
+begintsuglyph("uni4E0D",13);
+  kanji.grfour.non;
+  tsu_render;
+endtsuglyph;
+
 % yo/ata "give"
 begintsuglyph("uni4E0E",14);
   kanji.greight.give;
@@ -292,6 +298,12 @@ endtsuglyph;
 % sho/ka "furthermore"
 begintsuglyph("uni4E14",20);
   kanji.greight.furthermore;
+  tsu_render;
+endtsuglyph;
+
+% hi/oo "glorious" (needed as part of other things)
+begintsuglyph("uni4E15",21);
+  kanji.rare.glorious;
   tsu_render;
 endtsuglyph;
 

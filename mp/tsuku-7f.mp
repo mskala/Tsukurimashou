@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
@@ -71,6 +72,14 @@ vardef kanji.grfour.leave_behind =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% extra: fu/usagiami "rabbit catching net"
+begintsuglyph("uni7F58",88);
+  build_kanji.tb(600,-60)
+    (kanji.toprad.eye)
+    (kanji.grfour.non);
+  tsu_render;
+endtsuglyph;
 
 % chi/o "desert" or "leave behind"
 begintsuglyph("uni7F6E",110);

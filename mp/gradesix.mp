@@ -91,6 +91,14 @@ vardef kanji.grsix.inch =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.noes =
+  push_pbox_toexpand("kanji.grsix.noes");
+  build_kanji.level(build_kanji.tb(390,70)
+    (kanji.grfour.non)
+    (kanji.grone.mouth));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.respect =
   push_pbox_toexpand("kanji.grsix.respect");
   build_kanji.lr(540,20)

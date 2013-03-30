@@ -43,6 +43,7 @@ input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -159,6 +160,14 @@ endtsuglyph;
 % i "stomach"
 begintsuglyph("uni80C3",195);
   kanji.grfour.stomach;
+  tsu_render;
+endtsuglyph;
+
+% extra: hai/hanami "embryo"
+begintsuglyph("uni80DA",218);
+  build_kanji.level(build_kanji.lr(380,10)
+    (kanji.grone.moon)
+    (build_kanji.sscale(yscaled 0.9)(kanji.rare.glorious)));
   tsu_render;
 endtsuglyph;
 

@@ -36,6 +36,7 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -148,6 +149,14 @@ endtsuglyph;
 % han/saka "slope"
 begintsuglyph("uni5742",66);
   kanji.grthree.slope;
+  tsu_render;
+endtsuglyph;
+
+% extra: hai/tsuki "bowl"
+begintsuglyph("uni574F",79);
+  build_kanji.level(build_kanji.lr(450,30)
+    (kanji.leftrad.earth)
+    (build_kanji.sscale(scaled 0.93)(kanji.grfour.non)));
   tsu_render;
 endtsuglyph;
 

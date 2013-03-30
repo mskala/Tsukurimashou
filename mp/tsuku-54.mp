@@ -39,6 +39,7 @@ input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -161,6 +162,12 @@ endtsuglyph;
 % kun/kimi "pronoun or honorific for a subordinate"
 begintsuglyph("uni541B",27);
   kanji.grthree.junior;
+  tsu_render;
+endtsuglyph;
+
+% hi/ina "negation" or "the noes"
+begintsuglyph("uni5426",38);
+  kanji.grsix.noes;
   tsu_render;
 endtsuglyph;
 

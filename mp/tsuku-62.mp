@@ -1,6 +1,6 @@
 %
 % Unicode page 62 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
@@ -209,6 +210,14 @@ endtsuglyph;
 % tou/na "throw"
 begintsuglyph("uni6295",149);
   kanji.grthree.throw;
+  tsu_render;
+endtsuglyph;
+
+% extra: hou/nado "etcetera"
+begintsuglyph("uni6294",148);
+  build_kanji.level(build_kanji.lr(420,60)
+    (kanji.leftrad.hand)
+    (kanji.grfour.non));
   tsu_render;
 endtsuglyph;
 
