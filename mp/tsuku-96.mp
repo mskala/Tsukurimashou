@@ -112,6 +112,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.land =
+  push_pbox_toexpand("kanji.grfour.land");
+  build_kanji.lr(420,70)
+    (kanji.radical.beta)
+    (kanji.rare.clod_of_earth);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.brink =
   push_pbox_toexpand("kanji.grfive.brink");
   build_kanji.lr(390,80)
@@ -235,6 +245,12 @@ endtsuglyph;
 % in/kage "yin"
 begintsuglyph("uni9670",112);
   kanji.greight.yin;
+  tsu_render;
+endtsuglyph;
+
+% riku/oka "land"
+begintsuglyph("uni9678",120);
+  kanji.grfour.land;
   tsu_render;
 endtsuglyph;
 

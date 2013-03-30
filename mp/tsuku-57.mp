@@ -1,6 +1,6 @@
 %
 % Unicode page 57 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -120,6 +120,12 @@ begintsuglyph("uni5723",35);
   tsu_render;
 endtsuglyph;
 
+% extra: "mushroom"
+begintsuglyph("uni5725",37);
+  kanji.rare.mushroom;
+  tsu_render;
+endtsuglyph;
+
 % atsu/o "pressure"
 begintsuglyph("uni5727",39);
   kanji.grfive.pressure;
@@ -141,6 +147,12 @@ endtsuglyph;
 % han/saka "slope"
 begintsuglyph("uni5742",66);
   kanji.grthree.slope;
+  tsu_render;
+endtsuglyph;
+
+% extra: "clod of earth"
+begintsuglyph("uni5774",116);
+  kanji.rare.clod_of_earth;
   tsu_render;
 endtsuglyph;
 

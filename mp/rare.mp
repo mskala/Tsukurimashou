@@ -95,6 +95,14 @@ vardef kanji.rare.clear =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.clod_of_earth =
+  push_pbox_toexpand("kanji.rare.clod_of_earth");
+  build_kanji.tb(280,40)
+    (kanji.rare.mushroom)
+    (kanji.grone.earth);
+  expand_pbox;
+enddef;
+
 % dictionary says "name of an ancient tribe"; needed for grfour.low
 vardef kanji.rare.cruithne =
   push_pbox_toexpand("kanji.rare.cruithne");
@@ -304,6 +312,14 @@ enddef;
 vardef kanji.rare.mound =
   push_pbox_toexpand("kanji.rare.mound");
   build_kanji.attach_tick(660)(kanji.rare.mound_helper);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.mushroom =
+  push_pbox_toexpand("kanji.rare.mushroom");
+  build_kanji.tb(450,60)
+    (kanji.grone.earth)
+    (kanji.radical.legs);
   expand_pbox;
 enddef;
 
