@@ -120,6 +120,14 @@ vardef kanji.grfour.land =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.squad =
+  push_pbox_toexpand("kanji.grfour.squad");
+  build_kanji.lr(420,70)
+    (kanji.radical.beta)
+    (kanji.rare.obey);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.brink =
@@ -257,6 +265,12 @@ endtsuglyph;
 % you/hi "positive"
 begintsuglyph("uni967D",125);
   kanji.grthree.positive;
+  tsu_render;
+endtsuglyph;
+
+% tai "squad"
+begintsuglyph("uni968A",138);
+  kanji.grfour.squad;
   tsu_render;
 endtsuglyph;
 

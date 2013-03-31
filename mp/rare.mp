@@ -379,6 +379,14 @@ vardef kanji.rare.notwithstanding =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.obey =
+  push_pbox_toexpand("kanji.rare.obey");
+  build_kanji.tb(640,50)
+    (build_kanji.spread_legs(-180)(kanji.toprad.sparkle_two))
+    (kanji.radical.pig);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.obstruction =
   push_pbox_toexpand("kanji.rare.obstruction");
   push_stroke((90,740)--(910,740),(1.6,1.6)--(1.6,1.6));

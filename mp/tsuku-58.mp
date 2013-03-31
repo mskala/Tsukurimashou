@@ -1,6 +1,6 @@
 %
 % Unicode page 58 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -69,6 +69,17 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.hall =
+  push_pbox_toexpand("kanji.grfour.hall");
+  build_kanji.level(build_kanji.tb(260,100)
+    (kanji.toprad.ridiculous_hat)
+    (kanji.grone.earth;
+     set_boserif(-2,0,whatever)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.report =
   push_pbox_toexpand("kanji.grfive.report");
   build_kanji.level(build_kanji.lr(520,0)
@@ -89,6 +100,12 @@ vardef kanji.greight.legal_one =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% dou "hall"
+begintsuglyph("uni5802",2);
+  kanji.grfour.hall;
+  tsu_render;
+endtsuglyph;
 
 % hou/muku "report"
 begintsuglyph("uni5831",49);

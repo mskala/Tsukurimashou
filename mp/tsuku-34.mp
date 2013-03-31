@@ -1,6 +1,6 @@
 %
 % Unicode page 34 (Kanji) for Tsukurimashou
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ input buildkanji.mp;
 input gradeone.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -45,6 +46,12 @@ do_late_includes;
 % extra "uncultivated"
 begintsuglyph("uni342C",44);
   kanji.rare.uncultivated;
+  tsu_render;
+endtsuglyph;
+
+% extra "obey"
+begintsuglyph("uni34B8",184);
+  kanji.rare.obey;
   tsu_render;
 endtsuglyph;
 
