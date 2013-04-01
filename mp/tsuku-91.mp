@@ -95,6 +95,14 @@ vardef kanji.greight.bartending =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.dice =
+  push_pbox_toexpand("kanji.greight.dice");
+  build_kanji.level(build_kanji.tb(540,40)
+    (kanji.toprad.paw)
+    (kanji.grone.wood));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.shochu =
   push_pbox_toexpand("kanji.greight.shochu");
   build_kanji.lr(520,10)
@@ -168,6 +176,12 @@ endtsuglyph;
 % han/irodori "separate" or "divide" but mostly "topped rice radical"
 begintsuglyph("uni91C6",198);
   build_kanji.add_beret(kanji.grtwo.rice);
+  tsu_render;
+endtsuglyph;
+
+% sai/to "die" (macro name is plural for disambiguation)
+begintsuglyph("uni91C7",199);
+  kanji.greight.dice;
   tsu_render;
 endtsuglyph;
 

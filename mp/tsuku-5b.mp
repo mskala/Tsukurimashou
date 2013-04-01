@@ -311,6 +311,14 @@ begintsuglyph("uni5B57",87);
   tsu_render;
 endtsuglyph;
 
+% extra: fu/tamago "enfold"
+begintsuglyph("uni5B5A",90);
+  build_kanji.level(build_kanji.tb(580,0)
+    (kanji.toprad.paw)
+    (kanji.grone.child));
+  tsu_render;
+endtsuglyph;
+
 % kou/taka "filial piety"
 begintsuglyph("uni5B5D",93);
   kanji.grsix.filial_piety;

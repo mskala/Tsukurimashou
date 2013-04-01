@@ -144,6 +144,14 @@ begintsuglyph("uni2EA3",163);
   tsu_render;
 endtsuglyph;
 
+% Unicode calls it "paw one"
+begintsuglyph("uni2EA4",164);
+  build_kanji.tb(480,0)
+    (kanji.toprad.paw)
+    ();
+  tsu_render;
+endtsuglyph;
+
 % Unicode calls it "cow"
 begintsuglyph("uni2EA7",167);
   build_kanji.tb(440,-30)

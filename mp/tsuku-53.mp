@@ -91,12 +91,7 @@ enddef;
 vardef kanji.grthree.accept =
   push_pbox_toexpand("kanji.grthree.accept");
   build_kanji.tb(640,80)
-    (tsu_xform(identity yscaled 0.6)
-       (push_stroke(
-          (170,880)..(500,1060)..tension 1.1..(830,1380),
-          (1.1,1.1)--(1.6,1.6)--(2.0,2.0));
-        build_kanji.sscale(rotated 90 slanted -0.35 rotated -90)
-          (kanji.toprad.alt_sparkle_three)))
+    (kanji.toprad.paw)
     (build_kanji.tb(540,70)
        (kanji.radical.conservative_hat)
        (kanji.greight.otoh));

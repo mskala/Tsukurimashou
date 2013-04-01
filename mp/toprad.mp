@@ -117,6 +117,17 @@ vardef kanji.toprad.once_upon_a_time =
   expand_pbox;
 enddef;
 
+vardef kanji.toprad.paw =
+  push_pbox_toexpand("kanji.toprad.paw");
+  tsu_xform(identity yscaled 0.6)
+    (push_stroke(
+       (170,880)..(500,1060)..tension 1.1..(830,1380),
+       (1.1,1.1)--(1.6,1.6)--(2.0,2.0));
+     build_kanji.sscale(rotated 90 slanted -0.35 rotated -90)
+       (kanji.toprad.alt_sparkle_three));
+  expand_pbox;
+enddef;
+
 vardef kanji.toprad.pleasure =
   push_pbox_toexpand("kanji.toprad.pleasure");
   build_kanji.level(build_kanji.tb(540,32)

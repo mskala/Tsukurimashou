@@ -1,6 +1,6 @@
 %
 % Unicode page 89 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -89,6 +89,14 @@ endtsuglyph;
 % ken/mi "see"
 begintsuglyph("uni898B",139);
   kanji.grone.see;
+  tsu_render;
+endtsuglyph;
+
+% extra: beki/moto "seek"
+begintsuglyph("uni8993",147);
+  build_kanji.level(build_kanji.tb(580,0)
+    (kanji.toprad.paw)
+    (kanji.grone.see));
   tsu_render;
 endtsuglyph;
 
