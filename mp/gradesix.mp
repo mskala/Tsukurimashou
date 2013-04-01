@@ -70,6 +70,14 @@ vardef kanji.grsix.dry =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.emperor =
+  push_pbox_toexpand("kanji.grsix.emperor");
+  build_kanji.tb(350,-20)
+    (kanji.grone.white)
+    (kanji.grone.king);
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.fountain =
   push_pbox_toexpand("kanji.grsix.fountain");
   build_kanji.level(build_kanji.tb(380,54)

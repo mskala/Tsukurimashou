@@ -145,6 +145,14 @@ vardef kanji.grfour.peace =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.seat =
+  push_pbox_toexpand("kanji.grfour.seat");
+  build_kanji.dotcliff_enclose(build_kanji.tb(420,0)
+      (kanji.grnine.twenty)
+      (kanji.greight.towel));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.urban_prefecture =
   push_pbox_toexpand("kanji.grfour.urban_prefecture");
   build_kanji.dotcliff_enclose(kanji.grfour.attach);
@@ -256,6 +264,12 @@ endtsuglyph;
 % sou/houki "broom" as in houkiboshi "comet"
 begintsuglyph("uni5E1A",26);
   kanji.rare.broom;
+  tsu_render;
+endtsuglyph;
+
+% saki/mushiro "seat"
+begintsuglyph("uni5E2D",45);
+  kanji.grfour.seat;
   tsu_render;
 endtsuglyph;
 

@@ -157,11 +157,46 @@ vardef kanji.grfour.care =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.diameter =
+  push_pbox_toexpand("kanji.grfour.diameter");
+  build_kanji.level(build_kanji.lr(310,10)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.rare.sacred));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.pedestrian =
+  push_pbox_toexpand("kanji.grfour.pedestrian");
+  build_kanji.level(build_kanji.lr(310,10)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.grtwo.run));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.profit =
+  push_pbox_toexpand("kanji.grfour.profit");
+  build_kanji.level(build_kanji.lr(310,10)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (build_kanji.tb(360,-20)
+       (kanji.greight.daybreak;
+        replace_strokep(0)(oldp shifted (0,-80)))
+       (kanji.grsix.inch)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.affirm =
   push_pbox_toexpand("kanji.grfive.affirm");
   build_kanji.dotcliff_enclose(kanji.grtwo.heart);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.journey =
+  push_pbox_toexpand("kanji.grfive.journey");
+  build_kanji.level(build_kanji.lr(310,-40)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.grthree.master));
   expand_pbox;
 enddef;
 
@@ -183,6 +218,14 @@ vardef kanji.grsix.loyalty =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.regulate =
+  push_pbox_toexpand("kanji.grsix.regulate");
+  build_kanji.level(build_kanji.lr(310,0)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.radical.brush));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.funeral =
@@ -192,6 +235,22 @@ vardef kanji.greight.funeral =
     ((subpath (1,infinity) of oldp)
      shifted (-820,0) xscaled 0.45 shifted (820,0)));
   push_stroke((500,740)--(500,-60),(1.6,1.6)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.he =
+  push_pbox_toexpand("kanji.greight.he");
+  build_kanji.level(build_kanji.lr(310,-30)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.grthree.pelt));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.subjugate =
+  push_pbox_toexpand("kanji.greight.subjugate");
+  build_kanji.level(build_kanji.lr(310,0)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.grone.correct));
   expand_pbox;
 enddef;
 
@@ -336,9 +395,57 @@ begintsuglyph("uni5F66",102);
   tsu_render;
 endtsuglyph;
 
+% extra: hou/samayo "loiter"
+begintsuglyph("uni5F77",119);
+  build_kanji.level(build_kanji.lr(310,0)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.grtwo.direction));
+  tsu_render;
+endtsuglyph;
+
 % yaku "duty"
 begintsuglyph("uni5F79",121);
   kanji.grthree.duty;
+  tsu_render;
+endtsuglyph;
+
+% hi/kare "he"
+begintsuglyph("uni5F7C",124);
+  kanji.greight.he;
+  tsu_render;
+endtsuglyph;
+
+% ou/i "journey"
+begintsuglyph("uni5F80",128);
+  kanji.grfive.journey;
+  tsu_render;
+endtsuglyph;
+
+% sei "subjugate"
+begintsuglyph("uni5F81",129);
+  kanji.greight.subjugate;
+  tsu_render;
+endtsuglyph;
+
+% extra: ou/i "journey"
+begintsuglyph("uni5F82",130);
+  build_kanji.level(build_kanji.lr(310,0)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.greight.furthermore));
+  tsu_render;
+endtsuglyph;
+
+% extra: ou/i "journey"
+begintsuglyph("uni5F83",131);
+  build_kanji.level(build_kanji.lr(310,0)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.grone.life));
+  tsu_render;
+endtsuglyph;
+
+% kei/machi "diameter"
+begintsuglyph("uni5F84",132);
+  kanji.grfour.diameter;
   tsu_render;
 endtsuglyph;
 
@@ -348,9 +455,43 @@ begintsuglyph("uni5F85",133);
   tsu_render;
 endtsuglyph;
 
+% extra: kon/mopto "disobey"
+begintsuglyph("uni5F88",136);
+  build_kanji.level(build_kanji.lr(310,30)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.radical.northeast));
+  tsu_render;
+endtsuglyph;
+
+% extra: kai/samayo "wandering"
+begintsuglyph("uni5F8A",138);
+  build_kanji.level(build_kanji.lr(310,-40)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (build_kanji.sscale(scaled 0.92)(kanji.grtwo.occurrences)));
+  tsu_render;
+endtsuglyph;
+
+% ritsu/takashi regulate
+begintsuglyph("uni5F8B",139);
+  kanji.grsix.regulate;
+  tsu_render;
+endtsuglyph;
+
 % go/shiri "behind"
 begintsuglyph("uni5F8C",140);
   kanji.grtwo.behind;
+  tsu_render;
+endtsuglyph;
+
+% to/itazura "pedestrian"
+begintsuglyph("uni5F92",146);
+  kanji.grfour.pedestrian;
+  tsu_render;
+endtsuglyph;
+
+% taku/e "profit"
+begintsuglyph("uni5F97",151);
+  kanji.grfour.profit;
   tsu_render;
 endtsuglyph;
 
@@ -359,6 +500,14 @@ begintsuglyph("uni5F98",152);
   build_kanji.level(build_kanji.lr(310,-30)
     (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
     (kanji.grfive.mistake));
+  tsu_render;
+endtsuglyph;
+
+% extra: kou/samayo "wandering"
+begintsuglyph("uni5FA8",168);
+  build_kanji.level(build_kanji.lr(310,0)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (kanji.grsix.emperor));
   tsu_render;
 endtsuglyph;
 

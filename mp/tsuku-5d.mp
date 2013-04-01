@@ -66,6 +66,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.nest =
+  push_pbox_toexpand("kanji.grfour.nest");
+  build_kanji.level(build_kanji.tb(720,40)
+    (kanji.toprad.alt_sparkle_three)
+    (kanji.grfour.fruit));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.adroit =
   push_pbox_toexpand("kanji.greight.adroit");
   build_kanji.level(build_kanji.lr(380,60)
@@ -124,6 +134,12 @@ endtsuglyph;
 % shuu "province"
 begintsuglyph("uni5DDE",222);
   kanji.grthree.province;
+  tsu_render;
+endtsuglyph;
+
+% sou/su "nest"
+begintsuglyph("uni5DE3",227);
+  kanji.grfour.nest;
   tsu_render;
 endtsuglyph;
 

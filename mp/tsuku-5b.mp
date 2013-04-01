@@ -188,6 +188,16 @@ vardef kanji.grfour.guess =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.injury =
+  push_pbox_toexpand("kanji.grfour.injury");
+  build_kanji.level(build_kanji.tb(640,200)
+    (kanji.radical.silly_hat)
+    (build_kanji.sscale(xscaled 0.84)(build_kanji.tb(420,0)
+       (kanji.toprad.blue)
+       (kanji.grone.mouth))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.season =
   push_pbox_toexpand("kanji.grfour.season");
   build_kanji.tb(340,100)
@@ -465,6 +475,12 @@ endtsuglyph;
 % kyuu/miya "house"
 begintsuglyph("uni5BAE",174);
   kanji.grthree.palace;
+  tsu_render;
+endtsuglyph;
+
+% gai "injury"
+begintsuglyph("uni5BB3",179);
+  kanji.grfour.injury;
   tsu_render;
 endtsuglyph;
 

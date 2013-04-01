@@ -39,6 +39,7 @@ input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -76,16 +77,6 @@ vardef kanji.grfour.target =
     (build_kanji.sscale(yscaled 0.85 shifted (0,30))
        (kanji.grone.white))
     (kanji.grnine.ladle));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grsix.emperor =
-  push_pbox_toexpand("kanji.grsix.emperor");
-  build_kanji.tb(350,-20)
-    (kanji.grone.white)
-    (kanji.grone.king);
   expand_pbox;
 enddef;
 
