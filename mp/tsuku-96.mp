@@ -78,14 +78,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.collect =
-  push_pbox_toexpand("kanji.grthree.collect");
-  build_kanji.tb(340,60)
-    (build_kanji.sscale(shifted (-10,0))(kanji.radical.old_bird))
-    (build_kanji.sscale(shifted (20,0))(kanji.grone.wood));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.institution =
   push_pbox_toexpand("kanji.grthree.institution");
   build_kanji.lr(420,100)

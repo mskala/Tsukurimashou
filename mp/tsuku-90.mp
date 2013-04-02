@@ -36,6 +36,7 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -154,15 +155,6 @@ vardef kanji.grfour.county =
   build_kanji.lr(580,0)
     (kanji.grthree.junior)
     (kanji.rightrad.beta);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfive.expel =
-  push_pbox_toexpand("kanji.grfive.expel");
-  build_kanji.road_enclose(build_kanji.sscale(yscaled 0.91)
-    (kanji.radical.northeast));
   expand_pbox;
 enddef;
 

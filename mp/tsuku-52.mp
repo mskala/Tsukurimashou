@@ -137,6 +137,14 @@ vardef kanji.grfour.courage =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.first_time =
+  push_pbox_toexpand("kanji.grfour.first_time");
+  build_kanji.level(build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (kanji.grtwo.sword));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.labour =
   push_pbox_toexpand("kanji.grfour.labour");
   build_kanji.tb(740,100)
@@ -345,6 +353,12 @@ begintsuglyph("uni5218",24);
         (kanji.radical.kettle_lid)
         (kanji.radical.cut_the_grass))
      (kanji.rightrad.sword));
+  tsu_render;
+endtsuglyph;
+
+% sho/haji "first time"
+begintsuglyph("uni521D",29);
+  kanji.grfour.first_time;
   tsu_render;
 endtsuglyph;
 

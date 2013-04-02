@@ -115,6 +115,14 @@ vardef kanji.grthree.chapter =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.collect =
+  push_pbox_toexpand("kanji.grthree.collect");
+  build_kanji.tb(340,60)
+    (build_kanji.sscale(shifted (-10,0))(kanji.radical.old_bird))
+    (build_kanji.sscale(shifted (20,0))(kanji.grone.wood));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.column =
   push_pbox_toexpand("kanji.grthree.column");
   build_kanji.level(build_kanji.lr(560,20)
@@ -275,6 +283,14 @@ vardef kanji.grthree.junior =
   push_pbox_toexpand("kanji.grthree.junior");
   kanji.rare.director;
   build_kanji.box((320,240),(810,0));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.learn =
+  push_pbox_toexpand("kanji.grthree.learn");
+  build_kanji.level(build_kanji.tb(400,20)
+    (kanji.grtwo.feather)
+    (tsu_xform(identity shifted (40,0))(kanji.grone.white)));
   expand_pbox;
 enddef;
 

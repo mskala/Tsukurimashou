@@ -829,6 +829,16 @@ vardef kanji.grtwo.straight =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.strong =
+  push_pbox_toexpand("kanji.grtwo.strong");
+  build_kanji.level(build_kanji.lr(410,0)
+    (kanji.grtwo.bow)
+    (build_kanji.tb(600,30)
+     (kanji.radical.mu)
+     (kanji.grone.bug)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.sword =
   push_pbox_toexpand("kanji.grtwo.sword");
   push_stroke((450,710)..(400,400)..(290,120)..(100,-20),

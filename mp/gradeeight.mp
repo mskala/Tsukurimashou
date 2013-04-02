@@ -301,6 +301,14 @@ vardef kanji.greight.prefix_sub =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.prostrate =
+  push_pbox_toexpand("kanji.greight.prostrate");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grone.dog);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.punish =
   push_pbox_toexpand("kanji.greight.punish");
   build_kanji.level(build_kanji.lr(560,10)

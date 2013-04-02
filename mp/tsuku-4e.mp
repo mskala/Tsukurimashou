@@ -130,14 +130,6 @@ vardef kanji.grfive.france =
   expand_pbox;
 enddef;
 
-vardef kanji.grfive.responsibility =
-  push_pbox_toexpand("kanji.grfive.responsibility");
-  build_kanji.lr(300,-10)
-    (kanji.leftrad.person)
-    (tsu_xform(identity yscaled 0.93)(kanji.grnine.ninth));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfive.temporary =
   push_pbox_toexpand("kanji.grfive.temporary");
   build_kanji.lr(300,-10)

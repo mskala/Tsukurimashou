@@ -147,16 +147,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfive.protect =
-  push_pbox_toexpand("kanji.grfive.protect");
-  build_kanji.lr(300,30)
-    (kanji.leftrad.person)
-    (kanji.rare.befuddled);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 vardef kanji.grsix.haiku =
   push_pbox_toexpand("kanji.grsix.haiku");
   build_kanji.lr(300,20)
@@ -244,14 +234,6 @@ vardef kanji.greight.me_macho =
   build_kanji.lr(270,40*(1-mincho))
     (kanji.leftrad.person)
     (kanji.grnine.suffocate);
-  expand_pbox;
-enddef;
-
-vardef kanji.greight.prostrate =
-  push_pbox_toexpand("kanji.greight.prostrate");
-  build_kanji.lr(300,20)
-    (kanji.leftrad.person)
-    (kanji.grone.dog);
   expand_pbox;
 enddef;
 

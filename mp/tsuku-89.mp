@@ -34,10 +34,14 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefive.mp;
+input gradefour.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -79,6 +83,62 @@ vardef kanji.grfive.solve =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% extra: kon/fundoshi "loincloth"
+begintsuglyph("uni890C",12);
+  build_kanji.lr(380,0)
+    (kanji.leftrad.clothes)
+    (kanji.grfour.army);
+  tsu_render;
+endtsuglyph;
+
+% extra: hi/mutsuki "diaper"
+begintsuglyph("uni8913",19);
+  build_kanji.lr(360,-20)
+    (kanji.leftrad.clothes)
+    (kanji.grfive.protect);
+  tsu_render;
+endtsuglyph;
+
+% extra: tai/a "discolour"
+begintsuglyph("uni892A",42);
+  build_kanji.lr(360,-10)
+    (kanji.leftrad.clothes)
+    (kanji.grfive.expel);
+  tsu_render;
+endtsuglyph;
+
+% extra: shou/kasanu "pleats"
+begintsuglyph("uni8936",54);
+  build_kanji.lr(360,0)
+    (kanji.leftrad.clothes)
+    (kanji.grthree.learn);
+  tsu_render;
+endtsuglyph;
+
+% extra: kyou/mutsuki "diaper"
+begintsuglyph("uni8941",65);
+  build_kanji.lr(360,-20)
+    (kanji.leftrad.clothes)
+    (kanji.grtwo.strong);
+  tsu_render;
+endtsuglyph;
+
+% extra: zetsu/maji "blended"
+begintsuglyph("uni894D",77);
+  build_kanji.lr(360,-10)
+    (kanji.leftrad.clothes)
+    (kanji.grthree.collect);
+  tsu_render;
+endtsuglyph;
+
+% extra: shin/hadagi "underwear"
+begintsuglyph("uni896F",111);
+  build_kanji.lr(340,0)
+    (kanji.leftrad.clothes)
+    (kanji.grtwo.parent);
+  tsu_render;
+endtsuglyph;
 
 % sai/nishi "West" or "Spain"
 begintsuglyph("uni897F",127);

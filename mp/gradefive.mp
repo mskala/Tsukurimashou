@@ -1,6 +1,6 @@
 %
 % Grade Five kanji used on more than one page
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -61,6 +61,21 @@ vardef kanji.grfive.conform =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.easy =
+  push_pbox_toexpand("kanji.grfive.easy");
+  build_kanji.tb(480,0)
+    (tsu_xform(identity shifted (30,0))(kanji.grone.day))
+    (kanji.grnine.must_not);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.expel =
+  push_pbox_toexpand("kanji.grfive.expel");
+  build_kanji.road_enclose(build_kanji.sscale(yscaled 0.91)
+    (kanji.radical.northeast));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.intention =
   push_pbox_toexpand("kanji.grfive.intention");
   build_kanji.level(build_kanji.tb(420,10)
@@ -113,6 +128,22 @@ vardef kanji.grfive.phrase =
   push_pbox_toexpand("kanji.grfive.phrase");
   kanji.radical.wrapping;
   build_kanji.box((380,450),(640,250));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.protect =
+  push_pbox_toexpand("kanji.grfive.protect");
+  build_kanji.lr(300,30)
+    (kanji.leftrad.person)
+    (kanji.rare.befuddled);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.responsibility =
+  push_pbox_toexpand("kanji.grfive.responsibility");
+  build_kanji.lr(300,-10)
+    (kanji.leftrad.person)
+    (tsu_xform(identity yscaled 0.93)(kanji.grnine.ninth));
   expand_pbox;
 enddef;
 

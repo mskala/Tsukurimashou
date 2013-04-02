@@ -36,6 +36,7 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -171,14 +172,6 @@ vardef kanji.grfour.yesterday =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfive.easy =
-  push_pbox_toexpand("kanji.grfive.easy");
-  build_kanji.tb(480,0)
-    (tsu_xform(identity shifted (30,0))(kanji.grone.day))
-    (kanji.grnine.must_not);
-  expand_pbox;
-enddef;
 
 vardef kanji.grfive.outrage =
   push_pbox_toexpand("kanji.grfive.outrage");

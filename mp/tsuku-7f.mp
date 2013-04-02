@@ -53,14 +53,6 @@ vardef kanji.grthree.beauty =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.learn =
-  push_pbox_toexpand("kanji.grthree.learn");
-  build_kanji.level(build_kanji.tb(400,20)
-    (kanji.grtwo.feather)
-    (tsu_xform(identity shifted (40,0))(kanji.grone.white)));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.leave_behind =

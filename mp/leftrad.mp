@@ -89,6 +89,15 @@ vardef kanji.leftrad.boat =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.clothes =
+  push_pbox_toexpand("kanji.leftrad.clothes");
+  kanji.leftrad.showing;
+  push_stroke((830,400)..tension 1.2..(750,320)..(650,300),
+    (1.6,1.6)--(1.4,1.4)--(1,1));
+  set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.day =
   push_pbox_toexpand("kanji.leftrad.day");
   tsu_xform(identity shifted (0,-600) yscaled 0.62 shifted (0,600))

@@ -35,10 +35,16 @@ beginfont
 % AUTODEPS
 input bottomrad.mp;
 input buildkanji.mp;
+input gradeeight.mp;
+input gradefive.mp;
+input gradefour.mp;
+input gradenine.mp;
+input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input rightrad.mp;
 input toprad.mp;
 
@@ -92,9 +98,115 @@ begintsuglyph("uni8863",99);
   tsu_render;
 endtsuglyph;
 
+% extra "clothes left radical"
+begintsuglyph("uni8864",100);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    ();
+  tsu_render;
+endtsuglyph;
+
 % hyou/omote "surface"
 begintsuglyph("uni8868",104);
   kanji.grthree.surface;
+  tsu_render;
+endtsuglyph;
+
+% extra: sen "thin kimono"
+begintsuglyph("uni886B",107);
+  build_kanji.lr(450,40)
+    (kanji.leftrad.clothes)
+    (build_kanji.sscale(shifted (0,30))(kanji.rightrad.short_hair));
+  tsu_render;
+endtsuglyph;
+
+% extra: dou/koromo "priestly vestaments"
+begintsuglyph("uni8872",114);
+  build_kanji.lr(450,0)
+    (kanji.leftrad.clothes)
+    (kanji.grtwo.home);
+  tsu_render;
+endtsuglyph;
+
+% extra: jitsu/akume "everyday clothing"
+begintsuglyph("uni8875",117);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (build_kanji.sscale(shifted (0,-20))(kanji.grone.day));
+  tsu_render;
+endtsuglyph;
+
+% extra: jin/kokube "gusset"
+begintsuglyph("uni887D",125);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (build_kanji.sscale(shifted (0,-20))(kanji.grnine.ninth));
+  tsu_render;
+endtsuglyph;
+
+% :kanjivg.eids:<\X887F>[lr]\X8864<\X4ECA>[tb]\X4EBA(anything)
+% grnine.neck
+
+% extra: bei/tamato "sleeve"
+begintsuglyph("uni8882",130);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (kanji.rare.decide);
+  tsu_render;
+endtsuglyph;
+
+% extra: tan/katanu "baring the shoulder"
+begintsuglyph("uni8892",146);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (kanji.greight.daybreak);
+  tsu_render;
+endtsuglyph;
+
+% :kanjivg.eids:<\X8896>[lr]\X8864\X7531
+% greight.sleeve
+
+% extra: han "summer kimono"
+% not quite right - this code is Chinese style, needs slant dir change
+% begintsuglyph("uni88A2",162);
+%   build_kanji.level(build_kanji.lr(450,20)
+%     (kanji.leftrad.clothes)
+%     (kanji.grtwo.half));
+%   tsu_render;
+% endtsuglyph;
+
+% :kanjivg.eids:<\X88AB>[lr]\X8864\X76AE
+% greight.brood_over
+
+% extra: fuku "cloth wrapper"
+begintsuglyph("uni88B1",177);
+  build_kanji.lr(380,-10)
+    (kanji.leftrad.clothes)
+    (kanji.greight.prostrate);
+  tsu_render;
+endtsuglyph;
+
+% extra: jin/kokubi "gusset"
+begintsuglyph("uni88B5",181);
+  build_kanji.lr(380,-10)
+    (kanji.leftrad.clothes)
+    (kanji.grfive.responsibility);
+  tsu_render;
+endtsuglyph;
+
+% extra: kou/awase "lined kimono"
+begintsuglyph("uni88B7",183);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (kanji.grtwo.join);
+  tsu_render;
+endtsuglyph;
+
+% extra: kei/uchiki "Heian Period court clothing"
+begintsuglyph("uni88BF",191);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (kanji.grnine.square_jewel);
   tsu_render;
 endtsuglyph;
 
@@ -103,6 +215,42 @@ begintsuglyph("uni88C2",194);
   kanji.greight.rend;
   tsu_render;
 endtsuglyph;
+
+% extra: yuki "sleeve length"
+begintsuglyph("uni88C4",196);
+  build_kanji.lr(380,-10)
+    (kanji.leftrad.clothes)
+    (kanji.grtwo.go);
+  tsu_render;
+endtsuglyph;
+
+% :kanjivg.eids:<\X88D5>[lr]\X8864<\X8C37>[tb](anything)(anything)
+% greight.abundant
+
+% extra: kun/mosuso "underwear"
+begintsuglyph("uni88D9",217);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (kanji.grthree.junior);
+  tsu_render;
+endtsuglyph;
+
+% :kanjivg.eids:<\X88E1>[lr]\X8864\X91CC
+% grnine.reverse
+
+% :kanjivg.eids:<\X88F8>[lr]\X8864\X679C
+% greight.nude
+
+% extra: seki/hadanu "bear the shoulder"
+begintsuglyph("uni88FC",252);
+  build_kanji.lr(450,20)
+    (kanji.leftrad.clothes)
+    (kanji.grfive.easy);
+  tsu_render;
+endtsuglyph;
+
+% :kanjivg.eids:<\X88FE>[lr]\X8864<\X5C45>[wrapul]\X5C38<\X53E4>[tb]\X5341\X53E3
+% greight.cuff
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
