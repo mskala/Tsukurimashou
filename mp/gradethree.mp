@@ -337,11 +337,10 @@ enddef;
 
 vardef kanji.grthree.nose =
   push_pbox_toexpand("kanji.grthree.nose");
-  build_kanji.tb(440,-40)
+  build_kanji.tcb(440,-40)(140,30)
     (kanji.grtwo.self)
-    (build_kanji.tb(330,50)
-       (kanji.grone.paddy)
-       (kanji.radical.aitch));
+    (kanji.grone.paddy)
+    (kanji.radical.aitch);
   expand_pbox;
 enddef;
 

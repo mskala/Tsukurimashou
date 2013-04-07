@@ -40,6 +40,7 @@ input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -60,6 +61,13 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.boulevard =
+  push_pbox_toexpand("kanji.grfour.boulevard");
+  build_kanji.go_enclose(400,10)
+    (build_kanji.lift_skirt(250,100)(kanji.grnine.square_jewel));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.clothes =
   push_pbox_toexpand("kanji.grfour.clothes");
   build_kanji.level(build_kanji.tb(540,80)
@@ -70,11 +78,29 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.collide =
+  push_pbox_toexpand("kanji.greight.collide");
+  build_kanji.go_enclose(400,10)
+    (kanji.leftrad.heap_big);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.rend =
   push_pbox_toexpand("kanji.greight.rend");
   build_kanji.tb(420,70)
     (kanji.grthree.column)
     (kanji.grfour.clothes);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef build_kanji.go_enclose(expr w,o)(text inside) =
+  push_pbox_toexpand("build_kanji.go_enclose");
+  build_kanji.lcr(480-w/2-20,o)(480+w/2+20,o)
+    (build_kanji.harmonic(240,0.86,50)(kanji.leftrad.person))
+    (inside)
+    (build_kanji.harmonic(240,0.86,50)(kanji.grthree.thumbtack));
   expand_pbox;
 enddef;
 
@@ -89,6 +115,66 @@ endtsuglyph;
 % kou/i(ku) "go"
 begintsuglyph("uni884C",76);
   kanji.grtwo.go;
+  tsu_render;
+endtsuglyph;
+
+% extra: en/amari "overflow"
+begintsuglyph("uni884D",77);
+  build_kanji.go_enclose(400,40)(kanji.leftrad.water);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni884E",78);
+  build_kanji.go_enclose(400,-10)(kanji.grsix.dry);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8855",85);
+  build_kanji.go_enclose(440,-40)(kanji.grtwo.same);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8856",86);
+  build_kanji.go_enclose(420,20)(kanji.grfour.together);
+  tsu_render;
+endtsuglyph;
+
+% gai/machi "boulevard"
+begintsuglyph("uni8857",87);
+  kanji.grfour.boulevard;
+  tsu_render;
+endtsuglyph;
+
+% extra: ga "government office"
+begintsuglyph("uni8859",89);
+  build_kanji.go_enclose(400,20)(kanji.grnine.my);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni885A",90);
+  build_kanji.go_enclose(460,0)(kanji.grnine.barbarian);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni885C",92);
+  build_kanji.go_enclose(400,0)(kanji.grtwo.neck);
+  tsu_render;
+endtsuglyph;
+
+% shou/tsu "collide"
+begintsuglyph("uni885D",93);
+  kanji.greight.collide;
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8860",96);
+  build_kanji.go_enclose(420,20)(kanji.grthree.ingredient);
   tsu_render;
 endtsuglyph;
 
@@ -241,7 +327,7 @@ endtsuglyph;
 % :kanjivg.eids:<\X88F8>[lr]\X8864\X679C
 % greight.nude
 
-% extra: seki/hadanu "bear the shoulder"
+% extra: seki/hadanu "bare the shoulder"
 begintsuglyph("uni88FC",252);
   build_kanji.lr(450,20)
     (kanji.leftrad.clothes)

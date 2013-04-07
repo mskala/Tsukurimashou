@@ -63,9 +63,10 @@ endtsuglyph;
 % extra: alternate "hen"
 begintsuglyph("uni8B8A",138);
   build_kanji.level(build_kanji.tb(360,-30)
-    (build_kanji.sscale(xscaled 0.333 shifted (-300,0))(kanji.grone.thread);
-     build_kanji.sscale(xscaled 0.333)(kanji.grtwo.word);
-     build_kanji.sscale(xscaled 0.333 shifted (300,0))(kanji.grone.thread))
+    (build_kanji.lcr(360,10)(640,10)
+       (kanji.grone.thread)
+       (kanji.grtwo.word)
+       (kanji.grone.thread))
     (kanji.radical.winter));
   tsu_render;
 endtsuglyph;

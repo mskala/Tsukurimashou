@@ -51,9 +51,9 @@ do_late_includes;
 
 vardef kanji.grtwo.face =
   push_pbox_toexpand("kanji.grtwo.face");
-  build_kanji.lr(500,30)
+  build_kanji.level(build_kanji.lr(500,30)
     (kanji.grnine.boy)
-    (kanji.grnine.page);
+    (kanji.grnine.page));
   expand_pbox;
 enddef;
 

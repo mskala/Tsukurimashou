@@ -444,13 +444,11 @@ enddef;
 
 vardef kanji.grtwo.high =
   push_pbox_toexpand("kanji.grtwo.high");
-  build_kanji.level(build_kanji.tb(650,-45)
+  build_kanji.level(build_kanji.tcb(650,-45)(400,-45)
     (kanji.radical.kettle_lid)
-    (build_kanji.tb(550,-67)
-      (build_kanji.sscale(xscaled 0.75)(kanji.grone.mouth))
-      (kanji.radical.gmm;
-       build_kanji.box((350,550),(650,250));
-       )));
+    (build_kanji.sscale(xscaled 0.75)(kanji.grone.mouth))
+    (kanji.radical.gmm;
+     build_kanji.box((350,550),(650,250))));
   expand_pbox;
 enddef;
 
@@ -796,6 +794,15 @@ vardef kanji.grtwo.run =
   push_stroke((500,250)--(820,250),(1.5,1.5)--(1.6,1.6));
   set_boserif(0,1,9);
   kanji.grone_helper.foot;
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.same =
+  push_pbox_toexpand("kanji.grtwo.same");
+  kanji.radical.gmm;
+  push_stroke((310,620)--(690,620),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  build_kanji.box((350,470),(650,170));
   expand_pbox;
 enddef;
 

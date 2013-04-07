@@ -392,6 +392,32 @@ vardef build_kanji.harmonic(expr gap,sval,lspread)(text curves) =
   perl_structure:=perl_structure&"]],";
 enddef;
 
+vardef build_kanji.lcr(expr splitpointa,overlapa)(expr splitpointb,overlapb)
+  (text leftstuff)(text centrestuff)(text rightstuff) =
+  perl_structure:=perl_structure
+    &"['build_kanji.lcr','eids.u2ff2._2.1_1.2_',[";
+  begingroup
+    save t;
+    transform t[];
+    yypart t1=yypart t2=yypart t3=1;
+    ypart t1=yxpart t1=xypart t1=0;
+    ypart t2=yxpart t2=xypart t2=0;
+    ypart t3=yxpart t3=xypart t3=0;
+    (50,0) transformed t1=(50,0);
+    (950,0) transformed t1=(splitpointa+overlapa/2,0);
+    (50,0) transformed t2=(splitpointa-overlapa/2,0);
+    (950,0) transformed t2=(splitpointb+overlapb/2,0);
+    (50,0) transformed t3=(splitpointb-overlapb/2,0);
+    (950,0) transformed t3=(950,0);
+    tsu_xform(t1)(leftstuff);
+    perl_structure:=perl_structure&"],[";
+    tsu_xform(t2)(centrestuff);
+    perl_structure:=perl_structure&"],[";
+    tsu_xform(t3)(rightstuff);
+  endgroup;
+  perl_structure:=perl_structure&"]],";
+enddef;
+
 vardef build_kanji.lean_to(expr lr) =
   push_stroke((120,620)--(880,620),(1.6,1.6)--(1.6,1.6));
   set_boserif(0,1,9);
@@ -437,57 +463,6 @@ vardef build_kanji.level(text curves) =
       i:=i-1;
     endfor;
   endgroup;
-enddef;
-
-% note special calling convention - extra boolean for inclusion of "tick"
-% seen in some Japanese and Korean characters
-vardef build_kanji.long_stride_enclose(expr do_tick)(text contents) =
-  push_pbox_toexpand("build_kanji.long_stride_enclose");
-  perl_structure:=perl_structure&"'eids.u2FFA.u5EF4._3',";
-  begingroup
-    save myxf;
-    transform myxf;
-    (50,850) transformed myxf=(350,810);
-    (50,-50) transformed myxf=(350,80);
-    (950,-50) transformed myxf=(950,80);
-    tsu_xform(myxf)(contents);
-    save x,y;
-    numeric x[],y[];
-    x1=80;
-    x2=260;
-    x4=120;
-    y1=y2=780;
-    y4=460;
-    z3=0.4[z4,z2]+mincho*(30,0);
-    z5=(0.3-0.5*mincho)[z4,z2];
-    push_stroke(z1--z2..tension 1.2..z3..z5,
-      (1.6,1.6)--(1.6,1.6)--(1.6-0.1*mincho,1.6-0.1*mincho)--
-        (1.6-0.2*mincho,1.6-0.2*mincho));
-    set_boserif(0,1,4);
-    set_botip(0,1,0);
-    x7=0;
-    x9=300;
-    x10=220;
-    x11=100;
-    y7=y9=y4;
-    y10=80;
-    y11=-70;
-    z6=point 2.2 of get_strokep(0);
-    z8=(z7--z9) intersectionpoint (get_strokep(0)--((-1)[z4,z2]));
-    push_stroke(z6--z8--z9..tension 1.2..z10..z11,
-      (1.6-0.5*mincho,1.6-0.5*mincho)--(1.5-0.1*mincho,1.5-0.1*mincho)--
-      (1.6,1.6)--(1.4,1.4)--(1,1));
-    set_boserif(0,2,4);
-    set_botip(0,1,1);
-    set_botip(0,2,0);
-    if do_tick:
-      push_stroke((150,330)..(120,290)..(60,220),
-        (1.2,1.2)--(1.1,1.1)--(1.6,1.6));
-    fi;
-    push_stroke((130,300)..(390,30)..tension 1.6..(900,-50),
-      (1,1)--(1.6,1.6)--(1.9,1.9));
-  endgroup;
-  expand_pbox;
 enddef;
 
 vardef build_kanji.lstransform(expr thresh,dist,mypt) =
@@ -540,6 +515,57 @@ vardef build_kanji.lift_skirt(expr thresh,dist)(text curves) =
       set_boserif(boti,1,whatever);
     fi;
   endgroup;
+enddef;
+
+% note special calling convention - extra boolean for inclusion of "tick"
+% seen in some Japanese and Korean characters
+vardef build_kanji.long_stride_enclose(expr do_tick)(text contents) =
+  push_pbox_toexpand("build_kanji.long_stride_enclose");
+  perl_structure:=perl_structure&"'eids.u2FFA.u5EF4._3',";
+  begingroup
+    save myxf;
+    transform myxf;
+    (50,850) transformed myxf=(350,810);
+    (50,-50) transformed myxf=(350,80);
+    (950,-50) transformed myxf=(950,80);
+    tsu_xform(myxf)(contents);
+    save x,y;
+    numeric x[],y[];
+    x1=80;
+    x2=260;
+    x4=120;
+    y1=y2=780;
+    y4=460;
+    z3=0.4[z4,z2]+mincho*(30,0);
+    z5=(0.3-0.5*mincho)[z4,z2];
+    push_stroke(z1--z2..tension 1.2..z3..z5,
+      (1.6,1.6)--(1.6,1.6)--(1.6-0.1*mincho,1.6-0.1*mincho)--
+        (1.6-0.2*mincho,1.6-0.2*mincho));
+    set_boserif(0,1,4);
+    set_botip(0,1,0);
+    x7=0;
+    x9=300;
+    x10=220;
+    x11=100;
+    y7=y9=y4;
+    y10=80;
+    y11=-70;
+    z6=point 2.2 of get_strokep(0);
+    z8=(z7--z9) intersectionpoint (get_strokep(0)--((-1)[z4,z2]));
+    push_stroke(z6--z8--z9..tension 1.2..z10..z11,
+      (1.6-0.5*mincho,1.6-0.5*mincho)--(1.5-0.1*mincho,1.5-0.1*mincho)--
+      (1.6,1.6)--(1.4,1.4)--(1,1));
+    set_boserif(0,2,4);
+    set_botip(0,1,1);
+    set_botip(0,2,0);
+    if do_tick:
+      push_stroke((150,330)..(120,290)..(60,220),
+        (1.2,1.2)--(1.1,1.1)--(1.6,1.6));
+    fi;
+    push_stroke((130,300)..(390,30)..tension 1.6..(900,-50),
+      (1,1)--(1.6,1.6)--(1.9,1.9));
+  endgroup;
+  expand_pbox;
 enddef;
 
 vardef build_kanji.lr(expr splitpoint,overlap)
@@ -691,6 +717,32 @@ vardef build_kanji.tb(expr splitpoint,overlap)
     tsu_xform(t1)(topstuff);
     perl_structure:=perl_structure&"],[";
     tsu_xform(t2)(bottomstuff);
+  endgroup;
+  perl_structure:=perl_structure&"]],";
+enddef;
+
+vardef build_kanji.tcb(expr splitpointa,overlapa)(expr splitpointb,overlapb)
+  (text topstuff)(text centrestuff)(text bottomstuff) =
+  perl_structure:=perl_structure
+    &"['build_kanji.tcb','eids.u2ff3._2.1_1.2_',[";
+  begingroup
+    save t;
+    transform t[];
+    xxpart t1=xxpart t2=xxpart t3=1;
+    xpart t1=xypart t1=yxpart t1=0;
+    xpart t2=xypart t2=yxpart t2=0;
+    xpart t3=xypart t3=yxpart t3=0;
+    (0,850) transformed t1=(0,850);
+    (0,-50) transformed t1=(0,splitpointa-overlapa/2);
+    (0,850) transformed t2=(0,splitpointa+overlapa/2);
+    (0,-50) transformed t2=(0,splitpointb-overlapb/2);
+    (0,850) transformed t3=(0,splitpointb+overlapb/2);
+    (0,-50) transformed t3=(0,-50);
+    tsu_xform(t1)(topstuff);
+    perl_structure:=perl_structure&"],[";
+    tsu_xform(t2)(centrestuff);
+    perl_structure:=perl_structure&"],[";
+    tsu_xform(t3)(bottomstuff);
   endgroup;
   perl_structure:=perl_structure&"]],";
 enddef;

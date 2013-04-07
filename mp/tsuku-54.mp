@@ -51,17 +51,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.same =
-  push_pbox_toexpand("kanji.grtwo.same");
-  kanji.radical.gmm;
-  push_stroke((310,620)--(690,620),(1.6,1.6)--(1.6,1.6));
-  set_boserif(0,1,9);
-  build_kanji.box((350,470),(650,170));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 vardef kanji.grthree.decree =
   push_pbox_toexpand("kanji.grthree.decree");
   build_kanji.level(
