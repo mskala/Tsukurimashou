@@ -96,6 +96,14 @@ vardef kanji.grfour.history =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.poison =
+  push_pbox_toexpand("kanji.grfour.poison");
+  build_kanji.level(build_kanji.tb(430,-20)
+    (kanji.toprad.blue)
+    (kanji.radical.mother_stroked));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ketsu/ka/akubi "fail" or "yawn"
@@ -214,6 +222,12 @@ begintsuglyph("uni6BCF",207);
     (1.5,1.5)--(1.6,1.6));
   set_boserif(0,1,9);
   set_bosize(0,90);
+  tsu_render;
+endtsuglyph;
+
+% doku "poison"
+begintsuglyph("uni6BD2",210);
+  kanji.grfour.poison;
   tsu_render;
 endtsuglyph;
 

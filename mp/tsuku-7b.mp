@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -134,6 +135,14 @@ vardef kanji.grfour.pipe =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.section =
+  push_pbox_toexpand("kanji.grfour.section");
+  build_kanji.level(build_kanji.tb(480,190)
+    (kanji.toprad.bamboo)
+    (kanji.greight.instant));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.code =
@@ -203,6 +212,12 @@ endtsuglyph;
 % sou/hako "box"
 begintsuglyph("uni7BB1",177);
   kanji.grthree.box;
+  tsu_render;
+endtsuglyph;
+
+% setsu/fushi "section"
+begintsuglyph("uni7BC0",192);
+  kanji.grfour.section;
   tsu_render;
 endtsuglyph;
 

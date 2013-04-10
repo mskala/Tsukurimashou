@@ -279,6 +279,12 @@ begintsuglyph("uni5369",105);
   tsu_render;
 endtsuglyph;
 
+% soku/tsu "instant"
+begintsuglyph("uni5373",115);
+  kanji.greight.instant;
+  tsu_render;
+endtsuglyph;
+
 % karigane "cliff radical"
 begintsuglyph("uni5382",130);
   build_kanji.cliff_enclose();

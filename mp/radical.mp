@@ -390,6 +390,23 @@ vardef kanji.radical.northeast =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.alt_northeast =
+  push_pbox_toexpand("kanji.radical.northeast");
+  push_stroke((300,0)--(300,770)--(730,770)--(730,320),
+    (1.5,1.5)--(1.6,1.6)--(1.6,1.6)--(1.5,1.5));
+  set_boserif(0,1,4);
+  set_boserif(0,2,4);
+  set_botip(0,1,1);
+  set_botip(0,2,1);
+  push_stroke((300,570)--(730,570),(1.5,1.5)--(1.5,1.5));
+  push_stroke((300,370)--(730,370),(1.5,1.5)--(1.5,1.5));
+  push_stroke((130,-20)..tension 1.2..(300,0)..(720,80),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  push_stroke((650,170)..tension 1.3..(720,80)..(770,-20),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.old_bird =
   push_pbox_toexpand("kanji.radical.old_bird");
   push_stroke((300,840){curl 0.1}..(200,660)..(60,480),

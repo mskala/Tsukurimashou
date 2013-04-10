@@ -219,6 +219,14 @@ vardef kanji.greight.inflammation =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.instant =
+  push_pbox_toexpand("kanji.greight.instant");
+  build_kanji.level(build_kanji.lr(520,0)
+    (kanji.radical.alt_northeast)
+    (build_kanji.sscale(shifted (0,-28))(kanji.radical.seal)));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.mediate =
   push_pbox_toexpand("kanji.greight.mediate");
   build_kanji.level(

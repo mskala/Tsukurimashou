@@ -58,6 +58,20 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.love =
+  push_pbox_toexpand("kanji.grfour.love");
+  build_kanji.level(build_kanji.tb(430,160)
+    (build_kanji.tb(380,160)
+       (kanji.toprad.paw)
+       (kanji.radical.conservative_hat))
+    (build_kanji.tb(460,-40)
+       (build_kanji.sscale(xscaled 0.8)(kanji.bottomrad.heart))
+       (kanji.radical.winter)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.manner =
   push_pbox_toexpand("kanji.grfive.manner");
   build_kanji.level(build_kanji.tb(230,0)
@@ -90,6 +104,12 @@ begintsuglyph("uni6115",21);
   build_kanji.level(build_kanji.lr(320,50)
     (kanji.leftrad.heart)
     (kanji.rare.outspokenly));
+  tsu_render;
+endtsuglyph;
+
+% ai/ito "romantic love"
+begintsuglyph("uni611B",27);
+  kanji.grfour.love;
   tsu_render;
 endtsuglyph;
 
