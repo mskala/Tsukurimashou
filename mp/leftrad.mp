@@ -256,6 +256,14 @@ vardef kanji.leftrad.person =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.request =
+  push_pbox_toexpand("kanji.leftrad.request");
+  kanji.grfour.request;
+  replace_strokep(-2)(oldp shifted (-750,-400) scaled 0.5 shifted (760,470));
+  replace_strokep(-3)((610,370)..tension 1.2..(730,270)..(850,110));
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.sentence =
   push_pbox_toexpand("kanji.leftrad.sentence");
   build_kanji.level(build_kanji.tb(580,30)

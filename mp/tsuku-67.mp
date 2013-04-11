@@ -129,6 +129,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.sheet =
+  push_pbox_toexpand("kanji.grsix.sheet");
+  build_kanji.lr(480,110)
+    (kanji.leftrad.wood)
+    (build_kanji.sscale(yscaled 0.96)(kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.die_in_obscurity =
   push_pbox_toexpand("kanji.greight.die_in_obscurity");
   build_kanji.lr(480,40)
@@ -265,6 +275,12 @@ endtsuglyph;
 % rin/hayashi "grove"
 begintsuglyph("uni6797",151);
   kanji.grone.grove;
+  tsu_render;
+endtsuglyph;
+
+% mai "sheet" (counter for thin flat things)
+begintsuglyph("uni679A",154);
+  kanji.grsix.sheet;
   tsu_render;
 endtsuglyph;
 

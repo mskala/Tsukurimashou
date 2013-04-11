@@ -129,7 +129,58 @@ vardef kanji.grfour.failure =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.rescue =
+  push_pbox_toexpand("kanji.grfour.rescue");
+  build_kanji.level(build_kanji.lr(480,0)
+    (kanji.leftrad.request)
+    (kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.revision =
+  push_pbox_toexpand("kanji.grfour.revision");
+  build_kanji.level(build_kanji.lr(480,0)
+    (kanji.grsix.self)
+    (kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.former =
+  push_pbox_toexpand("kanji.grfive.former");
+  build_kanji.level(build_kanji.lr(480,20)
+    (kanji.grtwo.old)
+    (kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.politics =
+  push_pbox_toexpand("kanji.grfive.politics");
+  build_kanji.level(build_kanji.lr(480,40)
+    (build_kanji.sscale(shifted (0,-30))(build_kanji.lift_skirt(500,200)
+       (kanji.grone.correct)))
+    (kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.greight.agile =
+  push_pbox_toexpand("kanji.greight.agile");
+  build_kanji.level(build_kanji.lr(520,60)
+    (kanji.grtwo.every)
+    (kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.attack =
+  push_pbox_toexpand("kanji.greight.attack");
+  build_kanji.level(build_kanji.lr(420,80)
+    (build_kanji.lift_skirt(400,250)(kanji.grtwo.craft))
+    (kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
 
 vardef kanji.greight.decapitate =
   push_pbox_toexpand("kanji.greight.decapitate");
@@ -161,6 +212,7 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 % shi/sasa "support"
 begintsuglyph("uni652F",47);
   kanji.grfive.support;
@@ -173,9 +225,45 @@ begintsuglyph("uni6535",53);
   tsu_render;
 endtsuglyph;
 
+% kai/arata "revision"
+begintsuglyph("uni6539",57);
+  kanji.grfour.revision;
+  tsu_render;
+endtsuglyph;
+
+% kou/se attack
+begintsuglyph("uni653B",59);
+  kanji.greight.attack;
+  tsu_render;
+endtsuglyph;
+
 % hou/hana "release"
 begintsuglyph("uni653E",62);
   kanji.grthree.release;
+  tsu_render;
+endtsuglyph;
+
+% sei/matsurigoto politics
+begintsuglyph("uni653F",63);
+  kanji.grfive.politics;
+  tsu_render;
+endtsuglyph;
+
+% ko/yue "former"
+begintsuglyph("uni6545",69);
+  kanji.grfive.former;
+  tsu_render;
+endtsuglyph;
+
+% bin/satoi "agile"
+begintsuglyph("uni654F",79);
+  kanji.greight.agile;
+  tsu_render;
+endtsuglyph;
+
+% kyuu/suku "rescue"
+begintsuglyph("uni6551",81);
+  kanji.grfour.rescue;
   tsu_render;
 endtsuglyph;
 
@@ -206,6 +294,14 @@ endtsuglyph;
 % suu/kazu "number"
 begintsuglyph("uni6570",112);
   kanji.grtwo.number;
+  tsu_render;
+endtsuglyph;
+
+% extra: kou/tata "beat or hit"
+begintsuglyph("uni6572",114);
+  build_kanji.level(build_kanji.lr(520,0)
+    (kanji.grtwo.high)
+    (kanji.radical.folding_chair));
   tsu_render;
 endtsuglyph;
 

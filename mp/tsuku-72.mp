@@ -1,6 +1,6 @@
 %
 % Unicode page 72 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -49,6 +49,16 @@ vardef kanji.grthree.thing =
   build_kanji.lr(420,80)
     (kanji.leftrad.cow)
     (kanji.grnine.must_not);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.pasture =
+  push_pbox_toexpand("kanji.grfour.pasture");
+  build_kanji.lr(420,80)
+    (kanji.leftrad.cow)
+    (build_kanji.sscale(shifted (0,-30))(kanji.radical.folding_chair));
   expand_pbox;
 enddef;
 
@@ -134,6 +144,12 @@ endtsuglyph;
 % bo/osu "male (animal)"
 begintsuglyph("uni7261",97);
   kanji.grnine.male;
+  tsu_render;
+endtsuglyph;
+
+% boku/maki "pasture"
+begintsuglyph("uni7267",103);
+  kanji.grfour.pasture;
   tsu_render;
 endtsuglyph;
 
