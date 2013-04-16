@@ -42,6 +42,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -104,6 +105,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.battle =
+  push_pbox_toexpand("kanji.grfour.battle");
+  build_kanji.level(build_kanji.lr(520,100)
+    (build_kanji.sscale(yscaled 0.94 shifted (0,-30))(kanji.grfour.single))
+    (kanji.radical.tasselled_spear));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.fold =
   push_pbox_toexpand("kanji.grfour.fold");
   build_kanji.level(build_kanji.lr(420,20)
@@ -158,6 +167,28 @@ vardef kanji.grsix.spread =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.radical.tasselled_spear =
+  push_pbox_toexpand("kanji.radical.tasselled_spear");
+  kanji.radical.ceremony;
+  push_stroke((780,410)..tension 1.2..(620,190)..(170,-40),
+    (1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ka/hoko "tasselled spear radical"
+begintsuglyph("uni6208",8);
+  kanji.radical.tasselled_spear;
+  tsu_render;
+endtsuglyph;
+
+%sen/ikusa "battle"
+begintsuglyph("uni6226",38);
+  kanji.grfour.battle;
+  tsu_render;
+endtsuglyph;
 
 % ko/to "door"
 begintsuglyph("uni6238",56);

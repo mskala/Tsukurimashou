@@ -1,0 +1,110 @@
+Lang: en
+Lang[ja]: ja
+Long-Lang: en-CA
+Long-Lang[ja]: ja
+Filename: index
+Other-Lang: ja
+Other-Lang[ja]: en
+Other-Lang-Title: 日本語のページ
+Other-Lang-Title[ja]: English version
+Other-Lang-Flag: flag-jp.png
+Other-Lang-Flag[ja]: flag-en.png
+
+########################################################################
+
+Title: Tsukurimashou Project
+Title[ja]: 作りましょうプロジェクト
+Subtitle: Parametric font family
+Subtitle[ja]: パラメタほうしきフォントファミリ
+
+Nav-Bar.
+        <a href="./index.html.$v{lang}">Project Home</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/devel/">Developer Dashboard</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/releases/">Downloads</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/images">Screenshots</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/scm/">SVN</a> |
+        <a href="https://github.com/mskala/Tsukurimashou">Github</a> |
+        <a href="https://www.ohloh.net/p/tsukurimashou">Ohloh</a>
+.
+Nav-Bar[ja].
+        <a href="./index.html.$v{lang}">プロジェクトホーム</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/devel/">開発ダッシュボード</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/releases/">ダウンロード</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/images">スクショ</a> |
+        <a href="http://sourceforge.jp/projects/tsukurimashou/scm/">ＳＶＮ</a> |
+        <a href="https://github.com/mskala/Tsukurimashou">Ｇｉｔｈｕｂ</a> |
+        <a href="https://www.ohloh.net/p/tsukurimashou">Ｏｈｌｏｈ</a>
+.
+LATE-EVAL $v{nav_bar}=~s/\$v\{lang\}/$v{lang}/g;
+
+########################################################################
+
+Main-Text.
+<P>FIXME</P>
+
+<P>Sorry, this page isn't written yet.</P>
+.
+
+Right-Side.
+<p align="center"><a
+href="$this_pkg_link" title="$this_pkg_head"><img src="dlicon.png"><br>
+Download $this_pkg_head</a></p>
+<p class="newsDate" align="center">$this_pkg_date</p>
+.
+LATE-EVAL $v{right_side}=~s/\$this_pkg_link/$this_pkg_link/g;
+LATE-EVAL $v{right_side}=~s/\$this_pkg_head/$this_pkg_head/g;
+LATE-EVAL $v{right_side}=~s/\$this_pkg_date/$this_pkg_date/g;
+
+########################################################################
+
+Bottom-One:
+Bottom-Two:
+Bottom-Three:
+Bottom-Four.
+          <h1>Links</h1>
+<ul>
+<li><a href="http://ansuz.sooke.bc.ca/">mskala's home page</a></li>
+<li><a href="http://kanjivg.tagaini.net/">KanjiVG</a></li>
+<li><a href="http://www.chise.org/">CHISE</a></li>
+<li><a href="http://www.csse.monash.edu.au/~jwb/edict.html">EDICT</a></li>
+</ul>
+
+<p><a href="http://sourceforge.jp/"><img
+src="http://sourceforge.jp/sflogo.php?group_id=5643&type=2" width="125"
+height="39" border="0" alt="SourceForge.JP"></a></p>
+.
+Bottom-Four[ja].
+          <h1>リンク</h1>
+<ul>
+<li><a href="http://ansuz.sooke.bc.ca/">mskalaのページ</a></li>
+<li><a href="http://kanjivg.tagaini.net/">KanjiVG</a></li>
+<li><a href="http://www.chise.org/">CHISE</a></li>
+<li><a href="http://www.csse.monash.edu.au/~jwb/edict.html">EDICT</a></li>
+</ul>
+
+<p><a href="http://sourceforge.jp/"><img
+src="http://sourceforge.jp/sflogo.php?group_id=5643&type=2" width="125"
+height="39" border="0" alt="SourceForge.JP"></a></p>
+.
+
+########################################################################
+
+Footer.
+      <span class="doNotPrint">
+        For comments or questions about this website, please send email to
+        <a href="mailto:mskala@ansuz.sooke.bc.ca">Matthew Skala</a><br />
+      </span>
+
+      <strong>URI</strong> http://tsukurimashou.sourceforge.jp/$URI
+      &bull; <strong>Updated</strong> $update_time
+.
+Footer[ja].
+      <span class="doNotPrint">
+        このページの問題で<a href="mailto:mskala@ansuz.sooke.bc.ca">Matthew Skala</a>に連絡してください<br />
+      </span>
+
+      <strong>ＵＲＩ</strong> http://tsukurimashou.sourceforge.jp/$URI
+      &bull; <strong>修正</strong> $update_time
+.
+EVAL $v{footer}=~s/\$update_time/$update_time/;
+LATE-EVAL $v{footer}=~s/\$URI/($v{filename} eq 'index')?'':$v{filename}.'.html'/e;

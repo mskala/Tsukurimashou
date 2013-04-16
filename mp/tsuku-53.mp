@@ -255,6 +255,12 @@ begintsuglyph("uni5357",87);
   tsu_render;
 endtsuglyph;
 
+% tan/hitoe "single"
+begintsuglyph("uni5358",88);
+  kanji.grfour.single;
+  tsu_render;
+endtsuglyph;
+
 % haku "professional"
 begintsuglyph("uni535A",90);
   kanji.grfour.professional;

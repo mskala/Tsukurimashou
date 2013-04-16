@@ -1,9 +1,16 @@
 all: \
+  rmreleases \
   ul/.htaccess \
   ul/index.html.en ul/index.html.ja \
+  ul/beikaitoru.html.en ul/beikaitoru.html.ja \
+  ul/genjimon.html.en ul/genjimon.html.ja \
+  ul/idsgrep.html.en ul/idsgrep.html.ja \
+  ul/kleknev.html.en ul/kleknev.html.ja \
+  ul/ocr.html.en ul/ocr.html.ja \
   ul/prosimii-print.css ul/prosimii-screen.css \
   ul/demo200.png ul/flag-jp.png ul/flag-en.png ul/rss.png \
-  ul/rg00.png ul/rglyph.php
+  ul/rg00.png ul/rglyph.php \
+  ul/dlicon.png
 
 ul/.htaccess: dot-htaccess
 	mkdir -p ul
@@ -12,20 +19,36 @@ ul/.htaccess: dot-htaccess
 ul/rglyph.php: ul/.htaccess rglyph.php
 	cp rglyph.php ul/rglyph.php
 
-ul/index.html.en ul/index.html.ja: \
-  ul/.htaccess mkindex ../doc/kanjichart.tex
+rmreleases:
+	rm -f releases.rss release-dump.txt
+
+.PHONY: rmreleases
+
+releases.rss:
 	lynx -source \
 	  'http://sourceforge.jp/projects/tsukurimashou/releases/rss' \
 	  > releases.rss
+
+release-dump.txt:
 	lynx -dump \
 	  'http://sourceforge.jp/projects/tsukurimashou/releases/' \
 	  > release-dump.txt
-	perl -CDS ./mkindex
+	lynx -dump \
+	  'http://sourceforge.jp/projects/tsukurimashou/releases/?package_id=13300' \
+	  >> release-dump.txt
 
-ul/%.png: %.png url/.htaccess
+ul/%.html.en: ul/.htaccess mkindex ../doc/kanjichart.tex \
+  releases.rss release-dump.txt default.dat %.dat
+	perl -CDS ./mkindex en default.dat $*.dat > $@
+
+ul/%.html.ja: ul/.htaccess mkindex ../doc/kanjichart.tex \
+  releases.rss release-dump.txt default.dat %.dat
+	perl -CDS ./mkindex ja default.dat $*.dat > $@
+
+ul/%.png: %.png ul/.htaccess
 	cp $< $@
 
-ul/%.css: %.css url/.htaccess
+ul/%.css: %.css ul/.htaccess
 	cp $< $@
 
 ul/prosimii-print.css: prosimii-print.css

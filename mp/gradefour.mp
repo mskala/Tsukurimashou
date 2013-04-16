@@ -359,6 +359,15 @@ vardef kanji.grfour.revelation =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.single =
+  push_pbox_toexpand("kanji.grfour.single");
+  build_kanji.level(build_kanji.tb(720,100)
+    (kanji.toprad.alt_sparkle_three)
+    (build_kanji.sscale(shifted (0,-30))(kanji.grtwo.neighbourhood);
+     pop_stroke));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.together =
   push_pbox_toexpand("kanji.grfour.together");
   build_kanji.level(build_kanji.tb(290,46)

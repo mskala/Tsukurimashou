@@ -1,0 +1,16 @@
+Filename: kleknev
+Title: Kleknev
+Subtitle: A coarse-grained profiler for build systems, from the Tsukurimashou Project
+Main-Text.
+<P>Kleknev is a software development tool for measuring resource consumption 
+during operations like software builds, which may span thousands of process
+invocations and hours of real time in a multiprocessor environment.  It is
+currently experimental, incomplete, and available only by checkout from the
+Tsukurimashou Project's source control system.<P>
+
+<P>Kleknev includes a wrapper which Make can invoke in place of the
+Bourne shell, and a reporting program which examines the wrapper's log file
+to discover how resources were used during the build.  See
+<A HREF="http://ansuz.sooke.bc.ca/entry/260">this Web log posting</A> for a
+more detailed description.</P>
+.

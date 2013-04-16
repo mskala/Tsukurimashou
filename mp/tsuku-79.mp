@@ -1,6 +1,6 @@
 %
 % Unicode page 79 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -43,6 +44,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -133,6 +135,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.zen_buddhism =
+  push_pbox_toexpand("kanji.greight.zen_buddhism");
+  build_kanji.lr(450,40-20*mincho)
+    (kanji.leftrad.showing)
+    (kanji.grfour.single);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ji/shime "show" (also older radical form)
 begintsuglyph("uni793A",58);
   kanji.grfive.showing;
@@ -172,6 +184,12 @@ endtsuglyph;
 % sei/matsuri "festival"
 begintsuglyph("uni796D",109);
   kanji.grthree.festival;
+  tsu_render;
+endtsuglyph;
+
+% zen/shizuka "Zen Buddhism"
+begintsuglyph("uni7985",133);
+  kanji.greight.zen_buddhism;
   tsu_render;
 endtsuglyph;
 

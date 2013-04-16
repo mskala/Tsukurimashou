@@ -1,0 +1,81 @@
+EVAL $v{nav_bar}=~s/Project Home/Home/;
+EVAL $v{nav_bar}=~s/プロジェクト/ホーム/;
+Main-Text[en].
+<h1>Let's make something!</h1>
+
+<p>Tsukurimashou is a font meta-family, covering multiple styles, for
+Japanese, English, and Korean, made with METAFONT and released under the GPL
+v3 with embedding exception.  At present, we have full coverage of hiragana,
+katakana, hangul, and Latin.  There is also partial coverage of grade-school
+kanji.</P>
+
+<p>This project also includes IDSgrep, a tool for querying kanji databases
+by partial layout, like a more advanced version of the popular "radical
+search." IDSgrep comes with code to generate dictionaries from
+Tsukurimashou, CHISE IDS, EDICT2, and KanjiVG.</p>
+
+<p>Documentation is primarily in English.</p>
+.
+Main-Text[ja].
+<h1>作りましょう！</h1>
+
+<p>『作りましょう』は、Ｍｅｔａｆｏｎｔで作った日本語と英語と韓国語のパラメタほうしきフォントファミリです。カバレッジはぜんぶのひらがなとカタカナとハングルとＬａｔｉｎです。第２年の教育漢字も半の第３年の教育漢字も含まれます。予定は、ぜんぶの常用漢字です。スタイルは明朝とゴシックと外です。</p>
+
+<p>その上、ＩＤＳｇｒｅｐあります。漢字の探すツールです。『作りましょう』や『ＫａｎｊｉＶＧ』や『ＥＤＩＣＴ２』から辞典の抽出ができます。</p>
+
+<p>とりあえず文書化は英語で書いてあります。</p>
+.
+
+Right-Side.
+          <h1><a href="http://sourceforge.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> Latest Releases</h1>
+$release_news
+.
+Right-Side[ja].
+          <h1><a href="http://sourceforge.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> 新しいリリース</h1>
+$release_news
+.
+LATE-EVAL $v{right_side}=~s/\$release_news/$release_news/;
+
+########################################################################
+
+Bottom-One.
+          <h1>Sample</h2>
+          <p><img src="demo200.png" alt="Demonstration of Tsukurimashou fonts" /></p>
+
+          <div class="more"><a href="$demourl">PDF demo &raquo;</a></div>
+.
+Bottom-One[ja].
+          <h1>見本</h2>
+          <p><img src="demo200.png" alt="フォントの見本" /></p>
+
+          <div class="more"><a href="$demourl">PDF demo &raquo;</a></div>
+.
+LATE-EVAL $v{bottom_one}=~s/\$demourl/$demourl/;
+
+########################################################################
+
+Bottom-Two.
+          <h1>Random</h1>
+          <p><img src="rglyph.php" alt="Random glyph"></p>
+.
+Bottom-Two[ja].
+          <h1>ランダムな字</h1>
+          <p><img src="rglyph.php" alt="Random glyph"></p>
+.
+
+########################################################################
+
+Bottom-Three.
+          <h1>Kanji Coverage</h1>
+          $kcstat_en
+
+          <div class="more"><a href="$kcurl">PDF chart &raquo;</a></div>
+.
+Bottom-Three[ja].
+          <h1>漢字のカバレッジ</h1>
+          $kcstat_ja
+
+          <div class="more"><a href="$kcurl">PDF chart &raquo;</a></div>
+.
+LATE-EVAL $v{bottom_three}=~s/\$kcstat_en/$kcstat_en/;
+LATE-EVAL $v{bottom_three}=~s/\$kcstat_ja/$kcstat_ja/;

@@ -218,6 +218,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.fling =
+  push_pbox_toexpand("kanji.greight.fling");
+  build_kanji.level(build_kanji.lr(400,50)
+    (kanji.grtwo.bow)
+    (kanji.grfour.single));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.funeral =
   push_pbox_toexpand("kanji.greight.funeral");
   kanji.grtwo.bow;
@@ -352,6 +360,12 @@ endtsuglyph;
 % kyou/tsuyo "strong"
 begintsuglyph("uni5F37",55);
   kanji.grtwo.strong;
+  tsu_render;
+endtsuglyph;
+
+% dan/hi multiple meanings including "fling" and "strum"
+begintsuglyph("uni5F3E",62);
+  kanji.greight.fling;
   tsu_render;
 endtsuglyph;
 

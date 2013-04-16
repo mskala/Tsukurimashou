@@ -209,6 +209,14 @@ begintsuglyph("uni7BA1",161);
   tsu_render;
 endtsuglyph;
 
+% extra: tan/hako "bamboo rice bucket"
+begintsuglyph("uni7BAA",170);
+  build_kanji.level(build_kanji.tb(540,140)
+    (kanji.toprad.bamboo)
+    (kanji.grfour.single));
+  tsu_render;
+endtsuglyph;
+
 % sou/hako "box"
 begintsuglyph("uni7BB1",177);
   kanji.grthree.box;

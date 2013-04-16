@@ -1,9 +1,43 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -CDS
 
 use utf8;
 
 $update_time=`date`;
 
+$style=shift;
+$late_eval='';
+
+while (<>) {
+  chomp;
+  if (/^([a-z0-9\-_]+)(\[.*?\])?:\s*(.*)$/i) {
+    $key=lc($1);
+    $style_pat=$2;
+    $value=$3;
+    $key=~s/-/_/g;
+    if (($style_pat eq '') || ($style=~/$style_pat/)) {
+      $v{$key}=$value;
+    }
+  } elsif (/^([a-z0-9\-_]+)(\[.*?\])?\.\s*$/i) {
+    $key=lc($1);
+    $style_pat=$2;
+    $key=~s/-/_/g;
+    $value='';
+    while (<>) {
+      last if $_ eq ".\n";
+      s/^\.//;
+      $value.=$_;
+    }
+    if (($style_pat eq '') || ($style=~/$style_pat/)) {
+      $v{$key}=$value;
+    }
+  } elsif (/^EVAL\s*(.*)$/) {
+    eval $1;
+  } elsif (/^LATE-EVAL\s*(.*)$/) {
+    $late_eval.=$1;
+  }
+}
+
+$this_pkg_link='';
 open(REL,'releases.rss');
 $release_news='';
 while (<REL>) {
@@ -15,14 +49,26 @@ while (<REL>) {
 <a href="$link" class="newsHeading">$heading</a>
 <p class="newsDate">$date</p>
 EOF
+    $vf=$v{filename};
+    if (($heading=~/$vf/i) ||
+        (($this_pkg_link eq '') && ($heading=~/complete package/i))) {
+      $heading=~s/Parasite font packages - //;
+      $tpl_pat="($link\\S+)";
+      $tpl_pat=~s/releases/downloads/;
+      $this_pkg_head=$heading;
+      $this_pkg_date=$date;
+    }
   }
 }
 close(REL);
+
+$this_pkg_link='';
 
 open(REL,'release-dump.txt');
 while (<REL>) {
   $demourl=$1 if m!(http://sourceforge\S+demo.pdf/)!;
   $kcurl=$1 if m!(http://sourceforge\S+kanjichart.pdf/)!;
+  $this_pkg_link=$1 if m!$tpl_pat! && ($this_pkg_link eq '');
 }
 close(REL);
 
@@ -45,13 +91,13 @@ $kcstat_en.="<tr><td>Other</td><td>$otherkanji</td></tr>\n</table>\n";
 $kcstat_ja.="<tr><td>外の漢字</td><td>$otherkanji</td></tr>\n</table>\n";
 close(KC);
 
-open(EN,'>ul/index.html.en');
+eval $late_eval;
 
-print EN <<EOF;
+print <<EOF;
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-CA">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="$v{lang}" lang="$v{long_lang}">
   <head>
     <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
     <meta name="author" content="mskala@ansuz.sooke.bc.ca" />
@@ -60,7 +106,7 @@ print EN <<EOF;
     <link rel="stylesheet alternative" type="text/css" href="./prosimii-print.css" media="screen" title="Print Preview" />
     <link rel="stylesheet" type="text/css" href="./prosimii-print.css" media="print" />
 
-    <title>Tsukurimashou Font Family and IDSgrep</title>
+    <title>$v{title}</title>
   </head>
 
   <body>
@@ -72,13 +118,13 @@ print EN <<EOF;
     <div id="header">
       <div class="superHeader">
         <a href="http://sourceforge.jp/" title="Hosted by SourceForge.JP">SourceForge.JP</a> |
-        <a href="./index.html.ja" title="日本語のページ"><img src="flag-jp.png" />&nbsp;日本語のページ</a>
+        <a href="./$v{filename}.html.$v{other_lang}" title="$v{other_lang_title}"><img src="$v{other_lang_flag}" />&nbsp;$v{other_lang_title}</a>
       </div>
 
       <div class="midHeader">
-        <h1 class="headerTitle">Tsukurimashou and IDSgrep</h1>
+        <h1 class="headerTitle">$v{title}</h1>
         <div class="headerSubTitle">
-          Parametric Font Family and Structural Kanji Search
+          $v{subtitle}
         </div>
 
         <br class="doNotDisplay doNotPrint" />
@@ -87,13 +133,7 @@ print EN <<EOF;
 
       <div class="subHeader">
         <span class="doNotDisplay">Navigation:</span>
-        <a href="./index.html">Home</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/devel/">Developer Dashboard</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/releases/">Downloads</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/images">Screenshots</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/scm/">SVN</a> |
-        <a href="https://github.com/mskala/Tsukurimashou">Github</a> |
-        <a href="https://www.ohloh.net/p/tsukurimashou">Ohloh</a>
+$v{nav_bar}
       </div>
     </div>
 
@@ -102,68 +142,32 @@ print EN <<EOF;
     <div id="main-copy">
       <div class="rowOfBoxes">
         <div class="twoThirds noBorderOnLeft">
-<h1>Let's make something!</h1>
-
-<p>Tsukurimashou is a font meta-family, covering multiple styles, for
-Japanese, English, and Korean, made with METAFONT and released under the GPL
-v3 with embedding exception.  At present, we have full coverage of hiragana,
-katakana, hangul, and Latin.  There is also partial coverage of grade-school
-kanji.</P>
-
-<p>This project also includes IDSgrep, a tool for querying kanji databases
-by partial layout, like a more advanced version of the popular "radical
-search." IDSgrep comes with code to generate dictionaries from
-Tsukurimashou, CHISE IDS, EDICT2, and KanjiVG.</p>
-
-<p>Documentation is primarily in English.</p>
-
+$v{main_text}
         </div>
 
         <div class="oneThird">
-          <h1><a href="http://sourceforge.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> Latest Releases</h1>
-
-$release_news
-
+$v{right_side}
           <p class="filler"><!-- Filler para to extend left vertical line --></p>
         </div>
       </div>
 
       <div class="rowOfBoxes dividingBorderAbove">
         <div class="quarter noBorderOnLeft">
-          <h1>Sample</h2>
-          <p><img src="demo200.png" alt="Demonstration of Tsukurimashou fonts" /></p>
-
-          <div class="more"><a href="$demourl">PDF demo &raquo;</a></div>
+$v{bottom_one}
         </div>
 
         <div class="quarter">
-          <h1>Random</h1>
-          <p><img src="rglyph.php" alt="Random glyph"></p>
+$v{bottom_two}
           <p class="filler"><!-- Filler para to extend left vertical line --></p>
         </div>
 
         <div class="quarter">
-          <h1>Kanji Coverage</h1>
-          $kcstat_en
-
-          <div class="more"><a href="$kcurl">PDF chart &raquo;</a></div>
-
+$v{bottom_three}
           <p class="filler"><!-- Filler para to extend left vertical line --></p>
         </div>
 
         <div class="quarter">
-          <h1>Links</h1>
-<ul>
-<li><a href="http://ansuz.sooke.bc.ca/">mskala's home page</a></li>
-<li><a href="http://kanjivg.tagaini.net/">KanjiVG</a></li>
-<li><a href="http://www.chise.org/">CHISE</a></li>
-<li><a href="http://www.csse.monash.edu.au/~jwb/edict.html">EDICT</a></li>
-</ul>
-
-<p><a href="http://sourceforge.jp/"><img
-src="http://sourceforge.jp/sflogo.php?group_id=5643&type=2" width="125"
-height="39" border="0" alt="SourceForge.JP"></a></p>
-
+$v{bottom_four}
           <p class="filler"><!-- Filler para to extend left vertical line --></p>
         </div>
       </div>
@@ -172,149 +176,8 @@ height="39" border="0" alt="SourceForge.JP"></a></p>
     <!-- ##### Footer ##### -->
 
     <div id="footer">
-      <span class="doNotPrint">
-        For comments or questions about this website, please send email to
-        <a href="mailto:mskala@ansuz.sooke.bc.ca">Matthew Skala</a><br />
-      </span>
-
-      <strong>URI</strong> http://tsukurimashou.sourceforge.jp/
-      &bull; <strong>Updated</strong> $update_time
+$v{footer}
     </div>
   </body>
 </html>
 EOF
-
-close(EN);
-
-open(JP,'>ul/index.html.ja');
-
-print JP <<EOF;
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
-  <head>
-    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
-    <meta name="author" content="mskala@ansuz.sooke.bc.ca" />
-
-    <link rel="stylesheet" type="text/css" href="./prosimii-screen.css" media="screen, tv, projection" title="Default" />
-    <link rel="stylesheet alternative" type="text/css" href="./prosimii-print.css" media="screen" title="Print Preview" />
-    <link rel="stylesheet" type="text/css" href="./prosimii-print.css" media="print" />
-
-    <title>『作りましょう』と『ＩＤＳｇｒｅｐ』</title>
-  </head>
-
-  <body>
-    <!-- For non-visual user agents: -->
-      <div id="top"><a href="#main-copy" class="doNotDisplay doNotPrint">Skip to main content.</a></div>
-
-    <!-- ##### Header ##### -->
-
-    <div id="header">
-      <div class="superHeader">
-        <a href="http://sourceforge.jp/" title="Hosted by SourceForge.JP">SourceForge.JP</a> |
-        <a href="./index.html.en" title="English version"><img src="flag-en.png" />&nbsp;English version</a>
-      </div>
-
-      <div class="midHeader">
-        <h1 class="headerTitle">『作りましょう』と『ＩＤＳｇｒｅｐ』</h1>
-        <div class="headerSubTitle">
-          パラメタほうしきフォントファミリと漢字の立体構造の検索
-        </div>
-
-        <br class="doNotDisplay doNotPrint" />
-
-      </div>
-
-      <div class="subHeader">
-        <span class="doNotDisplay">Navigation:</span>
-        <a href="./index.html">Home</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/devel/">開発ダッシュボード</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/releases/">ダウンロード</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/images">スクショ</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/scm/">ＳＶＮ</a> |
-        <a href="https://github.com/mskala/Tsukurimashou">Ｇｉｔｈｕｂ</a> |
-        <a href="https://www.ohloh.net/p/tsukurimashou">Ｏｈｌｏｈ</a>
-      </div>
-    </div>
-
-    <!-- ##### Main Copy ##### -->
-
-    <div id="main-copy">
-      <div class="rowOfBoxes">
-        <div class="twoThirds noBorderOnLeft">
-<h1>作りましょう！</h1>
-
-<p>『作りましょう』は、Ｍｅｔａｆｏｎｔで作った日本語と英語と韓国語のパラメタほうしきフォントファミリです。カバレッジはぜんぶのひらがなとカタカナとハングルとＬａｔｉｎです。第２年の教育漢字も半の第３年の教育漢字も含まれます。予定は、ぜんぶの常用漢字です。スタイルは明朝とゴシックと外です。</p>
-
-<p>その上、ＩＤＳｇｒｅｐあります。漢字の探すツールです。『作りましょう』や『ＫａｎｊｉＶＧ』や『ＥＤＩＣＴ２』から辞典の抽出ができます。</p>
-
-<p>とりあえず文書化は英語で書いてあります。</p>
-
-        </div>
-
-        <div class="oneThird">
-          <h1><a href="http://sourceforge.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> 新しいリリース</h1>
-
-$release_news
-
-          <p class="filler"><!-- Filler para to extend left vertical line --></p>
-        </div>
-      </div>
-
-      <div class="rowOfBoxes dividingBorderAbove">
-        <div class="quarter noBorderOnLeft">
-          <h1>見本</h2>
-          <p><img src="demo200.png" alt="フォントの見本" /></p>
-
-          <div class="more"><a href="$demourl">PDF demo &raquo;</a></div>
-        </div>
-
-        <div class="quarter">
-          <h1>ランダムな字</h1>
-          <p><img src="rglyph.php" alt="Random glyph"></p>
-          <p class="filler"><!-- Filler para to extend left vertical line --></p>
-        </div>
-
-        <div class="quarter">
-          <h1>漢字のカバレッジ</h1>
-          $kcstat_ja
-
-          <div class="more"><a href="$kcurl">PDF chart &raquo;</a></div>
-
-          <p class="filler"><!-- Filler para to extend left vertical line --></p>
-        </div>
-
-        <div class="quarter">
-          <h1>リンク</h1>
-<ul>
-<li><a href="http://ansuz.sooke.bc.ca/">mskalaのページ</a></li>
-<li><a href="http://kanjivg.tagaini.net/">KanjiVG</a></li>
-<li><a href="http://www.chise.org/">CHISE</a></li>
-<li><a href="http://www.csse.monash.edu.au/~jwb/edict.html">EDICT</a></li>
-</ul>
-
-<p><a href="http://sourceforge.jp/"><img
-src="http://sourceforge.jp/sflogo.php?group_id=5643&type=2" width="125"
-height="39" border="0" alt="SourceForge.JP"></a></p>
-
-          <p class="filler"><!-- Filler para to extend left vertical line --></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ##### Footer ##### -->
-
-    <div id="footer">
-      <span class="doNotPrint">
-        このページの問題で<a href="mailto:mskala@ansuz.sooke.bc.ca">Matthew Skala</a>に連絡してください<br />
-      </span>
-
-      <strong>ＵＲＩ</strong> http://tsukurimashou.sourceforge.jp/
-      &bull; <strong>修正</strong> $update_time
-    </div>
-  </body>
-</html>
-EOF
-
-close(JP);

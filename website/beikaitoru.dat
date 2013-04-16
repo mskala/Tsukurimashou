@@ -1,0 +1,26 @@
+Filename: beikaitoru
+Title: Beikaitoru
+Subtitle: An OpenType Hershey revival from the Tsukurimashou Project
+Main-Text.
+<P>In 1967, Allen V. Hershey of the U.S. Naval Weapons Laboratory in
+Dahlgren, Virginia published a set published a set of fonts for use with
+computer-controlled plotters.  At that time, very few digital fonts were
+available at all, and even fewer were freely usable.  The Hershey fonts,
+being public domain because of their origin as work produced by a U.S.
+Federal Government employee in the course of his duties, quickly because
+popular.  They were eventually distributed by the U.S. National Bureau of
+Standards (which is sometimes incorrectly credited as the origin of the
+fonts), then disseminated on Usenet and in many other ways.</P>
+
+<P>The plotters for which the Hershey fonts were originally designed are now
+long since obsolete.  The distinctive appearance of these fonts, which
+results from the constraints of those plotters, is quite different from the
+look of modern digital typography.  But because the Hershey fonts were (and
+to some extent still are) so widely used, they have a nostalgic familiarity
+for many present-day computer users.  They evoke early CAD systems,
+low-budget GIS, and Turbo Pascal BGI drivers.  The Beikaitoru package is a
+present-day (2010s) revival of the Hershey fonts with current technology,
+based as nearly as possible on the original source material and including
+many special features omitted from other versions, most notably a set of
+Japanese-language characters.</P>
+.

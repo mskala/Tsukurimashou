@@ -1,0 +1,16 @@
+Filename: idsgrep
+Title: IDSgrep
+Title[ja]: ＩＤＳｇｒｅｐ
+Subtitle: Structural kanji search from the Tsukurimashou Project
+Subtitle[ja]: 『作りましょうプロジェクト』から漢字の立体構造の検索
+Main-Text.
+<P>IDSgrep is a general tree-matching utility whose main application is to
+querying databases of Han-script character structures.  For instance, a user
+might ask for all characters with 月 on the right, and get a result
+including the characters 明, 朝, and 期.  IDSgrep supports a powerful
+language for specifying structural queries, inspired by traditional Unix
+regular expression syntax; the structural data itself is represented in an
+extended version of Unicode Ideographic Description Sequences.  The
+package includes, or can generate, dictionary data from Tsukurimashou,
+KanjiVG, CHISE, and EDICT2.</P>
+.
