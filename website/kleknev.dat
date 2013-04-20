@@ -1,6 +1,8 @@
 Filename: kleknev
 Title: Kleknev
+Title[ja]: クレックネヴ
 Subtitle: A coarse-grained profiler for build systems, from the Tsukurimashou Project
+Subtitle[ja]: 作りましょうプロジェクトからビルドのプロファイラー
 Main-Text.
 <P>Kleknev is a software development tool for measuring resource consumption 
 during operations like software builds, which may span thousands of process
@@ -13,4 +15,7 @@ Bourne shell, and a reporting program which examines the wrapper's log file
 to discover how resources were used during the build.  See
 <A HREF="http://ansuz.sooke.bc.ca/entry/260">this Web log posting</A> for a
 more detailed description.</P>
+.
+Main-Text[ja].
+<P>クレックネヴは、作りましょうプロジェクトからビルドのプロファイラーです。いかがわしいです。もっとインフォメーションので<A HREF="http://ansuz.sooke.bc.ca/entry/260">このブローグ（英語）</A>を読んで下さい。</P>
 .

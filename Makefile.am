@@ -918,13 +918,13 @@ makefile-pdf.inc: makefile-vars.inc \
 	$(AM_V_at)for doc in proofs $(MAINTAINER_DOCS); do \
 	  FDEPS=`$(doc_font_script) $(mvp)/doc/$$doc.tex` ; \
 	  echo doc/$$doc.xdv doc/$$doc.toc doc/$$doc.aux: \
-	    $$FDEPS >> makefile-pdf.inc ; \
+	    $(mvp)/doc/$$doc.tex $$FDEPS >> makefile-pdf.inc ; \
 	  echo >> makefile-pdf.inc ; \
 	  echo doc/$$doc.pdf: $$FDEPS >> makefile-pdf.inc ; \
 	  echo >> makefile-pdf.inc ; \
 	done
 	$(AM_V_at)FDEPS=`$(doc_font_script) $(mvp)/doc/demo.tex` ; \
-	echo doc/demo.xdv doc/demo.toc doc/demo.aux: \
+	echo doc/demo.xdv doc/demo.toc doc/demo.aux: $(mvp)/doc/demo.tex \
 	  '$$('call filter_demo_deps,$$FDEPS')' >> makefile-pdf.inc ; \
 	echo >> makefile-pdf.inc ; \
 	echo doc/demo.pdf: '$$('call filter_demo_deps,$$FDEPS')' \
@@ -932,6 +932,7 @@ makefile-pdf.inc: makefile-vars.inc \
 	echo >> makefile-pdf.inc
 	$(AM_V_at)FDEPS=`$(doc_font_script) $(mvp)/doc/usermanual.tex` ; \
 	echo doc/usermanual.xdv doc/usermanual.toc doc/usermanual.aux: \
+	  $(mvp)/doc/usermanual.tex \
 	  '$$('call filter_demo_deps,$$FDEPS')' >> makefile-pdf.inc ; \
 	echo >> makefile-pdf.inc ; \
 	echo doc/usermanual.pdf: '$$('call filter_demo_deps,$$FDEPS')' \

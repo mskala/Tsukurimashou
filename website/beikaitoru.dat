@@ -1,9 +1,11 @@
 Filename: beikaitoru
 Title: Beikaitoru
+Title[ja]: ベイカイトル
 Subtitle: An OpenType Hershey revival from the Tsukurimashou Project
+Subtitle[ja]: 作りましょうプロジェクトからハーシー・フォントの復活
 Main-Text.
 <P>In 1967, Allen V. Hershey of the U.S. Naval Weapons Laboratory in
-Dahlgren, Virginia published a set published a set of fonts for use with
+Dahlgren, Virginia published a set of fonts for use with
 computer-controlled plotters.  At that time, very few digital fonts were
 available at all, and even fewer were freely usable.  The Hershey fonts,
 being public domain because of their origin as work produced by a U.S.
@@ -23,4 +25,7 @@ present-day (2010s) revival of the Hershey fonts with current technology,
 based as nearly as possible on the original source material and including
 many special features omitted from other versions, most notably a set of
 Japanese-language characters.</P>
+.
+Main-Text[ja].
+<P>１９６７年からAllen V. Hersheyのフォントは古典的です。『ベイカイトル』が現代の復活です。</P>
 .

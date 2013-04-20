@@ -9,21 +9,34 @@ v3 with embedding exception.  At present, we have full coverage of hiragana,
 katakana, hangul, and Latin.  There is also partial coverage of grade-school
 kanji.</P>
 
-<p>This project also includes IDSgrep, a tool for querying kanji databases
-by partial layout, like a more advanced version of the popular "radical
-search." IDSgrep comes with code to generate dictionaries from
-Tsukurimashou, CHISE IDS, EDICT2, and KanjiVG.</p>
-
 <p>Documentation is primarily in English.</p>
+
+<P>The Tsukurimashou Project also includes several sub-projects; see their
+individual pages for more information.</P>
+
+<UL>
+<LI><A HREF="idsgrep.html.en">IDSgrep</A> - structural kanji search
+<LI><A HREF="ocr.html.en">OCR A and OCR B</A> - optical character recognition fonts
+<LI><A HREF="genjimon.html.en">Genjimon</A> - a symbol font
+<LI><A HREF="beikaitoru.html.en">Beikaitoru</A> - an OpenType Hershey revival
+<LI><A HREF="kleknev.html.en">Kleknev</A> - a coarse-grained profiler for build systems
+</UL>
 .
 Main-Text[ja].
 <h1>作りましょう！</h1>
 
-<p>『作りましょう』は、Ｍｅｔａｆｏｎｔで作った日本語と英語と韓国語のパラメタほうしきフォントファミリです。カバレッジはぜんぶのひらがなとカタカナとハングルとＬａｔｉｎです。第２年の教育漢字も半の第３年の教育漢字も含まれます。予定は、ぜんぶの常用漢字です。スタイルは明朝とゴシックと外です。</p>
-
-<p>その上、ＩＤＳｇｒｅｐあります。漢字の探すツールです。『作りましょう』や『ＫａｎｊｉＶＧ』や『ＥＤＩＣＴ２』から辞典の抽出ができます。</p>
+<p>『作りましょう』は、Ｍｅｔａｆｏｎｔで作った日本語と英語と韓国語のパラメタほうしきフォントファミリです。カバレッジはぜんぶのひらがなとカタカナとハングルとＬａｔｉｎです。第３年の教育漢字も半の第４年の教育漢字も含まれます。予定は、ぜんぶの常用漢字です。スタイルは明朝とゴシックと外です。</p>
 
 <p>とりあえず文書化は英語で書いてあります。</p>
+
+<P>その上、プロジェクトの中では色々な副プロジェクトがあります。リンクを読んでください：</P>
+<UL>
+<LI><A HREF="idsgrep.html.ja">『ＩＤＳｇｒｅｐ』</A>漢字の立体構造の検索
+<LI><A HREF="ocr.html.ja">『ＯＣＲ　ＡとＯＣＲ　Ｂ』</A>フリーな光学文字認識のフォント
+<LI><A HREF="genjimon.html.ja">『源氏紋』</A>シンボルのフォント
+<LI><A HREF="beikaitoru.html.ja">『ベイカイトル』</A>ハーシー・フォントの復活
+<LI><A HREF="kleknev.html.ja">『クレックネヴ』</A>ビルドのプロファイラー
+</UL>
 .
 
 Right-Side.

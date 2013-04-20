@@ -1,8 +1,22 @@
 Filename: ocr
 Title: OCR A and OCR B
+Title[ja]: ＯＣＲ　ＡとＯＣＲ　Ｂ
 Subtitle: Free optical character recognition fonts from the Tsukurimashou Project
+Subtitle[ja]: 作りましょうプロジェクトからフリーな光学文字認識のフォント
 Main-Text.
 <P>This package contains freely-usable fonts for the OCR A and OCR B
-typefaces, which are useful among other purposes for typesetting standard
-UPC/EAN and ISBN bar code labels.</P>
+typefaces.  OCR-A is the font used for the ISBNs on books; and OCR-B is used
+for the human-readable digits on UPC/EAN bar codes.  A book with a standard
+bar code label uses both.</P>
+
+<P>I translated existing Metafont sources to MetaType1 to create the
+enhanced TrueType, PostScript, and OpenType versions included in this
+package.  They are available for free use, including in commercial
+applications; my own contributions are public domain, and others have
+licensed their copyright claims.</P>
+.
+Main-Text[ja].
+<P>ＯＣＲ−ＡはＩＳＢＮの数字のフォントです。ＯＣＲ−Ｂは、ＵＰＣ／ＥＡＮバーコードの人間みたい数字のフォントです。</P
+
+<P>状態：修めた。第２版。ＯＣＲ−Ａは版権でもフリーウェア。ＯＣＲ−Ｂはフリーウェア。ＯＴＦとＴＴＦとＰｏｓｔＳｃｒｉｐｔとＭｅｔａＴｙｐｅ１（ソースコード）．ＯＣＲ−ＡはTor Lillqvistは作りました。１９８９年にRichard B. Walesは更新しました。ＯＣＲ−Ｂは１９８６〜２０１０年にNorbert Schwarzは作りました。ＯＣＲ−ＡとＯＣＲ−Ｂは、２０１１年に私がＭｅｔａＴｙｐｅ１に訳しました。</P>
 .

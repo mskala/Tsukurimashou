@@ -14,3 +14,6 @@ extended version of Unicode Ideographic Description Sequences.  The
 package includes, or can generate, dictionary data from Tsukurimashou,
 KanjiVG, CHISE, and EDICT2.</P>
 .
+Main-Text[ja].
+<P>ＩＤＳｇｒｅｐは漢字のデータベースの中で検索のツールです。漢字の立体構造の検索ができます。たとえば、ユーザは「右側に『月』がある」と言えば、成果が「『明』と『朝』と『期』」です。</P>
+.
