@@ -211,6 +211,18 @@ vardef kanji.greight.guy =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.head_of_household =
+  push_pbox_toexpand("kanji.greight.head_of_household");
+  build_kanji.level(build_kanji.tb(650,-45)
+    (kanji.radical.kettle_lid)
+    (build_kanji.tb(550,0)
+       (build_kanji.sscale(xscaled 0.75)(kanji.grone.mouth))
+       (build_kanji.tb(450,90)
+          (build_kanji.sscale(yscaled 1.1)(kanji.radical.conservative_hat))
+          (build_kanji.sscale(xscaled 0.75)(kanji.grthree.thumbtack)))));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.inflammation =
   push_pbox_toexpand("kanji.greight.inflammation");
   build_kanji.level(build_kanji.tb(420,50)

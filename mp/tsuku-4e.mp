@@ -493,6 +493,13 @@ begintsuglyph("uni4EAC",172);
   tsu_render;
 endtsuglyph;
 
+% tei "head of household"
+begintsuglyph("uni4EAD",173);
+  kanji.greight.head_of_household;
+  tsu_render;
+endtsuglyph;
+
+
 % extra "capital"
 begintsuglyph("uni4EB0",176);
   build_kanji.level(build_kanji.tb(650,-40)

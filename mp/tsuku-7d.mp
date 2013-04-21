@@ -145,6 +145,14 @@ vardef kanji.grfour.journal =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.salary =
+  push_pbox_toexpand("kanji.grfour.salary");
+  build_kanji.lr(450,10)
+    (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
+    (kanji.grtwo.join);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.tie =
   push_pbox_toexpand("kanji.grfour.tie");
   build_kanji.lr(420,20)
@@ -210,6 +218,12 @@ endtsuglyph;
 % ketsu/musu "tie"
 begintsuglyph("uni7D50",80);
   kanji.grfour.tie;
+  tsu_render;
+endtsuglyph;
+
+% kyuu/tama "salary"
+begintsuglyph("uni7D66",102);
+  kanji.grfour.salary;
   tsu_render;
 endtsuglyph;
 

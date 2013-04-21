@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefive.mp;
 input gradefour.mp;
 input gradeone.mp;
@@ -66,6 +67,14 @@ vardef kanji.grfour.borrow =
   build_kanji.lr(320,20)
     (kanji.leftrad.person)
     (kanji.grthree.once_upon_a_time);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.halt =
+  push_pbox_toexpand("kanji.grfour.halt");
+  build_kanji.lr(280,0)
+    (kanji.leftrad.person)
+    (kanji.greight.head_of_household);
   expand_pbox;
 enddef;
 
@@ -138,6 +147,12 @@ begintsuglyph("uni5058",88);
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.grthree.goods);
+  tsu_render;
+endtsuglyph;
+
+% tei/to "halt"
+begintsuglyph("uni505C",92);
+  kanji.grfour.halt;
   tsu_render;
 endtsuglyph;
 

@@ -111,6 +111,17 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.give_birth =
+  push_pbox_toexpand("kanji.grfour.give_birth");
+  build_kanji.level(build_kanji.tb(520,80)
+    (kanji.toprad.stand_up;pop_stroke)
+    (build_kanji.cliff_enclose(build_kanji.sscale(shifted (-40,0))
+       (kanji.grone.life))));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef build_kanji.sickness_enclose(text contents) =
   push_pbox_toexpand("build_kanji.sickness_enclose");
   perl_structure:=perl_structure&"'eids.u2FF8.u7592.2_',";
@@ -147,6 +158,12 @@ endtsuglyph;
 % sei/ki "life"
 begintsuglyph("uni751F",31);
   kanji.grone.life;
+  tsu_render;
+endtsuglyph;
+
+% san/u "give birth"
+begintsuglyph("uni7523",35);
+  kanji.grfour.give_birth;
   tsu_render;
 endtsuglyph;
 

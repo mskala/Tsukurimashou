@@ -36,6 +36,7 @@ beginfont
 input buildkanji.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
@@ -59,6 +60,15 @@ vardef kanji.grfour.pasture =
   build_kanji.lr(420,80)
     (kanji.leftrad.cow)
     (build_kanji.sscale(shifted (0,-30))(kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
+
+% "singular" because METAFONT reserves "special"
+vardef kanji.grfour.singular =
+  push_pbox_toexpand("kanji.grfour.singular");
+  build_kanji.lr(420,-10)
+    (kanji.leftrad.cow)
+    (kanji.grtwo.temple);
   expand_pbox;
 enddef;
 
@@ -164,6 +174,12 @@ begintsuglyph("uni726A",106);
   build_kanji.lr(450,20)
     (kanji.leftrad.cow)
     (kanji.grtwo.cow);
+  tsu_render;
+endtsuglyph;
+
+% toku "special"
+begintsuglyph("uni7279",121);
+  kanji.grfour.singular;
   tsu_render;
 endtsuglyph;
 

@@ -127,6 +127,19 @@ vardef kanji.grfour.tip =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.utmost =
+  push_pbox_toexpand("kanji.grfour.utmost");
+  build_kanji.tb(500,-20)
+    (build_kanji.sscale(xscaled 0.9)(kanji.grone.day))
+    (build_kanji.lr(470,40)
+       (kanji.grone.ear)
+       (tsu_xform(identity yscaled 0.74 shifted (0,-40))
+          (kanji.greight.otoh));
+     replace_strokep(-7)
+       (point 0 of oldp--(point 0 of oldp xscaled -1 shifted (1000,0))));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.sheet =
@@ -157,6 +170,12 @@ vardef kanji.greight.sake_cup =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% sai/motto "utmost"
+begintsuglyph("uni6700",0);
+  kanji.grfour.utmost;
+  tsu_render;
+endtsuglyph;
 
 % tsuki/getsu "moon"
 begintsuglyph("uni6708",8);
