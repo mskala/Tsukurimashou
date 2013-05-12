@@ -94,6 +94,15 @@ vardef kanji.grfour.side =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.warehouse =
+  push_pbox_toexpand("kanji.grfour.warehouse");
+  build_kanji.level(build_kanji.tb(400,320)
+    (kanji.radical.tent)
+    (build_kanji.sscale(xscaled 0.84)(kanji.radical.moon_flag);
+     build_kanji.box((320,210),(810,-10))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.work =
   push_pbox_toexpand("kanji.grfour.work");
   build_kanji.lr(260,0)
@@ -123,6 +132,12 @@ vardef kanji.greight.manservant =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% sou/kura "warehouse"
+begintsuglyph("uni5009",9);
+  kanji.grfour.warehouse;
+  tsu_render;
+endtsuglyph;
 
 % ko "individual" or "counter for things"
 begintsuglyph("uni500B",11);

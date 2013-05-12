@@ -300,6 +300,26 @@ vardef kanji.radical.long_kimono =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.moon_flag =
+  push_pbox_toexpand("kanji.radical.moon_flag");
+  push_stroke((800,300)--(800,730)--(200,730){down}..(160,200)..(30,-50),
+    (1.5,1.5)--(1.6,1.6)--(1.6,1.6)--(1.3,1.3)--(0.9,0.9));
+  set_botip(0,1,1);
+  set_botip(0,2,1);
+  set_boserif(0,1,4);
+  set_boserif(0,2,4);
+  set_bosize(0,93);
+  push_stroke((((0,550)--(1000,550))
+      intersectionpoint reverse get_strokep(0))--(800,550),
+    (1.5,1.5)--(1.5,1.5));
+  set_bosize(0,94);
+  push_stroke((((0,350)--(1000,350))
+      intersectionpoint reverse get_strokep(-1))--(800,350),
+    (1.5,1.5)--(1.5,1.5));
+  set_bosize(0,97);
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.mother =
   push_pbox_toexpand("kanji.radical.mother");
   push_stroke(

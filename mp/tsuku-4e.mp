@@ -104,11 +104,41 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.as =
+  push_pbox_toexpand("kanji.grfour.as");
+  push_stroke((200,780)--(200,40),(1.6,1.6)--(1.4,1.4));
+  set_boserif(0,0,10);
+  push_stroke((100,0)..tension 1.2..(200,40)..(560,300),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  push_stroke((850,800)..tension 1.2..(780,250)
+      ..(680,70)..(400,-80),
+    (1.6,1.6)--(1.55,1.55)--(1.5,1.5)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((420,720)..tension 1.3..(550,620)..(620,520),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  push_stroke((point 1.3 of get_strokep(-1))..tension 1.3
+      ..(860,110)..(920,0),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  replace_strokep(0)(oldp shifted (0,-40));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.go_between =
   push_pbox_toexpand("kanji.grfour.go_between");
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.grone.middle);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.orders =
+  push_pbox_toexpand("kanji.grfour.orders");
+  kanji.radical.tent;
+  push_stroke((200,280)--(780,280),(1.6,1.6)--(1.6,1.6));
+  build_kanji.add_jtail(0);
+  set_botip(0,1,1);
+  replace_strokep(0)(oldp shifted (0,30));
+  push_stroke((470,310)--(470,-70),(1.6,1.6)--(1.5,1.5));  
   expand_pbox;
 enddef;
 
@@ -606,6 +636,18 @@ endtsuglyph;
 % dai/kawa "generation"
 begintsuglyph("uni4EE3",227);
   kanji.grthree.generation;
+  tsu_render;
+endtsuglyph;
+
+% rei "orders" (but usually part of honorific titles for family members)
+begintsuglyph("uni4EE4",228);
+  kanji.grfour.orders;
+  tsu_render;
+endtsuglyph;
+
+% i/mo(tsu) "because" or "with regard to"
+begintsuglyph("uni4EE5",229);
+  kanji.grfour.as;
   tsu_render;
 endtsuglyph;
 
