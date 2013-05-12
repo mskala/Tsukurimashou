@@ -131,17 +131,6 @@ vardef kanji.grfour.go_between =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.orders =
-  push_pbox_toexpand("kanji.grfour.orders");
-  kanji.radical.tent;
-  push_stroke((200,280)--(780,280),(1.6,1.6)--(1.6,1.6));
-  build_kanji.add_jtail(0);
-  set_botip(0,1,1);
-  replace_strokep(0)(oldp shifted (0,30));
-  push_stroke((470,310)--(470,-70),(1.6,1.6)--(1.5,1.5));  
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.affair =
@@ -332,6 +321,12 @@ endtsuglyph;
 % sei/sou "world"
 begintsuglyph("uni4E16",22);
   kanji.grthree.world;
+  tsu_render;
+endtsuglyph;
+
+% kyuu/oka "hill"
+begintsuglyph("uni4E18",24);
+  kanji.greight.knoll;
   tsu_render;
 endtsuglyph;
 

@@ -51,19 +51,6 @@ vardef kanji.greight.acrid =
   expand_pbox;
 enddef;
 
-vardef kanji.greight.axe =
-  push_pbox_toexpand("kanji.greight.axe");
-  push_stroke((770,810)..tension 1.2..(550,740)..(250,700),
-    (1.8,1.8)--(1.5,1.5)--(1,1));
-  push_stroke((250,730){down}..(160,180)..(50,30),
-    (1.6,1.6)--(1.3,1.3)--(1,1));
-  set_boserif(0,0,10);
-  push_stroke((250,500)--(870,500),(1.6,1.6)--(1.6,1.6)); 
-  set_boserif(0,1,9);
-  push_stroke((570,500)--(570,-20),(1.6,1.6)--(1.5,1.5));
-  expand_pbox;
-enddef;
-
 vardef kanji.greight.boat =
   push_pbox_toexpand("kanji.greight.boat");
   kanji.leftrad.boat;
@@ -236,6 +223,21 @@ vardef kanji.greight.instant =
   build_kanji.level(build_kanji.lr(520,0)
     (kanji.radical.alt_northeast)
     (build_kanji.sscale(shifted (0,-28))(kanji.radical.seal)));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.knoll =
+  push_pbox_toexpand("kanji.greight.knoll");
+  push_stroke((770,810)..tension 1.2..(580,740)..(300,700),
+    (1.8,1.8)--(1.5,1.5)--(1,1));
+  push_stroke((300,730)--(300,20),
+    (1.6,1.6)--(1.4,1.4));
+  set_boserif(0,0,10);
+  push_stroke((300,400)--(860,400),(1.6,1.6)--(1.6,1.6)); 
+  set_boserif(0,1,9);
+  push_stroke((590,400)--(590,20),(1.6,1.6)--(1.5,1.5));
+  push_stroke((120,20)--(880,20),(1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
   expand_pbox;
 enddef;
 

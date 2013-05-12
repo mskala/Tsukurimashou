@@ -104,6 +104,36 @@ vardef kanji.grfour.child =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.chill =
+  push_pbox_toexpand("kanji.grfour.chill");
+  build_kanji.lr(360,20)
+    (kanji.leftrad.ice)
+    (build_kanji.sscale(shifted (0,20))(kanji.grfour.orders));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.hundred_million =
+  push_pbox_toexpand("kanji.grfour.healthy");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.person)
+    (kanji.grthree.intention);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.portent =
+  push_pbox_toexpand("kanji.grfour.portent");
+  build_kanji.spread_legs(-110)(kanji.radical.legs);
+  push_stroke((100,660)..tension 1.2..(200,570)..(250,500),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  push_stroke((330,390)..(210,300)..tension 1.2..(70,240),
+    (1.2,1.2)--(1.6,1.6)--(1.9,1.9));
+  push_stroke((860,670)..(810,570)..tension 1.2..(720,500),
+    (1.2,1.2)--(1.6,1.6)--(1.9,1.9));
+  push_stroke((630,410)..tension 1.2..(750,340)..(850,240),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.rule =
   push_pbox_toexpand("kanji.grfour.rule");
   build_kanji.level(build_kanji.tb(180,0)
@@ -117,11 +147,11 @@ vardef kanji.grfour.rule =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.hundred_million =
-  push_pbox_toexpand("kanji.grfour.healthy");
-  build_kanji.lr(300,0)
-    (kanji.leftrad.person)
-    (kanji.grthree.intention);
+vardef kanji.grfour.soldier =
+  push_pbox_toexpand("kanji.grfour.soldier");
+  build_kanji.level(build_kanji.tb(200,0)
+    (kanji.greight.knoll)
+    (kanji.radical.eight));
   expand_pbox;
 enddef;
 
@@ -186,6 +216,12 @@ begintsuglyph("uni5145",69);
   tsu_render;
 endtsuglyph;
 
+% chou/kiza "portent" or "trillion"
+begintsuglyph("uni5146",70);
+  kanji.grfour.portent;
+  tsu_render;
+endtsuglyph;
+
 % sen "ahead"
 begintsuglyph("uni5148",72);
   kanji.grone.ahead;
@@ -246,6 +282,12 @@ begintsuglyph("uni5171",113);
   tsu_render;
 endtsuglyph;
 
+% hei/tsuwamono "soldier"
+begintsuglyph("uni5175",117);
+  kanji.grfour.soldier;
+  tsu_render;
+endtsuglyph;
+
 % ki/so "that" (as in sore and sono)
 begintsuglyph("uni5176",118);
   kanji.grnine.that;
@@ -303,6 +345,12 @@ endtsuglyph;
 % tou/fuyu "winter"
 begintsuglyph("uni51AC",172);
   kanji.grtwo.winter;
+  tsu_render;
+endtsuglyph;
+
+% rei/tsume "chill"
+begintsuglyph("uni51B7",183);
+  kanji.grfour.chill;
   tsu_render;
 endtsuglyph;
 
