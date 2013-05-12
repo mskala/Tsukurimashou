@@ -51,6 +51,19 @@ vardef kanji.greight.acrid =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.axe =
+  push_pbox_toexpand("kanji.greight.axe");
+  push_stroke((770,810)..tension 1.2..(550,740)..(250,700),
+    (1.8,1.8)--(1.5,1.5)--(1,1));
+  push_stroke((250,730){down}..(160,180)..(50,30),
+    (1.6,1.6)--(1.3,1.3)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((250,500)--(870,500),(1.6,1.6)--(1.6,1.6)); 
+  set_boserif(0,1,9);
+  push_stroke((570,500)--(570,-20),(1.6,1.6)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.boat =
   push_pbox_toexpand("kanji.greight.boat");
   kanji.leftrad.boat;
