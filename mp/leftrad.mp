@@ -32,6 +32,17 @@ inclusion_lock(leftrad);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.leftrad.alt_person =
+  push_pbox_toexpand("kanji.leftrad.alt_person");
+  push_stroke((510,780)..(450,400)..(300,100)..(20,-90),
+    (1.6,1.6)--(1.5,1.5)--(1.3,1.3)--(0.85,0.85));
+  set_boserif(0,0,10);
+  push_stroke(
+    (point 0.8 of get_strokep(0))..tension 1.2..(640,340)..(860,40),
+    (1.2,1.2)--(1.4,1.4)--(1.6,1.6));
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.bare_bone =
   push_pbox_toexpand("kanji.leftrad.bare_bone");
   push_stroke((120,790)--(880,790),(1.6,1.6)--(1.6,1.6));

@@ -100,6 +100,14 @@ vardef kanji.greight.demolish =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.dice =
+  push_pbox_toexpand("kanji.greight.dice");
+  build_kanji.level(build_kanji.tb(540,40)
+    (kanji.toprad.paw)
+    (kanji.grone.wood));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.dipper =
   push_pbox_toexpand("kanji.greight.dipper");
   push_stroke((600,810)--(600,-70),(1.6,1.6)--(1.5,1.5));

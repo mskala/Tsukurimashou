@@ -1,6 +1,6 @@
 %
 % Unicode page 83 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefive.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -80,6 +81,16 @@ vardef kanji.grthree.baggage =
   build_kanji.tb(640,0)
     (kanji.toprad.grass)
     (kanji.grtwo.what);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.vegetable =
+  push_pbox_toexpand("kanji.grfour.vegetable");
+  build_kanji.tb(640,-20)
+    (kanji.toprad.grass)
+    (kanji.greight.dice);
   expand_pbox;
 enddef;
 
@@ -162,6 +173,12 @@ endtsuglyph;
 % hoku/wazurawashii "no meaning given, but needed to build 'boku'"
 begintsuglyph("uni83D0",208);
   kanji.rare.eight_three_dee_zero;
+  tsu_render;
+endtsuglyph;
+
+% sai/na "vegetable"
+begintsuglyph("uni83DC",220);
+  kanji.grfour.vegetable;
   tsu_render;
 endtsuglyph;
 

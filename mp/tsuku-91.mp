@@ -95,14 +95,6 @@ vardef kanji.greight.bartending =
   expand_pbox;
 enddef;
 
-vardef kanji.greight.dice =
-  push_pbox_toexpand("kanji.greight.dice");
-  build_kanji.level(build_kanji.tb(540,40)
-    (kanji.toprad.paw)
-    (kanji.grone.wood));
-  expand_pbox;
-enddef;
-
 vardef kanji.greight.shochu =
   push_pbox_toexpand("kanji.greight.shochu");
   build_kanji.lr(520,10)
