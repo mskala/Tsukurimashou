@@ -137,6 +137,17 @@ vardef kanji.grfour.courage =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.distinction =
+  push_pbox_toexpand("kanji.grfour.distinction");
+  build_kanji.level(build_kanji.lr(560,0)
+    (build_kanji.tb(440,120)
+       (build_kanji.sscale(scaled 0.9)(kanji.grone.mouth))
+       (kanji.grtwo_helper.myriad;
+        set_boserif(-1,0,whatever)))
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.first_time =
   push_pbox_toexpand("kanji.grfour.first_time");
   build_kanji.level(build_kanji.lr(450,20)
@@ -365,6 +376,12 @@ endtsuglyph;
 % han/kawa "judge"
 begintsuglyph("uni5224",36);
   kanji.grfive.judge;
+  tsu_render;
+endtsuglyph;
+
+% betsu/waka "distinction"
+begintsuglyph("uni5225",37);
+  kanji.grfour.distinction;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 56 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -67,6 +68,26 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.enclosure =
+  push_pbox_toexpand("kanji.grfour.enclosure");
+  kanji.radical.box;
+  build_kanji.sscale(scaled 0.77 shifted (0,50))(kanji.greight.well);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.utensil =
+  push_pbox_toexpand("kanji.grfour.utensil");
+  build_kanji.sscale(yscaled 0.44)
+    (build_kanji.spread_legs(140)(kanji.grone.big));
+  build_kanji.box((160,790),(430,590));
+  build_kanji.box((570,790),(840,590));
+  build_kanji.box((150,200),(430,-20));
+  build_kanji.box((570,200),(850,-20));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.brigade =
   push_pbox_toexpand("kanji.grfive.brigade");
   kanji.radical.box;
@@ -82,6 +103,12 @@ vardef kanji.grfive.cause =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ki/utsuwa "utensil"
+begintsuglyph("uni5668",104);
+  kanji.grfour.utensil;
+  tsu_render;
+endtsuglyph;
 
 % box radical
 begintsuglyph("uni56D7",215);
@@ -123,6 +150,12 @@ endtsuglyph;
 % koma "bothered"
 begintsuglyph("uni56F0",240);
   kanji.grsix.bothered;
+  tsu_render;
+endtsuglyph;
+
+% i/kako "enclosure"
+begintsuglyph("uni56F2",242);
+  kanji.grfour.enclosure;
   tsu_render;
 endtsuglyph;
 

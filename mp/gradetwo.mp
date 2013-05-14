@@ -660,13 +660,19 @@ vardef kanji.grtwo.mother =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.myriad =
-  push_pbox_toexpand("kanji.grtwo.myriad");
+vardef kanji.grtwo_helper.myriad =
+  push_pbox_toexpand("kanji.grtwo_helper.myriad");
   kanji.grone.power;
   set_boserif(0,0,whatever);
   replace_strokep(0)(oldp yscaled (500/600) shifted (-50,0));
   replace_strokep(0)(
     subpath (xpart (oldp intersectiontimes get_strokep(-1)),infinity) of oldp);
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.myriad =
+  push_pbox_toexpand("kanji.grtwo.myriad");
+  kanji.grtwo_helper.myriad;
   push_stroke((100,780)--(900,780),(1.6,1.6)--(1.6,1.6));
   set_boserif(0,1,9);
   expand_pbox;

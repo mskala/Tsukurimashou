@@ -458,6 +458,12 @@ begintsuglyph("uni4E94",148);
   tsu_render;
 endtsuglyph;
 
+% sei/i "well" (water supply)
+begintsuglyph("uni4E95",149);
+  kanji.greight.well;
+  tsu_render;
+endtsuglyph;
+
 % extra
 begintsuglyph("uni4E96",150);
   build_kanji.tb(430,-50)

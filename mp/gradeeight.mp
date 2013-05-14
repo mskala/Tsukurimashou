@@ -473,6 +473,15 @@ vardef kanji.greight.towel =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.well =
+  push_pbox_toexpand("kanji.greight.well");
+  kanji.radical.aitch;
+  replace_strokep(-2)(oldp shifted (0,-140));
+  push_stroke((130,530)--(870,530),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.wizard =
   push_pbox_toexpand("kanji.greight.wizard");
   build_kanji.lr(300,0)

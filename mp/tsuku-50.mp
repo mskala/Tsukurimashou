@@ -1,6 +1,6 @@
 %
 % Unicode page 50 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -94,6 +94,28 @@ vardef kanji.grfour.side =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour_helper.wait_for_it =
+  push_pbox_toexpand("kanji.grfour_helper.wait_for_it");
+  build_kanji.tb(620,-30)
+    (push_stroke((230,760)--(750,760)..tension 1.2..(740,390)..(700,30),
+       (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+     set_botip(0,1,1);
+     set_boserif(0,1,4);
+     push_stroke((150,30)--(920,30),(1.5,1.5)--(1.5,1.5));
+     set_boserif(0,1,9))
+    (kanji.grtwo.arrow);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.wait_for_it =
+  push_pbox_toexpand("kanji.grfour.wait_for_it");
+  build_kanji.lr(290,-50)
+    (kanji.leftrad.person)
+    (build_kanji.sscale(scaled 0.75 shifted (-400,0))(kanji.radical.vline);
+     build_kanji.sscale(xscaled 0.8)(kanji.grfour_helper.wait_for_it));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.warehouse =
   push_pbox_toexpand("kanji.grfour.warehouse");
   build_kanji.level(build_kanji.tb(400,320)
@@ -148,6 +170,12 @@ endtsuglyph;
 % bai/be "double"
 begintsuglyph("uni500D",13);
   kanji.grthree.double;
+  tsu_render;
+endtsuglyph;
+
+% kou/sourou "season" or "candidate"
+begintsuglyph("uni5019",25);
+  kanji.grfour.wait_for_it;
   tsu_render;
 endtsuglyph;
 
