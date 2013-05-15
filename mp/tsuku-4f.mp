@@ -147,6 +147,17 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.imitate =
+  push_pbox_toexpand("kanji.grfive.imitate");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.person)
+    (kanji.grfour.as;
+     replace_strokep(-4)(subpath (0.16,infinity) of oldp));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.haiku =
   push_pbox_toexpand("kanji.grsix.haiku");
   build_kanji.lr(300,20)
@@ -197,6 +208,14 @@ vardef kanji.greight.companion =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.dependency =
+  push_pbox_toexpand("kanji.greight.dependency");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.grfour.clothes);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.earl =
   push_pbox_toexpand("kanji.greight.earl");
   build_kanji.lr(300,20)
@@ -218,6 +237,14 @@ vardef kanji.greight.excellent =
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.grnine.square_jewel);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.however =
+  push_pbox_toexpand("kanji.greight.however");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.greight.daybreak);
   expand_pbox;
 enddef;
 
@@ -258,6 +285,14 @@ vardef kanji.greight.skill =
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.grfive.support);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.strike =
+  push_pbox_toexpand("kanji.greight.strike");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.radical.tasselled_spear);
   expand_pbox;
 enddef;
 
@@ -380,6 +415,12 @@ begintsuglyph("uni4F0F",15);
   tsu_render;
 endtsuglyph;
 
+% batsu/ki "strike"
+begintsuglyph("uni4F10",16);
+  kanji.greight.strike;
+  tsu_render;
+endtsuglyph;
+
 % yasu "vacation"
 begintsuglyph("uni4F11",17);
   kanji.grone.vacation;
@@ -440,6 +481,12 @@ begintsuglyph("uni4F3A",58);
   tsu_render;
 endtsuglyph;
 
+% ji/ni "imitate"
+begintsuglyph("uni4F3C",60);
+  kanji.grfive.imitate;
+  tsu_render;
+endtsuglyph;
+
 % ka/togi "nurse"
 begintsuglyph("uni4F3D",61);
   kanji.grnine.nurse;
@@ -457,6 +504,12 @@ endtsuglyph;
 % ten/tsukuda "cultivated paddy"
 begintsuglyph("uni4F43",67);
   kanji.grnine.paddy;
+  tsu_render;
+endtsuglyph;
+
+% tan/tada "however"
+begintsuglyph("uni4F46",70);
+  kanji.greight.however;
   tsu_render;
 endtsuglyph;
 
@@ -599,6 +652,12 @@ endtsuglyph;
 % kyuu/domo "offer"
 begintsuglyph("uni4F9B",155);
   kanji.grsix.offer;
+  tsu_render;
+endtsuglyph;
+
+% i/yo "dependency"
+begintsuglyph("uni4F9D",157);
+  kanji.greight.dependency;
   tsu_render;
 endtsuglyph;
 

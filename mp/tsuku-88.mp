@@ -68,14 +68,6 @@ vardef kanji.grfour.boulevard =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.clothes =
-  push_pbox_toexpand("kanji.grfour.clothes");
-  build_kanji.level(build_kanji.tb(540,80)
-    (kanji.radical.kettle_lid)
-    (kanji.bottomrad.clothes));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.collide =

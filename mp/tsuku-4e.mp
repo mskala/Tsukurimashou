@@ -104,25 +104,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfour.as =
-  push_pbox_toexpand("kanji.grfour.as");
-  push_stroke((200,780)--(200,40),(1.6,1.6)--(1.4,1.4));
-  set_boserif(0,0,10);
-  push_stroke((100,0)..tension 1.2..(200,40)..(560,300),
-    (1.7,1.7)--(1.5,1.5)--(1,1));
-  push_stroke((850,800)..tension 1.2..(780,250)
-      ..(680,70)..(400,-80),
-    (1.6,1.6)--(1.55,1.55)--(1.5,1.5)--(1,1));
-  set_boserif(0,0,10);
-  push_stroke((420,720)..tension 1.3..(550,620)..(620,520),
-    (1,1)--(1.5,1.5)--(1.8,1.8));
-  push_stroke((point 1.3 of get_strokep(-1))..tension 1.3
-      ..(860,110)..(920,0),
-    (1,1)--(1.5,1.5)--(1.8,1.8));
-  replace_strokep(0)(oldp shifted (0,-40));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.go_between =
   push_pbox_toexpand("kanji.grfour.go_between");
   build_kanji.lr(300,20)
