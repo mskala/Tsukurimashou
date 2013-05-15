@@ -168,16 +168,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.radical.tasselled_spear =
-  push_pbox_toexpand("kanji.radical.tasselled_spear");
-  kanji.radical.ceremony;
-  push_stroke((780,410)..tension 1.2..(620,190)..(170,-40),
-    (1.6,1.6)--(1.4,1.4)--(1.2,1.2));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % ka/hoko "tasselled spear radical"
 begintsuglyph("uni6208",8);
   kanji.radical.tasselled_spear;

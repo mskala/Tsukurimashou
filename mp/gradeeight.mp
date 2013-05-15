@@ -231,6 +231,25 @@ vardef kanji.greight.head_of_household =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.how_much =
+  push_pbox_toexpand("kanji.greight.how_much");
+  build_kanji.level(
+    build_kanji.tb(440,100)
+      (build_kanji.lr(520,-80)
+         (kanji.radical.short_thread)
+         (kanji.radical.short_thread))
+      (kanji.radical.ceremony);
+    replace_strokep(-1)
+      (oldp shifted (-900,60) xscaled 0.9 shifted (900,-60));
+    replace_strokep(-1)((500,840){down}...subpath (1,infinity) of oldp);
+    push_stroke((780,190)..tension 1.2..(720,110)..(530,-40),
+      (1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+    build_kanji.sscale(xyscaled (0.42,0.35) shifted (-220,-280))
+      (kanji.leftrad.alt_person);
+  );
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.inflammation =
   push_pbox_toexpand("kanji.greight.inflammation");
   build_kanji.level(build_kanji.tb(420,50)

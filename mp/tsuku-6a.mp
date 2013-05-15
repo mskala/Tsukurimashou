@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -65,6 +66,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.aircraft =
+  push_pbox_toexpand("kanji.grfour.aircraft");
+  build_kanji.lr(380,50)
+    (kanji.leftrad.wood)
+    (kanji.greight.how_much);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ou/yoku "sideways"
 begintsuglyph("uni6A2A",42);
   kanji.grthree.sideways;
@@ -74,6 +85,12 @@ endtsuglyph;
 % kyou/hashi "bridge"
 begintsuglyph("uni6A4B",75);
   kanji.grthree.bridge;
+  tsu_render;
+endtsuglyph;
+
+% ki/hata "aircraft"
+begintsuglyph("uni6A5F",95);
+  kanji.grfour.aircraft;
   tsu_render;
 endtsuglyph;
 

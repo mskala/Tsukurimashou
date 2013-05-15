@@ -364,6 +364,12 @@ begintsuglyph("uni5E7D",125);
   tsu_render;
 endtsuglyph;
 
+% ki/iku "how much"
+begintsuglyph("uni5E7E",126);
+  kanji.greight.how_much;
+  tsu_render;
+endtsuglyph;
+
 % madare "dotted cliff radical"
 begintsuglyph("uni5E7F",127);
   build_kanji.dotcliff_enclose();

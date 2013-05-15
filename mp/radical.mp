@@ -587,6 +587,14 @@ vardef kanji.radical.spoon =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.tasselled_spear =
+  push_pbox_toexpand("kanji.radical.tasselled_spear");
+  kanji.radical.ceremony;
+  push_stroke((780,410)..tension 1.2..(620,190)..(170,-40),
+    (1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.tent =
   perl_structure:=perl_structure&"'eids.u2FF1.u4EBA.1_',";
   push_pbox_toexpand("kanji.radical.tent");
