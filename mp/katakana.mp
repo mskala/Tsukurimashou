@@ -1,6 +1,6 @@
 %
 % Katakana for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -676,10 +676,10 @@ vardef kata.ru =
   set_boserif(0,0,8);
 
   kata.no_stroke((880,370),(560,60));
-  replace_strokep(0)(insert_nodes((560,710)--reverse oldp)(0.75,1.5));
+  replace_strokep(0)(insert_nodes((560,710)--reverse oldp)(0.7));
   replace_strokeq(0)((1.6,1.6)--(1.3,1.3)--(1.8,1.8)--
-    (2,2)--(1.4,1.4)--(1,1)--(0.8,1));
-  set_botip(0,1,0);
+      (1.2,1.2)--(1,1)--(0.8,1));
+  set_botip(0,2,0);
   set_boserif(0,0,8);
   set_boserif(0,2,4);
   expand_pbox;
@@ -689,10 +689,10 @@ vardef kata.re =
   push_pbox_toexpand("kata.re");
 
   kata.no_stroke((770,390),(300,80));
-  replace_strokep(0)(insert_nodes((290,700)--reverse oldp)(0.75,1.2));
-  replace_strokeq(0)((1.6,1.6)--(1.3,1.3)--(2.1,2.1)--
-    (2,2)--(1.4,1.4)--(1,1)--(0.8,1));
-  set_botip(0,1,0);
+  replace_strokep(0)(insert_nodes((290,700)--reverse oldp)(0.7));
+  replace_strokeq(0)((1.6,1.6)--(1.3,1.3)--(1.8,1.8)--
+      (1.2,1.2)--(1.1,1.1)--(0.8,1));
+  set_botip(0,2,1);
   set_boserif(0,0,8);
   set_boserif(0,2,4);
   expand_pbox;

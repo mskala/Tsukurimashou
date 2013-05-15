@@ -266,9 +266,9 @@ vardef hira.se =
   set_boserif(0,0,5);
   set_boserif(0,2,6);
 
-  push_stroke((660,780)..(660,370){down}..(640,260-20*mincho)..
-      {curl 0.2}(520,280),
-    (1.7,1.7)--(1.5,1.5)--(1.5,1.5)--(1,1));
+  push_stroke(insert_nodes((660,780)..tension 1.5..(655+5*mincho,370)..
+      (600,260-20*mincho)..{curl 0.2}(520,280))(2.5),
+    (1.7,1.7)--(1.5,1.5)--(1.3,1.3)--(1.2,1.2)--(1,1));
   set_boserif(0,0,8);
 
   push_stroke((290,710)..(290,170){down}..(500,30)..
@@ -413,9 +413,9 @@ vardef hira.na =
 
   hira.ha_right;
 
-  replace_strokep(0)((point infinity of oldp){-direction infinity of oldp}
+  replace_strokep(0)(((120,0)+point 0 of oldp)
     ..(subpath (0.45+0.1*mincho,infinity) of oldp));
-  replace_strokeq(0)((0,-0.4)--(1.7,1)--(1.5,1.5)--(2,2)--
+  replace_strokeq(0)((-0.2,-0.4)--(1.7,1)--(1.5,1.5)--(2,2)--
     (1.1,1.1)--(1.9,1.9));
   expand_pbox;
 enddef;
