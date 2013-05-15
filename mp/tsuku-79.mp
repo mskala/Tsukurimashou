@@ -125,6 +125,24 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.forbidden =
+  push_pbox_toexpand("kanji.grfive.pioneer");
+  build_kanji.tb(460,20)
+    (kanji.grone.grove)
+    (kanji.grfive.showing);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.pioneer =
+  push_pbox_toexpand("kanji.grfive.pioneer");
+  build_kanji.lr(450,20)
+    (kanji.leftrad.showing)
+    (kanji.greight.furthermore);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.i =
   push_pbox_toexpand("kanji.grsix.i");
   build_kanji.lr(520,60)
@@ -169,6 +187,12 @@ begintsuglyph("uni793E",62);
   tsu_render;
 endtsuglyph;
 
+% so "pioneer"
+begintsuglyph("uni7956",86);
+  kanji.grfive.pioneer;
+  tsu_render;
+endtsuglyph;
+
 % shin/kami "deity"
 begintsuglyph("uni795E",94);
   kanji.grthree.deity;
@@ -184,6 +208,12 @@ endtsuglyph;
 % sei/matsuri "festival"
 begintsuglyph("uni796D",109);
   kanji.grthree.festival;
+  tsu_render;
+endtsuglyph;
+
+% kin "forbidden"
+begintsuglyph("uni7981",129);
+  kanji.grfive.forbidden;
   tsu_render;
 endtsuglyph;
 
