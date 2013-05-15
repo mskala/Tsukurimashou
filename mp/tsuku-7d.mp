@@ -128,6 +128,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.continue =
+  push_pbox_toexpand("kanji.grfour.continue");
+  build_kanji.lr(420,-40)
+    (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
+    (kanji.grtwo.sell);
+  expand_pbox;
+enddef;
+
 % both "shrink" and "agreement"!
 vardef kanji.grfour.contract =
   push_pbox_toexpand("kanji.grfour.contract");
@@ -236,6 +244,12 @@ endtsuglyph;
 % kai/e "picture"
 begintsuglyph("uni7D75",117);
   kanji.grtwo.drawing;
+  tsu_render;
+endtsuglyph;
+
+% zoku/tsudzu "continue"
+begintsuglyph("uni7D9A",154);
+  kanji.grfour.continue;
   tsu_render;
 endtsuglyph;
 

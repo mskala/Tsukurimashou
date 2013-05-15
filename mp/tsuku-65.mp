@@ -129,6 +129,14 @@ vardef kanji.grfour.failure =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.fee =
+  push_pbox_toexpand("kanji.grfour.fee");
+  build_kanji.level(build_kanji.lr(520,30)
+    (kanji.leftrad.rice)
+    (kanji.greight.dipper));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.rescue =
   push_pbox_toexpand("kanji.grfour.rescue");
   build_kanji.level(build_kanji.lr(480,0)
@@ -320,6 +328,12 @@ endtsuglyph;
 % to/masu "dipper"
 begintsuglyph("uni6597",151);
   kanji.greight.dipper;
+  tsu_render;
+endtsuglyph;
+
+% ryou "fee" (also "cooking" in compound words)
+begintsuglyph("uni6599",153);
+  kanji.grfour.fee;
   tsu_render;
 endtsuglyph;
 

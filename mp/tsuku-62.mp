@@ -113,6 +113,18 @@ vardef kanji.grfour.battle =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.become =
+  push_pbox_toexpand("kanji.grfour.become");
+  kanji.grnine.fifth;
+  push_stroke((173,280)--(410,280),
+    (1.6,1.6)--(1.6,1.6));
+  build_kanji.add_jtail(0);
+  replace_strokep(0)(oldp shifted (0,110));
+  set_boserif(0,1,4);
+  set_botip(0,1,1);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.fold =
   push_pbox_toexpand("kanji.grfour.fold");
   build_kanji.level(build_kanji.lr(420,20)
@@ -168,13 +180,49 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grnine.fifth =
+  push_pbox_toexpand("kanji.grnine.fifth");
+  push_stroke((50,-50)..(120,100)..(160,300)..tension 1.2..(180,560)
+      --(850,560),
+    (1,1)--(1.3,1.3)--(1.5,1.5)--(1.6,1.6)--(1.6,1.6));
+  set_botip(0,3,1);
+  set_boserif(0,4,9);
+  push_stroke(interpath(mincho,
+      (570,760){down}..(660,100)..(810,0)..tension 1.5..
+        (870,70)..{curl 0.3}(910,200),
+      (540,760){down}..(670,100)..{right}(910,-40){curl 1}..
+        (860,60)..(860,160)),
+    (1.6,1.6)--(1.4,1.4)--(1.4,1.4)--(1.2,1.2)--(0.9,0.9));
+  set_boserif(0,0,10);
+  push_stroke((680,720)..tension 1.2..(750,690)..(790,640),
+    (1,1)..(1.5,1.5)--(1.7,1.7));
+  set_bosize(0,90);
+  push_stroke((820,410)..tension 1.2..(720,240)..(370,-60),
+    (1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ka/hoko "tasselled spear radical"
 begintsuglyph("uni6208",8);
   kanji.radical.tasselled_spear;
   tsu_render;
 endtsuglyph;
 
-%sen/ikusa "battle"
+% bo/tsuchinoe "fifth class or calendar sign"
+begintsuglyph("uni620A",10);
+  kanji.grnine.fifth;
+  tsu_render;
+endtsuglyph;
+
+% sei/na (as in "naru") "become"
+begintsuglyph("uni6210",16);
+  kanji.grfour.become;
+  tsu_render;
+endtsuglyph;
+
+% sen/ikusa "battle"
 begintsuglyph("uni6226",38);
   kanji.grfour.battle;
   tsu_render;

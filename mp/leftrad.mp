@@ -275,6 +275,16 @@ vardef kanji.leftrad.request =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.rice =
+  push_pbox_toexpand("kanji.leftrad.rice");
+  build_kanji.level(build_kanji.tb(540,220)
+    (build_kanji.spread_legs(-200)(kanji.toprad.sparkle_two))
+    (build_kanji.lift_skirt(450,60)(kanji.leftrad.wood)));
+  replace_strokep(-3)((500,820)--(500,-30));
+  replace_strokeq(-3)((1.6,1.6)--(1.4,1.4));
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.sentence =
   push_pbox_toexpand("kanji.leftrad.sentence");
   build_kanji.level(build_kanji.tb(580,30)

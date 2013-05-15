@@ -1,6 +1,6 @@
 %
 % Unicode page 7C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,10 +37,21 @@ input buildkanji.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input toprad.mp;
 
 do_late_includes;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.powder =
+  push_pbox_toexpand("kanji.grfour.powder");
+  build_kanji.level(build_kanji.lr(520,30)
+    (kanji.leftrad.rice)
+    (kanji.grtwo.minute));
+  expand_pbox;
+enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -63,6 +74,12 @@ endtsuglyph;
 % bei/kome "rice", also "USA" and "metre"
 begintsuglyph("uni7C73",115);
   kanji.grtwo.rice;
+  tsu_render;
+endtsuglyph;
+
+% fun/kona "powder"
+begintsuglyph("uni7C89",137);
+  kanji.grfour.powder;
   tsu_render;
 endtsuglyph;
 
