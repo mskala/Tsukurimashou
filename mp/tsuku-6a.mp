@@ -1,6 +1,6 @@
 %
 % Unicode page 6A (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -74,7 +76,21 @@ vardef kanji.grfour.aircraft =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.symbol =
+  push_pbox_toexpand("kanji.grfour.symbol");
+  build_kanji.lr(380,50)
+    (kanji.leftrad.wood)
+    (build_kanji.sscale(yscaled 0.86)(kanji.grfour.ticket));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% hyou/shirobe "symbol"
+begintsuglyph("uni6A19",25);
+  kanji.grfour.symbol;
+  tsu_render;
+endtsuglyph;
 
 % ou/yoku "sideways"
 begintsuglyph("uni6A2A",42);

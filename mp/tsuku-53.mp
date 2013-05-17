@@ -161,6 +161,16 @@ vardef kanji.grfour.graduate =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.participate =
+  push_pbox_toexpand("kanji.grfour.participate");
+  build_kanji.level(build_kanji.tcb(600,10)(320,120)
+    (build_kanji.sscale(xscaled 0.8)(kanji.radical.mu))
+    (build_kanji.spread_legs(140)(kanji.grone.big))
+    (build_kanji.sscale(rotated 24 shifted (-60,0))
+       (kanji.rightrad.short_hair)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.professional =
   push_pbox_toexpand("kanji.grfour.professional");
   build_kanji.lr(340,60-20*mincho)
@@ -390,6 +400,12 @@ endtsuglyph;
 % kyo/sa "go away"
 begintsuglyph("uni53BB",187);
   kanji.grthree.go_away;
+  tsu_render;
+endtsuglyph;
+
+% san/mai multiple meanings including "participate"
+begintsuglyph("uni53C2",194);
+  kanji.grfour.participate;
   tsu_render;
 endtsuglyph;
 

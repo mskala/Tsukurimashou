@@ -205,6 +205,12 @@ begintsuglyph("uni795D",93);
   tsu_render;
 endtsuglyph;
 
+% hyou "ticket"
+begintsuglyph("uni7968",104);
+  kanji.grfour.ticket;
+  tsu_render;
+endtsuglyph;
+
 % sei/matsuri "festival"
 begintsuglyph("uni796D",109);
   kanji.grthree.festival;

@@ -33,6 +33,7 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
@@ -134,6 +135,16 @@ vardef kanji.grfour.fee =
   build_kanji.level(build_kanji.lr(520,30)
     (kanji.leftrad.rice)
     (kanji.greight.dipper));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.loose =
+  push_pbox_toexpand("kanji.grfour.loose");
+  build_kanji.level(build_kanji.lr(520,20)
+    (build_kanji.tb(500,-50)
+       (kanji.toprad.once_upon_a_time)
+       (kanji.bottomrad.moon))
+    (kanji.radical.folding_chair));
   expand_pbox;
 enddef;
 
@@ -290,6 +301,12 @@ endtsuglyph;
 % kyou/oshi "teaching"
 begintsuglyph("uni6559",89);
   kanji.grtwo.teaching;
+  tsu_render;
+endtsuglyph;
+
+% san/chi "loose"
+begintsuglyph("uni6563",99);
+  kanji.grfour.loose;
   tsu_render;
 endtsuglyph;
 
