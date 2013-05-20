@@ -409,12 +409,7 @@ enddef;
 vardef kanji.grfour.ticket =
   push_pbox_toexpand("kanji.grfour.ticket");
   build_kanji.tb(480,-30)
-    (build_kanji.thickness(0.92)
-       (push_stroke((110,760)--(890,760),(1.6,1.6)--(1.6,1.6));
-        set_boserif(0,1,9);
-        push_stroke((390,760)--(390,30),(1.5,1.5)--(1.4,1.4));
-        push_stroke((610,760)--(610,30),(1.5,1.5)--(1.4,1.4));
-        build_kanji.box((180,420),(820,30))))
+    (kanji.toprad.ticket)
     (kanji.grfive.showing);
   expand_pbox;
 enddef;

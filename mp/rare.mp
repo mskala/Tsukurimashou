@@ -88,6 +88,14 @@ vardef kanji.rare.branch =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.cash =
+  push_pbox_toexpand("kanji.rare.cash");
+  build_kanji.level(build_kanji.tb(600,60)
+    (build_kanji.sscale(xyscaled (0.8,1.1))(kanji.toprad.sparkle_two))
+    (kanji.grtwo.big_brother));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.centurion =
   push_pbox_toexpand("kanji.rare.centurion");
   build_kanji.lr(300,20)

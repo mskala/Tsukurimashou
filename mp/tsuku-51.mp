@@ -246,6 +246,12 @@ begintsuglyph("uni5150",80);
   tsu_render;
 endtsuglyph;
 
+% rare needed for 8AAC
+begintsuglyph("uni5151",81);
+  kanji.rare.cash;
+  tsu_render;
+endtsuglyph;
+
 % hai/i "put it in"
 begintsuglyph("uni5165",101);
   kanji.grone.put_it_in;

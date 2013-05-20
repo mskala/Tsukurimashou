@@ -1,6 +1,6 @@
 %
 % Unicode page 8A (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -136,6 +136,14 @@ vardef kanji.grfour.lesson =
   build_kanji.level(build_kanji.lr(450,20)
     (kanji.grtwo.word)
     (kanji.grfour.fruit));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.preach =
+  push_pbox_toexpand("kanji.grfour.preach");
+  build_kanji.level(build_kanji.lr(450,20)
+    (kanji.grtwo.word)
+    (kanji.rare.cash));
   expand_pbox;
 enddef;
 
@@ -612,6 +620,12 @@ endtsuglyph;
 % go/kata "language"
 begintsuglyph("uni8A9E",158);
   kanji.grtwo.language;
+  tsu_render;
+endtsuglyph;
+
+% setsu/to "preach"
+begintsuglyph("uni8AAC",172);
+  kanji.grfour.preach;
   tsu_render;
 endtsuglyph;
 

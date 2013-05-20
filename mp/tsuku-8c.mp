@@ -66,6 +66,18 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.elephant =
+  push_pbox_toexpand("kanji.grfour.elephant");
+  build_kanji.attach_fishhook(0.8)
+    (build_kanji.level(build_kanji.tb(580,140)
+       (kanji.grone.mouth)
+       (kanji.radical.pig);
+     replace_strokep(-6)((point 1.5 of get_strokep(-8))
+         --(point 0.5 of get_strokep(-7)));
+     replace_strokeq(-6)((1.5,1.5)--(1.4,1.4))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.freight =
   push_pbox_toexpand("kanji.grfour.freight");
   build_kanji.level(build_kanji.tb(560,-50)
@@ -109,6 +121,12 @@ endtsuglyph;
 % inoko "pig" radical
 begintsuglyph("uni8C55",85);
   kanji.radical.pig;
+  tsu_render;
+endtsuglyph;
+
+% shou/katado "elephant" or "to imitate"
+begintsuglyph("uni8C61",97);
+  kanji.grfour.elephant;
   tsu_render;
 endtsuglyph;
 

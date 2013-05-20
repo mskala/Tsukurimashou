@@ -60,6 +60,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.essential =
+  push_pbox_toexpand("kanji.grfour.essential");
+  build_kanji.tb(480,-30)
+    (kanji.toprad.ticket)
+    (kanji.grone.woman);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.remember =
   push_pbox_toexpand("kanji.grtwo.remember");
     build_kanji.tb(740,100)
@@ -143,6 +151,12 @@ endtsuglyph;
 % sai/nishi "West" or "Spain"
 begintsuglyph("uni897F",127);
   kanji.grtwo.west;
+  tsu_render;
+endtsuglyph;
+
+% you/i "essential"
+begintsuglyph("uni8981",129);
+  kanji.grfour.essential;
   tsu_render;
 endtsuglyph;
 
