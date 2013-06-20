@@ -114,6 +114,15 @@ vardef kanji.grfour.bathe =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.shallow =
+  push_pbox_toexpand("kanji.grfour.shallow");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.water)
+    (build_kanji.sscale(yscaled 1.07 shifted (0,30))
+       (kanji.radical.three_tasselled_spear));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.liquid =
@@ -173,6 +182,12 @@ endtsuglyph;
 % ryuu/naga "current"
 begintsuglyph("uni6D41",65);
   kanji.grthree.current;
+  tsu_render;
+endtsuglyph;
+
+% sen/asa "shallow"
+begintsuglyph("uni6D45",69);
+  kanji.grfour.shallow;
   tsu_render;
 endtsuglyph;
 

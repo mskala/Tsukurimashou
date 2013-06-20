@@ -627,6 +627,23 @@ vardef kanji.radical.thread_common =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.three_tasselled_spear =
+  push_pbox_toexpand("kanji.radical.three_tasselled_spear");
+  kanji.radical.ceremony;
+  replace_strokep(-2)(oldp shifted (0,40));
+  replace_strokep(0)(oldp shifted (-680,-750) xyscaled (1.2,0.6)
+    shifted (680,750));
+  push_stroke((subpath (0.1,0.9) of get_strokep(-2)) shifted (0,-130),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke(get_strokep(-3) shifted (0,-270),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((800,220)..tension 1.2..(620,88)..(120,-40),
+    (1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.topped_aitch =
   push_pbox_toexpand("kanji.radical.topped_aitch");
   push_stroke((160,730)--(840,730),(1.6,1.6)--(1.6,1.6));

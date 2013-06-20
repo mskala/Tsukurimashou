@@ -461,7 +461,7 @@ begintsuglyph("uni2F69",105);
 endtsuglyph;
 
 % moku/me "eye"
-begintsuglyph("uni1F6C",108);
+begintsuglyph("uni2F6C",108);
   kanji.grone.eye;
   tsu_render;
 endtsuglyph;

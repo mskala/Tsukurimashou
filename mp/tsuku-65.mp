@@ -38,6 +38,7 @@ input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
 input gradefour.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradetwo.mp;
@@ -135,6 +136,13 @@ vardef kanji.grfour.fee =
   build_kanji.level(build_kanji.lr(520,30)
     (kanji.leftrad.rice)
     (kanji.greight.dipper));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.flag =
+  push_pbox_toexpand("kanji.grfour.flag");
+  build_kanji.level(build_kanji.flag_enclose(0.8,0.75)
+    (kanji.grnine.that));
   expand_pbox;
 enddef;
 
@@ -401,6 +409,12 @@ endtsuglyph;
 % zoku "tribe"
 begintsuglyph("uni65CF",207);
   kanji.grthree.tribe;
+  tsu_render;
+endtsuglyph;
+
+% ki/hata "flag"
+begintsuglyph("uni65D7",215);
+  kanji.grfour.flag;
   tsu_render;
 endtsuglyph;
 

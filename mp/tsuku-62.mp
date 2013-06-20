@@ -216,9 +216,23 @@ begintsuglyph("uni620A",10);
   tsu_render;
 endtsuglyph;
 
+% Chinese-only character, and they draw it with two crossbars, but
+% it's always three when it occurs as part of a Japanese character
+begintsuglyph("uni620B",11);
+  kanji.radical.three_tasselled_spear;
+  obstacktype[find_whatever(otstroke,-2)]:=otnull;
+  tsu_render;
+endtsuglyph;
+
 % sei/na (as in "naru") "become"
 begintsuglyph("uni6210",16);
   kanji.grfour.become;
+  tsu_render;
+endtsuglyph;
+
+% kai/imashi "precept"
+begintsuglyph("uni6212",18);
+  kanji.greight.precept;
   tsu_render;
 endtsuglyph;
 

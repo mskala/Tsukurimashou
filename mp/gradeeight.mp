@@ -351,6 +351,15 @@ vardef kanji.greight.otoh =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.precept =
+  push_pbox_toexpand("kanji.greight.precept");
+  kanji.radical.tasselled_spear;
+  build_kanji.sscale(xyscaled (0.4,0.54) shifted (-250,-130))
+    (kanji.radical.aitch;
+     replace_strokep(0)(subpath (0,0.85) of oldp));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.prefix_sub =
   push_pbox_toexpand("kanji.greight.prefix.sub");
   push_stroke((80,790)--(920,790),(1.6,1.6)--(1.6,1.6));

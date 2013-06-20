@@ -316,7 +316,7 @@ vardef build_kanji.flag_enclose(expr xs,ys)(text contents) =
   perl_structure:=perl_structure&"'eids.u2FF8.u5C38.1_',";
   string flag_enclose.ps;
   flag_enclose.ps:=perl_structure;
-  build_kanji.lr(480,60)
+  build_kanji.lr(460,60)
     (kanji.grtwo.direction;)
     (perl_structure:=flag_enclose.ps;
      push_stroke((300,810)..tension 1.2..(220,600)..(110,480),

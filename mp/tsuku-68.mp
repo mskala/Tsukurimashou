@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
@@ -74,6 +75,14 @@ vardef kanji.grthree.root =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.machine =
+  push_pbox_toexpand("kanji.grfour.machine");
+  build_kanji.lr(370,40)
+    (kanji.leftrad.wood)
+    (build_kanji.sscale(shifted (0,30))(kanji.greight.precept));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfour.plan =
   push_pbox_toexpand("kanji.grfour.plan");
@@ -130,6 +139,12 @@ endtsuglyph;
 % bai/ume "plum"
 begintsuglyph("uni6885",133);
   kanji.grfour.plum;
+  tsu_render;
+endtsuglyph;
+
+% kai/kase "machine"
+begintsuglyph("uni68B0",176);
+  kanji.grfour.machine;
   tsu_render;
 endtsuglyph;
 

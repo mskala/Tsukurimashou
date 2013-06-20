@@ -144,14 +144,6 @@ vardef kanji.grthree.heat =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.shining =
-  push_pbox_toexpand("kanji.grthree.shining");
-  build_kanji.lr(330,0)
-    (kanji.leftrad.day)
-    (kanji.greight.call);
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.scenery =

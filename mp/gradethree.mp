@@ -407,6 +407,14 @@ vardef kanji.grthree.sheep =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.shining =
+  push_pbox_toexpand("kanji.grthree.shining");
+  build_kanji.lr(330,0)
+    (kanji.leftrad.day)
+    (kanji.greight.call);
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.surface =
   push_pbox_toexpand("kanji.grthree.surface");
   build_kanji.level(build_kanji.tb(400,60)

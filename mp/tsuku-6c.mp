@@ -146,6 +146,29 @@ vardef kanji.grfour.law =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.people =
+  push_pbox_toexpand("kanji.grfour.people");
+  push_stroke((800,480)--(800,730)--(250,730)--(250,-10),
+    (1.5,1.5)--(1.6,1.6)--(1.6,1.6)--(1.5,1.5));
+  set_botip(0,1,1);
+  set_botip(0,2,1);
+  set_boserif(0,1,4);
+  set_boserif(0,2,4);
+  push_stroke((250,540)--(800,540),
+    (1.5,1.5)--(1.5,1.5));
+  push_stroke((140,-30)..tension 1.2..(250,-10)..(510,70),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  push_stroke((250,320)--(870,326),(1.5,1.5)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke(interpath(mincho,
+      (500,537){dir 280}..tension 1.1..(760,0)..(850,0)..tension 1.5..
+        (880,75)..(910,150),
+      (500,537)..(660,150)..{right}(910,0){curl 1}..
+        (870,75)..(870,150)),
+    (1.6,1.6)--(1.4,1.4)--(1.4,1.4)--(1.2,1.2)--(0.9,0.9));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.weep =
   push_pbox_toexpand("kanji.grfour.weep");
   build_kanji.lr(360,0)
@@ -261,6 +284,12 @@ endtsuglyph;
 % tai/fumoto "name of an ancient tribe"
 begintsuglyph("uni6C10",16);
   kanji.rare.cruithne;
+  tsu_render;
+endtsuglyph;
+
+% min/tami "people" (but not min as in minna "everybody")
+begintsuglyph("uni6C11",17);
+  kanji.grfour.people;
   tsu_render;
 endtsuglyph;
 

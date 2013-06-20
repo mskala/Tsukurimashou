@@ -35,8 +35,10 @@ beginfont
 % AUTODEPS
 input bottomrad.mp;
 input buildkanji.mp;
+input gradeeight.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
@@ -50,6 +52,14 @@ vardef kanji.grfour.heat =
   push_pbox_toexpand("kanji.grfour.heat");
   build_kanji.tb(190,-30)
     (kanji.rare.art)
+    (kanji.bottomrad.four_ticks);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.illuminate =
+  push_pbox_toexpand("kanji.grfour.illuminate");
+  build_kanji.tb(190,-30)
+    (kanji.grthree.shining)
     (kanji.bottomrad.four_ticks);
   expand_pbox;
 enddef;
@@ -71,6 +81,12 @@ vardef kanji.grnine.prosperous =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% shou/te "illuminate"
+begintsuglyph("uni7167",103);
+  kanji.grfour.illuminate;
+  tsu_render;
+endtsuglyph;
 
 % ki/tanoshi "prosperous"
 begintsuglyph("uni7199",153);
