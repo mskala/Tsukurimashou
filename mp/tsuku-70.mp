@@ -1,6 +1,6 @@
 %
 % Unicode page 70 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradeone.mp;
+input gradethree.mp;
 input leftrad.mp;
 
 do_late_includes;
@@ -65,6 +66,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.lamp =
+  push_pbox_toexpand("kanji.four.lamp");
+  build_kanji.level(build_kanji.lr(480,60)
+    (kanji.leftrad.fire)
+    (kanji.grthree.thumbtack));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.ash =
   push_pbox_toexpand("kanji.grsix.ash");
   build_kanji.cliff_enclose(kanji.grone.fire);
@@ -76,6 +87,12 @@ enddef;
 % hi/ka "fire"
 begintsuglyph("uni706B",107);
   kanji.grone.fire;
+  tsu_render;
+endtsuglyph;
+
+% tou/hi "lamp"
+begintsuglyph("uni706F",111);
+  kanji.grfour.lamp;
   tsu_render;
 endtsuglyph;
 

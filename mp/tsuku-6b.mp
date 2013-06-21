@@ -96,6 +96,16 @@ vardef kanji.grfour.history =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.kill =
+  push_pbox_toexpand("kanji.grfour.kill");
+  build_kanji.level(build_kanji.lr(360,0)
+    (build_kanji.sscale(shifted (0,-40))(build_kanji.tb(600,-20)
+       (kanji.radical.cut_the_grass)
+       (kanji.leftrad.wood)))
+    (kanji.radical.windy_again));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.poison =
   push_pbox_toexpand("kanji.grfour.poison");
   build_kanji.level(build_kanji.tb(430,-20)
@@ -177,6 +187,12 @@ endtsuglyph;
 % shu/mata "windy again radical"
 begintsuglyph("uni6BB3",179);
   kanji.radical.windy_again;
+  tsu_render;
+endtsuglyph;
+
+% satsu/koro "kill"
+begintsuglyph("uni6BBA",186);
+  kanji.grfour.kill;
   tsu_render;
 endtsuglyph;
 

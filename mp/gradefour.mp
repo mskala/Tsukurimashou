@@ -260,6 +260,17 @@ vardef kanji.grfour.gentleman =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.genus =
+  push_pbox_toexpand("kanji.grfour.genus");
+  build_kanji.level(build_kanji.lr(480,40)
+    (build_kanji.lift_skirt(200,40)(build_kanji.tb(360,80)
+       (kanji.leftrad.rice;
+        replace_strokep(-3)(subpath (0,0.8) of oldp))
+       (kanji.leftrad.big)))
+    (kanji.grnine.page));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.good =
   push_pbox_toexpand("kanji.grfour.good");
   build_kanji.level(

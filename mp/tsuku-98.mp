@@ -1,6 +1,6 @@
 %
 % Unicode page 98 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -148,6 +148,12 @@ endtsuglyph;
 % gan/nega "prayer" (as in onegai, "please," literally "I pray you")
 begintsuglyph("uni9858",88);
   kanji.grfour.prayer;
+  tsu_render;
+endtsuglyph;
+
+% rui/tagu "genus"
+begintsuglyph("uni985E",94);
+  kanji.grfour.genus;
   tsu_render;
 endtsuglyph;
 

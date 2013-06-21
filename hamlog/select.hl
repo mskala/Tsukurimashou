@@ -427,7 +427,7 @@ want_page(_F,P):-atom_final(P,pageb,_X),!,fail.
 want_page(_F,P):-atom_final(P,pagec,_X),!,fail.
 want_page(_F,P):-atom_final(P,paged,_X),!,fail.
 
-% pages 2E, 2F, 34, 4E through 9F, and 200 are for all but Jieubsida
+% pages 2E, 2F, 34, 4E through 9F, and 2xx are for all but Jieubsida
 want_page(jieubsida,page2e):- !,fail.
 want_page(jieubsida,page2f):- !,fail.
 want_page(jieubsida,page34):- !,fail.
@@ -438,7 +438,9 @@ want_page(jieubsida,P):-atom_final(P,page6,_X),!,fail.
 want_page(jieubsida,P):-atom_final(P,page7,_X),!,fail.
 want_page(jieubsida,P):-atom_final(P,page8,_X),!,fail.
 want_page(jieubsida,P):-atom_final(P,page9,_X),!,fail.
-want_page(jieubsida,page200):- !,fail.
+want_page(jieubsida,P):-atom_final(P,page20,_X),!,fail.
+want_page(jieubsida,P):-atom_final(P,page21,_X),!,fail.
+want_page(jieubsida,P):-atom_final(P,page29,_X),!,fail.
 
 % otherwise want any page that is defined for us or generic
 want_page(F,P):-short_name(F,S),page_exists(S,P),!.
@@ -482,6 +484,7 @@ hi_page(page1f1).
 hi_page(page200).
 hi_page(page20a).
 hi_page(page21c).
+hi_page(page295).
 hi_page(pagef17).
 hi_page(pagef5c).
 hi_page(pageff0).
