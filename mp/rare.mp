@@ -75,6 +75,14 @@ vardef kanji.rare.big_brother =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.bobbin =
+  push_pbox_toexpand("kanji.rare.bobbin");
+  build_kanji.level(build_kanji.tb(480,20)
+    (kanji.radical.silly_hat)
+    (kanji.grthree.thumbtack));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.branch =
   push_pbox_toexpand("kanji.rare.branch");
   push_stroke((770,810)..tension 1.2..(550,740)..(250,700),

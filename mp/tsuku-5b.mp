@@ -363,6 +363,12 @@ begintsuglyph("uni5B80",128);
   tsu_render;
 endtsuglyph;
 
+% cho/takuwaeru "bobbin"
+begintsuglyph("uni5B81",129);
+  kanji.rare.bobbin;
+  tsu_render;
+endtsuglyph;
+
 % extra
 begintsuglyph("uni5B82",130);
   build_kanji.tb(550,180)

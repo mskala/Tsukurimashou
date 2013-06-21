@@ -94,6 +94,14 @@ vardef kanji.grfour.prize =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.wear_moustache =
+  push_pbox_toexpand("kanji.grfour.wear_moustache");
+  build_kanji.level(build_kanji.lr(480,0)
+    (kanji.grone.shell)
+    (kanji.rare.bobbin));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.fortune =
@@ -157,6 +165,13 @@ endtsuglyph;
 % seki/se "blame"
 begintsuglyph("uni8CAC",172);
   kanji.grfive.blame;
+  tsu_render;
+endtsuglyph;
+
+% cho/ta "wear moustache"
+% That is what KANJIDIC2 says, and "save" is a reserved word.
+begintsuglyph("uni8CAF",175);
+  kanji.grfour.wear_moustache;
   tsu_render;
 endtsuglyph;
 
