@@ -68,6 +68,21 @@ vardef kanji.grfour.essential =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.outlook =
+  push_pbox_toexpand("kanji.grfour.outlook");
+  build_kanji.level(build_kanji.lr(460,50)
+    (build_kanji.tb(470,190)
+      (kanji.grtwo.arrow;
+       replace_strokep(-1)(oldp shifted (-60,0));
+       obstacktype[find_whatever(otstroke,0)]:=otnull)
+      (kanji.radical.old_bird;
+       obstacktype[find_whatever(otstroke,-7)]:=otnull;
+       replace_strokep(-6)(point 0 of oldp+(0,15)--point 1 of oldp);
+       replace_strokep(-4)(point 0 of oldp+(30,0)--point 1 of oldp)))
+    (kanji.grone.see));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.remember =
   push_pbox_toexpand("kanji.grtwo.remember");
     build_kanji.tb(740,100)
@@ -183,6 +198,12 @@ endtsuglyph;
 % shin/oya/shita "parent"
 begintsuglyph("uni89AA",170);
   kanji.grtwo.parent;
+  tsu_render;
+endtsuglyph;
+
+% kan/mi "outlook"
+begintsuglyph("uni89B3",179);
+  kanji.grfour.outlook;
   tsu_render;
 endtsuglyph;
 

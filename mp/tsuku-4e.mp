@@ -475,6 +475,12 @@ begintsuglyph("uni4EA0",160);
   tsu_render;
 endtsuglyph;
 
+% bou/na "dead"
+begintsuglyph("uni4EA1",161);
+  kanji.grsix.dead;
+  tsu_render;
+endtsuglyph;
+
 % kou/maji "mix"
 begintsuglyph("uni4EA4",164);
   kanji.grtwo.mix;

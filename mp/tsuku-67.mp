@@ -103,6 +103,16 @@ vardef kanji.grfour.banknote =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.full_moon =
+  push_pbox_toexpand("kanji.grfour.full_moon");
+  build_kanji.tb(340,-20)
+    (build_kanji.lr(480,10)
+       (build_kanji.sscale(xyscaled (0.95,0.85) shifted (0,60))
+          (kanji.grsix.dead))
+       (kanji.grone.moon))
+    (kanji.grone.king);
+  expand_pbox;
+enddef;
 vardef kanji.grfour.lumber =
   push_pbox_toexpand("kanji.grfour.lumber");
   build_kanji.lr(480,20)
@@ -192,6 +202,12 @@ endtsuglyph;
 % fuku as in "sailor fuku"
 begintsuglyph("uni670D",13);
   kanji.grthree.clothing;
+  tsu_render;
+endtsuglyph;
+
+% bou/nozo "full moon" (and many other things by analogy)
+begintsuglyph("uni671B",27);
+  kanji.grfour.full_moon;
   tsu_render;
 endtsuglyph;
 

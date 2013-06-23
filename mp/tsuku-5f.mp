@@ -200,6 +200,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.forget =
+  push_pbox_toexpand("kanji.grsix.forget");
+  build_kanji.level(build_kanji.tb(360,-40)
+    (kanji.grsix.dead)
+    (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.loyalty =
   push_pbox_toexpand("kanji.grsix.loyalty");
   build_kanji.level(build_kanji.tb(360,0)
@@ -592,6 +600,12 @@ endtsuglyph;
 % shi/kokoroza "intention"
 begintsuglyph("uni5FD7",215);
   kanji.grfive.intention;
+  tsu_render;
+endtsuglyph;
+
+% bou/wasu "forget"
+begintsuglyph("uni5FD8",216);
+  kanji.grsix.forget;
   tsu_render;
 endtsuglyph;
 

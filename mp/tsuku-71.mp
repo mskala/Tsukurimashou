@@ -64,6 +64,34 @@ vardef kanji.grfour.illuminate =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.nothing =
+  push_pbox_toexpand("kanji.grfour.nothing");
+  build_kanji.level(build_kanji.tb(230,-50)
+    (push_stroke((330,840){curl 0.1}..(230,660)..(90,480),
+       (1.7,1.7)--(1.5,1.5)--(1.1,1.1));
+     set_boserif(0,0,10);
+     push_stroke((260,680)--(260,-40),
+       (1.39,1.39)--(1.3,1.3));
+     push_stroke(
+       (((0,680)--(1000,680)) intersectionpoint get_strokep(-1))--(840,680),
+       (1.5,1.5)--(1.5,1.5));
+     set_boserif(0,1,9);
+     push_stroke((420,680)--(420,-40),
+       (1.4,1.4)--(1.3,1.3));
+     push_stroke((580,680)--(580,-40),
+       (1.4,1.4)--(1.3,1.3));
+     push_stroke((740,680)--(740,-40),
+       (1.4,1.4)--(1.3,1.3));
+     push_stroke((120,320)--(880,320),
+       (1.5,1.5)--(1.5,1.5));
+     set_boserif(0,1,9);
+     push_stroke((140,-40)--(860,-40),
+       (1.5,1.5)--(1.5,1.5));
+     set_boserif(0,1,9))
+    (kanji.bottomrad.four_ticks));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grnine.prosperous =
@@ -81,6 +109,12 @@ vardef kanji.grnine.prosperous =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% mu/na "nothing"
+begintsuglyph("uni7121",33);
+  kanji.grfour.nothing;
+  tsu_render;
+endtsuglyph;
 
 % shou/te "illuminate"
 begintsuglyph("uni7167",103);

@@ -57,6 +57,15 @@ vardef kanji.grsix.climax =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.dead =
+  push_pbox_toexpand("kanji.grsix.dead");
+  build_kanji.level(build_kanji.tb(550,120)
+    (kanji.radical.kettle_lid)
+    (push_stroke((230,780)--(230,180){down}..{right}(450,-20)..(800,60),
+       (1.6,1.6)--(1.5,1.5)--(1.8,1.8)--(1.5,1.5))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.dry =
   push_pbox_toexpand("kanji.grsix.dry");
   push_stroke((180,780)--(820,780),
