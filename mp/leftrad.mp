@@ -294,6 +294,20 @@ vardef kanji.leftrad.sentence =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.seal =
+  push_pbox_toexpand("kanji.leftrad.seal");
+  push_stroke((770,810)..tension 1.2..(550,740)..(250,700),
+    (1.8,1.8)--(1.5,1.5)--(1,1));
+  push_stroke((250,730)--(250,0),
+    (1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  push_stroke((250,440)--(800,440),(1.55,1.55)--(1.55,1.55));
+  set_boserif(0,1,9);
+  push_stroke((250,80)--(800,80),(1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
 vardef kanji.leftrad.seven =
   push_pbox_toexpand("kanji.leftrad.seven");
   build_kanji.sscale(shifted (0,-300) yscaled 0.7 shifted (0,300))

@@ -180,6 +180,16 @@ vardef kanji.grfour.professional =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.seal =
+  push_pbox_toexpand("kanji.grfour.seal");
+  build_kanji.lr(480,40)
+    (kanji.leftrad.seal)
+    (build_kanji.sscale(yscaled 1.1 shifted (0,-110))(kanji.radical.seal));
+  replace_strokep(0)(subpath (xpart (oldp intersectiontimes
+    ((0,-80)--(1000,-80))),infinity) of oldp);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.wrap =
   push_pbox_toexpand("kanji.grfour.wrap");
   build_kanji.tb(360,480)
@@ -338,6 +348,12 @@ endtsuglyph;
 % setsu/warifu "seal radical"
 begintsuglyph("uni5369",105);
   kanji.radical.seal;
+  tsu_render;
+endtsuglyph;
+
+% in/shiroshi "seal"
+begintsuglyph("uni5370",112);
+  kanji.grfour.seal;
   tsu_render;
 endtsuglyph;
 
