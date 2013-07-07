@@ -78,6 +78,19 @@ vardef kanji.grfour.hall =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.salt =
+  push_pbox_toexpand("kanji.grfour.salt");
+  build_kanji.lr(370,0)
+    (kanji.leftrad.earth)
+    (build_kanji.level(build_kanji.tb(620,150)
+       (kanji.toprad.slash)
+       (build_kanji.tb(420,0)
+          (build_kanji.sscale(scaled 0.75 shifted (20,0))
+             (kanji.grone.mouth))
+          (kanji.grthree.dish))));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.report =
@@ -116,6 +129,12 @@ endtsuglyph;
 % shou/ba "place"
 begintsuglyph("uni5834",52);
   kanji.grtwo.place;
+  tsu_render;
+endtsuglyph;
+
+% en/shio "salt"
+begintsuglyph("uni5869",105);
+  kanji.grfour.salt;
   tsu_render;
 endtsuglyph;
 

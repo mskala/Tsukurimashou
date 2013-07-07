@@ -333,6 +333,12 @@ begintsuglyph("uni5F16",22);
   tsu_render;
 endtsuglyph;
 
+% futsu/doru "dollar"
+begintsuglyph("uni5F17",23);
+  kanji.rare.dollar;
+  tsu_render;
+endtsuglyph;
+
 % kou/hiro "wide" (used in names)
 begintsuglyph("uni5F18",24);
   kanji.grnine.wide;

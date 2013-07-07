@@ -179,9 +179,28 @@ vardef kanji.rare.director =
   expand_pbox;
 enddef;
 
-vardef kanji.rare.early_death =
-  push_pbox_toexpand("kanji.rare.early_death");
-  build_kanji.add_beret(kanji.grone.big);
+vardef kanji.rare.dollar =
+  push_pbox_toexpand("kanji.rare.dollar");
+  push_stroke((140,680)--(800,680)--(800,440),
+    (1.6,1.6)--(1.6,1.6)--(1.5,1.5));
+  set_botip(0,1,1);
+  set_boserif(0,1,4);
+  push_stroke((180,500)--(800,500),
+    (1.5,1.5)--(1.5,1.5));
+  push_stroke((185,535-15*mincho)..tension 1.2..(150,350)..(100,240),
+    (1.7,1.7)--(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,0,10);
+  push_stroke((get_strokep(0) intersectionpoint ((0,300)--(1000,300)))--
+      (870,300),
+    (1.6,1.6)--(1.6,1.6));
+  build_kanji.add_jtail(0);
+  set_botip(0,1,1);
+  set_boserif(0,1,4);
+  push_stroke((380,810){down}..(260,150)..(100,-60),
+    (1.6,1.6)--(1.3,1.3)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((620,810)--(620,-60),(1.6,1.6)--(1.4,1.4));
+  set_boserif(0,0,10);
   expand_pbox;
 enddef;
 
@@ -192,6 +211,12 @@ vardef kanji.rare.drink =
        (kanji.rare.early_death))
     (build_kanji.sscale(xyscaled (0.8,0.7) shifted (0,-50))
        (kanji.grone.mouth)));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.early_death =
+  push_pbox_toexpand("kanji.rare.early_death");
+  build_kanji.add_beret(kanji.grone.big);
   expand_pbox;
 enddef;
 

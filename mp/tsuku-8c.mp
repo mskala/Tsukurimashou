@@ -78,6 +78,14 @@ vardef kanji.grfour.elephant =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.expense =
+  push_pbox_toexpand("kanji.grfour.freight");
+  build_kanji.thickness(0.92)(build_kanji.level(build_kanji.tb(410,-20)
+    (kanji.rare.dollar)
+    (kanji.grone.shell)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.freight =
   push_pbox_toexpand("kanji.grfour.freight");
   build_kanji.level(build_kanji.tb(560,-50)
@@ -178,6 +186,12 @@ endtsuglyph;
 % gai/ka "buy"
 begintsuglyph("uni8CB7",183);
   kanji.grtwo.buy;
+  tsu_render;
+endtsuglyph;
+
+% hi/tsui "expense"
+begintsuglyph("uni8CBB",187);
+  kanji.grfour.expense;
   tsu_render;
 endtsuglyph;
 

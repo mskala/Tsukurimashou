@@ -182,6 +182,18 @@ vardef kanji.toprad.sheep =
   expand_pbox;
 enddef;
 
+vardef kanji.toprad.slash =
+  push_pbox_toexpand("kanji.toprad.slash");
+  push_stroke((280,810)..tension 1.2..(160,220)..(50,0),
+    (1.7,1.7)--(1.5,1.5)--(1.2,1.2));
+  set_boserif(0,0,10);
+  push_stroke((get_strokep(0) intersectionpoint ((0,520)--(1000,520)))--
+      (880,520),
+    (1.5,1.5)--(1.6,1.6));
+  set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
 vardef kanji.toprad.sparkle_four =
   push_pbox_toexpand("kanji.toprad.sparkle_four");
   push_stroke((150,600)..tension 1.2..(200,440)..(270,160),
