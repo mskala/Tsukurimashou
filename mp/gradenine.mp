@@ -139,6 +139,16 @@ vardef kanji.grnine.ladle =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.mountain_high =
+  push_pbox_toexpand("kanji.grnine.mountain_high");
+  build_kanji.level(build_kanji.tb(360,30)
+    (build_kanji.tb(420,150)
+       (kanji.grone.ten)
+       (kanji.toprad.grass))
+    (kanji.rare.bald));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.must_not =
   push_pbox_toexpand("kanji.grnine.must_not");
   kanji.radical.wrapping;

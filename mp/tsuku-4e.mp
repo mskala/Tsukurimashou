@@ -481,6 +481,12 @@ begintsuglyph("uni4EA1",161);
   tsu_render;
 endtsuglyph;
 
+% kou/takaburu "high spirits"
+begintsuglyph("uni4EA2",162);
+  kanji.rare.high_spirits;
+  tsu_render;
+endtsuglyph;
+
 % kou/maji "mix"
 begintsuglyph("uni4EA4",164);
   kanji.grtwo.mix;

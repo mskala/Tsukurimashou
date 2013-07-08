@@ -43,10 +43,19 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input toprad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.cook =
+  push_pbox_toexpand("kanji.grfour.cook");
+  build_kanji.level(build_kanji.lr(370,60)
+    (kanji.leftrad.fire)
+    (kanji.grnine.mountain_high));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfour.heat =
   push_pbox_toexpand("kanji.grfour.heat");
@@ -113,6 +122,12 @@ enddef;
 % mu/na "nothing"
 begintsuglyph("uni7121",33);
   kanji.grfour.nothing;
+  tsu_render;
+endtsuglyph;
+
+% shou/ya "cook"
+begintsuglyph("uni713C",60);
+  kanji.grfour.cook;
   tsu_render;
 endtsuglyph;
 

@@ -98,6 +98,22 @@ vardef kanji.grfour.english =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.navigate =
+  push_pbox_toexpand("kanji.grfour.navigate");
+  build_kanji.lr(520,70-30*mincho)
+    (kanji.leftrad.boat)
+    (build_kanji.sscale(shifted (0,20))(kanji.rare.high_spirits));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.sprout =
+  push_pbox_toexpand("kanji.grfour.sprout");
+  build_kanji.tb(580,-30)
+    (kanji.toprad.grass)
+    (kanji.radical.tusk);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.young_master =
@@ -159,6 +175,12 @@ begintsuglyph("uni8229",41);
   build_kanji.lr(480,0)
     (kanji.leftrad.boat)
     (kanji.grtwo.public);
+  tsu_render;
+endtsuglyph;
+
+% kou/wataru "navigate"
+begintsuglyph("uni822A",42);
+  kanji.grfour.navigate;
   tsu_render;
 endtsuglyph;
 
@@ -273,6 +295,12 @@ endtsuglyph;
 % gei/u "art"
 begintsuglyph("uni82B8",184);
   kanji.grfour.art;
+  tsu_render;
+endtsuglyph;
+
+% ga/me "sprout"
+begintsuglyph("uni82BD",189);
+  kanji.grfour.sprout;
   tsu_render;
 endtsuglyph;
 

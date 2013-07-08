@@ -668,6 +668,20 @@ vardef kanji.radical.travel_inside =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.tusk =
+  push_pbox_toexpand("kanji.radical.tusk");
+  push_stroke((140+30*mincho,780)--(830,780),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((660,780),(1.6,1.6));
+  build_kanji.add_jtail(0);
+  push_stroke((340,780)--(340,480),(1.6,1.6)--(1.5,1.5));
+  push_stroke((110+30*mincho,480)--(860,480),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((580,480)..tension 1.2..(380,200)..(110,60),
+    (1.6,1.6)--(1.4,1.4)--(1,1));
+  expand_pbox;
+enddef;
+
 % insert "Scottish tsundere" joke here
 vardef kanji.radical.twin_tailed_sheep =
   push_pbox_toexpand("kanji.radical.twin_tailed_sheep");

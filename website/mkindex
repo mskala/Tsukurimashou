@@ -7,6 +7,16 @@ $update_time=`date`;
 $style=shift;
 $late_eval='';
 
+$this_pkg_link='';
+
+open(REL,'release-dump.txt');
+while (<REL>) {
+  $demourl=$1 if m!(http://sourceforge\S+demo.pdf/)!;
+  $kcurl=$1 if m!(http://sourceforge\S+kanjichart.pdf/)!;
+  $this_pkg_link=$1 if m!$tpl_pat! && ($this_pkg_link eq '');
+}
+close(REL);
+
 while (<>) {
   chomp;
   if (/^([a-z0-9\-_]+)(\[.*?\])?:\s*(.*)$/i) {
@@ -59,16 +69,6 @@ EOF
       $this_pkg_date=$date;
     }
   }
-}
-close(REL);
-
-$this_pkg_link='';
-
-open(REL,'release-dump.txt');
-while (<REL>) {
-  $demourl=$1 if m!(http://sourceforge\S+demo.pdf/)!;
-  $kcurl=$1 if m!(http://sourceforge\S+kanjichart.pdf/)!;
-  $this_pkg_link=$1 if m!$tpl_pat! && ($this_pkg_link eq '');
 }
 close(REL);
 

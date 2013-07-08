@@ -113,6 +113,7 @@ vardef kanji.grfour.full_moon =
     (kanji.grone.king);
   expand_pbox;
 enddef;
+
 vardef kanji.grfour.lumber =
   push_pbox_toexpand("kanji.grfour.lumber");
   build_kanji.lr(480,20)

@@ -92,3 +92,4 @@ Bottom-Three[ja].
 .
 LATE-EVAL $v{bottom_three}=~s/\$kcstat_en/$kcstat_en/;
 LATE-EVAL $v{bottom_three}=~s/\$kcstat_ja/$kcstat_ja/;
+LATE-EVAL $v{bottom_three}=~s/\$kcurl/$kcurl/;

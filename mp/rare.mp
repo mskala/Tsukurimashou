@@ -238,6 +238,14 @@ vardef kanji.rare.glorious =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.high_spirits =
+  push_pbox_toexpand("kanji.rare.high_spirits");
+  build_kanji.level(build_kanji.tb(520,-100)
+    (kanji.radical.kettle_lid)
+    (kanji.radical.windy));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.history_inside =
   push_pbox_toexpand("kanji.rare.history_inside");
   build_kanji.tb(420,80)

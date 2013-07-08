@@ -37,6 +37,7 @@ input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
@@ -228,6 +229,12 @@ begintsuglyph("uni5C18",24);
   build_kanji.tb(500,-20)
     (kanji.grone.small)
     (kanji.grone.earth);
+  tsu_render;
+endtsuglyph;
+
+% gyou/taka "high" as in mountain
+begintsuglyph("uni5C2D",45);
+  kanji.grnine.mountain_high;
   tsu_render;
 endtsuglyph;
 
