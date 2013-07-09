@@ -66,6 +66,18 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.difference =
+  push_pbox_toexpand("kanji.grfour.difference");
+  build_kanji.level(
+    build_kanji.tb(250,100)
+      (build_kanji.sscale(xscaled 1.08)(kanji.toprad.sheep))
+      (build_kanji.sscale(xscaled 0.83 shifted (80,0))(kanji.grtwo.craft));
+    push_stroke(
+      (point 0.30 of get_strokep(-6))..tension 1.2..(270,210)..(80,20),
+      (1.6,1.6)--(1.4,1.4)--(0.9,0.9)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.nest =
   push_pbox_toexpand("kanji.grfour.nest");
   build_kanji.level(build_kanji.tb(720,40)
@@ -158,6 +170,12 @@ endtsuglyph;
 % kou/taku "adroit"
 begintsuglyph("uni5DE7",231);
   kanji.greight.adroit;
+  tsu_render;
+endtsuglyph;
+
+% sa "difference"
+begintsuglyph("uni5DEE",238);
+  kanji.grfour.difference;
   tsu_render;
 endtsuglyph;
 

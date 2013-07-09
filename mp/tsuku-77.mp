@@ -98,10 +98,7 @@ vardef kanji.grthree.wear_clothes =
   push_pbox_toexpand("kanji.grthree.wear_clothes");
   build_kanji.level(
     build_kanji.tb(370,70)
-      (build_kanji.sscale(xscaled 1.08)
-          (kanji.grthree.sheep;
-           replace_strokep(0)((point 0 of oldp)
-             --(oldp intersectionpoint get_strokep(-3)))))
+      (build_kanji.sscale(xscaled 1.08)(kanji.toprad.sheep))
       (tsu_xform(identity shifted (15,0))(kanji.grone.eye));
     push_stroke(
       (point 0.30 of get_strokep(-7))..tension 1.2..(190,280)..(80,200),

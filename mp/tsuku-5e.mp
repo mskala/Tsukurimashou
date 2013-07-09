@@ -135,6 +135,18 @@ vardef kanji.grfour.bottom =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.belt =
+  push_pbox_toexpand("kanji.grfour.belt");
+  build_kanji.level(build_kanji.tb(560,20)
+    (kanji.grnine.twenty;
+     push_stroke((500,810)--(500,0),(1.6,1.6)--(1.5,1.5));
+     set_boserif(0,0,10))
+    (build_kanji.tb(450,200)
+       (kanji.radical.conservative_hat)
+       (kanji.greight.towel)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.peace =
   push_pbox_toexpand("kanji.grfour.peace");
   build_kanji.dotcliff_enclose(build_kanji.tb(520,0)
@@ -301,6 +313,12 @@ endtsuglyph;
 % saki/mushiro "seat"
 begintsuglyph("uni5E2D",45);
   kanji.grfour.seat;
+  tsu_render;
+endtsuglyph;
+
+% tai/obi "belt"
+begintsuglyph("uni5E2F",47);
+  kanji.grfour.belt;
   tsu_render;
 endtsuglyph;
 
