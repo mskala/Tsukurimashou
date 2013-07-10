@@ -1,6 +1,6 @@
 %
 % Unicode page 63 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -65,6 +65,24 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.lift =
+  push_pbox_toexpand("kanji.grfour.lift");
+  build_kanji.level(build_kanji.sscale(xscaled 0.92 shifted (6,0))
+    (build_kanji.tb(480,180)
+       (build_kanji.tb(720,380)
+          (kanji.toprad.alt_sparkle_three)
+          (build_kanji.spread_legs(280)(kanji.grone.big);
+           replace_strokep(-1)(subpath
+               (xpart (oldp intersectiontimes get_strokep(-2)),infinity)
+             of oldp)))
+       (build_kanji.warp((700-40*mincho,850),(300,850),
+                         (-50-20*mincho,-50),(1050-20*mincho,-50))
+          (kanji.grone.hand))));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.depict =
   push_pbox_toexpand("kanji.greight.depict");
   build_kanji.level(build_kanji.lr(420,30)
@@ -92,6 +110,12 @@ endtsuglyph;
 % shi/yubi "finger"
 begintsuglyph("uni6307",7);
   kanji.grthree.finger;
+  tsu_render;
+endtsuglyph;
+
+%kyo/a "lift"
+begintsuglyph("uni6319",25);
+  kanji.grfour.lift;
   tsu_render;
 endtsuglyph;
 

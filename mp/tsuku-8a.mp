@@ -33,6 +33,7 @@
 beginfont
 
 % AUTODEPS
+input bkencl.mp;
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
@@ -270,6 +271,14 @@ vardef kanji.greight.sue =
   build_kanji.level(build_kanji.lr(450,0)
     (kanji.grtwo.word)
     (kanji.grtwo.public));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.who =
+  push_pbox_toexpand("kanji.greight.who");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(shifted (0,-50))(kanji.radical.old_bird)));
   expand_pbox;
 enddef;
 
@@ -632,6 +641,12 @@ endtsuglyph;
 % goku/yo "read"
 begintsuglyph("uni8AAD",173);
   kanji.grtwo.read;
+  tsu_render;
+endtsuglyph;
+
+% sui/dare "who"
+begintsuglyph("uni8AB0",176);
+  kanji.greight.who;
   tsu_render;
 endtsuglyph;
 
