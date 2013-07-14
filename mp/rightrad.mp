@@ -1,6 +1,6 @@
 %
 % Right-side radicals
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -63,6 +63,21 @@ vardef kanji.rightrad.clothing =
     (oldp shifted (-900,0) xscaled 0.78 shifted (900,0));
   replace_strokep(-1)
     (((-170,0)+point 0 of oldp)--subpath (1,infinity) of oldp);
+  expand_pbox;
+enddef;
+
+vardef kanji.rightrad.crooked_heaven =
+  push_pbox_toexpand("kanji.rightrad.crooked_heaven");
+  push_stroke((130,740)--(780,740),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((80,460)--(890,460),(1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((250,740)--(250,460),(1.6,1.6)--(1.5,1.5));
+  push_stroke((600,740){down}..(575,510)..(370,200)..{curl 0.5}(50,-20),
+    (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  push_stroke((580,360),(1.6,1.6));
+  build_kanji.add_ltail(0);
+  set_boserif(0,0,10);
   expand_pbox;
 enddef;
 

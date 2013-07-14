@@ -51,6 +51,15 @@ vardef kanji.greight.acrid =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.already =
+  push_pbox_toexpand("kanji.greight.already");
+  build_kanji.level(build_kanji.lr(460+60*mincho,60-30*mincho)
+    (build_kanji.sscale(yscaled 0.92)(build_kanji.lift_skirt(300,80)
+       (kanji.radical.alt_northeast)))
+    (kanji.rightrad.crooked_heaven));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.axe =
   push_pbox_toexpand("kanji.greight.axe");
   push_stroke((770,810)..tension 1.2..(550,740)..(250,700),

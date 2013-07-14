@@ -240,7 +240,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 % shi/sasa "support"
 begintsuglyph("uni652F",47);
   kanji.grfive.support;
@@ -416,6 +415,12 @@ endtsuglyph;
 % ki/hata "flag"
 begintsuglyph("uni65D7",215);
   kanji.grfour.flag;
+  tsu_render;
+endtsuglyph;
+
+% ki/sude "already"
+begintsuglyph("uni65E2",226);
+  kanji.greight.already;
   tsu_render;
 endtsuglyph;
 
