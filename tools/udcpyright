@@ -57,7 +57,11 @@ foreach $file (split("\n",$files)) {
 # print "$file\n";
   open(F,$file);
   while (<F>) {
-    if (/^([ !-\/:-@[-`{-~]*)Copyright (\(C\)|\x{00A9})([0-9, ]+)$bywhom/) {
+    if (eval {
+        local $SIG{__WARN__} = sub {};
+        /^([ !-\/:-@[-`{-~]*)Copyright (\(C\)|\x{00A9})([0-9, ]+)$bywhom/;
+      }) {
+      /^([ !-\/:-@[-`{-~]*)Copyright (\(C\)|\x{00A9})([0-9, ]+)$bywhom/;
       $nylist=$3;
       $earliest=9999; # beware the Y10K problem
       foreach $year (split(/, /,$nylist)) {
