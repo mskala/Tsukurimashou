@@ -115,6 +115,15 @@ vardef kanji.grfour.poison =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.remainder =
+  push_pbox_toexpand("kanji.grfour.remainder");
+  build_kanji.level(build_kanji.lr(470,50)
+    (build_kanji.sscale(yscaled 0.85 shifted (0,-50))
+       (kanji.leftrad.bare_bone))
+    (kanji.radical.three_tasselled_spear));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ketsu/ka/akubi "fail" or "yawn"
@@ -182,6 +191,12 @@ endtsuglyph;
 % shi "die"
 begintsuglyph("uni6B7B",123);
   kanji.grthree.die;
+  tsu_render;
+endtsuglyph;
+
+% zan/noko "remainder"
+begintsuglyph("uni6B8B",139);
+  kanji.grfour.remainder;
   tsu_render;
 endtsuglyph;
 

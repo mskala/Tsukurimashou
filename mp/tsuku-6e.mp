@@ -89,6 +89,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.full =
+  push_pbox_toexpand("kanji.grfour.full");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.water)
+    (build_kanji.level(build_kanji.tb(560,100)
+       (kanji.toprad.grass)
+       (kanji.grthree.both)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.pure =
   push_pbox_toexpand("kanji.grfour.pure");
   build_kanji.lr(360,0)
@@ -174,6 +184,12 @@ begintsuglyph("uni6E76",118);
   build_kanji.lr(360,0)
     (kanji.leftrad.water)
     (kanji.grsix.fountain);
+  tsu_render;
+endtsuglyph;
+
+% man/mi "full"
+begintsuglyph("uni6E80",128);
+  kanji.grfour.full;
   tsu_render;
 endtsuglyph;
 

@@ -51,19 +51,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.both =
-  push_pbox_toexpand("kanji.grthree.both");
-  build_kanji.level(
-    build_kanji.tb(600,0)
-      (kanji.grone.one)
-      (kanji.radical.gmm;
-       build_kanji.sscale(scaled 0.45)(kanji.radical.open_box));
-    push_stroke(
-      (point 0.5 of get_strokep(-4))--(point 0.5 of get_strokep(-1)),
-      (1.7,1.7)--(1.5,1.5)));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.generation =
   push_pbox_toexpand("kanji.grthree.generation");
   build_kanji.lr(300,30)

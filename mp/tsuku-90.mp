@@ -159,6 +159,14 @@ vardef kanji.grfour.county =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.plural =
+  push_pbox_toexpand("kanji.grfour.plural");
+  build_kanji.road_enclose(build_kanji.tb(560,0)
+    (kanji.grone.earth)
+    (kanji.grthree.sheep));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.avoid =
@@ -226,6 +234,12 @@ endtsuglyph;
 % dou/michi "street"
 begintsuglyph("uni9053",83);
   kanji.grtwo.street;
+  tsu_render;
+endtsuglyph;
+
+% tatsu/tachi "suffix for pluralizing pronouns" (and several other meanings)
+begintsuglyph("uni9054",84);
+  kanji.grfour.plural;
   tsu_render;
 endtsuglyph;
 
