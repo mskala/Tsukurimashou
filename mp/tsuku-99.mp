@@ -1,6 +1,6 @@
 %
 % Unicode page 99 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ input buildkanji.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradesix.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
@@ -65,6 +66,31 @@ vardef kanji.grthree.station =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.nurture =
+  push_pbox_toexpand("kanji.grfour.nurture");
+  build_kanji.tb(460,230)
+    (kanji.toprad.sheep)
+    (kanji.grtwo.eat);
+  replace_strokeq(-8)(subpath (xpart (get_strokep(-8) intersectiontimes
+    get_strokep(-12)),infinity) of oldq);
+  replace_strokep(-8)(subpath (xpart (oldp intersectiontimes
+    get_strokep(-12)),infinity) of oldp);
+  set_boserif(-8,0,whatever);
+  replace_strokeq(-7)(subpath (xpart (get_strokep(-7) intersectiontimes
+    get_strokep(-12)),infinity) of oldq);
+  replace_strokep(-7)(subpath (xpart (oldp intersectiontimes
+    get_strokep(-12)),infinity) of oldp);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% you/yashina "nurture"
+begintsuglyph("uni990A",10);
+  kanji.grfour.nurture;
+  tsu_render;
+endtsuglyph;
 
 % kan/yukata "building"
 begintsuglyph("uni9928",40);

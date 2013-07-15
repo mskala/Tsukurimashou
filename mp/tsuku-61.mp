@@ -42,6 +42,7 @@ input gradethree.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -91,6 +92,14 @@ vardef kanji.greight.indignation =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.rue =
+  push_pbox_toexpand("kanji.greight.rue");
+  build_kanji.level(build_kanji.lr(320,30)
+    (kanji.leftrad.heart)
+    (kanji.greight.already));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % i/moto "intention"
@@ -122,6 +131,12 @@ endtsuglyph;
 % tai/waza "manner"
 begintsuglyph("uni614B",75);
   kanji.grfive.manner;
+  tsu_render;
+endtsuglyph;
+
+% gai "rue"
+begintsuglyph("uni6168",104);
+  kanji.greight.rue;
   tsu_render;
 endtsuglyph;
 
