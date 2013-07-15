@@ -649,6 +649,12 @@ begintsuglyph("uni4F91",145);
   tsu_render;
 endtsuglyph;
 
+% rin/omo "be methodical"
+begintsuglyph("uni4F96",150);
+  kanji.rare.be_methodical;
+  tsu_render;
+endtsuglyph;
+
 % kyuu/domo "offer"
 begintsuglyph("uni4F9B",155);
   kanji.grsix.offer;

@@ -92,6 +92,14 @@ vardef kanji.grfour.vicinity =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.wheel =
+  push_pbox_toexpand("kanji.grfour.wheel");
+  build_kanji.level(build_kanji.lr(480,-20)
+    (kanji.grone.wheel)
+    (kanji.rare.be_methodical));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.crowded =
@@ -134,6 +142,12 @@ vardef kanji.grnine.grope_along =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% rin/wa "wheel"
+begintsuglyph("uni8F2A",42);
+  kanji.grfour.wheel;
+  tsu_render;
+endtsuglyph;
 
 % shin/kara "acrid"
 begintsuglyph("uni8F9B",155);

@@ -59,6 +59,18 @@ vardef kanji.rare.bald =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.be_methodical =
+  push_pbox_toexpand("kanji.rare.be_methodical");
+  build_kanji.level(
+    build_kanji.sscale(yscaled 0.8 shifted (0,100))(kanji.radical.tent);
+    build_kanji.sscale(yscaled 0.56 shifted (0,-200))
+      (kanji.radical.gmm;
+       push_stroke((383,780)--(383,0),(1.6,1.6)--(1.5,1.5));
+       push_stroke((617,780)--(617,0),(1.6,1.6)--(1.5,1.5));
+       push_stroke((150,410)--(850,410),(1.5,1.5)--(1.5,1.5))));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.befuddled =
   push_pbox_toexpand("kanji.rare.befuddled");
   build_kanji.level(build_kanji.tb(460,120)
