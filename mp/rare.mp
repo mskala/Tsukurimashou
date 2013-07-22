@@ -232,6 +232,31 @@ vardef kanji.rare.early_death =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.extremely =
+  push_pbox_toexpand("kanji.rare.extremely");
+  build_kanji.level(
+    path my_saved_path;
+    tsu_xform(identity shifted (-500,-740)
+      xyscaled (0.5,0.87) shifted (440,740))
+      (kanji.rare.obstruction;
+       my_saved_path:=get_strokep(-2));
+    replace_strokep(-2)(my_saved_path shifted (-500,0)
+      xscaled 0.9 shifted (500,0));
+    replace_strokep(-1)(subpath (0,(length oldp)-0.4) of oldp);
+    push_stroke((get_strokep(0) intersectionpoint ((0,450)--(1000,450)))--
+        (820,450)..tension 1.2..(770,260)..(660,100),
+      (1.5,1.5)--(1.6,1.6)--(1.4,1.4)--(0.9,0.95));
+    set_boserif(0,1,4);
+    set_botip(0,1,1);
+    push_stroke((660,330)..tension 1.2..(750,270)..(860,120),
+      (1,1)--(1.3,1.3)--(1.6,1.6));
+    build_kanji.box((180,400),(400,210));
+    push_stroke(my_saved_path shifted (0,-740),(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,1,9);
+  );
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.finally =
   push_pbox_toexpand("kanji.rare.finally");
   build_kanji.tb(480,-70)
@@ -359,8 +384,8 @@ vardef hook.mound_bottoms(expr left_i,right_i,bottom_i) =
   fi;
 enddef;
 
-vardef kanji.rare.mound_helper =
-  push_pbox_toexpand("kanji.rare.mound_helper");
+vardef kanji.rare_helper.mound =
+  push_pbox_toexpand("kanji.rare_helper.mound");
   begingroup
     save x,y;
     numeric x[],y[];
@@ -400,7 +425,7 @@ enddef;
 
 vardef kanji.rare.mound =
   push_pbox_toexpand("kanji.rare.mound");
-  build_kanji.attach_tick(660)(kanji.rare.mound_helper);
+  build_kanji.attach_tick(660)(kanji.rare_helper.mound);
   expand_pbox;
 enddef;
 

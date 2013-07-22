@@ -113,7 +113,7 @@ vardef kanji.grfour.bureaucracy =
   build_kanji.level(build_kanji.tb(570,100)
     (kanji.radical.silly_hat)
     (build_kanji.sscale(xscaled 0.8 shifted (30,0))
-       (kanji.rare.mound_helper)));
+       (kanji.rare_helper.mound)));
   expand_pbox;
 enddef;
 

@@ -48,6 +48,16 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.attempt =
+  push_pbox_toexpand("kanji.grfour.attempt");
+  build_kanji.lr(480,10)
+    (kanji.grtwo.horse)
+    (kanji.rightrad.attempt);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.hair =
   push_pbox_toexpand("kanji.greight.hair");
   build_kanji.level(build_kanji.tb(440,20)
@@ -65,6 +75,27 @@ vardef kanji.greight.surprise =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.rightrad.attempt =
+  push_pbox_toexpand("kanji.rightrad.attempt");
+  build_kanji.level(
+    build_kanji.sscale(yscaled 0.8 shifted (0,100))(kanji.radical.tent);
+    build_kanji.sscale(yscaled 0.71 shifted (0,-125))
+      (push_stroke((500,780){curl 0}..(430,310)..(280,90)..(20,-90),
+         (1.6,1.6)--(1.5,1.5)--(1.3,1.3)--(0.85,0.85));
+       push_stroke((520,290)..tension 1.2..(640,120)..(920,-50),
+         (1.2,1.2)--(1.4,1.4)--(1.6,1.6));
+       build_kanji.box((230,610),(770,320))));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ken/okashi "attempt"
+begintsuglyph("uni9A13",19);
+  kanji.grfour.attempt;
+  tsu_render;
+endtsuglyph;
 
 % kyou/odoro "surprise"
 begintsuglyph("uni9A5A",90);

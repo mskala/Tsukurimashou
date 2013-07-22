@@ -97,6 +97,42 @@ vardef kanji.grfour.cooked_rice =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour_helper.fly =
+  push_pbox_toexpand("kanji.grfour_helper.fly");
+  push_stroke((120,760)--interpath(mincho,
+      (660,760){dir -87}..{dir -72}(770,-20)..(860,-10)..tension 1.5..
+        (890,100)..(910,200),
+      (630,760){dir -82}..(740,100)..{right}(910,-40){curl 1}..
+        (890,60)..(890,160)),
+    (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.4,1.4)--(1.2,1.2)--(0.9,0.9));
+  set_botip(0,1,1);
+  set_boserif(0,1,4);
+  push_stroke((point 1.33 of get_strokep(0))
+      ..tension 1.2..(770,450)..(840,360),
+    (1.2,1.2)--(1.6,1.6)--(1.8,1.8));
+  set_bosize(0,90);
+  push_stroke((810,670)..tension 1.2..(770,590)..(720,480),
+    (1.6,1.6)--(1.4,1.4)--(1,1));
+  set_bosize(0,90);
+  set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.fly =
+  push_pbox_toexpand("kanji.grfour.fly");
+  build_kanji.tb(440,50)
+    (build_kanji.sscale(xscaled 0.9)(kanji.grfour_helper.fly))
+    (kanji.grfour_helper.fly);
+  push_stroke((480,680)--(480,-70),(1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  set_bosize(0,90);
+  push_stroke((120,610)..(270,640)..tension 1.1..(370,680),
+    (1.1,1.1)--(1.6,1.6)--(2.0,2.0));
+  push_stroke((270,630){down}..(190,130)..(90,-70),
+    (1.6,1.6)--(1.3,1.3)--(1,1));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.order =
   push_pbox_toexpand("kanji.grfour.order");
   build_kanji.level(build_kanji.lr(440,20)
@@ -161,6 +197,18 @@ endtsuglyph;
 % fuu/kaze "wind"
 begintsuglyph("uni98A8",168);
   kanji.grtwo.wind;
+  tsu_render;
+endtsuglyph;
+
+% hi/to "fly"
+begintsuglyph("uni98DB",219);
+  kanji.grfour.fly;
+  tsu_render;
+endtsuglyph;
+
+% helper for "fly"
+begintsuglyph("uni98DE",222);
+  kanji.grfour_helper.fly;
   tsu_render;
 endtsuglyph;
 

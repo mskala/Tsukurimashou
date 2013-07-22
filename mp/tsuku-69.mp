@@ -1,6 +1,6 @@
 %
 % Unicode page 69 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -81,6 +81,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfour.extreme =
+  push_pbox_toexpand("kanji.grfour.extreme");
+  build_kanji.lr(380,30)
+    (kanji.leftrad.wood)
+    (kanji.rare.extremely);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.radical.three_tailed_sheep =
   push_pbox_toexpand("kanji.radical.three_tailed_sheep");
   kanji.grthree.sheep;
@@ -106,6 +116,12 @@ endtsuglyph;
 % kyou/waza "business"
 begintsuglyph("uni696D",109);
   kanji.grthree.business;
+  tsu_render;
+endtsuglyph;
+
+% kyoku/kiwa "extreme"
+begintsuglyph("uni6975",117);
+  kanji.grfour.extreme;
   tsu_render;
 endtsuglyph;
 

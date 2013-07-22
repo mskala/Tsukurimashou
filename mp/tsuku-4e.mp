@@ -455,6 +455,12 @@ begintsuglyph("uni4E9C",156);
   tsu_render;
 endtsuglyph;
 
+% not in dictionaries but needed for grfour.extremely
+begintsuglyph("uni4E9F",159);
+  kanji.rare.extremely;
+  tsu_render;
+endtsuglyph;
+
 % "kettle lid radical"
 begintsuglyph("uni4EA0",160);
   build_kanji.tb(500,-50)
