@@ -34,10 +34,14 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
+input radical.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -88,6 +92,12 @@ endtsuglyph;
 % bi/utsuku "beauty"
 begintsuglyph("uni7F8E",142);
   kanji.grthree.beauty;
+  tsu_render;
+endtsuglyph;
+
+% gi/tagashi "righteousness"
+begintsuglyph("uni7FA9",169);
+  kanji.grfive.righteousness;
   tsu_render;
 endtsuglyph;
 

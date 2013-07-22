@@ -39,6 +39,7 @@ input gradeeight.mp;
 input gradefive.mp;
 input gradefour.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -228,6 +229,12 @@ endtsuglyph;
 % sei/na (as in "naru") "become"
 begintsuglyph("uni6210",16);
   kanji.grfour.become;
+  tsu_render;
+endtsuglyph;
+
+% ga/ware "ego" or "atman" (Buddhist technical term)
+begintsuglyph("uni6211",17);
+  kanji.grsix.ego;
   tsu_render;
 endtsuglyph;
 

@@ -35,12 +35,26 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.deliberation =
+  push_pbox_toexpand("kanji.grfour.deliberation");
+  build_kanji.level(build_kanji.lr(420,-30)
+    (kanji.grtwo.word)
+    (kanji.grfive.righteousness));
+  expand_pbox;
+enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -57,6 +71,12 @@ enddef;
 % bou/haka "conspire"
 begintsuglyph("uni8B00",0);
   kanji.greight.conspire;
+  tsu_render;
+endtsuglyph;
+
+% gi/kata "deliberation"
+begintsuglyph("uni8B70",112);
+  kanji.grfour.deliberation;
   tsu_render;
 endtsuglyph;
 

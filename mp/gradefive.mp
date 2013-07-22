@@ -147,6 +147,14 @@ vardef kanji.grfive.responsibility =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.righteousness =
+  push_pbox_toexpand("kanji.grfive.righteousness");
+  build_kanji.level(build_kanji.tb(460,20)
+    (kanji.toprad.blue)
+    (kanji.grsix.ego));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.showing =
   push_pbox_toexpand("kanji.grfive.showing");
   build_kanji.level(build_kanji.tb(480,130)

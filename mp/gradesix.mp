@@ -79,6 +79,19 @@ vardef kanji.grsix.dry =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.ego =
+  push_pbox_toexpand("kanji.grsix.ego");
+  build_kanji.level(build_kanji.sscale(yscaled 0.9 shifted (0,-50))
+    (build_kanji.lr(420,140)
+       (build_kanji.add_beret(build_kanji.sscale(yscaled 0.94)
+          (kanji.leftrad.hand;
+           obstacktype[find_whatever(otstroke,-1)]:=otnull)))
+       (build_kanji.sscale(yscaled 1.07 shifted (0,60))
+          (kanji.radical.tasselled_spear));
+     replace_strokep(-3)((70,560)--(910,560))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.emperor =
   push_pbox_toexpand("kanji.grsix.emperor");
   build_kanji.tb(350,-20)
