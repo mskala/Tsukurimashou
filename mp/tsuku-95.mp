@@ -35,12 +35,15 @@ beginfont
 % AUTODEPS
 input bkencl.mp;
 input buildkanji.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -49,6 +52,15 @@ do_late_includes;
 vardef kanji.grthree.open =
   push_pbox_toexpand("kanji.grthree.open");
   build_kanji.gate_enclose(kanji.radical.topped_aitch);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfour.barrier =
+  push_pbox_toexpand("kanji.grfour.barrier");
+  build_kanji.gate_enclose(build_kanji.sscale(xscaled 0.8)
+    (kanji.leftrad.barrier));
   expand_pbox;
 enddef;
 
@@ -71,6 +83,19 @@ enddef;
 vardef kanji.grnine.leap_year =
   push_pbox_toexpand("kanji.grnine.leap_year");
   build_kanji.gate_enclose(kanji.grone.king);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.leftrad.barrier =
+  push_pbox_toexpand("kanji.leftrad.barrier");
+  build_kanji.tb(620,190)
+    (kanji.toprad.sparkle_two)
+    (kanji.leftrad.husband;
+     replace_strokep(-1)(subpath
+       (xpart (oldp intersectiontimes get_strokep(-3)),infinity) of oldp);
+     set_boserif(-1,0,whatever));
   expand_pbox;
 enddef;
 
@@ -169,6 +194,12 @@ endtsuglyph;
 % extra
 begintsuglyph("uni95A0",160);
   build_kanji.gate_enclose(kanji.grone.ball);
+  tsu_render;
+endtsuglyph;
+
+% kan/seki "barrier"
+begintsuglyph("uni95A2",162);
+  kanji.grfour.barrier;
   tsu_render;
 endtsuglyph;
 

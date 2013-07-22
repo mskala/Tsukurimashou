@@ -99,6 +99,21 @@ vardef kanji.greight.discharge =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.vibrate =
+  push_pbox_toexpand("kanji.greight.discharge");
+  build_kanji.level(build_kanji.lr(360,40)
+    (kanji.leftrad.hand)
+    (build_kanji.tb(480,0)
+       (kanji.toprad.paw)
+       (push_stroke((200,760)--(800,760),(1.6,1.6)--(1.6,1.6));
+        set_boserif(0,1,9);
+        push_stroke((120,500)--(880,500),(1.6,1.6)--(1.6,1.6));
+        set_boserif(0,1,9);
+        push_stroke((500,760)--(500,0),(1.6,1.6)--(1.5,1.5));
+        build_kanji.cup((220,300),(780,0)))));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ji/mo "have"
@@ -128,6 +143,12 @@ endtsuglyph;
 % byou/ega "depict"
 begintsuglyph("uni63CF",207);
   kanji.greight.depict;
+  tsu_render;
+endtsuglyph;
+
+% you/yu "vibrate"
+begintsuglyph("uni63FA",250);
+  kanji.greight.vibrate;
   tsu_render;
 endtsuglyph;
 
