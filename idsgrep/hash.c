@@ -27,21 +27,12 @@
 
 /**********************************************************************/
 
-#define NUM_BITS (sizeof(size_t)*8)
-
-static HASHED_STRING *free_strings[NUM_BITS]={
-#if SIZEOF_INT>=8
+static HASHED_STRING *free_strings[64]={
    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-#endif
-#if SIZEOF_INT>=6
    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-#endif
-#if SIZEOF_INT>=4
    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-   NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-#endif
    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 };
@@ -49,15 +40,18 @@ static HASHED_STRING *free_strings[NUM_BITS]={
 NODE *default_match_fn(NODE *);
 
 HASHED_STRING *alloc_string(size_t len) {
-   int i=1;
+   int i;
    HASHED_STRING *rval;
    char *save_data;
 
-   while ((((size_t)1)<<i)<=len) i++;
+   if (len<=16)
+     i=4;
+   else
+     for (i=5;(((size_t)1)<<i)<len;i++);
    if (free_strings[i]==NULL) {
-      rval=(HASHED_STRING *)malloc(sizeof(HASHED_STRING));
+      rval=(HASHED_STRING *)malloc(sizeof(HASHED_STRING)+(((size_t)1)<<i));
       memset(rval,0,sizeof(HASHED_STRING));
-      rval->data=(char *)malloc(((size_t)1)<<i);
+      rval->data=(char *)(rval+1);
    } else {
       rval=free_strings[i];
       free_strings[i]=rval->next;
@@ -77,9 +71,12 @@ HASHED_STRING *alloc_string(size_t len) {
 }
 
 void free_string(HASHED_STRING *s) {
-   int i=1;
+   int i;
    
-   while ((((size_t)1)<<i)<=s->length) i++;
+   if (s->length<=16)
+     i=4;
+   else
+     for (i=5;(((size_t)1)<<i)<s->length;i++);
    s->next=free_strings[i];
 #ifdef HAVE_PCRE
    if (s->pcre_compiled) {
@@ -161,7 +158,10 @@ HASHED_STRING *new_string(size_t len,char *s) {
       memcpy(tmps->data,s,len);
       tmps->data[len]='\0';
       tmps->length=len;
-      tmps->refs=1;
+      if (len==1)
+	tmps->refs=2;
+      else
+	tmps->refs=1;
       tmps->next=hash_table[h%hash_table_size];
       hash_table[h%hash_table_size]=tmps;
       hash_table_occupancy++;
@@ -185,8 +185,6 @@ void delete_string(HASHED_STRING *s) {
       }
       free_string(s);
       hash_table_occupancy--;
-      
-      /* FIXME handle shrinking table */
    }
 }
 

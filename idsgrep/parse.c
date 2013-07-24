@@ -380,7 +380,20 @@ size_t parse(size_t len,char *inp) {
 	    /* put it in the string, then re-read it as closing bracket */
 	    close_bracket=hchar;
 	    parse_state=(PARSE_STATE)hchar->arity;
-	    memcpy(partstr,eptr,clen);
+	    switch (clen) {
+	     case 4:
+	       partstr[3]=eptr[3];
+	       /* FALL THROUGH */
+	     case 3:
+	       partstr[2]=eptr[2];
+	       /* FALL THROUGH */
+	     case 2:
+	       partstr[1]=eptr[1];
+	       /* FALL THROUGH */
+	     case 1:
+	       partstr[0]=eptr[0];
+	       /* FALL THROUGH */
+	    }
 	    partstr_len=clen;
 	    delete_string(hchar);
 	    continue;
@@ -471,8 +484,26 @@ size_t parse(size_t len,char *inp) {
 	    }
 	    
 	    /* append the data */
-	    memcpy(partstr+partstr_len,eptr,clen);
-	    partstr_len+=clen;
+	    switch (clen) {
+	     case 4:
+	       partstr[partstr_len++]=*(eptr++);
+	       /* FALL THROUGH */
+	     case 3:
+	       partstr[partstr_len++]=*(eptr++);
+	       /* FALL THROUGH */
+	     case 2:
+	       partstr[partstr_len++]=*(eptr++);
+	       /* FALL THROUGH */
+	     case 1:
+	       partstr[partstr_len++]=*eptr;
+	       /* FALL THROUGH */
+	    }
+	    /* Note this is the code that the above switch() replaced, but
+	     * the switch() also harmlessly trashes eptr.  It works because
+	     * we know clen must be 1, 2, 3, or 4.
+	     *    memcpy(partstr+partstr_len,eptr,clen);
+	     *	  partstr_len+=clen;
+	     */
 	    offs+=clen;
 	 }
 	 
