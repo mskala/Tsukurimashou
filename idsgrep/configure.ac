@@ -236,6 +236,7 @@ AX_CREATE_STDINT_H
 #
 # Checks for typedefs, structures, and compiler characteristics.
 #
+AC_C_INLINE
 AC_CHECK_SIZEOF([int])
 AC_TYPE_SIZE_T
 AX_C___ATTRIBUTE__

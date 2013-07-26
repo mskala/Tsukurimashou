@@ -49,7 +49,7 @@ HASHED_STRING *alloc_string(size_t len) {
    else
      for (i=5;(((size_t)1)<<i)<len;i++);
    if (free_strings[i]==NULL) {
-      rval=(HASHED_STRING *)malloc(sizeof(HASHED_STRING)+(((size_t)1)<<i));
+      rval=(HASHED_STRING *)malloc(sizeof(HASHED_STRING)+(((size_t)1)<<i)+1);
       memset(rval,0,sizeof(HASHED_STRING));
       rval->data=(char *)(rval+1);
    } else {
@@ -62,6 +62,7 @@ HASHED_STRING *alloc_string(size_t len) {
    rval->length=len;
    rval->arity=-2;
    rval->match_fn=default_match_fn;
+   rval->needle_bits_fn=default_needle_bits_fn;
 #ifdef HAVE_PCRE
    rval->pcre_compiled=NULL;
    rval->pcre_studied=NULL;
@@ -97,18 +98,8 @@ static HASHED_STRING **hash_table=NULL;
 static int hash_table_size=0;
 static int hash_table_occupancy=0;
 
-unsigned int hash_function(size_t len,char *s) {
-   unsigned int rval=1;
-   size_t i;
-   
-   for (i=0;i<len;i++) {
-      rval=(rval<<1)^rval^(rval>>1)^(unsigned int)(s[i]);
-   }
-   return rval;
-}
-
 HASHED_STRING *new_string(size_t len,char *s) {
-   unsigned int h,tmph;
+   uint32_t h,tmph;
    int i;
    HASHED_STRING *tmps;
    HASHED_STRING **new_table;
@@ -122,7 +113,7 @@ HASHED_STRING *new_string(size_t len,char *s) {
    }
    
    /* search for the string in the hash table */
-   h=hash_function(len,s);
+   h=fnv_hash(len,s,0);
    for (tmps=hash_table[h%hash_table_size];
 	tmps && ((tmps->length!=len) || memcmp(tmps->data,s,len));
 	tmps=tmps->next);
@@ -145,7 +136,7 @@ HASHED_STRING *new_string(size_t len,char *s) {
 	   while (hash_table[i]) {
 	      tmps=hash_table[i];
 	      hash_table[i]=tmps->next;
-	      tmph=hash_function(tmps->length,tmps->data)%hash_table_size;
+	      tmph=fnv_hash(tmps->length,tmps->data,0)%hash_table_size;
 	      tmps->next=new_table[tmph];
 	      new_table[tmph]=tmps;
 	   }
@@ -176,7 +167,7 @@ void delete_string(HASHED_STRING *s) {
 
    s->refs--;
    if (s->refs==0) {
-      h=hash_function(s->length,s->data)%hash_table_size;
+      h=fnv_hash(s->length,s->data,0)%hash_table_size;
       if (hash_table[h]==s) {
 	 hash_table[h]=s->next;
       } else {

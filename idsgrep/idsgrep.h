@@ -19,6 +19,8 @@
  * mskala@ansuz.sooke.bc.ca
  */
 
+#include <sys/types.h>
+
 #include "config.h"
 #include "_stdint.h"
 
@@ -28,7 +30,11 @@
 
 /**********************************************************************/
 
+struct _NODE;
+struct _BIT_FILTER;
+
 typedef struct _NODE *(*MATCH_FN)(struct _NODE *);
+typedef void (*BITVEC_FN)(struct _NODE *,struct _BIT_FILTER *);
 
 typedef enum _MATCH_RESULT {
    MR_INITIAL=0,
@@ -45,6 +51,7 @@ typedef struct _HASHED_STRING {
    size_t length;
    int refs,arity;
    MATCH_FN match_fn;
+   BITVEC_FN needle_bits_fn;
 #ifdef HAVE_PCRE
    pcre *pcre_compiled;
    pcre_extra *pcre_studied;
@@ -84,9 +91,63 @@ typedef enum _PARSE_STATE {
 
 /**********************************************************************/
 
+/* For consistency with Skala et al. (ACL 2010), LAMBDA is one *less*
+ * than the number of bits set per item inserted in the Bloom filter,
+ * i.e. the maximum number of bits that may be set and still have the
+ * unification result be "fail."  However, in this code we are closer
+ * to a pure Bloom filter than in that paper, because here we choose
+ * bit indices with replacement, accepting some collisions in the
+ * interest of making the vectors a little less dense.
+ */
+
+#define LAMBDA 3
+
+typedef struct _INDEX_HEADER {
+   uint32_t magica,despell;
+} INDEX_HEADER;
+
+typedef struct _INDEX_RECORD {
+   uint64_t bits[2];
+   uint32_t offset;
+} INDEX_RECORD;
+
+typedef struct _BIT_FILTER {
+   uint64_t bits[2];
+   int lambda;
+} BIT_FILTER;
+
+/**********************************************************************/
+
 /* assoc.c */
 
 NODE *assoc_match_fn(NODE *);
+
+/**********************************************************************/
+
+/* bitvec.c */
+
+#define MSEED_SIZE 13
+
+extern uint32_t magic_seed[MSEED_SIZE];
+
+void default_needle_bits_fn(NODE *,BIT_FILTER *);
+void haystack_bits_fn(NODE *,uint64_t bits[2]);
+
+#if UINT64_MAX==UINT_MAX
+# define BITVEC_MATCH(n,h) \
+   ((n)->lambda<(__builtin_popcount((n)->bits[0]&(h)->bits[0]) \
+		 +__builtin_popcount((n)->bits[1]&(h)->bits[1])))
+#else
+# if UINT64_MAX==ULONG_MAX
+#  define BITVEC_MATCH(n,h) \
+   ((n)->lambda<(__builtin_popcountl((n)->bits[0]&(h)->bits[0]) \
+		 +__builtin_popcountl((n)->bits[1]&(h)->bits[1])))
+# else
+#  define BITVEC_MATCH(n,h) \
+   ((n)->lambda<(__builtin_popcountll((n)->bits[0]&(h)->bits[0]) \
+		 +__builtin_popcountll((n)->bits[1]&(h)->bits[1])))
+# endif
+#endif
 
 /**********************************************************************/
 
@@ -156,3 +217,35 @@ void generate_unicode_list(NODE *,char *);
 void font_file_userpred(char *);
 
 NODE *user_match_fn(NODE *);
+
+/**********************************************************************/
+
+/* Fowler-Noll-Vo hash, type 1a, on unsigned ints or uint32_ts,
+ * whichever are bigger, but always folding to a uint32_t.
+ * The "bump" argument, if nonzero, has the effect of hashing an
+ * extra zero byte before the input; we use it to get two different
+ * hash functions for (almost) the price of one, which is useful in
+ * a few places in the code. */
+
+static inline uint32_t fnv_hash(int m,char *a,int bump) {
+   int i;
+#if UINT_MAX==0xFFFFFFFFFFFFFFFF
+   unsigned int hval=bump?12638153115695167455U:14695981039346656037U;
+   
+   for (i=0;i<m;i++) {
+      hval^=a[i];
+      hval*=1099511628211U;
+   }
+   
+   return (uint32_t)(hval^(hval>>32));
+#else
+   uint32_t hval=bump?UINT32_C(84696351):UINT32_C(2166136261);
+
+   for (i=0;i<m;i++) {
+      hval^=a[i];
+      hval*=UINT32_C(16777619);
+   }
+   
+   return hval;
+#endif
+}

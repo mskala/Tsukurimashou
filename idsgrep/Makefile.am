@@ -153,8 +153,8 @@ dist_pdf_DATA = $(MAYBE_DOCS)
 
 AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 idsgrep_SOURCES = \
-  assoc.c cook.c hash.c idsgrep.c idsgrep.h match.c parse.c \
-  regex.c unilist.c userpred.c
+  assoc.c bitvec.c cook.c hash.c idsgrep.c idsgrep.h match.c \
+  parse.c regex.c unilist.c userpred.c
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS)
 
