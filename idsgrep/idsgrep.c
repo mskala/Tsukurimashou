@@ -25,6 +25,9 @@
 #include <glob.h>
 #include <unistd.h>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "idsgrep.h"
 #include "getopt.h"
 
@@ -159,14 +162,191 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 
 /**********************************************************************/
 
+#define IDX_REC_BLK 2001
+
 void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
-   if (ignore_indices || generate_index || (strcmp(fn,"-")==0)) {
-      process_file(match_pattern,fn,fn_flag);
-      return;
+   int i,ir_avail,ir_done;
+   NODE *to_match;
+   FILE *infile,*idxfile;
+   HASHED_STRING *hfn,*colon;
+   off_t offset;
+   INDEX_HEADER ih;
+   INDEX_RECORD *ir;
+   struct stat stat_buff;
+   time_t mtime;
+   BIT_FILTER bf;
+   char *dict_buff;
+   size_t dict_buff_size=0,entry_size,parsed;
+
+   /* bail, if we can't use an index or have been told to ignore it */
+   if ((ignore_indices==1) || generate_index || (strcmp(fn,"-")==0)) {
+      if (ignore_indices==2) {
+	 puts("can't use index while generating index, nor on stdin");
+	 exit(1);
+      } else {
+	 process_file(match_pattern,fn,fn_flag);
+	 return;
+      }
+   }
+   ir=(INDEX_RECORD *)malloc(IDX_REC_BLK*sizeof(INDEX_RECORD));
+   
+   /* look for index file */
+   for (i=0;fn[i]!='\0';i++);
+   if ((i<5) || (strcmp(fn+i-5,".eids")!=0)
+       || (stat(fn,&stat_buff)!=0)) {
+      free(ir);
+      if (ignore_indices==2) {
+	 puts("filename doesn't end in .eids, or can't stat");
+	 exit(1);
+      } else {
+	 process_file(match_pattern,fn,fn_flag);
+	 return;
+      }
+   }
+   mtime=stat_buff.st_mtime;
+   strcpy(fn+i-4,"bvec");
+   if ((stat(fn,&stat_buff)!=0) || (stat_buff.st_mtime<mtime)
+       || ((idxfile=fopen(fn,"rb"))==NULL)) {
+      strcpy(fn+i-4,"eids");
+      free(ir);
+      if (ignore_indices==2) {
+	 puts("bit vector file too old, or can't stat or open it");
+	 exit(1);
+      } else {
+	 process_file(match_pattern,fn,fn_flag);
+	 return;
+      }
+   }
+   strcpy(fn+i-4,"eids");
+   
+   /* check for compatible header */
+   if ((fread(&ih,sizeof(INDEX_HEADER),1,idxfile)!=1)
+       || (ih.magica!=fnv_hash(MSEED_SIZE*sizeof(uint32_t),
+			       (char *)magic_seed,0))
+       || (ih.despell!=fnv_hash(MSEED_SIZE*sizeof(uint32_t),
+				(char *)magic_seed,1))
+       || (fread(ir,sizeof(INDEX_RECORD),1,idxfile)!=1)) {
+      fclose(idxfile);
+      free(ir);
+      if (ignore_indices==2) {
+	 puts("can't read desired header from bit vector file");
+	 exit(1);
+      } else {
+	 process_file(match_pattern,fn,fn_flag);
+	 return;
+      }
    }
    
-   /* FIXME - do search with index */
-   process_file(match_pattern,fn,fn_flag);
+   /* Now we are committed to index mode. */
+   
+   /* analyse the query */
+   match_pattern->functor->needle_bits_fn(match_pattern,&bf);
+   
+   /* wrap the filename in a string so we can escape-print it */
+   if (fn_flag>=0)
+     hfn=new_string(strlen(fn+fn_flag),fn+fn_flag);
+   else
+     hfn=new_string(strlen(fn),fn);
+   colon=new_string(1,":");
+
+   /* open input file */
+   infile=fopen(fn,"rb");
+   if (infile==NULL) {
+      fclose(idxfile);
+      free(ir);
+      fprintf(stderr,"can't open %s for reading\n",fn);
+      return;
+   }
+   offset=(off_t)0;
+   
+   /* loop over input */
+   ir_avail=0;
+   while (!(feof(idxfile) || ferror(idxfile))) {
+
+      /* try reading some index records */
+      ir_avail+=fread(ir+ir_avail+1,sizeof(INDEX_RECORD),
+		      IDX_REC_BLK-ir_avail-1,idxfile);
+
+      /* loop through whatever records we have */
+      for (ir_done=0;ir_done<ir_avail;ir_done++) {
+	 ir[ir_done].bits[0]&=bf.bits[0];
+	 ir[ir_done].bits[1]&=bf.bits[1];
+	 if (uint64_2_pop(ir[ir_done].bits)>bf.lambda) {
+	    
+	    /* go to appropriate place in the file */
+	    if ((offset!=ir[ir_done].offset)
+		&& (fseeko(infile,ir[ir_done].offset,SEEK_SET)!=0)) {
+	       fclose(infile);
+	       fclose(idxfile);
+	       free(ir);
+	       fprintf(stderr,"error seeking in %s\n",fn);
+	       return;
+	    }
+	    offset=ir[ir_done].offset;
+	    
+	    /* check we have a buffer and it's big enough */
+	    entry_size=ir[ir_done+1].offset-offset;
+	    if (entry_size>dict_buff_size) {
+	       if (dict_buff_size>0)
+		 free(dict_buff);
+	       dict_buff=(char *)malloc(entry_size*2);
+	       dict_buff_size=entry_size*2;
+	    }
+	    
+	    /* attempt to read the entry */
+	    if (fread(dict_buff,1,entry_size,infile)!=entry_size) {
+	       fclose(infile);
+	       fclose(idxfile);
+	       free(ir);
+	       fprintf(stderr,"error reading entry from %s\n",fn);
+	       return;
+	    }
+	    offset=ir[ir_done+1].offset;
+	    
+	    /* parse */
+	    parsed=parse(entry_size,dict_buff);
+	    
+	    /* MUST have a complete entry at this point */
+	    if (parse_state!=PS_COMPLETE_TREE) {
+	       puts("can't parse input pattern");
+	       fwrite(dict_buff,1,parsed,stdout);
+	       putchar('\n');
+	       fclose(infile);
+	       fclose(idxfile);
+	       free(ir);
+	       exit(1);
+	    }
+	    
+	    /* handle the parsed tree */
+	    to_match=parse_stack[0];
+	    stack_ptr=0;
+	    
+	    if (tree_match(match_pattern,to_match)) {
+	       if (fn_flag>=0)
+		 write_bracketed_string(hfn,colon);
+	       if (cook_output)
+		 write_cooked_tree(to_match);
+	       else
+		 fwrite(dict_buff,1,entry_size,stdout);
+	    }
+	    
+	    free_node(to_match);
+	 }
+      }
+      
+      /* shift down the last record */
+      ir[0]=ir[ir_avail];
+      ir_avail=0;
+   }
+   
+   fclose(infile);
+   fclose(idxfile);
+   
+   if (dict_buff_size>0) free(dict_buff);
+   free(ir);
+
+   delete_string(hfn);
+   delete_string(colon);
 }
 
 /**********************************************************************/
@@ -177,7 +357,7 @@ static struct option long_opts[] = {
    {"font-chars",required_argument,NULL,'f'},
    {"help",no_argument,NULL,'h'},
    {"generate-index",no_argument,NULL,'G'},
-   {"ignore-indices",no_argument,NULL,'I'},
+   {"ignore-indices",optional_argument,NULL,'I'},
    {"unicode-list",optional_argument,NULL,'U'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
@@ -205,7 +385,7 @@ int main(int argc,char **argv) {
    register_syntax();
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"GIU::Vc:d::f:h",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"GI::U::Vc:d::f:h",long_opts,NULL))!=-1) {
       switch (c) {
 
        case 'G':
@@ -213,7 +393,14 @@ int main(int argc,char **argv) {
 	 break;
 	 
        case 'I':
-	 ignore_indices=1;
+	 if (optarg==NULL)
+	   ignore_indices=1;
+	 else if (optarg[0]=='I')
+	   ignore_indices=2;
+	 else {
+	    puts("bad argument for -I");
+	    exit(1);
+	 }
 	 break;
 	 
        case 'U':
@@ -262,7 +449,7 @@ int main(int argc,char **argv) {
 	  "PATTERN should be an Extended Ideographic Description Sequence\n\n"
 	  "Options:\n"
 	  "  -G, --generate-index      generate bit vector index\n"
-	  "  -I, --ignore-indices      don't use bit vector indices\n"
+	  "  -I[I], --ignore-indices[=I]  ignore [insist on] bit vectors\n"
 	  "  -U, --unicode-list=CFG    generate Unicode list\n"
 	  "  -V, --version             display version and license\n"
 	  "  -c, --cooking=FMT         set input/output cooking\n"

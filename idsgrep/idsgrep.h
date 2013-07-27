@@ -133,21 +133,32 @@ extern uint32_t magic_seed[MSEED_SIZE];
 void default_needle_bits_fn(NODE *,BIT_FILTER *);
 void haystack_bits_fn(NODE *,uint64_t bits[2]);
 
-#if UINT64_MAX==UINT_MAX
-# define BITVEC_MATCH(n,h) \
-   ((n)->lambda<(__builtin_popcount((n)->bits[0]&(h)->bits[0]) \
-		 +__builtin_popcount((n)->bits[1]&(h)->bits[1])))
-#else
-# if UINT64_MAX==ULONG_MAX
-#  define BITVEC_MATCH(n,h) \
-   ((n)->lambda<(__builtin_popcountl((n)->bits[0]&(h)->bits[0]) \
-		 +__builtin_popcountl((n)->bits[1]&(h)->bits[1])))
-# else
-#  define BITVEC_MATCH(n,h) \
-   ((n)->lambda<(__builtin_popcountll((n)->bits[0]&(h)->bits[0]) \
-		 +__builtin_popcountll((n)->bits[1]&(h)->bits[1])))
-# endif
-#endif
+/* This should be:
+ *    - faster than GCC's builtin (which isn't great) when that doesn't
+ *      translate into a native instruction
+ *    - not a lot worse than the native instruction if it exists
+ *    - faster than software implementations designed for BIG input, because
+ *      of cache issues
+ *    - faster on a 64-bit machine than software implementations designed
+ *      for input smaller than 128 bits, because of sharing the multiply
+ *    - not completely disastrous even on platforms where there is no
+ *      good way to do population count.
+ */
+static inline int uint64_2_pop(uint64_t b[2]) {
+   uint64_t x,y;
+
+   x=b[0]-((b[0]>>1)&UINT64_C(0x5555555555555555));
+   x=(x&UINT64_C(0x3333333333333333))+((x>>2)&UINT64_C(0x3333333333333333));
+   x+=(x>>4);
+   x&=UINT64_C(0x0F0F0F0F0F0F0F0F);
+
+   y=b[1]-((b[1]>>1)&UINT64_C(0x5555555555555555));
+   y=(x&UINT64_C(0x3333333333333333))+((y>>2)&UINT64_C(0x3333333333333333));
+   y+=(y>>4);
+   y&=UINT64_C(0x0F0F0F0F0F0F0F0F);
+   
+   return ((x+y)*UINT64_C(0x0101010101010101))>>56;
+}
 
 /**********************************************************************/
 
