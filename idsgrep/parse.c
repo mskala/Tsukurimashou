@@ -382,7 +382,7 @@ size_t parse(size_t len,char *inp) {
 	    parse_state=(PARSE_STATE)hchar->arity;
 	    switch (clen) {
 	     case 4:
-	       partstr[3]=eptr[3];
+	       partstr[3]=eptr[3]; /* SNH */ /* no 4-byte chars are sugary */
 	       /* FALL THROUGH */
 	     case 3:
 	       partstr[2]=eptr[2];

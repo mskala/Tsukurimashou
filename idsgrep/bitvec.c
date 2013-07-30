@@ -171,44 +171,85 @@ void haystack_bits_fn(NODE *n,uint64_t bits[2]) {
 
 /* match everything */
 static BIT_FILTER *bf_true(BIT_FILTER *z) {
+   int i;
+   
    z->bits[0]=UINT64_MAX;
    z->bits[1]=UINT64_MAX;
    z->lambda=-1;
+
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"TRU=%016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
+   }
+
    return z;
 }
 
 /* match nothing */
 static BIT_FILTER *bf_false(BIT_FILTER *z) {
+   int i;
+   
    z->bits[0]=UINT64_C(0);
    z->bits[1]=UINT64_C(0);
    z->lambda=128;
+
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"FLS=%016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
+   }
+
    return z;
 }
 
 /* match if x does not match (very loose) */
 static BIT_FILTER *bf_not(BIT_FILTER *z,BIT_FILTER *x) {
+   int i;
+
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"NOT %016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
+   }
+
    return (x->lambda<0)?bf_false(z):bf_true(z);
 }
 
 /* match if x matches or y matches */
 static BIT_FILTER *bf_or(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
-   uint64_t xybits[2];
+   uint64_t trimbits[2];
    int i,hi_lambda;
-   
-   /* find places where they differ */
-   xybits[0]=x->bits[0]^y->bits[0];
-   xybits[1]=x->bits[1]^y->bits[1];
-   
-   /* compute basic OR */
-   z->bits[0]=x->bits[0]|y->bits[0];
-   z->bits[1]=x->bits[1]|y->bits[1];
+
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"OR  %016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"    %016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      y->bits[1],y->bits[0],y->lambda+1,uint64_2_pop(y->bits));
+   }
+
+   /* find new lambda, and bits we can consider trimming */
    if (x->lambda<y->lambda) {
       hi_lambda=y->lambda;
       z->lambda=x->lambda;
+      trimbits[0]=y->bits[0]&~x->bits[0];
+      trimbits[1]=y->bits[1]&~x->bits[1];
    } else {
       hi_lambda=x->lambda;
       z->lambda=y->lambda;
+      trimbits[0]=x->bits[0]&~y->bits[0];
+      trimbits[1]=x->bits[1]&~y->bits[1];
    }
+   
+   /* merge the bit vectors */
+   z->bits[0]=x->bits[0]|y->bits[0];
+   z->bits[1]=x->bits[1]|y->bits[1];
    
    /* peel off bits as far as possible */
    /* speed is not critical here (unlike where we do population count)
@@ -216,25 +257,43 @@ static BIT_FILTER *bf_or(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
     * more than z->lambda, it's not clear we'd save much by trying to
     * do a super-fast "find highest set bit" operation */
    for (i=63;(hi_lambda>z->lambda) && (i>=0);i--)
-     if (xybits[1]&(UINT64_C(1)<<i)) {
+     if (trimbits[1]&(UINT64_C(1)<<i)) {
 	z->bits[1]^=UINT64_C(1)<<i;
 	hi_lambda--;
      }
    for (i=63;(hi_lambda>z->lambda) && (i>=0);i--)
-     if (xybits[0]&(UINT64_C(1)<<i)) {
+     if (trimbits[0]&(UINT64_C(1)<<i)) {
 	z->bits[0]^=UINT64_C(1)<<i;
 	hi_lambda--;
      }
    
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"   =%016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
+   }
+
    return z;
 }
 
 /* match if x matches and y matches */
 static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
+   int i;
    uint64_t xybits[2];
    int a_max,a_min,b_max,b_min,c_max,c_min;
    int ab_min,bc_min,ac_min,abc_min,best_filter;
    
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"AND %016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"    %016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      y->bits[1],y->bits[0],y->lambda+1,uint64_2_pop(y->bits));
+   }
+
    /* find the bits in common */
    xybits[0]=x->bits[0]&y->bits[0];
    xybits[1]=x->bits[1]&y->bits[1];
@@ -273,14 +332,21 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
      ac_min=abc_min-b_max;
    
    /* find the best filter */
-   best_filter=((a_min>=a_max/3)?0:4)
-     +((b_min>=b_max/3)?0:2)
-       +((c_min>=c_max/3)?0:1);
+   best_filter=((a_min>a_max/3)?0:4)
+     +((b_min>b_max/3)?0:2)
+       +((c_min>c_max/3)?0:1);
+   
+   /* no good filter - try harder */
+   if (best_filter==7)
+     best_filter=((a_min>0)?0:4)
+       +((b_min>0)?0:2)
+	 +((c_min>0)?0:1);
+   if (best_filter==7)
+     return bf_true(z); /* SNH */
 
    /* set up the return value */
    switch(best_filter) {
     case 0: /* ABC */
-    case 7: /* ABC, last ditch when none of the subsets look good */
       z->bits[0]=x->bits[0]|y->bits[0];
       z->bits[1]=x->bits[1]|y->bits[1];
       z->lambda=abc_min-1;
@@ -323,6 +389,13 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
       break;
    }
 
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"   =%016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
+   }
+
    return z;
 }
 
@@ -330,8 +403,15 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
 
 /* match if first child of x matches */
 static BIT_FILTER *bf_first_child(BIT_FILTER *z,BIT_FILTER *x) {
-   int mylambda;
+   int mylambda,i;
    uint64_t c[2];
+
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"FCH %016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
+   }
 
    /* abort in case of the match-everything filter */
    if (x->lambda<0)
@@ -353,13 +433,27 @@ static BIT_FILTER *bf_first_child(BIT_FILTER *z,BIT_FILTER *x) {
    z->bits[0]=x->bits[0]<<32;
    z->lambda=mylambda;
    
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"   =%016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
+   }
+
    return z;
 }
 
 /* match if last child of x matches */
 static BIT_FILTER *bf_last_child(BIT_FILTER *z,BIT_FILTER *x) {
-   int mylambda;
+   int mylambda,i;
    uint64_t c[2];
+
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"LCH %016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
+   }
 
    /* abort in case of the match-everything filter */
    if (x->lambda<0)
@@ -381,14 +475,28 @@ static BIT_FILTER *bf_last_child(BIT_FILTER *z,BIT_FILTER *x) {
    z->bits[0]=UINT64_C(0);
    z->lambda=mylambda;
 
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"   =%016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
+   }
+
    return z;
 }
 
 /* match if middle child of x matches */
 static BIT_FILTER *bf_middle_child(BIT_FILTER *z,BIT_FILTER *x) {
-   int mylambda;
+   int mylambda,i;
    uint64_t c[2];
    
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"MCH %016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
+   }
+
    /* abort in case of the match-everything filter */
    if (x->lambda<0)
      return bf_true(z);
@@ -408,8 +516,15 @@ static BIT_FILTER *bf_middle_child(BIT_FILTER *z,BIT_FILTER *x) {
    z->bits[1]=x->bits[0]|x->bits[1];
    z->bits[1]=(z->bits[1]|(z->bits[1]>>32))<<32;
    z->bits[0]=UINT64_C(0);
-   z->lambda=x->lambda/4;
+   z->lambda=mylambda;
    
+   /* show debug information */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"   =%016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
+   }
+
    return z;
 }
 
@@ -518,9 +633,7 @@ void anywhere_needle_fn(NODE *n,BIT_FILTER *f) {
    /* match if it matches anywhere */
    bf_first_child(&fa,f);
    fa.bits[1]|=fa.bits[0]>>32;
-   bf_or(f,bf_or(f,&fa,&fa),bf_middle_child(&fb,f));
-   
-   /* FIXME make this tighter */
+   bf_or(f,bf_or(f,f,&fa),bf_middle_child(&fb,f));
 }
 
 void and_needle_fn(NODE *n,BIT_FILTER *f) {

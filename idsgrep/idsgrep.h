@@ -112,15 +112,12 @@ typedef enum _PARSE_STATE {
 /**********************************************************************/
 
 /* For consistency with Skala et al. (ACL 2010), LAMBDA is one *less*
- * than the number of bits set per item inserted in the Bloom filter,
- * i.e. the maximum number of bits that may be set and still have the
- * unification result be "fail."  However, in this code we are closer
- * to a pure Bloom filter than in that paper, because here we choose
- * bit indices with replacement, accepting some collisions in the
- * interest of making the vectors a little less dense.
+ * than the number of bits set per item inserted in the Bloom filter.
+ * In other words, LAMBDA is the maximum number of bits that may be
+ * set and still have the unification result be "fail."
  */
 
-#define LAMBDA 3
+#define LAMBDA 2
 
 typedef struct _INDEX_HEADER {
    uint32_t magica,despell;
