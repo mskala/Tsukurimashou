@@ -343,7 +343,7 @@ void generate_unicode_list(NODE *match_pattern,char *cfg) {
 	    stack_ptr=0;
 	    if (tree_match(match_pattern,to_match)) {
 	       if (cook_output)
-		 write_cooked_tree(to_match);
+		 write_cooked_tree(to_match,stdout);
 	       else {
 		  fwrite(ebuf,1,elen-1,stdout);
 		  echoing_whitespace=1;

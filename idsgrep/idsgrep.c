@@ -34,7 +34,6 @@
 /**********************************************************************/
 
 static int generate_index=0,ignore_indices=0;
-
 /* basic search and index generation */
 void process_file(NODE *match_pattern,char *fn,int fn_flag) {
    int read_amt,flag,i;
@@ -119,13 +118,19 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 	       haystack_bits_fn(to_match,ir.bits);
 	       fwrite(&ir,sizeof(INDEX_RECORD),1,stdout);
 	       offset+=(parse_ptr-i);
+	       if (bitvec_debug) {
+		  fprintf(stderr,"%016" PRIX64 "%016" PRIX64 "(%3d) ",
+			  ir.bits[1],ir.bits[0],uint64_2_pop(ir.bits));
+		  fwrite(input_buffer+i,1,parse_ptr-i,stderr);
+		  fputc('\n',stderr);
+	       }
 
 	    } else if (tree_match(match_pattern,to_match)) {
 	       for (i=0;((unsigned char)input_buffer[i])<=0x20;i++);
 	       if (fn_flag>=0)
-		 write_bracketed_string(hfn,colon);
+		 write_bracketed_string(hfn,colon,stdout);
 	       if (cook_output)
-		 write_cooked_tree(to_match);
+		 write_cooked_tree(to_match,stdout);
 	       else {
 		  fwrite(input_buffer+i,1,parse_ptr-i,stdout);
 		  echoing_whitespace=1;
@@ -164,6 +169,9 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 
 #define IDX_REC_BLK 2001
 
+static uint64_t bv_checks=UINT64_C(0),bv_hits=UINT64_C(0);
+static uint64_t tree_hits=UINT64_C(0);
+
 void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    int i,ir_avail,ir_done;
    NODE *to_match;
@@ -179,9 +187,9 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    size_t dict_buff_size=0,entry_size,parsed;
 
    /* bail, if we can't use an index or have been told to ignore it */
-   if ((ignore_indices==1) || generate_index || (strcmp(fn,"-")==0)) {
-      if (ignore_indices==2) {
-	 puts("can't use index while generating index, nor on stdin");
+   if (ignore_indices || generate_index || (strcmp(fn,"-")==0)) {
+      if (bitvec_debug && !generate_index) {
+	 puts("can't use index on stdin, nor both ignore and debug it");
 	 exit(1);
       } else {
 	 process_file(match_pattern,fn,fn_flag);
@@ -195,7 +203,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    if ((i<5) || (strcmp(fn+i-5,".eids")!=0)
        || (stat(fn,&stat_buff)!=0)) {
       free(ir);
-      if (ignore_indices==2) {
+      if (bitvec_debug) {
 	 puts("filename doesn't end in .eids, or can't stat");
 	 exit(1);
       } else {
@@ -209,7 +217,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
        || ((idxfile=fopen(fn,"rb"))==NULL)) {
       strcpy(fn+i-4,"eids");
       free(ir);
-      if (ignore_indices==2) {
+      if (bitvec_debug) {
 	 puts("bit vector file too old, or can't stat or open it");
 	 exit(1);
       } else {
@@ -228,7 +236,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
        || (fread(ir,sizeof(INDEX_RECORD),1,idxfile)!=1)) {
       fclose(idxfile);
       free(ir);
-      if (ignore_indices==2) {
+      if (bitvec_debug) {
 	 puts("can't read desired header from bit vector file");
 	 exit(1);
       } else {
@@ -240,7 +248,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    /* Now we are committed to index mode. */
    
    /* analyse the query */
-   match_pattern->functor->needle_bits_fn(match_pattern,&bf);
+   needle_fn_wrapper(match_pattern,&bf);
    
    /* wrap the filename in a string so we can escape-print it */
    if (fn_flag>=0)
@@ -271,7 +279,10 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
       for (ir_done=0;ir_done<ir_avail;ir_done++) {
 	 ir[ir_done].bits[0]&=bf.bits[0];
 	 ir[ir_done].bits[1]&=bf.bits[1];
+	 bv_checks++;
+	 
 	 if (uint64_2_pop(ir[ir_done].bits)>bf.lambda) {
+	    bv_hits++;
 	    
 	    /* go to appropriate place in the file */
 	    if ((offset!=ir[ir_done].offset)
@@ -322,10 +333,11 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 	    stack_ptr=0;
 	    
 	    if (tree_match(match_pattern,to_match)) {
+	       tree_hits++;
 	       if (fn_flag>=0)
-		 write_bracketed_string(hfn,colon);
+		 write_bracketed_string(hfn,colon,stdout);
 	       if (cook_output)
-		 write_cooked_tree(to_match);
+		 write_cooked_tree(to_match,stdout);
 	       else
 		 fwrite(dict_buff,1,entry_size,stdout);
 	    }
@@ -352,12 +364,13 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 /**********************************************************************/
 
 static struct option long_opts[] = {
+   {"bitvec-debug",no_argument,NULL,'D'|128},
    {"cooking",required_argument,NULL,'c'},
    {"dictionary",optional_argument,NULL,'d'},
    {"font-chars",required_argument,NULL,'f'},
    {"help",no_argument,NULL,'h'},
    {"generate-index",no_argument,NULL,'G'},
-   {"ignore-indices",optional_argument,NULL,'I'},
+   {"ignore-indices",no_argument,NULL,'I'},
    {"unicode-list",optional_argument,NULL,'U'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
@@ -376,7 +389,7 @@ int main(int argc,char **argv) {
    char *dictdir,*dictname=NULL,*dictglob,*unilist_cfg=NULL;
    glob_t globres;
    int show_version=0,show_help=0,generate_list=0;
-   
+
    /* quick usage message */
    if (argc<2)
      usage_message();
@@ -385,7 +398,7 @@ int main(int argc,char **argv) {
    register_syntax();
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"GI::U::Vc:d::f:h",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"GIU::Vc:d::f:h",long_opts,NULL))!=-1) {
       switch (c) {
 
        case 'G':
@@ -393,14 +406,7 @@ int main(int argc,char **argv) {
 	 break;
 	 
        case 'I':
-	 if (optarg==NULL)
-	   ignore_indices=1;
-	 else if (optarg[0]=='I')
-	   ignore_indices=2;
-	 else {
-	    puts("bad argument for -I");
-	    exit(1);
-	 }
+	 ignore_indices=1;
 	 break;
 	 
        case 'U':
@@ -431,6 +437,9 @@ int main(int argc,char **argv) {
 	 show_help=1;
 	 break;
 	 
+       case 'D'|128:
+	 bitvec_debug=1;
+
        default:
 	 break;
       }
@@ -449,20 +458,25 @@ int main(int argc,char **argv) {
 	  "PATTERN should be an Extended Ideographic Description Sequence\n\n"
 	  "Options:\n"
 	  "  -G, --generate-index      generate bit vector index\n"
-	  "  -I[I], --ignore-indices[=I]  ignore [insist on] bit vectors\n"
+	  "  -I, --ignore-indices      ignore bit vector indices\n"
 	  "  -U, --unicode-list=CFG    generate Unicode list\n"
 	  "  -V, --version             display version and license\n"
 	  "  -c, --cooking=FMT         set input/output cooking\n"
 	  "  -d, --dictionary=NAME     search standard dictionary\n"
 	  "  -f, --font-chars=FONT     use chars in FONT as a user-defined"
 	                             " predicate\n"
+	  "      --bitvec-debug        verbose bit vector debugging messages"
 	  "  -h, --help                display this help");
    
    if (show_version || show_help)
      exit(0);
  
-   /* parse matching pattern */
-   if (optind<argc) {
+   /* parse matching pattern (automatic wildcard in generate mode) */
+   if (generate_index) {
+      parse(1,"?");
+      match_pattern=parse_stack[0];
+      stack_ptr=0;
+   } else if (optind<argc) {
       if ((parse(strlen(argv[optind]),argv[optind])<strlen(argv[optind]))
 	  || (parse_state!=PS_COMPLETE_TREE)) {
 	 puts("can't parse matching pattern");
@@ -508,6 +522,24 @@ int main(int argc,char **argv) {
 	process_file(match_pattern,"-",-1);
       else
 	puts("(no dictionaries were searched)");
+   }
+   
+   /* print statistics */
+   if (bitvec_debug && !generate_index) {
+      fprintf(stderr,"%20" PRIu64 " bitvec checks\n",bv_checks);
+      if (bv_checks>UINT64_C(0)) {
+	 fprintf(stderr,"%20" PRIu64 " bitvec hits (%d.%d%%)\n",
+		bv_hits,(int)((100*bv_hits)/bv_checks),
+		((int)((1000*bv_hits)/bv_checks))%10);
+	 if (bv_hits>UINT64_C(0)) {
+	    fprintf(stderr,"%20" PRIu64 " tree hits (%d.%d%% of bitvec hits, "
+		   "%d.%d%% of all)\n",
+		   tree_hits,(int)((100*tree_hits)/bv_hits),
+		   ((int)((1000*tree_hits)/bv_hits))%10,
+		   (int)((100*tree_hits)/bv_checks),
+		   ((int)((1000*tree_hits)/bv_checks))%10);
+	 }
+      }
    }
 
    exit(0);

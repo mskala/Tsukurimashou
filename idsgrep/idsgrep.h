@@ -24,8 +24,28 @@
 #include "config.h"
 #include "_stdint.h"
 
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#else
+# if ULONG_MAX==4294967295UL
+#  ifndef PRIu64
+#   define PRIu64 "llu"
+#  endif
+#  ifndef PRIX64
+#   define PRIX64 "llx"
+#  endif
+# else
+#  ifndef PRIu64
+#   define PRIu64 "lu"
+#  endif
+#  ifndef PRIX64
+#   define PRIX64 "lx"
+#  endif
+# endif
+#endif
+
 #ifdef HAVE_PCRE
-#include <pcre.h>
+# include <pcre.h>
 #endif
 
 /**********************************************************************/
@@ -129,9 +149,32 @@ NODE *assoc_match_fn(NODE *);
 #define MSEED_SIZE 13
 
 extern uint32_t magic_seed[MSEED_SIZE];
+extern int bitvec_debug;
 
-void default_needle_bits_fn(NODE *,BIT_FILTER *);
 void haystack_bits_fn(NODE *,uint64_t bits[2]);
+
+void needle_fn_wrapper(NODE *,BIT_FILTER *);
+void default_needle_fn(NODE *,BIT_FILTER *);
+
+void anything_needle_fn(NODE *,BIT_FILTER *);
+void anywhere_needle_fn(NODE *,BIT_FILTER *);
+void and_needle_fn(NODE *,BIT_FILTER *);
+void or_needle_fn(NODE *,BIT_FILTER *);
+void not_needle_fn(NODE *,BIT_FILTER *);
+void unord_needle_fn(NODE *,BIT_FILTER *);
+
+/*
+idsgrep.h:NODE *assoc_match_fn(NODE *);
+idsgrep.h:NODE *default_match_fn(NODE *);
+idsgrep.h:NODE *and_or_match_fn(NODE *);
+idsgrep.h:NODE *anything_match_fn(NODE *);
+idsgrep.h:NODE *anywhere_match_fn(NODE *);
+idsgrep.h:NODE *equal_match_fn(NODE *);
+idsgrep.h:NODE *not_match_fn(NODE *);
+idsgrep.h:NODE *unord_match_fn(NODE *);
+idsgrep.h:NODE *regex_match_fn(NODE *);
+idsgrep.h:NODE *user_match_fn(NODE *);
+*/
 
 /* This should be:
  *    - faster than GCC's builtin (which isn't great) when that doesn't
@@ -153,7 +196,7 @@ static inline int uint64_2_pop(uint64_t b[2]) {
    x&=UINT64_C(0x0F0F0F0F0F0F0F0F);
 
    y=b[1]-((b[1]>>1)&UINT64_C(0x5555555555555555));
-   y=(x&UINT64_C(0x3333333333333333))+((y>>2)&UINT64_C(0x3333333333333333));
+   y=(y&UINT64_C(0x3333333333333333))+((y>>2)&UINT64_C(0x3333333333333333));
    y+=(y>>4);
    y&=UINT64_C(0x0F0F0F0F0F0F0F0F);
    
@@ -167,8 +210,8 @@ static inline int uint64_2_pop(uint64_t b[2]) {
 extern int cook_output,canonicalize_input;
 
 void set_output_recipe(char *);
-void write_bracketed_string(HASHED_STRING *,HASHED_STRING *);
-void write_cooked_tree(NODE *);
+void write_bracketed_string(HASHED_STRING *,HASHED_STRING *,FILE *f);
+void write_cooked_tree(NODE *,FILE *f);
 
 /**********************************************************************/
 

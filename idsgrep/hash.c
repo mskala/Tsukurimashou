@@ -62,7 +62,7 @@ HASHED_STRING *alloc_string(size_t len) {
    rval->length=len;
    rval->arity=-2;
    rval->match_fn=default_match_fn;
-   rval->needle_bits_fn=default_needle_bits_fn;
+   rval->needle_bits_fn=default_needle_fn;
 #ifdef HAVE_PCRE
    rval->pcre_compiled=NULL;
    rval->pcre_studied=NULL;

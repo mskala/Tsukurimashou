@@ -578,7 +578,7 @@ void register_brackets(char *opb,char *clb,int arity,int idx) {
    hashed_bracket[idx]=oph;
 }
 
-void register_special_functor(char *fctr,int arity,MATCH_FN mf) {
+void register_special_functor(char *fctr,int arity,MATCH_FN mf,BITVEC_FN bf) {
    HASHED_STRING *hs;
    
    hs=new_string(strlen(fctr),fctr);
@@ -590,6 +590,7 @@ void register_special_functor(char *fctr,int arity,MATCH_FN mf) {
 
    hs->arity=arity;
    hs->match_fn=mf;
+   hs->needle_bits_fn=bf;
 }
 
 void register_alias(char *fctr,char *canon) {
@@ -631,73 +632,85 @@ void register_syntax(void) {
    register_brackets("\xE3\x80\x94","\xE3\x80\x95",3,13); /* b tortoise */
    register_brackets("\xE3\x80\x98","\xE3\x80\x99",3,14); /* w tortoise */
    
-   register_special_functor(";",0,default_match_fn);
+   register_special_functor(";",0,default_match_fn,default_needle_fn);
 
-   register_special_functor(",",2,default_match_fn);
+   register_special_functor(",",2,default_match_fn,default_needle_fn);
 
-   register_special_functor("?",0,anything_match_fn);
+   register_special_functor("?",0,anything_match_fn,anything_needle_fn);
    register_alias("anything","?");
 
-   register_special_functor(".",1,anywhere_match_fn);
+   register_special_functor(".",1,anywhere_match_fn,anywhere_needle_fn);
    register_alias("anywhere",".");
 
-   register_special_functor("&",2,and_or_match_fn);
+   register_special_functor("&",2,and_or_match_fn,and_needle_fn);
    register_alias("and","&");  
 
-   register_special_functor("|",2,and_or_match_fn);
+   register_special_functor("|",2,and_or_match_fn,or_needle_fn);
    register_alias("or","|");
    
-   register_special_functor("!",1,not_match_fn);
+   register_special_functor("!",1,not_match_fn,not_needle_fn);
    register_alias("not","!");
 
-   register_special_functor("*",1,unord_match_fn);
+   register_special_functor("*",1,unord_match_fn,unord_needle_fn);
    register_alias("unord","*");
 
-   register_special_functor("=",1,equal_match_fn);
+   register_special_functor("=",1,equal_match_fn,anything_needle_fn);
    register_alias("equal","=");
 
-   register_special_functor("@",1,assoc_match_fn);
+   register_special_functor("@",1,assoc_match_fn,anything_needle_fn);
    register_alias("assoc","@");
 
-   register_special_functor("/",1,regex_match_fn);
+   register_special_functor("/",1,regex_match_fn,anything_needle_fn);
    register_alias("regex","/");
    
-   register_special_functor("#",1,user_match_fn);
+   register_special_functor("#",1,user_match_fn,anything_needle_fn);
    register_alias("user","#");
 
-   register_special_functor("\xE2\xBF\xB0",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xB0",2,
+			    default_match_fn,default_needle_fn);
    register_alias("lr","\xE2\xBF\xB0");
 
-   register_special_functor("\xE2\xBF\xB1",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xB1",2,
+			    default_match_fn,default_needle_fn);
    register_alias("tb","\xE2\xBF\xB1");
 
-   register_special_functor("\xE2\xBF\xB2",3,default_match_fn);
+   register_special_functor("\xE2\xBF\xB2",3,
+			    default_match_fn,default_needle_fn);
    register_alias("lcr","\xE2\xBF\xB2");
 
-   register_special_functor("\xE2\xBF\xB3",3,default_match_fn);
+   register_special_functor("\xE2\xBF\xB3",3,
+			    default_match_fn,default_needle_fn);
    register_alias("tcb","\xE2\xBF\xB3");
 
-   register_special_functor("\xE2\xBF\xB4",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xB4",2,
+			    default_match_fn,default_needle_fn);
    register_alias("enclose","\xE2\xBF\xB4");
 
-   register_special_functor("\xE2\xBF\xB5",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xB5",2,
+			    default_match_fn,default_needle_fn);
    register_alias("wrapu","\xE2\xBF\xB5");
 
-   register_special_functor("\xE2\xBF\xB6",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xB6",2,
+			    default_match_fn,default_needle_fn);
    register_alias("wrapd","\xE2\xBF\xB6");
 
-   register_special_functor("\xE2\xBF\xB7",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xB7",2,
+			    default_match_fn,default_needle_fn);
    register_alias("wrapl","\xE2\xBF\xB7");
 
-   register_special_functor("\xE2\xBF\xB8",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xB8",2,
+			    default_match_fn,default_needle_fn);
    register_alias("wrapul","\xE2\xBF\xB8");
 
-   register_special_functor("\xE2\xBF\xB9",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xB9",2,
+			    default_match_fn,default_needle_fn);
    register_alias("wrapur","\xE2\xBF\xB9");
 
-   register_special_functor("\xE2\xBF\xBA",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xBA",2,
+			    default_match_fn,default_needle_fn);
    register_alias("wrapll","\xE2\xBF\xBA");
 
-   register_special_functor("\xE2\xBF\xBB",2,default_match_fn);
+   register_special_functor("\xE2\xBF\xBB",2,
+			    default_match_fn,default_needle_fn);
    register_alias("overlap","\xE2\xBF\xBB");
 }

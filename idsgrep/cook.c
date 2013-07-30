@@ -100,7 +100,7 @@ int char_length(char *c) {
 
 /**********************************************************************/
 
-void write_maybe_escaped_char(char *cp,HASHED_STRING *br) {
+void write_maybe_escaped_char(char *cp,HASHED_STRING *br,FILE *f) {
    int c,do_esc;
 
    switch (char_length(cp)) {
@@ -152,7 +152,7 @@ void write_maybe_escaped_char(char *cp,HASHED_STRING *br) {
        case '3':
 	 if (((output_recipe[OS_ESCAPE_HOW]=='3') || (c>=0x7F)) &&
 	     (c<=0xFF)) {
-	    printf("\\x%02X",c);
+	    fprintf(f,"\\x%02X",c);
 	    break;
 	 }
 	 /* FALL THROUGH */
@@ -160,46 +160,46 @@ void write_maybe_escaped_char(char *cp,HASHED_STRING *br) {
        case '4':
 	 if (((output_recipe[OS_ESCAPE_HOW]=='4') || (c>0xFF)) &&
 	     (c<=0xFFFF)) {
-	    printf("\\X%04X",c);
+	    fprintf(f,"\\X%04X",c);
 	    break;
 	 }
 	 /* FALL THROUGH */
 	 
        case '2':
 	 if ((output_recipe[OS_ESCAPE_HOW]=='2') || (c>0xFFFF)) {
-	    printf("\\x{%X}",c);
+	    fprintf(f,"\\x{%X}",c);
 	    break;
 	 }
 	 /* FALL THROUGH */
 	 
        case '1':
 	 if ((c>=1) && (c<=27)) {
-	    fputc('\\',stdout);
+	    fputc('\\',f);
 	    switch (c) {
 	     case 7:
-	       fputc('a',stdout);
+	       fputc('a',f);
 	       break;
 	     case 8:
-	       fputc('b',stdout);
+	       fputc('b',f);
 	       break;
 	     case 27:
-	       fputc('e',stdout);
+	       fputc('e',f);
 	       break;
 	     case 12:
-	       fputc('f',stdout);
+	       fputc('f',f);
 	       break;
 	     case 9:
-	       fputc('t',stdout);
+	       fputc('t',f);
 	       break;
 	     case 10:
-	       fputc('n',stdout);
+	       fputc('n',f);
 	       break;
 	     case 13:
-	       fputc('r',stdout);
+	       fputc('r',f);
 	       break;
 	     default:
-	       fputc('c',stdout);
-	       fputc(c+'A'-1,stdout);
+	       fputc('c',f);
+	       fputc(c+'A'-1,f);
 	       break;
 	    }
 	    break;
@@ -210,34 +210,34 @@ void write_maybe_escaped_char(char *cp,HASHED_STRING *br) {
        default:
 	   if ((output_recipe[OS_ESCAPE_HOW]=='5') &&
 	       ((c<=0x1F) || (c==0x7F))) {
-	      printf("\\x%02X",c);
+	      fprintf(f,"\\x%02X",c);
 	   } else {	      
 	      if (((c|0x20)<'a') || ((c|0x20)>'z'))
-		fputc('\\',stdout);
-	      fwrite(cp,1,char_length(cp),stdout);
+		fputc('\\',f);
+	      fwrite(cp,1,char_length(cp),f);
 	   }
 	 break;
       }
    } else
-     fwrite(cp,1,char_length(cp),stdout);
+     fwrite(cp,1,char_length(cp),f);
 }
 
-void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br) {
+void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br,FILE *f) {
    int i;
 
-   fwrite(br->data,1,br->length,stdout);
+   fwrite(br->data,1,br->length,f);
    for (i=0;i<hs->length;i+=char_length(hs->data+i)) {
       if ((i==0) && (output_recipe[OS_ESCAPE_WHAT]<'6'))
-	write_maybe_escaped_char(hs->data+i,NULL);
+	write_maybe_escaped_char(hs->data+i,NULL,f);
       else
-	write_maybe_escaped_char(hs->data+i,br->mate);
+	write_maybe_escaped_char(hs->data+i,br->mate,f);
    }
-   fwrite(br->mate->data,1,br->mate->length,stdout);
+   fwrite(br->mate->data,1,br->mate->length,f);
 }
 
 /**********************************************************************/
 
-void write_cooked_tree(NODE *ms) {
+void write_cooked_tree(NODE *ms,FILE *f) {
    NODE *tail;
    HASHED_STRING *semicolon,*mf;
    int i;
@@ -255,13 +255,13 @@ void write_cooked_tree(NODE *ms) {
       }
       
       if ((output_recipe[OS_INDENTATION]!='0') && (ms->complete>0))
-	putchar('\n');
+	fputc('\n',f);
       if (output_recipe[OS_INDENTATION]=='8')
 	for (i=0;i<ms->complete;i++)
-	  putchar('\t');
+	  fputc('\t',f);
       else
 	for (i=0;i<(ms->complete*(output_recipe[OS_INDENTATION]-'0'));i++)
-	  putchar(' ');
+	  fputc(' ',f);
       
       if (((output_recipe[OS_SUGAR]&2) || (ms->complete==0)) &&
 	  ((output_recipe[OS_SUGAR]&4) || (ms->complete>0)) &&
@@ -271,7 +271,7 @@ void write_cooked_tree(NODE *ms) {
 	  (ms->head->arity==-2) &&
 	  (ms->arity==0) &&
 	  (ms->functor==semicolon)) {
-	 write_maybe_escaped_char(ms->head->data,NULL);
+	 write_maybe_escaped_char(ms->head->data,NULL,f);
 	 
       } else {
 	 
@@ -280,16 +280,18 @@ void write_cooked_tree(NODE *ms) {
 	       if (output_recipe[OS_TOP_HEAD_BRACKET_TYPE]<'2')
 		 write_bracketed_string(ms->head,hashed_bracket
 					[output_recipe
-					 [OS_TOP_HEAD_BRACKET_TYPE]-'0']);
+					 [OS_TOP_HEAD_BRACKET_TYPE]-'0'],
+				       f);
 	       else
-		 write_bracketed_string(ms->head,hashed_bracket[2]);
+		 write_bracketed_string(ms->head,hashed_bracket[2],f);
 	    } else {
 	       if (output_recipe[OS_INNER_HEAD_BRACKET_TYPE]<'2')
 		 write_bracketed_string(ms->head,hashed_bracket
 					[output_recipe
-					 [OS_INNER_HEAD_BRACKET_TYPE]-'0']);
+					 [OS_INNER_HEAD_BRACKET_TYPE]-'0'],
+				       f);
 	       else
-		 write_bracketed_string(ms->head,hashed_bracket[2]);
+		 write_bracketed_string(ms->head,hashed_bracket[2],f);
 	    }
 	 }
 	 
@@ -305,12 +307,12 @@ void write_cooked_tree(NODE *ms) {
 	     (mf->arity==ms->arity) &&
 	     (mf->mate==NULL) &&
 	     (char_length(mf->data)==mf->length)) {
-	    fwrite(mf->data,mf->length,1,stdout);
+	    fwrite(mf->data,mf->length,1,f);
 	    
 	 } else {
 	    i=output_recipe[OS_NULLARY_BRACKET_TYPE+ms->arity]-'0';
 	    if (i>2) i=2;
-	    write_bracketed_string(mf,hashed_bracket[3*(ms->arity+1)+i]);
+	    write_bracketed_string(mf,hashed_bracket[3*(ms->arity+1)+i],f);
 	 }
       }
       
@@ -320,18 +322,18 @@ void write_cooked_tree(NODE *ms) {
    
    switch (output_recipe[OS_SEPARATOR]) {
     case '0':
-      putchar('\0');
+      fputc('\0',f);
       break;
       /* 1 is default newline */
     case '2':
-      putchar('\n');
-      putchar('\n');
+      fputc('\n',f);
+      fputc('\n',f);
       break;
     case '3':
       /* 3 is nothing */
       break;
     default:
-      putchar('\n');
+      fputc('\n',f);
       break;
    }
       
