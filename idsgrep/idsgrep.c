@@ -180,7 +180,7 @@ static uint64_t bdd_hits=UINT64_C(0);
 
 static int eval_bdd(bdd decision_diagram,uint64_t bits[2]) {
    int v;
-   
+
    while (1) {
       if (decision_diagram==bddtrue)
 	return 1;
@@ -208,6 +208,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    time_t mtime;
    char *dict_buff;
    size_t dict_buff_size=0,entry_size,parsed;
+   uint64_t btest[2];
 
    /* bail, if we can't use an index or have been told to ignore it */
    if (ignore_indices || generate_index || (strcmp(fn,"-")==0)) {
@@ -277,8 +278,12 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
       bdd_setvarnum(128);
       if (!bitvec_debug)
 	bdd_gbc_hook(NULL);
-#endif
       needle_fn_wrapper(match_pattern,&bf);
+      if (bitvec_debug)
+	bdd_fprinttable(stderr,bf.decision_diagram);
+#else
+      needle_fn_wrapper(match_pattern,&bf);
+#endif
       indexed_pattern=match_pattern;
       /* we assume we'll never have to deal with another pattern... */
    }
@@ -310,12 +315,12 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 
       /* loop through whatever records we have */
       for (ir_done=0;ir_done<ir_avail;ir_done++) {
-	 ir[ir_done].bits[0]&=bf.bits[0];
-	 ir[ir_done].bits[1]&=bf.bits[1];
+	 btest[0]=ir[ir_done].bits[0]&bf.bits[0];
+	 btest[1]=ir[ir_done].bits[1]&bf.bits[1];
 	 bv_checks++;
 	 
 	 /* do the bitvec/lambda test */
-	 if (uint64_2_pop(ir[ir_done].bits)>bf.lambda) {
+	 if (uint64_2_pop(btest)>bf.lambda) {
 	    bv_hits++;
 	    
 #ifdef HAVE_BUDDY

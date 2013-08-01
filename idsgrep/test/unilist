@@ -12,6 +12,7 @@ for foo in Q ȱ 触 𠂊 ᓴ 􏻜 ; do \
   ./idsgrep -Ubdxq $foo >> unl-out.$$ ; \
   ./idsgrep -Ubdx "($foo)" >> unl-out.$$ ; \
   ./idsgrep -cascii -Ubdx "<$foo>;" >> unl-out.$$ ; \
+  ./idsgrep -cascii -Ubdx "<$foo"'x>;' >> unl-out.$$ ; \
   ./idsgrep -Ubdx "[$foo]??" >> unl-out.$$ ; \
 done
 

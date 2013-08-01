@@ -277,11 +277,12 @@ static BIT_FILTER *bf_not(BIT_FILTER *z,BIT_FILTER *x) {
 	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
    }
 
+   /* FIXME detect special cases where we need not fall back to true */
 #ifdef HAVE_BUDDY
    if (z==x) bdd_delref(x->decision_diagram);
-   return (x->decision_diagram==bddtrue)?bf_false(z):bf_true(z);
+   return bf_true(z);
 #else
-   return (x->lambda<0)?bf_false(z):bf_true(z);
+   return bf_true(z);
 #endif
 }
 
@@ -426,13 +427,6 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
      best_filter=((a_min>0)?0:4)
        +((b_min>0)?0:2)
 	 +((c_min>0)?0:1);
-   if (best_filter==7) {
-#ifdef HAVE_BUDDY
-      if (z==x) bdd_delref(x->decision_diagram); /* SNH */
-      if (z==y) bdd_delref(y->decision_diagram); /* SNH */
-#endif
-      return bf_true(z); /* SNH */
-   }
 
    /* set up the return value */
    switch(best_filter) {
@@ -476,6 +470,16 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
       z->bits[0]=y->bits[0]&~x->bits[0];
       z->bits[1]=y->bits[1]&~x->bits[1];
       z->lambda=c_min-1;
+      break;
+      
+    case 7: /* nothing - should only happen with BDDs */
+#ifdef HAVE_BUDDY
+      z->bits[0]=UINT64_MAX;
+      z->bits[1]=UINT64_MAX;
+      z->lambda=-1;
+#else
+      return bf_true(z); /* SNH */
+#endif
       break;
    }
 
@@ -711,7 +715,7 @@ static BIT_FILTER *bf_middle_child(BIT_FILTER *z,BIT_FILTER *x) {
 /**********************************************************************/
 
 void needle_fn_wrapper(NODE *n,BIT_FILTER *f) {
-   BIT_FILTER fa;
+   BIT_FILTER fa,fb;
    uint32_t hval;
    int i;
    
@@ -725,31 +729,30 @@ void needle_fn_wrapper(NODE *n,BIT_FILTER *f) {
    /* call the node's own needle function */
    n->functor->needle_bits_fn(n,f);
    
-   /* but if there's a head, then we could match that; else must match
-    * the absence of head */
+   /* but if there's a head, then haystack must have that head or no head */
    if (n->head!=NULL) {
-      hval=fnv_hash(0,"",0);
-      fa.bits[0]=(uint64_t)bit_combo(32,LAMBDA+1,hval);
-      fa.bits[1]=UINT64_C(0);
-      fa.lambda=LAMBDA;
-#ifdef HAVE_BUDDY
-      fa.decision_diagram=bit_bdd((uint32_t)fa.bits[0]);
-      bf_and(f,f,&fa);
-      bdd_delref(fa.decision_diagram);
-#else
-      bf_and(f,f,&fa);
-#endif
-
+      
+      /* "that head" */
       hval=fnv_hash(n->head->length,n->head->data,0);
       fa.bits[0]=(uint64_t)bit_combo(32,LAMBDA+1,hval);
       fa.bits[1]=UINT64_C(0);
       fa.lambda=LAMBDA;
+      
+      /* "no head" */
+      hval=fnv_hash(0,"",0);
+      fb.bits[0]=(uint64_t)bit_combo(32,LAMBDA+1,hval);
+      fb.bits[1]=UINT64_C(0);
+      fb.lambda=LAMBDA;
+      
+      /* do the logic */
 #ifdef HAVE_BUDDY
       fa.decision_diagram=bit_bdd((uint32_t)fa.bits[0]);
-      bf_or(f,f,&fa);
+      fb.decision_diagram=bit_bdd((uint32_t)fb.bits[0]);
+      bf_or(f,&fa,bf_and(f,f,&fb));
       bdd_delref(fa.decision_diagram);
+      bdd_delref(fb.decision_diagram);
 #else
-      bf_or(f,f,&fa);
+      bf_and(f,f,bf_or(&fa,&fa,&fb));
 #endif
    }
 
@@ -833,11 +836,15 @@ void anywhere_needle_fn(NODE *n,BIT_FILTER *f) {
    /* match if it matches anywhere */
    bf_first_child(&fa,f);
    bf_last_child(&fb,f);
-   bf_or(f,bf_or(f,f,&fa),bf_or(&fb,&fb,bf_middle_child(&fc,f)));
+   bf_middle_child(&fc,f);
+   bf_or(f,bf_or(f,f,&fa),bf_or(&fb,&fb,&fc));
 #ifdef HAVE_BUDDY
    bdd_delref(fa.decision_diagram);
    bdd_delref(fb.decision_diagram);
    bdd_delref(fc.decision_diagram);
+   /* FIXME */
+/*   bdd_delref(f->decision_diagram);
+   f->decision_diagram=bddtrue; */
 #endif
 }
 
@@ -925,7 +932,9 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
    /* FIXME figure out a better bound on new lambda */
    f->lambda/=3;
    
+#ifdef HAVE_BUDDY
    /* FIXME do the BDD properly */
    f->decision_diagram=bddtrue;
+#endif
 }
 

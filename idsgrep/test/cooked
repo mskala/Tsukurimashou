@@ -39,6 +39,9 @@ echo === >> co-out.$$
 ./idsgrep -c 220000803250 '?' co-in.$$ >> co-out.$$
 echo === >> co-out.$$
 
+./idsgrep -c 22000083 '?' co-in.$$ >> co-out.$$
+echo === >> co-out.$$
+
 if perl -pe 's/_/\x00/g' <<EOF | diff -c -a co-out.$$ -
 【萌え】,<萌>⿱艹<明>⿰日月,え
 ｟[もえ] (n)
@@ -167,6 +170,30 @@ if perl -pe 's/_/\x00/g' <<EOF | diff -c -a co-out.$$ -
 		月_()\\\\)_(()_.á\\XE001\\x{1F4A9}\\x{10FFFD}.
 	;_?_(	
 )_===
+〖萌え〗,
+	〖萌〗⿱
+		艹
+		〖明〗⿰
+			日
+			月
+	,
+		え
+		([もえ] (n\)
+  (1\) sprouting/budding/
+  (2\) (m-sl\) (also written 萌ゑ\) crush (anime, manga term\)/fascination/infatuation
+)〖萌〗⿱
+	艹
+	〖明〗⿰
+		日
+		月〖萌〗⿱
+	艹
+	〖明〗⿰
+		〖日〗⿻
+			口
+			(+1)
+		月()\\\\)(().á\XE001\x{1F4A9}\x{10FFFD}.
+	;?(	
+)===
 EOF
 then
   rm -f co-in.$$

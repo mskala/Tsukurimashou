@@ -96,6 +96,7 @@ if COND_BUDDY
 endif
 if COND_CHISE_IDS
    MAYBE_CIDATA=chise.eids
+   MAYBE_CIINDEX=chise.bvec
 endif
 if COND_DOCS
     MAYBE_DOCS=idsgrep.pdf
@@ -118,14 +119,14 @@ if COND_GCOV
    MAYBE_COVERAGE=--coverage --no-inline
 endif
 if COND_KANJIVG
-   MAYBE_KVDATA=kanjivg.eids
+   MAYBE_KVDATA=kanjivg.eids kanjivg.bvec
 endif
 if COND_TSUKU_BUILD
    MAYBE_DOCS=idsgrep.pdf
-   MAYBE_TSUKUDATA=tsukurimashou.eids
+   MAYBE_TSUKUDATA=tsukurimashou.eids tsukurimashou.bvec
 endif
 if COND_EDICT2
-   MAYBE_EDICTDATA=edict.eids
+   MAYBE_EDICTDATA=edict.eids edict.bvec
 endif
 
 ############################################################################
@@ -150,7 +151,8 @@ bin_PROGRAMS = idsgrep
 
 dist_dict_DATA = $(MAYBE_CIDATA)
 
-dict_DATA = $(MAYBE_EDICTDATA) $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)
+dict_DATA = $(MAYBE_CIINDEX) $(MAYBE_EDICTDATA) $(MAYBE_KVDATA) \
+  $(MAYBE_TSUKUDATA)
 
 dist_pdf_DATA = $(MAYBE_DOCS)
 
@@ -231,15 +233,19 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 	$(LN_S) -f @with_tsuku_build@/txt/tsukurimashou.eids \
 	  tsukurimashou.eids
 
+%.bvec: idsgrep %.eids
+	$(AM_V_GEN)
+	$(AM_V_at)./idsgrep -G $*.eids > $*.bvec
+
 ############################################################################
 
 # TESTING
 
 GCOV_TESTS = \
   test/andor test/anynot test/assoc test/basicmatch test/backslash \
-  test/bighash test/cooked test/demorgan test/equal test/kvg-grone \
-  test/messages test/regex test/spacing test/tsu-grone test/unilist \
-  test/unord test/utf8
+  test/bighash test/cooked test/demorgan test/equal test/genbv \
+  test/kvg-grone test/messages test/regex test/spacing test/tsu-grone \
+  test/unilist test/unord test/userpred test/utf8
 
 define GCDEP_RECIPE
 $1.log: test/rmgcda.log

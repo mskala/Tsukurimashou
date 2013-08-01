@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if test '!' -r kanjivg.eids
+then
+  exit 77
+fi
+
+cp kanjivg.eids gbv-d-$$.eids
+./idsgrep -G gbv-d-$$.eids > gbv-d-$$.bvec
+./idsgrep -I '!&!⿱止?!⿱?月' gbv-d-$$.eids > gbv-outa.$$
+./idsgrep --bitvec-debug '|⿱止?⿱?月' gbv-d-$$.eids > gbv-outb.$$
+
+if diff gbv-outa.$$ gbv-outb.$$
+then
+  rm -f gbv-d-$$.eids gbv-d-$$.bvec gbv-outa.$$ gbv-outb.$$
+  exit 0
+else
+  rm -f gbv-d-$$.eids gbv-d-$$.bvec gbv-outa.$$ gbv-outb.$$
+  exit 1
+fi
