@@ -91,6 +91,9 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 
 # CONDITIONAL OPTIONS
 
+if COND_BUDDY
+   BUDDY_LIBS=-lbdd
+endif
 if COND_CHISE_IDS
    MAYBE_CIDATA=chise.eids
 endif
@@ -156,7 +159,7 @@ idsgrep_SOURCES = \
   assoc.c bitvec.c cook.c hash.c idsgrep.c idsgrep.h match.c \
   parse.c regex.c unilist.c userpred.c
 
-LDADD = @LIBOBJS@ $(PCRE_LIBS)
+LDADD = @LIBOBJS@ $(PCRE_LIBS) $(BUDDY_LIBS)
 
 man1_MANS = idsgrep.1
 

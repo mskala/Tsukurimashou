@@ -2,12 +2,13 @@
 
 echo x > unl-out.$$
 
-for foo in Q 触 𠂊 ᓴ 􏻜 ; do \
+for foo in Q ȱ 触 𠂊 ᓴ 􏻜 ; do \
   ./idsgrep -U $foo >> unl-out.$$ ; \
   ./idsgrep -Ub $foo >> unl-out.$$ ; \
   ./idsgrep -Ud $foo >> unl-out.$$ ; \
   ./idsgrep -Ux $foo >> unl-out.$$ ; \
   ./idsgrep -Ubdx $foo >> unl-out.$$ ; \
+  ./idsgrep -Uxdb '&?'$foo >> unl-out.$$ ; \
   ./idsgrep -Ubdxq $foo >> unl-out.$$ ; \
   ./idsgrep -Ubdx "($foo)" >> unl-out.$$ ; \
   ./idsgrep -cascii -Ubdx "<$foo>;" >> unl-out.$$ ; \
@@ -18,40 +19,53 @@ echo y >> unl-out.$$
 
 if diff -c unl-out.$$ - <<EOF
 x
-<Q>;
-<Q>(Basic Latin)
-<Q>(81)
-<Q>(U+0051)
+【Q】;
+【Q】(Basic Latin)
+【Q】(81)
+【Q】(U+0051)
+【Q】(Basic Latin;81;U+0051)
+【Q】(U+0051;81;Basic Latin)
+【Q】(Basic Latin;81;U+0051)
 <Q>(Basic Latin;81;U+0051)
-<Q>(Basic Latin;81;U+0051)
-<Q>(Basic Latin;81;U+0051)
-<触>;
-<触>(CJK Unified Ideographs)
-<触>(35302)
-<触>(U+89E6)
-<触>(CJK Unified Ideographs;35302;U+89E6)
-<触>(CJK Unified Ideographs;35302;U+89E6)
+【ȱ】;
+【ȱ】(Latin Extended-B)
+【ȱ】(561)
+【ȱ】(U+0231)
+【ȱ】(Latin Extended-B;561;U+0231)
+【ȱ】(U+0231;561;Latin Extended-B)
+【ȱ】(Latin Extended-B;561;U+0231)
+<\X0231>(Latin Extended-B;561;U+0231)
+【触】;
+【触】(CJK Unified Ideographs)
+【触】(35302)
+【触】(U+89E6)
+【触】(CJK Unified Ideographs;35302;U+89E6)
+【触】(U+89E6;35302;CJK Unified Ideographs)
+【触】(CJK Unified Ideographs;35302;U+89E6)
 <\X89E6>(CJK Unified Ideographs;35302;U+89E6)
-<𠂊>;
-<𠂊>(CJK Unified Ideographs Extension B)
-<𠂊>(131210)
-<𠂊>(U+2008A)
-<𠂊>(CJK Unified Ideographs Extension B;131210;U+2008A)
-<𠂊>(CJK Unified Ideographs Extension B;131210;U+2008A)
+【\x{2008A}】;
+【\x{2008A}】(CJK Unified Ideographs Extension B)
+【\x{2008A}】(131210)
+【\x{2008A}】(U+2008A)
+【\x{2008A}】(CJK Unified Ideographs Extension B;131210;U+2008A)
+【\x{2008A}】(U+2008A;131210;CJK Unified Ideographs Extension B)
+【\x{2008A}】(CJK Unified Ideographs Extension B;131210;U+2008A)
 <\x{2008A}>(CJK Unified Ideographs Extension B;131210;U+2008A)
-<ᓴ>;
-<ᓴ>(Unified Canadian Aboriginal Syllabics)
-<ᓴ>(5364)
-<ᓴ>(U+14F4)
-<ᓴ>(Unified Canadian Aboriginal Syllabics;5364;U+14F4)
-<ᓴ>(Unified Canadian Aboriginal Syllabics;5364;U+14F4)
+【ᓴ】;
+【ᓴ】(Unified Canadian Aboriginal Syllabics)
+【ᓴ】(5364)
+【ᓴ】(U+14F4)
+【ᓴ】(Unified Canadian Aboriginal Syllabics;5364;U+14F4)
+【ᓴ】(U+14F4;5364;Unified Canadian Aboriginal Syllabics)
+【ᓴ】(Unified Canadian Aboriginal Syllabics;5364;U+14F4)
 <\X14F4>(Unified Canadian Aboriginal Syllabics;5364;U+14F4)
-<􏻜>;
-<􏻜>(Supplementary Private Use Area-B)
-<􏻜>(1113820)
-<􏻜>(U+10FEDC)
-<􏻜>(Supplementary Private Use Area-B;1113820;U+10FEDC)
-<􏻜>(Supplementary Private Use Area-B;1113820;U+10FEDC)
+【\x{10FEDC}】;
+【\x{10FEDC}】(Supplementary Private Use Area-B)
+【\x{10FEDC}】(1113820)
+【\x{10FEDC}】(U+10FEDC)
+【\x{10FEDC}】(Supplementary Private Use Area-B;1113820;U+10FEDC)
+【\x{10FEDC}】(U+10FEDC;1113820;Supplementary Private Use Area-B)
+【\x{10FEDC}】(Supplementary Private Use Area-B;1113820;U+10FEDC)
 <\x{10FEDC}>(Supplementary Private Use Area-B;1113820;U+10FEDC)
 y
 EOF

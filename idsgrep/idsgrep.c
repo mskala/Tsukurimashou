@@ -171,6 +171,30 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 
 static uint64_t bv_checks=UINT64_C(0),bv_hits=UINT64_C(0);
 static uint64_t tree_hits=UINT64_C(0);
+static BIT_FILTER bf;
+static NODE *indexed_pattern=NULL;
+
+#ifdef HAVE_BUDDY
+
+static uint64_t bdd_hits=UINT64_C(0);
+
+static int eval_bdd(bdd decision_diagram,uint64_t bits[2]) {
+   int v;
+   
+   while (1) {
+      if (decision_diagram==bddtrue)
+	return 1;
+      if (decision_diagram==bddfalse)
+	return 0;
+      v=bdd_var(decision_diagram);
+      if ((UINT64_C(1)<<(v&0x3F))&bits[v>>6])
+	decision_diagram=bdd_high(decision_diagram);
+      else
+	decision_diagram=bdd_low(decision_diagram);
+   }
+}
+
+#endif
 
 void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    int i,ir_avail,ir_done;
@@ -182,7 +206,6 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    INDEX_RECORD *ir;
    struct stat stat_buff;
    time_t mtime;
-   BIT_FILTER bf;
    char *dict_buff;
    size_t dict_buff_size=0,entry_size,parsed;
 
@@ -248,7 +271,17 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    /* Now we are committed to index mode. */
    
    /* analyse the query */
-   needle_fn_wrapper(match_pattern,&bf);
+   if (indexed_pattern==NULL) {
+#ifdef HAVE_BUDDY
+      bdd_init(10000,1000);
+      bdd_setvarnum(128);
+      if (!bitvec_debug)
+	bdd_gbc_hook(NULL);
+#endif
+      needle_fn_wrapper(match_pattern,&bf);
+      indexed_pattern=match_pattern;
+      /* we assume we'll never have to deal with another pattern... */
+   }
    
    /* wrap the filename in a string so we can escape-print it */
    if (fn_flag>=0)
@@ -281,68 +314,77 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 	 ir[ir_done].bits[1]&=bf.bits[1];
 	 bv_checks++;
 	 
+	 /* do the bitvec/lambda test */
 	 if (uint64_2_pop(ir[ir_done].bits)>bf.lambda) {
 	    bv_hits++;
 	    
-	    /* go to appropriate place in the file */
-	    if ((offset!=ir[ir_done].offset)
-		&& (fseeko(infile,ir[ir_done].offset,SEEK_SET)!=0)) {
-	       fclose(infile);
-	       fclose(idxfile);
-	       free(ir);
-	       fprintf(stderr,"error seeking in %s\n",fn);
-	       return;
+#ifdef HAVE_BUDDY
+	    /* do the bitvec/BDD test */
+	    if (eval_bdd(bf.decision_diagram,ir[ir_done].bits)) {
+	       bdd_hits++;
+#endif
+	       
+	       /* go to appropriate place in the file */
+	       if ((offset!=ir[ir_done].offset)
+		   && (fseeko(infile,ir[ir_done].offset,SEEK_SET)!=0)) {
+		  fclose(infile);
+		  fclose(idxfile);
+		  free(ir);
+		  fprintf(stderr,"error seeking in %s\n",fn);
+		  return;
+	       }
+	       offset=ir[ir_done].offset;
+	       
+	       /* check we have a buffer and it's big enough */
+	       entry_size=ir[ir_done+1].offset-offset;
+	       if (entry_size>dict_buff_size) {
+		  if (dict_buff_size>0)
+		    free(dict_buff);
+		  dict_buff=(char *)malloc(entry_size*2);
+		  dict_buff_size=entry_size*2;
+	       }
+	       
+	       /* attempt to read the entry */
+	       if (fread(dict_buff,1,entry_size,infile)!=entry_size) {
+		  fclose(infile);
+		  fclose(idxfile);
+		  free(ir);
+		  fprintf(stderr,"error reading entry from %s\n",fn);
+		  return;
+	       }
+	       offset=ir[ir_done+1].offset;
+	       
+	       /* parse */
+	       parsed=parse(entry_size,dict_buff);
+	       
+	       /* MUST have a complete entry at this point */
+	       if (parse_state!=PS_COMPLETE_TREE) {
+		  puts("can't parse input pattern");
+		  fwrite(dict_buff,1,parsed,stdout);
+		  putchar('\n');
+		  fclose(infile);
+		  fclose(idxfile);
+		  free(ir);
+		  exit(1);
+	       }
+	       
+	       /* handle the parsed tree */
+	       to_match=parse_stack[0];
+	       stack_ptr=0;
+	    
+	       if (tree_match(match_pattern,to_match)) {
+		  tree_hits++;
+		  if (fn_flag>=0)
+		    write_bracketed_string(hfn,colon,stdout);
+		  if (cook_output)
+		    write_cooked_tree(to_match,stdout);
+		  else
+		    fwrite(dict_buff,1,entry_size,stdout);
+	       }
+	       free_node(to_match);
+#ifdef HAVE_BUDDY
 	    }
-	    offset=ir[ir_done].offset;
-	    
-	    /* check we have a buffer and it's big enough */
-	    entry_size=ir[ir_done+1].offset-offset;
-	    if (entry_size>dict_buff_size) {
-	       if (dict_buff_size>0)
-		 free(dict_buff);
-	       dict_buff=(char *)malloc(entry_size*2);
-	       dict_buff_size=entry_size*2;
-	    }
-	    
-	    /* attempt to read the entry */
-	    if (fread(dict_buff,1,entry_size,infile)!=entry_size) {
-	       fclose(infile);
-	       fclose(idxfile);
-	       free(ir);
-	       fprintf(stderr,"error reading entry from %s\n",fn);
-	       return;
-	    }
-	    offset=ir[ir_done+1].offset;
-	    
-	    /* parse */
-	    parsed=parse(entry_size,dict_buff);
-	    
-	    /* MUST have a complete entry at this point */
-	    if (parse_state!=PS_COMPLETE_TREE) {
-	       puts("can't parse input pattern");
-	       fwrite(dict_buff,1,parsed,stdout);
-	       putchar('\n');
-	       fclose(infile);
-	       fclose(idxfile);
-	       free(ir);
-	       exit(1);
-	    }
-	    
-	    /* handle the parsed tree */
-	    to_match=parse_stack[0];
-	    stack_ptr=0;
-	    
-	    if (tree_match(match_pattern,to_match)) {
-	       tree_hits++;
-	       if (fn_flag>=0)
-		 write_bracketed_string(hfn,colon,stdout);
-	       if (cook_output)
-		 write_cooked_tree(to_match,stdout);
-	       else
-		 fwrite(dict_buff,1,entry_size,stdout);
-	    }
-	    
-	    free_node(to_match);
+#endif
 	 }
       }
       
@@ -465,7 +507,8 @@ int main(int argc,char **argv) {
 	  "  -d, --dictionary=NAME     search standard dictionary\n"
 	  "  -f, --font-chars=FONT     use chars in FONT as a user-defined"
 	                             " predicate\n"
-	  "      --bitvec-debug        verbose bit vector debugging messages"
+	  "      --bitvec-debug        verbose bit vector debugging"
+	                             " messages\n"
 	  "  -h, --help                display this help");
    
    if (show_version || show_help)
@@ -532,12 +575,33 @@ int main(int argc,char **argv) {
 		bv_hits,(int)((100*bv_hits)/bv_checks),
 		((int)((1000*bv_hits)/bv_checks))%10);
 	 if (bv_hits>UINT64_C(0)) {
+#ifdef HAVE_BUDDY
+	    fprintf(stderr,"%20" PRIu64 " bdd hits (%d.%d%% of bitvec hits, "
+		    "%d.%d%% of all)\n",
+		    bdd_hits,(int)((100*bdd_hits)/bv_hits),
+		    ((int)((1000*bdd_hits)/bv_hits))%10,
+		    (int)((100*bdd_hits)/bv_checks),
+		    ((int)((1000*bdd_hits)/bv_checks))%10);
+	    if (bdd_hits>UINT64_C(0))
+	      fprintf(stderr,"%20" PRIu64 " tree hits ("
+		      "%d.%d%% of bdd hits, "
+		      "%d.%d%% of bitvec hits, "
+		      "%d.%d%% of all)\n",
+		      tree_hits,
+		      (int)((100*tree_hits)/bdd_hits),
+		      ((int)((1000*tree_hits)/bdd_hits))%10,
+		      (int)((100*tree_hits)/bv_hits),
+		      ((int)((1000*tree_hits)/bv_hits))%10,
+		      (int)((100*tree_hits)/bv_checks),
+		      ((int)((1000*tree_hits)/bv_checks))%10);
+#else
 	    fprintf(stderr,"%20" PRIu64 " tree hits (%d.%d%% of bitvec hits, "
 		   "%d.%d%% of all)\n",
 		   tree_hits,(int)((100*tree_hits)/bv_hits),
 		   ((int)((1000*tree_hits)/bv_hits))%10,
 		   (int)((100*tree_hits)/bv_checks),
 		   ((int)((1000*tree_hits)/bv_checks))%10);
+#endif
 	 }
       }
    }

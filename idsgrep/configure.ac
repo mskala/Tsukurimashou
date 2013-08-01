@@ -216,6 +216,14 @@ AM_COND_IF([COND_PARASITE],
 #
 AX_PERL_MODULE_VERSION([XML::Parser 2.36],[],
   [AC_MSG_WARN([XML::Parser, needed for KanjiVG dictionary, is missing])])
+AC_CHECK_LIB([bdd],[bdd_init],[
+  have_buddy=yes
+  AC_DEFINE([HAVE_BUDDY],[1],
+    [Define to 1 if BuDDy is available])
+  ],[
+  have_buddy=no
+  AC_MSG_WARN([BuDDy is missing, binary decision diagrams won't be used])])
+AM_CONDITIONAL([COND_BUDDY],[test '!' "$have_buddy" = no])
 PKG_CHECK_MODULES([PCRE],[libpcre],[
   have_pcre=yes
   AC_DEFINE([HAVE_PCRE],[1],

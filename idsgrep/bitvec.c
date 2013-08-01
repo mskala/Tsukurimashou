@@ -86,6 +86,58 @@ static uint32_t bit_combo(int n,int k,uint32_t h) {
 
 /**********************************************************************/
 
+#ifdef HAVE_BUDDY
+
+#define MAX_BDD_COMPLEXITY 5000
+
+/* create a BDD for the conjunction of the bits in the input */
+static bdd bit_bdd(uint32_t bits) {
+   bdd rval,x;
+   int i;
+   
+   /* loop through bits, ANDing them into the result */
+   rval=bddtrue;
+   for (i=31;i>=0;i--)
+     if (bits&(UINT32_C(1)<<i)) {
+	x=bdd_addref(bdd_and(rval,bdd_ithvar(i)));
+	bdd_delref(rval);
+	rval=x;
+     }
+   return rval;
+}
+
+/* change the highest bits into don't-cares until few enough nodes */
+static bdd limit_bdd_complexity(bdd in_bdd) {
+   bdd rval,x;
+   int *vset;
+   int vnum;
+   
+   /* if input is not too big, pass it through unmolested */
+   if (bdd_nodecount(in_bdd)<=MAX_BDD_COMPLEXITY)
+     return in_bdd;
+   
+   /* otherwise, look for variables to remove */
+   x=bdd_addref(bdd_support(in_bdd));
+   bdd_scanset(x,&vset,&vnum);
+   bdd_delref(x);
+   
+   /* and remove them until we're small enough */
+   for (rval=in_bdd;vnum--;) {
+      x=bdd_addref(bdd_exist(rval,bdd_ithvar(vset[vnum])));
+      bdd_delref(rval);
+      rval=x;
+      if (bdd_nodecount(rval)<=MAX_BDD_COMPLEXITY)
+	break;
+   }
+   
+   free(vset);   
+   return rval;
+}
+
+#endif
+
+/**********************************************************************/
+
 void haystack_bits_fn(NODE *n,uint64_t bits[2]) {
    int i;
    uint32_t hval;
@@ -183,6 +235,11 @@ static BIT_FILTER *bf_true(BIT_FILTER *z) {
       fprintf(stderr,"TRU=%016" PRIX64 "%016" PRIX64 " %d/%d\n",
 	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
    }
+   
+#ifdef HAVE_BUDDY
+   /* handle decision diagram */
+   z->decision_diagram=bddtrue;
+#endif
 
    return z;
 }
@@ -202,6 +259,10 @@ static BIT_FILTER *bf_false(BIT_FILTER *z) {
 	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
    }
 
+#ifdef HAVE_BUDDY
+   /* handle decision diagram */
+   z->decision_diagram=bddfalse;
+#endif
    return z;
 }
 
@@ -216,13 +277,21 @@ static BIT_FILTER *bf_not(BIT_FILTER *z,BIT_FILTER *x) {
 	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
    }
 
+#ifdef HAVE_BUDDY
+   if (z==x) bdd_delref(x->decision_diagram);
+   return (x->decision_diagram==bddtrue)?bf_false(z):bf_true(z);
+#else
    return (x->lambda<0)?bf_false(z):bf_true(z);
+#endif
 }
 
 /* match if x matches or y matches */
 static BIT_FILTER *bf_or(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
    uint64_t trimbits[2];
    int i,hi_lambda;
+#ifdef HAVE_BUDDY
+   bdd new_bdd;
+#endif
 
    /* show debug information */
    if (bitvec_debug) {
@@ -273,6 +342,14 @@ static BIT_FILTER *bf_or(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
       fprintf(stderr,"   =%016" PRIX64 "%016" PRIX64 " %d/%d\n",
 	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
    }
+   
+#ifdef HAVE_BUDDY
+   /* handle decision diagram */
+   new_bdd=bdd_addref(bdd_or(x->decision_diagram,y->decision_diagram));
+   if (z==x) bdd_delref(x->decision_diagram);
+   if (z==y) bdd_delref(y->decision_diagram);
+   z->decision_diagram=limit_bdd_complexity(new_bdd);
+#endif
 
    return z;
 }
@@ -283,6 +360,9 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
    uint64_t xybits[2];
    int a_max,a_min,b_max,b_min,c_max,c_min;
    int ab_min,bc_min,ac_min,abc_min,best_filter;
+#ifdef HAVE_BUDDY
+   bdd new_bdd;
+#endif
    
    /* show debug information */
    if (bitvec_debug) {
@@ -304,8 +384,13 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
    c_max=uint64_2_pop(y->bits)-b_max;
 
    /* abort if there are no bits */
-   if (a_max+b_max+c_max==0)
-     return ((x->lambda<0) && (y->lambda<0))?bf_true(z):bf_false(z);
+   if (a_max+b_max+c_max==0) {
+#ifdef HAVE_BUDDY
+      if (z==x) bdd_delref(x->decision_diagram);
+      if (z==y) bdd_delref(y->decision_diagram);
+#endif
+      return ((x->lambda<0) && (y->lambda<0))?bf_true(z):bf_false(z);
+   }
    
    /* lower bounds, singletons */
    a_min=x->lambda+1-b_max;
@@ -341,8 +426,13 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
      best_filter=((a_min>0)?0:4)
        +((b_min>0)?0:2)
 	 +((c_min>0)?0:1);
-   if (best_filter==7)
-     return bf_true(z); /* SNH */
+   if (best_filter==7) {
+#ifdef HAVE_BUDDY
+      if (z==x) bdd_delref(x->decision_diagram); /* SNH */
+      if (z==y) bdd_delref(y->decision_diagram); /* SNH */
+#endif
+      return bf_true(z); /* SNH */
+   }
 
    /* set up the return value */
    switch(best_filter) {
@@ -396,6 +486,14 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
 	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
    }
 
+#ifdef HAVE_BUDDY
+   /* handle decision diagram */
+   new_bdd=bdd_addref(bdd_and(x->decision_diagram,y->decision_diagram));
+   if (z==x) bdd_delref(x->decision_diagram);
+   if (z==y) bdd_delref(y->decision_diagram);
+   z->decision_diagram=limit_bdd_complexity(new_bdd);
+#endif
+
    return z;
 }
 
@@ -405,6 +503,9 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
 static BIT_FILTER *bf_first_child(BIT_FILTER *z,BIT_FILTER *x) {
    int mylambda,i;
    uint64_t c[2];
+#ifdef HAVE_BUDDY
+   bdd bdd_a,bdd_b,bdd_c;
+#endif
 
    /* show debug information */
    if (bitvec_debug) {
@@ -414,8 +515,12 @@ static BIT_FILTER *bf_first_child(BIT_FILTER *z,BIT_FILTER *x) {
    }
 
    /* abort in case of the match-everything filter */
-   if (x->lambda<0)
-     return bf_true(z);
+   if (x->lambda<0) {
+#ifdef HAVE_BUDDY
+      if (z==x) bdd_delref(x->decision_diagram);
+#endif
+      return bf_true(z);
+   }
    
    /* count collisions */
    c[0]=(x->bits[1]|(x->bits[1]<<32))&UINT64_C(0xFFFFFFFF00000000);
@@ -440,6 +545,29 @@ static BIT_FILTER *bf_first_child(BIT_FILTER *z,BIT_FILTER *x) {
 	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
    }
 
+#ifdef HAVE_BUDDY
+   /* handle decision diagram */
+   bdd_a=bdd_addref(x->decision_diagram);
+   for (i=32;i<96;i++) {
+      bdd_b=bdd_addref(bdd_restrict(bdd_a,bdd_ithvar(i)));
+      bdd_c=bdd_addref(bdd_restrict(bdd_a,bdd_nithvar(i)));
+      bdd_delref(bdd_a);
+      bdd_a=bdd_addref(bdd_ite(bdd_ithvar((i&0x1F)+96),bdd_b,bdd_c));
+      bdd_delref(bdd_b);
+      bdd_delref(bdd_c);
+   }
+   for (i=0;i<32;i++) {
+      bdd_b=bdd_addref(bdd_restrict(bdd_a,bdd_ithvar(i)));
+      bdd_c=bdd_addref(bdd_restrict(bdd_a,bdd_nithvar(i)));
+      bdd_delref(bdd_a);
+      bdd_a=bdd_addref(bdd_ite(bdd_ithvar(i+32),bdd_b,bdd_c));
+      bdd_delref(bdd_b);
+      bdd_delref(bdd_c);
+   }
+   if (z==x) bdd_delref(x->decision_diagram);
+   z->decision_diagram=bdd_a;
+#endif
+
    return z;
 }
 
@@ -447,6 +575,9 @@ static BIT_FILTER *bf_first_child(BIT_FILTER *z,BIT_FILTER *x) {
 static BIT_FILTER *bf_last_child(BIT_FILTER *z,BIT_FILTER *x) {
    int mylambda,i;
    uint64_t c[2];
+#ifdef HAVE_BUDDY
+   bdd bdd_a,bdd_b,bdd_c;
+#endif
 
    /* show debug information */
    if (bitvec_debug) {
@@ -456,8 +587,12 @@ static BIT_FILTER *bf_last_child(BIT_FILTER *z,BIT_FILTER *x) {
    }
 
    /* abort in case of the match-everything filter */
-   if (x->lambda<0)
-     return bf_true(z);
+   if (x->lambda<0) {
+#ifdef HAVE_BUDDY
+      if (z==x) bdd_delref(x->decision_diagram);
+#endif
+      return bf_true(z);
+   }
    
    /* count collisions */
    c[0]=(x->bits[1]|(x->bits[1]<<32))&UINT64_C(0xFFFFFFFF00000000);
@@ -482,6 +617,29 @@ static BIT_FILTER *bf_last_child(BIT_FILTER *z,BIT_FILTER *x) {
 	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
    }
 
+#ifdef HAVE_BUDDY
+   /* handle decision diagram */
+   bdd_a=bdd_addref(x->decision_diagram);
+   for (i=32;i<96;i++) {
+      bdd_b=bdd_addref(bdd_restrict(bdd_a,bdd_ithvar(i)));
+      bdd_c=bdd_addref(bdd_restrict(bdd_a,bdd_nithvar(i)));
+      bdd_delref(bdd_a);
+      bdd_a=bdd_addref(bdd_ite(bdd_ithvar((i&0x1F)+96),bdd_b,bdd_c));
+      bdd_delref(bdd_b);
+      bdd_delref(bdd_c);
+   }
+   for (i=0;i<32;i++) {
+      bdd_b=bdd_addref(bdd_restrict(bdd_a,bdd_ithvar(i)));
+      bdd_c=bdd_addref(bdd_restrict(bdd_a,bdd_nithvar(i)));
+      bdd_delref(bdd_a);
+      bdd_a=bdd_addref(bdd_ite(bdd_ithvar(i+64),bdd_b,bdd_c));
+      bdd_delref(bdd_b);
+      bdd_delref(bdd_c);
+   }
+   if (z==x) bdd_delref(x->decision_diagram);
+   z->decision_diagram=bdd_a;
+#endif
+
    return z;
 }
 
@@ -489,6 +647,9 @@ static BIT_FILTER *bf_last_child(BIT_FILTER *z,BIT_FILTER *x) {
 static BIT_FILTER *bf_middle_child(BIT_FILTER *z,BIT_FILTER *x) {
    int mylambda,i;
    uint64_t c[2];
+#ifdef HAVE_BUDDY
+   bdd bdd_a,bdd_b,bdd_c;
+#endif
    
    /* show debug information */
    if (bitvec_debug) {
@@ -498,8 +659,12 @@ static BIT_FILTER *bf_middle_child(BIT_FILTER *z,BIT_FILTER *x) {
    }
 
    /* abort in case of the match-everything filter */
-   if (x->lambda<0)
-     return bf_true(z);
+   if (x->lambda<0) {
+#ifdef HAVE_BUDDY
+      if (z==x) bdd_delref(x->decision_diagram);
+#endif
+      return bf_true(z);
+   }
    
    /* count collisions */
    c[0]=(x->bits[0]<<32)|(x->bits[0]>>32)
@@ -525,6 +690,21 @@ static BIT_FILTER *bf_middle_child(BIT_FILTER *z,BIT_FILTER *x) {
 	      z->bits[1],z->bits[0],z->lambda+1,uint64_2_pop(z->bits));
    }
 
+#ifdef HAVE_BUDDY
+   /* handle decision diagram */
+   bdd_a=bdd_addref(x->decision_diagram);
+   for (i=0;i<96;i++) {
+      bdd_b=bdd_addref(bdd_restrict(bdd_a,bdd_ithvar(i)));
+      bdd_c=bdd_addref(bdd_restrict(bdd_a,bdd_nithvar(i)));
+      bdd_delref(bdd_a);
+      bdd_a=bdd_addref(bdd_ite(bdd_ithvar((i&0x1F)+96),bdd_b,bdd_c));
+      bdd_delref(bdd_b);
+      bdd_delref(bdd_c);
+   }
+   if (z==x) bdd_delref(x->decision_diagram);
+   z->decision_diagram=bdd_a;
+#endif
+
    return z;
 }
 
@@ -546,19 +726,31 @@ void needle_fn_wrapper(NODE *n,BIT_FILTER *f) {
    n->functor->needle_bits_fn(n,f);
    
    /* but if there's a head, then we could match that; else must match
-    * the absence of head*/
+    * the absence of head */
    if (n->head!=NULL) {
       hval=fnv_hash(0,"",0);
       fa.bits[0]=(uint64_t)bit_combo(32,LAMBDA+1,hval);
       fa.bits[1]=UINT64_C(0);
       fa.lambda=LAMBDA;
+#ifdef HAVE_BUDDY
+      fa.decision_diagram=bit_bdd((uint32_t)fa.bits[0]);
       bf_and(f,f,&fa);
+      bdd_delref(fa.decision_diagram);
+#else
+      bf_and(f,f,&fa);
+#endif
 
       hval=fnv_hash(n->head->length,n->head->data,0);
       fa.bits[0]=(uint64_t)bit_combo(32,LAMBDA+1,hval);
       fa.bits[1]=UINT64_C(0);
       fa.lambda=LAMBDA;
+#ifdef HAVE_BUDDY
+      fa.decision_diagram=bit_bdd((uint32_t)fa.bits[0]);
       bf_or(f,f,&fa);
+      bdd_delref(fa.decision_diagram);
+#else
+      bf_or(f,f,&fa);
+#endif
    }
 
    /* show the result of crunching it */
@@ -581,6 +773,9 @@ void default_needle_fn(NODE *n,BIT_FILTER *f) {
    f->bits[0]=(uint64_t)bit_combo(32,LAMBDA+1,hval);
    f->bits[1]=UINT64_C(0);
    f->lambda=LAMBDA;
+#ifdef HAVE_BUDDY
+   f->decision_diagram=bit_bdd((uint32_t)f->bits[0]);
+#endif
    
    /* first child */
    if (n->arity==0)
@@ -610,6 +805,11 @@ void default_needle_fn(NODE *n,BIT_FILTER *f) {
    bf_and(f,
 	  bf_and(f,f,&fa),
 	  bf_and(&fb,&fb,&fc));
+#ifdef HAVE_BUDDY
+   bdd_delref(fa.decision_diagram);
+   bdd_delref(fb.decision_diagram);
+   bdd_delref(fc.decision_diagram);
+#endif
 }
 
 /**********************************************************************/
@@ -619,7 +819,7 @@ void anything_needle_fn(NODE *n,BIT_FILTER *f) {
 }
 
 void anywhere_needle_fn(NODE *n,BIT_FILTER *f) {
-   BIT_FILTER fa,fb;
+   BIT_FILTER fa,fb,fc;
 
    /* if we are not unary, then it doesn't count */
    if (n->arity!=1) {
@@ -632,8 +832,13 @@ void anywhere_needle_fn(NODE *n,BIT_FILTER *f) {
    
    /* match if it matches anywhere */
    bf_first_child(&fa,f);
-   fa.bits[1]|=fa.bits[0]>>32;
-   bf_or(f,bf_or(f,f,&fa),bf_middle_child(&fb,f));
+   bf_last_child(&fb,f);
+   bf_or(f,bf_or(f,f,&fa),bf_or(&fb,&fb,bf_middle_child(&fc,f)));
+#ifdef HAVE_BUDDY
+   bdd_delref(fa.decision_diagram);
+   bdd_delref(fb.decision_diagram);
+   bdd_delref(fc.decision_diagram);
+#endif
 }
 
 void and_needle_fn(NODE *n,BIT_FILTER *f) {
@@ -651,6 +856,9 @@ void and_needle_fn(NODE *n,BIT_FILTER *f) {
    
    /* match if both match */
    bf_and(f,f,&fa);
+#ifdef HAVE_BUDDY
+   bdd_delref(fa.decision_diagram);
+#endif
 }
 
 void or_needle_fn(NODE *n,BIT_FILTER *f) {
@@ -668,6 +876,9 @@ void or_needle_fn(NODE *n,BIT_FILTER *f) {
    
    /* match if either matches */
    bf_or(f,f,&fa);
+#ifdef HAVE_BUDDY
+   bdd_delref(fa.decision_diagram);
+#endif
 }
 
 void not_needle_fn(NODE *n,BIT_FILTER *f) {
@@ -713,5 +924,8 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
    
    /* FIXME figure out a better bound on new lambda */
    f->lambda/=3;
+   
+   /* FIXME do the BDD properly */
+   f->decision_diagram=bddtrue;
 }
 

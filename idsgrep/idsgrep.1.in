@@ -7,6 +7,11 @@
 .RI [ OPTIONS ]
 .I PATTERN
 .RI [ FILE .\|.\|.]
+.PP
+.B @PACKAGE@
+.RI [ OPTIONS ]
+.G \-G
+.RI [ FILE .\|.\|.]
 .
 .SH DESCRIPTION
 The
@@ -131,6 +136,22 @@ or 64 on most hosts).
 .BR \-h ", " \-\^\-help
 Display a brief help message.
 .TP
+.BR \-G ", " \-\^\-generate-index
+Instead of searching for trees that match a matching pattern, generate
+and write to standard output a bit vector index of the specified file or
+files.
+This index, if written to a filename with a .bvec extension and placed
+alongside the input that generated it in a correspondingly-named .eids
+file, may speed up future searches.
+No matching pattern will be taken from the command line; all non-option
+arguments will be read as filenames.
+If there is more than one input file, the results for them will be
+concatenated, which is unlikely to be useful.
+.R Bit vectors are experimental and may not always produce correct results.
+.TP
+.BR \-I ", " \-\^\-ignore-indices
+Do not use bit vector indices, even if they are available.
+.TP
 .BR \-U "CFG\fR,\fP " "\-\^\-unicode-list=" CFG
 Generate a list of Unicode characters and use that as a dictionary, before
 and in addition to any others that may have been specified.
@@ -155,6 +176,12 @@ preceding \(lqU+\(rq.
 .TP
 .BR \-V ", " \-\^\-version
 Display the version and license information.
+.TP
+.B \-\^\-bitvec-debug
+Report detailed bit vector debugging and performance information tt
+standard error.
+This option, which must be given in long form (it has no single-character
+abbreviation), 
 .
 .SH EXTENDED IDEOGRAPHIC DESCRIPTION SEQUENCES
 The Han character set is open-ended.

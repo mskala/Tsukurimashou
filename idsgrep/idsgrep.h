@@ -24,6 +24,10 @@
 #include "config.h"
 #include "_stdint.h"
 
+#ifdef HAVE_BUDDY
+# include <bdd.h>
+#endif
+
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
@@ -131,6 +135,9 @@ typedef struct _INDEX_RECORD {
 typedef struct _BIT_FILTER {
    uint64_t bits[2];
    int lambda;
+#ifdef HAVE_BUDDY
+   bdd decision_diagram;
+#endif
 } BIT_FILTER;
 
 /**********************************************************************/
@@ -159,19 +166,6 @@ void and_needle_fn(NODE *,BIT_FILTER *);
 void or_needle_fn(NODE *,BIT_FILTER *);
 void not_needle_fn(NODE *,BIT_FILTER *);
 void unord_needle_fn(NODE *,BIT_FILTER *);
-
-/*
-idsgrep.h:NODE *assoc_match_fn(NODE *);
-idsgrep.h:NODE *default_match_fn(NODE *);
-idsgrep.h:NODE *and_or_match_fn(NODE *);
-idsgrep.h:NODE *anything_match_fn(NODE *);
-idsgrep.h:NODE *anywhere_match_fn(NODE *);
-idsgrep.h:NODE *equal_match_fn(NODE *);
-idsgrep.h:NODE *not_match_fn(NODE *);
-idsgrep.h:NODE *unord_match_fn(NODE *);
-idsgrep.h:NODE *regex_match_fn(NODE *);
-idsgrep.h:NODE *user_match_fn(NODE *);
-*/
 
 /* This should be:
  *    - faster than GCC's builtin (which isn't great) when that doesn't

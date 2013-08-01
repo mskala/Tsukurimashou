@@ -253,106 +253,140 @@ UNICODE_BLOCK_DATA unicode_blocks[]={
    {0x100000,0x10FFFF,"Supplementary Private Use Area-B"},
 };
 
-void generate_unicode_list(NODE *match_pattern,char *cfg) {
-   int i,j,blen=64,elen,complained=0,cfgbits;
-   char *ebuf,*cptr;
-   int start,parsed;
-   NODE *to_match;
-   
-   /* start with a small buffer - usually enough */
-   ebuf=(char *)malloc(blen);
+static NODE *generate_unilist_entry(int c,char *cfg) {
+   static int blen=64,complained=0;
+   static char *ebuf=NULL;
+   NODE *rval;
+   char hchar[4];
+   int j,elen,cfgbits;
+   char *cptr;
 
-   /* loop over chars */
-   for (i=0;i<0x110000;i++) {
+   /* get a new node */
+   rval=new_node();
+   rval->head=new_string(construct_utf8(c,hchar),hchar);
+   rval->arity=0;
+   
+   /* look for configured bits of entry */
+   cfgbits=0;
+   if ((cfg!=NULL) && (*cfg!='\0')) {
       
-      /* skip surrogates */
-      if (i==0xD800)
-	i=0xE000;
+      /* make sure we have a buffer */
+      if (ebuf==NULL)
+	ebuf=(char *)malloc(blen);
       
       /* generate dictionary entry */
-      ebuf[0]='<';
-      if (i==(int)'\\') {
-	 ebuf[1]='\\';
-	 ebuf[2]='\\';
-	 elen=3;
-      } else
-	elen=1+construct_utf8(i,ebuf+1);
-      ebuf[elen++]='>';
-      if ((cfg==NULL) || (*cfg=='\0'))
-	ebuf[elen++]=';';
-      else {
-	 j=0;
-	 cfgbits=0;
-	 for (cptr=cfg;*cptr;cptr++) {
-	    if (blen-elen<50) {
-	       blen*=2;
-	       ebuf=(char *)realloc(ebuf,blen);
-	    }
-	    switch (*cptr) {
-	     case 'b':
-	       for (;unicode_blocks[j].high<i;j++);
-	       if (unicode_blocks[j].low<=i) {
-		  ebuf[elen++]=cfgbits?';':'(';
-		  cfgbits++;
-		  strcpy(ebuf+elen,unicode_blocks[j].name);
-		  elen+=strlen(unicode_blocks[j].name);
-	       }
-	       break;
-	       
-	     case 'd':
-	       ebuf[elen++]=cfgbits?';':'(';
-	       cfgbits++;
-	       elen+=sprintf(ebuf+elen,"%d",i);
-	       break;
-	       
-	     case 'x':
-	       ebuf[elen++]=cfgbits?';':'(';
-	       cfgbits++;
-	       elen+=sprintf(ebuf+elen,"U+%04X",i);
-	       break;
-	       
-	     default:
-	       if (!complained) {
-		  fprintf(stderr,
-			  "bad character %c in dictionary generator config\n",
-			  *cptr);
-		  complained=1;
-	       }
-	       break;
-	    }
+      j=0;
+      elen=0;
+      for (cptr=cfg;*cptr;cptr++) {
+	 if (blen-elen<50) {
+	    blen*=2;
+	    ebuf=(char *)realloc(ebuf,blen);
 	 }
-	 ebuf[elen++]=cfgbits?')':';';
-      }
-      ebuf[elen++]='\n';
-      
-      /* try to parse */
-      for (start=0;start<elen;start+=parsed) {
-	 parsed=parse(elen-start,ebuf+start);
+	 switch (*cptr) {
+	  case 'b':
+	    for (;unicode_blocks[j].high<c;j++);
+	    if (unicode_blocks[j].low<=c) {
+	       if (cfgbits)
+		 ebuf[elen++]=';';
+	       cfgbits++;
+	       strcpy(ebuf+elen,unicode_blocks[j].name);
+	       elen+=strlen(unicode_blocks[j].name);
+	    }
+	    break;
+	    
+	  case 'd':
+	    if (cfgbits)
+	      ebuf[elen++]=';';
+	    cfgbits++;
+	    elen+=sprintf(ebuf+elen,"%d",c);
+	    break;
+	    
+	  case 'x':
+	    if (cfgbits)
+	      ebuf[elen++]=';';
+	    cfgbits++;
+	    elen+=sprintf(ebuf+elen,"U+%04X",c);
+	    break;
+	    
+	  default:
+	    if (!complained) {
+	       fprintf(stderr,
+		       "bad character %c in dictionary generator config\n",
+		       *cptr);
+	       complained=1;
+	    }
+	    break;
+	 }
+      }      
+   }
 
-	 /* complain about errors */
-	 if (parse_state==PS_ERROR) {
-	    puts("can't parse internally generated " /* SNH */
-		 "dictionary entry"); /* SNH */
-	    fwrite(ebuf,1,elen,stdout); /* SNH */
-	    exit(1); /* SNH */
-	 }
+   /* set the functor */
+   if (cfgbits)
+     rval->functor=new_string(elen,ebuf);
+   else
+     rval->functor=new_string(1,";");
+
+   return rval;
+}
+
+void generate_unicode_list(NODE *match_pattern,char *cfg) {
+   int i;
+   NODE *to_match;
+   char hchar[4];
+   
+   /* if match pattern has a head, it uniquely identifies the entry  */
+   if (match_pattern->head!=NULL) {
+      /* note the match pattern has been through the parser; it is
+       * UTF-8 that we generated, so we trust that it's valid */
+
+      /* find the head's character code and make sure it's just one char */
+      if ((match_pattern->head->data[0]&0x80)==0) {
+	 /* single-byte ASCII */
+	 i=match_pattern->head->data[0];
+	 if (match_pattern->head->length!=1)
+	   return;
 	 
-	 /* deal with a complete tree if we have one */
-	 if (parse_state==PS_COMPLETE_TREE) {
-	    to_match=parse_stack[0];
-	    stack_ptr=0;
-	    if (tree_match(match_pattern,to_match)) {
-	       if (cook_output)
-		 write_cooked_tree(to_match,stdout);
-	       else {
-		  fwrite(ebuf,1,elen-1,stdout);
-		  echoing_whitespace=1;
-	       }
-	    }
-	    free_node(to_match);
-	 }
+      } else if ((match_pattern->head->data[0]&0xE0)==0xC0) {
+	 /* two bytes */
+	 i=((match_pattern->head->data[0]&0x1F)<<6)
+	   +(match_pattern->head->data[1]&0x3F);
+	 if (match_pattern->head->length!=2)
+	   return;
+      
+      } else if ((match_pattern->head->data[0]&0xF0)==0xE0) {
+	 /* three bytes */
+	 i=((match_pattern->head->data[0]&0xF)<<12)
+	   +((match_pattern->head->data[1]&0x3F)<<6)
+	   +(match_pattern->head->data[2]&0x3F);
+	 if (match_pattern->head->length!=3)
+	   return;
+	 
+      } else {
+	 /* four bytes */
+	 i=((match_pattern->head->data[0]&0x7)<<18)
+	   +((match_pattern->head->data[1]&0x3F)<<12)
+	   +((match_pattern->head->data[2]&0x3F)<<6)
+	   +(match_pattern->head->data[3]&0x3F);
+	 if (match_pattern->head->length!=4)
+	   return;
+      }
+
+      /* generate a special dictionary of that one character */
+      to_match=generate_unilist_entry(i,cfg);
+      if (tree_match(match_pattern,to_match))
+	write_cooked_tree(to_match,stdout);
+      free_node(to_match);
+
+   } else { /* otherwise we have to look at them all */
+      for (i=0;i<0x110000;i++) {
+	 if (i==0xD800)
+	   i=0xE000;
+	 
+	 to_match=generate_unilist_entry(i,cfg);
+	 if (tree_match(match_pattern,to_match))
+	   write_cooked_tree(to_match,stdout);
+	 free_node(to_match);
       }
    }
-   
-   free(ebuf);
 }
+
