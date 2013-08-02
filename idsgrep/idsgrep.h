@@ -19,6 +19,8 @@
  * mskala@ansuz.sooke.bc.ca
  */
 
+#include <sys/resource.h>
+#include <sys/time.h>
 #include <sys/types.h>
 
 #include "config.h"
@@ -166,6 +168,7 @@ void and_needle_fn(NODE *,BIT_FILTER *);
 void or_needle_fn(NODE *,BIT_FILTER *);
 void not_needle_fn(NODE *,BIT_FILTER *);
 void unord_needle_fn(NODE *,BIT_FILTER *);
+void equal_needle_fn(NODE *,BIT_FILTER *);
 
 /* This should be:
  *    - faster than GCC's builtin (which isn't great) when that doesn't
@@ -212,6 +215,12 @@ HASHED_STRING *new_string(size_t,char *);
 void delete_string(HASHED_STRING *);
 NODE *new_node(void);
 void free_node(NODE *);
+
+/**********************************************************************/
+
+/* idsgrep.c */
+
+extern uint64_t tree_checks,tree_hits;
 
 /**********************************************************************/
 

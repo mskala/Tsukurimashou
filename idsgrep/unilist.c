@@ -373,8 +373,11 @@ void generate_unicode_list(NODE *match_pattern,char *cfg) {
 
       /* generate a special dictionary of that one character */
       to_match=generate_unilist_entry(i,cfg);
-      if (tree_match(match_pattern,to_match))
-	write_cooked_tree(to_match,stdout);
+      tree_checks++;
+      if (tree_match(match_pattern,to_match)) {
+	 tree_hits++;
+	 write_cooked_tree(to_match,stdout);
+      }
       free_node(to_match);
 
    } else { /* otherwise we have to look at them all */
@@ -383,8 +386,11 @@ void generate_unicode_list(NODE *match_pattern,char *cfg) {
 	   i=0xE000;
 	 
 	 to_match=generate_unilist_entry(i,cfg);
-	 if (tree_match(match_pattern,to_match))
-	   write_cooked_tree(to_match,stdout);
+	 tree_checks++;
+	 if (tree_match(match_pattern,to_match)) {
+	    tree_hits++;
+	    write_cooked_tree(to_match,stdout);
+	 }
 	 free_node(to_match);
       }
    }

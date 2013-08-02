@@ -266,26 +266,6 @@ static BIT_FILTER *bf_false(BIT_FILTER *z) {
    return z;
 }
 
-/* match if x does not match (very loose) */
-static BIT_FILTER *bf_not(BIT_FILTER *z,BIT_FILTER *x) {
-   int i;
-
-   /* show debug information */
-   if (bitvec_debug) {
-      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
-      fprintf(stderr,"NOT %016" PRIX64 "%016" PRIX64 " %d/%d\n",
-	      x->bits[1],x->bits[0],x->lambda+1,uint64_2_pop(x->bits));
-   }
-
-   /* FIXME detect special cases where we need not fall back to true */
-#ifdef HAVE_BUDDY
-   if (z==x) bdd_delref(x->decision_diagram);
-   return bf_true(z);
-#else
-   return bf_true(z);
-#endif
-}
-
 /* match if x matches or y matches */
 static BIT_FILTER *bf_or(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
    uint64_t trimbits[2];
@@ -842,9 +822,6 @@ void anywhere_needle_fn(NODE *n,BIT_FILTER *f) {
    bdd_delref(fa.decision_diagram);
    bdd_delref(fb.decision_diagram);
    bdd_delref(fc.decision_diagram);
-   /* FIXME */
-/*   bdd_delref(f->decision_diagram);
-   f->decision_diagram=bddtrue; */
 #endif
 }
 
@@ -889,21 +866,70 @@ void or_needle_fn(NODE *n,BIT_FILTER *f) {
 }
 
 void not_needle_fn(NODE *n,BIT_FILTER *f) {
+   NODE *na,*nb,*nc;
+
    /* if we are not unary, then it doesn't count */
    if (n->arity!=1) {
       default_needle_fn(n,f);
       return;
    }
    
-   /* get filter for the child */
-   needle_fn_wrapper(n->child[0],f);
-   
-   /* match if input doesn't match */
-   bf_not(f,f);
+   if ((n->child[0]->arity==0)
+       && (n->child[0]->functor->match_fn==anything_match_fn)) {
+      /* !? - never matches */
+      bf_false(f);
+      
+   } else if ((n->child[0]->arity==1)
+	      && (n->child[0]->functor->match_fn==not_match_fn)) {
+      /* !!x - matches iff x matches */
+      needle_fn_wrapper(n->child[0]->child[0],f);
+
+   } else if ((n->child[0]->arity==2)
+	      && (n->child[0]->functor->match_fn==and_or_match_fn)) {
+      /* can apply DeMorgan's law */
+
+      /* negated first child */
+      nb=new_node();
+      nb->functor=n->functor;
+      nb->functor->refs++;
+      nb->arity=1;
+      nb->child[0]=n->child[0]->child[0];
+      nb->child[0]->refs++;
+      
+      /* negated second child */
+      nc=new_node();
+      nc->functor=n->functor;
+      nc->functor->refs++;
+      nc->arity=1;
+      nc->child[0]=n->child[0]->child[1];
+      nc->child[0]->refs++;
+
+      /* binary operator */
+      na=new_node();
+      na->functor=new_string(1,n->child[0]->functor->data[0]=='|'?"&":"|");
+      na->arity=2;
+      na->child[0]=nb;
+      nb->refs++;
+      na->child[1]=nc;
+      nc->refs++;
+      
+      /* evaluate the tree fragment */
+      needle_fn_wrapper(na,f);
+      
+      /* clean up */
+      free_node(nb);
+      free_node(nc);
+      free_node(na);
+
+   } else {
+      /* any other cases: we can't prove the negative */
+      bf_true(f);
+   }
 }
 
 void unord_needle_fn(NODE *n,BIT_FILTER *f) {
    BIT_FILTER fa;
+   NODE *nprime;
 
    /* if we are not unary, then it doesn't count */
    if (n->arity!=1) {
@@ -911,30 +937,208 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
       return;
    }
    
-   /* get filter for the child */
+   /* get filter for the child - cases AB and ABC*/
    needle_fn_wrapper(n->child[0],f);
    
-   /* binary:  merge the two children */
+   /* Note that for cases which differ only by swapping the first and last
+    * children, if we are NOT doing BDDs, then it is easy to compute what
+    * the filter looks like just by ORing the bit masks back and forth.
+    * For BDDs, however, we would have to also rearrange variable indices,
+    * and for the cases that involve changing the middle child of a
+    * ternary node we have to do more complicated shifting, so for those,
+    * we actually construct a new node and make recursive calls. */
+
+   /* binary:  one other ordering to consider */
    if (n->child[0]->arity==2) {
+
+#ifdef HAVE_BUDDY
+      /* BA */
+      nprime=new_node();
+      nprime->functor=n->child[0]->functor;
+      nprime->functor->refs++;
+      nprime->arity=2;
+      nprime->child[0]=n->child[0]->child[1];
+      nprime->child[0]->refs++;
+      nprime->child[1]=n->child[0]->child[0];
+      nprime->child[1]->refs++;
+      
+      /* PUT IT IN */
+      needle_fn_wrapper(nprime,&fa);
+      bf_or(f,f,&fa);
+      bdd_delref(fa.decision_diagram);
+      free_node(nprime);
+
+#else
+      /* easy bit re-arrangement for non-BDD filters */
       f->bits[1]|=f->bits[0]>>32;
       f->bits[0]|=f->bits[1]<<32;
+#endif
 
-      /* ternary:  merge all the way around */
+      /* ternary:  five other orderings to consider */
    } else if (n->child[0]->arity==3) {
+      
+      /* BCA and CAB change middle child, so must recurse */
+
+      /* BCA */
+      nprime=new_node();
+      nprime->functor=n->child[0]->functor;
+      nprime->functor->refs++;
+      nprime->arity=3;
+      nprime->child[0]=n->child[0]->child[1];
+      nprime->child[0]->refs++;
+      nprime->child[1]=n->child[0]->child[2];
+      nprime->child[1]->refs++;
+      nprime->child[2]=n->child[0]->child[0];
+      nprime->child[2]->refs++;
+      
+      /* PUT IT IN */
+      needle_fn_wrapper(nprime,&fa);
+      bf_or(f,f,&fa);
+#ifdef HAVE_BUDDY
+      bdd_delref(fa.decision_diagram);
+#endif
+      free_node(nprime);
+
+      /* CAB */
+      nprime=new_node();
+      nprime->functor=n->child[0]->functor;
+      nprime->functor->refs++;
+      nprime->arity=3;
+      nprime->child[0]=n->child[0]->child[2];
+      nprime->child[0]->refs++;
+      nprime->child[1]=n->child[0]->child[0];
+      nprime->child[1]->refs++;
+      nprime->child[2]=n->child[0]->child[1];
+      nprime->child[2]->refs++;
+      
+      /* PUT IT IN */
+      needle_fn_wrapper(nprime,&fa);
+      bf_or(f,f,&fa);
+#ifdef HAVE_BUDDY
+      bdd_delref(fa.decision_diagram);
+#endif
+      free_node(nprime);
+
+#ifdef HAVE_BUDDY
+      /* CBA */
+      nprime=new_node();
+      nprime->functor=n->child[0]->functor;
+      nprime->functor->refs++;
+      nprime->arity=3;
+      nprime->child[0]=n->child[0]->child[2];
+      nprime->child[0]->refs++;
+      nprime->child[1]=n->child[0]->child[1];
+      nprime->child[1]->refs++;
+      nprime->child[2]=n->child[0]->child[0];
+      nprime->child[2]->refs++;
+      
+      /* PUT IT IN */
+      needle_fn_wrapper(nprime,&fa);
+      bf_or(f,f,&fa);
+      bdd_delref(fa.decision_diagram);
+      free_node(nprime);
+
+      /* ACB */
+      nprime=new_node();
+      nprime->functor=n->child[0]->functor;
+      nprime->functor->refs++;
+      nprime->arity=3;
+      nprime->child[0]=n->child[0]->child[0];
+      nprime->child[0]->refs++;
+      nprime->child[1]=n->child[0]->child[2];
+      nprime->child[1]->refs++;
+      nprime->child[2]=n->child[0]->child[1];
+      nprime->child[2]->refs++;
+      
+      /* PUT IT IN */
+      needle_fn_wrapper(nprime,&fa);
+      bf_or(f,f,&fa);
+      bdd_delref(fa.decision_diagram);
+      free_node(nprime);
+
+      /* BAC */
+      nprime=new_node();
+      nprime->functor=n->child[0]->functor;
+      nprime->functor->refs++;
+      nprime->arity=3;
+      nprime->child[0]=n->child[0]->child[1];
+      nprime->child[0]->refs++;
+      nprime->child[1]=n->child[0]->child[0];
+      nprime->child[1]->refs++;
+      nprime->child[2]=n->child[0]->child[2];
+      nprime->child[2]->refs++;
+      
+      /* PUT IT IN */
+      needle_fn_wrapper(nprime,&fa);
+      bf_or(f,f,&fa);
+      bdd_delref(fa.decision_diagram);
+      free_node(nprime);
+
+#else
+      /* easy bit re-arrangement for non-BDD filters */
       f->bits[1]|=f->bits[0]>>32;
-      f->bits[1]|=f->bits[1]<<32;
-      f->bits[0]|=f->bits[1]&UINT64_C(0xFFFFFFFF00000000);
-      f->bits[1]|=f->bits[0]>>32;
+      f->bits[0]|=f->bits[1]<<32;
+#endif
    }
    
-   /* this is a no-op for nullary and unary trees */
-   
-   /* FIXME figure out a better bound on new lambda */
-   f->lambda/=3;
-   
-#ifdef HAVE_BUDDY
-   /* FIXME do the BDD properly */
-   f->decision_diagram=bddtrue;
-#endif
+   /* .unord. is a no-op on nullary and unary trees */
 }
 
+/* this is like needle_bits_wrapper but forces the default function instead
+ * of using the child's possibly customized one */
+void equal_needle_fn(NODE *n,BIT_FILTER *f) {
+   BIT_FILTER fa,fb;
+   uint32_t hval;
+   int i;
+   
+   /* if we are not unary, then it doesn't count */
+   if (n->arity!=1) {
+      default_needle_fn(n,f);
+      return;
+   }
+   
+   /* show what we're about to crunch */
+   if (bitvec_debug) {
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      write_cooked_tree(n->child[0],stderr);
+      bvd_indent+=3;
+   }
+   
+   /* ignore the child's customized needle function */
+   default_needle_fn(n->child[0],f);
+   
+   /* and if there's a head, then haystack must have that head or no head */
+   if (n->child[0]->head!=NULL) {
+      
+      /* "that head" */
+      hval=fnv_hash(n->child[0]->head->length,n->child[0]->head->data,0);
+      fa.bits[0]=(uint64_t)bit_combo(32,LAMBDA+1,hval);
+      fa.bits[1]=UINT64_C(0);
+      fa.lambda=LAMBDA;
+      
+      /* "no head" */
+      hval=fnv_hash(0,"",0);
+      fb.bits[0]=(uint64_t)bit_combo(32,LAMBDA+1,hval);
+      fb.bits[1]=UINT64_C(0);
+      fb.lambda=LAMBDA;
+      
+      /* do the logic */
+#ifdef HAVE_BUDDY
+      fa.decision_diagram=bit_bdd((uint32_t)fa.bits[0]);
+      fb.decision_diagram=bit_bdd((uint32_t)fb.bits[0]);
+      bf_or(f,&fa,bf_and(f,f,&fb));
+      bdd_delref(fa.decision_diagram);
+      bdd_delref(fb.decision_diagram);
+#else
+      bf_and(f,f,bf_or(&fa,&fa,&fb));
+#endif
+   }
+
+   /* show the result of crunching it */
+   if (bitvec_debug) {
+      bvd_indent-=3;
+      for (i=0;i<bvd_indent;i++) fputc(' ',stderr);
+      fprintf(stderr,"%016" PRIX64 "%016" PRIX64 " %d/%d\n",
+	      f->bits[1],f->bits[0],f->lambda+1,uint64_2_pop(f->bits));
+   }
+}

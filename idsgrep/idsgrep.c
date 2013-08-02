@@ -34,6 +34,8 @@
 /**********************************************************************/
 
 static int generate_index=0,ignore_indices=0;
+uint64_t tree_checks=UINT64_C(0),tree_hits=UINT64_C(0);
+
 /* basic search and index generation */
 void process_file(NODE *match_pattern,char *fn,int fn_flag) {
    int read_amt,flag,i;
@@ -110,6 +112,7 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 	 if (parse_state==PS_COMPLETE_TREE) {
 	    to_match=parse_stack[0];
 	    stack_ptr=0;
+	    tree_checks++;
 
 	    if (generate_index) {
 	       for (i=0;((unsigned char)input_buffer[i])<=0x20;i++)
@@ -126,6 +129,7 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 	       }
 
 	    } else if (tree_match(match_pattern,to_match)) {
+	       tree_hits++;
 	       for (i=0;((unsigned char)input_buffer[i])<=0x20;i++);
 	       if (fn_flag>=0)
 		 write_bracketed_string(hfn,colon,stdout);
@@ -170,7 +174,6 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 #define IDX_REC_BLK 2001
 
 static uint64_t bv_checks=UINT64_C(0),bv_hits=UINT64_C(0);
-static uint64_t tree_hits=UINT64_C(0);
 static BIT_FILTER bf;
 static NODE *indexed_pattern=NULL;
 
@@ -376,6 +379,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 	       /* handle the parsed tree */
 	       to_match=parse_stack[0];
 	       stack_ptr=0;
+	       tree_checks++;
 	    
 	       if (tree_match(match_pattern,to_match)) {
 		  tree_hits++;
@@ -412,6 +416,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 
 static struct option long_opts[] = {
    {"bitvec-debug",no_argument,NULL,'D'|128},
+   {"statistics",no_argument,NULL,'s'|128},
    {"cooking",required_argument,NULL,'c'},
    {"dictionary",optional_argument,NULL,'d'},
    {"font-chars",required_argument,NULL,'f'},
@@ -435,7 +440,8 @@ int main(int argc,char **argv) {
    int c,num_files=0;
    char *dictdir,*dictname=NULL,*dictglob,*unilist_cfg=NULL;
    glob_t globres;
-   int show_version=0,show_help=0,generate_list=0;
+   int show_version=0,show_help=0,generate_list=0,report_statistics=0;
+   struct rusage rua,rub;
 
    /* quick usage message */
    if (argc<2)
@@ -486,6 +492,11 @@ int main(int argc,char **argv) {
 	 
        case 'D'|128:
 	 bitvec_debug=1;
+	 break;
+
+       case 's'|128:
+	 report_statistics=1;
+	 break;
 
        default:
 	 break;
@@ -514,10 +525,15 @@ int main(int argc,char **argv) {
 	                             " predicate\n"
 	  "      --bitvec-debug        verbose bit vector debugging"
 	                             " messages\n"
+	  "      --statistics          machine-readable statistics\n"
 	  "  -h, --help                display this help");
    
    if (show_version || show_help)
      exit(0);
+   
+   /* start counting time */
+   if (report_statistics)
+     getrusage(RUSAGE_SELF,&rua);
  
    /* parse matching pattern (automatic wildcard in generate mode) */
    if (generate_index) {
@@ -572,7 +588,23 @@ int main(int argc,char **argv) {
 	puts("(no dictionaries were searched)");
    }
    
-   /* print statistics */
+   /* stop counting time, print statistics - machine-readable */
+   if (report_statistics) {
+      getrusage(RUSAGE_SELF,&rub);
+      if (rua.ru_utime.tv_usec>rub.ru_utime.tv_usec) {
+	 rub.ru_utime.tv_usec+=1000000;
+	 rub.ru_utime.tv_sec--;
+      }
+      printf("STATS %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64
+	     " %" PRIu64 " %d.%06d ",
+	     bv_checks,bv_hits,bdd_hits,tree_checks,tree_hits,
+	     rub.ru_utime.tv_sec-rua.ru_utime.tv_sec,
+	     rub.ru_utime.tv_usec-rua.ru_utime.tv_usec);
+      set_output_recipe("cooked");
+      write_cooked_tree(match_pattern,stdout);
+   }
+
+   /* print statistics - debug */
    if (bitvec_debug && !generate_index) {
       fprintf(stderr,"%20" PRIu64 " bitvec checks\n",bv_checks);
       if (bv_checks>UINT64_C(0)) {

@@ -654,7 +654,7 @@ void register_syntax(void) {
    register_special_functor("*",1,unord_match_fn,unord_needle_fn);
    register_alias("unord","*");
 
-   register_special_functor("=",1,equal_match_fn,anything_needle_fn);
+   register_special_functor("=",1,equal_match_fn,equal_needle_fn);
    register_alias("equal","=");
 
    register_special_functor("@",1,assoc_match_fn,anything_needle_fn);
