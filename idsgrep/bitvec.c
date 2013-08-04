@@ -88,7 +88,7 @@ static uint32_t bit_combo(int n,int k,uint32_t h) {
 
 #ifdef HAVE_BUDDY
 
-#define MAX_BDD_COMPLEXITY 5000
+#define MAX_BDD_COMPLEXITY 1000
 
 /* create a BDD for the conjunction of the bits in the input */
 static bdd bit_bdd(uint32_t bits) {

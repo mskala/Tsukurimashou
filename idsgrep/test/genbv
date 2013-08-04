@@ -8,7 +8,8 @@ fi
 cp kanjivg.eids gbv-d-$$.eids
 ./idsgrep -G gbv-d-$$.eids > gbv-d-$$.bvec
 ./idsgrep -I '!&!⿱止?!⿱?月' gbv-d-$$.eids > gbv-outa.$$
-./idsgrep --bitvec-debug '|⿱止?⿱?月' gbv-d-$$.eids > gbv-outb.$$
+./idsgrep --bitvec-debug '|⿱止?⿱?月' gbv-d-$$.eids \
+  | grep -v 'Garbage' > gbv-outb.$$
 
 if diff gbv-outa.$$ gbv-outb.$$
 then

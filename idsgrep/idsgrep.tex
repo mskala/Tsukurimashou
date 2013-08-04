@@ -2,7 +2,9 @@
 
 \usepackage{fontspec}
 
+\usepackage{amsfonts}
 \usepackage{calc}
+\usepackage{manfnt}
 \usepackage[rigidchapters]{titlesec}
 \usepackage{tocloft}
 \usepackage{url}
@@ -18,9 +20,11 @@
 \setlength{\headheight}{0pt}
 \setlength{\headsep}{0pt}
 
-\setlength{\oddsidemargin}{\paperwidth/17-0.5in}
+\setlength{\oddsidemargin}{\paperwidth*2/17-1in}
+\setlength{\marginparsep}{\paperwidth*1/68}
+\setlength{\marginparwidth}{\paperwidth*1/17}
 \setlength{\columnsep}{1em}
-\setlength{\textwidth}{\paperwidth*15/17-1in}
+\setlength{\textwidth}{\paperwidth*13/17}
 \setlength{\textheight}{8.5in}
 
 \setlength{\parindent}{1.5em}
@@ -103,6 +107,8 @@
 \makeatother
 
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\DangerousBend}{\marginpar{\large\hfill\dbend\hfill\null}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -238,7 +244,7 @@ things in detail; for now, here are some examples.
 
 \noindent
 The Han character set is open-ended.  Although a few thousand characters
-suffice to write the languages most commonly written in Han script languages
+suffice to write the languages most commonly written in Han script
 (namely Chinese and Japanese) most of the time, popular standards define
 tens of thousands of less-popular characters, and there are at least
 hundreds of thousands of rare characters known to occur in names, historical
@@ -291,6 +297,12 @@ correctly with a single, simple command line (\texttt{idsgrep -d
 '[tb][lr]??心'}).  This software is intended to bring the user-friendliness
 of \texttt{grep} to Han character dictionaries.
 
+Some \DangerousBend passages in this manual are marked with the Knuthian
+``dangerous bend'' sign in the margin.  These cover obscure or difficult
+aspects of the software, less likely to be of interest to first-time users. 
+Beginners are encouraged to skip these parts on the first reading, then come
+back and check them out later if interested.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{What's new}
@@ -299,10 +311,11 @@ The main new features in version 0.4 are:
 \begin{itemize}
   \item changes to the build system for better integration with
     Tsukurimashou;
+  \item experimental support for bit vector indices;
   \item support for user-defined matching predicates, and in particular, the
     ability to match against the list of characters defined by a font file
     (``\texttt{-f}'' option);
-  \item built-in generation of Unicode character lists (``\texttt{-U}''
+  \item built-in generation of Unicode character lists (``\mbox{\texttt{-U}}''
     option).
 \end{itemize}
 
@@ -345,12 +358,25 @@ A precompiled version of the CHISE IDS-derived dictionary is bundled
 in the IDSgrep distribution tarball, so that one should be available (though
 not necessarily up-to-date) without any dependencies.
 
+Regular expression matching requires building with the Perl-Compatible
+Regular Expression (PCRE) library available at
+\url{http://www.pcre.org/}~\cite{PCRE}.  Many Linux distributions install
+this library by default.  Without PCRE, the regular-expression matching
+features will not be included, and any attempt to do regular-expression
+matching will result in a fatal error.
+
+Getting maximum benefit from the bit vector indexing features requires
+building with the BuDDy binary decision diagram library available at
+\url{http://sourceforge.net/projects/buddy/}~\cite{BuDDy}.  Many Linux
+distributions install this library by default.  Without BuDDy, bit vectors
+will still work, but will not speed up IDSgrep by as great a factor.
+
 The \texttt{configure}
 script will by default make a reasonable effort to find the dependencies; in
 many common cases it is not necessary to specify them on the command line. 
 Here is a more complete installation process relying on \texttt{configure}
 to find Tsukurimashou in a
-sibling directory and the others in the current directory:
+sibling directory and the other dictionaries in the current directory:
 \begin{verbatim}
 unzip tsukurimashou-0.6.zip
 cd tsukurimashou-0.6
@@ -403,15 +429,35 @@ present.  There is also a test that will use Valgrind~\cite{Valgrind} if
 available, to check for memory-related problems; if Valgrind is not found in
 the \texttt{PATH}, this test will be skipped.
 
-The \texttt{configure} script supports an \texttt{--enable-gcov} switch to
-enable meta-testing of the test suite's coverage.  This feature requires
-that the Gcov coverage analyser be installed.  To do a coverage analysis,
-run \texttt{configure} with \texttt{--enable-gcov} and any other desired
-options, then do \texttt{make clean} (necessary to be sure all object files
-are rebuilt with the coverage instrumentation) followed by \texttt{make
-check}.  Full coverage can only be attained if the dictionary files are
-installed (not just built).  Most people would not want to install the
-IDSgrep binary itself when built under this option.
+The \DangerousBend IDSgrep installation process will attempt to build and
+install bit vector indices for whatever dictionaries it installs.  Doing
+that entails running the \texttt{idsgrep} binary for the target system on
+the build system, and so it is unlikely to work in the case of
+Autotools-mediated cross-compilation.  Cross-compilation has not been tested
+at all and would likely fail anyway, but this point seemed worth mentioning
+for the benefit of anyone who might be trying to push the limits. 
+Similarly, the bit vector index files are architecture-specific.  An
+\texttt{idsgrep} binary that encounters bit vector files for a foreign
+architecture will ignore them and use the unfiltered matching algorithm;
+unfiltered matching is much slower, though otherwise harmless.  If you share
+parts of your installation between multiple architectures (for instance, on
+a heterogenous LAN), and you wish \texttt{idsgrep} binaries on every
+architecture to benefit from bit vectors, or if you are just finicky in a
+general way about keeping architecture-specific files and ``pure'' data
+separate from each other, then you may wish to pay close attention to where
+your dictionaries and indices are stored, and place bit vectors and
+dictionaries in architecture-specific space.
+
+The \DangerousBend\texttt{configure} script supports an
+\texttt{--enable-gcov} switch to enable meta-testing of the test suite's
+coverage.  This feature requires that the Gcov coverage analyser be
+installed.  To do a coverage analysis, run \texttt{configure} with
+\texttt{--enable-gcov} and any other desired options, then do \texttt{make
+clean} (necessary to be sure all object files are rebuilt with the coverage
+instrumentation) followed by \texttt{make check}.  Full coverage can only be
+attained if the dictionary files are installed (not just built).  Most
+people would not want to install the IDSgrep binary itself when built under
+this option.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -771,9 +817,9 @@ Tsukurimashou's directory, then \texttt{cd} to IDSgrep's directory and run
 
 \section{A note on TrueType/OpenType}
 
-This version of IDSgrep is designed to read TrueType or OpenType files
-(the distinction between the two is not relevant at this level) for
-character map information.  The specification for the
+This \DangerousBend version of IDSgrep is designed to read TrueType or
+OpenType files (the distinction between the two is not relevant at this
+level) for character map information.  The specification for the
 TrueType/OpenType file format reads like a parody.  I'd like to take a
 moment to complain about a few things.
 
@@ -906,6 +952,14 @@ are fully implemented for output.
 
 \begin{description}
 
+\item[\texttt{-c}, \texttt{--cooking}]
+Select the output generation and input canonicalization mode.  Requires one
+argument, which may be one of the keywords \texttt{raw}, \texttt{rawnc},
+\texttt{ascii}, \texttt{cooked}, or \texttt{indent}, to specify a preset
+mode; or a string of up to twelve decimal digits to control the output in
+more detail.  The default mode is \texttt{raw}.  See the
+section on ``cooked output'' in this manual for more details.
+
 \item[\texttt{-d}, \texttt{--dictionary}]
 Read a dictionary
 from the standard location.  There is a pathname for dictionaries hardcoded
@@ -925,14 +979,6 @@ the dictionary name, as ``\texttt{-dt}'' or ``\texttt{-dk},'' will search
 just the matching one; and it remains possible to specify a file exactly or
 use standard input in the usual \texttt{grep}-like way.
 
-\item[\texttt{-c}, \texttt{--cooking}]
-Select the output generation and input canonicalization mode.  Requires one
-argument, which may be one of the keywords \texttt{raw}, \texttt{rawnc},
-\texttt{ascii}, \texttt{cooked}, or \texttt{indent}, to specify a preset
-mode; or a string of up to twelve decimal digits to control the output in
-more detail.  The default mode is \texttt{raw}.  See the
-section on ``cooked output'' in this manual for more details.
-
 \item[\texttt{-f}, \texttt{--font-chars}]
 Read a font file and make its character coverage available as a user-defined
 matching predicate through the ``\texttt{\#}'' matching operator.  In the
@@ -944,30 +990,68 @@ so on.  The maximum number of user-defined predicates is limited to the
 number of bits in the largest integer type available to the C compiler; 32
 or 64 on many systems.
 
-\item[\texttt{-U}, \texttt{--unicode-list}]
-Generate a dictionary of Unicode code points, and read that before
-reading any other dictionaries or input files that may be specified.
-The generated dictionary consists of a single line for each of the
-code points U+0000 through U+10FFFF in ascending order, excluding the
-surrogates but not any other invalid or non-character code points; on
-each line, there is a tree whose head is the character and whose body
-is either a nullary semicolon or (if the optional argument to
-\texttt{-U} was specified) a nullary functor containing
-semicolon-separated pieces of information selected by the characters of the
-optional argument.  Characters permitted in the argument
-are ``\texttt{b}'' for the Unicode block name; ``\texttt{d}'' for the
-decimal value of the code point; and ``\texttt{x}'' for the
-hexadecimal value with ``U+.''  For example, specifying
-``\texttt{-Uxdb}'' will generate and scan a dictionary that includes
-the line ``\texttt{<A>(U+0041;65;Basic Latin)}.''
-This option is intended to be used together with \texttt{-f} to produce
-font coverage lists.
+\item[\texttt{-h}, \texttt{--help}] Display a short summary of these
+options.
+
+\item[\texttt{-G}, \texttt{--generate-index}]
+Instead \DangerousBend of searching for trees that match a matching
+pattern, generate and
+write to standard output a bit vector index of the specified file or files.
+This index, if written to a filename with a \texttt{.bvec} extension and
+placed alongside the input that generated it in a correspondingly-named
+\texttt{.eids} file, may speed up future searches.
+This feature is normally invoked automatically during program installation;
+users will only need to use it directly if they are building their own
+dictionaries.  No
+matching pattern will be taken from the command line; all non-option
+arguments will be read as filenames.  The \texttt{-U} option will be
+ignored.  If there is more than one input file, the results for them will be
+concatenated, which is unlikely to be useful.  See the chapter on bit vector
+indices in this manual for more information.
+
+\item[\texttt{-I}, \texttt{--ignore-indices}]
+Do \emph{not} look for or use any bit vector indices.
+
+\item[\texttt{-U}, \texttt{--unicode-list}] Generate a dictionary of Unicode
+code points, and read that before reading any other dictionaries or input
+files that may be specified.  The generated dictionary consists of a single
+line for each of the code points U+0000 through U+10FFFF in ascending order,
+excluding the surrogates but not any other invalid or non-character code
+points; on each line, there is a tree whose head is the character and whose
+body is either a nullary semicolon or (if the optional argument to
+\texttt{-U} was specified) a nullary functor containing semicolon-separated
+pieces of information selected by the characters of the optional argument. 
+Characters permitted in the argument are ``\texttt{b}'' for the Unicode
+block name; ``\texttt{d}'' for the decimal value of the code point; and
+``\texttt{x}'' for the hexadecimal value with ``U+.'' For example,
+specifying ``\texttt{-Uxdb}'' will generate and scan a dictionary that
+includes the line ``\texttt{<A>(U+0041;65;Basic Latin)}.'' This option is
+intended to be used together with \texttt{-f} to produce font coverage
+lists.  Bit vector indexing is of use for the internally-generated
+Unicode list, but when the query string has a head, IDSgrep will generate
+only the at most one dictionary entry that could match that query, giving
+something very much like the benefit of bit vector indexing.
 
 \item[\texttt{-V}, \texttt{--version}] Display the version and license
 information for IDSgrep.
 
-\item[\texttt{-h}, \texttt{--help}] Display a short summary of these
-options.
+\item[\texttt{--bitvec-debug}]
+Report \DangerousBend detailed bit vector debugging and performance
+information to standard error.
+The information reported is terse, undocumented, and probably not of
+interest to most users.
+Whereas in ordinary operation, \texttt{idsgrep}
+will silently switch to plain tree-matching should the bit vector index
+be unavailable or invalid, with this option the
+absence of a valid bit vector index for an input file will be
+treated as a fatal error.
+
+\item[\texttt{--statistics}]
+Report \DangerousBend a line of machine-readable performance information
+to standard output at the end of the run.  This may be useful in
+optimizing the bit vector features.  See the chapter on bit vectors in this
+manual for more information about the format and significance of the
+statistics.
 
 \end{description}
 
@@ -1306,9 +1390,9 @@ on output cooking for more information.
   \{lcr\} & $\Rightarrow$ & \{⿲\} & \{tcb\} & $\Rightarrow$ & \{⿳\}
 \end{tabular}}
 
-The \texttt{idsgrep} command-line utility attempts to follow Postel's Law
-with respect to byte sequences that are not valid UTF-8: ``be conservative
-in what you do, be liberal in what you accept from
+The \DangerousBend\texttt{idsgrep} command-line utility attempts to follow
+Postel's Law with respect to byte sequences that are not valid UTF-8: ``be
+conservative in what you do, be liberal in what you accept from
 others.''~\cite{Postel:TCP} Jesus of Nazareth stated a similar principle
 somewhat earlier.\footnote{``There is nothing from without a man, that
 entering into him can defile him: but the things which come out of him,
@@ -1595,24 +1679,23 @@ instead of strict equality for testing the heads and functors.
 Mnemonic: slash means regular expression matching in Perl.
 Verbose ASCII name: ``\texttt{.regex.}.''
 
-Regular expression matching for the purposes of this operator is as
-defined by the Perl Compatible Regular Expressions library, in
-whichever version was linked with the \texttt{idsgrep} utility.
-Strings are passed into PCRE as UTF-8, and are guaranteed (because the
-EIDS parser decodes and re-encodes \texttt{idsgrep}'s input for
-internal use) to be valid UTF-8 when PCRE sees them regardless of user
-input; as such, PCRE is given the option flags that make it read UTF-8
-without doing its own validity check.  Use of the PCRE
-``\texttt{\textbackslash C}'' syntax for matching individual octets
-within UTF-8 is strongly not recommended. All other PCRE options are
-left to the defaults chosen when PCRE was compiled, even if those are
-silly.  The character tables are PCRE's ``C locale'' defaults, not
-generated at runtime from the current locale. Things like case
-sensitivity can be controlled within the pattern using PCRE's syntax
-for doing so.  In the event that \texttt{idsgrep} was compiled without
-the PCRE library (which is not recommended, but is possible), or that
-PCRE was compiled without UTF-8 support, then an attempt to evaluate
-the slash operator will trigger a fatal error.
+Regular \DangerousBend expression matching for the purposes of this operator
+is as defined by the Perl Compatible Regular Expressions library, in
+whichever version was linked with the \texttt{idsgrep} utility.  Strings are
+passed into PCRE as UTF-8, and are guaranteed (because the EIDS parser
+decodes and re-encodes \texttt{idsgrep}'s input for internal use) to be
+valid UTF-8 when PCRE sees them regardless of user input; as such, PCRE is
+given the option flags that make it read UTF-8 without doing its own
+validity check.  Use of the PCRE ``\texttt{\textbackslash C}'' syntax for
+matching individual octets within UTF-8 is strongly not recommended.  All
+other PCRE options are left to the defaults chosen when PCRE was compiled,
+even if those are silly.  The character tables are PCRE's ``C locale''
+defaults, not generated at runtime from the current locale.  Things like
+case sensitivity can be controlled within the pattern using PCRE's syntax
+for doing so.  In the event that \texttt{idsgrep} was compiled without the
+PCRE library (which is not recommended, but is possible), or that PCRE was
+compiled without UTF-8 support, then an attempt to evaluate the slash
+operator will trigger a fatal error.
 
 A matching pattern given to PCRE will have already passed through the
 EIDS parser, which removes one level of backslash escaping.  The
@@ -1745,12 +1828,12 @@ way to use this option.  The available preset modes are as follows:
     ``\texttt{cooked}.''
 \end{description}
 
-If not given a preset keyword, ``\texttt{-c}'' can be given a string of
-ASCII decimal digits.  The decimal-string interface allows precise control
-of how output syntax will be generated, but it is somewhat experimental,
-very complicated, and may change incompatibly in future versions of this
-software.  Use of this feature is not recommended.  Nonetheless, the
-remainder of this section will attempt to document it.
+If \DangerousBend not given a preset keyword, ``\texttt{-c}'' can be given a
+string of ASCII decimal digits.  The decimal-string interface allows precise
+control of how output syntax will be generated, but it is somewhat
+experimental, very complicated, and may change incompatibly in future
+versions of this software.  Use of this feature is not recommended. 
+Nonetheless, the remainder of this section will attempt to document it.
 
 The format specifier may be up to twelve digits long.  If it is shorter than
 that, it is taken as a prefix with unspecified digits copied from the
@@ -1865,6 +1948,447 @@ transformation of alphabetic aliases to symbolic names on input; plus 2 to
 enable a translation from alphabetic aliases to symbolic names on output,
 which is generally only meaningful if 4 was selected; plus 1 to enable a
 transformation from symbolic names back to alphabetic aliases on output.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Bit vector indices}
+
+\noindent
+
+Matching trees according to the rules in the previous chapter is potentially
+an expensive operation.  The cases of tree-matching actually used in
+practice tend to be relatively easy ones, but parsing EIDS syntax is also
+expensive enough, even with an optimized implementation, that it may take as
+much time as matching or more; and every tree of the database must be parsed
+in order to attempt a match.  A complete installation of IDSgrep may take a
+second or two on a typical PC to parse and search all the dictionaries,
+which is not long enough to be a problem in typical interactive use, but
+could become an issue if queries were being generated automatically, faster
+than a single user would type them.
+
+The solution is to avoid doing tree matches, and avoid doing parsing, as
+much as possible.  As of version 0.4, IDSgrep is capable of analysing a
+dictionary in advance and generating an index file representing useful
+information about the trees in a format that can be scanned quickly.  It is
+not possible to correctly answer all queries solely from information in the
+index, but the hope is that for most queries, the program can rule out most
+dictionary entries as potential matches just from a fast examination of the
+index.  Then for any entries not excluded by the index, it runs the more
+expensive parsing and tree matching operations on the actual data.  The time
+saved by skipping input entries is supposed to more than compensate for the
+additional work of reading the index.  The size of the effect varies a lot
+depending on the data, but in tests with reasonably representative
+dictionaries and sample queries, it averaged to about a factor of 15 speed
+improvement.  If the index file is not sufficiently fresh, was built for a
+different computer architecture, or if there is no index file (for instance,
+with piped-in input), then IDSgrep will just do a tree match on every tree
+in the input, giving correct but slower results.
+
+Exactly how this feature works is complicated, and is part of the author's
+academic research.  This chapter starts with a short summary from a user's
+perspective of how to build and use bit vector indices.  After that, all
+remaining sections are marked with dangerous bend symbols, and attempt to
+give some notes on the technical details for interested parties without
+claiming to really be a complete presentation of the mathematical
+underpinnings of the system.  Those sections should not be read by anyone
+who is easily frightened.  Watch for future publications covering this
+material more formally.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Building and using bit vector indices}
+
+FIXME
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Filtered matching}
+
+Let \DangerousBend $\mathbb{E}$ be the set of EIDS trees.  Let $\mathsf{T}$
+and $\mathsf{F}$ represent Boolean true and false.  The previous chapter
+defined a function $\mathit{match}:\mathbb{E}\times\mathbb{E}\rightarrow
+\{\mathsf{T},\mathsf{F}\}$ for determining whether one EIDS tree matches
+another; if $\mathit{match}(N,H)=\mathsf{T}$ we say that $N$, which we call
+the \emph{needle}, matches $H$, which we call the \emph{haystack}.
+
+The \texttt{idsgrep} binary has the job of evaluating $\mathit{match}(N,H)$
+for one $N$ specified on the command line and every $H$ in the
+dictionary.  The dictionary is large, but does not change frequently,
+whereas each invocation of \texttt{idsgrep} faces only one value of $N$, but
+it is fresh and may never have been seen before.  And the $\mathit{match}$
+function is inconveniently expensive to calculate.
+
+We will attempt to deal with this situation by defining three new functions
+$\mathit{filt}:\mathbb{E}\rightarrow\mathbb{F}$,
+$\mathit{vec}:\mathbb{E}\rightarrow\mathbb{V}$,
+and $\mathit{check}:\mathbb{F}\times\mathbb{V}\rightarrow
+\{\mathsf{T},\mathsf{F}\}$.
+Elements of $\mathbb{V}$ that come out of $\mathit{vec}$ are called
+\emph{vectors} and elements of $\mathbb{F}$ that come out of $\mathit{filt}$
+are called \emph{filters}.
+We want the following properties:
+\begin{itemize}
+  \item $\mathit{vec}$ might be expensive to compute, but we can store
+    elements of $\mathbb{V}$ (its output) reasonably cheaply.
+  \item $\mathit{filt}$ might be relatively expensive to compute, and its
+    output might be large, but we can at least
+    afford to compute it, and store the
+    result, once per run of \texttt{idsgrep}.
+  \item $\mathit{check}$ is cheap to compute.
+  \item If $\mathit{match}(N,H)$ is true, then
+    $\mathit{check}(\mathit{filt}(N),$ $\mathit{vec}(H))$ is definitely true. 
+    Therefore if $\mathit{check}(\mathit{filt}(N),$ $\mathit{vec}(H))$ is
+    false then $\mathit{match}(N,H)$ must also be false.
+  \item If $\mathit{match}(N,H)$ is false, then
+    $\mathit{check}(\mathit{filt}(N),$ $\mathit{vec}(H))$ is usually false.
+    This might not be guaranteed, but we want it to hold as often as
+    possible.
+\end{itemize}
+
+With those properties, what we can do is run $\mathit{vec}$ on all the trees
+in the dictionary and store the results in the index ahead of time.  When
+the \texttt{idsgrep} binary runs, it can run $\mathit{filt}$ just once on
+the input search pattern.  Then for each entry in the index, it calculates
+$\mathit{check}(\mathit{filt}(N),\mathit{vec}(H))$.  That is supposed to be
+a cheap operation.  If $\mathit{check}$ returns true, then the dictionary
+entry \emph{might possibly} be a match.  At that point \texttt{idsgrep} can
+extract the location and length of the original tree data from the index,
+read the relevant chunk of the dictionary proper, parse it, and calculate
+$\mathit{match}$ to determine whether it really is a match.  We hope that
+when the dictionary entry is not really a match, $\mathit{check}$ will
+usually return false.  Whenever $\mathit{check}$ is false, we can be sure
+that $\mathit{match}$ would also return false, and so \texttt{idsgrep} can
+skip over that entry without doing the work of parsing or actually computing
+$\mathit{match}$ the hard way.
+
+This idea of doing an easy approximate check first, to save the cost of a
+more difficult accurate evaluation, should be quite familiar.  Imagine a
+hiring committee quickly throwing out all the job applications from software
+engineers, then interviewing the computational geometers.\footnote{You may
+say I'm a dreamer.} Similar concepts appear throughout computer science:
+consider instruction and data caches; memoization for dynamic programming;
+solving relaxed versions of optimization problems; and especially Bloom
+filters~\cite{Bloom:Filters}.  The bit vector technique used in IDSgrep
+builds on Bloom filters and on the work of Skala and
+others~\cite{Skala:Generalized} and Skala and Penn~\cite{Skala:Fast} on type
+unification.
+
+Functional programming weenies will note that the real point of an element
+of $\mathbb{F}$ is that you can combine it with $\mathit{check}$ to make a
+tasty curry: elements of $\mathbb{F}$ are important because of the functions
+$\mathbb{E}\rightarrow\{\mathsf{T},\mathsf{F}\}$ they beget upon
+$\mathit{check}$.  When the needle is a complicated EIDS tree with a lot of
+special matching operators in it, we hope that we can find filters for the
+subtrees and then combine them in some simple way to find a filter for the
+complicated needle.  This pursuit is called the \emph{filter calculus}.  It
+is always possible, at least a little, because we could just declare the
+result of the filter calculus to be a filter that makes $\mathit{check}$
+return $\mathsf{T}$ identically on all vectors.  That obeys all the
+properties it must obey.  But of course we hope for filters to be as
+restrictive as possible, to allow us to rule out as many dictionary entries
+as possible, so the accept-everything filter is a last resort.
+
+IDSgrep (when compiled with the necessary library) actually uses two layers
+of filtered matching, here called lambda filters and BDD filters.  Both
+layers share the same vectors---that is, $\mathbb{V}$ and $\mathit{vec}$ are
+the same for both.  For each entry in the index, the \texttt{idsgrep}
+utility checks the lambda filter.  If the lambda filter returns false, it
+stops.  If the lambda filter returns true, it tries the BDD filter, and if
+that returns false, it stops.  Only if both filters return true will it try
+parsing the tree and really calculating the $\mathit{match}$ function.  The
+filters are arranged in order of increasing cost: the lambda filter is
+expected to run faster than the BDD filter, which is expected to run much
+faster than the parse and tree test.
+
+In IDSgrep 0.4, $\mathbb{V}$ is the space of 128-bit binary vectors.  Each
+vector is conceptually divided into four 32-bit words; the actual
+implementation, intended for a 64-bit microcomputer, involves a two-element
+array of \texttt{uint\_64} integers.
+
+Vector values are calculated by the $\mathit{vec}$ function (called
+\texttt{haystack\_bits\_fn} in its implementation in \texttt{bitvec.c}) as
+follows.  The first (least significant) 32 bits of the vector are a Bloom
+filter encoding the head, and the functor and arity combined, of the root of
+the EIDS tree.  Depending on a hash of the head, three of the bits are set
+to ones.  They are chosen without replacement (unlike the bits in the
+classic Bloom filter) so it really is three distinct bits set to one---no
+collisions at this level.  If there is no head, a special combination of
+three bits is set, corresponding to the hash of an empty string.  Similarly,
+three bits are set depending on the functor and arity; these can collide
+with the head bits but not with each other.  So among the first 32 bits of
+the vector, somewhere between three and six bits will be set in a pattern
+that depends on the head, functor, and arity of the root of the tree.  This
+is a little less than the optimal density for a Bloom filter this size
+considered in isolation (from information theory: one wants the filter to
+end up with approximately equal numbers of ones and zeros), but because of
+the more complicated things happening elsewhere in the system, the reduced
+density here seems to work better.
+
+The second 32-bit word encodes the head, functor, and arity of the first
+child of the root, using the same scheme.  This is left zero for a nullary
+root.  The third 32-bit word similarly encodes the \emph{last} (not
+necessarily second) child of the root.  When the root is unary, that means
+the only child gets encoded into \emph{both} the second and third words of
+the overall vector.  Finally, the middle child of a ternary root, and all
+grandchildren and lower descendants of any root, are all encoded into the
+fourth 32-bit word, all bitwise ORed on top of one another.  Generate a bit
+vector index with debugging turned on, redirecting standard error to a file,
+to see what these vectors actually look like.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Lambda filters}
+
+Consider \DangerousBend a very simple needle that matches if and only if the
+head of the haystack has a certain value.  For instance, \texttt{<foo>!?}. 
+That matches anything with the head ``\texttt{foo}'' under the head-to-head
+matching rule, and nothing else because \texttt{!?} (the inverse of
+the match-everything query) matches nothing.
+This is not typical of the queries users actually write, but we will build
+up to the more complicated behaviour of realistic queries.
+
+Given the bit vector for a haystack tree, we could look at just the three
+bits in the first 32-bit word that (according to the hash function)
+correspond to ``head equal to \texttt{foo}.'' If the head of the haystack is
+\texttt{foo}, then those bits will definitely all be ones.  Otherwise, we
+expect them to behave like three bits chosen from a 32-bit word in
+which at most six bits chosen at random have been set, and the chances of
+\emph{all three} randomly being ones under those circumstances is roughly
+$(6/32)^3\approx 0.7\%$.  (Not exactly, because of collisions and stuff, but
+that's a fair estimate.) So a decent thing for $\mathit{check}$ to do, given
+this query, would be ``look at the three bits associated with the head
+\texttt{foo}, and return $\mathsf{T}$ if more than two (i.e., all three) of
+them are set, $\mathsf{F}$ otherwise.'' That would have the desired
+properties of returning $\mathsf{T}$ for sure when the query matches, and
+not being very likely to return $\mathsf{T}$ under other circumstances.
+
+Let $\mathbb{F}$ be the set of ordered pairs $(m,\lambda)$ where $m$ is a
+128-bit bit vector called the \emph{mask} and $\lambda$ is a nonnegative
+integer called the \emph{threshold}.  We call these pairs \emph{lambda
+filters}.  Define $\mathit{check}((m,\lambda),v)$ to compute the bitwise AND
+of the mask $m$ and vector $v$, count how many bits are set in the result,
+and then return $\mathsf{T}$ if and only if the count is strictly more than
+the threshold $\lambda$.  The filter for \texttt{<foo>!?} will consist of a
+mask that selects the three bits for \texttt{foo}, and a threshold of $2$. 
+It matches if and only if those three bits are all set, which is definitely
+true for haystacks that match the needle and reasonably unlikely to be true
+for haystacks that do not match the needle.  So far this is just the usual
+lookup algorithm for a Bloom filter.  But by choosing different masks and
+thresholds, we can also do other kinds of filtering.
+
+Suppose we have two filters $(m_1,\lambda_1)$ and $(m_2,\lambda_2)$.  Let
+$m_3$ be the bitwise OR of $m_1$ and $m_2$, and let $\lambda_3$ be the
+minimum of $\lambda_1$ and $\lambda_2$.  If a given vector contains more
+than $\lambda_1$ bits selected by $m_1$, then all those bits are also in
+$m_3$, so $(m_3,\lambda_3)$ will also match.  The same is true for
+$(m_2,\lambda_2)$; so if either of the original filters matched, then the
+combined filter must match.  In this way we can find a filter for the OR of
+two existing filters.  Note that this is not an if and only if: there could
+be combinations of bits that hit part of $m_1$ and part of $m_2$, so that
+neither $(m_1,\lambda_1)$ nor $(m_2,\lambda_2)$ would match but
+$(m_3,\lambda_3)$ matches.  We have lost some precision in the filter
+calculus, and if we kept ORing filters like this we would eventually end up
+with a saturated mask that matches everything.  But we have not lost any
+recall.  If $\lambda_1\ne\lambda_2$, we can improve things a
+little by removing bits from whichever filter has the greater $\lambda$
+until the two thresholds become equal; that slows down the saturation a
+little in some cases.
+
+Combining filters with AND is more complicated because there are multiple
+choices for the result.  Given that there are more than $\lambda_1$ bits set
+out of $m_1$, and more than $\lambda_2$ bits set out of $m_2$, we can
+conclude various things about the number of bits that must be set in the
+intersection and each set difference of the two masks.  For instance,
+knowing more than two bits out of four are set, and more than two bits out
+of a different set of four that overlaps in two places with the first set,
+we can conclude that more than zero bits of the two-bit intersection must be
+set; or more than three of the six-bit union.  Both those, and several
+others, would be acceptable results for the AND operation in the filter
+calculus.  IDSgrep attempts, heuristically, to guess which of these filters
+will be most useful and return the best one as the result of ANDing two
+lambda filters.
+
+When we push a subtree further down in the EIDS tree, its filter changes. 
+Suppose we have a filter for a given needle (assuming it is the root) but it
+actually appears as the right child of a binary root.  Any bits in its mask
+that would have queried the first word (head, functor, and arity of root)
+must now query the third word (head, functor, and arity of last child).  We
+can easily rearrange those bits in the mask.  However, if the mask selects
+any bits from the second through fourth words when the needle is at the
+root, then when it is shifted down the tree all those bits must come from
+the last word of the haystack's vector.  They could collide with each other. 
+Then a haystack that formerly would have been hit by the mask in three
+places might only be hit once, because all three of those bits collided. 
+The value of $\lambda$ might need to be reduced by as much as a factor of
+three.  IDSgrep computes all possible collisions and tries to use as large a
+value of $\lambda$ for the modified filter as it can prove will still give
+correct results.  Similar considerations apply to the operations of moving a
+needle's filter from the root to the left or middle children.
+
+Given these operations of OR, AND, and moving a needle that refers to the
+root to refer to a child instead, IDSgrep can find a lambda filter for basic
+matching of any tree.  The rules like ``if there is a head, then it must
+match exactly, and if not, then the functor, arity, and all children must
+match'' translate into filter calculus operations and can be applied
+recursively.
+
+Special matching operators require additional handling.  The \texttt{\&}
+(Boolean AND) and \texttt{|} (Boolean OR) operators are easy.  The
+\texttt{!} (Boolean NOT) operator unfortunately isn't: all we can say in
+pure filter calculus is that any filter might correspond to a match that
+might fail later, so the NOT of \emph{any} filter has to be the
+match-everything filter.  The IDSgrep implementation of NOT goes slightly
+beyond pure filter calculus by looking at the actual needle instead of only
+the needle's recursively-computed filter; so it is smart enough to recognize
+\texttt{!!} as a no-op, \texttt{!?} as match-nothing, and to apply De
+Morgan's laws to AND and OR.  The unordered match operator \texttt{*}
+translates easily into the OR of all permutations of its child, and the
+literal match operator \texttt{=} is straightforward.  Other match
+operators, such as regular expression, have semantics too complicated to
+easily handle, so the filter calculus just returns the match-everything
+filter for them.
+
+Most of the output from \texttt{-{}-bitvec-debug} consists of an indented
+trace of the lambda filter calculus operations performed while analysing the
+user's query.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{BDD filters}
+
+Lambda \DangerousBend filters do not capture everything we might want to
+know about the bits in a vector.  Consider the filters (with vector length
+limited to four) $(0011,1)$ and $(1100,1)$.  The OR of those filters in the
+lambda filter calculus will be $(1111,1)$.  But that will match if
+\emph{any} two bits are set; the original filter would only match if the
+first two or the last two are set.  We have lost some precision, which
+translates to eventually doing more tree matches than necessary, in exchange
+for the guarantee that the result of ORing two lambda filters will always be
+a lambda filter.  BDD filters attempt to lose less precision by allowing the
+results of filter calculus operations to be more complicated.  In exchange
+for this greater power, a lot of data structures have to be maintained in
+the background, and that is why we apply lambda filters first: lambda filter
+misses allow us to skip the greater work of testing the BDD filters, and BDD
+filter misses allow us to skip the even greater work of parsing and doing
+real tree matching.
+
+A Binary Decision Diagram (BDD) is basically the most boring ``Choose Your
+Own Adventure'' ever.  Every page just says ``If binary variable
+such-and-such is true, then go to this other page; otherwise, go to that
+other page.'' Many of these options collide with each other, so that even
+though there may be trillions of paths through the BDD there are only two
+endings, neither of which involves Gorga the Space Monster.  Spoiler: the
+two endings are ``1'' and ``0.''
+
+More mathematically, a BDD is a data structure that represents a function
+that takes some bits as input and returns one bit of output.  It can
+represent any binary function if you're willing to give it enough time and
+memory, and it is relatively easy to perform logic operations on functions
+represented as BDDs.  Donald E.\ Knuth is a great fan of BDDs.
+
+Let $\mathbb{F}$ be the set of BDDs on 128 variables.  Define
+$\mathit{check}(\mathit{filt}(N),\mathit{vec}(H))$ to simply evaluate the
+BDD $\mathit{filt}(N)$ on the 128 bits of $\mathit{vec}(H)$.  The vector
+$\mathit{vec}(H)$ is as defined previously; it remains to define
+$\mathit{filt}(N)$.
+
+For the query \texttt{<foo>!?}, which matches if and only if the head is
+\texttt{foo}, recall that there are three bits in the first word of the
+vector that will necessarily all be set by matching haystacks, and only rarely
+all set by non-matching haystacks.  We can easily create a BDD that
+returns 1 if and only if all three of those bits are set.  So far this is
+just the same as the corresponding lambda filter.
+
+The difference is in the BDD filter calculus operations.  We can take the OR
+of any two BDDs and the result will be a BDD that returns 1 if \emph{and
+only if} at least one of the inputs would return 1.  The equivalent
+operation on lambda filters would only be an if, not an if and only if; but
+with BDD filters there is no loss of precision in OR.  Similarly, we can do
+AND without loss.  Those two operations alone account for much of the filter
+calculus done in practice, and BDDs represent these functions exactly.  The
+only loss of precision is in the original Bloom filter encoding.
+
+Once we start shifting needles from the root to the children, more precision
+is lost because of bit collisions, just as with lambda filters.  The BDD may
+be looking for two bits that both ended up in the same place, so if that one
+bit is set then the BDD sees both its inputs true even though really,
+without the collision, only one would be true.  The NOT operation remains a
+problem too: in any pure filter calculus where the result of NOT depends
+only on the filter that was the input to NOT, because filters can really
+only return ``maybe'' and not exactly ``yes,'' the result of NOT must
+always be identically true regardless of the input.  Just as with lambda
+filters, IDSgrep looks at the needle itself, not purely at the filter, to
+get better results from NOT.  More complicated operations, like
+match-anywhere, have reasonably straightforward implementations.
+
+One issue for BDD filters that did not occur with lambda filters is that
+there is no practical limit to the size of a BDD on 128 bits, so it could
+grow until it exhausts memory or consumes so much time for filter calculus
+operations that it ends up giving no benefit over just using the
+match-everything filter and falling back on the original tree-matching
+algorithm.  In order to prevent this kind of failure, bearing in mind that
+it is always safe to change a filter to return hits on \emph{more} vectors as
+long as it doesn't lose any existing hits, IDSgrep keeps an eye on the size
+of the BDDs returned by filter calculus operations.  If a BDD exceeds 1000
+nodes, then IDSgrep applies existential quantification to shrink it.
+
+For a chosen variable, existential quantification changes the BDD to one
+that will return true if and only if \emph{there exists any value} of the
+chosen variable that would (given the values of the other variables) allow
+the result of the BDD to be true.  A roughly equivalent operation on a
+lambda filter might be to remove a bit from the mask and subtract one from
+$\lambda$, necessarily making the filter looser.  It may not be obvious that
+doing this will necessarily make a BDD simpler, but after we apply such a
+quantifier, no more nodes referring to the chosen variable can remain in the
+BDD.  The number of variables supporting the BDD necessarily decreases.  Do
+it to every variable and the BDD must end up identically true (unless it was
+identically false to begin with, in which case it remains so).  So by
+existentially quantifying variables in turn, we can guarantee that the BDD
+will at some point become smaller than 1000 nodes.
+
+The threshold of 1000 was chosen by educated guess and by running some test
+suite queries (those from \texttt{test/speed} and \texttt{test/kvg-grone})
+to see the effect on the overall running time of using different thresholds. 
+For the typically small queries in \texttt{test/speed}, the final BDDs end
+up with an average of 47 nodes each; increasing the threshold provides
+steady speed improvement from about 10 to 100, and has little or no effect
+on \texttt{test/speed} after that.  The single query in
+\texttt{test/kvg-grone} can potentially generate a very large BDD (at least
+70000 nodes), but for that query having the BDD doesn't help much anyway.  A
+threshold of 1000 nodes is the point at which the overhead of creating the
+BDD for \texttt{test/kvg-grone} starts to become significant (10\% slower
+overall than the smallest thesholds, where the BDD is forced to triviality
+in negligible time).  So this seems a good compromise point.  It provides
+performance about as good as any other tested value for the queries from
+\texttt{test/speed}, which are expected to be typical of actual use; it
+provides some headroom (a factor of 10) over the minimum sufficient for
+those queries; and it is still small enough to prevent pathological or
+malicious queries, like the one in \texttt{test/kvg-grone}, from slowing the
+system down significantly.
+
+As BDDs in BDD-using applications go, these are quite small ones.  It
+appears that that is because the functions IDSgrep computes with BDDs are
+monotonic functions, which seem to create very good cases for the data
+structure.  It also means that the BuDDy library's lack of negated edges is
+no problem.  A brief attempt to tighten the filters by making the functions
+non-monotonic had to be aborted; it caused the time and space spent on
+filter calculus to blow up exponentially, even with careful attention to the
+variable ordering, in exchange for only very small improvements in the
+precision of the filters.  Better to spend the time doing a few more tree
+matches.  It also appears that I was lucky with my choice of variable
+ordering.  The default ordering that resulted from using the bits in the
+vector straight through from LSB to MSB happens to give good BDDs (as
+long as they are monotonic).  That means it's unnecessary to put a lot of
+effort into automatic reordering of the variables to optimize the BDD
+calculations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Implementation details}
+
+FIXME\DangerousBend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

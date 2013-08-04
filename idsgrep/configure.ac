@@ -214,23 +214,20 @@ AM_COND_IF([COND_PARASITE],
 #
 # Checks for libraries.
 #
-AX_PERL_MODULE_VERSION([XML::Parser 2.36],[],
-  [AC_MSG_WARN([XML::Parser, needed for KanjiVG dictionary, is missing])])
+AX_PERL_MODULE_VERSION([XML::Parser 2.36],[have_perlxml=yes],
+  [have_perlxml=no])
 AC_CHECK_LIB([bdd],[bdd_init],[
   have_buddy=yes
   AC_DEFINE([HAVE_BUDDY],[1],
     [Define to 1 if BuDDy is available])
-  ],[
-  have_buddy=no
-  AC_MSG_WARN([BuDDy is missing, binary decision diagrams won't be used])])
+  ],[have_buddy=no])
 AM_CONDITIONAL([COND_BUDDY],[test '!' "$have_buddy" = no])
 PKG_CHECK_MODULES([PCRE],[libpcre],[
   have_pcre=yes
   AC_DEFINE([HAVE_PCRE],[1],
     [Define to 1 if Perl Compatible Regular Expressions library is available])
   ],[
-  have_pcre=no
-  AC_MSG_WARN([PCRE is missing, regular expression search won't be built])])
+  have_pcre=no])
 AM_CONDITIONAL([COND_PCRE],[test '!' "$have_pcre" = no])
 #
 ############################################################################
@@ -452,3 +449,14 @@ AC_DEFINE_UNQUOTED([DICTDIR],["$flat_dictdir"],
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile idsgrep.1 config.tex])
 AC_OUTPUT
+#
+############################################################################
+#
+# Warn about missing prerequisites
+#
+AS_IF([test "x$have_perlxml" = "xyes"],[],
+  [AC_MSG_WARN([XML::Parser is missing, KanjiVG dictionary disabled])])
+AS_IF([test "x$have_buddy" = "xyes"],[],
+  [AC_MSG_WARN([BuDDy is missing, binary decision diagrams disabled])])
+AS_IF([test "x$have_pcre" = "xyes"],[],
+  [AC_MSG_WARN([PCRE is missing, regular expression search disabled])])

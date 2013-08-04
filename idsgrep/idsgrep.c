@@ -277,7 +277,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    /* analyse the query */
    if (indexed_pattern==NULL) {
 #ifdef HAVE_BUDDY
-      bdd_init(10000,1000);
+      bdd_init(20000,2000);
       bdd_setvarnum(128);
       if (!bitvec_debug)
 	bdd_gbc_hook(NULL);
@@ -540,6 +540,7 @@ int main(int argc,char **argv) {
       parse(1,"?");
       match_pattern=parse_stack[0];
       stack_ptr=0;
+      generate_list=0;
    } else if (optind<argc) {
       if ((parse(strlen(argv[optind]),argv[optind])<strlen(argv[optind]))
 	  || (parse_state!=PS_COMPLETE_TREE)) {
@@ -596,10 +597,16 @@ int main(int argc,char **argv) {
 	 rub.ru_utime.tv_sec--;
       }
       printf("STATS %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64
-	     " %" PRIu64 " %d.%06d ",
+	     " %" PRIu64 " %d.%06d %d ",
 	     bv_checks,bv_hits,bdd_hits,tree_checks,tree_hits,
 	     rub.ru_utime.tv_sec-rua.ru_utime.tv_sec,
-	     rub.ru_utime.tv_usec-rua.ru_utime.tv_usec);
+	     rub.ru_utime.tv_usec-rua.ru_utime.tv_usec,
+#ifdef HAVE_BUDDY
+	     indexed_pattern?bdd_nodecount(bf.decision_diagram):0
+#else
+	     0
+#endif
+	    );
       set_output_recipe("cooked");
       write_cooked_tree(match_pattern,stdout);
    }
