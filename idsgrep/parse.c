@@ -572,9 +572,7 @@ void register_brackets(char *opb,char *clb,int arity,int idx) {
    
    oph->arity=arity;
    oph->mate=clh;
-   oph->refs++;
    clh->mate=oph;
-   if (clh!=oph) clh->refs++;
    hashed_bracket[idx]=oph;
 }
 

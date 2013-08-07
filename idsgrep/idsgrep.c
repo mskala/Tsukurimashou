@@ -556,6 +556,9 @@ int main(int argc,char **argv) {
    /* count explicit filenames */
    num_files=argc-optind;
    
+   /* prepare to memoize, if pattern is sufficiently complex */
+   check_memoization();
+
    /* generate Unicode list if requested */
    if (generate_list)
      generate_unicode_list(match_pattern,unilist_cfg);
@@ -597,8 +600,15 @@ int main(int argc,char **argv) {
 	 rub.ru_utime.tv_sec--;
       }
       printf("STATS %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64
-	     " %" PRIu64 " %d.%06d %d ",
-	     bv_checks,bv_hits,bdd_hits,tree_checks,tree_hits,
+	     " %" PRIu64 " %" PRIu64 " %" PRIu64 " %d.%06d %d ",
+	     bv_checks,bv_hits,
+#ifdef HAVE_BUDDY
+	     bdd_hits,
+#else
+	     0,
+#endif
+	     tree_checks,tree_hits,
+	     memo_checks,memo_hits,
 	     rub.ru_utime.tv_sec-rua.ru_utime.tv_sec,
 	     rub.ru_utime.tv_usec-rua.ru_utime.tv_usec,
 #ifdef HAVE_BUDDY

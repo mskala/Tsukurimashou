@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2019 2013-03-09 21:44:02Z mskala $])
+AC_REVISION([$Id: configure.ac 2388 2013-08-05 22:37:41Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -260,6 +260,15 @@ AS_IF([test "x$KLEKNEV" = "x"],[KLEKNEV=/bin/sh])
 # Checks for libraries.
 #
 AC_CHECK_LIB([m], [pow])
+AX_PERL_MODULE_VERSION([XML::Parser 2.36],[have_perlxml=yes],
+  [have_perlxml=no
+   can_full_idsgrep=no])
+AC_CHECK_LIB([bdd],[bdd_init],[have_buddy=yes],
+  [have_buddy=no
+   can_full_idsgrep=no])
+PKG_CHECK_MODULES([PCRE],[libpcre],[have_pcre=yes],
+  [have_pcre=no
+   can_full_idsgrep=no])
 #
 ############################################################################
 #
@@ -874,6 +883,19 @@ AS_IF([test '!' "x$ae_arg_okay" = "xyes"],
    AS_ECHO(["fonts may be missing some extrema as a result; this is probably harmless"])
    AS_ECHO(["for most purposes, but it means that make check and any offline calls to"])
    AS_ECHO(["fontlint are likely to report errors."])
+   ])
+
+AS_IF([test '!' "x$enable_parasites" = "xnone" && test "$can_full_idsgrep" = "no"],
+  [AS_ECHO([])
+   AS_ECHO(["One or more optional libraries for IDSgrep are missing:"])
+   AS_IF([test '!' "$have_perlxml" = "yes"],
+     [AS_ECHO(["   XML::Parser (>=2.36)  http://search.cpan.org/search?module=XML::Parser"])])
+   AS_IF([test '!' "$have_pcre" = "yes"],
+     [AS_ECHO(["   PCRE                  http://www.pcre.org"])])
+   AS_IF([test '!' "$have_buddy" = "yes"],
+     [AS_ECHO(["   BuDDy                 https://sourceforge.net/projects/buddy/"])])
+   AS_ECHO(["Without these things, IDSgrep can still be built if enabled, and will"])
+   AS_ECHO(["still run, but some features may be missing."])
    ])
 
 #

@@ -213,6 +213,9 @@ m4/ax_count_cpus.m4: ../m4/ax_count_cpus.m4
 m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
 	$(TSU_V_CP) cp $< $@
 
+m4/ax_perl_module_version.m4: ../m4/ax_perl_module_version.m4
+	$(TSU_V_CP) cp $< $@
+
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
 	$(TSU_V_CP) cp $< $@
 

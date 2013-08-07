@@ -365,8 +365,62 @@ NODE *unord_match_fn(NODE *ms) {
 
 /**********************************************************************/
 
+typedef struct _MEMO_REC {
+   int generation;
+   NODE *needle,*haystack;
+   MATCH_RESULT match_result;
+} MEMO_REC;
+
+static int memo_mask=0,memo_gen=0;
+static MEMO_REC *memo_table=NULL;
+uint64_t memo_checks=UINT64_C(0),memo_hits=UINT64_C(0);
+
+
+void check_memoization(void) {
+   int hard_node_count;
+   HASHED_STRING *hs;
+return;
+   /* References subtracted off:
+    *   2 for the new_string() calls right here
+    *   2 because . and * are single characters and therefore immortal
+    *   2 for . being an opening and closing bracket
+    *   2 for . and * being "special functors" with custom match functions
+    *   2 for . and * having ASCII mnemonic aliases
+    * total 10
+    *
+    * Any other references to these strings at this point, must be
+    * from nodes in the parsed matching pattern.
+    *
+    * This number will have to change if the set of counted references
+    * to these strings created before the call to check_memoization()
+    * should change in the future.
+    */
+
+   /* count refs to .*. */
+   hs=new_string(1,"*");
+   hard_node_count=hs->refs-6;
+   delete_string(hs);
+
+   /* count refs to ... */
+   hs=new_string(1,".");
+   hard_node_count+=hs->refs-4;
+   delete_string(hs);
+
+   /* decide whether to use memoization, and how big a table */
+   if (hard_node_count>=3) {
+      if (hard_node_count>22)
+	hard_node_count=22;
+      if (hard_node_count<10)
+	hard_node_count=10;
+      memo_table=(MEMO_REC *)malloc(sizeof(MEMO_REC)*(2<<hard_node_count));
+      memo_mask=(2<<hard_node_count)-1;
+   }
+}
+
 int tree_match(NODE *needle,NODE *haystack) {
    NODE *mn,*tmpn,*tmpnn;
+   MEMO_REC memo_key;
+   uint32_t hval;
    
    mn=new_node();
    mn->nc_needle=needle;
@@ -374,18 +428,47 @@ int tree_match(NODE *needle,NODE *haystack) {
    needle->refs++;
    haystack->refs++;
    
+   /* clear out the memoization table, first time and when counter wraps */
+   if (memo_mask!=0) {
+      memo_gen++;
+      memo_key.generation=memo_gen;
+      memo_key.match_result=MR_INITIAL;
+      if (memo_gen==1)
+	memset(memo_table,0,sizeof(MEMO_REC)*(memo_mask+1));
+   }
+   
    while (1) {
       if (mn->match_result==MR_INITIAL) {
-	 if ((mn->nc_needle->head!=NULL) && (mn->nc_haystack->head!=NULL)) {
-	    mn->match_result=(mn->nc_needle->head==mn->nc_haystack->head)?
-	      MR_TRUE:MR_FALSE;
-	 } else if (mn->nc_needle->arity==mn->nc_needle->functor->arity) {
-	    mn=mn->nc_needle->functor->match_fn(mn);
-	 } else {
-	    mn=default_match_fn(mn);
-	 }
+	 if ((mn->nc_needle->head!=NULL) && (mn->nc_haystack->head!=NULL))
+	   mn->match_result=(mn->nc_needle->head==mn->nc_haystack->head)?
+	   MR_TRUE:MR_FALSE;
+	 else if (memo_mask && mn->nc_needle->complete) {
+	    memo_checks++;
+	    memo_key.needle=mn->nc_needle;
+	    memo_key.haystack=mn->nc_haystack;
+	    hval=fnv_hash(sizeof(MEMO_REC),(char *)&memo_key,0)&memo_mask;
+	    if ((memo_table[hval].generation==memo_key.generation)
+		&& (memo_table[hval].needle==memo_key.needle)
+		&& (memo_table[hval].haystack==memo_key.haystack)) {
+	       mn->match_result=memo_table[hval].match_result;
+	       memo_hits++;
+	    } else if (mn->nc_needle->arity==mn->nc_needle->functor->arity)
+	      mn=mn->nc_needle->functor->match_fn(mn);
+	    else
+	      mn=default_match_fn(mn);
+	 } else if (mn->nc_needle->arity==mn->nc_needle->functor->arity)
+	      mn=mn->nc_needle->functor->match_fn(mn);
+	 else
+	   mn=default_match_fn(mn);
       } else if (mn->match_parent!=NULL) {
 	 tmpn=mn->match_parent;
+	 if (memo_mask && mn->nc_needle->complete) {
+	    memo_key.needle=mn->nc_needle;
+	    memo_key.haystack=mn->nc_haystack;
+	    hval=fnv_hash(sizeof(MEMO_REC),(char *)&memo_key,0)&memo_mask;
+	    memo_table[hval]=memo_key;
+	    memo_table[hval].match_result=mn->match_result;
+	 }
 	 switch (mn->match_result) {
 	  case MR_TRUE:
 	  case MR_AND_MAYBE:

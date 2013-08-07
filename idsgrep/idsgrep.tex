@@ -109,6 +109,8 @@
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 
 \newcommand{\DangerousBend}{\marginpar{\large\hfill\dbend\hfill\null}}
+\newcommand{\DangerousSection}{\marginpar{\large\hfill
+\raisebox{-0.5\baselineskip}[0pt][0pt]{\dbend}\hfill\null}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -815,9 +817,9 @@ Tsukurimashou's directory, then \texttt{cd} to IDSgrep's directory and run
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{A note on TrueType/OpenType}
+\section{A note on TrueType/OpenType}\DangerousBend
 
-This \DangerousBend version of IDSgrep is designed to read TrueType or
+This version of IDSgrep is designed to read TrueType or
 OpenType files (the distinction between the two is not relevant at this
 level) for character map information.  The specification for the
 TrueType/OpenType file format reads like a parody.  I'd like to take a
@@ -1957,16 +1959,19 @@ transformation from symbolic names back to alphabetic aliases on output.
 
 \noindent
 
-Matching trees according to the rules in the previous chapter is potentially
-an expensive operation.  The cases of tree-matching actually used in
-practice tend to be relatively easy ones, but parsing EIDS syntax is also
-expensive enough, even with an optimized implementation, that it may take as
-much time as matching or more; and every tree of the database must be parsed
-in order to attempt a match.  A complete installation of IDSgrep may take a
-second or two on a typical PC to parse and search all the dictionaries,
-which is not long enough to be a problem in typical interactive use, but
-could become an issue if queries were being generated automatically, faster
-than a single user would type them.
+Executive summary:  if you leave it on the default settings and skip this
+chapter, it should just work.
+
+In more detail:  matching trees according to the rules in the previous
+chapter is potentially an expensive operation.  The cases of tree-matching
+actually used in practice tend to be relatively easy ones, but parsing EIDS
+syntax is also expensive enough, even with an optimized implementation, that
+it may take as much time as matching or more; and every tree of the database
+must be parsed in order to attempt a match.  A complete installation of
+IDSgrep may take a second or two on a typical PC to parse and search all the
+dictionaries, which is not long enough to be a problem in typical
+interactive use, but could become an issue if queries were being generated
+automatically, faster than a single user would type them.
 
 The solution is to avoid doing tree matches, and avoid doing parsing, as
 much as possible.  As of version 0.4, IDSgrep is capable of analysing a
@@ -1978,13 +1983,7 @@ dictionary entries as potential matches just from a fast examination of the
 index.  Then for any entries not excluded by the index, it runs the more
 expensive parsing and tree matching operations on the actual data.  The time
 saved by skipping input entries is supposed to more than compensate for the
-additional work of reading the index.  The size of the effect varies a lot
-depending on the data, but in tests with reasonably representative
-dictionaries and sample queries, it averaged to about a factor of 15 speed
-improvement.  If the index file is not sufficiently fresh, was built for a
-different computer architecture, or if there is no index file (for instance,
-with piped-in input), then IDSgrep will just do a tree match on every tree
-in the input, giving correct but slower results.
+additional work of reading the index.
 
 Exactly how this feature works is complicated, and is part of the author's
 academic research.  This chapter starts with a short summary from a user's
@@ -2000,13 +1999,86 @@ material more formally.
 
 \section{Building and using bit vector indices}
 
-FIXME
+If you run \texttt{make install} to install dictionaries, then the build
+system should build, install, and use bit vector indices for the installed
+dictionaries automatically.
+
+Getting the most out of bit vector indexing requires building the
+\texttt{idsgrep} command-line utility with the BuDDy binary decision
+diagrams library available at
+\url{http://sourceforge.net/projects/buddy/}~\cite{BuDDy}.  Without it, bit
+vectors will still provide some speed improvement, but not as much.
+
+Bit vector indices are expected to increase the speed of searching by about
+a factor of 15 in typical use.  The improvement factor varies a lot
+depending on a number of issues, and could be a thousand or more under
+optimal conditions.  It should never be significantly less than one; that
+is, searching with a bit vector index should never take significantly longer
+than searching without one.
+
+Bit vectors provide the greatest benefit when the query is simple
+(exact-matching a single syrupy character is best); when the dictionary
+entries themselves are small; when the query, regardless of its form, only
+matches a small number of results; when the query includes exact matching of
+heads or functors at the root level of the EIDS tree (such as a query
+starting with ``\texttt{[lr]}'') or in the root's immediate children; and
+when the query does not include special matching operators such as regular
+expressions and user-defined predicates.
+
+Whenever the \texttt{texttt} utility reads a file whose pathname ends in
+``\texttt{.eids}''---regardless of whether that file was specified
+explicitly on the command line or indirectly via the \texttt{-d} option---it
+will look for an index file whose pathname is the same except with the
+\texttt{.eids} extension changed to \texttt{.bvec}.  If such a file exists,
+can be read, has the correct 8-byte magic number at the start, \emph{and has
+a timestamp no older than the timestamp of the} \texttt{.eids} \emph{file},
+then \texttt{idsgrep} will assume it is a bit vector index and use it to
+speed up the query process.  Note that all those conditions must be met.  If
+any of the conditions fail to be met, no error will be reported, but the
+scanner will be forced to read and parse the entire input file without using
+bit vector filtering.  Once the \emph{idsgrep} utility commits to start
+reading the index file past the header, it cannot switch to index-free
+searching and errors after that point will abort the search, just like
+errors in the EIDS input file.
+
+To create a bit vector index, use the \texttt{-G} option to
+\texttt{idsgrep}, as in \texttt{idsgrep -G dictionary.eids >
+dictionary.bvec}.  Something like this will be necessary if the dictionary
+file changes or if you create a new one of your own.  An outdated index file
+will usually be locked out by the timestamp check, but if you force the
+issue (for instance, by changing the timestamps with \texttt{touch}), the
+search will most likely abort with a parsing error when it hits the changed
+part of the dictionary file.
+
+Bit vector indices are only usable when reading from files with names ending
+in \texttt{.eids}.  When reading from standard input or similar, or even
+just from files without \texttt{*.eids} filenames, bit vectors will not be
+used.  Bit vectors are also not applicable to the internally-generated
+Unicode list associated with the \texttt{-U} option, although a somewhat
+similar feature (generating only the at most one entry that could match, if
+the query tree has a head) is always used where it applies.  If you direct
+the \texttt{idsgrep} utility to read from multiple input sources in the same
+run, it will use bit vector indices on whichever input sources it can, even
+if that is not all of them.
+
+You can force \texttt{idsgrep} to ignore bit vector indices with the
+\texttt{-I} option; that is unlikely to be useful except during speed tests,
+but one could maybe imagine a case where it's absolutely necessary to have a
+file named \texttt{*.bvec} which is not a bit vector index and must not be
+touched.
+
+Using a (valid) bit vector index, or not using one, should only affect
+speed.  It should never change which results are or are not returned from a
+query.  If you manage to find a case where the same query and the same input
+file produce different hits depending on whether \texttt{-I} is used or a
+bit vector index generated by the same \texttt{idsgrep} binary, then that
+may be evidence of a bug; please report it.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Filtered matching}
+\section{Filtered matching}\DangerousSection
 
-Let \DangerousBend $\mathbb{E}$ be the set of EIDS trees.  Let $\mathsf{T}$
+Let $\mathbb{E}$ be the set of EIDS trees.  Let $\mathsf{T}$
 and $\mathsf{F}$ represent Boolean true and false.  The previous chapter
 defined a function $\mathit{match}:\mathbb{E}\times\mathbb{E}\rightarrow
 \{\mathsf{T},\mathsf{F}\}$ for determining whether one EIDS tree matches
@@ -2066,14 +2138,14 @@ $\mathit{match}$ the hard way.
 This idea of doing an easy approximate check first, to save the cost of a
 more difficult accurate evaluation, should be quite familiar.  Imagine a
 hiring committee quickly throwing out all the job applications from software
-engineers, then interviewing the computational geometers.\footnote{You may
+engineers, then interviewing the computational linguists.\footnote{You may
 say I'm a dreamer.} Similar concepts appear throughout computer science:
 consider instruction and data caches; memoization for dynamic programming;
 solving relaxed versions of optimization problems; and especially Bloom
-filters~\cite{Bloom:Filters}.  The bit vector technique used in IDSgrep
-builds on Bloom filters and on the work of Skala and
-others~\cite{Skala:Generalized} and Skala and Penn~\cite{Skala:Fast} on type
-unification.
+filters~\cite{Bloom:Space}.  The bit vector technique used in IDSgrep builds
+on Bloom filters and on the work of Skala and
+others~\cite{Skala:Generalized} and Skala and Penn~\cite{Skala:Approximate}
+on unification of types in logic programming systems.
 
 Functional programming weenies will note that the real point of an element
 of $\mathbb{F}$ is that you can combine it with $\mathit{check}$ to make a
@@ -2139,9 +2211,9 @@ to see what these vectors actually look like.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Lambda filters}
+\section{Lambda filters}\DangerousSection
 
-Consider \DangerousBend a very simple needle that matches if and only if the
+Consider a very simple needle that matches if and only if the
 head of the haystack has a certain value.  For instance, \texttt{<foo>!?}. 
 That matches anything with the head ``\texttt{foo}'' under the head-to-head
 matching rule, and nothing else because \texttt{!?} (the inverse of
@@ -2256,9 +2328,9 @@ user's query.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{BDD filters}
+\section{BDD filters}\DangerousSection
 
-Lambda \DangerousBend filters do not capture everything we might want to
+Lambda filters do not capture everything we might want to
 know about the bits in a vector.  Consider the filters (with vector length
 limited to four) $(0011,1)$ and $(1100,1)$.  The OR of those filters in the
 lambda filter calculus will be $(1111,1)$.  But that will match if
@@ -2386,9 +2458,33 @@ calculations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Implementation details}
+\section{Implementation details}\DangerousSection
 
-FIXME\DangerousBend
+Storing bit vectors requires storing two \texttt{uint64\_t}s and an
+\texttt{off\_t}, with possible alignment padding, per entry.  That works out
+to 24 bytes on typical newer 64-bit and 32-bit platforms.  Some older 32-bit
+platforms with 32-bit \texttt{off\_t}s may only require 20 bytes per index
+entry, trading off the decreased space against likely problems should a
+dictionary ever grow larger than 4G.  For comparison, the average length of
+a dictionary entry in the CHISE, KanjiVG, and Tsukurimashou dictionaries as
+of this writing is about 40 bytes; four times that for EDICT2.  So storing
+the indices represents a significant, but not crippling, increase in storage
+requirements.  The performance improvement numbers do account for the time
+taken to read the additional data from disk---it just isn't enough to be a
+problem compared to the savings in parsing and tree matching.
+
+The format of the bit vector index file is specific to the version of
+IDSgrep and the computer architecture including the C compiler.  If you use
+a bit vector file with a mismatched \texttt{idsgrep} binary, it will almost
+certainly be detected as invalid and ignored.  Building with or without
+BuDDy will not make a difference to the file format; the difference is a
+different search algorithm applied to the same data.
+
+It is possible that the magic numbers may not
+perfectly track incompatible changes among different development versions
+of IDSgrep that you might check out of SVN, but they should definitely work
+correctly to differentiate between incompatible versions that have been
+formally released.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

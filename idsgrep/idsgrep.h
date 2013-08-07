@@ -131,7 +131,7 @@ typedef struct _INDEX_HEADER {
 
 typedef struct _INDEX_RECORD {
    uint64_t bits[2];
-   uint32_t offset;
+   off_t offset;
 } INDEX_RECORD;
 
 typedef struct _BIT_FILTER {
@@ -235,6 +235,9 @@ NODE *equal_match_fn(NODE *);
 NODE *not_match_fn(NODE *);
 NODE *unord_match_fn(NODE *);
 
+extern uint64_t memo_checks,memo_hits;
+
+void check_memoization(void);
 int tree_match(NODE *,NODE *);
 
 /**********************************************************************/
