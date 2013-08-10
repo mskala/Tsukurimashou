@@ -431,8 +431,9 @@ int tree_match(NODE *needle,NODE *haystack) {
    /* clear out the memoization table, first time and when counter wraps */
    if (memo_mask!=0) {
       memo_gen++;
+      /* just setting the fields to zero isn't enough because of padding */
+      memset(&memo_key,0,sizeof(MEMO_REC));
       memo_key.generation=memo_gen;
-      memo_key.match_result=MR_INITIAL;
       if (memo_gen==1)
 	memset(memo_table,0,sizeof(MEMO_REC)*(memo_mask+1));
    }

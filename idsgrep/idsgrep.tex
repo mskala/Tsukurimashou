@@ -817,7 +817,7 @@ Tsukurimashou's directory, then \texttt{cd} to IDSgrep's directory and run
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{A note on TrueType/OpenType}\DangerousBend
+\section{A note on TrueType/OpenType}\DangerousSection
 
 This version of IDSgrep is designed to read TrueType or
 OpenType files (the distinction between the two is not relevant at this
@@ -2138,14 +2138,14 @@ $\mathit{match}$ the hard way.
 This idea of doing an easy approximate check first, to save the cost of a
 more difficult accurate evaluation, should be quite familiar.  Imagine a
 hiring committee quickly throwing out all the job applications from software
-engineers, then interviewing the computational linguists.\footnote{You may
-say I'm a dreamer.} Similar concepts appear throughout computer science:
-consider instruction and data caches; memoization for dynamic programming;
-solving relaxed versions of optimization problems; and especially Bloom
-filters~\cite{Bloom:Space}.  The bit vector technique used in IDSgrep builds
-on Bloom filters and on the work of Skala and
-others~\cite{Skala:Generalized} and Skala and Penn~\cite{Skala:Approximate}
-on unification of types in logic programming systems.
+engineers, then interviewing the computational linguists.  Similar concepts
+appear throughout computer science: consider instruction and data caches;
+memoization for dynamic programming; solving relaxed versions of
+optimization problems; and especially Bloom filters~\cite{Bloom:Space}.  The
+bit vector technique used in IDSgrep builds on Bloom filters and on the work
+of Skala and others~\cite{Skala:Generalized} and Skala and
+Penn~\cite{Skala:Approximate} on unification of types in logic programming
+systems.
 
 Functional programming weenies will note that the real point of an element
 of $\mathbb{F}$ is that you can combine it with $\mathit{check}$ to make a
@@ -2257,7 +2257,9 @@ than $\lambda_1$ bits selected by $m_1$, then all those bits are also in
 $m_3$, so $(m_3,\lambda_3)$ will also match.  The same is true for
 $(m_2,\lambda_2)$; so if either of the original filters matched, then the
 combined filter must match.  In this way we can find a filter for the OR of
-two existing filters.  Note that this is not an if and only if: there could
+two existing filters.
+
+Note that the OR filter is not an if and only if: there could
 be combinations of bits that hit part of $m_1$ and part of $m_2$, so that
 neither $(m_1,\lambda_1)$ nor $(m_2,\lambda_2)$ would match but
 $(m_3,\lambda_3)$ matches.  We have lost some precision in the filter
@@ -2283,21 +2285,21 @@ will be most useful and return the best one as the result of ANDing two
 lambda filters.
 
 When we push a subtree further down in the EIDS tree, its filter changes. 
-Suppose we have a filter for a given needle (assuming it is the root) but it
-actually appears as the right child of a binary root.  Any bits in its mask
-that would have queried the first word (head, functor, and arity of root)
-must now query the third word (head, functor, and arity of last child).  We
-can easily rearrange those bits in the mask.  However, if the mask selects
-any bits from the second through fourth words when the needle is at the
-root, then when it is shifted down the tree all those bits must come from
-the last word of the haystack's vector.  They could collide with each other. 
-Then a haystack that formerly would have been hit by the mask in three
-places might only be hit once, because all three of those bits collided. 
-The value of $\lambda$ might need to be reduced by as much as a factor of
-three.  IDSgrep computes all possible collisions and tries to use as large a
-value of $\lambda$ for the modified filter as it can prove will still give
-correct results.  Similar considerations apply to the operations of moving a
-needle's filter from the root to the left or middle children.
+Suppose we have a filter that would be correct for a given needle if it were
+the root, but it actually appears as the right child of a binary root.  Any
+bits in its mask that would have queried the first word (head, functor, and
+arity of root) must now query the third word (head, functor, and arity of
+last child).  We can easily rearrange those bits in the mask.  However, if
+the mask selects any bits from the second through fourth words when the
+needle is at the root, then when it is shifted down the tree all those bits
+must come from the last word of the haystack's vector.  They could collide
+with each other.  Then a haystack that formerly would have been hit by the
+mask in three places might only be hit once, because all three of those bits
+collided.  The value of $\lambda$ might need to be reduced by as much as a
+factor of three.  IDSgrep computes all possible collisions and tries to use
+as large a value of $\lambda$ for the modified filter as it can prove will
+still give correct results.  Similar considerations apply to the operations
+of moving a needle's filter from the root to the left or middle children.
 
 Given these operations of OR, AND, and moving a needle that refers to the
 root to refer to a child instead, IDSgrep can find a lambda filter for basic
@@ -2314,7 +2316,7 @@ might fail later, so the NOT of \emph{any} filter has to be the
 match-everything filter.  The IDSgrep implementation of NOT goes slightly
 beyond pure filter calculus by looking at the actual needle instead of only
 the needle's recursively-computed filter; so it is smart enough to recognize
-\texttt{!!} as a no-op, \texttt{!?} as match-nothing, and to apply De
+\texttt{!!} as a no-op, \texttt{!?} as match-nothing, and to apply de
 Morgan's laws to AND and OR.  The unordered match operator \texttt{*}
 translates easily into the OR of all permutations of its child, and the
 literal match operator \texttt{=} is straightforward.  Other match
@@ -2395,6 +2397,89 @@ filters, IDSgrep looks at the needle itself, not purely at the filter, to
 get better results from NOT.  More complicated operations, like
 match-anywhere, have reasonably straightforward implementations.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Memoization in the tree match}\DangerousSection
+
+This feature does not involve bit vectors at all, but is described in the bit
+vector chapter because, like bit vectors, it is a speed enhancement that
+doesn't change the basic matching algorithm.  There is no ``r'' in
+``memoization.'' That word is a shibboleth\footnote{Judges 12:6.} for CS
+theorists.
+
+For the most part, when a match is not ruled out by the bit vector indices,
+IDSgrep uses a straightforward recursive-descent algorithm to implement the
+tree matching function $\mathit{match}$.  That works well in practice for
+the kinds of queries typically encountered.  However, it is possible to
+construct pathological queries on which the recursive matching algorithm
+will misbehave.  For instance, a query with many nested instances of
+\texttt{.anywhere.} can bog down attempting to match against a deep tree, as
+it tries all possibilities for the intermediate nodes that anchor the
+different \texttt{.anywhere.} operators, even though the choices are all
+equivalent.
+Matching according to IDSgrep's matching rules should in fact be possible in
+polynomial time, because we can match each node in the needle tree once
+against each node in the haystack tree.  Assuming the match function is
+well-defined we only need do that once per pair of nodes; so this suggests a
+dynamic programming algorithm.  The dynamic programming algorithm is
+unlikely to be a good idea in the usual case, because of excessive overhead
+maintaining the table and the possibility of doing extra, unnecessary
+matches if we're not careful.  Recursive descent, with short-circuiting of
+unnecessary subtree tests once the answer is known, seems to perform much
+better in practice in ordinary cases despite its exponential worst-case
+bound.  Nonetheless, to cover bad cases that may occur in the input,
+IDSgrep implements memoization of tree matches when it appears likely to be
+helpful.
+
+The matching operators that could cause trouble are ``\texttt{...}''
+(\texttt{.anywhere.}) and ``\texttt{.*.}'' (\texttt{.unord.}).  All other
+special matching operators, and the default matching rules, recurse at most
+once into each child; but match-anywhere attempts to match its needle tree
+once against every descendant of its haystack tree, and unordered match
+attempts to match its needle once against each of the up to six permutations
+of its haystack's children.  The time to do matching by recursive descent
+ends up having an exponent determined by the number of uses of those
+operators in the matching pattern.
+
+So IDSgrep counts how many times either of those operators occurs in the
+matching pattern, and uses that count to determine both whether memoization
+would help, and how big a table size to use.  The memoized match is
+straightforward.  Before testing a needle tree against a haystack tree,
+IDSgrep checks whether that pair of needle and haystack is recorded in the
+memoization hash table.  If it is, the answer is taken from the table
+instead of calculated fresh.  Otherwise, once it has been calculated, the
+result goes in the table.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Implementation details}\DangerousSection
+
+Storing bit vectors requires storing two \texttt{uint64\_t}s and an
+\texttt{off\_t}, with possible alignment padding, per entry.  That works out
+to 24 bytes on typical newer 64-bit and 32-bit platforms.  Some older 32-bit
+platforms with 32-bit \texttt{off\_t}s may only require 20 bytes per index
+entry, trading off the decreased space against likely problems should a
+dictionary ever grow larger than 4G.  For comparison, the average length of
+a dictionary entry in the CHISE, KanjiVG, and Tsukurimashou dictionaries as
+of this writing is about 40 bytes; four times that for EDICT2.  So storing
+the indices represents a significant, but not crippling, increase in storage
+requirements.  The performance improvement numbers do account for the time
+taken to read the additional data from disk---it just isn't enough to be a
+problem compared to the savings in parsing and tree matching.
+
+The format of the bit vector index file is specific to the version of
+IDSgrep and the computer architecture including the C compiler.  If you use
+a bit vector file with a mismatched \texttt{idsgrep} binary, it will almost
+certainly be detected as invalid and ignored.  Building with or without
+BuDDy will not make a difference to the file format; the difference is a
+different search algorithm applied to the same data.
+
+It is possible that the magic numbers may not
+perfectly track incompatible changes among different development versions
+of IDSgrep that you might check out of SVN, but they should definitely work
+correctly to differentiate between incompatible versions that have been
+formally released.
+
 One issue for BDD filters that did not occur with lambda filters is that
 there is no practical limit to the size of a BDD on 128 bits, so it could
 grow until it exhausts memory or consumes so much time for filter calculus
@@ -2456,35 +2541,50 @@ long as they are monotonic).  That means it's unnecessary to put a lot of
 effort into automatic reordering of the variables to optimize the BDD
 calculations.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The particular case of many \texttt{.anywhere.} operators nested inside one
+another with no heads and no other nodes in between might be detected and
+automatically simplified.  Any number of those will match the same set of
+trees as a single such operator, so the extras can be simply removed without
+affecting the semantivs.  But it is easy to construct more elaborate queries
+that still take exponential time without memoization and that the system
+cannot reasonably simplify.  Users are unlikely to do that by accident, but
+now that I've mentioned the possibility, someone will try.
 
-\section{Implementation details}\DangerousSection
+Let $k$ represent the number of \texttt{.anywhere.} and \texttt{.unord.}
+operators in the matching pattern.  It is actually determined
+by looking at the reference counts for the strings consisting of a single
+ASCII period and a single ASCII asterisk in an internal string table, so
+there may be an overcount if those strings happen to occur as heads or
+as non-unary functors.  If $k$ is less than three, memoization is not
+expected to be helpful, and so is not done.  Then assuming $k$ was at least
+three, if it is less than ten it is set to ten and if it is greater than 22
+it is set to 22, and then memoization will be done with a hash table of
+$2^{k+1}$ entries.  The idea here is to make the hash table grow as the
+number of entries needed grows, but always at least 2048 entries because
+there is little benefit from making it very small, and never more than 8M
+entries because if very large, memory becomes a bigger problem than time. 
+The constants here were chosen by informal experiment, to switch over to
+memoized matching at the level of query complexity where it starts to be
+useful, and keep the tables just large enough that making them significantly
+larger provides little benefit.
 
-Storing bit vectors requires storing two \texttt{uint64\_t}s and an
-\texttt{off\_t}, with possible alignment padding, per entry.  That works out
-to 24 bytes on typical newer 64-bit and 32-bit platforms.  Some older 32-bit
-platforms with 32-bit \texttt{off\_t}s may only require 20 bytes per index
-entry, trading off the decreased space against likely problems should a
-dictionary ever grow larger than 4G.  For comparison, the average length of
-a dictionary entry in the CHISE, KanjiVG, and Tsukurimashou dictionaries as
-of this writing is about 40 bytes; four times that for EDICT2.  So storing
-the indices represents a significant, but not crippling, increase in storage
-requirements.  The performance improvement numbers do account for the time
-taken to read the additional data from disk---it just isn't enough to be a
-problem compared to the savings in parsing and tree matching.
+Collisions are resolved by just overwriting the old entries; and the table
+gets emptied on each new top-level tree match.  Table entries have
+generation numbers, so the emptying is done in constant time by
+incrementing the generation instead of really rewriting the table.
 
-The format of the bit vector index file is specific to the version of
-IDSgrep and the computer architecture including the C compiler.  If you use
-a bit vector file with a mismatched \texttt{idsgrep} binary, it will almost
-certainly be detected as invalid and ignored.  Building with or without
-BuDDy will not make a difference to the file format; the difference is a
-different search algorithm applied to the same data.
-
-It is possible that the magic numbers may not
-perfectly track incompatible changes among different development versions
-of IDSgrep that you might check out of SVN, but they should definitely work
-correctly to differentiate between incompatible versions that have been
-formally released.
+The keys used for the hash table are the actual pointers.  Thus, it is
+possible for the performance of this feature to be nondeterministic on some
+platforms.  There are some additional wrinkles in the code because of the
+life cycle of pointers to tree nodes: the nodes created during parsing of
+input live at least as long as hash table generations, but there can be a
+few nodes created and deleted on the fly during matching, and those cannot
+be saved in the hash table lest the pointers be reused and invalidated.  It
+happens that the parser already set a flag in each node it created, for its
+own internal purposes in determining when the node was ready to come off the
+parsing stack.  Nodes created on the fly during matching lack that flag.  So
+the tree match memoization looks for the parser's flag to determine which
+nodes it is allowed to cache.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

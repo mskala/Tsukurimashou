@@ -732,7 +732,7 @@ void needle_fn_wrapper(NODE *n,BIT_FILTER *f) {
       bdd_delref(fa.decision_diagram);
       bdd_delref(fb.decision_diagram);
 #else
-      bf_and(f,f,bf_or(&fa,&fa,&fb));
+      bf_or(f,&fa,bf_and(f,f,&fb));
 #endif
    }
 
