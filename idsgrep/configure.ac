@@ -159,7 +159,7 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 #
 AC_PREREQ([2.67])
 AC_INIT([IDSgrep],
-	[0.4pre], [mskala@ansuz.sooke.bc.ca], [idsgrep],
+	[0.4], [mskala@ansuz.sooke.bc.ca], [idsgrep],
 	[[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
@@ -169,7 +169,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_REVISION([$Id: configure.ac 1015 2011-12-15 22:24:32Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2012, 2013 Matthew Skala])
-AC_SUBST([release_date],["March 7, 2013"])
+AC_SUBST([release_date],["August 20, 2013"])
 AM_SILENT_RULES
 #
 ############################################################################
@@ -359,7 +359,7 @@ m4_foreach_w([tbcheckname],m4_expand([tsukurimashou dnl
 tsukurimashou-0.6 tsukurimashou-0.7 tsukurimashou-0.8 dnl
 tsukurimashou-0.9 tsukurimashou-0.10 tsukurimashou-0.11]),[
 m4_foreach_w([tbcheckpath],m4_expand([$srcdir $srcdir/.. $srcdir/../.. dnl
-$prefix/src /src /usr/src /usr/local/src dnl
+$srcdir/../../.. $prefix/src /src /usr/src /usr/local/src dnl
 $HOME $HOME/src]),[
        AS_IF([test "$with_tsuku_build" = "auto"],
              [AS_IF([test -r "tbcheckpath/tbcheckname/Makefile"],[

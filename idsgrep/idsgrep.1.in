@@ -161,12 +161,29 @@ Do not use bit vector indices, even if they are available.
 .BI \-U "CFG\fR,\fP " "\-\^\-unicode-list=" CFG
 Generate a list of Unicode characters and use that as a dictionary, before
 and in addition to any others that may have been specified.
-The generated dictionary contains 1112064 entries, one for every Unicode
+The generated dictionary theoretically contains 1112064 entries,
+one for every Unicode
 code point excluding surrogates; the head of the entry is the single
 character, and the tail is (by default) a nullary semicolon, or (if a
 .I CFG
 string has been specified) a nullary functor containing some information
 about the character.
+If the search query has a head, then because all the
+entries in the generated dictionary have unique heads, at most one of them
+can be a match under the EIDS matching rules.
+As an optimization, in such a case 
+.B @PACKAGE@
+will only generate the one matching entry (if any), resulting in a
+significant speed increase.
+For any other kind of query it actually generates all the entries and
+tries to match them.
+This option generates the entries as EIDS trees in an internal format,
+not as a byte stream, bypassing the input parser,
+so output from
+.B \-U
+is always cooked even when a raw mode is selected with
+.B \-c
+to be used for real input.
 The
 .I CFG
 string should be some combination of the following characters, each of which
@@ -203,7 +220,8 @@ matching system.
 The format of the line is:
 .IP "" 11
 .B STATS
-.I weight-checks weight-hits bdd-hits tree-checks tree-hits time query
+.I weight-checks weight-hits bdd-hits tree-checks tree-hits
+.I memo-checks memo-hits time query
 .IP "" 7
 The fields are:
 .IR weight-checks ,
@@ -218,6 +236,10 @@ bit vector passes the weight and BDD tests, and the case where no bit
 vector index is in use and so all trees go directly to the tree check;
 .IR tree-hits ,
 the number of trees passing the tree check and thus returned as results;
+.IR memo-checks ,
+the number of checks performed on the tree-match memoization table;
+.IR memo-hits ,
+the number of hits in tree-match memoization ;
 .IR time ,
 the number of seconds of user CPU time, as measured by
 .BR getrusage (2);

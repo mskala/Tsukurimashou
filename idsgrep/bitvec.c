@@ -452,13 +452,13 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
       z->lambda=c_min-1;
       break;
       
-    case 7: /* nothing - should only happen with BDDs */
+    case 7: /* nothing */
 #ifdef HAVE_BUDDY
       z->bits[0]=UINT64_MAX;
       z->bits[1]=UINT64_MAX;
       z->lambda=-1;
 #else
-      return bf_true(z); /* SNH */
+      return bf_true(z);
 #endif
       break;
    }

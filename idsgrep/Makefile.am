@@ -131,6 +131,35 @@ endif
 
 ############################################################################
 
+# TESTING
+
+# must go before "filenames for autotools"
+
+GCOV_TESTS = \
+  test/andor test/anynot test/assoc test/basicmatch test/backslash \
+  test/bighash test/cooked test/demorgan test/equal test/genbv \
+  test/kvg-grone test/messages test/regex test/spacing test/speed \
+  test/tsu-grone test/unilist test/unord test/userpred test/utf8
+
+define GCDEP_RECIPE
+$1.log: test/rmgcda.log
+
+endef
+
+if COND_GCOV
+
+  TESTS = test/rmgcda $(GCOV_TESTS) test/gcov
+
+  $(foreach test,$(GCOV_TESTS),$(eval $(call GCDEP_RECIPE,$(test))))
+
+  test/gcov.log: $(foreach test,$(GCOV_TESTS),$(test).log)
+
+else
+  TESTS = $(GCOV_TESTS) test/vgneko
+endif
+
+############################################################################
+
 # FILENAMES FOR AUTOTOOLS
 
 # QVFG and FPEVCGF are DIST and SCRIPTS in ROT13, to keep Automake
@@ -171,11 +200,12 @@ man1_MANS = idsgrep.1
 
 MOSTLYCLEANFILES = \
   idsgrep.aux idsgrep.log idsgrep.blg idsgrep.bbl idsgrep.toc \
-  *.gcda *.gcno *.gcov
+  *.bvec *.gcda *.gcno *.gcov
 
 CLEANFILES = chise.errs edict.eids kanjivg.eids tsukurimashou.eids
 
-DISTCLEANFILES = $(if $(VPATH),idsgrep.pdf chise.eids,)
+DISTCLEANFILES = \
+  $(if $(VPATH),idsgrep.pdf chise.eids,) _stdint.h aminclude.am
 
 MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
 
@@ -236,33 +266,6 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 %.bvec: idsgrep %.eids
 	$(AM_V_GEN)
 	$(AM_V_at)./idsgrep -G $*.eids > $*.bvec
-
-############################################################################
-
-# TESTING
-
-GCOV_TESTS = \
-  test/andor test/anynot test/assoc test/basicmatch test/backslash \
-  test/bighash test/cooked test/demorgan test/equal test/genbv \
-  test/kvg-grone test/messages test/regex test/spacing test/speed \
-  test/tsu-grone test/unilist test/unord test/userpred test/utf8
-
-define GCDEP_RECIPE
-$1.log: test/rmgcda.log
-
-endef
-
-if COND_GCOV
-
-  TESTS = test/rmgcda $(GCOV_TESTS) test/gcov
-
-  $(foreach test,$(GCOV_TESTS),$(eval $(call GCDEP_RECIPE,$(test))))
-
-  test/gcov.log: $(foreach test,$(GCOV_TESTS),$(test).log)
-
-else
-  TESTS = $(GCOV_TESTS) test/vgneko
-endif
 
 ############################################################################
 

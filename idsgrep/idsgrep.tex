@@ -456,10 +456,11 @@ coverage.  This feature requires that the Gcov coverage analyser be
 installed.  To do a coverage analysis, run \texttt{configure} with
 \texttt{--enable-gcov} and any other desired options, then do \texttt{make
 clean} (necessary to be sure all object files are rebuilt with the coverage
-instrumentation) followed by \texttt{make check}.  Full coverage can only be
-attained if the dictionary files are installed (not just built).  Most
-people would not want to install the IDSgrep binary itself when built under
-this option.
+instrumentation) followed by \texttt{make check}.  Most people would not
+want to install the IDSgrep binary itself when built under this option.  As
+of version 0.4, the current test suite is not expected to achieve full
+coverage on most installations (though it should come close), so do not
+report failure of this test as a bug nor get too concerned about it.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -817,6 +818,7 @@ Tsukurimashou's directory, then \texttt{cd} to IDSgrep's directory and run
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\break\vspace*{-1.82\baselineskip}%
 \section{A note on TrueType/OpenType}\DangerousSection
 
 This version of IDSgrep is designed to read TrueType or
@@ -1029,10 +1031,17 @@ block name; ``\texttt{d}'' for the decimal value of the code point; and
 specifying ``\texttt{-Uxdb}'' will generate and scan a dictionary that
 includes the line ``\texttt{<A>(U+0041;65;Basic Latin)}.'' This option is
 intended to be used together with \texttt{-f} to produce font coverage
-lists.  Bit vector indexing is of use for the internally-generated
-Unicode list, but when the query string has a head, IDSgrep will generate
+lists.
+
+Bit \DangerousBend vector indexing is of no use for the internally-generated
+Unicode list, but when the query tree has a head, IDSgrep will generate
 only the at most one dictionary entry that could match that query, giving
 something very much like the benefit of bit vector indexing.
+This option generates the entries as EIDS trees in an internal format,
+not as a byte stream, bypassing the input parser,
+so output from \texttt{-U}
+is always cooked even when a raw mode is selected with
+\texttt{-c} to be used for real input.
 
 \item[\texttt{-V}, \texttt{--version}] Display the version and license
 information for IDSgrep.
@@ -2009,12 +2018,12 @@ diagrams library available at
 \url{http://sourceforge.net/projects/buddy/}~\cite{BuDDy}.  Without it, bit
 vectors will still provide some speed improvement, but not as much.
 
-Bit vector indices are expected to increase the speed of searching by about
-a factor of 15 in typical use.  The improvement factor varies a lot
-depending on a number of issues, and could be a thousand or more under
-optimal conditions.  It should never be significantly less than one; that
-is, searching with a bit vector index should never take significantly longer
-than searching without one.
+Bit vector indices properly used are expected to increase the speed of
+searching by about a factor of 15 in typical cases.  The improvement factor
+varies a lot depending on a number of issues, and could be a thousand or
+more under optimal conditions.  It should never be significantly less than
+one; that is, searching with a bit vector index should never take
+significantly longer than searching without one.
 
 Bit vectors provide the greatest benefit when the query is simple
 (exact-matching a single syrupy character is best); when the dictionary
@@ -2025,7 +2034,7 @@ starting with ``\texttt{[lr]}'') or in the root's immediate children; and
 when the query does not include special matching operators such as regular
 expressions and user-defined predicates.
 
-Whenever the \texttt{texttt} utility reads a file whose pathname ends in
+Whenever the \texttt{idsgrep} utility reads a file whose pathname ends in
 ``\texttt{.eids}''---regardless of whether that file was specified
 explicitly on the command line or indirectly via the \texttt{-d} option---it
 will look for an index file whose pathname is the same except with the
@@ -2036,7 +2045,7 @@ then \texttt{idsgrep} will assume it is a bit vector index and use it to
 speed up the query process.  Note that all those conditions must be met.  If
 any of the conditions fail to be met, no error will be reported, but the
 scanner will be forced to read and parse the entire input file without using
-bit vector filtering.  Once the \emph{idsgrep} utility commits to start
+bit vector filtering.  Once the \texttt{idsgrep} utility commits to start
 reading the index file past the header, it cannot switch to index-free
 searching and errors after that point will abort the search, just like
 errors in the EIDS input file.
@@ -2065,7 +2074,8 @@ You can force \texttt{idsgrep} to ignore bit vector indices with the
 \texttt{-I} option; that is unlikely to be useful except during speed tests,
 but one could maybe imagine a case where it's absolutely necessary to have a
 file named \texttt{*.bvec} which is not a bit vector index and must not be
-touched.
+touched, or where even looking for the index file incurs undesired traffic
+on a network filesystem.
 
 Using a (valid) bit vector index, or not using one, should only affect
 speed.  It should never change which results are or are not returned from a
@@ -2585,6 +2595,32 @@ own internal purposes in determining when the node was ready to come off the
 parsing stack.  Nodes created on the fly during matching lack that flag.  So
 the tree match memoization looks for the parser's flag to determine which
 nodes it is allowed to cache.
+
+The format of the statistics line generated by the \texttt{-{}-statistics}
+option is space-separated fields; the first is ``\texttt{STATS}'' and then
+the rest are mostly decimal numbers, in this order:
+\begin{itemize}
+  \item bit vector (lambda filter) checks;
+  \item lambda filter hits;
+  \item BDD hits (necessarily zero if BDDs not compiled in; the
+    number of BDD \emph{checks} when BDDs are used
+    is always exactly the value of the previous
+    field and thus not reported separately);
+  \item tree checks (may be greater than bit vector hits, because
+    of unindexed input which skips directly to the tree checking step);
+  \item tree hits (these result in output of matched trees);
+  \item memoization checks (may be much larger than number of tree checks,
+    because memoization happens inside the recursion of the tree check, but
+    only on sufficiently complicated needles);
+  \item memoization hits;
+  \item user CPU time (reported as seconds with a decimal fraction down to
+    microsecond precision as in the \texttt{struct rusage},
+    but your operating system probably rounds these numbers
+    to $1/100$ or $1/1000$ of a second);
+  \item node count in the BDD (zero if none was used or the feature is
+    absent); and
+  \item the query tree, in cooked EIDS format.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
