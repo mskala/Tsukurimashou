@@ -36,6 +36,7 @@ beginfont
 input bkencl.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -231,6 +232,12 @@ endtsuglyph;
 % hata "farm"
 begintsuglyph("uni7551",81);
   kanji.grthree.farm;
+  tsu_render;
+endtsuglyph;
+
+% ryuu/to "detain"
+begintsuglyph("uni7559",89);
+  kanji.grfive.detain;
   tsu_render;
 endtsuglyph;
 

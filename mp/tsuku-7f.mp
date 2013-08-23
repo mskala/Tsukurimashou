@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefive.mp;
 input gradefour.mp;
 input gradeone.mp;
@@ -68,6 +69,12 @@ vardef kanji.grfour.leave_behind =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% kan/kama "tin can"
+begintsuglyph("uni7F36",54);
+  kanji.greight.tin_can;
+  tsu_render;
+endtsuglyph;
 
 % extra: fu/usagiami "rabbit catching net"
 begintsuglyph("uni7F58",88);

@@ -87,6 +87,20 @@ vardef kanji.toprad.cave =
   expand_pbox;
 enddef;
 
+vardef kanji.toprad.detain =
+  push_pbox_toexpand("kanji.toprad.detain");
+  push_stroke((770,810)..tension 1.2..(550,740)..(250,700),
+    (1.8,1.8)--(1.5,1.5)--(1,1));
+  push_stroke((250,730)--(250,20),
+    (1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  push_stroke((130,-20)..tension 1.2..(250,20)..(720,240),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  push_stroke((650,390)..tension 1.3..(720,240)..(770,40),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
 vardef kanji.toprad.eye =
   push_pbox_toexpand("kanji.toprad.eye");
   build_kanji.box((130,800),(870,120));

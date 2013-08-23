@@ -1,6 +1,6 @@
 %
 % Unicode page 9B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -35,12 +35,46 @@ beginfont
 % AUTODEPS
 input bottomrad.mp;
 input buildkanji.mp;
+input gradeeight.mp;
 input gradeone.mp;
 input gradetwo.mp;
+input leftrad.mp;
+input radical.mp;
+input rare.mp;
+input rightrad.mp;
 
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.greight.gloom =
+  push_pbox_toexpand("kanji.greight.gloom");
+  build_kanji.tb(510,20)
+    (build_kanji.lcr(320,0)(680,0)
+       (kanji.leftrad.wood)
+       (kanji.greight.tin_can)
+       (kanji.grone.wood))
+    (build_kanji.tb(600,140)
+      (build_kanji.sscale(xscaled 1.06)(kanji.radical.conservative_hat))
+      (build_kanji.sscale(xyscaled (0.8,0.9))(build_kanji.lr(580,0)
+        (kanji.rare.spiced_liqueur)
+        (build_kanji.sscale(shifted (0,40))(kanji.rightrad.short_hair)))));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% chou/kaorigusa "spiced liqueur"
+begintsuglyph("uni9B2F",47);
+  kanji.rare.spiced_liqueur;
+  tsu_render;
+endtsuglyph;
+
+% utsu "gloom"
+begintsuglyph("uni9B31",49);
+  kanji.greight.gloom;
+  tsu_render;
+endtsuglyph;
 
 % gyo/sakana "fish"
 begintsuglyph("uni9B5A",90);

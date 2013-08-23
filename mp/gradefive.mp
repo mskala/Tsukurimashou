@@ -61,6 +61,16 @@ vardef kanji.grfive.conform =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.detain =
+  push_pbox_toexpand("kanji.grfive.easy");
+  build_kanji.level(build_kanji.tb(420,20)
+    (build_kanji.lr(480,40)
+     (kanji.toprad.detain)
+     (kanji.grtwo.sword))
+    (kanji.grone.paddy));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.easy =
   push_pbox_toexpand("kanji.grfive.easy");
   build_kanji.tb(480,0)

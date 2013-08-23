@@ -500,6 +500,15 @@ vardef kanji.greight.third =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.tin_can =
+  push_pbox_toexpand("kanji.greight.tin_can");
+  kanji.grtwo.noon;
+  replace_strokep(-1)((500,640)--(500,0));
+  replace_strokep(0)(oldp shifted (0,20));
+  build_kanji.cup((190,230),(810,0));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.towel =
   push_pbox_toexpand("kanji.greight.towel");
   build_kanji.sscale(xyscaled (0.9,0.6) shifted (0,-50))

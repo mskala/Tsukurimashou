@@ -540,6 +540,29 @@ vardef kanji.rare.smash =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.spiced_liqueur =
+  push_pbox_toexpand("kanji.rare.spiced_liqueur");
+  build_kanji.tb(400,-60)
+    (push_stroke((280,720)..(520,480)..(700,180),
+       (1,1)--(1.4,1.4)--(1.7,1.7));
+     set_bosize(0,90);
+     push_stroke((730,780)..(530,440)..(260,140),
+       (1.7,1.7)--(1.5,1.5)--(1.1,1.1));
+     set_boserif(0,0,10);
+     set_bosize(0,90);
+     push_stroke((470,780)..(510,750)..(530,700),(1,1)--(1.5,1.5)--(1.7,1.7));
+     set_bosize(0,90);
+     push_stroke((230,490)..(270,460)..(290,410),(1,1)--(1.5,1.5)--(1.7,1.7));
+     set_bosize(0,90);
+     push_stroke((700,470)..(740,440)..(760,390),(1,1)--(1.5,1.5)--(1.7,1.7));
+     set_bosize(0,90);
+     push_stroke((470,210)..(510,180)..(530,130),(1,1)--(1.5,1.5)--(1.7,1.7));
+     set_bosize(0,90);
+     build_kanji.cup((110,810),(890,0)))
+    (kanji.radical.spoon);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.sun =
   push_pbox_toexpand("kanji.rare.sun");
   build_kanji.tb(510,-30)

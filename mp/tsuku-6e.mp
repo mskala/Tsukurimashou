@@ -137,6 +137,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grnine.pool =
+  push_pbox_toexpand("kanji.grnine.pool");
+  build_kanji.lr(290,10)
+    (kanji.leftrad.water)
+    (kanji.grfive.detain);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % sei/kiyo "pure"
 begintsuglyph("uni6E05",5);
   kanji.grfour.pure;
@@ -196,6 +206,12 @@ endtsuglyph;
 % gen/minamoto "source" (also "gen" as in "Genji Monogatari")
 begintsuglyph("uni6E90",144);
   kanji.grsix.source;
+  tsu_render;
+endtsuglyph;
+
+% ryuu/ta "pool" or "collect"
+begintsuglyph("uni6E9C",156);
+  kanji.grnine.pool;
   tsu_render;
 endtsuglyph;
 
