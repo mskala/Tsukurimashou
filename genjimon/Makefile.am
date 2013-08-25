@@ -45,7 +45,7 @@ space:=$(empty) $(empty)
 comma:=,
 percent=%
 
-SHELL=@KLEKNEV@
+SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,/bin/sh)
 
 ############################################################################
 

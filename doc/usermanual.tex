@@ -413,74 +413,48 @@ Matthew Skala\\mskala@ansuz.sooke.bc.ca\\\TsukurimashouReleaseDate
 \blsubsection{\TsukurimashouVWide
 のニュース}{What's new in \TsukurimashouVersion?}
 
-This version extends the kanji coverage to roughly halfway through Grade
-Four.  There have also been a lot of infrastructure changes, some of them
-with important visible effects.  This version has taken a long time to bring
-to release, and the rate of kanji per unit time is a fair bit below what I'd
-like it to be.  That's partly because of issues outside the project that
-have limited my available time to work on defining kanji.  There's a lot of
-important material here other than kanji, however, and my hope is that the
-infrastructure improvements in 0.7 will help improve the rate of kanji
-addition further in the future and keep the project sustainable long enough
-that it can reach full coverage.  Here's a summary of the new stuff.
+Version 0.8 covers 1502 kanji, including all those taught through Grade Four
+in the Japanese school system.  This release includes relatively few major
+changes to infrastructure.  The new kanji are the main new content in this
+version.  These (100 scheduled by the roadmap, roughly another hundred
+spin-offs as a result of building kanji that are parts of others, and so on)
+turned out to be disproportionately hard.  It seems like Grade Four is when
+the Japanese school system takes the gloves off, so to speak, and expects
+children to learn kanji that are much less well-behaved than before in terms
+of being made of simple parts in simple ways.  Many of the new kanji in this
+release contain weird stroke structures that do \emph{not} occur widely in
+other glyphs.  As a result, they required a fair bit more new code, and this
+new code is likely to be less reusable, than the kanji in earlier releases. 
+I'm hoping that some of the kanji in the next few versions will be easier to
+handle, but that remains to be seen.
+
+Here are some other things of note in the new version:
 
 \begin{itemize}
-\item Font weight (bold, light, and so on) has been added, along with what
-  I think
-  is a reasonable if idiosyncratic way of handling ``style'' definitions like
-  ``Anbiruteki'' that are actually weight-related.  This feature basically
-  multiplies by six the number of fonts the package can generate.  It
-  was gratifying that almost all the code I wrote a long time ago to support
-  font weight in the future and never really tested, actually worked when I
-  added the missing parts and flipped the switch.
-\item ``Anchors,'' which are primarily used for attaching combining accents
-  in Latin, have been reworked almost completely.  They were broken in the
-  previous version and should at least be less broken now.
-\item A general mechanism for ``parasite'' packages was added to the build
-  system, and several of my other projects were reorganized to use this
-  mechanism.  They now come included with full distributions of
-  Tsukurimashou.  Genjimon and IDSgrep were already affiliated with
-  Tsukurimashou, but I've made their interfaces to Tsukurimashou's build
-  system more consistent and have added OCR and Beikaitoru.
-\item Dependency scanning for PFB files has been split into smaller
-  chunks that can run simultaneously; this significantly speeds up some
-  common scenarios when running the build system on a multicore computer.
-\item Build-system dependency handling should have been improved in the case
-  of a brand-new Metapost source file being added.  This is difficult to
-  test, however, and may require further work in the future.
-\item IDSgrep has many new features.  I
-  released a version 0.3 of it in late 2012, but Tsukurimashou 0.7 now ships
-  with a pre-release of version IDSgrep 0.4, containing some interesting
-  features beyond those of IDSgrep 0.3.
-\item Some lowercase Latin letters in TsuIta have been redrawn.  This was
-  a to-do list item; the last released version of TsuIta was experimental
-  and this version is less so.
-\item There is more support for ``Hangul Extension'' Unicode blocks, covering
-  rare, historical, and dialect vowels and consonants in Korean.
-\item The ``xpua'' feature was added, to remove private-use code points from
-  glyphs meant to be accessed via OpenType features.  This may improve the
-  ability to cut and paste from PDF documents made with Tsukurimashou fonts.
-\item The bundled version of METATYPE1 has diverged further from GUST's
-  distributed version; many features not used by Tsukurimashou have been
-  removed, and the hope is that this stripped-down version will be easier to
-  maintain.
-\item Low-level shape-drawing operations in Tsukurimashou have been modified
-  to insert extra nodes in some curves in order to produce more accurate
-  shapes and line widths, especially when a stroke turns a tight corner. 
-  This has necessitated some changes to the definitions some shapes
-  (especially in the hiragana, which contain some of the oldest code still in
-  use) because of unexpected dependence on the old, broken behaviour.  It is
-  possible that some glyphs may have visibly changed shape, but the goal is
-  for that not to have happened to any significant degree.
-\item FontForge's fontlint script has been replaced.  This was a last-minute
-  addition and detailed documentation isn't written yet, but there's a
-  strong chance that Tsukurimashou's replacement for fontlint will end up
-  being adopted by FontForge mainline anyway.  Shipping it with
-  Tsukurimashou is still worthwhile for the benefit of people who aren't
-  using cutting-edge FontForge.
-\item Another thing that came up at the last minute:  CHISE's servers appear
-  to be shutting down, and I have posted a snapshot of the part of their
-  Git repository that is relevant to IDSgrep, in my own Github account.
+\item Kleknev, a build system profiler, added as a parasite package.  This
+actually originated in some last-minute issues that came up while packaging
+the previous version, 0.7.  It remains somewhat undocumented and
+experimental, but there is at least a man page.
+
+\item The expect script used for invoking \XeLaTeX\ and a few other things
+now waits for child processes to avoid creating zombies.  That it didn't,
+before, was a bug discovered during Kleknev development.
+
+\item IDSgrep 0.4, released a few days before this version of Tsukurimashou,
+now incorporates experimental bit vector indices.  This is actually a pretty
+big deal; it is cutting-edge computer science research from which I hope to
+gain many prestigious academic publications.  From a user's point of view,
+though, the practical consequence is simply that IDSgrep should now run a
+lot faster.  See the IDSgrep documentation for more about the bit vector
+indices.
+
+\item Shortly after the release of Tsukurimashou~0.8, I will be giving a
+presentation about the project at TUG~2013, the \TeX\ Users Group annual
+meeting, in Tokyo.  That should raise the profile of the project a bit.
+
+\item Since May 2013, I am unemployed and looking for work.  That may have
+consequences eventually.  The fact that I am still single really worries me
+more, but both are important.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -504,6 +478,12 @@ commercial organizations, or published in the Chinese language and thus
 inaccessible to me.
 
 \begin{itemize}
+
+\item ``LCCD, A Language for Chinese Character Design,'' Tung Yun Mei,
+Stanford technical report STAN-CS-80-824.  He built a language similar in
+nature to METAFONT (collaborating with Knuth and sharing ideas with the
+earliest versions of METAFONT) and constructed 112 kanji for use in TAOCP. 
+It's interesting how little has changed since this early work.
 
 \item ``A Chinese Meta-Font,'' John Hobby and Gu Guoan, paper in TUGboat
 5--2, 1984.  Proof of concept and discussion of some of the graphic design
@@ -635,7 +615,7 @@ accomplished with, for instance, Adobe Multiple Master.
 \blsubsection{デベロップメントロードマップ}{Development roadmap}
 
 This version contains all the kyouiku kanji (the ones taught in Japanese
-elementary school) through Grade 3 and half of Grade 4.  The current plan is
+elementary school) through Grade 4.  The current plan is
 to release a minor version after each grade level of kyouiku kanji and one
 halfway through each grade level, which will take us up to version 0.12 at
 the end of Grade 6.  Version 1.0 will probably be a separate version
@@ -696,9 +676,10 @@ Tsukurimashou.
 %   0.5    20111216   2455911     776      2260   36479
 %   0.6    20120618   2456096    1110      2586   46635
 %   0.7    20130307   2456358    1291      2770   48879
+%   0.8    20130826   2456530    1502      2981   60177
 
 \begin{figure}
-\tikzset{horizontal axis/.style={xscale=0.14,xshift=1.5cm}}
+\tikzset{horizontal axis/.style={xscale=0.11,xshift=1.5cm}}
 \tikzset{vertical axis/.style={yscale=0.2}}
 \centering
 \begin{tikzpicture}
@@ -712,9 +693,9 @@ Tsukurimashou.
     \node[rotate=90] at (-2,16) {glyphs};
   \end{scope}
   \begin{scope}[horizontal axis]
-    \draw[arrows=-triangle 60] (-2,0) -- (78.0,0);
+    \draw[arrows=-triangle 60] (-2,0) -- (95.0,0);
     \foreach \x/\xlbl in
-      {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5,49.6/0.6,76.0/0.7} {
+      {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5,49.6/0.6,76.0/0.7,93.0/0.8} {
       \draw (\x,-0.2) -- (\x,0.2);
       \node[anchor=north] at (\x,-0.2) {\scriptsize\xlbl};
     }
@@ -728,19 +709,21 @@ Tsukurimashou.
     \node (v5k) at (31.1,7.76) {漢};
     \node (v6k) at (49.6,11.10) {漢};
     \node (v7k) at (75.7,12.91) {漢};
+    \node (v8k) at (93.0,15.02) {漢};
     \node (v1t) at (1.2,13.07) {\labelitemi};
     \node (v2t) at (5.8,16.46) {\labelitemi};
     \node (v3t) at (9.2,17.97) {\labelitemi};
     \node (v4t) at (25.1,20.21) {\labelitemi};
     \node (v5t) at (31.1,22.60) {\labelitemi};
     \node (v6t) at (49.6,25.86) {\labelitemi};
-    \node (v7t) at (76.0,27.70) {\labelitemi};
+    \node (v7t) at (75.7,27.70) {\labelitemi};
+    \node (v8t) at (93.0,29.81) {\labelitemi};
     \draw (v1k) -- (v2k) -- (v3k) -- (v4k) 
-      -- (v5k) -- (v6k) node[sloped,above,midway] {kanji};
-    \draw (v6k) -- (v7k);
+      -- (v5k) -- (v6k) -- (v7k) node[sloped,above,midway] {kanji};
+    \draw (v7k) -- (v8k);
     \draw (v1t) -- (v2t) -- (v3t) -- (v4t)
-      -- (v5t) -- (v6t) node[sloped,above,midway] {total};
-    \draw (v6t) -- (v7t);
+      -- (v5t) -- (v6t) -- (v7t) node[sloped,above,midway] {total};
+    \draw (v7t) -- (v8t);
   \end{scope}
 \end{tikzpicture}
 \caption{Growth of glyph counts}
@@ -760,8 +743,9 @@ Tsukurimashou family.
 \centering
 \begin{tikzpicture}
   \begin{scope}[vertical axis]
-    \draw[arrows=-triangle 60] (0,0) -- (0,52);
-    \foreach \y/\ylbl in {0/0,10/10000,20/20000,30/30000,40/40000,50/50000} {
+    \draw[arrows=-triangle 60] (0,0) -- (0,62);
+    \foreach \y/\ylbl in
+      {0/0,10/10000,20/20000,30/30000,40/40000,50/50000,60/60000} {
       \draw (-0.2,\y) -- (0.2,\y);
       \node[anchor=east] at (-0.2,\y) {\ylbl};
     }
@@ -784,7 +768,8 @@ Tsukurimashou family.
     \node (v5) at (22.60,36.479) {\labelitemi};
     \node (v6) at (25.86,46.635) {\labelitemi};
     \node (v7) at (27.70,48.879) {\labelitemi};
-    \draw (v1) -- (v2) -- (v3) -- (v4) -- (v5) -- (v6) -- (v7);
+    \node (v8) at (29.81,60.177) {\labelitemi};
+    \draw (v1) -- (v2) -- (v3) -- (v4) -- (v5) -- (v6) -- (v7) -- (v8);
   \end{scope}
 \end{tikzpicture}
 \caption{Lines of code per glyph}
@@ -844,12 +829,13 @@ have become so numerous that it makes sense to also have a central list.
     ``uni1100.l1'' from Tsukurimashou 0.5; in the new METATYPE1 version
     0.55, that gets tokenized in a context where the token ``l'' is a
     ``spark,'' and so the whole compilation fails.  The workaround
-    is to change ``l'' to ``lj'' (for ``lead jamo'').  We are not
-    actually using the glyph names written into the Postscript files,
-    so it doesn't matter if they are incorrect, but compilation must
-    not fail.  In the longer term it would be nice to make METATYPE1
-    not exhibit this behaviour, and pass the strings intact into the
-    Postscript file.
+    for that was to change ``l'' to ``lj'' (for ``lead jamo'').  A further
+    workaround, introduced in Tsukurimashou 0.6, was to modify the bundled
+    METATYPE1 code to save the glyph name as a string and put that in the
+    Postscript file instead of the tokenized version.  It still also parses
+    the names as tokens, however, so there is also code to insert a bunch of
+    underscores in the internally-used name before doing that, to reduce the
+    chance of name collisions from this parsing.
 
   \item METATYPE1 pen\_stroke\_edge macro: as of METATYPE1 version
     0.44, for reasons unknown to me if left to its own devices it will
@@ -895,7 +881,8 @@ have become so numerous that it makes sense to also have a central list.
     macro will sometimes abort in response to some conditions on ``turning
     number'' that do not appear to actually be harmful.  Workaround is to
     use our dangerousFill in intro.mp instead, which is just a copy of Fill
-    with the error checking removed.
+    with the error checking removed.  Since the switch to bundled code based
+    on METATYPE1 version 0.55, this seems to be a less significant issue.
 
   \item FontForge spline geometry operations, such as overlap removal and
     simplification: these have historically tended to be very numerically
@@ -967,6 +954,18 @@ have become so numerous that it makes sense to also have a central list.
     to be available from the scripting language and so the package has to
     actually be built without FreeType.  As of April 2012, seems not to
     be an issue with Arch Linux's packaged versions.
+
+  \item FontForge attempts to modify the names of all glyphs that it thinks
+    are ``related'' whenever a glyph name changes for any reason. 
+    Related-glyph renaming has wacky consequences when one glyph name is a
+    substring of another, and the Beikaitoru glyph-naming scripts (among
+    other things in Tsukurimashou) have to take it into account.  This issue
+    was reported as FontForge Github issue number 523
+    (\url{https://github.com/fontforge/fontforge/issues/523}) and patched in
+    their mainline; I don't understand FontForge's release schedule if they
+    have one, but presumably, distributed versions will someday contain the
+    fix.  Until we're sure that day has passed, Tsukurimashou will continue
+    to work around the issue.
 
   \item \XeTeX\ fails to advance glyph pointer after a successful match in a
     GSUB table, which has complicated consequences for chaining
@@ -2051,11 +2050,11 @@ family, are as follows.  Style names marked with an asterisk are not allowed
 as part of the basic Hamlog name but may be introduced via rewriting, as
 explained below.
 \begin{description}
-  \item{tsukurimashou} kaku, maru, mincho, bokukko, anbiruteki$^*$,
-    tenshinokami$^*$.
-  \item{tsuita} soku, atama.
-  \item{jieubsida} dodum, batang, sunmoon.
-  \item{blackletter\_lolita} cosette.
+  \item{\anbiruteki tsukurimashou} kaku, maru, mincho, bokukko,
+    anbiruteki$^*$, tenshinokami$^*$.
+  \item{\anbiruteki tsuita} soku, atama.
+  \item{\anbiruteki jieubsida} dodum, batang, sunmoon.
+  \item{\anbiruteki blackletter\_lolita} cosette.
 \end{description}
 
 The weight may be ``extralight,'' ``light,'' ``normal,'' ``demibold,''
@@ -2427,6 +2426,21 @@ run ``make check'' on any parasite packages that have been enabled, and the
 parasite package test suites (in particular, the one for IDSgrep) may be of
 more practical use than the main Tsukurimashou fontlint tests.
 
+If you try to do ``make distcheck,'' it will fail if any of the tests fail;
+and the tests probably \emph{will} fail because of the bugs in FontForge
+spline geometry.  A workaround, used in my Tsukurimashou 0.8 distribution
+packages, is to override the options for \texttt{fontlint.pe} as follows:
+\begin{verbatim}
+make DISTCHECK\_CONFIGURE\_FLAGS='FONTLINT_FLAGS="-w 2,3,5,23"' distcheck
+\end{verbatim}
+
+The \texttt{DISTCHECK\_CONFIGURE\_FLAGS} variable specifies additional flags
+(actually a command-line fragment) that ``make distcheck'' will pass to
+``configure.''  Then inside that, the \texttt{FONTLINT\_FLAGS} variable
+specifies flags to pass to the font integrity checker.  The codes 2, 3, 5,
+and 23 are the errors that I wasn't able to correct with the version of
+FontForge installed on my development system as of the time of the release.
+
 Don't bother with ``-{}-disable-dependency-tracking''; that is an
 Autotools thing meant for much larger and more softwary packages.  It
 applies only to code in languages supported by Autotools, which at
@@ -2513,11 +2527,11 @@ capable of building a standalone distribution of itself with the ``make
 dist'' target.  Parasites will generally look for a Tsukrimashou Project
 build in the parent directory and connect to it if one is found.
 
-The current parasites are Beikaitoru, Genjimon, IDSgrep, and OCR.  Each of
-these has its own detailed documentation, which see; the notes here are just
-a summary to give some idea of what the packages are all about.  Most of
-these existed in some form prior to the introduction of the parasite build
-mechanism, and in some cases vestiges still exist of their old, less
+The current parasites are Beikaitoru, Genjimon, IDSgrep, Kleknev, and OCR. 
+Each of these has its own detailed documentation, which see; the notes here
+are just a summary to give some idea of what the packages are all about. 
+Most of these existed in some form prior to the introduction of the parasite
+build mechanism, and in some cases vestiges still exist of their old, less
 systematic, ways of connecting to Tsukurimashou.  In the future, the
 connections will be more streamlined and normalized.
 
@@ -2551,6 +2565,15 @@ top-level project distribution.
     package may well be useful in other contexts as well.  Includes code to
     interface to several different character dictionaries, including
     structural data extracted from Tsukruimashou.  GPLv3.
+
+  \item{Kleknev} A coarse-grained profiler for build systems, such as the
+    Tsukurimashou build.  This is still rather experimental.  It basically
+    consists of a wrapper program that Make can invoke instead of
+    \texttt{/bin/sh}, which will (when told to do so by a special
+    environment variable) collect a bunch of performance information that
+    can be analysed by a separate reporting program to provide some insight
+    into where all the time goes during a long build.  See my Web log
+    article at 
 
   \item{OCR} Freely usable vector versions of the standard OCR A and OCR B
     fonts, based on the work of Tor Lillqvist, Richard B.\ Wales, and

@@ -192,7 +192,7 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.67])
-AC_INIT([Tsukurimashou],[0.7],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],
+AC_INIT([Tsukurimashou],[0.8],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],
   [[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
@@ -200,9 +200,9 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2388 2013-08-05 22:37:41Z mskala $])
+AC_REVISION([$Id: configure.ac 2421 2013-08-25 01:41:59Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
-AC_SUBST([release_date],["March 7, 2013"])
+AC_SUBST([release_date],["August 26, 2013"])
 AM_SILENT_RULES
 #
 ############################################################################
@@ -395,7 +395,7 @@ AC_SUBST([enable_ot_features])
 #
 AC_SUBST([enable_parasites])
 AS_IF([test "x$enable_parasites" = "xnone"],[],
-      [AC_CONFIG_SUBDIRS([beikaitoru genjimon idsgrep ocr])])
+      [AC_CONFIG_SUBDIRS([beikaitoru genjimon idsgrep kleknev ocr])])
 #
 AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AS_IF([test "$with_kanjidic2" = "auto"],[

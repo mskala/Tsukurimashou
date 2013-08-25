@@ -57,7 +57,7 @@ percent=%
 ZZZZHACKZZZZ=include makefile-vars.inc
 $(error This Makefile must be edited by Perl code in config.status before use)
 
-SHELL=@KLEKNEV@
+SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,/bin/sh)
 SUBDIRS = . $(PARASITES)
 
 ############################################################################

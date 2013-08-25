@@ -411,6 +411,7 @@ cfg_parasite(T,P):- =(T,P),parasite_available(P).
 parasite_available(beikaitoru).
 parasite_available(genjimon).
 parasite_available(idsgrep).
+parasite_available(kleknev).
 parasite_available(ocr).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
