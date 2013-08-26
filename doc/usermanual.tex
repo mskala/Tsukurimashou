@@ -941,7 +941,11 @@ have become so numerous that it makes sense to also have a central list.
     not observed recently and probably fixed by now.
 
   \item FontForge rasterization to BDF via FreeType as opposed to whatever
-    other code FontForge would use:  sometimes produces corrupt results. 
+    other code FontForge would use:  sometimes produces corrupt results,
+    which has complicated indirect consequences because the Tsukurimashou
+    infrastructures uses BDF files as input to the auto-kerning program.  As
+    a result, when this bug bites the horizontal metrics go screwy on some
+    fonts---notably, Jieubsida Batang PS ends up looking monospaced. 
     Reported to FontForge mailing list in November 2011, inspiring FreeType
     maintainer Werner Lemberg to find and fix an unrelated bug in FreeType
     (it was unable to process BDF files with high code points; see
@@ -949,11 +953,18 @@ have become so numerous that it makes sense to also have a central list.
     actually affect us because FontForge uses its own code for BDFs instead
     of FreeType's anyway, and Lemberg says can't help with the corrupt
     rasterization.  Workaround is to compile FontForge without FreeType
-    support; from GUI it is possible to just turn off FreeType rasterization
-    on individual bitmap-creation operations, but that option doesn't seem
-    to be available from the scripting language and so the package has to
-    actually be built without FreeType.  As of April 2012, seems not to
-    be an issue with Arch Linux's packaged versions.
+    support; from the GUI it is possible to just turn off FreeType
+    rasterization on individual bitmap-creation operations, but that option
+    doesn't seem to be available from the scripting language and so the
+    package has to actually be built without FreeType.  As of April 2012,
+    seems not to be an issue with Arch Linux's packaged versions.  However,
+    as of a few minutes before the Tsukurimashou~0.8 release (ouch!), this
+    is a problem again with the lastest FontForge, and the latest FontForge
+    now requires FreeType, so the workaround of disabling FreeType no longer
+    works.  I've reported it as FontForge GitHub issue number 685
+    (\url{https://github.com/fontforge/fontforge/issues/685}), am hacking my
+    local copy of FontForge to generate distribution fonts, and will hope to
+    get it resolved properly in mainline FontForge as soon as possible.
 
   \item FontForge attempts to modify the names of all glyphs that it thinks
     are ``related'' whenever a glyph name changes for any reason. 
@@ -2431,7 +2442,7 @@ and the tests probably \emph{will} fail because of the bugs in FontForge
 spline geometry.  A workaround, used in my Tsukurimashou 0.8 distribution
 packages, is to override the options for \texttt{fontlint.pe} as follows:
 \begin{verbatim}
-make DISTCHECK\_CONFIGURE\_FLAGS='FONTLINT_FLAGS="-w 2,3,5,23"' distcheck
+make DISTCHECK_CONFIGURE_FLAGS='FONTLINT_FLAGS="-w 2,3,5,23"' distcheck
 \end{verbatim}
 
 The \texttt{DISTCHECK\_CONFIGURE\_FLAGS} variable specifies additional flags
