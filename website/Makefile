@@ -1,12 +1,12 @@
 all: \
   rmreleases \
   ul/.htaccess \
-  ul/index.html.en ul/index.html.ja \
-  ul/beikaitoru.html.en ul/beikaitoru.html.ja \
-  ul/genjimon.html.en ul/genjimon.html.ja \
-  ul/idsgrep.html.en ul/idsgrep.html.ja \
-  ul/kleknev.html.en ul/kleknev.html.ja \
-  ul/ocr.html.en ul/ocr.html.ja \
+  ul/index.php.en ul/index.php.ja \
+  ul/beikaitoru.php.en ul/beikaitoru.php.ja \
+  ul/genjimon.php.en ul/genjimon.php.ja \
+  ul/idsgrep.php.en ul/idsgrep.php.ja \
+  ul/kleknev.php.en ul/kleknev.php.ja \
+  ul/ocr.php.en ul/ocr.php.ja \
   ul/prosimii-print.css ul/prosimii-screen.css \
   ul/demo200.png ul/flag-jp.png ul/flag-en.png ul/rss.png \
   ul/rg00.png ul/rglyph.php \
@@ -37,11 +37,11 @@ release-dump.txt:
 	  'http://sourceforge.jp/projects/tsukurimashou/releases/?package_id=13300' \
 	  >> release-dump.txt
 
-ul/%.html.en: ul/.htaccess mkindex ../doc/kanjichart.tex \
+ul/%.php.en: ul/.htaccess mkindex ../doc/kanjichart.tex \
   releases.rss release-dump.txt default.dat %.dat
 	perl -CDS ./mkindex en default.dat $*.dat > $@
 
-ul/%.html.ja: ul/.htaccess mkindex ../doc/kanjichart.tex \
+ul/%.php.ja: ul/.htaccess mkindex ../doc/kanjichart.tex \
   releases.rss release-dump.txt default.dat %.dat
 	perl -CDS ./mkindex ja default.dat $*.dat > $@
 

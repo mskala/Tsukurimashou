@@ -15,11 +15,11 @@ kanji.</P>
 individual pages for more information.</P>
 
 <UL>
-<LI><A HREF="idsgrep.html.en">IDSgrep</A> - structural kanji search
-<LI><A HREF="ocr.html.en">OCR A and OCR B</A> - optical character recognition fonts
-<LI><A HREF="genjimon.html.en">Genjimon</A> - a symbol font
-<LI><A HREF="beikaitoru.html.en">Beikaitoru</A> - an OpenType Hershey revival
-<LI><A HREF="kleknev.html.en">Kleknev</A> - a coarse-grained profiler for build systems
+<LI><A HREF="idsgrep.php.en">IDSgrep</A> - structural kanji search
+<LI><A HREF="ocr.php.en">OCR A and OCR B</A> - optical character recognition fonts
+<LI><A HREF="genjimon.php.en">Genjimon</A> - a symbol font
+<LI><A HREF="beikaitoru.php.en">Beikaitoru</A> - an OpenType Hershey revival
+<LI><A HREF="kleknev.php.en">Kleknev</A> - a coarse-grained profiler for build systems
 </UL>
 .
 Main-Text[ja].
@@ -31,11 +31,11 @@ Main-Text[ja].
 
 <P>その上、プロジェクトの中では色々な副プロジェクトがあります。リンクを読んでください：</P>
 <UL>
-<LI><A HREF="idsgrep.html.ja">『ＩＤＳｇｒｅｐ』</A>漢字の立体構造の検索
-<LI><A HREF="ocr.html.ja">『ＯＣＲ　ＡとＯＣＲ　Ｂ』</A>フリーな光学文字認識のフォント
-<LI><A HREF="genjimon.html.ja">『源氏紋』</A>シンボルのフォント
-<LI><A HREF="beikaitoru.html.ja">『ベイカイトル』</A>ハーシー・フォントの復活
-<LI><A HREF="kleknev.html.ja">『クレックネヴ』</A>ビルドのプロファイラー
+<LI><A HREF="idsgrep.php.ja">『ＩＤＳｇｒｅｐ』</A>漢字の立体構造の検索
+<LI><A HREF="ocr.php.ja">『ＯＣＲ　ＡとＯＣＲ　Ｂ』</A>フリーな光学文字認識のフォント
+<LI><A HREF="genjimon.php.ja">『源氏紋』</A>シンボルのフォント
+<LI><A HREF="beikaitoru.php.ja">『ベイカイトル』</A>ハーシー・フォントの復活
+<LI><A HREF="kleknev.php.ja">『クレックネヴ』</A>ビルドのプロファイラー
 </UL>
 .
 

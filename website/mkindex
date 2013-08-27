@@ -9,6 +9,12 @@ $late_eval='';
 
 $this_pkg_link='';
 
+open(RLC,'reflog.php');
+while (<RLC>) {
+  $reflog_code.=$_;
+}
+close(RLC);
+
 open(REL,'release-dump.txt');
 while (<REL>) {
   $demourl=$1 if m!(http://sourceforge\S+demo.pdf/)!;
@@ -118,7 +124,7 @@ print <<EOF;
     <div id="header">
       <div class="superHeader">
         <a href="http://sourceforge.jp/" title="Hosted by SourceForge.JP">SourceForge.JP</a> |
-        <a href="./$v{filename}.html.$v{other_lang}" title="$v{other_lang_title}"><img src="$v{other_lang_flag}" />&nbsp;$v{other_lang_title}</a>
+        <a href="./$v{filename}.php.$v{other_lang}" title="$v{other_lang_title}"><img src="$v{other_lang_flag}" />&nbsp;$v{other_lang_title}</a>
       </div>
 
       <div class="midHeader">
@@ -180,4 +186,5 @@ $v{footer}
     </div>
   </body>
 </html>
+$reflog_code
 EOF

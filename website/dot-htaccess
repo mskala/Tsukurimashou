@@ -1,1 +1,4 @@
 AddDefaultCharset utf-8
+RewriteEngine On
+RewriteBase /
+RewriteRule ^(.*)\.html(.*)$ $1.php$2 [R,L]
