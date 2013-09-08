@@ -1,0 +1,956 @@
+\documentclass[17pt]{extarticle}
+
+\usepackage{euler}
+\usepackage{fontspec}
+
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage[papersize={12in,9in},hmargin={0.7in},%
+  vmargin={0.5in},headsep={0.1in}]{geometry}
+\usepackage{mflogo}
+\usepackage{metalogo}
+\usepackage{wallpaper}
+\usepackage{xltxtra}
+
+\usepackage{tikz}
+
+\usetikzlibrary{arrows,calc,decorations.markings,decorations.pathreplacing,%
+  shapes.callouts,shapes.geometric}
+
+\usepgflibrary{arrows.new}
+
+\tikzset{bigah/.style={draw,ultra thick,->,>=latex' new,arrow head=6mm}}
+
+\defaultfontfeatures{Path={../otf/},Mapping=tex-text}
+
+\setmainfont[ItalicFont={TsuItaSokuPS},BoldFont={TsukurimashouKakuBoldPS}]%
+  {TsukurimashouKakuPS}
+\setsansfont[ItalicFont={TsuItaSokuPS},BoldFont={TsukurimashouKakuBoldPS}]%
+  {TsukurimashouKakuPS}
+\setmonofont[WordSpace={1,0,0},PunctuationSpace=3,Mapping={}]%
+  {TsukurimashouBokukko}
+\renewcommand{\labelitemi}{{\fontspec[RawFeature=+ornm]{TsukurimashouKakuPS}C}}
+
+\newfontface{\jieubsida}[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]%
+  {JieubsidaBatangPS}
+\newfontface{\mincho}{TsukurimashouMincho}
+
+\setlogokern{eL}{-0.03em}
+\setlogokern{La}{-0.20em}
+
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+
+\newenvironment{slide}{\clearpage\vspace*{\fill}\large}{\vspace*{\fill}}
+
+\newenvironment{bil}%
+  {\renewcommand{\arraystretch}{0.6}\begin{tabular}{cc}}{\end{tabular}}
+
+\newcommand{\slidetitle}[1]%
+   {{\centering\Large\sffamily\bfseries#1\par}\rmfamily}
+
+\setlength{\parskip}{\baselineskip}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\pagestyle{fancy}
+\rhead{\large http://tsukurimashou.sourceforge.jp/}
+\cfoot{}
+\renewcommand{\headrulewidth}{0pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+   \sffamily
+   \begin{center}\Huge\bfseries
+      Tsukurimashou: a Japanese-language font meta-family \\[1cm]
+      『作りましょう』\\
+      日本語のフォントのメタファミリー
+   \end{center}
+
+   \vspace{1.5in}
+   \begin{center}
+      \Large\bfseries Matthew Skala, University of Manitoba$^\textrm{*}$\\
+      マッシュ\,・\,スカラ\quad マニトバ大学$^\textrm{*}$
+   \end{center}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+
+\hspace{0.5in}
+\begin{minipage}{5in}
+\slidetitle{Outline}
+
+\begin{itemize}
+\item Japanese is easy!
+\item Japanese is impossible!
+\item Tsukurimashou
+\item Character databases
+\end{itemize}
+\end{minipage}
+\hspace{\fill}
+{\renewcommand{\arraystretch}{0.45}\Large
+\begin{tabular}{ccccc}
+\char"2779&\char"2778&\char"2777&\char"2776&\\[4pt]
+漢&作&日&日&\textbf{目}\\
+字&り&本&本&\textbf{次}\\
+の&ま&語&語&\\
+デ&し&は&が&\\
+\,\rotatebox{90}{ー}&\,\raisebox{0.3ex}{ょ}&で&や&\\
+タ&う&き&さ&\\
+ベ&&な&し&\\
+\,\rotatebox{90}{ー}&&い&い&\\
+ス&&&&
+\end{tabular}}\hspace{1.5in}
+
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\thispagestyle{empty}
+\ThisCenterWallPaper{1.08}{piggy.jpg}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}\begin{tikzpicture}[yscale=1.2]
+  \node at (0,0) {\scalebox{3}{語}};
+  \node[blue] at (0,-1.5) {\scalebox{2}{⿰}};
+  \node at (2.5,0) {\begin{bil}U+8A9E\\\emph{go}\\``language''\end{bil}};
+  \node at (-4,-4) {\scalebox{3}{言}};
+  \node at (-1.5,-4) {\begin{bil}U+8A00\\\emph{i}\\``speak''\end{bil}};
+  \node at (4,-4) {\scalebox{3}{吾}};
+  \node[blue] at (4,-5.5) {\scalebox{2}{⿱}};
+  \node at (6.5,-4) {\begin{bil}U+543E\\\emph{ware}\\``myself''\end{bil}};
+  \node at (1,-8) {\scalebox{3}{五}};
+  \node at (3.5,-8) {\begin{bil}U+4E94\\\emph{go}\\``five''\end{bil}};
+  \node at (7,-8) {\scalebox{3}{口}};
+  \node at (9.5,-8) {\begin{bil}U+53E3\\\emph{kuchi}\\``mouth''\end{bil}};
+  \draw[bigah,ultra thick] (-1,-1) -- (-3.5,-3);
+  \draw[bigah,ultra thick] (1,-1) -- (3.5,-3);
+  \draw[bigah,ultra thick] (3,-5) -- (1.5,-7);
+  \draw[bigah,ultra thick] (5,-5) -- (6.5,-7);
+  \node at (1,-11) {\scalebox{3}{語→⿰言⿱五口}};
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}\begin{tikzpicture}
+  \node at (0,0) {\scalebox{30.823}{\normalsize\mincho\char"6C38}};
+  \node at (-6,8.5) {\bfseries\begin{tabular}{ll}{\Large 永字八法}\\
+    The Eight Strokes of Eternity!\end{tabular}};
+  \node[shape=ellipse callout,color=blue!80!black,text=white,fill,%
+      callout absolute pointer={(0.5,5)}] at (6,8)
+      {\textbf{\char"2460\ strange stone}};
+  \node[shape=ellipse callout,color=blue!80!black,text=white,fill,%
+      callout absolute pointer={(-2,3.1)}] at (-8,6)
+      {\textbf{\char"2461\ jade table}};
+  \node[shape=ellipse callout,color=blue!80!black,text=white,fill,%
+      callout absolute pointer={(0,-2)}] at (6,-7)
+      {\textbf{\char"2462\ iron pillar}};
+  \node[shape=ellipse callout,color=blue!80!black,text=white,fill,%
+      callout absolute pointer={(-1,-6.1)}] at (-6,-7)
+      {\textbf{\char"2463\ crab's pincer}};
+  \node[shape=ellipse callout,color=blue!80!black,text=white,fill,%
+      callout absolute pointer={(-5,0.7)}] at (-8,2.3)
+      {\textbf{\char"2464\ tiger's tooth}};
+  \node[shape=ellipse callout,color=blue!80!black,text=white,fill,%
+      callout absolute pointer={(-4.8,-3.9)}] at (-8,-1.5)
+      {\textbf{\char"2465\ rhinoceros's horn}};
+  \node[shape=ellipse callout,color=blue!80!black,text=white,fill,%
+      callout absolute pointer={(5.5,1.5)}] at (10,5)
+      {\textbf{\char"2466\ bird pecking}};
+  \node[shape=ellipse callout,color=blue!80!black,text=white,fill,%
+      callout absolute pointer={(5,-4)}] at (10,-1.5)
+      {\textbf{\char"2467\ golden knife}};
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}\begin{tikzpicture}
+  \node at (-10,2) {\scalebox{7}{\fontspec[Path=./]{azu1.ttf}l}};
+  \node[shape=ellipse callout,draw,%
+      callout absolute pointer={(-9.7,4.5)}] at (-8.5,8)
+      {\begin{bil}\Large 作りましょう！\\%
+       Let's make something!\end{bil}};
+%
+  \node at (-1,9) {\begin{bil}{\Large 永字八法}\\%
+    8 strokes\end{bil}};
+  \node at (-1,4) {\begin{bil}{\Large ５０字の部首かな？}\\%
+    50 components,\\I guess?\end{bil}};
+  \node at (5,1) {\begin{bil}
+    {\Large \char"2FF0水\char"2FF1\char"4EA0\char"2FF1\char"53E3\char"5C0F}\\%
+     Unicode IDS\end{bil}};
+  \node at (0,-1) {\MF};
+  \node at (-9,-4) {\scalebox{5}{\fontspec{TsukurimashouKaku}\char"6DBC}};
+  \node at (-3,-4) {\scalebox{5}{\fontspec{TsukurimashouMincho}\char"6DBC}};
+  \node at (3,-4) {\scalebox{5}{\fontspec{TsukurimashouBokukko}\char"6DBC}};
+  \node at (9,-4) {\scalebox{5}{\fontspec{TsukurimashouMaruBold}\char"6DBC}};
+  \draw[bigah,ultra thick] (-1,8) -- (-1,5.5);
+  \draw[bigah,ultra thick] (-1,2.5) -- (-0.5,-0.5);
+  \draw[bigah,ultra thick] (3.5,0) -- (2,-0.5);
+  \draw[bigah,ultra thick] (-2.1,-1.4) -- (-7.6,-2.7);
+  \draw[bigah,ultra thick] (-0.7,-1.4) -- (-2.8,-2.5);
+  \draw[bigah,ultra thick] (0.7,-1.4) -- (2.8,-2.5);
+  \draw[bigah,ultra thick] (2.1,-1.4) -- (7.6,-2.7);
+%
+  \node at (10,1) {\scalebox{7}{\fontspec[Path=./]{azu1.ttf}a}};
+  \node[shape=cloud callout,draw,aspect=3,cloud puffs=15,%
+      callout absolute pointer={(8.5,3.5)}] at (7,7)
+      {\begin{bil}{\Large 任せ}\\%
+       \small somebody else's problem\end{bil}};
+  \draw[bigah,ultra thick,dotted] (6.5,6) -- (5.5,2);
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+
+\slidetitle{三十路漢字 ・ Kanji of Thirty Years}
+
+1980年 LCCD (Mei)
+
+1982年, 1986年 Letter Spirit, etc. (Hofstadter, \textit{Metamagical Themas})
+
+1984年 Chinese Metafont (Hobby \& Guoan, \textit{TUGboat} 5.2)
+
+1989年 Quixote Oriental Fonts (Hosek, \textit{TUGboat} 10.4)
+
+1990年 Poor Man's Chinese/Japanese (Ridgeway)
+
+1991年 Jem\TeX\ (Jalbert)
+
+1993年 Wadalab (TouDai)
+
+1997年, 2003年 HanGlyph (Yiu \& Wong, \textit{TUGboat} 24.1)
+
+2005年 Hóng Zì (Laguna, \textit{TUGboat} 26.2)
+
+2011年 Character Description Language (Wenlin Institute, commercial)
+
+2012年 Adjustable Fonts (Type Project, commercial)
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\thispagestyle{empty}
+\ThisCenterWallPaper{1.0}{Torin_Nurikabe.jpg}
+\begin{tikzpicture}
+  \useasboundingbox (0,10) rectangle (0,0);
+  \node at (-0.4,3.2) {\scalebox{1.5}{\bfseries\Huge\begin{bil}
+    ヌ\\ リ\\ カ\\ ベ\\ に\\ 注\\ 意\\ ！
+  \end{bil}}};
+  \node at (14,15)
+    {\scalebox{1.5}[2]{\fontspec{TsuItaAtamaBoldPS}\Huge
+     BEWARE THE NURIKABE!}};
+\end{tikzpicture}%
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}\begin{tikzpicture}
+  \node at (0,0) {\scalebox{3}{林}};
+  \node[blue] at (0,-1.5) {\scalebox{2}{⿰}};
+  \node at (2.5,0) {\begin{bil}U+6797\\\emph{hayashi}\\``forest''\end{bil}};
+  \node at (-3,-4) {\scalebox{3}{木}};
+  \node at (-0.5,-4) {\begin{bil}U+6728\\\emph{ki}\\``tree''\end{bil}};
+  \node at (3,-4) {\scalebox{3}{木}};
+  \node at (5.5,-4) {\begin{bil}U+6728\\\emph{ki}\\``tree''\end{bil}};
+  \draw[ultra thick,bigah] (-1,-1) -- (-2.5,-3);
+  \draw[ultra thick,bigah] (1,-1) -- (2.5,-3);
+%
+  \draw[green!80!black,ultra thick] (10.7,-1) circle[radius=3.5];
+  \fill[red!50!white,xshift={18cm},yshift={-1cm},rotate=45]
+    (-4,-0.1) rectangle (4,0.1);
+  \fill[red!50!white,xshift={18cm},yshift={-1cm},rotate=-45]
+    (-4,-0.1) rectangle (4,0.1);
+  \node at (11,-1) {\scalebox{10}{林}};
+  \begin{scope}
+    \clip (17.5,-4) rectangle (22,2);
+    \node at (18,-1) {\scalebox{10}{林}};
+  \end{scope}
+  \begin{scope}
+    \clip (14.8,-4) rectangle (22,2);
+    \node at (15.3,-1) {\scalebox{10}{林}};
+  \end{scope}
+%
+  \node[shape=ellipse callout,color=green!60!black,text=white,fill,%
+      callout absolute pointer={(9.5,-3.5)}] at (11,-7)
+      {\bfseries\begin{bil}{\large ちがう}\\different\end{bil}};
+  \node[shape=ellipse callout,color=green!60!black,text=white,fill,%
+      callout absolute pointer={(12.1,-3.5)}] at (11,-7)
+      {\bfseries\begin{bil}{\large ちがう}\\different\end{bil}};
+  \node[shape=ellipse callout,color=red!60!black,text=white,fill,%
+      callout absolute pointer={(16.5,-3.5)}] at (18,-7)
+      {\bfseries\begin{bil}{\large 同じ}\\same\end{bil}};
+  \node[shape=ellipse callout,color=red!60!black,text=white,fill,%
+      callout absolute pointer={(19.2,-3.5)}] at (18,-7)
+      {\bfseries\begin{bil}{\large 同じ}\\same\end{bil}};
+%
+  \node at (0,-7) {\scalebox{2}{林→⿰木木}};
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}\begin{tikzpicture}[yscale=1.2]
+  \node at (0,0) {\scalebox{3}{涼}};
+  \node[blue] at (0,-1.5) {\scalebox{2}{⿰}};
+  \node at (2.5,-0.1) {\begin{bil}U+6DBC\\\emph{ryou}\\~~``cool breeze''\end{bil}};
+  \node at (-4,-4) {\scalebox{3}{水}};
+  \node at (-1.5,-4) {\begin{bil}U+6C34\\\emph{omizu}\\``water''\end{bil}};
+  \node at (4,-4) {\scalebox{3}{京}};
+  \node[blue] at (4,-5.5) {\scalebox{2}{⿱}};
+  \node at (6.5,-4) {\begin{bil}U+4EAC\\\emph{kyou}\\``capital''\end{bil}};
+  \node at (1,-8) {\scalebox{3}{亠}};
+  \node at (3.5,-8) {\begin{bil}U+4EA0\\\emph{keisankanmuri}\\{}[that shape]\end{bil}};
+  \path[green!40!black,ultra thick,decoration={ticks,amplitude=4pt},%
+      postaction={decorate,draw}]
+    (7,-8) circle[radius=0.65,xscale=1.2];
+  \node[blue] at (7,-9.5) {\scalebox{2}{⿱}};
+  \node at (4,-12) {\scalebox{3}{口}};
+  \node at (6.5,-12) {\begin{bil}U+53E3\\\emph{kuchi}\\``mouth''\end{bil}};
+  \node at (10,-12) {\scalebox{3}{小}};
+  \node at (12.5,-12) {\begin{bil}U+5C0F\\\emph{shou}\\``small''\end{bil}};
+  \draw[bigah,ultra thick] (-1,-1) -- (-3.5,-3);
+  \draw[bigah,ultra thick] (1,-1) -- (3.5,-3);
+  \draw[bigah,ultra thick] (3,-5) -- (1.5,-7);
+  \draw[bigah,ultra thick] (5,-5) -- (6.5,-7);
+  \draw[bigah,ultra thick] (6,-9) -- (4.5,-11);
+  \draw[bigah,ultra thick] (8,-9) -- (9.5,-11);
+%
+  \node[shape=ellipse callout,color=red!50!black,text=white,fill,%
+      callout absolute pointer={(-4.5,-3.3)}] at (-6,-1)
+      {\bfseries\begin{bil}{\large 何これ？}\\WTF?\end{bil}};
+  \node[shape=ellipse callout,color=black!50!white,text=white,fill,%
+      callout absolute pointer={(0.3,-8)}] at (-5,-7)
+      {\bfseries\begin{bil}{\large 辞書ではない}\\
+       not in dictionary\end{bil}};
+  \node[shape=ellipse callout,color=blue!50!black,text=white,fill,%
+      callout absolute pointer={(4.7,-5.5)}] at (13,-9)
+      {\bfseries\begin{bil}{\large ちがう}\\different\end{bil}};
+  \node[shape=ellipse callout,color=blue!50!black,text=white,fill,%
+      callout absolute pointer={(7.7,-9.5)}] at (13,-9)
+      {\bfseries\begin{bil}{\large ちがう}\\different\end{bil}};
+  \node[shape=ellipse callout,color=green!50!black,text=white,fill,%
+      callout absolute pointer={(7,-8)}] at (11,-2)
+      {\bfseries\begin{bil}{\large Unicodeではない}\\
+       not in Unicode\end{bil}};
+%
+  \node at (-4,-11) {\scalebox{2}{涼→⿰水⿱亠⿱口小}};
+  \node at (-4,-12.5) {\scalebox{1.5}{ダメだよ！ ・ \textit{no good!}}};
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}\begin{tikzpicture}
+  \node at (0,0) {\scalebox{20}{\normalsize\mincho 観}};
+  \node at (0,-6.25) {\scalebox{2.5}{outlook}};
+  \node[red!60!black] at (10,3) {\scalebox{8}{\normalsize\mincho 見}};
+  \node[red!60!black] at (10,0.5) {see};
+  \node at (8,-3) {\scalebox{8}{\normalsize\mincho 目}};
+  \node at (8,-5.5) {eye};
+  \node at (12,-3) {\scalebox{8}{\normalsize\mincho 儿}};
+  \node at (12,-5.5) {legs};
+  \node[green!60!black] at (-10,4) {\scalebox{8}{\normalsize\mincho 矢}};
+  \node[green!60!black] at (-10,1.5) {arrow};
+  \node[blue!60!black] at (-10,-6) {\scalebox{8}{\normalsize\mincho 隹}};
+  \node[blue!60!black] at (-10,-8.5) {old bird};
+  \draw[ultra thick,dashed,green!60!black]
+    (-2.5,2) ellipse[x radius=3,y radius=3.5];
+  \draw[ultra thick,dashed,blue!60!black]
+    (-2.5,-1.5) ellipse[x radius=3,y radius=3.7];
+  \draw[ultra thick,dashed,red!60!black]
+    (2,0) ellipse[x radius=3.3,y radius=5];
+  \draw[bigah,ultra thick,green!60!black] (-5.6,3.6) -- (-7.7,4.1);
+  \draw[bigah,ultra thick,blue!60!black] (-5.6,-4.1) -- (-7.7,-5.1);
+  \draw[bigah,ultra thick,red!60!black] (5.5,2) -- (8.1,3.0);
+  \draw[bigah,ultra thick] (9.1,0.9) -- (8.1,-1.1);
+  \draw[bigah,ultra thick] (10.9,0.9) -- (11.9,-1.1);
+  \node[shape=ellipse callout,draw,fill=white,%
+      callout absolute pointer={(-3,0.05)}] at (-9,-1)
+      {\begin{bil}\large 大変\\big trouble\end{bil}};
+  \node at (1,-8.5) {\scalebox{2.2}{\mincho 観→⿰⿻矢隹⿱目儿}};
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\Large
+{\hspace*{\fill}
+\begin{tabular}[t]{m{3.5in}@{\quad}m{3.5in}}
+\raggedright Appearance over etymology.
+  & \huge 語源より観 \\ \\
+\raggedright Sometimes, exceptions are necessary.
+  & \huge ときどき特例が必要 \\ \\
+\raggedright Every character requires human intervention.
+  & \huge \raggedright 毎字は、~人間介入が 必要
+\end{tabular}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\Large
+\begin{tabular}[b]{r@{\quad}c@{\quad}l}
+kanji & 5000 & 漢字 \\
+LOC/kanji & 65 & １漢字につきLOC \\
+LOC & 325000 & LOC \\
+LOC/day & 10 & １日につきLOC\\
+days & 32500 & 日 \\
+working days/year & 250 & １年につき仕事の日\\
+years & 130 & 年
+\end{tabular}
+\quad
+\begin{tikzpicture}
+  \useasboundingbox (-2,-2.5) rectangle (2,8);
+  \node at (0,0) {\scalebox{7}{\fontspec[Path=./]{azu1.ttf}y}};
+  \node[shape=ellipse callout,draw,%
+      callout absolute pointer={(-0.2,3.2)}] at (0,7)
+      {\begin{bil}{\huge がんばって下さい}\\%
+       Please work hard.\end{bil}};
+\end{tikzpicture}
+
+\vspace{12pt}
+\huge Starting is O(1).  Finishing is O(\textit{n}).\\[5pt]
+最初はO(1)。 最後がO(\textit{n})。
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace{\fill}\begin{tikzpicture}[scale=1.2]
+  \node at (0,11) {\bfseries\huge 325000 LOC!};
+  \node at (-3,0) {\scalebox{8.6}{\fontspec[Path=./]{azu1.ttf}j}};
+  \node[shape=ellipse callout,draw,%
+      callout absolute pointer={(-3.5,3)}] at (-5,7.5)
+      {\begin{bil}{\huge ウィキを使おうっ}\\%
+       We'll use a Wiki ---\end{bil}};
+  \node at (3,0) {\scalebox{8.6}{\fontspec[Path=./]{azu1.ttf}f}};
+  \node[shape=ellipse callout,draw,%
+      callout absolute pointer={(3.2,3)}] at (5,6.5)
+      {\begin{bil}{\huge なんでやねん}\\%
+       Ya gotta be kidding.\end{bil}};
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace{\fill}\begin{tikzpicture}
+  \node at (-4,0) {\Huge\begin{bil}フォント\\font\end{bil}};
+  \draw[ultra thick,red!70!black] (-6,2) -- (-2,-2);
+  \draw[ultra thick,red!70!black] (-6,-2) -- (-2,2);
+  \node at (4,0) {\Huge\begin{bil}ソフトウェア\\software\end{bil}};
+  \draw[ultra thick,green!70!black] (4,0.2)
+    ellipse[x radius=3.5,y radius=2.5];
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace{\fill}\begin{tikzpicture}
+  \node at (-4,0) {\Huge\begin{bil}フォント\\font\end{bil}};
+  \draw[ultra thick,red!70!black] (-6,2) -- (-2,-2);
+  \draw[ultra thick,red!70!black] (-6,-2) -- (-2,2);
+  \node at (4,0) {\Huge\begin{bil}ソフトウェア\\software\end{bil}};
+  \draw[ultra thick,green!70!black] (4,0.2)
+    ellipse[x radius=3.5,y radius=2.5];
+%
+  \node[fill=yellow!50!white,ellipse] at (8,7)
+    {\begin{bil}バージョン管理\\version control\end{bil}};
+  \node[fill=yellow!50!white,ellipse] at (2,4.5)
+    {\begin{bil}チケットのシステム\\ticket system\end{bil}};
+  \node[fill=yellow!50!white,ellipse] at (-2,8)
+    {\begin{bil}多態性\\polymorphism\end{bil}};
+  \node[fill=yellow!50!white,ellipse] at (-8,4)
+    {\begin{bil}ビルドのシステム\\build system\end{bil}};
+  \node[fill=yellow!50!white,ellipse] at (-7,-4)
+    {\begin{bil}単体テスト\\unit tests\end{bil}};
+  \node[fill=yellow!50!white,ellipse] at (1,-6)
+    {\huge GPL};
+  \node[fill=yellow!50!white,ellipse] at (9,-4.5)
+    {\begin{bil}エンカプセレーション\\encapsulation\end{bil}};
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\Large
+{\hspace*{\fill}
+\begin{tabular}[t]{b{4.5in}@{\quad}b{4.5in}}
+\huge\bfseries Tsukurimashou &
+  \huge\bfseries 作りましょう\\[20pt]
+\raggedright Font family for English, Japanese, and Korean &
+日本語と英語とハングルの フォントファミリ\\[20pt]
+\raggedright GPLv3 open source & GPLv3のオープンソース \\[20pt]
+\raggedright one developer working since late 2010 &
+2010年から一人で書いて\\[20pt]
+now 〜100000 LOC & 今、\,〜十万LOC \\[20pt]
+now 〜1500 kanji & 今、\,〜1500字の漢字 \\[20pt]
+paramaterization: stroke style, shape, boldness, serifs, spacing &
+パラメタ方式は、\,画の形\,・\,字形\,・\,
+太字度\,・\,うろこ\,・\,スペーシング
+\end{tabular}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\ThisCenterWallPaper{0.985}{summshot.png}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\ThisCenterWallPaper{0.985}{ticketshot.png}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}\begin{tikzpicture}
+  \node at (-9,0) {\scalebox{9}{\fontspec{TsukurimashouKakuPS}\char"6E90}};
+  \node at (-9,-3) {\fontspec{TsukurimashouKakuPS}Kaku\quad 角};
+  \node at (-3,0) {\scalebox{9}{\fontspec{TsukurimashouMaruPS}\char"6E90}};
+  \node at (-3,-3) {\fontspec{TsukurimashouMaruPS}Maru\quad 丸};
+  \node at (3,0) {\scalebox{9}{\fontspec{TsukurimashouMinchoPS}\char"6E90}};
+  \node at (3,-3) {\fontspec{TsukurimashouMinchoPS}Mincho\quad 明朝};
+  \node at (9,0) {\scalebox{9}{\fontspec{TsukurimashouBokukkoPS}\char"6E90}};
+  \node at (9,-3) {\fontspec{TsukurimashouBokukkoPS}Bokukko\quad 僕女};
+\end{tikzpicture}\hspace*{\fill}\par}
+
+\vspace{\fill}
+
+{\hspace*{\fill}%
+\scalebox{6}{\fontspec{TsukurimashouKakuExtraLightPS}物}%
+\scalebox{6}{\fontspec{TsukurimashouKakuLightPS}物}%
+\scalebox{6}{\fontspec{TsukurimashouKakuPS}物}%
+\scalebox{6}{\fontspec{TsukurimashouKakuDemiboldPS}物}%
+\scalebox{6}{\fontspec{TsukurimashouKakuBoldPS}物}%
+\scalebox{6}{\fontspec{TsukurimashouKakuExtraBoldPS}物}%
+\hspace*{\fill}\par}
+
+\vspace{\fill}
+
+{\hspace*{\fill}\huge\begin{tabular}{c@{\quad}c}
+\fontspec{TsukurimashouKaku}Tsukurimashou Kaku
+  & \fontspec{TsukurimashouKakuPS}Tsukurimashou Kaku PS \\
+\fontspec{TsukurimashouMincho}Tsukurimashou Mincho
+  & \fontspec{TsukurimashouMinchoPS}Tsukurimashou Mincho PS \\
+\fontspec{TsuItaAtama}TsuIta Atama
+  & \fontspec{TsuItaAtamaPS}TsuIta Atama PS \\
+\fontspec{TsuItaSoku}TsuIta Soku
+  & \fontspec{TsuItaSokuPS}TsuIta Soku PS
+\end{tabular}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}\begin{tikzpicture}
+  \draw[fill=black!10!white] (0,0) rectangle (4,1.5);
+  \node at (2,0.75) {Metapost};
+  \draw[fill=red!10!white] (0,1.5) rectangle (4,3);
+  \node at (2,2.25) {MetaType1};
+  \draw[fill=blue!10!white] (0,3) rectangle (4,4.5);
+  \node at (2,3.75) {obstack};
+  \draw[fill=blue!10!white] (0,4.5) rectangle (4,6);
+  \node at (2,5.25) {作りましょう};
+%
+  \draw[bigah,ultra thick] (4.2,0.75) -- (5.8,0.75);
+  \node at (5,-0.5) {EPS and};
+  \node at (5,-1.2) {proof files};
+%
+  \draw[fill=black!10!white] (6,0) rectangle (10,1.5);
+  \node at (8,0.75) {Perl};
+  \fill[red!10!white] (6,1.5) -- (6,3) -- (10,3) --cycle;
+  \fill[blue!10!white] (6,1.5) -- (10,3) -- (10,1.5) --cycle;
+  \draw (6,1.5) rectangle (10,3);
+  \node at (8,2.25) {MT1 port};
+%
+  \draw[bigah,ultra thick] (10.2,0.75) -- (11.8,0.75);
+  \node at (11,-0.7) {Type 1};
+%
+  \draw[fill=black!10!white] (12,0) rectangle (16,1.5);
+  \node at (14,0.75) {FontForge};
+  \draw[fill=blue!10!white] (12,1.5) rectangle (16,3);
+  \node at (14,2.25) {scripts};
+%
+  \draw[bigah,ultra thick] (16.2,0.75) -- (17.8,0.75);
+  \draw[bigah,ultra thick] (17.8,0.75) -- (16.2,0.75);
+%
+  \draw[fill=blue!10!white] (18,0) rectangle (22,1.5);
+  \node at (20,0.75) {kerner};
+%
+  \draw[bigah,ultra thick] (14,-0.2) -- (14,-4);
+  \node at (14,-4.5) {\Large OTF};
+%
+  \draw[bigah,ultra thick] (8,-0.2) -- (8,-2.05);
+  \draw[fill=black!10!white] (6,-3.75) rectangle (10,-2.25);
+  \node at (8,-3) {Ti\emph{k}Z};
+  \draw[fill=black!10!white] (6,-5.25) rectangle (10,-3.75);
+  \node at (8,-4.5) {\XeLaTeX};
+  \draw[bigah,ultra thick] (13,-4.5) -- (10.2,-4.5);
+%
+  \draw[bigah,ultra thick] (8,-5.45) -- (8,-7.3);
+  \node at (8,-7.8) {\Large PDF};
+%
+  \begin{scope}[yshift={1cm}]
+  \path[green!70!black,ultra thick,decoration={ticks,amplitude=8pt},%
+      postaction={decorate,draw}]
+    (21,5.5) circle[x radius=2.5,y radius=3.5];
+  \draw[fill=black!10!white] (19,2.5) rectangle (23,4);
+  \node at (21,3.25) {GNU Make};
+  \draw[fill=black!10!white] (19,4) rectangle (23,5.5);
+  \node at (21,4.75) {Autotools};
+  \draw[fill=blue!10!white] (19,5.5) rectangle (23,8.5);
+  \node at (21,7.75) {build};
+  \draw[fill=blue!10!white] (20,5.5) rectangle (23,7);
+  \node at (21.5,6.25) {Hamlog};
+  \end{scope}
+\end{tikzpicture}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\begin{tikzpicture}
+  \useasboundingbox (0,10) rectangle (0,10);
+  \node at (22,6.5) {\scalebox{10}{\mincho 観}};
+  \draw[ultra thick,red,opacity=0.4] (18.7,6.2) rectangle (22.0,9.5);
+  \draw[ultra thick,green!60!black,opacity=0.4]
+    (21.7,3.7) rectangle (24.6,9.4);
+  \draw[ultra thick,blue,opacity=0.4]
+    (18.9,3.5) rectangle (21.9,7.7);
+  \draw[ultra thick,red,opacity=0.4] (1.8,2.9) rectangle (16.4,5.5);
+  \draw[ultra thick,red,opacity=0.4] (15.4,5.5) -- (18.7,7.2);
+  \draw[ultra thick,blue,opacity=0.4] (1.8,-0.7) rectangle (21.0,2.8);
+  \draw[ultra thick,blue,opacity=0.4] (17.2,2.8) -- (18.9,4.5);
+  \draw[ultra thick,green!60!black,opacity=0.4]
+    (1.2,-1.6) rectangle (7.1,-0.8);
+  \draw[ultra thick,green!60!black,opacity=0.4]
+    (7.1,-1.2) -- (23.1,-1.2) -- (23.1,3.7);
+\end{tikzpicture}%
+\begin{verbatim}
+vardef kanji.grfour.outlook =
+  push_pbox_toexpand("kanji.grfour.outlook");
+  build_kanji.level(build_kanji.lr(460,50)
+    (build_kanji.tb(470,190)
+      (kanji.grtwo.arrow;
+       replace_strokep(-1)(oldp shifted (-60,0));
+       obstacktype[find_whatever(otstroke,0)]:=otnull)
+      (kanji.radical.old_bird;
+       obstacktype[find_whatever(otstroke,-7)]:=otnull;
+       replace_strokep(-6)(point 0 of oldp+(0,15)--point 1 of oldp);
+       replace_strokep(-4)(point 0 of oldp+(30,0)--point 1 of oldp)))
+    (kanji.grone.see));
+  expand_pbox;
+enddef;
+% kan/mi "outlook"
+begintsuglyph("uni89B3",179);
+  kanji.grfour.outlook;
+  tsu_render;
+endtsuglyph;
+\end{verbatim}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+{\hspace*{\fill}
+\includegraphics[scale=1.4]{myproof.pdf}
+\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\centering
+
+{\Huge\bfseries Korean hangul\quad ハングル語}
+
+\vspace{\fill}
+
+\begin{tikzpicture}[scale=2]
+\draw (-4,3) rectangle (-2,5);
+\draw (-4,4.2) -- (-2.8,4.2) -- (-2.8,5);
+\draw (-4,3.8) -- (-2,3.8);
+\node at (-3.4,4.6) {L};
+\node at (-2.4,4.4) {V};
+\node at (-3,3.4) {T};
+\draw (-1,3) rectangle (1,5);
+\draw (0.2,3.8) -- (0.2,5);
+\draw (-1,3.8) -- (1,3.8);
+\node at (-0.4,4.4) {L};
+\node at (0.6,4.4) {V};
+\node at (0,3.4) {T};
+\draw (2,3) rectangle (4,5);
+\draw (2,4.2) -- (4,4.2);
+\draw (2,3.8) -- (4,3.8);
+\node at (3,4.6) {L};
+\node at (3,4) {V};
+\node at (3,3.4) {T};
+\draw (-4,0) rectangle (-2,2);
+\draw (-4,0.8) -- (-2.8,0.8) -- (-2.8,2);
+\node at (-3.4,1.4) {L};
+\node at (-2.4,1) {V};
+\draw (-1,0) rectangle (1,2);
+\draw (0.2,0) -- (0.2,2);
+\node at (-0.4,1) {L};
+\node at (0.6,1) {V};
+\draw (2,0) rectangle (4,2);
+\draw (2,0.8) -- (4,0.8);
+\node at (3,1.4) {L};
+\node at (3,0.4) {V};
+\end{tikzpicture}
+
+\vspace{\fill}
+
+{\hspace*{\fill}\scalebox{3}{\jieubsida 지읍시다 바탕 한글}\hspace*{\fill}\par}
+
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\centering\Huge
+{\bfseries Parasite packages\quad 寄生パッケージ}
+
+\vspace{1cm}
+
+{\fontspec{TsukurimashouMincho}IDSgrep}
+
+{\fontspec[Path={../ocr/}]{OCRA.otf}OCR A}\quad
+{\fontspec[Path={../ocr/}]{OCRB.otf}OCR B}
+
+{\fontspec[Path={../genjimon/}]{GenjimonMedium.ttf}Ge}%
+{\fontspec[Path={../genjimon/}]{GenjimonRoundOutline.ttf}nJ}%
+{\fontspec[Path={../genjimon/}]{GenjimonReverse.ttf}iM}%
+{\fontspec[Path={../genjimon/}]{GenjimonRound.ttf}on}
+
+{\fontspec[Path={../beikaitoru/otf/}]{Beikaitoru406.otf}Beikaitoru}
+
+{\fontspec{TsukurimashouMinchoPS}kleknev}
+
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\begin{tikzpicture}
+  \node[fill=green!30!white] at (-14,11)
+    {\begin{bil}何の漢字は『木』が左側にある？\\%
+     Which kanji have 木 on the left?\\%
+     札朽材村松板林柱校根植楾様横橋相\end{bil}};
+%
+  \node[fill=green!30!white] at (-14,7)
+    {\begin{bil}何漢字は『俺』の右側を持つか？\\%
+     What contains the right side of 俺?\\%
+     \huge 俺奄庵淹菴閹\end{bil}};
+%
+  \node[fill=green!30!white] at (-14,2.9)
+    {\begin{bil}何漢字は『目』があるでも、『首』とか『貝』とかないか？\\%
+     What contains 目, but nothing like 首 or 貝?\\%
+     \huge 想目相県箱\end{bil}};
+%
+  \node[fill=green!30!white] at (-14,-1.3)
+    {\begin{bil}『萌』の符号位置が何？\\%
+     What's the code point for 萌?\\%
+     \huge U+840C\end{bil}};
+%
+  \node at (0,0.5) {\scalebox{10}{\fontspec[Path=./]{azu1.ttf}z}};
+  \node[shape=ellipse callout,draw,fill=white,%
+      callout absolute pointer={(-0.2,4.2)}] at (-0.5,9)
+      {\begin{bil}{\huge \texttt{grep}を使ってが}\\{\huge いいですか？}\\%
+       Can't we just use \texttt{grep}?\end{bil}};
+\end{tikzpicture}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\begin{tikzpicture}
+  \node[fill=green!30!white] at (-14,11)
+    {\begin{bil}何の漢字は『木』が左側にある？\\%
+     Which kanji have 木 on the left?\\%
+     札朽材村松板林柱校根植楾様横橋相\end{bil}};
+  \node[fill=red!30!white] at (0,11) {\LARGE\texttt{idsgrep -d '[lr]木?'}};
+%
+  \node[fill=green!30!white] at (-14,7)
+    {\begin{bil}何漢字は『俺』の右側を持つか？\\%
+     What contains the right side of 俺?\\%
+     \huge 俺奄庵淹菴閹\end{bil}};
+  \node[fill=red!30!white] at (0,7) {\LARGE\begin{bil}
+    \texttt{idsgrep -d '俺'~~~~}\\
+    \texttt{idsgrep -d '...奄'}
+  \end{bil}};
+%
+  \node[fill=green!30!white] at (-14,2.9)
+    {\begin{bil}何漢字は『目』があるでも、『首』とか『貝』とかないか？\\%
+     What contains 目, but nothing like 首 or 貝?\\%
+     \huge 想目相県箱\end{bil}};
+  \node[fill=red!30!white] at (0,2.9) {\LARGE\begin{bil}
+    \texttt{idsgrep -d~~~~~~~~~~~~~~~}\\
+    \texttt{~~~~~'\&...目!...*[tb]目?'}
+  \end{bil}};
+%
+  \node[fill=green!30!white] at (-14,-1.3)
+    {\begin{bil}『萌』の符号位置が何？\\%
+     What's the code point for 萌?\\%
+     \huge U+840C\end{bil}};
+  \node[fill=red!30!white] at (0,-1.3) {\LARGE\texttt{idsgrep -Ux '萌'}};
+\end{tikzpicture}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\begin{tikzpicture}
+  [level distance={3cm},
+   level 1/.style={sibling distance=4.5cm},
+   level 2/.style={sibling distance=6cm},
+   level 3/.style={sibling distance=3.5cm},
+   edge from parent/.style=bigah]
+%
+  \fill[red!10!white] (-4.75,-4) rectangle (-2.75,-2);
+  \fill[red!50!blue!10!white] (-8,-10) rectangle (-2.75,-5);
+%
+  \node (haystack) at (-6,0) {\scalebox{2.5}{\mincho 態}}
+    child {node {\scalebox{2.5}{\mincho 能}}
+      child {node {\scalebox{2.5}{＊}}
+        child {node {\scalebox{2.5}{\mincho 厶}}}
+        child {node {\scalebox{2.5}{\mincho ⺝}}}
+      }
+      child {node {\scalebox{2.5}{＊}}
+        child {node {\scalebox{2.5}{\mincho 匕}}}
+        child {node {\scalebox{2.5}{\mincho 匕}}}
+      }
+    }
+    child {node {\scalebox{2.5}{\mincho 心}}};
+%
+  \node[blue] (asub) at ($(haystack)+(0,-1.5)$)
+    {\scalebox{1.75}{\mincho ⿱}};
+  \node[blue] (bsub) at ($(haystack-1)+(0,-1.5)$)
+    {\scalebox{1.75}{\mincho ⿰}};
+  \node[blue] (dsub) at ($(haystack-1-1)+(0,-1.5)$)
+    {\scalebox{1.75}{\mincho ⿱}};
+  \node[blue] (esub) at ($(haystack-1-2)+(0,-1.5)$)
+    {\scalebox{1.75}{\mincho ⿱}};
+%
+  \node (needle) at (6,0) {\scalebox{2.5}{\mincho [\&]}}
+    child {node {\scalebox{2.5}{\mincho ...}}
+      child {node {\scalebox{2.5}{\mincho(心)}}}
+    }
+    child {node {\scalebox{2.5}{\mincho ...}}
+      child {node {\scalebox{2.5}{\mincho [tb]}}
+        child {node {\scalebox{2.5}{\mincho (匕)}}}
+        child {node {\scalebox{2.5}{\mincho(匕)}}}
+      }
+    };
+%
+  \draw[red!70!black,densely dotted,bigah]
+    (needle-1) edge[bend right=60] (haystack-2);
+  \draw[red!70!black,densely dotted,bigah]
+    (needle-1-1) edge[bend left=10] (haystack-2);
+  \draw[red!50!blue!70!black,densely dotted,bigah]
+    (needle-2) edge[bend right=80,looseness=1.4] (haystack-1-2);
+  \draw[red!50!blue!70!black,densely dotted,bigah]
+    (needle-2-1) edge[bend left=20] (esub);
+  \draw[red!50!blue!70!black,densely dotted,bigah]
+    (needle-2-1-1) edge[bend left=20] (haystack-1-2-1);
+  \draw[red!50!blue!70!black,densely dotted,bigah]
+    (needle-2-1-2) edge[bend left=20] (haystack-1-2-2);
+%
+  \node at (-7,3.5) {\mincho\huge 【態】⿱<能>⿰⿱厶⺝⿱匕匕心};
+  \node at (4,5.5) {\huge\texttt{idsgrep -d '\&...心...[tb]匕匕'}};
+\end{tikzpicture}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\centering
+{\Huge\bfseries Character databases\quad 漢字のデータベース}
+
+\vspace{1cm}
+
+\Large
+\begin{tikzpicture}
+  \node[fill=yellow!50!white,ellipse] at (-8,6)
+    {\begin{bil}{\LARGE CHISE}\\Morioka 2001年\end{bil}};
+  \node[fill=yellow!50!white,ellipse] at (6,3)
+    {\begin{bil}{\LARGE KanjiVG}\\Apel 2009年\end{bil}};
+  \node[fill=yellow!50!white,ellipse] at (-6,-2)
+    {\begin{bil}{\LARGE Tsukurimashou}\\Skala 2012年\end{bil}};
+  \node[fill=yellow!20!white,ellipse,draw=black,dashed,ultra thick]
+    at (8,-6) {\LARGE CJKGrid};
+\end{tikzpicture}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\Large
+{\hspace*{\fill}
+\begin{tabular}[t]{m{4in}@{\quad}m{4in}}
+\raggedright What language(s)?
+  & \huge 何語か？ \\ \\
+\raggedright Who are the users? → Etymology or appearance?
+  & \huge ユーザは誰か？→語源と 観はどちらがいいか？ \\ \\
+\raggedright Data quality
+  & \huge \raggedright データの品質
+\end{tabular}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\thispagestyle{empty}
+\begin{tikzpicture}
+  \useasboundingbox (-5,-5) rectangle (16,8);
+  \node at (-2,0) {\scalebox{7}{\fontspec[Path=./]{azu1.ttf}l}};
+  \node[shape=ellipse callout,fill=black!70!blue,text=white,%
+      callout absolute pointer={(-1.4,3)}] at (1.9,7.3)
+      {\bfseries\begin{bil}\LARGE 聞くありがとう\\%
+       Thank you for your attention.\end{bil}};
+  \node[black!70!red] at (11,2.5) {\huge\begin{bil}
+    The Tsukurimashou Project\\
+    http://tsukurimashou.sourceforge.jp/\\
+    『作りましょう』のプロジェクト
+  \end{bil}};
+  \node[black!70!green] at (11,-1.6) {\Large\begin{bil}
+    Matthew Skala\qquad\qquad マッシュ\,・\,スカラ\\
+    mskala@ansuz.sooke.bc.ca
+  \end{bil}};
+\end{tikzpicture}
+
+\vspace{\fill}
+
+\small These slides were typeset using \XeLaTeX, Ti\textit{k}Z, a selection
+of fonts from the Tsukurimashou Project, and Azudings 1 by Vic~Fieger.
+Osakan pig photo by Matthew Skala, 2011.  Nurikabe painting by Kanou
+Tourin, 1802, public domain.
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

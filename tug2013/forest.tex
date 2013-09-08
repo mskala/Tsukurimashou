@@ -1,0 +1,53 @@
+\documentclass[17pt]{extarticle}
+
+\usepackage{fontspec}
+\usepackage[papersize={4.4in,4.75in},hmargin={0.1in},%
+  vmargin={0.1in}]{geometry}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows,calc,decorations.markings,decorations.pathreplacing,%
+  shapes.callouts,shapes.geometric}
+
+\usepgflibrary{arrows.new}
+
+\tikzset{bigah/.style={draw,ultra thick,->,>=latex' new,arrow head=6mm}}
+
+\defaultfontfeatures{Path={../otf/},Mapping=tex-text}
+
+\setmainfont[ItalicFont={TsuItaSokuPS},BoldFont={TsukurimashouKakuBoldPS}]%
+  {TsukurimashouKakuPS}
+
+\newenvironment{bil}%
+  {\renewcommand{\arraystretch}{0.6}\begin{tabular}{cc}}{\end{tabular}}
+
+\pagestyle{empty}
+
+\begin{document}
+\noindent
+\begin{tikzpicture}
+  \node at (0,0) {\scalebox{3}{林}};
+  \node[blue] at (0,-1.5) {\scalebox{2}{⿰}};
+  \node at (2.5,0) {\begin{bil}U+6797\\\emph{hayashi}\\``forest''\end{bil}};
+  \node at (-3,-4) {\scalebox{3}{木}};
+  \node at (-0.5,-4) {\begin{bil}U+6728\\\emph{ki}\\``tree''\end{bil}};
+  \node at (3,-4) {\scalebox{3}{木}};
+  \node at (5.5,-4) {\begin{bil}U+6728\\\emph{ki}\\``tree''\end{bil}};
+  \draw[ultra thick,bigah] (-1,-1) -- (-2.5,-3);
+  \draw[ultra thick,bigah] (1,-1) -- (2.5,-3);
+%
+  \draw[green!80!black,ultra thick] (-2.2,-7.5) circle[radius=2.2];
+  \fill[red!50!white,xshift={3.0cm},yshift={-7.5cm},rotate=45]
+    (-2.5,-0.1) rectangle (2.5,0.1);
+  \fill[red!50!white,xshift={3.0cm},yshift={-7.5cm},rotate=-45]
+    (-2.5,-0.1) rectangle (2.5,0.1);
+  \node at (-2.1,-7.5) {\scalebox{7}{林}};
+  \begin{scope}
+    \clip (3.0,-10.5) rectangle (5.2,-5.5);
+    \node at (3.2,-7.5) {\scalebox{7}{林}};
+  \end{scope}
+  \begin{scope}
+    \clip (1.2,-10.5) rectangle (6.1,-5.5);
+    \node at (1.4,-7.5) {\scalebox{7}{林}};
+  \end{scope}
+\end{tikzpicture}
+\end{document}

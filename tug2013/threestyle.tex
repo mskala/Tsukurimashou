@@ -1,0 +1,41 @@
+\documentclass[17pt]{extarticle}
+
+\usepackage{fontspec}
+\usepackage[papersize={4.9in,2.7in},hmargin={0.1in},%
+  vmargin={0.1in}]{geometry}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows,calc,decorations.markings,decorations.pathreplacing,%
+  shapes.callouts,shapes.geometric}
+
+\usepgflibrary{arrows.new}
+
+\tikzset{bigah/.style={draw,ultra thick,->,>=latex' new,arrow head=6mm}}
+
+\defaultfontfeatures{Path={../otf/},Mapping=tex-text}
+
+\setmainfont[ItalicFont={TsuItaSokuPS},BoldFont={TsukurimashouKakuBoldPS}]%
+  {TsukurimashouKakuPS}
+
+\newenvironment{bil}%
+  {\renewcommand{\arraystretch}{0.6}\begin{tabular}{cc}}{\end{tabular}}
+
+\pagestyle{empty}
+
+\begin{document}
+\noindent
+\begin{tikzpicture}
+  \fontspec{TsukurimashouKakuExtraLightPS}
+  \node at (0,2.8) {\scalebox{5}{語}};
+  \node at (0,0) {\scalebox{5}{五}};
+  \node at (0,-1.8) {Kaku Extra Light};
+  \fontspec{TsukurimashouMinchoPS}
+  \node at (4,2.8) {\scalebox{5}{語}};
+  \node at (4,0) {\scalebox{5}{五}};
+  \node at (4,-1.8) {Mincho};
+  \fontspec{TsukurimashouBokukkoBoldPS}
+  \node at (8,2.8) {\scalebox{5}{語}};
+  \node at (8,0) {\scalebox{5}{五}};
+  \node at (8,-1.8) {Bokukko Bold};
+\end{tikzpicture}
+\end{document}

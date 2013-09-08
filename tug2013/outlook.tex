@@ -1,0 +1,53 @@
+\documentclass[17pt]{extarticle}
+
+\usepackage{fontspec}
+\usepackage[papersize={6.3in,4.8in},hmargin={0.1in},%
+  vmargin={0.1in}]{geometry}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows,calc,decorations.markings,decorations.pathreplacing,%
+  shapes.callouts,shapes.geometric}
+
+\usepgflibrary{arrows.new}
+
+\tikzset{bigah/.style={draw,ultra thick,->,>=latex' new,arrow head=6mm}}
+
+\defaultfontfeatures{Path={../otf/},Mapping=tex-text}
+
+\setmainfont[ItalicFont={TsuItaSokuPS},BoldFont={TsukurimashouKakuBoldPS}]%
+  {TsukurimashouKakuPS}
+
+\newenvironment{bil}%
+  {\renewcommand{\arraystretch}{0.6}\begin{tabular}{cc}}{\end{tabular}}
+
+\pagestyle{empty}
+
+\begin{document}
+\noindent
+\begin{tikzpicture}[yscale=1.2]
+  \node at (0,0) {\scalebox{3}{観}};
+  \node[blue] at (0,-1.5) {\scalebox{2}{⿰}};
+  \node at (2.5,0) {\begin{bil}U+893B\\\emph{kan}\\``outlook''\end{bil}};
+
+  \begin{scope}
+    \clip (-6,-6) rectangle (-3.67,-2);
+    \node at (-3.6,-4) {\scalebox{3.3}{観}};
+  \end{scope}
+  \node[blue] at (-4,-5.5) {\scalebox{2}{⿻}};
+  \node at (-1.5,-4) {[unknown]};
+
+  \node at (-7,-8) {\scalebox{3}{矢}};
+  \node at (-4.5,-8) {\begin{bil}U+77E2\\\emph{ya}\\``arrow''\end{bil}};
+
+  \node at (-1,-8) {\scalebox{3}{隹}};
+  \node at (1.5,-8) {\begin{bil}U+96B9\\\emph{furutori}\\``old bird''\end{bil}};
+
+  \node at (4,-4) {\scalebox{3}{見}};
+  \node at (6.5,-4) {\begin{bil}U+898B\\\emph{mi}\\``see''\end{bil}};
+
+  \draw[bigah,ultra thick] (-1,-1) -- (-3.5,-3);
+  \draw[bigah,ultra thick] (-5,-5) -- (-6.5,-7);
+  \draw[bigah,ultra thick] (-3,-5) -- (-1.5,-7);
+  \draw[bigah,ultra thick] (1,-1) -- (3.5,-3);
+\end{tikzpicture}
+\end{document}

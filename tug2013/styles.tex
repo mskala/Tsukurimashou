@@ -1,0 +1,36 @@
+\documentclass[17pt]{extarticle}
+
+\usepackage{fontspec}
+\usepackage[papersize={3.9in,3.8in},hmargin={0.1in},%
+  vmargin={0.1in}]{geometry}
+
+\defaultfontfeatures{Path={../otf/},Mapping=tex-text}
+\pagestyle{empty}
+
+\begin{document}
+\noindent
+\begin{tabular}{ll}
+  \multicolumn{2}{c}{\fontspec{TsukurimashouKakuPS}Tsukurimashou Font Meta-Family} \\
+  \multicolumn{2}{c}{\fontspec{TsukurimashouBokukko}さてさて、何が出来るかな？} \\
+  \fontspec{TsukurimashouKakuPS}Kaku 角 &
+    \fontspec{TsukurimashouKakuExtraLightPS}Extra Light 白字 \\
+  \fontspec{TsukurimashouMinchoPS}Mincho 明朝 &
+    \fontspec{TsukurimashouKakuLightPS}Light 軽字\\
+  \fontspec{TsukurimashouMaruPS}Maru 丸 &
+    \fontspec{TsukurimashouKakuPS}Normal 本 \\
+  \fontspec{TsukurimashouBokukkoPS}Bokukko 僕女 &
+    \fontspec{TsukurimashouKakuDemiboldPS}Demibold 半太字\\
+  \fontspec{TsukurimashouMincho}Monospace &
+    \fontspec{TsukurimashouKakuBoldPS}Bold 太字 \\
+  \fontspec{TsukurimashouMinchoPS}Proportional &
+    \fontspec{TsukurimashouKakuExtraBoldPS}Extra Bold 黒字 \\
+  \fontspec{TsuItaAtamaPS}TsuIta Atama PS &
+    \fontspec{TsuItaAtamaPS}ツイタ頭 ＰＳ \\
+  \fontspec{TsuItaSokuPS}TsuIta Soku PS &
+    \fontspec{TsuItaSokuPS}ツイタ足 ＰＳ \\
+  \fontspec[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaDodumPS}Jieubsida 지읍시다 &
+    \fontspec[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaDodumPS}Dodum 돋움 \\
+  \fontspec[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaBatangPS}Batang 바탕&
+    \fontspec[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaSunMoonPS}Sun-Moon 선문
+\end{tabular}
+\end{document}
