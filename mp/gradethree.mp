@@ -237,6 +237,14 @@ vardef kanji.grthree.formula =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.generation =
+  push_pbox_toexpand("kanji.grthree.generation");
+  build_kanji.lr(300,30)
+    (kanji.leftrad.person)
+    (kanji.radical.ceremony);
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.go_away =
   push_pbox_toexpand("kanji.grthree.go_away");
   build_kanji.tb(340,20)
@@ -345,6 +353,14 @@ vardef kanji.grthree.motion =
   build_kanji.lr(520,30)
     (kanji.leftrad.heap_big)
     (kanji.grone.power);
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.next =
+  push_pbox_toexpand("kanji.grthree.next");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.ice)
+    (kanji.grfour.fail);
   expand_pbox;
 enddef;
 

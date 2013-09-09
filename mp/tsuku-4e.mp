@@ -51,14 +51,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.generation =
-  push_pbox_toexpand("kanji.grthree.generation");
-  build_kanji.lr(300,30)
-    (kanji.leftrad.person)
-    (kanji.radical.ceremony);
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.ride =
   push_pbox_toexpand("kanji.grthree.ride");
   build_kanji.add_beret(kanji.grone.wood);

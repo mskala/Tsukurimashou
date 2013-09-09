@@ -81,14 +81,6 @@ vardef kanji.grthree.die =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.next =
-  push_pbox_toexpand("kanji.grthree.next");
-  build_kanji.lr(360,0)
-    (kanji.leftrad.ice)
-    (kanji.grfour.fail);
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.history =

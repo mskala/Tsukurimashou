@@ -34,6 +34,8 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -58,18 +60,6 @@ vardef kanji.grfour.pulse =
   build_kanji.level(build_kanji.lr(420,10)
     (kanji.grone.moon)
     (kanji.rare.branch));
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.vassal =
-  push_pbox_toexpand("kanji.grfour.vassal");
-  kanji.radical.box_on_side;
-  push_stroke((500,800)--(500,550),(1.5,1.5)--(1.4,1.4));
-  build_kanji.box((100,550),(750,270));
-  replace_strokep(-1)(subpath (1.01,infinity) of oldp);
-  replace_strokeq(-1)(subpath (1,infinity) of oldq);
-  set_boserif(-1,2,whatever);
-  push_stroke((500,270)--(500,-20),(1.5,1.5)--(1.4,1.4));
   expand_pbox;
 enddef;
 
@@ -106,6 +96,12 @@ endtsuglyph;
 % shin/omi "vassal"
 begintsuglyph("uni81E3",227);
   kanji.grfour.vassal;
+  tsu_render;
+endtsuglyph;
+
+% rare needed for greight.wisdom
+begintsuglyph("uni81E4",228);
+  kanji.rare.wisdom;
   tsu_render;
 endtsuglyph;
 

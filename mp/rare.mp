@@ -639,6 +639,14 @@ vardef kanji.rare.walled_road =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.wisdom =
+  push_pbox_toexpand("kanji.rare.wisdom");
+  build_kanji.level(build_kanji.lr(500,-10)
+    (kanji.grfour.vassal)
+    (build_kanji.sscale(yscaled 1.07 shifted (0,-5))(kanji.greight.otoh)));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.yin =
   push_pbox_toexpand("kanji.rare.yin");
   build_kanji.tb(380,100)

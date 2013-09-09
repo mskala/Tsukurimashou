@@ -432,3 +432,15 @@ vardef kanji.grfour.together =
     (tsu_xform(identity shifted (20,0))(kanji.radical.eight)));
   expand_pbox;
 enddef;
+
+vardef kanji.grfour.vassal =
+  push_pbox_toexpand("kanji.grfour.vassal");
+  kanji.radical.box_on_side;
+  push_stroke((500,800)--(500,550),(1.5,1.5)--(1.4,1.4));
+  build_kanji.box((100,550),(750,270));
+  replace_strokep(-1)(subpath (1.01,infinity) of oldp);
+  replace_strokeq(-1)(subpath (1,infinity) of oldq);
+  set_boserif(-1,2,whatever);
+  push_stroke((500,270)--(500,-20),(1.5,1.5)--(1.4,1.4));
+  expand_pbox;
+enddef;

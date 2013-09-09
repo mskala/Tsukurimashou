@@ -34,7 +34,10 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefive.mp;
+input gradefour.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
@@ -112,11 +115,141 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.approve =
+  push_pbox_toexpand("kanji.grfive.approve");
+  build_kanji.level(build_kanji.tb(530,-10)
+    (build_kanji.lr(480,-50)
+       (kanji.leftrad.husband)
+       (kanji.grfour.husband))
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.congratulations =
+  push_pbox_toexpand("kanji.grfive.congratulations");
+  build_kanji.level(build_kanji.tb(560,-10)
+    (kanji.grfour.addition)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.fortune =
   push_pbox_toexpand("kanji.grfive.fortune");
   build_kanji.level(build_kanji.lr(480,0)
     (kanji.grone.shell)
     (kanji.rightrad.genius));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.fund =
+  push_pbox_toexpand("kanji.grfive.fund");
+  build_kanji.level(build_kanji.tb(560,-10)
+    (build_kanji.sscale(shifted (-70,0))(kanji.grthree.next))
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.lend =
+  push_pbox_toexpand("kanji.grfive.lend");
+  build_kanji.level(build_kanji.tb(580,0)
+    (kanji.grthree.generation;
+     replace_strokep(-2)(oldp shifted (0,-80)))
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.poor =
+  push_pbox_toexpand("kanji.grfive.poor");
+  build_kanji.level(build_kanji.tb(530,-20)
+    (kanji.grtwo.minute)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.quality =
+  push_pbox_toexpand("kanji.grfive.quality");
+  build_kanji.level(build_kanji.tb(540,0)
+    (build_kanji.lr(480,70)
+       (kanji.greight.axe)
+       (kanji.greight.axe))
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.trade =
+  push_pbox_toexpand("kanji.grfive.trade");
+  build_kanji.level(build_kanji.tb(540,0)
+    (build_kanji.lr(480,40)
+     (kanji.toprad.detain)
+     (kanji.grtwo.sword))
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grsix.wage =
+  push_pbox_toexpand("kanji.grsix.wage");
+  build_kanji.level(build_kanji.tb(560,-50)
+    (kanji.grfive.responsibility)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.greight.chastity =
+  push_pbox_toexpand("kanji.greight.chastity");
+  build_kanji.level(build_kanji.tb(580,50)
+    (kanji.grone.ten;
+     replace_strokep(0)(subpath (0.5,0.8) of oldp shifted (5,40)))
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.covet =
+  push_pbox_toexpand("kanji.greight.covet");
+  build_kanji.tb(470,50)
+    (kanji.grtwo.now)
+    (kanji.grone.shell);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.tribute =
+  push_pbox_toexpand("kanji.greight.tribute");
+  build_kanji.level(build_kanji.tb(540,-20)
+    (kanji.grtwo.craft)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.wisdom =
+  push_pbox_toexpand("kanji.greight.wisdom");
+  build_kanji.level(build_kanji.tb(530,-50)
+    (kanji.rare.wisdom)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grnine.obtain =
+  push_pbox_toexpand("kanji.grnine.obtain");
+  build_kanji.level(build_kanji.tb(520,-50)
+    (kanji.grthree.world)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grten.sell_out =
+  push_pbox_toexpand("kanji.grten.sell_out");
+  build_kanji.level(build_kanji.tb(440,-20)
+    (build_kanji.tb(360,-160)
+       (kanji.grfour.gentleman)
+       (kanji.toprad.eye))
+    (kanji.grone.shell));
   expand_pbox;
 enddef;
 
@@ -152,6 +285,12 @@ begintsuglyph("uni8C9D",157);
   tsu_render;
 endtsuglyph;
 
+% tei/sada "chastity"
+begintsuglyph("uni8C9E",158);
+  kanji.greight.chastity;
+  tsu_render;
+endtsuglyph;
+
 % fu/ma "undertake"
 begintsuglyph("uni8CA0",160);
   kanji.grthree.undertake;
@@ -164,9 +303,27 @@ begintsuglyph("uni8CA1",161);
   tsu_render;
 endtsuglyph;
 
+% kou/mitsu "tribute"
+begintsuglyph("uni8CA2",162);
+  kanji.greight.tribute;
+  tsu_render;
+endtsuglyph;
+
+% hin/mazu "poor"
+begintsuglyph("uni8CA7",167);
+  kanji.grfive.poor;
+  tsu_render;
+endtsuglyph;
+
 % ka/takara "freight"
 begintsuglyph("uni8CA8",168);
   kanji.grfour.freight;
+  tsu_render;
+endtsuglyph;
+
+% tan/musabo "covet"
+begintsuglyph("uni8CAA",170);
+  kanji.greight.covet;
   tsu_render;
 endtsuglyph;
 
@@ -183,9 +340,21 @@ begintsuglyph("uni8CAF",175);
   tsu_render;
 endtsuglyph;
 
+% sei/mora "obtain"
+begintsuglyph("uni8CB0",176);
+  kanji.grnine.obtain;
+  tsu_render;
+endtsuglyph;
+
 % gai/ka "buy"
 begintsuglyph("uni8CB7",183);
   kanji.grtwo.buy;
+  tsu_render;
+endtsuglyph;
+
+% tai/ka "lend"
+begintsuglyph("uni8CB8",184);
+  kanji.grfive.lend;
   tsu_render;
 endtsuglyph;
 
@@ -195,15 +364,71 @@ begintsuglyph("uni8CBB",187);
   tsu_render;
 endtsuglyph;
 
+% bou "trade"
+begintsuglyph("uni8CBF",191);
+  kanji.grfive.trade;
+  tsu_render;
+endtsuglyph;
+
+% ga/ka "congratulations"
+begintsuglyph("uni8CC0",192);
+  kanji.grfive.congratulations;
+  tsu_render;
+endtsuglyph;
+
 % fun "decorate" (needed for greight.indignation)
 begintsuglyph("uni8CC1",193);
   kanji.rare.decorate;
   tsu_render;
 endtsuglyph;
 
+% chin "wage"
+begintsuglyph("uni8CC3",195);
+  kanji.grsix.wage;
+  tsu_render;
+endtsuglyph;
+
+% shi "fund"
+begintsuglyph("uni8CC7",199);
+  kanji.grfive.fund;
+  tsu_render;
+endtsuglyph;
+
+% extra ko/akina "tradesman"
+begintsuglyph("uni8CC8",200);
+  build_kanji.level(build_kanji.tb(560,-30)
+    (kanji.toprad.ticket)
+    (kanji.grone.shell));
+  tsu_render;
+endtsuglyph;
+
+% san/tasu "approve"
+begintsuglyph("uni8CDB",219);
+  kanji.grfive.approve;
+  tsu_render;
+endtsuglyph;
+
 % shuu/ho "prize"
 begintsuglyph("uni8CDE",222);
   kanji.grfour.prize;
+  tsu_render;
+endtsuglyph;
+
+% ken/kashiko "wisdom"
+begintsuglyph("uni8CE2",226);
+  kanji.greight.wisdom;
+  tsu_render;
+endtsuglyph;
+
+% bai/uru "sell out"
+begintsuglyph("uni8CE3",227);
+  kanji.grten.sell_out;
+  tsu_render;
+endtsuglyph;
+
+% shitsu/tachi "quality"
+begintsuglyph("uni8CEA",234);
+  kanji.grfive.quality;
   tsu_render;
 endtsuglyph;
 
