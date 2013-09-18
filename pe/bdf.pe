@@ -2,7 +2,7 @@
 
 #
 # BDF (bitmap font) maker script for Tsukurimashou
-# Copyright (C) 2011  Matthew Skala
+# Copyright (C) 2011, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,9 +55,46 @@ Clear();
 SelectIf(0uff000,0uff1ff);
 Clear();
 
+# set all bearings to 50
 SelectWorthOutputting();
 SetLBearing(50);
 SetRBearing(50);
-BitmapsAvail([100]);
+
+# find blocks of 1000 glyphs
+nblocks=0;
+x=0;
+blockstart=Array(100);
+blockstart[0]=-1;
+blockend=Array(100);
+SelectWorthOutputting();
+foreach
+  if (x%1000 == 0)
+    nblocks=nblocks+1;
+  endif
+  if (x%100 == 0)
+    Print(x);
+  endif
+  x=x+1;
+  if (blockstart[nblocks-1] == -1)
+    blockstart[nblocks-1]=GlyphInfo("Encoding");
+    blockstart[nblocks]=-1;
+  endif
+  blockend[nblocks-1]=GlyphInfo("Encoding");
+endloop
+
+Print("aa");
+
+# make bitmaps, one block at a time
+BitmapsAvail([100],0);
+Print("bb");
+x=0;
+while (x<nblocks)
+  Print(blockend[x]);
+  Select(blockstart[x],blockend[x]);
+  BitmapsRegen([100]);
+  x=x+1;
+endloop
+
+# save the results
 Generate("bdf/"+$1+".","bdf",0,100);
 Quit(0);
