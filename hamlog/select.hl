@@ -40,11 +40,14 @@
 
 % Here we define the families, styles, weights, and spacings that exist
 
+% supported
 family(tsukurimashou).
-
 family(tsuita).
 family(jieubsida).
+
+% not supported, experimental
 family(blackletter_lolita).
+family(kazoemashou).
 
 style(tsukurimashou,kaku).
 style(tsukurimashou,maru).
@@ -59,6 +62,8 @@ style(jieubsida,batang).
 style(jieubsida,sunmoon).
 
 style(blackletter_lolita,cosette).
+
+style(kazoemashou,seisuu).
 
 weight(extralight).
 weight(light).
@@ -100,6 +105,7 @@ long_name(tsukurimashou,t__sukurimashou).
 
 long_name(tsuita,t__sui__ta).
 long_name(jieubsida,j__ieubsida).
+long_name(kazoemashou,k__azoemashou).
 long_name(blackletter_lolita,b__lackletters___el__olita).
 
 long_name(kaku,k__aku).
@@ -109,6 +115,7 @@ long_name(atama,a__tama).
 long_name(dodum,d__odum).
 long_name(batang,b__atang).
 long_name(mincho,m__incho).
+long_name(seisuu,s__eisuu).
 long_name(bokukko,b__okukko).
 long_name(cosette,c__osette).
 long_name(sunmoon,s__unh___enm__oon).
@@ -129,6 +136,7 @@ short_name(jieubsida,jieub).
 short_name(tsuita,tsuita).
 short_name(tsukurimashou,tsuku).
 short_name(blackletter_lolita,bll).
+short_name(kazoemashou,kazoe).
 
 short_name(kaku,kg).
 short_name(maru,mg).
@@ -137,6 +145,7 @@ short_name(atama,at).
 short_name(dodum,do).
 short_name(batang,bt).
 short_name(mincho,mi).
+short_name(seisuu,se).
 short_name(bokukko,bk).
 short_name(cosette,co).
 short_name(sunmoon,sm).
@@ -161,6 +170,7 @@ default_fname(T):-short_name(tsukurimashou,T).
 
 overlay_fname(T):-short_name(tsuita,T).
 overlay_fname(T):-short_name(jieubsida,T).
+overlay_fname(T):-short_name(kazoemashou,T).
 overlay_fname(T):-short_name(blackletter_lolita,T).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -418,6 +428,10 @@ parasite_available(ocr).
 
 % configuration - pages
 
+% declare families that don't have kanji
+non_kanji(jiebsida).
+non_kanji(kazoemashou).
+
 % pages A0 through DF are only for Jieubsida
 want_page(jieubsida,P):-atom_final(P,pagea,_X),!.
 want_page(jieubsida,P):-atom_final(P,pageb,_X),!.
@@ -428,20 +442,31 @@ want_page(_F,P):-atom_final(P,pageb,_X),!,fail.
 want_page(_F,P):-atom_final(P,pagec,_X),!,fail.
 want_page(_F,P):-atom_final(P,paged,_X),!,fail.
 
-% pages 2E, 2F, 34, 4E through 9F, and 2xx are for all but Jieubsida
-want_page(jieubsida,page2e):- !,fail.
-want_page(jieubsida,page2f):- !,fail.
-want_page(jieubsida,page34):- !,fail.
-want_page(jieubsida,page4e):- !,fail.
-want_page(jieubsida,page4f):- !,fail.
-want_page(jieubsida,P):-atom_final(P,page5,_X),!,fail.
-want_page(jieubsida,P):-atom_final(P,page6,_X),!,fail.
-want_page(jieubsida,P):-atom_final(P,page7,_X),!,fail.
-want_page(jieubsida,P):-atom_final(P,page8,_X),!,fail.
-want_page(jieubsida,P):-atom_final(P,page9,_X),!,fail.
-want_page(jieubsida,P):-atom_final(P,page20,_X),!,fail.
-want_page(jieubsida,P):-atom_final(P,page21,_X),!,fail.
-want_page(jieubsida,P):-atom_final(P,page29,_X),!,fail.
+% pages 1D5 through 1D7 are only for Kazoemashou
+want_page(kazoemashou,page1d4):- !.
+want_page(kazoemashou,page1d5):- !.
+want_page(kazoemashou,page1d6):- !.
+want_page(kazoemashou,page1d7):- !.
+want_page(_F,page1d4):- !,fail.
+want_page(_F,page1d5):- !,fail.
+want_page(_F,page1d6):- !,fail.
+want_page(_F,page1d7):- !,fail.
+
+% pages 2E, 2F, 34, 4E through 9F, F9, and 2xx are kanji pages
+want_page(F,page2e):- non_kanji(F),!,fail.
+want_page(F,page2f):- non_kanji(F),!,fail.
+want_page(F,page34):- non_kanji(F),!,fail.
+want_page(F,page4e):- non_kanji(F),!,fail.
+want_page(F,page4f):- non_kanji(F),!,fail.
+want_page(F,pagef9):- non_kanji(F),!,fail.
+want_page(F,P):-non_kanji(F),atom_final(P,page5,_X),!,fail.
+want_page(F,P):-non_kanji(F),atom_final(P,page6,_X),!,fail.
+want_page(F,P):-non_kanji(F),atom_final(P,page7,_X),!,fail.
+want_page(F,P):-non_kanji(F),atom_final(P,page8,_X),!,fail.
+want_page(F,P):-non_kanji(F),atom_final(P,page9,_X),!,fail.
+want_page(F,P):-non_kanji(F),atom_final(P,page20,_X),!,fail.
+want_page(F,P):-non_kanji(F),atom_final(P,page21,_X),!,fail.
+want_page(F,P):-non_kanji(F),atom_final(P,page29,_X),!,fail.
 
 % otherwise want any page that is defined for us or generic
 want_page(F,P):-short_name(F,S),page_exists(S,P),!.
@@ -481,6 +506,10 @@ lo_page(P):-
    atom_final(PX,page,X),hd(X).
 
 % hi_page(?P) - P is one of the few pages we care about outside the BMP
+hi_page(page1d4).
+hi_page(page1d5).
+hi_page(page1d6).
+hi_page(page1d7).
 hi_page(page1f1).
 hi_page(page200).
 hi_page(page20a).

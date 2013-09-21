@@ -494,7 +494,7 @@ PFBDEPS=$(foreach term,\
   $(call pfms,$(1)),$(DEFAULT_TOK)))-$(term).mp)
 
 KANJIPAGES:=$(strip 2e 2f 4e 4f $(foreach hinib,5 6 7 8 9,\
-  $(foreach lonib,0 1 2 3 4 5 6 7 8 9 a b c d e f,$(hinib)$(lonib) )))
+  $(foreach lonib,0 1 2 3 4 5 6 7 8 9 a b c d e f,$(hinib)$(lonib) )) f9)
 
 PAGEFILES=$(strip $(foreach page,\
   $(PAGES_$(firstword $(subst _,$(space),$(2)))),\
