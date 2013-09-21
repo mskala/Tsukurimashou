@@ -508,13 +508,21 @@ def tsu_render_segment(expr i,p,q) =
     mytip[l]:=tsu_brush_tip(l,p,q,obstackna.bosize[i],s<1,
       t>(length obstackp[i])-1,obstackba.boalternate[i]);
   endfor;
+  boolean is_cycle;
+  is_cycle=(abs((point infinity of p)-(point 0 of p))<1);
   pen_stroke(for ell=0 step 1 until length(p):
       if sharp_corners and known obstacknaa.botip[i][ltime[ell]]:
         tip(obstacknaa.botip[i][ltime[ell]])(ell)
       else:
         tsu_brush_opt(mytip[ell])(ell)
       fi
-    endfor)(p if abs((point infinity of p)-(point 0 of p))<1:
+    endfor if is_cycle:
+      if sharp_corners and known obstacknaa.botip[i][ltime[length(p)]]:
+        tip(obstacknaa.botip[i][ltime[length(p)]])((length(p)+1))
+      else:
+        tsu_brush_opt(mytip[length(p)])((length(p)+1))
+      fi
+    fi)(p if is_cycle:
       --(point 0.001 of p)
     fi)(glyph);
   glstk[ngls]:=regenerate(glyph);
@@ -592,8 +600,6 @@ def tsu_render_in_circle(expr fitcircle) =
                --(1,infinity))));
            fi;
            if ((t-s)>0.02) and (obstackna.bosize[i]>0):
-             boolean is_cycle;
-             is_cycle:=((point s of obstackp[i])=(point t of obstackp[i]));
              p:=subpath (s,t) of obstackp[i];
              q:=subpath (s,t) of bqi;
              numeric ltime[];
