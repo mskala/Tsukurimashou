@@ -1,6 +1,6 @@
 %
 % Tsukurimashou Kaku
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,12 +34,12 @@ input preintro.mp;
 
 stylename:="Kaku";
 
-(0,4) transformed tsu_brush_xf = (4,0.75);
-(1,1) transformed tsu_brush_xf = (1,0.62);
-(4,0) transformed tsu_brush_xf = (0,0.75);
+(0,4) transformed tsu_brush_xf.brletter = (4,0.75);
+(1,1) transformed tsu_brush_xf.brletter = (1,0.62);
+(4,0) transformed tsu_brush_xf.brletter = (0,0.75);
 
-tsu_brush_min:=0.62;
-tsu_brush_max:=0.75;
+tsu_brush_min.brletter:=0.62;
+tsu_brush_max.brletter:=0.75;
 
 def tsu_brush_opt(expr n,l) = cut(n,rel 90)(l) enddef;
 sharp_corners:=true;

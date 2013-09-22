@@ -34,21 +34,29 @@ input preintro.mp;
 
 stylename:="Seisuu";
 
-mincho:=1;
+mincho:=0.8;
 
-(0,4) transformed tsu_brush_xf = (0.0,0.9);
-(1,1) transformed tsu_brush_xf = (1.2,0.35);
-(4,0) transformed tsu_brush_xf = (4.8,1.0);
+transform kazoe_brush_xf[];
+(0,4) transformed kazoe_brush_xf.brletter = (0.0,0.9);
+(1,1) transformed kazoe_brush_xf.brletter = (1.2,0.35);
+(4,0) transformed kazoe_brush_xf.brletter = (4.8,1.0);
+tsu_brush_xf.brletter:=kazoe_brush_xf.brletter;
 
-tsu_brush_min:=0.35;
-tsu_brush_max:=0.90;
+tsu_brush_min.brletter:=0.35;
+tsu_brush_max.brletter:=0.90;
+tsu_brush_shape.brletter:=0.45;
+tsu_brush_angle.brletter:=1;
 
-tsu_brush_shape:=0.45;
-tsu_brush_angle:=1;
+tsu_brush_xf.bralternate:=identity xyscaled (1.2,0) shifted (0,0.35);
+tsu_brush_min.bralternate:=0.35;
+tsu_brush_max.bralternate:=0.35;
+tsu_brush_shape.bralternate:=1;
+tsu_brush_angle.bralternate:=0;
 
-tsu_pbrush_size:=60;
-tsu_pbrush_shape:=0.38;
-tsu_pbrush_angle:=1;
+tsu_brush_min.brpunct:=0.50;
+tsu_brush_max.brpunct:=0.50;
+tsu_brush_shape.brpunct:=1;
+tsu_brush_angle.brpunct:=0;
 
 input serif.mp;
 
@@ -64,3 +72,67 @@ boolean genji_rounded;
 genji_rounded:=true;
 
 input intro.mp;
+
+vardef kazoe.normal =
+  tsu_brush_xf.brletter:=kazoe_brush_xf.brletter;
+
+  tsu_brush_min.brletter:=0.35;
+  tsu_brush_max.brletter:=0.90;
+  tsu_pbrush_size.brletter:=50;
+  tsu_punct_size.brletter:=100;
+
+  handakuten_outer:=200;
+
+  calc_mbrush_size;
+enddef;
+
+vardef kazoe.bold =
+  scantokens "input tsuku-bq.mp;";
+enddef;
+
+let old_render_segment = tsu_render_segment;
+let old_rescale_half = tsu_rescale_full;
+let old_rescale_half_lc = tsu_rescale_full;
+
+vardef kazoe.italic =
+  tsu_do_serif[1]:=true;
+  tsu_do_serif[2]:=true;
+  tsu_do_serif[3]:=true;
+  for i=4 upto 10:
+    tsu_do_serif[i]:=false;
+  endfor;
+
+  def tsu_render_segment(expr i,p,q,b) =
+    begingroup
+      save start_time,end_time;
+      numeric start_time,end_time;
+    endgroup;
+    old_render_segment(i,p,q,b);
+  enddef;
+
+  def tsu_rescale_half =
+    old_rescale_half;
+    width_curve:=((-1,-1)--(100,100))..(560,310)..{right}(2000,400);
+  enddef;
+
+  def tsu_rescale_half_lc =
+    old_rescale_half_lc;
+    width_curve:=((-1,-1)--(100,100))..(610,310)..{right}(2000,400);
+  enddef;
+
+  do_italic_hook:=true;
+  italic_hook_radius:=170;
+  italic_hook_dir:=25;
+
+  scantokens "input tsuita-common.mp;";
+
+  vardef latin.lowa =
+    latin.double_lowa;
+  enddef;
+
+  rescale_slant:=230;
+enddef;
+
+vardef kazoe.sans =
+  % FIXME
+enddef;

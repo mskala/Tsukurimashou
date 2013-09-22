@@ -1,6 +1,6 @@
 %
 % TsuIta Soku
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,19 +36,25 @@ stylename:="Soku";
 
 mincho:=0.8;
 
-(0,4) transformed tsu_brush_xf = (0.0,0.80);
-(1,1) transformed tsu_brush_xf = (1.2,0.45);
-(4,0) transformed tsu_brush_xf = (4.8,0.80);
+(0,4) transformed tsu_brush_xf.brletter = (0.0,0.80);
+(1,1) transformed tsu_brush_xf.brletter = (1.2,0.45);
+(4,0) transformed tsu_brush_xf.brletter = (4.8,0.80);
 
-tsu_brush_min:=0.45;
-tsu_brush_max:=0.80;
+tsu_brush_min.brletter:=0.45;
+tsu_brush_max.brletter:=0.80;
+tsu_brush_shape.brletter:=0.60;
+tsu_brush_angle.brletter:=1;
 
-tsu_brush_shape:=0.60;
-tsu_brush_angle:=1;
+tsu_brush_xf.bralternate:=identity xyscaled (1.2,0) shifted (0,0.48);
+tsu_brush_min.bralternate:=0.48;
+tsu_brush_max.bralternate:=0.48;
+tsu_brush_shape.bralternate:=1;
+tsu_brush_angle.bralternate:=0;
 
-tsu_pbrush_size:=45;
-tsu_pbrush_shape:=1;
-tsu_pbrush_angle:=1;
+tsu_brush_min.brpunct:=0.45;
+tsu_brush_max.brpunct:=0.45;
+tsu_brush_shape.brpunct:=1;
+tsu_brush_angle.brpunct:=1;
 
 input serif.mp;
 
@@ -64,12 +70,12 @@ input intro.mp;
 
 let old_render_segment = tsu_render_segment;
 
-def tsu_render_segment(expr i,p,q) =
+def tsu_render_segment(expr i,p,q,b) =
   begingroup
     save start_time,end_time;
     numeric start_time,end_time;
   endgroup;
-  old_render_segment(i,p,q);
+  old_render_segment(i,p,q,b);
 enddef;
 
 let old_rescale_half = tsu_rescale_half;

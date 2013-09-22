@@ -117,7 +117,7 @@ vardef numeral.four =
       (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
     set_botip(0,1,0);
     set_botip(0,2,0);
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
 
     push_stroke(z3--z4,(1.6,1.6)--(1.6,1.6));
     set_botip(0,0,0);

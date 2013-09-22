@@ -1,6 +1,6 @@
 %
 % Tsukurimashou Mincho
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,19 +36,25 @@ stylename:="Mincho";
 
 mincho:=1;
 
-(0,4) transformed tsu_brush_xf = (0.0,1.1);
-(1,1) transformed tsu_brush_xf = (1.2,0.35);
-(4,0) transformed tsu_brush_xf = (4.8,1.1);
+(0,4) transformed tsu_brush_xf.brletter = (0.0,1.1);
+(1,1) transformed tsu_brush_xf.brletter = (1.2,0.35);
+(4,0) transformed tsu_brush_xf.brletter = (4.8,1.1);
 
-tsu_brush_min:=0.35;
-tsu_brush_max:=1.05;
+tsu_brush_min.brletter:=0.35;
+tsu_brush_max.brletter:=1.05;
+tsu_brush_shape.brletter:=0.38;
+tsu_brush_angle.brletter:=1;
 
-tsu_brush_shape:=0.38;
-tsu_brush_angle:=1;
+tsu_brush_xf.bralternate:=identity xyscaled (1.2,0) shifted (0,0.38);
+tsu_brush_min.bralternate:=0.38;
+tsu_brush_max.bralternate:=0.38;
+tsu_brush_shape.bralternate:=1;
+tsu_brush_angle.bralternate:=0;
 
-tsu_pbrush_size:=60;
-tsu_pbrush_shape:=0.38;
-tsu_pbrush_angle:=1;
+tsu_brush_min.brpunct:=0.60;
+tsu_brush_max.brpunct:=0.60;
+tsu_brush_shape.brpunct:=1;
+tsu_brush_angle.brpunct:=1;
 
 input serif.mp;
 

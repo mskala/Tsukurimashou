@@ -1,6 +1,6 @@
 %
 % Enclosed characters for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -33,15 +33,15 @@ inclusion_lock(enclosed);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef circle.single =
-  Fill fullcircle scaled (810+53*tsu_brush_max) shifted centre_pt;
-  unFill reverse fullcircle scaled (810-53*tsu_brush_max) shifted centre_pt;
+  Fill fullcircle scaled (810+53*tsu_brush_max.brletter) shifted centre_pt;
+  unFill reverse fullcircle scaled (810-53*tsu_brush_max.brletter) shifted centre_pt;
 enddef;
 
 vardef circle.double =
-  Fill fullcircle scaled (880+60*tsu_brush_max) shifted centre_pt;
-  unFill reverse fullcircle scaled (880-20*tsu_brush_max) shifted centre_pt;
-  Fill fullcircle scaled (740+40*tsu_brush_max) shifted centre_pt;
-  unFill reverse fullcircle scaled (740-40*tsu_brush_max) shifted centre_pt;
+  Fill fullcircle scaled (880+60*tsu_brush_max.brletter) shifted centre_pt;
+  unFill reverse fullcircle scaled (880-20*tsu_brush_max.brletter) shifted centre_pt;
+  Fill fullcircle scaled (740+40*tsu_brush_max.brletter) shifted centre_pt;
+  unFill reverse fullcircle scaled (740-40*tsu_brush_max.brletter) shifted centre_pt;
 enddef;
 
 vardef square.single(text curves) =

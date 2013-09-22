@@ -504,7 +504,8 @@ vardef hook.world_corner(expr side_i,bottom_i) =
         if abs(z3 dotprod z2)<0.1:
           point 1 of p1=z5+e2*z3;
           z5=(point 1 of p2)+whatever*z2;
-          e3=obstackna.bosize[bottom_i]*tsu_brush_max*tsu_brush_shape*0.5;
+          e3=obstackna.bosize[bottom_i]*tsu_brush_max.brletter
+            *tsu_brush_shape.brletter*0.5;
 
           if e2<e3:
             p1:=(point 0 of p1)--(z5+e3*z3);

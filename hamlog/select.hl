@@ -272,9 +272,14 @@ cfg_char(O,C,P):- =(O,C),char_page(C,P).
 
 % configuration - styles
 
+allowed_style(kazoemashou,_SA,normal,proportional):- !.
+allowed_style(kazoemashou,_SA,_WA,_PA):- !,fail.
+allowed_style(_FA,_SA,_WA,_PA):- !.
+
 want_style_short(F,S,W,P):-
   family(FA),style(FA,SA),weight(WA),spacing(PA),
   want_style(FA,SA,WA,PA),
+  allowed_style(FA,SA,WA,PA),
   short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P).
 
 style_xlat(F,S,W,P,_X,FX,SX,WX,PX):-
@@ -289,6 +294,10 @@ do_style_xlat(tsukurimashou,maru,extralight,P,FX,SX,WX,PX):-
 do_style_xlat(tsukurimashou,maru,extrabold,P,FX,SX,WX,PX):-
   long_name(tsukurimashou,FX),long_name(anbiruteki,SX),
   long_name(normal,WX),long_name(P,PX),!.
+
+do_style_xlat(kazoemashou,S,normal,proportional,FX,SX,WX,PX):-
+  long_name(kazoemashou,FX),long_name(S,SX),
+  long_name(normal,WX),long_name(monospace,PX),!.
 
 do_style_xlat(FA,SA,WA,PA,FX,SX,WX,PX):-
   long_name(FA,FX),long_name(SA,SX),long_name(WA,WX),long_name(PA,PX).

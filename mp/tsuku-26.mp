@@ -1,6 +1,6 @@
 %
 % Unicode page 26 (Misc. Symbols) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -140,16 +140,16 @@ tsu_rescale_half;
 begintsuglyph("musicalnote",106);
   push_stroke((500,150)..(380,205)..(260,95)..(380,40)..cycle,
     (1.6,1.6)--(1.4,1.4)--(1.4,1.4)--(1.4,1.4)--cycle);
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
   push_stroke((500,153)--(500,807),(1.6,1.6)--(1.6,1.6));
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
   push_stroke((640,640)..{curl 1}(500,810){down}..(640,550)..(780,470)..
       {curl 1}(750,400){curl 1}..(830,440)..cycle,
     (1.3,1.3)--(1.6,1.6)--(1.3,1.3)--(1.3,1.3)--(1,1)--(1.3,1.3));
   set_botip(0,1,0);
   set_botip(0,4,0);
-  set_boalternate(0);
-  if tsu_pbrush_size>=30:
+  set_bobrush(0,bralternate);
+  if tsu_brush_max.brpunct>=0.3:
     push_lcblob(get_strokep(-2));
     push_lcblob(get_strokep(0));
   fi;

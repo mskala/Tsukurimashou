@@ -1,6 +1,6 @@
 %
 % Common code for TsuIta
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -307,7 +307,7 @@ vardef latin.lowy =
 
   set_boserif(-1,0,11);
   set_botip(-1,1,1);
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   if do_alternation:
     replace_strokep(-1)(oldp shifted (alternate_adjust*left/2));
@@ -340,7 +340,7 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-def tsu_render_segment(expr i,p,q) =
+def tsu_render_segment(expr i,p,q,b) =
   begingroup
     save start_time,end_time,niba,nibb,nibc,myp,pext,x,y;
     numeric start_time,end_time,x,y;
@@ -348,10 +348,10 @@ def tsu_render_segment(expr i,p,q) =
 
     myp:=p;
 
-    niba:=fix_nib(obstackna.bosize[i]*tsu_brush_max
-                    *tsu_brush_shape,
-                  obstackna.bosize[i]*tsu_brush_max
-                    *tsu_brush_shape,
+    niba:=fix_nib(obstackna.bosize[i]*tsu_brush_max[b]
+                    *tsu_brush_shape[b],
+                  obstackna.bosize[i]*tsu_brush_max[b]
+                    *tsu_brush_shape[b],
                   0);
 
     if known obstacknaa.boserif[i][floor(ltime[0]+0.5)]:
@@ -360,14 +360,9 @@ def tsu_render_segment(expr i,p,q) =
           scaled (italic_hook_radius*(obstackna.bosize[i]/100)*2)
           shifted (point 0 of myp)));
         nibb:=tsu_brush_tip(0,myp,q,obstackna.bosize[i],s<1,
-          t>(length obstackp[i])-1,obstackba.boalternate[i]);
-        if do_alternation and obstackba.boalternate[i]:
-          niba:=nibb;
-          nibc:=nibb;
-        else:
-          niba:=nibb scaled tsu_brush_shape;
-          nibc:=nibb scaled sqrt(sqrt(tsu_brush_shape));
-        fi;
+          t>(length obstackp[i])-1,b);
+        niba:=nibb scaled tsu_brush_shape[b];
+        nibc:=nibb scaled sqrt(sqrt(tsu_brush_shape[b]));
         z1=(point 0 of myp)-
           italic_hook_radius*(obstackna.bosize[i]/100)*dir(italic_hook_dir);
         z3=point start_time of myp;
@@ -388,14 +383,9 @@ def tsu_render_segment(expr i,p,q) =
           scaled (italic_hook_radius*(obstackna.bosize[i]/100)*2)
           shifted (point infinity of myp)));
         nibb:=tsu_brush_tip(length(myp),myp,q,obstackna.bosize[i],s<1,
-          t>(length obstackp[i])-1,obstackba.boalternate[i]);
-        if do_alternation and obstackba.boalternate[i]:
-          niba:=nibb;
-          nibc:=nibb;
-        else:
-          niba:=nibb scaled tsu_brush_shape;
-          nibc:=nibb scaled sqrt(sqrt(tsu_brush_shape));
-        fi;
+          t>(length obstackp[i])-1,b);
+        niba:=nibb scaled tsu_brush_shape[b];
+        nibc:=nibb scaled sqrt(sqrt(tsu_brush_shape[b]));
         z4=point end_time of myp;
         z6=(point infinity of myp)+
           italic_hook_radius*(obstackna.bosize[i]/100)*dir(italic_hook_dir);
@@ -409,22 +399,14 @@ def tsu_render_segment(expr i,p,q) =
       fi;
     fi;
 
-    if do_alternation and obstackba.boalternate[i]:
-      default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max
-                             *tsu_brush_shape,
-                           obstackna.bosize[i]*tsu_brush_max
-                             *tsu_brush_shape,
-                           0);
-    else:
-      default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max,
-                           obstackna.bosize[i]*tsu_brush_max
-                             *tsu_brush_shape,
-                           tsu_brush_angle);
-    fi;
+    default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max[b],
+                         obstackna.bosize[i]*tsu_brush_max[b]
+                           *tsu_brush_shape[b],
+                         tsu_brush_angle[b]);
     path mytip[],glyph;
     for l=0 step 1 until length(myp):
       mytip[l]:=tsu_brush_tip(l,myp,q,obstackna.bosize[i],s<1,
-        t>(length obstackp[i])-1,obstackba.boalternate[i]);
+        t>(length obstackp[i])-1,b);
     endfor;
     pen_stroke(for l=0 step 1 until length(myp):
         if sharp_corners and known obstacknaa.botip[i][ltime[l]]:
@@ -440,7 +422,7 @@ def tsu_render_segment(expr i,p,q) =
       if (abs(ltime[l]-si)<0.05) and known obstacknaa.boserif[i][si]:
         tsu_serif.choose(obstacknaa.boserif[i][si],
           point l of myp,direction l of myp,l,
-          obstackna.bosize[i],tsu_brush_tip_size(l,q));
+          obstackna.bosize[i],tsu_brush_tip_size(l,q,b),b);
         write ("SERIF "&(decimal obstacknaa.boserif[i][si])&" "&
               (decimal xpart point l of myp)&","&
               (decimal ypart point l of myp)) to "proof.prf";

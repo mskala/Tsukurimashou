@@ -1,6 +1,6 @@
 %
 % Early shared code for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -72,15 +72,43 @@ enddef;
 
 % FONT PARAMETER DEFAULTS
 
-% basic brush definition
-transform tsu_brush_xf;
-tsu_brush_shape:=1.0;
-tsu_brush_angle:=0;
+% framework for brush definitions
+transform tsu_brush_xf[];
+numeric tsu_brush_shape[];
+numeric tsu_brush_angle[];
+numeric tsu_brush_min[];
+numeric tsu_brush_max[];
 
-% special brush for punctuation
-tsu_pbrush_size:=50;
-tsu_pbrush_shape:=1.0;
-tsu_pbrush_angle:=0;
+def brletter = 0 enddef;
+def bralternate = 1 enddef;
+def brpunct = 2 enddef;
+
+% basic brush definition
+% style MUST set tsu_brush_xf.brletter;
+tsu_brush_shape.brletter:=1.0;
+tsu_brush_angle.brletter:=0;
+tsu_brush_min.brletter:=0.5;
+tsu_brush_max.brletter:=1.0;
+
+% alternate brush
+(0,0) transformed tsu_brush_xf.bralternate=(1,1);
+(0,1) transformed tsu_brush_xf.bralternate=(1,1);
+(1,0) transformed tsu_brush_xf.bralternate=(1,1);
+tsu_brush_shape.bralternate:=1.0;
+tsu_brush_angle.bralternate:=0;
+tsu_brush_min.bralternate:=0.5;
+tsu_brush_max.bralternate:=0.5;
+
+% punctuation brush
+(0,0) transformed tsu_brush_xf.brpunct=(1,1);
+(0,1) transformed tsu_brush_xf.brpunct=(1,1);
+(1,0) transformed tsu_brush_xf.brpunct=(1,1);
+tsu_brush_shape.brpunct:=1.0;
+tsu_brush_angle.brpunct:=0;
+tsu_brush_min.brpunct:=0.5;
+tsu_brush_max.brpunct:=0.5;
+
+% size for punctuation
 tsu_punct_size:=100;
 
 % size the handakuten
@@ -105,8 +133,8 @@ stylename:="";
 % brush option override
 def tsu_brush_opt(expr n,l) = nib(n)(l) enddef;
 
-% bo_serif type; point lp; direction lp; brush tip size
-vardef tsu_serif.choose(expr bst,plp,dlp,l,bts,bos) =
+% bo_serif type; point lp; direction lp; brush tip size; brush code
+vardef tsu_serif.choose(expr bst,plp,dlp,l,bts,bos,b) =
 enddef;
 
 % do "modern" width alternation

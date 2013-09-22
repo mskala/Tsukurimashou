@@ -34,12 +34,12 @@ input preintro.mp;
 
 stylename:="Atama";
 
-(0,4) transformed tsu_brush_xf = (4,0.77);
-(1,1) transformed tsu_brush_xf = (1,0.73);
-(4,0) transformed tsu_brush_xf = (0,0.77);
+(0,4) transformed tsu_brush_xf.brletter = (4,0.77);
+(1,1) transformed tsu_brush_xf.brletter = (1,0.73);
+(4,0) transformed tsu_brush_xf.brletter = (0,0.77);
 
-tsu_brush_min:=0.73;
-tsu_brush_max:=0.77;
+tsu_brush_min.brletter:=0.73;
+tsu_brush_max.brletter:=0.77;
 
 def tsu_brush_opt(expr n,l) =
   if rescale_slant>10: cut(n,rel 90)(l) fi enddef;

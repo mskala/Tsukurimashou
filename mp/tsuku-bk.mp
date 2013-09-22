@@ -1,6 +1,6 @@
 %
 % Tsukurimashou Bokukko
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,18 +36,20 @@ stylename:="Bokukko";
 
 mincho:=0.3;
 
-(0,4) transformed tsu_brush_xf = (0.8,0.95);
-(1,1) transformed tsu_brush_xf = (1.02,0.80);
-(4,0) transformed tsu_brush_xf = (3.8,0.95);
+(0,4) transformed tsu_brush_xf.brletter = (0.8,0.95);
+(1,1) transformed tsu_brush_xf.brletter = (1.02,0.80);
+(4,0) transformed tsu_brush_xf.brletter = (3.8,0.95);
 
 tsu_brush_min:=0.80;
 tsu_brush_max:=0.95;
 tsu_brush_shape:=0.3;
 tsu_brush_angle:=20;
 
-tsu_pbrush_size:=60;
-tsu_pbrush_shape:=0.3;
-tsu_pbrush_angle:=20;
+tsu_brush_xf.brpunct:=tsu_brush_xf.brpunct yscaled 0 shifted (0,0.60);
+tsu_brush_min.brpunct:=0.60;
+tsu_brush_max.brpunct:=0.60;
+tsu_brush_shape.brpunct:=0.3;
+tsu_brush_angle.brpunct:=20;
 
 def tsu_brush_opt(expr n,l) = cut(n,rel 120)(l) enddef;
 sharp_corners:=true;

@@ -360,7 +360,8 @@ vardef hook.mound_bottoms(expr left_i,right_i,bottom_i) =
         z2=(direction 0.5 of p2)/abs(direction 0.5 of p2);
         z3=(direction 2 of p3)/abs(direction 2 of p3);
 
-        e3=obstackna.bosize[bottom_i]*tsu_brush_max*tsu_brush_shape*0.5;
+        e3=obstackna.bosize[bottom_i]*tsu_brush_max.brletter
+          *tsu_brush_shape.brletter*0.5;
         if abs(z1 dotprod z2)<0.1:
           point 0 of p1=z4+e1*z1;
           z4=(point 0.5 of p2)+whatever*z2;

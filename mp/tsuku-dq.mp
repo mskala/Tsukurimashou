@@ -1,6 +1,6 @@
 %
 % Demibold font weight
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -35,11 +35,21 @@ transform weight_xf;
 (1,0.62) transformed weight_xf = (1,0.781);
 (0,0.75) transformed weight_xf = (0,0.945);
 
-tsu_brush_xf:=tsu_brush_xf transformed weight_xf;
-tsu_brush_min:=ypart ((0,tsu_brush_min) transformed weight_xf);
-tsu_brush_max:=ypart ((0,tsu_brush_max) transformed weight_xf);
+tsu_brush_xf.brletter:=
+  tsu_brush_xf.brletter transformed weight_xf;
+tsu_brush_min.brletter:=
+  ypart ((0,tsu_brush_min.brletter) transformed weight_xf);
+tsu_brush_max.brletter:=
+  ypart ((0,tsu_brush_max.brletter) transformed weight_xf);
 
-tsu_pbrush_size:=tsu_pbrush_size*(115/100);
+tsu_brush_xf.bralternate:=
+  tsu_brush_xf.bralternate transformed weight_xf;
+tsu_brush_min.bralternate:=
+  ypart ((0,tsu_brush_min.bralternate) transformed weight_xf);
+tsu_brush_max.bralternate:=
+  ypart ((0,tsu_brush_max.bralternate) transformed weight_xf);
+
+tsu_brush_xf.brpunct:=tsu_brush_xf.brpunct yscaled 1.15;
 tsu_punct_size:=110;
 
 handakuten_outer:=260;

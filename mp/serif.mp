@@ -1,6 +1,6 @@
 %
 % Serifs for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@ inclusion_lock(serif);
 
 % figure out size of brush
 (sbrush_width,sbrush_height)=urcorner (
-   fullcircle yscaled tsu_brush_shape
-   rotated tsu_brush_angle
+   fullcircle yscaled tsu_brush_shape.brletter
+   rotated tsu_brush_angle.brletter
 );
 if sbrush_width>sbrush_height:
   sbrush_long:=sbrush_width;
@@ -47,15 +47,19 @@ fi;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef tsu_serif.latin.lrcore(expr bst,plp,dlp,l,bts,bos) =
-  serif:=serif xscaled sbrush_long yscaled sbrush_short;
+vardef tsu_serif.latin.lrcore(expr bst,plp,dlp,l,bts,bos,b) =
+  if b=brletter:
+    serif:=serif xyscaled (sbrush_long,sbrush_short);
+  else:
+    serif:=serif scaled sbrush_long;
+  fi;
   serif:=serif xscaled ((1+3*xxpart tsu_rescaling_xf)/4)
     yscaled bos scaled bts;
   glstk[ngls]:=regenerate(serif shifted plp);
   ngls:=ngls+1;
 enddef;
 
-vardef tsu_serif.latin.left(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.latin.left(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup
     save serif;
     path serif;
@@ -66,11 +70,11 @@ vardef tsu_serif.latin.left(expr bst,plp,dlp,l,bts,bos) =
       serif:=(-serif_size,1){left}..{right}(-serif_size,-1)--
         (0,-1)--(0,1)--cycle;
     fi;
-    tsu_serif.latin.lrcore(bst,plp,dlp,l,bts,bos);
+    tsu_serif.latin.lrcore(bst,plp,dlp,l,bts,bos,b);
   endgroup;
 enddef;
 
-vardef tsu_serif.latin.right(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.latin.right(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup
     save serif;
     path serif;
@@ -81,11 +85,11 @@ vardef tsu_serif.latin.right(expr bst,plp,dlp,l,bts,bos) =
       serif:=(0,1)--(0,-1)--
         (serif_size,-1){right}..{left}(serif_size,1)--cycle;
     fi;
-    tsu_serif.latin.lrcore(bst,plp,dlp,l,bts,bos);
+    tsu_serif.latin.lrcore(bst,plp,dlp,l,bts,bos,b);
   endgroup;
 enddef;
 
-vardef tsu_serif.latin.leftright(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.latin.leftright(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup
     save serif,xoffs;
     path serif;
@@ -99,32 +103,34 @@ vardef tsu_serif.latin.leftright(expr bst,plp,dlp,l,bts,bos) =
     xoffs=xpart (dlp/abs(dlp));
     tsu_serif.latin.lrcore(bst,
       plp+if l=0: right else: left fi*50*sbrush_long*xoffs,
-      dlp,l,bts,bos);
+      dlp,l,bts,bos,b);
   endgroup;
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef tsu_serif.mincho.corner(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.mincho.corner(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup
     save serif;
     path serif;
     serif:=(-1,-0.3)..(0.25,-1.3)..(1,-1.2)..tension 1.2..
       (1,0.6)..(-0.25,1.3)..(-1,1.2)..tension 1.2..cycle;
-    serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
+    serif:=serif yscaled sqrt(tsu_brush_shape[b])
+      rotated tsu_brush_angle[b]
       scaled (bts*0.43*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted plp);
     ngls:=ngls+1;
   endgroup;
 enddef;
 
-vardef tsu_serif.mincho.ulpoint(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.mincho.ulpoint(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup
     save serif;
     path serif;
     serif:=(-1.5,2.7)..tension 2..(-1,0)..(-0.4,-0.3)..tension 1.5..
       (0.707,0)..(0.2,0.6)..(-0.1,1.1)..tension 2..(-1.2,2.9)..cycle;
-    serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
+    serif:=serif yscaled sqrt(tsu_brush_shape[b])
+      rotated tsu_brush_angle[b]
       scaled (bts*0.5*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted
        (plp+(-1,0)*0.25*bts*(xpart dlp/abs(dlp))));
@@ -132,33 +138,35 @@ vardef tsu_serif.mincho.ulpoint(expr bst,plp,dlp,l,bts,bos) =
   endgroup;
 enddef;
 
-vardef tsu_serif.mincho.triangle(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.mincho.triangle(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup
     save serif;
     path serif;
     serif:=(-1.2,0)..(0,-0.8)..(1.2,0.4)..tension 2..(0.2,1.3)..
       (-0.2,1.3)..tension 2..cycle;
-    serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
+    serif:=serif yscaled sqrt(tsu_brush_shape[b])
+      rotated tsu_brush_angle[b]
       scaled (bts*0.5*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted (plp+0.25*bts*dlp/abs(dlp)));
     ngls:=ngls+1;
   endgroup;
 enddef;
 
-vardef tsu_serif.mincho.llpoint(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.mincho.llpoint(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup
     save serif;
     path serif;
     serif:=(-2.1,-1.9)..(-1.8,-2.1)..tension 2..(-0.1,-1.2)..(0.2,-1.1)..
       (0.707,0.707)..(-1,-0.3)..tension 2..cycle;
-    serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
+    serif:=serif yscaled sqrt(tsu_brush_shape[b])
+      rotated tsu_brush_angle[b]
       scaled (bts*0.5*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted plp);
     ngls:=ngls+1;
   endgroup;
 enddef;
 
-vardef tsu_serif.mincho.lpoint(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.mincho.lpoint(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup
     save serif;
     path serif;
@@ -166,14 +174,15 @@ vardef tsu_serif.mincho.lpoint(expr bst,plp,dlp,l,bts,bos) =
       (0.707,0.2)..(0.2,0.8)..(-0.4,1.1)..tension 2..(-1.2,2.0)..cycle;
     serif:=reverse serif reflectedabout ((-1,1),(1,-1))
       xyscaled (0.7,0.9) shifted (0.3,-0.3);
-    serif:=serif yscaled sqrt(tsu_brush_shape) rotated tsu_brush_angle
+    serif:=serif yscaled sqrt(tsu_brush_shape[b])
+      rotated tsu_brush_angle[b]
       scaled (bts*mincho_blob_size);
     glstk[ngls]:=regenerate(serif shifted plp);
     ngls:=ngls+1;
   endgroup;
 enddef;
 
-vardef tsu_serif.mincho.ktriangle(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.mincho.ktriangle(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup;
     save serif,x,y,t,q;
     path serif;
@@ -194,8 +203,8 @@ vardef tsu_serif.mincho.ktriangle(expr bst,plp,dlp,l,bts,bos) =
       (0.1[z3,z2]){z3-z2}..{z4-z3}(0.1[z3,z4])--
       (0.1[z4,z3]){z4-z3}..{z2-z4}(0.1[z4,z2])--cycle)
       shifted (0,-0.19)
-      transformed t yscaled tsu_brush_shape
-      rotated tsu_brush_angle
+      transformed t yscaled tsu_brush_shape[b]
+      rotated tsu_brush_angle[b]
       scaled (bts*bos*0.94*mincho_blob_size) shifted plp;
     if (xxpart t)*(yypart t)<0: serif:=reverse serif; fi;
     glstk[ngls]:=regenerate(serif);
@@ -203,7 +212,7 @@ vardef tsu_serif.mincho.ktriangle(expr bst,plp,dlp,l,bts,bos) =
   endgroup;
 enddef;
 
-vardef tsu_serif.mincho.khellipse(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.mincho.khellipse(expr bst,plp,dlp,l,bts,bos,b) =
   begingroup;
     save serif,x,y,t,q;
     path serif;
@@ -212,8 +221,8 @@ vardef tsu_serif.mincho.khellipse(expr bst,plp,dlp,l,bts,bos) =
     right transformed t=(dlp/abs(dlp));
     z1=(dlp/abs(dlp)) rotated 90;
     up transformed t=z1;
-    t:=t rotated -tsu_brush_angle yscaled tsu_brush_shape
-      rotated tsu_brush_angle scaled (bts*bos*0.99*mincho_blob_size)
+    t:=t rotated -tsu_brush_angle[b] yscaled tsu_brush_shape[b]
+      rotated tsu_brush_angle[b] scaled (bts*bos*0.99*mincho_blob_size)
       shifted plp;
     z2=(0.5[x3,x4],1);
     if l=0:
@@ -243,59 +252,59 @@ enddef;
 
 boolean tsu_do_serif[];
 
-vardef tsu_serif.standard(expr bst,plp,dlp,l,bts,bos) =
+vardef tsu_serif.standard(expr bst,plp,dlp,l,bts,bos,b) =
   if known tsu_do_serif[1]:
     if tsu_do_serif[1] and (bst=1):
-      tsu_serif.latin.left(bst,plp,dlp,l,bts,bos);
+      tsu_serif.latin.left(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[2]:
     if tsu_do_serif[2] and (bst=2):
-      tsu_serif.latin.right(bst,plp,dlp,l,bts,bos);
+      tsu_serif.latin.right(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[3]:
     if tsu_do_serif[3] and (bst=3):
-      tsu_serif.latin.leftright(bst,plp,dlp,l,bts,bos);
+      tsu_serif.latin.leftright(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[4]:
     if tsu_do_serif[4] and (bst=4):
-      tsu_serif.mincho.corner(bst,plp,dlp,l,bts,bos);
+      tsu_serif.mincho.corner(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[5]:
     if tsu_do_serif[5] and (bst=5):
-      tsu_serif.mincho.ulpoint(bst,plp,dlp,l,bts,bos);
+      tsu_serif.mincho.ulpoint(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[6]:
     if tsu_do_serif[6] and (bst=6):
-      tsu_serif.mincho.triangle(bst,plp,dlp,l,bts,bos);
+      tsu_serif.mincho.triangle(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[7]:
     if tsu_do_serif[7] and (bst=7):
-      tsu_serif.mincho.llpoint(bst,plp,dlp,l,bts,bos);
+      tsu_serif.mincho.llpoint(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[8]:
     if tsu_do_serif[8] and (bst=8):
-      tsu_serif.mincho.lpoint(bst,plp,dlp,l,bts,bos);
+      tsu_serif.mincho.lpoint(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[9]:
     if tsu_do_serif[9] and (bst=9):
-      tsu_serif.mincho.ktriangle(bst,plp,dlp,l,bts,bos);
+      tsu_serif.mincho.ktriangle(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
   if known tsu_do_serif[10]:
     if tsu_do_serif[10] and (bst=10):
-      tsu_serif.mincho.khellipse(bst,plp,dlp,l,bts,bos);
+      tsu_serif.mincho.khellipse(bst,plp,dlp,l,bts,bos,b);
     fi;
   fi;
 enddef;
 
-vardef tsu_serif.choose(expr bst,plp,dlp,l,bts,bos) =
-  tsu_serif.standard(bst,plp,dlp,l,bts,bos);
+vardef tsu_serif.choose(expr bst,plp,dlp,l,bts,bos,b) =
+  tsu_serif.standard(bst,plp,dlp,l,bts,bos,b);
 enddef;

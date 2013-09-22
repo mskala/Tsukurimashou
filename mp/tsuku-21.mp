@@ -71,7 +71,7 @@ vardef arrow(expr rot) =
   push_stroke(((-4,0)--(3.99,0))
       scaled tsu_punct_size rotated rot shifted centre_pt,
     (1.6,1.6)--(1.6,1.6));
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
   set_bosize(0,80);
   push_stroke(((2,2)..((3,1)+(0.2*mincho*(-1,-1)))..
       {curl 1}(4,0){curl 1}..
@@ -80,7 +80,7 @@ vardef arrow(expr rot) =
       scaled tsu_punct_size rotated rot shifted centre_pt,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   set_botip(0,2,1);
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
   set_bosize(0,80);
 enddef;
 

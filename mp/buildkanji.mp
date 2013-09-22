@@ -217,7 +217,8 @@ vardef hook.box_bottom(expr sides_i,bottom_i) =
           z4=(point 0 of p2)+whatever*z2;
           point 3 of p1=z5+e2*z3;
           z5=(point 1 of p2)+whatever*z2;
-          e3=obstackna.bosize[bottom_i]*tsu_brush_max*tsu_brush_shape*0.5;
+          e3=obstackna.bosize[bottom_i]*tsu_brush_max.brletter
+            *tsu_brush_shape.brletter*0.5;
 
           if e1<e3:
             p1:=(z4+e3*z1)--(subpath (1,3) of p1);

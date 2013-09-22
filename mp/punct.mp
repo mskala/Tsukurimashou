@@ -1,6 +1,6 @@
 %
 % Punctuation for Tsukurimashou
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ vardef punct.asciiquote =
   set_bosize(0,75);
   set_botip(0,6,0);;
 
-  if tsu_pbrush_size>=30:
+  if tsu_brush_max.brpunct>=0.3:
     push_lcblob(get_strokep(-1));
     push_lcblob(get_strokep(0));
   fi;
@@ -195,7 +195,7 @@ vardef punct.make_comma(expr cpos,cang) =
       transformed inverse t;
     set_botip(0,1,0);
 
-    if tsu_pbrush_size>=30:
+    if tsu_brush_max.brpunct>=0.3:
       replace_strokep(0)(subpath (0.03,5.75) of oldp);
       set_bosize(0,40);
       push_lcblob((subpath (1.6,4.9) of get_strokep(0))--cycle);
@@ -240,7 +240,7 @@ vardef punct.make_revcomma(expr cpos,cang) =
       transformed inverse t;
     set_botip(0,1,0);
 
-    if tsu_pbrush_size>=30:
+    if tsu_brush_max.brpunct>=0.3:
       replace_strokep(0)(subpath (0.25,5.97) of oldp);
       set_bosize(0,40);
       push_lcblob((subpath (1.1,4.4) of get_strokep(0))--cycle);
@@ -400,10 +400,10 @@ enddef;
 vardef punct.full_stop =
   push_pbox_toexpand("punct.full_stop");
 
-  if tsu_pbrush_size>=tsu_punct_size:
+  if tsu_brush_max.brpunct*100>=tsu_punct_size:
     push_lcblob(fullcircle
-      xscaled (1.5*tsu_punct_size+tsu_pbrush_size)
-      yscaled (1.5*tsu_punct_size+tsu_pbrush_size*tsu_pbrush_shape)
+      xscaled (1.5*tsu_punct_size+tsu_brush_max.brpunct*100)
+      yscaled (1.5*tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
       rotated tsu_pbrush_angle
       shifted (170,50));
   else:
@@ -630,7 +630,7 @@ vardef punct.pilcrow =
   set_bosize(0,67);
   set_boserif(0,1,3);
 
-  if tsu_pbrush_size>=30:
+  if tsu_brush_max.brpunct>=0.3:
     push_lcblob((subpath (xpart (get_strokep(-1) intersectiontimes (z7--z8)),
       infinity) of get_strokep(-1))--cycle);
   fi;
@@ -678,7 +678,7 @@ vardef punct.make_period(expr cpos) =
   push_stroke(fullcircle scaled (tsu_punct_size*1.15) shifted cpos,
     (2,2)--(2,2)--(2,2)--(2,2)--cycle);
 
-  if tsu_pbrush_size>=30:
+  if tsu_brush_max.brpunct>=0.3:
     set_bosize(0,40);
     push_lcblob(get_strokep(0));
   else:

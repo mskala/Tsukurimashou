@@ -1,6 +1,6 @@
 %
 % Unicode page FF (Full-width and Half-width Forms) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -53,16 +53,16 @@ do_late_includes;
 
 % exclamation point
 begintsuglyph("uniFF01",1);
-   if tsu_pbrush_size>=tsu_punct_size:
+   if tsu_brush_max.brpunct*100>=tsu_punct_size:
      push_lcblob(fullcircle
-        xscaled (tsu_punct_size+tsu_pbrush_size)
-        yscaled (tsu_punct_size+tsu_pbrush_size*tsu_pbrush_shape)
+        xscaled (tsu_punct_size+tsu_brush_max.brpunct*100)
+        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
         rotated tsu_pbrush_angle
         shifted (500,30));
    else:
      push_stroke(fullcircle scaled tsu_punct_size shifted (500,30),
        (2,2)--(2,2)--(2,2)--(2,2)--cycle);
-     if tsu_pbrush_size>=3:
+     if tsu_brush_max.brpunct*100>=3:
        push_lcblob(get_strokep(0));
      fi;
    fi;
@@ -71,7 +71,7 @@ begintsuglyph("uniFF01",1);
        (420,620){down}..{down}(500,250),
      (2,2)--(2,2)--(2,2)--(2,2)--(2,2));
 
-   if tsu_pbrush_size>=30:
+   if tsu_brush_max.brpunct>=0.3:
      push_lcblob((subpath (0.1,3.9) of get_strokep(0))--cycle);
    fi;
    tsu_render;
@@ -104,13 +104,13 @@ begintsuglyph("uniFF04",4);
   push_stroke((z1--z5--z2) shifted (0,-1),
     (2,2)--(2,2)--(2,2));
   set_bosize(0,85);
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   z6=(get_strokep(-1) intersectionpoint (z3--z4))+(3,1);
   push_stroke((z3--z6--z4) shifted (0,1),
     (2,2)--(2,2)--(2,2));
   set_bosize(0,85);
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   tsu_render;
 endtsuglyph;
@@ -150,9 +150,9 @@ begintsuglyph("uniFF0A",10);
      path lobe,glyph;
      numeric nlobes;
 
-     lobe:=(1,0){up}..((1+tsu_brush_max)*tsu_punct_size/4,280){up}
+     lobe:=(1,0){up}..((1+tsu_brush_max.brpunct)*tsu_punct_size/4,280){up}
        ..{curl 1}(0,350){curl 1}
-       ..(-(1+tsu_brush_max)*tsu_punct_size/4,280){down};
+       ..(-(1+tsu_brush_max.brpunct)*tsu_punct_size/4,280){down};
      if rescale_slant>50:
        lobe:=(lobe..(-1,0){down}..(0,-1)..cycle) scaled (tsu_punct_size/90);
        nlobes:=5;
@@ -161,9 +161,9 @@ begintsuglyph("uniFF0A",10);
        nlobes:=3;
      fi;
 
-     default_nib:=fix_nib(50*tsu_brush_max,
-       50*tsu_brush_max*tsu_brush_shape,
-       tsu_brush_angle);
+     default_nib:=fix_nib(50*tsu_brush_max.brpunct,
+       50*tsu_brush_max.brpunct*tsu_brush_shape.brpunct,
+       tsu_brush_angle.brpunct);
      
      for i:=0 upto nlobes-1:
        pen_stroke()(lobe rotated (i*360/nlobes)
@@ -303,17 +303,17 @@ endtsuglyph;
 % question mark
 begintsuglyph("uniFF1F",31);
    numeric r;
-   if tsu_pbrush_size>=tsu_punct_size:
+   if tsu_brush_max.brpunct*100>=tsu_punct_size:
      push_lcblob(fullcircle
-        xscaled (tsu_punct_size+tsu_pbrush_size)
-        yscaled (tsu_punct_size+tsu_pbrush_size*tsu_pbrush_shape)
+        xscaled (tsu_punct_size+tsu_brush_max.brpunct*100)
+        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
         rotated tsu_pbrush_angle
         shifted (480,10));
-     r:=tsu_pbrush_size;
+     r:=tsu_brush_max.brpunct*100;
    else:
      push_stroke(fullcircle scaled tsu_punct_size rotated 5 shifted (480,10),
        (2,2)--(2,2)--(2,2)--(2,2)--cycle);
-     if tsu_pbrush_size>=30:
+     if tsu_brush_max.brpunct>=0.3:
        push_lcblob(get_strokep(0));
      fi;
      r:=tsu_punct_size;
@@ -762,7 +762,8 @@ tsu_rescale_half_katakana;
 
 % katakana middle dot
 begintsuglyph("uniFF65",101);
-  Fill fullcircle scaled (200*tsu_brush_max) shifted (250,ypart centre_pt);   
+  Fill fullcircle scaled (200*tsu_brush_max.brpunct)
+    shifted (250,ypart centre_pt);   
 endtsuglyph;
 
 % katakana "wo"

@@ -1,6 +1,6 @@
 %
 % Blackletter Lolita overrides for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ endfor;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef tsu_render_segment(expr i,p,q) =
+vardef tsu_render_segment(expr i,p,q,b) =
   begingroup
     save lp,glyph,pcorner,pdir,k,ta,tz,dl,dr,dp,sl,sr,goodness,best,dtl,dtr,
       itl,itr;
@@ -229,11 +229,11 @@ vardef tsu_render_segment(expr i,p,q) =
     for j:=1 upto k:
       if (abs(pcorner[j-1]-pcorner[j])>10) and (pdir[j]>=0):
         lp:=subpath (0.01,0.99) of (pcorner[j-1]--pcorner[j]);
-        default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max
+        default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max[b]
             *bl_stroke_width[pdir[j]],
-          obstackna.bosize[i]*tsu_brush_max*tsu_brush_shape
+          obstackna.bosize[i]*tsu_brush_max[b]*tsu_brush_shape[b]
             *bl_stroke_width[pdir[j]],
-          tsu_brush_angle);
+          tsu_brush_angle[b]);
         pen_stroke()(lp)(glyph);
         glstk[ngls]:=regenerate(glyph);
         ngls:=ngls+1;

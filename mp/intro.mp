@@ -1,6 +1,6 @@
 %
 % General shared code for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -95,14 +95,14 @@ def endtsuglyph =
   sp:=0;
 enddef;
 
-def tsu_brush_tip_size(expr l,q) =
+def tsu_brush_tip_size(expr l,q,b) =
   begingroup
     numeric y,yy;
     y:=ypart (point l of q);
-    if y<tsu_brush_min:
-      yy:=tsu_brush_min;
-    elseif y>tsu_brush_max:
-      yy:=tsu_brush_max;
+    if y<tsu_brush_min[b]:
+      yy:=tsu_brush_min[b];
+    elseif y>tsu_brush_max[b]:
+      yy:=tsu_brush_max[b];
     else:
       yy:=y;
     fi;
@@ -110,15 +110,11 @@ def tsu_brush_tip_size(expr l,q) =
   endgroup
 enddef;
 
-def tsu_brush_tip(expr l,p,q,bsi,is_start,is_end,is_alt) =
+def tsu_brush_tip(expr l,p,q,bsi,is_start,is_end,b) =
   begingroup
     numeric y;
-    y=tsu_brush_tip_size(l,q);
-    if is_alt and do_alternation:
-      fix_nib(bsi*y*tsu_brush_shape,bsi*y*tsu_brush_shape,tsu_brush_angle)
-    else:
-      fix_nib(bsi*y,bsi*y*tsu_brush_shape,tsu_brush_angle)
-    fi
+    y=tsu_brush_tip_size(l,q,b);
+    fix_nib(bsi*y,bsi*y*tsu_brush_shape[b],tsu_brush_angle[b])
   endgroup
 enddef;
 
@@ -490,23 +486,15 @@ vardef really_insert_nodes(expr p)(text t) =
 enddef;
 
 % render a single segment - pulled out to make it easier to override
-def tsu_render_segment(expr i,p,q) =
-  if do_alternation and obstackba.boalternate[i]:
-    default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max
-                           *tsu_brush_shape,
-                         obstackna.bosize[i]*tsu_brush_max
-                           *tsu_brush_shape,
-                         0);
-  else:
-    default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max,
-                         obstackna.bosize[i]*tsu_brush_max
-                           *tsu_brush_shape,
-                         tsu_brush_angle);
-  fi;
+def tsu_render_segment(expr i,p,q,b) =
+  default_nib:=fix_nib(obstackna.bosize[i]*tsu_brush_max[b],
+                       obstackna.bosize[i]*tsu_brush_max[b]
+                         *tsu_brush_shape[b],
+                       tsu_brush_angle[b]);
   path mytip[],glyph;
   for l=0 step 1 until length(p):
     mytip[l]:=tsu_brush_tip(l,p,q,obstackna.bosize[i],s<1,
-      t>(length obstackp[i])-1,obstackba.boalternate[i]);
+      t>(length obstackp[i])-1,obstackna.bobrush[i]);
   endfor;
   boolean is_cycle;
   is_cycle=(abs((point infinity of p)-(point 0 of p))<1);
@@ -532,7 +520,7 @@ def tsu_render_segment(expr i,p,q) =
     if (abs(ltime[l]-si)<0.05) and known obstacknaa.boserif[i][si]:
       tsu_serif.choose(obstacknaa.boserif[i][si],
         point l of p,direction l of p,l,
-        obstackna.bosize[i],tsu_brush_tip_size(l,q));
+        obstackna.bosize[i],tsu_brush_tip_size(l,q,obstackna.bobrush[i]),b);
       write ("SERIF "&(decimal obstacknaa.boserif[i][si])&" "&
             (decimal xpart point l of p)&","&
             (decimal ypart point l of p)) to "proof.prf";
@@ -568,11 +556,14 @@ def tsu_render_in_circle(expr fitcircle) =
     ngls:=0;
     flati:=1;
     for i=1 upto sp-1: if obstacktype[i]=otstroke:
-      if unknown obstackba.boalternate[i]:
-        obstackba.boalternate[i]:=false;
+      if unknown obstackna.bobrush[i]:
+        obstackna.bobrush[i]:=brletter;
+      fi;
+      if (obstackna.bobrush[i]=bralternate) and not do_alternation:
+        obstackna.bobrush[i]:=brletter;
       fi;
 % message "suffix " & str i;
-      bqi:=obstackq[i] transformed tsu_brush_xf;
+      bqi:=obstackq[i] transformed tsu_brush_xf[obstackna.bobrush[i]];
       s:=0;
       for j=0 step 1 until (length obstackp[i])-1:
          k:=j+1;
@@ -650,7 +641,7 @@ def tsu_render_in_circle(expr fitcircle) =
                  &(decimal ypart point lcbj of p)) to "proof.prf";
              endfor;
              flati:=flati+1;
-             tsu_render_segment(i,p,q);
+             tsu_render_segment(i,p,q,obstackna.bobrush[i]);
            fi;
          fi;
       endfor;
@@ -872,17 +863,17 @@ enddef;
 vardef calc_mbrush_size =
   numeric mbrush_width,mbrush_height,alternate_adjust;
   (mbrush_width,mbrush_height)=urcorner (
-     fullcircle xscaled (tsu_brush_max*100)
-     yscaled (tsu_brush_max*tsu_brush_shape*100)
-     rotated tsu_brush_angle
+     fullcircle xscaled (tsu_brush_max.brletter*100)
+     yscaled (tsu_brush_max.brletter*tsu_brush_shape.brletter*100)
+     rotated tsu_brush_angle.brletter
   );
   alternate_adjust:=abs(mbrush_height-mbrush_width);
-  if tsu_brush_max>0.75:
+  if tsu_brush_max.brletter>0.75:
     serif_size:=2;
   else:
-    serif_size:=2*((tsu_brush_max/0.75)**(1/3));
+    serif_size:=2*((tsu_brush_max.brletter/0.75)**(1/3));
   fi;
-  mincho_blob_size:=sqrt(tsu_brush_max/0.75);
+  mincho_blob_size:=sqrt(tsu_brush_max.brletter/0.75);
 enddef;
 
 calc_mbrush_size;

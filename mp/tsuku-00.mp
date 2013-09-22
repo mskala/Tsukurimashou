@@ -1,6 +1,6 @@
 %
 % Unicode page 00 (ASCII/ISO Latin-1) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -62,11 +62,11 @@ fi;
 % exclamation point
 tsu_rescale_native_narrow;
 begintsuglyph("exclam",33);
-   if tsu_pbrush_size>=(tsu_punct_size*0.5):
+   if tsu_brush_max.brpunct>=(tsu_punct_size/200):
      push_lcblob(fullcircle
-        xscaled (tsu_punct_size+tsu_pbrush_size)
-        yscaled (tsu_punct_size+tsu_pbrush_size*tsu_pbrush_shape)
-        rotated tsu_pbrush_angle
+        xscaled (tsu_punct_size+tsu_brush_max.brpunct*100)
+        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
+        rotated tsu_brush_angle.brpunct
         shifted (220,40));
    else:
      push_stroke(fullcircle scaled tsu_punct_size shifted (220,40),
@@ -78,7 +78,7 @@ begintsuglyph("exclam",33);
      (160,680){down}..{down}(220,240),
      (1,1)--(2,2)--(2,2)--(2,2)--(1,1));
 
-   if tsu_pbrush_size>=30:
+   if tsu_brush_max.brpunct>=0.3:
      push_lcblob((subpath (0.1,3.9) of get_strokep(0))--cycle);
    fi;
 
@@ -152,9 +152,9 @@ begintsuglyph("asterisk",42);
      path lobe,glyph;
      numeric nlobes;
 
-     lobe:=(1,0){up}..((1+tsu_brush_max)*tsu_punct_size/8,140){up}
+     lobe:=(1,0){up}..((1+tsu_brush_max.brpunct)*tsu_punct_size/8,140){up}
        ..{curl 1}(0,175){curl 1}
-       ..(-(1+tsu_brush_max)*tsu_punct_size/8,140){down};
+       ..(-(1+tsu_brush_max.brpunct)*tsu_punct_size/8,140){down};
      if rescale_slant>50:
        lobe:=(lobe..(-1,0){down}..(0,-1)..cycle) scaled (tsu_punct_size/70);
        nlobes:=5;
@@ -163,9 +163,9 @@ begintsuglyph("asterisk",42);
        nlobes:=3;
      fi;
 
-     default_nib:=fix_nib(35*tsu_brush_max,
-       35*tsu_brush_max*tsu_brush_shape,
-       tsu_brush_angle);
+     default_nib:=fix_nib(35*tsu_brush_max.brpunct,
+       35*tsu_brush_max.brpunct*tsu_brush_shape.brpunct,
+       tsu_brush_angle.brpunct);
      
      for i:=0 upto nlobes-1:
        pen_stroke()(lobe rotated (i*360/nlobes)
@@ -314,16 +314,16 @@ endtsuglyph;
 % question mark
 begintsuglyph("question",63);
    numeric r;
-   if tsu_pbrush_size>=(tsu_punct_size*0.5):
+   if tsu_brush_max.brpunct*100>=(tsu_punct_size*0.5):
      push_lcblob(fullcircle
-        xscaled ((tsu_punct_size+tsu_pbrush_size)*0.89)
-        yscaled ((tsu_punct_size+tsu_pbrush_size*tsu_pbrush_shape)*0.89)
-        rotated tsu_pbrush_angle
+        xscaled ((tsu_punct_size+tsu_brush_max.brpunct*100)*0.89)
+        yscaled ((tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)*0.89)
+        rotated tsu_brush_angle.brpunct
         shifted (210,40));
    else:
      push_stroke(fullcircle scaled tsu_punct_size shifted (210,40),
        (2,2)--(2,2)--(2,2)--(2,2));
-     if tsu_pbrush_size>=30:
+     if tsu_brush_max.brpunct>=0.3:
        push_lcblob(get_strokep(0));
      fi;
    fi;
@@ -769,11 +769,11 @@ fi;
 % inverted exclamation point
 tsu_rescale_native_narrow;
 begintsuglyph("exclamdown",161);
-   if tsu_pbrush_size>=(tsu_punct_size*0.5):
+   if tsu_brush_max.brpunct*100>=(tsu_punct_size*0.5):
      push_lcblob(fullcircle
-       xscaled (tsu_punct_size+tsu_pbrush_size)
-       yscaled (tsu_punct_size+tsu_pbrush_size*tsu_pbrush_shape)
-       rotated tsu_pbrush_angle
+       xscaled (tsu_punct_size+tsu_brush_max.brpunct*100)
+       yscaled (tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
+       rotated tsu_brush_angle.brpunct
        shifted (220,40)
        rotatedaround ((250,390),180));
    else:
@@ -782,7 +782,7 @@ begintsuglyph("exclamdown",161);
          shifted (220,40)
          rotatedaround ((250,390),180),
        (2,2)--(2,2)--(2,2)--(2,2));
-     if tsu_pbrush_size>=30:
+     if tsu_brush_max.brpunct>=0.3:
        push_lcblob(get_strokep(0));
      fi;
    fi;
@@ -792,7 +792,7 @@ begintsuglyph("exclamdown",161);
        rotatedaround ((250,390),180),
      (1,1)--(2,2)--(2,2)--(2,2)--(1,1));
 
-   if tsu_pbrush_size>=30:
+   if tsu_brush_max.brpunct>=0.3:
      push_lcblob((subpath (0.1,3.9) of get_strokep(0))--cycle);
    fi;
 
@@ -847,9 +847,9 @@ endtsuglyph;
 tsu_rescale_native_conditional;
 
 begintsuglyph("copyright",169);
-  Fill fullcircle scaled (1320+120*tsu_brush_max) shifted centre_pt
+  Fill fullcircle scaled (1320+120*tsu_brush_max.brletter) shifted centre_pt
     transformed tsu_xf.latin_one_circled;
-  unFill reverse fullcircle scaled (1320-120*tsu_brush_max)
+  unFill reverse fullcircle scaled (1320-120*tsu_brush_max.brletter)
     shifted centre_pt transformed tsu_xf.latin_one_circled;
   tsu_xform(tsu_xf.latin_one_circled)(latin.upc);
   tsu_render_in_circle(tsu_xf.latin_one_cbound);
@@ -882,9 +882,9 @@ endtsuglyph;
 % soft hyphen is a zero-width space and added by make-font script
 
 begintsuglyph("registered",174);
-  Fill fullcircle scaled (1320+120*tsu_brush_max) shifted centre_pt
+  Fill fullcircle scaled (1320+120*tsu_brush_max.brletter) shifted centre_pt
     transformed tsu_xf.latin_one_circled;
-  unFill reverse fullcircle scaled (1320-120*tsu_brush_max)
+  unFill reverse fullcircle scaled (1320-120*tsu_brush_max.brletter)
     shifted centre_pt transformed tsu_xf.latin_one_circled;
   tsu_xform(tsu_xf.latin_one_circled)(latin.upr);
   tsu_render_in_circle(tsu_xf.latin_one_cbound);
@@ -905,7 +905,7 @@ tsu_rescale_native_conditional;
 begintsuglyph("degree",176);
   Fill fullcircle scaled (2.5*tsu_punct_size) shifted (250,760);
   unFill reverse fullcircle
-    scaled (2.5*tsu_punct_size-120*tsu_brush_max) shifted (250,760);
+    scaled (2.5*tsu_punct_size-120*tsu_brush_max.brletter) shifted (250,760);
 endtsuglyph;
 
 begintsuglyph("plusminus",177);
@@ -987,18 +987,18 @@ tsu_rescale_native_conditional;
 
 % question mark
 begintsuglyph("questiondown",191);
-   if tsu_pbrush_size>=(tsu_punct_size*0.5):
+   if tsu_brush_max.brpunct*100>=(tsu_punct_size*0.5):
      push_lcblob(fullcircle
-       xscaled ((tsu_punct_size+tsu_pbrush_size)*0.89)
-       yscaled ((tsu_punct_size+tsu_pbrush_size*tsu_pbrush_shape)*0.89)
-       rotated tsu_pbrush_angle
+       xscaled ((tsu_punct_size+tsu_brush_max.brpunct*100)*0.89)
+       yscaled ((tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)*0.89)
+       rotated tsu_brush_angle.brpunct
        shifted (210,40)
        rotatedaround ((250,390),180));
    else:
      push_stroke(fullcircle scaled tsu_punct_size shifted (210,40)
          rotatedaround ((250,390),180),
        (1,1)..(2,2)..(2,2)..(1,1));
-     if tsu_pbrush_size>=30:
+     if tsu_brush_max.brpunct>=0.3:
        push_lcblob(get_strokep(0));
      fi;
    fi;

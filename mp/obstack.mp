@@ -1,6 +1,6 @@
 %
 % Object stack for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ sp:=0;
 
 % numeric values, needed for syntax reasons
 
-def boalternate = 1924 enddef;
+def bobrush = 1165 enddef;
 def bokeepshape = 1838 enddef;
 def boserif = 1746 enddef;
 def bosize = 1393 enddef;
@@ -279,8 +279,8 @@ vardef replace_strokeq(expr idx)(text curves) =
   endgroup;
 enddef;
 
-vardef set_boalternate(expr idx) =
-  obstackba.boalternate[find_stroke(idx)]:=true;
+vardef set_bobrush(expr idx,b) =
+  obstackna.bobrush[find_stroke(idx)]:=b;
 enddef;
 
 vardef set_bokeepshape(expr idx) =

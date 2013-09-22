@@ -44,13 +44,13 @@ vardef latin.upa =
     y4=y5=vmetric(0.333);
 
     push_stroke(z1--(z2+alternate_adjust*left/2),(1.6,1.6)--(1.6,1.6));
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
     set_botip(0,1,0);
     set_boserif(0,0,3);
     set_boserif(0,1,1);
 
     push_stroke(z4--z5,(1.6,1.6)--(1.6,1.6));
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
 
     push_stroke((z2+alternate_adjust*right/2)--z3,(1.6,1.6)--(1.6,1.6));
     set_boserif(0,1,3);
@@ -98,10 +98,10 @@ vardef latin.upae =
   set_botip(0,1,1);
   set_boserif(0,1,1);
   set_boserif(0,2,3);
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   push_stroke(z8--z9,(1.6,1.6)--(1.6,1.6));
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   push_stroke(z2--z3--z4,(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   set_botip(0,1,1);
@@ -369,7 +369,7 @@ vardef latin.upk =
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   set_botip(0,2,1);
   if do_alternation:
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
     set_boserif(0,0,3);
     set_boserif(0,3,3);
   fi;
@@ -420,12 +420,12 @@ vardef latin.upm =
       (1.6,1.6)--(1.6,1.6));
     set_boserif(0,0,3);
     set_boserif(0,1,1);
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
 
     push_stroke(z2--(z3+alternate_adjust*left),(1.6,1.6)--(1.6,1.6));
 
     push_stroke(z3--(z4+alternate_adjust*left),(1.6,1.6)--(1.6,1.6));
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
 
     push_stroke(z4--z5,(1.6,1.6)--(1.6,1.6));
     set_boserif(0,1,3);
@@ -468,14 +468,14 @@ vardef latin.upn =
     push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
     set_boserif(0,0,3);
     set_boserif(0,1,1);
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
 
     push_stroke((z2+alternate_adjust*right)--(z3+alternate_adjust*left),
       (1.6,1.6)--(1.6,1.6));
 
     push_stroke(z3--z4,(1.6,1.6)--(1.6,1.6));
     set_boserif(0,1,3);
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
   else:
     push_stroke(z1--z2--z3--z4,(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
     set_botip(0,1,0);
@@ -737,7 +737,7 @@ vardef latin.upv =
 
     push_stroke((z2+alternate_adjust*right)--z3,(1.6,1.6)--(1.6,1.6));
     set_boserif(0,1,3);
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
   else:
     push_stroke(z1--(0.95[z1,z2])--z2--z3,
       (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
@@ -768,7 +768,7 @@ vardef latin.upw =
     set_boserif(0,0,3);
 
     push_stroke(z2--z3,(1.6,1.6)--(1.6,1.6));
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
 
     push_stroke((z3--z4) shifted (alternate_adjust*right),
       (1.6,1.6)--(1.6,1.6));
@@ -776,7 +776,7 @@ vardef latin.upw =
     push_stroke((z4--z5) shifted (alternate_adjust*right*2),
       (1.6,1.6)--(1.6,1.6));
     set_boserif(0,1,3);
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
   else:
     (x1+x5)/2=(x2+x4)/2=x3=500;
     (x3-x2)=(x2-x1);
@@ -827,7 +827,7 @@ vardef latin.upx =
     set_boserif(0,0,3);
     set_boserif(0,1,3);
   fi;
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
@@ -857,7 +857,7 @@ vardef latin.upy =
     push_stroke(z2--z3,(1.6,1.6)--(1.6,1.6));
   fi;
   set_boserif(0,1,3);
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))
     (((0,0) transformed tsu_xf.cap_upper_accent)-
@@ -908,7 +908,7 @@ vardef latin.double_lowa =
   push_stroke(z1{curl 0.2}..z2{right}..z3{down}..z4,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
   replace_strokep(0)(subpath (0.2,3) of oldp);
-  set_boserif(0,3,2);
+  set_boserif(0,3,if do_italic_hook: 11 else: 2 fi);
 
   push_stroke(z5{dir 240}..z6{down}..z7{right}..z8,
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
@@ -1375,7 +1375,7 @@ vardef latin.lowk =
   set_botip(0,1,1);
   set_boserif(0,0,if do_italic_hook: 1 else: 3 fi);
   if not do_italic_hook: set_boserif(0,2,3); fi;
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   tsu_accent.shift_anchors(ypart olda>vmetric(0.52))((40,0));
   push_anchor(anc_wide,identity xscaled 0.8
@@ -1657,7 +1657,7 @@ vardef latin.lowt =
     z10-z6=whatever*dir 47;
   fi;
 
-  if tsu_pbrush_size<30:
+  if tsu_brush_max.brpunct*100<30:
     push_stroke(z1--z6--z10--z3{down}..z4{right}..{curl 0.2}z5,
       (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
     set_botip(0,1,1);
@@ -1681,7 +1681,7 @@ vardef latin.lowt =
     z8-z9=whatever*dir 47;
   fi;
 
-  if tsu_pbrush_size>=30:
+  if tsu_brush_max.brpunct>=0.3:
     begingroup
       save t; transform t;
       t:=tsu_rescale_xform;
@@ -1755,7 +1755,7 @@ vardef latin.lowv =
 
     push_stroke((z2+alternate_adjust*right)--z3,(1.6,1.6)--(1.6,1.6));
     set_boserif(0,1,3);
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
   else:
     push_stroke(z1--z2--z3,(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
     set_botip(0,1,0);
@@ -1781,7 +1781,7 @@ vardef latin.loww =
 
     push_stroke(z2--z3,
       (1.6,1.6)--(1.6,1.6));
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
 
     push_stroke((z3--z4) shifted (alternate_adjust*right),
       (1.6,1.6)--(1.6,1.6));
@@ -1789,7 +1789,7 @@ vardef latin.loww =
     push_stroke((z4--z5) shifted (alternate_adjust*right*2),
       (1.6,1.6)--(1.6,1.6));
     set_boserif(0,1,3);
-    set_boalternate(0);
+    set_bobrush(0,bralternate);
   else:
     push_stroke(z1--z2--z3--z4--z5,
       (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
@@ -1828,7 +1828,7 @@ vardef latin.lowx =
     set_boserif(0,0,if do_italic_hook: 2 else: 3 fi);
     set_boserif(0,1,if do_italic_hook: 1 else: 3 fi);
   fi;
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   tsu_accent.shift_anchors(ai=anc_lower_connect)((240,0));
   expand_pbox;
@@ -1863,7 +1863,7 @@ vardef latin.lowy =
   set_boserif(-1,0,if do_italic_hook: 11 else: 3 fi);
   set_boserif(0,0,if do_italic_hook: 2 else: 3 fi);
   set_botip(-1,1,1);
-  set_boalternate(0);
+  set_bobrush(0,bralternate);
 
   if do_alternation:
     replace_strokep(-1)(oldp shifted (alternate_adjust*left/2));

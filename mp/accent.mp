@@ -1,6 +1,6 @@
 %
 % Accents for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -242,14 +242,14 @@ enddef;
 vardef tsu_accent.ringabove =
   push_anchor(-anc_ring,accent_default[anc_ring]);
   push_lcblob(fullcircle rotated 45
-    scaled (2*tsu_punct_size+20*tsu_brush_max)
+    scaled (2*tsu_punct_size+20*tsu_brush_max.brletter)
     shifted ((500,vmetric(0.83-0.03*mincho)-10)
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
   set_bokeepshape(0);
-  if 2*tsu_punct_size-110*tsu_brush_max>10:
+  if 2*tsu_punct_size-110*tsu_brush_max.brletter>10:
     push_lcblob(reverse fullcircle rotated 45
-      scaled (2*tsu_punct_size-110*tsu_brush_max)
+      scaled (2*tsu_punct_size-110*tsu_brush_max.brletter)
       shifted ((500,vmetric(0.83-0.03*mincho)-10)
         transformed tsu_rescale_xform)
       transformed inverse tsu_rescale_xform);

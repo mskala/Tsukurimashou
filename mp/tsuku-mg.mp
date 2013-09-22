@@ -1,6 +1,6 @@
 %
 % Tsukurimashou Maru
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,11 +34,11 @@ input preintro.mp;
 
 stylename:="Maru";
 
-(0,4) transformed tsu_brush_xf = (4,0.74);
-(1,1) transformed tsu_brush_xf = (1,0.65);
-(4,0) transformed tsu_brush_xf = (0,0.74);
+(0,4) transformed tsu_brush_xf.brletter = (4,0.74);
+(1,1) transformed tsu_brush_xf.brletter = (1,0.65);
+(4,0) transformed tsu_brush_xf.brletter = (0,0.74);
 
-tsu_brush_min:=0.65;
-tsu_brush_max:=0.74;
+tsu_brush_min.brletter:=0.65;
+tsu_brush_max.brletter:=0.74;
 
 input intro.mp;
