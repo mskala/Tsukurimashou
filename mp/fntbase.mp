@@ -536,9 +536,13 @@ default_cap:=1;
 vardef tangent_point(expr d,nib) = % |d| -- direction of pen movement
  save a_;
  point if cycle nib: (directiontime d of nib) else:
-  hide (a_:=turn_ang(d,(point 1 of nib)-(point 0 of nib)))
-  if abs(a_ mod 180)<.1: 1/2 % emergency
-  elseif a_<0: 0 else: 1 fi
+  if abs(d)<0.005:
+    1/2
+  else:
+    hide (a_:=turn_ang(d,(point 1 of nib)-(point 0 of nib)))
+    if abs(a_ mod 180)<.1: 1/2 % emergency
+    elseif a_<0: 0 else: 1 fi
+  fi
  fi of nib
 enddef;
 

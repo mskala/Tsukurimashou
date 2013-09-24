@@ -520,7 +520,7 @@ def tsu_render_segment(expr i,p,q,b) =
     if (abs(ltime[l]-si)<0.05) and known obstacknaa.boserif[i][si]:
       tsu_serif.choose(obstacknaa.boserif[i][si],
         point l of p,direction l of p,l,
-        obstackna.bosize[i],tsu_brush_tip_size(l,q,obstackna.bobrush[i]),b);
+        obstackna.bosize[i],tsu_brush_tip_size(l,q,b),b);
       write ("SERIF "&(decimal obstacknaa.boserif[i][si])&" "&
             (decimal xpart point l of p)&","&
             (decimal ypart point l of p)) to "proof.prf";
@@ -874,6 +874,17 @@ vardef calc_mbrush_size =
     serif_size:=2*((tsu_brush_max.brletter/0.75)**(1/3));
   fi;
   mincho_blob_size:=sqrt(tsu_brush_max.brletter/0.75);
+  (sbrush_width,sbrush_height)=urcorner (
+     fullcircle yscaled tsu_brush_shape.brletter
+     rotated tsu_brush_angle.brletter
+  );
+  if sbrush_width>sbrush_height:
+    sbrush_long:=sbrush_width;
+    sbrush_short:=sbrush_height;
+  else:
+    sbrush_short:=sbrush_width;
+    sbrush_long:=sbrush_height;
+  fi;
 enddef;
 
 calc_mbrush_size;

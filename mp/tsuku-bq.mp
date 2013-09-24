@@ -42,12 +42,9 @@ tsu_brush_min.brletter:=
 tsu_brush_max.brletter:=
   ypart ((0,tsu_brush_max.brletter) transformed weight_xf);
 
-tsu_brush_xf.bralternate:=
-  tsu_brush_xf.bralternate transformed weight_xf;
-tsu_brush_min.bralternate:=
-  ypart ((0,tsu_brush_min.bralternate) transformed weight_xf);
-tsu_brush_max.bralternate:=
-  ypart ((0,tsu_brush_max.bralternate) transformed weight_xf);
+tsu_brush_xf.bralternate:=tsu_brush_xf.bralternate yscaled (1.191/0.75);
+tsu_brush_min.bralternate:=tsu_brush_min.bralternate*(1.191/0.75);
+tsu_brush_max.bralternate:=tsu_brush_max.bralternate*(1.191/0.75);
 
 tsu_brush_xf.brpunct:=tsu_brush_xf.brpunct yscaled 1.15;
 tsu_punct_size:=120;

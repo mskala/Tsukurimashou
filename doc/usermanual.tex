@@ -2051,14 +2051,14 @@ same overall shapes for all glyphs, though the visual style of the strokes
 will vary.  If there are significant differences in shapes or glyph sets,
 they will be put in a separate family.  At present the supported values for
 the family are ``tsukurimashou,'' ``tsuita,'' and ``jieubsida,'' though
-there is also some experimental (less than alpha status) code for a
-family to be called ``blackletter\_lolita.''
+there is also some experimental (less than alpha status) code for
+families to be called ``blackletter\_lolita'' and ``kazoemashou.''
 
 The possible values for style will depend on the family.  Styles generally
 correspond to sets of preset values for the adjustable parameters of a
 family's letter-drawing code.  The style values currently allowed, per
 family, are as follows.  Style names marked with an asterisk are not allowed
-as part of the basic Hamlog name but may be introduced via rewriting, as
+as part of the basic Hamlog name but may be introduced by rewriting, as
 explained below.
 \begin{description}
   \item{\anbiruteki tsukurimashou} kaku, maru, mincho, bokukko,
@@ -2066,11 +2066,15 @@ explained below.
   \item{\anbiruteki tsuita} soku, atama.
   \item{\anbiruteki jieubsida} dodum, batang, sunmoon.
   \item{\anbiruteki blackletter\_lolita} cosette.
+  \item{\anbiruteki kazoemashou} seisuu.
 \end{description}
 
 The weight may be ``extralight,'' ``light,'' ``normal,'' ``demibold,''
 ``bold,'' or ``extrabold.''  The spacing may be ``monospace'' or
-``proportional.''
+``proportional.''  All combinations of these are allowed for all families
+except that when the family is ``kazoemashou,'' the weight and spacing must
+be ``normal'' and ``proportional'' respectively; that constraint is
+enforced by the ``allowed\_style/4'' predicate in select.hl.
 
 The Hamlog name may be subject to rewriting according to rules in the
 select.hl file, specifically the ``do\_style\_xlat/8'' predicate.  These
@@ -2080,12 +2084,17 @@ versions in which the weight parameter was not fully implemented.  This code
 is also meant to support future per-language localization of name components
 like ``demibold,'' in particular so that Korean fonts won't end up with
 Japanese in their names, though that aspect is not yet fully implemented.
-At present, there are just two rewriting rules:
+Here are the rewriting rules:
 \begin{itemize}
   \item (tsukurimashou, maru, extralight, $X$) is rewritten to
     (tsukurimashou, tenshinokami, normal, $X$).
   \item (tsukurimashou, maru, extrabold, $X$) is rewritten to
     (tsukurimashou, anbiruteki, normal, $X$).
+  \item (kazoemashou, $X$, normal, proportional) is rewritten to
+    (kazoemashou, $X$, normal, monospace).  Bearing in mind that ``monospace''
+    translates to the empty string in the long name, the point here is to
+    avoid a redundant ``PS'' in the long name (see below) for the
+    Kazoemashou family, where there is only a proportional version.
 \end{itemize}
 
 The Hamlog name is translated into a few other kinds of names, by a
@@ -2112,12 +2121,14 @@ build.
 
 Anyone contemplating modification of this system should be aware that
 short-name tokens other than page numbers must \emph{not} be valid
-hexadecimal digit sequences that could be mistaken for page numbers; the
-build system needs to be able to distinguish subfont and full-font short
-names from each other by testing for a hexadecimal number as the last
-token.  To prevent terms like ``extra bold'' and ``demibold'' from
-abbreviating to valid hexadecimal numbers, terms derived from the word
-``bold'' are abbreviated as if it were spelled ``qold'' or ``bqld.''
+hexadecimal digit sequences that could be mistaken for page numbers; in
+other words, each non-page-number token should contain at least one letter
+in the range ``g'' to ``z.'' The build system needs to be able to
+distinguish subfont and full-font short names from each other by testing for
+a hexadecimal number as the last token.  To prevent terms like ``extra
+bold'' and ``demibold'' from abbreviating to valid hexadecimal numbers,
+terms derived from the word ``bold'' are abbreviated as if it were spelled
+``qold'' or ``bqld.''
 
 Fragments of short names are also used to name source code files.  Files
 that follow this scheme (not all source files do) have names consisting of

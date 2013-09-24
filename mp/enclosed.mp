@@ -33,15 +33,25 @@ inclusion_lock(enclosed);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef circle.single =
-  Fill fullcircle scaled (810+53*tsu_brush_max.brletter) shifted centre_pt;
-  unFill reverse fullcircle scaled (810-53*tsu_brush_max.brletter) shifted centre_pt;
+  push_stroke(fullcircle scaled 810 shifted centre_pt,
+    (2,2)--(2,2)--(2,2)--(2,2)--cycle);
+  set_bobrush(0,brpunct);
+  set_bosize(0,53);
+  tsu_render;
+  init_obstack;
 enddef;
 
 vardef circle.double =
-  Fill fullcircle scaled (880+60*tsu_brush_max.brletter) shifted centre_pt;
-  unFill reverse fullcircle scaled (880-20*tsu_brush_max.brletter) shifted centre_pt;
-  Fill fullcircle scaled (740+40*tsu_brush_max.brletter) shifted centre_pt;
-  unFill reverse fullcircle scaled (740-40*tsu_brush_max.brletter) shifted centre_pt;
+  push_stroke(fullcircle scaled 900 shifted centre_pt,
+    (1,1)--(1,1)--(1,1)--(1,1)--cycle);
+  set_bobrush(0,brpunct);
+  set_bosize(0,40);
+  push_stroke(fullcircle scaled 740 shifted centre_pt,
+    (1,1)--(1,1)--(1,1)--(1,1)--cycle);
+  set_bobrush(0,brpunct);
+  set_bosize(0,40);
+  tsu_render;
+  init_obstack;
 enddef;
 
 vardef square.single(text curves) =
@@ -50,6 +60,7 @@ vardef square.single(text curves) =
     ((500,790)--(100,790)--(100,-10)--(900,-10)--(900,790)--cycle)
       transformed inverse tsu_slant_xform,
     (2,2)--(2,2)--(2,2)--(2,2)--(2,2)--cycle);
+  set_bobrush(0,brpunct);
   set_bosize(0,80);
   set_botip(0,1,1);
   set_botip(0,2,1);

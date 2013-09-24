@@ -47,9 +47,9 @@ tsu_brush_max.brletter:=0.90;
 tsu_brush_shape.brletter:=0.45;
 tsu_brush_angle.brletter:=1;
 
-tsu_brush_xf.bralternate:=identity xyscaled (1.2,0) shifted (0,0.35);
-tsu_brush_min.bralternate:=0.35;
-tsu_brush_max.bralternate:=0.35;
+tsu_brush_xf.bralternate:=identity xyscaled (1.2,0) shifted (0,0.315);
+tsu_brush_min.bralternate:=0.315;
+tsu_brush_max.bralternate:=0.315;
 tsu_brush_shape.bralternate:=1;
 tsu_brush_angle.bralternate:=0;
 
@@ -78,8 +78,19 @@ vardef kazoe.normal =
 
   tsu_brush_min.brletter:=0.35;
   tsu_brush_max.brletter:=0.90;
-  tsu_pbrush_size.brletter:=50;
-  tsu_punct_size.brletter:=100;
+  tsu_brush_shape.brletter:=0.45;
+  tsu_brush_angle.brletter:=1;
+
+  tsu_brush_xf.bralternate:=identity xyscaled (1.2,0) shifted (0,0.315);
+  tsu_brush_min.bralternate:=0.315;
+  tsu_brush_max.bralternate:=0.315;
+  tsu_brush_shape.bralternate:=1;
+  tsu_brush_angle.bralternate:=0;
+
+  tsu_brush_min.brpunct:=0.50;
+  tsu_brush_max.brpunct:=0.50;
+  tsu_brush_shape.brpunct:=1;
+  tsu_brush_angle.brpunct:=0;
 
   handakuten_outer:=200;
 

@@ -45,9 +45,9 @@ tsu_brush_max.brletter:=1.05;
 tsu_brush_shape.brletter:=0.38;
 tsu_brush_angle.brletter:=1;
 
-tsu_brush_xf.bralternate:=identity xyscaled (1.2,0) shifted (0,0.38);
-tsu_brush_min.bralternate:=0.38;
-tsu_brush_max.bralternate:=0.38;
+tsu_brush_xf.bralternate:=identity xyscaled (1.2,0) shifted (0,0.315);
+tsu_brush_min.bralternate:=0.315;
+tsu_brush_max.bralternate:=0.315;
 tsu_brush_shape.bralternate:=1;
 tsu_brush_angle.bralternate:=0;
 

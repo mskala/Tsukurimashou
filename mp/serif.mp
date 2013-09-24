@@ -30,29 +30,10 @@
 
 inclusion_lock(serif);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% figure out size of brush
-(sbrush_width,sbrush_height)=urcorner (
-   fullcircle yscaled tsu_brush_shape.brletter
-   rotated tsu_brush_angle.brletter
-);
-if sbrush_width>sbrush_height:
-  sbrush_long:=sbrush_width;
-  sbrush_short:=sbrush_height;
-else:
-  sbrush_short:=sbrush_width;
-  sbrush_long:=sbrush_height;
-fi;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef tsu_serif.latin.lrcore(expr bst,plp,dlp,l,bts,bos,b) =
-  if b=brletter:
-    serif:=serif xyscaled (sbrush_long,sbrush_short);
-  else:
-    serif:=serif scaled sbrush_long;
-  fi;
+  serif:=serif scaled 0.5 yscaled tsu_brush_shape[b];
   serif:=serif xscaled ((1+3*xxpart tsu_rescaling_xf)/4)
     yscaled bos scaled bts;
   glstk[ngls]:=regenerate(serif shifted plp);
