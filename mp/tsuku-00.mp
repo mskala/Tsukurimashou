@@ -1059,6 +1059,7 @@ begintsuglyph("Aring",197);
   tsu_accent.apply(tsu_accent.capital(latin.upa))(tsu_accent.ringabove);
   if do_alternation:
     set_boserif(-2,1,whatever);
+    set_boserif(0,0,whatever);
   else:
     set_boserif(-1,1,whatever);
   fi;

@@ -53,6 +53,7 @@ vardef latin.upa =
     set_bobrush(0,bralternate);
 
     push_stroke((z2+alternate_adjust*right/2)--z3,(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,0,1);
     set_boserif(0,1,3);
   else:
     z4=whatever[z1,z2]+(2,0);
@@ -423,8 +424,11 @@ vardef latin.upm =
     set_bobrush(0,bralternate);
 
     push_stroke(z2--(z3+alternate_adjust*left),(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,0,1);
 
-    push_stroke(z3--(z4+alternate_adjust*left),(1.6,1.6)--(1.6,1.6));
+    push_stroke((z3+alternate_adjust*left)--z3--
+        (z4+alternate_adjust*left)--z4,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
     set_bobrush(0,bralternate);
 
     push_stroke(z4--z5,(1.6,1.6)--(1.6,1.6));
@@ -472,9 +476,11 @@ vardef latin.upn =
 
     push_stroke((z2+alternate_adjust*right)--(z3+alternate_adjust*left),
       (1.6,1.6)--(1.6,1.6));
+    set_boserif(0,0,1);
 
-    push_stroke(z3--z4,(1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,3);
+    push_stroke((z3+alternate_adjust*left)--z3--z4,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,2,3);
     set_bobrush(0,bralternate);
   else:
     push_stroke(z1--z2--z3--z4,(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
@@ -735,8 +741,9 @@ vardef latin.upv =
     push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
     set_boserif(0,0,3);
 
-    push_stroke((z2+alternate_adjust*right)--z3,(1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,3);
+    push_stroke(z2--(z2+alternate_adjust*right)--z3,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,2,3);
     set_bobrush(0,bralternate);
   else:
     push_stroke(z1--(0.95[z1,z2])--z2--z3,
@@ -767,15 +774,18 @@ vardef latin.upw =
       (1.6,1.6)--(1.6,1.6));
     set_boserif(0,0,3);
 
-    push_stroke(z2--z3,(1.6,1.6)--(1.6,1.6));
+    push_stroke((z2+alternate_adjust*left)--z2--
+        z3--(z3+alternate_adjust*right),
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
     set_bobrush(0,bralternate);
 
     push_stroke((z3--z4) shifted (alternate_adjust*right),
       (1.6,1.6)--(1.6,1.6));
 
-    push_stroke((z4--z5) shifted (alternate_adjust*right*2),
-      (1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,3);
+    push_stroke((z4+alternate_adjust*right)--
+        ((z4--z5) shifted (alternate_adjust*right*2)),
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,2,3);
     set_bobrush(0,bralternate);
   else:
     (x1+x5)/2=(x2+x4)/2=x3=500;
@@ -1753,8 +1763,9 @@ vardef latin.lowv =
     push_stroke(z1--z2,(1.6,1.6)--(1.6,1.6));
     set_boserif(0,0,3);
 
-    push_stroke((z2+alternate_adjust*right)--z3,(1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,3);
+    push_stroke(z2--(z2+alternate_adjust*right)--z3,
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,2,3);
     set_bobrush(0,bralternate);
   else:
     push_stroke(z1--z2--z3,(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
@@ -1779,16 +1790,18 @@ vardef latin.loww =
       (1.6,1.6)--(1.6,1.6));
     set_boserif(0,0,3);
 
-    push_stroke(z2--z3,
-      (1.6,1.6)--(1.6,1.6));
+    push_stroke((z2+alternate_adjust*left)--z2--
+        z3--(z3+alternate_adjust*right),
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6));
     set_bobrush(0,bralternate);
 
     push_stroke((z3--z4) shifted (alternate_adjust*right),
       (1.6,1.6)--(1.6,1.6));
 
-    push_stroke((z4--z5) shifted (alternate_adjust*right*2),
-      (1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,3);
+    push_stroke((z4+alternate_adjust*right)--
+      (z4--z5) shifted (alternate_adjust*right*2),
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,2,3);
     set_bobrush(0,bralternate);
   else:
     push_stroke(z1--z2--z3--z4--z5,
