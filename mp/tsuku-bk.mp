@@ -45,8 +45,12 @@ tsu_brush_max:=0.95;
 tsu_brush_shape:=0.3;
 tsu_brush_angle:=20;
 
-tsu_brush_xf.brpunct:=tsu_brush_xf.brpunct yscaled 0 shifted (0,0.60);
-tsu_brush_min.brpunct:=0.60;
+tsu_brush_xf.brpunct:=whatever_xf;
+(0,4) transformed tsu_brush_xf.brpunct = (0,0.60);
+(1,1) transformed tsu_brush_xf.brpunct = (1,0.10);
+(4,0) transformed tsu_brush_xf.brpunct = (4,0.60);
+
+tsu_brush_min.brpunct:=0.10;
 tsu_brush_max.brpunct:=0.60;
 tsu_brush_shape.brpunct:=0.3;
 tsu_brush_angle.brpunct:=20;

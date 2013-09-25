@@ -68,6 +68,14 @@ vardef do_late_includes =
   late_include_count:=0;
 enddef;
 
+def whatever_xf =
+  begingroup
+    save newxf;
+    transform newxf;
+    newxf
+  endgroup
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % FONT PARAMETER DEFAULTS
@@ -100,12 +108,12 @@ tsu_brush_min.bralternate:=0.5;
 tsu_brush_max.bralternate:=0.5;
 
 % punctuation brush
-(0,0) transformed tsu_brush_xf.brpunct=(1,1);
-(0,1) transformed tsu_brush_xf.brpunct=(1,1);
-(1,0) transformed tsu_brush_xf.brpunct=(1,1);
+(0,4) transformed tsu_brush_xf.brpunct=(0,0.5);
+(1,1) transformed tsu_brush_xf.brpunct=(1,0.1);
+(4,0) transformed tsu_brush_xf.brpunct=(4,0.5);
 tsu_brush_shape.brpunct:=1.0;
 tsu_brush_angle.brpunct:=0;
-tsu_brush_min.brpunct:=0.5;
+tsu_brush_min.brpunct:=0.1;
 tsu_brush_max.brpunct:=0.5;
 
 % size for punctuation

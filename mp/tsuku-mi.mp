@@ -51,7 +51,7 @@ tsu_brush_max.bralternate:=0.315;
 tsu_brush_shape.bralternate:=1;
 tsu_brush_angle.bralternate:=0;
 
-tsu_brush_min.brpunct:=0.60;
+tsu_brush_min.brpunct:=0.117;
 tsu_brush_max.brpunct:=0.60;
 tsu_brush_shape.brpunct:=1;
 tsu_brush_angle.brpunct:=1;

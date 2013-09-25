@@ -69,8 +69,9 @@ vardef punct.asciiquote =
     (ptmp shifted z3))),(4-xpart ((reverse oldp) intersectiontimes
     (ptmp shifted z3)))) of oldp)--cycle);
   replace_strokep(0)((subpath (0.8,6) of oldp)--cycle);
+  set_bobrush(0,brpunct);
   set_bosize(0,75);
-  set_botip(0,6,0);;
+  set_botip(0,6,0);
 
   push_stroke((down..right..up..left..cycle) scaled (dx/2) shifted z2,
     (2,2)--(2,2)--(2,2)--(2,2)--(2,2)--(2,2)--(1.3,1.3)--cycle);
@@ -78,6 +79,7 @@ vardef punct.asciiquote =
     (ptmp shifted z4))),(4-xpart ((reverse oldp) intersectiontimes
     (ptmp shifted z4)))) of oldp)--cycle);
   replace_strokep(0)((subpath (0.8,6) of oldp)--cycle);
+  set_bobrush(0,brpunct);
   set_bosize(0,75);
   set_botip(0,6,0);;
 
@@ -155,10 +157,12 @@ vardef punct.bvline =
 
   push_stroke((500,690+tsu_punct_size)--(500,390+0.7*tsu_punct_size),
     (1.6,1.6)--(1.6,1.6));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_stroke((500,390-0.7*tsu_punct_size)--(500,90-tsu_punct_size),
     (1.6,1.6)--(1.6,1.6));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   expand_pbox;
 enddef;
@@ -184,7 +188,7 @@ vardef punct.make_comma(expr cpos,cang) =
     push_stroke(z1{curl 0.2}..tension 1.2..z2..z3..z4{dir 280}..
         z5..{curl 0.2}(point 0.8 of (z1{curl 0.2}..tension 1.2..
         z2..z3..z4{dir 280})),
-      (2,2)--(1,1)--(2,2)--(2,2)--(2,2)--(2,2)--(2,2));
+      (2,2)--(2,2)--(2,2)--(2,2)--(2,2)--(2,2)--(2,2));
     replace_strokep(0)((point 4.2 of oldp)--oldp);
     (0,0) transformed u=llcorner get_strokep(0);
     (1,0) transformed u=lrcorner get_strokep(0);
@@ -194,11 +198,11 @@ vardef punct.make_comma(expr cpos,cang) =
     u:=u scaled 1.3 rotated (cang-6) shifted (cpos transformed t)
       transformed inverse t;
     set_botip(0,1,0);
+    set_bobrush(0,brpunct);
 
     if tsu_brush_max.brpunct>=0.3:
-      replace_strokep(0)(subpath (0.03,5.75) of oldp);
       set_bosize(0,40);
-      push_lcblob((subpath (1.6,4.9) of get_strokep(0))--cycle);
+      push_lcblob(get_strokep(0)--cycle);
     else:
       replace_strokep(0)(subpath (0,5.2) of oldp);
       set_bosize(0,80);
@@ -228,7 +232,7 @@ vardef punct.make_revcomma(expr cpos,cang) =
     push_stroke(z1{curl 0.2}..tension 1.2..z2..z3..z4{dir 280}..
         z5..{curl 0.2}(point 0.8 of (z1{curl 0.2}..tension 1.2..
         z2..z3..z4{dir 280})),
-      (2,2)--(1,1)--(2,2)--(2,2)--(2,2)--(2,2)--(2,2));
+      (2,2)--(2,2)--(2,2)--(2,2)--(2,2)--(2,2)--(2,2));
     replace_strokep(0)((point 4.2 of oldp)--oldp);
     (0,0) transformed u=llcorner get_strokep(0);
     (1,0) transformed u=lrcorner get_strokep(0);
@@ -239,11 +243,11 @@ vardef punct.make_revcomma(expr cpos,cang) =
     u:=u scaled 1.3 rotated (cang-6) shifted (cpos transformed t)
       transformed inverse t;
     set_botip(0,1,0);
+    set_bobrush(0,brpunct);
 
     if tsu_brush_max.brpunct>=0.3:
-      replace_strokep(0)(subpath (0.25,5.97) of oldp);
       set_bosize(0,40);
-      push_lcblob((subpath (1.1,4.4) of get_strokep(0))--cycle);
+      push_lcblob(get_strokep(0)--cycle);
     else:
       replace_strokep(0)(subpath (0.8,6) of oldp);
       set_bosize(0,80);
@@ -255,6 +259,7 @@ enddef;
 vardef punct.corner_left =
   push_pbox_toexpand("punct.corner_left");
   push_stroke((910,800)--(650,800)--(650,400),(2,2)--(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,120);
   set_botip(0,1,1);
   expand_pbox;
@@ -270,27 +275,32 @@ vardef punct.currency =
   push_pbox_toexpand("punct.currency");
 
   push_stroke(fullcircle scaled (4*tsu_punct_size) shifted centre_pt,
-    (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.6,1.6)--cycle);
+    (2,2)--(2,2)--(2,2)--(2,2)--cycle);
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_stroke(((1,0)--(1.55,0)) rotated 45
       scaled (2*tsu_punct_size) shifted centre_pt,
-    (1.6,1.6)--(1.6,1.6));
+    (2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_stroke(((1,0)--(1.55,0)) rotated 135
       scaled (2*tsu_punct_size) shifted centre_pt,
-    (1.6,1.6)--(1.6,1.6));
+    (2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_stroke(((1,0)--(1.55,0)) rotated 225
       scaled (2*tsu_punct_size) shifted centre_pt,
-    (1.6,1.6)--(1.6,1.6));
+    (2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_stroke(((1,0)--(1.55,0)) rotated 315
       scaled (2*tsu_punct_size) shifted centre_pt,
-    (1.6,1.6)--(1.6,1.6));
+    (2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   expand_pbox;
 enddef;
@@ -307,7 +317,10 @@ vardef punct.dash.double_hyphen =
   x2=x4;
   
   push_stroke(z1--z2,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   push_stroke(z3--z4,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
+
   expand_pbox;
 enddef;
 
@@ -317,6 +330,7 @@ vardef punct.dash.em =
   x2-x1=if is_proportional: 750 else: 630 fi;
   y1=y2;
   push_stroke(z1--z2,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
@@ -326,6 +340,7 @@ vardef punct.dash.en =
   x2-x1=580;
   y1=y2;
   push_stroke(z1--z2,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
@@ -335,6 +350,7 @@ vardef punct.dash.hyphen =
   x2-x1=340;
   y1=y2;
   push_stroke(z1--z2,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
@@ -344,11 +360,13 @@ vardef punct.dash.long =
   x2-x1=340;
   y1=y2;
   push_stroke(z1--z2,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
 vardef punct.dividedby(expr t) =
   push_stroke(((-1,0)--(1,0)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_lcblob(fullcircle scaled (0.65*tsu_punct_size/xxpart t)
@@ -362,9 +380,11 @@ enddef;
 
 vardef punct.equals(expr t) =
   push_stroke(((-1,0.667)--(1,0.667)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_stroke(((-1,-0.667)--(1,-0.667)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_pbox_explicit("punct.equals",
@@ -403,18 +423,21 @@ vardef punct.full_stop =
   if tsu_brush_max.brpunct*100>=tsu_punct_size:
     push_lcblob(fullcircle
       xscaled (1.5*tsu_punct_size+tsu_brush_max.brpunct*100)
-      yscaled (1.5*tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
+      yscaled (1.5*tsu_punct_size+tsu_brush_max.brpunct*100
+        *tsu_brush_shape.brpunct)
       rotated tsu_pbrush_angle
       shifted (170,50));
   else:
     push_stroke(fullcircle scaled (1.5*tsu_punct_size) shifted (170,50),
-      (1,1)--(1,1)--(1,1)--(1,1)--cycle);
+      (2,2)--(2,2)--(2,2)--(2,2)--cycle);
+    set_bobrush(0,brpunct);
   fi;
   expand_pbox;
 enddef;
 
 vardef punct.greater_than(expr t) =
   push_stroke(((-1,1)--(1,0)--(-1,-1)) transformed t,(2,2)--(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   set_botip(0,1,1);
 
@@ -464,6 +487,7 @@ enddef;
 
 vardef punct.hminus(expr t) =
   push_stroke(((-1,0)--(1,0)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
 
   push_pbox_explicit("punct.hminus",
     identity shifted (-0.5,-0.5) xyscaled (2.4,0.6) transformed t);
@@ -471,6 +495,7 @@ enddef;
 
 vardef punct.less_than(expr t) =
   push_stroke(((1,1)--(-1,0)--(1,-1)) transformed t,(2,2)--(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   set_botip(0,1,1);
 
@@ -506,6 +531,7 @@ enddef;
 
 vardef punct.notsign(expr t) =
   push_stroke(((-1,0)--(1,0)--(1,-1)) transformed t,(2,2)--(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   set_botip(0,1,1);
 
@@ -529,12 +555,16 @@ vardef punct.numbersign =
   (0,3.5) transformed xf_num = z3;
 
   push_stroke(((0,2.5)--(3.5,2.5)) transformed xf_num,(1.6,1.6)--(1.6,1.6));
+  set_bobrush(0,brpunct);
   set_bosize(0,85);
   push_stroke(((1,3.5)--(1,0)) transformed xf_num,(1.6,1.6)--(1.6,1.6));
+  set_bobrush(0,brpunct);
   set_bosize(0,85);
   push_stroke(((0,1)--(3.5,1)) transformed xf_num,(1.6,1.6)--(1.6,1.6));
+  set_bobrush(0,brpunct);
   set_bosize(0,85);
   push_stroke(((2.5,3.5)--(2.5,0)) transformed xf_num,(1.6,1.6)--(1.6,1.6));
+  set_bobrush(0,brpunct);
   set_bosize(0,85);
   expand_pbox;
 enddef;
@@ -621,12 +651,14 @@ vardef punct.pilcrow =
     (z8--z9))) of oldq);
   replace_strokep(0)(subpath (0,xpart (oldp intersectiontimes
     (z8--z9))) of oldp);
+  set_bobrush(0,brpunct);
   set_bosize(0,67);
   set_botip(0,1,1);
   set_boserif(0,0,3);
   set_boserif(0,1,2);
 
   push_stroke(((z7--z8) intersectionpoint get_strokep(0))--z9,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,67);
   set_boserif(0,1,3);
 
@@ -639,15 +671,20 @@ enddef;
 
 vardef punct.plus(expr t) =
   push_stroke(((-1,0)--(1,0)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   push_stroke(((0,1)--(0,-1)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   push_pbox_explicit("punct.plus",
     identity shifted (-0.5,-0.5) scaled 2.4 transformed t);
 enddef;
 
 vardef punct.plusminus(expr t) =
   push_stroke(((-1,0.25)--(1,0.25)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   push_stroke(((0,1.25)--(0,-0.75)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   push_stroke(((-1,-1.25)--(1,-1.25)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
 
   push_pbox_explicit("punct.plusminus",
     identity shifted (-0.5,-0.5) xyscaled (2.4,3.2) transformed t);
@@ -677,6 +714,7 @@ enddef;
 vardef punct.make_period(expr cpos) =
   push_stroke(fullcircle scaled (tsu_punct_size*1.15) shifted cpos,
     (2,2)--(2,2)--(2,2)--(2,2)--cycle);
+  set_bobrush(0,brpunct);
 
   if tsu_brush_max.brpunct>=0.3:
     set_bosize(0,40);
@@ -719,7 +757,8 @@ vardef punct.slash =
 
   push_stroke((z1--z2)
       shifted -centre_pt scaled (tsu_punct_size/100) shifted centre_pt,
-    (1.6,1.6)--(1.6,1.6));
+    (2,2)--(2,2));
+  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
@@ -730,6 +769,7 @@ vardef punct.sqb_left =
       (900-2.5*tsu_punct_size,0)--
       (900,0),
     (2,2)--(2,2)--(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   set_botip(0,1,1);
   set_botip(0,2,1);
@@ -745,8 +785,10 @@ enddef;
 
 vardef punct.times(expr t) =
   push_stroke(((-1,-1)--(1,1)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   push_stroke(((-1,1)--(1,-1)) transformed t,(2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
 
   push_pbox_explicit("punct.times",
@@ -758,6 +800,7 @@ vardef punct.underscore =
   push_stroke((100,0.3[latin_wide_desc_h,latin_wide_low_h])--
       (900,0.3[latin_wide_desc_h,latin_wide_low_h]),
     (2,2)--(2,2));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   expand_pbox;
 enddef;
@@ -766,6 +809,7 @@ vardef punct.vline =
   push_pbox_toexpand("punct.vline");
   push_stroke((500,690+tsu_punct_size)--(500,90-tsu_punct_size),
     (1.6,1.6)--(1.6,1.6));
+  set_bobrush(0,brpunct);
   set_bosize(0,90);
   expand_pbox;
 enddef;
@@ -777,6 +821,7 @@ vardef punct.wavedash =
     (0.7,2.7)--(1.7,1.7)--(1.7,1.7)--(1.7,1.7)--(1.7,1.7)--
       (1.7,1.7)--(0.7,2.7));
   replace_strokep(0)(insert_nodes(oldp)(0.5,3.5));
+  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 

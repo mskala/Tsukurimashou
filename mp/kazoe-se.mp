@@ -53,7 +53,7 @@ tsu_brush_max.bralternate:=0.315;
 tsu_brush_shape.bralternate:=1;
 tsu_brush_angle.bralternate:=0;
 
-tsu_brush_min.brpunct:=0.50;
+tsu_brush_min.brpunct:=0.1;
 tsu_brush_max.brpunct:=0.50;
 tsu_brush_shape.brpunct:=1;
 tsu_brush_angle.brpunct:=0;
@@ -72,6 +72,7 @@ boolean genji_rounded;
 genji_rounded:=true;
 
 input intro.mp;
+serif_size:=serif_size*2/3;
 
 vardef kazoe.normal =
   tsu_brush_xf.brletter:=kazoe_brush_xf.brletter;
@@ -87,7 +88,7 @@ vardef kazoe.normal =
   tsu_brush_shape.bralternate:=1;
   tsu_brush_angle.bralternate:=0;
 
-  tsu_brush_min.brpunct:=0.50;
+  tsu_brush_min.brpunct:=0.1;
   tsu_brush_max.brpunct:=0.50;
   tsu_brush_shape.brpunct:=1;
   tsu_brush_angle.brpunct:=0;
@@ -95,10 +96,12 @@ vardef kazoe.normal =
   handakuten_outer:=200;
 
   calc_mbrush_size;
+  serif_size:=serif_size*2/3;
 enddef;
 
 vardef kazoe.bold =
   scantokens "input tsuku-bq.mp;";
+  serif_size:=serif_size*2/3;
 enddef;
 
 let old_render_segment = tsu_render_segment;

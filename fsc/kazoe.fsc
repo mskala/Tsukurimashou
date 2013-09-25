@@ -28,4 +28,19 @@
 # mskala@ansuz.sooke.bc.ca
 #
 
-INCLUDE tsuku
+languagesystem DFLT dflt;
+languagesystem latn dflt;
+languagesystem kana dflt;
+languagesystem math dflt;
+
+INCLUDE afrc
+INCLUDE misc
+INCLUDE ss01
+INCLUDE ss02
+
+BEGINFEATURE ccmp
+feature ccmp {
+  INCLUDE latinpc
+  INCLUDE kanapc
+} ccmp;
+ENDFEATURE

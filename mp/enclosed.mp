@@ -43,11 +43,11 @@ enddef;
 
 vardef circle.double =
   push_stroke(fullcircle scaled 900 shifted centre_pt,
-    (1,1)--(1,1)--(1,1)--(1,1)--cycle);
+    (2,2)--(2,2)--(2,2)--(2,2)--cycle);
   set_bobrush(0,brpunct);
   set_bosize(0,40);
   push_stroke(fullcircle scaled 740 shifted centre_pt,
-    (1,1)--(1,1)--(1,1)--(1,1)--cycle);
+    (2,2)--(2,2)--(2,2)--(2,2)--cycle);
   set_bobrush(0,brpunct);
   set_bosize(0,40);
   tsu_render;

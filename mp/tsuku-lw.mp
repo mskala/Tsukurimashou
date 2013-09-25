@@ -47,6 +47,8 @@ tsu_brush_min.bralternate:=tsu_brush_min.bralternate*(0.439/0.75);
 tsu_brush_max.bralternate:=tsu_brush_max.bralternate*(0.439/0.75);
 
 tsu_brush_xf.brpunct:=tsu_brush_xf.brpunct yscaled 0.35;
+tsu_brush_min.brpunct:=tsu_brush_min.brpunct*0.35;
+tsu_brush_max.brpunct:=tsu_brush_max.brpunct*0.35;
 tsu_punct_size:=90;
 
 handakuten_inner:=170;

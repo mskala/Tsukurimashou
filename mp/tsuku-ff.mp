@@ -56,7 +56,8 @@ begintsuglyph("uniFF01",1);
    if tsu_brush_max.brpunct*100>=tsu_punct_size:
      push_lcblob(fullcircle
         xscaled (tsu_punct_size+tsu_brush_max.brpunct*100)
-        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
+        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100
+          *tsu_brush_shape.brpunct)
         rotated tsu_pbrush_angle
         shifted (500,30));
    else:

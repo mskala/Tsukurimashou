@@ -65,18 +65,21 @@ begintsuglyph("exclam",33);
    if tsu_brush_max.brpunct>=(tsu_punct_size/200):
      push_lcblob(fullcircle
         xscaled (tsu_punct_size+tsu_brush_max.brpunct*100)
-        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
+        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100
+          *tsu_brush_shape.brpunct)
         rotated tsu_brush_angle.brpunct
         shifted (220,40));
    else:
      push_stroke(fullcircle scaled tsu_punct_size shifted (220,40),
        (2,2)--(2,2)--(2,2)--(2,2)--cycle);
+     set_bobrush(0,brpunct);
      push_lcblob(get_strokep(0));
    fi;
 
    push_stroke((220,240){up}..(280,680){up}..{curl 1}(220,825){curl 1}..
      (160,680){down}..{down}(220,240),
      (1,1)--(2,2)--(2,2)--(2,2)--(1,1));
+     set_bobrush(0,brpunct);
 
    if tsu_brush_max.brpunct>=0.3:
      push_lcblob((subpath (0.1,3.9) of get_strokep(0))--cycle);
