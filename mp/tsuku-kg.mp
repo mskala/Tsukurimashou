@@ -32,7 +32,7 @@
 
 input preintro.mp;
 
-stylename:="Kaku";
+if stylename="": stylename:="Kaku"; fi;
 
 (0,4) transformed tsu_brush_xf.brletter = (4,0.75);
 (1,1) transformed tsu_brush_xf.brletter = (1,0.62);

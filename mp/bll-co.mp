@@ -32,6 +32,7 @@
 
 input preintro.mp;
 
+familyname:="BLL";
 stylename:="Cosette";
 
 (0,4) transformed tsu_brush_xf.brletter = (4,0.75);

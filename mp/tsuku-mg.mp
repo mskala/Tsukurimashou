@@ -32,7 +32,7 @@
 
 input preintro.mp;
 
-stylename:="Maru";
+if stylename="": stylename:="Maru"; fi;
 
 (0,4) transformed tsu_brush_xf.brletter = (4,0.74);
 (1,1) transformed tsu_brush_xf.brletter = (1,0.65);

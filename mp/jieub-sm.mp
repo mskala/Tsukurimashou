@@ -1,6 +1,6 @@
 %
 % Jieubsida Sun-Moon
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -28,8 +28,10 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-% JIEUBSIDA Sun-Moon
+% JIEUBSIDA SUN-MOON
+
+string familyname,stylename;
+familyname:="Jieubsida";
+stylename:="Sun-Moon";
 
 input tsuku-bk.mp;
-
-stylename:="Sun-Moon";

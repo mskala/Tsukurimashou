@@ -32,6 +32,7 @@
 
 input preintro.mp;
 
+familyname:="Kazoemashou";
 stylename:="Seisuu";
 
 mincho:=0.8;
@@ -52,6 +53,11 @@ tsu_brush_min.bralternate:=0.315;
 tsu_brush_max.bralternate:=0.315;
 tsu_brush_shape.bralternate:=1;
 tsu_brush_angle.bralternate:=0;
+
+tsu_brush_xf.brpunct:=whatever_xf;
+(0,4) transformed tsu_brush_xf.brpunct = (0,0.50);
+(1,1) transformed tsu_brush_xf.brpunct = (1,0.10);
+(4,0) transformed tsu_brush_xf.brpunct = (4,0.50);
 
 tsu_brush_min.brpunct:=0.1;
 tsu_brush_max.brpunct:=0.50;
@@ -87,6 +93,11 @@ vardef kazoe.normal =
   tsu_brush_max.bralternate:=0.315;
   tsu_brush_shape.bralternate:=1;
   tsu_brush_angle.bralternate:=0;
+
+  tsu_brush_xf.brpunct:=whatever_xf;
+  (0,4) transformed tsu_brush_xf.brpunct = (0,0.50);
+  (1,1) transformed tsu_brush_xf.brpunct = (1,0.10);
+  (4,0) transformed tsu_brush_xf.brpunct = (4,0.50);
 
   tsu_brush_min.brpunct:=0.1;
   tsu_brush_max.brpunct:=0.50;

@@ -1,6 +1,6 @@
 %
 % TsuIta Atama
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 
 input preintro.mp;
 
+familyname:="TsuIta";
 stylename:="Atama";
 
 (0,4) transformed tsu_brush_xf.brletter = (4,0.77);

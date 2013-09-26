@@ -1,6 +1,6 @@
 %
 % Jieubsida Batang
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@
 
 % JIEUBSIDA BATANG
 
-input tsuku-mi.mp;
-
+string familyname,stylename;
+familyname:="Jieubsida";
 stylename:="Batang";
+
+input tsuku-mi.mp;

@@ -32,8 +32,6 @@ inclusion_lock(tsuitacommon);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-familyname:="TsuIta";
-
 rescale_slant:=0;
 
 if (pagename="00")

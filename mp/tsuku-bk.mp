@@ -32,7 +32,7 @@
 
 input preintro.mp;
 
-stylename:="Bokukko";
+if stylename="": stylename:="Bokukko"; fi;
 
 mincho:=0.3;
 

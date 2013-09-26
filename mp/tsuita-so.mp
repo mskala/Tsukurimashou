@@ -32,6 +32,7 @@
 
 input preintro.mp;
 
+familyname:="TsuIta";
 stylename:="Soku";
 
 mincho:=0.8;
@@ -51,6 +52,7 @@ tsu_brush_max.bralternate:=0.48;
 tsu_brush_shape.bralternate:=1;
 tsu_brush_angle.bralternate:=0;
 
+tsu_brush_xf.brpunct:=whatever_xf;
 (0,4) transformed tsu_brush_xf.brpunct = (0,0.45);
 (1,1) transformed tsu_brush_xf.brpunct = (1,0.10);
 (4,0) transformed tsu_brush_xf.brpunct = (4,0.45);

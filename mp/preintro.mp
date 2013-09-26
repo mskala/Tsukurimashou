@@ -134,9 +134,11 @@ boolean sharp_corners;
 sharp_corners:=false;
 
 % for naming the font
-string familyname,stylename;
-familyname:="Tsukurimashou";
-stylename:="";
+if unknown familyname:
+  string familyname,stylename;
+  familyname:="Tsukurimashou";
+  stylename:="";
+fi;
 
 % brush option override
 def tsu_brush_opt(expr n,l) = nib(n)(l) enddef;
