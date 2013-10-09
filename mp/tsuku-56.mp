@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -92,13 +93,6 @@ vardef kanji.grfive.brigade =
   push_pbox_toexpand("kanji.grfive.brigade");
   kanji.radical.box;
   build_kanji.sscale(scaled 0.75)(kanji.grsix.inch);
-  expand_pbox;
-enddef;
-
-vardef kanji.grfive.cause =
-  push_pbox_toexpand("kanji.grfive.cause");
-  kanji.radical.box;
-  build_kanji.sscale(scaled 0.75)(kanji.grone.big);
   expand_pbox;
 enddef;
 

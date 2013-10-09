@@ -131,6 +131,22 @@ vardef kanji.grfive.brink =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.defend =
+  push_pbox_toexpand("kanji.grfive.defend");
+  build_kanji.lr(420,90)
+    (kanji.radical.beta)
+    (kanji.grtwo.direction);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.limit =
+  push_pbox_toexpand("kanji.grfive.limit");
+  build_kanji.lr(420,110)
+    (kanji.radical.beta)
+    (build_kanji.sscale(shifted (0,-10))(kanji.radical.northeast));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.hinder =
@@ -234,6 +250,18 @@ endtsuglyph;
 % han/saka "heights"
 begintsuglyph("uni962A",42);
   kanji.greight.heights;
+  tsu_render;
+endtsuglyph;
+
+% bou/fuse "defend"
+begintsuglyph("uni9632",50);
+  kanji.grfive.defend;
+  tsu_render;
+endtsuglyph;
+
+% gen/kagi "limit"
+begintsuglyph("uni9650",80);
+  kanji.grfive.limit;
   tsu_render;
 endtsuglyph;
 

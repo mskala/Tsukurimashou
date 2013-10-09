@@ -35,10 +35,7 @@ beginfont
 input latin-intro.mp;
 
 % AUTODEPS
-input accent.mp;
 input latin.mp;
-input numerals.mp;
-input punct.mp;
 
 do_late_includes;
 

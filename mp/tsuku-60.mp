@@ -1,6 +1,6 @@
 %
 % Unicode page 60 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -119,6 +119,14 @@ vardef kanji.grfive.gender =
   build_kanji.level(build_kanji.lr(320,0)
     (kanji.leftrad.heart)
     (kanji.grone.life));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.gratitude =
+  push_pbox_toexpand("kanji.grfive.gratitude");
+  build_kanji.level(build_kanji.tb(300,20)
+    (kanji.grfive.cause)
+    (kanji.bottomrad.heart));
   expand_pbox;
 enddef;
 

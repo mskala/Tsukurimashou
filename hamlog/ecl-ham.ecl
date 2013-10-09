@@ -1,6 +1,6 @@
 %
 % Support script for running Hamlog programs in ECLiPSe-CLP
-% Copyright (C) 2011  Matthew Skala
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -30,13 +30,13 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-:-use_module(library(iso)).
-
 ecl_run_hamlog_program:-
   argv(all,[_,TStr,GStr|Includes]),
   compile(Includes),
-  open(string(TStr),read,TF),readvar(TF,T,TBind),close(TF),
-  open(string(GStr),read,GF),readvar(GF,G,GBind),close(GF),
+  ensure_dot_final(TStr,TDStr),
+  ensure_dot_final(GStr,GDStr),
+  open(string(TDStr),read,TF),readvar(TF,T,TBind),close(TF),
+  open(string(GDStr),read,GF),readvar(GF,G,GBind),close(GF),
   ecl_match_bindings(TBind,GBind),
   findall(T,G,BU),
   sort(BU,B),
@@ -53,6 +53,26 @@ ecl_write_results([]):-!.
 ecl_write_results([H|T]):-
   write(H),nl,
   ecl_write_results(T).
+
+ensure_dot_final(S,S):-append_strings(_,".",S),!.
+ensure_dot_final(S,SD):-append_strings(S,".",SD).
+
+atom_chars(Atom,List):-
+  var(Atom),!,
+  (foreach(Co,CList),foreach(Ch,List) do (
+     atom_string(Ch,Tmp),
+     string_list(Tmp,[Co])
+  )),
+  string_list(String,CList),
+  atom_string(Atom,String).
+atom_chars(Atom,List):-
+  atom(Atom),
+  atom_string(Atom,String),
+  string_list(String,CList),
+  (foreach(Co,CList),foreach(Ch,List) do (
+     string_list(Tmp,[Co]),
+     atom_string(Ch,Tmp)
+  )).
 
 ecl_atoi('0',0):-!.
 ecl_atoi('1',1):-!.

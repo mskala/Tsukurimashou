@@ -40,6 +40,13 @@ vardef kanji.grfive.blame =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.cause =
+  push_pbox_toexpand("kanji.grfive.cause");
+  kanji.radical.box;
+  build_kanji.sscale(scaled 0.75)(kanji.grone.big);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.compare =
   push_pbox_toexpand("kanji.grfive.compare");
   build_kanji.level(build_kanji.lr(540,-20)
