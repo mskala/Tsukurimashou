@@ -172,14 +172,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfour.grandchild =
-  push_pbox_toexpand("kanji.grfour.grandchild");
-  build_kanji.lr(480,110)
-    (kanji.rare.mosquito_larva)
-    (kanji.grfour.lineage);
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.guess =
   push_pbox_toexpand("kanji.grfour.guess");
   build_kanji.tb(600,70)

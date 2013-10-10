@@ -120,20 +120,6 @@ vardef kanji.grfour.hundred_million =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.portent =
-  push_pbox_toexpand("kanji.grfour.portent");
-  build_kanji.spread_legs(-110)(kanji.radical.legs);
-  push_stroke((100,660)..tension 1.2..(200,570)..(250,500),
-    (1,1)--(1.5,1.5)--(1.8,1.8));
-  push_stroke((330,390)..(210,300)..tension 1.2..(70,240),
-    (1.2,1.2)--(1.6,1.6)--(1.9,1.9));
-  push_stroke((860,670)..(810,570)..tension 1.2..(720,500),
-    (1.2,1.2)--(1.6,1.6)--(1.9,1.9));
-  push_stroke((630,410)..tension 1.2..(750,340)..(850,240),
-    (1,1)--(1.5,1.5)--(1.8,1.8));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.rule =
   push_pbox_toexpand("kanji.grfour.rule");
   build_kanji.level(build_kanji.tb(180,0)

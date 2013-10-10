@@ -1,6 +1,6 @@
 %
 % Unicode page 92 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -33,9 +33,11 @@
 beginfont
 
 % AUTODEPS
+input bkencl.mp;
 input buildkanji.mp;
 input gradefour.mp;
 input gradeone.mp;
+input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 
@@ -61,15 +63,45 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.copper =
+  push_pbox_toexpand("kanji.grfive.copper");
+  build_kanji.level(build_kanji.lr(480,-20)
+    (kanji.leftrad.gold)
+    (kanji.grtwo.same));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.ore =
+  push_pbox_toexpand("kanji.grfive.ore");
+  build_kanji.level(build_kanji.lr(480,-20)
+    (kanji.leftrad.gold)
+    (kanji.grtwo.wide));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % tetsu/kurogane "iron"
 begintsuglyph("uni9244",68);
   kanji.grthree.iron;
   tsu_render;
 endtsuglyph;
 
+% kou/aragane "ore"
+begintsuglyph("uni9271",113);
+  kanji.grfive.ore;
+  tsu_render;
+endtsuglyph;
+
 % gin/shirogane "silver"
 begintsuglyph("uni9280",128);
   kanji.grthree.silver;
+  tsu_render;
+endtsuglyph;
+
+% dou/akagane "copper"
+begintsuglyph("uni9283",133);
+  kanji.grfive.copper;
   tsu_render;
 endtsuglyph;
 

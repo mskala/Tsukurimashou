@@ -40,10 +40,10 @@ mincho:=0.3;
 (1,1) transformed tsu_brush_xf.brletter = (1.02,0.80);
 (4,0) transformed tsu_brush_xf.brletter = (3.8,0.95);
 
-tsu_brush_min:=0.80;
-tsu_brush_max:=0.95;
-tsu_brush_shape:=0.3;
-tsu_brush_angle:=20;
+tsu_brush_min.brletter:=0.80;
+tsu_brush_max.brletter:=0.95;
+tsu_brush_shape.brletter:=0.3;
+tsu_brush_angle.brletter:=20;
 
 tsu_brush_xf.brpunct:=whatever_xf;
 (0,4) transformed tsu_brush_xf.brpunct = (0,0.60);

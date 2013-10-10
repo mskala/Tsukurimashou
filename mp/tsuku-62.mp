@@ -127,14 +127,6 @@ vardef kanji.grfour.become =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.fold =
-  push_pbox_toexpand("kanji.grfour.fold");
-  build_kanji.level(build_kanji.lr(420,20)
-    (kanji.leftrad.hand)
-    (kanji.greight.axe));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.beckon =

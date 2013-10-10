@@ -38,6 +38,7 @@ input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input radical.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -118,11 +119,28 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.eyeball =
+  push_pbox_toexpand("kanji.grfive.eyeball");
+  build_kanji.level(build_kanji.lr(420,80)
+    (kanji.leftrad.eye)
+    (kanji.radical.northeast));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.leftrad.arrow =
   push_pbox_toexpand("kanji.leftrad.arrow");
   kanji.grtwo.arrow;
   replace_strokep(0)((point 1.6 of get_strokep(-1))..(690,200)..(850,80));
   replace_strokeq(0)((0.9,0.9)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
+vardef kanji.leftrad.eye =
+  push_pbox_toexpand("kanji.leftrad.eye");
+  build_kanji.sscale(yscaled 0.95 shifted (0,25))(kanji.grone.eye);
+  replace_strokep(-3)((subpath (0,2) of oldp)--((0,50)+point 3 of oldp));
   expand_pbox;
 enddef;
 
@@ -143,6 +161,12 @@ endtsuglyph;
 % shin/ma "truth"
 begintsuglyph("uni771F",31);
   kanji.grthree.truth;
+  tsu_render;
+endtsuglyph;
+
+% gan/manako "eyeball"
+begintsuglyph("uni773C",60);
+  kanji.grfive.eyeball;
   tsu_render;
 endtsuglyph;
 

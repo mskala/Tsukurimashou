@@ -32,6 +32,16 @@ inclusion_lock(gradethree);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grthree.accept =
+  push_pbox_toexpand("kanji.grthree.accept");
+  build_kanji.tb(640,80)
+    (kanji.toprad.paw)
+    (build_kanji.tb(540,70)
+       (kanji.radical.conservative_hat)
+       (kanji.greight.otoh));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.anti =
   push_pbox_toexpand("kanji.grthree.anti");
   build_kanji.cliff_enclose

@@ -36,8 +36,10 @@ beginfont
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
@@ -78,6 +80,32 @@ vardef kanji.grfour.lift =
        (build_kanji.warp((700-40*mincho,850),(300,850),
                          (-50-20*mincho,-50),(1050-20*mincho,-50))
           (kanji.grone.hand))));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.award =
+  push_pbox_toexpand("kanji.grfive.award");
+  build_kanji.level(build_kanji.lr(400,-20)
+    (kanji.leftrad.hand)
+    (kanji.grthree.accept));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.gather =
+  push_pbox_toexpand("kanji.grfive.gather");
+  build_kanji.level(build_kanji.lr(420,0)
+    (kanji.leftrad.hand)
+    (kanji.greight.dice));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.proposal =
+  push_pbox_toexpand("kanji.grfive.proposal");
+  build_kanji.level(build_kanji.lr(360,30)
+    (kanji.leftrad.hand)
+    (kanji.greight.righteousness));
   expand_pbox;
 enddef;
 
@@ -134,15 +162,33 @@ begintsuglyph("uni6319",25);
   tsu_render;
 endtsuglyph;
 
+% ju/sazu "award"
+begintsuglyph("uni6388",136);
+  kanji.grfive.award;
+  tsu_render;
+endtsuglyph;
+
 % hai "discharge"
 begintsuglyph("uni6392",146);
   kanji.greight.discharge;
   tsu_render;
 endtsuglyph;
 
+% sai/to "gather"
+begintsuglyph("uni63A1",161);
+  kanji.grfive.gather;
+  tsu_render;
+endtsuglyph;
+
 % byou/ega "depict"
 begintsuglyph("uni63CF",207);
   kanji.greight.depict;
+  tsu_render;
+endtsuglyph;
+
+% tei/sa "proposal" (or "lunchbox," or "prostitute")
+begintsuglyph("uni63D0",208);
+  kanji.grfive.proposal;
   tsu_render;
 endtsuglyph;
 

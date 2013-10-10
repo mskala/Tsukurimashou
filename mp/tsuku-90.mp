@@ -44,6 +44,7 @@ input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input rare.mp;
 input rightrad.mp;
@@ -169,9 +170,63 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.make_up =
+  push_pbox_toexpand("kanji.grfive.make_up");
+  build_kanji.road_enclose(kanji.grfour.revelation);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.avoid =
   push_pbox_toexpand("kanji.greight.avoid");
   build_kanji.road_enclose(kanji.rare.punish);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.death =
+  push_pbox_toexpand("kanji.greight.death");
+  build_kanji.road_enclose(kanji.grfour.fold);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.escape =
+  push_pbox_toexpand("kanji.greight.escape");
+  build_kanji.road_enclose(kanji.grfour.portent);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.follow =
+  push_pbox_toexpand("kanji.greight.follow");
+  build_kanji.road_enclose(kanji.radical.pig);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.humble =
+  push_pbox_toexpand("kanji.greight.humble");
+  build_kanji.road_enclose(kanji.grfour.grandchild);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.turn_away =
+  push_pbox_toexpand("kanji.greight.turn_away");
+  build_kanji.road_enclose(kanji.greight.dismiss);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grnine.crawl =
+  push_pbox_toexpand("kanji.grnine.crawl");
+  build_kanji.road_enclose(kanji.grtwo.word);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.sojourn =
+  push_pbox_toexpand("kanji.grnine.sojourn");
+  build_kanji.road_enclose(build_kanji.sscale
+    (scaled 0.94 shifted (0,-20-15*mincho))
+    (kanji.grthree.bean));
   expand_pbox;
 enddef;
 
@@ -189,15 +244,51 @@ begintsuglyph("uni9001",1);
   tsu_render;
 endtsuglyph;
 
+% tou/ni "escape"
+begintsuglyph("uni9003",3);
+  kanji.greight.escape;
+  tsu_render;
+endtsuglyph;
+
+% chiku "follow"
+begintsuglyph("uni9010",16);
+  kanji.greight.follow;
+  tsu_render;
+endtsuglyph;
+
+% tou/todo "sojourn"
+begintsuglyph("uni9017",23);
+  kanji.grnine.sojourn;
+  tsu_render;
+endtsuglyph;
+
+% sha/ha "crawl"
+begintsuglyph("uni9019",25);
+  kanji.grnine.crawl;
+  tsu_render;
+endtsuglyph;
+
 % tsuu/too "distant"
 begintsuglyph("uni901A",26);
   kanji.grtwo.traffic;
   tsu_render;
 endtsuglyph;
 
+% sei/yu "death"
+begintsuglyph("uni901D",29);
+  kanji.greight.death;
+  tsu_render;
+endtsuglyph;
+
 % soku/haya "fast"
 begintsuglyph("uni901F",31);
   kanji.grthree.fast;
+  tsu_render;
+endtsuglyph;
+
+% zou/tsuku "make up"
+begintsuglyph("uni9020",32);
+  kanji.grfive.make_up;
   tsu_render;
 endtsuglyph;
 
@@ -216,6 +307,12 @@ endtsuglyph;
 % sin/susu "proceed"
 begintsuglyph("uni9032",50);
   kanji.grthree.proceed;
+  tsu_render;
+endtsuglyph;
+
+% itsu/so "turn away"
+begintsuglyph("uni9038",56);
+  kanji.greight.turn_away;
   tsu_render;
 endtsuglyph;
 
@@ -240,6 +337,12 @@ endtsuglyph;
 % tatsu/tachi "suffix for pluralizing pronouns" (and several other meanings)
 begintsuglyph("uni9054",84);
   kanji.grfour.plural;
+  tsu_render;
+endtsuglyph;
+
+% son/shitaga "humble"
+begintsuglyph("uni905C",92);
+  kanji.greight.humble;
   tsu_render;
 endtsuglyph;
 

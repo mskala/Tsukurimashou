@@ -37,6 +37,7 @@ input bkencl.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
@@ -102,9 +103,23 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.hesitate =
+  push_pbox_toexpand("kanji.grfive.hesitate");
+  build_kanji.road_enclose(kanji.grtwo.rice);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.crowded =
   push_pbox_toexpand("kanji.greight.crowded");
   build_kanji.road_enclose(kanji.grone.put_it_in);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.reshuffle =
+  push_pbox_toexpand("kanji.greight.reshuffle");
+  build_kanji.road_enclose(kanji.grfour.disappear);
   expand_pbox;
 enddef;
 
@@ -135,9 +150,23 @@ vardef kanji.grnine.dragon_sign =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.edify =
+  push_pbox_toexpand("kanji.grnine.edify");
+  build_kanji.road_enclose(kanji.grthree.reason);
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.grope_along =
   push_pbox_toexpand("kanji.grnine.grope_along");
   build_kanji.road_enclose(kanji.grone.mountain);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.phonetic_ka =
+  push_pbox_toexpand("kanji.grnine.phonetic_ka");
+  build_kanji.road_enclose(tsu_xform(identity shifted (-950,-850)
+       scaled 0.98 shifted (950,850))
+    (kanji.grfour.addition));
   expand_pbox;
 enddef;
 
@@ -212,6 +241,30 @@ endtsuglyph;
 % hen/kae "return"
 begintsuglyph("uni8FD4",212);
   kanji.grthree.return;
+  tsu_render;
+endtsuglyph;
+
+% ka "phoneme only"
+begintsuglyph("uni8FE6",230);
+  kanji.grnine.phonetic_ka;
+  tsu_render;
+endtsuglyph;
+
+% teki/michi "edify"
+begintsuglyph("uni8FEA",234);
+  kanji.grnine.edify;
+  tsu_render;
+endtsuglyph;
+
+% tetsu "reshuffle"
+begintsuglyph("uni8FED",237);
+  kanji.greight.reshuffle;
+  tsu_render;
+endtsuglyph;
+
+% mei/mayo "hesitate"
+begintsuglyph("uni8FF7",247);
+  kanji.grfive.hesitate;
   tsu_render;
 endtsuglyph;
 

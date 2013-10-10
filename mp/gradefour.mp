@@ -235,6 +235,14 @@ vardef kanji.grfour.fancy =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.fold =
+  push_pbox_toexpand("kanji.grfour.fold");
+  build_kanji.level(build_kanji.lr(420,20)
+    (kanji.leftrad.hand)
+    (kanji.greight.axe));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.fruit =
   push_pbox_toexpand("kanji.grfour.fruit");
   build_kanji.tb(420,100)
@@ -277,6 +285,14 @@ vardef kanji.grfour.good =
     push_stroke((500,830)--(500,700),(1.6,1.6)--(1.5,1.5));
     set_boserif(0,0,10);
     tsu_xform(identity yscaled (700/770))(kanji.radical.northeast));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.grandchild =
+  push_pbox_toexpand("kanji.grfour.grandchild");
+  build_kanji.lr(480,110)
+    (kanji.rare.mosquito_larva)
+    (kanji.grfour.lineage);
   expand_pbox;
 enddef;
 
@@ -385,6 +401,20 @@ vardef kanji.grfour.perfect =
   build_kanji.tb(600,110)
     (kanji.radical.silly_hat)
     (build_kanji.sscale(xscaled 0.8)(kanji.grtwo.origin));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.portent =
+  push_pbox_toexpand("kanji.grfour.portent");
+  build_kanji.spread_legs(-110)(kanji.radical.legs);
+  push_stroke((100,660)..tension 1.2..(200,570)..(250,500),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  push_stroke((330,390)..(210,300)..tension 1.2..(70,240),
+    (1.2,1.2)--(1.6,1.6)--(1.9,1.9));
+  push_stroke((860,670)..(810,570)..tension 1.2..(720,500),
+    (1.2,1.2)--(1.6,1.6)--(1.9,1.9));
+  push_stroke((630,410)..tension 1.2..(750,340)..(850,240),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
   expand_pbox;
 enddef;
 
