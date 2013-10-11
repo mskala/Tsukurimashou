@@ -63,6 +63,15 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.cent =
+  push_pbox_toexpand("kanji.grfive.cent");
+  build_kanji.level(build_kanji.lr(520,20)
+    (kanji.leftrad.gold)
+    (build_kanji.sscale(shifted (0,40))
+       (kanji.radical.three_tasselled_spear)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.copper =
   push_pbox_toexpand("kanji.grfive.copper");
   build_kanji.level(build_kanji.lr(480,-20)
@@ -100,8 +109,14 @@ begintsuglyph("uni9280",128);
 endtsuglyph;
 
 % dou/akagane "copper"
-begintsuglyph("uni9283",133);
+begintsuglyph("uni9285",133);
   kanji.grfive.copper;
+  tsu_render;
+endtsuglyph;
+
+% sen "hundredth of a yen"
+begintsuglyph("uni92AD",173);
+  kanji.grfive.cent;
   tsu_render;
 endtsuglyph;
 
