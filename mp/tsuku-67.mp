@@ -154,6 +154,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.inspection =
+  push_pbox_toexpand("kanji.grfive.inspection");
+  build_kanji.level(build_kanji.tb(420,60)
+    (kanji.grone.wood)
+    (kanji.greight.furthermore));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grsix.sheet =
   push_pbox_toexpand("kanji.grsix.sheet");
   build_kanji.lr(480,110)
@@ -336,6 +346,12 @@ endtsuglyph;
 % chuu/hashira "pillar"
 begintsuglyph("uni67F1",241);
   kanji.grthree.pillar;
+  tsu_render;
+endtsuglyph;
+
+% sa "inspection"
+begintsuglyph("uni67FB",251);
+  kanji.grfive.inspection;
   tsu_render;
 endtsuglyph;
 

@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input bkencl.mp;
 input buildkanji.mp;
+input gradeeight.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -84,6 +85,18 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.business =
+  push_pbox_toexpand("kanji.grfive.business");
+  build_kanji.tb(740,100)
+    (kanji.toprad.alt_sparkle_three)
+    (build_kanji.tb(580,110)
+       (kanji.radical.conservative_hat)
+       (kanji.greight.spine));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % shou/tona "chant"
 begintsuglyph("uni5531",49);
   kanji.grfour.chant;
@@ -111,6 +124,12 @@ endtsuglyph;
 % kyou/taka "boast"
 begintsuglyph("uni55AC",172);
   kanji.grnine.boast;
+  tsu_render;
+endtsuglyph;
+
+% ei/itona "business"
+begintsuglyph("uni55B6",182);
+  kanji.grfive.business;
   tsu_render;
 endtsuglyph;
 

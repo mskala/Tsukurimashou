@@ -204,6 +204,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.thick =
+  push_pbox_toexpand("kanji.grfive.thick");
+  build_kanji.cliff_enclose(build_kanji.tb(440,0)
+    (build_kanji.sscale(xyscaled (0.9,0.8))(kanji.grone.day))
+    (kanji.grone.child));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grnine.divination =
   push_pbox_toexpand("kanji.grnine.divination");
   push_stroke((400,780)--(400,-20),
@@ -389,6 +399,12 @@ endtsuglyph;
 % extra
 begintsuglyph("uni5393",147);
   build_kanji.cliff_enclose(kanji.grnine.square_jewel);
+  tsu_render;
+endtsuglyph;
+
+% kou/atsu "thick"
+begintsuglyph("uni539A",154);
+  kanji.grfive.thick;
   tsu_render;
 endtsuglyph;
 

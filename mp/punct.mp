@@ -317,9 +317,9 @@ vardef punct.dash.double_hyphen =
   x2=x4;
   
   push_stroke(z1--z2,(2,2)--(2,2));
-  set_bobrush(0,brpunct);
+%  set_bobrush(0,brpunct);
   push_stroke(z3--z4,(2,2)--(2,2));
-  set_bobrush(0,brpunct);
+%  set_bobrush(0,brpunct);
 
   expand_pbox;
 enddef;
@@ -330,7 +330,7 @@ vardef punct.dash.em =
   x2-x1=if is_proportional: 750 else: 630 fi;
   y1=y2;
   push_stroke(z1--z2,(2,2)--(2,2));
-  set_bobrush(0,brpunct);
+%  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
@@ -340,7 +340,7 @@ vardef punct.dash.en =
   x2-x1=580;
   y1=y2;
   push_stroke(z1--z2,(2,2)--(2,2));
-  set_bobrush(0,brpunct);
+%  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
@@ -350,7 +350,7 @@ vardef punct.dash.hyphen =
   x2-x1=340;
   y1=y2;
   push_stroke(z1--z2,(2,2)--(2,2));
-  set_bobrush(0,brpunct);
+%  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
@@ -360,7 +360,7 @@ vardef punct.dash.long =
   x2-x1=340;
   y1=y2;
   push_stroke(z1--z2,(2,2)--(2,2));
-  set_bobrush(0,brpunct);
+%  set_bobrush(0,brpunct);
   expand_pbox;
 enddef;
 
@@ -487,7 +487,7 @@ enddef;
 
 vardef punct.hminus(expr t) =
   push_stroke(((-1,0)--(1,0)) transformed t,(2,2)--(2,2));
-  set_bobrush(0,brpunct);
+%  set_bobrush(0,brpunct);
 
   push_pbox_explicit("punct.hminus",
     identity shifted (-0.5,-0.5) xyscaled (2.4,0.6) transformed t);
@@ -800,7 +800,7 @@ vardef punct.underscore =
   push_stroke((100,0.3[latin_wide_desc_h,latin_wide_low_h])--
       (900,0.3[latin_wide_desc_h,latin_wide_low_h]),
     (2,2)--(2,2));
-  set_bobrush(0,brpunct);
+%  set_bobrush(0,brpunct);
   set_bosize(0,90);
   expand_pbox;
 enddef;

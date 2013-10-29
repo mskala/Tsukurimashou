@@ -532,10 +532,10 @@ paramaterization: stroke style, shape, boldness, serifs, spacing &
   \node at (-9,-3) {\fontspec{TsukurimashouKakuPS}Kaku\quad 角};
   \node at (-3,0) {\scalebox{9}{\fontspec{TsukurimashouMaruPS}\char"6E90}};
   \node at (-3,-3) {\fontspec{TsukurimashouMaruPS}Maru\quad 丸};
-  \node at (3,0) {\scalebox{9}{\fontspec{TsukurimashouMinchoPS}\char"6E90}};
-  \node at (3,-3) {\fontspec{TsukurimashouMinchoPS}Mincho\quad 明朝};
-  \node at (9,0) {\scalebox{9}{\fontspec{TsukurimashouBokukkoPS}\char"6E90}};
-  \node at (9,-3) {\fontspec{TsukurimashouBokukkoPS}Bokukko\quad 僕女};
+  \node at (3,0) {\scalebox{9}{\fontspec{TsukurimashouBokukkoPS}\char"6E90}};
+  \node at (3,-3) {\fontspec{TsukurimashouBokukkoPS}Bokukko\quad 僕女};
+  \node at (9,0) {\scalebox{9}{\fontspec{TsukurimashouMinchoPS}\char"6E90}};
+  \node at (9,-3) {\fontspec{TsukurimashouMinchoPS}Mincho\quad 明朝};
 \end{tikzpicture}\hspace*{\fill}\par}
 
 \vspace{\fill}
@@ -561,6 +561,37 @@ paramaterization: stroke style, shape, boldness, serifs, spacing &
 \fontspec{TsuItaSoku}TsuIta Soku
   & \fontspec{TsuItaSokuPS}TsuIta Soku PS
 \end{tabular}\hspace*{\fill}\par}
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\slidetitle{位相のパラメタ ・ Topological parameterization}
+
+{\hspace*{\fill}\begin{tikzpicture}
+  \node at (-7.2,0) {\scalebox{19}{\fontspec{TsukurimashouKakuPS}さ}};
+  \node at (-7.2,-6.5) {\Huge\fontspec{TsukurimashouKakuPS}mincho=0.0};
+  \path[red!70!white,ultra thick,decoration={ticks,amplitude=8pt},%
+      postaction={decorate,draw}] (-8.8,-1.5) circle[radius=2];
+  \node at (7.2,0) {\scalebox{19}{\fontspec{TsukurimashouMinchoPS}さ}};
+  \node at (7.2,-6.5) {\Huge\fontspec{TsukurimashouMinchoPS}mincho=1.0};
+  \path[red!70!white,ultra thick,decoration={ticks,amplitude=8pt},%
+      postaction={decorate,draw}] (5.5,-1.8) circle[radius=2];
+  \fill[green!50!black] (-9,-8.1) rectangle (9,-7.9);
+  \path[thick,draw,fill=green]
+    (7,-8) -- (7.5,-8.866) -- (6.5,-8.866) --cycle;
+  \path[thick,draw,fill=green]
+    (-7,-8) -- (-7.5,-8.866) -- (-6.5,-8.866) --cycle;
+  \path[thick,draw,fill=green]
+    (-2.8,-8) -- (-2.3,-8.866) -- (-3.3,-8.866) --cycle;
+  \node at (-7,-9.3) {\fontspec{TsukurimashouKakuPS}0.0};
+  \node at (-7,-9.9) {\fontspec{TsukurimashouKakuPS}Kaku 角};
+  \node at (-7,-10.4) {\fontspec{TsukurimashouMaruPS}Maru 丸};
+  \node at (-2.8,-9.3) {\fontspec{TsukurimashouKakuPS}0.3};
+  \node at (-2.8,-10) {\fontspec{TsukurimashouBokukkoPS}Bokukko 僕女};
+  \node at (7,-9.3) {\fontspec{TsukurimashouKakuPS}1.0};
+  \node at (7,-10) {\fontspec{TsukurimashouMinchoPS}Mincho 明朝};
+\end{tikzpicture}\hspace*{\fill}\par}
 \end{slide}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

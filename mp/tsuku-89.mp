@@ -86,11 +86,11 @@ enddef;
 
 vardef kanji.grfour.remember =
   push_pbox_toexpand("kanji.grtwo.remember");
-    build_kanji.tb(740,100)
-      (kanji.toprad.alt_sparkle_three)
-      (build_kanji.tb(580,110)
-         (kanji.radical.conservative_hat)
-         (build_kanji.sscale(xscaled 0.93)(kanji.grone.see)));
+  build_kanji.tb(740,100)
+    (kanji.toprad.alt_sparkle_three)
+    (build_kanji.tb(580,110)
+       (kanji.radical.conservative_hat)
+       (build_kanji.sscale(xscaled 0.93)(kanji.grone.see)));
   expand_pbox;
 enddef;
 
