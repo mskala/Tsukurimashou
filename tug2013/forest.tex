@@ -26,7 +26,7 @@
 \noindent
 \begin{tikzpicture}
   \node at (0,0) {\scalebox{3}{林}};
-  \node at (0,-1.5) {\scalebox{2}{⿰}};
+  \node[blue] at (0,-1.5) {\scalebox{2}{⿰}};
   \node at (2.5,0) {\begin{bil}U+6797\\\emph{hayashi}\\``forest''\end{bil}};
   \node at (-3,-4) {\scalebox{3}{木}};
   \node at (-0.5,-4) {\begin{bil}U+6728\\\emph{ki}\\``tree''\end{bil}};
@@ -35,10 +35,10 @@
   \draw[ultra thick,bigah] (-1,-1) -- (-2.5,-3);
   \draw[ultra thick,bigah] (1,-1) -- (2.5,-3);
 %
-  \draw[black!50!white,ultra thick] (-2.2,-7.5) circle[radius=2.2];
-  \fill[black!25!white,xshift={3.0cm},yshift={-7.5cm},rotate=45]
+  \draw[green!80!black,ultra thick] (-2.2,-7.5) circle[radius=2.2];
+  \fill[red!50!white,xshift={3.0cm},yshift={-7.5cm},rotate=45]
     (-2.5,-0.1) rectangle (2.5,0.1);
-  \fill[black!25!white,xshift={3.0cm},yshift={-7.5cm},rotate=-45]
+  \fill[red!50!white,xshift={3.0cm},yshift={-7.5cm},rotate=-45]
     (-2.5,-0.1) rectangle (2.5,0.1);
   \node at (-2.1,-7.5) {\scalebox{7}{林}};
   \begin{scope}

@@ -2,19 +2,12 @@
 
 \usepackage{graphicx}
 \usepackage{ifpdf}
-\def\CJK{CJK}
-%\def\GNU{GNU}
-%\def\EPS{EPS}
-%\def\TikZ{Ti{\em k}Z}
-%\def\XML{XML}
-%\usepackage{metalogo}
-
-%\ifpdf
-%\usepackage[breaklinks,colorlinks,linkcolor=black,citecolor=black,
-%           urlcolor=black]{hyperref}
-%\else
+\ifpdf
+\usepackage[breaklinks,colorlinks,linkcolor=black,citecolor=black,
+            urlcolor=black]{hyperref}
+\else
 \usepackage{url}
-%\fi
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -36,16 +29,14 @@ Canada}
 \maketitle
 
 \begin{abstract}
-\MF-based font projects for the Chinese,
-\linebreak%%!!
-Japanese, and Korean (\CJK)
+\MF-based font projects for the Chinese, Japanese, and Korean (\CJK)
 languages have been announced every few years since the early 1980s,
 even predating the current form of the \MF\ language.  Except for a few
 non-parameterized conversions of fonts that originated in other formats,
 in 30 years every \MF\ \CJK\ font has been abandoned at or before the
 8-bit barrier of 256 \emph{kanji}, nowhere near the thousands required for
 practical typesetting.  In this presentation I describe the first
-project to break that barrier: $\!$Tsukurimashou\kern-0.7pt\
+project to break that barrier: Tsukurimashou
 (\url{http://tsukurimashou.sourceforge.jp/}), currently at over 1500
 \emph{kanji} (as well as kana, Latin, and Korean hangul) and steadily growing.
 I discuss technical and human challenges facing this kind of project,
@@ -58,15 +49,11 @@ how to solve them, and spin-off technologies such as the IDSgrep
 \section{Introduction}
 
 The Han script, used by the Chinese, Japanese, and Korean (\CJK) languages
-among others, includes 
-\linebreak%%!!
-very many characters.  Just counting them is tricky,
+among others, includes very many characters.  Just counting them is tricky,
 but a human being might typically need to know a few thousand for basic
 literacy in a Han-script language.  The list of 2136 characters taught in
 the Japanese school system (the \emph{jouyou kanji}) is one benchmark, near
-the low end.  Chinese requires
-\linebreak
- more, and a typesetting system may require
+the low end.  Chinese requires more, and a typesetting system may require
 more still, because of rare characters found in names, historical contexts,
 and so on.  A human being can get away with failing to read the occasional
 character; typesetting systems need to be able to print nearly all of them. 
@@ -79,9 +66,7 @@ of work implied by that number, is daunting.  Considering the difficulty of
 building even a simple Latin font with \MF, it may be no surprise that there
 are no complete \MF-native \CJK\ typefaces.  But on the other hand,
 examination of Han-script text (even, or especially, by someone who cannot
-read it) quickly reveals that characters can be decomposed into
-\linebreak%%!!
-smaller
+read it) quickly reveals that characters can be decomposed into smaller
 parts, as shown in Figure~\ref{fig:tree}.  Computer scientists who examine
 Figure~\ref{fig:tree} are likely to believe they understand it.  ``Of
 course,'' one supposes, ``the tens of thousands of Han characters are just a
@@ -115,9 +100,7 @@ that a present-day computer scientist would naturally think of on viewing
 Figure~\ref{fig:tree}.  Mei's report includes images of 346 ``basic strokes
 and radicals,'' and 112 completed characters.
 
-Subsequent work on \MF-native \CJK
-\linebreak%%!! 
-fonts includes that of Hobby and Guoan
+Subsequent work on \MF-native \CJK\ fonts includes that of Hobby and Guoan
 in 1984, who created 128 characters~\cite{Hobby:Chinese}; Hosek in 1989,
 character count unknown but two are displayed in the \TUB\
 article~\cite{Hosek:Design}; Yiu and Wong in 2003, in a project that
@@ -128,14 +111,11 @@ small number of basic components, combining according to a spatial grammar
 to form more complicated characters.
 
 I listed published \MF-related projects.  Similar ideas have also been used
-behind closed
-\linebreak%%!!
- doors in commercial font foundries (\acro{CDL} from Wenlin
+behind closed doors in commercial font foundries (\acro{CDL} from Wenlin
 Institute seems to be an example~\cite{Wenlin:CDL}), and non-\MF\ research
 projects like the \acro{LISP}-based Wadalab toolkit~\cite{Tanaka:Wadalab}. 
 The Wadalab font project ran during the 1990s; much of the work was lost or
-withdrawn after hard drive failures and copyright infringement concerns that
-came to light in 2003, but some of its fonts survived to become widely used
+withdrawn, but some of its fonts survived to become widely used
 in the free software world.  These kinds of projects use grammars of
 character parts, but they lack the full parameterization that \MF\ users
 expect.  There has also been work on using \CJK\ fonts from other sources in
@@ -168,9 +148,7 @@ delaying travellers by night.
 
 Many font file formats are limited to 256 glyphs by their use of 8-bit
 character codes.  People who attempt to typeset \CJK\ documents in classical
-\TeX\ use elaborate workarounds involving slicing their
-\linebreak%%!!
- fonts into 256-glyph
+\TeX\ use elaborate workarounds involving slicing their fonts into 256-glyph
 sub-fonts.  Handling the input encoding for documents written in large
 character sets with these slicing schemes is a tough problem too, but
 fortunately not one we must solve as font designers.  There are extended
@@ -194,9 +172,7 @@ issue.  These are elementary problems in software engineering, but there is
 little or no previous work on them in the \MF\ context because nobody has
 built systems this size in \MF\ before.
 
-Classical \MF\ is designed to produce
-\linebreak%%!!
-bitmap fonts, but bitmap fonts are no
+Classical \MF\ is designed to produce bitmap fonts, but bitmap fonts are no
 longer such a desired commodity.  A present-day \CJK\ font project will
 presumably target a vector format, but making \MF\ or some variation of it
 produce vector fonts requires additional layers of software, all of which
@@ -243,9 +219,7 @@ successful large-scale collaboration is probably
 GlyphWiki~\cite{Kamichi:GlyphWiki}, which sacrifices parameterization for a
 more purely graphical approach that demands less from the participants.
 
-Finally, many of the potential rewards of a 
-\linebreak%%!!
-\MF\ \CJK\ project, such as
+Finally, many of the potential rewards of a \MF\ \CJK\ project, such as
 academic publications, can be had at the start, before the boring part; and
 then there are no more rewards until the end, and few then.  You can publish
 one paper about your innovative techniques for building fonts; and you can
@@ -280,7 +254,6 @@ issue in the first place.
 \includegraphics[scale=0.70]{forest.pdf}
 \caption{A forest is not two identical trees.}
 \label{fig:forest}
-\vskip-1mm%%!!
 \end{figure}
 
 In Figure~\ref{fig:outlook}, the left side of ``outlook,'' in addition to
@@ -327,9 +300,7 @@ oneself into thinking the whole character set will be easy.
 
 But in order to produce high-quality fonts with full parameterization, with
 all the characters needed to typeset real documents, we must be able to
-override the simple descriptions and combinations of
-\linebreak%%!!
- parts in arbitrarily
+override the simple descriptions and combinations of parts in arbitrarily
 complicated ways\Dash per character and depending non-linearly on the
 parameters.  To work at full scale, the font description language must have
 the power of a general-purpose programming language.
@@ -368,13 +339,9 @@ proof of concept.
 corporate or large-scale collaborative effort.
 \end{itemize}
 
-Tsukurimashou is hosted as a free software
-\linebreak%%!!
- project on SourceForge Japan,
+Tsukurimashou is hosted as a free software project on SourceForge Japan,
 with the bilingual project home page at
-\url{http://tsukurimashou.}
-\linebreak%%!!
-\url{sourceforge.jp/} featuring downloadable packages,
+\url{http://tsukurimashou.sourceforge.jp/} featuring downloadable packages,
 a Subversion repository for the source code, a bug tracker, mailing list,
 and so on.  The package as a whole is distributed under the \GNU\ General
 Public License, version 3, with a clarifying paragraph added to explicitly
@@ -408,16 +375,14 @@ Tsukurimashou has required me to invent new technology that may be useful in
 other projects.  Some of it is publishable research in computer science,
 certainly welcome for someone hoping to establish an academic career.  And
 because it places heavy (in some cases unprecedented) demands on other free
-software systems, Tsukurima\-shou has proven useful in the development of
+software systems, Tsukurimashou has proven useful in the development of
 those systems.  Given that I am already committing to spend some time per
 character on learning the language, the hope is to make that time pay off in
 as many ways as possible.
 
 \subsection{A brief tour of the fonts}
 
-Tsukurimashou as a software package generates
-\linebreak%%!!
- OpenType font files as its
+Tsukurimashou as a software package generates OpenType font files as its
 main output.  Those are intended for use in general typesetting and word
 processing, not only within the \TeX\ world.  I most often use them with
 \XeTeX.  The OpenType fonts are divided up into families, of which the main
@@ -441,56 +406,44 @@ some that are experimental and not intended for actual use.
 \includegraphics[scale=0.80]{styles.pdf}
 \caption{A sample of the Tsukurimashou meta-family of fonts.}
 \label{fig:styles}
-\vskip-2mm%%!!
 \end{figure}
 
 \begin{figure}
 \includegraphics[scale=0.69]{mincho.pdf}
 \caption{\emph{Kana} and Grade One \emph{kanji} in Tsukurimashou Mincho.}
 \label{fig:mincho}
-\vskip-1mm%%!!
 \end{figure}
 
-These are outline fonts intended for 
-\linebreak%%!!
-high-resolution printing.  They contain
+These are outline fonts intended for high-resolution printing.  They contain
 hinting for bitmap conversion, but it is done automatically and not expected
-to be extremely high quality. $\!$Japanese-language typesetting has
+to be extremely high quality.  Japanese-language typesetting has
 traditionally used monospace metrics, simple scaling (i.e., no corrections
 for optical weight), and no slanting or italicization; Tsukurimashou
-currently offers a choice between
-\linebreak%%!!
- monospace or proportional, no optical
+currently offers a choice between monospace or proportional, no optical
 weight features, and italics for the Latin script only.
 
-Although the largest use of Tsukurimashou 
-\linebreak%%!!
-fonts to date has been for
+Although the largest use of Tsukurimashou fonts to date has been for
 typesetting the project's own documentation in English, the design of the
 Tsukurimashou Latin glyphs, especially in the Mincho style, is intended
 primarily for setting the short fragments of English that sometimes occur in
-\linebreak
-Japanese text.  Tsukurimashou Mincho used for
-\linebreak%%!!
- pure English text ends up
+Japanese text.  Tsukurimashou Mincho used for pure English text ends up
 looking like a display face and might not be appropriate for entire
 sentences and paragraphs.  Tsukurimashou Kaku is more suitable for extended
 settings in English.
 
-The Jieubsida family (the name is a translation to Korean of
-``Tsukurimashou'') is intended to support Korean \emph{hangul} (alphabetic)
-script.  \emph{Hanja} (the Korean equivalent of \emph{kanji}) are not
-included.  This character set is relatively orthogonal: the main sequence of
-11172 glyphs is algorithmically generated from a few tens of basic parts,
-though many less common letters had to be defined with more human
-intervention.  Work on these fonts has proven useful in debugging the
-infrastructure at full scale, given that the Tsukurimashou series of fonts
-will eventually grow to a significant fraction of the size already reached
-by the Jieubsida series.
+The Jieubsida\footnote{Intended as a translation to Korean of the name
+``Tsukurimashou,'' but I am informed that ``Mandeubsida'' would be a better
+translation, and am considering changing it.} family is intended to support
+Korean \emph{hangul} (alphabetic) script.  \emph{Hanja} (the Korean
+equivalent of \emph{kanji}) are not included.  This character set is
+relatively orthogonal: the main sequence of 11172 glyphs is algorithmically
+generated from a few tens of basic parts, though many less common letters
+had to be defined with more human intervention.  Work on these fonts has
+proven useful in debugging the infrastructure at full scale, given that the
+Tsukurimashou series of fonts will eventually grow to a significant fraction
+of the size already reached by the Jieubsida series.
 
-Beyond the main Tsukurimashou package,
-\linebreak%%!!
- there are several smaller software
+Beyond the main Tsukurimashou package, there are several smaller software
 packages called ``parasites,'' which appear in subdirectories of the
 distribution or may be detached.  Some of these are font packages that share
 some of the Tsukurimashou infrastructure without really being part of the
@@ -505,9 +458,7 @@ scripts to accomplish that, and a would-be user can download a tarball,
 unpack it, and type \texttt{./configure} and \texttt{make}.
 
 The build system is based on \GNU\ Autotools.  Choosing which source code
-files are needed for 
-\linebreak%%!!
-which font styles involves doing some logical inference
+files are needed for which font styles involves doing some logical inference
 that would not be convenient to do in a Makefile, so the Makefiles invoke
 additional code written in a subset of Prolog to evaluate the style
 selections, then run Perl scripts that scan the \MF\ sources to look for
@@ -518,14 +469,12 @@ Knuth's \MF\ was designed with bitmap fonts in mind, whereas Tsukurimashou's
 target is OpenType outline fonts.  There are several \MF\ variants that can
 produce outline output from \MF\ source.  I chose
 MetaType1~\cite{Jackowski:Programming} for
-Tsu\-kurimashou.  This package originates with the Polish \TeX\ users group
+Tsukurimashou.  This package originates with the Polish \TeX\ users group
 \acro{GUST}\ and may be most famous for its use in the Latin Modern
 project~\cite{Jackowski:Latin}.  It consists
 primarily of a macro package for Metapost and a postprocessing script for
 \GNU\ \texttt{awk}.  One run of Metapost generates the glyphs of a font as
-\EPS\ files; another generates metrics; then the \texttt{gawk} script 
-\linebreak%%!!
-merges
+\EPS\ files; another generates metrics; then the \texttt{gawk} script merges
 those and does some rewriting of the Postscript code to turn them into a
 single Postscript Type 1 font.
 
@@ -545,9 +494,7 @@ postprocessed into Postscript Type 1 fonts.
 Each Postscript font contains up to 256 glyphs (but usually far fewer than
 that), corresponding to a 256-character block of the Unicode character
 space.  Many of these Postscript fonts are needed for each full-coverage
-OpenType font.  The build system runs them individually through a 
-\linebreak
-FontForge
+OpenType font.  The build system runs them individually through a FontForge
 script that removes overlapping sections of splines, this being an easier
 operation in FontForge than on the \MF\ side, and then once all Postscript
 fonts for an OpenType font have had their overlaps removed, it runs another
@@ -556,13 +503,9 @@ overlap removal as a separate step is an optimization for the common case
 during development where only some of the Postscript fonts have changed: it
 reduces the amount of work needed to reassemble the updated OpenType font.
 
-There are additional stages of processing in
-\linebreak%%!!
- FontForge after the Postscript
-fonts are merged. $\!$The raw outlines generated by \MF\ may contain excessive
-or poorly-located spline control points;
-\linebreak%%!!
- scripts in FontForge attempt to
+There are additional stages of processing in FontForge after the Postscript
+fonts are merged.  The raw outlines generated by \MF\ may contain excessive
+or poorly-located spline control points; scripts in FontForge attempt to
 remove those.  Similarly, some technical rules of the font formats (such as
 having points at the $x$ and $y$ extrema of each curve) need to be enforced. 
 There is another processing chain for automated horizontal spacing and
@@ -570,9 +513,7 @@ kerning of the proportionally-spaced styles.  In that chain, the build
 system generates bitmap fonts in \acro{BDF} format and a C program
 calculates spacing corrections, which are then applied back to the merged
 OpenType fonts.  Other scripts run on the side do things like constructing
-OpenType glyph-
-\linebreak%%!!
-substitution tables for Korean \emph{hangul} support, and
+OpenType glyph-substitution tables for Korean \emph{hangul} support, and
 collecting data for proof generation.  According to recent statistics from
 Ohloh~\cite{Ohloh:Languages}, 63\% of the project's code is written in
 Metapost (the font descriptions proper), 8\% is in \LaTeX\ (documentation),
@@ -581,9 +522,7 @@ infrastructure and some small spin-off packages.
 
 \subsection{The \MF\ code}
 
-Here is Tsukurimashou's code defining the
-\linebreak%%!!
- ``language''
+Here is Tsukurimashou's code defining the ``language''
 glyph of Figure~\ref{fig:tree}; three styles of it are shown at the top of
 Figure~\ref{fig:threestyle}.  This glyph is of about
 average complexity; some are even simpler, and a few involve much more
@@ -607,7 +546,6 @@ enddef;
 \includegraphics[scale=0.63]{threestyle.pdf}
 \caption{Three styles of ``language'' and ``five.''}
 \label{fig:threestyle}
-\vskip-2mm%%!!
 \end{figure}
 
 This code exists in a file named \verb|tsuku-8a.mp|, which covers the
@@ -621,9 +559,7 @@ avoid recompiling the whole system when something changes, but it also
 requires the build system to keep track of all the inter-file dependencies.
 
 Tsukurimashou frequently uses a sort of functional programming via \MF's
-concept of
-\linebreak%%!!
- text arguments to macros.  There is a global stack data structure
+concept of text arguments to macros.  There is a global stack data structure
 of objects (several kinds) that will eventually be rendered into the glyph. 
 A macro will receive one or more arguments that are themselves fragments of
 code; it runs them, then examines the objects they added to the stack and
@@ -634,12 +570,8 @@ macros can then shift and scale that square into its final location in the
 finished glyph.
 
 The macro
-\verb|build_kanji.lr|, for combining 
-\linebreak%%!!
-things left-to-right, allows its two
-arguments to run, then scales and shifts their results to cover two
-\linebreak%%!!
- smaller
+\verb|build_kanji.lr|, for combining things left-to-right, allows its two
+arguments to run, then scales and shifts their results to cover two smaller
 rectangles.  The numeric arguments $(450,0)$ specify that in this case, the
 dividing line is at $x$ coordinate $450$, and the two rectangles overlap by
 an amount of $0$.  So the left side runs from $(50,-50)$ to $(450,850)$ and
@@ -655,9 +587,7 @@ in this very simple glyph, some tweaking was necessary beyond just
 putting together existing pieces in a standardized way.
 
 Here is code for the \emph{kanji} numeral ``five,'' which is invoked indirectly by
-\verb|kanji.grtwo.language|
-\linebreak%%!!
- when it calls \verb|kanji.grnine.my|.  This
+\verb|kanji.grtwo.language| when it calls \verb|kanji.grnine.my|.  This
 glyph is shown at the bottom of Figure~\ref{fig:threestyle}.  This is
 typical of the basic shapes that are not made up of smaller components.
 \begin{verbatim}
@@ -680,17 +610,13 @@ vardef kanji.grone.five =
 enddef;
 \end{verbatim}
 
-The \verb|push_stroke| macros save paths on the 
-\linebreak
-stack, with each stroke
+The \verb|push_stroke| macros save paths on the stack, with each stroke
 defined by one path for the spine of the stroke, and a second path
 describing how the stroke weight (eventually translated to ``width'' through
 a style-dependent matrix) changes along the length of the stroke.  Other
 macros, such as \verb|set_boserif|, push other objects on the stack to indicate
 where serifs (\emph{uroko}) should be added in styles that use them.  The
-whole thing, like
-\linebreak%%!!
-\verb|kanji.grtwo.language| before it, is bracketed by
+whole thing, like \verb|kanji.grtwo.language| before it, is bracketed by
 \verb|push_pbox_toexpand| and \verb|expand_pbox|, which respectively save, and adjust
 the size of, an object called a ``proof box.''
 
@@ -738,9 +664,7 @@ is this character I don't recognize that has `speak' on the left and `five'
 at the upper right?'' Existing dictionaries sometimes offer what is called
 ``multi-radical'' search, whereby the user can specify one or more
 components and then see a list of all \emph{kanji} that contain all those
-components.  But multi-radical
-\linebreak%%!!
- search features seldom if ever capture
+components.  But multi-radical search features seldom if ever capture
 structural information like ``on the left''; such a system would just show
 all the characters that contain ``speak'' in one pile for the user to dig
 through.  In the initial stages of laying out Tsukurimashou's \emph{kanji}
@@ -750,18 +674,14 @@ why not run \verb|grep| on the writing system itself?
 
 The IDSgrep package attempts to serve that need.  With some irony intended,
 IDSgrep's stated goal is to bring the user-friendliness of \verb|grep| to
-Han character dictionaries.  IDSgrep is one of the Tsuku\-rimashou parasites:
+Han character dictionaries.  IDSgrep is one of the Tsukurimashou parasites:
 it comes included with the full distribution in a separate directory, or can
 be distributed on its own.
 
 Recall the tree decomposition of Figure~\ref{fig:tree}.  That tree might be
 rendered into a simple \acro{ASCII}-based prefix notation as
-``\verb|[lr](speak)[tb](five)|
-\linebreak%%!!
-\verb|(mouth)|'':  it is a left-right combination of
-two 
-\linebreak%%!!
-things, the first of which is ``speak'' and the second is a top-bottom
+``\verb|[lr](speak)[tb](five)(mouth)|'':  it is a left-right combination of
+two things, the first of which is ``speak'' and the second is a top-bottom
 combination of ``five'' and ``mouth.''  As argued earlier in this paper,
 such descriptions are not enough to render high-quality glyphs; but maybe if
 we include a few general catch-all categories like ``overlap,'' and accept
@@ -791,35 +711,23 @@ namely the difference between regular and context-free languages, a true
 regular expression search on these descriptions may be less than
 satisfactory.  IDSgrep implements a tree-matching query language in which
 the user can specify character components to search for explicitly, or use
-matching operators like wildcard, match-
-\linebreak%%!!
-anywhere, Boolean operations, and so
+matching operators like wildcard, match-anywhere, Boolean operations, and so
 on.  The \acro{IDS} syntax is not quite sufficiently flexible and
-well-
-\linebreak%%!!
-defined to encompass all the tasks IDSgrep demands of it, and the
+well-defined to encompass all the tasks IDSgrep demands of it, and the
 special Unicode combining operation characters are difficult to type (and to
 typeset in Computer Modern!); so IDSgrep defines extensions to the syntax
 and \acro{ASCII} synonyms for the special characters,
 forming a language of Extended Ideographic Description Sequences
-(\acro{EIDS}es) that subsumes the 
-%\linebreak%%!!
-Unicode \acro{IDS} syntax.
+(\acro{EIDS}es) that subsumes the Unicode \acro{IDS} syntax.
 
-IDSgrep's user interface consists of a Unix 
-\linebreak%%!!
-command-line utility similar to
+IDSgrep's user interface consists of a Unix command-line utility similar to
 \verb|grep|.  It reads a database of trees in \acro{EIDS} syntax, from files
-or standard input, and writes out any that match the
-\linebreak%!!
- matching pattern
+or standard input, and writes out any that match the matching pattern
 specified on the command line:  just like \verb|grep|.  The syntax for
 matching patterns is complicated because it is powerful, but no worse for
 skilled users than standard regular expressions.  After learning the syntax,
 a user can easily and quickly compose queries like ``What characters have
-this
-\linebreak%%!!
-component in that location, but not that other component anywhere?''
+this component in that location, but not that other component anywhere?''
 
 The latest version, IDSgrep 0.4, uses Bloom filters and binary decision
 diagrams to speed up searches.  Although the full tree-matching algorithm is
