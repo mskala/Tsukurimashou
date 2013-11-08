@@ -1472,7 +1472,7 @@ The main theoretical issue is that IDSes, whether IDSgrep-style ``extended''
 or Unicode-style traditional ones, belong to the class of
 \emph{context-free} languages.  They describe tree-like structures nested to
 arbitrary depth, similar in nature to programming-language expressions
-containing balanced parentheses although balanced parantheses as such are
+containing balanced parentheses although balanced parentheses as such are
 not actually part of EIDS syntax.  The natural way to parse these involves
 an abstract machine with a stack-like memory that can assume an infinite
 number of different states.  Regular expressions can only be used to
@@ -2251,14 +2251,17 @@ Let $\mathbb{F}$ be the set of ordered pairs $(m,\lambda)$ where $m$ is a
 integer called the \emph{threshold}.  We call these pairs \emph{lambda
 filters}.  Define $\mathit{check}((m,\lambda),v)$ to compute the bitwise AND
 of the mask $m$ and vector $v$, count how many bits are set in the result,
-and then return $\mathsf{T}$ if and only if the count is strictly more than
-the threshold $\lambda$.  The filter for \texttt{<foo>!?} will consist of a
-mask that selects the three bits for \texttt{foo}, and a threshold of $2$. 
-It matches if and only if those three bits are all set, which is definitely
-true for haystacks that match the needle and reasonably unlikely to be true
-for haystacks that do not match the needle.  So far this is just the usual
-lookup algorithm for a Bloom filter.  But by choosing different masks and
-thresholds, we can also do other kinds of filtering.
+and then return $\mathsf{T}$ if and only if the count is strictly
+more\footnote{This definition may seem to be off by one from
+the most intuitive way to do it, but $\lambda$ is defined this way for
+consistency with related work in the combinatorial design theory
+literature.} than the threshold $\lambda$.  The filter for \texttt{<foo>!?}
+will consist of a mask that selects the three bits for \texttt{foo}, and a
+threshold of $2$.  It matches if and only if those three bits are all set,
+which is definitely true for haystacks that match the needle and reasonably
+unlikely to be true for haystacks that do not match the needle.  So far this
+is just the usual lookup algorithm for a Bloom filter.  But by choosing
+different masks and thresholds, we can also do other kinds of filtering.
 
 Suppose we have two filters $(m_1,\lambda_1)$ and $(m_2,\lambda_2)$.  Let
 $m_3$ be the bitwise OR of $m_1$ and $m_2$, and let $\lambda_3$ be the
