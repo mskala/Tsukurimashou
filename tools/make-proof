@@ -90,9 +90,9 @@ close(MV);
   'jamo-basic'=>5910,
   'jamo-extra'=>5910,
   'hglextb'=>5911,
-  'jieub-bt'=>5920,
-  'jieub-do'=>5920,
-  'jieub-sm'=>5920,
+  'mande-bt'=>5920,
+  'mande-do'=>5920,
+  'mande-sm'=>5920,
   'hglpage'=>5950,
   
   'tsuita-common'=>10900,
@@ -121,8 +121,8 @@ close(MV);
   1118=>'U+7600 to U+89FF',
   1138=>'U+8A00 to U+9FFF',
   1247=>'U+A000 to U+10FFFF',
-  5900=>'Jieubsida core',
-  10082=>'Jieubsida alternates',
+  5900=>'Mandeubsida core',
+  10082=>'Mandeubsida alternates',
   10900=>'TsuIta',
   15900=>'Blackletter Lolita',
 );
@@ -130,7 +130,7 @@ close(MV);
 # prefix for page files (low ends of intervals)
 %partprefix=(
   100=>'tsuku',
-  5900=>'jieub',
+  5900=>'mande',
   10900=>'tsuita',
   15900=>'bll',
 );
@@ -138,7 +138,7 @@ close(MV);
 # files to read for glyph numbers, depending on family
 %glnumfile=(
   'tsuku'=>'tsuku-kg',
-  'jieub'=>'jieub-do',
+  'mande'=>'mande-do',
   'tsuita'=>'tsuita-at',
   'bll'=>'bll-co',
 );
@@ -159,9 +159,9 @@ foreach (sort keys %srcfiles) {
   if ($base=~/^tsuku-([0-9a-f]{2,3})$/) {
     $pri=1000+hex("0x$1");
     $priority{$base}=$pri;
-  } elsif ($base=~/^jieub-(a[d-f]|[bc][0-9a-f]|d[0-7])$/) {
+  } elsif ($base=~/^mande-(a[d-f]|[bc][0-9a-f]|d[0-7])$/) {
     next;
-  } elsif ($base=~/^jieub-([0-9a-f]{2,3})$/) {
+  } elsif ($base=~/^mande-([0-9a-f]{2,3})$/) {
     $pri=6000+hex("0x$1");
     $priority{$base}=$pri;
   } elsif ($base=~/^tsuita-([0-9a-f]{2,3})$/) {
@@ -271,7 +271,7 @@ sub read_mincho_proof {
 }
 
 # read all the basic proofs
-foreach $style ('tsuku-kg','jieub-do','bll-co','tsuita-at') {
+foreach $style ('tsuku-kg','mande-do','bll-co','tsuita-at') {
   ($glp,$dummy)=split('-',$style);
   while (<prf/$style-*.prf>) {
     next if /-ps/;
@@ -280,7 +280,7 @@ foreach $style ('tsuku-kg','jieub-do','bll-co','tsuita-at') {
 }
 
 # read all the alternate proofs
-foreach $style ('tsuku-mi','jieub-bt','tsuita-so') {
+foreach $style ('tsuku-mi','mande-bt','tsuita-so') {
   ($glp,$dummy)=split('-',$style);
   while (<prf/$style-*.prf>) {
     next if /-ps/;
@@ -454,7 +454,7 @@ foreach $glyph (keys %glnames) {
 %deflbls=();
 $nxtlbl='aaa';
 foreach $file (@files) {
-  if ($file=~/^(tsuku|tsuita|jieub|bll)-([0-9a-f]+)$/) {
+  if ($file=~/^(tsuku|tsuita|mande|bll)-([0-9a-f]+)$/) {
     $page=hex("0x$2");
     $glp=$1;
   } else {
@@ -725,13 +725,13 @@ foreach $file (@files) {
   close(MP);
   last if $proof_debug_chop && ($countpictures>=3);
 
-  if ($file eq 'jieub-ac') {
+  if ($file eq 'mande-ac') {
     print <<'EOF';
 
 \vspace*{\fill}
-PLEASE NOTE:  The files jieub-ac.mp through jieub-d6.mp are algorithmically
+PLEASE NOTE:  The files mande-ac.mp through mande-d6.mp are algorithmically
 generated, and identical except for the four variable assignments defining
-the start of each file's coverage range.  The file jieub-d7.mp is similar,
+the start of each file's coverage range.  The file mande-d7.mp is similar,
 but also includes hglextb.mp.  They define a total of 11172 glyphs for
 precomposed hangul syllables, which all consist of the same few jamo in
 systematically varying arrangements.  It seems that generating a proof page
@@ -747,14 +747,14 @@ EOF
       push @hgpcp,(($i*617)%11172+0xAC00);
     }
     foreach $cp (sort @hgpcp) {
-      printf "\n\\clearpage\\Picture{jieub.uni%04X}{%04X}",$cp,$cp;
+      printf "\n\\clearpage\\Picture{mande.uni%04X}{%04X}",$cp,$cp;
       printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
         $setgl{$cp},0,10,
-        $plox{sprintf('jieub.uni%04X',$cp)},
-        $ploy{sprintf('jieub.uni%04X',$cp)},
-        $phix{sprintf('jieub.uni%04X',$cp)},
-        $phiy{sprintf('jieub.uni%04X',$cp)},$partslant,
-        $picture{sprintf('jieub.uni%04X',$cp)};
+        $plox{sprintf('mande.uni%04X',$cp)},
+        $ploy{sprintf('mande.uni%04X',$cp)},
+        $phix{sprintf('mande.uni%04X',$cp)},
+        $phiy{sprintf('mande.uni%04X',$cp)},$partslant,
+        $picture{sprintf('mande.uni%04X',$cp)};
       $countpictures++;
       if ($countpictures-$lastprog>=10) {
         $lastprog=$countpictures;

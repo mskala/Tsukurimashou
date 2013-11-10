@@ -41,8 +41,8 @@ if ($dir eq '-mkpl') {
 $/=undef;
 
 while (<$dir/*.mp>) {
-  next if m!/(tsuku|bll|jieub|kazoe|tsuita)-!;
-  next if m!/(tsuku|bll|jieub|kazoe|tsuita)\.!;
+  next if m!/(tsuku|bll|mande|kazoe|tsuita)-!;
+  next if m!/(tsuku|bll|mande|kazoe|tsuita)\.!;
   next if m!intro\.!;
   next if m!fntbase\.!;
   m!/([^/]+)\.mp$!;

@@ -1,6 +1,6 @@
 %
-% Generic Unicode page (precomposed hangul syllables) for Jieubsida
-% Copyright (C) 2011, 2012  Matthew Skala
+% Generic Unicode page (precomposed hangul syllables) for Mandeubsida
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

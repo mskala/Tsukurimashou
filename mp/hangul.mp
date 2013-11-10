@@ -1,6 +1,6 @@
 %
-% Hangul infrastructure for Jieubsida
-% Copyright (C) 2011  Matthew Skala
+% Hangul infrastructure for Mandeubsida
+% Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

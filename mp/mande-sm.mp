@@ -1,5 +1,5 @@
 %
-% Jieubsida Dodum
+% Mandeubsida Sun-Moon
 % Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -28,10 +28,10 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-% JIEUBSIDA DODUM
+% MANDEUBSIDA SUN-MOON
 
 string familyname,stylename;
-familyname:="Jieubsida";
-stylename:="Dodum";
+familyname:="Mandeubsida";
+stylename:="Sun-Moon";
 
-input tsuku-kg.mp;
+input tsuku-bk.mp;

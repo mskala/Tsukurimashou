@@ -72,7 +72,7 @@ if ($partname=~/Blackletter/) {
 \colorlet{tartanfive}{magenta!80!red}
 \colorlet{tartanten}{magenta!40!white}
 EOF
-} elsif ($partname=~/Jieubsida/) {
+} elsif ($partname=~/Mandeubsida/) {
   print <<'EOF';
 \colorlet{bottombg}{green!20!black}
 \colorlet{tartanbg}{green!30!black}

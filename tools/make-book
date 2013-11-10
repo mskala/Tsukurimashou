@@ -58,7 +58,7 @@ while (<>) {
     push @{$secfirst{$part}},$2;
     $_=$1;
     s/\.mp$//;
-    s/^(tsuku|tsuita|jieub|bll)-//;
+    s/^(tsuku|tsuita|mande|bll)-//;
     s/^grade//;
     s/^([^ ]+ )+//;
     s/-?intro$// unless $_ eq 'intro';

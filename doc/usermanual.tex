@@ -62,8 +62,8 @@
 \newfontface\tenshinokami{TsukurimashouTenshinoKamiPS}
 \newfontface\bokukko{TsukurimashouBokukkoPS}
 
-\expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax\else
-  \newfontface\dodum[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaDodumPS}
+\expandafter\ifx\csname haveMandeubsidaDodumPS\endcsname\relax\else
+  \newfontface\dodum[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{MandeubsidaDodumPS}
 \fi
 
 \expandafter\ifx\csname haveTsuItaSokuPS\endcsname\relax
@@ -226,7 +226,7 @@ generate a potentially unlimited number of typeface designs from the source
 code; but I've provided parameters for several ready-made faces, each of
 which can be drawn in monospace or proportional forms.  The mainline
 Tsukurimashou fonts are intended for Japanese, but version 0.5 also
-introduced a series of fonts called Jieubsida, designed for Korean
+introduced a series of fonts called Mandeubsida, designed for Korean
 hangul.  There is also some experimental code intended to eventually become
 a set of blackletter fonts, but it is disabled by default and not currently
 usable.
@@ -295,7 +295,7 @@ Some other notes:
 
   \item Support of Korean is limited because of my limited knowledge
   of that language; and learning it is not a high priority for me.  At
-  this point the Jieubsida fonts only support Korean hangul, not hanja
+  this point the Mandeubsida fonts only support Korean hangul, not hanja
   (which are the Korean equivalent of kanji, but just different enough
   that copying over the Tsukurimashou kanji would not be good enough).
 
@@ -351,7 +351,7 @@ accept for free.  Okay, whatever; in such a case I'm happy to take the money
 for it.  Having a pay option will also give anybody who wants to support my
 efforts, an easy way to do that.  For now, though, I am distributing
 Tsukurimashou only as this source package, with precompiled versions
-included for the Kaku and Mincho styles.  The Jieubsida fonts, which don't
+included for the Kaku and Mincho styles.  The Mandeubsida fonts, which don't
 need the in-progress kanji glyphs, may also be available in precompiled form
 as a separate package.  If you want other styles, you'll have to compile
 them yourself or get them from someone who has done so.  This limitation is
@@ -659,10 +659,10 @@ Figure~\ref{fig:glyph-counts} is a chart of the progress to date.  Note the
 horizontal axis is labelled by version but scaled by time.  Even-numbered
 versions tend to take more time because I tend to do the easier characters
 in each grade level first.  All the glyph counts in these charts are for the
-Tsukurimashou (Japanese) fonts alone.  The Jieubsida (Korean) fonts contain
+Tsukurimashou (Japanese) fonts alone.  The Mandeubsida (Korean) fonts contain
 the 11172-glyph block of precomposed syllables, which because they are
 algorithmically generated cannot be well compared to the more
-manually-created kanji and other glyphs.  The Jieubsida fonts also contain a
+manually-created kanji and other glyphs.  The Mandeubsida fonts also contain a
 few hundred non-precomposed glyphs, beyond the core they share with
 Tsukurimashou.
 
@@ -733,8 +733,8 @@ Tsukurimashou.
 Figure~\ref{fig:loc-per-glyph} gives a different view of development
 progress: the number of lines of code (total lines in mp/*.mp, including
 comments and blanks but not including code in other languages and locations;
-also excluding jieub-*.mp, but still including a few other files from
-Jieubsida) plotted against the total number of glyphs in the main
+also excluding mande-*.mp, but still including a few other files from
+Mandeubsida) plotted against the total number of glyphs in the main
 Tsukurimashou family.
 
 \begin{figure}
@@ -945,7 +945,7 @@ have become so numerous that it makes sense to also have a central list.
     which has complicated indirect consequences because the Tsukurimashou
     infrastructures uses BDF files as input to the auto-kerning program.  As
     a result, when this bug bites the horizontal metrics go screwy on some
-    fonts---notably, Jieubsida Batang PS ends up looking monospaced. 
+    fonts---notably, Mandeubsida Batang PS ends up looking monospaced. 
     Reported to FontForge mailing list in November 2011, inspiring FreeType
     maintainer Werner Lemberg to find and fix an unrelated bug in FreeType
     (it was unable to process BDF files with high code points; see
@@ -1235,7 +1235,7 @@ enabled.
 Similarly, this feature will substitute precomposed voiced kana glyphs for
 combinations of unvoiced kana plus combining dakuten or handakuten.
 
-In the Jieubsida fonts, this feature breaks precomposed
+In the Mandeubsida fonts, this feature breaks precomposed
 syllables that don't have final consonants into their component jamo, and
 combines sequences of jamo for single vowels and consonants into jamo
 representing the sequences, where possible.  Splitting tail-less precomposed
@@ -1257,7 +1257,7 @@ not be familiar with some of the advanced aspects of the Latin script, it
 was a design decision to make the letters look good without ligatures even
 in proportional fonts.
 
-The Jieubsida fonts, however, contain an extensive ligature table for
+The Mandeubsida fonts, however, contain an extensive ligature table for
 hangul, and use of this feature is required to get full support for hangul
 script.  Without it, the decomposition of precomposed tail-less syllables in
 the ``ccmp'' feature will stand, leaving those syllables looking poorly
@@ -1271,7 +1271,7 @@ Korean language support for more details of how this feature works.
 
 \blsubsection{頭子音の形}{Lead Jamo Shaping (ljmo)}
 
-This feature only exists in the Jieubsida fonts and should be turned on by
+This feature only exists in the Mandeubsida fonts and should be turned on by
 default.  It replaces ``lead'' jamo glyphs (consonants at the starts of
 syllables) with contextual variants that depend on the vowel and the
 presence or absence of a tail.  For more information, see the section on
@@ -1481,7 +1481,7 @@ parentheses only.
 
 \blsubsection{母音の形}{Vowel Jamo Shaping (vjmo)}
 
-This feature only exists in the Jieubsida fonts, and should be turned on by
+This feature only exists in the Mandeubsida fonts, and should be turned on by
 default when it exists.  It replaces ``vowel'' jamo glyphs with appropriate
 contextual variations depending on the layout of the syllable.  The layout
 that will be used by ``vjmo'' is actually chosen during execution of the
@@ -1504,7 +1504,7 @@ directly by users, and more than one of them may correspond to the same
 Unicode character in ordinary text.  This feature removes the private-use
 code points from many such glyphs.
 
-For instance, in Jieubsida there is a glyph named ``uni112A'' for code point
+For instance, in Mandeubsida there is a glyph named ``uni112A'' for code point
 U+112A, but there is also a glyph named ``uni112A.bug'' which looks
 identical but is referenced in the substitution table in order to work
 around a bug in the ICU library used by \XeTeX.  The uni112A.bug glyph, as
@@ -1651,10 +1651,10 @@ It looks like this:  {\Large 󱜐}
 
 \blsection{ハングル語}{Korean Language Support}
 
-\expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax
+\expandafter\ifx\csname haveMandeubsidaDodumPS\endcsname\relax
 
 This user manual was built without the Korean fonts (in particular,
-Jieubsida Dodum PS) and as a result, the section on Korean support cannot be
+Mandeubsida Dodum PS) and as a result, the section on Korean support cannot be
 typeset.
 
 \else
@@ -1670,14 +1670,16 @@ The Tsukurimashou project is generally focused on the Japanese language; but
 Korean has some degree of connection to Japanese, the hangul writing system
 used for it is technically interesting and superficially appears easy, and
 for various reasons, I decided to extend Tsukurimashou to include some
-support for Korean.  The result is the ``Jieubsida'' {\dodum 「지읍시다」}
-series of fonts.  The name is as nearly as possible a direct translation
-from Japanese to Korean of the name ``Tsukurimashou'' 「作りましょう」. 
-Jieubsida builds from the same code base as Tsukurimashou, if you select the
+support for Korean.  The result is the ``Mandeubsida'' {\dodum 「만듭시다」}
+series of fonts.  The name is intended to be a direct translation
+from Japanese to Korean of the name ``Tsukurimashou'' 「作りましょう」;
+prior to version 0.9 these fonts were called ``Jieubsida'' {\dodum
+「지읍시다」}, which I'm told is not a good translation. 
+Mandeubsida builds from the same code base as Tsukurimashou, if you select the
 appropriate options during configuration.
 
 There are several ways to write Korean in Unicode, and they are
-supported to varying degress by Jieubsida:
+supported to varying degress by Mandeubsida:
 \begin{itemize}
   \item Individual jamo from the ``hangul compatibility jamo'' range
     of code points, U+3131 to U+318E.
@@ -1691,7 +1693,7 @@ supported to varying degress by Jieubsida:
 
 Hangul is theoretically a purely phonetic alphabet.  Letters are called
 jamo, and each one is supposed to correspond to exactly one phoneme of the
-Korean language.  The set of jamo in Unicode and Jieubsida is a little
+Korean language.  The set of jamo in Unicode and Mandeubsida is a little
 bigger than in the standard present-day Korean language, as a result of
 historical changes in the centuries since the writing system was introduced. 
 The rules for how jamo may be used together have also become more
@@ -1731,7 +1733,7 @@ of those longer, or merely other, combinations defined by Unicode.
 
 \blsubsection{コンパチのジャモ}{Compatibility jamo}
 
-The ``hangul compatibility jamo'' range is fully supported by Jieubsida. 
+The ``hangul compatibility jamo'' range is fully supported by Mandeubsida. 
 It's easy: one jamo per character box.  But it is not done to actually write
 the Korean language that way; readers and writers want one syllable per
 character box, with the individual jamo changing size and layout to pack
@@ -1739,7 +1741,7 @@ nicely.  As a result, the ``compatibility jamo'' glyphs are basically only
 useful in documents like this one, which discuss the technical details of
 the writing system.
 
-Hangul compatibility jamo look like {\dodum 「ㅈㅣㅇㅡㅂㅅㅣㄷㅏ」}. 
+Hangul compatibility jamo look like {\dodum 「ㅁㅏㄴㄷㅡㅂㅅㅣㄷㅏ」}. 
 Writing words that way leads to some ambiguity in syllable division, which
 may be one reason it never caught on (though the same ambiguity exists in
 most Romanization forms).
@@ -1756,10 +1758,10 @@ with a glyph for each one, or even just a glyph for each of the fraction of
 them that actually occurs in present-day relatively standardized Korean, can
 be used to write the present-day language with a minimum of fuss.  That's
 what most people do; most Korean documents on the Web are encoded into that
-range of Unicode; and Jieubsida contains the full set of glyphs to support
+range of Unicode; and Mandeubsida contains the full set of glyphs to support
 it.
 
-The precomposed syllables look like {\dodum 「지읍시다」}.
+The precomposed syllables look like {\dodum 「만듭시다」}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1776,7 +1778,7 @@ of the same combination of jamo being allowed as both a lead and a tail.
 The main sequence of Unicode jamo code points is in U+1100 through U+11FF;
 then there are ``extension'' blocks in U+A960 through U+A97C (extension A,
 for leads) and U+D7B0 through U+D7FB (extension B, for vowels and tails). 
-As of version 0.6, Jieubsida supports them all, although some rare vowels
+As of version 0.6, Mandeubsida supports them all, although some rare vowels
 that pose visual layout problems (such as U+D7BE {\dodum 「\char"D7BE」})
 may not look as good as you might hope.
 
@@ -1811,11 +1813,11 @@ horizontal, because there could be a vertical vowel and there has to be
 space reserved for it on the right in every lead jamo glyph.
 
 Conjoining jamo overlaid in this way look like
-{\fontspec[RawFeature={+ccmp,-ljmo,-vjmo,-liga}]{JieubsidaDodumPS}%
-「\char"110C\char"1175%
-\char"110B\char"1173\char"11B8%
+{\fontspec[RawFeature={+ccmp,-ljmo,-vjmo,-liga}]{MandeubsidaDodumPS}%
+「\char"1106\char"1161\char"11AB%
+\char"1103\char"1173\char"11B8%
 \char"1109\char"1175%
-\char"1103\char"1161」}; compare with precomposed {\dodum 「지읍시다」}.  It
+\char"1103\char"1161」}; compare with precomposed {\dodum 「만듭시다」}.  It
 does not look very appealing, especially because that's a near-worst-case
 example where three out of four syllables have empty tails and the fixed
 layout cannot stretch jamo to consume the resulting blank space; but this
@@ -1833,7 +1835,7 @@ different layout would be better. The precomposed jamo vary the entire
 layout of each syllable depending on all the jamo in the syllable, so that
 any given jamo might appear in hundreds of subtly different sizes and
 locations.  It is not practical to store all those variations of every jamo
-as individual glyphs, but Jieubsida compromises by recognizing six different
+as individual glyphs, but Mandeubsida compromises by recognizing six different
 standardized layouts for a syllable, depending on the shape of the vowel and
 the presence or absence of a nonempty tail.
 
@@ -1899,13 +1901,13 @@ and its supplements, where necessary.
 With the alternate forms chosen by the substitution rules, but no
 precomposed syllables, the font
 family name is rendered as
-{\fontspec[RawFeature={+ccmp,+ljmo,+vjmo,-liga}]{JieubsidaDodumPS}
-「\char"110C\char"1175%
-\char"110B\char"1173\char"11B8%
+{\fontspec[RawFeature={+ccmp,+ljmo,+vjmo,-liga}]{MandeubsidaDodumPS}
+「\char"1106\char"1161\char"11AB%
+\char"1103\char"1173\char"11B8%
 \char"1109\char"1175%
 \char"1103\char"1161」}.
 Note that is almost identical to the
-precomposed-syllable version, {\dodum 「지읍시다」}.  There are some minor
+precomposed-syllable version, {\dodum 「만듭시다」}.  There are some minor
 differences in the size and spacing of the jamo, because the
 glyph-overlay approach basically makes kerning impossible, and the six
 canned layouts still do not quite match the per-syllable customized layouts
@@ -1920,11 +1922,11 @@ have already run before these ones.  With the ligature substitutions in
 effect, actually entering the conjoining jamo for the
 standardized present-day Korean language will give the same result as using
 the precomposed code points.  The family name entered this way appears as
-{\dodum 「\char"110C\char"1175%
-\char"110B\char"1173\char"11B8%
+{\dodum 「\char"1106\char"1161\char"11AB%
+\char"1103\char"1173\char"11B8%
 \char"1109\char"1175%
 \char"1103\char"1161」}, which should be both visually and logically
-(same glyph sequence) identical to {\dodum 「지읍시다」}.
+(same glyph sequence) identical to {\dodum 「만듭시다」}.
 
 Also worth mentioning is the ``ccmp'' feature, which is supposed to run
 before all others.  It splits precomposed syllables that have no tails into
@@ -1938,7 +1940,7 @@ some of the strange things that the Unicode Consortium in its wisdom
 thinks you want to do, such as putting conjoining tail {\dodum 「ㅁ」} after
 precomposed {\dodum 「기」} and expecting it to turn into precomposed
 {\dodum 「기\char"11B7」}.  I'm told that not many fonts actually support
-that.  Jieubsida does!  However, I cannot promise that absolutely every
+that.  Mandeubsida does!  However, I cannot promise that absolutely every
 weird Unicode thing will work.  Most of them should.
 
 The big win is that with all the substitution
@@ -1983,7 +1985,7 @@ Japan, so the switch to the newer form in Japanese was probably quite
 recent; but if you write the present-day Japanese form where you should
 write the Korean form, it will look wrong.
 
-The current versions of the Jieubsida/Tsukurimashou fonts address this issue
+The current versions of the Mandeubsida/Tsukurimashou fonts address this issue
 by simply not supporting hanja at all.
 
 Supporting hanja would mean going through the entire set of kanji, finding
@@ -1998,7 +2000,7 @@ for some techniques that will later be applied to the Japanese side of the
 project.
 
 It's easy to imagine that someone could build a font containing both the
-kanji glyphs from Tsukurimashou and the hangul glyphs from Jieubsida, and
+kanji glyphs from Tsukurimashou and the hangul glyphs from Mandeubsida, and
 then try to use it to write hanja.  I hope you will not attempt that, and
 the Tsukurimashou build system is designed not to build such fonts.  There
 are too many fonts like that on the Net already as a result of people's
@@ -2007,7 +2009,7 @@ the consequences of what they're doing.  Obviously, in an open source system
 I can't stop people from creating such chimeras for their own use, but I
 don't want someone to create a Korean-language document with Japanese fake
 hanja in it, be asked ``What is that horrible font you're using that gets
-the hanja shapes wrong?'' and have them say ``It's Jieubsiuda by Matthew
+the hanja shapes wrong?'' and have them say ``It's Mandeubsida by Matthew
 Skala!'' Please, if you're going to set kanji next to hangul and call them
 hanja, try to make clear to people who see the results that it was your idea
 to do that and not mine.
@@ -2023,7 +2025,7 @@ to do that and not mine.
 First, I will use the term ``font'' to refer to an OTF or similar file with
 a complete glyph set (or as many glyphs as have been selected with
 configure).  This will generally be a few thousand glyphs for the
-Tsukurimashou family and about 13 thousand for the Jieubsida family. 
+Tsukurimashou family and about 13 thousand for the Mandeubsida family. 
 Because METATYPE1 is limited to producing Postscript font files with at most
 256 glyphs each, the system builds ``subfonts'' each corresponding to a
 ``page'' of the Unicode character set---that is, an aligned 256-code-point
@@ -2050,7 +2052,7 @@ sharing the same family value will have basically the same glyph set and the
 same overall shapes for all glyphs, though the visual style of the strokes
 will vary.  If there are significant differences in shapes or glyph sets,
 they will be put in a separate family.  At present the supported values for
-the family are ``tsukurimashou,'' ``tsuita,'' and ``jieubsida,'' though
+the family are ``tsukurimashou,'' ``tsuita,'' and ``mandeubsida,'' though
 there is also some experimental (less than alpha status) code for
 families to be called ``blackletter\_lolita'' and ``kazoemashou.''
 
@@ -2064,7 +2066,7 @@ explained below.
   \item{\anbiruteki tsukurimashou} kaku, maru, mincho, bokukko,
     anbiruteki$^*$, tenshinokami$^*$.
   \item{\anbiruteki tsuita} soku, atama.
-  \item{\anbiruteki jieubsida} dodum, batang, sunmoon.
+  \item{\anbiruteki mandeubsida} dodum, batang, sunmoon.
   \item{\anbiruteki blackletter\_lolita} cosette.
   \item{\anbiruteki kazoemashou} seisuu.
 \end{description}
@@ -2168,7 +2170,7 @@ removed.
 
 There are also ``JK names,'' which are constructed just like long names but
 with elements written in Japanese or Korean, and thus generally in non-ASCII
-Unicode characters.  For Jieubsida fonts these should be in Korean (but the
+Unicode characters.  For Mandeubsida fonts these should be in Korean (but the
 occasional Japanese or English word may appear because of a
 yet-unimplemented translation feature) and have spaces between the elements;
 otherwise JK names are in Japanese and have no spaces.  The main use of JK
@@ -3282,7 +3284,7 @@ trial and error.  Every glyph must be in a class for full kerning; but no
 class can be too big or FontForge barfs.  That in turn limits the size of
 the average class to some maximum, and so limits the number of classes to
 some minimum.  Using 200 classes seems to be enough for the current
-Jieubsida fonts, which are roughly 13000 glyphs each, and it is reasonable
+Mandeubsida fonts, which are roughly 13000 glyphs each, and it is reasonable
 to estimate that none of the fonts created in the planned scope of this
 project will have much more than that many glyphs.
 

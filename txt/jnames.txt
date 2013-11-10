@@ -60,7 +60,7 @@ extrabold	黒字
 monospace	l___da
 proportional	ＰＳ
 
-jieubsida	지읍시다
+mandeubsida	만듭시다
 
 dodum	돋움
 batang	바탕

@@ -43,7 +43,7 @@
 % supported
 family(tsukurimashou).
 family(tsuita).
-family(jieubsida).
+family(mandeubsida).
 
 % not supported, experimental
 family(blackletter_lolita).
@@ -57,9 +57,9 @@ style(tsukurimashou,bokukko).
 style(tsuita,soku).
 style(tsuita,atama).
 
-style(jieubsida,dodum).
-style(jieubsida,batang).
-style(jieubsida,sunmoon).
+style(mandeubsida,dodum).
+style(mandeubsida,batang).
+style(mandeubsida,sunmoon).
 
 style(blackletter_lolita,cosette).
 
@@ -83,8 +83,8 @@ proof_style(F,S,W,proportional):-
   family(F),style(F,S),weight(W),want_style(F,S,W,proportional).
 proof_style(tsukurimashou,kaku,normal,monospace).
 proof_style(tsukurimashou,mincho,normal,monospace).
-proof_style(jieubsida,dodum,normal,monospace).
-proof_style(jieubsida,batang,normal,monospace).
+proof_style(mandeubsida,dodum,normal,monospace).
+proof_style(mandeubsida,batang,normal,monospace).
 proof_style(tsuita,atama,normal,monospace).
 proof_style(tsuita,soku,normal,monospace).
 proof_style(blackletter_lolita,cosette,normal,monospace).
@@ -104,7 +104,7 @@ proof_style_short(F,S,W,P):-
 long_name(tsukurimashou,t__sukurimashou).
 
 long_name(tsuita,t__sui__ta).
-long_name(jieubsida,j__ieubsida).
+long_name(mandeubsida,m__andeubsida).
 long_name(kazoemashou,k__azoemashou).
 long_name(blackletter_lolita,b__lackletters___el__olita).
 
@@ -132,7 +132,7 @@ long_name(extrabold,e__xtras___eb__old).
 long_name(monospace,l___da).
 long_name(proportional,p__s__).
 
-short_name(jieubsida,jieub).
+short_name(mandeubsida,mande).
 short_name(tsuita,tsuita).
 short_name(tsukurimashou,tsuku).
 short_name(blackletter_lolita,bll).
@@ -169,7 +169,7 @@ short_name(proportional,ps).
 default_fname(T):-short_name(tsukurimashou,T).
 
 overlay_fname(T):-short_name(tsuita,T).
-overlay_fname(T):-short_name(jieubsida,T).
+overlay_fname(T):-short_name(mandeubsida,T).
 overlay_fname(T):-short_name(kazoemashou,T).
 overlay_fname(T):-short_name(blackletter_lolita,T).
 
@@ -438,14 +438,14 @@ parasite_available(ocr).
 % configuration - pages
 
 % declare families that don't have kanji
-non_kanji(jiebsida).
+non_kanji(mandeubsida).
 non_kanji(kazoemashou).
 
-% pages A0 through DF are only for Jieubsida
-want_page(jieubsida,P):-atom_final(P,pagea,_X),!.
-want_page(jieubsida,P):-atom_final(P,pageb,_X),!.
-want_page(jieubsida,P):-atom_final(P,pagec,_X),!.
-want_page(jieubsida,P):-atom_final(P,paged,_X),!.
+% pages A0 through DF are only for Mandeubsida
+want_page(mandeubsida,P):-atom_final(P,pagea,_X),!.
+want_page(mandeubsida,P):-atom_final(P,pageb,_X),!.
+want_page(mandeubsida,P):-atom_final(P,pagec,_X),!.
+want_page(mandeubsida,P):-atom_final(P,paged,_X),!.
 want_page(_F,P):-atom_final(P,pagea,_X),!,fail.
 want_page(_F,P):-atom_final(P,pageb,_X),!,fail.
 want_page(_F,P):-atom_final(P,pagec,_X),!,fail.

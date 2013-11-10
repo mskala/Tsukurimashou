@@ -1,5 +1,5 @@
 %
-% Jieubsida Batang
+% Mandeubsida Batang
 % Copyright (C) 2011, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
@@ -28,10 +28,10 @@
 % mskala@ansuz.sooke.bc.ca
 %
 
-% JIEUBSIDA BATANG
+% MANDEUBSIDA BATANG
 
 string familyname,stylename;
-familyname:="Jieubsida";
+familyname:="Mandeubsida";
 stylename:="Batang";
 
 input tsuku-mi.mp;

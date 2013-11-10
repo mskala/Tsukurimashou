@@ -54,7 +54,7 @@ if (substr($stylename_en,0,length($familyname_en)) eq $familyname_en) {
   $stylename_en=~s/^\s+//;
 }
 
-$is_korean=($familyname_en=~/Jieubsida/)?1:0;
+$is_korean=($familyname_en=~/Mandeubsida/)?1:0;
 
 if (-r "$prefix/makefile-maint.inc") {
    $svnversion=`cd $prefix; svnversion`;

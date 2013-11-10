@@ -1,8 +1,8 @@
 #!/usr/bin/perl -CDS
 
 #
-# Hangul syllable page file generator for Jieubsida
-# Copyright (C) 2011, 2012  Matthew Skala
+# Hangul syllable page file generator for Mandeubsida
+# Copyright (C) 2011, 2012, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #
 
 for ($page=0xAC;$page<=0xD7;$page++) {
-  open(PF,sprintf(">mp/jieub-%02x.mp",$page));
+  open(PF,sprintf(">mp/mande-%02x.mp",$page));
   print PF "% GENERATED FILE - edit the source in make-hglpages instead!\n\n";
   printf PF "string hgls_page; hgls_page=\"%02X\";\n",$page;
   printf PF "hgls_lead=%d;\n",int(($page*256-0xAC00)/588);

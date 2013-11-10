@@ -1,6 +1,6 @@
 %
-% Unicode page A9 (Hangul Jamo Extended A) for Jieubsida
-% Copyright (C) 2012  Matthew Skala
+% Unicode page A9 (Hangul Jamo Extended A) for Mandeubsida
+% Copyright (C) 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

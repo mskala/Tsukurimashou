@@ -219,8 +219,8 @@ EXTRA_DIST:=COPYING.GPL3 \
   $(wildcard $(mvp)/fsc/*.fsc) \
   t1asm/README t1asm/t1asm.1 \
   $(filter-out \
-    $(wildcard $(mvp)/mp/jieub-a[c-f].mp) \
-    $(wildcard $(mvp)/mp/jieub-[b-d][0-9a-f].mp),\
+    $(wildcard $(mvp)/mp/mande-a[c-f].mp) \
+    $(wildcard $(mvp)/mp/mande-[b-d][0-9a-f].mp),\
     $(wildcard $(mvp)/mp/*.mp)) \
   t1asm/README t1asm/t1asm.1
 
@@ -265,7 +265,7 @@ MOSTLYCLEANFILES = \
   doc/pgflibraryshapes.callouts.code.tex \
   fea/*.fea \
   hamlog/kddata.hl hamlog/jnames.hl \
-  mp/jieub-a[c-f].mp mp/jieub-[b-d][0-9a-f].mp mp/.hglstamp \
+  mp/mande-a[c-f].mp mp/mande-[b-d][0-9a-f].mp mp/.hglstamp \
   pe/assemble-font.pe pe/make-empty.pe pe/*-bearing.pe \
   pfb/*.afm pfb/*.pfb \
   pfbtmp/*.pfb prf/*.prf sfd/*.sfd sum/*.sum \
@@ -273,7 +273,7 @@ MOSTLYCLEANFILES = \
   txt/fontlog.txt txt/tsukurimashou.eids
 
 CLEANFILES = \
-  otf/Tsukurimashou*.otf otf/BlackletterLolita*.otf otf/Jieubsida*.otf \
+  otf/Tsukurimashou*.otf otf/BlackletterLolita*.otf otf/Mandeubsida*.otf \
   doc/*.pdf
 
 DISTCLEANFILES = \
@@ -366,7 +366,7 @@ hamlog/config.hl: tools/make-cfghl \
 	  echo 'generic_family($(DEFAULT_TOK)).' >> hamlog/config.hl ; \
 	  ( for a in a b c d; \
 	    do for b in 0 1 2 3 4 5 6 7 8 9 a b c d e f ; do \
-	      echo jieub-$$a$$b.mp ; done ; done ; \
+	      echo mande-$$a$$b.mp ; done ; done ; \
 	    ls $(mvp)/mp/ mp/ ) | \
 	  $(PERL) -CSD -n \
 	    -e 'print "page_exists($$1,page$$2).\n"' \
@@ -771,7 +771,7 @@ fea/%.fea: \
 
 fea/bll.fea: fsc/tsuku.fsc
 
-fea/jieub.fea: fsc/hangul.fsc
+fea/mande.fea: fsc/hangul.fsc
 
 fea/tsuita.fea: fsc/tsuku.fsc
 

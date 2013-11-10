@@ -2,7 +2,7 @@
 
 %
 % Demo for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2013  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@
 % Just because all these are conditional doesn't mean all invocations of
 % them are conditional.  If you really disable core fonts, you'll lose.
 % The main point is just to allow people to build a demo without
-% Jieubsida, since that's the default configuration.
+% Mandeubsida, since that's the default configuration.
 
 \expandafter\ifx\csname haveTsukurimashouKakuPS\endcsname\relax\else
   \newfontface\kaku{TsukurimashouKakuPS}
@@ -75,16 +75,16 @@
   \newfontface\bokukko{TsukurimashouBokukkoPS}
 \fi
 
-\expandafter\ifx\csname haveJieubsidaBatangPS\endcsname\relax\else
-  \newfontface\batang[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaBatangPS}
+\expandafter\ifx\csname haveMandeubsidaBatangPS\endcsname\relax\else
+  \newfontface\batang[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{MandeubsidaBatangPS}
 \fi
 
-\expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax\else
-  \newfontface\dodum[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaDodumPS}
+\expandafter\ifx\csname haveMandeubsidaDodumPS\endcsname\relax\else
+  \newfontface\dodum[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{MandeubsidaDodumPS}
 \fi
 
-\expandafter\ifx\csname haveJieubsidaSunMoonPS\endcsname\relax\else
-  \newfontface\sunmoon[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{JieubsidaSunMoonPS}
+\expandafter\ifx\csname haveMandeubsidaSunMoonPS\endcsname\relax\else
+  \newfontface\sunmoon[RawFeature={+ccmp,+ljmo,+vjmo,+liga}]{MandeubsidaSunMoonPS}
 \fi
 
 \expandafter\ifx\csname haveTsukurimashouKaku\endcsname\relax\else
@@ -428,13 +428,13 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ~~~~abcdefghijklmnopqrstuvwxyz
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax\else
+\expandafter\ifx\csname haveMandeubsidaDodumPS\endcsname\relax\else
 
 \dodum
 
 \Large
-지읍시다돋움\\
-Jieubsida Dodum
+만듭시다돋움\\
+Mandeubsida Dodum
 
 \normalsize
 
@@ -450,13 +450,13 @@ Kaku, but it covers Korean letter and syllable glyphs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\expandafter\ifx\csname haveJieubsidaBatangPS\endcsname\relax\else
+\expandafter\ifx\csname haveMandeubsidaBatangPS\endcsname\relax\else
 
 \batang
 
 \Large
-지읍시다바탕\\
-Jieubsida Batang
+만듭시다바탕\\
+Mandeubsida Batang
 
 \normalsize
 
@@ -473,17 +473,17 @@ serif type in Korean.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\expandafter\ifx\csname haveJieubsidaSunMoonPS\endcsname\relax\else
+\expandafter\ifx\csname haveMandeubsidaSunMoonPS\endcsname\relax\else
 
 \sunmoon
 
 \Large
-지읍시다선문\\
-Jieubsida Sun-Moon
+만듭시다선문\\
+Mandeubsida Sun-Moon
 
 \normalsize
 
-Jieubsida Sun-Moon has a similar look to Tsukurimashou Bokukko, reminiscent
+Mandeubsida Sun-Moon has a similar look to Tsukurimashou Bokukko, reminiscent
 of hand lettering with a felt-tip marker.  It is named after a character
 from the Web comic Bonobo Conspiracy.
 
@@ -575,7 +575,7 @@ Enterprises, Inc.}
 あそこで言語の変態をしましょう！」。%
 \footnote{日本語 (Japanese), Tsukurimashou Project.}
 
-\expandafter\ifx\csname haveJieubsidaDodumPS\endcsname\relax\else
+\expandafter\ifx\csname haveMandeubsidaDodumPS\endcsname\relax\else
 {\dodum%
 여호와께서 가라사대 이 무리가 한 족속이요, 언어도 하나이므로 이같이
 시작하였으니 이후로는 그 경영하는 일을 금지할 수 없으리로다.
