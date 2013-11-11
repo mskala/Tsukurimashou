@@ -446,6 +446,17 @@ vardef kanji.grthree.reason =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.regular =
+  push_pbox_toexpand("kanji.grthree.regular");
+  build_kanji.tb(580,80)
+    (kanji.radical.silly_hat)
+    (kanji.grnine.animal_counter;
+     replace_strokep(-4)(subpath (0.12,0.88) of oldp);
+     replace_strokeq(-4)((1.6,1.6)--(1.6,1.6));
+     set_boserif(-4,1,9));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.sheep =
   push_pbox_toexpand("kanji.grthree.sheep");
   build_kanji.sscale(yscaled 0.53 shifted (0,30))
@@ -469,6 +480,14 @@ vardef kanji.grthree.surface =
   build_kanji.level(build_kanji.tb(400,60)
     (kanji.toprad.blue)
     (kanji.bottomrad.clothes));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.take =
+  push_pbox_toexpand("kanji.grthree.take");
+  build_kanji.lr(520,50)
+    (kanji.grone.ear)
+    (tsu_xform(identity yscaled 0.83)(kanji.greight.otoh));
   expand_pbox;
 enddef;
 

@@ -109,14 +109,6 @@ vardef kanji.grthree.number =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.take =
-  push_pbox_toexpand("kanji.grthree.take");
-  build_kanji.lr(520,50)
-    (kanji.grone.ear)
-    (tsu_xform(identity yscaled 0.83)(kanji.greight.otoh));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.ward =
   push_pbox_toexpand("kanji.grthree.ward");
   kanji.radical.box_on_side;

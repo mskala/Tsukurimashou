@@ -159,17 +159,6 @@ vardef kanji.grthree.reality =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.regular =
-  push_pbox_toexpand("kanji.grthree.regular");
-  build_kanji.tb(580,80)
-    (kanji.radical.silly_hat)
-    (kanji.grnine.animal_counter;
-     replace_strokep(-4)(subpath (0.12,0.88) of oldp);
-     replace_strokeq(-4)((1.6,1.6)--(1.6,1.6));
-     set_boserif(-4,1,9));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.guess =

@@ -39,6 +39,7 @@ input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -111,16 +112,6 @@ vardef kanji.grfour.sprout =
   build_kanji.tb(580,-30)
     (kanji.toprad.grass)
     (kanji.radical.tusk);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grsix.young_master =
-  push_pbox_toexpand("kanji.grsix.young_master");
-  build_kanji.tb(600,0)
-    (kanji.toprad.grass)
-    (kanji.grone.right);
   expand_pbox;
 enddef;
 

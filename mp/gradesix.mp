@@ -163,3 +163,11 @@ vardef kanji.grsix.self =
   build_kanji.add_ltail(0);
   expand_pbox;
 enddef;
+
+vardef kanji.grsix.young_master =
+  push_pbox_toexpand("kanji.grsix.young_master");
+  build_kanji.tb(600,0)
+    (kanji.toprad.grass)
+    (kanji.grone.right);
+  expand_pbox;
+enddef;

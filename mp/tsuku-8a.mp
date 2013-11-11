@@ -47,6 +47,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -192,6 +193,14 @@ vardef kanji.grsix.attack =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.discourse =
+  push_pbox_toexpand("kanji.grsix.discourse");
+  build_kanji.level(build_kanji.lr(410,-20)
+    (kanji.grtwo.word)
+    (kanji.rare.be_methodical));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.magazine =
   push_pbox_toexpand("kanji.grsix.magazine");
   build_kanji.level(build_kanji.lr(450,0)
@@ -258,6 +267,14 @@ vardef kanji.greight.compose =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.consent =
+  push_pbox_toexpand("kanji.greight.consent");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grsix.young_master));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.detailed =
   push_pbox_toexpand("kanji.greight.detailed");
   build_kanji.level(build_kanji.lr(450,0)
@@ -271,6 +288,14 @@ vardef kanji.greight.edict =
   build_kanji.level(build_kanji.lr(450,0)
     (kanji.grtwo.word)
     (kanji.greight.call));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.harmony =
+  push_pbox_toexpand("kanji.greight.harmony");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.greight.everybody));
   expand_pbox;
 enddef;
 
@@ -314,6 +339,14 @@ vardef kanji.greight.revise =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.solicit =
+  push_pbox_toexpand("kanji.greight.solicit");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grone.blue));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.sue =
   push_pbox_toexpand("kanji.greight.sue");
   build_kanji.level(build_kanji.lr(450,0)
@@ -332,11 +365,35 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grnine.acknowledge =
+  push_pbox_toexpand("kanji.grnine.acknowledge");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grtwo.capital));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.annotate =
   push_pbox_toexpand("kanji.grnine.annotate");
   build_kanji.level(build_kanji.lr(450,0)
     (kanji.grtwo.word)
     (build_kanji.sscale(shifted (0,-20))(kanji.grthree.master)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.consult =
+  push_pbox_toexpand("kanji.grnine.consult");
+  build_kanji.level(build_kanji.lr(340,0)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(yscaled 1.05 shifted (0,10))(kanji.grthree.take)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.proverb =
+  push_pbox_toexpand("kanji.grnine.proverb");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grnine.boy));
   expand_pbox;
 enddef;
 
@@ -884,25 +941,101 @@ begintsuglyph("uni8AC7",199);
   tsu_render;
 endtsuglyph;
 
-% <\X8ACB>[lr]\X8A00<\X9752>[tb](anything)\X6708
-% <\X8ACC>[lr]\X8A00\X6771
-% <\X8ACF>[lr]\X8A00<\X53D6>[lr]\X8033\X53C8
-% <\X8AD2>[lr]\X8A00<\X4EAC>[tb]\X4EA0(anything)
-% <\X8AD6>[lr]\X8A00<\X4F96>[tb]\X4EBA(anything)
-% <\X8ADA>[lr]\X8A00<\X5B9A>[tb]\X5B80\X758B
-% <\X8AE2>[lr]\X8A00<\X8ECD>[tb]\X5196\X8ECA
-% <\X8AE4>[lr]\X8A00<\X54A2>[tb][lr]\X53E3\X53E3(anything)
-% <\X8AE7>[lr]\X8A00<\X7686>[tb]<\X6BD4>[lr](anything)\X5315<\X767D>[tb](anything)\X65E5
-% <\X8AF3>[lr]\X8A00<\X97F3>[tb]<\X7ACB>[tb]\X4EA0(anything)\X65E5
-% <\X8AF7>[lr]\X8A00\X98A8
+% sei/ko "solicit"
+begintsuglyph("uni8ACB",203);
+  kanji.greight.solicit;
+  tsu_render;
+endtsuglyph;
+
+% extra "dissuade"
+begintsuglyph("uni8ACC",204);
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grtwo.east));
+  tsu_render;
+endtsuglyph;
+
+% shu/so "consult"
+begintsuglyph("uni8ACF",207);
+  kanji.grnine.consult;
+  tsu_render;
+endtsuglyph;
+
+% ryou/akira "acknowledge"
+begintsuglyph("uni8AD2",210);
+  kanji.grnine.acknowledge;
+  tsu_render;
+endtsuglyph;
+
+% ron "discourse"
+begintsuglyph("uni8AD6",214);
+  kanji.grsix.discourse;
+  tsu_render;
+endtsuglyph;
+
+% extra "command"
+begintsuglyph("uni8ADA",218);
+  build_kanji.level(build_kanji.lr(450,-30)
+    (kanji.grtwo.word)
+    (kanji.grthree.regular));
+  tsu_render;
+endtsuglyph;
+
+% extra "joke"
+begintsuglyph("uni8AE2",226);
+  build_kanji.level(build_kanji.lr(450,-20)
+    (kanji.grtwo.word)
+    (kanji.grfour.army));
+  tsu_render;
+endtsuglyph;
+
+% extra "speaking the truth"
+begintsuglyph("uni8AE4",228);
+  build_kanji.level(build_kanji.lr(430,0)
+    (kanji.grtwo.word)
+    (kanji.rare.outspokenly));
+  tsu_render;
+endtsuglyph;
+
+% kai/kana "harmony"
+begintsuglyph("uni8AE7",231);
+  kanji.greight.harmony;
+  tsu_render;
+endtsuglyph;
+
+% extra "memorize"
+begintsuglyph("uni8AF3",243);
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grone.noise));
+  tsu_render;
+endtsuglyph;
+
+% extra "insinuate"
+begintsuglyph("uni8AF7",247);
+  build_kanji.level(build_kanji.lr(360,0)
+    (kanji.grtwo.word)
+    (kanji.grtwo.wind));
+  tsu_render;
+endtsuglyph;
+
 % sho/moro "various"
 begintsuglyph("uni8AF8",248);
   kanji.grsix.various;
   tsu_render;
 endtsuglyph;
 
-% <\X8AFA>[lr]\X8A00\X5F66
-% <\X8AFE>[lr]\X8A00<\X82E5>[tb]\X8279\X53F3
+% gen/kotowaza "proverb"
+begintsuglyph("uni8AFA",250);
+  kanji.grnine.proverb;
+  tsu_render;
+endtsuglyph;
+
+% daku "consent"
+begintsuglyph("uni8AFE",254);
+  kanji.greight.consent;
+  tsu_render;
+endtsuglyph;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

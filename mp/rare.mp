@@ -500,7 +500,7 @@ enddef;
 vardef kanji.rare.outspokenly =
   push_pbox_toexpand("kanji.rare.outspokenly");
   build_kanji.level(build_kanji.tb(540,40)
-    (build_kanji.sscale(scaled 0.84)(build_kanji.lr(480,0)
+    (build_kanji.sscale(scaled 0.84)(build_kanji.lr(480,-40)
        (kanji.grone.mouth)(kanji.grone.mouth)))
     (kanji.rare.deficient));
   expand_pbox;
