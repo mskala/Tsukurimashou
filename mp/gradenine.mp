@@ -125,6 +125,28 @@ vardef kanji.grnine.divination =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.fifth =
+  push_pbox_toexpand("kanji.grnine.fifth");
+  push_stroke((50,-50)..(120,100)..(160,300)..tension 1.2..(180,560)
+      --(850,560),
+    (1,1)--(1.3,1.3)--(1.5,1.5)--(1.6,1.6)--(1.6,1.6));
+  set_botip(0,3,1);
+  set_boserif(0,4,9);
+  push_stroke(interpath(mincho,
+      (570,760){down}..(660,100)..(810,0)..tension 1.5..
+        (870,70)..{curl 0.3}(910,200),
+      (540,760){down}..(670,100)..{right}(910,-40){curl 1}..
+        (860,60)..(860,160)),
+    (1.6,1.6)--(1.4,1.4)--(1.4,1.4)--(1.2,1.2)--(0.9,0.9));
+  set_boserif(0,0,10);
+  push_stroke((680,720)..tension 1.2..(750,690)..(790,640),
+    (1,1)..(1.5,1.5)--(1.7,1.7));
+  set_bosize(0,90);
+  push_stroke((820,410)..tension 1.2..(720,240)..(370,-60),
+    (1.6,1.6)--(1.4,1.4)--(1.2,1.2));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.fork_in_the_road =
   push_pbox_toexpand("kanji.grnine.fork_in_the_road");
   build_kanji.tb(400,120)

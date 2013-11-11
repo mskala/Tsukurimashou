@@ -216,6 +216,14 @@ vardef kanji.grsix.part_of_speech =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.sincerity =
+  push_pbox_toexpand("kanji.grsix.sincerity");
+  build_kanji.level(build_kanji.lr(420,-10)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(shifted (0,20))(kanji.grfour.become)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.translate =
   push_pbox_toexpand("kanji.grsix.translate");
   build_kanji.level(build_kanji.lr(450,-10)
@@ -329,6 +337,14 @@ vardef kanji.grnine.annotate =
   build_kanji.level(build_kanji.lr(450,0)
     (kanji.grtwo.word)
     (build_kanji.sscale(shifted (0,-20))(kanji.grthree.master)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.tedious =
+  push_pbox_toexpand("kanji.grnine.tedious");
+  build_kanji.level(build_kanji.lr(450,10)
+    (kanji.grtwo.word)
+    (kanji.greight.undergo));
   expand_pbox;
 enddef;
 
@@ -780,11 +796,44 @@ begintsuglyph("uni8A9E",158);
   tsu_render;
 endtsuglyph;
 
-% <\X8AA0>[lr]\X8A00\X6210
-% <\X8AA1>[lr]\X8A00\X6212
-% <\X8AA5>[lr]\X8A00<\X544A>[tb]\X725B\X53E3
-% <\X8AA6>[lr]\X8A00<\X752C>[tb]\X30DE\X7528
-% <\X8AA8>[lr]\X8A00<\X6BCE>[tb](anything)\X6BCD
+% sei/makoto "sincerity"
+begintsuglyph("uni8AA0",160);
+  kanji.grsix.sincerity;
+  tsu_render;
+endtsuglyph;
+
+% extra "admonish"
+begintsuglyph("uni8AA1",161);
+  build_kanji.level(build_kanji.lr(420,0)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(shifted (0,20))(kanji.greight.precept)));
+  tsu_render;
+endtsuglyph;
+
+% extra "give instructions"
+begintsuglyph("uni8AA5",165);
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grfour.revelation));
+  tsu_render;
+endtsuglyph;
+
+% extra "recite"
+begintsuglyph("uni8AA6",166);
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.rare.walled_road));
+  tsu_render;
+endtsuglyph;
+
+% extra "instruct"
+begintsuglyph("uni8AA8",168);
+  build_kanji.level(build_kanji.lr(400,-20)
+    (kanji.grtwo.word)
+    (kanji.grtwo.every));
+  tsu_render;
+endtsuglyph;
+
 % setsu/to "preach"
 begintsuglyph("uni8AAC",172);
   kanji.grfour.preach;
@@ -809,14 +858,26 @@ begintsuglyph("uni8AB2",178);
   tsu_render;
 endtsuglyph;
 
-% <\X8AB9>[lr]\X8A00<\X975E>[lr](anything)(anything)
+% extra "ridicule"
+begintsuglyph("uni8AB9",185);
+  build_kanji.level(build_kanji.lr(430,-20)
+    (kanji.grtwo.word)
+    (kanji.grfive.mistake));
+  tsu_render;
+endtsuglyph;
+
 % chou/shira "tune"
 begintsuglyph("uni8ABF",191);
   kanji.grthree.tune;
   tsu_render;
 endtsuglyph;
 
-% <\X8AC4>[lr]\X8A00<\X4EAB>[tb]\X4EA0(anything)
+% shun/kudo "tedious"
+begintsuglyph("uni8AC4",196);
+  kanji.grnine.tedious;
+  tsu_render;
+endtsuglyph;
+
 % dan "discuss"
 begintsuglyph("uni8AC7",199);
   kanji.grthree.discuss;

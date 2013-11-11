@@ -84,6 +84,18 @@ vardef kanji.grfour.attach =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.become =
+  push_pbox_toexpand("kanji.grfour.become");
+  kanji.grnine.fifth;
+  push_stroke((173,280)--(410,280),
+    (1.6,1.6)--(1.6,1.6));
+  build_kanji.add_jtail(0);
+  replace_strokep(0)(oldp shifted (0,110));
+  set_boserif(0,1,4);
+  set_botip(0,1,1);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.build =
   push_pbox_toexpand("kanji.grfour.build");
   build_kanji.long_stride_enclose(false)

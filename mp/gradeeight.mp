@@ -531,6 +531,16 @@ vardef kanji.greight.tusk =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.undergo =
+  push_pbox_toexpand("kanji.greight.undergo");
+  build_kanji.level(build_kanji.tb(650,-20)
+    (kanji.radical.kettle_lid)
+    (build_kanji.tb(550,-40)
+      (build_kanji.sscale(xscaled 0.9)(kanji.grone.mouth))
+      (kanji.grone.child)));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.well =
   push_pbox_toexpand("kanji.greight.well");
   kanji.radical.aitch;
