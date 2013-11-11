@@ -214,18 +214,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grnine.divination =
-  push_pbox_toexpand("kanji.grnine.divination");
-  push_stroke((400,780)--(400,-20),
-    (1.6,1.6)--(1.5,1.5));
-  set_boserif(0,0,10);
-  push_stroke((400,500)..tension 1.1..(640,405)..(780,300),
-    (1.3,1.3)--(1.6,1.6)--(1.8,1.8));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % hou/tsutsu "wrap"
 begintsuglyph("uni5305",5);
   kanji.grfour.wrap;

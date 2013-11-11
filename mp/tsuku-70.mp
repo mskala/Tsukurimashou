@@ -38,6 +38,7 @@ input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input leftrad.mp;
 
@@ -76,14 +77,6 @@ vardef kanji.grfour.lamp =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grsix.ash =
-  push_pbox_toexpand("kanji.grsix.ash");
-  build_kanji.cliff_enclose(kanji.grone.fire);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % hi/ka "fire"
 begintsuglyph("uni706B",107);

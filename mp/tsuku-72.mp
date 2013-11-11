@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
@@ -69,20 +70,6 @@ vardef kanji.grfour.singular =
   build_kanji.lr(420,-10)
     (kanji.leftrad.cow)
     (kanji.grtwo.temple);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.greight.tusk =
-  push_pbox_toexpand("kanji.greight.tusk");
-  kanji.radical.tusk;
-  replace_strokep(-4)((310,480)--(310,780)--(830,780));
-  replace_strokeq(-4)((1.5,1.5)--(1.6,1.6)--(1.6,1.6));
-  set_boserif(-4,1,4);
-  set_boserif(-4,2,9);
-  set_botip(-4,1,1);
-  obstacktype[find_whatever(otstroke,-2)]:=otnull;
   expand_pbox;
 enddef;
 

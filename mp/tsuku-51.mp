@@ -76,16 +76,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.complete =
-  push_pbox_toexpand("kanji.grthree.complete");
-  kanji.radical.tent;
-  pop_stroke;
-  tsu_xform(identity yscaled 0.56)(kanji.grone.king);
-  replace_strokep(-3)((220,ypart point 0 of oldp)--
-    (770,ypart point 1 of oldp));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.copy =
   push_pbox_toexpand("kanji.grthree.copy");
   build_kanji.level(build_kanji.tb(600,160)

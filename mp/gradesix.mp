@@ -32,6 +32,12 @@ inclusion_lock(gradesix);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.ash =
+  push_pbox_toexpand("kanji.grsix.ash");
+  build_kanji.cliff_enclose(kanji.grone.fire);
+  expand_pbox;
+enddef;
+
 % the other common word using this kanji is "foot (unit of measure)" but
 % that is a poor mnemonic because it's ambiguous with "foot (body part)"
 vardef kanji.grsix.blowjob =

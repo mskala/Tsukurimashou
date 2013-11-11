@@ -101,6 +101,19 @@ vardef kanji.grfive.intention =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.long =
+  push_pbox_toexpand("kanji.grfive.long");
+  push_stroke((360,790)..tension 1.2..(480,740)..(560,680),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  tsu_xform(identity yscaled 0.87)(kanji.grone.water);
+  replace_strokep(-3)(oldp shifted (0,-40));
+  replace_strokep(-1)((280,580)--(510,580)--(subpath (1,infinity) of oldp));
+  replace_strokeq(-1)((1.6,1.6)--oldq);
+  set_boserif(-1,0,whatever);
+  set_botip(-1,1,1);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.mistake =
   push_pbox_toexpand("kanji.grfive.mistake");
   push_stroke((380,810)--(370,240){dir 266}..tension 1.2..(300,70)..(80,-50),
