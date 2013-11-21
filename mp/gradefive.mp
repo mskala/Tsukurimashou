@@ -32,6 +32,16 @@ inclusion_lock(gradefive);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.approve =
+  push_pbox_toexpand("kanji.grfive.approve");
+  build_kanji.level(build_kanji.tb(530,-10)
+    (build_kanji.lr(480,-50)
+       (kanji.leftrad.husband)
+       (kanji.grfour.husband))
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.blame =
   push_pbox_toexpand("kanji.grfive.blame");
   build_kanji.level(build_kanji.tb(520,-20)
@@ -90,6 +100,12 @@ vardef kanji.grfive.expel =
   push_pbox_toexpand("kanji.grfive.expel");
   build_kanji.road_enclose(build_kanji.sscale(yscaled 0.91)
     (kanji.radical.northeast));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.hesitate =
+  push_pbox_toexpand("kanji.grfive.hesitate");
+  build_kanji.road_enclose(kanji.grtwo.rice);
   expand_pbox;
 enddef;
 

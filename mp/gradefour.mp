@@ -459,6 +459,14 @@ vardef kanji.grfour.single =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.stomach =
+  push_pbox_toexpand("kanji.grfour.stomach");
+  build_kanji.level(build_kanji.tb(420,0)
+    (kanji.grone.paddy)
+    (kanji.bottomrad.moon));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.ticket =
   push_pbox_toexpand("kanji.grfour.ticket");
   build_kanji.tb(480,-30)

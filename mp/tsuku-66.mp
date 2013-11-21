@@ -179,18 +179,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.greight.substitute =
-  push_pbox_toexpand("kanji.greight.substitute");
-  build_kanji.tb(360,-10)
-    (build_kanji.lr(480,-50*mincho)
-       (kanji.leftrad.husband)
-       (kanji.grfour.husband))
-    (kanji.grone.day);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % shou/sakan "prosperity"
 begintsuglyph("uni660C",12);
   kanji.grnine.prosperity;

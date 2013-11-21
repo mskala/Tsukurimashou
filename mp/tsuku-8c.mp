@@ -39,6 +39,7 @@ input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradeten.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -114,16 +115,6 @@ vardef kanji.grfour.wear_moustache =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfive.approve =
-  push_pbox_toexpand("kanji.grfive.approve");
-  build_kanji.level(build_kanji.tb(530,-10)
-    (build_kanji.lr(480,-50)
-       (kanji.leftrad.husband)
-       (kanji.grfour.husband))
-    (kanji.grone.shell));
-  expand_pbox;
-enddef;
 
 vardef kanji.grfive.congratulations =
   push_pbox_toexpand("kanji.grfive.congratulations");
@@ -237,18 +228,6 @@ vardef kanji.grnine.obtain =
   push_pbox_toexpand("kanji.grnine.obtain");
   build_kanji.level(build_kanji.tb(520,-50)
     (kanji.grthree.world)
-    (kanji.grone.shell));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grten.sell_out =
-  push_pbox_toexpand("kanji.grten.sell_out");
-  build_kanji.level(build_kanji.tb(440,-20)
-    (build_kanji.tb(360,-160)
-       (kanji.grfour.gentleman)
-       (kanji.toprad.eye))
     (kanji.grone.shell));
   expand_pbox;
 enddef;

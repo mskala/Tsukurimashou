@@ -88,16 +88,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfour.stomach =
-  push_pbox_toexpand("kanji.grfour.stomach");
-  build_kanji.level(build_kanji.tb(420,0)
-    (kanji.grone.paddy)
-    (kanji.bottomrad.moon));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % rou/o "old man"
 begintsuglyph("uni8001",1);
   kanji.grfour.old_man;

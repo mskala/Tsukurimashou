@@ -372,6 +372,13 @@ AC_MSG_RESULT([$with_tsuku_build])
 AM_CONDITIONAL([COND_TSUKU_BUILD], [test '!' "$with_tsuku_build" = no])
 AC_SUBST([with_tsuku_build])
 #
+AC_ARG_ENABLE([cjkvi-style],
+  [AS_HELP_STRING([--enable-cjkvi-style=[[gtjkva]]],
+    [which CJKVI dictionaries to build [j]])],
+    [],
+    [enable_cjkvi_style=j])
+AC_SUBST([enable_cjkvi_style])
+#
 AC_ARG_ENABLE([colour-build],
   [AS_HELP_STRING([--disable-colour-build],
     [turn off ANSI colour in build scripts])],
@@ -386,23 +393,16 @@ AC_ARG_ENABLE([docs],
     [enable_docs=yes])
 #
 AC_ARG_ENABLE([edict-decomp],
-  [AS_HELP_STRING([--enable-edict-decomp[[=chise|kanjivg|tsuku|auto]]],
-    [dictionary for EDICT2 decomposition [auto]])],
+  [AS_HELP_STRING([--enable-edict-decomp[[=cjkvi-X|chise|kanjivg|tsuku]]],
+    [dictionary for EDICT2 decomposition [cjkvi-j]])],
     [],
-    [enable_edict_decomp=auto])
-AS_IF([test '!' "$with_edict2" = "no"],[
-AC_MSG_CHECKING([EDICT2 decompositions])
-AS_IF(
-  [test "$enable_edict_decomp" = "auto"],
-      [AS_IF([test "$with_chise_ids" = "no"],
-             AS_IF([test "$with_kanjivg" = "no"],
-                   AS_IF([test "$with_tsuku_build" = "no"],
-                         [enable_edict_decomp=no],
-                         [enable_edict_decomp=tsuku]),
-                   [enable_edict_decomp=kanjivg]),
-             [enable_edict_decomp=chise])])
-AC_MSG_RESULT([$enable_edict_decomp])
-])
+    [enable_edict_decomp=cjkvi-j])
+AS_IF([test "$enable_edict_decomp" = "cjkvi-g"],[edict_decomp=cjkvi-g.eids])
+AS_IF([test "$enable_edict_decomp" = "cjkvi-t"],[edict_decomp=cjkvi-t.eids])
+AS_IF([test "$enable_edict_decomp" = "cjkvi-j"],[edict_decomp=cjkvi-j.eids])
+AS_IF([test "$enable_edict_decomp" = "cjkvi-k"],[edict_decomp=cjkvi-k.eids])
+AS_IF([test "$enable_edict_decomp" = "cjkvi-v"],[edict_decomp=cjkvi-v.eids])
+AS_IF([test "$enable_edict_decomp" = "cjkvi-a"],[edict_decomp=cjkvi-a.eids])
 AS_IF([test "$enable_edict_decomp" = "chise"],[edict_decomp=chise.eids])
 AS_IF([test "$enable_edict_decomp" = "kanjivg"],[edict_decomp=kanjivg.eids])
 AS_IF([test "$enable_edict_decomp" = "tsuku"],

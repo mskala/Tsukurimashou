@@ -50,16 +50,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.climb =
-  push_pbox_toexpand("kanji.grthree.climb");
-  kanji.radical.dotted_tent;
-  tsu_xform(identity shifted (-500,50) xyscaled (0.7,0.54) shifted (500,-50))
-    (kanji.grthree.bean);
-  obstacktype[find_whatever(otstroke,-5)]:=otnull;
-  replace_strokep(0)(oldp shifted (-500,0) xscaled 1.2 shifted (500,0));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.departure =
   push_pbox_toexpand("kanji.grthree.departure");
   build_kanji.level(

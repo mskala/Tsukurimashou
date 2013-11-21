@@ -103,14 +103,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfive.hesitate =
-  push_pbox_toexpand("kanji.grfive.hesitate");
-  build_kanji.road_enclose(kanji.grtwo.rice);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 vardef kanji.greight.crowded =
   push_pbox_toexpand("kanji.greight.crowded");
   build_kanji.road_enclose(kanji.grone.put_it_in);

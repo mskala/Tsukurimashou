@@ -95,8 +95,7 @@ if COND_BUDDY
    BUDDY_LIBS=-lbdd
 endif
 if COND_CHISE_IDS
-   MAYBE_CIDATA=chise.eids
-   MAYBE_CIINDEX=chise.bvec
+   MAYBE_CIDATA=chise.eids chise.bvec
 endif
 if COND_DOCS
     MAYBE_DOCS=idsgrep.pdf
@@ -128,6 +127,9 @@ endif
 if COND_EDICT2
    MAYBE_EDICTDATA=edict.eids edict.bvec
 endif
+MAYBE_CJKVIDATA=$(foreach ver,g t j k v a,\
+  $(if $(findstring $(ver),$(enable_cjkvi_style)),\
+  cjkvi-$(ver).eids cjkvi-$(ver).bvec ))
 
 ############################################################################
 
@@ -173,15 +175,14 @@ EXTRA_DIST:= \
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
-  chise2eids ed22eids kvg2eids \
+  chise2eids cjkvi2eids ed22eids kvg2eids \
+  cjkvi-ids.txt \
   $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
 
 bin_PROGRAMS = idsgrep
 
-dist_dict_DATA = $(MAYBE_CIDATA)
-
-dict_DATA = $(MAYBE_CIINDEX) $(MAYBE_EDICTDATA) $(MAYBE_KVDATA) \
-  $(MAYBE_TSUKUDATA)
+dict_DATA = $(MAYBE_CJKVIDATA) $(MAYBE_CIDATA) $(MAYBE_EDICTDATA) \
+  $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)
 
 dist_pdf_DATA = $(MAYBE_DOCS)
 
@@ -233,16 +234,14 @@ chise.eids: $(wildcard @with_chise_ids@/IDS-*.txt) chise2eids
 	  > chise.eids 2> chise.errs
 	echo `wc -l < chise.errs` errors detected in CHISE IDS
 
-# this if is for the case of chise.eids distributed and not locally built
+cjkvi-%.eids: cjkvi-ids.txt cjkvi2eids
+	$(PERL) -CDS $(mvp)/cjkvi2eids $* \
+	  $(mvp)/cjkvi-ids.txt > cjkvi-$*.eids
+
 edict.eids: @with_edict2@ @edict_decomp@ ed22eids
-	if test -r @edict_decomp@ ; \
-	then $(GZIP) -cd @with_edict2@ \
+	$(GZIP) -cd @with_edict2@ \
 	  | $(ICONV) -feuc-jp -tutf-8 \
-	  | $(PERL) -CDS $(mvp)/ed22eids @edict_decomp@ > edict.eids ; \
-	else $(GZIP) -cd @with_edict2@ \
-	  | $(ICONV) -feuc-jp -tutf-8 \
-	  | $(PERL) -CDS $(mvp)/ed22eids $(mvp)/@edict_decomp@ \
-	  > edict.eids ; fi
+	  | $(PERL) -CDS $(mvp)/ed22eids @edict_decomp@ > edict.eids
 
 kanjivg.eids: @with_kanjivg@ kvg2eids
 	if $(PERL) \

@@ -33,15 +33,21 @@
 beginfont
 
 % AUTODEPS
+input bkencl.mp;
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradesix.mp;
+input gradeten.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -66,6 +72,32 @@ vardef kanji.greight.conspire =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.riddle =
+  push_pbox_toexpand("kanji.greight.riddle");
+  build_kanji.level(build_kanji.lr(380,0)
+    (kanji.grtwo.word)
+    (kanji.grfive.hesitate));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grnine.history =
+  push_pbox_toexpand("kanji.grnine.history");
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grfour.stomach));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.praise =
+  push_pbox_toexpand("kanji.grnine.praise");
+  build_kanji.level(build_kanji.lr(430,-20)
+    (kanji.grtwo.word)
+    (kanji.grfive.approve));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % bou/haka "conspire"
@@ -74,9 +106,67 @@ begintsuglyph("uni8B00",0);
   tsu_render;
 endtsuglyph;
 
+% i "history"
+begintsuglyph("uni8B02",2);
+  kanji.grnine.history;
+  tsu_render;
+endtsuglyph;
+
+% extra "carol"
+begintsuglyph("uni8B0C",12);
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.rare.big_brother));
+  tsu_render;
+endtsuglyph;
+
+% mei/nazo "riddle"
+begintsuglyph("uni8B0E",14);
+  kanji.greight.riddle;
+  tsu_render;
+endtsuglyph;
+
+% extra "certificate"
+begintsuglyph("uni8B49",73);
+  build_kanji.level(build_kanji.lr(410,0)
+    (kanji.grtwo.word)
+    (kanji.grthree.climb));
+  tsu_render;
+endtsuglyph;
+
+% extra "disparage"
+begintsuglyph("uni8B4F",79);
+  build_kanji.level(build_kanji.lr(380,0)
+    (kanji.grtwo.word)
+    (kanji.greight.how_much));
+  tsu_render;
+endtsuglyph;
+
+% extra "false accusation"
+begintsuglyph("uni8B5B",91);
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(scaled 0.95)(kanji.greight.substitute)));
+  tsu_render;
+endtsuglyph;
+
 % gi/kata "deliberation"
 begintsuglyph("uni8B70",112);
   kanji.grfour.deliberation;
+  tsu_render;
+endtsuglyph;
+
+% extra "study"
+begintsuglyph("uni8B80",128);
+  build_kanji.level(build_kanji.lr(450,0)
+    (kanji.grtwo.word)
+    (kanji.grten.sell_out));
+  tsu_render;
+endtsuglyph;
+
+% san/ho "praise"
+begintsuglyph("uni8B83",131);
+  kanji.grnine.praise;
   tsu_render;
 endtsuglyph;
 
