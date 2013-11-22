@@ -21,7 +21,7 @@
 
 use utf8;
 
-$svnid='$Id: ed22eids 2601 2013-11-21 01:21:24Z mskala $';
+$svnid='$Id: ed22eids 2604 2013-11-21 21:52:58Z mskala $';
 
 # FIXME pass through copyright notices
 
@@ -29,6 +29,8 @@ $svnid='$Id: ed22eids 2601 2013-11-21 01:21:24Z mskala $';
 $kvg{'・'}='<・>;';
 $kvg{'（'}='<（>;';
 $kvg{'）'}='<）>;';
+$kvg{'('}='<(>;';
+$kvg{')'}='<)>;';
 
 if (@ARGV) {
   $decomp_file=shift;

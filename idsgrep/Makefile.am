@@ -127,7 +127,7 @@ endif
 if COND_EDICT2
    MAYBE_EDICTDATA=edict.eids edict.bvec
 endif
-MAYBE_CJKVIDATA=$(foreach ver,g t j k v a,\
+MAYBE_CJKVIDATA=$(foreach ver,g t j k v x a,\
   $(if $(findstring $(ver),$(enable_cjkvi_style)),\
   cjkvi-$(ver).eids cjkvi-$(ver).bvec ))
 
@@ -140,8 +140,8 @@ MAYBE_CJKVIDATA=$(foreach ver,g t j k v a,\
 GCOV_TESTS = \
   test/andor test/anynot test/assoc test/basicmatch test/backslash \
   test/bighash test/cooked test/demorgan test/equal test/genbv \
-  test/kvg-grone test/messages test/regex test/spacing test/speed \
-  test/tsu-grone test/unilist test/unord test/userpred test/utf8
+  test/kvg-grone test/messages test/parsedict test/regex test/spacing \
+  test/speed test/tsu-grone test/unilist test/unord test/userpred test/utf8
 
 define GCDEP_RECIPE
 $1.log: test/rmgcda.log
