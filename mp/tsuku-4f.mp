@@ -156,6 +156,34 @@ vardef kanji.grfive.imitate =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.price =
+  push_pbox_toexpand("kanji.grfive.price");
+  build_kanji.lr(300,0)
+    (kanji.leftrad.person)
+    (build_kanji.thickness(0.92)
+      (push_stroke((110,760)--(890,760),(1.6,1.6)--(1.6,1.6));
+       set_boserif(0,1,9);
+       push_stroke((390,760)--(390,10),(1.5,1.5)--(1.4,1.4));
+       push_stroke((610,760)--(610,10),(1.5,1.5)--(1.4,1.4));
+       build_kanji.box((180,480),(820,10))));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.surplus =
+  push_pbox_toexpand("kanji.grfive.surplus");
+  build_kanji.level(
+    kanji.radical.tent;
+    path saved_path;
+    tsu_xform(identity yscaled 0.5 shifted (0,-60))
+      (kanji.grone.small;saved_path=get_strokep(-1));
+    replace_strokep(-1)(saved_path yscaled 0.65 shifted (0,-38));
+    set_boserif(-1,0,whatever);
+    push_stroke((160,310)--(850,310))((1.5,1.5)--(1.5,1.5));
+    set_boserif(0,1,9);
+  );
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.haiku =
@@ -563,6 +591,12 @@ begintsuglyph("uni4F55",85);
   tsu_render;
 endtsuglyph;
 
+% yo/ama "surplus" ("ama" as in "amari yoku nai")
+begintsuglyph("uni4F59",89);
+  kanji.grfive.surplus;
+  tsu_render;
+endtsuglyph;
+
 % tsuku "make"
 begintsuglyph("uni4F5C",92);
   kanji.grtwo.make;
@@ -664,6 +698,12 @@ endtsuglyph;
 % i/yo "dependency"
 begintsuglyph("uni4F9D",157);
   kanji.greight.dependency;
+  tsu_render;
+endtsuglyph;
+
+% ka/atai "price"
+begintsuglyph("uni4FA1",161);
+  kanji.grfive.price;
   tsu_render;
 endtsuglyph;
 

@@ -123,14 +123,6 @@ vardef kanji.grthree.inn =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.guest =
-  push_pbox_toexpand("kanji.grthree.guest");
-  build_kanji.tb(600,110)
-    (kanji.radical.silly_hat)
-    (kanji.grfour.every);
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.palace =
   push_pbox_toexpand("kanji.grthree.palace");
   build_kanji.tb(600,90)

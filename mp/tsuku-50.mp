@@ -144,6 +144,14 @@ vardef kanji.grfive.individual =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.portrait =
+  push_pbox_toexpand("kanji.grfive.portrait");
+  build_kanji.lr(300,-20)
+    (kanji.leftrad.person)
+    (kanji.grfour.elephant);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.manservant =
@@ -215,6 +223,12 @@ endtsuglyph;
 % dou/hatara "work"
 begintsuglyph("uni50CD",205);
   kanji.grfour.work;
+  tsu_render;
+endtsuglyph;
+
+% zou "portrait"
+begintsuglyph("uni50CF",207);
+  kanji.grfive.portrait;
   tsu_render;
 endtsuglyph;
 
