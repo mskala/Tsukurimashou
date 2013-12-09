@@ -26,6 +26,7 @@
 #include "idsgrep.h"
 
 int cook_output=0;
+int colourize_output=0;
 int canonicalize_input=1;
 
 #define OS_TOP_HEAD_BRACKET_TYPE 0    /* 0 ASCII, 1 B lentic., 2 W lentic. */
@@ -34,7 +35,7 @@ int canonicalize_input=1;
 #define OS_UNARY_BRACKET_TYPE 3       /* 0 period, 1 colon, 2 centre dot */
 #define OS_BINARY_BRACKET_TYPE 4      /* 0 square bckt, 1 wide, 2 dbl wide */
 #define OS_TERNARY_BRACKET_TYPE 5     /* 0 curly brace, 1 B tort, 2 W tort */
-#define OS_INDENTATION 6              /* 8=tab, else # of spaces */
+#define OS_INDENTATION 6              /* 8=tab, 9=wrap, else # of spaces */
 #define OS_SEPARATOR 7                /* 0 null, 1 \n, 2 \n\n, 3 nothing */
 #define OS_SUGAR 8                    /* 4 syrup @top +2 not @top +1 sugar */
 #define OS_ESCAPE_WHAT 9              /* increasing subsets from 0 to 7 */
@@ -43,13 +44,18 @@ int canonicalize_input=1;
 
 #define NUM_OUTPUT_SETTINGS 12
 
-static char output_recipe[NUM_OUTPUT_SETTINGS]="100000013250";
+static char output_recipe[NUM_OUTPUT_SETTINGS]="100000913250";
+
+static char *bracketed_colours[6]={
+   "0;41;30","0;37","0;32","0;35","0;36","0;33"};
+static char *sweetened_colours[6]={
+   "0;41;30","1;37","1;32","1;35","1;36","1;33"};
 
 #define NUM_PRESET_RECIPES 5
 
 static struct {char *name,*recipe;} preset_recipe[NUM_PRESET_RECIPES]={
-   {"ascii", "000000013551"},
-   {"cooked","100000013250"},
+   {"ascii", "000000913551"},
+   {"cooked","100000913250"},
    {"indent","100000223250"},
    {"raw",   "000000000000"},
    {"rawnc", "000000000004"},
@@ -100,8 +106,81 @@ int char_length(char *c) {
 
 /**********************************************************************/
 
+static char *wrap_buffer=NULL;
+static int buffer_size=0,buffered_bytes=0,buffered_columns=0,
+  current_column=0,wrap_allowed=0;
+
+void wrap_write(char *cp,int len,FILE *f) {
+   int i,j;
+
+   if (output_recipe[OS_INDENTATION]!='9') {
+      fwrite(cp,1,len,f);
+      return;
+   }
+   
+   for (i=0;i<len;) {
+      if ((cp[i]=='\n') || (cp[i]=='\f')) {
+	 fwrite(wrap_buffer,1,buffered_bytes,f);
+	 fputc(cp[i],f);
+	 buffered_bytes=0;
+	 buffered_columns=0;
+	 current_column=0;
+	 wrap_allowed=0;
+	 
+	 i++;
+	 
+      } else if (wrap_allowed) {
+	 if (buffer_size<buffered_bytes+4) {
+	    if (wrap_buffer==NULL) {
+	       buffer_size=80*4;
+	       wrap_buffer=(char *)malloc(buffer_size);
+	    } else {
+	       buffer_size/=3;
+	       buffer_size*=4;
+	       wrap_buffer=(char *)realloc(wrap_buffer,buffer_size);
+	    }
+	 }
+	 
+	 buffered_columns+=idsgrep_utf8cw(cp+i);
+	 while (1) {
+	    wrap_buffer[buffered_bytes++]=cp[i++];
+	    if ((cp[i]&0xC0)!=0x80)
+	      break;
+	 };
+	 
+	 if (current_column+buffered_columns>76) {
+	    fwrite("\n   ",1,4,f);
+	    fwrite(wrap_buffer,1,buffered_bytes,f);
+	    current_column=3+buffered_columns;
+	    buffered_columns=0;
+	    buffered_bytes=0;
+	    wrap_allowed=0;
+	 }
+	 
+      } else {
+	 j=char_length(cp+i);
+	 fwrite(cp+i,1,j,f);
+	 current_column+=idsgrep_utf8cw(cp+i);
+
+	 i+=j;
+      }
+   }
+}
+
+void wrap_flush(FILE *f) {
+   if (buffered_bytes>0) {
+      fwrite(wrap_buffer,1,buffered_bytes,f);
+      current_column+=buffered_columns;
+      buffered_columns=0;
+      buffered_bytes=0;
+   }
+}
+
+/**********************************************************************/
+
 void write_maybe_escaped_char(char *cp,HASHED_STRING *br,FILE *f) {
-   int c,do_esc;
+   int c,do_esc,i;
+   char out_buffer[11];
 
    switch (char_length(cp)) {
     case 1:
@@ -152,7 +231,7 @@ void write_maybe_escaped_char(char *cp,HASHED_STRING *br,FILE *f) {
        case '3':
 	 if (((output_recipe[OS_ESCAPE_HOW]=='3') || (c>=0x7F)) &&
 	     (c<=0xFF)) {
-	    fprintf(f,"\\x%02X",c);
+	    sprintf(out_buffer,"\\x%02X",c);
 	    break;
 	 }
 	 /* FALL THROUGH */
@@ -160,46 +239,48 @@ void write_maybe_escaped_char(char *cp,HASHED_STRING *br,FILE *f) {
        case '4':
 	 if (((output_recipe[OS_ESCAPE_HOW]=='4') || (c>0xFF)) &&
 	     (c<=0xFFFF)) {
-	    fprintf(f,"\\X%04X",c);
+	    sprintf(out_buffer,"\\X%04X",c);
 	    break;
 	 }
 	 /* FALL THROUGH */
 	 
        case '2':
 	 if ((output_recipe[OS_ESCAPE_HOW]=='2') || (c>0xFFFF)) {
-	    fprintf(f,"\\x{%X}",c);
+	    sprintf(out_buffer,"\\x{%X}",c);
 	    break;
 	 }
 	 /* FALL THROUGH */
 	 
        case '1':
 	 if ((c>=1) && (c<=27)) {
-	    fputc('\\',f);
+	    out_buffer[0]='\\';
+	    out_buffer[2]='\0';
 	    switch (c) {
 	     case 7:
-	       fputc('a',f);
+	       out_buffer[1]='a';
 	       break;
 	     case 8:
-	       fputc('b',f);
+	       out_buffer[1]='b';
 	       break;
 	     case 27:
-	       fputc('e',f);
+	       out_buffer[1]='e';
 	       break;
 	     case 12:
-	       fputc('f',f);
+	       out_buffer[1]='f';
 	       break;
 	     case 9:
-	       fputc('t',f);
+	       out_buffer[1]='t';
 	       break;
 	     case 10:
-	       fputc('n',f);
+	       out_buffer[1]='n';
 	       break;
 	     case 13:
-	       fputc('r',f);
+	       out_buffer[1]='r';
 	       break;
 	     default:
-	       fputc('c',f);
-	       fputc(c+'A'-1,f);
+	       out_buffer[1]='c';
+	       out_buffer[2]=c+'A'-1;
+	       out_buffer[3]='\0';
 	       break;
 	    }
 	    break;
@@ -210,29 +291,44 @@ void write_maybe_escaped_char(char *cp,HASHED_STRING *br,FILE *f) {
        default:
 	   if ((output_recipe[OS_ESCAPE_HOW]=='5') &&
 	       ((c<=0x1F) || (c==0x7F))) {
-	      fprintf(f,"\\x%02X",c);
+	      sprintf(out_buffer,"\\x%02X",c);
 	   } else {	      
 	      if (((c|0x20)<'a') || ((c|0x20)>'z'))
-		fputc('\\',f);
-	      fwrite(cp,1,char_length(cp),f);
+		out_buffer[0]='\\';
+	      i=1;
+	      while (1) {
+		 out_buffer[i]=cp[i-1];
+		 i++;
+		 if ((cp[i]&0xC0)!=0x80)
+		   break;
+	      }
+	      out_buffer[i]='\0';
 	   }
 	 break;
       }
+
+      wrap_write(out_buffer,strlen(out_buffer),f);
+
    } else
-     fwrite(cp,1,char_length(cp),f);
+     wrap_write(cp,char_length(cp),f);
 }
 
 void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br,FILE *f) {
    int i;
 
-   fwrite(br->data,1,br->length,f);
+   wrap_flush(f);
+   if (colourize_output)
+     fprintf(f,"\e[%sm",bracketed_colours[br->arity+2]);
+
+   wrap_allowed=1;
+   wrap_write(br->data,br->length,f);
    for (i=0;i<hs->length;i+=char_length(hs->data+i)) {
       if ((i==0) && (output_recipe[OS_ESCAPE_WHAT]<'6'))
 	write_maybe_escaped_char(hs->data+i,NULL,f);
       else
 	write_maybe_escaped_char(hs->data+i,br->mate,f);
    }
-   fwrite(br->mate->data,1,br->mate->length,f);
+   wrap_write(br->mate->data,br->mate->length,f);
 }
 
 /**********************************************************************/
@@ -254,15 +350,17 @@ void write_cooked_tree(NODE *ms,FILE *f) {
 	 tail=ms->child[i];
       }
       
-      if ((output_recipe[OS_INDENTATION]!='0') && (ms->complete>0))
-	fputc('\n',f);
-      if (output_recipe[OS_INDENTATION]=='8')
-	for (i=0;i<ms->complete;i++)
-	  fputc('\t',f);
-      else
-	for (i=0;i<(ms->complete*(output_recipe[OS_INDENTATION]-'0'));i++)
-	  fputc(' ',f);
-      
+      if (output_recipe[OS_INDENTATION]!='9') {
+	 if ((output_recipe[OS_INDENTATION]!='0') && (ms->complete>0))
+	   fputc('\n',f);
+	 if (output_recipe[OS_INDENTATION]=='8')
+	   for (i=0;i<ms->complete;i++)
+	     fputc('\t',f);
+	 else
+	   for (i=0;i<(ms->complete*(output_recipe[OS_INDENTATION]-'0'));i++)
+	     fputc(' ',f);
+      }
+
       if (((output_recipe[OS_SUGAR]&2) || (ms->complete==0)) &&
 	  ((output_recipe[OS_SUGAR]&4) || (ms->complete>0)) &&
 	  (ms->head!=NULL) &&
@@ -271,6 +369,10 @@ void write_cooked_tree(NODE *ms,FILE *f) {
 	  (ms->head->arity==-2) &&
 	  (ms->arity==0) &&
 	  (ms->functor==semicolon)) {
+	 wrap_flush(f);
+	 if (colourize_output)
+	   fprintf(f,"\e[%sm",sweetened_colours[1]);
+	 wrap_allowed=1;
 	 write_maybe_escaped_char(ms->head->data,NULL,f);
 	 
       } else {
@@ -307,7 +409,11 @@ void write_cooked_tree(NODE *ms,FILE *f) {
 	     (mf->arity==ms->arity) &&
 	     (mf->mate==NULL) &&
 	     (char_length(mf->data)==mf->length)) {
-	    fwrite(mf->data,mf->length,1,f);
+	    wrap_flush(f);
+	    if (colourize_output)
+	      fprintf(f,"\e[%sm",sweetened_colours[mf->arity+2]);
+	    wrap_allowed=1;
+	    wrap_write(mf->data,mf->length,f);
 	    
 	 } else {
 	    i=output_recipe[OS_NULLARY_BRACKET_TYPE+ms->arity]-'0';
@@ -320,20 +426,23 @@ void write_cooked_tree(NODE *ms,FILE *f) {
       ms=tail;
    }
    
+   wrap_flush(f);
+   if (colourize_output)
+     fwrite("\e[0;37m",7,1,f);
+
    switch (output_recipe[OS_SEPARATOR]) {
     case '0':
       fputc('\0',f);
       break;
       /* 1 is default newline */
     case '2':
-      fputc('\n',f);
-      fputc('\n',f);
+      wrap_write("\n\n",2,f);
       break;
     case '3':
       /* 3 is nothing */
       break;
     default:
-      fputc('\n',f);
+      wrap_write("\n",1,f);
       break;
    }
       

@@ -97,7 +97,8 @@ if perl -pe 's/_/\x00/g' <<EOF | diff -c -a co-out.$$ -
 (	
 )
 ===
-<\\X840C\\X3048>,<\\X840C>[tb]\\X8279<\\X660E>[lr]\\X65E5\\X6708,\\X3048([\\X3082\\X3048] (n\\)\\n  (1\\) sprouting/budding/\\n  (2\\) (m-sl\\) (also written \\X840C\\X3091\\) crush (anime, manga term\\)/fascination/infatuation\\n)
+<\\X840C\\X3048>,<\\X840C>[tb]\\X8279<\\X660E>[lr]\\X65E5\\X6708,\\X3048
+   ([\\X3082\\X3048] (n\\)\\n  (1\\) sprouting/budding/\\n  (2\\) (m-sl\\) (also written \\X840C\\X3091\\) crush (anime, manga term\\)/fascination/infatuation\\n)
 <\\X840C>[tb]\\X8279<\\X660E>[lr]\\X65E5\\X6708
 <\\X840C>[tb]\\X8279<\\X660E>[lr]<\\X65E5>[overlap]\\X53E3(+1)\\X6708
 ()\\\\)

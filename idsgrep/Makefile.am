@@ -93,6 +93,10 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 
 if COND_BUDDY
    BUDDY_LIBS=-lbdd
+else
+if COND_WIDTHTAB
+$(error Cannot use --enable-widthtab without BuDDy)
+endif
 endif
 if COND_CHISE_IDS
    MAYBE_CIDATA=chise.eids chise.bvec
@@ -180,6 +184,7 @@ dist_noinst_SCRIPTS:= \
   $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
 
 bin_PROGRAMS = idsgrep
+noinst_PROGRAMS = mkwcw
 
 dict_DATA = $(MAYBE_CJKVIDATA) $(MAYBE_CIDATA) $(MAYBE_EDICTDATA) \
   $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)
@@ -189,7 +194,9 @@ dist_pdf_DATA = $(MAYBE_DOCS)
 AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 idsgrep_SOURCES = \
   assoc.c bitvec.c cook.c hash.c idsgrep.c idsgrep.h match.c \
-  parse.c regex.c unilist.c userpred.c
+  parse.c regex.c unilist.c userpred.c widthtab.c
+
+mkwcw_SOURCES = mkwcw.c
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS) $(BUDDY_LIBS)
 
@@ -265,6 +272,16 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 %.bvec: idsgrep %.eids
 	$(AM_V_GEN)
 	$(AM_V_at)./idsgrep -G $*.eids > $*.bvec
+
+############################################################################
+
+# BUILD THE WIDTH TABLE
+
+if COND_WIDTHTAB
+widthtab.c: mkwcw widths.txt EastAsianWidth.txt UnicodeData.txt
+	cat widths.txt EastAsianWidth.txt | ./mkwcw N UnicodeData.txt \
+	  > widthtab.c
+endif
 
 ############################################################################
 

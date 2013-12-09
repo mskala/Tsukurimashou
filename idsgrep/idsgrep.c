@@ -417,6 +417,8 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 static struct option long_opts[] = {
    {"bitvec-debug",no_argument,NULL,'D'|128},
    {"statistics",no_argument,NULL,'s'|128},
+   {"color",optional_argument,NULL,'C'},
+   {"colour",optional_argument,NULL,'C'},
    {"cooking",required_argument,NULL,'c'},
    {"dictionary",optional_argument,NULL,'d'},
    {"font-chars",required_argument,NULL,'f'},
@@ -451,8 +453,17 @@ int main(int argc,char **argv) {
    register_syntax();
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"GIU::Vc:d::f:h",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"CGIU::Vc:d::f:h",long_opts,NULL))!=-1) {
       switch (c) {
+	 
+       case 'C':
+	 if ((!optarg) || (optarg[0]=='\0') || (!strcmp(optarg,"auto")))
+	   colourize_output=isatty(fileno(stdout));
+	 else
+	   colourize_output=!strcmp(optarg,"always");
+	 if (colourize_output)
+	   cook_output=1;
+	 break;
 
        case 'G':
 	 generate_index=1;

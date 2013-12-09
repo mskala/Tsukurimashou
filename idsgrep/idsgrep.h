@@ -201,7 +201,7 @@ static inline int uint64_2_pop(uint64_t b[2]) {
 
 /* cook.c */
 
-extern int cook_output,canonicalize_input;
+extern int cook_output,colourize_output,canonicalize_input;
 
 void set_output_recipe(char *);
 void write_bracketed_string(HASHED_STRING *,HASHED_STRING *,FILE *f);

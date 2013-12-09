@@ -273,6 +273,13 @@ AC_ARG_ENABLE([gcov],
     [enable_gcov=no])
 AM_CONDITIONAL([COND_GCOV],[test '!' "$enable_gcov" = no])
 #
+AC_ARG_ENABLE([widthtab],
+  [AS_HELP_STRING([--enable-widthtab],
+    [reconstruct the character width automaton table])],
+    [],
+    [enable_widthtab=no])
+AM_CONDITIONAL([COND_WIDTHTAB],[test '!' "$enable_widthtab" = no])
+#
 AC_ARG_WITH([chise-ids],
   [AS_HELP_STRING([--with-chise-ids=PATH],
      [CHISE IDS database [auto]])],

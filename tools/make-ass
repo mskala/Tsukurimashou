@@ -109,7 +109,7 @@ foreach $pnumpage (keys %charpage,'hglextb') {
   while (<PAGE>) {
     if (/% BACKGROUND ([0-9a-fA-F]{4,})/) {
       $backgroundhex=$1;
-    } elsif (/begintsuglyph\("([A-Z0-9a-z_\.]+)",\s*(\d+)\s*\)/) {
+    } elsif (/^begintsuglyph\("([A-Z0-9a-z_\.]+)",\s*(\d+)\s*\)/) {
       $n=$numpage*256+$2;
       $havechar{$n}=1 if $charlist{$n};
       $gname=$1;
