@@ -144,7 +144,7 @@ void wrap_write(char *cp,int len,FILE *f) {
 	 buffered_columns+=idsgrep_utf8cw(cp+i);
 	 while (1) {
 	    wrap_buffer[buffered_bytes++]=cp[i++];
-	    if ((cp[i]&0xC0)!=0x80)
+	    if ((i>=len) || ((cp[i]&0xC0)!=0x80))
 	      break;
 	 };
 	 
@@ -179,10 +179,10 @@ void wrap_flush(FILE *f) {
 /**********************************************************************/
 
 void write_maybe_escaped_char(char *cp,HASHED_STRING *br,FILE *f) {
-   int c,do_esc,i;
+   int c,cl,do_esc,i;
    char out_buffer[11];
 
-   switch (char_length(cp)) {
+   switch ((cl=char_length(cp))) {
     case 1:
       c=(unsigned char)cp[0];
       break;
@@ -292,17 +292,18 @@ void write_maybe_escaped_char(char *cp,HASHED_STRING *br,FILE *f) {
 	   if ((output_recipe[OS_ESCAPE_HOW]=='5') &&
 	       ((c<=0x1F) || (c==0x7F))) {
 	      sprintf(out_buffer,"\\x%02X",c);
-	   } else {	      
-	      if (((c|0x20)<'a') || ((c|0x20)>'z'))
-		out_buffer[0]='\\';
-	      i=1;
-	      while (1) {
-		 out_buffer[i]=cp[i-1];
-		 i++;
-		 if ((cp[i]&0xC0)!=0x80)
-		   break;
+	   } else if (((c|0x20)>='a') && ((c|0x20)<='z')) {
+	      out_buffer[0]=c;
+	      out_buffer[1]='\0';
+	   } else {
+	      out_buffer[0]='\\';
+	      for (i=0;i<cl;i++)
+		out_buffer[i+1]=cp[i];
+	      out_buffer[i+1]='\0';
+	      if (c==0) {
+		 wrap_write(out_buffer,2,f);
+		 return;
 	      }
-	      out_buffer[i]='\0';
 	   }
 	 break;
       }

@@ -2,7 +2,7 @@
 
 $copyright=<<'EOF';
 EIDS decomposition dictionary generator for Tsukurimashou
-$Id: make-eids 2279 2013-06-19 16:30:32Z mskala $
+$Id: make-eids 2684 2013-12-10 17:20:38Z mskala $
 Copyright (C) 2012, 2013  Matthew Skala
 
 This program is free software: you can redistribute it and/or modify
@@ -243,6 +243,17 @@ sub struct_eids {
 }
 
 # write macro name information
+while (<mp/*.mp>) {
+  next unless m!/([a-z\-0-9_]+\.mp)$!i;
+  $fn=$1;
+  open(MP,$_);
+  while (<MP>) {
+    if (/^vardef ([a-z\-0-9_\.]+) =/i) {
+      $mfile{$1}.="$fn ";
+    }
+  }
+  close(MP);
+}
 while (<mp/tsuku-*.mp>) {
   open(MP,$_);
   $state=0;
@@ -262,7 +273,8 @@ while (<mp/tsuku-*.mp>) {
       }
     } elsif ($state==2) {
       if (/tsu_render;/) {
-        print "【$glchar】($glname: $macroname)\n";
+        print join(', ',"【$glchar】($glname: $macroname",
+                   split(' ',$mfile{$macroname})).")\n";
       }
       $state=0;
     } else {
