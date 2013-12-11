@@ -143,9 +143,10 @@ MAYBE_CJKVIDATA=$(foreach ver,g t j k v x a,\
 
 GCOV_TESTS = \
   test/andor test/anynot test/assoc test/basicmatch test/backslash \
-  test/bighash test/cooked test/demorgan test/equal test/genbv \
-  test/kvg-grone test/messages test/parsedict test/regex test/spacing \
-  test/speed test/tsu-grone test/unilist test/unord test/userpred test/utf8
+  test/bighash test/cooked test/demorgan test/equal test/filtcalc \
+  test/genbv test/kvg-grone test/messages test/parsedict test/regex \
+  test/spacing test/speed test/tsu-grone test/unilist test/unord \
+  test/userpred test/utf8
 
 define GCDEP_RECIPE
 $1.log: test/rmgcda.log

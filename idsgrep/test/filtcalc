@@ -1,0 +1,63 @@
+#!/bin/sh
+
+if test '!' -r cjkvi-j.eids || test '!' -r cjkvi-j.bvec
+then
+  exit 77
+fi
+
+./idsgrep --bitvec-debug '⿱止月' cjkvi-j.eids > fc-out.$$ 2> /dev/null
+echo === >> fc-out.$$
+
+./idsgrep --bitvec-debug '&|??|!?!?' cjkvi-j.eids >> fc-out.$$ 2> /dev/null
+echo === >> fc-out.$$
+
+./idsgrep --bitvec-debug '&&??&!?!?' cjkvi-j.eids >> fc-out.$$ 2> /dev/null
+echo === >> fc-out.$$
+
+./idsgrep --bitvec-debug '&|撩{tcb}&{tcb}渷潥*{tcb}禳*& 墺{tcb}|*{tcb}惢*'\
+'埇浧榞*{tcb}&!!{tcb}&紦渏崉掜**窉{tcb}爽湊*怐*搞礇{tcb}絇{tcb}!偷&|崸[lr'\
+']!{tcb}狟&[lr][lr]{tcb}椆!{tcb}={tcb}竴{tcb}{tcb}售扬炖{tcb}!縢沮溼&孹&!'\
+'眮!&![lr]娵妝&!|冤*湄=型*癡彰巭!!*紒氃!倀{tcb}*&*[lr]!=|嫮{tcb}*砜[lr]攘'\
+'|*糡[lr]窅疊[lr]*!扑唝=*![lr][lr]!{tcb}|漺!&!!県!猅!犪悺{tcb}{tcb}&|懹|!'\
+'&[lr]羇[lr]!備||撵朂&啞*!桏*&涸澇|厽堫緖渕!娂犚!嗘|徐{tcb}*橄&|忡創|!&&秄'\
+'*拭=|瀏!敂朔|[lr]!潝{tcb}澫|{tcb}岱|缨|祋弮旗||簛**|![lr]||無!{tcb}帾偁|'\
+'粴歯滵栃=&|穹*|!僚猃|箙&猽翖=!*!!|[lr]懄{tcb}!!翤漵绩爰{tcb}|娀|嬈拐![lr'\
+']搳![lr]濄檯{tcb}妻嶁[lr]塴[lr]|!|!*|&*矠{tcb}|劾紶{tcb}*!礄*庁徻{tcb}*叴'\
+'癟!妹枒緔{tcb}[lr]&{tcb}&&匚[lr]&*水梢*{tcb} 懬!*!*宁&|{tcb}妴*瘫*{tcb}['\
+'lr]瀖翹!朞焹{tcb}僥罟![lr]惨瓔{tcb}*啌*獲!&![lr]*&枍!&=羰{tcb}笽&尫{tcb}'\
+'喪砫[lr]泵{tcb}碘|{tcb}[lr]崧櫗**唒&{tcb}劰灡析墌=盐*澨痲!!{tcb}晍峾*!枨'\
+'熪偺*琬*吙纅{tcb}{tcb}=&慧*|!嵞|掚&[lr][lr]=浀{tcb}&[lr]椯|纱|!!=搻[lr]!'\
+'{tcb}獘漊剘|&級*即磉{tcb}{tcb}{tcb}!畓盵&愪姂將*扙梟&碀||繁|!粂&|!枊暥*灕'\
+'=!**=!帢{tcb}!皭瓓{tcb}!燘|&歀!|嶺![lr]*勧祚潗|{tcb}!昑|傊&&[lr]***[lr]='\
+'!拞&瘟旵禇=*劗洮甥嫚穕[lr]嬐&!昋!&&榷牳繅欿&!&|纾[lr]|!*縠*!怌箳|戭姷=淯'\
+'捉垁峀損*{tcb}悰=契*&|*坭奆榼{tcb}偷{tcb}嵷沃&攺[lr]=!洐&童*奺痄[lr]经簨'\
+'畕惙||!=*榔漺*{tcb}栴晴[lr]|夘!籯嫰槪沙{tcb}善&*岖&*=憾*&歫&!&灏|縺痛号='\
+'昞[lr]缳{tcb}&&=!{tcb}!&眱*[lr]氏巉 绥!妹噩繍!匏{tcb}=凨壩=|[lr]*攜!{tcb'\
+'}淰掬疼礕摪嬪!會{tcb}&&真堦[lr]!&&|[lr]|*!粒涧!瞮刅*喑&搄喻&橺璢!*!帶屒!'\
+'?' cjkvi-j.eids | grep -v 'Garbage' >> fc-out.$$ 2> /dev/null
+echo === >> fc-out.$$
+
+./idsgrep --bitvec-debug '&&{a}&&(d)(f)(g)bc|||||tuvwxy&<e>!?[q]xy' \
+cjkvi-j.eids >> fc-out.$$ 2> /dev/null
+echo === >> fc-out.$$
+
+./idsgrep --bitvec-debug '[.]x.&..|.[!]x[*]x[=]xx' \
+cjkvi-j.eids >> fc-out.$$ 2> /dev/null
+echo === >> fc-out.$$
+
+if diff -c fc-out.$$ - <<EOF
+【肯】⿱止月
+===
+===
+===
+===
+===
+===
+EOF
+then
+  rm -f fc-out.$$
+  exit 0
+else
+  rm -f fc-out.$$
+  exit 1
+fi

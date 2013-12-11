@@ -462,6 +462,14 @@ static BIT_FILTER *bf_and(BIT_FILTER *z,BIT_FILTER *x,BIT_FILTER *y) {
 #endif
       break;
    }
+   
+   if (z->lambda>uint64_2_pop(z->bits)) {
+#ifdef HAVE_BUDDY
+      if (z==x) bdd_delref(x->decision_diagram);
+      if (z==y) bdd_delref(y->decision_diagram);
+#endif
+      return bf_false(z);
+   }
 
    /* show debug information */
    if (bitvec_debug) {

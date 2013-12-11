@@ -1,11 +1,12 @@
 #!/bin/sh
 
-if test '!' -r kanjivg.eids
+if test '!' -r cjkvi-j.eids
 then
   exit 77
 fi
 
-cp kanjivg.eids gbv-d-$$.eids
+cp cjkvi-j.eids gbv-d-$$.eids
+echo '.foo.,.x.⿱止月.y.⿱止月' >> gbv-d-$$.eids
 ./idsgrep -G gbv-d-$$.eids > gbv-d-$$.bvec
 ./idsgrep -I '!&!⿱止?!⿱?月' gbv-d-$$.eids > gbv-outa.$$
 ./idsgrep --bitvec-debug '|⿱止?⿱?月' gbv-d-$$.eids \
