@@ -7,7 +7,7 @@ fi
 
 cp cjkvi-j.eids gbv-d-$$.eids
 echo '.foo.,.x.⿱止月.y.⿱止月' >> gbv-d-$$.eids
-./idsgrep -G gbv-d-$$.eids > gbv-d-$$.bvec
+./idsgrep -G --bitvec-debug gbv-d-$$.eids > gbv-d-$$.bvec 2> /dev/null
 ./idsgrep -I '!&!⿱止?!⿱?月' gbv-d-$$.eids > gbv-outa.$$
 ./idsgrep --bitvec-debug '|⿱止?⿱?月' gbv-d-$$.eids \
   | grep -v 'Garbage' > gbv-outb.$$

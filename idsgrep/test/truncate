@@ -1,0 +1,79 @@
+#!/bin/sh
+
+cat <<EOF > tr-in.$$.eids
+(a)
+.b.x
+.b.p
+[c]xy
+EOF
+./idsgrep -G tr-in.$$.eids > tr-in.$$.bvec
+if ./idsgrep -C -ccooked '?' tr-in.$$.eids > /dev/null
+then
+  true
+else
+  rm -f tr-in.$$.eids
+  rm -f tr-in.$$.bvec
+  exit 1
+fi
+
+cat <<EOF > tr-in.$$.eids
+(a)
+.b.x
+.b.p
+[c]
+EOF
+touch tr-in.$$.bvec
+if ./idsgrep '?' tr-in.$$.eids > /dev/null 2> /dev/null
+then
+  true
+else
+  rm -f tr-in.$$.eids
+  rm -f tr-in.$$.bvec
+  exit 1
+fi
+
+cat <<EOF > tr-in.$$.eids
+(a)
+.b.x
+.b.p
+[cxyz]
+EOF
+touch tr-in.$$.bvec
+if ./idsgrep '?' tr-in.$$.eids > /dev/null 2> /dev/null
+then
+  rm -f tr-in.$$.eids
+  rm -f tr-in.$$.bvec
+  exit 1
+else
+  true
+fi
+
+cat <<EOF > tr-in.$$.eids
+(a)
+.b.x
+.b.p
+[c]xy
+EOF
+perl -e 'print ((chr(0xFF)x8).(chr(0xF0)x32))' >> tr-in.$$.bvec
+if ./idsgrep 'q' tr-in.$$.eids > /dev/null 2> /dev/null
+then
+  true
+else
+  rm -f tr-in.$$.eids
+  rm -f tr-in.$$.bvec
+  exit 1
+fi
+
+chmod a-r tr-in.$$.eids
+if ./idsgrep '?' tr-in.$$.eids > /dev/null 2> /dev/null
+then
+  true
+else
+  rm -f tr-in.$$.eids
+  rm -f tr-in.$$.bvec
+  exit 1
+fi
+
+rm -f tr-in.$$.eids
+rm -f tr-in.$$.bvec
+exit 0

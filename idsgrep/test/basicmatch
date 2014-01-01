@@ -5,6 +5,7 @@ echo '.c.d.e.f' |./idsgrep '.e.<f>(;)' >> bm-out.$$
 echo '[g]hi[j]kl' |./idsgrep '[j]<k>;l' >> bm-out.$$
 echo '{m}nop{q}rst' |./idsgrep '{q}rst' >> bm-out.$$
 echo '<u>(v)<w>[x]yz' |./idsgrep w >> bm-out.$$
+echo '[.]xx' |./idsgrep '............[.]xx' >> bm-out.$$
 
 if diff bm-out.$$ - <<EOF
 b
@@ -12,6 +13,7 @@ b
 [j]kl
 {q}rst
 <w>[x]yz
+[.]xx
 EOF
 then
   rm -f bm-out.$$

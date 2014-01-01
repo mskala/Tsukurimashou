@@ -7,7 +7,7 @@ fi
 
 ./idsgrep '...&⿰日?⿰?月' kanjivg.eids > dem-out1.$$
 echo === >> dem-out1.$$
-./idsgrep '...|⿰日?⿰?月' kanjivg.eids >> dem-out1.$$
+./idsgrep '............|⿰日?⿰?月' kanjivg.eids >> dem-out1.$$
 
 ./idsgrep '...!|!⿰日?!⿰?月' kanjivg.eids > dem-out2.$$
 echo === >> dem-out2.$$

@@ -1,7 +1,7 @@
 #!/usr/bin/perl -CS
 
-# Gcov coverage checker with "should never happen" exclusion
-# Copyright (C) 2012  Matthew Skala
+# Gcov coverage checker with "should never happen" and "ignore"
+# Copyright (C) 2012, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@ foreach $fn (@ARGV) {
   $badexec=0;
   while (<GC>) {
     chomp;
+    next if m!/\*\s*GCI\s*\*/!;
+    next if m!//\s*GCI\s*$!;
     $should=1;
     $should=0 if m!/\*\s*SNH\s*\*/!;
     $should=0 if m!//\s*SNH\s*$!;

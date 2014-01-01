@@ -379,7 +379,7 @@ uint64_t memo_checks=UINT64_C(0),memo_hits=UINT64_C(0);
 void check_memoization(void) {
    int hard_node_count;
    HASHED_STRING *hs;
-return;
+
    /* References subtracted off:
     *   2 for the new_string() calls right here
     *   2 because . and * are single characters and therefore immortal

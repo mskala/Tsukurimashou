@@ -12,3 +12,15 @@ rm -f nofile.$$
 ./idsgrep -d '?' > /dev/null
 ./idsgrep -dxyzzy '?' > /dev/null
 ./idsgrep '-d?' '?' > /dev/null
+./idsgrep -Id --bitvec-debug '?' > /dev/null
+./idsgrep --bitvec-debug '?' > /dev/null
+touch somefile.$$
+./idsgrep --bitvec-debug '?' somefile.$$ > /dev/null
+rm -f somefile.$$
+touch somefile.$$.eids
+./idsgrep --bitvec-debug '?' somefile.$$.eids > /dev/null
+echo blah > somefile.$$.bvec
+./idsgrep --bitvec-debug '?' somefile.$$.eids > /dev/null
+./idsgrep '?' somefile.$$.eids > /dev/null
+rm -f somefile.$$.eids somefile.$$.bvec
+exit 0

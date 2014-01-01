@@ -1,7 +1,7 @@
 #!/usr/bin/perl -CDS
 
 # EDICT2 to IDSgrep EIDS translator
-# Copyright (C) 2012  Matthew Skala
+# Copyright (C) 2012, 2013  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 use utf8;
 
-$svnid='$Id: ed22eids 2604 2013-11-21 21:52:58Z mskala $';
+$svnid='$Id: ed22eids 2698 2014-01-01 16:12:50Z mskala $';
 
 # FIXME pass through copyright notices
 

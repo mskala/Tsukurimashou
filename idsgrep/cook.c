@@ -47,9 +47,11 @@ int canonicalize_input=1;
 static char output_recipe[NUM_OUTPUT_SETTINGS]="100000913250";
 
 static char *bracketed_colours[6]={
-   "0;41;30","0;37","0;32","0;35","0;36","0;33"};
+   "\e[0;41;30m","\e[0;37m","\e[0;32m","\e[0;35m","\e[0;36m","\e[0;33m"};
 static char *sweetened_colours[6]={
-   "0;41;30","1;37","1;32","1;35","1;36","1;33"};
+   "\e[0;41;30m","\e[1;37m","\e[1;32m","\e[1;35m","\e[1;36m","\e[1;33m"};
+
+static char *current_colour="";
 
 #define NUM_PRESET_RECIPES 5
 
@@ -122,6 +124,7 @@ void wrap_write(char *cp,int len,FILE *f) {
       if ((cp[i]=='\n') || (cp[i]=='\f')) {
 	 fwrite(wrap_buffer,1,buffered_bytes,f);
 	 fputc(cp[i],f);
+	 fputs(current_colour,f);
 	 buffered_bytes=0;
 	 buffered_columns=0;
 	 current_column=0;
@@ -147,9 +150,10 @@ void wrap_write(char *cp,int len,FILE *f) {
 	    if ((i>=len) || ((cp[i]&0xC0)!=0x80))
 	      break;
 	 };
-	 
+
 	 if (current_column+buffered_columns>76) {
 	    fwrite("\n   ",1,4,f);
+	    fputs(current_colour,f);
 	    fwrite(wrap_buffer,1,buffered_bytes,f);
 	    current_column=3+buffered_columns;
 	    buffered_columns=0;
@@ -318,8 +322,10 @@ void write_bracketed_string(HASHED_STRING *hs,HASHED_STRING *br,FILE *f) {
    int i;
 
    wrap_flush(f);
-   if (colourize_output)
-     fprintf(f,"\e[%sm",bracketed_colours[br->arity+2]);
+   if (colourize_output) {
+      current_colour=bracketed_colours[br->arity+2];
+      fputs(current_colour,f);
+   }
 
    wrap_allowed=1;
    wrap_write(br->data,br->length,f);
@@ -371,8 +377,10 @@ void write_cooked_tree(NODE *ms,FILE *f) {
 	  (ms->arity==0) &&
 	  (ms->functor==semicolon)) {
 	 wrap_flush(f);
-	 if (colourize_output)
-	   fprintf(f,"\e[%sm",sweetened_colours[1]);
+	 if (colourize_output) {
+	    current_colour=sweetened_colours[1];
+	    fputs(current_colour,f);
+	 }
 	 wrap_allowed=1;
 	 write_maybe_escaped_char(ms->head->data,NULL,f);
 	 
@@ -411,8 +419,10 @@ void write_cooked_tree(NODE *ms,FILE *f) {
 	     (mf->mate==NULL) &&
 	     (char_length(mf->data)==mf->length)) {
 	    wrap_flush(f);
-	    if (colourize_output)
-	      fprintf(f,"\e[%sm",sweetened_colours[mf->arity+2]);
+	    if (colourize_output) {
+	       current_colour=sweetened_colours[mf->arity+2];
+	       fputs(current_colour,f);
+	    }
 	    wrap_allowed=1;
 	    wrap_write(mf->data,mf->length,f);
 	    

@@ -304,6 +304,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
       fclose(idxfile);
       free(ir);
       fprintf(stderr,"can't open %s for reading\n",fn);
+      /* not fatal - should still look in other files */
       return;
    }
    offset=(off_t)0;
@@ -339,6 +340,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 		  fclose(idxfile);
 		  free(ir);
 		  fprintf(stderr,"error seeking in %s\n",fn);
+		  /* not fatal - should still look in other files */
 		  return;
 	       }
 	       offset=ir[ir_done].offset;
@@ -598,7 +600,7 @@ int main(int argc,char **argv) {
    /* read stdin or complain */
    if ((num_files==0) && (generate_list==0)) {
       if (dictname==NULL)
-	process_file(match_pattern,"-",-1);
+	process_file_indexed(match_pattern,"-",-1);
       else
 	puts("(no dictionaries were searched)");
    }
@@ -607,8 +609,8 @@ int main(int argc,char **argv) {
    if (report_statistics) {
       getrusage(RUSAGE_SELF,&rub);
       if (rua.ru_utime.tv_usec>rub.ru_utime.tv_usec) {
-	 rub.ru_utime.tv_usec+=1000000;
-	 rub.ru_utime.tv_sec--;
+	 rub.ru_utime.tv_usec+=1000000; /* GCI */
+	 rub.ru_utime.tv_sec--; /* GCI */
       }
       printf("STATS %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64
 	     " %" PRIu64 " %" PRIu64 " %" PRIu64 " %d.%06d %d ",
