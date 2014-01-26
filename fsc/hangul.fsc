@@ -240,17 +240,25 @@
 
 # after ccmp: we are guaranteed all jamo clustered, or tailful precomps
 BEGINFEATURE ccmp
-feature ccmp {
 
-  # handle Latin and kana precomposed glyphs
+# handle Latin and kana precomposed glyphs
+lookup LATIN_KANA {
   INCLUDE latinpc
+  subtable;
   INCLUDE kanapc
-  subtable;
+} LATIN_KANA;
 
-  # burst tail-less precomposed syllables
+lookup DOTLESS {
+  INCLUDE dotless
+} DOTLESS;
+
+# burst tail-less precomposed syllables
+lookup BURST_PRECOMPOSED {
   KLUDGE NT_DECOMPOSE
-  subtable;
-  
+} BURST_PRECOMPOSED;
+
+# join clusters, such as two leads in a row
+lookup JOIN_CLUSTERS {
   # three-letter leads
   sub uni1107 uni1109 uni1100 by uni1122;
   sub uni1107 uni1109 uni1103 by uni1123;
@@ -569,13 +577,10 @@ feature ccmp {
   sub uni11BD uni11BD by uniD7F9;
   sub uni1111 uni11BA by uniD7FA;
   sub uni1111 uni11C0 by uniD7FB;
+} JOIN_CLUSTERS;
 
-} ccmp;
-ENDFEATURE
-
-# choose proper layout for clustered leads
-BEGINFEATURE ljmo
-feature ljmo {
+# choose proper layout for clustered leads and vowels
+lookup SHAPE_SYLLABLES {
   # use bug letters instead of ignore because XeTeX can't do ignore
   # ignore sub @l0_lead_jamo' @hv_vowel_jamo @tail_jamo;
   sub @l0_lead_jamo' @hv_vowel_jamo @tail_jamo by @bug_lead_jamo;
@@ -584,21 +589,21 @@ feature ljmo {
   sub @l0_lead_jamo' @hv_vowel_jamo by @l1_lead_jamo;
   sub @l0_lead_jamo' @v_vowel_jamo by @l4_lead_jamo;
   sub @l0_lead_jamo' @h_vowel_jamo by @l5_lead_jamo;
-} ljmo;
-ENDFEATURE
 
-# choose proper layout for clustered vowels
-BEGINFEATURE vjmo
-feature vjmo {
-  # we optimistically expect that ljmo has run successfully, so follow
-  # the layout indicated by the lead jamo
+  # use layout selected by the lead rules above
   sub @l1_lead_jamo @hv_vowel_jamo' by @nt_hv_vowel_jamo;
   sub @l4_lead_jamo @v_vowel_jamo' by @nt_v_vowel_jamo;
   sub @l5_lead_jamo @h_vowel_jamo' by @nt_h_vowel_jamo;
-} vjmo;
-ENDFEATURE
+} SHAPE_SYLLABLES;
 
-# tjmo feature is not needed by Mandeubsida
+feature ccmp {
+  lookup LATIN_KANA;
+  lookup DOTLESS;
+  lookup BURST_PRECOMPOSED;
+  lookup JOIN_CLUSTERS;
+  lookup SHAPE_SYLLABLES;
+} ccmp;
+ENDFEATURE
 
 # convert layout-jamo to precomposed syllables
 BEGINFEATURE liga

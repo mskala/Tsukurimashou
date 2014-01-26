@@ -115,7 +115,7 @@ static int buffer_size=0,buffered_bytes=0,buffered_columns=0,
 void wrap_write(char *cp,int len,FILE *f) {
    int i,j;
 
-   if (output_recipe[OS_INDENTATION]!='9') {
+   if ((!cook_output) || (output_recipe[OS_INDENTATION]!='9')) {
       fwrite(cp,1,len,f);
       return;
    }

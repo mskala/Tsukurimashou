@@ -191,9 +191,3 @@ sub O uni030B by Ohungarumlaut;
 sub o uni030B by ohungarumlaut;
 sub U uni030B by Uhungarumlaut;
 sub u uni030B by uhungarumlaut;
-
-subtable;
-
-sub i' [uni0307 uni030A uni030B uni030C] by dotlessi;
-sub j' [uni0302 uni0304 uni0306 uni0307 uni0308 uni030A uni030B uni030C
-        gravecomb acutecomb tildecomb] by uni0237;

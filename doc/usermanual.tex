@@ -1029,7 +1029,7 @@ have become so numerous that it makes sense to also have a central list.
     classes, in some renderers, the resulting DVI file is so invalid as to
     cause the renderer to blank the rest of the page.  Reported to Will
     Robertson, package maintainer; he acknowledges it, and says will fix (by
-    not requesting dot leader when they're not wanted) in next version.  A
+    not requesting dot leaders when they're not wanted) in next version.  A
     workaround involving poking into the package internals to set a smaller
     invalid spacing is implemented near the top of doc/bkstyle.tex.
 
@@ -1044,6 +1044,13 @@ have become so numerous that it makes sense to also have a central list.
     presumably will not be an issue in any future releases, but buggy 2.10
     is the latest release and widely used as of late 2011; it will probably
     remain in the wild for a long time.
+
+  \item The ttx utility of TTX/FontTools will emit an empty Format 2 cmap
+    subtable (containing no code mappings at all) if given an XML file that
+    describes a Format 2 cmap subtable in which all the character codes are
+    single-byte codes.  Workaround is to include at least one
+    double-byte code.  Reported to their bug tracker
+    (\url{https://sourceforge.net/p/fonttools/bugs/53/}), January 2014.
 
 \end{itemize}
 

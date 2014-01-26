@@ -1,6 +1,6 @@
 #
-# OpenType feature definitions for Mandeubsida
-# Copyright (C) 2011, 2013, 2014  Matthew Skala
+# OpenType substitutions for dotless i and j
+# Copyright (C) 2014  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,16 +28,12 @@
 # mskala@ansuz.sooke.bc.ca
 #
 
-languagesystem DFLT dflt;
-languagesystem latn dflt;
-languagesystem kana dflt;
-languagesystem hang dflt;
-languagesystem jamo dflt;
+# Note this lists substitution rules only - the table wrapper must be
+# supplied by the caller, because in some fonts there are other
+# rules added besides these ones.  This file is separate from latinpc.fsc
+# because when the code goes into a lookup instead of a feature, then
+# it has to be in a SEPARATE lookup because of type restrictions.
 
-# put this first because it includes ccmp, which must be first
-INCLUDE hangul
-
-INCLUDE afrc
-INCLUDE misc
-INCLUDE ss01
-INCLUDE ss02
+sub i' [uni0307 uni030A uni030B uni030C] by dotlessi;
+sub j' [uni0302 uni0304 uni0306 uni0307 uni0308 uni030A uni030B uni030C
+        gravecomb acutecomb tildecomb] by uni0237;

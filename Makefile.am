@@ -215,7 +215,8 @@ endif
 
 EXTRA_DIST:=COPYING.GPL3 \
   README.en README.jp \
-  doc/demo.tex doc/proofs.tex doc/usermanual.tex doc/bkstyle.tex \
+  doc/bkstyle.tex doc/demo.tex doc/jamotest.tex doc/proofs.tex \
+  doc/usermanual.tex \
   $(wildcard $(mvp)/fsc/*.fsc) \
   t1asm/README t1asm/t1asm.1 \
   $(filter-out \

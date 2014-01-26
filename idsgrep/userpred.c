@@ -152,7 +152,7 @@ void scan_format2_table(FILE *fontfile,int swap_votes,
    format2_table=malloc(length);
    format2_table->format=2;
    format2_table->length=length;
-   if (fread(((uint8_t *)&format2_table)+4,length-4,1,fontfile)!=1) {
+   if (fread(((uint8_t *)format2_table)+4,length-4,1,fontfile)!=1) {
       fprintf(stderr,"error reading %s (format 2 cmap subtable %d)\n",
 	      fn,table_number);
       free(format2_table);
@@ -164,7 +164,7 @@ void scan_format2_table(FILE *fontfile,int swap_votes,
      for (i=2;i<(length/2);i++)
        ((uint16_t *)format2_table)[i]
      =BSWAP16(((uint16_t *)format2_table)[i]);
-   
+
    /* scan through high bytes */
    for (i=0;i<256;i++)
      if (format2_table->sub_header_keys[i]!=0) {
@@ -204,7 +204,7 @@ void scan_format2_table(FILE *fontfile,int swap_votes,
 	   return;
 	}
      }
-   
+
    free(format2_table);
 }
 
