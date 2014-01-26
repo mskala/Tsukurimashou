@@ -252,9 +252,9 @@ lookup DOTLESS {
   INCLUDE dotless
 } DOTLESS;
 
-# burst tail-less precomposed syllables
+# burst precomposed syllables
 lookup BURST_PRECOMPOSED {
-  KLUDGE NT_DECOMPOSE
+  KLUDGE PC_DECOMPOSE
 } BURST_PRECOMPOSED;
 
 # join clusters, such as two leads in a row

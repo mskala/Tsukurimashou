@@ -2,7 +2,7 @@
 
 #
 # OpenType feature file generator for Tsukurimashou
-# Copyright (C) 2011, 2012  Matthew Skala
+# Copyright (C) 2011, 2012, 2014  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -160,6 +160,22 @@ if (/^\s*#/) {
           sprintf("  sub uni%04X.%s uni%04X uni%04X by uni%04X;\n",
             0x1100+$lead,$lsa,0x1161+$vowel,0x11A7+$tail,
             0xAC00+588*$lead+28*$vowel+$tail);
+      }
+    }
+    push @newtable,"  subtable;\n" if $lead%7==6;
+  }
+  unshift @inlines,@newtable;
+  @newtable=();
+} elsif (/KLUDGE PC_DECOMPOSE/) {
+  @newtable=();
+  for ($lead=0;$lead<19;$lead++) {
+    for ($vowel=0;$vowel<21;$vowel++) {
+      push @newtable,sprintf("  sub uni%04X by uni%04X uni%04X;\n",
+        0xAC00+588*$lead+28*$vowel,0x1100+$lead,0x1161+$vowel);
+      for ($tail=1;$tail<28;$tail++) {
+        push @newtable,sprintf("  sub uni%04X by uni%04X uni%04X uni%04X;\n",
+          0xAC00+588*$lead+28*$vowel+$tail,
+          0x1100+$lead,0x1161+$vowel,0x11A7+$tail);
       }
     }
     push @newtable,"  subtable;\n" if $lead%7==6;
