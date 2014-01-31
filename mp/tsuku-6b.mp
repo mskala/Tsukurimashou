@@ -1,6 +1,6 @@
 %
 % Unicode page 6B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -55,14 +55,6 @@ vardef kanji.grtwo.song =
   build_kanji.lr(500,0)
     (kanji.rare.big_brother)
     (kanji.grfour.fail);
-  expand_pbox;
-enddef;
-
-vardef kanji.grtwo.walk =
-  push_pbox_toexpand("kanji.grtwo.walk");
-  build_kanji.level(build_kanji.tb(440,50)
-    (kanji.grtwo.cease)
-    (kanji.grtwo.little));
   expand_pbox;
 enddef;
 

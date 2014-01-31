@@ -40,6 +40,12 @@ echo === >> re-out.$$
 ./idsgrep '.../{i.*i}???' re-in.$$ >> re-out.$$
 echo === >> re-out.$$
 
+./idsgrep '............/{i.*i}???' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
+./idsgrep '............(/)' re-in.$$ >> re-out.$$
+echo === >> re-out.$$
+
 if diff -c re-out.$$ - <<EOF
 PCRE error: unmatched parentheses at 0.
 ===
@@ -66,6 +72,9 @@ PCRE error: unmatched parentheses at 1.
 [mississippi]xy
 ===
 .c..d.{uiaiaoioauaaieu}abc
+===
+.c..d.{uiaiaoioauaaieu}abc
+===
 ===
 EOF
 then

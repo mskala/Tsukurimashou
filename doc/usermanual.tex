@@ -2,7 +2,7 @@
 
 %
 % User Manual for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -92,6 +92,10 @@
 \kaku\large#1\qquad\phantomsection%
 \addcontentsline{toc}{subsection}{#1 #2}%
 #2\par\addpenalty{-300}\normalsize}
+\newcommand{\blsubsubsection}[2]{%
+\kaku\bfseries#1\qquad\phantomsection%
+\addcontentsline{toc}{subsubsection}{#1 #2}%
+#2\mdseries\par\addpenalty{-300}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -791,6 +795,8 @@ I've previously noted bugs when they come up, in code comments and the
 relevant parts of this document, but as of the current version, such bugs
 have become so numerous that it makes sense to also have a central list.
 
+\blsubsubsection{FIXME}{METAFONT, etc.}
+
 \begin{itemize}
   \item Metapost (maybe even METAFONT) issue propagated to METATYPE1:
     the equation solver has a non-renewable resource of ``independent
@@ -883,7 +889,11 @@ have become so numerous that it makes sense to also have a central list.
     use our dangerousFill in intro.mp instead, which is just a copy of Fill
     with the error checking removed.  Since the switch to bundled code based
     on METATYPE1 version 0.55, this seems to be a less significant issue.
+\end{itemize}
 
+\blsubsubsection{FIXME}{FontForge}
+
+\begin{itemize}
   \item FontForge spline geometry operations, such as overlap removal and
     simplification: these have historically tended to be very numerically
     unstable, and subject to some combination of infinite loops,
@@ -978,6 +988,21 @@ have become so numerous that it makes sense to also have a central list.
     fix.  Until we're sure that day has passed, Tsukurimashou will continue
     to work around the issue.
 
+  \item FontForge ``Metrics'' window crashes when OpenType feature choice is
+    changed, in the presence of a complicated multi-lookup GSUB feature. 
+    Reported as FontForge Github issue number 1138
+    (\url{https://github.com/fontforge/fontforge/issues/1138}), January 2014.
+
+  \item FontForge crashes when generating BDF if the copyright string is a
+    null pointer, because of using \texttt{==} instead of \texttt{!=} when
+    attempting to test for that case.  Pull request to fix the typo created
+    and merged (\url{https://github.com/fontforge/fontforge/pull/1143}),
+    January 2014.
+\end{itemize}
+
+\blsubsubsection{FIXME}{\XeTeX}
+
+\begin{itemize}
   \item \XeTeX\ fails to advance glyph pointer after a successful match in a
     GSUB table, which has complicated consequences for chaining
     substitutions, most notably that ``ignore sub'' rules have no effect.
@@ -1018,7 +1043,13 @@ have become so numerous that it makes sense to also have a central list.
     ``vjmo'').  Workaround: manually request them with the RawFeature
     option.  It is possible that more careful language tagging (specifically
     of Korean text) in the \TeX\ input might reduce or eliminate this issue.
+    Less relevant now (January 2014) that Mandeubsida no longer uses
+    ``ljmo'' and ``vjmo.''
+\end{itemize}
 
+\blsubsubsection{FIXME}{Other software}
+
+\begin{itemize}
   \item \LaTeX\ tocloft package:  as of May 2011, it sets an entry without a
     dot leader by actually requesting an entry with a leader, but with a
     font-dependent invalid spacing between dots.  The DVI renderer is
@@ -1052,6 +1083,16 @@ have become so numerous that it makes sense to also have a central list.
     double-byte code.  Reported to their bug tracker
     (\url{https://sourceforge.net/p/fonttools/bugs/53/}), January 2014.
 
+  \item HarfBuzz hangul ``shaper'' deliberately does not handle the case of
+    multiple conjoining jamo in the same category that could better be
+    expressed as a single cluster: for instance, the case of U+1100 U+1100
+    (kiyeok kiyeok) instead of U+1101 (ssangkiyeok).  These two sequences
+    are not canonically equivalent in Unicode, and apparently the longer one
+    is forbidden by the Korean standard KS~X~1026--1; nonetheless,
+    Mandeubsida's GSUB features were intended to handle them both nicely. 
+    Worked around this and various other issues (some of which were probably
+    bugs in Mandeubsida) by redesigning the GSUB features, January 2014. 
+    Thanks to Dohyun Kim and Jonathan Kew for discussion of these points.    
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1242,15 +1283,18 @@ enabled.
 Similarly, this feature will substitute precomposed voiced kana glyphs for
 combinations of unvoiced kana plus combining dakuten or handakuten.
 
-In the Mandeubsida fonts, this feature breaks precomposed
-syllables that don't have final consonants into their component jamo, and
-combines sequences of jamo for single vowels and consonants into jamo
-representing the sequences, where possible.  Splitting tail-less precomposed
-syllables is necessary to support the Unicode behaviour of adding a tail to
-a precomposed syllable that doesn't have one; the splitting is later undone
-by the ``liga'' feature.  Combining single jamo into multiples does not seem
-to be required by Unicode, but is vaguely described in Microsoft's spec, and
-it seems like a reasonable thing to do.
+In the Mandeubsida fonts, this feature does extensive processing of
+precomposed syllables, conjoining jamo, and jamo clusters, to render each
+syllable into one glyph for the lead (even if it contains more than one
+jamo), one glyph for the vowel, and zero or one glyphs for the tail, with
+the lead and vowel glyphs selected from a choice of alternate forms to take
+into account the layout of the syllable, which is driven by the vowel and
+the presence or absence of a tail.  In the case of syllables that do not
+have standard whole-syllable code points (i.e.\ those containing archaic or
+uncommon jamo or jamo combinations), the output of ccmp is the best we can
+do.  Main-line standard syllables, which have their own code points and
+corresponding precomposed glyphs, will get those glyphs substituted in when
+the ``liga'' feature runs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1266,23 +1310,9 @@ in proportional fonts.
 
 The Mandeubsida fonts, however, contain an extensive ligature table for
 hangul, and use of this feature is required to get full support for hangul
-script.  Without it, the decomposition of precomposed tail-less syllables in
-the ``ccmp'' feature will stand, leaving those syllables looking poorly
-designed; and syllables written out as individual jamo will be approximated
-with on-the-fly composition even when a precomposed glyph would be
-available.  In order for the ligature table to operate correctly, the
-``ljmo'' and ``vjmo'' features should also be turned on.  See the section on
-Korean language support for more details of how this feature works.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\blsubsection{頭子音の形}{Lead Jamo Shaping (ljmo)}
-
-This feature only exists in the Mandeubsida fonts and should be turned on by
-default.  It replaces ``lead'' jamo glyphs (consonants at the starts of
-syllables) with contextual variants that depend on the vowel and the
-presence or absence of a tail.  For more information, see the section on
-Korean support.
+script.  Without it, precomposed syllable glyphs will not be used and every
+syllable will be rendered in one of the six generic layouts.  See the
+section on Korean language support.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1486,33 +1516,20 @@ parentheses only.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{母音の形}{Vowel Jamo Shaping (vjmo)}
-
-This feature only exists in the Mandeubsida fonts, and should be turned on by
-default when it exists.  It replaces ``vowel'' jamo glyphs with appropriate
-contextual variations depending on the layout of the syllable.  The layout
-that will be used by ``vjmo'' is actually chosen during execution of the
-``ljmo'' feature, which must be applied before ``vjmo'' (as required by
-Microsoft's specification) for ``vjmo'' to work properly.  Note that
-Microsoft also describes, but we don't use, a similar ``tjmo'' feature for
-reshaping the tail.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \blsubsection{私用符号位置を避けて}{Limit PUA Code Points (xpua)}
 
 This is not the usual kind of OpenType feature, but is configured through
 the same interface as the others.
 
-For software engineering purposes it is
-convenient to have a unique Unicode-like code point for every glyph in the
-font family.  However, some of those glyphs are not intended to be accessed
-directly by users, and more than one of them may correspond to the same
-Unicode character in ordinary text.  This feature removes the private-use
-code points from many such glyphs.
+For software engineering purposes it is convenient to have a unique
+Unicode-like code point for every glyph in the font family.  However, some
+of those glyphs are not intended to be accessed directly by users, and more
+than one of them may correspond to the same Unicode character in ordinary
+text.  This feature removes the private-use code points from many such
+glyphs.
 
-For instance, in Mandeubsida there is a glyph named ``uni112A'' for code point
-U+112A, but there is also a glyph named ``uni112A.bug'' which looks
+For instance, in Mandeubsida there is a glyph named ``uni112A'' for code
+point U+112A, but there is also a glyph named ``uni112A.bug'' which looks
 identical but is referenced in the substitution table in order to work
 around a bug in the ICU library used by \XeTeX.  The uni112A.bug glyph, as
 its name implies, is used to typeset the character U+112A, but it is

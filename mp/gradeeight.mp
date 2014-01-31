@@ -1,6 +1,6 @@
 %
 % Grade Eight kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -87,6 +87,15 @@ vardef kanji.greight.call =
   build_kanji.tb(420,30)
     (kanji.grtwo.sword)
     (kanji.grone.mouth);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.court =
+  push_pbox_toexpand("kanji.greight.court");
+  build_kanji.long_stride_enclose(false)
+    (build_kanji.sscale(xscaled 0.84)
+       (build_kanji.add_beret(kanji.grfour.gentleman;
+        replace_strokep(-1)(oldp shifted (0,-70)))));
   expand_pbox;
 enddef;
 

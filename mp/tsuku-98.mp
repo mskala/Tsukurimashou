@@ -1,6 +1,6 @@
 %
 % Unicode page 98 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input bkencl.mp;
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
@@ -201,6 +202,14 @@ vardef kanji.greight.approximate =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.chin =
+  push_pbox_toexpand("kanji.greight.chin");
+  build_kanji.level(build_kanji.lr(530,10)
+    (build_kanji.sscale(shifted (0,30))(kanji.rare.outspokenly))
+    (kanji.grnine.page));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.clause =
   push_pbox_toexpand("kanji.greight.clause");
   build_kanji.level(build_kanji.lr(440,30)
@@ -221,6 +230,22 @@ vardef kanji.greight.necessary =
   push_pbox_toexpand("kanji.greight.necessary");
   build_kanji.level(build_kanji.lr(440,30)
     (build_kanji.sscale(shifted (0,70))(kanji.rightrad.short_hair))
+    (kanji.grnine.page));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.repeated =
+  push_pbox_toexpand("kanji.greight.repeated");
+  build_kanji.level(build_kanji.lr(520,20)
+    (build_kanji.sscale(yscaled 1.06 shifted (0,40))(kanji.grtwo.walk))
+    (kanji.grnine.page));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.request =
+  push_pbox_toexpand("kanji.greight.request");
+  build_kanji.level(build_kanji.lr(500,0)
+    (build_kanji.sscale(shifted (0,40))(kanji.grfour.bundle))
     (kanji.grnine.page));
   expand_pbox;
 enddef;
@@ -488,32 +513,29 @@ begintsuglyph("uni9828",40);
   tsu_render;
 endtsuglyph;
 
-%  【頩】⿰<并>⿱丷<开>⿱一<廾>⿻一<CDP-8BF5>⿰丿丨頁
 % extra
-% begintsuglyph("uni9829",41);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9829",41);
+  build_kanji.level(build_kanji.lr(500,0)
+    (build_kanji.sscale(yscaled 1.05 shifted (0,60))(kanji.rare.merger))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【頪】⿰米頁
 % extra
-% begintsuglyph("uni982A",42);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni982A",42);
+  build_kanji.level(build_kanji.lr(500,30)
+    (build_kanji.sscale(yscaled 1.07)(kanji.grtwo.rice))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【頫】⿰兆頁
 % extra
-% begintsuglyph("uni982B",43);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni982B",43);
+  build_kanji.level(build_kanji.lr(540,0)
+    (build_kanji.sscale(yscaled 1.08)(kanji.grfour.portent))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
 % tou/atama "head"
 begintsuglyph("uni982D",45);
@@ -521,118 +543,105 @@ begintsuglyph("uni982D",45);
   tsu_render;
 endtsuglyph;
 
-%  【頲】⿰<廷>⿺廴壬頁
 % extra
-% begintsuglyph("uni9832",50);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9832",50);
+  build_kanji.level(build_kanji.lr(500,0)
+    (tsu_xform(identity shifted (0,20))(kanji.greight.court))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【頳】⿰<赤>⿱<土>⿱十一<CDP-8CB5>;頁
 % extra
-% begintsuglyph("uni9833",51);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9833",51);
+  build_kanji.level(build_kanji.lr(500,0)
+    (kanji.grone.red)
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【頵】⿰<君>⿸<尹>⿻<CDP-8BAB>⿴<CDP-8C78>;一丿口頁
 % extra
-% begintsuglyph("uni9835",53);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9835",53);
+  build_kanji.level(build_kanji.lr(500,0)
+    (build_kanji.sscale(yscaled 1.05 shifted (0,30))(kanji.grthree.junior))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【頶】⿰<告>⿱𠂒口頁
 % extra
-% begintsuglyph("uni9836",54);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9836",54);
+  build_kanji.level(build_kanji.lr(500,0)
+    (build_kanji.sscale(shifted (0,30))(kanji.grfour.revelation))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【頻】⿰<歩>⿱止<少>⿱小丿頁
-% /
-% begintsuglyph("uni983B",59);
-%   kanji.greight.;
-%   tsu_render;
-% endtsuglyph;
+% hin/shiki "repeated"
+begintsuglyph("uni983B",59);
+  kanji.greight.repeated;
+  tsu_render;
+endtsuglyph;
 
-%  【頼】⿰束頁
-% /
-% begintsuglyph("uni983C",60);
-%   kanji.greight.;
-%   tsu_render;
-% endtsuglyph;
+% rai/tano "request"
+begintsuglyph("uni983C",60);
+  kanji.greight.request;
+  tsu_render;
+endtsuglyph;
 
-%  【顀】⿰隹頁
 % extra
-% begintsuglyph("uni9840",64);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9840",64);
+  build_kanji.level(build_kanji.lr(500,0)
+    (kanji.radical.old_bird)
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【顁】⿰<定>⿱宀<𤴓>⿱一龰頁
 % extra
-% begintsuglyph("uni9841",65);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9841",65);
+  build_kanji.level(build_kanji.lr(500,0)
+    (kanji.grthree.regular)
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【顃】⿰<炎>⿱<火>⿱八人<火>⿱八人頁
 % extra
-% begintsuglyph("uni9843",67);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9843",67);
+  build_kanji.level(build_kanji.lr(500,0)
+    (tsu_xform(identity shifted (0,20))(kanji.greight.inflammation))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【顆】⿰<果>⿻日木頁
 % extra
-% begintsuglyph("uni9846",70);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9846",70);
+  build_kanji.level(build_kanji.lr(500,0)
+    (kanji.grfour.fruit)
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【顇】⿰<卒>⿱<𠅃>⿱<亠>⿱丨一<从>⿰人人十頁
 % extra
-% begintsuglyph("uni9847",71);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9847",71);
+  build_kanji.level(build_kanji.lr(500,0)
+    (tsu_xform(identity shifted (0,20))(kanji.grfour.graduate))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【顉】⿰金頁
 % extra
-% begintsuglyph("uni9849",73);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9849",73);
+  build_kanji.level(build_kanji.lr(480,30)
+    (kanji.leftrad.gold)
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【顋】⿰<思>⿱田心頁
 % extra
-% begintsuglyph("uni984B",75);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni984B",75);
+  build_kanji.level(build_kanji.lr(500,0)
+    (kanji.grtwo.think)
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
 % dai "topic"
 begintsuglyph("uni984C",76);
@@ -646,30 +655,27 @@ begintsuglyph("uni984D",77);
   tsu_render;
 endtsuglyph;
 
-%  【顎】⿰<咢>⿱<吅>⿰口口<亏>⿱一<丂>⿱一㇉頁
-% /
-% begintsuglyph("uni984E",78);
-%   kanji.greight.;
-%   tsu_render;
-% endtsuglyph;
+% gaku/ago "chin"
+begintsuglyph("uni984E",78);
+  kanji.greight.chin;
+  tsu_render;
+endtsuglyph;
 
-%  【顐】⿰<軍>⿱冖車頁
 % extra
-% begintsuglyph("uni9850",80);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9850",80);
+  build_kanji.level(build_kanji.lr(500,-30)
+    (build_kanji.sscale(yscaled 1.07 shifted (0,40))(kanji.grfour.army))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【顑】⿰<咸>⿵<戌>⿵戊一口頁
 % extra
-% begintsuglyph("uni9851",81);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9851",81);
+  build_kanji.level(build_kanji.lr(560,0)
+    (build_kanji.sscale(shifted (0,40))(kanji.rare.the_same))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
 % gen/kao "face"
 begintsuglyph("uni9854",84);
@@ -683,14 +689,13 @@ begintsuglyph("uni9858",88);
   tsu_render;
 endtsuglyph;
 
-%  【顛】⿰<真>⿱十<具>⿳目一八頁
 % extra
-% begintsuglyph("uni985B",91);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni985B",91);
+  build_kanji.level(build_kanji.lr(500,0)
+    (kanji.grthree.truth)
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
 % rui/tagu "genus"
 begintsuglyph("uni985E",94);
@@ -698,23 +703,21 @@ begintsuglyph("uni985E",94);
   tsu_render;
 endtsuglyph;
 
-%  【顠】⿰<票>⿱<覀>⿱一<CDP-86EA>⿻<〢>⿰丨丨口示頁
 % extra
-% begintsuglyph("uni9860",96);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9860",96);
+  build_kanji.level(build_kanji.lr(500,0)
+    (build_kanji.sscale(shifted (0,20))(kanji.grfour.ticket))
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
-%  【顥】⿰<景>⿱日<京>⿳<亠>⿱丨一口小頁
 % extra
-% begintsuglyph("uni9865",101);
-%   build_kanji.level(build_kanji.lr(500,0)
-%     ()
-%     (kanji.grnine.page));
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni9865",101);
+  build_kanji.level(build_kanji.lr(500,0)
+    (kanji.grfour.scenery)
+    (kanji.grnine.page));
+  tsu_render;
+endtsuglyph;
 
 % fuu/kaze "wind"
 begintsuglyph("uni98A8",168);

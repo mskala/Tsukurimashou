@@ -1,6 +1,6 @@
 %
 % Unicode page 5E (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -215,15 +215,6 @@ enddef;
 vardef kanji.greight.bed =
   push_pbox_toexpand("kanji.greight.bed");
   build_kanji.dotcliff_enclose(kanji.grone.wood);
-  expand_pbox;
-enddef;
-
-vardef kanji.greight.court =
-  push_pbox_toexpand("kanji.greight.court");
-  build_kanji.long_stride_enclose(false)
-    (build_kanji.sscale(xscaled 0.84)
-       (build_kanji.add_beret(kanji.grfour.gentleman;
-        replace_strokep(-1)(oldp shifted (0,-70)))));
   expand_pbox;
 enddef;
 

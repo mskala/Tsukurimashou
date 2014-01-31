@@ -1,6 +1,6 @@
 %
 % Unicode page 60 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -49,16 +49,6 @@ input rare.mp;
 input toprad.mp;
 
 do_late_includes;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grtwo.think =
-  push_pbox_toexpand("kanji.grtwo.think");
-  build_kanji.level(build_kanji.tb(390,120)
-    (kanji.grone.paddy)
-    (kanji.bottomrad.heart));
-  expand_pbox;
-enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

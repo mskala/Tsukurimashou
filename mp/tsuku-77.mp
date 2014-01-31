@@ -1,6 +1,6 @@
 %
 % Unicode page 77 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -76,22 +76,6 @@ vardef kanji.grthree.short =
   build_kanji.level(build_kanji.lr(550,-20)
     (kanji.leftrad.arrow)
     (tsu_xform(identity shifted (0,-20))(kanji.grthree.bean)));
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.truth =
-  push_pbox_toexpand("kanji.grthree.truth");
-  build_kanji.level(build_kanji.tb(200,-60)
-    (build_kanji.tb(500,70)
-       (kanji.grone.ten)
-       (kanji.grone.eye))
-    (push_stroke((100,850)--(900,850),(1.6,1.6)--(1.6,1.6));
-     set_boserif(0,1,9);
-     push_stroke((320,630)..tension 1.3..(220,210)..(100,-60),
-       (1.6,1.6)--(1.5,1.5)--(1,1));
-     set_boserif(0,0,10);
-     push_stroke((630,680)..tension 1.3..(760,370)..(860,0),
-       (1,1)--(1.5,1.5)--(1.8,1.8))));
   expand_pbox;
 enddef;
 

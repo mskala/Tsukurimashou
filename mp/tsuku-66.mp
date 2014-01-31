@@ -1,6 +1,6 @@
 %
 % Unicode page 66 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -145,14 +145,6 @@ vardef kanji.grthree.heat =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfour.scenery =
-  push_pbox_toexpand("kanji.grfour.scenery");
-  build_kanji.level(build_kanji.tb(560,30)
-    (kanji.grone.day)
-    (kanji.grtwo.capital));
-  expand_pbox;
-enddef;
 
 vardef kanji.grfour.yesterday =
   push_pbox_toexpand("kanji.grfour.yesterday");

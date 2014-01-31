@@ -1,6 +1,6 @@
 %
 % Grade Two kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -881,6 +881,14 @@ vardef kanji.grtwo.thick =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.think =
+  push_pbox_toexpand("kanji.grtwo.think");
+  build_kanji.level(build_kanji.tb(390,120)
+    (kanji.grone.paddy)
+    (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.valley =
   push_pbox_toexpand("kanji.grtwo.valley");
   build_kanji.harmonic(230,0.8,260)(build_kanji.level(
@@ -888,6 +896,14 @@ vardef kanji.grtwo.valley =
     pop_stroke;
     build_kanji.box((250,400),(750,-10));
   ));
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.walk =
+  push_pbox_toexpand("kanji.grtwo.walk");
+  build_kanji.level(build_kanji.tb(440,50)
+    (kanji.grtwo.cease)
+    (kanji.grtwo.little));
   expand_pbox;
 enddef;
 

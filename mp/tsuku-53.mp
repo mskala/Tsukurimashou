@@ -1,6 +1,6 @@
 %
 % Unicode page 53 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -128,19 +128,6 @@ vardef kanji.grfour.cooperation =
        (kanji.grone.power)
        (kanji.grone.power)
        (kanji.grone.power)));
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.graduate =
-  push_pbox_toexpand("kanji.grfour.graduate");
-  build_kanji.level(build_kanji.tb(650,20)
-    (kanji.radical.kettle_lid)
-    (build_kanji.tb(480,-20)
-       (build_kanji.lr(480,20)
-          (kanji.leftrad.alt_person)
-          (kanji.leftrad.alt_person))
-       (kanji.grone.ten;
-        replace_strokep(0)(oldp shifted (0,50)))));
   expand_pbox;
 enddef;
 

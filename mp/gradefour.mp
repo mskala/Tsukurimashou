@@ -1,6 +1,6 @@
 %
 % Grade Four kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -312,6 +312,19 @@ vardef kanji.grfour.good =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.graduate =
+  push_pbox_toexpand("kanji.grfour.graduate");
+  build_kanji.level(build_kanji.tb(650,20)
+    (kanji.radical.kettle_lid)
+    (build_kanji.tb(480,-20)
+       (build_kanji.lr(480,20)
+          (kanji.leftrad.alt_person)
+          (kanji.leftrad.alt_person))
+       (kanji.grone.ten;
+        replace_strokep(0)(oldp shifted (0,50)))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.grandchild =
   push_pbox_toexpand("kanji.grfour.grandchild");
   build_kanji.lr(480,110)
@@ -459,6 +472,14 @@ vardef kanji.grfour.revelation =
   build_kanji.level(build_kanji.tb(440,-30)
     (kanji.radical.life_minus)
     (kanji.grone.mouth));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.scenery =
+  push_pbox_toexpand("kanji.grfour.scenery");
+  build_kanji.level(build_kanji.tb(560,30)
+    (kanji.grone.day)
+    (kanji.grtwo.capital));
   expand_pbox;
 enddef;
 

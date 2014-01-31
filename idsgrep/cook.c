@@ -1,6 +1,6 @@
 /*
  * I/O translations for IDSgrep
- * Copyright (C) 2012, 2013  Matthew Skala
+ * Copyright (C) 2012, 2013, 2014  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -439,7 +439,7 @@ void write_cooked_tree(NODE *ms,FILE *f) {
    
    wrap_flush(f);
    if (colourize_output)
-     fwrite("\e[0;37m",7,1,f);
+     current_colour="\e[0;37m";
 
    switch (output_recipe[OS_SEPARATOR]) {
     case '0':
@@ -456,6 +456,6 @@ void write_cooked_tree(NODE *ms,FILE *f) {
       wrap_write("\n",1,f);
       break;
    }
-      
+
    delete_string(semicolon);
 }
