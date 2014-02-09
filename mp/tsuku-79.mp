@@ -1,6 +1,6 @@
 %
 % Unicode page 79 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -247,9 +248,73 @@ begintsuglyph("uni79C1",193);
   tsu_render;
 endtsuglyph;
 
+% extra
+begintsuglyph("uni79C4",196);
+  build_kanji.lr(480,70)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grone.child);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79C6",198);
+  build_kanji.lr(520,40)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(shifted (0,-30))(kanji.grsix.dry));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79C7",199);
+  build_kanji.lr(460,50)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(shifted (0,-20))(kanji.grtwo.circle));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79C8",200);
+  build_kanji.lr(460,-20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grone.mountain);
+  tsu_render;
+endtsuglyph;
+
 % shuu/aki "autumn"
 begintsuglyph("uni79CB",203);
   kanji.grtwo.autumn;
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79CD",205);
+  build_kanji.lr(480,20)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(shifted (0,-30))(kanji.grone.middle));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79CE",206);
+  build_kanji.lr(520,60)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grtwo.minute);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79CF",207);
+  build_kanji.lr(480,70)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grtwo.hair);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79D0",208);
+  build_kanji.lr(480,70)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(yscaled 1.06 shifted (0,40))(kanji.grnine.declaim));
   tsu_render;
 endtsuglyph;
 
@@ -264,6 +329,212 @@ begintsuglyph("uni79D2",210);
   kanji.grthree.second_of_time;
   tsu_render;
 endtsuglyph;
+
+% extra
+begintsuglyph("uni79D3",211);
+  build_kanji.level(build_kanji.lr(500,70)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfive.support));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79D4",212);
+  build_kanji.lr(480,70)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rare.high_spirits);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79D5",213);
+  build_kanji.lr(460,30)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfive.compare);
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni79D6",214);
+  build_kanji.lr(460,60)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(shifted (0,10))(kanji.grfour.clan));
+  tsu_render;
+endtsuglyph;
+
+% 【秗】⿰<禾>⿱丿木<夭>⿱丿<大>⿻一人
+% extra
+% begintsuglyph("uni79D7",215);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秘】⿰<禾>⿱丿木<必>⿻心丿
+% grade six "secret"
+% begintsuglyph("uni79D8",216);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秙】⿰<禾>⿱丿木<古>⿱十口
+% extra
+% begintsuglyph("uni79D9",217);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秚】⿰<禾>⿱丿木<半>⿱丷<CDP-8BF1>⿻<二>⿱一一丨
+% extra
+% begintsuglyph("uni79DA",218);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秛】⿰<禾>⿱丿木皮
+% extra
+% begintsuglyph("uni79DB",219);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秜】⿰<禾>⿱丿木<尼>⿸尸<匕>⿺乚丿
+% extra
+% begintsuglyph("uni79DC",220);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秝】⿰<禾>⿱丿木<禾>⿱丿木
+% extra
+% begintsuglyph("uni79DD",221);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秞】⿰<禾>⿱丿木由
+% extra
+% begintsuglyph("uni79DE",222);
+%   tsu_render;
+% endtsuglyph;
+
+% 【租】⿰<禾>⿱丿木且
+% grade eight "crop tax"
+% begintsuglyph("uni79DF",223);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秠】⿰<禾>⿱丿木<丕>⿱<不>⿱一<CDP-8665>;一
+% extra
+% begintsuglyph("uni79E0",224);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秢】⿰<禾>⿱丿木<令>⿱<CDP-8AFC>⿵𠆢一<CDP-8A60>⿱𠃌丨
+% extra
+% begintsuglyph("uni79E2",226);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秣】⿰<禾>⿱丿木末
+% extra
+% begintsuglyph("uni79E3",227);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秤】⿰<禾>⿱丿木<平>⿻干丷
+% grade nine "balances/steelyard"
+% begintsuglyph("uni79E4",228);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秥】⿰<禾>⿱丿木<占>⿱⺊口
+% extra
+% begintsuglyph("uni79E5",229);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秧】⿰<禾>⿱丿木央
+% extra
+% begintsuglyph("uni79E7",231);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秨】⿰<禾>⿱丿木乍
+% extra
+% begintsuglyph("uni79E8",232);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秩】⿰<禾>⿱丿木<失>⿰丿<夫>⿻<二>⿱一一人
+% grade eight "regularity"
+% begintsuglyph("uni79E9",233);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秪】⿰<禾>⿱丿木<氐>⿱氏一
+% extra
+% begintsuglyph("uni79EA",234);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秮】⿰<禾>⿱丿木<台>⿱厶口
+% extra
+% begintsuglyph("uni79EE",238);
+%   tsu_render;
+% endtsuglyph;
+
+% 【积】⿰<禾>⿱丿木<只>⿱口八
+% extra
+% begintsuglyph("uni79EF",239);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秱】⿰<禾>⿱丿木<同>⿵<𠔼>⿵冂一口
+% extra
+% begintsuglyph("uni79F1",241);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秲】⿰<禾>⿱丿木<寺>⿱<土>⿱十一寸
+% extra
+% begintsuglyph("uni79F2",242);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秳】⿰<禾>⿱丿木<舌>⿱<千>⿱丿十口
+% extra
+% begintsuglyph("uni79F3",243);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秴】⿰<禾>⿱丿木<合>⿱<CDP-8AFC>⿵𠆢一口
+% extra
+% begintsuglyph("uni79F4",244);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秵】⿰<禾>⿱丿木<因>⿴囗<大>⿻一人
+% extra
+% begintsuglyph("uni79F5",245);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秷】⿰<禾>⿱丿木<至>⿱<𠫔>⿱一厶<土>⿱十一
+% extra
+% begintsuglyph("uni79F7",247);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秸】⿰<禾>⿱丿木<吉>⿱<士>⿱十一口
+% extra
+% begintsuglyph("uni79F8",248);
+%   tsu_render;
+% endtsuglyph;
+
+% 【秹】⿰<禾>⿱丿木<任>⿰亻壬
+% extra
+% begintsuglyph("uni79F9",249);
+%   tsu_render;
+% endtsuglyph;
+
+% 【移】⿰<禾>⿱丿木<多>⿱<夕>⿴𠂊丶<夕>⿴𠂊丶
+% grade five LOOK UP
+% begintsuglyph("uni79FB",251);
+%   tsu_render;
+% endtsuglyph;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

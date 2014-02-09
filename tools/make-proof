@@ -2,7 +2,7 @@
 
 #
 # Font proof generator for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,14 +38,6 @@ $proof_debug_chop=0;
 # figure out where we are
 $prefix=$0;
 $prefix=~s!/tools/make-proof$!!;
-
-# figure out whether xpua is active
-$xpua_mode=0;
-open(MV,'./makefile-vars.inc') || open(MV,"$prefix/makefile-vars.inc");
-while (<MV>) {
-  $xpua_mode=1 if /^OT_FEATURES=.*xpua/;
-}
-close(MV);
 
 # priority numbers for different filenames (default for others is 500)
 %priority=(
@@ -107,6 +99,8 @@ close(MV);
   'bll'=>15900,
   'bll-co'=>15920,
   'pentacross'=>15950,
+
+  'kazoe-se'=>20900,
 );
 
 # place a part break before the first file at each of these priority numbers
@@ -125,6 +119,7 @@ close(MV);
   10082=>'Mandeubsida alternates',
   10900=>'TsuIta',
   15900=>'Blackletter Lolita',
+  20900=>'Kazoemashou',
 );
 
 # prefix for page files (low ends of intervals)
@@ -133,14 +128,7 @@ close(MV);
   5900=>'mande',
   10900=>'tsuita',
   15900=>'bll',
-);
-
-# files to read for glyph numbers, depending on family
-%glnumfile=(
-  'tsuku'=>'tsuku-kg',
-  'mande'=>'mande-do',
-  'tsuita'=>'tsuita-at',
-  'bll'=>'bll-co',
+  20900=>'kazoe',
 );
 
 # get a list of all source files to scan
@@ -169,6 +157,9 @@ foreach (sort keys %srcfiles) {
     $priority{$base}=$pri;
   } elsif ($base=~/^bll-([0-9a-f]{2,3})$/) {
     $pri=16000+hex("0x$1");
+    $priority{$base}=$pri;
+  } elsif ($base=~/^kazoe-([0-9a-f]{2,3})$/) {
+    $pri=21000+hex("0x$1");
     $priority{$base}=$pri;
   } elsif (defined $priority{$base}) {
     $pri=$priority{$base};
@@ -271,7 +262,7 @@ sub read_mincho_proof {
 }
 
 # read all the basic proofs
-foreach $style ('tsuku-kg','mande-do','bll-co','tsuita-at') {
+foreach $style ('tsuku-kg','mande-do','bll-co','tsuita-at','kazoe-se') {
   ($glp,$dummy)=split('-',$style);
   while (<prf/$style-*.prf>) {
     next if /-ps/;
@@ -454,7 +445,7 @@ foreach $glyph (keys %glnames) {
 %deflbls=();
 $nxtlbl='aaa';
 foreach $file (@files) {
-  if ($file=~/^(tsuku|tsuita|mande|bll)-([0-9a-f]+)$/) {
+  if ($file=~/^(tsuku|tsuita|mande|bll|kazoe)-([0-9a-f]+)$/) {
     $page=hex("0x$2");
     $glp=$1;
   } else {
@@ -512,6 +503,19 @@ $partarab=1;
 $countpictures=0;
 $lastpart=-1;
 
+# XeTeX code to set a glyph, even if its code point is deleted by xpua
+sub setgl {
+  my($cp,$gln)=@_;
+  
+  if ((($cp>=0xE000) && ($cp<0xF900)) || ($cp>=0xF1800)) {
+    return '\expandafter\XeTeXglyph\XeTeXglyphindex"'.$gln.'"\relax';
+  } elsif ($cp<0x10000) {
+    return sprintf("\\char\"%04X",$cp);
+  } else {
+    return chr($cp);
+  }
+}
+
 foreach $file (@files) {
   $newsubsec='';
   $hipri=0;
@@ -530,32 +534,6 @@ foreach $file (@files) {
     print "\\def\\tmpmac{$partarab}\\ifx\\tmpmac\\partarab\\relax\n\n";
     $partarab++;
     $lastpart=$priority{$file};
-
-    %setgl=();
-    $num_unicode_glyphs=0;
-    @non_unicode_glyphs=();
-    open(GNF,"./sfd/$glnumfile{$glp}.sfd")
-      || open(GNF,"$prefix/sfd/$glnumfile{$glp}.sfd");
-    while (<GNF>) {
-      chomp;
-      if (/^Encoding: \d+ (\d+) (\d+)$/) {
-        if ($xpua_mode && ((($1>=0xE000) && ($1<0xF900)) || ($1>=0xF1800))) {
-          push @non_unicode_glyphs,$1;
-        } elsif ($1<0x10000) {
-          $num_unicode_glyphs++;
-          $setgl{$1}=sprintf("\\char\"%04X",$1);
-        } else {
-          $num_unicode_glyphs++;
-          $setgl{$1}=chr($1);
-        }
-      }
-    }
-    close(GNF);
-    @non_unicode_glyphs=sort {$a<=>$b} @non_unicode_glyphs;
-    for ($i=0;$i<=$#non_unicode_glyphs;$i++) {
-      $setgl{$non_unicode_glyphs[$i]}=
-        '\XeTeXglyph '.($num_unicode_glyphs+$i+1);
-    }
   }
   print "\\File{$file.mp}\n\n";
   if ($file=~/-([0-9a-f]+)/) {
@@ -590,7 +568,7 @@ foreach $file (@files) {
       if (!defined $moved_picture{"$glp.$1"}) {
         printf "\n\\Picture{%s}{%s%02X}","$glp.$1",$page,$2;
         printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
-          $setgl{($pnum<<8)+$2},$leftside{"$glp.$1"},$rightside{"$glp.$1"},
+          &setgl(($pnum<<8)+$2,$1),$leftside{"$glp.$1"},$rightside{"$glp.$1"},
           $plox{"$glp.$1"},$ploy{"$glp.$1"},
           $phix{"$glp.$1"},$phiy{"$glp.$1"},$partslant,
           $picture{"$glp.$1"};
@@ -598,9 +576,10 @@ foreach $file (@files) {
       }
     }
     if (/^make_hexagram\((\d+),/) {
-      printf "\n\\Picture{tsuku.iching%02d}{%s%02X}",$1,$page,191+$1;
+      $glyphname=sprintf('iching%02d',$1);
+      printf "\n\\Picture{tsuku.%s}{%s%02X}",$glyphname,$page,191+$1;
       printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
-        $setgl{($pnum<<8)+191+$1},0,10,
+        &setgl(($pnum<<8)+191+$1,$glyphname),0,10,
         $plox{sprintf('tsuku.iching%02d',$1)},
         $ploy{sprintf('tsuku.iching%02d',$1)},
         $phix{sprintf('tsuku.iching%02d',$1)},
@@ -612,7 +591,7 @@ foreach $file (@files) {
       $mp=$moved_picture{"$glp.$1"};
       printf "\n\\Picture{%s}{%04X}{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n"
             ."  {%s}\n\n",
-        $mp,$codepoint{$mp},$setgl{$codepoint{$mp}},$leftside{$mp},
+        $mp,$codepoint{$mp},&setgl($codepoint{$mp},$1),$leftside{$mp},
         $rightside{$mp},$plox{$mp},$ploy{$mp},$phix{$mp},$phiy{$mp},
         $partslant,$picture{$mp};
       $countpictures++;
@@ -747,9 +726,10 @@ EOF
       push @hgpcp,(($i*617)%11172+0xAC00);
     }
     foreach $cp (sort @hgpcp) {
+      $glyphname=sprintf('uni%04X',$cp);
       printf "\n\\clearpage\\Picture{mande.uni%04X}{%04X}",$cp,$cp;
       printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
-        $setgl{$cp},0,10,
+        &setgl($cp,$glyphname),0,10,
         $plox{sprintf('mande.uni%04X',$cp)},
         $ploy{sprintf('mande.uni%04X',$cp)},
         $phix{sprintf('mande.uni%04X',$cp)},

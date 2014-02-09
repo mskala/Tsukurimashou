@@ -2,7 +2,7 @@
 
 #
 # Make a cover for Tsukurimashou book proofs
-# Copyright (C) 2013  Matthew Skala
+# Copyright (C) 2014  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,6 +72,15 @@ if ($partname=~/Blackletter/) {
 \colorlet{tartanfive}{magenta!80!red}
 \colorlet{tartanten}{magenta!40!white}
 EOF
+} elsif ($partname=~/Kazoemashou/) {
+  $bbgtop='0.375';
+  print <<'EOF';
+\colorlet{bottombg}{red}
+\colorlet{tartanbg}{cyan!40!black}
+\colorlet{tartanone}{white!80!blue}
+\colorlet{tartanfive}{cyan!60!white}
+\colorlet{tartanten}{cyan!30!magenta}
+EOF
 } elsif ($partname=~/Mandeubsida/) {
   print <<'EOF';
 \colorlet{bottombg}{green!20!black}
@@ -131,7 +140,7 @@ print <<EOF;
   \\node at (\$(frontref)+(2.125,10.375)\$)
   {\\huge\\begin{minipage}{4.5in}\\centering
      {\\Huge 作りましょう~\\TsukurimashouVWide}\\\\
-     {パラメタ方式フォントファミ}
+     {パラメタ方式フォントファミリ}
    \\end{minipage}};
 
   \\node at (\$(frontref)+(6.375,10.375)\$)

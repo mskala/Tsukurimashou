@@ -175,7 +175,7 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 KANJIDIC2=@with_kanjidic2@
 if COND_BOOKPROOFS
   MAYBE_BOOKPROOFS=$(foreach \
-    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV, \
+    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV, \
     doc/book$(rn).pdf doc/cover$(rn).pdf)
   PROOF_ND_PASS=4
 else
