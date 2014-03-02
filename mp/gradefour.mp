@@ -508,6 +508,14 @@ vardef kanji.grfour.ticket =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.tip =
+  push_pbox_toexpand("kanji.grfour.tip");
+  kanji.grfour.not_yet;
+  replace_strokep(-3)((70,610)--(930,610));
+  replace_strokep(-4)((160,360)--(840,360));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.together =
   push_pbox_toexpand("kanji.grfour.together");
   build_kanji.level(build_kanji.tb(290,46)

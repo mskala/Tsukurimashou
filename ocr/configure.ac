@@ -194,7 +194,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([msk-ocra.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2019 2013-03-09 21:44:02Z mskala $])
+AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
 AC_COPYRIGHT([public domain])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -213,8 +213,8 @@ AC_PATH_PROG([AUTOMAKE],[automake])
 AC_ARG_VAR([EXPECT],[Expect])
 AC_PATH_PROG([EXPECT],[expect])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
-AC_ARG_VAR([FONTFORGE],[Fontforge])
-AC_PATH_PROG([FONTFORGE],[fontforge])
+AC_ARG_VAR([FONTANVIL],[FontAnvil])
+AC_PATH_PROGS([FONTANVIL],[fontanvil fontforge])
 AX_CHECK_GNU_MAKE
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])
@@ -287,10 +287,10 @@ AS_IF([test "x$enable_silent_rules" = "x"],
   [enable_silent_rules=yes
    AM_DEFAULT_VERBOSITY=0])
 #
-AC_MSG_CHECKING([whether FontForge accepts AddExtrema(1)])
-echo '#!/usr/local/bin/fontforge' > ffaetest.pe
+AC_MSG_CHECKING([whether FontAnvil accepts AddExtrema(1)])
+echo '#!/usr/local/bin/fontanvil' > ffaetest.pe
 echo 'New();AddExtrema(1);' >> ffaetest.pe
-AS_IF([$FONTFORGE ffaetest.pe >& /dev/null],
+AS_IF([$FONTANVIL ffaetest.pe >& /dev/null],
   [ae_arg_okay=yes],[ae_arg_okay=no])
 rm ffaetest.pe
 AC_SUBST([ae_arg_okay])

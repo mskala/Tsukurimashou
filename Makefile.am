@@ -648,12 +648,13 @@ mp/.hglstamp: mp/.dirstamp tools/make-hglpages
 
 pe/make-empty.pe: pe/.dirstamp
 	$(AM_V_GEN)
-	$(AM_V_at)echo '#!'$(FONTFORGE) > pe/make-empty.pe
+	$(AM_V_at)echo '#!'$(FONTANVIL) > pe/make-empty.pe
 	$(AM_V_at)echo 'New();Save("sfd/empty.sfd");' >> pe/make-empty.pe
 
 sfd/empty.sfd: sfd/.dirstamp pe/make-empty.pe
 	$(AM_V_GEN)
-	$(AM_V_at)$(FONTFORGE) pe/make-empty.pe $(TSU_V_REDIR)
+	$(AM_V_at)$(FONTANVIL) -lang=ff -script \
+	  pe/make-empty.pe $(TSU_V_REDIR)
 
 txt/fontlog.txt: txt/.dirstamp tools/make-flog \
   hamlog/config.hl makefile-vars.inc
@@ -733,7 +734,8 @@ pfb/%.pfb: pfbtmp/%.pfb pfb/.dirstamp sum/.dirstamp pe/rmo.pe tools/livecode
 	  touch pfb/$*.pfb ; \
 	else \
 	  $(TSU_V_RMO) \
-	  $(FONTFORGE) $(mvp)/pe/rmo.pe pfbtmp/$*.pfb pfb/$*.pfb \
+	  $(FONTANVIL) -lang=ff -script \
+	    $(mvp)/pe/rmo.pe pfbtmp/$*.pfb pfb/$*.pfb \
 	    $(TSU_V_REDIR) ; \
 	fi
 
@@ -798,7 +800,7 @@ otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf: otf/.dirstamp \
   fea/monospace.fea fea/$(subst _,-,$1)-name.fea \
   $(call PAGEFILES,pfb/,$(1),.pfb)
 	$(TSU_V_OTF) otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf
-	$(AM_V_at)$(FONTFORGE) pe/assemble-font.pe \
+	$(AM_V_at)$(FONTANVIL) -lang=ff -script pe/assemble-font.pe \
 	    $(subst _,-,$1) \
 	    "$(XLAT_$(word 1,$(subst _,$(space),$1)))" \
 	    "$(XLAT_$1)" \
@@ -822,7 +824,7 @@ sfd/$(subst _,-,$1).sfd: \
   fea/$(subst _,-,$1)-name.fea \
   $(call PAGEFILES,pfb/,$(1),.pfb)
 	$(TSU_V_SFD) sfd/$(subst _,-,$1).sfd
-	$(AM_V_at)$(FONTFORGE) pe/assemble-font.pe \
+	$(AM_V_at)$(FONTANVIL) -lang=ff -script pe/assemble-font.pe \
 	    $(subst _,-,$1) \
 	    "$(XLAT_$(word 1,$(subst _,$(space),$1)))" \
 	    "$(XLAT_$1)" \
@@ -835,7 +837,7 @@ sfd/$(subst _,-,$1).sfd: \
 bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf: \
   bdf/.dirstamp pe/bdf.pe sfd/$(subst _,-,$1).sfd
 	$(TSU_V_BDF) bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf
-	$(AM_V_at)$(FONTFORGE) $(mvp)/pe/bdf.pe \
+	$(AM_V_at)$(FONTANVIL) -lang=ff -script $(mvp)/pe/bdf.pe \
 	  $(subst -,,$(subst $(space),,$(XLAT_$1))) $(subst _,-,$1) \
 	  $(TSU_V_REDIR)
 	$(AM_V_at)mv -f \
@@ -860,7 +862,7 @@ fea/$(subst _,-,$1)-kern.fea: \
   sfd/$(subst _,-,$1).sfd \
   pe/getbearings.pe tools/make-gpos
 	$(TSU_V_KERN) fea/$(subst _,-,$1)-kern.fea
-	$(AM_V_at)$(FONTFORGE) $(mvp)/pe/getbearings.pe \
+	$(AM_V_at)$(FONTANVIL) -lang=ff -script $(mvp)/pe/getbearings.pe \
 	  sfd/$(subst _,-,$1).sfd \
 	  $(TSU_V_REDIR) > $1.bearings 
 	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-gpos "$(OT_FEATURES)" \
@@ -876,7 +878,7 @@ otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf: otf/.dirstamp \
   pe/kern-font.pe sfd/$(subst _,-,$1).sfd
 	$(TSU_V_OTF) \
 	  otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf
-	$(AM_V_at)$(FONTFORGE) $(mvp)/pe/kern-font.pe \
+	$(AM_V_at)$(FONTANVIL) -lang=ff -script $(mvp)/pe/kern-font.pe \
 	  $(subst _,-,$1) \
 	  "$(XLAT_$(word 1,$(subst _,$(space),$1)))" \
 	  "$(XLAT_$1)" \
@@ -1085,7 +1087,7 @@ area/%-before.area: area/.dirstamp pfbtmp/%.pfb pe/makepngs.pe sfd/empty.sfd
 	$(AM_V_GEN)
 	$(AM_V_at)$(MKDIR_P) $*.tmp ; \
 	(cd $*.tmp ; \
-	  $(FONTFORGE) $(realpath $(mvp))/pe/makepngs.pe \
+	  $(FONTANVIL) -lang=ff -script $(realpath $(mvp))/pe/makepngs.pe \
 	     $(realpath .)/pfbtmp/$*.pfb $(TSU_V_REDIR) ; \
 	  for f in *.png ; do echo -n "$$f" ; pngtopnm $$f | \
 	    pgmtopbm -threshold | pgmhist | \
@@ -1102,7 +1104,7 @@ area/%-after.area: area/.dirstamp sfd/%.sfd pe/makepngs.pe sfd/empty.sfd
 	$(AM_V_GEN)
 	$(AM_V_at)$(MKDIR_P) $*.tmp ; \
 	(cd $*.tmp ; \
-	  $(FONTFORGE) $(realpath $(mvp))/pe/makepngs.pe \
+	  $(FONTANVIL) -lang=ff -script $(realpath $(mvp))/pe/makepngs.pe \
 	     $(realpath .)/sfd/$*.sfd $(TSU_V_REDIR) ; \
 	  for f in *.png ; do echo -n "$$f" ; pngtopnm $$f | \
 	    pgmtopbm -threshold | pgmhist | \
@@ -1137,7 +1139,8 @@ check-areas: txt/area-problems.txt
 
 TESTS = $(dist_otf_DATA)
 TEST_EXTENSIONS = .otf
-OTF_LOG_COMPILER = $(FONTFORGE) $(mvp)/pe/fontlint.pe $(FONTLINT_FLAGS)
+OTF_LOG_COMPILER = $(FONTANVIL) -lang=ff -script \
+  $(mvp)/pe/fontlint.pe $(FONTLINT_FLAGS)
 
 ############################################################################
 

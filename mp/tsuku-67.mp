@@ -1,6 +1,6 @@
 %
 % Unicode page 67 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -128,14 +128,6 @@ vardef kanji.grfour.pine =
   build_kanji.lr(480,20)
     (build_kanji.sscale(yscaled 1.07)(kanji.leftrad.wood))
     (kanji.grtwo.public);
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.tip =
-  push_pbox_toexpand("kanji.grfour.tip");
-  kanji.grfour.not_yet;
-  replace_strokep(-3)((70,610)--(930,610));
-  replace_strokep(-4)((160,360)--(840,360));
   expand_pbox;
 enddef;
 

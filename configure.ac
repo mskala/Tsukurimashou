@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2421 2013-08-25 01:41:59Z mskala $])
+AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
 AC_SUBST([release_date],["August 26, 2013"])
 AM_SILENT_RULES
@@ -223,8 +223,8 @@ AC_PATH_PROGS([CHECKSUM],[sha256sum sha1sum md5sum cksum wc],[no])
 AC_ARG_VAR([EXPECT],[Expect])
 AC_PATH_PROG([EXPECT],[expect])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
-AC_ARG_VAR([FONTFORGE],[Fontforge])
-AC_PATH_PROG([FONTFORGE],[fontforge])
+AC_ARG_VAR([FONTANVIL],[FontAnvil])
+AC_PATH_PROGS([FONTANVIL],[fontanvil fontforge])
 AC_ARG_VAR([FONTLINT_FLAGS],[Flags for fontlint])
 AC_PATH_TOOL([GDB],[gdb])
 AX_CHECK_GNU_MAKE
@@ -330,7 +330,7 @@ AC_ARG_ENABLE([docs],
     [enable_docs=yes])
 AC_ARG_ENABLE([ff-debug],
   [AS_HELP_STRING([--disable-ff-debug],
-    [turn off Fontforge debuggery warning])],
+    [turn off FontAnvil debuggery warning])],
     [],
     [enable_ff_debug="test    "])
 AC_ARG_ENABLE([kanji-chart],
@@ -498,8 +498,8 @@ can_build=yes
 
 AC_MSG_CHECKING([core prerequisites])
 can_core=yes
-AS_IF([test "x$FONTFORGE" = "x" || test '!' -r "$FONTFORGE"],
-  [missing_fontforge=yes
+AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
+  [missing_fontanvil=yes
    can_core=no])
 AS_IF([test "x$_cv_gnu_make_command" = "x"],
   [missing_gmake=yes
@@ -609,10 +609,10 @@ AS_IF([test "x$EXPECT" = "x"],
    can_silent_rules=no])
 AC_MSG_RESULT([$can_silent_rules])
 
-AC_MSG_CHECKING([Fontforge debuggery])
+AC_MSG_CHECKING([FontAnvil debuggery])
 can_ffdebug=yes
-AS_IF([test "x$FONTFORGE" = "x" || test '!' -r "$FONTFORGE"],
-  [missing_fontforge=yes
+AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
+  [missing_fontanvil=yes
    can_ffdebug=no])
 AS_IF([test "x$CC" = "x"],
   [missing_cc=yes
@@ -624,7 +624,7 @@ AS_IF([test "x$GDB" = "x"],
   [missing_gdb=yes
    can_ffdebug=no])
 AS_IF([test "$can_ffdebug" = "yes"],
-  [gdb_result=`echo q | $GDB -q -n -s $FONTFORGE | $GREP 'no debug'`
+  [gdb_result=`echo q | $GDB -q -n -s $FONTANVIL | $GREP 'no debug'`
    AS_IF([test "x$gdb_result" = "x"],[],
      [missing_ff_debugsymbols=yes
       can_ffdebug=no])])
@@ -650,9 +650,9 @@ AS_IF([test "x$PERL" = "x" || test "x$AUTOCONF" = "x"],[],
 AC_MSG_RESULT([$can_bshack])
 
 AC_MSG_CHECKING([whether FontForge accepts AddExtrema(1)])
-echo '#!/usr/local/bin/fontforge' > ffaetest.pe
+echo '#!/usr/local/bin/fontanvil' > ffaetest.pe
 echo 'New();AddExtrema(1);' >> ffaetest.pe
-AS_IF([$FONTFORGE ffaetest.pe >& /dev/null],
+AS_IF([$FONTANVIL ffaetest.pe >& /dev/null],
   [ae_arg_okay=yes],[ae_arg_okay=no])
 rm ffaetest.pe
 AC_SUBST([ae_arg_okay])
@@ -705,7 +705,7 @@ AS_IF([test "x$enable_jobserver" = "xno"],
      [yes])])
 TSU_TABLE_LINE([silent build rules     ],[$enable_silent_rules],
   [$enable_silent_rules],[$can_silent_rules])
-TSU_TABLE_LINE([fontforge debugging    ],[$enable_ff_debug],
+TSU_TABLE_LINE([fontanvil debugging    ],[$enable_ff_debug],
   [no],[$can_ffdebug])
 TSU_TABLE_LINE([build-system hacking   ],[$enable_build_hacking],
   [no],[$can_bshack])
@@ -726,8 +726,8 @@ TSU_COLOURISE([$enable_parasites],[6])AS_ECHO([])
 AS_IF([test "$can_core" = "no"],
   [AS_ECHO([])
    AS_ECHO(["One or more prerequisites for the Tsukurimashou core are missing:"])
-   AS_IF([test "$missing_fontforge" = "yes"],
-     [AS_ECHO(["   Fontforge             http://fontforge.sourceforge.net/"])])
+   AS_IF([test "$missing_fontanvil" = "yes"],
+     [AS_ECHO(["   FontAnvil             http://fontforge.sourceforge.net/"])])
    AS_IF([test "$missing_gmake" = "yes"],
      [AS_ECHO(["   GNU Make >=3.82       http://www.gnu.org/software/make/"])])
    AS_IF([test "$missing_mpost" = "yes"],
@@ -844,9 +844,9 @@ AS_IF([test '!' "x$enable_silent_rules" = "xno" \
 
 AS_IF([test '!' "x$enable_ff_debug" = "xno" && test "$can_ffdebug" = "no"],
   [AS_ECHO([])
-   AS_ECHO(["One or more prerequisites for debugging Fontforge are missing:"])
-   AS_IF([test "$missing_fontforge" = "yes"],
-     [AS_ECHO(["   Fontforge itself!"])])
+   AS_ECHO(["One or more prerequisites for debugging FontAnvil are missing:"])
+   AS_IF([test "$missing_fontanvil" = "yes"],
+     [AS_ECHO(["   FontAnvil itself!"])])
    AS_IF([test "$missing_cc" = "yes"],
      [AS_ECHO(["   a C compiler of some description"])])
    AS_IF([test "$missing_grep" = "yes"],
@@ -854,8 +854,8 @@ AS_IF([test '!' "x$enable_ff_debug" = "xno" && test "$can_ffdebug" = "no"],
    AS_IF([test "$missing_gdb" = "yes"],
      [AS_ECHO(["   gdb                   http://www.gnu.org/software/gdb/"])])
    AS_IF([test "$missing_ff_debugsymbols" = "yes"],
-     [AS_ECHO(["   Fontforge was compiled without debug symbols"])])
-   AS_ECHO(["When Fontforge inevitably breaks, you'll be sorry.  Use --disable-ff-debug"])
+     [AS_ECHO(["   FontAnvil was compiled without debug symbols"])])
+   AS_ECHO(["When FontAnvil inevitably breaks, you'll be sorry.  Use --disable-ff-debug"])
    AS_ECHO(["to turn off this message without solving the problem."])
    ])
 

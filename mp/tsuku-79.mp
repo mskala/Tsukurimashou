@@ -33,6 +33,7 @@
 beginfont
 
 % AUTODEPS
+input bkencl.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
@@ -362,11 +363,13 @@ begintsuglyph("uni79D6",214);
   tsu_render;
 endtsuglyph;
 
-% 【秗】⿰<禾>⿱丿木<夭>⿱丿<大>⿻一人
 % extra
-% begintsuglyph("uni79D7",215);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79D7",215);
+  build_kanji.lr(460,40)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(shifted (0,-30))(kanji.rare.early_death));
+  tsu_render;
+endtsuglyph;
 
 % 【秘】⿰<禾>⿱丿木<必>⿻心丿
 % grade six "secret"
@@ -374,41 +377,53 @@ endtsuglyph;
 %   tsu_render;
 % endtsuglyph;
 
-% 【秙】⿰<禾>⿱丿木<古>⿱十口
 % extra
-% begintsuglyph("uni79D9",217);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79D9",217);
+  build_kanji.lr(460,40)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grtwo.old);
+  tsu_render;
+endtsuglyph;
 
-% 【秚】⿰<禾>⿱丿木<半>⿱丷<CDP-8BF1>⿻<二>⿱一一丨
 % extra
-% begintsuglyph("uni79DA",218);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79DA",218);
+  build_kanji.lr(460,60)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grtwo.half);
+  tsu_render;
+endtsuglyph;
 
-% 【秛】⿰<禾>⿱丿木皮
 % extra
-% begintsuglyph("uni79DB",219);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79DB",219);
+  build_kanji.lr(400,20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grthree.pelt);
+  tsu_render;
+endtsuglyph;
 
-% 【秜】⿰<禾>⿱丿木<尼>⿸尸<匕>⿺乚丿
 % extra
-% begintsuglyph("uni79DC",220);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79DC",220);
+  build_kanji.lr(440,40)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(yscaled 1.05)(kanji.greight.nun));
+  tsu_render;
+endtsuglyph;
 
-% 【秝】⿰<禾>⿱丿木<禾>⿱丿木
 % extra
-% begintsuglyph("uni79DD",221);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79DD",221);
+  build_kanji.lr(480,20-20*mincho)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grnine.two_branch_tree);
+  tsu_render;
+endtsuglyph;
 
-% 【秞】⿰<禾>⿱丿木由
 % extra
-% begintsuglyph("uni79DE",222);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79DE",222);
+  build_kanji.lr(460,60)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grthree.reason);
+  tsu_render;
+endtsuglyph;
 
 % 【租】⿰<禾>⿱丿木且
 % grade eight "crop tax"
@@ -416,23 +431,29 @@ endtsuglyph;
 %   tsu_render;
 % endtsuglyph;
 
-% 【秠】⿰<禾>⿱丿木<丕>⿱<不>⿱一<CDP-8665>;一
 % extra
-% begintsuglyph("uni79E0",224);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79E0",224);
+  build_kanji.lr(460,30)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rare.glorious);
+  tsu_render;
+endtsuglyph;
 
-% 【秢】⿰<禾>⿱丿木<令>⿱<CDP-8AFC>⿵𠆢一<CDP-8A60>⿱𠃌丨
 % extra
-% begintsuglyph("uni79E2",226);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79E2",226);
+  build_kanji.lr(460,80)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfour.orders);
+  tsu_render;
+endtsuglyph;
 
-% 【秣】⿰<禾>⿱丿木末
 % extra
-% begintsuglyph("uni79E3",227);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79E3",227);
+  build_kanji.lr(520,40)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfour.tip);
+  tsu_render;
+endtsuglyph;
 
 % 【秤】⿰<禾>⿱丿木<平>⿻干丷
 % grade nine "balances/steelyard"

@@ -247,7 +247,8 @@ pfbtmp/$(1).pfb: pfbtmp/.dirstamp subfont.mp \
 
 pfb/$(1).pfb: pfbtmp/$(1).pfb pfb/.dirstamp pe/rmo.pe
 	$$(AM_V_at)$$(TSU_V_RMO) \
-	$$(FONTFORGE) $$(mvp)/pe/rmo.pe pfbtmp/$(1).pfb pfb/$(1).pfb \
+	$$(FONTANVIL) -lang=ff -script \
+	  $$(mvp)/pe/rmo.pe pfbtmp/$(1).pfb pfb/$(1).pfb \
 	  $$(TSU_V_REDIR)
 endef
 
@@ -269,7 +270,8 @@ merged/$(1).sfd: pe/merge.pe merged/.dirstamp \
   pfb/$(1).4.pfb pfb/$(1).5.pfb pfb/$(1).6.pfb pfb/$(1).7.pfb \
   pfb/$(1).8.pfb pfb/$(1).9.pfb
 	$(AM_V_at)$$(TSU_V_SFD) \
-	  $(FONTFORGE) $(mvp)/pe/merge.pe $(1) @ae_arg_okay@ \
+	  $(FONTANVIL) -lang=ff -script \
+	    $(mvp)/pe/merge.pe $(1) @ae_arg_okay@ \
 	  $(TSU_V_REDIR)
 endef
 
@@ -282,52 +284,52 @@ $(eval $(call MERGED_RECIPE,$(ten)$(uni)))))
 define OTF_RECIPES
 otf/Beikaitoru$(1)0$(2).otf: otf/.dirstamp merged/$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe $(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe $(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)1$(2).otf: otf/.dirstamp merged/1$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe 1$(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 1$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)2$(2).otf: otf/.dirstamp merged/2$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe 2$(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 2$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)3$(2).otf: otf/.dirstamp merged/3$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe 3$(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 3$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)4$(2).otf: otf/.dirstamp merged/4$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)00.pe 4$(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 4$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)5$(2).otf: otf/.dirstamp merged/$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe $(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe $(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)6$(2).otf: otf/.dirstamp merged/1$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe 1$(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 1$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)7$(2).otf: otf/.dirstamp merged/2$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe 2$(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 2$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)8$(2).otf: otf/.dirstamp merged/3$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe 3$(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 3$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)9$(2).otf: otf/.dirstamp merged/4$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTFORGE) $(mvp)/pe/otf-$(1)50.pe 4$(2) \
+	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 4$(2) \
 	  $(TSU_V_REDIR)
 
 endef
@@ -350,7 +352,7 @@ beikaitoru.pdf: beikaitoru.tex \
 # TESTING
 
 TESTS = $(dist_otf_DATA) $(dist_ttf_DATA) $(dist_type1_DATA)
-LOG_COMPILER = $(FONTFORGE) pe/fontlint.pe
+LOG_COMPILER = $(FONTANVIL) -lang=ff -script pe/fontlint.pe
 
 ############################################################################
 

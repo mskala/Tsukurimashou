@@ -557,7 +557,7 @@ void write_pe(char *fname,char *feaname) {
      exit(9);
    
    fprintf(pe,
-	   "#!/usr/local/bin/fontforge\n\n"
+	   "#!/usr/local/bin/fontanvil\n\n"
 	   "# GENERATED FILE - DO NOT EDIT\n"
 	   "# Edit the kerner program that generates this, "
 	   "or its input, instead.\n\n"

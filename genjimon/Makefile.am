@@ -220,27 +220,33 @@ genjimon-routline.pfb: genjimon-routline.mp
 
 GenjimonMedium.ttf: genjimon-medium.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) $(mvp)/makettf.pe medium Medium $(TSU_V_REDIR)
+	$(FONTANVIL) -lang=ff -script \
+	  $(mvp)/makettf.pe medium Medium $(TSU_V_REDIR)
 
 GenjimonReverse.ttf: genjimon-reverse.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) $(mvp)/makettf.pe reverse Reverse $(TSU_V_REDIR)
+	$(FONTANVIL) -lang=ff -script \
+	  $(mvp)/makettf.pe reverse Reverse $(TSU_V_REDIR)
 
 GenjimonWhite.ttf: genjimon-white.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) $(mvp)/makettf.pe white White $(TSU_V_REDIR)
+	$(FONTANVIL) -lang=ff -script \
+	  $(mvp)/makettf.pe white White $(TSU_V_REDIR)
 
 GenjimonBlack.ttf: genjimon-black.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) $(mvp)/makettf.pe black Black $(TSU_V_REDIR)
+	$(FONTANVIL) -lang=ff -script \
+	  $(mvp)/makettf.pe black Black $(TSU_V_REDIR)
 
 GenjimonRound.ttf: genjimon-round.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) $(mvp)/makettf.pe round Round $(TSU_V_REDIR)
+	$(FONTANVIL) -lang=ff -script \
+	  $(mvp)/makettf.pe round Round $(TSU_V_REDIR)
 
 GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTFORGE) $(mvp)/makettf.pe routline RoundOutline $(TSU_V_REDIR)
+	$(FONTANVIL) -lang=ff -script \
+	  $(mvp)/makettf.pe routline RoundOutline $(TSU_V_REDIR)
 
 ############################################################################
 
@@ -257,7 +263,7 @@ genjimon.pdf: genjimon.tex \
 
 TESTS = $(dist_ttf_DATA)
 TEST_EXTENSIONS = .ttf
-TTF_LOG_COMPILER = $(FONTFORGE) fontlint.pe
+TTF_LOG_COMPILER = $(FONTANVIL) -lang=ff -script fontlint.pe
 
 ############################################################################
 
