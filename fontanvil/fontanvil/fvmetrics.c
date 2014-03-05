@@ -27,6 +27,8 @@
 #include "fontanvilvw.h"
 #include <math.h>
 #include <ustring.h>
+#include "baseviews.h"
+#include "views.h"
 #include "fvmetrics.h"
 
 static void DoChar(SplineChar *sc,CreateWidthData *wd, FontViewBase *fv,

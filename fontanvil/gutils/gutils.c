@@ -26,7 +26,6 @@
  */
 
 #include "basics.h"
-#include "gutils.h"
 
 #include <stdio.h>
 #include <math.h>

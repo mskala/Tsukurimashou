@@ -127,10 +127,10 @@ dist_man_MANS = \
 noinst_HEADERS = \
   inc/basics.h inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
   inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
-  inc/gimage.h inc/gio.h inc/gprogress.h \
+  inc/gimage.h inc/gio.h \
   inc/gresource.h inc/gwidget.h inc/gwwiconv.h inc/intl.h inc/ustring.h \
-  inc/utype.h inc/dlist.h inc/gnetwork.h inc/gutils.h \
-  fontanvil/fontanvilui.h fontanvil/sftextfieldP.h \
+  inc/utype.h inc/dlist.h inc/gnetwork.h \
+  fontanvil/sftextfieldP.h \
   fontanvil/configure-fontanvil.h fontanvil/views.h fontanvil/is_LIGATURE.h \
   fontanvil/flaglist.h fontanvil/strlist.h fontanvil/charview_private.h \
   fontanvil/autowidth2.h fontanvil/configure-fontanvil.h fontanvil/fontanvil.h \
@@ -153,7 +153,7 @@ noinst_LIBRARIES = \
   gutils/libgutils.a
 
 fontanvil_fontanvil_SOURCES = \
- fontanvil/main.c fontanvil/startnoui.c fontanvil/activeinui.c \
+ fontanvil/main.c fontanvil/startnoui.c \
  fontanvil/asmfpst.c fontanvil/autohint.c fontanvil/autosave.c \
  fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
  fontanvil/bezctx_ff.c fontanvil/bitmapchar.c fontanvil/bitmapcontrol.c \
@@ -207,7 +207,7 @@ Unicode_libgunicode_a_SOURCES = \
   Unicode/utype.c Unicode/gwwiconv.c Unicode/combiners.h
 
 gutils_libgutils_a_SOURCES = \
-  gutils/divisors.c gutils/dlist.c gutils/fsys.c gutils/gcol.c gutils/gimage.c \
+  gutils/dlist.c gutils/fsys.c gutils/gcol.c gutils/gimage.c \
   gutils/gimagebmpP.h gutils/gimageread.c gutils/gimagereadbmp.c gutils/gimagereadgif.c \
   gutils/gimagereadjpeg.c gutils/gimagereadpng.c gutils/gimagereadras.c \
   gutils/gimagereadrgb.c gutils/gimagereadtiff.c gutils/gimagereadxbm.c \
@@ -215,21 +215,20 @@ gutils_libgutils_a_SOURCES = \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
   gutils/gimagewritexpm.c gutils/gio.c gutils/giofile.c gutils/giohosts.c gutils/giomime.c \
   gutils/giothread.c gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gnetwork.c gutils/gutils.c \
-  gutils/gwwintl.c gutils/prefs.c gutils/prefs.h gutils/unicodelibinfo.c gutils/unicodelibinfo.h \
+  gutils/gwwintl.c gutils/prefs.c gutils/prefs.h gutils/unicodelibinfo.c inc/unicodelibinfo.h \
   gutils/gioftp.c gutils/gioftpP.h
 gutils_libgutils_a_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   $(GLIB_CFLAGS)
 gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a
 gutils_libgutils_a_LDFLAGS = $(GLIB_LIBS)
 
-doc_DATA = doc/fontanvil.pdf
+dist_doc_DATA = doc/fontanvil.pdf
 
-EXTRA_DIST = COPYING.gplv3 LICENSE \
+EXTRA_DIST = COPYING README \
   Unicode/README.TXT \
-  doc/README-Mac.html doc/README-MS.html doc/README-unix \
-  doc/README-Unix.html \
+  doc/fontanvil.tex doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
   fontanvil/fontimage.pe fontanvil/fontlint.pe fontanvil/sfddiff.pe \
-  (FONTANVILSHARE_FILES) $(HOTKEY_FILES) share/default-n
+  $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) share/default-n
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-theme-2012 --enable-debug
 

@@ -29,6 +29,8 @@
 #include <chardata.h>
 #include <utype.h>
 #include <ustring.h>
+#include "baseviews.h"
+#include "views.h"
 
 /* ************************************************************************** */
 /* *************** Routines to test conversion from OpenType **************** */

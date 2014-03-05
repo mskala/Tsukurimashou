@@ -29,7 +29,6 @@
 
 #include <stdarg.h>
 #include "gdraw.h"
-#include "gprogress.h"
 #include "ggadget.h"
 
 struct ggadget;

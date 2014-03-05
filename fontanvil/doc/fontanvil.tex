@@ -26,7 +26,7 @@
 
 \phantomsection\belowpdfbookmark{Title Page}{bkm:title}
 
-{\Huge FontAnvil 0.1.0}
+{\Huge FontAnvil 0.1}
 
 \vspace*{1.5in}
 
@@ -46,7 +46,8 @@
 
 \begin{minipage}{\linewidth}
 \noindent
-Visit the FontAnvil home page\ldots\ at such time as there is one!
+Visit the FontAnvil home page at
+\url{http://tsukurimashou.sourceforge.jp/fontanvil.php}
 
 \vspace*{1in}
 
@@ -234,10 +235,21 @@ Building from a version control checkout also requires recent Autotools.
 
 \section{From a version control checkout}
 
+FontAnvil is available by anonymous Subversion checkout from
+\url{http://svn.sourceforge.jp/svnroot/tsukurimashou/trunk/fontanvil/}. 
+That is the main public repository for FontAnvil source code, and checking
+out from there is (at least for the moment, while the code is in flux) the
+preferred way to obtain FontAnvil.  The Tsukurimashou repository as a whole
+is also mirrored on Github at
+\url{https://github.com/mskala/Tsukurimashou.git}, but Git unfortunately
+does not offer any easy way to clone only the FontAnvil portion of the
+repository.
+
 The version control system does not track files that would be included in a
 distribution tarball but can be built automatically from source files
 already under version control, and ``configure'' is one such, so it is
-necessary to create it first:
+necessary to create it before building.  This will require having recent GNU
+Autotools on your system.
 
 \begin{verbatim}
 autoreconf
@@ -266,6 +278,22 @@ not found.
 
 The build system should automatically detect and use multiple cores on a
 computer that has them.
+
+\section{From a distribution package}
+
+Distribution packages are available from the FontAnvil home page at
+\url{http://tsukurimashou.sourceforge.jp/fontanvil.php}.
+
+Building from one is much the same as building from a version control
+checkout, minus the need to build \texttt{configure}.  Unpack the tarball
+file and do the usual Autotools build:
+
+\begin{verbatim}
+./configure
+make
+# as root:
+make install
+\end{verbatim}
 
 \section{FontAnvil and Tsukurimashou}
 
@@ -297,12 +325,6 @@ As a courtesy to Github users, Tsukurimashou's entire source control system
 authoritative public home of the project.  You are welcome to clone the
 repository---that is why it's there---but the semi-automated gateway from
 Subversion to Git is one-way.  Do not file tickets for FontAnvil on Github.
-
-\section{From a distribution package}
-
-Source code distribution packages do not currently exist, and a little more
-work on the Autotools config will be needed before we can build them, but it
-is planned that this should happen soon.
 
 \clearpage
 

@@ -1,0 +1,22 @@
+Filename: fontanvil
+Title: FontAnvil
+Title[ja]: ＦｏｎｔＡｎｖｉｌ
+Subtitle: Font-editing script interpreter from the Tsukurimashou Project
+Subtitle[ja]: 『作りましょうプロジェクト』からフォントのエディットする言語
+Main-Text.
+<P>FontAnvil is a script language interpreter for manipulating fonts. 
+FontAnvil is substantially compatible with the <A
+HREF="http://fontforge.github.io/en-US/">PfaEdit/FontForge</A> native
+scripting language, but FontAnvil is intended for non-interactive use; for
+instance, invocation from the build systems of font packages like
+Tsukurimashou.  To better serve font package build systems in general and
+Tsukurimashou in particular, FontAnvil has no GUI and, to a reasonable
+extent, avoids dependencies on external packages.</P>
+
+<P>Read the <A HREF="fontanvil.pdf">FontAnvil user's manual</A> (PDF).</P>
+.
+Main-Text[ja].
+<P>ごめんなさい。このページは、とりあえず日本語の翻訳がありません。</P>
+
+<P><A HREF="fontanvil.pdf">ＦｏｎｔＡｎｖｉｌのユーザーマニュアル</A>（英語のＰＤＦ）</P>
+.
