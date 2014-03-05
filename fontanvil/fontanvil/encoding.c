@@ -33,11 +33,11 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <gfile.h>
-#include "plugins.h"
 #include "encoding.h"
 #include "ffglib.h"
 #include <glib/gprintf.h>
 
+typedef int (*EncFunc)(int);
 Encoding *default_encoding = NULL;
 
 static int32 tex_base_encoding[] = {

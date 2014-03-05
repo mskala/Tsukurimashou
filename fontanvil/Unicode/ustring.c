@@ -483,9 +483,9 @@ return(NULL);
 }
 
 char *u_to_c(const unichar_t *ubuf) {
+    static char buf[400];
     if( !ubuf )
 	return 0;
-    static char buf[400];
     cu_strncpy(buf,ubuf,sizeof(buf));
 return( buf );
 }

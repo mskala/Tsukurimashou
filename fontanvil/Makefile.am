@@ -126,11 +126,10 @@ dist_man_MANS = \
 
 noinst_HEADERS = \
   inc/basics.h inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
-  inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h inc/gicons.h \
-  inc/gimage.h inc/gio.h inc/gprogress.h inc/gresedit.h \
+  inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
+  inc/gimage.h inc/gio.h inc/gprogress.h \
   inc/gresource.h inc/gwidget.h inc/gwwiconv.h inc/intl.h inc/ustring.h \
-  inc/utype.h inc/dlist.h inc/carbon.h inc/gnetwork.h inc/gutils.h \
-  inc/pluginloading.h \
+  inc/utype.h inc/dlist.h inc/gnetwork.h inc/gutils.h \
   fontanvil/fontanvilui.h fontanvil/sftextfieldP.h \
   fontanvil/configure-fontanvil.h fontanvil/views.h fontanvil/is_LIGATURE.h \
   fontanvil/flaglist.h fontanvil/strlist.h fontanvil/charview_private.h \
@@ -158,8 +157,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/asmfpst.c fontanvil/autohint.c fontanvil/autosave.c \
  fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
  fontanvil/bezctx_ff.c fontanvil/bitmapchar.c fontanvil/bitmapcontrol.c \
- fontanvil/bvedit.c fontanvil/collabclient.c fontanvil/collabclient.h \
- fontanvil/collabclientpriv.h fontanvil/clipnoui.c fontanvil/crctab.c \
+ fontanvil/bvedit.c fontanvil/clipnoui.c fontanvil/crctab.c \
  fontanvil/cvexport.c fontanvil/cvimages.c fontanvil/cvundoes.c \
  fontanvil/dumpbdf.c fontanvil/dumppfa.c fontanvil/effects.c \
  fontanvil/encoding.c fontanvil/featurefile.c fontanvil/flaglist.c \

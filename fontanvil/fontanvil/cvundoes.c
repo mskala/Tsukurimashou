@@ -36,7 +36,7 @@
 #else
     #include <execinfo.h>
 #endif
-#include "collabclient.h"
+/* #include "collabclient.h" */
 
 extern char *coord_sep;
 
@@ -591,7 +591,7 @@ static Undoes *CVAddUndo(CharViewBase *cv,Undoes *undo) {
 
     /* Let collab system know that a new undo state */
     /* was pushed now since it last sent a message. */
-    collabclient_CVPreserveStateCalled( cv );
+/*    collabclient_CVPreserveStateCalled( cv ); */
     return( ret );
 }
 
@@ -733,7 +733,7 @@ Undoes *SCPreserveState(SplineChar *sc,int dohints) {
 	    SCPreserveLayer(sc,i,false);
 
     Undoes* ret = SCPreserveLayer( sc, ly_fore, dohints );
-    collabclient_SCPreserveStateCalled( sc );
+/*     collabclient_SCPreserveStateCalled( sc ); */
     return( ret );
 }
 
@@ -846,7 +846,7 @@ return(NULL);
 
     /* Let collab system know that a new undo state */
     /* was pushed now since it last sent a message. */
-    collabclient_SCPreserveStateCalled( sc );
+/*     collabclient_SCPreserveStateCalled( sc ); */
     return(ret);
 }
 
@@ -1006,9 +1006,9 @@ void CVDoUndo(CharViewBase *cv) {
     undo->next = cv->layerheads[cv->drawmode]->redoes;
     cv->layerheads[cv->drawmode]->redoes = undo;
 
-    if ( !collabclient_generatingUndoForWire(cv) ) {
+/*    if ( !collabclient_generatingUndoForWire(cv) ) {
 	_CVCharChangedUpdate(cv,undo->was_modified);
-    }
+    } */
 }
 
 void CVDoRedo(CharViewBase *cv) {

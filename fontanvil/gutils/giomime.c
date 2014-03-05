@@ -68,41 +68,6 @@ unichar_t fontsnf[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-',
 //unichar_t fontwoff[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','f','o','n','t','-','w','o','f','f', '\0' };
 //unichar_t fonttexfm[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','t','e','x','-','t','f','m', '\0' }; /* *.tfm */
 
-#ifdef __Mac
-#include <carbon.h>
-#define CHR(ch1,ch2,ch3,ch4) (((ch1)<<24)|((ch2)<<16)|((ch3)<<8)|(ch4))
-
-static unichar_t *_GioMacMime(const char *path) {
-    /* If we're on a mac, we can try to see if we've got a real resource fork */
-    FSRef ref;
-    FSCatalogInfo info;
-
-    if ( FSPathMakeRef( (uint8 *) path,&ref,NULL)!=noErr )
-return( NULL );
-    if ( FSGetCatalogInfo(&ref,kFSCatInfoFinderInfo,&info,NULL,NULL,NULL)!=noErr )
-return( NULL );
-    if ( ((FInfo *) (info.finderInfo))->fdType==CHR('F','F','I','L') )
-return( fontmacsuit );
-    if ( ((FInfo *) (info.finderInfo))->fdType==CHR('G','I','F','f') )
-return( imagegif );
-    if ( ((FInfo *) (info.finderInfo))->fdType==CHR('P','N','G',' ') )
-return( imagepng );
-/*
-    if ( ((FInfo *) (info.finderInfo))->fdType==CHR('B','M','P',' ') )
-return( imagebmp );
-*/
-    if ( ((FInfo *) (info.finderInfo))->fdType==CHR('J','P','E','G') )
-return( imagejpeg );
-/*
-    if ( ((FInfo *) (info.finderInfo))->fdType==CHR('T','I','F','F') )
-return( imagetiff );
-*/
-    if ( ((FInfo *) (info.finderInfo))->fdType==CHR('T','E','X','T') )
-return( textplain );
-
-return( NULL );
-}
-#endif
 
 /*
  * Unused

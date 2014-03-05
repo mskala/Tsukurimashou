@@ -32,7 +32,6 @@
 #include <time.h>
 #include "ustring.h"
 #include "gio.h"
-#include "gicons.h"
 #include "print.h"	/* For pdf output routines */
 #include <utype.h>
 
