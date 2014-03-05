@@ -1,0 +1,37 @@
+FontAnvil has a typical non-recursive Autotools build system.
+More detailed instructions are in the PDF documentation in the doc/
+subdirectory; quick start instructions below, but the procedure
+should already be familiar to almost anyone who has a reason to
+use this software.
+
+IF YOU ARE COMPILING FROM A VERSION CONTROL CHECKOUT:
+
+autoreconf
+automake --add-missing
+autoreconf
+./configure
+make
+# as root, or at least enough privilege to write to where you're installing:
+make install
+
+IF YOU ARE COMPILING FROM AN UNPACKED TARBALL DISTRIBUTION:
+
+./configure
+make
+# as root:
+make install
+
+OTHER NOTES:
+
+Use "./configure --help" for additional options controlling things like
+installation directories that you can add to configure.  Be aware that
+configure currently does not always properly detect or handle dependencies,
+because a previous build system was summarily replaced in the recent past. 
+On the other hand, some of the dependencies it's looking for are probably
+not actually needed anyway.  The autoreconf/automake/autoreconf shuffle is
+necessary for version control checkouts, at least on my system, because
+autoreconf and automake each require files created by the other.  The first
+autoreconf pushes things far enough before failing for automake to run
+correctly, after which autoreconf (again) can finish creating configure. 
+All these commands are likely to spew error and warning messages, a fact
+which I hope to reduce in the future.

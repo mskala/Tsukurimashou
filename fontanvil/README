@@ -1,0 +1,24 @@
+Most documentation is in the fontanvil.pdf file in the doc/ subdirectory. 
+From that file:
+
+FontAnvil is a script language interpreter for manipulating fonts. 
+FontAnvil is substantially compatible with the PfaEdit/FontForge native
+scripting language, but FontAnvil is intended for non-interactive use; for
+instance, invocation from the build systems of font packages like
+Tsukurimashou.  To better serve font package build systems in general and
+Tsukurimashou in particular, FontAnvil has no GUI and, to a reasonable
+extent, avoids dependencies on external packages.
+
+Flat text documents at the top level:
+   AUTHORS   list of contributors inherited from FontForge
+   COPYING   GNU GPL3 license applicable to the package as a whole, but
+             read the important notices in fontanvil.pdf
+   INSTALL   basic installation quick start instructions
+   README    this file
+
+FontAnvil is distributed by the Tsukurimashou Project at
+   http://tsukurimashou.sourceforge.jp/
+
+Matthew Skala
+mskala@ansuz.sooke.bc.ca
+http://ansuz.sooke.bc.ca/

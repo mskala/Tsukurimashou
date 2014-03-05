@@ -1,0 +1,33 @@
+This is a minimal testsuite for fontanvil. I expect it will grow with time.
+
+You can execute the tests with 'make check' on top level directory or in
+this testsuite directory.
+
+Some tests will need extra fonts not bundled with FontForge. You would like
+to download them externally and place them inside fonts/ folder in order to
+enable the extra tests; otherwise they will be skipped.
+
+test001.pe
+  Zapfino-4.0d3.dfont
+  Zapfino-4.1d6.dfont
+
+test002.pe
+  HanSans-Bold.otf	(any other cid-keyed otf file would do)
+
+test003.pe
+  MunhwaGothic-Bold	ftp://ftp.ora.com/pub/examples/nutshell/ujip/adobe/samples/MunhwaGothic-Bold
+			(any other cid-keyed non-otf file would do)
+test004.pe
+  mingliu.ttc		(any other ttc file would do)
+
+test005.pe
+  VKern.sfd
+
+...
+
+================================================================================
+
+This directory also includes the file randomtest.c . This program takes a
+directory of good fonts, makes copies of them, introduces random errors into
+those copies, and runs fontanvil on the result. If ff crashes it saves the
+test, otherwise it deletes it. Then it tries another test.

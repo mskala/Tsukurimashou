@@ -13,7 +13,11 @@ regular expression syntax; the structural data itself is represented in an
 extended version of Unicode Ideographic Description Sequences.  The
 package includes, or can generate, dictionary data from Tsukurimashou,
 KanjiVG, CHISE, and EDICT2.</P>
+
+<P>Read the <A HREF="idsgrep.pdf">IDSgrep user's manual</A> (PDF).</P>
 .
 Main-Text[ja].
 <P>ＩＤＳｇｒｅｐは漢字のデータベースの中で検索のツールです。漢字の立体構造の検索ができます。たとえば、ユーザは「右側に『月』がある」と言えば、成果が「『明』と『朝』と『期』」です。</P>
+
+<P><A HREF="idsgrep.pdf">ＩＤＳｇｒｅｐのユーザーマニュアル</A>（英語のＰＤＦ）</P>
 .

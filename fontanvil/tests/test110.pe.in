@@ -1,0 +1,7 @@
+#!@abs_top_builddir@/fontanvilexe/fontanvil
+#Needs: fonts/SimplifyBugs.sfd
+#Make sure simplify works...
+
+Open("@abs_srcdir@/fonts/SimplifyBugs.sfd")
+SelectAll();
+Simplify(28,1);

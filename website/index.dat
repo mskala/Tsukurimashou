@@ -9,7 +9,8 @@ v3 with embedding exception.  At present, we have full coverage of hiragana,
 katakana, hangul, and Latin.  There is also partial coverage of grade-school
 kanji.</P>
 
-<p>Documentation is primarily in English.</p>
+<p>Documentation is primarily in English.
+Read the <A HREF="tsukurimashou.pdf">user's manual</A> (PDF).</P>
 
 <P>The Tsukurimashou Project also includes several sub-projects; see their
 individual pages for more information.</P>
@@ -27,7 +28,8 @@ Main-Text[ja].
 
 <p>『作りましょう』は、Ｍｅｔａｆｏｎｔで作った日本語と英語と韓国語のパラメタほうしきフォントファミリです。カバレッジはぜんぶのひらがなとカタカナとハングルとＬａｔｉｎです。第３年の教育漢字も半の第４年の教育漢字も含まれます。予定は、ぜんぶの常用漢字です。スタイルは明朝とゴシックと外です。</p>
 
-<p>とりあえず文書化は英語で書いてあります。</p>
+<p>とりあえず文書化は英語で書いてあります。
+<a HREF="tsukurimashou.pdf">ユーザーマニュアル</a>（英語のＰＤＦ）</p>
 
 <P>その上、プロジェクトの中では色々な副プロジェクトがあります。リンクを読んでください：</P>
 <UL>

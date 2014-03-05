@@ -14,9 +14,13 @@ enhanced TrueType, PostScript, and OpenType versions included in this
 package.  They are available for free use, including in commercial
 applications; my own contributions are public domain, and others have
 licensed their copyright claims.</P>
+
+<P>Read the <A HREF="ocr.pdf">OCR documentation</A> (PDF).</P>
 .
 Main-Text[ja].
 <P>ＯＣＲ−ＡはＩＳＢＮの数字のフォントです。ＯＣＲ−Ｂは、ＵＰＣ／ＥＡＮバーコードの人間みたい数字のフォントです。</P
 
 <P>状態：修めた。第２版。ＯＣＲ−Ａは版権でもフリーウェア。ＯＣＲ−Ｂはフリーウェア。ＯＴＦとＴＴＦとＰｏｓｔＳｃｒｉｐｔとＭｅｔａＴｙｐｅ１（ソースコード）．ＯＣＲ−ＡはTor Lillqvistは作りました。１９８９年にRichard B. Walesは更新しました。ＯＣＲ−Ｂは１９８６〜２０１０年にNorbert Schwarzは作りました。ＯＣＲ−ＡとＯＣＲ−Ｂは、２０１１年に私がＭｅｔａＴｙｐｅ１に訳しました。</P>
+
+<P><A HREF="ocr.pdf">ＯＣＲのユーザーマニュアル</A>（英語のＰＤＦ）</P>
 .

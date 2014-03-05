@@ -1,0 +1,127 @@
+The list of contributors from FontForge preserved here as a reminder of our
+heritage, but be aware that because FontAnvil is based on only a fraction of
+the large FontForge code base, many of the contributions from people listed
+below are in fact no longer present in FontAnvil.
+
+George Williams
+10 years and approximately 600,000 lines of code.
+
+Abel Cheung
+Aktado <aktado@users.sourceforge.jp>
+Alex Raftis
+Anand
+Arthaey Angosii
+Alexey Kryukov - nowakowskittfinstr.c
+Alexandre Prokoudine
+Barry Schwartz
+Baruch Even - (debian upstream) baruch
+Bastien Dejean
+Behnam Esfahbod
+Ben Martin - hotkeys.c, hotkeys.h
+Claudio Beccari
+Craig Lennox
+Dave Crossland (dave@lab6.com)
+Deron Meranda
+Dave Levine
+Dong Yang
+Eddie Yuen
+Edward Lee
+Frank Trampe
+Georg Duffner
+Giuseppe Bilotta
+Giuseppe Ghibo
+Greg Ford
+Grzegorz
+Harald Harders
+Horváth Balázs
+J. Jansen - gv - ANALYZE_MAP.COM
+Jacob Jansen
+James Cloos
+James Crippen
+Jason Pagura
+Jeremy Tan
+Jim Killock
+Johannes Plass - gv = ANALYZE_MAP.COM
+Jon Banquer
+Jonathan Hanna
+Jonathan Hue
+Jose Da Silva
+Joshua Richardson
+Jouk Jansen
+Juergen Buntrock
+Just Fill Bugs <mozbugbox>
+KANOU Hiroki
+Kauzuyuki
+Kemie Guaida - Tango PixMaps
+Kevin Fenzi
+Khaled Hosny
+Lasse Fister
+Lu Wang <coolwanglu@gmail.com>
+Mark Oteiza
+Martin Hosken
+Mathias Wollin
+Matthew Petroff
+Matthew Skala
+Max Rabkin - excepthook.py
+Maxim Iorsh
+Michal Mazurek
+Michal Nowakowski - nowakowskittfinstr.c
+Phil Krylov
+Phil Lindsay
+Primoz PETERLIN
+Qmpel
+R.L. Horn
+Richard Hughes
+Rogier van Dalen
+R.P.C. Rodgers - standard man macros
+Rajeesh K Nambiar
+Reuben Thomas
+Ryusei Yamaguchi
+Scott Pakin - Packaging
+serval2412
+Silvan Toledo
+Steve White - ASMO 708 codepage, & more
+TANIGAWA Takashi
+Timothy O. Theisen - gv = ANALYZE_MAP.COM
+Tom Harvey - fontforge.1
+Tom Lechner
+Uli Schlachter
+Ulrich Klauer
+Vadim Belman
+Valek Filippov
+Vernon Adams
+Ville Skytta
+Werner Lemberg
+yannis
+Yuri Chornoivan
+Yi Yang (ahyangyi)
+
+...more coders to add here later since this is a long list!
+...however, got a small start with Translators....2012sep27
+
+Language Translations provided by:
+Rafael Ferran i Peralta - ca - Catalan
+Philipp Poll - de - Deutsch
+Apostolos Syropoulos - el - Greek
+George Williams - en_GB
+Walter Echarri, es - Spanish
+Pierre Hanser, fr - French
+Yannis Haralambous - French
+Claudio Beccari, it - Italian
+KANOU Hiroki, ja - Japanese
+TANIGAWA Takashi, ja - Japanese
+OKANO Takayoshi, ja - Japanese
+Hiran - ml - Malayalam
+Michal Nowakowski - po - Polish
+Jose Da Silva - pt - Portuguese
+Alexandre Prokoudine - ru - Russian
+Valek Filippov - ru - Russian
+Yuri Chornoivan - uk - Ukrainian
+Clytie Siddall - vi - Vietnamese
+Lee Chenhwa - zh_CN - Chinese
+Wei-Lun Chao - zh_TW - Traditional Chinese
+
+Effort was made to make this list, however it is likely
+contributors will have been missed. If you helped build
+FontForge, please indicate what and when to the mailing
+list at <fontforge-devel@lists.sourceforge.net>
