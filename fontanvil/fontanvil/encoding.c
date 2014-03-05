@@ -1680,9 +1680,11 @@ return(NULL);
 return( cidmaster );
 }
 
+#if 0
 int CountOfEncoding(Encoding *encoding_name) {
 return( encoding_name->char_cnt );
 }
+#endif
 
 char *SFEncodingName(SplineFont *sf,EncMap *map) {
     char buffer[130];

@@ -127,7 +127,7 @@ dist_man_MANS = \
 noinst_HEADERS = \
   inc/basics.h inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
   inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
-  inc/gimage.h inc/gio.h \
+  inc/gimage.h \
   inc/gresource.h inc/gwidget.h inc/gwwiconv.h inc/intl.h inc/ustring.h \
   inc/utype.h inc/dlist.h inc/gnetwork.h \
   fontanvil/sftextfieldP.h \
@@ -213,10 +213,10 @@ gutils_libgutils_a_SOURCES = \
   gutils/gimagereadrgb.c gutils/gimagereadtiff.c gutils/gimagereadxbm.c \
   gutils/gimagereadxpm.c gutils/gimagewritebmp.c gutils/gimagewritegimage.c \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
-  gutils/gimagewritexpm.c gutils/gio.c gutils/giofile.c gutils/giohosts.c gutils/giomime.c \
+  gutils/gimagewritexpm.c gutils/giofile.c gutils/giohosts.c gutils/giomime.c \
   gutils/giothread.c gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gnetwork.c gutils/gutils.c \
   gutils/gwwintl.c gutils/prefs.c gutils/prefs.h gutils/unicodelibinfo.c inc/unicodelibinfo.h \
-  gutils/gioftp.c gutils/gioftpP.h
+  gutils/gioftpP.h
 gutils_libgutils_a_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   $(GLIB_CFLAGS)
 gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a

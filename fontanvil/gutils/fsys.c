@@ -164,16 +164,6 @@ return( NULL );
 #endif
 }
 
-unichar_t *u_GFileGetHomeDir(void) {
-    unichar_t* dir = NULL;
-    char* tmp = GFileGetHomeDir();
-    if( tmp ) {
-	dir = uc_copy(tmp);
-	free(tmp);
-    }
-return dir;
-}
-
 static void savestrcpy(char *dest,const char *src) {
     for (;;) {
 	*dest = *src;
@@ -245,63 +235,6 @@ char *GFileMakeAbsoluteName(char *name) {
 return( copy(buffer));
 }
 
-char *GFileBuildName(char *dir,char *fname,char *buffer,int size) {
-    int len;
-
-    if ( dir==NULL || *dir=='\0' ) {
-	if ( strlen( fname )<size-1 )		/* valgrind didn't like my strncpies but this complication makes it happy */
-	    savestrcpy(buffer,fname);
-	else {
-	    strncpy(buffer,fname,size-1);
-	    buffer[size-1]='\0';
-	}
-    } else {
-	if ( buffer!=dir ) {
-	    if ( strlen( dir )<size-3 )
-		strcpy(buffer,dir);
-	    else {
-		strncpy(buffer,dir,size-3);
-		buffer[size-3]='\0';
-	    }
-	}
-	len = strlen(buffer);
-	if ( buffer[len-1]!='/' )
-	    buffer[len++] = '/';
-	if ( strlen( fname )<size-1 )
-	    strcpy(buffer+len,fname);
-	else {
-	    strncpy(buffer+len,fname,size-len-1);
-	    buffer[size-1]='\0';
-	}
-    }
-return( buffer );
-}
-
-/* Given a filename in a directory, pick the directory out of it, and */
-/*  create a new filename using that directory and the given nametail */
-char *GFileReplaceName(char *oldname,char *fname,char *buffer,int size) {
-    int len;
-    char *dirend;
-
-    dirend = strrchr(oldname,'/');
-    if ( dirend == NULL ) {
-	strncpy(buffer,fname,size-1);
-	buffer[size-1]='\0';
-    } else {
-	*dirend = '\0';
-	if ( buffer!=oldname ) {
-	    strncpy(buffer,oldname,size-3);
-	    buffer[size-3]='\0';
-	}
-	len = strlen(buffer);
-	*dirend = '/';
-	buffer[len++] = '/';
-	strncpy(buffer+len,fname,size-len-1);
-	buffer[size-1]='\0';
-    }
-return( buffer );
-}
-
 char *GFileNameTail(const char *oldname) {
     char *pt;
 
@@ -357,37 +290,12 @@ int GFileExists(const char *file) {
 return( access(file,0)==0 );
 }
 
-int GFileModifyable(const char *file) {
-return( access(file,02)==0 );
-}
-
-int GFileModifyableDir(const char *file) {
-    char buffer[1025], *pt;
-
-    buffer[1024]=0;
-    strncpy(buffer,file,1024);
-    pt = strrchr(buffer,'/');
-    if ( pt==NULL )
-	strcpy(buffer,".");
-    else
-	*pt='\0';
-    return( GFileModifyable(buffer) );
-}
-
 int GFileReadable(char *file) {
 return( access(file,04)==0 );
 }
 
 int GFileMkDir(char *name) {
 return( MKDIR(name,0755));
-}
-
-int GFileRmDir(char *name) {
-return(rmdir(name));
-}
-
-int GFileUnlink(char *name) {
-return(unlink(name));
 }
 
 char *_GFile_find_program_dir(char *prog) {
@@ -444,229 +352,6 @@ return( NULL );
     free(program_dir);
     program_dir = copy(filename);
 return( program_dir );
-}
-
-unichar_t *u_GFileGetAbsoluteName(unichar_t *name, unichar_t *result, int rsiz) {
-    /* result may be the same as name */
-    unichar_t buffer[1000];
-
-    if ( ! u_GFileIsAbsolute(name) ) {
-	unichar_t *pt, *spt, *rpt, *bpt;
-
-	if ( dirname_[0]=='\0' ) {
-	    getcwd(dirname_,sizeof(dirname_));
-	}
-	uc_strcpy(buffer,dirname_);
-	if ( buffer[u_strlen(buffer)-1]!='/' )
-	    uc_strcat(buffer,"/");
-	u_strcat(buffer,name);
-	_u_backslash_to_slash(buffer);
-
-	/* Normalize out any .. */
-	spt = rpt = buffer;
-	while ( *spt!='\0' ) {
-	    if ( *spt=='/' ) ++spt;
-	    for ( pt = spt; *pt!='\0' && *pt!='/'; ++pt );
-	    if ( pt==spt )	/* Found // in a path spec, reduce to / (we've*/
-		u_strcpy(spt,pt); /*  skipped past the :// of the machine name) */
-	    else if ( pt==spt+1 && spt[0]=='.' && *pt=='/' )	/* Noop */
-		u_strcpy(spt,spt+2);
-	    else if ( pt==spt+2 && spt[0]=='.' && spt[1]=='.' ) {
-		for ( bpt=spt-2 ; bpt>rpt && *bpt!='/'; --bpt );
-		if ( bpt>=rpt && *bpt=='/' ) {
-		    u_strcpy(bpt,pt);
-		    spt = bpt;
-		} else {
-		    rpt = pt;
-		    spt = pt;
-		}
-	    } else
-		spt = pt;
-	}
-	name = buffer;
-    }
-    if (result!=name) {
-	u_strncpy(result,name,rsiz);
-	result[rsiz-1]='\0';
-	_u_backslash_to_slash(result);
-    }
-return(result);
-}
-
-unichar_t *u_GFileBuildName(unichar_t *dir,unichar_t *fname,unichar_t *buffer,int size) {
-    int len;
-
-    if ( dir==NULL || *dir=='\0' ) {
-	u_strncpy(buffer,fname,size-1);
-	buffer[size-1]='\0';
-    } else {
-	if ( buffer!=dir ) {
-	    u_strncpy(buffer,dir,size-3);
-	    buffer[size-3]='\0';
-	}
-	len = u_strlen(buffer);
-	if ( buffer[len-1]!='/' )
-	    buffer[len++] = '/';
-	u_strncpy(buffer+len,fname,size-len-1);
-	buffer[size-1]='\0';
-    }
-return( buffer );
-}
-
-/* Given a filename in a directory, pick the directory out of it, and */
-/*  create a new filename using that directory and the given nametail */
-unichar_t *u_GFileReplaceName(unichar_t *oldname,unichar_t *fname,unichar_t *buffer,int size) {
-    int len;
-    unichar_t *dirend;
-
-    dirend = u_strrchr(oldname,'/');
-    if ( dirend == NULL ) {
-	u_strncpy(buffer,fname,size-1);
-	buffer[size-1]='\0';
-    } else {
-	*dirend = '\0';
-	if ( buffer!=oldname ) {
-	    u_strncpy(buffer,oldname,size-3);
-	    buffer[size-3]='\0';
-	}
-	len = u_strlen(buffer);
-	*dirend = '/';
-	buffer[len++] = '/';
-	u_strncpy(buffer+len,fname,size-len-1);
-	buffer[size-1]='\0';
-    }
-return( buffer );
-}
-
-unichar_t *u_GFileNameTail(const unichar_t *oldname) {
-    unichar_t *pt;
-
-    pt = u_strrchr(oldname,'/');
-    if ( pt !=NULL )
-return( pt+1);
-    else
-return( (unichar_t *)oldname );
-}
-
-unichar_t *u_GFileNormalize(unichar_t *name) {
-    unichar_t *pt, *base, *ppt;
-
-    if ( (pt = uc_strstr(name,"://"))!=NULL ) {
-	base = u_strchr(pt+3,'/');
-	if ( base==NULL )
-return( name );
-	++base;
-    } else if ( *name=='/' )
-	base = name+1;
-    else
-	base = name;
-    for ( pt=base; *pt!='\0'; ) {
-	if ( *pt=='/' )
-	    u_strcpy(pt,pt+1);
-	else if ( uc_strncmp(pt,"./",2)==0 )
-	    u_strcpy(pt,pt+2);
-	else if ( uc_strncmp(pt,"../",2)==0 ) {
-	    for ( ppt=pt-2; ppt>=base && *ppt!='/'; --ppt );
-	    ++ppt;
-	    if ( ppt>=base ) {
-		u_strcpy(ppt,pt+3);
-		pt = ppt;
-	    } else
-		pt += 3;
-	} else {
-	    while ( *pt!='/' && *pt!='\0' ) ++pt;
-	    if ( *pt == '/' ) ++pt;
-	}
-    }
-return( name );
-}
-
-unichar_t *u_GFileAppendFile(unichar_t *dir,unichar_t *name,int isdir) {
-    unichar_t *ret, *pt;
-
-    ret = (unichar_t *) malloc((u_strlen(dir)+u_strlen(name)+3)*sizeof(unichar_t));
-    u_strcpy(ret,dir);
-    pt = ret+u_strlen(ret);
-    if ( pt>ret && pt[-1]!='/' )
-	*pt++ = '/';
-    u_strcpy(pt,name);
-    if ( isdir ) {
-	pt += u_strlen(pt);
-	if ( pt>ret && pt[-1]!='/' ) {
-	    *pt++ = '/';
-	    *pt = '\0';
-	}
-    }
-return(ret);
-}
-
-int u_GFileIsAbsolute(const unichar_t *file) {
-#if defined(__MINGW32__)
-    if( (file[1]==':') && (('a'<=file[0] && file[0]<='z') || ('A'<=file[0] && file[0]<='Z')) )
-return ( true );
-#else
-    if ( *file=='/' )
-return( true );
-#endif
-    if ( uc_strstr(file,"://")!=NULL )
-return( true );
-
-return( false );
-}
-
-int u_GFileIsDir(const unichar_t *file) {
-    char buffer[1024];
-    u2def_strncpy(buffer,file,sizeof(buffer));
-    strcat(buffer,"/.");
-return( access(buffer,0)==0 );
-}
-
-int u_GFileExists(const unichar_t *file) {
-    char buffer[1024];
-    u2def_strncpy(buffer,file,sizeof(buffer));
-return( access(buffer,0)==0 );
-}
-
-int u_GFileModifyable(const unichar_t *file) {
-    char buffer[1024];
-    u2def_strncpy(buffer,file,sizeof(buffer));
-return( access(buffer,02)==0 );
-}
-
-int u_GFileModifyableDir(const unichar_t *file) {
-    char buffer[1024], *pt;
-
-    u2def_strncpy(buffer,file,sizeof(buffer));
-    pt = strrchr(buffer,'/');
-    if ( pt==NULL )
-	strcpy(buffer,".");
-    else
-	*pt='\0';
-return( GFileModifyable(buffer));
-}
-
-int u_GFileReadable(unichar_t *file) {
-    char buffer[1024];
-    u2def_strncpy(buffer,file,sizeof(buffer));
-return( access(buffer,04)==0 );
-}
-
-int u_GFileMkDir(unichar_t *name) {
-    char buffer[1024];
-    u2def_strncpy(buffer,name,sizeof(buffer));
-return( MKDIR(buffer,0755));
-}
-
-int u_GFileRmDir(unichar_t *name) {
-    char buffer[1024];
-    u2def_strncpy(buffer,name,sizeof(buffer));
-return(rmdir(buffer));
-}
-
-int u_GFileUnlink(unichar_t *name) {
-    char buffer[1024];
-    u2def_strncpy(buffer,name,sizeof(buffer));
-return(unlink(buffer));
 }
 
 static char *GResourceProgramDir = 0;
@@ -915,61 +600,7 @@ char *GFileReadAll(char *name) {
     return( 0 );
 }
 
-int GFileWriteAll(char *filepath, char *data) {
-/* Write char string 'data' into file 'name'. Return -1 if error. */
-    size_t bwrite = strlen(data);
-    FILE* fp;
-
-    if ( (fp = fopen( filepath, "wb" )) != NULL ) {
-	if ( (fwrite( data, 1, bwrite, fp ) == bwrite) && \
-	     (fflush(fp) == 0) )
-	    return( (fclose(fp) == 0 ? 0: -1) );
-	fclose(fp);
-    }
-    return -1;
-}
-
 const char *getTempDir(void)
 {
     return g_get_tmp_dir();
-}
-
-char *GFileGetHomeDocumentsDir(void)
-{
-    static char* ret = 0;
-    if( ret )
-	return ret;
-
-#if defined(__MINGW32__)
-
-    CHAR my_documents[MAX_PATH+2];
-    HRESULT result = SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, my_documents );
-    if (result != S_OK)
-    {
-    	fprintf(stderr,"Error: Can't get My Documents path!'\n");
-        return ret;
-    }
-    int pos = strlen(my_documents);
-    my_documents[ pos++ ] = '\\';
-    my_documents[ pos++ ] = '\0';
-    ret = copy( my_documents );
-    return ret;
-#endif
-
-    // On GNU/Linux and OSX it was decided that this should be just the
-    // home directory itself.
-    ret = GFileGetHomeDir();
-    return ret;
-}
-
-
-char *GFileDirName(const char *path)
-{
-    char ret[PATH_MAX+1];
-    strncpy( ret, path, PATH_MAX );
-    _backslash_to_slash( ret );
-    char *pt = strrchr( ret, '/' );
-    if ( pt )
-	*pt = '\0';
-    return strdup(ret);
 }

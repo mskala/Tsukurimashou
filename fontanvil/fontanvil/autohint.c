@@ -1122,6 +1122,7 @@ return( n->up!=e->up );
 return( false );
 }
 
+#if 0
 EI *EIActiveEdgesFindStem(EI *apt, real i, int major) {
     int cnt=apt->up?1:-1;
     EI *e, *p;
@@ -1150,6 +1151,7 @@ return( NULL );
     }
 return( p );
 }
+#endif
 
 static StemInfo *StemRemoveFlexCandidates(StemInfo *stems) {
     StemInfo *s, *t, *sn;
