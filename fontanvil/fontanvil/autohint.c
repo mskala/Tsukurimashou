@@ -1122,37 +1122,6 @@ return( n->up!=e->up );
 return( false );
 }
 
-#if 0
-EI *EIActiveEdgesFindStem(EI *apt, real i, int major) {
-    int cnt=apt->up?1:-1;
-    EI *e, *p;
-
-	/* If we're at an intersection point and the next spline continues */
-	/*  in about the same direction then this doesn't count as two lines */
-	/*  but as one */
-    if ( EISameLine(apt,apt->aenext,i,major))
-	apt = apt->aenext;
-
-    e=apt->aenext;
-    if ( e==NULL )
-return( NULL );
-
-    for ( ; e!=NULL && cnt!=0; e=e->aenext ) {
-	p = e;
-	if ( EISkipExtremum(e,i,major)) {
-	    e = e->aenext;
-	    if ( e==NULL )
-    break;
-    continue;
-	}
-	if ( EISameLine(e,e->aenext,i,major))
-	    e = e->aenext;
-	cnt += (e->up?1:-1);
-    }
-return( p );
-}
-#endif
-
 static StemInfo *StemRemoveFlexCandidates(StemInfo *stems) {
     StemInfo *s, *t, *sn;
     const real BlueShift = 7;

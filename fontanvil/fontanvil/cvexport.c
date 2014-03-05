@@ -130,7 +130,7 @@ int _ExportEPS(FILE *eps,SplineChar *sc, int layer, int preview) {
 return( ret );
 }
 
-int ExportEPS(char *filename,SplineChar *sc,int layer) {
+static int ExportEPS(char *filename,SplineChar *sc,int layer) {
     FILE *eps;
     int ret;
 
@@ -274,7 +274,7 @@ int _ExportPDF(FILE *pdf,SplineChar *sc,int layer) {
 return( ret );
 }
 
-int ExportPDF(char *filename,SplineChar *sc,int layer) {
+static int ExportPDF(char *filename,SplineChar *sc,int layer) {
     FILE *eps;
     int ret;
 
@@ -332,7 +332,7 @@ int _ExportPlate(FILE *plate,SplineChar *sc,int layer) {
 return( ret );
 }
 
-int ExportPlate(char *filename,SplineChar *sc,int layer) {
+static int ExportPlate(char *filename,SplineChar *sc,int layer) {
     FILE *plate;
     int ret;
 
@@ -345,7 +345,7 @@ return(0);
 return( ret );
 }
 
-int ExportSVG(char *filename,SplineChar *sc,int layer) {
+static int ExportSVG(char *filename,SplineChar *sc,int layer) {
     FILE *svg;
     int ret;
 
@@ -358,7 +358,7 @@ return(0);
 return( ret );
 }
 
-int ExportGlif(char *filename,SplineChar *sc,int layer) {
+static int ExportGlif(char *filename,SplineChar *sc,int layer) {
     FILE *glif;
     int ret;
 
@@ -457,7 +457,7 @@ static void FigSplineSet(FILE *fig,SplineSet *spl,int spmax, int asc) {
     }
 }
 
-int ExportFig(char *filename,SplineChar *sc,int layer) {
+static int ExportFig(char *filename,SplineChar *sc,int layer) {
     FILE *fig;
     RefChar *rf;
     int ret;
@@ -486,7 +486,7 @@ return(0);
 return( ret );
 }
 
-int ExportImage(char *filename,SplineChar *sc, int layer, int format, int pixelsize, int bitsperpixel) {
+static int ExportImage(char *filename,SplineChar *sc, int layer, int format, int pixelsize, int bitsperpixel) {
 /* 0=*.xbm, 1=*.bmp, 2=*.png, 3=*.xpm, 4=*.c(fontanvil-internal) */
     struct _GImage base;
     GImage gi;

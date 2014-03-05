@@ -2191,12 +2191,6 @@ extern void AnchorClassMerge(SplineFont *sf,AnchorClass *into,AnchorClass *from)
 extern void AnchorClassesFree(AnchorClass *kp);
 extern void TtfTablesFree(struct ttf_table *tab);
 extern void SFRemoveSavedTable(SplineFont *sf, uint32 tag);
-extern AnchorClass *AnchorClassMatch(SplineChar *sc1,SplineChar *sc2,
-	AnchorClass *restrict_, AnchorPoint **_ap1,AnchorPoint **_ap2 );
-extern AnchorClass *AnchorClassMkMkMatch(SplineChar *sc1,SplineChar *sc2,
-	AnchorPoint **_ap1,AnchorPoint **_ap2 );
-extern AnchorClass *AnchorClassCursMatch(SplineChar *sc1,SplineChar *sc2,
-	AnchorPoint **_ap1,AnchorPoint **_ap2 );
 extern void SCInsertPST(SplineChar *sc,PST *new_);
 extern void ValDevFree(ValDevTab *adjust);
 extern ValDevTab *ValDevTabCopy(ValDevTab *orig);
@@ -3224,14 +3218,7 @@ extern int _ExportPDF(FILE *pdf,SplineChar *sc,int layer);
 extern int _ExportEPS(FILE *eps,SplineChar *sc,int layer, int gen_preview);
 extern int _ExportSVG(FILE *svg,SplineChar *sc,int layer);
 extern int _ExportGlif(FILE *glif,SplineChar *sc,int layer);
-extern int ExportEPS(char *filename,SplineChar *sc,int layer);
-extern int ExportPDF(char *filename,SplineChar *sc,int layer);
-extern int ExportPlate(char *filename,SplineChar *sc,int layer);
-extern int ExportSVG(char *filename,SplineChar *sc,int layer);
-extern int ExportGlif(char *filename,SplineChar *sc,int layer);
-extern int ExportFig(char *filename,SplineChar *sc,int layer);
 extern int BCExportXBM(char *filename,BDFChar *bdfc, int format);
-extern int ExportImage(char *filename,SplineChar *sc, int layer, int format, int pixelsize, int bitsperpixel);
 extern void ScriptExport(SplineFont *sf, BDFFont *bdf, int format, int gid,
 	char *format_spec, EncMap *map);
 
@@ -3254,23 +3241,6 @@ extern void SCClearContents(SplineChar *sc,int layer);
 extern void SCClearAll(SplineChar *sc,int layer);
 extern void BCClearAll(BDFChar *bc);
 
-#if !defined(_NO_PYTHON)
-extern void FontAnvil_InitializeEmbeddedPython(void);
-extern void PyFF_ErrorString(const char *msg,const char *str);
-extern void PyFF_ErrorF3(const char *frmt, const char *str, int size, int depth);
-extern void PyFF_Stdin(void);
-extern void PyFF_Main(int argc,char **argv,int start);
-extern void PyFF_ScriptFile(struct fontviewbase *fv,SplineChar *sc,char *filename);
-extern void PyFF_ScriptString(struct fontviewbase *fv,SplineChar *sc,int layer,char *str);
-extern void PyFF_FreeFV(struct fontviewbase *fv);
-extern void PyFF_FreeSC(SplineChar *sc);
-extern void PyFF_FreeSF(SplineFont *sf);
-extern void PyFF_ProcessInitFiles(void);
-extern char *PyFF_PickleMeToString(void *pydata);
-extern void *PyFF_UnPickleMeToObjects(char *str);
-struct _object;		/* Python Object */
-extern void PyFF_CallDictFunc(struct _object *dict,char *key,char *argtypes, ... );
-#endif
 extern void doinitFontAnvilMain(void);
 
 extern void InitSimpleStuff(void);

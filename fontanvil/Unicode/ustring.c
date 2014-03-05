@@ -37,51 +37,6 @@ return(ch1-ch2);
     }
 }
 
-long uc_strncmp(const unichar_t *str1,const char *str2,int n) {
-    long ch1, ch2;
-    while ( --n>=0 ) {
-	ch1 = *str1++; ch2 = *(unsigned char *) str2++ ;
-	if ( ch1!=ch2 || ch1=='\0' )
-return(ch1-ch2);
-    }
-return( 0 );
-}
-
-long uc_strmatch(const unichar_t *str1, const char *str2) {
-    long ch1, ch2;
-    for (;;) {
-	ch1 = *str1++; ch2 = *(unsigned char *) str2++ ;
-	ch1 = tolower(ch1);
-	ch2 = tolower(ch2);
-	if ( ch1!=ch2 || ch1=='\0' )
-return(ch1-ch2);
-    }
-}
-
-long uc_strnmatch(const unichar_t *str1, const char *str2, int len) {
-    long ch1, ch2;
-    for (;--len>=0;) {
-	ch1 = *str1++; ch2 = *(unsigned char *) str2++ ;
-	ch1 = tolower(ch1);
-	ch2 = tolower(ch2);
-	if ( ch1!=ch2 || ch1=='\0' || len<=0 )
-return(ch1-ch2);
-    }
-return( 0 );
-}
-
-long u_strnmatch(const unichar_t *str1, const unichar_t *str2, int len) {
-    long ch1, ch2;
-    for (;--len>=0;) {
-	ch1 = *str1++; ch2 = *str2++ ;
-	ch1 = tolower(ch1);
-	ch2 = tolower(ch2);
-	if ( ch1!=ch2 || ch1=='\0' || len<=0 )
-return(ch1-ch2);
-    }
-return( 0 );
-}
-
 long u_strcmp(const unichar_t *str1,const unichar_t *str2) {
     long ch1, ch2;
     for (;;) {
@@ -89,34 +44,6 @@ long u_strcmp(const unichar_t *str1,const unichar_t *str2) {
 	if ( ch1!=ch2 || ch1=='\0' )
 return(ch1-ch2);
     }
-}
-
-long u_strncmp(const unichar_t *str1,const unichar_t *str2,int n) {
-    long ch1, ch2;
-    while ( --n>=0 ) {
-	ch1 = *str1++; ch2 = *str2++ ;
-	if ( ch1!=ch2 || ch1=='\0' )
-return(ch1-ch2);
-    }
-return( 0 );
-}
-
-long u_strmatch(const unichar_t *str1, const unichar_t *str2) {
-    long ch1, ch2;
-    for (;;) {
-	ch1 = *str1++; ch2 = *str2++ ;
-	ch1 = tolower(ch1);
-	ch2 = tolower(ch2);
-	if ( ch1!=ch2 || ch1=='\0' )
-return(ch1-ch2);
-    }
-}
-
-void cu_strcpy(char *to, const unichar_t *from) {
-    register unichar_t ch;
-    while ( (ch = *from++) != '\0' )
-	*(to++) = ch;
-    *to = 0;
 }
 
 void uc_strcpy(unichar_t *to, const char *from) {
@@ -154,31 +81,6 @@ void uc_strncpy(register unichar_t *to, const char *from, int len) {
     *to = 0;
 }
 
-void uc_strcat(unichar_t *to, const char *from) {
-    uc_strcpy(to+u_strlen(to),from);
-}
-
-void uc_strncat(unichar_t *to, const char *from,int len) {
-    uc_strncpy(to+u_strlen(to),from,len);
-}
-
-void cu_strcat(char *to, const unichar_t *from) {
-    cu_strcpy(to+strlen(to),from);
-}
-
-void cu_strncat(char *to, const unichar_t *from, int len) {
-    cu_strncpy(to+strlen(to),from,len);
-}
-
-void u_strcat(unichar_t *to, const unichar_t *from) {
-    u_strcpy(to+u_strlen(to),from);
-}
-
-void u_strncat(unichar_t *to, const unichar_t *from, int len) {
-    u_strncpy(to+u_strlen(to),from,len);
-}
-
-
 int u_strlen(register const unichar_t *str) {
     register int len = 0;
 
@@ -186,14 +88,6 @@ int u_strlen(register const unichar_t *str) {
 	++len;
 return( len );
 }
-
-int c_strlen( const char * p )
-{
-    if(!p)
-	return 0;
-    return strlen(p);
-}
-
 
 unichar_t *u_strchr(const unichar_t *str ,unichar_t ch) {
     register unichar_t test;
@@ -203,16 +97,6 @@ unichar_t *u_strchr(const unichar_t *str ,unichar_t ch) {
 return( (unichar_t *) str-1 );
 
 return( NULL );
-}
-
-unichar_t *u_strrchr(const unichar_t *str ,unichar_t ch) {
-    register unichar_t test, *last = NULL;
-
-    while ( (test=*(str++))!='\0' )
-	if ( test==ch )
-	    last = (unichar_t *) str-1;
-
-return( last );
 }
 
 unichar_t *uc_strstr(const unichar_t *longer, const char *substr) {
@@ -232,62 +116,7 @@ return((unichar_t *) lpt);
 return( NULL );
 }
 
-unichar_t *u_strstr(const unichar_t *longer, const unichar_t *substr) {
-    long ch1, ch2;
-    const unichar_t *lpt, *str1, *str2;
-
-    for ( lpt=longer; *lpt!='\0'; ++lpt ) {
-	str1 = lpt; str2 = substr;
-	for (;;) {
-	    ch1 = *str1++; ch2 = *str2++ ;
-	    if ( ch2=='\0' )
-return((unichar_t *) lpt);
-	    if ( ch1!=ch2 )
-	break;
-	}
-    }
-return( NULL );
-}
-
-unichar_t *uc_strstrmatch(const unichar_t *longer, const char *substr) {
-    long ch1, ch2;
-    const unichar_t *lpt, *str1; const unsigned char *str2;
-
-    for ( lpt=longer; *lpt!='\0'; ++lpt ) {
-	str1 = lpt; str2 = (unsigned char *) substr;
-	for (;;) {
-	    ch1 = *str1++; ch2 = *str2++ ;
-	    ch1 = tolower(ch1);
-	    ch2 = tolower(ch2);
-	    if ( ch2=='\0' )
-return((unichar_t *) lpt);
-	    if ( ch1!=ch2 )
-	break;
-	}
-    }
-return( NULL );
-}
-
-unichar_t *u_strstrmatch(const unichar_t *longer, const unichar_t *substr) {
-    long ch1, ch2;
-    const unichar_t *lpt, *str1, *str2;
-
-    for ( lpt=longer; *lpt!='\0'; ++lpt ) {
-	str1 = lpt; str2 = substr;
-	for (;;) {
-	    ch1 = *str1++; ch2 = *str2++ ;
-	    ch1 = tolower(ch1);
-	    ch2 = tolower(ch2);
-	    if ( ch2=='\0' )
-return((unichar_t *) lpt);
-	    if ( ch1!=ch2 )
-	break;
-	}
-    }
-return( NULL );
-}
-
-unichar_t *u_copyn(const unichar_t *pt, long n) {
+static unichar_t *u_copyn(const unichar_t *pt, long n) {
     unichar_t *res;
 #ifdef MEMORY_MASK
     if ( n*sizeof(unichar_t)>=MEMORY_MASK )
@@ -299,54 +128,11 @@ unichar_t *u_copyn(const unichar_t *pt, long n) {
 return(res);
 }
 
-unichar_t *u_copynallocm(const unichar_t *pt, long n, long m) {
-    unichar_t *res;
-#ifdef MEMORY_MASK
-    if ( n*sizeof(unichar_t)>=MEMORY_MASK )
-	n = MEMORY_MASK/sizeof(unichar_t)-1;
-#endif
-    res = malloc((m+1)*sizeof(unichar_t));
-    memcpy(res,pt,n*sizeof(unichar_t));
-    res[n]='\0';
-return(res);
-}
-
 unichar_t *u_copy(const unichar_t *pt) {
     if(pt)
 return u_copyn(pt,u_strlen(pt));
 
 return((unichar_t *)0);
-}
-
-unichar_t *u_concat(const unichar_t *s1, const unichar_t *s2) {
-    long len1, len2;
-    unichar_t *pt;
-
-    if ( s1==NULL )
-return( u_copy( s2 ));
-    else if ( s2==NULL )
-return( u_copy( s1 ));
-    len1 = u_strlen(s1); len2 = u_strlen(s2);
-    pt = (unichar_t *) malloc((len1+len2+1)*sizeof(unichar_t));
-    u_strcpy(pt,s1);
-    u_strcpy(pt+len1,s2);
-return( pt );
-}
-
-unichar_t *uc_copyn(const char *pt,int len) {
-    unichar_t *res, *rpt;
-
-    if(!pt)
-return((unichar_t *)0);
-
-#ifdef MEMORY_MASK
-    if ( (len+1)*sizeof(unichar_t)>=MEMORY_MASK )
-	len = MEMORY_MASK/sizeof(unichar_t)-1;
-#endif
-    res = (unichar_t *) malloc((len+1)*sizeof(unichar_t));
-    for ( rpt=res; --len>=0 ; *rpt++ = *(unsigned char *) pt++ );
-    *rpt = '\0';
-return(res);
 }
 
 unichar_t *uc_copy(const char *pt) {
@@ -399,95 +185,6 @@ return((char *)0);
     for ( rpt=res; --n>=0 ; *rpt++ = *pt++ );
     *rpt = '\0';
 return(res);
-}
-
-double u_strtod(const unichar_t *str, unichar_t **ptr) {
-    char buf[60], *pt, *ret;
-    const unichar_t *upt;
-    double val;
-    extern double strtod();		/* Please don't delete this, not all of us have good ansi headers */
-
-    for ( upt=str, pt=buf; *upt<128 && *upt!='\0' && pt-buf<sizeof(buf)-1; )
-	*pt++ = *upt++;
-    *pt = '\0';
-    val = strtod(buf,&ret);
-    if ( ptr!=NULL ) {
-	if ( pt==ret )
-	    *ptr = (unichar_t *) upt;
-	else
-	    *ptr = (unichar_t *) (str + (ret-buf));
-    }
-return( val );
-}
-
-long u_strtol(const unichar_t *str, unichar_t **ptr, int base) {
-    char buf[60], *pt, *ret;
-    const unichar_t *upt;
-    long val;
-    extern long strtol();		/* Please don't delete this, not all of us have good ansi headers */
-
-    for ( upt=str, pt=buf; *upt<128 && *upt!='\0' && pt<buf+sizeof(buf)-1; )
-	*pt++ = *upt++;
-    *pt = '\0';
-    val = strtol(buf,&ret,base);
-    if ( ptr!=NULL ) {
-	if ( pt==ret )
-	    *ptr = (unichar_t *) upt;
-	else
-	    *ptr = (unichar_t *) (str + (ret-buf));
-    }
-return( val );
-}
-
-unsigned long u_strtoul(const unichar_t *str, unichar_t **ptr, int base) {
-    char buf[60], *pt, *ret;
-    const unichar_t *upt;
-    unsigned long val;
-
-    for ( upt=str, pt=buf; *upt<128 && *upt!='\0' && pt<buf+sizeof(buf)-1; )
-	*pt++ = *upt++;
-    *pt = '\0';
-    val = strtoul(buf,&ret,base);
-    if ( ptr!=NULL ) {
-	if ( pt==ret )
-	    *ptr = (unichar_t *) upt;
-	else
-	    *ptr = (unichar_t *) (str + (ret-buf));
-    }
-return( val );
-}
-
-unichar_t *cu_strstartmatch(const char *key,const unichar_t *str) {
-    if ( key && str ) {
-	while( *key ) {
-	    if(tolower(*key) != tolower(*str))
-return 0;
-	    key++;
-	    str++;
-	}
-    }
-return (unichar_t *)str;
-}
-
-unichar_t *u_strstartmatch(const unichar_t *initial, const unichar_t *full) {
-    int ch1, ch2;
-    for (;;) {
-	ch1 = *initial++; ch2 = *full++ ;
-	if ( ch1=='\0' )
-return( (unichar_t *) full );
-	ch1 = tolower(ch1);
-	ch2 = tolower(ch2);
-	if ( ch1!=ch2 || ch1=='\0' )
-return(NULL);
-    }
-}
-
-char *u_to_c(const unichar_t *ubuf) {
-    static char buf[400];
-    if( !ubuf )
-	return 0;
-    cu_strncpy(buf,ubuf,sizeof(buf));
-return( buf );
 }
 
 unichar_t *c_to_u(const char *buf) {
@@ -983,22 +680,6 @@ int endswithi_partialExtension( const char *haystackZ,const char *needleZ) {
     }
     free( haystack );
     free( needle );
-    return ret;
-}
-
-int u_endswith(const unichar_t *haystack,const unichar_t *needle) {
-    int haylen = u_strlen( haystack );
-    int nedlen = u_strlen( needle );
-    if( haylen < nedlen )
-	return 0;
-    unichar_t* p = u_strstr( haystack + haylen - nedlen, needle );
-    return p == ( haystack + haylen - nedlen );
-}
-
-char* c_itostr( int v )
-{
-    static char ret[100+1];
-    snprintf(ret,100,"%d",v );
     return ret;
 }
 

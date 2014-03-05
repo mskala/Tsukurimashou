@@ -1878,7 +1878,7 @@ static void TurnOffUseMyMetrics(SplineChar *sc) {
 	    refs->use_my_metrics = false;
 }
 
-AnchorClass *AnchorClassMatch(SplineChar *sc1,SplineChar *sc2,AnchorClass *restrict_,
+static AnchorClass *AnchorClassMatch(SplineChar *sc1,SplineChar *sc2,AnchorClass *restrict_,
 	AnchorPoint **_ap1,AnchorPoint **_ap2 ) {
     AnchorPoint *ap1, *ap2;
 
@@ -1896,7 +1896,7 @@ return( ap1->anchor );
 return( NULL );
 }
 
-AnchorClass *AnchorClassMkMkMatch(SplineChar *sc1,SplineChar *sc2,
+static AnchorClass *AnchorClassMkMkMatch(SplineChar *sc1,SplineChar *sc2,
 	AnchorPoint **_ap1,AnchorPoint **_ap2 ) {
     AnchorPoint *ap1, *ap2;
 
@@ -1913,7 +1913,7 @@ return( ap1->anchor );
 return( NULL );
 }
 
-AnchorClass *AnchorClassCursMatch(SplineChar *sc1,SplineChar *sc2,
+static AnchorClass *AnchorClassCursMatch(SplineChar *sc1,SplineChar *sc2,
 	AnchorPoint **_ap1,AnchorPoint **_ap2 ) {
     AnchorPoint *ap1, *ap2;
 

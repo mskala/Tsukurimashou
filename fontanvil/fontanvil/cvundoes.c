@@ -992,39 +992,6 @@ static void SCUndoAct(SplineChar *sc,int layer, Undoes *undo) {
     }
 }
 
-void CVDoUndo(CharViewBase *cv) {
-    Undoes *undo = cv->layerheads[cv->drawmode]->undoes;
-
-    printf("CVDoUndo() undo:%p u->next:%p\n", undo, ( undo ? undo->next : 0 ) );
-    if ( undo==NULL )		/* Shouldn't happen */
-	return;
-
-    cv->layerheads[cv->drawmode]->undoes = undo->next;
-    undo->next = NULL;
-
-    SCUndoAct(cv->sc,CVLayer(cv),undo);
-    undo->next = cv->layerheads[cv->drawmode]->redoes;
-    cv->layerheads[cv->drawmode]->redoes = undo;
-
-/*    if ( !collabclient_generatingUndoForWire(cv) ) {
-	_CVCharChangedUpdate(cv,undo->was_modified);
-    } */
-}
-
-void CVDoRedo(CharViewBase *cv) {
-    Undoes *undo = cv->layerheads[cv->drawmode]->redoes;
-
-    if ( undo==NULL )		/* Shouldn't happen */
-	return;
-    cv->layerheads[cv->drawmode]->redoes = undo->next;
-    undo->next = NULL;
-
-    SCUndoAct(cv->sc,CVLayer(cv),undo);
-    undo->next = cv->layerheads[cv->drawmode]->undoes;
-    cv->layerheads[cv->drawmode]->undoes = undo;
-    CVCharChangedUpdate(cv);
-}
-
 void SCDoUndo(SplineChar *sc,int layer) {
     Undoes *undo = sc->layers[layer].undoes;
 
