@@ -79,98 +79,102 @@ void SFOrderBitmapList(SplineFont * sf) {
    }
 }
 
-SplineChar *SCBuildDummy(SplineChar * dummy, SplineFont * sf, EncMap * map,
+SplineChar *SCBuildDummy(SplineChar *dummy,SplineFont *sf,EncMap *map,
 			 int i) {
    static char namebuf[100];
-
    static Layer layers[2];
 
    memset(dummy, '\0', sizeof(*dummy));
+
    dummy->color = COLOR_DEFAULT;
    dummy->layer_cnt = 2;
    dummy->layers = layers;
+
    if (sf->cidmaster != NULL) {
       /* CID fonts don't have encodings, instead we must look up the cid */
       if (sf->cidmaster->loading_cid_map)
-	 dummy->unicodeenc = -1;
+	dummy->unicodeenc = -1;
       else
-	 dummy->unicodeenc =
-	    CID2NameUni(FindCidMap
-			(sf->cidmaster->cidregistry, sf->cidmaster->ordering,
-			 sf->cidmaster->supplement, sf->cidmaster), i,
-			namebuf, sizeof(namebuf));
+	dummy->unicodeenc =
+	CID2NameUni(FindCidMap
+		    (sf->cidmaster->cidregistry, sf->cidmaster->ordering,
+			sf->cidmaster->supplement, sf->cidmaster), i,
+		    namebuf, sizeof(namebuf));
    } else
-      dummy->unicodeenc = UniFromEnc(i, map->enc);
+     dummy->unicodeenc = UniFromEnc(i, map->enc);
 
    if (sf->cidmaster != NULL)
-      dummy->name = namebuf;
-   else if (map->enc->psnames != NULL && i < map->enc->char_cnt &&
-	    map->enc->psnames[i] != NULL)
-      dummy->name = map->enc->psnames[i];
-   else if (dummy->unicodeenc == -1)
-      dummy->name = NULL;
-   else
-      dummy->name =
-	 (char *) StdGlyphName(namebuf, dummy->unicodeenc, sf->uni_interp,
-			       sf->for_new_glyphs);
-   if (dummy->name == NULL) {
-      /*if ( dummy->unicodeenc!=-1 || i<256 )
-         dummy->name = ".notdef";
-         else */  {
-	 int j;
+     dummy->name = namebuf;
 
-	 sprintf(namebuf, "NameMe.%d", i);
-	 j = 0;
-	 while (SFFindExistingSlot(sf, -1, namebuf) != -1)
-	    sprintf(namebuf, "NameMe.%d.%d", i, ++j);
-	 dummy->name = namebuf;
-      }
+   else if (map->enc->psnames!=NULL && i<map->enc->char_cnt &&
+	    map->enc->psnames[i]!=NULL)
+      dummy->name=map->enc->psnames[i];
+
+   else if (dummy->unicodeenc==-1)
+     dummy->name = NULL;
+
+   else
+     dummy->name=
+     (char *)StdGlyphName(namebuf,dummy->unicodeenc,sf->uni_interp,
+			  sf->for_new_glyphs);
+
+   if (dummy->name == NULL) {
+      int j;
+
+      sprintf(namebuf, "NameMe.%d", i);
+      j=0;
+      while (SFFindExistingSlot(sf,-1,namebuf)!=-1)
+	sprintf(namebuf,"NameMe.%d.%d",i,++j);
+      dummy->name=namebuf;
    }
-   dummy->width = dummy->vwidth = sf->ascent + sf->descent;
-   if (dummy->unicodeenc > 0 && dummy->unicodeenc < 0x10000 &&
+
+   dummy->width=sf->ascent+sf->descent;
+   dummy->vwidth=dummy->width;
+
+   if (dummy->unicodeenc>0 && dummy->unicodeenc<0x10000 &&
        iscombining(dummy->unicodeenc)) {
       /* Mark characters should be 0 width */
       dummy->width = 0;
       /* Except in monospaced fonts on windows, where they should be the */
       /*  same width as everything else */
    }
+
    /* Actually, in a monospace font, all glyphs should be the same width */
    /*  whether mark or not */
-   if (sf->pfminfo.panose_set && sf->pfminfo.panose[3] == 9 &&
-       sf->glyphcnt > 0) {
-      for (i = sf->glyphcnt - 1; i >= 0; --i)
-	 if (SCWorthOutputting(sf->glyphs[i])) {
-	    dummy->width = sf->glyphs[i]->width;
-	    break;
-	 }
+   if (sf->pfminfo.panose_set && sf->pfminfo.panose[3]==9 &&
+       sf->glyphcnt>0) {
+      for (i=sf->glyphcnt-1;i>=0;--i)
+	if (SCWorthOutputting(sf->glyphs[i])) {
+	   dummy->width = sf->glyphs[i]->width;
+	   break;
+	}
    }
-   dummy->parent = sf;
-   dummy->orig_pos = 0xffff;
+
+   dummy->parent=sf;
+   dummy->orig_pos=0xffff;
    return (dummy);
 }
 
 static SplineChar *_SFMakeChar(SplineFont * sf, EncMap * map, int enc) {
    SplineChar dummy, *sc;
-
    SplineFont *ssf;
-
    int j, real_uni, gid;
-
    extern const int cns14pua[], amspua[];
 
    if (enc >= map->enccount)
-      gid = -1;
+     gid = -1;
    else
-      gid = map->map[enc];
+     gid = map->map[enc];
+
    if (sf->subfontcnt != 0 && gid != -1) {
       ssf = NULL;
       for (j = 0; j < sf->subfontcnt; ++j)
-	 if (gid < sf->subfonts[j]->glyphcnt) {
-	    ssf = sf->subfonts[j];
-	    if (ssf->glyphs[gid] != NULL) {
-	       return (ssf->glyphs[gid]);
-	    }
-	 }
+	if (gid < sf->subfonts[j]->glyphcnt) {
+	   ssf = sf->subfonts[j];
+	   if (ssf->glyphs[gid] != NULL) {
+	      return (ssf->glyphs[gid]);
+	   }
+	}
       sf = ssf;
    }
 
@@ -179,8 +183,9 @@ static SplineChar *_SFMakeChar(SplineFont * sf, EncMap * map, int enc) {
 	  (enc >= 0xe000 && enc <= 0xf8ff) &&
 	  (sf->uni_interp == ui_ams || sf->uni_interp == ui_trad_chinese) &&
 	  (real_uni =
-	   (sf->uni_interp == ui_ams ? amspua : cns14pua)[enc - 0xe000]) !=
+	      (sf->uni_interp == ui_ams ? amspua : cns14pua)[enc - 0xe000]) !=
 	  0) {
+
 	 if (real_uni < map->enccount) {
 	    SplineChar *sc;
 
@@ -194,6 +199,7 @@ static SplineChar *_SFMakeChar(SplineFont * sf, EncMap * map, int enc) {
       }
 
       SCBuildDummy(&dummy, sf, map, enc);
+
       /* Let's say a user has a postscript encoding where the glyph ".notdef" */
       /*  is assigned to many slots. Once the user creates a .notdef glyph */
       /*  all those slots should fill in. If they don't they damn well better */
@@ -205,20 +211,23 @@ static SplineChar *_SFMakeChar(SplineFont * sf, EncMap * map, int enc) {
 	 AltUniAdd(sc, dummy.unicodeenc);
 	 return (sc);
       }
-      sc = SFSplineCharCreate(sf);
-      sc->unicodeenc = dummy.unicodeenc;
-      sc->name = copy(dummy.name);
-      sc->width = dummy.width;
-      sc->orig_pos = 0xffff;
+
+      sc=SFSplineCharCreate(sf);
+      sc->unicodeenc=dummy.unicodeenc;
+      sc->name=copy(dummy.name);
+      sc->width=dummy.width;
+      sc->vwidth=dummy.vwidth;
+      sc->orig_pos=0xffff;
+
       if (sf->cidmaster != NULL)
-	 sc->altuni =
-	    CIDSetAltUnis(FindCidMap
-			  (sf->cidmaster->cidregistry,
-			   sf->cidmaster->ordering, sf->cidmaster->supplement,
-			   sf->cidmaster), enc);
-      /*SCLigDefault(sc); */
+	sc->altuni =
+	CIDSetAltUnis(FindCidMap
+		      (sf->cidmaster->cidregistry,
+			  sf->cidmaster->ordering, sf->cidmaster->supplement,
+			  sf->cidmaster), enc);
       SFAddGlyphAndEncode(sf, sc, map, enc);
    }
+
    return (sc);
 }
 

@@ -33,16 +33,13 @@
 #include <utype.h>
 #include <gresource.h>
 #ifdef HAVE_IEEEFP_H
-#   include <ieeefp.h>		/* Solaris defines isnan in ieeefp rather than math.h */
+#   include <ieeefp.h> /* Solaris defines isnan in ieeefp rather than math.h */
 #endif
 #include "ttf.h"
 
 int adjustwidth = true;
-
 int adjustlbearing = true;
-
 int allow_utf8_glyphnames = false;
-
 int clear_tt_instructions_when_needed = true;
 
 void SCClearRounds(SplineChar * sc, int layer) {
@@ -476,22 +473,30 @@ void SCClearContents(SplineChar * sc, int layer) {
    int ly_first, ly_last;
 
    if (sc == NULL)
-      return;
+     return;
+
    if (sc->parent != NULL && sc->parent->multilayer) {
       ly_first = ly_fore;
       ly_last = sc->layer_cnt - 1;
    } else
-      ly_first = ly_last = layer;
+     ly_first = ly_last = layer;
+
    for (layer = ly_first; layer <= ly_last; ++layer)
-      SCClearLayer(sc, layer);
+     SCClearLayer(sc, layer);
+
    --layer;
 
-   if (sc->parent != NULL &&
+   if (sc->parent!=NULL &&
        (sc->parent->multilayer ||
-	(!sc->parent->layers[layer].background && SCWasEmpty(sc, layer)))) {
+	   (!sc->parent->layers[layer].background && SCWasEmpty(sc,layer)))) {
+
       sc->widthset = false;
-      if (sc->parent != NULL && sc->width != 0)
-	 sc->width = sc->parent->ascent + sc->parent->descent;
+
+      if (sc->parent!=NULL && sc->width!=0) {
+	 sc->width=sc->parent->ascent+sc->parent->descent;
+	 sc->vwidth=sc->width;
+      }
+
       AnchorPointsFree(sc->anchor);
       sc->anchor = NULL;
       StemInfosFree(sc->hstem);
@@ -502,6 +507,7 @@ void SCClearContents(SplineChar * sc, int layer) {
       sc->dstem = NULL;
       MinimumDistancesFree(sc->md);
       sc->md = NULL;
+
       free(sc->ttf_instrs);
       sc->ttf_instrs = NULL;
       sc->ttf_instrs_len = 0;

@@ -1998,40 +1998,31 @@ static void dumpgposAnchorData(FILE * gpos, AnchorClass * _ac,
    fseek(gpos, 0, SEEK_END);
 }
 
-static void dumpGSUBsimplesubs(FILE * gsub, SplineFont * sf,
+static void dumpGSUBsimplesubs(FILE *gsub,SplineFont *sf,
 			       struct lookup_subtable *sub) {
-   int cnt, diff, ok = true;
+   int cnt;
+   int32 coverage_pos,end;
+   SplineChar **glyphs,***maps;
 
-   int32 coverage_pos, end;
+   glyphs=SFOrderedGlyphsWithPSTinSubtable(sf,sub);
+   maps=generateMapList(glyphs,sub);
 
-   SplineChar **glyphs, ***maps;
+   for (cnt=0;glyphs[cnt]!=NULL;++cnt); /* count non-null glyphs */
 
-   glyphs = SFOrderedGlyphsWithPSTinSubtable(sf, sub);
-   maps = generateMapList(glyphs, sub);
+   /* delta format may be a problem for vertical writing in XP,
+    * so we use list format instead */
+   putshort(gsub,2);	/* glyph list format */
+   coverage_pos=ftell(gsub);
+   putshort(gsub,0);	/* offset to coverage table */
+   putshort(gsub,cnt);
+   for (cnt=0;glyphs[cnt]!=NULL;++cnt)
+     putshort(gsub,(*maps[cnt])->ttf_glyph);
 
-   diff = (*maps[0])->ttf_glyph - glyphs[0]->ttf_glyph;
-   for (cnt = 0; glyphs[cnt] != NULL; ++cnt)
-      if (diff != maps[cnt][0]->ttf_glyph - glyphs[cnt]->ttf_glyph)
-	 ok = false;
-
-   if (ok) {
-      putshort(gsub, 1);	/* delta format */
-      coverage_pos = ftell(gsub);
-      putshort(gsub, 0);	/* offset to coverage table */
-      putshort(gsub, diff);
-   } else {
-      putshort(gsub, 2);	/* glyph list format */
-      coverage_pos = ftell(gsub);
-      putshort(gsub, 0);	/* offset to coverage table */
-      putshort(gsub, cnt);
-      for (cnt = 0; glyphs[cnt] != NULL; ++cnt)
-	 putshort(gsub, (*maps[cnt])->ttf_glyph);
-   }
-   end = ftell(gsub);
-   fseek(gsub, coverage_pos, SEEK_SET);
-   putshort(gsub, end - coverage_pos + 2);
-   fseek(gsub, end, SEEK_SET);
-   dumpcoveragetable(gsub, glyphs);
+   end=ftell(gsub);
+   fseek(gsub,coverage_pos,SEEK_SET);
+   putshort(gsub,end-coverage_pos+2);
+   fseek(gsub,end,SEEK_SET);
+   dumpcoveragetable(gsub,glyphs);
 
    free(glyphs);
    GlyphMapFree(maps);
