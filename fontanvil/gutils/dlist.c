@@ -25,123 +25,130 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <stdlib.h>
-#include <stdio.h>              /* for NULL */
+#include <stdio.h>		/* for NULL */
 #include "dlist.h"
 
-void dlist_pushfront( struct dlistnode** list, struct dlistnode* node ) {
-    if( *list ) {
-	node->next = *list;
-	node->next->prev = node;
-    }
-    *list = node;
+void dlist_pushfront(struct dlistnode **list, struct dlistnode *node) {
+   if (*list) {
+      node->next = *list;
+      node->next->prev = node;
+   }
+   *list = node;
 }
 
-int dlist_size( struct dlistnode** list ) {
-    struct dlistnode* node = *list;
-    int ret = 0;
-    for( ; node; node=node->next ) {
-	ret++;
-    }
-    return ret;
+int dlist_size(struct dlistnode **list) {
+   struct dlistnode *node = *list;
+
+   int ret = 0;
+
+   for (; node; node = node->next) {
+      ret++;
+   }
+   return ret;
 }
 
-int dlist_isempty( struct dlistnode** list ) {
-    return *list == NULL;
+int dlist_isempty(struct dlistnode **list) {
+   return *list == NULL;
 }
 
-void dlist_erase( struct dlistnode** list, struct dlistnode* node ) {
-    if( !node )
-	return;
-    if( *list == node ) {
-	*list = node->next;
-	if( node->next ) {
-	    node->next->prev = 0;
-	}
-	return;
-    }
-    if( node->prev ) {
-	node->prev->next = node->next;
-    }
-    if( node->next ) {
-	node->next->prev = node->prev;
-    }
+void dlist_erase(struct dlistnode **list, struct dlistnode *node) {
+   if (!node)
+      return;
+   if (*list == node) {
+      *list = node->next;
+      if (node->next) {
+	 node->next->prev = 0;
+      }
+      return;
+   }
+   if (node->prev) {
+      node->prev->next = node->next;
+   }
+   if (node->next) {
+      node->next->prev = node->prev;
+   }
 }
 
-void dlist_foreach( struct dlistnode** list, dlist_foreach_func_type func )
-{
-    struct dlistnode* node = *list;
-    while( node ) {
-	struct dlistnode* t = node;
-	node = node->next;
-	func( t );
-    }
+void dlist_foreach(struct dlistnode **list, dlist_foreach_func_type func) {
+   struct dlistnode *node = *list;
+
+   while (node) {
+      struct dlistnode *t = node;
+
+      node = node->next;
+      func(t);
+   }
 }
 
-void dlist_foreach_udata( struct dlistnode** list, dlist_foreach_udata_func_type func, void* udata )
-{
-    struct dlistnode* node = *list;
-    while( node ) {
-	struct dlistnode* t = node;
-	node = node->next;
-	func( t, udata );
-    }
+void dlist_foreach_udata(struct dlistnode **list,
+			 dlist_foreach_udata_func_type func, void *udata) {
+   struct dlistnode *node = *list;
+
+   while (node) {
+      struct dlistnode *t = node;
+
+      node = node->next;
+      func(t, udata);
+   }
 }
 
-static struct dlistnode* dlist_last( struct dlistnode* node )
-{
-    if( !node )
-	return node;
-    
-    while( node->next ) {
-	node = node->next;
-    }
-    return node;
+static struct dlistnode *dlist_last(struct dlistnode *node) {
+   if (!node)
+      return node;
+
+   while (node->next) {
+      node = node->next;
+   }
+   return node;
 }
 
-struct dlistnode* dlist_popback( struct dlistnode** list ) {
-    struct dlistnode* node = dlist_last(*list);
-    if( node )
-	dlist_erase( list, node );
-    return node;
+struct dlistnode *dlist_popback(struct dlistnode **list) {
+   struct dlistnode *node = dlist_last(*list);
+
+   if (node)
+      dlist_erase(list, node);
+   return node;
 }
 
-void dlist_foreach_reverse_udata( struct dlistnode** list, dlist_foreach_udata_func_type func, void* udata )
-{
-    struct dlistnode* node = dlist_last(*list);
-    while( node ) {
-	struct dlistnode* t = node;
-	node = node->prev;
-	func( t, udata );
-    }
+void dlist_foreach_reverse_udata(struct dlistnode **list,
+				 dlist_foreach_udata_func_type func,
+				 void *udata) {
+   struct dlistnode *node = dlist_last(*list);
+
+   while (node) {
+      struct dlistnode *t = node;
+
+      node = node->prev;
+      func(t, udata);
+   }
 }
 
-void dlist_pushfront_external( struct dlistnode** list, void* ptr )
-{
-    struct dlistnodeExternal* n = calloc(1,sizeof(struct dlistnodeExternal));
-    n->ptr = ptr;
-    dlist_pushfront( list, (struct dlistnode*)n );
+void dlist_pushfront_external(struct dlistnode **list, void *ptr) {
+   struct dlistnodeExternal *n = calloc(1, sizeof(struct dlistnodeExternal));
+
+   n->ptr = ptr;
+   dlist_pushfront(list, (struct dlistnode *) n);
 }
 
-static void freenode(struct dlistnode* node )
-{
-    free(node);
+static void freenode(struct dlistnode *node) {
+   free(node);
 }
 
-void dlist_free_external( struct dlistnode** list )
-{
-    if( !list || !(*list) )
-	return;
-    dlist_foreach( list, freenode );
+void dlist_free_external(struct dlistnode **list) {
+   if (!list || !(*list))
+      return;
+   dlist_foreach(list, freenode);
 }
 
-void dlist_trim_to_limit( struct dlistnode** list, int limit, dlist_visitor_func_type f )
-{
-    int sz = dlist_size( list );
-    while( sz >= limit ) {
-	struct dlistnode* node = dlist_popback( list );
-	f(node);
-	freenode(node);
-	sz = dlist_size( list );
-    }
-}
+void dlist_trim_to_limit(struct dlistnode **list, int limit,
+			 dlist_visitor_func_type f) {
+   int sz = dlist_size(list);
 
+   while (sz >= limit) {
+      struct dlistnode *node = dlist_popback(list);
+
+      f(node);
+      freenode(node);
+      sz = dlist_size(list);
+   }
+}

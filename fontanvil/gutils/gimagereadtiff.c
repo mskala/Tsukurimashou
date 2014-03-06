@@ -30,70 +30,76 @@
 
 #ifdef _NO_LIBTIFF
 
-static int a_file_must_define_something=0;	/* ANSI says so */
+static int a_file_must_define_something = 0;	/* ANSI says so */
 
 #else
 
-#include <tiffio.h>
+#   include <tiffio.h>
 
-#define int32 _int32
-#define uint32 _uint32
-#define int16 _int16
-#define uint16 _uint16
-#define int8 _int8
-#define uint8 _uint8
+#   define int32 _int32
+#   define uint32 _uint32
+#   define int16 _int16
+#   define uint16 _uint16
+#   define int8 _int8
+#   define uint8 _uint8
 
-#include "gimage.h"
+#   include "gimage.h"
 
-#undef uint32
+#   undef uint32
 
 GImage *GImageReadTiff(char *filename) {
 /* Import a TIF image, else return NULL if error  */
-    TIFF* tif;
-    uint32 w,h,i,j;
-    uint32 *ipt,*fpt,*raster=NULL;
-    GImage *ret=NULL;
-    struct _GImage *base;
+   TIFF *tif;
 
-    if ( (tif=TIFFOpen(filename,"rb"))==NULL ) {
-	/* if error, then report "built-in" error message and then exit	*/
-	return( NULL );
-    }
+   uint32 w, h, i, j;
 
-    /* Get width and height of TIF image, exit if error */
-    if ( TIFFGetField(tif,TIFFTAG_IMAGEWIDTH,&w)!=1 || \
-	 TIFFGetField(tif,TIFFTAG_IMAGELENGTH,&h)!=1 )
-	goto errorGImageReadTiff;
+   uint32 *ipt, *fpt, *raster = NULL;
 
-    /* Create memory to hold image & raster, exit if not enough memory	*/
-    if ( (ret=GImageCreate(it_true,w,h))==NULL )
-	goto errorGImageReadTiffMem;
-    if ( (raster=(uint32*) malloc(w*h*sizeof(uint32)))==NULL ) {
-	NoMoreMemMessage();
-	goto errorGImageReadTiffMem;
-    }
+   GImage *ret = NULL;
 
-    /* Read TIF image and process it into an internal FF usable format	*/
-    if ( TIFFReadRGBAImage(tif,w,h,raster,0) ) {
-	TIFFClose(tif);
-	base=ret->u.image;
-	for ( i=0; i<h; ++i ) {
-	    ipt=(uint32 *)(base->data+i*base->bytes_per_line);
-	    fpt=raster+(h-1-i)*w;
-	    for ( j=0; j<w; ++j )
-		*ipt++ =COLOR_CREATE(
-			TIFFGetR(fpt[j]),TIFFGetG(fpt[j]),TIFFGetB(fpt[j]));
-	}
-	free(raster);
-	return( ret );
-    }
+   struct _GImage *base;
 
-errorGImageReadTiff:
-    fprintf(stderr,"Bad input file \"%s\"\n",filename );
-errorGImageReadTiffMem:
-    free(raster); free(ret);
-    TIFFClose(tif);
-    return( NULL );
+   if ((tif = TIFFOpen(filename, "rb")) == NULL) {
+      /* if error, then report "built-in" error message and then exit */
+      return (NULL);
+   }
+
+   /* Get width and height of TIF image, exit if error */
+   if (TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &w) != 1 ||
+       TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h) != 1)
+      goto errorGImageReadTiff;
+
+   /* Create memory to hold image & raster, exit if not enough memory  */
+   if ((ret = GImageCreate(it_true, w, h)) == NULL)
+      goto errorGImageReadTiffMem;
+   if ((raster = (uint32 *) malloc(w * h * sizeof(uint32))) == NULL) {
+      NoMoreMemMessage();
+      goto errorGImageReadTiffMem;
+   }
+
+   /* Read TIF image and process it into an internal FF usable format  */
+   if (TIFFReadRGBAImage(tif, w, h, raster, 0)) {
+      TIFFClose(tif);
+      base = ret->u.image;
+      for (i = 0; i < h; ++i) {
+	 ipt = (uint32 *) (base->data + i * base->bytes_per_line);
+	 fpt = raster + (h - 1 - i) * w;
+	 for (j = 0; j < w; ++j)
+	    *ipt++ =
+	       COLOR_CREATE(TIFFGetR(fpt[j]), TIFFGetG(fpt[j]),
+			    TIFFGetB(fpt[j]));
+      }
+      free(raster);
+      return (ret);
+   }
+
+ errorGImageReadTiff:
+   fprintf(stderr, "Bad input file \"%s\"\n", filename);
+ errorGImageReadTiffMem:
+   free(raster);
+   free(ret);
+   TIFFClose(tif);
+   return (NULL);
 }
 
 #endif

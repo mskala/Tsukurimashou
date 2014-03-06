@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <dynamic.h>
 #ifdef __Mac
-# include <stdlib.h>		/* getenv,setenv */
+#   include <stdlib.h>		/* getenv,setenv */
 #endif
 
 #include <glib.h>
@@ -41,67 +41,75 @@
 #include "gb12345.h"
 
 int32 unicode_from_adobestd[256];
+
 struct lconv localeinfo;
+
 char *coord_sep = ",";
+
 int quiet = 0;
 
 static void initadobeenc(void) {
-    int i,j;
+   int i, j;
 
-    for ( i=0; i<0x100; ++i ) {
-	if ( strcmp(AdobeStandardEncoding[i],".notdef")==0 )
-	    unicode_from_adobestd[i] = 0xfffd;
-	else {
-	    j = UniFromName(AdobeStandardEncoding[i],ui_none,&custom);
-	    if ( j==-1 ) j = 0xfffd;
-	    unicode_from_adobestd[i] = j;
-	}
-    }
+   for (i = 0; i < 0x100; ++i) {
+      if (strcmp(AdobeStandardEncoding[i], ".notdef") == 0)
+	 unicode_from_adobestd[i] = 0xfffd;
+      else {
+	 j = UniFromName(AdobeStandardEncoding[i], ui_none, &custom);
+	 if (j == -1)
+	    j = 0xfffd;
+	 unicode_from_adobestd[i] = j;
+      }
+   }
 }
 
 static void initrand(void) {
-    struct timeval tv;
+   struct timeval tv;
 
-    gettimeofday(&tv,NULL);
-    srand(tv.tv_usec);
-    g_random_set_seed(tv.tv_usec);
+   gettimeofday(&tv, NULL);
+   srand(tv.tv_usec);
+   g_random_set_seed(tv.tv_usec);
 }
 
 void InitSimpleStuff(void) {
 
-    initrand();
-    initadobeenc();
-    
-    if ( !AddEncoding("EUC-GB12345",euc_gb12345_to_uni,uni_to_euc_gb12345,65535) )
-	LogError("Failed to add EUC-GB12345" );
+   initrand();
+   initadobeenc();
 
-    setlocale(LC_ALL,"");
-    localeinfo = *localeconv();
-    coord_sep = ",";
-    if ( *localeinfo.decimal_point=='.' ) coord_sep=",";
-    else if ( *localeinfo.decimal_point!='.' ) coord_sep=" ";
-    if ( getenv("FF_SCRIPT_IN_LATIN1") ) use_utf8_in_script=false;
+   if (!AddEncoding
+       ("EUC-GB12345", euc_gb12345_to_uni, uni_to_euc_gb12345, 65535))
+      LogError("Failed to add EUC-GB12345");
 
-    inituninameannot();	/* Note: unicodenames done after locales set */
+   setlocale(LC_ALL, "");
+   localeinfo = *localeconv();
+   coord_sep = ",";
+   if (*localeinfo.decimal_point == '.')
+      coord_sep = ",";
+   else if (*localeinfo.decimal_point != '.')
+      coord_sep = " ";
+   if (getenv("FF_SCRIPT_IN_LATIN1"))
+      use_utf8_in_script = false;
 
-    SetDefaults();
+   inituninameannot();		/* Note: unicodenames done after locales set */
+
+   SetDefaults();
 }
 
 void doinitFontAnvilMain(void) {
-    static int inited = false;
+   static int inited = false;
 
-    if ( inited )
-return;
-    InitSimpleStuff();
-    if ( default_encoding==NULL )
-	default_encoding=FindOrMakeEncoding("ISO8859-1");
-    if ( default_encoding==NULL )
-	default_encoding=&custom;	/* In case iconv is broken */
-    inited = true;
+   if (inited)
+      return;
+   InitSimpleStuff();
+   if (default_encoding == NULL)
+      default_encoding = FindOrMakeEncoding("ISO8859-1");
+   if (default_encoding == NULL)
+      default_encoding = &custom;	/* In case iconv is broken */
+   inited = true;
 }
 
 void doversion(const char *source_version_str) {
-    if ( source_version_str!=NULL )
-	printf( "fontanvil %s\n", source_version_str );
-exit(0);
+   if (source_version_str != NULL)
+      printf("fontanvil %s\n", source_version_str);
+   exit(0);
 }

@@ -32,5 +32,3 @@ extern int cv_auto_goto;
  * I've left this little stub of code around for then
  */
 //extern void loadPrefsFiles(void);
-
-

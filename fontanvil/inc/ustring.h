@@ -25,123 +25,201 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _UCHAR_H
-# define _UCHAR_H
-#include <stdarg.h>
-#include <string.h>
-#include <memory.h>
-#include <basics.h>
-#include <charset.h>
+#   define _UCHAR_H
+#   include <stdarg.h>
+#   include <string.h>
+#   include <memory.h>
+#   include <basics.h>
+#   include <charset.h>
 
 extern char *copy(const char *);
-extern char *copyn(const char *,long);
-extern unichar_t *u_copy(const unichar_t*);
-/* extern unichar_t *u_copyn(const unichar_t*, long); */
-extern unichar_t *u_copynallocm(const unichar_t *pt, long n, long m);
-extern unichar_t *uc_copyn(const char *, int);
-extern unichar_t *uc_copy(const char*);
-extern unichar_t *u_concat(const unichar_t*,const unichar_t*);
-extern char      *cu_copyn(const unichar_t *pt,int len);
-extern char      *cu_copy(const unichar_t*);
 
-extern long uc_strcmp(const unichar_t *,const char *);
+extern char *copyn(const char *, long);
+
+extern unichar_t *u_copy(const unichar_t *);
+
+/* extern unichar_t *u_copyn(const unichar_t*, long); */
+extern unichar_t *u_copynallocm(const unichar_t * pt, long n, long m);
+
+extern unichar_t *uc_copyn(const char *, int);
+
+extern unichar_t *uc_copy(const char *);
+
+extern unichar_t *u_concat(const unichar_t *, const unichar_t *);
+
+extern char *cu_copyn(const unichar_t * pt, int len);
+
+extern char *cu_copy(const unichar_t *);
+
+extern long uc_strcmp(const unichar_t *, const char *);
+
 extern long u_strcmp(const unichar_t *, const unichar_t *);
-extern long uc_strncmp(const unichar_t *,const char *,int);
-extern long u_strncmp(const unichar_t *, const unichar_t *,int);
-extern long uc_strmatch(const unichar_t *,const char *);
-extern long uc_strnmatch(const unichar_t *,const char *,int);
-extern long u_strnmatch(const unichar_t *str1, const unichar_t *str2, int len);
+
+extern long uc_strncmp(const unichar_t *, const char *, int);
+
+extern long u_strncmp(const unichar_t *, const unichar_t *, int);
+
+extern long uc_strmatch(const unichar_t *, const char *);
+
+extern long uc_strnmatch(const unichar_t *, const char *, int);
+
+extern long u_strnmatch(const unichar_t * str1, const unichar_t * str2,
+			int len);
 extern long u_strmatch(const unichar_t *, const unichar_t *);
-extern int    strmatch(const char *,const char *);
-extern int    strnmatch(const char *str1, const char *str2, int n);
+
+extern int strmatch(const char *, const char *);
+
+extern int strnmatch(const char *str1, const char *str2, int n);
+
 extern void uc_strcpy(unichar_t *, const char *);
+
 extern void cu_strcpy(char *, const unichar_t *);
+
 extern void u_strcpy(unichar_t *, const unichar_t *);
-extern void u_strncpy(unichar_t *, const unichar_t *,int);
-extern void cu_strncpy(char *to, const unichar_t *from, int len);
-extern void uc_strncpy(unichar_t *to, const char *from, int len);
+
+extern void u_strncpy(unichar_t *, const unichar_t *, int);
+
+extern void cu_strncpy(char *to, const unichar_t * from, int len);
+
+extern void uc_strncpy(unichar_t * to, const char *from, int len);
+
 extern void uc_strcat(unichar_t *, const char *);
-extern void uc_strncat(unichar_t *, const char *,int len);
+
+extern void uc_strncat(unichar_t *, const char *, int len);
+
 extern void cu_strcat(char *, const unichar_t *);
-extern void cu_strncat(char *, const unichar_t *,int len);
+
+extern void cu_strncat(char *, const unichar_t *, int len);
+
 extern void u_strcat(unichar_t *, const unichar_t *);
+
 extern void u_strncat(unichar_t *, const unichar_t *, int len);
-extern int  u_strlen(const unichar_t *);
+
+extern int u_strlen(const unichar_t *);
+
 /**
  * Like strlen() but passing a null pointer gets a 0 length
  */
-extern int  c_strlen(const char *);
-extern unichar_t *u_strchr(const unichar_t *,unichar_t);
-extern unichar_t *u_strrchr(const unichar_t *,unichar_t);
-extern unichar_t *uc_strstr(const unichar_t *,const char *);
-extern unichar_t *u_strstr(const unichar_t *,const unichar_t *);
-extern unichar_t *uc_strstrmatch(const unichar_t *,const char *);
-extern unichar_t *u_strstrmatch(const unichar_t *,const unichar_t *);
-extern char      *  strstrmatch(const char *,const char *);
+extern int c_strlen(const char *);
+
+extern unichar_t *u_strchr(const unichar_t *, unichar_t);
+
+extern unichar_t *u_strrchr(const unichar_t *, unichar_t);
+
+extern unichar_t *uc_strstr(const unichar_t *, const char *);
+
+extern unichar_t *u_strstr(const unichar_t *, const unichar_t *);
+
+extern unichar_t *uc_strstrmatch(const unichar_t *, const char *);
+
+extern unichar_t *u_strstrmatch(const unichar_t *, const unichar_t *);
+
+extern char *strstrmatch(const char *, const char *);
 
 extern char *u_to_c(const unichar_t *);
+
 extern unichar_t *c_to_u(const char *);
 
-extern unsigned long u_strtoul(const unichar_t *,unichar_t **,int);
-extern long   u_strtol(const unichar_t *,unichar_t **,int);
-extern double u_strtod(const unichar_t *,unichar_t **);
+extern unsigned long u_strtoul(const unichar_t *, unichar_t **, int);
+
+extern long u_strtol(const unichar_t *, unichar_t **, int);
+
+extern double u_strtod(const unichar_t *, unichar_t **);
 
 /*
  * Convert the integer 'v' to a string and return it.
  * You do not own the return value, it is an internal buffer
  * so you should copy it before using the function again
  */
-extern char*  c_itostr( int v );
+extern char *c_itostr(int v);
 
-extern char *strstart(const char *initial,const char *full);
-extern char *strstartmatch(const char *initial,const char *full);
-extern unichar_t *u_strstartmatch(const unichar_t *initial, const unichar_t *full);
-extern unichar_t *cu_strstartmatch(const char *initial, const unichar_t *full);
+extern char *strstart(const char *initial, const char *full);
 
-#define utf82u_strncpy utf82U_strncpy
+extern char *strstartmatch(const char *initial, const char *full);
+
+extern unichar_t *u_strstartmatch(const unichar_t * initial,
+				  const unichar_t * full);
+extern unichar_t *cu_strstartmatch(const char *initial,
+				   const unichar_t * full);
+
+#   define utf82u_strncpy utf82U_strncpy
 extern int32 utf8_ildb(const char **utf8_text);
-#define UTF8IDPB_NOZERO 1	/* Allow for 0 encoded as a non-zero utf8 0xc0:0x80 char */
-#define UTF8IDPB_OLDLIMIT 2	/* Today's utf8 is agreed to be limited to {0..0x10FFFF} */
-#define UTF8IDPB_UCS2 8		/* Encode {0...0xffff} as 16bit ucs2 type values */
-#define UTF8IDPB_UTF16 16	/* Encode {0...0x10ffff} as 16bit utf16 type values */
-#define UTF8IDPB_UTF32 32	/* Encode {0...0x10ffff} as 32bit utf32 type values */
-extern char *utf8_idpb(char *utf8_text,uint32 ch,int flags);
+
+#   define UTF8IDPB_NOZERO 1	/* Allow for 0 encoded as a non-zero utf8 0xc0:0x80 char */
+#   define UTF8IDPB_OLDLIMIT 2	/* Today's utf8 is agreed to be limited to {0..0x10FFFF} */
+#   define UTF8IDPB_UCS2 8	/* Encode {0...0xffff} as 16bit ucs2 type values */
+#   define UTF8IDPB_UTF16 16	/* Encode {0...0x10ffff} as 16bit utf16 type values */
+#   define UTF8IDPB_UTF32 32	/* Encode {0...0x10ffff} as 32bit utf32 type values */
+extern char *utf8_idpb(char *utf8_text, uint32 ch, int flags);
+
 extern char *utf8_db(char *utf8_text);
+
 extern char *utf8_ib(char *utf8_text);
+
 extern int utf8_valid(const char *str);
+
 extern void utf8_truncatevalid(char *str);
-extern char *latin1_2_utf8_strcpy(char *utf8buf,const char *lbuf);
+
+extern char *latin1_2_utf8_strcpy(char *utf8buf, const char *lbuf);
+
 extern char *latin1_2_utf8_copy(const char *lbuf);
+
 extern char *utf8_2_latin1_copy(const char *utf8buf);
-extern long utf8_strlen(const char *utf8_str);	 /* Count how many characters in the string NOT bytes */
-extern long utf82u_strlen(const char *utf8_str); /* Count how many shorts needed to represent in UCS2 */
-extern void utf8_strncpy(register char *to, const char *from, int len); /* copy n characters NOT bytes */
+
+extern long utf8_strlen(const char *utf8_str);	/* Count how many characters in the string NOT bytes */
+
+extern long utf82u_strlen(const char *utf8_str);	/* Count how many shorts needed to represent in UCS2 */
+
+extern void utf8_strncpy(register char *to, const char *from, int len);	/* copy n characters NOT bytes */
+
 extern char *def2utf8_copy(const char *from);
+
 extern char *utf82def_copy(const char *ufrom);
+
 extern char *utf8_strchr(const char *utf8_str, int search_char);
 
-extern unichar_t *utf82u_strncpy(unichar_t *ubuf,const char *utf8buf,int len);
-extern unichar_t *utf82u_strcpy(unichar_t *ubuf,const char *utf8buf);
-extern void       utf82u_strcat(unichar_t *ubuf,const char *utf8buf);
-extern unichar_t *utf82u_copyn(const char *utf8buf,int len);
-extern unichar_t *utf82u_copy(const char *utf8buf);
-extern char *u2utf8_strcpy(char *utf8buf,const unichar_t *ubuf);
-extern char *u2utf8_copy(const unichar_t *ubuf);
-extern char *u2utf8_copyn(const unichar_t *ubuf,int len);
-extern unichar_t *encoding2u_strncpy(unichar_t *uto, const char *from, int n, enum encoding cs);
-extern char *u2encoding_strncpy(char *to, const unichar_t *ufrom, int n, enum encoding cs);
-extern unichar_t *def2u_strncpy(unichar_t *uto, const char *from, int n);
-extern char *u2def_strncpy(char *to, const unichar_t *ufrom, int n);
-extern unichar_t *def2u_copy(const char *from);
-extern char *u2def_copy(const unichar_t *ufrom);
+extern unichar_t *utf82u_strncpy(unichar_t * ubuf, const char *utf8buf,
+				 int len);
+extern unichar_t *utf82u_strcpy(unichar_t * ubuf, const char *utf8buf);
 
-extern int uAllAscii(const unichar_t *str);
+extern void utf82u_strcat(unichar_t * ubuf, const char *utf8buf);
+
+extern unichar_t *utf82u_copyn(const char *utf8buf, int len);
+
+extern unichar_t *utf82u_copy(const char *utf8buf);
+
+extern char *u2utf8_strcpy(char *utf8buf, const unichar_t * ubuf);
+
+extern char *u2utf8_copy(const unichar_t * ubuf);
+
+extern char *u2utf8_copyn(const unichar_t * ubuf, int len);
+
+extern unichar_t *encoding2u_strncpy(unichar_t * uto, const char *from, int n,
+				     enum encoding cs);
+extern char *u2encoding_strncpy(char *to, const unichar_t * ufrom, int n,
+				enum encoding cs);
+extern unichar_t *def2u_strncpy(unichar_t * uto, const char *from, int n);
+
+extern char *u2def_strncpy(char *to, const unichar_t * ufrom, int n);
+
+extern unichar_t *def2u_copy(const char *from);
+
+extern char *u2def_copy(const unichar_t * ufrom);
+
+extern int uAllAscii(const unichar_t * str);
+
 extern int AllAscii(const char *);
+
 extern char *StripToASCII(const char *utf8_str);
 
 extern char *copytolower(const char *);
-extern int endswith(const char *haystack,const char *needle);
-extern int endswithi(const char *haystack,const char *needle);
-extern int endswithi_partialExtension( const char *haystack,const char *needle);
+
+extern int endswith(const char *haystack, const char *needle);
+
+extern int endswithi(const char *haystack, const char *needle);
+
+extern int endswithi_partialExtension(const char *haystack,
+				      const char *needle);
 
 /**
  * Remove trailing \n or \r from the given string. No memory
@@ -156,7 +234,7 @@ extern int endswithi_partialExtension( const char *haystack,const char *needle);
  * carrage return character found at the end of the string pointed to
  * by 'p'.
  */
-extern char* chomp( char* p );
+extern char *chomp(char *p);
 
 /**
  * Return true if the haystack plain string ends with the string
@@ -166,7 +244,7 @@ extern char* chomp( char* p );
  *
  * No new strings are allocated, freed, or returned.
  */
-int endswith(const char *haystack,const char *needle);
+int endswith(const char *haystack, const char *needle);
 
 /**
  * Return true if the haystack unicode string ends with the string needle.
@@ -176,7 +254,7 @@ int endswith(const char *haystack,const char *needle);
  *
  * No new strings are allocated, freed, or returned.
  */
-extern int u_endswith(const unichar_t *haystack,const unichar_t *needle);
+extern int u_endswith(const unichar_t * haystack, const unichar_t * needle);
 
 /**
  * In the string 's' replace all occurances of 'orig' with 'replacement'.
@@ -195,6 +273,7 @@ extern int u_endswith(const unichar_t *haystack,const unichar_t *needle);
  * so it can be freed without concern. This also allows the ordering of replace_all
  * in the above to be changed without having to worry about the free_s flag.
  */
-extern char* str_replace_all( char* s, char* orig, char* replacement, int free_s );
+extern char *str_replace_all(char *s, char *orig, char *replacement,
+			     int free_s);
 
 #endif

@@ -25,26 +25,26 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GIOFTP_H
-#define _GIOFTP_H
+#   define _GIOFTP_H
 
-#include "gioP.h"
+#   include "gioP.h"
 
 struct ftpconnectiondata {
-    /* a read on the control socket may garner more than one line. Do simple buffering */
-    int ctl;
-    int rlen;		/* read */
-    int plen;		/* processed */
-    int base;		/* start of current line processed */
-    char buffer[513];
+   /* a read on the control socket may garner more than one line. Do simple buffering */
+   int ctl;
+   int rlen;			/* read */
+   int plen;			/* processed */
+   int base;			/* start of current line processed */
+   char buffer[513];
 };
 
 struct ftphostaccessdata {
-    struct ftphostaccessdata *next;
-    int port;
-    int protocol_index;
-    int tzoff;
-    int ctl;
-    char *username;
-    char *password;
+   struct ftphostaccessdata *next;
+   int port;
+   int protocol_index;
+   int tzoff;
+   int ctl;
+   char *username;
+   char *password;
 };
 #endif

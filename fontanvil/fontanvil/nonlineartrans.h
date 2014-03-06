@@ -29,51 +29,55 @@
 #include <ustring.h>
 #include <math.h>
 #ifdef HAVE_IEEEFP_H
-# include <ieeefp.h>		/* Solaris defines isnan in ieeefp rather than math.h */
+#   include <ieeefp.h>		/* Solaris defines isnan in ieeefp rather than math.h */
 #endif
 
 #ifndef _NONLINEARTRANS_H
-#define _NONLINEARTRANS_H
+#   define _NONLINEARTRANS_H
 
-enum operator {
-    op_base = 0x100,			/* Bigger than any character */
+enum operator  {
+   op_base = 0x100,		/* Bigger than any character */
 
-    op_x, op_y,				/* Returns current x & y values, no operands */
-    op_value,				/* Returns a constant value */
-    op_negate, op_not,			/* Unary operators: op1 */
-    op_log, op_exp, op_sqrt, op_sin, op_cos, op_tan,
-    op_abs, op_rint, op_floor, op_ceil,
-    op_pow,				/* Binary operators: op1, op2 */
-    op_atan2,
-    op_times, op_div, op_mod,
-    op_add, op_sub,
-    op_eq, op_ne, op_le, op_lt, op_gt, op_ge,
-    op_and, op_or,
-    op_if				/* Trinary operator: op1 ? op2 : op3 */
+   op_x, op_y,			/* Returns current x & y values, no operands */
+   op_value,			/* Returns a constant value */
+   op_negate, op_not,		/* Unary operators: op1 */
+   op_log, op_exp, op_sqrt, op_sin, op_cos, op_tan,
+   op_abs, op_rint, op_floor, op_ceil,
+   op_pow,			/* Binary operators: op1, op2 */
+   op_atan2,
+   op_times, op_div, op_mod,
+   op_add, op_sub,
+   op_eq, op_ne, op_le, op_lt, op_gt, op_ge,
+   op_and, op_or,
+   op_if			/* Trinary operator: op1 ? op2 : op3 */
 };
 
 struct expr {
-    enum operator operator;
-    struct expr *op1, *op2, *op3;
-    real value;
+   enum operator  operator;
+   struct expr *op1, *op2, *op3;
+   real value;
 };
 
 struct context {
-    char *start, *cur;
-    unsigned int had_error: 1;
-    enum operator backed_token;
-    real backed_val;
+   char *start, *cur;
+   unsigned int had_error:1;
+   enum operator  backed_token;
+   real backed_val;
 
-    real x, y;
-    struct expr *x_expr, *y_expr;
-    SplineChar *sc;
-    void *pov;
-    void (*pov_func)(BasePoint *me,void *);
+   real x, y;
+   struct expr *x_expr, *y_expr;
+   SplineChar *sc;
+   void *pov;
+   void (*pov_func) (BasePoint * me, void *);
 };
 
-extern void _SFNLTrans(FontViewBase *fv,struct context *c);
-extern struct expr *nlt_parseexpr(struct context *c,char *str);
+extern void _SFNLTrans(FontViewBase * fv, struct context *c);
+
+extern struct expr *nlt_parseexpr(struct context *c, char *str);
+
 extern void nlt_exprfree(struct expr *e);
-extern void CVNLTrans(CharViewBase *cv,struct context *c);
-extern void SPLPoV(SplineSet *spl,struct pov_data *pov, int only_selected);
+
+extern void CVNLTrans(CharViewBase * cv, struct context *c);
+
+extern void SPLPoV(SplineSet * spl, struct pov_data *pov, int only_selected);
 #endif

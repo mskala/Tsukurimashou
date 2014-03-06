@@ -37,102 +37,99 @@
 #include <limits.h>
 
 #if defined(__MINGW32__)
-#  include <winsock2.h>
-#  include <windows.h>
-#  include <plibc.h>
+#   include <winsock2.h>
+#   include <windows.h>
+#   include <plibc.h>
 #else
 extern int h_errno;
-#  include <netdb.h>
-#  include <arpa/inet.h>
+
+#   include <netdb.h>
+#   include <arpa/inet.h>
 #endif
 
 #ifdef BUILD_COLLAB
-#if !defined(__MINGW32__)
-#include <uuid/uuid.h>
+#   if !defined(__MINGW32__)
+#      include <uuid/uuid.h>
+#   endif
 #endif
-#endif
 
 
-char* ff_gethostname( char* outstring, int outstring_sz )
-{
-    char hostname[PATH_MAX+1];
-    int rc = 0;
+char *ff_gethostname(char *outstring, int outstring_sz) {
+   char hostname[PATH_MAX + 1];
 
-    rc = gethostname( hostname, PATH_MAX );
-    if( rc == -1 )
-    {
-	strncpy( outstring, "localhost", outstring_sz );
-	return outstring;
-    }
+   int rc = 0;
 
-    strncpy( outstring, hostname, outstring_sz );
-    return outstring;
+   rc = gethostname(hostname, PATH_MAX);
+   if (rc == -1) {
+      strncpy(outstring, "localhost", outstring_sz);
+      return outstring;
+   }
+
+   strncpy(outstring, hostname, outstring_sz);
+   return outstring;
 }
 
 
-char* getNetworkAddress( char* outstring )
-{
-    char hostname[PATH_MAX+1];
-    int rc = 0;
+char *getNetworkAddress(char *outstring) {
+   char hostname[PATH_MAX + 1];
 
-    rc = gethostname( hostname, PATH_MAX );
-    if( rc == -1 )
-    {
-	return 0;
-    }
-    printf("hostname: %s\n", hostname );
-    struct hostent * he = gethostbyname( hostname );
-    if( !he )
-    {
-	return 0;
-    }
-    if( he->h_addrtype != AF_INET && he->h_addrtype != AF_INET6 )
-    {
-	return 0;
-    }
+   int rc = 0;
 
-    inet_ntop( he->h_addrtype, he->h_addr_list[0],
-	       outstring, IPADDRESS_STRING_LENGTH_T-1 );
+   rc = gethostname(hostname, PATH_MAX);
+   if (rc == -1) {
+      return 0;
+   }
+   printf("hostname: %s\n", hostname);
+   struct hostent *he = gethostbyname(hostname);
 
-    return outstring;
+   if (!he) {
+      return 0;
+   }
+   if (he->h_addrtype != AF_INET && he->h_addrtype != AF_INET6) {
+      return 0;
+   }
+
+   inet_ntop(he->h_addrtype, he->h_addr_list[0],
+	     outstring, IPADDRESS_STRING_LENGTH_T - 1);
+
+   return outstring;
 }
 
-char* HostPortPack( char* hostname, int port )
-{
-    static char ret[PATH_MAX+1];
-    snprintf(ret,PATH_MAX,"%s:%d",hostname,port);
-    return ret;
+char *HostPortPack(char *hostname, int port) {
+   static char ret[PATH_MAX + 1];
+
+   snprintf(ret, PATH_MAX, "%s:%d", hostname, port);
+   return ret;
 }
 
-char* HostPortUnpack( char* packed, int* port, int port_default )
-{
-    char* colon = strrchr( packed, ':' );
-    if( !colon )
-    {
-	*port = port_default;
-	return packed;
-    }
+char *HostPortUnpack(char *packed, int *port, int port_default) {
+   char *colon = strrchr(packed, ':');
 
-    *colon = '\0';
-    *port = atoi(colon+1);
-    return packed;
+   if (!colon) {
+      *port = port_default;
+      return packed;
+   }
+
+   *colon = '\0';
+   *port = atoi(colon + 1);
+   return packed;
 }
 
 
 //
 // target must be at least 1b4e28ba-2fa1-11d2-883f-0016d3cca427 + null in length.
 //
-char* ff_uuid_generate( char* target )
-{
-    strcpy( target, "" );
+char *ff_uuid_generate(char *target) {
+   strcpy(target, "");
 
 #ifdef BUILD_COLLAB
-#if !defined(__MINGW32__)
-    uuid_t uuid;
-    uuid_generate (uuid);
-    uuid_unparse_lower( uuid, target );
-#endif
+#   if !defined(__MINGW32__)
+   uuid_t uuid;
+
+   uuid_generate(uuid);
+   uuid_unparse_lower(uuid, target);
+#   endif
 #endif // collab guard.
 
-    return target;
+   return target;
 }

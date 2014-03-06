@@ -25,18 +25,26 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _CVRULER_H
-#define _CVRULER_H
+#   define _CVRULER_H
 
 extern int measuretoolshowhorizontolvertical;
+
 extern Color measuretoollinecol;
+
 extern Color measuretoolpointcol;
+
 extern Color measuretoolpointsnappedcol;
+
 extern Color measuretoolcanvasnumberscol;
+
 extern Color measuretoolcanvasnumberssnappedcol;
-extern Color measuretoolwindowforegroundcol;
-extern Color measuretoolwindowbackgroundcol;
+
 extern Color measuretoolwindowforegroundcol;
 
-extern void CVRulerExpose(GWindow pixmap,CharView *cv);
+extern Color measuretoolwindowbackgroundcol;
+
+extern Color measuretoolwindowforegroundcol;
+
+extern void CVRulerExpose(GWindow pixmap, CharView * cv);
 
 #endif

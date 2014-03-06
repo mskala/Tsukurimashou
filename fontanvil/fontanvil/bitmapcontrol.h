@@ -26,18 +26,18 @@
  */
 
 typedef struct createbitmapdata {
-    FontViewBase *fv;
-    SplineFont *sf;
-    SplineChar *sc;
-    int layer;
-    int isavail;
-    int which;
-    int rasterize;
-    unsigned int done: 1;
+   FontViewBase *fv;
+   SplineFont *sf;
+   SplineChar *sc;
+   int layer;
+   int isavail;
+   int which;
+   int rasterize;
+   unsigned int done:1;
 } CreateBitmapData;
 
 enum { bd_all, bd_selected, bd_current };
 
 extern int bdfcontrol_lastwhich;
 
-void BitmapsDoIt(CreateBitmapData *bd,int32 *sizes,int usefreetype);
+void BitmapsDoIt(CreateBitmapData * bd, int32 * sizes, int usefreetype);

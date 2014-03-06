@@ -27,8 +27,9 @@
 
 #include "fontanvilvw.h"
 #ifndef _NO_LIBUNICODENAMES
-# include <libunicodenames.h>	/* need to open a database when we start */
-extern uninm_names_db names_db; /* Unicode character names and annotations database */
+#   include <libunicodenames.h>	/* need to open a database when we start */
+extern uninm_names_db names_db;	/* Unicode character names and annotations database */
+
 extern uninm_blocks_db blocks_db;
 #endif
 #include <gfile.h>
@@ -40,7 +41,7 @@ extern uninm_blocks_db blocks_db;
 #include <unistd.h>
 #include <dynamic.h>
 #ifdef __Mac
-# include <stdlib.h>		/* getenv,setenv */
+#   include <stdlib.h>		/* getenv,setenv */
 #endif
 
 static void doscriptusage(void) {
@@ -53,57 +54,65 @@ static void doscriptusage(void) {
    printf("\t-lang=ff\t (ignored for compatibility)\n");
    printf("\t-lang=py\t (fatal error)\n");
    printf("\n");
-   printf("If no scriptfile/string is given (or if it's \"-\") FontAnvil will read stdin\n");
+   printf
+      ("If no scriptfile/string is given (or if it's \"-\") FontAnvil will read stdin\n");
    printf("Any arguments after the script file will be passed to it.\n");
-   printf("If the first argument is an executable filename, and that file's first\n");
-   printf("\tline contains \"fontanvil\" or \"fontforge\" then it will be treated as a scriptfile.\n\n");
+   printf
+      ("If the first argument is an executable filename, and that file's first\n");
+   printf
+      ("\tline contains \"fontanvil\" or \"fontforge\" then it will be treated as a scriptfile.\n\n");
    exit(0);
 }
 
-int fontanvil_main( int argc, char **argv ) {
+int fontanvil_main(int argc, char **argv) {
    extern const char *source_version_str;
+
    extern const char *source_modtime_str;
-   
-   fprintf(stderr,"Copyright (c) 2000-2014 by George Williams. See AUTHORS for Contributors.\n");
-   fprintf(stderr," License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n");
-   fprintf(stderr," with many parts BSD <http://fontforge.org/license.html>. Please read LICENSE.\n");
-   fprintf(stderr," Executable based on sources from %s"
-	   "-ML"
+
+   fprintf(stderr,
+	   "Copyright (c) 2000-2014 by George Williams. See AUTHORS for Contributors.\n");
+   fprintf(stderr,
+	   " License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n");
+   fprintf(stderr,
+	   " with many parts BSD <http://fontforge.org/license.html>. Please read LICENSE.\n");
+   fprintf(stderr, " Executable based on sources from %s" "-ML"
 #ifdef FONTANVIL_CONFIG_USE_DOUBLE
 	   "-D"
 #endif
-	   ".\n",
-	   source_modtime_str );
-   fprintf(stderr," Library based on sources from %s.\n",FONTANVIL_MODTIME_STR);
-   
+	   ".\n", source_modtime_str);
+   fprintf(stderr, " Library based on sources from %s.\n",
+	   FONTANVIL_MODTIME_STR);
+
    FindProgDir(argv[0]);
    InitSimpleStuff();
-   
-   bind_textdomain_codeset("FontAnvil","UTF-8");
+
+   bind_textdomain_codeset("FontAnvil", "UTF-8");
    bindtextdomain("FontAnvil", getLocaleDir());
    textdomain("FontAnvil");
-   
-   if (default_encoding==NULL)
-     default_encoding=FindOrMakeEncoding("ISO8859-1");
-   if (default_encoding==NULL)
-     default_encoding=&custom;	/* In case iconv is broken */
-   CheckIsScript(argc,argv);		/* Will run the script and exit if it is a script */
-   if (argc==2) {
+
+   if (default_encoding == NULL)
+      default_encoding = FindOrMakeEncoding("ISO8859-1");
+   if (default_encoding == NULL)
+      default_encoding = &custom;	/* In case iconv is broken */
+   CheckIsScript(argc, argv);	/* Will run the script and exit if it is a script */
+   if (argc == 2) {
       char *pt = argv[1];
-      if (*pt=='-' && pt[1]=='-' && pt[2]!='\0') ++pt;
-      if (strcmp(pt,"-usage")==0)
-	doscriptusage();
-      else if (strcmp(pt,"-help")==0)
-	doscriptusage();
-      else if (strcmp(pt,"-version")==0)
-	doversion(source_version_str);
+
+      if (*pt == '-' && pt[1] == '-' && pt[2] != '\0')
+	 ++pt;
+      if (strcmp(pt, "-usage") == 0)
+	 doscriptusage();
+      else if (strcmp(pt, "-help") == 0)
+	 doscriptusage();
+      else if (strcmp(pt, "-version") == 0)
+	 doversion(source_version_str);
    }
-   ProcessNativeScript(argc, argv,stdin);
-   
+   ProcessNativeScript(argc, argv, stdin);
+
 #ifndef _NO_LIBUNICODENAMES
    uninm_names_db_close(names_db);	/* close this database before exiting */
    uninm_blocks_db_close(blocks_db);
 #endif
-   
+
    return 0;
 }

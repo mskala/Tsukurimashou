@@ -25,20 +25,20 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GROUPS_H
-#define _GROUPS_H
+#   define _GROUPS_H
 
 
 typedef struct ffgroup {
-    char *name;			/* The name of this group (utf8) */
-    struct ffgroup *parent;	/* parent of this group (NULL for group root) */
-    int kid_cnt;		/* Number of sub-groups */
-    struct ffgroup **kids;	/* The sub-groups */
-    char *glyphs;		/* Or, if a terminal node, a list of glyph names/Unicodes */
-    unsigned int unique: 1;	/* If set => set in all kids & a glyph name may only appear once in all terminal groups */
+   char *name;			/* The name of this group (utf8) */
+   struct ffgroup *parent;	/* parent of this group (NULL for group root) */
+   int kid_cnt;			/* Number of sub-groups */
+   struct ffgroup **kids;	/* The sub-groups */
+   char *glyphs;		/* Or, if a terminal node, a list of glyph names/Unicodes */
+   unsigned int unique:1;	/* If set => set in all kids & a glyph name may only appear once in all terminal groups */
 /* Used by the dialog */
-    unsigned int open: 1;
-    unsigned int selected : 1;
-    int lpos;
+   unsigned int open:1;
+   unsigned int selected:1;
+   int lpos;
 } Group;
 
 extern Group *group_root;
@@ -46,7 +46,10 @@ extern Group *group_root;
 struct fontview;
 
 void SaveGroupList(void);
+
 void LoadGroupList(void);
-Group *GroupCopy(Group *g);
-void GroupFree(Group *g);
+
+Group *GroupCopy(Group * g);
+
+void GroupFree(Group * g);
 #endif

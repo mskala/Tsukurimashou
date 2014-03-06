@@ -27,6 +27,6 @@
 
 #include "fontanvil.h"
 
-int main( int argc, char **argv ) {
-    return fontanvil_main( argc, argv );
+int main(int argc, char **argv) {
+   return fontanvil_main(argc, argv);
 }

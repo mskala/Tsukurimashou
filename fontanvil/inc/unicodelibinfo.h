@@ -25,19 +25,25 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GUTILS_UNICODELIBINFO_H_
-#define _GUTILS_UNICODELIBINFO_H_
+#   define _GUTILS_UNICODELIBINFO_H_
 
-#include <fontanvil-config.h>
-#include <basics.h>
+#   include <fontanvil-config.h>
+#   include <basics.h>
 
 /* These functions are used with uninameslist or unicodenames library, if */
 /* available  (oldest function listed first, latest function listed last) */
 extern void inituninameannot(void);
+
 extern char *unicode_name(int32 unienc);
+
 extern char *unicode_annot(int32 unienc);
+
 extern int32 unicode_block_start(int32 block_i);
+
 extern int32 unicode_block_end(int32 block_i);
+
 extern char *unicode_block_name(int32 block_i);
+
 extern char *unicode_library_version(void);
 
 

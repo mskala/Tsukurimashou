@@ -25,11 +25,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _FONTANVILVW_H_
-#define _FONTANVILVW_H_
+#   define _FONTANVILVW_H_
 
-#include "fontanvil.h"
-#include "gfile.h"
-#include "gimage.h"
-#include "baseviews.h"
+#   include "fontanvil.h"
+#   include "gfile.h"
+#   include "gimage.h"
+#   include "baseviews.h"
 
 #endif

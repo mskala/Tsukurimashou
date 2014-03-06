@@ -25,37 +25,47 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GRESOURCE_H
-#define _GRESOURCE_H
+#   define _GRESOURCE_H
 
-#include "gdraw.h"
+#   include "gdraw.h"
 
-enum res_type { rt_int, rt_double, rt_bool/* int */, rt_color, rt_string };
+enum res_type { rt_int, rt_double, rt_bool /* int */ , rt_color, rt_string };
 
 typedef struct gresstruct {
-    char *resname;
-    enum res_type type;
-    void *val;
-    void *(*cvt)(char *,void *);	/* converts a string into a whatever */
-    int found;
+   char *resname;
+   enum res_type type;
+   void *val;
+   void *(*cvt) (char *, void *);	/* converts a string into a whatever */
+   int found;
 } GResStruct;
 
-#define GRESSTRUCT_EMPTY { NULL, 0, NULL, NULL, 0 }
+#   define GRESSTRUCT_EMPTY { NULL, 0, NULL, NULL, 0 }
 
 
-extern char *GResourceProgramName, *GResourceFullProgram, *GResourceProgramDir;
+extern char *GResourceProgramName, *GResourceFullProgram,
+   *GResourceProgramDir;
 extern int local_encoding;
-#if HAVE_ICONV_H
-# include <iconv.h>
+
+#   if HAVE_ICONV_H
+#      include <iconv.h>
 extern char *iconv_local_encoding_name;
-#endif
+#   endif
 
 void GResourceSetProg(char *prog);
-void GResourceAddResourceFile(char *filename,char *prog,int warn);
-void GResourceAddResourceString(char *string,char *prog);
-void GResourceFind( GResStruct *info, char *prefix);
+
+void GResourceAddResourceFile(char *filename, char *prog, int warn);
+
+void GResourceAddResourceString(char *string, char *prog);
+
+void GResourceFind(GResStruct * info, char *prefix);
+
 char *GResourceFindString(char *name);
+
 int GResourceFindBool(char *name, int def);
+
 long GResourceFindInt(char *name, long def);
+
 Color GResourceFindColor(char *name, Color def);
-GImage *GResourceFindImage(char *name, GImage *def);
+
+GImage *GResourceFindImage(char *name, GImage * def);
 #endif

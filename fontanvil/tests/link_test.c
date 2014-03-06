@@ -1,7 +1,6 @@
 #include "fontanvil.h"
 
-int main()
-{
-    InitSimpleStuff();
-    return 0;
+int main() {
+   InitSimpleStuff();
+   return 0;
 }

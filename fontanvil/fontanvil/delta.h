@@ -26,22 +26,22 @@
  */
 
 #ifndef _DELTA_H
-#define _DELTA_H
+#   define _DELTA_H
 
 typedef struct {
-    SplineChar *sc;
-    int size;
-    int nearestpt;		/* Point on spline closest to the questionable grid square */
-    int x,y;			/* Of the lower left corner of the grid square */
-    double distance;
+   SplineChar *sc;
+   int size;
+   int nearestpt;		/* Point on spline closest to the questionable grid square */
+   int x, y;			/* Of the lower left corner of the grid square */
+   double distance;
 } QuestionableGrid;
 
 struct qgnode {
-    QuestionableGrid *first;
-    struct qgnode *kids, *parent;
-    int kid_cnt, qg_cnt, tot_under;
-    uint8 open;
-    char *name;
+   QuestionableGrid *first;
+   struct qgnode *kids, *parent;
+   int kid_cnt, qg_cnt, tot_under;
+   uint8 open;
+   char *name;
 };
 
 enum qg_error { qg_ok, qg_notnumber, qg_badnumber, qg_badrange, qg_nofont };
@@ -51,43 +51,43 @@ enum glyph_sort { gs_unicode, gs_alpha, gs_gid };
 enum info_sort { is_glyph_size_pt, is_glyph_pt_size, is_size_glyph_pt };
 
 typedef struct qg_data {
-    /* Set by dlg */
-    FontViewBase *fv;
-    struct charview *cv;
-    SplineChar *sc;
-    int layer;
-    double within;		/* Return center points which are less than within from a spline */
-    char *pixelsizes;
-    int dpi;
-    int depth;
+   /* Set by dlg */
+   FontViewBase *fv;
+   struct charview *cv;
+   SplineChar *sc;
+   int layer;
+   double within;		/* Return center points which are less than within from a spline */
+   char *pixelsizes;
+   int dpi;
+   int depth;
 
 /* Used internally */
-    void *freetype_context;
-    int cur_size;
+   void *freetype_context;
+   int cur_size;
 
 /* Set internally */
-    QuestionableGrid *qg;
-    int cur, max, glyph_start;
-    enum qg_error error;
+   QuestionableGrid *qg;
+   int cur, max, glyph_start;
+   enum qg_error error;
 
 /* Dlg internal */
-    struct gwindow *gw;
-    int done;
+   struct gwindow *gw;
+   int done;
 
 /* Second dlg */
-    struct font_instance *font;
-    int fh,as;
-    int vlcnt;			/* # physical lines in "v" window */
-    int lcnt;			/* # logical lines currently open */
-    int loff_top;
-    struct ggadget *vsb;
-    struct gwindow *v;
-    enum glyph_sort glyph_sort;
-    enum info_sort info_sort;
+   struct font_instance *font;
+   int fh, as;
+   int vlcnt;			/* # physical lines in "v" window */
+   int lcnt;			/* # logical lines currently open */
+   int loff_top;
+   struct ggadget *vsb;
+   struct gwindow *v;
+   enum glyph_sort glyph_sort;
+   enum info_sort info_sort;
 
-    struct qgnode list;
+   struct qgnode list;
 
-    uint8 inprocess;
+   uint8 inprocess;
 } QGData;
 
 extern void TopFindQuestionablePoints(struct qg_data *data);

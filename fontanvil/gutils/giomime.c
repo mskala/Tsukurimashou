@@ -28,43 +28,85 @@
 #include "gfile.h"
 #include "ustring.h"
 
-unichar_t unknown[] = { '*','/','*', '\0' };
-unichar_t textplain[] = { 't','e','x','t','/','p','l','a','i','n', '\0' };
-unichar_t texthtml[] = { 't','e','x','t','/','h','t','m','l', '\0' };
-unichar_t textxml[] = { 't','e','x','t','/','x','m','l', '\0' };
-unichar_t textc[] = { 't','e','x','t','/','c', '\0' };
-unichar_t textcss[] = { 't','e','x','t','/','c','s','s', '\0' };
-unichar_t textmake[] = { 't','e','x','t','/','m','a','k','e', '\0' };
-unichar_t textjava[] = { 't','e','x','t','/','j','a','v','a', '\0' };
-unichar_t textps[] = { 't','e','x','t','/','p','s', '\0' };
+unichar_t unknown[] = { '*', '/', '*', '\0' };
+unichar_t textplain[] =
+   { 't', 'e', 'x', 't', '/', 'p', 'l', 'a', 'i', 'n', '\0' };
+unichar_t texthtml[] = { 't', 'e', 'x', 't', '/', 'h', 't', 'm', 'l', '\0' };
+unichar_t textxml[] = { 't', 'e', 'x', 't', '/', 'x', 'm', 'l', '\0' };
+unichar_t textc[] = { 't', 'e', 'x', 't', '/', 'c', '\0' };
+unichar_t textcss[] = { 't', 'e', 'x', 't', '/', 'c', 's', 's', '\0' };
+unichar_t textmake[] = { 't', 'e', 'x', 't', '/', 'm', 'a', 'k', 'e', '\0' };
+unichar_t textjava[] = { 't', 'e', 'x', 't', '/', 'j', 'a', 'v', 'a', '\0' };
+unichar_t textps[] = { 't', 'e', 'x', 't', '/', 'p', 's', '\0' };
+
 	/* Officially registered with IANA on 14 May 2008 */
-unichar_t sfdfont[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','v','n','d','.','f','o','n','t','-','f','o','n','t','f','o','r','g','e','-','s','f','d', '\0' };
-unichar_t textpsfont[] = { 't','e','x','t','/','f','o','n','t','p','s', '\0' };
-unichar_t textbdffont[] = { 't','e','x','t','/','f','o','n','t','b','d','f', '\0' };
-unichar_t imagebmp[] = { 'i','m','a','g','e','/','b','m','p', '\0' }; /* *.bmp */
-unichar_t imagegif[] = { 'i','m','a','g','e','/','g','i','f', '\0' };
-unichar_t imagejpeg[] = { 'i','m','a','g','e','/','j','p','e','g', '\0' }; /* *.jpeg,*.jpg */
-unichar_t imagepng[] = { 'i','m','a','g','e','/','p','n','g', '\0' };
-unichar_t imageras[] = { 'i','m','a','g','e','/','x','-','c','m','u','-','r','a','s','t','e','r', '\0' }; /* *.ras */
-unichar_t imagesvg[] = { 'i','m','a','g','e','/','s','v','g','+','x','m','l', '\0' };
-unichar_t videoquick[] = { 'v','i','d','e','o','/','q','u','i','c','k','t','i','m','e', '\0' };
-unichar_t audiowav[] = { 'a','u','d','i','o','/','w','a','v', '\0' };
-unichar_t pdf[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','p','d','f', '\0' };
-unichar_t object[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','o','b','j','e','c','t', '\0' };
-unichar_t dir[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','n','a','v','i','d','i','r', '\0' };
-unichar_t core[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','c','o','r','e', '\0' };
-unichar_t fontttf[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','f','o','n','t','-','t','t','f', '\0' };
-unichar_t fontotf[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','f','o','n','t','-','o','t','f', '\0' };
-unichar_t fontcid[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','f','o','n','t','-','c','i','d', '\0' };
-unichar_t fonttype1[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','f','o','n','t','-','t','y','p','e','1', '\0' };
-unichar_t fontmacsuit[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','m','a','c','-','s','u','i','t', '\0' };
-unichar_t macbin[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','m','a','c','b','i','n','a','r','y', '\0' };
-unichar_t machqx[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','m','a','c','-','b','i','n','h','e','x','4','0', '\0' };
-unichar_t macdfont[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','m','a','c','-','d','f','o','n','t', '\0' };
-unichar_t compressed[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','c','o','m','p','r','e','s','s','e','d', '\0' };
-unichar_t tar[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','t','a','r', '\0' };
-unichar_t fontpcf[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','f','o','n','t','-','p','c','f', '\0' };
-unichar_t fontsnf[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','f','o','n','t','-','s','n','f', '\0' };
+unichar_t sfdfont[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'v', 'n',
+'d', '.', 'f', 'o', 'n', 't', '-', 'f', 'o', 'n', 't', 'f', 'o', 'r', 'g', 'e', '-', 's',
+'f', 'd', '\0' };
+unichar_t textpsfont[] =
+   { 't', 'e', 'x', 't', '/', 'f', 'o', 'n', 't', 'p', 's', '\0' };
+unichar_t textbdffont[] =
+   { 't', 'e', 'x', 't', '/', 'f', 'o', 'n', 't', 'b', 'd', 'f', '\0' };
+unichar_t imagebmp[] = { 'i', 'm', 'a', 'g', 'e', '/', 'b', 'm', 'p', '\0' };	/* *.bmp */
+unichar_t imagegif[] = { 'i', 'm', 'a', 'g', 'e', '/', 'g', 'i', 'f', '\0' };
+unichar_t imagejpeg[] = { 'i', 'm', 'a', 'g', 'e', '/', 'j', 'p', 'e', 'g', '\0' };	/* *.jpeg,*.jpg */
+unichar_t imagepng[] = { 'i', 'm', 'a', 'g', 'e', '/', 'p', 'n', 'g', '\0' };
+unichar_t imageras[] = { 'i', 'm', 'a', 'g', 'e', '/', 'x', '-', 'c', 'm', 'u', '-', 'r', 'a', 's', 't', 'e', 'r', '\0' };	/* *.ras */
+unichar_t imagesvg[] =
+   { 'i', 'm', 'a', 'g', 'e', '/', 's', 'v', 'g', '+', 'x', 'm', 'l', '\0' };
+unichar_t videoquick[] =
+   { 'v', 'i', 'd', 'e', 'o', '/', 'q', 'u', 'i', 'c', 'k', 't', 'i', 'm',
+'e', '\0' };
+unichar_t audiowav[] = { 'a', 'u', 'd', 'i', 'o', '/', 'w', 'a', 'v', '\0' };
+unichar_t pdf[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'p', 'd',
+'f', '\0' };
+unichar_t object[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'o', 'b', 'j', 'e', 'c', 't', '\0' };
+unichar_t dir[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'n', 'a', 'v', 'i', 'd', 'i', 'r', '\0' };
+unichar_t core[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'c', 'o', 'r', 'e', '\0' };
+unichar_t fontttf[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'f', 'o', 'n', 't', '-', 't', 't', 'f', '\0' };
+unichar_t fontotf[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'f', 'o', 'n', 't', '-', 'o', 't', 'f', '\0' };
+unichar_t fontcid[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'f', 'o', 'n', 't', '-', 'c', 'i', 'd', '\0' };
+unichar_t fonttype1[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'f', 'o', 'n', 't', '-', 't', 'y', 'p', 'e', '1', '\0' };
+unichar_t fontmacsuit[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'m', 'a', 'c', '-', 's', 'u', 'i', 't', '\0' };
+unichar_t macbin[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'m', 'a', 'c', 'b', 'i', 'n', 'a', 'r', 'y', '\0' };
+unichar_t machqx[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'m', 'a', 'c', '-', 'b', 'i', 'n', 'h', 'e', 'x', '4', '0', '\0' };
+unichar_t macdfont[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'m', 'a', 'c', '-', 'd', 'f', 'o', 'n', 't', '\0' };
+unichar_t compressed[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'c', 'o', 'm', 'p', 'r', 'e', 's', 's', 'e', 'd', '\0' };
+unichar_t tar[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'t', 'a', 'r', '\0' };
+unichar_t fontpcf[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'f', 'o', 'n', 't', '-', 'p', 'c', 'f', '\0' };
+unichar_t fontsnf[] =
+   { 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'x', '-',
+'f', 'o', 'n', 't', '-', 's', 'n', 'f', '\0' };
 //unichar_t fontwoff[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','f','o','n','t','-','w','o','f','f', '\0' };
 //unichar_t fonttexfm[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-','t','e','x','-','t','f','m', '\0' }; /* *.tfm */
 
@@ -94,42 +136,40 @@ unichar_t fontsnf[] = { 'a','p','p','l','i','c','a','t','i','o','n','/','x','-',
 #include "ustring.h"
 
 
-char*
-GIOGetMimeType( const char *path, int sniff_data )
-{
-    char *content_type, *mime;
-    int sniff_length = 4096;
-    guchar sniff_buffer[sniff_length];
-    gboolean uncertain;
+char *GIOGetMimeType(const char *path, int sniff_data) {
+   char *content_type, *mime;
 
-    content_type = g_content_type_guess (path, NULL, 0, NULL);
+   int sniff_length = 4096;
 
-    if (sniff_data)
-    {
-	FILE *fp = fopen (path, "rb");
-	if (fp)
-        {
-	    size_t res = fread (sniff_buffer, 1, sniff_length, fp);
-	    fclose (fp);
-	    if (res >= 0)
-            {
-		g_free (content_type);
-		content_type = g_content_type_guess (NULL, sniff_buffer, res, &uncertain);
-		if (uncertain)
-                {
-		    g_content_type_guess (path, sniff_buffer, res, NULL);
-                }
-            }
-        }
-    }
+   guchar sniff_buffer[sniff_length];
 
-    mime = g_content_type_get_mime_type (content_type);
-    g_free (content_type);
+   gboolean uncertain;
 
-    if (!mime)
-	mime = "*/*";
+   content_type = g_content_type_guess(path, NULL, 0, NULL);
 
-    return mime;
+   if (sniff_data) {
+      FILE *fp = fopen(path, "rb");
+
+      if (fp) {
+	 size_t res = fread(sniff_buffer, 1, sniff_length, fp);
+
+	 fclose(fp);
+	 if (res >= 0) {
+	    g_free(content_type);
+	    content_type =
+	       g_content_type_guess(NULL, sniff_buffer, res, &uncertain);
+	    if (uncertain) {
+	       g_content_type_guess(path, sniff_buffer, res, NULL);
+	    }
+	 }
+      }
+   }
+
+   mime = g_content_type_get_mime_type(content_type);
+   g_free(content_type);
+
+   if (!mime)
+      mime = "*/*";
+
+   return mime;
 }
-
-

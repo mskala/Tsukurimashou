@@ -38,53 +38,56 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void ProcessFiles(FILE *in, FILE *out) {
-    char line[1000];
-    char *match1 = "Ligature: 8", *match2 = "Ligature: 9";
-    int matchlen = strlen(match1);
+static void ProcessFiles(FILE * in, FILE * out) {
+   char line[1000];
 
-    while ( fgets(line,sizeof(line),in)!=NULL ) {
-	if ( strncmp(line,match1,matchlen)==0 )
-	    line[matchlen-1] = '0';
-	else if ( strncmp(line,match2,matchlen)==0 )
-	    line[matchlen-1] = '1';
-	fputs(line,out);
-    }
+   char *match1 = "Ligature: 8", *match2 = "Ligature: 9";
+
+   int matchlen = strlen(match1);
+
+   while (fgets(line, sizeof(line), in) != NULL) {
+      if (strncmp(line, match1, matchlen) == 0)
+	 line[matchlen - 1] = '0';
+      else if (strncmp(line, match2, matchlen) == 0)
+	 line[matchlen - 1] = '1';
+      fputs(line, out);
+   }
 }
 
 static void ProcessFilename(char *name) {
-    char buffer[1000];
-    FILE *in, *out;
+   char buffer[1000];
 
-    strcpy(buffer,name);
-    if ( strlen(buffer)>4 && strcmp(buffer+strlen(buffer)-4,".sfd")==0 )
-	strcpy(buffer+strlen(buffer)-4,"-new.sfd");
-    else
-	strcat(buffer,"-new");
-    in = fopen(name,"r");
-    if ( in==NULL ) {
-	fprintf( stderr, "Could not open %s for reading\n", name );
-exit(1);
-    }
-    out = fopen(buffer,"w");
-    if ( out==NULL ) {
-	fclose(in);
-	fprintf( stderr, "Could not open %s for writing\n", buffer );
-exit(1);
-    }
-    ProcessFiles(in,out);
-    fclose(in);
-    fclose(out);
+   FILE *in, *out;
+
+   strcpy(buffer, name);
+   if (strlen(buffer) > 4 && strcmp(buffer + strlen(buffer) - 4, ".sfd") == 0)
+      strcpy(buffer + strlen(buffer) - 4, "-new.sfd");
+   else
+      strcat(buffer, "-new");
+   in = fopen(name, "r");
+   if (in == NULL) {
+      fprintf(stderr, "Could not open %s for reading\n", name);
+      exit(1);
+   }
+   out = fopen(buffer, "w");
+   if (out == NULL) {
+      fclose(in);
+      fprintf(stderr, "Could not open %s for writing\n", buffer);
+      exit(1);
+   }
+   ProcessFiles(in, out);
+   fclose(in);
+   fclose(out);
 }
-	
-int main(int argc, char **argv) {
-    int i;
 
-    if ( argc==1 )
-	ProcessFiles(stdin,stdout);
-    else {
-	for ( i=1; i<argc; ++i )
-	    ProcessFilename(argv[i]);
-    }
-return( 0 );
+int main(int argc, char **argv) {
+   int i;
+
+   if (argc == 1)
+      ProcessFiles(stdin, stdout);
+   else {
+      for (i = 1; i < argc; ++i)
+	 ProcessFilename(argv[i]);
+   }
+   return (0);
 }

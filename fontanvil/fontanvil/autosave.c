@@ -38,162 +38,175 @@
 #include "views.h"
 #include "gwidget.h"
 
-int AutoSaveFrequency=5;
+int AutoSaveFrequency = 5;
 
 #if !defined(__MINGW32__)
-# include <pwd.h>
+#   include <pwd.h>
 #endif
 
 char *getPfaEditDir(char *buffer) {
-    static char *editdir = NULL;
-    char *dir;
-    char olddir[1024];
+   static char *editdir = NULL;
 
-    if ( editdir!=NULL )
-return( editdir );
+   char *dir;
 
-    dir = GFileGetHomeDir();
-    if ( dir==NULL )
-return( NULL );
+   char olddir[1024];
+
+   if (editdir != NULL)
+      return (editdir);
+
+   dir = GFileGetHomeDir();
+   if (dir == NULL)
+      return (NULL);
 #ifdef __VMS
-   sprintf(buffer,"%s/_FontAnvil", dir);
+   sprintf(buffer, "%s/_FontAnvil", dir);
 #else
-   sprintf(buffer,"%s/.FontAnvil", dir);
+   sprintf(buffer, "%s/.FontAnvil", dir);
 #endif
-   /* We used to use .PfaEdit. So if we don't find a .FontAnvil look for that*/
-    /*  if there is a .PfaEdit, then rename it to .FontAnvil */
-    if ( access(buffer,F_OK)==-1 ) {
+   /* We used to use .PfaEdit. So if we don't find a .FontAnvil look for that */
+   /*  if there is a .PfaEdit, then rename it to .FontAnvil */
+   if (access(buffer, F_OK) == -1) {
 #ifdef __VMS
-       snprintf(olddir,sizeof(olddir),"%s/_PfaEdit", dir);
+      snprintf(olddir, sizeof(olddir), "%s/_PfaEdit", dir);
 #else
-       snprintf(olddir,sizeof(olddir),"%s/.PfaEdit", dir);
+      snprintf(olddir, sizeof(olddir), "%s/.PfaEdit", dir);
 #endif
-       if ( access(olddir,F_OK)==0 )
-	    rename(olddir,buffer);
-    }
-    free(dir);
-    /* If we still can't find it, create it */
-    if ( access(buffer,F_OK)==-1 )
-	if ( GFileMkDir(buffer)==-1 )
-return( NULL );
-    editdir = copy(buffer);
-return( editdir );
+      if (access(olddir, F_OK) == 0)
+	 rename(olddir, buffer);
+   }
+   free(dir);
+   /* If we still can't find it, create it */
+   if (access(buffer, F_OK) == -1)
+      if (GFileMkDir(buffer) == -1)
+	 return (NULL);
+   editdir = copy(buffer);
+   return (editdir);
 }
 
 static char *getAutoDirName(char *buffer) {
-    char *dir=getPfaEditDir(buffer);
+   char *dir = getPfaEditDir(buffer);
 
-    if ( dir==NULL )
-return( NULL );
-    sprintf(buffer,"%s/autosave", dir);
-    if ( access(buffer,F_OK)==-1 )
-	if ( GFileMkDir(buffer)==-1 )
-return( NULL );
-    dir = copy(buffer);
-return( dir );
+   if (dir == NULL)
+      return (NULL);
+   sprintf(buffer, "%s/autosave", dir);
+   if (access(buffer, F_OK) == -1)
+      if (GFileMkDir(buffer) == -1)
+	 return (NULL);
+   dir = copy(buffer);
+   return (dir);
 }
 
-static void MakeAutoSaveName(SplineFont *sf) {
-    char buffer[1025];
-    char *autosavedir;
-    static int cnt=0;
+static void MakeAutoSaveName(SplineFont * sf) {
+   char buffer[1025];
 
-    if ( sf->autosavename )
-return;
-    autosavedir = getAutoDirName(buffer);
-    if ( autosavedir==NULL )
-return;
-    while ( 1 ) {
-	sprintf( buffer, "%s/auto%06x-%d.asfd", autosavedir, getpid(), ++cnt );
-	if ( access(buffer,F_OK)==-1 ) {
-	    sf->autosavename = copy(buffer);
-return;
-	}
-    }
+   char *autosavedir;
+
+   static int cnt = 0;
+
+   if (sf->autosavename)
+      return;
+   autosavedir = getAutoDirName(buffer);
+   if (autosavedir == NULL)
+      return;
+   while (1) {
+      sprintf(buffer, "%s/auto%06x-%d.asfd", autosavedir, getpid(), ++cnt);
+      if (access(buffer, F_OK) == -1) {
+	 sf->autosavename = copy(buffer);
+	 return;
+      }
+   }
 }
 
 
-int DoAutoRecoveryExtended(int inquire, DoAutoRecoveryPostRecoverFunc PostRecoverFunc )
-{
-    char buffer[1025];
-    char *recoverdir = getAutoDirName(buffer);
-    DIR *dir;
-    struct dirent *entry;
-    int any = false;
-    SplineFont *sf;
-    int inquire_state=0;
+int DoAutoRecoveryExtended(int inquire,
+			   DoAutoRecoveryPostRecoverFunc PostRecoverFunc) {
+   char buffer[1025];
 
-    if ( recoverdir==NULL )
-return( false );
-    if ( (dir = opendir(recoverdir))==NULL )
-return( false );
-    while ( (entry=readdir(dir))!=NULL ) {
-	if ( strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0 )
-    continue;
-	sprintf(buffer,"%s/%s",recoverdir,entry->d_name);
-	fprintf( stderr, "Recovering from %s... ", buffer);
-	if ( (sf = SFRecoverFile(buffer,inquire,&inquire_state)) ) {
-	    any=true;
-	    if ( sf->fv==NULL )		/* Doesn't work, cli arguments not parsed yet */
-		FontViewCreate(sf,false);
-	    fprintf( stderr, " Done\n" );
-	}
-    }
-    closedir(dir);
-return( any );
+   char *recoverdir = getAutoDirName(buffer);
+
+   DIR *dir;
+
+   struct dirent *entry;
+
+   int any = false;
+
+   SplineFont *sf;
+
+   int inquire_state = 0;
+
+   if (recoverdir == NULL)
+      return (false);
+   if ((dir = opendir(recoverdir)) == NULL)
+      return (false);
+   while ((entry = readdir(dir)) != NULL) {
+      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+	 continue;
+      sprintf(buffer, "%s/%s", recoverdir, entry->d_name);
+      fprintf(stderr, "Recovering from %s... ", buffer);
+      if ((sf = SFRecoverFile(buffer, inquire, &inquire_state))) {
+	 any = true;
+	 if (sf->fv == NULL)	/* Doesn't work, cli arguments not parsed yet */
+	    FontViewCreate(sf, false);
+	 fprintf(stderr, " Done\n");
+      }
+   }
+   closedir(dir);
+   return (any);
 }
 
-static void DoAutoRecoveryPostRecover_DontPrompt(SplineFont *sf)
-{
+static void DoAutoRecoveryPostRecover_DontPrompt(SplineFont * sf) {
 }
 
-int DoAutoRecovery(int inquire )
-{
-    return DoAutoRecoveryExtended( inquire, DoAutoRecoveryPostRecover_DontPrompt );
+int DoAutoRecovery(int inquire) {
+   return DoAutoRecoveryExtended(inquire,
+				 DoAutoRecoveryPostRecover_DontPrompt);
 }
 
 
 void CleanAutoRecovery(void) {
-    char buffer[1025];
-    char *recoverdir = getAutoDirName(buffer);
-    DIR *dir;
-    struct dirent *entry;
+   char buffer[1025];
 
-    if ( recoverdir==NULL )
-return;
-    if ( (dir = opendir(recoverdir))==NULL )
-return;
-    while ( (entry=readdir(dir))!=NULL ) {
-	if ( strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0 )
-    continue;
-	sprintf(buffer,"%s/%s",recoverdir,entry->d_name);
-	if ( unlink(buffer)!=0 ) {
-	    fprintf( stderr, "Failed to clean " );
-	    perror(buffer);
-	}
-    }
-    closedir(dir);
+   char *recoverdir = getAutoDirName(buffer);
+
+   DIR *dir;
+
+   struct dirent *entry;
+
+   if (recoverdir == NULL)
+      return;
+   if ((dir = opendir(recoverdir)) == NULL)
+      return;
+   while ((entry = readdir(dir)) != NULL) {
+      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+	 continue;
+      sprintf(buffer, "%s/%s", recoverdir, entry->d_name);
+      if (unlink(buffer) != 0) {
+	 fprintf(stderr, "Failed to clean ");
+	 perror(buffer);
+      }
+   }
+   closedir(dir);
 }
 
 
-void _DoAutoSaves(FontViewBase *fvs) {
-    FontViewBase *fv;
-    SplineFont *sf;
+void _DoAutoSaves(FontViewBase * fvs) {
+   FontViewBase *fv;
 
-    if ( AutoSaveFrequency<=0 )
-return;
+   SplineFont *sf;
 
-    for ( fv=fvs; fv!=NULL; fv=fv->next ) {
-	sf = fv->cidmaster?fv->cidmaster:fv->sf;
-	if ( sf->changed_since_autosave ) {
-	    if ( sf->autosavename==NULL )
-		MakeAutoSaveName(sf);
-	    if ( sf->autosavename!=NULL )
-		SFAutoSave(sf,fv->map);
-	}
-    }
+   if (AutoSaveFrequency <= 0)
+      return;
+
+   for (fv = fvs; fv != NULL; fv = fv->next) {
+      sf = fv->cidmaster ? fv->cidmaster : fv->sf;
+      if (sf->changed_since_autosave) {
+	 if (sf->autosavename == NULL)
+	    MakeAutoSaveName(sf);
+	 if (sf->autosavename != NULL)
+	    SFAutoSave(sf, fv->map);
+      }
+   }
 }
 
 void DoAutoSaves(void) {
-    _DoAutoSaves(FontViewFirst());
+   _DoAutoSaves(FontViewFirst());
 }

@@ -32,10 +32,12 @@
 #include <intl.h>
 
 char *sgettext(const char *msgid) {
-    const char *msgval = _(msgid);
-    char *found;
-    if (msgval == msgid)
-	if ( (found = strrchr (msgid, '|'))!=NULL )
-	    msgval = found+1;
-return (char *) msgval;
+   const char *msgval = _(msgid);
+
+   char *found;
+
+   if (msgval == msgid)
+      if ((found = strrchr(msgid, '|')) != NULL)
+	 msgval = found + 1;
+   return (char *) msgval;
 }

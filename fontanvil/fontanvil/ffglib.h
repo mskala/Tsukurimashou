@@ -20,13 +20,13 @@
  */
 
 #ifndef _FFGLIB_H_
-#define _FFGLIB_H_
+#   define _FFGLIB_H_
 
-#define GTimer GTimer_GTK
-#define GList  GList_Glib
-#include <glib.h>
-#include <glib-object.h>
-#undef GTimer
-#undef GList
+#   define GTimer GTimer_GTK
+#   define GList  GList_Glib
+#   include <glib.h>
+#   include <glib-object.h>
+#   undef GTimer
+#   undef GList
 
 #endif

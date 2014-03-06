@@ -26,47 +26,49 @@
  */
 
 #ifndef _FFFREETYPE_H
-#define _FFFREETYPE_H
+#   define _FFFREETYPE_H
 
-#if !defined(_NO_FREETYPE)
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include FT_OUTLINE_H
-#if FREETYPE_MINOR >= 5
-# include FT_TRUETYPE_DRIVER_H
-#endif
+#   if !defined(_NO_FREETYPE)
+#      include <ft2build.h>
+#      include FT_FREETYPE_H
+#      include FT_OUTLINE_H
+#      if FREETYPE_MINOR >= 5
+#         include FT_TRUETYPE_DRIVER_H
+#      endif
 
-#if defined(__MINGW32__)
-# include <Windows.h>
-#else
-# include <sys/mman.h>
-#endif
+#      if defined(__MINGW32__)
+#         include <Windows.h>
+#      else
+#         include <sys/mman.h>
+#      endif
 
-#include <unistd.h>
+#      include <unistd.h>
 
 extern FT_Library ff_ft_context;
 
 typedef struct freetypecontext {
-    SplineFont *sf;
-    int layer;
-    FILE *file;
-    void *mappedfile;
-    long len;
-    int *glyph_indeces;
-    FT_Face face;
-    struct freetypecontext *shared_ftc;	/* file, mappedfile, glyph_indeces are shared with this ftc */
-				/*  We have a new face, but that's it. This is so we can */
-			        /*  have multiple pointsizes without loading the font many */
-			        /*  times */
-    int isttf;
-    int em;			/* Em size in the spline font, not ppem */
+   SplineFont *sf;
+   int layer;
+   FILE *file;
+   void *mappedfile;
+   long len;
+   int *glyph_indeces;
+   FT_Face face;
+   struct freetypecontext *shared_ftc;	/* file, mappedfile, glyph_indeces are shared with this ftc */
+   /*  We have a new face, but that's it. This is so we can */
+   /*  have multiple pointsizes without loading the font many */
+   /*  times */
+   int isttf;
+   int em;			/* Em size in the spline font, not ppem */
 } FTC;
 
 extern void *__FreeTypeFontContext(FT_Library context,
-	SplineFont *sf,SplineChar *sc,FontViewBase *fv,
-	int layer,
-	enum fontformat ff,int flags,void *shared_ftc);
+				   SplineFont * sf, SplineChar * sc,
+				   FontViewBase * fv, int layer,
+				   enum fontformat ff, int flags,
+				   void *shared_ftc);
 
-#endif /* we do have FreeType */
+#   endif
+       /* we do have FreeType */
 
 #endif /* _FFFREETYPE_H */

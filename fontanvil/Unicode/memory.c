@@ -32,26 +32,26 @@
 
 void NoMoreMemMessage(void) {
 /* Output an 'Out of memory' message, then continue */
-    fprintf(stderr, "Out of memory\n" );
+   fprintf(stderr, "Out of memory\n");
 }
 
 char *copy(const char *str) {
-    char *ret;
+   char *ret;
 
-    if ( str==NULL )
-return( NULL );
-    ret = (char *) malloc(strlen(str)+1);
-    strcpy(ret,str);
-return( ret );
+   if (str == NULL)
+      return (NULL);
+   ret = (char *) malloc(strlen(str) + 1);
+   strcpy(ret, str);
+   return (ret);
 }
 
-char *copyn(const char *str,long n) {
-    char *ret;
+char *copyn(const char *str, long n) {
+   char *ret;
 
-    if ( str==NULL )
-return( NULL );
-    ret = (char *) malloc(n+1);
-    memcpy(ret,str,n);
-    ret[n]='\0';
-return( ret );
+   if (str == NULL)
+      return (NULL);
+   ret = (char *) malloc(n + 1);
+   memcpy(ret, str, n);
+   ret[n] = '\0';
+   return (ret);
 }

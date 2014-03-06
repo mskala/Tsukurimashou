@@ -25,89 +25,107 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GIO_H
-#define _GIO_H
+#   define _GIO_H
 
-#include <basics.h>
-#include <time.h>
+#   include <basics.h>
+#   include <time.h>
 
 enum giofuncs { gf_dir, gf_statfile, gf_getfile, gf_putfile,
-	gf_mkdir, gf_delfile, gf_deldir, gf_renamefile,
-	/*gf_lockfile, gf_unlockfile,*/
-	gf_max };
+   gf_mkdir, gf_delfile, gf_deldir, gf_renamefile,
+   /*gf_lockfile, gf_unlockfile, */
+   gf_max
+};
 
 typedef struct giocontrol {
-    unichar_t *path;
-    unichar_t *origpath;		/* what the user asked for (before any redirects), NULL if path doesn't change */
-    unichar_t *topath;			/* for renames and copies */
-    void *userdata;
-    struct gio_connectiondata *connectiondata;
-    struct gio_threaddata *threaddata;
-    void *iodata;
-    void (*receivedata)(struct giocontrol *);
-    void (*receiveintermediate)(struct giocontrol *);
-    void (*receiveerror)(struct giocontrol *);
-    unsigned int done: 1;
-    unsigned int direntrydata: 1;
-    unsigned int abort: 1;
-    enum giofuncs gf;
-    int protocol_index;
-    struct giocontrol *next;
-    int return_code;
-    unichar_t *error;
-    unichar_t status[80];
+   unichar_t *path;
+   unichar_t *origpath;		/* what the user asked for (before any redirects), NULL if path doesn't change */
+   unichar_t *topath;		/* for renames and copies */
+   void *userdata;
+   struct gio_connectiondata *connectiondata;
+   struct gio_threaddata *threaddata;
+   void *iodata;
+   void (*receivedata) (struct giocontrol *);
+   void (*receiveintermediate) (struct giocontrol *);
+   void (*receiveerror) (struct giocontrol *);
+   unsigned int done:1;
+   unsigned int direntrydata:1;
+   unsigned int abort:1;
+   enum giofuncs gf;
+   int protocol_index;
+   struct giocontrol *next;
+   int return_code;
+   unichar_t *error;
+   unichar_t status[80];
 } GIOControl;
-    
+
 typedef struct gdirentry {
-    unichar_t *name;
-    unichar_t *mimetype;
-    unsigned int isdir: 1;
-    unsigned int isexe: 1;
-    unsigned int islnk: 1;
-    unsigned int hasdir: 1;
-    unsigned int hasexe: 1;
-    unsigned int haslnk: 1;
-    unsigned int hasmode: 1;
-    unsigned int hassize: 1;
-    unsigned int hastime: 1;
-    unsigned int timezoneknown: 1;	/* We got a time, but we don't know the timezone. might be off by 24 hours either way */
-    unsigned int fcdata: 2;
-    short mode;
-    uint32 size;
-    time_t modtime;
-    struct gdirentry *next;
+   unichar_t *name;
+   unichar_t *mimetype;
+   unsigned int isdir:1;
+   unsigned int isexe:1;
+   unsigned int islnk:1;
+   unsigned int hasdir:1;
+   unsigned int hasexe:1;
+   unsigned int haslnk:1;
+   unsigned int hasmode:1;
+   unsigned int hassize:1;
+   unsigned int hastime:1;
+   unsigned int timezoneknown:1;	/* We got a time, but we don't know the timezone. might be off by 24 hours either way */
+   unsigned int fcdata:2;
+   short mode;
+   uint32 size;
+   time_t modtime;
+   struct gdirentry *next;
 } GDirEntry;
 
-extern void GIOdir(GIOControl *gc);
-extern void GIOstatFile(GIOControl *gc);
-extern void GIOfileExists(GIOControl *gc);
-extern void GIOgetFile(GIOControl *gc);
-extern void GIOputFile(GIOControl *gc);
-extern void GIOmkDir(GIOControl *gc);
-extern void GIOdelFile(GIOControl *gc);
-extern void GIOdelDir(GIOControl *gc);
-extern void GIOrenameFile(GIOControl *gc);
-extern GDirEntry *GIOgetDirData(GIOControl *gc);
-extern int32 GIOread(GIOControl *gc,void *buffer,int32 len);
-extern int32 GIOwrite(GIOControl *gc,void *buffer,int32 len);
-extern void GIOFreeDirEntries(GDirEntry *lst);
-extern void GIOcancel(GIOControl *gc);
-extern void GIOclose(GIOControl *gc);
-extern GIOControl *GIOCreate(unichar_t *path,void *userdata,
-	void (*receivedata)(struct giocontrol *),
-	void (*receiveerror)(struct giocontrol *));
-extern void GIOSetDefAuthorizer(int32 (*getauth)(struct giocontrol *));
-extern void GIOSetUserAgent(unichar_t *agent);
+extern void GIOdir(GIOControl * gc);
+
+extern void GIOstatFile(GIOControl * gc);
+
+extern void GIOfileExists(GIOControl * gc);
+
+extern void GIOgetFile(GIOControl * gc);
+
+extern void GIOputFile(GIOControl * gc);
+
+extern void GIOmkDir(GIOControl * gc);
+
+extern void GIOdelFile(GIOControl * gc);
+
+extern void GIOdelDir(GIOControl * gc);
+
+extern void GIOrenameFile(GIOControl * gc);
+
+extern GDirEntry *GIOgetDirData(GIOControl * gc);
+
+extern int32 GIOread(GIOControl * gc, void *buffer, int32 len);
+
+extern int32 GIOwrite(GIOControl * gc, void *buffer, int32 len);
+
+extern void GIOFreeDirEntries(GDirEntry * lst);
+
+extern void GIOcancel(GIOControl * gc);
+
+extern void GIOclose(GIOControl * gc);
+
+extern GIOControl *GIOCreate(unichar_t * path, void *userdata,
+			     void (*receivedata) (struct giocontrol *),
+			     void (*receiveerror) (struct giocontrol *));
+extern void GIOSetDefAuthorizer(int32(*getauth) (struct giocontrol *));
+
+extern void GIOSetUserAgent(unichar_t * agent);
 
 //extern unichar_t *GIOguessMimeType(const unichar_t *path,int isdir);
 //extern unichar_t *_GioMacMime(const char *path);
 extern char *GIOGetMimeType(const char *path, bool sniff_data);
 
-extern char *GIO_PasswordCache(char *proto,char *host,char *username,char *password);
-extern char *_GIO_decomposeURL(const unichar_t *url,char **host, int *port, char **username,
-	char **password);
+extern char *GIO_PasswordCache(char *proto, char *host, char *username,
+			       char *password);
+extern char *_GIO_decomposeURL(const unichar_t * url, char **host, int *port,
+			       char **username, char **password);
 
-extern void GIO_SetThreadCallback(void (*callback)(void *,void *,void *));
+extern void GIO_SetThreadCallback(void (*callback) (void *, void *, void *));
 
-extern char* GIOGetMimeType (const char *path, int sniff_data);
+extern char *GIOGetMimeType(const char *path, int sniff_data);
 
 #endif

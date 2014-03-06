@@ -31,84 +31,91 @@
 #include <basics.h>
 #include <ustring.h>
 
-static void NOUI_IError(const char *format,...) {
-    va_list ap;
-    char buffer[400], *str;
-    va_start(ap,format);
-    fprintf(stderr, "Internal Error: " );
-    vsnprintf(buffer,sizeof(buffer),format,ap);
-    str = utf82def_copy(buffer);
-    fprintf(stderr,"%s",str);
-    if ( str[strlen(str)-1]!='\n' )
-	putc('\n',stderr);
-    free(str);
-    va_end(ap);
+static void NOUI_IError(const char *format, ...) {
+   va_list ap;
+
+   char buffer[400], *str;
+
+   va_start(ap, format);
+   fprintf(stderr, "Internal Error: ");
+   vsnprintf(buffer, sizeof(buffer), format, ap);
+   str = utf82def_copy(buffer);
+   fprintf(stderr, "%s", str);
+   if (str[strlen(str) - 1] != '\n')
+      putc('\n', stderr);
+   free(str);
+   va_end(ap);
 }
 
-static void NOUI__LogError(const char *format,va_list ap) {
-    char buffer[400], *str;
-    vsnprintf(buffer,sizeof(buffer),format,ap);
-    str = utf82def_copy(buffer);
-    fprintf(stderr,"%s",str);
-    if ( str[strlen(str)-1]!='\n' )
-	putc('\n',stderr);
-    free(str);
+static void NOUI__LogError(const char *format, va_list ap) {
+   char buffer[400], *str;
+
+   vsnprintf(buffer, sizeof(buffer), format, ap);
+   str = utf82def_copy(buffer);
+   fprintf(stderr, "%s", str);
+   if (str[strlen(str) - 1] != '\n')
+      putc('\n', stderr);
+   free(str);
 }
 
-static void NOUI_LogError(const char *format,...) {
-    va_list ap;
+static void NOUI_LogError(const char *format, ...) {
+   va_list ap;
 
-    va_start(ap,format);
-    NOUI__LogError(format,ap);
-    va_end(ap);
+   va_start(ap, format);
+   NOUI__LogError(format, ap);
+   va_end(ap);
 }
 
-static void NOUI_post_notice(const char *title,const char *statement,...) {
-    va_list ap;
-    va_start(ap,statement);
-    NOUI__LogError(statement,ap);
-    va_end(ap);
+static void NOUI_post_notice(const char *title, const char *statement, ...) {
+   va_list ap;
+
+   va_start(ap, statement);
+   NOUI__LogError(statement, ap);
+   va_end(ap);
 }
 
-static void NOUI_post_error(const char *title,const char *statement,...) {
-    va_list ap;
-    va_start(ap,statement);
-    NOUI__LogError(statement,ap);
-    va_end(ap);
+static void NOUI_post_error(const char *title, const char *statement, ...) {
+   va_list ap;
+
+   va_start(ap, statement);
+   NOUI__LogError(statement, ap);
+   va_end(ap);
 }
 
 static int NOUI_ask(const char *title, const char **answers,
-	int def, int cancel,const char *question,...) {
-return( def );
+		    int def, int cancel, const char *question, ...) {
+   return (def);
 }
 
-static int NOUI_choose(const char *title, const char **choices,int cnt, int def,
-	const char *question,...) {
-return( def );
+static int NOUI_choose(const char *title, const char **choices, int cnt,
+		       int def, const char *question, ...) {
+   return (def);
 }
 
-static int NOUI_choose_multiple(char *title, const char **choices,char *sel,
-	int cnt, char *buts[2], const char *question,...) {
-return( -1 );
+static int NOUI_choose_multiple(char *title, const char **choices, char *sel,
+				int cnt, char *buts[2], const char *question,
+				...) {
+   return (-1);
 }
 
 static char *NOUI_ask_string(const char *title, const char *def,
-	const char *question,...) {
-return( (char *) def );
+			     const char *question, ...) {
+   return ((char *) def);
 }
 
 static char *NOUI_open_file(const char *title, const char *defaultfile,
-	const char *initial_filter) {
-return( NULL );
+			    const char *initial_filter) {
+   return (NULL);
 }
 
 static char *NOUI_saveas_file(const char *title, const char *defaultfile,
-	const char *initial_filter) {
-return( copy(defaultfile) );
+			      const char *initial_filter) {
+   return (copy(defaultfile));
 }
 
-static void NOUI_progress_start(int delay, const char *title, const char *line1,
-	const char *line2, int tot, int stages) {
+static void NOUI_progress_start(int delay, const char *title,
+				const char *line1, const char *line2, int tot,
+				int stages) {
 }
 
 static void NOUI_void_void_noop(void) {
@@ -118,57 +125,58 @@ static void NOUI_void_int_noop(int useless) {
 }
 
 static int NOUI_int_int_noop(int useless) {
-return( true );
+   return (true);
 }
 
-static void NOUI_void_str_noop(const char * useless) {
+static void NOUI_void_str_noop(const char *useless) {
 }
 
 static int NOUI_alwaystrue(void) {
-return( true );
+   return (true);
 }
 
 static int NOUI_DefaultStrokeFlags(void) {
-return( sf_correctdir );
+   return (sf_correctdir);
 }
 
 static struct ui_interface noui_interface = {
-    NOUI_IError,
-    NOUI_post_error,
-    NOUI_LogError,
-    NOUI_post_notice,
-    NOUI_ask,
-    NOUI_choose,
-    NOUI_choose_multiple,
-    NOUI_ask_string,
-    NOUI_ask_string,			/* password */
-    NOUI_open_file,
-    NOUI_saveas_file,
+   NOUI_IError,
+   NOUI_post_error,
+   NOUI_LogError,
+   NOUI_post_notice,
+   NOUI_ask,
+   NOUI_choose,
+   NOUI_choose_multiple,
+   NOUI_ask_string,
+   NOUI_ask_string,		/* password */
+   NOUI_open_file,
+   NOUI_saveas_file,
 
-    NOUI_progress_start,
-    NOUI_void_void_noop,
-    NOUI_void_void_noop,
-    NOUI_void_int_noop,
-    NOUI_alwaystrue,
-    NOUI_alwaystrue,
-    NOUI_int_int_noop,
-    NOUI_void_str_noop,
-    NOUI_void_str_noop,
-    NOUI_void_void_noop,
-    NOUI_void_void_noop,
-    NOUI_void_int_noop,
-    NOUI_void_int_noop,
-    NOUI_alwaystrue,
+   NOUI_progress_start,
+   NOUI_void_void_noop,
+   NOUI_void_void_noop,
+   NOUI_void_int_noop,
+   NOUI_alwaystrue,
+   NOUI_alwaystrue,
+   NOUI_int_int_noop,
+   NOUI_void_str_noop,
+   NOUI_void_str_noop,
+   NOUI_void_void_noop,
+   NOUI_void_void_noop,
+   NOUI_void_int_noop,
+   NOUI_void_int_noop,
+   NOUI_alwaystrue,
 
-    NOUI_void_void_noop,
+   NOUI_void_void_noop,
 
-    NOUI_TTFNameIds,
-    NOUI_MSLangString,
+   NOUI_TTFNameIds,
+   NOUI_MSLangString,
 
-    NOUI_DefaultStrokeFlags
+   NOUI_DefaultStrokeFlags
 };
+
 struct ui_interface *ui_interface = &noui_interface;
 
 void FF_SetUiInterface(struct ui_interface *uii) {
-    ui_interface = uii;
+   ui_interface = uii;
 }

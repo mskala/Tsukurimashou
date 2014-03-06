@@ -25,36 +25,36 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _NAMEHASH_H
-# define _NAMEHASH_H
+#   define _NAMEHASH_H
 
-#define GN_HSIZE	257
+#   define GN_HSIZE	257
 
 struct glyphnamebucket {
-    SplineChar *sc;
-    struct glyphnamebucket *next;
-    char *name;
+   SplineChar *sc;
+   struct glyphnamebucket *next;
+   char *name;
 };
 
 struct glyphnamehash {
-    struct glyphnamebucket *table[GN_HSIZE];
+   struct glyphnamebucket *table[GN_HSIZE];
 };
 
-#ifndef __GNUC__
-# define __inline__
-#endif
+#   ifndef __GNUC__
+#      define __inline__
+#   endif
 
 static __inline__ int hashname(const char *pt) {
-    int val = 0;
+   int val = 0;
 
-    while ( *pt ) {
-	val = (val<<3)|((val>>29)&0x7);
-	val ^= (unsigned char)(*pt-'!');
-	pt++;
-    }
-    val ^= (val>>16);
-    val &= 0xffff;
-    val %= GN_HSIZE;
-return( val );
+   while (*pt) {
+      val = (val << 3) | ((val >> 29) & 0x7);
+      val ^= (unsigned char) (*pt - '!');
+      pt++;
+   }
+   val ^= (val >> 16);
+   val &= 0xffff;
+   val %= GN_HSIZE;
+   return (val);
 }
 
 extern void __GlyphHashFree(struct glyphnamehash *hash);

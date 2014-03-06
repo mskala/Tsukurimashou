@@ -25,7 +25,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _DLIST_H
-#define _DLIST_H
+#   define _DLIST_H
 
 /**
  * Doubly linked list abstraction. Putting a full member of this
@@ -37,8 +37,8 @@
  * rescan to find removeme->prev;
  */
 struct dlistnode {
-    struct dlistnode* next;
-    struct dlistnode* prev;
+   struct dlistnode *next;
+   struct dlistnode *prev;
 };
 
 /**
@@ -63,73 +63,80 @@ struct dlistnode {
  * identical to a dlistnode with an extra ptr payload.
  */
 struct dlistnodeExternal {
-    struct dlistnode* next;
-    struct dlistnode* prev;
-    void* ptr;
+   struct dlistnode *next;
+   struct dlistnode *prev;
+   void *ptr;
 };
 
 
 /**
  * Push the node onto the head of the list
  */
-extern void dlist_pushfront( struct dlistnode** list, struct dlistnode* node );
+extern void dlist_pushfront(struct dlistnode **list, struct dlistnode *node);
 
 /**
  * Take the last node off the list and return it. If the list is empty, return 0.
  */
-struct dlistnode* dlist_popback( struct dlistnode** list );
+struct dlistnode *dlist_popback(struct dlistnode **list);
 
 /**
  * the number of nodes in the list
  */
-extern int  dlist_size( struct dlistnode** list );
+extern int dlist_size(struct dlistnode **list);
 
 /**
  * is the list empty
  */
-extern int  dlist_isempty( struct dlistnode** list );
+extern int dlist_isempty(struct dlistnode **list);
 
 /**
  * Remove the node from the list. The node itself is not free()ed.
  * That is still up to the caller. All this function does is preserve
  * the list structure without the node being in it.
  */
-extern void dlist_erase( struct dlistnode** list, struct dlistnode* node );
-typedef void (*dlist_foreach_func_type)( struct dlistnode* );
+extern void dlist_erase(struct dlistnode **list, struct dlistnode *node);
+
+typedef void (*dlist_foreach_func_type) (struct dlistnode *);
 
 /**
  * Call func for every node in the list. This is a defensive
  *  implementation, if you want to remove a node from the list inside
  *  func() that is perfectly fine.
  */
-extern void dlist_foreach( struct dlistnode** list, dlist_foreach_func_type func );
-typedef void (*dlist_foreach_udata_func_type)( struct dlistnode*, void* udata );
+extern void dlist_foreach(struct dlistnode **list,
+			  dlist_foreach_func_type func);
+typedef void (*dlist_foreach_udata_func_type) (struct dlistnode *,
+					       void *udata);
 
 /**
  * Like dlist_foreach(), defensive coding still, but the udata pointer
  * is passed back to your visitor function.
  */
-extern void dlist_foreach_udata( struct dlistnode** list, dlist_foreach_udata_func_type func, void* udata );
+extern void dlist_foreach_udata(struct dlistnode **list,
+				dlist_foreach_udata_func_type func,
+				void *udata);
 
 /**
  * Like dlist_foreach_udata() but nodes are visited in reverse order.
  */
-extern void dlist_foreach_reverse_udata( struct dlistnode** list, dlist_foreach_udata_func_type func, void* udata );
+extern void dlist_foreach_reverse_udata(struct dlistnode **list,
+					dlist_foreach_udata_func_type func,
+					void *udata);
 
 /**
  * Assuming list is an externalNode list, push a newly allocated list node with
  * a dlistnodeExternal.ptr = ptr passed.
  */
-extern void dlist_pushfront_external( struct dlistnode** list, void* ptr );
+extern void dlist_pushfront_external(struct dlistnode **list, void *ptr);
 
 /**
  * Free a list of externalNode type. The externalNode memory is
  * free()ed, whatever externalNode.ptr is pointing to is not free()ed.
  */
-extern void dlist_free_external( struct dlistnode** list );
+extern void dlist_free_external(struct dlistnode **list);
 
 
-typedef void (*dlist_visitor_func_type)( struct dlistnode* );
+typedef void (*dlist_visitor_func_type) (struct dlistnode *);
 
 /**
  * To create a list of bounded length, use this function. Limit is the
@@ -144,8 +151,8 @@ typedef void (*dlist_visitor_func_type)( struct dlistnode* );
  * at a single time, but might not be quite as optimized for that case
  * as it could be.
  */
-extern void dlist_trim_to_limit( struct dlistnode** list, int limit, dlist_visitor_func_type f );
+extern void dlist_trim_to_limit(struct dlistnode **list, int limit,
+				dlist_visitor_func_type f);
 
 
 #endif // _DLIST_H
-

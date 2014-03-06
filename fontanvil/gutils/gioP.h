@@ -25,71 +25,74 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GIOP_H
-#define _GIOP_H
+#   define _GIOP_H
 
-#include "gio.h"
-#include <sys/types.h>
+#   include "gio.h"
+#   include <sys/types.h>
 
-#if defined(__MINGW32__)
-#include <winsock2.h>
-#else
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#endif
+#   if defined(__MINGW32__)
+#      include <winsock2.h>
+#   else
+#      include <sys/socket.h>
+#      include <netinet/in.h>
+#      include <arpa/inet.h>
+#   endif
 
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#endif
+#   ifdef HAVE_PTHREAD_H
+#      include <pthread.h>
+#   endif
 
 struct stdfuncs {
-    char *(*decomposeURL)(const unichar_t *url,char **host, int *port,
-	char **username, char **password);
-    void (*PostSuccess)(GIOControl *gc);
-    void (*PostInter)(GIOControl *gc);
-    void (*PostError)(GIOControl *gc);
-    void (*RequestAuthorization)(GIOControl *gc);
-    struct hostdata *(*LookupHost)(char *name);
-    int32 (*getauth)(struct giocontrol *);
-    void (*FreeDirEntries)(GDirEntry *lst);
-    void (*reportheaders)(char *, ...);
-#ifdef HAVE_PTHREAD_H
-    pthread_mutex_t hostacccess_mutex;
-#endif
-    char *useragent;
-    void (*gdraw_sync_thread)(void *,void *,void *);
+   char *(*decomposeURL) (const unichar_t * url, char **host, int *port,
+			  char **username, char **password);
+   void (*PostSuccess) (GIOControl * gc);
+   void (*PostInter) (GIOControl * gc);
+   void (*PostError) (GIOControl * gc);
+   void (*RequestAuthorization) (GIOControl * gc);
+   struct hostdata *(*LookupHost) (char *name);
+     int32(*getauth) (struct giocontrol *);
+   void (*FreeDirEntries) (GDirEntry * lst);
+   void (*reportheaders) (char *, ...);
+#   ifdef HAVE_PTHREAD_H
+   pthread_mutex_t hostacccess_mutex;
+#   endif
+   char *useragent;
+   void (*gdraw_sync_thread) (void *, void *, void *);
 };
 
 struct gio_threaddata {
-#ifdef HAVE_PTHREAD_H
-    pthread_t thread;
-    pthread_mutex_t mutex;
-    pthread_cond_t cond;
-#else
-    int foo;
-#endif
+#   ifdef HAVE_PTHREAD_H
+   pthread_t thread;
+   pthread_mutex_t mutex;
+   pthread_cond_t cond;
+#   else
+   int foo;
+#   endif
 };
 
 /* One of these for each protocol (possibly) containing stuff like authorization */
 /*  or ftp socket */
 struct hostaccessdata {
-    struct hostaccessdata *next;
-    int port;
-    int protocol_index;
-    void *moredata;
+   struct hostaccessdata *next;
+   int port;
+   int protocol_index;
+   void *moredata;
 };
 
 struct hostdata {
-    char *hostname;
-    struct sockaddr_in addr;
-    struct hostaccessdata *had;
-    struct hostdata *next;
+   char *hostname;
+   struct sockaddr_in addr;
+   struct hostaccessdata *had;
+   struct hostdata *next;
 };
 
 /* The four functions protocol libraries should define */
-extern void *GIO_dispatch(GIOControl *gc);
-extern void GIO_cancel(GIOControl *gc);
-extern void GIO_init(void *handle,struct stdfuncs *_stdfuncs,int index);
+extern void *GIO_dispatch(GIOControl * gc);
+
+extern void GIO_cancel(GIOControl * gc);
+
+extern void GIO_init(void *handle, struct stdfuncs *_stdfuncs, int index);
+
 extern void GIO_term(void);
 
 #endif

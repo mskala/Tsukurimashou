@@ -144,7 +144,7 @@ noinst_HEADERS = \
   fontanvil/nonlineartrans.h fontanvil/sd.h fontanvil/unicoderange.h \
   fontanvil/bitmapcontrol.h fontanvil/encoding.h fontanvil/ofl.h \
   fontanvil/search.h fontanvil/usermenu.h fontanvil/fffreetype.h \
-  fontanvil/PfEd.h fontanvil/sfd1.h fontanvil/ffpython.h \
+  fontanvil/PfEd.h fontanvil/sfd1.h \
   fontanvil/sflayoutP.h fontanvil/print.h fontanvil/splinefont.h \
   fontanvil/cvruler.h fontanvil/ffglib.h fontanvil/gb12345.h
 

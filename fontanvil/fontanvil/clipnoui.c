@@ -31,32 +31,33 @@
 static void NClipboard_Grab(void) {
 }
 
-static void NClipboard_AddDataType(const char *type, void *data, int cnt, int size,
-	void *(*gendata)(void *,int32 *len), void (*freedata)(void *)) {
-    if ( freedata!=NULL && data !=NULL )
-	(freedata)(data);
+static void NClipboard_AddDataType(const char *type, void *data, int cnt,
+				   int size, void *(*gendata) (void *,
+							       int32 * len),
+				   void (*freedata) (void *)) {
+   if (freedata != NULL && data != NULL)
+      (freedata) (data);
 }
 
 /* Asks for the clip and waits for the response. */
-static void *NClipboard_Request(const char *mimetype,int *len) {
-    *len = 0;
-return( NULL );
+static void *NClipboard_Request(const char *mimetype, int *len) {
+   *len = 0;
+   return (NULL);
 }
 
 static int NClipboard_HasType(const char *mimetype) {
-return( 0 );
+   return (0);
 }
 
 static struct clip_interface noui_clip_interface = {
-    NClipboard_Grab,
-    NClipboard_AddDataType,
-    NClipboard_HasType,
-    NClipboard_Request
+   NClipboard_Grab,
+   NClipboard_AddDataType,
+   NClipboard_HasType,
+   NClipboard_Request
 };
 
 struct clip_interface *clip_interface = &noui_clip_interface;
 
 void FF_SetClipInterface(struct clip_interface *clipi) {
-    clip_interface = clipi;
+   clip_interface = clipi;
 }
-

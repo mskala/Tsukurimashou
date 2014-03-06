@@ -25,86 +25,105 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _PFAEDIT_H_
-#define _PFAEDIT_H_
+#   define _PFAEDIT_H_
 
-#include <fontanvil-config.h>
-#include "configure-fontanvil.h"
-#include <basics.h>
-#include <stdio.h>
-#include <string.h>
-#include <intl.h>
-#include "splinefont.h"
-#include "uiinterface.h"
+#   include <fontanvil-config.h>
+#   include "configure-fontanvil.h"
+#   include <basics.h>
+#   include <stdio.h>
+#   include <string.h>
+#   include <intl.h>
+#   include "splinefont.h"
+#   include "uiinterface.h"
 
 
-static const int unicode4_size = 17*65536;
+static const int unicode4_size = 17 * 65536;
+
     /* Unicode goes up to 0x10ffff */
 
 
-extern void ProcessNativeScript(int argc, char *argv[], FILE *script);
+extern void ProcessNativeScript(int argc, char *argv[], FILE * script);
+
 extern void CheckIsScript(int argc, char *argv[]);
 
 extern char *AdobeStandardEncoding[256];
+
 extern int32 unicode_from_adobestd[256];
 
 /* unicode_nameannot - Deprecated, but kept for older programs to access. */
-#if _NO_LIBUNINAMESLIST
+#   if _NO_LIBUNINAMESLIST
 struct unicode_nameannot {
-    const char *name, *annot;
+   const char *name, *annot;
 };
-#endif
-extern const struct unicode_nameannot * const *const *_UnicodeNameAnnot;
+#   endif
+extern const struct unicode_nameannot *const *const *_UnicodeNameAnnot;
 
 extern int default_fv_font_size;
+
 extern int default_fv_antialias;
+
 extern int default_fv_bbsized;
+
 extern Encoding *default_encoding, custom;
+
 extern int adjustwidth;
+
 extern int adjustlbearing;
+
 extern int autohint_before_generate;
+
 extern int seperate_hint_controls;
+
 extern int no_windowing_ui;
+
 extern uint32 default_background;
+
 extern int use_utf8_in_script;
 
 extern int new_em_size;
+
 extern int new_fonts_are_order2;
+
 extern int loaded_fonts_same_as_new;
 
 extern char *BDFFoundry, *TTFFoundry;
+
 extern char *xuid;
 
 extern int pagewidth, pageheight, printtype;	/* Printer defaults */
+
 extern char *printcommand, *printlazyprinter;
 
 extern Encoding *enclist;
 
 extern int quiet;
 
-#define SCRIPT_MENU_MAX	10
+#   define SCRIPT_MENU_MAX	10
 
 
 extern MacFeat *default_mac_feature_map;
 
 typedef struct library_version_configuration {
-    uint16 major, minor;
-    long library_source_modtime;
-    char *library_source_modtime_string;
-    int  library_source_versiondate;
-    uint16 sizeof_me;
-    uint16 sizeof_splinefont;
-    uint16 sizeof_splinechar;
-    uint16 sizeof_fvbase;
-    uint16 sizeof_cvbase;
-    uint16 sizeof_cvcontainer;
-    uint8  config_had_devicetables;
-    uint8  config_had_multilayer;
-    uint8  config_had_python;
-    uint8  mba1;		/* Must be all ones (0xff), config values are 0,1 need to distinquish from both */
+   uint16 major, minor;
+   long library_source_modtime;
+   char *library_source_modtime_string;
+   int library_source_versiondate;
+   uint16 sizeof_me;
+   uint16 sizeof_splinefont;
+   uint16 sizeof_splinechar;
+   uint16 sizeof_fvbase;
+   uint16 sizeof_cvbase;
+   uint16 sizeof_cvcontainer;
+   uint8 config_had_devicetables;
+   uint8 config_had_multilayer;
+   uint8 config_had_python;
+   uint8 mba1;			/* Must be all ones (0xff), config values are 0,1 need to distinquish from both */
 } Library_Version_Configuration;
+
 extern Library_Version_Configuration library_version_configuration;
 
-extern int check_library_version(Library_Version_Configuration *exe_lib_version, int fatal, int quiet);
+extern int check_library_version(Library_Version_Configuration *
+				 exe_lib_version, int fatal, int quiet);
 
 extern int fontanvil_main(int, char **);
 #endif

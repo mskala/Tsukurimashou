@@ -54,19 +54,17 @@ int cv_auto_goto = 0;
 /* { */
 /*     if( keyfile ) */
 /* 	return; */
-    
+
 /*     keyfile = g_key_file_new(); */
 /*     char localefn[PATH_MAX+1]; */
 /*     char* sharedir = getShareDir(); */
 /*     int rc = 0; */
-    
+
 /*     snprintf(localefn,PATH_MAX,"%s/preferences", sharedir ); */
 /*     rc = g_key_file_load_from_file( keyfile, localefn, G_KEY_FILE_NONE, 0 ); */
-    
+
 /*     snprintf(localefn,PATH_MAX,"%s/preferences", getDotFontAnvilDir() ); */
 /*     rc = g_key_file_load_from_file( keyfile, localefn, G_KEY_FILE_NONE, 0 ); */
-    
+
 /*     cv_auto_goto = get_bool( "CharView", "AutoGoto", 0 ); */
 /* } */
-
-

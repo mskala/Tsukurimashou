@@ -27,28 +27,32 @@
 ******************************************************************************/
 
 #ifndef _ALREADY_INCLUDED_FF_SFUNDO_H
-#define _ALREADY_INCLUDED_FF_SFUNDO_H
+#   define _ALREADY_INCLUDED_FF_SFUNDO_H
 
-#include "splinefont.h"
+#   include "splinefont.h"
 
-void SFUndoFreeAssociated( struct sfundoes *undo );
-void SFUndoFree( struct sfundoes *undo );
-SFUndoes* SFUndoCreateSFD( enum sfundotype t, char* staticmsg, char* sfdfrag );
+void SFUndoFreeAssociated(struct sfundoes *undo);
+
+void SFUndoFree(struct sfundoes *undo);
+
+SFUndoes *SFUndoCreateSFD(enum sfundotype t, char *staticmsg, char *sfdfrag);
 
 /**
  * Remove undo from the font level undoes on splinefont 'sf' and
  * completely free the given undo from memory.
  */
-void SFUndoRemoveAndFree( SplineFont *sf, struct sfundoes *undo );
+void SFUndoRemoveAndFree(SplineFont * sf, struct sfundoes *undo);
 
 
-char* SFUndoToString( SFUndoes* undo );
-SFUndoes* SFUndoFromString( char* str );
+char *SFUndoToString(SFUndoes * undo);
 
-void SFUndoPerform( SFUndoes* undo, SplineFont* sf );
-SFUndoes* SFUndoCreateRedo( SFUndoes* undo, SplineFont* sf );
+SFUndoes *SFUndoFromString(char *str);
 
-void SFUndoPushFront( struct sfundoes ** undoes, SFUndoes* undo );
+void SFUndoPerform(SFUndoes * undo, SplineFont * sf);
+
+SFUndoes *SFUndoCreateRedo(SFUndoes * undo, SplineFont * sf);
+
+void SFUndoPushFront(struct sfundoes **undoes, SFUndoes * undo);
 
 
 

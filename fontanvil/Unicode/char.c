@@ -30,67 +30,78 @@
 #include "ustring.h"
 
 char *strstart(const char *initial, const char *full) {
-    int ch1, ch2;
-    for (;;) {
-	ch1 = *initial++; ch2 = *full++ ;
-	if ( ch1=='\0' )
-return( (char *) full );
-	if ( ch1!=ch2 || ch1=='\0' )
-return(NULL);
-    }
+   int ch1, ch2;
+
+   for (;;) {
+      ch1 = *initial++;
+      ch2 = *full++;
+      if (ch1 == '\0')
+	 return ((char *) full);
+      if (ch1 != ch2 || ch1 == '\0')
+	 return (NULL);
+   }
 }
 
 char *strstartmatch(const char *initial, const char *full) {
-    int ch1, ch2;
-    for (;;) {
-	ch1 = *initial++; ch2 = *full++ ;
-	if ( ch1=='\0' )
-return( (char *) full );
-	ch1 = tolower(ch1);
-	ch2 = tolower(ch2);
-	if ( ch1!=ch2 || ch1=='\0' )
-return(NULL);
-    }
+   int ch1, ch2;
+
+   for (;;) {
+      ch1 = *initial++;
+      ch2 = *full++;
+      if (ch1 == '\0')
+	 return ((char *) full);
+      ch1 = tolower(ch1);
+      ch2 = tolower(ch2);
+      if (ch1 != ch2 || ch1 == '\0')
+	 return (NULL);
+   }
 }
 
 int strmatch(const char *str1, const char *str2) {
-    int ch1, ch2;
-    for (;;) {
-	ch1 = *str1++; ch2 = *str2++ ;
-	ch1 = tolower(ch1);
-	ch2 = tolower(ch2);
-	if ( ch1!=ch2 || ch1=='\0' )
-return(ch1-ch2);
-    }
+   int ch1, ch2;
+
+   for (;;) {
+      ch1 = *str1++;
+      ch2 = *str2++;
+      ch1 = tolower(ch1);
+      ch2 = tolower(ch2);
+      if (ch1 != ch2 || ch1 == '\0')
+	 return (ch1 - ch2);
+   }
 }
 
 int strnmatch(const char *str1, const char *str2, int n) {
-    int ch1, ch2;
-    for (;n-->0;) {
-	ch1 = *str1++; ch2 = *str2++ ;
-	ch1 = tolower(ch1);
-	ch2 = tolower(ch2);
-	if ( ch1!=ch2 || ch1=='\0' )
-return(ch1-ch2);
-    }
-return(0);
+   int ch1, ch2;
+
+   for (; n-- > 0;) {
+      ch1 = *str1++;
+      ch2 = *str2++;
+      ch1 = tolower(ch1);
+      ch2 = tolower(ch2);
+      if (ch1 != ch2 || ch1 == '\0')
+	 return (ch1 - ch2);
+   }
+   return (0);
 }
 
 char *strstrmatch(const char *longer, const char *substr) {
-    int ch1, ch2;
-    const char *lpt, *str1, *str2;
+   int ch1, ch2;
 
-    for ( lpt=longer; *lpt!='\0'; ++lpt ) {
-	str1 = lpt; str2 = substr;
-	for (;;) {
-	    ch1 = *str1++; ch2 = *str2++ ;
-	    ch1 = tolower(ch1);
-	    ch2 = tolower(ch2);
-	    if ( ch2=='\0' )
-return((char *) lpt);
-	    if ( ch1!=ch2 )
-	break;
-	}
-    }
-return( NULL );
+   const char *lpt, *str1, *str2;
+
+   for (lpt = longer; *lpt != '\0'; ++lpt) {
+      str1 = lpt;
+      str2 = substr;
+      for (;;) {
+	 ch1 = *str1++;
+	 ch2 = *str2++;
+	 ch1 = tolower(ch1);
+	 ch2 = tolower(ch2);
+	 if (ch2 == '\0')
+	    return ((char *) lpt);
+	 if (ch1 != ch2)
+	    break;
+      }
+   }
+   return (NULL);
 }

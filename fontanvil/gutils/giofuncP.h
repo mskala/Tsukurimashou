@@ -25,23 +25,32 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GIOFUNCP_H
-#define _GIOFUNCP_H
+#   define _GIOFUNCP_H
 
-#include "gioP.h"
+#   include "gioP.h"
 
-extern void _GIO_localDispatch(GIOControl *gc);
-extern void *_GIO_fileDispatch(GIOControl *gc);
+extern void _GIO_localDispatch(GIOControl * gc);
+
+extern void *_GIO_fileDispatch(GIOControl * gc);
+
 void _GIO_ReportHeaders(char *format, ...);
-void _GIO_reporterror(GIOControl *gc, int errn);
-void _GIO_PostSuccess(GIOControl *gc);
-void _GIO_PostInter(GIOControl *gc);
-void _GIO_PostError(GIOControl *gc);
-void _GIO_RequestAuthorization(GIOControl *gc);
+
+void _GIO_reporterror(GIOControl * gc, int errn);
+
+void _GIO_PostSuccess(GIOControl * gc);
+
+void _GIO_PostInter(GIOControl * gc);
+
+void _GIO_PostError(GIOControl * gc);
+
+void _GIO_RequestAuthorization(GIOControl * gc);
+
 struct hostdata *_GIO_LookupHost(char *host);
 
-extern char *_GIO_decomposeURL(const unichar_t *url,char **host, int *port,
-	char **username, char **password);
+extern char *_GIO_decomposeURL(const unichar_t * url, char **host, int *port,
+			       char **username, char **password);
 
 extern unichar_t *_GIO_translateURL(unichar_t *, enum giofuncs gf);
+
 extern struct stdfuncs _GIO_stdfuncs;
 #endif

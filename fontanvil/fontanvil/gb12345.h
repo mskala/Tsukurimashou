@@ -20,8 +20,10 @@
  * mskala@ansuz.sooke.bc.ca
  */
 
-typedef int (*EncFunc)(int);
-int AddEncoding(char *,EncFunc,EncFunc,int);
+typedef int (*EncFunc) (int);
+
+int AddEncoding(char *, EncFunc, EncFunc, int);
 
 extern int euc_gb12345_to_uni(int);
+
 extern int uni_to_euc_gb12345(int);

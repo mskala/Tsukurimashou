@@ -1,6 +1,8 @@
 extern char *lookup_type_names[2][10];
-extern void SortInsertLookup(SplineFont *sf, OTLookup *newotl);
-extern char *SuffixFromTags(FeatureScriptLangList *fl);
+
+extern void SortInsertLookup(SplineFont * sf, OTLookup * newotl);
+
+extern char *SuffixFromTags(FeatureScriptLangList * fl);
 
 /**
  * Get the index into the char* array "firsts_or_seconds" that contains "name".
@@ -24,6 +26,6 @@ extern char *SuffixFromTags(FeatureScriptLangList *fl);
  * if (idxx==idxa && idxy==idxb) {}
  * 
  */
-extern int KernClassFindIndexContaining( char **firsts_or_seconds,
-					 int firsts_or_seconds_size,
-					 const char *name );
+extern int KernClassFindIndexContaining(char **firsts_or_seconds,
+					int firsts_or_seconds_size,
+					const char *name);

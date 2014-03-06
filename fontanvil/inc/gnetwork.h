@@ -26,11 +26,11 @@
  */
 
 #ifndef _ALREADY_INCLUDED_GNETWORK_H_
-#define _ALREADY_INCLUDED_GNETWORK_H_
+#   define _ALREADY_INCLUDED_GNETWORK_H_
 
-#include <fontanvil-config.h>
+#   include <fontanvil-config.h>
 
-#define IPADDRESS_STRING_LENGTH_T 100
+#   define IPADDRESS_STRING_LENGTH_T 100
 
 /**
  * Get a string that describes this host. It may be something
@@ -38,7 +38,7 @@
  * So you might not be able to resolve the returned hostname on a remote
  * computer. Data is copied to outstring and outstring is returned.
  */
-char* ff_gethostname( char* outstring, int outstring_sz );
+char *ff_gethostname(char *outstring, int outstring_sz);
 
 
 /**
@@ -51,10 +51,11 @@ char* ff_gethostname( char* outstring, int outstring_sz );
  * at least ipaddress_string_length_t bytes long. The outstring is
  * also returned.
  */
-extern char* getNetworkAddress( char* outstring );
+extern char *getNetworkAddress(char *outstring);
 
-extern char* HostPortPack( char* hostname, int port );
-extern char* HostPortUnpack( char* packed, int* port, int port_default );
+extern char *HostPortPack(char *hostname, int port);
+
+extern char *HostPortUnpack(char *packed, int *port, int port_default);
 
 /**
  * generate a new uuid and stringify it into the target area provided
@@ -65,6 +66,6 @@ extern char* HostPortUnpack( char* packed, int* port, int port_default );
  * 40 bytes is a good length for target.
  * the 'target' is also the return value.
  */
-char* ff_uuid_generate( char* target );
+char *ff_uuid_generate(char *target);
 
 #endif

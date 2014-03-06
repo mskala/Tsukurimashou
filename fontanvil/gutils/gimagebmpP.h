@@ -25,31 +25,31 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GIMAGEBMPP_H
-#define _GIMAGEBMPP_H
+#   define _GIMAGEBMPP_H
 
 struct bmpheader {
-    char b;		/* should contain 'B' */
-    char m;		/* should contain 'M' */
-    long size;		/* lowbyte first, size of file in bytes */
-    short mbz1;		/* reserved */
-    short mbz2;		/* reserved */
-    long offset;	/* lowbyte first, offset to bitmap */
-    long headersize;	/* who cares */
-    long width;
-    long height;
-    short planes;	/* must be 1 */
-    short bitsperpixel;	/* 1,4,8,24 (later 16,32 also) */
-    long compression;	/* 0 => none, 1=>8bit rlc, 2=>4bit rlc, 3=>16/32 */
-    long imagesize;
-    long ignore1;	/* suggested x pixels per meter */
-    long ignore2;	/* suggested y pixels per meter */
-    long colorsused;	/* size of color table */
-    long colorsimportant;
-    uint32 clut[256];
-    long red_mask, green_mask, blue_mask;
-    int red_shift, green_shift, blue_shift;
-    unsigned int invert: 1;
-    unsigned char *byte_pixels;
-    uint32 *int32_pixels;
+   char b;			/* should contain 'B' */
+   char m;			/* should contain 'M' */
+   long size;			/* lowbyte first, size of file in bytes */
+   short mbz1;			/* reserved */
+   short mbz2;			/* reserved */
+   long offset;			/* lowbyte first, offset to bitmap */
+   long headersize;		/* who cares */
+   long width;
+   long height;
+   short planes;		/* must be 1 */
+   short bitsperpixel;		/* 1,4,8,24 (later 16,32 also) */
+   long compression;		/* 0 => none, 1=>8bit rlc, 2=>4bit rlc, 3=>16/32 */
+   long imagesize;
+   long ignore1;		/* suggested x pixels per meter */
+   long ignore2;		/* suggested y pixels per meter */
+   long colorsused;		/* size of color table */
+   long colorsimportant;
+   uint32 clut[256];
+   long red_mask, green_mask, blue_mask;
+   int red_shift, green_shift, blue_shift;
+   unsigned int invert:1;
+   unsigned char *byte_pixels;
+   uint32 *int32_pixels;
 };
 #endif

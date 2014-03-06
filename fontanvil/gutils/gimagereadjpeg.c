@@ -29,123 +29,136 @@
 
 #ifdef _NO_LIBJPEG
 
-static int a_file_must_define_something=0;	/* ANSI says so */
+static int a_file_must_define_something = 0;	/* ANSI says so */
 
 #else /* We can build with jpeglib - therefore import jpg files */
 
-#include <basics.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <jpeglib.h>
-#include <jerror.h>
-#include <setjmp.h>
-#include "gimage.h"
+#   include <basics.h>
+#   include <sys/types.h>
+#   include <stdio.h>
+#   include <jpeglib.h>
+#   include <jerror.h>
+#   include <setjmp.h>
+#   include "gimage.h"
 
 /******************************************************************************/
 
 struct jpegState {
-    struct jpeg_decompress_struct *cinfo;
-    int state;
-    struct _GImage *base;
-    JSAMPLE *buffer;
-    int scanpos;
+   struct jpeg_decompress_struct *cinfo;
+   int state;
+   struct _GImage *base;
+   JSAMPLE *buffer;
+   int scanpos;
 };
 
 struct my_error_mgr {
-  struct jpeg_error_mgr pub;	/* "public" fields */
+   struct jpeg_error_mgr pub;	/* "public" fields */
 
-  jmp_buf setjmp_buffer;	/* for return to caller */
-  int padding[8];		/* On my solaris box jmp_buf is the wrong size */
+   jmp_buf setjmp_buffer;	/* for return to caller */
+   int padding[8];		/* On my solaris box jmp_buf is the wrong size */
 };
 
-typedef struct my_error_mgr * my_error_ptr;
+typedef struct my_error_mgr *my_error_ptr;
 
-METHODDEF(void)
-my_error_exit (j_common_ptr cinfo)
-{
-  /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
-  my_error_ptr myerr = (my_error_ptr) cinfo->err;
+METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
+   /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
+   my_error_ptr myerr = (my_error_ptr) cinfo->err;
 
-  /* Always display the message. */
-  /* We could postpone this until after returning, if we chose. */
-  (*cinfo->err->output_message) (cinfo);
+   /* Always display the message. */
+   /* We could postpone this until after returning, if we chose. */
+   (*cinfo->err->output_message) (cinfo);
 
-  /* Return control to the setjmp point */
-  longjmp(myerr->setjmp_buffer, 1);
+   /* Return control to the setjmp point */
+   longjmp(myerr->setjmp_buffer, 1);
 }
 
 /* jpeg routines use 24 bit pixels, xvt routines pad out to 32 */
-static void transferBufferToImage(struct jpegState *js,int ypos) {
-    struct jpeg_decompress_struct *cinfo = js->cinfo;
-    JSAMPLE *pt, *end;
-    Color *ppt;
+static void transferBufferToImage(struct jpegState *js, int ypos) {
+   struct jpeg_decompress_struct *cinfo = js->cinfo;
 
-    ppt = (Color *) (js->base->data+ypos*js->base->bytes_per_line);
-    for ( pt = js->buffer, end = pt+3*cinfo->image_width; pt<end; ) {
-	register int r,g,b;
-	r = *(pt++); g= *(pt++); b= *(pt++);
-	*(ppt++) = COLOR_CREATE(r,g,b);
-    }
+   JSAMPLE *pt, *end;
+
+   Color *ppt;
+
+   ppt = (Color *) (js->base->data + ypos * js->base->bytes_per_line);
+   for (pt = js->buffer, end = pt + 3 * cinfo->image_width; pt < end;) {
+      register int r, g, b;
+
+      r = *(pt++);
+      g = *(pt++);
+      b = *(pt++);
+      *(ppt++) = COLOR_CREATE(r, g, b);
+   }
 }
 
-GImage *GImageRead_Jpeg(FILE *infile) {
-    GImage *ret;
-    struct _GImage *base;
-    struct jpeg_decompress_struct cinfo;
-    struct my_error_mgr jerr;
-    JSAMPLE *rows[1];
-    struct jpegState js;
-    int ypos;
+GImage *GImageRead_Jpeg(FILE * infile) {
+   GImage *ret;
+
+   struct _GImage *base;
+
+   struct jpeg_decompress_struct cinfo;
+
+   struct my_error_mgr jerr;
+
+   JSAMPLE *rows[1];
+
+   struct jpegState js;
+
+   int ypos;
 
 
-  cinfo.err = jpeg_std_error(&jerr.pub);
-  jerr.pub.error_exit = my_error_exit;
-  if (setjmp(jerr.setjmp_buffer)) {
-    jpeg_destroy_decompress(&cinfo);
-return( NULL );
-  }
+   cinfo.err = jpeg_std_error(&jerr.pub);
+   jerr.pub.error_exit = my_error_exit;
+   if (setjmp(jerr.setjmp_buffer)) {
+      jpeg_destroy_decompress(&cinfo);
+      return (NULL);
+   }
 
-  jpeg_CreateDecompress(&cinfo,JPEG_LIB_VERSION,(size_t) sizeof(struct jpeg_decompress_struct));
-  jpeg_stdio_src(&cinfo, infile);
-  (void) jpeg_read_header(&cinfo, TRUE);
+   jpeg_CreateDecompress(&cinfo, JPEG_LIB_VERSION,
+			 (size_t) sizeof(struct jpeg_decompress_struct));
+   jpeg_stdio_src(&cinfo, infile);
+   (void) jpeg_read_header(&cinfo, TRUE);
 
-    if ( cinfo.jpeg_color_space == JCS_GRAYSCALE )
-	cinfo.out_color_space = JCS_RGB;
-    ret = GImageCreate(it_true,cinfo.image_width, cinfo.image_height);
-    if ( ret==NULL ) {
-	jpeg_destroy_decompress(&cinfo);
-return( NULL );
-    }
-    base = ret->u.image;
+   if (cinfo.jpeg_color_space == JCS_GRAYSCALE)
+      cinfo.out_color_space = JCS_RGB;
+   ret = GImageCreate(it_true, cinfo.image_width, cinfo.image_height);
+   if (ret == NULL) {
+      jpeg_destroy_decompress(&cinfo);
+      return (NULL);
+   }
+   base = ret->u.image;
 
-    (void) jpeg_start_decompress(&cinfo);
-    rows[0] = (JSAMPLE *) malloc(3*cinfo.image_width);
-    js.cinfo = &cinfo; js.base = base; js.buffer = rows[0];
-    while (cinfo.output_scanline < cinfo.output_height) {
-	ypos = cinfo.output_scanline;
-	(void) jpeg_read_scanlines(&cinfo, rows, 1);
-	transferBufferToImage(&js,ypos);
-    }
+   (void) jpeg_start_decompress(&cinfo);
+   rows[0] = (JSAMPLE *) malloc(3 * cinfo.image_width);
+   js.cinfo = &cinfo;
+   js.base = base;
+   js.buffer = rows[0];
+   while (cinfo.output_scanline < cinfo.output_height) {
+      ypos = cinfo.output_scanline;
+      (void) jpeg_read_scanlines(&cinfo, rows, 1);
+      transferBufferToImage(&js, ypos);
+   }
 
-  (void) jpeg_finish_decompress(&cinfo);
-  jpeg_destroy_decompress(&cinfo);
-  free(rows[0]);
+   (void) jpeg_finish_decompress(&cinfo);
+   jpeg_destroy_decompress(&cinfo);
+   free(rows[0]);
 
-return( ret );
+   return (ret);
 }
 
 GImage *GImageReadJpeg(char *filename) {
 /* Import a jpeg image, else return NULL if error  */
-    GImage *ret;
-    FILE * infile;		/* source file */
+   GImage *ret;
 
-    if ((infile = fopen(filename, "rb")) == NULL) {
-	fprintf(stderr,"Can't open \"%s\"\n", filename);
-	return( NULL );
-    }
+   FILE *infile;		/* source file */
 
-    ret = GImageRead_Jpeg(infile);
-    fclose(infile);
-    return( ret );
+   if ((infile = fopen(filename, "rb")) == NULL) {
+      fprintf(stderr, "Can't open \"%s\"\n", filename);
+      return (NULL);
+   }
+
+   ret = GImageRead_Jpeg(infile);
+   fclose(infile);
+   return (ret);
 }
 #endif

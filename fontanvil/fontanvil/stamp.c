@@ -4,6 +4,8 @@
 #include <fontanvil-config.h>
 #include <time.h>
 
-const time_t source_modtime    = FONTANVIL_MODTIME_RAW;	/* Seconds since 1970 (standard unix time) */
+const time_t source_modtime = FONTANVIL_MODTIME_RAW;	/* Seconds since 1970 (standard unix time) */
+
 const char *source_modtime_str = FONTANVIL_MODTIME_STR;
+
 const char *source_version_str = FONTANVIL_VERSIONDATE;	/* Year, month, day */

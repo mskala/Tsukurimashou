@@ -617,7 +617,6 @@ AC_MSG_RESULT([$can_bshack])
 AH_TOP([#ifndef _FF_CONFIG_H
 #define _FF_CONFIG_H 1])
 AH_BOTTOM([#endif])
-AC_DEFINE([_NO_PYTHON],1,[Define because not using Python.])
 AC_SUBST([andt],[])
 AC_SUBST([HOST],["$host"])
 AC_SUBST([MACAPP])

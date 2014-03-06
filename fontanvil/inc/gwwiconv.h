@@ -25,32 +25,37 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _GWWICONV_H
-#define _GWWICONV_H
+#   define _GWWICONV_H
 
-# ifndef HAVE_ICONV_H
-#  define __need_size_t
-#  include <stdlib.h>		/* For size_t */
+#   ifndef HAVE_ICONV_H
+#      define __need_size_t
+#      include <stdlib.h>	/* For size_t */
 
 typedef void *gww_iconv_t;
 
-extern gww_iconv_t gww_iconv_open(const char *toenc,const char *fromenc);
-extern void gww_iconv_close( gww_iconv_t cd);
-extern size_t gww_iconv( gww_iconv_t cd,
-	char **inbuf, size_t *inlen,
-	char **outbuf, size_t *outlen);
+extern gww_iconv_t gww_iconv_open(const char *toenc, const char *fromenc);
 
-#define iconv_t		gww_iconv_t
-#define iconv_open	gww_iconv_open
-#define iconv_close	gww_iconv_close
-#define iconv		gww_iconv
+extern void gww_iconv_close(gww_iconv_t cd);
 
-#  define iconv_arg2_t	char **
-# else		/* HAVE_ICONV_H */
-#  include <iconv.h>
-#  ifdef iconv			/* libiconv has a different calling convention */
-#   define iconv_arg2_t	const char **
-#  else
-#  define iconv_arg2_t	char **
-#  endif	/* iconv */
-# endif		/* HAVE_ICONV_H */
-#endif		/* _GWWICONV_H */
+extern size_t gww_iconv(gww_iconv_t cd,
+			char **inbuf, size_t * inlen,
+			char **outbuf, size_t * outlen);
+
+#      define iconv_t		gww_iconv_t
+#      define iconv_open	gww_iconv_open
+#      define iconv_close	gww_iconv_close
+#      define iconv		gww_iconv
+
+#      define iconv_arg2_t	char **
+#   else
+       /* HAVE_ICONV_H */
+#      include <iconv.h>
+#      ifdef iconv		/* libiconv has a different calling convention */
+#         define iconv_arg2_t	const char **
+#      else
+#         define iconv_arg2_t	char **
+#      endif
+	 /* iconv */
+#   endif
+	/* HAVE_ICONV_H */
+#endif /* _GWWICONV_H */
