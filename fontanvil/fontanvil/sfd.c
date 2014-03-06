@@ -4215,47 +4215,44 @@ static void SFDGetSpiros(FILE * sfd, SplineSet * cur) {
 
 static SplineSet *SFDGetSplineSet(SplineFont * sf, FILE * sfd, int order2) {
    SplinePointList *cur = NULL, *head = NULL;
-
    BasePoint current;
-
    real stack[100];
-
    int sp = 0;
-
    SplinePoint *pt = NULL;
-
    int ch;
-
    int ch2;
-
    char tok[100];
-
    int ttfindex = 0;
-
    int lastacceptable;
 
    current.x = current.y = 0;
    lastacceptable = 0;
+
    while (1) {
       int have_read_val = 0;
-
       int val = 0;
 
       while (getreal(sfd, &stack[sp]) == 1)
-	 if (sp < 99)
-	    ++sp;
+	if (sp < 99)
+	  ++sp;
+      
       while (isspace(ch = nlgetc(sfd)));
+
       if (ch == 'E' || ch == 'e' || ch == EOF)
-	 break;
+	break;
+      
       if (ch == 'S') {
 	 ungetc(ch, sfd);
 	 SFDGetSpiros(sfd, cur);
 	 continue;
+	 
       } else if ((ch == 'N') && nlgetc(sfd) == 'a' &&	/* a */
 		 nlgetc(sfd) == 'm' &&	/* m */
 		 nlgetc(sfd) == 'e' &&	/* e */
 		 nlgetc(sfd) == 'd') {	/* d */
+	 
 	 ch2 = nlgetc(sfd);	/* : */
+	 
 	 // We are either fetching a splineset name (Named:) or a point name (NamedP:).
 	 if (ch2 == 'P') {
 	    if ((nlgetc(sfd) == ':') && (pt != NULL)) {
@@ -4264,12 +4261,15 @@ static SplineSet *SFDGetSplineSet(SplineFont * sf, FILE * sfd, int order2) {
 	       }
 	       pt->name = SFDReadUTF7Str(sfd);
 	    }
+	    
 	 } else if (ch2 == ':')
-	    cur->contour_name = SFDReadUTF7Str(sfd);
+	      cur->contour_name = SFDReadUTF7Str(sfd);
+	 
 	 continue;
+	 
       } else if (ch == 'P') {
 	 int flags;
-
+	 
 	 nlgetc(sfd);		/* a */
 	 nlgetc(sfd);		/* t */
 	 nlgetc(sfd);		/* h */
@@ -4282,6 +4282,7 @@ static SplineSet *SFDGetSplineSet(SplineFont * sf, FILE * sfd, int order2) {
 	 getint(sfd, &flags);
 	 cur->is_clip_path = flags & 1;
       }
+      
       pt = NULL;
       if (ch == 'l' || ch == 'm') {
 	 if (sp >= 2) {
@@ -4292,33 +4293,36 @@ static SplineSet *SFDGetSplineSet(SplineFont * sf, FILE * sfd, int order2) {
 	    pt->me = current;
 	    pt->noprevcp = true;
 	    pt->nonextcp = true;
+	    
 	    if (ch == 'm') {
 	       SplinePointList *spl = chunkalloc(sizeof(SplinePointList));
 
 	       spl->first = spl->last = pt;
 	       if (cur != NULL) {
 		  if (SFDCloseCheck(cur, order2))
-		     --ttfindex;
+		    --ttfindex;
 		  cur->next = spl;
 	       } else
-		  head = spl;
+		 head = spl;
 	       cur = spl;
+	       
 	    } else {
 	       if (cur != NULL && cur->first != NULL
 		   && (cur->first != cur->last || cur->first->next == NULL)) {
 		  if (cur->last->nextcpindex == 0xfffe)
-		     cur->last->nextcpindex = 0xffff;
+		    cur->last->nextcpindex = 0xffff;
 		  SplineMake(cur->last, pt, order2);
 		  cur->last = pt;
 	       }
 	    }
+	    
 	 } else
 	    sp = 0;
+	 
       } else if (ch == 'c') {
 	 if (sp >= 6) {
 	    getint(sfd, &val);
 	    have_read_val = 1;
-
 
 	    current.x = stack[sp - 2];
 	    current.y = stack[sp - 1];
@@ -4341,21 +4345,32 @@ static SplineSet *SFDGetSplineSet(SplineFont * sf, FILE * sfd, int order2) {
 
 	    if (cur != NULL && cur->first != NULL
 		&& (cur->first != cur->last || cur->first->next == NULL)) {
+
 	       cur->last->nextcp.x = stack[sp - 6];
 	       cur->last->nextcp.y = stack[sp - 5];
 	       cur->last->nonextcp = false;
+
 	       pt = chunkalloc(sizeof(SplinePoint));
 	       pt->prevcp.x = stack[sp - 4];
 	       pt->prevcp.y = stack[sp - 3];
 	       pt->me = current;
 	       pt->nonextcp = true;
+
 	       if (cur->last->nextcpindex == 0xfffe)
-		  cur->last->nextcpindex = ttfindex++;
+		 cur->last->nextcpindex = ttfindex++;
 	       else if (cur->last->nextcpindex != 0xffff)
-		  ttfindex = cur->last->nextcpindex + 1;
+		 ttfindex = cur->last->nextcpindex + 1;
+	       
 	       SplineMake(cur->last, pt, order2);
 	       cur->last = pt;
+
+	       /* pt->me is a copy of 'current' so we should now move
+		* the x coord of pt->me back to where it should be.
+		* The whole aim here is that this spline remains an open path
+		* when PTFLAG_FORCE_OPEN_PATH is set. */
+	       pt->me.x = original_current_x;
 	    }
+	    
 	    // Move the point back to the same location it was
 	    // but do not connect it back to the point that is
 	    // already there.
@@ -4363,9 +4378,11 @@ static SplineSet *SFDGetSplineSet(SplineFont * sf, FILE * sfd, int order2) {
 	       current.x = original_current_x;
 
 	    sp -= 6;
+
 	 } else
 	    sp = 0;
       }
+      
       if (pt != NULL) {
 	 if (!have_read_val)
 	    getint(sfd, &val);
@@ -4377,53 +4394,58 @@ static SplineSet *SFDGetSplineSet(SplineFont * sf, FILE * sfd, int order2) {
 	 pt->roundx = (val & SFD_PTFLAG_ROUND_IN_X) > 0;
 	 pt->roundy = (val & SFD_PTFLAG_ROUND_IN_Y) > 0;
 	 pt->dontinterpolate = (val & SFD_PTFLAG_INTERPOLATE_NEVER) > 0;
+
 	 if (pt->prev != NULL)
-	    pt->prev->acceptableextrema =
-	       (val & SFD_PTFLAG_PREV_EXTREMA_MARKED_ACCEPTABLE) > 0;
+	   pt->prev->acceptableextrema =
+	   (val & SFD_PTFLAG_PREV_EXTREMA_MARKED_ACCEPTABLE) > 0;
 	 else
-	    lastacceptable =
-	       (val & SFD_PTFLAG_PREV_EXTREMA_MARKED_ACCEPTABLE) > 0;
+	   lastacceptable =
+	   (val & SFD_PTFLAG_PREV_EXTREMA_MARKED_ACCEPTABLE) > 0;
 	 if (val & 0x80)
-	    pt->ttfindex = 0xffff;
+	   pt->ttfindex = 0xffff;
 	 else
-	    pt->ttfindex = ttfindex++;
+	   pt->ttfindex = ttfindex++;
 	 pt->nextcpindex = 0xfffe;
 	 ch = nlgetc(sfd);
 	 if (ch == 'x') {
 	    pt->hintmask = chunkalloc(sizeof(HintMask));
 	    SFDGetHintMask(sfd, pt->hintmask);
 	 } else if (ch != ',')
-	    ungetc(ch, sfd);
+	      ungetc(ch, sfd);
 	 else {
 	    ch = nlgetc(sfd);
 	    if (ch == ',')
-	       pt->ttfindex = 0xfffe;
+	      pt->ttfindex = 0xfffe;
 	    else {
 	       ungetc(ch, sfd);
 	       getint(sfd, &val);
 	       pt->ttfindex = val;
 	       nlgetc(sfd);	/* skip comma */
 	       if (val != -1)
-		  ttfindex = val + 1;
+		 ttfindex = val + 1;
 	    }
 	    ch = nlgetc(sfd);
 	    if (ch == '\r' || ch == '\n')
-	       ungetc(ch, sfd);
+	      ungetc(ch, sfd);
 	    else {
 	       ungetc(ch, sfd);
 	       getint(sfd, &val);
 	       pt->nextcpindex = val;
 	       if (val != -1)
-		  ttfindex = val + 1;
+		 ttfindex = val + 1;
 	    }
 	 }
       }
    }
+   
    if (cur != NULL)
-      SFDCloseCheck(cur, order2);
+     SFDCloseCheck(cur, order2);
+   
    if (lastacceptable && cur->last->prev != NULL)
       cur->last->prev->acceptableextrema = true;
+   
    getname(sfd, tok);
+   
    return (head);
 }
 
