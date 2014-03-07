@@ -1,3 +1,4 @@
+/* $Id: gimagereadtiff.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013feb15, added file and mem error checks, Jose Da Silva */
 /*

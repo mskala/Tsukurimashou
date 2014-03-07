@@ -1,3 +1,4 @@
+/* $Id: ksc5601.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* This file is generated for FontAnvil use */
 /* Please refer to Unicode/README.txt for detail */
 

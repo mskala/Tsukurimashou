@@ -1,3 +1,4 @@
+/* $Id: stamp.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* This file was generated using stamper.c to create the next version release.          */
 /* If you need to update this to the next release version, see fontanvil/GNUmakefile.in */
 

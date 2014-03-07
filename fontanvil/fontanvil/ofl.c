@@ -1,3 +1,4 @@
+/* $Id: ofl.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* This file contains the SIL Open Font License */
 /* See http://scripts.sil.org/OFL for all the details */
 /* Check the extensive FAQ as well */

@@ -1,3 +1,4 @@
+/* $Id: scripting.c 2922 2014-03-07 22:33:29Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +63,6 @@ int use_utf8_in_script = true;
 
 extern int prefRevisionsToRetain;	/* sfd.c */
 
-#ifndef _NO_FFSCRIPT
 static int verbose = -1;
 
 static struct dictionary globals;
@@ -123,7 +123,6 @@ static char *script2latin1_copy(const char *str) {
       return (ret);
    }
 }
-#endif /* _NO_FFSCRIPT */
 
 void arrayfree(Array * a) {
    int i;
@@ -138,7 +137,6 @@ void arrayfree(Array * a) {
    free(a);
 }
 
-#ifndef _NO_FFSCRIPT
 static Array *arraycopy(Array * a) {
    int i;
 
@@ -1792,7 +1790,6 @@ static void bQuit(Context * c) {
       exit(c->a.vals[1].u.ival);
    exit(1);
 }
-#endif /* _NO_FFSCRIPT */
 
 char **GetFontNames(char *filename) {
    FILE *foo;
@@ -1856,7 +1853,6 @@ char **GetFontNames(char *filename) {
    return (ret);
 }
 
-#ifndef _NO_FFSCRIPT
 static void bFontsInFile(Context * c) {
    char **ret;
 
@@ -11535,15 +11531,10 @@ void ff_VerboseCheck(void) {
 
 void ProcessNativeScript(int argc, char *argv[], FILE * script) {
    int i, j;
-
    Context c;
-
    enum token_type tok;
-
    char *string = NULL;
-
    int dry = 0;
-
    jmp_buf env;
 
    no_windowing_ui = true;
@@ -11553,36 +11544,8 @@ void ProcessNativeScript(int argc, char *argv[], FILE * script) {
 
    i = 1;
    if (script != NULL) {
-      if (argc < 2 || strcmp(argv[1], "-") != 0)
+      if (argc<2)
 	 i = 0;
-   } else {
-      // Count valid arguments but only allow one order. (?)
-      if (argc > i + 1
-	  && (strcmp(argv[i], "-nosplash") == 0
-	      || strcmp(argv[i], "--nosplash") == 0
-	      || strcmp(argv[i], "-quiet") == 0
-	      || strcmp(argv[i], "--quiet") == 0))
-	 ++i;
-      if (argc > i + 1
-	  && (strncmp(argv[i], "-lang=", 6) == 0
-	      || strncmp(argv[i], "--lang=", 7) == 0))
-	 ++i;
-      if (argc > i + 2
-	  && (strncmp(argv[i], "-lang", 5) == 0
-	      || strncmp(argv[i], "--lang", 6) == 0)
-	  && (strcmp(argv[i + 1], "py") == 0 || strcmp(argv[i + 1], "ff") == 0
-	      || strcmp(argv[i + 1], "pe") == 0))
-	 i += 2;
-      if (strcmp(argv[i], "-script") == 0 || strcmp(argv[i], "--script") == 0)
-	 ++i;
-      else if (strcmp(argv[i], "-dry") == 0 || strcmp(argv[i], "--dry") == 0) {
-	 ++i;
-	 dry = 1;
-      } else if ((strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--c") == 0)
-		 && argc >= i + 1) {
-	 ++i;
-	 string = argv[i];
-      }
    }
    // Clear the context.
    memset(&c, 0, sizeof(c));
@@ -11660,7 +11623,6 @@ void ProcessNativeScript(int argc, char *argv[], FILE * script) {
    free(c.dontfree);
    exit(0);
 }
-#endif /* _NO_FFSCRIPT */
 
 static int DefaultLangPython(void) {
    static int def_py = -2;
@@ -11677,58 +11639,6 @@ static int DefaultLangPython(void) {
    else
       def_py = 0;
    return (def_py);
-}
-
-static void _CheckIsScript(int argc, char *argv[]) {
-   int i, is_python = DefaultLangPython();
-
-   char *pt;
-
-   if (argc == 1)
-      return;
-   for (i = 1; i < argc; ++i) {
-      pt = argv[i];
-      if (*pt == '-' && pt[1] == '-' && pt[2] != '\0')
-	 ++pt;
-      if (strcmp(pt, "-nosplash") == 0 || strcmp(pt, "-quiet") == 0)
-	 /* Skip it */ ;
-      else if (strcmp(pt, "-lang=py") == 0)
-	 is_python = true;
-      else if (strcmp(pt, "-lang=ff") == 0 || strcmp(pt, "-lang=pe") == 0)
-	 is_python = false;
-      else if (strcmp(pt, "-lang") == 0 && i + 1 < argc &&
-	       (strcmp(argv[i + 1], "py") == 0
-		|| strcmp(argv[i + 1], "ff") == 0
-		|| strcmp(argv[i + 1], "pe") == 0)) {
-	 ++i;
-	 is_python = strcmp(argv[i], "py") == 0;
-      } else if (strcmp(argv[i], "-") == 0) {	/* Someone thought that, of course, "-" meant read from a script. I guess it makes no sense with anything else... */
-	 ProcessNativeScript(argc, argv, stdin);
-      } else if (strcmp(pt, "-script") == 0 ||
-		 strcmp(pt, "-dry") == 0 || strcmp(argv[i], "-c") == 0) {
-	 ProcessNativeScript(argc, argv, NULL);
-      } else {			/*if ( access(argv[i],X_OK|R_OK)==0 ) */
-
-	 FILE *temp = fopen(argv[i], "r");
-
-	 char buffer[200];
-
-	 if (temp == NULL)
-	    return;
-	 buffer[0] = '\0';
-	 fgets(buffer, sizeof(buffer), temp);
-	 fclose(temp);
-	 if (buffer[0] == '#' && buffer[1] == '!' &&
-	     (strstr(buffer, "pfaedit") != NULL
-	      || strstr(buffer, "fontanvil") != NULL)) {
-	    ProcessNativeScript(argc, argv, NULL);
-	 }
-      }
-   }
-}
-
-void CheckIsScript(int argc, char *argv[]) {
-   _CheckIsScript(argc, argv);
 }
 
 static void ExecuteNativeScriptFile(FontViewBase * fv, char *filename) {

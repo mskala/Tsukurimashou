@@ -1,3 +1,4 @@
+/* $Id: dynamic.h 2918 2014-03-07 16:09:49Z mskala $ */
 /* Vague support for several different shared library formats */
 /* Everyone but the mac uses a varient of dlopen, while the mac uses NSAddImage */
 /* Under cygwin the shared libs have very strange names which bare little */

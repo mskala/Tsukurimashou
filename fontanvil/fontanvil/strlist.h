@@ -1,3 +1,4 @@
+/* $Id: strlist.h 2918 2014-03-07 16:09:49Z mskala $ */
 /* strlist.h
  *
  * A general-purpose singly-linked list of C strings.

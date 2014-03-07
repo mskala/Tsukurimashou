@@ -1,3 +1,4 @@
+/* $Id: stamper.c 2918 2014-03-07 16:09:49Z mskala $ */
 /*
  * This program is used to create a 'release date' time stamp when it is time for the
  * next fontanvil release build. See fontanvil/GNUmakefile.in

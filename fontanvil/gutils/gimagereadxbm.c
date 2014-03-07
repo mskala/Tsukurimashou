@@ -1,3 +1,4 @@
+/* $Id: gimagereadxbm.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013feb15, fileread and mem error checks, plus test for short, Jose Da Silva */
 /*

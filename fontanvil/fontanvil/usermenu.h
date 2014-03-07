@@ -1,3 +1,4 @@
+/* $Id: usermenu.h 2918 2014-03-07 16:09:49Z mskala $ */
 #include <ggadget.h>
 
 extern SplineChar *sc_active_in_ui;

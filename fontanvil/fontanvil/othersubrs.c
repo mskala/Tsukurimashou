@@ -1,3 +1,4 @@
+/* $Id: othersubrs.c 2918 2014-03-07 16:09:49Z mskala $ */
 #include "fontanvil.h"		/* For LogError */
 
 /* These subroutines are code by Adobe for this exact use (from T1_Spec.pdf) */

@@ -1,3 +1,4 @@
+/* $Id: unicoderange.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* -*- coding: utf-8 -*- */
 /* Copyright (C) 2006-2012 by George Williams */
 /* 2012nov14, table updates, fixes added, Jose Da Silva */

@@ -1,3 +1,4 @@
+/* $Id: pua.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* A number of encodings use the public use area to map to glyphs that are    */
 /*  defined in planes other than the BMP (chinese), or just multiple encodings*/
 /*  for the same glyph (ams)						      */

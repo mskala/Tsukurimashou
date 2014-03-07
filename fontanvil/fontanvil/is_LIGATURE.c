@@ -1,3 +1,4 @@
+/* $Id: is_LIGATURE.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* This is a generated file. */
 
 #include <stdlib.h>

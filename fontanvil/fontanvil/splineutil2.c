@@ -1,3 +1,4 @@
+/* $Id: splineutil2.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* -*- coding: utf-8 -*- */
 /* Copyright (C) 2000-2012 by George Williams */
 /*

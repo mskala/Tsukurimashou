@@ -1,3 +1,4 @@
+/* $Id: alphabet.c 2918 2014-03-07 16:09:49Z mskala $ */
 #include <chardata.h>
 
 unichar_t *unicode_from_alphabets[] = {

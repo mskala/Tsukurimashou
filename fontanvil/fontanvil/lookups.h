@@ -1,3 +1,4 @@
+/* $Id: lookups.h 2918 2014-03-07 16:09:49Z mskala $ */
 extern char *lookup_type_names[2][10];
 
 extern void SortInsertLookup(SplineFont * sf, OTLookup * newotl);

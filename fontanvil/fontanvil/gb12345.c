@@ -1,3 +1,4 @@
+/* $Id: gb12345.c 2918 2014-03-07 16:09:49Z mskala $ */
 #include "gb12345.h"
 
 static const unsigned short __gb12345_to_ucs[] = {

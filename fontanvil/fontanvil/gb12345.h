@@ -1,3 +1,4 @@
+/* $Id: gb12345.h 2918 2014-03-07 16:09:49Z mskala $ */
 /*
  * Prototypes for FontAnvil to use GB12345 without a "plugin"
  * Copyright (C) 2014  Matthew Skala
@@ -23,7 +24,5 @@
 typedef int (*EncFunc) (int);
 
 int AddEncoding(char *, EncFunc, EncFunc, int);
-
 extern int euc_gb12345_to_uni(int);
-
 extern int uni_to_euc_gb12345(int);

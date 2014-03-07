@@ -1,3 +1,4 @@
+/* $Id: encoding.h 2918 2014-03-07 16:09:49Z mskala $ */
 #ifndef _ENCODING_H
 #   define _ENCODING_H
 

@@ -1,3 +1,4 @@
+/* $Id: spiro.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /* 2013sep19-22, error handling and cleanup fixes in Spiro.c, Jose Da Silva */
 /*

@@ -1,3 +1,4 @@
+/* $Id: crctab.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* GWW: taken from http://www.ctan.org/tex-archive/tools/macutils/crc/ */
 /*  This is the output (slightly modified) of makecrc for the binhex case */
 

@@ -1,3 +1,4 @@
+/* $Id: gimagereadgif.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013jan18..22, several fixes + interlacing, Jose Da Silva */
 /*

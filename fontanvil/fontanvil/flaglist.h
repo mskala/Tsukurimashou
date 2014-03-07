@@ -1,3 +1,4 @@
+/* $Id: flaglist.h 2918 2014-03-07 16:09:49Z mskala $ */
 /* flaglist.h */
 #ifndef _FLAGLIST_H_
 #   define _FLAGLIST_H_

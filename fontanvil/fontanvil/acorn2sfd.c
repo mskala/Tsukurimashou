@@ -1,3 +1,4 @@
+/* $Id: acorn2sfd.c 2918 2014-03-07 16:09:49Z mskala $ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

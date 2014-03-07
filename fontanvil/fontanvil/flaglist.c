@@ -1,3 +1,4 @@
+/* $Id: flaglist.c 2918 2014-03-07 16:09:49Z mskala $ */
 #include <basics.h>
 #include <string.h>
 #include "flaglist.h"

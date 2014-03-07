@@ -1,3 +1,4 @@
+/* $Id: stemdb.c 2918 2014-03-07 16:09:49Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams and Alexey Kryukov */
 /*
  * Redistribution and use in source and binary forms, with or without
