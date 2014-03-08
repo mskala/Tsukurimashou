@@ -153,7 +153,7 @@ noinst_LIBRARIES = \
   gutils/libgutils.a
 
 fontanvil_fontanvil_SOURCES = \
- fontanvil/main.c fontanvil/startnoui.c \
+ fontanvil/main.c \
  fontanvil/asmfpst.c fontanvil/autohint.c fontanvil/autosave.c \
  fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
  fontanvil/bezctx_ff.c fontanvil/bitmapchar.c fontanvil/bitmapcontrol.c \

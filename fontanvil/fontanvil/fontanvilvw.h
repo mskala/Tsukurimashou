@@ -1,4 +1,4 @@
-/* $Id: fontanvilvw.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: fontanvilvw.h 2923 2014-03-08 01:52:03Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #ifndef _FONTANVILVW_H_
 #   define _FONTANVILVW_H_
 

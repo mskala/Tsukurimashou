@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: baseviews.h 2923 2014-03-08 01:52:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -681,9 +681,6 @@ extern void MVCopyChar(FontViewBase * fv, BDFFont * bdf, SplineChar * sc,
 		       enum fvcopy_type fullcopy);
 extern void PasteIntoMV(FontViewBase * fv, BDFFont * bdf, SplineChar * sc,
 			int doclear);
-
-extern void ExecuteScriptFile(FontViewBase * fv, SplineChar * sc,
-			      char *filename);
 
 extern int HasLicense(SplineFont *, FILE *);
 

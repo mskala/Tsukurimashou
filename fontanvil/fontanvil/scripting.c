@@ -1,4 +1,4 @@
-/* $Id: scripting.c 2922 2014-03-07 22:33:29Z mskala $ */
+/* $Id: scripting.c 2925 2014-03-08 02:53:07Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,6 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*			   Yet another interpreter			      */
 
 #include "fontanvil.h"
 #include <gfile.h>
@@ -42,7 +41,7 @@
 #include <time.h>
 #include <locale.h>
 #ifdef HAVE_IEEEFP_H
-#   include <ieeefp.h>		/* Solaris defines isnan in ieeefp rather than math.h */
+#   include <ieeefp.h> /* Solaris defines isnan in ieeefp rather than math.h */
 #endif
 #ifndef _NO_LIBREADLINE
 #   include <readline/readline.h>
@@ -11525,159 +11524,119 @@ static FILE *CopyNonSeekableFile(FILE * former) {
 }
 
 void ff_VerboseCheck(void) {
-   if (verbose == -1)
-      verbose = getenv("FONTANVIL_VERBOSE") != NULL;
+   if (verbose==-1)
+     verbose=getenv("FONTANVIL_VERBOSE")!=NULL;
 }
 
-void ProcessNativeScript(int argc, char *argv[], FILE * script) {
-   int i, j;
+int dry_option_selected=0;
+
+void RunScriptInterpreter(char *script_name,FILE *script_file,
+			  int script_argc,char **script_argv) {
    Context c;
+   int i;
+   char *tstr;
    enum token_type tok;
-   char *string = NULL;
-   int dry = 0;
    jmp_buf env;
 
-   no_windowing_ui = true;
-   running_script = true;
+   no_windowing_ui=true;
+   running_script=true;
 
    ff_VerboseCheck();
 
-   i = 1;
-   if (script != NULL) {
-      if (argc<2)
-	 i = 0;
-   }
-   // Clear the context.
-   memset(&c, 0, sizeof(c));
-   c.a.argc = argc - i;		// Remaining arguments belong to the context.
-   c.a.vals = malloc(c.a.argc * sizeof(Val));
-   c.dontfree = calloc(c.a.argc, sizeof(Array *));
-   c.donteval = dry;
-   // Copy the context arguments.
-   for (j = i; j < argc; ++j) {
-      char *t;
+   /* set up the context */
+   memset(&c,0,sizeof(Context));
+   c.a.argc=script_argc+1;
+   c.a.vals=malloc(c.a.argc*sizeof(Val));
+   c.dontfree=calloc(c.a.argc,sizeof(Array *));
+   c.donteval=dry_option_selected;
+   c.return_val.type=v_void;
+   c.filename=script_name;
+   c.script=script_file;
 
-      c.a.vals[j - i].type = v_str;
-      t = def2utf8_copy(argv[j]);
-      c.a.vals[j - i].u.sval = utf82script_copy(t);
-      free(t);
+   /* copy and convert the arguments */
+   c.a.vals[0].type=v_str;
+   tstr=def2utf8_copy(script_name);
+   c.a.vals[i].u.sval=utf82script_copy(tstr);
+   free(tstr);
+   for (i=0;i<script_argc;i++) {
+      c.a.vals[i+1].type=v_str;
+      tstr=def2utf8_copy(script_argv[i]);
+      c.a.vals[i+1].u.sval=utf82script_copy(tstr);
+      free(tstr);
    }
-   c.return_val.type = v_void;
-   if (script != NULL) {
-      // If the function is called with a non-null script, use it and call it stdin.
-      c.filename = "<stdin>";
-      c.script = script;
-   } else if (string != NULL) {
-      // If command line has a command string, copy it into a temporary file for easier use.
-      c.filename = "<command-string>";
-      c.script = tmpfile();
-      fwrite(string, 1, strlen(string), c.script);
-      rewind(c.script);
-   } else if (i < argc && strcmp(argv[i], "-") != 0) {
-      // Take the first non-matched argument as a filename if it isn't a hyphen. (So the filename is not necessarily right after the -script argument.)
-      c.filename = argv[i];
-      c.script = fopen(c.filename, "r");
-   } else {
-      // If there is no other source of commands, use stdin.
-      c.filename = "<stdin>";
-      c.script = stdin;
-   }
-   // If the file is not seekable, we copy it into a seekable file.
-   /* On Mac OS/X fseek/ftell appear to be broken and return success even */
-   /*  for terminals. They should return -1, EBADF */
-   if (c.script != NULL
-       && (ftell(c.script) == -1 || isatty(fileno(c.script)))) {
-      if (c.script == stdin) {
+
+   /* If the file is not seekable, we copy it into a seekable file.
+    * On Mac OS/X fseek/ftell appear to be broken and return success even
+    * for terminals.  They should return -1, EBADF */
+   if (ftell(c.script)==-1 || isatty(fileno(c.script))) {
+      if (c.script==stdin) {
 	 c.script = tmpfile();
 	 if (c.script)
-	    c.interactive = true;
+	   c.interactive = true;
       } else {
 	 FILE *tmpfile1 = CopyNonSeekableFile(c.script);
 
-	 if ((c.script != stdin) && (c.script != script))
-	    fclose(c.script);
-	 c.script = tmpfile1;
+	 fclose(c.script);
+	 c.script=tmpfile1;
       }
    }
-   if (c.script == NULL)
-      ScriptError(&c, "No such file");
-   else {
-      // If the script is accessible, we start to parse it.
-      c.lineno = 1;
-      // Set the jump environment for returning from the error reporter.
-      while (setjmp(env));
-      c.err_env = &env;
-      // Parse and execute.
+
+   if (c.script) {
+      /* If the script is accessible, we start to parse it. */
+      c.lineno=1;
+
+      /* Set the jump environment for returning from the error reporter. */
+      while (setjmp(env)); /* SRSLY??? */
+      c.err_env=&env;
+
+      /* Parse and execute. */
       while (c.script && !c.error && !c.returned && !c.broken
-	     && (tok = ff_NextToken(&c)) != tt_eof) {
+	     && (tok=ff_NextToken(&c))!=tt_eof) {
 	 ff_backuptok(&c);
 	 ff_statement(&c);
       }
-      if ((c.script != stdin) && (c.script != script) && (c.script != NULL))
-	 fclose(c.script);
-   }
-   // Free previously copied arguments.
-   for (i = 0; i < c.a.argc; ++i)
-      free(c.a.vals[i].u.sval);
+      if ((c.script!=stdin) && (c.script!=NULL))
+	fclose(c.script);
+   } else
+     ScriptError(&c,"Internal null file error");
+
+   /* Free previously copied arguments. */
+   for (i=0;i<c.a.argc;i++)
+     free(c.a.vals[i].u.sval);
    free(c.a.vals);
    free(c.dontfree);
-   exit(0);
 }
 
-static int DefaultLangPython(void) {
-   static int def_py = -2;
+void ExecuteOneScriptCommand(char *command,
+			     int script_argc,char **script_argv) {
+   FILE *script_file;
 
-   char *pt;
-
-   if (def_py != -2)
-      return (def_py);
-   pt = getenv("FONTANVIL_LANGUAGE");
-   if (pt == NULL)
-      def_py = -1;
-   else if (strcmp(pt, "py") == 0)
-      def_py = 1;
-   else
-      def_py = 0;
-   return (def_py);
-}
-
-static void ExecuteNativeScriptFile(FontViewBase * fv, char *filename) {
-   Context c;
-
-   Val argv[1];
-
-   Array *dontfree[1];
-
-   jmp_buf env;
-
-   ff_VerboseCheck();
-
-   memset(&c, 0, sizeof(c));
-   c.a.argc = 1;
-   c.a.vals = argv;
-   c.dontfree = dontfree;
-   argv[0].type = v_str;
-   argv[0].u.sval = filename;
-   c.filename = filename;
-   c.return_val.type = v_void;
-   c.err_env = &env;
-   c.curfv = fv;
-   if (setjmp(env) != 0)
-      return;			/* Error return */
-
-   c.script = fopen(c.filename, "r");
-   if (c.script == NULL)
-      ScriptError(&c, "No such file");
-   else {
-      c.lineno = 1;
-      while (!c.returned && !c.broken && ff_NextToken(&c) != tt_eof) {
-	 ff_backuptok(&c);
-	 ff_statement(&c);
-      }
-      fclose(c.script);
+   script_file=tmpfile();
+   if (script_file) {
+      fwrite(command,1,strlen(command),script_file);
+      rewind(script_file);
+      RunScriptInterpreter("<command-string>",script_file,
+			   script_argc,script_argv);
+   } else {
+      puts("Cannot create temp file");
+      exit(1);
    }
 }
 
-void ExecuteScriptFile(FontViewBase * fv, SplineChar * sc, char *filename) {
-   ExecuteNativeScriptFile(fv, filename);
+void ExecuteScriptCommandsInteractively(int script_argc,char **script_argv) {
+   RunScriptInterpreter("<stdin>",stdin,script_argc,script_argv);
+}
+
+void ExecuteScriptFile(char *script_filename,
+		       int script_argc,char **script_argv) {
+   FILE *script_file;
+
+   script_file=fopen(script_filename,"r");
+   if (script_file)
+     RunScriptInterpreter(script_filename,script_file,
+			  script_argc,script_argv);
+   else {
+      puts("Cannot open script file");
+      exit(1);
+   }
 }

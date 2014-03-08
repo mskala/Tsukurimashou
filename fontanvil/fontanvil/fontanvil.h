@@ -1,4 +1,4 @@
-/* $Id: fontanvil.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: fontanvil.h 2923 2014-03-08 01:52:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -37,18 +37,10 @@
 #   include "splinefont.h"
 #   include "uiinterface.h"
 
-
 static const int unicode4_size = 17 * 65536;
-
     /* Unicode goes up to 0x10ffff */
 
-
-extern void ProcessNativeScript(int argc, char *argv[], FILE * script);
-
-extern void CheckIsScript(int argc, char *argv[]);
-
 extern char *AdobeStandardEncoding[256];
-
 extern int32 unicode_from_adobestd[256];
 
 /* unicode_nameannot - Deprecated, but kept for older programs to access. */
@@ -57,42 +49,30 @@ struct unicode_nameannot {
    const char *name, *annot;
 };
 #   endif
+
 extern const struct unicode_nameannot *const *const *_UnicodeNameAnnot;
 
 extern int default_fv_font_size;
-
 extern int default_fv_antialias;
-
 extern int default_fv_bbsized;
 
 extern Encoding *default_encoding, custom;
 
 extern int adjustwidth;
-
 extern int adjustlbearing;
-
 extern int autohint_before_generate;
-
 extern int seperate_hint_controls;
-
 extern int no_windowing_ui;
-
 extern uint32 default_background;
-
 extern int use_utf8_in_script;
-
 extern int new_em_size;
-
 extern int new_fonts_are_order2;
-
 extern int loaded_fonts_same_as_new;
 
 extern char *BDFFoundry, *TTFFoundry;
-
 extern char *xuid;
 
 extern int pagewidth, pageheight, printtype;	/* Printer defaults */
-
 extern char *printcommand, *printlazyprinter;
 
 extern Encoding *enclist;
@@ -100,7 +80,6 @@ extern Encoding *enclist;
 extern int quiet;
 
 #   define SCRIPT_MENU_MAX	10
-
 
 extern MacFeat *default_mac_feature_map;
 
@@ -126,5 +105,10 @@ extern Library_Version_Configuration library_version_configuration;
 extern int check_library_version(Library_Version_Configuration *
 				 exe_lib_version, int fatal, int quiet);
 
-extern int fontanvil_main(int, char **);
+extern int dry_option_selected;
+
+extern void ExecuteOneScriptCommand(char *,int,char **);
+extern void ExecuteScriptCommandsInteractively(int,char **);
+extern void ExecuteScriptFile(char *,int,char **);
+
 #endif

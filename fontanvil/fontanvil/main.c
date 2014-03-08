@@ -1,4 +1,4 @@
-/* $Id: main.c 2922 2014-03-07 22:33:29Z mskala $ */
+/* $Id: main.c 2923 2014-03-08 01:52:03Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
  * Copyright (C) 2014  Matthew Skala
@@ -34,8 +34,8 @@ extern uninm_blocks_db blocks_db;
 #endif
 
 static struct option long_opts[]={
-   /* TODO "dry" */
-   /* TODO "-c" */
+   {"command",1,NULL,'c'},
+   {"dry",0,NULL,'d'},
    {"help",0,NULL,'h'},
    {"lang",1,NULL,'l'},
    {"nosplash",0,NULL,'i'},
@@ -48,6 +48,7 @@ static struct option long_opts[]={
 
 int main(int argc,char **argv) {
    int c;
+   char *command=NULL;
    char **new_argv;
    int show_version=0,show_help=0;
    
@@ -57,8 +58,16 @@ int main(int argc,char **argv) {
    InitSimpleStuff();
    
    /* loop on command-line options */
-   while ((c=getopt_long_only(argc,argv,"+c:hil:v",long_opts,NULL))!=-1) {
+   while ((c=getopt_long_only(argc,argv,"+c:dhil:v",long_opts,NULL))!=-1) {
       switch (c) {
+
+       case 'c':
+	 command=optarg;
+	 break;
+
+       case 'd':
+	 dry_option_selected=1;
+	 break;
 
        case 'h':
 	 show_help=1;
@@ -78,6 +87,9 @@ int main(int argc,char **argv) {
 
        case 'v':
 	 show_version=1;
+	 break;
+
+       default:
 	 break;
       }
    }
@@ -102,12 +114,15 @@ int main(int argc,char **argv) {
    if (default_encoding == NULL)
      default_encoding = &custom;
 
-   /* execute script */
-   new_argv=(char **)malloc((argc-optind+1)*sizeof(char *));
-   new_argv[0]=argv[0];
-   for (c=optind;c<argc;c++)
-     new_argv[c-optind+1]=argv[c];
-   ProcessNativeScript(argc-optind+1,new_argv,NULL); /* FIXME eliminate arg[cv]-pass */
+   /* execute script, command, or interactively */
+   if (command!=NULL)
+     ExecuteOneScriptCommand(command,argc-optind,argv+optind);
+   else if (optind>=argc)
+     ExecuteScriptCommandsInteractively(0,NULL);
+   else if (strcmp(argv[optind],"-")==0)
+     ExecuteScriptCommandsInteractively(argc-optind-1,argv+optind+1);
+   else
+     ExecuteScriptFile(argv[optind],argc-optind-1,argv+optind+1);
    
    /* clean up */
    /* FIXME this is dead code in FontForge, do we really need it after all? */
