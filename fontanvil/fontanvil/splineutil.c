@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: splineutil.c 2927 2014-03-08 15:00:32Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -8538,14 +8538,4 @@ void GrowBufferAddStr(GrowBuf * gb, char *str) {
    }
    strcpy((char *) gb->pt, str);
    gb->pt += n;
-}
-
-bigreal DistanceBetweenPoints(BasePoint * p1, BasePoint * p2) {
-   bigreal t = pow(p1->x - p2->x, 2) + pow(p1->y - p2->y, 2);
-
-   if (!t)
-      return t;
-
-   t = sqrt(t);
-   return t;
 }

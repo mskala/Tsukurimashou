@@ -1,5 +1,4 @@
-/* $Id: unicodelibinfo.c 2918 2014-03-07 16:09:49Z mskala $ */
-/* -*- coding: utf-8 -*- */
+/* $Id: unicodelibinfo.c 2927 2014-03-08 15:00:32Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without

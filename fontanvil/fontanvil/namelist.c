@@ -1,5 +1,4 @@
-/* $Id: namelist.c 2926 2014-03-08 14:34:45Z mskala $ */
-/* -*- coding: utf-8 -*- */
+/* $Id: namelist.c 2927 2014-03-08 15:00:32Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without

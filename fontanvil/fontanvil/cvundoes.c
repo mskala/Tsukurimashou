@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 2926 2014-03-08 14:34:45Z mskala $ */
+/* $Id: cvundoes.c 2927 2014-03-08 15:00:32Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3184,55 +3184,6 @@ static void _PasteToBC(BDFChar * bc, int pixelsize, int depth,
 
 void PasteToBC(BDFChar * bc, int pixelsize, int depth) {
    _PasteToBC(bc, pixelsize, depth, &copybuffer, false);
-}
-
-void FVCopyWidth(FontViewBase * fv, enum undotype ut) {
-   Undoes *head = NULL, *last = NULL, *cur;
-
-   int i, any = false, gid;
-
-   SplineChar *sc;
-
-   DBounds bb;
-
-   CopyBufferFreeGrab();
-
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i]) {
-	 any = true;
-	 cur = chunkalloc(sizeof(Undoes));
-	 cur->undotype = ut;
-	 if ((gid = fv->map->map[i]) != -1
-	     && (sc = fv->sf->glyphs[gid]) != NULL) {
-	    switch (ut) {
-	      case ut_width:
-		 cur->u.width = sc->width;
-		 break;
-	      case ut_vwidth:
-		 cur->u.width = sc->vwidth;
-		 break;
-	      case ut_lbearing:
-		 SplineCharFindBounds(sc, &bb);
-		 cur->u.lbearing = bb.minx;
-		 break;
-	      case ut_rbearing:
-		 SplineCharFindBounds(sc, &bb);
-		 cur->u.rbearing = sc->width - bb.maxx;
-		 break;
-	    }
-	 } else
-	    cur->undotype = ut_noop;
-	 if (head == NULL)
-	    head = cur;
-	 else
-	    last->next = cur;
-	 last = cur;
-      }
-   copybuffer.undotype = ut_multiple;
-   copybuffer.u.multiple.mult = head;
-   copybuffer.copied_from = fv->sf;
-   if (!any)
-      LogError(_("No selection\n"));
 }
 
 void FVCopyAnchors(FontViewBase * fv) {

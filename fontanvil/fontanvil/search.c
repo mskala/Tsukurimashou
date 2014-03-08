@@ -1,4 +1,4 @@
-/* $Id: search.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: search.c 2927 2014-03-08 15:00:32Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1530,36 +1530,6 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
 }
 
 /* This will free both the find and rpl contours */
-int FVReplaceAll(FontViewBase * fv, SplineSet * find, SplineSet * rpl,
-		 double fudge, int flags) {
-   SearchData *sv;
-
-   int ret;
-
-   sv = SDFillup(calloc(1, sizeof(SearchData)), fv);
-   sv->fudge_percent = .001;
-   sv->fudge = fudge;
-   sv->replaceall = true;
-
-   sv->tryreverse = (flags & sv_reverse);
-   sv->tryflips = (flags & sv_flips);
-   sv->tryrotate = (flags & sv_rotate);
-   sv->tryscale = (flags & sv_scale);
-
-   sv->sc_srch.layers[ly_fore].splines = find;
-   sv->sc_rpl.layers[ly_fore].splines = rpl;
-   sv->sc_srch.changed_since_autosave = sv->sc_rpl.changed_since_autosave =
-      true;
-   SVResetPaths(sv);
-
-   ret = _DoFindAll(sv);
-
-   SDDestroy(sv);
-   free(sv);
-   return (ret);
-}
-
-/* This will free both the find and rpl contours */
 SearchData *SDFromContour(FontViewBase * fv, SplineSet * find, double fudge,
 			  int flags) {
    SearchData *sv;
@@ -1688,75 +1658,4 @@ static struct splinecharlist *DListRemove(struct splinecharlist *dependents,
       }
       return (dependents);
    }
-}
-
-void FVCorrectReferences(FontViewBase * fv) {
-   int enc, gid, cnt;
-
-   SplineFont *sf = fv->sf;
-
-   SplineChar *sc, *rsc;
-
-   RefChar *ref;
-
-   int layer = fv->active_layer;
-
-   int index;
-
-   cnt = 0;
-   for (enc = 0; enc < fv->map->enccount; ++enc) {
-      if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
-	  && (sc = sf->glyphs[gid]) != NULL)
-	 ++cnt;
-   }
-   ff_progress_start_indicator(10, _("Correcting References"),
-			       _
-			       ("Adding new glyphs and referring to them when a glyph contains a bad truetype reference"),
-			       NULL, cnt, 1);
-   for (enc = 0; enc < fv->map->enccount; ++enc) {
-      if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
-	  && (sc = sf->glyphs[gid]) != NULL) {
-	 index = 1;
-	 if (sc->layers[layer].splines != NULL
-	     && sc->layers[layer].refs != NULL) {
-	    SCPreserveLayer(sc, layer, false);
-	    rsc = RC_MakeNewGlyph(fv, sc, index++,
-				  _
-				  ("%s had both contours and references, so the contours were moved "
-				   "into this glyph, and a reference to it was added in the original."),
-				  "");
-	    rsc->layers[layer].splines = sc->layers[layer].splines;
-	    sc->layers[layer].splines = NULL;
-	    AddRef(sc, rsc, layer);
-	    /* I don't bother to check for instructions because there */
-	    /*  shouldn't be any in a mixed outline and reference glyph */
-	 }
-	 for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next) {
-	    if (ref->transform[0] > 0x7fff / 16384.0 || ref->transform[1] > 0x7fff / 16384.0 || ref->transform[2] > 0x7fff / 16384.0 || ref->transform[3] > 0x7fff / 16384.0 || ref->transform[0] < -2.0 ||	/* Numbers are asymetric, negative range slightly bigger */
-		ref->transform[1] < -2.0 ||
-		ref->transform[2] < -2.0 || ref->transform[3] < -2.0) {
-	       if (index == 1)
-		  SCPreserveLayer(sc, layer, false);
-	       rsc = RC_MakeNewGlyph(fv, sc, index++,
-				     _
-				     ("%1$s had a reference, %2$s, with a bad transformation matrix (one of "
-				      "the matrix elements was bigger than 2). I moved the transformed "
-				      "contours into this glyph and made a reference to it, instead."),
-				     ref->sc->name);
-	       rsc->layers[layer].splines = ref->layers[0].splines;
-	       ref->layers[0].splines = NULL;
-	       ref->sc->dependents = DListRemove(ref->sc->dependents, sc);
-	       ref->sc = rsc;
-	       memset(ref->transform, 0, sizeof(ref->transform));
-	       ref->transform[0] = ref->transform[3] = 1.0;
-	       SCReinstanciateRefChar(sc, ref, layer);
-	    }
-	 }
-	 if (index != 1)
-	    SCCharChangedUpdate(sc, layer);
-	 if (!ff_progress_next())
-	    break;
-      }
-   }
-   ff_progress_end_indicator();
 }

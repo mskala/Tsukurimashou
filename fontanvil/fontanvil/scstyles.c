@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 2926 2014-03-08 14:34:45Z mskala $ */
+/* $Id: scstyles.c 2927 2014-03-08 15:00:32Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3388,192 +3388,6 @@ static SplineChar *MakeSubSupGlyphSlot(SplineFont * sf, SplineChar * sc,
    return (sc_sc);
 }
 
-void FVGenericChange(FontViewBase * fv, struct genericchange *genchange) {
-   int gid, enc, cnt;
-
-   SplineFont *sf = fv->sf;
-
-   SplineChar *sc, *sc_sc, *rsc, *achar = NULL;
-
-   RefChar *ref, *r;
-
-   struct lookup_subtable *feature;
-
-   char buffer[200];
-
-   if (sf->cidmaster != NULL && genchange->gc == gc_subsuper)
-      return;			/* Can't randomly add things to a CID keyed font */
-
-   if (genchange->small != NULL) {
-      genchange->italic_angle = genchange->small->italic_angle;
-      genchange->tan_ia = genchange->small->tan_ia;
-   }
-
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL)
-	 sc->ticked = false;
-
-   cnt = 0;
-   for (enc = 0; enc < fv->map->enccount; ++enc) {
-      if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
-	  && (sc = sf->glyphs[gid]) != NULL) {
-	 ++cnt;
-      }
-   }
-   if (cnt == 0)
-      return;
-
-   genchange->g.cnt = genchange->m.cnt + 2;
-   genchange->g.maps =
-      malloc(genchange->g.cnt * sizeof(struct position_maps));
-
-   if (genchange->feature_tag != 0) {
-      uint32 *scripts = malloc(cnt * sizeof(uint32));
-
-      int scnt = 0;
-
-      for (enc = 0; enc < fv->map->enccount; ++enc) {
-	 if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
-	     && (sc = sf->glyphs[gid]) != NULL) {
-	    uint32 script = SCScriptFromUnicode(sc);
-
-	    int i;
-
-	    for (i = 0; i < scnt; ++i)
-	       if (scripts[i] == script)
-		  break;
-	    if (i == scnt)
-	       scripts[scnt++] = script;
-	 }
-      }
-
-      feature = MakeSupSupLookup(sf, genchange->feature_tag, scripts, scnt);
-      free(scripts);
-   } else
-      feature = NULL;
-
-   if (genchange->gc == gc_subsuper)
-      ff_progress_start_indicator(10, _("Subscripts/Superscripts"),
-				  _("Building sub/superscripts"), NULL, cnt,
-				  1);
-   else
-      ff_progress_start_indicator(10, _("Generic change"),
-				  _("Changing glyphs"), NULL, cnt, 1);
-
-   for (enc = 0; enc < fv->map->enccount; ++enc) {
-      if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
-	  && (sc = sf->glyphs[gid]) != NULL) {
-	 if (sc->ticked)
-	    goto end_loop;
-	 if (sc->layers[fv->active_layer].splines == NULL) {
-	    /* Create the glyph now, so it gets encoded right, but otherwise */
-	    /*  skip for now */
-	    if (genchange->glyph_extension != NULL)
-	       sc_sc = MakeSubSupGlyphSlot(sf, sc, feature, fv, genchange);
-	    continue;		/* Deal with these later */
-	 }
-	 sc->ticked = true;
-	 if (genchange->glyph_extension != NULL) {
-	    sc_sc = MakeSubSupGlyphSlot(sf, sc, feature, fv, genchange);
-	    if (sc_sc == NULL)
-	       goto end_loop;
-	 } else {
-	    sc_sc = sc;
-	    SCPreserveLayer(sc, fv->active_layer, true);
-	 }
-	 if (achar == NULL)
-	    achar = sc_sc;
-	 ChangeGlyph(sc_sc, sc, fv->active_layer, genchange);
-       end_loop:
-	 if (!ff_progress_next())
-	    break;
-      }
-   }
-   /* OK. Here we have done all the base glyphs we are going to do. Now let's */
-   /*  look at things which depend on references */
-   /* This is only relevant if we've got an extension, else we just use the */
-   /*  same old refs */
-   if (genchange->glyph_extension != NULL)
-      for (enc = 0; enc < fv->map->enccount; ++enc) {
-	 if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
-	     && (sc = sf->glyphs[gid]) != NULL) {
-	    if (sc->layers[fv->active_layer].refs == NULL)
-	       continue;
-	    snprintf(buffer, sizeof(buffer), "%s.%s", sc->name,
-		     genchange->glyph_extension);
-	    sc_sc = SFGetChar(sf, -1, buffer);
-	    if (sc_sc == NULL)	/* Should not happen */
-	       sc_sc = MakeSubSupGlyphSlot(sf, sc, feature, fv, genchange);
-	    if (sc_sc == NULL)
-	       goto end_loop2;
-	    if (achar == NULL)
-	       achar = sc_sc;
-	    /* BuildComposite can do a better job of positioning accents */
-	    /*  than I'm going to do here... */
-	    if (sc->layers[fv->active_layer].splines == NULL &&
-		SFGetAlternate(sf, sc->unicodeenc, sc, false) != NULL)
-	       SCBuildComposit(sf, sc_sc, fv->active_layer, NULL, true);
-	    if (sc_sc->layers[fv->active_layer].refs == NULL) {
-	       RefChar *rlast = NULL;
-
-	       for (ref = sc->layers[fv->active_layer].refs; ref != NULL;
-		    ref = ref->next) {
-		  snprintf(buffer, sizeof(buffer), "%s.%s", ref->sc->name,
-			   genchange->glyph_extension);
-		  rsc = SFGetChar(sf, -1, buffer);
-		  if (rsc == NULL && isaccent(ref->sc->unicodeenc))
-		     rsc = ref->sc;
-		  if (rsc != NULL) {
-		     r = RefCharCreate();
-		     free(r->layers);
-		     *r = *ref;
-		     r->layers = NULL;
-		     r->layer_cnt = 0;
-		     r->next = NULL;
-		     r->sc = rsc;
-		     r->transform[4] *= genchange->hcounter_scale;
-		     r->transform[5] *=
-			genchange->use_vert_mapping ? genchange->
-			v_scale : genchange->vcounter_scale;
-		     if (rsc == ref->sc)
-			r->transform[5] += genchange->vertical_offset;
-		     SCMakeDependent(sc_sc, rsc);
-		     SCReinstanciateRefChar(sc_sc, r, fv->active_layer);
-		     if (rlast == NULL)
-			sc_sc->layers[fv->active_layer].refs = r;
-		     else
-			rlast->next = r;
-		     rlast = r;
-		  }
-	       }
-	       SCCharChangedUpdate(sc_sc, fv->active_layer);
-	    }
-	  end_loop2:
-	    if (!sc->ticked && !ff_progress_next())
-	       break;
-	    sc->ticked = true;
-	 }
-   } else
-      for (enc = 0; enc < fv->map->enccount; ++enc) {
-	 if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
-	     && (sc = sf->glyphs[gid]) != NULL) {
-	    for (ref = sc->layers[fv->active_layer].refs; ref != NULL;
-		 ref = ref->next) {
-	       ref->transform[4] *= genchange->hcounter_scale;
-	       ref->transform[5] *=
-		  genchange->use_vert_mapping ? genchange->
-		  v_scale : genchange->vcounter_scale;
-	    }
-	    if (sc->layers[fv->active_layer].refs != NULL)
-	       SCCharChangedUpdate(sc, fv->active_layer);
-	 }
-      }
-   ff_progress_end_indicator();
-   if (achar != NULL)
-      FVDisplayGID(fv, achar->orig_pos);
-   free(genchange->g.maps);
-}
-
 SplineSet *SSControlStems(SplineSet * ss, double stemwidthscale,
 			  double stemheightscale, double hscale,
 			  double vscale, double xheight) {
@@ -3945,19 +3759,12 @@ static void BPAdjustCE(BasePoint * bp, struct counterinfo *ci) {
 void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
 		      int do_undoes) {
    SplineSet *ss;
-
    SplinePoint *sp;
-
    Spline *s, *first;
-
    DBounds b;
-
    int width;
-
    double offset;
-
    real transform[6];
-
    int order2 = sc->layers[layer].order2;
 
    if (do_undoes)
@@ -4045,22 +3852,6 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
 void ScriptSCCondenseExtend(SplineChar * sc, struct counterinfo *ci) {
 
    SCCondenseExtend(ci, sc, ci->layer, true);
-
-   free(ci->zones[0]);
-   free(ci->zones[1]);
-}
-
-void FVCondenseExtend(FontViewBase * fv, struct counterinfo *ci) {
-   int i, gid;
-
-   SplineChar *sc;
-
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
-	  && (sc = fv->sf->glyphs[gid]) != NULL) {
-	 SCCondenseExtend(ci, sc, ly_fore, true);
-      }
 
    free(ci->zones[0]);
    free(ci->zones[1]);

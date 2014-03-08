@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 2926 2014-03-08 14:34:45Z mskala $ */
+/* $Id: nonlineartrans.c 2927 2014-03-08 15:00:32Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -927,49 +927,6 @@ static void SCFindCenter(SplineChar * sc, BasePoint * center) {
    SplineCharFindBounds(sc, &db);
    center->x = (db.minx + db.maxx) / 2;
    center->y = (db.miny + db.maxy) / 2;
-}
-
-void FVPointOfView(FontViewBase * fv, struct pov_data *pov) {
-   int i, cnt = 0, layer, last, first, gid;
-
-   BasePoint origin;
-
-   SplineChar *sc;
-
-   for (i = 0; i < fv->map->enccount; ++i)
-      if ((gid = fv->map->map[i]) != -1 && fv->sf->glyphs[gid] != NULL &&
-	  fv->selected[i])
-	 ++cnt;
-   ff_progress_start_indicator(10, _("Projecting..."), _("Projecting..."), 0,
-			       cnt, 1);
-
-   SFUntickAll(fv->sf);
-   for (i = 0; i < fv->map->enccount; ++i) {
-      if ((gid = fv->map->map[i]) != -1 && fv->selected[i] &&
-	  (sc = fv->sf->glyphs[gid]) != NULL && !sc->ticked) {
-	 sc->ticked = true;
-	 SCPreserveLayer(sc, layer, false);
-
-	 origin.x = origin.y = 0;
-	 if (pov->xorigin == or_center || pov->yorigin == or_center)
-	    SCFindCenter(sc, &origin);
-	 if (pov->xorigin != or_value)
-	    pov->x = origin.x;
-	 if (pov->yorigin != or_value)
-	    pov->y = origin.y;
-
-	 MinimumDistancesFree(sc->md);
-	 sc->md = NULL;
-	 if (sc->parent->multilayer) {
-	    first = ly_fore;
-	    last = sc->layer_cnt - 1;
-	 } else
-	    first = last = fv->active_layer;
-	 for (layer = first; layer <= last; ++layer)
-	    SPLPoV(sc->layers[layer].splines, pov, false);
-	 SCCharChangedUpdate(sc, layer);
-      }
-   }
 }
 
 struct vanishing_point {
