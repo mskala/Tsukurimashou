@@ -1,19 +1,19 @@
-/* $Id: splineutil2.c 2927 2014-03-08 15:00:32Z mskala $ */
+/* $Id: splineutil2.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -1928,121 +1928,13 @@ static void GlyphBindToPath(SplineSet * glyph, SplineSet * path) {
    SplinePointListTransform(glyph, transform, tpt_AllPoints);
 }
 
-
-SplineSet *SplineSetBindToPath(SplineSet * ss, int doscale, int glyph_as_unit,
-			       int align, real offset, SplineSet * path) {
-   DBounds b;
-
-   real transform[6];
-
-   bigreal pathlength = PathLength(path);
-
-   SplineSet *spl, *eog, *nextglyph;
-
-   SplinePoint *sp;
-
-   Spline *s, *first;
-
-   int order2 = -1;
-
-   BasePoint cp;
-
-   memset(transform, 0, sizeof(transform));
-   transform[0] = transform[3] = 1;
-   SplineSetFindBounds(ss, &b);
-
-   if (doscale && b.maxx - b.minx != 0) {
-      transform[0] = transform[3] = pathlength / (b.maxx - b.minx);
-      transform[4] = -b.minx;
-   } else if (align == 0) {	/* At start */
-      transform[4] = -b.minx;
-   } else if (align == 1) {	/* Centered */
-      transform[4] = (pathlength - (b.maxx - b.minx)) / 2 - b.minx;
-   } else {			/* At end */
-      transform[4] = pathlength - b.maxx;
-   }
-   if (pathlength == 0) {
-      transform[4] += path->first->me.x;
-      transform[5] += path->first->me.y;
-   }
-   transform[5] += offset;
-   SplinePointListTransform(ss, transform, tpt_AllPoints);
-   if (pathlength == 0)
-      return (ss);
-
-   if (glyph_as_unit) {
-      for (spl = ss; spl != NULL; spl = nextglyph) {
-	 for (eog = spl; eog != NULL && !eog->ticked; eog = eog->next);
-	 if (eog == NULL)
-	    nextglyph = NULL;
-	 else {
-	    nextglyph = eog->next;
-	    eog->next = NULL;
-	 }
-	 GlyphBindToPath(spl, path);
-	 if (eog != NULL)
-	    eog->next = nextglyph;
-      }
-   } else {
-      for (spl = ss; spl != NULL; spl = spl->next) {
-	 for (sp = spl->first;;) {
-	    SplinePointBindToPath(sp, path);
-	    if (sp->next == NULL)
-	       break;
-	    order2 = sp->next->order2;
-	    sp = sp->next->to;
-	    if (sp == spl->first)
-	       break;
-	 }
-      }
-      if (order2 == 1) {
-	 for (spl = ss; spl != NULL; spl = spl->next) {
-	    for (sp = spl->first;;) {
-	       if (!sp->noprevcp && sp->prev != NULL) {
-		  if (!IntersectLines
-		      (&cp, &sp->me, &sp->prevcp, &sp->prev->from->nextcp,
-		       &sp->prev->from->me)) {
-		     cp.x = (sp->prevcp.x + sp->prev->from->nextcp.x) / 2;
-		     cp.y = (sp->prevcp.y + sp->prev->from->nextcp.y) / 2;
-		  }
-		  sp->prevcp = sp->prev->from->nextcp = cp;
-	       }
-	       if (sp->next == NULL)
-		  break;
-	       sp = sp->next->to;
-	       if (sp == spl->first)
-		  break;
-	    }
-	 }
-      }
-
-      for (spl = ss; spl != NULL; spl = spl->next) {
-	 first = NULL;
-	 for (s = spl->first->next; s != NULL && s != first; s = s->to->next) {
-	    if (s->order2)
-	       SplineRefigure2(s);
-	    else
-	       s = SplineBindToPath(s, path);
-	    if (first == NULL)
-	       first = s;
-	 }
-      }
-   }
-   return (ss);
-}
-
 static TPoint *SplinesFigureTPsBetween(SplinePoint * from, SplinePoint * to,
 				       int *tot) {
    int cnt, i, j, pcnt;
-
    bigreal len, slen, lbase;
-
    SplinePoint *np;
-
    TPoint *tp;
-
    bigreal _lens[10], *lens = _lens;
-
    int _cnts[10], *cnts = _cnts;
 
    /* I used just to give every spline 10 points. But that gave much more */

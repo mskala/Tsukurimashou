@@ -1,19 +1,19 @@
-/* $Id: fontviewbase.c 2927 2014-03-08 15:00:32Z mskala $ */
+/* $Id: fontviewbase.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -1207,14 +1207,6 @@ void FVAutoInstr(FontViewBase * fv) {
    /* (This way the auto hinter won't complain if they existed) */
    if (fv->sf->ttf_tables != NULL && AllGlyphsSelected(fv))
       ClearFpgmPrepCvt(fv->sf);
-   if (fv->sf->private == NULL && !no_windowing_ui)
-      ff_post_notice(_("Things could be better..."),
-		     _
-		     ("You will get better instructions if you fill in the Private dictionary, Element->Font Info->Private, for the font"));
-   if (!no_windowing_ui && !AnySelectedHints(fv))
-      ff_post_notice(_("Things could be better..."),
-		     _
-		     ("The selected glyphs have no hints. FontAnvil will not produce many instructions."));
 
    QuickBlues(fv->sf, fv->active_layer, &bd);
 
@@ -1386,21 +1378,7 @@ void FVBuildAccent(FontViewBase * fv, int onlyaccents) {
 	       continue;
 	 }
 	 if (sc == NULL)
-	    sc = SCBuildDummy(&dummy, fv->sf, fv->map, i);
-	 else if (!no_windowing_ui && sc->unicodeenc == 0x00c5 /* Aring */  &&
-		  sc->layers[fv->active_layer].splines != NULL) {
-	    char *buts[3];
-
-	    buts[0] = _("_Yes");
-	    buts[1] = _("_No");
-	    buts[2] = NULL;
-	    if (ff_ask
-		(U_("Replace Å"), (const char **) buts, 0, 1,
-		 U_
-		 ("Are you sure you want to replace Å?\nThe ring will not join to the A."))
-		== 1)
-	       continue;
-	 }
+	   sc = SCBuildDummy(&dummy, fv->sf, fv->map, i);
 	 if (SFIsSomethingBuildable
 	     (fv->sf, sc, fv->active_layer, onlyaccents)) {
 	    sc = SFMakeChar(fv->sf, fv->map, i);

@@ -1,19 +1,19 @@
-/* $Id: splinechar.c 2927 2014-03-08 15:00:32Z mskala $ */
+/* $Id: splinechar.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -2051,34 +2051,13 @@ int SCValidate(SplineChar * sc, int layer, int force) {
 
 int SFValidate(SplineFont * sf, int layer, int force) {
    int k, gid;
-
    SplineFont *sub;
-
    int any = 0;
-
    SplineChar *sc;
-
    int cnt = 0;
 
    if (sf->cidmaster)
       sf = sf->cidmaster;
-
-   if (!no_windowing_ui) {
-      cnt = 0;
-      k = 0;
-      do {
-	 sub = sf->subfontcnt == 0 ? sf : sf->subfonts[k];
-	 for (gid = 0; gid < sub->glyphcnt; ++gid)
-	    if ((sc = sub->glyphs[gid]) != NULL) {
-	       if (force || !(sc->layers[layer].validation_state & vs_known))
-		  ++cnt;
-	    }
-	 ++k;
-      } while (k < sf->subfontcnt);
-      if (cnt != 0)
-	 ff_progress_start_indicator(10, _("Validating..."),
-				     _("Validating..."), 0, cnt, 1);
-   }
 
    k = 0;
    do {
@@ -2912,36 +2891,6 @@ void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {
        found:;
       }
    }
-   if (!complain || no_windowing_ui)
-      /* If we're in a script it's annoying (and pointless) to get this message */
-	 ;
-   else if (sc->complained_about_ptnums)
-      /* It's annoying to get the same message over and over again as you edit a glyph */
-	 ;
-   else if (had_ap || had_dep || had_instrs) {
-      ff_post_notice(_("You changed the point numbering"),
-		     _
-		     ("You have just changed the point numbering of glyph %s.%s%s%s"),
-		     sc->name,
-		     had_instrs == 0 ? "" : had_instrs ==
-		     1 ?
-		     _
-		     (" Instructions in this glyph (or one that refers to it) have been lost.")
-		     :
-		     _
-		     (" Instructions in this glyph (or one that refers to it) are now out of date."),
-		     had_dep ?
-		     _
-		     (" At least one reference to this glyph used point matching. That match is now out of date.")
-		     : "",
-		     had_ap ?
-		     _
-		     (" At least one anchor point used point matching. It may be out of date now.")
-		     : "");
-      sc->complained_about_ptnums = true;
-      if (had_instrs == 2)
-	 FVRefreshAll(sc->parent);
-   }
 }
 
 void PatternSCBounds(SplineChar * sc, DBounds * b) {
@@ -2982,10 +2931,9 @@ void instrcheck(SplineChar * sc, int layer) {
    if (!sc->layers[layer].order2 || sc->layers[layer].background)
       return;
 
-   if (sc->instructions_out_of_date && no_windowing_ui && sc->anchor == NULL)
+   if (sc->instructions_out_of_date && sc->anchor==NULL)
       return;
-   if (instrs == NULL && sc->dependents == NULL && no_windowing_ui
-       && sc->anchor == NULL)
+   if (instrs==NULL && sc->dependents==NULL && sc->anchor==NULL)
       return;
    /* If the points are no longer in order then the instructions are not valid */
    /*  (because they'll refer to the wrong points) and should be removed */

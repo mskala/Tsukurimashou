@@ -1,19 +1,19 @@
-/* $Id: parsettfbmf.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: parsettfbmf.c 2928 2014-03-08 15:37:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -604,36 +604,19 @@ void TTFLoadBitmaps(FILE * ttf, struct ttfinfo *info, int onlyone) {
    /*  then just load that strike. Don't ask */
    if (info->glyphlocations_start == 0 && info->cff_start == 0 && cnt == 1)
       sel[0] = true;
-   else if (no_windowing_ui) {
+   else {
       if (onlyone) {
 	 biggest = 0;
 	 for (i = 1; i < cnt; ++i)
-	    if (sizes[i].ppem > sizes[biggest].ppem && sizes[i].depth == 1)
-	       biggest = i;
+	   if (sizes[i].ppem > sizes[biggest].ppem && sizes[i].depth == 1)
+	     biggest = i;
 	 sel[biggest] = true;
       } else {
 	 for (i = 0; i < cnt; ++i)
-	    sel[i] = true;
+	   sel[i] = true;
       }
-   } else if (no_windowing_ui) {
-      if (onlyone) {
-	 if (biggest != -1)
-	    sel[biggest] = true;
-      } else
-	 biggest = -2;
-   } else if (onlyone) {
-      biggest = ff_choose(_("Load Bitmap Fonts"), choices, cnt, biggest,
-			  _
-			  ("Do you want to load the bitmap fonts embedded in this true/open type file?\n(And if so, which)"));
-      if (biggest != -1)
-	 sel[biggest] = true;
-   } else {
-      biggest =
-	 ff_choose_multiple(_("Load Bitmap Fonts"), choices, sel, cnt,
-			    buttons,
-			    _
-			    ("Do you want to load the bitmap fonts embedded in this true/open type file?\n(And if so, which)"));
    }
+
    for (i = 0; i < cnt; ++i)
       free((unichar_t *) (choices[i]));
    free(choices);

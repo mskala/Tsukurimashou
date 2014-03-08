@@ -1,19 +1,19 @@
-/* $Id: fontanvil.h 2923 2014-03-08 01:52:03Z mskala $ */
+/* $Id: fontanvil.h 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -62,7 +62,6 @@ extern int adjustwidth;
 extern int adjustlbearing;
 extern int autohint_before_generate;
 extern int seperate_hint_controls;
-extern int no_windowing_ui;
 extern uint32 default_background;
 extern int use_utf8_in_script;
 extern int new_em_size;

@@ -1,19 +1,19 @@
-/* $Id: parsettf.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: parsettf.c 2928 2014-03-08 15:37:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -708,12 +708,9 @@ static int PickTTFFont(FILE * ttf, char *filename, char **chosenname) {
 	 free(fn);
       }
       free(find);
-   } else if (no_windowing_ui)
-      choice = 0;
-   else
-      choice =
-	 ff_choose(_("Pick a font, any font..."), (const char **) names, j, 0,
-		   _("There are multiple fonts in this file, pick one"));
+   } else
+     choice = 0;
+
    if (choice != -1) {
       fseek(ttf, offsets[choice], SEEK_SET);
       *chosenname = copy(names[choice]);
@@ -734,13 +731,8 @@ static int PickCFFFont(char **fontnames) {
    names = calloc(cnt + 1, sizeof(unichar_t *));
    for (i = 0; i < cnt; ++i)
       names[i] = uc_copy(fontnames[i]);
-   if (no_windowing_ui)
-      choice = 0;
-   else
-      choice = ff_choose(_("Pick a font, any font..."),
-			 (const char **) names, cnt, 0,
-			 _
-			 ("There are multiple fonts in this file, pick one"));
+   choice=0;
+
    for (i = 0; i < cnt; ++i)
       free(names[i]);
    free(names);

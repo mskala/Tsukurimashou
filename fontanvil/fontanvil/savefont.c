@@ -1,19 +1,19 @@
-/* $Id: savefont.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: savefont.c 2928 2014-03-08 15:37:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -1112,9 +1112,9 @@ void PrepareUnlinkRmOvrlp(SplineFont * sf, char *filename, int layer) {
 
    RefChar *ref, *refnext;
 
-   extern int no_windowing_ui, maxundoes;
+   extern int maxundoes;
 
-   int old_nwui = no_windowing_ui, old_maxundoes = maxundoes;
+   int old_maxundoes = maxundoes;
 
    if (maxundoes == 0)
       maxundoes = 1;		/* Force undoes */
@@ -1123,12 +1123,9 @@ void PrepareUnlinkRmOvrlp(SplineFont * sf, char *filename, int layer) {
       if ((sc = sf->glyphs[gid]) != NULL && sc->unlink_rm_ovrlp_save_undo) {
 	 if (autohint_before_generate && sc != NULL &&
 	     sc->changedsincelasthinted && !sc->manualhints) {
-	    no_windowing_ui = true;
 	    SplineCharAutoHint(sc, layer, NULL);	/* Do this now, else we get an unwanted undo on the stack from hinting */
 	 }
-	 no_windowing_ui = false;
 	 SCPreserveLayer(sc, layer, false);
-	 no_windowing_ui = true;	/* Clustering wants to create an undo that I don't need */
 	 for (ref = sc->layers[layer].refs; ref != NULL; ref = refnext) {
 	    refnext = ref->next;
 	    SCRefToSplines(sc, ref, layer);
@@ -1137,11 +1134,9 @@ void PrepareUnlinkRmOvrlp(SplineFont * sf, char *filename, int layer) {
 	 sc->layers[layer].splines =
 	    SplineSetRemoveOverlap(sc, sc->layers[layer].splines,
 				   over_remove);
-	 no_windowing_ui = false;
 	 if (!sc->manualhints)
 	    sc->changedsincelasthinted = false;
       }
-   no_windowing_ui = old_nwui;
    maxundoes = old_maxundoes;
 }
 

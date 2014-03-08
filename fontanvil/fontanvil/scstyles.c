@@ -1,19 +1,19 @@
-/* $Id: scstyles.c 2927 2014-03-08 15:00:32Z mskala $ */
+/* $Id: scstyles.c 2928 2014-03-08 15:37:54Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -7374,19 +7374,11 @@ static void Ital_a_From_d(SplineChar * sc, int layer, ItalicInfo * ii) {
 static void _SCChangeXHeight(SplineChar * sc, int layer,
 			     struct xheightinfo *xi) {
    int l;
-
    struct position_maps pmaps[7];
-
    struct fixed_maps fix;
-
    DBounds b;
 
-   extern int no_windowing_ui;
-
-   int nwi = no_windowing_ui;
-
    SplineCharLayerFindBounds(sc, layer, &b);
-   no_windowing_ui = true;	/* Turn off undoes */
 
    l = 0;
    fix.maps = pmaps;
@@ -7430,21 +7422,14 @@ static void _SCChangeXHeight(SplineChar * sc, int layer,
 			      sc->vstem, 0, remove_x, b.minx, b.maxx);
    }
    SplineSetRefigure(sc->layers[layer].splines);
-   no_windowing_ui = nwi;
 }
 
 static void SCMakeItalic(SplineChar * sc, int layer, ItalicInfo * ii) {
    real skew[6], refpos[6];;
    RefChar *ref;
-
-   extern int no_windowing_ui;
-
-   int nwi = no_windowing_ui;
-
    int letter_case;
 
    SCPreserveLayer(sc, layer, true);
-   no_windowing_ui = true;	/* Turn off undoes */
 
    if (autohint_before_generate
        && (sc->changedsincelasthinted || sc->vstem == NULL)
@@ -7532,7 +7517,6 @@ static void SCMakeItalic(SplineChar * sc, int layer, ItalicInfo * ii) {
    sc->vstem = NULL;
    DStemInfosFree(sc->dstem);
    sc->dstem = NULL;
-   no_windowing_ui = nwi;
    SCRound2Int(sc, layer, 1.0);	/* This calls SCCharChangedUpdate(sc,layer); */
 }
 

@@ -1,19 +1,19 @@
-/* $Id: scripting.c 2926 2014-03-08 14:34:45Z mskala $ */
+/* $Id: scripting.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -54,10 +54,7 @@
 
 #include "unicodelibinfo.h"
 
-int no_windowing_ui = false;
-
-int running_script = false;
-
+int running_script = true;
 int use_utf8_in_script = true;
 
 extern int prefRevisionsToRetain;	/* sfd.c */
@@ -282,11 +279,6 @@ static void expect(Context * c, enum token_type expected, enum token_type got) {
       else
 	 LogError(_("%s: %d Expected %s, got %s"),
 		  c->filename, c->lineno, toknames[expected], toknames[got]);
-      if (!no_windowing_ui) {
-	 ff_post_error(NULL, _("%1$s: %2$d. Expected %3$s got %4$s"),
-		       c->filename, c->lineno, toknames[expected],
-		       toknames[got]);
-      }
       showtoken(c, got);
    }
 }
@@ -299,10 +291,6 @@ static void unexpected(Context * c, enum token_type got) {
    else
       LogError(_("%s: %d Unexpected %s found"),
 	       c->filename, c->lineno, toknames[got]);
-   if (!no_windowing_ui) {
-      ff_post_error(NULL, "%1$s: %2$d Unexpected %3$",
-		    c->filename, c->lineno, toknames[got]);
-   }
    showtoken(c, got);
 }
 
@@ -323,9 +311,6 @@ void ScriptError(Context * c, const char *msg) {
       LogError(_("%s line: %d %s\n"), ufile, c->lineno, t1);
    else
       LogError("%s: %s\n", ufile, t1);
-   if (!no_windowing_ui) {
-      ff_post_error(NULL, "%s: %d  %s", ufile, c->lineno, t1);
-   }
    free(ufile);
    free(t1);
    traceback(c);
@@ -346,9 +331,6 @@ void ScriptErrorString(Context * c, const char *msg, const char *name) {
       LogError(_("%s line: %d %s: %s\n"), ufile, c->lineno, t1, t2);
    else
       LogError("%s: %s: %s\n", ufile, t1, t2);
-   if (!no_windowing_ui) {
-      ff_post_error(NULL, "%s: %d %s: %s", ufile, c->lineno, t1, t2);
-   }
    free(ufile);
    free(t1);
    free(t2);
@@ -375,9 +357,6 @@ void ScriptErrorF(Context * c, const char *format, ...) {
       LogError(_("%s line: %d %s\n"), ufile, c->lineno, errbuf);
    else
       LogError("%s: %s\n", ufile, errbuf);
-   if (!no_windowing_ui) {
-      ff_post_error(NULL, "%s: %d  %s", ufile, c->lineno, errbuf);
-   }
    free(ufile);
    traceback(c);
 }
@@ -484,27 +463,18 @@ static void bPostNotice(Context * c) {
       ScriptError(c, "Expected string argument");
 
    loc = c->a.vals[1].u.sval;
-   if (!no_windowing_ui) {
-      if (!use_utf8_in_script) {
-	 unichar_t *t1 = uc_copy(loc);
-
-	 loc = u2utf8_copy(t1);
-	 free(t1);
-      }
-      ff_post_notice(_("Attention"), "%.200s", loc);
-      if (loc != c->a.vals[1].u.sval)
-	 free(loc);
-   } else {
-      t1 = script2utf8_copy(loc);
-      loc = utf82def_copy(t1);
-      fprintf(stderr, "%s\n", loc);
-      free(loc);
-      free(t1);
-   }
+   t1 = script2utf8_copy(loc);
+   loc = utf82def_copy(t1);
+   fprintf(stderr, "%s\n", loc);
+   free(loc);
+   free(t1);
 }
 
 static void bAskUser(Context * c) {
    char *quest, *def = "";
+   char buffer[300];
+   char *t1 = script2utf8_copy(quest);
+   char *loc = utf82def_copy(t1);
 
    if (c->a.argc != 2 && c->a.argc != 3)
       ScriptError(c, "Wrong number of arguments");
@@ -513,46 +483,22 @@ static void bAskUser(Context * c) {
       ScriptError(c, "Expected string argument");
    quest = c->a.vals[1].u.sval;
    if (c->a.argc == 3)
-      def = c->a.vals[2].u.sval;
-   if (no_windowing_ui) {
-      char buffer[300];
+     def = c->a.vals[2].u.sval;
 
-      char *t1 = script2utf8_copy(quest);
-
-      char *loc = utf82def_copy(t1);
-
-      printf("%s", loc);
+   printf("%s", loc);
+   free(t1);
+   free(loc);
+   buffer[0] = '\0';
+   c->return_val.type = v_str;
+   if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+      clearerr(stdin);
+      c->return_val.u.sval = copy("");
+   } else if (buffer[0] == '\0' || buffer[0] == '\n' || buffer[0] == '\r')
+	c->return_val.u.sval = copy(def);
+   else {
+      t1 = def2utf8_copy(buffer);
+      c->return_val.u.sval = utf82script_copy(t1);
       free(t1);
-      free(loc);
-      buffer[0] = '\0';
-      c->return_val.type = v_str;
-      if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
-	 clearerr(stdin);
-	 c->return_val.u.sval = copy("");
-      } else if (buffer[0] == '\0' || buffer[0] == '\n' || buffer[0] == '\r')
-	 c->return_val.u.sval = copy(def);
-      else {
-	 t1 = def2utf8_copy(buffer);
-	 c->return_val.u.sval = utf82script_copy(t1);
-	 free(t1);
-      }
-   } else {
-      char *t1, *t2, *ret;
-
-      if (use_utf8_in_script) {
-	 ret = ff_ask_string(quest, def, "%s", quest);
-      } else {
-	 t1 = latin1_2_utf8_copy(quest);
-	 ret = ff_ask_string(t1, t2 = latin1_2_utf8_copy(def), "%s", t1);
-	 free(t1);
-	 free(t2);
-      }
-      c->return_val.type = v_str;
-      c->return_val.u.sval = utf82script_copy(ret);
-      if (ret == NULL)
-	 c->return_val.u.sval = copy("");
-      else
-	 free(ret);
    }
 }
 
@@ -1914,8 +1860,6 @@ static void bOpen(Context * c) {
    else {
       if (sf->fv != NULL)
 	 /* All done */ ;
-      else if (!no_windowing_ui)
-	 FontViewCreate(sf, openflags & of_hidewindow);
       else
 	 FVAppend(_FontViewCreate(sf));
       c->curfv = sf->fv;
@@ -1950,10 +1894,7 @@ static void bSelectBitmap(Context * c) {
 static void bNew(Context * c) {
    if (c->a.argc != 1)
       ScriptError(c, "Wrong number of arguments");
-   if (!no_windowing_ui)
-      c->curfv = FontViewCreate(SplineFontNew(), false);
-   else
-      c->curfv = FVAppend(_FontViewCreate(SplineFontNew()));
+   c->curfv = FVAppend(_FontViewCreate(SplineFontNew()));
 }
 
 static void bClose(Context * c) {
@@ -3458,8 +3399,6 @@ static void bReencode(Context * c) {
 
 	 EncMapFree(c->curfv->map);
 	 c->curfv->map = map;
-	 if (!no_windowing_ui)
-	    FVSetTitles(c->curfv->sf);
       }
       if (c->curfv->normal != NULL) {
 	 EncMapFree(c->curfv->normal);
@@ -3469,8 +3408,6 @@ static void bReencode(Context * c) {
    }
    free(c->curfv->selected);
    c->curfv->selected = calloc(c->curfv->map->enccount, sizeof(char));
-   if (!no_windowing_ui)
-      FontViewReformatAll(c->curfv->sf);
 /*
     c->curfv->sf->changed = true;
     c->curfv->sf->changed_since_autosave = true;
@@ -3508,8 +3445,6 @@ static void bSetCharCnt(Context * c) {
       return;
    if (newcnt < map->enc->char_cnt) {
       map->enc = &custom;
-      if (!no_windowing_ui)
-	 FVSetTitles(c->curfv->sf);
    } else {
       c->curfv->selected = realloc(c->curfv->selected, newcnt);
       if (newcnt > map->encmax) {
@@ -3522,8 +3457,6 @@ static void bSetCharCnt(Context * c) {
       }
    }
    map->enccount = newcnt;
-   if (!no_windowing_ui)
-      FontViewReformatOne(c->curfv);
    c->curfv->sf->changed = true;
    c->curfv->sf->changed_since_autosave = true;
    c->curfv->sf->changed_since_xuidchanged = true;
@@ -7399,10 +7332,6 @@ static void bCIDChangeSubFont(Context * c) {
       map->enccount = new->glyphcnt;
    }
    c->curfv->sf = new;
-   if (!no_windowing_ui) {
-      FVSetTitle(c->curfv);
-      FontViewReformatOne(c->curfv);
-   }
 }
 
 static void bCIDSetFontNames(Context * c) {
@@ -11494,7 +11423,6 @@ void RunScriptInterpreter(char *script_name,FILE *script_file,
    enum token_type tok;
    jmp_buf env;
 
-   no_windowing_ui=true;
    running_script=true;
 
    ff_VerboseCheck();

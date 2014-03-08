@@ -1,19 +1,19 @@
-/* $Id: macbinary.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: macbinary.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -2325,13 +2325,8 @@ static SplineFont *SearchTtfResources(FILE * f, long rlistpos, int subcnt,
 	    free(fn);
 	 }
 	 free(find);
-      } else if (no_windowing_ui)
-	 which = 0;
-      else
-	 which =
-	    ff_choose(_("Pick a font, any font..."), (const char **) names,
-		      subcnt, 0,
-		      _("There are multiple fonts in this file, pick one"));
+      } else
+	which=0;
       if (lparen == NULL && which != -1)
 	 chosenname = copy(names[which]);
       for (i = 0; i < subcnt; ++i)
@@ -2887,12 +2882,8 @@ static FOND *PickFOND(FOND * fondlist, char *filename, char **name,
       free(find);
    } else if (cnt == 1)
       which = 0;
-   else if (no_windowing_ui)
-      which = 0;
    else
-      which =
-	 ff_choose(_("Pick a font, any font..."), (const char **) names, cnt,
-		   0, _("There are multiple fonts in this file, pick one"));
+      which = 0;
 
    if (which != -1) {
       fond = fonds[which];

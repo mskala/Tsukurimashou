@@ -1,19 +1,19 @@
-/* $Id: palmfonts.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: palmfonts.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -737,26 +737,11 @@ int WritePalmBitmaps(char *filename, SplineFont * sf, int32 * sizes,
 	 ++dencnt;
    }
 
-   fontcnt = 1;
-   if (no_windowing_ui && dencnt > 1)
-      fonttype = 3;
-   else if (dencnt > 1) {
-      char *choices[5];
-
-      choices[0] = _("Multiple-Density Font");
-      choices[1] = _("High-Density Font");
-      choices[2] = _("Single and Multi-Density Fonts");
-      choices[3] = _("Single and High-Density Fonts");
-      choices[4] = NULL;
-      fonttype =
-	 ff_choose(_("Choose a file format..."), (const char **) choices, 4,
-		   3, _("What type(s) of palm font records do you want?"));
-      if (fonttype == -1)
-	 return (false);
-      if (fonttype >= 2)
-	 fontcnt = 2;
-   } else
-      fonttype = 4;
+   fontcnt=1;
+   if (dencnt>1)
+     fonttype=3;
+   else
+     fonttype=4;
 
    memset(&fn, 0, sizeof(fn));
    fn.fontType = 0x9000;

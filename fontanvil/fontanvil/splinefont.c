@@ -1,19 +1,19 @@
-/* $Id: splinefont.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: splinefont.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -1159,8 +1159,6 @@ SplineFont *_ReadSplineFont(FILE * file, char *filename,
 			       _("Loading..."), ubuf, _("Reading Glyphs"), 0,
 			       1);
    ff_progress_enable_stop(0);
-   if (FontViewFirst() == NULL && !no_windowing_ui)
-      ff_progress_allow_events();
 
    if (file == NULL) {
       file = fopen(strippedname, "rb");
@@ -2278,19 +2276,6 @@ void SFLayerSetBackground(SplineFont * sf, int layer, int is_back) {
    } while (k < sf->subfontcnt);
 }
 
-
-int SplinePointListContains(SplinePointList * container,
-			    SplinePointList * sought) {
-   SplinePointList *spl;
-
-   for (spl = container; spl != NULL; spl = spl->next) {
-      if (spl == sought)
-	 return 1;
-   }
-   return 0;
-}
-
-
 void SPLFirstVisitorDebug(SplinePoint * splfirst, Spline * spline,
 			  void *udata) {
    printf("   splfirst:%p spline:%p udata:%p\n", splfirst, spline, udata);
@@ -2362,8 +2347,6 @@ void SPLFirstVisitPoints(SplinePoint * splfirst, SPLFirstVisitPointsVisitor f,
    }
 }
 
-
-
 typedef struct SPLFirstVisitorFoundSoughtDataS {
    SplinePoint *sought;
    int found;
@@ -2381,30 +2364,6 @@ static void SPLFirstVisitorFoundSought(SplinePoint * splfirst,
       d->found = 1;
    }
 }
-
-int SplinePointListContainsPoint(SplinePointList * container,
-				 SplinePoint * sought) {
-   if (!sought)
-      return 0;
-
-//    printf("\n\n\nSplinePointListContainsPoint(top) want:%p\n", sought );
-   SplinePointList *spl;
-
-   for (spl = container; spl != NULL; spl = spl->next) {
-      //SplinePoint* p   = spl->first;
-      //SplinePoint* end = spl->last;
-
-      SPLFirstVisitorFoundSoughtData d;
-
-      d.sought = sought;
-      d.found = 0;
-      SPLFirstVisitSplines(spl->first, SPLFirstVisitorFoundSought, &d);
-      if (d.found)
-	 return 1;
-   }
-   return 0;
-}
-
 
 typedef struct SPLFirstVisitorFoundSoughtXYDataS {
    int use_x;
@@ -2469,7 +2428,6 @@ static void SPLFirstVisitorFoundSoughtXY(SplinePoint * splfirst,
    }
 }
 
-
 SplinePoint *SplinePointListContainsPointAtX(SplinePointList * container,
 					     real x) {
    SplinePointList *spl;
@@ -2481,44 +2439,6 @@ SplinePoint *SplinePointListContainsPointAtX(SplinePointList * container,
       d.use_y = 0;
       d.x = x;
       d.y = 0;
-      d.found = 0;
-      SPLFirstVisitSplines(spl->first, SPLFirstVisitorFoundSoughtXY, &d);
-      if (d.found)
-	 return d.sp;
-   }
-   return 0;
-}
-
-SplinePoint *SplinePointListContainsPointAtY(SplinePointList * container,
-					     real y) {
-   SplinePointList *spl;
-
-   for (spl = container; spl != NULL; spl = spl->next) {
-      SPLFirstVisitorFoundSoughtXYData d;
-
-      d.use_x = 0;
-      d.use_y = 1;
-      d.x = 0;
-      d.y = y;
-      d.found = 0;
-      SPLFirstVisitSplines(spl->first, SPLFirstVisitorFoundSoughtXY, &d);
-      if (d.found)
-	 return d.sp;
-   }
-   return 0;
-}
-
-SplinePoint *SplinePointListContainsPointAtXY(SplinePointList * container,
-					      real x, real y) {
-   SplinePointList *spl;
-
-   for (spl = container; spl != NULL; spl = spl->next) {
-      SPLFirstVisitorFoundSoughtXYData d;
-
-      d.use_x = 1;
-      d.use_y = 1;
-      d.x = x;
-      d.y = y;
       d.found = 0;
       SPLFirstVisitSplines(spl->first, SPLFirstVisitorFoundSoughtXY, &d);
       if (d.found)

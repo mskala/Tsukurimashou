@@ -1,19 +1,19 @@
-/* $Id: cvundoes.c 2927 2014-03-08 15:00:32Z mskala $ */
+/* $Id: cvundoes.c 2928 2014-03-08 15:37:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -634,20 +634,11 @@ int CVLayer(CharViewBase * cv) {
 }
 
 Undoes *CVPreserveState(CharViewBase * cv) {
-   Undoes *undo;
-
-   int layer = CVLayer(cv);
-
-   if (!quiet)
-      printf("CVPreserveState() no_windowing_ui:%d maxundoes:%d\n",
-	     no_windowing_ui, maxundoes);
    return (NULL);
 }
 
 Undoes *SCPreserveHints(SplineChar * sc, int layer) {
-   Undoes *undo;
-
-      return (NULL);
+   return (NULL);
 }
 
 /* This routine allows for undoes in scripting -- under controlled conditions */
@@ -1006,14 +997,6 @@ void _CVUndoCleanup(CharViewBase * cv, PressedOn * p) {
    undo->undotype = ut_state;
 }
 
-void CVRemoveTopUndo(CharViewBase * cv) {
-   Undoes *undo = cv->layerheads[cv->drawmode]->undoes;
-
-   cv->layerheads[cv->drawmode]->undoes = undo->next;
-   undo->next = NULL;
-   UndoesFree(undo);
-}
-
 static void BCUndoAct(BDFChar * bc, Undoes * undo) {
    uint8 *b;
 
@@ -1152,8 +1135,6 @@ void CopyBufferFree(void) {
 
 static void CopyBufferFreeGrab(void) {
    CopyBufferFree();
-   if (FontViewFirst() != NULL && !no_windowing_ui && export_clipboard)
-      ClipboardGrab();
 }
 
 static void noop(void *_copybuffer) {
@@ -3768,31 +3749,4 @@ void PasteAnchorClassMerge(SplineFont * sf, AnchorClass * into,
 
 void PasteRemoveAnchorClass(SplineFont * sf, AnchorClass * dying) {
    _PasteAnchorClassManip(sf, NULL, dying);
-}
-
-char *UndoToString(SplineChar * sc, Undoes * undo) {
-   int idx = 0;
-
-   char filename[PATH_MAX];
-
-   snprintf(filename, PATH_MAX, "/tmp/fontanvil-undo-to-string.sfd");
-   FILE *f = fopen(filename, "w");
-
-   SFDDumpUndo(f, sc, undo, "Undo", idx);
-   fclose(f);
-   char *sfd = GFileReadAll(filename);
-
-   return sfd;
-}
-
-void dumpUndoChain(char *msg, SplineChar * sc, Undoes * undo) {
-   int idx = 0;
-
-   printf("dumpUndoChain(start) %s\n", msg);
-   for (; undo; undo = undo->next, idx++) {
-      char *str = UndoToString(sc, undo);
-
-      printf("\n\n*** undo: %d\n%s\n", idx, str);
-   }
-   printf("dumpUndoChain(end) %s\n", msg);
 }

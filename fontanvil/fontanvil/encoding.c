@@ -1,19 +1,19 @@
-/* $Id: encoding.c 2926 2014-03-08 14:34:45Z mskala $ */
+/* $Id: encoding.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -694,32 +694,10 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
 	prev = item, item = next, ++i) {
       next = item->next;
       if (item->enc_name == NULL) {
-	 if (no_windowing_ui) {
-	    ff_post_error(_("Bad encoding file format"),
-			  _
-			  ("This file contains an unnamed encoding, which cannot be named in a script"));
-	    return (NULL);
-	 }
-	 if (item == head && item->next == NULL)
-	    buf = (char *) g_strdup(_("Please name this encoding"));
-	 else
-	    buf =
-	       (char *)
-	       g_strdup_printf(_("Please name encoding %d in this file"), i);
-
-	 name = ff_ask_string(buf, NULL, buf);
-	 g_free(buf);
-
-	 if (name != NULL) {
-	    item->enc_name = copy(name);
-	    free(name);
-	 } else {
-	    if (prev == NULL)
-	       head = item->next;
-	    else
-	       prev->next = item->next;
-	    EncodingFree(item);
-	 }
+	 ff_post_error(_("Bad encoding file format"),
+		       _
+		       ("This file contains an unnamed encoding, which cannot be named in a script"));
+	 return (NULL);
       }
    }
    for (item = head; item != NULL; item = item->next)
@@ -1142,44 +1120,22 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
 		   getFontAnvilShareDir() ==
 		   NULL ? "/usr/share/fontanvil" : getFontAnvilShareDir()
 	    );
-	 if (ret == 1 || no_windowing_ui) {
-	    g_free(buf);
-	    buf = NULL;
-	 }
+	 g_free(buf);
+	 buf = NULL;
       }
       uret = NULL;
-      if ((buf != NULL) && !no_windowing_ui) {
-	 if (sf != NULL)
-	    sf->loading_cid_map = true;
-	 uret =
-	    ff_open_filename(_("Find a cidmap file..."), NULL, (char *) buf);
-	 if (sf != NULL)
-	    sf->loading_cid_map = false;
-      }
       if (uret == NULL) {
 	 buts2[0] = "_Use It";
 	 buts2[1] = "_Search";
 	 buts2[2] = NULL;
 	 if (maybe == NULL && maybefile == NULL)
 	    /* No luck */ ;
-	 else if (no_windowing_ui && maybe != NULL) {
+	 else if (maybe!=NULL) {
 	    maybe->maxsupple = supplement;
 	    return (maybe);
-	 } else if (no_windowing_ui) {
+	 } else {
 	    file = maybefile;
 	    maybefile = NULL;
-	 } else
-	    if (ff_ask
-		(_("Use CID Map"), (const char **) buts2, 0, 1,
-		 _("Are you sure you don't want to use the cidmap I found?"))
-		== 0) {
-	    if (maybe != NULL) {
-	       maybe->maxsupple = supplement;
-	       return (maybe);
-	    } else {
-	       file = maybefile;
-	       maybefile = NULL;
-	    }
 	 }
       } else {
 	 file = utf82def_copy(uret);

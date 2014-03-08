@@ -1,20 +1,20 @@
-/* $Id: parsepdf.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: parsepdf.c 2928 2014-03-08 15:37:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2012nov01, many fixes added, Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -2368,13 +2368,8 @@ SplineFont *_SFReadPdfFont(FILE * pdf, char *filename,
       for (i = 0; i < pc.fcnt; ++i)
 	 names[i] = copy(pc.fontnames[i]);
       names[i] = NULL;
-      if (no_windowing_ui)
-	 choice = 0;
-      else
-	 choice =
-	    ff_choose(_("Pick a font, any font..."), (const char **) names,
-		      pc.fcnt, 0,
-		      _("There are multiple fonts in this file, pick one"));
+      choice=0;
+
       for (i = 0; i < pc.fcnt; ++i)
 	 free(names[i]);
       free(names);
@@ -2443,27 +2438,7 @@ Entity *EntityInterpretPDFPage(FILE * pdf, int select_page) {
    } else if (select_page >= 0 && select_page < pc.pcnt) {
       ent = pdf_InterpretEntity(&pc, select_page);
    } else {
-      if (no_windowing_ui)
-	 choice = 0;
-      else {
-	 char buffer[200];
-
-	 snprintf(buffer, sizeof(buffer),
-		  _("There are %d pages in this file, which do you want?"),
-		  pc.pcnt);
-	 ret = ff_ask_string(_("Pick a page"), "1", buffer);
-	 if (ret == NULL) {
-	    pcFree(&pc);
-	    setlocale(LC_NUMERIC, oldloc);
-	    return (NULL);
-	 }
-	 choice = strtol(ret, NULL, 10) - 1;
-	 if (choice < 0 || choice >= pc.pcnt) {
-	    pcFree(&pc);
-	    setlocale(LC_NUMERIC, oldloc);
-	    return (NULL);
-	 }
-      }
+      choice=0;
       ent = pdf_InterpretEntity(&pc, choice);
    }
    setlocale(LC_NUMERIC, oldloc);

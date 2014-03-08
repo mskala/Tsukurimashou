@@ -1,19 +1,19 @@
-/* $Id: bitmapcontrol.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: bitmapcontrol.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -36,14 +36,9 @@ static void RemoveBDFWindows(BDFFont * bdf) {
    int i;
 
    for (i = 0; i < bdf->glyphcnt; ++i)
-      if (bdf->glyphs[i] != NULL) {
-	 BCDestroyAll(bdf->glyphs[i]);
-      }
-   if (!no_windowing_ui) {
-      ff_progress_allow_events();
-      /* Just in case... */
-      ff_progress_allow_events();
-   }
+     if (bdf->glyphs[i] != NULL) {
+	BCDestroyAll(bdf->glyphs[i]);
+     }
    /* We can't free the bdf until all the windows have executed their destroy */
    /*  routines (which they will when they get the destroy window event) */
    /*  because those routines depend on the bdf existing ... */

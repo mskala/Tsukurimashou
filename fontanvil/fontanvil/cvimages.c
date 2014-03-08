@@ -1,19 +1,19 @@
-/* $Id: cvimages.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: cvimages.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -1095,10 +1095,7 @@ GImage *ImageAlterClut(GImage * image) {
       clut = base->clut = calloc(1, sizeof(GClut));
       clut->clut_len = 2;
       clut->clut[0] = 0x808080;
-      if (!no_windowing_ui)
-	 clut->clut[1] = default_background;
-      else
-	 clut->clut[1] = 0xb0b0b0;
+      clut->clut[1] = 0xb0b0b0;
       clut->trans_index = 1;
       base->trans = 1;
    } else if (base->trans != -1) {

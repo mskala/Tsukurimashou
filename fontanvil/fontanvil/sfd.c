@@ -1,19 +1,19 @@
-/* $Id: sfd.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: sfd.c 2929 2014-03-08 16:02:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
-
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
-
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
-
+ *
  * The name of the author may not be used to endorse or promote products
  * derived from this software without specific prior written permission.
-
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -9828,63 +9828,7 @@ SplineFont *SFRecoverFile(char *autosavename, int inquire, int *state) {
 }
 
 void SFAutoSave(SplineFont * sf, EncMap * map) {
-   int i, k, max;
-
-   FILE *asfd;
-
-   char oldloc[25];
-
-   SplineFont *ssf;
-
-   if (no_windowing_ui)		/* No autosaves when just scripting */
-      return;
-
-   if (sf->cidmaster != NULL)
-      sf = sf->cidmaster;
-   asfd = fopen(sf->autosavename, "w");
-   if (asfd == NULL)
-      return;
-
-   max = sf->glyphcnt;
-   for (i = 0; i < sf->subfontcnt; ++i)
-      if (sf->subfonts[i]->glyphcnt > max)
-	 max = sf->subfonts[i]->glyphcnt;
-
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24] = 0;
-   setlocale(LC_NUMERIC, "C");
-   if (!sf->new && sf->origname != NULL)	/* might be a new file */
-      fprintf(asfd, "Base: %s%s\n", sf->origname,
-	      sf->compression ==
-	      0 ? "" : compressors[sf->compression - 1].ext);
-   fprintf(asfd, "Encoding: %s\n", map->enc->enc_name);
-   fprintf(asfd, "UnicodeInterp: %s\n", unicode_interp_names[sf->uni_interp]);
-   fprintf(asfd, "LayerCount: %d\n", sf->layer_cnt);
-   for (i = 0; i < sf->layer_cnt; ++i) {
-      fprintf(asfd, "Layer: %d %d ", i, sf->layers[i].order2);
-      SFDDumpUTF7Str(asfd, sf->layers[i].name);
-      putc('\n', asfd);
-   }
-   if (sf->multilayer)
-      fprintf(asfd, "MultiLayer: %d\n", sf->multilayer);
-   fprintf(asfd, "BeginChars: %d\n", max);
-   for (i = 0; i < max; ++i) {
-      ssf = sf;
-      for (k = 0; k < sf->subfontcnt; ++k) {
-	 if (i < sf->subfonts[k]->glyphcnt) {
-	    ssf = sf->subfonts[k];
-	    if (SCWorthOutputting(ssf->glyphs[i]))
-	       break;
-	 }
-      }
-      if (ssf->glyphs[i] != NULL && ssf->glyphs[i]->changed)
-	 SFDDumpChar(asfd, ssf->glyphs[i], map, NULL, false, 1);
-   }
-   fprintf(asfd, "EndChars\n");
-   fprintf(asfd, "EndSplineFont\n");
-   fclose(asfd);
-   setlocale(LC_NUMERIC, oldloc);
-   sf->changed_since_autosave = false;
+   return;
 }
 
 void SFClearAutoSave(SplineFont * sf) {
