@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: cvundoes.c 2926 2014-03-08 14:34:45Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -641,75 +641,13 @@ Undoes *CVPreserveState(CharViewBase * cv) {
    if (!quiet)
       printf("CVPreserveState() no_windowing_ui:%d maxundoes:%d\n",
 	     no_windowing_ui, maxundoes);
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
-      return (NULL);
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->undotype = ut_state;
-   undo->was_modified = cv->sc->changed;
-   undo->was_order2 = cv->layerheads[cv->drawmode]->order2;
-   undo->u.state.width = cv->sc->width;
-   undo->u.state.vwidth = cv->sc->vwidth;
-   undo->u.state.splines =
-      SplinePointListCopy(cv->layerheads[cv->drawmode]->splines);
-   undo->u.state.refs = RefCharsCopyState(cv->sc, layer);
-   if (layer == ly_fore) {
-      undo->u.state.anchor = AnchorPointsCopy(cv->sc->anchor);
-   }
-   undo->u.state.images = ImageListCopy(cv->layerheads[cv->drawmode]->images);
-   BrushCopy(&undo->u.state.fill_brush,
-	     &cv->layerheads[cv->drawmode]->fill_brush, NULL);
-   PenCopy(&undo->u.state.stroke_pen,
-	   &cv->layerheads[cv->drawmode]->stroke_pen, NULL);
-   undo->u.state.dofill = cv->layerheads[cv->drawmode]->dofill;
-   undo->u.state.dostroke = cv->layerheads[cv->drawmode]->dostroke;
-   undo->u.state.fillfirst = cv->layerheads[cv->drawmode]->fillfirst;
-   undo->layer = cv->drawmode;
-   printf("CVPreserveState() dm:%d layer:%d new undo is at %p\n",
-	  cv->drawmode, layer, undo);
-
-   // MIQ: Note, this is the wrong time to call sendRedo as we are
-   // currently taking the undo state snapshot, after that the app
-   // will modify the local state, and that modification is what we
-   // are interested in sending on the wire, not the old undo state.
-   // collabclient_sendRedo( cv );
-
-   return (CVAddUndo(cv, undo));
-}
-
-Undoes *CVPreserveStateHints(CharViewBase * cv) {
-   Undoes *undo = CVPreserveState(cv);
-
-   if (CVLayer(cv) == ly_fore) {
-      undo->undotype = ut_statehint;
-      undo->u.state.hints = UHintCopy(cv->sc, true);
-      undo->u.state.instrs =
-	 (uint8 *) copyn((char *) cv->sc->ttf_instrs, cv->sc->ttf_instrs_len);
-      undo->u.state.instrs_len = cv->sc->ttf_instrs_len;
-   }
-   return (undo);
+   return (NULL);
 }
 
 Undoes *SCPreserveHints(SplineChar * sc, int layer) {
    Undoes *undo;
 
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
       return (NULL);
-   if (!preserve_hint_undoes)
-      return (NULL);
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->was_modified = sc->changed;
-   undo->undotype = ut_hints;
-   undo->u.state.hints = UHintCopy(sc, true);
-   undo->u.state.instrs =
-      (uint8 *) copyn((char *) sc->ttf_instrs, sc->ttf_instrs_len);
-   undo->u.state.instrs_len = sc->ttf_instrs_len;
-   undo->copied_from = sc->parent;
-   return (AddUndo
-	   (undo, &sc->layers[layer].undoes, &sc->layers[layer].redoes));
 }
 
 /* This routine allows for undoes in scripting -- under controlled conditions */
@@ -762,9 +700,7 @@ Undoes *_SCPreserveLayer(SplineChar * sc, int layer, int dohints) {
 /* This routine does not allow for undoes in scripting */
 Undoes *SCPreserveLayer(SplineChar * sc, int layer, int dohints) {
 
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
       return (NULL);
-   return (_SCPreserveLayer(sc, layer, dohints));
 }
 
 
@@ -805,9 +741,7 @@ Undoes *_SFPreserveGuide(SplineFont * sf) {
 }
 
 Undoes *SFPreserveGuide(SplineFont * sf) {
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
       return (NULL);
-   return (_SFPreserveGuide(sf));
 }
 
 void SCUndoSetLBearingChange(SplineChar * sc, int lbc) {
@@ -848,104 +782,20 @@ Undoes *_CVPreserveTState(CharViewBase * cv, PressedOn * p) {
    return (undo);
 }
 
-Undoes *CVPreserveWidth(CharViewBase * cv, int width) {
-   Undoes *undo;
-
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
-      return (NULL);
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->undotype = ut_width;
-   undo->was_modified = cv->sc->changed;
-   undo->was_order2 = cv->layerheads[cv->drawmode]->order2;
-   undo->u.width = width;
-   return (CVAddUndo(cv, undo));
-}
-
-Undoes *CVPreserveVWidth(CharViewBase * cv, int vwidth) {
-   Undoes *undo;
-
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
-      return (NULL);
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->undotype = ut_vwidth;
-   undo->was_modified = cv->sc->changed;
-   undo->was_order2 = cv->layerheads[cv->drawmode]->order2;
-   undo->u.width = vwidth;
-   return (CVAddUndo(cv, undo));
-}
-
 Undoes *SCPreserveWidth(SplineChar * sc) {
    Undoes *undo;
 
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
       return (NULL);
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->undotype = ut_width;
-   undo->was_modified = sc->changed;
-   undo->was_order2 = sc->layers[ly_fore].order2;
-   undo->u.state.width = sc->width;
-
-   Undoes *ret =
-      AddUndo(undo, &sc->layers[ly_fore].undoes, &sc->layers[ly_fore].redoes);
-
-   /* Let collab system know that a new undo state */
-   /* was pushed now since it last sent a message. */
-/*     collabclient_SCPreserveStateCalled( sc ); */
-   return (ret);
 }
 
 Undoes *SCPreserveVWidth(SplineChar * sc) {
    Undoes *undo;
 
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
       return (NULL);
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->undotype = ut_vwidth;
-   undo->was_modified = sc->changed;
-   undo->was_order2 = sc->layers[ly_fore].order2;
-   undo->u.state.width = sc->vwidth;
-   return (AddUndo
-	   (undo, &sc->layers[ly_fore].undoes, &sc->layers[ly_fore].redoes));
 }
 
 Undoes *BCPreserveState(BDFChar * bc) {
-   Undoes *undo;
-
-   BDFRefChar *head, *ref, *prev = NULL;
-
-   if (no_windowing_ui || maxundoes == 0)	/* No use for undoes in scripting */
       return (NULL);
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->undotype = ut_bitmap;
-   undo->u.bmpstate.width = bc->width;
-   undo->u.bmpstate.xmin = bc->xmin;
-   undo->u.bmpstate.xmax = bc->xmax;
-   undo->u.bmpstate.ymin = bc->ymin;
-   undo->u.bmpstate.ymax = bc->ymax;
-   undo->u.bmpstate.bytes_per_line = bc->bytes_per_line;
-   undo->u.bmpstate.bitmap = bmpcopy(bc->bitmap, bc->bytes_per_line,
-				     bc->ymax - bc->ymin + 1);
-   undo->u.bmpstate.selection = BDFFloatCopy(bc->selection);
-   for (head = bc->refs; head != NULL; head = head->next) {
-      ref = calloc(1, sizeof(BDFRefChar));
-      memcpy(ref, head, sizeof(BDFRefChar));
-      if (prev == NULL)
-	 undo->u.bmpstate.refs = ref;
-      else
-	 prev->next = ref;
-      prev = ref;
-   }
-   return (AddUndo(undo, &bc->undoes, &bc->redoes));
 }
 
 static void SCUndoAct(SplineChar * sc, int layer, Undoes * undo) {
@@ -1709,54 +1559,7 @@ static void *copybuffer2eps(void *_copybuffer, int32 * len) {
 }
 
 static void XClipCheckEps(void) {
-   Undoes *cur = &copybuffer;
-
-   if (FontViewFirst() == NULL)
       return;
-   if (no_windowing_ui)
-      return;
-
-   while (cur) {
-      switch (cur->undotype) {
-	case ut_multiple:
-#ifndef _NO_LIBXML
-	   if (CopyContainsVectors())
-	      ClipboardAddDataType("application/x-font-svg", &copybuffer, 0,
-				   sizeof(char), copybuffer2svgmult, noop);
-#endif
-	   cur = cur->u.multiple.mult;
-	   break;
-	case ut_composit:
-	   cur = cur->u.composit.state;
-	   break;
-	case ut_state:
-	case ut_statehint:
-	case ut_statename:
-	case ut_layers:
-	   ClipboardAddDataType("image/eps", &copybuffer, 0, sizeof(char),
-				copybuffer2eps, noop);
-#ifndef _NO_LIBXML
-	   ClipboardAddDataType("image/svg+xml", &copybuffer, 0, sizeof(char),
-				copybuffer2svg, noop);
-	   ClipboardAddDataType("image/svg", &copybuffer, 0, sizeof(char),
-				copybuffer2svg, noop);
-#endif
-	   /* If the selection is one point, then export the coordinates as a string */
-	   if (cur->u.state.splines != NULL && cur->u.state.refs == NULL &&
-	       cur->u.state.splines->next == NULL &&
-	       cur->u.state.splines->first->next == NULL)
-	      ClipboardAddDataType("STRING", &copybuffer, 0, sizeof(char),
-				   copybufferPt2str, noop);
-	   else if (cur->undotype == ut_statename)
-	      ClipboardAddDataType("STRING", &copybuffer, 0, sizeof(char),
-				   copybufferName2str, noop);
-	   cur = NULL;
-	   break;
-	default:
-	   cur = NULL;
-	   break;
-      }
-   }
 }
 
 void ClipboardClear(void) {
@@ -1995,24 +1798,6 @@ void CopySelected(CharViewBase * cv, int doanchors) {
       copybuffer.u.state.dostroke = cv->layerheads[cv->drawmode]->dostroke;
       copybuffer.u.state.fillfirst = cv->layerheads[cv->drawmode]->fillfirst;
    }
-   copybuffer.copied_from = cv->sc->parent;
-
-   XClipCheckEps();
-}
-
-void CVCopyGridFit(CharViewBase * cv) {
-   SplineChar *sc = cv->sc;
-
-   if (cv->gridfit == NULL)
-      return;
-
-   CopyBufferFreeGrab();
-
-   copybuffer.undotype = ut_state;
-   copybuffer.was_order2 = cv->layerheads[cv->drawmode]->order2;
-   copybuffer.u.state.width = cv->ft_gridfitwidth;
-   copybuffer.u.state.vwidth = sc->vwidth;
-   copybuffer.u.state.splines = SplinePointListCopy(cv->gridfit);
    copybuffer.copied_from = cv->sc->parent;
 
    XClipCheckEps();
@@ -2280,75 +2065,7 @@ static void PasteNonExistantRefCheck(SplineChar * sc, Undoes * paster,
 }
 
 static void SCCheckXClipboard(SplineChar * sc, int layer, int doclear) {
-   int type;
-
-   int32 len;
-
-   char *paste;
-
-   FILE *temp;
-
-   GImage *image;
-
-   int sx = 0, s_x = 0;
-
-   if (no_windowing_ui)
       return;
-   type = 0;
-#ifndef _NO_LIBXML
-   /* SVG is a better format (than eps) if we've got it because it doesn't */
-   /*  force conversion of quadratic to cubic and back */
-   if (HasSVG() && ((sx = ClipboardHasType("image/svg+xml")) ||
-		    (s_x = ClipboardHasType("image/svg-xml")) ||
-		    ClipboardHasType("image/svg")))
-      type = sx ? 1 : s_x ? 2 : 3;
-   else
-#endif
-   if (ClipboardHasType("image/eps"))
-      type = 4;
-   else if (ClipboardHasType("image/ps"))
-      type = 5;
-#ifndef _NO_LIBPNG
-   else if (ClipboardHasType("image/png"))
-      type = 6;
-#endif
-   else if (ClipboardHasType("image/bmp"))
-      type = 7;
-
-   if (type == 0)
-      return;
-
-   paste = ClipboardRequest(type == 1 ? "image/svg+xml" :
-			    type == 2 ? "image/svg-xml" :
-			    type == 3 ? "image/svg" :
-			    type == 4 ? "image/eps" :
-			    type == 5 ? "image/ps" :
-			    type == 6 ? "image/png" : "image/bmp", &len);
-   if (paste == NULL)
-      return;
-
-   temp = tmpfile();
-   if (temp != NULL) {
-      fwrite(paste, 1, len, temp);
-      rewind(temp);
-      if (type == 4 || type == 5) {	/* eps/ps */
-	 SCImportPSFile(sc, layer, temp, doclear, -1);
-#ifndef _NO_LIBXML
-      } else if (type <= 3) {
-	 SCImportSVG(sc, layer, NULL, paste, len, doclear);
-#endif
-      } else {
-#ifndef _NO_LIBPNG
-	 if (type == 6)
-	    image = GImageRead_Png(temp);
-	 else
-#endif
-	    image = GImageRead_Bmp(temp);
-	 SCAddScaleImage(sc, image, doclear, layer);
-      }
-      fclose(temp);
-   }
-   free(paste);
 }
 
 #ifndef _NO_LIBXML
@@ -3383,53 +3100,6 @@ static Undoes *BCCopyAll(BDFChar * bc, int pixelsize, int depth,
    cur->u.bmpstate.pixelsize = pixelsize;
    cur->u.bmpstate.depth = depth;
    return (cur);
-}
-
-void BCCopySelected(BDFChar * bc, int pixelsize, int depth) {
-   int has_selected_refs = false;
-
-   BDFRefChar *head, *ref;
-
-   CopyBufferFreeGrab();
-
-   memset(&copybuffer, '\0', sizeof(copybuffer));
-   if (bc->selection != NULL) {
-      copybuffer.undotype = ut_bitmapsel;
-      copybuffer.u.bmpstate.selection = BDFFloatCopy(bc->selection);
-   } else {
-      for (head = bc->refs; head != NULL; head = head->next)
-	 if (head->selected) {
-	    has_selected_refs = true;
-	    ref = calloc(1, sizeof(BDFRefChar));
-	    memcpy(ref, head, sizeof(BDFRefChar));
-	    ref->next = copybuffer.u.bmpstate.refs;
-	    copybuffer.u.bmpstate.refs = ref;
-	 }
-      if (has_selected_refs) {
-	 copybuffer.undotype = ut_bitmap;
-	 copybuffer.u.bmpstate.width = bc->width;
-	 copybuffer.u.bmpstate.bytes_per_line = 1;
-	 copybuffer.u.bmpstate.bitmap = calloc(1, sizeof(uint8));
-	 copybuffer.u.bmpstate.selection = NULL;
-      } else {
-	 copybuffer.undotype = ut_bitmapsel;
-	 copybuffer.u.bmpstate.selection =
-	    BDFFloatCreate(bc, bc->xmin, bc->xmax, bc->ymin, bc->ymax, false);
-      }
-   }
-   copybuffer.u.bmpstate.pixelsize = pixelsize;
-   copybuffer.u.bmpstate.depth = depth;
-}
-
-void BCCopyReference(BDFChar * bc, int pixelsize, int depth) {
-   Undoes *tmp;
-
-   CopyBufferFreeGrab();
-   tmp = BCCopyAll(bc, pixelsize, depth, ct_reference);
-
-   memcpy(&copybuffer, tmp, sizeof(Undoes));
-   chunkfree(tmp, sizeof(Undoes));
-   XClipCheckEps();
 }
 
 static void _PasteToBC(BDFChar * bc, int pixelsize, int depth,

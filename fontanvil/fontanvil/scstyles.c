@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: scstyles.c 2926 2014-03-08 14:34:45Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3574,31 +3574,6 @@ void FVGenericChange(FontViewBase * fv, struct genericchange *genchange) {
    free(genchange->g.maps);
 }
 
-void CVGenericChange(CharViewBase * cv, struct genericchange *genchange) {
-   SplineChar *sc = cv->sc;
-
-   int layer = CVLayer(cv);
-
-   if (genchange->gc != gc_generic || layer < 0)
-      return;
-
-   if (genchange->small != NULL) {
-      genchange->italic_angle = genchange->small->italic_angle;
-      genchange->tan_ia = genchange->small->tan_ia;
-   }
-
-   genchange->g.cnt = genchange->m.cnt + 2;
-   genchange->g.maps =
-      malloc(genchange->g.cnt * sizeof(struct position_maps));
-
-   if (sc->layers[layer].splines != NULL) {
-      SCPreserveLayer(sc, layer, true);
-      ChangeGlyph(sc, sc, layer, genchange);
-   }
-
-   free(genchange->g.maps);
-}
-
 SplineSet *SSControlStems(SplineSet * ss, double stemwidthscale,
 			  double stemheightscale, double hscale,
 			  double vscale, double xheight) {
@@ -3965,13 +3940,6 @@ static void BPAdjustCE(BasePoint * bp, struct counterinfo *ci) {
       BPAdjustCEZ(bp, ci, TOP_Z);
    else
       BPAdjustCEZ(bp, ci, BOT_Z);
-}
-
-void CI_Init(struct counterinfo *ci, SplineFont * sf) {
-
-   QuickBlues(sf, ci->layer, &ci->bd);
-
-   ci->stdvw = SFStdVW(sf);
 }
 
 void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
@@ -5047,19 +5015,6 @@ void FVEmbolden(FontViewBase * fv, enum embolden_type type,
 	 PerGlyphInit(sc, zones, type);
 	 SCEmbolden(sc, zones, -2);	/* -2 => all foreground layers */
       }
-}
-
-void CVEmbolden(CharViewBase * cv, enum embolden_type type,
-		struct lcg_zones *zones) {
-   SplineChar *sc = cv->sc;
-
-   if (cv->drawmode == dm_grid)
-      return;
-
-   LCG_ZoneInit(sc->parent, CVLayer(cv), zones, type);
-
-   PerGlyphInit(sc, zones, type);
-   SCEmbolden(sc, zones, CVLayer(cv));
 }
 
 void ScriptSCEmbolden(SplineChar * sc, int layer, enum embolden_type type,

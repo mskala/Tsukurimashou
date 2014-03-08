@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: nonlineartrans.c 2926 2014-03-08 14:34:45Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -850,32 +850,6 @@ int SCNLTrans(SplineChar * sc, int layer, char *x_expr, char *y_expr) {
    nlt_exprfree(c.x_expr);
    nlt_exprfree(c.y_expr);
    return (true);
-}
-
-void CVNLTrans(CharViewBase * cv, struct context *c) {
-   SplineSet *ss;
-
-   RefChar *ref;
-
-   int layer = CVLayer(cv);
-
-   if (cv->layerheads[cv->drawmode]->splines == NULL
-       && (cv->drawmode != dm_fore || cv->sc->layers[layer].refs == NULL))
-      return;
-
-   CVPreserveState(cv);
-   c->sc = cv->sc;
-   for (ss = cv->layerheads[cv->drawmode]->splines; ss != NULL; ss = ss->next)
-      SplineSetNLTrans(ss, c, false);
-   for (ref = cv->layerheads[cv->drawmode]->refs; ref != NULL;
-	ref = ref->next) {
-      c->x = ref->transform[4];
-      c->y = ref->transform[5];
-      ref->transform[4] = NL_expr(c, c->x_expr);
-      ref->transform[5] = NL_expr(c, c->y_expr);
-      SCReinstanciateRefChar(cv->sc, ref, layer);
-   }
-   CVCharChangedUpdate(cv);
 }
 
 static void BpPoV(BasePoint * me, void *_pov) {

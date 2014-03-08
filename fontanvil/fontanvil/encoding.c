@@ -1,4 +1,4 @@
-/* $Id: encoding.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: encoding.c 2926 2014-03-08 14:34:45Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -816,23 +816,6 @@ int CIDFromName(char *name, SplineFont * cidmaster) {
       return (-1);
 
    return (cid);
-}
-
-int CID2Uni(struct cidmap *map, int cid) {
-   unsigned int uni;
-
-   if (map == NULL)
-      return (-1);
-   else if (cid == 0)
-      return (0);
-   else if (cid < map->namemax && map->unicode[cid] != 0)
-      return (map->unicode[cid]);
-   else if (cid < map->namemax && map->name[cid] != NULL) {
-      if (sscanf(map->name[cid], "uni%x", &uni) == 1)
-	 return (uni);
-   }
-
-   return (-1);
 }
 
 int CID2NameUni(struct cidmap *map, int cid, char *buffer, int len) {

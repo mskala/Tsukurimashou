@@ -1,4 +1,4 @@
-/* $Id: fvmetrics.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: fvmetrics.c 2926 2014-03-08 14:34:45Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -221,12 +221,6 @@ void FVDoit(CreateWidthData * wd) {
    wd->done = true;
 }
 
-void CVDoit(CreateWidthData * wd) {
-   CharView *cv = (CharView *) (wd->_fv);
-
-   DoChar(cv->b.sc, wd, (FontViewBase *) (cv->b.fv), NULL);
-   wd->done = true;
-}
 void GenericVDoit(CreateWidthData * wd) {
    FontViewBase *fv = (FontViewBase *) wd->_fv;
 

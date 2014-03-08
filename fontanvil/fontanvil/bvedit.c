@@ -1,4 +1,4 @@
-/* $Id: bvedit.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: bvedit.c 2926 2014-03-08 14:34:45Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -400,23 +400,6 @@ void BCExpandBitmapToEmBox(BDFChar * bc, int xmin, int ymin, int xmax,
       BCExpandBitmap(bc, xmin, ymin);
       BCExpandBitmap(bc, xmax, ymax);
    }
-}
-
-void BCSetPoint(BDFChar * bc, int x, int y, int color) {
-
-   if (x < bc->xmin || x > bc->xmax || y < bc->ymin || y > bc->ymax) {
-      if (color == 0)
-	 return;		/* Already clear */
-      BCExpandBitmap(bc, x, y);
-   }
-   y = bc->ymax - y;
-   x -= bc->xmin;
-   if (bc->byte_data)
-      bc->bitmap[y * bc->bytes_per_line + x] = color;
-   else if (color == 0)
-      bc->bitmap[y * bc->bytes_per_line + (x >> 3)] &= ~(1 << (7 - (x & 7)));
-   else
-      bc->bitmap[y * bc->bytes_per_line + (x >> 3)] |= (1 << (7 - (x & 7)));
 }
 
 void BDFFloatFree(BDFFloat * sel) {

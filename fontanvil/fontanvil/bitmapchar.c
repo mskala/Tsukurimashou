@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: bitmapchar.c 2926 2014-03-08 14:34:45Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -412,24 +412,6 @@ void SFReplaceFontnameBDFProps(SplineFont * sf) {
 	 }
       }
    }
-}
-
-BDFProperties *BdfPropsCopy(BDFProperties * props, int cnt) {
-   BDFProperties *ret;
-
-   int i;
-
-   if (cnt == 0)
-      return (NULL);
-   ret = malloc(cnt * sizeof(BDFProperties));
-   memcpy(ret, props, cnt * sizeof(BDFProperties));
-   for (i = 0; i < cnt; ++i) {
-      ret[i].name = copy(ret[i].name);
-      if ((ret[i].type & ~prt_property) == prt_string
-	  || (ret[i].type & ~prt_property) == prt_atom)
-	 ret[i].u.str = copy(ret[i].u.str);
-   }
-   return (ret);
 }
 
 void def_Charset_Enc(EncMap * map, char *reg, char *enc) {

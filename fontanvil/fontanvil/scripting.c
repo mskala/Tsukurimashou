@@ -1,4 +1,4 @@
-/* $Id: scripting.c 2925 2014-03-08 02:53:07Z mskala $ */
+/* $Id: scripting.c 2926 2014-03-08 14:34:45Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -9741,43 +9741,6 @@ static struct builtins {
    NULL, 0, 0}
 };
 
-static struct builtins *userdefined = NULL;
-
-static int ud_cnt = 0, ud_max = 0;
-
-int AddScriptingCommand(char *name, void (*func) (Context *), int needs_font) {
-   int i;
-
-   for (i = 0; builtins[i].name != NULL; ++i)
-      if (strcmp(builtins[i].name, name) == 0)
-	 return (0);		/* Can't supercede a built in function */
-
-   for (i = 0; i < ud_cnt; ++i)
-      if (strcmp(userdefined[i].name, name) == 0) {
-	 userdefined[i].func = func;
-	 userdefined[i].nofontok = !needs_font;
-	 return (2);
-      }
-
-   if (ud_cnt >= ud_max)
-      userdefined =
-	 realloc(userdefined, (ud_max += 20) * sizeof(struct builtins));
-   userdefined[ud_cnt].name = copy(name);
-   userdefined[ud_cnt].func = func;
-   userdefined[ud_cnt].nofontok = !needs_font;
-   return (true);
-}
-
-UserDefScriptFunc HasUserScriptingCommand(char *name) {
-   int i;
-
-   for (i = 0; i < ud_cnt; ++i)
-      if (strcmp(userdefined[i].name, name) == 0)
-	 return (userdefined[i].func);
-
-   return (NULL);
-}
-
 /* ******************************* Interpreter ****************************** */
 
 static void expr(Context *, Val * val);
@@ -10321,13 +10284,6 @@ static void docall(Context * c, char *name, Val * val) {
 	    found = &builtins[i];
 	    break;
 	 }
-      if (found == NULL && userdefined != NULL) {
-	 for (i = 0; i < ud_cnt; ++i)
-	    if (strcmp(userdefined[i].name, name) == 0) {
-	       found = &userdefined[i];
-	       break;
-	    }
-      }
       if (found != NULL) {
 	 if (verbose > 0)
 	    fflush(stdout);

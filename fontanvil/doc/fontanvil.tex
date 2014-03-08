@@ -331,6 +331,22 @@ Subversion to Git is one-way.  Do not file tickets for FontAnvil on Github.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\chapter{Running FontAnvil}
+
+\begin{framed}
+FontAnvil's command-line syntax attempts to achieve some degree of FontForge
+compatibility.  However, as of March~2014, FontForge contains at least six
+different command-line
+parsers,\footnote{https://github.com/fontforge/fontforge/issues/1277} and
+also sometimes hands its command lines off to Python for parsing, so that
+options interact in complicated ways with each other, with compile-time
+settings, with operating system shebang support and whether stdin is a
+terminal or pipe, and so on.  FontAnvil does not attempt to match all of
+this behaviour exactly.
+\end{framed}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Data model}
 \label{sec:data-model}
 
@@ -512,7 +528,7 @@ coincide with ASCII for all the characters covered by ASCII; but it also
 covers many thousands of other characters.  It is supposed to be a universal
 code for all text in all human languages.  But Unicode did not always exist and its use was not always
 universal.  Most common font formats are designed to also accomodate
-character encoding schemes predating Unicode simply other than Unicode. 
+character encoding schemes predating Unicode or simply other than Unicode. 
 Frequently, a font file will include translation mappings for several
 different codes, in the hope that software using the font can find its own
 preferred code among the choices.  There needs to be a way to translate code
