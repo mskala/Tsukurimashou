@@ -1,4 +1,4 @@
-/* $Id: sfd.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: sfd.c 2932 2014-03-09 15:26:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -945,32 +945,6 @@ static uint8 *image2rle(struct _GImage *img, int *len) {
    *len = pt - rle;
    return (rle);
 }
-
-/*
- * Unused
-static void SFDDumpBrush( FILE *sfd, struct brush* brush ) {
-    fprintf(sfd, "Brush: #%06x %g\n", brush->col, brush->opacity );
-    fprintf(sfd, "EndBrush\n");
-}
-
-static void SFDDumpPen( FILE *sfd, struct pen* p ) {
-    fprintf(sfd, "Pen: %g %s %s [%g %g %g %g] [",
-            p->width, joins[p->linejoin], caps[p->linecap],
-            (double) p->trans[0], (double) p->trans[1],
-            (double) p->trans[2], (double) p->trans[3] );
-    if ( p->dashes[0]==0 && p->dashes[1]==DASH_INHERITED ) {
-	fprintf(sfd,"0 %d]\n", DASH_INHERITED);
-    } else {
-        int j;
-        for ( j=0; j<DASH_MAX && p->dashes[j]!=0; ++j )
-            fprintf( sfd,"%d ", p->dashes[j]);
-        fprintf(sfd,"]\n");
-    }
-    SFDDumpBrush( sfd, &p->brush );
-    fprintf(sfd, "EndPen\n");
-}
-*/
-
 
 void SFDDumpUndo(FILE * sfd, SplineChar * sc, Undoes * u, char *keyPrefix,
 		 int idx) {

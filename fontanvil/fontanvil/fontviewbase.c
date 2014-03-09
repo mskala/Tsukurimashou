@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: fontviewbase.c 2932 2014-03-09 15:26:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1130,23 +1130,6 @@ static int AllGlyphsSelected(FontViewBase * fv) {
 	    return (false);
 
    return (true);
-}
-
-static int AnySelectedHints(FontViewBase * fv) {
-   SplineFont *sf = fv->sf;
-
-   int gid, enc;
-
-   SplineChar *sc;
-
-   for (enc = 0; enc < fv->map->enccount; ++enc) {
-      if (fv->selected[enc] && (gid = fv->map->map[enc]) != -1 &&
-	  (sc = sf->glyphs[gid]) != NULL &&
-	  (sc->hstem != NULL || sc->vstem != NULL || sc->dstem != NULL))
-	 return (true);		/* A glyph with hints! */
-   }
-
-   return (false);
 }
 
 void CIDSetEncMap(FontViewBase * fv, SplineFont * new) {

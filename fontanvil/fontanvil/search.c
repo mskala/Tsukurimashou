@@ -1,4 +1,4 @@
-/* $Id: search.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: search.c 2932 2014-03-09 15:26:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1617,25 +1617,6 @@ static SplineChar *RC_MakeNewGlyph(FontViewBase * fv, SplineChar * base,
    sprintf(ret->comment, reason, base->name, morereason);
    ret->color = 0xff8080;
    return (ret);
-}
-
-static void AddRef(SplineChar * sc, SplineChar * rsc, int layer) {
-   RefChar *r;
-
-   r = RefCharCreate();
-   free(r->layers);
-   r->layers = NULL;
-   r->layer_cnt = 0;
-   r->sc = rsc;
-   r->unicode_enc = rsc->unicodeenc;
-   r->orig_pos = rsc->orig_pos;
-   r->adobe_enc = getAdobeEnc(rsc->name);
-   r->transform[0] = r->transform[3] = 1.0;
-   r->next = NULL;
-   SCMakeDependent(sc, rsc);
-   SCReinstanciateRefChar(sc, r, layer);
-   r->next = sc->layers[layer].refs;
-   sc->layers[layer].refs = r;
 }
 
 static struct splinecharlist *DListRemove(struct splinecharlist *dependents,

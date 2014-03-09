@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splineutil2.c 2932 2014-03-09 15:26:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1782,57 +1782,6 @@ Spline *PathFindDistance(SplineSet * path, bigreal d, bigreal * _t) {
    return (last);
 }
 
-static void SplinePointBindToPath(SplinePoint * sp, SplineSet * path) {
-   Spline *s;
-
-   bigreal t;
-
-   BasePoint pos, slope, ntemp, ptemp;
-
-   bigreal len;
-
-   s = PathFindDistance(path, sp->me.x, &t);
-   pos.x =
-      ((s->splines[0].a * t + s->splines[0].b) * t + s->splines[0].c) * t +
-      s->splines[0].d;
-   pos.y =
-      ((s->splines[1].a * t + s->splines[1].b) * t + s->splines[1].c) * t +
-      s->splines[1].d;
-   slope.x =
-      (3 * s->splines[0].a * t + 2 * s->splines[0].b) * t + s->splines[0].c;
-   slope.y =
-      (3 * s->splines[1].a * t + 2 * s->splines[1].b) * t + s->splines[1].c;
-   len = sqrt(slope.x * slope.x + slope.y * slope.y);
-   if (len != 0) {
-      slope.x /= len;
-      slope.y /= len;
-   }
-
-   /* Now I could find a separate transformation matrix for the control points */
-   /* but I think that would look odd (formerly smooth joints could become */
-   /* discontiguous) so I use the same transformation for all */
-   /* Except that doesn't work for order2 (I'll fix that later) */
-
-   ntemp.x =
-      (sp->nextcp.x - sp->me.x) * slope.x - (sp->nextcp.y -
-					     sp->me.y) * slope.y;
-   ntemp.y =
-      (sp->nextcp.x - sp->me.x) * slope.y + (sp->nextcp.y -
-					     sp->me.y) * slope.x;
-   ptemp.x =
-      (sp->prevcp.x - sp->me.x) * slope.x - (sp->prevcp.y -
-					     sp->me.y) * slope.y;
-   ptemp.y =
-      (sp->prevcp.x - sp->me.x) * slope.y + (sp->prevcp.y -
-					     sp->me.y) * slope.x;
-   sp->me.x = pos.x - sp->me.y * slope.y;
-   sp->me.y = pos.y + sp->me.y * slope.x;
-   sp->nextcp.x = sp->me.x + ntemp.x;
-   sp->nextcp.y = sp->me.y + ntemp.y;
-   sp->prevcp.x = sp->me.x + ptemp.x;
-   sp->prevcp.y = sp->me.y + ptemp.y;
-}
-
 static Spline *SplineBindToPath(Spline * s, SplineSet * path) {
    /* OK. The endpoints and the control points have already been moved. */
    /*  But the transformation is potentially non-linear, so figure some */
@@ -1879,53 +1828,6 @@ static Spline *SplineBindToPath(Spline * s, SplineSet * path) {
    ret = ApproximateSplineFromPointsSlopes(s->from, s->to, mids, i, false);
    SplineFree(s);
    return (ret);
-}
-
-static void GlyphBindToPath(SplineSet * glyph, SplineSet * path) {
-   /* Find the transformation for the middle of the glyph, and then rotate */
-   /*  the entire thing by that */
-   bigreal pt, len;
-
-   BasePoint pos, slope;
-
-   Spline *ps;
-
-   DBounds b;
-
-   real transform[6], offset[6], mid;
-
-   SplineSetFindBounds(glyph, &b);
-   mid = (b.minx + b.maxx) / 2;
-   ps = PathFindDistance(path, mid, &pt);
-   pos.x =
-      ((ps->splines[0].a * pt + ps->splines[0].b) * pt +
-       ps->splines[0].c) * pt + ps->splines[0].d;
-   pos.y =
-      ((ps->splines[1].a * pt + ps->splines[1].b) * pt +
-       ps->splines[1].c) * pt + ps->splines[1].d;
-   slope.x =
-      (3 * ps->splines[0].a * pt + 2 * ps->splines[0].b) * pt +
-      ps->splines[0].c;
-   slope.y =
-      (3 * ps->splines[1].a * pt + 2 * ps->splines[1].b) * pt +
-      ps->splines[1].c;
-   len = sqrt(slope.x * slope.x + slope.y * slope.y);
-   if (len != 0) {
-      slope.x /= len;
-      slope.y /= len;
-   }
-
-   memset(offset, 0, sizeof(offset));
-   offset[0] = offset[3] = 1;
-   offset[4] = -mid;
-
-   transform[0] = transform[3] = slope.x;
-   transform[1] = slope.y;
-   transform[2] = -slope.y;
-   transform[4] = pos.x;
-   transform[5] = pos.y;
-   MatMultiply(offset, transform, transform);
-   SplinePointListTransform(glyph, transform, tpt_AllPoints);
 }
 
 static TPoint *SplinesFigureTPsBetween(SplinePoint * from, SplinePoint * to,

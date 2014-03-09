@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+
+while (<*/*.[ch]>) {
+  $fn=$_;
+  %static_defined=();
+  open(SRC,$fn);
+  while (<SRC>) {
+    if (/\s*static\b[^(=]*\s([A-Z_][A-Za-z_0-9]*)\s*[(,;=]/) {
+      $static_defined{$1}=1;
+    }
+  }
+  close(SRC);
+  %static_used=();
+  @statics=sort keys %static_defined;
+  open(SRC,$fn);
+  while (<SRC>) {
+    foreach $symbol (@statics) {
+      if (/\b$symbol\b/) {
+        $static_used{$symbol}++;
+      }
+    }
+  }
+  close(SRC);
+  foreach $symbol (@statics) {
+    if ($static_used{$symbol}<2) {
+      print "$fn defines static $symbol but does not use it\n";
+    }
+  }
+}

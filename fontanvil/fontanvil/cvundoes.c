@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 2928 2014-03-08 15:37:54Z mskala $ */
+/* $Id: cvundoes.c 2932 2014-03-09 15:26:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2969,35 +2969,6 @@ static OTLookup **GetLookupsToCopy(SplineFont * sf, OTLookup *** backpairlist,
    free(list1);
    free(list2);
    return (list);
-}
-
-static void SCPasteLookupsTop(SplineChar * sc, Undoes * paster) {
-   OTLookup **list, **backpairlist;
-
-   SplineChar *fromsc;
-
-   struct sfmergecontext mc;
-
-   if (paster->copied_from == NULL)
-      return;
-   (void) FindCharacter(sc->parent, paster->copied_from,
-			paster->u.state.refs, &fromsc);
-   if (fromsc == NULL) {
-      ff_post_error(_("Missing glyph"), _("Could not find original glyph"));
-      return;
-   }
-   list =
-      GetLookupsToCopy(fromsc->parent, &backpairlist,
-		       fromsc->parent == sc->parent);
-   if (list == NULL)
-      return;
-   memset(&mc, 0, sizeof(mc));
-   mc.sf_from = paster->copied_from;
-   mc.sf_to = sc->parent;
-   SCPasteLookups(sc, fromsc, true, list, backpairlist, &mc);
-   free(list);
-   free(backpairlist);
-   SFFinishMergeContext(&mc);
 }
 
 SplineSet *ClipBoardToSplineSet(void) {

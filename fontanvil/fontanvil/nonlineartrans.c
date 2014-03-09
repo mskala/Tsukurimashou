@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: nonlineartrans.c 2932 2014-03-09 15:26:10Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -919,14 +919,6 @@ void SPLPoV(SplineSet * base, struct pov_data *pov, int only_selected) {
    transform[5] = pov->y;
    SplinePointListTransform(base, transform,
 			    only_selected ? tpt_OnlySelected : tpt_AllPoints);
-}
-
-static void SCFindCenter(SplineChar * sc, BasePoint * center) {
-   DBounds db;
-
-   SplineCharFindBounds(sc, &db);
-   center->x = (db.minx + db.maxx) / 2;
-   center->y = (db.miny + db.maxy) / 2;
 }
 
 struct vanishing_point {
