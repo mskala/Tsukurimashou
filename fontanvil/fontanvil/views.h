@@ -1,4 +1,4 @@
-/* $Id: views.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: views.h 2938 2014-03-10 18:51:22Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 #   include "baseviews.h"
 
 #   include <ggadget.h>
-#   include "dlist.h"
 
 
 struct gfi_data;

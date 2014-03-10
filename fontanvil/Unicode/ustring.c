@@ -1,4 +1,4 @@
-/* $Id: ustring.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: ustring.c 2937 2014-03-10 18:31:50Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -245,12 +245,6 @@ unichar_t *utf82u_strcpy(unichar_t * ubuf, const char *utf8buf) {
    return (utf82u_strncpy(ubuf, utf8buf, strlen(utf8buf) + 1));
 }
 
-unichar_t *utf82u_copyn(const char *utf8buf, int len) {
-   unichar_t *ubuf = (unichar_t *) malloc((len + 1) * sizeof(unichar_t));
-
-   return (utf82u_strncpy(ubuf, utf8buf, len + 1));
-}
-
 unichar_t *utf82u_copy(const char *utf8buf) {
    int len;
 
@@ -262,37 +256,6 @@ unichar_t *utf82u_copy(const char *utf8buf) {
    len = strlen(utf8buf);
    ubuf = (unichar_t *) malloc((len + 1) * sizeof(unichar_t));
    return (utf82u_strncpy(ubuf, utf8buf, len + 1));
-}
-
-void utf82u_strcat(unichar_t * to, const char *from) {
-   utf82u_strcpy(to + u_strlen(to), from);
-}
-
-char *u2utf8_strcpy(char *utf8buf, const unichar_t * ubuf) {
-/* Copy unichar string 'ubuf' into utf8 buffer string 'utf8buf' */
-   char *pt = utf8buf;
-
-   if (ubuf != NULL) {
-      while (*ubuf && (pt = utf8_idpb(pt, *ubuf++, 0)));
-      if (pt) {
-	 *pt = '\0';
-	 return (utf8buf);
-      }
-   }
-   return (NULL);
-}
-
-char *utf8_strchr(const char *str, int search) {
-   int ch;
-
-   const char *old = str;
-
-   while ((ch = utf8_ildb(&str)) != 0) {
-      if (ch == search)
-	 return ((char *) old);
-      old = str;
-   }
-   return (NULL);
 }
 
 char *latin1_2_utf8_strcpy(char *utf8buf, const char *lbuf) {
@@ -478,26 +441,6 @@ char *utf8_idpb(char *utf8_text, uint32 ch, int flags) {
    return (utf8_text);
 }
 
-char *utf8_ib(char *utf8_text) {
-/* Increment to next utf8 character */
-   unsigned char ch;
-
-   if ((ch = (unsigned char) *utf8_text) == '\0')
-      return (utf8_text);
-   else if (ch <= 127)
-      return (utf8_text + 1);
-   else if (ch < 0xe0)
-      return (utf8_text + 2);
-   else if (ch < 0xf0)
-      return (utf8_text + 3);
-   else if (ch < 0xf8)
-      return (utf8_text + 4);
-   else if (ch < 0xfc)
-      return (utf8_text + 5);
-   else
-      return (utf8_text + 6);
-}
-
 int utf8_valid(const char *str) {
    /* Is this a valid utf8 string? */
    int ch;
@@ -507,59 +450,6 @@ int utf8_valid(const char *str) {
 	 return (false);
 
    return (true);
-}
-
-void utf8_truncatevalid(char *str) {
-   /* There are certain cases where we have a fixed amount of space to display */
-   /*  something, and if it doesn't fit in that, then we truncate it. But... */
-   /*  that can leave us with a half completed utf8 byte sequence. So truncate */
-   /*  again, right before the start of the bad sequence */
-   int ch;
-
-   char *old;
-
-   old = str;
-   while ((ch = utf8_ildb((const char **) &str)) != '\0') {
-      if (ch == -1) {
-	 *old = '\0';
-	 return;
-      }
-      old = str;
-   }
-}
-
-char *utf8_db(char *utf8_text) {
-/* Decrement utf8 pointer to previous utf8 character.*/
-/* NOTE: This should never happen but if the pointer */
-/* was looking at an intermediate character, it will */
-/* be properly positioned at the start of a new char */
-/* and not the previous character.		     */
-   unsigned char *pt = (unsigned char *) utf8_text;
-
-   --pt;
-   if (*pt >= 0x80 && *pt < 0xc0) {
-      --pt;
-      if (*pt >= 0x80 && *pt < 0xc0) {
-	 --pt;
-	 if (*pt >= 0x80 && *pt < 0xc0) {
-	    --pt;
-	    if (*pt >= 0x80 && *pt < 0xc0) {
-	       --pt;
-	       if (*pt >= 0x80 && *pt < 0xc0)
-		  --pt;
-	    }
-	 }
-      }
-   }
-   return ((char *) pt);
-}
-
-long utf8_strlen(const char *utf8_str) {
-/* Count how many characters in the string NOT bytes */
-   long len = 0;
-
-   while (utf8_ildb(&utf8_str) > 0 && ++len > 0);
-   return (len);
 }
 
 long utf82u_strlen(const char *utf8_str) {
@@ -572,18 +462,6 @@ long utf82u_strlen(const char *utf8_str) {
       if (ch >= 0x10000)
 	 ++len;
    return (len);
-}
-
-void utf8_strncpy(register char *to, const char *from, int len) {
-   /* copy n characters NOT bytes */
-   const char *old = from;
-
-   while (len && *old) {
-      utf8_ildb(&old);
-      len--;
-   }
-   strncpy(to, from, old - from);
-   to[old - from] = 0;
 }
 
 #include <chardata.h>
@@ -660,134 +538,4 @@ int AllAscii(const char *txt) {
 	 return (false);
    }
    return (true);
-}
-
-int uAllAscii(const unichar_t * txt) {
-   for (; *txt != '\0'; ++txt) {
-      if (*txt == '\t' || *txt == '\n' || *txt == '\r')
-	 /* All right */ ;
-      else if (*txt < ' ' || *txt >= '\177')
-	 return (false);
-   }
-   return (true);
-}
-
-char *chomp(char *line) {
-   if (!line)
-      return line;
-   if (line[strlen(line) - 1] == '\n')
-      line[strlen(line) - 1] = '\0';
-   if (line[strlen(line) - 1] == '\r')
-      line[strlen(line) - 1] = '\0';
-   return line;
-}
-
-char *copytolower(const char *input) {
-   char *ret = copy(input);
-
-   char *p = ret;
-
-   for (; *p; ++p) {
-      *p = tolower(*p);
-   }
-   return ret;
-}
-
-
-int endswith(const char *haystack, const char *needle) {
-   int haylen = strlen(haystack);
-
-   int nedlen = strlen(needle);
-
-   if (haylen < nedlen)
-      return 0;
-   char *p = strstr(haystack + haylen - nedlen, needle);
-
-   return p == (haystack + haylen - nedlen);
-}
-
-int endswithi(const char *haystackZ, const char *needleZ) {
-   char *haystack = copytolower(haystackZ);
-
-   char *needle = copytolower(needleZ);
-
-   int ret = endswith(haystack, needle);
-
-   free(haystack);
-   free(needle);
-   return ret;
-}
-
-int endswithi_partialExtension(const char *haystackZ, const char *needleZ) {
-   int nedlen = strlen(needleZ);
-
-   if (nedlen == 0) {
-      return 0;
-   }
-   char *haystack = copytolower(haystackZ);
-
-   char *needle = copytolower(needleZ);
-
-   int ret = 0;
-
-   int i = nedlen - 1;
-
-   ret |= endswith(haystack, needle);
-   for (; i >= 0 && !ret; --i) {
-      needle[i] = '\0';
-      ret |= endswith(haystack, needle);
-   }
-   free(haystack);
-   free(needle);
-   return ret;
-}
-
-char *str_replace_all(char *s, char *orig, char *replacement, int free_s) {
-   char *p = strstr(s, orig);
-
-   if (!p) {
-      if (free_s)
-	 return s;
-      return copy(s);
-   }
-
-   int count = 0;
-
-   p = s;
-   while (p) {
-      p = strstr(p, orig);
-      if (!p)
-	 break;
-      p++;
-      count++;
-   }
-   count++;
-
-   // more than strictly needed, but always enough RAM.
-   int retsz = strlen(s) + count * strlen(replacement) + 1;
-
-   char *ret = (char *) malloc(retsz);
-
-   memset(ret, '\0', retsz);
-   char *output = ret;
-
-   char *remains = s;
-
-   p = remains;
-   while (p) {
-      p = strstr(remains, orig);
-      if (!p) {
-	 strcpy(output, remains);
-	 break;
-      }
-      if (p > remains)
-	 strncpy(output, remains, p - remains);
-      strcat(output, replacement);
-      output += strlen(output);
-      remains = p + strlen(orig);
-   }
-
-   if (free_s)
-      free(s);
-   return ret;
 }

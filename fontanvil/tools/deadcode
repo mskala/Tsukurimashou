@@ -1,7 +1,31 @@
 #!/usr/bin/perl
 
+open(NM,'nm -g `find . -name *.o`|');
+while (<NM>) {
+  chomp;
+  if (/^[\.\/]+(([a-z]+\/).*_a-)?(.*)\.o:/) {
+    $fn="$2$3.c";
+    print "$_ => $fn\n";
+  } elsif (/^([0-9a-f]*)\s+([A-Z]) (.*)$/) {
+    if ($2 eq 'U') {
+      $extern_used{$3}=1;
+    } else {
+      $extern_defined{$3}=$fn;
+    }
+  }
+}
+close(NM);
+
+@questionable_externs=();
+foreach $extern (sort keys %extern_defined) {
+  if (!$extern_used{$extern}) {
+    push @questionable_externs,$extern;
+  }
+}
+
 while (<*/*.[ch]>) {
   $fn=$_;
+  print "($fn)\n";
   %static_defined=();
   open(SRC,$fn);
   while (<SRC>) {
@@ -19,11 +43,25 @@ while (<*/*.[ch]>) {
         $static_used{$symbol}++;
       }
     }
+    foreach $extern (@questionable_externs) {
+      if ($extern_defined{$extern} eq $fn) {
+        if (/\b$extern\b/) {
+          $extern_used{$extern}++;
+        }
+      }
+    }
   }
   close(SRC);
   foreach $symbol (@statics) {
     if ($static_used{$symbol}<2) {
       print "$fn defines static $symbol but does not use it\n";
     }
+  }
+}
+
+foreach $extern (@questionable_externs) {
+  if ($extern_used{$extern}<2) {
+    print $extern_defined{$extern}.
+      " defines extern $extern but no file uses it\n";
   }
 }

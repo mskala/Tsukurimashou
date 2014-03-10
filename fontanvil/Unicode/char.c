@@ -1,4 +1,4 @@
-/* $Id: char.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: char.c 2939 2014-03-10 19:10:18Z mskala $ */
 /* Copyright (C) 2000-2002 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,34 +29,6 @@
 #include <string.h>
 #include <utype.h>
 #include "ustring.h"
-
-char *strstart(const char *initial, const char *full) {
-   int ch1, ch2;
-
-   for (;;) {
-      ch1 = *initial++;
-      ch2 = *full++;
-      if (ch1 == '\0')
-	 return ((char *) full);
-      if (ch1 != ch2 || ch1 == '\0')
-	 return (NULL);
-   }
-}
-
-char *strstartmatch(const char *initial, const char *full) {
-   int ch1, ch2;
-
-   for (;;) {
-      ch1 = *initial++;
-      ch2 = *full++;
-      if (ch1 == '\0')
-	 return ((char *) full);
-      ch1 = tolower(ch1);
-      ch2 = tolower(ch2);
-      if (ch1 != ch2 || ch1 == '\0')
-	 return (NULL);
-   }
-}
 
 int strmatch(const char *str1, const char *str2) {
    int ch1, ch2;

@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splineutil.c 2935 2014-03-10 17:48:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1375,15 +1375,6 @@ void SplinePointCatagorize(SplinePoint * sp) {
    }
 }
 
-int SplinePointIsACorner(SplinePoint * sp) {
-   enum pointtype old = sp->pointtype, new;
-
-   SplinePointCatagorize(sp);
-   new = sp->pointtype;
-   sp->pointtype = old;
-   return (new == pt_corner);
-}
-
 void SPLCatagorizePoints(SplinePointList * spl) {
    Spline *spline, *first, *last = NULL;
 
@@ -1650,73 +1641,6 @@ SplinePointList *SplinePointListCopy(const SplinePointList * base) {
    return (head);
 }
 
-SplinePointList *SplinePointListCopySelected(SplinePointList * base) {
-   SplinePointList *head = NULL, *last = NULL, *cur = NULL;
-
-   SplinePoint *pt, *first;
-
-   int anysel, allsel;
-
-   for (; base != NULL; base = base->next) {
-      anysel = false;
-      allsel = true;
-      first = NULL;
-      for (pt = base->first; pt != NULL && pt != first; pt = pt->next->to) {
-	 if (pt->selected)
-	    anysel = true;
-	 else
-	    allsel = false;
-	 if (first == NULL)
-	    first = pt;
-	 if (pt->next == NULL)
-	    break;
-      }
-      if (allsel)
-	 cur = SplinePointListCopy1(base);
-      else if (anysel)
-	 cur = SplinePointListCopySelected1(base);
-      if (anysel) {
-	 if (head == NULL)
-	    head = cur;
-	 else
-	    last->next = cur;
-	 for (last = cur; last->next; last = last->next);
-      }
-   }
-   return (head);
-}
-
-SplinePointList *SplinePointListCopySpiroSelected(SplinePointList * base) {
-   SplinePointList *head = NULL, *last = NULL, *cur = NULL;
-
-   int anysel, allsel;
-
-   int i;
-
-   for (; base != NULL; base = base->next) {
-      anysel = false;
-      allsel = true;
-      for (i = 0; i < base->spiro_cnt - 1; ++i) {
-	 if (SPIRO_SELECTED(&base->spiros[i]))
-	    anysel = true;
-	 else
-	    allsel = false;
-      }
-      if (allsel)
-	 cur = SplinePointListCopy1(base);
-      else if (anysel)
-	 cur = SplinePointListCopySpiroSelected1(base);
-      if (anysel) {
-	 if (head == NULL)
-	    head = cur;
-	 else
-	    last->next = cur;
-	 for (last = cur; last->next; last = last->next);
-      }
-   }
-   return (head);
-}
-
 static SplinePointList *SplinePointListSplitSpiros(SplineChar * sc,
 						   SplinePointList * spl) {
    SplinePointList *head = NULL, *last = NULL, *cur;
@@ -1832,69 +1756,6 @@ static SplinePointList *SplinePointListSplit(SplineChar * sc,
       }
    }
    return (last);
-}
-
-SplinePointList *SplinePointListRemoveSelected(SplineChar * sc,
-					       SplinePointList * base) {
-   SplinePointList *head = NULL, *last = NULL, *next;
-
-   SplinePoint *pt, *first;
-
-   int anysel, allsel;
-
-   for (; base != NULL; base = next) {
-      next = base->next;
-      anysel = false;
-      allsel = true;
-      if (!sc->inspiro || !hasspiro()) {
-	 first = NULL;
-	 for (pt = base->first; pt != NULL && pt != first; pt = pt->next->to) {
-	    if (pt->selected)
-	       anysel = true;
-	    else
-	       allsel = false;
-	    if (first == NULL)
-	       first = pt;
-	    if (pt->next == NULL)
-	       break;
-	 }
-      } else {
-	 int i;
-
-	 for (i = 0; i < base->spiro_cnt; ++i) {
-	    if (SPIRO_SELECTED(&base->spiros[i]))
-	       anysel = true;
-	    else
-	       allsel = false;
-	 }
-      }
-      if (allsel) {
-	 SplinePointListMDFree(sc, base);
-	 continue;
-      }
-      if (!sc->inspiro || !anysel || !hasspiro()) {
-	 if (head == NULL)
-	    head = base;
-	 else
-	    last->next = base;
-	 last = base;
-	 if (anysel)
-	    last = SplinePointListSplit(sc, base);
-      } else {
-	 SplineSet *ret;
-
-	 ret = SplinePointListSplitSpiros(sc, base);
-	 if (head == NULL)
-	    head = ret;
-	 else
-	    last->next = ret;
-	 if (ret != NULL)
-	    for (last = ret; last->next != NULL; last = last->next);
-      }
-   }
-   if (last != NULL)
-      last->next = NULL;
-   return (head);
 }
 
 ImageList *ImageListCopy(ImageList * cimg) {
@@ -2229,49 +2090,6 @@ SplinePointList *SplinePointListTransform(SplinePointList * base,
    enum transformPointMask tpmask = 0;
 
    return SplinePointListTransformExtended(base, transform, tpt, tpmask);
-}
-
-SplinePointList *SplinePointListSpiroTransform(SplinePointList * base,
-					       real transform[6],
-					       int allpoints) {
-   SplinePointList *spl;
-
-   int allsel, anysel;
-
-   int i;
-
-
-   if (allpoints)
-      return (SplinePointListTransform(base, transform, tpt_AllPoints));
-
-   for (spl = base; spl != NULL; spl = spl->next) {
-      allsel = true;
-      anysel = false;
-      for (i = 0; i < spl->spiro_cnt - 1; ++i)
-	 if (spl->spiros[i].ty & 0x80)
-	    anysel = true;
-	 else
-	    allsel = false;
-      if (!anysel)
-	 continue;
-      if (allsel) {
-	 SplinePointList *next = spl->next;
-
-	 /* If we are transforming everything, then we can just transform */
-	 /*  the beziers too */
-	 spl->next = NULL;
-	 SplinePointListTransform(spl, transform, tpt_AllPoints);
-	 spl->next = next;
-	 continue;
-      }
-      /* If we are transformings some things, then we need to transform the */
-      /*  selected spiros and then regenerate the beziers */
-      for (i = 0; i < spl->spiro_cnt - 1; ++i)
-	 if (spl->spiros[i].ty & 0x80)
-	    TransformSpiro(&spl->spiros[i], transform);
-      SSRegenerateFromSpiros(spl);
-   }
-   return (base);
 }
 
 SplinePointList *SplinePointListShift(SplinePointList * base, real xoff,
@@ -3683,15 +3501,6 @@ void SFReinstanciateRefs(SplineFont * sf) {
       _SFReinstanciateRefs(sf);
 }
 
-void SCReinstanciateRef(SplineChar * sc, SplineChar * rsc, int layer) {
-   RefChar *rf;
-
-   for (rf = sc->layers[layer].refs; rf != NULL; rf = rf->next)
-      if (rf->sc == rsc) {
-	 SCReinstanciateRefChar(sc, rf, layer);
-      }
-}
-
 void SCRemoveDependent(SplineChar * dependent, RefChar * rf, int layer) {
    struct splinecharlist *dlist, *pd;
 
@@ -3740,13 +3549,6 @@ void SCRemoveLayerDependents(SplineChar * dependent, int layer) {
       SCRemoveDependent(dependent, rf, layer);
    }
    dependent->layers[layer].refs = NULL;
-}
-
-void SCRemoveDependents(SplineChar * dependent) {
-   int layer;
-
-   for (layer = ly_fore; layer < dependent->layer_cnt; ++layer)
-      SCRemoveLayerDependents(dependent, layer);
 }
 
 void SCRefToSplines(SplineChar * sc, RefChar * rf, int layer) {
@@ -4089,96 +3891,6 @@ extended SplineSolve(const Spline1D * sp, real tmin, real tmax,
 #define D_RE_Factor	(1024.0*1024.0*1024.0*1024.0*1024.0*2.0)
 /* But that's not going to work near 0, so, since the t values we care about */
 /*  are [0,1], let's use 1.0/D_RE_Factor */
-
-extended SplineSolveFixup(const Spline1D * sp, real tmin, real tmax,
-			  extended sought) {
-   extended ts[3];
-
-   int i;
-
-   bigreal factor;
-
-   extended t;
-
-   extended val, valp, valm;
-
-   CubicSolve(sp, sought, ts);
-   if (tmax < tmin) {
-      t = tmax;
-      tmax = tmin;
-      tmin = t;
-   }
-   for (i = 0; i < 3; ++i)
-      if (ts[i] >= tmin && ts[i] <= tmax)
-	 break;
-   if (i == 3) {
-      /* nothing in range, but ... */
-      /* did a rounding error take a solution just outside the bounds? */
-      extended bestd = .0001;
-
-      int besti = -1;
-
-      extended off;
-
-      for (i = 0; i < 3 && ts[i] != -1; ++i) {
-	 if (ts[i] < tmin)
-	    off = tmin - ts[i];
-	 else
-	    off = ts[i] - tmax;
-	 if (off < bestd) {
-	    bestd = off;
-	    besti = i;
-	 }
-      }
-      if (besti == -1)
-	 return (-1);
-      i = besti;
-   }
-   t = ts[i];
-
-   if ((val = (((sp->a * t + sp->b) * t + sp->c) * t + sp->d) - sought) < 0)
-      val = -val;
-   if (val != 0) {
-      for (factor = 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0; factor > .5;
-	   factor /= 2.0) {
-	 extended tp = t + (factor * t) / D_RE_Factor;
-
-	 extended tm = t - (factor * t) / D_RE_Factor;
-
-	 if ((valp =
-	      (((sp->a * tp + sp->b) * tp + sp->c) * tp + sp->d) - sought) <
-	     0)
-	    valp = -valp;
-	 if ((valm =
-	      (((sp->a * tm + sp->b) * tm + sp->c) * tm + sp->d) - sought) <
-	     0)
-	    valm = -valm;
-	 if (valp < val && valp < valm) {
-	    if (factor == 1024.0 * 1024.0 * 1024.0 * 1024 * 1024) {
-	       bigreal it = IterateSplineSolve(sp, tmin, tmax, sought);
-
-	       printf("Used %g: orig-t: %g, new-t: %g iter-t: %g\n",
-		      (double) factor, (double) t, (double) tp, (double) it);
-	    }
-	    t = tp;
-	    val = valp;
-	 } else if (valm < val) {
-	    if (factor == 1024.0 * 1024.0 * 1024.0 * 1024 * 1024) {
-	       bigreal it = IterateSplineSolve(sp, tmin, tmax, sought);
-
-	       printf("Used -%g: orig-t: %g, new-t: %g iter-t: %g\n",
-		      (double) factor, (double) t, (double) tm, (double) it);
-	    }
-	    t = tm;
-	    val = valm;
-	 }
-      }
-   }
-   if (t >= tmin && t <= tmax)
-      return (t);
-
-   return (-1);
-}
 
 extended IterateSplineSolve(const Spline1D * sp, extended tmin, extended tmax,
 			    extended sought) {
@@ -5804,52 +5516,6 @@ real SplineNearPoint(Spline * spline, BasePoint * bp, real fudge) {
    return (p.t);
 }
 
-int SplineT2SpiroIndex(Spline * spline, bigreal t, SplineSet * spl) {
-   /* User clicked on a spline. Now, where in the spiro array was that? */
-   /* I shall assume that the first time we hit a spiro point that corresponds */
-   /*  to the point. In some really gnarly spiro tangles that might not be */
-   /*  true, but in a well behaved contour I think (hope) it will be ok */
-
-   /* It appears that each spiro cp has a corresponding splinepoint, but */
-   /*  I don't want to rely on that because it won't be true after a simplify */
-   Spline *sp, *lastsp = spl->first->next;
-
-   bigreal lastt = 0, test;
-
-   int i;
-
-   BasePoint bp;
-
-   for (i = 1; i < spl->spiro_cnt; ++i) {	/* For once I do mean spiro count, that loops back to the start for close contours */
-      if (i < spl->spiro_cnt - 1) {
-	 bp.x = spl->spiros[i].x;
-	 bp.y = spl->spiros[i].y;
-      } else if (SPIRO_SPL_OPEN(spl))
-	 return (-1);
-      else {
-	 bp.x = spl->spiros[0].x;
-	 bp.y = spl->spiros[0].y;
-      }
-      for (sp = lastsp;;) {
-	 test = SplineNearPoint(sp, &bp, .001);
-	 if (test == -1) {
-	    if (sp == spline)
-	       return (i - 1);
-	 } else {
-	    if (sp == spline && t < test)
-	       return (i - 1);
-	    lastsp = sp;
-	    lastt = test;
-	    break;
-	 }
-	 if (sp->to->next == NULL || sp->to == spl->first)
-	    return (-1);
-	 sp = sp->to->next;
-      }
-   }
-   return (-1);
-}
-
 static int SplinePrevMinMax(Spline * s, int up) {
    const bigreal t = .9999;
 
@@ -6087,23 +5753,6 @@ DStemInfo *DStemInfoCopy(DStemInfo * h) {
    return (head);
 }
 
-MinimumDistance *MinimumDistanceCopy(MinimumDistance * md) {
-   MinimumDistance *head = NULL, *last = NULL, *cur;
-
-   for (; md != NULL; md = md->next) {
-      cur = chunkalloc(sizeof(DStemInfo));
-      *cur = *md;
-      cur->next = NULL;
-      if (head == NULL)
-	 head = last = cur;
-      else {
-	 last->next = cur;
-	 last = cur;
-      }
-   }
-   return (head);
-}
-
 void KernPairsFree(KernPair * kp) {
    KernPair *knext;
 
@@ -6140,38 +5789,6 @@ static AnchorPoint *AnchorPointsRemoveName(AnchorPoint * alist,
 	 prev = ap;
    }
    return (alist);
-}
-
-/* Finds or adds an AnchorClass of the given name. Resets it to have the given subtable if not NULL */
-AnchorClass *SFFindOrAddAnchorClass(SplineFont * sf, char *name,
-				    struct lookup_subtable * sub) {
-   AnchorClass *ac;
-
-   int actype = act_unknown;
-
-   for (ac = sf->anchor; ac != NULL; ac = ac->next)
-      if (strcmp(name, ac->name) == 0)
-	 break;
-   if (ac != NULL && (sub == NULL || ac->subtable == sub))
-      return (ac);
-
-   if (sub != NULL)
-      actype = sub->lookup->lookup_type == gpos_cursive ? act_curs :
-	 sub->lookup->lookup_type == gpos_mark2base ? act_mark :
-	 sub->lookup->lookup_type == gpos_mark2ligature ? act_mklg :
-	 sub->lookup->lookup_type == gpos_mark2mark ? act_mkmk : act_unknown;
-   if (ac == NULL) {
-      ac = chunkalloc(sizeof(AnchorClass));
-      ac->subtable = sub;
-      ac->type = actype;
-      ac->name = copy(name);
-      ac->next = sf->anchor;
-      sf->anchor = ac;
-   } else if (sub != NULL && ac->subtable != sub) {
-      ac->subtable = sub;
-      ac->type = actype;
-   }
-   return (ac);
 }
 
 static void SCRemoveAnchorClass(SplineChar * sc, AnchorClass * an) {
@@ -6244,20 +5861,6 @@ AnchorPoint *APAnchorClassMerge(AnchorPoint * anchors, AnchorClass * into,
 	 prev = ap;
    }
    return (anchors);
-}
-
-void AnchorClassMerge(SplineFont * sf, AnchorClass * into, AnchorClass * from) {
-   int i;
-
-   if (into == from)
-      return;
-   PasteAnchorClassMerge(sf, into, from);
-   for (i = 0; i < sf->glyphcnt; ++i)
-      if (sf->glyphs[i] != NULL) {
-	 SplineChar *sc = sf->glyphs[i];
-
-	 sc->anchor = APAnchorClassMerge(sc->anchor, into, from);
-      }
 }
 
 AnchorPoint *AnchorPointsCopy(AnchorPoint * alist) {
@@ -6355,59 +5958,6 @@ DeviceTable *DeviceTableCopy(DeviceTable * orig) {
    return (new);
 }
 
-void DeviceTableSet(DeviceTable * adjust, int size, int correction) {
-   int len, i, j;
-
-   len = adjust->last_pixel_size - adjust->first_pixel_size + 1;
-   if (correction == 0) {
-      if (adjust->corrections == NULL ||
-	  size < adjust->first_pixel_size || size > adjust->last_pixel_size)
-	 return;
-      adjust->corrections[size - adjust->first_pixel_size] = 0;
-      for (i = 0; i < len; ++i)
-	 if (adjust->corrections[i] != 0)
-	    break;
-      if (i == len) {
-	 free(adjust->corrections);
-	 memset(adjust, 0, sizeof(DeviceTable));
-      } else {
-	 if (i != 0) {
-	    for (j = 0; j < len - i; ++j)
-	       adjust->corrections[j] = adjust->corrections[j + i];
-	    adjust->first_pixel_size += i;
-	    len -= i;
-	 }
-	 for (i = len - 1; i >= 0; --i)
-	    if (adjust->corrections[i] != 0)
-	       break;
-	 adjust->last_pixel_size = adjust->first_pixel_size + i;
-      }
-   } else {
-      if (adjust->corrections == NULL) {
-	 adjust->first_pixel_size = adjust->last_pixel_size = size;
-	 adjust->corrections = malloc(1);
-      } else if (size >= adjust->first_pixel_size &&
-		 size <= adjust->last_pixel_size) {
-      } else if (size > adjust->last_pixel_size) {
-	 adjust->corrections = realloc(adjust->corrections,
-				       size - adjust->first_pixel_size);
-	 for (i = len; i < size - adjust->first_pixel_size; ++i)
-	    adjust->corrections[i] = 0;
-	 adjust->last_pixel_size = size;
-      } else {
-	 int8 *new = malloc(adjust->last_pixel_size - size + 1);
-
-	 memset(new, 0, adjust->first_pixel_size - size);
-	 memcpy(new + adjust->first_pixel_size - size,
-		adjust->corrections, len);
-	 adjust->first_pixel_size = size;
-	 free(adjust->corrections);
-	 adjust->corrections = new;
-      }
-      adjust->corrections[size - adjust->first_pixel_size] = correction;
-   }
-}
-
 void PSTFree(PST * pst) {
    PST *pnext;
 
@@ -6458,14 +6008,6 @@ void FPSTRuleContentsFree(struct fpst_rule *r, enum fpossub_format format) {
 	break;
    }
    free(r->lookups);
-}
-
-void FPSTRulesFree(struct fpst_rule *r, enum fpossub_format format, int rcnt) {
-   int i;
-
-   for (i = 0; i < rcnt; ++i)
-      FPSTRuleContentsFree(&r[i], format);
-   free(r);
 }
 
 static struct fpst_rule *RulesCopy(struct fpst_rule *from, int cnt,
@@ -6715,55 +6257,6 @@ void GlyphVariantsFree(struct glyphvariants *gv) {
    chunkfree(gv, sizeof(*gv));
 }
 
-struct glyphvariants *GlyphVariantsCopy(struct glyphvariants *gv) {
-   struct glyphvariants *newgv;
-
-   int i;
-
-   if (gv == NULL)
-      return (NULL);
-   newgv = chunkalloc(sizeof(struct glyphvariants));
-   newgv->variants = copy(gv->variants);
-   newgv->italic_adjusts = DeviceTableCopy(gv->italic_adjusts);
-   newgv->part_cnt = gv->part_cnt;
-   if (gv->part_cnt != 0) {
-      newgv->parts = calloc(gv->part_cnt, sizeof(struct gv_part));
-      memcpy(newgv->parts, gv->parts, gv->part_cnt * sizeof(struct gv_part));
-      for (i = 0; i < gv->part_cnt; ++i)
-	 newgv->parts[i].component = copy(gv->parts[i].component);
-   }
-   return (newgv);
-}
-
-struct mathkern *MathKernCopy(struct mathkern *mk) {
-   int i, j;
-
-   struct mathkern *mknew;
-
-   if (mk == NULL)
-      return (NULL);
-   mknew = chunkalloc(sizeof(*mknew));
-   for (i = 0; i < 4; ++i) {
-      struct mathkernvertex *mkv = &(&mk->top_right)[i];
-
-      struct mathkernvertex *mknewv = &(&mknew->top_right)[i];
-
-      mknewv->cnt = mkv->cnt;
-      if (mknewv->cnt != 0) {
-	 mknewv->mkd = calloc(mkv->cnt, sizeof(struct mathkerndata));
-	 for (j = 0; j < mkv->cnt; ++j) {
-	    mknewv->mkd[j].height = mkv->mkd[j].height;
-	    mknewv->mkd[j].kern = mkv->mkd[j].kern;
-	    mknewv->mkd[j].height_adjusts =
-	       DeviceTableCopy(mkv->mkd[j].height_adjusts);
-	    mknewv->mkd[j].kern_adjusts =
-	       DeviceTableCopy(mkv->mkd[j].kern_adjusts);
-	 }
-      }
-   }
-   return (mknew);
-}
-
 void MathKernVContentsFree(struct mathkernvertex *mk) {
    int i;
 
@@ -6927,34 +6420,6 @@ void TtfTablesFree(struct ttf_table *tab) {
       next = tab->next;
       free(tab->data);
       chunkfree(tab, sizeof(struct ttf_table));
-   }
-}
-
-void SFRemoveSavedTable(SplineFont * sf, uint32 tag) {
-   struct ttf_table *tab, *prev;
-
-   for (prev = NULL, tab = sf->ttf_tables; tab != NULL && tab->tag != tag;
-	prev = tab, tab = tab->next);
-   if (tab != NULL) {
-      if (prev == NULL)
-	 sf->ttf_tables = tab->next;
-      else
-	 prev->next = tab->next;
-   } else {
-      for (prev = NULL, tab = sf->ttf_tab_saved;
-	   tab != NULL && tab->tag != tag; prev = tab, tab = tab->next);
-      if (tab == NULL)
-	 return;
-      if (prev == NULL)
-	 sf->ttf_tab_saved = tab->next;
-      else
-	 prev->next = tab->next;
-   }
-   tab->next = NULL;
-   TtfTablesFree(tab);
-   if (!sf->changed) {
-      sf->changed = true;
-      FVSetTitles(sf);
    }
 }
 
@@ -7305,36 +6770,6 @@ static OTLookup **OTLListCopy(OTLookup ** str) {
       ret[i] = str[i];
    ret[i] = NULL;
    return (ret);
-}
-
-struct jstf_lang *JstfLangsCopy(struct jstf_lang *jl) {
-   struct jstf_lang *head = NULL, *last = NULL, *cur;
-
-   int i;
-
-   while (jl != NULL) {
-      cur = chunkalloc(sizeof(*cur));
-      cur->lang = jl->lang;
-      cur->cnt = jl->cnt;
-      cur->prios = calloc(cur->cnt, sizeof(struct jstf_prio));
-      for (i = 0; i < cur->cnt; ++i) {
-	 cur->prios[i].enableShrink = OTLListCopy(jl->prios[i].enableShrink);
-	 cur->prios[i].disableShrink =
-	    OTLListCopy(jl->prios[i].disableShrink);
-	 cur->prios[i].maxShrink = OTLListCopy(jl->prios[i].maxShrink);
-	 cur->prios[i].enableExtend = OTLListCopy(jl->prios[i].enableExtend);
-	 cur->prios[i].disableExtend =
-	    OTLListCopy(jl->prios[i].disableExtend);
-	 cur->prios[i].maxExtend = OTLListCopy(jl->prios[i].maxExtend);
-      }
-      if (head == NULL)
-	 head = cur;
-      else
-	 last->next = cur;
-      last = cur;
-      jl = jl->next;
-   }
-   return (head);
 }
 
 void JstfLangFree(struct jstf_lang *jl) {
@@ -8034,118 +7469,6 @@ SplinePoint *SplineBisect(Spline * spline, extended t) {
    return (mid);
 }
 
-Spline *SplineSplit(Spline * spline, extended ts[3]) {
-   /* Split the current spline in up to 3 places */
-   Spline1 splines[2][4];
-
-   int i, cnt;
-
-   bigreal base;
-
-   SplinePoint *last, *sp;
-
-   Spline *new;
-
-   int order2 = spline->order2;
-
-   memset(splines, 0, sizeof(splines));
-   base = 0;
-   for (i = cnt = 0; i < 3 && ts[i] != -1; ++i) {
-      if (base > 1 - 1e-3)	/* Avoid tiny splines */
-	 break;
-      else if (base < ts[i] - 1e-3) {
-	 FigureSpline1(&splines[0][cnt], base, ts[i], &spline->splines[0]);
-	 FigureSpline1(&splines[1][cnt++], base, ts[i], &spline->splines[1]);
-	 base = ts[i];
-      }
-   }
-   if (base == 0)
-      return (spline);
-
-   FigureSpline1(&splines[0][cnt], base, 1.0, &spline->splines[0]);
-   FigureSpline1(&splines[1][cnt], base, 1.0, &spline->splines[1]);
-
-   last = spline->from;
-   for (i = 0; i <= cnt; ++i) {
-      if (order2) {
-	 last->nextcp.x = splines[0][i].sp.d + splines[0][i].sp.c / 2;
-	 last->nextcp.y = splines[1][i].sp.d + splines[1][i].sp.c / 2;
-      } else {
-	 last->nextcp.x = splines[0][i].c0;
-	 last->nextcp.y = splines[1][i].c0;
-      }
-      if (i == cnt)
-	 sp = spline->to;
-      else {
-	 sp = chunkalloc(sizeof(SplinePoint));
-	 sp->me.x = splines[0][i + 1].sp.d;
-	 sp->me.y = splines[1][i + 1].sp.d;
-      }
-      if (order2) {
-	 sp->prevcp = last->nextcp;
-	 SplineMake2(last, sp);
-      } else {
-	 sp->prevcp.x = splines[0][i].c1;
-	 sp->prevcp.y = splines[1][i].c1;
-	 SplineMake3(last, sp);
-      }
-      last = sp;
-   }
-
-   new = spline->from->next;
-   SplineFree(spline);
-   return (new);
-}
-
-int SSExistsInLayer(SplineSet * ss, SplineSet * lots) {
-   /* In Find Problems we hold some state while we allow the user to go off */
-   /*  and do stuff. It is perfectly possible for the user to delete the */
-   /*  state we hold pointers to. Do a rough check that the thing hasn't */
-   /*  been deleted */
-   while (lots != NULL) {
-      if (lots == ss)
-	 return (true);
-      lots = lots->next;
-   }
-   return (false);
-}
-
-int SplineExistsInSS(Spline * s, SplineSet * ss) {
-   /* In Find Problems we hold some state while we allow the user to go off */
-   /*  and do stuff. It is perfectly possible for the user to delete the */
-   /*  state we hold pointers to. Do a rough check that the thing hasn't */
-   /*  been deleted */
-   Spline *spline, *first;
-
-   first = NULL;
-   for (spline = ss->first->next; spline != NULL && spline != first;
-	spline = spline->to->next) {
-      if (first == NULL)
-	 first = spline;
-      if (spline == s)
-	 return (true);
-   }
-   return (false);
-}
-
-int SpExistsInSS(SplinePoint * sp, SplineSet * ss) {
-   /* In Find Problems we hold some state while we allow the user to go off */
-   /*  and do stuff. It is perfectly possible for the user to delete the */
-   /*  state we hold pointers to. Do a rough check that the thing hasn't */
-   /*  been deleted */
-   SplinePoint *sp2;
-
-   for (sp2 = ss->first;;) {
-      if (sp == sp2)
-	 return (true);
-      if (sp2->next == NULL)
-	 return (false);
-      sp2 = sp2->next->to;
-      if (sp2 == ss->first)
-	 return (false);
-   }
-}
-
 int SSHasClip(SplineSet * ss) {
    while (ss != NULL) {
       if (ss->is_clip_path)
@@ -8162,109 +7485,6 @@ int SSHasDrawn(SplineSet * ss) {
       ss = ss->next;
    }
    return (false);
-}
-
-int SSBoundsWithin(SplineSet * ss, bigreal z1, bigreal z2, bigreal * wmin,
-		   bigreal * wmax, int major) {
-   /* if major==0 then find y values when x between z1, z2 */
-   /* if major==1 then find x values when y between z1, z2 */
-   bigreal w0 = 1e23, w1 = -1e23;
-
-   int any = 0;
-
-   Spline *s, *first;
-
-   Spline1D *ws, *zs;
-
-   extended ts[3];
-
-   bigreal w, z;
-
-   int i;
-
-   int other = !major;
-
-   if (z1 > z2) {
-      bigreal temp = z1;
-
-      z1 = z2;
-      z2 = temp;
-   }
-
-   while (ss != NULL) {
-      first = NULL;
-      for (s = ss->first->next; s != first; s = s->to->next) {
-	 if (first == NULL)
-	    first = s;
-	 ws = &s->splines[other];
-	 zs = &s->splines[major];
-	 if (major) {
-	    if (s->from->me.y < z1 && s->from->nextcp.y < z1
-		&& s->to->prevcp.y < z1 && s->to->me.y < z1)
-	       continue;
-	    else if (s->from->me.y > z2 && s->from->nextcp.y > z2
-		     && s->to->prevcp.y > z2 && s->to->me.y > z2)
-	       continue;
-	 } else {
-	    if (s->from->me.x < z1 && s->from->nextcp.x < z1
-		&& s->to->prevcp.x < z1 && s->to->me.x < z1)
-	       continue;
-	    else if (s->from->me.x > z2 && s->from->nextcp.x > z2
-		     && s->to->prevcp.x > z2 && s->to->me.x > z2)
-	       continue;
-	 }
-	 if (CubicSolve(zs, z1, ts)) {
-	    for (i = 0; i < 2 && ts[i] != -1; ++i) {
-	       w = ((ws->a * ts[i] + ws->b) * ts[i] + ws->c) * ts[i] + ws->d;
-	       if (w < w0)
-		  w0 = w;
-	       if (w > w1)
-		  w1 = w;
-	       any = true;
-	    }
-	 }
-	 if (CubicSolve(zs, z2, ts)) {
-	    for (i = 0; i < 2 && ts[i] != -1; ++i) {
-	       w = ((ws->a * ts[i] + ws->b) * ts[i] + ws->c) * ts[i] + ws->d;
-	       if (w < w0)
-		  w0 = w;
-	       if (w > w1)
-		  w1 = w;
-	       any = true;
-	    }
-	 }
-	 ts[0] = 0;
-	 ts[1] = 1.0;
-	 for (i = 0; i < 2; ++i) {
-	    w = ((ws->a * ts[i] + ws->b) * ts[i] + ws->c) * ts[i] + ws->d;
-	    z = ((zs->a * ts[i] + zs->b) * ts[i] + zs->c) * ts[i] + zs->d;
-	    if (z >= z1 && z <= z2) {
-	       if (w < w0)
-		  w0 = w;
-	       if (w > w1)
-		  w1 = w;
-	       any = true;
-	    }
-	 }
-	 SplineFindExtrema(ws, &ts[0], &ts[1]);
-	 for (i = 0; i < 2 && ts[i] != -1; ++i) {
-	    w = ((ws->a * ts[i] + ws->b) * ts[i] + ws->c) * ts[i] + ws->d;
-	    z = ((zs->a * ts[i] + zs->b) * ts[i] + zs->c) * ts[i] + zs->d;
-	    if (z >= z1 && z <= z2) {
-	       if (w < w0)
-		  w0 = w;
-	       if (w > w1)
-		  w1 = w;
-	       any = true;
-	    }
-	 }
-      }
-      ss = ss->next;
-   }
-
-   *wmin = w0;
-   *wmax = w1;
-   return (any);
 }
 
 static bigreal FindZero5(bigreal w[7], bigreal tlow, bigreal thigh) {

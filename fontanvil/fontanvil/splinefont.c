@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splinefont.c 2938 2014-03-10 18:51:22Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -330,102 +330,6 @@ int NameToEncoding(SplineFont * sf, EncMap * map, const char *name) {
    /*  But that doesn't sound like a good idea. And it would also map "a.sc" */
    /*  to "a" -- which was confusing */
    return (enc);
-}
-
-void SFRemoveUndoes(SplineFont * sf, uint8 * selected, EncMap * map) {
-   SplineFont *main = sf->cidmaster ? sf->cidmaster : sf, *ssf;
-
-   int i, k, max, layer, gid;
-
-   SplineChar *sc;
-
-   BDFFont *bdf;
-
-   if (selected != NULL || main->subfontcnt == 0)
-      max = sf->glyphcnt;
-   else {
-      max = 0;
-      for (k = 0; k < main->subfontcnt; ++k)
-	 if (main->subfonts[k]->glyphcnt > max)
-	    max = main->subfonts[k]->glyphcnt;
-   }
-   for (i = 0;; ++i) {
-      if (selected == NULL || main->subfontcnt != 0) {
-	 if (i >= max)
-	    break;
-	 gid = i;
-      } else {
-	 if (i >= map->enccount)
-	    break;
-	 if (!selected[i])
-	    continue;
-	 gid = map->map[i];
-	 if (gid == -1)
-	    continue;
-      }
-      for (bdf = main->bitmaps; bdf != NULL; bdf = bdf->next) {
-	 if (bdf->glyphs[gid] != NULL) {
-	    UndoesFree(bdf->glyphs[gid]->undoes);
-	    bdf->glyphs[gid]->undoes = NULL;
-	    UndoesFree(bdf->glyphs[gid]->redoes);
-	    bdf->glyphs[gid]->redoes = NULL;
-	 }
-      }
-      k = 0;
-      do {
-	 ssf = main->subfontcnt == 0 ? main : main->subfonts[k];
-	 if (gid < ssf->glyphcnt && ssf->glyphs[gid] != NULL) {
-	    sc = ssf->glyphs[gid];
-	    for (layer = 0; layer < sc->layer_cnt; ++layer) {
-	       UndoesFree(sc->layers[layer].undoes);
-	       sc->layers[layer].undoes = NULL;
-	       UndoesFree(sc->layers[layer].redoes);
-	       sc->layers[layer].redoes = NULL;
-	    }
-	 }
-	 ++k;
-      } while (k < main->subfontcnt);
-   }
-}
-
-static void _SplineFontSetUnChanged(SplineFont * sf) {
-   int i;
-
-   int was = sf->changed;
-
-   BDFFont *bdf;
-
-   sf->changed = false;
-   SFClearAutoSave(sf);
-   for (i = 0; i < sf->glyphcnt; ++i)
-      if (sf->glyphs[i] != NULL)
-	 if (sf->glyphs[i]->changed) {
-	    sf->glyphs[i]->changed = false;
-	    SCRefreshTitles(sf->glyphs[i]);
-	 }
-   for (bdf = sf->bitmaps; bdf != NULL; bdf = bdf->next)
-      for (i = 0; i < bdf->glyphcnt; ++i)
-	 if (bdf->glyphs[i] != NULL)
-	    bdf->glyphs[i]->changed = false;
-   if (was)
-      FVRefreshAll(sf);
-   if (was)
-      FVSetTitles(sf);
-   for (i = 0; i < sf->subfontcnt; ++i)
-      _SplineFontSetUnChanged(sf->subfonts[i]);
-}
-
-void SplineFontSetUnChanged(SplineFont * sf) {
-   int i;
-
-   if (sf->cidmaster != NULL)
-      sf = sf->cidmaster;
-   if (sf->mm != NULL)
-      sf = sf->mm->normal;
-   _SplineFontSetUnChanged(sf);
-   if (sf->mm != NULL)
-      for (i = 0; i < sf->mm->instance_count; ++i)
-	 _SplineFontSetUnChanged(sf->mm->instances[i]);
 }
 
 static char *scaleString(char *string, double scale) {
@@ -1511,9 +1415,6 @@ const char *realweights[] =
    "Fett", "Mager", "Mittel", "Buchschrift", NULL
 };
 static const char *moreweights[] = { "ExtraLight", "VeryLight", NULL };
-const char **noticeweights[] =
-   { moreweights, realweights, knownweights, NULL };
-
 static const char *modifierlist[] =
    { "Ital", "Obli", "Kursive", "Cursive", "Slanted",
    "Expa", "Cond", NULL
@@ -1591,96 +1492,6 @@ char *_GetModifiers(char *fontname, char *familyname, char *weight) {
 
 char *SFGetModifiers(SplineFont * sf) {
    return (_GetModifiers(sf->fontname, sf->familyname, sf->weight));
-}
-
-const unichar_t *_uGetModifiers(const unichar_t * fontname,
-				const unichar_t * familyname,
-				const unichar_t * weight) {
-   const unichar_t *pt, *fpt;
-   static unichar_t regular[] = { 'R', 'e', 'g', 'u', 'l', 'a', 'r', 0 };
-   static unichar_t space[20];
-
-   int i, j;
-
-   /* URW fontnames don't match the familyname */
-   /* "NimbusSanL-Regu" vs "Nimbus Sans L" (note "San" vs "Sans") */
-   /* so look for a '-' if there is one and use that as the break point... */
-
-   if ((fpt = u_strchr(fontname, '-')) != NULL) {
-      ++fpt;
-      if (*fpt == '\0')
-	 fpt = NULL;
-   } else if (familyname != NULL) {
-      for (pt = fontname, fpt = familyname; *fpt != '\0' && *pt != '\0';) {
-	 if (*fpt == *pt) {
-	    ++fpt;
-	    ++pt;
-	 } else if (*fpt == ' ')
-	    ++fpt;
-	 else if (*pt == ' ')
-	    ++pt;
-	 else if (*fpt == 'a' || *fpt == 'e' || *fpt == 'i' || *fpt == 'o'
-		  || *fpt == 'u')
-	    ++fpt;		/* allow vowels to be omitted from family when in fontname */
-	 else
-	    break;
-      }
-      if (*fpt == '\0' && *pt != '\0')
-	 fpt = pt;
-      else
-	 fpt = NULL;
-   }
-
-   if (fpt == NULL) {
-      for (i = 0; mods[i] != NULL; ++i)
-	 for (j = 0; mods[i][j] != NULL; ++j) {
-	    pt = uc_strstr(fontname, mods[i][j]);
-	    if (pt != NULL && (fpt == NULL || pt < fpt))
-	       fpt = pt;
-	 }
-   }
-
-   if (fpt != NULL) {
-      for (i = 0; mods[i] != NULL; ++i)
-	 for (j = 0; mods[i][j] != NULL; ++j) {
-	    if (uc_strcmp(fpt, mods[i][j]) == 0) {
-	       uc_strcpy(space, fullmods[i][j]);
-	       return (space);
-	    }
-	 }
-      if (uc_strcmp(fpt, "BoldItal") == 0) {
-	 uc_strcpy(space, "BoldItalic");
-	 return (space);
-      } else if (uc_strcmp(fpt, "BoldObli") == 0) {
-	 uc_strcpy(space, "BoldOblique");
-	 return (space);
-      }
-      return (fpt);
-   }
-
-   return (weight == NULL || *weight == '\0' ? regular : weight);
-}
-
-int SFIsDuplicatable(SplineFont * sf, SplineChar * sc) {
-   extern const int cns14pua[], amspua[];
-
-   const int *pua =
-      sf->uni_interp == ui_trad_chinese ? cns14pua : sf->uni_interp ==
-      ui_ams ? amspua : NULL;
-   int baseuni = 0;
-
-   const unichar_t *pt;
-
-   if (pua != NULL && sc->unicodeenc >= 0xe000 && sc->unicodeenc <= 0xf8ff)
-      baseuni = pua[sc->unicodeenc - 0xe000];
-   if (baseuni == 0
-       && (pt = SFGetAlternate(sf, sc->unicodeenc, sc, false)) != NULL
-       && pt[0] != '\0' && pt[1] == '\0')
-      baseuni = pt[0];
-   if (baseuni != 0 && SFGetChar(sf, baseuni, NULL) != NULL)
-      return (true);
-
-   return (false);
 }
 
 enum flatness { mt_flat, mt_round, mt_pointy, mt_unknown };
@@ -2157,146 +1968,6 @@ int SFPrivateGuess(SplineFont * sf, int layer, struct psdict *private,
    return (ret);
 }
 
-void SFRemoveLayer(SplineFont * sf, int l) {
-   int gid, i;
-
-   SplineChar *sc;
-
-   CharViewBase *cvs;
-
-   FontViewBase *fvs;
-
-   int layers, any_quads;
-
-   if (sf->subfontcnt != 0 || l <= ly_fore || sf->multilayer)
-      return;
-
-   for (layers = ly_fore, any_quads = 0; layers < sf->layer_cnt; ++layers) {
-      if (layers != l && sf->layers[layers].order2)
-	 any_quads = true;
-   }
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL) {
-	 LayerFreeContents(sc, l);
-	 for (i = l + 1; i < sc->layer_cnt; ++i)
-	    sc->layers[i - 1] = sc->layers[i];
-	 --sc->layer_cnt;
-	 for (cvs = sc->views; cvs != NULL; cvs = cvs->next) {
-	    if (cvs->layerheads[dm_back] - sc->layers >= sc->layer_cnt)
-	       cvs->layerheads[dm_back] = &sc->layers[ly_back];
-	    if (cvs->layerheads[dm_fore] - sc->layers >= sc->layer_cnt)
-	       cvs->layerheads[dm_fore] = &sc->layers[ly_fore];
-	 }
-	 if (!any_quads) {
-	    free(sc->ttf_instrs);
-	    sc->ttf_instrs = NULL;
-	    sc->ttf_instrs_len = 0;
-	 }
-      }
-
-   for (fvs = sf->fv; fvs != NULL; fvs = fvs->next) {
-      if (fvs->active_layer >= l) {
-	 --fvs->active_layer;
-	 if (fvs->active_layer + 1 == l)
-	    FontViewLayerChanged(fvs);
-      }
-   }
-   MVDestroyAll(sf);
-
-   free(sf->layers[l].name);
-   for (i = l + 1; i < sf->layer_cnt; ++i)
-      sf->layers[i - 1] = sf->layers[i];
-   --sf->layer_cnt;
-}
-
-void SFAddLayer(SplineFont * sf, char *name, int order2, int background) {
-   int gid, l;
-
-   SplineChar *sc;
-
-   CharViewBase *cvs;
-
-   if (sf->layer_cnt >= BACK_LAYER_MAX - 1) {
-      ff_post_error(_("Too many layers"),
-		    _("Attempt to have a font with more than %d layers"),
-		    BACK_LAYER_MAX);
-      return;
-   }
-   if (name == NULL || *name == '\0')
-      name = _("Back");
-
-   l = sf->layer_cnt;
-   ++sf->layer_cnt;
-   sf->layers = realloc(sf->layers, (l + 1) * sizeof(LayerInfo));
-   memset(&sf->layers[l], 0, sizeof(LayerInfo));
-   sf->layers[l].name = copy(name);
-   sf->layers[l].order2 = order2;
-   sf->layers[l].background = background;
-
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL) {
-	 Layer *old = sc->layers;
-
-	 sc->layers = realloc(sc->layers, (l + 1) * sizeof(Layer));
-	 memset(&sc->layers[l], 0, sizeof(Layer));
-	 LayerDefault(&sc->layers[l]);
-	 sc->layers[l].order2 = order2;
-	 sc->layers[l].background = background;
-	 ++sc->layer_cnt;
-	 for (cvs = sc->views; cvs != NULL; cvs = cvs->next) {
-	    cvs->layerheads[dm_back] =
-	       sc->layers + (cvs->layerheads[dm_back] - old);
-	    cvs->layerheads[dm_fore] =
-	       sc->layers + (cvs->layerheads[dm_fore] - old);
-	 }
-      }
-}
-
-void SFLayerSetBackground(SplineFont * sf, int layer, int is_back) {
-   int k, gid;
-
-   SplineFont *_sf;
-
-   SplineChar *sc;
-
-   sf->layers[layer].background = is_back;
-   k = 0;
-   do {
-      _sf = sf->subfontcnt == 0 ? sf : sf->subfonts[k];
-      for (gid = 0; gid < _sf->glyphcnt; ++gid)
-	 if ((sc = _sf->glyphs[gid]) != NULL) {
-	    sc->layers[layer].background = is_back;
-	    if (!is_back && sc->layers[layer].images != NULL) {
-	       ImageListsFree(sc->layers[layer].images);
-	       sc->layers[layer].images = NULL;
-	       SCCharChangedUpdate(sc, layer);
-	    }
-	 }
-      ++k;
-   } while (k < sf->subfontcnt);
-}
-
-void SPLFirstVisitorDebug(SplinePoint * splfirst, Spline * spline,
-			  void *udata) {
-   printf("   splfirst:%p spline:%p udata:%p\n", splfirst, spline, udata);
-}
-
-void SPLFirstVisitorDebugSelectionState(SplinePoint * splfirst,
-					Spline * spline, void *udata) {
-   printf("   splfirst:%p spline:%p udata:%p", splfirst, spline, udata);
-   printf("   from.selected:%d n:%d p:%d to.selected:%d n:%d p:%d\n",
-	  (spline->from ? spline->from->selected : -1),
-	  (spline->from ? spline->from->nextcpselected : -1),
-	  (spline->from ? spline->from->prevcpselected : -1),
-	  (spline->to ? spline->to->selected : -1),
-	  (spline->to ? spline->to->nextcpselected : -1),
-	  (spline->to ? spline->to->prevcpselected : -1)
-      );
-}
-
-
-
-
 void SPLFirstVisitSplines(SplinePoint * splfirst,
 			  SPLFirstVisitSplinesVisitor f, void *udata) {
    Spline *spline = 0;
@@ -2313,32 +1984,6 @@ void SPLFirstVisitSplines(SplinePoint * splfirst,
 
 	 // callback
 	 f(splfirst, spline, udata);
-
-	 if (first == NULL) {
-	    first = spline;
-	 }
-      }
-   }
-}
-
-void SPLFirstVisitPoints(SplinePoint * splfirst, SPLFirstVisitPointsVisitor f,
-			 void *udata) {
-   Spline *spline = 0;
-
-   Spline *first = 0;
-
-   Spline *next = 0;
-
-   if (splfirst != NULL) {
-      first = NULL;
-      for (spline = splfirst->next; spline != NULL && spline != first;
-	   spline = next) {
-	 next = spline->to->next;
-
-	 // callback
-	 if (splfirst && splfirst->next == spline)
-	    f(splfirst, spline, spline->from, udata);
-	 f(splfirst, spline, spline->to, udata);
 
 	 if (first == NULL) {
 	    first = spline;

@@ -370,7 +370,9 @@ AS_IF([test '!' "x$with_libpng" = xno],
 #
 AC_ARG_VAR([LIBREADLINE_CFLAGS],[C compiler flags for libreadline])
 AC_ARG_VAR([LIBREADLINE_LIBS],[linker flags for libreadline])
-AC_SEARCH_LIBS([rl_readline_version],[readline],[],[with_libreadline=no])
+AC_SEARCH_LIBS([rl_readline_version],[readline],
+  [AC_SEARCH_LIBS([tgetflag],[termcap],[],[])],
+  [with_libreadline=no],[-ltermcap])
 AM_CONDITIONAL([COND_LIBREADLINE],[test '!' "x$with_libreadline" = xno])
 AC_SUBST([LIBREADLINE_CFLAGS])
 AC_SUBST([LIBREADLINE_LIBS])

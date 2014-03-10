@@ -333,6 +333,16 @@ Subversion to Git is one-way.  Do not file tickets for FontAnvil on Github.
 
 \chapter{Running FontAnvil}
 
+FontAnvil is a script interpreter, so in normal operation it is assumed you
+already have a script file for it to interpret.  Scripts are written in the
+PE script language described elsewhere in this document.  Script files for
+FontAnvil are traditionally given the filename extension \texttt{.pe} (for
+``PfaEdit''); the extension \texttt{.ff} is also popular.  Invoking the
+FontAnvil interpreter then proceeds on more or less the same lines as
+invoking any other script interpreter.
+
+\section{Command-line options}
+
 \begin{framed}
 FontAnvil's command-line syntax attempts to achieve some degree of FontForge
 compatibility.  However, as of March~2014, FontForge contains at least six
@@ -344,6 +354,141 @@ settings, with operating system shebang support and whether stdin is a
 terminal or pipe, and so on.  FontAnvil does not attempt to match all of
 this behaviour exactly.
 \end{framed}
+
+
+
+FontAnvil uses GNU \texttt{getopt\_long\_only} to parse command-line
+arguments; this has the consequence that long options may be specified with
+\texttt{-} (one hyphen) or \texttt{-{}-} (two hyphens) as the flag sequence;
+using \texttt{-{}-} is the modern-day Unix convention, but \texttt{-} may be
+preferable for FontForge compatibility.  Short options require a single
+hyphen.  Options recognized are as follows.
+
+\begin{description}
+  \item[\texttt{-command} $\langle cmd\rangle$,
+    \texttt{-c} $\langle cmd\rangle$]
+  Execute a PE script command given literally on the command line.  FontAnvil
+  will \emph{not} look for a script file name on the command line if this
+  option is specified; all arguments starting with the first non-option
+  argument become arguments to the script.  Only the last invocation of this
+  option will be used; unlike, for instance, Perl, it is not possible to
+  build up a multi-line script by specifying \texttt{-c} multiple times.
+
+  \item[\texttt{-dry}, \texttt{-d}]
+  Activate a poorly-documented ``dry run mode'' built into some parts of
+  the FontForge PE script interpreter.  This appears to
+  be intended for syntax checking.  \emph{Most}, but not necessarily
+  \emph{all}, commands will be skipped.  \emph{I do not promise that new
+  code added in FontAnvil will necessarily respect this mode.}
+
+  \item[\texttt{-help}, \texttt{-usage}, \texttt{-h}]
+  Display a command-line option help message, and terminate without
+  executing a script.
+
+  \item[\texttt{-lang} $\langle cmd\rangle$,
+    \texttt{-l} $\langle cmd\rangle$]
+  Specify interpreter language.  If this option is given with the value
+  ``\texttt{ff}'' then it will be ignored for compatibility.  Any other
+  value is a fatal error.
+
+  \item[\texttt{-nosplash}, \texttt{-quiet}, \texttt{-script}, \texttt{-i}]
+  Ignored for compatibility.
+
+  \item[\texttt{-version}, \texttt{-v}]
+  Display a version and copyright banner, and terminate without executing a
+  script.
+
+  \item[\texttt{-{}-}]
+  Terminate option scanning.  All subsequent arguments will be treated as
+  ``non-option arguments'' (thus eligible to become script file names or
+  script arguments) even if they resemble FontAnvil options.  This would be
+  what you might use if for some reason you needed to execute a script file
+  that was named exactly ``\texttt{-script}.''
+\end{description}
+
+The first non-option command line argument will be taken as the filename of
+a script file to execute, unless the \texttt{-c} option or one of its
+synonyms has overridden this behaviour.  If the filename so specified is a
+single hyphen, or if there are no non-option command line arguments
+at all, then FontAnvil will enter \emph{interactive mode}, reading
+commands from standard input, as described later in this chapter.  Any
+command line arguments after any script filename will be passed
+into the script in the variables \texttt{\$1},
+\texttt{\$2}, and so on---even in the cases of \texttt{-c} and interactive
+mode.
+
+\begin{framed}
+Option scanning stops at the first non-option argument encountered, which
+will usually be treated as the script filename.  Any arguments after that
+become arguments to the script (passed in the variables \texttt{\$1},
+\texttt{\$2}, etc.) and not options for the FontAnvil interpreter.  For this
+reason, options \emph{must} precede the script file name on the FontAnvil
+command line.  For maximum compatibility, the \texttt{-script} option should
+be the last option if you use it at all, with the script file name in a
+separate argument, not attached using \texttt{=}.
+\end{framed}
+
+\section{Shebang}
+
+FontAnvil may be invoked using the shebang convention.  Place a line
+something like ``\texttt{\#!/usr/local/bin/fontanvil}'' at the top of a
+file, and make the file executable, to create a script that can be run like
+any other program and will automatically use FontAnvil as the interpreter.
+
+Details of shebang support vary depending on the operating system.  On most
+systems, the shebang line must specify an absolute path, and the
+\texttt{env} program may be used to search for a command name in the path to
+avoid hardcoding the absolute location of the interpreter into a script. 
+There are also special considerations applicable to the length of the
+interpreter path, arguments specified in the shebang line, and so on. 
+
+\emph{FontAnvil does not have any special support for shebang.}  In
+particular, it does not scan the script to look for its own name in the
+shebang line.  Since the shebang line by definition starts with the comment
+character \texttt{\#}, it will be skipped as a comment.  FontAnvil just
+takes the script file name as an argument from the operating system, and
+(assuming the script name does not happen to be something weird that looks
+like an option) executes it, with any remaining arguments becoming arguments
+to the script.  This is normally the desired behaviour.  However, be aware
+that it is a technical difference from FontForge, which attempts to
+determine whether it was invoked via the shebang mechanism and do smart
+things depending the answer, including working around operating systems that
+support this feature only poorly.  FontForge may possibly \emph{require}
+options in the shebang line in at least some cases, to select which
+scripting language it will use.
+
+If you try to specify command-line options in the shebang line, then
+depending on your operating system's support it is possible that FontAnvil
+will not see the options even though FontForge would.  Some operating
+systems have unintuitive behaviour regarding options specified in the
+shebang line; for instance, combining all options into a single string
+passed as one argument instead of splitting them on spaces.  For this
+reason, authorities on Unix often recommend against using options in the
+shebang line at all; nonetheless, people continue doing it.
+
+For maximum compatibility with both interpreters, I suggest writing shebang
+lines in PE script files as you would write them for FontForge (including
+mentioning the filename ``\texttt{fontforge}''), and then invoking FontAnvil
+on the files by other means when desired.  That way, FontForge will see the
+interpreter name and any options it wants, and FontAnvil will ignore them.
+
+\section{Interactive mode and readline}
+
+FontAnvil is intended primarily for non-interactive use.  However, if it is
+invoked without a script file name, or with ``\texttt{-}'' (a single hyphen)
+as the script file name, then it will enter a special \emph{interactive
+mode}, where it reads commands from standard input and executes them
+immediately, line by line, rather than reading from a script file.  This can
+be convenient for one-off editing tasks and testing the syntax and behaviour
+of script commands.
+
+If FontAnvil was compiled with the GNU Readline library and detects that
+standard input is a terminal, then interactive mode will also offer
+command-line editing and history using Readline.  The usual Readline
+keystrokes (such as up and down arrows to recall earlier-typed command
+lines) become available in this mode, and there are some minor changes to
+the output formatting (in particular, the display of a command prompt) to
+make it friendlier for interactive users.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

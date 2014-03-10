@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splinefont.h 2938 2014-03-10 18:51:22Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
 #   define _SPLINEFONT_H
 
 #   include <basics.h>
-#   include <dlist.h>
 #   include "configure-fontanvil.h"
 #   ifdef HAVE_ICONV_H
 #      include <iconv.h>
@@ -977,7 +976,7 @@ enum sfundotype {
  * which changed when the undo was created.
  */
 typedef struct sfundoes {
-   struct dlistnode ln;
+//   struct dlistnode ln;
    char *msg;
    enum sfundotype type;
    union {
@@ -2568,7 +2567,7 @@ extern void MathKernFree(struct mathkern *mk);
 
 extern struct mathkern *MathKernCopy(struct mathkern *mk);
 
-extern void SplineCharListsFree(struct splinecharlist *dlist);
+// extern void SplineCharListsFree(struct splinecharlist *dlist);
 
 extern void LayerFreeContents(SplineChar * sc, int layer);
 

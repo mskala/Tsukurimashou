@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 2932 2014-03-09 15:26:10Z mskala $ */
+/* $Id: cvundoes.c 2934 2014-03-10 16:58:02Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -641,53 +641,6 @@ Undoes *SCPreserveHints(SplineChar * sc, int layer) {
    return (NULL);
 }
 
-/* This routine allows for undoes in scripting -- under controlled conditions */
-Undoes *_SCPreserveLayer(SplineChar * sc, int layer, int dohints) {
-   Undoes *undo;
-
-   if (maxundoes == 0)
-      return (NULL);
-
-   if (layer == ly_grid)
-      layer = ly_fore;
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->undotype = ut_state;
-   undo->was_modified = sc->changed;
-   undo->was_order2 = sc->layers[layer].order2;
-   undo->u.state.width = sc->width;
-   undo->u.state.vwidth = sc->vwidth;
-   undo->u.state.splines = SplinePointListCopy(sc->layers[layer].splines);
-   undo->u.state.refs = RefCharsCopyState(sc, layer);
-   if (layer == ly_fore) {
-      undo->u.state.anchor = AnchorPointsCopy(sc->anchor);
-   }
-   if (dohints) {
-      undo->undotype = ut_statehint;
-      undo->u.state.hints = UHintCopy(sc, true);
-      undo->u.state.instrs =
-	 (uint8 *) copyn((char *) sc->ttf_instrs, sc->ttf_instrs_len);
-      undo->u.state.instrs_len = sc->ttf_instrs_len;
-      if (dohints == 2) {
-	 undo->undotype = ut_statename;
-	 undo->u.state.unicodeenc = sc->unicodeenc;
-	 undo->u.state.charname = copy(sc->name);
-	 undo->u.state.comment = copy(sc->comment);
-	 undo->u.state.possub = PSTCopy(sc->possub, sc, NULL);
-      }
-   }
-   undo->u.state.images = ImageListCopy(sc->layers[layer].images);
-   BrushCopy(&undo->u.state.fill_brush, &sc->layers[layer].fill_brush, NULL);
-   PenCopy(&undo->u.state.stroke_pen, &sc->layers[layer].stroke_pen, NULL);
-   undo->u.state.dofill = sc->layers[layer].dofill;
-   undo->u.state.dostroke = sc->layers[layer].dostroke;
-   undo->u.state.fillfirst = sc->layers[layer].fillfirst;
-   undo->copied_from = sc->parent;
-   return (AddUndo
-	   (undo, &sc->layers[layer].undoes, &sc->layers[layer].redoes));
-}
-
 /* This routine does not allow for undoes in scripting */
 Undoes *SCPreserveLayer(SplineChar * sc, int layer, int dohints) {
 
@@ -712,25 +665,6 @@ Undoes *SCPreserveBackground(SplineChar * sc) {
    return (SCPreserveLayer(sc, ly_back, false));
 }
 
-Undoes *_SFPreserveGuide(SplineFont * sf) {
-   Undoes *undo;
-
-   undo = chunkalloc(sizeof(Undoes));
-
-   undo->undotype = ut_state;
-   undo->was_modified = sf->changed;
-   undo->was_order2 = sf->grid.order2;
-   undo->u.state.splines = SplinePointListCopy(sf->grid.splines);
-   undo->u.state.images = ImageListCopy(sf->grid.images);
-   undo->u.state.fill_brush = sf->grid.fill_brush;
-   undo->u.state.stroke_pen = sf->grid.stroke_pen;
-   undo->u.state.dofill = sf->grid.dofill;
-   undo->u.state.dostroke = sf->grid.dostroke;
-   undo->u.state.fillfirst = sf->grid.fillfirst;
-   undo->copied_from = sf;
-   return (AddUndo(undo, &sf->grid.undoes, &sf->grid.redoes));
-}
-
 Undoes *SFPreserveGuide(SplineFont * sf) {
       return (NULL);
 }
@@ -741,36 +675,6 @@ void SCUndoSetLBearingChange(SplineChar * sc, int lbc) {
    if (undo == NULL || undo->undotype != ut_state)
       return;
    undo->u.state.lbearingchange = lbc;
-}
-
-Undoes *_CVPreserveTState(CharViewBase * cv, PressedOn * p) {
-   Undoes *undo;
-
-   RefChar *refs, *urefs;
-
-   int was0 = false, j;
-
-   if (maxundoes == 0) {
-      was0 = true;
-      maxundoes = 1;
-   }
-
-   undo = CVPreserveState(cv);
-   if (!p->transany || p->transanyrefs) {
-      for (refs = cv->layerheads[cv->drawmode]->refs, urefs =
-	   undo->u.state.refs; urefs != NULL;
-	   refs = refs->next, urefs = urefs->next)
-	 if (!p->transany || refs->selected)
-	    for (j = 0; j < urefs->layer_cnt; ++j)
-	       urefs->layers[j].splines =
-		  SplinePointListCopy(refs->layers[j].splines);
-   }
-   undo->undotype = ut_tstate;
-
-   if (was0)
-      maxundoes = 0;
-
-   return (undo);
 }
 
 Undoes *SCPreserveWidth(SplineChar * sc) {
@@ -923,80 +827,6 @@ void SCDoUndo(SplineChar * sc, int layer) {
    return;
 }
 
-void SCDoRedo(SplineChar * sc, int layer) {
-   Undoes *undo = sc->layers[layer].redoes;
-
-   if (undo == NULL)		/* Shouldn't happen */
-      return;
-   sc->layers[layer].redoes = undo->next;
-   undo->next = NULL;
-   SCUndoAct(sc, layer, undo);
-   undo->next = sc->layers[layer].undoes;
-   sc->layers[layer].undoes = undo;
-   SCCharChangedUpdate(sc, layer);
-   return;
-}
-
-/* Used when doing incremental transformations. If I just keep doing increments*/
-/*  then rounding errors will mount. Instead I go back to the original state */
-/*  each time */
-void _CVRestoreTOriginalState(CharViewBase * cv, PressedOn * p) {
-   Undoes *undo = cv->layerheads[cv->drawmode]->undoes;
-
-   RefChar *ref, *uref;
-
-   ImageList *img, *uimg;
-
-   int j;
-
-   SplinePointListSet(cv->layerheads[cv->drawmode]->splines,
-		      undo->u.state.splines);
-   if (!p->anysel || p->transanyrefs) {
-      for (ref = cv->layerheads[cv->drawmode]->refs, uref =
-	   undo->u.state.refs; uref != NULL;
-	   ref = ref->next, uref = uref->next)
-	 for (j = 0; j < uref->layer_cnt; ++j)
-	    if (uref->layers[j].splines != NULL) {
-	       SplinePointListSet(ref->layers[j].splines,
-				  uref->layers[j].splines);
-	       memcpy(&ref->transform, &uref->transform,
-		      sizeof(ref->transform));
-	    }
-   }
-   for (img = cv->layerheads[cv->drawmode]->images, uimg =
-	undo->u.state.images; uimg != NULL;
-	img = img->next, uimg = uimg->next) {
-      img->xoff = uimg->xoff;
-      img->yoff = uimg->yoff;
-      img->xscale = uimg->xscale;
-      img->yscale = uimg->yscale;
-   }
-}
-
-void _CVUndoCleanup(CharViewBase * cv, PressedOn * p) {
-   Undoes *undo = cv->layerheads[cv->drawmode]->undoes;
-
-   RefChar *uref;
-
-   if (!p->anysel || p->transanyrefs) {
-      for (uref = undo->u.state.refs; uref != NULL; uref = uref->next) {
-	 int i;
-
-	 for (i = 0; i < uref->layer_cnt; ++i) {
-	    SplinePointListsFree(uref->layers[i].splines);
-	    GradientFree(uref->layers[i].fill_brush.gradient);
-	    PatternFree(uref->layers[i].fill_brush.pattern);
-	    GradientFree(uref->layers[i].stroke_pen.brush.gradient);
-	    PatternFree(uref->layers[i].stroke_pen.brush.pattern);
-	 }
-	 free(uref->layers);
-	 uref->layers = NULL;
-	 uref->layer_cnt = 0;
-      }
-   }
-   undo->undotype = ut_state;
-}
-
 static void BCUndoAct(BDFChar * bc, Undoes * undo) {
    uint8 *b;
 
@@ -1052,34 +882,6 @@ static void BCUndoAct(BDFChar * bc, Undoes * undo) {
 	IError("Unknown undo type in BCUndoAct: %d", undo->undotype);
 	break;
    }
-}
-
-void BCDoUndo(BDFChar * bc) {
-   Undoes *undo = bc->undoes;
-
-   if (undo == NULL)		/* Shouldn't happen */
-      return;
-   bc->undoes = undo->next;
-   undo->next = NULL;
-   BCUndoAct(bc, undo);
-   undo->next = bc->redoes;
-   bc->redoes = undo;
-   BCCharChangedUpdate(bc);
-   return;
-}
-
-void BCDoRedo(BDFChar * bc) {
-   Undoes *undo = bc->redoes;
-
-   if (undo == NULL)		/* Shouldn't happen */
-      return;
-   bc->redoes = undo->next;
-   undo->next = NULL;
-   BCUndoAct(bc, undo);
-   undo->next = bc->undoes;
-   bc->undoes = undo;
-   BCCharChangedUpdate(bc);
-   return;
 }
 
 /* **************************** Cut, Copy & Paste *************************** */
@@ -1543,58 +1345,6 @@ static void XClipCheckEps(void) {
       return;
 }
 
-void ClipboardClear(void) {
-   CopyBufferFree();
-}
-
-enum undotype CopyUndoType(void) {
-   Undoes *paster;
-
-   paster = &copybuffer;
-   while (paster->undotype == ut_composit || paster->undotype == ut_multiple) {
-      if (paster->undotype == ut_multiple)
-	 paster = paster->u.multiple.mult;
-      else if (paster->u.composit.state == NULL)
-	 return (ut_none);
-      else
-	 paster = paster->u.composit.state;
-   }
-   return (paster->undotype);
-}
-
-int CopyContainsSomething(void) {
-   Undoes *cur = &copybuffer;
-
-   if (cur->undotype == ut_multiple)
-      cur = cur->u.multiple.mult;
-   if (cur->undotype == ut_composit)
-      return (cur->u.composit.state != NULL);
-
-   if (cur->undotype == ut_statelookup && cur->copied_from == NULL)
-      return (false);		/* That is, if the source font has been closed, we can't use this any more */
-
-   return (cur->undotype == ut_state || cur->undotype == ut_tstate ||
-	   cur->undotype == ut_statehint || cur->undotype == ut_statename ||
-	   cur->undotype == ut_statelookup ||
-	   cur->undotype == ut_width || cur->undotype == ut_vwidth ||
-	   cur->undotype == ut_lbearing || cur->undotype == ut_rbearing ||
-	   cur->undotype == ut_hints ||
-	   cur->undotype == ut_bitmap || cur->undotype == ut_bitmapsel ||
-	   cur->undotype == ut_anchors || cur->undotype == ut_noop);
-}
-
-int CopyContainsBitmap(void) {
-   Undoes *cur = &copybuffer;
-
-   if (cur->undotype == ut_multiple)
-      cur = cur->u.multiple.mult;
-   if (cur->undotype == ut_composit)
-      return (cur->u.composit.bitmaps != NULL);
-
-   return (cur->undotype == ut_bitmap || cur->undotype == ut_bitmapsel
-	   || cur->undotype == ut_noop);
-}
-
 int CopyContainsVectors(void) {
    Undoes *cur = &copybuffer;
 
@@ -1680,108 +1430,6 @@ int getAdobeEnc(char *name) {
    if (i == 256)
       i = -1;
    return (i);
-}
-
-void CopyReference(SplineChar * sc) {
-   RefChar *ref;
-
-   CopyBufferFreeGrab();
-
-   copybuffer.undotype = ut_state;
-   copybuffer.was_order2 = sc->layers[ly_fore].order2;	/* Largely irrelevant */
-   copybuffer.u.state.width = sc->width;
-   copybuffer.u.state.vwidth = sc->vwidth;
-   copybuffer.u.state.refs = ref = RefCharCreate();
-   copybuffer.copied_from = sc->parent;
-   if (ly_fore < sc->layer_cnt) {
-      BrushCopy(&copybuffer.u.state.fill_brush,
-		&sc->layers[ly_fore].fill_brush, NULL);
-      PenCopy(&copybuffer.u.state.stroke_pen, &sc->layers[ly_fore].stroke_pen,
-	      NULL);
-      copybuffer.u.state.dofill = sc->layers[ly_fore].dofill;
-      copybuffer.u.state.dostroke = sc->layers[ly_fore].dostroke;
-      copybuffer.u.state.fillfirst = sc->layers[ly_fore].fillfirst;
-   }
-   ref->unicode_enc = sc->unicodeenc;
-   ref->orig_pos = sc->orig_pos;
-   ref->adobe_enc = getAdobeEnc(sc->name);
-   ref->transform[0] = ref->transform[3] = 1.0;
-
-   XClipCheckEps();
-}
-
-void SCCopyLookupData(SplineChar * sc) {
-   CopyReference(sc);
-   copybuffer.undotype = ut_statelookup;
-}
-
-void CopySelected(CharViewBase * cv, int doanchors) {
-
-   CopyBufferFreeGrab();
-
-   copybuffer.undotype = ut_state;
-   copybuffer.was_order2 = cv->layerheads[cv->drawmode]->order2;
-   copybuffer.u.state.width = cv->sc->width;
-   copybuffer.u.state.vwidth = cv->sc->vwidth;
-   if (cv->sc->inspiro && hasspiro())
-      copybuffer.u.state.splines =
-	 SplinePointListCopySpiroSelected(cv->layerheads[cv->drawmode]->
-					  splines);
-   else
-      copybuffer.u.state.splines =
-	 SplinePointListCopySelected(cv->layerheads[cv->drawmode]->splines);
-   if (cv->drawmode != dm_grid) {
-      RefChar *refs, *new;
-
-      for (refs = cv->layerheads[cv->drawmode]->refs; refs != NULL;
-	   refs = refs->next)
-	 if (refs->selected) {
-	    new = RefCharCreate();
-	    free(new->layers);
-	    *new = *refs;
-	    new->layers = NULL;
-	    new->layer_cnt = 0;
-	    new->orig_pos = new->sc->orig_pos;
-	    new->sc = NULL;
-	    new->next = copybuffer.u.state.refs;
-	    copybuffer.u.state.refs = new;
-	 }
-      if (doanchors) {
-	 AnchorPoint *ap, *new;
-
-	 for (ap = cv->sc->anchor; ap != NULL; ap = ap->next)
-	    if (ap->selected) {
-	       new = chunkalloc(sizeof(AnchorPoint));
-	       *new = *ap;
-	       new->next = copybuffer.u.state.anchor;
-	       copybuffer.u.state.anchor = new;
-	    }
-      }
-   }
-   if (cv->drawmode != dm_grid && CVLayer(cv) != ly_fore) {
-      ImageList *imgs, *new;
-
-      for (imgs = cv->layerheads[cv->drawmode]->images; imgs != NULL;
-	   imgs = imgs->next)
-	 if (imgs->selected) {
-	    new = chunkalloc(sizeof(ImageList));
-	    *new = *imgs;
-	    new->next = copybuffer.u.state.images;
-	    copybuffer.u.state.images = new;
-	 }
-   }
-   if (cv->drawmode == dm_fore || cv->drawmode == dm_back) {
-      BrushCopy(&copybuffer.u.state.fill_brush,
-		&cv->layerheads[cv->drawmode]->fill_brush, NULL);
-      PenCopy(&copybuffer.u.state.stroke_pen,
-	      &cv->layerheads[cv->drawmode]->stroke_pen, NULL);
-      copybuffer.u.state.dofill = cv->layerheads[cv->drawmode]->dofill;
-      copybuffer.u.state.dostroke = cv->layerheads[cv->drawmode]->dostroke;
-      copybuffer.u.state.fillfirst = cv->layerheads[cv->drawmode]->fillfirst;
-   }
-   copybuffer.copied_from = cv->sc->parent;
-
-   XClipCheckEps();
 }
 
 static Undoes *SCCopyAllLayer(SplineChar * sc, enum fvcopy_type full,
@@ -1878,35 +1526,6 @@ static Undoes *SCCopyAll(SplineChar * sc, int layer, enum fvcopy_type full) {
       return (ret);
    } else
       return (SCCopyAllLayer(sc, full, layer));
-}
-
-void SCCopyWidth(SplineChar * sc, enum undotype ut) {
-   DBounds bb;
-
-   CopyBufferFreeGrab();
-
-   copybuffer.undotype = ut;
-   copybuffer.copied_from = sc->parent;
-   switch (ut) {
-     case ut_width:
-	copybuffer.u.width = sc->width;
-	break;
-     case ut_vwidth:
-	copybuffer.u.width = sc->width;
-	break;
-     case ut_lbearing:
-	SplineCharFindBounds(sc, &bb);
-	copybuffer.u.lbearing = bb.minx;
-	break;
-     case ut_rbearing:
-	SplineCharFindBounds(sc, &bb);
-	copybuffer.u.rbearing = sc->width - bb.maxx;
-	break;
-   }
-}
-
-void CopyWidth(CharViewBase * cv, enum undotype ut) {
-   SCCopyWidth(cv->sc, ut);
 }
 
 static SplineChar *FindCharacter(SplineFont * into, SplineFont * from,
@@ -2971,43 +2590,6 @@ static OTLookup **GetLookupsToCopy(SplineFont * sf, OTLookup *** backpairlist,
    return (list);
 }
 
-SplineSet *ClipBoardToSplineSet(void) {
-   Undoes *paster = &copybuffer;
-
-   while (paster != NULL) {
-      switch (paster->undotype) {
-	default:
-	case ut_noop:
-	case ut_none:
-	   return (NULL);
-	   break;
-	case ut_state:
-	case ut_statehint:
-	case ut_statename:
-	   if (paster->u.state.refs != NULL)
-	      return (NULL);
-
-	   return (paster->u.state.splines);
-	   break;
-	case ut_width:
-	   return (NULL);
-	case ut_vwidth:
-	   return (NULL);
-	case ut_rbearing:
-	   return (NULL);
-	case ut_lbearing:
-	   return (NULL);
-	case ut_composit:
-	   paster = paster->u.composit.state;
-	   break;
-	case ut_multiple:
-	   paster = paster->u.multiple.mult;
-	   break;
-      }
-   }
-   return (NULL);
-}
-
 static Undoes *BCCopyAll(BDFChar * bc, int pixelsize, int depth,
 			 enum fvcopy_type full) {
    Undoes *cur;
@@ -3134,10 +2716,6 @@ static void _PasteToBC(BDFChar * bc, int pixelsize, int depth,
    }
 }
 
-void PasteToBC(BDFChar * bc, int pixelsize, int depth) {
-   _PasteToBC(bc, pixelsize, depth, &copybuffer, false);
-}
-
 void FVCopyAnchors(FontViewBase * fv) {
    Undoes *head = NULL, *last = NULL, *cur;
 
@@ -3245,55 +2823,6 @@ void FVCopy(FontViewBase * fv, enum fvcopy_type fullcopy) {
    copybuffer.undotype = ut_multiple;
    copybuffer.u.multiple.mult = head;
    copybuffer.copied_from = fv->sf;
-
-   XClipCheckEps();
-}
-
-void MVCopyChar(FontViewBase * fv, BDFFont * mvbdf, SplineChar * sc,
-		enum fvcopy_type fullcopy) {
-   BDFFont *bdf;
-
-   Undoes *cur = NULL;
-
-   Undoes *bhead = NULL, *blast = NULL, *bcur;
-
-   Undoes *state;
-
-   extern int onlycopydisplayed;
-
-   if ((onlycopydisplayed && mvbdf == NULL) || fullcopy == ct_lookups) {
-      cur = SCCopyAll(sc, fv->active_layer, fullcopy);
-   } else if (onlycopydisplayed) {
-      cur =
-	 BCCopyAll(BDFMakeGID(mvbdf, sc->orig_pos), mvbdf->pixelsize,
-		   BDFDepth(mvbdf), fullcopy);
-   } else {
-      state = SCCopyAll(sc, fv->active_layer, fullcopy);
-      bhead = NULL;
-      for (bdf = fv->sf->bitmaps; bdf != NULL; bdf = bdf->next) {
-	 bcur =
-	    BCCopyAll(BDFMakeGID(bdf, sc->orig_pos), bdf->pixelsize,
-		      BDFDepth(bdf), fullcopy);
-	 if (bhead == NULL)
-	    bhead = bcur;
-	 else
-	    blast->next = bcur;
-	 blast = bcur;
-      }
-      if (bhead != NULL || state != NULL) {
-	 cur = chunkalloc(sizeof(Undoes));
-	 cur->undotype = ut_composit;
-	 cur->u.composit.state = state;
-	 cur->u.composit.bitmaps = bhead;
-      } else
-	 cur = NULL;
-   }
-
-   if (cur == NULL)
-      return;
-   CopyBufferFreeGrab();
-   copybuffer.undotype = ut_multiple;
-   copybuffer.u.multiple.mult = cur;
 
    XClipCheckEps();
 }
@@ -3579,98 +3108,6 @@ void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]) {
    SFFinishMergeContext(&mc);
    free(list);
    free(backpairlist);
-}
-
-void PasteIntoMV(FontViewBase * fv, BDFFont * mvbdf, SplineChar * sc,
-		 int doclear) {
-   Undoes *cur = NULL, *bmp;
-
-   BDFFont *bdf;
-
-   int yestoall = 0, first = true;
-
-   extern int onlycopydisplayed;
-
-   struct sfmergecontext mc;
-
-   int refstate = 0, already_complained = 0;
-
-   memset(&mc, 0, sizeof(mc));
-   mc.sf_to = fv->sf;
-
-   cur = &copybuffer;
-
-   if (copybuffer.undotype == ut_none) {
-      SCCheckXClipboard(sc, ly_fore, doclear);
-      return;
-   }
-
-   if (cur->undotype == ut_multiple)
-      cur = cur->u.multiple.mult;
-   switch (cur->undotype) {
-     case ut_noop:
-	break;
-     case ut_state:
-     case ut_width:
-     case ut_vwidth:
-     case ut_lbearing:
-     case ut_rbearing:
-     case ut_statehint:
-     case ut_statename:
-	if (!fv->sf->hasvmetrics && cur->undotype == ut_vwidth) {
-	   ff_post_error(_("No Vertical Metrics"),
-			 _
-			 ("This font does not have vertical metrics enabled.\nUse Element->Font Info to enable them."));
-	   return;
-	}
-	PasteToSC(sc, fv->active_layer, cur, fv, !doclear, NULL, &mc,
-		  &refstate, &already_complained);
-	break;
-     case ut_bitmapsel:
-     case ut_bitmap:
-	if (onlycopydisplayed && mvbdf != NULL)
-	   _PasteToBC(BDFMakeChar
-		      (mvbdf, fv->map, fv->map->backmap[sc->orig_pos]),
-		      mvbdf->pixelsize, BDFDepth(mvbdf), cur, doclear);
-	else {
-	   for (bdf = fv->sf->bitmaps; bdf != NULL &&
-		(bdf->pixelsize != cur->u.bmpstate.pixelsize
-		 || BDFDepth(bdf) != cur->u.bmpstate.depth); bdf = bdf->next);
-	   if (bdf == NULL) {
-	      bdf =
-		 BitmapCreateCheck(fv, &yestoall, first,
-				   cur->u.bmpstate.pixelsize,
-				   cur->u.bmpstate.depth);
-	      first = false;
-	   }
-	   if (bdf != NULL)
-	      _PasteToBC(BDFMakeChar
-			 (bdf, fv->map, fv->map->backmap[sc->orig_pos]),
-			 bdf->pixelsize, BDFDepth(bdf), cur, doclear);
-	}
-	break;
-     case ut_composit:
-	if (cur->u.composit.state != NULL)
-	   PasteToSC(sc, fv->active_layer, cur->u.composit.state, fv,
-		     !doclear, NULL, &mc, &refstate, &already_complained);
-	for (bmp = cur->u.composit.bitmaps; bmp != NULL; bmp = bmp->next) {
-	   for (bdf = fv->sf->bitmaps; bdf != NULL &&
-		(bdf->pixelsize != bmp->u.bmpstate.pixelsize
-		 || BDFDepth(bdf) != bmp->u.bmpstate.depth); bdf = bdf->next);
-	   if (bdf == NULL)
-	      bdf =
-		 BitmapCreateCheck(fv, &yestoall, first,
-				   bmp->u.bmpstate.pixelsize,
-				   bmp->u.bmpstate.depth);
-	   if (bdf != NULL)
-	      _PasteToBC(BDFMakeChar
-			 (bdf, fv->map, fv->map->backmap[sc->orig_pos]),
-			 bdf->pixelsize, BDFDepth(bdf), bmp, doclear);
-	}
-	first = false;
-	break;
-   }
-   SFFinishMergeContext(&mc);
 }
 
 /* Look through the copy buffer. If it wasn't copied from the given font, then */

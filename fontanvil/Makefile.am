@@ -129,7 +129,7 @@ noinst_HEADERS = \
   inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
   inc/gimage.h \
   inc/gresource.h inc/gwidget.h inc/gwwiconv.h inc/intl.h inc/ustring.h \
-  inc/utype.h inc/dlist.h inc/gnetwork.h \
+  inc/utype.h \
   fontanvil/sftextfieldP.h \
   fontanvil/configure-fontanvil.h fontanvil/views.h fontanvil/is_LIGATURE.h \
   fontanvil/flaglist.h fontanvil/strlist.h fontanvil/charview_private.h \
@@ -207,14 +207,14 @@ Unicode_libgunicode_a_SOURCES = \
   Unicode/utype.c Unicode/gwwiconv.c Unicode/combiners.h
 
 gutils_libgutils_a_SOURCES = \
-  gutils/dlist.c gutils/fsys.c gutils/gcol.c gutils/gimage.c \
+  gutils/fsys.c gutils/gimage.c \
   gutils/gimagebmpP.h gutils/gimageread.c gutils/gimagereadbmp.c gutils/gimagereadgif.c \
   gutils/gimagereadjpeg.c gutils/gimagereadpng.c gutils/gimagereadras.c \
   gutils/gimagereadrgb.c gutils/gimagereadtiff.c gutils/gimagereadxbm.c \
   gutils/gimagereadxpm.c gutils/gimagewritebmp.c gutils/gimagewritegimage.c \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
-  gutils/gimagewritexpm.c gutils/giofile.c gutils/giohosts.c gutils/giomime.c \
-  gutils/giothread.c gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gnetwork.c gutils/gutils.c \
+  gutils/gimagewritexpm.c gutils/giohosts.c gutils/giomime.c \
+  gutils/giothread.c gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gutils.c \
   gutils/gwwintl.c gutils/prefs.c gutils/prefs.h gutils/unicodelibinfo.c inc/unicodelibinfo.h \
   gutils/gioftpP.h
 gutils_libgutils_a_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
