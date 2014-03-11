@@ -1,4 +1,4 @@
-/* $Id: start.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: start.c 2946 2014-03-11 19:55:39Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -94,23 +94,4 @@ void InitSimpleStuff(void) {
    inituninameannot();		/* Note: unicodenames done after locales set */
 
    SetDefaults();
-}
-
-void doinitFontAnvilMain(void) {
-   static int inited = false;
-
-   if (inited)
-      return;
-   InitSimpleStuff();
-   if (default_encoding == NULL)
-      default_encoding = FindOrMakeEncoding("ISO8859-1");
-   if (default_encoding == NULL)
-      default_encoding = &custom;	/* In case iconv is broken */
-   inited = true;
-}
-
-void doversion(const char *source_version_str) {
-   if (source_version_str != NULL)
-      printf("fontanvil %s\n", source_version_str);
-   exit(0);
 }

@@ -1,4 +1,4 @@
-/* $Id: sfd.c 2936 2014-03-10 18:14:07Z mskala $ */
+/* $Id: sfd.c 2946 2014-03-11 19:55:39Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -541,8 +541,11 @@ static void SFDDumpSplineSet(FILE * sfd, SplineSet * spl) {
 	    }
 	 }
 	 putc('\n', sfd);
-	 if (sp->name != NULL)
-	    fprintf(sfd, "NamedP: %s\n", sp->name);
+	 if (sp->name!=NULL) {
+	    fputs("NamedP: ", sfd);
+	    SFDDumpUTF7Str(sfd, sp->name);
+	    putc('\n', sfd);
+	 }
 	 if (sp == first)
 	    break;
 	 if (first == NULL)

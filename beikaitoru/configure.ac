@@ -208,7 +208,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([subfont.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
+AC_REVISION([$Id: configure.ac 2945 2014-03-11 19:14:11Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2013 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -302,9 +302,9 @@ AS_IF([test "x$enable_silent_rules" = "x"],
    AM_DEFAULT_VERBOSITY=0])
 #
 AC_MSG_CHECKING([whether FontAnvil accepts AddExtrema(1)])
-echo '#!/usr/local/bin/fontanvil' > ffaetest.pe
+echo '#!/usr/local/bin/fontforge' > ffaetest.pe
 echo 'New();AddExtrema(1);' >> ffaetest.pe
-AS_IF([$FONTANVIL ffaetest.pe >& /dev/null],
+AS_IF([$FONTANVIL -script ffaetest.pe >& /dev/null],
   [ae_arg_okay=yes],[ae_arg_okay=no])
 rm ffaetest.pe
 AC_SUBST([ae_arg_okay])

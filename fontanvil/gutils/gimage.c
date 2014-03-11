@@ -1,4 +1,4 @@
-/* $Id: gimage.c 2937 2014-03-10 18:31:50Z mskala $ */
+/* $Id: gimage.c 2942 2014-03-10 22:57:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -125,6 +125,45 @@ void GImageDestroy(GImage * gi) {
       free(gi);
    }
 }
+
+GImage *GImageCreateAnimation(GImage ** images, int n) {
+   /* Create an animation using n "images". Return gi and free "images" if*/
+   /* okay, else return NULL and keep "images" if memory error occurred,*/
+   GImage *gi;
+   struct _GImage **imgs;
+   int i;
+   
+   /* Check if "images" are okay to copy before creating an animation. */
+   /* We expect to find single images (not an array). Type must match. */
+   for (i = 0; i < n; ++i) {
+      if (images[i]->list_len != 0 ||
+	  images[i]->u.image->image_type != images[0]->u.image->image_type) {
+	 fprintf(stderr, "Images are not compatible to make an Animation\n");
+	 return (NULL);
+      }
+   }
+   
+   /* First, create enough memory space to hold the complete animation */
+   gi = (GImage *) calloc(1, sizeof(GImage));
+   imgs = (struct _GImage **) malloc(n * sizeof(struct _GImage *));
+   if (gi == NULL || imgs == NULL) {
+      free(gi);
+      free(imgs);
+      NoMoreMemMessage();
+      return (NULL);
+   }
+   
+   /* Copy images[i] pointer into 'gi', then release each "images[i]". */
+   gi->list_len = n;
+   gi->u.images = imgs;
+   for (i = 0; i < n; ++i) {
+      imgs[i] = images[i]->u.image;
+      free(images[i]);
+   }
+   return (gi);
+   
+}
+
 
 void GImageDrawRect(GImage * img, GRect * r, Color col) {
    struct _GImage *base;

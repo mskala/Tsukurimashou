@@ -1,4 +1,4 @@
-#!/usr/local/bin/fontanvil
+#!/usr/local/bin/fontforge
 
 #
 # Make PNG files of glyphs in a font

@@ -37,7 +37,7 @@ $prefix=~s!/tools/make-ass$!!;
 
 $cpynotice=~s/script generator/script/;
 print <<EOF.$cpynotice;
-#!/usr/local/bin/fontanvil
+#!/usr/local/bin/fontforge
 
 #
 # This is a GENERATED FILE.

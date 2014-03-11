@@ -1,4 +1,4 @@
-#!/usr/local/bin/fontanvil
+#!/usr/local/bin/fontforge
 
 # Script to apply glyph bearings
 # Copyright (C) 2011, 2012  Matthew Skala

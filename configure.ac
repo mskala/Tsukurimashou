@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
+AC_REVISION([$Id: configure.ac 2945 2014-03-11 19:14:11Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
 AC_SUBST([release_date],["August 26, 2013"])
 AM_SILENT_RULES
@@ -650,9 +650,9 @@ AS_IF([test "x$PERL" = "x" || test "x$AUTOCONF" = "x"],[],
 AC_MSG_RESULT([$can_bshack])
 
 AC_MSG_CHECKING([whether FontForge accepts AddExtrema(1)])
-echo '#!/usr/local/bin/fontanvil' > ffaetest.pe
+echo '#!/usr/local/bin/fontforge' > ffaetest.pe
 echo 'New();AddExtrema(1);' >> ffaetest.pe
-AS_IF([$FONTANVIL ffaetest.pe >& /dev/null],
+AS_IF([$FONTANVIL -script ffaetest.pe >& /dev/null],
   [ae_arg_okay=yes],[ae_arg_okay=no])
 rm ffaetest.pe
 AC_SUBST([ae_arg_okay])

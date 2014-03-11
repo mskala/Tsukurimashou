@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 2932 2014-03-09 15:26:10Z mskala $ */
+/* $Id: fontviewbase.c 2946 2014-03-11 19:55:39Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1904,11 +1904,6 @@ struct fv_interface noui_fv = {
 
 struct fv_interface *fv_interface = &noui_fv;
 
-void FF_SetFVInterface(struct fv_interface *fvi) {
-   fv_interface = fvi;
-}
-
-
 /******************************************************************************/
 static int NoGlyphs(struct metricsview *mv) {
    return (0);
@@ -1936,7 +1931,3 @@ struct mv_interface noui_mv = {
 };
 
 struct mv_interface *mv_interface = &noui_mv;
-
-void FF_SetMVInterface(struct mv_interface *mvi) {
-   mv_interface = mvi;
-}

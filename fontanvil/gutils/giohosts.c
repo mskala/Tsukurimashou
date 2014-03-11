@@ -1,4 +1,4 @@
-/* $Id: giohosts.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: giohosts.c 2946 2014-03-11 19:55:39Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -33,64 +33,6 @@
 #if !defined(__MINGW32__)
 #   include <netdb.h>
 #endif
-
-char *_GIO_decomposeURL(const unichar_t * url, char **host, int *port,
-			char **username, char **password) {
-   unichar_t *pt, *pt2, *upt, *ppt;
-
-   char *path;
-
-   char proto[40];
-
-   /* ftp://[user[:password]@]ftpserver[:port]/url-path */
-
-   *username = NULL;
-   *password = NULL;
-   *port = -1;
-   pt = uc_strstr(url, "://");
-   if (pt == NULL) {
-      *host = NULL;
-      return (cu_copy(url));
-   }
-   cu_strncpy(proto, url,
-	      pt - url < sizeof(proto) ? pt - url : sizeof(proto));
-   pt += 3;
-
-   pt2 = u_strchr(pt, '/');
-   if (pt2 == NULL) {
-      pt2 = pt + u_strlen(pt);
-      path = copy("/");
-   } else {
-      path = cu_copy(pt2);
-   }
-
-   upt = u_strchr(pt, '@');
-   if (upt != NULL && upt < pt2) {
-      ppt = u_strchr(pt, ':');
-      if (ppt == NULL)
-	 *username = cu_copyn(pt, upt - pt);
-      else {
-	 *username = cu_copyn(pt, ppt - pt);
-	 *password = cu_copyn(ppt + 1, upt - ppt - 1);
-      }
-      pt = upt + 1;
-   }
-
-   ppt = u_strchr(pt, ':');
-   if (ppt != NULL && ppt < pt2) {
-      char *temp = cu_copyn(ppt + 1, pt2 - ppt - 1), *end;
-
-      *port = strtol(temp, &end, 10);
-      if (*end != '\0')
-	 *port = -2;
-      free(temp);
-      pt2 = ppt;
-   }
-   *host = cu_copyn(pt, pt2 - pt);
-   if (*username)
-      *password = GIO_PasswordCache(proto, *host, *username, *password);
-   return (path);
-}
 
 struct passwd_cache {
    char *proto;
@@ -150,75 +92,4 @@ char *GIO_PasswordCache(char *proto, char *host, char *username,
 #endif
 
    return (password);
-}
-
-/* simple hash tables */
-static struct hostdata *names[26], *numbers[10];
-
-struct hostdata *_GIO_LookupHost(char *host) {
-#if defined(__MINGW32__)
-   return NULL;
-#else
-
-   struct hostdata **base, *cur;
-
-#   ifdef HAVE_PTHREAD_H
-   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-#   endif
-   int i;
-
-#   ifdef HAVE_PTHREAD_H
-   pthread_mutex_lock(&mutex);
-#   endif
-   if (isdigit(host[0]))
-      base = &numbers[host[0] - '0'];
-   else if (isupper(host[0]) && host[0] < 127)
-      base = &names[host[0] - 'A'];
-   else if (islower(host[0]) && host[0] < 127)
-      base = &names[host[0] - 'a'];
-   else
-      base = &names['z' - 'a'];
-
-   for (cur = *base; cur != NULL && strmatch(cur->hostname, host) != 0;
-	cur = cur->next);
-   if (cur != NULL) {
-#   ifdef HAVE_PTHREAD_H
-      pthread_mutex_unlock(&mutex);
-#   endif
-      return (cur);
-   }
-
-   cur = calloc(1, sizeof(struct hostdata));
-   cur->addr.sin_family = AF_INET;
-   cur->addr.sin_port = 0;
-   if (isdigit(host[0])) {
-      if (!inet_aton(host, &cur->addr.sin_addr)) {
-	 free(cur);
-#   ifdef HAVE_PTHREAD_H
-	 pthread_mutex_unlock(&mutex);
-#   endif
-	 return (NULL);
-      }
-   } else {
-      struct hostent *he;
-
-      he = gethostbyname(host);
-      if (he == NULL) {
-	 free(cur);
-#   ifdef HAVE_PTHREAD_H
-	 pthread_mutex_unlock(&mutex);
-#   endif
-	 return (NULL);
-      }
-      for (i = 0; he->h_addr_list[i] != NULL; ++i);
-      memcpy(&cur->addr.sin_addr, he->h_addr_list[rand() % i], he->h_length);
-   }
-   cur->hostname = copy(host);
-   cur->next = *base;
-   *base = cur;
-#   ifdef HAVE_PTHREAD_H
-   pthread_mutex_unlock(&mutex);
-#   endif
-   return (cur);
-#endif
 }

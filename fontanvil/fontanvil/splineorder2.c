@@ -1,4 +1,4 @@
-/* $Id: splineorder2.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splineorder2.c 2946 2014-03-11 19:55:39Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1119,16 +1119,6 @@ static void ttfCleanup(SplinePoint * from) {
    }
 }
 
-SplinePoint *SplineTtfApprox(Spline * ps) {
-   SplinePoint *from;
-
-   from = chunkalloc(sizeof(SplinePoint));
-   *from = *ps->from;
-   from->hintmask = NULL;
-   ttfApprox(ps, from);
-   return (from);
-}
-
 SplineSet *SSttfApprox(SplineSet * ss) {
    SplineSet *ret = chunkalloc(sizeof(SplineSet));
 
@@ -1493,20 +1483,6 @@ void SCConvertLayerToOrder3(SplineChar * sc, int layer) {
       sc->ttf_instrs_len = 0;
       /* If this character has any cv's showing instructions then remove the instruction pane!!!!! */
    }
-}
-
-void SCConvertToOrder3(SplineChar * sc) {
-   int layer;
-
-   for (layer = 0; layer < sc->layer_cnt; ++layer)
-      SCConvertLayerToOrder3(sc, layer);
-}
-
-void SCConvertOrder(SplineChar * sc, int to_order2) {
-   if (to_order2)
-      SCConvertToOrder2(sc);
-   else
-      SCConvertToOrder3(sc);
 }
 
 void SFConvertLayerToOrder3(SplineFont * _sf, int layer) {
@@ -2057,144 +2033,4 @@ Spline *SplineMake(SplinePoint * from, SplinePoint * to, int order2) {
       return (SplineMake2(from, to));
    else
       return (SplineMake3(from, to));
-}
-
-void SplinePointPrevCPChanged2(SplinePoint * sp) {
-   SplinePoint *p, *pp;
-
-   BasePoint p_pcp;
-
-   if (sp->prev != NULL) {
-      p = sp->prev->from;
-      if (SPInterpolate(p) && !sp->noprevcp) {
-	 p->nextcp = sp->prevcp;
-	 p->me.x = (p->prevcp.x + p->nextcp.x) / 2;
-	 p->me.y = (p->prevcp.y + p->nextcp.y) / 2;
-	 SplineRefigure2(sp->prev);
-	 if (p->prev != NULL)
-	    SplineRefigure2(p->prev);
-      } else {
-	 p->nextcp = sp->prevcp;
-	 p->nonextcp = sp->noprevcp;
-	 if (sp->noprevcp) {
-	    p->nonextcp = true;
-	    p->nextcp = p->me;
-	    SplineRefigure2(sp->prev);
-	 } else if ((p->pointtype == pt_curve || p->pointtype == pt_hvcurve)
-		    && !p->noprevcp) {
-	    SplineRefigure2(sp->prev);
-	    if (p->prev == NULL) {
-	       bigreal len1, len2;
-
-	       len1 = sqrt((p->nextcp.x - p->me.x) * (p->nextcp.x - p->me.x) +
-			   (p->nextcp.y - p->me.y) * (p->nextcp.y - p->me.y));
-	       len2 = sqrt((p->prevcp.x - p->me.x) * (p->prevcp.x - p->me.x) +
-			   (p->prevcp.y - p->me.y) * (p->prevcp.y - p->me.y));
-	       len2 /= len1;
-	       p->prevcp.x = rint(len2 * (p->me.x - p->prevcp.x) + p->me.x);
-	       p->prevcp.y = rint(len2 * (p->me.y - p->prevcp.y) + p->me.y);
-	    } else {
-	       pp = p->prev->from;
-	       /* Find the intersection (if any) of the lines between */
-	       /*  pp->nextcp&pp->me with p->prevcp&p->me */
-	       if (IntersectLines
-		   (&p_pcp, &pp->nextcp, &pp->me, &p->nextcp, &p->me)) {
-		  bigreal len =
-		     (pp->me.x - p->me.x) * (pp->me.x - p->me.x) + (pp->me.y -
-								    p->me.y) *
-		     (pp->me.y - p->me.y);
-		  bigreal d1 =
-		     (p_pcp.x - p->me.x) * (pp->me.x - p->me.x) + (p_pcp.y -
-								   p->me.y) *
-		     (pp->me.y - p->me.y);
-		  bigreal d2 =
-		     (p_pcp.x - pp->me.x) * (p->me.x - pp->me.x) + (p_pcp.y -
-								    pp->me.
-								    y) *
-		     (p->me.y - pp->me.y);
-		  if (d1 >= 0 && d1 <= len && d2 >= 0 && d2 <= len) {
-		     if (rint(2 * p->me.x) == 2 * p->me.x
-			 && rint(2 * pp->me.x) == 2 * pp->me.x)
-			p_pcp.x = rint(p_pcp.x);
-		     if (rint(2 * p->me.y) == 2 * p->me.y
-			 && rint(2 * pp->me.y) == 2 * pp->me.y)
-			p_pcp.y = rint(p_pcp.y);
-		     p->prevcp = pp->nextcp = p_pcp;
-		     SplineRefigure2(p->prev);
-		  }
-	       }
-	    }
-	 }
-      }
-   }
-}
-
-void SplinePointNextCPChanged2(SplinePoint * sp) {
-   SplinePoint *n, *nn;
-
-   BasePoint n_ncp;
-
-   if (sp->next != NULL) {
-      n = sp->next->to;
-      if (SPInterpolate(n) && !sp->nonextcp) {
-	 n->prevcp = sp->nextcp;
-	 n->me.x = (n->prevcp.x + n->nextcp.x) / 2;
-	 n->me.y = (n->prevcp.y + n->nextcp.y) / 2;
-	 SplineRefigure2(sp->next);
-	 if (n->next != NULL)
-	    SplineRefigure2(n->next);
-      } else {
-	 n->prevcp = sp->nextcp;
-	 n->noprevcp = sp->nonextcp;
-	 if (sp->nonextcp) {
-	    n->noprevcp = true;
-	    n->prevcp = n->me;
-	    SplineRefigure2(sp->next);
-	 } else if ((n->pointtype == pt_curve || n->pointtype == pt_hvcurve)
-		    && !n->nonextcp) {
-	    SplineRefigure2(sp->next);
-	    if (n->next == NULL) {
-	       bigreal len1, len2;
-
-	       len1 = sqrt((n->prevcp.x - n->me.x) * (n->prevcp.x - n->me.x) +
-			   (n->prevcp.y - n->me.y) * (n->prevcp.y - n->me.y));
-	       len2 = sqrt((n->nextcp.x - n->me.x) * (n->nextcp.x - n->me.x) +
-			   (n->nextcp.y - n->me.y) * (n->nextcp.y - n->me.y));
-	       len2 /= len1;
-	       n->nextcp.x = rint(len2 * (n->me.x - n->nextcp.x) + n->me.x);
-	       n->nextcp.y = rint(len2 * (n->me.y - n->nextcp.y) + n->me.y);
-	    } else {
-	       nn = n->next->to;
-	       /* Find the intersection (if any) of the lines between */
-	       /*  nn->prevcp&nn->me with n->nextcp&.->me */
-	       if (IntersectLines
-		   (&n_ncp, &nn->prevcp, &nn->me, &n->prevcp, &n->me)) {
-		  bigreal len =
-		     (nn->me.x - n->me.x) * (nn->me.x - n->me.x) + (nn->me.y -
-								    n->me.y) *
-		     (nn->me.y - n->me.y);
-		  bigreal d1 =
-		     (n_ncp.x - n->me.x) * (nn->me.x - n->me.x) + (n_ncp.y -
-								   n->me.y) *
-		     (nn->me.y - n->me.y);
-		  bigreal d2 =
-		     (n_ncp.x - nn->me.x) * (n->me.x - nn->me.x) + (n_ncp.y -
-								    nn->me.
-								    y) *
-		     (n->me.y - nn->me.y);
-		  if (d1 >= 0 && d1 <= len && d2 >= 0 && d2 <= len) {
-		     if (rint(2 * n->me.x) == 2 * n->me.x
-			 && rint(2 * nn->me.x) == 2 * nn->me.x)
-			n_ncp.x = rint(n_ncp.x);
-		     if (rint(2 * n->me.y) == 2 * n->me.y
-			 && rint(2 * nn->me.y) == 2 * nn->me.y)
-			n_ncp.y = rint(n_ncp.y);
-		     n->nextcp = nn->prevcp = n_ncp;
-		     SplineRefigure2(n->next);
-		  }
-	       }
-	    }
-	 }
-      }
-   }
 }
