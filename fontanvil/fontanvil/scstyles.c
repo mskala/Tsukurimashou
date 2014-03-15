@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 2928 2014-03-08 15:37:54Z mskala $ */
+/* $Id: scstyles.c 2951 2014-03-15 16:49:47Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3849,14 +3849,6 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
    SCCharChangedUpdate(sc, layer);
 }
 
-void ScriptSCCondenseExtend(SplineChar * sc, struct counterinfo *ci) {
-
-   SCCondenseExtend(ci, sc, ci->layer, true);
-
-   free(ci->zones[0]);
-   free(ci->zones[1]);
-}
-
 /* ************************************************************************** */
 /* ***************************** Embolden Dialog **************************** */
 /* ************************************************************************** */
@@ -4806,15 +4798,6 @@ void FVEmbolden(FontViewBase * fv, enum embolden_type type,
 	 PerGlyphInit(sc, zones, type);
 	 SCEmbolden(sc, zones, -2);	/* -2 => all foreground layers */
       }
-}
-
-void ScriptSCEmbolden(SplineChar * sc, int layer, enum embolden_type type,
-		      struct lcg_zones *zones) {
-
-   LCG_ZoneInit(sc->parent, layer, zones, type);
-
-   PerGlyphInit(sc, zones, type);
-   SCEmbolden(sc, zones, layer);
 }
 
 /* ************************************************************************** */

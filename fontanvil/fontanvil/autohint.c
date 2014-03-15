@@ -1,4 +1,4 @@
-/* $Id: autohint.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: autohint.c 2953 2014-03-15 17:44:07Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2278,72 +2278,6 @@ static void _SCClearHintMasks(SplineChar * sc, int layer, int counterstoo) {
    }
 }
 
-static void ModifyHintMaskAdd(HintMask * hm, int index) {
-   int i;
-
-   if (hm == NULL)
-      return;
-
-   for (i = 94; i >= index; --i) {
-      if ((*hm)[i >> 3] & (0x80 >> (i & 7)))
-	 (*hm)[(i + 1) >> 3] |= (0x80 >> ((i + 1) & 7));
-      else
-	 (*hm)[(i + 1) >> 3] &= ~(0x80 >> ((i + 1) & 7));
-   }
-   (*hm)[index >> 3] &= ~(0x80 >> (index & 7));
-}
-
-void SCModifyHintMasksAdd(SplineChar * sc, int layer, StemInfo * new) {
-   SplineSet *spl;
-
-   SplinePoint *sp;
-
-   RefChar *ref;
-
-   int index;
-
-   StemInfo *h;
-
-   int i;
-
-   /* We've added a new stem. Figure out where it goes and modify the */
-   /*  hintmasks accordingly */
-
-   for (index = 0, h = sc->hstem; h != NULL && h != new;
-	++index, h = h->next);
-   if (h == NULL)
-      for (h = sc->vstem; h != NULL && h != new; ++index, h = h->next);
-   if (h == NULL)
-      return;
-
-   for (i = 0; i < sc->countermask_cnt; ++i)
-      ModifyHintMaskAdd(&sc->countermasks[i], index);
-
-   for (spl = sc->layers[layer].splines; spl != NULL; spl = spl->next) {
-      for (sp = spl->first;;) {
-	 ModifyHintMaskAdd(sp->hintmask, index);
-	 if (sp->next == NULL)
-	    break;
-	 sp = sp->next->to;
-	 if (sp == spl->first)
-	    break;
-      }
-   }
-
-   for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next) {
-      for (spl = ref->layers[0].splines; spl != NULL; spl = spl->next) {
-	 for (sp = spl->first;;) {
-	    ModifyHintMaskAdd(sp->hintmask, index);
-	    if (sp->next == NULL)
-	       break;
-	    sp = sp->next->to;
-	    if (sp == spl->first)
-	       break;
-	 }
-      }
-   }
-}
-
 static void SCFigureSimpleCounterMasks(SplineChar * sc) {
    SplineChar *scs[MmMax];
 
@@ -2428,42 +2362,6 @@ static int FigureCounters(StemInfo * stems, HintMask mask) {
       return (true);
    }
    return (false);
-}
-
-/* Only used for metafont routine */
-void SCFigureVerticalCounterMasks(SplineChar * sc) {
-   HintMask masks[30];
-
-   StemInfo *h;
-
-   int mc = 0, i;
-
-   /* I'm not supporting counter hints for mm fonts */
-
-   if (sc == NULL)
-      return;
-
-   free(sc->countermasks);
-   sc->countermask_cnt = 0;
-   sc->countermasks = NULL;
-
-   for (h = sc->vstem; h != NULL; h = h->next)
-      h->used = false;
-
-   mc = 0;
-
-   while (mc < sizeof(masks) / sizeof(masks[0])) {
-      memset(masks[mc], '\0', sizeof(HintMask));
-      if (!FigureCounters(sc->vstem, masks[mc]))
-	 break;
-      ++mc;
-   }
-   if (mc != 0) {
-      sc->countermask_cnt = mc;
-      sc->countermasks = malloc(mc * sizeof(HintMask));
-      for (i = 0; i < mc; ++i)
-	 memcpy(sc->countermasks[i], masks[i], sizeof(HintMask));
-   }
 }
 
 void SCFigureCounterMasks(SplineChar * sc) {
@@ -3708,96 +3606,6 @@ static int _SplineCharIsFlexible(SplineChar * sc, int layer, int blueshift) {
 	    break;
 	 }
    return (max);
-}
-
-static int MatchFlexes(MMSet * mm, int layer, int opos) {
-   int any = false, i;
-
-   SplineSet *spl[16];
-
-   SplinePoint *sp[16];
-
-   int mismatchx, mismatchy;
-
-   for (i = 0; i < mm->instance_count; ++i)
-      if (opos < mm->instances[i]->glyphcnt
-	  && mm->instances[i]->glyphs[opos] != NULL)
-	 spl[i] = mm->instances[i]->glyphs[opos]->layers[layer].splines;
-      else
-	 spl[i] = NULL;
-   while (spl[0] != NULL) {
-      for (i = 0; i < mm->instance_count; ++i)
-	 if (spl[i] != NULL)
-	    sp[i] = spl[i]->first;
-	 else
-	    sp[i] = NULL;
-      while (sp[0] != NULL) {
-	 mismatchx = mismatchy = false;
-	 for (i = 1; i < mm->instance_count; ++i) {
-	    if (sp[i] == NULL)
-	       mismatchx = mismatchy = true;
-	    else {
-	       if (sp[i]->flexx != sp[0]->flexx)
-		  mismatchx = true;
-	       if (sp[i]->flexy != sp[0]->flexy)
-		  mismatchy = true;
-	    }
-	 }
-	 if (mismatchx || mismatchy) {
-	    for (i = 0; i < mm->instance_count; ++i)
-	       if (sp[i] != NULL) {
-		  if (mismatchx)
-		     sp[i]->flexx = false;
-		  if (mismatchy)
-		     sp[i]->flexy = false;
-	       }
-	 }
-	 if (sp[0]->flexx || sp[0]->flexy)
-	    any = true;
-	 for (i = 0; i < mm->instance_count; ++i)
-	    if (sp[i] != NULL) {
-	       if (sp[i]->next == NULL)
-		  sp[i] = NULL;
-	       else
-		  sp[i] = sp[i]->next->to;
-	    }
-	 if (sp[0] == spl[0]->first)
-	    break;
-      }
-      for (i = 0; i < mm->instance_count; ++i)
-	 if (spl[i] != NULL)
-	    spl[i] = spl[i]->next;
-   }
-   return (any);
-}
-
-int SplineCharIsFlexible(SplineChar * sc, int layer) {
-   char *pt;
-
-   int blueshift;
-
-   int i;
-
-   MMSet *mm;
-
-   pt = PSDictHasEntry(sc->parent->private, "BlueShift");
-   blueshift = 7;		/* use default value here */
-   if (pt != NULL) {
-      blueshift = strtol(pt, NULL, 10);
-      if (blueshift > 21)
-	 blueshift = 21;
-   } else if (PSDictHasEntry(sc->parent->private, "BlueValues") != NULL)
-      blueshift = 7;
-   if (sc->parent->mm == NULL)
-      return (_SplineCharIsFlexible(sc, layer, blueshift));
-
-   mm = sc->parent->mm;
-   for (i = 0; i < mm->instance_count; ++i)
-      if (sc->orig_pos < mm->instances[i]->glyphcnt
-	  && mm->instances[i]->glyphs[sc->orig_pos] != NULL)
-	 _SplineCharIsFlexible(mm->instances[i]->glyphs[sc->orig_pos], layer,
-			       blueshift);
-   return (MatchFlexes(mm, layer, sc->orig_pos));
 }
 
 static void SCUnflex(SplineChar * sc, int layer) {

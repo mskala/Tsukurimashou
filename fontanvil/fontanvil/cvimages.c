@@ -1,4 +1,4 @@
-/* $Id: cvimages.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: cvimages.c 2952 2014-03-15 17:28:24Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -212,127 +212,6 @@ void SCImportPDF(SplineChar * sc, int layer, char *path, int doclear,
       return;
    SCImportPDFFile(sc, layer, pdf, doclear, flags);
    fclose(pdf);
-}
-
-void SCImportPlateFile(SplineChar * sc, int layer, FILE * plate, int doclear,
-		       int flags) {
-   SplineSet **ly_head, *head, *cur, *last;
-
-   spiro_cp *spiros = NULL;
-
-   int cnt = 0, max = 0, ch;
-
-   char buffer[80];
-
-   real transform[6];
-
-   if (plate == NULL)
-      return;
-
-   head = last = NULL;
-   fgets(buffer, sizeof(buffer), plate);
-   if (strncmp(buffer, "(plate", strlen("plate(")) != 0) {
-      ff_post_error(_("Not a plate file"),
-		    _
-		    ("This does not seem to be a plate file\nFirst line wrong"));
-      return;
-   }
-   while (!feof(plate)) {
-      while (isspace((ch = getc(plate))));
-      if (ch == ')' || ch == EOF)
-	 break;
-      if (ch != '(') {
-	 ff_post_error(_("Not a plate file"),
-		       _
-		       ("This does not seem to be a plate file\nExpected left paren"));
-	 return;
-      }
-      ch = getc(plate);
-      if (ch != 'v' && ch != 'o' && ch != 'c' && ch != '[' && ch != ']'
-	  && ch != 'z') {
-	 ff_post_error(_("Not a plate file"),
-		       _
-		       ("This does not seem to be a plate file\nExpected one of 'voc[]z'"));
-	 return;
-      }
-      if (cnt >= max)
-	 spiros = realloc(spiros, (max += 30) * sizeof(spiro_cp));
-      spiros[cnt].x = spiros[cnt].y = 0;
-      spiros[cnt].ty = ch;
-      if (ch == 'z') {
-	 cur = SpiroCP2SplineSet(spiros);
-	 cur->spiros = SpiroCPCopy(spiros, &cur->spiro_cnt);
-	 cur->spiro_max = cur->spiro_cnt;
-	 SplineSetAddExtrema(sc, cur, ae_only_good,
-			     sc->parent->ascent + sc->parent->descent);
-	 if (cur == NULL)
-	    /* Do Nothing */ ;
-	 else if (last != NULL) {
-	    last->next = cur;
-	    last = cur;
-	 } else
-	    head = last = cur;
-	 cnt = 0;
-	 ch = getc(plate);	/* Must be ')' */
-      } else {
-	 if (fscanf(plate, "%lg %lg )", &spiros[cnt].x, &spiros[cnt].y) != 2) {
-	    ff_post_error(_("Not a plate file"),
-			  _
-			  ("This does not seem to be a plate file\nExpected two real numbers"));
-	    return;
-	 }
-	 ++cnt;
-      }
-   }
-   if (cnt != 0) {
-      /* This happens when we've got an open contour */
-      if (cnt >= max)
-	 spiros = realloc(spiros, (max += 30) * sizeof(spiro_cp));
-      spiros[cnt].x = spiros[cnt].y = 0;
-      spiros[cnt].ty = 'z';
-      spiros[0].ty = '{';	/* Open contour mark */
-      cur = SpiroCP2SplineSet(spiros);
-      cur->spiros = SpiroCPCopy(spiros, &cur->spiro_cnt);
-      cur->spiro_max = cur->spiro_cnt;
-      SplineSetAddExtrema(sc, cur, ae_only_good,
-			  sc->parent->ascent + sc->parent->descent);
-      if (cur == NULL)
-	 /* Do Nothing */ ;
-      else if (last != NULL) {
-	 last->next = cur;
-	 last = cur;
-      } else
-	 head = last = cur;
-   }
-   free(spiros);
-
-   /* Raph's plate files seem to have the base line at 800, and glyphs grow */
-   /*  downwards *//* At least for Inconsola */
-   memset(transform, 0, sizeof(transform));
-   transform[0] = 1;
-   transform[3] = -1;
-   transform[5] = 800;
-   head = SplinePointListTransform(head, transform, tpt_AllPoints);
-   /* After doing the above flip, the contours appear oriented acording to my */
-   /*  conventions */
-
-   if (sc->layers[layer].order2) {
-      head = SplineSetsConvertOrder(head, true);
-      for (last = head; last->next != NULL; last = last->next);
-   }
-   if (layer == ly_grid)
-      ly_head = &sc->parent->grid.splines;
-   else {
-      SCPreserveLayer(sc, layer, false);
-      ly_head = &sc->layers[layer].splines;
-   }
-   if (doclear) {
-      SplinePointListsFree(*ly_head);
-      *ly_head = NULL;
-   }
-   last->next = *ly_head;
-   *ly_head = head;
-   SCCharChangedUpdate(sc, layer);
 }
 
 #ifndef _NO_LIBXML
@@ -1011,51 +890,6 @@ static SplineSet *slurpcompoundguts(FILE * fig, SplineChar * sc,
       }
    }
    return (sofar);
-}
-
-void SCImportFig(SplineChar * sc, int layer, char *path, int doclear) {
-   FILE *fig;
-
-   char buffer[100];
-
-   SplineSet *spl, *espl, **head;
-
-   int i;
-
-   fig = fopen(path, "r");
-   if (fig == NULL) {
-      ff_post_error(_("Can't find the file"), _("Can't find the file"));
-      return;
-   }
-   if (fgets(buffer, sizeof(buffer), fig) == NULL
-       || strcmp(buffer, "#FIG 3.2\n") != 0) {
-      ff_post_error(_("Bad xfig file"), _("Bad xfig file"));
-      fclose(fig);
-      return;
-   }
-   /* skip the header, it isn't interesting */
-   for (i = 0; i < 8; ++i)
-      fgets(buffer, sizeof(buffer), fig);
-   spl = slurpcompoundguts(fig, sc, NULL);
-   if (spl != NULL) {
-      if (layer == ly_grid)
-	 head = &sc->parent->grid.splines;
-      else {
-	 SCPreserveLayer(sc, layer, false);
-	 head = &sc->layers[layer].splines;
-      }
-      if (doclear) {
-	 SplinePointListsFree(*head);
-	 *head = NULL;
-      }
-      if (sc->layers[ly_fore].order2)
-	 spl = SplineSetsConvertOrder(spl, true);
-      for (espl = spl; espl->next != NULL; espl = espl->next);
-      espl->next = *head;
-      *head = spl;
-      SCCharChangedUpdate(sc, layer);
-   }
-   fclose(fig);
 }
 
 /************************** Normal Image Import *******************************/

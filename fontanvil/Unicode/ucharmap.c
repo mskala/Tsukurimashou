@@ -1,4 +1,4 @@
-/* $Id: ucharmap.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: ucharmap.c 2951 2014-03-15 16:49:47Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -576,61 +576,6 @@ unichar_t *def2u_strncpy(unichar_t * uto, const char *from, int n) {
    }
 #endif
    return (encoding2u_strncpy(uto, from, n, local_encoding));
-}
-
-char *u2def_strncpy(char *to, const unichar_t * ufrom, int n) {
-#if HAVE_ICONV_H
-   if (my_iconv_setup()) {
-      size_t in_left = sizeof(unichar_t) * n, out_left = n;
-
-      char *cfrom = (char *) ufrom, *cto = to;
-
-      iconv(from_unicode, (iconv_arg2_t) & cfrom, &in_left, &cto, &out_left);
-      if (cto < to + n)
-	 *cto++ = '\0';
-      if (cto < to + n)
-	 *cto++ = '\0';
-      if (cto < to + n)
-	 *cto++ = '\0';
-      if (cto < to + n)
-	 *cto++ = '\0';
-      return (to);
-   }
-#endif
-   return (u2encoding_strncpy(to, ufrom, n, local_encoding));
-}
-
-unichar_t *def2u_copy(const char *from) {
-   int len;
-
-   unichar_t *uto, *ret;
-
-   if (from == NULL)
-      return (NULL);
-   len = strlen(from);
-   uto = (unichar_t *) malloc((len + 1) * sizeof(unichar_t));
-   if (uto == NULL)
-      return (NULL);
-#if HAVE_ICONV_H
-   if (my_iconv_setup()) {
-      size_t in_left = len, out_left = sizeof(unichar_t) * len;
-
-      char *cto = (char *) uto;
-
-      iconv(to_unicode, (iconv_arg2_t) & from, &in_left, &cto, &out_left);
-      *cto++ = '\0';
-      *cto++ = '\0';
-      *cto++ = '\0';
-      *cto++ = '\0';
-      return (uto);
-   }
-#endif
-   ret = encoding2u_strncpy(uto, from, len, local_encoding);
-   if (ret == NULL)
-      free(uto);
-   else
-      uto[len] = '\0';
-   return (ret);
 }
 
 char *u2def_copy(const unichar_t * ufrom) {

@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: autotrace.c 2953 2014-03-15 17:44:07Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -257,6 +257,7 @@ static char *add_arg(char *buffer, char *s) {
    *buffer = '\0';
    return buffer;
 }
+
 void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    ImageList *images;
 
@@ -369,6 +370,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 
 }
 #else
+
 void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    ImageList *images;
 
@@ -629,25 +631,6 @@ void FVAutoTrace(FontViewBase * fv, int ask) {
       }
    }
    ff_progress_end_indicator();
-}
-
-void SCAutoTrace(SplineChar * sc, int layer, int ask) {
-   char **args;
-
-   if (sc->layers[ly_back].images == NULL) {
-      ff_post_error(_("Nothing to trace"), _("Nothing to trace"));
-      return;
-   } else if (FindAutoTraceName() == NULL) {
-      ff_post_error(_("Can't find autotrace"),
-		    _
-		    ("Can't find autotrace program (set AUTOTRACE environment variable) or download from:\n  http://sf.net/projects/autotrace/"));
-      return;
-   }
-
-   args = AutoTraceArgs(ask);
-   if (args == (char **) -1)
-      return;
-   _SCAutoTrace(sc, layer, args);
 }
 
 char *ProgramExists(char *prog, char *buffer) {

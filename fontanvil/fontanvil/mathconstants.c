@@ -1,4 +1,4 @@
-/* $Id: mathconstants.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: mathconstants.c 2952 2014-03-15 17:28:24Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -282,83 +282,3 @@ struct math_constants_descriptor math_constants_descriptor[] = {
        1),
    MATH_CONSTANTS_DESCRIPTOR_EMPTY
 };
-
-struct MATH *MathTableNew(SplineFont * sf) {
-   struct MATH *math = calloc(1, sizeof(struct MATH));	/* Too big for chunkalloc */
-
-   int emsize = sf->ascent + sf->descent;
-
-   DBounds b;
-
-   SplineChar *sc;
-
-   math->ScriptPercentScaleDown = 80;
-   math->ScriptScriptPercentScaleDown = 60;
-   math->DelimitedSubFormulaMinHeight = emsize * 1.5;
-   /* No default given for math->DisplayOperatorMinHeight */
-   /* No default given for math->AxisHeight */
-   sc = SFGetChar(sf, 'x', NULL);
-   if (sc != NULL) {
-      SplineCharFindBounds(sc, &b);
-      math->AccentBaseHeight = b.maxy;
-   }
-   sc = SFGetChar(sf, 'I', NULL);
-   if (sc != NULL) {
-      SplineCharFindBounds(sc, &b);
-      math->FlattenedAccentBaseHeight = b.maxy;
-   }
-   if (sf->pfminfo.subsuper_set)
-      math->SubscriptShiftDown = sf->pfminfo.os2_subyoff;
-   math->SubscriptTopMax = math->AccentBaseHeight;	/* X-height */
-   /* No default given for math->SubscriptBaselineDropMin */
-   if (sf->pfminfo.subsuper_set)
-      math->SuperscriptShiftUp = sf->pfminfo.os2_supyoff;
-   /* No default given for math->SuperscriptShiftUpCramped */
-   math->SuperscriptBottomMin = math->AccentBaseHeight;	/* X-height */
-   /* No default given for math->SuperscriptBaselineDropMax */
-   math->SubSuperscriptGapMin = 4 * sf->uwidth;	/* 4* default rule thickness */
-   math->SuperscriptBottomMaxWithSubscript = math->AccentBaseHeight;	/* X-height */
-   math->SpaceAfterScript = emsize / 24;	/* .5pt at 12pt */
-   math->StackGapMin = 3 * sf->uwidth;	/* 3* default rule thickness */
-   math->StackDisplayStyleGapMin = 7 * sf->uwidth;
-   math->StretchStackGapAboveMin = math->UpperLimitGapMin;
-   math->StretchStackGapBelowMin = math->LowerLimitGapMin;
-   math->FractionNumeratorDisplayStyleShiftUp =
-      math->StackTopDisplayStyleShiftUp;
-   math->FractionDenominatorDisplayStyleShiftDown =
-      math->StackBottomDisplayStyleShiftDown;
-   math->FractionNumeratorGapMin = sf->uwidth;
-   math->FractionNumeratorDisplayStyleGapMin = 3 * sf->uwidth;
-   math->FractionRuleThickness = sf->uwidth;
-   math->FractionDenominatorGapMin = sf->uwidth;
-   math->FractionDenominatorDisplayStyleGapMin = 3 * sf->uwidth;
-   math->OverbarVerticalGap = 3 * sf->uwidth;
-   math->OverbarRuleThickness = sf->uwidth;
-   math->OverbarExtraAscender = sf->uwidth;
-   math->UnderbarVerticalGap = 3 * sf->uwidth;
-   math->UnderbarRuleThickness = sf->uwidth;
-   math->UnderbarExtraDescender = sf->uwidth;
-   math->RadicalVerticalGap = sf->uwidth;
-   math->RadicalExtraAscender = sf->uwidth;
-   math->RadicalKernBeforeDegree = 5 * emsize / 18;
-   math->RadicalKernAfterDegree = -10 * emsize / 18;
-   math->RadicalDegreeBottomRaisePercent = 60;
-
-   math->MinConnectorOverlap = emsize / 50;
-   return (math);
-}
-
-void MATHFree(struct MATH *math) {
-   int i;
-
-   if (math == NULL)
-      return;
-
-   for (i = 0; math_constants_descriptor[i].ui_name != NULL; ++i) {
-      if (math_constants_descriptor[i].devtab_offset >= 0)
-	 DeviceTableFree(*(DeviceTable **)
-			 (((char *) math) +
-			  math_constants_descriptor[i].devtab_offset));
-   }
-   free(math);
-}

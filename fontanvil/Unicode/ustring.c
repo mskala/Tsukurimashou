@@ -1,4 +1,4 @@
-/* $Id: ustring.c 2937 2014-03-10 18:31:50Z mskala $ */
+/* $Id: ustring.c 2950 2014-03-15 16:10:53Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,6 @@
 #include "ustring.h"
 #include "utype.h"
 
-long uc_strcmp(const unichar_t * str1, const char *str2) {
-   long ch1, ch2;
-
-   for (;;) {
-      ch1 = *str1++;
-      ch2 = *(unsigned char *) str2++;
-      if (ch1 != ch2 || ch1 == '\0')
-	 return (ch1 - ch2);
-   }
-}
-
 long u_strcmp(const unichar_t * str1, const unichar_t * str2) {
    long ch1, ch2;
 
@@ -49,14 +38,6 @@ long u_strcmp(const unichar_t * str1, const unichar_t * str2) {
       if (ch1 != ch2 || ch1 == '\0')
 	 return (ch1 - ch2);
    }
-}
-
-void uc_strcpy(unichar_t * to, const char *from) {
-   register unichar_t ch;
-
-   while ((ch = *(unsigned char *) from++) != '\0')
-      *(to++) = ch;
-   *to = 0;
 }
 
 void u_strcpy(unichar_t * to, const unichar_t * from) {
@@ -75,60 +56,12 @@ void u_strncpy(register unichar_t * to, const unichar_t * from, int len) {
    *to = 0;
 }
 
-void cu_strncpy(register char *to, const unichar_t * from, int len) {
-   register unichar_t ch;
-
-   while ((ch = *from++) != '\0' && --len >= 0)
-      *(to++) = ch;
-   *to = 0;
-}
-
-void uc_strncpy(register unichar_t * to, const char *from, int len) {
-   register unichar_t ch;
-
-   while ((ch = *(unsigned char *) from++) != '\0' && --len >= 0)
-      *(to++) = ch;
-   *to = 0;
-}
-
 int u_strlen(register const unichar_t * str) {
    register int len = 0;
 
    while (*str++ != '\0')
       ++len;
    return (len);
-}
-
-unichar_t *u_strchr(const unichar_t * str, unichar_t ch) {
-   register unichar_t test;
-
-   while ((test = *(str++)) != '\0')
-      if (test == ch)
-	 return ((unichar_t *) str - 1);
-
-   return (NULL);
-}
-
-unichar_t *uc_strstr(const unichar_t * longer, const char *substr) {
-   long ch1, ch2;
-
-   const unichar_t *lpt, *str1;
-
-   const char *str2;
-
-   for (lpt = longer; *lpt != '\0'; ++lpt) {
-      str1 = lpt;
-      str2 = substr;
-      for (;;) {
-	 ch1 = *str1++;
-	 ch2 = *(unsigned char *) str2++;
-	 if (ch2 == '\0')
-	    return ((unichar_t *) lpt);
-	 if (ch1 != ch2)
-	    break;
-      }
-   }
-   return (NULL);
 }
 
 static unichar_t *u_copyn(const unichar_t * pt, long n) {
@@ -170,22 +103,6 @@ unichar_t *uc_copy(const char *pt) {
    return (res);
 }
 
-char *cu_copyn(const unichar_t * pt, int len) {
-   char *res, *rpt;
-
-   if (!pt)
-      return (NULL);
-
-#ifdef MEMORY_MASK
-   if ((len + 1) >= MEMORY_MASK)
-      len = MEMORY_MASK - 1;
-#endif
-   res = (char *) malloc(len + 1);
-   for (rpt = res; --len >= 0; *rpt++ = *pt++);
-   *rpt = '\0';
-   return (res);
-}
-
 char *cu_copy(const unichar_t * pt) {
    char *res, *rpt;
 
@@ -203,13 +120,6 @@ char *cu_copy(const unichar_t * pt) {
    for (rpt = res; --n >= 0; *rpt++ = *pt++);
    *rpt = '\0';
    return (res);
-}
-
-unichar_t *c_to_u(const char *buf) {
-   static unichar_t ubuf[400];
-
-   uc_strncpy(ubuf, buf, sizeof(ubuf));
-   return (ubuf);
 }
 
 unichar_t *utf82u_strncpy(unichar_t * ubuf, const char *utf8buf, int len) {

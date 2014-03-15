@@ -1,4 +1,4 @@
-/* $Id: autosave.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: autosave.c 2952 2014-03-15 17:28:24Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -116,78 +116,6 @@ static void MakeAutoSaveName(SplineFont * sf) {
       }
    }
 }
-
-
-int DoAutoRecoveryExtended(int inquire,
-			   DoAutoRecoveryPostRecoverFunc PostRecoverFunc) {
-   char buffer[1025];
-
-   char *recoverdir = getAutoDirName(buffer);
-
-   DIR *dir;
-
-   struct dirent *entry;
-
-   int any = false;
-
-   SplineFont *sf;
-
-   int inquire_state = 0;
-
-   if (recoverdir == NULL)
-      return (false);
-   if ((dir = opendir(recoverdir)) == NULL)
-      return (false);
-   while ((entry = readdir(dir)) != NULL) {
-      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-	 continue;
-      sprintf(buffer, "%s/%s", recoverdir, entry->d_name);
-      fprintf(stderr, "Recovering from %s... ", buffer);
-      if ((sf = SFRecoverFile(buffer, inquire, &inquire_state))) {
-	 any = true;
-	 if (sf->fv == NULL)	/* Doesn't work, cli arguments not parsed yet */
-	    FontViewCreate(sf, false);
-	 fprintf(stderr, " Done\n");
-      }
-   }
-   closedir(dir);
-   return (any);
-}
-
-static void DoAutoRecoveryPostRecover_DontPrompt(SplineFont * sf) {
-}
-
-int DoAutoRecovery(int inquire) {
-   return DoAutoRecoveryExtended(inquire,
-				 DoAutoRecoveryPostRecover_DontPrompt);
-}
-
-
-void CleanAutoRecovery(void) {
-   char buffer[1025];
-
-   char *recoverdir = getAutoDirName(buffer);
-
-   DIR *dir;
-
-   struct dirent *entry;
-
-   if (recoverdir == NULL)
-      return;
-   if ((dir = opendir(recoverdir)) == NULL)
-      return;
-   while ((entry = readdir(dir)) != NULL) {
-      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-	 continue;
-      sprintf(buffer, "%s/%s", recoverdir, entry->d_name);
-      if (unlink(buffer) != 0) {
-	 fprintf(stderr, "Failed to clean ");
-	 perror(buffer);
-      }
-   }
-   closedir(dir);
-}
-
 
 void _DoAutoSaves(FontViewBase * fvs) {
    FontViewBase *fv;

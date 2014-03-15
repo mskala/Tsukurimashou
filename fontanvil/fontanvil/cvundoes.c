@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 2934 2014-03-10 16:58:02Z mskala $ */
+/* $Id: cvundoes.c 2952 2014-03-15 17:28:24Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -631,10 +631,6 @@ int CVLayer(CharViewBase * cv) {
       return (ly_grid);
 
    return (cv->layerheads[cv->drawmode] - cv->sc->layers);
-}
-
-Undoes *CVPreserveState(CharViewBase * cv) {
-   return (NULL);
 }
 
 Undoes *SCPreserveHints(SplineChar * sc, int layer) {
@@ -3148,11 +3144,6 @@ static void _PasteAnchorClassManip(SplineFont * sf, AnchorClass * into,
 
 void PasteRemoveSFAnchors(SplineFont * sf) {
    _PasteAnchorClassManip(sf, NULL, NULL);
-}
-
-void PasteAnchorClassMerge(SplineFont * sf, AnchorClass * into,
-			   AnchorClass * from) {
-   _PasteAnchorClassManip(sf, into, from);
 }
 
 void PasteRemoveAnchorClass(SplineFont * sf, AnchorClass * dying) {

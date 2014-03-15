@@ -132,7 +132,7 @@ noinst_HEADERS = \
   inc/utype.h \
   fontanvil/sftextfieldP.h \
   fontanvil/configure-fontanvil.h fontanvil/views.h fontanvil/is_LIGATURE.h \
-  fontanvil/flaglist.h fontanvil/strlist.h fontanvil/charview_private.h \
+  fontanvil/flaglist.h fontanvil/charview_private.h \
   fontanvil/autowidth2.h fontanvil/configure-fontanvil.h fontanvil/fontanvil.h \
   fontanvil/libffstamp.h fontanvil/psfont.h fontanvil/stemdb.h \
   fontanvil/autowidth.h fontanvil/delta.h fontanvil/fontanvilvw.h \
@@ -178,8 +178,8 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/spiro.c fontanvil/splinechar.c fontanvil/splinefill.c \
  fontanvil/splinefont.c fontanvil/splineorder2.c fontanvil/splineoverlap.c \
  fontanvil/splinesaveafm.c fontanvil/splinesave.c fontanvil/splinestroke.c \
- fontanvil/splineutil2.c fontanvil/splineutil.c fontanvil/stamp.c \
- fontanvil/start.c fontanvil/stemdb.c fontanvil/strlist.c fontanvil/svg.c \
+ fontanvil/splineutil2.c fontanvil/splineutil.c \
+ fontanvil/start.c fontanvil/stemdb.c fontanvil/svg.c \
  fontanvil/tottfaat.c fontanvil/tottfgpos.c fontanvil/tottf.c \
  fontanvil/tottfvar.c fontanvil/ttfinstrs.c fontanvil/ttfspecial.c \
  fontanvil/ufo.c fontanvil/unicoderange.c fontanvil/utils.c \

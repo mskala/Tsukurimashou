@@ -1,4 +1,4 @@
-/* $Id: search.c 2932 2014-03-09 15:26:10Z mskala $ */
+/* $Id: search.c 2952 2014-03-15 17:28:24Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1527,48 +1527,6 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
    free(selected);
    memcpy(fv->selected, changed, fv->map->enccount);
    free(changed);
-}
-
-/* This will free both the find and rpl contours */
-SearchData *SDFromContour(FontViewBase * fv, SplineSet * find, double fudge,
-			  int flags) {
-   SearchData *sv;
-
-   sv = SDFillup(calloc(1, sizeof(SearchData)), fv);
-   sv->fudge_percent = .001;
-   sv->fudge = fudge;
-
-   sv->tryreverse = (flags & sv_reverse) != 0;
-   sv->tryflips = (flags & sv_flips) != 0;
-   sv->tryrotate = (flags & sv_rotate) != 0;
-   sv->tryscale = (flags & sv_scale) != 0;
-
-   sv->sc_srch.layers[ly_fore].splines = find;
-   sv->sc_srch.changed_since_autosave = sv->sc_rpl.changed_since_autosave =
-      true;
-   SVResetPaths(sv);
-
-   sv->last_gid = -1;
-   return (sv);
-}
-
-SplineChar *SDFindNext(SearchData * sd) {
-   int gid;
-
-   FontViewBase *fv;
-
-   if (sd == NULL)
-      return (NULL);
-   fv = sd->fv;
-
-   for (gid = sd->last_gid + 1; gid < fv->sf->glyphcnt; ++gid) {
-      SCSplinePointsUntick(fv->sf->glyphs[gid], fv->active_layer);
-      if (SearchChar(sd, gid, false)) {
-	 sd->last_gid = gid;
-	 return (fv->sf->glyphs[gid]);
-      }
-   }
-   return (NULL);
 }
 
 /* ************************************************************************** */

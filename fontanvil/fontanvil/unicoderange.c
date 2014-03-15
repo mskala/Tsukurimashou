@@ -1,4 +1,4 @@
-/* $Id: unicoderange.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: unicoderange.c 2951 2014-03-15 16:49:47Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /* 2012nov14, table updates, fixes added, Jose Da Silva */
 /*
@@ -423,6 +423,7 @@ static int ncmp(const void *_ri1, const void *_ri2) {
    return (strcoll(_(ri1->range->name), _(ri2->range->name)));
 }
 
+#if 0
 struct rangeinfo *SFUnicodeRanges(SplineFont * sf, enum ur_flags flags) {
 /* Find and return the Unicode range descriptions for these characters */
 /* Return NULL if out of memory to hold rangeinfo[cnt]. */
@@ -563,3 +564,4 @@ const char *UnicodeRange(int32 unienc) {
 
    return (ret);
 }
+#endif

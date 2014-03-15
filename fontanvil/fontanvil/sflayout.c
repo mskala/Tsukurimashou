@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: sflayout.c 2952 2014-03-15 17:28:24Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -870,30 +870,6 @@ static void LayoutInfoChangeFontList(LayoutInfo * li, int rpllen,
    }
 }
 
-int LayoutInfoReplace(LayoutInfo * li, const unichar_t * str,
-		      int sel_start, int sel_end, int width) {
-   unichar_t *old = li->oldtext;
-
-   int rpllen = u_strlen(str);
-
-   unichar_t *new =
-      malloc((u_strlen(li->text) - (sel_end - sel_start) + rpllen +
-	      1) * sizeof(unichar_t));
-
-   li->oldtext = li->text;
-   LayoutInfoChangeFontList(li, rpllen, sel_start, sel_end);
-
-   u_strncpy(new, li->text, sel_start);
-   u_strcpy(new + sel_start, str);
-   u_strcpy(new + sel_start + rpllen, li->text + sel_end);
-   li->text = new;
-   free(old);
-
-   LI_fontlistmergecheck(li);
-   LayoutInfoRefigureLines(li, sel_start, sel_start + rpllen, width);
-   return (rpllen);
-}
-
 void LayoutInfo_Destroy(LayoutInfo * li) {
    struct sfmaps *m, *n;
 
@@ -1136,76 +1112,6 @@ void LayoutInfoInitLangSys(LayoutInfo * li, int end, uint32 script,
    next->lang = lang;
    next->end = end;
    next->feats = LI_TagsCopy(StdFeaturesOfScript(script));
-}
-
-LayoutInfo *LIConvertToPrint(LayoutInfo * li, int width, int height, int dpi) {
-   LayoutInfo *print = calloc(1, sizeof(LayoutInfo));
-
-   struct fontlist *fl;
-
-   struct fontdata *fd1, *fd2;
-
-   print->wrap = true;
-   print->dpi = dpi;
-
-   print->text = u_copy(li->text);
-   print->generated = FontDataCopyNoBDF(print, li->generated);
-   print->fontlist = LI_fontlistcopy(li->fontlist);
-   for (fl = print->fontlist; fl != NULL; fl = fl->next) {
-      for (fd1 = li->generated, fd2 = print->generated;
-	   fd1 != NULL && fd1 != fl->fd; fd1 = fd1->next, fd2 = fd2->next);
-      fl->fd = fd2;
-   }
-   print->ps = -1;
-   LayoutInfoRefigureLines(print, 0, -1, width);
-   return (print);
-}
-
-SplineSet *LIConvertToSplines(LayoutInfo * li, double dpi, int order2) {
-   SplineSet *ss, *base, *head = NULL, *last = NULL;
-
-   double y = 0, x;
-
-   int l, i;
-
-   real transform[6];
-
-   transform[1] = transform[2] = 0;
-
-   for (l = 0; l < li->lcnt; ++l) {
-      struct opentype_str **line = li->lines[l];
-
-      y = li->lineheights[l].y;
-      x = 0;
-
-      for (i = 0; line[i] != NULL; ++i) {
-	 SplineChar *sc = line[i]->sc;
-
-	 FontData *fd = ((struct fontlist *) (line[i]->fl))->fd;
-
-	 base = LayerAllSplines(&sc->layers[ly_fore]);
-	 ss = SplinePointListCopy(base);
-	 LayerUnAllSplines(&sc->layers[ly_fore]);
-	 if (sc->layers[ly_fore].order2 != order2)
-	    ss = SplineSetsConvertOrder(ss, order2);
-
-	 transform[0] = transform[3] =
-	    fd->pointsize * dpi / 72.0 / (fd->sf->ascent + fd->sf->descent);
-	 transform[4] = x + line[i]->vr.xoff;
-	 transform[5] = -y + (line[i]->vr.yoff + line[i]->bsln_off);
-	 ss = SplinePointListTransform(ss, transform, tpt_AllPoints);
-	 if (head == NULL)
-	    head = ss;
-	 else
-	    last->next = ss;
-	 if (ss != NULL) {
-	    for (last = ss; last->next != NULL; last = last->next);
-	    last->ticked = true;	/* Mark end of glyph */
-	 }
-	 x += line[i]->advance_width + line[i]->vr.h_adv_off;
-      }
-   }
-   return (head);
 }
 
 #include "scripting.h"
@@ -1493,27 +1399,6 @@ void FontImage(SplineFont * sf, char *filename, Array * arr, int width,
 
 #include <stdlib.h>
 #include <unistd.h>
-char *SFDefaultImage(SplineFont * sf, char *filename) {
-
-   if (filename == NULL) {
-      static int cnt = 0;
-
-      char *dir = getenv("TMPDIR");
-
-      if (dir == NULL)
-	 dir = P_tmpdir;
-      filename = malloc(strlen(dir) + strlen(sf->fontname) + 100);
-#ifdef _NO_LIBPNG
-      sprintf(filename, "%s/ff-preview-%s-%d-%d.bmp", dir, sf->fontname,
-	      getpid(), ++cnt);
-#else
-      sprintf(filename, "%s/ff-preview-%s-%d-%d.png", dir, sf->fontname,
-	      getpid(), ++cnt);
-#endif
-   }
-   FontImage(sf, filename, NULL, -1, -1);
-   return (filename);
-}
 
 void LayoutInfoSetTitle(LayoutInfo * li, const unichar_t * tit, int width) {
    unichar_t *old = li->oldtext;

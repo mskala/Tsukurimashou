@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splinechar.c 2952 2014-03-15 17:28:24Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -56,37 +56,6 @@ void SCClearRounds(SplineChar * sc, int layer) {
 	 if (sp == ss->first)
 	    break;
       }
-   }
-}
-
-void MDReplace(MinimumDistance * md, SplineSet * old, SplineSet * rpl) {
-   /* Replace all the old points with the ones in rpl in the minimum distance hints */
-   SplinePoint *osp, *rsp;
-
-   MinimumDistance *test;
-
-   if (md == NULL)
-      return;
-
-   while (old != NULL && rpl != NULL) {
-      osp = old->first;
-      rsp = rpl->first;
-      while (1) {
-	 for (test = md; test != NULL; test = test->next) {
-	    if (test->sp1 == osp)
-	       test->sp1 = rsp;
-	    if (test->sp2 == osp)
-	       test->sp2 = rsp;
-	 }
-	 if (osp->next == NULL || rsp->next == NULL)
-	    break;
-	 osp = osp->next->to;
-	 rsp = rsp->next->to;
-	 if (osp == old->first)
-	    break;
-      }
-      old = old->next;
-      rpl = rpl->next;
    }
 }
 
@@ -654,131 +623,6 @@ int BpWithin(BasePoint * first, BasePoint * mid, BasePoint * last) {
    return (len2 >= 0 && len2 <= len);
 }
 
-void SPChangePointType(SplinePoint * sp, int pointtype) {
-   BasePoint unitnext, unitprev;
-
-   bigreal nextlen, prevlen;
-
-   int makedflt;
-
-   /*int oldpointtype = sp->pointtype; */
-
-   if (sp->pointtype == pointtype) {
-      if (pointtype == pt_curve || pointtype == pt_hvcurve) {
-	 if (!sp->nextcpdef && sp->next != NULL && !sp->next->order2)
-	    SplineCharDefaultNextCP(sp);
-	 if (!sp->prevcpdef && sp->prev != NULL && !sp->prev->order2)
-	    SplineCharDefaultPrevCP(sp);
-      }
-      return;
-   }
-   sp->pointtype = pointtype;
-
-   if (pointtype == pt_corner) {
-      /* Leave control points as they are */ ;
-      sp->nextcpdef = sp->nonextcp;
-      sp->prevcpdef = sp->noprevcp;
-   } else if (pointtype == pt_tangent) {
-      if (sp->next != NULL && !sp->nonextcp && sp->next->knownlinear) {
-	 sp->nonextcp = true;
-	 sp->nextcp = sp->me;
-      } else if (sp->prev != NULL && !sp->nonextcp &&
-		 BpColinear(&sp->prev->from->me, &sp->me, &sp->nextcp)) {
-	 /* The current control point is reasonable */
-      } else {
-	 SplineCharTangentNextCP(sp);
-	 if (sp->next)
-	    SplineRefigure(sp->next);
-      }
-      if (sp->prev != NULL && !sp->noprevcp && sp->prev->knownlinear) {
-	 sp->noprevcp = true;
-	 sp->prevcp = sp->me;
-      } else if (sp->next != NULL && !sp->noprevcp &&
-		 BpColinear(&sp->next->to->me, &sp->me, &sp->prevcp)) {
-	 /* The current control point is reasonable */
-      } else {
-	 SplineCharTangentPrevCP(sp);
-	 if (sp->prev)
-	    SplineRefigure(sp->prev);
-      }
-   } else if (pointtype != pt_curve
-	      && ((BpColinear(&sp->prevcp, &sp->me, &sp->nextcp) ||
-		   (sp->nonextcp ^ sp->noprevcp)) &&
-		  (pointtype != pt_hvcurve ||
-		   (sp->nextcp.x == sp->me.x && sp->nextcp.y != sp->me.y) ||
-		   (sp->nextcp.y == sp->me.y && sp->nextcp.x != sp->me.x)))) {
-      /* Retain the old control points */
-   } else {
-      unitnext.x = sp->nextcp.x - sp->me.x;
-      unitnext.y = sp->nextcp.y - sp->me.y;
-      nextlen = sqrt(unitnext.x * unitnext.x + unitnext.y * unitnext.y);
-      unitprev.x = sp->prevcp.x - sp->me.x;
-      unitprev.y = sp->prevcp.y - sp->me.y;
-      prevlen = sqrt(unitprev.x * unitprev.x + unitprev.y * unitprev.y);
-      makedflt = true;
-      if (nextlen != 0 && prevlen != 0) {
-	 unitnext.x /= nextlen;
-	 unitnext.y /= nextlen;
-	 unitprev.x /= prevlen;
-	 unitprev.y /= prevlen;
-	 if (unitnext.x * unitprev.x + unitnext.y * unitprev.y <= -.95) {
-	    /* If the control points are essentially in the same direction */
-	    /*  (so valid for a curve) then leave them as is */
-	    makedflt = false;
-	 }
-      }
-      if (pointtype == pt_hvcurve &&
-	  ((unitnext.x != 0 && unitnext.y != 0) ||
-	   (unitprev.x != 0 && unitprev.y != 0))) {
-	 BasePoint ncp, pcp;
-
-	 if (fabs(unitnext.x) + fabs(unitprev.x) >
-	     fabs(unitnext.y) + fabs(unitprev.y)) {
-	    unitnext.y = unitprev.y = 0;
-	    unitnext.x = unitnext.x > 0 ? 1 : -1;
-	    unitprev.x = unitprev.x > 0 ? 1 : -1;
-	 } else {
-	    unitnext.x = unitprev.x = 0;
-	    unitnext.y = unitnext.y > 0 ? 1 : -1;
-	    unitprev.y = unitprev.y > 0 ? 1 : -1;
-	 }
-	 ncp.x = sp->me.x + unitnext.x * nextlen;
-	 ncp.y = sp->me.y + unitnext.y * nextlen;
-	 sp->nextcp = ncp;
-	 if (sp->next != NULL && sp->next->order2)
-	    sp->next->to->prevcp = ncp;
-	 pcp.x = sp->me.x + unitprev.x * prevlen;
-	 pcp.y = sp->me.y + unitprev.y * prevlen;
-	 sp->prevcp = pcp;
-	 if (sp->prev != NULL && sp->prev->order2)
-	    sp->prev->from->nextcp = pcp;
-	 makedflt = false;
-      }
-      if (pointtype == pt_curve)
-	 makedflt = true;
-
-      if (makedflt) {
-	 sp->nextcpdef = sp->prevcpdef = true;
-	 if ((sp->prev != NULL && sp->prev->order2) ||
-	     (sp->next != NULL && sp->next->order2)) {
-	    if (sp->prev != NULL)
-	       SplineRefigureFixup(sp->prev);
-	    if (sp->next != NULL)
-	       SplineRefigureFixup(sp->next);
-	 } else {
-	    SplineCharDefaultPrevCP(sp);
-	    SplineCharDefaultNextCP(sp);
-	 }
-      }
-   }
-   /* Now in order2 splines it is possible to request combinations that are */
-   /*  mathematically impossible -- two adjacent hv points often don't work */
-   if (pointtype == pt_hvcurve &&
-       !(sp->nextcp.x == sp->me.x && sp->nextcp.y != sp->me.y) &&
-       !(sp->nextcp.y == sp->me.y && sp->nextcp.x != sp->me.x))
-      sp->pointtype = pt_curve;
-}
-
 void SplinePointRound(SplinePoint * sp, real factor) {
    BasePoint noff, poff;
 
@@ -1239,71 +1083,6 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 
    SCRefreshTitles(sc);
    return (true);
-}
-
-void RevertedGlyphReferenceFixup(SplineChar * sc, SplineFont * sf) {
-   RefChar *refs, *prev, *next;
-
-   KernPair *kp, *kprev, *knext;
-
-   SplineFont *cidmaster = sf, *ksf;
-
-   int layer, isv, l;
-
-   for (layer = 0; layer < sc->layer_cnt; ++layer) {
-      for (prev = NULL, refs = sc->layers[layer].refs; refs != NULL;
-	   refs = next) {
-	 next = refs->next;
-	 if (refs->orig_pos < sf->glyphcnt
-	     && sf->glyphs[refs->orig_pos] != NULL) {
-	    prev = refs;
-	    refs->sc = sf->glyphs[refs->orig_pos];
-	    refs->unicode_enc = refs->sc->unicodeenc;
-	    SCReinstanciateRefChar(sc, refs, layer);
-	    SCMakeDependent(sc, refs->sc);
-	 } else {
-	    if (prev == NULL)
-	       sc->layers[layer].refs = next;
-	    else
-	       prev->next = next;
-	    RefCharFree(refs);
-	 }
-      }
-   }
-   /* Fixup kerning pairs as well */
-   for (isv = 0; isv < 2; ++isv) {
-      for (kprev = NULL, kp = isv ? sc->vkerns : sc->kerns; kp != NULL;
-	   kp = knext) {
-	 int index = (intpt) (kp->sc);
-
-	 knext = kp->next;
-	 kp->kcid = false;
-	 ksf = sf;
-	 if (cidmaster != sf) {
-	    for (l = 0; l < cidmaster->subfontcnt; ++l) {
-	       ksf = cidmaster->subfonts[l];
-	       if (index < ksf->glyphcnt && ksf->glyphs[index] != NULL)
-		  break;
-	    }
-	 }
-	 if (index >= ksf->glyphcnt || ksf->glyphs[index] == NULL) {
-	    IError("Bad kerning information in glyph %s\n", sc->name);
-	    kp->sc = NULL;
-	 } else
-	    kp->sc = ksf->glyphs[index];
-	 if (kp->sc != NULL)
-	    kprev = kp;
-	 else {
-	    if (kprev != NULL)
-	       kprev->next = knext;
-	    else if (isv)
-	       sc->vkerns = knext;
-	    else
-	       sc->kerns = knext;
-	    chunkfree(kp, sizeof(KernPair));
-	 }
-      }
-   }
 }
 
 static int CheckBluePair(char *blues, char *others, int bluefuzz,
@@ -2097,23 +1876,6 @@ void SCTickValidationState(SplineChar * sc, int layer) {
    }
 }
 
-int VSMaskFromFormat(SplineFont * sf, int layer, enum fontformat format) {
-   if (format == ff_cid || format == ff_cffcid || format == ff_otfcid
-       || format == ff_otfciddfont)
-      return (vs_maskcid);
-   else if (format <= ff_cff)
-      return (vs_maskps);
-   else if (format <= ff_ttfdfont)
-      return (vs_maskttf);
-   else if (format <= ff_otfdfont)
-      return (vs_maskps);
-   else if (format == ff_svg)
-      return (vs_maskttf);
-   else
-      return (sf->subfontcnt != 0 || sf->cidmaster != NULL ? vs_maskcid :
-	      sf->layers[layer].order2 ? vs_maskttf : vs_maskps);
-}
-
 static SplinePoint *CirclePoint(int which) {
    SplinePoint *sp;
 
@@ -2642,175 +2404,6 @@ static int EllipseSomewhere(CharViewBase * cv, SplinePoint * sp1,
 	    order2, ellipse_to_back));
 }
 
-static int MakeShape(CharViewBase * cv, SplinePointList * spl1,
-		     SplinePointList * spl2, SplinePoint * sp1,
-		     SplinePoint * sp2, int order2, int changed, int do_arc,
-		     int ellipse_to_back) {
-   if (!do_arc || (sp1->me.x == sp2->me.x && sp1->me.y == sp2->me.y)) {
-      if (!changed)
-	 CVPreserveState(cv);
-      sp1->nonextcp = true;
-      sp1->nextcp = sp1->me;
-      sp2->noprevcp = true;
-      sp2->prevcp = sp2->me;
-      if (sp1->next == NULL)
-	 SplineMake(sp1, sp2, order2);
-      else
-	 SplineRefigure(sp1->next);
-      return (true);
-   } else {
-      /* There are either an infinite number of elliptical solutions or none */
-      /* First search for a solution where one of the points lies on one of */
-      /*  the axes of the ellipse. (If there is a circular solution this    */
-      /*  will find it as the above statement is true of all points on a    */
-      /*  circle). If that fails then try a more general search which will  */
-      /*  find something, but may not find an intuitively expected soln.    */
-      if (MakeEllipseWithAxis(cv, sp1, sp2, order2, changed, ellipse_to_back))
-	 return (true);
-      /* OK, sp1 wasn't on an axis. How about sp2? */
-      SplineSetReverse(spl1);
-      if (spl1 != spl2)
-	 SplineSetReverse(spl2);
-      if (MakeEllipseWithAxis(cv, sp2, sp1, order2, changed, ellipse_to_back))
-	 return (-1);
-      SplineSetReverse(spl1);
-      if (spl1 != spl2)
-	 SplineSetReverse(spl2);
-      /* OK, neither was on an axis. Ellipse is rotated by some odd amount */
-      if (EllipseSomewhere(cv, sp1, sp2, order2, changed, ellipse_to_back))
-	 return (true);
-
-      return (false);
-   }
-}
-
-void _CVMenuMakeLine(CharViewBase * cv, int do_arc, int ellipse_to_back) {
-   SplinePointList *spl, *spl1 = NULL, *spl2 = NULL;
-
-   SplinePoint *sp, *sp1 = NULL, *sp2 = NULL;
-
-   int changed = false;
-
-   int layer;
-
-   for (spl = cv->layerheads[cv->drawmode]->splines; spl != NULL;
-	spl = spl->next) {
-      for (sp = spl->first;;) {
-	 if (sp->selected) {
-	    if (sp1 == NULL) {
-	       sp1 = sp;
-	       spl1 = spl;
-	    } else if (sp2 == NULL) {
-	       sp2 = sp;
-	       spl2 = spl;
-	    } else {
-	       sp1 = (SplinePoint *) - 1;
-	       break;
-	    }
-	 }
-	 if (sp->next == NULL)
-	    break;
-	 sp = sp->next->to;
-	 if (sp == spl->first)
-	    break;
-      }
-      if (sp1 == (SplinePoint *) - 1)
-	 break;
-   }
-   if (sp1 != (SplinePoint *) - 1 && sp2 != NULL &&
-       ((sp1->prev == NULL || sp1->next == NULL)
-	&& (sp2->prev == NULL || sp2->next == NULL) && !(sp1->next != NULL
-							 && sp1->next->to ==
-							 sp2)
-	&& !(sp1->prev != NULL && sp1->prev->from == sp2))) {
-      layer = CVLayer(cv);
-      CVPreserveState(cv);
-      if (sp1->next != NULL) {
-	 sp = sp1;
-	 sp1 = sp2;
-	 sp2 = sp;
-	 spl = spl1;
-	 spl1 = spl2;
-	 spl2 = spl;
-      }
-      if (spl1 == spl2) {
-	 /* case of two connected points is handled below */
-	 /* This case joins the endpoints of an open-contour */
-	 if (MakeShape
-	     (cv, spl1, spl2, sp1, sp2, cv->sc->layers[layer].order2, changed,
-	      do_arc, ellipse_to_back)) {
-	    changed = true;
-	    spl1->last = spl1->first;
-	 }
-      } else {
-	 if (sp1->next != NULL)
-	    SplineSetReverse(spl1);
-	 if (sp2->prev != NULL)
-	    SplineSetReverse(spl2);
-	 switch (MakeShape
-		 (cv, spl1, spl2, sp1, sp2, cv->sc->layers[layer].order2,
-		  changed, do_arc, ellipse_to_back)) {
-	   case 1:
-	      spl1->last = spl2->last;
-	      for (spl = cv->layerheads[cv->drawmode]->splines;
-		   spl != NULL && spl->next != spl2; spl = spl->next);
-	      if (spl != NULL)
-		 spl->next = spl2->next;
-	      else
-		 cv->layerheads[cv->drawmode]->splines = spl2->next;
-	      chunkfree(spl2, sizeof(*spl2));
-	      changed = true;
-	      break;
-	   case -1:
-	      /* we reversed spl1 and spl2 to get a good match */
-	      spl2->last = spl1->last;
-	      SplineSetReverse(spl2);
-	      for (spl = cv->layerheads[cv->drawmode]->splines;
-		   spl != NULL && spl->next != spl1; spl = spl->next);
-	      if (spl != NULL)
-		 spl->next = spl1->next;
-	      else
-		 cv->layerheads[cv->drawmode]->splines = spl1->next;
-	      chunkfree(spl1, sizeof(*spl1));
-	      changed = true;
-	      break;
-	 }
-      }
-   } else
-      for (spl = cv->layerheads[cv->drawmode]->splines; spl != NULL;
-	   spl = spl->next) {
-	 for (sp = spl->first;;) {
-	    if (sp->selected) {
-	       if (sp->next != NULL && sp->next->to->selected) {
-		  if (MakeShape
-		      (cv, spl, spl, sp, sp->next->to, sp->next->order2,
-		       changed, do_arc, ellipse_to_back))
-		     changed = true;
-		  if (!changed) {
-		     CVPreserveState(cv);
-		     changed = true;
-		  }
-		  if (!do_arc) {
-		     sp->nextcp = sp->me;
-		     sp->nonextcp = true;
-		     sp->next->to->prevcp = sp->next->to->me;
-		     sp->next->to->noprevcp = true;
-		  }
-		  SplineRefigure(sp->next);
-	       }
-	    }
-	    if (sp->next == NULL)
-	       break;
-	    sp = sp->next->to;
-	    if (sp == spl->first)
-	       break;
-	 }
-      }
-
-   if (changed)
-      CVCharChangedUpdate(cv);
-}
-
 void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {
    uint8 *instrs = sc->ttf_instrs == NULL && sc->parent->mm != NULL
       && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
@@ -3034,11 +2627,7 @@ static struct sc_interface noui_sc = {
 
 struct sc_interface *sc_interface = &noui_sc;
 
-void FF_SetSCInterface(struct sc_interface *sci) {
-   sc_interface = sci;
-}
-
-static void CVChngNoUpdate(CharViewBase * cv) {
+void CVChngNoUpdate(CharViewBase * cv) {
    _SCChngNoUpdate(cv->sc, CVLayer(cv), true);
 }
 
@@ -3060,28 +2649,3 @@ static struct cv_interface noui_cv = {
 };
 
 struct cv_interface *cv_interface = &noui_cv;
-
-void FF_SetCVInterface(struct cv_interface *cvi) {
-   cv_interface = cvi;
-}
-
-
-void SCRemoveKern(SplineChar * sc) {
-   if (sc->kerns != NULL) {
-      KernPairsFree(sc->kerns);
-      sc->kerns = NULL;
-      sc->parent->changed = true;
-      if (sc->parent->fv->cidmaster != NULL)
-	 sc->parent->fv->cidmaster->changed = true;
-   }
-}
-
-void SCRemoveVKern(SplineChar * sc) {
-   if (sc->vkerns != NULL) {
-      KernPairsFree(sc->vkerns);
-      sc->vkerns = NULL;
-      sc->parent->changed = true;
-      if (sc->parent->fv->cidmaster != NULL)
-	 sc->parent->fv->cidmaster->changed = true;
-   }
-}
