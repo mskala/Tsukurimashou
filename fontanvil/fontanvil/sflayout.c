@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 2952 2014-03-15 17:28:24Z mskala $ */
+/* $Id: sflayout.c 2967 2014-03-20 18:49:57Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -762,112 +762,6 @@ void LI_fontlistmergecheck(LayoutInfo * li) {
       }
    }
    fontlistcheck(li);
-}
-
-static void LayoutInfoChangeFontList(LayoutInfo * li, int rpllen,
-				     int sel_start, int sel_end) {
-   /* we are removing a chunk starting at sel_start going to sel_end */
-   /*  and replacing it with a chunk that is rpllen long */
-   /* So we remove any chunks wholy within sel_start,sel_end and extend the */
-   /*  chunk at sel_start by rpllen */
-   struct fontlist *fl, *next, *test;
-
-   int diff;
-
-   int ps, pe, ls, le, p, l;
-
-   struct fontlist *oldstart, *oldend;
-
-   fontlistfree(li->oldfontlist);
-   li->oldfontlist = LI_fontlistcopy(li->fontlist);
-
-   diff = rpllen - (sel_end - sel_start);
-
-   ps = 0;
-   pe = li->pcnt;
-   ls = 0;
-   le = li->lcnt;
-   p = l = 0;
-   oldstart = li->fontlist;
-   for (fl = li->fontlist; fl != NULL && fl->start <= sel_start;
-	fl = fl->next) {
-      if (fl->next != NULL && fl->end != fl->next->start
-	  && fl->next->start <= sel_start) {
-	 oldstart = fl->next;
-      }
-   }
-   if (li->paras != NULL && oldstart != NULL) {
-      while (p < li->pcnt && li->paras[p].start_pos != oldstart->start)
-	 ++p;
-      if (p < li->pcnt) {
-	 ps = p;
-	 while (l < li->lcnt
-		&& li->lineheights[l].start_pos != oldstart->start)
-	    ++l;
-	 if (l < li->lcnt)
-	    ls = l;
-      }
-   }
-
-   for (fl = oldstart; fl != NULL && sel_end >= fl->start; fl = fl->next);
-   oldend = fl;
-   while (oldend != NULL && li->text[oldend->start - 1] != '\n')
-      oldend = oldend->next;
-   if (oldend != NULL && li->paras != NULL) {
-      while (p < li->pcnt && li->paras[p].start_pos != oldend->start)
-	 ++p;
-      if (p < li->pcnt) {
-	 pe = p;
-	 while (l < li->lcnt && li->lineheights[l].start_pos != oldend->start)
-	    ++l;
-	 if (l < li->lcnt)
-	    le = l;
-	 for (; p < li->pcnt; ++p)
-	    li->paras[p].start_pos += diff;
-	 for (; l < li->lcnt; ++l)
-	    li->lineheights[l].start_pos += diff;
-      }
-   }
-   li->ps = ps;
-   li->pe = pe;
-   li->ls = ls;
-   li->le = le;
-   li->oldstart = oldstart;
-   li->oldend = oldend;
-
-   for (fl = li->fontlist; fl != NULL && sel_start > fl->end; fl = fl->next);
-   if (fl == NULL)
-      return;
-   if (fl->next != NULL && fl->end == fl->next->end)
-      fl = fl->next;
-   if (fl->end >= sel_end) {
-      fl->end += diff;
-      fl = fl->next;
-   } else {
-      fl->end = sel_start + rpllen;
-      for (test = fl->next; test != NULL && sel_end >= test->end; test = next) {
-	 next = test->next;
-	 free(test->feats);
-	 free(test->sctext);
-	 free(test->ottext);
-	 chunkfree(test, sizeof(struct fontlist));
-      }
-      fl->next = test;
-      if (test != NULL) {
-	 if (li->text[fl->end] == '\n')
-	    test->start = fl->end + 1;
-	 else
-	    test->start = fl->end;
-	 test->end += diff;
-	 fl = test->next;
-      } else
-	 fl = NULL;
-   }
-   while (fl != NULL) {
-      fl->start += diff;
-      fl->end += diff;
-      fl = fl->next;
-   }
 }
 
 void LayoutInfo_Destroy(LayoutInfo * li) {

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+echo '【气】⿳<𠂉>⿰丿一一乁' > tbv-d-$$.eids
+echo '⿳<𠂉>⿰丿一一乁' >> tbv-d-$$.eids
+echo '⿳⿰丿一一乁' >> tbv-d-$$.eids
+echo '⿳⿰丿一一?' >> tbv-d-$$.eids
+echo '⿳⿰丿一??' >> tbv-d-$$.eids
+echo '⿳⿰丿???' >> tbv-d-$$.eids
+echo '⿳⿰????' >> tbv-d-$$.eids
+
+./idsgrep -G --bitvec-debug tbv-d-$$.eids > tbv-d-$$.bvec 2> /dev/null
+./idsgrep -I '|⺡⿳⿰丿一一乁' tbv-d-$$.eids > tbv-outa.$$
+./idsgrep --bitvec-debug '|⺡⿳⿰丿一一乁' tbv-d-$$.eids \
+  | grep -v 'Garbage' > tbv-outb.$$
+
+if diff tbv-outa.$$ tbv-outb.$$
+then
+  rm -f tbv-d-$$.eids tbv-d-$$.bvec tbv-outa.$$ tbv-outb.$$
+  exit 0
+else
+  rm -f tbv-d-$$.eids tbv-d-$$.bvec tbv-outa.$$ tbv-outb.$$
+  exit 1
+fi

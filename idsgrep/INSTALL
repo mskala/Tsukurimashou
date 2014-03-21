@@ -1,4 +1,4 @@
-This is IDSgrep 0.1.
+This is IDSgrep.
 
 Quick start:
    ./configure ; make ; make install
