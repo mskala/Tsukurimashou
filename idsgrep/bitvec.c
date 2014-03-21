@@ -45,7 +45,7 @@ uint32_t magic_seed[MSEED_SIZE]={
    UINT32_C(0xe381abe9),UINT32_C(0xa0ade382),UINT32_C(0x92e381b6),
    UINT32_C(0xe381a4e3),UINT32_C(0x8191e381),UINT32_C(0xa6e6adbb),
    UINT32_C(0xe381ad21),
-   (uint32_t)(LAMBDA+128),
+   (uint32_t)(LAMBDA+256), /* add multiples of 128 on breaking changes */
    (uint32_t)sizeof(INDEX_HEADER),(uint32_t)sizeof(INDEX_RECORD),
 };
 
@@ -184,7 +184,7 @@ void haystack_bits_fn(NODE *n,uint64_t bits[2]) {
     case 3:
       haystack_bits_fn(n->child[0],cbits);
       bits[0]|=(cbits[0]<<32);
-      bits[0]|=(cbits[0]&UINT64_C(0xFFFFFFFF00000000));
+      bits[1]|=(cbits[0]&UINT64_C(0xFFFFFFFF00000000));
       bits[1]|=
 	((cbits[1]|(cbits[1]<<32))&UINT64_C(0xFFFFFFFF00000000));
 
