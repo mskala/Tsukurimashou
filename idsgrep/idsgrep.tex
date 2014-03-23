@@ -223,6 +223,9 @@ things in detail; for now, here are some examples.
   not otherwise be available.
 \item[\texttt{idsgrep -d -c indent 萌}]~\\
   The \texttt{-c} option selects ``cooked'' or pretty-printed output modes.
+\item[\texttt{idsgrep -d -C 萌}]~\\
+  The \texttt{-C} option selects colourized output for ANSI terminals (and,
+  implicitly, cooked mode).
 \item[\texttt{idsgrep -d -f FontFile.otf '\#1'}]~\\
   The \texttt{-f} option reads the character set of an OpenType font
   and makes it available as a user-defined matching predicate accessed
@@ -309,16 +312,14 @@ back and check them out later if interested.
 
 \section{What's new}
 
-The main new features in version 0.4 are:
+The main new items in version 0.5 are:
 \begin{itemize}
-  \item changes to the build system for better integration with
-    Tsukurimashou;
-  \item experimental support for bit vector indices;
-  \item support for user-defined matching predicates, and in particular, the
-    ability to match against the list of characters defined by a font file
-    (``\texttt{-f}'' option);
-  \item built-in generation of Unicode character lists (``\mbox{\texttt{-U}}''
-    option).
+  \item support for CJKVI, which is a cleaned-up version of more or less the
+    same data as CHISE IDS (this database now ships with IDSgrep);
+  \item colourized output in cooked mode via the \texttt{-{}-colour} option;
+  \item word wrapping in cooked mode;
+  \item fixes for some obscure bugs in matching and database compilation;
+  \item nearly full test coverage (everything except the TTF/OTF reader).
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -338,8 +339,8 @@ bug-tracker items should be filed there.
 
 A minimal default build and install could run something like this:
 \begin{verbatim}
-tar -xzvf idsgrep-0.3.tar.gz
-cd idsgrep-0.3
+tar -xzvf idsgrep-0.5.tar.gz
+cd idsgrep-0.5
 ./configure
 make
 su -c 'make install'
@@ -347,18 +348,20 @@ su -c 'make install'
 
 IDSgrep can build dictionaries
 from the Tsukurimashou font package, which is available through the same
-Sourceforge.JP project as IDSgrep; from the KanjiVG database available at
-\url{http://kanjivg.tagaini.net/}~\cite{KanjiVG}; from the CHISE IDS
-database available at
+Sourceforge.JP project as IDSgrep;
+from the KanjiVG database available at
+\url{http://kanjivg.tagaini.net/}~\cite{KanjiVG};
+from the CHISE IDS database available at
 \url{http://chise.zinbun.kyoto-u.ac.jp/dist/ids/}~\cite{CHISE};
+from the CJKVI database available at
+\url{https://github.com/cjkvi/cjkvi-ids}~\cite{CJKVI};
 or from the EDICT2 database available at
 \url{http://www.csse.monash.edu.au/~jwb/edict.html}~\cite{EDICT2}.  For an
 ideal complete installation of IDSgrep, one would download all those
 packages, build Tsukurimashou first, and make it and the dictionaries
 available to the IDSgrep \texttt{configure} script.
-A precompiled version of the CHISE IDS-derived dictionary is bundled
-in the IDSgrep distribution tarball, so that one should be available (though
-not necessarily up-to-date) without any dependencies.
+The CJKVI dictionary data (current as of March 22, 2014) is included in the
+IDSgrep package, so need not be downloaded except to update it.
 
 Regular expression matching requires building with the Perl-Compatible
 Regular Expression (PCRE) library available at
@@ -380,14 +383,14 @@ Here is a more complete installation process relying on \texttt{configure}
 to find Tsukurimashou in a
 sibling directory and the other dictionaries in the current directory:
 \begin{verbatim}
-unzip tsukurimashou-0.6.zip
-cd tsukurimashou-0.6
+unzip tsukurimashou-0.5.zip
+cd tsukurimashou-0.5
 ./configure
 make
 # install of Tsukurimashou not needed by IDSgrep
 cd ..
-tar -xzvf idsgrep-0.2.tar.gz
-cd idsgrep-0.2
+tar -xzvf idsgrep-0.5.tar.gz
+cd idsgrep-0.5
 ln -s /some/where/else/kanjivg-20120219.xml.gz .
 ln -s /some/where/else/edict2.gz .
 ln -s /some/where/else/chise-ids-0.25 .
@@ -418,9 +421,11 @@ help message.
 The EDICT2-based dictionary should preferably include
 character decompositions from some other dictionary; which one is
 selectable by the \texttt{--enable-edict-decomp} option.  Allowed values
-include \texttt{chise}, \texttt{kanjivg}, \texttt{tsuku}, and \texttt{no};
-the default of \texttt{auto} will try all of those in that order and use the
-first that works.  The value \texttt{no} corresponds to simply mapping every
+include \texttt{chise}, \texttt{kanjivg}, \texttt{tsuku}, \texttt{cjkvi-j}
+(other CJKVI languages besides Japanese may also be specified, but might not
+make much sense), and \texttt{no};
+the default is \texttt{cjkvi-j}.
+The value \texttt{no} corresponds to simply mapping every
 character to itself without further decomposition; that is obviously not as
 informative as might be desired, but it will still allow for regular
 expression searches.
@@ -458,7 +463,7 @@ installed.  To do a coverage analysis, run \texttt{configure} with
 clean} (necessary to be sure all object files are rebuilt with the coverage
 instrumentation) followed by \texttt{make check}.  Most people would not
 want to install the IDSgrep binary itself when built under this option.  As
-of version 0.4, the current test suite is not expected to achieve full
+of version 0.5, the current test suite is not expected to achieve full
 coverage on most installations (though it should come close), so do not
 report failure of this test as a bug nor get too concerned about it.
 
@@ -535,6 +540,66 @@ glyphs.  The distinction between characters and glyphs simply cannot be made
 perfectly in all cases.  For use in cases where variation selectors appear
 to be appropriate, both CHISE IDS and IDSgrep extend IDS syntax in
 such a way as to allow them in some way.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Interface to CJKVI}
+
+Taichi Kawabata and the CJKVI Project~\cite{CJKVI} maintain a database of
+Unicode IDSes derived from the CHISE IDS database (next subsection) and
+marked up for the different between Han-script languages (Chinese, Japanese,
+Korean, etc.).  There is little documentation of this database, and even
+less in English.  But the data is posted in a Github repository and
+occasionally updated, and a current version as of this writing is also
+bundled with IDSgrep.  This data is
+covered by GPL and as of IDSgrep 0.5, it is the suggested default dictionary
+for IDSgrep.  It contains about 74000 entries, in an extended IDS syntax
+more or less the same as CHISE IDS's.
+
+For most characters, the CJKVI database contains a single IDS assumed to
+represent that character in all languages.  When there is more than one IDS
+for a character, \emph{usually} the IDSes are tagged with non-overlapping
+combinations of letters in the set $\{$ G, T, J, K, V $\}$, for simplified
+Chinese, traditional Chinese, Japanese, Korean, and Vietnamese respectively. 
+There might be two slightly different IDSes with one tagged [G] and the
+other tagged [TJK]; in such a case IDSgrep's dictionary compiler will use
+the first for simplified Chinese; the second for traditional Chinese,
+Japanese, and Korean; and exclude that entry entirely for any other
+languages, such as Vietnamese.  However, exceptions to this scheme exist. 
+There are entries with more than one untagged IDS for a character.  There
+are entries with more than one IDS sharing a tag.  There are entries with a
+mixture of tagged and untagged IDSes.  And there are even a few rare tags
+with unknown meanings that occur only in a few entries (U, H, and X have all
+been observed).
+
+The bundled version of the database is in the file \texttt{cjkvi-ids.txt}. 
+Overwrite that file with a new version of the CJKVI Project's
+\texttt{ids.txt} file, if they release one and you want to use it (new
+releases are rare now that the data is mature).  IDSgrep's build system will
+expect to find this file included in the source directory.
+
+Because of the language tagging, it is possible to build more than one
+dictionary from CJKVI IDS data.  The \texttt{-{}-enable-cjkvi-style} option
+to \texttt{configure} takes a string of lowercase letters in the set $\{$ g,
+t, k, j, v, x, h, a $\}$ and will build one dictionary for each letter
+specified.  For example, an argument value of ``gtk'' would build the
+simplified and traditional Chinese dictionaries and the Korean dictionary. 
+The default is ``j.'' Dictionaries are placed in files with names like
+\texttt{cjkvi-g.txt}, \texttt{cjkvi-t.txt}, \texttt{cjkvi-k.txt}, and so on. 
+Note that the rare language tag U is always counted as if it were X; and the
+special value ``a'' will match all languages.
+
+When building a dictionary
+for a language tag other than ``a,'' for each code point the
+dictionary builder will use the first IDS on the line in
+\texttt{cjkvi-ids.txt} that matches the specified tag; if no IDS
+specifically mentions the specified tag, then it will use the first IDS on
+the line at all, should that one have no tag; and otherwise it will not
+include that code point in the dictionary.  The ``a'' style is special:
+there, it creates an entry for \emph{every} IDS on the line, even if that
+means several entries for the same code point.  However, the first one
+encountered is always the one chosen for recursive decompositions of leaves
+in the entries.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -634,17 +699,10 @@ plausible under Unicode's definition of what variation selectors signify)
 and \texttt{chise2eids} does not attempt to accomodate anything like that.
 
 The CHISE IDS database is covered by the GNU GPL version 2 or later, which
-is basically compatible with the GNU GPL version 3 used by IDSgrep.  So
-distributions of IDSgrep can reasonably include a bundled copy of
-\texttt{chise.eids} for the benefit of users who don't want to download the
-separate package and generate their own.  Without taking a position on
-whether the \texttt{chise.eids} file constitutes ``object code'' for the
-purposes of the GNU GPL as opposed to being modified source code in itself,
-I am willing to provide a copy of the CHISE IDS checkout I used to generate
-my version of \texttt{chise.eids}, to anyone who contacts me about it at
-\url{mskala@ansuz.sooke.bc.ca}.  Going directly to the original distribution
-points at the URLs given above is probably a more convenient option for most
-users.
+is basically compatible with the GNU GPL version 3 used by IDSgrep.  IDSgrep
+0.4 included a bundled copy of the dictionary derived from CHISE IDS, but as
+of version 0.5, that has been replaced by a bundled copy of the CJKVI
+database.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -818,7 +876,7 @@ Tsukurimashou's directory, then \texttt{cd} to IDSgrep's directory and run
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\break\vspace*{-1.82\baselineskip}%
+%\break\vspace*{-1.82\baselineskip}%
 \section{A note on TrueType/OpenType}\DangerousSection
 
 This version of IDSgrep is designed to read TrueType or
@@ -956,7 +1014,7 @@ are fully implemented for output.
 
 \begin{description}
 
-\item[\texttt{-c}, \texttt{--cooking}]
+\item[\texttt{-c}, \texttt{-{}-cooking}]
 Select the output generation and input canonicalization mode.  Requires one
 argument, which may be one of the keywords \texttt{raw}, \texttt{rawnc},
 \texttt{ascii}, \texttt{cooked}, or \texttt{indent}, to specify a preset
@@ -964,7 +1022,7 @@ mode; or a string of up to twelve decimal digits to control the output in
 more detail.  The default mode is \texttt{raw}.  See the
 section on ``cooked output'' in this manual for more details.
 
-\item[\texttt{-d}, \texttt{--dictionary}]
+\item[\texttt{-d}, \texttt{-{}-dictionary}]
 Read a dictionary
 from the standard location.  There is a pathname for dictionaries hardcoded
 into the \texttt{idsgrep} binary, generally
@@ -983,7 +1041,7 @@ the dictionary name, as ``\texttt{-dt}'' or ``\texttt{-dk},'' will search
 just the matching one; and it remains possible to specify a file exactly or
 use standard input in the usual \texttt{grep}-like way.
 
-\item[\texttt{-f}, \texttt{--font-chars}]
+\item[\texttt{-f}, \texttt{-{}-font-chars}]
 Read a font file and make its character coverage available as a user-defined
 matching predicate through the ``\texttt{\#}'' matching operator.  In the
 current version, this feature can only read TrueType and OpenType files that
@@ -997,7 +1055,17 @@ or 64 on many systems.
 \item[\texttt{-h}, \texttt{--help}] Display a short summary of these
 options.
 
-\item[\texttt{-G}, \texttt{--generate-index}]
+\item[\texttt{-C}, \texttt{-{}-colour}, \texttt{-{}-color}] Colourize the
+output with ANSI terminal escape sequences.  The long form takes an optional
+argument which may be ``\texttt{always},'' ``\texttt{auto},'' or
+``\texttt{never}.'' The default is ``\texttt{auto}'' if the long form option
+is specified with no argument, and the short form \texttt{-C} which does not
+take an argument is equivalent to \texttt{-{}-color=auto}, but not
+specifying a colour option at all is the same as specifying
+``\texttt{never}.'' In ``\texttt{auto}'' mode, IDSgrep will colourize if and
+only if standard output is a terminal.
+
+\item[\texttt{-G}, \texttt{-{}-generate-index}]
 Instead \DangerousBend of searching for trees that match a matching
 pattern, generate and
 write to standard output a bit vector index of the specified file or files.
@@ -1013,10 +1081,10 @@ ignored.  If there is more than one input file, the results for them will be
 concatenated, which is unlikely to be useful.  See the chapter on bit vector
 indices in this manual for more information.
 
-\item[\texttt{-I}, \texttt{--ignore-indices}]
+\item[\texttt{-I}, \texttt{-{}-ignore-indices}]
 Do \emph{not} look for or use any bit vector indices.
 
-\item[\texttt{-U}, \texttt{--unicode-list}] Generate a dictionary of Unicode
+\item[\texttt{-U}, \texttt{-{}-unicode-list}] Generate a dictionary of Unicode
 code points, and read that before reading any other dictionaries or input
 files that may be specified.  The generated dictionary consists of a single
 line for each of the code points U+0000 through U+10FFFF in ascending order,
@@ -1848,10 +1916,10 @@ Nonetheless, the remainder of this section will attempt to document it.
 
 The format specifier may be up to twelve digits long.  If it is shorter than
 that, it is taken as a prefix with unspecified digits copied from the
-default specifier, which is ``\texttt{100000013250}'' and equivalent to the
+default specifier, which is ``\texttt{100000913250}'' and equivalent to the
 ``\texttt{cooked}'' preset.  The two raw presets are handled as special
 cases; of the remaining cooked presets, ``\texttt{ascii}'' is equivalent to
-``\texttt{000000013551}'' and ``\texttt{indent}'' is equivalent to
+``\texttt{000000913551}'' and ``\texttt{indent}'' is equivalent to
 ``\texttt{100000223250}.''
 
 The first digit specifies the type of brackets to be used for the head of
@@ -1870,11 +1938,19 @@ and the sixth digit specifies the brackets for ternary functors:
 ``\texttt{〘〙}''.
 
 The seventh digit describes how to insert newlines and indentation to
-pretty-print the tree structure.  If it is 0, that will not be done.  If it
-is 8, trees will be pretty-printed using one tab character per level; the
-number eight is a mnemonic for the fact that people generally expect those
-to be equivalent to eight spaces each.  Any other decimal digit specifies
-that many spaces per level.
+pretty-print the tree structure.  If it is 0, that will not be done.  Any
+decimal digit from 1 to 7 specifies the number of spaces per level of
+indentation.  If it is 8, trees will be pretty-printed using one tab
+character per level; the number eight is a mnemonic for the fact that people
+generally expect those to be equivalent to eight spaces each.  If it is 9,
+trees will be wrapped to 76 columns by inserting newlines, with three-space
+indentation of all but the first line of each tree.  The added white space
+will only be inserted where it does not change the semantics of the output,
+i.e.\ between and not within bracketed strings.  One consequence is that
+bracketed strings longer than one line, such as occur in the EDICT2-derived
+dictionary, will not be split, but may be moved onto lines of their own. 
+The right margin of 76 will probably become an adjustable option in a future
+version.
 
 The eighth digit specifies the separator printed between trees: 0 for a null
 byte (U+0000), 1 for a newline, 2 for two newlines, or 3 for no separator at
@@ -1959,6 +2035,125 @@ transformation of alphabetic aliases to symbolic names on input; plus 2 to
 enable a translation from alphabetic aliases to symbolic names on output,
 which is generally only meaningful if 4 was selected; plus 1 to enable a
 transformation from symbolic names back to alphabetic aliases on output.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Character widths and line wrapping}\DangerousSection
+
+The line wrap feature involves a grossly disproportionate amount of support
+code because of wide characters.  On a character-cell terminal, a character
+like ``\texttt{A},'' called ``narrow,'' takes up one cell of horizontal
+space.  The line length is assumed to be 80 cells, so we can print 80 of
+those characters per line.  But there are other characters like
+``\texttt{あ},'' called ``wide,'' that take up two cells each.  Note that
+these wide characters are distinct from, although related to, objects of the
+type \texttt{wchar\_t}, which are also sometimes called wide characters.  If
+we print more than 40 wide characters without a line break, we run off the
+edge of the terminal.  Moreover, if we are one cell away from the end of the
+line, we can't print a wide character even though there is some space
+remaining.  Since IDSgrep's output usually includes a mixture of wide and
+narrow characters, correct line wrapping requires detailed knowledge of
+character widths.
+
+The width of control characters cannot necessarily be defined (how ``wide''
+is carriage return?), but there are also things that are not exactly control
+characters but seem like they should have widths other than one or two.  For
+instance, combining characters seem like they should have zero width; there
+are multi-em dashes like U+2E3B which seem like they should have width
+greater than two; the variable-length sequence of code points corresponding
+to a spelled-out Korean syllable seems like it should be two cells wide as a
+whole, with no meaningful breakdown of which code points
+correspond to which fraction of that; there are issues with bidi (mixing
+left-to-right and right-to-left scripts); languages like Thai and Mongolian
+present their own problems; and so on.  All in all, it probably just isn't
+possible to do correct typewriter-style line breaking on general Unicode
+text.  IDSgrep nonetheless makes the attempt, at least for the kinds of text
+expected to occur in its dictionaries.
+
+There is no standardized list of which characters are wide and which are
+narrow.  Pre-Unicode CJK character sets had the simple rule that those
+encoded with one byte were narrow, one-cell characters, and those encoded
+with two bytes were wide, two-cell characters.  The ``wide Latin'' and
+``narrow katakana'' character ranges originate in that distinction.  But
+IDSgrep does everything in Unicode.
+
+Unicode provides, in a ``Standard Annex''~\cite{Unicode:Width}, some default
+rules for deciding whether a code point should be treated as narrow or wide. 
+There is a field in the Unicode character database specifying the treatment
+of each character.  Unfortunately, that field does not just say ``wide'' or
+``narrow''; Unicode allows six different values for it including ``neutral''
+and ``ambiguous,'' and the treatment for those is explicitly left to
+application developers to decide according to context.
+
+POSIX provides a library function called \texttt{wcwidth(3)}, which is supposed to
+answer the question of how many columns wide a character might be.  However,
+it has some problems for use with IDSgrep.  It takes a \texttt{wchar\_t} as
+its argument, not necessarily a Unicode code point.  So IDSgrep would have
+to convert its internal representation (which is always UTF-8) into whatever
+\texttt{wchar\_t} might be on the particular platform, making portability
+that much more difficult.  A \texttt{wchar\_t} is \emph{usually} a Unicode
+code point on modern installations, but there is no promise of that, and it
+is a recipe for headaches.  It would also introduce an undesired, though
+maybe necessary, dependence of IDSgrep's behaviour on the local host's i18n
+configuration.  The idea of converting to Shift-JIS and then counting the
+bytes has similar issues.
+
+On my own installation, \texttt{wcwidth(3)} would not even produce correct
+results.  It seems to follow the Unicode rules with decisions on the
+unspecified points that are not appropriate for IDSgrep.  For instance, my
+installation's \texttt{wcwidth(3)} claims that enclosed characters like
+\texttt{①②③} should be one-cell characters, because Unicode classes them as
+Ambiguous, treated as narrow by default, because both CJK and non-CJK
+character sets have historically included things that are now mapped to
+those code points.  But in IDSgrep output they should definitely be counted
+as two-cell characters, because they would almost certainly derive from CJK
+sources and the relevant fonts make them the same size as Han characters.
+
+IDSgrep's solution to these issues is messy, and quite possibly will be
+ripped out and replaced with something else in the future, but it at least
+produces reasonable results on my own installation, and since the
+consequences are mostly cosmetic anyway, I consider it good enough for the
+moment.
+
+The file \texttt{widthtab.c}, distributed as part of the IDSgrep package,
+contains the knowledge of which characters are narrow or wide (or
+zero-width).  Most of this file is the transition table of two finite state
+automata that make the decision by examining the UTF-8 representation of the
+character (not its code point).  The automata are encoded in a complicated
+way intended to be efficient in both time and space: each state specifies
+the index of a bit in the UTF-8 representation, and then the three bits
+starting from that point are used to choose from among eight transitions,
+which could consist of accepting, rejecting, or going to another state to
+look at more bits.  The two automata share the same state table, with two
+different starting states; some of the states are allowed to overlap between
+the two.  BDD hackers will note that this is, more or less, a ``reduced
+ordered octal decision diagram,'' something like a BDD with three layers of
+bit tests collapsed into a choice of eight paths\footnote{\texttt{八正道}}
+at each level.  \emph{As long as there is no need to change the width
+mapping}, this file can safely be treated as a black box.
+
+However, it is not practical for a human being to edit the
+transition tables directly.  Instead, the file \texttt{mkwcw.c} contains a
+meta-program for generating \texttt{widthtab.c}.  This file is distributed
+with IDSgrep but is not built and used by default.  You should only use it
+if you wish to update \texttt{widthtab.c} for a new version of the Unicode
+database or to reflect different preferences about how to override the
+default and unspecified width definitions from the Unicode database.
+
+To build and run \texttt{mkwcw} and re-generate \texttt{widthtab.c}, use the
+\texttt{-{}-enable-widthtab} configuration option when building IDSgrep. 
+This will require the BuDDy library for BDD processing, even
+though BuDDy is not required to compile and run the code that
+\texttt{mkwcw} generates.  It will also require current versions of
+the \texttt{EastAsianWidth.txt} and \texttt{UnicodeData.txt} files from the
+Unicode Character Database.  The file \texttt{widths.txt}, which ships with
+IDSgrep, contains width information that will override what is in
+\texttt{EastAsianWidth.txt}; any code points mentioned here will have the
+widths specified in \texttt{widths.txt} instead of the widths specified in
+\texttt{EastAsianWidth.txt}.  It is written in the same format as
+\texttt{EastAsianWidth.txt}.
+
+See the comments in \texttt{mkwcw.c} for further details on its use.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

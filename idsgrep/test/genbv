@@ -11,6 +11,10 @@ echo '.foo.,.x.⿱止月.y.⿱止月' >> gbv-d-$$.eids
 ./idsgrep -I '!&!⿱止?!⿱?月' gbv-d-$$.eids > gbv-outa.$$
 ./idsgrep --bitvec-debug '|⿱止?⿱?月' gbv-d-$$.eids \
   | grep -v 'Garbage' > gbv-outb.$$
+sleep 3
+touch gbv-d-$$.eids
+./idsgrep '!&!⿱止?!⿱?月' gbv-d-$$.eids >> gbv-outa.$$
+./idsgrep -I '!&!⿱止?!⿱?月' gbv-d-$$.eids >> gbv-outb.$$
 
 if diff gbv-outa.$$ gbv-outb.$$
 then

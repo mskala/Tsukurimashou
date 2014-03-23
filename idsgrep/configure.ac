@@ -380,7 +380,7 @@ AM_CONDITIONAL([COND_TSUKU_BUILD], [test '!' "$with_tsuku_build" = no])
 AC_SUBST([with_tsuku_build])
 #
 AC_ARG_ENABLE([cjkvi-style],
-  [AS_HELP_STRING([--enable-cjkvi-style=[[gtjkvxa]]],
+  [AS_HELP_STRING([--enable-cjkvi-style=[[gtjkvxha]]],
     [which CJKVI dictionaries to build [j]])],
     [],
     [enable_cjkvi_style=j])
@@ -410,6 +410,7 @@ AS_IF([test "$enable_edict_decomp" = "cjkvi-j"],[edict_decomp=cjkvi-j.eids])
 AS_IF([test "$enable_edict_decomp" = "cjkvi-k"],[edict_decomp=cjkvi-k.eids])
 AS_IF([test "$enable_edict_decomp" = "cjkvi-v"],[edict_decomp=cjkvi-v.eids])
 AS_IF([test "$enable_edict_decomp" = "cjkvi-x"],[edict_decomp=cjkvi-x.eids])
+AS_IF([test "$enable_edict_decomp" = "cjkvi-h"],[edict_decomp=cjkvi-x.eids])
 AS_IF([test "$enable_edict_decomp" = "cjkvi-a"],[edict_decomp=cjkvi-a.eids])
 AS_IF([test "$enable_edict_decomp" = "chise"],[edict_decomp=chise.eids])
 AS_IF([test "$enable_edict_decomp" = "kanjivg"],[edict_decomp=kanjivg.eids])

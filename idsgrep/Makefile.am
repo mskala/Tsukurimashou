@@ -131,7 +131,7 @@ endif
 if COND_EDICT2
    MAYBE_EDICTDATA=edict.eids edict.bvec
 endif
-MAYBE_CJKVIDATA=$(foreach ver,g t j k v x a,\
+MAYBE_CJKVIDATA=$(foreach ver,g t j k v x h a,\
   $(if $(findstring $(ver),$(enable_cjkvi_style)),\
   cjkvi-$(ver).eids cjkvi-$(ver).bvec ))
 

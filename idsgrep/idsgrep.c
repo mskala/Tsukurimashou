@@ -336,12 +336,12 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 	       /* go to appropriate place in the file */
 	       if ((offset!=ir[ir_done].offset)
 		   && (fseeko(infile,ir[ir_done].offset,SEEK_SET)!=0)) {
-		  fclose(infile);
-		  fclose(idxfile);
-		  free(ir);
-		  fprintf(stderr,"error seeking in %s\n",fn);
+		  fclose(infile); /* SNH */
+		  fclose(idxfile); /* SNH */
+		  free(ir); /* SNH */
+		  fprintf(stderr,"error seeking in %s\n",fn); /* SNH */
 		  /* not fatal - should still look in other files */
-		  return;
+		  return; /* SNH */
 	       }
 	       offset=ir[ir_done].offset;
 	       
@@ -519,7 +519,7 @@ int main(int argc,char **argv) {
    /* deal with version and help */
    if (show_version)
      puts(PACKAGE_STRING "\n\n"
-	  "Copyright (C) 2012 Matthew Skala\n"
+	  "Copyright (C) 2012, 2013, 2014  Matthew Skala\n"
 	  "License GPLv3: GNU GPL version 3 <http://gnu.org/licenses/gpl-3.0.html>\n"
 	  "This is free software: you are free to change and redistribute it.\n"
 	  "There is NO WARRANTY, to the extent permitted by law.");
@@ -528,6 +528,7 @@ int main(int argc,char **argv) {
      puts("Usage: " PACKAGE_TARNAME " [OPTION]... PATTERN [FILE]...\n"
 	  "PATTERN should be an Extended Ideographic Description Sequence\n\n"
 	  "Options:\n"
+	  "  -C, --colo[u]r=VAL        always/never/auto colourize output\n"
 	  "  -G, --generate-index      generate bit vector index\n"
 	  "  -I, --ignore-indices      ignore bit vector indices\n"
 	  "  -U, --unicode-list=CFG    generate Unicode list\n"

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if ./idsgrep -I '?' *.eids > /dev/null
+if ./idsgrep -I '?' *[a-z].eids > /dev/null
 then
   exit 0
 else
