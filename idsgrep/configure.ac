@@ -4,7 +4,7 @@
 
 #
 # Configuration source for IDSgrep
-# Copyright (C) 2012, 2013  Matthew Skala
+# Copyright (C) 2012, 2013, 2014  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -159,8 +159,8 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 #
 AC_PREREQ([2.67])
 AC_INIT([IDSgrep],
-	[0.4], [mskala@ansuz.sooke.bc.ca], [idsgrep],
-	[[http://tsukurimashou.sourceforge.jp/]])
+	[0.5], [mskala@ansuz.sooke.bc.ca], [idsgrep],
+	[[http://tsukurimashou.sourceforge.jp/idsgrep.php]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign color-tests parallel-tests silent-rules])
@@ -168,8 +168,8 @@ AC_CONFIG_SRCDIR([idsgrep.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_REVISION([$Id: configure.ac 1015 2011-12-15 22:24:32Z mskala $])
-AC_COPYRIGHT([Copyright (C) 2012, 2013 Matthew Skala])
-AC_SUBST([release_date],["August 20, 2013"])
+AC_COPYRIGHT([Copyright (C) 2012, 2013, 2014  Matthew Skala])
+AC_SUBST([release_date],["March 23, 2014"])
 AM_SILENT_RULES
 #
 ############################################################################

@@ -239,6 +239,24 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grten.sword =
+  push_pbox_toexpand("kanji.grten.sword");
+  build_kanji.level(build_kanji.lr(670,-20)
+    (build_kanji.tb(480,200)
+      (kanji.radical.tent)
+      (build_kanji.tb(380,0)
+         (build_kanji.lr(450,-40)
+            (kanji.grone.mouth)
+            (kanji.grone.mouth))
+         (build_kanji.lr(450,-10)
+            (build_kanji.lift_skirt(280,170)(kanji.grone.person))
+            (kanji.grone.person))))
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef build_kanji.extend_ltail_enclose(expr splitpoint,overlap)
   (text leftstuff)(text rightstuff) =
   perl_structure:=perl_structure&"'eids.u2FFA.1_4.2_3',[";
@@ -456,6 +474,12 @@ begintsuglyph("uni527B",123);
   build_kanji.level(build_kanji.lr(650,0)
     (kanji.greight.demolish)
     (kanji.rightrad.sword));
+  tsu_render;
+endtsuglyph;
+
+% ken/tsurugi "sword", uncommon character used in names
+begintsuglyph("uni528D",141);
+  kanji.grten.sword;
   tsu_render;
 endtsuglyph;
 

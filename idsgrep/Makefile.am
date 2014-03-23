@@ -175,7 +175,7 @@ endif
 STANDALONE_QVFG:=
 EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  gnugetopt.h idsgrep.tex idsgrep.bib
+  gnugetopt.h idsgrep.tex idsgrep.bib widths.txt
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \

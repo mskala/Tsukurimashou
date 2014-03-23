@@ -312,12 +312,25 @@ back and check them out later if interested.
 
 \section{What's new}
 
+Version 0.5 was pushed out in a bit of a hurry because of the discovery of a
+bug in the version 0.4 bit-vector generator that, although it rarely would make any
+difference in practical applications,\footnote{The issue was that
+because of an array index written as 0 where it should have been 1 in a
+seldom-visited line of code, the bits for the first child of the first child
+of a ternary root would be recorded as if they were for a child, not
+grandchild, of the root.  That resulted in incorrect filtering in roughly
+0.0006\% of my test queries.} nonetheless invalidated the results of
+some experiments I was running.  In order to be able to publish results
+referring to a released version with the correction, it seemed appropriate
+to change the planned schedule of the 0.5 release.
+
 The main new items in version 0.5 are:
 \begin{itemize}
-  \item support for CJKVI, which is a cleaned-up version of more or less the
-    same data as CHISE IDS (this database now ships with IDSgrep);
+  \item support for CJKVI, which is a third-party cleaned-up version of more
+    or less the same data as CHISE IDS (this database now ships with
+    IDSgrep);
   \item colourized output in cooked mode via the \texttt{-{}-colour} option;
-  \item word wrapping in cooked mode;
+  \item line wrapping in cooked mode;
   \item fixes for some obscure bugs in matching and database compilation;
   \item nearly full test coverage (everything except the TTF/OTF reader).
 \end{itemize}
@@ -2046,14 +2059,14 @@ like ``\texttt{A},'' called ``narrow,'' takes up one cell of horizontal
 space.  The line length is assumed to be 80 cells, so we can print 80 of
 those characters per line.  But there are other characters like
 ``\texttt{あ},'' called ``wide,'' that take up two cells each.  Note that
-these wide characters are distinct from, although related to, objects of the
-type \texttt{wchar\_t}, which are also sometimes called wide characters.  If
-we print more than 40 wide characters without a line break, we run off the
-edge of the terminal.  Moreover, if we are one cell away from the end of the
-line, we can't print a wide character even though there is some space
-remaining.  Since IDSgrep's output usually includes a mixture of wide and
-narrow characters, correct line wrapping requires detailed knowledge of
-character widths.
+these wide characters are distinct from, although related to, C-language
+values of the type \texttt{wchar\_t}, which are also sometimes called wide
+characters.  If we print more than 40 wide characters without a line break,
+we run off the edge of the terminal.  Moreover, if we are one cell away from
+the end of the line, we can't print a wide character even though there is
+some space remaining.  Since IDSgrep's output usually includes a mixture of
+wide and narrow characters, correct line wrapping requires attention to
+these issues.
 
 The width of control characters cannot necessarily be defined (how ``wide''
 is carriage return?), but there are also things that are not exactly control
@@ -2072,9 +2085,9 @@ expected to occur in its dictionaries.
 
 There is no standardized list of which characters are wide and which are
 narrow.  Pre-Unicode CJK character sets had the simple rule that those
-encoded with one byte were narrow, one-cell characters, and those encoded
-with two bytes were wide, two-cell characters.  The ``wide Latin'' and
-``narrow katakana'' character ranges originate in that distinction.  But
+characters encoded with one byte were narrow, one-cell characters, and those
+encoded with two bytes were wide, two-cell characters.  The ``wide Latin''
+and ``narrow katakana'' character ranges originate in that distinction.  But
 IDSgrep does everything in Unicode.
 
 Unicode provides, in a ``Standard Annex''~\cite{Unicode:Width}, some default
@@ -2085,29 +2098,30 @@ of each character.  Unfortunately, that field does not just say ``wide'' or
 and ``ambiguous,'' and the treatment for those is explicitly left to
 application developers to decide according to context.
 
-POSIX provides a library function called \texttt{wcwidth(3)}, which is supposed to
-answer the question of how many columns wide a character might be.  However,
-it has some problems for use with IDSgrep.  It takes a \texttt{wchar\_t} as
-its argument, not necessarily a Unicode code point.  So IDSgrep would have
-to convert its internal representation (which is always UTF-8) into whatever
-\texttt{wchar\_t} might be on the particular platform, making portability
-that much more difficult.  A \texttt{wchar\_t} is \emph{usually} a Unicode
-code point on modern installations, but there is no promise of that, and it
-is a recipe for headaches.  It would also introduce an undesired, though
-maybe necessary, dependence of IDSgrep's behaviour on the local host's i18n
-configuration.  The idea of converting to Shift-JIS and then counting the
-bytes has similar issues.
+POSIX provides a library function called \texttt{wcwidth(3)}, which is
+supposed to answer the question of how many columns wide a character might
+be.  However, it has some problems for use with IDSgrep.  It takes a
+\texttt{wchar\_t} as its argument, not necessarily a Unicode code point.  So
+IDSgrep would have to convert its internal representation (which is always
+UTF-8) into whatever \texttt{wchar\_t} might be on the particular platform,
+making portability that much more difficult.  A \texttt{wchar\_t} is
+\emph{usually} a Unicode code point on modern installations, but there is no
+promise of that, and it is a recipe for headaches.  It would also introduce
+an undesired, though maybe necessary, dependence of IDSgrep's behaviour on
+the local host's i18n configuration.  The idea of converting to Shift-JIS
+and then counting the bytes has similar issues.
 
 On my own installation, \texttt{wcwidth(3)} would not even produce correct
 results.  It seems to follow the Unicode rules with decisions on the
 unspecified points that are not appropriate for IDSgrep.  For instance, my
-installation's \texttt{wcwidth(3)} claims that enclosed characters like
-\texttt{①②③} should be one-cell characters, because Unicode classes them as
-Ambiguous, treated as narrow by default, because both CJK and non-CJK
-character sets have historically included things that are now mapped to
-those code points.  But in IDSgrep output they should definitely be counted
-as two-cell characters, because they would almost certainly derive from CJK
-sources and the relevant fonts make them the same size as Han characters.
+installation's \texttt{wcwidth(3)} claims that some but not all enclosed
+characters, like \texttt{①②③}, are one-cell characters, because Unicode
+classes them as Ambiguous, treated as narrow by default, because both CJK
+and non-CJK character sets have historically included things that are now
+mapped to those code points.  But in IDSgrep output they should definitely
+be counted as two-cell characters, because they would almost certainly
+derive from CJK sources and the relevant fonts make them the same size as
+Han characters.
 
 IDSgrep's solution to these issues is messy, and quite possibly will be
 ripped out and replaced with something else in the future, but it at least

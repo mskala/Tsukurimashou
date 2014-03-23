@@ -136,6 +136,32 @@ or 64 on most hosts).
 .BR \-h ", " \-\^\-help
 Display a brief help message.
 .TP
+.BI \-C "\fR,\fP " "\-\^\-colour\fR[\fP=" VAL "\fR],\fP \-\^\-color\fR[\fP=" VAL "\fR]\fP"
+Possibly colourize the output using ANSI terminal escape sequences.
+The
+.I VAL
+argument may be
+.BR always ", " never ", or " auto ", "
+defaulting to
+.B auto
+with the
+.B -C
+short form (which does not take an argument) or to
+.B never
+when no form of this option has been specified.
+In
+.B always
+mode, colourization will be performed unconditionally; in
+.B auto
+mode it will be performed if and only if standard output is a terminal;
+and in
+.B never
+mode it will not be performed.
+Note that the inserted escape sequences make the colourized output of
+.B @PACKAGE@
+unsuitable as input for a further invocation of
+.BR @PACKAGE@ "."
+.TP
 .BR \-G ", " \-\^\-generate-index
 Instead of searching for trees that match a matching pattern, generate
 and write to standard output a bit vector index of the specified file or
@@ -153,7 +179,6 @@ The
 option will be ignored.
 If there is more than one input file, the results for them will be
 concatenated, which is unlikely to be useful.
-.I Bit vectors are experimental and may not always produce correct results.
 .TP
 .BR \-I ", " \-\^\-ignore-indices
 Do not use bit vector indices, even if they are available.
@@ -221,7 +246,7 @@ The format of the line is:
 .IP "" 11
 .B STATS
 .I weight-checks weight-hits bdd-hits tree-checks tree-hits
-.I memo-checks memo-hits time query
+.I memo-checks memo-hits time nodes query
 .IP "" 7
 The fields are:
 .IR weight-checks ,
@@ -243,6 +268,8 @@ the number of hits in tree-match memoization ;
 .IR time ,
 the number of seconds of user CPU time, as measured by
 .BR getrusage (2);
+.IR nodes ,
+the number of nodes in the BDD if one was constructed, else zero;
 and
 .IR query ,
 the query that was being answered, in cooked EIDS format.
@@ -290,7 +317,7 @@ describes a
 character made of three parts, much in the same manner as the binary
 operators.
 .IP \(bu 4
-As of Unicode 6.1, IDS length is unlimited.
+Since Unicode 6.1, IDS length is unlimited.
 Earlier versions specified that an IDS could not be more than 16 code
 points long overall nor contain more than six consecutive non-operator
 characters.
@@ -656,9 +683,10 @@ may possibly have installed the files elsewhere.
 .PP
 .I @flat_dictdir@/chise.eids
 .RS
-Character decompositions from the CHISE EIDS database.
-Coverage of approximately 130000 Han-script characters, spanning multiple
-languages.
+Character decompositions from the CHISE IDS database.
+Approximately 130000 Han-script characters, spanning multiple
+languages; some of these are duplicates of each other under different
+symbolic names, so the actual number of distinct characters may be less.
 Non-Unicode characters are expressed using symbolic names apparently invented
 by the CHISE project, or possibly by the affiliated UTF-2000 initiative.
 This dictionary is generally of high quality because the original source
@@ -671,8 +699,19 @@ syntactically invalid, and are therefore excluded from IDSgrep's
 converted dictionary.
 What that implies about the quality of the remaining entries is an
 open question.
-Because this dictionary has GPL 2+ licensing, it can be bundled with the
-IDSgrep source package (the majority of which is GPL 3).
+.RE
+.I @flat_dictdir@/cjkvi-X.eids
+.RS
+The letter X in the filename may be replaced by any of several
+possibilities, \(lqj\(rq being the most popular, corresponding to different
+language versions of substantially the same database.
+This is a cleaned-up and reformatted database of character descriptions
+derived from the CHISE IDS data, curated by Taichi Kawabata.
+Roughly 74000 characters, marked up with information about which languages
+they refer to.
+Some characters may have different decompositions depending on the language
+version.
+This database is bundled with the IDSgrep package.
 .RE
 .I @flat_dictdir@/edict.eids
 .RS
@@ -726,6 +765,10 @@ Note that locale-related environment variables are
 .I not
 recognized.
 Input and output are in UTF-8 regardless of locale.
+Similarly, the escape sequences used for colourized output, should it be
+selected, are ANSI
+.I regardless
+of the local terminal settings.
 .
 .SH BUGS
 Non-ASCII characters are essential to documenting this software, and
@@ -759,7 +802,7 @@ Matthew Skala <mskala@ansuz.sooke.bc.ca>
 .
 .SH COPYRIGHT
 Copyright \(co
-2012, 2013
+2012, 2013, 2014
 Matthew Skala
 .PP
 This program is free software: you can redistribute it and/or modify
@@ -782,8 +825,8 @@ based on KanjiVG and EDICT2.
 The input files for those are subject to the Creative Commons 
 Attribution-Share Alike 3.0 Licence, and their authors might make a
 copyright claim on the resulting dictionaries.
-The input files for the CHISE IDS dictionary are subject to GPL 2 or any
-later version.
+The input files for the CHISE IDS and CJKVI dictionaries are subject to
+GPL 2 or any later version.
 The Tsukurimashou project also builds an EIDS-format dictionary for
 use with IDSgrep, but happens to use the same copyright and GPL 3 licensing
 terms as IDSgrep anyway.
