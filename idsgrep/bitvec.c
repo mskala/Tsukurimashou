@@ -948,18 +948,9 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
    /* get filter for the child - cases AB and ABC*/
    needle_fn_wrapper(n->child[0],f);
    
-   /* Note that for cases which differ only by swapping the first and last
-    * children, if we are NOT doing BDDs, then it is easy to compute what
-    * the filter looks like just by ORing the bit masks back and forth.
-    * For BDDs, however, we would have to also rearrange variable indices,
-    * and for the cases that involve changing the middle child of a
-    * ternary node we have to do more complicated shifting, so for those,
-    * we actually construct a new node and make recursive calls. */
-
    /* binary:  one other ordering to consider */
    if (n->child[0]->arity==2) {
 
-#ifdef HAVE_BUDDY
       /* BA */
       nprime=new_node();
       nprime->functor=n->child[0]->functor;
@@ -973,14 +964,10 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
       /* PUT IT IN */
       needle_fn_wrapper(nprime,&fa);
       bf_or(f,f,&fa);
+#ifdef HAVE_BUDDY
       bdd_delref(fa.decision_diagram);
-      free_node(nprime);
-
-#else
-      /* easy bit re-arrangement for non-BDD filters */
-      f->bits[1]|=f->bits[0]>>32;
-      f->bits[0]|=f->bits[1]<<32;
 #endif
+      free_node(nprime);
 
       /* ternary:  five other orderings to consider */
    } else if (n->child[0]->arity==3) {
@@ -1027,7 +1014,6 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
 #endif
       free_node(nprime);
 
-#ifdef HAVE_BUDDY
       /* CBA */
       nprime=new_node();
       nprime->functor=n->child[0]->functor;
@@ -1043,9 +1029,11 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
       /* PUT IT IN */
       needle_fn_wrapper(nprime,&fa);
       bf_or(f,f,&fa);
+#ifdef HAVE_BUDDY
       bdd_delref(fa.decision_diagram);
+#endif
       free_node(nprime);
-
+      
       /* ACB */
       nprime=new_node();
       nprime->functor=n->child[0]->functor;
@@ -1061,7 +1049,9 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
       /* PUT IT IN */
       needle_fn_wrapper(nprime,&fa);
       bf_or(f,f,&fa);
+#ifdef HAVE_BUDDY
       bdd_delref(fa.decision_diagram);
+#endif
       free_node(nprime);
 
       /* BAC */
@@ -1079,14 +1069,10 @@ void unord_needle_fn(NODE *n,BIT_FILTER *f) {
       /* PUT IT IN */
       needle_fn_wrapper(nprime,&fa);
       bf_or(f,f,&fa);
+#ifdef HAVE_BUDDY
       bdd_delref(fa.decision_diagram);
-      free_node(nprime);
-
-#else
-      /* easy bit re-arrangement for non-BDD filters */
-      f->bits[1]|=f->bits[0]>>32;
-      f->bits[0]|=f->bits[1]<<32;
 #endif
+      free_node(nprime);
    }
    
    /* .unord. is a no-op on nullary and unary trees */
@@ -1138,7 +1124,7 @@ void equal_needle_fn(NODE *n,BIT_FILTER *f) {
       bdd_delref(fa.decision_diagram);
       bdd_delref(fb.decision_diagram);
 #else
-      bf_and(f,f,bf_or(&fa,&fa,&fb));
+      bf_or(f,&fa,bf_and(f,f,&fb));
 #endif
    }
 

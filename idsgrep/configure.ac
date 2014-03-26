@@ -159,7 +159,7 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 #
 AC_PREREQ([2.67])
 AC_INIT([IDSgrep],
-	[0.5], [mskala@ansuz.sooke.bc.ca], [idsgrep],
+	[0.5.1], [mskala@ansuz.sooke.bc.ca], [idsgrep],
 	[[http://tsukurimashou.sourceforge.jp/idsgrep.php]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
@@ -169,7 +169,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_REVISION([$Id: configure.ac 1015 2011-12-15 22:24:32Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2012, 2013, 2014  Matthew Skala])
-AC_SUBST([release_date],["March 23, 2014"])
+AC_SUBST([release_date],["March 27, 2014"])
 AM_SILENT_RULES
 #
 ############################################################################

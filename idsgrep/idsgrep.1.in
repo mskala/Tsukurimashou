@@ -237,6 +237,27 @@ be unavailable or invalid, with this option the
 absence of a valid bit vector index for an input file will be
 treated as a fatal error.
 .TP
+.B \-\^\-disable-bdd
+Disable the BDD filtering layer (option exists only on
+.B @PACKAGE@
+binaries that contain this layer in the first place).
+Index files will still be read, and a BDD filter will still be
+constructed, but the code that invokes the BDD filter will instead
+return a hardcoded \(lqpossible match\(rq result.
+This option is intended only for testing and debugging purposes.
+To disable bit vector filtering entirely (and, in particular, to
+avoid opening and reading any index file), use
+.BR -I "."
+.TP
+.B \-\^\-disable-lambda
+Disable the lambda filtering layer.
+Index files will still be read, and a lambda filter will still be
+constructed, but the code that tests the lambda filter
+will return a hardcoded \(lqpossible match\(rq result.
+Like
+.BR \-\^\-disable-bdd ", "
+this option is intended only for testing and debugging purposes.
+.TP
 .B \-\^\-statistics
 At the end of the run, write to standard output a line of statistical
 information about the work done.

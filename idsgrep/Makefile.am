@@ -134,6 +134,9 @@ endif
 MAYBE_CJKVIDATA=$(foreach ver,g t j k v x h a,\
   $(if $(findstring $(ver),$(enable_cjkvi_style)),\
   cjkvi-$(ver).eids cjkvi-$(ver).bvec ))
+if COND_WIDTHTAB
+  noinst_PROGRAMS = mkwcw
+endif
 
 ############################################################################
 
@@ -175,7 +178,7 @@ endif
 STANDALONE_QVFG:=
 EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  gnugetopt.h idsgrep.tex idsgrep.bib widths.txt
+  gnugetopt.h idsgrep.tex idsgrep.bib widths.txt mkwcw.c
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
@@ -185,7 +188,6 @@ dist_noinst_SCRIPTS:= \
   $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
 
 bin_PROGRAMS = idsgrep
-noinst_PROGRAMS = mkwcw
 
 dict_DATA = $(MAYBE_CJKVIDATA) $(MAYBE_CIDATA) $(MAYBE_EDICTDATA) \
   $(MAYBE_KVDATA) $(MAYBE_TSUKUDATA)

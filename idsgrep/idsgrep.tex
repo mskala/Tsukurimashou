@@ -335,6 +335,24 @@ The main new items in version 0.5 are:
   \item nearly full test coverage (everything except the TTF/OTF reader).
 \end{itemize}
 
+\emph{And then,} demonstrating that haste makes waste, issues
+were discovered in version 0.5, necessitating some more patching and an
+extra release a few days later.  New stuff in version 0.5.1:
+\begin{itemize}
+  \item Patched infelicities in handling of bit vector filters for
+    unordered match:  0.5 would build the lambda filter for an
+    unordered-match query differently depending on whether BDDs were
+    compiled in.  I think it's likely that both results were
+    correct (they just put the Bloom-filter slop in different places),
+    but it resulted in differing filter hit counts depending on
+    settings that would not normally be expected to affect the hit count,
+    and it was a problem for testing.
+  \item New options for run-time control of the two filtering layers (to
+    make speed comparisons and testing easier).
+  \item Build system adjustments to make it easier to build without BDD
+    support.
+\end{itemize}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Download, build, test, and install}
@@ -424,16 +442,16 @@ If the default search fails, the filenames of KanjiVG (\texttt{.xml} or
 \texttt{.xml.gz}), EDICT2 (\texttt{.gz}), and the directories containing
 extracted distributions of Tsukurimashou and CHISE IDS can be
 specified on the \texttt{configure} command line with
-the \texttt{--with-kanjivg}, \texttt{--with-edict2},
-\texttt{--with-tsuku-build}, and \texttt{--with-chise-ids} options.  For
-other options, run \texttt{configure --help}.  It's a reasonably standard
+the \texttt{-{}-with-kanjivg}, \texttt{-{}-with-edict2},
+\texttt{-{}-with-tsuku-build}, and \texttt{-{}-with-chise-ids} options.  For
+other options, run \texttt{configure -{}-help}.  It's a reasonably standard
 GNU Autotools~\cite{Autotools} configuration script, albeit with a lot of
 options for inapplicable installation directories removed to simplify the
 help message.
 
 The EDICT2-based dictionary should preferably include
 character decompositions from some other dictionary; which one is
-selectable by the \texttt{--enable-edict-decomp} option.  Allowed values
+selectable by the \texttt{-{}-enable-edict-decomp} option.  Allowed values
 include \texttt{chise}, \texttt{kanjivg}, \texttt{tsuku}, \texttt{cjkvi-j}
 (other CJKVI languages besides Japanese may also be specified, but might not
 make much sense), and \texttt{no};
@@ -469,10 +487,10 @@ your dictionaries and indices are stored, and place bit vectors and
 dictionaries in architecture-specific space.
 
 The \DangerousBend\texttt{configure} script supports an
-\texttt{--enable-gcov} switch to enable meta-testing of the test suite's
+\texttt{-{}-enable-gcov} switch to enable meta-testing of the test suite's
 coverage.  This feature requires that the Gcov coverage analyser be
 installed.  To do a coverage analysis, run \texttt{configure} with
-\texttt{--enable-gcov} and any other desired options, then do \texttt{make
+\texttt{-{}-enable-gcov} and any other desired options, then do \texttt{make
 clean} (necessary to be sure all object files are rebuilt with the coverage
 instrumentation) followed by \texttt{make check}.  Most people would not
 want to install the IDSgrep binary itself when built under this option.  As
@@ -653,7 +671,7 @@ valid IDSgrep EIDS syntax, it is easy to convert them into EIDS format.
 IDSgrep includes a \texttt{chise2eids} Perl script for that purpose.  The
 \texttt{configure} script will look for CHISE IDS in a directory named
 \texttt{chise-ids-*} in a short list of likely places, or use the value of
-the \texttt{--enable-chise-ids} command-line option if one is given.  This
+the \texttt{-{}-enable-chise-ids} command-line option if one is given.  This
 directory should simply be an unpacked CHISE IDS distribution tarball, or a
 checkout from the CHISE IDS Git repository.  It is not necessary to run
 CHISE's Makefile, which would require also having and installing other parts
@@ -676,7 +694,7 @@ The last distribution tarball of CHISE-IDS was version 0.25 dated June 2010.
 The Git versions are more recent and may be preferable.  The directory
 created by checking out a Git version will probably not have a name
 recognized automatically by the build system, so it should be given on the
-\texttt{configure} command line with \texttt{--enable-chise-ids}.
+\texttt{configure} command line with \texttt{-{}-enable-chise-ids}.
 
 Roughly 6\% of the entries in the CHISE IDS database include invalid
 extended IDS syntax---most often in the form of too many children for the
@@ -776,7 +794,7 @@ there is some value in being able to do sub-character structural
 searches on multi-character words.
 
 If another dictionary besides EDICT2 is available
-(subject to configuration by \texttt{--enable-edict-decomp}), then the
+(subject to configuration by \texttt{-{}-enable-edict-decomp}), then the
 build system will generate and install a
 dictionary file called \texttt{edict.eids} which represents a database
 join of EDICT2 with the other dictionary.  With no other dictionary,
@@ -864,7 +882,7 @@ can also run IDSgrep's \texttt{configure} in its own directory, and then do
 (specifically, a build directory in which Tsukurimashou's \texttt{configure}
 has \emph{already been executed}) as the parent directory and in a few other
 places, or you can specify the location of a Tsukurimashou build with the
-``\texttt{--with-tsuku-build}'' option to IDSgrep's \texttt{configure}.  If
+``\texttt{-{}-with-tsuku-build}'' option to IDSgrep's \texttt{configure}.  If
 Tsukurimashou is not available, IDSgrep will build without creating
 the Tsukurimashou-derived dictionary file.
 
@@ -889,7 +907,7 @@ Tsukurimashou's directory, then \texttt{cd} to IDSgrep's directory and run
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\break\vspace*{-1.82\baselineskip}%
+\break\vspace*{-1.82\baselineskip}%
 \section{A note on TrueType/OpenType}\DangerousSection
 
 This version of IDSgrep is designed to read TrueType or
@@ -1065,7 +1083,7 @@ so on.  The maximum number of user-defined predicates is limited to the
 number of bits in the largest integer type available to the C compiler; 32
 or 64 on many systems.
 
-\item[\texttt{-h}, \texttt{--help}] Display a short summary of these
+\item[\texttt{-h}, \texttt{-{}-help}] Display a short summary of these
 options.
 
 \item[\texttt{-C}, \texttt{-{}-colour}, \texttt{-{}-color}] Colourize the
@@ -1124,10 +1142,10 @@ so output from \texttt{-U}
 is always cooked even when a raw mode is selected with
 \texttt{-c} to be used for real input.
 
-\item[\texttt{-V}, \texttt{--version}] Display the version and license
+\item[\texttt{-V}, \texttt{-{}-version}] Display the version and license
 information for IDSgrep.
 
-\item[\texttt{--bitvec-debug}]
+\item[\texttt{-{}-bitvec-debug}]
 Report \DangerousBend detailed bit vector debugging and performance
 information to standard error.
 The information reported is terse, undocumented, and probably not of
@@ -1138,7 +1156,25 @@ be unavailable or invalid, with this option the
 absence of a valid bit vector index for an input file will be
 treated as a fatal error.
 
-\item[\texttt{--statistics}]
+\item[\texttt{-{}-disable-bdd}]
+Disable \DangerousBend the BDD filtering layer (option exists only on
+binaries that contain this layer in the first place).
+Index files will still be read, and a BDD filter will still be
+constructed, but the code that invokes the BDD filter will instead
+return a hardcoded ``possible match'' result.
+This option is intended only for testing and debugging purposes.
+To disable bit vector filtering entirely (and, in particular, to
+avoid opening and reading any index file), use \texttt{-I}.
+
+\item[\texttt{-{}-disable-bdd}]
+Disable \DangerousBend the lambda filtering layer.
+Index files will still be read, and a lambda filter will still be
+constructed, but the code that tests the lambda filter
+will return a hardcoded ``possible match'' result.
+Like \texttt{-{}-disable-bdd},
+this option is intended only for testing and debugging purposes.
+
+\item[\texttt{-{}-statistics}]
 Report \DangerousBend a line of machine-readable performance information
 to standard output at the end of the run.  This may be useful in
 optimizing the bit vector features.  See the chapter on bit vectors in this
@@ -1877,7 +1913,7 @@ reasonably possible to the operation of \texttt{grep}.  However, preserving
 the exact input bytes may preserve invalid UTF-8, valid but weird EIDS
 syntax, or non-ASCII characters users may find difficult to type or
 display, that may have existed in the input.  The ``\texttt{-c}''
-(``\texttt{--cooking}'') command-line option provides a wide range of
+(``\texttt{-{}-cooking}'') command-line option provides a wide range of
 ways for \texttt{idsgrep} to generate new EIDS syntax of its own, guaranteed
 to be valid, from the internal representation generated by the parser.  The
 cooked output modes force the output into a well-behaved format

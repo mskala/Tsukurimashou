@@ -176,9 +176,11 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 static uint64_t bv_checks=UINT64_C(0),bv_hits=UINT64_C(0);
 static BIT_FILTER bf;
 static NODE *indexed_pattern=NULL;
+static int disable_lambda=0;
 
 #ifdef HAVE_BUDDY
 
+static int disable_bdd=0;
 static uint64_t bdd_hits=UINT64_C(0);
 
 static int eval_bdd(bdd decision_diagram,uint64_t bits[2]) {
@@ -324,12 +326,13 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 	 bv_checks++;
 	 
 	 /* do the bitvec/lambda test */
-	 if (uint64_2_pop(btest)>bf.lambda) {
+	 if (disable_lambda || (uint64_2_pop(btest)>bf.lambda)) {
 	    bv_hits++;
 	    
 #ifdef HAVE_BUDDY
 	    /* do the bitvec/BDD test */
-	    if (eval_bdd(bf.decision_diagram,ir[ir_done].bits)) {
+	    if (disable_bdd ||
+		eval_bdd(bf.decision_diagram,ir[ir_done].bits)) {
 	       bdd_hits++;
 #endif
 	       
@@ -417,7 +420,11 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 /**********************************************************************/
 
 static struct option long_opts[] = {
+#ifdef HAVE_BUDDY
+   {"disable-bdd",no_argument,NULL,'B'|128},
+#endif
    {"bitvec-debug",no_argument,NULL,'D'|128},
+   {"disable-lambda",no_argument,NULL,'L'|128},
    {"statistics",no_argument,NULL,'s'|128},
    {"color",optional_argument,NULL,'C'},
    {"colour",optional_argument,NULL,'C'},
@@ -502,9 +509,19 @@ int main(int argc,char **argv) {
        case 'h':
 	 show_help=1;
 	 break;
-	 
+
+#ifdef HAVE_BUDDY
+       case 'B'|128:
+	 disable_bdd=1;
+	 break;
+#endif
+
        case 'D'|128:
 	 bitvec_debug=1;
+	 break;
+
+       case 'L'|128:
+	 disable_lambda=1;
 	 break;
 
        case 's'|128:
@@ -537,6 +554,10 @@ int main(int argc,char **argv) {
 	  "  -d, --dictionary=NAME     search standard dictionary\n"
 	  "  -f, --font-chars=FONT     use chars in FONT as a user-defined"
 	                             " predicate\n"
+#ifdef HAVE_BUDDY
+	  "      --disable-bdd         turn off BDD filtering\n"
+#endif
+	  "      --disable-lambda      turn off lambda filtering\n"
 	  "      --bitvec-debug        verbose bit vector debugging"
 	                             " messages\n"
 	  "      --statistics          machine-readable statistics\n"
