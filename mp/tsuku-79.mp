@@ -461,23 +461,29 @@ endtsuglyph;
 %   tsu_render;
 % endtsuglyph;
 
-% 【秥】⿰<禾>⿱丿木<占>⿱⺊口
 % extra
-% begintsuglyph("uni79E5",229);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79E5",229);
+  build_kanji.lr(460,50)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.greight.divination);
+  tsu_render;
+endtsuglyph;
 
-% 【秧】⿰<禾>⿱丿木央
 % extra
-% begintsuglyph("uni79E7",231);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79E7",231);
+  build_kanji.lr(460,50)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grthree.centre);
+  tsu_render;
+endtsuglyph;
 
-% 【秨】⿰<禾>⿱丿木乍
 % extra
-% begintsuglyph("uni79E8",232);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79E8",232);
+  build_kanji.lr(460,60)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rare.notwithstanding);
+  tsu_render;
+endtsuglyph;
 
 % 【秩】⿰<禾>⿱丿木<失>⿰丿<夫>⿻<二>⿱一一人
 % grade eight "regularity"
@@ -485,71 +491,93 @@ endtsuglyph;
 %   tsu_render;
 % endtsuglyph;
 
-% 【秪】⿰<禾>⿱丿木<氐>⿱氏一
 % extra
-% begintsuglyph("uni79EA",234);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79EA",234);
+  build_kanji.lr(420,50)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rare.cruithne);
+  tsu_render;
+endtsuglyph;
 
-% 【秮】⿰<禾>⿱丿木<台>⿱厶口
 % extra
-% begintsuglyph("uni79EE",238);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79EE",238);
+  build_kanji.lr(470,50)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grtwo.pedestal);
+  tsu_render;
+endtsuglyph;
 
-% 【积】⿰<禾>⿱丿木<只>⿱口八
 % extra
-% begintsuglyph("uni79EF",239);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79EF",239);
+  build_kanji.lr(460,20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grnine.only);
+  tsu_render;
+endtsuglyph;
 
-% 【秱】⿰<禾>⿱丿木<同>⿵<𠔼>⿵冂一口
 % extra
-% begintsuglyph("uni79F1",241);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79F1",241);
+  build_kanji.lr(420,0)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grtwo.same);
+  tsu_render;
+endtsuglyph;
 
-% 【秲】⿰<禾>⿱丿木<寺>⿱<土>⿱十一寸
 % extra
-% begintsuglyph("uni79F2",242);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79F2",242);
+  build_kanji.lr(460,30)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grtwo.temple);
+  tsu_render;
+endtsuglyph;
 
-% 【秳】⿰<禾>⿱丿木<舌>⿱<千>⿱丿十口
 % extra
-% begintsuglyph("uni79F3",243);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79F3",243);
+  build_kanji.lr(460,20)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(yscaled 0.95 shifted (0,-20))(kanji.grfive.tongue));
+  tsu_render;
+endtsuglyph;
 
-% 【秴】⿰<禾>⿱丿木<合>⿱<CDP-8AFC>⿵𠆢一口
 % extra
-% begintsuglyph("uni79F4",244);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79F4",244);
+  build_kanji.lr(460,40)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grtwo.join);
+  tsu_render;
+endtsuglyph;
 
-% 【秵】⿰<禾>⿱丿木<因>⿴囗<大>⿻一人
 % extra
-% begintsuglyph("uni79F5",245);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79F5",245);
+  build_kanji.lr(440,-10)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfive.cause);
+  tsu_render;
+endtsuglyph;
 
-% 【秷】⿰<禾>⿱丿木<至>⿱<𠫔>⿱一厶<土>⿱十一
 % extra
-% begintsuglyph("uni79F7",247);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79F7",247);
+  build_kanji.lr(460,30)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(yscaled 0.95 shifted (0,-30))(kanji.grsix.climax));
+  tsu_render;
+endtsuglyph;
 
-% 【秸】⿰<禾>⿱丿木<吉>⿱<士>⿱十一口
 % extra
-% begintsuglyph("uni79F8",248);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79F8",248);
+  build_kanji.lr(460,40)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.greight.good_luck);
+  tsu_render;
+endtsuglyph;
 
-% 【秹】⿰<禾>⿱丿木<任>⿰亻壬
 % extra
-% begintsuglyph("uni79F9",249);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni79F9",249);
+  build_kanji.lr(420,20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfive.responsibility);
+  tsu_render;
+endtsuglyph;
 
 % 【移】⿰<禾>⿱丿木<多>⿱<夕>⿴𠂊丶<夕>⿴𠂊丶
 % grade five LOOK UP

@@ -1,4 +1,4 @@
-/* $Id: encoding.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: encoding.c 2995 2014-03-29 22:11:26Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2189,27 +2189,28 @@ EncMap *EncMapFromEncoding(SplineFont * sf, Encoding * enc) {
    return (map);
 }
 
-EncMap *CompactEncMap(EncMap * map, SplineFont * sf) {
-   int i, inuse, gid;
-
+EncMap *CompactEncMap(EncMap *map, SplineFont *sf) {
+   int i,inuse,gid;
    int32 *newmap;
 
-   for (i = inuse = 0; i < map->enccount; ++i)
-      if ((gid = map->map[i]) != -1 && SCWorthOutputting(sf->glyphs[gid]))
-	 ++inuse;
-   newmap = malloc(inuse * sizeof(int32));
+   inuse=0;
+   for (i=0;i<map->enccount;i++)
+      if (((gid=map->map[i])!=-1) && SCWorthOutputting(sf->glyphs[gid]))
+	 inuse++;
+
+   newmap=malloc(inuse*sizeof(int32));
    for (i = inuse = 0; i < map->enccount; ++i)
       if ((gid = map->map[i]) != -1 && SCWorthOutputting(sf->glyphs[gid]))
 	 newmap[inuse++] = gid;
    free(map->map);
-   map->map = newmap;
-   map->enccount = inuse;
-   map->encmax = inuse;
-   map->enc = &custom;
-   memset(map->backmap, -1, sf->glyphcnt * sizeof(int32));
-   for (i = inuse - 1; i >= 0; --i)
-      if ((gid = map->map[i]) != -1)
-	 map->backmap[gid] = i;
+   map->map=newmap;
+   map->enccount=inuse;
+   map->encmax=inuse;
+   map->enc=&custom;
+   memset(map->backmap,-1,sf->glyphcnt*sizeof(int32));
+   for (i=inuse-1;i>=0;i--)
+      if ((gid=map->map[i])!=-1)
+	 map->backmap[gid]=i;
    return (map);
 }
 

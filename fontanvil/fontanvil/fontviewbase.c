@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 2946 2014-03-11 19:55:39Z mskala $ */
+/* $Id: fontviewbase.c 2995 2014-03-29 22:11:26Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1523,41 +1523,16 @@ void FVMetricsCenter(FontViewBase * fv, int docenter) {
    }
 }
 
-static int RevertAskChanged(char *fontname, char *filename) {
-   int ret;
-
-   char *buts[3];
-
-   if (filename == NULL)
-      filename = "untitled.sfd";
-   filename = GFileNameTail(filename);
-   buts[0] = _("_Revert");
-   buts[1] = _("_Cancel");
-   buts[2] = NULL;
-   ret =
-      ff_ask(_("Font changed"), (const char **) buts, 0, 1,
-	     _
-	     ("Font %1$.40s in file %2$.40s has been changed.\nReverting the file will lose those changes.\nIs that what you want?"),
-	     fontname, filename);
-   return (ret == 0);
-}
-
-static void _FVRevert(FontViewBase * fv, int tobackup) {
-   SplineFont *temp, *old = fv->cidmaster ? fv->cidmaster : fv->sf;
-
+static void _FVRevert(FontViewBase *fv, int tobackup) {
+   SplineFont *temp,*old=fv->cidmaster?fv->cidmaster:fv->sf;
    BDFFont *bdf;
-
    int i;
-
    FontViewBase *fvs;
-
    EncMap *map;
 
-   if (old->origname == NULL)
+   if (old->origname==NULL)
       return;
-   if (old->changed)
-      if (!RevertAskChanged(old->fontname, old->origname))
-	 return;
+
    if (tobackup) {
       /* we can only revert to backup if it's an sfd file. So we use filename */
       /*  here. In the normal case we revert to whatever file we read it from */
@@ -1583,41 +1558,45 @@ static void _FVRevert(FontViewBase * fv, int tobackup) {
 	 temp = ReadSplineFont(buf, 0);
       }
       free(buf);
+
    } else {
-      if (old->compression != 0) {
+      if (old->compression!=0) {
 	 char *tmpfile;
+	 char *buf=malloc(strlen(old->filename)+20);
 
-	 char *buf = malloc(strlen(old->filename) + 20);
-
-	 strcpy(buf, old->filename);
-	 strcat(buf, compressors[old->compression - 1].ext);
-	 tmpfile = Decompress(buf, old->compression - 1);
-	 if (tmpfile == NULL)
-	    temp = NULL;
+	 strcpy(buf,old->filename);
+	 strcat(buf,compressors[old->compression-1].ext);
+	 tmpfile=Decompress(buf,old->compression-1);
+	 if (tmpfile==NULL)
+	   temp=NULL;
 	 else {
-	    temp = ReadSplineFont(tmpfile, 0);
+	    temp=ReadSplineFont(tmpfile,0);
 	    unlink(tmpfile);
 	    free(tmpfile);
 	 }
       } else
-	 temp = ReadSplineFont(old->origname, 0);
+	temp=ReadSplineFont(old->origname,0);
    }
-   if (temp == NULL) {
-      return;
-   }
-   if (temp->filename != NULL) {
+
+   if (temp==NULL)
+     return;
+
+   if (temp->filename!=NULL) {
       free(temp->filename);
       temp->filename = copy(old->filename);
    }
-   if (temp->origname != NULL) {
+   if (temp->origname!=NULL) {
       free(temp->origname);
       temp->origname = copy(old->origname);
    }
-   temp->compression = old->compression;
-   temp->fv = old->fv;
-   FVReattachCVs(old, temp);
+
+   temp->compression=old->compression;
+   temp->fv=old->fv;
+
+   FVReattachCVs(old,temp);
    for (i = 0; i < old->subfontcnt; ++i)
       FVReattachCVs(old->subfonts[i], temp);
+
    if (fv->sf->fontinfo)
       FontInfo_Destroy(fv->sf);
    for (bdf = old->bitmaps; bdf != NULL; bdf = bdf->next)
@@ -1625,29 +1604,32 @@ static void _FVRevert(FontViewBase * fv, int tobackup) {
 	 if (bdf->glyphs[i] != NULL)
 	    BCDestroyAll(bdf->glyphs[i]);
    MVDestroyAll(old);
-   for (fvs = fv->sf->fv; fvs != NULL; fvs = fvs->nextsame) {
-      if (fvs == fv)
-	 map = temp->map;
+
+   for (fvs=fv->sf->fv;fvs!=NULL;fvs=fvs->nextsame) {
+      if (fvs==fv)
+	 map=temp->map;
       else
-	 map = EncMapFromEncoding(fv->sf, fv->map->enc);
-      if (map->enccount > fvs->map->enccount) {
-	 fvs->selected = realloc(fvs->selected, map->enccount);
-	 memset(fvs->selected + fvs->map->enccount, 0,
-		map->enccount - fvs->map->enccount);
+	 map=EncMapFromEncoding(fv->sf,fv->map->enc);
+      if (map->enccount>fvs->map->enccount) {
+	 fvs->selected=realloc(fvs->selected,map->enccount);
+	 memset(fvs->selected+fvs->map->enccount,0,
+		map->enccount-fvs->map->enccount);
       }
       EncMapFree(fv->map);
-      fv->map = map;
-      if (fvs->normal != NULL) {
+      fv->map=map;
+      if (fvs->normal!=NULL) {
 	 EncMapFree(fvs->normal);
-	 fvs->normal = EncMapCopy(fvs->map);
-	 CompactEncMap(fvs->map, fv->sf);
+	 fvs->normal=EncMapCopy(fvs->map);
+	 CompactEncMap(fvs->map,temp);
       }
    }
+
    ff_progress_allow_events();
    SFClearAutoSave(old);
-   temp->fv = fv->sf->fv;
-   for (fvs = fv->sf->fv; fvs != NULL; fvs = fvs->nextsame)
-      fvs->sf = temp;
+   temp->fv=fv->sf->fv;
+   for (fvs=fv->sf->fv;fvs!=NULL;fvs=fvs->nextsame)
+      fvs->sf=temp;
+
    FontViewReformatAll(fv->sf);
    SplineFontFree(old);
 }
