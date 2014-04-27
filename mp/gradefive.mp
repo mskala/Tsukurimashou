@@ -113,6 +113,14 @@ vardef kanji.grfive.expel =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.face =
+  push_pbox_toexpand("kanji.grfive.face");
+  build_kanji.tb(600,130)
+    (kanji.radical.silly_hat)
+    (kanji.grtwo.valley);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.hesitate =
   push_pbox_toexpand("kanji.grfive.hesitate");
   build_kanji.road_enclose(kanji.grtwo.rice);

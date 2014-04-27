@@ -129,6 +129,19 @@ vardef kanji.grfour.bureaucracy =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.care =
+  push_pbox_toexpand("kanji.grfour.care");
+  build_kanji.level(build_kanji.tb(360,160)
+    (kanji.grtwo.now;
+     replace_strokep(0)
+       ((point 0 of oldp)--
+        (subpath (1,infinity) of (oldp shifted (-point 1 of oldp)
+                                  xscaled 0.5
+                                  shifted (point 1 of oldp)))))
+    (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.circuit =
   push_pbox_toexpand("kanji.grfour.circuit");
   push_stroke((80,-20)..(150,100)..{up}(200,760){right}--(820,760),
@@ -433,6 +446,16 @@ vardef kanji.grfour.orders =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.peace =
+  push_pbox_toexpand("kanji.grfour.peace");
+  build_kanji.dotcliff_enclose(build_kanji.tb(520,0)
+      (tsu_xform(identity shifted (10,-270))
+         (kanji.radical.pigs_snout))
+      (kanji.radical.alt_water);
+    replace_strokep(-4)((500,810)--subpath (1,infinity) of oldp));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.perfect =
   push_pbox_toexpand("kanji.grfour.perfect");
   build_kanji.tb(600,110)
@@ -530,6 +553,19 @@ vardef kanji.grfour.together =
   build_kanji.level(build_kanji.tb(290,46)
     (kanji.toprad.once_upon_a_time)
     (tsu_xform(identity shifted (20,0))(kanji.radical.eight)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.utmost =
+  push_pbox_toexpand("kanji.grfour.utmost");
+  build_kanji.tb(500,-20)
+    (build_kanji.sscale(xscaled 0.9)(kanji.grone.day))
+    (build_kanji.lr(470,40)
+       (kanji.grone.ear)
+       (tsu_xform(identity yscaled 0.74 shifted (0,-40))
+          (kanji.greight.otoh));
+     replace_strokep(-7)
+       (point 0 of oldp--(point 0 of oldp xscaled -1 shifted (1000,0))));
   expand_pbox;
 enddef;
 

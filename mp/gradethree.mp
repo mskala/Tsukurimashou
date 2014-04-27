@@ -229,6 +229,14 @@ vardef kanji.grthree.face =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.farming =
+  push_pbox_toexpand("kanji.grthree.farming");
+  build_kanji.level(build_kanji.tb(480,-20)
+    (kanji.grthree.melody)
+    (kanji.grnine.dragon_sign));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.festival =
   push_pbox_toexpand("kanji.grthree.festival");
   build_kanji.level(
@@ -317,6 +325,16 @@ vardef kanji.grthree.heap_big =
     ((160,ypart point 0 of oldp)--(840,ypart point 1 of oldp));
   set_boserif(0,1,9);
   set_bosize(0,get_bosize(-2));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.hurry =
+  push_pbox_toexpand("kanji.grthree.hurry");
+  build_kanji.level(build_kanji.tb(390,40)
+    (build_kanji.sscale(xscaled 0.9 shifted (40,0))
+       (build_kanji.attach_fishhook(0.6)
+          (kanji.radical.pigs_head)))
+    (kanji.bottomrad.heart));
   expand_pbox;
 enddef;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 5B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -76,14 +76,6 @@ vardef kanji.grtwo.chamber =
     (build_kanji.level(build_kanji.tb(420,100)
        (build_kanji.sscale(scaled 0.7)(kanji.radical.mu_bar))
        (kanji.grone.earth)));
-  expand_pbox;
-enddef;
-
-vardef kanji.grtwo.house =
-  push_pbox_toexpand("kanji.grtwo.house");
-  build_kanji.level(build_kanji.tb(600,150)
-    (kanji.radical.silly_hat)
-    (kanji.radical.pig));
   expand_pbox;
 enddef;
 
@@ -191,14 +183,6 @@ vardef kanji.grfive.draw_near =
   build_kanji.tb(600,180)
     (kanji.radical.silly_hat)
     (build_kanji.sscale(xscaled (1-0.15*mincho))(kanji.greight.strange));
-  expand_pbox;
-enddef;
-
-vardef kanji.grfive.face =
-  push_pbox_toexpand("kanji.grfive.face");
-  build_kanji.tb(600,130)
-    (kanji.radical.silly_hat)
-    (kanji.grtwo.valley);
   expand_pbox;
 enddef;
 

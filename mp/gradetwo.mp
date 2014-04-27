@@ -494,6 +494,14 @@ vardef kanji.grtwo.horse =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.house =
+  push_pbox_toexpand("kanji.grtwo.house");
+  build_kanji.level(build_kanji.tb(600,150)
+    (kanji.radical.silly_hat)
+    (kanji.radical.pig));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.interval =
   push_pbox_toexpand("kanji.grtwo.interval");
   build_kanji.gate_enclose(kanji.grone.day);

@@ -149,16 +149,6 @@ vardef kanji.grfour.belt =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.peace =
-  push_pbox_toexpand("kanji.grfour.peace");
-  build_kanji.dotcliff_enclose(build_kanji.tb(520,0)
-      (tsu_xform(identity shifted (10,-270))
-         (kanji.radical.pigs_snout))
-      (kanji.radical.alt_water);
-    replace_strokep(-4)((500,810)--subpath (1,infinity) of oldp));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.seat =
   push_pbox_toexpand("kanji.grfour.seat");
   build_kanji.dotcliff_enclose(build_kanji.tb(420,0)

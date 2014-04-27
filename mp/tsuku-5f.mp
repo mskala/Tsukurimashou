@@ -118,19 +118,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfour.care =
-  push_pbox_toexpand("kanji.grfour.care");
-  build_kanji.level(build_kanji.tb(360,160)
-    (kanji.grtwo.now;
-     replace_strokep(0)
-       ((point 0 of oldp)--
-        (subpath (1,infinity) of (oldp shifted (-point 1 of oldp)
-                                  xscaled 0.5
-                                  shifted (point 1 of oldp)))))
-    (kanji.bottomrad.heart));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.diameter =
   push_pbox_toexpand("kanji.grfour.diameter");
   build_kanji.level(build_kanji.lr(310,10)

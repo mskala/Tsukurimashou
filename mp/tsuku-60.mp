@@ -76,16 +76,6 @@ vardef kanji.grthree.evil =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.hurry =
-  push_pbox_toexpand("kanji.grthree.hurry");
-  build_kanji.level(build_kanji.tb(390,40)
-    (build_kanji.sscale(xscaled 0.9 shifted (40,0))
-       (build_kanji.attach_fishhook(0.6)
-          (kanji.radical.pigs_head)))
-    (kanji.bottomrad.heart));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.sad =
   push_pbox_toexpand("kanji.grthree.sad");
   build_kanji.level(build_kanji.tb(300,20)
