@@ -549,6 +549,23 @@ vardef kanji.grtwo.little =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.little_brother =
+  push_pbox_toexpand("kanji.grtwo.little_brother");
+  build_kanji.level(build_kanji.tb(630,90)
+    (kanji.toprad.sparkle_two)
+    (kanji.grtwo.bow));
+  replace_strokep(0)((point 0 of oldp)--
+    ((subpath (1,infinity) of oldp)
+     shifted (-820,0) xscaled 0.45 shifted (820,0)));
+  push_stroke((500,ypart point 0 of get_strokep(-3))--(500,-70),
+    (1.6,1.6)--(1.4,1.4));
+  push_stroke(
+    ((get_strokep(0) intersectionpoint get_strokep(-1))+(-40,0))..
+      tension 1.2..(280,30)..(80,-60),
+    (1.6,1.6)--(1.4,1.4)--(0.9,0.9));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.long =
   push_pbox_toexpand("kanji.grtwo.long");
   push_stroke((300,0)--(300,770)--(800,770),

@@ -1,6 +1,6 @@
 %
 % Unicode page 5F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -77,23 +77,6 @@ vardef kanji.grtwo.form =
   build_kanji.level(build_kanji.lr(580,60)
     (kanji.radical.topped_aitch)
     (tsu_xform(identity yscaled 1.04)(kanji.rightrad.short_hair)));
-  expand_pbox;
-enddef;
-
-vardef kanji.grtwo.little_brother =
-  push_pbox_toexpand("kanji.grtwo.little_brother");
-  build_kanji.level(build_kanji.tb(630,90)
-    (kanji.toprad.sparkle_two)
-    (kanji.grtwo.bow));
-  replace_strokep(0)((point 0 of oldp)--
-    ((subpath (1,infinity) of oldp)
-     shifted (-820,0) xscaled 0.45 shifted (820,0)));
-  push_stroke((500,ypart point 0 of get_strokep(-3))--(500,-70),
-    (1.6,1.6)--(1.4,1.4));
-  push_stroke(
-    ((get_strokep(0) intersectionpoint get_strokep(-1))+(-40,0))..
-      tension 1.2..(280,30)..(80,-60),
-    (1.6,1.6)--(1.4,1.4)--(0.9,0.9));
   expand_pbox;
 enddef;
 

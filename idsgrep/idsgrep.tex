@@ -1378,7 +1378,9 @@ X} offer a choice of two-digit, four-digit, or variable-length (enclosed by
 curly braces) hexadecimal specification of Unicode code points.  The hex
 codes are case-insensitive.  Values greater than 10FFFF, and therefore
 outside the Unicode range, will be replaced by the Unicode replacement
-character U+FFFD.
+character U+FFFD.  The closing curly brace that terminates a variable-length
+Unicode hex sequence will not also terminate a curly-brace-enclosed
+bracketed string in which it might happen to occur.
 
 Parsing of bracketed strings has a few features worth noting.  First, there
 is no special treatment of nested brackets.  After the ``\texttt{<}'' that

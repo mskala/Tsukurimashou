@@ -1,4 +1,4 @@
-/* $Id: sfd.c 2946 2014-03-11 19:55:39Z mskala $ */
+/* $Id: sfd.c 2997 2014-03-30 01:02:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1935,7 +1935,6 @@ FILE *MakeTemporaryFile() {
    strcat(template, "/");
    strcat(template, "fontanvil-stemp-XXXXXX");
    fd = g_mkstemp(template);
-   printf("MakeTemporaryFile() fd:%d template:%s\n", fd, template);
    if ((ret = fdopen(fd, "rw+")) == NULL)
       ret = 0;
    unlink(template);
@@ -4866,10 +4865,8 @@ void SFDGetKerns(FILE * sfd, SplineChar * sc, char *ttok) {
 	    sc->kerns = kp;
 	 last = kp;
       }
-      if (!kernCount) {
-	 printf("SFDGetKerns() have a BLANK KERN\n");
-	 sc->kerns = 0;
-      }
+      if (!kernCount)
+	sc->kerns = 0;
    } else if (strmatch(tok, "Kerns:") == 0 ||
 	      strmatch(tok, "KernsSLI:") == 0 ||
 	      strmatch(tok, "KernsSLIF:") == 0 ||

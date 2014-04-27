@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splinefill.c 2997 2014-03-30 01:02:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2090,10 +2090,9 @@ BDFFont *SplineFontPieceMeal(SplineFont * sf, int layer, int ptsize, int dpi,
       scale = pixelsize / (real) (sf->ascent + sf->descent);
       bdf->ascent = rint(sf->ascent * scale);
    }
-   if (flags & pf_ft_nohints) {
-      printf("SplineFontPieceMeal() going unhinted...\n");
+   if (flags & pf_ft_nohints)
       bdf->unhinted_freetype = true;
-   } else if (flags & pf_ft_recontext)
+   else if (flags & pf_ft_recontext)
       bdf->recontext_freetype = true;
 
    bdf->sf = sf;
@@ -2112,9 +2111,8 @@ BDFFont *SplineFontPieceMeal(SplineFont * sf, int layer, int ptsize, int dpi,
 
    if (ftc == NULL && (bdf->recontext_freetype || bdf->unhinted_freetype) &&
        !hasFreeType()) {
-      printf
-	 ("WARNING: SplineFontPieceMeal() turning off unhinted_freetype\n");
-      bdf->recontext_freetype = bdf->unhinted_freetype = false;
+      bdf->recontext_freetype=false;
+      bdf->unhinted_freetype=false;
    }
 
    if ((ftc || bdf->recontext_freetype || bdf->recontext_freetype)

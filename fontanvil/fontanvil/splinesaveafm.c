@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splinesaveafm.c 2997 2014-03-30 01:02:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -416,7 +416,6 @@ static void tfmDoLigKern(SplineFont * sf, int enc, int lk_index,
 	     (tfmd->kerntab[k_index + 2] << 8) + tfmd->kerntab[k_index +
 							       3]) /
 	    (bigreal) 0x100000;
-	 /* printf( "%s(%d) %s(%d) -> %g\n", sc1->name, sc1->enc, sc2->name, sc2->enc, off); */
 	 KPInsert(sc1, sc2, rint(off), false);
       } else if (tfmd->ligkerntab[lk_index * 4 + 2] == 0 &&
 		 tfmd->ligkerntab[lk_index * 4 + 3] < map->enccount &&
@@ -723,7 +722,6 @@ static void ofmDoLigKern(SplineFont * sf, int enc, int lk_index,
 	     (tfmd->kerntab[k_index + 2] << 8) + tfmd->kerntab[k_index +
 							       3]) /
 	    (bigreal) 0x100000;
-	 /* printf( "%s(%d) %s(%d) -> %g\n", sc1->name, sc1->enc, sc2->name, sc2->enc, off); */
 	 KPInsert(sc1, sc2, rint(off), false);
       } else if (LKShort(lk_index, 2) == 0 &&
 		 LKShort(lk_index, 3) < map->enccount &&

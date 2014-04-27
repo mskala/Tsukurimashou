@@ -1,6 +1,6 @@
 %
 % Unicode page 4F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -166,21 +166,6 @@ vardef kanji.grfive.price =
        push_stroke((390,760)--(390,10),(1.5,1.5)--(1.4,1.4));
        push_stroke((610,760)--(610,10),(1.5,1.5)--(1.4,1.4));
        build_kanji.box((180,480),(820,10))));
-  expand_pbox;
-enddef;
-
-vardef kanji.grfive.surplus =
-  push_pbox_toexpand("kanji.grfive.surplus");
-  build_kanji.level(
-    kanji.radical.tent;
-    path saved_path;
-    tsu_xform(identity yscaled 0.5 shifted (0,-60))
-      (kanji.grone.small;saved_path=get_strokep(-1));
-    replace_strokep(-1)(saved_path yscaled 0.65 shifted (0,-38));
-    set_boserif(-1,0,whatever);
-    push_stroke((160,310)--(850,310))((1.5,1.5)--(1.5,1.5));
-    set_boserif(0,1,9);
-  );
   expand_pbox;
 enddef;
 

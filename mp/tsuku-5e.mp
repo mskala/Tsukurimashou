@@ -36,6 +36,7 @@ beginfont
 input bkencl.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -158,15 +159,6 @@ vardef kanji.grfour.peace =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.rarity =
-  push_pbox_toexpand("kanji.grfour.rarity");
-  build_kanji.level(build_kanji.tb(600,20)
-    (build_kanji.sscale(xscaled 0.9 shifted (60,0))
-       (kanji.radical.cut_the_grass))
-    (kanji.grfive.cloth));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.seat =
   push_pbox_toexpand("kanji.grfour.seat");
   build_kanji.dotcliff_enclose(build_kanji.tb(420,0)
@@ -182,16 +174,6 @@ vardef kanji.grfour.urban_prefecture =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfive.cloth =
-  push_pbox_toexpand("kanji.grfive.cloth");
-  build_kanji.level(
-    build_kanji.lean_to((430,240));
-    build_kanji.sscale(xyscaled (0.86,0.74) shifted (80,-160))
-      (kanji.greight.towel);
-  );
-  expand_pbox;
-enddef;
 
 vardef kanji.grfive.normal =
   push_pbox_toexpand("kanji.grfive.normal");

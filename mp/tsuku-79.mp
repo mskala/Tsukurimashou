@@ -128,7 +128,7 @@ enddef;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.forbidden =
-  push_pbox_toexpand("kanji.grfive.pioneer");
+  push_pbox_toexpand("kanji.grfive.forbidden");
   build_kanji.tb(460,20)
     (kanji.grone.grove)
     (kanji.grfive.showing);
@@ -143,6 +143,14 @@ vardef kanji.grfive.pioneer =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.shift =
+  push_pbox_toexpand("kanji.grfive.shift");
+  build_kanji.level(build_kanji.lr(380,30)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(yscaled 0.96 shifted (0,-20))(kanji.grtwo.many)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.i =
@@ -153,13 +161,47 @@ vardef kanji.grsix.i =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.secret =
+  push_pbox_toexpand("kanji.grsix.secret");
+  build_kanji.lr(460,-20)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(shifted (0,-10))(kanji.grfour.inevitable));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.greight.crop_tax =
+  push_pbox_toexpand("kanji.greight.crop_tax");
+  build_kanji.lr(440,60)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.greight.furthermore);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.regularity =
+  push_pbox_toexpand("kanji.greight.regularity");
+  build_kanji.lr(460,20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfour.disappear);
+  expand_pbox;
+enddef;
 
 vardef kanji.greight.zen_buddhism =
   push_pbox_toexpand("kanji.greight.zen_buddhism");
   build_kanji.lr(450,40-20*mincho)
     (kanji.leftrad.showing)
     (kanji.grfour.single);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grnine.weigh_scale =
+  push_pbox_toexpand("kanji.grnine.weigh_scale");
+  build_kanji.lr(460,20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grthree.level);
   expand_pbox;
 enddef;
 
@@ -371,11 +413,11 @@ begintsuglyph("uni79D7",215);
   tsu_render;
 endtsuglyph;
 
-% 【秘】⿰<禾>⿱丿木<必>⿻心丿
-% grade six "secret"
-% begintsuglyph("uni79D8",216);
-%   tsu_render;
-% endtsuglyph;
+% hi as in himitsu "secret"
+begintsuglyph("uni79D8",216);
+  kanji.grsix.secret;
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni79D9",217);
@@ -425,11 +467,11 @@ begintsuglyph("uni79DE",222);
   tsu_render;
 endtsuglyph;
 
-% 【租】⿰<禾>⿱丿木且
-% grade eight "crop tax"
-% begintsuglyph("uni79DF",223);
-%   tsu_render;
-% endtsuglyph;
+% so "crop tax"
+begintsuglyph("uni79DF",223);
+  kanji.greight.crop_tax;
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni79E0",224);
@@ -455,11 +497,11 @@ begintsuglyph("uni79E3",227);
   tsu_render;
 endtsuglyph;
 
-% 【秤】⿰<禾>⿱丿木<平>⿻干丷
-% grade nine "balances/steelyard"
-% begintsuglyph("uni79E4",228);
-%   tsu_render;
-% endtsuglyph;
+% shou/hakari "weigh_scale"
+begintsuglyph("uni79E4",228);
+  kanji.grnine.weigh_scale;
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni79E5",229);
@@ -485,11 +527,11 @@ begintsuglyph("uni79E8",232);
   tsu_render;
 endtsuglyph;
 
-% 【秩】⿰<禾>⿱丿木<失>⿰丿<夫>⿻<二>⿱一一人
-% grade eight "regularity"
-% begintsuglyph("uni79E9",233);
-%   tsu_render;
-% endtsuglyph;
+% chitsu/chichi "regularity"
+begintsuglyph("uni79E9",233);
+  kanji.greight.regularity;
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni79EA",234);
@@ -579,11 +621,11 @@ begintsuglyph("uni79F9",249);
   tsu_render;
 endtsuglyph;
 
-% 【移】⿰<禾>⿱丿木<多>⿱<夕>⿴𠂊丶<夕>⿴𠂊丶
-% grade five LOOK UP
-% begintsuglyph("uni79FB",251);
-%   tsu_render;
-% endtsuglyph;
+% i/utsu "shift"
+begintsuglyph("uni79FB",251);
+  kanji.grfive.shift;
+  tsu_render;
+endtsuglyph;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

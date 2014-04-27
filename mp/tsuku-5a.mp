@@ -1,6 +1,6 @@
 %
 % Unicode page 5A (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -35,8 +35,11 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradefour.mp;
+input gradeone.mp;
+input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -51,6 +54,14 @@ vardef kanji.greight.daughter =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% extra
+begintsuglyph("uni5A04",4);
+  build_kanji.level(build_kanji.tb(380,-30)
+    (kanji.grtwo.rice)
+    (kanji.grone.woman));
+  tsu_render;
+endtsuglyph;
 
 % chi/shuu "winter radical"
 begintsuglyph("uni5A18",24);

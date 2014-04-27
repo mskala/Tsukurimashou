@@ -1,6 +1,6 @@
 %
 % Grade Five kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -54,6 +54,16 @@ vardef kanji.grfive.cause =
   push_pbox_toexpand("kanji.grfive.cause");
   kanji.radical.box;
   build_kanji.sscale(scaled 0.75)(kanji.grone.big);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.cloth =
+  push_pbox_toexpand("kanji.grfive.cloth");
+  build_kanji.level(
+    build_kanji.lean_to((430,240));
+    build_kanji.sscale(xyscaled (0.86,0.74) shifted (80,-160))
+      (kanji.greight.towel);
+  );
   expand_pbox;
 enddef;
 
@@ -215,6 +225,21 @@ vardef kanji.grfive.support =
   build_kanji.level(build_kanji.tb(500,50)
     (kanji.grone.ten)
     (kanji.greight.otoh));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.surplus =
+  push_pbox_toexpand("kanji.grfive.surplus");
+  build_kanji.level(
+    kanji.radical.tent;
+    path saved_path;
+    tsu_xform(identity yscaled 0.5 shifted (0,-60))
+      (kanji.grone.small;saved_path=get_strokep(-1));
+    replace_strokep(-1)(saved_path yscaled 0.65 shifted (0,-38));
+    set_boserif(-1,0,whatever);
+    push_stroke((160,310)--(850,310))((1.5,1.5)--(1.5,1.5));
+    set_boserif(0,1,9);
+  );
   expand_pbox;
 enddef;
 

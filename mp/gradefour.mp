@@ -455,6 +455,15 @@ vardef kanji.grfour.portent =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.rarity =
+  push_pbox_toexpand("kanji.grfour.rarity");
+  build_kanji.level(build_kanji.tb(600,20)
+    (build_kanji.sscale(xscaled 0.9 shifted (60,0))
+       (kanji.radical.cut_the_grass))
+    (kanji.grfive.cloth));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.request =
   push_pbox_toexpand("kanji.grfour.request");
   tsu_xform(identity yscaled 0.9)(kanji.radical.alt_water);

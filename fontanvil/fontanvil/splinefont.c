@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 2938 2014-03-10 18:51:22Z mskala $ */
+/* $Id: splinefont.c 2997 2014-03-30 01:02:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1999,15 +1999,11 @@ typedef struct SPLFirstVisitorFoundSoughtDataS {
 
 static void SPLFirstVisitorFoundSought(SplinePoint * splfirst,
 				       Spline * spline, void *udata) {
-   SPLFirstVisitorFoundSoughtData *d =
-      (SPLFirstVisitorFoundSoughtData *) udata;
-//    printf("SPLFirstVisitorFoundSought()   splfirst:%p spline:%p udata:%p\n", splfirst, spline, udata );
-//    printf("SPLFirstVisitorFoundSought()   sought:%p from:%p to:%p\n", d->sought, spline->from, spline->to );
+   SPLFirstVisitorFoundSoughtData *d=
+      (SPLFirstVisitorFoundSoughtData *)udata;
 
-   if (spline->from == d->sought || spline->to == d->sought) {
-//      printf("got it!\n");
-      d->found = 1;
-   }
+   if (spline->from == d->sought || spline->to == d->sought)
+     d->found = 1;
 }
 
 typedef struct SPLFirstVisitorFoundSoughtXYDataS {
@@ -2032,8 +2028,6 @@ static void SPLFirstVisitorFoundSoughtXY(SplinePoint * splfirst,
    if (d->found)
       return;
 
-   printf("SPLFirstVisitorFoundSoughtXY() %f %f %f\n", d->x,
-	  spline->from->me.x, spline->to->me.x);
    if (d->use_x) {
       if (spline->from->me.x == d->x) {
 	 found = 1;

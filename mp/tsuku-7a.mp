@@ -33,9 +33,13 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradeone.mp;
+input gradesix.mp;
 input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
@@ -101,6 +105,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.tax =
+  push_pbox_toexpand("kanji.grfive.tax");
+  build_kanji.lr(420,10)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rare.cash);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.leftrad.contend =
   push_pbox_toexpand("kanji.leftrad.contend");
   kanji.rare.contend;
@@ -134,83 +148,110 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% 【稀】⿰<禾>⿱丿木<希>⿱㐅<布>⿸𠂇巾
 % extra
-% begintsuglyph("uni7A00",0);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A00",0);
+  build_kanji.lr(420,0)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfour.rarity);
+  tsu_render;
+endtsuglyph;
 
-% 【稂】⿰<禾>⿱丿木<良>⿱丨艮
 % extra
-% begintsuglyph("uni7A02",2);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A02",2);
+  build_kanji.lr(450,60)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfour.good);
+  tsu_render;
+endtsuglyph;
 
-% 【稃】⿰<禾>⿱丿木<孚>⿱<爫>⿱丿⿲丿丶丶子
 % extra
-% begintsuglyph("uni7A03",3);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A03",3);
+  tsu_render;
+  build_kanji.level(build_kanji.lr(420,30)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.tb(580,0)
+       (kanji.toprad.paw)
+       (kanji.grone.child)));
+  tsu_render;
+endtsuglyph;
 
-% 【稇】⿰<禾>⿱丿木<困>⿴囗木
 % extra
-% begintsuglyph("uni7A07",7);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A07",7);
+  build_kanji.level(build_kanji.lr(380,-20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grsix.bothered));
+  tsu_render;
+endtsuglyph;
 
-% 【稉】⿰<禾>⿱丿木<更>⿱一<CDP-89E7>⿻日<乂>⿻丿乀
 % extra
-% begintsuglyph("uni7A09",9);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A09",9);
+  build_kanji.lr(420,20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.greight.night_watch);
+  tsu_render;
+endtsuglyph;
 
-% 【稊】⿰<禾>⿱丿木<弟>⿱丷<𢎨>⿹<弔>⿻弓丨丿
 % extra
-% begintsuglyph("uni7A0A",10);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A0A",10);
+  build_kanji.lr(400,20)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(shifted (0,20))(kanji.grtwo.little_brother));
+  tsu_render;
+endtsuglyph;
 
-% 【稌】⿰<禾>⿱丿木<余>⿱<CDP-8AFC>⿵𠆢一朩
 % extra
-% begintsuglyph("uni7A0C",12);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A0C",12);
+  build_kanji.lr(420,40)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfive.surplus);
+  tsu_render;
+endtsuglyph;
 
-% 【稍】⿰<禾>⿱丿木<肖>⿱⺌月
 % extra
-% begintsuglyph("uni7A0D",13);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A0D",13);
+  build_kanji.lr(420,40)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.greight.resemblance);
+  tsu_render;
+endtsuglyph;
 
-% 【税】⿰<禾>⿱丿木<兑>⿱丷<兄>⿱口<儿>⿰丿乚
-% grade five LOOK UP
-% begintsuglyph("uni7A0E",14);
-%   tsu_render;
-% endtsuglyph;
+% zei "tax"
+begintsuglyph("uni7A0E",14);
+  kanji.grfive.tax;
+  tsu_render;
+endtsuglyph;
 
-% 【稐】⿰<禾>⿱丿木<侖>⿱<CDP-8AFC>⿵𠆢一<𠕁>⿵冂<卄>⿻⿰丨丨一
 % extra
-% begintsuglyph("uni7A10",16);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A10",16);
+  build_kanji.lr(360,0)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rare.be_methodical);
+  tsu_render;
+endtsuglyph;
 
-% 【稑】⿰<禾>⿱丿木<坴>⿱<圥>⿱<土>⿱十一<儿>⿰丿乚<土>⿱十一
 % extra
-% begintsuglyph("uni7A11",17);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A11",17);
+  build_kanji.lr(400,0)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.rare.clod_of_earth);
+  tsu_render;
+endtsuglyph;
 
-% 【稒】⿰<禾>⿱丿木<固>⿴囗<古>⿱十口
 % extra
-% begintsuglyph("uni7A12",18);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A12",18);
+  build_kanji.lr(380,-20)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grfour.hard);
+  tsu_render;
+endtsuglyph;
 
-% 【稓】⿰<禾>⿱丿木<昔>⿱<龷>⿱<卄>⿻⿰丨丨一一日
 % extra
-% begintsuglyph("uni7A13",19);
-%   tsu_render;
-% endtsuglyph;
+begintsuglyph("uni7A13",19);
+  build_kanji.lr(420,40)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grthree.once_upon_a_time);
+  tsu_render;
+endtsuglyph;
 
 % 【稔】⿰<禾>⿱丿木<念>⿱<今>⿱<CDP-8AFC>⿵𠆢一⺂心
 % extra

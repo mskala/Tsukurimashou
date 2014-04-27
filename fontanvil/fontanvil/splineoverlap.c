@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splineoverlap.c 2997 2014-03-30 01:02:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3777,11 +3777,6 @@ static SplineSet *SSRemoveReversals(SplineSet * base) {
 	       } else if (sp->nonextcp /* which implies sp->noprevcp */  &&
 			  psp->nonextcp && nsp->noprevcp &&
 			  (isp = SameLine(psp, sp, nsp)) != NULL) {
-		  /* printf(" sp x:%f y:%f\n",  sp->me.x,  sp->me.y ); */
-		  /* printf("psp x:%f y:%f\n", psp->me.x, psp->me.y ); */
-		  /* printf("nsp x:%f y:%f\n", nsp->me.x, nsp->me.y ); */
-		  /* printf("between1:%d\n", BetweenForCollinearPoints( nsp, psp, sp )); */
-		  /* printf("between2:%d\n", BetweenForCollinearPoints( psp, nsp, sp )); */
 
 		  if (BetweenForCollinearPoints(nsp, psp, sp)
 		      || BetweenForCollinearPoints(psp, nsp, sp)) {
