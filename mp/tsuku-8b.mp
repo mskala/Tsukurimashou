@@ -64,6 +64,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.lecture =
+  push_pbox_toexpand("kanji.grfive.lecture");
+  build_kanji.level(build_kanji.lr(400,-10)
+    (kanji.grtwo.word)
+    (kanji.rare.inner_palace));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.conspire =
   push_pbox_toexpand("kanji.greight.conspire");
   build_kanji.level(build_kanji.lr(420,0)
@@ -139,6 +149,12 @@ begintsuglyph("uni8B12",18);
   build_kanji.level(build_kanji.lr(400,0)
     (kanji.grtwo.word)
     (build_kanji.sscale(yscaled 0.96)(kanji.grfour.warehouse)));
+  tsu_render;
+endtsuglyph;
+
+% kou "lecture"
+begintsuglyph("uni8B1B",27);
+  kanji.grfive.lecture;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 8C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -191,6 +191,14 @@ vardef kanji.greight.covet =
   build_kanji.tb(470,50)
     (kanji.grtwo.now)
     (kanji.grone.shell);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.subscribe =
+  push_pbox_toexpand("kanji.greight.subscribe");
+  build_kanji.level(build_kanji.lr(410,20)
+    (build_kanji.lift_skirt(220,60)(kanji.grone.shell))
+    (kanji.rare.inner_palace));
   expand_pbox;
 enddef;
 
@@ -396,6 +404,12 @@ endtsuglyph;
 % shitsu/tachi "quality"
 begintsuglyph("uni8CEA",234);
   kanji.grfive.quality;
+  tsu_render;
+endtsuglyph;
+
+% kou "subscribe"
+begintsuglyph("uni8CFC",252);
+  kanji.greight.subscribe;
   tsu_render;
 endtsuglyph;
 

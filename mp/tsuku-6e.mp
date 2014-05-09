@@ -1,6 +1,6 @@
 %
 % Unicode page 6E (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -137,6 +137,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.ditch =
+  push_pbox_toexpand("kanji.greight.ditch");
+  build_kanji.lr(290+20*mincho,10)
+    (kanji.leftrad.water)
+    (kanji.rare.inner_palace);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grnine.pool =
   push_pbox_toexpand("kanji.grnine.pool");
   build_kanji.lr(290,10)
@@ -212,6 +222,12 @@ endtsuglyph;
 % ryuu/ta "pool" or "collect"
 begintsuglyph("uni6E9C",156);
   kanji.grnine.pool;
+  tsu_render;
+endtsuglyph;
+
+% kou/miso "ditch"
+begintsuglyph("uni6E9D",157);
+  kanji.greight.ditch;
   tsu_render;
 endtsuglyph;
 
