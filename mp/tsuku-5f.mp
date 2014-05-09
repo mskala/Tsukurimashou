@@ -153,6 +153,14 @@ vardef kanji.grfive.affirm =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.eloquence =
+  push_pbox_toexpand("kanji.grfive.eloquence");
+  build_kanji.level(build_kanji.tb(490,10)
+    (build_kanji.sscale(xscaled 0.90)(kanji.radical.mu))
+    (kanji.radical.aitch));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.journey =
   push_pbox_toexpand("kanji.grfive.journey");
   build_kanji.level(build_kanji.lr(310,-40)
@@ -166,6 +174,14 @@ vardef kanji.grfive.pleasure =
   build_kanji.level(build_kanji.lr(320,30)
     (kanji.leftrad.heart)
     (kanji.rare.decide));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.stretch =
+  push_pbox_toexpand("kanji.grfive.stretch");
+  build_kanji.lr(380,-40)
+    (build_kanji.sscale(yscaled 1.06 shifted (0,10))(kanji.grtwo.bow))
+    (kanji.grtwo.long);
   expand_pbox;
 enddef;
 
@@ -265,6 +281,12 @@ begintsuglyph("uni5F00",0);
   tsu_render;
 endtsuglyph;
 
+% ben/kanmuri multiple meanings including "eloquence"
+begintsuglyph("uni5F01",1);
+  kanji.grfive.eloquence;
+  tsu_render;
+endtsuglyph;
+
 % yoku/iguromi "ceremony radical"
 begintsuglyph("uni5F0B",11);
   kanji.radical.ceremony;
@@ -339,6 +361,12 @@ endtsuglyph;
 % jyaku/yowa "weak"
 begintsuglyph("uni5F31",49);
   kanji.grtwo.weak;
+  tsu_render;
+endtsuglyph;
+
+% chou/ha "stretch"
+begintsuglyph("uni5F35",53);
+  kanji.grfive.stretch;
   tsu_render;
 endtsuglyph;
 

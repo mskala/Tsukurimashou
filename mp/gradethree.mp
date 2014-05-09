@@ -164,6 +164,15 @@ vardef kanji.grthree.column =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.commerce =
+  push_pbox_toexpand("kanji.grthree.commerce");
+  build_kanji.level(build_kanji.tb(620,60)
+    (kanji.toprad.stand_up;
+     pop_stroke)
+    (kanji.rare.clear));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.complete =
   push_pbox_toexpand("kanji.grthree.complete");
   kanji.radical.tent;

@@ -1,6 +1,6 @@
 %
 % Unicode page 55 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ beginfont
 input bkencl.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -48,15 +49,6 @@ input toprad.mp;
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grthree.commerce =
-  push_pbox_toexpand("kanji.grthree.commerce");
-  build_kanji.level(build_kanji.tb(620,60)
-    (kanji.toprad.stand_up;
-     pop_stroke)
-    (kanji.rare.clear));
-  expand_pbox;
-enddef;
 
 vardef kanji.grthree.question =
   push_pbox_toexpand("kanji.grthree.question");
@@ -72,14 +64,6 @@ vardef kanji.grfour.chant =
   build_kanji.lr(320,30)
     (kanji.leftrad.mouth)
     (kanji.grnine.prosperity);
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.pleasure =
-  push_pbox_toexpand("kanji.grfour.pleasure");
-  build_kanji.level(build_kanji.tb(190,-30)
-    (kanji.toprad.pleasure)
-    (build_kanji.sscale(xscaled 0.85)(kanji.grone.mouth)));
   expand_pbox;
 enddef;
 

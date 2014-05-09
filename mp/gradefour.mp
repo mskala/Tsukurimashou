@@ -96,6 +96,12 @@ vardef kanji.grfour.become =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.bring =
+  push_pbox_toexpand("kanji.grfour.bring");
+  build_kanji.road_enclose(kanji.grone.wheel);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.build =
   push_pbox_toexpand("kanji.grfour.build");
   build_kanji.long_stride_enclose(false)
@@ -427,6 +433,34 @@ vardef kanji.grfour.not_yet =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.nothing =
+  push_pbox_toexpand("kanji.grfour.nothing");
+  build_kanji.level(build_kanji.tb(230,-50)
+    (push_stroke((330,840){curl 0.1}..(230,660)..(90,480),
+       (1.7,1.7)--(1.5,1.5)--(1.1,1.1));
+     set_boserif(0,0,10);
+     push_stroke((260,680)--(260,-40),
+       (1.39,1.39)--(1.3,1.3));
+     push_stroke(
+       (((0,680)--(1000,680)) intersectionpoint get_strokep(-1))--(840,680),
+       (1.5,1.5)--(1.5,1.5));
+     set_boserif(0,1,9);
+     push_stroke((420,680)--(420,-40),
+       (1.4,1.4)--(1.3,1.3));
+     push_stroke((580,680)--(580,-40),
+       (1.4,1.4)--(1.3,1.3));
+     push_stroke((740,680)--(740,-40),
+       (1.4,1.4)--(1.3,1.3));
+     push_stroke((120,320)--(880,320),
+       (1.5,1.5)--(1.5,1.5));
+     set_boserif(0,1,9);
+     push_stroke((140,-40)--(860,-40),
+       (1.5,1.5)--(1.5,1.5));
+     set_boserif(0,1,9))
+    (kanji.bottomrad.four_ticks));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.old_man =
   push_pbox_toexpand("kanji.grfour.old_man");
   kanji.radical.old_man(
@@ -461,6 +495,14 @@ vardef kanji.grfour.perfect =
   build_kanji.tb(600,110)
     (kanji.radical.silly_hat)
     (build_kanji.sscale(xscaled 0.8)(kanji.grtwo.origin));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.pleasure =
+  push_pbox_toexpand("kanji.grfour.pleasure");
+  build_kanji.level(build_kanji.tb(190,-30)
+    (kanji.toprad.pleasure)
+    (build_kanji.sscale(xscaled 0.85)(kanji.grone.mouth)));
   expand_pbox;
 enddef;
 
@@ -578,5 +620,14 @@ vardef kanji.grfour.vassal =
   replace_strokeq(-1)(subpath (1,infinity) of oldq);
   set_boserif(-1,2,whatever);
   push_stroke((500,270)--(500,-20),(1.5,1.5)--(1.4,1.4));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.warehouse =
+  push_pbox_toexpand("kanji.grfour.warehouse");
+  build_kanji.level(build_kanji.tb(400,320)
+    (kanji.radical.tent)
+    (build_kanji.sscale(xscaled 0.84)(kanji.radical.moon_flag);
+     build_kanji.box((320,210),(810,-10))));
   expand_pbox;
 enddef;

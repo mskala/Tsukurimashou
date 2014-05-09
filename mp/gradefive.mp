@@ -32,6 +32,16 @@ inclusion_lock(gradefive);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.again =
+  push_pbox_toexpand("kanji.grfive.again");
+  build_kanji.level(
+    kanji.rare.terracotta;
+    set_boserif(0,0,whatever);
+    push_stroke((110,820)--(890,820),(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,1,9));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.approve =
   push_pbox_toexpand("kanji.grfive.approve");
   build_kanji.level(build_kanji.tb(530,-10)
@@ -216,6 +226,14 @@ vardef kanji.grfive.righteousness =
   build_kanji.level(build_kanji.tb(460,20)
     (kanji.toprad.blue)
     (kanji.grsix.ego));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.shift =
+  push_pbox_toexpand("kanji.grfive.shift");
+  build_kanji.level(build_kanji.lr(380,30)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(yscaled 0.96 shifted (0,-20))(kanji.grtwo.many)));
   expand_pbox;
 enddef;
 

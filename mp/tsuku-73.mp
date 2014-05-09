@@ -1,6 +1,6 @@
 %
 % Unicode page 73 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -33,9 +33,22 @@
 beginfont
 
 % AUTODEPS
+input buildkanji.mp;
 input gradeone.mp;
+input leftrad.mp;
+input radical.mp;
 
 do_late_includes;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.actually =
+  push_pbox_toexpand("kanji.grfive.actually");
+  build_kanji.lr(400,20)
+    (kanji.leftrad.king)
+    (kanji.grone.see);
+  expand_pbox;
+enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -48,6 +61,12 @@ endtsuglyph;
 % ou "king"
 begintsuglyph("uni738B",139);
   kanji.grone.king;
+  tsu_render;
+endtsuglyph;
+
+% gen/arawa "actually"
+begintsuglyph("uni73FE",254);
+  kanji.grfive.actually;
   tsu_render;
 endtsuglyph;
 

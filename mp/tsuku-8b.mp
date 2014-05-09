@@ -1,6 +1,6 @@
 %
 % Unicode page 8B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -112,6 +112,14 @@ begintsuglyph("uni8B02",2);
   tsu_render;
 endtsuglyph;
 
+% extra
+begintsuglyph("uni8B03",3);
+  build_kanji.level(build_kanji.lr(410,-10)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(yscaled 0.96)(kanji.grtwo.star)));
+  tsu_render;
+endtsuglyph;
+
 % extra "carol"
 begintsuglyph("uni8B0C",12);
   build_kanji.level(build_kanji.lr(450,0)
@@ -126,11 +134,100 @@ begintsuglyph("uni8B0E",14);
   tsu_render;
 endtsuglyph;
 
+% extra
+begintsuglyph("uni8B12",18);
+  build_kanji.level(build_kanji.lr(400,0)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(yscaled 0.96)(kanji.grfour.warehouse)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B1C",28);
+  build_kanji.level(build_kanji.lr(380,0)
+    (kanji.grtwo.word)
+    (kanji.grtwo.field));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B1E",30);
+  build_kanji.level(build_kanji.lr(400,-20)
+    (kanji.grtwo.word)
+    (kanji.grtwo.high));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B24",36);
+  build_kanji.level(build_kanji.lr(410,-20)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(yscaled 0.96 shifted (0,-30))(kanji.grfour.ticket)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B2A",42);
+  build_kanji.level(build_kanji.lr(360,-20)
+    (kanji.grtwo.word)
+    (kanji.grthree.commerce));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B2E",46);
+  build_kanji.level(build_kanji.lr(410,-20)
+    (kanji.grtwo.word)
+    (kanji.grfive.blame));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B30",48);
+  build_kanji.level(build_kanji.lr(380,0)
+    (kanji.grtwo.word)
+    (kanji.grfour.bring));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B35",53);
+  build_kanji.level(build_kanji.lr(410,-20)
+    (kanji.grtwo.word)
+    (kanji.grthree.learn));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B3B",59);
+  build_kanji.level(build_kanji.lcr(320,-20)(630,0)
+    (kanji.grtwo.word)
+    (kanji.leftrad.two_branch_tree)
+    (build_kanji.sscale(yscaled 0.96 shifted (0,-20))(kanji.grtwo.many)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B3F",63);
+  build_kanji.level(build_kanji.lr(360,30)
+    (kanji.grtwo.word)
+    (kanji.grtwo.morning));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B46",70);
+  build_kanji.lr(430,20-20*mincho)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(shifted (0,20))(kanji.grfour.pleasure));
+  tsu_render;
+endtsuglyph;
+
 % extra "certificate"
 begintsuglyph("uni8B49",73);
   build_kanji.level(build_kanji.lr(410,0)
     (kanji.grtwo.word)
-    (kanji.grthree.climb));
+    (build_kanji.sscale(yscaled 0.95)(kanji.grthree.climb)));
   tsu_render;
 endtsuglyph;
 
@@ -142,11 +239,67 @@ begintsuglyph("uni8B4F",79);
   tsu_render;
 endtsuglyph;
 
+% extra
+begintsuglyph("uni8B51",81);
+  build_kanji.level(build_kanji.lr(430,0)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(yscaled 0.94 shifted (0,-20))(kanji.grnine.boast)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B52",82);
+  build_kanji.level(build_kanji.lr(430,0)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(yscaled 0.94 shifted (0,-30))(kanji.grtwo.ordinal)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B54",84);
+  build_kanji.level(build_kanji.lr(410,-30)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(yscaled 0.95)(kanji.grnine.southeast)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B55",85);
+  build_kanji.level(build_kanji.lr(350,-20)
+    (kanji.grtwo.word)
+    (kanji.grfour.nothing));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B57",87);
+  build_kanji.level(build_kanji.lr(380,-20)
+    (kanji.grtwo.word)
+    (build_kanji.sscale(shifted (0,20))(kanji.grtwo.answer)));
+  tsu_render;
+endtsuglyph;
+
 % extra "false accusation"
 begintsuglyph("uni8B5B",91);
   build_kanji.level(build_kanji.lr(450,0)
     (kanji.grtwo.word)
     (build_kanji.sscale(scaled 0.95)(kanji.greight.substitute)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B68",104);
+  build_kanji.level(build_kanji.lr(380,-40)
+    (kanji.grtwo.word)
+    (kanji.grthree.farming));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni8B69",105);
+  build_kanji.level(build_kanji.lr(400,-30)
+    (kanji.grtwo.word)
+    (kanji.grthree.intention));
   tsu_render;
 endtsuglyph;
 
@@ -158,7 +311,7 @@ endtsuglyph;
 
 % extra "study"
 begintsuglyph("uni8B80",128);
-  build_kanji.level(build_kanji.lr(450,0)
+  build_kanji.level(build_kanji.lr(420,-20)
     (kanji.grtwo.word)
     (kanji.grten.sell_out));
   tsu_render;

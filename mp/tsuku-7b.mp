@@ -1,6 +1,6 @@
 %
 % Unicode page 7B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -48,14 +48,6 @@ input toprad.mp;
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grtwo.answer =
-  push_pbox_toexpand("kanji.grtwo.answer");
-  build_kanji.level(build_kanji.tb(540,220)
-    (kanji.toprad.bamboo)
-    (kanji.grtwo.join));
-  expand_pbox;
-enddef;
 
 vardef kanji.grtwo.calculate =
   push_pbox_toexpand("kanji.grtwo.calculate");

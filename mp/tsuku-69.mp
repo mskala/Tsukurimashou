@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradefive.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
@@ -91,6 +92,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.posture =
+  push_pbox_toexpand("kanji.grfive.posture");
+  build_kanji.lr(380,30)
+    (kanji.leftrad.wood)
+    (build_kanji.sscale(yscaled 0.95)(kanji.rare.inner_palace));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.radical.three_tailed_sheep =
   push_pbox_toexpand("kanji.radical.three_tailed_sheep");
   kanji.grthree.sheep;
@@ -136,6 +147,12 @@ begintsuglyph("uni697E",126);
   build_kanji.lr(480,30)
     (kanji.leftrad.wood)
     (kanji.grsix.fountain);
+  tsu_render;
+endtsuglyph;
+
+% kou/kama "posture" or "construction"
+begintsuglyph("uni69CB",203);
+  kanji.grfive.posture;
   tsu_render;
 endtsuglyph;
 

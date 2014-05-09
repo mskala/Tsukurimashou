@@ -32,6 +32,14 @@ inclusion_lock(gradetwo);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grtwo.answer =
+  push_pbox_toexpand("kanji.grtwo.answer");
+  build_kanji.level(build_kanji.tb(540,220)
+    (kanji.toprad.bamboo)
+    (kanji.grtwo.join));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.arrow =
   push_pbox_toexpand("kanji.grone.arrow");
   push_stroke((300,810)..tension 1.2..(220,600)..(110,480),
@@ -769,6 +777,16 @@ vardef kanji.grtwo.old =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.ordinal =
+  push_pbox_toexpand("kanji.grtwo.ordinal");
+  build_kanji.level(build_kanji.tb(350,140)
+    (build_kanji.spread_legs(140)(build_kanji.add_beret(
+       kanji.grtwo.rice)))
+    (kanji.grone.paddy));
+  replace_strokep(-8)((point 0 of oldp)--(500,330+50*mincho));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.origin =
   push_pbox_toexpand("kanji.grtwo.origin");
   build_kanji.tb(520,110)
@@ -850,6 +868,14 @@ vardef kanji.grtwo.sell =
     (build_kanji.tb(450,200)
        (kanji.radical.conservative_hat)
        (kanji.radical.legs)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.star =
+  push_pbox_toexpand("kanji.grtwo.star");
+  build_kanji.sscale(xscaled 1.07)(build_kanji.tb(420,0)
+    (kanji.grone.day)
+    (kanji.grone.life));
   expand_pbox;
 enddef;
 

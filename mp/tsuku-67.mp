@@ -133,6 +133,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.article =
+  push_pbox_toexpand("kanji.grfive.article");
+  build_kanji.level(build_kanji.tb(420,20+30*mincho)
+    (kanji.radical.winter)
+    (kanji.grone.wood));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.inspection =
   push_pbox_toexpand("kanji.grfive.inspection");
   build_kanji.level(build_kanji.tb(420,60)
@@ -265,6 +273,12 @@ endtsuglyph;
 % soku/taba "bundle"
 begintsuglyph("uni675F",95);
   kanji.grfour.bundle;
+  tsu_render;
+endtsuglyph;
+
+% jou/eda "article" (as a division of a document) etc.
+begintsuglyph("uni6761",97);
+  kanji.grfive.article;
   tsu_render;
 endtsuglyph;
 

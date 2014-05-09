@@ -1,6 +1,6 @@
 %
 % Unicode page 4E (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -107,6 +107,22 @@ vardef kanji.grfive.france =
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.radical.mu);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.long_time =
+  push_pbox_toexpand("kanji.grfive.long_time");
+  push_stroke((420,830)..tension 1.2..(270,570)..(120,460),
+    (1.7,1.7)--(1.4,1.4)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((get_strokep(0) intersectionpoint ((0,690)--(1000,690)))--
+      (690,690)..tension 1.2..(430,280)..(70,-10),
+    (1.5,1.5)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  set_boserif(0,1,4);
+  set_botip(0,1,0);
+  push_stroke((point 1.60 of get_strokep(0))..tension 1.2..
+      (710,160)..(900,0),
+    (0.92,0.92)--(1.3,1.3)--(1.8,1.8));
   expand_pbox;
 enddef;
 
@@ -314,6 +330,12 @@ endtsuglyph;
 % shu/nushi "master"
 begintsuglyph("uni4E3B",59);
   kanji.grthree.master;
+  tsu_render;
+endtsuglyph;
+
+% kyuu/hisa "long time" (as in "hisashiburi")
+begintsuglyph("uni4E45",69);
+  kanji.grfive.long_time;
   tsu_render;
 endtsuglyph;
 

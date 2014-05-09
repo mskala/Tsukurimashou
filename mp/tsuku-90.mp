@@ -1,6 +1,6 @@
 %
 % Unicode page 90 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -139,12 +139,6 @@ vardef kanji.grthree.send =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfour.bring =
-  push_pbox_toexpand("kanji.grfour.bring");
-  build_kanji.road_enclose(kanji.grone.wheel);
-  expand_pbox;
-enddef;
 
 vardef kanji.grfour.choose =
   push_pbox_toexpand("kanji.grfour.county");

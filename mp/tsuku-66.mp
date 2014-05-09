@@ -85,14 +85,6 @@ vardef kanji.grtwo.spring =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.star =
-  push_pbox_toexpand("kanji.grtwo.star");
-  build_kanji.sscale(xscaled 1.07)(build_kanji.tb(420,0)
-    (kanji.grone.day)
-    (kanji.grone.life));
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.time =
   push_pbox_toexpand("kanji.grtwo.time");
   build_kanji.lr(330,0)

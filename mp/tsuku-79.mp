@@ -143,14 +143,6 @@ vardef kanji.grfive.pioneer =
   expand_pbox;
 enddef;
 
-vardef kanji.grfive.shift =
-  push_pbox_toexpand("kanji.grfive.shift");
-  build_kanji.level(build_kanji.lr(380,30)
-    (kanji.leftrad.two_branch_tree)
-    (build_kanji.sscale(yscaled 0.96 shifted (0,-20))(kanji.grtwo.many)));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.i =

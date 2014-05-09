@@ -173,6 +173,13 @@ vardef kanji.grfive.normal =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.preface =
+  push_pbox_toexpand("kanji.grfive.preface");
+  build_kanji.dotcliff_enclose(tsu_xform(identity yscaled 0.95)
+    (kanji.grthree.before));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.government_office =
@@ -399,6 +406,12 @@ endtsuglyph;
 % toko/yuka "bed"
 begintsuglyph("uni5E8A",138);
   kanji.greight.bed;
+  tsu_render;
+endtsuglyph;
+
+% jo/tsui "preface"
+begintsuglyph("uni5E8F",143);
+  kanji.grfive.preface;
   tsu_render;
 endtsuglyph;
 

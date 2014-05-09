@@ -1,6 +1,6 @@
 %
 % Rare kanji needed to build others
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -288,6 +288,16 @@ vardef kanji.rare.history_inside =
   build_kanji.tb(420,80)
     (kanji.grone.grove)
     (kanji.grtwo.cease);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.inner_palace =
+  push_pbox_toexpand("kanji.rare.inner_palace");
+  build_kanji.level(build_kanji.tb(490,27)
+    (build_kanji.sscale(xscaled 0.8)(kanji.toprad.grass);
+     replace_strokep(0)(oldp shifted (0,140));
+     build_kanji.sscale(xscaled 0.77 shifted (0,-130))(kanji.grone.one))
+    (kanji.grfive.again));
   expand_pbox;
 enddef;
 
@@ -579,6 +589,18 @@ vardef kanji.rare.swim =
   push_pbox_toexpand("kanji.rare.swim");
   build_kanji.level(build_kanji.flag_enclose(0.72,0.7)
     (kanji.grone.child));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.terracotta =
+  push_pbox_toexpand("kanji.rare.terracotta");
+  build_kanji.level(build_kanji.sscale(xyscaled (0.82,0.87) shifted (0,-70))
+    (kanji.grone.moon);
+    replace_strokep(0)(((90,0)--(910,0)) shifted (0,ypart point 0 of oldp));
+    set_boserif(0,1,9);
+    push_stroke((500,820)--(point 0.5 of get_strokep(0)),
+      (1.6,1.6)--(1.5,1.5));
+    set_boserif(0,0,10));
   expand_pbox;
 enddef;
 

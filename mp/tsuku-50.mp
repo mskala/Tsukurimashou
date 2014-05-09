@@ -1,6 +1,6 @@
 %
 % Unicode page 50 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -114,15 +114,6 @@ vardef kanji.grfour.wait_for_it =
     (kanji.leftrad.person)
     (build_kanji.sscale(scaled 0.75 shifted (-400,0))(kanji.radical.vline);
      build_kanji.sscale(xscaled 0.8)(kanji.grfour_helper.wait_for_it));
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.warehouse =
-  push_pbox_toexpand("kanji.grfour.warehouse");
-  build_kanji.level(build_kanji.tb(400,320)
-    (kanji.radical.tent)
-    (build_kanji.sscale(xscaled 0.84)(kanji.radical.moon_flag);
-     build_kanji.box((320,210),(810,-10))));
   expand_pbox;
 enddef;
 

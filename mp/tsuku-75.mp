@@ -1,6 +1,6 @@
 %
 % Unicode page 75 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -73,16 +73,6 @@ vardef kanji.grtwo.brush_stroke =
     (1.6,1.6)--(1.6,1.6));
   build_kanji.box((300,550),(700,190));
   build_kanji.cup((120,580),(880,20));
-  expand_pbox;
-enddef;
-
-vardef kanji.grtwo.ordinal =
-  push_pbox_toexpand("kanji.grtwo.ordinal");
-  build_kanji.level(build_kanji.tb(350,140)
-    (build_kanji.spread_legs(140)(build_kanji.add_beret(
-       kanji.grtwo.rice)))
-    (kanji.grone.paddy));
-  replace_strokep(-8)((point 0 of oldp)--(500,330+50*mincho));
   expand_pbox;
 enddef;
 

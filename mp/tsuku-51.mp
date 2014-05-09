@@ -1,6 +1,6 @@
 %
 % Unicode page 51 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -306,9 +306,27 @@ begintsuglyph("uni5186",134);
   tsu_render;
 endtsuglyph;
 
+% terra-cotta colour, needed for grade five "again"
+begintsuglyph("uni5189",137);
+  kanji.rare.terracotta;
+  tsu_render;
+endtsuglyph;
+
+% sai/futata "again"
+begintsuglyph("uni518D",141);
+  kanji.grfive.again;
+  tsu_render;
+endtsuglyph;
+
 % kei/akiraka "clear"
 begintsuglyph("uni518F",143);
   kanji.rare.clear;
+  tsu_render;
+endtsuglyph;
+
+% used in "posture"
+begintsuglyph("uni5193",147);
+  kanji.rare.inner_palace;
   tsu_render;
 endtsuglyph;
 
