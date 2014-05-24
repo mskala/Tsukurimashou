@@ -486,7 +486,7 @@ foreach $file (@files) {
     $state=4 if ($state==2) && !/^\s+tsu_render;$/;
     if ($state==3) {
       if (/^\s*endtsuglyph;$/ &&
-          (($rightside{$cname}>6) || ($moved_picture{$mname} ne ''))) {
+          (($rightside{$cname}>6) || ($moved_picture{$mname} eq ''))) {
         delete $moved_picture{$moved_picture{$mname}}
           if ($moved_picture{$mname} ne '') && ($glp ne 'kazoe');
         $moved_picture{$mname}=$cname;
@@ -577,7 +577,7 @@ foreach $file (@files) {
       $pnum=hex("0x$page");
     }
     if (/^begintsuglyph\("(.*)",(\d+)\)/) {
-      if ($moved_picture{"$glp.$1"} ne '') {
+      if ($moved_picture{"$glp.$1"} eq '') {
         printf "\n\\Picture{%s}{%s%02X}","$glp.$1",$page,$2;
         printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
           &setgl(($pnum<<8)+$2,$1),$leftside{"$glp.$1"},$rightside{"$glp.$1"},
