@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3041 2014-04-27 02:12:23Z mskala $])
+AC_REVISION([$Id: configure.ac 3104 2014-05-23 18:49:25Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
 AC_SUBST([release_date],["August 26, 2013"])
 AM_SILENT_RULES
@@ -592,6 +592,15 @@ AS_IF([test '!' "$enable_proportional" = "yes" \
   || test '!' "$can_proportional" = "yes"],
   [missing_proportional=yes
    can_proofs=no])
+AS_IF([test '!' "x$enable_proofs" = "xno"],
+  [$PERL -CSD $srcdir/tools/make-cfghl style "$enable_styles" > cdp-temp.hl
+   cdp_result=`$PERL -CSD $srcdir/hamlog/hamlog 'Y' \
+     'can_do_proofs(Y)' cdp-temp.hl $srcdir/hamlog/select.hl`
+   rm -f cdp-temp.hl
+   AS_IF([test '!' "x$cdp_result" = "xyes"],
+     [missing_hl_cdp=yes
+      can_proofs=no])
+   ],[AS_IF([test "$can_proofs" = "yes"],[can_proofs=maybe])])
 AS_IF([test '!' "$enable_proofs" = "no" && test "$can_proofs" = "no"],
   [can_build=no])
 AC_MSG_RESULT([$can_proofs])
@@ -826,6 +835,8 @@ AS_IF([test '!' "x$enable_proofs" = "xno" && test "$can_proofs" = "no"],
      [AS_ECHO(["   PGF/TikZ (>=2.00)     http://pgf.sf.net/"])])
    AS_IF([test "$missing_proportional" = "yes"],
      [AS_ECHO(["   proportional spacing and kerning must be enabled and buildable"])])
+   AS_IF([test "$missing_hl_cdp" = "yes"],
+     [AS_ECHO(["   all font styles that appear in the proofs must be enabled"])])
    AS_ECHO(["Without the above it is not possible to build this component.  Use"])
    AS_ECHO(["the --disable-proofs option, or install all prerequisites."])
    ])

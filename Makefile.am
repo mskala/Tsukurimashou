@@ -1045,7 +1045,13 @@ doc/pppcount.tex: doc/pprinted.tex
 	$(AM_V_at)$(GREP) '\\def\\ProgressCount' \
 	  doc/pprinted.tex > doc/pppcount.tex
 
-doc/proofs.pdf: doc/proofs.xdv
+otf/KazoemashouPuruufu.otf: sfd/kazoe-se-ps.sfd
+	$(TSU_V_OTF) otf/KazoemashouPuruufu.otf
+	$(AM_V_at)$(FONTANVIL) -lang=ff -c \
+	'Open("sfd/kazoe-se-ps.sfd");Generate("otf/KazoemashouPuruufu.otf");' \
+	  $(TSU_V_REDIR)
+
+doc/proofs.pdf: doc/proofs.xdv otf/KazoemashouPuruufu.otf
 
 doc/proofs.xdv doc/proofs.toc doc/proofs.aux: \
   doc/proofs.tex doc/pprinted.tex doc/pppcount.tex $(MAYBE_PGFLIBSHAPES)

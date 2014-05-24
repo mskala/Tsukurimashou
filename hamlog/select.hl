@@ -93,6 +93,12 @@ proof_style_short(F,S,W,P):-
   proof_style(FA,SA,WA,PA),
   short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P).
 
+% test for proof capability
+
+can_do_proofs(yes):-
+  proof_style(F,S,W,P),not_want_style(F,S,W,P), !,fail.
+can_do_proofs(yes).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Long and short names for Hamlog atoms.  The "long" ones are human-readable;
@@ -281,6 +287,9 @@ want_style_short(F,S,W,P):-
   want_style(FA,SA,WA,PA),
   allowed_style(FA,SA,WA,PA),
   short_name(FA,F),short_name(SA,S),short_name(WA,W),short_name(PA,P).
+
+not_want_style(F,S,W,P):-want_style(F,S,W,P), !,fail.
+not_want_style(_F,_S,_W,_P):- !.
 
 style_xlat(F,S,W,P,_X,FX,SX,WX,PX):-
   family(FA),style(FA,SA),weight(WA),spacing(PA),
