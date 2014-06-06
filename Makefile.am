@@ -267,6 +267,7 @@ MOSTLYCLEANFILES = \
   fea/*.fea \
   hamlog/kddata.hl hamlog/jnames.hl \
   mp/mande-a[c-f].mp mp/mande-[b-d][0-9a-f].mp mp/.hglstamp \
+  otf/KazouemashouPuruufu.otf \
   pe/assemble-font.pe pe/make-empty.pe pe/*-bearing.pe \
   pfb/*.afm pfb/*.pfb \
   pfbtmp/*.pfb prf/*.prf sfd/*.sfd sum/*.sum \
@@ -274,7 +275,9 @@ MOSTLYCLEANFILES = \
   txt/fontlog.txt txt/tsukurimashou.eids
 
 CLEANFILES = \
-  otf/Tsukurimashou*.otf otf/BlackletterLolita*.otf otf/Mandeubsida*.otf \
+  otf/Tsukurimashou*.otf \
+  otf/BlackletterLolita*.otf otf/Kazoemashou*.otf \
+  otf/Mandeubsida*.otf otf/TsuIta*.otf \
   doc/*.pdf
 
 DISTCLEANFILES = \

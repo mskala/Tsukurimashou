@@ -577,7 +577,7 @@ foreach $file (@files) {
       $pnum=hex("0x$page");
     }
     if (/^begintsuglyph\("(.*)",(\d+)\)/) {
-      if ($moved_picture{"$glp.$1"} eq '') {
+      if ($moved_picture{"$glp.$1"} ne '') {
         printf "\n\\Picture{%s}{%s%02X}","$glp.$1",$page,$2;
         printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
           &setgl(($pnum<<8)+$2,$1),$leftside{"$glp.$1"},$rightside{"$glp.$1"},
