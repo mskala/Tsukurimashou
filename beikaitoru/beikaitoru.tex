@@ -315,7 +315,197 @@ have been slightly smaller than ideal.  And then subsequent to Hershey's
 work, many users ended up choosing much smaller dot sizes, producing a very
 different look.
 
-Beikaitoru provides the following nine numbered sizes:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Font style}
+
+Since he was designing for hardware incapable of scaling the fonts, Hershey
+designed complete alphabets at several different sizes (measured in grid
+points), as well as multiple styles.  In the original designs, the sizes are
+not clearly separated from the styles; and some non-alphabetic characters
+seem intended for use with multiple sizes or styles.  Individual glyphs are
+given four-digit numbers in a scheme unique to the Hershey report, and in
+particular not corresponding to ASCII or the then-nonexistent Unicode.
+function.
+
+The main organizational division of the glyph set is into "Simplex,"
+"Duplex," and "Triplex," according to how many strokes of the plotter
+pen are used for the wide strokes in the glyphs.  These are then divided
+into different styles, typically at least serif and sans-serif, sometimes
+italic.  Most styles include upper and lowercase Latin and Greek; some also
+include Cyrillic.  There are three blackletter alphabets incorrectly
+described as "Gothic." There is a selection of Japanese
+characters, apparently intended as a proof of concept rather than for actual
+use; it is not really enough to create a complete usable font.  And there is
+a collection of cartographic symbols, including (for many of the symbols)
+multiple sizes and orientations, to accomodate the plotter's limitations.
+
+The Beikaitoru fonts attempt to reorganize the glyph set according to
+Unicode; each font is pieced together from multiple segments of the Hershey
+set.  The styles as seen in Beikaitoru are discussed later; this summary
+describes Hershey's organization.  The appendix, part, and section names and
+numbering shown here are from his report.  Be warned that some of the
+nomenclature does not follow modern usage.  Also, the Usenet-posted
+electronic source used by Beikaitoru does not perfectly match the pictures
+in the report.  The main difference is that it contains some additional
+glyphs, although just a few are substituted entirely, such as number 0229,
+which is lozenge in the Hershey report and centre dot in the electronic
+source, while the electronic source has lozenge at 0235, a number not used
+in the Hershey report.
+
+FIXME reproduce Hershey's descriptions of his source materials.
+
+\subsection*{Appendix B: Digitalization with vectors}
+
+\subsubsection*{Part I: Simplex Repertory}
+
+\paragraph*{A. FORTRAN}
+
+Apparently a set of characters for writing FORTRAN.  Small sans-serif
+uppercase-only Latin and Greek alphabets with limited punctuation; larger
+upper- and lowercase Latin and Greek, upright except the lowercase Greek is
+italic (as is typical in mathematics).  Large script-style upper- and
+lowercase Latin.
+
+\paragraph*{B. Cartographic}
+
+A grab bag of line-drawing glyphs, and markers that seem to be intended for
+making maps, as the title implies.  A few electronic circuit symbols.  The
+electronic source also includes some specifically weather-related map
+symbols not in the Hershey report.
+
+\subsubsection*{Part II: Duplex Repertory}
+
+\paragraph*{A. Indexical}
+
+"Indexical" is a smaller size, probably intended for subscripts and
+superscripts.  Upper and lowercase Latin and Greek (upright except the
+lowercase Greek is italic); upper and lowercase italic Latin.  All are
+serif, and seem to be based on Scotch Modern.  Some additional typographic
+and astronomical symbols.
+
+\paragraph*{B. Principal}
+
+The same styles as for "indexical," larger.  Some additional math and music
+symbols.  Oversize math brackets, sum, product, root, integral.  Sans serif
+large upright Latin; script Latin.  Serif upright Cyrillic.
+
+\subsubsection*{Part III: Triplex Repertory}
+
+Three styles of Latin blackletter (not "Gothic" despite the titles), upper-
+and lowercase.  The Hershey report shows only the alphabets, but the
+electronic source, as well as numbering them differently, also
+includes a single set of blackletter numerals and punctuation
+apparently intended to be shared by all three styles.
+
+\paragraph*{A. English Gothic}
+
+\paragraph*{B. Italian Gothic}
+
+\paragraph*{C. German Gothic}
+
+\subsection*{Appendix C: Digitalization of Japanese}
+
+\subsubsection*{Part I: Kanji List}
+
+A selection of 603 kanji characters, apparently intended as a representative
+sampling for proof of concept, determined as follows: those of the 214
+traditional radicals that are characters in themselves and included on the
+Touyou Kanji list (i.e.\ the Japanese government's "daily use" list current
+at the time; the modern Jouyou Kanji were introduced in 1981); the
+first-grade school kanji (again, current as of 1967); and "a selection of
+characters of scientific interest." Apparently some effort was made to
+include both halves of pairs of antonyms if they chose to include either
+half, and any components shared by more than one character they would
+otherwise include; the details of these rules were not elaborated in the
+report.  The report and the electronic source index these characters by
+Nelson dictionary numbers.
+
+This range also includes three punctuation marks:  period and comma, both of
+which are Western-style shapes but spaced for use with Japanese, and kana
+vowel length mark.
+
+\subsubsection*{Part II: Hiragana List}
+
+The full basic set of hiragana, including archaic glyphs for "wi" and "we"
+and an extra copy of the "u" glyph in a spot where the character code
+implies "wu"; separate glyphs with dakuten and handakuten where applicable. 
+No "small" kana.  
+
+\subsubsection*{Part III: Katakana List}
+
+Katakana, covering the same range as the hiragana.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Guide to the Beikaitoru fonts}
+
+Reviving the Hershey fonts for use with 21st Century technology required
+rearranging and coding the glyphs to fit in the framework of Unicode,
+splitting the "repertories" into distinct font styles, and making decisions
+on issues like dot size that in the 1960s would have been dictated by
+hardware considerations.  Making many of these choices available to users
+implies the creation of a large family of fonts, and then there is some
+question of how to name and identify the different fonts within the family.
+
+The fonts created by this package are all named "Beikaitoru" with a
+three-digit decimal number identifying the specific font.  These numbers are
+defined as sums of integers encoding information about the font:
+\begin{itemize}
+   \item a multiple of 50 (from 100 to 800) defining the general style;
+   \item plus 10 for coordinate smoothing;
+   \item plus a one-digit number (from 0 to 9) defining the dot or pen size.
+\end{itemize}
+
+The multiples of 50 encoding general style are selected from the following
+list.  The style definitions are work in progress.  As of this writing, only
+those marked with an asterisk are defined and will build correctly; others
+may build with placeholder code copied from other styles (i.e.\ the glyphs
+in the font are not correctly the style described by the number), or they
+may not build at all.  Even for styles that build completely enough to be
+usable, not all characters planned for eventual inclusion will necessarily
+be included at the present time.
+
+\begin{tabular}{ll}
+  code & description \\ \hline
+  100* & simplex small grid \\
+  150* & simplex medium grid \\
+  200* & simplex script \\
+  250 & [not used] \\
+  300* & duplex roman indexical (small grid) \\
+  350 & duplex italic indexical (small grid) \\
+  400* & duplex roman principal (large grid) \\
+  450 & duplex italic principal (large grid) \\
+  500* & duplex sans serif \\
+  550 & duplex script \\
+  600* & triplex roman \\
+  650 & triplex italic \\
+  700 & triplex German blackletter \\
+  750 & triplex English blackletter \\
+  800 & triplex Italian blackletter
+\end{tabular}
+
+Since these are scaleable vector fonts, the actual sizes of text will be
+determined by the scaling chosen; references to size above refer to the
+sizes of the glyphs in terms of Hershey's grid units.  Fonts defined on a
+smaller grid will appear bolder and blockier than fonts on a larger grid, at
+the same physical size.  These fonts do not directly support any concept of
+"optical size," although using smaller grid sizes for smaller optical sizes
+will produce a similar effect.
+
+Adding 10 for curve smoothing invokes a special feature of Beikaitoru's
+Metapost code that attempts to detect when the Hershey plotter data is
+approximating a curve with many small line segments, and in such cases
+replaces the line segments with interpolating cubic splines.  In many
+glyphs, the results look more visually appealing.  However, the code
+sometimes guesses wrong, and the jagged effect of the original line segments
+may be desirable to impart an historical flavour anyway, so this feature is
+not necessarily always a good thing.
+
+Beikaitoru provides the following nine numbered sizes, each of which defines
+a diameter for the dot or pen in grid units.  The last digit of
+each font's style number is the pen size; for instance, Beikaitoru 406 uses
+pen size 6.
 
 \begin{tabular}{ll}
   size & dot diameter \\ \hline
@@ -332,7 +522,8 @@ Beikaitoru provides the following nine numbered sizes:
 
 Size 6 is probably optimal for simulating the way Hershey intended his fonts
 to look on the hardware that was current in 1967, and it is the size used to
-typeset the main text of this documentation.  Sizes 1, 2, and 3, depending
+typeset the main text of this documentation.  (This text is set in
+Beikaitoru~406.)  Sizes 1, 2, and 3, depending
 on scaling, may be appropriate for simulating later historical uses of the
 Hershey vectors in vector-plotting environments.
 
