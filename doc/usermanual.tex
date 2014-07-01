@@ -79,8 +79,10 @@
 \setmonofont[WordSpace={1,0,0},PunctuationSpace=3]{TsukurimashouMincho}
 
 \renewcommand{\labelitemi}{{\fontspec[RawFeature=+ornm]{TsukurimashouKaku}C}}
-\newcommand{\fracfont}[1]{{\fontspec[RawFeature=+afrc]{TsukurimashouKaku}#1}}
-\newcommand{\enclfont}[1]{{\fontspec[RawFeature=+ss02]{TsukurimashouKakuPS}#1}}
+\newcommand{\fracfont}[1]{%
+  {\fontspec[RawFeature=+afrc]{TsukurimashouKaku}\relax #1}}
+\newcommand{\enclfont}[1]{%
+  {\fontspec[RawFeature=+ss02]{TsukurimashouKakuPS}\relax #1}}
 
 % section and subsection names in this document are bilingual; define
 % special commands to format them nicely.
@@ -894,6 +896,20 @@ have become so numerous that it makes sense to also have a central list.
 \blsubsubsection{FIXME}{FontForge}
 
 \begin{itemize}
+  \item FontForge's list of external dependencies continues to grow, as does
+    its emphasis on Python.  There has been talk of removing ``native''
+    scripting from FontForge altogether, which would be a disaster for
+    Tsukurimashou.  Rather than waiting for FontForge to become unusable and
+    then panicking, I've forked the project.  FontForge's source repository
+    now includes a directory for ``FontAnvil,'' a standalone interpreter of
+    FontForge's native scripting language.  Tsukurimashou's build system
+    as of version 0.9 will look for FontAnvil and use it in preference to
+    FontForge if found.  My hope is that this will be beneficial to both
+    Tsukurimashou and FontForge, by providing a stable platform for
+    Tsukurimashou's scripts and also freeing the FontForge team from the
+    ongoing need to support features that do not fit into their marketing
+    strategy.
+
   \item FontForge spline geometry operations, such as overlap removal and
     simplification: these have historically tended to be very numerically
     unstable, and subject to some combination of infinite loops,
@@ -1003,8 +1019,8 @@ have become so numerous that it makes sense to also have a central list.
 \blsubsubsection{FIXME}{\XeTeX}
 
 \begin{itemize}
-  \item \XeTeX\ fails to advance glyph pointer after a successful match in a
-    GSUB table, which has complicated consequences for chaining
+  \item \XeTeX\ fails to advance the glyph pointer after a successful
+    match in a GSUB table, which has complicated consequences for chaining
     substitutions, most notably that ``ignore sub'' rules have no effect.
     This is actually a bug in the third-party ICU library which \XeTeX\ uses.
     Reported to \XeTeX\ mailing list in November 2011; after discussion there
@@ -1045,6 +1061,18 @@ have become so numerous that it makes sense to also have a central list.
     of Korean text) in the \TeX\ input might reduce or eliminate this issue.
     Less relevant now (January 2014) that Mandeubsida no longer uses
     ``ljmo'' and ``vjmo.''
+
+  \item Version 2.4 of the fontspec package (which I first encountered in
+    \TeX{}Live 2014) changes the syntax of the \verb|\fontspec| macro
+    to place its optional argument after, not before, the required argument.
+    It claims to be backward compatible, but this is a problem when
+    the macro is followed immediately by text intended to be written in
+    literal square brackets; as a result, Tsukurimashou user manuals prior
+    to version 0.9 cannot be typeset with new fontspec.  Switching documents
+    to the new syntax would break compatibility with earlier versions of
+    fontspec.  Instead, recent Tsukurimashou documentation inserts
+    \verb|\relax| commands to prevent square-bracketed text from being
+    interpreted as an optional argument.
 \end{itemize}
 
 \blsubsubsection{FIXME}{Other software}
@@ -1387,25 +1415,25 @@ style to the next.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\blsubsection{ＦｏｎｔＦｏｒｇｅだけのメタデータ}%
-{FontForge-specific Metadata (pfed)}
+\blsubsection{ＦｏｎｔＡｎｖｉｌだけのメタデータ}%
+{FontAnvil-specific Metadata (pfed)}
 
 This is not the usual kind of OpenType feature, but it can be turned on and
 off through the same build-system interface.  When selected, it causes the
 build system to add a ``pfed'' table with a ``flog'' subtable in the
 generated OpenType fonts, containing verbose information about the
 installation on which the fonts were built.  This table is a
-FontForge-specific extension of OpenType format; the name ``pfed'' refers to
-PfaEdit, an earlier name of the software that later became FontForge.  Other
-software will ignore this table; but users with FontForge can examine the
-verbose metadata under the ``FONTLOG'' heading in the ``Font Info...''
-dialog.  The data is also visible as a chunk of plain text near the end of
-the file when the OTF file is examined with a general-purpose file viewer
-such as ``less.''  The main interesting content is the command line that was
-given to configure, and a dump of most of the variables known to Make. 
-There's also a copy of the copyright notice and URLs for the project home
-pages, giving in more verbose detail some of the same information included
-in the ``name'' table.
+FontForge/FontAnvil-specific extension of OpenType format; the name ``pfed''
+refers to PfaEdit, an earlier name of the software that later became
+FontForge.  Other software will ignore this table; but users with FontForge
+can examine the verbose metadata under the ``FONTLOG'' heading in the ``Font
+Info...'' dialog.  The data is also visible as a chunk of plain text near
+the end of the file when the OTF file is examined with a general-purpose
+file viewer such as ``less.'' The main interesting content is the command
+line that was given to configure, and a dump of most of the variables known
+to Make.  There's also a copy of the copyright notice and URLs for the
+project home pages, giving in more verbose detail some of the same
+information included in the ``name'' table.
 
 I recommend activating this feature, especially if you will be building
 fonts for distribution to others.  It may make bug reporting easier, because
@@ -2226,8 +2254,12 @@ on building Tsukurimashou are only for expert users who want the greater
 control, wider style coverage, and intellectual challenge of doing custom
 compilation.
 
+First I will describe building from a source distribution package.  If you
+wish to compile from a version-control checkout, then also read the specific
+notes about that in Subsection~\ref{sub:version-control}.
+
 Assuming you wish to embark on the adventure of compiling Tsukurimashou, you
-will need at least the following:
+must have at least the following:
 
 \begin{itemize}
   \item A reasonably standard Unix command-line environment.  I use
@@ -2238,7 +2270,8 @@ will need at least the following:
   \item GNU Make 3.82 or later (non-GNU versions will not work;
     earlier versions will not work).
   \item Metapost (this comes with most \TeX/\LaTeX\ installations)
-  \item A version of FontForge that actually works.
+  \item An interpreter of PE scripts.  FontAnvil is preferred.  FontForge
+     will also work, as long as it retains support for ``native'' scripting.
 \end{itemize}
 
 Other things that might also be useful include:
@@ -2268,46 +2301,22 @@ preparing METATYPE1 code for bundling I discovered a previously unknown
 dependency of previous versions on the t1asm package from t1utils; that has
 now been bundled as well.
 
-I mentioned a requirement for a version of FontForge ``that actually
-works.'' FontForge is plagued by many bugs and numerical instabilities in
-its spline geometry code, and stock, distributed ``stable'' versions tend to
-hang and/or segfault when they are used to compile Tsukurimashou.  As of
-March 2013, the mainline development version distributed as source seems to
-work well.  However, a really full build of all weights of all styles
-involves tens of thousands of invocations of FontForge and is likely to
-cause at least one or two segfaults or infinite loops with any
-widely-available precompiled binary package.
-
-There is also an issue relating to the syntax of the AddExtrema() command in
-the FontForge native scripting language; until recently, no version of
-FontForge was capable of generating (under native-script control) extrema
-that would pass FontForge's own validation checks, and so ``make check''
-would almost always fail despite the fonts being in fairly clean
-condition.  A patch I merged into FontForge's GitHub repository\footnote{I
-never asked for write access, but this is what they do to people who
-complain.} on September 30, 2012 adds an optional argument to
-AddExtrema() to get around this issue, and the Tsukurimashou build system
-will check for an appropriately modified version of FontForge and use it if
-possible, otherwise generating a warning during configuration.  As of this
-writing, I think the only way to get a fully patched version of FontForge is
-to check it out of GitHub.
-
-In the recent past there've been bugs relevant to Tsukurimashou fixed in the
-interface to FreeType for rasterization; spline geometry; and hinting.  I
-can't promise that using the latest patched version will be enough to keep
-FontForge from crashing; what I do myself is go in with gdb after each
-sufficiently annoying crash, find the line that is segfaulting, and try to
-fix it.  I'm not sure that I have reported or recorded all the changes I've
-made as a result of this procedure.  Because of all this,
-Tsukurimashou's configure script will check that your FontForge has been
-compiled with debugging symbols, and generate a warning message if not.  You
-can either get a debuggable version, or disable the message if you feel like
-living dangerously.
+Tsukurimashou compilation depends heavily on scripts written in the
+FontForge ``native'' scripting language, which I call PE script for
+neutrality.  Although (as of July 2014) mainline FontForge continues to be
+able to interpret this language, the FontForge development team treats PE
+script as a legacy feature and encourages users to switch to Python instead. 
+It is highly unlikely that the Tsukurimashou project will ever switch to
+Python.  To ensure continued support for Tsukurimashou, I now maintain a
+standalone PE script interpreter called FontAnvil; this should be available
+wherever you got the Tsukurimashou source code, and is the preferred PE
+script interpreter for building Tsukurimashou.  As of version 0.9, both
+FontAnvil and FontForge will work, more or less equally well.  Continued
+FontForge compatibility in the future is not guaranteed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\clearpage
-\blsubsection{ビルドのシステム}{Build System}
+\blsubsection{ビルドのシステム}{Build system}
 
 The build system is based on GNU Autotools and should be reasonably familiar
 to anyone who has compiled popular free software before.  Run ``./configure
@@ -2347,11 +2356,11 @@ covered, which is important for my own development efforts in planning what
 to design next and knowing when to release.
 
 The build system for Tsukurimashou is fairly elaborate; it may seem like
-overkill, but given that I expect to run this myself several times a day for
-at least a couple years, it's important that it should be pleasant for me and
-efficient in time consumption.  Thus it defaults to ``silent'' build rules,
-uses pretty ANSI colours, and does a bunch of complicated checks on whether
-file contents (not just modification times) have changed in order to avoid
+overkill, but given that I'm running on a daily basis over the course of
+years, it's important that it should be pleasant for me and efficient in
+time consumption.  Thus it defaults to ``silent'' build rules, uses pretty
+ANSI colours, and does a bunch of complicated checks on whether file
+contents (not just modification times) have changed in order to avoid
 expensive dependency rebuilds unless those are really needed, while
 triggering them automatically when I add new source files.
 
@@ -2417,13 +2426,13 @@ fractions or enclosed numerals if you have disabled the numeral
 characters---though you \emph{can} build a font with enclosed and not
 regular numeric glyphs, because glyphs are mostly independent of each
 other.\footnote{Mostly.  In the case of white-on-black reversed glyphs and
-some fractions precomposed by FontForge instead of by METATYPE1, you
-must include all the parts that FontForge will assemble in order to get the
+some fractions precomposed by FontAnvil instead of by METATYPE1, you
+must include all the parts that FontAnvil will assemble in order to get the
 combined glyph made by assembling those parts.  This is a sufficiently
 arcane scenario that the build system will not check for it.}
 This automatic disabling may not be perfectly clean, either; in some cases
 disabling a character might not disable the feature code that mentions it,
-and in that case FontForge may create an empty glyph for the character even
+and in that case FontAnvil may create an empty glyph for the character even
 though you disabled it.  That shouldn't happen unless you attempt something
 very unusual and non-standard, however. Currently supported tags are
 ``all,'' ``none,'' and a four-character tag corresponding to the OpenType
@@ -2462,20 +2471,21 @@ The ``make clean'' target and its variations should make things pretty
 clean, now that we're attempting to make the system pass ``make distcheck''
 before each release.  Use them with caution, however.
 
-There is a ``make check'' target, which will run FontForge's fontlint
+There is a ``make check'' target, which will run FontAnvil's fontlint
 program on all the OTF files.  This is a very stringent test and it's quite
 likely that fonts will fail despite really being in pretty good shape;
 fontlint flags a lot of things that I am not convinced are actually errors
 at all; so if you run it and get nothing but complaints, don't panic.  At
-the very least, you will need a FontForge with my all-extrema patch
-(discussed in the previous section) to have much hope of building fonts that
-can pass fontlint.  Running ``make check'' at the top will also recursively
-run ``make check'' on any parasite packages that have been enabled, and the
-parasite package test suites (in particular, the one for IDSgrep) may be of
-more practical use than the main Tsukurimashou fontlint tests.
+the very least, you will need a PE script interpreter with my all-extrema
+patch (it is included in recent versions of FontForge and all versions of
+FontAnvil) to have much hope of building fonts that can pass fontlint. 
+Running ``make check'' at the top will also recursively run ``make check''
+on any parasite packages that have been enabled, and the parasite package
+test suites (in particular, the one for IDSgrep) may be of more practical
+use than the main Tsukurimashou fontlint tests.
 
 If you try to do ``make distcheck,'' it will fail if any of the tests fail;
-and the tests probably \emph{will} fail because of the bugs in FontForge
+and the tests probably \emph{will} fail because of the bugs in FontAnvil
 spline geometry.  A workaround, used in my Tsukurimashou 0.8 distribution
 packages, is to override the options for \texttt{fontlint.pe} as follows:
 \begin{verbatim}
@@ -2629,6 +2639,75 @@ top-level project distribution.
     freely usable.
 \end{description}
 
+FontAnvil is not a parasite in this sense, but a separate package that
+happens to share the Tsukurimashou version-control repository.  It cannot be
+enabled through the Tsukurimashou configure script, but must be built
+and installed as an additional step (usually before building Tsukurimashou,
+if you wish to build and install them both).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\blsubsection{FIXME}{Building from a version-control checkout}
+
+For the very latest public development version of Tsukurimashou and its
+associated tools, you can check out the source code from version control. 
+Since the version control system stores only the source code as such, not
+any files that can be automatically generated, some additional steps are
+necessary.  This method requires Autotools, which would probably not be
+needed if building from a source distribution, as well as either Subversion
+or Git to check out the sources in the first place.
+
+First, check out the project by anonymous Subversion from SourceForge Japan:
+\begin{verbatim}
+svn checkout https://svn.sourceforge.jp/svnroot/tsukurimashou/trunk \
+   ./tsukurimashou
+\end{verbatim}
+
+SourceForge is the preferred repository, but you may instead obtain it from
+Github:
+\begin{verbatim}
+git clone https://github.com/mskala/Tsukurimashou.git
+\end{verbatim}
+
+Either of these commands downloads the sources from the repository and
+creates a subdirectory called ``tsukurimashou'' in the current directory.
+
+You should build FontAnvil first; although FontForge should work if you have
+it, FontAnvil is preferred for building Tsukurimashou, especially from
+development checkouts.  Run autoreconf twice with automake
+-{}-add-missing in between, to set up FontAnvil's build system:
+\begin{verbatim}
+cd tsukurimashou/fontanvil
+autoreconf
+automake --add-missing
+autoreconf
+\end{verbatim}
+
+The above commands are likely to produce many error and warning messages,
+but should work, nonetheless.
+
+Configure, build, and install FontAnvil.  Make any appropriate substitutions
+to these commands for your local configuration.
+\begin{verbatim}
+./configure
+make
+make install
+\end{verbatim}
+
+Now more or less the same steps can be used to set up the main Tsukurimashou
+build system in the parent directory.  Here it is necessary to run
+autoheader as well as automake.
+\begin{verbatim}
+cd ..
+autoreconf
+autoheader
+automake --add-missing
+autoreconf
+\end{verbatim}
+
+At this point the configure script should have been created, and you can
+proceed to build as if from a distribution.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \blsubsection{ツールの文書化}{Tool documentation}
@@ -2678,7 +2757,7 @@ Perl.
 
 \begin{itemize}
 
-\item \texttt{add-flog}: attach the ``font log'' file to a FontForge
+\item \texttt{add-flog}: attach the ``font log'' file to a FontAnvil
 SFD-format font; this requires re-encoding it to UTF-7 format.
 
 \item \texttt{livecode}: chase file inclusions and determine all the
@@ -2725,7 +2804,7 @@ generate a font log file (see \texttt{add-flog} above).
 
 \item \texttt{make-gpos}: compute information for GPOS features ``mark'' and
 ``mkmk'' by scanning the proof files (to determine anchor locations and
-compatibility) and some generated FontForge scripts (to determine bearing
+compatibility) and some generated FontAnvil scripts (to determine bearing
 adjustments made during kerning).
 
 \item \texttt{make-hglpages}: generate METAFONT source code for the hangul
@@ -2748,7 +2827,7 @@ to generate something that can be processed into a Postscript font, and then
 does process the result into a Postscript font.  Note that hinting support
 has been \emph{removed} from this code, and the resulting Postscript fonts
 may not really be good or entirely format-valid; they are only intended as a
-way of getting the outline data into FontForge for later stages of
+way of getting the outline data into FontAnvil for later stages of
 processing.
 
 \item \texttt{mpdep}: generates a list of the dependencies of a
@@ -2874,10 +2953,10 @@ fine-grained change tracking on the Metapost files in mp/, which define
 Postscript ``page'' fonts each covering up to 256 code points.  Those are
 processed to remove overlaps (RMO) and end up in pfb/.  The make-ass script
 also scans the Metapost files to get a list of defined code points and some
-other metadata; its main output is a FontForge
+other metadata; its main output is a FontAnvil
 script that assembles the page fonts into full-coverage OpenType or
-FontForge native fonts.  Non-proportional fonts become OpenType and are
-finished here; proportional fonts become FontForge native and are processed
+FontAnvil native fonts.  Non-proportional fonts become OpenType and are
+finished here; proportional fonts become FontAnvil native and are processed
 further.  The assemble-font script also makes use of per-family feature
 files from make-fea (defining things like glyph composition) and per-font
 feature files from make-name (defining metadata table contents).  The
@@ -2929,7 +3008,7 @@ both the automatic documentation generator and the GPOS table generator.}
 \caption{Additional processing for proportional fonts.  The SFD file
 containing the font outlines is converted to a BDF bitmap font, which feeds
 the kerner program.  That generates a ``ktmp'' feature file with the actual
-kerning data, and a FontForge script to apply the chosen bearings.  At
+kerning data, and a FontAnvil script to apply the chosen bearings.  At
 right, the make-gpos script reads the proof files to determine accent anchor
 locations.  But since those must be adjusted when the bearings are set, it
 also needs ``before'' bearing information extracted by getbearings, and
@@ -3305,7 +3384,7 @@ a distance for every pair of glyphs.
 
 The number 200 (up from 150 in earlier versions) was chosen by educated
 trial and error.  Every glyph must be in a class for full kerning; but no
-class can be too big or FontForge barfs.  That in turn limits the size of
+class can be too big or FontAnvil barfs.  That in turn limits the size of
 the average class to some maximum, and so limits the number of classes to
 some minimum.  Using 200 classes seems to be enough for the current
 Mandeubsida fonts, which are roughly 13000 glyphs each, and it is reasonable
@@ -3415,7 +3494,7 @@ table is written to a fragment of an Adobe .fea file, with subtable breaks
 on left-class boundaries each time a subtable grows past 5000 entries;
 that means subtables actually end up a little over 5000 entries each.  That
 seems to be how big they can get without overflowing the OTF table-size
-limits.  Bearings are written to a FontForge .pe script.
+limits.  Bearings are written to a PE script.
 
 The build system runs kern-font.pe, which applies the output of the kerner
 program to the font.  Something else that kern-font.pe does is to add a
