@@ -2257,6 +2257,8 @@ static void _SCClearHintMasks(SplineChar * sc, int layer, int counterstoo) {
 	 sp->hintmask = NULL;
 	 if (sp->next == NULL)
 	    break;
+	 if (sp->next->to==sp)
+	   break;
 	 sp = sp->next->to;
 	 if (sp == spl->first)
 	    break;
