@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 2935 2014-03-10 17:48:27Z mskala $ */
+/* $Id: splineutil.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1270,7 +1270,7 @@ void SplineFontQuickConservativeBounds(SplineFont * sf, DBounds * b) {
       b->maxy = 0;
 }
 
-void SplinePointCatagorize(SplinePoint * sp) {
+void SplinePointCategorize(SplinePoint * sp) {
    int oldpointtype = sp->pointtype;
 
    sp->pointtype = pt_corner;
@@ -1375,28 +1375,28 @@ void SplinePointCatagorize(SplinePoint * sp) {
    }
 }
 
-void SPLCatagorizePoints(SplinePointList * spl) {
+void SPLCategorizePoints(SplinePointList * spl) {
    Spline *spline, *first, *last = NULL;
 
    for (; spl != NULL; spl = spl->next) {
       first = NULL;
       for (spline = spl->first->next; spline != NULL && spline != first;
 	   spline = spline->to->next) {
-	 SplinePointCatagorize(spline->from);
+	 SplinePointCategorize(spline->from);
 	 last = spline;
 	 if (first == NULL)
 	    first = spline;
       }
       if (spline == NULL && last != NULL)
-	 SplinePointCatagorize(last->to);
+	 SplinePointCategorize(last->to);
    }
 }
 
-void SCCatagorizePoints(SplineChar * sc) {
+void SCCategorizePoints(SplineChar * sc) {
    int i;
 
    for (i = ly_fore; i < sc->layer_cnt; ++i)
-      SPLCatagorizePoints(sc->layers[i].splines);
+      SPLCategorizePoints(sc->layers[i].splines);
 }
 
 static int CharsNotInEncoding(FontDict * fd) {
@@ -3891,6 +3891,72 @@ extended SplineSolve(const Spline1D * sp, real tmin, real tmax,
 #define D_RE_Factor	(1024.0*1024.0*1024.0*1024.0*1024.0*2.0)
 /* But that's not going to work near 0, so, since the t values we care about */
 /*  are [0,1], let's use 1.0/D_RE_Factor */
+
+extended SplineSolveFixup(const Spline1D *sp, real tmin, real tmax, extended sought) {
+    extended ts[3];
+    int i;
+    bigreal factor;
+    extended t;
+    extended val, valp, valm;
+
+    CubicSolve(sp,sought,ts);
+    if ( tmax<tmin ) { t = tmax; tmax = tmin; tmin = t; }
+    for ( i=0; i<3; ++i )
+	if ( ts[i]>=tmin && ts[i]<=tmax )
+    break;
+    if ( i==3 ) {
+	/* nothing in range, but ... */
+	/* did a rounding error take a solution just outside the bounds? */
+	extended bestd = .0001; int besti = -1;
+	extended off;
+	for ( i=0; i<3 && ts[i]!=-1; ++i ) {
+	    if ( ts[i]<tmin )
+		off = tmin-ts[i];
+	    else
+		off = ts[i]-tmax;
+	    if ( off<bestd ) {
+		bestd = off;
+		besti = i;
+	    }
+	}
+	if ( besti==-1 )
+return( -1 );
+	i = besti;
+    }
+    t = ts[i];
+
+    if ((val = (((sp->a*t+sp->b)*t+sp->c)*t+sp->d) - sought)<0 )
+	val=-val;
+    if ( val!=0 ) {
+	for ( factor=1024.0*1024.0*1024.0*1024.0*1024.0; factor>.5; factor/=2.0 ) {
+	    extended tp = t + (factor*t)/D_RE_Factor;
+	    extended tm = t - (factor*t)/D_RE_Factor;
+	    if ( (valp = (((sp->a*tp+sp->b)*tp+sp->c)*tp+sp->d) - sought)<0 )
+		valp = -valp;
+	    if ( (valm = (((sp->a*tm+sp->b)*tm+sp->c)*tm+sp->d) - sought)<0 )
+		valm = -valm;
+	    if ( valp<val && valp<valm ) {
+		if ( factor==1024.0*1024.0*1024.0*1024*1024 ) {
+		    bigreal it = IterateSplineSolve(sp,tmin,tmax,sought);
+		    printf( "Used %g: orig-t: %g, new-t: %g iter-t: %g\n", (double) factor, (double) t, (double) tp, (double) it );
+		}
+		t = tp;
+		val = valp;
+	    } else if ( valm<val ) {
+		if ( factor==1024.0*1024.0*1024.0*1024*1024 ) {
+		    bigreal it = IterateSplineSolve(sp,tmin,tmax,sought);
+		    printf( "Used -%g: orig-t: %g, new-t: %g iter-t: %g\n", (double) factor, (double) t, (double) tm, (double) it );
+		}
+		t = tm;
+		val = valm;
+	    }
+	}
+    }
+    if ( t>=tmin && t<=tmax )
+return( t );
+
+return( -1 );
+}
 
 extended IterateSplineSolve(const Spline1D * sp, extended tmin, extended tmax,
 			    extended sought) {

@@ -1,4 +1,4 @@
-/* $Id: spiro.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: spiro.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /* 2013sep19-22, error handling and cleanup fixes in Spiro.c, Jose Da Silva */
 /*
@@ -132,7 +132,7 @@ SplineSet *SpiroCP2SplineSet(spiro_cp * spiros) {
    }
    ss->spiros = spiros;
    ss->spiro_cnt = ss->spiro_max = n + 1;
-   SPLCatagorizePoints(ss);
+   SPLCategorizePoints(ss);
    return (ss);
 }
 

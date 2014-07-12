@@ -1,4 +1,4 @@
-/* $Id: ufo.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: ufo.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1549,7 +1549,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont * sf, xmlDocPtr doc,
       }
    }
    xmlFreeDoc(doc);
-   SPLCatagorizePoints(sc->layers[layerdest].splines);
+   SPLCategorizePoints(sc->layers[layerdest].splines);
    return (sc);
 }
 

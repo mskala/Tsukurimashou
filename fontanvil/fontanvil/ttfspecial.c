@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: ttfspecial.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1390,7 +1390,7 @@ static void pfed_read_normal_contour(FILE * ttf, SplineSet * ss,
    } else {
       ss->last = current;
    }
-   SPLCatagorizePoints(ss);
+   SPLCategorizePoints(ss);
 }
 
 static void pfed_read_spiro_contour(FILE * ttf, SplineSet * ss,
@@ -1568,7 +1568,7 @@ static void pfed_readguidelines(FILE * ttf, struct ttfinfo *info, uint32 base) {
 	 ss->next = info->guidelines.splines;
 	 info->guidelines.splines = ss;
       }
-      SPLCatagorizePoints(info->guidelines.splines);
+      SPLCategorizePoints(info->guidelines.splines);
       free(vs);
       free(hs);
    }

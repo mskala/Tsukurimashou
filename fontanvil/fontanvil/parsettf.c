@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 2928 2014-03-08 15:37:54Z mskala $ */
+/* $Id: parsettf.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2219,7 +2219,7 @@ static void readttfsimpleglyph(FILE * ttf, struct ttfinfo *info,
       sc->ttf_instrs = instructions;
    } else
       free(instructions);
-   SCCatagorizePoints(sc);
+   SCCategorizePoints(sc);
    free(endpt);
    free(flags);
    free(pts);

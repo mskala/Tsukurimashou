@@ -1,4 +1,4 @@
-/* $Id: psread.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: psread.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -622,13 +622,13 @@ int MatIsIdentity(real transform[6]) {
 	   && transform[2] == 0 && transform[4] == 0 && transform[5] == 0);
 }
 
-static void ECCatagorizePoints(EntityChar * ec) {
+static void ECCategorizePoints(EntityChar * ec) {
    Entity *ent;
 
    for (ent = ec->splines; ent != NULL; ent = ent->next)
       if (ent->type == et_splines) {
-	 SPLCatagorizePoints(ent->u.splines.splines);
-	 SPLCatagorizePoints(ent->clippath);
+	 SPLCategorizePoints(ent->u.splines.splines);
+	 SPLCategorizePoints(ent->clippath);
       }
 }
 
@@ -3173,7 +3173,7 @@ static void _InterpretPS(IO * wrapper, EntityChar * ec, RetStack * rs) {
       SplinePointListsFree(gsaves[gsp].clippath);
    }
    SplinePointListsFree(clippath);
-   ECCatagorizePoints(ec);
+   ECCategorizePoints(ec);
    if (ec->width == UNDEFINED_WIDTH)
       ec->width = wrapper->advance_width;
    setlocale(LC_NUMERIC, oldloc);
@@ -5352,7 +5352,7 @@ SplineChar *PSCharStringToSplines(uint8 * type1, int len,
  done:
    if (pcsp != 0)
       LogError(_("end of subroutine reached with no return in %s\n"), name);
-   SCCatagorizePoints(ret);
+   SCCategorizePoints(ret);
 
    ret->hstem = HintsAppend(ret->hstem, activeh);
    activeh = NULL;

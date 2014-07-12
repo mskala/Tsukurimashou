@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 2951 2014-03-15 16:49:47Z mskala $ */
+/* $Id: scstyles.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -5162,7 +5162,7 @@ static SplineSet *MakeBottomItalicSerif(double stemwidth, double endx,
       SplinePointListFree(ss);
       ss = newss;
    } else {
-      SPLCatagorizePoints(ss);
+      SPLCategorizePoints(ss);
    }
    {
       double temp;
@@ -5360,7 +5360,7 @@ static SplineSet *MakeItalicDSerif(DStemInfo * d, double stemwidth,
       SplinePointListFree(ss);
       ss = newss;
    } else {
-      SPLCatagorizePoints(ss);
+      SPLCategorizePoints(ss);
    }
    return (ss);
 }

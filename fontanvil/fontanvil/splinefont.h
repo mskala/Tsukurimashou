@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 2938 2014-03-10 18:51:22Z mskala $ */
+/* $Id: splinefont.h 3170 2014-07-12 03:20:25Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -26,97 +26,90 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef _SPLINEFONT_H
-#   define _SPLINEFONT_H
+# define _SPLINEFONT_H
 
-#   include <basics.h>
-#   include "configure-fontanvil.h"
-#   ifdef HAVE_ICONV_H
-#      include <iconv.h>
-/* libiconv.h defines iconv as taking a const pointer for inbuf. iconv doesn't*/
-/* OH, JOY! A new version of libiconv does not use the const! Even better, the man page says it does */
-#      ifdef _LIBICONV_VERSION
-#         if _LIBICONV_VERSION >= 0x10B
-#            define ICONV_CONST
-#         else
-#            define ICONV_CONST	const
-#         endif
-#      else
-#         define ICONV_CONST
-#      endif
+# include <basics.h>
+# include "configure-fontanvil.h"
+# ifdef HAVE_ICONV_H
+#  include <iconv.h>
+/* libiconv.h defines iconv as taking a const pointer for inbuf.
+ * iconv doesn't.  OH, JOY!  A new version of libiconv does not use
+ * the const! Even better, the man page says it does */
+#  ifdef _LIBICONV_VERSION
+#   if _LIBICONV_VERSION >= 0x10B
+#    define ICONV_CONST
 #   else
-#      include <gwwiconv.h>
-#      define ICONV_CONST
+#    define ICONV_CONST	const
 #   endif
+#  else
+#   define ICONV_CONST
+#  endif
+# else
+#  include <gwwiconv.h>
+#  define ICONV_CONST
+# endif
 
-#   ifdef FONTANVIL_CONFIG_USE_DOUBLE
-#      define real		double
-#      define bigreal	double
-#   else
-#      define real		float
-#      define bigreal	double
-#   endif
+# ifdef FONTANVIL_CONFIG_USE_DOUBLE
+#  define real		double
+#  define bigreal	double
+# else
+#  define real		float
+#  define bigreal	double
+# endif
 
-#   define extended	double
-	/* Solaris wants to define extended to be unsigned [3] unless we do this */
-#   define _EXTENDED
+# define extended	double
+/* Solaris wants to define extended to be unsigned [3] unless we do this */
+# define _EXTENDED
 
-#   define CHR(ch1,ch2,ch3,ch4) (((ch1)<<24)|((ch2)<<16)|((ch3)<<8)|(ch4))
+# define CHR(ch1,ch2,ch3,ch4) (((ch1)<<24)|((ch2)<<16)|((ch3)<<8)|(ch4))
 
-#   define MmMax		16
-				/* PS says at most this many instances for type1/2 mm fonts */
-#   define AppleMmMax	26	/* Apple sort of has a limit of 4095, but we only support this many */
+# define MmMax		16
+/* PS says at most this many instances for type1/2 mm fonts */
+# define AppleMmMax	26	/* Apple sort of has a limit of 4095,
+				 * but we only support this many */
 
 typedef struct ipoint {
    int x;
    int y;
 } IPoint;
-
-#   define IPOINT_EMPTY { 0, 0 }
-
+# define IPOINT_EMPTY { 0, 0 }
 
 typedef struct basepoint {
    real x;
    real y;
 } BasePoint;
-
-#   define BASEPOINT_EMPTY { (real)0.0, (real)0.0 }
-
+# define BASEPOINT_EMPTY { (real)0.0, (real)0.0 }
 
 typedef struct dbasepoint {
    bigreal x;
    bigreal y;
 } DBasePoint;
-
-#   define DBASEPOINT_EMPTY { (bigreal)0.0, (bigreal)0.0 }
-
+# define DBASEPOINT_EMPTY { (bigreal)0.0, (bigreal)0.0 }
 
 typedef struct tpoint {
    real x;
    real y;
    real t;
 } TPoint;
-
-#   define TPOINT_EMPTY { (real)0.0, (real)0.0, (real)0.0 }
+# define TPOINT_EMPTY { (real)0.0, (real)0.0, (real)0.0 }
 
 
 typedef struct dbounds {
    real minx, maxx;
    real miny, maxy;
 } DBounds;
-
-#   define DBOUNDS_EMPTY { (real)0.0, (real)0.0, (real)0.0, (real)0.0 }
+# define DBOUNDS_EMPTY { (real)0.0, (real)0.0, (real)0.0, (real)0.0 }
 
 
 typedef struct ibounds {
    int minx, maxx;
    int miny, maxy;
 } IBounds;
-
-#   define IBOUNDS_EMPTY { 0, 0, 0, 0 }
+# define IBOUNDS_EMPTY { 0, 0, 0, 0 }
 
 
 enum val_type { v_int, v_real, v_str, v_unicode, v_lval, v_arr, v_arrfree,
-   v_int32pt, v_int16pt, v_int8pt, v_void
+     v_int32pt, v_int16pt, v_int8pt, v_void
 };
 
 typedef struct val {
@@ -131,11 +124,11 @@ typedef struct val {
       uint16 *u16ptval;
       uint8 *u8ptval;
    } u;
-} Val;				/* Used by scripting */
+} Val;		   /* Used by scripting */
 
 struct psdict {
-   int cnt;			/* *key[0..cnt] and *values[0..cnt] currently available */
-   int next;			/* **key[0..next] and **values[0..next] currently used  */
+   int cnt;	   /* *key[0..cnt] and *values[0..cnt] currently available */
+   int next;	   /* **key[0..next] and **values[0..next] currently used  */
    char **keys;
    char **values;
 };
@@ -150,23 +143,23 @@ struct pschars {
 
 enum linejoin {
    lj_miter,			/* Extend lines until they meet */
-   lj_round,			/* circle centered at the join of expand radius */
-   lj_bevel,			/* Straight line between the ends of next and prev */
-   lj_inherited
+     lj_round,			/* circle centered at the join of expand radius */
+     lj_bevel,			/* Straight line between the ends of next and prev */
+     lj_inherited
 };
 
 enum linecap {
    lc_butt,			/* equiv to lj_bevel, straight line extends from one side to other */
-   lc_round,			/* semi-circle */
-   lc_square,			/* Extend lines by radius, then join them */
-   lc_inherited
+     lc_round,			/* semi-circle */
+     lc_square,			/* Extend lines by radius, then join them */
+     lc_inherited
 };
 
 enum spreadMethod {
    sm_pad, sm_reflect, sm_repeat
 };
 
-#   define COLOR_INHERITED	0xfffffffe
+# define COLOR_INHERITED	0xfffffffe
 
 struct grad_stops {
    real offset;
@@ -200,10 +193,10 @@ struct brush {
    struct gradient *gradient;	/* A gradient fill */
 };
 
-#   define WIDTH_INHERITED	(-1)
-#   define DASH_INHERITED	255
-				/* if the dashes[0]==0 && dashes[1]==DASH_INHERITED */
-#   define DASH_MAX	8
+# define WIDTH_INHERITED	(-1)
+# define DASH_INHERITED	255
+/* if the dashes[0]==0 && dashes[1]==DASH_INHERITED */
+# define DASH_MAX	8
 typedef unsigned char DashType;
 
 struct pen {
@@ -232,29 +225,29 @@ typedef struct strokeinfo {
    real minorradius;
    struct splinepointlist *poly;
    real resolution;
-/* For freehand tool */
+   /* For freehand tool */
    real radius2;
    int pressure1, pressure2;
-/* End freehand tool */
+   /* End freehand tool */
    void *data;
-     bigreal(*factor) (void *data, struct spline * spline, real t);
+   bigreal(*factor) (void *data, struct spline * spline, real t);
 } StrokeInfo;
 
 enum PolyType { Poly_Convex, Poly_Concave, Poly_PointOnEdge,
-   Poly_TooFewPoints, Poly_Line
+     Poly_TooFewPoints, Poly_Line
 };
 
 
 enum overlap_type { over_remove, over_rmselected, over_intersect,
-      over_intersel,
-   over_exclude, over_findinter, over_fisel
+     over_intersel,
+     over_exclude, over_findinter, over_fisel
 };
 
-enum simpify_flags { sf_cleanup = -1, sf_normal = 0, sf_ignoreslopes = 1,
-   sf_ignoreextremum = 2, sf_smoothcurves = 4, sf_choosehv = 8,
-   sf_forcelines = 0x10, sf_nearlyhvlines = 0x20,
-   sf_mergelines = 0x40, sf_setstart2extremum = 0x80,
-   sf_rmsingletonpoints = 0x100
+enum simpify_flags { sf_cleanup=-1, sf_normal=0, sf_ignoreslopes=1,
+     sf_ignoreextremum=2, sf_smoothcurves=4, sf_choosehv=8,
+     sf_forcelines=0x10, sf_nearlyhvlines=0x20,
+     sf_mergelines=0x40, sf_setstart2extremum=0x80,
+     sf_rmsingletonpoints=0x100
 };
 
 struct simplifyinfo {
@@ -376,58 +369,58 @@ typedef struct bdffloat {
 #   define REQUIRED_FEATURE	CHR(' ','R','Q','D')
 
 enum otlookup_type {
-   ot_undef = 0,		/* Not a lookup type */
-   gsub_start = 0x000,		/* Not a lookup type */
-   gsub_single = 0x001,
-   gsub_multiple = 0x002,
-   gsub_alternate = 0x003,
-   gsub_ligature = 0x004,
-   gsub_context = 0x005,
-   gsub_contextchain = 0x006,
+   ot_undef=0,		/* Not a lookup type */
+   gsub_start=0x000,		/* Not a lookup type */
+   gsub_single=0x001,
+   gsub_multiple=0x002,
+   gsub_alternate=0x003,
+   gsub_ligature=0x004,
+   gsub_context=0x005,
+   gsub_contextchain=0x006,
    /* GSUB extension 7 */
-   gsub_reversecchain = 0x008,
+   gsub_reversecchain=0x008,
    /* mac state machines */
-   morx_indic = 0x0fd,
-   morx_context = 0x0fe,
-   morx_insert = 0x0ff,
+   morx_indic=0x0fd,
+   morx_context=0x0fe,
+   morx_insert=0x0ff,
    /* ********************* */
-   gpos_start = 0x100,		/* Not a lookup type */
+   gpos_start=0x100,		/* Not a lookup type */
 
-   gpos_single = 0x101,
-   gpos_pair = 0x102,
-   gpos_cursive = 0x103,
-   gpos_mark2base = 0x104,
-   gpos_mark2ligature = 0x105,
-   gpos_mark2mark = 0x106,
-   gpos_context = 0x107,
-   gpos_contextchain = 0x108,
+   gpos_single=0x101,
+   gpos_pair=0x102,
+   gpos_cursive=0x103,
+   gpos_mark2base=0x104,
+   gpos_mark2ligature=0x105,
+   gpos_mark2mark=0x106,
+   gpos_context=0x107,
+   gpos_contextchain=0x108,
    /* GPOS extension 9 */
-   kern_statemachine = 0x1ff
+   kern_statemachine=0x1ff
       /* otlookup&0xff == lookup type for the appropriate table */
       /* otlookup>>8:     0=>GSUB, 1=>GPOS */
 };
 
 enum otlookup_typemasks {
-   gsub_single_mask = 0x00001,
-   gsub_multiple_mask = 0x00002,
-   gsub_alternate_mask = 0x00004,
-   gsub_ligature_mask = 0x00008,
-   gsub_context_mask = 0x00010,
-   gsub_contextchain_mask = 0x00020,
-   gsub_reversecchain_mask = 0x00040,
-   morx_indic_mask = 0x00080,
-   morx_context_mask = 0x00100,
-   morx_insert_mask = 0x00200,
+   gsub_single_mask=0x00001,
+   gsub_multiple_mask=0x00002,
+   gsub_alternate_mask=0x00004,
+   gsub_ligature_mask=0x00008,
+   gsub_context_mask=0x00010,
+   gsub_contextchain_mask=0x00020,
+   gsub_reversecchain_mask=0x00040,
+   morx_indic_mask=0x00080,
+   morx_context_mask=0x00100,
+   morx_insert_mask=0x00200,
    /* ********************* */
-   gpos_single_mask = 0x00400,
-   gpos_pair_mask = 0x00800,
-   gpos_cursive_mask = 0x01000,
-   gpos_mark2base_mask = 0x02000,
-   gpos_mark2ligature_mask = 0x04000,
-   gpos_mark2mark_mask = 0x08000,
-   gpos_context_mask = 0x10000,
-   gpos_contextchain_mask = 0x20000,
-   kern_statemachine_mask = 0x40000
+   gpos_single_mask=0x00400,
+   gpos_pair_mask=0x00800,
+   gpos_cursive_mask=0x01000,
+   gpos_mark2base_mask=0x02000,
+   gpos_mark2ligature_mask=0x04000,
+   gpos_mark2mark_mask=0x08000,
+   gpos_context_mask=0x10000,
+   gpos_contextchain_mask=0x20000,
+   kern_statemachine_mask=0x40000
 };
 
 #   define MAX_LANG 		4	/* If more than this we allocate more_langs in chunks of MAX_LANG */
@@ -456,10 +449,10 @@ typedef struct featurescriptlanglist {
    unsigned int ismac:1;	/* treat the featuretag as a mac feature/setting */
 } FeatureScriptLangList;
 
-enum pst_flags { pst_r2l = 1, pst_ignorebaseglyphs = 2, pst_ignoreligatures =
+enum pst_flags { pst_r2l=1, pst_ignorebaseglyphs=2, pst_ignoreligatures =
       4,
-   pst_ignorecombiningmarks = 8, pst_usemarkfilteringset = 0x10,
-   pst_markclass = 0xff00, pst_markset = 0xffff0000
+   pst_ignorecombiningmarks=8, pst_usemarkfilteringset=0x10,
+   pst_markclass=0xff00, pst_markset=0xffff0000
 };
 
 struct lookup_subtable {
@@ -593,7 +586,7 @@ enum possub_type { pst_null, pst_position, pst_pair,
    pst_lcaret /* must be pst_max-1, see charinfo.c */ ,
    pst_max,
    /* These are not psts but are related so it's handly to have values for them */
-   pst_kerning = pst_max, pst_vkerning, pst_anchors,
+   pst_kerning=pst_max, pst_vkerning, pst_anchors,
    /* And these are fpsts */
    pst_contextpos, pst_contextsub, pst_chainpos, pst_chainsub,
    pst_reversesub, fpst_max,
@@ -701,10 +694,10 @@ typedef struct generic_fpst {
    char **nclassnames, **bclassnames, **fclassnames;
 } FPST;
 
-enum asm_type { asm_indic, asm_context, asm_lig, asm_simple = 4, asm_insert,
-   asm_kern = 0x11
+enum asm_type { asm_indic, asm_context, asm_lig, asm_simple=4, asm_insert,
+   asm_kern=0x11
 };
-enum asm_flags { asm_vert = 0x8000, asm_descending = 0x4000, asm_always =
+enum asm_flags { asm_vert=0x8000, asm_descending=0x4000, asm_always =
       0x2000 };
 
 struct asm_state {
@@ -744,14 +737,14 @@ typedef struct generic_asm {	/* Apple State Machine */
 	0x4000	don't advance to next glyph
 	0x2000	mark current glyph as last
 	0x000f	verb
-		0 = no change		8 = AxCD => CDxA
-		1 = Ax => xA		9 = AxCD => DCxA
-		2 = xD => Dx		a = ABxD => DxAB
-		3 = AxD => DxA		b = ABxD => DxBA
-		4 = ABx => xAB		c = ABxCD => CDxAB
-		5 = ABx => xBA		d = ABxCD => CDxBA
-		6 = xCD => CDx		e = ABxCD => DCxAB
-		7 = xCD => DCx		f = ABxCD => DCxBA
+		0=no change		8=AxCD => CDxA
+		1=Ax => xA		9=AxCD => DCxA
+		2=xD => Dx		a=ABxD => DxAB
+		3=AxD => DxA		b=ABxD => DxBA
+		4=ABx => xAB		c=ABxCD => CDxAB
+		5=ABx => xBA		d=ABxCD => CDxBA
+		6=xCD => CDx		e=ABxCD => DCxAB
+		7=xCD => DCx		f=ABxCD => DCxBA
  Contextual:
 	0x8000	mark current glyph
 	0x4000	don't advance to next glyph
@@ -894,7 +887,7 @@ typedef struct bdfchar {
    struct bdfcharlist *dependents;
 } BDFChar;
 
-enum undotype { ut_none = 0, ut_state, ut_tstate, ut_statehint, ut_statename,
+enum undotype { ut_none=0, ut_state, ut_tstate, ut_statehint, ut_statename,
    ut_statelookup,
    ut_anchors,
    ut_width, ut_vwidth, ut_lbearing, ut_rbearing, ut_possub,
@@ -956,7 +949,7 @@ typedef struct undoes {
 } Undoes;
 
 enum sfundotype {
-   sfut_none = 0,
+   sfut_none=0,
    sfut_lookups,
    sfut_lookups_kerns,
    sfut_fontinfo,
@@ -1033,7 +1026,7 @@ typedef struct namelist {
    char *a_utf8_name;
 } NameList;
 
-enum uni_interp { ui_unset = -1, ui_none, ui_adobe, ui_greek, ui_japanese,
+enum uni_interp { ui_unset=-1, ui_none, ui_adobe, ui_greek, ui_japanese,
    ui_trad_chinese, ui_simp_chinese, ui_korean, ui_ams
 };
 
@@ -1131,7 +1124,7 @@ typedef struct splinepoint {
    char *name;
 } SplinePoint;
 
-enum linelist_flags { cvli_onscreen = 0x1, cvli_clipped = 0x2 };
+enum linelist_flags { cvli_onscreen=0x1, cvli_clipped=0x2 };
 
 typedef struct linelist {
    IPoint here;
@@ -1194,15 +1187,15 @@ typedef struct spline {
 } Spline;
 
 #   ifndef _NO_LIBSPIRO
-#      include "spiroentrypoints.h"
+#    include "spiroentrypoints.h"
 #   else
-#      define SPIRO_OPEN_CONTOUR	'{'
-#      define SPIRO_CORNER		'v'
-#      define SPIRO_G4		'o'
-#      define SPIRO_G2		'c'
-#      define SPIRO_LEFT		'['
-#      define SPIRO_RIGHT		']'
-#      define SPIRO_END		'z'
+#    define SPIRO_OPEN_CONTOUR	'{'
+#    define SPIRO_CORNER		'v'
+#    define SPIRO_G4		'o'
+#    define SPIRO_G2		'c'
+#    define SPIRO_LEFT		'['
+#    define SPIRO_RIGHT		']'
+#    define SPIRO_END		'z'
 typedef struct {		/* Taken from spiro.h because I want */
    double x;			/*  to be able to compile for spiro */
    double y;			/*  even on a system without it */
@@ -1215,9 +1208,9 @@ typedef struct {		/* Taken from spiro.h because I want */
 #   define SPIRO_SPL_OPEN(spl)	((spl)->spiro_cnt>1 && ((spl)->spiros[0].ty&0x7f)==SPIRO_OPEN_CONTOUR)
 
 #   define SPIRO_NEXT_CONSTRAINT	SPIRO_RIGHT
-						/* The curve is on the next side of the constraint point */
+/* The curve is on the next side of the constraint point */
 #   define SPIRO_PREV_CONSTRAINT	SPIRO_LEFT
-						/* The curve is on the prev side of the constraint point */
+/* The curve is on the prev side of the constraint point */
 
 typedef struct splinepointlist {
    SplinePoint *first, *last;
@@ -1291,7 +1284,7 @@ typedef struct hintinstance {
    struct hintinstance *next;
 } HintInstance;
 
-enum hinttypes { ht_unspecified = 0, ht_h, ht_v, ht_d };
+enum hinttypes { ht_unspecified=0, ht_h, ht_v, ht_d };
 
 typedef real _MMArray[2][MmMax];
 
@@ -1367,10 +1360,10 @@ typedef struct layer {		/* : reflayer */
    uint32 old_vs;
 } Layer;
 
-enum layer_type { ly_all = -2, ly_grid = -1, ly_back = 0, ly_fore = 1,
+enum layer_type { ly_all=-2, ly_grid=-1, ly_back=0, ly_fore=1,
    /* Possibly other foreground layers for type3 things */
    /* Possibly other background layers for normal fonts */
-   ly_none = -3
+   ly_none=-3
 };
 
 struct gv_part {
@@ -1414,57 +1407,57 @@ struct mathkern {
 };
 
 enum privatedict_state {
-   pds_odd = 0x1,		/* Odd number of entries */
-   pds_outoforder = 0x2,	/* Bluevalues should be listed in order */
-   pds_toomany = 0x4,		/* arrays are of limited sizes */
-   pds_tooclose = 0x8,		/* adjacent zones must not be within 2*bluefuzz+1 (or 3, if bluefuzz omitted) */
-   pds_notintegral = 0x10,	/* Must be integers */
-   pds_toobig = 0x20,		/* within pair difference have some relation to BlueScale but the docs make no sense to me */
-   pds_shift = 8,		/* BlueValues/OtherBlues, unshifted, FamilyBlues/FamilyOtherBlues shifted once */
+   pds_odd=0x1,		/* Odd number of entries */
+   pds_outoforder=0x2,	/* Bluevalues should be listed in order */
+   pds_toomany=0x4,		/* arrays are of limited sizes */
+   pds_tooclose=0x8,		/* adjacent zones must not be within 2*bluefuzz+1 (or 3, if bluefuzz omitted) */
+   pds_notintegral=0x10,	/* Must be integers */
+   pds_toobig=0x20,		/* within pair difference have some relation to BlueScale but the docs make no sense to me */
+   pds_shift=8,		/* BlueValues/OtherBlues, unshifted, FamilyBlues/FamilyOtherBlues shifted once */
 
-   pds_missingblue = 0x010000,
-   pds_badbluefuzz = 0x020000,
-   pds_badbluescale = 0x040000,
-   pds_badstdhw = 0x080000,
-   pds_badstdvw = 0x100000,
-   pds_badstemsnaph = 0x200000,
-   pds_badstemsnapv = 0x400000,
-   pds_stemsnapnostdh = 0x0800000,
-   pds_stemsnapnostdv = 0x1000000,
-   pds_badblueshift = 0x2000000
+   pds_missingblue=0x010000,
+   pds_badbluefuzz=0x020000,
+   pds_badbluescale=0x040000,
+   pds_badstdhw=0x080000,
+   pds_badstdvw=0x100000,
+   pds_badstemsnaph=0x200000,
+   pds_badstemsnapv=0x400000,
+   pds_stemsnapnostdh=0x0800000,
+   pds_stemsnapnostdv=0x1000000,
+   pds_badblueshift=0x2000000
 };
 
-enum validation_state { vs_unknown = 0,
-   vs_known = 0x01,		/* It has been validated */
-   vs_opencontour = 0x02,
-   vs_selfintersects = 0x04,
-   vs_wrongdirection = 0x08,
-   vs_flippedreferences = 0x10,	/* special case of wrong direction */
-   vs_missingextrema = 0x20,
-   vs_missingglyphnameingsub = 0x40,
+enum validation_state { vs_unknown=0,
+   vs_known=0x01,		/* It has been validated */
+   vs_opencontour=0x02,
+   vs_selfintersects=0x04,
+   vs_wrongdirection=0x08,
+   vs_flippedreferences=0x10,	/* special case of wrong direction */
+   vs_missingextrema=0x20,
+   vs_missingglyphnameingsub=0x40,
    /* Next few are postscript only */
-   vs_toomanypoints = 0x80,
-   vs_toomanyhints = 0x100,
-   vs_badglyphname = 0x200,
+   vs_toomanypoints=0x80,
+   vs_toomanyhints=0x100,
+   vs_badglyphname=0x200,
    /* Next few are only for fontlint */
    /* These are relative to maxp values which ff would fix on generating a font */
-   vs_maxp_toomanypoints = 0x400,
-   vs_maxp_toomanypaths = 0x800,
-   vs_maxp_toomanycomppoints = 0x1000,
-   vs_maxp_toomanycomppaths = 0x2000,
-   vs_maxp_instrtoolong = 0x4000,
-   vs_maxp_toomanyrefs = 0x8000,
-   vs_maxp_refstoodeep = 0x10000,
+   vs_maxp_toomanypoints=0x400,
+   vs_maxp_toomanypaths=0x800,
+   vs_maxp_toomanycomppoints=0x1000,
+   vs_maxp_toomanycomppaths=0x2000,
+   vs_maxp_instrtoolong=0x4000,
+   vs_maxp_toomanyrefs=0x8000,
+   vs_maxp_refstoodeep=0x10000,
    /* vs_maxp_prepfpgmtoolong=0x20000, *//* I think I was wrong about this "error" */
    /* Oops, we need another one, two, for the glyphs */
-   vs_pointstoofarapart = 0x40000,
-   vs_nonintegral = 0x80000,	/* This will never be interesting in a real font, but might be in an sfd file */
-   vs_missinganchor = 0x100000,
-   vs_dupname = 0x200000,
-   vs_dupunicode = 0x400000,
-   vs_overlappedhints = 0x800000,
+   vs_pointstoofarapart=0x40000,
+   vs_nonintegral=0x80000,	/* This will never be interesting in a real font, but might be in an sfd file */
+   vs_missinganchor=0x100000,
+   vs_dupname=0x200000,
+   vs_dupunicode=0x400000,
+   vs_overlappedhints=0x800000,
 
-   vs_last = vs_overlappedhints,
+   vs_last=vs_overlappedhints,
    vs_maskps =
       0x3fe | vs_pointstoofarapart | vs_missinganchor | vs_dupname |
       vs_dupunicode | vs_overlappedhints,
@@ -1593,7 +1586,7 @@ typedef struct splinechar {
 
 #   define TEX_UNDEF 0x7fff
 
-enum ttfnames { ttf_copyright = 0, ttf_family, ttf_subfamily, ttf_uniqueid,
+enum ttfnames { ttf_copyright=0, ttf_family, ttf_subfamily, ttf_uniqueid,
    ttf_fullname, ttf_version, ttf_postscriptname, ttf_trademark,
    ttf_manufacturer, ttf_designer, ttf_descriptor, ttf_venderurl,
    ttf_designerurl, ttf_license, ttf_licenseurl, ttf_idontknow /*reserved */ ,
@@ -1721,19 +1714,19 @@ struct MATH {
    uint16 MinConnectorOverlap;	/* in the math variants sub-table */
 };
 
-enum backedup_state { bs_dontknow = 0, bs_not = 1, bs_backedup = 2 };
+enum backedup_state { bs_dontknow=0, bs_not=1, bs_backedup=2 };
 
 enum loadvalidation_state {
-   lvs_bad_ps_fontname = 0x001,
-   lvs_bad_glyph_table = 0x002,
-   lvs_bad_cff_table = 0x004,
-   lvs_bad_metrics_table = 0x008,
-   lvs_bad_cmap_table = 0x010,
-   lvs_bad_bitmaps_table = 0x020,
-   lvs_bad_gx_table = 0x040,
-   lvs_bad_ot_table = 0x080,
-   lvs_bad_os2_version = 0x100,
-   lvs_bad_sfnt_header = 0x200
+   lvs_bad_ps_fontname=0x001,
+   lvs_bad_glyph_table=0x002,
+   lvs_bad_cff_table=0x004,
+   lvs_bad_metrics_table=0x008,
+   lvs_bad_cmap_table=0x010,
+   lvs_bad_bitmaps_table=0x020,
+   lvs_bad_gx_table=0x040,
+   lvs_bad_ot_table=0x080,
+   lvs_bad_os2_version=0x100,
+   lvs_bad_sfnt_header=0x200
 };
 
 typedef struct layerinfo {
@@ -2008,9 +2001,9 @@ typedef struct mmset {
 } MMSet;
 
 /* mac styles. Useful idea we'll just steal it */
-enum style_flags { sf_bold = 1, sf_italic = 2, sf_underline = 4, sf_outline =
+enum style_flags { sf_bold=1, sf_italic=2, sf_underline=4, sf_outline =
       8,
-   sf_shadow = 0x10, sf_condense = 0x20, sf_extend = 0x40
+   sf_shadow=0x10, sf_condense=0x20, sf_extend=0x40
 };
 
 struct sflist {
@@ -2036,42 +2029,42 @@ typedef struct anchorpos {
    unsigned int ticked:1;	/* Used as a mark to mark */
 } AnchorPos;
 
-enum ttf_flags { ttf_flag_shortps = 1, ttf_flag_nohints = 2,
-   ttf_flag_applemode = 4,
-   ttf_flag_pfed_comments = 8, ttf_flag_pfed_colors = 0x10,
-   ttf_flag_otmode = 0x20,
-   ttf_flag_glyphmap = 0x40,
-   ttf_flag_TeXtable = 0x80,
-   ttf_flag_ofm = 0x100,
-   ttf_flag_oldkern = 0x200,	/* never set in conjunction with applemode */
-   ttf_flag_brokensize = 0x400,	/* Adobe originally issued fonts with a bug in the size feature. They now claim (Aug 2006) that this has been fixed. Legacy programs will do the wrong thing with the fixed feature though */
-   ttf_flag_pfed_lookupnames = 0x800,
-   ttf_flag_pfed_guides = 0x1000,
-   ttf_flag_pfed_layers = 0x2000,
-   ttf_flag_symbol = 0x4000,
-   ttf_flag_dummyDSIG = 0x8000
+enum ttf_flags { ttf_flag_shortps=1, ttf_flag_nohints=2,
+   ttf_flag_applemode=4,
+   ttf_flag_pfed_comments=8, ttf_flag_pfed_colors=0x10,
+   ttf_flag_otmode=0x20,
+   ttf_flag_glyphmap=0x40,
+   ttf_flag_TeXtable=0x80,
+   ttf_flag_ofm=0x100,
+   ttf_flag_oldkern=0x200,	/* never set in conjunction with applemode */
+   ttf_flag_brokensize=0x400,	/* Adobe originally issued fonts with a bug in the size feature. They now claim (Aug 2006) that this has been fixed. Legacy programs will do the wrong thing with the fixed feature though */
+   ttf_flag_pfed_lookupnames=0x800,
+   ttf_flag_pfed_guides=0x1000,
+   ttf_flag_pfed_layers=0x2000,
+   ttf_flag_symbol=0x4000,
+   ttf_flag_dummyDSIG=0x8000
 };
-enum ttc_flags { ttc_flag_trymerge = 0x1, ttc_flag_cff = 0x2 };
+enum ttc_flags { ttc_flag_trymerge=0x1, ttc_flag_cff=0x2 };
 
-enum openflags { of_fstypepermitted = 1, of_askcmap =
-      2, of_all_glyphs_in_ttc = 4,
-   of_fontlint = 8, of_hidewindow = 0x10
+enum openflags { of_fstypepermitted=1, of_askcmap =
+      2, of_all_glyphs_in_ttc=4,
+   of_fontlint=8, of_hidewindow=0x10
 };
 
-enum ps_flags { ps_flag_nohintsubs = 0x10000, ps_flag_noflex = 0x20000,
-   ps_flag_nohints = 0x40000, ps_flag_restrict256 = 0x80000,
-   ps_flag_afm = 0x100000, ps_flag_pfm = 0x200000,
-   ps_flag_tfm = 0x400000,
-   ps_flag_round = 0x800000,
+enum ps_flags { ps_flag_nohintsubs=0x10000, ps_flag_noflex=0x20000,
+   ps_flag_nohints=0x40000, ps_flag_restrict256=0x80000,
+   ps_flag_afm=0x100000, ps_flag_pfm=0x200000,
+   ps_flag_tfm=0x400000,
+   ps_flag_round=0x800000,
 /* CFF fonts are wrapped up in some postscript sugar -- unless they are to */
 /*  go into a pdf file or an otf font */
-   ps_flag_nocffsugar = 0x1000000,
+   ps_flag_nocffsugar=0x1000000,
 /* in type42 cid fonts we sometimes want an identity map from gid to cid */
-   ps_flag_identitycidmap = 0x2000000,
-   ps_flag_afmwithmarks = 0x4000000,
-   ps_flag_noseac = 0x8000000,
-   ps_flag_outputfontlog = 0x10000000,
-   ps_flag_mask = (ps_flag_nohintsubs | ps_flag_noflex |
+   ps_flag_identitycidmap=0x2000000,
+   ps_flag_afmwithmarks=0x4000000,
+   ps_flag_noseac=0x8000000,
+   ps_flag_outputfontlog=0x10000000,
+   ps_flag_mask=(ps_flag_nohintsubs | ps_flag_noflex |
 		   ps_flag_afm | ps_flag_pfm | ps_flag_tfm | ps_flag_round)
 };
 
@@ -2092,20 +2085,15 @@ struct archivers {
 #   define ARCHIVERS_EMPTY { NULL, NULL, NULL, NULL, NULL, NULL, 0 }
 
 struct fontdict;
-
 struct pschars;
-
 struct findsel;
-
 struct charprocs;
-
 struct enc;
 
 #   define chunkalloc(size)	calloc(1,size)
 #   define chunkfree(item,size)	free(item)
 
 extern char *strconcat(const char *str, const char *str2);
-
 extern char *strconcat3(const char *str, const char *str2, const char *str3);
 
 extern char *XUIDFromFD(int xuid[20]);
@@ -2128,12 +2116,11 @@ extern int LoadKerningDataFromMacFOND(SplineFont * sf, char *filename,
 				      EncMap * map);
 extern int LoadKerningDataFromMetricsFile(SplineFont * sf, char *filename,
 					  EncMap * map);
-extern void FeatDumpFontLookups(FILE * out, SplineFont * sf);
 
+extern void FeatDumpFontLookups(FILE * out, SplineFont * sf);
 extern void FeatDumpOneLookup(FILE * out, SplineFont * sf, OTLookup * otl);
 
 extern void SFApplyFeatureFile(SplineFont * sf, FILE * file, char *filename);
-
 extern void SFApplyFeatureFilename(SplineFont * sf, char *filename);
 
 extern void SubsNew(SplineChar * to, enum possub_type type, int tag,
@@ -2141,9 +2128,7 @@ extern void SubsNew(SplineChar * to, enum possub_type type, int tag,
 extern void PosNew(SplineChar * to, int tag, int dx, int dy, int dh, int dv);
 
 extern int SFOneWidth(SplineFont * sf);
-
 extern int CIDOneWidth(SplineFont * sf);
-
 extern int SFOneHeight(SplineFont * sf);
 
 extern int SFIsCJK(SplineFont * sf, EncMap * map);
@@ -2166,11 +2151,8 @@ extern struct pschars *SplineFont2ChrsSubrs(SplineFont * sf, int iscjk,
 extern int CanonicalCombiner(int uni);
 
 struct cidbytes;
-
 struct fd2data;
-
 struct ttfinfo;
-
 struct alltabs;
 
 typedef struct growbuf {
@@ -2180,9 +2162,7 @@ typedef struct growbuf {
 } GrowBuf;
 
 extern void GrowBuffer(GrowBuf * gb);
-
 extern void GrowBufferAdd(GrowBuf * gb, int ch);
-
 extern void GrowBufferAddStr(GrowBuf * gb, char *str);
 
 struct glyphdata;
@@ -2191,6 +2171,7 @@ extern int UnitsParallel(BasePoint * u1, BasePoint * u2, int strict);
 
 extern int CvtPsStem3(struct growbuf *gb, SplineChar * scs[MmMax],
 		      int instance_count, int ishstem, int round);
+
 extern struct pschars *CID2ChrsSubrs(SplineFont * cidmaster,
 				     struct cidbytes *cidbytes, int flags,
 				     int layer);
@@ -2278,23 +2259,18 @@ extern void TeXDefaultParams(SplineFont * sf);
 extern int AlreadyMSSymbolArea(SplineFont * sf, EncMap * map);
 
 extern void OS2FigureCodePages(SplineFont * sf, uint32 CodePage[2]);
-
 extern void OS2FigureUnicodeRanges(SplineFont * sf, uint32 Ranges[4]);
-
 extern void SFDefaultOS2Info(struct pfminfo *pfminfo, SplineFont * sf,
 			     char *fontname);
 extern void SFDefaultOS2Simple(struct pfminfo *pfminfo, SplineFont * sf);
-
 extern void SFDefaultOS2SubSuper(struct pfminfo *pfminfo, int emsize,
 				 double italicangle);
+
 extern void VerifyLanguages(SplineFont * sf);
 
 extern int ScriptIsRightToLeft(uint32 script);
-
 extern void ScriptMainRange(uint32 script, int *start, int *end);
-
 extern uint32 ScriptFromUnicode(int u, SplineFont * sf);
-
 extern uint32 SCScriptFromUnicode(SplineChar * sc);
 
 extern int SCRightToLeft(SplineChar * sc);
@@ -2306,7 +2282,6 @@ extern void SFFindNearTop(SplineFont *);
 extern void SFRestoreNearTop(SplineFont *);
 
 extern int SFForceEncoding(SplineFont * sf, EncMap * old, Encoding * new_map);
-
 extern int CountOfEncoding(Encoding * encoding_name);
 
 extern void SFMatchGlyphs(SplineFont * sf, SplineFont * target,
@@ -2329,19 +2304,13 @@ extern void ttfdumpbitmapscaling(SplineFont * sf, struct alltabs *at,
 extern void SplineFontSetUnChanged(SplineFont * sf);
 
 extern int Within4RoundingErrors(bigreal v1, bigreal v2);
-
 extern int Within16RoundingErrors(bigreal v1, bigreal v2);
-
 extern int Within64RoundingErrors(bigreal v1, bigreal v2);
 
 extern int RealNear(real a, real b);
-
 extern int RealNearish(real a, real b);
-
 extern int RealApprox(real a, real b);
-
 extern int RealWithin(real a, real b, real fudge);
-
 extern int RealRatio(real a, real b, real fudge);
 
 extern int PointsDiagonalable(SplineFont * sf, BasePoint ** bp,
@@ -2349,49 +2318,33 @@ extern int PointsDiagonalable(SplineFont * sf, BasePoint ** bp,
 extern int MergeDStemInfo(SplineFont * sf, DStemInfo ** ds, DStemInfo * test);
 
 extern void LineListFree(LineList * ll);
-
 extern void LinearApproxFree(LinearApprox * la);
-
 extern void SplineFree(Spline * spline);
 
 extern SplinePoint *SplinePointCreate(real x, real y);
-
 extern void SplinePointFree(SplinePoint * sp);
-
 extern void SplinePointMDFree(SplineChar * sc, SplinePoint * sp);
-
 extern void SplinePointsFree(SplinePointList * spl);
-
 extern void SplinePointListFree(SplinePointList * spl);
-
 extern void SplinePointListMDFree(SplineChar * sc, SplinePointList * spl);
-
 extern void SplinePointListsMDFree(SplineChar * sc, SplinePointList * spl);
-
 extern void SplinePointListsFree(SplinePointList * head);
 
 extern void SplineSetSpirosClear(SplineSet * spl);
-
 extern void SplineSetBeziersClear(SplineSet * spl);
 
 extern void RefCharFree(RefChar * ref);
-
 extern void RefCharsFree(RefChar * ref);
-
 extern void RefCharsFreeRef(RefChar * ref);
 
 extern void CopyBufferFree(void);
-
 extern void CopyBufferClearCopiedFrom(SplineFont * dying);
 
 extern void UndoesFree(Undoes * undo);
 
 extern void StemInfosFree(StemInfo * h);
-
 extern void StemInfoFree(StemInfo * h);
-
 extern void DStemInfosFree(DStemInfo * h);
-
 extern void DStemInfoFree(DStemInfo * h);
 
 extern void KernPairsFree(KernPair * kp);
@@ -2399,17 +2352,12 @@ extern void KernPairsFree(KernPair * kp);
 extern void SCOrderAP(SplineChar * sc);
 
 extern void AnchorPointsFree(AnchorPoint * ap);
-
 extern AnchorPoint *AnchorPointsCopy(AnchorPoint * alist);
-
 extern AnchorClass *SFFindOrAddAnchorClass(SplineFont * sf, char *name,
 					   struct lookup_subtable *sub);
 extern void SFRemoveAnchorClass(SplineFont * sf, AnchorClass * an);
-
 extern int AnchorClassesNextMerge(AnchorClass * ac);
-
 extern int IsAnchorClassUsed(SplineChar * sc, AnchorClass * an);
-
 extern AnchorPoint *APAnchorClassMerge(AnchorPoint * anchors,
 				       AnchorClass * into,
 				       AnchorClass * from);
@@ -2665,13 +2613,13 @@ extern void SplineCharQuickConservativeBounds(SplineChar * sc, DBounds * b);
 
 extern void SplineFontQuickConservativeBounds(SplineFont * sf, DBounds * b);
 
-extern void SplinePointCatagorize(SplinePoint * sp);
+extern void SplinePointCategorize(SplinePoint * sp);
 
 extern int SplinePointIsACorner(SplinePoint * sp);
 
-extern void SPLCatagorizePoints(SplinePointList * spl);
+extern void SPLCategorizePoints(SplinePointList * spl);
 
-extern void SCCatagorizePoints(SplineChar * sc);
+extern void SCCategorizePoints(SplineChar * sc);
 
 extern SplinePointList *SplinePointListCopy1(const SplinePointList * spl);
 
@@ -2698,8 +2646,8 @@ enum transformPointType { tpt_OnlySelected, tpt_AllPoints,
  * able to disable some of them.
  */
 enum transformPointMask {
-   tpmask_dontFixControlPoints = 1 << 1,
-   tpmask_operateOnSelectedBCP = 1 << 2
+   tpmask_dontFixControlPoints=1 << 1,
+   tpmask_operateOnSelectedBCP=1 << 2
 };
 
 extern SplinePointList *SplinePointListTransform(SplinePointList * base,
@@ -2797,8 +2745,8 @@ extern int BDFDepth(BDFFont * bdf);
 extern BDFChar *BDFPieceMeal(BDFFont * bdf, int index);
 
 extern BDFChar *BDFPieceMealCheck(BDFFont * bdf, int index);
-enum piecemeal_flags { pf_antialias = 1, pf_bbsized = 2, pf_ft_nohints =
-      4, pf_ft_recontext = 8 };
+enum piecemeal_flags { pf_antialias=1, pf_bbsized=2, pf_ft_nohints =
+      4, pf_ft_recontext=8 };
 extern BDFFont *SplineFontPieceMeal(SplineFont * sf, int layer, int ptsize,
 				    int dpi, int flags,
 				    void *freetype_context);
@@ -3418,8 +3366,8 @@ extern SplineChar *SFDReadOneChar(SplineFont * sf, const char *name);
 extern char *TTFGetFontName(FILE * ttf, int32 offset, int32 off2);
 
 extern void TTFLoadBitmaps(FILE * ttf, struct ttfinfo *info, int onlyone);
-enum ttfflags { ttf_onlystrikes = 1, ttf_onlyonestrike = 2, ttf_onlykerns =
-      4, ttf_onlynames = 8 };
+enum ttfflags { ttf_onlystrikes=1, ttf_onlyonestrike=2, ttf_onlykerns =
+      4, ttf_onlynames=8 };
 extern SplineFont *_SFReadWOFF(FILE * woff, int flags,
 			       enum openflags openflags, char *filename,
 			       struct fontdict *fd);
@@ -3889,8 +3837,8 @@ extern int BpWithin(BasePoint * first, BasePoint * mid, BasePoint * last);
 
     /* Colinear & between */
 
-enum psstrokeflags { /* sf_removeoverlap=2, */ sf_handle_eraser = 4,
-   sf_correctdir = 8, sf_clearbeforeinput = 16
+enum psstrokeflags { /* sf_removeoverlap=2, */ sf_handle_eraser=4,
+   sf_correctdir=8, sf_clearbeforeinput=16
 };
 
 extern char *MMAxisAbrev(char *axis_name);
@@ -3913,30 +3861,30 @@ extern char *EnforcePostScriptName(char *old);
 
 extern char *ToAbsolute(char *filename);
 
-enum Compare_Ret { SS_DiffContourCount = 1,
-   SS_MismatchOpenClosed = 2,
-   SS_DisorderedContours = 4,
-   SS_DisorderedStart = 8,
-   SS_DisorderedDirection = 16,
-   SS_PointsMatch = 32,
-   SS_ContourMatch = 64,
-   SS_NoMatch = 128,
-   SS_RefMismatch = 256,
-   SS_WidthMismatch = 512,
-   SS_VWidthMismatch = 1024,
-   SS_HintMismatch = 2048,
-   SS_HintMaskMismatch = 4096,
-   SS_LayerCntMismatch = 8192,
-   SS_ContourMismatch = 16384,
-   SS_UnlinkRefMatch = 32768,
+enum Compare_Ret { SS_DiffContourCount=1,
+   SS_MismatchOpenClosed=2,
+   SS_DisorderedContours=4,
+   SS_DisorderedStart=8,
+   SS_DisorderedDirection=16,
+   SS_PointsMatch=32,
+   SS_ContourMatch=64,
+   SS_NoMatch=128,
+   SS_RefMismatch=256,
+   SS_WidthMismatch=512,
+   SS_VWidthMismatch=1024,
+   SS_HintMismatch=2048,
+   SS_HintMaskMismatch=4096,
+   SS_LayerCntMismatch=8192,
+   SS_ContourMismatch=16384,
+   SS_UnlinkRefMatch=32768,
 
-   BC_DepthMismatch = 1 << 16,
-   BC_BoundingBoxMismatch = 2 << 16,
-   BC_BitmapMismatch = 4 << 16,
-   BC_NoMatch = 8 << 16,
-   BC_Match = 16 << 16,
+   BC_DepthMismatch=1 << 16,
+   BC_BoundingBoxMismatch=2 << 16,
+   BC_BitmapMismatch=4 << 16,
+   BC_NoMatch=8 << 16,
+   BC_Match=16 << 16,
 
-   SS_RefPtMismatch = 32 << 16
+   SS_RefPtMismatch=32 << 16
 };
 
 extern enum Compare_Ret BitmapCompare(BDFChar * bc1, BDFChar * bc2, int err,
@@ -3944,12 +3892,12 @@ extern enum Compare_Ret BitmapCompare(BDFChar * bc1, BDFChar * bc2, int err,
 extern enum Compare_Ret SSsCompare(const SplineSet * ss1,
 				   const SplineSet * ss2, real pt_err,
 				   real spline_err, SplinePoint ** hmfail);
-enum font_compare_flags { fcf_outlines = 1, fcf_exact =
-      2, fcf_warn_not_exact = 4,
-   fcf_hinting = 8, fcf_hintmasks = 0x10, fcf_hmonlywithconflicts = 0x20,
-   fcf_warn_not_ref_exact = 0x40,
-   fcf_bitmaps = 0x80, fcf_names = 0x100, fcf_gpos = 0x200, fcf_gsub = 0x400,
-   fcf_adddiff2sf1 = 0x800, fcf_addmissing = 0x1000
+enum font_compare_flags { fcf_outlines=1, fcf_exact =
+      2, fcf_warn_not_exact=4,
+   fcf_hinting=8, fcf_hintmasks=0x10, fcf_hmonlywithconflicts=0x20,
+   fcf_warn_not_ref_exact=0x40,
+   fcf_bitmaps=0x80, fcf_names=0x100, fcf_gpos=0x200, fcf_gsub=0x400,
+   fcf_adddiff2sf1=0x800, fcf_addmissing=0x1000
 };
 
 extern int CompareFonts(SplineFont * sf1, EncMap * map1, SplineFont * sf2,
@@ -4374,8 +4322,8 @@ extern void SPLFirstVisitorDebugSelectionState(SplinePoint * splfirst,
  * // ...
  *
  *	SPLFirstVisitorFoundSoughtData d;
- *	d.sought = sought;
- *	d.found  = 0;
+ *	d.sought=sought;
+ *	d.found=0;
  *	SPLFirstVisit( spl->first, SPLFirstVisitorFoundSought, &d );
  *	if( d.found )
  *           return 1;

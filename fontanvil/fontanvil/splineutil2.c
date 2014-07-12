@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 2935 2014-03-10 17:48:27Z mskala $ */
+/* $Id: splineutil2.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1857,8 +1857,8 @@ static TPoint *SplinesFigureTPsBetween(SplinePoint * from, SplinePoint * to,
    return (tp);
 }
 
-static void SplinePointReCatagorize(SplinePoint * sp, int oldpt) {
-   SplinePointCatagorize(sp);
+static void SplinePointReCategorize(SplinePoint * sp, int oldpt) {
+   SplinePointCategorize(sp);
    if (sp->pointtype != oldpt) {
       if (sp->pointtype == pt_curve && oldpt == pt_hvcurve &&
 	  ((sp->nextcp.x == sp->me.x && sp->nextcp.y != sp->me.y) ||
@@ -1902,8 +1902,8 @@ void SplinesRemoveBetween(SplineChar * sc, SplinePoint * from,
 
    free(tp);
 
-   SplinePointReCatagorize(from, oldfpt);
-   SplinePointReCatagorize(to, oldtpt);
+   SplinePointReCategorize(from, oldfpt);
+   SplinePointReCategorize(to, oldtpt);
 }
 
 static void RemoveZeroLengthSplines(SplineSet * spl, int onlyselected,
@@ -2375,8 +2375,8 @@ static int SplinesRemoveBetweenMaybe(SplineChar * sc,
 	 SplineFree(sp->next);
 	 SplinePointMDFree(sc, sp);
       }
-      SplinePointCatagorize(from);
-      SplinePointCatagorize(to);
+      SplinePointCategorize(from);
+      SplinePointCategorize(to);
    } else {
       SplineFree(from->next);
       from->next = afterfrom->prev;
@@ -3236,7 +3236,7 @@ SplineSet *SplineCharSimplify(SplineChar * sc, SplineSet * head,
       }
    }
    SplineSetsRemoveAnnoyingExtrema(head, .3);
-   SPLCatagorizePoints(head);
+   SPLCategorizePoints(head);
    /* printf( "nocnt=%d totcnt=%d curdif=%d incr=%d\n", nocnt_cnt, totcnt_cnt, curdiff_cnt, incr_cnt ); *//* Debug!!! */
    return (head);
 }

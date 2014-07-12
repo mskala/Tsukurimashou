@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splinestroke.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3145,7 +3145,7 @@ static void PointJoint(SplinePoint * base, SplinePoint * other,
    base->me = inter;
    SplineRefigure(base->next);
    SplineRefigure(base->prev);
-   SplinePointCatagorize(base);
+   SplinePointCategorize(base);
 
    SplinePointFree(other);
 }

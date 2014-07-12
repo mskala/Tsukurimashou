@@ -1,4 +1,4 @@
-/* $Id: svg.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: svg.c 3169 2014-07-12 03:10:15Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3265,7 +3265,7 @@ static Entity *_SVGParseSVG(xmlNodePtr svg, xmlNodePtr top,
    if (head == NULL)
       return (NULL);
 
-   SPLCatagorizePoints(head);
+   SPLCategorizePoints(head);
 
    eret =
       EntityCreate(SplinePointListTransform
@@ -3355,7 +3355,7 @@ static void SVGParseGlyphBody(SplineChar * sc, xmlNodePtr glyph, int *flags) {
 	 sc->parent->multilayer = true;
    }
 
-   SCCatagorizePoints(sc);
+   SCCategorizePoints(sc);
 }
 
 static SplineChar *SVGParseGlyphArgs(xmlNodePtr glyph, int defh, int defv,
