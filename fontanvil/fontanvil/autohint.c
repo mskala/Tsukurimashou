@@ -1,4 +1,4 @@
-/* $Id: autohint.c 2953 2014-03-15 17:44:07Z mskala $ */
+/* $Id: autohint.c 3173 2014-07-12 17:12:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
