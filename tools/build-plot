@@ -1,0 +1,172 @@
+#!/usr/bin/perl -CDS
+
+#
+# Graphical progress plotter for Tsukurimashou build
+# Copyright (C) 2014  Matthew Skala
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# As a special exception, if you create a document which uses this font, and
+# embed this font or unaltered portions of this font into the document, this
+# font does not by itself cause the resulting document to be covered by the
+# GNU General Public License. This exception does not however invalidate any
+# other reasons why the document might be covered by the GNU General Public
+# License. If you modify this font, you may extend this exception to your
+# version of the font, but you are not obligated to do so. If you do not
+# wish to do so, delete this exception statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Matthew Skala
+# http://ansuz.sooke.bc.ca/
+# mskala@ansuz.sooke.bc.ca
+#
+
+# To use this script:  run it from the root of an in-progress Tsukurimashou
+# build.  GNUplot is required; and it will only work as intended if the
+# build is a full build initiated by typing "make" from a basically clean
+# starting point.  Output is written to "build.png" and consists of a plot
+# showing files that have been created versus time, since the start of the
+# build, with a regression line that may give some sort of estimate of when
+# completion may be expected.  Please note that this is VERY approximate;
+# accurately predicting what files need to be created during the build is
+# the job of the Makefile (currently over a thousand lines of source) aided
+# by Autotools and Prolog, and to a certain extent we don't know when we are
+# finished until we get there.  But the plot is pretty, anyway.
+
+$start_time=1408128350; # default for testing
+# FIXME hook makefile to pick up accurate starting time
+
+open(MKV,'makefile-vars.inc');
+while (<MKV>) {
+  chomp;
+  if (/^PAGES_([a-z0-9]+)=(.*)$/) {
+    $pages{$1}=[split(/ /,$2)];
+  } elsif (/^SHORT_STYLES=(.*)$/) {
+    @short_styles=split(/ /,$1);
+  } elsif (/^XLAT_(.*)=(.*)$/) {
+    $xlat{$1}=$2;
+  }
+}
+close(MKV);
+
+@todo=();
+$total_cost=0;
+foreach $style (@short_styles) {
+  $sthyph=$style;
+  $sthyph=~tr/_/\-/;
+  $style=~/^([a-z0-9]+)_/;
+  $family=$1;
+  foreach $page (@{$pages{$family}}) {
+    push @todo,"pfbtmp/$sthyph-$page.pfb";
+    $cost{"pfbtmp/$sthyph-$page.pfb"}=1;
+    push @todo,"pfb/$sthyph-$page.pfb";
+    $cost{"pfb/$sthyph-$page.pfb"}=1;
+    $total_cost+=2;
+  }
+  if ($style=~/-ps$/) {
+    push @todo,"sfd/$sthyph.sfd";
+    $cost{"sfd/$sthyph.sfd"}=$#{$pages{$family}}+1;
+    $total_cost+=($#{$pages{$family}}+1);
+  }
+  $nosp=$xlat{$style};
+  $nosp=~tr/ //d;
+  push @todo,"otf/$nosp.otf";
+  $cost{"otf/$nosp.otf"}=$#{$pages{$family}}+1;
+  $total_cost+=($#{$pages{$family}}+1);
+}
+
+%completed=();
+foreach $fn (keys %cost) {
+  ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+   $atime,$mtime,$ctime,$blksize,$blocks)=stat($fn);
+  if ($mtime>=$start_time) {
+    $completed{$mtime}.="$fn\n";
+  }
+}
+
+open(BP1,'>bp1.dat');
+open(BP2,'>bp2.dat');
+open(BP3,'>bp3.dat');
+open(BP4,'>bp4.dat');
+
+$present_time=time+0;
+$current_progress=0;
+foreach $current_time (sort {$a<=>$b} keys %completed) {
+  $ct=($current_time-$present_time)/3600.0;
+  foreach $fn (split(/\n/,$completed{$current_time})) {
+    $current_progress+=$cost{$fn};
+    $cp=100*$current_progress/$total_cost;
+    if ($fn=~/^pfbtmp\//) {
+      print BP1 "$ct\t$cp\n";
+    } elsif ($fn=~/^pfb\//) {
+      print BP2 "$ct\t$cp\n";
+    } elsif ($fn=~/^sfd\//) {
+      print BP3 "$ct\t$cp\n";
+    } else {
+      print BP4 "$ct\t$cp\n";
+    }
+  }
+}
+
+close(BP1);
+close(BP2);
+close(BP3);
+close(BP4);
+
+`cat bp[1-4].dat > bpx.dat`;
+$timeoffs=time+0;
+
+open(BPFGP,'>bpf.gp');
+print BPFGP <<EOF;
+f(x)=a*x+b
+fit f(x) "bpx.dat" via a,b
+xt=(100.0-b)/a
+print "MARKER"
+print xt;
+exit
+EOF
+close(BPFGP);
+
+$xt='*';
+open(GP,'gnuplot bpf.gp 2>&1 |');
+while (<GP>) {
+  if (/([0-9\.]+)/ && $marked) {
+    $xt=$1;
+    $marked=0;
+  }
+  $marked=1 if /MARKER/;
+}
+close(GP);
+
+$st=($start_time-$present_time)/3600.0;
+
+open(BPGP,'>bp.gp');
+print BPGP <<EOF;
+set terminal png
+set output "buildplot.png"
+set key top left
+f(x)=a*x+b
+fit f(x) "bpx.dat" via a,b
+set xrange [$st:$xt]
+set yrange [0:100]
+set xlabel "Time (hours from present)"
+set ylabel "Estimated completion (percent)"
+plot "bp1.dat" title "Metatype1", \\
+  "bp2.dat" title "RMO", \\
+  "bp3.dat" title "SFD", \\
+  "bp4.dat" title "OTF", \\
+  f(x) title "linear fit"
+exit
+EOF
+close(BPGP);
+
+`gnuplot bp.gp`;

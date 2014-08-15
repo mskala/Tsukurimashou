@@ -914,7 +914,8 @@ endif
 doc_font_script := $(PERL) -CSD -e \
   'while (<>) { chomp; while (/%\s*$$/) { $$_.=<>; chomp; } if (\
   /(newfontfamily|newfontface|setmainfont|setmonofont).*\{([^{}]+)\}+\s*$$/\
-  ) { $$d{"otf/$$2.otf"}=1; } } print join(" ",keys %d);'
+  ) { $$d{"otf/$$2.otf"}=1; } if (/ItalicFont=\{([^{}]+)\}/) {\
+  $$d{"otf/$$1.otf"}=1; } } print join(" ",keys %d);'
 filter_demo_deps = $(filter $(strip $(foreach st,$(SHORT_STYLES), \
     otf/$(subst -,,$(subst $(space),,$(XLAT_$(st)))).otf)),$1)
 makefile-pdf.inc: makefile-vars.inc \
@@ -973,6 +974,8 @@ makefile-pdf.inc: makefile-vars.inc \
 	    >> makefile-pdf.inc ; \
 	  echo >> makefile-pdf.inc ; \
 	done
+
+doc/usermanual.xdv: $(dist_otf_DATA) 
 
 nocomma_date:=$(subst $(comma),,@release_date@)
 doc/version.tex: hamlog/config.hl

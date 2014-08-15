@@ -192,7 +192,7 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.67])
-AC_INIT([Tsukurimashou],[0.8],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],
+AC_INIT([Tsukurimashou],[0.9],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],
   [[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
@@ -200,9 +200,9 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3104 2014-05-23 18:49:25Z mskala $])
-AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013 Matthew Skala])
-AC_SUBST([release_date],["August 26, 2013"])
+AC_REVISION([$Id: configure.ac 3215 2014-08-13 12:47:05Z mskala $])
+AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
+AC_SUBST([release_date],["August 15, 2013"])
 AM_SILENT_RULES
 #
 ############################################################################

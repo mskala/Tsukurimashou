@@ -91,7 +91,8 @@ close(MAKEFILE);
 );
 
 sub windows_name {
-  my($nid,$lang,$_)=@_;
+  my($nid,$lang);
+  ($nid,$lang,$_)=@_;
   s/(["\\\x{0080}-\x{ffee}])/sprintf("\\%04x",ord($1))/ge;
   printf "  nameid %d 3 1 0x%04x \"%s\";\n",
     $nid,$windows_lang{$lang},$_;
@@ -104,14 +105,15 @@ sub windows_name {
 );
 
 sub mac_name {
-  my($nid,$lang,$_)=@_;
+  my($nid,$lang);
+  ($nid,$lang,$_)=@_;
   s/(["\\\x{80}-\x{ff}])/sprintf("\\%02x",ord($1))/ge;
   printf "  nameid %d 1 0 %d \"%s\";\n",
     $nid,$mac_lang{$lang},$_;
 }
 
 print "table name {\n";
-&windows_name(0,en,"Copyright \x{00A9} 2011, 2012, 2013 Matthew Skala");
+&windows_name(0,en,"Copyright \x{00A9} 2011, 2012, 2013, 2014 Matthew Skala");
 &windows_name(1,en,$familyname_en);
 &windows_name(1,$is_korean?kr:jp,$familyname_jk);
 &windows_name(2,en,$stylename_en);
@@ -132,7 +134,7 @@ if (!$is_korean) {
   &windows_name(12,jp,"http://ansuz.sooke.bc.ca/");
 }
 &windows_name(13,en,"Licensed under the GNU GPL version 3 with font-embedding clarification.  Note that this generally does NOT permit distribution on \"free font\" Web sites, because of the requirement to make source code available.");
-&mac_name(0,en,"Copyright \x{00A9} 2011, 2012, 2013 Matthew Skala");
+&mac_name(0,en,"Copyright \x{00A9} 2011, 2012, 2013, 2014 Matthew Skala");
 &mac_name(1,en,$familyname_en);
 &mac_name(2,en,$stylename_en);
 &mac_name(3,en,"Tsukurimashou : $fullname_en : ".(0+time));
