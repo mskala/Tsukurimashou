@@ -236,7 +236,7 @@ dist_noinst_SCRIPTS = \
   hamlog/select.hl hamlog/swi-ham.pl hamlog/ecl-ham.ecl hamlog/gp-ham.pl \
   pe/bdf.pe pe/fontlint.pe pe/getbearings.pe pe/kern-font.pe \
   pe/makepngs.pe pe/rmo.pe \
-  tools/add-flog tools/autodep tools/livecode \
+  tools/add-flog tools/autodep tools/build-plot tools/livecode \
   tools/make-ass tools/make-book tools/make-cfghl tools/make-cover \
   tools/make-eids tools/make-fea tools/make-flog tools/make-gpos \
   tools/make-hglpages tools/make-kchart tools/make-kddata tools/make-name \
@@ -261,6 +261,8 @@ MOSTLYCLEANFILES = \
   *~ doc/*~ fea/*~ kerner/*~ m4/*~ mp/*~ pe/*~ t1asm/*~ \
   *.prog \
   bdf/*.bdf \
+  bp.gp bpf.gp bp[1-4x].dat \
+  build-started \
   doc/*.aux doc/*.log doc/*.out doc/*-draft.tex doc/*.toc doc/*.xdv \
   doc/kanjichart.tex \
   doc/pgflibraryshapes.callouts.code.tex \
@@ -289,7 +291,7 @@ DISTCLEANFILES = \
 
 ############################################################################
 
-# KILL EMPTY FILES
+# KILL EMPTY FILES AND RECORD BUILD START
 
 kill_empty=@$(PERL) \
   -e 'while (<$(1)>) { if (-f && -z _) {' \
@@ -299,6 +301,7 @@ kill-empty:
 	$(call kill_empty,pfb/*.pfb)
 	$(call kill_empty,sfd/*.sfd)
 	$(call kill_empty,otf/*.otf)
+	-@touch build-started
 
 .PHONY: kill-empty
 

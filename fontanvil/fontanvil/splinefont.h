@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3170 2014-07-12 03:20:25Z mskala $ */
+/* $Id: splinefont.h 3228 2014-08-16 12:59:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2962,7 +2962,7 @@ extern void SPLNearlyHvLines(SplineChar * sc, SplineSet * ss, bigreal err);
 
 extern int SPLNearlyLines(SplineChar * sc, SplineSet * ss, bigreal err);
 
-extern int SPInterpolate(SplinePoint * sp);
+extern int SPInterpolate(const SplinePoint * sp);
 
 extern void SplinePointListSimplify(SplineChar * sc, SplinePointList * spl,
 				    struct simplifyinfo *smpl);

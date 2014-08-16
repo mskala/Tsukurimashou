@@ -272,21 +272,11 @@ Some other notes:
   look at all the kanji individually myself (for instance, by feeding a
   pre-existing database of kanji shapes into my existing general font
   technology) are not appropriate to the original intention of the project. 
-  Nonetheless, as of Fall 2012 I have become involved in a proposed research
-  project to more or less exactly feed a pre-existing database of kanji
-  shapes into my existing general font technology.  Most likely,
-  Tsukurimashou itself will continue to be manually maintained by me alone
-  in support of my own language learning, and some future version of this
-  document will also contain information about the database-driven system,
-  which will also be free, will involve other maintainers besides me, and
-  will share technology with Tsukurimashou.
 
-  \item Proportional spacing and kerning still require some work.  Be aware
-  that future versions will change the spacing of some characters, so if you
-  are one of those people to whom any changes in line breaking are anathema,
-  you should not expect to be able to upgrade the proportionally spaced
-  versions of these fonts in archived documents.  The monospace
-  versions have more, but still not complete, long-term stability.
+  \item As of version 0.9 (August 2014) I'm not happy with the weight of
+  punctuation marks, nor the sizes of serifs in the Mincho Latin character
+  range.  Both these things will probably change in future versions, with
+  consequent changes in spacing.
 
   \item I would like to include at least some support for vertical script,
   but it is not a high priority.  One obstacle is that I don't have access
@@ -382,26 +372,17 @@ manual is done with fonts from this package.
 
 The name ``Tsukurimashou'' could be translated as ``Let's make something!''
 
-From time to time, people ask how they can help with the project.  I'm
-hesitant to accept contributions to the coding, because of the pedagogical
-goal: I need to do it myself in order to learn by doing it.  I also don't
-have much need for monetary donations.  If you are in a position to actually
-offer me full-time employment appropriate to my skills and experience, I
-might like to hear from you, but as far as the Tsukurimashou project is
-concerned, the one thing that would really help a lot would be publicity. 
-Share the link on social networks; write about it on your Web log (or invite
-me to write a guest posting); or even just do a ``review'' or a ``rating''
-on the Sourceforge.JP project page.  Tsukurimashou is also registered on
-Github, Ohloh, and CIA.vc; if you use one of those systems, you're
-encouraged to ``follow'' or ``subscribe'' to it as appropriate, both to keep
-yourself updated and to raise the project's profile.
-
-There is some possibility that I may actually be able to get funding in the
-future to work on kanji fonts and dictionaries full-time for a while. 
-Exactly what that would mean for Tsukurimashou is unknown, because the
-project under discussion would have goals similar to but not exactly the
-same as the current Tsukurimashou/IDSgrep, and it's too soon to announce
-anything.
+From time to time, people ask how they can help with the project.
+The one thing this project most needs is your \emph{attention}.  I am not
+looking for code contributions because of the pedagogical goal (part of the
+point is for me to learn kanji by doing all the work); I am not looking for
+money as such, although I could certainly use academic employment; but
+public and third-party attention would be very helpful to the project's
+long-term success.  Use it, share it, and above all write about it.
+At this point I'm not even sure anybody but me has ever so much as run the
+Tsukurimashou build process, and that really hurt my motivation to continue
+maintaining it as a published free software package when other demands in my
+life pile up.
 
 The home pages for this project, where you can download the latest releases,
 browse the source-control repository, and so on, are:\\
@@ -419,49 +400,113 @@ Matthew Skala\\mskala@ansuz.sooke.bc.ca\\\TsukurimashouReleaseDate
 \blsubsection{\TsukurimashouVWide
 のニュース}{What's new in \TsukurimashouVersion?}
 
-Version 0.8 covers 1502 kanji, including all those taught through Grade Four
-in the Japanese school system.  This release includes relatively few major
-changes to infrastructure.  The new kanji are the main new content in this
-version.  These (100 scheduled by the roadmap, roughly another hundred
-spin-offs as a result of building kanji that are parts of others, and so on)
-turned out to be disproportionately hard.  It seems like Grade Four is when
-the Japanese school system takes the gloves off, so to speak, and expects
-children to learn kanji that are much less well-behaved than before in terms
-of being made of simple parts in simple ways.  Many of the new kanji in this
-release contain weird stroke structures that do \emph{not} occur widely in
-other glyphs.  As a result, they required a fair bit more new code, and this
-new code is likely to be less reusable, than the kanji in earlier releases. 
-I'm hoping that some of the kanji in the next few versions will be easier to
-handle, but that remains to be seen.
+Version 0.9 has been a long time coming.  There are not all that many new
+kanji.  The current count is FIXME, up from 1502 in version 0.8 roughly a
+year ago.  But a lot of infrastructure work has been done.  This version was
+prepared in a hurry, for reasons to be described below.
 
-Here are some other things of note in the new version:
+This version of Tsukurimashou introduces FontAnvil, a standalone interpreter
+for FontForge's native scripting language (PE script).  The decision to
+bundle a more or less complete font editor, drastically increasing the
+amount of code in the project and thus increasing the maintenance costs, was
+not made lightly.  The issue is that within the last two years or so I have
+been involved in FontForge development, and it is clear that the strategic
+direction of that project will present problems for the long-term use of
+FontForge within Tsukurimashou.  FontForge's development team is primarily
+interested in end-user GUI features (even going so far as social networking)
+and encourages Python for all new code; they have even seriously discussed,
+though not yet committed to, removing PE script support entirely, which
+would be fatal to Tsukurimashou if Tsukurimashou continued to rely on
+FontForge.  Especially given that Tsukurimashou already bundles its own
+versions of several other critical tools (such as Metatype1 and t1asm), it
+seems reasonable to bundle Tsukurimashou's own replacement for FontForge. 
+This is hoped to be of benefit to FontForge development as well, because it
+may make it easier for them to stop supporting PE script should they want to
+in the future; they can encourage PE script users to use FontAnvil instead
+of leaving such users out in the cold.
 
-\begin{itemize}
-\item Kleknev, a build system profiler, added as a parasite package.  This
-actually originated in some last-minute issues that came up while packaging
-the previous version, 0.7.  It remains somewhat undocumented and
-experimental, but there is at least a man page.
+FontForge has very recently made significant improvements to its
+spline-geometry operations (remove overlaps, find intersections, add
+extrema).  I have been complaining about those bugs for \emph{years}; they
+are critical to Tsukurimashou.  Many thanks are due to Frank Trampe of the
+FontForge team for his assiduous work on the spline geometry issues.  The
+latest changes to these features from FontForge were ported into FontAnvil
+at the last minute before the Tsukurimashou 0.9 release, along with some
+quick-and-dirty last-minute hacking on other stability issues (infinite
+loops and segfaults) to just get the build working.  I cannot vouch for
+Tsukurimashou 0.9 to build properly with any font compiler except the
+development FontAnvil bundled with it; and I cannot vouch for that version
+of FontAnvil to do anything except build Tsukurimashou 0.9 more or less
+correctly.  However, that specific combination, on my specific desktop
+computer, seems to work pretty well.
 
-\item The expect script used for invoking \XeLaTeX\ and a few other things
-now waits for child processes to avoid creating zombies.  That it didn't,
-before, was a bug discovered during Kleknev development.
+I presented Tsukurimashou at TUG 2013 in Tokyo.  Slides from that talk are
+at \url{https://tug.org/tug2013/slides/skala-slides.pdf}, and the associated
+\emph{TUGboat} article is available to TUG members at
+\url{https://www.tug.org/members/TUGboat/tb34-3/tb108skala.pdf}; it will
+eventually become open-access.  Most of the source code for the article
+(maybe not including the absolute latest edits, made by the journal editors
+instead of by me) is in the \texttt{tug2013/} subdirectory of
+Tsukurimashou's version control system.
 
-\item IDSgrep 0.4, released a few days before this version of Tsukurimashou,
-now incorporates experimental bit vector indices.  This is actually a pretty
-big deal; it is cutting-edge computer science research from which I hope to
-gain many prestigious academic publications.  From a user's point of view,
-though, the practical consequence is simply that IDSgrep should now run a
-lot faster.  See the IDSgrep documentation for more about the bit vector
-indices.
+In this version the Korean-language fonts have had their names changed to
+``Mandeubsida''; from talking to some people at the TUG meeting, it appears
+that this is a better translation of the name Tsukurimashou into Korean. 
+The GSUB features to support Korean glyph shaping have been redesigned to
+better work with some shapers (in particular, recent versions of HarfBuzz).
+Also in this version, build system support for an experimental font family
+called Kazoemashou (``let's count!'') has been added; this is intended to
+become a Unicode Math font based on Tsukurimashou, but as of this writing it
+is very fragmentary and not usable.
 
-\item Shortly after the release of Tsukurimashou~0.8, I will be giving a
-presentation about the project at TUG~2013, the \TeX\ Users Group annual
-meeting, in Tokyo.  That should raise the profile of the project a bit.
+An academic article about IDSgrep is currently in submission to \emph{ACM
+Transactions on Asian Language Information Processing}.  You can read a
+preprint version at \url{http://arxiv.org/abs/1404.5585}.
 
-\item Since May 2013, I am unemployed and looking for work.  That may have
-consequences eventually.  The fact that I am still single really worries me
-more, but both are important.
-\end{itemize}
+Version 0.9 was prepared in a hurry, and there are some ongoing questions
+about the future of Tsukurimashou as a result of my life and employment
+situations.  This release is a fair bit less polished than other releases
+have been, and some parts of the documentation (especially in the parasite
+packages) may not have been properly updated.  I am releasing it as it
+stands because after a year, we need a new version; the kanji planned for
+inclusion in this version are complete at least; and it may be a long time
+before I have another chance.
+
+I mentioned in last version's release notes that I was unhappy about being
+single and unemployed.  It took me a year and a half to find an academic
+job.  During that time I lived mostly on savings, with occasionable
+short-term contracts.  During that time my availability to work on
+Tsukurimashou was limited and development was slow.  I eventually obtained a
+postdoctoral position at the IT University of Copenhagen, working for a
+project called Scaleable Similarity Search.  This project's subject matter
+is a close match to the kind of thing I wrote about in my doctoral
+dissertation, and I am excited about getting to do more work on it.  As I
+write this text (August 16, 2014) I am in the middle of packing to move from
+Canada to Denmark.  Now I am rushing to get the Tsukurimashou 0.9 release
+out the door before I leave, because if I don't, it won't go out until much
+later, if ever.  Very soon I will be shutting down and packing my main
+development computer so it can be shipped; and it will probably be at least
+two months before I can use this computer again.
+
+Once I arrive in Copenhagen, I don't know if I will be spending a lot of
+time trying to learn to speak Danish, and if so what that will do to my
+Japanese studies.  Despite strict Danish government regulations limiting
+employment work hours, I don't know how much leisure time I will really have
+to devote to Tsukurimashou; and I don't know to what extent I will be able
+to fit continued Tsukurimashou development into my future career plans.  I
+am now six years post-PhD.  My job in Copenhagen is to be at most two years
+long, and given that it took me a year and a half to find this job, and next
+time, if I am to have a real academic career at all then my next job had
+better be at the faculty level, it appears that I should \emph{already} have
+been searching for my next job since something like a year ago.
+
+This is an extremely stressful state to be in and it is destructive to my
+ability to pursue side projects like Tsukurimashou.  I am conscious that my
+life outside of work is also far from what it should be, it is not
+clear whether I will ever be able to have the life that I was promised and
+have earned, and that too is destructive.  The bottom line is that I can't
+predict much about possible future development of Tsukurimashou.
+バージョン０．９は、楽しんで下さい。
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2653,9 +2698,9 @@ For the very latest public development version of Tsukurimashou and its
 associated tools, you can check out the source code from version control. 
 Since the version control system stores only the source code as such, not
 any files that can be automatically generated, some additional steps are
-necessary.  This method requires Autotools, which would probably not be
-needed if building from a source distribution, as well as either Subversion
-or Git to check out the sources in the first place.
+necessary to build from a checkout, beyond those used to build from a
+distribution.  Building from a checkout requires Autotools, as well as
+either Subversion or Git to check out the sources in the first place.
 
 First, check out the project by anonymous Subversion from SourceForge Japan:
 \begin{verbatim}
@@ -2689,6 +2734,7 @@ but should work, nonetheless.
 Configure, build, and install FontAnvil.  Make any appropriate substitutions
 to these commands for your local configuration.
 \begin{verbatim}
+# already in tsukurimashou/fontanvil
 ./configure
 make
 make install
@@ -2714,7 +2760,7 @@ proceed to build as if from a distribution.
 
 There are a number of scripts included in the \texttt{tools/} subdirectory. 
 Most of these are intended only to be invoked automatically by the build
-system, but two intended to be invoked by hand are described below.
+system, but those intended to be invoked by hand are described below.
 
 \begin{itemize}
 
@@ -2732,7 +2778,35 @@ includes the definitions of all needed macros.  There are a number of
 exceptions and special cases included to make it do the right thing with
 macros defined in multiple places as a result of style overrides, and so on.
 
-\item \texttt{udcpyright}: check that all years in which a file was modified
+\item \texttt{build-plot}: generate a plot (using GNUplot, which is
+required) of the current progress of a full build.  This was hacked in at
+the last minute to fill a specific need during the rather hurried
+packaging of version 0.9, and it may or may not be useful in any other
+contexts.  Run it from the root build directory while a full build is in
+progress.  It will create a file named \texttt{buildplot.png} which shows
+the current state of build progress.  Computing the overall progress status
+of a Tsukurimashou build is complicated because even knowing which files
+need to be updated requires thousands of lines of code spread across several
+languages and systems; so this is an approximation.  It reads the
+\texttt{makefile-vars.inc} file and attempts to identify all the Postscript,
+SFD, and OTF font files to be built in the current configuration.  Then it
+checks the time stamps of all those files (if they exist at all) and
+computes what fraction of them have been updated since the current build
+began.  It knows when the current build began by checking a tag file that is
+updated in the ``kill-empty'' step already wedged into an Autotools hook to
+execute at the start of a full build; thus, this will only
+work when the current build actually is a full build, initiated by just typing \texttt{make}
+rather than asking to build individual files.  The completion estimate will
+also only be correct when all those files actually need to be built, that
+is, building from a fresh copy of the distribution or after \texttt{make
+clean}.  It will probably produce incorrect results if a build is
+not actually in progress (for instance, after a build has completed or been
+aborted).  And the ETA estimate will usually be wrong.  Despite all these
+limitations, it's a fun thing to run in a loop in a window to get some idea
+of where the build stands beyond the endless columns of MT1/PERL/RMO
+messages put out by \texttt{make}.
+
+\item \texttt{udcpyright}: check that all years in which each file was modified
 are included in its copyright notice.  This assumes one has an SVN checkout
 in the current directory---intended to be a checkout from my private SVN
 repository, but it would probably work with one from the SourceForge

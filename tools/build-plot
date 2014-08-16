@@ -42,8 +42,9 @@
 # by Autotools and Prolog, and to a certain extent we don't know when we are
 # finished until we get there.  But the plot is pretty, anyway.
 
-$start_time=1408128350; # default for testing
-# FIXME hook makefile to pick up accurate starting time
+($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+ $atime,$mtime,$ctime,$blksize,$blocks)=stat('build-started');
+$start_time=$mtime;
 
 open(MKV,'makefile-vars.inc');
 while (<MKV>) {
@@ -72,7 +73,7 @@ foreach $style (@short_styles) {
     $cost{"pfb/$sthyph-$page.pfb"}=1;
     $total_cost+=2;
   }
-  if ($style=~/-ps$/) {
+  if ($style=~/_ps$/) {
     push @todo,"sfd/$sthyph.sfd";
     $cost{"sfd/$sthyph.sfd"}=$#{$pages{$family}}+1;
     $total_cost+=($#{$pages{$family}}+1);
@@ -128,7 +129,8 @@ $timeoffs=time+0;
 open(BPFGP,'>bpf.gp');
 print BPFGP <<EOF;
 f(x)=a*x+b
-fit f(x) "bpx.dat" via a,b
+b=$cp
+fit f(x) "bpx.dat" via a
 xt=(100.0-b)/a
 print "MARKER"
 print xt;
@@ -149,22 +151,27 @@ close(GP);
 
 $st=($start_time-$present_time)/3600.0;
 
+$ps=sprintf('%.1f',$cp);
+$xs=sprintf('%d:%02d',int($xt),int(60*($xt-int($xt))));
+
 open(BPGP,'>bp.gp');
 print BPGP <<EOF;
-set terminal png
+set terminal png size 1024,768
 set output "buildplot.png"
 set key top left
 f(x)=a*x+b
-fit f(x) "bpx.dat" via a,b
+b=$cp
+fit f(x) "bpx.dat" via a
 set xrange [$st:$xt]
 set yrange [0:100]
-set xlabel "Time (hours from present)"
-set ylabel "Estimated completion (percent)"
-plot "bp1.dat" title "Metatype1", \\
+set title "Tsukurimashou build progress"
+set xlabel "Time (hours from present, ETA $xs)"
+set ylabel "Estimated completion (percent, current $ps)"
+plot "bp1.dat" title "MT1", \\
   "bp2.dat" title "RMO", \\
   "bp3.dat" title "SFD", \\
   "bp4.dat" title "OTF", \\
-  f(x) title "linear fit"
+  f(x) title "trend"
 exit
 EOF
 close(BPGP);
