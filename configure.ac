@@ -200,9 +200,9 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3215 2014-08-13 12:47:05Z mskala $])
+AC_REVISION([$Id: configure.ac 3231 2014-08-16 23:54:13Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
-AC_SUBST([release_date],["August 15, 2013"])
+AC_SUBST([release_date],["August 16, 2013"])
 AM_SILENT_RULES
 #
 ############################################################################

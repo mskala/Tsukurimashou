@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: splineoverlap.c 3230 2014-08-16 21:53:57Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
