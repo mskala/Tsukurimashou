@@ -127,7 +127,7 @@ dist_man_MANS = \
 noinst_HEADERS = \
   inc/basics.h inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
   inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
-  inc/gimage.h \
+  inc/gimage.h inc/gio.h \
   inc/gresource.h inc/gwidget.h inc/gwwiconv.h inc/intl.h inc/ustring.h \
   inc/utype.h \
   fontanvil/sftextfieldP.h \

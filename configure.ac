@@ -200,9 +200,9 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3231 2014-08-16 23:54:13Z mskala $])
+AC_REVISION([$Id: configure.ac 3233 2014-08-17 19:57:47Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
-AC_SUBST([release_date],["August 16, 2013"])
+AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
 #
 ############################################################################
@@ -384,7 +384,7 @@ AS_IF([test "x$enable_color_build" = "xyes"],
   [],[tsu_colour=no])
 AM_CONDITIONAL([COND_COLOUR],[test '!' "$tsu_colour" = no])
 #
-AS_IF([test "x$FONTLINT_FLAGS" = "x"],[FONTLINT_FLAGS="-w 2"])
+AS_IF([test "x$FONTLINT_FLAGS" = "x"],[FONTLINT_FLAGS="-w 2,5"])
 #
 AC_SUBST([enable_chars])
 #
