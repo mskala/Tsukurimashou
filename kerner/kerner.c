@@ -37,10 +37,92 @@
 #include <ctype.h>
 #include <limits.h>
 #include <math.h>
-#include <obstack.h>
+#ifdef HAVE_OBSTACK
+# include <obstack.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/***********************************************************************/
+
+#ifndef HAVE_OBSTACK
+
+/* minimal obstack implementation for systems that don't have it */
+/* covers JUST ENOUGH of the API for our purposes */
+
+struct obstack_obj {
+   struct obstack_obj *next;
+   char *start;
+   int size;
+};
+
+struct obstack {
+   struct obstack_obj *top;
+   int open;
+};
+
+void *obstack_alloc(struct obstack *o,int size) {
+   struct obstack_obj *tmp;
+
+   tmp=(struct obstack_obj *)malloc(sizeof(struct obstack_obj));
+   tmp->next=o->top;
+   tmp->start=(char *)malloc(size>0?size:1);
+   tmp->size=size;
+   o->top=tmp;
+   o->open=0;
+   return tmp->start;
+}
+
+void obstack_1grow(struct obstack *o,char c) {
+   if (!o->open)
+     obstack_alloc(o,0);
+   o->open=1;
+   o->top->size++;
+   o->top->start=(char *)realloc((void *)o->top->start,o->top->size);
+   o->top->start[o->top->size-1]=c;
+}
+
+void *obstack_copy(struct obstack *o,void *from,int size) {
+   char *to;
+   int i;
+   
+   to=(char *)obstack_alloc(o,size);
+   for (i=0;i<size;i++)
+     to[i]=((char *)from)[i];
+   o->open=0;
+   return (void *)to;
+}
+
+void *obstack_finish(struct obstack *o) {
+   o->open=0;
+   return (void *)(o->top->start);
+}
+
+void obstack_free(struct obstack *o,void *obj) {
+   struct obstack_obj *tmp;
+
+   while (o->top!=NULL) {
+      tmp=o->top;
+      o->top=tmp->next;
+      free(tmp->start);
+      if (tmp->start==(char *)obj) {
+	 free(tmp);
+	 break;
+      }
+      free(tmp);
+   }
+   o->open=0;
+}
+
+int obstack_init(struct obstack *o) {
+   o->top=NULL;
+   o->open=1;
+   obstack_alloc(o,0);
+   return 1;
+}
+
+#endif
 
 /***********************************************************************/
 

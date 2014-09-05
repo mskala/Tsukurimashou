@@ -536,7 +536,7 @@ setting the current font to that one.
 When the interepreter starts up, the set of open fonts is empty and there is
 no current font.  In this state, any operation that implicitly refers to the
 current font will fail; scripts can only use a small subset of the language
-to create or open a font make it current.  The \texttt{Close()} built-in
+to create or open a font and make it current.  The \texttt{Close()} built-in
 function removes the current font from the set of open fonts (without saving
 it to disk---that must be done as a separate operation if saving is desired)
 and places the interpreter back into the state of having no current font. 
@@ -978,7 +978,6 @@ Autotrace,
 BitmapsAvail,
 BitmapsRegen,
 BuildAccented,
-BuildComposit,
 BuildComposite,
 BuildDuplicate,
 CIDChangeSubFont,
@@ -1131,7 +1130,6 @@ Rand,
 ReadOtherSubrsFile,
 Real,
 Reencode,
-RemoveATT,
 RemoveAllKerns,
 RemoveAllVKerns,
 RemoveAnchorClass,
@@ -1263,9 +1261,6 @@ Wireframe,
 WorthOutputting,
 WritePfm,
 WriteStringToFile,
-bAutoCounter,
-bDontAutoHint,
-bSubstitutionPoints
 
 \section{Built-in functions in FontAnvil and not in FontForge }
 
@@ -1275,6 +1270,20 @@ No such functions at the moment.
 
 Because FontAnvil does not support plugins, these built-in functions have
 been removed from the language:  LoadPlugin, LoadPluginDir.
+
+In FontForge's history it has several times happened that function names
+were misspelled, or documented incorrectly.  After the errors were
+discovered the names were changed in the documents to reflect the designer's
+intentions, but the wrong names were kept in the code as aliases of the
+correct ones, in order to avoid breaking any existing scripts that might
+have relied on them.  The plan is to remove most if not all of these in
+FontAnvil, bringing the code closer to the documentation.  To date, the
+function aliases of this kind removed from FontAnvil are: bAutoCounter,
+bDontAutoHint, bSubstitutionPoints, BuildComposit, GetPrefs.
+
+In mainline FontForge, some functions were deprecated and had their
+implementations replaced by error messages.  In FontAnvil these functions
+have been removed entirely:  PrivateToCvt, RemoveATT.
 
 \section{Other notes}
 

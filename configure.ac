@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3233 2014-08-17 19:57:47Z mskala $])
+AC_REVISION([$Id: configure.ac 3264 2014-09-05 07:06:59Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -236,7 +236,9 @@ AC_ARG_VAR([MPOST],[MetaPost])
 AC_PATH_PROG([MPOST],[mpost])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
-AC_PATH_PROGS([PROLOG],[pl swipl eclipse gprolog],[])
+AS_IF([unames=`uname -s` ; test "x$unames" = 'xDarwin'],
+  [AC_PATH_PROGS([PROLOG],[swipl eclipse gprolog],[])],
+  [AC_PATH_PROGS([PROLOG],[pl swipl eclipse gprolog],[])])
 AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
 AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
@@ -439,14 +441,14 @@ case "x$with_prolog" in #(((((
     AC_MSG_ERROR([cannot proceed]) ;;
   xauto) :
     AS_IF([test "x$PROLOG" = "x"],
-      [PROLOG="$PERL ./hamlog"
+      [PROLOG="$PERL hamlog/hamlog"
        tsu_prolog_style=hamlog]) ;;
   xyes) :
     AS_IF([test "x$PROLOG" = "x"],
-      [PROLOG="$PERL ./hamlog"
+      [PROLOG="$PERL hamlog/hamlog"
        tsu_prolog_style=hamlog]) ;;
   xhamlog) :
-    PROLOG="$PERL ./hamlog" 
+    PROLOG="$PERL hamlog/hamlog" 
     tsu_prolog_style=hamlog ;;
   *) :
     PROLOG="$with_prolog" ;;
@@ -455,7 +457,7 @@ AS_IF([test "$tsu_prolog_style" = "unknown" \
   && test '!' "x$with_prolog" = "x$PROLOG"],[
 case "$PROLOG" in #(
   *eclipse*) :
-    PROLOG="$PERL ./hamlog"
+    PROLOG="$PERL hamlog/hamlog"
     tsu_prolog_style=hamlog
     eclipse_prolog_warn=yes
   ;;
