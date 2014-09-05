@@ -137,7 +137,7 @@ AS_HELP_STRING([--$1dir=DIR],m4_expand([$4 @<:@m4_toupper([$2])/$3@:>@]))\
 
 # Add a new directory
 TSUKU_ADD_INSTDIR_OPTION([dict],[datarootdir],[dict],[dictionaries],
-  [di],[ --disable])
+  [di],[ --docdir])
 
 # Reduce the ridiculous verbosity of Autoconf's help message
 TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
