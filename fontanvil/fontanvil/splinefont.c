@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 2997 2014-03-30 01:02:48Z mskala $ */
+/* $Id: splinefont.c 3271 2014-09-07 19:15:34Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1996,15 +1996,6 @@ typedef struct SPLFirstVisitorFoundSoughtDataS {
    SplinePoint *sought;
    int found;
 } SPLFirstVisitorFoundSoughtData;
-
-static void SPLFirstVisitorFoundSought(SplinePoint * splfirst,
-				       Spline * spline, void *udata) {
-   SPLFirstVisitorFoundSoughtData *d=
-      (SPLFirstVisitorFoundSoughtData *)udata;
-
-   if (spline->from == d->sought || spline->to == d->sought)
-     d->found = 1;
-}
 
 typedef struct SPLFirstVisitorFoundSoughtXYDataS {
    int use_x;

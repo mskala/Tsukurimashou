@@ -1,4 +1,4 @@
-/* $Id: splinesave.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splinesave.c 3277 2014-09-08 14:16:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -334,18 +334,6 @@ static int NumberHints(SplineChar * scs[MmMax], int instance_count) {
 	 IError("MM font with different hint counts");
    }
    return (cnt);
-}
-
-void RefCharsFreeRef(RefChar * ref) {
-   RefChar *rnext;
-
-   while (ref != NULL) {
-      rnext = ref->next;
-      /* don't free the splines */
-      free(ref->layers);
-      chunkfree(ref, sizeof(RefChar));
-      ref = rnext;
-   }
 }
 
 static void MarkTranslationRefs(SplineFont * sf, int layer) {
@@ -2029,29 +2017,6 @@ int CIDOneWidth(SplineFont * _sf) {
 	 }
       ++k;
    } while (k < _sf->subfontcnt);
-   return (width);
-}
-
-int SFOneHeight(SplineFont * sf) {
-   int width, i;
-
-   if (!sf->hasvmetrics)
-      return (sf->ascent + sf->descent);
-
-   width = -2;
-   for (i = 0; i < sf->glyphcnt; ++i)
-      if (SCWorthOutputting(sf->glyphs[i]) &&
-	  (strcmp(sf->glyphs[i]->name, ".notdef") != 0
-	   || sf->glyphs[i]->layers[ly_fore].splines != NULL)) {
-	 /* Only trust the width of notdef if it's got some content */
-	 /* (at least as far as fixed pitch determination goes) */
-	 if (width == -2)
-	    width = sf->glyphs[i]->vwidth;
-	 else if (width != sf->glyphs[i]->vwidth) {
-	    width = -1;
-	    break;
-	 }
-      }
    return (width);
 }
 

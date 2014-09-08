@@ -1,4 +1,4 @@
-/* $Id: sfd.c 2997 2014-03-30 01:02:48Z mskala $ */
+/* $Id: sfd.c 3276 2014-09-08 14:06:05Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1920,25 +1920,6 @@ static char *getSlashTempName() {
 #   define P_tmpdir	"/tmp"
 #endif
    return P_tmpdir;
-}
-
-
-FILE *MakeTemporaryFile() {
-   FILE *ret;
-
-   char template[PATH_MAX + 1];
-
-   int fd;
-
-   strncpy(template, getSlashTempName(),
-	   PATH_MAX - 2 - strlen("fontanvil-stemp-XXXXXX"));
-   strcat(template, "/");
-   strcat(template, "fontanvil-stemp-XXXXXX");
-   fd = g_mkstemp(template);
-   if ((ret = fdopen(fd, "rw+")) == NULL)
-      ret = 0;
-   unlink(template);
-   return ret;
 }
 
 int SFD_DumpSplineFontMetadata(FILE * sfd, SplineFont * sf) {
@@ -4811,142 +4792,6 @@ static void SFDConsumeUntil(FILE * sfd, char **terminators) {
 }
 
 static int orig_pos;
-
-void SFDGetKerns(FILE * sfd, SplineChar * sc, char *ttok) {
-   struct splinefont *sf = sc->parent;
-
-   char tok[2001], ch;
-
-   uint32 script = 0;
-
-   SplineFont *sli_sf = sf->cidmaster ? sf->cidmaster : sf;
-
-   strncpy(tok, ttok, sizeof(tok) - 1);
-   tok[2000] = 0;
-
-   if (strmatch(tok, "Kerns2:") == 0 || strmatch(tok, "VKerns2:") == 0) {
-      KernPair *kp, *last = NULL;
-
-      int isv = *tok == 'V';
-
-      int off, index;
-
-      struct lookup_subtable *sub;
-
-      int kernCount = 0;
-
-      if (sf->sfd_version < 2)
-	 LogError(_
-		  ("Found an new style kerning pair inside a version 1 (or lower) sfd file.\n"));
-      while (fscanf(sfd, "%d %d", &index, &off) == 2) {
-	 sub = SFFindLookupSubtableAndFreeName(sf, SFDReadUTF7Str(sfd));
-	 if (sub == NULL) {
-	    LogError(_("KernPair with no subtable name.\n"));
-	    break;
-	 }
-	 kernCount++;
-	 kp = chunkalloc(sizeof(KernPair1));
-	 kp->sc = (SplineChar *) (intpt) index;
-	 kp->kcid = true;
-	 kp->off = off;
-	 kp->subtable = sub;
-	 kp->next = NULL;
-	 while ((ch = nlgetc(sfd)) == ' ');
-	 ungetc(ch, sfd);
-	 if (ch == '{') {
-	    kp->adjust = chunkalloc(sizeof(DeviceTable));
-	    SFDReadDeviceTable(sfd, kp->adjust);
-	 }
-	 if (last != NULL)
-	    last->next = kp;
-	 else if (isv)
-	    sc->vkerns = kp;
-	 else
-	    sc->kerns = kp;
-	 last = kp;
-      }
-      if (!kernCount)
-	sc->kerns = 0;
-   } else if (strmatch(tok, "Kerns:") == 0 ||
-	      strmatch(tok, "KernsSLI:") == 0 ||
-	      strmatch(tok, "KernsSLIF:") == 0 ||
-	      strmatch(tok, "VKernsSLIF:") == 0 ||
-	      strmatch(tok, "KernsSLIFO:") == 0 ||
-	      strmatch(tok, "VKernsSLIFO:") == 0) {
-      KernPair1 *kp, *last = NULL;
-
-      int index, off, sli, flags = 0;
-
-      int hassli = (strmatch(tok, "KernsSLI:") == 0);
-
-      int isv = *tok == 'V';
-
-      int has_orig = strstr(tok, "SLIFO:") != NULL;
-
-      if (sf->sfd_version >= 2) {
-	 IError
-	    ("Found an old style kerning pair inside a version 2 (or higher) sfd file.");
-	 exit(1);
-      }
-      if (strmatch(tok, "KernsSLIF:") == 0
-	  || strmatch(tok, "KernsSLIFO:") == 0
-	  || strmatch(tok, "VKernsSLIF:") == 0
-	  || strmatch(tok, "VKernsSLIFO:") == 0)
-	 hassli = 2;
-      while ((hassli == 1 && fscanf(sfd, "%d %d %d", &index, &off, &sli) == 3)
-	     || (hassli == 2
-		 && fscanf(sfd, "%d %d %d %d", &index, &off, &sli,
-			   &flags) == 4) || (hassli == 0
-					     && fscanf(sfd, "%d %d", &index,
-						       &off) == 2)) {
-	 if (!hassli)
-	    sli = SFFindBiggestScriptLangIndex(sli_sf,
-					       script !=
-					       0 ? script :
-					       SCScriptFromUnicode(sc),
-					       DEFAULT_LANG);
-	 if (sli >= ((SplineFont1 *) sli_sf)->sli_cnt && sli != SLI_NESTED) {
-	    static int complained = false;
-
-	    if (!complained)
-	       IError("'%s' in %s has a script index out of bounds: %d",
-		      isv ? "vkrn" : "kern", sc->name, sli);
-	    else
-	       IError("'%s' in %s has a script index out of bounds: %d",
-		      isv ? "vkrn" : "kern", sc->name, sli);
-	    sli = SFFindBiggestScriptLangIndex(sli_sf,
-					       SCScriptFromUnicode(sc),
-					       DEFAULT_LANG);
-	    complained = true;
-	 }
-	 kp = chunkalloc(sizeof(KernPair1));
-	 kp->kp.sc = (SplineChar *) (intpt) index;
-	 kp->kp.kcid = has_orig;
-	 kp->kp.off = off;
-	 kp->sli = sli;
-	 kp->flags = flags;
-	 kp->kp.next = NULL;
-	 while ((ch = nlgetc(sfd)) == ' ');
-	 ungetc(ch, sfd);
-	 if (ch == '{') {
-	    kp->kp.adjust = chunkalloc(sizeof(DeviceTable));
-	    SFDReadDeviceTable(sfd, kp->kp.adjust);
-	 }
-	 if (last != NULL)
-	    last->kp.next = (KernPair *) kp;
-	 else if (isv)
-	    sc->vkerns = (KernPair *) kp;
-	 else
-	    sc->kerns = (KernPair *) kp;
-	 last = kp;
-      }
-   } else {
-      return;
-   }
-
-   // we matched something, grab the next top level token to ttok
-   getname(sfd, ttok);
-}
 
 static SplineChar *SFDGetChar(FILE * sfd, SplineFont * sf,
 			      int had_sf_layer_cnt) {
@@ -9020,43 +8865,6 @@ static int ask_about_file(FILE * asfd, int *state, char *filename) {
 	return (false);
    }
    return (true);
-}
-
-SplineFont *SFRecoverFile(char *autosavename, int inquire, int *state) {
-   FILE *asfd = fopen(autosavename, "r");
-
-   SplineFont *ret;
-
-   char oldloc[25], tok[1025];
-
-   if (asfd == NULL)
-      return (NULL);
-   if (inquire && !ask_about_file(asfd, state, autosavename)) {
-      fclose(asfd);
-      return (NULL);
-   }
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24] = 0;
-   setlocale(LC_NUMERIC, "C");
-   ret = SlurpRecovery(asfd, tok, sizeof(tok));
-   if (ret == NULL) {
-      char *buts[3];
-
-      buts[0] = "_Forget It";
-      buts[1] = "_Try Again";
-      buts[2] = NULL;
-      if (ff_ask
-	  (_("Recovery Failed"), (const char **) buts, 0, 1,
-	   _
-	   ("Automagic recovery of changes to %.80s failed.\nShould FontAnvil try again to recover next time you start it?"),
-	   tok) == 0)
-	 unlink(autosavename);
-   }
-   setlocale(LC_NUMERIC, oldloc);
-   fclose(asfd);
-   if (ret)
-      ret->autosavename = copy(autosavename);
-   return (ret);
 }
 
 void SFAutoSave(SplineFont * sf, EncMap * map) {

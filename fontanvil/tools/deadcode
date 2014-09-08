@@ -6,7 +6,7 @@ while (<NM>) {
   if (/^[\.\/]+(([a-z]+\/).*_a-)?(.*)\.o:/) {
     $fn="$2$3.c";
     print "$_ => $fn\n";
-  } elsif (/^([0-9a-f]*)\s+([A-Z]) (.*)$/) {
+  } elsif (/^([0-9a-f]*)\s+([A-RT-Z]) (.*)$/) {
     if ($2 eq 'U') {
       $extern_used{$3}=1;
     } else {

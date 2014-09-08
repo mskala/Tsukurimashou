@@ -51,7 +51,6 @@ empty:=
 space:=$(empty) $(empty)
 comma:=,
 percent=%
-escchar:=$(strip $(shell echo x | tr 'x' '\033'))
 
 # This is a nasty hack, but seems to be needed to get the variables
 # included soon enough for them to be useful in Automake's recipes
@@ -68,6 +67,7 @@ SUBDIRS = . $(PARASITES)
 TSU_V_REDIR=$(if $(AM_V_at),>& /dev/null)
 
 if COND_COLOUR
+  escchar:=$(strip $(shell echo x | tr 'x' '\033'))
   ansi_default=$(escchar)[0m
   ansi_red=$(escchar)[31m
   ansi_green=$(escchar)[32m

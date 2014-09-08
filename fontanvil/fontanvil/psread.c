@@ -1,4 +1,4 @@
-/* $Id: psread.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: psread.c 3277 2014-09-08 14:16:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3349,71 +3349,6 @@ static SplinePointList *SplinesFromLayers(SplineChar * sc, int *flags,
    return (head);
 }
 
-void SFSplinesFromLayers(SplineFont * sf, int tostroke) {
-   /* User has turned off multi-layer, flatten the font */
-   int i, layer;
-
-   int flags = -1;
-
-   Layer *new;
-
-   CharViewBase *cv;
-
-   for (i = 0; i < sf->glyphcnt; ++i)
-      if (sf->glyphs[i] != NULL) {
-	 SplineChar *sc = sf->glyphs[i];
-
-	 SplineSet *splines = SplinesFromLayers(sc, &flags, tostroke);
-
-	 RefChar *head = NULL, *last = NULL;
-
-	 for (layer = ly_fore; layer < sc->layer_cnt; ++layer) {
-	    if (head == NULL)
-	       head = last = sc->layers[layer].refs;
-	    else
-	       last->next = sc->layers[layer].refs;
-	    if (last != NULL)
-	       while (last->next != NULL)
-		  last = last->next;
-	    sc->layers[layer].refs = NULL;
-	 }
-	 new = calloc(2, sizeof(Layer));
-	 new[ly_back] = sc->layers[ly_back];
-	 memset(&sc->layers[ly_back], 0, sizeof(Layer));
-	 LayerDefault(&new[ly_fore]);
-	 new[ly_fore].splines = splines;
-	 new[ly_fore].refs = head;
-	 for (layer = ly_fore; layer < sc->layer_cnt; ++layer) {
-	    SplinePointListsMDFree(sc, sc->layers[layer].splines);
-	    RefCharsFree(sc->layers[layer].refs);
-	    ImageListsFree(sc->layers[layer].images);
-	 }
-	 free(sc->layers);
-	 sc->layers = new;
-	 sc->layer_cnt = 2;
-	 for (cv = sc->views; cv != NULL; cv = cv->next) {
-	    cv->layerheads[dm_back] = &sc->layers[ly_back];
-	    cv->layerheads[dm_fore] = &sc->layers[ly_fore];
-	 }
-      }
-   SFReinstanciateRefs(sf);
-}
-
-void SFSetLayerWidthsStroked(SplineFont * sf, real strokewidth) {
-   int i;
-
-   /* We changed from a stroked font to a multilayered font */
-
-   for (i = 0; i < sf->glyphcnt; ++i)
-      if (sf->glyphs[i] != NULL) {
-	 SplineChar *sc = sf->glyphs[i];
-
-	 sc->layers[ly_fore].dofill = false;
-	 sc->layers[ly_fore].dostroke = true;
-	 sc->layers[ly_fore].stroke_pen.width = strokewidth;
-      }
-}
-
 static void EntityCharCorrectDir(EntityChar * ec) {
    SplineSet *ss;
 
@@ -3871,19 +3806,6 @@ Encoding *PSSlurpEncodings(FILE * file) {
    }
 
    return (head);
-}
-
-int EvaluatePS(char *str, real * stack, int size) {
-   EntityChar ec;
-
-   RetStack rs;
-
-   memset(&ec, '\0', sizeof(ec));
-   memset(&rs, '\0', sizeof(rs));
-   rs.max = size;
-   rs.stack = stack;
-   InterpretPS(NULL, str, &ec, &rs);
-   return (rs.cnt);
 }
 
 static void closepath(SplinePointList * cur, int is_type2) {

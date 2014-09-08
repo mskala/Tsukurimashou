@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 2967 2014-03-20 18:49:57Z mskala $ */
+/* $Id: splinechar.c 3271 2014-09-07 19:15:34Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1926,72 +1926,6 @@ static SplineSet *UnitCircle(int clockwise) {
    if (!clockwise)
       SplineSetReverse(spl);
    return (spl);
-}
-
-#define PI	3.1415926535897932
-
-static int CutCircle(SplineSet * spl, BasePoint * me, int first) {
-   Spline *s, *firsts;
-
-   SplinePoint *end;
-
-   extended ts[3];
-
-   int i;
-
-   bigreal best_t = -1;
-
-   Spline *best_s = NULL;
-
-   bigreal best_off = 2;
-
-   firsts = NULL;
-   for (s = spl->first->next; s != NULL && s != firsts; s = s->to->next) {
-      if (firsts == NULL)
-	 firsts = s;
-      CubicSolve(&s->splines[0], me->x, ts);
-      for (i = 0; i < 3 && ts[i] != -1; ++i) {
-	 bigreal y =
-	    ((s->splines[1].a * ts[i] + s->splines[1].b) * ts[i] +
-	     s->splines[1].c) * ts[i] + s->splines[1].d;
-	 bigreal off = me->y - y;
-
-	 if (off < 0)
-	    off = -off;
-	 if (off < best_off) {
-	    best_s = s;
-	    best_t = ts[i];
-	    best_off = off;
-	 }
-      }
-   }
-   if (best_s == NULL) {
-      return (false);
-   }
-
-   if (best_t < .0001)
-      end = best_s->from;
-   else if (best_t > .999)
-      end = best_s->to;
-   else
-      end = SplineBisect(best_s, best_t);
-   if (first) {
-      spl->first = end;
-      spl->last = end;
-   } else {
-      spl->last = end;
-      s = end->next;
-      end->next = NULL;
-      while (s != NULL) {
-	 end = s->to;
-	 SplineFree(s);
-	 if (end == spl->first)
-	    break;
-	 s = end->next;
-	 SplinePointFree(end);
-      }
-   }
-   return (true);
 }
 
 void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {

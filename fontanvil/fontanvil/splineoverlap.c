@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 3230 2014-08-16 21:53:57Z mskala $ */
+/* $Id: splineoverlap.c 3271 2014-09-07 19:15:34Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -471,25 +471,6 @@ static void MListRemoveMonotonic(struct mlist ** base_pointer, struct monotonic 
       (*current_pointer) = tmp_pointer;
     }
     if (*current_pointer) current_pointer = &((*current_pointer)->next);
-  }
-  return;
-}
-
-static void MListReplaceMonotonicComplete(struct mlist ** input, struct monotonic * findm, struct monotonic * replacem, struct monotonic * replacement, int isend) {
-  // This replaces a reference to one monotonic with a copied reference. I hope that it is not necessary.
-  // It is necessary to use double pointers so that we can set the previous reference.
-  struct mlist ** current_pointer = input;
-  struct mlist * tmp_pointer;
-  while (*current_pointer) {
-    if ((*current_pointer)->m == findm) {
-      if ((tmp_pointer = chunkalloc(sizeof(struct monotonic))) &&
-      (memcpy(tmp_pointer, replacement, sizeof(struct monotonic)) == 0)) {
-        tmp_pointer->next = (*current_pointer)->next;
-        chunkfree(*current_pointer, sizeof(struct monotonic));
-        (*current_pointer) = tmp_pointer;
-      } else SOError("Error copying segment.\n");
-    }
-    current_pointer = &((*current_pointer)->next);
   }
   return;
 }
@@ -970,98 +951,12 @@ return( (testx-basex)*(testx-basex) + (testy-basey)*(testy-basey) <=
 	(curx-basex)*(curx-basex) + (cury-basey)*(cury-basey) );
 }
 
-static void ILReplaceMono(Intersection *il,Monotonic *m,Monotonic *otherm) {
-    MList *ml;
-
-    for ( ml=il->monos; ml!=NULL; ml=ml->next ) {
-	if ( ml->m==m ) {
-	    ml->m = otherm;
-    break;
-	}
-    }
-}
-
 struct inter_data {
     Monotonic *m, *otherm;
     bigreal t, othert;
     BasePoint inter;
     int new;
 };
-
-static void SplitMonotonicAtT(Monotonic *m,int which,bigreal t,bigreal coord,
-	struct inter_data *id) {
-// Validate(m, NULL);
-    Monotonic *otherm = NULL;
-    bigreal othert;
-    real cx,cy;
-    Spline1D *sx, *sy;
-
-    sx = &m->s->splines[0]; sy = &m->s->splines[1];
-    cx = ((sx->a*t+sx->b)*t+sx->c)*t+sx->d;
-    cy = ((sy->a*t+sy->b)*t+sy->c)*t+sy->d;
-    /* t might not be tstart/tend, but it could still produce a point which */
-    /*  (after rounding errors) is at the start/end point of the monotonic */
-    if ( t<=m->tstart || t>=m->tend ||
-	    ((cx<=m->b.minx || cx>=m->b.maxx) && (cy<=m->b.miny || cy>=m->b.maxy))) {
-	struct intersection *pt=NULL;
-	if ( t-m->tstart<m->tend-t ) {
-	    t = m->tstart;
-	    otherm = m->prev;
-	    othert = m->prev->tend;
-	    pt = m->start;
-	} else {
-	    t = m->tend;
-	    otherm = m->next;
-	    othert = m->next->tstart;
-	    pt = m->end;
-	}
-	sx = &m->s->splines[0]; sy = &m->s->splines[1];
-	cx = ((sx->a*t+sx->b)*t+sx->c)*t+sx->d;
-	cy = ((sy->a*t+sy->b)*t+sy->c)*t+sy->d;
-	if ( which==1 ) cy = coord; else if ( which==0 ) cx = coord;	/* Correct for rounding errors */
-	if ( pt!=NULL ) { cx = pt->inter.x; cy = pt->inter.y; }
-	id->new = false;
-    } else {
-	SONotify("Break monotonic from t = %f to t = %f at t = %f.\n", m->tstart, m->tend, t);
-	othert = t;
-	otherm = chunkalloc(sizeof(Monotonic));
-	*otherm = *m;
-	otherm->pending = NULL;
-	m->next = otherm;
-	m->linked = otherm;
-	otherm->prev = m;
-	otherm->next->prev = otherm;
-	m->tend = t;
-	if ( otherm->end!=NULL ) {
-	    m->end = NULL;
-	    ILReplaceMono(otherm->end,m,otherm);
-	}
-	otherm->tstart = t; otherm->start = NULL;
-        otherm->tend = m->tend; otherm->end = m->end; // Frank added this.
-	m->end = NULL;
-#ifdef FF_RELATIONAL_GEOM
-        otherm->otend = m->otend;
-	m->otend = t;
-	otherm->otstart = t;
-#endif
-	if ( which==1 ) cy = coord; else if ( which==0 ) cx = coord;	/* Correct for rounding errors */
-	if ( m->xup ) {
-	    m->b.maxx = otherm->b.minx = cx;
-	} else {
-	    m->b.minx = otherm->b.maxx = cx;
-	}
-	if ( m->yup ) {
-	    m->b.maxy = otherm->b.miny = cy;
-	} else {
-	    m->b.miny = otherm->b.maxy = cy;
-	}
-	id->new = true;
-    }
-    id->m = m; id->otherm = otherm;
-    id->t = t; id->othert = othert;
-    id->inter.x = cx; id->inter.y = cy;
-// Validate(m, NULL);
-}
 
 static extended RealDistance(extended v1, extended v2) {
   if (v2 > v1) return v2 - v1;
@@ -1217,11 +1112,6 @@ static void SplitMonotonicAtFlex(Monotonic *m,int which,bigreal coord,
         id->inter.x = 0;
         id->inter.y = 0;
     }
-}
-
-static void SplitMonotonicAt(Monotonic *m,int which,bigreal coord,
-	struct inter_data *id) {
-  SplitMonotonicAtFlex(m, which, coord, id, 1);
 }
 
 static void SplitMonotonicAtFake(Monotonic *m,int which,bigreal coord,
@@ -1604,14 +1494,6 @@ return( ilist );
 return( ilist );
 	t2 = m2->tend;
     }
-#if 0
-    SplitMonotonicAtT(m1,-1,t1,0,&id1);
-    SplitMonotonicAtT(m2,-1,t2,0,&id2);
-    ilist = check = _AddIntersection(ilist,id1.m,id1.otherm,id1.t,id1.othert,&id2.inter);
-    ilist = _AddIntersection(ilist,id2.m,id2.otherm,id2.t,id2.othert,&id2.inter);	/* Use id1.inter to avoid rounding errors */
-    if ( check!=ilist )
-	IError("Added too many intersections.");
-#endif // 0
     ilist = _AddIntersection(ilist,m1,m2,t1,t2,inter);
 return( ilist );
 }
