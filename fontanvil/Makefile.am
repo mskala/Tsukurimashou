@@ -164,7 +164,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/encoding.c fontanvil/featurefile.c fontanvil/flaglist.c \
  fontanvil/fontviewbase.c fontanvil/freetype.c fontanvil/fvcomposite.c \
  fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
- fontanvil/ftdelta.c fontanvil/glyphcomp.c fontanvil/groups.c \
+ fontanvil/glyphcomp.c fontanvil/groups.c \
  fontanvil/http.c fontanvil/ikarus.c fontanvil/is_LIGATURE.c \
  fontanvil/langfreq.c fontanvil/lookups.c fontanvil/macbinary.c \
  fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \

@@ -1,17 +1,7 @@
-/* $Id: flaglist.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: flaglist.c 3279 2014-09-08 15:58:27Z mskala $ */
 #include <basics.h>
 #include <string.h>
 #include "flaglist.h"
-
-int FindFlagByName(struct flaglist *flags, const char *name) {
-   int i;
-
-   for (i = 0; flags[i].name != NULL; ++i) {
-      if (strcmp(name, flags[i].name) == 0)
-	 return (flags[i].flag);
-   }
-   return FLAG_UNKNOWN;
-}
 
 const char *FindNameOfFlag(struct flaglist *flags, int flag) {
    int i;

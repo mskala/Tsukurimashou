@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3274 2014-09-08 13:49:54Z mskala $ */
+/* $Id: scstyles.c 3279 2014-09-08 15:58:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -7446,40 +7446,6 @@ static double SerifExtent(SplineChar * sc, int layer, int is_bottom) {
 	    return (min);
 	 if (max != 0)
 	    return (max);
-      }
-   return (0);
-}
-
-static double SCSerifHeight(SplineChar * sc, int layer) {
-   StemInfo *h;
-
-   SplineSet *ss;
-
-   SplinePoint *sp, *nsp, *start, *end;
-
-   ItalicInfo tempii;
-
-   if (sc == NULL)
-      return (0);
-   memset(&tempii, 0, sizeof(tempii));
-   tempii.serif_extent = 1000;
-
-   if (autohint_before_generate
-       && (sc->changedsincelasthinted || sc->vstem == NULL)
-       && !sc->manualhints)
-      SplineCharAutoHint(sc, layer, NULL);
-   FigureGoodStems(sc->vstem);
-   for (h = sc->vstem; h != NULL; h = h->next)
-      if (h->tobeused) {
-	 FindBottomSerifOnStem(sc, layer, h, 0, &tempii, &start, &end, &ss);
-	 if (start == NULL)
-	    continue;
-	 for (sp = start; sp != end; sp = nsp) {
-	    nsp = sp->next->to;
-	    if (sp->me.y > 5 && sp->me.y >= nsp->me.y - 1
-		&& sp->me.y <= nsp->me.y + 1)
-	       return (sp->me.y);
-	 }
       }
    return (0);
 }

@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: noprefs.c 3278 2014-09-08 15:44:53Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1300,7 +1300,3 @@ static struct prefs_interface prefsnoui = {
 };
 
 struct prefs_interface *prefs_interface = &prefsnoui;
-
-void FF_SetPrefsInterface(struct prefs_interface *prefsi) {
-   prefs_interface = prefsi;
-}

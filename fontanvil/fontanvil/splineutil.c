@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: splineutil.c 3278 2014-09-08 15:44:53Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -266,16 +266,6 @@ void SplinePointListMDFree(SplineChar * sc, SplinePointList * spl) {
    free(spl->spiros);
    free(spl->contour_name);
    chunkfree(spl, sizeof(SplinePointList));
-}
-
-void SplinePointListsMDFree(SplineChar * sc, SplinePointList * spl) {
-   SplinePointList *next;
-
-   while (spl != NULL) {
-      next = spl->next;
-      SplinePointListMDFree(sc, spl);
-      spl = next;
-   }
 }
 
 void SplinePointListsFree(SplinePointList * spl) {
@@ -3449,56 +3439,6 @@ void SCReinstanciateRefChar(SplineChar * sc, RefChar * rf, int layer) {
       }
    }
    RefCharFindBounds(rf);
-}
-
-static void _SFReinstanciateRefs(SplineFont * sf) {
-   int i, undone, undoable, j, cnt;
-
-   RefChar *ref;
-
-   for (i = 0; i < sf->glyphcnt; ++i)
-      if (sf->glyphs[i] != NULL)
-	 sf->glyphs[i]->ticked = false;
-
-   undone = true;
-   cnt = 0;
-   while (undone && cnt < 200) {
-      undone = false;
-      for (i = 0; i < sf->glyphcnt; ++i)
-	 if (sf->glyphs[i] != NULL && !sf->glyphs[i]->ticked) {
-	    undoable = false;
-	    for (j = 0; j < sf->glyphs[i]->layer_cnt; ++j) {
-	       for (ref = sf->glyphs[i]->layers[j].refs; ref != NULL;
-		    ref = ref->next) {
-		  if (!ref->sc->ticked)
-		     undoable = true;
-	       }
-	    }
-	    if (undoable)
-	       undone = true;
-	    else {
-	       for (j = 0; j < sf->glyphs[i]->layer_cnt; ++j) {
-		  for (ref = sf->glyphs[i]->layers[j].refs; ref != NULL;
-		       ref = ref->next)
-		     SCReinstanciateRefChar(sf->glyphs[i], ref, j);
-	       }
-	       sf->glyphs[i]->ticked = true;
-	    }
-	 }
-      ++cnt;
-   }
-}
-
-void SFReinstanciateRefs(SplineFont * sf) {
-   int i;
-
-   if (sf->cidmaster != NULL || sf->subfontcnt != 0) {
-      if (sf->cidmaster != NULL)
-	 sf = sf->cidmaster;
-      for (i = 0; i < sf->subfontcnt; ++i)
-	 _SFReinstanciateRefs(sf->subfonts[i]);
-   } else
-      _SFReinstanciateRefs(sf);
 }
 
 void SCRemoveDependent(SplineChar * dependent, RefChar * rf, int layer) {

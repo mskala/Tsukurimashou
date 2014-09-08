@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: bitmapchar.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1111,7 +1111,3 @@ static struct bc_interface noui_bc = {
 };
 
 struct bc_interface *bc_interface = &noui_bc;
-
-void FF_SetBCInterface(struct bc_interface *bci) {
-   bc_interface = bci;
-}

@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 2967 2014-03-20 18:49:57Z mskala $ */
+/* $Id: sflayout.c 3279 2014-09-08 15:58:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -662,25 +662,6 @@ static void fontlistfree(struct fontlist *fl) {
       free(fl->ottext);
       chunkfree(fl, sizeof(struct fontlist));
    }
-}
-
-struct fontlist *LI_fontlistcopy(struct fontlist *fl) {
-   struct fontlist *nfl, *nhead = NULL, *last = NULL;
-
-   for (; fl != NULL; fl = fl->next) {
-      nfl = chunkalloc(sizeof(struct fontlist));
-      *nfl = *fl;
-      nfl->feats = LI_TagsCopy(fl->feats);
-      nfl->scmax = 0;
-      nfl->sctext = NULL;
-      nfl->ottext = NULL;
-      if (nhead == NULL)
-	 nhead = nfl;
-      else
-	 last->next = nfl;
-      last = nfl;
-   }
-   return (nhead);
 }
 
 static void fontlistcheck(LayoutInfo * li) {

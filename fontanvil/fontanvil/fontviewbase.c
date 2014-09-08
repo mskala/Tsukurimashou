@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 2995 2014-03-29 22:11:26Z mskala $ */
+/* $Id: fontviewbase.c 3278 2014-09-08 15:44:53Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1132,33 +1132,6 @@ static int AllGlyphsSelected(FontViewBase * fv) {
    return (true);
 }
 
-void CIDSetEncMap(FontViewBase * fv, SplineFont * new) {
-   int gcnt = new->glyphcnt;
-
-   if (fv->cidmaster != NULL && gcnt != fv->sf->glyphcnt) {
-      int i;
-
-      if (fv->map->encmax < gcnt) {
-	 fv->map->map = realloc(fv->map->map, gcnt * sizeof(int));
-	 fv->map->backmap = realloc(fv->map->backmap, gcnt * sizeof(int));
-	 fv->map->backmax = fv->map->encmax = gcnt;
-      }
-      for (i = 0; i < gcnt; ++i)
-	 fv->map->map[i] = fv->map->backmap[i] = i;
-      if (gcnt < fv->map->enccount)
-	 memset(fv->selected + gcnt, 0, fv->map->enccount - gcnt);
-      else {
-	 free(fv->selected);
-	 fv->selected = calloc(gcnt, sizeof(char));
-      }
-      fv->map->enccount = gcnt;
-   }
-   fv->sf = new;
-   new->fv = fv;
-   FVSetTitle(fv);
-   FontViewReformatOne(fv);
-}
-
 static void ClearFpgmPrepCvt(SplineFont * sf) {
    struct ttf_table *tab, *prev = NULL, *next;
 
@@ -1255,18 +1228,6 @@ void FVClearHints(FontViewBase * fv) {
 	 SCClearHints(sc);
 	 SCUpdateAll(sc);
       }
-}
-
-FontViewBase *ViewPostScriptFont(char *filename, int openflags) {
-   SplineFont *sf = LoadSplineFont(filename, openflags);
-
-   extern NameList *force_names_when_opening;
-
-   if (sf == NULL)
-      return (NULL);
-   if (sf->fv == NULL && force_names_when_opening != NULL)
-      SFRenameGlyphsToNamelist(sf, force_names_when_opening);
-   return (FontViewCreate(sf, openflags & of_hidewindow));	/* Always make a new view now */
 }
 
 static int tester(SplineChar * sc, struct lookup_subtable *sub) {

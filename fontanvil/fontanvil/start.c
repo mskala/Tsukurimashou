@@ -1,4 +1,4 @@
-/* $Id: start.c 2946 2014-03-11 19:55:39Z mskala $ */
+/* $Id: start.c 3279 2014-09-08 15:58:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,6 @@ int32 unicode_from_adobestd[256];
 struct lconv localeinfo;
 
 char *coord_sep = ",";
-
-int quiet = 0;
 
 static void initadobeenc(void) {
    int i, j;

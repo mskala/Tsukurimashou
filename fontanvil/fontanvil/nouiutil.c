@@ -1,4 +1,4 @@
-/* $Id: nouiutil.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: nouiutil.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -177,7 +177,3 @@ static struct ui_interface noui_interface = {
 };
 
 struct ui_interface *ui_interface = &noui_interface;
-
-void FF_SetUiInterface(struct ui_interface *uii) {
-   ui_interface = uii;
-}

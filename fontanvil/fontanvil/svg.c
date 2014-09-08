@@ -1,4 +1,4 @@
-/* $Id: svg.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: svg.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1170,17 +1170,6 @@ static void svg_sfdump(FILE * file, SplineFont * sf, int layer) {
    svg_dumpkerns(file, sf, true);
    svg_outfonttrailer(file, sf);
    setlocale(LC_NUMERIC, oldloc);
-}
-
-int _WriteSVGFont(FILE * file, SplineFont * sf, enum fontformat format,
-		  int flags, EncMap * map, int layer) {
-   int ret;
-
-   svg_sfdump(file, sf, layer);
-   ret = true;
-   if (ferror(file))
-      ret = false;
-   return (ret);
 }
 
 int WriteSVGFont(char *fontname, SplineFont * sf, enum fontformat format,

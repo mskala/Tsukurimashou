@@ -1,4 +1,4 @@
-/* $Id: encoding.c 2995 2014-03-29 22:11:26Z mskala $ */
+/* $Id: encoding.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1888,19 +1888,6 @@ SplineFont *MakeCIDMaster(SplineFont * sf, EncMap * oldmap, int bycmap,
    CIDMasterAsDes(sf);
    FontViewReformatAll(sf);
    return (cidmaster);
-}
-
-char *SFEncodingName(SplineFont * sf, EncMap * map) {
-   char buffer[130];
-
-   if (sf->cidmaster != NULL)
-      sf = sf->cidmaster;
-   if (sf->subfontcnt != 0) {
-      sprintf(buffer, "%.50s-%.50s-%d", sf->cidregistry, sf->ordering,
-	      sf->supplement);
-      return (copy(buffer));
-   }
-   return (copy(map->enc->enc_name));
 }
 
 /* ************************** Reencoding  routines ************************** */

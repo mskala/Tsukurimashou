@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: fvfonts.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -996,28 +996,8 @@ SplineChar *SFGetOrMakeChar(SplineFont * sf, int unienc, const char *name) {
    return (sc);
 }
 
-SplineChar *SFGetOrMakeCharFromUnicode(SplineFont * sf, EncMap * map, int ch) {
-   int i;
-
-   SplineChar *sc;
-
-   i = SFFindSlot(sf, map, ch, NULL);
-   if (i == -1)
-      return (NULL);
-   else {
-      sc = SFMakeChar(sf, map, i);
-   }
-   return (sc);
-}
-SplineChar *SFGetOrMakeCharFromUnicodeBasic(SplineFont * sf, int ch) {
-   return SFGetOrMakeCharFromUnicode(sf, sf->fv->map, ch);
-}
-
-
-
 static int _SFFindExistingSlot(SplineFont * sf, int unienc, const char *name) {
    int gid = -1;
-
    struct altuni *altuni;
 
    if (unienc != -1) {

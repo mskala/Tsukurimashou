@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: glyphcomp.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2801,19 +2801,4 @@ int CompareFonts(SplineFont * sf1, EncMap * map1, SplineFont * sf2,
       GlyphHashFree(sf1);
 
    return (fd.diff);
-}
-
-int LayersSimilar(Layer * ly1, Layer * ly2, double spline_err) {
-   SplinePoint *hmfail;
-
-   int ret;
-
-   if (!fdRefCheck(NULL, NULL, ly1->refs, ly2->refs, false))
-      return (false);
-   ret =
-      SSsCompare(ly1->splines, ly2->splines, spline_err, spline_err, &hmfail);
-   if (ret & SS_NoMatch)
-      return (false);
-
-   return (true);
 }

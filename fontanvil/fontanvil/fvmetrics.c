@@ -1,4 +1,4 @@
-/* $Id: fvmetrics.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: fvmetrics.c 3279 2014-09-08 15:58:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -218,15 +218,6 @@ void FVDoit(CreateWidthData * wd) {
 	       bc = BDFMakeChar(fv->active_bitmap, fv->map, i);
 	 DoChar(sc, wd, fv, bc);
       }
-   wd->done = true;
-}
-
-void GenericVDoit(CreateWidthData * wd) {
-   FontViewBase *fv = (FontViewBase *) wd->_fv;
-
-   SplineChar *sc = (SplineChar *) wd->_sc;
-
-   DoChar(sc, wd, fv, NULL);
    wd->done = true;
 }
 

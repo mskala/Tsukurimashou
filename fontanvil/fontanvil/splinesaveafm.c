@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 2997 2014-03-30 01:02:48Z mskala $ */
+/* $Id: splinesaveafm.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -320,22 +320,6 @@ void SubsNew(SplineChar * to, enum possub_type type, int tag,
       pst->u.lig.lig = to;
       pst->subtable->lookup->store_in_afm = true;
    }
-   pst->next = to->possub;
-   to->possub = pst;
-}
-
-void PosNew(SplineChar * to, int tag, int dx, int dy, int dh, int dv) {
-   PST *pst;
-
-   pst = chunkalloc(sizeof(PST));
-   pst->type = pst_position;
-   pst->subtable =
-      SFSubTableFindOrMake(to->parent, tag, SCScriptFromUnicode(to),
-			   gpos_single);
-   pst->u.pos.xoff = dx;
-   pst->u.pos.yoff = dy;
-   pst->u.pos.h_adv_off = dh;
-   pst->u.pos.v_adv_off = dv;
    pst->next = to->possub;
    to->possub = pst;
 }

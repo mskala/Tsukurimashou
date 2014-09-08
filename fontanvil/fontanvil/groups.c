@@ -1,4 +1,4 @@
-/* $Id: groups.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: groups.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -99,26 +99,6 @@ static void _SaveGroupList(FILE * file, Group * g, int indent) {
       for (i = 0; i < g->kid_cnt; ++i)
 	 _SaveGroupList(file, g->kids[i], indent + 1);
    }
-}
-
-void SaveGroupList(void) {
-   char *groupfilename;
-
-   FILE *groups;
-
-   groupfilename = getPfaEditGroups();
-   if (groupfilename == NULL)
-      return;
-   if (group_root == NULL
-       || (group_root->kid_cnt == 0 && group_root->glyphs == NULL)) {
-      unlink(groupfilename);
-      return;
-   }
-   groups = fopen(groupfilename, "w");
-   if (groups == NULL)
-      return;
-   _SaveGroupList(groups, group_root, 0);
-   fclose(groups);
 }
 
 struct gcontext {
