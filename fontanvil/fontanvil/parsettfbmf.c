@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 2928 2014-03-08 15:37:54Z mskala $ */
+/* $Id: parsettfbmf.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -282,7 +282,6 @@ static void ttfreadbmfglyph(FILE * ttf, struct ttfinfo *info,
 	 }
       }
    }
-   ff_progress_next();
 }
 
 static void BdfCRefFixup(BDFFont * bdf, int gid, int *warned,
@@ -632,7 +631,6 @@ void TTFLoadBitmaps(FILE * ttf, struct ttfinfo *info, int onlyone) {
    }
    cnt = j;
 
-   ff_progress_change_stages(3 + cnt);
    info->bitmaps = last = NULL;
    if (info->subfonts == NULL)
       glyphcnt = info->glyph_cnt;
@@ -666,9 +664,7 @@ void TTFLoadBitmaps(FILE * ttf, struct ttfinfo *info, int onlyone) {
 	 last->next = bdf;
       last = bdf;
       snprintf(buf, sizeof(buf), _("%d pixel bitmap"), sizes[i].ppem);
-      ff_progress_change_line2(buf);
       readttfbitmapfont(ttf, info, &sizes[i], bdf);
-      ff_progress_next_stage();
    }
    free(sizes);
    free(sel);
@@ -1340,9 +1336,7 @@ void ttfdumpbitmap(SplineFont * sf, struct alltabs *at, int32 * sizes) {
       dumpbitmapSizeTable(at->bloc, &space);
 
    /* Dump out the strikes... */
-   ff_progress_change_line1(_("Saving Bitmap Font(s)"));
    for (i = 0; sizes[i] != 0; ++i) {
-      ff_progress_next_stage();
       for (bdf = sf->bitmaps;
 	   bdf != NULL && (bdf->pixelsize != (sizes[i] & 0xffff)
 			   || BDFDepth(bdf) != (sizes[i] >> 16));
@@ -1402,7 +1396,6 @@ void ttfdumpbitmap(SplineFont * sf, struct alltabs *at, int32 * sizes) {
    if (ftell(at->bloc) & 2)
       putshort(at->bloc, 0);
 
-   ff_progress_change_line1(_("Saving TrueType Font"));
    ttf_bdf_dump(sf, at, sizes);
 }
 

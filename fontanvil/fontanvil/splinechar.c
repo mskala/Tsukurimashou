@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 3271 2014-09-07 19:15:34Z mskala $ */
+/* $Id: splinechar.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1845,8 +1845,6 @@ int SFValidate(SplineFont * sf, int layer, int force) {
 	 if ((sc = sub->glyphs[gid]) != NULL) {
 	    if (force || !(sc->layers[layer].validation_state & vs_known)) {
 	       SCValidate(sc, layer, true);
-	       if (!ff_progress_next())
-		  return (-1);
 	    } else if (SCValidateAnchors(sc) != NULL)
 	       sc->layers[layer].validation_state |= vs_missinganchor;
 
@@ -1857,7 +1855,6 @@ int SFValidate(SplineFont * sf, int layer, int force) {
 	 }
       ++k;
    } while (k < sf->subfontcnt);
-   ff_progress_end_indicator();
 
    /* a lot of asian ttf files have a bad postscript fontname stored in the */
    /*  name table */

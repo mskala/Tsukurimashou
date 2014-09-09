@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 3275 2014-09-08 14:04:49Z mskala $ */
+/* $Id: splinestroke.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -4144,8 +4144,6 @@ void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
       if ((gid = fv->map->map[i]) != -1 && fv->sf->glyphs[gid] != NULL
 	  && fv->selected[i])
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Stroking..."), _("Stroking..."), 0, cnt,
-			       1);
 
    SFUntickAll(fv->sf);
    for (i = 0; i < fv->map->enccount; ++i) {
@@ -4172,10 +4170,7 @@ void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
 	    sc->layers[layer].splines = temp;
 	    SCCharChangedUpdate(sc, layer);
 	 }
-	 if (!ff_progress_next())
-	    break;
       }
    }
    glyphname = NULL;
-   ff_progress_end_indicator();
 }

@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 3280 2014-09-08 17:24:23Z mskala $ */
+/* $Id: splinesaveafm.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -124,7 +124,6 @@ int LoadKerningDataFromAfm(SplineFont * sf, char *filename, EncMap * map) {
 
    if (file == NULL)
       return (0);
-   ff_progress_change_line2(_("Reading AFM file"));
    while (mygets(file, buffer, sizeof(buffer)) != NULL) {
       if (strncmp(buffer, "KPX", 3) == 0 || strncmp(buffer, "KPY", 3) == 0) {
 	 int isv = strncmp(buffer, "KPY", 3) == 0;
@@ -233,7 +232,6 @@ int LoadKerningDataFromAmfm(SplineFont * sf, char *filename, EncMap * map) {
    if (file == NULL)
       return (0);
 
-   ff_progress_change_line2(_("Reading AFM file"));
    while (fgets(buffer, sizeof(buffer), file) != NULL) {
       if (strstrmatch(buffer, "StartMaster") != NULL)
 	 break;
@@ -1043,7 +1041,6 @@ static void AfmSplineCharX(FILE * afm, SplineChar * sc, int enc, int layer) {
    if (sc->ligofme != NULL)
       AfmLigOut(afm, sc);
    putc('\n', afm);
-   ff_progress_next();
 }
 
 static void AfmZapfCharX(FILE * afm, int zi) {
@@ -1070,7 +1067,6 @@ static void AfmSplineChar(FILE * afm, SplineChar * sc, int enc, int layer) {
    if (sc->ligofme != NULL)
       AfmLigOut(afm, sc);
    putc('\n', afm);
-   ff_progress_next();
 }
 
 static void AfmCIDChar(FILE * afm, SplineChar * sc, int enc, int layer) {
@@ -1087,7 +1083,6 @@ static void AfmCIDChar(FILE * afm, SplineChar * sc, int enc, int layer) {
 	   (int) floor(b.minx * 1000 / em), (int) floor(b.miny * 1000 / em),
 	   (int) ceil(b.maxx * 1000 / em), (int) ceil(b.maxy * 1000 / em));
    putc('\n', afm);
-   ff_progress_next();
 }
 
 static int anykerns(SplineFont * sf, int isv) {

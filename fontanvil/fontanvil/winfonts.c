@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: winfonts.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -928,8 +928,6 @@ int FONFontDump(char *filename, SplineFont * sf, int32 * sizes, int resol,
       sf = sf->cidmaster;
 
    for (i = 0; sizes[i] != 0; ++i);
-   ff_progress_change_line1(_("Saving Bitmap Font(s)"));
-   ff_progress_change_stages(i);
    num_files = i;
    fntarray = (FILE **) malloc(num_files * sizeof(FILE *));
    file_lens = (int *) malloc(num_files * sizeof(int));
@@ -955,7 +953,6 @@ int FONFontDump(char *filename, SplineFont * sf, int32 * sizes, int resol,
 	 free(fntarray);
 	 return (false);
       }
-      ff_progress_next_stage();
 
       rewind(fntarray[i]);
       lgetushort(fntarray[i]);

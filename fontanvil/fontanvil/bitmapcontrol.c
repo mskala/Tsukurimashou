@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: bitmapcontrol.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -160,8 +160,6 @@ static void FVScaleBitmaps(FontViewBase * fv, int32 * sizes, int rasterize) {
       if (sizes[i] > 0)
 	 ++cnt;
    scale = fv->active_bitmap;
-   ff_progress_start_indicator(10, _("Scaling Bitmaps"), _("Scaling Bitmaps"),
-			       0, cnt, 1);
 
    for (i = 0; sizes[i] != 0; ++i)
       if (!SizeExists(fv->sf->bitmaps, sizes[i])) {
@@ -174,10 +172,7 @@ static void FVScaleBitmaps(FontViewBase * fv, int32 * sizes, int rasterize) {
 	 bdf->next = fv->sf->bitmaps;
 	 fv->sf->bitmaps = bdf;
 	 fv->sf->changed = true;
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 
    /* Order the list */
    SFOrderBitmapList(fv->sf);
@@ -310,7 +305,6 @@ static void BDFClearGlyph(BDFFont * bdf, int gid, int pass) {
       return;
    if (pass == 0) {
       BCDestroyAll(bdf->glyphs[gid]);
-      ff_progress_allow_events();
    } else {
       BDFCharFree(bdf->glyphs[gid]);
       bdf->glyphs[gid] = NULL;
@@ -350,7 +344,6 @@ static int FVRemoveBitmaps(CreateBitmapData * bd, int32 * sizes) {
 	    }
 	 }
       }
-      ff_progress_allow_events();
    }
    sf->changed = true;
    FVRefreshAll(fv->sf);

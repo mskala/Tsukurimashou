@@ -1,4 +1,4 @@
-/* $Id: tottfaat.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: tottfaat.c 3285 2014-09-09 07:38:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,6 @@
 
 /* This file contains routines to create some of the Apple Advanced Typography Tables */
 /*  (or GX fonts)  */
-
-/* ************************************************************************** */
-/* *************************    The 'acnt' table    ************************* */
-/* ************************************************************************** */
-
-void aat_dumpacnt(struct alltabs *at, SplineFont * sf) {
-}
 
 /* ************************************************************************** */
 /* *************************    The 'kern' table    ************************* */

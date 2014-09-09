@@ -1,4 +1,4 @@
-/* $Id: splinesave.c 3277 2014-09-08 14:16:28Z mskala $ */
+/* $Id: splinesave.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2276,11 +2276,6 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont * sf, int iscjk,
 	 continue;
       gi.active = &gi.gb[i];
       SplineChar2PS(sc, NULL, round, iscjk, subrs, flags, format, &gi);
-      if (!ff_progress_next()) {
-	 PSCharsFree(chrs);
-	 GIFree(&gi, &dummynotdef);
-	 return (NULL);
-      }
    }
 
    SetupType1Subrs(subrs, &gi);
@@ -2384,11 +2379,6 @@ struct pschars *CID2ChrsSubrs(SplineFont * cidmaster,
 	 gi.active = &gi.gb[cid];
 	 SplineChar2PS(sc, NULL, round, fd->iscjk | 0x100, fd->subrs,
 		       flags, ff_cid, &gi);
-	 if (!ff_progress_next()) {
-	    PSCharsFree(chrs);
-	    GIFree(&gi, &dummynotdef);
-	    return (NULL);
-	 }
       }
 
       SetupType1Subrs(fd->subrs, &gi);
@@ -3538,7 +3528,6 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont * sf, int nomwid, int defwid,
 	 continue;
       gi.active = &gi.gb[i];
       SplineChar2PS2(sc, NULL, nomwid, defwid, NULL, flags, &gi);
-      ff_progress_next();
    }
 
    for (i = scnt = 0; i < gi.pcnt; ++i) {
@@ -3780,7 +3769,6 @@ struct pschars *CID2ChrsSubrs2(SplineFont * cidmaster, struct fd2data *fds,
 	 SplineChar2PS2(sc, NULL, fds[i].nomwid, fds[i].defwid, NULL, flags,
 			&gi);
       }
-      ff_progress_next();
    }
 
    scnts = calloc(cidmaster->subfontcnt + 1, sizeof(int));

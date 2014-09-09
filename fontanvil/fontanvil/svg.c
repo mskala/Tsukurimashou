@@ -1,4 +1,4 @@
-/* $Id: svg.c 3280 2014-09-08 17:24:23Z mskala $ */
+/* $Id: svg.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3921,7 +3921,6 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
       sprintf(sf->xuid, "[%s %d]", xuid, (rand() & 0xffffff));
    }
 
-   ff_progress_change_total(cnt);
    sf->glyphcnt = sf->glyphmax = cnt;
    sf->glyphs = malloc(cnt * sizeof(SplineChar *));
 
@@ -3933,14 +3932,12 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	    sf->glyphs[cnt]->orig_pos = cnt;
 	    cnt++;
 	 }
-	 ff_progress_next();
       } else if (xmlStrcmp(kids->name, (const xmlChar *) "glyph") == 0) {
 	 sf->glyphs[cnt] = SVGParseGlyph(sf, kids, defh, defv, cnt, &flags);
 	 if (sf->glyphs[cnt] != NULL) {
 	    sf->glyphs[cnt]->orig_pos = cnt;
 	    cnt++;
 	 }
-	 ff_progress_next();
       }
    }
    cnt = 0;

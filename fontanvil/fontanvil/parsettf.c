@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: parsettf.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2480,7 +2480,6 @@ static void readttfglyphs(FILE * ttf, struct ttfinfo *info) {
       for (i = 0; i < info->glyph_cnt; ++i) {
 	 info->chars[i] =
 	    readttfglyph(ttf, info, goffsets[i], goffsets[i + 1], i);
-	 ff_progress_next();
       }
    } else {
       /* only read the glyphs we actually use in this font */
@@ -2501,7 +2500,6 @@ static void readttfglyphs(FILE * ttf, struct ttfinfo *info) {
 	    if (info->inuse[i] && info->chars[i] == NULL) {
 	       info->chars[i] =
 		  readttfglyph(ttf, info, goffsets[i], goffsets[i + 1], i);
-	       ff_progress_next();
 	       anyread = info->chars[i] != NULL;
 	    }
 	 }
@@ -2513,7 +2511,6 @@ static void readttfglyphs(FILE * ttf, struct ttfinfo *info) {
    for (i = 0; i < info->glyph_cnt; ++i)
       if (info->chars[i] != NULL)
 	 info->chars[i]->orig_pos = i;
-   ff_progress_next_stage();
 }
 
 /* Standard names for cff */
@@ -4189,7 +4186,6 @@ static void cidfigure(struct ttfinfo *info, struct topdicts *dict,
 	 else
 	    sf->glyphs[cid]->width += subdicts[j]->nominalwidthx;
       }
-      ff_progress_next();
    }
    /* No need to do a reference fixup here-- the chars aren't associated */
    /*  with any encoding as is required for seac */
@@ -5586,8 +5582,6 @@ static void readttfpostnames(FILE * ttf, struct ttfinfo *info) {
 
    int anynames = false;
 
-   ff_progress_change_line2(_("Reading Names"));
-
    /* Give ourselves an xuid, just in case they want to convert to PostScript */
    /*  (even type42)                                                         */
    if (xuid != NULL && info->fd == NULL && info->xuid == NULL) {
@@ -5718,7 +5712,6 @@ static void readttfpostnames(FILE * ttf, struct ttfinfo *info) {
 	       }
 	    }
 	 }
-	 ff_progress_next();
 	 info->chars[i]->name = copy(name);
       }
 
@@ -5753,9 +5746,7 @@ static void readttfpostnames(FILE * ttf, struct ttfinfo *info) {
       else
 	 sprintf(buffer, "glyph%d", i);
       info->chars[i]->name = copy(buffer);
-      ff_progress_next();
    }
-   ff_progress_next_stage();
 }
 
 static void readttfgasp(FILE * ttf, struct ttfinfo *info) {
@@ -5897,15 +5888,12 @@ int ttfFixupRef(SplineChar ** chars, int i) {
 static void ttfFixupReferences(struct ttfinfo *info) {
    int i;
 
-   ff_progress_change_line2(_("Fixing up References"));
    for (i = 0; i < info->glyph_cnt; ++i)
       if (info->chars[i] != NULL)
 	 info->chars[i]->ticked = false;
    for (i = 0; i < info->glyph_cnt; ++i) {
       ttfFixupRef(info->chars, i);
-      ff_progress_next();
    }
-   ff_progress_next_stage();
 }
 
 static void TtfCopyTableBlindly(struct ttfinfo *info, FILE * ttf,
@@ -5946,7 +5934,6 @@ static int readttf(FILE * ttf, struct ttfinfo *info, char *filename) {
 
    int i;
 
-   ff_progress_change_stages(3);
    if (!readttfheader(ttf, info, filename, &info->chosenname)) {
       return (0);
    }
@@ -5954,7 +5941,6 @@ static int readttf(FILE * ttf, struct ttfinfo *info, char *filename) {
    strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
    setlocale(LC_NUMERIC, "C");
    readttfpreglyph(ttf, info);
-   ff_progress_change_total(info->glyph_cnt);
 
    /* If font only contains bitmaps, then only read bitmaps */
    if ((info->glyphlocations_start == 0 || info->glyph_length == 0) &&

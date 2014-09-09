@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 2997 2014-03-30 01:02:48Z mskala $ */
+/* $Id: splinefill.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1747,9 +1747,6 @@ BDFFont *SplineFontToBDFHeader(SplineFont * _sf, int pixelsize, int indicate) {
 	 strncat(aa, sf->fontname, sizeof(aa) - strlen(aa));
 	 aa[sizeof(aa) - 1] = '\0';
       }
-      ff_progress_start_indicator(10, _("Rasterizing..."),
-				  aa, size, sf->glyphcnt, 1);
-      ff_progress_enable_stop(0);
    }
    bdf->sf = _sf;
    bdf->glyphcnt = bdf->glyphmax = max;
@@ -1779,11 +1776,7 @@ BDFFont *SplineFontRasterize(SplineFont * _sf, int layer, int pixelsize,
 	    }
       }
       bdf->glyphs[i] = SplineCharRasterize(sf->glyphs[i], layer, pixelsize);
-      if (indicate)
-	 ff_progress_next();
    }
-   if (indicate)
-      ff_progress_end_indicator();
    return (bdf);
 }
 
@@ -1931,9 +1924,6 @@ BDFFont *SplineFontAntiAlias(SplineFont * _sf, int layer, int pixelsize,
       strncat(aa, sf->fontname, sizeof(aa) - strlen(aa));
       aa[sizeof(aa) - 1] = '\0';
    }
-   ff_progress_start_indicator(10, _("Rasterizing..."),
-			       aa, size, sf->glyphcnt, 1);
-   ff_progress_enable_stop(0);
 
    if (linear_scale > 16)
       linear_scale = 16;	/* can't deal with more than 256 levels of grey */
@@ -1959,10 +1949,8 @@ BDFFont *SplineFontAntiAlias(SplineFont * _sf, int layer, int pixelsize,
       bdf->glyphs[i] =
 	 SplineCharRasterize(sf->glyphs[i], layer, pixelsize * linear_scale);
       BDFCAntiAlias(bdf->glyphs[i], linear_scale);
-      ff_progress_next();
    }
    BDFClut(bdf, linear_scale);
-   ff_progress_end_indicator();
    return (bdf);
 }
 

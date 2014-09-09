@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 3271 2014-09-07 19:15:34Z mskala $ */
+/* $Id: splinefont.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -574,10 +574,7 @@ static SplineFont *_SFReadPostScript(FILE * file, char *filename) {
 
    SplineFont *sf = NULL;
 
-   ff_progress_change_stages(2);
    fd = _ReadPSFont(file);
-   ff_progress_next_stage();
-   ff_progress_change_line2(_("Interpreting Glyphs"));
    if (fd != NULL) {
       sf = SplineFontFromPSFont(fd);
       PSFontFree(fd);
@@ -592,10 +589,7 @@ static SplineFont *SFReadPostScript(char *filename) {
 
    SplineFont *sf = NULL;
 
-   ff_progress_change_stages(2);
    fd = ReadPSFont(filename);
-   ff_progress_next_stage();
-   ff_progress_change_line2(_("Interpreting Glyphs"));
    if (fd != NULL) {
       sf = SplineFontFromPSFont(fd);
       PSFontFree(fd);
@@ -1059,10 +1053,6 @@ SplineFont *_ReadSplineFont(FILE * file, char *filename,
       strncat(ubuf, temp = def2utf8_copy(GFileNameTail(filename)), 100);
    free(temp);
    ubuf[100 + len] = '\0';
-   ff_progress_start_indicator(FontViewFirst() == NULL ? 0 : 10,
-			       _("Loading..."), ubuf, _("Reading Glyphs"), 0,
-			       1);
-   ff_progress_enable_stop(0);
 
    if (file == NULL) {
       file = fopen(strippedname, "rb");
@@ -1248,7 +1238,6 @@ SplineFont *_ReadSplineFont(FILE * file, char *filename,
    } else {
       sf = SFReadMacBinary(fullname, 0, openflags);
    }
-   ff_progress_end_indicator();
 
    if (sf != NULL) {
       SplineFont *norm = sf->mm != NULL ? sf->mm->normal : sf;

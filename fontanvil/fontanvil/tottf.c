@@ -1,4 +1,4 @@
-/* $Id: tottf.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: tottf.c 3287 2014-09-09 09:28:26Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1568,10 +1568,8 @@ static int dumpglyphs(SplineFont * sf, struct glyphinfo *gi) {
 
    int answer, answered = -1;
 
-   ff_progress_change_stages(2 + gi->strikecnt);
    QuickBlues(sf, gi->layer, &gi->bd);
    /*FindBlues(sf,gi->blues,NULL); */
-   ff_progress_next_stage();
 
    if (!gi->onlybitmaps) {
       if (sf->layers[gi->layer].order2)
@@ -1588,7 +1586,6 @@ static int dumpglyphs(SplineFont * sf, struct glyphinfo *gi) {
 		     buts[2] = _("No _to All");
 		     buts[3] = _("_No");
 		     buts[4] = NULL;
-		     ff_progress_pause_timer();
 		     answer =
 			ff_ask(_("Bad Point Numbering"), (const char **) buts,
 			       0, 3,
@@ -1653,8 +1650,6 @@ static int dumpglyphs(SplineFont * sf, struct glyphinfo *gi) {
 	 if (ftell(gi->glyphs) & 2)
 	    putshort(gi->glyphs, 0);
       }
-      if (!ff_progress_next())
-	 return (false);
    }
 
    /* extra location entry points to end of last glyph */
@@ -2199,17 +2194,13 @@ static void dumpcffprivate(SplineFont * sf, struct alltabs *at, int subfont,
    hasblue = PSDictHasEntry(sf->private, "BlueValues") != NULL;
    hash = PSDictHasEntry(sf->private, "StdHW") != NULL;
    hasv = PSDictHasEntry(sf->private, "StdVW") != NULL;
-   ff_progress_change_stages(2 + autohint_before_generate + !hasblue);
    if (autohint_before_generate) {
-      ff_progress_change_line1(_("Auto Hinting Font..."));
       SplineFontAutoHint(sf, at->gi.layer);
-      ff_progress_next_stage();
    }
 
    otherblues[0] = otherblues[1] = bluevalues[0] = bluevalues[1] = 0;
    if (!hasblue) {
       FindBlues(sf, at->gi.layer, bluevalues, otherblues);
-      ff_progress_next_stage();
    }
 
    stdhw[0] = stdvw[0] = 0;
@@ -2236,7 +2227,6 @@ static void dumpcffprivate(SplineFont * sf, struct alltabs *at, int subfont,
       if (mi != -1)
 	 stdvw[0] = stemsnapv[mi];
    }
-   ff_progress_change_line1(_("Saving OpenType Font"));
 
    if (hasblue)
       DumpStrArray(PSDictHasEntry(sf->private, "BlueValues"), private, 6);
@@ -2860,7 +2850,6 @@ static int dumptype2glyphs(SplineFont * sf, struct alltabs *at) {
    dumpcffheader(sf, at->cfff);
    dumpcffnames(sf, at->cfff);
    dumpcffcharset(sf, at);
-   ff_progress_change_stages(2 + at->gi.strikecnt);
 
    ATFigureDefWidth(sf, at, -1);
    if ((chrs =
@@ -2871,7 +2860,6 @@ static int dumptype2glyphs(SplineFont * sf, struct alltabs *at) {
    dumpcffprivate(sf, at, -1, subrs->next);
    if (subrs->next != 0)
       _dumpcffstrings(at->private, subrs);
-   ff_progress_next_stage();
    at->charstrings = dumpcffstrings(chrs);
    PSCharsFree(subrs);
    if (at->charstrings == NULL)
@@ -7569,145 +7557,4 @@ static void ttc_dump(FILE * ttc, struct alltabs *all, enum fontformat format,
       fseek(ttc, tab->offset + 2 * sizeof(int32), SEEK_SET);
       putlong(ttc, checksum);
    }
-}
-
-static void CopySFNTAndFixup(FILE * ttc, FILE * ttf) {
-   /* ttf contains a truetype file which we want to copy into ttc */
-   /* Mostly this is just a dump copy, but the offset table at the */
-   /* start of the file must be adjusted to reflect the absolute */
-   /* locations of the tables in the ttc */
-   int offset = ftell(ttc);
-
-   int val, table_cnt, i;
-
-   fseek(ttf, 0, SEEK_SET);
-   val = getlong(ttf);
-   putlong(ttc, val);		/* sfnt version */
-   table_cnt = getushort(ttf);
-   putshort(ttc, table_cnt);
-   val = getushort(ttf);
-   putshort(ttc, val);
-   val = getushort(ttf);
-   putshort(ttc, val);
-   val = getushort(ttf);
-   putshort(ttc, val);
-
-   for (i = 0; i < table_cnt; ++i) {
-      val = getlong(ttf);
-      putlong(ttc, val);	/* tag */
-      val = getlong(ttf);
-      putlong(ttc, val);	/* checkSum */
-      val = getlong(ttf);
-      putlong(ttc, val + offset);	/* offset */
-      val = getlong(ttf);
-      putlong(ttc, val);	/* length */
-   }
-
-   while ((val = getc(ttf)) != EOF)
-      putc(val, ttc);
-
-   fclose(ttf);
-
-   if (ftell(ttc) & 1)
-      putc('\0', ttc);
-   if (ftell(ttc) & 2)
-      putshort(ttc, 0);
-}
-
-int WriteTTC(char *filename, struct sflist *sfs, enum fontformat format,
-	     enum bitmapformat bf, int flags, int layer,
-	     enum ttc_flags ttcflags) {
-   struct sflist *sfitem, *sfi2;
-
-   int ok = 1;
-
-   FILE *ttc;
-
-   int cnt, offset;
-
-   int dobruteforce;
-
-   struct alltabs *ret;
-
-   SplineFont dummysf;
-
-   if (strstr(filename, "://") != NULL) {
-      if ((ttc = tmpfile()) == NULL)
-	 return (0);
-   } else {
-      if ((ttc = fopen(filename, "wb+")) == NULL)
-	 return (0);
-   }
-
-   format = (ttcflags & ttc_flag_cff) ? ff_otf : ff_ttf;
-
-   dobruteforce = true;
-   if ((ttcflags & ttc_flag_trymerge) && bf == bf_none) {
-      dobruteforce = false;
-      ret = ttc_prep(sfs, format, bf, flags, layer, ttcflags, &dummysf);
-      if (ret == NULL)
-	 dobruteforce = true;
-      else
-	 ttc_dump(ttc, ret, format, flags, ttcflags);
-      free(ret);
-   }
-   if (dobruteforce) {
-      /* Create a trivial ttc where each font is its own entity and there */
-      /*  are no common tables */
-      /* Generate all the fonts (don't generate DSIGs, there's one DSIG for */
-      /*  the ttc as a whole) */
-      for (sfitem = sfs, cnt = 0; sfitem != NULL;
-	   sfitem = sfitem->next, ++cnt) {
-	 sfitem->tempttf = tmpfile();
-	 if (sfitem->tempttf == NULL)
-	    ok = 0;
-	 else
-	    ok =
-	       _WriteTTFFont(sfitem->tempttf, sfitem->sf, format,
-			     sfitem->sizes, bf, flags & ~ttf_flag_dummyDSIG,
-			     sfitem->map, layer);
-	 if (!ok) {
-	    for (sfi2 = sfs; sfi2 != NULL; sfi2 = sfi2->next)
-	       if (sfi2->tempttf != NULL)
-		  fclose(sfi2->tempttf);
-	    fclose(ttc);
-	    return (true);
-	 }
-	 fseek(sfitem->tempttf, 0, SEEK_END);
-	 sfitem->len = ftell(sfitem->tempttf);
-      }
-
-      putlong(ttc, CHR('t', 't', 'c', 'f'));
-      if (flags & ttf_flag_dummyDSIG) {
-	 putlong(ttc, 0x00020000);
-	 offset = 4 * (3 + cnt + 4);
-      } else {
-	 putlong(ttc, 0x00010000);
-	 offset = 4 * (3 + cnt);
-      }
-      putlong(ttc, cnt);
-      for (sfitem = sfs; sfitem != NULL; sfitem = sfitem->next) {
-	 putlong(ttc, offset);
-	 offset += ((sfitem->len + 3) >> 2) << 2;	/* Align on 4 byte boundary */
-      }
-      if (flags & ttf_flag_dummyDSIG) {
-	 putlong(ttc, CHR('D', 'S', 'I', 'G'));
-	 putlong(ttc, 8);	/* Length of dummy DSIG table */
-	 putlong(ttc, 0x00000001);	/* Standard DSIG version */
-	 putlong(ttc, 0);	/* No Signatures, no flags */
-      }
-      for (sfitem = sfs; sfitem != NULL; sfitem = sfitem->next)
-	 CopySFNTAndFixup(ttc, sfitem->tempttf);
-      if (ftell(ttc) != offset)
-	 IError("Miscalculated offsets in ttc");
-   } else
-    if (strstr(filename, "://") != NULL && ok)
-      ok = URLFromFile(filename, ttc);
-   if (ferror(ttc))
-      ok = false;
-   if (fclose(ttc) == -1)
-      ok = false;
-   if (!ok)
-      LogError(_("Something went wrong"));
-   return (ok);
 }

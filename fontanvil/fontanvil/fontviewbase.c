@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 3278 2014-09-08 15:44:53Z mskala $ */
+/* $Id: fontviewbase.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -334,9 +334,6 @@ void FVBuildDuplicate(FontViewBase * fv) {
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i])
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Building duplicate encodings"),
-			       _("Building duplicate encodings"), NULL, cnt,
-			       1);
 
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i]) {
@@ -359,10 +356,7 @@ void FVBuildDuplicate(FontViewBase * fv) {
 	 if (baseuni != 0
 	     && (gid = SFFindExistingSlot(fv->sf, baseuni, NULL)) != -1)
 	    LinkEncToGid(fv, i, gid);
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 }
 
 void TransHints(StemInfo * stem, real mul1, real off1, real mul2, real off2,
@@ -832,9 +826,6 @@ void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
 	 ++cnt;
 
 
-   ff_progress_start_indicator(10, _("Transforming..."), _("Transforming..."),
-			       0, cnt, 1);
-
    SFUntickAll(fv->sf);
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
@@ -865,15 +856,12 @@ void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
 	    }
 	 }
 	 sc->ticked = true;
-	 if (!ff_progress_next())
-	    break;
       }
    if (flags & fvt_dogrid) {
       SFPreserveGuide(fv->sf);
       SplinePointListTransform(fv->sf->grid.splines, transform,
 			       tpt_AllPoints);
    }
-   ff_progress_end_indicator();
 
    if (flags & fvt_scalekernclasses) {
       KernClass *kc;
@@ -903,9 +891,6 @@ void FVOverlap(FontViewBase * fv, enum overlap_type ot) {
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
-   ff_progress_start_indicator(10, _("Removing overlaps..."),
-			       _("Removing overlaps..."), 0, cnt, 1);
-
    SFUntickAll(fv->sf);
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
@@ -924,10 +909,7 @@ void FVOverlap(FontViewBase * fv, enum overlap_type ot) {
 	    sc->layers[layer].splines =
 	       SplineSetRemoveOverlap(sc, sc->layers[layer].splines, ot);
 	 SCCharChangedUpdate(sc, fv->active_layer);
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 }
 
 void FVAddExtrema(FontViewBase * fv, int force_adding) {
@@ -943,8 +925,6 @@ void FVAddExtrema(FontViewBase * fv, int force_adding) {
       if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Adding points at Extrema..."),
-			       _("Adding points at Extrema..."), 0, cnt, 1);
 
    SFUntickAll(fv->sf);
    for (i = 0; i < fv->map->enccount; ++i)
@@ -964,10 +944,7 @@ void FVAddExtrema(FontViewBase * fv, int force_adding) {
 				 emsize);
 	 }
 	 SCCharChangedUpdate(sc, fv->active_layer);
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 }
 
 void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl) {
@@ -979,8 +956,6 @@ void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl) {
       if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Simplifying..."), _("Simplifying..."),
-			       0, cnt, 1);
 
    SFUntickAll(fv->sf);
    for (i = 0; i < fv->map->enccount; ++i)
@@ -998,10 +973,7 @@ void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl) {
 	    sc->layers[layer].splines =
 	       SplineCharSimplify(sc, sc->layers[layer].splines, smpl);
 	 SCCharChangedUpdate(sc, fv->active_layer);
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 }
 
 void FVAutoHint(FontViewBase * fv) {
@@ -1027,8 +999,6 @@ void FVAutoHint(FontViewBase * fv) {
 	 ++cnt;
 	 sc->ticked = false;
       }
-   ff_progress_start_indicator(10, _("Auto Hinting Font..."),
-			       _("Auto Hinting Font..."), 0, cnt, 1);
 
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
@@ -1038,10 +1008,7 @@ void FVAutoHint(FontViewBase * fv) {
 	 sc->manualhints = false;
 	 /* Hint undoes are done in _SplineCharAutoHint */
 	 SFSCAutoHint(sc, fv->active_layer, bd);
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
    FVRefreshAll(fv->sf);
 }
 
@@ -1054,9 +1021,6 @@ void FVAutoHintSubs(FontViewBase * fv) {
       if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Finding Substitution Points..."),
-			       _("Finding Substitution Points..."), 0, cnt,
-			       1);
 
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
@@ -1066,10 +1030,7 @@ void FVAutoHintSubs(FontViewBase * fv) {
 
 	 SCFigureHintMasks(sc, fv->active_layer);
 	 SCUpdateAll(sc);
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 }
 
 void FVAutoCounter(FontViewBase * fv) {
@@ -1079,8 +1040,6 @@ void FVAutoCounter(FontViewBase * fv) {
       if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Finding Counter Masks..."),
-			       _("Finding Counter Masks..."), 0, cnt, 1);
 
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
@@ -1089,10 +1048,7 @@ void FVAutoCounter(FontViewBase * fv) {
 	 SplineChar *sc = fv->sf->glyphs[gid];
 
 	 SCFigureCounterMasks(sc);
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 }
 
 void FVDontAutoHint(FontViewBase * fv) {
@@ -1172,8 +1128,6 @@ void FVAutoInstr(FontViewBase * fv) {
       if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Auto Instructing Font..."),
-			       _("Auto Instructing Font..."), 0, cnt, 1);
 
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
@@ -1182,13 +1136,10 @@ void FVAutoInstr(FontViewBase * fv) {
 	 SplineChar *sc = fv->sf->glyphs[gid];
 
 	 NowakowskiSCAutoInstr(&gic, sc);
-	 if (!ff_progress_next())
-	    break;
       }
 
    FreeGlobalInstrCt(&gic);
 
-   ff_progress_end_indicator();
 }
 
 void FVClearInstrs(FontViewBase * fv) {
@@ -1308,8 +1259,6 @@ void FVBuildAccent(FontViewBase * fv, int onlyaccents) {
       if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Building accented glyphs"),
-			       _("Building accented glyphs"), NULL, cnt, 1);
 
    SFUntickAll(fv->sf);
    for (i = 0; i < fv->map->enccount; ++i)
@@ -1330,10 +1279,7 @@ void FVBuildAccent(FontViewBase * fv, int onlyaccents) {
 	    SCBuildComposit(fv->sf, sc, fv->active_layer, fv->active_bitmap,
 			    onlycopydisplayed);
 	 }
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 }
 
 void FVDetachGlyphs(FontViewBase * fv) {
@@ -1585,7 +1531,6 @@ static void _FVRevert(FontViewBase *fv, int tobackup) {
       }
    }
 
-   ff_progress_allow_events();
    SFClearAutoSave(old);
    temp->fv=fv->sf->fv;
    for (fvs=fv->sf->fv;fvs!=NULL;fvs=fvs->nextsame)

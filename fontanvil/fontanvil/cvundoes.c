@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 2952 2014-03-15 17:28:24Z mskala $ */
+/* $Id: cvundoes.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1633,13 +1633,11 @@ static void PasteNonExistantRefCheck(SplineChar * sc, Undoes * paster,
 	 buts[2] = _("No _to All");
 	 buts[3] = _("_No");
 	 buts[4] = NULL;
-	 ff_progress_pause_timer();
 	 yes =
 	    ff_ask(_("Bad Reference"), (const char **) buts, 0, 3,
 		   _
 		   ("You are attempting to paste a reference to %1$s into %2$s.\nBut %1$s does not exist in this font.\nWould you like to copy the original splines (or delete the reference)?"),
 		   fromsc->name, sc->name);
-	 ff_progress_resume_timer();
 	 if (yes == 1)
 	    *refstate |= 1;
 	 else if (yes == 2)
@@ -2961,8 +2959,6 @@ void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]) {
    }
 
    anchor_lost_warning = false;
-   ff_progress_start_indicator(10, _("Pasting..."), _("Pasting..."), 0, cnt,
-			       1);
 
    if (cur->undotype == ut_multiple)
       cur = cur->u.multiple.mult;
@@ -3072,8 +3068,6 @@ void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]) {
 	    sf = mm->instances[j];
 	 }
 	 cur = cur->next;
-	 if (!ff_progress_next())
-	    break;
       }
    /* If we copy glyphs from one font to another, and if some of those glyphs */
    /*  contain references, and the width of the original glyph is the same as */
@@ -3098,7 +3092,6 @@ void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]) {
 	 }
       }
  err:
-   ff_progress_end_indicator();
    if (oldsel != fv->selected)
       free(oldsel);
    SFFinishMergeContext(&mc);

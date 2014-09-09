@@ -1,4 +1,4 @@
-/* $Id: unicoderange.c 2951 2014-03-15 16:49:47Z mskala $ */
+/* $Id: unicoderange.c 3287 2014-09-09 09:28:26Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /* 2012nov14, table updates, fixes added, Jose Da Silva */
 /*
@@ -367,8 +367,6 @@ struct unicoderange unicoderange[] = {
     0},
    UNICODERANGE_EMPTY
 };
-
-int unicoderange_cnt = sizeof(unicoderange) / sizeof(unicoderange[0]) - 1;
 
 static struct unicoderange nonunicode =
    { N_("Non-Unicode Glyphs"), -1, -1, ASFIRST, 2, 1, 0 };

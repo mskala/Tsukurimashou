@@ -143,7 +143,7 @@ noinst_HEADERS = \
   fontanvil/namehash.h fontanvil/scripting.h fontanvil/uiinterface.h \
   fontanvil/bezctx_ff.h fontanvil/edgelist.h fontanvil/groups.h \
   fontanvil/nonlineartrans.h fontanvil/sd.h fontanvil/unicoderange.h \
-  fontanvil/bitmapcontrol.h fontanvil/encoding.h fontanvil/ofl.h \
+  fontanvil/bitmapcontrol.h fontanvil/encoding.h \
   fontanvil/search.h fontanvil/usermenu.h fontanvil/fffreetype.h \
   fontanvil/PfEd.h fontanvil/sfd1.h \
   fontanvil/sflayoutP.h fontanvil/print.h fontanvil/splinefont.h \
@@ -169,7 +169,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/langfreq.c fontanvil/lookups.c fontanvil/macbinary.c \
  fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \
  fontanvil/namelist.c fontanvil/nonlineartrans.c fontanvil/noprefs.c \
- fontanvil/nouiutil.c fontanvil/nowakowskittfinstr.c fontanvil/ofl.c \
+ fontanvil/nouiutil.c fontanvil/nowakowskittfinstr.c \
  fontanvil/othersubrs.c fontanvil/palmfonts.c fontanvil/parsepdf.c \
  fontanvil/parsepfa.c fontanvil/parsettfatt.c fontanvil/parsettfbmf.c \
  fontanvil/parsettf.c fontanvil/parsettfvar.c fontanvil/print.c \

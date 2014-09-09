@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3279 2014-09-08 15:58:27Z mskala $ */
+/* $Id: scstyles.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3160,8 +3160,6 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
    genchange->layer = fv->active_layer;
 
    MakeSCLookups(sf, c2sc, smcp, ltn, crl, grk, symbols, genchange->petite);
-   ff_progress_start_indicator(10, _("Small Capitals"),
-			       _("Building small capitals"), NULL, cnt, 1);
    for (enc = 0; enc < fv->map->enccount; ++enc) {
       if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
 	  && (sc = sf->glyphs[gid]) != NULL) {
@@ -3180,17 +3178,17 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 	    if (sc->unicodeenc < 0x10000 && islower(sc->unicodeenc)) {
 	       sc = SFGetChar(sf, toupper(sc->unicodeenc), NULL);
 	       if (sc == NULL)
-		  goto end_loop;
+		  continue;
 	    }
 	    if (sc->ticked)
-	       goto end_loop;
+	       break;
 	    /* make the glyph now, even if it contains refs, because we */
 	    /*  want to retain the encoding ordering */
 	    sc_sc =
 	       MakeSmallCapGlyphSlot(sf, sc, script, c2sc, smcp, fv,
 				     genchange);
 	    if (sc_sc == NULL)
-	       goto end_loop;
+	       continue;
 	    if (sc->layers[fv->active_layer].splines == NULL)
 	       continue;	/* Deal with these later */
 	    sc->ticked = true;
@@ -3201,9 +3199,6 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 	       BuildSCLigatures(sc_sc, sc, fv->active_layer, genchange);
 	    else
 	       ChangeGlyph(sc_sc, sc, fv->active_layer, genchange);
-	  end_loop:
-	    if (!ff_progress_next())
-	       break;
 	 }
       }
    }
@@ -3285,14 +3280,11 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 	    }
 	  end_loop2:
 	    if (sc != NULL) {
-	       if (!sc->ticked && !ff_progress_next())
-		  break;
 	       sc->ticked = true;
 	    }
 	 }
       }
    }
-   ff_progress_end_indicator();
    if (achar != NULL)
       FVDisplayGID(fv, achar->orig_pos);
    free(genchange->g.maps);
@@ -7398,7 +7390,7 @@ static int FVMakeAllItalic(FontViewBase * fv, SplineChar * sc, int layer,
       }
    }
    SCMakeItalic(sc, layer, ii);
-   return (ff_progress_next());
+   return true;
 }
 
 static double SerifExtent(SplineChar * sc, int layer, int is_bottom) {
@@ -7531,9 +7523,6 @@ void MakeItalic(FontViewBase * fv, CharViewBase * cv, ItalicInfo * ii) {
 	 }
       }
       if (cnt != 0) {
-	 ff_progress_start_indicator(10, _("Italic"),
-				     _("Italic Conversion"), NULL, cnt, 1);
-
 	 for (enc = 0; enc < fv->map->enccount; ++enc) {
 	    if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc] &&
 		(sc = sf->glyphs[gid]) != NULL && !sc->ticked) {
@@ -7541,7 +7530,6 @@ void MakeItalic(FontViewBase * fv, CharViewBase * cv, ItalicInfo * ii) {
 		  break;
 	    }
 	 }
-	 ff_progress_end_indicator();
       }
    }
    detect_diagonal_stems = dds;
@@ -7579,5 +7567,5 @@ static int FVChangeXHeight(FontViewBase * fv, SplineChar * sc, int layer,
       }
    }
    SCChangeXHeight(sc, layer, xi);
-   return (ff_progress_next());
+   return true;
 }

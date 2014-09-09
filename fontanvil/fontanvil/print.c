@@ -1,4 +1,4 @@
-/* $Id: print.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: print.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1743,13 +1743,6 @@ static int PIDownloadFont(PI * pi, SplineFont * sf, EncMap * map) {
 		    _("Failed to open temporary output file"));
       return (false);
    }
-   if (pi->sfid == 0)
-      ff_progress_start_indicator(10, _("Printing Font"), _("Printing Font"),
-				  _("Generating PostScript Font"),
-				  sf->glyphcnt, 1);
-   else
-      ff_progress_reset();
-   ff_progress_enable_stop(false);
    if (pi->printtype == pt_pdf && sf->multilayer) {
       /* These need to be done in line as pdf objects */
       /* I leave fontfile open as a flag, even though we don't use it */
@@ -1768,8 +1761,6 @@ static int PIDownloadFont(PI * pi, SplineFont * sf, EncMap * map) {
 			    ff_pfa, ps_flag_identitycidmap, map, NULL,
 			    ly_fore))
       error = true;
-
-   ff_progress_end_indicator();
 
    if (error) {
       ff_post_error(_("Failed to generate postscript font"),

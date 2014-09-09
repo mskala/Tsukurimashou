@@ -1,4 +1,4 @@
-/* $Id: psread.c 3277 2014-09-08 14:16:28Z mskala $ */
+/* $Id: psread.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3658,7 +3658,6 @@ void PSFontInterpretPS(FILE * ps, struct charprocs *cp, char **encoding) {
 	    cp->values[cp->next++] = sc;
 	    sc->name = copy(tokbuf);
 	    SCInterpretPS(ps, sc, &flags);
-	    ff_progress_next();
 	 } else {
 	    memset(&dummy, 0, sizeof(dummy));
 	    dummy.fromtype3 = true;

@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: macbinary.c 3282 2014-09-09 06:45:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -216,16 +216,6 @@ static int IsMacMonospaced(SplineFont * sf, EncMap * map) {
       }
    }
    return (true);
-}
-
-SplineChar *SFFindExistingCharMac(SplineFont * sf, EncMap * map, int unienc) {
-   int i, gid;
-
-   for (i = 0; i < map->enccount && i < 256; ++i)
-      if ((gid = map->map[i]) != -1 && sf->glyphs[gid] != NULL
-	  && sf->glyphs[gid]->unicodeenc == unienc)
-	 return (sf->glyphs[gid]);
-   return (NULL);
 }
 
 static double SFMacWidthMax(SplineFont * sf, EncMap * map) {
@@ -2084,18 +2074,6 @@ int WriteMacFamily(char *filename, struct sflist *sfs, enum fontformat format,
       free(sfi->bdfs);
    }
    return (ret);
-}
-
-void SfListFree(struct sflist *sfs) {
-   struct sflist *sfi;
-
-   while (sfs != NULL) {
-      sfi = sfs->next;
-      free(sfs->sizes);
-      EncMapFree(sfs->map);
-      chunkfree(sfs, sizeof(struct sflist));
-      sfs = sfi;
-   }
 }
 
 /* ******************************** Reading ********************************* */

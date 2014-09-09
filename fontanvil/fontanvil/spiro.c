@@ -1,4 +1,4 @@
-/* $Id: spiro.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: spiro.c 3287 2014-09-09 09:28:26Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /* 2013sep19-22, error handling and cleanup fixes in Spiro.c, Jose Da Silva */
 /*
@@ -230,23 +230,6 @@ spiro_cp *SplineSet2SpiroCP(SplineSet * ss, uint16 * _cnt) {
 
 int hasspiro(void) {
    return has_spiro;
-}
-
-spiro_cp *SpiroCPCopy(spiro_cp * spiros, uint16 * _cnt) {
-/* Make a copy of a (closed='z' or open='{}') spiro */
-   int ch, n = 0;
-
-   spiro_cp *nspiros;
-
-   if (spiros == NULL)
-      return (NULL);
-   while ((ch = spiros[n++].ty) != 'z' && ch != '}');
-   if ((nspiros = (spiro_cp *) malloc(n * sizeof(spiro_cp))) == NULL)
-      return (NULL);
-   memcpy(nspiros, spiros, n * sizeof(spiro_cp));
-   if (_cnt != NULL)
-      *_cnt = n;
-   return (nspiros);
 }
 
 void SSRegenerateFromSpiros(SplineSet * spl) {

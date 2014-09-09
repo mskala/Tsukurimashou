@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: dumppfa.c 3287 2014-09-09 09:28:26Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -352,24 +352,6 @@ char *PSDictHasEntry(struct psdict *dict, char *key) {
    return (NULL);
 }
 
-int PSDictSame(struct psdict *dict1, struct psdict *dict2) {
-   int i;
-
-   if ((dict1 == NULL || dict1->cnt == 0)
-       && (dict2 == NULL || dict2->cnt == 0))
-      return (true);
-   if (dict1 == NULL || dict2 == NULL || dict1->cnt != dict2->cnt)
-      return (false);
-
-   for (i = 0; i < dict1->cnt; ++i) {
-      char *val = PSDictHasEntry(dict2, dict1->keys[i]);
-
-      if (val == NULL || strcmp(val, dict1->values[i]) != 0)
-	 return (false);
-   }
-   return (true);
-}
-
 int PSDictRemoveEntry(struct psdict *dict, char *key) {
    int i;
 
@@ -458,8 +440,6 @@ static int dumpcharstrings(void (*dumpchar) (int ch, void *data), void *data,
 	    chars->lens[i] + leniv);
       encodestrout(dumpchar, data, chars->values[i], chars->lens[i], leniv);
       dumpstr(dumpchar, data, " ND\n");
-      if (!ff_progress_next())
-	 return (false);
    }
    dumpstr(dumpchar, data, "end end\nreadonly put\n");
    return (true);
@@ -1390,8 +1370,6 @@ static int dumpcharprocs(void (*dumpchar) (int ch, void *data), void *data,
       if (i != notdefpos) {
 	 if (SCWorthOutputting(sf->glyphs[i]))
 	    dumpproc(dumpchar, data, sf->glyphs[i]);
-	 if (!ff_progress_next())
-	    return (false);
       }
    dumpstr(dumpchar, data, "end\ncurrentdict end\n");
    dumpf(dumpchar, data, "/%s exch definefont\n", sf->fontname);
@@ -1729,20 +1707,14 @@ static int dumpprivatestuff(void (*dumpchar) (int ch, void *data), void *data,
    if (sf->pfminfo.pfmset && sf->pfminfo.weight >= 700)
       isbold = true;
 
-   ff_progress_change_stages(2 + 2 - hasblue);
    if (autohint_before_generate && SFNeedsAutoHint(sf, layer) &&
        !(flags & ps_flag_nohints)) {
-      ff_progress_change_line1(_("Auto Hinting Font..."));
       SplineFontAutoHint(sf, layer);
    }
-   if (!ff_progress_next_stage())
-      return (false);
 
    otherblues[0] = otherblues[1] = bluevalues[0] = bluevalues[1] = 0;
    if (!hasblue) {
       FindBlues(sf, layer, bluevalues, otherblues);
-      if (!ff_progress_next_stage())
-	 return (false);
    }
    bluescale = BlueScaleFigure(sf->private, bluevalues, otherblues);
 
@@ -1773,14 +1745,10 @@ static int dumpprivatestuff(void (*dumpchar) (int ch, void *data), void *data,
    }
 
    if (incid == NULL) {
-      ff_progress_next_stage();
-      ff_progress_change_line1(_("Converting PostScript"));
       if ((chars =
 	   SplineFont2ChrsSubrs(sf, iscjk, subrs, flags, format,
 				layer)) == NULL)
 	 return (false);
-      ff_progress_next_stage();
-      ff_progress_change_line1(_("Saving PostScript Font"));
    }
 
    if (incid == NULL)
@@ -1902,7 +1870,6 @@ static int dumpprivatestuff(void (*dumpchar) (int ch, void *data), void *data,
       PSCharsFree(subrs);
    }
 
-   ff_progress_change_stages(1);
    return (true);
 }
 
@@ -2788,22 +2755,14 @@ static FILE *gencidbinarydata(SplineFont * cidmaster,
       else
 	 fd->leniv = 4;
    }
-   ff_progress_change_line1(_("Converting PostScript"));
    if ((chars = CID2ChrsSubrs(cidmaster, cidbytes, flags, layer)) == NULL)
       return (NULL);
-   ff_progress_next_stage();
-   ff_progress_change_line1(_("Saving PostScript Font"));
 
    chrs = tmpfile();
    for (i = 0; i < chars->next; ++i) {
       if (chars->lens[i] != 0) {
 	 leniv = cidbytes->fds[cidbytes->fdind[i]].leniv;
 	 dumpt1str(chrs, chars->values[i], chars->lens[i], leniv);
-	 if (!ff_progress_next()) {
-	    PSCharsFree(chars);
-	    fclose(chrs);
-	    return (NULL);
-	 }
 	 if (leniv > 0)
 	    chars->lens[i] += leniv;
       }

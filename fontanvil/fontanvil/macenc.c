@@ -1,4 +1,4 @@
-/* $Id: macenc.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: macenc.c 3282 2014-09-09 06:45:09Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1324,19 +1324,6 @@ uint16 WinLangToMac(int winlang) {
 	 return (i);
 
    return (0xffff);
-}
-
-int CanEncodingWinLangAsMac(int winlang) {
-   int maclang = WinLangToMac(winlang);
-
-   int macenc = MacEncFromMacLang(maclang);
-
-   if (macenc == 0xff)
-      return (false);
-   if (macencodings[macenc] == NULL)
-      return (false);
-
-   return (true);
 }
 
 const int32 *MacEncToUnicode(int script, int lang) {

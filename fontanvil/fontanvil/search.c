@@ -1,4 +1,4 @@
-/* $Id: search.c 2952 2014-03-15 17:28:24Z mskala $ */
+/* $Id: search.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1493,9 +1493,6 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
       if (selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  sf->glyphs[gid] != NULL)
 	 ++selcnt;
-   ff_progress_start_indicator(10, _("Replace with Reference"),
-			       _("Replace Outline with Reference"), 0, selcnt,
-			       1);
 
    for (i = 0; i < fv->map->enccount; ++i)
       if (selected[i] && (gid = fv->map->map[i]) != -1 &&
@@ -1516,10 +1513,7 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
 	 for (j = 0; j < fv->map->enccount; ++j)
 	    if (fv->selected[j])
 	       changed[j] = 1;
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 
    SDDestroy(sv);
    free(sv);

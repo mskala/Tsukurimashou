@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 3278 2014-09-08 15:44:53Z mskala $ */
+/* $Id: splineutil.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2790,7 +2790,6 @@ static void _SplineFontFromType1(SplineFont * sf, FontDict * fd,
 	 sf->glyphs[i]->parent = sf;
 	 /* SCLigDefault(sf->glyphs[i]); *//* Also reads from AFM file, but it probably doesn't exist */
       }
-      ff_progress_next();
    }
    SFInstanciateRefs(sf);
    if (fd->metrics != NULL) {
@@ -3212,7 +3211,6 @@ static SplineFont *SplineFontFromCIDType1(SplineFont * sf, FontDict * fd,
 	 if (chars[i]->layers[ly_fore].refs != NULL)
 	    IError("Reference found in CID font. Can't fix it up");
 	 sf->subfonts[j]->glyphcnt = sf->subfonts[j]->glyphmax = i + 1;
-	 ff_progress_next();
       }
    for (i = 0; i < fd->fdcnt; ++i)
       sf->subfonts[i]->glyphs =

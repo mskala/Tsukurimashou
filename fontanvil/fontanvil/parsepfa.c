@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: parsepfa.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1087,7 +1087,6 @@ static void InitChars(struct pschars *chars, char *line) {
       chars->keys = calloc(chars->cnt, sizeof(char *));
       chars->values = calloc(chars->cnt, sizeof(char *));
       chars->lens = calloc(chars->cnt, sizeof(int));
-      ff_progress_change_total(chars->cnt);
    }
 }
 
@@ -1100,7 +1099,6 @@ static void InitCharProcs(struct charprocs *cp, char *line) {
    if (cp->cnt > 0) {
       cp->keys = calloc(cp->cnt, sizeof(char *));
       cp->values = calloc(cp->cnt, sizeof(SplineChar *));
-      ff_progress_change_total(cp->cnt);
    }
 }
 
@@ -1706,7 +1704,6 @@ static void parseline(struct fontparse *fp, char *line, FILE * in) {
 	    ++line;
 	 *line = '\0';
 	 findstring(fp, chars, i, namestrt, line + 1);
-	 ff_progress_next();
       }
       return;
    }
@@ -2175,7 +2172,6 @@ static void addinfo(struct fontparse *fp, char *line, char *tok,
 	 chars->values[i] = malloc(binlen);
 	 memcpy(chars->values[i], binstart, binlen);
 	 ++chars->next;
-	 ff_progress_next();
       }
    } else if (!fp->alreadycomplained) {
       /* Special hacks for known badly formatted fonts */
@@ -2632,7 +2628,6 @@ static void figurecids(struct fontparse *fp, FILE * temp) {
    fd->cidlens = malloc(cidcnt * sizeof(int16));
    fd->cidfds = malloc((cidcnt + 1) * sizeof(int16));
    offsets = malloc((cidcnt + 1) * sizeof(int));
-   ff_progress_change_total(cidcnt);
 
    fseek(temp, fd->mapoffset, SEEK_SET);
    for (i = 0; i <= fd->cidcnt; ++i) {
@@ -2663,7 +2658,6 @@ static void figurecids(struct fontparse *fp, FILE * temp) {
 				    fd->fds[fd->cidfds[i]]->private->leniv);
 	 fd->cidlens[i] -= fd->fds[fd->cidfds[i]]->private->leniv;
       }
-      ff_progress_next();
    }
    free(offsets);
 

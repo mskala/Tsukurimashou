@@ -1,4 +1,4 @@
-/* $Id: sfd.c 3276 2014-09-08 14:06:05Z mskala $ */
+/* $Id: sfd.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1591,7 +1591,6 @@ static int SFDDumpBitmapFont(FILE * sfd, BDFFont * bdf, EncMap * encm,
 
    BDFRefChar *ref;
 
-   ff_progress_next_stage();
    fprintf(sfd, "BitmapFont: %d %d %d %d %d %s\n", bdf->pixelsize,
 	   bdf->glyphcnt, bdf->ascent, bdf->descent, BDFDepth(bdf),
 	   bdf->foundry ? bdf->foundry : "");
@@ -1638,7 +1637,6 @@ static int SFDDumpBitmapFont(FILE * sfd, BDFFont * bdf, EncMap * encm,
 	 } else
 	    SFDDumpBitmapChar(sfd, bdf->glyphs[i], encm->backmap[i], newgids);
       }
-      ff_progress_next();
    }
    for (i = 0; i < bdf->glyphcnt; ++i)
       if ((bc = bdf->glyphs[i]) != NULL) {
@@ -2573,14 +2571,11 @@ static int SFD_Dump(FILE * sfd, SplineFont * sf, EncMap * map,
 	       free(glyphfile);
 	    }
 	 }
-	 ff_progress_next();
       }
       if (!todir)
 	 fprintf(sfd, "EndChars\n");
    }
 
-   if (sf->bitmaps != NULL)
-      ff_progress_change_line2(_("Saving Bitmaps"));
    for (bdf = sf->bitmaps; bdf != NULL; bdf = bdf->next) {
       if (todir) {
 	 char *strike = malloc(strlen(dirname) + 1 + 20 + 20);
@@ -2725,10 +2720,6 @@ static int SFDDump(FILE * sfd, SplineFont * sf, EncMap * map, EncMap * normal,
 	    realcnt = sf->subfonts[i]->glyphcnt;
    }
    for (i = 0, bdf = sf->bitmaps; bdf != NULL; bdf = bdf->next, ++i);
-   ff_progress_start_indicator(10, _("Saving..."),
-			       _("Saving Spline Font Database"),
-			       _("Saving Outlines"), realcnt, i + 1);
-   ff_progress_enable_stop(false);
    double version = 3.1;
 
    if (!UndoRedoLimitToSave)
@@ -2738,7 +2729,6 @@ static int SFDDump(FILE * sfd, SplineFont * sf, EncMap * map, EncMap * normal,
       err = SFD_MMDump(sfd, sf->mm->normal, map, normal, todir, dirname);
    else
       err = SFD_Dump(sfd, sf, map, normal, todir, dirname);
-   ff_progress_end_indicator();
    return (err);
 }
 
@@ -5868,7 +5858,6 @@ static int SFDGetBitmapFont(FILE * sfd, SplineFont * sf, int fromdir,
 	       if (getname(gsfd, tok) && strcmp(tok, "BDFChar:") == 0)
 		  SFDGetBitmapChar(gsfd, bdf);
 	       fclose(gsfd);
-	       ff_progress_next();
 	    }
 	 }
       }
@@ -6001,7 +5990,6 @@ void SFDFixupRefs(SplineFont * sf) {
    if (sf->subfontcnt != 0)
       sf = sf->subfonts[0];
 
-   ff_progress_change_line2(_("Interpreting Glyphs"));
    for (;;) {
       for (i = 0; i < sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL) {
@@ -6120,7 +6108,6 @@ void SFDFixupRefs(SplineFont * sf) {
 		  SFDFixupRef(sf->glyphs[i], refs, layer);
 	       }
 	    }
-	    ff_progress_next();
 	 }
       if (sf->cidmaster == NULL)
 	 for (i = sf->glyphcnt - 1; i >= 0 && sf->glyphs[i] == NULL; --i)
@@ -6832,7 +6819,6 @@ static SplineFont *SFD_FigureDirType(SplineFont * sf, char *tok,
       sf->glyphcnt = 0;
       sf->glyphmax = gc;
       sf->glyphs = calloc(gc, sizeof(SplineChar *));
-      ff_progress_change_total(gc);
       if (sf->cidmaster != NULL) {
 	 sf->map = sf->cidmaster->map;
       } else {
@@ -6854,19 +6840,16 @@ static SplineFont *SFD_FigureDirType(SplineFont * sf, char *tok,
 	    gsfd = fopen(name, "r");
 	    if (gsfd != NULL) {
 	       SFDGetChar(gsfd, sf, had_layer_cnt);
-	       ff_progress_next();
 	       fclose(gsfd);
 	    }
 	 }
       }
-      ff_progress_next_stage();
    } else if (sc != 0) {
       int i = 0;
 
       sf->subfontcnt = sc;
       sf->subfonts = calloc(sf->subfontcnt, sizeof(SplineFont *));
       sf->map = EncMap1to1(1000);
-      ff_progress_change_stages(2 * sc);
 
       while ((ent = readdir(dir)) != NULL) {
 	 pt = strrchr(ent->d_name, EXT_CHAR);
@@ -6879,8 +6862,6 @@ static SplineFont *SFD_FigureDirType(SplineFont * sf, char *tok,
 	    sprintf(props, "%s/" FONT_PROPS, name);
 	    ssfd = fopen(props, "r");
 	    if (ssfd != NULL) {
-	       if (i != 0)
-		  ff_progress_next_stage();
 	       sf->subfonts[i++] =
 		  SFD_GetFont(ssfd, sf, tok, true, name, sf->sfd_version);
 	       fclose(ssfd);
@@ -6893,7 +6874,6 @@ static SplineFont *SFD_FigureDirType(SplineFont * sf, char *tok,
       int ipos, i = 0;
 
       MMInferStuff(sf->mm);
-      ff_progress_change_stages(2 * (mm->instance_count + 1));
       while ((ent = readdir(dir)) != NULL) {
 	 pt = strrchr(ent->d_name, EXT_CHAR);
 	 if (pt == NULL)
@@ -6902,8 +6882,6 @@ static SplineFont *SFD_FigureDirType(SplineFont * sf, char *tok,
 		  && sscanf(ent->d_name, "mm%d", &ipos) == 1) {
 	    FILE *ssfd;
 
-	    if (i != 0)
-	       ff_progress_next_stage();
 	    sprintf(name, "%s/%s", dirname, ent->d_name);
 	    sprintf(props, "%s/" FONT_PROPS, name);
 	    ssfd = fopen(props, "r");
@@ -6925,7 +6903,6 @@ static SplineFont *SFD_FigureDirType(SplineFont * sf, char *tok,
 	    }
 	 }
       }
-      ff_progress_next_stage();
       sf->mm = NULL;
       SplineFontFree(sf);
       sf = mm->normal;
@@ -8436,8 +8413,6 @@ static SplineFont *SFD_GetFont(FILE * sfd, SplineFont * cidmaster, char *tok,
 
 	 getint(sfd, &cnt);
 	 getint(sfd, &realcnt);
-	 ff_progress_change_stages(cnt);
-	 ff_progress_change_total(realcnt);
 	 MMInferStuff(sf->mm);
 	 break;
       } else if (strmatch(tok, "BeginSubFonts:") == 0) {
@@ -8445,8 +8420,6 @@ static SplineFont *SFD_GetFont(FILE * sfd, SplineFont * cidmaster, char *tok,
 	 sf->subfonts = calloc(sf->subfontcnt, sizeof(SplineFont *));
 	 getint(sfd, &realcnt);
 	 sf->map = EncMap1to1(realcnt);
-	 ff_progress_change_stages(2);
-	 ff_progress_change_total(realcnt);
 	 break;
       } else if (strmatch(tok, "BeginChars:") == 0) {
 	 int charcnt;
@@ -8460,7 +8433,6 @@ static SplineFont *SFD_GetFont(FILE * sfd, SplineFont * cidmaster, char *tok,
 	    realcnt = charcnt;
 	 else
 	    ++realcnt;		/* value saved is max glyph, not glyph cnt */
-	 ff_progress_change_total(realcnt);
 	 sf->glyphcnt = sf->glyphmax = realcnt;
 	 sf->glyphs = calloc(realcnt, sizeof(SplineChar *));
 	 if (cidmaster != NULL) {
@@ -8484,27 +8456,20 @@ static SplineFont *SFD_GetFont(FILE * sfd, SplineFont * cidmaster, char *tok,
    if (fromdir)
       sf = SFD_FigureDirType(sf, tok, dirname, enc, remap, had_layer_cnt);
    else if (sf->subfontcnt != 0) {
-      ff_progress_change_stages(2 * sf->subfontcnt);
       for (i = 0; i < sf->subfontcnt; ++i) {
-	 if (i != 0)
-	    ff_progress_next_stage();
 	 sf->subfonts[i] =
 	    SFD_GetFont(sfd, sf, tok, fromdir, dirname, sfdversion);
       }
    } else if (sf->mm != NULL) {
       MMSet *mm = sf->mm;
 
-      ff_progress_change_stages(2 * (mm->instance_count + 1));
       for (i = 0; i < mm->instance_count; ++i) {
-	 if (i != 0)
-	    ff_progress_next_stage();
 	 mm->instances[i] =
 	    SFD_GetFont(sfd, NULL, tok, fromdir, dirname, sfdversion);
 	 EncMapFree(mm->instances[i]->map);
 	 mm->instances[i]->map = NULL;
 	 mm->instances[i]->mm = mm;
       }
-      ff_progress_next_stage();
       mm->normal = SFD_GetFont(sfd, NULL, tok, fromdir, dirname, sfdversion);
       mm->normal->mm = mm;
       sf->mm = NULL;
@@ -8519,10 +8484,7 @@ static SplineFont *SFD_GetFont(FILE * sfd, SplineFont * cidmaster, char *tok,
 	 sf->map = map;
       }
    } else {
-      while (SFDGetChar(sfd, sf, had_layer_cnt) != NULL) {
-	 ff_progress_next();
-      }
-      ff_progress_next_stage();
+      while (SFDGetChar(sfd, sf, had_layer_cnt) != NULL);
    }
    haddupenc = false;
    while (getname(sfd, tok) == 1) {
@@ -8615,7 +8577,6 @@ static SplineFont *SFD_Read(char *filename, FILE * sfd, int fromdir) {
    strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
    oldloc[24] = 0;
    setlocale(LC_NUMERIC, "C");
-   ff_progress_change_stages(2);
    if ((version = SFDStartsCorrectly(sfd, tok)) != -1)
       sf = SFD_GetFont(sfd, NULL, tok, fromdir, filename, version);
    setlocale(LC_NUMERIC, oldloc);

@@ -1,4 +1,4 @@
-/* $Id: autohint.c 3173 2014-07-12 17:12:17Z mskala $ */
+/* $Id: autohint.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -223,8 +223,6 @@ void FindBlues(SplineFont * sf, int layer, real blues[14],
 	    }
 	 }
       }
-      if (!ff_progress_next())
-	 break;
    }
    if (otherdigits[2] > 0 && digith[2] > 0) {
       if (otherdigits[0] / otherdigits[2] >= .95 * digith[0] / digith[2]) {
@@ -3302,10 +3300,6 @@ void SplineFontAutoHint(SplineFont * _sf, int layer) {
 	    if (sf->glyphs[i]->changedsincelasthinted &&
 		!sf->glyphs[i]->manualhints)
 	       SFSCAutoHint(sf->glyphs[i], layer, bd);
-	    if (!ff_progress_next()) {
-	       k = _sf->subfontcnt + 1;
-	       break;
-	    }
 	 }
       ++k;
    } while (k < _sf->subfontcnt);

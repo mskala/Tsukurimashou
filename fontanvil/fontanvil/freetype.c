@@ -1,4 +1,4 @@
-/* $Id: freetype.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: freetype.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -615,7 +615,6 @@ BDFFont *SplineFontFreeTypeRasterize(void *freetypecontext, int pixelsize,
 	       bdf->glyphs[i] =
 		  SplineCharAntiAlias(subsf->glyphs[i], ftc->layer, pixelsize,
 				      (1 << (depth / 2)));
-	    ff_progress_next();
 	 } else
 	    bdf->glyphs[i] = NULL;
       if (subftc != NULL && subftc != ftc)
@@ -623,7 +622,6 @@ BDFFont *SplineFontFreeTypeRasterize(void *freetypecontext, int pixelsize,
       subftc = NULL;
       ++k;
    } while (k < sf->subfontcnt);
-   ff_progress_end_indicator();
    return (bdf);
 }
 
@@ -1357,9 +1355,7 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
 BDFFont *SplineFontFreeTypeRasterizeNoHints(SplineFont * sf, int layer,
 					    int pixelsize, int depth) {
    SplineFont *subsf;
-
    int i, k;
-
    BDFFont *bdf = SplineFontToBDFHeader(sf, pixelsize, true);
 
    if (depth != 1)
@@ -1386,12 +1382,10 @@ BDFFont *SplineFontFreeTypeRasterizeNoHints(SplineFont * sf, int layer,
 	       bdf->glyphs[i] =
 		  SplineCharAntiAlias(subsf->glyphs[i], layer, pixelsize,
 				      (1 << (depth / 2)));
-	    ff_progress_next();
 	 } else
 	    bdf->glyphs[i] = NULL;
       ++k;
    } while (k < sf->subfontcnt);
-   ff_progress_end_indicator();
    return (bdf);
 }
 #endif
@@ -1403,11 +1397,4 @@ void *FreeTypeFontContext(SplineFont * sf, SplineChar * sc, FontViewBase * fv,
 	    sf->subfontcnt !=
 	    0 ? ff_otfcid : sf->layers[layer].order2 ? ff_ttf : ff_pfb, 0,
 	    NULL));
-}
-
-void FreeType_FreeRaster(struct freetype_raster *raster) {
-   if (raster == NULL || raster == (void *) -1)
-      return;
-   free(raster->bitmap);
-   free(raster);
 }
