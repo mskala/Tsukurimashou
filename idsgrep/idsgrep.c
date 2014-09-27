@@ -33,7 +33,8 @@
 
 /**********************************************************************/
 
-static int generate_index=0,ignore_indices=0;
+static int generate_index=0,ignore_indices=0,report_statistics=0;
+static int preproc_sec=0,preproc_usec=0;
 uint64_t tree_checks=UINT64_C(0),tree_hits=UINT64_C(0);
 
 /* basic search and index generation */
@@ -214,6 +215,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    char *dict_buff;
    size_t dict_buff_size=0,entry_size,parsed;
    uint64_t btest[2];
+   struct rusage rua,rub;
 
    /* bail, if we can't use an index or have been told to ignore it */
    if (ignore_indices || generate_index || (strcmp(fn,"-")==0)) {
@@ -278,6 +280,10 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    
    /* analyse the query */
    if (indexed_pattern==NULL) {
+      /* start counting preprocessing time */
+      if (report_statistics)
+	getrusage(RUSAGE_SELF,&rua);
+ 
 #ifdef HAVE_BUDDY
       bdd_init(20000,2000);
       bdd_setvarnum(128);
@@ -291,6 +297,13 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 #endif
       indexed_pattern=match_pattern;
       /* we assume we'll never have to deal with another pattern... */
+
+      /* stop counting preprocessing time */
+      if (report_statistics) {
+	 getrusage(RUSAGE_SELF,&rub);
+	 preproc_sec+=(rub.ru_utime.tv_sec-rua.ru_utime.tv_sec);
+	 preproc_usec+=(rub.ru_utime.tv_usec-rua.ru_utime.tv_usec);
+      }
    }
    
    /* wrap the filename in a string so we can escape-print it */
@@ -451,8 +464,8 @@ int main(int argc,char **argv) {
    int c,num_files=0;
    char *dictdir,*dictname=NULL,*dictglob,*unilist_cfg=NULL;
    glob_t globres;
-   int show_version=0,show_help=0,generate_list=0,report_statistics=0;
-   struct rusage rua,rub;
+   int show_version=0,show_help=0,generate_list=0;
+   struct rusage rua,rub,ruc,rud;
 
    /* quick usage message */
    if (argc<2)
@@ -577,6 +590,10 @@ int main(int argc,char **argv) {
       stack_ptr=0;
       generate_list=0;
    } else if (optind<argc) {
+      /* start counting preprocessing time */
+      if (report_statistics)
+	getrusage(RUSAGE_SELF,&ruc);
+ 
       if ((parse(strlen(argv[optind]),argv[optind])<strlen(argv[optind]))
 	  || (parse_state!=PS_COMPLETE_TREE)) {
 	 puts("can't parse matching pattern");
@@ -585,6 +602,14 @@ int main(int argc,char **argv) {
       match_pattern=parse_stack[0];
       stack_ptr=0;
       optind++;
+      
+      /* stop counting preprocessing time */
+      if (report_statistics) {
+	 getrusage(RUSAGE_SELF,&rud);
+	 preproc_sec+=(rud.ru_utime.tv_sec-ruc.ru_utime.tv_sec);
+	 preproc_usec+=(rud.ru_utime.tv_usec-ruc.ru_utime.tv_usec);
+      }
+
    } else
      usage_message();
    
@@ -634,8 +659,17 @@ int main(int argc,char **argv) {
 	 rub.ru_utime.tv_usec+=1000000; /* GCI */
 	 rub.ru_utime.tv_sec--; /* GCI */
       }
+      while (preproc_usec<0) {
+	 preproc_usec+=1000000; /* GCI */
+	 preproc_sec--; /* GCI */
+      }
+      while (preproc_usec>=1000000) {
+	 preproc_usec-=1000000; /* GCI */
+	 preproc_sec++; /* GCI */
+      }
+
       printf("STATS %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64
-	     " %" PRIu64 " %" PRIu64 " %" PRIu64 " %d.%06d %d ",
+	     " %" PRIu64 " %" PRIu64 " %" PRIu64 " %ld.%06d %d %d.%06d ",
 	     bv_checks,bv_hits,
 #ifdef HAVE_BUDDY
 	     bdd_hits,
@@ -647,10 +681,11 @@ int main(int argc,char **argv) {
 	     rub.ru_utime.tv_sec-rua.ru_utime.tv_sec,
 	     rub.ru_utime.tv_usec-rua.ru_utime.tv_usec,
 #ifdef HAVE_BUDDY
-	     indexed_pattern?bdd_nodecount(bf.decision_diagram):0
+	     indexed_pattern?bdd_nodecount(bf.decision_diagram):0,
 #else
-	     0
+	     0,
 #endif
+	     preproc_sec,preproc_usec
 	    );
       set_output_recipe("cooked");
       write_cooked_tree(match_pattern,stdout);
