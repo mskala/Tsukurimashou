@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 3277 2014-09-08 14:16:28Z mskala $ */
+/* $Id: splineutil2.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ int snaptoint=0;
 
 /*#define DEBUG	1*/
 
-#if defined( FONTANVIL_CONFIG_USE_DOUBLE )
+#if defined(FONTANVIL_CONFIG_USE_DOUBLE)
 # define RE_NearZero	.00000001
 # define RE_Factor	(1024.0*1024.0*1024.0*1024.0*1024.0*2.0) /* 52 bits => divide by 2^51 */
 #else
@@ -59,28 +59,28 @@ int Within4RoundingErrors(bigreal v1, bigreal v2) {
     bigreal temp=v1*v2;
     bigreal re;
 
-    if ( temp<0 ) /* Ok, if the two values are on different sides of 0 there */
-     return( false );	/* is no way they can be within a rounding error of each other */
-    else if ( temp==0 ) {
-	if ( v1==0 )
-	 return( v2<RE_NearZero && v2>-RE_NearZero );
+    if (temp<0) /* Ok, if the two values are on different sides of 0 there */
+     return false;	/* is no way they can be within a rounding error of each other */
+    else if (temp==0) {
+	if (v1==0)
+	 return v2<RE_NearZero && v2>-RE_NearZero;
 	else
-	 return( v1<RE_NearZero && v1>-RE_NearZero );
-    } else if ( v1>0 ) {
-	if ( v1>v2 ) {		/* Rounding error from the biggest absolute value */
+	 return v1<RE_NearZero && v1>-RE_NearZero;
+    } else if (v1>0) {
+	if (v1>v2) {		/* Rounding error from the biggest absolute value */
 	    re = v1/ (RE_Factor/4);
-	   return( v1-v2 < re );
+	   return v1-v2 < re;
 	} else {
 	    re = v2/ (RE_Factor/4);
-	   return( v2-v1 < re );
+	   return v2-v1 < re;
 	}
     } else {
-	if ( v1<v2 ) {
+	if (v1<v2) {
 	    re = v1/ (RE_Factor/4);	/* This will be a negative number */
-	   return( v1-v2 > re );
+	   return v1-v2 > re;
 	} else {
 	    re = v2/ (RE_Factor/4);
-	   return( v2-v1 > re );
+	   return v2-v1 > re;
 	}
     }
 }
@@ -89,28 +89,28 @@ int Within16RoundingErrors(bigreal v1, bigreal v2) {
     bigreal temp=v1*v2;
     bigreal re;
 
-    if ( temp<0 ) /* Ok, if the two values are on different sides of 0 there */
-     return( false );	/* is no way they can be within a rounding error of each other */
-    else if ( temp==0 ) {
-	if ( v1==0 )
-	 return( v2<RE_NearZero && v2>-RE_NearZero );
+    if (temp<0) /* Ok, if the two values are on different sides of 0 there */
+     return false;	/* is no way they can be within a rounding error of each other */
+    else if (temp==0) {
+	if (v1==0)
+	 return v2<RE_NearZero && v2>-RE_NearZero;
 	else
-	 return( v1<RE_NearZero && v1>-RE_NearZero );
-    } else if ( v1>0 ) {
-	if ( v1>v2 ) {		/* Rounding error from the biggest absolute value */
+	 return v1<RE_NearZero && v1>-RE_NearZero;
+    } else if (v1>0) {
+	if (v1>v2) {		/* Rounding error from the biggest absolute value */
 	    re = v1/ (RE_Factor/16);
-	   return( v1-v2 < re );
+	   return v1-v2 < re;
 	} else {
 	    re = v2/ (RE_Factor/16);
-	   return( v2-v1 < re );
+	   return v2-v1 < re;
 	}
     } else {
-	if ( v1<v2 ) {
+	if (v1<v2) {
 	    re = v1/ (RE_Factor/16);	/* This will be a negative number */
-	   return( v1-v2 > re );
+	   return v1-v2 > re;
 	} else {
 	    re = v2/ (RE_Factor/16);
-	   return( v2-v1 > re );
+	   return v2-v1 > re;
 	}
     }
 }
@@ -119,28 +119,28 @@ int Within64RoundingErrors(bigreal v1, bigreal v2) {
     bigreal temp=v1*v2;
     bigreal re;
 
-    if ( temp<0 ) /* Ok, if the two values are on different sides of 0 there */
-     return( false );	/* is no way they can be within a rounding error of each other */
-    else if ( temp==0 ) {
-	if ( v1==0 )
-	 return( v2<RE_NearZero && v2>-RE_NearZero );
+    if (temp<0) /* Ok, if the two values are on different sides of 0 there */
+     return false;	/* is no way they can be within a rounding error of each other */
+    else if (temp==0) {
+	if (v1==0)
+	 return v2<RE_NearZero && v2>-RE_NearZero;
 	else
-	 return( v1<RE_NearZero && v1>-RE_NearZero );
-    } else if ( v1>0 ) {
-	if ( v1>v2 ) {		/* Rounding error from the biggest absolute value */
+	 return v1<RE_NearZero && v1>-RE_NearZero;
+    } else if (v1>0) {
+	if (v1>v2) {		/* Rounding error from the biggest absolute value */
 	    re = v1/ (RE_Factor/64);
-	   return( v1-v2 < re );
+	   return v1-v2 < re;
 	} else {
 	    re = v2/ (RE_Factor/64);
-	   return( v2-v1 < re );
+	   return v2-v1 < re;
 	}
     } else {
-	if ( v1<v2 ) {
+	if (v1<v2) {
 	    re = v1/ (RE_Factor/64);	/* This will be a negative number */
-	   return( v1-v2 > re );
+	   return v1-v2 > re;
 	} else {
 	    re = v2/ (RE_Factor/64);
-	   return( v2-v1 > re );
+	   return v2-v1 > re;
 	}
     }
 }
@@ -149,60 +149,60 @@ int RealNear(real a,real b) {
     real d;
 
 #ifdef FONTANVIL_CONFIG_USE_DOUBLE
-    if ( a==0 )
-     return( b>-1e-8 && b<1e-8 );
-    if ( b==0 )
-     return( a>-1e-8 && a<1e-8 );
+    if (a==0)
+     return b>-1e-8 && b<1e-8;
+    if (b==0)
+     return a>-1e-8 && a<1e-8;
 
     d = a/(1024*1024.);
 #else		/* For floats */
-    if ( a==0 )
-     return( b>-1e-5 && b<1e-5 );
-    if ( b==0 )
-     return( a>-1e-5 && a<1e-5 );
+    if (a==0)
+     return b>-1e-5 && b<1e-5;
+    if (b==0)
+     return a>-1e-5 && a<1e-5;
 
     d = a/(1024*64.);
 #endif
     a-=b;
-    if ( d<0 )
-     return( a>d && a<-d );
+    if (d<0)
+     return a>d && a<-d;
     else
-     return( a>-d && a<d );
+     return a>-d && a<d;
 }
 
 int RealNearish(real a,real b) {
 
     a-=b;
-   return( a<.001 && a>-.001 );
+   return a<.001 && a>-.001;
 }
 
 int RealApprox(real a,real b) {
 
-    if ( a==0 ) {
-	if ( b<.0001 && b>-.0001 )
-	 return( true );
-    } else if ( b==0 ) {
-	if ( a<.0001 && a>-.0001 )
-	 return( true );
+    if (a==0) {
+	if (b<.0001 && b>-.0001)
+	 return true;
+    } else if (b==0) {
+	if (a<.0001 && a>-.0001)
+	 return true;
     } else {
 	a /= b;
-	if ( a>=.95 && a<=1.05 )
-	 return( true );
+	if (a>=.95 && a<=1.05)
+	 return true;
     }
-   return( false );
+   return false;
 }
 
 int RealWithin(real a,real b,real fudge) {
 
-   return( b>=a-fudge && b<=a+fudge );
+   return b>=a-fudge && b<=a+fudge;
 }
 
 int RealRatio(real a,real b,real fudge) {
 
-    if ( b==0 )
-     return( RealWithin(a,b,fudge));
+    if (b==0)
+     return RealWithin(a,b,fudge);
 
-   return( RealWithin(a/b,1.0,fudge));
+   return RealWithin(a/b,1.0,fudge);
 }
 
 static int MinMaxWithin(Spline *spline) {
@@ -215,72 +215,72 @@ static int MinMaxWithin(Spline *spline) {
     /*  treat it as a line. If the extrema are way outside the line segment */
     /*  then it's a line that backtracks on itself */
 
-    if ( (dx = spline->to->me.x - spline->from->me.x)<0 ) dx = -dx;
-    if ( (dy = spline->to->me.y - spline->from->me.y)<0 ) dy = -dy;
+    if ((dx = spline->to->me.x - spline->from->me.x)<0) dx = -dx;
+    if ((dy = spline->to->me.y - spline->from->me.y)<0) dy = -dy;
     which = dx<dy;
     SplineFindExtrema(&spline->splines[which],&t1,&t2);
-    if ( t1==-1 )
-     return( true );
+    if (t1==-1)
+     return true;
     w = ((spline->splines[which].a*t1 + spline->splines[which].b)*t1
 	     + spline->splines[which].c)*t1 + spline->splines[which].d;
-    if ( RealNear(w, (&spline->to->me.x)[which]) || RealNear(w, (&spline->from->me.x)[which]) )
+    if (RealNear(w, (&spline->to->me.x)[which]) || RealNear(w, (&spline->from->me.x)[which]))
 	/* Close enough */;
-    else if ( (w<(&spline->to->me.x)[which] && w<(&spline->from->me.x)[which]) ||
-	    (w>(&spline->to->me.x)[which] && w>(&spline->from->me.x)[which]) )
-     return( false );		/* Outside */
+    else if ((w<(&spline->to->me.x)[which] && w<(&spline->from->me.x)[which]) ||
+	    (w>(&spline->to->me.x)[which] && w>(&spline->from->me.x)[which]))
+     return false;		/* Outside */
 
     w = ((spline->splines[which].a*t2 + spline->splines[which].b)*t2
 	     + spline->splines[which].c)*t2 + spline->splines[which].d;
-    if ( RealNear(w, (&spline->to->me.x)[which]) || RealNear(w, (&spline->from->me.x)[which]) )
+    if (RealNear(w, (&spline->to->me.x)[which]) || RealNear(w, (&spline->from->me.x)[which]))
 	/* Close enough */;
-    else if ( (w<(&spline->to->me.x)[which] && w<(&spline->from->me.x)[which]) ||
-	    (w>(&spline->to->me.x)[which] && w>(&spline->from->me.x)[which]) )
-     return( false );		/* Outside */
+    else if ((w<(&spline->to->me.x)[which] && w<(&spline->from->me.x)[which]) ||
+	    (w>(&spline->to->me.x)[which] && w>(&spline->from->me.x)[which]))
+     return false;		/* Outside */
 
-   return( true );
+   return true;
 }
 
 int SplineIsLinear(Spline *spline) {
     bigreal t1,t2, t3,t4;
     int ret;
 
-    if ( spline->knownlinear )
-     return( true );
-    if ( spline->knowncurved )
-     return( false );
+    if (spline->knownlinear)
+     return true;
+    if (spline->knowncurved)
+     return false;
 
-    if ( spline->splines[0].a==0 && spline->splines[0].b==0 &&
-	    spline->splines[1].a==0 && spline->splines[1].b==0 )
-     return( true );
+    if (spline->splines[0].a==0 && spline->splines[0].b==0 &&
+	    spline->splines[1].a==0 && spline->splines[1].b==0)
+     return true;
 
     /* Something is linear if the control points lie on the line between the */
     /*  two base points */
 
     /* Vertical lines */
-    if ( RealNear(spline->from->me.x,spline->to->me.x) ) {
+    if (RealNear(spline->from->me.x,spline->to->me.x)) {
 	ret = RealNear(spline->from->me.x,spline->from->nextcp.x) &&
 	    RealNear(spline->from->me.x,spline->to->prevcp.x);
-	if ( ! ((spline->from->nextcp.y >= spline->from->me.y &&
+	if (! ((spline->from->nextcp.y >= spline->from->me.y &&
 		  spline->from->nextcp.y <= spline->to->me.y &&
 		  spline->to->prevcp.y >= spline->from->me.y &&
-		  spline->to->prevcp.y <= spline->to->me.y ) ||
+		  spline->to->prevcp.y <= spline->to->me.y) ||
 		 (spline->from->nextcp.y <= spline->from->me.y &&
 		  spline->from->nextcp.y >= spline->to->me.y &&
 		  spline->to->prevcp.y <= spline->from->me.y &&
-		  spline->to->prevcp.y >= spline->to->me.y )) )
+		  spline->to->prevcp.y >= spline->to->me.y)))
 	    ret = MinMaxWithin(spline);
     /* Horizontal lines */
-    } else if ( RealNear(spline->from->me.y,spline->to->me.y) ) {
+    } else if (RealNear(spline->from->me.y,spline->to->me.y)) {
 	ret = RealNear(spline->from->me.y,spline->from->nextcp.y) &&
 	    RealNear(spline->from->me.y,spline->to->prevcp.y);
-	if ( ! ((spline->from->nextcp.x >= spline->from->me.x &&
+	if (! ((spline->from->nextcp.x >= spline->from->me.x &&
 		  spline->from->nextcp.x <= spline->to->me.x &&
 		  spline->to->prevcp.x >= spline->from->me.x &&
 		  spline->to->prevcp.x <= spline->to->me.x) ||
 		 (spline->from->nextcp.x <= spline->from->me.x &&
 		  spline->from->nextcp.x >= spline->to->me.x &&
 		  spline->to->prevcp.x <= spline->from->me.x &&
-		  spline->to->prevcp.x >= spline->to->me.x)) )
+		  spline->to->prevcp.x >= spline->to->me.x)))
 	    ret = MinMaxWithin(spline);
     } else {
 	ret = true;
@@ -290,15 +290,15 @@ int SplineIsLinear(Spline *spline) {
 	t4 = (spline->to->me.x-spline->to->prevcp.x)/(spline->to->me.x-spline->from->me.x);
 	ret = (Within16RoundingErrors(t1,t2) || (RealApprox(t1,0) && RealApprox(t2,0))) &&
 		(Within16RoundingErrors(t3,t4) || (RealApprox(t3,0) && RealApprox(t4,0)));
-	if ( ret ) {
-	    if ( t1<0 || t2<0 || t3<0 || t4<0 ||
-		    t1>1 || t2>1 || t3>1 || t4>1 )
+	if (ret) {
+	    if (t1<0 || t2<0 || t3<0 || t4<0 ||
+		    t1>1 || t2>1 || t3>1 || t4>1)
 		ret = MinMaxWithin(spline);
 	}
     }
     spline->knowncurved = !ret;
     spline->knownlinear = ret;
-    if ( ret ) {
+    if (ret) {
 	/* A few places that if the spline is knownlinear then its splines[?] */
 	/*  are linear. So give the linear version and not that suggested by */
 	/*  the control points */
@@ -309,28 +309,28 @@ int SplineIsLinear(Spline *spline) {
 	spline->splines[1].d = spline->from->me.y;
 	spline->splines[1].c = spline->to->me.y-spline->from->me.y;
     }
-   return( ret );
+   return ret;
 }
 
 int SplineIsLinearMake(Spline *spline) {
 
-    if ( spline->islinear )
-     return( true );
-    if ( SplineIsLinear(spline)) {
+    if (spline->islinear)
+     return true;
+    if (SplineIsLinear(spline)) {
 	spline->islinear = spline->from->nonextcp = spline->to->noprevcp = true;
 	spline->from->nextcp = spline->from->me;
-	if ( spline->from->nonextcp && spline->from->noprevcp )
+	if (spline->from->nonextcp && spline->from->noprevcp)
 	    spline->from->pointtype = pt_corner;
-	else if ( spline->from->pointtype == pt_curve || spline->from->pointtype == pt_hvcurve )
+	else if (spline->from->pointtype == pt_curve || spline->from->pointtype == pt_hvcurve)
 	    spline->from->pointtype = pt_tangent;
 	spline->to->prevcp = spline->to->me;
-	if ( spline->to->nonextcp && spline->to->noprevcp )
+	if (spline->to->nonextcp && spline->to->noprevcp)
 	    spline->to->pointtype = pt_corner;
-	else if ( spline->to->pointtype == pt_curve || spline->to->pointtype == pt_hvcurve )
+	else if (spline->to->pointtype == pt_curve || spline->to->pointtype == pt_hvcurve)
 	    spline->to->pointtype = pt_tangent;
 	SplineRefigure(spline);
     }
-   return( spline->islinear );
+   return spline->islinear;
 }
 
 static Spline *IsLinearApprox(SplinePoint *from, SplinePoint *to,
@@ -339,23 +339,23 @@ static Spline *IsLinearApprox(SplinePoint *from, SplinePoint *to,
     int i;
 
     vx = to->me.x-from->me.x; vy = to->me.y-from->me.y;
-    if ( vx==0 && vy==0 ) {
-	for ( i=0; i<cnt; ++i )
-	    if ( mid[i].x != from->me.x || mid[i].y != from->me.y )
-	   return( NULL );
-    } else if ( fabs(vx)>fabs(vy) ) {
+    if (vx==0 && vy==0) {
+	for (i=0; i<cnt; ++i)
+	    if (mid[i].x != from->me.x || mid[i].y != from->me.y)
+	   return NULL;
+    } else if (fabs(vx)>fabs(vy)) {
 	slope = vy/vx;
-	for ( i=0; i<cnt; ++i )
-	    if ( !RealWithin(mid[i].y,from->me.y+slope*(mid[i].x-from->me.x),.7) )
-	   return( NULL );
+	for (i=0; i<cnt; ++i)
+	    if (!RealWithin(mid[i].y,from->me.y+slope*(mid[i].x-from->me.x),.7))
+	   return NULL;
     } else {
 	slope = vx/vy; 
-	for ( i=0; i<cnt; ++i )
-	    if ( !RealWithin(mid[i].x,from->me.x+slope*(mid[i].y-from->me.y),.7) )
-	   return( NULL );
+	for (i=0; i<cnt; ++i)
+	    if (!RealWithin(mid[i].x,from->me.x+slope*(mid[i].y-from->me.y),.7))
+	   return NULL;
     }
     from->nonextcp = to->noprevcp = true;
-   return( SplineMake(from,to,order2) );
+   return SplineMake(from,to,order2);
 }
 
 /* This routine should almost never be called now. It uses a flawed algorithm */
@@ -403,11 +403,11 @@ static int _ApproximateSplineFromPoints(SplinePoint *from, SplinePoint *to,
     memset(&nres,0,sizeof(nres)); memset(&pres,0,sizeof(pres));
 
     /* Add the initial and end points */
-    ts[0] = 2; for ( i=1; i<7; ++i ) ts[i] = 1;
+    ts[0] = 2; for (i=1; i<7; ++i) ts[i] = 1;
     xts[0] = from->me.x+to->me.x; yts[0] = from->me.y+to->me.y;
     xts[3] = xts[2] = xts[1] = to->me.x; yts[3] = yts[2] = yts[1] = to->me.y;
     nmin = pmin = 0; nmax = pmax = (to->me.x-from->me.x)*(to->me.x-from->me.x)+(to->me.y-from->me.y)*(to->me.y-from->me.y);
-    for ( i=0; i<cnt; ++i ) {
+    for (i=0; i<cnt; ++i) {
 	xts[0] += mid[i].x;
 	yts[0] += mid[i].y;
 	++ts[0];
@@ -426,17 +426,17 @@ static int _ApproximateSplineFromPoints(SplinePoint *from, SplinePoint *to,
 	ts[6] += (ttn*=tt);
 
 	test = (mid[i].x-from->me.x)*(to->me.x-from->me.x) + (mid[i].y-from->me.y)*(to->me.y-from->me.y);
-	if ( test<nmin ) nmin=test;
-	if ( test>nmax ) nmax=test;
+	if (test<nmin) nmin=test;
+	if (test>nmax) nmax=test;
 	test = (mid[i].x-to->me.x)*(from->me.x-to->me.x) + (mid[i].y-to->me.y)*(from->me.y-to->me.y);
-	if ( test<pmin ) pmin=test;
-	if ( test>pmax ) pmax=test;
+	if (test<pmin) pmin=test;
+	if (test>pmax) pmax=test;
     }
     pmin *= 1.2; pmax *= 1.2; nmin *= 1.2; nmax *= 1.2;
 
-    for ( j=0; j<3; ++j ) {
-	if ( order2 ) {
-	    if ( RealNear(ts[j+2],ts[j+1]) )
+    for (j=0; j<3; ++j) {
+	if (order2) {
+	    if (RealNear(ts[j+2],ts[j+1]))
     continue;
 	    /* This produces really bad results!!!! But I don't see what I can do to improve it */
 	    bx = (xts[j]-ts[j+1]*(to->me.x-from->me.x) - ts[j]*from->me.x) / (ts[j+2]-ts[j+1]);
@@ -468,7 +468,7 @@ static int _ApproximateSplineFromPoints(SplinePoint *from, SplinePoint *to,
 	    vy[1] -= ts[j+3]*vy[2];
 	    m[1][0] = 0; m[1][1] -= ts[j+3]; m[1][2] -= ts[j+3];
 
-	    if ( fabs(m[1][1])<fabs(m[0][1]) ) {
+	    if (fabs(m[1][1])<fabs(m[0][1])) {
 		bigreal temp;
 		temp = vx[1]; vx[1] = vx[0]; vx[0] = temp;
 		temp = vy[1]; vy[1] = vy[0]; vy[0] = temp;
@@ -508,41 +508,41 @@ static int _ApproximateSplineFromPoints(SplinePoint *from, SplinePoint *to,
 		(nextcp->y-from->me.y)*(to->me.y-from->me.y);
 	ptest = (prevcp->x-to->me.x)*(from->me.x-to->me.x) +
 		(prevcp->y-to->me.y)*(from->me.y-to->me.y);
-	if ( order2 &&
+	if (order2 &&
 		(test<nmin || test>nmax || ptest<pmin || ptest>pmax))
     continue;
-	if ( test>=nmin && test<=nmax ) {
+	if (test>=nmin && test<=nmax) {
 	    nres.x += nextcp->x; nres.y += nextcp->y;
 	    ++nrescnt;
 	}
-	if ( test>=pmin && test<=pmax ) {
+	if (test>=pmin && test<=pmax) {
 	    pres.x += prevcp->x; pres.y += prevcp->y;
 	    ++prescnt;
 	}
-	if ( nrescnt==1 && prescnt==1 )
+	if (nrescnt==1 && prescnt==1)
     break;
     }
 
     ret = 0;
-    if ( nrescnt>0 ) {
+    if (nrescnt>0) {
 	ret |= 1;
 	nextcp->x = nres.x/nrescnt;
 	nextcp->y = nres.y/nrescnt;
     } else
 	*nextcp = from->nextcp;
-    if ( prescnt>0 ) {
+    if (prescnt>0) {
 	ret |= 2;
 	prevcp->x = pres.x/prescnt;
 	prevcp->y = pres.y/prescnt;
     } else
 	*prevcp = to->prevcp;
-    if ( order2 && ret!=3 ) {
+    if (order2 && ret!=3) {
 	nextcp->x = (nextcp->x + prevcp->x)/2;
 	nextcp->y = (nextcp->y + prevcp->y)/2;
     }
-    if ( order2 )
+    if (order2)
 	*prevcp = *nextcp;
-   return( ret );
+   return ret;
 }
 
 static void TestForLinear(SplinePoint *from,SplinePoint *to) {
@@ -552,20 +552,20 @@ static void TestForLinear(SplinePoint *from,SplinePoint *to) {
     /* Did we make a line? */
     off.x = to->me.x-from->me.x; off.y = to->me.y-from->me.y;
     len = sqrt(off.x*off.x + off.y*off.y);
-    if ( len!=0 ) {
+    if (len!=0) {
 	off.x /= len; off.y /= len;
 	cpoff.x = from->nextcp.x-from->me.x; cpoff.y = from->nextcp.y-from->me.y;
 	len = sqrt(cpoff.x*cpoff.x + cpoff.y*cpoff.y);
-	if ( len!=0 ) {
+	if (len!=0) {
 	    cpoff.x /= len; cpoff.y /= len;
 	}
 	cpoff2.x = to->prevcp.x-from->me.x; cpoff2.y = to->prevcp.y-from->me.y;
 	len = sqrt(cpoff2.x*cpoff2.x + cpoff2.y*cpoff2.y);
-	if ( len!=0 ) {
+	if (len!=0) {
 	    cpoff2.x /= len; cpoff2.y /= len;
 	}
 	co = cpoff.x*off.y - cpoff.y*off.x; co2 = cpoff2.x*off.y - cpoff2.y*off.x;
-	if ( co<.05 && co>-.05 && co2<.05 && co2>-.05 ) {
+	if (co<.05 && co>-.05 && co2<.05 && co2>-.05) {
 	    from->nextcp = from->me; from->nonextcp = true;
 	    to->prevcp = to->me; to->noprevcp = true;
 	} else {
@@ -573,7 +573,7 @@ static void TestForLinear(SplinePoint *from,SplinePoint *to) {
 	    memset(&temp,0,sizeof(temp));
 	    temp.from = from; temp.to = to;
 	    SplineRefigure(&temp);
-	    if ( SplineIsLinear(&temp)) {
+	    if (SplineIsLinear(&temp)) {
 		from->nextcp = from->me; from->nonextcp = true;
 		to->prevcp = to->me; to->noprevcp = true;
 	    }
@@ -625,28 +625,28 @@ Spline *ApproximateSplineFromPoints(SplinePoint *from, SplinePoint *to,
     BasePoint nextcp, prevcp;
     int i;
 
-    if ( order2 ) {
+    if (order2) {
 	bigreal xconst, yconst, term /* Same for x and y */;
 	xconst = yconst = term = 0;
-	for ( i=0; i<cnt; ++i ) {
+	for (i=0; i<cnt; ++i) {
 	    bigreal t = mid[i].t, t2 = t*t;
 	    bigreal tfactor = (t-2*t2);
 	    term += 2*tfactor*tfactor;
 	    xconst += tfactor*(from->me.x*(1-2*t+t2) + to->me.x*t2 - mid[i].x);
 	    yconst += tfactor*(from->me.y*(1-2*t+t2) + to->me.y*t2 - mid[i].y);
 	}
-	if ( term!=0 ) {
+	if (term!=0) {
 	    BasePoint cp;
 	    cp.x = xconst/term; cp.y = yconst/term;
 	    from->nextcp = to->prevcp = cp;
-	   return( SplineMake2(from,to));
+	   return SplineMake2(from,to);
 	}
     } else {
 	bigreal xconst[2], yconst[2], f_term[2], t_term[2] /* Same for x and y */;
 	bigreal tfactor[2], determinant;
 	xconst[0] = xconst[1] = yconst[0] = yconst[1] =
 	    f_term[0] = f_term[1] = t_term[0] = t_term[1] =  0;
-	for ( i=0; i<cnt; ++i ) {
+	for (i=0; i<cnt; ++i) {
 	    bigreal t = mid[i].t, t2 = t*t, t3=t*t2;
 	    bigreal xc = (from->me.x*(1-3*t+3*t2-t3) + to->me.x*t3 - mid[i].x);
 	    bigreal yc = (from->me.y*(1-3*t+3*t2-t3) + to->me.y*t3 - mid[i].y);
@@ -662,10 +662,10 @@ Spline *ApproximateSplineFromPoints(SplinePoint *from, SplinePoint *to,
 	}
 	t_term[0] = f_term[1];
 	determinant = f_term[1]*t_term[0] - f_term[0]*t_term[1];
-	if ( determinant!=0 ) {
+	if (determinant!=0) {
 	    to->prevcp.x = -(xconst[0]*f_term[1]-xconst[1]*f_term[0])/determinant;
 	    to->prevcp.y = -(yconst[0]*f_term[1]-yconst[1]*f_term[0])/determinant;
-	    if ( f_term[0]!=0 ) {
+	    if (f_term[0]!=0) {
 		from->nextcp.x = (-xconst[0]-t_term[0]*to->prevcp.x)/f_term[0];
 		from->nextcp.y = (-yconst[0]-t_term[0]*to->prevcp.y)/f_term[0];
 	    } else {
@@ -673,23 +673,23 @@ Spline *ApproximateSplineFromPoints(SplinePoint *from, SplinePoint *to,
 		from->nextcp.y = (-yconst[1]-t_term[1]*to->prevcp.y)/f_term[1];
 	    }
 	    to->noprevcp = from->nonextcp = false;
-	   return( SplineMake3(from,to));
+	   return SplineMake3(from,to);
 	}
     }
 
-    if ( (spline = IsLinearApprox(from,to,mid,cnt,order2))!=NULL )
-     return( spline );
+    if ((spline = IsLinearApprox(from,to,mid,cnt,order2))!=NULL)
+     return spline;
 
     ret = _ApproximateSplineFromPoints(from,to,mid,cnt,&nextcp,&prevcp,order2);
 
-    if ( ret&1 ) {
+    if (ret&1) {
 	from->nextcp = nextcp;
 	from->nonextcp = false;
     } else {
 	from->nextcp = from->me;
 	from->nonextcp = true;
     }
-    if ( ret&2 ) {
+    if (ret&2) {
 	to->prevcp = prevcp;
 	to->noprevcp = false;
     } else {
@@ -698,7 +698,7 @@ Spline *ApproximateSplineFromPoints(SplinePoint *from, SplinePoint *to,
     }
     TestForLinear(from,to);
     spline = SplineMake(from,to,order2);
-   return( spline );
+   return spline;
 }
 
 static bigreal ClosestSplineSolve(Spline1D *sp,bigreal sought,bigreal close_to_t) {
@@ -711,15 +711,15 @@ static bigreal ClosestSplineSolve(Spline1D *sp,bigreal sought,bigreal close_to_t
 
     _CubicSolve(sp,sought,ts);
     best = 9e20; t= close_to_t;
-    for ( i=0; i<3; ++i ) if ( ts[i]>-.0001 && ts[i]<1.0001 ) {
-	if ( (test=ts[i]-close_to_t)<0 ) test = -test;
-	if ( test<best ) {
+    for (i=0; i<3; ++i) if (ts[i]>-.0001 && ts[i]<1.0001) {
+	if ((test=ts[i]-close_to_t)<0) test = -test;
+	if (test<best) {
 	    best = test;
 	    t = ts[i];
 	}
     }
 
-   return( t );
+   return t;
 }
 
 struct dotbounds {
@@ -738,24 +738,24 @@ static bigreal SigmaDeltas(Spline *spline,TPoint *mid, int cnt, DBounds *b, stru
     bigreal dot;
     int near_vert, near_horiz;
 
-    if ( (xdiff = to->me.x-from->me.x)<0 ) xdiff = -xdiff;
-    if ( (ydiff = to->me.y-from->me.y)<0 ) ydiff = -ydiff;
+    if ((xdiff = to->me.x-from->me.x)<0) xdiff = -xdiff;
+    if ((ydiff = to->me.y-from->me.y)<0) ydiff = -ydiff;
     near_vert = ydiff>2*xdiff;
     near_horiz = xdiff>2*ydiff;
 
     sum = 0;
-    for ( i=0; i<cnt; ++i ) {
-	if ( near_vert ) {
+    for (i=0; i<cnt; ++i) {
+	if (near_vert) {
 	    t = ClosestSplineSolve(&spline->splines[1],mid[i].y,mid[i].t);
-	} else if ( near_horiz ) {
+	} else if (near_horiz) {
 	    t = ClosestSplineSolve(&spline->splines[0],mid[i].x,mid[i].t);
 	} else {
 	    t = (ClosestSplineSolve(&spline->splines[1],mid[i].y,mid[i].t) +
 		    ClosestSplineSolve(&spline->splines[0],mid[i].x,mid[i].t))/2;
 	}
-	temp = mid[i].x - ( ((spline->splines[0].a*t+spline->splines[0].b)*t+spline->splines[0].c)*t + spline->splines[0].d );
+	temp = mid[i].x - (((spline->splines[0].a*t+spline->splines[0].b)*t+spline->splines[0].c)*t + spline->splines[0].d);
 	sum += temp*temp;
-	temp = mid[i].y - ( ((spline->splines[1].a*t+spline->splines[1].b)*t+spline->splines[1].c)*t + spline->splines[1].d );
+	temp = mid[i].y - (((spline->splines[1].a*t+spline->splines[1].b)*t+spline->splines[1].c)*t + spline->splines[1].d);
 	sum += temp*temp;
     }
 
@@ -765,45 +765,45 @@ static bigreal SigmaDeltas(Spline *spline,TPoint *mid, int cnt, DBounds *b, stru
     /* And get really unhappy if the spline extends beyond the end-points */
     db2.min = 0; db2.max = db->len;
     SplineFindExtrema(&spline->splines[0],&ts[0],&ts[1]);
-    for ( i=0; i<2; ++i ) {
-	if ( ts[i]!=-1 ) {
+    for (i=0; i<2; ++i) {
+	if (ts[i]!=-1) {
 	    x = ((spline->splines[0].a*ts[i]+spline->splines[0].b)*ts[i]+spline->splines[0].c)*ts[i] + spline->splines[0].d;
 	    y = ((spline->splines[1].a*ts[i]+spline->splines[1].b)*ts[i]+spline->splines[1].c)*ts[i] + spline->splines[1].d;
-	    if ( x<b->minx )
+	    if (x<b->minx)
 		sum += (x-b->minx)*(x-b->minx);
-	    else if ( x>b->maxx )
+	    else if (x>b->maxx)
 		sum += (x-b->maxx)*(x-b->maxx);
 	    dot = (x-db->base.x)*db->unit.x + (y-db->base.y)*db->unit.y;
-	    if ( dot<db2.min ) db2.min = dot;
-	    if ( dot>db2.max ) db2.max = dot;
+	    if (dot<db2.min) db2.min = dot;
+	    if (dot>db2.max) db2.max = dot;
 	}
     }
     SplineFindExtrema(&spline->splines[1],&ts[0],&ts[1]);
-    for ( i=0; i<2; ++i ) {
-	if ( ts[i]!=-1 ) {
+    for (i=0; i<2; ++i) {
+	if (ts[i]!=-1) {
 	    x = ((spline->splines[0].a*ts[i]+spline->splines[0].b)*ts[i]+spline->splines[0].c)*ts[i] + spline->splines[0].d;
 	    y = ((spline->splines[1].a*ts[i]+spline->splines[1].b)*ts[i]+spline->splines[1].c)*ts[i] + spline->splines[1].d;
-	    if ( y<b->miny )
+	    if (y<b->miny)
 		sum += (y-b->miny)*(y-b->miny);
-	    else if ( y>b->maxy )
+	    else if (y>b->maxy)
 		sum += (y-b->maxy)*(y-b->maxy);
 	    dot = (x-db->base.x)*db->unit.x + (y-db->base.y)*db->unit.y;
-	    if ( dot<db2.min ) db2.min = dot;
-	    if ( dot>db2.max ) db2.max = dot;
+	    if (dot<db2.min) db2.min = dot;
+	    if (dot>db2.max) db2.max = dot;
 	}
     }
 
     /* Big penalty for going beyond the range of the desired spline */
-    if ( db->min==0 && db2.min<0 )
+    if (db->min==0 && db2.min<0)
 	sum += 10000 + db2.min*db2.min;
-    else if ( db2.min<db->min )
+    else if (db2.min<db->min)
 	sum += 100 + (db2.min-db->min)*(db2.min-db->min);
-    if ( db->max==db->len && db2.max>db->len )
+    if (db->max==db->len && db2.max>db->len)
 	sum += 10000 + (db2.max-db->max)*(db2.max-db->max);
-    else if ( db2.max>db->max )
+    else if (db2.max>db->max)
 	sum += 100 + (db2.max-db->max)*(db2.max-db->max);
 
-   return( sum );
+   return sum;
 }
 
 static void ApproxBounds(DBounds *b,TPoint *mid, int cnt, struct dotbounds *db) {
@@ -813,23 +813,23 @@ static void ApproxBounds(DBounds *b,TPoint *mid, int cnt, struct dotbounds *db) 
     b->minx = b->maxx = mid[0].x;
     b->miny = b->maxy = mid[0].y;
     db->min = 0; db->max = db->len;
-    for ( i=1; i<cnt; ++i ) {
-	if ( mid[i].x>b->maxx ) b->maxx = mid[i].x;
-	if ( mid[i].x<b->minx ) b->minx = mid[i].x;
-	if ( mid[i].y>b->maxy ) b->maxy = mid[i].y;
-	if ( mid[i].y<b->miny ) b->miny = mid[i].y;
+    for (i=1; i<cnt; ++i) {
+	if (mid[i].x>b->maxx) b->maxx = mid[i].x;
+	if (mid[i].x<b->minx) b->minx = mid[i].x;
+	if (mid[i].y>b->maxy) b->maxy = mid[i].y;
+	if (mid[i].y<b->miny) b->miny = mid[i].y;
 	dot = (mid[i].x-db->base.x)*db->unit.x + (mid[i].y-db->base.y)*db->unit.y;
-	if ( dot<db->min ) db->min = dot;
-	if ( dot>db->max ) db->max = dot;
+	if (dot<db->min) db->min = dot;
+	if (dot>db->max) db->max = dot;
     }
 }
 
-static int GoodCurve(SplinePoint *sp, int check_prev ) {
+static int GoodCurve(SplinePoint *sp, int check_prev) {
     bigreal dx, dy, lenx, leny;
 
-    if ( sp->pointtype!=pt_curve && sp->pointtype!=pt_hvcurve )
-     return( false );
-    if ( check_prev ) {
+    if (sp->pointtype!=pt_curve && sp->pointtype!=pt_hvcurve)
+     return false;
+    if (check_prev) {
 	dx = sp->me.x - sp->prevcp.x;
 	dy = sp->me.y - sp->prevcp.y;
     } else {
@@ -837,28 +837,28 @@ static int GoodCurve(SplinePoint *sp, int check_prev ) {
 	dy = sp->me.y - sp->nextcp.y;
     }
     /* If the cp is very close to the base point the point might as well be a corner */
-    if ( dx<0 ) dx = -dx;
-    if ( dy<0 ) dy = -dy;
-    if ( dx+dy<1 )
-     return( false );
+    if (dx<0) dx = -dx;
+    if (dy<0) dy = -dy;
+    if (dx+dy<1)
+     return false;
 
-    if ( check_prev ) {
-	if ( sp->prev==NULL )
-	 return( true );
+    if (check_prev) {
+	if (sp->prev==NULL)
+	 return true;
 	lenx = sp->me.x - sp->prev->from->me.x;
 	leny = sp->me.y - sp->prev->from->me.y;
     } else {
-	if ( sp->next==NULL )
-	 return( true );
+	if (sp->next==NULL)
+	 return true;
 	lenx = sp->me.x - sp->next->to->me.x;
 	leny = sp->me.y - sp->next->to->me.y;
     }
-    if ( lenx<0 ) lenx = -lenx;
-    if ( leny<0 ) leny = -leny;
-    if ( 50*(dx+dy) < lenx+leny )
-     return( false );
+    if (lenx<0) lenx = -lenx;
+    if (leny<0) leny = -leny;
+    if (50*(dx+dy) < lenx+leny)
+     return false;
 
-   return( true );
+   return true;
 }
 
 /* pf == point from (start point) */
@@ -932,33 +932,33 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
     /* Or if one end-point is a tangent but the point defining the tangent's */
     /*  slope is being removed then allow the slope to vary */
     /* Except if the slope is horizontal or vertical then keep it fixed */
-    if ( ( !from->nonextcp && ( from->nextcp.x==from->me.x || from->nextcp.y==from->me.y)) ||
-	    (!to->noprevcp && ( to->prevcp.x==to->me.x || to->prevcp.y==to->me.y)) )
+    if ((!from->nonextcp && (from->nextcp.x==from->me.x || from->nextcp.y==from->me.y)) ||
+	    (!to->noprevcp && (to->prevcp.x==to->me.x || to->prevcp.y==to->me.y)))
 	/* Preserve the slope */;
-    else if ( ((from->pointtype == pt_corner && from->nonextcp) ||
+    else if (((from->pointtype == pt_corner && from->nonextcp) ||
 		(from->pointtype == pt_tangent &&
 			((from->nonextcp && from->noprevcp) || !from->noprevcp))) &&
 	    ((to->pointtype == pt_corner && to->noprevcp) ||
 		(to->pointtype == pt_tangent &&
-			((to->nonextcp && to->noprevcp) || !to->nonextcp))) ) {
+			((to->nonextcp && to->noprevcp) || !to->nonextcp)))) {
 	from->pointtype = to->pointtype = pt_corner;
-       return( ApproximateSplineFromPoints(from,to,mid,cnt,order2) );
+       return ApproximateSplineFromPoints(from,to,mid,cnt,order2);
     }
 
     /* If we are going to honour the slopes of a quadratic spline, there is */
     /*  only one possibility */
-    if ( order2 ) {
-	if ( from->nonextcp )
+    if (order2) {
+	if (from->nonextcp)
 	    from->nextcp = from->next->to->me;
-	if ( to->noprevcp )
+	if (to->noprevcp)
 	    to->prevcp = to->prev->from->me;
 	from->nonextcp = to->noprevcp = false;
 	fromunit.x = from->nextcp.x-from->me.x; fromunit.y = from->nextcp.y-from->me.y;
 	tounit.x = to->prevcp.x-to->me.x; tounit.y = to->prevcp.y-to->me.y;
 
-	if ( !IntersectLines(&nextcp,&from->nextcp,&from->me,&to->prevcp,&to->me) ||
+	if (!IntersectLines(&nextcp,&from->nextcp,&from->me,&to->prevcp,&to->me) ||
 		(nextcp.x-from->me.x)*fromunit.x + (nextcp.y-from->me.y)*fromunit.y < 0 ||
-		(nextcp.x-to->me.x)*tounit.x + (nextcp.y-to->me.y)*tounit.y < 0 ) {
+		(nextcp.x-to->me.x)*tounit.x + (nextcp.y-to->me.y)*tounit.y < 0) {
 	    /* If the slopes don't intersect then use a line */
 	    /*  (or if the intersection is patently absurd) */
 	    from->nonextcp = to->noprevcp = true;
@@ -969,15 +969,15 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 	    from->nextcp = to->prevcp = nextcp;
 	    from->nonextcp = to->noprevcp = false;
 	}
-       return( SplineMake2(from,to));
+       return SplineMake2(from,to);
     }
     /* From here down we are only working with cubic splines */
 
-    if ( cnt==0 ) {
+    if (cnt==0) {
 	/* Just use what we've got, no data to improve it */
 	/* But we do sometimes get some cps which are too big */
 	bigreal len = sqrt((to->me.x-from->me.x)*(to->me.x-from->me.x) + (to->me.y-from->me.y)*(to->me.y-from->me.y));
-	if ( len==0 ) {
+	if (len==0) {
 	    from->nonextcp = to->noprevcp = true;
 	    from->nextcp = from->me;
 	    to->prevcp = to->me;
@@ -988,38 +988,38 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 	    poff.x = to->me.x-to->prevcp.x; poff.y = to->me.y-to->prevcp.y;
 	    nlen = sqrt(noff.x*noff.x + noff.y+noff.y);
 	    plen = sqrt(poff.x*poff.x + poff.y+poff.y);
-	    if ( nlen>len/3 ) {
+	    if (nlen>len/3) {
 		noff.x *= len/3/nlen; noff.y *= len/3/nlen;
 		from->nextcp.x = from->me.x + noff.x;
 		from->nextcp.y = from->me.y + noff.y;
 	    }
-	    if ( plen>len/3 ) {
+	    if (plen>len/3) {
 		poff.x *= len/3/plen; poff.y *= len/3/plen;
 		to->prevcp.x = to->me.x + poff.x;
 		to->prevcp.y = to->me.y + poff.y;
 	    }
 	}
-       return( SplineMake3(from,to));
+       return SplineMake3(from,to);
     }
 
-    if ( to->prev!=NULL && (( to->noprevcp && to->nonextcp ) || to->prev->knownlinear )) {
+    if (to->prev!=NULL && ((to->noprevcp && to->nonextcp) || to->prev->knownlinear)) {
 	tounit.x = to->prev->from->me.x-to->me.x; tounit.y = to->prev->from->me.y-to->me.y;
-    } else if ( !to->noprevcp || to->pointtype == pt_corner ) {
+    } else if (!to->noprevcp || to->pointtype == pt_corner) {
 	tounit.x = to->prevcp.x-to->me.x; tounit.y = to->prevcp.y-to->me.y;
     } else {
 	tounit.x = to->me.x-to->nextcp.x; tounit.y = to->me.y-to->nextcp.y;
     }
     tlen = sqrt(tounit.x*tounit.x + tounit.y*tounit.y);
-    if ( from->next!=NULL && (( from->noprevcp && from->nonextcp ) || from->next->knownlinear) ) {
+    if (from->next!=NULL && ((from->noprevcp && from->nonextcp) || from->next->knownlinear)) {
 	fromunit.x = from->next->to->me.x-from->me.x; fromunit.y = from->next->to->me.y-from->me.y;
-    } else if ( !from->nonextcp || from->pointtype == pt_corner ) {
+    } else if (!from->nonextcp || from->pointtype == pt_corner) {
 	fromunit.x = from->nextcp.x-from->me.x; fromunit.y = from->nextcp.y-from->me.y;
     } else {
 	fromunit.x = from->me.x-from->prevcp.x; fromunit.y = from->me.y-from->prevcp.y;
     }
     flen = sqrt(fromunit.x*fromunit.x + fromunit.y*fromunit.y);
-    if ( tlen==0 || flen==0 ) {
-	if ( from->next!=NULL )
+    if (tlen==0 || flen==0) {
+	if (from->next!=NULL)
 	    temp = *from->next;
 	else {
 	    memset(&temp,0,sizeof(temp));
@@ -1028,25 +1028,25 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 	    from->next = to->prev = NULL;
 	}
     }
-    if ( tlen==0 ) {
-	if ( (to->pointtype==pt_curve || to->pointtype==pt_hvcurve) &&
-		to->next && !to->nonextcp ) {
+    if (tlen==0) {
+	if ((to->pointtype==pt_curve || to->pointtype==pt_hvcurve) &&
+		to->next && !to->nonextcp) {
 	    tounit.x = to->me.x-to->nextcp.x; tounit.y = to->me.y-to->nextcp.y;
 	} else {
-	    tounit.x = -( (3*temp.splines[0].a*.9999+2*temp.splines[0].b)*.9999+temp.splines[0].c );
-	    tounit.y = -( (3*temp.splines[1].a*.9999+2*temp.splines[1].b)*.9999+temp.splines[1].c );
+	    tounit.x = -((3*temp.splines[0].a*.9999+2*temp.splines[0].b)*.9999+temp.splines[0].c);
+	    tounit.y = -((3*temp.splines[1].a*.9999+2*temp.splines[1].b)*.9999+temp.splines[1].c);
 	}
 	tlen = sqrt(tounit.x*tounit.x + tounit.y*tounit.y);
     }
     tounit.x /= tlen; tounit.y /= tlen;
 
-    if ( flen==0 ) {
-	if ( (from->pointtype==pt_curve || from->pointtype==pt_hvcurve) &&
-		from->prev && !from->noprevcp ) {
+    if (flen==0) {
+	if ((from->pointtype==pt_curve || from->pointtype==pt_hvcurve) &&
+		from->prev && !from->noprevcp) {
 	    fromunit.x = from->me.x-from->prevcp.x; fromunit.y = from->me.y-from->prevcp.y;
 	} else {
-	    fromunit.x = ( (3*temp.splines[0].a*.0001+2*temp.splines[0].b)*.0001+temp.splines[0].c );
-	    fromunit.y = ( (3*temp.splines[1].a*.0001+2*temp.splines[1].b)*.0001+temp.splines[1].c );
+	    fromunit.x = ((3*temp.splines[0].a*.0001+2*temp.splines[0].b)*.0001+temp.splines[0].c);
+	    fromunit.y = ((3*temp.splines[1].a*.0001+2*temp.splines[1].b)*.0001+temp.splines[1].c);
 	}
 	flen = sqrt(fromunit.x*fromunit.x + fromunit.y*fromunit.y);
     }
@@ -1054,22 +1054,22 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 
     ftunit.x = (to->me.x-from->me.x); ftunit.y = (to->me.y-from->me.y);
     ftlen = sqrt(ftunit.x*ftunit.x + ftunit.y*ftunit.y);
-    if ( ftlen!=0 ) {
+    if (ftlen!=0) {
 	ftunit.x /= ftlen; ftunit.y /= ftlen;
     }
 
-    if ( (dot=fromunit.x*tounit.y - fromunit.y*tounit.x)<.0001 && dot>-.0001 &&
-	    (dot=ftunit.x*tounit.y - ftunit.y*tounit.x)<.0001 && dot>-.0001 ) {
+    if ((dot=fromunit.x*tounit.y - fromunit.y*tounit.x)<.0001 && dot>-.0001 &&
+	    (dot=ftunit.x*tounit.y - ftunit.y*tounit.x)<.0001 && dot>-.0001) {
 	/* It's a line. Slopes are parallel, and parallel to vector between (from,to) */
 	from->nonextcp = to->noprevcp = true;
 	from->nextcp = from->me; to->prevcp = to->me;
-       return( SplineMake3(from,to));
+       return SplineMake3(from,to);
     }
 
     pt_pf_x = to->me.x - from->me.x;
     pt_pf_y = to->me.y - from->me.y;
     consts[0] = consts[1] = rt_terms[0] = rt_terms[1] = rf_terms[0] = rf_terms[1] = 0;
-    for ( i=0; i<cnt; ++i ) {
+    for (i=0; i<cnt; ++i) {
 	bigreal t = mid[i].t, t2 = t*t, t3=t2*t;
 	bigreal factor_from = t-2*t2+t3;
 	bigreal factor_to = t2-t3;
@@ -1082,56 +1082,56 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 	bigreal rt_term_x = -temp2*tounit.x;
 	bigreal rt_term_y = -temp2*tounit.y;
 
-	consts[0] += factor_from*( fromunit.x*const_x + fromunit.y*const_y );
-	consts[1] += factor_to *( -tounit.x*const_x + -tounit.y*const_y);
-	rf_terms[0] += factor_from*( fromunit.x*rf_term_x + fromunit.y*rf_term_y);
-	rf_terms[1] += factor_to*( -tounit.x*rf_term_x + -tounit.y*rf_term_y);
-	rt_terms[0] += factor_from*( fromunit.x*rt_term_x + fromunit.y*rt_term_y);
-	rt_terms[1] += factor_to*( -tounit.x*rt_term_x + -tounit.y*rt_term_y);
+	consts[0] += factor_from*(fromunit.x*const_x + fromunit.y*const_y);
+	consts[1] += factor_to *(-tounit.x*const_x + -tounit.y*const_y);
+	rf_terms[0] += factor_from*(fromunit.x*rf_term_x + fromunit.y*rf_term_y);
+	rf_terms[1] += factor_to*(-tounit.x*rf_term_x + -tounit.y*rf_term_y);
+	rt_terms[0] += factor_from*(fromunit.x*rt_term_x + fromunit.y*rt_term_y);
+	rt_terms[1] += factor_to*(-tounit.x*rt_term_x + -tounit.y*rt_term_y);
     }
 
  /* I've only seen singular matrices (determinant==0) when cnt==1 */
  /* but even with cnt==1 the determinant is usually non-0 (16 times out of 17)*/
     determinant = (rt_terms[0]*rf_terms[1]-rt_terms[1]*rf_terms[0]);
-    if ( determinant!=0 ) {
+    if (determinant!=0) {
 	bigreal rt, rf;
 	rt = (consts[1]*rf_terms[0]-consts[0]*rf_terms[1])/determinant;
-	if ( rf_terms[0]!=0 )
+	if (rf_terms[0]!=0)
 	    rf = -(consts[0]+rt*rt_terms[0])/rf_terms[0];
-	else /* if ( rf_terms[1]!=0 ) This can't happen, otherwise the determinant would be 0 */
+	else /* if (rf_terms[1]!=0) This can't happen, otherwise the determinant would be 0 */
 	    rf = -(consts[1]+rt*rt_terms[1])/rf_terms[1];
 	/* If we get bad values (ones that point diametrically opposed to what*/
 	/*  we need), then fix that factor at 0, and see what we get for the */
 	/*  other */
-	if ( rf>=0 && rt>0 && rf_terms[0]!=0 &&
-		(rf = -consts[0]/rf_terms[0])>0 ) {
+	if (rf>=0 && rt>0 && rf_terms[0]!=0 &&
+		(rf = -consts[0]/rf_terms[0])>0) {
 	    rt = 0;
-	} else if ( rf<0 && rt<=0 && rt_terms[1]!=0 &&
-		(rt = -consts[1]/rt_terms[1])<0 ) {
+	} else if (rf<0 && rt<=0 && rt_terms[1]!=0 &&
+		(rt = -consts[1]/rt_terms[1])<0) {
 	    rf = 0;
 	}
-	if ( rt<=0 && rf>=0 ) {
+	if (rt<=0 && rf>=0) {
 	    from->nextcp.x = from->me.x + rf*fromunit.x;
 	    from->nextcp.y = from->me.y + rf*fromunit.y;
 	    to->prevcp.x = to->me.x - rt*tounit.x;
 	    to->prevcp.y = to->me.y - rt*tounit.y;
 	    from->nonextcp = rf==0;
 	    to->noprevcp = rt==0;
-	   return( SplineMake3(from,to));
+	   return SplineMake3(from,to);
 	}
     }
 
     trylen = (to->me.x-from->me.x)*fromunit.x + (to->me.y-from->me.y)*fromunit.y;
-    if ( trylen>flen ) flen = trylen;
+    if (trylen>flen) flen = trylen;
     
     trylen = (from->me.x-to->me.x)*tounit.x + (from->me.y-to->me.y)*tounit.y;
-    if ( trylen>tlen ) tlen = trylen;
+    if (trylen>tlen) tlen = trylen;
 
-    for ( i=0; i<cnt; ++i ) {
+    for (i=0; i<cnt; ++i) {
 	trylen = (mid[i].x-from->me.x)*fromunit.x + (mid[i].y-from->me.y)*fromunit.y;
-	if ( trylen>flen ) flen = trylen;
+	if (trylen>flen) flen = trylen;
 	trylen = (mid[i].x-to->me.x)*tounit.x + (mid[i].y-to->me.y)*tounit.y;
-	if ( trylen>tlen ) tlen = trylen;
+	if (trylen>tlen) tlen = trylen;
     }
 
     fdotft = fromunit.x*ftunit.x + fromunit.y*ftunit.y;
@@ -1146,7 +1146,7 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
     db.len = ftlen;
     ApproxBounds(&b,mid,cnt,&db);
 
-    for ( k=0; k<TRY_CNT; ++k ) {
+    for (k=0; k<TRY_CNT; ++k) {
 	bestdiff[k] = 1e20;
 	besti[k] = -1; bestj[k] = -1;
     }
@@ -1157,16 +1157,16 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
     to->noprevcp = false;
     memset(&temp,0,sizeof(Spline));
     temp.from = from; temp.to = to;
-    for ( i=1; i<DECIMATION; ++i ) {
+    for (i=1; i<DECIMATION; ++i) {
 	from->nextcp.x += fdiff*fromunit.x; from->nextcp.y += fdiff*fromunit.y;
 	to->prevcp = to->me;
-	for ( j=1; j<DECIMATION; ++j ) {
+	for (j=1; j<DECIMATION; ++j) {
 	    to->prevcp.x += tdiff*tounit.x; to->prevcp.y += tdiff*tounit.y;
 	    SplineRefigure(&temp);
 	    curdiff = SigmaDeltas(&temp,mid,cnt,&b,&db);
-	    for ( k=0; k<TRY_CNT; ++k ) {
-		if ( curdiff<bestdiff[k] ) {
-		    for ( l=TRY_CNT-1; l>k; --l ) {
+	    for (k=0; k<TRY_CNT; ++k) {
+		if (curdiff<bestdiff[k]) {
+		    for (l=TRY_CNT-1; l>k; --l) {
 			bestdiff[l] = bestdiff[l-1];
 			besti[l] = besti[l-1];
 			bestj[l] = bestj[l-1];
@@ -1182,21 +1182,21 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
     finaldiff = 1e20;
     offn_ = offp_ = -1;
     spline = SplineMake(from,to,false);
-    for ( k=-1; k<TRY_CNT; ++k ) {
-	if ( k<0 ) {
+    for (k=-1; k<TRY_CNT; ++k) {
+	if (k<0) {
 	    BasePoint nextcp, prevcp;
 	    bigreal temp1, temp2;
 	    int ret = _ApproximateSplineFromPoints(from,to,mid,cnt,&nextcp,&prevcp,false);
 	    /* sometimes least squares gives us the right answer */
-	    if ( !(ret&1) || !(ret&2))
+	    if (!(ret&1) || !(ret&2))
     continue;
 	    temp1 = (prevcp.x-to->me.x)*tounit.x + (prevcp.y-to->me.y)*tounit.y;
 	    temp2 = (nextcp.x-from->me.x)*fromunit.x + (nextcp.y-from->me.y)*fromunit.y;
-	    if ( temp1<=0 || temp2<=0 )		/* A nice solution... but the control points are diametrically opposed to what they should be */
+	    if (temp1<=0 || temp2<=0)		/* A nice solution... but the control points are diametrically opposed to what they should be */
     continue;
 	    tlen = temp1; flen = temp2;
 	} else {
-	    if ( bestj[k]<0 || besti[k]<0 )
+	    if (bestj[k]<0 || besti[k]<0)
     continue;
 	    tlen = bestj[k]*tdiff; flen = besti[k]*fdiff;
 	}
@@ -1222,7 +1222,7 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 	    SplineRefigure(spline);
 	    fsdiff = SigmaDeltas(spline,mid,cnt,&b,&db);
 	    from->nextcp.x = from->me.x + offn*fromunit.x; from->nextcp.y = from->me.y + offn*fromunit.y;
-	    if ( offn-incrn<=0 )
+	    if (offn-incrn<=0)
 		fsdiff += 1e10;
 
 	    to->prevcp.x = to->me.x + (offp+incrp)*tounit.x; to->prevcp.y = to->me.y + (offp+incrp)*tounit.y;
@@ -1232,59 +1232,59 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 	    SplineRefigure(spline);
 	    tsdiff = SigmaDeltas(spline,mid,cnt,&b,&db);
 	    to->prevcp.x = to->me.x + offp*tounit.x; to->prevcp.y = to->me.y + offp*tounit.y;
-	    if ( offp-incrp<=0 )
+	    if (offp-incrp<=0)
 		tsdiff += 1e10;
 
-	    if ( offn>=incrn && fsdiff<curdiff &&
+	    if (offn>=incrn && fsdiff<curdiff &&
 		    (fsdiff<fadiff && fsdiff<tsdiff && fsdiff<tadiff)) {
 		offn -= incrn;
-		if ( bettern>0 )
+		if (bettern>0)
 		    incrn /= 2;
 		bettern = -1;
 		nocnt = 0;
 		curdiff = fsdiff;
-	    } else if ( offn+incrn<fmax && fadiff<curdiff &&
+	    } else if (offn+incrn<fmax && fadiff<curdiff &&
 		    (fadiff<=fsdiff && fadiff<tsdiff && fadiff<tadiff)) {
 		offn += incrn;
-		if ( bettern<0 )
+		if (bettern<0)
 		    incrn /= 2;
 		bettern = 1;
 		nocnt = 0;
 		curdiff = fadiff;
-	    } else if ( offp>=incrp && tsdiff<curdiff &&
+	    } else if (offp>=incrp && tsdiff<curdiff &&
 		    (tsdiff<=fsdiff && tsdiff<=fadiff && tsdiff<tadiff)) {
 		offp -= incrp;
-		if ( betterp>0 )
+		if (betterp>0)
 		    incrp /= 2;
 		betterp = -1;
 		nocnt = 0;
 		curdiff = tsdiff;
-	    } else if ( offp+incrp<tmax && tadiff<curdiff &&
+	    } else if (offp+incrp<tmax && tadiff<curdiff &&
 		    (tadiff<=fsdiff && tadiff<=fadiff && tadiff<=tsdiff)) {
 		offp += incrp;
-		if ( betterp<0 )
+		if (betterp<0)
 		    incrp /= 2;
 		betterp = 1;
 		nocnt = 0;
 		curdiff = tadiff;
 	    } else {
-		if ( ++nocnt > 6 )
+		if (++nocnt > 6)
 	break;
 		incrn /= 2;
 		incrp /= 2;
 	    }
-	    if ( curdiff<1 )
+	    if (curdiff<1)
 	break;
-	    if ( incrp<tdiff/1024 || incrn<fdiff/1024 )
+	    if (incrp<tdiff/1024 || incrn<fdiff/1024)
 	break;
-	    if ( ++totcnt>200 )
+	    if (++totcnt>200)
 	break;
-	    if ( offn<0 || offp<0 ) {
+	    if (offn<0 || offp<0) {
 		IError("Approximation got inverse control points");
 	break;
 	    }
 	}
-	if ( curdiff<finaldiff ) {
+	if (curdiff<finaldiff) {
 	    finaldiff = curdiff;
 	    offn_ = offn;
 	    offp_ = offp;
@@ -1302,7 +1302,7 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
     /*TestForLinear(from,to);*/
     SplineRefigure(spline);
 
-   return( spline );
+   return spline;
 }
 #undef TRY_CNT
 #undef DECIMATION
@@ -1312,26 +1312,26 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 static bigreal SplineLenApprox(Spline *spline) {
     bigreal len, slen, temp;
 
-    if ( (temp = spline->to->me.x-spline->from->me.x)<0 ) temp = -temp;
+    if ((temp = spline->to->me.x-spline->from->me.x)<0) temp = -temp;
     len = temp;
-    if ( (temp = spline->to->me.y-spline->from->me.y)<0 ) temp = -temp;
+    if ((temp = spline->to->me.y-spline->from->me.y)<0) temp = -temp;
     len += temp;
-    if ( !spline->to->noprevcp || !spline->from->nonextcp ) {
-	if ( (temp = spline->from->nextcp.x-spline->from->me.x)<0 ) temp = -temp;
+    if (!spline->to->noprevcp || !spline->from->nonextcp) {
+	if ((temp = spline->from->nextcp.x-spline->from->me.x)<0) temp = -temp;
 	slen = temp;
-	if ( (temp = spline->from->nextcp.y-spline->from->me.y)<0 ) temp = -temp;
+	if ((temp = spline->from->nextcp.y-spline->from->me.y)<0) temp = -temp;
 	slen += temp;
-	if ( (temp = spline->to->prevcp.x-spline->from->nextcp.x)<0 ) temp = -temp;
+	if ((temp = spline->to->prevcp.x-spline->from->nextcp.x)<0) temp = -temp;
 	slen += temp;
-	if ( (temp = spline->to->prevcp.y-spline->from->nextcp.y)<0 ) temp = -temp;
+	if ((temp = spline->to->prevcp.y-spline->from->nextcp.y)<0) temp = -temp;
 	slen += temp;
-	if ( (temp = spline->to->me.x-spline->to->prevcp.x)<0 ) temp = -temp;
+	if ((temp = spline->to->me.x-spline->to->prevcp.x)<0) temp = -temp;
 	slen += temp;
-	if ( (temp = spline->to->me.y-spline->to->prevcp.y)<0 ) temp = -temp;
+	if ((temp = spline->to->me.y-spline->to->prevcp.y)<0) temp = -temp;
 	slen += temp;
 	len = (len + slen)/2;
     }
-   return( len );
+   return len;
 }
 
 bigreal SplineLength(Spline *spline) {
@@ -1341,13 +1341,13 @@ bigreal SplineLength(Spline *spline) {
     bigreal curx, cury;
 
     len = 0;
-    for ( t=1.0/128; t<=1.0001 ; t+=1.0/128 ) {
+    for (t=1.0/128; t<=1.0001 ; t+=1.0/128) {
 	curx = ((spline->splines[0].a*t+spline->splines[0].b)*t+spline->splines[0].c)*t;
 	cury = ((spline->splines[1].a*t+spline->splines[1].b)*t+spline->splines[1].c)*t;
-	len += sqrt( (curx-lastx)*(curx-lastx) + (cury-lasty)*(cury-lasty) );
+	len += sqrt((curx-lastx)*(curx-lastx) + (cury-lasty)*(cury-lasty));
 	lastx = curx; lasty = cury;
     }
-   return( len );
+   return len;
 }
 
 Spline *PathFindDistance(SplineSet *path,bigreal d,bigreal *_t) {
@@ -1356,28 +1356,28 @@ Spline *PathFindDistance(SplineSet *path,bigreal d,bigreal *_t) {
     bigreal curx, cury;
     bigreal t;
 
-    for ( s=path->first->next; s!=NULL && s!=first; s=s->to->next ) {
+    for (s=path->first->next; s!=NULL && s!=first; s=s->to->next) {
 	bigreal lastx = 0, lasty = 0;
-	for ( t=1.0/128; t<=1.0001 ; t+=1.0/128 ) {
+	for (t=1.0/128; t<=1.0001 ; t+=1.0/128) {
 	    curx = ((s->splines[0].a*t+s->splines[0].b)*t+s->splines[0].c)*t;
 	    cury = ((s->splines[1].a*t+s->splines[1].b)*t+s->splines[1].c)*t;
-	    diff = sqrt( (curx-lastx)*(curx-lastx) + (cury-lasty)*(cury-lasty) );
+	    diff = sqrt((curx-lastx)*(curx-lastx) + (cury-lasty)*(cury-lasty));
 	    lastx = curx; lasty = cury;
-	    if ( len+diff>=d ) {
+	    if (len+diff>=d) {
 		d -= len;
 		*_t = t - (diff-d)/diff * (1.0/128);
-		if ( *_t<0 ) *_t=0;
-		if ( *_t>1 ) *_t = 1;
-	       return( s );
+		if (*_t<0) *_t=0;
+		if (*_t>1) *_t = 1;
+	       return s;
 	    }
 	    len += diff;
 	}
-	if ( first==NULL )
+	if (first==NULL)
 	    first = s;
 	last = s;
     }
     *_t = 1;
-   return( last );
+   return last;
 }
 
 static Spline *SplineBindToPath(Spline *s,SplineSet *path) {
@@ -1390,7 +1390,7 @@ static Spline *SplineBindToPath(Spline *s,SplineSet *path) {
     BasePoint spos, pos, slope;
     Spline *ps, *ret;
 
-    for ( i=0, t=.25; i<3 ; t += .25, ++i ) {
+    for (i=0, t=.25; i<3 ; t += .25, ++i) {
 	spos.x = ((s->splines[0].a*t + s->splines[0].b)*t+s->splines[0].c)*t+s->splines[0].d;
 	spos.y = ((s->splines[1].a*t + s->splines[1].b)*t+s->splines[1].c)*t+s->splines[1].d;
 	ps = PathFindDistance(path,spos.x,&pt);
@@ -1399,7 +1399,7 @@ static Spline *SplineBindToPath(Spline *s,SplineSet *path) {
 	slope.x = (3*ps->splines[0].a*pt + 2*ps->splines[0].b)*pt+ps->splines[0].c;
 	slope.y = (3*ps->splines[1].a*pt + 2*ps->splines[1].b)*pt+ps->splines[1].c;
 	len = sqrt(slope.x*slope.x + slope.y*slope.y);
-	if ( len!=0 ) {
+	if (len!=0) {
 	    slope.x /= len;
 	    slope.y /= len;
 	}
@@ -1409,7 +1409,7 @@ static Spline *SplineBindToPath(Spline *s,SplineSet *path) {
     }
     ret = ApproximateSplineFromPointsSlopes(s->from,s->to,mids,i,false);
     SplineFree(s);
-   return( ret );
+   return ret;
 }
 
 static TPoint *SplinesFigureTPsBetween(SplinePoint *from, SplinePoint *to,
@@ -1424,28 +1424,28 @@ static TPoint *SplinesFigureTPsBetween(SplinePoint *from, SplinePoint *to,
     /*  weight to small splines than to big ones */
 
     cnt = 0;
-    for ( np = from->next->to; ; np = np->next->to ) {
+    for (np = from->next->to; ; np = np->next->to) {
 	++cnt;
-	if ( np==to )
+	if (np==to)
     break;
     }
-    if ( cnt>10 ) {
+    if (cnt>10) {
 	lens = malloc(cnt*sizeof(bigreal));
 	cnts = malloc(cnt*sizeof(int));
     }
     cnt = 0; len = 0;
-    for ( np = from->next->to; ; np = np->next->to ) {
+    for (np = from->next->to; ; np = np->next->to) {
 	lens[cnt] = SplineLenApprox(np->prev);
 	len += lens[cnt];
 	++cnt;
-	if ( np==to )
+	if (np==to)
     break;
     }
-    if ( len!=0 ) {
+    if (len!=0) {
 	pcnt = 0;
-	for ( i=0; i<cnt; ++i ) {
-	    int pnts = rint( (10*cnt*lens[i])/len );
-	    if ( pnts<2 ) pnts = 2;
+	for (i=0; i<cnt; ++i) {
+	    int pnts = rint((10*cnt*lens[i])/len);
+	    if (pnts<2) pnts = 2;
 	    cnts[i] = pnts;
 	    pcnt += pnts;
 	}
@@ -1453,41 +1453,41 @@ static TPoint *SplinesFigureTPsBetween(SplinePoint *from, SplinePoint *to,
 	pcnt = 2*cnt;
 
     tp = malloc((pcnt+1)*sizeof(TPoint)); i = 0;
-    if ( len==0 ) {
-	for ( i=0; i<=pcnt; ++i ) {
+    if (len==0) {
+	for (i=0; i<=pcnt; ++i) {
 	    tp[i].t = i/(pcnt);
 	    tp[i].x = from->me.x;
 	    tp[i].y = from->me.y;
 	}
     } else {
 	lbase = 0;
-	for ( i=cnt=0, np = from->next->to; ; np = np->next->to, ++cnt ) {
+	for (i=cnt=0, np = from->next->to; ; np = np->next->to, ++cnt) {
 	    slen = SplineLenApprox(np->prev);
-	    for ( j=0; j<cnts[cnt]; ++j ) {
+	    for (j=0; j<cnts[cnt]; ++j) {
 		bigreal t = j/(bigreal) cnts[cnt];
 		tp[i].t = (lbase+ t*slen)/len;
 		tp[i].x = ((np->prev->splines[0].a*t+np->prev->splines[0].b)*t+np->prev->splines[0].c)*t + np->prev->splines[0].d;
 		tp[i++].y = ((np->prev->splines[1].a*t+np->prev->splines[1].b)*t+np->prev->splines[1].c)*t + np->prev->splines[1].d;
 	    }
 	    lbase += slen;
-	    if ( np==to )
+	    if (np==to)
 	break;
 	}
     }
-    if ( cnts!=_cnts ) free(cnts);
-    if ( lens!=_lens ) free(lens);
+    if (cnts!=_cnts) free(cnts);
+    if (lens!=_lens) free(lens);
 
     *tot = i;
 	
-   return( tp );
+   return tp;
 }
 
 static void SplinePointReCategorize(SplinePoint *sp,int oldpt) {
     SplinePointCategorize(sp);
-    if ( sp->pointtype!=oldpt ) {
-	if ( sp->pointtype==pt_curve && oldpt==pt_hvcurve &&
-		((sp->nextcp.x == sp->me.x && sp->nextcp.y != sp->me.y ) ||
-		 (sp->nextcp.y == sp->me.y && sp->nextcp.x != sp->me.x )))
+    if (sp->pointtype!=oldpt) {
+	if (sp->pointtype==pt_curve && oldpt==pt_hvcurve &&
+		((sp->nextcp.x == sp->me.x && sp->nextcp.y != sp->me.y) ||
+		 (sp->nextcp.y == sp->me.y && sp->nextcp.x != sp->me.x)))
 	    sp->pointtype = pt_hvcurve;
     }
 }
@@ -1503,17 +1503,17 @@ void SplinesRemoveBetween(SplineChar *sc, SplinePoint *from, SplinePoint *to,int
     oldfrom = *from;
     tp = SplinesFigureTPsBetween(from,to,&tot);
 
-    if ( type==1 )
+    if (type==1)
 	ApproximateSplineFromPointsSlopes(from,to,tp,tot-1,order2);
     else
 	ApproximateSplineFromPoints(from,to,tp,tot-1,order2);
 
     /* Have to do the frees after the approximation because the approx */
     /*  uses the splines to determine slopes */
-    for ( sp = oldfrom.next; ; ) {
+    for (sp = oldfrom.next; ;) {
 	np = sp->to;
 	SplineFree(sp);
-	if ( np==to )
+	if (np==to)
     break;
 	sp = np->next;
 	SplinePointMDFree(sc,np);
@@ -1531,52 +1531,52 @@ static void RemoveZeroLengthSplines(SplineSet *spl, int onlyselected, bigreal bo
 
     bound *= bound;
 
-    for ( curp = spl->first, prev=NULL; curp!=NULL ; curp=next ) {
+    for (curp = spl->first, prev=NULL; curp!=NULL ; curp=next) {
 	next = NULL;
-	if ( curp->next!=NULL )
+	if (curp->next!=NULL)
 	    next = curp->next->to;
-	if ( curp==next )	/* Once we've worked a contour down to a single point we can't do anything more here. Someone else will have to free the contour */
+	if (curp==next)	/* Once we've worked a contour down to a single point we can't do anything more here. Someone else will have to free the contour */
 	 return;
 	/* Zero length splines give us NaNs */
-	if ( curp!=NULL && (curp->selected || !onlyselected) ) {
+	if (curp!=NULL && (curp->selected || !onlyselected)) {
 	    plen = nlen = 1e10;
-	    if ( curp->prev!=NULL ) {
+	    if (curp->prev!=NULL) {
 		plen = (curp->me.x-curp->prev->from->me.x)*(curp->me.x-curp->prev->from->me.x) +
 			(curp->me.y-curp->prev->from->me.y)*(curp->me.y-curp->prev->from->me.y);
-		if ( plen<=bound ) {
+		if (plen<=bound) {
 		    plen =
-			sqrt( (curp->me.x-curp->prevcp.x)*(curp->me.x-curp->prevcp.x) +
+			sqrt((curp->me.x-curp->prevcp.x)*(curp->me.x-curp->prevcp.x) +
 				(curp->me.y-curp->prevcp.y)*(curp->me.y-curp->prevcp.y)) +
-			sqrt( (curp->prevcp.x-curp->prev->from->nextcp.x)*(curp->prevcp.x-curp->prev->from->nextcp.x) +
+			sqrt((curp->prevcp.x-curp->prev->from->nextcp.x)*(curp->prevcp.x-curp->prev->from->nextcp.x) +
 				(curp->prevcp.y-curp->prev->from->nextcp.y)*(curp->prevcp.y-curp->prev->from->nextcp.y)) +
-			sqrt( (curp->prev->from->nextcp.x-curp->prev->from->me.x)*(curp->prev->from->nextcp.x-curp->prev->from->me.x) +
+			sqrt((curp->prev->from->nextcp.x-curp->prev->from->me.x)*(curp->prev->from->nextcp.x-curp->prev->from->me.x) +
 				(curp->prev->from->nextcp.y-curp->prev->from->me.y)*(curp->prev->from->nextcp.y-curp->prev->from->me.y));
 		    plen *= plen;
 		}
 	    }
-	    if ( curp->next!=NULL ) {
+	    if (curp->next!=NULL) {
 		nlen = (curp->me.x-next->me.x)*(curp->me.x-next->me.x) +
 			(curp->me.y-next->me.y)*(curp->me.y-next->me.y);
-		if ( nlen<=bound ) {
+		if (nlen<=bound) {
 		    nlen =
-			sqrt( (curp->me.x-curp->nextcp.x)*(curp->me.x-curp->nextcp.x) +
+			sqrt((curp->me.x-curp->nextcp.x)*(curp->me.x-curp->nextcp.x) +
 				(curp->me.y-curp->nextcp.y)*(curp->me.y-curp->nextcp.y)) +
-			sqrt( (curp->nextcp.x-curp->next->to->prevcp.x)*(curp->nextcp.x-curp->next->to->prevcp.x) +
+			sqrt((curp->nextcp.x-curp->next->to->prevcp.x)*(curp->nextcp.x-curp->next->to->prevcp.x) +
 				(curp->nextcp.y-curp->next->to->prevcp.y)*(curp->nextcp.y-curp->next->to->prevcp.y)) +
-			sqrt( (curp->next->to->prevcp.x-curp->next->to->me.x)*(curp->next->to->prevcp.x-curp->next->to->me.x) +
+			sqrt((curp->next->to->prevcp.x-curp->next->to->me.x)*(curp->next->to->prevcp.x-curp->next->to->me.x) +
 				(curp->next->to->prevcp.y-curp->next->to->me.y)*(curp->next->to->prevcp.y-curp->next->to->me.y));
 		    nlen *= nlen;
 		}
 	    }
-	    if (( curp->prev!=NULL && plen<=bound && plen<nlen ) ||
-		    (curp->next!=NULL && nlen<=bound && nlen<=plen )) {
-		if ( curp->prev!=NULL && plen<=bound && plen<nlen ) {
+	    if ((curp->prev!=NULL && plen<=bound && plen<nlen) ||
+		    (curp->next!=NULL && nlen<=bound && nlen<=plen)) {
+		if (curp->prev!=NULL && plen<=bound && plen<nlen) {
 		    SplinePoint *other = curp->prev->from;
 		    other->nextcp = curp->nextcp;
 		    other->nonextcp = curp->nonextcp;
 		    other->nextcpdef = curp->nextcpdef;
 		    other->next = curp->next;
-		    if ( curp->next!=NULL ) other->next->from = other;
+		    if (curp->next!=NULL) other->next->from = other;
 		    SplineFree(curp->prev);
 		} else {
 		    SplinePoint *other = next;
@@ -1584,21 +1584,21 @@ static void RemoveZeroLengthSplines(SplineSet *spl, int onlyselected, bigreal bo
 		    other->noprevcp = curp->noprevcp;
 		    other->prevcpdef = curp->prevcpdef;
 		    other->prev = curp->prev;
-		    if ( curp->prev!=NULL ) other->prev->to = other;
+		    if (curp->prev!=NULL) other->prev->to = other;
 		    SplineFree(curp->next);
 		}
 		SplinePointFree(curp);
-		if ( spl->first==curp ) {
+		if (spl->first==curp) {
 		    spl->first = next;
-		    if ( spl->last==curp )
+		    if (spl->last==curp)
 			spl->last = next;
-		} else if ( spl->last==curp )
+		} else if (spl->last==curp)
 		    spl->last = prev;
 	    } else
 		prev = curp;
 	} else
 	    prev = curp;
-	if ( next==spl->first )
+	if (next==spl->first)
     break;
     }
 }
@@ -1606,16 +1606,16 @@ static void RemoveZeroLengthSplines(SplineSet *spl, int onlyselected, bigreal bo
 SplineSet *SSRemoveZeroLengthSplines(SplineSet *base) {
     SplineSet *spl;
 
-    for ( spl=base; spl!=NULL; spl=spl->next ) {
+    for (spl=base; spl!=NULL; spl=spl->next) {
 	RemoveZeroLengthSplines(spl,false,0);
-	if ( spl->first->next!=NULL && spl->first->next->to==spl->first &&
-		spl->first->nonextcp && spl->first->noprevcp ) {
+	if (spl->first->next!=NULL && spl->first->next->to==spl->first &&
+		spl->first->nonextcp && spl->first->noprevcp) {
 	    /* Turn it into a single point, rather than a zero length contour */
 	    chunkfree(spl->first->next,sizeof(Spline));
 	    spl->first->next = spl->first->prev = NULL;
 	}
     }
-   return( base );
+   return base;
 }
 
 static void RemoveStupidControlPoints(SplineSet *spl) {
@@ -1628,48 +1628,48 @@ static void RemoveStupidControlPoints(SplineSet *spl) {
     /* We get equally bad results with a control point that points beyond the */
     /*  other end point */
     first = NULL;
-    for ( s = spl->first->next; s!=NULL && s!=first; s=s->to->next ) {
+    for (s = spl->first->next; s!=NULL && s!=first; s=s->to->next) {
 	unit.x = s->to->me.x-s->from->me.x;
 	unit.y = s->to->me.y-s->from->me.y;
 	len = sqrt(unit.x*unit.x+unit.y*unit.y);
-	if ( len!=0 ) {
+	if (len!=0) {
 	    int refigure = false;
 	    unit.x /= len; unit.y /= len;
-	    if ( !s->from->nonextcp ) {
+	    if (!s->from->nonextcp) {
 		off.x = s->from->nextcp.x-s->from->me.x;
 		off.y = s->from->nextcp.y-s->from->me.y;
-		if ((normal = off.x*unit.y - off.y*unit.x)<0 ) normal = -normal;
+		if ((normal = off.x*unit.y - off.y*unit.x)<0) normal = -normal;
 		dir = off.x*unit.x + off.y*unit.y;
-		if (( normal<dir && normal<1 && dir<0 ) || (normal<.5 && dir<-.5) ||
+		if ((normal<dir && normal<1 && dir<0) || (normal<.5 && dir<-.5) ||
 			(normal<.1 && dir>len)) {
 		    s->from->nextcp = s->from->me;
 		    s->from->nonextcp = true;
 		    refigure = true;
 		}
 	    }
-	    if ( !s->to->noprevcp ) {
+	    if (!s->to->noprevcp) {
 		off.x = s->to->me.x - s->to->prevcp.x;
 		off.y = s->to->me.y - s->to->prevcp.y;
-		if ((normal = off.x*unit.y - off.y*unit.x)<0 ) normal = -normal;
+		if ((normal = off.x*unit.y - off.y*unit.x)<0) normal = -normal;
 		dir = off.x*unit.x + off.y*unit.y;
-		if (( normal<-dir && normal<1 && dir<0 ) || (normal<.5 && dir>-.5 && dir<0) ||
+		if ((normal<-dir && normal<1 && dir<0) || (normal<.5 && dir>-.5 && dir<0) ||
 			(normal<.1 && dir>len)) {
 		    s->to->prevcp = s->to->me;
 		    s->to->noprevcp = true;
 		    refigure = true;
 		}
 	    }
-	    if ( refigure )
+	    if (refigure)
 		SplineRefigure(s);
 	}
-	if ( first==NULL ) first = s;
+	if (first==NULL) first = s;
     }
 }
 
 void SSRemoveStupidControlPoints(SplineSet *base) {
     SplineSet *spl;
 
-    for (spl=base; spl!=NULL; spl=spl->next )
+    for (spl=base; spl!=NULL; spl=spl->next)
 	RemoveStupidControlPoints(spl);
 }
 
@@ -1681,52 +1681,52 @@ static SplinePointList *SplinePointListMerge(SplineChar *sc, SplinePointList *sp
 
     /* If the entire splineset is selected, it should merge into oblivion */
     first = NULL;
-    if ( sc->inspiro && hasspiro() ) {
+    if (sc->inspiro && hasspiro()) {
 	int i,j;
 	any = false; all = true;
-	for ( i=0; i<spl->spiro_cnt-1; ++i )
-	    if ( SPIRO_SELECTED(&spl->spiros[i]))
+	for (i=0; i<spl->spiro_cnt-1; ++i)
+	    if (SPIRO_SELECTED(&spl->spiros[i]))
 		any = true;
 	    else
 		all = false;
-	if ( all )
-	 return( NULL );
-	else if ( any ) {
-	    for ( i=0; i<spl->spiro_cnt-1; ++i )
-		if ( SPIRO_SELECTED(&spl->spiros[i])) {
-		    for ( j=i+1; j<spl->spiro_cnt ; ++j )
+	if (all)
+	 return NULL;
+	else if (any) {
+	    for (i=0; i<spl->spiro_cnt-1; ++i)
+		if (SPIRO_SELECTED(&spl->spiros[i])) {
+		    for (j=i+1; j<spl->spiro_cnt ; ++j)
 			spl->spiros[j-1] = spl->spiros[j];
 		    --spl->spiro_cnt;
 		}
 	    SSRegenerateFromSpiros(spl);
 	}
-       return( spl );
+       return spl;
     }
 
     any = all = spl->first->selected;
-    for ( spline = spl->first->next; spline!=NULL && spline!=first && all; spline=spline->to->next ) {
-	if ( spline->to->selected ) any = true;
+    for (spline = spl->first->next; spline!=NULL && spline!=first && all; spline=spline->to->next) {
+	if (spline->to->selected) any = true;
 	else all = false;
-	if ( first==NULL ) first = spline;
+	if (first==NULL) first = spline;
     }
-    if ( spl->first->next!=NULL && spl->first->next->to==spl->first &&
-	    spl->first->nonextcp && spl->first->noprevcp )
+    if (spl->first->next!=NULL && spl->first->next->to==spl->first &&
+	    spl->first->nonextcp && spl->first->noprevcp)
 	all = true;		/* Merge away any splines which are just dots */
-    if ( all )
-     return( NULL );			/* Some one else should free it and reorder the spline set list */
+    if (all)
+     return NULL;			/* Some one else should free it and reorder the spline set list */
     RemoveZeroLengthSplines(spl,true,.3);
 
-    if ( spl->first!=spl->last ) {
+    if (spl->first!=spl->last) {
 	/* If the spline isn't closed, then any selected points at the ends */
 	/*  get deleted */
-	while ( spl->first->selected ) {
+	while (spl->first->selected) {
 	    nextp = spl->first->next->to;
 	    SplineFree(spl->first->next);
 	    SplinePointMDFree(sc,spl->first);
 	    spl->first = nextp;
 	    nextp->prev = NULL;
 	}
-	while ( spl->last->selected ) {
+	while (spl->last->selected) {
 	    nextp = spl->last->prev->from;
 	    SplineFree(spl->last->prev);
 	    SplinePointMDFree(sc,spl->last);
@@ -1734,99 +1734,99 @@ static SplinePointList *SplinePointListMerge(SplineChar *sc, SplinePointList *sp
 	    nextp->next = NULL;
 	}
     } else {
-	while ( spl->first->selected ) {
+	while (spl->first->selected) {
 	    spl->first = spl->first->next->to;
 	    spl->last = spl->first;
 	}
     }
 
     /* when we get here spl->first is not selected */
-    if ( spl->first->selected ) IError( "spl->first is selected in SplinePointListMerge");
+    if (spl->first->selected) IError("spl->first is selected in SplinePointListMerge");
     curp = spl->first;
     selectme = NULL;
-    while ( 1 ) {
-	while ( !curp->selected ) {
-	    if ( curp->next==NULL )
+    while (1) {
+	while (!curp->selected) {
+	    if (curp->next==NULL)
 		curp = NULL;
 	    else
 		curp = curp->next->to;
-	    if ( curp==spl->first || curp==NULL )
+	    if (curp==spl->first || curp==NULL)
 	break;
 	}
-	if ( curp==NULL || !curp->selected )
+	if (curp==NULL || !curp->selected)
     break;
-	for ( nextp=curp->next->to; nextp->selected; nextp = nextp->next->to );
+	for (nextp=curp->next->to; nextp->selected; nextp = nextp->next->to);
 	/* we don't need to check for the end of the splineset here because */
 	/*  we know that spl->last is not selected */
 	SplinesRemoveBetween(sc,curp->prev->from,nextp,type);
 	curp = nextp;
 	selectme = nextp;
     }
-    if ( selectme!=NULL ) selectme->selected = true;
-    if ( any )
+    if (selectme!=NULL) selectme->selected = true;
+    if (any)
 	SplineSetSpirosClear(spl);
-   return( spl );
+   return spl;
 }
 
 static int SPisExtremum(SplinePoint *sp) {
     BasePoint *prev, *next;
     SplinePoint *psp, *nsp;
 
-    if ( sp->prev==NULL || sp->next==NULL )
-     return( true );
+    if (sp->prev==NULL || sp->next==NULL)
+     return true;
 
     nsp = sp->next->to;
     psp = sp->prev->from;
 
     /* A point that changes from curved to straight horizontal/vertical should*/
     /*  be treated as an extremum */
-    if (( !sp->next->knownlinear && sp->prev->knownlinear &&
+    if ((!sp->next->knownlinear && sp->prev->knownlinear &&
 		(RealWithin(sp->me.x,sp->prev->from->me.x,.02) ||
 		 RealWithin(sp->me.y,sp->prev->from->me.y,.02))) ||
-	    ( !sp->prev->knownlinear && sp->next->knownlinear &&
+	    (!sp->prev->knownlinear && sp->next->knownlinear &&
 		(RealWithin(sp->me.x,sp->next->to->me.x,.02) ||
 		 RealWithin(sp->me.y,sp->next->to->me.y,.02))))
-     return( true );
+     return true;
 
-    if ( sp->prev->knownlinear )
+    if (sp->prev->knownlinear)
 	prev = &psp->me;
-    else if ( !sp->noprevcp )
+    else if (!sp->noprevcp)
 	prev = &sp->prevcp;
     else
 	prev = &psp->nextcp;
-    if ( sp->next->knownlinear )
+    if (sp->next->knownlinear)
 	next = &nsp->me;
-    else if ( !sp->nonextcp )
+    else if (!sp->nonextcp)
 	next = &sp->nextcp;
     else
 	next = &nsp->prevcp;
 
-    if ( sp->next->knownlinear && sp->prev->knownlinear &&
+    if (sp->next->knownlinear && sp->prev->knownlinear &&
 	    ((sp->me.x==nsp->me.x && sp->me.x==psp->me.x &&
 	      ((sp->me.y<=nsp->me.y && psp->me.y<=sp->me.y) ||
 	       (sp->me.y>=nsp->me.y && psp->me.y>=sp->me.y))) ||
 	     (sp->me.y==nsp->me.y && sp->me.y==psp->me.y &&
 	      ((sp->me.x<=nsp->me.x && psp->me.x<=sp->me.x) ||
-	       (sp->me.x>=nsp->me.x && psp->me.x>=sp->me.x)))) )
-     return( false );	/* A point in the middle of a horizontal/vertical line */
+	       (sp->me.x>=nsp->me.x && psp->me.x>=sp->me.x)))))
+     return false;	/* A point in the middle of a horizontal/vertical line */
 			/*  is not an extrema and can be removed */
 
-    if ( prev->x==sp->me.x && next->x==sp->me.x ) {
-	if ( prev->y==sp->me.y && next->y==sp->me.y )
-	 return( false );		/* this should be caught above */
+    if (prev->x==sp->me.x && next->x==sp->me.x) {
+	if (prev->y==sp->me.y && next->y==sp->me.y)
+	 return false;		/* this should be caught above */
 	/* no matter what the control points look like this guy is either an */
 	/*  an extremum or a point of inflection, so we don't need to check */
-       return( true );
-    } else if ( prev->y==sp->me.y && next->y==sp->me.y ) {
-       return( true );
-    } else if (( prev->x<=sp->me.x && next->x<=sp->me.x ) ||
-	    (prev->x>=sp->me.x && next->x>=sp->me.x ))
-	 return( true );
-    else if (( prev->y<=sp->me.y && next->y<=sp->me.y ) ||
-	    (prev->y>=sp->me.y && next->y>=sp->me.y ))
-     return( true );
+       return true;
+    } else if (prev->y==sp->me.y && next->y==sp->me.y) {
+       return true;
+    } else if ((prev->x<=sp->me.x && next->x<=sp->me.x) ||
+	    (prev->x>=sp->me.x && next->x>=sp->me.x))
+	 return true;
+    else if ((prev->y<=sp->me.y && next->y<=sp->me.y) ||
+	    (prev->y>=sp->me.y && next->y>=sp->me.y))
+     return true;
 
-   return( false );
+   return false;
 }
 
 static bigreal SecondDerivative(Spline *s,bigreal t) {
@@ -1846,30 +1846,30 @@ static bigreal SecondDerivative(Spline *s,bigreal t) {
     bigreal d2xdt2 = 6*s->splines[0].a*t + 2*s->splines[0].b;
     bigreal top = (d2ydt2*dxdt - dydt*d2xdt2);
 
-    if ( dxdt==0 ) {
-	if ( top==0 )
-	 return( 0 );
-	if ( top>0 )
-	 return( 1e10 );
-       return( -1e10 );
+    if (dxdt==0) {
+	if (top==0)
+	 return 0;
+	if (top>0)
+	 return 1e10;
+       return -1e10;
     }
 
-   return( top/(dxdt*dxdt) );
+   return top/(dxdt*dxdt);
 }
     
 
 /* Does the second derivative change sign around this point? If so we should */
 /*  retain it for truetype */
-static int SPisD2Change( SplinePoint *sp ) {
+static int SPisD2Change(SplinePoint *sp) {
     bigreal d2next = SecondDerivative(sp->next,0);
     bigreal d2prev = SecondDerivative(sp->prev,1);
 
-    if ( d2next>=0 && d2prev>=0 )
-     return( false );
-    if ( d2next<=0 && d2prev<=0 )
-     return( false );
+    if (d2next>=0 && d2prev>=0)
+     return false;
+    if (d2next<=0 && d2prev<=0)
+     return false;
 
-   return( true );
+   return true;
 }
 
 /* Almost exactly the same as SplinesRemoveBetween, but this one is conditional */
@@ -1890,14 +1890,14 @@ static int SplinesRemoveBetweenMaybe(SplineChar *sc,
     fncp = from->nextcp; tpcp = to->prevcp;
     fpt = from->pointtype; tpt = to->pointtype;
 
-    if ( afterfrom==to || from==to )
-     return( false );
+    if (afterfrom==to || from==to)
+     return false;
 
     tp = SplinesFigureTPsBetween(from,to,&tot);
     tp2 = malloc((tot+1)*sizeof(TPoint));
     memcpy(tp2,tp,tot*sizeof(TPoint));
 
-    if ( !(flags&sf_ignoreslopes) )
+    if (!(flags&sf_ignoreslopes))
 	ApproximateSplineFromPointsSlopes(from,to,tp,tot-1,order2);
     else {
 	ApproximateSplineFromPoints(from,to,tp,tot-1,order2);
@@ -1906,7 +1906,7 @@ static int SplinesRemoveBetweenMaybe(SplineChar *sc,
     i = tot;
 
     good = true;
-    while ( --i>0 && good ) {
+    while (--i>0 && good) {
 	/* tp[0] is the same as from (easier to include it), but the SplineNear*/
 	/*  routine will sometimes reject the end-points of the spline */
 	/*  so just don't check it */
@@ -1916,9 +1916,9 @@ static int SplinesRemoveBetweenMaybe(SplineChar *sc,
 
     free(tp);
     free(tp2);
-    if ( good ) {
+    if (good) {
 	SplineFree(afterfrom->prev);
-	for ( sp=afterfrom; sp!=to; sp=next ) {
+	for (sp=afterfrom; sp!=to; sp=next) {
 	    next = sp->next->to;
 	    SplineFree(sp->next);
 	    SplinePointMDFree(sc,sp);
@@ -1929,15 +1929,15 @@ static int SplinesRemoveBetweenMaybe(SplineChar *sc,
 	SplineFree(from->next);
 	from->next = afterfrom->prev;
 	from->nextcp = fncp;
-	from->nonextcp = ( fncp.x==from->me.x && fncp.y==from->me.y);
+	from->nonextcp = (fncp.x==from->me.x && fncp.y==from->me.y);
 	from->pointtype = fpt;
-	for ( sp=afterfrom; sp->next->to!=to; sp=sp->next->to );
+	for (sp=afterfrom; sp->next->to!=to; sp=sp->next->to);
 	to->prev = sp->next;
 	to->prevcp = tpcp;
-	to->noprevcp = ( tpcp.x==to->me.x && tpcp.y==to->me.y);
+	to->noprevcp = (tpcp.x==to->me.x && tpcp.y==to->me.y);
 	to->pointtype = tpt;
     }
-   return( good );
+   return good;
 }
 
 /* In truetype we can interpolate away an on curve point. Try this */
@@ -1958,41 +1958,41 @@ static int Spline2Interpolate(SplinePoint *mid, bigreal err) {
 
     i = tot;
     good = true;
-    while ( --i>0 && good ) {
+    while (--i>0 && good) {
 	/* tp[0] is the same as from (easier to include it), but the SplineNear*/
 	/*  routine will sometimes reject the end-points of the spline */
 	/*  so just don't check it */
 	test.x = tp[i].x; test.y = tp[i].y;
-	if ( i>tot/2 )
+	if (i>tot/2)
 	    good = SplineNearPoint(mid->next,&test,err)!= -1 ||
 		    SplineNearPoint(mid->prev,&test,err)!= -1;
 	else
 	    good = SplineNearPoint(mid->prev,&test,err)!= -1 ||
 		    SplineNearPoint(mid->next,&test,err)!= -1;
     }
-    if ( !good ) {
+    if (!good) {
 	mid->me = midme;
 	SplineRefigure(mid->next);
 	SplineRefigure(mid->prev);
     }
     free(tp);
-   return( good );
+   return good;
 }
 
 int SPInterpolate(const SplinePoint *sp) {
     /* Using truetype rules, can we interpolate this point? */
-   return( !sp->dontinterpolate && !sp->nonextcp && !sp->noprevcp &&
+   return(!sp->dontinterpolate && !sp->nonextcp && !sp->noprevcp &&
 	    !sp->roundx && !sp->roundy &&
 	    (RealWithin(sp->me.x,(sp->nextcp.x+sp->prevcp.x)/2,.1) &&
-	     RealWithin(sp->me.y,(sp->nextcp.y+sp->prevcp.y)/2,.1)) );
+	     RealWithin(sp->me.y,(sp->nextcp.y+sp->prevcp.y)/2,.1)));
 }
 
 static int _SplinesRemoveMidMaybe(SplineChar *sc,SplinePoint *mid, int flags,
 	bigreal err, bigreal lenmax2) {
     SplinePoint *from, *to;
 
-    if ( mid->prev==NULL || mid->next==NULL )
-     return( false );
+    if (mid->prev==NULL || mid->next==NULL)
+     return false;
 
     from = mid->prev->from; to = mid->next->to;
 
@@ -2000,16 +2000,16 @@ static int _SplinesRemoveMidMaybe(SplineChar *sc,SplinePoint *mid, int flags,
     /*  type1 fonts should always have a point at the extrema (except for small*/
     /*  things like serifs), and the extrema occur at horizontal/vertical points*/
     /* tt says something similar */
-    if ( !(flags&sf_ignoreextremum) && SPisExtremum(mid) )
-     return( false );
+    if (!(flags&sf_ignoreextremum) && SPisExtremum(mid))
+     return false;
 
     /* In truetype fonts we also want to retain points where the second */
     /*  derivative changes sign */
-    if ( !(flags&sf_ignoreextremum) && mid->prev->order2 && SPisD2Change(mid) )
-     return( false );
+    if (!(flags&sf_ignoreextremum) && mid->prev->order2 && SPisD2Change(mid))
+     return false;
 
-    if ( !(flags&sf_mergelines) && (mid->pointtype==pt_corner ||
-	    mid->prev->knownlinear || mid->next->knownlinear) ) {
+    if (!(flags&sf_mergelines) && (mid->pointtype==pt_corner ||
+	    mid->prev->knownlinear || mid->next->knownlinear)) {
 	/* Be very careful about merging straight lines. Generally they should*/
 	/*  remain straight... */
 	/* Actually it's not that the lines are straight, the significant thing */
@@ -2018,14 +2018,14 @@ static int _SplinesRemoveMidMaybe(SplineChar *sc,SplinePoint *mid, int flags,
 	BasePoint prevu, nextu;
 	bigreal plen, nlen;
 
-	if ( mid->next->knownlinear || mid->nonextcp ) {
+	if (mid->next->knownlinear || mid->nonextcp) {
 	    nextu.x = to->me.x-mid->me.x;
 	    nextu.y = to->me.y-mid->me.y;
 	} else {
 	    nextu.x = mid->nextcp.x-mid->me.x;
 	    nextu.y = mid->nextcp.y-mid->me.y;
 	}
-	if ( mid->prev->knownlinear || mid->noprevcp ) {
+	if (mid->prev->knownlinear || mid->noprevcp) {
 	    prevu.x = from->me.x-mid->me.x;
 	    prevu.y = from->me.y-mid->me.y;
 	} else {
@@ -2034,9 +2034,9 @@ static int _SplinesRemoveMidMaybe(SplineChar *sc,SplinePoint *mid, int flags,
 	}
 	nlen = sqrt(nextu.x*nextu.x + nextu.y*nextu.y);
 	plen = sqrt(prevu.x*prevu.x + prevu.y*prevu.y);
-	if ( nlen==0 || plen==0 )
+	if (nlen==0 || plen==0)
 	    /* Not a real corner */;
-	else if ( (nextu.x*prevu.x + nextu.y*prevu.y)/(nlen*plen)>((nlen+plen>20)?-.98:-.95) ) {
+	else if ((nextu.x*prevu.x + nextu.y*prevu.y)/(nlen*plen)>((nlen+plen>20)?-.98:-.95)) {
 	    /* If the cos if the angle between the two segments is too far */
 	    /*  from parallel then don't try to smooth the point into oblivion */
 	    bigreal flen, tlen;
@@ -2044,43 +2044,43 @@ static int _SplinesRemoveMidMaybe(SplineChar *sc,SplinePoint *mid, int flags,
 		    (from->me.y-mid->me.y)*(from->me.y-mid->me.y);
 	    tlen = (to->me.x-mid->me.x)*(to->me.x-mid->me.x) +
 		    (to->me.y-mid->me.y)*(to->me.y-mid->me.y);
-	    if ( (flen<.7 && tlen<.7) || flen<.25 || tlen<.25 )
+	    if ((flen<.7 && tlen<.7) || flen<.25 || tlen<.25)
 		/* Too short to matter */;
 	    else
-	     return( false );
+	     return false;
 	}
 
-	if ( mid->prev->knownlinear && mid->next->knownlinear ) {
+	if (mid->prev->knownlinear && mid->next->knownlinear) {
 	    /* Special checks for horizontal/vertical lines */
 	    /* don't let the smoothing distort them */
-	    if ( from->me.x==to->me.x ) {
-		if ( mid->me.x!=to->me.x )
-		 return( false );
-	    } else if ( from->me.y==to->me.y ) {
-		if ( mid->me.y!=to->me.y )
-		 return( false );
-	    } else if ( !RealRatio((from->me.y-to->me.y)/(from->me.x-to->me.x),
+	    if (from->me.x==to->me.x) {
+		if (mid->me.x!=to->me.x)
+		 return false;
+	    } else if (from->me.y==to->me.y) {
+		if (mid->me.y!=to->me.y)
+		 return false;
+	    } else if (!RealRatio((from->me.y-to->me.y)/(from->me.x-to->me.x),
 				(mid->me.y-to->me.y)/(mid->me.x-to->me.x),
-			        .05) ) {
-	       return( false );
+			        .05)) {
+	       return false;
 	    }
-	} else if ( mid->prev->knownlinear ) {
-	    if ( (mid->me.x-from->me.x)*(mid->me.x-from->me.x) + (mid->me.y-from->me.y)*(mid->me.y-from->me.y)
-		    > lenmax2 )
-	     return( false );
+	} else if (mid->prev->knownlinear) {
+	    if ((mid->me.x-from->me.x)*(mid->me.x-from->me.x) + (mid->me.y-from->me.y)*(mid->me.y-from->me.y)
+		    > lenmax2)
+	     return false;
 	} else {
-	    if ( (mid->me.x-to->me.x)*(mid->me.x-to->me.x) + (mid->me.y-to->me.y)*(mid->me.y-to->me.y)
-		    > lenmax2 )
-	     return( false );
+	    if ((mid->me.x-to->me.x)*(mid->me.x-to->me.x) + (mid->me.y-to->me.y)*(mid->me.y-to->me.y)
+		    > lenmax2)
+	     return false;
 	}
     }
 
-    if ( mid->next->order2 ) {
-	if ( SPInterpolate(from) && SPInterpolate(to) && SPInterpolate(mid))
-	 return( false );
+    if (mid->next->order2) {
+	if (SPInterpolate(from) && SPInterpolate(to) && SPInterpolate(mid))
+	 return false;
     }
 
-   return ( SplinesRemoveBetweenMaybe(sc,from,to,flags,err));
+   return (SplinesRemoveBetweenMaybe(sc,from,to,flags,err));
 }
 
 /* A wrapper to SplinesRemoveBetweenMaybe to handle some extra checking for a */
@@ -2088,13 +2088,13 @@ static int _SplinesRemoveMidMaybe(SplineChar *sc,SplinePoint *mid, int flags,
 static int SplinesRemoveMidMaybe(SplineChar *sc,SplinePoint *mid, int flags,
 	bigreal err, bigreal lenmax2) {
     int changed1 = false;
-    if ( mid->next->order2 ) {
-	if ( !mid->dontinterpolate && !mid->nonextcp && !mid->noprevcp &&
+    if (mid->next->order2) {
+	if (!mid->dontinterpolate && !mid->nonextcp && !mid->noprevcp &&
 		!(RealWithin(mid->me.x,(mid->nextcp.x+mid->prevcp.x)/2,.1) &&
-		  RealWithin(mid->me.y,(mid->nextcp.y+mid->prevcp.y)/2,.1)) )
+		  RealWithin(mid->me.y,(mid->nextcp.y+mid->prevcp.y)/2,.1)))
 	  changed1 = Spline2Interpolate(mid,err);
     }
-   return( _SplinesRemoveMidMaybe(sc,mid,flags,err,lenmax2) || changed1 );
+   return _SplinesRemoveMidMaybe(sc,mid,flags,err,lenmax2) || changed1;
 }
 
 void SPLNearlyHvCps(SplineChar *sc,SplineSet *ss,bigreal err) {
@@ -2102,33 +2102,33 @@ void SPLNearlyHvCps(SplineChar *sc,SplineSet *ss,bigreal err) {
     int refresh;
     SplinePoint *from, *to;
 
-    for ( s = ss->first->next; s!=NULL && s!=first; s=s->to->next ) {
-	if ( first==NULL ) first = s;
+    for (s = ss->first->next; s!=NULL && s!=first; s=s->to->next) {
+	if (first==NULL) first = s;
 	refresh = false;
 	from = s->from; to = s->to;
-	if ( !from->nonextcp && from->nextcp.x-from->me.x<err && from->nextcp.x-from->me.x>-err ) {
+	if (!from->nonextcp && from->nextcp.x-from->me.x<err && from->nextcp.x-from->me.x>-err) {
 	    from->nextcp.x = from->me.x;
-	    if ( s->order2 ) to->prevcp = from->nextcp;
-	    if ( from->nextcp.y==from->me.y ) from->nonextcp = true;
+	    if (s->order2) to->prevcp = from->nextcp;
+	    if (from->nextcp.y==from->me.y) from->nonextcp = true;
 	    refresh = true;
-	} else if ( !from->nonextcp && from->nextcp.y-from->me.y<err && from->nextcp.y-from->me.y>-err ) {
+	} else if (!from->nonextcp && from->nextcp.y-from->me.y<err && from->nextcp.y-from->me.y>-err) {
 	    from->nextcp.y = from->me.y;
-	    if ( s->order2 ) to->prevcp = from->nextcp;
-	    if ( from->nextcp.x==from->me.x ) from->nonextcp = true;
+	    if (s->order2) to->prevcp = from->nextcp;
+	    if (from->nextcp.x==from->me.x) from->nonextcp = true;
 	    refresh = true;
 	}
-	if ( !to->noprevcp && to->prevcp.x-to->me.x<err && to->prevcp.x-to->me.x>-err ) {
+	if (!to->noprevcp && to->prevcp.x-to->me.x<err && to->prevcp.x-to->me.x>-err) {
 	    to->prevcp.x = to->me.x;
-	    if ( s->order2 ) from->nextcp = to->prevcp;
-	    if ( to->prevcp.y==to->me.y ) to->noprevcp = true;
+	    if (s->order2) from->nextcp = to->prevcp;
+	    if (to->prevcp.y==to->me.y) to->noprevcp = true;
 	    refresh = true;
-	} else if ( !to->noprevcp && to->prevcp.y-to->me.y<err && to->prevcp.y-to->me.y>-err ) {
+	} else if (!to->noprevcp && to->prevcp.y-to->me.y<err && to->prevcp.y-to->me.y>-err) {
 	    to->prevcp.y = to->me.y;
-	    if ( s->order2 ) from->nextcp = to->prevcp;
-	    if ( to->prevcp.x==to->me.x ) to->noprevcp = true;
+	    if (s->order2) from->nextcp = to->prevcp;
+	    if (to->prevcp.x==to->me.x) to->noprevcp = true;
 	    refresh = true;
 	}
-	if ( refresh )
+	if (refresh)
 	    SplineRefigure(s);
     }
 }
@@ -2136,30 +2136,30 @@ void SPLNearlyHvCps(SplineChar *sc,SplineSet *ss,bigreal err) {
 void SPLNearlyHvLines(SplineChar *sc,SplineSet *ss,bigreal err) {
     Spline *s, *first=NULL;
 
-    for ( s = ss->first->next; s!=NULL && s!=first; s=s->to->next ) {
-	if ( first==NULL ) first = s;
-	if ( s->knownlinear ) {
-	    if ( s->to->me.x-s->from->me.x<err && s->to->me.x-s->from->me.x>-err ) {
+    for (s = ss->first->next; s!=NULL && s!=first; s=s->to->next) {
+	if (first==NULL) first = s;
+	if (s->knownlinear) {
+	    if (s->to->me.x-s->from->me.x<err && s->to->me.x-s->from->me.x>-err) {
 		s->to->nextcp.x += (s->from->me.x-s->to->me.x);
-		if ( s->order2 && s->to->next!=NULL )
+		if (s->order2 && s->to->next!=NULL)
 		    s->to->next->to->prevcp.x = s->to->nextcp.x;
 		s->to->me.x = s->from->me.x;
 		s->to->prevcp = s->to->me;
 		s->from->nextcp = s->from->me;
 		s->from->nonextcp = s->to->noprevcp = true;
 		SplineRefigure(s);
-		if ( s->to->next != NULL )
+		if (s->to->next != NULL)
 		    SplineRefigure(s->to->next);
-	    } else if ( s->to->me.y-s->from->me.y<err && s->to->me.y-s->from->me.y>-err ) {
+	    } else if (s->to->me.y-s->from->me.y<err && s->to->me.y-s->from->me.y>-err) {
 		s->to->nextcp.y += (s->from->me.y-s->to->me.y);
-		if ( s->order2 && s->to->next!=NULL )
+		if (s->order2 && s->to->next!=NULL)
 		    s->to->next->to->prevcp.y = s->to->nextcp.y;
 		s->to->me.y = s->from->me.y;
 		s->to->prevcp = s->to->me;
 		s->from->nextcp = s->from->me;
 		s->from->nonextcp = s->to->noprevcp = true;
 		SplineRefigure(s);
-		if ( s->to->next != NULL )
+		if (s->to->next != NULL)
 		    SplineRefigure(s->to->next);
 	    }
 	}
@@ -2204,28 +2204,28 @@ static int SplineCloseToLinear(Spline *s, bigreal err) {
     SplineRefigure(&sp);
     SplineFindExtrema(&sp.splines[1],&t1,&t2);
 
-    if ( t1==-1 )
-     return( true );
+    if (t1==-1)
+     return true;
 
     y = ((sp.splines[1].a*t1 + sp.splines[1].b)*t1 + sp.splines[1].c)*t1 + sp.splines[1].d;
-    if ( y>err || y<-err )
-     return( false );
+    if (y>err || y<-err)
+     return false;
 
-    if ( t2==-1 )
-     return( true );
+    if (t2==-1)
+     return true;
     y = ((sp.splines[1].a*t2 + sp.splines[1].b)*t2 + sp.splines[1].c)*t2 + sp.splines[1].d;
-   return( y<=err && y>=-err );
+   return y<=err && y>=-err;
 }
 
 int SPLNearlyLines(SplineChar *sc,SplineSet *ss,bigreal err) {
     Spline *s, *first=NULL;
     int changed = false;
 
-    for ( s = ss->first->next; s!=NULL && s!=first; s=s->to->next ) {
-	if ( first==NULL ) first = s;
-	if ( s->islinear )
+    for (s = ss->first->next; s!=NULL && s!=first; s=s->to->next) {
+	if (first==NULL) first = s;
+	if (s->islinear)
 	    /* Nothing to be done */;
-	else if ( s->knownlinear || SplineCloseToLinear(s,err)) {
+	else if (s->knownlinear || SplineCloseToLinear(s,err)) {
 	    s->from->nextcp = s->from->me;
 	    s->from->nonextcp = true;
 	    s->to->prevcp = s->to->me;
@@ -2234,7 +2234,7 @@ int SPLNearlyLines(SplineChar *sc,SplineSet *ss,bigreal err) {
 	    changed = true;
 	}
     }
-   return( changed );
+   return changed;
 }
 
 static void SPLForceLines(SplineChar *sc,SplineSet *ss,bigreal bump_size) {
@@ -2246,41 +2246,41 @@ static void SPLForceLines(SplineChar *sc,SplineSet *ss,bigreal bump_size) {
     bigreal diff, xoff, yoff, len2;
     int order2=false;
 
-    if ( ss->first->next!=NULL && ss->first->next->order2 )
+    if (ss->first->next!=NULL && ss->first->next->order2)
 	order2 = true;
 
-    for ( s = ss->first->next; s!=NULL && s!=first; s=s->to->next ) {
-	if ( first==NULL ) first = s;
-	if ( s->knownlinear ) {
+    for (s = ss->first->next; s!=NULL && s!=first; s=s->to->next) {
+	if (first==NULL) first = s;
+	if (s->knownlinear) {
 	    unit.x = s->to->me.x-s->from->me.x;
 	    unit.y = s->to->me.y-s->from->me.y;
 	    len = sqrt(unit.x*unit.x + unit.y*unit.y);
-	    if ( len<minlen )
+	    if (len<minlen)
     continue;
 	    unit.x /= len; unit.y /= len;
 	    do {
 		any = false;
-		if ( s->from->prev!=NULL && s->from->prev!=s ) {
+		if (s->from->prev!=NULL && s->from->prev!=s) {
 		    sp = s->from->prev->from;
 		    len2 = sqrt((sp->me.x-s->from->me.x)*(sp->me.x-s->from->me.x) + (sp->me.y-s->from->me.y)*(sp->me.y-s->from->me.y));
 		    diff = (sp->me.x-s->from->me.x)*unit.y - (sp->me.y-s->from->me.y)*unit.x;
-		    if ( len2<len && fabs(diff)<=bump_size ) {
+		    if (len2<len && fabs(diff)<=bump_size) {
 			xoff = diff*unit.y; yoff = -diff*unit.x;
 			sp->me.x -= xoff; sp->me.y -= yoff;
 			sp->prevcp.x -= xoff; sp->prevcp.y -= yoff;
-			if ( order2 && sp->prev!=NULL && !sp->noprevcp )
+			if (order2 && sp->prev!=NULL && !sp->noprevcp)
 			    sp->prev->from->nextcp = sp->prevcp;
 			sp->nextcp = sp->me; sp->nonextcp = true;
-			if ( sp->next==first ) first = NULL;
+			if (sp->next==first) first = NULL;
 			SplineFree(sp->next);
-			if ( s->from==ss->first ) {
-			    if ( ss->first==ss->last ) ss->last = sp;
+			if (s->from==ss->first) {
+			    if (ss->first==ss->last) ss->last = sp;
 			    ss->first = sp;
 			}
 			SplinePointMDFree(sc,s->from);
 			sp->next = s; s->from = sp;
 			SplineRefigure(s);
-			if ( sp->prev!=NULL )
+			if (sp->prev!=NULL)
 			    SplineRefigure(sp->prev);
 			sp->pointtype = pt_corner;
 			any = true;
@@ -2290,35 +2290,35 @@ static void SPLForceLines(SplineChar *sc,SplineSet *ss,bigreal bump_size) {
 			unit.x = s->to->me.x-s->from->me.x;
 			unit.y = s->to->me.y-s->from->me.y;
 			len = sqrt(unit.x*unit.x + unit.y*unit.y);
-			if ( len<minlen )
+			if (len<minlen)
 	    break;
 			unit.x /= len; unit.y /= len;
 		    }
 		}
-		if ( s->to->next!=NULL && s->to->next!=s ) {
+		if (s->to->next!=NULL && s->to->next!=s) {
 		    sp = s->to->next->to;
 		    /* If the next spline is a longer line than we are, then don't */
 		    /*  merge it to us, rather merge us into it next time through the loop */
 		    /* Hmm. Don't merge out the bump in general if the "bump" is longer than we are */
 		    len2 = sqrt((sp->me.x-s->to->me.x)*(sp->me.x-s->to->me.x) + (sp->me.y-s->to->me.y)*(sp->me.y-s->to->me.y));
 		    diff = (sp->me.x-s->to->me.x)*unit.y - (sp->me.y-s->to->me.y)*unit.x;
-		    if ( len2<len && fabs(diff)<=bump_size ) {
+		    if (len2<len && fabs(diff)<=bump_size) {
 			xoff = diff*unit.y; yoff = -diff*unit.x;
 			sp->me.x -= xoff; sp->me.y -= yoff;
 			sp->nextcp.x -= xoff; sp->nextcp.y -= yoff;
-			if ( order2 && sp->next!=NULL && !sp->nonextcp )
+			if (order2 && sp->next!=NULL && !sp->nonextcp)
 			    sp->next->to->prevcp = sp->nextcp;
 			sp->prevcp = sp->me; sp->noprevcp = true;
-			if ( sp->prev==first ) first = NULL;
+			if (sp->prev==first) first = NULL;
 			SplineFree(sp->prev);
-			if ( s->to==ss->last ) {
-			    if ( ss->first==ss->last ) ss->first = sp;
+			if (s->to==ss->last) {
+			    if (ss->first==ss->last) ss->first = sp;
 			    ss->last = sp;
 			}
 			SplinePointMDFree(sc,s->to);
 			sp->prev = s; s->to = sp;
 			SplineRefigure(s);
-			if ( sp->next!=NULL )
+			if (sp->next!=NULL)
 			    SplineRefigure(sp->next);
 			sp->pointtype = pt_corner;
 			any = true;
@@ -2326,12 +2326,12 @@ static void SPLForceLines(SplineChar *sc,SplineSet *ss,bigreal bump_size) {
 			unit.x = s->to->me.x-s->from->me.x;
 			unit.y = s->to->me.y-s->from->me.y;
 			len = sqrt(unit.x*unit.x + unit.y*unit.y);
-			if ( len<minlen )
+			if (len<minlen)
 	    break;
 			unit.x /= len; unit.y /= len;
 		    }
 		}
-	    } while ( any );
+	    } while (any);
 	}
     }
 }
@@ -2345,14 +2345,14 @@ static int SPLSmoothControlPoints(SplineSet *ss,bigreal tan_bounds,int vert_chec
     bigreal len, len2, para, norm, tn;
     int changed=false, found;
 
-    if ( ss->first->next!=NULL && ss->first->next->order2 )
-     return( false );
+    if (ss->first->next!=NULL && ss->first->next->order2)
+     return false;
 
-    for ( sp = ss->first; ; ) {
-	if (( !sp->nonextcp && !sp->noprevcp && sp->pointtype==pt_corner ) ||
+    for (sp = ss->first; ;) {
+	if ((!sp->nonextcp && !sp->noprevcp && sp->pointtype==pt_corner) ||
 		((sp->pointtype==pt_corner || sp->pointtype==pt_curve || sp->pointtype==pt_hvcurve) &&
-		 (( !sp->nonextcp && sp->noprevcp && sp->prev!=NULL && sp->prev->knownlinear ) ||
-		  ( !sp->noprevcp && sp->nonextcp && sp->next!=NULL && sp->next->knownlinear )))) {
+		 ((!sp->nonextcp && sp->noprevcp && sp->prev!=NULL && sp->prev->knownlinear) ||
+		  (!sp->noprevcp && sp->nonextcp && sp->next!=NULL && sp->next->knownlinear)))) {
 	    BasePoint *next = sp->nonextcp ? &sp->next->to->me : &sp->nextcp;
 	    BasePoint *prev = sp->noprevcp ? &sp->prev->to->me : &sp->prevcp;
 	    unit.x = next->x-sp->me.x;
@@ -2361,42 +2361,42 @@ static int SPLSmoothControlPoints(SplineSet *ss,bigreal tan_bounds,int vert_chec
 	    unit.x /= len; unit.y /= len;
 	    para = (sp->me.x-prev->x)*unit.x + (sp->me.y-prev->y)*unit.y;
 	    norm = (sp->me.x-prev->x)*unit.y - (sp->me.y-prev->y)*unit.x;
-	    if ( para==0 )
+	    if (para==0)
 		tn = 1000;
 	    else
 		tn = norm/para;
-	    if ( tn<0 ) tn = -tn;
-	    if ( tn<tan_bounds && para>0 ) {
+	    if (tn<0) tn = -tn;
+	    if (tn<tan_bounds && para>0) {
 		found = 0;
 		unit2.x = sp->me.x-sp->prevcp.x;
 		unit2.y = sp->me.y-sp->prevcp.y;
 		len2 = sqrt(unit2.x*unit2.x + unit2.y*unit2.y);
 		unit2.x /= len2; unit2.y /= len2;
-		if ( vert_check ) {
-		    if ( fabs(unit.x)>fabs(unit.y) ) {
+		if (vert_check) {
+		    if (fabs(unit.x)>fabs(unit.y)) {
 			/* Closer to horizontal */
-			if ( (unit.y<=0 && unit2.y>=0) || (unit.y>=0 && unit2.y<=0) ) {
+			if ((unit.y<=0 && unit2.y>=0) || (unit.y>=0 && unit2.y<=0)) {
 			    unit2.x = unit2.x<0 ? -1 : 1; unit2.y = 0;
 			    found = 1;
 			}
 		    } else {
-			if ( (unit.x<=0 && unit2.x>=0) || (unit.x>=0 && unit2.x<=0) ) {
+			if ((unit.x<=0 && unit2.x>=0) || (unit.x>=0 && unit2.x<=0)) {
 			    unit2.y = unit2.y<0 ? -1 : 1; unit2.x = 0;
 			    found = 1;
 			}
 		    }
 		}
 		/* If we're next to a line, we must extend the line. No choice */
-		if ( sp->nonextcp ) {
-		    if ( len<len2 )
+		if (sp->nonextcp) {
+		    if (len<len2)
     goto nextpt;
 		    found = true;
 		    unit2 = unit;
-		} else if ( sp->noprevcp ) {
-		    if ( len2<len )
+		} else if (sp->noprevcp) {
+		    if (len2<len)
     goto nextpt;
 		    found = true;
-		} else if ( !found ) {
+		} else if (!found) {
 		    unit2.x = (unit.x*len + unit2.x*len2)/(len+len2);
 		    unit2.y = (unit.y*len + unit2.y*len2)/(len+len2);
 		}
@@ -2405,71 +2405,71 @@ static int SPLSmoothControlPoints(SplineSet *ss,bigreal tan_bounds,int vert_chec
 		sp->prevcp.x = sp->me.x - len2*unit2.x;
 		sp->prevcp.y = sp->me.y - len2*unit2.y;
 		sp->pointtype = pt_curve;
-		if ( sp->prev )
+		if (sp->prev)
 		    SplineRefigure(sp->prev);
-		if ( sp->next )
+		if (sp->next)
 		    SplineRefigure(sp->next);
 		changed = true;
 	    }
 	}
     nextpt:
-	if ( sp->next==NULL )
+	if (sp->next==NULL)
     break;
 	sp = sp->next->to;
-	if ( sp==ss->first )
+	if (sp==ss->first)
     break;
     }
-   return( changed );
+   return changed;
 }
 
 static void GetNextUnitVector(SplinePoint *sp,BasePoint *uv) {
     bigreal len;
 
-    if ( sp->next==NULL ) {
+    if (sp->next==NULL) {
 	uv->x = uv->y = 0;
-    } else if ( sp->next->knownlinear ) {
+    } else if (sp->next->knownlinear) {
 	uv->x = sp->next->to->me.x - sp->me.x;
 	uv->y = sp->next->to->me.y - sp->me.y;
-    } else if ( sp->nonextcp ) {
+    } else if (sp->nonextcp) {
 	uv->x = sp->next->to->prevcp.x - sp->me.x;
 	uv->y = sp->next->to->prevcp.y - sp->me.y;
     } else {
 	uv->x = sp->nextcp.x - sp->me.x;
 	uv->y = sp->nextcp.y - sp->me.y;
     }
-    len = sqrt(uv->x*uv->x + uv->y*uv->y );
-    if ( len!= 0 ) {
+    len = sqrt(uv->x*uv->x + uv->y*uv->y);
+    if (len!= 0) {
 	uv->x /= len;
 	uv->y /= len;
     }
 }
 
 static int isExtreme(SplinePoint *sp) {
-    if ( sp->next==NULL || sp->prev==NULL )
-     return( 2 );		/* End point. Always extreme */
-    if ( sp->nonextcp ) {
-	if ( !sp->next->knownlinear )
-	 return( false );
-	if ( sp->next->to->me.x == sp->me.x || sp->next->to->me.y == sp->me.y )
+    if (sp->next==NULL || sp->prev==NULL)
+     return 2;		/* End point. Always extreme */
+    if (sp->nonextcp) {
+	if (!sp->next->knownlinear)
+	 return false;
+	if (sp->next->to->me.x == sp->me.x || sp->next->to->me.y == sp->me.y)
 	    /* Ok, horizontal or vertical line, that'll do */;
 	else
-	 return( false );
+	 return false;
     } else {
-	if ( sp->nextcp.x != sp->me.x && sp->nextcp.y != sp->me.y )
-	 return( false );
+	if (sp->nextcp.x != sp->me.x && sp->nextcp.y != sp->me.y)
+	 return false;
     }
-    if ( sp->noprevcp ) {
-	if ( !sp->prev->knownlinear )
-	 return( false );
-	if ( sp->prev->from->me.x == sp->me.x || sp->prev->from->me.y == sp->me.y )
+    if (sp->noprevcp) {
+	if (!sp->prev->knownlinear)
+	 return false;
+	if (sp->prev->from->me.x == sp->me.x || sp->prev->from->me.y == sp->me.y)
 	    /* Ok, horizontal or vertical line, that'll do */;
 	else
-	 return( false );
+	 return false;
     } else {
-	if ( sp->prevcp.x != sp->me.x && sp->prevcp.y != sp->me.y )
-	 return( false );
+	if (sp->prevcp.x != sp->me.x && sp->prevcp.y != sp->me.y)
+	 return false;
     }
-   return( true );
+   return true;
 }
 
 /* If the start point of a contour is not at an extremum, and the contour has */
@@ -2479,14 +2479,14 @@ static int isExtreme(SplinePoint *sp) {
 static void SPLStartToExtremum(SplineChar *sc,SplinePointList *spl) {
     SplinePoint *sp;
 
-    while ( spl!=NULL ) {
-	if ( spl->first==spl->last ) {		/* It's closed */
-	    for ( sp=spl->first; !isExtreme(sp); ) {
+    while (spl!=NULL) {
+	if (spl->first==spl->last) {		/* It's closed */
+	    for (sp=spl->first; !isExtreme(sp);) {
 		sp = sp->next->to;
-		if ( sp==spl->first )
+		if (sp==spl->first)
 	    break;
 	    }
-	    if ( sp!=spl->first )
+	    if (sp!=spl->first)
 		spl->first = spl->last = sp;
 	}
 	spl = spl->next;
@@ -2505,76 +2505,76 @@ void SplinePointListSimplify(SplineChar *sc,SplinePointList *spl,
     BasePoint suv, nuv;
     bigreal lenmax2 = smpl->linelenmax*smpl->linelenmax;
 
-    if ( spl==NULL )
+    if (spl==NULL)
      return;
 
     RemoveZeroLengthSplines(spl,false,0.1);
     RemoveStupidControlPoints(spl);
     SSRemoveBacktracks(spl);
-    if ( smpl->flags!=sf_cleanup && (smpl->flags&sf_setstart2extremum))
+    if (smpl->flags!=sf_cleanup && (smpl->flags&sf_setstart2extremum))
 	SPLStartToExtremum(sc,spl);
-    if ( spl->first->next!=NULL && spl->first->next->to==spl->first &&
-	    spl->first->nonextcp && spl->first->noprevcp )
+    if (spl->first->next!=NULL && spl->first->next->to==spl->first &&
+	    spl->first->nonextcp && spl->first->noprevcp)
      return;		/* Ignore any splines which are just dots */
 
-    if ( smpl->flags!=sf_cleanup && (smpl->flags&sf_forcelines)) {
+    if (smpl->flags!=sf_cleanup && (smpl->flags&sf_forcelines)) {
 	SPLNearlyHvLines(sc,spl,smpl->linefixup);
 	SPLForceLines(sc,spl,smpl->linefixup);
     }
 
-    if ( smpl->flags!=sf_cleanup && spl->first->prev!=NULL && spl->first->prev!=spl->first->next ) {
+    if (smpl->flags!=sf_cleanup && spl->first->prev!=NULL && spl->first->prev!=spl->first->next) {
 	/* first thing to try is to remove everything between two extrema */
 	/* We do this even if they checked ignore extrema. After this pass */
 	/*  we'll come back and check every point individually */
 	/* However, if we turn through more than 90 degrees we can't approximate */
 	/*  a good match, and it takes us forever to make the attempt and fail*/
 	/*  We take a dot product to prevent that */
-	for ( sp = spl->first; ; ) {
-	    if ( sp->next==NULL )
+	for (sp = spl->first; ;) {
+	    if (sp->next==NULL)
 	break;
-	    if ( SPisExtremum(sp) ) {
+	    if (SPisExtremum(sp)) {
 		GetNextUnitVector(sp,&suv);
-		for ( nsp=sp->next->to; nsp!=sp; nsp = nsp->next->to ) {
-		    if ( nsp->next==NULL )
+		for (nsp=sp->next->to; nsp!=sp; nsp = nsp->next->to) {
+		    if (nsp->next==NULL)
 		break;
-		    if ( nsp->prev->knownlinear &&
+		    if (nsp->prev->knownlinear &&
 			    (nsp->me.x-nsp->prev->from->me.x)*(nsp->me.x-nsp->prev->from->me.x) +
 			    (nsp->me.y-nsp->prev->from->me.y)*(nsp->me.y-nsp->prev->from->me.y)
-			    >= lenmax2 )
+			    >= lenmax2)
 	      goto nogood;
 		    GetNextUnitVector(nsp,&nuv);
-		    if ( suv.x*nuv.x + suv.y*nuv.y < 0 ) {
-			if ( suv.x*nuv.x + suv.y*nuv.y > -.1 )
+		    if (suv.x*nuv.x + suv.y*nuv.y < 0) {
+			if (suv.x*nuv.x + suv.y*nuv.y > -.1)
 		break;
 	      goto nogood;
 		    }
-		    if ( SPisExtremum(nsp) || nsp==spl->first)
+		    if (SPisExtremum(nsp) || nsp==spl->first)
 		break;
 		}
 		/* nsp is something we don't want to remove */
-		if ( nsp==sp )
+		if (nsp==sp)
 	break;
-		else if ( sp->next->to == nsp )
+		else if (sp->next->to == nsp)
 	      goto nogood;		/* Nothing to remove */
-		if ( SplinesRemoveBetweenMaybe(sc,sp,nsp,smpl->flags,smpl->err)) {
-		    if ( spl->last==spl->first )
+		if (SplinesRemoveBetweenMaybe(sc,sp,nsp,smpl->flags,smpl->err)) {
+		    if (spl->last==spl->first)
 			spl->last = spl->first = sp;	/* We know this point didn't get removed */
 		}
 	      nogood:
 		sp = nsp;
 	    } else
 		sp = sp->next->to;
-	    if ( sp == spl->first )
+	    if (sp == spl->first)
 	break;
 	}
 
-	while ( 1 ) {
+	while (1) {
 	    first = spl->first->prev->from;
-	    if ( first->prev == first->next )
+	    if (first->prev == first->next)
 	     return;
-	    if ( !SplinesRemoveMidMaybe(sc,spl->first,smpl->flags,smpl->err,lenmax2))
+	    if (!SplinesRemoveMidMaybe(sc,spl->first,smpl->flags,smpl->err,lenmax2))
 	break;
-	    if ( spl->first==spl->last )
+	    if (spl->first==spl->last)
 		spl->last = first;
 	    spl->first = first;
 	}
@@ -2582,52 +2582,52 @@ void SplinePointListSimplify(SplineChar *sc,SplinePointList *spl,
 
 	/* Special case checks for paths containing only one point */
 	/*  else we get lots of nans (or only two points) */
-    if ( spl->first->next == NULL )
+    if (spl->first->next == NULL)
      return;
-    for ( sp = spl->first->next->to; sp->next!=NULL; sp = next ) {
+    for (sp = spl->first->next->to; sp->next!=NULL; sp = next) {
 	SplineIsLinearMake(sp->prev);		/* First see if we can turn it*/
 				/* into a line, then try to merge two splines */
 	next = sp->next->to;
-	if ( sp->prev == sp->next ||
+	if (sp->prev == sp->next ||
 		(sp->next!=NULL && sp->next->to->next!=NULL &&
-		    sp->next->to->next->to == sp ))
+		    sp->next->to->next->to == sp))
 	 return;
-	if ( smpl->flags!=sf_cleanup ) {
-	    if ( SplinesRemoveMidMaybe(sc,sp,smpl->flags,smpl->err,lenmax2) ) {
-		if ( spl->first==sp )
+	if (smpl->flags!=sf_cleanup) {
+	    if (SplinesRemoveMidMaybe(sc,sp,smpl->flags,smpl->err,lenmax2)) {
+		if (spl->first==sp)
 		    spl->first = next;
-		if ( spl->last==sp )
+		if (spl->last==sp)
 		    spl->last = next;
     continue;
 	    }
 	} else {
-	    while ( sp->me.x==next->me.x && sp->me.y==next->me.y &&
+	    while (sp->me.x==next->me.x && sp->me.y==next->me.y &&
 		    sp->nextcp.x>sp->me.x-1 && sp->nextcp.x<sp->me.x+1 &&
 		    sp->nextcp.y>sp->me.y-1 && sp->nextcp.y<sp->me.y+1 &&
 		    next->prevcp.x>next->me.x-1 && next->prevcp.x<next->me.x+1 &&
-		    next->prevcp.y>next->me.y-1 && next->prevcp.y<next->me.y+1 ) {
+		    next->prevcp.y>next->me.y-1 && next->prevcp.y<next->me.y+1) {
 		SplineFree(sp->next);
 		sp->next = next->next;
-		if ( sp->next!=NULL )
+		if (sp->next!=NULL)
 		    sp->next->from = sp;
 		sp->nextcp = next->nextcp;
 		sp->nonextcp = next->nonextcp;
 		sp->nextcpdef = next->nextcpdef;
 		SplinePointMDFree(sc,next);
-		if ( sp->next!=NULL )
+		if (sp->next!=NULL)
 		    next = sp->next->to;
 		else {
 		    next = NULL;
 	    break;
 		}
 	    }
-	    if ( next==NULL )
+	    if (next==NULL)
     break;
 	}
-	if ( next->prev!=NULL && next->prev->from==spl->last )
+	if (next->prev!=NULL && next->prev->from==spl->last)
     break;
     }
-    if ( smpl->flags!=sf_cleanup && (smpl->flags&sf_smoothcurves))
+    if (smpl->flags!=sf_cleanup && (smpl->flags&sf_smoothcurves))
 	SPLSmoothControlPoints(spl,smpl->tan_bounds,smpl->flags&sf_choosehv);
 }
 
@@ -2637,27 +2637,27 @@ SplineSet *SplineCharSimplify(SplineChar *sc,SplineSet *head,
     SplineSet *spl, *prev, *snext;
     int anysel=0, wassingleton;
 
-    if ( smpl->check_selected_contours ) {
-	for ( spl = head; spl!=NULL && !anysel; spl = spl->next ) {
+    if (smpl->check_selected_contours) {
+	for (spl = head; spl!=NULL && !anysel; spl = spl->next) {
 	    anysel = PointListIsSelected(spl);
 	}
     }
 
     prev = NULL;
-    for ( spl = head; spl!=NULL; spl = snext ) {
+    for (spl = head; spl!=NULL; spl = snext) {
 	snext = spl->next;
-	if ( !anysel || PointListIsSelected(spl)) {
+	if (!anysel || PointListIsSelected(spl)) {
 	    wassingleton = spl->first->prev==spl->first->next &&
 		    (spl->first->prev==NULL ||
 		     (spl->first->noprevcp && spl->first->nonextcp));
 	    SplinePointListSimplify(sc,spl,smpl);
 	    /* remove any singleton points */
-	    if (( !wassingleton ||
+	    if ((!wassingleton ||
 		    (smpl->flags!=sf_cleanup && (smpl->flags&sf_rmsingletonpoints))) &&
 		   spl->first->prev==spl->first->next &&
 		   (spl->first->prev==NULL ||
 		     (spl->first->noprevcp && spl->first->nonextcp))) {
-		if ( prev==NULL )
+		if (prev==NULL)
 		    head = snext;
 		else
 		    prev->next = snext;
@@ -2669,8 +2669,8 @@ SplineSet *SplineCharSimplify(SplineChar *sc,SplineSet *head,
     }
     SplineSetsRemoveAnnoyingExtrema(head,.3);
     SPLCategorizePoints(head);
-    /* printf( "nocnt=%d totcnt=%d curdif=%d incr=%d\n", nocnt_cnt, totcnt_cnt, curdiff_cnt, incr_cnt ); */ /* Debug!!! */
-   return( head );
+    /* printf("nocnt=%d totcnt=%d curdif=%d incr=%d\n", nocnt_cnt, totcnt_cnt, curdiff_cnt, incr_cnt); */ /* Debug!!! */
+   return head;
 }
 
 /* If the start point of a contour to be the left most point on it.  If there */
@@ -2680,20 +2680,20 @@ void SPLStartToLeftmost(SplineChar *sc,SplinePointList *spl, int *changed) {
     SplinePoint *sp;
     SplinePoint *best;
 
-    if ( spl->first==spl->last ) {		/* It's closed */
+    if (spl->first==spl->last) {		/* It's closed */
 	best = spl->first;
-	for ( sp=spl->first; ; ) {
-	    if ( sp->me.x < best->me.x ||
-		    (sp->me.x==best->me.x && (fabs(sp->me.y)<fabs(best->me.y))) )
+	for (sp=spl->first; ;) {
+	    if (sp->me.x < best->me.x ||
+		    (sp->me.x==best->me.x && (fabs(sp->me.y)<fabs(best->me.y))))
 		best = sp;
-	    if ( sp->next==NULL )
+	    if (sp->next==NULL)
 	break;
 	    sp = sp->next->to;
-	    if ( sp==spl->first )
+	    if (sp==spl->first)
 	break;
 	}
-	if ( best!=spl->first ) {
-	    if ( !*changed ) {
+	if (best!=spl->first) {
+	    if (!*changed) {
 		SCPreserveState(sc,false);
 		*changed = true;
 	    }
@@ -2707,21 +2707,21 @@ void SPLsStartToLeftmost(SplineChar *sc,int layer) {
     int changed = 0;
     SplineSet *ss;
 
-    if ( sc==NULL )
+    if (sc==NULL)
      return;
 
-    if ( sc->parent->multilayer ) {
-	for ( layer=ly_fore; layer<sc->layer_cnt; ++layer ) {
-	    for ( ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next )
+    if (sc->parent->multilayer) {
+	for (layer=ly_fore; layer<sc->layer_cnt; ++layer) {
+	    for (ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next)
 		SPLStartToLeftmost(sc,ss,&changed);
 	}
-	if ( changed )
-	    SCCharChangedUpdate(sc,ly_all);
+	if (changed)
+	    SCCharChangedUpdate(sc,ly_all,true);
     } else {
-	for ( ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next )
+	for (ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next)
 	    SPLStartToLeftmost(sc,ss,&changed);
-	if ( changed )
-	    SCCharChangedUpdate(sc,layer);
+	if (changed)
+	    SCCharChangedUpdate(sc,layer,true);
     }
 }
 
@@ -2733,16 +2733,16 @@ struct contourinfo {
 static int order_contours(const void *_c1, const void *_c2) {
     const struct contourinfo *c1 = _c1, *c2 = _c2;
 
-    if ( c1->min->x<c2->min->x )
-     return( -1 );
-    else if ( c1->min->x>c2->min->x )
-     return( 1 );
-    else if ( fabs(c1->min->y)<fabs(c2->min->y) )
-     return( -1 );
-    else if ( fabs(c1->min->y)>fabs(c2->min->y) )
-     return( 1 );
+    if (c1->min->x<c2->min->x)
+     return -1;
+    else if (c1->min->x>c2->min->x)
+     return 1;
+    else if (fabs(c1->min->y)<fabs(c2->min->y))
+     return -1;
+    else if (fabs(c1->min->y)>fabs(c2->min->y))
+     return 1;
     else
-     return( 0 );
+     return 0;
 }
 
 void CanonicalContours(SplineChar *sc,int layer) {
@@ -2752,34 +2752,34 @@ void CanonicalContours(SplineChar *sc,int layer) {
     int contour_cnt, contour_max=0, i, diff;
     struct contourinfo *ci;
 
-    if ( sc==NULL )
+    if (sc==NULL)
      return;
 
-    for ( layer=ly_fore; layer<sc->layer_cnt; ++layer ) {
+    for (layer=ly_fore; layer<sc->layer_cnt; ++layer) {
 	contour_cnt = 0;
-	for ( ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next )
+	for (ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next)
 	    ++contour_cnt;
-	if ( contour_cnt>contour_max )
+	if (contour_cnt>contour_max)
 	    contour_max = contour_cnt;
     }
 
-    if ( contour_max<=1 )	/* Can't be out of order */
+    if (contour_max<=1)	/* Can't be out of order */
      return;
 
     changed = 0;
     ci = calloc(contour_max,sizeof(struct contourinfo));
-    for ( layer=ly_fore; layer<sc->layer_cnt; ++layer ) {
+    for (layer=ly_fore; layer<sc->layer_cnt; ++layer) {
 	contour_cnt = 0;
-	for ( ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next ) {
+	for (ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next) {
 	    best = ss->first;
-	    for ( sp=ss->first; ; ) {
-		if ( sp->me.x < best->me.x ||
-			(sp->me.x==best->me.x && (fabs(sp->me.y)<fabs(best->me.y))) )
+	    for (sp=ss->first; ;) {
+		if (sp->me.x < best->me.x ||
+			(sp->me.x==best->me.x && (fabs(sp->me.y)<fabs(best->me.y))))
 		    best = sp;
-		if ( sp->next==NULL )
+		if (sp->next==NULL)
 	    break;
 		sp = sp->next->to;
-		if ( sp==ss->first )
+		if (sp==ss->first)
 	    break;
 	    }
 	    ci[contour_cnt].ss = ss;
@@ -2787,26 +2787,26 @@ void CanonicalContours(SplineChar *sc,int layer) {
 	}
 	qsort(ci,contour_cnt,sizeof(struct contourinfo),order_contours);
 	diff = 0;
-	for ( i=0, ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next ) {
-	    if ( ci[i].ss != ss ) {
+	for (i=0, ss = sc->layers[layer].splines; ss!=NULL; ss=ss->next) {
+	    if (ci[i].ss != ss) {
 		diff = true;
 	break;
 	    }
 	}
-	if ( diff && !changed ) {
+	if (diff && !changed) {
 	    SCPreserveLayer(sc,layer,false);
 	    changed = true;
 	}
-	if ( diff ) {
+	if (diff) {
 	    sc->layers[layer].splines = ci[0].ss;
-	    for ( i=1; i<contour_cnt; ++i )
+	    for (i=1; i<contour_cnt; ++i)
 		ci[i-1].ss->next = ci[i].ss;
 	    ci[contour_cnt-1].ss->next = NULL;
 	}
     }
     free(ci);
-    if ( changed )
-	SCCharChangedUpdate(sc,ly_all);
+    if (changed)
+	SCCharChangedUpdate(sc,ly_all,true);
 }
 
 void SplineSetJoinCpFixup(SplinePoint *sp) {
@@ -2814,26 +2814,26 @@ void SplineSetJoinCpFixup(SplinePoint *sp) {
     bigreal nlen, plen;
     int fixprev=0, fixnext=0;
 
-    if ( sp->pointtype == pt_corner )
+    if (sp->pointtype == pt_corner)
 	/* Leave control points as they are */;
-    else if ( sp->pointtype == pt_tangent ) {
+    else if (sp->pointtype == pt_tangent) {
 	SplineCharTangentNextCP(sp);
 	SplineCharTangentPrevCP(sp);
 	fixprev = fixnext = 1;
-    } else if ( !BpColinear(&sp->prevcp,&sp->me,&sp->nextcp)) {
+    } else if (!BpColinear(&sp->prevcp,&sp->me,&sp->nextcp)) {
 	ndir.x = sp->nextcp.x - sp->me.x;
 	ndir.y = sp->nextcp.y - sp->me.y;
-	nlen = sqrt( ndir.x*ndir.x + ndir.y*ndir.y );
-	if ( nlen!=0 ) { ndir.x /= nlen; ndir.y/=nlen; }
+	nlen = sqrt(ndir.x*ndir.x + ndir.y*ndir.y);
+	if (nlen!=0) { ndir.x /= nlen; ndir.y/=nlen; }
 	pdir.x = sp->prevcp.x - sp->me.x;
 	pdir.y = sp->prevcp.y - sp->me.y;
-	plen = sqrt( pdir.x*pdir.x + pdir.y*pdir.y );
-	if ( plen!=0 ) { pdir.x /= plen; pdir.y/=plen; }
-	if ( !sp->nextcpdef && sp->prevcpdef ) {
+	plen = sqrt(pdir.x*pdir.x + pdir.y*pdir.y);
+	if (plen!=0) { pdir.x /= plen; pdir.y/=plen; }
+	if (!sp->nextcpdef && sp->prevcpdef) {
 	    sp->prevcp.x = sp->me.x - plen * ndir.x;
 	    sp->prevcp.y = sp->me.y - plen * ndir.y;
 	    fixprev = true;
-	} else if ( sp->nextcpdef && !sp->prevcpdef ) {
+	} else if (sp->nextcpdef && !sp->prevcpdef) {
 	    sp->nextcp.x = sp->me.x - nlen * pdir.x;
 	    sp->nextcp.y = sp->me.y - nlen * pdir.y;
 	    fixnext = true;
@@ -2843,26 +2843,26 @@ void SplineSetJoinCpFixup(SplinePoint *sp) {
 	    fixprev = fixnext = 1;
 	}
     }
-    if ( sp->next!=NULL && sp->next->to->pointtype==pt_tangent && sp->next->to->next!=NULL ) {
+    if (sp->next!=NULL && sp->next->to->pointtype==pt_tangent && sp->next->to->next!=NULL) {
 	SplineCharTangentNextCP(sp->next->to);
 	SplineRefigure(sp->next->to->next);
     }
-    if ( sp->prev!=NULL && sp->prev->from->pointtype==pt_tangent && sp->prev->from->prev!=NULL ) {
+    if (sp->prev!=NULL && sp->prev->from->pointtype==pt_tangent && sp->prev->from->prev!=NULL) {
 	SplineCharTangentPrevCP(sp->prev->from);
 	SplineRefigure(sp->prev->from->prev);
     }
-    if ( fixprev && sp->prev!=NULL )
+    if (fixprev && sp->prev!=NULL)
 	SplineRefigure(sp->prev);
-    if ( fixnext && sp->next!=NULL )
+    if (fixnext && sp->next!=NULL)
 	SplineRefigure(sp->next);
 }
 
 static int SplineSetMakeLoop(SplineSet *spl,real fudge) {
-    if ( spl->first!=spl->last &&
+    if (spl->first!=spl->last &&
 	    (spl->first->me.x >= spl->last->me.x-fudge &&
 		spl->first->me.x <= spl->last->me.x+fudge &&
 		spl->first->me.y >= spl->last->me.y-fudge &&
-		spl->first->me.y <= spl->last->me.y+fudge )) {
+		spl->first->me.y <= spl->last->me.y+fudge)) {
 	spl->first->prev = spl->last->prev;
 	spl->first->prev->to = spl->first;
 	spl->first->prevcp = spl->last->prevcp;
@@ -2870,16 +2870,16 @@ static int SplineSetMakeLoop(SplineSet *spl,real fudge) {
 	spl->first->prevcpdef = spl->last->prevcpdef;
 	SplinePointFree(spl->last);
 	spl->last = spl->first;
-	if ( spl->spiros!=NULL ) {
+	if (spl->spiros!=NULL) {
 	    spl->spiros[0].ty = spl->spiros[spl->spiro_cnt-2].ty;
 	    spl->spiros[spl->spiro_cnt-2] = spl->spiros[spl->spiro_cnt-1];
 	    --spl->spiro_cnt;
 	} else {
 	    SplineSetJoinCpFixup(spl->first);
 	}
-       return( true );
+       return true;
     }
-   return( false );
+   return false;
 }
 
 SplineSet *SplineSetJoin(SplineSet *start,int doall,real fudge,int *changed) {
@@ -2889,37 +2889,37 @@ SplineSet *SplineSetJoin(SplineSet *start,int doall,real fudge,int *changed) {
     /*  at the end */
 
     *changed = false;
-    for ( spl=start; spl!=NULL; spl=spl->next ) {
-	if ( spl->first->prev==NULL &&
-		(doall || PointListIsSelected(spl)) ) {
-	    if ( SplineSetMakeLoop(spl,fudge) ) {
+    for (spl=start; spl!=NULL; spl=spl->next) {
+	if (spl->first->prev==NULL &&
+		(doall || PointListIsSelected(spl))) {
+	    if (SplineSetMakeLoop(spl,fudge)) {
 		*changed = true;
 	    } else {
 		prev = NULL;
-		for ( spl2=start ; spl2!=NULL; prev = spl2, spl2=spl2->next ) if ( spl2!=spl ) {
-		    if (!( spl->first->me.x >= spl2->last->me.x-fudge &&
+		for (spl2=start ; spl2!=NULL; prev = spl2, spl2=spl2->next) if (spl2!=spl) {
+		    if (!(spl->first->me.x >= spl2->last->me.x-fudge &&
 			    spl->first->me.x <= spl2->last->me.x+fudge &&
 			    spl->first->me.y >= spl2->last->me.y-fudge &&
-			    spl->first->me.y <= spl2->last->me.y+fudge )) {
-			if (( spl->last->me.x >= spl2->last->me.x-fudge &&
+			    spl->first->me.y <= spl2->last->me.y+fudge)) {
+			if ((spl->last->me.x >= spl2->last->me.x-fudge &&
 				spl->last->me.x <= spl2->last->me.x+fudge &&
 				spl->last->me.y >= spl2->last->me.y-fudge &&
-				spl->last->me.y <= spl2->last->me.y+fudge ) ||
-			    ( spl->last->me.x >= spl2->first->me.x-fudge &&
+				spl->last->me.y <= spl2->last->me.y+fudge) ||
+			    (spl->last->me.x >= spl2->first->me.x-fudge &&
 				spl->last->me.x <= spl2->first->me.x+fudge &&
 				spl->last->me.y >= spl2->first->me.y-fudge &&
-				spl->last->me.y <= spl2->first->me.y+fudge ))
+				spl->last->me.y <= spl2->first->me.y+fudge))
 			    SplineSetReverse(spl);
 		    }
-		    if ( spl->first->me.x >= spl2->first->me.x-fudge &&
+		    if (spl->first->me.x >= spl2->first->me.x-fudge &&
 			    spl->first->me.x <= spl2->first->me.x+fudge &&
 			    spl->first->me.y >= spl2->first->me.y-fudge &&
-			    spl->first->me.y <= spl2->first->me.y+fudge )
+			    spl->first->me.y <= spl2->first->me.y+fudge)
 			SplineSetReverse(spl2);
-		    if ( spl->first->me.x >= spl2->last->me.x-fudge &&
+		    if (spl->first->me.x >= spl2->last->me.x-fudge &&
 			    spl->first->me.x <= spl2->last->me.x+fudge &&
 			    spl->first->me.y >= spl2->last->me.y-fudge &&
-			    spl->first->me.y <= spl2->last->me.y+fudge ) {
+			    spl->first->me.y <= spl2->last->me.y+fudge) {
 			spl->first->prev = spl2->last->prev;
 			spl->first->prev->to = spl->first;
 			spl->first->prevcp = spl2->last->prevcp;
@@ -2929,12 +2929,12 @@ SplineSet *SplineSetJoin(SplineSet *start,int doall,real fudge,int *changed) {
 			SplineSetJoinCpFixup(spl->first);
 			spl->first = spl2->first;
 			spl2->first = spl2->last = NULL;
-			if ( prev!=NULL )
+			if (prev!=NULL)
 			    prev->next = spl2->next;
 			else
 			    start = spl2->next;
-			if ( spl->spiros && spl2->spiros ) {
-			    if ( spl->spiro_cnt+spl2->spiro_cnt > spl->spiro_max )
+			if (spl->spiros && spl2->spiros) {
+			    if (spl->spiro_cnt+spl2->spiro_cnt > spl->spiro_max)
 				spl->spiros = realloc(spl->spiros,
 					(spl->spiro_max = spl->spiro_cnt+spl2->spiro_cnt)*sizeof(spiro_cp));
 			    memcpy(spl->spiros+spl->spiro_cnt-1,
@@ -2952,50 +2952,50 @@ SplineSet *SplineSetJoin(SplineSet *start,int doall,real fudge,int *changed) {
 	    }
 	}
     }
-   return(start);
+   return start;
 }
 
 int SpIsExtremum(SplinePoint *sp) {
     BasePoint *ncp, *pcp;
     BasePoint *nncp, *ppcp;
-    if ( sp->next==NULL || sp->prev==NULL )
-     return( true );
+    if (sp->next==NULL || sp->prev==NULL)
+     return true;
     nncp = &sp->next->to->me;
-    if ( !sp->nonextcp ) {
+    if (!sp->nonextcp) {
 	ncp = &sp->nextcp;
-	if ( !sp->next->to->noprevcp )
+	if (!sp->next->to->noprevcp)
 	    nncp = &sp->next->to->prevcp;
-    } else if ( !sp->next->to->noprevcp )
+    } else if (!sp->next->to->noprevcp)
 	ncp = &sp->next->to->prevcp;
     else
 	ncp = nncp;
     ppcp = &sp->prev->from->me;
-    if ( !sp->noprevcp ) {
+    if (!sp->noprevcp) {
 	pcp = &sp->prevcp;
-	if ( !sp->prev->from->nonextcp )
+	if (!sp->prev->from->nonextcp)
 	    ppcp = &sp->prev->from->nextcp;
-    } else if ( !sp->prev->from->nonextcp )
+    } else if (!sp->prev->from->nonextcp)
 	pcp = &sp->prev->from->nextcp;
     else
 	pcp = ppcp;
-    if ((( ncp->x<sp->me.x || (ncp->x==sp->me.x && nncp->x<sp->me.x)) &&
+    if (((ncp->x<sp->me.x || (ncp->x==sp->me.x && nncp->x<sp->me.x)) &&
 		(pcp->x<sp->me.x || (pcp->x==sp->me.x && ppcp->x<sp->me.x))) ||
 	    ((ncp->x>sp->me.x || (ncp->x==sp->me.x && nncp->x>sp->me.x)) &&
 		(pcp->x>sp->me.x || (pcp->x==sp->me.x && ppcp->x>sp->me.x))) ||
-	(( ncp->y<sp->me.y || (ncp->y==sp->me.y && nncp->y<sp->me.y)) &&
+	((ncp->y<sp->me.y || (ncp->y==sp->me.y && nncp->y<sp->me.y)) &&
 		(pcp->y<sp->me.y || (pcp->y==sp->me.y && ppcp->y<sp->me.y))) ||
 	    ((ncp->y>sp->me.y || (ncp->y==sp->me.y && nncp->y>sp->me.y)) &&
 		(pcp->y>sp->me.y || (pcp->y==sp->me.y && ppcp->y>sp->me.y))))
-     return( true );
+     return true;
 
     /* These aren't true points of extrema, but they probably should be treated */
     /*  as if they were */
-    if ( !sp->nonextcp && !sp->noprevcp &&
+    if (!sp->nonextcp && !sp->noprevcp &&
 	    ((sp->me.x==sp->nextcp.x && sp->me.x==sp->prevcp.x) ||
-	     (sp->me.y==sp->nextcp.y && sp->me.y==sp->prevcp.y)) )
-     return( true );
+	     (sp->me.y==sp->nextcp.y && sp->me.y==sp->prevcp.y)))
+     return true;
 
-   return( false );
+   return false;
 }
 
 /* An extremum is very close to the end-point. So close that we don't want */
@@ -3013,7 +3013,7 @@ static int ForceEndPointExtrema(Spline *s,int isto) {
     /*  point, and adjusting the slope at the end-point may be all we need */
     /*  to do. We won't need to adjust it by much, because it is so close. */
 
-    if ( isto ) {
+    if (isto) {
 	end = s->to; cp = &end->prevcp;
 	othercpunit.x = s->from->nextcp.x - s->from->me.x;
 	othercpunit.y = s->from->nextcp.y - s->from->me.y;
@@ -3031,11 +3031,11 @@ static int ForceEndPointExtrema(Spline *s,int isto) {
     unitslope.x = s->to->me.x - s->from->me.x;
     unitslope.y = s->to->me.y - s->from->me.y;
     len = unitslope.x*unitslope.x + unitslope.y*unitslope.y;
-    if ( len==0 )
-     return( -1 );
+    if (len==0)
+     return -1;
     len = sqrt(len);
-    if ( mylen<30*len && mylen<cplen && mylen<1 ) {
-	if ( isto ) {
+    if (mylen<30*len && mylen<cplen && mylen<1) {
+	if (isto) {
 	    s->to->noprevcp = true;
 	    s->to->prevcp = s->to->me;
 	} else {
@@ -3044,18 +3044,18 @@ static int ForceEndPointExtrema(Spline *s,int isto) {
 	}
 	end->pointtype = pt_corner;
 	SplineRefigure(s);
-       return( true );	/* We changed the slope */
+       return true;	/* We changed the slope */
     }
     unitslope.x /= len; unitslope.y /= len;
 
     mydot = myslope.x*unitslope.y - myslope.y*unitslope.x;
     cpdot = othercpunit.x*unitslope.y - othercpunit.y*unitslope.y;
-    if ( mydot*cpdot<0 && mylen<cplen ) {
+    if (mydot*cpdot<0 && mylen<cplen) {
 	/* The two control points are in opposite directions with respect to */
 	/*  the main spline, and ours isn't very big, so make it point along */
 	/*  the spline */
 	end->pointtype = pt_corner;
-	if ( isto ) {
+	if (isto) {
 	    s->to->prevcp.x = s->to->me.x - mydot*unitslope.x;
 	    s->to->prevcp.y = s->to->me.y - mydot*unitslope.y;
 	} else {
@@ -3063,26 +3063,26 @@ static int ForceEndPointExtrema(Spline *s,int isto) {
 	    s->from->nextcp.y = s->from->me.y + mydot*unitslope.y;
 	}
 	SplineRefigure(s);
-       return( true );	/* We changed the slope */
+       return true;	/* We changed the slope */
     }
     
-    if ( (xdiff = cp->x - end->me.x)<0 ) xdiff = -xdiff;
-    if ( (ydiff = cp->y - end->me.y)<0 ) ydiff = -ydiff;
+    if ((xdiff = cp->x - end->me.x)<0) xdiff = -xdiff;
+    if ((ydiff = cp->y - end->me.y)<0) ydiff = -ydiff;
 
     to = *cp;
-    if ( xdiff<ydiff/10.0 && xdiff>0 ) {
+    if (xdiff<ydiff/10.0 && xdiff>0) {
 	to.x = end->me.x;
 	end->pointtype = pt_corner;
 	SPAdjustControl(end,cp,&to,s->order2);
-       return( true );	/* We changed the slope */
-    } else if ( ydiff<xdiff/10 && ydiff>0 ) {
+       return true;	/* We changed the slope */
+    } else if (ydiff<xdiff/10 && ydiff>0) {
 	to.y = end->me.y;
 	end->pointtype = pt_corner;
 	SPAdjustControl(end,cp,&to,s->order2);
-       return( true );	/* We changed the slope */
+       return true;	/* We changed the slope */
     }
 
-   return( -1 );		/* Didn't do anything */
+   return -1;		/* Didn't do anything */
 }
 
 int Spline1DCantExtremeX(const Spline *s) {
@@ -3091,16 +3091,16 @@ int Spline1DCantExtremeX(const Spline *s) {
     /*  extrema. So do a sanity check to make sure it is possible to get */
     /*  any extrema before actually looking for them */
 
-    if ( s->from->me.x>=s->from->nextcp.x &&
+    if (s->from->me.x>=s->from->nextcp.x &&
 	    s->from->nextcp.x>=s->to->prevcp.x &&
-	    s->to->prevcp.x>=s->to->me.x )
-     return( true );
-    if ( s->from->me.x<=s->from->nextcp.x &&
+	    s->to->prevcp.x>=s->to->me.x)
+     return true;
+    if (s->from->me.x<=s->from->nextcp.x &&
 	    s->from->nextcp.x<=s->to->prevcp.x &&
-	    s->to->prevcp.x<=s->to->me.x )
-     return( true );
+	    s->to->prevcp.x<=s->to->me.x)
+     return true;
 
-   return( false );
+   return false;
 }
 
 int Spline1DCantExtremeY(const Spline *s) {
@@ -3109,16 +3109,16 @@ int Spline1DCantExtremeY(const Spline *s) {
     /*  extrema. So do a sanity check to make sure it is possible to get */
     /*  any extrema before actually looking for them */
 
-    if ( s->from->me.y>=s->from->nextcp.y &&
+    if (s->from->me.y>=s->from->nextcp.y &&
 	    s->from->nextcp.y>=s->to->prevcp.y &&
-	    s->to->prevcp.y>=s->to->me.y )
-     return( true );
-    if ( s->from->me.y<=s->from->nextcp.y &&
+	    s->to->prevcp.y>=s->to->me.y)
+     return true;
+    if (s->from->me.y<=s->from->nextcp.y &&
 	    s->from->nextcp.y<=s->to->prevcp.y &&
-	    s->to->prevcp.y<=s->to->me.y )
-     return( true );
+	    s->to->prevcp.y<=s->to->me.y)
+     return true;
 
-   return( false );
+   return false;
 }
 
 Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
@@ -3131,13 +3131,13 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
     real len;
    int leash;
 
-    if ( !always ) {
+    if (!always) {
 	real xlen, ylen;
 	xlen = (s->from->me.x-s->to->me.x);
 	ylen = (s->from->me.y-s->to->me.y);
 	len = xlen*xlen + ylen*ylen;
 	lenbound *= lenbound;
-	if ( len < lenbound ) {
+	if (len < lenbound) {
 	    len = SplineLength(s);
 	    len *= len;
 	}
@@ -3147,16 +3147,16 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
     memset(rmto,0,sizeof(rmto));
 
     for (leash=1000;leash>0;leash--) {
-	if ( s->knownlinear )
-	 return(s);
+	if (s->knownlinear)
+	 return s;
 	p = 0;
-	if ( Spline1DCantExtremeX(s) ) {
+	if (Spline1DCantExtremeX(s)) {
 	    /* If the control points are at the end-points then this (1D) spline is */
 	    /*  basically a line. But rounding errors can give us very faint extrema */
 	    /*  if we look for them */
-	} else if ( s->splines[0].a!=0 ) {
+	} else if (s->splines[0].a!=0) {
 	    bigreal d = 4*s->splines[0].b*s->splines[0].b-4*3*s->splines[0].a*s->splines[0].c;
-	    if ( d>0 ) {
+	    if (d>0) {
 		extended t1, t2;
 		d = sqrt(d);
 		t1 = (-2*s->splines[0].b+d)/(2*3*s->splines[0].a);
@@ -3164,9 +3164,9 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 		t[p++] = CheckExtremaForSingleBitErrors(&s->splines[0],t1,t2);
 		t[p++] = CheckExtremaForSingleBitErrors(&s->splines[0],t2,t1);
 	    }
-	} else if ( s->splines[0].b!=0 )
+	} else if (s->splines[0].b!=0)
 	    t[p++] = -s->splines[0].c/(2*s->splines[0].b);
-	if ( !always ) {
+	if (!always) {
 	    /* Generally we are only interested in extrema on long splines, or */
 	    /* extrema which are extrema for the entire contour, not just this */
 	    /* spline */
@@ -3174,19 +3174,19 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 	    /*  be ignored. */
 	    /* No they can't. But we need to remove the original point in this*/
 	    /*  case */
-	    for ( i=0; i<p; ++i ) {
+	    for (i=0; i<p; ++i) {
 		real x = ((s->splines[0].a*t[i]+s->splines[0].b)*t[i]+s->splines[0].c)*t[i]+s->splines[0].d;
 		real y = ((s->splines[1].a*t[i]+s->splines[1].b)*t[i]+s->splines[1].c)*t[i]+s->splines[1].d;
-		int close_from = ( x-s->from->me.x<offsetbound && x-s->from->me.x>-offsetbound) &&
-				( y-s->from->me.y<10*offsetbound && y-s->from->me.y>-10*offsetbound );
-		int close_to = ( x-s->to->me.x<offsetbound && x-s->to->me.x>-offsetbound) &&
-				( y-s->to->me.y<10*offsetbound && y-s->to->me.y>-10*offsetbound );
+		int close_from = (x-s->from->me.x<offsetbound && x-s->from->me.x>-offsetbound) &&
+				(y-s->from->me.y<10*offsetbound && y-s->from->me.y>-10*offsetbound);
+		int close_to = (x-s->to->me.x<offsetbound && x-s->to->me.x>-offsetbound) &&
+				(y-s->to->me.y<10*offsetbound && y-s->to->me.y>-10*offsetbound);
 		int remove_from = close_from  && GoodCurve(s->from,true) && !SpIsExtremum(s->from);
 		int remove_to = close_to  && GoodCurve(s->to,false) && !SpIsExtremum(s->to);
-		if (( x>b->minx && x<b->maxx  && len<lenbound ) ||
-			(close_from && !remove_from) || (close_to && !remove_to) ) {
+		if ((x>b->minx && x<b->maxx  && len<lenbound) ||
+			(close_from && !remove_from) || (close_to && !remove_to)) {
 		    --p;
-		    for ( j=i; j<p; ++j )
+		    for (j=i; j<p; ++j)
 			t[j] = t[j+1];
 		    --i;
 		} else {
@@ -3197,13 +3197,13 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 	}
 
 	p_s = p;
-	if ( Spline1DCantExtremeY(s) ) {
+	if (Spline1DCantExtremeY(s)) {
 	    /* If the control points are at the end-points then this (1D) spline is */
 	    /*  basically a line. But rounding errors can give us very faint extrema */
 	    /*  if we look for them */
-	} else if ( s->splines[1].a!=0 ) {
+	} else if (s->splines[1].a!=0) {
 	    bigreal d = 4*s->splines[1].b*s->splines[1].b-4*3*s->splines[1].a*s->splines[1].c;
-	    if ( d>0 ) {
+	    if (d>0) {
 		extended t1,t2;
 		d = sqrt(d);
 		t1 = (-2*s->splines[1].b+d)/(2*3*s->splines[1].a);
@@ -3211,22 +3211,22 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 		t[p++] = CheckExtremaForSingleBitErrors(&s->splines[1],t1,t2);
 		t[p++] = CheckExtremaForSingleBitErrors(&s->splines[1],t2,t1);
 	    }
-	} else if ( s->splines[1].b!=0 )
+	} else if (s->splines[1].b!=0)
 	    t[p++] = -s->splines[1].c/(2*s->splines[1].b);
-	if ( !always ) {
-	    for ( i=p_s; i<p; ++i ) {
+	if (!always) {
+	    for (i=p_s; i<p; ++i) {
 		real x = ((s->splines[0].a*t[i]+s->splines[0].b)*t[i]+s->splines[0].c)*t[i]+s->splines[0].d;
 		real y = ((s->splines[1].a*t[i]+s->splines[1].b)*t[i]+s->splines[1].c)*t[i]+s->splines[1].d;
-		int close_from =( y-s->from->me.y<offsetbound && y-s->from->me.y>-offsetbound ) &&
-			( x-s->from->me.x<offsetbound && x-s->from->me.x>-offsetbound);
-		int close_to = ( y-s->to->me.y<offsetbound && y-s->to->me.y>-offsetbound ) &&
-			( x-s->to->me.x<offsetbound && x-s->to->me.x>-offsetbound);
+		int close_from =(y-s->from->me.y<offsetbound && y-s->from->me.y>-offsetbound) &&
+			(x-s->from->me.x<offsetbound && x-s->from->me.x>-offsetbound);
+		int close_to = (y-s->to->me.y<offsetbound && y-s->to->me.y>-offsetbound) &&
+			(x-s->to->me.x<offsetbound && x-s->to->me.x>-offsetbound);
 		int remove_from = close_from  && GoodCurve(s->from,true) && !SpIsExtremum(s->from);
 		int remove_to = close_to  && GoodCurve(s->to,false) && !SpIsExtremum(s->to);
-		if (( y>b->miny && y<b->maxy && len<lenbound ) ||
-			(close_from && !remove_from) || (close_to && !remove_to) ) {
+		if ((y>b->miny && y<b->maxy && len<lenbound) ||
+			(close_from && !remove_from) || (close_to && !remove_to)) {
 		    --p;
-		    for ( j=i; j<p; ++j )
+		    for (j=i; j<p; ++j)
 			t[j] = t[j+1];
 		    --i;
 		} else {
@@ -3240,28 +3240,28 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 	/*  (we do a little fudging near the endpoints so we don't get confused */
 	/*   by rounding errors) */
 	restart = false;
-	for ( i=0; i<p; ++i ) {
-	    if ( t[i]>0 && t[i]<.05 ) {
+	for (i=0; i<p; ++i) {
+	    if (t[i]>0 && t[i]<.05) {
 		BasePoint test;
 		/* Expand stroke gets very confused on zero-length splines so */
 		/*  don't let that happen */
 		test.x = ((s->splines[0].a*t[i]+s->splines[0].b)*t[i]+s->splines[0].c)*t[i]+s->splines[0].d - s->from->me.x;
 		test.y = ((s->splines[1].a*t[i]+s->splines[1].b)*t[i]+s->splines[1].c)*t[i]+s->splines[1].d - s->from->me.y;
-		if (( test.x*test.x + test.y*test.y<1e-7 ) && ( test.x*test.x + test.y*test.y>0.0 )) {
-		    if ( (forced = ForceEndPointExtrema(s,0))>=0 ) {
-			if ( forced && s->from->prev!=NULL )
+		if ((test.x*test.x + test.y*test.y<1e-7) && (test.x*test.x + test.y*test.y>0.0)) {
+		    if ((forced = ForceEndPointExtrema(s,0))>=0) {
+			if (forced && s->from->prev!=NULL)
 			    SplineAddExtrema(s->from->prev,always,lenbound,offsetbound,b);
 			restart = true;
 	break;
 		    }
 		}
 	    }
-	    if ( t[i]<1 && t[i]>.95 ) {
+	    if (t[i]<1 && t[i]>.95) {
 		BasePoint test;
 		test.x = ((s->splines[0].a*t[i]+s->splines[0].b)*t[i]+s->splines[0].c)*t[i]+s->splines[0].d - s->to->me.x;
 		test.y = ((s->splines[1].a*t[i]+s->splines[1].b)*t[i]+s->splines[1].c)*t[i]+s->splines[1].d - s->to->me.y;
-		if (( test.x*test.x + test.y*test.y < 1e-7 ) && ( test.x*test.x + test.y*test.y>0.0 )) {
-		    if ( ForceEndPointExtrema(s,1)>=0 ) {
+		if ((test.x*test.x + test.y*test.y < 1e-7) && (test.x*test.x + test.y*test.y>0.0)) {
+		    if (ForceEndPointExtrema(s,1)>=0) {
 			/* don't need to fix up next, because splinesetaddextrema will do that soon */
 			restart = true;
 	break;
@@ -3269,9 +3269,9 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 		}
 	    }
 		
-	    if ( t[i]<=0 || t[i]>=1.0 ) {
+	    if (t[i]<=0 || t[i]>=1.0) {
 		--p;
-		for ( j=i; j<p; ++j ) {
+		for (j=i; j<p; ++j) {
 		    t[j] = t[j+1];
 		    rmfrom[j] = rmfrom[j+1];
 		    rmto[j] = rmto[j+1];
@@ -3279,16 +3279,16 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 		--i;
 	    }
 	}
-	if ( restart )
+	if (restart)
     continue;
 
-	if ( p==0 )
-	 return(s);
+	if (p==0)
+	 return s;
 
 	/* Find the smallest of all the interesting points */
 	min = t[0]; mini = 0;
-	for ( i=1; i<p; ++i ) {
-	    if ( t[i]<min ) {
+	for (i=1; i<p; ++i) {
+	    if (t[i]<min) {
 		min=t[i];
 		mini = i;
 	    }
@@ -3296,29 +3296,29 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 	sp = SplineBisect(s,min);
 /* On the mac we get rounding errors in the bisect routine */
 	{ bigreal dx, dy;
-	    if ( (dx = sp->me.x - sp->prevcp.x)<0 ) dx=-dx;
-	    if ( (dy = sp->me.y - sp->prevcp.y)<0 ) dy=-dy;
-	    if ( dx!=0 && dy!=0 ) {
-		if ( dx<dy )
+	    if ((dx = sp->me.x - sp->prevcp.x)<0) dx=-dx;
+	    if ((dy = sp->me.y - sp->prevcp.y)<0) dy=-dy;
+	    if (dx!=0 && dy!=0) {
+		if (dx<dy)
 		    sp->prevcp.x = sp->me.x;
 		else
 		    sp->prevcp.y = sp->me.y;
 	    }
-	    if ( (dx = sp->me.x - sp->nextcp.x)<0 ) dx=-dx;
-	    if ( (dy = sp->me.y - sp->nextcp.y)<0 ) dy=-dy;
-	    if ( dx!=0 && dy!=0 ) {
-		if ( dx<dy )
+	    if ((dx = sp->me.x - sp->nextcp.x)<0) dx=-dx;
+	    if ((dy = sp->me.y - sp->nextcp.y)<0) dy=-dy;
+	    if (dx!=0 && dy!=0) {
+		if (dx<dy)
 		    sp->nextcp.x = sp->me.x;
 		else
 		    sp->nextcp.y = sp->me.y;
 	    }
 	}
 
-	if ( rmfrom[mini] ) sp->prev->from->ticked = true;
-	if ( rmto[mini] ) sp->next->to->ticked = true;
+	if (rmfrom[mini]) sp->prev->from->ticked = true;
+	if (rmto[mini]) sp->next->to->ticked = true;
 	s = sp->next;
-	if ( p==1 )
-	 return( s );
+	if (p==1)
+	 return s;
 	/* Don't try to use any other computed t values, it is easier to */
 	/*  recompute them than to try and figure out what they map to on the */
 	/*  new spline */
@@ -3335,41 +3335,41 @@ void SplineSetAddExtrema(SplineChar *sc, SplineSet *ss,enum ae_type between_sele
     real offsetbound=0;
     SplinePoint *sp, *nextp;
 
-    if ( between_selected==ae_only_good ) {
+    if (between_selected==ae_only_good) {
 	SplineSetQuickBounds(ss,&b);
 	lenbound = (emsize)/32.0;
 	always = false;
 	offsetbound = .5;
 	between_selected = ae_only_good_rm_later;
-	for ( sp = ss->first; ; ) {
+	for (sp = ss->first; ;) {
 	    sp->ticked = false;
-	    if ( sp->next==NULL )
+	    if (sp->next==NULL)
 	break;
 	    sp = sp->next->to;
-	    if ( sp==ss->first )
+	    if (sp==ss->first)
 	break;
 	}
     }
 
     first = NULL;
-    for ( s = ss->first->next; s!=NULL && s!=first; s = s->to->next ) {
-	if ( between_selected!=ae_between_selected ||
+    for (s = ss->first->next; s!=NULL && s!=first; s = s->to->next) {
+	if (between_selected!=ae_between_selected ||
 		(s->from->selected && s->to->selected))
 	    s = SplineAddExtrema(s,always,lenbound,offsetbound,&b);
-	if ( first==NULL ) first = s;
+	if (first==NULL) first = s;
     }
-    if ( between_selected == ae_only_good_rm_later ) {
-	for ( sp = ss->first; ; ) {
-	    if ( sp->next==NULL )
+    if (between_selected == ae_only_good_rm_later) {
+	for (sp = ss->first; ;) {
+	    if (sp->next==NULL)
 	break;
 	    nextp = sp->next->to;
-	    if ( sp->ticked ) {
-		if ( sp==ss->first )
+	    if (sp->ticked) {
+		if (sp==ss->first)
 		    ss->first = ss->last = nextp;
 		SplinesRemoveBetween(sc,sp->prev->from,nextp,1);
 	    }
 	    sp = nextp;
-	    if ( sp==ss->first )
+	    if (sp==ss->first)
 	break;
 	}
     }
@@ -3378,7 +3378,7 @@ void SplineSetAddExtrema(SplineChar *sc, SplineSet *ss,enum ae_type between_sele
 void SplineCharAddExtrema(SplineChar *sc, SplineSet *head,enum ae_type between_selected,int emsize) {
     SplineSet *ss;
 
-    for ( ss=head; ss!=NULL; ss=ss->next )
+    for (ss=head; ss!=NULL; ss=ss->next)
 	    SplineSetAddExtrema(sc,ss,between_selected,emsize);
 }
 
@@ -3386,8 +3386,8 @@ char *GetNextUntitledName(void) {
     static int untitled_cnt=1;
     char buffer[80];
 
-    sprintf( buffer, "Untitled%d", untitled_cnt++ );
-   return( copy(buffer));
+    sprintf(buffer, "Untitled%d", untitled_cnt++);
+   return copy(buffer);
 }
 
 SplineFont *SplineFontEmpty(void) {
@@ -3410,7 +3410,7 @@ SplineFont *SplineFontEmpty(void) {
     sf->pfminfo.winascent_add = sf->pfminfo.windescent_add = true;
     sf->pfminfo.hheadascent_add = sf->pfminfo.hheaddescent_add = true;
     sf->pfminfo.typoascent_add = sf->pfminfo.typodescent_add = true;
-    if ( TTFFoundry!=NULL )
+    if (TTFFoundry!=NULL)
 	strncpy(sf->pfminfo.os2_vendor,TTFFoundry,4);
     else
 	memcpy(sf->pfminfo.os2_vendor,"PfEd",4);
@@ -3426,7 +3426,7 @@ SplineFont *SplineFontEmpty(void) {
     sf->layers[1].background = false;
     sf->grid.background = true;
 
-   return( sf );
+   return sf;
 }
 
 SplineFont *SplineFontBlank(int charcnt) {
@@ -3440,21 +3440,21 @@ SplineFont *SplineFontBlank(int charcnt) {
     sf->fontname = GetNextUntitledName();
     sf->fullname = copy(sf->fontname);
     sf->familyname = copy(sf->fontname);
-    sprintf( buffer, "%s.sfd", sf->fontname);
+    sprintf(buffer, "%s.sfd", sf->fontname);
     sf->origname = ToAbsolute(buffer);
     sf->weight = copy("Regular");
     time(&now);
     tm = localtime(&now);
-    if ( author!=NULL )
-	sprintf( buffer, "Copyright (c) %d, %.50s", tm->tm_year+1900, author );
+    if (author!=NULL)
+	sprintf(buffer, "Copyright (c) %d, %.50s", tm->tm_year+1900, author);
     else
-	sprintf( buffer, "Copyright (c) %d, Anonymous", tm->tm_year+1900 );
+	sprintf(buffer, "Copyright (c) %d, Anonymous", tm->tm_year+1900);
     sf->copyright = copy(buffer);
-    if ( xuid!=NULL ) {
+    if (xuid!=NULL) {
 	sf->xuid = malloc(strlen(xuid)+20);
 	sprintf(sf->xuid,"[%s %d]", xuid, (rand()&0xffffff));
     }
-    sprintf( buffer, "%d-%d-%d: Created with FontAnvil", tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday );
+    sprintf(buffer, "%d-%d-%d: Created with FontAnvil", tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday);
     sf->comments = copy(buffer);
     sf->version = copy("001.000");
     sf->ascent = rint(new_em_size*.8); sf->descent = new_em_size-sf->ascent;
@@ -3464,7 +3464,7 @@ SplineFont *SplineFontBlank(int charcnt) {
     sf->glyphs = calloc(charcnt,sizeof(SplineChar *));
     sf->pfminfo.fstype = -1;
     sf->use_typo_metrics = true;
-   return( sf );
+   return sf;
 }
 
 SplineFont *SplineFontNew(void) {
@@ -3479,23 +3479,23 @@ SplineFont *SplineFontNew(void) {
     sf->grid.order2 = new_fonts_are_order2;
 
     sf->map = EncMapNew(enclen,enclen,default_encoding);
-   return( sf );
+   return sf;
 }
 
 static void SFChangeXUID(SplineFont *sf, int random) {
     char *pt, *new, *npt;
     int val;
 
-    if ( sf->xuid==NULL )
+    if (sf->xuid==NULL)
      return;
     pt = strrchr(sf->xuid,' ');
-    if ( pt==NULL )
+    if (pt==NULL)
 	pt = strchr(sf->xuid,'[');
-    if ( pt==NULL )
+    if (pt==NULL)
 	pt = sf->xuid;
     else
 	++pt;
-    if ( random )
+    if (random)
 	val = rand()&0xffffff;
     else {
 	val = strtol(pt,NULL,10);
@@ -3505,8 +3505,8 @@ static void SFChangeXUID(SplineFont *sf, int random) {
     new = malloc(pt-sf->xuid+12);
     strncpy(new,sf->xuid,pt-sf->xuid);
     npt = new + (pt-sf->xuid);
-    if ( npt==new ) *npt++ = '[';
-    sprintf(npt, "%d]", val );
+    if (npt==new) *npt++ = '[';
+    sprintf(npt, "%d]", val);
     free(sf->xuid); sf->xuid = new;
     sf->changed = true;
     sf->changed_since_xuidchanged = false;
@@ -3521,27 +3521,27 @@ void SplineCharTangentNextCP(SplinePoint *sp) {
     BasePoint *bp, unit;
     extern int snaptoint;
 
-    if ( sp->prev==NULL )
+    if (sp->prev==NULL)
      return;
     bp = &sp->prev->from->me;
 
     unit.y = sp->me.y-bp->y; unit.x = sp->me.x-bp->x;
-    len = sqrt( unit.x*unit.x + unit.y*unit.y );
-    if ( len!=0 ) {
+    len = sqrt(unit.x*unit.x + unit.y*unit.y);
+    if (len!=0) {
 	unit.x /= len;
 	unit.y /= len;
     }
     len = sqrt((sp->nextcp.y-sp->me.y)*(sp->nextcp.y-sp->me.y) + (sp->nextcp.x-sp->me.x)*(sp->nextcp.x-sp->me.x));
     sp->nextcp.x = sp->me.x + len*unit.x;
     sp->nextcp.y = sp->me.y + len*unit.y;
-    if ( snaptoint ) {
+    if (snaptoint) {
 	sp->nextcp.x = rint(sp->nextcp.x);
 	sp->nextcp.y = rint(sp->nextcp.y);
     } else {
 	sp->nextcp.x = rint(sp->nextcp.x*1024)/1024;
 	sp->nextcp.y = rint(sp->nextcp.y*1024)/1024;
     }
-    if ( sp->next!=NULL && sp->next->order2 )
+    if (sp->next!=NULL && sp->next->order2)
 	sp->next->to->prevcp = sp->nextcp;
 }
 
@@ -3550,27 +3550,27 @@ void SplineCharTangentPrevCP(SplinePoint *sp) {
     BasePoint *bp, unit;
     extern int snaptoint;
 
-    if ( sp->next==NULL )
+    if (sp->next==NULL)
      return;
     bp = &sp->next->to->me;
 
     unit.y = sp->me.y-bp->y; unit.x = sp->me.x-bp->x;
-    len = sqrt( unit.x*unit.x + unit.y*unit.y );
-    if ( len!=0 ) {
+    len = sqrt(unit.x*unit.x + unit.y*unit.y);
+    if (len!=0) {
 	unit.x /= len;
 	unit.y /= len;
     }
     len = sqrt((sp->prevcp.y-sp->me.y)*(sp->prevcp.y-sp->me.y) + (sp->prevcp.x-sp->me.x)*(sp->prevcp.x-sp->me.x));
     sp->prevcp.x = sp->me.x + len*unit.x;
     sp->prevcp.y = sp->me.y + len*unit.y;
-    if ( snaptoint ) {
+    if (snaptoint) {
 	sp->prevcp.x = rint(sp->prevcp.x);
 	sp->prevcp.y = rint(sp->prevcp.y);
     } else {
 	sp->prevcp.x = rint(sp->prevcp.x*1024)/1024;
 	sp->prevcp.y = rint(sp->prevcp.y*1024)/1024;
     }
-    if ( sp->prev!=NULL && sp->prev->order2 )
+    if (sp->prev!=NULL && sp->prev->order2)
 	sp->prev->from->nextcp = sp->prevcp;
 }
 
@@ -3578,12 +3578,12 @@ void BP_HVForce(BasePoint *vector) {
     /* Force vector to be horizontal/vertical */
     bigreal dx, dy, len;
 
-    if ( (dx= vector->x)<0 ) dx = -dx;
-    if ( (dy= vector->y)<0 ) dy = -dy;
-    if ( dx==0 || dy==0 )
+    if ((dx= vector->x)<0) dx = -dx;
+    if ((dy= vector->y)<0) dy = -dy;
+    if (dx==0 || dy==0)
      return;
     len = sqrt(dx*dx + dy*dy);
-    if ( dx>dy ) {
+    if (dx>dy) {
 	vector->x = vector->x<0 ? -len : len;
 	vector->y = 0;
     } else {
@@ -3599,19 +3599,19 @@ void SplineCharDefaultNextCP(SplinePoint *base) {
     BasePoint unit;
     extern int snaptoint;
 
-    if ( base->next==NULL )
+    if (base->next==NULL)
      return;
-    if ( base->next->order2 ) {
+    if (base->next->order2) {
 	SplineRefigureFixup(base->next);
        return;
     }
-    if ( !base->nextcpdef ) {
-	if ( base->pointtype==pt_tangent )
+    if (!base->nextcpdef) {
+	if (base->pointtype==pt_tangent)
 	    SplineCharTangentNextCP(base);
        return;
     }
     next = base->next->to;
-    if ( base->prev!=NULL )
+    if (base->prev!=NULL)
 	prev = base->prev->from;
 
     len = NICE_PROPORTION * sqrt((base->me.x-next->me.x)*(base->me.x-next->me.x) +
@@ -3619,53 +3619,53 @@ void SplineCharDefaultNextCP(SplinePoint *base) {
     unit.x = next->me.x - base->me.x;
     unit.y = next->me.y - base->me.y;
     ulen = sqrt(unit.x*unit.x + unit.y*unit.y);
-    if ( ulen!=0 )
+    if (ulen!=0)
 	unit.x /= ulen, unit.y /= ulen;
     base->nonextcp = false;
 
-    if ( base->pointtype == pt_curve || base->pointtype == pt_hvcurve ) {
-	if ( prev!=NULL && (base->prevcpdef || base->noprevcp)) {
+    if (base->pointtype == pt_curve || base->pointtype == pt_hvcurve) {
+	if (prev!=NULL && (base->prevcpdef || base->noprevcp)) {
 	    unit.x = next->me.x - prev->me.x;
 	    unit.y = next->me.y - prev->me.y;
 	    ulen = sqrt(unit.x*unit.x + unit.y*unit.y);
-	    if ( ulen!=0 )
+	    if (ulen!=0)
 		unit.x /= ulen, unit.y /= ulen;
-	    if ( base->pointtype == pt_hvcurve )
+	    if (base->pointtype == pt_hvcurve)
 		BP_HVForce(&unit);
 	    plen = sqrt((base->prevcp.x-base->me.x)*(base->prevcp.x-base->me.x) +
 		    (base->prevcp.y-base->me.y)*(base->prevcp.y-base->me.y));
 	    base->prevcp.x = base->me.x - plen*unit.x;
 	    base->prevcp.y = base->me.y - plen*unit.y;
-	    if ( snaptoint ) {
+	    if (snaptoint) {
 		base->prevcp.x = rint(base->prevcp.x);
 		base->prevcp.y = rint(base->prevcp.y);
 	    }
 	    SplineRefigureFixup(base->prev);
-	} else if ( prev!=NULL ) {
+	} else if (prev!=NULL) {
 	    /* The prev control point is fixed. So we've got to use the same */
 	    /*  angle it uses */
 	    unit.x = base->me.x-base->prevcp.x;
 	    unit.y = base->me.y-base->prevcp.y;
 	    ulen = sqrt(unit.x*unit.x + unit.y*unit.y);
-	    if ( ulen!=0 )
+	    if (ulen!=0)
 		unit.x /= ulen, unit.y /= ulen;
 	} else {
 	    base->prevcp = base->me;
 	    base->noprevcp = true;
 	    base->prevcpdef = true;
 	}
-	if ( base->pointtype == pt_hvcurve )
+	if (base->pointtype == pt_hvcurve)
 	    BP_HVForce(&unit);
-    } else if ( base->pointtype == pt_corner ) {
-	if ( next->pointtype != pt_curve && next->pointtype != pt_hvcurve ) {
+    } else if (base->pointtype == pt_corner) {
+	if (next->pointtype != pt_curve && next->pointtype != pt_hvcurve) {
 	    base->nonextcp = true;
 	}
     } else /* tangent */ {
-	if ( next->pointtype != pt_curve ) {
+	if (next->pointtype != pt_curve) {
 	    base->nonextcp = true;
 	} else {
-	    if ( prev!=NULL ) {
-		if ( !base->noprevcp ) {
+	    if (prev!=NULL) {
+		if (!base->noprevcp) {
 		    plen = sqrt((base->prevcp.x-base->me.x)*(base->prevcp.x-base->me.x) +
 			    (base->prevcp.y-base->me.y)*(base->prevcp.y-base->me.y));
 		    base->prevcp.x = base->me.x - plen*unit.x;
@@ -3675,24 +3675,24 @@ void SplineCharDefaultNextCP(SplinePoint *base) {
 		unit.x = base->me.x-prev->me.x;
 		unit.y = base->me.y-prev->me.y;
 		ulen = sqrt(unit.x*unit.x + unit.y*unit.y);
-		if ( ulen!=0 )
+		if (ulen!=0)
 		    unit.x /= ulen, unit.y /= ulen;
 	    }
 	}
     }
-    if ( base->nonextcp )
+    if (base->nonextcp)
 	base->nextcp = base->me;
     else {
 	base->nextcp.x = base->me.x + len*unit.x;
 	base->nextcp.y = base->me.y + len*unit.y;
-	if ( snaptoint ) {
+	if (snaptoint) {
 	    base->nextcp.x = rint(base->nextcp.x);
 	    base->nextcp.y = rint(base->nextcp.y);
 	} else {
 	    base->nextcp.x = rint(base->nextcp.x*1024)/1024;
 	    base->nextcp.y = rint(base->nextcp.y*1024)/1024;
 	}
-	if ( base->next != NULL )
+	if (base->next != NULL)
 	    SplineRefigureFixup(base->next);
     }
 }
@@ -3703,19 +3703,19 @@ void SplineCharDefaultPrevCP(SplinePoint *base) {
     BasePoint unit;
     extern int snaptoint;
 
-    if ( base->prev==NULL )
+    if (base->prev==NULL)
      return;
-    if ( base->prev->order2 ) {
+    if (base->prev->order2) {
 	SplineRefigureFixup(base->prev);
        return;
     }
-    if ( !base->prevcpdef ) {
-	if ( base->pointtype==pt_tangent )
+    if (!base->prevcpdef) {
+	if (base->pointtype==pt_tangent)
 	    SplineCharTangentPrevCP(base);
        return;
     }
     prev = base->prev->from;
-    if ( base->next!=NULL )
+    if (base->next!=NULL)
 	next = base->next->to;
 
     len = NICE_PROPORTION * sqrt((base->me.x-prev->me.x)*(base->me.x-prev->me.x) +
@@ -3723,53 +3723,53 @@ void SplineCharDefaultPrevCP(SplinePoint *base) {
     unit.x = prev->me.x - base->me.x;
     unit.y = prev->me.y - base->me.y;
     ulen = sqrt(unit.x*unit.x + unit.y*unit.y);
-    if ( ulen!=0 )
+    if (ulen!=0)
 	unit.x /= ulen, unit.y /= ulen;
     base->noprevcp = false;
 
-    if ( base->pointtype == pt_curve || base->pointtype == pt_hvcurve ) {
-	if ( next!=NULL && (base->nextcpdef || base->nonextcp)) {
+    if (base->pointtype == pt_curve || base->pointtype == pt_hvcurve) {
+	if (next!=NULL && (base->nextcpdef || base->nonextcp)) {
 	    unit.x = prev->me.x - next->me.x;
 	    unit.y = prev->me.y - next->me.y;
 	    ulen = sqrt(unit.x*unit.x + unit.y*unit.y);
-	    if ( ulen!=0 ) 
+	    if (ulen!=0) 
 		unit.x /= ulen, unit.y /= ulen;
-	    if ( base->pointtype == pt_hvcurve )
+	    if (base->pointtype == pt_hvcurve)
 		BP_HVForce(&unit);
 	    nlen = sqrt((base->nextcp.x-base->me.x)*(base->nextcp.x-base->me.x) +
 		    (base->nextcp.y-base->me.y)*(base->nextcp.y-base->me.y));
 	    base->nextcp.x = base->me.x - nlen*unit.x;
 	    base->nextcp.y = base->me.y - nlen*unit.y;
-	    if ( snaptoint ) {
+	    if (snaptoint) {
 		base->nextcp.x = rint(base->nextcp.x);
 		base->nextcp.y = rint(base->nextcp.y);
 	    }
 	    SplineRefigureFixup(base->next);
-	} else if ( next!=NULL ) {
+	} else if (next!=NULL) {
 	    /* The next control point is fixed. So we got to use the same */
 	    /*  angle it uses */
 	    unit.x = base->me.x-base->nextcp.x;
 	    unit.y = base->me.y-base->nextcp.y;
 	    ulen = sqrt(unit.x*unit.x + unit.y*unit.y);
-	    if ( ulen!=0 )
+	    if (ulen!=0)
 		unit.x /= ulen, unit.y /= ulen;
 	} else {
 	    base->nextcp = base->me;
 	    base->nonextcp = true;
 	    base->nextcpdef = true;
 	}
-	if ( base->pointtype == pt_hvcurve )
+	if (base->pointtype == pt_hvcurve)
 	    BP_HVForce(&unit);
-    } else if ( base->pointtype == pt_corner ) {
-	if ( prev->pointtype != pt_curve && prev->pointtype != pt_hvcurve ) {
+    } else if (base->pointtype == pt_corner) {
+	if (prev->pointtype != pt_curve && prev->pointtype != pt_hvcurve) {
 	    base->noprevcp = true;
 	}
     } else /* tangent */ {
-	if ( prev->pointtype != pt_curve ) {
+	if (prev->pointtype != pt_curve) {
 	    base->noprevcp = true;
 	} else {
-	    if ( next!=NULL ) {
-		if ( !base->nonextcp ) {
+	    if (next!=NULL) {
+		if (!base->nonextcp) {
 		    nlen = sqrt((base->nextcp.x-base->me.x)*(base->nextcp.x-base->me.x) +
 			    (base->nextcp.y-base->me.y)*(base->nextcp.y-base->me.y));
 		    base->nextcp.x = base->me.x - nlen*unit.x;
@@ -3779,24 +3779,24 @@ void SplineCharDefaultPrevCP(SplinePoint *base) {
 		unit.x = base->me.x-next->me.x;
 		unit.y = base->me.y-next->me.y;
 		ulen = sqrt(unit.x*unit.x + unit.y*unit.y);
-		if ( ulen!=0 )
+		if (ulen!=0)
 		    unit.x /= ulen, unit.y /= ulen;
 	    }
 	}
     }
-    if ( base->noprevcp )
+    if (base->noprevcp)
 	base->prevcp = base->me;
     else {
 	base->prevcp.x = base->me.x + len*unit.x;
 	base->prevcp.y = base->me.y + len*unit.y;
-	if ( snaptoint ) {
+	if (snaptoint) {
 	    base->prevcp.x = rint(base->prevcp.x);
 	    base->prevcp.y = rint(base->prevcp.y);
 	} else {
 	    base->prevcp.x = rint(base->prevcp.x*1024)/1024;
 	    base->prevcp.y = rint(base->prevcp.y*1024)/1024;
 	}
-	if ( base->prev!=NULL )
+	if (base->prev!=NULL)
 	    SplineRefigureFixup(base->prev);
     }
 }
@@ -3804,21 +3804,21 @@ void SplineCharDefaultPrevCP(SplinePoint *base) {
 void SPSmoothJoint(SplinePoint *sp) {
     BasePoint unitn, unitp;
     bigreal len, dot, dotn, dotp;
-    if ( sp->prev==NULL || sp->next==NULL || sp->pointtype==pt_corner )
+    if (sp->prev==NULL || sp->next==NULL || sp->pointtype==pt_corner)
      return;
 
-    if ( (sp->pointtype==pt_curve || sp->pointtype==pt_hvcurve ) &&
-	    !sp->nonextcp && !sp->noprevcp ) {
+    if ((sp->pointtype==pt_curve || sp->pointtype==pt_hvcurve) &&
+	    !sp->nonextcp && !sp->noprevcp) {
 	unitn.x = sp->nextcp.x-sp->me.x;
 	unitn.y = sp->nextcp.y-sp->me.y;
 	len = sqrt(unitn.x*unitn.x + unitn.y*unitn.y);
-	if ( len==0 )
+	if (len==0)
 	 return;
 	unitn.x /= len; unitn.y /= len;
 	unitp.x = sp->me.x - sp->prevcp.x;
 	unitp.y = sp->me.y - sp->prevcp.y;
 	len = sqrt(unitp.x*unitp.x + unitp.y*unitp.y);
-	if ( len==0 )
+	if (len==0)
 	 return;
 	unitp.x /= len; unitp.y /= len;
 	dotn = unitp.y*(sp->nextcp.x-sp->me.x) - unitp.x*(sp->nextcp.y-sp->me.y);
@@ -3829,11 +3829,11 @@ void SPSmoothJoint(SplinePoint *sp) {
 	sp->prevcp.y += -dotp*unitn.x/2;
 	SplineRefigure(sp->prev); SplineRefigure(sp->next);
     }
-    if ( sp->pointtype==pt_tangent && !sp->nonextcp ) {
+    if (sp->pointtype==pt_tangent && !sp->nonextcp) {
 	unitp.x = sp->me.x - sp->prev->from->me.x;
 	unitp.y = sp->me.y - sp->prev->from->me.y;
 	len = sqrt(unitp.x*unitp.x + unitp.y*unitp.y);
-	if ( len!=0 ) {
+	if (len!=0) {
 	    unitp.x /= len; unitp.y /= len;
 	    dot = unitp.y*(sp->nextcp.x-sp->me.x) - unitp.x*(sp->nextcp.y-sp->me.y);
 	    sp->nextcp.x -= dot*unitp.y;
@@ -3841,11 +3841,11 @@ void SPSmoothJoint(SplinePoint *sp) {
 	    SplineRefigure(sp->next);
 	}
     }
-    if ( sp->pointtype==pt_tangent && !sp->noprevcp ) {
+    if (sp->pointtype==pt_tangent && !sp->noprevcp) {
 	unitn.x = sp->nextcp.x-sp->me.x;
 	unitn.y = sp->nextcp.y-sp->me.y;
 	len = sqrt(unitn.x*unitn.x + unitn.y*unitn.y);
-	if ( len!=0 ) {
+	if (len!=0) {
 	    unitn.x /= len; unitn.y /= len;
 	    dot = unitn.y*(sp->me.x-sp->prevcp.x) - unitn.x*(sp->me.y-sp->prevcp.y);
 	    sp->prevcp.x += dot*unitn.y;
@@ -3858,7 +3858,7 @@ void SPSmoothJoint(SplinePoint *sp) {
 void SPTouchControl(SplinePoint *sp,BasePoint *which, int order2)
 {
     BasePoint to = *which;
-    SPAdjustControl( sp, which, &to, order2 );
+    SPAdjustControl(sp, which, &to, order2);
 }
 
 
@@ -3866,7 +3866,7 @@ void SPAdjustControl(SplinePoint *sp,BasePoint *cp, BasePoint *to,int order2) {
     BasePoint *othercp = cp==&sp->nextcp?&sp->prevcp:&sp->nextcp;
     int refig = false, otherchanged = false;
 
-    if ( sp->ttfindex==0xffff && order2 ) {
+    if (sp->ttfindex==0xffff && order2) {
 	/* If the point itself is implied, then it's the control points that */
 	/*  are fixed. Moving a CP should move the implied point so that it */
 	/*  continues to be in the right place */
@@ -3874,10 +3874,10 @@ void SPAdjustControl(SplinePoint *sp,BasePoint *cp, BasePoint *to,int order2) {
 	sp->me.y = (to->y+othercp->y)/2;
 	*cp = *to;
 	refig = true;
-    } else if ( sp->pointtype==pt_corner ) {
+    } else if (sp->pointtype==pt_corner) {
 	*cp = *to;
-    } else if ( sp->pointtype==pt_curve || sp->pointtype==pt_hvcurve ) {
-	if ( sp->pointtype==pt_hvcurve ) {
+    } else if (sp->pointtype==pt_curve || sp->pointtype==pt_hvcurve) {
+	if (sp->pointtype==pt_hvcurve) {
 	    BasePoint diff;
 	    diff.x = to->x - sp->me.x;
 	    diff.y = to->y - sp->me.y;
@@ -3887,10 +3887,10 @@ void SPAdjustControl(SplinePoint *sp,BasePoint *cp, BasePoint *to,int order2) {
 	} else {
 	    *cp = *to;
 	}
-	if (( cp->x!=sp->me.x || cp->y!=sp->me.y ) &&
+	if ((cp->x!=sp->me.x || cp->y!=sp->me.y) &&
 		(!order2 ||
 		 (cp==&sp->nextcp && sp->next!=NULL && sp->next->to->ttfindex==0xffff) ||
-		 (cp==&sp->prevcp && sp->prev!=NULL && sp->prev->from->ttfindex==0xffff)) ) {
+		 (cp==&sp->prevcp && sp->prev!=NULL && sp->prev->from->ttfindex==0xffff))) {
 	    bigreal len1, len2;
 	    len1 = sqrt((cp->x-sp->me.x)*(cp->x-sp->me.x) +
 			(cp->y-sp->me.y)*(cp->y-sp->me.y));
@@ -3900,52 +3900,52 @@ void SPAdjustControl(SplinePoint *sp,BasePoint *cp, BasePoint *to,int order2) {
 	    othercp->x = len2 * (sp->me.x-cp->x) + sp->me.x;
 	    othercp->y = len2 * (sp->me.y-cp->y) + sp->me.y;
 	    otherchanged = true;
-	    if ( sp->next!=NULL && othercp==&sp->nextcp ) {
-		if ( order2 ) sp->next->to->prevcp = *othercp;
+	    if (sp->next!=NULL && othercp==&sp->nextcp) {
+		if (order2) sp->next->to->prevcp = *othercp;
 		SplineRefigure(sp->next);
-	    } else if ( sp->prev!=NULL && othercp==&sp->prevcp ) {
-		if ( order2 ) sp->prev->from->nextcp = *othercp;
+	    } else if (sp->prev!=NULL && othercp==&sp->prevcp) {
+		if (order2) sp->prev->from->nextcp = *othercp;
 		SplineRefigure(sp->prev);
 	    }
 	}
-	if ( cp==&sp->nextcp ) sp->prevcpdef = false;
+	if (cp==&sp->nextcp) sp->prevcpdef = false;
 	else sp->nextcpdef = false;
     } else {
 	BasePoint *bp;
-	if ( cp==&sp->prevcp && sp->next!=NULL )
+	if (cp==&sp->prevcp && sp->next!=NULL)
 	    bp = &sp->next->to->me;
-	else if ( cp==&sp->nextcp && sp->prev!=NULL )
+	else if (cp==&sp->nextcp && sp->prev!=NULL)
 	    bp = &sp->prev->from->me;
 	else
 	    bp = NULL;
-	if ( bp!=NULL ) {
+	if (bp!=NULL) {
 	    real angle = atan2(bp->y-sp->me.y,bp->x-sp->me.x);
 	    real len = sqrt((bp->x-sp->me.x)*(bp->x-sp->me.x) + (bp->y-sp->me.y)*(bp->y-sp->me.y));
 	    real dotprod =
 		    ((to->x-sp->me.x)*(bp->x-sp->me.x) +
 		     (to->y-sp->me.y)*(bp->y-sp->me.y));
-	    if ( len!=0 ) {
+	    if (len!=0) {
 		dotprod /= len;
-		if ( dotprod>0 ) dotprod = 0;
+		if (dotprod>0) dotprod = 0;
 		cp->x = sp->me.x + dotprod*cos(angle);
 		cp->y = sp->me.y + dotprod*sin(angle);
 	    }
 	}
     }
 
-    if ( order2 ) {
-	if ( (cp==&sp->nextcp || otherchanged) && sp->next!=NULL ) {
+    if (order2) {
+	if ((cp==&sp->nextcp || otherchanged) && sp->next!=NULL) {
 	    SplinePoint *osp = sp->next->to;
-	    if ( osp->ttfindex==0xffff ) {
+	    if (osp->ttfindex==0xffff) {
 		osp->prevcp = sp->nextcp;
 		osp->me.x = (osp->prevcp.x+osp->nextcp.x)/2;
 		osp->me.y = (osp->prevcp.y+osp->nextcp.y)/2;
 		SplineRefigure(osp->next);
 	    }
 	}
-	if ( (cp==&sp->prevcp || otherchanged) && sp->prev!=NULL ) {
+	if ((cp==&sp->prevcp || otherchanged) && sp->prev!=NULL) {
 	    SplinePoint *osp = sp->prev->from;
-	    if ( osp->ttfindex==0xffff ) {
+	    if (osp->ttfindex==0xffff) {
 		osp->nextcp = sp->prevcp;
 		osp->me.x = (osp->prevcp.x+osp->nextcp.x)/2;
 		osp->me.y = (osp->prevcp.y+osp->nextcp.y)/2;
@@ -3954,31 +3954,31 @@ void SPAdjustControl(SplinePoint *sp,BasePoint *cp, BasePoint *to,int order2) {
 	}
     }
 
-    if ( cp->x==sp->me.x && cp->y==sp->me.y ) {
-	if ( cp==&sp->nextcp ) sp->nonextcp = true;
+    if (cp->x==sp->me.x && cp->y==sp->me.y) {
+	if (cp==&sp->nextcp) sp->nonextcp = true;
 	else sp->noprevcp = true;
     }  else {
-	if ( cp==&sp->nextcp ) sp->nonextcp = false;
+	if (cp==&sp->nextcp) sp->nonextcp = false;
 	else sp->noprevcp = false;
     }
-    if ( cp==&sp->nextcp ) sp->nextcpdef = false;
+    if (cp==&sp->nextcp) sp->nextcpdef = false;
     else sp->prevcpdef = false;
 
-    if ( sp->next!=NULL && cp==&sp->nextcp ) {
-	if ( order2 && !sp->nonextcp ) {
+    if (sp->next!=NULL && cp==&sp->nextcp) {
+	if (order2 && !sp->nonextcp) {
 	    sp->next->to->prevcp = *cp;
 	    sp->next->to->noprevcp = false;
 	}
 	SplineRefigureFixup(sp->next);
     }
-    if ( sp->prev!=NULL && cp==&sp->prevcp ) {
-	if ( order2 && !sp->noprevcp ) {
+    if (sp->prev!=NULL && cp==&sp->prevcp) {
+	if (order2 && !sp->noprevcp) {
 	    sp->prev->from->nextcp = *cp;
 	    sp->prev->from->nonextcp = false;
 	}
 	SplineRefigureFixup(sp->prev);
     }
-    if ( refig ) {
+    if (refig) {
 	SplineRefigure(sp->prev);
 	SplineRefigure(sp->next);
     }
@@ -3990,17 +3990,17 @@ int PointListIsSelected(SplinePointList *spl) {
     int i;
 
     first = NULL;
-    if ( spl->first->selected ) anypoints = true;
-    for ( spline=spl->first->next; spline!=NULL && spline!=first && !anypoints; spline = spline->to->next ) {
-	if ( spline->to->selected ) anypoints = true;
-	if ( first == NULL ) first = spline;
+    if (spl->first->selected) anypoints = true;
+    for (spline=spl->first->next; spline!=NULL && spline!=first && !anypoints; spline = spline->to->next) {
+	if (spline->to->selected) anypoints = true;
+	if (first == NULL) first = spline;
     }
-    if ( !anypoints && spl->spiro_cnt!=0 ) {
-	for ( i=0; i<spl->spiro_cnt-1; ++i )
-	    if ( SPIRO_SELECTED(&spl->spiros[i]))
-	   return( true );
+    if (!anypoints && spl->spiro_cnt!=0) {
+	for (i=0; i<spl->spiro_cnt-1; ++i)
+	    if (SPIRO_SELECTED(&spl->spiros[i]))
+	   return true;
     }
-   return( anypoints );
+   return anypoints;
 }
 
 SplineSet *SplineSetReverse(SplineSet *spl) {
@@ -4015,8 +4015,8 @@ SplineSet *SplineSetReverse(SplineSet *spl) {
 
     first = NULL;
     spline = spl->first->next;
-    if ( spline==NULL )
-     return( spl );			/* Only one point, reversal is meaningless */
+    if (spline==NULL)
+     return spl;			/* Only one point, reversal is meaningless */
 
     tp = spline->from->nextcp;
     spline->from->nextcp = spline->from->prevcp;
@@ -4028,10 +4028,10 @@ SplineSet *SplineSetReverse(SplineSet *spl) {
     spline->from->nextcpdef = spline->from->prevcpdef;
     spline->from->prevcpdef = flag;
 
-    for ( ; spline!=NULL && spline!=first; spline=next ) {
+    for (; spline!=NULL && spline!=first; spline=next) {
 	next = spline->to->next;
 
-	if ( spline->to!=spl->first ) {		/* On a closed spline don't want to reverse the first point twice */
+	if (spline->to!=spl->first) {		/* On a closed spline don't want to reverse the first point twice */
 	    tp = spline->to->nextcp;
 	    spline->to->nextcp = spline->to->prevcp;
 	    spline->to->prevcp = tp;
@@ -4049,10 +4049,10 @@ SplineSet *SplineSetReverse(SplineSet *spl) {
 	spline->from->next = spline;
 	spline->to->prev = spline;
 	SplineRefigure(spline);
-	if ( first==NULL ) first = spline;
+	if (first==NULL) first = spline;
     }
 
-    if ( spl->first!=spl->last ) {
+    if (spl->first!=spl->last) {
 	temp = spl->first;
 	spl->first = spl->last;
 	spl->last = temp;
@@ -4060,39 +4060,39 @@ SplineSet *SplineSetReverse(SplineSet *spl) {
 	spl->last->next = NULL;
     }
 
-    if ( spl->spiro_cnt>2 ) {
-	for ( i=(spl->spiro_cnt-1)/2-1; i>=0; --i ) {
+    if (spl->spiro_cnt>2) {
+	for (i=(spl->spiro_cnt-1)/2-1; i>=0; --i) {
 	    spiro_cp temp_cp = spl->spiros[i];
 	    spl->spiros[i] = spl->spiros[spl->spiro_cnt-2-i];
 	    spl->spiros[spl->spiro_cnt-2-i] = temp_cp;
 	}
-	if ( (spl->spiros[spl->spiro_cnt-2].ty&0x7f)==SPIRO_OPEN_CONTOUR ) {
+	if ((spl->spiros[spl->spiro_cnt-2].ty&0x7f)==SPIRO_OPEN_CONTOUR) {
 	    spl->spiros[spl->spiro_cnt-2].ty = (spl->spiros[0].ty&0x7f) | (spl->spiros[spl->spiro_cnt-2].ty&0x80);
 	    spl->spiros[0].ty = SPIRO_OPEN_CONTOUR | (spl->spiros[0].ty&0x80);
 	}
-	for ( i=spl->spiro_cnt-2; i>=0; --i ) {
-	    if ( (spl->spiros[i].ty&0x7f) == SPIRO_LEFT )
+	for (i=spl->spiro_cnt-2; i>=0; --i) {
+	    if ((spl->spiros[i].ty&0x7f) == SPIRO_LEFT)
 		spl->spiros[i].ty = SPIRO_RIGHT | (spl->spiros[i].ty&0x80);
-	    else if ( (spl->spiros[i].ty&0x7f) == SPIRO_RIGHT )
+	    else if ((spl->spiros[i].ty&0x7f) == SPIRO_RIGHT)
 		spl->spiros[i].ty = SPIRO_LEFT | (spl->spiros[i].ty&0x80);
 	}
     }
-   return( spl );
+   return spl;
 }
 
 void SplineSetsUntick(SplineSet *spl) {
     Spline *spline, *first;
     
-    while ( spl!=NULL ) {
+    while (spl!=NULL) {
 	first = NULL;
 	spl->first->isintersection = false;
-	for ( spline=spl->first->next; spline!=first && spline!=NULL; spline = spline->to->next ) {
+	for (spline=spl->first->next; spline!=first && spline!=NULL; spline = spline->to->next) {
 	    spline->isticked = false;
 	    spline->isneeded = false;
 	    spline->isunneeded = false;
 	    spline->ishorvert = false;
 	    spline->to->isintersection = false;
-	    if ( first==NULL ) first = spline;
+	    if (first==NULL) first = spline;
 	}
 	spl = spl->next;
     }
@@ -4102,37 +4102,37 @@ static void SplineSetTick(SplineSet *spl) {
     Spline *spline, *first;
     
     first = NULL;
-    for ( spline=spl->first->next; spline!=first && spline!=NULL; spline = spline->to->next ) {
+    for (spline=spl->first->next; spline!=first && spline!=NULL; spline = spline->to->next) {
 	spline->isticked = true;
-	if ( first==NULL ) first = spline;
+	if (first==NULL) first = spline;
     }
 }
 
 static SplineSet *SplineSetOfSpline(SplineSet *spl,Spline *search) {
     Spline *spline, *first;
     
-    while ( spl!=NULL ) {
+    while (spl!=NULL) {
 	first = NULL;
-	for ( spline=spl->first->next; spline!=first && spline!=NULL; spline = spline->to->next ) {
-	    if ( spline==search )
-	     return( spl );
-	    if ( first==NULL ) first = spline;
+	for (spline=spl->first->next; spline!=first && spline!=NULL; spline = spline->to->next) {
+	    if (spline==search)
+	     return spl;
+	    if (first==NULL) first = spline;
 	}
 	spl = spl->next;
     }
-   return( NULL );
+   return NULL;
 }
 
 int SplineInSplineSet(Spline *spline, SplineSet *spl) {
     Spline *first, *s;
 
     first = NULL;
-    for ( s = spl->first->next; s!=NULL && s!=first; s = s->to->next ) {
-	if ( s==spline )
-	 return( true );
-	if ( first==NULL ) first = s;
+    for (s = spl->first->next; s!=NULL && s!=first; s = s->to->next) {
+	if (s==spline)
+	 return true;
+	if (first==NULL) first = s;
     }
-   return( false );
+   return false;
 }
 
 #include "edgelist.h"
@@ -4140,11 +4140,11 @@ int SplineInSplineSet(Spline *spline, SplineSet *spl) {
 static void EdgeListReverse(EdgeList *es, SplineSet *spl) {
     int i;
 
-    if ( es->edges!=NULL ) {
-	for ( i=0; i<es->cnt; ++i ) {
+    if (es->edges!=NULL) {
+	for (i=0; i<es->cnt; ++i) {
 	    Edge *e;
-	    for ( e = es->edges[i]; e!=NULL; e = e->esnext ) {
-		if ( SplineInSplineSet(e->spline,spl)) {
+	    for (e = es->edges[i]; e!=NULL; e = e->esnext) {
+		if (SplineInSplineSet(e->spline,spl)) {
 		    e->up = !e->up;
 		    e->t_mmin = 1-e->t_mmin;
 		    e->t_mmax = 1-e->t_mmax;
@@ -4157,16 +4157,16 @@ static void EdgeListReverse(EdgeList *es, SplineSet *spl) {
 
 static int SSCheck(SplineSet *base,Edge *active, int up, EdgeList *es,int *changed) {
     SplineSet *spl;
-    if ( active->spline->isticked )
-     return( 0 );
+    if (active->spline->isticked)
+     return 0;
     spl = SplineSetOfSpline(base,active->spline);
-    if ( active->up!=up ) {
+    if (active->up!=up) {
 	SplineSetReverse(spl);
 	*changed = true;
 	EdgeListReverse(es,spl);
     }
     SplineSetTick(spl);
-   return( 1 );
+   return 1;
 }
 
 /* The idea behind SplineSetsCorrect is simple. However there are many splinesets */
@@ -4186,7 +4186,7 @@ SplineSet *SplineSetsCorrect(SplineSet *base,int *changed) {
     *changed = false;
 
     SplineSetsUntick(base);
-    for (sscnt=0,spl=base; spl!=NULL; spl=spl->next, ++sscnt );
+    for (sscnt=0,spl=base; spl!=NULL; spl=spl->next, ++sscnt);
 
     SplineSetFindBounds(base,&b);
     memset(&es,'\0',sizeof(es));
@@ -4198,7 +4198,7 @@ SplineSet *SplineSetsCorrect(SplineSet *base,int *changed) {
     es.layer = ly_fore;		/* Not meaningful */
 
 /* Give up if we are given unreasonable values (ie. if rounding errors might screw us up) */
-    if ( es.mmin<1e5 && es.mmax>-1e5 && es.omin<1e5 && es.omax>-1e5 ) {
+    if (es.mmin<1e5 && es.mmax>-1e5 && es.omin<1e5 && es.omax>-1e5) {
 	es.cnt = (int) (es.mmax-es.mmin) + 1;
 	es.edges = calloc(es.cnt,sizeof(Edge *));
 	es.interesting = calloc(es.cnt,sizeof(char));
@@ -4207,34 +4207,34 @@ SplineSet *SplineSetsCorrect(SplineSet *base,int *changed) {
 	FindEdgesSplineSet(base,&es,false);
 
 	check_cnt = 0;
-	for ( i=0; i<es.cnt && check_cnt<sscnt; ++i ) {
+	for (i=0; i<es.cnt && check_cnt<sscnt; ++i) {
 	    active = ActiveEdgesRefigure(&es,active,i);
-	    if ( es.edges[i]!=NULL )
+	    if (es.edges[i]!=NULL)
 	continue;			/* Just too hard to get the edges sorted when we are at a start vertex */
-	    if ( /*es.edges[i]==NULL &&*/ !es.interesting[i] &&
+	    if (/*es.edges[i]==NULL &&*/ !es.interesting[i] &&
 		    !(i>0 && es.interesting[i-1]) && !(i>0 && es.edges[i-1]!=NULL) &&
 		    !(i<es.cnt-1 && es.edges[i+1]!=NULL) &&
 		    !(i<es.cnt-1 && es.interesting[i+1]))	/* interesting things happen when we add (or remove) entries */
 	continue;			/* and where we have extrema */
-	    for ( apt=active; apt!=NULL; apt = e) {
+	    for (apt=active; apt!=NULL; apt = e) {
 		check_cnt += SSCheck(base,apt,true,&es,changed);
 		winding = apt->up?1:-1;
-		for ( pr=apt, e=apt->aenext; e!=NULL && winding!=0; pr=e, e=e->aenext ) {
-		    if ( !e->spline->isticked )
+		for (pr=apt, e=apt->aenext; e!=NULL && winding!=0; pr=e, e=e->aenext) {
+		    if (!e->spline->isticked)
 			check_cnt += SSCheck(base,e,winding<0,&es,changed);
-		    if ( pr->up!=e->up )
+		    if (pr->up!=e->up)
 			winding += (e->up?1:-1);
-		    else if ( (pr->before==e || pr->after==e ) &&
-			    (( pr->mmax==i && e->mmin==i ) ||
-			     ( pr->mmin==i && e->mmax==i )) )
+		    else if ((pr->before==e || pr->after==e) &&
+			    ((pr->mmax==i && e->mmin==i) ||
+			     (pr->mmin==i && e->mmax==i)))
 			/* This just continues the line and doesn't change count */;
 		    else
 			winding += (e->up?1:-1);
 		}
 		/* color a horizontal line that comes out of the last vertex */
-		if ( e!=NULL && (e->before==pr || e->after==pr) &&
-			    (( pr->mmax==i && e->mmin==i ) ||
-			     ( pr->mmin==i && e->mmax==i )) ) {
+		if (e!=NULL && (e->before==pr || e->after==pr) &&
+			    ((pr->mmax==i && e->mmin==i) ||
+			     (pr->mmin==i && e->mmax==i))) {
 		    pr = e;
 		    e = e->aenext;
 		}
@@ -4242,7 +4242,7 @@ SplineSet *SplineSetsCorrect(SplineSet *base,int *changed) {
 	}
 	FreeEdges(&es);
     }
-   return( base );
+   return base;
 }
 
 SplineSet *SplineSetsAntiCorrect(SplineSet *base) {
@@ -4250,9 +4250,9 @@ SplineSet *SplineSetsAntiCorrect(SplineSet *base) {
     SplineSet *spl;
 
     SplineSetsCorrect(base,&changed);
-    for ( spl = base; spl!=NULL; spl = spl->next )
+    for (spl = base; spl!=NULL; spl = spl->next)
 	SplineSetReverse(spl);
-   return( base );
+   return base;
 }
 
 /* This is exactly the same as SplineSetsCorrect, but instead of correcting */
@@ -4277,53 +4277,53 @@ SplineSet *SplineSetsDetectDir(SplineSet **_base,int *_lastscan) {
     dummy.layer_cnt = 2;
     dummy.layers[ly_fore].splines = base;
     ELFindEdges(&dummy,&el);
-    if ( el.coordmax[1]-el.coordmin[1] > 1.e6 ) {
-	LogError( _("Warning: Unreasonably big splines. They will be ignored.\n") );
-       return( NULL );
+    if (el.coordmax[1]-el.coordmin[1] > 1.e6) {
+	LogError(_("Warning: Unreasonably big splines. They will be ignored.\n"));
+       return NULL;
     }
     el.major = 1;
     ELOrder(&el,el.major);
 
     ret = NULL;
     waschange = false;
-    for ( i=0; i<el.cnt && ret==NULL; ++i ) {
+    for (i=0; i<el.cnt && ret==NULL; ++i) {
 	active = EIActiveEdgesRefigure(&el,active,i,1,&change);
-	if ( i<=lastscan )
+	if (i<=lastscan)
     continue;
-	for ( apt=active, cnt=0; apt!=NULL; apt = apt->aenext , ++cnt );
-	if ( el.ordered[i]!=NULL || el.ends[i] || cnt&1 ) {
+	for (apt=active, cnt=0; apt!=NULL; apt = apt->aenext , ++cnt);
+	if (el.ordered[i]!=NULL || el.ends[i] || cnt&1) {
 	    waschange = change;
     continue;			/* Just too hard to get the edges sorted when we are at a start vertex */
 	}
-	if ( !( waschange || change || el.ends[i] || el.ordered[i]!=NULL ||
-		(i!=el.cnt-1 && (el.ends[i+1] || el.ordered[i+1]!=NULL)) ))
+	if (!(waschange || change || el.ends[i] || el.ordered[i]!=NULL ||
+		(i!=el.cnt-1 && (el.ends[i+1] || el.ordered[i+1]!=NULL))))
     continue;
 	waschange = change;
-	for ( apt=active; apt!=NULL && ret==NULL; apt = e) {
-	    if ( EISkipExtremum(apt,i+el.low,1)) {
+	for (apt=active; apt!=NULL && ret==NULL; apt = e) {
+	    if (EISkipExtremum(apt,i+el.low,1)) {
 		e = apt->aenext->aenext;
 	continue;
 	    }
-	    if ( !apt->up ) {
+	    if (!apt->up) {
 		ret = SplineSetOfSpline(base,apt->spline);
 	break;
 	    }
 	    winding = apt->up?1:-1;
-	    for ( pr=apt, e=apt->aenext; e!=NULL && winding!=0; pr=e, e=e->aenext ) {
-		if ( EISkipExtremum(e,i+el.low,1)) {
+	    for (pr=apt, e=apt->aenext; e!=NULL && winding!=0; pr=e, e=e->aenext) {
+		if (EISkipExtremum(e,i+el.low,1)) {
 		    e = e->aenext;
 	    continue;
 		}
-		if ( pr->up!=e->up ) {
-		    if ( (winding<=0 && !e->up) || (winding>0 && e->up )) {
+		if (pr->up!=e->up) {
+		    if ((winding<=0 && !e->up) || (winding>0 && e->up)) {
 			ret = SplineSetOfSpline(base,active->spline);
 		break;
 		    }
 		    winding += (e->up?1:-1);
-		} else if ( EISameLine(pr,e,i+el.low,1) )
+		} else if (EISameLine(pr,e,i+el.low,1))
 		    /* This just continues the line and doesn't change count */;
 		else {
-		    if ( (winding<=0 && !e->up) || (winding>0 && e->up )) {
+		    if ((winding<=0 && !e->up) || (winding>0 && e->up)) {
 			ret = SplineSetOfSpline(base,active->spline);
 		break;
 		    }
@@ -4337,7 +4337,7 @@ SplineSet *SplineSetsDetectDir(SplineSet **_base,int *_lastscan) {
     ElFreeEI(&el);
     *_base = base;
     *_lastscan = i;
-   return( ret );
+   return ret;
 }
 
 int SplinePointListIsClockwise(const SplineSet *spl) {
@@ -4359,59 +4359,59 @@ int SplinePointListIsClockwise(const SplineSet *spl) {
     dummy.name = "Clockwise Test";
     next = spl->next; ((SplineSet *) spl)->next = NULL;
     ELFindEdges(&dummy,&el);
-    if ( el.coordmax[1]-el.coordmin[1] > 1.e6 ) {
-	LogError( _("Warning: Unreasonably big splines. They will be ignored.\n") );
+    if (el.coordmax[1]-el.coordmin[1] > 1.e6) {
+	LogError(_("Warning: Unreasonably big splines. They will be ignored.\n"));
 	((SplineSet *) spl)->next = next;
-       return( -1 );
+       return -1;
     }
     el.major = 1;
     ELOrder(&el,el.major);
 
     waschange = false;
-    for ( i=0; i<el.cnt ; ++i ) {
+    for (i=0; i<el.cnt ; ++i) {
 	active = EIActiveEdgesRefigure(&el,active,i,1,&change);
-	for ( apt=active, cnt=0; apt!=NULL; apt = apt->aenext , ++cnt );
-	if ( el.ordered[i]!=NULL || el.ends[i] || cnt&1 ||
+	for (apt=active, cnt=0; apt!=NULL; apt = apt->aenext , ++cnt);
+	if (el.ordered[i]!=NULL || el.ends[i] || cnt&1 ||
 		waschange || change ||
-		(i!=el.cnt-1 && (el.ends[i+1] || el.ordered[i+1])) ) {
+		(i!=el.cnt-1 && (el.ends[i+1] || el.ordered[i+1]))) {
 	    waschange = change;
     continue;			/* Just too hard to get the edges sorted when we are at a start vertex */
 	}
 	waschange = change;
-	for ( apt=active; apt!=NULL; apt = e) {
-	    if ( EISkipExtremum(apt,i+el.low,1)) {
+	for (apt=active; apt!=NULL; apt = e) {
+	    if (EISkipExtremum(apt,i+el.low,1)) {
 		e = apt->aenext->aenext;
 	continue;
 	    }
-	    if ( apt->up )
+	    if (apt->up)
 		++cw_cnt;
 	    else
 		++ccw_cnt;
-	    if ( cw_cnt!=0 && ccw_cnt!=0 ) {
+	    if (cw_cnt!=0 && ccw_cnt!=0) {
 		((SplineSet *) spl)->next = next;
-	       return( -1 );
+	       return -1;
 	    }
 	    winding = apt->up?1:-1;
-	    for ( pr=apt, e=apt->aenext; e!=NULL && winding!=0; pr=e, e=e->aenext ) {
-		if ( EISkipExtremum(e,i+el.low,1)) {
+	    for (pr=apt, e=apt->aenext; e!=NULL && winding!=0; pr=e, e=e->aenext) {
+		if (EISkipExtremum(e,i+el.low,1)) {
 		    e = e->aenext;
 	    continue;
 		}
-		if ( pr->up!=e->up ) {
-		    if ( (winding<=0 && !e->up) || (winding>0 && e->up )) {
-		       /* return( -1 );*/	/* This is an erroneous condition... but I don't think*/
+		if (pr->up!=e->up) {
+		    if ((winding<=0 && !e->up) || (winding>0 && e->up)) {
+		       /* return -1;*/	/* This is an erroneous condition... but I don't think*/
 			/*  it can actually happen with a single contour. I */
 			/*  think it is more likely this means a rounding error*/
 			/*  and a problem in my algorithm */
-			fprintf( stderr, "SplinePointListIsClockwise: Found error\n" );
+			fprintf(stderr, "SplinePointListIsClockwise: Found error\n");
 		    }
 		    winding += (e->up?1:-1);
-		} else if ( EISameLine(pr,e,i+el.low,1) )
+		} else if (EISameLine(pr,e,i+el.low,1))
 		    /* This just continues the line and doesn't change count */;
 		else {
-		    if ( (winding<=0 && !e->up) || (winding>0 && e->up )) {
-			fprintf( stderr, "SplinePointListIsClockwise: Found error\n" );
-		       /*return( -1 );*/
+		    if ((winding<=0 && !e->up) || (winding>0 && e->up)) {
+			fprintf(stderr, "SplinePointListIsClockwise: Found error\n");
+		       /*return -1;*/
 		    }
 		    winding += (e->up?1:-1);
 		}
@@ -4423,42 +4423,42 @@ int SplinePointListIsClockwise(const SplineSet *spl) {
     ElFreeEI(&el);
     ((SplineSet *) spl)->next = next;
 
-    if ( cw_cnt!=0 )
-     return( true );
-    else if ( ccw_cnt!=0 )
-     return( false );
+    if (cw_cnt!=0)
+     return true;
+    else if (ccw_cnt!=0)
+     return false;
 
-   return( -1 );
+   return -1;
 }
 
 /* Since this function now deals with 4 arbitrarily selected points, */
 /* it has to try to combine them by different ways in order to see */
 /* if they actually can specify a diagonal stem. The reordered points */
 /* are placed back to array passed to the function.*/
-int PointsDiagonalable( SplineFont *sf,BasePoint **bp,BasePoint *unit ) {
+int PointsDiagonalable(SplineFont *sf,BasePoint **bp,BasePoint *unit) {
     BasePoint *line1[2], *line2[2], *temp, *base;
     BasePoint unit1, unit2;
     int i, j, k;
     bigreal dist_error_diag, len1, len2, width, dot;
     bigreal off1, off2;
 
-    for ( i=0; i<4; i++ ) {
-        if ( bp[i] == NULL )
-	 return( false );
+    for (i=0; i<4; i++) {
+        if (bp[i] == NULL)
+	 return false;
     }
 
-    dist_error_diag = 0.0065 * ( sf->ascent + sf->descent );
+    dist_error_diag = 0.0065 * (sf->ascent + sf->descent);
     /* Assume that the first point passed to the function is the starting */
     /* point of the first of two vectors. Then try all possible combinations */
     /* (there are 3), ensure the vectors are consistantly ordered, and */
     /* check if they are parallel.*/
     base = bp[0];
-    for ( i=1; i<4; i++ ) {
+    for (i=1; i<4; i++) {
         line1[0] = base; line1[1] = bp[i];
         
         k=0;
-        for ( j=1; j<4; j++ ) {
-            if ( j != i )
+        for (j=1; j<4; j++) {
+            if (j != i)
                 line2[k++] = bp[j];
         }
         unit1.x = line1[1]->x - line1[0]->x;
@@ -4466,44 +4466,44 @@ int PointsDiagonalable( SplineFont *sf,BasePoint **bp,BasePoint *unit ) {
         unit2.x = line2[1]->x - line2[0]->x;
         unit2.y = line2[1]->y - line2[0]->y;
         /* No horizontal, vertical edges */
-        if ( unit1.x == 0 || unit1.y == 0 || unit2.x == 0 || unit2.y == 0 )
+        if (unit1.x == 0 || unit1.y == 0 || unit2.x == 0 || unit2.y == 0)
     continue;
-        len1 = sqrt( pow( unit1.x,2 ) + pow( unit1.y,2 ));
-        len2 = sqrt( pow( unit2.x,2 ) + pow( unit2.y,2 ));
+        len1 = sqrt(pow(unit1.x,2) + pow(unit1.y,2));
+        len2 = sqrt(pow(unit2.x,2) + pow(unit2.y,2));
         unit1.x /= len1; unit1.y /= len1;
         unit2.x /= len2; unit2.y /= len2;
         dot = unit1.x * unit2.y - unit1.y * unit2.x;
         /* Units parallel */
-        if ( dot <= -.05 || dot >= .05 )
+        if (dot <= -.05 || dot >= .05)
     continue;
         /* Ensure vectors point by such a way that the angle is between 90 and 270 degrees */
-        if ( unit1.x <  0 ) {
+        if (unit1.x <  0) {
             temp = line1[0]; line1[0] = line1[1]; line1[1] = temp;
             unit1.x = -unit1.x; unit1.y = -unit1.y;
         }
-        if ( unit2.x <  0 ) {
+        if (unit2.x <  0) {
             temp = line2[0]; line2[0] = line2[1]; line2[1] = temp;
             unit2.x = -unit2.x; unit2.y = -unit2.y;
         }
-        off1 =  ( line1[1]->x - line1[0]->x ) * unit2.y -
-                ( line1[1]->y - line1[0]->y ) * unit2.x;
-        off2 =  ( line2[1]->x - line2[0]->x ) * unit1.y -
-                ( line2[1]->y - line2[0]->y ) * unit1.x;
-        if ( len1 > len2 && fabs( off2 ) < 2*dist_error_diag ) *unit = unit1;
-        else if ( fabs( off1 ) < 2*dist_error_diag ) *unit = unit2;
+        off1 =  (line1[1]->x - line1[0]->x) * unit2.y -
+                (line1[1]->y - line1[0]->y) * unit2.x;
+        off2 =  (line2[1]->x - line2[0]->x) * unit1.y -
+                (line2[1]->y - line2[0]->y) * unit1.x;
+        if (len1 > len2 && fabs(off2) < 2*dist_error_diag) *unit = unit1;
+        else if (fabs(off1) < 2*dist_error_diag) *unit = unit2;
         else
     continue;
-        width = ( line2[0]->x - line1[0]->x ) * unit->y -
-                ( line2[0]->y - line1[0]->y ) * unit->x;
+        width = (line2[0]->x - line1[0]->x) * unit->y -
+                (line2[0]->y - line1[0]->y) * unit->x;
         /* Make sure this is a real line, rather than just two */
         /* short spline segments which occasionally have happened to be */
         /* parallel. This is necessary to correctly handle things which may */
         /* be "diagonalable" in 2 different directions (like slash in some */
         /* designs). */
-        if ( fabs( width ) > len1 || fabs( width ) > len2 )
+        if (fabs(width) > len1 || fabs(width) > len2)
     continue;
 	/* Make sure line2 is further right than line1 */
-        if ( width < 0 ) {
+        if (width < 0) {
 	    temp = line1[0]; line1[0] = line2[0]; line2[0] = temp;
 	    temp = line1[1]; line1[1] = line2[1]; line2[1] = temp;
         }
@@ -4511,7 +4511,7 @@ int PointsDiagonalable( SplineFont *sf,BasePoint **bp,BasePoint *unit ) {
         bp[1] = line2[0];
         bp[2] = line1[1];
         bp[3] = line2[1];
-       return( true );
+       return true;
     }
-   return( false );
+   return false;
 }

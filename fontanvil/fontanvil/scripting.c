@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3319 2014-09-27 06:47:05Z mskala $ */
+/* $Id: scripting.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -728,7 +728,7 @@ static void SCReplaceWith(SplineChar * dest, SplineChar * src) {
 	    if (scl->sc == src)
 	       scl->sc = dest;
       }
-   SCCharChangedUpdate(dest, ly_fore);
+   SCCharChangedUpdate(dest, ly_fore, true);
 }
 
 static void FVApplySubstitution(FontViewBase * fv, uint32 script, uint32 lang,
@@ -1204,8 +1204,6 @@ static void bAddDHint(Context * c) {
 	 } else
 	    MergeDStemInfo(sc->parent, &sc->dstem, d);
 	 sc->manualhints = true;
-	 SCOutOfDateBackground(sc);
-	 SCUpdateAll(sc);
 	 any = true;
       }
    if (!any)
@@ -1260,8 +1258,6 @@ static void _AddHint(Context * c, int ish) {
 	 }
 	 sc->manualhints = true;
 	 SCClearHintMasks(sc, ly_fore, true);
-	 SCOutOfDateBackground(sc);
-	 SCUpdateAll(sc);
 	 any = true;
       }
    if (!any)
@@ -1317,7 +1313,7 @@ static void SCMakeLine(SplineChar * sc) {
       }
    }
    if (changed)
-      SCCharChangedUpdate(sc, ly_fore);
+      SCCharChangedUpdate(sc, ly_fore, true);
 }
 
 static void bAddHHint(Context * c) {
@@ -2446,7 +2442,7 @@ static void _bMoveReference(Context * c, int position) {
 		  ref->bb.maxy += t[5];
 	       }
 	    }
-	    SCCharChangedUpdate(sc, ly_fore);
+	    SCCharChangedUpdate(sc, ly_fore, true);
 	 }
       }
 }
@@ -2791,7 +2787,6 @@ static void bClearHints(Context * c) {
 	       DStemInfosFree(sc->dstem);
 	       sc->dstem = NULL;
 	    }
-	    SCUpdateAll(sc);
 	 }
    } else
       ScriptError(c,
@@ -3090,7 +3085,7 @@ static void bCorrectDirection(Context * c) {
 	 sc->layers[ly_fore].splines =
 	    SplineSetsCorrect(sc->layers[ly_fore].splines, &changed);
 	 if (changed || refchanged)
-	    SCCharChangedUpdate(sc, ly_fore);
+	    SCCharChangedUpdate(sc, ly_fore, true);
       }
 }
 
@@ -3155,7 +3150,7 @@ static void bDefaultRoundToGrid(Context * c) {
 	    }
 	 }
 	 if (changed)
-	    SCCharChangedUpdate(sc, ly_fore);
+	    SCCharChangedUpdate(sc, ly_fore, true);
       }
 }
 
@@ -3203,7 +3198,7 @@ static void bDefaultUseMyMetrics(Context * c) {
 	 if (sc->layer_cnt == 2 && !already && goodmatch != NULL) {
 	    SCPreserveState(sc, false);
 	    goodmatch->use_my_metrics = true;
-	    SCCharChangedUpdate(sc, ly_fore);
+	    SCCharChangedUpdate(sc, ly_fore, true);
 	 }
       }
 }
@@ -5426,7 +5421,7 @@ static void bNearlyLines(Context * c) {
 	       changed |= SPLNearlyLines(sc, spl, err);
 	 }
 	 if (changed)
-	    SCCharChangedUpdate(sc, ly_fore);
+	    SCCharChangedUpdate(sc, ly_fore, true);
       }
 }
 

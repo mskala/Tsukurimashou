@@ -1,4 +1,4 @@
-/* $Id: encoding.c 3280 2014-09-08 17:24:23Z mskala $ */
+/* $Id: encoding.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2253,9 +2253,6 @@ void SFRemoveGlyph(SplineFont * sf, SplineChar * sc, int *flags) {
 
    if (sc == NULL)
       return;
-
-   /* Close any open windows */
-   SCCloseAllViews(sc);
 
    /* Turn any references to this glyph into inline copies of it */
    for (dep = sc->dependents; dep != NULL; dep = dnext) {

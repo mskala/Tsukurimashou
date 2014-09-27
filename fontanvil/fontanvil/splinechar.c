@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: splinechar.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -135,7 +135,6 @@ void SCSynchronizeWidth(SplineChar * sc, real newwidth, real oldwidth,
 	    dlist->sc->changed = true;
 	    FVToggleCharChanged(dlist->sc);
 	 }
-	 SCUpdateAll(dlist->sc);
       }
    }
 }
@@ -197,7 +196,6 @@ void SCSynchronizeLBearing(SplineChar * sc, real off, int layer) {
 	    ref->bb.minx += off;
 	    ref->bb.maxx += off;
 	 }
-      SCUpdateAll(dlist->sc);
       SCSynchronizeLBearing(dlist->sc, off, layer);
    }
 }
@@ -480,7 +478,6 @@ void SCClearContents(SplineChar * sc, int layer) {
       free(sc->ttf_instrs);
       sc->ttf_instrs = NULL;
       sc->ttf_instrs_len = 0;
-      SCOutOfDateBackground(sc);
    }
 }
 
@@ -509,7 +506,7 @@ void SCClearAll(SplineChar * sc, int layer) {
       sc->possub = NULL;
    }
    SCClearContents(sc, layer);
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 void SCClearBackground(SplineChar * sc) {
@@ -521,8 +518,7 @@ void SCClearBackground(SplineChar * sc) {
       return;
    SCPreserveBackground(sc);
    SCClearLayer(sc, ly_back);
-   SCOutOfDateBackground(sc);
-   SCCharChangedUpdate(sc, ly_back);
+   SCCharChangedUpdate(sc, ly_back, true);
 }
 
 void SCCopyLayerToLayer(SplineChar * sc, int from, int to, int doclear) {
@@ -561,7 +557,7 @@ void SCCopyLayerToLayer(SplineChar * sc, int from, int to, int doclear) {
       SCReinstanciateRefChar(sc, ref, to);
       SCMakeDependent(sc, ref->sc);
    }
-   SCCharChangedUpdate(sc, to);
+   SCCharChangedUpdate(sc, to, true);
 }
 
 int BpColinear(BasePoint * first, BasePoint * mid, BasePoint * last) {
@@ -815,7 +811,7 @@ void SCRound2Int(SplineChar * sc, int layer, real factor) {
       ap->me.x = rint(ap->me.x * factor) / factor;
       ap->me.y = rint(ap->me.y * factor) / factor;
    }
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 void AltUniRemove(SplineChar * sc, int uni) {
@@ -940,7 +936,6 @@ void UnlinkThisReference(FontViewBase * fv, SplineChar * sc, int layer) {
 	       /* Even if we were to preserve the state there would be no */
 	       /*  way to undo the operation until we undid the delete... */
 	       SCRefToSplines(dsc, rf, layer);
-	       SCUpdateAll(dsc);
 	    }
 	 }
       }
@@ -1081,7 +1076,6 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
    if (comment != NULL && *comment != '\0')
       sc->comment = copy(comment);
 
-   SCRefreshTitles(sc);
    return (true);
 }
 
@@ -1946,7 +1940,6 @@ void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {
 	 free(sc->ttf_instrs);
 	 sc->ttf_instrs = NULL;
 	 sc->ttf_instrs_len = 0;
-	 SCMarkInstrDlgAsChanged(sc);
 	 had_instrs = 1;
       } else {
 	 sc->instructions_out_of_date = true;
@@ -1961,7 +1954,6 @@ void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {
 	    free(dep->sc->ttf_instrs);
 	    dep->sc->ttf_instrs = NULL;
 	    dep->sc->ttf_instrs_len = 0;
-	    SCMarkInstrDlgAsChanged(dep->sc);
 	    had_instrs = 1;
 	 } else {
 	    dep->sc->instructions_out_of_date = true;
@@ -2025,10 +2017,7 @@ void PatternSCBounds(SplineChar * sc, DBounds * b) {
       b->maxy = b->miny + 1;
 }
 
-static void SCUpdateNothing(SplineChar * sc) {
-}
-
-static void SCHintsChng(SplineChar * sc) {
+void SCHintsChanged(SplineChar * sc) {
    sc->changedsincelasthinted = false;
    if (!sc->changed) {
       sc->changed = true;
@@ -2086,7 +2075,7 @@ void TTFPointMatches(SplineChar * sc, int layer, int top) {
 	       ref->transform[5] = there.y - here.y;
 	       SCReinstanciateRefChar(sc, ref, layer);
 	       if (!top)
-		  _SCCharChangedUpdate(sc, layer, true);
+		  SCCharChangedUpdate(sc, layer, true);
 	    }
 	 } else
 	    ref->point_match = false;	/* one of the points no longer exists */
@@ -2096,11 +2085,11 @@ void TTFPointMatches(SplineChar * sc, int layer, int top) {
       TTFPointMatches(deps->sc, layer, false);
 }
 
-static void _SCChngNoUpdate(SplineChar * sc, int layer, int changed) {
+void SCCharChangedUpdate(SplineChar * sc, int layer, int changed) {
    SplineFont *sf = sc->parent;
 
    if (layer >= sc->layer_cnt) {
-      IError("Bad layer in _SCChngNoUpdate");
+      IError("Bad layer in SCCharChangedUpdate");
       layer = ly_fore;
    }
    if (layer >= 0 && !sc->layers[layer].background)
@@ -2127,33 +2116,12 @@ static void _SCChngNoUpdate(SplineChar * sc, int layer, int changed) {
    }
 }
 
-static void SCChngNoUpdate(SplineChar * sc, int layer) {
-   _SCChngNoUpdate(sc, layer, true);
-}
-
-static void SCB_MoreLayers(SplineChar * sc, Layer * old) {
-}
-
-static struct sc_interface noui_sc = {
-   SCUpdateNothing,
-   SCUpdateNothing,
-   SCUpdateNothing,
-   SCHintsChng,
-   SCChngNoUpdate,
-   _SCChngNoUpdate,
-   SCUpdateNothing,
-   SCUpdateNothing,
-   SCB_MoreLayers
-};
-
-struct sc_interface *sc_interface = &noui_sc;
-
 void CVChngNoUpdate(CharViewBase * cv) {
-   _SCChngNoUpdate(cv->sc, CVLayer(cv), true);
+   SCCharChangedUpdate(cv->sc, CVLayer(cv), true);
 }
 
 static void _CVChngNoUpdate(CharViewBase * cv, int changed) {
-   _SCChngNoUpdate(cv->sc, CVLayer(cv), changed);
+   SCCharChangedUpdate(cv->sc, CVLayer(cv), changed);
 }
 
 static void CVGlphRenameFixup(SplineFont * sf, char *oldname, char *newname) {

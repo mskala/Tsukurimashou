@@ -1,4 +1,4 @@
-/* $Id: tottf.c 3287 2014-09-09 09:28:26Z mskala $ */
+/* $Id: tottf.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1600,7 +1600,6 @@ static int dumpglyphs(SplineFont * sf, struct glyphinfo *gi) {
 		     free(sc->ttf_instrs);
 		     sc->ttf_instrs = NULL;
 		     sc->ttf_instrs_len = 0;
-		     SCMarkInstrDlgAsChanged(sc);
 		  }
 		  SCNumberPoints(sc, gi->layer);
 	       }

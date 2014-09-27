@@ -1,4 +1,4 @@
-/* $Id: search.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: search.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1345,7 +1345,7 @@ int DoRpl(SearchData * sv) {
       DoReplaceIncomplete(sv->curchar, sv);
    else
       DoReplaceFull(sv->curchar, sv);
-   SCCharChangedUpdate(sv->curchar, layer);
+   SCCharChangedUpdate(sv->curchar, layer, true);
    return (true);
 }
 

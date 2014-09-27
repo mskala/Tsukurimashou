@@ -1,4 +1,4 @@
-/* $Id: uiinterface.h 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: uiinterface.h 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -116,82 +116,23 @@ const char *NOUI_MSLangString(int);
 /* ************************************************************************** */
 struct val;
 
-struct prefs_interface {
-   void (*save_prefs) (int not_if_running_script);
-   void (*load_prefs) (void);
-   int (*get_prefs) (char *name, struct val * value);
-   int (*set_prefs) (char *name, struct val * val1, struct val * val2);
-   char *(*get_exe_share_dir) (void);
-   void (*init_prefs) (void);
-};
-
-extern struct prefs_interface *prefs_interface;
-
-#   define SavePrefs		(prefs_interface->save_prefs)
-#   define LoadPrefs		(prefs_interface->load_prefs)
-#   define GetPrefs		(prefs_interface->get_prefs)
-#   define SetPrefs		(prefs_interface->set_prefs)
-#   define getFontAnvilShareDir	(prefs_interface->get_exe_share_dir)
-#   define SetDefaults		(prefs_interface->init_prefs)
-
-void FF_SetPrefsInterface(struct prefs_interface *prefsi);
+extern void SavePrefs(int not_if_running_script);
+extern void LoadPrefs(void);
+extern int GetPrefs(char *name,struct val *value);
+extern int SetPrefs(char *name,struct val *val1,struct val *val2);
+extern char *getFontAnvilShareDir(void);
 
 /* ************************************************************************** */
 /*                          Updating glyph windows                            */
 /* ************************************************************************** */
 
 struct splinechar;
-
 struct layer;
 
-struct sc_interface {
-   /* Update all windows looking at this glyph */
-   void (*update_all) (struct splinechar *);
+/* The hints of the glyph have changed */
+void SCHintsChanged(struct splinechar *);
 
-   /* Background images or kerning info have changed for this glyph and */
-   /*  all windows displaying them need to be refreshed */
-   void (*out_of_date_background) (struct splinechar *);
-
-   /* The name or code point or encoding of this glyph has changed */
-   /*  update all window titles of any windows looking at us */
-   void (*refresh_titles) (struct splinechar *);
-
-   /* The hints of the glyph have changed */
-   void (*hints_changed) (struct splinechar *);
-
-   /* Mark the glyph as changed, and force an update */
-   void (*glyph_changed_update) (struct splinechar *, int layer);
-
-   /* As above, except this time the change might take the glyph back to */
-   /*  an "unchanged" state (ie. an Undo) */
-   void (*glyph__changed_update) (struct splinechar *, int layer, int);
-
-   /* The glyph's instructions have changed, so any dlgs looking at */
-   /*  our instructions need to be updated */
-   void (*instructions_changed) (struct splinechar * sc);
-
-   /* We are removing this glyph (or something like it), get rid of any */
-   /* glyph outline windows which display it */
-   void (*close_all_windows) (struct splinechar *);
-
-   /* Called when a multilayered glyph increases its layer count */
-   /*  the charview needs to add more layers to its layer window, etc. */
-   void (*more_layers) (struct splinechar *, struct layer *);
-};
-
-extern struct sc_interface *sc_interface;
-
-#   define SCUpdateAll			(sc_interface->update_all)
-#   define SCOutOfDateBackground		(sc_interface->out_of_date_background)
-#   define SCRefreshTitles			(sc_interface->refresh_titles)
-#   define SCHintsChanged			(sc_interface->hints_changed)
-#   define _SCCharChangedUpdate		(sc_interface->glyph__changed_update)
-#   define SCCharChangedUpdate		(sc_interface->glyph_changed_update)
-#   define SCMarkInstrDlgAsChanged		(sc_interface->instructions_changed)
-#   define SCCloseAllViews			(sc_interface->close_all_windows)
-#   define SCMoreLayers			(sc_interface->more_layers)
-
-void FF_SetSCInterface(struct sc_interface *sci);
+void SCCharChangedUpdate(struct splinechar *,int,int);
 
 /* ************************************************************************** */
 /*                         Updating glyph windows 2                           */

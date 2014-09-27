@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: splinefont.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -194,7 +194,7 @@ static SplineChar *_SFMakeChar(SplineFont * sf, EncMap * map, int enc) {
 	    /*  and then make us be a duplicate of it */
 	    sc = _SFMakeChar(sf, map, real_uni);
 	    map->map[enc] = gid = sc->orig_pos;
-	    SCCharChangedUpdate(sc, ly_all);
+	    SCCharChangedUpdate(sc, ly_all, true);
 	    return (sc);
 	 }
       }

@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: fvcomposite.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2701,7 +2701,7 @@ static void DoSpaces(SplineFont * sf, SplineChar * sc, int layer,
    if (!disp_only || bdf == NULL) {
       sc->width = width;
       sc->widthset = true;
-      SCCharChangedUpdate(sc, ly_none);
+      SCCharChangedUpdate(sc, ly_none, true);
    }
 
    if (!disp_only) {
@@ -2836,7 +2836,7 @@ static void DoRules(SplineFont * sf, SplineChar * sc, int layer,
 	 first;
       sc->width = width;
       sc->widthset = true;
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
    }
 
    if (!disp_only) {
@@ -2962,7 +2962,7 @@ static void DoRotation(SplineFont * sf, SplineChar * sc, int layer,
 	    for (last = temp; last->next != NULL; last = last->next);
       }
       sc->width = sc->parent->ascent + sc->parent->descent;
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
    }
 
    if (!disp_only) {
@@ -3088,8 +3088,8 @@ static int _SCMakeDotless(SplineFont * sf, SplineChar * dotless, int layer,
    SCRemoveLayerDependents(dotless, layer);
    dotless->width = sc->width;
    dotless->layers[layer].splines = head;
-   SCCharChangedUpdate(dotless, layer);
-   return (true);
+   SCCharChangedUpdate(dotless, layer, true);
+   return true;
 }
 
 int SCMakeDotless(SplineFont * sf, SplineChar * dotless, int layer,
@@ -3274,7 +3274,7 @@ void SCBuildComposit(SplineFont * sf, SplineChar * sc, int layer,
 	 SCSetReasonableLBearing(sc, base->sc, layer);
    }
    if (!disp_only || bdf == NULL)
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
    if (!disp_only) {
       for (bdf = sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
 	   bdf != NULL; bdf = bdf->next)

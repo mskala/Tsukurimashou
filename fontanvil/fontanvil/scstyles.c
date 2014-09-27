@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: scstyles.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3104,7 +3104,7 @@ static void BuildSCLigatures(SplineChar * sc_sc, SplineChar * cap_sc,
       ++components;
    }
    sc_sc->width = width;
-   SCCharChangedUpdate(sc_sc, layer);
+   SCCharChangedUpdate(sc_sc, layer, true);
 }
 
 void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
@@ -3276,7 +3276,7 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 		     sc_sc->width = rsc->width;
 		  }
 	       }
-	       SCCharChangedUpdate(sc_sc, fv->active_layer);
+	       SCCharChangedUpdate(sc_sc, fv->active_layer, true);
 	    }
 	  end_loop2:
 	    if (sc != NULL) {
@@ -3776,9 +3776,8 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
       sc->hstem = NULL;
       DStemInfosFree(sc->dstem);
       sc->dstem = NULL;
-      SCOutOfDateBackground(sc);
    }
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 /* ************************************************************************** */
@@ -4476,9 +4475,8 @@ static void SCEmbolden(SplineChar * sc, struct lcg_zones *zones, int layer) {
       sc->hstem = NULL;
       DStemInfosFree(sc->dstem);
       sc->dstem = NULL;
-      SCOutOfDateBackground(sc);
    }
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 static struct {
@@ -7551,7 +7549,7 @@ static void SCChangeXHeight(SplineChar * sc, int layer,
    else {
       SCPreserveLayer(sc, layer, true);
       _SCChangeXHeight(sc, layer, xi);
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
    }
 }
 

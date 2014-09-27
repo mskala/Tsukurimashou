@@ -1,4 +1,4 @@
-/* $Id: effects.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: effects.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ void FVOutline(FontViewBase * fv, real width) {
 	      spl = spl->next);
 	 spl->next = temp;
 	 SplineSetsCorrect(sc->layers[layer].splines, &changed);
-	 SCCharChangedUpdate(sc, layer);
+	 SCCharChangedUpdate(sc, layer, true);
       }
 }
 
@@ -109,7 +109,7 @@ void FVInline(FontViewBase * fv, real width, real inset) {
 	 for (; spl->next != NULL; spl = spl->next);
 	 spl->next = temp2;
 	 SplineSetsCorrect(sc->layers[layer].splines, &changed);
-	 SCCharChangedUpdate(sc, layer);
+	 SCCharChangedUpdate(sc, layer, true);
       }
 }
 
@@ -907,6 +907,6 @@ void FVShadow(FontViewBase * fv, real angle, real outline_width,
 	 sc->layers[layer].splines =
 	    SSShadow(sc->layers[layer].splines, angle, outline_width,
 		     shadow_length, sc, wireframe);
-	 SCCharChangedUpdate(sc, layer);
+	 SCCharChangedUpdate(sc, layer, true);
       }
 }

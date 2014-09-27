@@ -1,4 +1,4 @@
-/* $Id: fvmetrics.c 3279 2014-09-08 15:58:27Z mskala $ */
+/* $Id: fvmetrics.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -189,7 +189,7 @@ static void DoChar(SplineChar * sc, CreateWidthData * wd, FontViewBase * fv,
 	 sc->vwidth = width;
       }
    }
-   SCCharChangedUpdate(sc, fv->active_layer);
+   SCCharChangedUpdate(sc, fv->active_layer, true);
 }
 
 void FVDoit(CreateWidthData * wd) {

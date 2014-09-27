@@ -1,4 +1,4 @@
-/* $Id: autohint.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: autohint.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2210,7 +2210,6 @@ static void AutoHintRefs(SplineChar * sc, int layer, BlueData * bd, int picky,
    sc->vconflicts = StemListAnyConflicts(sc->vstem);
    sc->hconflicts = StemListAnyConflicts(sc->hstem);
 
-   SCOutOfDateBackground(sc);
    SCHintsChanged(sc);
 }
 
@@ -2231,7 +2230,6 @@ void SCClearHints(SplineChar * sc) {
    sc->dstem = NULL;
    MinimumDistancesFree(sc->md);
    sc->md = NULL;
-   SCOutOfDateBackground(sc);
    if (any)
       SCHintsChanged(sc);
 }
@@ -3229,7 +3227,6 @@ static void __SplineCharAutoHint(SplineChar * sc, int layer, BlueData * bd,
 			     NULL, gen_undoes);
    }
    SCFigureHintMasks(sc, layer);
-   SCUpdateAll(sc);
 }
 
 void SplineCharAutoHint(SplineChar * sc, int layer, BlueData * bd) {

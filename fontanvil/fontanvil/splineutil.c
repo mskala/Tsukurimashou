@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: splineutil.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3522,7 +3522,6 @@ void SCRefToSplines(SplineChar * sc, RefChar * rf, int layer) {
 	    rf->layers[rlayer].fillfirst;
       }
       sc->layer_cnt += rf->layer_cnt;
-      SCMoreLayers(sc, old);
    } else {
       if ((spl = rf->layers[0].splines) != NULL) {
 	 while (spl->next != NULL)
@@ -7202,7 +7201,7 @@ int SCRoundToCluster(SplineChar * sc, int layer, int sel, bigreal within,
 	    }
 	 }
       }
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
    }
    return (changed);
 }

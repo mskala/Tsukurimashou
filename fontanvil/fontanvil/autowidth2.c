@@ -1,4 +1,4 @@
-/* $Id: autowidth2.c 2953 2014-03-15 17:44:07Z mskala $ */
+/* $Id: autowidth2.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2009-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -213,7 +213,7 @@ static void aw2_figure_all_sidebearing(AW_Data * all) {
 	 changed = true;
       }
       if (changed)
-	 SCCharChangedUpdate(me->sc, ly_none);
+	 SCCharChangedUpdate(me->sc, ly_none, true);
    }
    free(rsel);
 }

@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 3280 2014-09-08 17:24:23Z mskala $ */
+/* $Id: glyphcomp.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1200,7 +1200,6 @@ static void SCAddBackgrounds(SplineChar * sc1, SplineChar * sc2,
 
    RefChar *ref;
 
-   SCOutOfDateBackground(sc1);
    SplinePointListsFree(sc1->layers[ly_back].splines);
    sc1->layers[ly_back].splines =
       SplinePointListCopy(sc2->layers[ly_fore].splines);
@@ -1226,7 +1225,7 @@ static void SCAddBackgrounds(SplineChar * sc1, SplineChar * sc2,
       sc1->layers[ly_back].splines =
 	 SplineSetsConvertOrder(sc1->layers[ly_back].splines,
 				sc1->layers[ly_back].order2);
-   SCCharChangedUpdate(sc1, ly_back);
+   SCCharChangedUpdate(sc1, ly_back, true);
 }
 
 static void SCCompare(SplineChar * sc1, SplineChar * sc2,

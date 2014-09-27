@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: fontviewbase.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -219,7 +219,7 @@ void FVUnlinkRef(FontViewBase * fv) {
 		  SCRefToSplines(sc, rf, layer);
 	       }
 	    }
-	    SCCharChangedUpdate(sc, fv->active_layer);
+	    SCCharChangedUpdate(sc, fv->active_layer, true);
 	 }
 
 	 for (bdf = fv->sf->bitmaps; bdf != NULL; bdf = bdf->next) {
@@ -260,7 +260,7 @@ void FVJoin(FontViewBase * fv) {
 	    SplineSetJoin(sf->glyphs[gid]->layers[fv->active_layer].splines,
 			  true, joinsnap, &changed);
 	 if (changed)
-	    SCCharChangedUpdate(sf->glyphs[gid], fv->active_layer);
+	    SCCharChangedUpdate(sf->glyphs[gid], fv->active_layer, true);
       }
 }
 
@@ -467,7 +467,6 @@ void BackgroundImageTransform(SplineChar * sc, ImageList * img,
       /* Don't support rotating, flipping or skewing images */
       ;
    }
-   SCOutOfDateBackground(sc);
 }
 
 static void GV_Trans(struct glyphvariants *gv, real transform[6], int is_v) {
@@ -803,7 +802,7 @@ void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
       /* Barry thinks rounding them is a bad idea. */
       SCRound2Int(sc, fv->active_layer, 1.0);
    }
-   SCCharChangedUpdate(sc, fv->active_layer);
+   SCCharChangedUpdate(sc, fv->active_layer, true);
 }
 
 void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
@@ -908,7 +907,7 @@ void FVOverlap(FontViewBase * fv, enum overlap_type ot) {
 	 for (layer = first; layer <= last; ++layer)
 	    sc->layers[layer].splines =
 	       SplineSetRemoveOverlap(sc, sc->layers[layer].splines, ot);
-	 SCCharChangedUpdate(sc, fv->active_layer);
+	 SCCharChangedUpdate(sc, fv->active_layer, true);
       }
 }
 
@@ -943,7 +942,7 @@ void FVAddExtrema(FontViewBase * fv, int force_adding) {
 				 force_adding ? ae_all : ae_only_good,
 				 emsize);
 	 }
-	 SCCharChangedUpdate(sc, fv->active_layer);
+	 SCCharChangedUpdate(sc, fv->active_layer, true);
       }
 }
 
@@ -972,7 +971,7 @@ void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl) {
 	 for (layer = first; layer <= last; ++layer)
 	    sc->layers[layer].splines =
 	       SplineCharSimplify(sc, sc->layers[layer].splines, smpl);
-	 SCCharChangedUpdate(sc, fv->active_layer);
+	 SCCharChangedUpdate(sc, fv->active_layer, true);
       }
 }
 
@@ -1029,7 +1028,6 @@ void FVAutoHintSubs(FontViewBase * fv) {
 	 SplineChar *sc = fv->sf->glyphs[gid];
 
 	 SCFigureHintMasks(sc, fv->active_layer);
-	 SCUpdateAll(sc);
       }
 }
 
@@ -1159,7 +1157,7 @@ void FVClearInstrs(FontViewBase * fv) {
 	    sc->ttf_instrs = NULL;
 	    sc->ttf_instrs_len = 0;
 	    sc->instructions_out_of_date = false;
-	    SCCharChangedUpdate(sc, ly_none);
+	    SCCharChangedUpdate(sc, ly_none, true);
 	    sc->complained_about_ptnums = false;
 	 }
       }
@@ -1177,7 +1175,6 @@ void FVClearHints(FontViewBase * fv) {
 	 sc->manualhints = true;
 	 SCPreserveHints(sc, fv->active_layer);
 	 SCClearHints(sc);
-	 SCUpdateAll(sc);
       }
 }
 

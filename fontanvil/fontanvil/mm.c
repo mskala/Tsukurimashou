@@ -1,4 +1,4 @@
-/* $Id: mm.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: mm.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -742,7 +742,7 @@ int MMReblend(FontViewBase * fv, MMSet * mm) {
 	 break;
       err = MMBlendChar(mm, i);
       if (mm->normal->glyphs[i] != NULL)
-	 _SCCharChangedUpdate(mm->normal->glyphs[i], ly_fore, -1);
+	 SCCharChangedUpdate(mm->normal->glyphs[i], ly_fore, -1);
       if (err == NULL)
 	 continue;
       if (olderr == NULL) {

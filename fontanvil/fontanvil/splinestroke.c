@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: splinestroke.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -4160,7 +4160,7 @@ void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
 	       SplinePointListsFree(sc->layers[layer].splines);
 	       sc->layers[layer].splines = temp;
 	    }
-	    SCCharChangedUpdate(sc, ly_all);
+	    SCCharChangedUpdate(sc, ly_all, true);
 	 } else {
 	    SCPreserveLayer(sc, layer, false);
 	    temp =
@@ -4168,7 +4168,7 @@ void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
 			       sc->layers[layer].order2);
 	    SplinePointListsFree(sc->layers[layer].splines);
 	    sc->layers[layer].splines = temp;
-	    SCCharChangedUpdate(sc, layer);
+	    SCCharChangedUpdate(sc, layer, true);
 	 }
       }
    }

@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 3277 2014-09-08 14:16:28Z mskala $ */
+/* $Id: nonlineartrans.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -791,7 +791,7 @@ void _SFNLTrans(FontViewBase * fv, struct context *c) {
 	 /*  but let's do the obvious thing */
 	 for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next)
 	    SCReinstanciateRefChar(sc, ref, layer);
-	 SCCharChangedUpdate(sc, fv->active_layer);
+	 SCCharChangedUpdate(sc, fv->active_layer, true);
       }
 }
 

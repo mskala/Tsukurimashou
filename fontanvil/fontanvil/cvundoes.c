@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: cvundoes.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -721,7 +721,6 @@ static void SCUndoAct(SplineChar * sc, int layer, Undoes * undo) {
 	   undo->u.state.hints = hints;
 	   undo->u.state.instrs = instrs;
 	   undo->u.state.instrs_len = instrs_len;
-	   SCOutOfDateBackground(sc);
 	} break;
      case ut_state:
      case ut_tstate:
@@ -777,7 +776,6 @@ static void SCUndoAct(SplineChar * sc, int layer, Undoes * undo) {
 
 	      FixupImages(sc, undo->u.state.images, layer);
 	      undo->u.state.images = images;
-	      SCOutOfDateBackground(sc);
 	   }
 	   undo->u.state.splines = spl;
 	   if (undo->u.state.lbearingchange) {
@@ -819,7 +817,7 @@ void SCDoUndo(SplineChar * sc, int layer) {
    SCUndoAct(sc, layer, undo);
    undo->next = sc->layers[layer].redoes;
    sc->layers[layer].redoes = undo;
-   _SCCharChangedUpdate(sc, layer, undo->was_modified);
+   SCCharChangedUpdate(sc, layer, undo->was_modified);
    return;
 }
 
@@ -1998,7 +1996,6 @@ static void _PasteToSC(SplineChar * sc, Undoes * paster, FontViewBase * fv,
 	      new->next = sc->layers[layer].images;
 	      sc->layers[layer].images = new;
 	   }
-	   SCOutOfDateBackground(sc);
 	}
 	if ((paster->undotype == ut_statehint
 	     || paster->undotype == ut_statename)
@@ -2086,7 +2083,7 @@ static void _PasteToSC(SplineChar * sc, Undoes * paster, FontViewBase * fv,
 	      }
 	   }
 	}
-	SCCharChangedUpdate(sc, layer);
+	SCCharChangedUpdate(sc, layer, true);
 	/* Bug here. we are assuming that the pasted hints are up to date */
 	if (was_empty && (sc->hstem != NULL || sc->vstem != NULL))
 	   sc->changedsincelasthinted = false;
@@ -2094,7 +2091,7 @@ static void _PasteToSC(SplineChar * sc, Undoes * paster, FontViewBase * fv,
      case ut_width:
 	SCPreserveWidth(sc);
 	SCSynchronizeWidth(sc, paster->u.width, sc->width, fv);
-	SCCharChangedUpdate(sc, layer);
+	SCCharChangedUpdate(sc, layer, true);
 	break;
      case ut_vwidth:
 	if (!sc->parent->hasvmetrics)
@@ -2104,14 +2101,14 @@ static void _PasteToSC(SplineChar * sc, Undoes * paster, FontViewBase * fv,
 	else {
 	   SCPreserveVWidth(sc);
 	   sc->vwidth = paster->u.width;
-	   SCCharChangedUpdate(sc, layer);
+	   SCCharChangedUpdate(sc, layer, true);
 	}
 	break;
      case ut_rbearing:
 	SCPreserveWidth(sc);
 	SplineCharFindBounds(sc, &bb);
 	SCSynchronizeWidth(sc, bb.maxx + paster->u.rbearing, sc->width, fv);
-	SCCharChangedUpdate(sc, layer);
+	SCCharChangedUpdate(sc, layer, true);
 	break;
      case ut_lbearing:
 	SplineCharFindBounds(sc, &bb);
@@ -2167,7 +2164,6 @@ static void PasteToSC(SplineChar * sc, int layer, Undoes * paster,
 	   pl = pl->next, ++lc)
 	 _PasteToSC(sc, pl, fv, pasteinto, start + lc, trans, mc, refstate,
 		    already_complained);
-      SCMoreLayers(sc, old);
    } else if (paster->undotype == ut_layers) {
       Undoes *pl;
 
@@ -2428,12 +2424,12 @@ static void SCPasteLookups(SplineChar * sc, SplineChar * fromsc,
 		     break;
 	       }
 	       KPInto(test2, kp, fromkp, isv, sc, sub);
-	       _SCCharChangedUpdate(test2, ly_none, 2);
+	       SCCharChangedUpdate(test2, ly_none, 2);
 	    }
 	 }
    }
    if (changed)
-      _SCCharChangedUpdate(sc, ly_none, 2);
+      SCCharChangedUpdate(sc, ly_none, 2);
 }
 
 static void SCPasteLookupsMid(SplineChar * sc, Undoes * paster, int pasteinto,
