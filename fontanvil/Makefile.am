@@ -141,7 +141,7 @@ noinst_HEADERS = \
   fontanvil/baseviews.h fontanvil/fvmetrics.h fontanvil/mm.h \
   fontanvil/scriptfuncs.h fontanvil/ttfinstrs.h fontanvil/edgelist2.h \
   fontanvil/namehash.h fontanvil/scripting.h fontanvil/uiinterface.h \
-  fontanvil/bezctx_ff.h fontanvil/edgelist.h fontanvil/groups.h \
+  fontanvil/bezctx_ff.h fontanvil/edgelist.h \
   fontanvil/nonlineartrans.h fontanvil/sd.h fontanvil/unicoderange.h \
   fontanvil/bitmapcontrol.h fontanvil/encoding.h \
   fontanvil/search.h fontanvil/usermenu.h fontanvil/fffreetype.h \
@@ -155,7 +155,7 @@ noinst_LIBRARIES = \
 
 fontanvil_fontanvil_SOURCES = \
  fontanvil/main.c \
- fontanvil/asmfpst.c fontanvil/autohint.c fontanvil/autosave.c \
+ fontanvil/asmfpst.c fontanvil/autohint.c \
  fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
  fontanvil/bezctx_ff.c fontanvil/bitmapchar.c fontanvil/bitmapcontrol.c \
  fontanvil/bvedit.c fontanvil/clipnoui.c fontanvil/crctab.c \
@@ -164,7 +164,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/encoding.c fontanvil/featurefile.c fontanvil/flaglist.c \
  fontanvil/fontviewbase.c fontanvil/freetype.c fontanvil/fvcomposite.c \
  fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
- fontanvil/glyphcomp.c fontanvil/groups.c \
+ fontanvil/glyphcomp.c \
  fontanvil/http.c fontanvil/ikarus.c fontanvil/is_LIGATURE.c \
  fontanvil/langfreq.c fontanvil/lookups.c fontanvil/macbinary.c \
  fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \
@@ -215,7 +215,7 @@ gutils_libgutils_a_SOURCES = \
   gutils/gimagereadxpm.c gutils/gimagewritebmp.c gutils/gimagewritegimage.c \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
   gutils/gimagewritexpm.c gutils/giohosts.c gutils/giomime.c \
-  gutils/giothread.c gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gutils.c \
+  gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gutils.c \
   gutils/gwwintl.c gutils/prefs.c gutils/prefs.h gutils/unicodelibinfo.c inc/unicodelibinfo.h \
   gutils/gioftpP.h
 gutils_libgutils_a_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \

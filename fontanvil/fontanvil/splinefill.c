@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: splinefill.c 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -503,7 +503,7 @@ static void FindEdges(SplineChar * sc, EdgeList * es) {
    FindEdgesSplineSet(sc->layers[es->layer].splines, es, false);
 }
 
-Edge *ActiveEdgesInsertNew(EdgeList * es, Edge * active, int i) {
+static Edge *ActiveEdgesInsertNew(EdgeList * es, Edge * active, int i) {
    Edge *apt, *pr, *npt;
 
    for (pr = NULL, apt = active, npt = es->edges[(int) i];
@@ -589,7 +589,7 @@ Edge *ActiveEdgesRefigure(EdgeList * es, Edge * active, real i) {
    return (active);
 }
 
-Edge *ActiveEdgesFindStem(Edge * apt, Edge ** prev, real i) {
+static Edge *ActiveEdgesFindStem(Edge * apt, Edge ** prev, real i) {
    int cnt = apt->up ? 1 : -1;
 
    Edge *pr, *e;

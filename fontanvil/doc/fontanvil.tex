@@ -1262,15 +1262,6 @@ WorthOutputting,
 WritePfm,
 WriteStringToFile,
 
-\section{Built-in functions that are different in FontAnvil and FontForge}
-
-SetGasp: FontAnvil's SetGasp can accept version 1 flag values (i.e. the
-values 4, 8, and 12), and automatically sets the table version to 1 when
-such values are used.  FontForge's SetGasp accepts only the values 0 through
-3 and appears not to provide access to the version number from the script
-language at all---it will preserve the gasp table version number in a loaded
-font but always sets it to 0 by default in a new font.
-
 \section{Built-in functions in FontAnvil and not in FontForge}
 
 No such functions at the moment.
@@ -1279,6 +1270,11 @@ No such functions at the moment.
 
 Because FontAnvil does not support plugins, these built-in functions have
 been removed from the language:  LoadPlugin, LoadPluginDir.
+
+Similarly, FontAnvil does not store persistent preferences in the user's
+home directory, and the functions to do that have been removed: LoadPrefs,
+SavePrefs.  For the moment, at least, other functions related to
+``preference'' variables remain in the language.
 
 In FontForge's history it has several times happened that function names
 were misspelled, or documented incorrectly.  After the errors were

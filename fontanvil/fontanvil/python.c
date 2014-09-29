@@ -1,4 +1,4 @@
-/* $Id: python.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: python.c 3323 2014-09-27 18:09:42Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -288,7 +288,7 @@ static struct flaglist sfnt_name_mslangs[] = {
    FLAGLIST_EMPTY		/* Sentinel */
 };
 
-const char *NOUI_TTFNameIds(int id) {
+const char *TTFNameIds(int id) {
    int i;
 
    for (i = 0; sfnt_name_str_ids[i].name != NULL; ++i)
@@ -298,7 +298,7 @@ const char *NOUI_TTFNameIds(int id) {
    return (_("Unknown"));
 }
 
-const char *NOUI_MSLangString(int language) {
+const char *MSLangString(int language) {
    int i;
 
    for (i = 0; sfnt_name_mslangs[i].name != NULL; ++i)

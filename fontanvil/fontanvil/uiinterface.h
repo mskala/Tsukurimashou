@@ -1,4 +1,4 @@
-/* $Id: uiinterface.h 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: uiinterface.h 3331 2014-09-29 08:27:42Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -103,20 +103,17 @@ int PsStrokeFlagsDlg(void);
 /* These next few provide friendly names of various opentype tags */
 /*  The ui version will probably be translated, while the non-ui list */
 /*  will probably not. The distinction isn't necessary, but is present in ff */
-const char *NOUI_TTFNameIds(int);
-const char *NOUI_MSLangString(int);
+const char *TTFNameIds(int);
+const char *MSLangString(int);
 
 #   define ff_ask_password ff_ask_string
-
-#   define TTFNameIds			NOUI_TTFNameIds
-#   define MSLangString			NOUI_MSLangString
 
 /* ************************************************************************** */
 /*                                Preferences                                 */
 /* ************************************************************************** */
 struct val;
 
-extern void SavePrefs(int not_if_running_script);
+extern void SavePrefs(void);
 extern void LoadPrefs(void);
 extern int GetPrefs(char *name,struct val *value);
 extern int SetPrefs(char *name,struct val *val1,struct val *val2);
@@ -173,25 +170,7 @@ void FF_SetCVInterface(struct cv_interface *cvi);
 
 struct bdfchar;
 
-struct bc_interface {
-   /* Update all windows looking at this bitmap glyph */
-   /* And mark as changed */
-   void (*glyph_changed_update) (struct bdfchar *);
-
-   /* Force a refresh on all open bitmap windows of this glyph */
-   void (*refresh_all) (struct bdfchar *);
-
-   /* Destroy all open bitmap windows of this glyph */
-   void (*destroy_all) (struct bdfchar *);
-};
-
-extern struct bc_interface *bc_interface;
-
-#   define BCCharChangedUpdate		(bc_interface->glyph_changed_update)
-#   define BCRefreshAll			(bc_interface->refresh_all)
-#   define BCDestroyAll			(bc_interface->destroy_all)
-
-void FF_SetBCInterface(struct bc_interface *bci);
+extern void BCCharChangedUpdate(struct bdfchar *bc);
 
 /* ************************************************************************** */
 /*                          Access to metrics views                           */
@@ -416,8 +395,8 @@ extern struct clip_interface *clip_interface;
 
 void FF_SetClipInterface(struct clip_interface *clipi);
 
-extern const char *NOUI_TTFNameIds(int id);
+extern const char *TTFNameIds(int id);
 
-extern const char *NOUI_MSLangString(int language);
+extern const char *MSLangString(int language);
 
 #  endif

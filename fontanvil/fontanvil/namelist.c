@@ -1,4 +1,4 @@
-/* $Id: namelist.c 2932 2014-03-09 15:26:10Z mskala $ */
+/* $Id: namelist.c 3330 2014-09-29 08:08:43Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -497,13 +497,9 @@ static int isnamelist(char *filename) {
 
 void LoadNamelistDir(char *dir) {
    DIR *diro;
-
    struct dirent *ent;
-
    char buffer[1025];
 
-   if (dir == NULL)
-      dir = getPfaEditDir(dir);
    if (dir == NULL)
       return;
 

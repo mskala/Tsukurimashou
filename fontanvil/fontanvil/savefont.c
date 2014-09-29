@@ -1,4 +1,4 @@
-/* $Id: savefont.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: savefont.c 3331 2014-09-29 08:27:42Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -832,8 +832,6 @@ static int WriteMultiplePSFont(SplineFont * sf, char *newname, int32 * sizes,
       free(names[i]);
    free(names);
    free(sizes);
-   if (!err)
-      SavePrefs(true);
    return (err);
 }
 
@@ -1049,8 +1047,6 @@ int _DoSave(SplineFont * sf, char *newname, int32 * sizes, int res,
 	 err = true;
    }
    free(sizes);
-   if (!err)
-      SavePrefs(true);
    return (err);
 }
 

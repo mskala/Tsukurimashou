@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: scripting.c 3331 2014-09-29 08:27:42Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ static int verbose = -1;
 
 static struct dictionary globals;
 
-struct keywords {
+static struct keywords {
    enum token_type tok;
    char *name;
 } keywords[] = {
@@ -99,11 +99,14 @@ static const char *toknames[] = {
    NULL
 };
 
-char *utf82script_copy(const char *ustr) {
+static void ff_statement(Context *c);
+static char **GetFontNames(char *filename);
+
+static char *utf82script_copy(const char *ustr) {
    return (use_utf8_in_script ? copy(ustr) : utf8_2_latin1_copy(ustr));
 }
 
-char *script2utf8_copy(const char *str) {
+static char *script2utf8_copy(const char *str) {
    return (use_utf8_in_script ? copy(str) : latin1_2_utf8_copy(str));
 }
 
@@ -2774,7 +2777,6 @@ static void bClearHints(Context * c) {
 	    SplineChar *sc = fv->sf->glyphs[gid];
 
 	    sc->manualhints = true;
-	    SCPreserveHints(sc, fv->active_layer);
 	    if (y_dir && !x_dir) {
 	       StemInfosFree(sc->vstem);
 	       sc->vstem = NULL;
@@ -4749,7 +4751,6 @@ static void bLoadEncodingFile(Context * c) {
 		     (c->a.argc >= 3 ? c->a.vals[2].u.sval : NULL));
    free(locfilename);
    free(t);
-   /*DumpPfaEditEncodings(); */
 }
 
 static void bLoadFileToString(Context * c) {
@@ -4805,7 +4806,7 @@ static void bLoadNamelistDir(Context * c) {
    free(dir);
 }
 
-char **GetFontNames(char *filename) {
+static char **GetFontNames(char *filename) {
    FILE *foo;
    char **ret = NULL;
 
@@ -4860,10 +4861,6 @@ char **GetFontNames(char *filename) {
       }
    }
    return (ret);
-}
-
-static void bLoadPrefs(Context * c) {
-   LoadPrefs();
 }
 
 static void bLoadTableFromFile(Context * c) {
@@ -6245,11 +6242,6 @@ static void bSave(Context * c) {
    }
 }
 
-static void bSavePrefs(Context * c) {
-   SavePrefs(false);
-   DumpPfaEditEncodings();
-}
-
 static void bSaveTableToFile(Context * c) {
    SplineFont *sf = c->curfv->sf;
    uint32 tag;
@@ -6927,7 +6919,7 @@ static void bSetGasp(Context * c) {
 	 ScriptError(c, "'gasp' Pixel size out of range");
       if (i != base && arr->vals[i].u.ival <= arr->vals[i - 2].u.ival)
 	 ScriptError(c, "'gasp' Pixel size out of order");
-      if (arr->vals[i + 1].u.ival < 0 || arr->vals[i + 1].u.ival > 12)
+      if (arr->vals[i + 1].u.ival < 0 || arr->vals[i + 1].u.ival > 15)
 	 ScriptError(c, "'gasp' flag out of range");
       if (arr->vals[i+1].u.ival>3)
 	 sf->gasp_version=1;
@@ -8521,7 +8513,6 @@ static struct builtins {
    {"LoadEncodingFile", bLoadEncodingFile, 1,2,3},
    {"LoadNamelist", bLoadNamelist, 1,2,2},
    {"LoadNamelistDir", bLoadNamelistDir, 1,0,2},
-   {"LoadPrefs", bLoadPrefs, 1,1,1},
    {"LoadStringFromFile", bLoadFileToString, 1,2,2},
    {"LoadTableFromFile", bLoadTableFromFile, 0,3,3},
    {"Log", bLog, 1,2,2},
@@ -8590,7 +8581,6 @@ static struct builtins {
    {"RoundToInt", bRoundToInt, 0,1,2},
    {"SameGlyphAs", bSameGlyphAs, 0,1,1},
    {"Save", bSave, 0,0,3},
-   {"SavePrefs", bSavePrefs, 1,1,1},
    {"SaveTableToFile", bSaveTableToFile, 0,3,3},
    {"Scale", bScale, 0,2,5},
    {"ScaleToEm", bScaleToEm, 0,2,3},
@@ -8835,7 +8825,7 @@ static void cseek(Context * c, long pos) {
    c->backedup = false;
 }
 
-enum token_type ff_NextToken(Context * c) {
+static enum token_type ff_NextToken(Context * c) {
    int ch, nch;
    enum token_type tok = tt_error;
 
@@ -9155,7 +9145,7 @@ enum token_type ff_NextToken(Context * c) {
    return (tok);
 }
 
-void ff_backuptok(Context * c) {
+static void ff_backuptok(Context * c) {
    if (c->backedup)
       IError("%s:%d Internal Error: Attempt to back token twice\n",
 	     c->filename, c->lineno);
@@ -10328,7 +10318,7 @@ static void doshift(Context * c) {
    }
 }
 
-void ff_statement(Context * c) {
+static void ff_statement(Context * c) {
    enum token_type tok = ff_NextToken(c);
    Val val;
 
@@ -10410,15 +10400,15 @@ static FILE *CopyNonSeekableFile(FILE * former) {
    return (temp);
 }
 
-void ff_VerboseCheck(void) {
+static void ff_VerboseCheck(void) {
    if (verbose==-1)
      verbose=getenv("FONTANVIL_VERBOSE")!=NULL;
 }
 
 int dry_option_selected=0;
 
-void RunScriptInterpreter(char *script_name,FILE *script_file,
-			  int script_argc,char **script_argv) {
+static void RunScriptInterpreter(char *script_name,FILE *script_file,
+				 int script_argc,char **script_argv) {
    Context c;
    int i;
    char *tstr;

@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 3321 2014-09-27 14:48:30Z mskala $ */
+/* $Id: noprefs.c 3332 2014-09-29 08:37:22Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
  */
 #include "fontanvil.h"
 #include "baseviews.h"
-#include "groups.h"
 #include <charset.h>
 #include <gfile.h>
 #include <ustring.h>
@@ -627,31 +626,6 @@ static struct prefs_list {
 }, *prefs_list[] = {
 core_list, extras, NULL};
 
-static int UserSettingsDiffer(void) {
-   int i, j;
-
-   if (user_macfeat_otftag == NULL)
-      return (false);
-
-   for (i = 0; user_macfeat_otftag[i].otf_tag != 0; ++i);
-   for (j = 0; macfeat_otftag[j].otf_tag != 0; ++j);
-   if (i != j)
-      return (true);
-   for (i = 0; user_macfeat_otftag[i].otf_tag != 0; ++i) {
-      for (j = 0; macfeat_otftag[j].otf_tag != 0; ++j) {
-	 if (macfeat_otftag[j].mac_feature_type ==
-	     user_macfeat_otftag[i].mac_feature_type &&
-	     macfeat_otftag[j].mac_feature_setting ==
-	     user_macfeat_otftag[i].mac_feature_setting &&
-	     macfeat_otftag[j].otf_tag == user_macfeat_otftag[i].otf_tag)
-	    break;
-      }
-      if (macfeat_otftag[j].otf_tag == 0)
-	 return (true);
-   }
-   return (false);
-}
-
 int GetPrefs(char *name, Val * val) {
    int i, j;
 
@@ -756,25 +730,10 @@ int SetPrefs(char *name, Val * val1, Val * val2) {
 	    } else
 	       return (false);
 
-	    SavePrefs(true);
 	    return (true);
 	 }
       }
    return (false);
-}
-
-static char *getPfaEditPrefs(void) {
-   static char *prefs = NULL;
-
-   char buffer[1025];
-
-   if (prefs != NULL)
-      return (prefs);
-   if (getPfaEditDir(buffer) == NULL)
-      return (NULL);
-   sprintf(buffer, "%s/prefs", getPfaEditDir(buffer));
-   prefs = copy(buffer);
-   return (prefs);
 }
 
 char *getFontAnvilShareDir(void) {
@@ -787,11 +746,8 @@ char *getFontAnvilShareDir(void) {
 
    if (!sharedir) {
       char path[MAX_PATH + 32];
-
       char *c = path;
-
       char *tail = 0;
-
       unsigned int len = GetModuleFileNameA(NULL, path, MAX_PATH);
 
       path[len] = '\0';
@@ -814,231 +770,4 @@ char *getFontAnvilShareDir(void) {
 #else
    return (NULL);
 #endif
-}
-
-static void ParseMacMapping(char *pt, struct macsettingname *ms) {
-   char *end;
-
-   ms->mac_feature_type = strtol(pt, &end, 10);
-   if (*end == ',')
-      ++end;
-   ms->mac_feature_setting = strtol(end, &end, 10);
-   if (*end == ' ')
-      ++end;
-   ms->otf_tag =
-      ((end[0] & 0xff) << 24) |
-      ((end[1] & 0xff) << 16) | ((end[2] & 0xff) << 8) | (end[3] & 0xff);
-}
-
-static void ParseNewMacFeature(FILE * p, char *line) {
-   fseek(p, -(strlen(line) - strlen("MacFeat:")), SEEK_CUR);
-   line[strlen("MacFeat:")] = '\0';
-   default_mac_feature_map = SFDParseMacFeatures(p, line);
-   fseek(p, -strlen(line), SEEK_CUR);
-   if (user_mac_feature_map != NULL)
-      MacFeatListFree(user_mac_feature_map);
-   user_mac_feature_map = default_mac_feature_map;
-}
-
-void LoadPrefs(void) {
-   char *prefs = getPfaEditPrefs();
-   FILE *p;
-   char line[1100];
-   int i, j, ri = 0, mn = 0, ms = 0 /*, fn=0, ff=0, filt_max=0 */ ;
-   int msp = 0, msc = 0;
-   char *pt;
-   struct prefs_list *pl;
-
-   LoadPfaEditEncodings();
-   LoadGroupList();
-
-   if (prefs != NULL && (p = fopen(prefs, "r")) != NULL) {
-      while (fgets(line, sizeof(line), p) != NULL) {
-	 if (*line == '#')
-	    continue;
-	 pt = strchr(line, ':');
-	 if (pt == NULL)
-	    continue;
-	 for (j = 0; prefs_list[j] != NULL; ++j) {
-	    for (i = 0; prefs_list[j][i].name != NULL; ++i)
-	       if (strncmp(line, prefs_list[j][i].name, pt - line) == 0)
-		  break;
-	    if (prefs_list[j][i].name != NULL)
-	       break;
-	 }
-	 pl = NULL;
-	 if (prefs_list[j] != NULL)
-	    pl = &prefs_list[j][i];
-	 for (++pt; *pt == '\t'; ++pt);
-	 if (line[strlen(line) - 1] == '\n')
-	    line[strlen(line) - 1] = '\0';
-	 if (line[strlen(line) - 1] == '\r')
-	    line[strlen(line) - 1] = '\0';
-	 if (pl == NULL) {
-	    if (strncmp(line, "Recent:", strlen("Recent:")) == 0
-		&& ri < RECENT_MAX)
-	       RecentFiles[ri++] = copy(pt);
-	    else if (strncmp(line, "MenuScript:", strlen("MenuScript:")) == 0
-		     && ms < SCRIPT_MENU_MAX)
-	       script_filenames[ms++] = copy(pt);
-	    else if (strncmp(line, "MenuName:", strlen("MenuName:")) == 0
-		     && mn < SCRIPT_MENU_MAX)
-	       script_menu_names[mn++] = utf82u_copy(pt);
-	    else if (strncmp(line, "MacMapCnt:", strlen("MacSetCnt:")) == 0) {
-	       sscanf(pt, "%d", &msc);
-	       msp = 0;
-	       user_macfeat_otftag =
-		  calloc(msc + 1, sizeof(struct macsettingname));
-	    } else if (strncmp(line, "MacMapping:", strlen("MacMapping:")) ==
-		       0 && msp < msc) {
-	       ParseMacMapping(pt, &user_macfeat_otftag[msp++]);
-	    } else if (strncmp(line, "MacFeat:", strlen("MacFeat:")) == 0) {
-	       ParseNewMacFeature(p, line);
-	    }
-	    continue;
-	 }
-	 switch (pl->type) {
-	   case pr_encoding:
-	      {
-		 Encoding *enc = FindOrMakeEncoding(pt);
-
-		 if (enc == NULL)
-		    enc = FindOrMakeEncoding("ISO8859-1");
-		 if (enc == NULL)
-		    enc = &custom;
-		 *((Encoding **) (pl->val)) = enc;
-	      }
-	      break;
-	   case pr_namelist:
-	      {
-		 NameList *nl = NameListByName(pt);
-
-		 if (strcmp(pt, "NULL") == 0
-		     && pl->val != &namelist_for_new_fonts)
-		    *((NameList **) (pl->val)) = NULL;
-		 else if (nl != NULL)
-		    *((NameList **) (pl->val)) = nl;
-	      }
-	      break;
-	   case pr_bool:
-	   case pr_int:
-	      sscanf(pt, "%d", (int *) pl->val);
-	      break;
-	   case pr_unicode:
-	      if (sscanf(pt, "U+%x", (int *) pl->val) != 1)
-		 if (sscanf(pt, "u+%x", (int *) pl->val) != 1)
-		    sscanf(pt, "%x", (int *) pl->val);
-	      break;
-	   case pr_real:
-	      {
-		 char *end;
-
-		 *((float *) pl->val) = strtod(pt, &end);
-		 if ((*end == ',' || *end == '.')) {
-		    *end = (*end == '.') ? ',' : '.';
-		    *((float *) pl->val) = strtod(pt, NULL);
-		 }
-	      }
-	      break;
-	   case pr_string:
-	   case pr_file:
-	      if (*pt == '\0')
-		 pt = NULL;
-	      if (pl->val != NULL)
-		 *((char **) (pl->val)) = copy(pt);
-	      else
-		 (pl->set) (copy(pt));
-	      break;
-	 }
-      }
-      fclose(p);
-   }
-   if (othersubrsfile != NULL && ReadOtherSubrsFile(othersubrsfile) <= 0)
-      fprintf(stderr, "Failed to read OtherSubrs from %s\n", othersubrsfile);
-
-   if (glyph_2_name_map) {
-      old_sfnt_flags |= ttf_flag_glyphmap;
-   }
-   LoadNamelistDir(NULL);
-}
-
-void SavePrefs(int not_if_script) {
-   char *prefs = getPfaEditPrefs();
-   FILE *p;
-   int i, j;
-   char *temp;
-   struct prefs_list *pl;
-   extern int running_script;
-
-   if (prefs == NULL)
-      return;
-   if (not_if_script && running_script)
-      return;
-
-   if ((p = fopen(prefs, "w")) == NULL)
-      return;
-
-   for (j = 0; prefs_list[j] != NULL; ++j)
-      for (i = 0; prefs_list[j][i].name != NULL; ++i) {
-	 pl = &prefs_list[j][i];
-	 switch (pl->type) {
-	   case pr_encoding:
-	      fprintf(p, "%s:\t%s\n", pl->name,
-		      (*((Encoding **) (pl->val)))->enc_name);
-	      break;
-	   case pr_namelist:
-	      fprintf(p, "%s:\t%s\n", pl->name,
-		      *((NameList **) (pl->val)) ==
-		      NULL ? "NULL" : (*((NameList **) (pl->val)))->title);
-	      break;
-	   case pr_bool:
-	   case pr_int:
-	      fprintf(p, "%s:\t%d\n", pl->name, *(int *) (pl->val));
-	      break;
-	   case pr_unicode:
-	      fprintf(p, "%s:\tU+%04x\n", pl->name, *(int *) (pl->val));
-	      break;
-	   case pr_real:
-	      fprintf(p, "%s:\t%g\n", pl->name,
-		      (double) *(float *) (pl->val));
-	      break;
-	   case pr_string:
-	   case pr_file:
-	      if ((pl->val) != NULL)
-		 temp = *(char **) (pl->val);
-	      else
-		 temp = (char *) (pl->get());
-	      if (temp != NULL)
-		 fprintf(p, "%s:\t%s\n", pl->name, temp);
-	      if ((pl->val) == NULL)
-		 free(temp);
-	      break;
-	 }
-      }
-
-   for (i = 0; i < RECENT_MAX && RecentFiles[i] != NULL; ++i)
-      fprintf(p, "Recent:\t%s\n", RecentFiles[i]);
-   for (i = 0; i < SCRIPT_MENU_MAX && script_filenames[i] != NULL; ++i) {
-      fprintf(p, "MenuScript:\t%s\n", script_filenames[i]);
-      fprintf(p, "MenuName:\t%s\n", temp = u2utf8_copy(script_menu_names[i]));
-      free(temp);
-   }
-   if (user_macfeat_otftag != NULL && UserSettingsDiffer()) {
-      for (i = 0; user_macfeat_otftag[i].otf_tag != 0; ++i);
-      fprintf(p, "MacMapCnt: %d\n", i);
-      for (i = 0; user_macfeat_otftag[i].otf_tag != 0; ++i) {
-	 fprintf(p, "MacMapping: %d,%d %c%c%c%c\n",
-		 user_macfeat_otftag[i].mac_feature_type,
-		 user_macfeat_otftag[i].mac_feature_setting,
-		 (int) (user_macfeat_otftag[i].otf_tag >> 24),
-		 (int) ((user_macfeat_otftag[i].otf_tag >> 16) & 0xff),
-		 (int) ((user_macfeat_otftag[i].otf_tag >> 8) & 0xff),
-		 (int) (user_macfeat_otftag[i].otf_tag & 0xff));
-      }
-   }
-
-   if (UserFeaturesDiffer())
-      SFDDumpMacFeat(p, default_mac_feature_map);
-
-   fclose(p);
 }

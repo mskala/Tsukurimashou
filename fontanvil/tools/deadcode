@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+$uname=`uname`;
+chomp $uname;
+print STDERR "Macintosh detected.\n" if $uname eq 'Darwin';
+
 open(NM,'nm -g `find . -name *.o`|');
 while (<NM>) {
   chomp;
@@ -7,10 +11,13 @@ while (<NM>) {
     $fn="$2$3.c";
     print "$_ => $fn\n";
   } elsif (/^([0-9a-f]*)\s+([A-RT-Z]) (.*)$/) {
-    if ($2 eq 'U') {
-      $extern_used{$3}=1;
+    $two=$2;
+    $three=$3;
+    $three=~s/^_// if $uname eq 'Darwin';
+    if ($two eq 'U') {
+      $extern_used{$three}=1;
     } else {
-      $extern_defined{$3}=$fn;
+      $extern_defined{$three}=$fn;
     }
   }
 }

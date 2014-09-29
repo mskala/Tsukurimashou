@@ -1,4 +1,4 @@
-/* $Id: svg.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: svg.c 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -880,7 +880,7 @@ static PST *HasLigature(SplineChar * sc) {
    return (best);
 }
 
-SplineChar *SCHasSubs(SplineChar * sc, uint32 tag) {
+static SplineChar *SCHasSubs(SplineChar * sc, uint32 tag) {
    PST *pst;
 
    for (pst = sc->possub; pst != NULL; pst = pst->next) {
@@ -1244,7 +1244,7 @@ int _ExportSVG(FILE * svg, SplineChar * sc, int layer) {
 /* ************************************************************************** */
 
 #ifdef _NO_LIBXML
-int HasSVG(void) {
+static int HasSVG(void) {
    return (false);
 }
 
@@ -1256,7 +1256,7 @@ char **NamesReadSVG(char *filename) {
    return (NULL);
 }
 
-SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
+static SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
 				       int memlen, int em_size, int ascent,
 				       int is_stroked) {
    return (NULL);
@@ -4295,7 +4295,7 @@ Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
    return (ret);
 }
 
-SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
+static SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
 				       int memlen, int em_size, int ascent,
 				       int is_stroked) {
    Entity *ret =
@@ -4305,7 +4305,7 @@ SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
    return (SplinesFromEntities(ret, &flags, is_stroked));
 }
 
-int HasSVG(void) {
+static int HasSVG(void) {
    return (libxml_init_base());
 }
 #endif

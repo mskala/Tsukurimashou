@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: scstyles.c 3324 2014-09-27 20:21:49Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3713,7 +3713,7 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
       sc->vstem = NULL;
    }
    if (sc->vstem == NULL)
-      _SplineCharAutoHint(sc, ci->layer, &ci->bd, NULL, false);
+      _SplineCharAutoHint(sc, ci->layer, &ci->bd, NULL);
 
    PerGlyphFindCounters(ci, sc, layer);
 
@@ -4427,7 +4427,7 @@ static void SCEmbolden(SplineChar * sc, struct lcg_zones *zones, int layer) {
    if (layer != ly_back && zones->wants_hints &&
        sc->hstem == NULL && sc->vstem == NULL && sc->dstem == NULL) {
       _SplineCharAutoHint(sc, layer == ly_all ? ly_fore : layer, &zones->bd,
-			  NULL, false);
+			  NULL);
    }
 
    adjust_counters = zones->counter_type == ct_retain ||

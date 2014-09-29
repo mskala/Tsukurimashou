@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: glyphcomp.c 3324 2014-09-27 20:21:49Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -730,13 +730,11 @@ int CompareLayer(Context * c, const SplineSet * ss1, const SplineSet * ss2,
    return (val);
 }
 
-static int CompareBitmap(Context * c, SplineChar * sc, const Undoes * cur,
+static int CompareBitmap(Context *c, SplineChar *sc, const Undoes *cur,
 			 real pixel_off_frac, int bb_err,
 			 int diffs_are_errors) {
    int ret, err;
-
    BDFFont *bdf;
-
    BDFChar bc;
 
    for (bdf = c->curfv->sf->bitmaps;
@@ -931,13 +929,9 @@ int CompareGlyphs(Context * c, real pt_err, real spline_err,
 		  real pixel_off_frac, int bb_err, int comp_hints,
 		  int diffs_are_errors) {
    FontViewBase *fv = c->curfv;
-
    SplineFont *sf = fv->sf;
-
    int i, cnt = 0;
-
    int ret = 0;
-
    const Undoes *cur, *bmp;
 
    for (i = 0; i < fv->map->enccount; ++i)

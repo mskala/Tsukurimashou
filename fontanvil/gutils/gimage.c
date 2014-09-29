@@ -1,4 +1,4 @@
-/* $Id: gimage.c 2942 2014-03-10 22:57:27Z mskala $ */
+/* $Id: gimage.c 3327 2014-09-29 07:50:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,6 @@ GImage *GImageCreate(enum image_type type, int32 width, int32 height) {
    NoMoreMemMessage();
    return (NULL);
 }
-
 
 GImage *_GImage_Create(enum image_type type, int32 width, int32 height) {
    GImage *gi;
@@ -164,7 +163,6 @@ GImage *GImageCreateAnimation(GImage ** images, int n) {
    
 }
 
-
 void GImageDrawRect(GImage * img, GRect * r, Color col) {
    struct _GImage *base;
 
@@ -256,7 +254,7 @@ void GImageDrawImage(GImage * dest, GImage * src, GRect * junk, int x, int y) {
 
 /* Blends src image with alpha channel over dest. Both images must be */
 /* 32-bit truecolor. Alpha channel of dest must be all opaque.        */
-void GImageBlendOver(GImage * dest, GImage * src, GRect * from, int x, int y) {
+static void GImageBlendOver(GImage * dest, GImage * src, GRect * from, int x, int y) {
    struct _GImage *sbase, *dbase;
 
    int i, j, a, r, g, b;

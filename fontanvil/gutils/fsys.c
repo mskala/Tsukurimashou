@@ -1,4 +1,4 @@
-/* $Id: fsys.c 2939 2014-03-10 19:10:18Z mskala $ */
+/* $Id: fsys.c 3332 2014-09-29 08:37:22Z mskala $ */
 /* Copyright (C) 2000-2004 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ static void _u_backslash_to_slash(unichar_t * c) {
 
 /* make directories.  make parent directories as needed,  with no error if
  * the path already exists */
-int mkdir_p(const char *path, mode_t mode) {
+static int mkdir_p(const char *path, mode_t mode) {
    struct stat st;
 
    const char *e;
@@ -117,43 +117,6 @@ int mkdir_p(const char *path, mode_t mode) {
    return EXIT_SUCCESS;
 }
 
-char *GFileGetHomeDir(void) {
-#if defined(__MINGW32__)
-   char *dir = getenv("HOME");
-
-   if (!dir)
-      dir = getenv("USERPROFILE");
-   if (dir) {
-      char *buffer = copy(dir);
-
-      _backslash_to_slash(buffer);
-      return buffer;
-   }
-   return NULL;
-#else
-   static char *dir;
-
-   int uid;
-
-   struct passwd *pw;
-
-   dir = getenv("HOME");
-   if (dir != NULL)
-      return (copy(dir));
-
-   uid = getuid();
-   while ((pw = getpwent()) != NULL) {
-      if (pw->pw_uid == uid) {
-	 dir = copy(pw->pw_dir);
-	 endpwent();
-	 return (dir);
-      }
-   }
-   endpwent();
-   return (NULL);
-#endif
-}
-
 static void savestrcpy(char *dest, const char *src) {
    for (;;) {
       *dest = *src;
@@ -162,6 +125,22 @@ static void savestrcpy(char *dest, const char *src) {
       ++dest;
       ++src;
    }
+}
+
+static int GFileIsAbsolute(const char *file) {
+#if defined(__MINGW32__)
+   if ((file[1] == ':')
+       && (('a' <= file[0] && file[0] <= 'z')
+	   || ('A' <= file[0] && file[0] <= 'Z')))
+      return (true);
+#else
+   if (*file == '/')
+      return (true);
+#endif
+   if (strstr(file, "://") != NULL)
+      return (true);
+
+   return (false);
 }
 
 char *GFileGetAbsoluteName(char *name, char *result, int rsiz) {
@@ -256,22 +235,6 @@ char *GFileAppendFile(char *dir, char *name, int isdir) {
    return (ret);
 }
 
-int GFileIsAbsolute(const char *file) {
-#if defined(__MINGW32__)
-   if ((file[1] == ':')
-       && (('a' <= file[0] && file[0] <= 'z')
-	   || ('A' <= file[0] && file[0] <= 'Z')))
-      return (true);
-#else
-   if (*file == '/')
-      return (true);
-#endif
-   if (strstr(file, "://") != NULL)
-      return (true);
-
-   return (false);
-}
-
 int GFileIsDir(const char *file) {
    struct stat info;
 
@@ -293,7 +256,7 @@ int GFileMkDir(char *name) {
    return (MKDIR(name, 0755));
 }
 
-char *_GFile_find_program_dir(char *prog) {
+static char *_GFile_find_program_dir(char *prog) {
    char *pt, *path, *program_dir = NULL;
 
    char filename[2000];

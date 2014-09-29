@@ -1,4 +1,4 @@
-/* $Id: encoding.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: encoding.h 3326 2014-09-29 07:28:28Z mskala $ */
 #ifndef _ENCODING_H
 #   define _ENCODING_H
 
@@ -20,8 +20,4 @@ struct cidmap {
 };
 
 extern struct cidmap *cidmaps;
-
-extern void DeleteEncoding(Encoding * me);
-
-extern void RemoveMultiples(Encoding * item);
 #endif

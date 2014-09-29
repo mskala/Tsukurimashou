@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: fontviewbase.c 3330 2014-09-29 08:08:43Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
  */
 #include "fontanvil.h"
 #include "baseviews.h"
-#include "groups.h"
 #include "psfont.h"
 #include <gfile.h>
 #include <gio.h>
@@ -881,10 +880,6 @@ void FVOverlap(FontViewBase * fv, enum overlap_type ot) {
 
    SplineChar *sc;
 
-   /* We know it's more likely that we'll find a problem in the overlap code */
-   /*  than anywhere else, so let's save the current state against a crash */
-   DoAutoSaves();
-
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
@@ -1173,7 +1168,6 @@ void FVClearHints(FontViewBase * fv) {
 	 SplineChar *sc = fv->sf->glyphs[gid];
 
 	 sc->manualhints = true;
-	 SCPreserveHints(sc, fv->active_layer);
 	 SCClearHints(sc);
       }
 }
@@ -1503,10 +1497,6 @@ static void _FVRevert(FontViewBase *fv, int tobackup) {
 
    if (fv->sf->fontinfo)
       FontInfo_Destroy(fv->sf);
-   for (bdf = old->bitmaps; bdf != NULL; bdf = bdf->next)
-      for (i = 0; i < bdf->glyphcnt; ++i)
-	 if (bdf->glyphs[i] != NULL)
-	    BCDestroyAll(bdf->glyphs[i]);
    MVDestroyAll(old);
 
    for (fvs=fv->sf->fv;fvs!=NULL;fvs=fvs->nextsame) {

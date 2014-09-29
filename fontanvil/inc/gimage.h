@@ -1,4 +1,4 @@
-/* $Id: gimage.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimage.h 3327 2014-09-29 07:50:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -136,8 +136,6 @@ extern GImage *_GImage_Create(enum image_type type, int32 width,
 			      int32 height);
 extern void GImageDestroy(GImage * gi);
 
-extern GImage *GImageCreateAnimation(GImage ** images, int n);
-
 extern GImage *GImageAddImageBefore(GImage * dest, GImage * src, int pos);
 
 extern GImage *GImageBaseGetSub(struct _GImage *base, enum image_type it,
@@ -192,11 +190,7 @@ extern Color GDrawColorBrighten(Color col, int by);
 
 extern int GImageWriteGImage(GImage * gi, char *filename);
 
-extern int GImageWrite_Bmp(GImage * gi, FILE * fp);
-
 extern int GImageWriteBmp(GImage * gi, char *filename);
-
-extern GImage *GImageRead_Bmp(FILE * file);
 
 extern GImage *GImageReadBmp(char *filename);
 
@@ -229,8 +223,8 @@ extern int GImageWrite_Png(GImage * gi, FILE * fp, int progressive);
 extern int GImageWritePng(GImage * gi, char *filename, int progressive);
 
 extern GImage *GImageReadGif(char *filename);
-
 extern int GImageWriteGif(GImage * gi, char *filename, int progressive);
+extern GImage *GImageCreateAnimation(GImage ** images, int n);
 
 extern GImage *GImageReadRas(char *filename);	/* Sun Raster */
 
@@ -241,8 +235,6 @@ extern GImage *GImageRead(char *filename);
 extern void GImageDrawRect(GImage * img, GRect * r, Color col);
 
 extern void GImageDrawImage(GImage * dest, GImage * src, GRect * junk, int x,
-			    int y);
-extern void GImageBlendOver(GImage * dest, GImage * src, GRect * from, int x,
 			    int y);
 
 extern void gRGB2HSL(struct hslrgb *col);

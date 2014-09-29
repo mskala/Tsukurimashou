@@ -1,4 +1,4 @@
-/* $Id: fffreetype.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: fffreetype.h 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -62,12 +62,6 @@ typedef struct freetypecontext {
    int isttf;
    int em;			/* Em size in the spline font, not ppem */
 } FTC;
-
-extern void *__FreeTypeFontContext(FT_Library context,
-				   SplineFont * sf, SplineChar * sc,
-				   FontViewBase * fv, int layer,
-				   enum fontformat ff, int flags,
-				   void *shared_ftc);
 
 #   endif
        /* we do have FreeType */

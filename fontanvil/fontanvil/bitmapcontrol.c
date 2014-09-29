@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: bitmapcontrol.c 3325 2014-09-28 18:05:37Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -31,18 +31,6 @@
 #include "bitmapcontrol.h"
 
 int bdfcontrol_lastwhich = bd_selected;
-
-static void RemoveBDFWindows(BDFFont * bdf) {
-   int i;
-
-   for (i = 0; i < bdf->glyphcnt; ++i)
-     if (bdf->glyphs[i] != NULL) {
-	BCDestroyAll(bdf->glyphs[i]);
-     }
-   /* We can't free the bdf until all the windows have executed their destroy */
-   /*  routines (which they will when they get the destroy window event) */
-   /*  because those routines depend on the bdf existing ... */
-}
 
 static BDFFont *BDFNew(SplineFont * sf, int pixel_size, int depth) {
    BDFFont *new = chunkalloc(sizeof(BDFFont));
@@ -87,7 +75,6 @@ static void SFRemoveUnwantedBitmaps(SplineFont * sf, int32 * sizes) {
 		  FVShowFilled(fv);
 	    }
 	 }
-	 RemoveBDFWindows(bdf);
 	 BDFFontFree(bdf);
 	 sf->changed = true;
       } else {
@@ -224,7 +211,6 @@ static void ReplaceBDFC(SplineFont * sf, int32 * sizes, int gid,
 	    bdf->glyphs[gid]->views = bdfc->views;
 	    bdfc->views = NULL;
 	    BDFCharFree(bdfc);
-	    BCRefreshAll(bdf->glyphs[gid]);
 	 }
       }
    }
@@ -304,7 +290,7 @@ static void BDFClearGlyph(BDFFont * bdf, int gid, int pass) {
    if (bdf == NULL || bdf->glyphs[gid] == NULL)
       return;
    if (pass == 0) {
-      BCDestroyAll(bdf->glyphs[gid]);
+     /* */
    } else {
       BDFCharFree(bdf->glyphs[gid]);
       bdf->glyphs[gid] = NULL;

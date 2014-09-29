@@ -1,4 +1,4 @@
-/* $Id: asmfpst.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: asmfpst.c 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2003-2007 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ static char **classcopy(char **names, int nextclass) {
    return (ret);
 }
 
-FPST *FPSTGlyphToClass(FPST * fpst) {
+static FPST *FPSTGlyphToClass(FPST * fpst) {
    FPST *new;
 
    int nextclass = 0, i, j, k, max, cnt, ch;

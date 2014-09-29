@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: cvundoes.c 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -47,17 +47,11 @@ int copymetadata = 0;
 
 int copyttfinstr = 0;
 
-#if defined(__Mac)
-int export_clipboard = 0;
-#else
-int export_clipboard = 1;
-#endif
+static void *UHintCopy(SplineChar * sc, int docopy);
 
-extern void *UHintCopy(SplineChar * sc, int docopy);
+static void ExtractHints(SplineChar * sc, void *hints, int docopy);
 
-extern void ExtractHints(SplineChar * sc, void *hints, int docopy);
-
-extern void UndoesFreeButRetainFirstN(Undoes ** undopp, int retainAmount);
+static void UndoesFreeButRetainFirstN(Undoes ** undopp, int retainAmount);
 
 /* ********************************* Undoes ********************************* */
 
@@ -402,7 +396,7 @@ static void UHintListFree(void *hints) {
    }
 }
 
-void *UHintCopy(SplineChar * sc, int docopy) {
+static void *UHintCopy(SplineChar * sc, int docopy) {
    StemInfo *h = sc->hstem, *v = sc->vstem, *last = NULL;
 
    DStemInfo *d = sc->dstem;
@@ -444,7 +438,7 @@ void *UHintCopy(SplineChar * sc, int docopy) {
    return (ret);
 }
 
-void ExtractHints(SplineChar * sc, void *hints, int docopy) {
+static void ExtractHints(SplineChar * sc, void *hints, int docopy) {
    StemInfo *h = NULL, *v = NULL, *p;
 
    DStemInfo *d = NULL;
@@ -491,7 +485,7 @@ void ExtractHints(SplineChar * sc, void *hints, int docopy) {
    sc->vconflicts = StemInfoAnyOverlaps(v);
 }
 
-void UndoesFreeButRetainFirstN(Undoes ** undopp, int retainAmount) {
+static void UndoesFreeButRetainFirstN(Undoes ** undopp, int retainAmount) {
    if (!undopp || !*undopp)
       return;
    Undoes *undo = *undopp;
@@ -631,10 +625,6 @@ int CVLayer(CharViewBase * cv) {
       return (ly_grid);
 
    return (cv->layerheads[cv->drawmode] - cv->sc->layers);
-}
-
-Undoes *SCPreserveHints(SplineChar * sc, int layer) {
-   return (NULL);
 }
 
 /* This routine does not allow for undoes in scripting */
@@ -882,7 +872,7 @@ static void BCUndoAct(BDFChar * bc, Undoes * undo) {
 
 static Undoes copybuffer;
 
-void CopyBufferFree(void) {
+static void CopyBufferFree(void) {
    BDFRefChar *brhead, *brnext;
 
    switch (copybuffer.undotype) {

@@ -1,4 +1,4 @@
-/* $Id: gfile.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gfile.h 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,6 @@
 /* home directories for fontforge */
 enum { Cache, Config, Data };
 
-int mkdir_p(const char *path, mode_t mode);
-
 char *smprintf(char *fmt, ...);
 
 extern char *GFileGetHomeDir(void);
@@ -53,8 +51,6 @@ extern char *GFileReplaceName(char *oldname, char *fname, char *buffer,
 extern char *GFileNameTail(const char *oldname);
 
 extern char *GFileAppendFile(char *dir, char *name, int isdir);
-
-extern int GFileIsAbsolute(const char *file);
 
 extern int GFileIsDir(const char *file);
 
@@ -74,8 +70,6 @@ extern int GFileMkDir(char *name);
 extern int GFileRmDir(char *name);
 
 extern int GFileUnlink(char *name);
-
-extern char *_GFile_find_program_dir(char *prog);
 
 extern unichar_t *u_GFileGetAbsoluteName(unichar_t * name, unichar_t * result,
 					 int rsiz);
