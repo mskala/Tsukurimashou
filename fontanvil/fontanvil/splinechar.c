@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: splinechar.c 3337 2014-09-30 13:58:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2095,7 +2095,6 @@ void SCCharChangedUpdate(SplineChar * sc, int layer, int changed) {
    if (layer >= 0 && !sc->layers[layer].background)
       TTFPointMatches(sc, layer, true);
    if (changed != -1) {
-      sc->changed_since_autosave = true;
       SFSetModTime(sf);
       if ((sc->changed == 0) != (changed == 0)) {
 	 sc->changed = (changed != 0);
@@ -2109,7 +2108,6 @@ void SCCharChangedUpdate(SplineChar * sc, int layer, int changed) {
       sc->changedsincelasthinted = true;
       sc->changed_since_search = true;
       sf->changed = true;
-      sf->changed_since_autosave = true;
       sf->changed_since_xuidchanged = true;
       if (layer >= 0)
 	 SCTickValidationState(sc, layer);

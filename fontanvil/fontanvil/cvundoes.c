@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: cvundoes.c 3338 2014-09-30 18:25:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -50,8 +50,6 @@ int copyttfinstr = 0;
 static void *UHintCopy(SplineChar * sc, int docopy);
 
 static void ExtractHints(SplineChar * sc, void *hints, int docopy);
-
-static void UndoesFreeButRetainFirstN(Undoes ** undopp, int retainAmount);
 
 /* ********************************* Undoes ********************************* */
 
@@ -484,34 +482,6 @@ static void ExtractHints(SplineChar * sc, void *hints, int docopy) {
    sc->hconflicts = StemInfoAnyOverlaps(h);
    sc->vconflicts = StemInfoAnyOverlaps(v);
 }
-
-static void UndoesFreeButRetainFirstN(Undoes ** undopp, int retainAmount) {
-   if (!undopp || !*undopp)
-      return;
-   Undoes *undo = *undopp;
-
-   // wipe them all will change the list header pointer too
-   if (!retainAmount) {
-      UndoesFree(undo);
-      *undopp = 0;
-      return;
-   }
-
-   Undoes *undoprev = undo;
-
-   for (; retainAmount > 0 && undo; retainAmount--) {
-      undoprev = undo;
-      undo = undo->next;
-   }
-   // not enough items to need to do a trim.
-   if (retainAmount > 0)
-      return;
-
-   // break off and free the tail
-   UndoesFree(undo);
-   undoprev->next = 0;
-}
-
 
 void UndoesFree(Undoes * undo) {
    Undoes *unext;

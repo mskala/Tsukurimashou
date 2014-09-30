@@ -1,4 +1,4 @@
-/* $Id: http.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: http.c 3338 2014-09-30 18:25:16Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -334,22 +334,6 @@ static char *UrlEncode(char *to, char *source) {
 }
 
 static void ChangeLine2_8(char *str) {
-}
-
-static int dumpfile(FILE * formdata, FILE * dump, char *pathspec) {
-   int ch;
-
-   if (dump == NULL)
-      dump = fopen(pathspec, "rb");
-   if (dump == NULL) {
-      fclose(formdata);
-      return (false);
-   }
-   while ((ch = getc(dump)) != EOF)
-      putc(ch, formdata);
-   fclose(dump);
-   fprintf(formdata, "\r\n");	/* Final line break not part of message (I hope) */
-   return (true);
 }
 
 static char *ImageMimeType(char *ext) {

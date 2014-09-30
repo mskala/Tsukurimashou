@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 3332 2014-09-29 08:37:22Z mskala $ */
+/* $Id: noprefs.c 3338 2014-09-30 18:25:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -109,8 +109,6 @@ extern int mf_clearbackgrounds;	/* in autotrace.c */
 extern int mf_showerrors;	/* in autotrace.c */
 
 extern char *mf_args;		/* in autotrace.c */
-
-static int glyph_2_name_map = 0;	/* was in tottf.c, now a flag in savefont options dlg */
 
 extern int coverageformatsallowed;	/* in tottfgpos.c */
 

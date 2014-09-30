@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3335 2014-09-29 09:36:05Z mskala $ */
+/* $Id: splinefont.h 3337 2014-09-30 13:58:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1508,7 +1508,6 @@ typedef struct splinechar {
    unsigned int manualhints:1;
    unsigned int ticked:1;	/* For reference character processing */
    /* And fontview processing */
-   unsigned int changed_since_autosave:1;
    unsigned int widthset:1;	/* needed so an emspace char doesn't disappear */
    unsigned int vconflicts:1;	/* Any hint overlaps in the vstem list? */
    unsigned int hconflicts:1;	/* Any hint overlaps in the hstem list? */
@@ -1819,7 +1818,6 @@ typedef struct splinefont {
    int glyphcnt, glyphmax;	/* allocated size of glyphs array */
    SplineChar **glyphs;
    unsigned int changed:1;
-   unsigned int changed_since_autosave:1;
    unsigned int changed_since_xuidchanged:1;
    unsigned int display_antialias:1;
    unsigned int display_bbsized:1;
@@ -1859,7 +1857,6 @@ typedef struct splinefont {
    Layer grid;
    BDFFont *bitmaps;
    char *origname;		/* filename of font file (ie. if not an sfd) */
-   char *autosavename;
    int display_size;		/* a val <0 => Generate our own images from splines, a value >0 => find a bdf font of that size */
    struct psdict *private;	/* read in from type1 file or provided by user */
    char *xuid;
@@ -3466,9 +3463,6 @@ typedef void (*DoAutoRecoveryPostRecoverFunc) (SplineFont *sf);
 extern int DoAutoRecoveryExtended(int inquire,
 				  DoAutoRecoveryPostRecoverFunc
 				  PostRecoverFunc);
-extern SplineFont *SFRecoverFile(char *autosavename, int inquire, int *state);
-
-extern void SFAutoSave(SplineFont *sf, EncMap *map);
 
 extern void SFClearAutoSave(SplineFont *sf);
 

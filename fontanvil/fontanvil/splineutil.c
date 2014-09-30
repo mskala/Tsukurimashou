@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 3336 2014-09-29 09:47:43Z mskala $ */
+/* $Id: splineutil.c 3338 2014-09-30 18:25:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -64,10 +64,6 @@ typedef struct quartic {
 #ifdef FLAG
 #   undef FLAG
 #   define FLAG 0xbadcafe
-#endif
-
-#ifdef CHUNKDEBUG
-static int chunkdebug = 0;	/* When this is set we never free anything, insuring that each chunk is unique */
 #endif
 
 #if ALLOC_CHUNK>1
@@ -6878,7 +6874,6 @@ void SplineFontFree(SplineFont * sf) {
    free(sf->comments);
    free(sf->filename);
    free(sf->origname);
-   free(sf->autosavename);
    free(sf->version);
    free(sf->xuid);
    free(sf->cidregistry);

@@ -1,4 +1,4 @@
-/* $Id: encoding.c 3329 2014-09-29 07:59:10Z mskala $ */
+/* $Id: encoding.c 3337 2014-09-30 13:58:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1395,7 +1395,7 @@ static SplineFont *CIDFlatten(SplineFont * cidmaster, SplineChar ** glyphs,
    new->uwidth = cidmaster->uwidth;
    new->ascent = cidmaster->ascent;
    new->descent = cidmaster->descent;
-   new->changed = new->changed_since_autosave = true;
+   new->changed = true;
    new->display_antialias = cidmaster->display_antialias;
    new->hasvmetrics = cidmaster->hasvmetrics;
    new->fv = cidmaster->fv;
@@ -1778,7 +1778,7 @@ SplineFont *MakeCIDMaster(SplineFont * sf, EncMap * oldmap, int bycmap,
    cidmaster->display_size = sf->display_size;
    cidmaster->ascent = sf->ascent /*880 */ ;
    cidmaster->descent = sf->descent /*120 */ ;
-   cidmaster->changed = cidmaster->changed_since_autosave = true;
+   cidmaster->changed = true;
    for (fvs = sf->fv; fvs != NULL; fvs = fvs->nextsame)
       fvs->cidmaster = cidmaster;
    cidmaster->fv = sf->fv;

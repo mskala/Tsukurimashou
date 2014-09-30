@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3331 2014-09-29 08:27:42Z mskala $ */
+/* $Id: scripting.c 3337 2014-09-30 13:58:49Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -5753,7 +5753,6 @@ if (c->a.vals[1].type != v_str
    c->curfv->selected = calloc(c->curfv->map->enccount, sizeof(char));
 /*
     c->curfv->sf->changed = true;
-    c->curfv->sf->changed_since_autosave = true;
     c->curfv->sf->changed_since_xuidchanged = true;
 */
 }
@@ -6745,7 +6744,6 @@ if (c->a.vals[1].type != v_int)
    }
    map->enccount = newcnt;
    c->curfv->sf->changed = true;
-   c->curfv->sf->changed_since_autosave = true;
    c->curfv->sf->changed_since_xuidchanged = true;
 }
 
@@ -6961,7 +6959,6 @@ if (c->a.vals[1].type != v_int)
 	 if (fv->selected[i]) {
 	    sf->glyphs[gid]->changed = changed_or_not;
 	    sf->glyphs[gid]->changedsincelasthinted = changed_or_not;
-	    sf->glyphs[gid]->changed_since_autosave = changed_or_not;
 	    sf->glyphs[gid]->changed_since_search = changed_or_not;
 	    sf->glyphs[gid]->namechanged = changed_or_not;
 	 }
@@ -6970,7 +6967,6 @@ if (c->a.vals[1].type != v_int)
       }
    }
    sf->changed = changed_any;
-   sf->changed_since_autosave = changed_any;
    sf->changed_since_xuidchanged = changed_any;
 }
 

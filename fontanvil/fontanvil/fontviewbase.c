@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 3330 2014-09-29 08:08:43Z mskala $ */
+/* $Id: fontviewbase.c 3338 2014-09-30 18:25:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1518,7 +1518,6 @@ static void _FVRevert(FontViewBase *fv, int tobackup) {
       }
    }
 
-   SFClearAutoSave(old);
    temp->fv=fv->sf->fv;
    for (fvs=fv->sf->fv;fvs!=NULL;fvs=fvs->nextsame)
       fvs->sf=temp;
@@ -1533,34 +1532,6 @@ void FVRevert(FontViewBase * fv) {
 
 void FVRevertBackup(FontViewBase * fv) {
    _FVRevert(fv, true);
-}
-
-static int isuniname(char *name) {
-   int i;
-
-   if (name[0] != 'u' || name[1] != 'n' || name[2] != 'i')
-      return (false);
-   for (i = 3; i < 7; ++i)
-      if (name[i] < '0' || (name[i] > '9' && name[i] < 'A') || name[i] > 'F')
-	 return (false);
-   if (name[7] != '\0')
-      return (false);
-
-   return (true);
-}
-
-static int isuname(char *name) {
-   int i;
-
-   if (name[0] != 'u')
-      return (false);
-   for (i = 1; i < 5; ++i)
-      if (name[i] < '0' || (name[i] > '9' && name[i] < 'A') || name[i] > 'F')
-	 return (false);
-   if (name[5] != '\0')
-      return (false);
-
-   return (true);
 }
 
 /*                             FV Interface                                   */

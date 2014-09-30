@@ -36,7 +36,7 @@ while (<*/*.[ch]>) {
   %static_defined=();
   open(SRC,$fn);
   while (<SRC>) {
-    if (/\s*static\b[^(=]*\s([A-Z_][A-Za-z_0-9]*)\s*[(,;=]/) {
+    if (/\s*static\b[^(=]*\s([A-Za-z_][A-Za-z_0-9]*)\s*[(,;=]/) {
       $static_defined{$1}=1;
     }
   }
@@ -45,9 +45,11 @@ while (<*/*.[ch]>) {
   @statics=sort keys %static_defined;
   open(SRC,$fn);
   while (<SRC>) {
-    foreach $symbol (@statics) {
-      if (/\b$symbol\b/) {
-        $static_used{$symbol}++;
+    if (!/^\s*extern.*;/) {
+      foreach $symbol (@statics) {
+        if (/\b$symbol\b/ && (!/^\s*static.*$symbol\s*\(.*\)\s*;/)) {
+          $static_used{$symbol}++;
+        }
       }
     }
     foreach $extern (@questionable_externs) {

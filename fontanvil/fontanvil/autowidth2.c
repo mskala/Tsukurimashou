@@ -1,4 +1,4 @@
-/* $Id: autowidth2.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: autowidth2.c 3338 2014-09-30 18:25:16Z mskala $ */
 /* Copyright (C) 2009-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -216,105 +216,6 @@ static void aw2_figure_all_sidebearing(AW_Data * all) {
 	 SCCharChangedUpdate(me->sc, ly_none, true);
    }
    free(rsel);
-}
-
-static int ak2_figure_kern(AW_Glyph * g1, AW_Glyph * g2, AW_Data * all) {
-   int sep = aw2_bbox_separation(g1, g2, all);
-
-   sep += g2->bb.minx + g1->sc->width - g1->bb.maxx;
-   return (all->desired_separation - sep);
-}
-
-static int ak2_figure_touch(AW_Glyph * g1, AW_Glyph * g2, AW_Data * all) {
-   int j;
-
-   int imin_y, imax_y;
-
-   real smallest, tot;
-
-   imin_y = g2->imin_y > g1->imin_y ? g2->imin_y : g1->imin_y;
-   imax_y = g2->imax_y < g1->imax_y ? g2->imax_y : g1->imax_y;
-   if (imax_y < imin_y)		/* no overlap. ie grave and "a" */
-      return (-(g2->bb.minx + g1->sc->width - g1->bb.maxx));
-   smallest = 0x7fff;
-   for (j = imin_y; j < imax_y; ++j) {
-      tot = g2->left[j - g2->imin_y] - g1->right[j - g1->imin_y];
-      if (tot < smallest)
-	 smallest = tot;
-   }
-   if (smallest == 0x7fff)	/* Overlaps only in gaps, "i" and something between the base and the dot */
-      return (-(g2->bb.minx + g1->sc->width - g1->bb.maxx));
-
-   smallest += g2->bb.minx + g1->sc->width - g1->bb.maxx;
-   return (all->desired_separation - smallest);
-}
-
-static int ak2_figure_kernclass(int *class1, int *class2, AW_Data * all) {
-   int h, i;
-
-   real subtot, tot, cnt2;
-
-   tot = cnt2 = 0;
-   for (h = 0; class1[h] != -1; ++h) {
-      AW_Glyph *g1 = &all->glyphs[class1[h]];
-
-      for (i = 0; class2[i] != -1; ++i) {
-	 AW_Glyph *g2 = &all->glyphs[class2[i]];
-
-	 subtot = aw2_bbox_separation(g1, g2, all);
-	 tot += g2->bb.minx + g1->sc->width - g1->bb.maxx + subtot;
-	 ++cnt2;
-      }
-   }
-   if (cnt2 == 0)
-      return (0);
-
-   if (cnt2 != 0)
-      tot /= cnt2;
-   return (all->desired_separation - tot);
-}
-
-static int ak2_figure_touchclass(int *class1, int *class2, AW_Data * all) {
-   int h, i, j;
-
-   int imin_y, imax_y;
-
-   real smallest, smaller, tot;
-
-   smallest = 0x7fff;
-   for (h = 0; class1[h] != -1; ++h) {
-      AW_Glyph *g1 = &all->glyphs[class1[h]];
-
-      for (i = 0; class2[i] != -1; ++i) {
-	 AW_Glyph *g2 = &all->glyphs[class2[i]];
-
-	 imin_y = g2->imin_y > g1->imin_y ? g2->imin_y : g1->imin_y;
-	 imax_y = g2->imax_y < g1->imax_y ? g2->imax_y : g1->imax_y;
-	 if (imax_y < imin_y) {	/* no overlap. ie grave and "a" */
-	    if (smallest < -(g2->bb.minx + g1->sc->width - g1->bb.maxx))
-	       smallest = -(g2->bb.minx + g1->sc->width - g1->bb.maxx);
-	    continue;
-	 }
-	 smaller = 0x7fff;
-	 for (j = imin_y; j < imax_y; ++j) {
-	    tot = g2->left[j - g2->imin_y] - g1->right[j - g1->imin_y];
-	    if (tot < smaller)
-	       smaller = tot;
-	 }
-	 if (smaller == 0x7fff) {
-	    if (smallest < -(g2->bb.minx + g1->sc->width - g1->bb.maxx))
-	       smallest = -(g2->bb.minx + g1->sc->width - g1->bb.maxx);
-	    continue;		/* Overlaps only in gaps */
-	 }
-	 smaller += g2->bb.minx + g1->sc->width - g1->bb.maxx;
-	 if (smaller < smallest)
-	    smallest = smaller;
-      }
-   }
-   if (smallest == 0x7fff)
-      return (0);
-
-   return (all->desired_separation - smallest);
 }
 
 static double MonotonicFindY(Monotonic * m, double test, double old_t) {
@@ -542,14 +443,4 @@ void AutoWidth2(FontViewBase * fv, int separation, int min_side, int max_side,
       free(all.glyphs);
    }
    free(scripts);
-}
-
-static void kc2AddOffset(void *data, int left_index, int right_index,
-			 int offset) {
-   KernClass *kc = data;
-
-   if (kc->subtable->lookup->lookup_flags & pst_r2l) {
-      kc->offsets[right_index * kc->first_cnt + left_index] = offset;
-   } else
-      kc->offsets[left_index * kc->second_cnt + right_index] = offset;
 }

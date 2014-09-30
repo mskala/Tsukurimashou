@@ -1,4 +1,4 @@
-/* $Id: search.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: search.c 3337 2014-09-30 13:58:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1232,23 +1232,6 @@ static void DoReplaceFull(SplineChar * sc, SearchData * s) {
 void SVResetPaths(SearchData * sv) {
    SplineSet *spl;
 
-   if (sv->sc_srch.changed_since_autosave) {
-      sv->path = sv->sc_srch.layers[ly_fore].splines;
-      SplinePointListsFree(sv->revpath);
-      sv->revpath = SplinePointListCopy(sv->path);
-      for (spl = sv->revpath; spl != NULL; spl = spl->next)
-	 spl = SplineSetReverse(spl);
-      sv->sc_srch.changed_since_autosave = false;
-   }
-   if (sv->sc_rpl.changed_since_autosave) {
-      sv->replacepath = sv->sc_rpl.layers[ly_fore].splines;
-      SplinePointListsFree(sv->revreplace);
-      sv->revreplace = SplinePointListCopy(sv->replacepath);
-      for (spl = sv->revreplace; spl != NULL; spl = spl->next)
-	 spl = SplineSetReverse(spl);
-      sv->sc_rpl.changed_since_autosave = false;
-   }
-
    /* Only do a sub pattern search if we have a single path and it is open */
    /*  and there is either no replace pattern, or it is also a single open */
    /*  path */
@@ -1502,8 +1485,6 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
 	 memset(fv->selected, 0, fv->map->enccount);
 	 SDCopyToSC(checksc, &sv->sc_srch, ct_fullcopy);
 	 SDCopyToSC(checksc, &sv->sc_rpl, ct_reference);
-	 sv->sc_srch.changed_since_autosave =
-	    sv->sc_rpl.changed_since_autosave = true;
 	 SVResetPaths(sv);
 	 if (!_DoFindAll(sv) && selcnt == 1)
 	    ff_post_notice(_("Not Found"),
