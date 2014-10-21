@@ -216,7 +216,7 @@ gutils_libgutils_a_SOURCES = \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
   gutils/gimagewritexpm.c gutils/giohosts.c gutils/giomime.c \
   gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gutils.c \
-  gutils/gwwintl.c gutils/prefs.c gutils/prefs.h gutils/unicodelibinfo.c inc/unicodelibinfo.h \
+  gutils/gwwintl.c gutils/unicodelibinfo.c inc/unicodelibinfo.h \
   gutils/gioftpP.h
 gutils_libgutils_a_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   $(GLIB_CFLAGS)

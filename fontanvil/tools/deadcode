@@ -38,6 +38,7 @@ while (<*/*.[ch]>) {
   while (<SRC>) {
     if (/\s*static\b[^(=]*\s([A-Za-z_][A-Za-z_0-9]*)\s*[(,;=]/) {
       $static_defined{$1}=1;
+      $global_static_defined{$1}=1;
     }
   }
   close(SRC);
@@ -52,6 +53,7 @@ while (<*/*.[ch]>) {
         }
       }
     }
+    next if $fn=~/h$/;
     foreach $extern (@questionable_externs) {
       if ($extern_defined{$extern} eq $fn) {
         if (/\b$extern\b/) {
@@ -66,6 +68,22 @@ while (<*/*.[ch]>) {
       print "$fn defines static $symbol but does not use it\n";
     }
   }
+}
+
+@statics=sort keys %global_static_defined;
+while (<*/*.[ch]>) {
+  $fn=$_;
+  print "[$fn]\n";
+  open(SRC,$fn);
+  while (<SRC>) {
+    next unless (/extern.*;/);
+    foreach $extern (@statics) {
+      if (/extern[^(=]*\b$extern\b.*;/) {
+        print "static $extern referenced as extern in $fn\n";
+      }
+    }
+  }
+  close(SRC);
 }
 
 foreach $extern (@questionable_externs) {

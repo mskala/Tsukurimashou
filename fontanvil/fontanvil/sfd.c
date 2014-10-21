@@ -1,4 +1,4 @@
-/* $Id: sfd.c 3337 2014-09-30 13:58:49Z mskala $ */
+/* $Id: sfd.c 3339 2014-10-01 11:56:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -156,8 +156,6 @@ static void SFDDumpDHintList(FILE * sfd, char *key, DStemInfo * d);
 static StemInfo *SFDReadHints(FILE * sfd);
 
 static DStemInfo *SFDReadDHints(SplineFont * sf, FILE * sfd, int old);
-
-extern void ExtractHints(SplineChar * sc, void *hints, int docopy);
 
 extern void *UHintCopy(SplineChar * sc, int docopy);
 

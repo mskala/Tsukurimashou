@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3337 2014-09-30 13:58:49Z mskala $ */
+/* $Id: splinefont.h 3339 2014-10-01 11:56:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3380,7 +3380,6 @@ extern int SFIsSomethingBuildable(SplineFont *sf, SplineChar *sc, int layer,
 				  int onlyaccents);
 extern int SFIsRotatable(SplineFont *sf, SplineChar *sc, int layer);
 
-/* extern int SCMakeDotless(SplineFont *sf, SplineChar *dotless, int layer, int copybmp, int doit);*/
 extern void SCBuildComposit(SplineFont *sf, SplineChar *sc, int layer,
 			    BDFFont *bmp, int disp_only);
 extern int SCAppendAccent(SplineChar *sc, int layer, char *glyph_name,

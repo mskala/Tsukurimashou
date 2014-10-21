@@ -35,6 +35,7 @@
 
 static int generate_index=0,ignore_indices=0,report_statistics=0;
 static int preproc_sec=0,preproc_usec=0;
+static int disable_tree=0;
 uint64_t tree_checks=UINT64_C(0),tree_hits=UINT64_C(0);
 
 /* basic search and index generation */
@@ -129,7 +130,7 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 		  fputc('\n',stderr);
 	       }
 
-	    } else if (tree_match(match_pattern,to_match)) {
+	    } else if (disable_tree || tree_match(match_pattern,to_match)) {
 	       tree_hits++;
 	       for (i=0;((unsigned char)input_buffer[i])<=0x20;i++);
 	       if (fn_flag>=0)
@@ -399,7 +400,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 	       stack_ptr=0;
 	       tree_checks++;
 	    
-	       if (tree_match(match_pattern,to_match)) {
+	       if (disable_tree || tree_match(match_pattern,to_match)) {
 		  tree_hits++;
 		  if (fn_flag>=0)
 		    write_bracketed_string(hfn,colon,stdout);
@@ -438,6 +439,7 @@ static struct option long_opts[] = {
 #endif
    {"bitvec-debug",no_argument,NULL,'D'|128},
    {"disable-lambda",no_argument,NULL,'L'|128},
+   {"disable-tree-match",no_argument,NULL,'T'|128},
    {"statistics",no_argument,NULL,'s'|128},
    {"color",optional_argument,NULL,'C'},
    {"colour",optional_argument,NULL,'C'},
@@ -536,6 +538,9 @@ int main(int argc,char **argv) {
        case 'L'|128:
 	 disable_lambda=1;
 	 break;
+
+       case 'T'|128:
+	 disable_tree=1;
 
        case 's'|128:
 	 report_statistics=1;

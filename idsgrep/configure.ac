@@ -291,7 +291,7 @@ m4_foreach_w([cicheckpath],m4_expand([$srcdir $srcdir/.. $srcdir/../.. dnl
 $prefix/src /src /usr/src /usr/local/src dnl
 $HOME $HOME/src]),[
        AS_IF([test "$with_chise_ids" = "auto"],
-             [for cicheckdir in cicheckpath/chise-ids-*
+             [for cicheckdir in cicheckpath/chise-ids-* cicheckpath/chise-ids
 do
   AS_IF([test -r "$cicheckdir/Makefile"],[
 check_line=x`grep 'Makefile for CHISE IDS' "$cicheckdir/Makefile"`

@@ -258,6 +258,15 @@ Like
 .BR \-\^\-disable-bdd ", "
 this option is intended only for testing and debugging purposes.
 .TP
+.B \-\^\-disable-tree
+Disable the tree match.
+All otherwise-enabled filtering and preprocessing will still be performed,
+and trees will still be read and parsed, but the recursive matching test
+will be replaced with one that always returns true.
+Like
+.BR \-\^\-disable-bdd ", "
+this option is intended only for testing and debugging purposes.
+.TP
 .B \-\^\-statistics
 At the end of the run, write to standard output a line of statistical
 information about the work done.

@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3337 2014-09-30 13:58:49Z mskala $ */
+/* $Id: scripting.c 3367 2014-10-09 04:08:06Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -56,8 +56,6 @@
 
 int running_script = true;
 int use_utf8_in_script = true;
-
-extern int prefRevisionsToRetain;	/* sfd.c */
 
 static int verbose = -1;
 
@@ -10458,8 +10456,10 @@ static void RunScriptInterpreter(char *script_name,FILE *script_file,
       c.lineno=1;
 
       /* Set the jump environment for returning from the error reporter. */
-      while (setjmp(env)); /* SRSLY??? */
-      c.err_env=&env;
+      if (c.interactive) {
+	 while (setjmp(env)); /* SRSLY??? */
+	 c.err_env=&env;
+      }
 
       /* Parse and execute. */
       while (c.script && !c.error && !c.returned && !c.broken
