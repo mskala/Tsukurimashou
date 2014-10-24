@@ -412,7 +412,8 @@ void write_cooked_tree(NODE *ms,FILE *f) {
 	 if ((ms->functor->canonical!=NULL) &&
 	     (ms->arity==ms->functor->canonical->arity) &&
 	     ((output_recipe[OS_CANONICAL]&
-	       ((ms->functor->data[0]&0x80)?1:2))!=0))
+	       (((ms->functor->data[0]<'a') ||
+		 (ms->functor->data[0]>'z'))?1:2))!=0))
 	   mf=ms->functor->canonical;
 	 else
 	   mf=ms->functor;

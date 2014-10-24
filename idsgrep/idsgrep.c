@@ -576,6 +576,7 @@ int main(int argc,char **argv) {
 	  "      --disable-bdd         turn off BDD filtering\n"
 #endif
 	  "      --disable-lambda      turn off lambda filtering\n"
+	  "      --disable-tree-match  turn off final tree match\n"
 	  "      --bitvec-debug        verbose bit vector debugging"
 	                             " messages\n"
 	  "      --statistics          machine-readable statistics\n"

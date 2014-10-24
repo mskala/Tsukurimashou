@@ -1,4 +1,4 @@
-/* $Id: main.c 2923 2014-03-08 01:52:03Z mskala $ */
+/* $Id: main.c 3411 2014-10-23 14:02:01Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
  * Copyright (C) 2014  Matthew Skala
@@ -50,19 +50,20 @@ int main(int argc,char **argv) {
    int c;
    char *command=NULL;
    char **new_argv;
-   int show_version=0,show_help=0;
+   int show_version=0,show_help=0,is_interactive=1;
    
    /* init things that must be ready before command line handling */
    /* FIXME: are these really needed so early?  or at all? */
    FindProgDir(argv[0]);
    InitSimpleStuff();
-   
+
    /* loop on command-line options */
    while ((c=getopt_long_only(argc,argv,"+c:dhil:v",long_opts,NULL))!=-1) {
       switch (c) {
 
        case 'c':
 	 command=optarg;
+	 is_interactive=0;
 	 break;
 
        case 'd':
@@ -71,6 +72,7 @@ int main(int argc,char **argv) {
 
        case 'h':
 	 show_help=1;
+	 is_interactive=0;
 	 break;
 
        case 'i':
@@ -87,22 +89,43 @@ int main(int argc,char **argv) {
 
        case 'v':
 	 show_version=1;
+	 is_interactive=0;
 	 break;
 
        default:
 	 break;
       }
    }
-   
+
+   if (optind<argc)
+     is_interactive=0;
+
    /* deal with version and help */
-   if (show_version) {
-      puts("Version message.");
-      /* FIXME */
+   if (show_version || is_interactive) {
+      puts(PACKAGE_STRING " (" FONTANVIL_VERSIONDATE ") <"
+	      PACKAGE_URL ">\n\n"
+	   "Copyright (C) 2000-2014  Georgre Williams\n"
+	   "Copyright (C) 2014       Matthew Skala\n"
+	   "License GPLv3+: GNU GPL version 3 "
+	      "<http://gnu.org/licenses/gpl-3.0.html>\n"
+	   "Some parts of this software are also available "
+	      "under other licenses.\n"
+	   "This is free software: you are free to change and redistribute "
+	   "it.\nThere is NO WARRANTY, to the extent permitted by law.");
+      if (is_interactive)
+	puts("\nUse \"Quit()\" or end-of-file to exit the interpreter.");
    }
    
    if (show_help) {
-      puts("Help message.");
-      /* FIXME */
+      puts("Usage: " PACKAGE_TARNAME " [OPTION]... [SCRIPT] [ARGUMENT]...\n\n"
+	   "Options:\n"
+	   "  -c, --command <cmd>    execute scripting command\n"
+	   "  -d, --dry              syntax check with minimal execution\n" 
+	   "  -l, --lang ff          specify language (only ff is valid)\n"
+	   "  -i, --nosplash         ignored for compatibility\n"
+	   "      --quiet, --script  ignored for compatibility\n"
+	   "  -h, --help, --usage    display this help\n"
+	   "  -v, --version          display version and copyright");
    }
    
    if (show_version || show_help)

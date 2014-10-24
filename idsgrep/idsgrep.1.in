@@ -258,7 +258,7 @@ Like
 .BR \-\^\-disable-bdd ", "
 this option is intended only for testing and debugging purposes.
 .TP
-.B \-\^\-disable-tree
+.B \-\^\-disable-tree-match
 Disable the tree match.
 All otherwise-enabled filtering and preprocessing will still be performed,
 and trees will still be read and parsed, but the recursive matching test
@@ -266,6 +266,11 @@ will be replaced with one that always returns true.
 Like
 .BR \-\^\-disable-bdd ", "
 this option is intended only for testing and debugging purposes.
+Note that with this option in effect
+.I IDSgrep may print incorrect results,
+even when operating correctly with no bugs, because the filtering
+layers by design may match some trees that do not match the query string
+entered on the command line.
 .TP
 .B \-\^\-statistics
 At the end of the run, write to standard output a line of statistical

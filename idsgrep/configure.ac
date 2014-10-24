@@ -196,7 +196,7 @@ AC_ARG_VAR([KLEKNEV],[Kleknev])
 AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
-AC_ARG_VAR([XELATEX],[XeLaTeX])
+AC_ARG_VAR([XELATEX],[XeLaTeX],[no])
 AC_PATH_PROG([XELATEX],[xelatex])
 #
 ############################################################################
@@ -254,6 +254,18 @@ TSU_C_GCC_BUILTIN_BSWAP
 #
 AX_FUNC_GETOPT_LONG
 AC_CHECK_FUNCS_ONCE([memmove memset strchr])
+#
+AC_SUBST([set_sans_font])
+AS_IF([test "x$XELATEX" = "xno"],[],
+  [TSU_CHECK_XELATEX_FONT([Helvetica])
+   AS_IF([test "x$xelatex_font_found" = "xyes"],
+     [set_sans_font='\setsansfont{Helvetica}'],
+     [TSU_CHECK_XELATEX_FONT([Nimbus Sans L])
+      AS_IF([test "x$xelatex_font_found" = "xyes"],
+        [set_sans_font='\setsansfont{Nimbus Sans L}'],
+        [set_sans_font='%'])
+   ])
+])
 #
 ############################################################################
 #
@@ -380,7 +392,7 @@ AM_CONDITIONAL([COND_TSUKU_BUILD], [test '!' "$with_tsuku_build" = no])
 AC_SUBST([with_tsuku_build])
 #
 AC_ARG_ENABLE([cjkvi-style],
-  [AS_HELP_STRING([--enable-cjkvi-style=[[gtjkvxha]]],
+  [AS_HELP_STRING([--enable-cjkvi-style=[[gtjkvxhau]]],
     [which CJKVI dictionaries to build [j]])],
     [],
     [enable_cjkvi_style=j])
