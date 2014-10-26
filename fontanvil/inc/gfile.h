@@ -1,4 +1,4 @@
-/* $Id: gfile.h 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: gfile.h 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -106,8 +106,6 @@ extern long GFileGetSize(char *name);
 extern char *GFileReadAll(char *name);
 
 extern int GFileWriteAll(char *filepath, char *data);
-
-extern char *getGResourceProgramDir(void);
 
 extern void FindProgDir(char *prog);
 

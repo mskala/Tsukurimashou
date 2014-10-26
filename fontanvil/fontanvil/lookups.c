@@ -1,4 +1,4 @@
-/* $Id: lookups.c 2946 2014-03-11 19:55:39Z mskala $ */
+/* $Id: lookups.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -4521,65 +4521,6 @@ static void AddOTLToSllk(struct sllk *sllk, OTLookup * otl,
    /* reverse contextual chaining is weird and I shall ignore it. Adobe does too */
 }
 
-static char *ComponentsFromPSTs(PST ** psts, int pcnt) {
-   char **names = NULL;
-
-   int ncnt = 0, nmax = 0;
-
-   int i, j, len;
-
-   char *ret;
-
-   /* First find all the names */
-   for (i = 0; i < pcnt; ++i) {
-      char *nlist = psts[i]->u.alt.components;
-
-      char *start, *pt, ch;
-
-      for (start = nlist;;) {
-	 while (*start == ' ')
-	    ++start;
-	 if (*start == '\0')
-	    break;
-	 for (pt = start; *pt != ' ' && *pt != '\0'; ++pt);
-	 ch = *pt;
-	 *pt = '\0';
-	 for (j = 0; j < ncnt; ++j)
-	    if (strcmp(start, names[j]) == 0)
-	       break;
-	 if (j == ncnt) {
-	    if (ncnt >= nmax)
-	       names = realloc(names, (nmax += 10) * sizeof(char *));
-	    names[ncnt++] = copy(start);
-	 }
-	 *pt = ch;
-	 start = pt;
-      }
-   }
-
-   len = 0;
-   for (i = 0; i < ncnt; ++i)
-      len += strlen(names[i]) + 1;
-   if (len == 0)
-      len = 1;
-   ret = malloc(len);
-   len = 0;
-   for (i = 0; i < ncnt; ++i) {
-      strcpy(ret + len, names[i]);
-      len += strlen(names[i]);
-      ret[len++] = ' ';
-   }
-   if (len == 0)
-      *ret = '\0';
-   else
-      ret[len - 1] = '\0';
-
-   for (i = 0; i < ncnt; ++i)
-      free(names[i]);
-   free(names);
-   return (ret);
-}
-
 int IsAnchorClassUsed(SplineChar * sc, AnchorClass * an) {
    AnchorPoint *ap;
 
@@ -4700,17 +4641,6 @@ int KCFindName(char *name, char **classnames, int cnt, int allow_class0) {
    /* If class 0 is specified, then we didn't find anything. If class 0 is */
    /*  unspecified then it means "anything" so we found something */
    return (classnames[0] != NULL || !allow_class0 ? -1 : 0);
-}
-
-static char *my_asprintf(const char *format, ...) {
-   va_list ap;
-
-   char buffer[400];
-
-   va_start(ap, format);
-   vsnprintf(buffer, sizeof(buffer), format, ap);
-   va_end(ap);
-   return (copy(buffer));
 }
 
 typedef struct lookuplist {

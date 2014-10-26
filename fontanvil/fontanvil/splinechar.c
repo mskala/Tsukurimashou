@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 3337 2014-09-30 13:58:49Z mskala $ */
+/* $Id: splinechar.c 3414 2014-10-25 16:23:29Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1865,58 +1865,6 @@ void SCTickValidationState(SplineChar * sc, int layer) {
       else
 	 SCTickValidationState(dlist->sc, layer);
    }
-}
-
-static SplinePoint *CirclePoint(int which) {
-   SplinePoint *sp;
-
-   static struct shapedescrip {
-      BasePoint me, prevcp, nextcp;
-      int nocp;
-   } ellipse3[] = {
-      { {
-      1, 0}, {
-      1, 0.552}, {
-      1, -.552}, false}, { {
-      0, -1}, {
-      0.552, -1}, {
-      -0.552, -1}, false}, { {
-      -1, 0}, {
-      -1, -0.552}, {
-      -1, .552}, false}, { {
-      0, 1}, {
-      -0.552, 1}, {
-      0.552, 1}, false}, { {
-      0, 0}, {
-      0, 0}, {
-      0, 0}, 0}
-   };
-
-   sp = SplinePointCreate(ellipse3[which].me.x, ellipse3[which].me.y);
-   sp->nonextcp = sp->noprevcp = false;
-   sp->nextcp = ellipse3[which].nextcp;
-   sp->prevcp = ellipse3[which].prevcp;
-   return (sp);
-}
-
-static SplineSet *UnitCircle(int clockwise) {
-   SplineSet *spl;
-
-   SplinePoint *sps[5];
-
-   int i;
-
-   spl = chunkalloc(sizeof(SplineSet));
-   for (i = 0; i < 4; ++i)
-      sps[i] = CirclePoint(i & 3);
-   sps[4] = sps[0];
-   for (i = 0; i < 4; ++i)
-      SplineMake3(sps[i], sps[i + 1]);
-   spl->first = sps[0];
-   spl->last = sps[4];
-   if (!clockwise)
-      SplineSetReverse(spl);
-   return (spl);
 }
 
 void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {

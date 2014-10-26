@@ -1,4 +1,4 @@
-/* $Id: http.c 3338 2014-09-30 18:25:16Z mskala $ */
+/* $Id: http.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -306,57 +306,7 @@ static int makeConnection(struct sockaddr_in *addr) {
    return (soc);
 }
 
-static char *UrlEncode(char *to, char *source) {
-   int nibble;
-
-   while (*source) {
-      if (isalnum(*source) || *source == '$' || *source == '_')
-	 *to++ = *source;
-      else if (*source == ' ')
-	 *to++ = '+';
-      else {
-	 *to++ = '%';
-	 nibble = (*source >> 4) & 0xf;
-	 if (nibble < 10)
-	    *to++ = '0' + nibble;
-	 else
-	    *to++ = 'A' - 10 + nibble;
-	 nibble = *source & 0xf;
-	 if (nibble < 10)
-	    *to++ = '0' + nibble;
-	 else
-	    *to++ = 'A' - 10 + nibble;
-      }
-      ++source;
-   }
-   *to = '\0';
-   return (to);
-}
-
 static void ChangeLine2_8(char *str) {
-}
-
-static char *ImageMimeType(char *ext) {
-   if (ext == NULL)
-      return ("application/octet-stream");
-
-   if (strcasecmp(ext, ".txt") == 0)
-      return ("text/plain");
-   if (strcasecmp(ext, ".html") == 0 || strcasecmp(ext, ".htm") == 0)
-      return ("text/html");
-
-   if (strcasecmp(ext, ".png") == 0)
-      return ("image/png");
-   if (strcasecmp(ext, ".jpeg") == 0 || strcasecmp(ext, ".jpg") == 0)
-      return ("image/jpeg");
-   if (strcasecmp(ext, ".gif") == 0)
-      return ("image/gif");
-   if (strcasecmp(ext, ".bmp") == 0)
-      return ("image/bmp");
-   if (strcasecmp(ext, ".pdf") == 0)
-      return ("application/pdf");
-
-   return ("application/octet-stream");
 }
 
 static char *decomposeURL(const char *url, char **host, int *port,

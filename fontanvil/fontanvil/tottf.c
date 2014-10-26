@@ -1,4 +1,4 @@
-/* $Id: tottf.c 3338 2014-09-30 18:25:16Z mskala $ */
+/* $Id: tottf.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -5813,16 +5813,6 @@ static void initATTables(struct alltabs *at, SplineFont * sf,
    dumpnames(at, sf, format);	/* Must be after dumpmorx which may create extra names */
    /* GPOS 'size' can also create names (so must be after that too) */
    redoos2(at);
-}
-
-static struct taboff *findtabindir(struct tabdir *td, uint32 tag) {
-   int i;
-
-   for (i = 0; i < td->numtab; ++i)
-      if (td->tabs[i].tag == tag)
-	 return (&td->tabs[i]);
-
-   return (NULL);
 }
 
 static void buildtablestructures(struct alltabs *at, SplineFont * sf,

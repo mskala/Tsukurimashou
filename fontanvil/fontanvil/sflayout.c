@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 3279 2014-09-08 15:58:27Z mskala $ */
+/* $Id: sflayout.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -939,27 +939,6 @@ FontData *LI_FindFontData(LayoutInfo * li, SplineFont * sf,
    ret->next = li->generated;
    li->generated = ret;
    return (ret);
-}
-
-static FontData *FontDataCopyNoBDF(LayoutInfo * print_li, FontData * source) {
-   FontData *head = NULL, *last = NULL, *cur;
-
-   while (source) {
-      cur = calloc(1, sizeof(FontData));
-      cur->sf = source->sf;
-      cur->fonttype = source->fonttype;
-      cur->pointsize = source->pointsize;
-      cur->layer = source->layer;
-
-      cur->sfmap = SFMapOfSF(print_li, source->sf);
-      if (head == NULL)
-	 head = cur;
-      else
-	 last->next = cur;
-      last = cur;
-      source = source->next;
-   }
-   return (head);
 }
 
 void LayoutInfoInitLangSys(LayoutInfo * li, int end, uint32 script,

@@ -1,4 +1,4 @@
-/* $Id: main.c 3411 2014-10-23 14:02:01Z mskala $ */
+/* $Id: main.c 3412 2014-10-24 20:34:43Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
  * Copyright (C) 2014  Matthew Skala
@@ -54,7 +54,6 @@ int main(int argc,char **argv) {
    
    /* init things that must be ready before command line handling */
    /* FIXME: are these really needed so early?  or at all? */
-   FindProgDir(argv[0]);
    InitSimpleStuff();
 
    /* loop on command-line options */

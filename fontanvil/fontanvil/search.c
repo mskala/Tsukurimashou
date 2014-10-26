@@ -1,4 +1,4 @@
-/* $Id: search.c 3337 2014-09-30 13:58:49Z mskala $ */
+/* $Id: search.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1502,74 +1502,4 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
    free(selected);
    memcpy(fv->selected, changed, fv->map->enccount);
    free(changed);
-}
-
-/* ************************************************************************** */
-/* *************************** Correct References *************************** */
-/* ************************************************************************** */
-
-/* In TrueType a glyph can either be all contours or all references. FontAnvil*/
-/*  supports mixed contours and references. This section goes through the font*/
-/*  looking for such mixed glyphs, if it finds one it will create a new glyph */
-/*  move the contours into it, and make a reference to the new glyph in the   */
-/*  original.  This is designed to reduce the size of the TT output file      */
-
-/* Similar problem... The transformation matrix of a truetype reference has   */
-/*  certain restrictions placed on it (all entries must be less than 2 in abs */
-/*  value, etc.  If we have a glyph with a ref with a bad transform, then     */
-/*  go through a similar process to the above */
-
-static SplineChar *RC_MakeNewGlyph(FontViewBase * fv, SplineChar * base,
-				   int index, char *reason,
-				   char *morereason) {
-   char *namebuf;
-
-   SplineFont *sf = fv->sf;
-
-   int enc;
-
-   SplineChar *ret;
-
-   namebuf = malloc(strlen(base->name) + 20);
-   for (;;) {
-      sprintf(namebuf, "%s.ref%d", base->name, index++);
-      if (SFGetChar(sf, -1, namebuf) == NULL)
-	 break;
-   }
-
-   enc = SFFindSlot(sf, fv->map, -1, namebuf);
-   if (enc == -1)
-      enc = fv->map->enccount;
-   ret = SFMakeChar(sf, fv->map, enc);
-   free(ret->name);
-   ret->name = namebuf;
-   SFHashGlyph(sf, ret);
-
-   ret->comment =
-      malloc(strlen(reason) + strlen(ret->name) + strlen(morereason) + 2);
-   sprintf(ret->comment, reason, base->name, morereason);
-   ret->color = 0xff8080;
-   return (ret);
-}
-
-static struct splinecharlist *DListRemove(struct splinecharlist *dependents,
-					  SplineChar * this_sc) {
-   struct splinecharlist *dlist, *pd;
-
-   if (dependents == NULL)
-      return (NULL);
-   else if (dependents->sc == this_sc) {
-      dlist = dependents->next;
-      chunkfree(dependents, sizeof(*dependents));
-      return (dlist);
-   } else {
-      for (pd = dependents, dlist = pd->next;
-	   dlist != NULL && dlist->sc != this_sc;
-	   pd = dlist, dlist = pd->next);
-      if (dlist != NULL) {
-	 pd->next = dlist->next;
-	 chunkfree(dlist, sizeof(*dlist));
-      }
-      return (dependents);
-   }
 }

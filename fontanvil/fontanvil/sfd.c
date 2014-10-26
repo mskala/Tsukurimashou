@@ -1,4 +1,4 @@
-/* $Id: sfd.c 3339 2014-10-01 11:56:28Z mskala $ */
+/* $Id: sfd.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -157,23 +157,12 @@ static StemInfo *SFDReadHints(FILE * sfd);
 
 static DStemInfo *SFDReadDHints(SplineFont * sf, FILE * sfd, int old);
 
-extern void *UHintCopy(SplineChar * sc, int docopy);
-
 static void utf7_encode(FILE * sfd, long ch) {
 
    putc(base64[(ch >> 18) & 0x3f], sfd);
    putc(base64[(ch >> 12) & 0x3f], sfd);
    putc(base64[(ch >> 6) & 0x3f], sfd);
    putc(base64[ch & 0x3f], sfd);
-}
-
-static char *base64_encode(char *ostr, long ch) {
-
-   *ostr++ = base64[(ch >> 18) & 0x3f];
-   *ostr++ = base64[(ch >> 12) & 0x3f];
-   *ostr++ = base64[(ch >> 6) & 0x3f];
-   *ostr++ = base64[(ch) & 0x3f];
-   return (ostr);
 }
 
 static void SFDDumpUTF7Str(FILE * sfd, const char *_str) {
@@ -1771,22 +1760,6 @@ static void SFDFpstClassNamesOut(FILE * sfd, int class_cnt, char **classnames,
       }
       putc('\n', sfd);
    }
-}
-
-/**
- * Get the path name of /tmp or equivalent on the current system.
- * The return value should not be freed by the caller
- */
-static char *getSlashTempName() {
-   char *t = 0;
-
-   if ((t = getenv("TMPDIR"))) {
-      return t;
-   }
-#ifndef P_tmpdir
-#   define P_tmpdir	"/tmp"
-#endif
-   return P_tmpdir;
 }
 
 static int SFD_DumpSplineFontMetadata(FILE * sfd, SplineFont * sf) {

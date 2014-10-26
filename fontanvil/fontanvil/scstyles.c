@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3324 2014-09-27 20:21:49Z mskala $ */
+/* $Id: scstyles.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3288,96 +3288,6 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
    if (achar != NULL)
       FVDisplayGID(fv, achar->orig_pos);
    free(genchange->g.maps);
-}
-
-/* ************************************************************************** */
-/* ************************** Subscript/Superscript ************************* */
-/* ************************************************************************** */
-
-static struct lookup_subtable *MakeSupSupLookup(SplineFont * sf,
-						uint32 feature_tag,
-						uint32 * scripts, int scnt) {
-   OTLookup *test, *found;
-
-   FeatureScriptLangList *fl;
-
-   struct scriptlanglist *sl;
-
-   int i;
-
-   struct lookup_subtable *sub;
-
-   if (sf->cidmaster)
-      sf = sf->cidmaster;
-   found = NULL;
-   for (i = 0; i < scnt && found == NULL; ++i) {
-      for (test = sf->gsub_lookups; test != NULL; test = test->next)
-	 if (test->lookup_type == gsub_single) {
-	    if (FeatureScriptTagInFeatureScriptList
-		(feature_tag, scripts[i], test->features)) {
-	       found = test;
-	       break;
-	    }
-	 }
-   }
-
-   if (found == NULL) {
-      sub = SFSubTableFindOrMake(sf, feature_tag, scripts[0], gsub_single);
-      found = sub->lookup;
-   }
-   fl = FindFeatureTagInFeatureScriptList(feature_tag, found->features);
-   for (i = 0; i < scnt; ++i) {
-      for (sl = fl->scripts; sl != NULL && sl->script != scripts[i];
-	   sl = sl->next);
-      if (sl == NULL) {
-	 sl = chunkalloc(sizeof(struct scriptlanglist));
-	 sl->script = scripts[i];
-	 sl->lang_cnt = 1;
-	 sl->langs[0] = DEFAULT_LANG;
-	 sl->next = fl->scripts;
-	 fl->scripts = sl;
-      }
-   }
-
-   return (found->subtables);
-}
-
-static SplineChar *MakeSubSupGlyphSlot(SplineFont * sf, SplineChar * sc,
-				       struct lookup_subtable *feature,
-				       FontViewBase * fv,
-				       struct genericchange *genchange) {
-   SplineChar *sc_sc;
-
-   char buffer[300];
-
-   PST *pst;
-
-   int enc;
-
-   snprintf(buffer, sizeof(buffer), "%s.%s", sc->name,
-	    genchange->glyph_extension);
-   sc_sc = SFGetChar(sf, -1, buffer);
-   if (sc_sc != NULL) {
-      SCPreserveLayer(sc_sc, fv->active_layer, false);
-      SCClearLayer(sc_sc, fv->active_layer);
-      return (sc_sc);
-   }
-   enc = SFFindSlot(sf, fv->map, -1, buffer);
-   if (enc == -1)
-      enc = fv->map->enccount;
-   sc_sc = SFMakeChar(sf, fv->map, enc);
-   free(sc_sc->name);
-   sc_sc->name = copy(buffer);
-   SFHashGlyph(sf, sc_sc);
-
-   pst = chunkalloc(sizeof(PST));
-   pst->next = sc->possub;
-   sc->possub = pst;
-   pst->subtable = feature;
-   pst->type = pst_substitution;
-   pst->u.subs.variant = copy(buffer);
-
-   return (sc_sc);
 }
 
 /* ************************************************************************** */

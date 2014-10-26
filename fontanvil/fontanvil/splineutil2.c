@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 3336 2014-09-29 09:47:43Z mskala $ */
+/* $Id: splineutil2.c 3414 2014-10-25 16:23:29Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1348,68 +1348,6 @@ bigreal SplineLength(Spline *spline) {
 	lastx = curx; lasty = cury;
     }
    return len;
-}
-
-Spline *PathFindDistance(SplineSet *path,bigreal d,bigreal *_t) {
-    Spline *s, *first=NULL, *last=NULL;
-    bigreal len=0, diff;
-    bigreal curx, cury;
-    bigreal t;
-
-    for (s=path->first->next; s!=NULL && s!=first; s=s->to->next) {
-	bigreal lastx = 0, lasty = 0;
-	for (t=1.0/128; t<=1.0001 ; t+=1.0/128) {
-	    curx = ((s->splines[0].a*t+s->splines[0].b)*t+s->splines[0].c)*t;
-	    cury = ((s->splines[1].a*t+s->splines[1].b)*t+s->splines[1].c)*t;
-	    diff = sqrt((curx-lastx)*(curx-lastx) + (cury-lasty)*(cury-lasty));
-	    lastx = curx; lasty = cury;
-	    if (len+diff>=d) {
-		d -= len;
-		*_t = t - (diff-d)/diff * (1.0/128);
-		if (*_t<0) *_t=0;
-		if (*_t>1) *_t = 1;
-	       return s;
-	    }
-	    len += diff;
-	}
-	if (first==NULL)
-	    first = s;
-	last = s;
-    }
-    *_t = 1;
-   return last;
-}
-
-static Spline *SplineBindToPath(Spline *s,SplineSet *path) {
-    /* OK. The endpoints and the control points have already been moved. */
-    /*  But the transformation is potentially non-linear, so figure some */
-    /*  intermediate values, and then approximate a new spline based on them */
-    TPoint mids[3];
-    bigreal t, pt,len;
-    int i;
-    BasePoint spos, pos, slope;
-    Spline *ps, *ret;
-
-    for (i=0, t=.25; i<3 ; t += .25, ++i) {
-	spos.x = ((s->splines[0].a*t + s->splines[0].b)*t+s->splines[0].c)*t+s->splines[0].d;
-	spos.y = ((s->splines[1].a*t + s->splines[1].b)*t+s->splines[1].c)*t+s->splines[1].d;
-	ps = PathFindDistance(path,spos.x,&pt);
-	pos.x = ((ps->splines[0].a*pt + ps->splines[0].b)*pt+ps->splines[0].c)*pt+ps->splines[0].d;
-	pos.y = ((ps->splines[1].a*pt + ps->splines[1].b)*pt+ps->splines[1].c)*pt+ps->splines[1].d;
-	slope.x = (3*ps->splines[0].a*pt + 2*ps->splines[0].b)*pt+ps->splines[0].c;
-	slope.y = (3*ps->splines[1].a*pt + 2*ps->splines[1].b)*pt+ps->splines[1].c;
-	len = sqrt(slope.x*slope.x + slope.y*slope.y);
-	if (len!=0) {
-	    slope.x /= len;
-	    slope.y /= len;
-	}
-	mids[i].t = t;
-	mids[i].x = pos.x - spos.y*slope.y;
-	mids[i].y = pos.y + spos.y*slope.x;
-    }
-    ret = ApproximateSplineFromPointsSlopes(s->from,s->to,mids,i,false);
-    SplineFree(s);
-   return ret;
 }
 
 static TPoint *SplinesFigureTPsBetween(SplinePoint *from, SplinePoint *to,
