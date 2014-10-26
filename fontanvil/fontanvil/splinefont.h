@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3339 2014-10-01 11:56:28Z mskala $ */
+/* $Id: splinefont.h 3423 2014-10-26 18:51:07Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,17 @@
 
 # include <basics.h>
 # include "configure-fontanvil.h"
-# ifdef HAVE_ICONV_H
-#  include <iconv.h>
+# include <iconv.h>
 /* libiconv.h defines iconv as taking a const pointer for inbuf.
  * iconv doesn't.  OH, JOY!  A new version of libiconv does not use
  * the const! Even better, the man page says it does */
-#  ifdef _LIBICONV_VERSION
-#   if _LIBICONV_VERSION >= 0x10B
-#    define ICONV_CONST
-#   else
-#    define ICONV_CONST	const
-#   endif
-#  else
+# ifdef _LIBICONV_VERSION
+#  if _LIBICONV_VERSION >= 0x10B
 #   define ICONV_CONST
+#  else
+#   define ICONV_CONST	const
 #  endif
 # else
-#  include <gwwiconv.h>
 #  define ICONV_CONST
 # endif
 

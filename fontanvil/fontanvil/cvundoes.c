@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 3414 2014-10-25 16:23:29Z mskala $ */
+/* $Id: cvundoes.c 3423 2014-10-26 18:51:07Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -39,16 +39,11 @@
 #endif
 /* #include "collabclient.h" */
 
-extern char *coord_sep;
-
 int onlycopydisplayed = 0;
-
 int copymetadata = 0;
-
 int copyttfinstr = 0;
 
 static void *UHintCopy(SplineChar * sc, int docopy);
-
 static void ExtractHints(SplineChar * sc, void *hints, int docopy);
 
 /* ********************************* Undoes ********************************* */

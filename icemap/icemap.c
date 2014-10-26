@@ -19,55 +19,12 @@
  * mskala@ansuz.sooke.bc.ca
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "icemap.h"
 
 /**********************************************************************/
 
-static NODE *free_nodes=NULL;
-
-NODE *node_new(void) {
-   NODE *rval;
-   
-   if (free_nodes!=NULL) {
-      rval=free_nodes;
-      free_nodes=rval->next;
-   } else
-     rval=(NODE *)malloc(sizeof(NODE));
-
-   rval->next=NULL;
-   rval->refs=1;
-   rval->cp=NULL;
-   return rval;
-}
-
-void node_delete(NODE *n) {
-   n->refs--;
-   if (n->refs<=0) {
-      if (n->cp!=NULL) {
-	 free(n->cp);
-	 n->cp=NULL;
-      }
-      n->next=free_nodes;
-      free_nodes=n;
-   }
-}
-
-/**********************************************************************/
-
-void handle_opening_brace(void) {
-}
-
-void handle_closing_brace(void) {
-}
-
-/**********************************************************************/
-
 int main(int argc,char **argv) {
-   handle_opening_brace();
    parse();
-   handle_closing_brace();
    return 0;
 }
+

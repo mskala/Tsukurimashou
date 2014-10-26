@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3367 2014-10-09 04:08:06Z mskala $ */
+/* $Id: scripting.c 3423 2014-10-26 18:51:07Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -8010,15 +8010,8 @@ if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_unicode)
 }
 
 static void bUnicodeNamesListVersion(Context * c) {
-/* If the library is available, then return the Nameslist Version */
-   char *temp;
-
-   if ((temp = unicode_library_version()) == NULL) {
-      temp = malloc(1 * sizeof(char));
-      *temp = '\0';
-   }
-   c->return_val.type = v_str;
-   c->return_val.u.sval = temp;
+   c->return_val.type=v_str;
+   c->return_val.u.sval=strdup(PACKAGE_STRING " (" FONTANVIL_VERSIONDATE ")");
 }
 
 static void bUnlinkReference(Context * c) {

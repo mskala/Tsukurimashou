@@ -129,7 +129,7 @@ noinst_HEADERS = \
   inc/basics.h inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
   inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
   inc/gimage.h inc/gio.h \
-  inc/gresource.h inc/gwidget.h inc/gwwiconv.h inc/intl.h inc/ustring.h \
+  inc/gresource.h inc/gwidget.h inc/intl.h inc/ustring.h \
   inc/utype.h \
   fontanvil/sftextfieldP.h \
   fontanvil/configure-fontanvil.h fontanvil/views.h fontanvil/is_LIGATURE.h \
@@ -205,7 +205,7 @@ Unicode_libgunicode_a_SOURCES = \
   Unicode/charset/MacSymbol.c Unicode/charset/win.c \
   Unicode/charset/ZapfDingbats.c Unicode/ArabicForms.c Unicode/char.c \
   Unicode/memory.c Unicode/ucharmap.c Unicode/unialt.c Unicode/ustring.c \
-  Unicode/utype.c Unicode/gwwiconv.c Unicode/combiners.h
+  Unicode/utype.c Unicode/combiners.h
 
 gutils_libgutils_a_SOURCES = \
   gutils/fsys.c gutils/gimage.c \

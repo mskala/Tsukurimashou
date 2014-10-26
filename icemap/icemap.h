@@ -19,6 +19,8 @@
  * mskala@ansuz.sooke.bc.ca
  */
 
+#include <stdio.h>
+
 /**********************************************************************/
 
 /* nodes.c */
@@ -48,16 +50,46 @@ void node_delete(NODE *n);
 
 /**********************************************************************/
 
-/* where? */
+/* parser.c */
 
-void handle_opening_brace(void);
-void handle_closing_brace(void);
+typedef struct _PARSER_STATE {
+   NODE *file_stack;
+   int ignore_semicolon;
+   NODE *first_token,*last_token;
+} PARSER_STATE;
+
+void parse_error(PARSER_STATE *ps,char *message,...);
+NODE *get_token(PARSER_STATE *ps);
+void complete_int_range(PARSER_STATE *ps,NODE *start_tok);
+
+void parse(void);
 
 /**********************************************************************/
 
-/* parser.c */
+/* context.c */
 
-struct _PARSER_STATE;
+typedef enum _DUPE_PRIORITY {
+   dp_error,dp_first,dp_last,dp_min,dp_max
+} DUPE_PRIORITY;
 
-void parse_error(struct _PARSER_STATE *ps,char *message,...);
-void parse(void);
+typedef struct _CONTEXT {
+   struct _CONTEXT *parent;
+   char *id;
+   NODE **arrows;
+   int num_arrows,max_arrows;
+   DUPE_PRIORITY dupe_priority;
+   char *skip_regex,*parse_regex;
+} CONTEXT;
+
+extern CONTEXT *context_stack;
+
+void handle_opening_brace(PARSER_STATE *ps);
+void handle_closing_brace(PARSER_STATE *ps);
+
+/**********************************************************************/
+
+/* arrows.c */
+
+void raw_add_arrow(PARSER_STATE *ps,NODE *k,NODE *v);
+void add_one_arrow(PARSER_STATE *ps);
+void add_many_arrows(PARSER_STATE *ps);

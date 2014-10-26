@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: unicodelibinfo.c 3423 2014-10-26 18:51:07Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,6 @@
 #include "../fontanvil/ffglib.h"
 #include <glib/gprintf.h>
 
-
 #ifndef _NO_LIBUNINAMESLIST
 #   include <uninameslist.h>
 #else
@@ -40,14 +39,13 @@ struct unicode_block {
    const char *name;
 };
 #endif
-const struct unicode_nameannot *const *const *_UnicodeNameAnnot = NULL;	/* deprecated */
 
+const struct unicode_nameannot *const *const *_UnicodeNameAnnot = NULL;	/* deprecated */
 const struct unicode_block *_UnicodeBlock = NULL;
 
 #ifndef _NO_LIBUNICODENAMES
 #   include <libunicodenames.h>
 uninm_names_db names_db;	/* Unicode character names and annotations database */
-
 uninm_blocks_db blocks_db;
 #endif
 
@@ -359,26 +357,5 @@ char *unicode_block_name(int32 block_i) {
 #   endif
 
    return (name_data);
-#endif
-}
-
-char *unicode_library_version(void) {
-/* Return the unicode version for this library. Sometimes users still use */
-/* older libuninameslist or libunincodenames libraries because they don't */
-/* realize that these need to be updated to keep current too but not made */
-/* at same time that FontAnvil is released (release dates not in sync).   */
-
-#if !(_NO_LIBUNINAMESLIST) && _LIBUNINAMESLIST_FUN
-   /* libuninameslist-0.3.20130501-1 and later have a "version" function */
-   char *version_str;
-
-   version_str = copy(uniNamesList_NamesListVersion());
-
-   return (version_str);
-#else
-   /* Libunicodenames and older versions of libuninames don't have a ver */
-   /* function so we need to either test various annotations to find out */
-   /* what version we have, or we keep it simple and just return nothing */
-   return (NULL);
 #endif
 }

@@ -164,6 +164,13 @@ AM_COND_IF([COND_PARASITE],
 #
 # Checks for libraries.
 #
+PKG_CHECK_MODULES([PCRE],[libpcre],[
+  have_pcre=yes
+  AC_DEFINE([HAVE_PCRE],[1],
+    [Define to 1 if Perl Compatible Regular Expressions library is available])
+  ],[
+  have_pcre=no])
+AM_CONDITIONAL([COND_PCRE],[test '!' "$have_pcre" = no])
 #
 ############################################################################
 #
@@ -231,3 +238,10 @@ AS_IF([test "x$enable_silent_rules" = "x"],
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+#
+############################################################################
+#
+# Warn about missing prerequisites
+#
+AS_IF([test "x$have_pcre" = "xyes"],[],
+  [AC_MSG_WARN([PCRE is missing])])

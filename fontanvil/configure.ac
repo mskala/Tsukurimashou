@@ -344,11 +344,6 @@ AS_IF([test '!' "x$with_giflib" = xno],
   [],
   [AC_DEFINE([_NO_LIBUNGIF],1,[Define if not using system giflib.])])
 #
-AM_CONDITIONAL([COND_ICONV],[test '!' "x$with_iconv" = xno])
-AS_IF([test '!' "x$with_iconv" = xno],
-  [],
-  [AC_DEFINE([_NO_ICONV],1,[Define if not using system iconv.])])
-#
 AC_ARG_VAR([LIBJPEG_CFLAGS],[C compiler flags for libjpeg])
 AC_ARG_VAR([LIBJPEG_LIBS],[linker flags for libjpeg])
 AC_SEARCH_LIBS([jpeg_CreateDecompress],[jpeg],[],[with_libjpeg=no])

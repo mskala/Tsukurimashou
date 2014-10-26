@@ -1,4 +1,4 @@
-/* $Id: start.c 3321 2014-09-27 14:48:30Z mskala $ */
+/* $Id: start.c 3423 2014-10-26 18:51:07Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,6 @@
 int32 unicode_from_adobestd[256];
 
 struct lconv localeinfo;
-char *coord_sep = ",";
 
 static void initadobeenc(void) {
    int i, j;
@@ -313,11 +312,6 @@ void InitSimpleStuff(void) {
 
    setlocale(LC_ALL, "");
    localeinfo = *localeconv();
-   coord_sep = ",";
-   if (*localeinfo.decimal_point == '.')
-      coord_sep = ",";
-   else if (*localeinfo.decimal_point != '.')
-      coord_sep = " ";
    if (getenv("FF_SCRIPT_IN_LATIN1"))
       use_utf8_in_script = false;
 
