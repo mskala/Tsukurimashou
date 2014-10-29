@@ -21,6 +21,8 @@
 
 #include <stdio.h>
 
+#include "_stdint.h"
+
 /**********************************************************************/
 
 /* nodes.c */
@@ -42,11 +44,13 @@ typedef struct _NODE {
    struct _NODE *nodes;
    FILE *fp;
    char *cp;
-   int x,y,z;
+   int x,y;
 } NODE;
 
 NODE *node_new(void);
 void node_delete(NODE *n);
+
+int atom_cmp(NODE *x,NODE *y);
 
 /**********************************************************************/
 
@@ -66,17 +70,35 @@ void parse(void);
 
 /**********************************************************************/
 
-/* context.c */
+/* arrows.c */
 
 typedef enum _DUPE_PRIORITY {
    dp_error,dp_first,dp_last,dp_min,dp_max
 } DUPE_PRIORITY;
 
+typedef struct _ARROW_MAP {
+   NODE **arrows;
+   int num_arrows,num_buckets;
+} ARROW_MAP;
+
+void arrow_map_new(ARROW_MAP *am);
+void arrow_map_copy(ARROW_MAP *zm,ARROW_MAP *am);
+void arrow_map_delete(ARROW_MAP *am);
+NODE *arrow_map_lookup(ARROW_MAP *am,NODE *k);
+
+int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp);
+
+void add_one_arrow(PARSER_STATE *ps);
+void add_many_arrows(PARSER_STATE *ps);
+
+/**********************************************************************/
+
+/* context.c */
+
 typedef struct _CONTEXT {
    struct _CONTEXT *parent;
    char *id;
-   NODE **arrows;
-   int num_arrows,max_arrows;
+   ARROW_MAP am;
    DUPE_PRIORITY dupe_priority;
    char *skip_regex,*parse_regex;
 } CONTEXT;
@@ -88,8 +110,6 @@ void handle_closing_brace(PARSER_STATE *ps);
 
 /**********************************************************************/
 
-/* arrows.c */
+/* rxparse.c */
 
-void raw_add_arrow(PARSER_STATE *ps,NODE *k,NODE *v);
-void add_one_arrow(PARSER_STATE *ps);
-void add_many_arrows(PARSER_STATE *ps);
+void handle_rxparse(PARSER_STATE *ps);

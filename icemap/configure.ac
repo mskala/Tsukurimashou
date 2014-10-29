@@ -164,12 +164,10 @@ AM_COND_IF([COND_PARASITE],
 #
 # Checks for libraries.
 #
-PKG_CHECK_MODULES([PCRE],[libpcre],[
-  have_pcre=yes
+AX_PATH_LIB_PCRE([have_pcre=yes
   AC_DEFINE([HAVE_PCRE],[1],
     [Define to 1 if Perl Compatible Regular Expressions library is available])
-  ],[
-  have_pcre=no])
+  ],[have_pcre=no])
 AM_CONDITIONAL([COND_PCRE],[test '!' "$have_pcre" = no])
 #
 ############################################################################

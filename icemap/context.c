@@ -37,24 +37,14 @@ void handle_opening_brace(PARSER_STATE *ps) {
    ctx->parent=context_stack;
    if (context_stack==NULL) {
       ctx->id=strdup("map");
-      ctx->num_arrows=0;
-      ctx->max_arrows=10;
-      ctx->arrows=(NODE **)malloc(sizeof(NODE *)*20);
+      arrow_map_new(&(ctx->am));
       ctx->dupe_priority=dp_error;
       ctx->skip_regex=NULL;
       ctx->parse_regex=NULL;
 
    } else {
       ctx->id=strdup(context_stack->id);
-      ctx->num_arrows=context_stack->num_arrows;
-      ctx->max_arrows=context_stack->max_arrows;
-      ctx->arrows=(NODE **)malloc((sizeof(NODE *)*2)*(ctx->max_arrows));
-      
-      for (i=0;i<ctx->num_arrows*2;i++) {
-	 ctx->arrows[i]=context_stack->arrows[i];
-	 ctx->arrows[i]->refs++;
-      }
-
+      arrow_map_copy(&(ctx->am),&(context_stack->am));
       ctx->dupe_priority=context_stack->dupe_priority;
 
       if (ctx->parent->skip_regex!=NULL)
@@ -83,20 +73,7 @@ void handle_closing_brace(PARSER_STATE *ps) {
    
    /* FIXME handle actually generating the code */
    
-   for (i=0;i<context_stack->num_arrows*2;i+=2) {
-      if (context_stack->arrows[i]->type==nt_string)
-	printf("%s -> ",context_stack->arrows[i]->cp);
-      else
-	printf("%d -> ",context_stack->arrows[i]->x);
-      if (context_stack->arrows[i+1]->type==nt_string)
-	printf("%s\n",context_stack->arrows[i+1]->cp);
-      else
-	printf("%d\n",context_stack->arrows[i+1]->x);
-   }
-   
-   for (i=0;i<context_stack->num_arrows*2;i++)
-     node_delete(context_stack->arrows[i]);
-   free(context_stack->arrows);
+   arrow_map_delete(&(context_stack->am));
    
    free(context_stack->id);
    if (context_stack->skip_regex!=NULL)

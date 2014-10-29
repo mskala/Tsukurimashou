@@ -21,15 +21,115 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "icemap.h"
 
 /**********************************************************************/
 
-void raw_add_arrow(PARSER_STATE *ps,NODE *k,NODE *v) {
-   int i,replace=0;
+void arrow_map_new(ARROW_MAP *am) {
+   int i;
 
-#if 0
+   am->arrows=(NODE **)malloc(sizeof(NODE *)*16);
+   am->num_arrows=0;
+   am->num_buckets=16;
+   for (i=0;i<am->num_buckets;i++)
+     am->arrows[i]=NULL;
+}
+
+void arrow_map_copy(ARROW_MAP *zm,ARROW_MAP *am) {
+   int i;
+   NODE *ni,*nn;
+
+   zm->arrows=(NODE **)malloc(sizeof(NODE *)*am->num_buckets);
+   zm->num_arrows=am->num_arrows;
+   zm->num_buckets=am->num_buckets;
+
+   for (i=0;i<zm->num_buckets;i++) {
+     zm->arrows[i]=NULL;
+
+     for (ni=am->arrows[i];ni!=NULL;ni=ni->next) {
+	nn=node_new();
+
+	nn->type=ni->type;
+	if (nn->type==nt_string)
+	  nn->cp=strdup(ni->cp);
+	else
+	  nn->x=ni->x;
+	nn->nodes=ni->nodes;
+	nn->nodes->refs++;
+	
+	nn->next=zm->arrows[i];
+	zm->arrows[i]=nn;
+     }
+   }
+}
+
+void arrow_map_delete(ARROW_MAP *am) {
+   int i;
+   NODE *n;
+   
+   for (i=0;i<am->num_buckets;i++)
+     while (am->arrows[i]!=NULL) {
+	n=am->arrows[i]->next;
+	node_delete(am->arrows[i]->nodes);
+	node_delete(am->arrows[i]);
+	am->arrows[i]=n;
+     }
+   
+   free(am->arrows);
+}
+
+/**********************************************************************/
+
+/* Fowler-Noll-Vo hash, type 1a, on unsigned ints or uint32_ts,
+ * whichever are bigger, but always folding to a uint32_t. */
+
+static inline uint32_t fnv_hash(int m,char *a) {
+   int i;
+#if UINT_MAX==0xFFFFFFFFFFFFFFFF
+   unsigned int hval=14695981039346656037U;
+
+   for (i=0;i<m;i++) {
+      hval^=a[i];
+      hval*=1099511628211U;
+   }
+
+   return (uint32_t)(hval^(hval>>32));
+#else
+   uint32_t hval=UINT32_C(2166136261);
+
+   for (i=0;i<m;i++) {
+      hval^=a[i];
+      hval*=UINT32_C(16777619);
+   }
+
+   return hval;
+#endif
+}
+
+NODE *arrow_map_lookup(ARROW_MAP *am,NODE *k) {
+   uint32_t h;
+   NODE *n;
+   
+   h=(k->type==nt_string)?fnv_hash(strlen(k->cp),k->cp):
+     fnv_hash(sizeof(int),(char *)&(k->x));
+   h%=am->num_buckets;
+
+   for (n=am->arrows[h];n!=NULL;n=n->next)
+     if (atom_cmp(k,n)==0)
+       return n->nodes;
+
+   return NULL;
+}
+
+int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp) {
+   int replace=0;
+   uint32_t h;
+   NODE *n,**new_arrows;
+   int i;
+
+#if 1
    if (k->type==nt_int)
      printf("%d",k->x);
    else
@@ -40,54 +140,74 @@ void raw_add_arrow(PARSER_STATE *ps,NODE *k,NODE *v) {
      printf(" -> \"%s\"\n",v->cp);
 #endif
    
-   for (i=0;i<context_stack->num_arrows;i++)
-     if (atom_cmp(context_stack->arrows[i<<1],k)==0) {
-	switch (context_stack->dupe_priority) {
-	   
-	 case dp_first:
-	   break;
-	   
-	 case dp_last:
-	   replace=1;
-	   break;
-	   
-	 case dp_min:
-	   replace=(atom_cmp(context_stack->arrows[(i<<1)+1],v)>0);
-	   break;
-	   
-	 case dp_max:
-	   replace=(atom_cmp(v,context_stack->arrows[(i<<1)+1])>0);
-	   break;
-	   
-	 default: /* error */
-	   if (k->type==nt_string)
-	     parse_error(ps,"duplicate key %s",k->cp);
-	   else
-	     parse_error(ps,"duplicate key %d",k->x);
-	   exit(1);
-	   break;
-	}
-	
-	if (replace) {
-	   node_delete(context_stack->arrows[(i<<1)+1]);
-	   v->refs++;
-	   context_stack->arrows[(i<<1)+1]=v;
-	}
-	return;
-     }
+   h=(k->type==nt_string)?fnv_hash(strlen(k->cp),k->cp):
+     fnv_hash(sizeof(int),(char *)&(k->x));
+   h%=am->num_buckets;
+   
+   for (n=am->arrows[h];n!=NULL;n=n->next)
+     if (atom_cmp(k,n)==0)
+       break;
 
-   if (context_stack->num_arrows>=context_stack->max_arrows) {
-      context_stack->max_arrows=context_stack->num_arrows*4;
-      context_stack->max_arrows/=3;
-      context_stack->arrows=
-	(NODE **)realloc(context_stack->arrows,
-			 (sizeof(NODE *)*2)*context_stack->max_arrows);
+   if (n!=NULL) {
+      switch (dp) {
+	 
+       case dp_first:
+	 break;
+	 
+       case dp_last:
+	 replace=1;
+	 break;
+	 
+       case dp_min:
+	 replace=(atom_cmp(n->nodes,v)>0);
+	 break;
+	 
+       case dp_max:
+	 replace=(atom_cmp(v,n->nodes)>0);
+	 break;
+
+       default: /* error */
+	 return 0;
+      }
+	
+      if (replace) {
+	 node_delete(n->nodes);
+	 v->refs++;
+	 n->nodes=v;
+      }
+
+   } else {
+      k->refs++;
+      k->next=am->arrows[h];
+      am->arrows[h]=k;
+      
+      v->refs++;
+      k->nodes=v;
+      
+      am->num_arrows++;
+      if (am->num_arrows>am->num_buckets) {
+	 am->num_buckets*=2;
+	 new_arrows=(NODE **)malloc(sizeof(NODE *)*am->num_buckets);
+	 for (i=0;i<am->num_buckets;i++)
+	   new_arrows[i]=NULL;
+	 for (i=0;i<am->num_buckets/2;i++)
+	   while (am->arrows[i]) {
+	      n=am->arrows[i];
+	      am->arrows[i]=n->next;
+
+	      h=(n->type==nt_string)?fnv_hash(strlen(n->cp),n->cp):
+		fnv_hash(sizeof(int),(char *)&(n->x));
+	      h%=am->num_buckets;
+
+	      n->next=new_arrows[h];
+	      new_arrows[h]=n;
+	   }
+	 free(am->arrows);
+	 am->arrows=new_arrows;
+      }
    }
 
-   k->refs++;
-   context_stack->arrows[context_stack->num_arrows<<1]=k;
-   v->refs++;
-   context_stack->arrows[((context_stack->num_arrows++)<<1)+1]=v;
+   return 1;
 }
 
 /**********************************************************************/
@@ -104,9 +224,15 @@ void add_one_arrow(PARSER_STATE *ps) {
 
    if ((val->type!=nt_int) && (val->type!=nt_string))
       parse_error(ps,"-> needs a string or integer as value");
-   else
-     raw_add_arrow(ps,ps->first_token,val);
-   
+   else if (!raw_add_arrow(&(context_stack->am),ps->first_token,val,
+			   context_stack->dupe_priority)) {
+      if (ps->first_token->type==nt_string)
+	parse_error(ps,"duplicate key %s",ps->first_token->cp);
+      else
+	parse_error(ps,"duplicate key %d",ps->first_token->x);
+      exit(1);
+   }
+
    node_delete(val);
    node_delete(ps->first_token);
    ps->first_token=NULL;
@@ -141,8 +267,7 @@ void add_many_arrows(PARSER_STATE *ps) {
 	 key=ps->first_token;
 	 ps->first_token=key->next;
 
-	 if ((ps->first_token->type!=nt_int) &&
-	     (ps->first_token->type!=nt_string)) {
+	 if ((key->type!=nt_int) && (key->type!=nt_string)) {
 	    parse_error(ps,"=> needs integers, ranges, or strings as keys");
 	    node_delete(key);
 	    continue;
@@ -190,7 +315,14 @@ void add_many_arrows(PARSER_STATE *ps) {
 	 vals=NULL;
       }
 
-      raw_add_arrow(ps,key,val);      
+      if (!raw_add_arrow(&(context_stack->am),key,val,
+			 context_stack->dupe_priority)) {
+	 if (key->type==nt_string)
+	   parse_error(ps,"duplicate key %s",key->cp);
+	 else
+	   parse_error(ps,"duplicate key %d",key->x);
+	 exit(1);
+      }
       node_delete(key);
    }
    ps->last_token=NULL;

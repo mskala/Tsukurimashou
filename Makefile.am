@@ -57,7 +57,8 @@ percent=%
 ZZZZHACKZZZZ=include makefile-vars.inc
 $(error This Makefile must be edited by Perl code in config.status before use)
 
-SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,/bin/sh)
+SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
+  $(wildcard /bin/bash),/bin/bash,/bin/sh))
 SUBDIRS = . $(PARASITES)
 
 ############################################################################
@@ -132,7 +133,7 @@ TSU_V_NAPERL_0=echo \
 
 TSU_V_NASKIP=$(TSU_V_NASKIP_$(V))
 TSU_V_NASKIP_=$(TSU_V_NASKIP_$(AM_DEFAULT_VERBOSITY))
-TSU_V_NASKIP_0=echo -n \
+TSU_V_NASKIP_0=printf '%s%s%s' \
   "$(ansi_cleareol)  SKIP  " $@ "$(ansi_home)";
 
 TSU_V_OTF=$(TSU_V_OTF_$(V))
@@ -1103,7 +1104,7 @@ area/%-before.area: area/.dirstamp pfbtmp/%.pfb pe/makepngs.pe sfd/empty.sfd
 	(cd $*.tmp ; \
 	  $(FONTANVIL) -lang=ff -script $(realpath $(mvp))/pe/makepngs.pe \
 	     $(realpath .)/pfbtmp/$*.pfb $(TSU_V_REDIR) ; \
-	  for f in *.png ; do echo -n "$$f" ; pngtopnm $$f | \
+	  for f in *.png ; do printf '%s' "$$f" ; pngtopnm $$f | \
 	    pgmtopbm -threshold | pgmhist | \
 	    grep '^    0' ; echo ' 0 0' ; done | \
 	    $(PERL) -pe \
@@ -1120,7 +1121,7 @@ area/%-after.area: area/.dirstamp sfd/%.sfd pe/makepngs.pe sfd/empty.sfd
 	(cd $*.tmp ; \
 	  $(FONTANVIL) -lang=ff -script $(realpath $(mvp))/pe/makepngs.pe \
 	     $(realpath .)/sfd/$*.sfd $(TSU_V_REDIR) ; \
-	  for f in *.png ; do echo -n "$$f" ; pngtopnm $$f | \
+	  for f in *.png ; do printf '%s' "$$f" ; pngtopnm $$f | \
 	    pgmtopbm -threshold | pgmhist | \
 	    grep '^    0' ; echo ' 0 0' ; done | \
 	    $(PERL) -pe \

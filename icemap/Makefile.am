@@ -36,7 +36,8 @@ space:=$(empty) $(empty)
 comma:=,
 percent=%
 
-SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,/bin/sh)
+SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
+  $(wildcard /bin/bash),/bin/bash,/bin/sh))
 
 ############################################################################
 
@@ -117,7 +118,7 @@ bin_PROGRAMS = icemap
 AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 
 icemap_SOURCES = icemap.c icemap.h \
-  arrows.c context.c nodes.c parser.c
+  arrows.c context.c nodes.c parser.c rxparse.c
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS)
 

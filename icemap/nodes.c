@@ -39,6 +39,7 @@ NODE *node_new(void) {
      rval=(NODE *)malloc(sizeof(NODE));
 
    rval->next=NULL;
+   rval->nodes=NULL;
    rval->refs=1;
    rval->cp=NULL;
    return rval;

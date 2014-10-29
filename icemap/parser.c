@@ -586,7 +586,9 @@ void parse(void) {
       }
       
       if ((context_stack==NULL) &&
-	  !((token->type==nt_keyword) && (strcmp(token->cp,"{")==0))) {
+	  !((token->type==nt_keyword) &&
+	    ((strcmp(token->cp,"{")==0) ||
+		(strcmp(token->cp,"include")==0)))) {
 	 parse_error(&ps,
 		     "cannot do anything without a context except open one");
 	 exit(1);
@@ -628,6 +630,9 @@ void parse(void) {
 
 	    else if (strcmp(token->cp,"priority")==0)
 	      handle_priority(&ps);
+	    
+	    else if (strcmp(token->cp,"rxparse")==0)
+	      handle_rxparse(&ps);
 	    
 	    else if (strcmp(token->cp,"skiprx")==0)
 	      handle_string_or_null(&ps,
