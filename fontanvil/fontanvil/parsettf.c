@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: parsettf.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1747,15 +1747,7 @@ static void TTFAddLangStr(FILE * ttf, struct ttfinfo *info, int id,
 	 buts[2] = _("Second _to All");
 	 buts[3] = _("Use _Second");
 	 buts[4] = NULL;
-	 ret =
-	    ff_ask(_("Multiple names for language"), (const char **) buts, 0,
-		   3,
-		   _
-		   ("The 'name' table contains (at least) two strings for the %s in language %s, the first '%.12s...' the second '%.12s...'.\nWhich do you prefer?"),
-		   TTFNameIds(id), MSLangString(language), cur->names[id],
-		   str);
-	 if (ret == 1 || ret == 2)
-	    info->dupnamestate = ret;
+	 ret =0;
       }
       if (ret == 0 || ret == 1)
 	 free(str);
@@ -4508,10 +4500,6 @@ static void readttfvwidths(FILE * ttf, struct ttfinfo *info) {
 
 }
 
-static int modenc(int enc, int modtype) {
-   return (enc);
-}
-
 static int badencoding(struct ttfinfo *info) {
    if (!info->bad_cmap) {
       LogError(_("Bad encoding information in 'cmap' table."));
@@ -4869,9 +4857,7 @@ N_("Script|Traditional Chinese"), N_("Script|Korean"),
 	      12 ? "Segmented coverage" : "Unknown format");
       choices[i] = copy(buffer);
    }
-   ret =
-      ff_choose(_("Pick a CMap subtable"), (const char **) choices, enccnt,
-		def, _("Pick a CMap subtable"));
+   ret=def;
    for (i = 0; i < enccnt; ++i)
       free(choices[i]);
    free(choices);
@@ -5158,13 +5144,11 @@ static void readttfencodings(FILE * ttf, struct ttfinfo *info, int justinuse) {
 			   || info->chars[(uint16) (j + delta[i])] == NULL) {
 		     LogError(_
 			      ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
-			      (uint16) (j + delta[i]), modenc(j, mod),
-			      modenc(j, mod));
+			      (uint16)(j+delta[i]),j,j);
 		     info->bad_cmap = true;
 		  } else {
 		     int uenc = umodenc(j, mod, info);
-
-		     int lenc = modenc(j, mod);
+		     int lenc=j;
 
 		     if (uenc != -1 && used[uenc]) {
 			if (!badencwarned) {
@@ -5215,19 +5199,18 @@ static void readttfencodings(FILE * ttf, struct ttfinfo *info, int justinuse) {
 			/*  program says it is treated as 0 */
 			LogError(_
 				 ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
-				 index, modenc(j, mod), modenc(j, mod));
+				 index,j,j);
 			info->bad_cmap = true;
 		     } else if (justinuse == git_justinuse)
 			info->inuse[index] = 1;
 		     else if (info->chars[index] == NULL) {
 			LogError(_
 				 ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
-				 index, modenc(j, mod), modenc(j, mod));
+				 index,j,j);
 			info->bad_cmap = true;
 		     } else {
-			int uenc = umodenc(j, mod, info);
-
-			int lenc = modenc(j, mod);
+			int uenc=umodenc(j,mod,info);
+			int lenc=j;
 
 			if (uenc != -1 && used[uenc]) {
 			   if (!badencwarned) {
@@ -5344,7 +5327,7 @@ static void readttfencodings(FILE * ttf, struct ttfinfo *info, int justinuse) {
 		  else if (info->chars[index] == NULL)
 		     /* Do Nothing */ ;
 		  else {
-		     int lenc = modenc(i, mod);
+		     int lenc=i;
 
 		     if (dounicode && info->chars[index]->unicodeenc == -1)
 			info->chars[index]->unicodeenc = i;
@@ -5364,7 +5347,7 @@ static void readttfencodings(FILE * ttf, struct ttfinfo *info, int justinuse) {
 		     index = (uint16) (index + subheads[k].delta);
 		  if (index != 0 && index < info->glyph_cnt) {
 		     enc = (i << 8) | (j + subheads[k].first);
-		     lenc = modenc(enc, mod);
+		     lenc=enc;
 		     if (justinuse == git_justinuse)
 			info->inuse[index] = 1;
 		     else if (info->chars[index] == NULL)
@@ -5959,17 +5942,8 @@ static int readttf(FILE * ttf, struct ttfinfo *info, char *filename) {
       buts[1] = _("OTF 'CFF '");
       buts[2] = _("_Cancel");
       buts[3] = NULL;
-      choice =
-	 ff_ask(_("Pick a font, any font..."), (const char **) buts, 0, 2,
-		_
-		("This font contains both a TrueType 'glyf' table and an OpenType 'CFF ' table. FontAnvil can only deal with one at a time, please pick which one you want to use"));
-      if (choice == 2) {
-	 setlocale(LC_NUMERIC, oldloc);
-	 return (0);
-      } else if (choice == 0)
-	 info->cff_start = 0;
-      else
-	 info->glyph_start = info->glyphlocations_start = 0;
+      choice =0;
+      info->cff_start = 0;
    }
 
    if (info->onlystrikes) {

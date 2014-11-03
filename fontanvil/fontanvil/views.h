@@ -1,4 +1,4 @@
-/* $Id: views.h 3333 2014-09-29 08:57:09Z mskala $ */
+/* $Id: views.h 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -713,8 +713,6 @@ extern void FVChangeChar(FontView * fv, int encoding);
 extern void FVMergeFonts(FontView * fv);
 
 extern void FVInterpolateFonts(FontView * fv);
-
-extern void FVDeselectAll(FontView * fv);
 
 extern void FVAutoWidth2(FontView * fv);
 

@@ -1,4 +1,4 @@
-/* $Id: tottf.c 3412 2014-10-24 20:34:43Z mskala $ */
+/* $Id: tottf.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1586,14 +1586,7 @@ static int dumpglyphs(SplineFont * sf, struct glyphinfo *gi) {
 		     buts[2] = _("No _to All");
 		     buts[3] = _("_No");
 		     buts[4] = NULL;
-		     answer =
-			ff_ask(_("Bad Point Numbering"), (const char **) buts,
-			       0, 3,
-			       _
-			       ("The points in %s are not numbered properly. This means that any instructions will probably move the wrong points and do the wrong thing.\nWould you like me to remove the instructions?"),
-			       sc->name);
-		     if (answer == 1 || answer == 2)
-			answered = answer;
+		     answer =0;
 		  } else
 		     answer = answered;
 		  if (answer == 0) {
@@ -6657,16 +6650,6 @@ int _WriteTTFFont(FILE * ttf, SplineFont * sf, enum fontformat format,
 	  && !sf->internal_temp) {
 	 if (i < 0 && anyglyphs) {
 	    if (map->enccount <= 256) {
-	       char *buts[3];
-
-	       buts[0] = _("_Yes");
-	       buts[1] = _("_No");
-	       buts[2] = NULL;
-	       if (ff_ask
-		   (_("No Encoded Glyphs"), (const char **) buts, 0, 1,
-		    _
-		    ("This font contains no glyphs with unicode encodings.\nWould you like to use a \"Symbol\" encoding instead of Unicode?"))
-		   == 0)
 		  flags |= ttf_flag_symbol;
 	    } else
 	       ff_post_error(_("No Encoded Glyphs"),

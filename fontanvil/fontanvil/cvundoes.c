@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 3423 2014-10-26 18:51:07Z mskala $ */
+/* $Id: cvundoes.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -573,10 +573,6 @@ Undoes *SCPreserveBackground(SplineChar * sc) {
    return (SCPreserveLayer(sc, ly_back, false));
 }
 
-Undoes *SFPreserveGuide(SplineFont * sf) {
-      return (NULL);
-}
-
 void SCUndoSetLBearingChange(SplineChar * sc, int lbc) {
    Undoes *undo = sc->layers[ly_fore].undoes;
 
@@ -594,10 +590,6 @@ Undoes *SCPreserveWidth(SplineChar * sc) {
 Undoes *SCPreserveVWidth(SplineChar * sc) {
    Undoes *undo;
 
-      return (NULL);
-}
-
-Undoes *BCPreserveState(BDFChar * bc) {
       return (NULL);
 }
 
@@ -843,10 +835,6 @@ static void CopyBufferFree(void) {
 
 static void CopyBufferFreeGrab(void) {
    CopyBufferFree();
-}
-
-static void XClipCheckEps(void) {
-      return;
 }
 
 RefChar *CopyContainsRef(SplineFont * sf) {
@@ -1112,13 +1100,7 @@ static void PasteNonExistantRefCheck(SplineChar * sc, Undoes * paster,
 	 buts[0] = _("Don't Warn Again");
 	 buts[1] = _("_OK");
 	 buts[2] = NULL;
-	 yes =
-	    ff_ask(_("Bad Reference"), (const char **) buts, 1, 1,
-		   _
-		   ("You are attempting to paste a reference to %1$s into %2$s.\nBut %1$s does not exist in this font, nor can I find the original character referred to.\nIt will not be copied."),
-		   name, sc->name);
-	 if (yes == 0)
-	    *refstate |= 0x4;
+	 yes=1;
       }
    } else {
       if (!(*refstate & 0x3)) {
@@ -1129,15 +1111,7 @@ static void PasteNonExistantRefCheck(SplineChar * sc, Undoes * paster,
 	 buts[2] = _("No _to All");
 	 buts[3] = _("_No");
 	 buts[4] = NULL;
-	 yes =
-	    ff_ask(_("Bad Reference"), (const char **) buts, 0, 3,
-		   _
-		   ("You are attempting to paste a reference to %1$s into %2$s.\nBut %1$s does not exist in this font.\nWould you like to copy the original splines (or delete the reference)?"),
-		   fromsc->name, sc->name);
-	 if (yes == 1)
-	    *refstate |= 1;
-	 else if (yes == 2)
-	    *refstate |= 2;
+	 yes=0;
       }
       if ((*refstate & 1) || yes <= 1) {
 	 new =
@@ -1312,18 +1286,7 @@ static int InstrsSameParent(SplineChar * sc, SplineFont * copied_from) {
    buts[1] = _("Yes to _All");
    buts[2] = _("No _to All");
    buts[4] = NULL;
-   ret =
-      ff_ask(_("Different Fonts"), (const char **) buts, 0, 3,
-	     _
-	     ("You are attempting to paste glyph instructions from one font to another. Generally this will not work unless the 'prep', 'fpgm' and 'cvt ' tables are the same.\nDo you want to continue anyway?"));
-   if (ret == 0)
-      return (true);
-   if (ret == 3)
-      return (false);
-   dontask_parent = sc->parent;
-   dontask_copied_from = copied_from;
-   dontask_ret = ret == 1;
-   return (dontask_ret);
+   return (true);
 }
 
 int SCWasEmpty(SplineChar * sc, int skip_this_layer) {
@@ -2132,7 +2095,6 @@ static void _PasteToBC(BDFChar * bc, int pixelsize, int depth,
      case ut_noop:
 	break;
      case ut_bitmapsel:
-	BCPreserveState(bc);
 	BCFlattenFloat(bc);
 	if (clearfirst)
 	   memset(bc->bitmap, '\0',
@@ -2143,7 +2105,6 @@ static void _PasteToBC(BDFChar * bc, int pixelsize, int depth,
 	BCCharChangedUpdate(bc);
 	break;
      case ut_bitmap:
-	BCPreserveState(bc);
 	BCFlattenFloat(bc);
 	if (clearfirst) {
 	   for (head = bc->refs; head != NULL;) {
@@ -2311,16 +2272,12 @@ void FVCopy(FontViewBase * fv, enum fvcopy_type fullcopy) {
    copybuffer.undotype = ut_multiple;
    copybuffer.u.multiple.mult = head;
    copybuffer.copied_from = fv->sf;
-
-   XClipCheckEps();
 }
 
 static BDFFont *BitmapCreateCheck(FontViewBase * fv, int *yestoall, int first,
 				  int pixelsize, int depth) {
    int yes = 0;
-
    BDFFont *bdf = NULL;
-
    if (*yestoall > 0 && first) {
       char *buts[5];
 
@@ -2335,16 +2292,7 @@ static BDFFont *BitmapCreateCheck(FontViewBase * fv, int *yestoall, int first,
       buts[2] = _("No _to All");
       buts[3] = _("_No");
       buts[4] = NULL;
-      yes =
-	 ff_ask(_("Bitmap Paste"), (const char **) buts, 0, 3,
-		"The clipboard contains a bitmap character of size %s,\na size which is not in your database.\nWould you like to create a bitmap font of that size,\nor ignore this character?",
-		buf);
-      if (yes == 1)
-	 *yestoall = true;
-      else if (yes == 2)
-	 *yestoall = -1;
-      else
-	 yes = yes != 3;
+      yes=1;
    }
    if (yes == 1 || *yestoall) {
       void *freetypecontext =

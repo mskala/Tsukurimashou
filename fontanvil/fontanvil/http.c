@@ -1,4 +1,4 @@
-/* $Id: http.c 3412 2014-10-24 20:34:43Z mskala $ */
+/* $Id: http.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -365,9 +365,7 @@ static char *decomposeURL(const char *url, char **host, int *port,
    if (*username) {
       *password = GIO_PasswordCache(proto, *host, *username, *password);
       if (*password == NULL) {
-	 *password =
-	    ff_ask_password(_("Password?"), "", _("Enter password for %s@%s"),
-			    *username, *host);
+	 *password="";
 	 *password = GIO_PasswordCache(proto, *host, *username, *password);
       }
    }

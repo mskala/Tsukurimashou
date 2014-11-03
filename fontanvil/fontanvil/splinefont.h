@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3423 2014-10-26 18:51:07Z mskala $ */
+/* $Id: splinefont.h 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3353,15 +3353,11 @@ extern Undoes *SCPreserveState(SplineChar *sc, int dohints);
 
 extern Undoes *SCPreserveBackground(SplineChar *sc);
 
-extern Undoes *SFPreserveGuide(SplineFont *sf);
-
 extern Undoes *_SFPreserveGuide(SplineFont *sf);
 
 extern Undoes *SCPreserveWidth(SplineChar *sc);
 
 extern Undoes *SCPreserveVWidth(SplineChar *sc);
-
-extern Undoes *BCPreserveState(BDFChar *bc);
 
 extern void BCDoRedo(BDFChar *bc);
 

@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: bitmapchar.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1082,7 +1082,6 @@ void BCClearAll(BDFChar * bc) {
    }
    bc->refs = NULL;
 
-   BCPreserveState(bc);
    BCFlattenFloat(bc);
    memset(bc->bitmap, '\0', bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
    BCCompressBitmap(bc);

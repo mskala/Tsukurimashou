@@ -1,4 +1,4 @@
-/* $Id: savefont.c 3331 2014-09-29 08:27:42Z mskala $ */
+/* $Id: savefont.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -852,13 +852,6 @@ int CheckIfTransparent(SplineFont * sf) {
 	 for (j = ly_fore; j < sc->layer_cnt; ++j) {
 	    if (sc->layers[j].fill_brush.opacity != 1
 		|| sc->layers[j].stroke_pen.brush.opacity != 1) {
-	       if (ff_ask
-		   (_("Bad Drawing Operation"), (const char **) buts, 0, 1,
-		    _
-		    ("This font contains at least one translucent layer, but type3 does not support that (anything translucent or transparent is treated as opaque). Do you want to proceed anyway?"))
-		   == 1)
-		  return (true);
-
 	       return (false);
 	    }
 	 }

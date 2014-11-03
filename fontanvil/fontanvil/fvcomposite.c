@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: fvcomposite.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1776,7 +1776,6 @@ static void BCClearAndCopyBelow(BDFFont * bdf, int togid, int fromgid,
    BDFChar *bc, *rbc;
 
    bc = BDFMakeGID(bdf, togid);
-   BCPreserveState(bc);
    BCFlattenFloat(bc);
    BCCompressBitmap(bc);
    if (bdf->glyphs[fromgid] != NULL) {
@@ -2611,7 +2610,6 @@ static void BCMakeSpace(BDFFont * bdf, int gid, int width, int em) {
    if ((bc = bdf->glyphs[gid]) == NULL) {
       BDFMakeGID(bdf, gid);
    } else {
-      BCPreserveState(bc);
       BCFlattenFloat(bc);
       BCCompressBitmap(bc);
       free(bc->bitmap);
@@ -2735,7 +2733,6 @@ static void BCMakeRule(BDFFont * bdf, int gid, int layer) {
    if ((bc = bdf->glyphs[gid]) == NULL) {
       BDFMakeGID(bdf, gid);
    } else {
-      BCPreserveState(bc);
       BCFlattenFloat(bc);
       BCCompressBitmap(bc);
       free(bc->bitmap);

@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3412 2014-10-24 20:34:43Z mskala $ */
+/* $Id: scstyles.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3285,8 +3285,6 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 	 }
       }
    }
-   if (achar != NULL)
-      FVDisplayGID(fv, achar->orig_pos);
    free(genchange->g.maps);
 }
 

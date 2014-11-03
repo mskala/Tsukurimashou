@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: fvimportbdf.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -170,7 +170,6 @@ static void ExtendSF(SplineFont * sf, EncMap * map, int enc, int set) {
 	    free(fvs->selected);
 	    fvs->selected = calloc(map->enccount, 1);
 	 }
-	 FontViewReformatAll(sf);
       }
    }
 }
@@ -2106,14 +2105,11 @@ static int askusersize(char *filename) {
    else
       *def = '\0';
  retry:
-   ret =
-      ff_ask_string(_("Pixel size:"), def,
-		    _("What is the pixel size of the font in this file?"));
+   ret =def;
    if (ret == NULL)
       guess = -1;
    else {
       guess = strtol(ret, &end, 10);
-      free(ret);
       if (guess <= 0 || *end != '\0') {
 	 ff_post_error(_("Bad Number"), _("Bad Number"));
 	 goto retry;
@@ -2131,12 +2127,7 @@ static int alreadyexists(int pixelsize) {
    buts[1] = _("_Cancel");
    buts[2] = NULL;
 
-   ret = ff_ask(_("Duplicate pixelsize"), (const char **) buts, 0, 1,
-		_
-		("The font database already contains a bitmap\012font with this pixelsize (%d)\012Do you want to overwrite it?"),
-		pixelsize);
-
-   return (ret == 0);
+   return true;
 }
 
 static void BDFForceEnc(SplineFont * sf, EncMap * map) {
@@ -2275,8 +2266,6 @@ void SFSetFontName(SplineFont * sf, char *family, char *mods, char *fullname) {
       else
 	 sf->weight = copy("Medium");
    }
-
-   FVSetTitles(sf);
 }
 
 static BDFFont *SFImportBDF(SplineFont * sf, char *filename, int ispk,
@@ -2643,7 +2632,6 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
       if (b != NULL) {
 	 anyb = b;
 	 any = true;
-	 FVRefreshAll(fv->sf);
       }
       file = fpt + 2;
    } while (fpt != NULL);
@@ -2654,7 +2642,6 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
 	 free(fvs->selected);
 	 fvs->selected = calloc(fvs->map->enccount, sizeof(char));
       }
-      FontViewReformatAll(fv->sf);
    }
    if (anyb == NULL) {
       ff_post_error(_("No Bitmap Font"),

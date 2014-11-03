@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: splinesaveafm.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3916,10 +3916,6 @@ int LoadKerningDataFromMetricsFile(SplineFont * sf, char *filename,
 	/*  that I'm not even going to try to check for it here */
 	ret = LoadKerningDataFromMacFOND(sf, filename, map);
 	break;
-   }
-   if (ret) {
-      FontInfo_Destroy(sf);
-      MVReKernAll(sf);
    }
    return (ret);
 }

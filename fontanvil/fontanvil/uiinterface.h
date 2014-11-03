@@ -1,4 +1,4 @@
-/* $Id: uiinterface.h 3331 2014-09-29 08:27:42Z mskala $ */
+/* $Id: uiinterface.h 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -108,9 +108,6 @@ const char *MSLangString(int);
 
 #   define ff_ask_password ff_ask_string
 
-/* ************************************************************************** */
-/*                                Preferences                                 */
-/* ************************************************************************** */
 struct val;
 
 extern void SavePrefs(void);
@@ -118,10 +115,6 @@ extern void LoadPrefs(void);
 extern int GetPrefs(char *name,struct val *value);
 extern int SetPrefs(char *name,struct val *val1,struct val *val2);
 extern char *getFontAnvilShareDir(void);
-
-/* ************************************************************************** */
-/*                          Updating glyph windows                            */
-/* ************************************************************************** */
 
 struct splinechar;
 struct layer;
@@ -131,240 +124,48 @@ void SCHintsChanged(struct splinechar *);
 
 void SCCharChangedUpdate(struct splinechar *,int,int);
 
-/* ************************************************************************** */
-/*                         Updating glyph windows 2                           */
-/* ************************************************************************** */
-
-struct charviewbase;
-
-struct splinefont;
-
-struct cv_interface {
-   /* Update all windows looking at what this char window looks at */
-   /*  which might be a glyph, or perhaps the grid layer */
-   /* And mark as changed */
-   void (*glyph_changed_update) (struct charviewbase *);
-   void (*_glyph_changed_update) (struct charviewbase *, int);
-
-   /* A glyph's name has changed find all charviews with tabs with that name */
-   /*  and update those tabs */
-   void (*glyph_name_change) (struct splinefont * sf, char *oldname,
-			      char *newname);
-
-   /* We've added a layer to a font */
-   void (*layer_palette_check) (struct splinefont * sf);
-};
-
-extern struct cv_interface *cv_interface;
-
-#   define CVCharChangedUpdate		(cv_interface->glyph_changed_update)
-#   define _CVCharChangedUpdate		(cv_interface->_glyph_changed_update)
-#   define CVGlyphRenameFixup		(cv_interface->glyph_name_change)
-#   define CVLayerPaletteCheck		(cv_interface->layer_palette_check)
-
-void FF_SetCVInterface(struct cv_interface *cvi);
-
-/* ************************************************************************** */
-/*                         Updating bitmap windows                            */
-/* ************************************************************************** */
-
 struct bdfchar;
 
 extern void BCCharChangedUpdate(struct bdfchar *bc);
 
-/* ************************************************************************** */
-/*                          Access to metrics views                           */
-/* ************************************************************************** */
-
-struct metricsview;
-
-struct splinefont;
-
-struct mv_interface {
-   /* Number of glyphs displayed in the view */
-   int (*glyph_cnt) (struct metricsview *);
-
-   /* Access to the i'th member */
-   struct splinechar *(*get_glyph) (struct metricsview *, int);
-
-   /* Kerning (or width) information for this font has changed. Remetric the */
-   /*  metric views */
-   void (*rekern) (struct splinefont *);
-
-   /* Feature/lookup/subtable info for the font has changed */
-   /* Features, lookups or subtables have been added or removed */
-   /* This call should probably be followed by a call to rekern to remetric */
-   void (*refeature) (struct splinefont *);
-
-   /* Close any metrics views associated with this font */
-   void (*sf_close_metrics) (struct splinefont * sf);
-};
-
-extern struct mv_interface *mv_interface;
-
-#   define MVGlyphCount			(mv_interface->glyph_cnt)
-#   define MVGlyphIndex			(mv_interface->get_glyph)
-#   define MVReKernAll			(mv_interface->rekern)
-#   define MVReFeatureAll			(mv_interface->refeature)
-#   define MVDestroyAll			(mv_interface->sf_close_metrics)
-
-void FF_SetMVInterface(struct mv_interface *mvi);
-
-/* ************************************************************************** */
-/*                             Access to font info                            */
-/* ************************************************************************** */
 struct otlookup;
-
-struct fi_interface {
-   /* Insert a new lookup into the fontinfo lookup list */
-   void (*insert_lookup) (struct splinefont *, struct otlookup *);
-
-   /* Merge lookup in from another font */
-   void (*copy_into) (struct splinefont *, struct splinefont *,
-		      struct otlookup *, struct otlookup *, int,
-		      struct otlookup *);
-
-   /* Removes any font info window for this font */
-   void (*destroy) (struct splinefont *);
-};
-
-extern struct fi_interface *fi_interface;
-
-#   define FISortInsertLookup			(fi_interface->insert_lookup)
-#   define FIOTLookupCopyInto			(fi_interface->copy_into)
-#   define FontInfo_Destroy			(fi_interface->destroy)
-
-void FF_SetFIInterface(struct fi_interface *fii);
-
-/* ************************************************************************** */
-/*                           Updating font windows                            */
-/* ************************************************************************** */
-
+struct splinefont;
 struct fontviewbase;
-
 struct bdffont;
 
-struct fv_interface {
-   /* Create a new font view. Whatever that may entail */
-   struct fontviewbase *(*create) (struct splinefont *, int hide);
+/* Create a new font view. Whatever that may entail */
+struct fontviewbase *FontViewCreate(struct splinefont *, int hide);
 
-   /* Create a new font view but without attaching it to a window */
-   struct fontviewbase *(*_create) (struct splinefont *);
+/* Create a new font view but without attaching it to a window */
+struct fontviewbase *_FontViewCreate(struct splinefont *);
 
-   /* Free a font view (we assume all windows have already been destroyed) */
-   void (*close) (struct fontviewbase *);
+/* Free a font view (we assume all windows have already been destroyed) */
+void FontViewClose(struct fontviewbase *);
 
-   /* Free a font view (we assume all windows have already been destroyed) */
-   void (*free) (struct fontviewbase *);
+/* Free a font view (we assume all windows have already been destroyed) */
+void FontViewFree(struct fontviewbase *);
 
-   /* Set the window title of this fontview */
-   void (*set_title) (struct fontviewbase *);
+/* Retrieve the window's size in rows and columns */
+int FVWinInfo(struct fontviewbase *, int *cols, int *rows);
 
-   /* Set the window title of all fontviews associated with this font */
-   void (*set_titles) (struct splinefont *);
+/* Is this font currently open? (It was open once, this check is to make   */
+/*  sure the user hasn't closed it since they copied from it -- so we can  */
+/*  follow references appropriately if the font we are pasting into doesn't */
+/*  have the needed glyph */
+int SFIsActive(struct splinefont *);
 
-   /* Refresh all displays of all fontviews associated with this font */
-   void (*refresh_all) (struct splinefont *);
+/* Sometimes we just need a fontview, any fontview as a last resort fallback */
+struct fontviewbase *FontViewFirst(void);
 
-   /* Reformat this particular fontview (after encoding change, etc) */
-   void (*reformat_one) (struct fontviewbase *);
+/* Append this fontview to the list of them */
+struct fontviewbase *FVAppend(struct fontviewbase *);
 
-   /* Reformat all fontviews associated with this font */
-   void (*reformat_all) (struct splinefont *);
+/* Look through all loaded fontviews and see if any contains a font */
+/*  which lives in the given filename */
+struct splinefont *FontWithThisFilename(const char *);
 
-   /* The active layer has changed. Possibly because the old one was deleted */
-   void (*layer_changed) (struct fontviewbase *);
-
-   /* toggle the change indicator of this glyph in the font view */
-   void (*flag_glyph_changed) (struct splinechar *);
-
-   /* Retrieve the window's size in rows and columns */
-   int (*win_info) (struct fontviewbase *, int *cols, int *rows);
-
-   /* Is this font currently open? (It was open once, this check is to make   */
-   /*  sure the user hasn't closed it since they copied from it -- so we can  */
-   /*  follow references appropriately if the font we are pasting into doesn't */
-   /*  have the needed glyph */
-   int (*font_is_active) (struct splinefont *);
-
-   /* Sometimes we just need a fontview, any fontview as a last resort fallback */
-   struct fontviewbase *(*first_font) (void);
-
-   /* Append this fontview to the list of them */
-   struct fontviewbase *(*append) (struct fontviewbase *);
-
-   /* Look through all loaded fontviews and see if any contains a font */
-   /*  which lives in the given filename */
-   struct splinefont *(*font_of_filename) (const char *);
-
-   /* We've just added some extra encoding slots, which means we may need */
-   /*  to increase the number of rows in the fontview display and perhaps */
-   /*  adjust its scrollbar */
-   void (*extra_enc_slots) (struct fontviewbase *, int new_enc_max);
-
-   /* My fontviews contain a glyph cache (a BDFPieceMeal font) whenever */
-   /*  more glyphs are added to the font, more bitmap glyph slots need to */
-   /*  be added to the font cache */
-   void (*bigger_glyph_cache) (struct fontviewbase *, int new_glyph_cnt);
-
-   /* If we want to change the font displayed in a fontview */
-   void (*change_display_bitmap) (struct fontviewbase *, struct bdffont *);
-
-   /* We just deleted the active bitmap, so switch to a rasteriztion of the outlines */
-   void (*display_filled) (struct fontviewbase *);
-
-   /* When we revert a font we need to change the alegence of all outline */
-   /*  glyph windows to the new value of the font */
-   void (*reattach_cvs) (struct splinefont * old, struct splinefont * new);
-
-   /* deselect any selected glyphs */
-   void (*deselect_all) (struct fontviewbase *);
-
-   /* Scroll (or whatever) the fontview so that the desired */
-   /*  gid is displayed */
-   void (*display_gid) (struct fontviewbase *, int gid);
-
-   /* Scroll (or whatever) the fontview so that the desired */
-   /*  encoding is displayed */
-   void (*display_enc) (struct fontviewbase *, int enc);
-
-   /* Scroll (or whatever) the fontview so that the desired */
-   /*  glyph is displayed */
-   void (*select_gid) (struct fontviewbase *, int gid);
-
-   /* Close any open glyph instruction windows in the font */
-   int (*close_all_instrs) (struct splinefont *);
-};
-
-extern struct fv_interface *fv_interface;
-
-#   define FontViewCreate		(fv_interface->create)
-#   define _FontViewCreate		(fv_interface->_create)
-#   define FontViewClose		(fv_interface->close)
-#   define FontViewFree		(fv_interface->free)
-#   define FVSetTitle		(fv_interface->set_title)
-#   define FVSetTitles		(fv_interface->set_titles)
-#   define FVRefreshAll		(fv_interface->refresh_all)
-#   define FontViewReformatOne	(fv_interface->reformat_one)
-#   define FontViewReformatAll	(fv_interface->reformat_all)
-#   define FontViewLayerChanged	(fv_interface->layer_changed)
-#   define FVToggleCharChanged	(fv_interface->flag_glyph_changed)
-#   define FVWinInfo		(fv_interface->win_info)
-#   define SFIsActive		(fv_interface->font_is_active)
-#   define FontViewFirst		(fv_interface->first_font)
-#   define FVAppend		(fv_interface->append)
-#   define FontWithThisFilename	(fv_interface->font_of_filename)
-#   define FVAdjustScrollBarRows	(fv_interface->extra_enc_slots)
-#   define FVBiggerGlyphCache	(fv_interface->bigger_glyph_cache)
-#   define FVChangeDisplayBitmap	(fv_interface->change_display_bitmap)
-#   define FVShowFilled		(fv_interface->display_filled)
-#   define FVReattachCVs		(fv_interface->reattach_cvs)
-#   define FVDisplayGID		(fv_interface->display_gid)
-#   define FVDisplayEnc		(fv_interface->display_enc)
-#   define FVChangeGID		(fv_interface->select_gid)
-#   define SFCloseAllInstrs	(fv_interface->close_all_instrs)
-
-void FF_SetFVInterface(struct fv_interface *fvi);
+/* deselect any selected glyphs */
+void FVDeselectAll(struct fontviewbase *);
 
 /* ************************************************************************** */
 /*                       Clibboard access (copy/paste)                        */

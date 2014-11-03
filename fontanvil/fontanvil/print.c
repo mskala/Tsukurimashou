@@ -1,4 +1,4 @@
-/* $Id: print.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: print.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1718,9 +1718,7 @@ static void dump_prologue(PI * pi) {
 
 static int PIDownloadFont(PI * pi, SplineFont * sf, EncMap * map) {
    int is_mm = sf->mm != NULL && MMValid(sf->mm, false);
-
    int error = false;
-
    struct sfbits *sfbit = &pi->sfbits[pi->sfid];
 
    if (sf->cidmaster != NULL)
@@ -2190,11 +2188,6 @@ static void PIChars(PI * pi) {
 	    SCPrintPage(pi, pi->mainsf->glyphs[gid]);
    } else if (pi->sc != NULL)
       SCPrintPage(pi, pi->sc);
-   else {
-      for (i = 0; i < MVGlyphCount(pi->mv); ++i)
-	 if (SCWorthOutputting(MVGlyphIndex(pi->mv, i)))
-	    SCPrintPage(pi, MVGlyphIndex(pi->mv, i));
-   }
    dump_trailer(pi);
 }
 
@@ -2469,11 +2462,6 @@ static void PIMultiSize(PI * pi) {
 	    SCPrintSizes(pi, sfbit->sf->glyphs[gid]);
    } else if (pi->sc != NULL)
       SCPrintSizes(pi, pi->sc);
-   else {
-      for (i = 0; i < MVGlyphCount(pi->mv); ++i)
-	 if (SCWorthOutputting(MVGlyphIndex(pi->mv, i)))
-	    SCPrintSizes(pi, MVGlyphIndex(pi->mv, i));
-   }
 
    dump_trailer(pi);
 }

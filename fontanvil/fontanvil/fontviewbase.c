@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 3338 2014-09-30 18:25:16Z mskala $ */
+/* $Id: fontviewbase.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -116,19 +116,8 @@ void FVClear(FontViewBase * fv) {
 	       buts[3] = _("No _to All");
 	       buts[4] = _("_No");
 	       buts[5] = NULL;
-	       yes =
-		  ff_ask(_("Bad Reference"), (const char **) buts, 2, 4,
-			 _
-			 ("You are attempting to clear %.30s which is referred to by\nanother character. Are you sure you want to clear it?"),
-			 fv->sf->glyphs[gid]->name);
-	       if (yes == 1)
-		  refstate = 1;
-	       else if (yes == 2)
-		  refstate = -2;
-	       else if (yes == 3)
-		  refstate = -1;
-	       else if (yes == 4)
-		  continue;
+	       yes=2;
+	       refstate = -2;
 	    }
 	    if (refstate == -2) {
 	       if (onlycopydisplayed && fv->active_bitmap == NULL)
@@ -189,15 +178,10 @@ void FVCopyFgtoBg(FontViewBase * fv) {
 
 void FVUnlinkRef(FontViewBase * fv) {
    int i, layer, first, last, gid;
-
    SplineChar *sc;
-
    RefChar *rf, *next;
-
    BDFFont *bdf;
-
    BDFChar *bdfc;
-
    BDFRefChar *head, *cur;
 
    for (i = 0; i < fv->map->enccount; ++i)
@@ -243,9 +227,7 @@ void FVUnlinkRef(FontViewBase * fv) {
 
 void FVJoin(FontViewBase * fv) {
    SplineFont *sf = fv->sf;
-
    int i, changed, gid;
-
    extern float joinsnap;
 
    if (onlycopydisplayed && fv->active_bitmap != NULL)
@@ -264,12 +246,9 @@ void FVJoin(FontViewBase * fv) {
 }
 
 static void LinkEncToGid(FontViewBase * fv, int enc, int gid) {
-   EncMap *map = fv->map;
-
+   EncMap *map=fv->map;
    int old_gid;
-
-   int flags = -1;
-
+   int flags=-1;
    int j;
 
    if (map->map[enc] != -1 && map->map[enc] != gid) {
@@ -394,7 +373,6 @@ void TransHints(StemInfo * stem, real mul1, real off1, real mul2, real off2,
 void TransDStemHints(DStemInfo * ds, real xmul, real xoff, real ymul,
 		     real yoff, int round_to_int) {
    HintInstance *hi;
-
    double dmul, temp;
 
    for (; ds != NULL; ds = ds->next) {
@@ -856,7 +834,6 @@ void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
 	 sc->ticked = true;
       }
    if (flags & fvt_dogrid) {
-      SFPreserveGuide(fv->sf);
       SplinePointListTransform(fv->sf->grid.splines, transform,
 			       tpt_AllPoints);
    }
@@ -1003,7 +980,6 @@ void FVAutoHint(FontViewBase * fv) {
 	 /* Hint undoes are done in _SplineCharAutoHint */
 	 SFSCAutoHint(sc, fv->active_layer, bd);
       }
-   FVRefreshAll(fv->sf);
 }
 
 void FVAutoHintSubs(FontViewBase * fv) {
@@ -1139,9 +1115,6 @@ void FVClearInstrs(FontViewBase * fv) {
    SplineChar *sc;
 
    int i, gid;
-
-   if (!SFCloseAllInstrs(fv->sf))
-      return;
 
    for (i = 0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
@@ -1294,8 +1267,6 @@ void FVDetachGlyphs(FontViewBase * fv) {
 	     && map->enc != &custom)
 	    AltUniRemove(sf->glyphs[gid], UniFromEnc(i, map->enc));
       }
-   if (altered)
-      FVRefreshAll(sf);
 }
 
 void FVDetachAndRemoveGlyphs(FontViewBase * fv) {
@@ -1329,26 +1300,16 @@ void FVDetachAndRemoveGlyphs(FontViewBase * fv) {
       }
    if (changed && !fv->sf->changed) {
       fv->sf->changed = true;
-      for (fvs = sf->fv; fvs != NULL; fvs = fvs->nextsame)
-	 FVSetTitle(fvs);
    }
-   if (altered)
-      FVRefreshAll(sf);
 }
 
 void FVMetricsCenter(FontViewBase * fv, int docenter) {
    int i, gid;
-
    SplineChar *sc;
-
    DBounds bb;
-
    IBounds ib;
-
    real transform[6], itransform[6];
-
    BVTFunc bvts[2];
-
    BDFFont *bdf;
 
    memset(transform, 0, sizeof(transform));
@@ -1491,14 +1452,6 @@ static void _FVRevert(FontViewBase *fv, int tobackup) {
    temp->compression=old->compression;
    temp->fv=old->fv;
 
-   FVReattachCVs(old,temp);
-   for (i = 0; i < old->subfontcnt; ++i)
-      FVReattachCVs(old->subfonts[i], temp);
-
-   if (fv->sf->fontinfo)
-      FontInfo_Destroy(fv->sf);
-   MVDestroyAll(old);
-
    for (fvs=fv->sf->fv;fvs!=NULL;fvs=fvs->nextsame) {
       if (fvs==fv)
 	 map=temp->map;
@@ -1522,7 +1475,6 @@ static void _FVRevert(FontViewBase *fv, int tobackup) {
    for (fvs=fv->sf->fv;fvs!=NULL;fvs=fvs->nextsame)
       fvs->sf=temp;
 
-   FontViewReformatAll(fv->sf);
    SplineFontFree(old);
 }
 
@@ -1536,7 +1488,7 @@ void FVRevertBackup(FontViewBase * fv) {
 
 /*                             FV Interface                                   */
 
-static FontViewBase *_FontViewBaseCreate(SplineFont * sf) {
+FontViewBase *_FontViewCreate(SplineFont * sf) {
    FontViewBase *fv = calloc(1, sizeof(FontViewBase));
 
    int i;
@@ -1584,13 +1536,13 @@ static FontViewBase *_FontViewBaseCreate(SplineFont * sf) {
    return (fv);
 }
 
-static FontViewBase *FontViewBase_Create(SplineFont * sf, int hide) {
-   FontViewBase *fv = _FontViewBaseCreate(sf);
+FontViewBase *FontViewCreate(SplineFont * sf, int hide) {
+   FontViewBase *fv = _FontViewCreate(sf);
 
    return (fv);
 }
 
-static FontViewBase *FontViewBase_Append(FontViewBase * fv) {
+FontViewBase *FVAppend(FontViewBase * fv) {
    /* Normally fontviews get added to the fv list when their windows are */
    /*  created. but we don't create any windows here, so... */
    FontViewBase *test;
@@ -1604,9 +1556,8 @@ static FontViewBase *FontViewBase_Append(FontViewBase * fv) {
    return (fv);
 }
 
-static void FontViewBase_Free(FontViewBase * fv) {
+void FontViewFree(FontViewBase * fv) {
    int i;
-
    FontViewBase *prev;
 
    if (fv->nextsame == NULL && fv->sf->fv == fv) {
@@ -1633,30 +1584,17 @@ static void FontViewBase_Free(FontViewBase * fv) {
    free(fv);
 }
 
-static int FontViewBaseWinInfo(FontViewBase * fv, int *cc, int *rc) {
+int FVWinInfo(FontViewBase * fv, int *cc, int *rc) {
    *cc = 16;
    *rc = 4;
    return (-1);
 }
 
-static void FontViewBaseSetTitle(FontViewBase * foo) {
-}
-static void FontViewBaseSetTitles(SplineFont * foo) {
-}
-static void FontViewBaseRefreshAll(SplineFont * foo) {
-}
-static void FontViewBaseReformatOne(FontViewBase * foo) {
-}
-static void FontViewBaseReformatAll(SplineFont * foo) {
-}
-static void FontViewBaseLayerChanged(FontViewBase * foo) {
-}
-static void FV_ToggleCharChanged(SplineChar * foo) {
-}
-static FontViewBase *FVAny(void) {
+FontViewBase *FontViewFirst(void) {
    return fv_list;
 }
-static int FontIsActive(SplineFont * sf) {
+
+int SFIsActive(SplineFont * sf) {
    FontViewBase *fv;
 
    for (fv = fv_list; fv != NULL; fv = fv->next)
@@ -1666,9 +1604,8 @@ static int FontIsActive(SplineFont * sf) {
    return (false);
 }
 
-static SplineFont *FontOfFilename(const char *filename) {
+SplineFont *FontWithThisFilename(const char *filename) {
    char buffer[1025];
-
    FontViewBase *fv;
 
    GFileGetAbsoluteName((char *) filename, buffer, sizeof(buffer));
@@ -1682,10 +1619,7 @@ static SplineFont *FontOfFilename(const char *filename) {
    return (NULL);
 }
 
-static void FVExtraEncSlots(FontViewBase * fv, int encmax) {
-}
-
-static void FontViewBase_Close(FontViewBase * fv) {
+void FontViewClose(FontViewBase * fv) {
    if (fv_list == fv)
       fv_list = fv->next;
    else {
@@ -1697,83 +1631,6 @@ static void FontViewBase_Close(FontViewBase * fv) {
    FontViewFree(fv);
 }
 
-static void FVB_ChangeDisplayBitmap(FontViewBase * fv, BDFFont * bdf) {
-   fv->active_bitmap = bdf;
-}
-
-static void FVB_ShowFilled(FontViewBase * fv) {
-   fv->active_bitmap = NULL;
-}
-
-static void FVB_ReattachCVs(SplineFont * old, SplineFont * new) {
-}
-
-static void FVB_DeselectAll(FontViewBase * fv) {
+void FVDeselectAll(FontViewBase * fv) {
    memset(fv->selected, 0, fv->map->encmax);
 }
-
-static void FVB_DisplayChar(FontViewBase * fv, int gid) {
-}
-
-static int SFB_CloseAllInstrs(SplineFont * sf) {
-   return (true);
-}
-
-struct fv_interface noui_fv = {
-   FontViewBase_Create,
-   _FontViewBaseCreate,
-   FontViewBase_Close,
-   FontViewBase_Free,
-   FontViewBaseSetTitle,
-   FontViewBaseSetTitles,
-   FontViewBaseRefreshAll,
-   FontViewBaseReformatOne,
-   FontViewBaseReformatAll,
-   FontViewBaseLayerChanged,
-   FV_ToggleCharChanged,
-   FontViewBaseWinInfo,
-   FontIsActive,
-   FVAny,
-   FontViewBase_Append,
-   FontOfFilename,
-   FVExtraEncSlots,
-   FVExtraEncSlots,
-   FVB_ChangeDisplayBitmap,
-   FVB_ShowFilled,
-   FVB_ReattachCVs,
-   FVB_DeselectAll,
-   FVB_DisplayChar,
-   FVB_DisplayChar,
-   FVB_DisplayChar,
-   SFB_CloseAllInstrs
-};
-
-struct fv_interface *fv_interface = &noui_fv;
-
-/******************************************************************************/
-static int NoGlyphs(struct metricsview *mv) {
-   return (0);
-}
-
-static SplineChar *Nothing(struct metricsview *mv, int i) {
-   return (NULL);
-}
-
-static void NoReKern(struct splinefont *sf) {
-}
-
-static void NoReFeature(struct splinefont *sf) {
-}
-
-static void NoCloseAll(struct splinefont *sf) {
-}
-
-struct mv_interface noui_mv = {
-   NoGlyphs,
-   Nothing,
-   NoReKern,
-   NoReFeature,
-   NoCloseAll
-};
-
-struct mv_interface *mv_interface = &noui_mv;

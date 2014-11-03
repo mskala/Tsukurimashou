@@ -1,4 +1,4 @@
-/* $Id: bvedit.c 3278 2014-09-08 15:44:53Z mskala $ */
+/* $Id: bvedit.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -275,7 +275,6 @@ void BCTrans(BDFFont * bdf, BDFChar * bc, BVTFunc * bvts, FontViewBase * fv) {
 
    if (bvts[0].func == bvt_none)
       return;
-   BCPreserveState(bc);
    for (i = 0; bvts[i].func != bvt_none; ++i) {
       if (bvts[i].func == bvt_transmove) {
 	 xoff =
@@ -299,7 +298,6 @@ void BCRotateCharForVert(BDFChar * bc, BDFChar * from, BDFFont * frombdf) {
    /*  vertically displayed latin letter */
    int xmin, ymax;
 
-   BCPreserveState(bc);
    BCFlattenFloat(from);
    free(bc->bitmap);
    bc->xmin = from->xmin;

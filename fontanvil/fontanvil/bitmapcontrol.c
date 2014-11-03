@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 3325 2014-09-28 18:05:37Z mskala $ */
+/* $Id: bitmapcontrol.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -70,9 +70,9 @@ static void SFRemoveUnwantedBitmaps(SplineFont * sf, int32 * sizes) {
 	 for (fv = sf->fv; fv != NULL; fv = fv->nextsame) {
 	    if (fv->active_bitmap == bdf) {
 	       if (sf->onlybitmaps && sf->bitmaps != NULL)
-		  FVChangeDisplayBitmap(fv, sf->bitmaps);
+		 fv->active_bitmap=sf->bitmaps;
 	       else
-		  FVShowFilled(fv);
+		 fv->active_bitmap=NULL;
 	    }
 	 }
 	 BDFFontFree(bdf);
@@ -281,7 +281,6 @@ static int FVRegenBitmaps(CreateBitmapData * bd, int32 * sizes,
       }
    }
    sf->changed = true;
-   FVRefreshAll(fv->sf);
    return (true);
 }
 
@@ -332,7 +331,6 @@ static int FVRemoveBitmaps(CreateBitmapData * bd, int32 * sizes) {
       }
    }
    sf->changed = true;
-   FVRefreshAll(fv->sf);
    return (true);
 }
 
@@ -349,12 +347,11 @@ void BitmapsDoIt(CreateBitmapData * bd, int32 * sizes, int usefreetype) {
       /*  fontview so that it shows one of the bitmaps */
       if (bd->sf->onlybitmaps && bd->sf->bitmaps != NULL) {
 	 BDFFont *bdf;
-
 	 FontViewBase *fvs;
 
-	 for (bdf = bd->sf->bitmaps; bdf->next != NULL; bdf = bdf->next);
-	 for (fvs = bd->sf->fv; fvs != NULL; fvs = fvs->nextsame)
-	    FVChangeDisplayBitmap(fvs, bdf);
+	 for (bdf=bd->sf->bitmaps;bdf->next!=NULL;bdf=bdf->next);
+	 for (fvs=bd->sf->fv;fvs!=NULL; fvs = fvs->nextsame)
+	   fvs->active_bitmap=bdf;
       }
    } else {
       if (FVRegenBitmaps(bd, sizes, usefreetype))

@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: splinefont.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -556,7 +556,6 @@ int SFScaleToEm(SplineFont * sf, int as, int des) {
 
    if (!sf->changed) {
       sf->changed = true;
-      FVSetTitles(sf);
    }
 
    return (true);
@@ -761,10 +760,7 @@ static char *ArchiveParseTOC(char *listfile, enum archive_list_style ars,
       }
    }
 
-   choice =
-      ff_choose(_("Which archived item should be opened?"),
-		(const char **) files, fcnt, def,
-		_("There are multiple files in this archive, pick one"));
+   choice=def;
    if (choice == -1)
       name = NULL;
    else
@@ -1307,14 +1303,8 @@ SplineFont *_ReadSplineFont(FILE * file, char *filename,
       buts[0] = _("_Yes");
       buts[1] = _("_No");
       buts[2] = NULL;
-      if (ff_ask
-	  (_("Restricted Font"), (const char **) buts, 1, 1,
-	   _
-	   ("This font is marked with an FSType of 2 (Restricted\nLicense). That means it is not editable without the\npermission of the legal owner.\n\nDo you have such permission?"))
-	  == 1) {
-	 SplineFontFree(sf);
-	 return (NULL);
-      }
+      SplineFontFree(sf);
+      return (NULL);
    }
    return (sf);
 }

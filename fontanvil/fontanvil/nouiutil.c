@@ -1,4 +1,4 @@
-/* $Id: nouiutil.c 3284 2014-09-09 07:34:26Z mskala $ */
+/* $Id: nouiutil.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -83,25 +83,10 @@ void ff_post_error(const char *title, const char *statement, ...) {
    va_end(ap);
 }
 
-int ff_ask(const char *title, const char **answers,
-		    int def, int cancel, const char *question, ...) {
-   return (def);
-}
-
-int ff_choose(const char *title, const char **choices, int cnt,
-		       int def, const char *question, ...) {
-   return (def);
-}
-
 int ff_choose_multiple(char *title, const char **choices, char *sel,
 				int cnt, char *buts[2], const char *question,
 				...) {
    return (-1);
-}
-
-char *ff_ask_string(const char *title, const char *def,
-		    const char *question, ...) {
-   return ((char *) def);
 }
 
 int PsStrokeFlagsDlg(void) {

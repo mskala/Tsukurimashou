@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 3280 2014-09-08 17:24:23Z mskala $ */
+/* $Id: fvfonts.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1211,8 +1211,6 @@ static void _MergeFont(SplineFont * into, SplineFont * other,
 		     bdf->glyphmax = bdf->glyphcnt = emptypos + cnt;
 		  }
 	       for (fvs = into->fv; fvs != NULL; fvs = fvs->nextsame)
-		  FVBiggerGlyphCache(fvs, emptypos + cnt);
-	       for (fvs = into->fv; fvs != NULL; fvs = fvs->nextsame)
 		  if (fvs->sf == into)
 		     FVMergeRefigureMapSel(fvs, into, o_sf, mapping, emptypos,
 					   cnt);
@@ -1251,7 +1249,6 @@ static void _MergeFont(SplineFont * into, SplineFont * other,
    if (other->fv == NULL)
       SplineFontFree(other);
    into->changed = true;
-   FontViewReformatAll(into);
    GlyphHashFree(into);
 }
 
@@ -1328,7 +1325,6 @@ static void CIDMergeFont(SplineFont * into, SplineFont * other,
       MergeFixupRefChars(i_sf);
       ++k;
    } while (k < other->subfontcnt);
-   FontViewReformatAll(into);
    into->changed = true;
    GlyphHashFree(into);
 

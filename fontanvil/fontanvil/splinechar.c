@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 3414 2014-10-25 16:23:29Z mskala $ */
+/* $Id: splinechar.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -133,7 +133,6 @@ void SCSynchronizeWidth(SplineChar * sc, real newwidth, real oldwidth,
 	 SCSynchronizeWidth(dlist->sc, newwidth, oldwidth, flagfv);
 	 if (!dlist->sc->changed) {
 	    dlist->sc->changed = true;
-	    FVToggleCharChanged(dlist->sc);
 	 }
       }
    }
@@ -943,35 +942,11 @@ void UnlinkThisReference(FontViewBase * fv, SplineChar * sc, int layer) {
 }
 
 static int MultipleValues(char *name, int local) {
-   char *buts[3];
-
-   buts[0] = _("_Yes");
-   buts[1] = _("_No");
-   buts[2] = NULL;
-   if (ff_ask
-       (_("Multiple"), (const char **) buts, 0, 1,
-	_
-	("There is already a glyph with this Unicode encoding\n(named %1$.40s, at local encoding %2$d).\nIs that what you want?"),
-	name, local) == 0)
-      return (true);
-
-   return (false);
+   return (true);
 }
 
 static int MultipleNames(void) {
-   char *buts[3];
-
-   buts[0] = _("_Yes");
-   buts[1] = _("_Cancel");
-   buts[2] = NULL;
-   if (ff_ask
-       (_("Multiple"), (const char **) buts, 0, 1,
-	_
-	("There is already a glyph with this name,\ndo you want to swap names?"))
-       == 0)
-      return (true);
-
-   return (false);
+   return (true);
 }
 
 int SCSetMetaData(SplineChar * sc, char *name, int unienc,
@@ -1067,7 +1042,6 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 	 if (enc != -1 && ((fvs->map->enc->only_1byte && enc < 256) ||
 			   (fvs->map->enc->has_2byte && enc < 65535))) {
 	    fvs->map->enc = &custom;
-	    FVSetTitle(fvs);
 	 }
       }
    }
@@ -1996,11 +1970,8 @@ void instrcheck(SplineChar * sc, int layer) {
 
 void TTFPointMatches(SplineChar * sc, int layer, int top) {
    AnchorPoint *ap;
-
    BasePoint here, there;
-
    struct splinecharlist *deps;
-
    RefChar *ref;
 
    if (!sc->layers[layer].order2 || sc->layers[layer].background)
@@ -2061,26 +2032,3 @@ void SCCharChangedUpdate(SplineChar * sc, int layer, int changed) {
 	 SCTickValidationState(sc, layer);
    }
 }
-
-void CVChngNoUpdate(CharViewBase * cv) {
-   SCCharChangedUpdate(cv->sc, CVLayer(cv), true);
-}
-
-static void _CVChngNoUpdate(CharViewBase * cv, int changed) {
-   SCCharChangedUpdate(cv->sc, CVLayer(cv), changed);
-}
-
-static void CVGlphRenameFixup(SplineFont * sf, char *oldname, char *newname) {
-}
-
-static void CV__LayerPaletteCheck(SplineFont * sf) {
-}
-
-static struct cv_interface noui_cv = {
-   CVChngNoUpdate,
-   _CVChngNoUpdate,
-   CVGlphRenameFixup,
-   CV__LayerPaletteCheck
-};
-
-struct cv_interface *cv_interface = &noui_cv;

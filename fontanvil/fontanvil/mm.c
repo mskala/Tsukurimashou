@@ -1,4 +1,4 @@
-/* $Id: mm.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: mm.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -747,7 +747,7 @@ int MMReblend(FontViewBase * fv, MMSet * mm) {
 	 continue;
       if (olderr == NULL) {
 	 if (fv != NULL)
-	    (fv_interface->deselect_all) (fv);
+	    FVDeselectAll(fv);
 	 first = i;
       }
       if (olderr == NULL || olderr == err)
@@ -777,7 +777,6 @@ int MMReblend(FontViewBase * fv, MMSet * mm) {
       return (true);
 
    if (fv != NULL) {
-      FVDisplayEnc(fv, first);
       if (olderr == (char *) -1)
 	 ff_post_error(_("Bad Multiple Master Font"),
 		       _("Various errors occurred at the selected glyphs"));
@@ -896,25 +895,23 @@ FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
       mm->defweights[i] = blends[i];
    }
    if (tonew) {
-      SplineFont *new;
-
+      SplineFont *newsf;
       FontViewBase *oldfv = hold->fv;
-
       char *fn, *full;
 
-      mm->normal = new = MMNewFont(mm, -1, hold->familyname);
+      mm->normal = newsf = MMNewFont(mm, -1, hold->familyname);
       MMWeightsUnMap(blends, axispos, mm->axis_count);
       fn = _MMMakeFontname(mm, axispos, &full);
-      free(new->fontname);
-      free(new->fullname);
-      new->fontname = fn;
-      new->fullname = full;
-      new->weight = _MMGuessWeight(mm, axispos, new->weight);
-      new->private = BlendPrivate(PSDictCopy(hold->private), mm);
-      new->fv = NULL;
-      fv = FontViewCreate(new, false);
+      free(newsf->fontname);
+      free(newsf->fullname);
+      newsf->fontname = fn;
+      newsf->fullname = full;
+      newsf->weight = _MMGuessWeight(mm, axispos, newsf->weight);
+      newsf->private = BlendPrivate(PSDictCopy(hold->private), mm);
+      newsf->fv = NULL;
+      fv = FontViewCreate(newsf, false);
       MMReblend(fv, mm);
-      new->mm = NULL;
+      newsf->mm = NULL;
       mm->normal = hold;
       for (i = 0; i < mm->instance_count; ++i) {
 	 mm->defweights[i] = oldblends[i];
@@ -1203,7 +1200,6 @@ int MMValid(MMSet * mm, int complain) {
 	 if (SCWorthOutputting(sf->glyphs[i]) !=
 	     SCWorthOutputting(mm->instances[j]->glyphs[i])) {
 	    if (complain) {
-	       FVChangeGID(sf->fv, i);
 	       if (SCWorthOutputting(sf->glyphs[i]))
 		  ff_post_error(_("Bad Multiple Master Font"),
 				_
@@ -1224,7 +1220,6 @@ int MMValid(MMSet * mm, int complain) {
 	 if (mm->apple && sf->glyphs[i]->layers[ly_fore].refs != NULL
 	     && sf->glyphs[i]->layers[ly_fore].splines != NULL) {
 	    if (complain) {
-	       FVChangeGID(sf->fv, i);
 	       ff_post_error(_("Bad Multiple Master Font"),
 			     _
 			     ("The glyph %1$.30s in %2$.30s has both references and contours. This is not supported in a font with variations"),
@@ -1238,7 +1233,6 @@ int MMValid(MMSet * mm, int complain) {
 		&& mm->instances[j]->glyphs[i]->layers[ly_fore].splines !=
 		NULL) {
 	       if (complain) {
-		  FVChangeGID(sf->fv, i);
 		  ff_post_error(_("Bad Multiple Master Font"),
 				_
 				("The glyph %1$.30s in %2$.30s has both references and contours. This is not supported in a font with variations"),
@@ -1250,7 +1244,6 @@ int MMValid(MMSet * mm, int complain) {
 	    if (ContourCount(sf->glyphs[i]) !=
 		ContourCount(mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  FVChangeGID(sf->fv, i);
 		  ff_post_error(_("Bad Multiple Master Font"),
 				_
 				("The glyph %1$.30s has a different number of contours in font %2$.30s than in %3$.30s"),
@@ -1262,7 +1255,6 @@ int MMValid(MMSet * mm, int complain) {
 		       && !ContourPtMatch(sf->glyphs[i],
 					  mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  FVChangeGID(sf->fv, i);
 		  ff_post_error(_("Bad Multiple Master Font"),
 				_
 				("The glyph %1$.30s in font %2$.30s has a different number of points (or control points) on its contours than in %3$.30s"),
@@ -1274,7 +1266,6 @@ int MMValid(MMSet * mm, int complain) {
 	       if (!ContourDirMatch
 		   (sf->glyphs[i], mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  FVChangeGID(sf->fv, i);
 		  ff_post_error(_("Bad Multiple Master Font"),
 				_
 				("The glyph %1$.30s in font %2$.30s has contours running in a different direction than in %3$.30s"),
@@ -1284,7 +1275,6 @@ int MMValid(MMSet * mm, int complain) {
 	       return (false);
 	    } else if (!RefMatch(sf->glyphs[i], mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  FVChangeGID(sf->fv, i);
 		  ff_post_error(_("Bad Multiple Master Font"),
 				_
 				("The glyph %1$.30s in font %2$.30s has a different number of references than in %3$.30s"),
@@ -1296,7 +1286,6 @@ int MMValid(MMSet * mm, int complain) {
 		       && !RefTransformsMatch(sf->glyphs[i],
 					      mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  FVChangeGID(sf->fv, i);
 		  ff_post_error(_("Bad Multiple Master Font"),
 				_
 				("The glyph %1$.30s in font %2$.30s has references with different scaling or rotation (etc.) than in %3$.30s"),
@@ -1308,7 +1297,6 @@ int MMValid(MMSet * mm, int complain) {
 		       && !KernsMatch(sf->glyphs[i],
 				      mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  FVChangeGID(sf->fv, i);
 		  ff_post_error(_("Bad Multiple Master Font"),
 				_
 				("The glyph %1$.30s in font %2$.30s has a different set of kern pairs than in %3$.30s"),
@@ -1320,7 +1308,6 @@ int MMValid(MMSet * mm, int complain) {
 	 }
 	 if (mm->apple && !ContourPtNumMatch(mm, i)) {
 	    if (complain) {
-	       FVChangeGID(sf->fv, i);
 	       ff_post_error(_("Bad Multiple Master Font"),
 			     _
 			     ("The glyph %1$.30s has a different numbering of points (and control points) on its contours than in the various instances of the font"),
@@ -1334,7 +1321,6 @@ int MMValid(MMSet * mm, int complain) {
 		   (sf->glyphs[i]->hstem,
 		    mm->instances[j]->glyphs[i]->hstem)) {
 		  if (complain) {
-		     FVChangeGID(sf->fv, i);
 		     ff_post_error(_("Bad Multiple Master Font"),
 				   _
 				   ("The %1$s hints in glyph \"%2$.30s\" in font %3$.30s do not match those in %4$.30s (different number or different overlap criteria)"),
@@ -1347,7 +1333,6 @@ int MMValid(MMSet * mm, int complain) {
 		      (sf->glyphs[i]->vstem,
 		       mm->instances[j]->glyphs[i]->vstem)) {
 		  if (complain) {
-		     FVChangeGID(sf->fv, i);
 		     ff_post_error(_("Bad Multiple Master Font"),
 				   _
 				   ("The %1$s hints in glyph \"%2$.30s\" in font %3$.30s do not match those in %4$.30s (different number or different overlap criteria)"),
@@ -1361,7 +1346,6 @@ int MMValid(MMSet * mm, int complain) {
 	       if (!ContourHintMaskMatch
 		   (sf->glyphs[i], mm->instances[j]->glyphs[i])) {
 		  if (complain) {
-		     FVChangeGID(sf->fv, i);
 		     ff_post_error(_("Bad Multiple Master Font"),
 				   _
 				   ("The glyph %1$.30s in font %2$.30s has a different hint mask on its contours than in %3$.30s"),

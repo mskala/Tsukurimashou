@@ -1,4 +1,4 @@
-/* $Id: lookups.c 3412 2014-10-24 20:34:43Z mskala $ */
+/* $Id: lookups.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2730,8 +2730,6 @@ static OTLookup *_OTLookupCopyInto(struct sfmergecontext *mc,
       otl->next = NULL;
       otl->subtables = NULL;
       OrderNewLookup(mc->sf_to, otl, before);
-      if (!do_contents)
-	 FIOTLookupCopyInto(mc->sf_to, mc->sf_from, from_otl, otl, 0, before);
    } else
       otl = mc->lks[l].to;
    if (!do_contents)
@@ -2763,7 +2761,6 @@ static OTLookup *_OTLookupCopyInto(struct sfmergecontext *mc,
 	 SF_AddPSTKern(mc, from_sub, sub);
       ++scnt;
    }
-   FIOTLookupCopyInto(mc->sf_to, mc->sf_from, from_otl, otl, scnt, before);
    return (otl);
 }
 
@@ -4316,7 +4313,6 @@ void SFGlyphRenameFixup(SplineFont * sf, char *old, char *new,
 
    ASM *sm;
 
-   CVGlyphRenameFixup(sf, old, new);
    if (sf->cidmaster != NULL)
       master = sf->cidmaster;
 
@@ -4642,34 +4638,3 @@ int KCFindName(char *name, char **classnames, int cnt, int allow_class0) {
    /*  unspecified then it means "anything" so we found something */
    return (classnames[0] != NULL || !allow_class0 ? -1 : 0);
 }
-
-typedef struct lookuplist {
-   OTLookup *lookup;
-   struct lookuplist *next;
-} LookupList;
-
-typedef struct matchstr {
-   char *entity;
-   char *replacements;		/* For reverse contextual chaining */
-   LookupList *lookups;
-} MatchStr;
-
-/* User interface functionality when we have no UI */
-static void NOFI_SortInsertLookup(SplineFont * sf, OTLookup * newotl) {
-}
-
-static void NOFI_OTLookupCopyInto(SplineFont * into_sf, SplineFont * from_sf,
-				  OTLookup * from_otl, OTLookup * to_otl,
-				  int scnt, OTLookup * before) {
-}
-
-static void NOFI_Destroy(SplineFont * sf) {
-}
-
-struct fi_interface noui_fi = {
-   NOFI_SortInsertLookup,
-   NOFI_OTLookupCopyInto,
-   NOFI_Destroy
-};
-
-struct fi_interface *fi_interface = &noui_fi;

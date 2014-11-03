@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: autowidth.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -118,7 +118,6 @@ static void AW_AutoKern(WidthInfo * wi) {
 	 wi->sf->changed = true;
       }
    }
-   MVReKernAll(wi->fv->sf);
 }
 
 static real SplineFindMinXAtY(Spline * spline, real y, real min) {
@@ -809,7 +808,6 @@ static void AW_KernRemoveBelowThreshold(SplineFont * sf, int threshold) {
 	    }
 	 }
       }
-   MVReKernAll(sf);
 }
 
 static struct charone *AW_MakeCharOne(SplineChar * sc) {
@@ -1132,7 +1130,6 @@ void FVRemoveKerns(FontViewBase * fv) {
    }
    if (changed) {
       sf->changed = true;
-      MVReKernAll(fv->sf);
    }
 }
 
@@ -1157,7 +1154,6 @@ void FVRemoveVKerns(FontViewBase * fv) {
    }
    if (changed) {
       fv->sf->changed = true;
-      MVReKernAll(fv->sf);
    }
 }
 

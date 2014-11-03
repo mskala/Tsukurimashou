@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3423 2014-10-26 18:51:07Z mskala $ */
+/* $Id: scripting.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2071,7 +2071,7 @@ static void bBuildDuplicate(Context * c) {
 }
 
 static void bCIDChangeSubFont(Context * c) {
-   SplineFont *sf = c->curfv->sf, *new;
+   SplineFont *sf = c->curfv->sf, *newsf;
 
    EncMap *map = c->curfv->map;
    int i;
@@ -2087,24 +2087,23 @@ static void bCIDChangeSubFont(Context * c) {
    if (i == sf->cidmaster->subfontcnt)
       ScriptErrorString(c, "Not in the current cid font",
 			c->a.vals[1].u.sval);
-   new = sf->cidmaster->subfonts[i];
+   newsf = sf->cidmaster->subfonts[i];
 
-   MVDestroyAll(c->curfv->sf);
-   if (new->glyphcnt > sf->glyphcnt) {
+   if (newsf->glyphcnt > sf->glyphcnt) {
       free(c->curfv->selected);
-      c->curfv->selected = calloc(new->glyphcnt, sizeof(char));
-      if (new->glyphcnt > map->encmax)
+      c->curfv->selected = calloc(newsf->glyphcnt, sizeof(char));
+      if (newsf->glyphcnt > map->encmax)
 	 map->map =
-	    realloc(map->map, (map->encmax = new->glyphcnt) * sizeof(int32));
-      if (new->glyphcnt > map->backmax)
+	    realloc(map->map, (map->encmax = newsf->glyphcnt) * sizeof(int32));
+      if (newsf->glyphcnt > map->backmax)
 	 map->backmap =
 	    realloc(map->backmap,
-		    (map->backmax = new->glyphcnt) * sizeof(int32));
-      for (i = 0; i < new->glyphcnt; ++i)
+		    (map->backmax = newsf->glyphcnt) * sizeof(int32));
+      for (i = 0; i < newsf->glyphcnt; ++i)
 	 map->map[i] = map->backmap[i] = i;
-      map->enccount = new->glyphcnt;
+      map->enccount = newsf->glyphcnt;
    }
-   c->curfv->sf = new;
+   c->curfv->sf = newsf;
 }
 
 static void bCIDFlatten(Context * c) {
@@ -6884,7 +6883,6 @@ static void bSetFontOrder(Context * c) {
       /* No Op */ ;
    else {
       if (c->a.vals[1].u.ival == 2) {
-	 SFCloseAllInstrs(c->curfv->sf);
 	 SFConvertToOrder2(c->curfv->sf);
       } else
 	 SFConvertToOrder3(c->curfv->sf);
