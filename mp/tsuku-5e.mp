@@ -230,19 +230,6 @@ vardef kanji.grnine.manor =
   expand_pbox;
 enddef;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.rare.broom =
-  push_pbox_toexpand("kanji.rare.broom");
-  build_kanji.level(build_kanji.sscale(yscaled 0.95 shifted (0,-10))
-    (build_kanji.tb(550,50)
-      (kanji.radical.pigs_snout)
-      (build_kanji.tb(450,200)
-         (kanji.radical.conservative_hat)
-         (kanji.greight.towel))));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.leftrad.sword =

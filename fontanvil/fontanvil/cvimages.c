@@ -1,4 +1,4 @@
-/* $Id: cvimages.c 2952 2014-03-15 17:28:24Z mskala $ */
+/* $Id: cvimages.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -105,7 +105,6 @@ void SCAppendEntityLayers(SplineChar * sc, Entity * ent) {
       free(e);
    }
    sc->layer_cnt += cnt;
-   SCMoreLayers(sc, old);
 }
 
 void SCImportPSFile(SplineChar * sc, int layer, FILE * ps, int doclear,
@@ -151,7 +150,7 @@ void SCImportPSFile(SplineChar * sc, int layer, FILE * ps, int doclear,
    }
    if ((empty || doclear) && width != UNDEFINED_WIDTH)
       SCSynchronizeWidth(sc, width, sc->width, NULL);
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 void SCImportPS(SplineChar * sc, int layer, char *path, int doclear,
@@ -201,7 +200,7 @@ void SCImportPDFFile(SplineChar * sc, int layer, FILE * pdf, int doclear,
       espl->next = *head;
       *head = spl;
    }
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 void SCImportPDF(SplineChar * sc, int layer, char *path, int doclear,
@@ -256,7 +255,7 @@ void SCImportSVG(SplineChar * sc, int layer, char *path, char *memory,
       espl->next = *head;
       *head = spl;
    }
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 void SCImportGlif(SplineChar * sc, int layer, char *path, char *memory,
@@ -293,7 +292,7 @@ void SCImportGlif(SplineChar * sc, int layer, char *path, char *memory,
    espl->next = *head;
    *head = spl;
 
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 #endif
 
@@ -964,8 +963,7 @@ void SCInsertImage(SplineChar * sc, GImage * image, real scale, real yoff,
    im->bb.miny = im->yoff - GImageGetHeight(im->image) * im->yscale;
    sc->layers[layer].images = im;
    sc->parent->onlybitmaps = false;
-   SCOutOfDateBackground(sc);
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 void SCAddScaleImage(SplineChar * sc, GImage * image, int doclear, int layer) {

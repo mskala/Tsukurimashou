@@ -1,4 +1,4 @@
-/* $Id: views.h 2938 2014-03-10 18:51:22Z mskala $ */
+/* $Id: views.h 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -713,8 +713,6 @@ extern void FVChangeChar(FontView * fv, int encoding);
 extern void FVMergeFonts(FontView * fv);
 
 extern void FVInterpolateFonts(FontView * fv);
-
-extern void FVDeselectAll(FontView * fv);
 
 extern void FVAutoWidth2(FontView * fv);
 
@@ -1686,8 +1684,6 @@ extern void SFD_DumpPST(FILE * sfd, SplineChar * sc);
 
 extern void SFD_DumpKerns(FILE * sfd, SplineChar * sc, int *newgids);
 
-extern void SFDDumpCharStartingMarker(FILE * sfd, SplineChar * sc);
-
 extern Undoes *SFDGetUndo(SplineFont * sf, FILE * sfd, SplineChar * sc,
 			  const char *startTag, const char *endTag,
 			  int current_layer);
@@ -1717,10 +1713,6 @@ extern FILE *MakeTemporaryFile(void);
  */
 extern char *FileToAllocatedString(FILE * f);
 
-extern char *getquotedeol(FILE * sfd);
-
-extern int getname(FILE * sfd, char *tokbuf);
-
 extern void SFDGetKerns(FILE * sfd, SplineChar * sc, char *ttok);
 
 extern void SFDGetPSTs(FILE * sfd, SplineChar * sc, char *ttok);
@@ -1739,26 +1731,6 @@ extern void SFDGetPSTs(FILE * sfd, SplineChar * sc, char *ttok);
  * skip to the start of the next one.
  */
 extern char *SFDMoveToNextStartChar(FILE * sfd);
-
-/**
- * Some references in the SFD file are to a numeric glyph ID. As a
- * sneaky method to handle that, fontanvil will load these glyph
- * numbers into the pointers which should refer to the glyph. For
- * example, in kerning, instead of pointing to the splinechar for the
- * "v" glyph, the ID might be stored there, say the number 143. This
- * fixup function will convert such 143 references to being pointers
- * to the splinechar with a numeric ID of 143. It is generally a good
- * idea to do this, as some fontanvil code will of course assume a
- * pointer to a splinechar is a pointer to a splinechar and not just
- * the glyph index of that splinechar.
- *
- * MIQ updated this in Oct 2012 to be more forgiving when called twice
- * or on a splinefont which has some of it's references already fixed.
- * This was to allow partial updates of data structures from SFD
- * fragments and the fixup to operate just on those references which
- * need to be fixed.
- */
-extern void SFDFixupRefs(SplineFont * sf);
 
 /**
  * Dump a single undo for the given splinechar to the file at "sfd".

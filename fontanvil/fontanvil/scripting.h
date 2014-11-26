@@ -1,4 +1,4 @@
-/* $Id: scripting.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: scripting.h 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -118,14 +118,6 @@ extern int AddScriptingCommand(char *name, UserDefScriptFunc func,
  /*  given name */
 extern UserDefScriptFunc HasUserScriptingCommand(char *name);
 
- /* Scripts used to be in latin1, and we still support that if the user sets */
- /*  an environment variable. Now scripts are by default utf8. These two funcs */
- /*  will interconvert between latin1 & utf8 if appropriate, or just make a */
- /*  utf8 copy if not. They always make a copy. */
-extern char *utf82script_copy(const char *ustr);
-
-extern char *script2utf8_copy(const char *str);
-
  /* Various error routines. */
 void ScriptError(Context * c, const char *msg);
 
@@ -140,14 +132,5 @@ void ScriptErrorF(Context * c, const char *fmt, ...);
 	/* utf8 */
 
 extern int running_script;
-
-/* Hooks so a scripting dlg can execute fontanvil's legacy scripting language */
-extern void ff_VerboseCheck(void);
-
-extern enum token_type ff_NextToken(Context * c);
-
-extern void ff_backuptok(Context * c);
-
-extern void ff_statement(Context *);
 
 #endif /* _SCRIPTING_H */

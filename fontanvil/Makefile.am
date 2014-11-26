@@ -37,7 +37,8 @@ space:=$(empty) $(empty)
 comma:=,
 percent=%
 
-SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,/bin/sh)
+SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
+  $(wildcard /bin/bash),/bin/bash,/bin/sh))
 
 ############################################################################
 
@@ -46,22 +47,23 @@ SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,/bin/sh)
 TSU_V_REDIR=$(if $(AM_V_at),>& /dev/null)
 
 if COND_COLOUR
-  ECHO_ANSI=echo -e
-  ansi_default=\e[0m
-  ansi_red=\e[31m
-  ansi_green=\e[32m
-  ansi_yellow=\e[33m
-  ansi_blue=\e[34m
-  ansi_magenta=\e[35m
-  ansi_cyan=\e[36m
-  ansi_pink=\e[35;1m
-  ansi_white=\e[37;1m
-  ansi_cleareol=\e[K
+  escchar:=$(strip $(shell echo x | tr 'x' '\033'))
+  ECHO_ANSI=echo
+  ansi_default=$(escchar)[0m
+  ansi_red=$(escchar)[31m
+  ansi_green=$(escchar)[32m
+  ansi_yellow=$(escchar)[33m
+  ansi_blue=$(escchar)[34m
+  ansi_magenta=$(escchar)[35m
+  ansi_cyan=$(escchar)[36m
+  ansi_pink=$(escchar)[35;1m
+  ansi_white=$(escchar)[37;1m
+  ansi_cleareol=$(escchar)[K
   ansi_clearescaped=\033\[K
-  ansi_home=\e[1G
-  am__@andt@v_CC_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CC    " $@;
-  am__@andt@v_CCLD_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
-  am__@andt@v_GEN_0=@echo -e "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
+  ansi_home=$(escchar)[1G
+  am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
+  am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
+  am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
 else
   ECHO_ANSI=echo
   ansi_default=
@@ -128,7 +130,7 @@ noinst_HEADERS = \
   inc/basics.h inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
   inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
   inc/gimage.h inc/gio.h \
-  inc/gresource.h inc/gwidget.h inc/gwwiconv.h inc/intl.h inc/ustring.h \
+  inc/gresource.h inc/gwidget.h inc/intl.h inc/ustring.h \
   inc/utype.h \
   fontanvil/sftextfieldP.h \
   fontanvil/configure-fontanvil.h fontanvil/views.h fontanvil/is_LIGATURE.h \
@@ -140,9 +142,9 @@ noinst_HEADERS = \
   fontanvil/baseviews.h fontanvil/fvmetrics.h fontanvil/mm.h \
   fontanvil/scriptfuncs.h fontanvil/ttfinstrs.h fontanvil/edgelist2.h \
   fontanvil/namehash.h fontanvil/scripting.h fontanvil/uiinterface.h \
-  fontanvil/bezctx_ff.h fontanvil/edgelist.h fontanvil/groups.h \
+  fontanvil/bezctx_ff.h fontanvil/edgelist.h \
   fontanvil/nonlineartrans.h fontanvil/sd.h fontanvil/unicoderange.h \
-  fontanvil/bitmapcontrol.h fontanvil/encoding.h fontanvil/ofl.h \
+  fontanvil/bitmapcontrol.h fontanvil/encoding.h \
   fontanvil/search.h fontanvil/usermenu.h fontanvil/fffreetype.h \
   fontanvil/PfEd.h fontanvil/sfd1.h \
   fontanvil/sflayoutP.h fontanvil/print.h fontanvil/splinefont.h \
@@ -154,7 +156,7 @@ noinst_LIBRARIES = \
 
 fontanvil_fontanvil_SOURCES = \
  fontanvil/main.c \
- fontanvil/asmfpst.c fontanvil/autohint.c fontanvil/autosave.c \
+ fontanvil/asmfpst.c fontanvil/autohint.c \
  fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
  fontanvil/bezctx_ff.c fontanvil/bitmapchar.c fontanvil/bitmapcontrol.c \
  fontanvil/bvedit.c fontanvil/clipnoui.c fontanvil/crctab.c \
@@ -163,12 +165,12 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/encoding.c fontanvil/featurefile.c fontanvil/flaglist.c \
  fontanvil/fontviewbase.c fontanvil/freetype.c fontanvil/fvcomposite.c \
  fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
- fontanvil/ftdelta.c fontanvil/glyphcomp.c fontanvil/groups.c \
+ fontanvil/glyphcomp.c \
  fontanvil/http.c fontanvil/ikarus.c fontanvil/is_LIGATURE.c \
  fontanvil/langfreq.c fontanvil/lookups.c fontanvil/macbinary.c \
  fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \
  fontanvil/namelist.c fontanvil/nonlineartrans.c fontanvil/noprefs.c \
- fontanvil/nouiutil.c fontanvil/nowakowskittfinstr.c fontanvil/ofl.c \
+ fontanvil/nouiutil.c fontanvil/nowakowskittfinstr.c \
  fontanvil/othersubrs.c fontanvil/palmfonts.c fontanvil/parsepdf.c \
  fontanvil/parsepfa.c fontanvil/parsettfatt.c fontanvil/parsettfbmf.c \
  fontanvil/parsettf.c fontanvil/parsettfvar.c fontanvil/print.c \
@@ -204,7 +206,7 @@ Unicode_libgunicode_a_SOURCES = \
   Unicode/charset/MacSymbol.c Unicode/charset/win.c \
   Unicode/charset/ZapfDingbats.c Unicode/ArabicForms.c Unicode/char.c \
   Unicode/memory.c Unicode/ucharmap.c Unicode/unialt.c Unicode/ustring.c \
-  Unicode/utype.c Unicode/gwwiconv.c Unicode/combiners.h
+  Unicode/utype.c Unicode/combiners.h
 
 gutils_libgutils_a_SOURCES = \
   gutils/fsys.c gutils/gimage.c \
@@ -214,8 +216,8 @@ gutils_libgutils_a_SOURCES = \
   gutils/gimagereadxpm.c gutils/gimagewritebmp.c gutils/gimagewritegimage.c \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
   gutils/gimagewritexpm.c gutils/giohosts.c gutils/giomime.c \
-  gutils/giothread.c gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gutils.c \
-  gutils/gwwintl.c gutils/prefs.c gutils/prefs.h gutils/unicodelibinfo.c inc/unicodelibinfo.h \
+  gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gutils.c \
+  gutils/gwwintl.c gutils/unicodelibinfo.c inc/unicodelibinfo.h \
   gutils/gioftpP.h
 gutils_libgutils_a_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   $(GLIB_CFLAGS)

@@ -1,4 +1,4 @@
-/* $Id: ustring.c 2950 2014-03-15 16:10:53Z mskala $ */
+/* $Id: ustring.c 3285 2014-09-09 07:38:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -44,14 +44,6 @@ void u_strcpy(unichar_t * to, const unichar_t * from) {
    register unichar_t ch;
 
    while ((ch = *from++) != '\0')
-      *(to++) = ch;
-   *to = 0;
-}
-
-void u_strncpy(register unichar_t * to, const unichar_t * from, int len) {
-   register unichar_t ch;
-
-   while ((ch = *from++) != '\0' && --len >= 0)
       *(to++) = ch;
    *to = 0;
 }

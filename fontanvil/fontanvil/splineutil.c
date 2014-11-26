@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: splineutil.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -66,10 +66,6 @@ typedef struct quartic {
 #   define FLAG 0xbadcafe
 #endif
 
-#ifdef CHUNKDEBUG
-static int chunkdebug = 0;	/* When this is set we never free anything, insuring that each chunk is unique */
-#endif
-
 #if ALLOC_CHUNK>1
 struct chunk {
    struct chunk *next;
@@ -121,7 +117,7 @@ char *strconcat3(const char *str1, const char *str2, const char *str3) {
    return (ret);
 }
 
-void LineListFree(LineList * ll) {
+static void LineListFree(LineList * ll) {
    LineList *next;
 
    while (ll != NULL) {
@@ -201,7 +197,7 @@ void SplinePointMDFree(SplineChar * sc, SplinePoint * sp) {
    chunkfree(sp, sizeof(SplinePoint));
 }
 
-void SplinePointsFree(SplinePointList * spl) {
+static void SplinePointsFree(SplinePointList * spl) {
    Spline *first, *spline, *next;
 
    int nonext;
@@ -266,16 +262,6 @@ void SplinePointListMDFree(SplineChar * sc, SplinePointList * spl) {
    free(spl->spiros);
    free(spl->contour_name);
    chunkfree(spl, sizeof(SplinePointList));
-}
-
-void SplinePointListsMDFree(SplineChar * sc, SplinePointList * spl) {
-   SplinePointList *next;
-
-   while (spl != NULL) {
-      next = spl->next;
-      SplinePointListMDFree(sc, spl);
-      spl = next;
-   }
 }
 
 void SplinePointListsFree(SplinePointList * spl) {
@@ -1125,7 +1111,7 @@ void SplineCharLayerQuickBounds(SplineChar * sc, int layer, DBounds * bounds) {
       memset(bounds, 0, sizeof(*bounds));
 }
 
-void SplineSetQuickConservativeBounds(SplineSet * ss, DBounds * b) {
+static void SplineSetQuickConservativeBounds(SplineSet * ss, DBounds * b) {
    SplinePoint *sp;
 
    b->minx = b->miny = 1e10;
@@ -1503,130 +1489,6 @@ SplinePointList *SplinePointListCopy1(const SplinePointList * spl) {
    return (cur);
 }
 
-/* If this routine is called we are guarenteed that:
-    at least one point on the splineset is selected
-    not all points on the splineset are selected
-*/
-static SplinePointList *SplinePointListCopySelected1(SplinePointList * spl) {
-   SplinePointList *head = NULL, *last = NULL, *cur;
-
-   SplinePoint *cpt, *first, *start;
-
-   Spline *spline;
-
-   start = spl->first;
-   if (spl->first == spl->last) {
-      /* If it's a closed contour and the start point is selected then we */
-      /*  don't know where that selection began (and we have to keep it with */
-      /*  the things that precede it when we make the new splinesets), so */
-      /*  loop until we find something unselected */
-      while (start->selected)
-	 start = start->next->to;
-   }
-   first = NULL;
-   while (start != NULL && start != first) {
-      while (start != NULL && start != first && !start->selected) {
-	 if (first == NULL)
-	    first = start;
-	 if (start->next == NULL) {
-	    start = NULL;
-	    break;
-	 }
-	 start = start->next->to;
-      }
-      if (start == NULL || start == first)
-	 break;
-      cur = chunkalloc(sizeof(SplinePointList));
-      if (head == NULL)
-	 head = cur;
-      else
-	 last->next = cur;
-      last = cur;
-
-      while (start != NULL && start->selected && start != first) {
-	 cpt = chunkalloc(sizeof(SplinePoint));
-	 *cpt = *start;
-	 cpt->hintmask = NULL;
-	 cpt->name = NULL;
-	 cpt->next = cpt->prev = NULL;
-	 if (cur->first == NULL)
-	    cur->first = cur->last = cpt;
-	 else {
-	    spline = chunkalloc(sizeof(Spline));
-	    *spline = *start->prev;
-	    spline->from = cur->last;
-	    cur->last->next = spline;
-	    cpt->prev = spline;
-	    spline->to = cpt;
-	    spline->approx = NULL;
-	    cur->last = cpt;
-	 }
-	 if (first == NULL)
-	    first = start;
-	 if (start->next == NULL) {
-	    start = NULL;
-	    break;
-	 }
-	 start = start->next->to;
-      }
-   }
-   return (head);
-}
-
-/* If this routine is called we are guarenteed that:
-    at least one point on the splineset is selected
-    not all points on the splineset are selected
-*/
-static SplinePointList *SplinePointListCopySpiroSelected1(SplinePointList *
-							  spl) {
-   SplinePointList *head = NULL, *last = NULL, *cur;
-
-   int i, j;
-
-   spiro_cp *list = spl->spiros, *freeme = NULL, *temp;
-
-   if (!SPIRO_SPL_OPEN(spl)) {
-      /* If it's a closed contour and the start point is selected then we */
-      /*  don't know where that selection began (and we have to keep it with */
-      /*  the things that precede it when we make the new splinesets), so */
-      /*  loop until we find something unselected */
-      for (i = 0; i < spl->spiro_cnt - 1; ++i)
-	 if (!(SPIRO_SELECTED(&list[i])))
-	    break;
-      if (i != 0) {
-	 freeme = malloc(spl->spiro_cnt * sizeof(spiro_cp));
-	 memcpy(freeme, list + i,
-		(spl->spiro_cnt - 1 - i) * sizeof(spiro_cp));
-	 memcpy(freeme + (spl->spiro_cnt - 1 - i), list,
-		i * sizeof(spiro_cp));
-	 /* And copy the list terminator */
-	 memcpy(freeme + spl->spiro_cnt - 1, list + spl->spiro_cnt - 1,
-		sizeof(spiro_cp));
-	 list = freeme;
-      }
-   }
-   for (i = 0; i < spl->spiro_cnt - 1;) {
-      /* Skip unselected things */
-      for (; i < spl->spiro_cnt - 1 && !SPIRO_SELECTED(&list[i]); ++i);
-      if (i == spl->spiro_cnt - 1)
-	 break;
-      for (j = i; j < spl->spiro_cnt - 1 && SPIRO_SELECTED(&list[j]); ++j);
-      temp = malloc((j - i + 2) * sizeof(spiro_cp));
-      memcpy(temp, list + i, (j - i) * sizeof(spiro_cp));
-      temp[0].ty = SPIRO_OPEN_CONTOUR;
-      memset(temp + (j - i), 0, sizeof(spiro_cp));
-      temp[j - i].ty = SPIRO_END;
-      cur = SpiroCP2SplineSet(temp);
-      if (head == NULL)
-	 head = cur;
-      else
-	 last->next = cur;
-      last = cur;
-      i = j;
-   }
-   return (head);
-}
-
 SplinePointList *SplinePointListCopy(const SplinePointList * base) {
    SplinePointList *head = NULL, *last = NULL, *cur;
 
@@ -1639,123 +1501,6 @@ SplinePointList *SplinePointListCopy(const SplinePointList * base) {
       last = cur;
    }
    return (head);
-}
-
-static SplinePointList *SplinePointListSplitSpiros(SplineChar * sc,
-						   SplinePointList * spl) {
-   SplinePointList *head = NULL, *last = NULL, *cur;
-
-   int i;
-
-   spiro_cp *list = spl->spiros, *freeme = NULL, *temp;
-
-   if (!SPIRO_SPL_OPEN(spl)) {
-      /* If it's a closed contour and the start point is selected then we */
-      /*  don't know where that selection began (and we have to keep it with */
-      /*  the things that precede it when we make the new splinesets), so */
-      /*  loop until we find something unselected */
-      for (i = 0; i < spl->spiro_cnt - 1; ++i)
-	 if (!(SPIRO_SELECTED(&list[i])))
-	    break;
-      if (i != 0) {
-	 freeme = malloc(spl->spiro_cnt * sizeof(spiro_cp));
-	 memcpy(freeme, list + i,
-		(spl->spiro_cnt - 1 - i) * sizeof(spiro_cp));
-	 memcpy(freeme + (spl->spiro_cnt - 1 - i), list,
-		i * sizeof(spiro_cp));
-	 /* And copy the list terminator */
-	 memcpy(freeme + spl->spiro_cnt - 1, list + spl->spiro_cnt - 1,
-		sizeof(spiro_cp));
-	 list = freeme;
-      }
-   }
-   for (i = 0; i < spl->spiro_cnt - 1;) {
-      int start = i;
-
-      /* Retain unselected things */
-      for (; i < spl->spiro_cnt - 1 && !SPIRO_SELECTED(&list[i]); ++i);
-      if (i != start) {
-	 temp = malloc((i - start + 2) * sizeof(spiro_cp));
-	 memcpy(temp, list + start, (i - start) * sizeof(spiro_cp));
-	 temp[0].ty = SPIRO_OPEN_CONTOUR;
-	 memset(temp + (i - start), 0, sizeof(spiro_cp));
-	 temp[i - start].ty = SPIRO_END;
-	 cur = SpiroCP2SplineSet(temp);
-	 if (head == NULL)
-	    head = cur;
-	 else
-	    last->next = cur;
-	 last = cur;
-      }
-      for (; i < spl->spiro_cnt - 1 && SPIRO_SELECTED(&list[i]); ++i);
-   }
-   SplinePointListFree(spl);
-   return (head);
-}
-
-static SplinePointList *SplinePointListSplit(SplineChar * sc,
-					     SplinePointList * spl) {
-   SplinePointList *head = NULL, *last = NULL, *cur;
-
-   SplinePoint *first, *start, *next;
-
-   start = spl->first;
-   if (spl->first == spl->last) {
-      /* If it's a closed contour and the start point is selected then we */
-      /*  don't know where that selection began (and we have to keep it with */
-      /*  the things that precede it when we make the new splinesets), so */
-      /*  loop until we find something unselected */
-      while (!start->selected)
-	 start = start->next->to;
-   }
-   first = NULL;
-   while (start != NULL && start != first) {
-      while (start != NULL && start != first && start->selected) {
-	 if (first == NULL)
-	    first = start;
-	 if (start->prev != NULL) {
-	    start->prev->from->next = NULL;
-	    SplineFree(start->prev);
-	 }
-	 if (start->next != NULL) {
-	    next = start->next->to;
-	    next->prev = NULL;
-	    SplineFree(start->next);
-	 } else
-	    next = NULL;
-	 SplinePointMDFree(sc, start);
-	 start = next;
-      }
-      if (start == NULL || start == first)
-	 break;
-      if (head == NULL) {
-	 head = cur = spl;
-	 spl->first = spl->last = NULL;
-      } else {
-	 cur = chunkalloc(sizeof(SplinePointList));
-	 last->next = cur;
-      }
-      last = cur;
-
-      while (start != NULL && !start->selected && start != first) {
-	 if (cur->first == NULL)
-	    cur->first = start;
-	 cur->last = start;
-	 if (start->next != NULL) {
-	    next = start->next->to;
-	    if (next->selected) {
-	       SplineFree(start->next);
-	       start->next = NULL;
-	       next->prev = NULL;
-	    }
-	 } else
-	    next = NULL;
-	 if (first == NULL)
-	    first = start;
-	 start = next;
-      }
-   }
-   return (last);
 }
 
 ImageList *ImageListCopy(ImageList * cimg) {
@@ -1775,7 +1520,7 @@ ImageList *ImageListCopy(ImageList * cimg) {
    return (head);
 }
 
-ImageList *ImageListTransform(ImageList * img, real transform[6],
+static ImageList *ImageListTransform(ImageList * img, real transform[6],
 			      int everything) {
    ImageList *head = img;
 
@@ -1814,7 +1559,7 @@ ImageList *ImageListTransform(ImageList * img, real transform[6],
    return (head);
 }
 
-void BpTransform(BasePoint * to, BasePoint * from, real transform[6]) {
+static void BpTransform(BasePoint * to, BasePoint * from, real transform[6]) {
    BasePoint p;
 
    p.x = transform[0] * from->x + transform[2] * from->y + transform[4];
@@ -1944,7 +1689,7 @@ static void TransformPTsInterpolateCPs(BasePoint * fromorig, Spline * spline,
 }
 
 
-SplinePointList *SplinePointListTransformExtended(SplinePointList * base,
+static SplinePointList *SplinePointListTransformExtended(SplinePointList * base,
 						  real transform[6],
 						  enum transformPointType tpt,
 						  enum transformPointMask
@@ -2800,7 +2545,6 @@ static void _SplineFontFromType1(SplineFont * sf, FontDict * fd,
 	 sf->glyphs[i]->parent = sf;
 	 /* SCLigDefault(sf->glyphs[i]); *//* Also reads from AFM file, but it probably doesn't exist */
       }
-      ff_progress_next();
    }
    SFInstanciateRefs(sf);
    if (fd->metrics != NULL) {
@@ -3222,7 +2966,6 @@ static SplineFont *SplineFontFromCIDType1(SplineFont * sf, FontDict * fd,
 	 if (chars[i]->layers[ly_fore].refs != NULL)
 	    IError("Reference found in CID font. Can't fix it up");
 	 sf->subfonts[j]->glyphcnt = sf->subfonts[j]->glyphmax = i + 1;
-	 ff_progress_next();
       }
    for (i = 0; i < fd->fdcnt; ++i)
       sf->subfonts[i]->glyphs =
@@ -3451,56 +3194,6 @@ void SCReinstanciateRefChar(SplineChar * sc, RefChar * rf, int layer) {
    RefCharFindBounds(rf);
 }
 
-static void _SFReinstanciateRefs(SplineFont * sf) {
-   int i, undone, undoable, j, cnt;
-
-   RefChar *ref;
-
-   for (i = 0; i < sf->glyphcnt; ++i)
-      if (sf->glyphs[i] != NULL)
-	 sf->glyphs[i]->ticked = false;
-
-   undone = true;
-   cnt = 0;
-   while (undone && cnt < 200) {
-      undone = false;
-      for (i = 0; i < sf->glyphcnt; ++i)
-	 if (sf->glyphs[i] != NULL && !sf->glyphs[i]->ticked) {
-	    undoable = false;
-	    for (j = 0; j < sf->glyphs[i]->layer_cnt; ++j) {
-	       for (ref = sf->glyphs[i]->layers[j].refs; ref != NULL;
-		    ref = ref->next) {
-		  if (!ref->sc->ticked)
-		     undoable = true;
-	       }
-	    }
-	    if (undoable)
-	       undone = true;
-	    else {
-	       for (j = 0; j < sf->glyphs[i]->layer_cnt; ++j) {
-		  for (ref = sf->glyphs[i]->layers[j].refs; ref != NULL;
-		       ref = ref->next)
-		     SCReinstanciateRefChar(sf->glyphs[i], ref, j);
-	       }
-	       sf->glyphs[i]->ticked = true;
-	    }
-	 }
-      ++cnt;
-   }
-}
-
-void SFReinstanciateRefs(SplineFont * sf) {
-   int i;
-
-   if (sf->cidmaster != NULL || sf->subfontcnt != 0) {
-      if (sf->cidmaster != NULL)
-	 sf = sf->cidmaster;
-      for (i = 0; i < sf->subfontcnt; ++i)
-	 _SFReinstanciateRefs(sf->subfonts[i]);
-   } else
-      _SFReinstanciateRefs(sf);
-}
-
 void SCRemoveDependent(SplineChar * dependent, RefChar * rf, int layer) {
    struct splinecharlist *dlist, *pd;
 
@@ -3584,7 +3277,6 @@ void SCRefToSplines(SplineChar * sc, RefChar * rf, int layer) {
 	    rf->layers[rlayer].fillfirst;
       }
       sc->layer_cnt += rf->layer_cnt;
-      SCMoreLayers(sc, old);
    } else {
       if ((spl = rf->layers[0].splines) != NULL) {
 	 while (spl->next != NULL)
@@ -4257,13 +3949,13 @@ bigreal SplineCurvature(Spline * s, bigreal t) {
    return (numer / denom);
 }
 
-int SplineAtInflection(Spline1D * sp, bigreal t) {
+static int SplineAtInflection(Spline1D * sp, bigreal t) {
    /* It's a point of inflection if d sp/dt==0 and d2 sp/dt^2==0 */
    return (RealNear((3 * sp->a * t + 2 * sp->b) * t + sp->c, 0) &&
 	   RealNear(6 * sp->a * t + 2 * sp->b, 0));
 }
 
-int SplineAtMinMax(Spline1D * sp, bigreal t) {
+static int SplineAtMinMax(Spline1D * sp, bigreal t) {
    /* It's a point of inflection if d sp/dt==0 and d2 sp/dt^2!=0 */
    return (RealNear((3 * sp->a * t + 2 * sp->b) * t + sp->c, 0) &&
 	   !RealNear(6 * sp->a * t + 2 * sp->b, 0));
@@ -5292,7 +4984,7 @@ int SplineSetIntersect(SplineSet * spl, Spline ** _spline, Spline ** _spline2) {
    return (found);
 }
 
-int LineTangentToSplineThroughPt(Spline * s, BasePoint * pt, extended ts[4],
+static int LineTangentToSplineThroughPt(Spline * s, BasePoint * pt, extended ts[4],
 				 extended tmin, extended tmax) {
    /* attempt to find a line though the point pt which is tangent to the spline */
    /*  we return t of the tangent point on the spline (if any)           */
@@ -5463,7 +5155,7 @@ static int NearXSpline(FindSel * fs, Spline * spline) {
    return (false);
 }
 
-int NearSpline(FindSel * fs, Spline * spline) {
+static int NearSpline(FindSel * fs, Spline * spline) {
    bigreal t, x, y;
 
    Spline1D *yspline = &spline->splines[1], *xspline = &spline->splines[0];
@@ -6045,7 +5737,7 @@ void PSTFree(PST * pst) {
    }
 }
 
-void FPSTRuleContentsFree(struct fpst_rule *r, enum fpossub_format format) {
+static void FPSTRuleContentsFree(struct fpst_rule *r, enum fpossub_format format) {
    int j;
 
    switch (format) {
@@ -6183,7 +5875,7 @@ FPST *FPSTCopy(FPST * fpst) {
    return (nfpst);
 }
 
-void FPSTClassesFree(FPST * fpst) {
+static void FPSTClassesFree(FPST * fpst) {
    int i;
 
    for (i = 0; i < fpst->nccnt; ++i) {
@@ -6237,7 +5929,7 @@ void MinimumDistancesFree(MinimumDistance * md) {
    }
 }
 
-void TTFLangNamesFree(struct ttflangname *l) {
+static void TTFLangNamesFree(struct ttflangname *l) {
    struct ttflangname *next;
 
    int i;
@@ -6310,7 +6002,7 @@ SplineChar *SFSplineCharCreate(SplineFont * sf) {
    return (sc);
 }
 
-void GlyphVariantsFree(struct glyphvariants *gv) {
+static void GlyphVariantsFree(struct glyphvariants *gv) {
    int i;
 
    if (gv == NULL)
@@ -6323,7 +6015,7 @@ void GlyphVariantsFree(struct glyphvariants *gv) {
    chunkfree(gv, sizeof(*gv));
 }
 
-void MathKernVContentsFree(struct mathkernvertex *mk) {
+static void MathKernVContentsFree(struct mathkernvertex *mk) {
    int i;
 
    for (i = 0; i < mk->cnt; ++i) {
@@ -6333,7 +6025,7 @@ void MathKernVContentsFree(struct mathkernvertex *mk) {
    free(mk->mkd);
 }
 
-void MathKernFree(struct mathkern *mk) {
+static void MathKernFree(struct mathkern *mk) {
    int i;
 
    if (mk == NULL)
@@ -6343,7 +6035,7 @@ void MathKernFree(struct mathkern *mk) {
    chunkfree(mk, sizeof(*mk));
 }
 
-void SplineCharListsFree(struct splinecharlist *dlist) {
+static void SplineCharListsFree(struct splinecharlist *dlist) {
    struct splinecharlist *dnext;
 
    for (; dlist != NULL; dlist = dnext) {
@@ -6352,7 +6044,7 @@ void SplineCharListsFree(struct splinecharlist *dlist) {
    }
 }
 
-struct pattern *PatternCopy(struct pattern *old, real transform[6]) {
+static struct pattern *PatternCopy(struct pattern *old, real transform[6]) {
    struct pattern *pat = chunkalloc(sizeof(struct pattern));
 
    if (old == NULL)
@@ -6374,7 +6066,7 @@ void PatternFree(struct pattern *pat) {
    chunkfree(pat, sizeof(struct pattern));
 }
 
-struct gradient *GradientCopy(struct gradient *old, real transform[6]) {
+static struct gradient *GradientCopy(struct gradient *old, real transform[6]) {
    struct gradient *grad = chunkalloc(sizeof(struct gradient));
 
    if (old == NULL)
@@ -6412,7 +6104,7 @@ void PenCopy(struct pen *into, struct pen *from, real transform[6]) {
    into->brush.pattern = PatternCopy(from->brush.pattern, transform);
 }
 
-void LayerFreeContents(SplineChar * sc, int layer) {
+static void LayerFreeContents(SplineChar * sc, int layer) {
    SplinePointListsFree(sc->layers[layer].splines);
    GradientFree(sc->layers[layer].fill_brush.gradient);
    PatternFree(sc->layers[layer].fill_brush.pattern);
@@ -6425,7 +6117,7 @@ void LayerFreeContents(SplineChar * sc, int layer) {
    UndoesFree(sc->layers[layer].redoes);
 }
 
-void SplineCharFreeContents(SplineChar * sc) {
+static void SplineCharFreeContents(SplineChar * sc) {
    int i;
 
    if (sc == NULL)
@@ -6469,7 +6161,7 @@ void SplineCharFree(SplineChar * sc) {
    chunkfree(sc, sizeof(SplineChar));
 }
 
-void AnchorClassesFree(AnchorClass * an) {
+static void AnchorClassesFree(AnchorClass * an) {
    AnchorClass *anext;
 
    for (; an != NULL; an = anext) {
@@ -6571,7 +6263,7 @@ KernClass *KernClassCopy(KernClass * kc) {
    return (new);
 }
 
-void KernClassFreeContents(KernClass * kc) {
+static void KernClassFreeContents(KernClass * kc) {
    int i;
 
    for (i = 1; i < kc->first_cnt; ++i)
@@ -6597,7 +6289,7 @@ void KernClassListFree(KernClass * kc) {
    }
 }
 
-void MacNameListFree(struct macname *mn) {
+static void MacNameListFree(struct macname *mn) {
    struct macname *next;
 
    while (mn != NULL) {
@@ -6608,7 +6300,7 @@ void MacNameListFree(struct macname *mn) {
    }
 }
 
-void MacSettingListFree(struct macsetting *ms) {
+static void MacSettingListFree(struct macsetting *ms) {
    struct macsetting *next;
 
    while (ms != NULL) {
@@ -6619,7 +6311,7 @@ void MacSettingListFree(struct macsetting *ms) {
    }
 }
 
-void MacFeatListFree(MacFeat * mf) {
+static void MacFeatListFree(MacFeat * mf) {
    MacFeat *next;
 
    while (mf != NULL) {
@@ -6751,7 +6443,7 @@ EncMap *EncMapCopy(EncMap * map) {
    return (new);
 }
 
-void MarkClassFree(int cnt, char **classes, char **names) {
+static void MarkClassFree(int cnt, char **classes, char **names) {
    int i;
 
    for (i = 1; i < cnt; ++i) {
@@ -6762,7 +6454,7 @@ void MarkClassFree(int cnt, char **classes, char **names) {
    free(names);
 }
 
-void MarkSetFree(int cnt, char **classes, char **names) {
+static void MarkSetFree(int cnt, char **classes, char **names) {
    int i;
 
    for (i = 0; i < cnt; ++i) {
@@ -6773,7 +6465,7 @@ void MarkSetFree(int cnt, char **classes, char **names) {
    free(names);
 }
 
-struct baselangextent *BaseLangCopy(struct baselangextent *extent) {
+static struct baselangextent *BaseLangCopy(struct baselangextent *extent) {
    struct baselangextent *head, *last, *cur;
 
    last = head = NULL;
@@ -6790,7 +6482,7 @@ struct baselangextent *BaseLangCopy(struct baselangextent *extent) {
    return (head);
 }
 
-void BaseLangFree(struct baselangextent *extent) {
+static void BaseLangFree(struct baselangextent *extent) {
    struct baselangextent *next;
 
    while (extent != NULL) {
@@ -6823,22 +6515,7 @@ void BaseFree(struct Base *base) {
    chunkfree(base, sizeof(struct Base));
 }
 
-static OTLookup **OTLListCopy(OTLookup ** str) {
-   OTLookup **ret;
-
-   int i;
-
-   if (str == NULL)
-      return (NULL);
-   for (i = 0; str[i] != NULL; ++i);
-   ret = malloc((i + 1) * sizeof(OTLookup *));
-   for (i = 0; str[i] != NULL; ++i)
-      ret[i] = str[i];
-   ret[i] = NULL;
-   return (ret);
-}
-
-void JstfLangFree(struct jstf_lang *jl) {
+static void JstfLangFree(struct jstf_lang *jl) {
    struct jstf_lang *next;
 
    int i;
@@ -6861,7 +6538,7 @@ void JstfLangFree(struct jstf_lang *jl) {
    }
 }
 
-void JustifyFree(Justify * just) {
+static void JustifyFree(Justify * just) {
    Justify *next;
 
    while (just != NULL) {
@@ -6871,6 +6548,45 @@ void JustifyFree(Justify * just) {
       chunkfree(just, sizeof(*just));
       just = next;
    }
+}
+
+static void MMSetFreeContents(MMSet * mm) {
+   int i;
+
+   free(mm->instances);
+
+   free(mm->positions);
+   free(mm->defweights);
+
+   for (i = 0; i < mm->axis_count; ++i) {
+      free(mm->axes[i]);
+      free(mm->axismaps[i].blends);
+      free(mm->axismaps[i].designs);
+      MacNameListFree(mm->axismaps[i].axisnames);
+   }
+   free(mm->axismaps);
+   free(mm->cdv);
+   free(mm->ndv);
+   for (i = 0; i < mm->named_instance_count; ++i) {
+      free(mm->named_instances[i].coords);
+      MacNameListFree(mm->named_instances[i].names);
+   }
+   free(mm->named_instances);
+}
+
+static void MMSetFree(MMSet * mm) {
+   int i;
+
+   for (i = 0; i < mm->instance_count; ++i) {
+      mm->instances[i]->mm = NULL;
+      mm->instances[i]->map = NULL;
+      SplineFontFree(mm->instances[i]);
+   }
+   mm->normal->mm = NULL;
+   SplineFontFree(mm->normal);	/* EncMap gets freed here */
+   MMSetFreeContents(mm);
+
+   chunkfree(mm, sizeof(*mm));
 }
 
 void SplineFontFree(SplineFont * sf) {
@@ -6902,7 +6618,6 @@ void SplineFontFree(SplineFont * sf) {
    free(sf->comments);
    free(sf->filename);
    free(sf->origname);
-   free(sf->autosavename);
    free(sf->version);
    free(sf->xuid);
    free(sf->cidregistry);
@@ -6937,45 +6652,6 @@ void SplineFontFree(SplineFont * sf) {
    BaseFree(sf->vert_base);
    JustifyFree(sf->justify);
    free(sf);
-}
-
-void MMSetFreeContents(MMSet * mm) {
-   int i;
-
-   free(mm->instances);
-
-   free(mm->positions);
-   free(mm->defweights);
-
-   for (i = 0; i < mm->axis_count; ++i) {
-      free(mm->axes[i]);
-      free(mm->axismaps[i].blends);
-      free(mm->axismaps[i].designs);
-      MacNameListFree(mm->axismaps[i].axisnames);
-   }
-   free(mm->axismaps);
-   free(mm->cdv);
-   free(mm->ndv);
-   for (i = 0; i < mm->named_instance_count; ++i) {
-      free(mm->named_instances[i].coords);
-      MacNameListFree(mm->named_instances[i].names);
-   }
-   free(mm->named_instances);
-}
-
-void MMSetFree(MMSet * mm) {
-   int i;
-
-   for (i = 0; i < mm->instance_count; ++i) {
-      mm->instances[i]->mm = NULL;
-      mm->instances[i]->map = NULL;
-      SplineFontFree(mm->instances[i]);
-   }
-   mm->normal->mm = NULL;
-   SplineFontFree(mm->normal);	/* EncMap gets freed here */
-   MMSetFreeContents(mm);
-
-   chunkfree(mm, sizeof(*mm));
 }
 
 static int xcmp(const void *_p1, const void *_p2) {
@@ -7264,7 +6940,7 @@ int SCRoundToCluster(SplineChar * sc, int layer, int sel, bigreal within,
 	    }
 	 }
       }
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
    }
    return (changed);
 }
@@ -7620,7 +7296,7 @@ static bigreal FindZero3(bigreal w[7], bigreal tlow, bigreal thigh) {
    }
 }
 
-bigreal SplineMinDistanceToPoint(Spline * s, BasePoint * p) {
+static bigreal SplineMinDistanceToPoint(Spline * s, BasePoint * p) {
    /* So to find the minimum distance we want the sqrt( (sx(t)-px)^2 + (sy(t)-py)^2 ) */
    /*  Same minima as (sx(t)-px)^2 + (sy(t)-py)^2, which is easier to deal with */
    bigreal w[7];

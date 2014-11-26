@@ -14,8 +14,6 @@
 
 \input{config.tex}
 
-\setsansfont{Nimbus Sans L}
-
 \setlength{\topmargin}{0.25in}
 \setlength{\headheight}{0pt}
 \setlength{\headsep}{0pt}
@@ -578,30 +576,55 @@ such a way as to allow them in some way.
 
 Taichi Kawabata and the CJKVI Project~\cite{CJKVI} maintain a database of
 Unicode IDSes derived from the CHISE IDS database (next subsection) and
-marked up for the different between Han-script languages (Chinese, Japanese,
-Korean, etc.).  There is little documentation of this database, and even
-less in English.  But the data is posted in a Github repository and
-occasionally updated, and a current version as of this writing is also
-bundled with IDSgrep.  This data is
-covered by GPL and as of IDSgrep 0.5, it is the suggested default dictionary
-for IDSgrep.  It contains about 74000 entries, in an extended IDS syntax
-more or less the same as CHISE IDS's.
+marked up for the difference between Han-script languages (Chinese, Japanese,
+Korean, etc.).  Subsequent to the bundling of CJKVI data in IDSgrep 0.5, some
+documentation of the data has been added to the GitHub repository's README
+file.  Handling of CJKVI data in IDSgrep has been changed a little in
+version 0.6, to reflect the new information.
+
+The CJKVI IDS data is based on CHISE-IDS, and follows their licensing, which
+is the GNU GPL version 2 or later.  As of IDSgrep version 0.6, it is bundled
+with IDSgrep and is the suggested default dictionary.  It contains about
+80000 entries in an extended IDS syntax more or less the same as CHISE
+IDS's, converted to IDSgrep EIDS during IDSgrep installation.
+
+As extensions to Unicode IDS, CJKVI allows some additional characters not
+allowed by Unicode (but allowed by IDSgrep) to occur in its extended IDSes. 
+First of all, it allows compatibility characters, typically to clarify the
+interpretation in cases where the unified character may be ambiguous. 
+Compatibility characters, in particular, may occur in the expansions of
+other compatibility characters.  CJKVI allows some characters it calls
+``non-ideographs'' to occur as components; these include some of the CJK
+Strokes range (which I think Unicode may have allowed anyway), and a few
+Greek letters and geometric shapes.
+
+When there is no better way to encode a component, CJKVI will use a circled
+number, like \texttt{③}, representing the number of strokes.  It also includes
+some references to characters that are encoded by CDP and not Unicode, in a
+format that looks like ``\texttt{\&CDP-XXXX;}'' (CJKVI syntax), translated to
+``\texttt{<CDP-XXXX>;}'' (IDSgrep syntax).  The XXXX represents a four-digit
+hexadecimal code point in an encoding derived from Big5 and inherited from
+CHISE.  There is a Japanese-language article discussing these in GlyphWiki at
+\url|http://glyphwiki.org/wiki/Group:CDP%E5%A4%96%E5%AD%97|.
 
 For most characters, the CJKVI database contains a single IDS assumed to
 represent that character in all languages.  When there is more than one IDS
 for a character, \emph{usually} the IDSes are tagged with non-overlapping
-combinations of letters in the set $\{$ G, T, J, K, V $\}$, for simplified
-Chinese, traditional Chinese, Japanese, Korean, and Vietnamese respectively. 
-There might be two slightly different IDSes with one tagged [G] and the
-other tagged [TJK]; in such a case IDSgrep's dictionary compiler will use
-the first for simplified Chinese; the second for traditional Chinese,
-Japanese, and Korean; and exclude that entry entirely for any other
-languages, such as Vietnamese.  However, exceptions to this scheme exist. 
-There are entries with more than one untagged IDS for a character.  There
-are entries with more than one IDS sharing a tag.  There are entries with a
-mixture of tagged and untagged IDSes.  And there are even a few rare tags
-with unknown meanings that occur only in a few entries (U, H, and X have all
-been observed).
+combinations of letters in the set $\{$G, T, J, K, V, A, X$\}$, for simplified
+Chinese, traditional Chinese, Japanese, Korean, Vietnamese, Adobe Japan, and
+``virtual'' shapes, respectively.  ``Virtual'' means that the shape does not
+actually appear in the Unicode tables but possibly matches a code point
+according to Annex S of the Unicode specification.  The letters H and U also
+occur, but I'm not sure what they signify.
+
+A typical database entry might include two slightly different IDSes with one
+tagged [G] and the other tagged [TJK].  In such a case IDSgrep's dictionary
+compiler will use the first for simplified Chinese; the second for
+traditional Chinese, Japanese, and Korean; and exclude that entry entirely
+for any other languages, such as Vietnamese.  However, exceptions to this
+scheme exist.  There are entries with more than one untagged IDS for a
+character.  There are entries with more than one IDS sharing a tag.  There
+are entries with a mixture of tagged and untagged IDSes.
 
 The bundled version of the database is in the file \texttt{cjkvi-ids.txt}. 
 Overwrite that file with a new version of the CJKVI Project's
@@ -611,26 +634,22 @@ expect to find this file included in the source directory.
 
 Because of the language tagging, it is possible to build more than one
 dictionary from CJKVI IDS data.  The \texttt{-{}-enable-cjkvi-style} option
-to \texttt{configure} takes a string of lowercase letters in the set $\{$ g,
-t, k, j, v, x, h, a $\}$ and will build one dictionary for each letter
+to \texttt{configure} takes a string of lowercase letters in the set $\{$g,
+t, k, j, v, x, h, a, u$\}$ and will build one dictionary for each letter
 specified.  For example, an argument value of ``gtk'' would build the
 simplified and traditional Chinese dictionaries and the Korean dictionary. 
 The default is ``j.'' Dictionaries are placed in files with names like
 \texttt{cjkvi-g.txt}, \texttt{cjkvi-t.txt}, \texttt{cjkvi-k.txt}, and so on. 
-Note that the rare language tag U is always counted as if it were X; and the
-special value ``a'' will match all languages.
 
-When building a dictionary
-for a language tag other than ``a,'' for each code point the
+Note that since version 0.6, IDSgrep does not treat
+the language tag ``a'' as special.
+
+When building a dictionary, for each code point the
 dictionary builder will use the first IDS on the line in
 \texttt{cjkvi-ids.txt} that matches the specified tag; if no IDS
 specifically mentions the specified tag, then it will use the first IDS on
 the line at all, should that one have no tag; and otherwise it will not
-include that code point in the dictionary.  The ``a'' style is special:
-there, it creates an entry for \emph{every} IDS on the line, even if that
-means several entries for the same code point.  However, the first one
-encountered is always the one chosen for recursive decompositions of leaves
-in the entries.
+include that code point in the dictionary.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -907,7 +926,6 @@ Tsukurimashou's directory, then \texttt{cd} to IDSgrep's directory and run
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\break\vspace*{-1.82\baselineskip}%
 \section{A note on TrueType/OpenType}\DangerousSection
 
 This version of IDSgrep is designed to read TrueType or
@@ -1166,13 +1184,22 @@ This option is intended only for testing and debugging purposes.
 To disable bit vector filtering entirely (and, in particular, to
 avoid opening and reading any index file), use \texttt{-I}.
 
-\item[\texttt{-{}-disable-bdd}]
+\item[\texttt{-{}-disable-lambda}]
 Disable \DangerousBend the lambda filtering layer.
 Index files will still be read, and a lambda filter will still be
 constructed, but the code that tests the lambda filter
 will return a hardcoded ``possible match'' result.
 Like \texttt{-{}-disable-bdd},
 this option is intended only for testing and debugging purposes.
+
+\item[\texttt{-{}-disable-tree-match}]
+Disable \DangerousBend the tree matching operation; print all trees that
+pass the filters.
+This option is intended only for testing and debugging purposes.
+Note that with this option in effect \emph{IDSgrep may print incorrect
+results}, even when operating correctly with no bugs, because the filtering
+layers by design may match some trees that do not match the query string
+entered on the command line.
 
 \item[\texttt{-{}-statistics}]
 Report \DangerousBend a line of machine-readable performance information
@@ -1742,7 +1769,9 @@ that its root may be of unlimited arity.  Then for every child of $x'$ whose
 functor and arity are identical to the functor and arity of $x$, replace
 that child in $x'$ with its children, in order.  Repeat that operation until
 no more children of $x'$ have functor and arity identical to the
-functor and arity of $x$.  Compute $y'$ from $y$ by the same process.  Then
+functor and arity of $x$.  Compute $y'$ from $y$ by the same process.
+Heads are discarded during this process; neither $x'$ nor $y'$ will
+have a head.  Then
 $\textit{match}'(\texttt{.@.}x,y)=\textit{match}(\texttt{.=.}x',y')$.
 
 This matching operator is intended for the case of three or more
@@ -2659,13 +2688,13 @@ match-anywhere, have reasonably straightforward implementations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Memoization in the tree match}\DangerousSection
+\section{Memoization in the tree match} % \DangerousSection
 
-This feature does not involve bit vectors at all, but is described in the bit
-vector chapter because, like bit vectors, it is a speed enhancement that
-doesn't change the basic matching algorithm.  There is no ``r'' in
-``memoization.'' That word is a shibboleth\footnote{Judges 12:6.} for CS
-theorists.
+This \DangerousBend feature does not involve bit vectors at all, but is
+described in the bit vector chapter because, like bit vectors, it is a speed
+enhancement that doesn't change the basic matching algorithm.  There is no
+``r'' in ``memoization.'' That word is a shibboleth\footnote{Judges 12:6.}
+for CS theorists.
 
 For the most part, when a match is not ruled out by the bit vector indices,
 IDSgrep uses a straightforward recursive-descent algorithm to implement the

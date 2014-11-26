@@ -1,4 +1,4 @@
-/* $Id: search.c 2952 2014-03-15 17:28:24Z mskala $ */
+/* $Id: search.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1232,23 +1232,6 @@ static void DoReplaceFull(SplineChar * sc, SearchData * s) {
 void SVResetPaths(SearchData * sv) {
    SplineSet *spl;
 
-   if (sv->sc_srch.changed_since_autosave) {
-      sv->path = sv->sc_srch.layers[ly_fore].splines;
-      SplinePointListsFree(sv->revpath);
-      sv->revpath = SplinePointListCopy(sv->path);
-      for (spl = sv->revpath; spl != NULL; spl = spl->next)
-	 spl = SplineSetReverse(spl);
-      sv->sc_srch.changed_since_autosave = false;
-   }
-   if (sv->sc_rpl.changed_since_autosave) {
-      sv->replacepath = sv->sc_rpl.layers[ly_fore].splines;
-      SplinePointListsFree(sv->revreplace);
-      sv->revreplace = SplinePointListCopy(sv->replacepath);
-      for (spl = sv->revreplace; spl != NULL; spl = spl->next)
-	 spl = SplineSetReverse(spl);
-      sv->sc_rpl.changed_since_autosave = false;
-   }
-
    /* Only do a sub pattern search if we have a single path and it is open */
    /*  and there is either no replace pattern, or it is also a single open */
    /*  path */
@@ -1345,7 +1328,7 @@ int DoRpl(SearchData * sv) {
       DoReplaceIncomplete(sv->curchar, sv);
    else
       DoReplaceFull(sv->curchar, sv);
-   SCCharChangedUpdate(sv->curchar, layer);
+   SCCharChangedUpdate(sv->curchar, layer, true);
    return (true);
 }
 
@@ -1493,9 +1476,6 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
       if (selected[i] && (gid = fv->map->map[i]) != -1 &&
 	  sf->glyphs[gid] != NULL)
 	 ++selcnt;
-   ff_progress_start_indicator(10, _("Replace with Reference"),
-			       _("Replace Outline with Reference"), 0, selcnt,
-			       1);
 
    for (i = 0; i < fv->map->enccount; ++i)
       if (selected[i] && (gid = fv->map->map[i]) != -1 &&
@@ -1505,8 +1485,6 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
 	 memset(fv->selected, 0, fv->map->enccount);
 	 SDCopyToSC(checksc, &sv->sc_srch, ct_fullcopy);
 	 SDCopyToSC(checksc, &sv->sc_rpl, ct_reference);
-	 sv->sc_srch.changed_since_autosave =
-	    sv->sc_rpl.changed_since_autosave = true;
 	 SVResetPaths(sv);
 	 if (!_DoFindAll(sv) && selcnt == 1)
 	    ff_post_notice(_("Not Found"),
@@ -1516,10 +1494,7 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
 	 for (j = 0; j < fv->map->enccount; ++j)
 	    if (fv->selected[j])
 	       changed[j] = 1;
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 
    SDDestroy(sv);
    free(sv);
@@ -1527,74 +1502,4 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
    free(selected);
    memcpy(fv->selected, changed, fv->map->enccount);
    free(changed);
-}
-
-/* ************************************************************************** */
-/* *************************** Correct References *************************** */
-/* ************************************************************************** */
-
-/* In TrueType a glyph can either be all contours or all references. FontAnvil*/
-/*  supports mixed contours and references. This section goes through the font*/
-/*  looking for such mixed glyphs, if it finds one it will create a new glyph */
-/*  move the contours into it, and make a reference to the new glyph in the   */
-/*  original.  This is designed to reduce the size of the TT output file      */
-
-/* Similar problem... The transformation matrix of a truetype reference has   */
-/*  certain restrictions placed on it (all entries must be less than 2 in abs */
-/*  value, etc.  If we have a glyph with a ref with a bad transform, then     */
-/*  go through a similar process to the above */
-
-static SplineChar *RC_MakeNewGlyph(FontViewBase * fv, SplineChar * base,
-				   int index, char *reason,
-				   char *morereason) {
-   char *namebuf;
-
-   SplineFont *sf = fv->sf;
-
-   int enc;
-
-   SplineChar *ret;
-
-   namebuf = malloc(strlen(base->name) + 20);
-   for (;;) {
-      sprintf(namebuf, "%s.ref%d", base->name, index++);
-      if (SFGetChar(sf, -1, namebuf) == NULL)
-	 break;
-   }
-
-   enc = SFFindSlot(sf, fv->map, -1, namebuf);
-   if (enc == -1)
-      enc = fv->map->enccount;
-   ret = SFMakeChar(sf, fv->map, enc);
-   free(ret->name);
-   ret->name = namebuf;
-   SFHashGlyph(sf, ret);
-
-   ret->comment =
-      malloc(strlen(reason) + strlen(ret->name) + strlen(morereason) + 2);
-   sprintf(ret->comment, reason, base->name, morereason);
-   ret->color = 0xff8080;
-   return (ret);
-}
-
-static struct splinecharlist *DListRemove(struct splinecharlist *dependents,
-					  SplineChar * this_sc) {
-   struct splinecharlist *dlist, *pd;
-
-   if (dependents == NULL)
-      return (NULL);
-   else if (dependents->sc == this_sc) {
-      dlist = dependents->next;
-      chunkfree(dependents, sizeof(*dependents));
-      return (dlist);
-   } else {
-      for (pd = dependents, dlist = pd->next;
-	   dlist != NULL && dlist->sc != this_sc;
-	   pd = dlist, dlist = pd->next);
-      if (dlist != NULL) {
-	 pd->next = dlist->next;
-	 chunkfree(dlist, sizeof(*dlist));
-      }
-      return (dependents);
-   }
 }

@@ -1,4 +1,4 @@
-/* $Id: savefont.c 2928 2014-03-08 15:37:54Z mskala $ */
+/* $Id: savefont.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -98,8 +98,6 @@ static int WriteAfmFile(char *filename, SplineFont * sf, int formattype,
       strcat(buf, ".afm");
    else
       strcpy(pt, ".afm");
-   ff_progress_change_line1(_("Saving AFM File"));
-   ff_progress_change_line2(buf);
    if (strstr(buf, "://") == NULL)
       afm = fopen(buf, "w");
    else
@@ -135,7 +133,6 @@ static int WriteAfmFile(char *filename, SplineFont * sf, int formattype,
 	    ++pt;
 	 strcpy(pt, sf->fontname);
 	 strcat(pt, ".afm");
-	 ff_progress_change_line2(buf);
 	 afm = fopen(buf, "w");
 	 free(buf);
 	 if (afm == NULL)
@@ -158,7 +155,6 @@ static int WriteAfmFile(char *filename, SplineFont * sf, int formattype,
 	 strcat(buf, ".amfm");
       else
 	 strcpy(pt, ".amfm");
-      ff_progress_change_line2(buf);
       afm = fopen(buf, "w");
       free(buf);
       if (afm == NULL)
@@ -190,9 +186,6 @@ static int WriteTfmFile(char *filename, SplineFont * sf, int formattype,
       strcat(buf, ".tfm");
    else
       strcpy(pt, ".tfm");
-   ff_progress_change_line1(_("Saving TFM File"));
-   ff_progress_change_line2(buf);
-   ff_progress_next();		/* Forces a refresh */
    tfm = fopen(buf, "wb");
    if (tfm == NULL)
       return (false);
@@ -260,9 +253,6 @@ static int WriteOfmFile(char *filename, SplineFont * sf, int formattype,
       strcat(buf, ".ofm");
    else
       strcpy(pt, ".ofm");
-   ff_progress_change_line1(_("Saving OFM File"));
-   ff_progress_change_line2(buf);
-   ff_progress_next();		/* Forces a refresh */
    tfm = fopen(buf, "wb");
    if (tfm == NULL)
       return (false);
@@ -320,7 +310,6 @@ int WritePfmFile(char *filename, SplineFont * sf, int type0, EncMap * map,
       strcat(buf, ".pfm");
    else
       strcpy(pt, ".pfm");
-   ff_progress_change_line2(buf);
    pfm = fopen(buf, "wb");
    free(buf);
    if (pfm == NULL)
@@ -375,7 +364,6 @@ static int WriteBitmaps(char *filename, SplineFont * sf, int32 * sizes,
       sf = sf->cidmaster;
 
    for (i = 0; sizes[i] != 0; ++i);
-   ff_progress_change_stages(i);
    for (i = 0; sizes[i] != 0; ++i) {
       for (bdf = sf->bitmaps; bdf != NULL &&
 	   (bdf->pixelsize != (sizes[i] & 0xffff)
@@ -413,7 +401,6 @@ static int WriteBitmaps(char *filename, SplineFont * sf, int32 * sizes,
       else
 	 sprintf(pt, "-%d@%d%s", bdf->pixelsize, BDFDepth(bdf), ext);
 
-      ff_progress_change_line2(buf);
       if (bf == bf_bdf)
 	 BDFFontDump(buf, bdf, map, res);
       else if (bf == bf_ptype3)
@@ -422,7 +409,6 @@ static int WriteBitmaps(char *filename, SplineFont * sf, int32 * sizes,
 	 FNTFontDump(buf, bdf, map, res);
       else
 	 IError("Unexpected font type");
-      ff_progress_next_stage();
    }
    free(buf);
    return (true);
@@ -736,7 +722,6 @@ static int SaveSubFont(SplineFont * sf, char *newname, int32 * sizes, int res,
    strcat(temp.fullname, " ");
    strcat(temp.fullname, names[subfont]);
    strcat(spt, subtype == ff_pfb ? ".pfb" : ".pfa");
-   ff_progress_change_line2(filename);
 
    if (sf->xuid != NULL) {
       sprintf(buf, "%d", subfont);
@@ -757,7 +742,7 @@ static int SaveSubFont(SplineFont * sf, char *newname, int32 * sizes, int res,
 		   layer);
    if (err)
       ff_post_error(_("Save Failed"), _("Save Failed"));
-   if (!err && (old_ps_flags & ps_flag_afm) && ff_progress_next_stage()) {
+   if (!err && (old_ps_flags & ps_flag_afm)) {
       if (!WriteAfmFile
 	  (filename, &temp, oldformatstate, &encmap, old_ps_flags, sf,
 	   layer)) {
@@ -772,8 +757,6 @@ static int SaveSubFont(SplineFont * sf, char *newname, int32 * sizes, int res,
       }
    }
    /* ??? Bitmaps */
-   if (!ff_progress_next_stage())
-      err = -1;
 
    if (temp.glyphs != chars)
       free(temp.glyphs);
@@ -838,10 +821,6 @@ static int WriteMultiplePSFont(SplineFont * sf, char *newname, int32 * sizes,
    if ((old_ps_flags & ps_flag_afm))
       filecnt = 2;
    path = def2utf8_copy(newname);
-   ff_progress_start_indicator(10, _("Saving font"),
-			       _("Saving Multiple PostScript Fonts"),
-			       path, 256, (max + 1) * filecnt);
-   /*ff_progress_enable_stop(false); */
    free(path);
 
    for (i = 0; i <= max && !err; ++i)
@@ -853,9 +832,6 @@ static int WriteMultiplePSFont(SplineFont * sf, char *newname, int32 * sizes,
       free(names[i]);
    free(names);
    free(sizes);
-   ff_progress_end_indicator();
-   if (!err)
-      SavePrefs(true);
    return (err);
 }
 
@@ -876,13 +852,6 @@ int CheckIfTransparent(SplineFont * sf) {
 	 for (j = ly_fore; j < sc->layer_cnt; ++j) {
 	    if (sc->layers[j].fill_brush.opacity != 1
 		|| sc->layers[j].stroke_pen.brush.opacity != 1) {
-	       if (ff_ask
-		   (_("Bad Drawing Operation"), (const char **) buts, 0, 1,
-		    _
-		    ("This font contains at least one translucent layer, but type3 does not support that (anything translucent or transparent is treated as opaque). Do you want to proceed anyway?"))
-		   == 1)
-		  return (true);
-
 	       return (false);
 	    }
 	 }
@@ -916,28 +885,6 @@ int _DoSave(SplineFont * sf, char *newname, int32 * sizes, int res,
       flags = old_psotb_flags;
 
    path = def2utf8_copy(newname);
-   ff_progress_start_indicator(10, _("Saving font"),
-			       oldformatstate == ff_ttf
-			       || oldformatstate == ff_ttfsym
-			       || oldformatstate ==
-			       ff_ttfmacbin ? _("Saving TrueType Font") :
-			       oldformatstate == ff_otf
-			       || oldformatstate ==
-			       ff_otfdfont ? _("Saving OpenType Font") :
-			       oldformatstate == ff_cid
-			       || oldformatstate == ff_cffcid
-			       || oldformatstate == ff_otfcid
-			       || oldformatstate ==
-			       ff_otfciddfont ? _("Saving CID keyed font") :
-			       oldformatstate == ff_mma
-			       || oldformatstate ==
-			       ff_mmb ? _("Saving multi-master font") :
-			       oldformatstate ==
-			       ff_svg ? _("Saving SVG font") : oldformatstate
-			       ==
-			       ff_ufo ? _("Saving Unified Font Object") :
-			       _("Saving PostScript Font"), path,
-			       sf->glyphcnt, 1);
    free(path);
    if (oldformatstate != ff_none) {
       int oerr = 0;
@@ -1031,22 +978,18 @@ int _DoSave(SplineFont * sf, char *newname, int32 * sizes, int res,
       }
    }
    if (!err && (flags & ps_flag_afm)) {
-      ff_progress_increment(-sf->glyphcnt);
       if (!WriteAfmFile(newname, sf, oldformatstate, map, flags, NULL, layer)) {
 	 ff_post_error(_("Afm Save Failed"), _("Afm Save Failed"));
 	 err = true;
       }
    }
    if (!err && (flags & ps_flag_outputfontlog)) {
-      /*ff_progress_increment(-sf->glyphcnt); */
       if (!WriteFontLog(newname, sf, oldformatstate, map, flags, NULL)) {
 	 ff_post_error(_("FontLog Save Failed"), _("FontLog Save Failed"));
 	 err = true;
       }
    }
    if (!err && (flags & ps_flag_pfm) && !iscid) {
-      ff_progress_change_line1(_("Saving PFM File"));
-      ff_progress_increment(-sf->glyphcnt);
       if (!WritePfmFile(newname, sf, oldformatstate == ff_ptype0, map, layer)) {
 	 ff_post_error(_("Pfm Save Failed"), _("Pfm Save Failed"));
 	 err = true;
@@ -1080,8 +1023,6 @@ int _DoSave(SplineFont * sf, char *newname, int32 * sizes, int res,
 	 free(temp);
    } else if ((oldbitmapstate == bf_bdf || oldbitmapstate == bf_fnt ||
 	       oldbitmapstate == bf_ptype3) && !err) {
-      ff_progress_change_line1(_("Saving Bitmap Font(s)"));
-      ff_progress_increment(-sf->glyphcnt);
       if (!WriteBitmaps(newname, sf, sizes, res, oldbitmapstate, map))
 	 err = true;
    } else if (oldbitmapstate == bf_fon && !err) {
@@ -1099,9 +1040,6 @@ int _DoSave(SplineFont * sf, char *newname, int32 * sizes, int res,
 	 err = true;
    }
    free(sizes);
-   ff_progress_end_indicator();
-   if (!err)
-      SavePrefs(true);
    return (err);
 }
 

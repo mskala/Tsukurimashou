@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: splinestroke.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -272,84 +272,7 @@ static enum hittest PolygonHitTest(BasePoint * poly, BasePoint * polyslopes,
 /*  4. No more than 255 corners (could extend this number, but why?) */
 /*  5. It must be drawn clockwise (not really an error, if found just invert, but important for later checks). */
 /*  6. It must be convex */
-/*  7. No extranious points on the edges */
-
-enum PolyType PolygonIsConvex(BasePoint * poly, int n, int *badpointindex) {
-   /* For each vertex: */
-   /*  Remove that vertex from the polygon, and then test if the vertex is */
-   /*  inside the resultant poly. If it is inside, then the polygon is not */
-   /*  convex */
-   /* If all verteces are outside then we have a convex poly */
-   /* If one vertex is on an edge, then we have a poly with an unneeded vertex */
-   bigreal nx, ny;
-
-   int i, j, ni;
-
-   if (badpointindex != NULL)
-      *badpointindex = -1;
-   if (n < 3)
-      return (Poly_TooFewPoints);
-   /* All the points might lie on one line. That wouldn't be a polygon */
-   nx = -(poly[1].y - poly[0].y);
-   ny = (poly[1].x - poly[0].x);
-   for (i = 2; i < n; ++i) {
-      if ((poly[i].x - poly[0].x) * ny - (poly[i].y - poly[0].y) * nx != 0)
-	 break;
-   }
-   if (i == n)
-      return (Poly_Line);	/* Colinear */
-   if (n == 3) {
-      /* Triangles are always convex */
-      return (Poly_Convex);
-   }
-
-   for (j = 0; j < n; ++j) {
-      /* Test to see if poly[j] is inside the polygon poly[0..j-1,j+1..n] */
-      /* Basically the hit test code above modified to ignore poly[j] */
-      int outside = 0, zero_cnt = 0, sign = 0;
-
-      bigreal sx, sy, dx, dy, dot;
-
-      for (i = 0;; ++i) {
-	 if (i == j)
-	    continue;
-	 ni = i + 1;
-	 if (ni == n)
-	    ni = 0;
-	 if (ni == j) {
-	    ++ni;
-	    if (ni == n)
-	       ni = 0;		/* Can't be j, because it already was */
-	 }
-
-	 sx = poly[ni].x - poly[i].x;
-	 sy = poly[ni].y - poly[i].y;
-	 dx = poly[j].x - poly[i].x;
-	 dy = poly[j].y - poly[i].y;
-	 /* Only care about signs, so I don't need unit vectors */
-	 dot = dx * sy - dy * sx;
-	 if (dot == 0)
-	    ++zero_cnt;
-	 else if (sign == 0)
-	    sign = dot;
-	 else if ((dot < 0 && sign > 0) || (dot > 0 && sign < 0)) {
-	    outside = true;
-	    break;
-	 }
-	 if (ni == 0)
-	    break;
-      }
-      if (!outside) {
-	 if (badpointindex != NULL)
-	    *badpointindex = j;
-	 if (zero_cnt > 0)
-	    return (Poly_PointOnEdge);
-	 else
-	    return (Poly_Concave);
-      }
-   }
-   return (Poly_Convex);
-}
+/*  7. No extraneous points on the edges */
 
 /******************************************************************************/
 /* ******************************* Circle Pen ******************************* */
@@ -2382,69 +2305,6 @@ static SplinePoint *SpOnCircle(int i, bigreal radius, BasePoint * center) {
    return (sp);
 }
 
-SplineSet *UnitShape(int n) {
-   SplineSet *ret;
-
-   SplinePoint *sp1, *sp2;
-
-   int i;
-
-   BasePoint origin;
-
-   ret = chunkalloc(sizeof(SplineSet));
-   if (n >= 3 || n <= -3) {
-      /* Regular n-gon with n sides */
-      /* Inscribed in a unit circle, if n<0 then circumscribed around */
-      bigreal angle = 2 * PI / (2 * n);
-
-      bigreal factor = 1;
-
-      if (n < 0) {
-	 angle = -angle;
-	 n = -n;
-	 factor = 1 / cos(angle);
-      }
-      angle -= PI / 2;
-      ret->first = sp1 =
-	 SplinePointCreate(factor * cos(angle), factor * sin(angle));
-      sp1->pointtype = pt_corner;
-      for (i = 1; i < n; ++i) {
-	 angle = 2 * PI / (2 * n) + i * 2 * PI / n - PI / 2;
-	 sp2 = SplinePointCreate(factor * cos(angle), factor * sin(angle));
-	 sp2->pointtype = pt_corner;
-	 SplineMake3(sp1, sp2);
-	 sp1 = sp2;
-      }
-      SplineMake3(sp1, ret->first);
-      ret->last = ret->first;
-      SplineSetReverse(ret);	/* Drat, just drew it counter-clockwise */
-   } else if (n) {
-      ret->first = sp1 = SplinePointCreate(SquareCorners[0].x,
-					   SquareCorners[0].y);
-      sp1->pointtype = pt_corner;
-      for (i = 1; i < 4; ++i) {
-	 sp2 = SplinePointCreate(SquareCorners[i].x, SquareCorners[i].y);
-	 sp2->pointtype = pt_corner;
-	 SplineMake3(sp1, sp2);
-	 sp1 = sp2;
-      }
-      SplineMake3(sp1, ret->first);
-      ret->last = ret->first;
-   } else {
-      /* Turn into a circle */
-      origin.x = origin.y = 0;
-      ret->first = sp1 = SpOnCircle(0, 1, &origin);
-      for (i = 1; i < 4; ++i) {
-	 sp2 = SpOnCircle(i, 1, &origin);
-	 SplineMake3(sp1, sp2);
-	 sp1 = sp2;
-      }
-      SplineMake3(sp1, ret->first);
-      ret->last = ret->first;
-   }
-   return (ret);
-}
-
 static SplinePointList *SinglePointStroke(SplinePoint * sp,
 					  struct strokecontext *c) {
    SplineSet *ret;
@@ -4284,8 +4144,6 @@ void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
       if ((gid = fv->map->map[i]) != -1 && fv->sf->glyphs[gid] != NULL
 	  && fv->selected[i])
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Stroking..."), _("Stroking..."), 0, cnt,
-			       1);
 
    SFUntickAll(fv->sf);
    for (i = 0; i < fv->map->enccount; ++i) {
@@ -4302,7 +4160,7 @@ void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
 	       SplinePointListsFree(sc->layers[layer].splines);
 	       sc->layers[layer].splines = temp;
 	    }
-	    SCCharChangedUpdate(sc, ly_all);
+	    SCCharChangedUpdate(sc, ly_all, true);
 	 } else {
 	    SCPreserveLayer(sc, layer, false);
 	    temp =
@@ -4310,12 +4168,9 @@ void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
 			       sc->layers[layer].order2);
 	    SplinePointListsFree(sc->layers[layer].splines);
 	    sc->layers[layer].splines = temp;
-	    SCCharChangedUpdate(sc, layer);
+	    SCCharChangedUpdate(sc, layer, true);
 	 }
-	 if (!ff_progress_next())
-	    break;
       }
    }
    glyphname = NULL;
-   ff_progress_end_indicator();
 }

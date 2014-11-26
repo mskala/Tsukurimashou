@@ -34,14 +34,26 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.woman =
+  push_pbox_toexpand("kanji.grfive.woman");
+  build_kanji.lr(380,20)
+    (kanji.leftrad.woman)
+    (kanji.rare.broom);
+  expand_pbox;
+enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -66,6 +78,12 @@ endtsuglyph;
 % chi/shuu "winter radical"
 begintsuglyph("uni5A18",24);
   kanji.greight.daughter;
+  tsu_render;
+endtsuglyph;
+
+% fu/yome "woman"
+begintsuglyph("uni5A66",102);
+  kanji.grfive.woman;
   tsu_render;
 endtsuglyph;
 

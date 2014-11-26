@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: scstyles.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3104,7 +3104,7 @@ static void BuildSCLigatures(SplineChar * sc_sc, SplineChar * cap_sc,
       ++components;
    }
    sc_sc->width = width;
-   SCCharChangedUpdate(sc_sc, layer);
+   SCCharChangedUpdate(sc_sc, layer, true);
 }
 
 void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
@@ -3160,8 +3160,6 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
    genchange->layer = fv->active_layer;
 
    MakeSCLookups(sf, c2sc, smcp, ltn, crl, grk, symbols, genchange->petite);
-   ff_progress_start_indicator(10, _("Small Capitals"),
-			       _("Building small capitals"), NULL, cnt, 1);
    for (enc = 0; enc < fv->map->enccount; ++enc) {
       if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
 	  && (sc = sf->glyphs[gid]) != NULL) {
@@ -3180,17 +3178,17 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 	    if (sc->unicodeenc < 0x10000 && islower(sc->unicodeenc)) {
 	       sc = SFGetChar(sf, toupper(sc->unicodeenc), NULL);
 	       if (sc == NULL)
-		  goto end_loop;
+		  continue;
 	    }
 	    if (sc->ticked)
-	       goto end_loop;
+	       break;
 	    /* make the glyph now, even if it contains refs, because we */
 	    /*  want to retain the encoding ordering */
 	    sc_sc =
 	       MakeSmallCapGlyphSlot(sf, sc, script, c2sc, smcp, fv,
 				     genchange);
 	    if (sc_sc == NULL)
-	       goto end_loop;
+	       continue;
 	    if (sc->layers[fv->active_layer].splines == NULL)
 	       continue;	/* Deal with these later */
 	    sc->ticked = true;
@@ -3201,9 +3199,6 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 	       BuildSCLigatures(sc_sc, sc, fv->active_layer, genchange);
 	    else
 	       ChangeGlyph(sc_sc, sc, fv->active_layer, genchange);
-	  end_loop:
-	    if (!ff_progress_next())
-	       break;
 	 }
       }
    }
@@ -3281,171 +3276,16 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 		     sc_sc->width = rsc->width;
 		  }
 	       }
-	       SCCharChangedUpdate(sc_sc, fv->active_layer);
+	       SCCharChangedUpdate(sc_sc, fv->active_layer, true);
 	    }
 	  end_loop2:
 	    if (sc != NULL) {
-	       if (!sc->ticked && !ff_progress_next())
-		  break;
 	       sc->ticked = true;
 	    }
 	 }
       }
    }
-   ff_progress_end_indicator();
-   if (achar != NULL)
-      FVDisplayGID(fv, achar->orig_pos);
    free(genchange->g.maps);
-}
-
-/* ************************************************************************** */
-/* ************************** Subscript/Superscript ************************* */
-/* ************************************************************************** */
-
-static struct lookup_subtable *MakeSupSupLookup(SplineFont * sf,
-						uint32 feature_tag,
-						uint32 * scripts, int scnt) {
-   OTLookup *test, *found;
-
-   FeatureScriptLangList *fl;
-
-   struct scriptlanglist *sl;
-
-   int i;
-
-   struct lookup_subtable *sub;
-
-   if (sf->cidmaster)
-      sf = sf->cidmaster;
-   found = NULL;
-   for (i = 0; i < scnt && found == NULL; ++i) {
-      for (test = sf->gsub_lookups; test != NULL; test = test->next)
-	 if (test->lookup_type == gsub_single) {
-	    if (FeatureScriptTagInFeatureScriptList
-		(feature_tag, scripts[i], test->features)) {
-	       found = test;
-	       break;
-	    }
-	 }
-   }
-
-   if (found == NULL) {
-      sub = SFSubTableFindOrMake(sf, feature_tag, scripts[0], gsub_single);
-      found = sub->lookup;
-   }
-   fl = FindFeatureTagInFeatureScriptList(feature_tag, found->features);
-   for (i = 0; i < scnt; ++i) {
-      for (sl = fl->scripts; sl != NULL && sl->script != scripts[i];
-	   sl = sl->next);
-      if (sl == NULL) {
-	 sl = chunkalloc(sizeof(struct scriptlanglist));
-	 sl->script = scripts[i];
-	 sl->lang_cnt = 1;
-	 sl->langs[0] = DEFAULT_LANG;
-	 sl->next = fl->scripts;
-	 fl->scripts = sl;
-      }
-   }
-
-   return (found->subtables);
-}
-
-static SplineChar *MakeSubSupGlyphSlot(SplineFont * sf, SplineChar * sc,
-				       struct lookup_subtable *feature,
-				       FontViewBase * fv,
-				       struct genericchange *genchange) {
-   SplineChar *sc_sc;
-
-   char buffer[300];
-
-   PST *pst;
-
-   int enc;
-
-   snprintf(buffer, sizeof(buffer), "%s.%s", sc->name,
-	    genchange->glyph_extension);
-   sc_sc = SFGetChar(sf, -1, buffer);
-   if (sc_sc != NULL) {
-      SCPreserveLayer(sc_sc, fv->active_layer, false);
-      SCClearLayer(sc_sc, fv->active_layer);
-      return (sc_sc);
-   }
-   enc = SFFindSlot(sf, fv->map, -1, buffer);
-   if (enc == -1)
-      enc = fv->map->enccount;
-   sc_sc = SFMakeChar(sf, fv->map, enc);
-   free(sc_sc->name);
-   sc_sc->name = copy(buffer);
-   SFHashGlyph(sf, sc_sc);
-
-   pst = chunkalloc(sizeof(PST));
-   pst->next = sc->possub;
-   sc->possub = pst;
-   pst->subtable = feature;
-   pst->type = pst_substitution;
-   pst->u.subs.variant = copy(buffer);
-
-   return (sc_sc);
-}
-
-SplineSet *SSControlStems(SplineSet * ss, double stemwidthscale,
-			  double stemheightscale, double hscale,
-			  double vscale, double xheight) {
-   SplineFont dummysf;
-
-   SplineChar dummy;
-
-   Layer layers[2];
-
-   LayerInfo li[2];
-
-   struct genericchange genchange;
-
-   SplineSet *spl;
-
-   int order2 = 0;
-
-   for (spl = ss; spl != NULL; spl = spl->next) {
-      if (spl->first->next != NULL) {
-	 order2 = spl->first->next->order2;
-	 break;
-      }
-   }
-
-   memset(&dummysf, 0, sizeof(dummysf));
-   memset(&dummy, 0, sizeof(dummy));
-   memset(&li, 0, sizeof(li));
-   memset(&layers, 0, sizeof(layers));
-   memset(&genchange, 0, sizeof(genchange));
-
-   dummysf.ascent = 800;
-   dummysf.descent = 200;
-   dummysf.layer_cnt = 2;
-   dummysf.layers = li;
-   li[ly_fore].order2 = order2;
-   dummy.parent = &dummysf;
-   dummy.name = "nameless";
-   dummy.layer_cnt = 2;
-   dummy.layers = layers;
-   dummy.unicodeenc = -1;
-   layers[ly_fore].order2 = order2;
-   layers[ly_fore].splines = ss;
-
-   if (hscale == -1 && vscale == -1)
-      hscale = vscale = 1;
-   if (stemwidthscale == -1 && stemheightscale == -1)
-      stemwidthscale = stemheightscale = 1;
-
-   genchange.stem_width_scale =
-      stemwidthscale != -1 ? stemwidthscale : stemheightscale;
-   genchange.stem_height_scale =
-      stemheightscale != -1 ? stemheightscale : stemwidthscale;
-   genchange.hcounter_scale = hscale != -1 ? hscale : vscale;
-   genchange.v_scale = vscale != -1 ? vscale : hscale;
-   genchange.lsb_scale = genchange.rsb_scale = genchange.hcounter_scale;
-
-   ChangeGlyph(&dummy, &dummy, ly_fore, &genchange);
-   return (ss);
 }
 
 /* ************************************************************************** */
@@ -3781,7 +3621,7 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
       sc->vstem = NULL;
    }
    if (sc->vstem == NULL)
-      _SplineCharAutoHint(sc, ci->layer, &ci->bd, NULL, false);
+      _SplineCharAutoHint(sc, ci->layer, &ci->bd, NULL);
 
    PerGlyphFindCounters(ci, sc, layer);
 
@@ -3844,9 +3684,8 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
       sc->hstem = NULL;
       DStemInfosFree(sc->dstem);
       sc->dstem = NULL;
-      SCOutOfDateBackground(sc);
    }
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 /* ************************************************************************** */
@@ -4496,7 +4335,7 @@ static void SCEmbolden(SplineChar * sc, struct lcg_zones *zones, int layer) {
    if (layer != ly_back && zones->wants_hints &&
        sc->hstem == NULL && sc->vstem == NULL && sc->dstem == NULL) {
       _SplineCharAutoHint(sc, layer == ly_all ? ly_fore : layer, &zones->bd,
-			  NULL, false);
+			  NULL);
    }
 
    adjust_counters = zones->counter_type == ct_retain ||
@@ -4544,9 +4383,8 @@ static void SCEmbolden(SplineChar * sc, struct lcg_zones *zones, int layer) {
       sc->hstem = NULL;
       DStemInfosFree(sc->dstem);
       sc->dstem = NULL;
-      SCOutOfDateBackground(sc);
    }
-   SCCharChangedUpdate(sc, layer);
+   SCCharChangedUpdate(sc, layer, true);
 }
 
 static struct {
@@ -4637,72 +4475,6 @@ static double SearchBlues(SplineFont * sf, int type, double value) {
       return (value);
 
    return (bestvalue);
-}
-
-double SFSerifHeight(SplineFont * sf) {
-   SplineChar *isc;
-
-   SplineSet *ss;
-
-   SplinePoint *sp;
-
-   DBounds b;
-
-   if (sf->strokedfont || sf->multilayer)
-      return (0);
-
-   isc = SFGetChar(sf, 'I', NULL);
-   if (isc == NULL)
-      isc = SFGetChar(sf, 0x0399, "Iota");
-   if (isc == NULL)
-      isc = SFGetChar(sf, 0x0406, NULL);
-   if (isc == NULL)
-      return (0);
-
-   ss = isc->layers[ly_fore].splines;
-   if (ss == NULL || ss->next != NULL)	/* Too complicated, probably doesn't have simple serifs (black letter?) */
-      return (0);
-   if (ss->first->prev == NULL)
-      return (0);
-   for (sp = ss->first;;) {
-      if (sp->me.y == 0)
-	 break;
-      sp = sp->next->to;
-      if (sp == ss->first)
-	 break;
-   }
-   if (sp->me.y != 0)
-      return (0);
-   SplineCharFindBounds(isc, &b);
-   if (sp->next->to->me.y == 0 || sp->next->to->next->to->me.y == 0) {
-      SplinePoint *psp = sp->prev->from;
-
-      if (psp->me.y >= b.maxy / 3)
-	 return (0);		/* Sans Serif, probably */
-      if (!psp->nonextcp && psp->nextcp.x == psp->me.x) {
-	 /* A curve point half-way up the serif? */
-	 psp = psp->prev->from;
-	 if (psp->me.y >= b.maxy / 3)
-	    return (0);		/* I give up, I don't understand this */
-      }
-      return (psp->me.y);
-   } else if (sp->prev->from->me.y == 0
-	      || sp->prev->from->prev->from->me.y == 0) {
-      SplinePoint *nsp = sp->next->to;
-
-      if (nsp->me.y >= b.maxy / 3)
-	 return (0);		/* Sans Serif, probably */
-      if (!nsp->nonextcp && nsp->nextcp.x == nsp->me.x) {
-	 /* A curve point half-way up the serif? */
-	 nsp = nsp->next->to;
-	 if (nsp->me.y >= b.maxy / 3)
-	    return (0);		/* I give up, I don't understand this */
-      }
-      return (nsp->me.y);
-   }
-
-   /* Too complex for me */
-   return (0);
 }
 
 static void PerGlyphInit(SplineChar * sc, struct lcg_zones *zones,
@@ -7524,7 +7296,7 @@ static int FVMakeAllItalic(FontViewBase * fv, SplineChar * sc, int layer,
       }
    }
    SCMakeItalic(sc, layer, ii);
-   return (ff_progress_next());
+   return true;
 }
 
 static double SerifExtent(SplineChar * sc, int layer, int is_bottom) {
@@ -7572,40 +7344,6 @@ static double SerifExtent(SplineChar * sc, int layer, int is_bottom) {
 	    return (min);
 	 if (max != 0)
 	    return (max);
-      }
-   return (0);
-}
-
-static double SCSerifHeight(SplineChar * sc, int layer) {
-   StemInfo *h;
-
-   SplineSet *ss;
-
-   SplinePoint *sp, *nsp, *start, *end;
-
-   ItalicInfo tempii;
-
-   if (sc == NULL)
-      return (0);
-   memset(&tempii, 0, sizeof(tempii));
-   tempii.serif_extent = 1000;
-
-   if (autohint_before_generate
-       && (sc->changedsincelasthinted || sc->vstem == NULL)
-       && !sc->manualhints)
-      SplineCharAutoHint(sc, layer, NULL);
-   FigureGoodStems(sc->vstem);
-   for (h = sc->vstem; h != NULL; h = h->next)
-      if (h->tobeused) {
-	 FindBottomSerifOnStem(sc, layer, h, 0, &tempii, &start, &end, &ss);
-	 if (start == NULL)
-	    continue;
-	 for (sp = start; sp != end; sp = nsp) {
-	    nsp = sp->next->to;
-	    if (sp->me.y > 5 && sp->me.y >= nsp->me.y - 1
-		&& sp->me.y <= nsp->me.y + 1)
-	       return (sp->me.y);
-	 }
       }
    return (0);
 }
@@ -7691,9 +7429,6 @@ void MakeItalic(FontViewBase * fv, CharViewBase * cv, ItalicInfo * ii) {
 	 }
       }
       if (cnt != 0) {
-	 ff_progress_start_indicator(10, _("Italic"),
-				     _("Italic Conversion"), NULL, cnt, 1);
-
 	 for (enc = 0; enc < fv->map->enccount; ++enc) {
 	    if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc] &&
 		(sc = sf->glyphs[gid]) != NULL && !sc->ticked) {
@@ -7701,7 +7436,6 @@ void MakeItalic(FontViewBase * fv, CharViewBase * cv, ItalicInfo * ii) {
 		  break;
 	    }
 	 }
-	 ff_progress_end_indicator();
       }
    }
    detect_diagonal_stems = dds;
@@ -7711,47 +7445,6 @@ void MakeItalic(FontViewBase * fv, CharViewBase * cv, ItalicInfo * ii) {
 /* ************************************************************************** */
 /* ***************************** Change X-Height **************************** */
 /* ************************************************************************** */
-
-void InitXHeightInfo(SplineFont * sf, int layer, struct xheightinfo *xi) {
-   int i, j, cnt, besti;
-
-   double sum, val;
-
-   const int MW = 100;
-
-   struct widths {
-      double width, total;
-   } widths[MW];
-
-   memset(xi, 0, sizeof(*xi));
-   xi->xheight_current = SFXHeight(sf, layer, false);
-   sum = 0;
-   for (i = cnt = 0; lc_botserif_str[i] != 0; ++i) {
-      val = SCSerifHeight(SFGetChar(sf, lc_botserif_str[i], NULL), layer);
-      if (val != 0) {
-	 for (j = 0; j < cnt; ++j) {
-	    if (widths[j].width == val) {
-	       ++widths[j].total;
-	       break;
-	    }
-	 }
-	 if (j == cnt && j < MW) {
-	    widths[j].width = val;
-	    widths[j].total = 1;
-	 }
-      }
-   }
-
-   besti = -1;
-   for (j = 0; j < cnt; ++j) {
-      if (besti == -1)
-	 besti = j;
-      else if (widths[j].total >= widths[besti].total)
-	 besti = j;
-   }
-   if (besti != -1)
-      xi->serif_height = widths[besti].total;
-}
 
 static void SCChangeXHeight(SplineChar * sc, int layer,
 			    struct xheightinfo *xi) {
@@ -7764,7 +7457,7 @@ static void SCChangeXHeight(SplineChar * sc, int layer,
    else {
       SCPreserveLayer(sc, layer, true);
       _SCChangeXHeight(sc, layer, xi);
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
    }
 }
 
@@ -7780,50 +7473,5 @@ static int FVChangeXHeight(FontViewBase * fv, SplineChar * sc, int layer,
       }
    }
    SCChangeXHeight(sc, layer, xi);
-   return (ff_progress_next());
-}
-
-void ChangeXHeight(FontViewBase * fv, CharViewBase * cv,
-		   struct xheightinfo *xi) {
-   int cnt, enc, gid;
-
-   SplineChar *sc;
-
-   SplineFont *sf = fv != NULL ? fv->sf : cv->sc->parent;
-
-   int layer = fv != NULL ? fv->active_layer : CVLayer(cv);
-
-   extern int detect_diagonal_stems;
-
-   int dds = detect_diagonal_stems;
-
-   detect_diagonal_stems = true;
-
-   if (cv != NULL)
-      SCChangeXHeight(cv->sc, layer, xi);
-   else {
-      cnt = 0;
-
-      for (enc = 0; enc < fv->map->enccount; ++enc) {
-	 if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc]
-	     && (sc = sf->glyphs[gid]) != NULL) {
-	    ++cnt;
-	    sc->ticked = false;
-	 }
-      }
-      if (cnt != 0) {
-	 ff_progress_start_indicator(10, _("Change X-Height"),
-				     _("Change X-Height"), NULL, cnt, 1);
-
-	 for (enc = 0; enc < fv->map->enccount; ++enc) {
-	    if ((gid = fv->map->map[enc]) != -1 && fv->selected[enc] &&
-		(sc = sf->glyphs[gid]) != NULL && !sc->ticked) {
-	       if (!FVChangeXHeight(fv, sc, layer, xi))
-		  break;
-	    }
-	 }
-	 ff_progress_end_indicator();
-      }
-   }
-   detect_diagonal_stems = dds;
+   return true;
 }

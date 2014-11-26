@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 2953 2014-03-15 17:44:07Z mskala $ */
+/* $Id: autowidth.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ Autokern has similar ideas, but is simpler:
     No, I think it is better not to propigate kerning.
 */
 
-void AW_AutoKern(WidthInfo * wi) {
+static void AW_AutoKern(WidthInfo * wi) {
    struct charpair *cp;
 
    SplineChar *lsc, *rsc;
@@ -118,7 +118,6 @@ void AW_AutoKern(WidthInfo * wi) {
 	 wi->sf->changed = true;
       }
    }
-   MVReKernAll(wi->fv->sf);
 }
 
 static real SplineFindMinXAtY(Spline * spline, real y, real min) {
@@ -448,7 +447,7 @@ static void PairFindDistance(struct charpair *cp, WidthInfo * wi) {
    }
 }
 
-void AW_FindFontParameters(WidthInfo * wi) {
+static void AW_FindFontParameters(WidthInfo * wi) {
    DBounds bb;
 
    SplineFont *sf = wi->sf;
@@ -687,7 +686,7 @@ real SFGuessItalicAngle(SplineFont * sf) {
    return (angle);
 }
 
-void AW_InitCharPairs(WidthInfo * wi) {
+static void AW_InitCharPairs(WidthInfo * wi) {
    int i, j;
 
    struct charpair *cp;
@@ -708,7 +707,7 @@ void AW_InitCharPairs(WidthInfo * wi) {
    wi->tcnt = wi->lcnt + wi->rcnt;
 }
 
-void AW_BuildCharPairs(WidthInfo * wi) {
+static void AW_BuildCharPairs(WidthInfo * wi) {
    int i;
 
    /* FindFontParameters(wi); *//* Moved earlier */
@@ -722,7 +721,7 @@ void AW_BuildCharPairs(WidthInfo * wi) {
       PairFindDistance(wi->pairs[i], wi);
 }
 
-void AW_FreeCharList(struct charone **list) {
+static void AW_FreeCharList(struct charone **list) {
    int i;
 
    if (list == NULL)
@@ -735,7 +734,7 @@ void AW_FreeCharList(struct charone **list) {
    free(list);
 }
 
-void AW_FreeCharPairs(struct charpair **list, int cnt) {
+static void AW_FreeCharPairs(struct charpair **list, int cnt) {
    int i;
 
    if (list == NULL)
@@ -785,7 +784,7 @@ int KernThreshold(SplineFont * sf, int cnt) {
    return (0);
 }
 
-void AW_KernRemoveBelowThreshold(SplineFont * sf, int threshold) {
+static void AW_KernRemoveBelowThreshold(SplineFont * sf, int threshold) {
    int i;
 
    KernPair *kp, *prev, *next;
@@ -809,10 +808,9 @@ void AW_KernRemoveBelowThreshold(SplineFont * sf, int threshold) {
 	    }
 	 }
       }
-   MVReKernAll(sf);
 }
 
-struct charone *AW_MakeCharOne(SplineChar * sc) {
+static struct charone *AW_MakeCharOne(SplineChar * sc) {
    struct charone *ch = calloc(1, sizeof(struct charone));
 
    ch->sc = sc;
@@ -941,7 +939,7 @@ static void parsekernstr(unichar_t * buffer, struct kernsets *ks) {
    }
 }
 
-void AW_ScriptSerifChecker(WidthInfo * wi) {
+static void AW_ScriptSerifChecker(WidthInfo * wi) {
    /* If not LGC (latin, greek, cyrillic) then ignore serif checks */
    /*  What about letterlike-symbols? */
    if ((wi->left[0]->sc->unicodeenc >= 'A'
@@ -1059,7 +1057,7 @@ static void kernsetsfree(struct kernsets *ks) {
    free(ks->ch1);
 }
 
-int AW_ReadKernPairFile(char *fn, WidthInfo * wi) {
+static int AW_ReadKernPairFile(char *fn, WidthInfo * wi) {
    char *filename;
 
    FILE *file;
@@ -1132,7 +1130,6 @@ void FVRemoveKerns(FontViewBase * fv) {
    }
    if (changed) {
       sf->changed = true;
-      MVReKernAll(fv->sf);
    }
 }
 
@@ -1157,7 +1154,6 @@ void FVRemoveVKerns(FontViewBase * fv) {
    }
    if (changed) {
       fv->sf->changed = true;
-      MVReKernAll(fv->sf);
    }
 }
 

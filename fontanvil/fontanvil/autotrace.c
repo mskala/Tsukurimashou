@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 2953 2014-03-15 17:44:07Z mskala $ */
+/* $Id: autotrace.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -366,7 +366,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
       unlink(tempname_out);
    }
    if (changed)
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
 
 }
 #else
@@ -506,7 +506,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
       unlink(tempname);		/* Might not be needed, but probably is */
    }
    if (changed)
-      SCCharChangedUpdate(sc, layer);
+      SCCharChangedUpdate(sc, layer, true);
 }
 #endif
 
@@ -616,9 +616,6 @@ void FVAutoTrace(FontViewBase * fv, int ask) {
 	  fv->sf->glyphs[gid]->layers[ly_back].images)
 	 ++cnt;
 
-   ff_progress_start_indicator(10, _("Autotracing..."), _("Autotracing..."),
-			       0, cnt, 1);
-
    SFUntickAll(fv->sf);
    for (i = cnt = 0; i < fv->map->enccount; ++i) {
       if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
@@ -626,11 +623,8 @@ void FVAutoTrace(FontViewBase * fv, int ask) {
 	  fv->sf->glyphs[gid]->layers[ly_back].images &&
 	  !fv->sf->glyphs[gid]->ticked) {
 	 _SCAutoTrace(fv->sf->glyphs[gid], fv->active_layer, args);
-	 if (!ff_progress_next())
-	    break;
       }
    }
-   ff_progress_end_indicator();
 }
 
 char *ProgramExists(char *prog, char *buffer) {
@@ -848,7 +842,6 @@ SplineFont *SFFromMF(char *filename) {
       }
       exit(execvp(arglist[0], arglist) == -1);	/* If exec fails, then die */
    } else if (pid != -1) {
-      ff_progress_show();
       waitpid(pid, &status, 0);
       if (WIFEXITED(status)) {
 	 char *gffile = FindGfFile(tempdir);
@@ -861,8 +854,6 @@ SplineFont *SFFromMF(char *filename) {
 	    sf = SFFromBDF(gffile, 3, true);
 	    free(gffile);
 	    if (sf != NULL) {
-	       ff_progress_change_line1(_("Autotracing..."));
-	       ff_progress_change_total(sf->glyphcnt);
 	       for (i = 0; i < sf->glyphcnt; ++i) {
 		  if ((sc = sf->glyphs[i]) != NULL
 		      && sc->layers[ly_back].images) {
@@ -873,8 +864,6 @@ SplineFont *SFFromMF(char *filename) {
 			sc->layers[ly_back].images = NULL;
 		     }
 		  }
-		  if (!ff_progress_next())
-		     break;
 	       }
 	    } else
 	       ff_post_error(_("Can't run mf"),

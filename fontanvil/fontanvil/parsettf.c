@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: parsettf.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1747,15 +1747,7 @@ static void TTFAddLangStr(FILE * ttf, struct ttfinfo *info, int id,
 	 buts[2] = _("Second _to All");
 	 buts[3] = _("Use _Second");
 	 buts[4] = NULL;
-	 ret =
-	    ff_ask(_("Multiple names for language"), (const char **) buts, 0,
-		   3,
-		   _
-		   ("The 'name' table contains (at least) two strings for the %s in language %s, the first '%.12s...' the second '%.12s...'.\nWhich do you prefer?"),
-		   TTFNameIds(id), MSLangString(language), cur->names[id],
-		   str);
-	 if (ret == 1 || ret == 2)
-	    info->dupnamestate = ret;
+	 ret =0;
       }
       if (ret == 0 || ret == 1)
 	 free(str);
@@ -2480,7 +2472,6 @@ static void readttfglyphs(FILE * ttf, struct ttfinfo *info) {
       for (i = 0; i < info->glyph_cnt; ++i) {
 	 info->chars[i] =
 	    readttfglyph(ttf, info, goffsets[i], goffsets[i + 1], i);
-	 ff_progress_next();
       }
    } else {
       /* only read the glyphs we actually use in this font */
@@ -2501,7 +2492,6 @@ static void readttfglyphs(FILE * ttf, struct ttfinfo *info) {
 	    if (info->inuse[i] && info->chars[i] == NULL) {
 	       info->chars[i] =
 		  readttfglyph(ttf, info, goffsets[i], goffsets[i + 1], i);
-	       ff_progress_next();
 	       anyread = info->chars[i] != NULL;
 	    }
 	 }
@@ -2513,7 +2503,6 @@ static void readttfglyphs(FILE * ttf, struct ttfinfo *info) {
    for (i = 0; i < info->glyph_cnt; ++i)
       if (info->chars[i] != NULL)
 	 info->chars[i]->orig_pos = i;
-   ff_progress_next_stage();
 }
 
 /* Standard names for cff */
@@ -4189,7 +4178,6 @@ static void cidfigure(struct ttfinfo *info, struct topdicts *dict,
 	 else
 	    sf->glyphs[cid]->width += subdicts[j]->nominalwidthx;
       }
-      ff_progress_next();
    }
    /* No need to do a reference fixup here-- the chars aren't associated */
    /*  with any encoding as is required for seac */
@@ -4510,10 +4498,6 @@ static void readttfvwidths(FILE * ttf, struct ttfinfo *info) {
 	 info->chars[j]->vwidth = lastvwidth;
    }
 
-}
-
-static int modenc(int enc, int modtype) {
-   return (enc);
 }
 
 static int badencoding(struct ttfinfo *info) {
@@ -4873,9 +4857,7 @@ N_("Script|Traditional Chinese"), N_("Script|Korean"),
 	      12 ? "Segmented coverage" : "Unknown format");
       choices[i] = copy(buffer);
    }
-   ret =
-      ff_choose(_("Pick a CMap subtable"), (const char **) choices, enccnt,
-		def, _("Pick a CMap subtable"));
+   ret=def;
    for (i = 0; i < enccnt; ++i)
       free(choices[i]);
    free(choices);
@@ -5162,13 +5144,11 @@ static void readttfencodings(FILE * ttf, struct ttfinfo *info, int justinuse) {
 			   || info->chars[(uint16) (j + delta[i])] == NULL) {
 		     LogError(_
 			      ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
-			      (uint16) (j + delta[i]), modenc(j, mod),
-			      modenc(j, mod));
+			      (uint16)(j+delta[i]),j,j);
 		     info->bad_cmap = true;
 		  } else {
 		     int uenc = umodenc(j, mod, info);
-
-		     int lenc = modenc(j, mod);
+		     int lenc=j;
 
 		     if (uenc != -1 && used[uenc]) {
 			if (!badencwarned) {
@@ -5219,19 +5199,18 @@ static void readttfencodings(FILE * ttf, struct ttfinfo *info, int justinuse) {
 			/*  program says it is treated as 0 */
 			LogError(_
 				 ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
-				 index, modenc(j, mod), modenc(j, mod));
+				 index,j,j);
 			info->bad_cmap = true;
 		     } else if (justinuse == git_justinuse)
 			info->inuse[index] = 1;
 		     else if (info->chars[index] == NULL) {
 			LogError(_
 				 ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
-				 index, modenc(j, mod), modenc(j, mod));
+				 index,j,j);
 			info->bad_cmap = true;
 		     } else {
-			int uenc = umodenc(j, mod, info);
-
-			int lenc = modenc(j, mod);
+			int uenc=umodenc(j,mod,info);
+			int lenc=j;
 
 			if (uenc != -1 && used[uenc]) {
 			   if (!badencwarned) {
@@ -5348,7 +5327,7 @@ static void readttfencodings(FILE * ttf, struct ttfinfo *info, int justinuse) {
 		  else if (info->chars[index] == NULL)
 		     /* Do Nothing */ ;
 		  else {
-		     int lenc = modenc(i, mod);
+		     int lenc=i;
 
 		     if (dounicode && info->chars[index]->unicodeenc == -1)
 			info->chars[index]->unicodeenc = i;
@@ -5368,7 +5347,7 @@ static void readttfencodings(FILE * ttf, struct ttfinfo *info, int justinuse) {
 		     index = (uint16) (index + subheads[k].delta);
 		  if (index != 0 && index < info->glyph_cnt) {
 		     enc = (i << 8) | (j + subheads[k].first);
-		     lenc = modenc(enc, mod);
+		     lenc=enc;
 		     if (justinuse == git_justinuse)
 			info->inuse[index] = 1;
 		     else if (info->chars[index] == NULL)
@@ -5586,8 +5565,6 @@ static void readttfpostnames(FILE * ttf, struct ttfinfo *info) {
 
    int anynames = false;
 
-   ff_progress_change_line2(_("Reading Names"));
-
    /* Give ourselves an xuid, just in case they want to convert to PostScript */
    /*  (even type42)                                                         */
    if (xuid != NULL && info->fd == NULL && info->xuid == NULL) {
@@ -5718,7 +5695,6 @@ static void readttfpostnames(FILE * ttf, struct ttfinfo *info) {
 	       }
 	    }
 	 }
-	 ff_progress_next();
 	 info->chars[i]->name = copy(name);
       }
 
@@ -5753,9 +5729,7 @@ static void readttfpostnames(FILE * ttf, struct ttfinfo *info) {
       else
 	 sprintf(buffer, "glyph%d", i);
       info->chars[i]->name = copy(buffer);
-      ff_progress_next();
    }
-   ff_progress_next_stage();
 }
 
 static void readttfgasp(FILE * ttf, struct ttfinfo *info) {
@@ -5897,15 +5871,12 @@ int ttfFixupRef(SplineChar ** chars, int i) {
 static void ttfFixupReferences(struct ttfinfo *info) {
    int i;
 
-   ff_progress_change_line2(_("Fixing up References"));
    for (i = 0; i < info->glyph_cnt; ++i)
       if (info->chars[i] != NULL)
 	 info->chars[i]->ticked = false;
    for (i = 0; i < info->glyph_cnt; ++i) {
       ttfFixupRef(info->chars, i);
-      ff_progress_next();
    }
-   ff_progress_next_stage();
 }
 
 static void TtfCopyTableBlindly(struct ttfinfo *info, FILE * ttf,
@@ -5946,7 +5917,6 @@ static int readttf(FILE * ttf, struct ttfinfo *info, char *filename) {
 
    int i;
 
-   ff_progress_change_stages(3);
    if (!readttfheader(ttf, info, filename, &info->chosenname)) {
       return (0);
    }
@@ -5954,7 +5924,6 @@ static int readttf(FILE * ttf, struct ttfinfo *info, char *filename) {
    strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
    setlocale(LC_NUMERIC, "C");
    readttfpreglyph(ttf, info);
-   ff_progress_change_total(info->glyph_cnt);
 
    /* If font only contains bitmaps, then only read bitmaps */
    if ((info->glyphlocations_start == 0 || info->glyph_length == 0) &&
@@ -5973,17 +5942,8 @@ static int readttf(FILE * ttf, struct ttfinfo *info, char *filename) {
       buts[1] = _("OTF 'CFF '");
       buts[2] = _("_Cancel");
       buts[3] = NULL;
-      choice =
-	 ff_ask(_("Pick a font, any font..."), (const char **) buts, 0, 2,
-		_
-		("This font contains both a TrueType 'glyf' table and an OpenType 'CFF ' table. FontAnvil can only deal with one at a time, please pick which one you want to use"));
-      if (choice == 2) {
-	 setlocale(LC_NUMERIC, oldloc);
-	 return (0);
-      } else if (choice == 0)
-	 info->cff_start = 0;
-      else
-	 info->glyph_start = info->glyphlocations_start = 0;
+      choice =0;
+      info->cff_start = 0;
    }
 
    if (info->onlystrikes) {

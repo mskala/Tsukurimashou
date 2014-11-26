@@ -1,4 +1,4 @@
-/* $Id: clipnoui.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: clipnoui.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,3 @@ static struct clip_interface noui_clip_interface = {
 };
 
 struct clip_interface *clip_interface = &noui_clip_interface;
-
-void FF_SetClipInterface(struct clip_interface *clipi) {
-   clip_interface = clipi;
-}

@@ -1,4 +1,4 @@
-/* $Id: gimagereadbmp.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagereadbmp.c 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -370,7 +370,7 @@ static int readpixels(FILE * file, struct bmpheader *head) {
    return (1);
 }
 
-GImage *GImageRead_Bmp(FILE * file) {
+static GImage *GImageRead_Bmp(FILE * file) {
 /* Import a BMP image (based on file handle), cleanup & return NULL if error */
    struct bmpheader bmp;
 

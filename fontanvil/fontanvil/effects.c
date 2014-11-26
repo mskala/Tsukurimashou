@@ -1,4 +1,4 @@
-/* $Id: effects.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: effects.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,6 @@ void FVOutline(FontViewBase * fv, real width) {
       if ((gid = fv->map->map[i]) != -1 && (sc = fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines)
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Outlining glyphs"),
-			       _("Outlining glyphs"), 0, cnt, 1);
 
    memset(&si, 0, sizeof(si));
    si.removeexternal = true;
@@ -67,11 +65,8 @@ void FVOutline(FontViewBase * fv, real width) {
 	      spl = spl->next);
 	 spl->next = temp;
 	 SplineSetsCorrect(sc->layers[layer].splines, &changed);
-	 SCCharChangedUpdate(sc, layer);
-	 if (!ff_progress_next())
-	    break;
+	 SCCharChangedUpdate(sc, layer, true);
       }
-   ff_progress_end_indicator();
 }
 
 void FVInline(FontViewBase * fv, real width, real inset) {
@@ -89,8 +84,6 @@ void FVInline(FontViewBase * fv, real width, real inset) {
       if ((gid = fv->map->map[i]) != -1 && (sc = fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines)
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Inlining glyphs"), _("Inlining glyphs"),
-			       0, cnt, 1);
 
    memset(&si, 0, sizeof(si));
    si.removeexternal = true;
@@ -116,11 +109,8 @@ void FVInline(FontViewBase * fv, real width, real inset) {
 	 for (; spl->next != NULL; spl = spl->next);
 	 spl->next = temp2;
 	 SplineSetsCorrect(sc->layers[layer].splines, &changed);
-	 SCCharChangedUpdate(sc, layer);
-	 if (!ff_progress_next())
-	    break;
+	 SCCharChangedUpdate(sc, layer, true);
       }
-   ff_progress_end_indicator();
 }
 
 /**************************************************************************** */
@@ -907,8 +897,6 @@ void FVShadow(FontViewBase * fv, real angle, real outline_width,
       if ((gid = fv->map->map[i]) != -1 && (sc = fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines)
 	 ++cnt;
-   ff_progress_start_indicator(10, _("Shadowing glyphs"),
-			       _("Shadowing glyphs"), 0, cnt, 1);
 
    SFUntickAll(fv->sf);
    for (i = 0; i < fv->map->enccount; ++i)
@@ -919,9 +907,6 @@ void FVShadow(FontViewBase * fv, real angle, real outline_width,
 	 sc->layers[layer].splines =
 	    SSShadow(sc->layers[layer].splines, angle, outline_width,
 		     shadow_length, sc, wireframe);
-	 SCCharChangedUpdate(sc, layer);
-	 if (!ff_progress_next())
-	    break;
+	 SCCharChangedUpdate(sc, layer, true);
       }
-   ff_progress_end_indicator();
 }

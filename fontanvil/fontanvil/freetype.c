@@ -1,4 +1,4 @@
-/* $Id: freetype.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: freetype.c 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,30 @@
 #include "fffreetype.h"
 #include <math.h>
 
+static int FreeTypeAtLeast(int major, int minor, int patch);
+
 #if _NO_FREETYPE
 
 int hasFreeType(void) {
    return (false);
 }
 
-void doneFreeType(void) {
+static void doneFreeType(void) {
 }
 
-int hasFreeTypeDebugger(void) {
+static int hasFreeTypeDebugger(void) {
    return (false);
 }
 
-int hasFreeTypeByteCode(void) {
+static int hasFreeTypeByteCode(void) {
    return (false);
 }
 
-int FreeTypeAtLeast(int major, int minor, int patch) {
+static int FreeTypeAtLeast(int major, int minor, int patch) {
    return (0);
 }
 
-char *FreeTypeStringVersion(void) {
+static char *FreeTypeStringVersion(void) {
    return ("");
 }
 
@@ -116,13 +118,13 @@ int hasFreeType(void) {
    return (true);
 }
 
-void doneFreeType(void) {
+static void doneFreeType(void) {
    if (ff_ft_context != NULL)
       FT_Done_FreeType(ff_ft_context);
    ff_ft_context = NULL;
 }
 
-int hasFreeTypeByteCode(void) {
+static int hasFreeTypeByteCode(void) {
    static int complained = 0;
 
    if (!hasFreeType())
@@ -160,12 +162,12 @@ int hasFreeTypeByteCode(void) {
 #   endif
 }
 
-int hasFreeTypeDebugger(void) {
+static int hasFreeTypeDebugger(void) {
    return (false);
 }
 
 #   if FREETYPE_MAJOR>2 || (FREETYPE_MAJOR==2 && (FREETYPE_MINOR>1 || (FREETYPE_MINOR==1 && FREETYPE_PATCH>=4)))
-int FreeTypeAtLeast(int major, int minor, int patch) {
+static int FreeTypeAtLeast(int major, int minor, int patch) {
    int ma, mi, pa;
 
    if (!hasFreeType())
@@ -178,7 +180,7 @@ int FreeTypeAtLeast(int major, int minor, int patch) {
    return (false);
 }
 
-char *FreeTypeStringVersion(void) {
+static char *FreeTypeStringVersion(void) {
    int ma, mi, pa;
 
    static char buffer[60];
@@ -190,11 +192,11 @@ char *FreeTypeStringVersion(void) {
    return (buffer);
 }
 #   else
-int FreeTypeAtLeast(int major, int minor, int patch) {
+static int FreeTypeAtLeast(int major, int minor, int patch) {
    return (0);			/* older than 2.1.4, but don't know how old */
 }
 
-char *FreeTypeStringVersion(void) {
+static char *FreeTypeStringVersion(void) {
 
    if (!hasFreeType())
       return ("");
@@ -245,7 +247,7 @@ void FreeTypeFreeContext(void *freetypecontext) {
    free(ftc);
 }
 
-void *__FreeTypeFontContext(FT_Library context,
+static void *__FreeTypeFontContext(FT_Library context,
 			    SplineFont * sf, SplineChar * sc,
 			    FontViewBase * fv, int layer, enum fontformat ff,
 			    int flags, void *shared_ftc) {
@@ -615,7 +617,6 @@ BDFFont *SplineFontFreeTypeRasterize(void *freetypecontext, int pixelsize,
 	       bdf->glyphs[i] =
 		  SplineCharAntiAlias(subsf->glyphs[i], ftc->layer, pixelsize,
 				      (1 << (depth / 2)));
-	    ff_progress_next();
 	 } else
 	    bdf->glyphs[i] = NULL;
       if (subftc != NULL && subftc != ftc)
@@ -623,7 +624,6 @@ BDFFont *SplineFontFreeTypeRasterize(void *freetypecontext, int pixelsize,
       subftc = NULL;
       ++k;
    } while (k < sf->subfontcnt);
-   ff_progress_end_indicator();
    return (bdf);
 }
 
@@ -1357,9 +1357,7 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
 BDFFont *SplineFontFreeTypeRasterizeNoHints(SplineFont * sf, int layer,
 					    int pixelsize, int depth) {
    SplineFont *subsf;
-
    int i, k;
-
    BDFFont *bdf = SplineFontToBDFHeader(sf, pixelsize, true);
 
    if (depth != 1)
@@ -1386,12 +1384,10 @@ BDFFont *SplineFontFreeTypeRasterizeNoHints(SplineFont * sf, int layer,
 	       bdf->glyphs[i] =
 		  SplineCharAntiAlias(subsf->glyphs[i], layer, pixelsize,
 				      (1 << (depth / 2)));
-	    ff_progress_next();
 	 } else
 	    bdf->glyphs[i] = NULL;
       ++k;
    } while (k < sf->subfontcnt);
-   ff_progress_end_indicator();
    return (bdf);
 }
 #endif
@@ -1403,11 +1399,4 @@ void *FreeTypeFontContext(SplineFont * sf, SplineChar * sc, FontViewBase * fv,
 	    sf->subfontcnt !=
 	    0 ? ff_otfcid : sf->layers[layer].order2 ? ff_ttf : ff_pfb, 0,
 	    NULL));
-}
-
-void FreeType_FreeRaster(struct freetype_raster *raster) {
-   if (raster == NULL || raster == (void *) -1)
-      return;
-   free(raster->bitmap);
-   free(raster);
 }

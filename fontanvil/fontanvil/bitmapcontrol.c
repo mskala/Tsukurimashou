@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: bitmapcontrol.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -31,18 +31,6 @@
 #include "bitmapcontrol.h"
 
 int bdfcontrol_lastwhich = bd_selected;
-
-static void RemoveBDFWindows(BDFFont * bdf) {
-   int i;
-
-   for (i = 0; i < bdf->glyphcnt; ++i)
-     if (bdf->glyphs[i] != NULL) {
-	BCDestroyAll(bdf->glyphs[i]);
-     }
-   /* We can't free the bdf until all the windows have executed their destroy */
-   /*  routines (which they will when they get the destroy window event) */
-   /*  because those routines depend on the bdf existing ... */
-}
 
 static BDFFont *BDFNew(SplineFont * sf, int pixel_size, int depth) {
    BDFFont *new = chunkalloc(sizeof(BDFFont));
@@ -82,12 +70,11 @@ static void SFRemoveUnwantedBitmaps(SplineFont * sf, int32 * sizes) {
 	 for (fv = sf->fv; fv != NULL; fv = fv->nextsame) {
 	    if (fv->active_bitmap == bdf) {
 	       if (sf->onlybitmaps && sf->bitmaps != NULL)
-		  FVChangeDisplayBitmap(fv, sf->bitmaps);
+		 fv->active_bitmap=sf->bitmaps;
 	       else
-		  FVShowFilled(fv);
+		 fv->active_bitmap=NULL;
 	    }
 	 }
-	 RemoveBDFWindows(bdf);
 	 BDFFontFree(bdf);
 	 sf->changed = true;
       } else {
@@ -160,8 +147,6 @@ static void FVScaleBitmaps(FontViewBase * fv, int32 * sizes, int rasterize) {
       if (sizes[i] > 0)
 	 ++cnt;
    scale = fv->active_bitmap;
-   ff_progress_start_indicator(10, _("Scaling Bitmaps"), _("Scaling Bitmaps"),
-			       0, cnt, 1);
 
    for (i = 0; sizes[i] != 0; ++i)
       if (!SizeExists(fv->sf->bitmaps, sizes[i])) {
@@ -174,10 +159,7 @@ static void FVScaleBitmaps(FontViewBase * fv, int32 * sizes, int rasterize) {
 	 bdf->next = fv->sf->bitmaps;
 	 fv->sf->bitmaps = bdf;
 	 fv->sf->changed = true;
-	 if (!ff_progress_next())
-	    break;
       }
-   ff_progress_end_indicator();
 
    /* Order the list */
    SFOrderBitmapList(fv->sf);
@@ -229,7 +211,6 @@ static void ReplaceBDFC(SplineFont * sf, int32 * sizes, int gid,
 	    bdf->glyphs[gid]->views = bdfc->views;
 	    bdfc->views = NULL;
 	    BDFCharFree(bdfc);
-	    BCRefreshAll(bdf->glyphs[gid]);
 	 }
       }
    }
@@ -300,7 +281,6 @@ static int FVRegenBitmaps(CreateBitmapData * bd, int32 * sizes,
       }
    }
    sf->changed = true;
-   FVRefreshAll(fv->sf);
    return (true);
 }
 
@@ -309,8 +289,7 @@ static void BDFClearGlyph(BDFFont * bdf, int gid, int pass) {
    if (bdf == NULL || bdf->glyphs[gid] == NULL)
       return;
    if (pass == 0) {
-      BCDestroyAll(bdf->glyphs[gid]);
-      ff_progress_allow_events();
+     /* */
    } else {
       BDFCharFree(bdf->glyphs[gid]);
       bdf->glyphs[gid] = NULL;
@@ -350,10 +329,8 @@ static int FVRemoveBitmaps(CreateBitmapData * bd, int32 * sizes) {
 	    }
 	 }
       }
-      ff_progress_allow_events();
    }
    sf->changed = true;
-   FVRefreshAll(fv->sf);
    return (true);
 }
 
@@ -370,12 +347,11 @@ void BitmapsDoIt(CreateBitmapData * bd, int32 * sizes, int usefreetype) {
       /*  fontview so that it shows one of the bitmaps */
       if (bd->sf->onlybitmaps && bd->sf->bitmaps != NULL) {
 	 BDFFont *bdf;
-
 	 FontViewBase *fvs;
 
-	 for (bdf = bd->sf->bitmaps; bdf->next != NULL; bdf = bdf->next);
-	 for (fvs = bd->sf->fv; fvs != NULL; fvs = fvs->nextsame)
-	    FVChangeDisplayBitmap(fvs, bdf);
+	 for (bdf=bd->sf->bitmaps;bdf->next!=NULL;bdf=bdf->next);
+	 for (fvs=bd->sf->fv;fvs!=NULL; fvs = fvs->nextsame)
+	   fvs->active_bitmap=bdf;
       }
    } else {
       if (FVRegenBitmaps(bd, sizes, usefreetype))

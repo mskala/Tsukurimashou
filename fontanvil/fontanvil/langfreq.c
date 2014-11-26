@@ -1,4 +1,4 @@
-/* $Id: langfreq.c 2927 2014-03-08 15:00:32Z mskala $ */
+/* $Id: langfreq.c 3280 2014-09-08 17:24:23Z mskala $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -4455,33 +4455,6 @@ static char *RandomPara(struct lang_frequencies *lf,
    return (copy(parabuf));
 }
 
-char *RandomParaFromScriptLang(uint32 script, uint32 lang, SplineFont * sf,
-			       struct lang_frequencies *lf) {
-   int i;
-
-   struct script_chars chrs;
-
-   char *ret;
-
-   memset(&chrs, 0, sizeof(chrs));
-
-   if (lf == NULL) {
-      for (i = 0; lang_frequencies[i].script != 0; ++i) {
-	 if (lang_frequencies[i].script == script &&
-	     lang_frequencies[i].lang == lang) {
-	    lf = &lang_frequencies[i];
-	    break;
-	 }
-      }
-   }
-
-   if (lf == NULL)
-      ScriptCharInit(sf, script, &chrs);
-   ret = RandomPara(lf, &chrs, sf);
-   free(chrs.chars);
-   return (ret);
-}
-
 char *RandomParaFromScript(uint32 script, uint32 * lang, SplineFont * sf) {
    int i;
 
@@ -4540,13 +4513,9 @@ static int tag_compare(const void *tag1, const void *tag2) {
 
 int SF2Scripts(SplineFont * sf, uint32 scripts[100]) {
    int scnt, s, gid, k;
-
    SplineFont *subsf;
-
    SplineChar *sc;
-
    uint32 script;
-
    PST *pst;
 
    scnt = 0;
@@ -4579,54 +4548,4 @@ int SF2Scripts(SplineFont * sf, uint32 scripts[100]) {
    qsort(scripts, scnt, sizeof(uint32), tag_compare);
    scripts[scnt] = 0;
    return (scnt);
-}
-
-char **SFScriptLangs(SplineFont * sf, struct lang_frequencies ***_freq) {
-   uint32 scripts[100];
-
-   int scnt, s, extras, i, pos;
-
-   char **sl;
-
-   char buffer[100];
-
-   struct lang_frequencies **freq;
-
-   scnt = SF2Scripts(sf, scripts);
-
-   extras = 0;
-   for (s = 0; s < scnt; ++s) {
-      for (i = 0; lang_frequencies[i].script != 0; ++i)
-	 if (lang_frequencies[i].script == scripts[s])
-	    ++extras;
-   }
-
-   sl = malloc((scnt + extras + 1) * sizeof(char *));
-   freq = malloc((scnt + extras + 1) * sizeof(struct lang_frequencies *));
-   pos = 0;
-   for (s = 0; s < scnt; ++s) {
-      for (i = 0; lang_frequencies[i].script != 0; ++i) {
-	 if (lang_frequencies[i].script == scripts[s]) {
-	    sprintf(buffer, "%.70s %c%c%c%c{%c%c%c%c}",
-		    S_(lang_frequencies[i].note),
-		    scripts[s] >> 24, scripts[s] >> 16, scripts[s] >> 8,
-		    scripts[s], lang_frequencies[i].lang >> 24,
-		    lang_frequencies[i].lang >> 16,
-		    lang_frequencies[i].lang >> 8, lang_frequencies[i].lang);
-	    freq[pos] = &lang_frequencies[i];
-	    sl[pos++] = copy(buffer);
-	 }
-      }
-      sprintf(buffer, "%c%c%c%c{dflt}",
-	      scripts[s] >> 24, scripts[s] >> 16, scripts[s] >> 8,
-	      scripts[s]);
-      freq[pos] = NULL;
-      sl[pos++] = copy(buffer);
-   }
-   sl[pos] = NULL;
-   if (_freq != NULL)
-      *_freq = freq;
-   else
-      free(freq);
-   return (sl);
 }

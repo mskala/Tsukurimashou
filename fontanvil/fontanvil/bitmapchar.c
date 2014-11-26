@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: bitmapchar.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1082,7 +1082,6 @@ void BCClearAll(BDFChar * bc) {
    }
    bc->refs = NULL;
 
-   BCPreserveState(bc);
    BCFlattenFloat(bc);
    memset(bc->bitmap, '\0', bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
    BCCompressBitmap(bc);
@@ -1093,25 +1092,7 @@ void BCClearAll(BDFChar * bc) {
    BCCharChangedUpdate(bc);
 }
 
-static void BCChngNoUpdate(BDFChar * bc) {
+void BCCharChangedUpdate(BDFChar * bc) {
    bc->changed = true;
    bc->sc->parent->changed = true;
-}
-
-static void BCNoUpdate(BDFChar * bc) {
-}
-
-static void BCNothingDestroyed(BDFChar * bc) {
-}
-
-static struct bc_interface noui_bc = {
-   BCChngNoUpdate,
-   BCNoUpdate,
-   BCNothingDestroyed
-};
-
-struct bc_interface *bc_interface = &noui_bc;
-
-void FF_SetBCInterface(struct bc_interface *bci) {
-   bc_interface = bci;
 }

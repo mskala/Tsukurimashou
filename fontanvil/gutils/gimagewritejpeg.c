@@ -1,4 +1,4 @@
-/* $Id: gimagewritejpeg.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagewritejpeg.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -200,20 +200,6 @@ int GImageWrite_Jpeg(GImage * gi, FILE * outfile, int quality,
    if (cinfo.in_color_space != JCS_GRAYSCALE)
       free(row_pointer[0]);
    return (1);
-}
-
-int GImageWriteJpeg(GImage * gi, char *filename, int quality, int progressive) {
-   FILE *outfile;		/* target file */
-
-   int ret;
-
-   if ((outfile = fopen(filename, "wb")) == NULL) {
-      fprintf(stderr, "can't open %s\n", filename);
-      return (0);
-   }
-   ret = GImageWrite_Jpeg(gi, outfile, quality, progressive);
-   fclose(outfile);
-   return (ret);
 }
 
 #endif

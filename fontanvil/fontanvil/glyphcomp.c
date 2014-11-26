@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: glyphcomp.c 3324 2014-09-27 20:21:49Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -730,13 +730,11 @@ int CompareLayer(Context * c, const SplineSet * ss1, const SplineSet * ss2,
    return (val);
 }
 
-static int CompareBitmap(Context * c, SplineChar * sc, const Undoes * cur,
+static int CompareBitmap(Context *c, SplineChar *sc, const Undoes *cur,
 			 real pixel_off_frac, int bb_err,
 			 int diffs_are_errors) {
    int ret, err;
-
    BDFFont *bdf;
-
    BDFChar bc;
 
    for (bdf = c->curfv->sf->bitmaps;
@@ -931,13 +929,9 @@ int CompareGlyphs(Context * c, real pt_err, real spline_err,
 		  real pixel_off_frac, int bb_err, int comp_hints,
 		  int diffs_are_errors) {
    FontViewBase *fv = c->curfv;
-
    SplineFont *sf = fv->sf;
-
    int i, cnt = 0;
-
    int ret = 0;
-
    const Undoes *cur, *bmp;
 
    for (i = 0; i < fv->map->enccount; ++i)
@@ -1200,7 +1194,6 @@ static void SCAddBackgrounds(SplineChar * sc1, SplineChar * sc2,
 
    RefChar *ref;
 
-   SCOutOfDateBackground(sc1);
    SplinePointListsFree(sc1->layers[ly_back].splines);
    sc1->layers[ly_back].splines =
       SplinePointListCopy(sc2->layers[ly_fore].splines);
@@ -1226,7 +1219,7 @@ static void SCAddBackgrounds(SplineChar * sc1, SplineChar * sc2,
       sc1->layers[ly_back].splines =
 	 SplineSetsConvertOrder(sc1->layers[ly_back].splines,
 				sc1->layers[ly_back].order2);
-   SCCharChangedUpdate(sc1, ly_back);
+   SCCharChangedUpdate(sc1, ly_back, true);
 }
 
 static void SCCompare(SplineChar * sc1, SplineChar * sc2,
@@ -2801,19 +2794,4 @@ int CompareFonts(SplineFont * sf1, EncMap * map1, SplineFont * sf2,
       GlyphHashFree(sf1);
 
    return (fd.diff);
-}
-
-int LayersSimilar(Layer * ly1, Layer * ly2, double spline_err) {
-   SplinePoint *hmfail;
-
-   int ret;
-
-   if (!fdRefCheck(NULL, NULL, ly1->refs, ly2->refs, false))
-      return (false);
-   ret =
-      SSsCompare(ly1->splines, ly2->splines, spline_err, spline_err, &hmfail);
-   if (ret & SS_NoMatch)
-      return (false);
-
-   return (true);
 }

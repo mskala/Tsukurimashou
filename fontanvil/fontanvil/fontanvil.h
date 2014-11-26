@@ -1,4 +1,4 @@
-/* $Id: fontanvil.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: fontanvil.h 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -73,8 +73,6 @@ extern char *xuid;
 
 extern int pagewidth, pageheight, printtype;	/* Printer defaults */
 extern char *printcommand, *printlazyprinter;
-
-extern Encoding *enclist;
 
 extern int quiet;
 

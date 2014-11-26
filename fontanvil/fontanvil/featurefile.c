@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: featurefile.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* Copyright (C) 2012 by Khaled Hosny */
 /* Copyright (C) 2013 by Matthew Skala */
@@ -8138,8 +8138,6 @@ static void fea_NameLookups(struct parseState *tok) {
    }
 
    sf->changed = true;
-   FVSetTitles(sf);
-   FVRefreshAll(sf);
 }
 
 void SFApplyFeatureFile(SplineFont * sf, FILE * file, char *filename) {

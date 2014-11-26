@@ -1,4 +1,4 @@
-/* $Id: namelist.c 2932 2014-03-09 15:26:10Z mskala $ */
+/* $Id: namelist.c 3338 2014-09-30 18:25:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -236,25 +236,6 @@ const char *StdGlyphName(char *buffer, int uni, enum uni_interp interp,
 }
 
 #define RefMax	40
-
-static int transcmp(RefChar * r1, RefChar * r2) {
-   double d1, d2;
-
-   if (r1->transform[4] < r2->transform[4])
-      return (-1);
-   else if (r1->transform[4] > r2->transform[4])
-      return (1);
-   if ((d1 = r1->transform[5]) < 0)
-      d1 = -d1;
-   if ((d2 = r2->transform[5]) < 0)
-      d2 = -d2;
-   if (d1 < d2)
-      return (-1);
-   else if (d1 == d2)
-      return (0);
-   else
-      return (1);
-}
 
 NameList *DefaultNameListForNewFonts(void) {
    return (namelist_for_new_fonts);
@@ -497,13 +478,9 @@ static int isnamelist(char *filename) {
 
 void LoadNamelistDir(char *dir) {
    DIR *diro;
-
    struct dirent *ent;
-
    char buffer[1025];
 
-   if (dir == NULL)
-      dir = getPfaEditDir(dir);
    if (dir == NULL)
       return;
 

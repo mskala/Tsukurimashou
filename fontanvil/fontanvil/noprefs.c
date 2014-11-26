@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: noprefs.c 3338 2014-09-30 18:25:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
  */
 #include "fontanvil.h"
 #include "baseviews.h"
-#include "groups.h"
 #include <charset.h>
 #include <gfile.h>
 #include <ustring.h>
@@ -110,8 +109,6 @@ extern int mf_clearbackgrounds;	/* in autotrace.c */
 extern int mf_showerrors;	/* in autotrace.c */
 
 extern char *mf_args;		/* in autotrace.c */
-
-static int glyph_2_name_map = 0;	/* was in tottf.c, now a flag in savefont options dlg */
 
 extern int coverageformatsallowed;	/* in tottfgpos.c */
 
@@ -627,32 +624,7 @@ static struct prefs_list {
 }, *prefs_list[] = {
 core_list, extras, NULL};
 
-static int UserSettingsDiffer(void) {
-   int i, j;
-
-   if (user_macfeat_otftag == NULL)
-      return (false);
-
-   for (i = 0; user_macfeat_otftag[i].otf_tag != 0; ++i);
-   for (j = 0; macfeat_otftag[j].otf_tag != 0; ++j);
-   if (i != j)
-      return (true);
-   for (i = 0; user_macfeat_otftag[i].otf_tag != 0; ++i) {
-      for (j = 0; macfeat_otftag[j].otf_tag != 0; ++j) {
-	 if (macfeat_otftag[j].mac_feature_type ==
-	     user_macfeat_otftag[i].mac_feature_type &&
-	     macfeat_otftag[j].mac_feature_setting ==
-	     user_macfeat_otftag[i].mac_feature_setting &&
-	     macfeat_otftag[j].otf_tag == user_macfeat_otftag[i].otf_tag)
-	    break;
-      }
-      if (macfeat_otftag[j].otf_tag == 0)
-	 return (true);
-   }
-   return (false);
-}
-
-static int NOUI_GetPrefs(char *name, Val * val) {
+int GetPrefs(char *name, Val * val) {
    int i, j;
 
    for (i = 0; prefs_list[i] != NULL; ++i)
@@ -694,7 +666,7 @@ static int NOUI_GetPrefs(char *name, Val * val) {
    return (false);
 }
 
-static int NOUI_SetPrefs(char *name, Val * val1, Val * val2) {
+int SetPrefs(char *name, Val * val1, Val * val2) {
    int i, j;
 
    for (i = 0; prefs_list[i] != NULL; ++i)
@@ -756,28 +728,13 @@ static int NOUI_SetPrefs(char *name, Val * val1, Val * val2) {
 	    } else
 	       return (false);
 
-	    SavePrefs(true);
 	    return (true);
 	 }
       }
    return (false);
 }
 
-static char *getPfaEditPrefs(void) {
-   static char *prefs = NULL;
-
-   char buffer[1025];
-
-   if (prefs != NULL)
-      return (prefs);
-   if (getPfaEditDir(buffer) == NULL)
-      return (NULL);
-   sprintf(buffer, "%s/prefs", getPfaEditDir(buffer));
-   prefs = copy(buffer);
-   return (prefs);
-}
-
-static char *NOUI_getFontAnvilShareDir(void) {
+char *getFontAnvilShareDir(void) {
 #if defined(__MINGW32__)
 #   ifndef MAX_PATH
 #      define MAX_PATH 4096
@@ -787,11 +744,8 @@ static char *NOUI_getFontAnvilShareDir(void) {
 
    if (!sharedir) {
       char path[MAX_PATH + 32];
-
       char *c = path;
-
       char *tail = 0;
-
       unsigned int len = GetModuleFileNameA(NULL, path, MAX_PATH);
 
       path[len] = '\0';
@@ -814,493 +768,4 @@ static char *NOUI_getFontAnvilShareDir(void) {
 #else
    return (NULL);
 #endif
-}
-
-#include <charset.h>		/* we still need the charsets & encoding to set local_encoding */
-static int encmatch(const char *enc, int subok) {
-   static struct {
-      char *name;
-      int enc;
-   } encs[] = {
-      {
-      "US-ASCII", e_usascii}, {
-      "ASCII", e_usascii}, {
-      "ISO646-NO", e_iso646_no}, {
-      "ISO646-SE", e_iso646_se}, {
-      "LATIN1", e_iso8859_1}, {
-      "ISO-8859-1", e_iso8859_1}, {
-      "ISO-8859-2", e_iso8859_2}, {
-      "ISO-8859-3", e_iso8859_3}, {
-      "ISO-8859-4", e_iso8859_4}, {
-      "ISO-8859-5", e_iso8859_4}, {
-      "ISO-8859-6", e_iso8859_4}, {
-      "ISO-8859-7", e_iso8859_4}, {
-      "ISO-8859-8", e_iso8859_4}, {
-      "ISO-8859-9", e_iso8859_4}, {
-      "ISO-8859-10", e_iso8859_10}, {
-      "ISO-8859-11", e_iso8859_11}, {
-      "ISO-8859-13", e_iso8859_13}, {
-      "ISO-8859-14", e_iso8859_14}, {
-      "ISO-8859-15", e_iso8859_15}, {
-      "ISO_8859-1", e_iso8859_1}, {
-      "ISO_8859-2", e_iso8859_2}, {
-      "ISO_8859-3", e_iso8859_3}, {
-      "ISO_8859-4", e_iso8859_4}, {
-      "ISO_8859-5", e_iso8859_4}, {
-      "ISO_8859-6", e_iso8859_4}, {
-      "ISO_8859-7", e_iso8859_4}, {
-      "ISO_8859-8", e_iso8859_4}, {
-      "ISO_8859-9", e_iso8859_4}, {
-      "ISO_8859-10", e_iso8859_10}, {
-      "ISO_8859-11", e_iso8859_11}, {
-      "ISO_8859-13", e_iso8859_13}, {
-      "ISO_8859-14", e_iso8859_14}, {
-      "ISO_8859-15", e_iso8859_15}, {
-      "ISO8859-1", e_iso8859_1}, {
-      "ISO8859-2", e_iso8859_2}, {
-      "ISO8859-3", e_iso8859_3}, {
-      "ISO8859-4", e_iso8859_4}, {
-      "ISO8859-5", e_iso8859_4}, {
-      "ISO8859-6", e_iso8859_4}, {
-      "ISO8859-7", e_iso8859_4}, {
-      "ISO8859-8", e_iso8859_4}, {
-      "ISO8859-9", e_iso8859_4}, {
-      "ISO8859-10", e_iso8859_10}, {
-      "ISO8859-11", e_iso8859_11}, {
-      "ISO8859-13", e_iso8859_13}, {
-      "ISO8859-14", e_iso8859_14}, {
-      "ISO8859-15", e_iso8859_15}, {
-      "ISO88591", e_iso8859_1}, {
-      "ISO88592", e_iso8859_2}, {
-      "ISO88593", e_iso8859_3}, {
-      "ISO88594", e_iso8859_4}, {
-      "ISO88595", e_iso8859_4}, {
-      "ISO88596", e_iso8859_4}, {
-      "ISO88597", e_iso8859_4}, {
-      "ISO88598", e_iso8859_4}, {
-      "ISO88599", e_iso8859_4}, {
-      "ISO885910", e_iso8859_10}, {
-      "ISO885911", e_iso8859_11}, {
-      "ISO885913", e_iso8859_13}, {
-      "ISO885914", e_iso8859_14}, {
-      "ISO885915", e_iso8859_15}, {
-      "8859_1", e_iso8859_1}, {
-      "8859_2", e_iso8859_2}, {
-      "8859_3", e_iso8859_3}, {
-      "8859_4", e_iso8859_4}, {
-      "8859_5", e_iso8859_4}, {
-      "8859_6", e_iso8859_4}, {
-      "8859_7", e_iso8859_4}, {
-      "8859_8", e_iso8859_4}, {
-      "8859_9", e_iso8859_4}, {
-      "8859_10", e_iso8859_10}, {
-      "8859_11", e_iso8859_11}, {
-      "8859_13", e_iso8859_13}, {
-      "8859_14", e_iso8859_14}, {
-      "8859_15", e_iso8859_15}, {
-      "KOI8-R", e_koi8_r}, {
-      "KOI8R", e_koi8_r}, {
-      "WINDOWS-1252", e_win}, {
-      "CP1252", e_win}, {
-      "Big5", e_big5}, {
-      "Big-5", e_big5}, {
-      "BigFive", e_big5}, {
-      "Big-Five", e_big5}, {
-      "Big5HKSCS", e_big5hkscs}, {
-      "Big5-HKSCS", e_big5hkscs}, {
-      "UTF-8", e_utf8}, {
-      "utf-8", e_utf8}, {
-      "UTF8", e_utf8}, {
-      "utf8", e_utf8}, {
-      "ISO-10646/UTF-8", e_utf8}, {
-      "ISO_10646/UTF-8", e_utf8}, {
-      "UCS2", e_unicode}, {
-      "UCS-2", e_unicode}, {
-      "UCS-2-INTERNAL", e_unicode}, {
-      "ISO-10646", e_unicode}, {
-      "ISO_10646", e_unicode},
-	 /* { "eucJP", e_euc }, */
-	 /* { "EUC-JP", e_euc }, */
-	 /* { "ujis", ??? }, */
-	 /* { "EUC-KR", e_euckorean }, */
-      {
-      NULL, 0}
-   };
-   int i;
-
-   char buffer[80];
-
-#if HAVE_ICONV_H
-   static char *last_complaint;
-
-   iconv_t test;
-
-   free(iconv_local_encoding_name);
-   iconv_local_encoding_name = NULL;
-#endif
-
-   if (strchr(enc, '@') != NULL && strlen(enc) < sizeof(buffer) - 1) {
-      strcpy(buffer, enc);
-      *strchr(buffer, '@') = '\0';
-      enc = buffer;
-   }
-
-   for (i = 0; encs[i].name != NULL; ++i)
-      if (strmatch(enc, encs[i].name) == 0)
-	 return (encs[i].enc);
-
-   if (subok) {
-      for (i = 0; encs[i].name != NULL; ++i)
-	 if (strstrmatch(enc, encs[i].name) != NULL)
-	    return (encs[i].enc);
-
-#if HAVE_ICONV_H
-      /* I only try to use iconv if the encoding doesn't match one I support */
-      /*  loading iconv unicode data takes a while */
-      test = iconv_open(enc, FindUnicharName());
-      if (test == (iconv_t) (-1) || test == NULL) {
-	 if (last_complaint == NULL || strcmp(last_complaint, enc) != 0) {
-	    fprintf(stderr,
-		    "Neither FontAnvil nor iconv() supports your encoding (%s) we will pretend\n you asked for latin1 instead.\n",
-		    enc);
-	    free(last_complaint);
-	    last_complaint = copy(enc);
-	 }
-      } else {
-	 if (last_complaint == NULL || strcmp(last_complaint, enc) != 0) {
-	    fprintf(stderr,
-		    "FontAnvil does not support your encoding (%s), it will try to use iconv()\n or it will pretend the local encoding is latin1\n",
-		    enc);
-	    free(last_complaint);
-	    last_complaint = copy(enc);
-	 }
-	 iconv_local_encoding_name = copy(enc);
-	 iconv_close(test);
-      }
-#else
-      fprintf(stderr,
-	      "FontAnvil does not support your encoding (%s), it will pretend the local encoding is latin1\n",
-	      enc);
-#endif
-
-      return (e_iso8859_1);
-   }
-   return (e_unknown);
-}
-
-static int DefaultEncoding(void) {
-   const char *loc;
-
-   int enc;
-
-#if HAVE_LANGINFO_H
-   loc = nl_langinfo(CODESET);
-   enc = encmatch(loc, false);
-   if (enc != e_unknown)
-      return (enc);
-#endif
-   loc = getenv("LC_ALL");
-   if (loc == NULL)
-      loc = getenv("LC_CTYPE");
-   /*if ( loc==NULL ) loc = getenv("LC_MESSAGES"); */
-   if (loc == NULL)
-      loc = getenv("LANG");
-
-   if (loc == NULL)
-      return (e_iso8859_1);
-
-   enc = encmatch(loc, false);
-   if (enc == e_unknown) {
-      loc = strrchr(loc, '.');
-      if (loc == NULL)
-	 return (e_iso8859_1);
-      enc = encmatch(loc + 1, true);
-   }
-   if (enc == e_unknown)
-      return (e_iso8859_1);
-
-   return (enc);
-}
-
-static void DefaultXUID(void) {
-   /* Adobe has assigned PfaEdit a base XUID of 1021. Each new user is going */
-   /*  to get a couple of random numbers appended to that, hoping that will */
-   /*  make for a fairly safe system. */
-   /* FontAnvil will use the same scheme */
-   int r1, r2;
-
-   char buffer[50];
-
-   struct timeval tv;
-
-   gettimeofday(&tv, NULL);
-   srand(tv.tv_usec);
-   do {
-      r1 = rand() & 0x3ff;
-   } while (r1 == 0);		/* I reserve "0" for me! */
-   gettimeofday(&tv, NULL);
-   g_random_set_seed(tv.tv_usec + 1);
-   r2 = g_random_int();
-   sprintf(buffer, "1021 %d %d", r1, r2);
-   free(xuid);
-   xuid = copy(buffer);
-}
-
-static void NOUI_SetDefaults(void) {
-
-   DefaultXUID();
-   local_encoding = DefaultEncoding();
-}
-
-static void ParseMacMapping(char *pt, struct macsettingname *ms) {
-   char *end;
-
-   ms->mac_feature_type = strtol(pt, &end, 10);
-   if (*end == ',')
-      ++end;
-   ms->mac_feature_setting = strtol(end, &end, 10);
-   if (*end == ' ')
-      ++end;
-   ms->otf_tag =
-      ((end[0] & 0xff) << 24) |
-      ((end[1] & 0xff) << 16) | ((end[2] & 0xff) << 8) | (end[3] & 0xff);
-}
-
-static void ParseNewMacFeature(FILE * p, char *line) {
-   fseek(p, -(strlen(line) - strlen("MacFeat:")), SEEK_CUR);
-   line[strlen("MacFeat:")] = '\0';
-   default_mac_feature_map = SFDParseMacFeatures(p, line);
-   fseek(p, -strlen(line), SEEK_CUR);
-   if (user_mac_feature_map != NULL)
-      MacFeatListFree(user_mac_feature_map);
-   user_mac_feature_map = default_mac_feature_map;
-}
-
-static void NOUI_LoadPrefs(void) {
-   char *prefs = getPfaEditPrefs();
-
-   FILE *p;
-
-   char line[1100];
-
-   int i, j, ri = 0, mn = 0, ms = 0 /*, fn=0, ff=0, filt_max=0 */ ;
-
-   int msp = 0, msc = 0;
-
-   char *pt;
-
-   struct prefs_list *pl;
-
-   LoadPfaEditEncodings();
-   LoadGroupList();
-
-   if (prefs != NULL && (p = fopen(prefs, "r")) != NULL) {
-      while (fgets(line, sizeof(line), p) != NULL) {
-	 if (*line == '#')
-	    continue;
-	 pt = strchr(line, ':');
-	 if (pt == NULL)
-	    continue;
-	 for (j = 0; prefs_list[j] != NULL; ++j) {
-	    for (i = 0; prefs_list[j][i].name != NULL; ++i)
-	       if (strncmp(line, prefs_list[j][i].name, pt - line) == 0)
-		  break;
-	    if (prefs_list[j][i].name != NULL)
-	       break;
-	 }
-	 pl = NULL;
-	 if (prefs_list[j] != NULL)
-	    pl = &prefs_list[j][i];
-	 for (++pt; *pt == '\t'; ++pt);
-	 if (line[strlen(line) - 1] == '\n')
-	    line[strlen(line) - 1] = '\0';
-	 if (line[strlen(line) - 1] == '\r')
-	    line[strlen(line) - 1] = '\0';
-	 if (pl == NULL) {
-	    if (strncmp(line, "Recent:", strlen("Recent:")) == 0
-		&& ri < RECENT_MAX)
-	       RecentFiles[ri++] = copy(pt);
-	    else if (strncmp(line, "MenuScript:", strlen("MenuScript:")) == 0
-		     && ms < SCRIPT_MENU_MAX)
-	       script_filenames[ms++] = copy(pt);
-	    else if (strncmp(line, "MenuName:", strlen("MenuName:")) == 0
-		     && mn < SCRIPT_MENU_MAX)
-	       script_menu_names[mn++] = utf82u_copy(pt);
-	    else if (strncmp(line, "MacMapCnt:", strlen("MacSetCnt:")) == 0) {
-	       sscanf(pt, "%d", &msc);
-	       msp = 0;
-	       user_macfeat_otftag =
-		  calloc(msc + 1, sizeof(struct macsettingname));
-	    } else if (strncmp(line, "MacMapping:", strlen("MacMapping:")) ==
-		       0 && msp < msc) {
-	       ParseMacMapping(pt, &user_macfeat_otftag[msp++]);
-	    } else if (strncmp(line, "MacFeat:", strlen("MacFeat:")) == 0) {
-	       ParseNewMacFeature(p, line);
-	    }
-	    continue;
-	 }
-	 switch (pl->type) {
-	   case pr_encoding:
-	      {
-		 Encoding *enc = FindOrMakeEncoding(pt);
-
-		 if (enc == NULL)
-		    enc = FindOrMakeEncoding("ISO8859-1");
-		 if (enc == NULL)
-		    enc = &custom;
-		 *((Encoding **) (pl->val)) = enc;
-	      }
-	      break;
-	   case pr_namelist:
-	      {
-		 NameList *nl = NameListByName(pt);
-
-		 if (strcmp(pt, "NULL") == 0
-		     && pl->val != &namelist_for_new_fonts)
-		    *((NameList **) (pl->val)) = NULL;
-		 else if (nl != NULL)
-		    *((NameList **) (pl->val)) = nl;
-	      }
-	      break;
-	   case pr_bool:
-	   case pr_int:
-	      sscanf(pt, "%d", (int *) pl->val);
-	      break;
-	   case pr_unicode:
-	      if (sscanf(pt, "U+%x", (int *) pl->val) != 1)
-		 if (sscanf(pt, "u+%x", (int *) pl->val) != 1)
-		    sscanf(pt, "%x", (int *) pl->val);
-	      break;
-	   case pr_real:
-	      {
-		 char *end;
-
-		 *((float *) pl->val) = strtod(pt, &end);
-		 if ((*end == ',' || *end == '.')) {
-		    *end = (*end == '.') ? ',' : '.';
-		    *((float *) pl->val) = strtod(pt, NULL);
-		 }
-	      }
-	      break;
-	   case pr_string:
-	   case pr_file:
-	      if (*pt == '\0')
-		 pt = NULL;
-	      if (pl->val != NULL)
-		 *((char **) (pl->val)) = copy(pt);
-	      else
-		 (pl->set) (copy(pt));
-	      break;
-	 }
-      }
-      fclose(p);
-   }
-   if (othersubrsfile != NULL && ReadOtherSubrsFile(othersubrsfile) <= 0)
-      fprintf(stderr, "Failed to read OtherSubrs from %s\n", othersubrsfile);
-
-   if (glyph_2_name_map) {
-      old_sfnt_flags |= ttf_flag_glyphmap;
-   }
-   LoadNamelistDir(NULL);
-}
-
-static void NOUI_SavePrefs(int not_if_script) {
-   char *prefs = getPfaEditPrefs();
-
-   FILE *p;
-
-   int i, j;
-
-   char *temp;
-
-   struct prefs_list *pl;
-
-   extern int running_script;
-
-   if (prefs == NULL)
-      return;
-   if (not_if_script && running_script)
-      return;
-
-   if ((p = fopen(prefs, "w")) == NULL)
-      return;
-
-   for (j = 0; prefs_list[j] != NULL; ++j)
-      for (i = 0; prefs_list[j][i].name != NULL; ++i) {
-	 pl = &prefs_list[j][i];
-	 switch (pl->type) {
-	   case pr_encoding:
-	      fprintf(p, "%s:\t%s\n", pl->name,
-		      (*((Encoding **) (pl->val)))->enc_name);
-	      break;
-	   case pr_namelist:
-	      fprintf(p, "%s:\t%s\n", pl->name,
-		      *((NameList **) (pl->val)) ==
-		      NULL ? "NULL" : (*((NameList **) (pl->val)))->title);
-	      break;
-	   case pr_bool:
-	   case pr_int:
-	      fprintf(p, "%s:\t%d\n", pl->name, *(int *) (pl->val));
-	      break;
-	   case pr_unicode:
-	      fprintf(p, "%s:\tU+%04x\n", pl->name, *(int *) (pl->val));
-	      break;
-	   case pr_real:
-	      fprintf(p, "%s:\t%g\n", pl->name,
-		      (double) *(float *) (pl->val));
-	      break;
-	   case pr_string:
-	   case pr_file:
-	      if ((pl->val) != NULL)
-		 temp = *(char **) (pl->val);
-	      else
-		 temp = (char *) (pl->get());
-	      if (temp != NULL)
-		 fprintf(p, "%s:\t%s\n", pl->name, temp);
-	      if ((pl->val) == NULL)
-		 free(temp);
-	      break;
-	 }
-      }
-
-   for (i = 0; i < RECENT_MAX && RecentFiles[i] != NULL; ++i)
-      fprintf(p, "Recent:\t%s\n", RecentFiles[i]);
-   for (i = 0; i < SCRIPT_MENU_MAX && script_filenames[i] != NULL; ++i) {
-      fprintf(p, "MenuScript:\t%s\n", script_filenames[i]);
-      fprintf(p, "MenuName:\t%s\n", temp = u2utf8_copy(script_menu_names[i]));
-      free(temp);
-   }
-   if (user_macfeat_otftag != NULL && UserSettingsDiffer()) {
-      for (i = 0; user_macfeat_otftag[i].otf_tag != 0; ++i);
-      fprintf(p, "MacMapCnt: %d\n", i);
-      for (i = 0; user_macfeat_otftag[i].otf_tag != 0; ++i) {
-	 fprintf(p, "MacMapping: %d,%d %c%c%c%c\n",
-		 user_macfeat_otftag[i].mac_feature_type,
-		 user_macfeat_otftag[i].mac_feature_setting,
-		 (int) (user_macfeat_otftag[i].otf_tag >> 24),
-		 (int) ((user_macfeat_otftag[i].otf_tag >> 16) & 0xff),
-		 (int) ((user_macfeat_otftag[i].otf_tag >> 8) & 0xff),
-		 (int) (user_macfeat_otftag[i].otf_tag & 0xff));
-      }
-   }
-
-   if (UserFeaturesDiffer())
-      SFDDumpMacFeat(p, default_mac_feature_map);
-
-   fclose(p);
-}
-
-static struct prefs_interface prefsnoui = {
-   NOUI_SavePrefs,
-   NOUI_LoadPrefs,
-   NOUI_GetPrefs,
-   NOUI_SetPrefs,
-   NOUI_getFontAnvilShareDir,
-   NOUI_SetDefaults
-};
-
-struct prefs_interface *prefs_interface = &prefsnoui;
-
-void FF_SetPrefsInterface(struct prefs_interface *prefsi) {
-   prefs_interface = prefsi;
 }

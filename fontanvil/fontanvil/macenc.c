@@ -1,4 +1,4 @@
-/* $Id: macenc.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: macenc.c 3332 2014-09-29 08:37:22Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1326,19 +1326,6 @@ uint16 WinLangToMac(int winlang) {
    return (0xffff);
 }
 
-int CanEncodingWinLangAsMac(int winlang) {
-   int maclang = WinLangToMac(winlang);
-
-   int macenc = MacEncFromMacLang(maclang);
-
-   if (macenc == 0xff)
-      return (false);
-   if (macencodings[macenc] == NULL)
-      return (false);
-
-   return (true);
-}
-
 const int32 *MacEncToUnicode(int script, int lang) {
    static int32 temp[256];
 
@@ -2248,54 +2235,7 @@ static MacFeat fs_features[] = {
    {NULL, 0, 0, 0, 0, NULL, NULL}
 };
 
-MacFeat *default_mac_feature_map = &fs_features[26],
-   *builtin_mac_feature_map = &fs_features[26], *user_mac_feature_map;
-
-static int MacNamesDiffer(struct macname *mn, struct macname *mn2) {
-
-   for (; mn != NULL && mn2 != NULL; mn = mn->next, mn2 = mn2->next) {
-      if (mn->lang != mn2->lang || mn->enc != mn2->enc ||
-	  strcmp(mn->name, mn2->name) != 0)
-	 return (true);
-   }
-   if (mn == mn2)		/* Both NULL */
-      return (false);
-
-   return (true);
-}
-
-static int MacSettingsDiffer(struct macsetting *ms, struct macsetting *ms2) {
-
-   for (; ms != NULL && ms2 != NULL; ms = ms->next, ms2 = ms2->next) {
-      if (ms->setting != ms2->setting ||
-	  ms->initially_enabled != ms2->initially_enabled ||
-	  MacNamesDiffer(ms->setname, ms2->setname))
-	 return (true);
-   }
-   if (ms == ms2)		/* Both NULL */
-      return (false);
-
-   return (true);
-}
-
-int UserFeaturesDiffer(void) {
-   MacFeat *mf, *mf2;
-
-   if (user_mac_feature_map == NULL)
-      return (false);
-   for (mf = builtin_mac_feature_map, mf2 = user_mac_feature_map;
-	mf != NULL && mf2 != NULL; mf = mf->next, mf2 = mf2->next) {
-      if (mf->feature != mf2->feature || mf->ismutex != mf2->ismutex ||
-	  mf->default_setting != mf2->default_setting ||
-	  MacNamesDiffer(mf->featname, mf2->featname) ||
-	  MacSettingsDiffer(mf->settings, mf2->settings))
-	 return (true);
-   }
-   if (mf == mf2)		/* Both NULL */
-      return (false);
-
-   return (true);
-}
+MacFeat *default_mac_feature_map = &fs_features[26];
 
 struct macname *MacNameCopy(struct macname *mn) {
    struct macname *head = NULL, *last, *cur;

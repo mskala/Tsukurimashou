@@ -1,4 +1,4 @@
-/* $Id: dumpbdf.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: dumpbdf.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -167,7 +167,6 @@ static void BDFDumpChar(FILE * file, BDFFont * font, BDFChar * bdfc, int enc,
       putc('\n', file);
    }
    fprintf(file, "ENDCHAR\n");
-   ff_progress_next();
 }
 
 static void figureDefMetrics(BDFFont * font, struct metric_defaults *defs) {

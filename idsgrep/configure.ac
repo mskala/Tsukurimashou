@@ -137,7 +137,7 @@ AS_HELP_STRING([--$1dir=DIR],m4_expand([$4 @<:@m4_toupper([$2])/$3@:>@]))\
 
 # Add a new directory
 TSUKU_ADD_INSTDIR_OPTION([dict],[datarootdir],[dict],[dictionaries],
-  [di],[ --disable])
+  [di],[ --docdir])
 
 # Reduce the ridiculous verbosity of Autoconf's help message
 TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
@@ -196,7 +196,7 @@ AC_ARG_VAR([KLEKNEV],[Kleknev])
 AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
-AC_ARG_VAR([XELATEX],[XeLaTeX])
+AC_ARG_VAR([XELATEX],[XeLaTeX],[no])
 AC_PATH_PROG([XELATEX],[xelatex])
 #
 ############################################################################
@@ -222,12 +222,10 @@ AC_CHECK_LIB([bdd],[bdd_init],[
     [Define to 1 if BuDDy is available])
   ],[have_buddy=no])
 AM_CONDITIONAL([COND_BUDDY],[test '!' "$have_buddy" = no])
-PKG_CHECK_MODULES([PCRE],[libpcre],[
-  have_pcre=yes
+AX_PATH_LIB_PCRE([have_pcre=yes
   AC_DEFINE([HAVE_PCRE],[1],
     [Define to 1 if Perl Compatible Regular Expressions library is available])
-  ],[
-  have_pcre=no])
+  ],[have_pcre=no])
 AM_CONDITIONAL([COND_PCRE],[test '!' "$have_pcre" = no])
 #
 ############################################################################
@@ -254,6 +252,18 @@ TSU_C_GCC_BUILTIN_BSWAP
 #
 AX_FUNC_GETOPT_LONG
 AC_CHECK_FUNCS_ONCE([memmove memset strchr])
+#
+AC_SUBST([set_sans_font])
+AS_IF([test "x$XELATEX" = "xno"],[],
+  [TSU_CHECK_XELATEX_FONT([Helvetica])
+   AS_IF([test "x$xelatex_font_found" = "xyes"],
+     [set_sans_font='\setsansfont{Helvetica}'],
+     [TSU_CHECK_XELATEX_FONT([Nimbus Sans L])
+      AS_IF([test "x$xelatex_font_found" = "xyes"],
+        [set_sans_font='\setsansfont{Nimbus Sans L}'],
+        [set_sans_font='%'])
+   ])
+])
 #
 ############################################################################
 #
@@ -291,7 +301,7 @@ m4_foreach_w([cicheckpath],m4_expand([$srcdir $srcdir/.. $srcdir/../.. dnl
 $prefix/src /src /usr/src /usr/local/src dnl
 $HOME $HOME/src]),[
        AS_IF([test "$with_chise_ids" = "auto"],
-             [for cicheckdir in cicheckpath/chise-ids-*
+             [for cicheckdir in cicheckpath/chise-ids-* cicheckpath/chise-ids
 do
   AS_IF([test -r "$cicheckdir/Makefile"],[
 check_line=x`grep 'Makefile for CHISE IDS' "$cicheckdir/Makefile"`
@@ -380,7 +390,7 @@ AM_CONDITIONAL([COND_TSUKU_BUILD], [test '!' "$with_tsuku_build" = no])
 AC_SUBST([with_tsuku_build])
 #
 AC_ARG_ENABLE([cjkvi-style],
-  [AS_HELP_STRING([--enable-cjkvi-style=[[gtjkvxha]]],
+  [AS_HELP_STRING([--enable-cjkvi-style=[[gtjkvxhau]]],
     [which CJKVI dictionaries to build [j]])],
     [],
     [enable_cjkvi_style=j])

@@ -1,4 +1,4 @@
-/* $Id: ufo.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: ufo.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1633,7 +1633,6 @@ static void UFOLoadGlyphs(SplineFont * sf, char *glyphdir, int layerdest) {
       if (xmlStrcmp(keys->name, (const xmlChar *) "key") == 0)
 	 ++tot;
    }
-   ff_progress_change_total(tot);
    // Start reading in glyph name to file name mappings.
    for (keys = dict->children; keys != NULL; keys = keys->next) {
       for (value = keys->next;
@@ -1671,7 +1670,6 @@ static void UFOLoadGlyphs(SplineFont * sf, char *glyphdir, int layerdest) {
 	    }
 	 }
 	 keys = value;
-	 ff_progress_next();
       }
    }
    xmlFreeDoc(doc);

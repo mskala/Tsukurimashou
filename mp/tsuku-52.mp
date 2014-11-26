@@ -193,6 +193,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.effect =
+  push_pbox_toexpand("kanji.grfive.effect");
+  build_kanji.lr(520,30)
+    (kanji.leftrad.mix)
+    (kanji.grone.power);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.judge =
   push_pbox_toexpand("kanji.grfive.judge");
   build_kanji.level(build_kanji.lr(560,20)
@@ -297,6 +305,18 @@ vardef build_kanji.extend_ltail_enclose(expr splitpoint,overlap)
     obstackp[ele_curve]:=obstackp[ele_curve] transformed myxf2;
   endgroup;
   perl_structure:=perl_structure&"[";
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.leftrad.mix =
+  push_pbox_toexpand("kanji.leftrad.mix");
+  build_kanji.level(build_kanji.tb(610,70)
+    (kanji.radical.kettle_lid)
+    (build_kanji.tb(620,100)
+       (tsu_xform(identity shifted (-20,-150))(kanji.radical.eight))
+       (build_kanji.lift_skirt(250,110)(kanji.radical.cut_the_grass))));
   expand_pbox;
 enddef;
 
@@ -525,6 +545,12 @@ endtsuglyph;
 % rou/ita "labour"
 begintsuglyph("uni52B4",180);
   kanji.grfour.labour;
+  tsu_render;
+endtsuglyph;
+
+% kou/ki "effect" (as in physics)
+begintsuglyph("uni52B9",185);
+  kanji.grfive.effect;
   tsu_render;
 endtsuglyph;
 

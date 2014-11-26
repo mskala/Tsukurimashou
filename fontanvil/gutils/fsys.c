@@ -1,4 +1,4 @@
-/* $Id: fsys.c 2939 2014-03-10 19:10:18Z mskala $ */
+/* $Id: fsys.c 3412 2014-10-24 20:34:43Z mskala $ */
 /* Copyright (C) 2000-2004 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ static void _u_backslash_to_slash(unichar_t * c) {
 
 /* make directories.  make parent directories as needed,  with no error if
  * the path already exists */
-int mkdir_p(const char *path, mode_t mode) {
+static int mkdir_p(const char *path, mode_t mode) {
    struct stat st;
 
    const char *e;
@@ -117,43 +117,6 @@ int mkdir_p(const char *path, mode_t mode) {
    return EXIT_SUCCESS;
 }
 
-char *GFileGetHomeDir(void) {
-#if defined(__MINGW32__)
-   char *dir = getenv("HOME");
-
-   if (!dir)
-      dir = getenv("USERPROFILE");
-   if (dir) {
-      char *buffer = copy(dir);
-
-      _backslash_to_slash(buffer);
-      return buffer;
-   }
-   return NULL;
-#else
-   static char *dir;
-
-   int uid;
-
-   struct passwd *pw;
-
-   dir = getenv("HOME");
-   if (dir != NULL)
-      return (copy(dir));
-
-   uid = getuid();
-   while ((pw = getpwent()) != NULL) {
-      if (pw->pw_uid == uid) {
-	 dir = copy(pw->pw_dir);
-	 endpwent();
-	 return (dir);
-      }
-   }
-   endpwent();
-   return (NULL);
-#endif
-}
-
 static void savestrcpy(char *dest, const char *src) {
    for (;;) {
       *dest = *src;
@@ -162,6 +125,22 @@ static void savestrcpy(char *dest, const char *src) {
       ++dest;
       ++src;
    }
+}
+
+static int GFileIsAbsolute(const char *file) {
+#if defined(__MINGW32__)
+   if ((file[1] == ':')
+       && (('a' <= file[0] && file[0] <= 'z')
+	   || ('A' <= file[0] && file[0] <= 'Z')))
+      return (true);
+#else
+   if (*file == '/')
+      return (true);
+#endif
+   if (strstr(file, "://") != NULL)
+      return (true);
+
+   return (false);
 }
 
 char *GFileGetAbsoluteName(char *name, char *result, int rsiz) {
@@ -256,22 +235,6 @@ char *GFileAppendFile(char *dir, char *name, int isdir) {
    return (ret);
 }
 
-int GFileIsAbsolute(const char *file) {
-#if defined(__MINGW32__)
-   if ((file[1] == ':')
-       && (('a' <= file[0] && file[0] <= 'z')
-	   || ('A' <= file[0] && file[0] <= 'Z')))
-      return (true);
-#else
-   if (*file == '/')
-      return (true);
-#endif
-   if (strstr(file, "://") != NULL)
-      return (true);
-
-   return (false);
-}
-
 int GFileIsDir(const char *file) {
    struct stat info;
 
@@ -291,100 +254,4 @@ int GFileReadable(char *file) {
 
 int GFileMkDir(char *name) {
    return (MKDIR(name, 0755));
-}
-
-char *_GFile_find_program_dir(char *prog) {
-   char *pt, *path, *program_dir = NULL;
-
-   char filename[2000];
-
-#if defined(__MINGW32__)
-   char *pt1 = strrchr(prog, '/');
-
-   char *pt2 = strrchr(prog, '\\');
-
-   if (pt1 < pt2)
-      pt1 = pt2;
-   if (pt1)
-      program_dir = copyn(prog, pt1 - prog);
-   else if ((path = getenv("PATH")) != NULL) {
-      char *tmppath = copy(path);
-
-      path = tmppath;
-      for (;;) {
-	 pt1 = strchr(path, ';');
-	 if (pt1)
-	    *pt1 = '\0';
-	 sprintf(filename, "%s/%s", path, prog);
-	 if (access(filename, 1) != -1) {
-	    program_dir = copy(path);
-	    break;
-	 }
-	 if (!pt1)
-	    break;
-	 path = pt1 + 1;
-      }
-      free(tmppath);
-   }
-#else
-   if ((pt = strrchr(prog, '/')) != NULL)
-      program_dir = copyn(prog, pt - prog);
-   else if ((path = getenv("PATH")) != NULL) {
-      while ((pt = strchr(path, ':')) != NULL) {
-	 sprintf(filename, "%.*s/%s", (int) (pt - path), path, prog);
-	 /* Under cygwin, applying access to "potrace" will find "potrace.exe" */
-	 /*  no need for special check to add ".exe" */
-	 if (access(filename, 1) != -1) {
-	    program_dir = copyn(path, pt - path);
-	    break;
-	 }
-	 path = pt + 1;
-      }
-      if (program_dir == NULL) {
-	 sprintf(filename, "%s/%s", path, prog);
-	 if (access(filename, 1) != -1)
-	    program_dir = copy(path);
-      }
-   }
-#endif
-
-   if (program_dir == NULL)
-      return (NULL);
-   GFileGetAbsoluteName(program_dir, filename, sizeof(filename));
-   free(program_dir);
-   program_dir = copy(filename);
-   return (program_dir);
-}
-
-static char *GResourceProgramDir = 0;
-
-void FindProgDir(char *prog) {
-#if defined(__MINGW32__)
-   char path[MAX_PATH + 4];
-
-   char *c = path;
-
-   char *tail = 0;
-
-   unsigned int len = GetModuleFileNameA(NULL, path, MAX_PATH);
-
-   path[len] = '\0';
-   for (; *c; *c++) {
-      if (*c == '\\') {
-	 tail = c;
-	 *c = '/';
-      }
-   }
-   if (tail)
-      *tail = '\0';
-   GResourceProgramDir = copy(path);
-#else
-   GResourceProgramDir = _GFile_find_program_dir(prog);
-   if (GResourceProgramDir == NULL) {
-      char filename[1025];
-
-      GFileGetAbsoluteName(".", filename, sizeof(filename));
-      GResourceProgramDir = copy(filename);
-   }
-#endif
 }

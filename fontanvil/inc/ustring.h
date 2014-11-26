@@ -1,4 +1,4 @@
-/* $Id: ustring.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: ustring.h 3423 2014-10-26 18:51:07Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ extern char *copyn(const char *, long);
 
 extern unichar_t *u_copy(const unichar_t *);
 
-/* extern unichar_t *u_copyn(const unichar_t*, long); */
 extern unichar_t *u_copynallocm(const unichar_t * pt, long n, long m);
 
 extern unichar_t *uc_copyn(const char *, int);
@@ -143,7 +142,6 @@ extern unichar_t *u_strstartmatch(const unichar_t * initial,
 extern unichar_t *cu_strstartmatch(const char *initial,
 				   const unichar_t * full);
 
-#   define utf82u_strncpy utf82U_strncpy
 extern int32 utf8_ildb(const char **utf8_text);
 
 #   define UTF8IDPB_NOZERO 1	/* Allow for 0 encoded as a non-zero utf8 0xc0:0x80 char */

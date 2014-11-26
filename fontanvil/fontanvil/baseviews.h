@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: baseviews.h 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -432,8 +432,6 @@ extern char *ProgramExists(char *prog, char *buffer);
 extern void MfArgsInit(void);
 
 extern void FVAutoTrace(FontViewBase * fv, int ask);
-
-extern void FVAddEncodingSlot(FontViewBase * fv, int gid);
 
 extern int FVImportMult(FontViewBase * fv, char *filename, int toback,
 			int bf);

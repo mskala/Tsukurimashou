@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: parsettfvar.c 3283 2014-09-09 07:10:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -843,7 +843,6 @@ void readttfvariations(struct ttfinfo *info, FILE * ttf) {
        || info->fvar_len == 0)
       return;
 
-   ff_progress_change_line2(_("Processing Variations"));
    parsefvar(info, ttf);
    if (info->variations != NULL && info->avar_start != 0)
       parseavar(info, ttf);

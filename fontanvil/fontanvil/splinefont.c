@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 2997 2014-03-30 01:02:48Z mskala $ */
+/* $Id: splinefont.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -194,7 +194,7 @@ static SplineChar *_SFMakeChar(SplineFont * sf, EncMap * map, int enc) {
 	    /*  and then make us be a duplicate of it */
 	    sc = _SFMakeChar(sf, map, real_uni);
 	    map->map[enc] = gid = sc->orig_pos;
-	    SCCharChangedUpdate(sc, ly_all);
+	    SCCharChangedUpdate(sc, ly_all, true);
 	    return (sc);
 	 }
       }
@@ -556,7 +556,6 @@ int SFScaleToEm(SplineFont * sf, int as, int des) {
 
    if (!sf->changed) {
       sf->changed = true;
-      FVSetTitles(sf);
    }
 
    return (true);
@@ -574,10 +573,7 @@ static SplineFont *_SFReadPostScript(FILE * file, char *filename) {
 
    SplineFont *sf = NULL;
 
-   ff_progress_change_stages(2);
    fd = _ReadPSFont(file);
-   ff_progress_next_stage();
-   ff_progress_change_line2(_("Interpreting Glyphs"));
    if (fd != NULL) {
       sf = SplineFontFromPSFont(fd);
       PSFontFree(fd);
@@ -592,10 +588,7 @@ static SplineFont *SFReadPostScript(char *filename) {
 
    SplineFont *sf = NULL;
 
-   ff_progress_change_stages(2);
    fd = ReadPSFont(filename);
-   ff_progress_next_stage();
-   ff_progress_change_line2(_("Interpreting Glyphs"));
    if (fd != NULL) {
       sf = SplineFontFromPSFont(fd);
       PSFontFree(fd);
@@ -767,10 +760,7 @@ static char *ArchiveParseTOC(char *listfile, enum archive_list_style ars,
       }
    }
 
-   choice =
-      ff_choose(_("Which archived item should be opened?"),
-		(const char **) files, fcnt, def,
-		_("There are multiple files in this archive, pick one"));
+   choice=def;
    if (choice == -1)
       name = NULL;
    else
@@ -1059,10 +1049,6 @@ SplineFont *_ReadSplineFont(FILE * file, char *filename,
       strncat(ubuf, temp = def2utf8_copy(GFileNameTail(filename)), 100);
    free(temp);
    ubuf[100 + len] = '\0';
-   ff_progress_start_indicator(FontViewFirst() == NULL ? 0 : 10,
-			       _("Loading..."), ubuf, _("Reading Glyphs"), 0,
-			       1);
-   ff_progress_enable_stop(0);
 
    if (file == NULL) {
       file = fopen(strippedname, "rb");
@@ -1248,7 +1234,6 @@ SplineFont *_ReadSplineFont(FILE * file, char *filename,
    } else {
       sf = SFReadMacBinary(fullname, 0, openflags);
    }
-   ff_progress_end_indicator();
 
    if (sf != NULL) {
       SplineFont *norm = sf->mm != NULL ? sf->mm->normal : sf;
@@ -1318,14 +1303,8 @@ SplineFont *_ReadSplineFont(FILE * file, char *filename,
       buts[0] = _("_Yes");
       buts[1] = _("_No");
       buts[2] = NULL;
-      if (ff_ask
-	  (_("Restricted Font"), (const char **) buts, 1, 1,
-	   _
-	   ("This font is marked with an FSType of 2 (Restricted\nLicense). That means it is not editable without the\npermission of the legal owner.\n\nDo you have such permission?"))
-	  == 1) {
-	 SplineFontFree(sf);
-	 return (NULL);
-      }
+      SplineFontFree(sf);
+      return (NULL);
    }
    return (sf);
 }
@@ -1996,15 +1975,6 @@ typedef struct SPLFirstVisitorFoundSoughtDataS {
    SplinePoint *sought;
    int found;
 } SPLFirstVisitorFoundSoughtData;
-
-static void SPLFirstVisitorFoundSought(SplinePoint * splfirst,
-				       Spline * spline, void *udata) {
-   SPLFirstVisitorFoundSoughtData *d=
-      (SPLFirstVisitorFoundSoughtData *)udata;
-
-   if (spline->from == d->sought || spline->to == d->sought)
-     d->found = 1;
-}
 
 typedef struct SPLFirstVisitorFoundSoughtXYDataS {
    int use_x;

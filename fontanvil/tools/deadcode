@@ -1,16 +1,23 @@
 #!/usr/bin/perl
 
+$uname=`uname`;
+chomp $uname;
+print STDERR "Macintosh detected.\n" if $uname eq 'Darwin';
+
 open(NM,'nm -g `find . -name *.o`|');
 while (<NM>) {
   chomp;
   if (/^[\.\/]+(([a-z]+\/).*_a-)?(.*)\.o:/) {
     $fn="$2$3.c";
     print "$_ => $fn\n";
-  } elsif (/^([0-9a-f]*)\s+([A-Z]) (.*)$/) {
-    if ($2 eq 'U') {
-      $extern_used{$3}=1;
+  } elsif (/^([0-9a-f]*)\s+([A-RT-Z]) (.*)$/) {
+    $two=$2;
+    $three=$3;
+    $three=~s/^_// if $uname eq 'Darwin';
+    if ($two eq 'U') {
+      $extern_used{$three}=1;
     } else {
-      $extern_defined{$3}=$fn;
+      $extern_defined{$three}=$fn;
     }
   }
 }
@@ -29,8 +36,9 @@ while (<*/*.[ch]>) {
   %static_defined=();
   open(SRC,$fn);
   while (<SRC>) {
-    if (/\s*static\b[^(=]*\s([A-Z_][A-Za-z_0-9]*)\s*[(,;=]/) {
-      $static_defined{$1}=1;
+    if (/\s*static\b[^(=]*(\*|\s)([A-Za-z_][A-Za-z_0-9]*)\s*[(,;=]/) {
+      $static_defined{$2}=1;
+      $global_static_defined{$2}=1;
     }
   }
   close(SRC);
@@ -38,11 +46,14 @@ while (<*/*.[ch]>) {
   @statics=sort keys %static_defined;
   open(SRC,$fn);
   while (<SRC>) {
-    foreach $symbol (@statics) {
-      if (/\b$symbol\b/) {
-        $static_used{$symbol}++;
+    if (!/^\s*extern.*;/) {
+      foreach $symbol (@statics) {
+        if (/\b$symbol\b/ && (!/^\s*static.*$symbol\s*\(.*\)\s*;/)) {
+          $static_used{$symbol}++;
+        }
       }
     }
+    next if $fn=~/h$/;
     foreach $extern (@questionable_externs) {
       if ($extern_defined{$extern} eq $fn) {
         if (/\b$extern\b/) {
@@ -57,6 +68,22 @@ while (<*/*.[ch]>) {
       print "$fn defines static $symbol but does not use it\n";
     }
   }
+}
+
+@statics=sort keys %global_static_defined;
+while (<*/*.[ch]>) {
+  $fn=$_;
+  print "[$fn]\n";
+  open(SRC,$fn);
+  while (<SRC>) {
+    next unless (/extern.*;/);
+    foreach $extern (@statics) {
+      if (/extern[^(=]*\b$extern\b.*;/) {
+        print "static $extern referenced as extern in $fn\n";
+      }
+    }
+  }
+  close(SRC);
 }
 
 foreach $extern (@questionable_externs) {

@@ -1,4 +1,4 @@
-/* $Id: nowakowskittfinstr.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: nowakowskittfinstr.c 3322 2014-09-27 15:44:08Z mskala $ */
 /* Copyright (C) 2000-2012 by
    George Williams, Michal Nowakowski & Alexey Kryukov */
 
@@ -5693,6 +5693,5 @@ void NowakowskiSCAutoInstr(GlobalInstrCt * gic, SplineChar * sc) {
    free(contourends);
    free(clockwise);
 
-   SCMarkInstrDlgAsChanged(sc);
    SCHintsChanged(sc);
 }

@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 2997 2014-03-30 01:02:48Z mskala $ */
+/* $Id: splinesaveafm.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -124,7 +124,6 @@ int LoadKerningDataFromAfm(SplineFont * sf, char *filename, EncMap * map) {
 
    if (file == NULL)
       return (0);
-   ff_progress_change_line2(_("Reading AFM file"));
    while (mygets(file, buffer, sizeof(buffer)) != NULL) {
       if (strncmp(buffer, "KPX", 3) == 0 || strncmp(buffer, "KPY", 3) == 0) {
 	 int isv = strncmp(buffer, "KPY", 3) == 0;
@@ -233,7 +232,6 @@ int LoadKerningDataFromAmfm(SplineFont * sf, char *filename, EncMap * map) {
    if (file == NULL)
       return (0);
 
-   ff_progress_change_line2(_("Reading AFM file"));
    while (fgets(buffer, sizeof(buffer), file) != NULL) {
       if (strstrmatch(buffer, "StartMaster") != NULL)
 	 break;
@@ -320,22 +318,6 @@ void SubsNew(SplineChar * to, enum possub_type type, int tag,
       pst->u.lig.lig = to;
       pst->subtable->lookup->store_in_afm = true;
    }
-   pst->next = to->possub;
-   to->possub = pst;
-}
-
-void PosNew(SplineChar * to, int tag, int dx, int dy, int dh, int dv) {
-   PST *pst;
-
-   pst = chunkalloc(sizeof(PST));
-   pst->type = pst_position;
-   pst->subtable =
-      SFSubTableFindOrMake(to->parent, tag, SCScriptFromUnicode(to),
-			   gpos_single);
-   pst->u.pos.xoff = dx;
-   pst->u.pos.yoff = dy;
-   pst->u.pos.h_adv_off = dh;
-   pst->u.pos.v_adv_off = dv;
    pst->next = to->possub;
    to->possub = pst;
 }
@@ -1059,7 +1041,6 @@ static void AfmSplineCharX(FILE * afm, SplineChar * sc, int enc, int layer) {
    if (sc->ligofme != NULL)
       AfmLigOut(afm, sc);
    putc('\n', afm);
-   ff_progress_next();
 }
 
 static void AfmZapfCharX(FILE * afm, int zi) {
@@ -1086,7 +1067,6 @@ static void AfmSplineChar(FILE * afm, SplineChar * sc, int enc, int layer) {
    if (sc->ligofme != NULL)
       AfmLigOut(afm, sc);
    putc('\n', afm);
-   ff_progress_next();
 }
 
 static void AfmCIDChar(FILE * afm, SplineChar * sc, int enc, int layer) {
@@ -1103,7 +1083,6 @@ static void AfmCIDChar(FILE * afm, SplineChar * sc, int enc, int layer) {
 	   (int) floor(b.minx * 1000 / em), (int) floor(b.miny * 1000 / em),
 	   (int) ceil(b.maxx * 1000 / em), (int) ceil(b.maxy * 1000 / em));
    putc('\n', afm);
-   ff_progress_next();
 }
 
 static int anykerns(SplineFont * sf, int isv) {
@@ -3937,10 +3916,6 @@ int LoadKerningDataFromMetricsFile(SplineFont * sf, char *filename,
 	/*  that I'm not even going to try to check for it here */
 	ret = LoadKerningDataFromMacFOND(sf, filename, map);
 	break;
-   }
-   if (ret) {
-      FontInfo_Destroy(sf);
-      MVReKernAll(sf);
    }
    return (ret);
 }

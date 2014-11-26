@@ -33,7 +33,9 @@
 
 /**********************************************************************/
 
-static int generate_index=0,ignore_indices=0;
+static int generate_index=0,ignore_indices=0,report_statistics=0;
+static int preproc_sec=0,preproc_usec=0;
+static int disable_tree=0;
 uint64_t tree_checks=UINT64_C(0),tree_hits=UINT64_C(0);
 
 /* basic search and index generation */
@@ -128,7 +130,7 @@ void process_file(NODE *match_pattern,char *fn,int fn_flag) {
 		  fputc('\n',stderr);
 	       }
 
-	    } else if (tree_match(match_pattern,to_match)) {
+	    } else if (disable_tree || tree_match(match_pattern,to_match)) {
 	       tree_hits++;
 	       for (i=0;((unsigned char)input_buffer[i])<=0x20;i++);
 	       if (fn_flag>=0)
@@ -214,6 +216,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    char *dict_buff;
    size_t dict_buff_size=0,entry_size,parsed;
    uint64_t btest[2];
+   struct rusage rua,rub;
 
    /* bail, if we can't use an index or have been told to ignore it */
    if (ignore_indices || generate_index || (strcmp(fn,"-")==0)) {
@@ -278,6 +281,10 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
    
    /* analyse the query */
    if (indexed_pattern==NULL) {
+      /* start counting preprocessing time */
+      if (report_statistics)
+	getrusage(RUSAGE_SELF,&rua);
+ 
 #ifdef HAVE_BUDDY
       bdd_init(20000,2000);
       bdd_setvarnum(128);
@@ -291,6 +298,13 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 #endif
       indexed_pattern=match_pattern;
       /* we assume we'll never have to deal with another pattern... */
+
+      /* stop counting preprocessing time */
+      if (report_statistics) {
+	 getrusage(RUSAGE_SELF,&rub);
+	 preproc_sec+=(rub.ru_utime.tv_sec-rua.ru_utime.tv_sec);
+	 preproc_usec+=(rub.ru_utime.tv_usec-rua.ru_utime.tv_usec);
+      }
    }
    
    /* wrap the filename in a string so we can escape-print it */
@@ -386,7 +400,7 @@ void process_file_indexed(NODE *match_pattern,char *fn,int fn_flag) {
 	       stack_ptr=0;
 	       tree_checks++;
 	    
-	       if (tree_match(match_pattern,to_match)) {
+	       if (disable_tree || tree_match(match_pattern,to_match)) {
 		  tree_hits++;
 		  if (fn_flag>=0)
 		    write_bracketed_string(hfn,colon,stdout);
@@ -425,6 +439,7 @@ static struct option long_opts[] = {
 #endif
    {"bitvec-debug",no_argument,NULL,'D'|128},
    {"disable-lambda",no_argument,NULL,'L'|128},
+   {"disable-tree-match",no_argument,NULL,'T'|128},
    {"statistics",no_argument,NULL,'s'|128},
    {"color",optional_argument,NULL,'C'},
    {"colour",optional_argument,NULL,'C'},
@@ -451,8 +466,8 @@ int main(int argc,char **argv) {
    int c,num_files=0;
    char *dictdir,*dictname=NULL,*dictglob,*unilist_cfg=NULL;
    glob_t globres;
-   int show_version=0,show_help=0,generate_list=0,report_statistics=0;
-   struct rusage rua,rub;
+   int show_version=0,show_help=0,generate_list=0;
+   struct rusage rua,rub,ruc,rud;
 
    /* quick usage message */
    if (argc<2)
@@ -524,6 +539,9 @@ int main(int argc,char **argv) {
 	 disable_lambda=1;
 	 break;
 
+       case 'T'|128:
+	 disable_tree=1;
+
        case 's'|128:
 	 report_statistics=1;
 	 break;
@@ -558,6 +576,7 @@ int main(int argc,char **argv) {
 	  "      --disable-bdd         turn off BDD filtering\n"
 #endif
 	  "      --disable-lambda      turn off lambda filtering\n"
+	  "      --disable-tree-match  turn off final tree match\n"
 	  "      --bitvec-debug        verbose bit vector debugging"
 	                             " messages\n"
 	  "      --statistics          machine-readable statistics\n"
@@ -577,6 +596,10 @@ int main(int argc,char **argv) {
       stack_ptr=0;
       generate_list=0;
    } else if (optind<argc) {
+      /* start counting preprocessing time */
+      if (report_statistics)
+	getrusage(RUSAGE_SELF,&ruc);
+ 
       if ((parse(strlen(argv[optind]),argv[optind])<strlen(argv[optind]))
 	  || (parse_state!=PS_COMPLETE_TREE)) {
 	 puts("can't parse matching pattern");
@@ -585,6 +608,14 @@ int main(int argc,char **argv) {
       match_pattern=parse_stack[0];
       stack_ptr=0;
       optind++;
+      
+      /* stop counting preprocessing time */
+      if (report_statistics) {
+	 getrusage(RUSAGE_SELF,&rud);
+	 preproc_sec+=(rud.ru_utime.tv_sec-ruc.ru_utime.tv_sec);
+	 preproc_usec+=(rud.ru_utime.tv_usec-ruc.ru_utime.tv_usec);
+      }
+
    } else
      usage_message();
    
@@ -634,23 +665,33 @@ int main(int argc,char **argv) {
 	 rub.ru_utime.tv_usec+=1000000; /* GCI */
 	 rub.ru_utime.tv_sec--; /* GCI */
       }
+      while (preproc_usec<0) {
+	 preproc_usec+=1000000; /* GCI */
+	 preproc_sec--; /* GCI */
+      }
+      while (preproc_usec>=1000000) {
+	 preproc_usec-=1000000; /* GCI */
+	 preproc_sec++; /* GCI */
+      }
+
       printf("STATS %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64
-	     " %" PRIu64 " %" PRIu64 " %" PRIu64 " %d.%06d %d ",
+	     " %" PRIu64 " %" PRIu64 " %" PRIu64 " %ld.%06d %d %d.%06d ",
 	     bv_checks,bv_hits,
 #ifdef HAVE_BUDDY
 	     bdd_hits,
 #else
-	     0,
+	     UINT64_C(0),
 #endif
 	     tree_checks,tree_hits,
 	     memo_checks,memo_hits,
 	     rub.ru_utime.tv_sec-rua.ru_utime.tv_sec,
 	     rub.ru_utime.tv_usec-rua.ru_utime.tv_usec,
 #ifdef HAVE_BUDDY
-	     indexed_pattern?bdd_nodecount(bf.decision_diagram):0
+	     indexed_pattern?bdd_nodecount(bf.decision_diagram):0,
 #else
-	     0
+	     0,
 #endif
+	     preproc_sec,preproc_usec
 	    );
       set_output_recipe("cooked");
       write_cooked_tree(match_pattern,stdout);

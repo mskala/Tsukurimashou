@@ -1,4 +1,4 @@
-/* $Id: bvedit.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: bvedit.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -275,7 +275,6 @@ void BCTrans(BDFFont * bdf, BDFChar * bc, BVTFunc * bvts, FontViewBase * fv) {
 
    if (bvts[0].func == bvt_none)
       return;
-   BCPreserveState(bc);
    for (i = 0; bvts[i].func != bvt_none; ++i) {
       if (bvts[i].func == bvt_transmove) {
 	 xoff =
@@ -299,7 +298,6 @@ void BCRotateCharForVert(BDFChar * bc, BDFChar * from, BDFFont * frombdf) {
    /*  vertically displayed latin letter */
    int xmin, ymax;
 
-   BCPreserveState(bc);
    BCFlattenFloat(from);
    free(bc->bitmap);
    bc->xmin = from->xmin;
@@ -468,82 +466,6 @@ BDFFloat *BDFFloatConvert(BDFFloat * sel, int todepth, int fromdepth) {
       for (i = 0; i < sel->bytes_per_line * (sel->ymax - sel->ymin + 1); ++i)
 	 new->bitmap[i] = (sel->bitmap[i] * fdiv + tdiv / 2) / tdiv;
    }
-   return (new);
-}
-
-/* Creates a floating selection, and clears out the underlying bitmap */
-BDFFloat *BDFFloatCreate(BDFChar * bc, int xmin, int xmax, int ymin, int ymax,
-			 int clear) {
-   BDFFloat *new;
-
-   int x, y;
-
-   uint8 *bpt, *npt;
-
-   if (bc->selection != NULL) {
-      BCFlattenFloat(bc);
-      bc->selection = NULL;
-   }
-   BCCompressBitmap(bc);
-
-   if (xmin > xmax) {
-      xmin ^= xmax;
-      xmax ^= xmin;
-      xmin ^= xmax;
-   }
-   if (ymin > ymax) {
-      ymin ^= ymax;
-      ymax ^= ymin;
-      ymin ^= ymax;
-   }
-   if (xmin < bc->xmin)
-      xmin = bc->xmin;
-   if (xmax > bc->xmax)
-      xmax = bc->xmax;
-   if (ymin < bc->ymin)
-      ymin = bc->ymin;
-   if (ymax > bc->ymax)
-      ymax = bc->ymax;
-   if (xmin > xmax || ymin > ymax)
-      return (NULL);
-   new = malloc(sizeof(BDFFloat));
-   new->xmin = xmin;
-   new->xmax = xmax;
-   new->ymin = ymin;
-   new->ymax = ymax;
-   new->byte_data = bc->byte_data;
-   new->depth = bc->depth;
-   if (bc->byte_data) {
-      new->bytes_per_line = xmax - xmin + 1;
-      new->bitmap =
-	 calloc(new->bytes_per_line * (ymax - ymin + 1), sizeof(uint8));
-      for (y = ymin; y <= ymax; ++y) {
-	 bpt = bc->bitmap + (bc->ymax - y) * bc->bytes_per_line;
-	 npt = new->bitmap + (ymax - y) * new->bytes_per_line;
-	 memcpy(npt, bpt + xmin - bc->xmin, xmax - xmin + 1);
-	 if (clear)
-	    memset(bpt + xmin - bc->xmin, 0, xmax - xmin + 1);
-      }
-   } else {
-      new->bytes_per_line = ((xmax - xmin) >> 3) + 1;
-      new->bitmap =
-	 calloc(new->bytes_per_line * (ymax - ymin + 1), sizeof(uint8));
-      for (y = ymin; y <= ymax; ++y) {
-	 bpt = bc->bitmap + (bc->ymax - y) * bc->bytes_per_line;
-	 npt = new->bitmap + (ymax - y) * new->bytes_per_line;
-	 for (x = xmin; x <= xmax; ++x) {
-	    int bx = x - bc->xmin, nx = x - xmin;
-
-	    if (bpt[bx >> 3] & (1 << (7 - (bx & 7)))) {
-	       npt[nx >> 3] |= (1 << (7 - (nx & 7)));
-	       if (clear)
-		  bpt[bx >> 3] &= ~(1 << (7 - (bx & 7)));
-	    }
-	 }
-      }
-   }
-   if (clear)
-      bc->selection = new;
    return (new);
 }
 
@@ -846,40 +768,6 @@ void BCMakeDependent(BDFChar * dependent, BDFChar * base) {
       dlist->next = base->dependents;
       base->dependents = dlist;
    }
-}
-
-void BCRemoveDependent(BDFChar * dependent, BDFRefChar * ref) {
-   struct bdfcharlist *dlist, *pd;
-
-   BDFRefChar *prev;
-
-   if (dependent->refs == ref)
-      dependent->refs = ref->next;
-   else {
-      for (prev = dependent->refs; prev->next != ref; prev = prev->next);
-      prev->next = ref->next;
-   }
-   /* Check for multiple dependencies (colon has two refs to period) */
-   /*  if there are none, then remove dependent from ref->sc's dependents list */
-   for (prev = dependent->refs;
-	prev != NULL && (prev == ref || prev->bdfc != ref->bdfc);
-	prev = prev->next);
-   if (prev == NULL) {
-      dlist = ref->bdfc->dependents;
-      if (dlist == NULL)
-	 /* Do nothing */ ;
-      else if (dlist->bc == dependent) {
-	 ref->bdfc->dependents = dlist->next;
-      } else {
-	 for (pd = dlist, dlist = pd->next;
-	      dlist != NULL && dlist->bc != dependent;
-	      pd = dlist, dlist = pd->next);
-	 if (dlist != NULL)
-	    pd->next = dlist->next;
-      }
-      chunkfree(dlist, sizeof(struct bdfcharlist));
-   }
-   free(ref);
 }
 
 void BCUnlinkThisReference(struct fontviewbase *fv, BDFChar * bc) {

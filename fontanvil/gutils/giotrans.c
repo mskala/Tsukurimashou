@@ -1,4 +1,4 @@
-/* $Id: giotrans.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: giotrans.c 3280 2014-09-08 17:24:23Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -38,27 +38,3 @@ struct transtab {
 };
 
 static struct transtab *transtab = NULL;
-
-unichar_t *_GIO_translateURL(unichar_t * path, enum giofuncs gf) {
-   struct transtab *test;
-
-   unichar_t *res;
-
-   if (transtab == NULL)
-      /* Need some sort of _GIO_addURL(), otherwise you never get past here   */
-      return (NULL);
-
-   for (test = transtab; test->old != NULL; ++test) {
-      if ((test->gf_mask & (1 << gf))
-	  && u_strncmp(path, test->old, test->olen) == 0) {
-	 if ((res =
-	      malloc((u_strlen(path) - test->olen + u_strlen(test->new) +
-		      1) * sizeof(unichar_t))) == NULL)
-	    return (NULL);
-	 u_strcpy(res, test->new);
-	 u_strcat(res, path + test->olen);
-	 return (res);
-      }
-   }
-   return (NULL);
-}

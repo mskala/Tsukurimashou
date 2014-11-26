@@ -278,7 +278,8 @@ AC_SEARCH_LIBS([cos],[m])
 #
 PKG_CHECK_MODULES([FREETYPE],[freetype2])
 PKG_CHECK_MODULES([GLIB],[glib-2.0 >= 2.6 gio-2.0])
-PKG_CHECK_MODULES([ZLIB],[zlib])
+AC_SEARCH_LIBS([iconv],[iconv])
+PKG_CHECK_MODULES([ZLIB],[zlib],[],[AC_SEARCH_LIBS([inflate],[z])])
 #
 AC_ARG_WITH([giflib],
  [AS_HELP_STRING([--with-giflib=PATH],
@@ -342,11 +343,6 @@ AC_SUBST([GIFLIB_LIBS])
 AS_IF([test '!' "x$with_giflib" = xno],
   [],
   [AC_DEFINE([_NO_LIBUNGIF],1,[Define if not using system giflib.])])
-#
-AM_CONDITIONAL([COND_ICONV],[test '!' "x$with_iconv" = xno])
-AS_IF([test '!' "x$with_iconv" = xno],
-  [],
-  [AC_DEFINE([_NO_ICONV],1,[Define if not using system iconv.])])
 #
 AC_ARG_VAR([LIBJPEG_CFLAGS],[C compiler flags for libjpeg])
 AC_ARG_VAR([LIBJPEG_LIBS],[linker flags for libjpeg])

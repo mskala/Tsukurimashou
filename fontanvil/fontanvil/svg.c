@@ -1,4 +1,4 @@
-/* $Id: svg.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: svg.c 3326 2014-09-29 07:28:28Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -880,7 +880,7 @@ static PST *HasLigature(SplineChar * sc) {
    return (best);
 }
 
-SplineChar *SCHasSubs(SplineChar * sc, uint32 tag) {
+static SplineChar *SCHasSubs(SplineChar * sc, uint32 tag) {
    PST *pst;
 
    for (pst = sc->possub; pst != NULL; pst = pst->next) {
@@ -1172,17 +1172,6 @@ static void svg_sfdump(FILE * file, SplineFont * sf, int layer) {
    setlocale(LC_NUMERIC, oldloc);
 }
 
-int _WriteSVGFont(FILE * file, SplineFont * sf, enum fontformat format,
-		  int flags, EncMap * map, int layer) {
-   int ret;
-
-   svg_sfdump(file, sf, layer);
-   ret = true;
-   if (ferror(file))
-      ret = false;
-   return (ret);
-}
-
 int WriteSVGFont(char *fontname, SplineFont * sf, enum fontformat format,
 		 int flags, EncMap * map, int layer) {
    FILE *file;
@@ -1255,7 +1244,7 @@ int _ExportSVG(FILE * svg, SplineChar * sc, int layer) {
 /* ************************************************************************** */
 
 #ifdef _NO_LIBXML
-int HasSVG(void) {
+static int HasSVG(void) {
    return (false);
 }
 
@@ -1267,7 +1256,7 @@ char **NamesReadSVG(char *filename) {
    return (NULL);
 }
 
-SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
+static SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
 				       int memlen, int em_size, int ascent,
 				       int is_stroked) {
    return (NULL);
@@ -3932,7 +3921,6 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
       sprintf(sf->xuid, "[%s %d]", xuid, (rand() & 0xffffff));
    }
 
-   ff_progress_change_total(cnt);
    sf->glyphcnt = sf->glyphmax = cnt;
    sf->glyphs = malloc(cnt * sizeof(SplineChar *));
 
@@ -3944,14 +3932,12 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	    sf->glyphs[cnt]->orig_pos = cnt;
 	    cnt++;
 	 }
-	 ff_progress_next();
       } else if (xmlStrcmp(kids->name, (const xmlChar *) "glyph") == 0) {
 	 sf->glyphs[cnt] = SVGParseGlyph(sf, kids, defh, defv, cnt, &flags);
 	 if (sf->glyphs[cnt] != NULL) {
 	    sf->glyphs[cnt]->orig_pos = cnt;
 	    cnt++;
 	 }
-	 ff_progress_next();
       }
    }
    cnt = 0;
@@ -4309,7 +4295,7 @@ Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
    return (ret);
 }
 
-SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
+static SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
 				       int memlen, int em_size, int ascent,
 				       int is_stroked) {
    Entity *ret =
@@ -4319,7 +4305,7 @@ SplineSet *SplinePointListInterpretSVG(char *filename, char *memory,
    return (SplinesFromEntities(ret, &flags, is_stroked));
 }
 
-int HasSVG(void) {
+static int HasSVG(void) {
    return (libxml_init_base());
 }
 #endif

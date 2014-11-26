@@ -1,4 +1,4 @@
-/* $Id: http.c 2932 2014-03-09 15:26:10Z mskala $ */
+/* $Id: http.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -306,76 +306,7 @@ static int makeConnection(struct sockaddr_in *addr) {
    return (soc);
 }
 
-static char *UrlEncode(char *to, char *source) {
-   int nibble;
-
-   while (*source) {
-      if (isalnum(*source) || *source == '$' || *source == '_')
-	 *to++ = *source;
-      else if (*source == ' ')
-	 *to++ = '+';
-      else {
-	 *to++ = '%';
-	 nibble = (*source >> 4) & 0xf;
-	 if (nibble < 10)
-	    *to++ = '0' + nibble;
-	 else
-	    *to++ = 'A' - 10 + nibble;
-	 nibble = *source & 0xf;
-	 if (nibble < 10)
-	    *to++ = '0' + nibble;
-	 else
-	    *to++ = 'A' - 10 + nibble;
-      }
-      ++source;
-   }
-   *to = '\0';
-   return (to);
-}
-
 static void ChangeLine2_8(char *str) {
-   ff_progress_change_line2(str);
-   ff_progress_allow_events();
-}
-
-static int dumpfile(FILE * formdata, FILE * dump, char *pathspec) {
-   int ch;
-
-   if (dump == NULL)
-      dump = fopen(pathspec, "rb");
-   if (dump == NULL) {
-      fclose(formdata);
-      ff_progress_end_indicator();
-      return (false);
-   }
-   while ((ch = getc(dump)) != EOF)
-      putc(ch, formdata);
-   fclose(dump);
-   fprintf(formdata, "\r\n");	/* Final line break not part of message (I hope) */
-   return (true);
-}
-
-static char *ImageMimeType(char *ext) {
-   if (ext == NULL)
-      return ("application/octet-stream");
-
-   if (strcasecmp(ext, ".txt") == 0)
-      return ("text/plain");
-   if (strcasecmp(ext, ".html") == 0 || strcasecmp(ext, ".htm") == 0)
-      return ("text/html");
-
-   if (strcasecmp(ext, ".png") == 0)
-      return ("image/png");
-   if (strcasecmp(ext, ".jpeg") == 0 || strcasecmp(ext, ".jpg") == 0)
-      return ("image/jpeg");
-   if (strcasecmp(ext, ".gif") == 0)
-      return ("image/gif");
-   if (strcasecmp(ext, ".bmp") == 0)
-      return ("image/bmp");
-   if (strcasecmp(ext, ".pdf") == 0)
-      return ("application/pdf");
-
-   return ("application/octet-stream");
 }
 
 static char *decomposeURL(const char *url, char **host, int *port,
@@ -434,9 +365,7 @@ static char *decomposeURL(const char *url, char **host, int *port,
    if (*username) {
       *password = GIO_PasswordCache(proto, *host, *username, *password);
       if (*password == NULL) {
-	 *password =
-	    ff_ask_password(_("Password?"), "", _("Enter password for %s@%s"),
-			    *username, *host);
+	 *password="";
 	 *password = GIO_PasswordCache(proto, *host, *username, *password);
       }
    }
@@ -484,19 +413,9 @@ static FILE *HttpURLToTempFile(char *url, void *_lock) {
    if (lock != NULL)
       pthread_mutex_unlock(lock);
 
-   if (lock == NULL) {
-      ff_progress_start_indicator(0, _("Font Download..."), buffer,
-				  _("Resolving host"), 1, 1);
-      ff_progress_enable_stop(false);
-      ff_progress_allow_events();
-      ff_progress_allow_events();
-   }
-
-   /* This routine contains it's own lock */
+   /* This routine contains its own lock */
    if (!findHTTPhost(&addr, host, port)) {
-      if (lock == NULL)
-	 ff_progress_end_indicator();
-      else
+      if (lock != NULL)
 	 pthread_mutex_lock(lock);
       ff_post_error(_("Could not find host"),
 		    _
@@ -510,9 +429,7 @@ static FILE *HttpURLToTempFile(char *url, void *_lock) {
    }
    soc = makeConnection(&addr);
    if (soc == -1) {
-      if (lock == NULL)
-	 ff_progress_end_indicator();
-      else
+      if (lock != NULL)
 	 pthread_mutex_lock(lock);
       ff_post_error(_("Could not connect to host"),
 		    _("Could not connect to \"%s\"."), host);
@@ -537,8 +454,6 @@ static FILE *HttpURLToTempFile(char *url, void *_lock) {
 	   "User-Agent: FontAnvil\r\n"
 	   "Connection: close\r\n\r\n", filename, host);
    if (write(soc, databuf, strlen(databuf)) == -1) {
-      if (lock == NULL)
-	 ff_progress_end_indicator();
       if (lock != NULL)
 	 pthread_mutex_lock(lock);
       ff_post_error(_("Could not send request"),
@@ -593,23 +508,16 @@ static FILE *HttpURLToTempFile(char *url, void *_lock) {
 	 pt = strstr(databuf, "Content-Length: ");
 	 if (lock == NULL && pt != NULL) {
 	    pt += strlen("Content-Length: ");
-	    ff_progress_change_total(strtol(pt, NULL, 10));
 	 }
 	 pt = strstr(databuf, "\r\n\r\n");
 	 if (pt != NULL) {
 	    pt += strlen("\r\n\r\n");
 	    fwrite(pt, 1, len - (pt - databuf), ret);
-	    if (lock == NULL)
-	       ff_progress_increment(len - (pt - databuf));
 	 }
       } else {
 	 fwrite(databuf, 1, len, ret);
-	 if (lock == NULL)
-	    ff_progress_increment(len);
       }
    }
-   if (lock == NULL)
-      ff_progress_end_indicator();
    close(soc);
    free(databuf);
    if (lock != NULL)
@@ -663,14 +571,7 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
    }
    filename = decomposeURL(url, &host, &port, &username, &password);
 
-   ff_progress_start_indicator(0, _("Font Download..."), buffer,
-			       _("Resolving host"), 1, 1);
-   ff_progress_enable_stop(false);
-   ff_progress_allow_events();
-   ff_progress_allow_events();
-
    if (!findFTPhost(&addr, host, port)) {
-      ff_progress_end_indicator();
       ff_post_error(_("Could not find host"),
 		    _
 		    ("Could not find \"%s\"\nAre you connected to the internet?"),
@@ -681,7 +582,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
    }
    soc = makeConnection(&addr);
    if (soc == -1) {
-      ff_progress_end_indicator();
       ff_post_error(_("Could not connect to host"),
 		    _("Could not connect to \"%s\"."), host);
       free(host);
@@ -695,7 +595,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
 
    ChangeLine2_8(_("Logging in..."));
    if (getresponse(soc, databuf, datalen) == -1) {	/* ftp servers say "Hi" when then connect */
-      ff_progress_end_indicator();
       ff_post_error(_("Could not connect to host"),
 		    _("Could not connect to \"%s\"."), host);
       free(host);
@@ -716,7 +615,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
 
    sprintf(cmd, "USER %s\r\n", username);
    if (ftpsendr(soc, cmd, databuf, datalen) == -1) {
-      ff_progress_end_indicator();
       close(soc);
       free(filename);
       free(databuf);
@@ -728,7 +626,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
    free(username);
    free(password);
    if (ftpsendr(soc, cmd, databuf, datalen) <= 0) {
-      ff_progress_end_indicator();
       LogError(_("Bad Username/Password\n"));
       close(soc);
       free(filename);
@@ -737,7 +634,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
    }
 
    if (ftpsendr(soc, "TYPE I\r\n", databuf, datalen) == -1) {	/* Binary */
-      ff_progress_end_indicator();
       close(soc);
       free(filename);
       free(databuf);
@@ -750,7 +646,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
       ChangeLine2_8(_("Transmitting font..."));
 
    if (ftpsendpassive(soc, &data_addr, databuf, datalen) <= 0) {
-      ff_progress_end_indicator();
       close(soc);
       free(filename);
       free(databuf);
@@ -759,7 +654,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
    if ((data = socket(PF_INET, SOCK_STREAM, 0)) == -1 ||
        connect(data, (struct sockaddr *) &data_addr,
 	       sizeof(data_addr)) == -1) {
-      ff_progress_end_indicator();
       if (data != -1)
 	 close(data);
       close(soc);
@@ -772,7 +666,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
    if (from == NULL) {
       sprintf(cmd, "RETR %s\r\n", filename);
       if (ftpsendr(soc, cmd, databuf, datalen) <= 0) {
-	 ff_progress_end_indicator();
 	 ff_post_error(_("Could not download data"),
 		       _("Could not find file."));
 	 close(data);
@@ -794,7 +687,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
    } else {
       sprintf(cmd, "STOR %s\r\n", filename);
       if (ftpsendr(soc, cmd, databuf, datalen) <= 0) {
-	 ff_progress_end_indicator();
 	 ff_post_error(_("Could not download data"),
 		       _("Could not find file."));
 	 close(data);
@@ -813,7 +705,6 @@ static int FtpURLAndTempFile(char *url, FILE ** to, FILE * from) {
       }
       ret = NULL;
    }
-   ff_progress_end_indicator();
    close(soc);
    close(data);
    free(databuf);

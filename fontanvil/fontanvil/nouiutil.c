@@ -1,4 +1,4 @@
-/* $Id: nouiutil.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: nouiutil.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 #include <basics.h>
 #include <ustring.h>
 
-static void NOUI_IError(const char *format, ...) {
+void IError(const char *format, ...) {
    va_list ap;
 
    char buffer[400], *str;
@@ -59,7 +59,7 @@ static void NOUI__LogError(const char *format, va_list ap) {
    free(str);
 }
 
-static void NOUI_LogError(const char *format, ...) {
+void LogError(const char *format, ...) {
    va_list ap;
 
    va_start(ap, format);
@@ -67,7 +67,7 @@ static void NOUI_LogError(const char *format, ...) {
    va_end(ap);
 }
 
-static void NOUI_post_notice(const char *title, const char *statement, ...) {
+void ff_post_notice(const char *title, const char *statement, ...) {
    va_list ap;
 
    va_start(ap, statement);
@@ -75,7 +75,7 @@ static void NOUI_post_notice(const char *title, const char *statement, ...) {
    va_end(ap);
 }
 
-static void NOUI_post_error(const char *title, const char *statement, ...) {
+void ff_post_error(const char *title, const char *statement, ...) {
    va_list ap;
 
    va_start(ap, statement);
@@ -83,101 +83,12 @@ static void NOUI_post_error(const char *title, const char *statement, ...) {
    va_end(ap);
 }
 
-static int NOUI_ask(const char *title, const char **answers,
-		    int def, int cancel, const char *question, ...) {
-   return (def);
-}
-
-static int NOUI_choose(const char *title, const char **choices, int cnt,
-		       int def, const char *question, ...) {
-   return (def);
-}
-
-static int NOUI_choose_multiple(char *title, const char **choices, char *sel,
+int ff_choose_multiple(char *title, const char **choices, char *sel,
 				int cnt, char *buts[2], const char *question,
 				...) {
    return (-1);
 }
 
-static char *NOUI_ask_string(const char *title, const char *def,
-			     const char *question, ...) {
-   return ((char *) def);
-}
-
-static char *NOUI_open_file(const char *title, const char *defaultfile,
-			    const char *initial_filter) {
-   return (NULL);
-}
-
-static char *NOUI_saveas_file(const char *title, const char *defaultfile,
-			      const char *initial_filter) {
-   return (copy(defaultfile));
-}
-
-static void NOUI_progress_start(int delay, const char *title,
-				const char *line1, const char *line2, int tot,
-				int stages) {
-}
-
-static void NOUI_void_void_noop(void) {
-}
-
-static void NOUI_void_int_noop(int useless) {
-}
-
-static int NOUI_int_int_noop(int useless) {
-   return (true);
-}
-
-static void NOUI_void_str_noop(const char *useless) {
-}
-
-static int NOUI_alwaystrue(void) {
-   return (true);
-}
-
-static int NOUI_DefaultStrokeFlags(void) {
+int PsStrokeFlagsDlg(void) {
    return (sf_correctdir);
-}
-
-static struct ui_interface noui_interface = {
-   NOUI_IError,
-   NOUI_post_error,
-   NOUI_LogError,
-   NOUI_post_notice,
-   NOUI_ask,
-   NOUI_choose,
-   NOUI_choose_multiple,
-   NOUI_ask_string,
-   NOUI_ask_string,		/* password */
-   NOUI_open_file,
-   NOUI_saveas_file,
-
-   NOUI_progress_start,
-   NOUI_void_void_noop,
-   NOUI_void_void_noop,
-   NOUI_void_int_noop,
-   NOUI_alwaystrue,
-   NOUI_alwaystrue,
-   NOUI_int_int_noop,
-   NOUI_void_str_noop,
-   NOUI_void_str_noop,
-   NOUI_void_void_noop,
-   NOUI_void_void_noop,
-   NOUI_void_int_noop,
-   NOUI_void_int_noop,
-   NOUI_alwaystrue,
-
-   NOUI_void_void_noop,
-
-   NOUI_TTFNameIds,
-   NOUI_MSLangString,
-
-   NOUI_DefaultStrokeFlags
-};
-
-struct ui_interface *ui_interface = &noui_interface;
-
-void FF_SetUiInterface(struct ui_interface *uii) {
-   ui_interface = uii;
 }

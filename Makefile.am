@@ -57,7 +57,8 @@ percent=%
 ZZZZHACKZZZZ=include makefile-vars.inc
 $(error This Makefile must be edited by Perl code in config.status before use)
 
-SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,/bin/sh)
+SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
+  $(wildcard /bin/bash),/bin/bash,/bin/sh))
 SUBDIRS = . $(PARASITES)
 
 ############################################################################
@@ -67,24 +68,23 @@ SUBDIRS = . $(PARASITES)
 TSU_V_REDIR=$(if $(AM_V_at),>& /dev/null)
 
 if COND_COLOUR
-  ECHO_ANSI=echo -e
-  ansi_default=\e[0m
-  ansi_red=\e[31m
-  ansi_green=\e[32m
-  ansi_yellow=\e[33m
-  ansi_blue=\e[34m
-  ansi_magenta=\e[35m
-  ansi_cyan=\e[36m
-  ansi_pink=\e[35;1m
-  ansi_white=\e[37;1m
-  ansi_cleareol=\e[K
+  escchar:=$(strip $(shell echo x | tr 'x' '\033'))
+  ansi_default=$(escchar)[0m
+  ansi_red=$(escchar)[31m
+  ansi_green=$(escchar)[32m
+  ansi_yellow=$(escchar)[33m
+  ansi_blue=$(escchar)[34m
+  ansi_magenta=$(escchar)[35m
+  ansi_cyan=$(escchar)[36m
+  ansi_pink=$(escchar)[35;1m
+  ansi_white=$(escchar)[37;1m
+  ansi_cleareol=$(escchar)[K
   ansi_clearescaped=\033\[K
-  ansi_home=\e[1G
-  am__@andt@v_CC_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CC    " $@;
-  am__@andt@v_CCLD_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
-  am__@andt@v_GEN_0=@echo -e "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
+  ansi_home=$(escchar)[1G
+  am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
+  am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
+  am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
 else
-  ECHO_ANSI=echo
   ansi_default=
   ansi_red=
   ansi_green=
@@ -101,71 +101,71 @@ endif
 
 TSU_V_BDF =$(TSU_V_BDF_$(V))
 TSU_V_BDF_=$(TSU_V_BDF_$(AM_DEFAULT_VERBOSITY))
-TSU_V_BDF_0=@$(ECHO_ANSI) \
+TSU_V_BDF_0=@echo \
   "$(ansi_cleareol)  $(ansi_yellow)BDF$(ansi_default)   "
 TSU_V_BDF_1=@true
 
 TSU_V_HAM=$(TSU_V_HAM_$(V))
 TSU_V_HAM_=$(TSU_V_HAM_$(AM_DEFAULT_VERBOSITY))
-TSU_V_HAM_0=@$(ECHO_ANSI) \
+TSU_V_HAM_0=@echo \
   "$(ansi_cleareol)  $(ansi_red)HAM$(ansi_default)   " $@;
 
 TSU_V_KERN=$(TSU_V_KERN_$(V))
 TSU_V_KERN_=$(TSU_V_KERN_$(AM_DEFAULT_VERBOSITY))
-TSU_V_KERN_0=@$(ECHO_ANSI) \
+TSU_V_KERN_0=@echo \
   "$(ansi_cleareol)  $(ansi_yellow)KERN$(ansi_default)  "
 TSU_V_KERN_1=@true
 
 TSU_V_MAKE=$(TSU_V_MAKE_$(V))
 TSU_V_MAKE_=$(TSU_V_MAKE_$(AM_DEFAULT_VERBOSITY))
-TSU_V_MAKE_0=@$(ECHO_ANSI) \
+TSU_V_MAKE_0=@echo \
   "$(ansi_cleareol)  $(ansi_white)MAKE$(ansi_default)  " $@;
 
 TSU_V_MT1=$(TSU_V_MT1_$(V))
 TSU_V_MT1_=$(TSU_V_MT1_$(AM_DEFAULT_VERBOSITY))
-TSU_V_MT1_0=$(ECHO_ANSI) \
+TSU_V_MT1_0=echo \
   "$(ansi_cleareol)  $(ansi_blue)MT1$(ansi_default)   " $@;
 
 TSU_V_NAPERL=$(TSU_V_NAPERL_$(V))
 TSU_V_NAPERL_=$(TSU_V_NAPERL_$(AM_DEFAULT_VERBOSITY))
-TSU_V_NAPERL_0=$(ECHO_ANSI) \
+TSU_V_NAPERL_0=echo \
   "$(ansi_cleareol)  $(ansi_magenta)PERL$(ansi_default)  " $@;
 
 TSU_V_NASKIP=$(TSU_V_NASKIP_$(V))
 TSU_V_NASKIP_=$(TSU_V_NASKIP_$(AM_DEFAULT_VERBOSITY))
-TSU_V_NASKIP_0=$(ECHO_ANSI) -n \
+TSU_V_NASKIP_0=printf '%s%s%s' \
   "$(ansi_cleareol)  SKIP  " $@ "$(ansi_home)";
 
 TSU_V_OTF=$(TSU_V_OTF_$(V))
 TSU_V_OTF_=$(TSU_V_OTF_$(AM_DEFAULT_VERBOSITY))
-TSU_V_OTF_0=@$(ECHO_ANSI) \
+TSU_V_OTF_0=@echo \
   "$(ansi_cleareol)  $(ansi_cyan)OTF$(ansi_default)   "
 TSU_V_OTF_1=@true
 
 TSU_V_PERL=$(TSU_V_PERL_$(V))
 TSU_V_PERL_=$(TSU_V_PERL_$(AM_DEFAULT_VERBOSITY))
-TSU_V_PERL_0=@$(ECHO_ANSI) \
+TSU_V_PERL_0=@echo \
   "$(ansi_cleareol)  $(ansi_magenta)PERL$(ansi_default)  " $@;
 
 TSU_V_RMO=$(TSU_V_RMO_$(V))
 TSU_V_RMO_=$(TSU_V_RMO_$(AM_DEFAULT_VERBOSITY))
-TSU_V_RMO_0=$(ECHO_ANSI) \
+TSU_V_RMO_0=echo \
   "$(ansi_cleareol)  $(ansi_cyan)RMO$(ansi_default)   " $@;
 
 TSU_V_SFD=$(TSU_V_SFD_$(V))
 TSU_V_SFD_=$(TSU_V_SFD_$(AM_DEFAULT_VERBOSITY))
-TSU_V_SFD_0=@$(ECHO_ANSI) \
+TSU_V_SFD_0=@echo \
   "$(ansi_cleareol)  $(ansi_cyan)SFD$(ansi_default)   "
 TSU_V_SFD_1=@true
 
 TSU_V_TEX=$(TSU_V_TEX_$(V))
 TSU_V_TEX_=$(TSU_V_TEX_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TEX_0=@$(ECHO_ANSI) \
+TSU_V_TEX_0=@echo \
   "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " $@;
 
 TSU_V_TEXL=$(TSU_V_TEXL_$(V))
 TSU_V_TEXL_=$(TSU_V_TEXL_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TEXL_0=$(ECHO_ANSI) \
+TSU_V_TEXL_0=echo \
   "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " "$@($$I)";
 
 ############################################################################
@@ -1104,7 +1104,7 @@ area/%-before.area: area/.dirstamp pfbtmp/%.pfb pe/makepngs.pe sfd/empty.sfd
 	(cd $*.tmp ; \
 	  $(FONTANVIL) -lang=ff -script $(realpath $(mvp))/pe/makepngs.pe \
 	     $(realpath .)/pfbtmp/$*.pfb $(TSU_V_REDIR) ; \
-	  for f in *.png ; do echo -n "$$f" ; pngtopnm $$f | \
+	  for f in *.png ; do printf '%s' "$$f" ; pngtopnm $$f | \
 	    pgmtopbm -threshold | pgmhist | \
 	    grep '^    0' ; echo ' 0 0' ; done | \
 	    $(PERL) -pe \
@@ -1121,7 +1121,7 @@ area/%-after.area: area/.dirstamp sfd/%.sfd pe/makepngs.pe sfd/empty.sfd
 	(cd $*.tmp ; \
 	  $(FONTANVIL) -lang=ff -script $(realpath $(mvp))/pe/makepngs.pe \
 	     $(realpath .)/sfd/$*.sfd $(TSU_V_REDIR) ; \
-	  for f in *.png ; do echo -n "$$f" ; pngtopnm $$f | \
+	  for f in *.png ; do printf '%s' "$$f" ; pngtopnm $$f | \
 	    pgmtopbm -threshold | pgmhist | \
 	    grep '^    0' ; echo ' 0 0' ; done | \
 	    $(PERL) -pe \

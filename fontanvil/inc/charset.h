@@ -1,4 +1,4 @@
-/* $Id: charset.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: charset.h 3423 2014-10-26 18:51:07Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -68,12 +68,9 @@ enum charset { em_none = -1,
 
 extern int /*enum charset */ local_encoding;
 
-#   if HAVE_ICONV_H
-#      include <iconv.h>
+#include <iconv.h>
 extern char *iconv_local_encoding_name;
-#   else
-#      include "gwwiconv.h"	/* My fake iconv based on encodings in gdraw/gunicode */
-#   endif
+
 extern struct namemap {
    char *name;
    int map;

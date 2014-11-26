@@ -1,4 +1,4 @@
-/* $Id: autohint.c 3173 2014-07-12 17:12:17Z mskala $ */
+/* $Id: autohint.c 3324 2014-09-27 20:21:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -223,8 +223,6 @@ void FindBlues(SplineFont * sf, int layer, real blues[14],
 	    }
 	 }
       }
-      if (!ff_progress_next())
-	 break;
    }
    if (otherdigits[2] > 0 && digith[2] > 0) {
       if (otherdigits[0] / otherdigits[2] >= .95 * digith[0] / digith[2]) {
@@ -2154,11 +2152,10 @@ static DStemInfo *RefDHintsMerge(SplineFont * sf, DStemInfo * into,
    return (into);
 }
 
-static void __SplineCharAutoHint(SplineChar * sc, int layer, BlueData * bd,
-				 int gen_undoes);
+static void __SplineCharAutoHint(SplineChar *sc,int layer,BlueData * bd);
 
-static void AutoHintRefs(SplineChar * sc, int layer, BlueData * bd, int picky,
-			 int gen_undoes) {
+static void AutoHintRefs(SplineChar *sc,int layer,BlueData *bd,
+			 int picky) {
    RefChar *ref;
 
    /* Add hints for base characters before accent hints => if there are any */
@@ -2169,9 +2166,9 @@ static void AutoHintRefs(SplineChar * sc, int layer, BlueData * bd, int picky,
 	    if (!ref->sc->manualhints && ref->sc->changedsincelasthinted &&
 		(ref->sc->layers[layer].refs != NULL &&
 		 ref->sc->layers[layer].splines == NULL))
-	       AutoHintRefs(ref->sc, layer, bd, true, gen_undoes);
+	       AutoHintRefs(ref->sc, layer, bd, true);
 	 } else if (!ref->sc->manualhints && ref->sc->changedsincelasthinted)
-	    __SplineCharAutoHint(ref->sc, layer, bd, gen_undoes);
+	    __SplineCharAutoHint(ref->sc, layer, bd);
 	 if (ref->sc->unicodeenc != -1 && ref->sc->unicodeenc < 0x10000 &&
 	     isalnum(ref->sc->unicodeenc)) {
 	    sc->hstem =
@@ -2212,7 +2209,6 @@ static void AutoHintRefs(SplineChar * sc, int layer, BlueData * bd, int picky,
    sc->vconflicts = StemListAnyConflicts(sc->vstem);
    sc->hconflicts = StemListAnyConflicts(sc->hstem);
 
-   SCOutOfDateBackground(sc);
    SCHintsChanged(sc);
 }
 
@@ -2233,7 +2229,6 @@ void SCClearHints(SplineChar * sc) {
    sc->dstem = NULL;
    MinimumDistancesFree(sc->md);
    sc->md = NULL;
-   SCOutOfDateBackground(sc);
    if (any)
       SCHintsChanged(sc);
 }
@@ -3176,12 +3171,10 @@ static DStemInfo *GDFindDStems(struct glyphdata *gd) {
    return (head);
 }
 
-void _SplineCharAutoHint(SplineChar * sc, int layer, BlueData * bd,
-			 struct glyphdata *gd2, int gen_undoes) {
+void _SplineCharAutoHint(SplineChar *sc,int layer,BlueData * bd,
+			 struct glyphdata *gd2) {
    struct glyphdata *gd;
 
-   if (gen_undoes)
-      SCPreserveHints(sc, layer);
    StemInfosFree(sc->vstem);
    sc->vstem = NULL;
    StemInfosFree(sc->hstem);
@@ -3210,32 +3203,30 @@ void _SplineCharAutoHint(SplineChar * sc, int layer, BlueData * bd,
 	 GlyphDataFree(gd);
    }
 
-   AutoHintRefs(sc, layer, bd, false, gen_undoes);
+   AutoHintRefs(sc, layer, bd, false);
 }
 
-static void __SplineCharAutoHint(SplineChar * sc, int layer, BlueData * bd,
-				 int gen_undoes) {
+static void __SplineCharAutoHint(SplineChar *sc,int layer,BlueData *bd) {
    MMSet *mm = sc->parent->mm;
 
    int i;
 
    if (mm == NULL)
-      _SplineCharAutoHint(sc, layer, bd, NULL, gen_undoes);
+      _SplineCharAutoHint(sc, layer, bd, NULL);
    else {
       for (i = 0; i < mm->instance_count; ++i)
 	 if (sc->orig_pos < mm->instances[i]->glyphcnt)
 	    _SplineCharAutoHint(mm->instances[i]->glyphs[sc->orig_pos], layer,
-				NULL, NULL, gen_undoes);
+				NULL, NULL);
       if (sc->orig_pos < mm->normal->glyphcnt)
 	 _SplineCharAutoHint(mm->normal->glyphs[sc->orig_pos], layer, NULL,
-			     NULL, gen_undoes);
+			     NULL);
    }
    SCFigureHintMasks(sc, layer);
-   SCUpdateAll(sc);
 }
 
-void SplineCharAutoHint(SplineChar * sc, int layer, BlueData * bd) {
-   __SplineCharAutoHint(sc, layer, bd, true);
+void SplineCharAutoHint(SplineChar *sc,int layer,BlueData *bd) {
+   __SplineCharAutoHint(sc, layer, bd);
 }
 
 void SFSCAutoHint(SplineChar * sc, int layer, BlueData * bd) {
@@ -3302,10 +3293,6 @@ void SplineFontAutoHint(SplineFont * _sf, int layer) {
 	    if (sf->glyphs[i]->changedsincelasthinted &&
 		!sf->glyphs[i]->manualhints)
 	       SFSCAutoHint(sf->glyphs[i], layer, bd);
-	    if (!ff_progress_next()) {
-	       k = _sf->subfontcnt + 1;
-	       break;
-	    }
 	 }
       ++k;
    } while (k < _sf->subfontcnt);
@@ -3313,11 +3300,8 @@ void SplineFontAutoHint(SplineFont * _sf, int layer) {
 
 void SplineFontAutoHintRefs(SplineFont * _sf, int layer) {
    int i, k;
-
    SplineFont *sf;
-
    BlueData *bd = NULL, _bd;
-
    SplineChar *sc;
 
    if (_sf->mm == NULL) {
@@ -3334,12 +3318,11 @@ void SplineFontAutoHintRefs(SplineFont * _sf, int layer) {
 		!sc->manualhints &&
 		(sc->layers[layer].refs != NULL
 		 && sc->layers[layer].splines == NULL)) {
-	       SCPreserveHints(sc, layer);
 	       StemInfosFree(sc->vstem);
 	       sc->vstem = NULL;
 	       StemInfosFree(sc->hstem);
 	       sc->hstem = NULL;
-	       AutoHintRefs(sc, layer, bd, true, true);
+	       AutoHintRefs(sc, layer, bd, true);
 	    }
 	 }
       ++k;

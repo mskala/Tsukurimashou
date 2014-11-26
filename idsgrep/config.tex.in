@@ -1,2 +1,3 @@
 \setmonofont[Path={@with_tsuku_build@/otf/}]{TsukurimashouMincho.otf}
+@set_sans_font@
 \def\idsgrepversion{@VERSION@}

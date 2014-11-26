@@ -1,4 +1,4 @@
-/* $Id: encoding.c 2995 2014-03-29 22:11:26Z mskala $ */
+/* $Id: encoding.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -140,7 +140,7 @@ static Encoding symbol =
    { "Symbol", 256, unicode_from_MacSymbol, NULL, &adobestd, 1, 1, 1, 1, 0, 0,
 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0 };
 
-Encoding *enclist = &symbol;
+static Encoding *enclist = &symbol;
 
 const char *FindUnicharName(void) {
    /* Iconv and libiconv use different names for UCS2. Just great. Perhaps */
@@ -261,25 +261,16 @@ static int TryEscape(Encoding * enc, char *escape_sequence) {
    return (enc->has_2byte);
 }
 
-Encoding *_FindOrMakeEncoding(const char *name, int make_it) {
+static Encoding *_FindOrMakeEncoding(const char *name, int make_it) {
    Encoding *enc;
-
    char buffer[20];
-
    const char *iconv_name;
-
    Encoding temp;
-
    uint8 good[256];
-
    int i, j, any, all;
-
    char from[8], ucs[20];
-
    size_t fromlen, tolen;
-
    ICONV_CONST char *fpt;
-
    char *upt;
 
    /* iconv is not case sensitive */
@@ -544,20 +535,6 @@ int AddEncoding(char *name, EncFunc enc_to_uni, EncFunc uni_to_enc, int max) {
    return (1);
 }
 
-static char *getPfaEditEncodings(void) {
-   static char *encfile = NULL;
-
-   char buffer[1025];
-
-   if (encfile != NULL)
-      return (encfile);
-   if (getPfaEditDir(buffer) == NULL)
-      return (NULL);
-   sprintf(buffer, "%s/Encodings.ps", getPfaEditDir(buffer));
-   encfile = copy(buffer);
-   return (encfile);
-}
-
 static void EncodingFree(Encoding * item) {
    int i;
 
@@ -570,7 +547,7 @@ static void EncodingFree(Encoding * item) {
    free(item);
 }
 
-void DeleteEncoding(Encoding * me) {
+static void DeleteEncoding(Encoding * me) {
    FontViewBase *fv;
 
    Encoding *prev;
@@ -595,7 +572,6 @@ void DeleteEncoding(Encoding * me) {
       default_encoding = FindOrMakeEncoding("ISO8859-1");
    if (default_encoding == NULL)
       default_encoding = &custom;
-   DumpPfaEditEncodings();
 }
 
 /* Parse a TXT file from the unicode consortium */
@@ -640,7 +616,7 @@ static Encoding *ParseConsortiumEncodingFile(FILE * file) {
    return (item);
 }
 
-void RemoveMultiples(Encoding * item) {
+static void RemoveMultiples(Encoding * item) {
    Encoding *test;
 
    for (test = enclist; test != NULL; test = test->next) {
@@ -663,7 +639,7 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
    int i, ch;
 
    if (filename == NULL)
-      filename = getPfaEditEncodings();
+     return NULL;
    file = fopen(filename, "r");
    if (file == NULL) {
       if (orig != NULL)
@@ -710,56 +686,6 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
       item->next = head;
    }
    return (copy(head->enc_name));
-}
-
-void LoadPfaEditEncodings(void) {
-   ParseEncodingFile(NULL, NULL);
-}
-
-void DumpPfaEditEncodings(void) {
-   FILE *file;
-
-   Encoding *item;
-
-   int i;
-
-   char buffer[80];
-
-   for (item = enclist; item != NULL && item->builtin; item = item->next);
-   if (item == NULL) {
-      unlink(getPfaEditEncodings());
-      return;
-   }
-
-   file = fopen(getPfaEditEncodings(), "w");
-   if (file == NULL) {
-      LogError(_("couldn't write encodings file\n"));
-      return;
-   }
-
-   for (item = enclist; item != NULL; item = item->next)
-      if (!item->builtin && item->tounicode_func == NULL) {
-	 fprintf(file, "/%s [\n", item->enc_name);
-	 if (item->psnames == NULL)
-	    fprintf(file, "%% Use codepoints.\n");
-	 for (i = 0; i < item->char_cnt; ++i) {
-	    if (item->psnames != NULL && item->psnames[i] != NULL)
-	       fprintf(file, " /%s", item->psnames[i]);
-	    else if (item->unicode[i] < ' '
-		     || (item->unicode[i] >= 0x7f && item->unicode[i] < 0xa0))
-	       fprintf(file, " /.notdef");
-	    else
-	       fprintf(file, " /%s",
-		       StdGlyphName(buffer, item->unicode[i], ui_none,
-				    (NameList *) - 1));
-	    if ((i & 0xf) == 0)
-	       fprintf(file, "\t\t%% 0x%02x\n", i);
-	    else
-	       putc('\n', file);
-	 }
-	 fprintf(file, "] def\n\n");
-      }
-   fclose(file);
 }
 
 /* ************************************************************************** */
@@ -1087,14 +1013,9 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
       buts[0] = _("_Use It");
       buts[1] = _("_Search");
       buts[2] = NULL;
-      ret =
-	 ff_ask(_("Use CID Map"), (const char **) buts, 0, 1,
-		_
-		("This font is based on the charset %1$.20s-%2$.20s-%3$d, but the best I've been able to find is %1$.20s-%2$.20s-%4$d.\nShall I use that or let you search?"),
-		registry, ordering, supplement, maybe_sup);
+      ret=0;
       if (sf != NULL)
 	 sf->loading_cid_map = false;
-      if (ret == 0) {
 	 if (maybe != NULL) {
 	    maybe->maxsupple = supplement;
 	    return (maybe);
@@ -1102,7 +1023,6 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
 	    file = maybefile;
 	    maybefile = NULL;
 	 }
-      }
    }
 
    if (file == NULL) {
@@ -1113,13 +1033,7 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
 	 buts3[0] = _("_Browse");
 	 buts3[1] = _("_Give Up");
 	 buts3[2] = NULL;
-	 ret =
-	    ff_ask(_("No cidmap file..."), (const char **) buts3, 0, 1,
-		   _
-		   ("FontAnvil was unable to find a cidmap file for this font. It is not essential to have one, but some things will work better if you do. If you have not done so you might want to download the cidmaps from:\n   http://FontAnvil.sourceforge.net/cidmaps.tgz\nand then gunzip and untar them and move them to:\n  %.80s\n\nWould you like to search your local disk for an appropriate file?"),
-		   getFontAnvilShareDir() ==
-		   NULL ? "/usr/share/fontanvil" : getFontAnvilShareDir()
-	    );
+	 ret=0;
 	 g_free(buf);
 	 buf = NULL;
       }
@@ -1202,7 +1116,7 @@ static void SFApplyOrdering(SplineFont * sf, int glyphcnt) {
 }
 
 /* Convert a normal font to a cid font, rearranging glyphs into cid order */
-void SFEncodeToMap(SplineFont * sf, struct cidmap *map) {
+static void SFEncodeToMap(SplineFont * sf, struct cidmap *map) {
    SplineChar *sc;
 
    int i, max = 0, anyextras = 0;
@@ -1223,21 +1137,6 @@ void SFEncodeToMap(SplineFont * sf, struct cidmap *map) {
       buttons[0] = _("_Delete");
       buttons[1] = _("_Add");
       buttons[2] = NULL;
-      if (ff_ask
-	  (_("Extraneous glyphs"), (const char **) buttons, 0, 1,
-	   _
-	   ("The current encoding contains glyphs which I cannot map to CIDs.\nShould I delete them or add them to the end (where they may conflict with future ros definitions)?"))
-	  == 1) {
-	 if (map != NULL && max < map->cidmax)
-	    max = map->cidmax;
-	 anyextras = 0;
-	 for (i = 0; i < sf->glyphcnt; ++i)
-	    if (SCWorthOutputting(sc = sf->glyphs[i])) {
-	       if (sc->orig_pos == -1)
-		  sc->orig_pos = max + anyextras++;
-	    }
-	 max += anyextras;
-      }
    }
    SFApplyOrdering(sf, max + 1);
 }
@@ -1442,7 +1341,7 @@ static void CompressCMap(struct cmap *cmap) {
    }
 }
 
-SplineFont *CIDFlatten(SplineFont * cidmaster, SplineChar ** glyphs,
+static SplineFont *CIDFlatten(SplineFont * cidmaster, SplineChar ** glyphs,
 		       int charcnt) {
    FontViewBase *fvs;
 
@@ -1469,7 +1368,7 @@ SplineFont *CIDFlatten(SplineFont * cidmaster, SplineChar ** glyphs,
    new->uwidth = cidmaster->uwidth;
    new->ascent = cidmaster->ascent;
    new->descent = cidmaster->descent;
-   new->changed = new->changed_since_autosave = true;
+   new->changed = true;
    new->display_antialias = cidmaster->display_antialias;
    new->hasvmetrics = cidmaster->hasvmetrics;
    new->fv = cidmaster->fv;
@@ -1530,9 +1429,7 @@ SplineFont *CIDFlatten(SplineFont * cidmaster, SplineChar ** glyphs,
 	    fvs->map->map[j] = fvs->map->backmap[j] = j;
       }
       fvs->sf = new;
-      FVSetTitle(fvs);
    }
-   FontViewReformatAll(new);
    SplineFontFree(cidmaster);
    return (new);
 }
@@ -1681,7 +1578,6 @@ int SFFlattenByCMap(SplineFont * sf, char *cmapname) {
       }
    }
    cmapfree(cmap);
-   FontViewReformatAll(sf);
    return (true);
 }
 
@@ -1732,28 +1628,6 @@ static void SFEncodeToCMap(SplineFont * cidmaster, SplineFont * sf,
    if (GID0 != NULL)
       GID0->orig_pos = ++max;
 
-   if (anyextras) {
-      char *buttons[3];
-
-      buttons[0] = _("_Delete");
-      buttons[1] = _("_Add");
-      buttons[2] = NULL;
-      if (ff_ask
-	  (_("Extraneous glyphs"), (const char **) buttons, 0, 1,
-	   _
-	   ("The current encoding contains glyphs which I cannot map to CIDs.\nShould I delete them or add them to the end (where they may conflict with future ros definitions)?"))
-	  == 1) {
-	 if (cmap != NULL && max < cmap->total)
-	    max = cmap->total;
-	 anyextras = 0;
-	 for (i = 0; i < sf->glyphcnt; ++i)
-	    if ((sc = sf->glyphs[i]) != NULL) {
-	       if (sc->orig_pos == -1)
-		  sc->orig_pos = max + anyextras++;
-	    }
-	 max += anyextras;
-      }
-   }
    SFApplyOrdering(sf, max + 1);
 }
 
@@ -1761,7 +1635,7 @@ static void SFEncodeToCMap(SplineFont * cidmaster, SplineFont * sf,
 /*  as/ds of the master font. I used to think this irrelevant, but as the */
 /*  typoAscent/Descent is based on the master's ascent/descent it actually */
 /*  is meaningful. Set the master to the subfont with the most glyphs */
-void CIDMasterAsDes(SplineFont * sf) {
+static void CIDMasterAsDes(SplineFont * sf) {
    SplineFont *cidmaster = sf->cidmaster;
 
    SplineFont *best;
@@ -1852,7 +1726,7 @@ SplineFont *MakeCIDMaster(SplineFont * sf, EncMap * oldmap, int bycmap,
    cidmaster->display_size = sf->display_size;
    cidmaster->ascent = sf->ascent /*880 */ ;
    cidmaster->descent = sf->descent /*120 */ ;
-   cidmaster->changed = cidmaster->changed_since_autosave = true;
+   cidmaster->changed = true;
    for (fvs = sf->fv; fvs != NULL; fvs = fvs->nextsame)
       fvs->cidmaster = cidmaster;
    cidmaster->fv = sf->fv;
@@ -1883,29 +1757,14 @@ SplineFont *MakeCIDMaster(SplineFont * sf, EncMap * oldmap, int bycmap,
       fvs->selected = calloc(fvs->sf->glyphcnt, sizeof(char));
       EncMapFree(fvs->map);
       fvs->map = EncMap1to1(fvs->sf->glyphcnt);
-      FVSetTitle(fvs);
    }
    CIDMasterAsDes(sf);
-   FontViewReformatAll(sf);
    return (cidmaster);
-}
-
-char *SFEncodingName(SplineFont * sf, EncMap * map) {
-   char buffer[130];
-
-   if (sf->cidmaster != NULL)
-      sf = sf->cidmaster;
-   if (sf->subfontcnt != 0) {
-      sprintf(buffer, "%.50s-%.50s-%d", sf->cidregistry, sf->ordering,
-	      sf->supplement);
-      return (copy(buffer));
-   }
-   return (copy(map->enc->enc_name));
 }
 
 /* ************************** Reencoding  routines ************************** */
 
-void BDFOrigFixup(BDFFont * bdf, int orig_cnt, SplineFont * sf) {
+static void BDFOrigFixup(BDFFont * bdf, int orig_cnt, SplineFont * sf) {
    BDFChar **glyphs;
 
    int i;
@@ -2005,8 +1864,6 @@ static int _SFForceEncoding(SplineFont * sf, EncMap * old, Encoding * new_enc) {
 	 IError("Unticked encmap");
       for (bdf = sf->bitmaps; bdf != NULL; bdf = bdf->next)
 	 BDFOrigFixup(bdf, enc_cnt, sf);
-      for (fvs = sf->fv; fvs != NULL; fvs = fvs->nextsame)
-	 FVBiggerGlyphCache(fvs, enc_cnt);
       glyphs = calloc(enc_cnt, sizeof(SplineChar *));
       for (i = 0; i < sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL)
@@ -2267,9 +2124,6 @@ void SFRemoveGlyph(SplineFont * sf, SplineChar * sc, int *flags) {
    if (sc == NULL)
       return;
 
-   /* Close any open windows */
-   SCCloseAllViews(sc);
-
    /* Turn any references to this glyph into inline copies of it */
    for (dep = sc->dependents; dep != NULL; dep = dnext) {
       SplineChar *dsc = dep->sc;
@@ -2375,7 +2229,7 @@ static int MapAddEncodingSlot(EncMap * map, int gid) {
    return (enc);
 }
 
-void FVAddEncodingSlot(FontViewBase * fv, int gid) {
+static void FVAddEncodingSlot(FontViewBase * fv, int gid) {
    EncMap *map = fv->map;
 
    int enc;
@@ -2384,7 +2238,6 @@ void FVAddEncodingSlot(FontViewBase * fv, int gid) {
 
    fv->selected = realloc(fv->selected, map->enccount);
    fv->selected[enc] = 0;
-   FVAdjustScrollBarRows(fv, enc);
 }
 
 void SFAddEncodingSlot(SplineFont * sf, int gid) {
@@ -2508,8 +2361,6 @@ void SFAddGlyphAndEncode(SplineFont * sf, SplineChar * sc, EncMap * basemap,
    sf->glyphs[gid] = NULL;
    for (fv = sf->fv; fv != NULL; fv = fv->nextsame) {
       EncMap *map = fv->map;
-
-      FVBiggerGlyphCache(fv, gid);
 
       if (!MapAddEnc(sf, sc, basemap, map, baseenc, gid, fv))
 	 FVAddEncodingSlot(fv, gid);

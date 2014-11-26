@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: fvimportbdf.c 3441 2014-11-03 07:49:27Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -170,7 +170,6 @@ static void ExtendSF(SplineFont * sf, EncMap * map, int enc, int set) {
 	    free(fvs->selected);
 	    fvs->selected = calloc(map->enccount, 1);
 	 }
-	 FontViewReformatAll(sf);
       }
    }
 }
@@ -574,7 +573,6 @@ static int slurp_header(FILE * bdf, int *_as, int *_ds, Encoding ** _enc,
       if (strcmp(tok, "CHARS") == 0) {
 	 cnt = 0;
 	 fscanf(bdf, "%d", &cnt);
-	 ff_progress_change_total(cnt);
 	 break;
       }
       if (strcmp(tok, "STARTPROPERTIES") == 0) {
@@ -1906,7 +1904,6 @@ static int PcfReadBitmaps(FILE * file, struct toc *toc, BDFFont * b) {
 	    IError("Bad PCF glyph bitmap size");
 	 memcpy(bc->bitmap, bitmap + offsets[i],
 		bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
-	 ff_progress_next();
       }
    } else {
       int pad = PCF_GLYPH_PAD(format);
@@ -1920,7 +1917,6 @@ static int PcfReadBitmaps(FILE * file, struct toc *toc, BDFFont * b) {
 	    memcpy(bc->bitmap + (j - bc->ymin) * bc->bytes_per_line,
 		   bitmap + offsets[i] + (j - bc->ymin) * bpl,
 		   bc->bytes_per_line);
-	 ff_progress_next();
       }
    }
    free(bitmap);
@@ -2109,14 +2105,11 @@ static int askusersize(char *filename) {
    else
       *def = '\0';
  retry:
-   ret =
-      ff_ask_string(_("Pixel size:"), def,
-		    _("What is the pixel size of the font in this file?"));
+   ret =def;
    if (ret == NULL)
       guess = -1;
    else {
       guess = strtol(ret, &end, 10);
-      free(ret);
       if (guess <= 0 || *end != '\0') {
 	 ff_post_error(_("Bad Number"), _("Bad Number"));
 	 goto retry;
@@ -2134,12 +2127,7 @@ static int alreadyexists(int pixelsize) {
    buts[1] = _("_Cancel");
    buts[2] = NULL;
 
-   ret = ff_ask(_("Duplicate pixelsize"), (const char **) buts, 0, 1,
-		_
-		("The font database already contains a bitmap\012font with this pixelsize (%d)\012Do you want to overwrite it?"),
-		pixelsize);
-
-   return (ret == 0);
+   return true;
 }
 
 static void BDFForceEnc(SplineFont * sf, EncMap * map) {
@@ -2278,8 +2266,6 @@ void SFSetFontName(SplineFont * sf, char *family, char *mods, char *fullname) {
       else
 	 sf->weight = copy("Medium");
    }
-
-   FVSetTitles(sf);
 }
 
 static BDFFont *SFImportBDF(SplineFont * sf, char *filename, int ispk,
@@ -2476,7 +2462,6 @@ static BDFFont *SFImportBDF(SplineFont * sf, char *filename, int ispk,
 	    }
 	 } else if (strcmp(tok, "STARTCHAR") == 0) {
 	    AddBDFChar(bdf, sf, b, map, depth, &defs, enc);
-	    ff_progress_next();
 	 }
       }
    }
@@ -2631,9 +2616,6 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
    }
 
    sprintf(buf, _("Loading font from %.100s"), filename);
-   ff_progress_start_indicator(10, _("Loading..."), buf, _("Reading Glyphs"),
-			       0, fcnt);
-   ff_progress_enable_stop(false);
 
    file = eod + 1;
    do {
@@ -2645,19 +2627,14 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
       strcat(full, "/");
       strcat(full, file);
       sprintf(buf, _("Loading font from %.100s"), filename);
-      ff_progress_change_line1(buf);
       b = _SFImportBDF(fv->sf, full, ispk, toback, fv->map);
       free(full);
-      if (fpt != NULL)
-	 ff_progress_next_stage();
       if (b != NULL) {
 	 anyb = b;
 	 any = true;
-	 FVRefreshAll(fv->sf);
       }
       file = fpt + 2;
    } while (fpt != NULL);
-   ff_progress_end_indicator();
    if (oldenccnt != fv->map->enccount) {
       FontViewBase *fvs;
 
@@ -2665,7 +2642,6 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
 	 free(fvs->selected);
 	 fvs->selected = calloc(fvs->map->enccount, sizeof(char));
       }
-      FontViewReformatAll(fv->sf);
    }
    if (anyb == NULL) {
       ff_post_error(_("No Bitmap Font"),
@@ -2737,9 +2713,6 @@ int FVImportMult(FontViewBase * fv, char *filename, int toback, int bf) {
    char buf[300];
 
    snprintf(buf, sizeof(buf), _("Loading font from %.100s"), filename);
-   ff_progress_start_indicator(10, _("Loading..."), buf, _("Reading Glyphs"),
-			       0, 2);
-   ff_progress_enable_stop(false);
 
    if (bf == bf_ttf)
       strikeholder =
@@ -2758,7 +2731,6 @@ int FVImportMult(FontViewBase * fv, char *filename, int toback, int bf) {
 
    if (strikeholder == NULL || (strikes = strikeholder->bitmaps) == NULL) {
       SplineFontFree(strikeholder);
-      ff_progress_end_indicator();
       return (false);
    }
    SFMatchGlyphs(strikeholder, sf, false);
@@ -2769,7 +2741,6 @@ int FVImportMult(FontViewBase * fv, char *filename, int toback, int bf) {
 
    strikeholder->bitmaps = NULL;
    SplineFontFree(strikeholder);
-   ff_progress_end_indicator();
    return (true);
 }
 
