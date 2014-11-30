@@ -1,4 +1,4 @@
-/* $Id: gdraw.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gdraw.h 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -650,7 +650,7 @@ typedef struct BackgroundTimerstruct {
    int32 BackgroundTimerMS;
 } BackgroundTimer_t;
 
-/**
+/*
  * Create a new windowless timer which will be fired every
  * BackgroundTimerMS milliseconds and call func with the supplied
  * userdata.
@@ -659,14 +659,14 @@ BackgroundTimer_t *BackgroundTimer_new(int32 BackgroundTimerMS,
 				       BackgroundTimerFunc func,
 				       void *userdata);
 
-/**
+/*
  * Remove a windowless background timer freeing any resources
  * associated with it.
  */
 void BackgroundTimer_remove(BackgroundTimer_t * t);
 
-/**
- * Make sure the timer fires at it's desired time from now(). For
+/*
+ * Make sure the timer fires at its desired time from now(). For
  * example, if a timer will fire every 2 seconds and is about to fire
  * in a few ms from now, calling touch() will make it fire 2 seconds
  * from now instead.

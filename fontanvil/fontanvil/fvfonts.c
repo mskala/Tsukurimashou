@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: fvfonts.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ RefChar *RefCharsCopy(RefChar * ref) {
       cur = RefCharCreate();
       {
 	 struct reflayer *layers = cur->layers;
-
 	 int layer;
 
 	 layers = realloc(layers, ref->layer_cnt * sizeof(struct reflayer));
@@ -67,7 +66,6 @@ RefChar *RefCharsCopy(RefChar * ref) {
 
 static OTLookup *MCConvertLookup(struct sfmergecontext *mc, OTLookup * otl) {
    int l;
-
    OTLookup *newotl;
 
    if (mc == NULL || mc->sf_from == mc->sf_to)
@@ -94,20 +92,15 @@ static OTLookup *MCConvertLookup(struct sfmergecontext *mc, OTLookup * otl) {
 struct lookup_subtable *MCConvertSubtable(struct sfmergecontext *mc,
 					  struct lookup_subtable *sub) {
    int s;
-
    struct lookup_subtable *newsub;
 
    if (mc == NULL || mc->sf_from == mc->sf_to)
       return (sub);		/* No translation needed */
    if (mc->prefix == NULL) {
       int lcnt, scnt;
-
       OTLookup *otl;
-
       struct lookup_subtable *subs;
-
       int isgpos, doit;
-
       char *temp;
 
       /* Not initialized */
@@ -180,18 +173,14 @@ struct lookup_subtable *MCConvertSubtable(struct sfmergecontext *mc,
 AnchorClass *MCConvertAnchorClass(struct sfmergecontext * mc,
 				  AnchorClass * ac) {
    int a;
-
    AnchorClass *newac;
 
    if (mc == NULL || mc->sf_from == mc->sf_to)
       return (ac);		/* No translation needed */
    if (mc->acnt == 0) {
       int acnt;
-
       AnchorClass *testac, *testac2;
-
       int doit;
-
       char *temp;
 
       /* Not initialized */
@@ -239,9 +228,7 @@ AnchorClass *MCConvertAnchorClass(struct sfmergecontext * mc,
 
 void SFFinishMergeContext(struct sfmergecontext *mc) {
    int l, s, slast, isgpos;
-
    OTLookup *otl, *last;
-
    struct lookup_subtable *sub_last;
 
    if (mc->prefix == NULL)	/* Nothing to do, never initialized, no lookups needed */
@@ -329,7 +316,6 @@ PST *PSTCopy(PST * base, SplineChar * sc, struct sfmergecontext *mc) {
 
 static AnchorPoint *AnchorPointsDuplicate(AnchorPoint * base, SplineChar * sc) {
    AnchorPoint *head = NULL, *last = NULL, *cur;
-
    AnchorClass *ac;
 
    for (; base != NULL; base = base->next) {
@@ -391,7 +377,6 @@ static void AnchorClassesAdd(SplineFont * into, SplineFont * from,
 static void FPSTsAdd(SplineFont * into, SplineFont * from,
 		     struct sfmergecontext *mc) {
    FPST *fpst, *nfpst, *last;
-
    int i, k;
 
    last = NULL;
@@ -420,7 +405,6 @@ static void FPSTsAdd(SplineFont * into, SplineFont * from,
 static void ASMsAdd(SplineFont * into, SplineFont * from,
 		    struct sfmergecontext *mc) {
    ASM *sm, *nsm, *last;
-
    int i;
 
    last = NULL;
@@ -533,9 +517,7 @@ struct altuni *AltUniCopy(struct altuni *altuni, SplineFont * noconflicts) {
 SplineChar *SplineCharCopy(SplineChar * sc, SplineFont * into,
 			   struct sfmergecontext * mc) {
    SplineChar *nsc = SFSplineCharCreate(into);
-
    Layer *layers = nsc->layers;
-
    int layer, lycopy;
 
    *nsc = *sc;
@@ -604,7 +586,6 @@ static int _SFFindExistingSlot(SplineFont * sf, int unienc, const char *name);
 static KernPair *KernsCopy(KernPair * kp, int *mapping, SplineFont * into,
 			   struct sfmergecontext *mc) {
    KernPair *head = NULL, *last = NULL, *new;
-
    int index;
 
    while (kp != NULL) {
@@ -668,7 +649,6 @@ void BitmapsCopy(SplineFont * to, SplineFont * from, int to_index,
 
 void __GlyphHashFree(struct glyphnamehash *hash) {
    struct glyphnamebucket *test, *next;
-
    int i;
 
    if (hash == NULL)
@@ -698,11 +678,8 @@ void GlyphHashFree(SplineFont * sf) {
 
 static void GlyphHashCreate(SplineFont * sf) {
    int i, k, hash;
-
    SplineFont *_sf;
-
    struct glyphnamehash *gnh;
-
    struct glyphnamebucket *new;
 
    if (sf->glyphnames != NULL)
@@ -774,7 +751,6 @@ static int SCUniMatch(SplineChar * sc, int unienc) {
 /*  Returns -1 else on error */
 int SFFindGID(SplineFont * sf, int unienc, const char *name) {
    int gid;
-
    SplineChar *sc;
 
    if (unienc != -1) {
@@ -797,7 +773,6 @@ int SFFindGID(SplineFont * sf, int unienc, const char *name) {
 /*  be found. (or for unencoded glyphs where it is found). Returns -1 else */
 int SFFindSlot(SplineFont * sf, EncMap * map, int unienc, const char *name) {
    int index = -1, pos;
-
    struct cidmap *cidmap;
 
    if (sf->cidmaster != NULL && !map->enc->is_compact &&
@@ -873,7 +848,6 @@ int SFCIDFindExistingChar(SplineFont * sf, int unienc, const char *name) {
 int SFCIDFindCID(SplineFont * sf, int unienc, const char *name) {
    // For a given SplineFont *sf, find the index of the SplineChar with code unienc or name *name.
    int j, ret;
-
    struct cidmap *cidmap;
 
    // If there is a cidmap or if there are multiple subfonts, do complicated things.
@@ -920,11 +894,8 @@ int SFHasCID(SplineFont * sf, int cid) {
 SplineChar *SFGetChar(SplineFont * sf, int unienc, const char *name) {
    // This function presumably finds a glyph matching the code or name supplied. Undefined code is unienc = -1. Undefined name is name = NULL.
    int ind = -1;
-
    int j;
-
    char *pt, *start;
-
    int ch;
 
    if (name == NULL)
@@ -1037,7 +1008,6 @@ int SFFindExistingSlot(SplineFont * sf, int unienc, const char *name) {
 
 static void MFixupSC(SplineFont * sf, SplineChar * sc, int i) {
    RefChar *ref, *prev;
-
    int l;
 
    sc->orig_pos = i;
@@ -1098,16 +1068,14 @@ static void FVMergeRefigureMapSel(FontViewBase * fv, SplineFont * into,
 				  SplineFont * o_sf, int *mapping,
 				  int emptypos, int cnt) {
    int extras, doit, i;
-
    EncMap *map = fv->map;
-
-   int base = map->enccount;
+   int base;
 
    base = map->enccount;
 
-   for (doit = 0; doit < 2; ++doit) {
-      extras = 0;
-      for (i = 0; i < o_sf->glyphcnt; ++i)
+   for (doit=0;doit<2;doit++) {
+      extras=0;
+      for (i=0;i<o_sf->glyphcnt;i++)
 	 if (mapping[i] >= emptypos) {
 	    int index =
 	       SFFindSlot(into, map, o_sf->glyphs[i]->unicodeenc,
@@ -1147,13 +1115,9 @@ static void FVMergeRefigureMapSel(FontViewBase * fv, SplineFont * into,
 static void _MergeFont(SplineFont * into, SplineFont * other,
 		       struct sfmergecontext *mc) {
    int i, cnt, doit, emptypos, index, k;
-
    SplineFont *o_sf, *bitmap_into;
-
    BDFFont *bdf;
-
    FontViewBase *fvs;
-
    int *mapping;
 
    emptypos = into->glyphcnt;
@@ -1274,11 +1238,8 @@ static void __MergeFont(SplineFont * into, SplineFont * other,
 static void CIDMergeFont(SplineFont * into, SplineFont * other,
 			 int preserveCrossFontKerning) {
    int i, j, k;
-
    SplineFont *i_sf, *o_sf;
-
    FontViewBase *fvs;
-
    struct sfmergecontext mc;
 
    memset(&mc, 0, sizeof(mc));
@@ -1366,9 +1327,7 @@ void MergeFont(FontViewBase * fv, SplineFont * other,
 static RefChar *InterpRefs(RefChar * base, RefChar * other, real amount,
 			   SplineChar * sc) {
    RefChar *head = NULL, *last = NULL, *cur;
-
    RefChar *test;
-
    int i;
 
    for (test = other; test != NULL; test = test->next)
@@ -1414,8 +1373,9 @@ static RefChar *InterpRefs(RefChar * base, RefChar * other, real amount,
 static void InterpPoint(SplineSet * cur, SplinePoint * base,
 			SplinePoint * other, real amount) {
    SplinePoint *p = chunkalloc(sizeof(SplinePoint));
-
-   int order2 =
+   int order2;
+   
+   order2=
       base->prev != NULL ? base->prev->order2 : base->next !=
       NULL ? base->next->order2 : false;
 
@@ -1466,7 +1426,6 @@ static void InterpPoint(SplineSet * cur, SplinePoint * base,
 static SplineSet *InterpSplineSet(SplineSet * base, SplineSet * other,
 				  real amount, SplineChar * sc) {
    SplineSet *cur = chunkalloc(sizeof(SplineSet));
-
    SplinePoint *bp, *op;
 
    for (bp = base->first, op = other->first;;) {
@@ -1576,7 +1535,7 @@ static KernPair *InterpKerns(KernPair * kp1, KernPair * kp2, real amount,
 }
 
 static uint32 InterpColor(uint32 col1, uint32 col2, real amount) {
-   int r1, g1, b1, r2, b2, g2;
+   int r1,g1,b1,r2,b2,g2;
 
    r1 = (col1 >> 16) & 0xff;
    r2 = (col2 >> 16) & 0xff;
@@ -1592,7 +1551,6 @@ static uint32 InterpColor(uint32 col1, uint32 col2, real amount) {
 
 static void LayerInterpolate(Layer * to, Layer * base, Layer * other,
 			     real amount, SplineChar * sc, int lc) {
-
    /* to already has things set to default values, so when an error occurs */
    /*  I just leave things as the default (and don't need to set it again) */
    if (base->dostroke == other->dostroke)
@@ -1698,7 +1656,6 @@ static void LayerInterpolate(Layer * to, Layer * base, Layer * other,
 SplineChar *SplineCharInterpolate(SplineChar * base, SplineChar * other,
 				  real amount, SplineFont * newfont) {
    SplineChar *sc;
-
    int i;
 
    if (base == NULL || other == NULL)
@@ -1797,7 +1754,6 @@ static void InterpFixupRefChars(SplineFont * sf) {
 SplineFont *InterpolateFont(SplineFont * base, SplineFont * other,
 			    real amount, Encoding * enc) {
    SplineFont *new;
-
    int i, index, lc;
 
    if (base == other) {

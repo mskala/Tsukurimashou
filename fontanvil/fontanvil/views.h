@@ -1,4 +1,4 @@
-/* $Id: views.h 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: views.h 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1882,7 +1882,7 @@ extern void CVUnselectAllBCP(CharView * cv);
 
 /**
  * This will call your visitor function 'f' on any selected BCP. This
- * is regardless of if the BCP is the next or prev BCP for it's
+ * is regardless of if the BCP is the next or prev BCP for its
  * splinepoint.
  *
  * This function doesn't use udata at all, it simply passes it on to

@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 3282 2014-09-09 06:45:09Z mskala $ */
+/* $Id: macbinary.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -80,7 +80,7 @@ const int mac_dpi = 72;
 
 /* The POST resource isn't noticeably documented, it's pretty much a */
 /*  straight copy of the pfb file cut up into 0x800 byte chunks. */
-/*  (each section of the pfb file has it's own set of chunks, the last may be smaller than 0x800) */
+/*  (each section of the pfb file has its own set of chunks, the last may be smaller than 0x800) */
 /* The NFNT resource http://developer.apple.com/techpubs/mac/Text/Text-250.html */
 /* The FOND resource http://developer.apple.com/techpubs/mac/Text/Text-269.html */
 /* The sfnt resource is basically a copy of the ttf file */

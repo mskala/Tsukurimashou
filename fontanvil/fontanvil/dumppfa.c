@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 3287 2014-09-09 09:28:26Z mskala $ */
+/* $Id: dumppfa.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,6 @@ struct fileencryptdata {
 
 static void encodehex(int plain, void *d) {
    struct fileencryptdata *fed = d;
-
    unsigned char cypher = (plain ^ (fed->r >> 8));
 
    fed->r = (cypher + fed->r) * c1 + c2;
@@ -95,7 +94,6 @@ static void encodehex(int plain, void *d) {
 
 static void encodebin(int plain, void *d) {
    struct fileencryptdata *fed = d;
-
    unsigned char cypher = (plain ^ (fed->r >> 8));
 
    fed->r = (cypher + fed->r) * c1 + c2;
@@ -119,7 +117,6 @@ static DumpChar startfileencoding(DumpChar dumpchar, void *data,
 
    if (dobinary) {
       unsigned short r;
-
       unsigned char cypher;
 
       while (1) {
@@ -170,7 +167,6 @@ static DumpChar startfileencoding(DumpChar dumpchar, void *data,
 static void encodestrout(void (*dumpchar) (int ch, void *data), void *data,
 			 unsigned char *value, int len, int leniv) {
    unsigned short r = 4330;
-
    unsigned char plain, cypher;
    static unsigned char randombytes[10] =
       { 0xaa, 0x55, 0x3e, 0x4d, 0x89, 0x98, 'a', '4', 0, 0xff };
@@ -246,7 +242,6 @@ static void dumpstrn(void (*dumpchar) (int ch, void *data), void *data,
 static void dumpf(void (*dumpchar) (int ch, void *data), void *data,
 		  char *format, ...) {
    va_list args;
-
    char buffer[300];
 
    va_start(args, format);
@@ -307,7 +302,6 @@ static void dumpdblarray(void (*dumpchar) (int ch, void *data), void *data,
 
 struct psdict *PSDictCopy(struct psdict *dict) {
    struct psdict *ret;
-
    int i;
 
    if (dict == NULL)
@@ -402,9 +396,7 @@ int PSDictChangeEntry(struct psdict *dict, char *key, char *newval) {
 static void dumpsubrs(void (*dumpchar) (int ch, void *data), void *data,
 		      SplineFont * sf, struct pschars *subrs) {
    int leniv = 4;
-
    int i;
-
    char *pt;
 
    if (subrs == NULL)
@@ -424,9 +416,7 @@ static void dumpsubrs(void (*dumpchar) (int ch, void *data), void *data,
 static int dumpcharstrings(void (*dumpchar) (int ch, void *data), void *data,
 			   SplineFont * sf, struct pschars *chars) {
    int leniv = 4;
-
    int i;
-
    char *pt;
 
    if ((pt = PSDictHasEntry(sf->private, "lenIV")) != NULL)
@@ -485,7 +475,6 @@ static void dumpsplineset(void (*dumpchar) (int ch, void *data), void *data,
 
 static int InvertTransform(real inverse[6], real transform[6]) {
    real temp[6], val;
-
    int i;
 
    for (i = 0; i < 6; ++i)
@@ -610,9 +599,7 @@ static void dumpGradient(void (*dumpchar) (int ch, void *data), void *data,
 						  grad->grad_stops[j -
 								   1].offset);
 	       uint32 col1 = grad->grad_stops[j - 1].col;
-
 	       uint32 col2 = grad->grad_stops[j].col;
-
 	       int red, green, blue;
 
 	       if (col1 == COLOR_INHERITED)
@@ -647,9 +634,7 @@ static void dumpPattern(void (*dumpchar) (int ch, void *data), void *data,
 			struct pattern *pat, RefChar * ref, SplineChar * sc,
 			int layer, int pdfopers, int isstroke) {
    SplineChar *pattern_sc = SFGetChar(sc->parent, -1, pat->pattern);
-
    DBounds b;
-
    real scale[6], result[6];
 
    if (pdfopers) {
@@ -794,7 +779,6 @@ static void Filter(struct psfilter *ps, uint8 ch) {
    ps->ascii85encode = (ps->ascii85encode << 8) | ch;
    if (++ps->ascii85n == 4) {
       int ch5, ch4, ch3, ch2, ch1;
-
       uint32 val = ps->ascii85encode;
 
       if (val == 0) {
@@ -827,7 +811,6 @@ static void Filter(struct psfilter *ps, uint8 ch) {
 
 static void FlushFilter(struct psfilter *ps) {
    uint32 val = ps->ascii85encode;
-
    int n = ps->ascii85n;
 
    if (n != 0) {
@@ -871,9 +854,7 @@ static void PSDumpBinaryData(void (*dumpchar) (int ch, void *data),
 			     void *data, uint8 * bytes, int rows,
 			     int bytes_per_row, int useful_bytes_per_row) {
    struct psfilter ps;
-
    int i, j, cnt, group_cnt;
-
    const int max_string = 65536;
 
    if (useful_bytes_per_row * rows < max_string) {
@@ -920,13 +901,9 @@ static void PSDumpBinaryData(void (*dumpchar) (int ch, void *data),
 static void PSDump24BinaryData(void (*dumpchar) (int ch, void *data),
 			       void *data, struct _GImage *base) {
    struct psfilter ps;
-
    int i, j, cnt, group_cnt;
-
    register uint32 val;
-
    register uint32 *pt, *end;
-
    const int max_string = 65536;
 
    if (3 * base->width * base->height < max_string) {
@@ -1079,11 +1056,8 @@ void SC_PSDump(void (*dumpchar) (int ch, void *data), void *data,
 	       SplineChar * sc, int refs_to_splines, int pdfopers,
 	       int layer) {
    RefChar *ref;
-
    real inverse[6];
-
    int i, last, first;
-
    SplineSet *temp;
 
    if (sc == NULL)
@@ -1283,9 +1257,7 @@ void SC_PSDump(void (*dumpchar) (int ch, void *data), void *data,
 
 static int SCSetsColor(SplineChar * sc) {
    int l;
-
    RefChar *r;
-
    ImageList *img;
 
    for (l = ly_fore; l < sc->layer_cnt; ++l) {
@@ -1378,11 +1350,8 @@ static int dumpcharprocs(void (*dumpchar) (int ch, void *data), void *data,
 
 static struct pschars *initsubrs(int needsflex, MMSet * mm) {
    extern const uint8 *const subrs[10];
-
    extern const int subrslens[10];
-
    int i;
-
    struct pschars *sub;
 
    sub = calloc(1, sizeof(struct pschars));
@@ -1413,11 +1382,8 @@ static void dumpothersubrs(void (*dumpchar) (int ch, void *data), void *data,
 			   int incid, int needsflex, int needscounters,
 			   MMSet * mm) {
    extern const char **othersubrs_copyright[];
-
    extern const char **othersubrs[];
-
    extern const char *cid_othersubrs[];
-
    int i, j;
 
    dumpstr(dumpchar, data, "/OtherSubrs \n");
@@ -1438,6 +1404,7 @@ static void dumpothersubrs(void (*dumpchar) (int ch, void *data), void *data,
 	 min_subr = 3;
 	 max_subr = 3;
       }
+
       if (needscounters)
 	 max_subr = 13;
       for (i = 0; othersubrs_copyright[0][i] != NULL; ++i) {
@@ -1546,9 +1513,7 @@ static void dumpmmprivatearr(void (*dumpchar) (int ch, void *data),
 static void dumpmmprivate(void (*dumpchar) (int ch, void *data), void *data,
 			  MMSet * mm) {
    char *privates[16];
-
    int j, k, missing, allsame;
-
    struct psdict *private = mm->instances[0]->private;
 
    if (private == NULL)
@@ -1579,7 +1544,6 @@ static void dumpmmprivate(void (*dumpchar) (int ch, void *data), void *data,
 
 static double FindMaxDiffOfBlues(char *pt, double max_diff) {
    char *end;
-
    double p1, p2;
 
    while (*pt == ' ' || *pt == '[')
@@ -1602,9 +1566,7 @@ static double FindMaxDiffOfBlues(char *pt, double max_diff) {
 double BlueScaleFigureForced(struct psdict *private_, real bluevalues[],
 			     real otherblues[]) {
    double max_diff = 0;
-
    char *pt;
-
    int i;
 
    pt = PSDictHasEntry(private_, "BlueValues");
@@ -1653,31 +1615,19 @@ static int dumpprivatestuff(void (*dumpchar) (int ch, void *data), void *data,
 			    SplineFont * sf, struct fddata *incid, int flags,
 			    enum fontformat format, EncMap * map, int layer) {
    int cnt, mi;
-
    real bluevalues[14], otherblues[10];
-
    real snapcnt[12];
-
    real stemsnaph[12], stemsnapv[12];
-
    real stdhw[1], stdvw[1];
-
    int flex_max;
-
    int i;
-
    int hasblue = 0, hash = 0, hasv =
       0, hasshift /*, hasxuid */ , hasbold, haslg;
    int isbold = false;
-
    int iscjk;
-
    struct pschars *subrs, *chars;
-
    char *ND = "def";
-
    MMSet *mm = (format == ff_mma || format == ff_mmb) ? sf->mm : NULL;
-
    double bluescale;
 
    if (incid == NULL) {
@@ -1875,9 +1825,8 @@ static int dumpprivatestuff(void (*dumpchar) (int ch, void *data), void *data,
 
 static void dumpfontinfo(void (*dumpchar) (int ch, void *data), void *data,
 			 SplineFont * sf, enum fontformat format) {
-   int cnt;
+   int cnt=0;
 
-   cnt = 0;
    if (sf->familyname != NULL)
       ++cnt;
    if (sf->fullname != NULL)
@@ -1992,7 +1941,6 @@ static void dumpfontinfo(void (*dumpchar) (int ch, void *data), void *data,
 static void dumpfontcomments(void (*dumpchar) (int ch, void *data),
 			     void *data, SplineFont * sf, int format) {
    time_t now;
-
    const char *author = GetAuthor();
 
    time(&now);
@@ -2082,15 +2030,10 @@ static void dumprequiredfontinfo(void (*dumpchar) (int ch, void *data),
 				 EncMap * map, SplineFont * fullsf,
 				 int layer) {
    int cnt, i;
-
    double fm[6];
-
    char *encoding[256];
-
    DBounds b;
-
    int uniqueid;
-
    char buffer[50];
 
    dumpf(dumpchar, data, "%%!PS-AdobeFont-1.0: %s %s\n", sf->fontname,
@@ -2173,11 +2116,8 @@ static void dumprequiredfontinfo(void (*dumpchar) (int ch, void *data),
    dumpfontinfo(dumpchar, data, sf, format);
    if (format == ff_mma || format == ff_mmb) {
       MMSet *mm = sf->mm;
-
       int j, k;
-
       DBounds mb[16];
-
       extern const char *mmfindfont[], *makeblendedfont[];
 
       dumpstr(dumpchar, data, " /WeightVector [");
@@ -2290,7 +2230,6 @@ static void dumpencodedstuff(void (*dumpchar) (int ch, void *data),
 			     void *data, SplineFont * sf, int format,
 			     int flags, EncMap * map, int layer) {
    struct fileencryptdata fed;
-
    void (*func) (int ch, void *data);
 
    func = startfileencoding(dumpchar, data, &fed, format == ff_pfb
@@ -2309,7 +2248,6 @@ static void dumpencodedstuff(void (*dumpchar) (int ch, void *data),
 static void dumpfinalascii(void (*dumpchar) (int ch, void *data), void *data,
 			   SplineFont * sf, int format) {
    int i;
-
    int uniqueid = sf->uniqueid;
 
    /* output 512 zeros */
@@ -2324,7 +2262,6 @@ static void dumpfinalascii(void (*dumpchar) (int ch, void *data), void *data,
 
 static void mkheadercopyfile(FILE * temp, FILE * out, int headertype) {
    char buffer[8 * 1024];
-
    int len;
 
    /* output the file header */
@@ -2345,13 +2282,9 @@ static void mkheadercopyfile(FILE * temp, FILE * out, int headertype) {
 static void dumptype42(FILE * out, SplineFont * sf, int format, int flags,
 		       EncMap * map, int layer) {
    double fm[6];
-
    DBounds b;
-
    int uniqueid;
-
    int i, cnt, gid, hasnotdef;
-
    SplineFont *cidmaster;
 
    cidmaster = sf->cidmaster;
@@ -2584,7 +2517,6 @@ static void dumpreencodeproc(FILE * out) {
 
 static char *dumpnotdefenc(FILE * out, SplineFont * sf) {
    char *notdefname;
-
    int i;
 
    /* At one point I thought the unicode replacement char 0xfffd */
@@ -2610,11 +2542,8 @@ static int somecharsused(SplineFont * sf, int bottom, int top, EncMap * map) {
 
 static void dumptype0stuff(FILE * out, SplineFont * sf, EncMap * map) {
    char *notdefname;
-
    int i, j;
-
    extern char *zapfnomen[];
-
    extern int8 zapfexists[];
 
    dumpreencodeproc(out);
@@ -2700,7 +2629,6 @@ static void dumpt1str(FILE * binary, uint8 * data, int len, int leniv) {
 }
 
 static void dump_index(FILE * binary, int size, int val) {
-
    if (size >= 4)
       putc((val >> 24) & 0xff, binary);
    if (size >= 3)
@@ -2715,21 +2643,13 @@ static FILE *gencidbinarydata(SplineFont * cidmaster,
 			      struct cidbytes *cidbytes, int flags,
 			      EncMap * map, int layer) {
    int i, j, leniv, subrtot;
-
    SplineFont *sf;
-
    struct fddata *fd;
-
    FILE *chrs, *subrs, *binary;
-
    char *buffer;
-
    long offset;
-
    char *pt;
-
    struct pschars *chars;
-
    int len;
 
    memset(cidbytes, '\0', sizeof(struct cidbytes));
@@ -2851,17 +2771,11 @@ static FILE *gencidbinarydata(SplineFont * cidmaster,
 static int dumpcidstuff(FILE * out, SplineFont * cidmaster, int flags,
 			EncMap * map, int layer) {
    int i;
-
    DBounds res;
-
    FILE *binary;
-
    SplineFont *sf;
-
    struct cidbytes cidbytes;
-
    char buffer[4096];
-
    long len;
 
    fprintf(out, "%%!PS-Adobe-3.0 Resource-CIDFont\n");
@@ -2958,9 +2872,7 @@ static int dumpcidstuff(FILE * out, SplineFont * cidmaster, int flags,
 int _WritePSFont(FILE * out, SplineFont * sf, enum fontformat format,
 		 int flags, EncMap * map, SplineFont * fullsf, int layer) {
    char oldloc[24];
-
    int err = false;
-
    extern const char **othersubrs[];
 
    if (format != ff_cid && format != ff_ptype3 &&
@@ -3007,7 +2919,6 @@ int _WritePSFont(FILE * out, SplineFont * sf, enum fontformat format,
 int WritePSFont(char *fontname, SplineFont * sf, enum fontformat format,
 		int flags, EncMap * map, SplineFont * fullsf, int layer) {
    FILE *out;
-
    int ret;
 
    if (strstr(fontname, "://") != NULL) {
@@ -3027,13 +2938,10 @@ int WritePSFont(char *fontname, SplineFont * sf, enum fontformat format,
 
 static void dumpimageproc(FILE * file, BDFChar * bdfc, BDFFont * font) {
    SplineFont *sf = font->sf;
-
    double scale = (sf->ascent + sf->descent) / font->pixelsize;
-
    int width = bdfc->xmax - bdfc->xmin + 1, height =
       bdfc->ymax - bdfc->ymin + 1;
    int i;
-
    struct psfilter ps;
 
    /*                     wx wy ix iy urx ury setcachdevice */
@@ -3058,13 +2966,9 @@ static void dumpimageproc(FILE * file, BDFChar * bdfc, BDFFont * font) {
 
 int PSBitmapDump(char *filename, BDFFont * font, EncMap * map) {
    char buffer[300];
-
    FILE *file;
-
    int i, notdefpos, cnt;
-
    int ret = 0;
-
    SplineFont *sf = font->sf;
 
    if (filename == NULL) {

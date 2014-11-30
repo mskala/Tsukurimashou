@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: tottfgpos.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2465,7 +2465,7 @@ static void dumpg___ContextChainClass(FILE * lfile, SplineFont * sf,
    ii = 0;
    for (i = 0; i < fpst->nccnt; ++i) {
       if (initialclasses[ii] != i) {
-	 /* This class isn't an initial one, so leave it's rule pointer NULL */
+	 /* This class isn't an initial one, so leave its rule pointer NULL */
       } else {
 	 ++ii;
 	 pos = ftell(lfile);

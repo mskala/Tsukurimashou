@@ -1,4 +1,4 @@
-/* $Id: ufo.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: ufo.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,6 @@ static char *buildname(char *basedir, char *sub) {
 
 static void DumpHintsLib(FILE * file, SplineChar * sc) {
    StemInfo *h;
-
    int has_hints = (sc != NULL && (sc->hstem != NULL || sc->vstem != NULL));
 
    if (has_hints) {
@@ -119,7 +118,6 @@ static void DumpHintsLib(FILE * file, SplineChar * sc) {
 /* ************************************************************************** */
 static int refcomp(const void *_r1, const void *_r2) {
    const RefChar *ref1 = *(RefChar * const *) _r1;
-
    const RefChar *ref2 = *(RefChar * const *) _r2;
 
    return (strcmp(ref1->sc->name, ref2->sc->name));
@@ -127,17 +125,11 @@ static int refcomp(const void *_r1, const void *_r2) {
 
 static int _GlifDump(FILE * glif, SplineChar * sc, int layer) {
    struct altuni *altuni;
-
    int isquad = sc->layers[layer].order2;
-
    SplineSet *spl;
-
    SplinePoint *sp;
-
    AnchorPoint *ap;
-
    RefChar *ref;
-
    int err;
 
    if (glif == NULL)
@@ -248,9 +240,7 @@ static int _GlifDump(FILE * glif, SplineChar * sc, int layer) {
 
 static int GlifDump(char *glyphdir, char *gfname, SplineChar * sc, int layer) {
    char *gn = buildname(glyphdir, gfname);
-
    FILE *glif = fopen(gn, "w");
-
    int ret = _GlifDump(glif, sc, layer);
 
    free(gn);
@@ -275,7 +265,6 @@ static void PListOutputHeader(FILE * plist) {
 
 static FILE *PListCreate(char *basedir, char *sub) {
    char *fname = buildname(basedir, sub);
-
    FILE *plist = fopen(fname, "w");
 
    free(fname);
@@ -346,7 +335,6 @@ static void PListOutputString(FILE * plist, char *key, char *value) {
 static void PListOutputNameString(FILE * plist, char *key, SplineFont * sf,
 				  int strid) {
    char *value = NULL, *nonenglish = NULL, *freeme = NULL;
-
    struct ttflangname *nm;
 
    for (nm = sf->names; nm != NULL; nm = nm->next) {
@@ -381,7 +369,6 @@ static void PListOutputIntArray(FILE * plist, char *key, char *entries,
 static void PListOutputPrivateArray(FILE * plist, char *key,
 				    struct psdict *private) {
    char *value;
-
    int skipping;
 
    if (private == NULL)
@@ -447,9 +434,7 @@ static int UFOOutputMetaInfo(char *basedir, SplineFont * sf) {
 
 static int UFOOutputFontInfo(char *basedir, SplineFont * sf, int layer) {
    FILE *plist = PListCreate(basedir, "fontinfo.plist");
-
    DBounds bb;
-
    double test;
 
    if (plist == NULL)
@@ -545,7 +530,6 @@ static int UFOOutputFontInfo(char *basedir, SplineFont * sf, int layer) {
       PListOutputIntArray(plist, "openTypeOS2FamilyClass", fc, 2);
       if (sf->pfminfo.fstype != -1) {
 	 int fscnt, i;
-
 	 char fstype[16];
 
 	 for (i = fscnt = 0; i < 16; ++i)
@@ -608,7 +592,6 @@ static int UFOOutputFontInfo(char *basedir, SplineFont * sf, int layer) {
 			 sf->pfminfo.vlinegap);
    if (sf->pfminfo.hasunicoderanges) {
       char ranges[128];
-
       int i, j, c = 0;
 
       for (i = 0; i < 4; i++)
@@ -620,7 +603,6 @@ static int UFOOutputFontInfo(char *basedir, SplineFont * sf, int layer) {
    }
    if (sf->pfminfo.hascodepages) {
       char pages[64];
-
       int i, j, c = 0;
 
       for (i = 0; i < 2; i++)
@@ -688,9 +670,7 @@ static void KerningPListOutputGlyph(FILE * plist, char *key, KernPair * kp) {
 
 static int UFOOutputKerning(char *basedir, SplineFont * sf) {
    FILE *plist = PListCreate(basedir, "kerning.plist");
-
    SplineChar *sc;
-
    int i;
 
    if (plist == NULL)
@@ -705,9 +685,7 @@ static int UFOOutputKerning(char *basedir, SplineFont * sf) {
 
 static int UFOOutputVKerning(char *basedir, SplineFont * sf) {
    FILE *plist;
-
    SplineChar *sc;
-
    int i;
 
    for (i = sf->glyphcnt - 1; i >= 0; --i)
@@ -732,9 +710,7 @@ static int UFOOutputLib(char *basedir, SplineFont * sf) {
 #ifndef Version_1
 static int UFOOutputFeatures(char *basedir, SplineFont * sf) {
    char *fname = buildname(basedir, "features.fea");
-
    FILE *feats = fopen(fname, "w");
-
    int err;
 
    free(fname);
@@ -750,13 +726,9 @@ static int UFOOutputFeatures(char *basedir, SplineFont * sf) {
 int WriteUFOFont(char *basedir, SplineFont * sf, enum fontformat ff,
 		 int flags, EncMap * map, int layer) {
    char *foo = malloc(strlen(basedir) + 20), *glyphdir, *gfname;
-
    int err;
-
    FILE *plist;
-
    int i;
-
    SplineChar *sc;
 
    /* Clean it out, if it exists */
@@ -828,10 +800,9 @@ int WriteUFOFont(char *basedir, SplineFont * sf, enum fontformat ff,
 
 static char *get_thingy(FILE * file, char *buffer, char *tag) {
    int ch;
-
    char *pt;
 
-   for (;;) {
+   while (1) {
       while ((ch = getc(file)) != '<' && ch != EOF);
       if (ch == EOF)
 	 return (NULL);
@@ -859,11 +830,8 @@ static char *get_thingy(FILE * file, char *buffer, char *tag) {
 
 char **NamesReadUFO(char *filename) {
    char *fn = buildname(filename, "fontinfo.plist");
-
    FILE *info = fopen(fn, "r");
-
    char buffer[1024];
-
    char **ret;
 
    free(fn);
@@ -937,9 +905,7 @@ static xmlNodePtr FindNode(xmlNodePtr kids, char *name) {
 static StemInfo *GlifParseHints(xmlDocPtr doc, xmlNodePtr dict,
 				char *hinttype) {
    StemInfo *head = NULL, *last = NULL, *h;
-
    xmlNodePtr keys, array, kids, poswidth, temp;
-
    double pos, width;
 
    for (keys = dict->children; keys != NULL; keys = keys->next) {
@@ -1030,19 +996,12 @@ static SplineChar *_UFOLoadGlyph(SplineFont * sf, xmlDocPtr doc,
 				 char *glifname, char *glyphname,
 				 SplineChar * existingglyph, int layerdest) {
    xmlNodePtr glyph, kids, contour, points;
-
    SplineChar *sc;
-
    xmlChar *format, *width, *height, *u;
-
    char *name, *tmpname;
-
    int uni;
-
    char *cpt;
-
    SplineSet *last = NULL;
-
    int newsc = 0;
 
    glyph = xmlDocGetRootElement(doc);
@@ -1192,17 +1151,11 @@ static SplineChar *_UFOLoadGlyph(SplineFont * sf, xmlDocPtr doc,
 	    } else if (xmlStrcmp(contour->name, (const xmlChar *) "contour")
 		       == 0) {
 	       xmlNodePtr npoints;
-
 	       SplineSet *ss;
-
 	       SplinePoint *sp;
-
 	       SplinePoint *sp2;
-
 	       BasePoint pre[2], init[4];
-
 	       int precnt = 0, initcnt = 0, open = 0;
-
 	       // precnt seems to count control points leading into the next on-curve point. pre stores those points.
 	       // initcnt counts the control points that appear before the first on-curve point. This can get updated at the beginning and/or the end of the list.
 	       // This is important for determining the order of the closing curve.
@@ -1256,7 +1209,6 @@ static SplineChar *_UFOLoadGlyph(SplineFont * sf, xmlDocPtr doc,
 	       }
 	       // If we have not identified the contour as holding an anchor point, we continue processing it as a rendered shape.
 	       int wasquad = -1;	// This tracks whether we identified the previous curve as quadratic. (-1 means undefined.)
-
 	       int firstpointsaidquad = -1;	// This tracks the declared order of the curve leading into the first on-curve point.
 
 	       ss = chunkalloc(sizeof(SplineSet));
@@ -1570,7 +1522,6 @@ static SplineChar *UFOLoadGlyph(SplineFont * sf, char *glifname,
 
 static void UFORefFixup(SplineFont * sf, SplineChar * sc) {
    RefChar *r, *prev;
-
    SplineChar *rsc;
 
    if (sc == NULL || sc->ticked)
@@ -1602,17 +1553,11 @@ static void UFORefFixup(SplineFont * sf, SplineChar * sc) {
 
 static void UFOLoadGlyphs(SplineFont * sf, char *glyphdir, int layerdest) {
    char *glyphlist = buildname(glyphdir, "contents.plist");
-
    xmlDocPtr doc;
-
    xmlNodePtr plist, dict, keys, value;
-
    char *valname, *glyphfname;
-
    int i;
-
    SplineChar *sc;
-
    int tot;
 
    doc = xmlParseFile(glyphlist);
@@ -1681,21 +1626,13 @@ static void UFOLoadGlyphs(SplineFont * sf, char *glyphdir, int layerdest) {
 
 static void UFOHandleKern(SplineFont * sf, char *basedir, int isv) {
    char *fname = buildname(basedir, isv ? "vkerning.plist" : "kerning.plist");
-
    xmlDocPtr doc = NULL;
-
    xmlNodePtr plist, dict, keys, value, subkeys;
-
    char *keyname, *valname;
-
    int offset;
-
    SplineChar *sc, *ssc;
-
    KernPair *kp;
-
    char *end;
-
    uint32 script;
 
    if (GFileExists(fname))
@@ -1807,7 +1744,6 @@ static void UFOAddPrivate(SplineFont * sf, char *key, char *value) {
 static void UFOAddPrivateArray(SplineFont * sf, char *key, xmlDocPtr doc,
 			       xmlNodePtr value) {
    char space[400], *pt, *end;
-
    xmlNodePtr kid;
 
    if (xmlStrcmp(value->name, (const xmlChar *) "array") != 0)
@@ -1839,7 +1775,6 @@ static void UFOAddPrivateArray(SplineFont * sf, char *key, xmlDocPtr doc,
 static void UFOGetByteArray(char *array, int cnt, xmlDocPtr doc,
 			    xmlNodePtr value) {
    xmlNodePtr kid;
-
    int i;
 
    memset(array, 0, cnt);
@@ -1860,7 +1795,6 @@ static void UFOGetByteArray(char *array, int cnt, xmlDocPtr doc,
 
 static long UFOGetBits(xmlDocPtr doc, xmlNodePtr value) {
    xmlNodePtr kid;
-
    long mask = 0;
 
    if (xmlStrcmp(value->name, (const xmlChar *) "array") != 0)
@@ -1879,7 +1813,6 @@ static long UFOGetBits(xmlDocPtr doc, xmlNodePtr value) {
 static void UFOGetBitArray(xmlDocPtr doc, xmlNodePtr value, uint32 * res,
 			   int len) {
    xmlNodePtr kid;
-
    int index;
 
    if (xmlStrcmp(value->name, (const xmlChar *) "array") != 0)
@@ -1898,19 +1831,12 @@ static void UFOGetBitArray(xmlDocPtr doc, xmlNodePtr value, uint32 * res,
 
 SplineFont *SFReadUFO(char *basedir, int flags) {
    xmlNodePtr plist, dict, keys, value;
-
    xmlDocPtr doc;
-
    SplineFont *sf;
-
    xmlChar *keyname, *valname;
-
    char *stylename = NULL;
-
    char *temp, *glyphlist, *glyphdir;
-
    char oldloc[25], *end;
-
    int as = -1, ds = -1, em = -1;
 
    if (!libxml_init_base()) {
@@ -2241,7 +2167,6 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
    xmlFreeDoc(doc);
 
    char *layercontentsname = buildname(basedir, "layercontents.plist");
-
    char **layernames = NULL;
 
    if (layercontentsname == NULL) {
@@ -2254,13 +2179,9 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
       xmlNodePtr layercontentsdict = NULL;
 
       xmlNodePtr layercontentslayer = NULL;
-
       xmlNodePtr layercontentsvalue = NULL;
-
       int layercontentslayercount = 0;
-
       int layernamesbuffersize = 0;
-
       int layercontentsvaluecount = 0;
 
       if ((layercontentsdoc = xmlParseFile(layercontentsname))) {
@@ -2354,11 +2275,8 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 	    }
 	    if (layernames != NULL) {
 	       int lcount = 0;
-
 	       int auxpos = 2;
-
 	       int layerdest = 0;
-
 	       int bg = 1;
 
 	       if (layercontentslayercount > 0) {
@@ -2427,9 +2345,9 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 			free(glyphdir);
 		     }
 		  }
-	       } else {
-		  LogError(_("layercontents.plist lists no valid layers."));
-	       }
+	       } else
+		 LogError(_("layercontents.plist lists no valid layers."));
+
 	       // Free layer names.
 	       for (lcount = 0; lcount < layercontentslayercount; lcount++) {
 		  if (layernames[2 * lcount])
@@ -2477,11 +2395,8 @@ SplineSet *SplinePointListInterpretGlif(SplineFont * sf, char *filename,
 					char *memory, int memlen, int em_size,
 					int ascent, int is_stroked) {
    xmlDocPtr doc;
-
    char oldloc[25];
-
    SplineChar *sc;
-
    SplineSet *ss;
 
    if (!libxml_init_base()) {

@@ -1,4 +1,4 @@
-/* $Id: print.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: print.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -158,23 +158,14 @@ struct fontdesc {
 static int figure_fontdesc(PI * pi, int sfid, struct fontdesc *fd,
 			   int fonttype, int fontstream) {
    int i, j, first = true;
-
    SplineFont *sf = pi->sfbits[sfid].sf;
-
    EncMap *map = pi->sfbits[sfid].map;
-
    DBounds b;
-
    int capcnt = 0, xhcnt = 0, wcnt = 0;
-
    double samewidth = -1;
-
    int beyond_std = false;
-
    int fd_num = pi->next_object;
-
    int cidmax;
-
    char *stemv;
 
    memset(fd, 0, sizeof(*fd));
@@ -334,11 +325,8 @@ static int figure_fontdesc(PI * pi, int sfid, struct fontdesc *fd,
 
 static void dump_pfb_encoding(PI * pi, int sfid, int base, int font_d_ref) {
    int i, first = -1, last, gid;
-
    struct sfbits *sfbit = &pi->sfbits[sfid];
-
    SplineFont *sf = sfbit->sf;
-
    EncMap *map = sfbit->map;
 
    for (i = base; i < base + 256 && i < map->enccount; ++i) {
@@ -400,15 +388,10 @@ static void dump_pfb_encoding(PI * pi, int sfid, int base, int font_d_ref) {
 
 static void pdf_dump_type1(PI * pi, int sfid) {
    struct sfbits *sfbit = &pi->sfbits[sfid];
-
    int font_stream = pi->next_object;
-
    int fd_obj;
-
    int length1, length2, length3;
-
    int i;
-
    struct fontdesc fd;
 
    length1 = pfb_getsectionlength(sfbit->fontfile, 1, true);
@@ -501,13 +484,9 @@ static void pdf_BrushCheck(PI * pi, struct glyph_res *gr, struct brush *brush,
 			   int isfill, int layer, SplineChar * sc,
 			   RefChar * ref) {
    char buffer[400];
-
    int function_obj, shade_obj;
-
    int i, j;
-
    struct gradient *grad = brush->gradient;
-
    struct pattern *pat;
 
    if (grad != NULL) {
@@ -626,13 +605,9 @@ static void pdf_BrushCheck(PI * pi, struct glyph_res *gr, struct brush *brush,
       fprintf(pi->out, "endobj\n");
    } else if ((pat = brush->pattern) != NULL) {
       SplineChar *pattern_sc = SFGetChar(sc->parent, -1, pat->pattern);
-
       DBounds b;
-
       real scale[6], result[6];
-
       int respos, resobj;
-
       int lenpos, lenstart, len;
 
       if (pattern_sc == NULL)
@@ -721,13 +696,9 @@ static void pdf_BrushCheck(PI * pi, struct glyph_res *gr, struct brush *brush,
 static void pdf_ImageCheck(PI * pi, struct glyph_res *gr, ImageList * images,
 			   int layer, SplineChar * sc) {
    char buffer[400];
-
    int icnt = 0;
-
    GImage *img;
-
    struct _GImage *base;
-
    int i;
 
    while (images != NULL) {
@@ -798,13 +769,9 @@ static void pdf_ImageCheck(PI * pi, struct glyph_res *gr, ImageList * images,
 /*  matrices of references to the same glyph. Sigh. */
 int PdfDumpGlyphResources(PI * pi, SplineChar * sc) {
    int resobj;
-
    struct glyph_res gr = GLYPH_RES_EMPTY;
-
    int i;
-
    int layer;
-
    RefChar *ref;
 
    for (layer = ly_fore; layer < sc->layer_cnt; ++layer) {
@@ -868,15 +835,10 @@ int PdfDumpGlyphResources(PI * pi, SplineChar * sc) {
 
 static int PdfDumpSFResources(PI * pi, SplineFont * sf) {
    int resobj;
-
    struct glyph_res gr = GLYPH_RES_EMPTY;
-
    int i;
-
    int layer, gid;
-
    SplineChar *sc;
-
    RefChar *ref;
 
    for (gid = 0; gid < sf->glyphcnt; ++gid)
@@ -944,9 +906,7 @@ static int PdfDumpSFResources(PI * pi, SplineFont * sf) {
 
 static int pdf_charproc(PI * pi, SplineChar * sc) {
    int ret = pi->next_object;
-
    long streamstart, streamlength;
-
    int i, last;
 
    pdf_addobject(pi);
@@ -1035,15 +995,10 @@ static int pdf_charproc(PI * pi, SplineChar * sc) {
 static void dump_pdf3_encoding(PI * pi, int sfid, int base, DBounds * bb,
 			       int notdefproc) {
    int i, first = -1, last, gid;
-
    int charprocs[256];
-
    struct sfbits *sfbit = &pi->sfbits[sfid];
-
    SplineFont *sf = sfbit->sf;
-
    EncMap *map = sfbit->map;
-
    int respos, resobj;
 
    for (i = base; i < base + 256 && i < map->enccount; ++i)
@@ -1135,19 +1090,12 @@ static void dump_pdf3_encoding(PI * pi, int sfid, int base, DBounds * bb,
 
 static void pdf_gen_type3(PI * pi, int sfid) {
    int i, notdefproc;
-
    DBounds bb;
-
    SplineChar sc;
-
    Layer layers[2];
-
    struct sfbits *sfbit = &pi->sfbits[sfid];
-
    SplineFont *sf = sfbit->sf;
-
    EncMap *map = sfbit->map;
-
    int notdefpos = SFFindNotdef(sf, -2);
 
    if (notdefpos != -1)
@@ -1175,21 +1123,13 @@ static void pdf_gen_type3(PI * pi, int sfid) {
 
 static void pdf_build_type0(PI * pi, int sfid) {
    int cidfont_ref, fd_obj, font_stream = pi->next_object;
-
    long len;
-
    int ch, cidmax, i, j;
-
    struct fontdesc fd;
-
    struct sfbits *sfbit = &pi->sfbits[sfid];
-
    SplineFont *sf = sfbit->sf;
-
    SplineFont *cidmaster = sf->cidmaster != NULL ? sf->cidmaster : sf;
-
    uint16 *widths;
-
    int defwidth = sf->ascent + sf->descent;
 
    fseek(sfbit->fontfile, 0, SEEK_END);
@@ -1315,11 +1255,8 @@ static void pdf_build_type0(PI * pi, int sfid) {
 static void dump_pdfprologue(PI * pi) {
 /* TODO: Note, maybe this routine can be combined somehow with cvexports.c _ExportPDF() */
    time_t now;
-
    struct tm *tm;
-
    const char *author = GetAuthor();
-
    int sfid;
 
    fprintf(pi->out, "%%PDF-1.4\n%%\201\342\202\203\n");	/* Header comment + binary comment */
@@ -1393,9 +1330,7 @@ static void dump_pdfprologue(PI * pi) {
 
 static void dump_pdftrailer(PI * pi) {
    int i;
-
    int xrefloc;
-
    int sfid;
 
    /* Fix up the document catalog to point to the Pages dictionary */
@@ -1478,11 +1413,8 @@ static void dump_pdftrailer(PI * pi) {
 
 static void DumpIdentCMap(PI * pi, int sfid) {
    struct sfbits *sfbit = &pi->sfbits[pi->sfid];
-
    SplineFont *sf = sfbit->sf;
-
    SplineFont *master;
-
    int i, j, k, max;
 
    master = sf->subfontcnt != 0 ? sf : sf->cidmaster;
@@ -1559,9 +1491,7 @@ static void DumpIdentCMap(PI * pi, int sfid) {
 
 static void dump_prologue(PI * pi) {
    time_t now;
-
    int ch, i, j, base, sfid;
-
    const char *author = GetAuthor();
 
    if (pi->printtype == pt_pdf) {
@@ -1847,7 +1777,6 @@ static void startpage(PI * pi) {
 
 static int DumpLine(PI * pi) {
    int i = 0, line, gid;
-
    struct sfbits *sfbit = &pi->sfbits[0];
 
    /* First find the next line with stuff on it */
@@ -2056,7 +1985,6 @@ static void PIFontDisplay(PI * pi) {
 
 static void SCPrintPage(PI * pi, SplineChar * sc) {
    DBounds b, page;
-
    real scalex, scaley;
 
    if (pi->page != 0)
@@ -2270,15 +2198,10 @@ static void outputotchar(PI * pi, struct opentype_str *osc, int x,
    struct fontlist *fl = osc->fl;
 
    FontData *fd = fl->fd;
-
    struct sfmaps *sfmap = fd->sfmap;
-
    int sfid = sfmap->sfbit_id;
-
    struct sfbits *sfbit = &pi->sfbits[sfid];
-
    SplineChar *sc = osc->sc;
-
    int enc = sfbit->map->backmap[sc->orig_pos];
 
    if (pi->printtype == pt_pdf) {
@@ -2332,15 +2255,10 @@ static void outputotchar(PI * pi, struct opentype_str *osc, int x,
 
 static void PIFontSample(PI * pi) {
    struct sfmaps *sfmaps;
-
    int cnt = 0;
-
    int y, x, bottom, top, baseline;
-
    LayoutInfo *li = pi->sample;
-
    struct opentype_str **line;
-
    int i, j;
 
    pi->pointsize = 12;		/* no longer meaningful */
@@ -2402,9 +2320,7 @@ static double pointsizes[] =
 
 static void SCPrintSizes(PI * pi, SplineChar * sc) {
    int xstart = 10, i;
-
    int enc;
-
    struct sfbits *sfbit = &pi->sfbits[0];
 
    if (!SCWorthOutputting(sc))
@@ -2444,7 +2360,6 @@ static void SCPrintSizes(PI * pi, SplineChar * sc) {
 
 static void PIMultiSize(PI * pi) {
    int i, gid;
-
    struct sfbits *sfbit = &pi->sfbits[0];
 
    pi->pointsize = pointsizes[0];
@@ -3054,11 +2969,8 @@ static struct langsamples {
 
 static void OrderSampleByLang(void) {
    const char *lang = getenv("LANG");
-
    char langbuf[12], *pt;
-
    int i, j;
-
    int simple_pos;
 
    if (lang == NULL)
@@ -3113,9 +3025,7 @@ static void OrderSampleByLang(void) {
 
 static int AllChars(SplineFont * sf, const char *str) {
    int i, ch;
-
    SplineChar *sc;
-
    struct altuni *alt;
 
    if (sf->subfontcnt == 0) {
@@ -3170,17 +3080,11 @@ unichar_t *PrtBuildDef(SplineFont * sf, void *tf,
 		       void (*langsyscallback) (void *tf, int end,
 						uint32 script, uint32 lang)) {
    int i, j, gotem, len, any = 0, foundsomething = 0;
-
    unichar_t *ret = NULL;
-
    char **cur;
-
    uint32 scriptsdone[100], scriptsthere[100], langs[100];
-
    char *randoms[100];
-
    char buffer[220], *pt;
-
    int scnt, s, therecnt, rcnt;
 
    OrderSampleByLang();
@@ -3304,9 +3208,7 @@ unichar_t *PrtBuildDef(SplineFont * sf, void *tf,
 static void QueueIt(PI * pi) {
 #if !defined(__MINGW32__)
    int pid;
-
    int stdinno, i, status;
-
    char *argv[40], buf[10];
 
    if ((pid = fork()) == 0) {
@@ -3485,11 +3387,8 @@ void PI_Init(PI * pi, FontViewBase * fv, SplineChar * sc) {
 
 static unichar_t *FileToUString(char *filename, int max) {
    FILE *file;
-
    int ch, ch2;
-
    int format = 0;
-
    unichar_t *space, *upt, *end;
 
    file = fopen(filename, "rb");
@@ -3532,11 +3431,8 @@ static unichar_t *FileToUString(char *filename, int max) {
 void ScriptPrint(FontViewBase * fv, int type, int32 * pointsizes,
 		 char *samplefile, unichar_t * sample, char *outputfile) {
    PI pi;
-
    char buf[100];
-
    LayoutInfo *li;
-
    unichar_t temp[2];
 
    PI_Init(&pi, fv, NULL);

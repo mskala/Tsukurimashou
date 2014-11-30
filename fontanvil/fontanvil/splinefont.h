@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: splinefont.h 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -497,7 +497,7 @@ typedef struct otlookup {
    int16 subcnt;		/* Actual number of subtables we will output */
    /* Some of our subtables may contain no data */
    /* Some may be too big and need to be broken up. */
-   /* So this field may be different than just counting the subtables */
+   /* So this field may be different from just counting the subtables */
    int lookup_index;		/* used during opentype generation */
    uint32 lookup_offset;
    uint32 lookup_length;

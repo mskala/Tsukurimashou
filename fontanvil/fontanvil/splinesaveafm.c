@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: splinesaveafm.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,6 @@ static void *mygets(FILE * file, char *buffer, int size) {
 /* ************************************************************************** */
 static void KPInsert(SplineChar * sc1, SplineChar * sc2, int off, int isv) {
    KernPair *kp;
-
    int32 script;
 
    if (sc1 != NULL && sc2 != NULL) {
@@ -109,17 +108,11 @@ static void KPInsert(SplineChar * sc1, SplineChar * sc2, int off, int isv) {
 
 int LoadKerningDataFromAfm(SplineFont * sf, char *filename, EncMap * map) {
    FILE *file = fopen(filename, "r");
-
    char buffer[200], *pt, *ept, ch;
-
    SplineChar *sc1, *sc2;
-
    int off;
-
    char name[44], second[44], lig[44], buf2[100];
-
    PST *liga;
-
    bigreal scale = (sf->ascent + sf->descent) / 1000.0;
 
    if (file == NULL)
@@ -212,11 +205,8 @@ static void CheckMMAfmFile(SplineFont * sf, char *amfm_filename,
 
 int LoadKerningDataFromAmfm(SplineFont * sf, char *filename, EncMap * map) {
    FILE *file = NULL;
-
    char buffer[280], *pt, lastname[257];
-
    int index, i;
-
    MMSet *mm = sf->mm;
 
    if (mm != NULL)
@@ -268,9 +258,7 @@ int LoadKerningDataFromAmfm(SplineFont * sf, char *filename, EncMap * map) {
 
 int CheckAfmOfPostScript(SplineFont * sf, char *psname, EncMap * map) {
    char *new, *pt;
-
    int ret;
-
    int wasuc = false;
 
    new = malloc(strlen(psname) + 6);
@@ -361,9 +349,7 @@ struct tfmdata {
 static void tfmDoLigKern(SplineFont * sf, int enc, int lk_index,
 			 struct tfmdata *tfmd, EncMap * map) {
    int enc2, k_index;
-
    SplineChar *sc1, *sc2, *sc3;
-
    real off;
 
    if (enc >= map->enccount || map->map[enc] == -1
@@ -422,11 +408,8 @@ int doesGlyphExpandHorizontally(SplineChar * sc) {
 static void tfmDoCharList(SplineFont * sf, int i, struct tfmdata *tfmd,
 			  EncMap * map) {
    int used[256], ucnt, len, was;
-
    char *components;
-
    SplineChar *sc;
-
    struct glyphvariants **gvbase;
 
    if (i >= map->enccount || map->map[i] == -1
@@ -471,15 +454,10 @@ static void tfmDoCharList(SplineFont * sf, int i, struct tfmdata *tfmd,
 static void tfmDoExten(SplineFont * sf, int i, struct tfmdata *tfmd, int left,
 		       EncMap * map) {
    int j, k, gid, gid2, cnt;
-
    SplineChar *bits[4], *bats[5];
-
    uint8 *ext;
-
    SplineChar *sc;
-
    struct glyphvariants **gvbase;
-
    int is_horiz;
 
    if (i >= map->enccount || (gid = map->map[i]) == -1
@@ -545,17 +523,11 @@ static void tfmDoExten(SplineFont * sf, int i, struct tfmdata *tfmd, int left,
 
 int LoadKerningDataFromTfm(SplineFont * sf, char *filename, EncMap * map) {
    FILE *file = fopen(filename, "rb");
-
    int i, tag, left, ictag;
-
    struct tfmdata tfmd;
-
    int charlist[256];
-
    int is_math;
-
    int width, height, depth;
-
    real scale = (sf->ascent + sf->descent) / (bigreal) (1 << 20);
 
    if (file == NULL)
@@ -669,9 +641,7 @@ int LoadKerningDataFromTfm(SplineFont * sf, char *filename, EncMap * map) {
 static void ofmDoLigKern(SplineFont * sf, int enc, int lk_index,
 			 struct tfmdata *tfmd, EncMap * map) {
    int enc2, k_index;
-
    SplineChar *sc1, *sc2, *sc3;
-
    real off;
 
    if (enc >= map->enccount || map->map[enc] == -1
@@ -729,13 +699,9 @@ static void ofmDoLigKern(SplineFont * sf, int enc, int lk_index,
 static void ofmDoExten(SplineFont * sf, int i, struct tfmdata *tfmd, int left,
 		       EncMap * map) {
    int j, k, gid, gid2, cnt;
-
    uint8 *ext;
-
    SplineChar *sc, *bits[4], *bats[4];
-
    struct glyphvariants **gvbase;
-
    int is_horiz;
 
    if (i >= map->enccount || (gid = map->map[i]) == -1
@@ -799,17 +765,11 @@ static void ofmDoExten(SplineFont * sf, int i, struct tfmdata *tfmd, int left,
 
 int LoadKerningDataFromOfm(SplineFont * sf, char *filename, EncMap * map) {
    FILE *file = fopen(filename, "rb");
-
    int i, tag, left, ictag;
-
    int level, font_dir;
-
    int is_math;
-
    int width, height, depth;
-
    real scale = (sf->ascent + sf->descent) / (bigreal) (1 << 20);
-
    struct tfmdata tfmd;
 
    if (file == NULL)
@@ -963,9 +923,7 @@ int LoadKerningDataFromOfm(SplineFont * sf, char *filename, EncMap * map) {
 
 char *EncodingName(Encoding * map) {
    char *name = map->iconv_name != NULL ? map->iconv_name : map->enc_name;
-
    int len = strlen(name);
-
    char *pt;
 
    if (strmatch(name, "AdobeStandard") == 0)
@@ -1007,9 +965,7 @@ char *EncodingName(Encoding * map) {
 
 static void AfmLigOut(FILE * afm, SplineChar * sc) {
    LigList *ll;
-
    PST *lig;
-
    char *pt, *eos;
 
    for (ll = sc->ligofme; ll != NULL; ll = ll->next) {
@@ -1026,7 +982,6 @@ static void AfmLigOut(FILE * afm, SplineChar * sc) {
 
 static void AfmSplineCharX(FILE * afm, SplineChar * sc, int enc, int layer) {
    DBounds b;
-
    int em = (sc->parent->ascent + sc->parent->descent);
 
    SplineCharLayerFindBounds(sc, layer, &b);
@@ -1044,7 +999,6 @@ static void AfmSplineCharX(FILE * afm, SplineChar * sc, int enc, int layer) {
 }
 
 static void AfmZapfCharX(FILE * afm, int zi) {
-
    /*fprintf( afm, "CX <%04x> ; WX %d ; N %s ; B %d %d %d %d ;\n", */
    fprintf(afm, "C %d ; WX %d ; N %s ; B %d %d %d %d ;\n",
 	   0x2700 + zi, zapfwx[zi], zapfnomen[zi],
@@ -1053,7 +1007,6 @@ static void AfmZapfCharX(FILE * afm, int zi) {
 
 static void AfmSplineChar(FILE * afm, SplineChar * sc, int enc, int layer) {
    DBounds b;
-
    int em = (sc->parent->ascent + sc->parent->descent);
 
    SplineCharLayerFindBounds(sc, layer, &b);
@@ -1071,7 +1024,6 @@ static void AfmSplineChar(FILE * afm, SplineChar * sc, int enc, int layer) {
 
 static void AfmCIDChar(FILE * afm, SplineChar * sc, int enc, int layer) {
    DBounds b;
-
    int em = (sc->parent->ascent + sc->parent->descent);
 
    SplineCharLayerFindBounds(sc, layer, &b);
@@ -1087,7 +1039,6 @@ static void AfmCIDChar(FILE * afm, SplineChar * sc, int enc, int layer) {
 
 static int anykerns(SplineFont * sf, int isv) {
    int i, cnt = 0;
-
    KernPair *kp;
 
    for (i = 0; i < sf->glyphcnt; ++i) {
@@ -1105,7 +1056,6 @@ static int anykerns(SplineFont * sf, int isv) {
 
 static void AfmKernPairs(FILE * afm, SplineChar * sc, int isv) {
    KernPair *kp;
-
    int em = (sc->parent->ascent + sc->parent->descent);
 
    if (strcmp(sc->name, ".notdef") == 0)
@@ -1176,7 +1126,6 @@ int SFFindNotdef(SplineFont * sf, int fixed) {
 
 int SCDrawsSomething(SplineChar * sc) {
    int layer, l;
-
    RefChar *ref;
 
    if (sc == NULL)
@@ -1228,21 +1177,13 @@ static void AfmSplineFontHeader(FILE * afm, SplineFont * sf, int formattype,
 				EncMap * map, SplineFont * fullsf,
 				int layer) {
    DBounds b;
-
    real width;
-
    int i, j, cnt, max;
-
    bigreal caph, xh, ash, dsh;
-
    int iscid = (formattype == ff_cid || formattype == ff_otfcid);
-
    int ismm = (formattype == ff_mma || formattype == ff_mmb);
-
    time_t now;
-
    SplineChar *sc;
-
    int em = (sf->ascent + sf->descent);
 
    if (iscid && sf->cidmaster != NULL)
@@ -1433,9 +1374,7 @@ static int FigureUnicodes(int *unicode, SplineChar * sc, int u) {
 
 static int FindDecomposition(int *unicode, int u) {
    int uni;
-
    const unichar_t *upt;
-
    int i;
 
    for (uni = 0; uni < 65536; ++uni) {
@@ -1469,11 +1408,8 @@ static void sortunis(int *unicode, int u) {
 
 static char *NameFrom(struct cc_data *this, int *unicode, int u, int uni) {
    char *ret, *pt;
-
    char buffer[60];
-
    struct cc_accents *cca;
-
    int i, len;
 
    if (uni != -1)
@@ -1506,11 +1442,8 @@ static char *NameFrom(struct cc_data *this, int *unicode, int u, int uni) {
 
 static int AfmBuildCCName(struct cc_data *this, struct cc_container *cc) {
    int unicode[4 * AC_MAX];
-
    int u;
-
    int uni;
-
    struct cc_accents *cca;
 
    u = FigureUnicodes(unicode, this->base, 0);
@@ -1540,11 +1473,8 @@ static void AfmBuildMarkCombos(SplineChar * sc, AnchorPoint * ap,
 			       struct cc_container *cc) {
    if (ap == NULL) {
       AnchorPoint *ap;
-
       struct cc_data *this = &cc->ccs[cc->cnt++];
-
       int acnt = 0;
-
       AnchorPoint *map;
 
       this->base = sc;
@@ -1589,7 +1519,6 @@ static void AfmBuildMarkCombos(SplineChar * sc, AnchorPoint * ap,
 
 static void AfmBuildCombos(SplineChar * sc, AnchorPoint * ap,
 			   struct cc_container *cc) {
-
    if (ap != NULL) {
       AfmBuildCombos(sc, ap->next, cc);
       if (ap->type == at_basechar) {
@@ -1599,7 +1528,6 @@ static void AfmBuildCombos(SplineChar * sc, AnchorPoint * ap,
       }
    } else {
       int ticks, cnt;
-
       AnchorPoint *ap;
 
       for (ap = sc->anchor, ticks = 0, cnt = 1; ap != NULL; ap = ap->next) {
@@ -1621,15 +1549,10 @@ static void AfmBuildCombos(SplineChar * sc, AnchorPoint * ap,
 
 static struct cc_data *AfmFigureCCdata(SplineFont * sf, int *total) {
    int ac_cnt, i;
-
    AnchorClass *ac;
-
    AnchorPoint *ap;
-
    SplineChar *sc;
-
    int *mmax;
-
    struct cc_container cc;
 
    memset(&cc, 0, sizeof(cc));
@@ -1676,7 +1599,6 @@ static struct cc_data *AfmFigureCCdata(SplineFont * sf, int *total) {
 
 static void CCFree(struct cc_data *cc) {
    int i;
-
    struct cc_accents *cca, *next;
 
    if (cc == NULL)
@@ -1694,9 +1616,7 @@ static void CCFree(struct cc_data *cc) {
 static void AfmComposites(FILE * afm, SplineFont * sf, struct cc_data *cc,
 			  int cc_cnt) {
    int i;
-
    struct cc_accents *cca;
-
    bigreal em = (sf->ascent + sf->descent);
 
    fprintf(afm, "StartComposites %d\n", cc_cnt);
@@ -1715,13 +1635,9 @@ static void AfmComposites(FILE * afm, SplineFont * sf, struct cc_data *cc,
 
 static void AfmCompositeChar(FILE * afm, struct cc_data *cc, int layer) {
    DBounds b, b1;
-
    SplineChar *sc = cc->base;
-
    SplineFont *sf = sc->parent;
-
    int em = (sf->ascent + sf->descent);
-
    struct cc_accents *cca;
 
    SplineCharLayerFindBounds(sc, layer, &b);
@@ -1751,21 +1667,13 @@ static void LigatureClosure(SplineFont * sf);
 int AfmSplineFont(FILE * afm, SplineFont * sf, int formattype, EncMap * map,
 		  int docc, SplineFont * fullsf, int layer) {
    int i, j, cnt, vcnt;
-
    int type0 = (formattype == ff_ptype0);
-
    int otf = (formattype == ff_otf);
-
    int encmax = (!type0 && !otf) ? 256 : 65536;
-
    int anyzapf;
-
    int iscid = (formattype == ff_cid || formattype == ff_otfcid);
-
    SplineChar *sc;
-
    int cc_cnt = 0;
-
    struct cc_data *cc = NULL;
 
    SFLigaturePrepare(sf);
@@ -1983,9 +1891,7 @@ int AmfmSplineFont(FILE * amfm, MMSet * mm, int formattype, EncMap * map,
 
 void SFLigatureCleanup(SplineFont * sf) {
    LigList *l, *next;
-
    struct splinecharlist *scl, *sclnext;
-
    int j;
 
    if (sf->internal_temp)
@@ -2011,19 +1917,12 @@ void SFLigatureCleanup(SplineFont * sf) {
 
 void SFLigaturePrepare(SplineFont * sf) {
    PST *lig;
-
    LigList *ll;
-
    int i, j, k, ch;
-
    char *pt, *ligstart;
-
    SplineChar *sc, *tsc;
-
    struct splinecharlist *head, *last;
-
    int ccnt, lcnt, lmax = 20;
-
    LigList **all = malloc(lmax * sizeof(LigList *));
 
    /* First clear out any old stuff */
@@ -2126,11 +2025,8 @@ static void LigatureClosure(SplineFont * sf) {
    /*  of 2+1+1 because that doesn't happen in latin that I know of, and arabic */
    /*  really should be using a type2 font */
    int i;
-
    LigList *l, *l2, *l3;
-
    PST *lig;
-
    SplineChar *sc, *sublig;
 
    for (i = 0; i < sf->glyphcnt; ++i)
@@ -2183,9 +2079,7 @@ static void LigatureClosure(SplineFont * sf) {
 
 void SFKernCleanup(SplineFont * sf, int isv) {
    int i;
-
    KernPair *kp, *p, *n;
-
    OTLookup *otl, *otlp, *otln;
 
    if (sf->internal_temp)
@@ -2234,9 +2128,7 @@ static void KCSfree(SplineChar *** scs, int cnt) {
 static SplineChar ***KernClassToSC(SplineFont * sf, char **classnames,
 				   int cnt) {
    SplineChar ***scs, *sc;
-
    int i, j;
-
    char *pt, *end, ch;
 
    scs = malloc(cnt * sizeof(SplineChar **));
@@ -2289,13 +2181,9 @@ static void AddTempKP(SplineChar * first, SplineChar * second,
 
 void SFKernClassTempDecompose(SplineFont * sf, int isv) {
    KernClass *kc, *head = isv ? sf->vkerns : sf->kerns;
-
    KernPair *kp;
-
    SplineChar ***first, ***last;
-
    int i, j, k, l;
-
    OTLookup *otl;
 
    /* Make sure the temporary field is cleaned up. Otherwise we may lose kerning data */
@@ -2408,7 +2296,6 @@ static const unsigned short local_unicode_from_win[] = {
 
 static int inwin(SplineFont * sf, int winmap[256]) {
    int i, j;
-
    int cnt;
 
    memset(winmap, -1, sizeof(int[256]));
@@ -2445,13 +2332,9 @@ int PfmSplineFont(FILE * pfm, SplineFont * sf, int type0, EncMap * map,
    int caph = 0, xh = 0, ash = 0, dsh = 0, cnt = 0, first = -1, samewid =
       -1, maxwid = -1, last = 0, wid = 0, ymax = 0, ymin = 0;
    int kerncnt = 0, spacepos = 0x20;
-
    int i, ii;
-
    char *pt;
-
    KernPair *kp;
-
    int winmap[256];
 
    /* my docs imply that pfm files can only handle 1byte fonts */
@@ -2754,13 +2637,9 @@ int PfmSplineFont(FILE * pfm, SplineFont * sf, int type0, EncMap * map,
 /* ************************************************************************** */
 int LoadKerningDataFromPfm(SplineFont * sf, char *filename, EncMap * map) {
    FILE *file = fopen(filename, "rb");
-
    int widthbytes, kernoff, i, kerncnt;
-
    int ch1, ch2, offset;
-
    int winmap[256];
-
    int encoding;
 
    if (file == NULL)
@@ -2887,7 +2766,6 @@ static struct ligkern *TfmAddKern(KernPair * kp, struct ligkern *last,
 				  double *kerns, int *_kcnt, EncMap * map,
 				  int maxc) {
    struct ligkern *new = calloc(1, sizeof(struct ligkern));
-
    int i;
 
    new->other_char = map->backmap[kp->sc->orig_pos];
@@ -2933,7 +2811,6 @@ static struct ligkern *TfmAddLiga(LigList * l, struct ligkern *last,
 static void FindCharlists(SplineFont * sf, int *charlistindex, EncMap * map,
 			  int maxc) {
    int i, last, ch;
-
    char *pt, *end, *variants;
 
    memset(charlistindex, -1, (maxc + 1) * sizeof(int));
@@ -2971,13 +2848,9 @@ static void FindCharlists(SplineFont * sf, int *charlistindex, EncMap * map,
 static int FindExtensions(SplineFont * sf, struct extension *extensions,
 			  int *extenindex, EncMap * map, int maxc) {
    int i;
-
    int j, k;
-
    char *foundnames[4];
-
    int16 founds[4];
-
    int fcnt, ecnt = 0;
 
    memset(extenindex, -1, (maxc + 1) * sizeof(int));
@@ -3042,15 +2915,10 @@ static int FindExtensions(SplineFont * sf, struct extension *extensions,
 
 static int CoalesceValues(double *values, int max, int *index, int maxc) {
    int i, j, k, top, offpos, diff, eoz;
-
    int _backindex[257];
-
    double off, test;
-
    double _topvalues[257], _totvalues[257], *topvalues, *totvalues;
-
    int _cnt[257];
-
    int *backindex, *cnt;
 
    if (maxc <= 256) {
@@ -3186,7 +3054,6 @@ static int CoalesceValues(double *values, int max, int *index, int maxc) {
 
 void TeXDefaultParams(SplineFont * sf) {
    int i, spacew;
-
    BlueData bd;
 
    if (sf->texdata.type != tex_unset)
@@ -3236,57 +3103,32 @@ void TeXDefaultParams(SplineFont * sf) {
 static int _OTfmSplineFont(FILE * tfm, SplineFont * sf, int formattype,
 			   EncMap * map, int maxc, int layer) {
    struct tfm_header header;
-
    char *full = NULL, *encname;
-
    int i;
-
    DBounds b;
-
    struct ligkern *_ligkerns[256], **ligkerns, *lk, *lknext;
-
    double _widths[257], _heights[257], _depths[257], _italics[257];
-
    double *widths, *heights, *depths, *italics;
-
    uint8 _tags[256], *tags;
-
    uint16 _lkindex[256], *lkindex;
-
    int _former[256], *former;
-
    struct extension _extensions[257], *extensions;
-
    int _charlistindex[257], _extenindex[257];
-
    int *charlistindex, *extenindex;
-
    int _widthindex[257], _heightindex[257], _depthindex[257],
       _italicindex[257];
    int *widthindex, *heightindex, *depthindex, *italicindex;
-
    double *kerns;
-
    int widcnt, hcnt, dcnt, icnt, kcnt, lkcnt, pcnt, ecnt, sccnt;
-
    int first, last;
-
    KernPair *kp;
-
    LigList *l;
-
    int style, any;
-
    uint32 *lkarray;
-
    struct ligkern *o_lkarray = NULL;
-
    char *familyname;
-
    int anyITLC;
-
    real scale = (1 << 20) / (double) (sf->ascent + sf->descent);
-
    int toobig_warn = false;
 
    if (maxc == 256) {
@@ -3815,11 +3657,8 @@ enum metricsformat { mf_none, mf_afm, mf_amfm, mf_tfm, mf_ofm, mf_pfm,
 
 static enum metricsformat MetricsFormatType(char *filename) {
    FILE *file = fopen(filename, "rb");
-
    unsigned char buffer[200];
-
    struct stat sb;
-
    int len;
 
    if (file == NULL)

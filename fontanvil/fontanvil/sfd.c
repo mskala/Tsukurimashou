@@ -1,4 +1,4 @@
-/* $Id: sfd.c 3412 2014-10-24 20:34:43Z mskala $ */
+/* $Id: sfd.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -5596,7 +5596,7 @@ static void SFDFixupUndoRefs(SplineFont * sf) {
  * the glyph index of that splinechar.
  *
  * MIQ updated this in Oct 2012 to be more forgiving when called twice
- * or on a splinefont which has some of it's references already fixed.
+ * or on a splinefont which has some of its references already fixed.
  * This was to allow partial updates of data structures from SFD
  * fragments and the fixup to operate just on those references which
  * need to be fixed.

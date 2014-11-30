@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: scstyles.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2300,7 +2300,7 @@ static void MakeLookups(SplineFont * sf, OTLookup ** lookups, int ltn,
    }
 
    if (any == (OTLookup *) - 1) {
-      /* Each script has it's own lookup. So if we are missing a script we */
+      /* Each script has its own lookup. So if we are missing a script we */
       /*  should create a new lookup for it */
       if (lookups[0] == NULL && ltn) {
 	 sub =

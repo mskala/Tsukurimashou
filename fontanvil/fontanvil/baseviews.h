@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: baseviews.h 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -788,8 +788,8 @@ extern FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
 					 real blends[MmMax], int tonew);
 extern void FVB_MakeNamelist(FontViewBase * fv, FILE * file);
 
-/**
- * Code which wants the fontview to redraw it's title can call here to
+/*
+ * Code which wants the fontview to redraw its title can call here to
  * have that happen.
  */
 extern void FVTitleUpdate(FontViewBase * fv);

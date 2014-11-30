@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: fvcomposite.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,8 @@
 #include <ustring.h>
 
 int accent_offset = 6;
-
 int GraveAcuteCenterBottom = 1;
-
 int PreferSpacingAccents = true;
-
 int CharCenterHighest = 1;
 
 #define BottomAccent	0x300
@@ -942,7 +939,6 @@ unichar_t adobes_pua_alts[0x200][3] = {	/* Mapped from 0xf600-0xf7ff */
 
 static real SplineSetQuickTop(SplineSet * ss) {
    real max = -1e10;
-
    SplinePoint *sp;
 
    for (; ss != NULL; ss = ss->next) {
@@ -963,7 +959,6 @@ static real SplineSetQuickTop(SplineSet * ss) {
 
 static real SplineCharQuickTop(SplineChar * sc, int layer) {
    RefChar *ref;
-
    real max, temp;
 
    max = SplineSetQuickTop(sc->layers[layer].splines);
@@ -974,7 +969,6 @@ static real SplineCharQuickTop(SplineChar * sc, int layer) {
 }
 
 int isaccent(int uni) {
-
    if (uni < 0x10000 && iscombining(uni))
       return (true);
    if (uni >= 0x2b0 && uni < 0x2ff)
@@ -1009,7 +1003,6 @@ static int haschar(SplineFont * sf, unichar_t ch, char *dot) {
 
 static SplineChar *GetChar(SplineFont * sf, unichar_t ch, char *dot) {
    char buffer[200], namebuf[200];
-
    SplineChar *sc;
 
    /* Basically the same as above */
@@ -1030,9 +1023,7 @@ static SplineChar *GetChar(SplineFont * sf, unichar_t ch, char *dot) {
 static const unichar_t *arabicfixup(SplineFont * sf, const unichar_t * upt,
 				    int ini, int final) {
    static unichar_t arabicalts[20];
-
    unichar_t *apt;
-
    const unichar_t *pt;
 
    for (apt = arabicalts, pt = upt; *pt != '\0'; ++pt, ++apt) {
@@ -1061,13 +1052,9 @@ static const unichar_t *arabicfixup(SplineFont * sf, const unichar_t * upt,
 static const unichar_t *SFAlternateFromLigature(SplineFont * sf, int base,
 						SplineChar * sc) {
    static unichar_t space[30];
-
    unichar_t *spt, *send = space + sizeof(space) / sizeof(space[0]) - 1;
-
    char *ligstart, *semi, *pt, sch, ch, *dpt;
-
    int j;
-
    PST *pst;
 
    if (sc == NULL && base >= 0)
@@ -1137,11 +1124,8 @@ static const unichar_t *SFAlternateFromLigature(SplineFont * sf, int base,
 const unichar_t *SFGetAlternate(SplineFont * sf, int base, SplineChar * sc,
 				int nocheck) {
    static unichar_t greekalts[5];
-
    const unichar_t *upt, *pt;
-
    unichar_t *gpt;
-
    char *dot = NULL;
 
    if (sc != NULL && (dot = strchr(sc->name, '.')) != NULL) {
@@ -1268,13 +1252,9 @@ static SplineChar *GetGoodAccentGlyph(SplineFont * sf, int uni, int basech,
 int SFIsCompositBuildable(SplineFont * sf, int unicodeenc, SplineChar * sc,
 			  int layer) {
    const unichar_t *pt, *all;
-
    unichar_t ch, basech;
-
    SplineChar *one, *two;
-
    char *dot = NULL;
-
    int invert = false;
 
    if (unicodeenc == 0x131 || unicodeenc == 0x0237 || unicodeenc == 0xf6be)
@@ -1319,7 +1299,6 @@ int SFIsCompositBuildable(SplineFont * sf, int unicodeenc, SplineChar * sc,
 
 int SFIsRotatable(SplineFont * sf, SplineChar * sc, int layer) {
    char *end;
-
    int cid;
 
    if (sf->cidmaster != NULL && strncmp(sc->name, "vertcid_", 8) == 0) {
@@ -1420,7 +1399,6 @@ static int SPInRange(SplinePoint * sp, real ymin, real ymax) {
 static void _SplineSetFindXRange(SplinePointList * spl, DBounds * bounds,
 				 real ymin, real ymax, real ia) {
    Spline *spline;
-
    real xadjust, tia = tan(ia);
 
    for (; spl != NULL; spl = spl->next) {
@@ -1457,9 +1435,7 @@ static real _SplineSetFindXRangeAtYExtremum(SplinePointList * spl,
 					    DBounds * bounds, int findymax,
 					    real yextreme, real ia) {
    Spline *spline;
-
    extended t0, t1, t2, t3;
-
    bigreal y0, y1, y2, y3, x;
 
    for (; spl != NULL; spl = spl->next) {
@@ -1554,7 +1530,6 @@ static real _SplineSetFindXRangeAtYExtremum(SplinePointList * spl,
 static real SCFindTopXRange(SplineChar * sc, int layer, DBounds * bounds,
 			    real ia) {
    RefChar *rf;
-
    real yextreme = -0x80000;
 
    /* a char with no splines (ie. a space) must have an lbearing of 0 */
@@ -1600,7 +1575,6 @@ static real SCFindBottomXRange(SplineChar * sc, int layer, DBounds * bounds,
 static real SCFindTopBounds(SplineChar * sc, int layer, DBounds * bounds,
 			    real ia) {
    RefChar *rf;
-
    int ymax = bounds->maxy + 1, ymin =
       ymax - (bounds->maxy - bounds->miny) / 20;
 
@@ -1618,7 +1592,6 @@ static real SCFindTopBounds(SplineChar * sc, int layer, DBounds * bounds,
 static real SCFindBottomBounds(SplineChar * sc, int layer, DBounds * bounds,
 			       real ia) {
    RefChar *rf;
-
    int ymin = bounds->miny - 1, ymax =
       ymin + (bounds->maxy - bounds->miny) / 20;
 
@@ -1635,9 +1608,7 @@ static real SCFindBottomBounds(SplineChar * sc, int layer, DBounds * bounds,
 static real SplineCharFindSlantedBounds(SplineChar * sc, int layer,
 					DBounds * bounds, real ia) {
    int ymin, ymax;
-
    RefChar *rf;
-
    SplineCharFindBounds(sc, bounds);
 
    ymin = bounds->miny - 1, ymax = bounds->maxy + 1;
@@ -1659,9 +1630,7 @@ static int SCStemCheck(SplineFont * sf, int layer, int basech, DBounds * bb,
    /*  (or right) vertical (or diagonal) stem. Here we try to find that */
    /*  stem */
    StemInfo *h, *best;
-
    SplineChar *sc;
-
    DStemInfo *d;
 
    sc = SFGetChar(sf, basech, NULL);
@@ -1826,11 +1795,8 @@ static int BCFindGap(BDFChar * bc) {
 static int SCMakeBaseReference(SplineChar * sc, SplineFont * sf, int layer,
 			       int ch, BDFFont * bdf, int disp_only) {
    SplineChar *rsc;
-
    BDFChar *bc;
-
    char *dot;
-
    char buffer[200], namebuf[200];
 
    if ((dot = strchr(sc->name, '.')) != NULL) {
@@ -1911,11 +1877,8 @@ static SplineChar *GetGoodAccentGlyph(SplineFont * sf, int uni, int basech,
 				      int *invert, double ia, char *dot,
 				      SplineChar * destination) {
    int ach = -1;
-
    const unichar_t *apt, *end;
-
    SplineChar *rsc;
-
    char buffer[200], namebuf[200];
 
    *invert = false;
@@ -1923,20 +1886,13 @@ static SplineChar *GetGoodAccentGlyph(SplineFont * sf, int uni, int basech,
    /* cedilla on lower "g" becomes a turned comma above it */
    if (uni == 0x327 && basech == 'g' && haschar(sf, 0x312, dot))
       uni = 0x312;
-   if (!PreferSpacingAccents && ((haschar(sf, uni, dot) &&
-				  !SCDependsOnSC(GetChar(sf, uni, dot),
-						 destination)) || (dot != NULL
-								   &&
-								   haschar(sf,
-									   uni,
-									   NULL)
-								   &&
-								   !SCDependsOnSC
-								   (GetChar
-								    (sf, uni,
-								     NULL),
-								    destination))))
-      ach = uni;
+   if (!PreferSpacingAccents
+       && ((haschar(sf,uni,dot)
+	    && !SCDependsOnSC(GetChar(sf,uni,dot),destination))
+	   || (dot!=NULL
+	       && haschar(sf,uni,NULL)
+	       && !SCDependsOnSC(GetChar(sf,uni,NULL),destination))))
+     ach = uni;
    else if (uni >= BottomAccent && uni <= TopAccent) {
       apt = accents[uni - BottomAccent];
       end = apt + sizeof(accents[0]) / sizeof(accents[0][0]);
@@ -1988,13 +1944,9 @@ static SplineChar *GetGoodAccentGlyph(SplineFont * sf, int uni, int basech,
    if (dot == NULL
        && (isupper(basech) || (basech >= 0x400 && basech <= 0x52f))) {
       char *uc_accent;
-
       SplineChar *test = NULL;
-
       char buffer[80];
-
       char *suffixes[4];
-
       int scnt = 0, i;
 
       if (rsc != NULL) {
@@ -2150,9 +2102,7 @@ static AnchorClass *AnchorClassCursMatch(SplineChar * sc1, SplineChar * sc2,
 static void _BCCenterAccent(BDFFont * bdf, int gid, int rgid, int ch, int basech, int italicoff, uint32 pos,	/* unicode char position info, see #define for utype2[] in utype.h */
 			    real em) {
    BDFChar *bc, *rbc;
-
    int ixoff, iyoff, ispacing;
-
    IBounds ibb, irb;
 
    if ((rbc = bdf->glyphs[rgid]) != NULL && (bc = bdf->glyphs[gid]) != NULL) {
@@ -2204,26 +2154,21 @@ static void _BCCenterAccent(BDFFont * bdf, int gid, int rgid, int ch, int basech
    }
 }
 
-static void _SCCenterAccent(SplineChar * sc, SplineChar * basersc, SplineFont * sf, int layer, int ch, BDFFont * bdf, int disp_only, SplineChar * rsc, real ia, int basech, int invert,	/* invert accent, false==0, true!=0 */
-			    uint32 pos
+static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
+			    SplineFont *sf,int layer,int ch,
+			    BDFFont *bdf,int disp_only,SplineChar *rsc,
+			    real ia,int basech,
+			    int invert,	/* invert accent, false==0, true!=0 */			    uint32 pos
 			    /* unicode char position info, see #define for utype2[] in utype.h */
-			    ) {
+			   ) {
    real transform[6];
-
    DBounds bb, rbb, bbb;
-
    real xoff, yoff;
-
    real spacing = (sf->ascent + sf->descent) * accent_offset / 100;
-
    real ybase, italicoff;
-
    const unichar_t *temp;
-
    int baserch = basech;
-
    int eta;
-
    AnchorPoint *ap1, *ap2;
 
    if (rsc == NULL || sc == NULL)
@@ -2510,8 +2455,9 @@ static void SCCenterAccent(SplineChar * sc, SplineChar * basersc,
 			   SplineFont * sf, int layer, int ch, BDFFont * bdf,
 			   int disp_only, real ia, int basech, char *dot) {
    int invert = false;		/* invert accent, false==0, true!=0 */
-
-   SplineChar *rsc = GetGoodAccentGlyph(sf, ch, basech, &invert, ia, dot, sc);
+   SplineChar *rsc;
+   
+   rsc=GetGoodAccentGlyph(sf,ch,basech,&invert,ia,dot,sc);
 
    /* find a location to put an accent on this character */
    _SCCenterAccent(sc, basersc, sf, layer, ch, bdf, disp_only, rsc, ia,
@@ -2521,7 +2467,6 @@ static void SCCenterAccent(SplineChar * sc, SplineChar * basersc,
 static void _BCPutRefAfter(BDFFont * bdf, int gid, int rgid, int normal,
 			   int under) {
    BDFChar *bc, *rbc;
-
    int ispacing;
 
    if (bdf->glyphs[rgid] != NULL && bdf->glyphs[gid] != NULL) {
@@ -2548,13 +2493,10 @@ static void _BCPutRefAfter(BDFFont * bdf, int gid, int rgid, int normal,
 static void SCPutRefAfter(SplineChar * sc, SplineFont * sf, int layer, int ch,
 			  BDFFont * bdf, int disp_only, char *dot) {
    SplineChar *rsc = SFGetChar(sf, ch, NULL);
-
    int full = sc->unicodeenc, normal = false, under =
       false /*, stationary=false */ ;
    DBounds bb, rbb;
-
    real spacing = (sf->ascent + sf->descent) * accent_offset / 100;
-
    char buffer[300], namebuf[300];
 
    if (bdf == NULL || !disp_only) {
@@ -2627,11 +2569,8 @@ static void BCMakeSpace(BDFFont * bdf, int gid, int width, int em) {
 static void DoSpaces(SplineFont * sf, SplineChar * sc, int layer,
 		     BDFFont * bdf, int disp_only) {
    int width;
-
    int uni = sc->unicodeenc;
-
    int em = sf->ascent + sf->descent;
-
    SplineChar *tempsc;
 
    if (iszerowidth(uni))
@@ -2751,17 +2690,11 @@ static void BCMakeRule(BDFFont * bdf, int gid, int layer) {
 static void DoRules(SplineFont * sf, SplineChar * sc, int layer,
 		    BDFFont * bdf, int disp_only) {
    int width;
-
    int uni = sc->unicodeenc;
-
    int em = sf->ascent + sf->descent;
-
    SplineChar *tempsc;
-
    DBounds b;
-
    real lbearing, rbearing, height, ypos;
-
    SplinePoint *first, *sp;
 
    switch (uni) {
@@ -2868,15 +2801,10 @@ static void DoRotation(SplineFont * sf, SplineChar * sc, int layer,
    /*  them. Note the rotated and normal characters are often in different */
    /*  subfonts so we can't use references */
    SplineChar *scbase;
-
    real transform[6];
-
    SplineSet *last, *temp;
-
    RefChar *ref;
-
    char *end;
-
    int j, cid;
 
    if (sf->cidmaster != NULL && strncmp(sc->name, "vertcid_", 8) == 0) {
@@ -2976,9 +2904,7 @@ static int SCMakeRightToLeftLig(SplineChar * sc, SplineFont * sf,
 				int layer, const unichar_t * start,
 				BDFFont * bdf, int disp_only) {
    int cnt = u_strlen(start);
-
    int ret, ch, alt_ch;
-
    const unichar_t *pt;
 
    pt = start + cnt - 1;
@@ -3010,7 +2936,6 @@ static void SCBuildHangul(SplineFont * sf, SplineChar * sc, int layer,
 			  const unichar_t * pt, BDFFont * bdf,
 			  int disp_only) {
    SplineChar *rsc;
-
    int first = true;
 
    sc->width = 0;
@@ -3045,11 +2970,8 @@ static void SCBuildHangul(SplineFont * sf, SplineChar * sc, int layer,
 static int _SCMakeDotless(SplineFont * sf, SplineChar * dotless, int layer,
 			  int doit) {
    SplineChar *sc, *xsc;
-
    BlueData bd;
-
    SplineSet *head = NULL, *last = NULL, *test, *cur, *next;
-
    DBounds b;
 
    sc = SFGetChar(sf, dotless->unicodeenc == 0x131 ? 'i' : 'j', NULL);
@@ -3092,16 +3014,16 @@ static int _SCMakeDotless(SplineFont * sf, SplineChar * dotless, int layer,
 int SCMakeDotless(SplineFont * sf, SplineChar * dotless, int layer,
 		  BDFFont * bdf, int disp_only, int doit) {
    SplineChar *sc;
-
    BDFChar *bc;
-
    int ret = 0;
 
    if (dotless == NULL)
       return (ret);
+
    if (dotless->unicodeenc != 0x131 && dotless->unicodeenc != 0xf6be
        && dotless->unicodeenc != 0x237)
       return (ret);
+
    sc = SFGetChar(sf, dotless->unicodeenc == 0x131 ? 'i' : 'j', NULL);
    if (sc == NULL)
       return (ret);
@@ -3128,15 +3050,10 @@ int SCMakeDotless(SplineFont * sf, SplineChar * dotless, int layer,
 static void SCSetReasonableLBearing(SplineChar * sc, SplineChar * base,
 				    int layer) {
    DBounds full, b;
-
    SplineFont *sf;
-
    int emsize;
-
    double xoff;
-
    RefChar *ref;
-
    real transform[6];
 
    /* Hmm. Panov doesn't think this should happen */
@@ -3171,11 +3088,8 @@ static void SCSetReasonableLBearing(SplineChar * sc, SplineChar * base,
 void SCBuildComposit(SplineFont * sf, SplineChar * sc, int layer,
 		     BDFFont * bdf, int disp_only) {
    const unichar_t *pt, *apt;
-
    unichar_t ch;
-
    real ia;
-
    char *dot;
 
    /* This does not handle arabic ligatures at all. It would need to reverse */
@@ -3288,21 +3202,13 @@ int SCAppendAccent(SplineChar * sc, int layer, char *glyph_name,	/* unicode char
 		   /* unicode char position info, see #define for (uint32)(utype2[]) */
 		   ) {
    SplineFont *sf = sc->parent;
-
    double ia;
-
    int basech;
-
    RefChar *ref, *last = NULL;
-
    int invert = false;		/* invert accent, false==0, true!=0 */
-
    SplineChar *asc;
-
    int i;
-
    const unichar_t *apt, *end;
-
    char *pt;
 
    for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next)

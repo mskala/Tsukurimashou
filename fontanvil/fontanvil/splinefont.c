@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: splinefont.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,6 @@ void SFUntickAll(SplineFont * sf) {
 
 void SFOrderBitmapList(SplineFont * sf) {
    BDFFont *bdf, *prev, *next;
-
    BDFFont *bdf2, *prev2;
 
    for (prev = NULL, bdf = sf->bitmaps; bdf != NULL; bdf = bdf->next) {
@@ -257,9 +256,7 @@ struct unicoderange specialnames[] = {
 
 int NameToEncoding(SplineFont * sf, EncMap * map, const char *name) {
    int enc, uni, i, ch;
-
    char *end, *freeme = NULL;
-
    const char *upt = name;
 
    ch = utf8_ildb(&upt);
@@ -334,11 +331,8 @@ int NameToEncoding(SplineFont * sf, EncMap * map, const char *name) {
 
 static char *scaleString(char *string, double scale) {
    char *result;
-
    char *pt;
-
    char *end;
-
    double val;
 
    if (string == NULL)
@@ -380,11 +374,8 @@ static char *scaleString(char *string, double scale) {
 
 static char *iscaleString(char *string, double scale) {
    char *result;
-
    char *pt;
-
    char *end;
-
    double val;
 
    if (string == NULL)
@@ -461,9 +452,7 @@ static void SFScalePrivate(SplineFont * sf, double scale) {
 
 static void ScaleBase(struct Base *base, double scale) {
    struct basescript *bs;
-
    struct baselangextent *bl, *feat;
-
    int i;
 
    for (bs = base->scripts; bs != NULL; bs = bs->next) {
@@ -482,13 +471,9 @@ static void ScaleBase(struct Base *base, double scale) {
 
 int SFScaleToEm(SplineFont * sf, int as, int des) {
    bigreal scale;
-
    real transform[6];
-
    BVTFunc bvts;
-
    uint8 *oldselected = sf->fv->selected;
-
    enum fvtrans_flags trans_flags =
       fvt_alllayers | fvt_round_to_int | fvt_dontsetwidth |
       fvt_scalekernclasses | fvt_scalepstpos | fvt_dogrid;
@@ -570,7 +555,6 @@ void SFSetModTime(SplineFont * sf) {
 
 static SplineFont *_SFReadPostScript(FILE * file, char *filename) {
    FontDict *fd = NULL;
-
    SplineFont *sf = NULL;
 
    fd = _ReadPSFont(file);
@@ -585,7 +569,6 @@ static SplineFont *_SFReadPostScript(FILE * file, char *filename) {
 
 static SplineFont *SFReadPostScript(char *filename) {
    FontDict *fd = NULL;
-
    SplineFont *sf = NULL;
 
    fd = ReadPSFont(filename);
@@ -624,9 +607,7 @@ void ArchiveCleanup(char *archivedir) {
 static char *ArchiveParseTOC(char *listfile, enum archive_list_style ars,
 			     int *doall) {
    FILE *file;
-
    int nlcnt, ch, linelen, linelenmax, fcnt, choice, i, def, def_prio, prio;
-
    char **files, *linebuffer, *pt, *name;
 
    *doall = false;
@@ -705,20 +686,12 @@ static char *ArchiveParseTOC(char *listfile, enum archive_list_style ars,
    /*  tar or I have removed all directories from that list) */
    pt = strrchr(files[0], '/');
    if (pt != NULL) {
-      if ((pt - files[0] > 4
-	   && (strncasecmp(pt - 4, ".ufo", 4) == 0
-	       || strncasecmp(pt - 4, "_ufo", 4) == 0)) || (pt - files[0] > 6
-							    &&
-							    (strncasecmp
-							     (pt - 6,
-							      ".sfdir",
-							      6) == 0
-							     || strncasecmp(pt
-									    -
-									    6,
-									    "_sfdir",
-									    6)
-							     == 0))) {
+      if ((pt-files[0]>4
+	   && (strncasecmp(pt-4,".ufo",4)==0
+	       || strncasecmp(pt-4,"_ufo",4)==0))
+	  || (pt-files[0]>6
+	      && (strncasecmp(pt-6,".sfdir",6)==0
+		  || strncasecmp(pt-6,"_sfdir",6)== 0))) {
 	 /* Ok, looks like a potential directory font. Now is EVERYTHING */
 	 /*  in the archive inside this guy? */
 	 for (i = 0; i < fcnt; ++i)
@@ -776,15 +749,11 @@ static char *ArchiveParseTOC(char *listfile, enum archive_list_style ars,
 
 char *Unarchive(char *name, char **_archivedir) {
    char *dir = getenv("TMPDIR");
-
    char *pt, *archivedir, *listfile, *listcommand, *unarchivecmd,
       *desiredfile;
    char *finalfile;
-
    int i;
-
    int doall = false;
-
    static int cnt = 0;
 
    *_archivedir = NULL;
@@ -879,9 +848,7 @@ struct compressors compressors[] = {
 
 char *Decompress(char *name, int compression) {
    char *dir = getenv("TMPDIR");
-
    char buf[1500];
-
    char *tmpfile;
 
    if (dir == NULL)
@@ -901,9 +868,7 @@ char *Decompress(char *name, int compression) {
 
 static char *ForceFileToHaveName(FILE * file, char *exten) {
    char tmpfilename[L_tmpnam + 100];
-
    static int try = 0;
-
    FILE *newfile;
 
    for (;;) {
@@ -929,23 +894,15 @@ static char *ForceFileToHaveName(FILE * file, char *exten) {
 SplineFont *_ReadSplineFont(FILE * file, char *filename,
 			    enum openflags openflags) {
    SplineFont *sf;
-
    char ubuf[251], *temp;
-
    int fromsfd = false;
-
    int i;
-
    char *pt, *ext2, *strippedname, *oldstrippedname, *tmpfile = NULL, *paren =
       NULL, *fullname = filename, *rparen;
    char *archivedir = NULL;
-
    int len;
-
    int checked;
-
    int compression = 0;
-
    int wasurl = false, nowlocal = true, wasarchived = false;
 
    if (filename == NULL)
@@ -1090,19 +1047,12 @@ SplineFont *_ReadSplineFont(FILE * file, char *filename,
    } else if (file != NULL) {
       /* Try to guess the file type from the first few characters... */
       int ch1 = getc(file);
-
       int ch2 = getc(file);
-
       int ch3 = getc(file);
-
       int ch4 = getc(file);
-
       int ch5 = getc(file);
-
       int ch6 = getc(file);
-
       int ch7 = getc(file);
-
       int ch9, ch10;
 
       fseek(file, 98, SEEK_SET);
@@ -1322,7 +1272,6 @@ char *ToAbsolute(char *filename) {
 
 SplineFont *LoadSplineFont(char *filename, enum openflags openflags) {
    SplineFont *sf;
-
    char *pt, *ept, *tobefreed1 = NULL, *tobefreed2 = NULL;
    static char *extens[] =
       { ".sfd", ".pfa", ".pfb", ".ttf", ".otf", ".ps", ".cid", ".bin",
@@ -1408,9 +1357,7 @@ static const char **fullmods[] = { realweights, modifierlistfull, NULL };
 
 char *_GetModifiers(char *fontname, char *familyname, char *weight) {
    char *pt, *fpt;
-
    static char space[20];
-
    int i, j;
 
    /* URW fontnames don't match the familyname */
@@ -1477,13 +1424,9 @@ enum flatness { mt_flat, mt_round, mt_pointy, mt_unknown };
 
 static bigreal SPLMaxHeight(SplineSet * spl, enum flatness *isflat) {
    enum flatness f = mt_unknown;
-
    bigreal max = -1.0e23;
-
    Spline *s, *first;
-
    extended ts[2];
-
    int i;
 
    for (; spl != NULL; spl = spl->next) {
@@ -1540,9 +1483,7 @@ static bigreal SCMaxHeight(SplineChar * sc, int layer, enum flatness *isflat) {
    /* Find the max height of this layer of the glyph. Also find whether that */
    /* max is flat (as in "z", curved as in "o" or pointy as in "A") */
    enum flatness f = mt_unknown, curf;
-
    bigreal max = -1.0e23, test;
-
    RefChar *r;
 
    max = SPLMaxHeight(sc->layers[layer].splines, &curf);
@@ -1560,13 +1501,9 @@ static bigreal SCMaxHeight(SplineChar * sc, int layer, enum flatness *isflat) {
 
 static bigreal SPLMinHeight(SplineSet * spl, enum flatness *isflat) {
    enum flatness f = mt_unknown;
-
    bigreal min = 1.0e23;
-
    Spline *s, *first;
-
    extended ts[2];
-
    int i;
 
    for (; spl != NULL; spl = spl->next) {
@@ -1623,9 +1560,7 @@ static bigreal SCMinHeight(SplineChar * sc, int layer, enum flatness *isflat) {
    /* Find the min height of this layer of the glyph. Also find whether that */
    /* min is flat (as in "z", curved as in "o" or pointy as in "A") */
    enum flatness f = mt_unknown, curf;
-
    bigreal min = 1.0e23, test;
-
    RefChar *r;
 
    min = SPLMinHeight(sc->layers[layer].splines, &curf);
@@ -1665,17 +1600,11 @@ static int dclist_insert(struct dimcnt *arr, int cnt, bigreal val) {
 static bigreal SFStandardHeight(SplineFont * sf, int layer, int do_max,
 				unichar_t * list) {
    struct dimcnt flats[200], curves[200];
-
    bigreal test;
-
    enum flatness curf;
-
    int fcnt = 0, ccnt = 0, cnt, tot, i, useit;
-
    unichar_t ch, top;
-
    bigreal result, bestheight, bestdiff, diff, val;
-
    char *blues, *end;
 
    while (*list) {
@@ -1847,7 +1776,6 @@ static void arraystring(char *buffer, real * array, int cnt) {
 static void SnapSet(struct psdict *private, real stemsnap[12],
 		    real snapcnt[12], char *name1, char *name2, int which) {
    int i, mi;
-
    char buffer[211];
 
    mi = -1;
@@ -1871,15 +1799,10 @@ static void SnapSet(struct psdict *private, real stemsnap[12],
 int SFPrivateGuess(SplineFont * sf, int layer, struct psdict *private,
 		   char *name, int onlyone) {
    real bluevalues[14], otherblues[10];
-
    real snapcnt[12];
-
    real stemsnap[12];
-
    char buffer[211];
-
    char *oldloc;
-
    int ret;
 
    oldloc = copy(setlocale(LC_NUMERIC, NULL));
@@ -1950,9 +1873,7 @@ int SFPrivateGuess(SplineFont * sf, int layer, struct psdict *private,
 void SPLFirstVisitSplines(SplinePoint * splfirst,
 			  SPLFirstVisitSplinesVisitor f, void *udata) {
    Spline *spline = 0;
-
    Spline *first = 0;
-
    Spline *next = 0;
 
    if (splfirst != NULL) {

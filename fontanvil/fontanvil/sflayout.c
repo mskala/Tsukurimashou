@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 3412 2014-10-24 20:34:43Z mskala $ */
+/* $Id: sflayout.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -84,11 +84,8 @@ int LI_FDDrawChar(void *data,
 		  void (*drawRect) (void *, GRect *, Color col),
 		  struct opentype_str *osc, int x, int y, Color col) {
    BDFChar *bdfc;
-
    int gid;
-
    FontData *fd;
-
    SplineChar *sc;
 
    if (osc == NULL)
@@ -196,7 +193,6 @@ static SplineChar *FDMap(FontData * fd, int uenc) {
 static int LinesInPara(LayoutInfo * li, struct opentype_str **paratext,
 		       int width) {
    int start, end, break_pos, cnt;
-
    int len, pos;
 
    if (paratext == NULL)
@@ -238,7 +234,6 @@ static int LinesInPara(LayoutInfo * li, struct opentype_str **paratext,
 static struct opentype_str **LineFromPara(struct opentype_str **str,
 					  int *_pos) {
    int len;
-
    struct opentype_str **ret;
 
    for (len = 0; str[len] != NULL && !str[len]->line_break_after; ++len);
@@ -259,7 +254,6 @@ static struct opentype_str **LineFromPara(struct opentype_str **str,
 static struct basescript *FindBS(struct Base *base, struct opentype_str *ch,
 				 LayoutInfo * li) {
    uint32 script = SCScriptFromUnicode(ch->sc);
-
    struct basescript *bs;
 
    if (script == DEFAULT_SCRIPT) {
@@ -305,20 +299,14 @@ static int BaselineOffset(struct Base *base, struct basescript *bs,
 
 static void LIFigureLineHeight(LayoutInfo * li, int l, int p) {
    int i;
-
    struct opentype_str **line = li->lines[l];
-
    int as = 0, ds = 0, ld = 0;
-
    int width = 0;
 
    if (line[0] != NULL) {
       FontData *start_fd = ((struct fontlist *) (line[0]->fl))->fd;
-
       struct Base *start_base = start_fd->sf->horiz_base;
-
       struct basescript *start_bs = NULL;
-
       uint32 start_bsln_tag = 0;
 
       for (i = 0; line[i] != NULL; ++i)
@@ -357,11 +345,8 @@ static void LIFigureLineHeight(LayoutInfo * li, int l, int p) {
 
    for (i = 0; line[i] != NULL; ++i) {
       FontData *fd = ((struct fontlist *) (line[i]->fl))->fd;
-
       BDFFont *bdf = fd->bdf;
-
       int off = line[i]->bsln_off;
-
       double scale =
 	 fd->pointsize * li->dpi / (72.0 *
 				    (fd->sf->ascent + fd->sf->descent));
@@ -472,11 +457,8 @@ static int ot_strlen(struct opentype_str *str) {
 void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
 			     int end_of_change, int width) {
    int i, j, p, ps, pe, l, ls, le, pdiff, ldiff;
-
    int len, start, pcnt, lcnt;
-
    struct fontlist *fl, *oldstart, *oldend, *curp;
-
    double scale;
 
    if (li->lines == NULL) {
@@ -687,7 +669,6 @@ static void fontlistcheck(LayoutInfo * li) {
 
 void LI_fontlistmergecheck(LayoutInfo * li) {
    struct fontlist *fl, *next;
-
    unichar_t *pt;
 
    if (li->fontlist == NULL)
@@ -747,7 +728,6 @@ void LI_fontlistmergecheck(LayoutInfo * li) {
 
 void LayoutInfo_Destroy(LayoutInfo * li) {
    struct sfmaps *m, *n;
-
    FontData *fd, *nfd;
 
    free(li->paras);
@@ -806,13 +786,9 @@ struct sfmaps *SFMapOfSF(LayoutInfo * li, SplineFont * sf) {
 
 FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret) {
    FontData *test;
-
    BDFFont *bdf, *ok, *old;
-
    void *ftc;
-
    int pixelsize;
-
    int freeold = ret->fonttype != sftf_bitmap, depends_on =
       ret->depends_on != NULL;
    extern Color default_background;
@@ -971,22 +947,14 @@ void LayoutInfoInitLangSys(LayoutInfo * li, int end, uint32 script,
 #include "scripting.h"
 static Array *SFDefaultScriptsLines(Array * arr, SplineFont * sf) {
    int pixelsize = 24;
-
    uint32 scripts[200], script;
-
    char *lines[209];
-
    int i, scnt, lcnt, gid;
-
    /* If the font has more than 200 scripts we can't give a good sample image */
    SplineChar *sc;
-
    char buffer[51 * 4 + 1], *pt;
-
    Array *ret;
-
    char *str;
-
    int start, end, anyscript = 0, anyhere;
 
    if (arr != NULL && arr->argc == 1)
@@ -1120,25 +1088,15 @@ static Array *SFDefaultScriptsLines(Array * arr, SplineFont * sf) {
 void FontImage(SplineFont * sf, char *filename, Array * arr, int width,
 	       int height) {
    LayoutInfo *li = calloc(1, sizeof(LayoutInfo));
-
    int cnt, len, i, j, ret, p, x;
-
    struct fontlist *last;
-
    enum sftf_fonttype type = sf->layers[ly_fore].order2 ? sftf_ttf : sftf_otf;
-
    GImage *image;
-
    struct _GImage *base;
-
    unichar_t *upt;
-
    uint32 script;
-
    struct opentype_str **line;
-
    int ybase = 0;
-
    Array *freeme = NULL;
 
    if (!hasFreeType())
@@ -1268,7 +1226,6 @@ void LayoutInfoSetTitle(LayoutInfo * li, const unichar_t * tit, int width) {
 
 static int LI_NormalizeStartEnd(LayoutInfo * li, int start, int *_end) {
    int end = *_end;
-
    int len = u_strlen(li->text);
 
    if (li->generated == NULL) {

@@ -1,4 +1,4 @@
-/* $Id: nowakowskittfinstr.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: nowakowskittfinstr.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2000-2012 by
    George Williams, Michal Nowakowski & Alexey Kryukov */
 
@@ -195,9 +195,8 @@ static uint8 *pushpoints(uint8 * instrs, int ptcnt, const int *pts) {
  * There are no checks for overflow!
  */
 static uint8 *pushF26Dot6(uint8 * instrs, double num) {
-   int a, elems[3];
-
-   int negative = 0;
+   int a,elems[3];
+   int negative=0;
 
    if (num < 0) {
       negative = 1;
@@ -289,7 +288,6 @@ struct ttf_table *SFFindTable(SplineFont * sf, uint32 tag) {
 
 int TTF__getcvtval(SplineFont * sf, int val) {
    int i;
-
    struct ttf_table *cvt_tab = SFFindTable(sf, CHR('c', 'v', 't', ' '));
 
    if (cvt_tab == NULL) {
@@ -333,15 +331,10 @@ int TTF_getcvtval(SplineFont * sf, int val) {
 static StdStem *CVTSeekStem(int xdir, GlobalInstrCt * gic, double value,
 			    int can_fail) {
    StdStem *mainstem = xdir ? &(gic->stdvw) : &(gic->stdhw);
-
    StdStem *otherstems = xdir ? gic->stemsnapv : gic->stemsnaph;
-
    StdStem *closest = NULL;
-
    int otherstemcnt = xdir ? gic->stemsnapvcnt : gic->stemsnaphcnt;
-
    int i;
-
    double mindelta = 1e20, delta, closestwidth = 1e20;
 
    if (mainstem->width == -1)
@@ -400,9 +393,7 @@ static int GetBlueFuzz(SplineFont * sf) {
 /* Return BlueScale as PPEM at which we have to stop suppressing overshoots */
 static int GetBlueScale(SplineFont * sf) {
    char *str, *end;
-
    double bs;
-
    int result;
 
    if (sf->private == NULL
@@ -425,7 +416,6 @@ static int GetBlueScale(SplineFont * sf) {
 
 static real *ParsePSArray(const char *str, int *rescnt) {
    char *end;
-
    real d, *results = NULL;
 
    if ((rescnt == NULL) || (str == NULL))
@@ -496,9 +486,7 @@ static int SortBlues(const void *a, const void *b) {
  */
 static void GICImportBlues(GlobalInstrCt * gic) {
    int bluecnt = 0;
-
    int i, j, cnt;
-
    real *values;
 
    int HasPSBlues =
@@ -508,9 +496,7 @@ static void GICImportBlues(GlobalInstrCt * gic) {
    int HasPSFamilyBlues =
       (PSDictHasEntry(gic->sf->private, "FamilyBlues") != NULL) ||
       (PSDictHasEntry(gic->sf->private, "FamilyOtherBlues") != NULL);
-
    char *PrimaryBlues = HasPSBlues ? "BlueValues" : "FamilyBlues";
-
    char *OtherBlues = HasPSBlues ? "OtherBlues" : "FamilyOtherBlues";
 
    if (HasPSBlues || HasPSFamilyBlues) {
@@ -652,17 +638,11 @@ static int SortStems(const void *a, const void *b) {
  */
 static void GICImportStems(int xdir, GlobalInstrCt * gic) {
    int i, cnt, next;
-
    real *values;
-
    char *s_StdW = xdir ? "StdVW" : "StdHW";
-
    char *s_StemSnap = xdir ? "StemSnapV" : "StemSnapH";
-
    StdStem *stdw = xdir ? &(gic->stdvw) : &(gic->stdhw);
-
    StdStem **stemsnap = xdir ? &(gic->stemsnapv) : &(gic->stemsnaph);
-
    int *stemsnapcnt = xdir ? &(gic->stemsnapvcnt) : &(gic->stemsnaphcnt);
 
    if ((values = GetNParsePSArray(gic->sf, s_StdW, &cnt)) != NULL) {
@@ -711,9 +691,7 @@ static void GICImportStems(int xdir, GlobalInstrCt * gic) {
  */
 static void init_cvt(GlobalInstrCt * gic) {
    int i, cvtindex, cvtsize;
-
    struct ttf_table *tab;
-
    uint8 *cvt;
 
    cvtsize = 1;
@@ -832,7 +810,6 @@ static void init_cvt(GlobalInstrCt * gic) {
  */
 static void init_maxp(GlobalInstrCt * gic) {
    struct ttf_table *tab = SFFindTable(gic->sf, CHR('m', 'a', 'x', 'p'));
-
    uint16 zones, twpts, store, fdefs, stack;
 
    if (tab == NULL) {
@@ -1037,7 +1014,7 @@ static void init_fpgm(GlobalInstrCt * gic) {
       0x2d,			// ENDF
 
       /* Function 5: determine if we are hinting vertically. The function
-       * is crude and it's use is limited to conditions set by SVTCA[].
+       * is crude and its use is limited to conditions set by SVTCA[].
        * Syntax: PUSHB_1 5 CALL; leaves boolean on the stack.
        */
       0xb0,			// PUSHB_1
@@ -1540,7 +1517,7 @@ static void init_fpgm(GlobalInstrCt * gic) {
       0x2d,			// ENDF
 
       /* Function 20: compute adjustments for X and Y components of projection
-       * vector, for aspect ratios different than 1:1, and store them
+       * vector, for aspect ratios different from 1:1, and store them
        * in storage[0] and storage[1] respectively.
        * Syntax: 20 CALL (use it only ONCE, from PREP table).
        */
@@ -1716,11 +1693,8 @@ static int compute_blue_height(real val, int EM, int bluescale, int ppem) {
 
 static uint8 *use_family_blues(uint8 * prep_head, GlobalInstrCt * gic) {
    int i, h1, h2, stopat;
-
    int bs = GetBlueScale(gic->sf);
-
    int EM = gic->sf->ascent + gic->sf->descent;
-
    int callargs[3];
 
    for (i = 0; i < gic->bluecnt; i++) {
@@ -1754,7 +1728,6 @@ static uint8 *use_family_blues(uint8 * prep_head, GlobalInstrCt * gic) {
 #define SNAP_THRESHOLD (64)
 static int compute_stem_width(int xdir, StdStem * stem, int EM, int ppem) {
    int scaled_width;		/* in 1/64th pixels */
-
    int snapto_width;		/* in 1/64th pixels */
 
    scaled_width = (int) rint((rint(fabs(stem->width)) * ppem * 64.0) / EM);
@@ -1782,7 +1755,6 @@ static int compute_stem_width(int xdir, StdStem * stem, int EM, int ppem) {
 static uint8 *normalize_stem(uint8 * prep_head, int xdir, StdStem * stem,
 			     GlobalInstrCt * gic) {
    int callargs[3];
-
    int i;
 
    stem->stopat = 32767;
@@ -1833,11 +1805,8 @@ static uint8 *normalize_stem(uint8 * prep_head, int xdir, StdStem * stem,
 static uint8 *normalize_stems(uint8 * prep_head, int xdir,
 			      GlobalInstrCt * gic) {
    int i, t;
-
    StdStem *mainstem = xdir ? &(gic->stdvw) : &(gic->stdhw);
-
    StdStem *otherstems = xdir ? gic->stemsnapv : gic->stemsnaph;
-
    int otherstemcnt = xdir ? gic->stemsnapvcnt : gic->stemsnaphcnt;
 
    if (mainstem->width == -1)
@@ -1938,11 +1907,8 @@ static void init_prep(GlobalInstrCt * gic) {
    };
 
    int preplen = sizeof(new_prep_preamble);
-
    int prepmaxlen = preplen;
-
    uint8 *new_prep, *prep_head;
-
    struct ttf_table *tab;
 
    if (gic->cvt_done) {
@@ -2204,7 +2170,6 @@ static int NextOnContour(int *contourends, int p) {
  */
 static int __same_angle(int *contourends, BasePoint * bp, int p, double angle) {
    int PrevPoint, NextPoint;
-
    double PrevTangent, NextTangent;
 
    PrevPoint = PrevOnContour(contourends, p);
@@ -2266,7 +2231,6 @@ static int IsCornerExtremum(int xdir, int *contourends, BasePoint * bp, int p) {
 
 static int IsAnglePoint(int *contourends, BasePoint * bp, SplinePoint * sp) {
    int PrevPoint, NextPoint, p = sp->ttfindex;
-
    double PrevTangent, NextTangent;
 
    if ((sp->pointtype != pt_corner) || (p == 0xffff))
@@ -2283,9 +2247,7 @@ static int IsAnglePoint(int *contourends, BasePoint * bp, SplinePoint * sp) {
 static int IsInflectionPoint(int *contourends, BasePoint * bp,
 			     SplinePoint * sp) {
    double CURVATURE_THRESHOLD = 1e-9;
-
    struct spline *prev, *next;
-
    double in, out;
 
    if (IsAnglePoint(contourends, bp, sp))
@@ -2351,11 +2313,8 @@ static void RunOnPoints(InstrCt * ct, int contour_direction,
 			void (*runme) (int p, SplinePoint * sp,
 				       InstrCt * ct)) {
    SplineSet *ss = ct->ss;
-
    SplinePoint *sp;
-
    uint8 *done;
-
    int c, p;
 
    done = (uint8 *) calloc(ct->ptcnt, sizeof(uint8));
@@ -2431,9 +2390,7 @@ static void RunOnPoints(InstrCt * ct, int contour_direction,
 /* given point is about to be gridfitted or interpolated             */
 static int value_point(InstrCt * ct, int p, SplinePoint * sp, real fudge) {
    int score = 0;
-
    int EM = ct->gic->sf->ascent + ct->gic->sf->descent;
-
    uint8 touchflag = ct->xdir ? tf_x : tf_y;
 
    if (IsCornerExtremum(ct->xdir, ct->contourends, ct->bp, p) ||
@@ -2469,11 +2426,8 @@ static int value_point(InstrCt * ct, int p, SplinePoint * sp, real fudge) {
 /* search for points to be snapped to an edge - to be used in RunOnPoints() */
 static void search_edge(int p, SplinePoint * sp, InstrCt * ct) {
    int tmp, score;
-
    real fudge = ct->gic->fudge;
-
    uint8 touchflag = ct->xdir ? tf_x : tf_y;
-
    real refcoord, coord = ct->xdir ? ct->bp[p].x : ct->bp[p].y;
 
    if (fabs(coord - ct->edge.base) <= fudge) {
@@ -2515,11 +2469,8 @@ static void search_edge(int p, SplinePoint * sp, InstrCt * ct) {
 
 static int StemPreferredForPoint(PointData * pd, StemData * stem, int is_next) {
    StemData **stems;
-
    BasePoint bp;
-
    real off, bestoff;
-
    int i, is_l, best = 0, *stemcnt;
 
    stems = (is_next) ? pd->nextstems : pd->prevstems;
@@ -2551,7 +2502,6 @@ static int StemPreferredForPoint(PointData * pd, StemData * stem, int is_next) {
 
 static int has_valid_dstem(PointData * pd, int next) {
    int i, cnt;
-
    StemData *test;
 
    cnt = next ? pd->nextcnt : pd->prevcnt;
@@ -2576,7 +2526,6 @@ static int has_valid_dstem(PointData * pd, int next) {
 static void assign_points_to_edge(InstrCt * ct, StemData * stem, int is_l,
 				  int *refidx) {
    int i, previdx, nextidx, test_l, dint_inner = false, flag;
-
    PointData *pd;
 
    flag = RealNear(stem->unit.y, 1) ? tf_x : tf_y;
@@ -2613,11 +2562,8 @@ static void assign_points_to_edge(InstrCt * ct, StemData * stem, int is_l,
 
 static void init_stem_edge(InstrCt * ct, StemData * stem, int is_l) {
    real left, right, base, other;
-
    struct dependent_stem *slave;
-
    PointData *rpd = NULL;
-
    int i, *refidx = NULL;
 
    left = (stem->unit.x == 0) ? stem->left.x : stem->left.y;
@@ -2719,11 +2665,8 @@ static int findoffs(const int *elems, int elemcnt, int val) {
  */
 static void optimize_segment(int segstart, int segend, InstrCt * ct) {
    int i, local_refpt = -1;
-
    int *others = ct->edge.others;
-
    int touchflag = (ct->xdir) ? tf_x : tf_y;
-
    int ondiags = 0;
 
    if (segstart == segend)
@@ -2764,13 +2707,9 @@ static void optimize_segment(int segstart, int segend, InstrCt * ct) {
  */
 static void optimize_edge(InstrCt * ct) {
    int i, p, segstart, next;
-
    int refpt = ct->edge.refpt;
-
    int *others = ct->edge.others;
-
    int othercnt = ct->edge.othercnt;
-
    int touchflag = (ct->xdir) ? tf_x : tf_y;
 
    if (othercnt == 0)
@@ -2825,19 +2764,12 @@ static void optimize_edge(InstrCt * ct) {
  */
 static void optimize_blue(InstrCt * ct) {
    int i, j, curr;
-
    int *others = ct->edge.others;
-
    int othercnt = ct->edge.othercnt;
-
    int touchflag = (ct->xdir) ? tf_x : tf_y;
-
    int *contourends = ct->contourends;
-
    uint8 *touched = ct->touched;
-
    uint8 *affected = ct->affected;
-
    uint8 *tosnap;
 
    if (othercnt == 0)
@@ -2896,7 +2828,7 @@ static void optimize_blue(InstrCt * ct) {
       }
 }
 
-/* For any strong point, check whether it's position can rely on other
+/* For any strong point, check whether its position can rely on other
  * points (if so, we don't have to instruct it explicitly).
  * This optimization is two-pass. 'Obvious' Off-curve points are sweeped
  * first. Some remaining unneeded points (off- and on-curve) may then be
@@ -2916,13 +2848,9 @@ static void optimize_strongpts(InstrCt * ct) {
 
 static void optimize_strongpts_step1(InstrCt * ct) {
    int i, j;
-
    int *others = ct->edge.others;
-
    int othercnt = ct->edge.othercnt;
-
    int *contourends = ct->contourends;
-
    uint8 *tocull, *tocheck;
 
    if (othercnt == 0)
@@ -2936,21 +2864,13 @@ static void optimize_strongpts_step1(InstrCt * ct) {
    /* for each point of "edge" (would be better called "zone") */
    for (i = 0; i < ct->edge.othercnt; i++) {
       int pt = others[i];
-
       double pt_x = ct->bp[pt].x;
-
       double pt_y = ct->bp[pt].y;
-
       int pt_next = NextOnContour(contourends, pt);
-
       double pt_next_x = ct->bp[pt_next].x;
-
       double pt_next_y = ct->bp[pt_next].y;
-
       int pt_prev = PrevOnContour(contourends, pt);
-
       double pt_prev_x = ct->bp[pt_prev].x;
-
       double pt_prev_y = ct->bp[pt_prev].y;
 
       /* We sweep only off-curve points here */
@@ -2986,25 +2906,15 @@ static void optimize_strongpts_step1(InstrCt * ct) {
 
 static void optimize_strongpts_step2(InstrCt * ct) {
    int pass, i, j, forward;
-
    int next_closed, prev_closed;
-
    int next_pt_max, next_pt_min, prev_pt_max, prev_pt_min;
-
    int next_coord_max, next_coord_min, prev_coord_max, prev_coord_min;
-
    int *others = ct->edge.others;
-
    int othercnt = ct->edge.othercnt;
-
    int touchflag = (ct->xdir) ? tf_x : tf_y;
-
    int *contourends = ct->contourends;
-
    uint8 *touched = ct->touched;
-
    uint8 *affected = ct->affected;
-
    uint8 *toinstr, *tocull, *tocheck;
 
    if (othercnt == 0)
@@ -3148,9 +3058,7 @@ static void finish_edge(InstrCt * ct, uint8 command) {
  */
 static void mark_startenddones(StemData * stem, int is_l) {
    struct dependent_stem *slave;
-
    int i;
-
    uint8 *done;
 
    done = is_l ? &stem->ldone : &stem->rdone;
@@ -3166,7 +3074,6 @@ static void mark_startenddones(StemData * stem, int is_l) {
 
 static void build_cvt_stem(InstrCt * ct, real width, StdStem * cvt_stem) {
    int i, width_parent, width_me;
-
    int EM = ct->gic->sf->ascent + ct->gic->sf->descent;
 
    cvt_stem->width = (int) rint(fabs(width));
@@ -3193,11 +3100,8 @@ static void build_cvt_stem(InstrCt * ct, real width, StdStem * cvt_stem) {
 static void maintain_black_dist(InstrCt * ct, real width, int refpt,
 				int chg_rp0) {
    int callargs[5];
-
    StdStem *StdW = ct->xdir ? &(ct->gic->stdvw) : &(ct->gic->stdhw);
-
    StdStem *ClosestStem;
-
    StdStem cvt_stem;
 
    ClosestStem = CVTSeekStem(ct->xdir, ct->gic, width, true);
@@ -3241,7 +3145,6 @@ static void maintain_black_dist(InstrCt * ct, real width, int refpt,
 static void finish_stem(StemData * stem, int shp_rp1, int chg_rp0,
 			InstrCt * ct) {
    int is_l, basedone, oppdone, reverse;
-
    real hleft, hright, width;
 
    if (stem == NULL)
@@ -3308,9 +3211,7 @@ static void finish_stem(StemData * stem, int shp_rp1, int chg_rp0,
 static void mark_points_affected(InstrCt * ct, StemData * target,
 				 PointData * opd, int next) {
    Spline *s;
-
    PointData *pd, *cpd;
-
    int cpidx;
 
    s = next ? opd->sp->next : opd->sp->prev;
@@ -3353,11 +3254,8 @@ static void mark_points_affected(InstrCt * ct, StemData * target,
 static void finish_serif(StemData * slave, StemData * master, int lbase,
 			 int is_ball, InstrCt * ct) {
    int inner_pt, callargs[4];
-
    struct stem_chunk *chunk;
-
    PointData *opd;
-
    int i;
 
    if (slave == NULL || master == NULL)
@@ -3404,7 +3302,6 @@ static void finish_serif(StemData * slave, StemData * master, int lbase,
 
 static void link_serifs_to_edge(InstrCt * ct, StemData * stem, int is_l) {
    int i, callargs[3];
-
    struct dependent_serif *serif;
 
    /* We use an FPGM function to set rp0, and thus the exact value
@@ -3437,7 +3334,6 @@ static void link_serifs_to_edge(InstrCt * ct, StemData * stem, int is_l) {
 
 static void instruct_serifs(InstrCt * ct, StemData * stem) {
    int i, lcnt, rcnt;
-
    struct dependent_serif *serif;
 
    if (stem->leftidx == -1 || stem->rightidx == -1)
@@ -3462,13 +3358,9 @@ static void instruct_serifs(InstrCt * ct, StemData * stem) {
 
 static void instruct_dependent(InstrCt * ct, StemData * stem) {
    int i, j, rp, rp1, rp2, stopat, callargs[4];
-
    struct dependent_stem *slave;
-
    int w_master, w_slave;
-
    StdStem *std_master, *std_slave, norm_master, norm_slave;
-
    StdStem *StdW = ct->xdir ? &(ct->gic->stdvw) : &(ct->gic->stdhw);
 
    for (i = 0; i < stem->dep_cnt; i++) {
@@ -3636,7 +3528,6 @@ static void instruct_dependent(InstrCt * ct, StemData * stem) {
  */
 static void update_blue_pts(int blueindex, InstrCt * ct) {
    BasePoint *bp = ct->bp;
-
    BlueZone *blues = ct->gic->blues;
 
    if (ct->edge.refpt == -1)
@@ -3664,7 +3555,6 @@ static void fixup_blue_pts(BlueZone * b1, BlueZone * b2) {
 
 static void check_blue_pts(InstrCt * ct) {
    BasePoint *bp = ct->bp;
-
    BlueZone *blues = ct->gic->blues;
 
    int i, j, bluecnt = ct->gic->bluecnt;
@@ -3685,9 +3575,7 @@ static int snap_stem_to_blue(InstrCt * ct, StemData * stem, BlueZone * blue,
    int i, is_l, ret = 0;
    int callargs[3] = { 0 /*pt */ , 0 /*cvt */ , 0 };
    real base, advance, tmp;
-
    real fuzz = GetBlueFuzz(ct->gic->sf);
-
    StemData *slave;
 
    /* Which edge to start at? */
@@ -3762,21 +3650,14 @@ static int snap_stem_to_blue(InstrCt * ct, StemData * stem, BlueZone * blue,
  */
 static void snap_to_blues(InstrCt * ct) {
    int i, j, cvt;
-
    int therewerestems;		/* were there any HStems snapped to this blue? */
-
    StemData *stem;		/* for HStems affected by blues */
-
    real base;			/* for the hint */
    int callargs[3] = { 0 /*pt */ , 0 /*cvt */ , 0 };
    real fudge;
-
    int bluecnt = ct->gic->bluecnt;
-
    int queue[12];		/* Blue zones' indices in processing order */
-
    BlueZone *blues = ct->gic->blues;
-
    real fuzz = GetBlueFuzz(ct->gic->sf);
 
    if (bluecnt == 0)
@@ -3869,9 +3750,7 @@ static void snap_to_blues(InstrCt * ct) {
 
 static int get_counters_cut_in(InstrCt * ct, int m1, int m2, int c1, int c2) {
    real s1, e1, s2, e2, width1, width2;
-
    int i, swidth1, swidth2;
-
    int EM = ct->gic->sf->ascent + ct->gic->sf->descent;
 
    s1 = (&ct->gd->points[m1].base.x)[!ct->xdir];
@@ -3916,9 +3795,7 @@ static int get_counters_cut_in(InstrCt * ct, int m1, int m2, int c1, int c2) {
 static void geninstrs(InstrCt * ct, StemData * stem, StemData * prev,
 		      int lbase) {
    int shp_rp1, chg_rp0, c_m_pt1 = -1, c_m_pt2 = -1;
-
    int callargs[6];
-
    real prev_pos = 0, cur_pos;
 
    if (stem->ldone && stem->rdone)
@@ -4022,19 +3899,12 @@ static void geninstrs(InstrCt * ct, StemData * stem, StemData * prev,
  */
 static void HStemGeninst(InstrCt * ct) {
    BlueZone *blues = ct->gic->blues;
-
    int bluecnt = ct->gic->bluecnt;
-
    BasePoint *bp = ct->bp;
-
    StemData *stem;
-
    int i, j, rp1, rp2, opp, bpt, ept;
-
    double hbase, hend;
-
    int mdrp_end, mdrp_base, ip_base, *rpts1, *rpts2;
-
    int callargs[5];
 
    if (ct->gd->hbundle == NULL)
@@ -4225,7 +4095,6 @@ static void HStemGeninst(InstrCt * ct) {
  */
 static void VStemGeninst(InstrCt * ct) {
    StemData *stem, *prev = NULL;
-
    int i;
 
    if (ct->rp0 != ct->ptcnt) {
@@ -4282,7 +4151,6 @@ static void VStemGeninst(InstrCt * ct) {
 
 static int ds_cmp(const void *_s1, const void *_s2) {
    StemData *const *s1 = _s1, *const *s2 = _s2;
-
    BasePoint *bp1, *bp2;
 
    bp1 =
@@ -4305,7 +4173,6 @@ static int ds_cmp(const void *_s1, const void *_s2) {
  */
 static BasePoint GetVector(BasePoint * top, BasePoint * bottom, int orth) {
    real catx, caty, hyp, temp;
-
    BasePoint ret;
 
    catx = top->x - bottom->x;
@@ -4324,15 +4191,10 @@ static BasePoint GetVector(BasePoint * top, BasePoint * bottom, int orth) {
 
 static int SetDStemKeyPoint(InstrCt * ct, StemData * stem, PointData * pd,
 			    int aindex) {
-
    int nextidx, previdx, cpidx, prev_outer, next_outer, is_start;
-
    int nsidx, psidx, sidx;
-
    uint8 flag;
-
    PointData *ncpd, *pcpd, *cpd, *best = NULL;
-
    real prevdot, nextdot, cpdist;
 
    if (pd == NULL)
@@ -4394,7 +4256,6 @@ static int SetDStemKeyPoint(InstrCt * ct, StemData * stem, PointData * pd,
 static void AssignLineToPoint(DiagPointInfo * diagpts, StemData * stem,
 			      int idx, int is_l) {
    int num, base, i;
-
    PointData *pd1, *pd2;
 
    num = diagpts[idx].count;
@@ -4422,17 +4283,11 @@ static void AssignLineToPoint(DiagPointInfo * diagpts, StemData * stem,
  */
 static void InitDStemData(InstrCt * ct) {
    DiagPointInfo *diagpts = ct->diagpts;
-
    int i, j, idx, previdx, nextidx, num1, num2, psidx, nsidx, is_l, cnt = 0;
-
    real prevlsp, prevrsp, prevlep, prevrep, lpos, rpos;
-
    GlyphData *gd;
-
    StemData *stem;
-
    PointData *ls, *rs, *le, *re, *tpd, *ppd, *npd;
-
    struct stem_chunk *chunk;
 
    gd = ct->gd;
@@ -4587,9 +4442,7 @@ static int SetFreedomVector(uint8 ** instrs, int pnum, int ptcnt,
 			    int fpgm_ok) {
 
    int i, pushpts[3];
-
    PointData *start = NULL, *end = NULL;
-
    BasePoint newfv;
 
    if ((touched[pnum] & tf_d) && !(touched[pnum] & tf_x)
@@ -4635,6 +4488,7 @@ static int SetFreedomVector(uint8 ** instrs, int pnum, int ptcnt,
 	 fv->y = 0;
       }
       return (true);
+
    } else if (!(touched[pnum] & (tf_x | tf_y | tf_d))) {
       if (!UnitsParallel(fv, norm, true)) {
 	 fv->x = norm->x;
@@ -4679,13 +4533,9 @@ static int MarkLineFinished(int pnum, int startnum, int endnum,
 static uint8 *FixDStemPoint(InstrCt * ct, StemData * stem,
 			    int pt, int refpt, int firstedge, int cvt,
 			    BasePoint * fv) {
-
    PointData *v1, *v2;
-
    uint8 *instrs, *touched;
-
    int ptcnt;
-
    DiagPointInfo *diagpts;
 
    diagpts = ct->diagpts;
@@ -4814,13 +4664,9 @@ static uint8 *SnapDStemCorners(InstrCt * ct, StemData * stem, PointData * pd1,
  */
 static uint8 *FixDstem(InstrCt * ct, StemData * ds, BasePoint * fv) {
    int startnum, a1, a2, b1, b2, ptcnt, firstedge, cvt;
-
    int x_ldup, y_ldup, x_edup, y_edup, dsc1, dsc2;
-
    PointData *v1, *v2;
-
    uint8 *touched;
-
    int pushpts[3];
 
    if (ds->ldone && ds->rdone)
@@ -4926,13 +4772,9 @@ static uint8 *FixDstem(InstrCt * ct, StemData * ds, BasePoint * fv) {
 static uint8 *FixPointOnLine(DiagPointInfo * diagpts, PointVector * line,
 			     PointData * pd, InstrCt * ct, BasePoint * fv,
 			     BasePoint * pv, int *rp1, int *rp2) {
-
    uint8 *instrs, *touched;
-
    BasePoint newpv;
-
    int ptcnt;
-
    int pushpts[4];
 
    touched = ct->touched;
@@ -4986,13 +4828,9 @@ static uint8 *InterpolateAlongDiag(DiagPointInfo * diagpts,
 				   PointVector * line, PointData * pd,
 				   InstrCt * ct, BasePoint * fv,
 				   BasePoint * pv, int *rp1, int *rp2) {
-
    uint8 *instrs, *touched;
-
    BasePoint newpv;
-
    int ptcnt;
-
    int pushpts[3];
 
    touched = ct->touched;
@@ -5056,17 +4894,11 @@ static uint8 *InterpolateAlongDiag(DiagPointInfo * diagpts,
  * to another stem. Thus is can handle things like "X" or "K".
  */
 static uint8 *MovePointsToIntersections(InstrCt * ct, BasePoint * fv) {
-
    int i, j, ptcnt, rp1 = -1, rp2 = -1;
-
    uint8 *touched;
-
    BasePoint pv;
-
    PointData *curpd, *npd, *ppd;
-
    DiagPointInfo *diagpts;
-
    StemData *ds;
 
    touched = ct->touched;
@@ -5153,11 +4985,8 @@ static uint8 *MovePointsToIntersections(InstrCt * ct, BasePoint * fv) {
 static void TouchControlPoint(InstrCt * ct, PointData * pd,
 			      int next, int *tobefixedy, int *tobefixedx,
 			      int *numx, int *numy) {
-
    int idx, cpidx;
-
    PointData *cpd;
-
    uint8 *touched = ct->touched;
 
    idx = pd->ttfindex;
@@ -5190,15 +5019,10 @@ static void TouchControlPoint(InstrCt * ct, PointData * pd,
  * have already been), so that subsequent IUP's can't distort our stems.
  */
 static uint8 *TouchDStemPoints(InstrCt * ct, BasePoint * fv) {
-
    int i, ptcnt, numx = 0, numy = 0, idx;
-
    int *tobefixedy, *tobefixedx;
-
    uint8 *instrs, *touched;
-
    DiagPointInfo *diagpts;
-
    PointData *pd;
 
    touched = ct->touched;
@@ -5264,7 +5088,6 @@ static uint8 *TouchDStemPoints(InstrCt * ct, BasePoint * fv) {
 
 static void DStemInfoGeninst(InstrCt * ct) {
    BasePoint fv;
-
    int i;
 
    if (ct->diagcnt == 0)
@@ -5313,7 +5136,6 @@ static int sortedges(const void *_e1, const void *_e2) {
 static int AddEdge(InstrCt * ct, StemData * stem, int is_l,
 		   struct stemedge *edgelist, int cnt) {
    real coord;
-
    int i, skip, refidx;
 
    if (!stem->ghost ||
@@ -5350,23 +5172,14 @@ static int AddEdge(InstrCt * ct, StemData * stem, int is_l,
  */
 static void InterpolateStrongPoints(InstrCt * ct) {
    StemBundle *bundle;
-
    StemData *stem;
-
    uint8 touchflag = ct->xdir ? tf_x : tf_y;
-
    real fudge;
-
    struct stemedge edgelist[192];
-
    int edgecnt = 0, i, j;
-
    int lpoint = -1, ledge = 0;
-
    int rpoint = -1;
-
    int nowrp1 = 1;
-
    int ldone = 0;
 
    bundle = (ct->xdir) ? ct->gd->vbundle : ct->gd->hbundle;
@@ -5450,11 +5263,8 @@ static void InterpolateStrongPoints(InstrCt * ct) {
 
 static uint8 *dogeninstructions(InstrCt * ct) {
    StemData *stem;
-
    int max, i;
-
    DStemInfo *dstem;
-
    BlueData nbd;
 
    /* Fill a temporary BlueData structure basing on the data stored in the global
@@ -5571,23 +5381,14 @@ static uint8 *dogeninstructions(InstrCt * ct) {
 
 void NowakowskiSCAutoInstr(GlobalInstrCt * gic, SplineChar * sc) {
    int cnt, contourcnt;
-
    BasePoint *bp;
-
    int *contourends;
-
    uint8 *clockwise;
-
    uint8 *touched;
-
    uint8 *affected;
-
    SplineSet *ss;
-
    RefChar *ref;
-
    InstrCt ct;
-
    int i;
 
    if (!sc->layers[gic->layer].order2)

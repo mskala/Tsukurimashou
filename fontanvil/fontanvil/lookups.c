@@ -1,4 +1,4 @@
-/* $Id: lookups.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: lookups.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -323,7 +323,6 @@ static int lang_cmp(const void *_ui1, const void *_ui2) {
 FeatureScriptLangList *FindFeatureTagInFeatureScriptList(uint32 tag,
 							 FeatureScriptLangList
 							 * fl) {
-
    while (fl != NULL) {
       if (fl->featuretag == tag)
 	 return (fl);
@@ -333,7 +332,6 @@ FeatureScriptLangList *FindFeatureTagInFeatureScriptList(uint32 tag,
 }
 
 int FeatureTagInFeatureScriptList(uint32 tag, FeatureScriptLangList * fl) {
-
    while (fl != NULL) {
       if (fl->featuretag == tag)
 	 return (true);
@@ -372,7 +370,6 @@ int DefaultLangTagInOneScriptList(struct scriptlanglist *sl) {
 
 struct scriptlanglist *DefaultLangTagInScriptList(struct scriptlanglist *sl,
 						  int DFLT_ok) {
-
    while (sl != NULL) {
       if (DFLT_ok || sl->script != DEFAULT_SCRIPT) {
 	 if (DefaultLangTagInOneScriptList(sl))
@@ -419,13 +416,9 @@ better make sure that both tables have the same script set.
 a GPOS, but he says the GPOS won't work without a GSUB.)
 */
    int cnt = 0, tot = 0, i;
-
    uint32 *scripts = NULL;
-
    OTLookup *test;
-
    FeatureScriptLangList *fl;
-
    struct scriptlanglist *sl;
 
    /* So here always give scripts for both (see comment above) no */
@@ -470,13 +463,9 @@ uint32 *SFLangsInScript(SplineFont * sf, int gpos, uint32 script) {
    /* But giving a value of -1 for gpos will give us the set of languages in */
    /*  both tables (for this script) */
    int cnt = 0, tot = 0, i, g, l;
-
    uint32 *langs = NULL;
-
    OTLookup *test;
-
    FeatureScriptLangList *fl;
-
    struct scriptlanglist *sl;
 
    for (g = 0; g < 2; ++g) {
@@ -538,13 +527,9 @@ uint32 *SFLangsInScript(SplineFont * sf, int gpos, uint32 script) {
 uint32 *SFFeaturesInScriptLang(SplineFont * sf, int gpos, uint32 script,
 			       uint32 lang) {
    int cnt = 0, tot = 0, i, l, isg;
-
    uint32 *features = NULL;
-
    OTLookup *test;
-
    FeatureScriptLangList *fl;
-
    struct scriptlanglist *sl;
 
    /* gpos==0 => GSUB, gpos==1 => GPOS, gpos==-1 => both, gpos==-2 => Both & morx & kern */
@@ -641,13 +626,9 @@ OTLookup **SFLookupsInScriptLangFeature(SplineFont * sf, int gpos,
 					uint32 script, uint32 lang,
 					uint32 feature) {
    int cnt = 0, tot = 0, l;
-
    OTLookup **lookups = NULL;
-
    OTLookup *test;
-
    FeatureScriptLangList *fl;
-
    struct scriptlanglist *sl;
 
    for (test = gpos ? sf->gpos_lookups : sf->gsub_lookups; test != NULL;
@@ -694,7 +675,6 @@ OTLookup **SFLookupsInScriptLangFeature(SplineFont * sf, int gpos,
 
 static int LigaturesFirstComponentGID(SplineFont * sf, char *components) {
    int gid, ch;
-
    char *pt;
 
    for (pt = components; *pt != '\0' && *pt != ' '; ++pt);
@@ -707,7 +687,6 @@ static int LigaturesFirstComponentGID(SplineFont * sf, char *components) {
 
 static int PSTValid(SplineFont * sf, PST * pst) {
    char *start, *pt, ch;
-
    int ret;
 
    switch (pst->type) {
@@ -744,17 +723,11 @@ static int PSTValid(SplineFont * sf, PST * pst) {
 SplineChar **SFGlyphsWithPSTinSubtable(SplineFont * sf,
 				       struct lookup_subtable * subtable) {
    uint8 *used = calloc(sf->glyphcnt, sizeof(uint8));
-
    SplineChar **glyphs, *sc;
-
    int i, k, gid, cnt;
-
    KernPair *kp;
-
    PST *pst;
-
    int ispair = subtable->lookup->lookup_type == gpos_pair;
-
    int isliga = subtable->lookup->lookup_type == gsub_ligature;
 
    for (i = 0; i < sf->glyphcnt; ++i)
@@ -810,7 +783,6 @@ SplineChar **SFGlyphsWithPSTinSubtable(SplineFont * sf,
 
 static void TickLookupKids(OTLookup * otl) {
    struct lookup_subtable *sub;
-
    int i, j;
 
    for (sub = otl->subtables; sub != NULL; sub = sub->next) {
@@ -829,27 +801,16 @@ static void TickLookupKids(OTLookup * otl) {
 
 void SFFindUnusedLookups(SplineFont * sf) {
    OTLookup *test;
-
    struct lookup_subtable *sub;
-
    int gpos;
-
    AnchorClass *ac;
-
    AnchorPoint *ap;
-
    SplineChar *sc;
-
    KernPair *kp;
-
    PST *pst;
-
    int i, k, gid, isv;
-
    SplineFont *_sf = sf;
-
    Justify *jscripts;
-
    struct jstf_lang *jlangs;
 
    if (_sf->cidmaster)
@@ -870,7 +831,7 @@ void SFFindUnusedLookups(SplineFont * sf) {
 	    sub->unused = true;
 	    /* We'll turn the following bit back on if there turns out */
 	    /*  to be an anchor class attached to it -- that is subtly */
-	    /*  different than being unused -- unused will be set if all */
+	    /*  different from being unused -- unused will be set if all */
 	    /*  acs are unused, this bit will be on if there are unused */
 	    /*  classes that still refer to us. */
 	    sub->anchor_classes = false;
@@ -998,7 +959,6 @@ void SFFindUnusedLookups(SplineFont * sf) {
 
 void SFFindClearUnusedLookupBits(SplineFont * sf) {
    OTLookup *test;
-
    int gpos;
 
    for (gpos = 0; gpos < 2; ++gpos) {
@@ -1034,9 +994,7 @@ static OTLookup **RemoveFromList(OTLookup ** list, OTLookup * dying) {
 
 static void RemoveJSTFReferences(SplineFont * sf, OTLookup * dying) {
    Justify *jscript;
-
    struct jstf_lang *jlang;
-
    int i;
 
    for (jscript = sf->justify; jscript != NULL; jscript = jscript->next) {
@@ -1058,9 +1016,7 @@ static void RemoveJSTFReferences(SplineFont * sf, OTLookup * dying) {
 static void RemoveNestedReferences(SplineFont * sf, int isgpos,
 				   OTLookup * dying) {
    OTLookup *otl;
-
    struct lookup_subtable *sub;
-
    int i, j, k;
 
    for (otl = isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
@@ -1110,7 +1066,6 @@ static void RemoveNestedReferences(SplineFont * sf, int isgpos,
 void SFRemoveLookupSubTable(SplineFont * sf, struct lookup_subtable *sub,
 			    int remove_acs) {
    OTLookup *otl = sub->lookup;
-
    struct lookup_subtable *subprev, *subtest;
 
    if (sf->cidmaster != NULL)
@@ -1178,13 +1133,9 @@ void SFRemoveLookupSubTable(SplineFont * sf, struct lookup_subtable *sub,
       }
    } else {
       int i, k, v;
-
       SplineChar *sc;
-
       SplineFont *_sf;
-
       PST *pst, *prev, *next;
-
       KernPair *kp, *kpprev, *kpnext;
 
       k = 0;
@@ -1240,9 +1191,7 @@ void SFRemoveLookupSubTable(SplineFont * sf, struct lookup_subtable *sub,
 
 void SFRemoveLookup(SplineFont * sf, OTLookup * otl, int remove_acs) {
    OTLookup *test, *prev;
-
    int isgpos;
-
    struct lookup_subtable *sub, *subnext;
 
    if (sf->cidmaster)
@@ -1277,9 +1226,7 @@ void SFRemoveLookup(SplineFont * sf, OTLookup * otl, int remove_acs) {
 
 struct lookup_subtable *SFFindLookupSubtable(SplineFont * sf, char *name) {
    int isgpos;
-
    OTLookup *otl;
-
    struct lookup_subtable *sub;
 
    if (sf->cidmaster)
@@ -1310,7 +1257,6 @@ struct lookup_subtable *SFFindLookupSubtableAndFreeName(SplineFont * sf,
 
 OTLookup *SFFindLookup(SplineFont * sf, char *name) {
    int isgpos;
-
    OTLookup *otl;
 
    if (sf->cidmaster)
@@ -1332,7 +1278,6 @@ OTLookup *SFFindLookup(SplineFont * sf, char *name) {
 void FListAppendScriptLang(FeatureScriptLangList * fl, uint32 script_tag,
 			   uint32 lang_tag) {
    struct scriptlanglist *sl;
-
    int l;
 
    for (sl = fl->scripts; sl != NULL && sl->script != script_tag;
@@ -1560,7 +1505,6 @@ static struct {
 
 void LookupInit(void) {
    static int done = false;
-
    int i, j;
 
    if (done)
@@ -1579,7 +1523,6 @@ void LookupInit(void) {
 
 char *TagFullName(SplineFont * sf, uint32 tag, int ismac, int onlyifknown) {
    char ubuf[200], *end = ubuf + sizeof(ubuf), *setname;
-
    int k;
 
    if (ismac == -1)
@@ -1629,15 +1572,10 @@ char *TagFullName(SplineFont * sf, uint32 tag, int ismac, int onlyifknown) {
 
 void NameOTLookup(OTLookup * otl, SplineFont * sf) {
    char *userfriendly = NULL, *script;
-
    FeatureScriptLangList *fl;
-
    char *lookuptype;
-
    char *format;
-
    struct lookup_subtable *subtable;
-
    int k;
 
    LookupInit();
@@ -1797,7 +1735,6 @@ void NameOTLookup(OTLookup * otl, SplineFont * sf) {
 
 static void LangOrder(struct scriptlanglist *sl) {
    int i, j;
-
    uint32 lang, lang2;
 
    for (i = 0; i < sl->lang_cnt; ++i) {
@@ -1821,7 +1758,6 @@ static void LangOrder(struct scriptlanglist *sl) {
 
 static struct scriptlanglist *SLOrder(struct scriptlanglist *sl) {
    int i, j, cnt;
-
    struct scriptlanglist *sl2, *space[30], **allocked = NULL, **test = space;
 
    for (sl2 = sl, cnt = 0; sl2 != NULL; sl2 = sl2->next, ++cnt)
@@ -1852,7 +1788,6 @@ static struct scriptlanglist *SLOrder(struct scriptlanglist *sl) {
 
 FeatureScriptLangList *FLOrder(FeatureScriptLangList * fl) {
    int i, j, cnt;
-
    FeatureScriptLangList *fl2, *space[30], **allocked = NULL, **test = space;
 
    for (fl2 = fl, cnt = 0; fl2 != NULL; fl2 = fl2->next, ++cnt)
@@ -1928,7 +1863,6 @@ FeatureScriptLangList *FeatureListCopy(FeatureScriptLangList * fl) {
 static void LangMerge(struct scriptlanglist *into,
 		      struct scriptlanglist *from) {
    int i, j;
-
    uint32 flang, tlang;
 
    for (i = 0; i < from->lang_cnt; ++i) {
@@ -1994,17 +1928,11 @@ void FLMerge(OTLookup * into, OTLookup * from) {
 void SFSubTablesMerge(SplineFont * _sf, struct lookup_subtable *subfirst,
 		      struct lookup_subtable *subsecond) {
    int lookup_type = subfirst->lookup->lookup_type;
-
    int gid, k, isv;
-
    SplineChar *sc;
-
    SplineFont *sf = _sf;
-
    PST *pst, *fpst, *spst, *pstprev, *pstnext;
-
    KernPair *fkp, *skp, *kpprev, *kpnext;
-
    AnchorClass *ac;
 
    if (lookup_type != subsecond->lookup->lookup_type) {
@@ -2156,7 +2084,6 @@ void SFSubTablesMerge(SplineFont * _sf, struct lookup_subtable *subfirst,
 
 static char **ClassCopy(int class_cnt, char **classes) {
    char **newclasses;
-
    int i;
 
    if (classes == NULL || class_cnt == 0)
@@ -2173,9 +2100,7 @@ static OTLookup *_OTLookupCopyInto(struct sfmergecontext *mc,
 static OTLookup *OTLookupCopyNested(struct sfmergecontext *mc,
 				    OTLookup * from_otl) {
    char *newname;
-
    OTLookup *to_nested_otl;
-
    int l;
 
    if (from_otl == NULL)
@@ -2221,7 +2146,6 @@ static KernClass *SF_AddKernClass(struct sfmergecontext *mc, KernClass * kc,
 static FPST *SF_AddFPST(struct sfmergecontext *mc, FPST * fpst,
 			struct lookup_subtable *sub) {
    FPST *newfpst;
-
    int i, k, cur;
 
    newfpst = chunkalloc(sizeof(FPST));
@@ -2295,7 +2219,6 @@ static FPST *SF_AddFPST(struct sfmergecontext *mc, FPST * fpst,
 static ASM *SF_AddASM(struct sfmergecontext *mc, ASM * sm,
 		      struct lookup_subtable *sub) {
    ASM *newsm;
-
    int i;
 
    newsm = chunkalloc(sizeof(ASM));
@@ -2365,13 +2288,9 @@ static void SF_AddAnchorClasses(struct sfmergecontext *mc,
 				struct lookup_subtable *from_sub,
 				struct lookup_subtable *sub) {
    AnchorClass *ac, *nac;
-
    int k, gid;
-
    SplineFont *fsf;
-
    AnchorPoint *ap;
-
    SplineChar *fsc, *tsc;
 
    for (ac = mc->sf_from->anchor; ac != NULL; ac = ac->next)
@@ -2436,7 +2355,6 @@ static int SF_SCAddKP(SplineChar * tosc, KernPair * kp,
 		      struct lookup_subtable *sub, int isvkern,
 		      SplineFont * to_sf) {
    SplineChar *tosecond;
-
    KernPair *newkp;
 
    tosecond = SFGetChar(to_sf, kp->sc->unicodeenc, kp->sc->name);
@@ -2461,15 +2379,10 @@ static void SF_AddPSTKern(struct sfmergecontext *mc,
 			  struct lookup_subtable *from_sub,
 			  struct lookup_subtable *sub) {
    int k, gid, isv;
-
    SplineFont *fsf;
-
    SplineChar *fsc, *tsc;
-
    PST *pst;
-
    KernPair *kp;
-
    int iskern = sub->lookup->lookup_type == gpos_pair;
 
    k = 0;
@@ -2650,7 +2563,6 @@ int FeatureOrderId(int isgpos, FeatureScriptLangList * fl) {
 
 void SortInsertLookup(SplineFont * sf, OTLookup * newotl) {
    int isgpos = newotl->lookup_type >= gpos_start;
-
    int pos;
 
    OTLookup *prev, *otl;
@@ -2677,9 +2589,7 @@ void SortInsertLookup(SplineFont * sf, OTLookup * newotl) {
 static void OrderNewLookup(SplineFont * into_sf, OTLookup * otl,
 			   OTLookup * before) {
    int isgpos = otl->lookup_type >= gpos_start;
-
    OTLookup **head = isgpos ? &into_sf->gpos_lookups : &into_sf->gsub_lookups;
-
    OTLookup *prev;
 
    if (before == (OTLookup *) - 2)
@@ -2699,9 +2609,7 @@ static OTLookup *_OTLookupCopyInto(struct sfmergecontext *mc,
 				   OTLookup * from_otl, OTLookup * before,
 				   int do_contents) {
    OTLookup *otl;
-
    struct lookup_subtable *sub, *last, *from_sub;
-
    int scnt, l;
 
    for (l = 0; l < mc->lcnt; ++l) {
@@ -2767,9 +2675,7 @@ static OTLookup *_OTLookupCopyInto(struct sfmergecontext *mc,
 static int NeedsPrefix(SplineFont * into_sf, SplineFont * from_sf,
 		       OTLookup ** list) {
    struct lookup_subtable *from_sub;
-
    int i, j, k;
-
    OTLookup *sublist[2];
 
    sublist[1] = NULL;
@@ -2833,7 +2739,6 @@ static int ApplyLookupAtPos(uint32 tag, OTLookup * otl,
 
 static int GlyphNameInClass(char *name, char *class) {
    char *pt;
-
    int len = strlen(name);
 
    if (class == NULL)
@@ -2859,7 +2764,6 @@ static int GlyphNameInClass(char *name, char *class) {
 static void ApplyMacIndicRearrangement(struct lookup_data *data, int verb,
 				       int first_pos, int last_pos) {
    struct opentype_str temp, temp2, temp3, temp4;
-
    int i;
 
    if (first_pos == -1 || last_pos == -1 || last_pos <= first_pos)
@@ -3000,9 +2904,7 @@ static void ApplyMacIndicRearrangement(struct lookup_data *data, int verb,
 static int ApplyMacInsert(struct lookup_data *data, int ipos, int cnt,
 			  char *glyphnames, int orig_index) {
    SplineChar *inserts[32];
-
    char *start, *pt;
-
    int i, ch;
 
    if (cnt == 0 || glyphnames == NULL || ipos == -1)
@@ -3037,15 +2939,10 @@ static int ApplyMacInsert(struct lookup_data *data, int ipos, int cnt,
 static void ApplyAppleStateMachine(uint32 tag, OTLookup * otl,
 				   struct lookup_data *data) {
    struct lookup_subtable *sub;
-
    int state, class, pos, mark_pos, markend_pos, i;
-
    ASM *sm;
-
    int cnt_cur, cnt_mark;
-
    struct asm_state *entry;
-
    int kern_stack[8], kcnt;	/* Kerning state machines handle at most 8 glyphs */
 
    /* Flaws: Line processing has not been done yet, so we are never in the */
@@ -3166,13 +3063,9 @@ static void LigatureFree(struct lookup_data *data) {
 static void LigatureSearch(struct lookup_subtable *sub,
 			   struct lookup_data *data) {
    SplineFont *sf = data->sf;
-
    int gid, ccnt, cnt, ch, err;
-
    SplineChar *sc;
-
    PST *pst;
-
    char *pt, *start;
 
    LigatureFree(data);
@@ -3331,11 +3224,8 @@ static int ContextualMatch(struct lookup_subtable *sub,
 			   struct lookup_data *data, int pos,
 			   struct fpst_rule **_rule) {
    int i, cpos, retpos, r;
-
    FPST *fpst = sub->fpst;
-
    int lookup_flags = sub->lookup->lookup_flags;
-
    char *pt;
 
    /* If we should skip the current glyph then don't try for a match here */
@@ -3504,7 +3394,6 @@ static int ContextualMatch(struct lookup_subtable *sub,
 static int ApplySingleSubsAtPos(struct lookup_subtable *sub,
 				struct lookup_data *data, int pos) {
    PST *pst;
-
    SplineChar *sc;
 
    for (pst = data->str[pos].sc->possub; pst != NULL && pst->subtable != sub;
@@ -3532,13 +3421,9 @@ static int ApplySingleSubsAtPos(struct lookup_subtable *sub,
 static int ApplyMultSubsAtPos(struct lookup_subtable *sub,
 			      struct lookup_data *data, int pos) {
    PST *pst;
-
    SplineChar *sc;
-
    char *start, *pt;
-
    int mcnt, ch, i;
-
    SplineChar *mults[20];
 
    for (pst = data->str[pos].sc->possub; pst != NULL && pst->subtable != sub;
@@ -3592,9 +3477,7 @@ static int ApplyMultSubsAtPos(struct lookup_subtable *sub,
 static int ApplyAltSubsAtPos(struct lookup_subtable *sub,
 			     struct lookup_data *data, int pos) {
    PST *pst;
-
    SplineChar *sc;
-
    char *start, *pt, ch;
 
    for (pst = data->str[pos].sc->possub; pst != NULL && pst->subtable != sub;
@@ -3623,9 +3506,7 @@ static int ApplyAltSubsAtPos(struct lookup_subtable *sub,
 static int ApplyLigatureSubsAtPos(struct lookup_subtable *sub,
 				  struct lookup_data *data, int pos) {
    int i, k, lpos, npos;
-
    int lookup_flags = sub->lookup->lookup_flags;
-
    int match_found = -1, match_len = 0;
 
    if (data->lig_owner != sub)
@@ -3679,7 +3560,6 @@ static int ApplyContextual(struct lookup_subtable *sub,
    /*  If the contextual matches, then we apply the lookups, otherwise we */
    /*  don't. Now the lookups will be different, but we don't care here */
    struct fpst_rule *rule;
-
    int retpos, i, j;
 
    retpos = ContextualMatch(sub, data, pos, &rule);
@@ -3697,7 +3577,6 @@ static int ApplyContextual(struct lookup_subtable *sub,
 }
 
 static int FigureDeviceTable(DeviceTable * dt, int pixelsize) {
-
    if (dt == NULL || dt->corrections == NULL
        || pixelsize < dt->first_pixel_size || pixelsize > dt->last_pixel_size)
       return (0);
@@ -3735,9 +3614,7 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
 			     struct lookup_data *data, int pos,
 			     int allow_class0) {
    PST *pst;
-
    int npos, isv, within, f, l, kcspecd;
-
    KernPair *kp;
 
    npos = skipglyphs(sub->lookup->lookup_flags, data, pos + 1);
@@ -3833,7 +3710,6 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
 static int ApplyAnchorPosAtPos(struct lookup_subtable *sub,
 			       struct lookup_data *data, int pos) {
    AnchorPoint *ap1, *ap2;
-
    int bpos;
 
    /* Anchors do not position the base glyph, but the mark (or second glyph */
@@ -3923,9 +3799,7 @@ static int ApplyAnchorPosAtPos(struct lookup_subtable *sub,
 static int ConditionalTagOk(uint32 tag, OTLookup * otl,
 			    struct lookup_data *data, int pos) {
    int npos, bpos;
-
    uint32 script;
-
    int before_in_script, after_in_script;
 
    if (tag == CHR('i', 'n', 'i', 't') || tag == CHR('i', 's', 'o', 'l') ||
@@ -3955,7 +3829,6 @@ static int ConditionalTagOk(uint32 tag, OTLookup * otl,
 static int ApplyLookupAtPos(uint32 tag, OTLookup * otl,
 			    struct lookup_data *data, int pos) {
    struct lookup_subtable *sub;
-
    int newpos;
 
    /* Need two passes for pair kerning lookups. At the second pass we accept */
@@ -4030,7 +3903,6 @@ static int ApplyLookupAtPos(uint32 tag, OTLookup * otl,
 
 static void ApplyLookup(uint32 tag, OTLookup * otl, struct lookup_data *data) {
    int pos, npos;
-
    int lt = otl->lookup_type;
 
    if (lt == morx_indic || lt == morx_context || lt == morx_insert ||
@@ -4050,7 +3922,6 @@ static void ApplyLookup(uint32 tag, OTLookup * otl, struct lookup_data *data) {
 static uint32 FSLLMatches(FeatureScriptLangList * fl, uint32 * flist,
 			  uint32 script, uint32 lang) {
    int i, l;
-
    struct scriptlanglist *sl;
 
    if (flist == NULL)
@@ -4087,13 +3958,9 @@ struct opentype_str *ApplyTickedFeatures(SplineFont * sf, uint32 * flist,
 					 int pixelsize,
 					 SplineChar ** glyphs) {
    int isgpos, cnt;
-
    OTLookup *otl;
-
    struct lookup_data data;
-
    uint32 *langs, templang;
-
    int i;
 
    memset(&data, 0, sizeof(data));
@@ -4142,7 +4009,6 @@ struct opentype_str *ApplyTickedFeatures(SplineFont * sf, uint32 * flist,
 static void doreplace(char **haystack, char *start, char *search, char *rpl,
 		      int slen) {
    int rlen;
-
    char *pt = start + slen;
 
    rlen = strlen(rpl);
@@ -4171,9 +4037,7 @@ static void doreplace(char **haystack, char *start, char *search, char *rpl,
 static int rplstr(char **haystack, char *search, char *rpl,
 		  int multipleoccurances) {
    char *start, *pt, *base = *haystack;
-
    int ch, match, slen = strlen(search);
-
    int any = 0;
 
    if (base == NULL)
@@ -4213,9 +4077,7 @@ static int rplglyphname(char **haystack, char *search, char *rpl) {
    /* If we change "f" to "uni0066" then we should also change "f.sc" to */
    /*  "uni0066.sc" and "f_f_l" to "uni0066_uni0066_l" */
    char *start, *pt, *base = *haystack;
-
    int ch, match, slen = strlen(search);
-
    int any = 0;
 
    if (slen >= strlen(base))
@@ -4254,7 +4116,6 @@ static int rplglyphname(char **haystack, char *search, char *rpl) {
 static int glyphnameIsComponent(char *haystack, char *search) {
    /* Check for a glyph name in ligature names and dotted names */
    char *start, *pt;
-
    int slen = strlen(search);
 
    if (slen >= strlen(haystack))
@@ -4277,7 +4138,6 @@ static int glyphnameIsComponent(char *haystack, char *search) {
 
 static int gvfixup(struct glyphvariants *gv, char *old, char *new) {
    int i;
-
    int ret = 0;
 
    if (gv == NULL)
@@ -4298,19 +4158,12 @@ void SFGlyphRenameFixup(SplineFont * sf, char *old, char *new,
 /* NOTE: Existing GUI behaviour renames glyphs, rename_related_glyphs turns */
 /* off this behaviour for scripting - see github issue #523 */
    int k, gid, isv;
-
    int i, r;
-
    SplineFont *master = sf;
-
    SplineChar *sc;
-
    PST *pst;
-
    FPST *fpst;
-
    KernClass *kc;
-
    ASM *sm;
 
    if (sf->cidmaster != NULL)
@@ -4424,13 +4277,9 @@ void SFGlyphRenameFixup(SplineFont * sf, char *old, char *new,
 struct lookup_subtable *SFSubTableFindOrMake(SplineFont * sf, uint32 tag,
 					     uint32 script, int lookup_type) {
    OTLookup **base;
-
    OTLookup *otl, *found = NULL;
-
    int isgpos = lookup_type >= gpos_start;
-
    struct lookup_subtable *sub;
-
    int isnew = false;
 
    if (sf->cidmaster)
@@ -4519,7 +4368,6 @@ static void AddOTLToSllk(struct sllk *sllk, OTLookup * otl,
 
 int IsAnchorClassUsed(SplineChar * sc, AnchorClass * an) {
    AnchorPoint *ap;
-
    int waslig = 0, sawentry = 0, sawexit = 0;
 
    for (ap = sc->anchor; ap != NULL; ap = ap->next) {
@@ -4555,7 +4403,6 @@ int IsAnchorClassUsed(SplineChar * sc, AnchorClass * an) {
 
 int PSTContains(const char *components, const char *name) {
    const char *pt;
-
    int len = strlen(name);
 
    for (pt = strstr(components, name); pt != NULL;
@@ -4569,7 +4416,6 @@ int PSTContains(const char *components, const char *name) {
 
 int KernClassContains(KernClass * kc, char *name1, char *name2, int ordered) {
    int infirst = 0, insecond = 0, scpos1, kwpos1, scpos2, kwpos2;
-
    int i;
 
    for (i = 1; i < kc->first_cnt; ++i) {
@@ -4613,7 +4459,6 @@ int KernClassContains(KernClass * kc, char *name1, char *name2, int ordered) {
 
 int KCFindName(char *name, char **classnames, int cnt, int allow_class0) {
    int i;
-
    char *pt, *end, ch;
 
    for (i = 0; i < cnt; ++i) {

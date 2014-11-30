@@ -1,4 +1,4 @@
-/* $Id: macenc.c 3332 2014-09-29 08:37:22Z mskala $ */
+/* $Id: macenc.c 3501 2014-11-30 12:15:54Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1162,9 +1162,7 @@ static const unichar_t *MacEncLangToTable(int macenc, int maclang) {
 
 char *MacStrToUtf8(const char *str, int macenc, int maclang) {
    const unichar_t *table;
-
    char *ret, *rpt;
-
    const uint8 *ustr = (uint8 *) str;
 
    if (str == NULL)
@@ -1177,11 +1175,8 @@ char *MacStrToUtf8(const char *str, int macenc, int maclang) {
 			    sm_korean ? "EUC-KR" : macenc ==
 			    sm_tradchinese ? "Big5" : "EUC-CN");
       iconv_t *toutf8;
-
       ICONV_CONST char *in;
-
       char *out;
-
       size_t inlen, outlen;
 
       if (enc == NULL)
@@ -1223,9 +1218,7 @@ char *MacStrToUtf8(const char *str, int macenc, int maclang) {
 
 char *Utf8ToMacStr(const char *ustr, int macenc, int maclang) {
    char *ret, *rpt;
-
    const unichar_t *table;
-
    int i, ch;
 
    if (ustr == NULL)
@@ -1238,11 +1231,8 @@ char *Utf8ToMacStr(const char *ustr, int macenc, int maclang) {
 			    sm_korean ? "EUC-KR" : macenc ==
 			    sm_tradchinese ? "Big5" : "EUC-CN");
       iconv_t fromutf8;
-
       ICONV_CONST char *in;
-
       char *out;
-
       size_t inlen, outlen;
 
       if (enc == NULL)
@@ -1303,7 +1293,6 @@ uint8 MacEncFromMacLang(int maclang) {
 }
 
 uint16 WinLangFromMac(int maclang) {
-
    if (maclang < 0
        || maclang >= sizeof(_WinLangFromMac) / sizeof(_WinLangFromMac[0]))
       return (0xffff);
@@ -1328,9 +1317,7 @@ uint16 WinLangToMac(int winlang) {
 
 const int32 *MacEncToUnicode(int script, int lang) {
    static int32 temp[256];
-
    int i;
-
    const unichar_t *table;
 
    table = MacEncLangToTable(script, lang);
@@ -1344,9 +1331,7 @@ const int32 *MacEncToUnicode(int script, int lang) {
 int MacLangFromLocale(void) {
    /*const char *loc = setlocale(LC_MESSAGES,NULL); *//* This always returns "C" for me, even when it shouldn't be */
    const char *loc;
-
    static int found = -1;
-
    int i;
 
    if (found != -1)
@@ -1386,7 +1371,6 @@ int MacLangFromLocale(void) {
 
 char *PickNameFromMacName(struct macname *mn) {
    int lang = MacLangFromLocale();
-
    struct macname *first = mn, *english = NULL;
 
    while (mn != NULL) {
@@ -1407,7 +1391,6 @@ char *PickNameFromMacName(struct macname *mn) {
 }
 
 char *FindEnglishNameInMacName(struct macname *mn) {
-
    while (mn != NULL) {
       if (mn->lang == 0)
 	 break;
@@ -1439,7 +1422,6 @@ MacFeat *FindMacFeature(SplineFont * sf, int feat, MacFeat ** secondary) {
 struct macsetting *FindMacSetting(SplineFont * sf, int feat, int set,
 				  struct macsetting **secondary) {
    MacFeat *from_f, *from_p;
-
    struct macsetting *s_f, *s_p;
 
    if (sf != NULL)
@@ -1468,7 +1450,6 @@ struct macsetting *FindMacSetting(SplineFont * sf, int feat, int set,
 
 struct macname *FindMacSettingName(SplineFont * sf, int feat, int set) {
    MacFeat *from_f, *from_p;
-
    struct macsetting *s;
 
    if (sf != NULL)
