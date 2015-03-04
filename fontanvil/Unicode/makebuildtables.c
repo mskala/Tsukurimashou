@@ -1,4 +1,4 @@
-/* $Id: makebuildtables.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: makebuildtables.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -684,7 +684,7 @@ void ParseUnicodeFile(FILE * in) {
 	 continue;
       pt += 6;
       mask = 0;
-      for (;;) {
+      while (1) {
 	 for (i = 0; names2[i].name != NULL; ++i) {
 	    if (strncmp(pt, names2[i].name, strlen(names2[i].name)) == 0)
 	       break;

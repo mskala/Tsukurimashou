@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3424 2014-10-27 08:34:41Z mskala $])
+AC_REVISION([$Id: configure.ac 3512 2014-12-02 08:05:37Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -254,6 +254,14 @@ gmake_version=dnl
    AS_VERSION_COMPARE([$gmake_version],[3.82],
      [missing_gmake_version=yes])])
 AC_MSG_RESULT([$gmake_version])
+#
+date_parser='date -d'
+AC_MSG_CHECKING([how to parse dates])
+date_res=`$date_parser 'February 29 2000' '+%Y%m%d' 2> /dev/null`
+AS_IF([test "x$date_res" = "x20000229"],[],
+      [date_parser='date -j -f "%B %d %Y"'])
+AC_MSG_RESULT([$date_parser])
+AC_SUBST([date_parser])
 #
 AS_IF([test "x$KLEKNEV" = "x"],[KLEKNEV=/bin/sh])
 #
@@ -635,7 +643,7 @@ AS_IF([test "x$GDB" = "x"],
   [missing_gdb=yes
    can_ffdebug=no])
 AS_IF([test "$can_ffdebug" = "yes"],
-  [gdb_result=`echo q | $GDB -q -n -s $FONTANVIL | $GREP 'no debug'`
+  [gdb_result=`echo q | $GDB -q -n -s $FONTANVIL 2> /dev/null | $GREP 'no debug'`
    AS_IF([test "x$gdb_result" = "x"],[],
      [missing_ff_debugsymbols=yes
       can_ffdebug=no])])

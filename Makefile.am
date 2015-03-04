@@ -991,7 +991,7 @@ doc/version.tex: hamlog/config.hl
 	  >> doc/version.tex
 	$(AM_V_at)echo '\def\TsukurimashouReleaseDate{@release_date@}' \
 	  >> doc/version.tex
-	$(AM_V_at)echo '\def\TsukurimashouRDWide{'`date -d \
+	$(AM_V_at)echo '\def\TsukurimashouRDWide{'`@date_parser@ \
 	    "$(nocomma_date)" "+%YX%-mY%-dZ"`'}' \
 	  | $(PERL) -CSD -pe \
 	    'tr/0-9XYZ/\x{ff10}-\x{ff19}\x{5e74}\x{6708}\x{65e5}/' \

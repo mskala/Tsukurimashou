@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 3271 2014-09-07 19:15:34Z mskala $ */
+/* $Id: splineoverlap.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2949,7 +2949,7 @@ static SplinePoint *MonoFollowForward(Intersection **curil, MList *ml,
     SplinePoint *mid;
     Monotonic *m = ml->m, *mstart;
 
-    for (;;) {
+    while (1) {
 	for ( mstart = m; m->s==mstart->s; m=m->next) {
 	    if ( !m->isneeded )
 		SOError( "Expected needed monotonic @(%g,%g) (%g,%g)->(%g,%g).\n", (*curil)->inter.x, (*curil)->inter.y,
@@ -2993,7 +2993,7 @@ static SplinePoint *MonoFollowBackward(Intersection **curil, MList *ml,
     SplinePoint *mid;
     Monotonic *m = ml->m, *mstart;
 
-    for (;;) {
+    while (1) {
 	for ( mstart=m; m->s==mstart->s; m=m->prev) {
 	    if ( !m->isneeded )
 		SOError( "Expected needed monotonic (back) @(%g,%g) (%g,%g)->(%g,%g).\n", (double) (*curil)->inter.x, (double) (*curil)->inter.y,
@@ -3044,7 +3044,7 @@ static SplineSet *JoinAContour(Intersection *startil,MList *ml) {
     // Start building a new spline.
     ss->first = last = SplinePointCreate(startil->inter.x,startil->inter.y);
     curil = startil;
-    for (;;) {
+    while (1) {
 	if ( allexclude && !ml->m->exclude ) allexclude = false;
 	finalm = NULL;
 	// Create a spline on the attached monotonic if it is in fact connected here.
@@ -3174,7 +3174,7 @@ static SplineSet *JoinAllNeeded(Intersection *ilist) {
 
     for ( il=ilist; il!=NULL; il=il->next ) {
 	/* Try to preserve direction */
-	for (;;) {
+	while (1) {
 	    reverse_flag = 0;
 	    // We loop until there are no more monotonics connected to this intersection.
 	    // First we iterate through the connected monotonics until we find one that is needed (and not already handled) and starts at this intersection.

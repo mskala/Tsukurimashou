@@ -1,4 +1,4 @@
-/* $Id: fsys.c 3412 2014-10-24 20:34:43Z mskala $ */
+/* $Id: fsys.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2004 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -118,7 +118,7 @@ static int mkdir_p(const char *path, mode_t mode) {
 }
 
 static void savestrcpy(char *dest, const char *src) {
-   for (;;) {
+   while (1) {
       *dest = *src;
       if (*dest == '\0')
 	 break;

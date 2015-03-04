@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: autowidth.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -841,7 +841,7 @@ static unichar_t *ugetstr(FILE * file, int format, unichar_t * buffer,
 	    ungetc(ch, file);
       }
    } else {
-      for (;;) {
+      while (1) {
 	 ch = getc(file);
 	 ch2 = getc(file);
 	 if (format == 1)

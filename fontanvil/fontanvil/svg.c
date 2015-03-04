@@ -1,4 +1,4 @@
-/* $Id: svg.c 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: svg.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -840,7 +840,7 @@ static int LigCnt(SplineFont * sf, PST * lig, int32 * univals, int max) {
    else if (!lig->subtable->lookup->store_in_afm)
       return (0);
    pt = lig->u.lig.components;
-   for (;;) {
+   while (1) {
       end = strchr(pt, ' ');
       if (end != NULL)
 	 *end = '\0';
@@ -2947,10 +2947,9 @@ static void SVGFigureStyle(struct svg_state *st, char *name,
 			   char **fill_colour_source,
 			   char **stroke_colour_source) {
    char *pt;
-
    char namebuf[200], propbuf[400];
 
-   for (;;) {
+   while (1) {
       while (isspace(*name))
 	 ++name;
       if (*name == ':') {

@@ -1,4 +1,4 @@
-/* $Id: print.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: print.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -118,7 +118,7 @@ static void pdf_finishpage(PI * pi) {
 static int pfb_getsectionlength(FILE * pfb, int sec_type, int skip_sec) {
    int len = 0, sublen, ch;
 
-   for (;;) {
+   while (1) {
       ch = getc(pfb);
       if (ch != 0x80) {
 	 ungetc(ch, pfb);

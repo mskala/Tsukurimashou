@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: parsepdf.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2012nov01, many fixes added, Jose Da Silva */
 /*
@@ -346,7 +346,7 @@ static char *pdf_getdictvalue(struct pdfcontext *pc) {
 
    pdf_skipwhitespace(pc);
    ch = getc(pdf);
-   for (;;) {
+   while (1) {
       if (pt >= end) {
 	 char *temp = realloc(pc->tokbuf, (pc->tblen += 300));
 
@@ -436,7 +436,7 @@ static int pdf_readdict(struct pdfcontext *pc) {
       return (false);
    getc(pdf);			/* Eat the second '<' */
 
-   for (;;) {
+   while (1) {
       key = copy(pdf_getname(pc));
       if (key == NULL) {
 	 if (pc->compressed != NULL) {	/* We've read the whole object */
@@ -823,7 +823,7 @@ static void pdf_85filter(FILE * to, FILE * from) {
    int cnt;
 
    rewind(from);
-   for (;;) {
+   while (1) {
       while (isspace(ch1 = getc(from)));
       if (ch1 == EOF || ch1 == '~')
 	 break;

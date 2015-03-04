@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 3324 2014-09-27 20:21:49Z mskala $ */
+/* $Id: glyphcomp.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -216,15 +216,10 @@ static int NearSplineSet(BasePoint * here, const SplineSet * ss,
 static int ContourMatch(const SplineSet * ss1, const SplineSet * ss2,
 			real err) {
    const Spline *s, *first;
-
    double t, newt;
-
    const Spline *last_found = NULL;
-
    double last_t;
-
    BasePoint here;
-
    double dx, dy, adx, ady, step;
 
    step = err >= 1 ? err * 1.001 : 1;
@@ -236,7 +231,7 @@ static int ContourMatch(const SplineSet * ss1, const SplineSet * ss2,
       if (!NearSplineSet(&s->from->me, ss2, &last_found, &last_t, err))
 	 return (false);
       here = s->from->me;
-      for (;;) {
+      while (1) {
 	 adx = dx =
 	    (3 * s->splines[0].a * t + 2 * s->splines[0].b) * t +
 	    s->splines[0].c;
@@ -311,7 +306,7 @@ static int AllPointsMatch(const SplinePoint * start1,
 
    SplinePoint *hmfail = NULL;
 
-   for (;;) {
+   while (1) {
       if ((dx = sp1->me.x - sp2->me.x) <= err && dx >= -err &&
 	  (dy = sp1->me.y - sp2->me.y) <= err && dy >= -err &&
 	  (dx = sp1->nextcp.x - sp2->nextcp.x) <= err && dx >= -err &&

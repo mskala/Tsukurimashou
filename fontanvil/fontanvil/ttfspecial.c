@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: ttfspecial.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1282,7 +1282,7 @@ static void pfed_read_normal_contour(FILE * ttf, SplineSet * ss,
    offx = pfed_get_coord(ttf, COM_MOD(verb));
    offy = pfed_get_coord(ttf, COM_MOD(verb));
    ss->first = current = SplinePointCreate(offx, offy);
-   for (;;) {
+   while (1) {
       verb = getc(ttf);
       v = COM_VERB(verb);
       m = COM_MOD(verb);

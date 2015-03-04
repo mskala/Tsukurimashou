@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: stemdb.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams and Alexey Kryukov */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -954,7 +954,7 @@ static int FindMatchingHVEdge(struct glyphdata *gd, struct pointdata *pd,
 static BasePoint PerturbAlongSpline(Spline * s, BasePoint * bp, double t) {
    BasePoint perturbed;
 
-   for (;;) {
+   while (1) {
       perturbed.x =
 	 ((s->splines[0].a * t + s->splines[0].b) * t + s->splines[0].c) * t +
 	 s->splines[0].d;

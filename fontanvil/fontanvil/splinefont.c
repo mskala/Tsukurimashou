@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: splinefont.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -871,7 +871,7 @@ static char *ForceFileToHaveName(FILE * file, char *exten) {
    static int try = 0;
    FILE *newfile;
 
-   for (;;) {
+   while (1) {
       sprintf(tmpfilename, P_tmpdir "/fontanvil%d-%d", getpid(), try++);
       if (exten != NULL)
 	 strcat(tmpfilename, exten);

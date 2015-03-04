@@ -1,4 +1,4 @@
-/* $Id: ufo.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: ufo.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -382,7 +382,7 @@ static void PListOutputPrivateArray(FILE * plist, char *key,
 
    fprintf(plist, "\t<key>postscript%s</key>\n", key);
    fprintf(plist, "\t<array>\n");
-   for (;;) {
+   while (1) {
       fprintf(plist, "\t\t<integer>");
       skipping = 0;
       while (*value != ']' && *value != '\0' && *value != ' ') {

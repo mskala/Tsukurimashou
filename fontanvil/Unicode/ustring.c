@@ -1,4 +1,4 @@
-/* $Id: ustring.c 3285 2014-09-09 07:38:08Z mskala $ */
+/* $Id: ustring.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 long u_strcmp(const unichar_t * str1, const unichar_t * str2) {
    long ch1, ch2;
 
-   for (;;) {
+   while (1) {
       ch1 = *str1++;
       ch2 = *str2++;
       if (ch1 != ch2 || ch1 == '\0')

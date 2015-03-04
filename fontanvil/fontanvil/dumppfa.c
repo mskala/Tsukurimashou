@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: dumppfa.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1548,7 +1548,7 @@ static double FindMaxDiffOfBlues(char *pt, double max_diff) {
 
    while (*pt == ' ' || *pt == '[')
       ++pt;
-   for (;;) {
+   while (1) {
       p1 = strtod(pt, &end);
       if (end == pt)
 	 break;

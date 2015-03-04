@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: featurefile.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* Copyright (C) 2012 by Khaled Hosny */
 /* Copyright (C) 2013 by Matthew Skala */
@@ -3651,7 +3651,7 @@ static void fea_ParseDeviceTable(struct parseState *tok, DeviceTable * adjust) {
    if (tok->type != tk_device)
       return;
 
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       if (first && tok->type == tk_NULL) {
 	 fea_TokenMustBe(tok, tk_char, '>');
@@ -4306,7 +4306,7 @@ static struct markedglyphs *fea_ParseMarkedGlyphs(struct parseState *tok,
    struct mark_state mark_state;
 
    memset(&mark_state, 0, sizeof(mark_state));
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       cur = NULL;
       if (is_pos && tok->type == tk_cursive)
@@ -4566,7 +4566,7 @@ static struct feat_item *fea_process_pos_pair(struct parseState *tok,
 
    if (enumer || (glyphs->is_name && glyphs->next->is_name)) {
       start = glyphs->name_or_class;
-      for (;;) {
+      while (1) {
 	 while (*start == ' ')
 	    ++start;
 	 if (*start == '\0')
@@ -4579,7 +4579,7 @@ static struct feat_item *fea_process_pos_pair(struct parseState *tok,
 	 start = pt;
 	 if (sc != NULL) {
 	    start2 = glyphs->next->name_or_class;
-	    for (;;) {
+	    while (1) {
 	       while (*start2 == ' ')
 		  ++start2;
 	       if (*start2 == '\0')
@@ -4630,7 +4630,7 @@ static struct feat_item *fea_process_pos_cursive(struct parseState *tok,
    start = glyphs->name_or_class;
    if (glyphs->anchors[1] != NULL)
       glyphs->anchors[1]->type = at_cexit;
-   for (;;) {
+   while (1) {
       while (*start == ' ')
 	 ++start;
       if (*start == '\0')
@@ -4667,7 +4667,7 @@ static struct feat_item *fea_process_pos_markbase(struct parseState *tok,
    SplineChar *sc;
 
    start = glyphs->name_or_class;
-   for (;;) {
+   while (1) {
       while (*start == ' ')
 	 ++start;
       if (*start == '\0')
@@ -4707,7 +4707,7 @@ static struct feat_item *fea_process_pos_ligature(struct parseState *tok,
    SplineChar *sc;
 
    start = glyphs->name_or_class;
-   for (;;) {
+   while (1) {
       while (*start == ' ')
 	 ++start;
       if (*start == '\0')
@@ -4759,7 +4759,7 @@ static struct feat_item *fea_process_sub_single(struct parseState *tok,
 	    ++tok->err_count;
 	    return (sofar);
 	 }
-	 for (;;) {
+	 while (1) {
 	    while (*start == ' ')
 	       ++start;
 	    if (*start == '\0')
@@ -4785,7 +4785,7 @@ static struct feat_item *fea_process_sub_single(struct parseState *tok,
    } else if (!glyphs->is_name) {
       start = glyphs->name_or_class;
       start2 = rpl->name_or_class;
-      for (;;) {
+      while (1) {
 	 while (*start == ' ')
 	    ++start;
 	 while (*start2 == ' ')
@@ -5090,7 +5090,7 @@ static void fea_ParseIgnore(struct parseState *tok) {
       ++tok->err_count;
       is_pos = true;
    }
-   for (;;) {
+   while (1) {
       glyphs =
 	 fea_ParseMarkedGlyphs(tok,
 			       false /* don't parse value records, etc */ ,
@@ -5555,7 +5555,7 @@ static void fea_ParseLookupDef(struct parseState *tok, int could_be_stat) {
    tok->sofar = item;
 
    first_after_mark = NULL;
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       if (tok->err_count > 100)
 	 break;
@@ -5840,7 +5840,7 @@ static void fea_ParseFeatureNames(struct parseState *tok, uint32 tag) {
 
    /* name [<string attibute>] string; */
 
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       if (tok->type != tk_name && strcmp(tok->tokbuf, "name") != 0)	/* "name" is only a keyword here */
 	 break;
@@ -5914,7 +5914,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
       return;
    }
 
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       if (tok->err_count > 100)
 	 break;
@@ -5964,7 +5964,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 	      } else {
 		 item = fea_AddFeatItem(tok, type, tok->tag);
 		 if (type == ft_lang) {
-		    for (;;) {
+		    while (1) {
 		       fea_ParseTok(tok);
 		       if (tok->type == tk_include_dflt)
 			  /* Unneeded */ ;
@@ -6066,7 +6066,7 @@ static void fea_ParseNameTable(struct parseState *tok) {
 
    /* nameid <id> [<string attibute>] string; */
 
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       if (tok->type != tk_nameid)
 	 break;
@@ -6099,7 +6099,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
    int i;
    struct feat_item *item;
 
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       if (tok->type != tk_name)
 	 break;
@@ -6231,7 +6231,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
    int16 *carets = NULL;
    int len = 0, max = 0;
 
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       if (tok->type != tk_name)
 	 break;
@@ -6245,7 +6245,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	    ++tok->err_count;
 	    fea_skip_to_semi(tok);
 	 } else {
-	    for (;;) {
+	    while (1) {
 	       fea_ParseTok(tok);
 	       if (tok->type != tk_int)
 		  break;
@@ -6281,7 +6281,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	    fea_skip_to_semi(tok);
 	    continue;
 	 }
-	 for (;;) {
+	 while (1) {
 	    fea_ParseTok(tok);
 	    if (tok->type == tk_int)
 	       /* Not strictly cricket, but I'll accept it */ ;
@@ -6657,7 +6657,7 @@ static void fea_featitemFree(struct feat_item *item) {
 }
 
 static void fea_ParseFeatureFile(struct parseState *tok) {
-   for (;;) {
+   while (1) {
       fea_ParseTok(tok);
       if (tok->err_count > 100)
 	 break;
@@ -6988,7 +6988,7 @@ static void fea_ApplyLookupListMark2(struct parseState *tok,
    for (i = 0; i < ac_cnt; ++i) {
       for (sames = classes[i]; sames != NULL; sames = sames->same) {
 	 start = sames->glyphs;
-	 for (;;) {
+	 while (1) {
 	    while (*start == ' ')
 	       ++start;
 	    if (*start == '\0')

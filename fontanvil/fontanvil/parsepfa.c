@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: parsepfa.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -937,7 +937,7 @@ static char *getstring(char *start, FILE * in) {
    int parencnt = 0, len = 0;
    char buffer[512];
 
-   for (;;) {
+   while (1) {
       while (*start != '\0' && *start != '(')
 	 ++start;
       if (*start == '\0') {
@@ -950,7 +950,7 @@ static char *getstring(char *start, FILE * in) {
    ++start;
    ret = NULL;
    len = 1;
-   for (;;) {
+   while (1) {
       for (end = start; *end != '\0' && (*end != ')' || parencnt > 0); ++end) {
 	 if (*end == '\\' && (end[1] == '(' || end[1] == ')'))
 	    ++end;
@@ -1194,7 +1194,7 @@ static void AddValue(struct fontparse *fp, struct psdict *dict, char *line,
       ContinueValue(fp, dict, endtok);
       return;
    }
-   for (;;) {
+   while (1) {
       while (pt - 1 > endtok && isspace(pt[-1]))
 	 --pt;
       if (pt - 8 > endtok && strncmp(pt - 8, "noaccess", 8) == 0)
@@ -1318,7 +1318,7 @@ static void findnumbers(struct fontparse *fp, struct pschars *chars,
    int val;
    char *end;
 
-   for (;;) {
+   while (1) {
       int index = chars->next;
 
       char *namestrt;

@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: parsettf.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3031,7 +3031,7 @@ static void skipcfft2thing(FILE * ttf) {
 /* GT: DICT is a magic term inside CFF fonts, as is INDEX, and I guess CFF and type2 */
    LogError(_
 	    ("FontAnvil does not support type2 programs embedded in CFF DICT INDICES.\n"));
-   for (;;) {
+   while (1) {
       ch = getc(ttf);
       if (ch >= 247 && ch <= 254)
 	 getc(ttf);		/* Two byte number */

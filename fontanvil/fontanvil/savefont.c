@@ -1,4 +1,4 @@
-/* $Id: savefont.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: savefont.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -481,7 +481,7 @@ static int32 *ParseWernerSFDFile(char *wernerfilename, SplineFont * sf,
       if ((*pt != '\n' && *pt != '\r') || (pt > buffer && pt[-1] == '\\') ||
 	  (pt > buffer + 1 && pt[-2] == '\\' && isspace(pt[-1]))) {
 	 bpt = copy("");
-	 for (;;) {
+	 while (1) {
 	    loop = false;
 	    if ((*pt != '\n' && *pt != '\r')
 		|| (pt > buffer && pt[-1] == '\\') || (pt > buffer + 1
@@ -657,7 +657,7 @@ static int SaveSubFont(SplineFont * sf, char *newname, int32 * sizes, int res,
    /*  as unencoded chars */
    /* We could just replace with splines, I suppose but that would make */
    /*  korean fonts huge */
-   for (;;) {
+   while (1) {
       extras = 0;
       for (i = 0; i < temp.glyphcnt; ++i)
 	 if (temp.glyphs[i] != NULL) {

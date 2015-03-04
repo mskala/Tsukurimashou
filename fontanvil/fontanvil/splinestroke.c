@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: splinestroke.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -675,7 +675,7 @@ static void LineJoin(StrokeContext * c, int atbreak) {
       }
       rot = incr_angle;
       was_neg = false;
-      for (;;) {
+      while (1) {
 	 if (c->cur >= c->max) {
 	    int extras = 400;
 
@@ -2221,7 +2221,7 @@ static void SSRemoveColinearPoints(SplineSet * ss) {
    nnsp = nsp->next->to;
    memset(&ndir, 0, sizeof(ndir));
    removed = false;
-   for (;;) {
+   while (1) {
       if (sp == nsp)
 	 break;
       if (nsp->next->knownlinear) {

@@ -1,4 +1,4 @@
-/* $Id: asmfpst.c 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: asmfpst.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2003-2007 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -399,7 +399,7 @@ static struct contexttree *TreeNext(struct contexttree *cur) {
    if (cur->branch_cnt != 0)
       return (cur->branches[0].branch);
    else {
-      for (;;) {
+      while (1) {
 	 p = cur->parent;
 	 if (p == NULL)
 	    return (NULL);

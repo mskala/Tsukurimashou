@@ -1,4 +1,4 @@
-/* $Id: pcl2ttf.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: pcl2ttf.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2004 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -127,7 +127,7 @@ static unsigned int getlong(FILE * pcl) {
 static int skip2thingamy(FILE * pcl, char *thingamy) {
    int ch;
 
-   for (;;) {
+   while (1) {
       while ((ch = getc(pcl)) != EOF && ch != escape_char);
       if (ch == EOF)
 	 return (false);
@@ -389,7 +389,7 @@ static int readheaderttf(FILE * pcl, struct ttf_header *hdr) {
    for (i = 0; i < hdr->fd_size - 72; ++i)
       getc(pcl);
 
-   for (;;) {
+   while (1) {
       seg_id = getshort(pcl);
       seg_size = getshort(pcl);
       if (seg_id == (('C' << 8) | 'P')) {

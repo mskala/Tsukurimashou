@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: scstyles.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -4427,7 +4427,6 @@ static void LCG_ZoneInit(SplineFont * sf, int layer, struct lcg_zones *zones,
 
 static double BlueSearch(char *bluestring, double value, double bestvalue) {
    char *end;
-
    double try, diff, bestdiff;
 
    if (*bluestring == '[')
@@ -4435,7 +4434,7 @@ static double BlueSearch(char *bluestring, double value, double bestvalue) {
    if ((bestdiff = bestvalue - value) < 0)
       bestdiff = -bestdiff;
 
-   for (;;) {
+   while (1) {
       try = strtod(bluestring, &end);
       if (bluestring == end)
 	 return (bestvalue);
@@ -4453,7 +4452,6 @@ static double BlueSearch(char *bluestring, double value, double bestvalue) {
 
 static double SearchBlues(SplineFont * sf, int type, double value) {
    char *blues, *others;
-
    double bestvalue;
 
    if (type == 'x')

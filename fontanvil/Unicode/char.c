@@ -1,4 +1,4 @@
-/* $Id: char.c 2939 2014-03-10 19:10:18Z mskala $ */
+/* $Id: char.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2002 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 int strmatch(const char *str1, const char *str2) {
    int ch1, ch2;
 
-   for (;;) {
+   while (1) {
       ch1 = *str1++;
       ch2 = *str2++;
       ch1 = tolower(ch1);
@@ -65,7 +65,7 @@ char *strstrmatch(const char *longer, const char *substr) {
    for (lpt = longer; *lpt != '\0'; ++lpt) {
       str1 = lpt;
       str2 = substr;
-      for (;;) {
+      while (1) {
 	 ch1 = *str1++;
 	 ch2 = *str2++;
 	 ch1 = tolower(ch1);

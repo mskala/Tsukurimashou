@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 3414 2014-10-25 16:23:29Z mskala $ */
+/* $Id: splineutil2.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1210,7 +1210,7 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 	nocnt = 0;
 	curdiff = SigmaDeltas(spline,mid,cnt,&b,&db);
 	totcnt = 0;
-	for (;;) {
+	while (1) {
 	    bigreal fadiff, fsdiff;
 	    bigreal tadiff, tsdiff;
 

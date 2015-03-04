@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: macbinary.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -290,7 +290,7 @@ static struct resource *PSToResources(FILE * res, FILE * pfbfile) {
    resstarts = calloc(cnt + 1, sizeof(struct resource));
 
    cnt = 0;
-   for (;;) {
+   while (1) {
       if (getc(pfbfile) != 0x80) {
 	 IError("We made a pfb file, but didn't get one. Hunh?");
 	 return (NULL);

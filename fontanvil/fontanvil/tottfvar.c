@@ -1,4 +1,4 @@
-/* $Id: tottfvar.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: tottfvar.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -80,10 +80,10 @@ static int AssignPtNumbers(MMSet * mm, int gid) {
 	 return (false);
    }
 
-   for (;;) {
+   while (1) {
       for (i = 0; i <= mm->instance_count; ++i)
 	 sp[i] = ss[i]->first;
-      for (;;) {
+      while (1) {
 	 allavg = alllines = true;
 	 for (i = 0; i <= mm->instance_count; ++i) {
 	    if (!RealNear

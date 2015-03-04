@@ -1,4 +1,4 @@
-/* $Id: search.c 3412 2014-10-24 20:34:43Z mskala $ */
+/* $Id: search.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1021,7 +1021,7 @@ static void DoReplaceIncomplete(SplineChar * sc, SearchData * s) {
       SplineRefigure(&dummysp);
       sc_p = &dummy;
    }
-   for (;;) {
+   while (1) {
       if ((p_p->next == NULL && r_p->next == NULL) ||
 	  (s->endpoints && p_p->next->to->next == NULL
 	   && r_p->next->to->next == NULL)) {

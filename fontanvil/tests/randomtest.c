@@ -1,4 +1,4 @@
-/* $Id: randomtest.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: randomtest.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2005 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -542,7 +542,7 @@ int main(int argc, char **argv) {
 #else
    mkdir(results_dir);
 #endif
-   for (;;)
+   while (1)
       do_test();
 
    return (0);

@@ -1,4 +1,4 @@
-/* $Id: autohint.c 3324 2014-09-27 20:21:49Z mskala $ */
+/* $Id: autohint.c 3502 2014-11-30 12:26:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2861,14 +2861,14 @@ static void SplResolveSplitHints(SplineChar * scs[MmMax],
 
    int i, anymore;
 
-   for (;;) {
+   while (1) {
       for (i = 0; i < instance_count; ++i) {
 	 if (spl[i] != NULL)
 	    to[i] = spl[i]->first;
 	 else
 	    to[i] = NULL;
       }
-      for (;;) {
+      while (1) {
 	 for (i = 0; i < instance_count; ++i) {
 	    h[i] = OnHHint(to[i], scs[i]->hstem);
 	    v[i] = OnVHint(to[i], scs[i]->vstem);
@@ -2984,14 +2984,14 @@ static int SplFigureHintMasks(SplineChar * scs[MmMax], SplineSet * spl[MmMax],
       inited = true;
    }
 
-   for (;;) {
+   while (1) {
       for (i = 0; i < instance_count; ++i) {
 	 if (spl[i] != NULL)
 	    to[i] = spl[i]->first;
 	 else
 	    to[i] = NULL;
       }
-      for (;;) {
+      while (1) {
 	 TestHintMask(scs, to, instance_count, mask);
 	 anymore = false;
 	 for (i = 0; i < instance_count; ++i)
@@ -3070,7 +3070,7 @@ void SCFigureHintMasks(SplineChar * sc, int layer) {
       ref[i] = scs[i]->layers[layer].refs;
    }
    inited = SplFigureHintMasks(scs, spl, instance_count, mask, false);
-   for (;;) {
+   while (1) {
       for (i = 0; i < instance_count; ++i) {
 	 if (ref[i] != NULL)
 	    spl[i] = ref[i]->layers[0].splines;
