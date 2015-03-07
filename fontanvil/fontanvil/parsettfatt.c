@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: parsettfatt.c 3788 2015-03-07 11:17:00Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ static uint16 *getAppleClassTable(FILE * ttf, int classdef_offset, int cnt,
    int first, i, n;
 
    /* Apple stores its class tables as containing offsets. I find it hard to */
-   /*  think that way and convert them to indeces (by subtracting off a base */
+   /*  think that way and convert them to indices (by subtracting off a base */
    /*  offset and dividing by the item's size) before doing anything else */
 
    fseek(ttf, classdef_offset, SEEK_SET);
@@ -1400,7 +1400,7 @@ static void g___ContextSubTable2(FILE * ttf, int stoffset,
       uint32 offset;
       int ccnt;
       int scnt;
-      uint16 *classindeces;
+      uint16 *classindices;
       struct seqlookup *sl;
    };
    struct rule {
@@ -1444,11 +1444,11 @@ static void g___ContextSubTable2(FILE * ttf, int stoffset,
 	       free(rules);
 	       return;
 	    }
-	    rules[i].subrules[j].classindeces =
+	    rules[i].subrules[j].classindices =
 	       malloc(rules[i].subrules[j].ccnt * sizeof(uint16));
-	    rules[i].subrules[j].classindeces[0] = i;
+	    rules[i].subrules[j].classindices[0] = i;
 	    for (k = 1; k < rules[i].subrules[j].ccnt; ++k)
-	       rules[i].subrules[j].classindeces[k] = getushort(ttf);
+	       rules[i].subrules[j].classindices[k] = getushort(ttf);
 	    if (rules[i].subrules[j].scnt < 0) {
 	       LogError(_("Bad count in contextual chaining sub-table.\n"));
 	       info->bad_ot = true;
@@ -1509,9 +1509,9 @@ static void g___ContextSubTable2(FILE * ttf, int stoffset,
       cnt = 0;
       for (i = 0; i < rcnt; ++i)
 	 for (j = 0; j < rules[i].scnt; ++j) {
-	    rule[cnt].u.class.nclasses = rules[i].subrules[j].classindeces;
+	    rule[cnt].u.class.nclasses = rules[i].subrules[j].classindices;
 	    rule[cnt].u.class.ncnt = rules[i].subrules[j].ccnt;
-	    rules[i].subrules[j].classindeces = NULL;
+	    rules[i].subrules[j].classindices = NULL;
 	    rule[cnt].lookup_cnt = rules[i].subrules[j].scnt;
 	    rule[cnt].lookups = rules[i].subrules[j].sl;
 	    rules[i].subrules[j].sl = NULL;
@@ -1524,7 +1524,7 @@ static void g___ContextSubTable2(FILE * ttf, int stoffset,
 
    for (i = 0; i < rcnt; ++i) {
       for (j = 0; j < rules[i].scnt; ++j) {
-	 free(rules[i].subrules[j].classindeces);
+	 free(rules[i].subrules[j].classindices);
 	 free(rules[i].subrules[j].sl);
       }
       free(rules[i].subrules);
@@ -1544,7 +1544,7 @@ static void g___ChainingSubTable2(FILE * ttf, int stoffset,
       uint32 offset;
       int ccnt, bccnt, fccnt;
       int scnt;
-      uint16 *classindeces, *bci, *fci;
+      uint16 *classindices, *bci, *fci;
       struct seqlookup *sl;
    };
    struct rule {
@@ -1603,11 +1603,11 @@ static void g___ChainingSubTable2(FILE * ttf, int stoffset,
 	       free(rules);
 	       return;
 	    }
-	    rules[i].subrules[j].classindeces =
+	    rules[i].subrules[j].classindices =
 	       malloc(rules[i].subrules[j].ccnt * sizeof(uint16));
-	    rules[i].subrules[j].classindeces[0] = i;
+	    rules[i].subrules[j].classindices[0] = i;
 	    for (k = 1; k < rules[i].subrules[j].ccnt; ++k)
-	       rules[i].subrules[j].classindeces[k] = getushort(ttf);
+	       rules[i].subrules[j].classindices[k] = getushort(ttf);
 	    rules[i].subrules[j].fccnt = getushort(ttf);
 	    if (rules[i].subrules[j].fccnt < 0) {
 	       LogError(_
@@ -1701,9 +1701,9 @@ static void g___ChainingSubTable2(FILE * ttf, int stoffset,
       cnt = 0;
       for (i = 0; i < rcnt; ++i)
 	 for (j = 0; j < rules[i].scnt; ++j) {
-	    rule[cnt].u.class.nclasses = rules[i].subrules[j].classindeces;
+	    rule[cnt].u.class.nclasses = rules[i].subrules[j].classindices;
 	    rule[cnt].u.class.ncnt = rules[i].subrules[j].ccnt;
-	    rules[i].subrules[j].classindeces = NULL;
+	    rules[i].subrules[j].classindices = NULL;
 	    rule[cnt].u.class.bclasses = rules[i].subrules[j].bci;
 	    rule[cnt].u.class.bcnt = rules[i].subrules[j].bccnt;
 	    rules[i].subrules[j].bci = NULL;
@@ -1722,7 +1722,7 @@ static void g___ChainingSubTable2(FILE * ttf, int stoffset,
 
    for (i = 0; i < rcnt; ++i) {
       for (j = 0; j < rules[i].scnt; ++j) {
-	 free(rules[i].subrules[j].classindeces);
+	 free(rules[i].subrules[j].classindices);
 	 free(rules[i].subrules[j].sl);
       }
       free(rules[i].subrules);
@@ -6320,7 +6320,7 @@ void readttfbsln(FILE * ttf, struct ttfinfo *info) {
       base->baseline_tags[2] = CHR('m', 'a', 't', 'h');	/* Apple 4 */
       base->baseline_tags[3] = CHR('r', 'o', 'm', 'n');	/* Apple 0 */
 
-      /* Map from Apple's baseline indeces, to OT tag positions */
+      /* Map from Apple's baseline indices, to OT tag positions */
       mapping[3] = 0;
       mapping[2] = 1;
       mapping[4] = 2;

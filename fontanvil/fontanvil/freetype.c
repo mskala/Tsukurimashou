@@ -1,4 +1,4 @@
-/* $Id: freetype.c 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: freetype.c 3788 2015-03-07 11:17:00Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -243,7 +243,7 @@ void FreeTypeFreeContext(void *freetypecontext) {
 #   endif
    if (ftc->file != NULL)
       fclose(ftc->file);
-   free(ftc->glyph_indeces);
+   free(ftc->glyph_indices);
    free(ftc);
 }
 
@@ -257,11 +257,8 @@ static void *__FreeTypeFontContext(FT_Library context,
     *  else       => the entire font
     */
    FTC *ftc;
-
    SplineChar **old = sf->glyphs, **new;
-
    uint8 *selected = fv != NULL ? fv->selected : NULL;
-
    EncMap *map =
       fv != NULL ? fv->map : sf->fv != NULL ? sf->fv->map : sf->map;
    int i, cnt, notdefpos;
@@ -321,7 +318,6 @@ static void *__FreeTypeFontContext(FT_Library context,
 	 if ((ff == ff_pfb || ff == ff_pfa || ff == ff_otf || ff == ff_otfcid)
 	     && autohint_before_generate) {
 	    extern int preserve_hint_undoes;	/* users don't expect that rasterizing the glyph will cause an undo */
-
 	    int phu = preserve_hint_undoes;	/* if metrics view & char view are open, and a change is made in */
 
 	    /*  the char view, then metrics view rasterize glyph, changes hints, */
@@ -330,7 +326,6 @@ static void *__FreeTypeFontContext(FT_Library context,
 	    /*  and leaves the change the user did intact. And that will force */
 	    /*  another rasterize and perhaps another hint undo... */
 	    SplineChar *sc;
-
 	    BlueData bd;
 
 	    preserve_hint_undoes = false;
@@ -373,33 +368,33 @@ static void *__FreeTypeFontContext(FT_Library context,
 	 for (k = 0; k < sf->subfontcnt; ++k)
 	    if (sf->subfonts[k]->glyphcnt > max)
 	       max = sf->subfonts[k]->glyphcnt;
-	 ftc->glyph_indeces = malloc(max * sizeof(int));
-	 memset(ftc->glyph_indeces, -1, max * sizeof(int));
+	 ftc->glyph_indices = malloc(max * sizeof(int));
+	 memset(ftc->glyph_indices, -1, max * sizeof(int));
 	 for (i = 0; i < max; ++i) {
 	    for (k = 0; k < sf->subfontcnt; ++k) {
 	       if (i < sf->subfonts[k]->glyphcnt &&
 		   SCWorthOutputting(sf->subfonts[k]->glyphs[i])) {
-		  ftc->glyph_indeces[i] =
+		  ftc->glyph_indices[i] =
 		     sf->subfonts[k]->glyphs[i]->ttf_glyph;
 		  break;
 	       }
 	    }
 	 }
       } else {
-	 ftc->glyph_indeces = malloc(sf->glyphcnt * sizeof(int));
-	 memset(ftc->glyph_indeces, -1, sf->glyphcnt * sizeof(int));
+	 ftc->glyph_indices = malloc(sf->glyphcnt * sizeof(int));
+	 memset(ftc->glyph_indices, -1, sf->glyphcnt * sizeof(int));
 	 cnt = 1;
 	 if (notdefpos != -1)
-	    ftc->glyph_indeces[notdefpos] = 0;
+	    ftc->glyph_indices[notdefpos] = 0;
 	 if (ff == ff_pfa || ff == ff_pfb) {
 	    for (i = 0; i < sf->glyphcnt; ++i) {
 	       if (i != notdefpos && SCWorthOutputting(sf->glyphs[i]))
-		  ftc->glyph_indeces[i] = cnt++;
+		  ftc->glyph_indices[i] = cnt++;
 	    }
 	 } else {
 	    for (i = 0; i < sf->glyphcnt; ++i) {
 	       if (SCWorthOutputting(sf->glyphs[i])) {
-		  ftc->glyph_indeces[i] = sf->glyphs[i]->ttf_glyph;
+		  ftc->glyph_indices[i] = sf->glyphs[i]->ttf_glyph;
 	       }
 	    }
 	 }
@@ -551,12 +546,12 @@ BDFChar *SplineCharFreeTypeRasterize(void *freetypecontext, int gid,
 
    int pixelsize = (int) rint((ptsize * dpi) / 72.0);
 
-   if (ftc->glyph_indeces[gid] == -1)
+   if (ftc->glyph_indices[gid] == -1)
       goto fail;
    if (FT_Set_Char_Size
        (ftc->face, (int) (ptsize * 64), (int) (ptsize * 64), dpi, dpi))
       goto fail;
-   if (FT_Load_Glyph(ftc->face, ftc->glyph_indeces[gid],
+   if (FT_Load_Glyph(ftc->face, ftc->glyph_indices[gid],
 		     depth ==
 		     1 ? (FT_LOAD_NO_AUTOHINT | FT_LOAD_RENDER |
 			  FT_LOAD_TARGET_MONO) : (FT_LOAD_NO_AUTOHINT |
@@ -815,7 +810,7 @@ SplineSet *FreeType_GridFitChar(void *single_glyph_context, int enc,
        (ftc->face, (int) (ptsizex * 64), (int) (ptsizey * 64), dpi, dpi))
       return (NULL);		/* Error Return */
 
-   if (FT_Load_Glyph(ftc->face, ftc->glyph_indeces[enc],
+   if (FT_Load_Glyph(ftc->face, ftc->glyph_indices[enc],
 		     depth ==
 		     1 ? (FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_BITMAP |
 			  FT_LOAD_TARGET_MONO) : (FT_LOAD_NO_AUTOHINT |
@@ -871,7 +866,7 @@ struct freetype_raster *FreeType_GetRaster(void *single_glyph_context,
        (ftc->face, (int) (ptsizex * 64), (int) (ptsizey * 64), dpi, dpi))
       return (NULL);		/* Error Return */
 
-   if (FT_Load_Glyph(ftc->face, ftc->glyph_indeces[enc],
+   if (FT_Load_Glyph(ftc->face, ftc->glyph_indices[enc],
 		     depth ==
 		     1 ? (FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_BITMAP |
 			  FT_LOAD_TARGET_MONO) : (FT_LOAD_NO_AUTOHINT |
@@ -1397,6 +1392,6 @@ void *FreeTypeFontContext(SplineFont * sf, SplineChar * sc, FontViewBase * fv,
    return (_FreeTypeFontContext
 	   (sf, sc, fv, layer,
 	    sf->subfontcnt !=
-	    0 ? ff_otfcid : sf->layers[layer].order2 ? ff_ttf : ff_pfb, 0,
+	    0 ? ff_otfcid : sf->layers[layer].order2 ? ff_ttf : ff_cff, 0,
 	    NULL));
 }

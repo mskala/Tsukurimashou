@@ -1,4 +1,4 @@
-/* $Id: encoding.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: encoding.c 3788 2015-03-07 11:17:00Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1322,10 +1322,10 @@ static void CompressCMap(struct cmap *cmap) {
    }
    cmap->remap[pos].infont = -1;	/* Marks end */
    cmap->total = base;
-   /* so cmap->remap will map sf indeces into the encoding in the cmap */
+   /* so cmap->remap will map sf indices into the encoding in the cmap */
 
    /* And now we want to change the groups[cmt_cid].ranges so that they will */
-   /*  map into sf indeces rather than into the encoding of the cmap */
+   /*  map into sf indices rather than into the encoding of the cmap */
    for (i = 0; i < cmap->groups[cmt_cid].n; ++i) {
       for (k = 0; cmap->remap[k].infont != -1; ++k)
 	 if (cmap->groups[cmt_cid].ranges[i].first >= cmap->remap[k].firstenc

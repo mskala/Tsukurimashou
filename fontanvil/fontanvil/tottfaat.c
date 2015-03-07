@@ -1,4 +1,4 @@
-/* $Id: tottfaat.c 3285 2014-09-09 07:38:08Z mskala $ */
+/* $Id: tottfaat.c 3788 2015-03-07 11:17:00Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1054,7 +1054,7 @@ static void morx_dumpLigaFeature(FILE * temp, SplineChar ** glyphs, int gcnt,
    /* Do A simple check on the validity of what we've done */
    if (here + 6 * trans_cnt + 6 * acnt != ftell(temp))
       IError("Offset wrong in morx ligature table\n");
-   /* And finally the ligature glyph indeces */
+   /* And finally the ligature glyph indices */
    for (i = 0; i < lcnt; ++i)
       putshort(temp, lig_glyphs[i]);
 

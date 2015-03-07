@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 3502 2014-11-30 12:26:48Z mskala $ */
+/* $Id: macbinary.c 3788 2015-03-07 11:17:00Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -925,7 +925,7 @@ static uint32 SFToFOND(FILE * res, SplineFont * sf, uint32 id, int dottf,
    else
       strcnt = 3;
    for (k = 0; k < 48; ++k)
-      putc(strcnt == 1 ? 1 : 2, res);	/* All indeces point to this font */
+      putc(strcnt == 1 ? 1 : 2, res);	/* All indices point to this font */
    putshort(res, strcnt);	/* strcnt strings */
    if (strcnt == 1) {
       putc(strlen(sf->fontname), res);	/* basename is full name */
@@ -1331,7 +1331,7 @@ static uint32 SFsToFOND(FILE * res, struct sflist *sfs, uint32 id, int format,
    strcnt =
       1 /* Family Name */  + pscnt - exact /* count of format strings */  +
       has_hyphen + pscnt - exact /* count of additional strings */ ;
-   /* indeces to format strings */
+   /* indices to format strings */
    for (i = 0, pscnt = 2; i < 48; ++i)
       if (psfaces[i] != NULL && psfaces[i]->sf->fontname[famlen] != 0)
 	 putc(pscnt++, res);

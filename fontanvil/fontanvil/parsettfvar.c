@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 3283 2014-09-09 07:10:27Z mskala $ */
+/* $Id: parsettfvar.c 3788 2015-03-07 11:17:00Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -787,7 +787,7 @@ static void parsecvar(struct ttfinfo *info, FILE * ttf) {
       tupleDataSize = getushort(ttf);
       tupleIndex = getushort(ttf);
       /* there is no provision here for a global tuple coordinate section */
-      /*  so John says there are no tuple indeces. Just embedded tuples */
+      /*  so John says there are no tuple indices. Just embedded tuples */
       if (tupleIndex & 0x4000) {
 	 if (!warned)
 	    LogError(_

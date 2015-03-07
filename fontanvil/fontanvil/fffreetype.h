@@ -1,4 +1,4 @@
-/* $Id: fffreetype.h 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: fffreetype.h 3788 2015-03-07 11:17:00Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -50,12 +50,11 @@ extern FT_Library ff_ft_context;
 typedef struct freetypecontext {
    SplineFont *sf;
    int layer;
-   FILE *file;
    void *mappedfile;
    long len;
-   int *glyph_indeces;
+   int *glyph_indices;
    FT_Face face;
-   struct freetypecontext *shared_ftc;	/* file, mappedfile, glyph_indeces are shared with this ftc */
+   struct freetypecontext *shared_ftc;	/* mappedfile, glyph_indices are shared with this ftc */
    /*  We have a new face, but that's it. This is so we can */
    /*  have multiple pointsizes without loading the font many */
    /*  times */

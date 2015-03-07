@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: splinesaveafm.c 3788 2015-03-07 11:17:00Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -360,7 +360,7 @@ static void tfmDoLigKern(SplineFont * sf, int enc, int lk_index,
    if (lk_index >= tfmd->ligkern_size)
       return;
 
-   if (tfmd->ligkerntab[lk_index * 4 + 0] > 128)	/* Special case to get big indeces */
+   if (tfmd->ligkerntab[lk_index * 4 + 0] > 128)	/* Special case to get big indices */
       lk_index =
 	 256 * tfmd->ligkerntab[lk_index * 4 + 2] +
 	 tfmd->ligkerntab[lk_index * 4 + 3];
@@ -652,7 +652,7 @@ static void ofmDoLigKern(SplineFont * sf, int enc, int lk_index,
    if (lk_index >= 2 * tfmd->ligkern_size)
       return;
 
-   if (LKShort(lk_index, 0) > 128)	/* Special case to get big indeces */
+   if (LKShort(lk_index, 0) > 128)	/* Special case to get big indices */
       lk_index = 65536 * LKShort(lk_index, 2) + LKShort(lk_index, 3);
 
    while (1) {
