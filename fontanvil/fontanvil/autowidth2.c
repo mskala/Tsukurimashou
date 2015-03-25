@@ -1,4 +1,4 @@
-/* $Id: autowidth2.c 3338 2014-09-30 18:25:16Z mskala $ */
+/* $Id: autowidth2.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2009-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 #include "autowidth2.h"
 #include "edgelist2.h"
 
-static int aw2_bbox_separation(AW_Glyph * g1, AW_Glyph * g2, AW_Data * all) {
+static int aw2_bbox_separation(AW_Glyph *g1,AW_Glyph *g2,AW_Data *all) {
    int j;
 
    int imin_y, imax_y;
@@ -52,19 +52,19 @@ static int aw2_bbox_separation(AW_Glyph * g1, AW_Glyph * g2, AW_Data * all) {
    /*  things that look close are more important than those which look far */
    /*  So "T" and "O" should be dominated by the crossbar of the "T"... */
 
-   imin_y = g2->imin_y > g1->imin_y ? g2->imin_y : g1->imin_y;
-   imax_y = g2->imax_y < g1->imax_y ? g2->imax_y : g1->imax_y;
+   imin_y=g2->imin_y > g1->imin_y ? g2->imin_y : g1->imin_y;
+   imax_y=g2->imax_y < g1->imax_y ? g2->imax_y : g1->imax_y;
    if (imax_y < imin_y)		/* no overlap. ie grave and "a" */
       return (0);
-   denom = all->denom;
-   tot = cnt = 0;
-   for (j = imin_y; j < imax_y; ++j) {
+   denom=all->denom;
+   tot=cnt=0;
+   for (j=imin_y; j < imax_y; ++j) {
       if (g2->left[j - g2->imin_y] < 32767
 	  && g1->right[j - g1->imin_y] > -32767) {
 	 /* beware of gaps such as those in "i" or "aaccute" */
-	 real sep = g2->left[j - g2->imin_y] - g1->right[j - g1->imin_y];
+	 real sep=g2->left[j - g2->imin_y] - g1->right[j - g1->imin_y];
 
-	 real weight = 1.0 / (sep + denom);
+	 real weight=1.0 / (sep + denom);
 
 	 weight *= weight;
 
@@ -77,59 +77,59 @@ static int aw2_bbox_separation(AW_Glyph * g1, AW_Glyph * g2, AW_Data * all) {
    return (rint(tot));
 }
 
-static void aw2_figure_lsb(int right_index, AW_Data * all) {
+static void aw2_figure_lsb(int right_index,AW_Data *all) {
    int i;
 
    AW_Glyph *me, *other;
 
    int lsb, tot;
 
-   int *vpt = all->visual_separation + right_index;
+   int *vpt=all->visual_separation + right_index;
 
-   lsb = 0;
-   me = &all->glyphs[right_index];
-   for (i = 0; i < all->gcnt; ++i) {
-      other = &all->glyphs[i];
-      tot = all->desired_separation - vpt[i * all->gcnt] - other->rsb;
+   lsb=0;
+   me=&all->glyphs[right_index];
+   for (i=0; i < all->gcnt; ++i) {
+      other=&all->glyphs[i];
+      tot=all->desired_separation - vpt[i * all->gcnt] - other->rsb;
       if (tot < all->min_sidebearing)
-	 tot = all->min_sidebearing;
+	 tot=all->min_sidebearing;
       else if (tot > all->max_sidebearing)
-	 tot = all->max_sidebearing;
+	 tot=all->max_sidebearing;
       lsb += tot;
    }
    if (i != 0)
-      lsb = (lsb + i / 2) / i;
-   lsb = rint((3 * lsb + me->lsb) / 4.0);
-   me->nlsb = lsb;
+      lsb=(lsb + i / 2) / i;
+   lsb=rint((3 * lsb + me->lsb) / 4.0);
+   me->nlsb=lsb;
 }
 
-static void aw2_figure_rsb(int left_index, AW_Data * all) {
+static void aw2_figure_rsb(int left_index,AW_Data *all) {
    int i;
 
    AW_Glyph *me, *other;
 
    int rsb, tot;
 
-   int *vpt = all->visual_separation + left_index * all->gcnt;
+   int *vpt=all->visual_separation + left_index * all->gcnt;
 
-   rsb = 0;
-   me = &all->glyphs[left_index];
-   for (i = 0; i < all->gcnt; ++i) {
-      other = &all->glyphs[i];
-      tot = all->desired_separation - vpt[i] - other->lsb;
+   rsb=0;
+   me=&all->glyphs[left_index];
+   for (i=0; i < all->gcnt; ++i) {
+      other=&all->glyphs[i];
+      tot=all->desired_separation - vpt[i] - other->lsb;
       if (tot < all->min_sidebearing)
-	 tot = all->min_sidebearing;
+	 tot=all->min_sidebearing;
       else if (tot > all->max_sidebearing)
-	 tot = all->max_sidebearing;
+	 tot=all->max_sidebearing;
       rsb += tot;
    }
    if (i != 0)
-      rsb = (rsb + i / 2) / i;
-   rsb = rint((3 * rsb + me->rsb) / 4.0);
-   me->nrsb = rsb;
+      rsb=(rsb + i / 2) / i;
+   rsb=rint((3 * rsb + me->rsb) / 4.0);
+   me->nrsb=rsb;
 }
 
-static void aw2_figure_all_sidebearing(AW_Data * all) {
+static void aw2_figure_all_sidebearing(AW_Data *all) {
    int i, j;
 
    AW_Glyph *me, *other;
@@ -138,79 +138,79 @@ static void aw2_figure_all_sidebearing(AW_Data * all) {
 
    int width, changed;
 
-   uint8 *rsel = calloc(all->fv->map->enccount, sizeof(char));
+   uint8 *rsel=calloc(all->fv->map->enccount, sizeof(char));
 
-   real denom = (all->sf->ascent + all->sf->descent) / DENOM_FACTOR_OF_EMSIZE;
+   real denom=(all->sf->ascent + all->sf->descent) / DENOM_FACTOR_OF_EMSIZE;
 
    int ldiff, rdiff;
 
-   all->denom = denom;
-   all->visual_separation = malloc(all->gcnt * all->gcnt * sizeof(int));
-   for (i = 0; i < all->gcnt; ++i) {
-      int *vpt = all->visual_separation + i * all->gcnt;
+   all->denom=denom;
+   all->visual_separation=malloc(all->gcnt * all->gcnt * sizeof(int));
+   for (i=0; i < all->gcnt; ++i) {
+      int *vpt=all->visual_separation + i * all->gcnt;
 
-      me = &all->glyphs[i];
-      for (j = 0; j < all->gcnt; ++j) {
-	 other = &all->glyphs[j];
-	 vpt[j] = aw2_bbox_separation(me, other, all);
+      me=&all->glyphs[i];
+      for (j=0; j < all->gcnt; ++j) {
+	 other=&all->glyphs[j];
+	 vpt[j]=aw2_bbox_separation(me, other, all);
       }
    }
 
-   half = all->desired_separation / 2;
-   for (i = 0; i < all->gcnt; ++i) {
-      me = &all->glyphs[i];
-      me->lsb = me->rsb = half;
+   half=all->desired_separation / 2;
+   for (i=0; i < all->gcnt; ++i) {
+      me=&all->glyphs[i];
+      me->lsb=me->rsb=half;
    }
 
-   for (j = 0; j < all->loop_cnt; ++j) {
-      for (i = 0; i < all->gcnt; ++i)
+   for (j=0; j < all->loop_cnt; ++j) {
+      for (i=0; i < all->gcnt; ++i)
 	 aw2_figure_lsb(i, all);
-      for (i = 0; i < all->gcnt; ++i)
+      for (i=0; i < all->gcnt; ++i)
 	 aw2_figure_rsb(i, all);
-      for (i = 0; i < all->gcnt; ++i) {
-	 AW_Glyph *me = &all->glyphs[i];
+      for (i=0; i < all->gcnt; ++i) {
+	 AW_Glyph *me=&all->glyphs[i];
 
-	 me->rsb = me->nrsb;
-	 me->lsb = me->nlsb;
+	 me->rsb=me->nrsb;
+	 me->lsb=me->nlsb;
       }
    }
    free(all->visual_separation);
-   all->visual_separation = NULL;
+   all->visual_separation=NULL;
 
    if (all->normalize) {
       /* This is the dummy flat edge we added. We want the separation between */
       /*  two adjacent flat edges to be desired_separation */
-      me = &all->glyphs[all->gcnt - 1];
-      if (me->lsb + me->rsb != all->desired_separation && me->sc == NULL) {
+      me=&all->glyphs[all->gcnt - 1];
+      if (me->lsb + me->rsb != all->desired_separation && me->sc==NULL) {
 	 if (me->lsb + me->rsb != 0) {
 	    ldiff =
 	       (all->desired_separation -
 		(me->lsb + me->rsb)) * me->lsb / (me->lsb + me->rsb);
 	 } else {
-	    ldiff = all->desired_separation / 2;
+	    ldiff=all->desired_separation / 2;
 	 }
-	 rdiff = (all->desired_separation - (me->lsb + me->rsb)) - ldiff;
-	 for (i = 0; (me = &all->glyphs[i])->sc != NULL; ++i) {
+	 rdiff=(all->desired_separation - (me->lsb + me->rsb)) - ldiff;
+	 for (i=0; (me=&all->glyphs[i])->sc != NULL; ++i) {
 	    me->lsb += ldiff;
 	    me->rsb += rdiff;
 	 }
       }
    }
 
-   transform[0] = transform[3] = 1.0;
-   transform[1] = transform[2] = transform[5] = 0;
-   for (i = 0; (me = &all->glyphs[i])->sc != NULL; ++i) {
-      changed = 0;
+   transform[0]=transform[3]=1.0;
+   transform[1]=transform[2]=transform[5]=0;
+   for (i=0; (me=&all->glyphs[i])->sc != NULL; ++i) {
+      changed=0;
       if (me->lsb != me->bb.minx) {
-	 transform[4] = me->lsb - me->bb.minx;
+	 transform[4]=me->lsb - me->bb.minx;
 	 FVTrans(all->fv, me->sc, transform, rsel, false);
-	 changed = true;
+	 changed=true;
       }
-      width = me->lsb + me->rsb + rint(me->bb.maxx - me->bb.minx);
+      width=me->lsb + me->rsb + rint(me->bb.maxx - me->bb.minx);
       if (me->sc->width != width) {
 	 SCPreserveWidth(me->sc);
 	 SCSynchronizeWidth(me->sc, width, me->sc->width, all->fv);
-	 changed = true;
+	 changed=true;
       }
       if (changed)
 	 SCCharChangedUpdate(me->sc, ly_none, true);
@@ -218,22 +218,22 @@ static void aw2_figure_all_sidebearing(AW_Data * all) {
    free(rsel);
 }
 
-static double MonotonicFindY(Monotonic * m, double test, double old_t) {
+static double MonotonicFindY(Monotonic *m,double test,double old_t) {
    double tstart, tend, t;
 
-   tstart = m->tstart;
-   tend = m->tend;
+   tstart=m->tstart;
+   tend=m->tend;
    if (old_t != -1) {
       if (m->yup)
-	 tstart = old_t;
+	 tstart=old_t;
       else
-	 tend = old_t;
+	 tend=old_t;
    }
-   t = IterateSplineSolve(&m->s->splines[1], tstart, tend, test);
+   t=IterateSplineSolve(&m->s->splines[1], tstart, tend, test);
    return (t);
 }
 
-static void aw2_findedges(AW_Glyph * me, AW_Data * all) {
+static void aw2_findedges(AW_Glyph *me,AW_Data *all) {
    Monotonic *ms, *m;
 
    real ytop, ybottom;
@@ -248,52 +248,52 @@ static void aw2_findedges(AW_Glyph * me, AW_Data * all) {
 
    SplineSet *base;
 
-   me->imin_y = floor(me->bb.miny / all->sub_height);
-   me->imax_y = ceil(me->bb.maxy / all->sub_height);
-   me->left = malloc((me->imax_y - me->imin_y + 1) * sizeof(short));
-   me->right = malloc((me->imax_y - me->imin_y + 1) * sizeof(short));
+   me->imin_y=floor(me->bb.miny / all->sub_height);
+   me->imax_y=ceil(me->bb.maxy / all->sub_height);
+   me->left=malloc((me->imax_y - me->imin_y + 1) * sizeof(short));
+   me->right=malloc((me->imax_y - me->imin_y + 1) * sizeof(short));
 
-   base = LayerAllSplines(&me->sc->layers[all->layer]);
-   ms = SSsToMContours(base, over_remove);	/* over_remove is an arcane way of saying: Look at all contours, not just selected ones */
+   base=LayerAllSplines(&me->sc->layers[all->layer]);
+   ms=SSsToMContours(base, over_remove);	/* over_remove is an arcane way of saying: Look at all contours, not just selected ones */
    LayerUnAllSplines(&me->sc->layers[all->layer]);
 
-   ytop = me->imin_y * all->sub_height;
-   for (m = ms; m != NULL; m = m->linked) {
-      m->t = -1;
+   ytop=me->imin_y * all->sub_height;
+   for (m=ms; m != NULL; m=m->linked) {
+      m->t=-1;
       if (m->b.miny <= ytop)	/* can't be less than, but... */
-	 m->t = MonotonicFindY(m, ytop, -1);
+	 m->t=MonotonicFindY(m, ytop, -1);
    }
-   for (i = me->imin_y; i <= me->imax_y; ++i) {
-      ybottom = ytop;
+   for (i=me->imin_y; i <= me->imax_y; ++i) {
+      ybottom=ytop;
       ytop += all->sub_height;
-      xmin = 1e10;
-      xmax = -1e10;
-      for (m = ms; m != NULL; m = m->linked) {
+      xmin=1e10;
+      xmax=-1e10;
+      for (m=ms; m != NULL; m=m->linked) {
 	 if (m->b.maxy < ybottom || m->b.miny > ytop
-	     || m->b.maxy == m->b.miny)
+	     || m->b.maxy==m->b.miny)
 	    continue;
-	 if ((t = m->t) == -1)
-	    t = MonotonicFindY(m, m->b.miny, -1);
-	 msp = &m->s->splines[0];
+	 if ((t=m->t)==-1)
+	    t=MonotonicFindY(m, m->b.miny, -1);
+	 msp=&m->s->splines[0];
 	 if (t != -1) {
-	    x = ((msp->a * t + msp->b) * t + msp->c) * t + msp->d;
+	    x=((msp->a * t + msp->b) * t + msp->c) * t + msp->d;
 	    if (x > xmax)
-	       xmax = x;
+	       xmax=x;
 	    if (x < xmin)
-	       xmin = x;
+	       xmin=x;
 	 }
 	 if (ytop < m->b.maxy)
-	    t = m->t = MonotonicFindY(m, ytop, t);
+	    t=m->t=MonotonicFindY(m, ytop, t);
 	 else {
-	    m->t = -1;
-	    t = MonotonicFindY(m, m->b.maxy, t);
+	    m->t=-1;
+	    t=MonotonicFindY(m, m->b.maxy, t);
 	 }
 	 if (t != -1) {
-	    x = ((msp->a * t + msp->b) * t + msp->c) * t + msp->d;
+	    x=((msp->a * t + msp->b) * t + msp->c) * t + msp->d;
 	    if (x > xmax)
-	       xmax = x;
+	       xmax=x;
 	    if (x < xmin)
-	       xmin = x;
+	       xmin=x;
 	 }
       }
       if (xmin > 1e9) {
@@ -303,54 +303,54 @@ static void aw2_findedges(AW_Glyph * me, AW_Data * all) {
 	 me->right[i - me->imin_y] =
 	    -32767 /* floor(-(me->bb.maxx - me->bb.minx)/2) */ ;
       } else {
-	 me->left[i - me->imin_y] = floor(xmin - me->bb.minx);
-	 me->right[i - me->imin_y] = floor(xmax - me->bb.maxx);	/* This is always non-positive, so floor will give the bigger absolute value */
+	 me->left[i - me->imin_y]=floor(xmin - me->bb.minx);
+	 me->right[i - me->imin_y]=floor(xmax - me->bb.maxx);	/* This is always non-positive, so floor will give the bigger absolute value */
       }
    }
    FreeMonotonics(ms);
 }
 
-static void aw2_dummyedges(AW_Glyph * flat, AW_Data * all) {
+static void aw2_dummyedges(AW_Glyph *flat,AW_Data *all) {
    int i;
 
-   int imin_y = 32000, imax_y = -32000;
+   int imin_y=32000, imax_y=-32000;
 
    if (all != NULL) {
-      for (i = 0; i < all->gcnt; ++i) {
-	 AW_Glyph *test = &all->glyphs[i];
+      for (i=0; i < all->gcnt; ++i) {
+	 AW_Glyph *test=&all->glyphs[i];
 
 	 if (test->imin_y < imin_y)
-	    imin_y = test->imin_y;
+	    imin_y=test->imin_y;
 	 if (test->imax_y > imax_y)
-	    imax_y = test->imax_y;
+	    imax_y=test->imax_y;
       }
-      if (imin_y == 32000) {
-	 imin_y = floor(-all->sf->descent / all->sub_height);
-	 imax_y = ceil(all->sf->ascent / all->sub_height);
+      if (imin_y==32000) {
+	 imin_y=floor(-all->sf->descent / all->sub_height);
+	 imax_y=ceil(all->sf->ascent / all->sub_height);
       }
-      flat->imin_y = imin_y;
-      flat->imax_y = imax_y;
+      flat->imin_y=imin_y;
+      flat->imax_y=imax_y;
    }
-   flat->left = calloc((flat->imax_y - flat->imin_y + 1), sizeof(short));
-   flat->right = calloc((flat->imax_y - flat->imin_y + 1), sizeof(short));
+   flat->left=calloc((flat->imax_y - flat->imin_y + 1), sizeof(short));
+   flat->right=calloc((flat->imax_y - flat->imin_y + 1), sizeof(short));
 }
 
-static void AWGlyphFree(AW_Glyph * me) {
+static void AWGlyphFree(AW_Glyph *me) {
    free(me->left);
    free(me->right);
 }
 
-static void aw2_handlescript(AW_Data * all) {
+static void aw2_handlescript(AW_Data *all) {
    int i;
 
    AW_Glyph *me;
 
-   for (i = 0; (me = &all->glyphs[i])->sc != NULL; ++i)
+   for (i=0; (me=&all->glyphs[i])->sc != NULL; ++i)
       aw2_findedges(me, all);
    aw2_dummyedges(me, all);
    ++all->gcnt;
    aw2_figure_all_sidebearing(all);
-   for (i = 0; i < all->gcnt; ++i)
+   for (i=0; i < all->gcnt; ++i)
       AWGlyphFree(&all->glyphs[i]);
 }
 
@@ -366,48 +366,48 @@ void AutoWidth2(FontViewBase * fv, int separation, int min_side, int max_side,
 
    int enc, gid, s, i;
 
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
    SplineChar *sc;
 
    AW_Data all;
 
    if (chunk_height <= 0)
-      chunk_height = (sf->ascent + sf->descent) / 100;
+      chunk_height=(sf->ascent + sf->descent) / 100;
    if (loop_cnt <= 0)
-      loop_cnt = 4;
+      loop_cnt=4;
 
-   scnt = 0;
-   smax = 10;
-   scripts = malloc(smax * sizeof(struct scriptlist));
+   scnt=0;
+   smax=10;
+   scripts=malloc(smax * sizeof(struct scriptlist));
 
-   for (gid = 0; gid < sf->glyphcnt; ++gid) {
-      if ((sc = sf->glyphs[gid]) != NULL)
-	 sc->ticked = false;
+   for (gid=0; gid < sf->glyphcnt; ++gid) {
+      if ((sc=sf->glyphs[gid]) != NULL)
+	 sc->ticked=false;
    }
-   for (enc = 0; enc < fv->map->enccount; ++enc) {
-      if (fv->selected[enc] && (gid = fv->map->map[enc]) != -1 &&
-	  (sc = sf->glyphs[gid]) != NULL && !sc->ticked &&
-	  HasUseMyMetrics(sc, fv->active_layer) == NULL) {
+   for (enc=0; enc < fv->map->enccount; ++enc) {
+      if (fv->selected[enc] && (gid=fv->map->map[enc]) != -1 &&
+	  (sc=sf->glyphs[gid]) != NULL && !sc->ticked &&
+	  HasUseMyMetrics(sc, fv->active_layer)==NULL) {
 	 /* If Use My Metrics is set, then we can't change the width (which we grab from a refchar) */
 	 uint32 script;
 
-	 script = SCScriptFromUnicode(sc);
-	 for (s = 0; s < scnt; ++s) {
-	    if (scripts[s].script == script)
+	 script=SCScriptFromUnicode(sc);
+	 for (s=0; s < scnt; ++s) {
+	    if (scripts[s].script==script)
 	       break;
 	 }
-	 if (s == scnt) {
+	 if (s==scnt) {
 	    if (scnt >= smax)
 	       scripts =
 		  realloc(scripts, (smax += 10) * sizeof(struct scriptlist));
 	    memset(&scripts[scnt], 0, sizeof(struct scriptlist));
-	    scripts[scnt].script = script;
-	    scripts[scnt].glyphs = calloc(sf->glyphcnt + 1, sizeof(AW_Glyph));
+	    scripts[scnt].script=script;
+	    scripts[scnt].glyphs=calloc(sf->glyphcnt + 1, sizeof(AW_Glyph));
 	    ++scnt;
 	 }
-	 i = scripts[s].gcnt;
-	 scripts[s].glyphs[i].sc = sc;
+	 i=scripts[s].gcnt;
+	 scripts[s].glyphs[i].sc=sc;
 	 SplineCharLayerFindBounds(sc, fv->active_layer,
 				   &scripts[s].glyphs[i].bb);
 	 if (scripts[s].glyphs[i].bb.minx < -16000
@@ -424,21 +424,21 @@ void AutoWidth2(FontViewBase * fv, int separation, int min_side, int max_side,
    }
 
    memset(&all, 0, sizeof(all));
-   all.sf = sf;
-   all.fv = fv;
-   all.layer = fv->active_layer;
-   all.normalize = true;
+   all.sf=sf;
+   all.fv=fv;
+   all.layer=fv->active_layer;
+   all.normalize=true;
 
-   all.sub_height = chunk_height;
-   all.loop_cnt = loop_cnt;
-   all.desired_separation = separation;
-   all.min_sidebearing = min_side;
-   all.max_sidebearing = max_side;
+   all.sub_height=chunk_height;
+   all.loop_cnt=loop_cnt;
+   all.desired_separation=separation;
+   all.min_sidebearing=min_side;
+   all.max_sidebearing=max_side;
 
-   for (s = 0; s < scnt; ++s) {
+   for (s=0; s < scnt; ++s) {
       memset(&scripts[s].glyphs[scripts[s].gcnt], 0, sizeof(AW_Glyph));
-      all.glyphs = scripts[s].glyphs;
-      all.gcnt = scripts[s].gcnt;
+      all.glyphs=scripts[s].glyphs;
+      all.gcnt=scripts[s].gcnt;
       aw2_handlescript(&all);
       free(all.glyphs);
    }

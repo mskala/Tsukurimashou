@@ -1,8 +1,8 @@
-/* $Id: zapfnomen.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: zapfnomen.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Zapf dingbat info. Slot into unicode at 0x2700 */
 /* Taken from adobe's afm file */
 
-char *zapfnomen[] = {
+char *zapfnomen[]={
    0, "a1", "a2", "a202", "a3", "a4", "a5", "a119",
    "a118", "a117", "a11", "a12", "a13", "a14", "a15", "a16",
    "a105", "a17", "a18", "a19", "a20", "a21", "a22", "a23",
@@ -29,7 +29,7 @@ char *zapfnomen[] = {
    "a186", "a195", "a187", "a188", "a189", "a190", "a191", 0
 };
 
-short zapfwx[] = {
+short zapfwx[]={
    0, 974, 961, 974, 980, 719, 789, 790,
    791, 690, 960, 939, 549, 855, 911, 933,
    911, 945, 974, 755, 846, 762, 761, 571,
@@ -56,7 +56,7 @@ short zapfwx[] = {
    967, 888, 831, 873, 927, 970, 918, 0
 };
 
-short zapfbb[][4] = {
+short zapfbb[][4]={
    {0, 0, 0, 0},
    {35, 72, 939, 621},
    {35, 81, 927, 611},
@@ -251,7 +251,7 @@ short zapfbb[][4] = {
    {0, 0, 0, 0}
 };
 
-char zapfexists[] = {
+char zapfexists[]={
    0, 1, 1, 1, 1, 0, 1, 1,
    1, 1, 0, 0, 1, 1, 1, 1,
    1, 1, 1, 1, 1, 1, 1, 1,

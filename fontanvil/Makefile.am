@@ -132,7 +132,7 @@ noinst_HEADERS = \
   inc/gimage.h inc/gio.h \
   inc/gresource.h inc/gwidget.h inc/intl.h inc/ustring.h \
   inc/utype.h \
-  fontanvil/sftextfieldP.h \
+  fontanvil/afile.h fontanvil/sftextfieldP.h \
   fontanvil/configure-fontanvil.h fontanvil/views.h fontanvil/is_LIGATURE.h \
   fontanvil/flaglist.h fontanvil/charview_private.h \
   fontanvil/autowidth2.h fontanvil/configure-fontanvil.h fontanvil/fontanvil.h \
@@ -156,7 +156,7 @@ noinst_LIBRARIES = \
 
 fontanvil_fontanvil_SOURCES = \
  fontanvil/main.c \
- fontanvil/asmfpst.c fontanvil/autohint.c \
+ fontanvil/afile.c fontanvil/asmfpst.c fontanvil/autohint.c \
  fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
  fontanvil/bezctx_ff.c fontanvil/bitmapchar.c fontanvil/bitmapcontrol.c \
  fontanvil/bvedit.c fontanvil/clipnoui.c fontanvil/crctab.c \

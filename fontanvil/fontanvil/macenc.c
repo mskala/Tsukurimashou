@@ -1,4 +1,4 @@
-/* $Id: macenc.c 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: macenc.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@
 */
 
 /* Macintosh 1 byte encodings */
-static unichar_t arabic[256] = {
+static unichar_t arabic[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -87,7 +87,7 @@ static unichar_t arabic[256] = {
    0x06af, 0x0688, 0x0691, 0x007b, 0x007c, 0x007d, 0x0698, 0x06d2
 };
 
-static unichar_t centeuro[256] = {
+static unichar_t centeuro[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -122,7 +122,7 @@ static unichar_t centeuro[256] = {
    0x00dd, 0x00fd, 0x0137, 0x017b, 0x0141, 0x017c, 0x0122, 0x02c7
 };
 
-static unichar_t croatian[256] = {
+static unichar_t croatian[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -157,7 +157,7 @@ static unichar_t croatian[256] = {
    0x00af, 0x03c0, 0x00cb, 0x02da, 0x00b8, 0x00ca, 0x00e6, 0x02c7
 };
 
-static unichar_t cyrillic[256] = {
+static unichar_t cyrillic[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -192,7 +192,7 @@ static unichar_t cyrillic[256] = {
    0x0448, 0x0449, 0x044a, 0x044b, 0x044c, 0x044d, 0x044e, 0x20ac
 };
 
-static unichar_t devanagari[256] = {
+static unichar_t devanagari[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -227,7 +227,7 @@ static unichar_t devanagari[256] = {
    0x096d, 0x096e, 0x096f,
 };
 
-static unichar_t farsi[256] = {
+static unichar_t farsi[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -262,7 +262,7 @@ static unichar_t farsi[256] = {
    0x06af, 0x0688, 0x0691, 0x007b, 0x007c, 0x007d, 0x0698, 0x06d2
 };
 
-static unichar_t greek[256] = {
+static unichar_t greek[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -297,7 +297,7 @@ static unichar_t greek[256] = {
    0x03c7, 0x03c5, 0x03b6, 0x03ca, 0x03cb, 0x0390, 0x03b0, 0x00ad
 };
 
-static unichar_t gujarati[256] = {
+static unichar_t gujarati[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -332,7 +332,7 @@ static unichar_t gujarati[256] = {
    0x0aed, 0x0aee, 0x0aef,
 };
 
-static unichar_t gurmukhi[256] = {
+static unichar_t gurmukhi[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -367,7 +367,7 @@ static unichar_t gurmukhi[256] = {
    0x0a6d, 0x0a6e, 0x0a6f,
 };
 
-static unichar_t hebrew[256] = {
+static unichar_t hebrew[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -402,7 +402,7 @@ static unichar_t hebrew[256] = {
    0x05e8, 0x05e9, 0x05ea, 0x007d, 0x005d, 0x007b, 0x005b, 0x007c
 };
 
-static unichar_t iceland[256] = {
+static unichar_t iceland[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -437,7 +437,7 @@ static unichar_t iceland[256] = {
    0x00af, 0x02d8, 0x02d9, 0x02da, 0x00b8, 0x02dd, 0x02db, 0x02c7
 };
 
-static unichar_t romanian[256] = {
+static unichar_t romanian[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -472,7 +472,7 @@ static unichar_t romanian[256] = {
    0x00af, 0x02d8, 0x02d9, 0x02da, 0x00b8, 0x02dd, 0x02db, 0x02c7
 };
 
-unichar_t MacRomanEnc[256] = {
+unichar_t MacRomanEnc[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -507,7 +507,7 @@ unichar_t MacRomanEnc[256] = {
    0x00af, 0x02d8, 0x02d9, 0x02da, 0x00b8, 0x02dd, 0x02db, 0x02c7
 };
 
-static unichar_t thai[256] = {
+static unichar_t thai[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -542,7 +542,7 @@ static unichar_t thai[256] = {
    0x0e58, 0x0e59, 0x00ae, 0x00a9,
 };
 
-static unichar_t turkish[256] = {
+static unichar_t turkish[256]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -589,7 +589,7 @@ enum script_codes {
    sm_max
 };
 
-static unichar_t *macencodings[] = {
+static unichar_t *macencodings[]={
    MacRomanEnc,
    NULL /*Essentially SJIS */ ,
    NULL /*Essentially Big 5 */ ,
@@ -635,7 +635,7 @@ static unichar_t *macencodings[] = {
 
 /* I've no idea what encoding code farsi uses, it isn't documented to be arabic 4, nor is it documented to have its own code */
 
-static uint8 _MacScriptFromLanguage[] = {
+static uint8 _MacScriptFromLanguage[]={
    sm_roman,			/* English */
    sm_roman,			/* French */
    sm_roman,			/* German */
@@ -804,7 +804,7 @@ static uint8 _MacScriptFromLanguage[] = {
    0xff
 };
 
-static uint16 _WinLangFromMac[] = {
+static uint16 _WinLangFromMac[]={
    0x409,			/* English */
    0x40c,			/* French */
    0x407,			/* German */
@@ -973,7 +973,7 @@ static uint16 _WinLangFromMac[] = {
    0xffff
 };
 
-static char *LanguageCodesFromMacLang[] = {
+static char *LanguageCodesFromMacLang[]={
    "en",			/* English */
    "fr",			/* French */
    "de",			/* German */
@@ -1142,36 +1142,36 @@ static char *LanguageCodesFromMacLang[] = {
    NULL
 };
 
-static const unichar_t *MacEncLangToTable(int macenc, int maclang) {
-   const unichar_t *table = macencodings[macenc];
+static const unichar_t *MacEncLangToTable(int macenc,int maclang) {
+   const unichar_t *table=macencodings[macenc];
 
-   if (maclang == 15 /* Icelandic */  ||
-       maclang == 30 /* Faroese */  ||
-       maclang == 149 /* Greenlandic */ )
-      table = iceland;
-   else if (maclang == 17 /* turkish */ )
-      table = turkish;
-   else if (maclang == 18 /* croatian */ )
-      table = croatian;
-   else if (maclang == 37 /* romanian */ )
-      table = romanian;
-   else if (maclang == 31 /* Farsi/Persian */ )
-      table = farsi;
+   if (maclang==15 /* Icelandic */  ||
+       maclang==30 /* Faroese */  ||
+       maclang==149 /* Greenlandic */ )
+      table=iceland;
+   else if (maclang==17 /* turkish */ )
+      table=turkish;
+   else if (maclang==18 /* croatian */ )
+      table=croatian;
+   else if (maclang==37 /* romanian */ )
+      table=romanian;
+   else if (maclang==31 /* Farsi/Persian */ )
+      table=farsi;
    return (table);
 }
 
 char *MacStrToUtf8(const char *str, int macenc, int maclang) {
    const unichar_t *table;
    char *ret, *rpt;
-   const uint8 *ustr = (uint8 *) str;
+   const uint8 *ustr=(uint8 *) str;
 
-   if (str == NULL)
+   if (str==NULL)
       return (NULL);
 
-   if (macenc == sm_japanese || macenc == sm_korean
-       || macenc == sm_tradchinese || macenc == sm_simpchinese) {
+   if (macenc==sm_japanese || macenc==sm_korean
+       || macenc==sm_tradchinese || macenc==sm_simpchinese) {
       Encoding *enc =
-	 FindOrMakeEncoding(macenc == sm_japanese ? "Sjis" : macenc ==
+	 FindOrMakeEncoding(macenc==sm_japanese ? "Sjis" : macenc ==
 			    sm_korean ? "EUC-KR" : macenc ==
 			    sm_tradchinese ? "Big5" : "EUC-CN");
       iconv_t *toutf8;
@@ -1179,20 +1179,20 @@ char *MacStrToUtf8(const char *str, int macenc, int maclang) {
       char *out;
       size_t inlen, outlen;
 
-      if (enc == NULL)
+      if (enc==NULL)
 	 return (NULL);
       toutf8 =
 	 iconv_open("UTF-8",
 		    enc->iconv_name !=
 		    NULL ? enc->iconv_name : enc->enc_name);
-      if (toutf8 == (iconv_t) - 1 || toutf8 == NULL)
+      if (toutf8==(iconv_t) - 1 || toutf8==NULL)
 	 return (NULL);
-      in = (char *) str;
-      inlen = strlen(in);
-      outlen = (inlen + 1) * 4;
-      out = (char *) (ret = malloc(outlen + 2));
+      in=(char *) str;
+      inlen=strlen(in);
+      outlen=(inlen + 1) * 4;
+      out=(char *) (ret=malloc(outlen + 2));
       iconv(toutf8, &in, &inlen, &out, &outlen);
-      out[0] = '\0';
+      out[0]='\0';
       iconv_close(toutf8);
       return (ret);
    }
@@ -1201,18 +1201,18 @@ char *MacStrToUtf8(const char *str, int macenc, int maclang) {
       IError("Invalid mac encoding %d.\n", macenc);
       return (NULL);
    }
-   table = MacEncLangToTable(macenc, maclang);
+   table=MacEncLangToTable(macenc, maclang);
 
-   if (table == NULL)
+   if (table==NULL)
       return (NULL);
 
-   ret = malloc(strlen(str) * 4 + 1);
-   for (rpt = ret; *ustr; ++ustr) {
-      int ch = table[*ustr];
+   ret=malloc(strlen(str) * 4 + 1);
+   for (rpt=ret; *ustr; ++ustr) {
+      int ch=table[*ustr];
 
-      rpt = utf8_idpb(rpt, ch, 0);
+      rpt=utf8_idpb(rpt, ch, 0);
    }
-   *rpt = '\0';
+   *rpt='\0';
    return (ret);
 }
 
@@ -1221,13 +1221,13 @@ char *Utf8ToMacStr(const char *ustr, int macenc, int maclang) {
    const unichar_t *table;
    int i, ch;
 
-   if (ustr == NULL)
+   if (ustr==NULL)
       return (NULL);
 
-   if (macenc == sm_japanese || macenc == sm_korean
-       || macenc == sm_tradchinese || macenc == sm_simpchinese) {
+   if (macenc==sm_japanese || macenc==sm_korean
+       || macenc==sm_tradchinese || macenc==sm_simpchinese) {
       Encoding *enc =
-	 FindOrMakeEncoding(macenc == sm_japanese ? "Sjis" : macenc ==
+	 FindOrMakeEncoding(macenc==sm_japanese ? "Sjis" : macenc ==
 			    sm_korean ? "EUC-KR" : macenc ==
 			    sm_tradchinese ? "Big5" : "EUC-CN");
       iconv_t fromutf8;
@@ -1235,51 +1235,51 @@ char *Utf8ToMacStr(const char *ustr, int macenc, int maclang) {
       char *out;
       size_t inlen, outlen;
 
-      if (enc == NULL)
+      if (enc==NULL)
 	 return (NULL);
       fromutf8 =
 	 iconv_open(enc->iconv_name != NULL ? enc->iconv_name : enc->enc_name,
 		    "UTF-8");
-      if (fromutf8 == (iconv_t) - 1 || fromutf8 == NULL)
+      if (fromutf8==(iconv_t) - 1 || fromutf8==NULL)
 	 return (NULL);
-      in = (char *) ustr;
-      inlen = strlen(ustr);
-      outlen = sizeof(unichar_t) * strlen(ustr);
-      out = ret = malloc(outlen + sizeof(unichar_t));
+      in=(char *) ustr;
+      inlen=strlen(ustr);
+      outlen=sizeof(unichar_t) * strlen(ustr);
+      out=ret=malloc(outlen + sizeof(unichar_t));
       iconv(fromutf8, &in, &inlen, &out, &outlen);
-      out[0] = out[1] = '\0';
-      out[2] = out[3] = '\0';
+      out[0]=out[1]='\0';
+      out[2]=out[3]='\0';
       iconv_close(fromutf8);
       return (ret);
    }
 
-   table = macencodings[macenc];
+   table=macencodings[macenc];
 
-   if (maclang == 15 /* Icelandic */  ||
-       maclang == 30 /* Faroese */  ||
-       maclang == 149 /* Greenlandic */ )
-      table = iceland;
-   else if (maclang == 17 /* turkish */ )
-      table = turkish;
-   else if (maclang == 18 /* croatian */ )
-      table = croatian;
-   else if (maclang == 37 /* romanian */ )
-      table = romanian;
-   else if (maclang == 31 /* Farsi/Persian */ )
-      table = farsi;
+   if (maclang==15 /* Icelandic */  ||
+       maclang==30 /* Faroese */  ||
+       maclang==149 /* Greenlandic */ )
+      table=iceland;
+   else if (maclang==17 /* turkish */ )
+      table=turkish;
+   else if (maclang==18 /* croatian */ )
+      table=croatian;
+   else if (maclang==37 /* romanian */ )
+      table=romanian;
+   else if (maclang==31 /* Farsi/Persian */ )
+      table=farsi;
 
-   if (table == NULL)
+   if (table==NULL)
       return (NULL);
 
-   ret = malloc(strlen(ustr) + 1);
-   for (rpt = ret; (ch = utf8_ildb(&ustr));) {
-      for (i = 0; i < 256; ++i)
-	 if (table[i] == ch) {
-	    *rpt++ = i;
+   ret=malloc(strlen(ustr) + 1);
+   for (rpt=ret; (ch=utf8_ildb(&ustr));) {
+      for (i=0; i < 256; ++i)
+	 if (table[i]==ch) {
+	    *rpt++=i;
 	    break;
 	 }
    }
-   *rpt = '\0';
+   *rpt='\0';
    return (ret);
 }
 
@@ -1303,13 +1303,13 @@ uint16 WinLangFromMac(int maclang) {
 uint16 WinLangToMac(int winlang) {
    int i;
 
-   for (i = 0; i < sizeof(_WinLangFromMac) / sizeof(_WinLangFromMac[0]); ++i)
-      if (_WinLangFromMac[i] == winlang)
+   for (i=0; i < sizeof(_WinLangFromMac) / sizeof(_WinLangFromMac[0]); ++i)
+      if (_WinLangFromMac[i]==winlang)
 	 return (i);
 
    winlang &= 0xff;
-   for (i = 0; i < sizeof(_WinLangFromMac) / sizeof(_WinLangFromMac[0]); ++i)
-      if ((_WinLangFromMac[i] & 0xff) == winlang)
+   for (i=0; i < sizeof(_WinLangFromMac) / sizeof(_WinLangFromMac[0]); ++i)
+      if ((_WinLangFromMac[i] & 0xff)==winlang)
 	 return (i);
 
    return (0xffff);
@@ -1320,71 +1320,71 @@ const int32 *MacEncToUnicode(int script, int lang) {
    int i;
    const unichar_t *table;
 
-   table = MacEncLangToTable(script, lang);
-   if (table == NULL)
+   table=MacEncLangToTable(script, lang);
+   if (table==NULL)
       return (NULL);
-   for (i = 0; i < 256; ++i)
-      temp[i] = table[i];
+   for (i=0; i < 256; ++i)
+      temp[i]=table[i];
    return (temp);
 }
 
 int MacLangFromLocale(void) {
-   /*const char *loc = setlocale(LC_MESSAGES,NULL); *//* This always returns "C" for me, even when it shouldn't be */
+   /*const char *loc=setlocale(LC_MESSAGES,NULL); *//* This always returns "C" for me, even when it shouldn't be */
    const char *loc;
-   static int found = -1;
+   static int found=-1;
    int i;
 
    if (found != -1)
       return (found);
 
-   loc = getenv("LC_ALL");
-   if (loc == NULL)
-      loc = getenv("LC_MESSAGES");
-   if (loc == NULL)
-      loc = getenv("LANG");
+   loc=getenv("LC_ALL");
+   if (loc==NULL)
+      loc=getenv("LC_MESSAGES");
+   if (loc==NULL)
+      loc=getenv("LANG");
 
-   if (loc == NULL) {
-      found = 0;		/* Default to english */
+   if (loc==NULL) {
+      found=0;		/* Default to english */
       return (found);
    }
-   if (strncmp(loc, "nl_BE", 5) == 0) {
-      found = 34;
+   if (strncmp(loc, "nl_BE", 5)==0) {
+      found=34;
       return (found);
    }
-   for (i = 0;
+   for (i=0;
 	i <
 	sizeof(LanguageCodesFromMacLang) /
 	sizeof(LanguageCodesFromMacLang[0]); ++i) {
       if (LanguageCodesFromMacLang[i] != NULL
 	  && strncmp(loc, LanguageCodesFromMacLang[i],
-		     strlen(LanguageCodesFromMacLang[i])) == 0) {
-	 found = i;
+		     strlen(LanguageCodesFromMacLang[i]))==0) {
+	 found=i;
 	 return (found);
       }
    }
-   if (strncmp(loc, "zh_HK", 2) == 0)	/* I think there are other traditional locales than Hong Kong and Taiwan (?Singapore?) so any chinese we don't recognize */
-      found = 19;
+   if (strncmp(loc, "zh_HK", 2)==0)	/* I think there are other traditional locales than Hong Kong and Taiwan (?Singapore?) so any chinese we don't recognize */
+      found=19;
    else
-      found = 0;
+      found=0;
    return (found);
 }
 
 char *PickNameFromMacName(struct macname *mn) {
-   int lang = MacLangFromLocale();
-   struct macname *first = mn, *english = NULL;
+   int lang=MacLangFromLocale();
+   struct macname *first=mn, *english=NULL;
 
    while (mn != NULL) {
-      if (mn->lang == lang)
+      if (mn->lang==lang)
 	 break;
-      else if (mn->lang == 0)
-	 english = mn;
-      mn = mn->next;
+      else if (mn->lang==0)
+	 english=mn;
+      mn=mn->next;
    }
-   if (mn == NULL)
-      mn = english;
-   if (mn == NULL)
-      mn = first;
-   if (mn == NULL)
+   if (mn==NULL)
+      mn=english;
+   if (mn==NULL)
+      mn=first;
+   if (mn==NULL)
       return (NULL);
 
    return (MacStrToUtf8(mn->name, mn->enc, mn->lang));
@@ -1392,92 +1392,92 @@ char *PickNameFromMacName(struct macname *mn) {
 
 char *FindEnglishNameInMacName(struct macname *mn) {
    while (mn != NULL) {
-      if (mn->lang == 0)
+      if (mn->lang==0)
 	 break;
-      mn = mn->next;
+      mn=mn->next;
    }
-   if (mn == NULL)
+   if (mn==NULL)
       return (NULL);
 
    return (MacStrToUtf8(mn->name, mn->enc, mn->lang));
 }
 
-MacFeat *FindMacFeature(SplineFont * sf, int feat, MacFeat ** secondary) {
+MacFeat *FindMacFeature(SplineFont *sf, int feat, MacFeat ** secondary) {
    MacFeat *from_f, *from_p;
 
-   for (from_f = sf->features; from_f != NULL && from_f->feature != feat;
-	from_f = from_f->next);
-   for (from_p = default_mac_feature_map;
-	from_p != NULL && from_p->feature != feat; from_p = from_p->next);
+   for (from_f=sf->features; from_f != NULL && from_f->feature != feat;
+	from_f=from_f->next);
+   for (from_p=default_mac_feature_map;
+	from_p != NULL && from_p->feature != feat; from_p=from_p->next);
    if (from_f != NULL) {
       if (secondary != NULL)
-	 *secondary = from_p;
+	 *secondary=from_p;
       return (from_f);
    }
    if (secondary != NULL)
-      *secondary = NULL;
+      *secondary=NULL;
    return (from_p);
 }
 
-struct macsetting *FindMacSetting(SplineFont * sf, int feat, int set,
+struct macsetting *FindMacSetting(SplineFont *sf, int feat, int set,
 				  struct macsetting **secondary) {
    MacFeat *from_f, *from_p;
    struct macsetting *s_f, *s_p;
 
    if (sf != NULL)
-      for (from_f = sf->features; from_f != NULL && from_f->feature != feat;
-	   from_f = from_f->next);
+      for (from_f=sf->features; from_f != NULL && from_f->feature != feat;
+	   from_f=from_f->next);
    else
-      from_f = NULL;
-   for (from_p = default_mac_feature_map;
-	from_p != NULL && from_p->feature != feat; from_p = from_p->next);
-   s_f = s_p = NULL;
+      from_f=NULL;
+   for (from_p=default_mac_feature_map;
+	from_p != NULL && from_p->feature != feat; from_p=from_p->next);
+   s_f=s_p=NULL;
    if (from_f != NULL)
-      for (s_f = from_f->settings; s_f != NULL && s_f->setting != set;
-	   s_f = s_f->next);
+      for (s_f=from_f->settings; s_f != NULL && s_f->setting != set;
+	   s_f=s_f->next);
    if (from_p != NULL)
-      for (s_p = from_p->settings; s_p != NULL && s_p->setting != set;
-	   s_p = s_p->next);
+      for (s_p=from_p->settings; s_p != NULL && s_p->setting != set;
+	   s_p=s_p->next);
    if (s_f != NULL) {
       if (secondary != NULL)
-	 *secondary = s_p;
+	 *secondary=s_p;
       return (s_f);
    }
    if (secondary != NULL)
-      *secondary = NULL;
+      *secondary=NULL;
    return (s_p);
 }
 
-struct macname *FindMacSettingName(SplineFont * sf, int feat, int set) {
+struct macname *FindMacSettingName(SplineFont *sf, int feat, int set) {
    MacFeat *from_f, *from_p;
    struct macsetting *s;
 
    if (sf != NULL)
-      for (from_f = sf->features; from_f != NULL && from_f->feature != feat;
-	   from_f = from_f->next);
+      for (from_f=sf->features; from_f != NULL && from_f->feature != feat;
+	   from_f=from_f->next);
    else
-      from_f = NULL;
-   for (from_p = default_mac_feature_map;
-	from_p != NULL && from_p->feature != feat; from_p = from_p->next);
-   if (set == -1) {
+      from_f=NULL;
+   for (from_p=default_mac_feature_map;
+	from_p != NULL && from_p->feature != feat; from_p=from_p->next);
+   if (set==-1) {
       if (from_f != NULL && from_f->featname != NULL)
 	 return (from_f->featname);
       else if (from_p != NULL)
 	 return (from_p->featname);
       return (NULL);
    }
-   s = NULL;
+   s=NULL;
    if (from_f != NULL)
-      for (s = from_f->settings; s != NULL && s->setting != set; s = s->next);
-   if ((s == NULL || s->setname == NULL) && from_p != NULL)
-      for (s = from_p->settings; s != NULL && s->setting != set; s = s->next);
+      for (s=from_f->settings; s != NULL && s->setting != set; s=s->next);
+   if ((s==NULL || s->setname==NULL) && from_p != NULL)
+      for (s=from_p->settings; s != NULL && s->setting != set; s=s->next);
    if (s != NULL)
       return (s->setname);
 
    return (NULL);
 }
 
-struct macsettingname macfeat_otftag[] = {
+struct macsettingname macfeat_otftag[]={
    {1, 0, CHR('r', 'l', 'i', 'g')},	/* Required ligatures */
    {1, 2, CHR('l', 'i', 'g', 'a')},	/* Common ligatures */
    {1, 4, CHR('d', 'l', 'i', 'g')},	/* rare ligatures => discretionary */
@@ -1520,7 +1520,7 @@ struct macsettingname macfeat_otftag[] = {
    {0, 0, 0}
 }, *user_macfeat_otftag;
 
-static struct macname fs_names[] = {
+static struct macname fs_names[]={
    {&fs_names[146], 0, 0, "All Typographic Features"},
    {&fs_names[147], 0, 0, "All Type Features"},
    {&fs_names[148], 0, 0, "Ligatures"},
@@ -2065,7 +2065,7 @@ static struct macname fs_names[] = {
    {NULL, 0, 0, NULL}
 };
 
-static struct macsetting fs_settings[] = {
+static struct macsetting fs_settings[]={
    {NULL, 0, 0, &fs_names[1], 0},
    {NULL, 14, 0, &fs_names[10], 0},
    {&fs_settings[1], 12, 0, &fs_names[9], 0},
@@ -2185,7 +2185,7 @@ static struct macsetting fs_settings[] = {
    {NULL, 0, 0, NULL, 0}
 };
 
-static MacFeat fs_features[] = {
+static MacFeat fs_features[]={
    {NULL, 103, 1, 0, 0, &fs_names[139], &fs_settings[115]},
    {&fs_features[0], 27, 0, 0, 0, &fs_names[144], &fs_settings[111]},
    {&fs_features[1], 26, 1, 0, 0, &fs_names[133], &fs_settings[110]},
@@ -2216,22 +2216,22 @@ static MacFeat fs_features[] = {
    {NULL, 0, 0, 0, 0, NULL, NULL}
 };
 
-MacFeat *default_mac_feature_map = &fs_features[26];
+MacFeat *default_mac_feature_map=&fs_features[26];
 
 struct macname *MacNameCopy(struct macname *mn) {
-   struct macname *head = NULL, *last, *cur;
+   struct macname *head=NULL, *last, *cur;
 
    while (mn != NULL) {
-      cur = chunkalloc(sizeof(struct macname));
-      cur->enc = mn->enc;
-      cur->lang = mn->lang;
-      cur->name = copy(mn->name);
-      if (head == NULL)
-	 head = cur;
+      cur=chunkalloc(sizeof(struct macname));
+      cur->enc=mn->enc;
+      cur->lang=mn->lang;
+      cur->name=copy(mn->name);
+      if (head==NULL)
+	 head=cur;
       else
-	 last->next = cur;
-      last = cur;
-      mn = mn->next;
+	 last->next=cur;
+      last=cur;
+      mn=mn->next;
    }
    return (head);
 }
@@ -2240,7 +2240,7 @@ struct macname *MacNameCopy(struct macname *mn) {
 static struct {
    char *name;
    int code;
-} localmaclang[] = {
+} localmaclang[]={
    {
    N_("English"), 0}, {
    N_("French"), 1}, {
@@ -2369,11 +2369,11 @@ static struct {
 char *MacLanguageFromCode(int code) {
    int i;
 
-   if (code == -1)
+   if (code==-1)
       return (_("Unspecified Language"));
 
-   for (i = 0; localmaclang[i].name != NULL; ++i)
-      if (code == localmaclang[i].code)
+   for (i=0; localmaclang[i].name != NULL; ++i)
+      if (code==localmaclang[i].code)
 	 return (S_(localmaclang[i].name));
 
    return (_("Unknown Language"));

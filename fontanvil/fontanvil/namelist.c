@@ -1,4 +1,4 @@
-/* $Id: namelist.c 3338 2014-09-30 18:25:16Z mskala $ */
+/* $Id: namelist.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,11 @@
 #include <utype.h>
 #include "namehash.h"
 
-int recognizePUA = false;
+int recognizePUA=false;
 
-NameList *force_names_when_opening = NULL;
+NameList *force_names_when_opening=NULL;
 
-NameList *force_names_when_saving = NULL;
+NameList *force_names_when_saving=NULL;
 
 static struct psaltnames {
    char *name;
@@ -43,9 +43,9 @@ static struct psaltnames {
    int provenance;		/* 1=> Adobe PUA, 2=>AMS PUA, 3=>TeX */
 } psaltnames[];
 
-static NameList agl_sans, agl, agl_nf, adobepua, greeksc, tex, ams;
+static NameList agl_sans,agl,agl_nf,adobepua,greeksc,tex,ams;
 
-NameList *namelist_for_new_fonts = &agl_nf;
+NameList *namelist_for_new_fonts=&agl_nf;
 
 /* Adobe's standard names are wrong for: */
 /* 0x2206 is named Delta, 0x394 should be */
@@ -56,7 +56,7 @@ NameList *namelist_for_new_fonts = &agl_nf;
 /* 0x0163 is named tcommaaccent, 0x21B should be */
 /* 0xf6be is named dotlessj, 0x237 should be */
 
-static int psnamesinited = false;
+static int psnamesinited=false;
 
 #define HASH_SIZE	257
 struct psbucket {
@@ -65,25 +65,25 @@ struct psbucket {
    struct psbucket *prev;
 } *psbuckets[HASH_SIZE];
 
-static void psaddbucket(const char *name, int uni) {
-   int hash = hashname(name);
+static void psaddbucket(const char *name,int uni) {
+   int hash=hashname(name);
 
-   struct psbucket *buck = calloc(1, sizeof(struct psbucket));
+   struct psbucket *buck=calloc(1, sizeof(struct psbucket));
 
-   buck->name = name;
-   buck->uni = uni;
-   buck->prev = psbuckets[hash];
-   psbuckets[hash] = buck;
+   buck->name=name;
+   buck->uni=uni;
+   buck->prev=psbuckets[hash];
+   psbuckets[hash]=buck;
 }
 
-static void NameListHash(NameList * nl) {
+static void NameListHash(NameList *nl) {
    int i, j, k;
 
-   for (i = 0; i < 17; ++i)
+   for (i=0; i < 17; ++i)
       if (nl->unicode[i] != NULL) {
-	 for (j = 0; j < 256; ++j)
+	 for (j=0; j < 256; ++j)
 	    if (nl->unicode[i][j] != NULL) {
-	       for (k = 0; k < 256; ++k)
+	       for (k=0; k < 256; ++k)
 		  if (nl->unicode[i][j][k] != NULL)
 		     psaddbucket(nl->unicode[i][j][k],
 				 (i << 16) | (j << 8) | k);
@@ -96,18 +96,18 @@ static void psinitnames(void) {
 
    NameList *nl;
 
-   agl.next = &agl_nf;
-   agl_nf.next = &agl_sans;
-   agl_sans.next = &adobepua;
-   adobepua.next = &greeksc;
-   greeksc.next = &tex;
-   tex.next = &ams;
+   agl.next=&agl_nf;
+   agl_nf.next=&agl_sans;
+   agl_sans.next=&adobepua;
+   adobepua.next=&greeksc;
+   greeksc.next=&tex;
+   tex.next=&ams;
 
-   for (i = 0; psaltnames[i].name != NULL; ++i)
+   for (i=0; psaltnames[i].name != NULL; ++i)
       psaddbucket(psaltnames[i].name, psaltnames[i].unicode);
-   for (nl = &agl; nl != NULL; nl = nl->next)
+   for (nl=&agl; nl != NULL; nl=nl->next)
       NameListHash(nl);
-   psnamesinited = true;
+   psnamesinited=true;
 }
 
 static void psreinitnames(void) {
@@ -120,117 +120,117 @@ static void psreinitnames(void) {
 
    NameList *nl;
 
-   for (i = 0; i < HASH_SIZE; ++i) {
-      for (cur = psbuckets[i]; cur != NULL; cur = prev) {
-	 prev = cur->prev;
+   for (i=0; i < HASH_SIZE; ++i) {
+      for (cur=psbuckets[i]; cur != NULL; cur=prev) {
+	 prev=cur->prev;
 	 chunkfree(cur, sizeof(struct psbucket));
       }
-      psbuckets[i] = NULL;
+      psbuckets[i]=NULL;
    }
 
-   for (i = 0; psaltnames[i].name != NULL; ++i)
+   for (i=0; psaltnames[i].name != NULL; ++i)
       psaddbucket(psaltnames[i].name, psaltnames[i].unicode);
-   for (nl = &agl; nl != NULL; nl = nl->next)
+   for (nl=&agl; nl != NULL; nl=nl->next)
       NameListHash(nl);
 }
 
 int UniFromName(const char *name, enum uni_interp interp, Encoding * encname) {
-   int i = -1;
+   int i=-1;
 
    char *end;
 
    struct psbucket *buck;
 
-   int _recognizePUA = recognizePUA;
+   int _recognizePUA=recognizePUA;
 
-   if (strncmp(name, "uni", 3) == 0) {
-      i = strtol(name + 3, &end, 16);
+   if (strncmp(name, "uni", 3)==0) {
+      i=strtol(name + 3, &end, 16);
       if (*end || end - name != 7)	/* uniXXXXXXXX means a ligature of uniXXXX and uniXXXX */
-	 i = -1;
-      _recognizePUA = true;
-   } else if ((name[0] == 'U' || name[0] == 'u') && name[1] == '+' &&
-	      (strlen(name) == 6 || strlen(name) == 7)) {
+	 i=-1;
+      _recognizePUA=true;
+   } else if ((name[0]=='U' || name[0]=='u') && name[1]=='+' &&
+	      (strlen(name)==6 || strlen(name)==7)) {
       /* Unifont uses this convention */
-      i = strtol(name + 2, &end, 16);
+      i=strtol(name + 2, &end, 16);
       if (*end)
-	 i = -1;
-      _recognizePUA = true;
-   } else if (name[0] == 'u' && strlen(name) >= 5) {
-      i = strtol(name + 1, &end, 16);
+	 i=-1;
+      _recognizePUA=true;
+   } else if (name[0]=='u' && strlen(name) >= 5) {
+      i=strtol(name + 1, &end, 16);
       if (*end)
-	 i = -1;
+	 i=-1;
       else if (encname != NULL && !encname->is_unicodefull &&
-	       (interp == ui_ams || interp == ui_trad_chinese)) {
+	       (interp==ui_ams || interp==ui_trad_chinese)) {
 	 int j;
 
 	 extern const int cns14pua[], amspua[];
 
-	 const int *pua = interp == ui_ams ? amspua : cns14pua;
+	 const int *pua=interp==ui_ams ? amspua : cns14pua;
 
-	 for (j = 0xf8ff - 0xe000; j >= 0; --j)
-	    if (pua[j] == i) {
-	       i = j + 0xe000;
+	 for (j=0xf8ff - 0xe000; j >= 0; --j)
+	    if (pua[j]==i) {
+	       i=j + 0xe000;
 	       break;
 	    }
       }
       if (i != -1)
-	 _recognizePUA = true;
-   } else if (name[0] != '\0' && name[1] == '\0')
-      i = ((unsigned char *) name)[0];
-   if (i == -1) {
+	 _recognizePUA=true;
+   } else if (name[0] != '\0' && name[1]=='\0')
+      i=((unsigned char *) name)[0];
+   if (i==-1) {
       if (!psnamesinited)
 	 psinitnames();
-      for (buck = psbuckets[hashname(name)]; buck != NULL; buck = buck->prev)
-	 if (strcmp(buck->name, name) == 0)
+      for (buck=psbuckets[hashname(name)]; buck != NULL; buck=buck->prev)
+	 if (strcmp(buck->name, name)==0)
 	    break;
       if (buck != NULL)
-	 i = buck->uni;
+	 i=buck->uni;
    }
    if (!_recognizePUA && i >= 0xe000 && i <= 0xf8ff)
-      i = -1;
+      i=-1;
    return (i);
 }
 
 const char *StdGlyphName(char *buffer, int uni, enum uni_interp interp,
 			 NameList * for_this_font) {
-   const char *name = NULL;
+   const char *name=NULL;
 
    NameList *nl;
 
    int up, ub, uc;
 
-   if (for_this_font == NULL)
-      for_this_font = namelist_for_new_fonts;
-   else if (for_this_font == (NameList *) - 1)
-      for_this_font = &agl;
+   if (for_this_font==NULL)
+      for_this_font=namelist_for_new_fonts;
+   else if (for_this_font==(NameList *) - 1)
+      for_this_font=&agl;
    if ((uni >= 0 && uni < ' ') || (uni >= 0x7f && uni < 0xa0))
       /* standard controls */ ;
    else if (uni != -1) {
       if (uni >= 0xe000 && uni <= 0xf8ff &&
-	  (interp == ui_trad_chinese || for_this_font == &ams)) {
+	  (interp==ui_trad_chinese || for_this_font==&ams)) {
 	 extern const int cns14pua[], amspua[];
 
-	 const int *pua = interp == ui_trad_chinese ? cns14pua : amspua;
+	 const int *pua=interp==ui_trad_chinese ? cns14pua : amspua;
 
 	 if (pua[uni - 0xe000] != 0)
-	    uni = pua[uni - 0xe000];
+	    uni=pua[uni - 0xe000];
       }
-      up = uni >> 16;
-      ub = (uni & 0xff00) >> 8;
-      uc = (uni & 0xff);
+      up=uni >> 16;
+      ub=(uni & 0xff00) >> 8;
+      uc=(uni & 0xff);
       if (up < 17)
-	 for (nl = for_this_font; nl != NULL; nl = nl->basedon) {
+	 for (nl=for_this_font; nl != NULL; nl=nl->basedon) {
 	    if (nl->unicode[up] != NULL && nl->unicode[up][ub] != NULL &&
-		(name = nl->unicode[up][ub][uc]) != NULL)
+		(name=nl->unicode[up][ub][uc]) != NULL)
 	       break;
 	 }
    }
-   if (name == NULL) {
+   if (name==NULL) {
       if (uni >= 0x10000)
 	 sprintf(buffer, "u%04X", uni);
       else
 	 sprintf(buffer, "uni%04X", uni);
-      name = buffer;
+      name=buffer;
    }
    return (name);
 }
@@ -242,29 +242,29 @@ NameList *DefaultNameListForNewFonts(void) {
 }
 
 NameList *NameListByName(char *name) {
-   const char *nameTex = "ΤεΧ Names";
+   const char *nameTex="ΤεΧ Names";
 
    NameList *nl;
 
    /* ΤεΧ is hard tp type e.g. from scripting, so accept TeX as alias */
-   if (strcmp(name, "TeX Names") == 0)
-      name = (char *) nameTex;
+   if (strcmp(name, "TeX Names")==0)
+      name=(char *) nameTex;
 
-   for (nl = &agl; nl != NULL; nl = nl->next) {
-      if (strcmp(_(nl->title), name) == 0 || strcmp(nl->title, name) == 0)
+   for (nl=&agl; nl != NULL; nl=nl->next) {
+      if (strcmp(_(nl->title), name)==0 || strcmp(nl->title, name)==0)
 	 return (nl);
    }
    return (NULL);
 }
 
-static void NameListFreeContents(NameList * nl) {
+static void NameListFreeContents(NameList *nl) {
    int np, nb, nc, i;
 
-   for (np = 0; np < 17; ++np)
+   for (np=0; np < 17; ++np)
       if (nl->unicode[np] != NULL) {
-	 for (nb = 0; nb < 256; ++nb)
+	 for (nb=0; nb < 256; ++nb)
 	    if (nl->unicode[np][nb] != NULL) {
-	       for (nc = 0; nc < 256; ++nc)
+	       for (nc=0; nc < 256; ++nc)
 		  if (nl->unicode[np][nb][nc] != NULL)
 		     free((char *) nl->unicode[np][nb][nc]);
 	       free((char **) nl->unicode[np][nb]);
@@ -273,7 +273,7 @@ static void NameListFreeContents(NameList * nl) {
       }
    free(nl->title);
    if (nl->renames != NULL) {
-      for (i = 0; nl->renames[i].from != NULL; ++i) {
+      for (i=0; nl->renames[i].from != NULL; ++i) {
 	 free(nl->renames[i].from);
 	 free(nl->renames[i].to);
       }
@@ -282,7 +282,7 @@ static void NameListFreeContents(NameList * nl) {
    free(nl->a_utf8_name);
 }
 
-static void NameListFree(NameList * nl) {
+static void NameListFree(NameList *nl) {
    NameListFreeContents(nl);
    chunkfree(nl, sizeof(NameList));
 }
@@ -293,55 +293,47 @@ static void NameListFree(NameList * nl) {
 #include <dirent.h>
 
 NameList *LoadNamelist(char *filename) {
-   FILE *file = fopen(filename, "r");
-
+   AFILE *file=afopen(filename, "r");
    NameList *nl, *nl2;
-
    char buffer[400];
-
    char *pt, *end, *test;
-
    int uni;
-
    int len;
-
    int up, ub, uc;
+   int rn_cnt=0, rn_max=0;
+   int uses_unicode=false;
 
-   int rn_cnt = 0, rn_max = 0;
-
-   int uses_unicode = false;
-
-   if (file == NULL)
+   if (file==NULL)
       return (NULL);
 
    if (!psnamesinited)
       psinitnames();
 
-   nl = chunkalloc(sizeof(NameList));
-   pt = strrchr(filename, '/');
-   if (pt == NULL)
-      pt = filename;
+   nl=chunkalloc(sizeof(NameList));
+   pt=strrchr(filename, '/');
+   if (pt==NULL)
+      pt=filename;
    else
       ++pt;
-   nl->title = def2utf8_copy(pt);
-   pt = strrchr(nl->title, '.');
+   nl->title=def2utf8_copy(pt);
+   pt=strrchr(nl->title, '.');
    if (pt != NULL)
-      *pt = '\0';
+      *pt='\0';
 
    while (fgets(buffer, sizeof(buffer), file) != NULL) {
-      if (buffer[0] == '#' || buffer[0] == '\n' || buffer[0] == '\r')
+      if (buffer[0]=='#' || buffer[0]=='\n' || buffer[0]=='\r')
 	 continue;
-      len = strlen(buffer);
-      if (buffer[len - 1] == '\n')
-	 buffer[--len] = '\0';
-      if (buffer[len - 1] == '\r')
-	 buffer[--len] = '\0';
-      if (strncmp(buffer, "Based:", 6) == 0) {
-	 for (pt = buffer + 6; *pt == ' ' || *pt == '\t'; ++pt);
-	 for (nl2 = &agl; nl2 != NULL; nl2 = nl2->next)
-	    if (strcmp(nl2->title, pt) == 0)
+      len=strlen(buffer);
+      if (buffer[len - 1]=='\n')
+	 buffer[--len]='\0';
+      if (buffer[len - 1]=='\r')
+	 buffer[--len]='\0';
+      if (strncmp(buffer, "Based:", 6)==0) {
+	 for (pt=buffer + 6; *pt==' ' || *pt=='\t'; ++pt);
+	 for (nl2=&agl; nl2 != NULL; nl2=nl2->next)
+	    if (strcmp(nl2->title, pt)==0)
 	       break;
-	 if (nl2 == NULL) {
+	 if (nl2==NULL) {
 	    ff_post_error(_("NameList base missing"),
 			  _
 			  ("NameList %s based on %s which could not be found"),
@@ -354,23 +346,23 @@ NameList *LoadNamelist(char *filename) {
 	    NameListFree(nl);
 	    return (NULL);
 	 }
-	 nl->basedon = nl2;
-      } else if (strncmp(buffer, "Rename:", 7) == 0) {
-	 for (pt = buffer + 7; *pt == ' ' || *pt == '\t'; ++pt);
-	 for (test = pt; *test != ' ' && *test != '\t' && *test != '\0';
+	 nl->basedon=nl2;
+      } else if (strncmp(buffer, "Rename:", 7)==0) {
+	 for (pt=buffer + 7; *pt==' ' || *pt=='\t'; ++pt);
+	 for (test=pt; *test != ' ' && *test != '\t' && *test != '\0';
 	      ++test);
-	 if (*test == '\0') {
+	 if (*test=='\0') {
 	    ff_post_error(_("NameList parsing error"),
 			  _("Missing rename \"to\" name %s\n%s"), nl->title,
 			  buffer);
 	    NameListFree(nl);
 	    return (NULL);
 	 }
-	 *test = '\0';
-	 for (++test; *test == ' ' || *test == '\t'; ++test);
-	 if ((test[0] == '-' || test[0] == '=') && test[1] == '>')
-	    for (test += 2; *test == ' ' || *test == '\t'; ++test);
-	 if (*test == '\0') {
+	 *test='\0';
+	 for (++test; *test==' ' || *test=='\t'; ++test);
+	 if ((test[0]=='-' || test[0]=='=') && test[1]=='>')
+	    for (test += 2; *test==' ' || *test=='\t'; ++test);
+	 if (*test=='\0') {
 	    ff_post_error(_("NameList parsing error"),
 			  _("Missing rename \"to\" name %s\n%s"), nl->title,
 			  buffer);
@@ -380,38 +372,38 @@ NameList *LoadNamelist(char *filename) {
 	 if (rn_cnt >= rn_max - 1)
 	    nl->renames =
 	       realloc(nl->renames, (rn_max += 20) * sizeof(struct renames));
-	 nl->renames[rn_cnt].from = copy(pt);
-	 nl->renames[rn_cnt].to = copy(test);
-	 nl->renames[++rn_cnt].from = NULL;	/* End mark */
+	 nl->renames[rn_cnt].from=copy(pt);
+	 nl->renames[rn_cnt].to=copy(test);
+	 nl->renames[++rn_cnt].from=NULL;	/* End mark */
       } else {
-	 pt = buffer;
-	 if (*pt == '0' && (pt[1] == 'x' || pt[1] == 'X'))
+	 pt=buffer;
+	 if (*pt=='0' && (pt[1]=='x' || pt[1]=='X'))
 	    pt += 2;
-	 else if ((*pt == 'u' || *pt == 'U') && pt[1] == '+')
+	 else if ((*pt=='u' || *pt=='U') && pt[1]=='+')
 	    pt += 2;
-	 uni = strtol(pt, &end, 16);
-	 if (end == pt || uni < 0 || uni >= unicode4_size) {
+	 uni=strtol(pt, &end, 16);
+	 if (end==pt || uni < 0 || uni >= unicode4_size) {
 	    ff_post_error(_("NameList parsing error"),
 			  _("Bad unicode value when parsing %s\n%s"),
 			  nl->title, buffer);
 	    NameListFree(nl);
 	    return (NULL);
 	 }
-	 pt = end;
-	 while (*pt == ' ' || *pt == ';' || *pt == '\t')
+	 pt=end;
+	 while (*pt==' ' || *pt==';' || *pt=='\t')
 	    ++pt;
-	 if (*pt == '\0') {
+	 if (*pt=='\0') {
 	    ff_post_error(_("NameList parsing error"),
 			  _("Missing name when parsing %s for unicode %x"),
 			  nl->title, uni);
 	    NameListFree(nl);
 	    return (NULL);
 	 }
-	 for (test = pt; *test; ++test) {
+	 for (test=pt; *test; ++test) {
 	    if ((*test <= ' ' && *test >= 0) ||
-		*test == '(' || *test == '[' || *test == '{' || *test == '<'
-		|| *test == ')' || *test == ']' || *test == '}'
-		|| *test == '>' || *test == '%' || *test == '/') {
+		*test=='(' || *test=='[' || *test=='{' || *test=='<'
+		|| *test==')' || *test==']' || *test=='}'
+		|| *test=='>' || *test=='%' || *test=='/') {
 	       ff_post_error(_("NameList parsing error"),
 			     _("Bad name when parsing %s for unicode %x"),
 			     nl->title, uni);
@@ -419,20 +411,20 @@ NameList *LoadNamelist(char *filename) {
 	       return (NULL);
 	    }
 	    if (*test & 0x80) {
-	       uses_unicode = true;
-	       if (nl->a_utf8_name == NULL)
-		  nl->a_utf8_name = copy(pt);
+	       uses_unicode=true;
+	       if (nl->a_utf8_name==NULL)
+		  nl->a_utf8_name=copy(pt);
 	    }
 	 }
-	 up = uni >> 16;
-	 ub = (uni & 0xff00) >> 8;
-	 uc = uni & 0xff;
-	 if (nl->unicode[up] == NULL)
-	    nl->unicode[up] = calloc(256, sizeof(char **));
-	 if (nl->unicode[up][ub] == NULL)
-	    nl->unicode[up][ub] = calloc(256, sizeof(char *));
-	 if (nl->unicode[up][ub][uc] == NULL)
-	    nl->unicode[up][ub][uc] = copy(pt);
+	 up=uni >> 16;
+	 ub=(uni & 0xff00) >> 8;
+	 uc=uni & 0xff;
+	 if (nl->unicode[up]==NULL)
+	    nl->unicode[up]=calloc(256, sizeof(char **));
+	 if (nl->unicode[up][ub]==NULL)
+	    nl->unicode[up][ub]=calloc(256, sizeof(char *));
+	 if (nl->unicode[up][ub][uc]==NULL)
+	    nl->unicode[up][ub][uc]=copy(pt);
 	 else {
 	    ff_post_error(_("NameList parsing error"),
 			  _("Multiple names when parsing %s for unicode %x"),
@@ -443,34 +435,34 @@ NameList *LoadNamelist(char *filename) {
       }
    }
 
-   nl->uses_unicode = uses_unicode;
+   nl->uses_unicode=uses_unicode;
    if (nl->basedon != NULL && nl->basedon->uses_unicode)
-      nl->uses_unicode = true;
-   fclose(file);
-   for (nl2 = &agl; nl2->next != NULL; nl2 = nl2->next) {
-      if (strcmp(nl2->title, nl->title) == 0) {	/* Replace old version */
-	 NameList *next = nl2->next;
+      nl->uses_unicode=true;
+   afclose(file);
+   for (nl2=&agl; nl2->next != NULL; nl2=nl2->next) {
+      if (strcmp(nl2->title, nl->title)==0) {	/* Replace old version */
+	 NameList *next=nl2->next;
 
 	 NameListFreeContents(nl2);
-	 *nl2 = *nl;
-	 nl2->next = next;
+	 *nl2=*nl;
+	 nl2->next=next;
 	 chunkfree(nl, sizeof(NameList));
 	 psreinitnames();
 	 return (nl2);
       }
    }
    NameListHash(nl);
-   nl2->next = nl;
+   nl2->next=nl;
    return (nl);
 }
 
 static int isnamelist(char *filename) {
    char *pt;
 
-   pt = strrchr(filename, '.');
-   if (pt == NULL)
+   pt=strrchr(filename, '.');
+   if (pt==NULL)
       return (false);
-   if (strcmp(pt, ".nam") == 0)
+   if (strcmp(pt, ".nam")==0)
       return (true);
 
    return (false);
@@ -481,14 +473,14 @@ void LoadNamelistDir(char *dir) {
    struct dirent *ent;
    char buffer[1025];
 
-   if (dir == NULL)
+   if (dir==NULL)
       return;
 
-   diro = opendir(dir);
-   if (diro == NULL)		/* It's ok not to have any */
+   diro=opendir(dir);
+   if (diro==NULL)		/* It's ok not to have any */
       return;
 
-   while ((ent = readdir(diro)) != NULL) {
+   while ((ent=readdir(diro)) != NULL) {
       if (isnamelist(ent->d_name)) {
 	 sprintf(buffer, "%s/%s", dir, ent->d_name);
 	 LoadNamelist(buffer);
@@ -516,85 +508,85 @@ const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
    NameList *nl;
 
    if (sc->unicodeenc != -1) {
-      up = sc->unicodeenc >> 16;
-      ub = (sc->unicodeenc >> 8) & 0xff;
-      uc = (sc->unicodeenc & 0xff);
-      for (nl = new; nl != NULL; nl = nl->basedon)
+      up=sc->unicodeenc >> 16;
+      ub=(sc->unicodeenc >> 8) & 0xff;
+      uc=(sc->unicodeenc & 0xff);
+      for (nl=new; nl != NULL; nl=nl->basedon)
 	 if (nl->unicode[up] != NULL && nl->unicode[up][ub] != NULL
 	     && nl->unicode[up][ub][uc] != NULL)
 	    return (nl->unicode[up][ub][uc]);
-      if (up == 0)
+      if (up==0)
 	 sprintf(buffer, "uni%04X", sc->unicodeenc);
       else
 	 sprintf(buffer, "u%04X", sc->unicodeenc);
       return (buffer);
    } else {
       if (old != NULL && old->renames != NULL) {
-	 for (i = 0; old->renames[i].from != NULL; ++i)
-	    if (strcmp(sc->name, old->renames[i].from) == 0)
+	 for (i=0; old->renames[i].from != NULL; ++i)
+	    if (strcmp(sc->name, old->renames[i].from)==0)
 	       return (old->renames[i].to);
       }
       if (new->renames != NULL) {
-	 for (i = 0; new->renames[i].from != NULL; ++i)
-	    if (strcmp(sc->name, new->renames[i].to) == 0)
+	 for (i=0; new->renames[i].from != NULL; ++i)
+	    if (strcmp(sc->name, new->renames[i].to)==0)
 	       return (new->renames[i].from);
       }
       if (strlen(sc->name) > sizeof(space) - 1)
 	 return (sc->name);
       strcpy(space, sc->name);
-      opt = buffer;
-      oend = buffer + 31;
-      start = space;
+      opt=buffer;
+      oend=buffer + 31;
+      start=space;
       /* Check for composite names f_i, A.small */
       while (*start) {
-	 for (pt = start; *pt != '\0' && *pt != '.' && *pt != '_'; ++pt);
-	 if (*pt == '\0' && start == space)
+	 for (pt=start; *pt != '\0' && *pt != '.' && *pt != '_'; ++pt);
+	 if (*pt=='\0' && start==space)
 	    return (sc->name);
-	 ch = *pt;
-	 *pt = '\0';
-	 tempsc = SFGetChar(sc->parent, -1, start);
-	 newsubname = NULL;
+	 ch=*pt;
+	 *pt='\0';
+	 tempsc=SFGetChar(sc->parent, -1, start);
+	 newsubname=NULL;
 	 if (tempsc != NULL)
 	    newsubname =
 	       RenameGlyphToNamelist(tempbuf, tempsc, old, new, sofar);
 	 else if (sofar != NULL) {
-	    for (gid = sc->parent->glyphcnt - 1; gid >= 0; --gid)
+	    for (gid=sc->parent->glyphcnt - 1; gid >= 0; --gid)
 	       if (sofar[gid] != NULL) {
-		  if (strcmp(sofar[gid], start) == 0)
+		  if (strcmp(sofar[gid], start)==0)
 		     break;
 	       }
 	    if (gid != -1)
-	       newsubname = sc->parent->glyphs[gid]->name;
+	       newsubname=sc->parent->glyphs[gid]->name;
 	 }
-	 if (newsubname == NULL)
+	 if (newsubname==NULL)
 	    return (sc->name);
 	 while (opt < oend && *newsubname)
-	    *opt++ = *newsubname++;
+	    *opt++=*newsubname++;
 	 if (*newsubname)
 	    return (sc->name);
-	 if (ch == '\0') {
-	    *opt = '\0';
+	 if (ch=='\0') {
+	    *opt='\0';
 	    return (buffer);
-	 } else if (ch == '.') {
+	 } else if (ch=='.') {
 	    /* don't attempt to translate anything after a '.' just copy that litterally */
-	    *pt = ch;
+	    *pt=ch;
 	    while (opt < oend && *pt)
-	       *opt++ = *pt++;
+	       *opt++=*pt++;
 	    if (*pt)
 	       return (sc->name);
-	    *opt = '\0';
+	    *opt='\0';
 	    return (buffer);
 	 } else {		/* _ */
-	    *opt++ = '_';
-	    start = pt + 1;
+	    *opt++='_';
+	    start=pt + 1;
 	 }
       }
-      *opt = '\0';
+      *opt='\0';
       return (buffer);
    }
 }
 
-static void BuildHash(struct glyphnamehash *hash, SplineFont * sf,
+static void BuildHash(struct glyphnamehash *hash,SplineFont *sf,
 		      char **oldnames) {
    int gid, hv;
 
@@ -603,23 +595,23 @@ static void BuildHash(struct glyphnamehash *hash, SplineFont * sf,
    struct glyphnamebucket *new;
 
    memset(hash, 0, sizeof(*hash));
-   for (gid = 0; gid < sf->glyphcnt; ++gid) {
-      if ((sc = sf->glyphs[gid]) != NULL && oldnames[gid] != NULL) {
-	 new = chunkalloc(sizeof(struct glyphnamebucket));
-	 new->sc = sf->glyphs[gid];
-	 hv = hashname(oldnames[gid]);
-	 new->next = hash->table[hv];
-	 new->name = oldnames[gid];
-	 hash->table[hv] = new;
+   for (gid=0; gid < sf->glyphcnt; ++gid) {
+      if ((sc=sf->glyphs[gid]) != NULL && oldnames[gid] != NULL) {
+	 new=chunkalloc(sizeof(struct glyphnamebucket));
+	 new->sc=sf->glyphs[gid];
+	 hv=hashname(oldnames[gid]);
+	 new->next=hash->table[hv];
+	 new->name=oldnames[gid];
+	 hash->table[hv]=new;
       }
    }
 }
 
-static SplineChar *HashFind(struct glyphnamehash *hash, const char *name) {
+static SplineChar *HashFind(struct glyphnamehash *hash,const char *name) {
    struct glyphnamebucket *test;
 
-   for (test = hash->table[hashname(name)]; test != NULL; test = test->next)
-      if (strcmp(test->name, name) == 0)
+   for (test=hash->table[hashname(name)]; test != NULL; test=test->next)
+      if (strcmp(test->name, name)==0)
 	 return (test->sc);
 
    return (NULL);
@@ -630,95 +622,95 @@ struct bits {
    SplineChar *rpl;
 };
 
-static void safestrcpy(char *to, const char *from) {
+static void safestrcpy(char *to,const char *from) {
    int ch;
 
-   while ((ch = *from++) != '\0')
-      *to++ = ch;
-   *to = '\0';
+   while ((ch=*from++) != '\0')
+      *to++=ch;
+   *to='\0';
 }
 
-static char *DoReplacements(struct bits *bits, int bc, char **_src,
+static char *DoReplacements(struct bits *bits,int bc,char **_src,
 			    char *start) {
-   int offset = start - *_src;
+   int offset=start - *_src;
 
-   int diff, i, off, allsmall = 1, len;
+   int diff, i, off, allsmall=1, len;
 
    char *ret, *last, *last_orig;
 
-   for (diff = i = 0; i < bc; ++i) {
-      off = strlen(bits[i].rpl->name) - (bits[i].end - bits[i].start);
+   for (diff=i=0; i < bc; ++i) {
+      off=strlen(bits[i].rpl->name) - (bits[i].end - bits[i].start);
       diff += off;
       if (diff > 0)
-	 allsmall = 0;
+	 allsmall=0;
    }
    if (allsmall) {
-      diff = 0;
-      for (i = 0; i < bc; ++i) {
-	 len = strlen(bits[i].rpl->name);
+      diff=0;
+      for (i=0; i < bc; ++i) {
+	 len=strlen(bits[i].rpl->name);
 	 memcpy(bits[i].start + diff, bits[i].rpl->name, len);
 	 if (len < (bits[i].end - bits[i].start))
 	    safestrcpy(bits[i].start + len + diff, bits[i].end + diff);
 	 diff += len - (bits[i].end - bits[i].start);
       }
    } else {
-      int totlen = strlen(*_src);
+      int totlen=strlen(*_src);
 
-      last = ret = malloc(totlen + diff + 1);
-      last_orig = *_src;
-      for (i = 0; i < bc; ++i) {
+      last=ret=malloc(totlen + diff + 1);
+      last_orig=*_src;
+      for (i=0; i < bc; ++i) {
 	 if (last_orig < bits[i].start) {
 	    memcpy(last, last_orig, bits[i].start - last_orig);
 	    last += bits[i].start - last_orig;
 	 }
 	 strcpy(last, bits[i].rpl->name);
 	 last += strlen(bits[i].rpl->name);
-	 last_orig = bits[i].end;
+	 last_orig=bits[i].end;
       }
       strcpy(last, last_orig);
       free(*_src);
-      *_src = ret;
+      *_src=ret;
    }
 
    return (*_src + offset + diff);
 }
 
-static void ReplaceByHash(char **_src, struct glyphnamehash *hash) {
+static void ReplaceByHash(char **_src,struct glyphnamehash *hash) {
    struct bits bits[40];
 
    int bc, ch;
 
    char *start, *end;
 
-   start = *_src;
-   if (start == NULL)
+   start=*_src;
+   if (start==NULL)
       return;
-   while (*start == ' ')
+   while (*start==' ')
       ++start;
 
-   bc = 0;
-   for (; *start; start = end) {
+   bc=0;
+   for (; *start; start=end) {
       if (bc >= 40) {
-	 start = DoReplacements(bits, bc, _src, start);
-	 bc = 0;
+	 start=DoReplacements(bits, bc, _src, start);
+	 bc=0;
       }
-      for (end = start; *end != '\0' && *end != ' '; ++end);
-      ch = *end;
-      *end = '\0';
-      bits[bc].start = start;
-      bits[bc].end = end;
-      bits[bc].rpl = HashFind(hash, start);
+      for (end=start; *end != '\0' && *end != ' '; ++end);
+      ch=*end;
+      *end='\0';
+      bits[bc].start=start;
+      bits[bc].end=end;
+      bits[bc].rpl=HashFind(hash, start);
       if (bits[bc].rpl != NULL)
 	 ++bc;
-      *end = ch;
-      while (*end == ' ')
+      *end=ch;
+      while (*end==' ')
 	 ++end;
    }
    if (bc != 0)
       (void) DoReplacements(bits, bc, _src, start);
 }
 
-static void SFRenameLookupsByHash(SplineFont * sf, struct glyphnamehash *hash) {
+static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
    int gid, i, j, h;
 
    SplineChar *sc, *rpl;
@@ -733,16 +725,16 @@ static void SFRenameLookupsByHash(SplineFont * sf, struct glyphnamehash *hash) {
 
    KernClass *kc;
 
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL) {
-	 for (pst = sc->possub; pst != NULL; pst = pst->next) {
+   for (gid=0; gid < sf->glyphcnt; ++gid)
+      if ((sc=sf->glyphs[gid]) != NULL) {
+	 for (pst=sc->possub; pst != NULL; pst=pst->next) {
 	    switch (pst->type) {
 	      case pst_pair:
 	      case pst_substitution:
-		 rpl = HashFind(hash, pst->u.subs.variant);	/* variant is at same location as paired */
+		 rpl=HashFind(hash, pst->u.subs.variant);	/* variant is at same location as paired */
 		 if (rpl != NULL) {
 		    free(pst->u.subs.variant);
-		    pst->u.subs.variant = copy(rpl->name);
+		    pst->u.subs.variant=copy(rpl->name);
 		 }
 		 break;
 	      case pst_alternate:
@@ -755,24 +747,24 @@ static void SFRenameLookupsByHash(SplineFont * sf, struct glyphnamehash *hash) {
 		 break;
 	    }
 	 }
-	 for (h = 0; h < 2; ++h) {
-	    gv = h ? sc->horiz_variants : sc->vert_variants;
-	    if (gv == NULL)
+	 for (h=0; h < 2; ++h) {
+	    gv=h ? sc->horiz_variants : sc->vert_variants;
+	    if (gv==NULL)
 	       continue;
 	    ReplaceByHash(&gv->variants, hash);
-	    for (i = 0; i < gv->part_cnt; ++i) {
-	       struct gv_part *part = &gv->parts[i];
+	    for (i=0; i < gv->part_cnt; ++i) {
+	       struct gv_part *part=&gv->parts[i];
 
 	       ReplaceByHash(&part->component, hash);
 	    }
 	 }
       }
 
-   for (fpst = sf->possub; fpst != NULL; fpst = fpst->next) {
+   for (fpst=sf->possub; fpst != NULL; fpst=fpst->next) {
       switch (fpst->format) {
 	case pst_glyphs:
-	   for (i = 0; i < fpst->rule_cnt; ++i) {
-	      struct fpst_rule *r = &fpst->rules[i];
+	   for (i=0; i < fpst->rule_cnt; ++i) {
+	      struct fpst_rule *r=&fpst->rules[i];
 
 	      ReplaceByHash(&r->u.glyph.names, hash);
 	      ReplaceByHash(&r->u.glyph.back, hash);
@@ -780,47 +772,47 @@ static void SFRenameLookupsByHash(SplineFont * sf, struct glyphnamehash *hash) {
 	   }
 	   break;
 	case pst_class:
-	   for (i = 0; i < fpst->nccnt; ++i)
+	   for (i=0; i < fpst->nccnt; ++i)
 	      ReplaceByHash(&fpst->nclass[i], hash);
-	   for (i = 0; i < fpst->bccnt; ++i)
+	   for (i=0; i < fpst->bccnt; ++i)
 	      ReplaceByHash(&fpst->bclass[i], hash);
-	   for (i = 0; i < fpst->fccnt; ++i)
+	   for (i=0; i < fpst->fccnt; ++i)
 	      ReplaceByHash(&fpst->fclass[i], hash);
 	   break;
 	case pst_coverage:
 	case pst_reversecoverage:
-	   for (i = 0; i < fpst->rule_cnt; ++i) {
-	      struct fpst_rule *r = &fpst->rules[i];
+	   for (i=0; i < fpst->rule_cnt; ++i) {
+	      struct fpst_rule *r=&fpst->rules[i];
 
-	      for (j = 0; j < r->u.coverage.ncnt; ++j)
+	      for (j=0; j < r->u.coverage.ncnt; ++j)
 		 ReplaceByHash(&r->u.coverage.ncovers[j], hash);
-	      for (j = 0; j < r->u.coverage.bcnt; ++j)
+	      for (j=0; j < r->u.coverage.bcnt; ++j)
 		 ReplaceByHash(&r->u.coverage.bcovers[j], hash);
-	      for (j = 0; j < r->u.coverage.fcnt; ++j)
+	      for (j=0; j < r->u.coverage.fcnt; ++j)
 		 ReplaceByHash(&r->u.coverage.fcovers[j], hash);
-	      if (fpst->format == pst_reversecoverage)
+	      if (fpst->format==pst_reversecoverage)
 		 ReplaceByHash(&r->u.rcoverage.replacements, hash);
 	   }
 	   break;
       }
    }
 
-   for (sm = sf->sm; sm != NULL; sm = sm->next) {
-      for (i = 0; i < sm->class_cnt; ++i)
+   for (sm=sf->sm; sm != NULL; sm=sm->next) {
+      for (i=0; i < sm->class_cnt; ++i)
 	 ReplaceByHash(&sm->classes[i], hash);
    }
 
-   for (h = 0; h < 2; ++h) {
-      for (kc = h ? sf->kerns : sf->vkerns; kc != NULL; kc = kc->next) {
-	 for (i = 0; i < kc->first_cnt; ++i)
+   for (h=0; h < 2; ++h) {
+      for (kc=h ? sf->kerns : sf->vkerns; kc != NULL; kc=kc->next) {
+	 for (i=0; i < kc->first_cnt; ++i)
 	    ReplaceByHash(&kc->firsts[i], hash);
-	 for (i = 0; i < kc->second_cnt; ++i)
+	 for (i=0; i < kc->second_cnt; ++i)
 	    ReplaceByHash(&kc->seconds[i], hash);
       }
    }
 }
 
-char **SFTemporaryRenameGlyphsToNamelist(SplineFont * sf, NameList * new) {
+char **SFTemporaryRenameGlyphsToNamelist(SplineFont *sf, NameList * new) {
    int gid;
 
    char buffer[40];
@@ -833,17 +825,17 @@ char **SFTemporaryRenameGlyphsToNamelist(SplineFont * sf, NameList * new) {
 
    struct glyphnamehash hash;
 
-   if (new == NULL)
+   if (new==NULL)
       return (NULL);
 
-   ret = calloc(sf->glyphcnt, sizeof(char *));
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL) {
+   ret=calloc(sf->glyphcnt, sizeof(char *));
+   for (gid=0; gid < sf->glyphcnt; ++gid)
+      if ((sc=sf->glyphs[gid]) != NULL) {
 	 name =
 	    RenameGlyphToNamelist(buffer, sc, sf->for_new_glyphs, new, ret);
 	 if (name != sc->name) {
-	    ret[gid] = sc->name;
-	    sc->name = copy(name);
+	    ret[gid]=sc->name;
+	    sc->name=copy(name);
 	 }
       }
 
@@ -854,49 +846,49 @@ char **SFTemporaryRenameGlyphsToNamelist(SplineFont * sf, NameList * new) {
    return (ret);
 }
 
-void SFTemporaryRestoreGlyphNames(SplineFont * sf, char **former) {
+void SFTemporaryRestoreGlyphNames(SplineFont *sf, char **former) {
    int gid;
 
    SplineChar *sc;
 
    struct glyphnamehash hash;
 
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL) {
+   for (gid=0; gid < sf->glyphcnt; ++gid)
+      if ((sc=sf->glyphs[gid]) != NULL) {
 	 if (former[gid] != NULL) {
-	    char *old = sc->name;
+	    char *old=sc->name;
 
-	    sc->name = former[gid];
-	    former[gid] = old;
+	    sc->name=former[gid];
+	    former[gid]=old;
 	 }
       }
    BuildHash(&hash, sf, former);
    SFRenameLookupsByHash(sf, &hash);
    __GlyphHashFree(&hash);
    GlyphHashFree(sf);
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid < sf->glyphcnt; ++gid)
       free(former[gid]);
    free(former);
 }
 
-void SFRenameGlyphsToNamelist(SplineFont * sf, NameList * new) {
+void SFRenameGlyphsToNamelist(SplineFont *sf, NameList * new) {
    char **ret;
 
    int gid;
 
-   if (new == NULL)
+   if (new==NULL)
       return;
 
-   ret = SFTemporaryRenameGlyphsToNamelist(sf, new);
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
+   ret=SFTemporaryRenameGlyphsToNamelist(sf, new);
+   for (gid=0; gid < sf->glyphcnt; ++gid)
       free(ret[gid]);
    free(ret);
 
-   sf->for_new_glyphs = new;
+   sf->for_new_glyphs=new;
 }
 
 /* ************************************************************************** */
-static const char *agl_sans_p0_b0[] = {
+static const char *agl_sans_p0_b0[]={
    NULL,
    NULL,
    NULL,
@@ -1155,7 +1147,7 @@ static const char *agl_sans_p0_b0[] = {
    "ydieresis"
 };
 
-static const char *agl_sans_p0_b1[] = {
+static const char *agl_sans_p0_b1[]={
    "Amacron",
    "amacron",
    "Abreve",
@@ -1414,7 +1406,7 @@ static const char *agl_sans_p0_b1[] = {
    "oslashacute"
 };
 
-static const char *agl_sans_p0_b2[] = {
+static const char *agl_sans_p0_b2[]={
    NULL,
    NULL,
    NULL,
@@ -1673,7 +1665,7 @@ static const char *agl_sans_p0_b2[] = {
    NULL
 };
 
-static const char *agl_sans_p0_b3[] = {
+static const char *agl_sans_p0_b3[]={
    "gravecomb",
    "acutecomb",
    NULL,
@@ -1932,7 +1924,7 @@ static const char *agl_sans_p0_b3[] = {
    NULL
 };
 
-static const char *agl_sans_p0_b1e[] = {
+static const char *agl_sans_p0_b1e[]={
    NULL,
    NULL,
    NULL,
@@ -2191,7 +2183,7 @@ static const char *agl_sans_p0_b1e[] = {
    NULL
 };
 
-static const char *agl_sans_p0_b20[] = {
+static const char *agl_sans_p0_b20[]={
    NULL,
    NULL,
    NULL,
@@ -2450,7 +2442,7 @@ static const char *agl_sans_p0_b20[] = {
    NULL
 };
 
-static const char *agl_sans_p0_b21[] = {
+static const char *agl_sans_p0_b21[]={
    NULL,
    NULL,
    NULL,
@@ -2709,7 +2701,7 @@ static const char *agl_sans_p0_b21[] = {
    NULL
 };
 
-static const char *agl_sans_p0_b22[] = {
+static const char *agl_sans_p0_b22[]={
    "universal",
    NULL,
    "partialdiff",
@@ -2968,7 +2960,7 @@ static const char *agl_sans_p0_b22[] = {
    NULL
 };
 
-static const char *agl_sans_p0_b23[] = {
+static const char *agl_sans_p0_b23[]={
    NULL,
    NULL,
    "house",
@@ -3227,7 +3219,7 @@ static const char *agl_sans_p0_b23[] = {
    NULL
 };
 
-static const char *agl_sans_p0_b25[] = {
+static const char *agl_sans_p0_b25[]={
    "SF100000",
    NULL,
    "SF110000",
@@ -3486,7 +3478,7 @@ static const char *agl_sans_p0_b25[] = {
    NULL
 };
 
-static const char *agl_sans_p0_b26[] = {
+static const char *agl_sans_p0_b26[]={
    NULL,
    NULL,
    NULL,
@@ -3745,7 +3737,7 @@ static const char *agl_sans_p0_b26[] = {
    NULL
 };
 
-static const char **agl_sans_p0[] = {
+static const char **agl_sans_p0[]={
    agl_sans_p0_b0,
    agl_sans_p0_b1,
    agl_sans_p0_b2,
@@ -4004,7 +3996,7 @@ static const char **agl_sans_p0[] = {
    NULL
 };
 
-static NameList agl_sans = {
+static NameList agl_sans={
    NULL,
    N_("AGL without afii"),
    {agl_sans_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -4013,7 +4005,7 @@ static NameList agl_sans = {
 };
 
 /* ************************************************************************** */
-static const char *agl_nf_p0_b1[] = {
+static const char *agl_nf_p0_b1[]={
    "Amacron",
    "amacron",
    "Abreve",
@@ -4272,7 +4264,7 @@ static const char *agl_nf_p0_b1[] = {
    "oslashacute"
 };
 
-static const char *agl_nf_p0_b2[] = {
+static const char *agl_nf_p0_b2[]={
    NULL,
    NULL,
    NULL,
@@ -4531,7 +4523,7 @@ static const char *agl_nf_p0_b2[] = {
    NULL
 };
 
-static const char **agl_nf_p0[] = {
+static const char **agl_nf_p0[]={
    agl_sans_p0_b0,
    agl_nf_p0_b1,
    agl_nf_p0_b2,
@@ -4790,7 +4782,7 @@ static const char **agl_nf_p0[] = {
    NULL
 };
 
-static NameList agl_nf = {
+static NameList agl_nf={
    NULL,
    N_("AGL For New Fonts"),
    {agl_nf_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -4799,7 +4791,7 @@ static NameList agl_nf = {
 };
 
 /* ************************************************************************** */
-static const char *agl_p0_b1[] = {
+static const char *agl_p0_b1[]={
    NULL,
    NULL,
    NULL,
@@ -5058,7 +5050,7 @@ static const char *agl_p0_b1[] = {
    NULL
 };
 
-static const char *agl_p0_b2[] = {
+static const char *agl_p0_b2[]={
    NULL,
    NULL,
    NULL,
@@ -5317,7 +5309,7 @@ static const char *agl_p0_b2[] = {
    NULL
 };
 
-static const char *agl_p0_b4[] = {
+static const char *agl_p0_b4[]={
    NULL,
    "afii10023",
    "afii10051",
@@ -5576,7 +5568,7 @@ static const char *agl_p0_b4[] = {
    NULL
 };
 
-static const char *agl_p0_b5[] = {
+static const char *agl_p0_b5[]={
    NULL,
    NULL,
    NULL,
@@ -5835,7 +5827,7 @@ static const char *agl_p0_b5[] = {
    NULL
 };
 
-static const char *agl_p0_b6[] = {
+static const char *agl_p0_b6[]={
    NULL,
    NULL,
    NULL,
@@ -6094,7 +6086,7 @@ static const char *agl_p0_b6[] = {
    NULL
 };
 
-static const char *agl_p0_b20[] = {
+static const char *agl_p0_b20[]={
    NULL,
    NULL,
    NULL,
@@ -6353,7 +6345,7 @@ static const char *agl_p0_b20[] = {
    NULL
 };
 
-static const char *agl_p0_b21[] = {
+static const char *agl_p0_b21[]={
    NULL,
    NULL,
    NULL,
@@ -6612,7 +6604,7 @@ static const char *agl_p0_b21[] = {
    NULL
 };
 
-static const char **agl_p0[] = {
+static const char **agl_p0[]={
    NULL,
    agl_p0_b1,
    agl_p0_b2,
@@ -6871,7 +6863,7 @@ static const char **agl_p0[] = {
    NULL
 };
 
-static NameList agl = {
+static NameList agl={
    &agl_sans,
    N_("Adobe Glyph List"),
    {agl_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -6880,7 +6872,7 @@ static NameList agl = {
 };
 
 /* ************************************************************************** */
-static const char *adobepua_p0_bf6[] = {
+static const char *adobepua_p0_bf6[]={
    NULL,
    NULL,
    NULL,
@@ -7139,7 +7131,7 @@ static const char *adobepua_p0_bf6[] = {
    "zcaron.sc"
 };
 
-static const char *adobepua_p0_bf7[] = {
+static const char *adobepua_p0_bf7[]={
    NULL,
    NULL,
    NULL,
@@ -7398,7 +7390,7 @@ static const char *adobepua_p0_bf7[] = {
    "ydieresis.sc"
 };
 
-static const char *adobepua_p0_bf8[] = {
+static const char *adobepua_p0_bf8[]={
    NULL,
    NULL,
    NULL,
@@ -7657,7 +7649,7 @@ static const char *adobepua_p0_bf8[] = {
    NULL
 };
 
-static const char *adobepua_p0_bfb[] = {
+static const char *adobepua_p0_bfb[]={
    "f_f",
    "f_i",
    "f_l",
@@ -7916,7 +7908,7 @@ static const char *adobepua_p0_bfb[] = {
    NULL
 };
 
-static const char **adobepua_p0[] = {
+static const char **adobepua_p0[]={
    NULL,
    NULL,
    NULL,
@@ -8175,7 +8167,7 @@ static const char **adobepua_p0[] = {
    NULL
 };
 
-static NameList adobepua = {
+static NameList adobepua={
    &agl,
    N_("AGL with PUA"),
    {adobepua_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -8184,7 +8176,7 @@ static NameList adobepua = {
 };
 
 /* ************************************************************************** */
-static const char *greeksc_p0_bf5[] = {
+static const char *greeksc_p0_bf5[]={
    "alpha.sc",
    "beta.sc",
    "gamma.sc",
@@ -8443,7 +8435,7 @@ static const char *greeksc_p0_bf5[] = {
    NULL
 };
 
-static const char **greeksc_p0[] = {
+static const char **greeksc_p0[]={
    NULL,
    NULL,
    NULL,
@@ -8702,7 +8694,7 @@ static const char **greeksc_p0[] = {
    NULL
 };
 
-static NameList greeksc = {
+static NameList greeksc={
    &adobepua,
    N_("Greek small caps"),
    {greeksc_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -8711,7 +8703,7 @@ static NameList greeksc = {
 };
 
 /* ************************************************************************** */
-static const char *tex_p0_b20[] = {
+static const char *tex_p0_b20[]={
    NULL,
    NULL,
    NULL,
@@ -8970,7 +8962,7 @@ static const char *tex_p0_b20[] = {
    NULL
 };
 
-static const char *tex_p0_b21[] = {
+static const char *tex_p0_b21[]={
    NULL,
    NULL,
    NULL,
@@ -9229,7 +9221,7 @@ static const char *tex_p0_b21[] = {
    NULL
 };
 
-static const char *tex_p0_b22[] = {
+static const char *tex_p0_b22[]={
    NULL,
    NULL,
    NULL,
@@ -9488,7 +9480,7 @@ static const char *tex_p0_b22[] = {
    NULL
 };
 
-static const char *tex_p0_b23[] = {
+static const char *tex_p0_b23[]={
    NULL,
    NULL,
    NULL,
@@ -9747,7 +9739,7 @@ static const char *tex_p0_b23[] = {
    NULL
 };
 
-static const char *tex_p0_b27[] = {
+static const char *tex_p0_b27[]={
    NULL,
    NULL,
    NULL,
@@ -10006,7 +9998,7 @@ static const char *tex_p0_b27[] = {
    "longrightzigzagarrow"
 };
 
-static const char *tex_p0_b29[] = {
+static const char *tex_p0_b29[]={
    NULL,
    NULL,
    "nvLeftarrow",
@@ -10265,7 +10257,7 @@ static const char *tex_p0_b29[] = {
    NULL
 };
 
-static const char *tex_p0_b2a[] = {
+static const char *tex_p0_b2a[]={
    NULL,
    NULL,
    NULL,
@@ -10524,7 +10516,7 @@ static const char *tex_p0_b2a[] = {
    NULL
 };
 
-static const char *tex_p0_be2[] = {
+static const char *tex_p0_be2[]={
    NULL,
    NULL,
    NULL,
@@ -10783,7 +10775,7 @@ static const char *tex_p0_be2[] = {
    NULL
 };
 
-static const char *tex_p0_be3[] = {
+static const char *tex_p0_be3[]={
    NULL,
    NULL,
    NULL,
@@ -11042,7 +11034,7 @@ static const char *tex_p0_be3[] = {
    NULL
 };
 
-static const char *tex_p0_be4[] = {
+static const char *tex_p0_be4[]={
    NULL,
    NULL,
    NULL,
@@ -11301,7 +11293,7 @@ static const char *tex_p0_be4[] = {
    NULL
 };
 
-static const char *tex_p0_be6[] = {
+static const char *tex_p0_be6[]={
    NULL,
    NULL,
    NULL,
@@ -11560,7 +11552,7 @@ static const char *tex_p0_be6[] = {
    NULL
 };
 
-static const char **tex_p0[] = {
+static const char **tex_p0[]={
    NULL,
    NULL,
    NULL,
@@ -11819,7 +11811,7 @@ static const char **tex_p0[] = {
    NULL
 };
 
-static NameList tex = {
+static NameList tex={
    &agl,
    NU_("ΤεΧ Names"),
    {tex_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -11828,7 +11820,7 @@ static NameList tex = {
 };
 
 /* ************************************************************************** */
-static const char *ams_p0_be2[] = {
+static const char *ams_p0_be2[]={
    NULL,
    NULL,
    NULL,
@@ -12087,7 +12079,7 @@ static const char *ams_p0_be2[] = {
    NULL
 };
 
-static const char *ams_p0_be3[] = {
+static const char *ams_p0_be3[]={
    NULL,
    "uni2223.short",
    "uni2225.short",
@@ -12346,7 +12338,7 @@ static const char *ams_p0_be3[] = {
    NULL
 };
 
-static const char *ams_p0_be4[] = {
+static const char *ams_p0_be4[]={
    NULL,
    NULL,
    NULL,
@@ -12605,7 +12597,7 @@ static const char *ams_p0_be4[] = {
    NULL
 };
 
-static const char *ams_p0_be5[] = {
+static const char *ams_p0_be5[]={
    NULL,
    NULL,
    NULL,
@@ -12864,7 +12856,7 @@ static const char *ams_p0_be5[] = {
    NULL
 };
 
-static const char *ams_p0_be6[] = {
+static const char *ams_p0_be6[]={
    NULL,
    NULL,
    NULL,
@@ -13123,7 +13115,7 @@ static const char *ams_p0_be6[] = {
    NULL
 };
 
-static const char *ams_p0_be8[] = {
+static const char *ams_p0_be8[]={
    NULL,
    NULL,
    NULL,
@@ -13382,7 +13374,7 @@ static const char *ams_p0_be8[] = {
    NULL
 };
 
-static const char *ams_p0_bea[] = {
+static const char *ams_p0_bea[]={
    NULL,
    NULL,
    NULL,
@@ -13641,7 +13633,7 @@ static const char *ams_p0_bea[] = {
    NULL
 };
 
-static const char *ams_p0_bec[] = {
+static const char *ams_p0_bec[]={
    NULL,
    NULL,
    "uni2A3DFE00",
@@ -13900,7 +13892,7 @@ static const char *ams_p0_bec[] = {
    NULL
 };
 
-static const char *ams_p0_bed[] = {
+static const char *ams_p0_bed[]={
    NULL,
    NULL,
    NULL,
@@ -14159,7 +14151,7 @@ static const char *ams_p0_bed[] = {
    NULL
 };
 
-static const char *ams_p0_bee[] = {
+static const char *ams_p0_bee[]={
    "stixEE00",
    "stixEE01",
    "stixEE02",
@@ -14418,7 +14410,7 @@ static const char *ams_p0_bee[] = {
    NULL
 };
 
-static const char *ams_p0_bf4[] = {
+static const char *ams_p0_bf4[]={
    NULL,
    NULL,
    NULL,
@@ -14677,7 +14669,7 @@ static const char *ams_p0_bf4[] = {
    NULL
 };
 
-static const char *ams_p0_bf5[] = {
+static const char *ams_p0_bf5[]={
    NULL,
    NULL,
    NULL,
@@ -14936,7 +14928,7 @@ static const char *ams_p0_bf5[] = {
    NULL
 };
 
-static const char **ams_p0[] = {
+static const char **ams_p0[]={
    NULL,
    NULL,
    NULL,
@@ -15195,7 +15187,7 @@ static const char **ams_p0[] = {
    NULL
 };
 
-static NameList ams = {
+static NameList ams={
    &tex,
    N_("AMS Names"),
    {ams_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -15204,7 +15196,7 @@ static NameList ams = {
 };
 
 /* ************************************************************************** */
-static struct psaltnames psaltnames[] = {
+static struct psaltnames psaltnames[]={
    {"AEmacron", 0x01e2, 0},
    {"AEsmall", 0xf7e6, 0},
    {"Aacutesmall", 0xf7e1, 0},

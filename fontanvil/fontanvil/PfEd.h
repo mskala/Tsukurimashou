@@ -1,4 +1,4 @@
-/* $Id: PfEd.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: PfEd.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2008-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -194,7 +194,7 @@
 
 #   define	V_CurveTo	32	/* Cubic spline, rel, rel (6 coords, cp1, cp2, p) */
 #   define	V_VHCurveTo	36	/* Cubic spline, rel, rel (4 coords, cp1.y cp2.* p.x) */
-	/* cp1.x == current.y, p.y == cp2.y */
+	/* cp1.x==current.y, p.y==cp2.y */
 #   define	V_HVCurveTo	40	/* Cubic spline, rel, rel (4 coords, cp1.x cp2.* p.y) */
 
 #   define	V_Close		44	/* Close path (optionally adding a line) no data */

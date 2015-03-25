@@ -1,4 +1,4 @@
-/* $Id: autowidth2.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: autowidth2.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2009-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,8 @@ typedef struct aw_glyph {
    /*real min_y, max_y; */
    int imin_y, imax_y;		/* floor(bb.min_y/sub_height) */
    /* Allocate two arrays [min_y/sub_height,max_y/sub_height) */
-   /*  normalize so that min_y = sub_height*floor(bb.miny/sub_height) */
-   /*                    max_y = sub_height*ceil (bb.maxy/sub_height) */
+   /*  normalize so that min_y=sub_height*floor(bb.miny/sub_height) */
+   /*                    max_y=sub_height*ceil (bb.maxy/sub_height) */
    /* left[i] is the minimum x value any spline attains between min_y+i*sub_hight and min_y+(i+1)*sub_height */
    /*  in other words, it is a sampling of the left edge of the glyph */
    /* Similarly right is a sampling of the right edge */

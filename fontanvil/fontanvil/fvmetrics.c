@@ -1,4 +1,4 @@
-/* $Id: fvmetrics.c 3322 2014-09-27 15:44:08Z mskala $ */
+/* $Id: fvmetrics.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 #include "views.h"
 #include "fvmetrics.h"
 
-static void DoChar(SplineChar * sc, CreateWidthData * wd, FontViewBase * fv,
+static void DoChar(SplineChar *sc,CreateWidthData *wd,FontViewBase *fv,
 		   BDFChar * bc) {
    real transform[6];
 
@@ -40,83 +40,83 @@ static void DoChar(SplineChar * sc, CreateWidthData * wd, FontViewBase * fv,
 
    IBounds ib;
 
-   int width = 0;
+   int width=0;
 
    BVTFunc bvts[2];
 
    BDFFont *bdf;
 
-   RefChar *r = HasUseMyMetrics(sc, fv->active_layer);
+   RefChar *r=HasUseMyMetrics(sc, fv->active_layer);
 
    /* Can't change the horizontal or vertical advance if there's a "use my metrics" bit set */
    if (r != NULL && wd->wtype != wt_lbearing)
       return;
 
-   if (wd->wtype == wt_width) {
-      if (wd->type == st_set)
-	 width = wd->setto;
-      else if (wd->type == st_incr)
-	 width = sc->width + wd->increment;
+   if (wd->wtype==wt_width) {
+      if (wd->type==st_set)
+	 width=wd->setto;
+      else if (wd->type==st_incr)
+	 width=sc->width + wd->increment;
       else
-	 width = sc->width * wd->scale / 100;
-      sc->widthset = true;
+	 width=sc->width * wd->scale / 100;
+      sc->widthset=true;
       if (width != sc->width) {
 	 SCPreserveWidth(sc);
 	 SCSynchronizeWidth(sc, width, sc->width, fv);
       }
-   } else if (wd->wtype == wt_lbearing) {
-      transform[0] = transform[3] = 1.0;
-      transform[1] = transform[2] = transform[5] = 0;
-      bvts[1].func = bvt_none;
-      bvts[0].func = bvt_transmove;
-      bvts[0].y = 0;
-      if (bc == NULL) {
+   } else if (wd->wtype==wt_lbearing) {
+      transform[0]=transform[3]=1.0;
+      transform[1]=transform[2]=transform[5]=0;
+      bvts[1].func=bvt_none;
+      bvts[0].func=bvt_transmove;
+      bvts[0].y=0;
+      if (bc==NULL) {
 	 SplineCharFindBounds(sc, &bb);
-	 if (wd->type == st_set)
-	    transform[4] = wd->setto - bb.minx;
-	 else if (wd->type == st_incr)
-	    transform[4] = wd->increment;
+	 if (wd->type==st_set)
+	    transform[4]=wd->setto - bb.minx;
+	 else if (wd->type==st_incr)
+	    transform[4]=wd->increment;
 	 else
-	    transform[4] = bb.minx * wd->scale / 100 - bb.minx;
+	    transform[4]=bb.minx * wd->scale / 100 - bb.minx;
       } else {
 	 double scale =
 	    (fv->sf->ascent +
 	     fv->sf->descent) / (double) (fv->active_bitmap->pixelsize);
 	 BDFCharFindBounds(bc, &ib);
-	 if (wd->type == st_set)
-	    transform[4] = wd->setto - ib.minx * scale;
-	 else if (wd->type == st_incr)
-	    transform[4] = wd->increment;
+	 if (wd->type==st_set)
+	    transform[4]=wd->setto - ib.minx * scale;
+	 else if (wd->type==st_incr)
+	    transform[4]=wd->increment;
 	 else
-	    transform[4] = scale * ib.minx * wd->scale / 100 - ib.minx;
+	    transform[4]=scale * ib.minx * wd->scale / 100 - ib.minx;
       }
       if (transform[4] != 0) {
 	 FVTrans(fv, sc, transform, NULL, fvt_dontmovewidth | fvt_alllayers);
-	 bvts[0].x = transform[4];
-	 for (bdf = fv->sf->bitmaps; bdf != NULL; bdf = bdf->next)
+	 bvts[0].x=transform[4];
+	 for (bdf=fv->sf->bitmaps; bdf != NULL; bdf=bdf->next)
 	    if (bdf->glyphs[sc->orig_pos] != NULL)
 	       BCTrans(bdf, bdf->glyphs[sc->orig_pos], bvts, fv);
       }
       return;
-   } else if (wd->wtype == wt_rbearing) {
-      if (bc == NULL) {
+   } else if (wd->wtype==wt_rbearing) {
+      if (bc==NULL) {
 	 SplineCharFindBounds(sc, &bb);
-	 if (wd->type == st_set)
-	    width = bb.maxx + wd->setto;
-	 else if (wd->type == st_incr)
-	    width = sc->width + wd->increment;
+	 if (wd->type==st_set)
+	    width=bb.maxx + wd->setto;
+	 else if (wd->type==st_incr)
+	    width=sc->width + wd->increment;
 	 else
-	    width = (sc->width - bb.maxx) * wd->scale / 100 + bb.maxx;
+	    width=(sc->width - bb.maxx) * wd->scale / 100 + bb.maxx;
       } else {
 	 double scale =
 	    (fv->sf->ascent +
 	     fv->sf->descent) / (double) (fv->active_bitmap->pixelsize);
 	 BDFCharFindBounds(bc, &ib);
 	 ++ib.maxx;
-	 if (wd->type == st_set)
-	    width = rint(ib.maxx * scale + wd->setto);
-	 else if (wd->type == st_incr)
-	    width = rint(sc->width + wd->increment);
+	 if (wd->type==st_set)
+	    width=rint(ib.maxx * scale + wd->setto);
+	 else if (wd->type==st_incr)
+	    width=rint(sc->width + wd->increment);
 	 else
 	    width =
 	       rint(scale * (bc->width - ib.maxx) * wd->scale / 100 +
@@ -126,23 +126,23 @@ static void DoChar(SplineChar * sc, CreateWidthData * wd, FontViewBase * fv,
 	 SCPreserveWidth(sc);
 	 SCSynchronizeWidth(sc, width, sc->width, fv);
       }
-   } else if (wd->wtype == wt_bearings) {
-      transform[0] = transform[3] = 1.0;
-      transform[1] = transform[2] = transform[5] = 0;
-      bvts[1].func = bvt_none;
-      bvts[0].func = bvt_transmove;
-      bvts[0].y = 0;
-      if (bc == NULL) {
+   } else if (wd->wtype==wt_bearings) {
+      transform[0]=transform[3]=1.0;
+      transform[1]=transform[2]=transform[5]=0;
+      bvts[1].func=bvt_none;
+      bvts[0].func=bvt_transmove;
+      bvts[0].y=0;
+      if (bc==NULL) {
 	 SplineCharFindBounds(sc, &bb);
-	 if (wd->type == st_set) {
-	    transform[4] = wd->setto - bb.minx;
-	    width = bb.maxx - bb.minx + 2 * wd->setto;
-	 } else if (wd->type == st_incr) {
-	    transform[4] = wd->increment;
+	 if (wd->type==st_set) {
+	    transform[4]=wd->setto - bb.minx;
+	    width=bb.maxx - bb.minx + 2 * wd->setto;
+	 } else if (wd->type==st_incr) {
+	    transform[4]=wd->increment;
 	    width += 2 * wd->increment;
 	 } else {
-	    transform[4] = bb.minx * wd->scale / 100 - bb.minx;
-	    width = bb.maxx - bb.minx +
+	    transform[4]=bb.minx * wd->scale / 100 - bb.minx;
+	    width=bb.maxx - bb.minx +
 	       (bb.minx + (sc->width - bb.maxx)) * wd->scale / 100;
 	 }
       } else {
@@ -151,19 +151,19 @@ static void DoChar(SplineChar * sc, CreateWidthData * wd, FontViewBase * fv,
 	     fv->sf->descent) / (double) (fv->active_bitmap->pixelsize);
 	 BDFCharFindBounds(bc, &ib);
 	 ++ib.maxx;
-	 if (wd->type == st_set) {
-	    transform[4] = wd->setto - ib.minx;
-	    width = (ib.maxx - ib.minx + 2 * wd->setto);
-	 } else if (wd->type == st_incr) {
-	    transform[4] = wd->increment;
+	 if (wd->type==st_set) {
+	    transform[4]=wd->setto - ib.minx;
+	    width=(ib.maxx - ib.minx + 2 * wd->setto);
+	 } else if (wd->type==st_incr) {
+	    transform[4]=wd->increment;
 	    width += 2 * wd->increment;
 	 } else {
-	    transform[4] = ib.minx * wd->scale / 100 - ib.minx;
-	    width = ib.maxx - ib.minx +
+	    transform[4]=ib.minx * wd->scale / 100 - ib.minx;
+	    width=ib.maxx - ib.minx +
 	       (ib.minx + (bc->width - ib.maxx)) * wd->scale / 100;
 	 }
 	 transform[4] *= scale;
-	 width = rint(width * scale);
+	 width=rint(width * scale);
       }
       if (width != sc->width) {
 	 SCPreserveWidth(sc);
@@ -171,29 +171,29 @@ static void DoChar(SplineChar * sc, CreateWidthData * wd, FontViewBase * fv,
       }
       if (transform[4] != 0) {
 	 FVTrans(fv, sc, transform, NULL, fvt_dontmovewidth | fvt_alllayers);
-	 bvts[0].x = transform[4];
-	 for (bdf = fv->sf->bitmaps; bdf != NULL; bdf = bdf->next)
+	 bvts[0].x=transform[4];
+	 for (bdf=fv->sf->bitmaps; bdf != NULL; bdf=bdf->next)
 	    if (bdf->glyphs[sc->orig_pos] != NULL)
 	       BCTrans(bdf, bdf->glyphs[sc->orig_pos], bvts, fv);
       }
       return;
    } else {
-      if (wd->type == st_set)
-	 width = wd->setto;
-      else if (wd->type == st_incr)
-	 width = sc->vwidth + wd->increment;
+      if (wd->type==st_set)
+	 width=wd->setto;
+      else if (wd->type==st_incr)
+	 width=sc->vwidth + wd->increment;
       else
-	 width = sc->vwidth * wd->scale / 100;
+	 width=sc->vwidth * wd->scale / 100;
       if (width != sc->vwidth) {
 	 SCPreserveVWidth(sc);
-	 sc->vwidth = width;
+	 sc->vwidth=width;
       }
    }
    SCCharChangedUpdate(sc, fv->active_layer, true);
 }
 
 void FVDoit(CreateWidthData * wd) {
-   FontViewBase *fv = (FontViewBase *) (wd->_fv);
+   FontViewBase *fv=(FontViewBase *) (wd->_fv);
 
    int i;
 
@@ -207,18 +207,18 @@ void FVDoit(CreateWidthData * wd) {
       wd->setto *= scale;
       wd->increment *= scale;
    }
-   bc = NULL;
-   for (i = 0; i < fv->map->enccount; ++i)
+   bc=NULL;
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i]) {
 	 SplineChar *sc;
 
-	 sc = SFMakeChar(fv->sf, fv->map, i);
+	 sc=SFMakeChar(fv->sf, fv->map, i);
 	 if (fv->sf->onlybitmaps && fv->sf->bitmaps != NULL)
 	    if (fv->active_bitmap != NULL)
-	       bc = BDFMakeChar(fv->active_bitmap, fv->map, i);
+	       bc=BDFMakeChar(fv->active_bitmap, fv->map, i);
 	 DoChar(sc, wd, fv, bc);
       }
-   wd->done = true;
+   wd->done=true;
 }
 
 void FVSetWidthScript(FontViewBase * fv, enum widthtype wtype, int val,
@@ -226,10 +226,10 @@ void FVSetWidthScript(FontViewBase * fv, enum widthtype wtype, int val,
    CreateWidthData wd;
 
    memset(&wd, 0, sizeof(wd));
-   wd._fv = fv;
-   wd.doit = FVDoit;
-   wd.setto = wd.increment = wd.scale = val;
-   wd.type = incr == 0 ? st_set : incr == 2 ? st_scale : st_incr;
-   wd.wtype = wtype;
+   wd._fv=fv;
+   wd.doit=FVDoit;
+   wd.setto=wd.increment=wd.scale=val;
+   wd.type=incr==0 ? st_set : incr==2 ? st_scale : st_incr;
+   wd.wtype=wtype;
    FVDoit(&wd);
 }

@@ -1,4 +1,4 @@
-/* $Id: is_LIGATURE.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: is_LIGATURE.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* This is a generated file. */
 
 #include <stdlib.h>
@@ -9,7 +9,7 @@
  *      LIGATURE|VULGAR FRACTION
  *
  */
-static unsigned int matching_codepoints[528] = {
+static unsigned int matching_codepoints[528]={
    188, 189, 190, 306, 307, 338, 339, 1188, 1189, 1204, 1205, 1236, 1237,
       1415, 1520, 1521, 1522, 1558, 1750, 1751, 8528, 8529, 8530, 8531, 8532,
       8533, 8534, 8535, 8536, 8537, 8538, 8539, 8540, 8541, 8542, 8585, 43001,
@@ -65,18 +65,18 @@ static unsigned int matching_codepoints[528] = {
       65276
 };
 
-static int compare_codepoints(const void *codepoint1, const void *codepoint2) {
-   const unsigned int *cp1 = (const unsigned int *) codepoint1;
+static int compare_codepoints(const void *codepoint1,const void *codepoint2) {
+   const unsigned int *cp1=(const unsigned int *) codepoint1;
 
-   const unsigned int *cp2 = (const unsigned int *) codepoint2;
+   const unsigned int *cp2=(const unsigned int *) codepoint2;
 
-   return ((*cp1 < *cp2) ? -1 : ((*cp1 == *cp2) ? 0 : 1));
+   return ((*cp1 < *cp2) ? -1 : ((*cp1==*cp2) ? 0 : 1));
 }
 
 int is_LIGATURE_or_VULGAR_FRACTION(unsigned int codepoint);
 
 int is_LIGATURE_or_VULGAR_FRACTION(unsigned int codepoint) {
-   unsigned int *p = (unsigned int *) bsearch(&codepoint, matching_codepoints,
+   unsigned int *p=(unsigned int *) bsearch(&codepoint, matching_codepoints,
 					      528, sizeof(unsigned int),
 					      compare_codepoints);
 

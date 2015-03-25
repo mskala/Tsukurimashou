@@ -1,10 +1,10 @@
-/* $Id: pua.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: pua.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* A number of encodings use the public use area to map to glyphs that are    */
 /*  defined in planes other than the BMP (chinese), or just multiple encodings*/
 /*  for the same glyph (ams)						      */
 
 /* These data are taken from http://www.ams.org/STIX/bnb/stix-tbl.asc-2003-10-10 */
-const int amspua[] = {
+const int amspua[]={
 /* E000 */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
 /* E008 */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
 /* E010 */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
@@ -895,7 +895,7 @@ const int amspua[] = {
 };
 
 /* These data are taken from adobe's cid2code.txt for ac14 */
-const int cns14pua[] = {	/* Big5 and friends */
+const int cns14pua[]={	/* Big5 and friends */
 /* E000 */ 0x20547, 0x0, 0x205df, 0x23fc5, 0x0, 0x0, 0x0, 0x0,
 /* E008 */ 0x0, 0x24942, 0x289e4, 0x0, 0x219db, 0x0, 0x23cc8, 0x0,
 /* E010 */ 0x0, 0x0, 0x24933, 0x289aa, 0x202a0, 0x26bb3, 0x21305, 0x0,

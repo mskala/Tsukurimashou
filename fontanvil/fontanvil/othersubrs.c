@@ -1,4 +1,4 @@
-/* $Id: othersubrs.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: othersubrs.c 3857 2015-03-25 13:26:40Z mskala $ */
 #include "fontanvil.h"		/* For LogError */
 
 /* These subroutines are code by Adobe for this exact use (from T1_Spec.pdf) */
@@ -7,25 +7,25 @@
 static const uint8 subrs0[] =
    { 3 + 139, 0 + 139, 12, 16, 12, 17, 12, 17, 12, 33, 11 };
 	/* 0 1 callothersubr return */
-static const uint8 subrs1[] = { 0 + 139, 1 + 139, 12, 16, 11 };
+static const uint8 subrs1[]={ 0 + 139,1 + 139,12,16,11 };
 
 	/* 0 2 callothersubr return */
-static const uint8 subrs2[] = { 0 + 139, 2 + 139, 12, 16, 11 };
+static const uint8 subrs2[]={ 0 + 139,2 + 139,12,16,11 };
 
 	/* return */
-static const uint8 subrs3[] = { 11 };
+static const uint8 subrs3[]={ 11 };
 
 	/* This one I created myself to do hint substitution */
 	/* <subr number presumed to be on stack> 1 3 callother pop callsubr */
-static const uint8 subrs4[] = { 1 + 139, 3 + 139, 12, 16, 12, 17, 10, 11 };
+static const uint8 subrs4[]={ 1 + 139,3 + 139,12,16,12,17,10,11 };
 
 	/* These others from adobe for multiple master */
 	/* They need some fix up before they are used (the stack count depends on the # instances). */
 	/* <n> 14 callothersubr pop return */
-static const uint8 subrs5[] = { 139, 14 + 139, 12, 16, 12, 17, 11 };
+static const uint8 subrs5[]={ 139,14 + 139,12,16,12,17,11 };
 
 	/* 2*<n> 15 callothersubr pop pop return */
-static const uint8 subrs6[] = { 139, 15 + 139, 12, 16, 12, 17, 12, 17, 11 };
+static const uint8 subrs6[]={ 139,15 + 139,12,16,12,17,12,17,11 };
 
 	/* 3*<n> 16 callothersubr pop pop pop return */
 static const uint8 subrs7[] =
@@ -39,16 +39,16 @@ static const uint8 subrs9[] =
 11 };
 
 
-const uint8 *const subrs[] = { subrs0, subrs1, subrs2, subrs3, subrs4,
+const uint8 *const subrs[]={ subrs0, subrs1, subrs2, subrs3, subrs4,
    subrs5, subrs6, subrs7, subrs8, subrs9
 };
 
-const int subrslens[] = { sizeof(subrs0), sizeof(subrs1), sizeof(subrs2),
+const int subrslens[]={ sizeof(subrs0), sizeof(subrs1), sizeof(subrs2),
    sizeof(subrs3), sizeof(subrs4), sizeof(subrs5), sizeof(subrs6),
    sizeof(subrs7), sizeof(subrs8), sizeof(subrs9)
 };
 
-static const char *copyright[] = {
+static const char *copyright[]={
    "% Copyright (c) 1987-1990 Adobe Systems Incorporated.",
    "% All Rights Reserved.",
    "% This code to be used for Flex and hint replacement.",
@@ -56,7 +56,7 @@ static const char *copyright[] = {
    NULL
 };
 
-static const char *othersubrs0[] = {
+static const char *othersubrs0[]={
    "systemdict /internaldict known",
    "{1183615869 systemdict /internaldict get exec",
    "/FlxProc known {save true} {false} ifelse}",
@@ -221,17 +221,17 @@ static const char *othersubrs0[] = {
    NULL
 };
 
-static const char *othersubrs1[] = {
+static const char *othersubrs1[]={
    "{gsave currentpoint newpath moveto} executeonly",
    NULL
 };
 
-static const char *othersubrs2[] = {
+static const char *othersubrs2[]={
    "{currentpoint grestore gsave currentpoint newpath moveto} executeonly",
    NULL
 };
 
-static const char *othersubrs3[] = {
+static const char *othersubrs3[]={
    "{systemdict /internaldict known not",
    "{pop 3}",
    "{1183615869 systemdict /internaldict get exec",
@@ -247,17 +247,17 @@ static const char *othersubrs3[] = {
    NULL
 };
 
-static const char *othersubrs4_12[] = {
+static const char *othersubrs4_12[]={
    "{}",
    NULL
 };
 
-static const char *othersubrs13[] = {
+static const char *othersubrs13[]={
    "{2 {cvi {{pop 0 lt {exit} if} loop} repeat} repeat}",	/* Other Subr 13 for counter hints */
    NULL
 };
 
-const char **othersubrs_copyright[] = { copyright };
+const char **othersubrs_copyright[]={ copyright };
 
 const char **othersubrs[] =
    { othersubrs0, othersubrs1, othersubrs2, othersubrs3,
@@ -283,7 +283,7 @@ static const char **default_othersubrs[] =
 /* James Cloos notes that the second number is /StdVW, and the first number is */
 /*  StdVW 8 idiv .5 add */
 /* 
-const char *erode[] = {
+const char *erode[]={
 	"/Erode",
 	"{ 9.5 dup 3 -1 roll 0.1 mul exch 0.5 sub mul cvi sub dup mul",
 	"  72 0 dtransform dup mul exch dup mul add le",
@@ -297,7 +297,7 @@ const char *erode[] = {
 
 /* from Adobe Technical Specification #5014, Adobe CMap and CIDFont Files */
 /* Specification, Version 1.0. */
-const char *cid_othersubrs[] = {
+const char *cid_othersubrs[]={
    "[ {} {} {}",
    "  { systemdict /internaldict known not",
    "    { pop 3 }",
@@ -321,7 +321,7 @@ const char *cid_othersubrs[] = {
 };
 
 
-const char *makeblendedfont[] = {
+const char *makeblendedfont[]={
    "% Copyright (c) 1990-1994 Adobe Systems Incorporated.",
    "% All Rights Reserved.",
 /* Adobe has posted a copyright notice in 5015.Type1_Supp.pdf with the */
@@ -419,7 +419,7 @@ const char *makeblendedfont[] = {
    NULL
 };
 
-const char *mmfindfont[] = {
+const char *mmfindfont[]={
    "/$mmff_origfindfont where {",
    "  pop save { restore } { pop pop }",
    "} { {} { def } } ifelse",
@@ -467,22 +467,22 @@ const char *mmfindfont[] = {
 #include <string.h>
 #include <ustring.h>
 
-static const char **CopyLines(char **lines, int l, int is_copyright) {
+static const char **CopyLines(char **lines,int l,int is_copyright) {
    const char **ret;
 
    int i;
 
-   if (l == 0 && !is_copyright) {
-      ret = malloc(2 * sizeof(char *));
-      ret[0] = copy("{}");
-      ret[1] = NULL;
+   if (l==0 && !is_copyright) {
+      ret=malloc(2 * sizeof(char *));
+      ret[0]=copy("{}");
+      ret[1]=NULL;
       return (ret);
    }
 
-   ret = malloc((l + 1) * sizeof(char *));
-   for (i = 0; i < l; ++i)
-      ret[i] = lines[i];
-   ret[l] = NULL;
+   ret=malloc((l + 1) * sizeof(char *));
+   for (i=0; i < l; ++i)
+      ret[i]=lines[i];
+   ret[l]=NULL;
    return (ret);
 }
 
@@ -490,79 +490,73 @@ void DefaultOtherSubrs(void) {
    int i, j;
 
    if (othersubrs_copyright[0] != copyright) {
-      for (i = 0; othersubrs_copyright[0][i] != NULL; ++i)
+      for (i=0; othersubrs_copyright[0][i] != NULL; ++i)
 	 free((char *) othersubrs_copyright[0][i]);
       free(othersubrs_copyright[0]);
-      othersubrs_copyright[0] = copyright;
+      othersubrs_copyright[0]=copyright;
    }
-   for (j = 0; j <= 13; ++j) {
+   for (j=0; j <= 13; ++j) {
       if (othersubrs[j] != default_othersubrs[j]) {
-	 for (i = 0; othersubrs[j][i] != NULL; ++i)
+	 for (i=0; othersubrs[j][i] != NULL; ++i)
 	    free((char *) othersubrs[j][i]);
 	 free(othersubrs[j]);
-	 othersubrs[j] = default_othersubrs[j];
+	 othersubrs[j]=default_othersubrs[j];
       }
    }
 }
 
 int ReadOtherSubrsFile(char *filename) {
-   FILE *os = fopen(filename, "r");
-
+   AFILE *os=afopen(filename, "r");
    char buffer[500];
-
-   char **lines = NULL;
-
-   int l = 0, lmax = 0;
-
-   int sub_num = -1;
-
-   const char **co = NULL, **osubs[14];
-
+   char **lines=NULL;
+   int l=0, lmax=0;
+   int sub_num=-1;
+   const char **co=NULL, **osubs[14];
    int i;
 
-   if (os == NULL)
+   if (os==NULL)
       return (false);
    while (fgets(buffer, sizeof(buffer), os) != NULL) {
-      int len = strlen(buffer);
+      int len=strlen(buffer);
 
-      if (len > 0 && (buffer[len - 1] == '\r' || buffer[len - 1] == '\n')) {
-	 if (len > 1 && (buffer[len - 2] == '\r' || buffer[len - 2] == '\n'))
-	    buffer[len - 2] = '\0';
+      if (len > 0 && (buffer[len - 1]=='\r' || buffer[len - 1]=='\n')) {
+	 if (len > 1 && (buffer[len - 2]=='\r' || buffer[len - 2]=='\n'))
+	    buffer[len - 2]='\0';
 	 else
-	    buffer[len - 1] = '\0';
+	    buffer[len - 1]='\0';
       }
-      if (buffer[0] == '%' && buffer[1] == '%' && buffer[2] == '%'
-	  && buffer[3] == '%') {
-	 if (sub_num == -1)
-	    co = CopyLines(lines, l, true);
+      if (buffer[0]=='%' && buffer[1]=='%' && buffer[2]=='%'
+	  && buffer[3]=='%') {
+	 if (sub_num==-1)
+	    co=CopyLines(lines, l, true);
 	 else if (sub_num < 14)
-	    osubs[sub_num] = CopyLines(lines, l, false);
-	 else if (sub_num == 14)
+	    osubs[sub_num]=CopyLines(lines, l, false);
+	 else if (sub_num==14)
 	    LogError(_
 		     ("Too many subroutines. We can deal with at most 14 (0-13)\n"));
 	 ++sub_num;
-	 l = 0;
+	 l=0;
       } else {
 	 if (l >= lmax) {
 	    lmax += 100;
-	    lines = realloc(lines, lmax * sizeof(char *));
+	    lines=realloc(lines, lmax * sizeof(char *));
 	 }
-	 lines[l++] = copy(buffer);
+	 lines[l++]=copy(buffer);
       }
    }
-   fclose(os);
+   afclose(os);
    /* we just read a copyright notice? That's no use */
    if (sub_num <= 0)
       return (false);
    while (sub_num < 14) {
-      osubs[sub_num] = calloc(2, sizeof(char *));
-      osubs[sub_num][0] = copy("{}");
+      osubs[sub_num]=calloc(2, sizeof(char *));
+      osubs[sub_num][0]=copy("{}");
       ++sub_num;
    }
    DefaultOtherSubrs();
-   othersubrs_copyright[0] = co;
-   for (i = 0; i < 14; ++i)
-      othersubrs[i] = osubs[i];
+   othersubrs_copyright[0]=co;
+   for (i=0; i < 14; ++i)
+      othersubrs[i]=osubs[i];
    free(lines);
    return (true);
 }

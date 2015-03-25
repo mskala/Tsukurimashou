@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 3502 2014-11-30 12:26:48Z mskala $ */
+/* $Id: autowidth.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 
 #include "autowidth.h"
 
-SplineFont *aw_old_sf = NULL;
+SplineFont *aw_old_sf=NULL;
 
 int aw_old_spaceguess;
 
@@ -70,7 +70,7 @@ int aw_old_spaceguess;
 Autokern has similar ideas, but is simpler:
     Once we've found the average of the zone distances
     Adjust the kerning between the two characters so that
-	<kern> = <dspace>-(<rb>-<lb>-<visual>)
+	<kern>=<dspace>-(<rb>-<lb>-<visual>)
 	Again check for overlap (<dspace>/4 in any zone)
     Kerning by the left character can always propigate to dependents
     Kerning by the right char should not
@@ -79,7 +79,7 @@ Autokern has similar ideas, but is simpler:
     No, I think it is better not to propigate kerning.
 */
 
-static void AW_AutoKern(WidthInfo * wi) {
+static void AW_AutoKern(WidthInfo *wi) {
    struct charpair *cp;
 
    SplineChar *lsc, *rsc;
@@ -88,8 +88,8 @@ static void AW_AutoKern(WidthInfo * wi) {
 
    KernPair *kp;
 
-   for (i = 0; i < wi->pcnt; ++i) {
-      cp = wi->pairs[i];
+   for (i=0; i < wi->pcnt; ++i) {
+      cp=wi->pairs[i];
 
       diff =
 	 rint(wi->spacing -
@@ -97,30 +97,30 @@ static void AW_AutoKern(WidthInfo * wi) {
 	       cp->visual));
 
       if (wi->threshold != 0 && diff > -wi->threshold && diff < wi->threshold)
-	 diff = 0;
+	 diff=0;
       if (wi->onlynegkerns && diff > 0)
-	 diff = 0;
-      lsc = cp->left->sc;
-      rsc = cp->right->sc;
-      for (kp = lsc->kerns; kp != NULL && kp->sc != rsc; kp = kp->next);
+	 diff=0;
+      lsc=cp->left->sc;
+      rsc=cp->right->sc;
+      for (kp=lsc->kerns; kp != NULL && kp->sc != rsc; kp=kp->next);
       if (kp != NULL) {
 	 if (kp->off != diff) {
-	    kp->off = diff;
-	    wi->sf->changed = true;
+	    kp->off=diff;
+	    wi->sf->changed=true;
 	 }
       } else if (diff != 0) {
-	 kp = chunkalloc(sizeof(KernPair));
-	 kp->sc = rsc;
-	 kp->off = diff;
-	 kp->subtable = wi->subtable;
-	 kp->next = lsc->kerns;
-	 lsc->kerns = kp;
-	 wi->sf->changed = true;
+	 kp=chunkalloc(sizeof(KernPair));
+	 kp->sc=rsc;
+	 kp->off=diff;
+	 kp->subtable=wi->subtable;
+	 kp->next=lsc->kerns;
+	 lsc->kerns=kp;
+	 wi->sf->changed=true;
       }
    }
 }
 
-static real SplineFindMinXAtY(Spline * spline, real y, real min) {
+static real SplineFindMinXAtY(Spline *spline,real y,real min) {
    extended t, t1, t2, tbase, val;
 
    Spline1D *xsp;
@@ -137,53 +137,53 @@ static real SplineFindMinXAtY(Spline * spline, real y, real min) {
 	 return (min);
    }
 
-   xsp = &spline->splines[0];
+   xsp=&spline->splines[0];
    SplineFindExtrema(&spline->splines[1], &t1, &t2);
-   tbase = 0;
+   tbase=0;
    if (t1 != -1) {
-      t = SplineSolve(&spline->splines[1], 0, t1, y);
+      t=SplineSolve(&spline->splines[1], 0, t1, y);
       if (t >= 0 && t <= 1) {
-	 val = ((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d;
-	 if (min == NOTREACHED || val < min)
-	    min = val;
+	 val=((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d;
+	 if (min==NOTREACHED || val < min)
+	    min=val;
       }
-      tbase = t1;
+      tbase=t1;
    }
    if (t2 != -1) {
-      t = SplineSolve(&spline->splines[1], tbase, t2, y);
+      t=SplineSolve(&spline->splines[1], tbase, t2, y);
       if (t >= 0 && t <= 1) {
-	 val = ((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d;
-	 if (min == NOTREACHED || val < min)
-	    min = val;
+	 val=((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d;
+	 if (min==NOTREACHED || val < min)
+	    min=val;
       }
-      tbase = t2;
+      tbase=t2;
    }
-   t = SplineSolve(&spline->splines[1], tbase, 1.0, y);
+   t=SplineSolve(&spline->splines[1], tbase, 1.0, y);
    if (t >= 0 && t <= 1) {
-      val = ((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d;
-      if (min == NOTREACHED || val < min)
-	 min = val;
+      val=((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d;
+      if (min==NOTREACHED || val < min)
+	 min=val;
    }
    return (min);
 }
 
-static void PtFindEdges(real x, real y, struct charone *ch, WidthInfo * wi) {
+static void PtFindEdges(real x,real y,struct charone *ch,WidthInfo *wi) {
    int i;
 
-   i = rint(y / wi->decimation);
+   i=rint(y / wi->decimation);
    if (i > ch->top)
-      i = ch->top;		/* Can't happen */
+      i=ch->top;		/* Can't happen */
    i -= ch->base;
    if (i < 0)
-      i = 0;			/* Can't happen */
+      i=0;			/* Can't happen */
 
-   if (ch->ledge[i] == NOTREACHED || x < ch->ledge[i])
-      ch->ledge[i] = x;
-   if (ch->redge[i] == NOTREACHED || x > ch->redge[i])
-      ch->redge[i] = x;
+   if (ch->ledge[i]==NOTREACHED || x < ch->ledge[i])
+      ch->ledge[i]=x;
+   if (ch->redge[i]==NOTREACHED || x > ch->redge[i])
+      ch->redge[i]=x;
 }
 
-static void SplineFindEdges(Spline * spline, struct charone *ch,
+static void SplineFindEdges(Spline *spline,struct charone *ch,
 			    WidthInfo * wi) {
    Spline1D *xsp, *ysp;
 
@@ -196,8 +196,8 @@ static void SplineFindEdges(Spline * spline, struct charone *ch,
    PtFindEdges(spline->from->me.x, spline->from->me.y, ch, wi);
 
    /* then try the extrema of the spline (assuming they are between t=(0,1) */
-   xsp = &spline->splines[0];
-   ysp = &spline->splines[1];
+   xsp=&spline->splines[0];
+   ysp=&spline->splines[1];
    SplineFindExtrema(xsp, &t1, &t2);
    if (t1 != -1)
       PtFindEdges(((xsp->a * t1 + xsp->b) * t1 + xsp->c) * t1 + xsp->d,
@@ -208,23 +208,23 @@ static void SplineFindEdges(Spline * spline, struct charone *ch,
 		  ((ysp->a * t2 + ysp->b) * t2 + ysp->c) * t2 + ysp->d,
 		  ch, wi);
 
-   ymin = ymax = spline->from->me.y;
+   ymin=ymax=spline->from->me.y;
    if (spline->from->nextcp.y > ymax)
-      ymax = spline->from->nextcp.y;
+      ymax=spline->from->nextcp.y;
    if (spline->from->nextcp.y < ymin)
-      ymin = spline->from->nextcp.y;
+      ymin=spline->from->nextcp.y;
    if (spline->to->prevcp.y > ymax)
-      ymax = spline->to->prevcp.y;
+      ymax=spline->to->prevcp.y;
    if (spline->to->prevcp.y < ymin)
-      ymin = spline->to->prevcp.y;
+      ymin=spline->to->prevcp.y;
    if (spline->to->me.y > ymax)
-      ymax = spline->to->me.y;
+      ymax=spline->to->me.y;
    if (spline->to->me.y < ymin)
-      ymin = spline->to->me.y;
+      ymin=spline->to->me.y;
 
    if (ymin != ymax) {
-      toff = wi->decimation / (2 * (ymax - ymin));
-      for (t = toff; t < 1; t += toff) {
+      toff=wi->decimation / (2 * (ymax - ymin));
+      for (t=toff; t < 1; t += toff) {
 	 PtFindEdges(((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d,
 		     ((ysp->a * t + ysp->b) * t + ysp->c) * t + ysp->d,
 		     ch, wi);
@@ -232,85 +232,85 @@ static void SplineFindEdges(Spline * spline, struct charone *ch,
    }
 }
 
-static real SSFindMinXAtY(SplineSet * spl, real y, real min) {
+static real SSFindMinXAtY(SplineSet *spl,real y,real min) {
    Spline *sp, *first;
 
    while (spl != NULL) {
-      first = NULL;
-      for (sp = spl->first->next; sp != NULL && sp != first;
-	   sp = sp->to->next) {
-	 min = SplineFindMinXAtY(sp, y, min);
-	 if (first == NULL)
-	    first = sp;
+      first=NULL;
+      for (sp=spl->first->next; sp != NULL && sp != first;
+	   sp=sp->to->next) {
+	 min=SplineFindMinXAtY(sp, y, min);
+	 if (first==NULL)
+	    first=sp;
       }
-      spl = spl->next;
+      spl=spl->next;
    }
    return (min);
 }
 
-static real SSIsMinXAtYCurved(SplineSet * spl, real y, real oldmin,
+static real SSIsMinXAtYCurved(SplineSet *spl,real y,real oldmin,
 			      int *curved) {
    Spline *sp, *first;
 
    real min;
 
    while (spl != NULL) {
-      first = NULL;
-      for (sp = spl->first->next; sp != NULL && sp != first;
-	   sp = sp->to->next) {
-	 min = SplineFindMinXAtY(sp, y, oldmin);
+      first=NULL;
+      for (sp=spl->first->next; sp != NULL && sp != first;
+	   sp=sp->to->next) {
+	 min=SplineFindMinXAtY(sp, y, oldmin);
 	 if (min != oldmin) {
-	    oldmin = min;
-	    *curved = !sp->knownlinear;
+	    oldmin=min;
+	    *curved=!sp->knownlinear;
 	 }
-	 if (first == NULL)
-	    first = sp;
+	 if (first==NULL)
+	    first=sp;
       }
-      spl = spl->next;
+      spl=spl->next;
    }
    return (oldmin);
 }
 
-static void SSFindEdges(SplineSet * spl, struct charone *ch, WidthInfo * wi) {
+static void SSFindEdges(SplineSet *spl,struct charone *ch,WidthInfo *wi) {
    Spline *sp, *first;
 
    while (spl != NULL) {
-      first = NULL;
-      for (sp = spl->first->next; sp != NULL && sp != first;
-	   sp = sp->to->next) {
+      first=NULL;
+      for (sp=spl->first->next; sp != NULL && sp != first;
+	   sp=sp->to->next) {
 	 SplineFindEdges(sp, ch, wi);
-	 if (first == NULL)
-	    first = sp;
+	 if (first==NULL)
+	    first=sp;
       }
-      spl = spl->next;
+      spl=spl->next;
    }
 }
 
-static real SCFindMinXAtY(SplineChar * sc, int layer, real y) {
-   real min = NOTREACHED;
+static real SCFindMinXAtY(SplineChar *sc,int layer,real y) {
+   real min=NOTREACHED;
 
    RefChar *ref;
 
-   min = SSFindMinXAtY(sc->layers[layer].splines, y, NOTREACHED);
-   for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next)
-      min = SSFindMinXAtY(ref->layers[0].splines, y, min);
+   min=SSFindMinXAtY(sc->layers[layer].splines, y, NOTREACHED);
+   for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next)
+      min=SSFindMinXAtY(ref->layers[0].splines, y, min);
    return (min);
 }
 
-static int SCIsMinXAtYCurved(SplineChar * sc, int layer, real y) {
-   real min = NOTREACHED;
+static int SCIsMinXAtYCurved(SplineChar *sc,int layer,real y) {
+   real min=NOTREACHED;
 
-   int curved = false;
+   int curved=false;
 
    RefChar *ref;
 
-   min = SSFindMinXAtY(sc->layers[layer].splines, y, NOTREACHED);
-   for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next)
-      min = SSIsMinXAtYCurved(ref->layers[0].splines, y, min, &curved);
+   min=SSFindMinXAtY(sc->layers[layer].splines, y, NOTREACHED);
+   for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next)
+      min=SSIsMinXAtYCurved(ref->layers[0].splines, y, min, &curved);
    return (curved);
 }
 
-static void SCFindEdges(struct charone *ch, WidthInfo * wi) {
+static void SCFindEdges(struct charone *ch,WidthInfo *wi) {
    RefChar *ref;
 
    SplineChar *sc;
@@ -320,44 +320,44 @@ static void SCFindEdges(struct charone *ch, WidthInfo * wi) {
    DBounds bb;
 
    SplineCharQuickConservativeBounds(ch->sc, &bb);
-   ch->base = rint(bb.miny / wi->decimation);
-   ch->top = rint(bb.maxy / wi->decimation);
-   ch->ledge = malloc((ch->top - ch->base + 1) * sizeof(short));
-   ch->redge = malloc((ch->top - ch->base + 1) * sizeof(short));
-   for (i = 0; i <= ch->top - ch->base; ++i)
-      ch->ledge[i] = ch->redge[i] = NOTREACHED;
+   ch->base=rint(bb.miny / wi->decimation);
+   ch->top=rint(bb.maxy / wi->decimation);
+   ch->ledge=malloc((ch->top - ch->base + 1) * sizeof(short));
+   ch->redge=malloc((ch->top - ch->base + 1) * sizeof(short));
+   for (i=0; i <= ch->top - ch->base; ++i)
+      ch->ledge[i]=ch->redge[i]=NOTREACHED;
    SSFindEdges(ch->sc->layers[wi->layer].splines, ch, wi);
-   for (ref = ch->sc->layers[wi->layer].refs; ref != NULL; ref = ref->next)
+   for (ref=ch->sc->layers[wi->layer].refs; ref != NULL; ref=ref->next)
       SSFindEdges(ref->layers[0].splines, ch, wi);
-   ch->lbearing = ch->rmax = NOTREACHED;
-   for (i = 0; i <= ch->top - ch->base; ++i) {
+   ch->lbearing=ch->rmax=NOTREACHED;
+   for (i=0; i <= ch->top - ch->base; ++i) {
       if (ch->ledge[i] != NOTREACHED)
-	 if (ch->lbearing == NOTREACHED || ch->ledge[i] < ch->lbearing)
-	    ch->lbearing = ch->ledge[i];
+	 if (ch->lbearing==NOTREACHED || ch->ledge[i] < ch->lbearing)
+	    ch->lbearing=ch->ledge[i];
       if (ch->redge[i] != NOTREACHED)
-	 if (ch->rmax == NOTREACHED || ch->redge[i] > ch->rmax)
-	    ch->rmax = ch->redge[i];
+	 if (ch->rmax==NOTREACHED || ch->redge[i] > ch->rmax)
+	    ch->rmax=ch->redge[i];
    }
 
    /* In accented characters find the base letter, compute its dimensions */
    /*  then figure out its serif zones */
-   sc = ch->sc;
+   sc=ch->sc;
    while (sc->layers[wi->layer].refs != NULL) {
-      for (ref = ch->sc->layers[wi->layer].refs; ref != NULL; ref = ref->next)
+      for (ref=ch->sc->layers[wi->layer].refs; ref != NULL; ref=ref->next)
 	 if (ref->sc->unicodeenc != -1 && isalpha(ref->sc->unicodeenc))
 	    break;
-      if (ref == NULL)
+      if (ref==NULL)
 	 break;
-      sc = ref->sc;
+      sc=ref->sc;
    }
    SplineCharQuickBounds(ch->sc, &bb);
-   if (sc->unicodeenc == 'k') {
-      ch->baseserif = 1;
-      ch->lefttops = 3;
-      ch->righttops = 2;
+   if (sc->unicodeenc=='k') {
+      ch->baseserif=1;
+      ch->lefttops=3;
+      ch->righttops=2;
    } else {
-      ch->baseserif = (bb.miny >= 0 || -bb.miny < -wi->descent / 2) ? 1 : 0;
-      ch->lefttops = ch->righttops =
+      ch->baseserif=(bb.miny >= 0 || -bb.miny < -wi->descent / 2) ? 1 : 0;
+      ch->lefttops=ch->righttops =
 	 (bb.maxy <= wi->xheight
 	  || bb.maxy - wi->xheight < wi->caph - bb.maxy) ? 2 : 3;
    }
@@ -370,42 +370,42 @@ static void SCFindEdges(struct charone *ch, WidthInfo * wi) {
 /*  lower than the top bar of the z. Which means it can slide nicely into the */
 /*  middle of "z". But that looks really bad. Instead we need a fudge zone */
 /*  that extends around every point on the edge */
-static void PairFindDistance(struct charpair *cp, WidthInfo * wi) {
+static void PairFindDistance(struct charpair *cp,WidthInfo *wi) {
    int i, j, wasserif, wasseriff;
 
    real sum, cnt, min, fudge, minf, temp;
 
-   struct charone *left = cp->left, *right = cp->right;
+   struct charone *left=cp->left, *right=cp->right;
 
    int fudgerange;
 
-   fudgerange = rint(wi->caph / (20 * wi->decimation));
+   fudgerange=rint(wi->caph / (20 * wi->decimation));
    if (wi->serifsize != 0)	/* the serifs provide some fudging themselves */
-      fudgerange = rint(wi->caph / (30 * wi->decimation));
+      fudgerange=rint(wi->caph / (30 * wi->decimation));
 
    cp->base =
       (left->base > right->base ? left->base : right->base) - fudgerange;
-   cp->top = (left->top < right->top ? left->top : right->top) + fudgerange;
+   cp->top=(left->top < right->top ? left->top : right->top) + fudgerange;
    if (cp->top < cp->base)
-      cp->distances = malloc(sizeof(short));
+      cp->distances=malloc(sizeof(short));
    else
-      cp->distances = malloc((cp->top - cp->base + 1) * sizeof(short));
+      cp->distances=malloc((cp->top - cp->base + 1) * sizeof(short));
 
-   min = NOTREACHED;
-   wasserif = false;
-   for (i = cp->base; i <= cp->top; ++i) {
-      cp->distances[i - cp->base] = NOTREACHED;
+   min=NOTREACHED;
+   wasserif=false;
+   for (i=cp->base; i <= cp->top; ++i) {
+      cp->distances[i - cp->base]=NOTREACHED;
       if (i >= left->base && i <= left->top &&
 	  left->redge[i - left->base] != NOTREACHED) {
-	 minf = NOTREACHED;
-	 wasseriff = false;
-	 for (j = i - fudgerange; j <= i + fudgerange; ++j) {
+	 minf=NOTREACHED;
+	 wasseriff=false;
+	 for (j=i - fudgerange; j <= i + fudgerange; ++j) {
 	    if (j >= right->base && j <= right->top &&
 		right->ledge[j - right->base] != NOTREACHED) {
-	       temp = right->ledge[j - right->base] - right->lbearing +
+	       temp=right->ledge[j - right->base] - right->lbearing +
 		  left->rmax - left->redge[i - left->base];
-	       if (minf == NOTREACHED || temp < minf) {
-		  minf = temp;
+	       if (minf==NOTREACHED || temp < minf) {
+		  minf=temp;
 		  wasseriff =
 		     ((i >= wi->serifs[left->baseserif][0]
 		       && i <= wi->serifs[left->baseserif][1])
@@ -418,52 +418,52 @@ static void PairFindDistance(struct charpair *cp, WidthInfo * wi) {
 	       }
 	    }
 	 }
-	 cp->distances[i - cp->base] = minf;
-	 if (minf != NOTREACHED && (min == NOTREACHED || min > minf)) {
-	    min = minf;
-	    wasserif = wasseriff;
+	 cp->distances[i - cp->base]=minf;
+	 if (minf != NOTREACHED && (min==NOTREACHED || min > minf)) {
+	    min=minf;
+	    wasserif=wasseriff;
 	 }
       }
    }
 
-   fudge = (wi->sf->ascent + wi->sf->descent) / 100;
-   if (min == NOTREACHED)
-      cp->visual = 0;
+   fudge=(wi->sf->ascent + wi->sf->descent) / 100;
+   if (min==NOTREACHED)
+      cp->visual=0;
    else {
-      sum = cnt = 0;
-      for (i = cp->base; i <= cp->top; ++i) {
+      sum=cnt=0;
+      for (i=cp->base; i <= cp->top; ++i) {
 	 if (cp->distances[i - cp->base] != NOTREACHED &&
 	     cp->distances[i - cp->base] <= min + fudge) {
 	    ++cnt;
 	    sum += cp->distances[i - cp->base];
 	 }
       }
-      if (cnt == 0)
-	 cp->visual = min;	/* Can't happen */
+      if (cnt==0)
+	 cp->visual=min;	/* Can't happen */
       else
-	 cp->visual = (min + sum / cnt) / 2;
+	 cp->visual=(min + sum / cnt) / 2;
       if (!wasserif)
 	 cp->visual -= wi->seriflength / 2;
    }
 }
 
-static void AW_FindFontParameters(WidthInfo * wi) {
+static void AW_FindFontParameters(WidthInfo *wi) {
    DBounds bb;
 
-   SplineFont *sf = wi->sf;
+   SplineFont *sf=wi->sf;
 
-   int i, j, si = -1;
+   int i, j, si=-1;
 
-   real caph, ds, xh, serifsize, angle, ca, seriflength = 0;
+   real caph, ds, xh, serifsize, angle, ca, seriflength=0;
 
    int cnt;
    static unichar_t caps[] =
       { 'A', 'Z', 0x391, 0x3a9, 0x40f, 0x418, 0x41a, 0x42f, 0 };
-   static unichar_t descent[] = { 'p', 'q', 'g', 'y', 'j',
+   static unichar_t descent[]={ 'p','q','g','y','j',
       0x3c8, 0x3b7, 0x3b3, 0x3b2, 0x3b6, 0x3bc, 0x3be, 0x3c1, 0x3c6,
       0x444, 0x443, 0x458, 0x434, 0
    };
-   static unichar_t xheight[] = { 'x', 'u', 'v', 'w', 'y', 'z',
+   static unichar_t xheight[]={ 'x','u','v','w','y','z',
       0x3b3, 0x3b9, 0x3ba, 0x3bc, 0x3bd, 0x3c0, 0x3c4, 0x3c5, 0x3c7, 0x3c8,
       0x432, 0x433, 0x436, 0x438, 0x43a, 0x43d, 0x43f, 0x442, 0x443, 0x445,
       0x446, 0x447, 0x448, 0x449, 0
@@ -476,11 +476,11 @@ static void AW_FindFontParameters(WidthInfo * wi) {
    };
    real stemx, testx, y, ytop, ybottom, yorig, topx, bottomx;
 
-   caph = 0;
-   cnt = 0;
-   for (i = 0; caps[i] != '\0' && cnt < 5; i += 2)
-      for (j = caps[i]; j <= caps[i + 1] && cnt < 5; ++j)
-	 if ((si = SFFindExistingSlot(sf, j, NULL)) != -1
+   caph=0;
+   cnt=0;
+   for (i=0; caps[i] != '\0' && cnt < 5; i += 2)
+      for (j=caps[i]; j <= caps[i + 1] && cnt < 5; ++j)
+	 if ((si=SFFindExistingSlot(sf, j, NULL)) != -1
 	     && sf->glyphs[si] != NULL) {
 	    SplineCharQuickBounds(sf->glyphs[si], &bb);
 	    caph += bb.maxy;
@@ -489,22 +489,22 @@ static void AW_FindFontParameters(WidthInfo * wi) {
    if (cnt != 0)
       caph /= cnt;
    else
-      caph = sf->ascent;
+      caph=sf->ascent;
 
-   for (i = 0; descent[i] != '\0'; ++i)
-      if ((si = SFFindExistingSlot(sf, descent[i], NULL)) != -1
+   for (i=0; descent[i] != '\0'; ++i)
+      if ((si=SFFindExistingSlot(sf, descent[i], NULL)) != -1
 	  && sf->glyphs[si] != NULL)
 	 break;
    if (descent[i] != '\0') {
       SplineCharQuickBounds(sf->glyphs[si], &bb);
-      ds = bb.miny;
+      ds=bb.miny;
    } else
-      ds = -sf->descent;
+      ds=-sf->descent;
 
-   cnt = 0;
-   xh = 0;
-   for (i = 0; xheight[i] != '\0' && cnt < 5; ++i)
-      if ((si = SFFindExistingSlot(sf, xheight[i], NULL)) != -1
+   cnt=0;
+   xh=0;
+   for (i=0; xheight[i] != '\0' && cnt < 5; ++i)
+      if ((si=SFFindExistingSlot(sf, xheight[i], NULL)) != -1
 	  && sf->glyphs[si] != NULL) {
 	 SplineCharQuickBounds(sf->glyphs[si], &bb);
 	 xh += bb.maxy;
@@ -513,79 +513,79 @@ static void AW_FindFontParameters(WidthInfo * wi) {
    if (cnt != 0)
       xh /= cnt;
    else
-      xh = 3 * caph / 4;
+      xh=3 * caph / 4;
 
-   for (i = 0; easyserif[i] != '\0'; ++i)
-      if ((si = SFFindExistingSlot(sf, easyserif[i], NULL)) != -1
+   for (i=0; easyserif[i] != '\0'; ++i)
+      if ((si=SFFindExistingSlot(sf, easyserif[i], NULL)) != -1
 	  && sf->glyphs[si] != NULL)
 	 break;
    if (si != -1) {
-      topx = SCFindMinXAtY(sf->glyphs[si], wi->layer, 2 * caph / 3);
-      bottomx = SCFindMinXAtY(sf->glyphs[si], wi->layer, caph / 3);
+      topx=SCFindMinXAtY(sf->glyphs[si], wi->layer, 2 * caph / 3);
+      bottomx=SCFindMinXAtY(sf->glyphs[si], wi->layer, caph / 3);
       /* Some fonts don't sit on the baseline... */
       SplineCharQuickBounds(sf->glyphs[si], &bb);
       /* beware of slanted (italic, oblique) fonts */
-      ytop = caph / 2;
-      ybottom = bb.miny;
-      stemx = SCFindMinXAtY(sf->glyphs[si], wi->layer, ytop);
-      if (topx == bottomx) {
-	 ca = 0;
-	 yorig = 0;		/* Irrelevant because we will multiply it by 0, but makes gcc happy */
+      ytop=caph / 2;
+      ybottom=bb.miny;
+      stemx=SCFindMinXAtY(sf->glyphs[si], wi->layer, ytop);
+      if (topx==bottomx) {
+	 ca=0;
+	 yorig=0;		/* Irrelevant because we will multiply it by 0, but makes gcc happy */
 	 while (ytop - ybottom >= .5) {
-	    y = (ytop + ybottom) / 2;
-	    testx = SCFindMinXAtY(sf->glyphs[si], wi->layer, y);
+	    y=(ytop + ybottom) / 2;
+	    testx=SCFindMinXAtY(sf->glyphs[si], wi->layer, y);
 	    if (testx + 1 >= stemx)
-	       ytop = y;
+	       ytop=y;
 	    else
-	       ybottom = y;
+	       ybottom=y;
 	 }
       } else {
-	 angle = atan2(caph / 3, topx - bottomx);
-	 ca = cos(angle);
-	 yorig = ytop;
+	 angle=atan2(caph / 3, topx - bottomx);
+	 ca=cos(angle);
+	 yorig=ytop;
 	 while (ytop - ybottom >= .5) {
-	    y = (ytop + ybottom) / 2;
-	    testx = SCFindMinXAtY(sf->glyphs[si], wi->layer, y) +
+	    y=(ytop + ybottom) / 2;
+	    testx=SCFindMinXAtY(sf->glyphs[si], wi->layer, y) +
 	       (yorig - y) * ca;
 	    if (testx + 4 >= stemx)	/* the +4 is to counteract rounding */
-	       ytop = y;
+	       ytop=y;
 	    else
-	       ybottom = y;
+	       ybottom=y;
 	 }
       }
       /* If "I" has a curved stem then it's probably in a script style and */
       /*  serifs don't really make sense (or not the simplistic ones I deal with) */
       if (ytop <= bb.miny + .5
 	  || SCIsMinXAtYCurved(sf->glyphs[si], wi->layer, caph / 2))
-	 serifsize = 0;
+	 serifsize=0;
       else if (ytop > caph / 4)
-	 serifsize = /*.06*(sf->ascent+sf->descent) */ 0;
+	 serifsize=/*.06*(sf->ascent+sf->descent) */ 0;
       else
-	 serifsize = ytop - bb.miny;
+	 serifsize=ytop - bb.miny;
 
       if (serifsize != 0) {
-	 y = serifsize / 4 + bb.miny;
-	 testx = SCFindMinXAtY(sf->glyphs[si], wi->layer, y);
-	 if (testx == NOTREACHED)
-	    serifsize = 0;
+	 y=serifsize / 4 + bb.miny;
+	 testx=SCFindMinXAtY(sf->glyphs[si], wi->layer, y);
+	 if (testx==NOTREACHED)
+	    serifsize=0;
 	 else {
 	    testx += (yorig - y) * ca;
-	    seriflength = stemx - testx;
+	    seriflength=stemx - testx;
 	    if (seriflength < (sf->ascent + sf->descent) / 200)
-	       serifsize = 0;
+	       serifsize=0;
 	 }
       }
    } else
-      serifsize = .06 * (sf->ascent + sf->descent);
-   serifsize = rint(serifsize);
+      serifsize=.06 * (sf->ascent + sf->descent);
+   serifsize=rint(serifsize);
    if (seriflength > .1 * (sf->ascent + sf->descent) || serifsize < 0) {
-      seriflength = 0;		/* that's an unreasonable value, we must be wrong */
-      serifsize = 0;
+      seriflength=0;		/* that's an unreasonable value, we must be wrong */
+      serifsize=0;
    }
 
-   if ((si = SFFindExistingSlot(sf, 'n', "n")) != -1
+   if ((si=SFFindExistingSlot(sf, 'n', "n")) != -1
        && sf->glyphs[si] != NULL) {
-      SplineChar *sc = sf->glyphs[si];
+      SplineChar *sc=sf->glyphs[si];
 
       if (sc->changedsincelasthinted && !sc->manualhints)
 	 SplineCharAutoHint(sc, wi->layer, NULL);
@@ -600,62 +600,62 @@ static void AW_FindFontParameters(WidthInfo * wi) {
       if (wi->n_stem_exterior_width < bb.maxx - bb.minx - 3 * seriflength ||
 	  wi->n_stem_exterior_width > bb.maxx - bb.minx + seriflength ||
 	  wi->n_stem_interior_width <= 0) {
-	 wi->n_stem_exterior_width = bb.maxx - bb.minx - 2 * seriflength;
+	 wi->n_stem_exterior_width=bb.maxx - bb.minx - 2 * seriflength;
 	 /* guess that the stem width is somewhere around the seriflength and */
 	 /*  one quarter of the character width */
-	 wi->n_stem_interior_width = wi->n_stem_exterior_width - seriflength -
+	 wi->n_stem_interior_width=wi->n_stem_exterior_width - seriflength -
 	    wi->n_stem_exterior_width / 4;
       }
    }
-   if (((si = SFFindExistingSlot(sf, 'I', "I")) != -1
+   if (((si=SFFindExistingSlot(sf, 'I', "I")) != -1
 	&& sf->glyphs[si] != NULL)
-       || ((si = SFFindExistingSlot(sf, 0x399, "Iota")) != -1
+       || ((si=SFFindExistingSlot(sf, 0x399, "Iota")) != -1
 	   && sf->glyphs[si] != NULL)
-       || ((si = SFFindExistingSlot(sf, 0x406, "afii10055")) != -1
+       || ((si=SFFindExistingSlot(sf, 0x406, "afii10055")) != -1
 	   && sf->glyphs[si] != NULL)) {
-      SplineChar *sc = sf->glyphs[si];
+      SplineChar *sc=sf->glyphs[si];
 
       SplineCharQuickBounds(sc, &bb);
-      wi->current_I_spacing = sc->width - (bb.maxx - bb.minx);
+      wi->current_I_spacing=sc->width - (bb.maxx - bb.minx);
    }
 
-   wi->caph = caph;
-   wi->descent = ds;
-   wi->xheight = xh;
-   wi->serifsize = serifsize;
-   wi->seriflength = seriflength;
-   wi->decimation = caph <= 1 ? 10 : caph / 60;
+   wi->caph=caph;
+   wi->descent=ds;
+   wi->xheight=xh;
+   wi->serifsize=serifsize;
+   wi->seriflength=seriflength;
+   wi->decimation=caph <= 1 ? 10 : caph / 60;
 
-   if (serifsize == 0) {
-      wi->serifs[0][0] = wi->serifs[0][1] = wi->serifs[1][0] =
-	 wi->serifs[1][1] = NOTREACHED;
-      wi->serifs[2][0] = wi->serifs[2][1] = wi->serifs[3][0] =
-	 wi->serifs[3][1] = NOTREACHED;
+   if (serifsize==0) {
+      wi->serifs[0][0]=wi->serifs[0][1]=wi->serifs[1][0] =
+	 wi->serifs[1][1]=NOTREACHED;
+      wi->serifs[2][0]=wi->serifs[2][1]=wi->serifs[3][0] =
+	 wi->serifs[3][1]=NOTREACHED;
    } else {
-      wi->serifs[0][0] = rint(ds / wi->decimation);
-      wi->serifs[0][1] = rint((ds + serifsize) / wi->decimation);
-      wi->serifs[1][0] = 0;
-      wi->serifs[1][1] = rint(serifsize / wi->decimation);
-      wi->serifs[2][0] = rint((xh - serifsize) / wi->decimation);
-      wi->serifs[2][1] = rint(xh / wi->decimation);
-      wi->serifs[3][0] = rint((caph - serifsize) / wi->decimation);
-      wi->serifs[3][1] = rint(caph / wi->decimation);
+      wi->serifs[0][0]=rint(ds / wi->decimation);
+      wi->serifs[0][1]=rint((ds + serifsize) / wi->decimation);
+      wi->serifs[1][0]=0;
+      wi->serifs[1][1]=rint(serifsize / wi->decimation);
+      wi->serifs[2][0]=rint((xh - serifsize) / wi->decimation);
+      wi->serifs[2][1]=rint(xh / wi->decimation);
+      wi->serifs[3][0]=rint((caph - serifsize) / wi->decimation);
+      wi->serifs[3][1]=rint(caph / wi->decimation);
    }
 
-   if (wi->sf == aw_old_sf)
-      wi->space_guess = aw_old_spaceguess;
+   if (wi->sf==aw_old_sf)
+      wi->space_guess=aw_old_spaceguess;
    else if (wi->autokern && wi->current_I_spacing)
-      wi->space_guess = rint(wi->current_I_spacing);
+      wi->space_guess=rint(wi->current_I_spacing);
    else if (wi->n_stem_interior_width > 0)
-      wi->space_guess = rint(wi->n_stem_interior_width);
+      wi->space_guess=rint(wi->n_stem_interior_width);
    else if (caph != sf->ascent && ds != -sf->descent)
-      wi->space_guess = rint(.205 * (caph - ds));
+      wi->space_guess=rint(.205 * (caph - ds));
    else
-      wi->space_guess = rint(.184 * (sf->ascent + sf->descent));
+      wi->space_guess=rint(.184 * (sf->ascent + sf->descent));
 }
 
-real SFGuessItalicAngle(SplineFont * sf) {
-   static char *easyserif = "IBDEFHKLNPR";
+real SFGuessItalicAngle(SplineFont *sf) {
+   static char *easyserif="IBDEFHKLNPR";
 
    int i, si;
 
@@ -665,68 +665,68 @@ real SFGuessItalicAngle(SplineFont * sf) {
 
    double angle;
 
-   for (i = 0; easyserif[i] != '\0'; ++i)
-      if ((si = SFFindExistingSlot(sf, easyserif[i], NULL)) != -1
+   for (i=0; easyserif[i] != '\0'; ++i)
+      if ((si=SFFindExistingSlot(sf, easyserif[i], NULL)) != -1
 	  && sf->glyphs[si] != NULL)
 	 break;
-   if (easyserif[i] == '\0')	/* can't guess */
+   if (easyserif[i]=='\0')	/* can't guess */
       return (0);
 
    SplineCharFindBounds(sf->glyphs[si], &bb);
-   as = bb.maxy - bb.miny;
+   as=bb.maxy - bb.miny;
 
-   topx = SCFindMinXAtY(sf->glyphs[si], ly_fore, 2 * as / 3 + bb.miny);
-   bottomx = SCFindMinXAtY(sf->glyphs[si], ly_fore, as / 3 + bb.miny);
-   if (topx == bottomx)
+   topx=SCFindMinXAtY(sf->glyphs[si], ly_fore, 2 * as / 3 + bb.miny);
+   bottomx=SCFindMinXAtY(sf->glyphs[si], ly_fore, as / 3 + bb.miny);
+   if (topx==bottomx)
       return (0);
 
-   angle = atan2(as / 3, topx - bottomx) * 180 / 3.1415926535897932 - 90;
+   angle=atan2(as / 3, topx - bottomx) * 180 / 3.1415926535897932 - 90;
    if (angle < 1 && angle > -1)
-      angle = 0;
+      angle=0;
    return (angle);
 }
 
-static void AW_InitCharPairs(WidthInfo * wi) {
+static void AW_InitCharPairs(WidthInfo *wi) {
    int i, j;
 
    struct charpair *cp;
 
-   wi->pcnt = wi->lcnt * wi->rcnt;
-   wi->pairs = malloc(wi->pcnt * sizeof(struct charpair *));
-   for (i = 0; i < wi->lcnt; ++i)
-      for (j = 0; j < wi->rcnt; ++j) {
-	 wi->pairs[i * wi->rcnt + j] = cp =
+   wi->pcnt=wi->lcnt * wi->rcnt;
+   wi->pairs=malloc(wi->pcnt * sizeof(struct charpair *));
+   for (i=0; i < wi->lcnt; ++i)
+      for (j=0; j < wi->rcnt; ++j) {
+	 wi->pairs[i * wi->rcnt + j]=cp =
 	    calloc(1, sizeof(struct charpair));
-	 cp->left = wi->left[i];
-	 cp->right = wi->right[j];
-	 cp->nextasleft = cp->left->asleft;
-	 cp->left->asleft = cp;
-	 cp->nextasright = cp->right->asright;
-	 cp->right->asright = cp;
+	 cp->left=wi->left[i];
+	 cp->right=wi->right[j];
+	 cp->nextasleft=cp->left->asleft;
+	 cp->left->asleft=cp;
+	 cp->nextasright=cp->right->asright;
+	 cp->right->asright=cp;
       }
-   wi->tcnt = wi->lcnt + wi->rcnt;
+   wi->tcnt=wi->lcnt + wi->rcnt;
 }
 
-static void AW_BuildCharPairs(WidthInfo * wi) {
+static void AW_BuildCharPairs(WidthInfo *wi) {
    int i;
 
    /* FindFontParameters(wi); *//* Moved earlier */
 
-   for (i = 0; i < wi->lcnt; ++i)
+   for (i=0; i < wi->lcnt; ++i)
       SCFindEdges(wi->left[i], wi);
-   for (i = 0; i < wi->rcnt; ++i)
+   for (i=0; i < wi->rcnt; ++i)
       SCFindEdges(wi->right[i], wi);
 
-   for (i = 0; i < wi->pcnt; ++i)
+   for (i=0; i < wi->pcnt; ++i)
       PairFindDistance(wi->pairs[i], wi);
 }
 
 static void AW_FreeCharList(struct charone **list) {
    int i;
 
-   if (list == NULL)
+   if (list==NULL)
       return;
-   for (i = 0; list[i] != NULL; ++i) {
+   for (i=0; list[i] != NULL; ++i) {
       free(list[i]->ledge);
       free(list[i]->redge);
       free(list[i]);
@@ -734,17 +734,17 @@ static void AW_FreeCharList(struct charone **list) {
    free(list);
 }
 
-static void AW_FreeCharPairs(struct charpair **list, int cnt) {
+static void AW_FreeCharPairs(struct charpair **list,int cnt) {
    int i;
 
-   if (list == NULL)
+   if (list==NULL)
       return;
-   for (i = 0; i < cnt; ++i)
+   for (i=0; i < cnt; ++i)
       free(list[i]);
    free(list);
 }
 
-int KernThreshold(SplineFont * sf, int cnt) {
+int KernThreshold(SplineFont *sf, int cnt) {
    /* We want only cnt kerning pairs in the entire font. Any pair whose */
    /*  absolute offset is less than the threshold should be removed */
    int *totals, tot;
@@ -753,29 +753,29 @@ int KernThreshold(SplineFont * sf, int cnt) {
 
    KernPair *kp;
 
-   if (cnt == 0)		/* Infinite */
+   if (cnt==0)		/* Infinite */
       return (0);
 
-   high = sf->ascent + sf->descent;
-   totals = calloc(high + 1, sizeof(int));
-   tot = 0;
-   for (i = 0; i < sf->glyphcnt; ++i)
+   high=sf->ascent + sf->descent;
+   totals=calloc(high + 1, sizeof(int));
+   tot=0;
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 for (kp = sf->glyphs[i]->kerns; kp != NULL; kp = kp->next) {
-	    val = kp->off;
+	 for (kp=sf->glyphs[i]->kerns; kp != NULL; kp=kp->next) {
+	    val=kp->off;
 	    if (val != 0) {
 	       if (val < 0)
-		  val = -val;
+		  val=-val;
 	       if (val > high)
-		  val = high;
+		  val=high;
 	       ++totals[val];
 	       ++tot;
 	    }
 	 }
       }
    if (tot > cnt) {
-      tot = 0;
-      for (i = high; i > 0 && tot + totals[i] < cnt; --i)
+      tot=0;
+      for (i=high; i > 0 && tot + totals[i] < cnt; --i)
 	 tot += totals[i];
       free(totals);
       return (i + 1);
@@ -784,37 +784,37 @@ int KernThreshold(SplineFont * sf, int cnt) {
    return (0);
 }
 
-static void AW_KernRemoveBelowThreshold(SplineFont * sf, int threshold) {
+static void AW_KernRemoveBelowThreshold(SplineFont *sf,int threshold) {
    int i;
 
    KernPair *kp, *prev, *next;
 
-   if (threshold == 0)
+   if (threshold==0)
       return;
 
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 prev = NULL;
-	 for (kp = sf->glyphs[i]->kerns; kp != NULL; kp = next) {
-	    next = kp->next;
+	 prev=NULL;
+	 for (kp=sf->glyphs[i]->kerns; kp != NULL; kp=next) {
+	    next=kp->next;
 	    if (kp->off >= threshold || kp->off <= -threshold)
-	       prev = kp;
+	       prev=kp;
 	    else {
-	       if (prev == NULL)
-		  sf->glyphs[i]->kerns = next;
+	       if (prev==NULL)
+		  sf->glyphs[i]->kerns=next;
 	       else
-		  prev->next = next;
+		  prev->next=next;
 	       chunkfree(kp, sizeof(KernPair));
 	    }
 	 }
       }
 }
 
-static struct charone *AW_MakeCharOne(SplineChar * sc) {
-   struct charone *ch = calloc(1, sizeof(struct charone));
+static struct charone *AW_MakeCharOne(SplineChar *sc) {
+   struct charone *ch=calloc(1, sizeof(struct charone));
 
-   ch->sc = sc;
-   ch->newr = ch->newl = NOTREACHED;
+   ch->sc=sc;
+   ch->newr=ch->newl=NOTREACHED;
    return (ch);
 }
 
@@ -824,58 +824,58 @@ struct kernsets {
    unichar_t **ch2s;		/* first level array is same dim as ch1 */
 };
 
-static unichar_t *ugetstr(FILE * file, int format, unichar_t * buffer,
+static unichar_t *ugetstr(AFILE *file,int format,unichar_t *buffer,
 			  int len) {
    int ch, ch2;
 
-   unichar_t *upt = buffer;
+   unichar_t *upt=buffer;
 
-   if (format == 0) {
-      while ((ch = getc(file)) != '\n' && ch != '\r' && ch != EOF) {
+   if (format==0) {
+      while ((ch=agetc(file)) != '\n' && ch != '\r' && ch != EOF) {
 	 if (upt < buffer + len - 1)
-	    *upt++ = ch;
+	    *upt++=ch;
       }
-      if (ch == '\r') {
-	 ch = getc(file);
+      if (ch=='\r') {
+	 ch=agetc(file);
 	 if (ch != '\n')
-	    ungetc(ch, file);
+	    aungetc(ch, file);
       }
    } else {
       while (1) {
-	 ch = getc(file);
-	 ch2 = getc(file);
-	 if (format == 1)
-	    ch = (ch << 8) | ch2;
+	 ch=agetc(file);
+	 ch2=agetc(file);
+	 if (format==1)
+	    ch=(ch << 8) | ch2;
 	 else
-	    ch = (ch2 << 8) | ch;
-	 if (ch2 == EOF) {
-	    ch = EOF;
+	    ch=(ch2 << 8) | ch;
+	 if (ch2==EOF) {
+	    ch=EOF;
 	    break;
-	 } else if (ch == '\n' || ch == '\r')
+	 } else if (ch=='\n' || ch=='\r')
 	    break;
 	 if (upt < buffer + len - 1)
-	    *upt++ = ch;
+	    *upt++=ch;
       }
-      if (ch == '\r') {
-	 ch = getc(file);
-	 ch2 = getc(file);
+      if (ch=='\r') {
+	 ch=agetc(file);
+	 ch2=agetc(file);
 	 if (ch2 != EOF) {
-	    if (format == 1)
-	       ch = (ch << 8) | ch2;
+	    if (format==1)
+	       ch=(ch << 8) | ch2;
 	    else
-	       ch = (ch2 << 8) | ch;
+	       ch=(ch2 << 8) | ch;
 	    if (ch != '\n')
-	       fseek(file, -2, SEEK_CUR);
+	       afseek(file, -2, SEEK_CUR);
 	 }
       }
    }
 
-   if (ch == EOF && upt == buffer)
+   if (ch==EOF && upt==buffer)
       return (NULL);
-   *upt = '\0';
+   *upt='\0';
 
-   for (upt = buffer; *upt; ++upt) {
-      if ((*upt == 'U' || *upt == 'u') && upt[1] == '+' && ishexdigit(upt[2])
+   for (upt=buffer; *upt; ++upt) {
+      if ((*upt=='U' || *upt=='u') && upt[1]=='+' && ishexdigit(upt[2])
 	  && ishexdigit(upt[3]) && ishexdigit(upt[4]) && ishexdigit(upt[5])) {
 	 ch =
 	    isdigit(upt[2]) ? upt[2] - '0' : islower(upt[2]) ? upt[2] - 'a' +
@@ -892,54 +892,54 @@ static unichar_t *ugetstr(FILE * file, int format, unichar_t * buffer,
 	    (ch << 4) + (isdigit(upt[5]) ? upt[5] -
 			 '0' : islower(upt[5]) ? upt[5] - 'a' + 10 : upt[5] -
 			 'A' + 10);
-	 *upt = ch;
+	 *upt=ch;
 	 u_strcpy(upt + 1, upt + 6);
       }
    }
    return (buffer);
 }
 
-static void parsekernstr(unichar_t * buffer, struct kernsets *ks) {
+static void parsekernstr(unichar_t *buffer,struct kernsets *ks) {
    int i, j, k;
 
    /* Any line not parseable as a kern pair is ignored */
    if (u_strlen(buffer) != 2)
       return;
 
-   for (i = 0; i < ks->cur && buffer[0] > ks->ch1[i]; ++i);
+   for (i=0; i < ks->cur && buffer[0] > ks->ch1[i]; ++i);
    if (i >= ks->cur || buffer[0] != ks->ch1[i]) {
       if (ks->cur + 1 >= ks->max) {
 	 ks->max += 100;
-	 if (ks->cur == 0) {
-	    ks->ch1 = malloc(ks->max * sizeof(unichar_t));
-	    ks->ch2s = malloc(ks->max * sizeof(unichar_t *));
+	 if (ks->cur==0) {
+	    ks->ch1=malloc(ks->max * sizeof(unichar_t));
+	    ks->ch2s=malloc(ks->max * sizeof(unichar_t *));
 	 } else {
-	    ks->ch1 = realloc(ks->ch1, ks->max * sizeof(unichar_t));
-	    ks->ch2s = realloc(ks->ch2s, ks->max * sizeof(unichar_t *));
+	    ks->ch1=realloc(ks->ch1, ks->max * sizeof(unichar_t));
+	    ks->ch2s=realloc(ks->ch2s, ks->max * sizeof(unichar_t *));
 	 }
       }
-      for (j = ks->cur; j > i; --j) {
-	 ks->ch1[j] = ks->ch1[j - 1];
-	 ks->ch2s[j] = ks->ch2s[j - 1];
+      for (j=ks->cur; j > i; --j) {
+	 ks->ch1[j]=ks->ch1[j - 1];
+	 ks->ch2s[j]=ks->ch2s[j - 1];
       }
-      ks->ch1[i] = buffer[0];
-      ks->ch2s[i] = malloc(50 * sizeof(unichar_t));
-      ks->ch2s[i][0] = '\0';
+      ks->ch1[i]=buffer[0];
+      ks->ch2s[i]=malloc(50 * sizeof(unichar_t));
+      ks->ch2s[i][0]='\0';
       ++ks->cur;
    }
-   if ((u_strlen(ks->ch2s[i]) + 1) % 50 == 0)
+   if ((u_strlen(ks->ch2s[i]) + 1) % 50==0)
       ks->ch2s[i] =
 	 realloc(ks->ch2s[i],
 		 (u_strlen(ks->ch2s[i]) + 50) * sizeof(unichar_t));
-   for (j = 0; ks->ch2s[i][j] != 0 && buffer[1] > ks->ch2s[i][j]; ++j);
+   for (j=0; ks->ch2s[i][j] != 0 && buffer[1] > ks->ch2s[i][j]; ++j);
    if (ks->ch2s[i][j] != buffer[1]) {
-      for (k = u_strlen(ks->ch2s[i]) + 1; k > j; --k)
-	 ks->ch2s[i][k] = ks->ch2s[i][k - 1];
-      ks->ch2s[i][j] = buffer[1];
+      for (k=u_strlen(ks->ch2s[i]) + 1; k > j; --k)
+	 ks->ch2s[i][k]=ks->ch2s[i][k - 1];
+      ks->ch2s[i][j]=buffer[1];
    }
 }
 
-static void AW_ScriptSerifChecker(WidthInfo * wi) {
+static void AW_ScriptSerifChecker(WidthInfo *wi) {
    /* If not LGC (latin, greek, cyrillic) then ignore serif checks */
    /*  What about letterlike-symbols? */
    if ((wi->left[0]->sc->unicodeenc >= 'A'
@@ -948,15 +948,15 @@ static void AW_ScriptSerifChecker(WidthInfo * wi) {
 	   && wi->left[0]->sc->unicodeenc < 0x2000)) {
       /* They are working with letters where serif checks are reasonable */
    } else {
-      wi->serifsize = wi->seriflength = 0;
-      wi->serifs[0][0] = wi->serifs[0][1] = NOTREACHED;
-      wi->serifs[1][0] = wi->serifs[1][1] = NOTREACHED;
-      wi->serifs[2][0] = wi->serifs[2][1] = NOTREACHED;
-      wi->serifs[3][0] = wi->serifs[3][1] = NOTREACHED;
+      wi->serifsize=wi->seriflength=0;
+      wi->serifs[0][0]=wi->serifs[0][1]=NOTREACHED;
+      wi->serifs[1][0]=wi->serifs[1][1]=NOTREACHED;
+      wi->serifs[2][0]=wi->serifs[2][1]=NOTREACHED;
+      wi->serifs[3][0]=wi->serifs[3][1]=NOTREACHED;
    }
 }
 
-static int figurekernsets(WidthInfo * wi, struct kernsets *ks) {
+static int figurekernsets(WidthInfo *wi,struct kernsets *ks) {
    int i, j, k, cnt, lcnt, max;
 
    unichar_t *ch2s;
@@ -965,138 +965,134 @@ static int figurekernsets(WidthInfo * wi, struct kernsets *ks) {
 
    struct charpair *cp;
 
-   SplineFont *sf = wi->sf;
+   SplineFont *sf=wi->sf;
 
-   if (ks->cur == 0)
+   if (ks->cur==0)
       return (false);
 
-   wi->left = malloc((ks->cur + 1) * sizeof(struct charone *));
-   for (i = cnt = 0; i < ks->cur; ++i) {
-      j = SFFindExistingSlot(sf, ks->ch1[i], NULL);
+   wi->left=malloc((ks->cur + 1) * sizeof(struct charone *));
+   for (i=cnt=0; i < ks->cur; ++i) {
+      j=SFFindExistingSlot(sf, ks->ch1[i], NULL);
       if (j != -1 && sf->glyphs[j] != NULL &&
 	  (sf->glyphs[j]->layers[wi->layer].splines != NULL
 	   || sf->glyphs[j]->layers[wi->layer].refs != NULL))
-	 wi->left[cnt++] = AW_MakeCharOne(sf->glyphs[j]);
+	 wi->left[cnt++]=AW_MakeCharOne(sf->glyphs[j]);
       else
-	 ks->ch1[i] = '\0';
+	 ks->ch1[i]='\0';
    }
-   wi->lcnt = cnt;
-   wi->left[cnt] = NULL;
-   if (cnt == 0) {
+   wi->lcnt=cnt;
+   wi->left[cnt]=NULL;
+   if (cnt==0) {
       free(wi->left);
-      wi->left = NULL;
+      wi->left=NULL;
       return (false);
    }
 
-   for (i = max = 0; i < ks->cur; ++i)
+   for (i=max=0; i < ks->cur; ++i)
       if (ks->ch1[i] != '\0')
 	 max += u_strlen(ks->ch2s[i]);
-   ch2s = malloc((max + 1) * sizeof(unichar_t));
-   for (i = 0; i < ks->cur && ks->ch1[i] == '\0'; ++i);
+   ch2s=malloc((max + 1) * sizeof(unichar_t));
+   for (i=0; i < ks->cur && ks->ch1[i]=='\0'; ++i);
    u_strcpy(ch2s, ks->ch2s[i]);
    for (++i; i < ks->cur; ++i)
       if (ks->ch1[i] != '\0') {
-	 for (upt = ks->ch2s[i]; *upt != '\0'; ++upt) {
-	    for (cpt = ch2s; *cpt != '\0' && *upt < *cpt; ++cpt);
-	    if (*cpt == *upt)	/* already listed */
+	 for (upt=ks->ch2s[i]; *upt != '\0'; ++upt) {
+	    for (cpt=ch2s; *cpt != '\0' && *upt < *cpt; ++cpt);
+	    if (*cpt==*upt)	/* already listed */
 	       continue;
-	    for (k = u_strlen(cpt) + 1; k > 0; --k)
-	       cpt[k] = cpt[k - 1];
-	    *cpt = *upt;
+	    for (k=u_strlen(cpt) + 1; k > 0; --k)
+	       cpt[k]=cpt[k - 1];
+	    *cpt=*upt;
 	 }
       }
 
-   wi->right = malloc((u_strlen(ch2s) + 1) * sizeof(struct charone *));
-   for (cnt = 0, cpt = ch2s; *cpt; ++cpt) {
-      j = SFFindExistingSlot(sf, *cpt, NULL);
+   wi->right=malloc((u_strlen(ch2s) + 1) * sizeof(struct charone *));
+   for (cnt=0, cpt=ch2s; *cpt; ++cpt) {
+      j=SFFindExistingSlot(sf, *cpt, NULL);
       if (j != -1 && sf->glyphs[j] != NULL &&
 	  (sf->glyphs[j]->layers[wi->layer].splines != NULL
 	   || sf->glyphs[j]->layers[wi->layer].refs != NULL))
-	 wi->right[cnt++] = AW_MakeCharOne(sf->glyphs[j]);
+	 wi->right[cnt++]=AW_MakeCharOne(sf->glyphs[j]);
    }
-   wi->rcnt = cnt;
-   wi->right[cnt] = NULL;
+   wi->rcnt=cnt;
+   wi->right[cnt]=NULL;
    free(ch2s);
-   if (cnt == 0) {
+   if (cnt==0) {
       free(wi->left);
-      wi->left = NULL;
+      wi->left=NULL;
       free(wi->right);
-      wi->right = NULL;
+      wi->right=NULL;
       return (false);
    }
    AW_ScriptSerifChecker(wi);
 
-   wi->pairs = malloc(max * sizeof(struct charpair *));
-   for (i = lcnt = cnt = 0; i < ks->cur; ++i)
+   wi->pairs=malloc(max * sizeof(struct charpair *));
+   for (i=lcnt=cnt=0; i < ks->cur; ++i)
       if (ks->ch1[i] != '\0') {
-	 for (cpt = ks->ch2s[i]; *cpt; ++cpt) {
-	    for (j = 0; j < wi->rcnt && wi->right[j]->sc->unicodeenc != *cpt;
+	 for (cpt=ks->ch2s[i]; *cpt; ++cpt) {
+	    for (j=0; j < wi->rcnt && wi->right[j]->sc->unicodeenc != *cpt;
 		 ++j);
 	    if (j < wi->rcnt) {
-	       wi->pairs[cnt++] = cp = calloc(1, sizeof(struct charpair));
-	       cp->left = wi->left[lcnt];
-	       cp->right = wi->right[j];
-	       cp->nextasleft = cp->left->asleft;
-	       cp->left->asleft = cp;
-	       cp->nextasright = cp->right->asright;
-	       cp->right->asright = cp;
+	       wi->pairs[cnt++]=cp=calloc(1, sizeof(struct charpair));
+	       cp->left=wi->left[lcnt];
+	       cp->right=wi->right[j];
+	       cp->nextasleft=cp->left->asleft;
+	       cp->left->asleft=cp;
+	       cp->nextasright=cp->right->asright;
+	       cp->right->asright=cp;
 	    }
 	 }
 	 ++lcnt;
       }
-   wi->pcnt = cnt;
+   wi->pcnt=cnt;
    return (true);
 }
 
 static void kernsetsfree(struct kernsets *ks) {
    int i;
 
-   for (i = 0; i < ks->cur; ++i)
+   for (i=0; i < ks->cur; ++i)
       free(ks->ch2s[i]);
    free(ks->ch2s);
    free(ks->ch1);
 }
 
-static int AW_ReadKernPairFile(char *fn, WidthInfo * wi) {
+static int AW_ReadKernPairFile(char *fn,WidthInfo *wi) {
    char *filename;
-
-   FILE *file;
-
-   int ch, format = 0;
-
+   AFILE *file;
+   int ch, format=0;
    unichar_t buffer[300];
-
    struct kernsets ks;
 
-   filename = utf82def_copy(fn);
-   file = fopen(filename, "r");
+   filename=utf82def_copy(fn);
+   file=afopen(filename, "r");
    free(filename);
-   if (file == NULL) {
+   if (file==NULL) {
       ff_post_error(_("Couldn't open file"), _("Couldn't open file %.200s"),
 		    fn);
       free(fn);
       return (false);
    }
 
-   ch = getc(file);
-   if (ch == 0xff || ch == 0xfe) {
-      int ch2 = getc(file);
+   ch=agetc(file);
+   if (ch==0xff || ch==0xfe) {
+      int ch2=agetc(file);
 
-      if (ch == 0xfe && ch2 == 0xff)
-	 format = 1;		/* normal ucs2 */
-      else if (ch == 0xff && ch2 == 0xfe)
-	 format = 2;		/* byte-swapped ucs2 */
+      if (ch==0xfe && ch2==0xff)
+	 format=1;		/* normal ucs2 */
+      else if (ch==0xff && ch2==0xfe)
+	 format=2;		/* byte-swapped ucs2 */
       else
-	 rewind(file);
+	 arewind(file);
    } else
-      ungetc(ch, file);
+      aungetc(ch, file);
 
    memset(&ks, 0, sizeof(ks));
    while (ugetstr(file, format, buffer, sizeof(buffer) / sizeof(buffer[0])) !=
 	  NULL)
       parsekernstr(buffer, &ks);
 
-   fclose(file);
+   afclose(file);
    if (!figurekernsets(wi, &ks)) {
       ff_post_error(_("No Kern Pairs"), _("No kerning pairs found in %.200s"),
 		    fn);
@@ -1110,61 +1106,61 @@ static int AW_ReadKernPairFile(char *fn, WidthInfo * wi) {
 }
 
 void FVRemoveKerns(FontViewBase * fv) {
-   int changed = false;
+   int changed=false;
 
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
    OTLookup *otl, *notl;
 
    if (sf->cidmaster != NULL)
-      sf = sf->cidmaster;
+      sf=sf->cidmaster;
 
-   for (otl = sf->gpos_lookups; otl != NULL; otl = notl) {
-      notl = otl->next;
-      if (otl->lookup_type == gpos_pair &&
+   for (otl=sf->gpos_lookups; otl != NULL; otl=notl) {
+      notl=otl->next;
+      if (otl->lookup_type==gpos_pair &&
 	  FeatureTagInFeatureScriptList(CHR('k', 'e', 'r', 'n'),
 					otl->features)) {
 	 SFRemoveLookup(sf, otl, 0);
-	 changed = true;
+	 changed=true;
       }
    }
    if (changed) {
-      sf->changed = true;
+      sf->changed=true;
    }
 }
 
 void FVRemoveVKerns(FontViewBase * fv) {
-   int changed = false;
+   int changed=false;
 
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
    OTLookup *otl, *notl;
 
    if (sf->cidmaster != NULL)
-      sf = sf->cidmaster;
+      sf=sf->cidmaster;
 
-   for (otl = sf->gpos_lookups; otl != NULL; otl = notl) {
-      notl = otl->next;
-      if (otl->lookup_type == gpos_pair &&
+   for (otl=sf->gpos_lookups; otl != NULL; otl=notl) {
+      notl=otl->next;
+      if (otl->lookup_type==gpos_pair &&
 	  FeatureTagInFeatureScriptList(CHR('v', 'k', 'r', 'n'),
 					otl->features)) {
 	 SFRemoveLookup(sf, otl, 0);
-	 changed = true;
+	 changed=true;
       }
    }
    if (changed) {
-      fv->sf->changed = true;
+      fv->sf->changed=true;
    }
 }
 
-static SplineChar *SCHasVertVariant(SplineChar * sc) {
+static SplineChar *SCHasVertVariant(SplineChar *sc) {
    PST *pst;
 
-   if (sc == NULL)
+   if (sc==NULL)
       return (NULL);
 
-   for (pst = sc->possub; pst != NULL; pst = pst->next) {
-      if (pst->type == pst_substitution &&
+   for (pst=sc->possub; pst != NULL; pst=pst->next) {
+      if (pst->type==pst_substitution &&
 	  (FeatureTagInFeatureScriptList
 	   (CHR('v', 'e', 'r', 't'), pst->subtable->lookup->features)
 	   || FeatureTagInFeatureScriptList(CHR('v', 'r', 't', '2'),
@@ -1176,39 +1172,39 @@ static SplineChar *SCHasVertVariant(SplineChar * sc) {
    return (NULL);
 }
 
-static SplineChar **CharNamesToVertSC(SplineFont * sf, char *names) {
+static SplineChar **CharNamesToVertSC(SplineFont *sf,char *names) {
    char *pt, *end, ch;
 
    int cnt;
 
    SplineChar **list;
 
-   if (names == NULL || *names == '\0')
+   if (names==NULL || *names=='\0')
       return (NULL);
-   cnt = 1;
-   for (pt = names; (pt = strchr(pt, ' ')) != NULL; ++pt)
+   cnt=1;
+   for (pt=names; (pt=strchr(pt, ' ')) != NULL; ++pt)
       ++cnt;
-   list = calloc(cnt + 1, sizeof(SplineChar *));
+   list=calloc(cnt + 1, sizeof(SplineChar *));
 
-   cnt = 0;
-   for (pt = names; *pt; pt = end) {
-      while (*pt == ' ')
+   cnt=0;
+   for (pt=names; *pt; pt=end) {
+      while (*pt==' ')
 	 ++pt;
-      if (*pt == '\0')
+      if (*pt=='\0')
 	 break;
-      end = strchr(pt, ' ');
-      if (end == NULL)
-	 end = pt + strlen(pt);
-      ch = *end;
-      *end = '\0';
-      list[cnt] = SCHasVertVariant(SFGetChar(sf, -1, pt));
-      *end = ch;
+      end=strchr(pt, ' ');
+      if (end==NULL)
+	 end=pt + strlen(pt);
+      ch=*end;
+      *end='\0';
+      list[cnt]=SCHasVertVariant(SFGetChar(sf, -1, pt));
+      *end=ch;
       if (list[cnt] != NULL)
 	 ++cnt;
    }
-   if (cnt == 0) {
+   if (cnt==0) {
       free(list);
-      list = NULL;
+      list=NULL;
    }
    return (list);
 }
@@ -1218,17 +1214,17 @@ static char *SCListToName(SplineChar ** sclist) {
 
    char *names, *pt;
 
-   for (i = len = 0; sclist[i] != NULL; ++i)
+   for (i=len=0; sclist[i] != NULL; ++i)
       len += strlen(sclist[i]->name) + 1;
-   names = pt = malloc(len + 1);
-   *pt = '\0';
-   for (i = 0; sclist[i] != NULL; ++i) {
+   names=pt=malloc(len + 1);
+   *pt='\0';
+   for (i=0; sclist[i] != NULL; ++i) {
       strcat(pt, sclist[i]->name);
       strcat(pt, " ");
       pt += strlen(pt);
    }
    if (pt > names)
-      pt[-1] = '\0';
+      pt[-1]='\0';
    return (names);
 }
 
@@ -1257,68 +1253,68 @@ static struct lookup_subtable *VSubtableFromH(struct lookupmap *lookupmap,
 
    FeatureScriptLangList *fl;
 
-   for (i = 0; i < lookupmap->sc; ++i)
-      if (lookupmap->smap[i].from == sub)
+   for (i=0; i < lookupmap->sc; ++i)
+      if (lookupmap->smap[i].from==sub)
 	 return (lookupmap->smap[i].to);
 
-   if (lookupmap->lmap == NULL) {
-      for (otl = lookupmap->sf->gpos_lookups, lc = sc = 0; otl != NULL;
-	   otl = otl->next) {
-	 if (otl->lookup_type == gpos_pair) {
+   if (lookupmap->lmap==NULL) {
+      for (otl=lookupmap->sf->gpos_lookups, lc=sc=0; otl != NULL;
+	   otl=otl->next) {
+	 if (otl->lookup_type==gpos_pair) {
 	    ++lc;
-	    for (ls = otl->subtables; ls != NULL; ls = ls->next)
+	    for (ls=otl->subtables; ls != NULL; ls=ls->next)
 	       ++sc;
 	 }
       }
-      lookupmap->lmap = malloc(lc * sizeof(struct otlmap));
-      lookupmap->smap = malloc(sc * sizeof(struct submap));
+      lookupmap->lmap=malloc(lc * sizeof(struct otlmap));
+      lookupmap->smap=malloc(sc * sizeof(struct submap));
    }
 
-   for (i = 0; i < lookupmap->lc; ++i)
-      if (lookupmap->lmap[i].from == sub->lookup)
+   for (i=0; i < lookupmap->lc; ++i)
+      if (lookupmap->lmap[i].from==sub->lookup)
 	 break;
 
-   if (i == lookupmap->lc) {
+   if (i==lookupmap->lc) {
       ++lookupmap->lc;
-      lookupmap->lmap[i].from = sub->lookup;
-      lookupmap->lmap[i].to = otl = chunkalloc(sizeof(OTLookup));
-      otl->lookup_type = gpos_pair;
-      otl->features = FeatureListCopy(sub->lookup->features);
-      for (fl = otl->features; fl != NULL; fl = fl->next)
-	 if (fl->featuretag == CHR('k', 'e', 'r', 'n'))
-	    fl->featuretag = CHR('v', 'k', 'r', 'n');
-      otl->lookup_name = strconcat("V", sub->lookup->lookup_name);
-      otl->next = sub->lookup->next;
-      sub->lookup->next = otl;
+      lookupmap->lmap[i].from=sub->lookup;
+      lookupmap->lmap[i].to=otl=chunkalloc(sizeof(OTLookup));
+      otl->lookup_type=gpos_pair;
+      otl->features=FeatureListCopy(sub->lookup->features);
+      for (fl=otl->features; fl != NULL; fl=fl->next)
+	 if (fl->featuretag==CHR('k', 'e', 'r', 'n'))
+	    fl->featuretag=CHR('v', 'k', 'r', 'n');
+      otl->lookup_name=strconcat("V", sub->lookup->lookup_name);
+      otl->next=sub->lookup->next;
+      sub->lookup->next=otl;
    } else
-      otl = lookupmap->lmap[i].to;
+      otl=lookupmap->lmap[i].to;
 
-   sc = lookupmap->sc++;
-   lookupmap->smap[sc].from = sub;
-   lookupmap->smap[sc].to = nsub = chunkalloc(sizeof(struct lookup_subtable));
-   nsub->subtable_name = strconcat("V", sub->subtable_name);
-   nsub->per_glyph_pst_or_kern = sub->per_glyph_pst_or_kern;
-   nsub->vertical_kerning = true;
-   nsub->lookup = otl;
+   sc=lookupmap->sc++;
+   lookupmap->smap[sc].from=sub;
+   lookupmap->smap[sc].to=nsub=chunkalloc(sizeof(struct lookup_subtable));
+   nsub->subtable_name=strconcat("V", sub->subtable_name);
+   nsub->per_glyph_pst_or_kern=sub->per_glyph_pst_or_kern;
+   nsub->vertical_kerning=true;
+   nsub->lookup=otl;
 
    /* Order the subtables of the new lookup the same way they are ordered */
    /*  in the old. However there may be holes (subtables which don't get */
    /*  converted) */
-   prev = NULL;
-   for (test = sub->lookup->subtables; test != NULL && test != sub;
-	test = test->next) {
-      for (i = 0; i < lookupmap->sc; ++i)
-	 if (lookupmap->smap[i].from == test) {
-	    prev = lookupmap->smap[i].to;
+   prev=NULL;
+   for (test=sub->lookup->subtables; test != NULL && test != sub;
+	test=test->next) {
+      for (i=0; i < lookupmap->sc; ++i)
+	 if (lookupmap->smap[i].from==test) {
+	    prev=lookupmap->smap[i].to;
 	    break;
 	 }
    }
    if (prev != NULL) {
-      nsub->next = prev->next;
-      prev->next = nsub;
+      nsub->next=prev->next;
+      prev->next=nsub;
    } else {
-      nsub->next = otl->subtables;
-      otl->subtables = nsub;
+      nsub->next=otl->subtables;
+      otl->subtables=nsub;
    }
    return (nsub);
 }
@@ -1336,7 +1332,7 @@ void FVVKernFromHKern(FontViewBase * fv) {
 
    int any1, any2;
 
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
    int *map1, *map2;
 
@@ -1344,75 +1340,75 @@ void FVVKernFromHKern(FontViewBase * fv) {
 
    FVRemoveVKerns(fv);
    if (sf->cidmaster)
-      sf = sf->cidmaster;
+      sf=sf->cidmaster;
    if (!sf->hasvmetrics)
       return;
    memset(&lookupmap, 0, sizeof(lookupmap));
-   lookupmap.sf = sf;
+   lookupmap.sf=sf;
 
-   for (i = 0; i < sf->glyphcnt; ++i) {
-      if ((sc1 = SCHasVertVariant(sf->glyphs[i])) != NULL) {
-	 for (kp = sf->glyphs[i]->kerns; kp != NULL; kp = kp->next) {
-	    if ((sc2 = SCHasVertVariant(kp->sc)) != NULL) {
-	       vkp = chunkalloc(sizeof(KernPair));
-	       *vkp = *kp;
-	       vkp->subtable = VSubtableFromH(&lookupmap, kp->subtable);
-	       vkp->adjust = DeviceTableCopy(vkp->adjust);
-	       vkp->sc = sc2;
-	       vkp->next = sc1->vkerns;
-	       sc1->vkerns = vkp;
+   for (i=0; i < sf->glyphcnt; ++i) {
+      if ((sc1=SCHasVertVariant(sf->glyphs[i])) != NULL) {
+	 for (kp=sf->glyphs[i]->kerns; kp != NULL; kp=kp->next) {
+	    if ((sc2=SCHasVertVariant(kp->sc)) != NULL) {
+	       vkp=chunkalloc(sizeof(KernPair));
+	       *vkp=*kp;
+	       vkp->subtable=VSubtableFromH(&lookupmap, kp->subtable);
+	       vkp->adjust=DeviceTableCopy(vkp->adjust);
+	       vkp->sc=sc2;
+	       vkp->next=sc1->vkerns;
+	       sc1->vkerns=vkp;
 	    }
 	 }
       }
    }
 
-   for (kc = sf->kerns; kc != NULL; kc = kc->next) {
-      firsts = malloc(kc->first_cnt * sizeof(SplineChar *));
-      map1 = calloc(kc->first_cnt, sizeof(int));
-      seconds = malloc(kc->second_cnt * sizeof(SplineChar *));
-      map2 = calloc(kc->second_cnt, sizeof(int));
-      any1 = 0;
-      for (i = 1; i < kc->first_cnt; ++i) {
-	 if ((firsts[i] = CharNamesToVertSC(sf, kc->firsts[i])) != NULL)
-	    map1[i] = ++any1;
+   for (kc=sf->kerns; kc != NULL; kc=kc->next) {
+      firsts=malloc(kc->first_cnt * sizeof(SplineChar *));
+      map1=calloc(kc->first_cnt, sizeof(int));
+      seconds=malloc(kc->second_cnt * sizeof(SplineChar *));
+      map2=calloc(kc->second_cnt, sizeof(int));
+      any1=0;
+      for (i=1; i < kc->first_cnt; ++i) {
+	 if ((firsts[i]=CharNamesToVertSC(sf, kc->firsts[i])) != NULL)
+	    map1[i]=++any1;
       }
-      any2 = 0;
-      for (i = 1; i < kc->second_cnt; ++i) {
-	 if ((seconds[i] = CharNamesToVertSC(sf, kc->seconds[i])) != NULL)
-	    map2[i] = ++any2;
+      any2=0;
+      for (i=1; i < kc->second_cnt; ++i) {
+	 if ((seconds[i]=CharNamesToVertSC(sf, kc->seconds[i])) != NULL)
+	    map2[i]=++any2;
       }
       if (any1 && any2) {
-	 vkc = chunkalloc(sizeof(KernClass));
-	 *vkc = *kc;
-	 vkc->subtable = VSubtableFromH(&lookupmap, kc->subtable);
-	 vkc->subtable->kc = vkc;
-	 vkc->next = sf->vkerns;
-	 sf->vkerns = vkc;
-	 vkc->first_cnt = any1 + 1;
-	 vkc->second_cnt = any2 + 1;
-	 vkc->firsts = calloc(any1 + 1, sizeof(char *));
-	 for (i = 0; i < kc->first_cnt; ++i)
+	 vkc=chunkalloc(sizeof(KernClass));
+	 *vkc=*kc;
+	 vkc->subtable=VSubtableFromH(&lookupmap, kc->subtable);
+	 vkc->subtable->kc=vkc;
+	 vkc->next=sf->vkerns;
+	 sf->vkerns=vkc;
+	 vkc->first_cnt=any1 + 1;
+	 vkc->second_cnt=any2 + 1;
+	 vkc->firsts=calloc(any1 + 1, sizeof(char *));
+	 for (i=0; i < kc->first_cnt; ++i)
 	    if (map1[i] != 0)
-	       vkc->firsts[map1[i]] = SCListToName(firsts[i]);
-	 vkc->seconds = calloc(any2 + 1, sizeof(char *));
-	 for (i = 0; i < kc->second_cnt; ++i)
+	       vkc->firsts[map1[i]]=SCListToName(firsts[i]);
+	 vkc->seconds=calloc(any2 + 1, sizeof(char *));
+	 for (i=0; i < kc->second_cnt; ++i)
 	    if (map2[i] != 0)
-	       vkc->seconds[map2[i]] = SCListToName(seconds[i]);
-	 vkc->offsets = calloc((any1 + 1) * (any2 + 1), sizeof(int16));
-	 vkc->adjusts = calloc((any1 + 1) * (any2 + 1), sizeof(DeviceTable));
-	 for (i = 0; i < kc->first_cnt; ++i)
+	       vkc->seconds[map2[i]]=SCListToName(seconds[i]);
+	 vkc->offsets=calloc((any1 + 1) * (any2 + 1), sizeof(int16));
+	 vkc->adjusts=calloc((any1 + 1) * (any2 + 1), sizeof(DeviceTable));
+	 for (i=0; i < kc->first_cnt; ++i)
 	    if (map1[i] != 0) {
-	       for (j = 0; j < kc->second_cnt; ++j)
+	       for (j=0; j < kc->second_cnt; ++j)
 		  if (map2[j] != 0) {
-		     int n = map1[i] * vkc->second_cnt + map2[j], o =
+		     int n=map1[i] * vkc->second_cnt + map2[j], o =
 			i * kc->second_cnt + j;
-		     vkc->offsets[n] = kc->offsets[o];
+		     vkc->offsets[n]=kc->offsets[o];
 		     if (kc->adjusts[o].corrections != NULL) {
 			int len =
 			   kc->adjusts[o].last_pixel_size -
 			   kc->adjusts[o].first_pixel_size + 1;
-			vkc->adjusts[n] = kc->adjusts[o];
-			vkc->adjusts[n].corrections = malloc(len);
+			vkc->adjusts[n]=kc->adjusts[o];
+			vkc->adjusts[n].corrections=malloc(len);
 			memcpy(vkc->adjusts[n].corrections,
 			       kc->adjusts[o].corrections, len);
 		     }
@@ -1421,9 +1417,9 @@ void FVVKernFromHKern(FontViewBase * fv) {
       }
       free(map1);
       free(map2);
-      for (i = 1; i < kc->first_cnt; ++i)
+      for (i=1; i < kc->first_cnt; ++i)
 	 free(firsts[i]);
-      for (i = 1; i < kc->second_cnt; ++i)
+      for (i=1; i < kc->second_cnt; ++i)
 	 free(seconds[i]);
       free(firsts);
       free(seconds);
@@ -1434,33 +1430,30 @@ void FVVKernFromHKern(FontViewBase * fv) {
 
 /* Scripting hooks */
 
-static struct charone **autowidthBuildCharList(FontViewBase * fv,
-					       SplineFont * sf, int *tot,
+static struct charone **autowidthBuildCharList(FontViewBase *fv,
+					       SplineFont *sf, int *tot,
 					       int *rtot, int *ipos,
 					       int iswidth) {
    int i, cnt, doit, s;
-
-   struct charone **ret = NULL;
-
-   EncMap *map = fv->map;
-
+   struct charone **ret=NULL;
+   EncMap *map=fv->map;
    int gid;
 
-   for (doit = 0; doit < 2; ++doit) {
-      for (i = cnt = 0; i < map->enccount && cnt < 300; ++i) {
-	 if (fv->selected[i] && (gid = map->map[i]) != -1
+   for (doit=0; doit < 2; ++doit) {
+      for (i=cnt=0; i < map->enccount && cnt < 300; ++i) {
+	 if (fv->selected[i] && (gid=map->map[i]) != -1
 	     && SCWorthOutputting(sf->glyphs[gid])) {
 	    if (doit)
-	       ret[cnt++] = AW_MakeCharOne(sf->glyphs[gid]);
+	       ret[cnt++]=AW_MakeCharOne(sf->glyphs[gid]);
 	    else
 	       ++cnt;
 	 }
       }
 
       if (!doit)
-	 ret = malloc((cnt + 2) * sizeof(struct charone *));
+	 ret=malloc((cnt + 2) * sizeof(struct charone *));
       else {
-	 *rtot = cnt;
+	 *rtot=cnt;
 	 if (iswidth &&		/* I always want 'I' in the character list when doing widths */
 	     /*  or at least when doing widths of LGC alphabets where */
 	     /*  concepts like serifs make sense */
@@ -1468,22 +1461,22 @@ static struct charone **autowidthBuildCharList(FontViewBase * fv,
 	       && ret[0]->sc->unicodeenc < 0x530)
 	      || (ret[0]->sc->unicodeenc >= 0x1d00
 		  && ret[0]->sc->unicodeenc < 0x2000))) {
-	    for (s = 0; s < cnt; ++s)
-	       if (ret[s]->sc->unicodeenc == 'I')
+	    for (s=0; s < cnt; ++s)
+	       if (ret[s]->sc->unicodeenc=='I')
 		  break;
-	    if (s == cnt) {
-	       i = SFFindExistingSlot(sf, 'I', NULL);
+	    if (s==cnt) {
+	       i=SFFindExistingSlot(sf, 'I', NULL);
 	       if (i != -1)
-		  ret[cnt++] = AW_MakeCharOne(sf->glyphs[i]);
+		  ret[cnt++]=AW_MakeCharOne(sf->glyphs[i]);
 	       else
-		  s = -1;
+		  s=-1;
 	    }
-	    *ipos = s;
+	    *ipos=s;
 	 }
-	 ret[cnt] = NULL;
+	 ret[cnt]=NULL;
       }
    }
-   *tot = cnt;
+   *tot=cnt;
    return (ret);
 }
 
@@ -1491,26 +1484,26 @@ int AutoKernScript(FontViewBase * fv, int spacing, int threshold,
 		   struct lookup_subtable *sub, char *kernfile) {
    WidthInfo wi;
 
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
    memset(&wi, '\0', sizeof(wi));
-   wi.autokern = 1;
-   wi.sf = sf;
-   wi.fv = fv;
+   wi.autokern=1;
+   wi.sf=sf;
+   wi.fv=fv;
    AW_FindFontParameters(&wi);
    if (spacing > -(sf->ascent + sf->descent))
-      wi.spacing = spacing;
-   wi.threshold = threshold;
-   wi.subtable = sub;
+      wi.spacing=spacing;
+   wi.threshold=threshold;
+   wi.subtable=sub;
 
-   if (kernfile == NULL) {
+   if (kernfile==NULL) {
       wi.left =
 	 autowidthBuildCharList(wi.fv, wi.sf, &wi.lcnt, &wi.real_lcnt,
 				&wi.l_Ipos, false);
       wi.right =
 	 autowidthBuildCharList(wi.fv, wi.sf, &wi.rcnt, &wi.real_rcnt,
 				&wi.r_Ipos, false);
-      if (wi.lcnt == 0 || wi.rcnt == 0) {
+      if (wi.lcnt==0 || wi.rcnt==0) {
 	 AW_FreeCharList(wi.left);
 	 AW_FreeCharList(wi.right);
 	 return (false);
@@ -1521,7 +1514,7 @@ int AutoKernScript(FontViewBase * fv, int spacing, int threshold,
       if (!AW_ReadKernPairFile(copy(kernfile), &wi))
 	 return (false);
    }
-   wi.done = true;
+   wi.done=true;
    AW_BuildCharPairs(&wi);
    AW_AutoKern(&wi);
    AW_KernRemoveBelowThreshold(wi.sf, KernThreshold(wi.sf, 0));

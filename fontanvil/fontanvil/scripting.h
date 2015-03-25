@@ -1,4 +1,4 @@
-/* $Id: scripting.h 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: scripting.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ enum token_type { tt_name, tt_string, tt_number, tt_unicode, tt_real,
 
    tt_eof,
 
-   tt_error = -1
+   tt_error=-1
 };
 
 typedef struct context {
@@ -74,7 +74,7 @@ typedef struct context {
    Array a;			/* The argument array */
    Array **dontfree;		/* Irrelevant for user defined funcs */
    struct dictionary locals;	/* Irrelevant for user defined funcs */
-   FILE *script;		/* Irrelevant for user defined funcs */
+   AFILE *script;		/* Irrelevant for user defined funcs */
    unsigned int backedup:1;	/* Irrelevant for user defined funcs */
    unsigned int donteval:1;	/* Irrelevant for user defined funcs */
    unsigned int returned:1;	/* Irrelevant for user defined funcs */
@@ -98,7 +98,7 @@ typedef struct context {
 
 void arrayfree(Array *);
 
-void FontImage(SplineFont * sf, char *filename, Array * arr, int width,
+void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
 	       int height);
 
  /* Adds a user defined scripting function to the interpretter */

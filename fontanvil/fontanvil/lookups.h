@@ -1,7 +1,7 @@
-/* $Id: lookups.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: lookups.h 3857 2015-03-25 13:26:40Z mskala $ */
 extern char *lookup_type_names[2][10];
 
-extern void SortInsertLookup(SplineFont * sf, OTLookup * newotl);
+extern void SortInsertLookup(SplineFont *sf, OTLookup * newotl);
 
 extern char *SuffixFromTags(FeatureScriptLangList * fl);
 
@@ -16,12 +16,12 @@ extern char *SuffixFromTags(FeatureScriptLangList * fl);
  * This can be useful if you want to check if a digraph of chars
  * "ab" and "xy" are in the same cell of a KernClass or not (handled in the same class).
  * first do
- * int idxx = KernClassFindIndexContaining( kc->firsts,  kc->first_cnt,  "x" );
- * int idxy = KernClassFindIndexContaining( kc->seconds, kc->second_cnt, "y" );
+ * int idxx=KernClassFindIndexContaining( kc->firsts,  kc->first_cnt,  "x" );
+ * int idxy=KernClassFindIndexContaining( kc->seconds, kc->second_cnt, "y" );
  * 
  * then to test any diagrap, say "ab" h for being in the same cell:
- * int idxa = KernClassFindIndexContaining( kc->firsts,  kc->first_cnt,  "a" );
- * int idxb = KernClassFindIndexContaining( kc->seconds, kc->second_cnt, "b" );
+ * int idxa=KernClassFindIndexContaining( kc->firsts,  kc->first_cnt,  "a" );
+ * int idxb=KernClassFindIndexContaining( kc->seconds, kc->second_cnt, "b" );
  *
  * and they are in the same cell of the kernclass
  * if (idxx==idxa && idxy==idxb) {}

@@ -1,4 +1,4 @@
-/* $Id: basics.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: basics.h 3858 2015-03-25 13:49:37Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -42,17 +42,11 @@
 #   define false 0
 
 typedef int bool;
-
 typedef int32_t int32;
-
 typedef uint32_t uint32;
-
 typedef int16_t int16;
-
 typedef uint16_t uint16;
-
 typedef int8_t int8;
-
 typedef uint8_t uint8;
 
 /* An integral type which can hold a pointer */
@@ -91,5 +85,9 @@ static inline int imax(int a, int b) {
 }
 
 #   define IS_IN_ORDER3( a, b, c )   ( ((a)<=(b)) && ((b)<=(c)) )
+
+#ifndef HAVE_ISFINITE
+#define isfinite finite
+#endif
 
 #endif

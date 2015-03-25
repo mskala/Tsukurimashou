@@ -1,4 +1,4 @@
-/* $Id: sfundo.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: sfundo.h 3851 2015-03-25 11:54:30Z mskala $ */
 /******************************************************************************
 *******************************************************************************
 *******************************************************************************
@@ -36,22 +36,22 @@ void SFUndoFreeAssociated(struct sfundoes *undo);
 
 void SFUndoFree(struct sfundoes *undo);
 
-SFUndoes *SFUndoCreateSFD(enum sfundotype t, char *staticmsg, char *sfdfrag);
+SFUndoes *SFUndoCreateSFD(enum sfundotype t, char *staticmsg,char *sfdfrag);
 
 /**
  * Remove undo from the font level undoes on splinefont 'sf' and
  * completely free the given undo from memory.
  */
-void SFUndoRemoveAndFree(SplineFont * sf, struct sfundoes *undo);
+void SFUndoRemoveAndFree(SplineFont *sf, struct sfundoes *undo);
 
 
 char *SFUndoToString(SFUndoes * undo);
 
 SFUndoes *SFUndoFromString(char *str);
 
-void SFUndoPerform(SFUndoes * undo, SplineFont * sf);
+void SFUndoPerform(SFUndoes * undo, SplineFont *sf);
 
-SFUndoes *SFUndoCreateRedo(SFUndoes * undo, SplineFont * sf);
+SFUndoes *SFUndoCreateRedo(SFUndoes * undo, SplineFont *sf);
 
 void SFUndoPushFront(struct sfundoes **undoes, SFUndoes * undo);
 

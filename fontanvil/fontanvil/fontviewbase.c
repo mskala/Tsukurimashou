@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: fontviewbase.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -37,19 +37,19 @@
 #include <math.h>
 #include <unistd.h>
 
-static FontViewBase *fv_list = NULL;
+static FontViewBase *fv_list=NULL;
 
 extern int onlycopydisplayed;
 
-float joinsnap = 0;
+float joinsnap=0;
 
-static int SCUnselectedDependents(FontViewBase * fv, SplineChar * sc) {
+static int SCUnselectedDependents(FontViewBase *fv,SplineChar *sc) {
    struct splinecharlist *dep;
 
-   if (sc == NULL)
+   if (sc==NULL)
       return (false);
 
-   for (dep = sc->dependents; dep != NULL; dep = dep->next) {
+   for (dep=sc->dependents; dep != NULL; dep=dep->next) {
       if (!fv->selected[fv->map->backmap[dep->sc->orig_pos]])
 	 return (true);
       if (SCUnselectedDependents(fv, dep->sc))
@@ -58,13 +58,13 @@ static int SCUnselectedDependents(FontViewBase * fv, SplineChar * sc) {
    return (false);
 }
 
-static int BCUnselectedDependents(FontViewBase * fv, BDFChar * bc) {
+static int BCUnselectedDependents(FontViewBase *fv,BDFChar *bc) {
    struct bdfcharlist *dep;
 
-   if (bc == NULL)
+   if (bc==NULL)
       return (false);
 
-   for (dep = bc->dependents; dep != NULL; dep = dep->next) {
+   for (dep=bc->dependents; dep != NULL; dep=dep->next) {
       if (!fv->selected[fv->map->backmap[dep->bc->orig_pos]])
 	 return (true);
       if (BCUnselectedDependents(fv, dep->bc))
@@ -73,20 +73,20 @@ static int BCUnselectedDependents(FontViewBase * fv, BDFChar * bc) {
    return (false);
 }
 
-static int UnselectedDependents(FontViewBase * fv, int gid) {
-   int ret = false;
+static int UnselectedDependents(FontViewBase *fv,int gid) {
+   int ret=false;
 
    BDFFont *bdf;
 
-   if (onlycopydisplayed && fv->active_bitmap == NULL) {
-      ret = SCUnselectedDependents(fv, fv->sf->glyphs[gid]);
+   if (onlycopydisplayed && fv->active_bitmap==NULL) {
+      ret=SCUnselectedDependents(fv, fv->sf->glyphs[gid]);
    } else if (onlycopydisplayed) {
-      ret = BCUnselectedDependents(fv, fv->active_bitmap->glyphs[gid]);
+      ret=BCUnselectedDependents(fv, fv->active_bitmap->glyphs[gid]);
    } else {
-      ret = SCUnselectedDependents(fv, fv->sf->glyphs[gid]);
+      ret=SCUnselectedDependents(fv, fv->sf->glyphs[gid]);
       for (bdf =
 	   fv->sf->cidmaster ? fv->sf->cidmaster->bitmaps : fv->sf->bitmaps;
-	   bdf != NULL; bdf = bdf->next)
+	   bdf != NULL; bdf=bdf->next)
 	 ret |= BCUnselectedDependents(fv, bdf->glyphs[gid]);
    }
    return (ret);
@@ -97,7 +97,7 @@ void FVClear(FontViewBase * fv) {
 
    BDFFont *bdf;
 
-   int refstate = 0;
+   int refstate=0;
 
    char *buts[6];
 
@@ -105,22 +105,22 @@ void FVClear(FontViewBase * fv) {
 
    /* refstate==0 => ask, refstate==1 => clearall, refstate==-1 => skip all */
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1) {
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1) {
 	 /* If we are messing with the outline character, check for dependencies */
-	 if (refstate <= 0 && (unsel = UnselectedDependents(fv, gid))) {
-	    if (refstate == 0) {
-	       buts[0] = _("_Yes");
-	       buts[1] = _("Yes to _All");
-	       buts[2] = _("_Unlink All");
-	       buts[3] = _("No _to All");
-	       buts[4] = _("_No");
-	       buts[5] = NULL;
+	 if (refstate <= 0 && (unsel=UnselectedDependents(fv, gid))) {
+	    if (refstate==0) {
+	       buts[0]=_("_Yes");
+	       buts[1]=_("Yes to _All");
+	       buts[2]=_("_Unlink All");
+	       buts[3]=_("No _to All");
+	       buts[4]=_("_No");
+	       buts[5]=NULL;
 	       yes=2;
-	       refstate = -2;
+	       refstate=-2;
 	    }
-	    if (refstate == -2) {
-	       if (onlycopydisplayed && fv->active_bitmap == NULL)
+	    if (refstate==-2) {
+	       if (onlycopydisplayed && fv->active_bitmap==NULL)
 		  UnlinkThisReference(fv, fv->sf->glyphs[gid],
 				      fv->active_layer);
 	       else if (onlycopydisplayed && fv->active_bitmap != NULL)
@@ -130,14 +130,14 @@ void FVClear(FontViewBase * fv) {
 				      fv->active_layer);
 		  for (bdf =
 		       fv->sf->cidmaster ? fv->sf->cidmaster->bitmaps : fv->
-		       sf->bitmaps; bdf != NULL; bdf = bdf->next)
+		       sf->bitmaps; bdf != NULL; bdf=bdf->next)
 		     BCUnlinkThisReference(fv, bdf->glyphs[gid]);
 	       }
-	    } else if (refstate == -1)
+	    } else if (refstate==-1)
 	       continue;
 	 }
 
-	 if (onlycopydisplayed && fv->active_bitmap == NULL) {
+	 if (onlycopydisplayed && fv->active_bitmap==NULL) {
 	    SCClearAll(fv->sf->glyphs[gid], fv->active_layer);
 	 } else if (onlycopydisplayed) {
 	    BCClearAll(fv->active_bitmap->glyphs[gid]);
@@ -145,23 +145,23 @@ void FVClear(FontViewBase * fv) {
 	    SCClearAll(fv->sf->glyphs[gid], fv->active_layer);
 	    for (bdf =
 		 fv->sf->cidmaster ? fv->sf->cidmaster->bitmaps : fv->sf->
-		 bitmaps; bdf != NULL; bdf = bdf->next)
+		 bitmaps; bdf != NULL; bdf=bdf->next)
 	       BCClearAll(bdf->glyphs[gid]);
 	 }
       }
 }
 
 void FVClearBackground(FontViewBase * fv) {
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
    int i, gid;
 
    if (onlycopydisplayed && fv->active_bitmap != NULL)
       return;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1 && sf->glyphs[gid] != NULL) {
+	  (gid=fv->map->map[i]) != -1 && sf->glyphs[gid] != NULL) {
 	 SCClearBackground(sf->glyphs[gid]);
       }
 }
@@ -169,8 +169,8 @@ void FVClearBackground(FontViewBase * fv) {
 void FVCopyFgtoBg(FontViewBase * fv) {
    int i, gid;
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  fv->sf->glyphs[gid] != NULL)
 	 SCCopyLayerToLayer(fv->sf->glyphs[gid], fv->active_layer, ly_back,
 			    true);
@@ -184,41 +184,41 @@ void FVUnlinkRef(FontViewBase * fv) {
    BDFChar *bdfc;
    BDFRefChar *head, *cur;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
-	  && (sc = fv->sf->glyphs[gid]) != NULL) {
-	 if ((fv->active_bitmap == NULL || !onlycopydisplayed)
+	  (gid=fv->map->map[i]) != -1
+	  && (sc=fv->sf->glyphs[gid]) != NULL) {
+	 if ((fv->active_bitmap==NULL || !onlycopydisplayed)
 	     && sc->layers[fv->active_layer].refs != NULL) {
 	    SCPreserveLayer(sc, fv->active_layer, false);
 	    if (sc->parent->multilayer) {
-	       first = ly_fore;
-	       last = sc->layer_cnt - 1;
+	       first=ly_fore;
+	       last=sc->layer_cnt - 1;
 	    } else
-	       first = last = fv->active_layer;
-	    for (layer = first; layer <= last; ++layer) {
-	       for (rf = sc->layers[layer].refs; rf != NULL; rf = next) {
-		  next = rf->next;
+	       first=last=fv->active_layer;
+	    for (layer=first; layer <= last; ++layer) {
+	       for (rf=sc->layers[layer].refs; rf != NULL; rf=next) {
+		  next=rf->next;
 		  SCRefToSplines(sc, rf, layer);
 	       }
 	    }
 	    SCCharChangedUpdate(sc, fv->active_layer, true);
 	 }
 
-	 for (bdf = fv->sf->bitmaps; bdf != NULL; bdf = bdf->next) {
+	 for (bdf=fv->sf->bitmaps; bdf != NULL; bdf=bdf->next) {
 	    if (bdf != fv->active_bitmap && onlycopydisplayed)
 	       continue;
 
-	    bdfc = gid == -1
+	    bdfc=gid==-1
 	       || gid >= bdf->glyphcnt ? NULL : bdf->glyphs[gid];
 	    if (bdfc != NULL && bdfc->refs != NULL) {
 	       BCMergeReferences(bdfc, bdfc, 0, 0);
-	       for (head = bdfc->refs; head != NULL;) {
-		  cur = head;
-		  head = cur->next;
+	       for (head=bdfc->refs; head != NULL;) {
+		  cur=head;
+		  head=cur->next;
 		  free(cur);
 	       }
-	       bdfc->refs = NULL;
+	       bdfc->refs=NULL;
 	       BCCharChangedUpdate(bdfc);
 	    }
 	 }
@@ -226,16 +226,16 @@ void FVUnlinkRef(FontViewBase * fv) {
 }
 
 void FVJoin(FontViewBase * fv) {
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
    int i, changed, gid;
    extern float joinsnap;
 
    if (onlycopydisplayed && fv->active_bitmap != NULL)
       return;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1 && sf->glyphs[gid] != NULL) {
+	  (gid=fv->map->map[i]) != -1 && sf->glyphs[gid] != NULL) {
 	 SCPreserveLayer(sf->glyphs[gid], fv->active_layer, false);
 	 sf->glyphs[gid]->layers[fv->active_layer].splines =
 	    SplineSetJoin(sf->glyphs[gid]->layers[fv->active_layer].splines,
@@ -245,22 +245,22 @@ void FVJoin(FontViewBase * fv) {
       }
 }
 
-static void LinkEncToGid(FontViewBase * fv, int enc, int gid) {
+static void LinkEncToGid(FontViewBase *fv,int enc,int gid) {
    EncMap *map=fv->map;
    int old_gid;
    int flags=-1;
    int j;
 
    if (map->map[enc] != -1 && map->map[enc] != gid) {
-      SplineFont *sf = fv->sf;
+      SplineFont *sf=fv->sf;
 
-      old_gid = map->map[enc];
-      for (j = 0; j < map->enccount; ++j)
-	 if (j != enc && map->map[j] == old_gid)
+      old_gid=map->map[enc];
+      for (j=0; j < map->enccount; ++j)
+	 if (j != enc && map->map[j]==old_gid)
 	    break;
       /* If the glyph is used elsewhere in the encoding then reusing this */
       /* slot causes no problems */
-      if (j == map->enccount) {
+      if (j==map->enccount) {
 	 /* However if this is the only use and the glyph is interesting */
 	 /*  then add it to the unencoded area. If it is uninteresting we */
 	 /*  can just get rid of it */
@@ -270,28 +270,28 @@ static void LinkEncToGid(FontViewBase * fv, int enc, int gid) {
 	    SFRemoveGlyph(sf, sf->glyphs[old_gid], &flags);
       }
    }
-   map->map[enc] = gid;
-   if (map->backmap[gid] == -1)
-      map->backmap[gid] = enc;
+   map->map[enc]=gid;
+   if (map->backmap[gid]==-1)
+      map->backmap[gid]=enc;
    if (map->enc != &custom) {
-      int uni = UniFromEnc(enc, map->enc);
+      int uni=UniFromEnc(enc, map->enc);
 
       AltUniAdd(fv->sf->glyphs[gid], uni);
    }
 }
 
 void FVSameGlyphAs(FontViewBase * fv) {
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
-   RefChar *base = CopyContainsRef(sf);
+   RefChar *base=CopyContainsRef(sf);
 
    int i;
 
-   EncMap *map = fv->map;
+   EncMap *map=fv->map;
 
-   if (base == NULL || fv->cidmaster != NULL)
+   if (base==NULL || fv->cidmaster != NULL)
       return;
-   for (i = 0; i < map->enccount; ++i)
+   for (i=0; i < map->enccount; ++i)
       if (fv->selected[i]) {
 	 LinkEncToGid(fv, i, base->orig_pos);
       }
@@ -301,38 +301,38 @@ void FVBuildDuplicate(FontViewBase * fv) {
    extern const int cns14pua[], amspua[];
 
    const int *pua =
-      fv->sf->uni_interp == ui_trad_chinese ? cns14pua : fv->sf->uni_interp ==
+      fv->sf->uni_interp==ui_trad_chinese ? cns14pua : fv->sf->uni_interp ==
       ui_ams ? amspua : NULL;
-   int i, cnt = 0, gid;
+   int i, cnt=0, gid;
 
    SplineChar dummy;
 
    const unichar_t *pt;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i])
 	 ++cnt;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i]) {
 	 SplineChar *sc;
 
-	 int baseuni = 0;
+	 int baseuni=0;
 
-	 if ((gid = fv->map->map[i]) == -1
-	     || (sc = fv->sf->glyphs[gid]) == NULL)
-	    sc = SCBuildDummy(&dummy, fv->sf, fv->map, i);
+	 if ((gid=fv->map->map[i])==-1
+	     || (sc=fv->sf->glyphs[gid])==NULL)
+	    sc=SCBuildDummy(&dummy, fv->sf, fv->map, i);
 	 if (pua != NULL && sc->unicodeenc >= 0xe000
 	     && sc->unicodeenc <= 0xf8ff)
-	    baseuni = pua[sc->unicodeenc - 0xe000];
-	 if (baseuni == 0
+	    baseuni=pua[sc->unicodeenc - 0xe000];
+	 if (baseuni==0
 	     && (pt =
 		 SFGetAlternate(fv->sf, sc->unicodeenc, sc, false)) != NULL
-	     && pt[0] != '\0' && pt[1] == '\0')
-	    baseuni = pt[0];
+	     && pt[0] != '\0' && pt[1]=='\0')
+	    baseuni=pt[0];
 
 	 if (baseuni != 0
-	     && (gid = SFFindExistingSlot(fv->sf, baseuni, NULL)) != -1)
+	     && (gid=SFFindExistingSlot(fv->sf, baseuni, NULL)) != -1)
 	    LinkEncToGid(fv, i, gid);
       }
 }
@@ -341,29 +341,29 @@ void TransHints(StemInfo * stem, real mul1, real off1, real mul2, real off2,
 		int round_to_int) {
    HintInstance *hi;
 
-   for (; stem != NULL; stem = stem->next) {
-      stem->start = stem->start * mul1 + off1;
+   for (; stem != NULL; stem=stem->next) {
+      stem->start=stem->start * mul1 + off1;
       stem->width *= mul1;
       if (round_to_int) {
-	 stem->start = rint(stem->start);
-	 stem->width = rint(stem->width);
+	 stem->start=rint(stem->start);
+	 stem->width=rint(stem->width);
       }
       if (mul1 < 0) {
 	 stem->start += stem->width;
-	 stem->width = -stem->width;
+	 stem->width=-stem->width;
       }
-      for (hi = stem->where; hi != NULL; hi = hi->next) {
-	 hi->begin = hi->begin * mul2 + off2;
-	 hi->end = hi->end * mul2 + off2;
+      for (hi=stem->where; hi != NULL; hi=hi->next) {
+	 hi->begin=hi->begin * mul2 + off2;
+	 hi->end=hi->end * mul2 + off2;
 	 if (round_to_int) {
-	    hi->begin = rint(hi->begin);
-	    hi->end = rint(hi->end);
+	    hi->begin=rint(hi->begin);
+	    hi->end=rint(hi->end);
 	 }
 	 if (mul2 < 0) {
-	    double temp = hi->begin;
+	    double temp=hi->begin;
 
-	    hi->begin = hi->end;
-	    hi->end = temp;
+	    hi->begin=hi->end;
+	    hi->end=temp;
 	 }
       }
    }
@@ -375,36 +375,36 @@ void TransDStemHints(DStemInfo * ds, real xmul, real xoff, real ymul,
    HintInstance *hi;
    double dmul, temp;
 
-   for (; ds != NULL; ds = ds->next) {
-      ds->left.x = xmul * ds->left.x + xoff;
-      ds->left.y = ymul * ds->left.y + yoff;
-      ds->right.x = xmul * ds->right.x + xoff;
-      ds->right.y = ymul * ds->right.y + yoff;
+   for (; ds != NULL; ds=ds->next) {
+      ds->left.x=xmul * ds->left.x + xoff;
+      ds->left.y=ymul * ds->left.y + yoff;
+      ds->right.x=xmul * ds->right.x + xoff;
+      ds->right.y=ymul * ds->right.y + yoff;
       if (round_to_int) {
-	 ds->left.x = rint(ds->left.x);
-	 ds->left.y = rint(ds->left.y);
-	 ds->right.x = rint(ds->right.x);
-	 ds->right.y = rint(ds->right.y);
+	 ds->left.x=rint(ds->left.x);
+	 ds->left.y=rint(ds->left.y);
+	 ds->right.x=rint(ds->right.x);
+	 ds->right.y=rint(ds->right.y);
       }
 
       if ((xmul < 0 && ymul > 0) || (xmul > 0 && ymul < 0))
-	 ds->unit.y = -ds->unit.y;
+	 ds->unit.y=-ds->unit.y;
       ds->unit.x *= fabs(xmul);
       ds->unit.y *= fabs(ymul);
-      dmul = sqrt(pow(ds->unit.x, 2) + pow(ds->unit.y, 2));
+      dmul=sqrt(pow(ds->unit.x, 2) + pow(ds->unit.y, 2));
       ds->unit.x /= dmul;
       ds->unit.y /= dmul;
       if (xmul < 0)
-	 dmul = -dmul;
+	 dmul=-dmul;
 
-      for (hi = ds->where; hi != NULL; hi = hi->next) {
+      for (hi=ds->where; hi != NULL; hi=hi->next) {
 	 if (dmul > 0) {
-	    hi->begin = hi->begin * dmul;
-	    hi->end = hi->end * dmul;
+	    hi->begin=hi->begin * dmul;
+	    hi->end=hi->end * dmul;
 	 } else {
-	    temp = hi->begin;
-	    hi->begin = hi->end * dmul;
-	    hi->end = temp * dmul;
+	    temp=hi->begin;
+	    hi->begin=hi->end * dmul;
+	    hi->end=temp * dmul;
 	 }
       }
    }
@@ -416,44 +416,44 @@ void VrTrans(struct vr *vr, real transform[6]) {
    /*  unchanged by translation */
    double x, y;
 
-   x = vr->xoff;
-   y = vr->yoff;
-   vr->xoff = rint(transform[0] * x + transform[1] * y);
-   vr->yoff = rint(transform[2] * x + transform[3] * y);
-   x = vr->h_adv_off;
-   y = vr->v_adv_off;
-   vr->h_adv_off = rint(transform[0] * x + transform[1] * y);
-   vr->v_adv_off = rint(transform[2] * x + transform[3] * y);
+   x=vr->xoff;
+   y=vr->yoff;
+   vr->xoff=rint(transform[0] * x + transform[1] * y);
+   vr->yoff=rint(transform[2] * x + transform[3] * y);
+   x=vr->h_adv_off;
+   y=vr->v_adv_off;
+   vr->h_adv_off=rint(transform[0] * x + transform[1] * y);
+   vr->v_adv_off=rint(transform[2] * x + transform[3] * y);
 }
 
 void BackgroundImageTransform(SplineChar * sc, ImageList * img,
 			      real transform[6]) {
-   if (transform[1] == 0 && transform[2] == 0 && transform[0] > 0
+   if (transform[1]==0 && transform[2]==0 && transform[0] > 0
        && transform[3] > 0) {
-      img->xoff = transform[0] * img->xoff + transform[4];
-      img->yoff = transform[3] * img->yoff + transform[5];
+      img->xoff=transform[0] * img->xoff + transform[4];
+      img->yoff=transform[3] * img->yoff + transform[5];
       if ((img->xscale *= transform[0]) < 0)
-	 img->xscale = -img->xscale;
+	 img->xscale=-img->xscale;
       if ((img->yscale *= transform[3]) < 0)
-	 img->yscale = -img->yscale;
-      img->bb.minx = img->xoff;
-      img->bb.maxy = img->yoff;
-      img->bb.maxx = img->xoff + GImageGetWidth(img->image) * img->xscale;
-      img->bb.miny = img->yoff - GImageGetHeight(img->image) * img->yscale;
+	 img->yscale=-img->yscale;
+      img->bb.minx=img->xoff;
+      img->bb.maxy=img->yoff;
+      img->bb.maxx=img->xoff + GImageGetWidth(img->image) * img->xscale;
+      img->bb.miny=img->yoff - GImageGetHeight(img->image) * img->yscale;
    } else {
       /* Don't support rotating, flipping or skewing images */
       ;
    }
 }
 
-static void GV_Trans(struct glyphvariants *gv, real transform[6], int is_v) {
+static void GV_Trans(struct glyphvariants *gv,real transform[6],int is_v) {
    int i;
 
-   if (gv == NULL)
+   if (gv==NULL)
       return;
-   gv->italic_correction = rint(gv->italic_correction * transform[0]);
-   is_v = 3 * is_v;
-   for (i = 0; i < gv->part_cnt; ++i) {
+   gv->italic_correction=rint(gv->italic_correction * transform[0]);
+   is_v=3 * is_v;
+   for (i=0; i < gv->part_cnt; ++i) {
       gv->parts[i].startConnectorLength =
 	 rint(gv->parts[i].startConnectorLength * transform[is_v]);
       gv->parts[i].endConnectorLength =
@@ -463,17 +463,17 @@ static void GV_Trans(struct glyphvariants *gv, real transform[6], int is_v) {
    }
 }
 
-static void MKV_Trans(struct mathkernvertex *mkv, real transform[6]) {
+static void MKV_Trans(struct mathkernvertex *mkv,real transform[6]) {
    int i;
 
-   for (i = 0; i < mkv->cnt; ++i) {
-      mkv->mkd[i].kern = rint(mkv->mkd[i].kern * transform[0]);
-      mkv->mkd[i].height = rint(mkv->mkd[i].height * transform[0]);
+   for (i=0; i < mkv->cnt; ++i) {
+      mkv->mkd[i].kern=rint(mkv->mkd[i].kern * transform[0]);
+      mkv->mkd[i].height=rint(mkv->mkd[i].height * transform[0]);
    }
 }
 
-static void MK_Trans(struct mathkern *mk, real transform[6]) {
-   if (mk == NULL)
+static void MK_Trans(struct mathkern *mk,real transform[6]) {
+   if (mk==NULL)
       return;
    MKV_Trans(&mk->top_right, transform);
    MKV_Trans(&mk->top_left, transform);
@@ -481,23 +481,23 @@ static void MK_Trans(struct mathkern *mk, real transform[6]) {
    MKV_Trans(&mk->bottom_left, transform);
 }
 
-static void MATH_Trans(struct MATH *math, real transform[6]) {
-   if (math == NULL)
+static void MATH_Trans(struct MATH *math,real transform[6]) {
+   if (math==NULL)
       return;
    math->DelimitedSubFormulaMinHeight =
       rint(math->DelimitedSubFormulaMinHeight * transform[3]);
    math->DisplayOperatorMinHeight =
       rint(math->DisplayOperatorMinHeight * transform[3]);
-   math->MathLeading = rint(math->MathLeading * transform[3]);
-   math->AxisHeight = rint(math->AxisHeight * transform[3]);
-   math->AccentBaseHeight = rint(math->AccentBaseHeight * transform[3]);
+   math->MathLeading=rint(math->MathLeading * transform[3]);
+   math->AxisHeight=rint(math->AxisHeight * transform[3]);
+   math->AccentBaseHeight=rint(math->AccentBaseHeight * transform[3]);
    math->FlattenedAccentBaseHeight =
       rint(math->FlattenedAccentBaseHeight * transform[3]);
-   math->SubscriptShiftDown = rint(math->SubscriptShiftDown * transform[3]);
-   math->SubscriptTopMax = rint(math->SubscriptTopMax * transform[3]);
+   math->SubscriptShiftDown=rint(math->SubscriptShiftDown * transform[3]);
+   math->SubscriptTopMax=rint(math->SubscriptTopMax * transform[3]);
    math->SubscriptBaselineDropMin =
       rint(math->SubscriptBaselineDropMin * transform[3]);
-   math->SuperscriptShiftUp = rint(math->SuperscriptShiftUp * transform[3]);
+   math->SuperscriptShiftUp=rint(math->SuperscriptShiftUp * transform[3]);
    math->SuperscriptShiftUpCramped =
       rint(math->SuperscriptShiftUpCramped * transform[3]);
    math->SuperscriptBottomMin =
@@ -509,20 +509,20 @@ static void MATH_Trans(struct MATH *math, real transform[6]) {
    math->SuperscriptBottomMaxWithSubscript =
       rint(math->SuperscriptBottomMaxWithSubscript * transform[3]);
    /* SpaceAfterScript is horizontal and is below */
-   math->UpperLimitGapMin = rint(math->UpperLimitGapMin * transform[3]);
+   math->UpperLimitGapMin=rint(math->UpperLimitGapMin * transform[3]);
    math->UpperLimitBaselineRiseMin =
       rint(math->UpperLimitBaselineRiseMin * transform[3]);
-   math->LowerLimitGapMin = rint(math->LowerLimitGapMin * transform[3]);
+   math->LowerLimitGapMin=rint(math->LowerLimitGapMin * transform[3]);
    math->LowerLimitBaselineDropMin =
       rint(math->LowerLimitBaselineDropMin * transform[3]);
-   math->StackTopShiftUp = rint(math->StackTopShiftUp * transform[3]);
+   math->StackTopShiftUp=rint(math->StackTopShiftUp * transform[3]);
    math->StackTopDisplayStyleShiftUp =
       rint(math->StackTopDisplayStyleShiftUp * transform[3]);
    math->StackBottomShiftDown =
       rint(math->StackBottomShiftDown * transform[3]);
    math->StackBottomDisplayStyleShiftDown =
       rint(math->StackBottomDisplayStyleShiftDown * transform[3]);
-   math->StackGapMin = rint(math->StackGapMin * transform[3]);
+   math->StackGapMin=rint(math->StackGapMin * transform[3]);
    math->StackDisplayStyleGapMin =
       rint(math->StackDisplayStyleGapMin * transform[3]);
    math->StretchStackTopShiftUp =
@@ -554,17 +554,17 @@ static void MATH_Trans(struct MATH *math, real transform[6]) {
    /* SkewedFractionHorizontalGap is horizontal and is below */
    math->SkewedFractionVerticalGap =
       rint(math->SkewedFractionVerticalGap * transform[3]);
-   math->OverbarVerticalGap = rint(math->OverbarVerticalGap * transform[3]);
+   math->OverbarVerticalGap=rint(math->OverbarVerticalGap * transform[3]);
    math->OverbarRuleThickness =
       rint(math->OverbarRuleThickness * transform[3]);
    math->OverbarExtraAscender =
       rint(math->OverbarExtraAscender * transform[3]);
-   math->UnderbarVerticalGap = rint(math->UnderbarVerticalGap * transform[3]);
+   math->UnderbarVerticalGap=rint(math->UnderbarVerticalGap * transform[3]);
    math->UnderbarRuleThickness =
       rint(math->UnderbarRuleThickness * transform[3]);
    math->UnderbarExtraDescender =
       rint(math->UnderbarExtraDescender * transform[3]);
-   math->RadicalVerticalGap = rint(math->RadicalVerticalGap * transform[3]);
+   math->RadicalVerticalGap=rint(math->RadicalVerticalGap * transform[3]);
    math->RadicalDisplayStyleVerticalGap =
       rint(math->RadicalDisplayStyleVerticalGap * transform[3]);
    math->RadicalRuleThickness =
@@ -575,7 +575,7 @@ static void MATH_Trans(struct MATH *math, real transform[6]) {
       rint(math->RadicalDegreeBottomRaisePercent * transform[3]);
 
    /* Horizontals */
-   math->SpaceAfterScript = rint(math->SpaceAfterScript * transform[0]);
+   math->SpaceAfterScript=rint(math->SpaceAfterScript * transform[0]);
    math->SkewedFractionHorizontalGap =
       rint(math->SkewedFractionHorizontalGap * transform[0]);
    math->RadicalKernBeforeDegree =
@@ -590,15 +590,15 @@ static void MATH_Trans(struct MATH *math, real transform[6]) {
       rint(math->RadicalKernAfterDegree * transform[0]);
 }
 
-static void KCTrans(KernClass * kc, double scale) {
+static void KCTrans(KernClass *kc,double scale) {
    /* Again these are offsets, so I don't apply translation */
    int i;
 
-   for (i = kc->first_cnt * kc->second_cnt - 1; i >= 0; --i)
-      kc->offsets[i] = rint(scale * kc->offsets[i]);
+   for (i=kc->first_cnt * kc->second_cnt - 1; i >= 0; --i)
+      kc->offsets[i]=rint(scale * kc->offsets[i]);
 }
 
-static void SCTransLayer(FontViewBase * fv, SplineChar * sc, int flags, int i,
+static void SCTransLayer(FontViewBase *fv,SplineChar *sc,int flags,int i,
 			 real transform[6], uint8 * sel) {
    int j;
 
@@ -609,34 +609,34 @@ static void SCTransLayer(FontViewBase * fv, SplineChar * sc, int flags, int i,
    ImageList *img;
 
    SplinePointListTransform(sc->layers[i].splines, transform, tpt_AllPoints);
-   for (refs = sc->layers[i].refs; refs != NULL; refs = refs->next) {
+   for (refs=sc->layers[i].refs; refs != NULL; refs=refs->next) {
       if ((sel != NULL && sel[fv->map->backmap[refs->sc->orig_pos]]) ||
 	  (flags & fvt_partialreftrans)) {
 	 /* if the character referred to is selected then it's going to */
 	 /*  be scaled too (or will have been) so we don't want to scale */
 	 /*  it twice */
-	 t[4] = refs->transform[4] * transform[0] +
+	 t[4]=refs->transform[4] * transform[0] +
 	    refs->transform[5] * transform[2] +
 	    /*transform[4] */ 0;
-	 t[5] = refs->transform[4] * transform[1] +
+	 t[5]=refs->transform[4] * transform[1] +
 	    refs->transform[5] * transform[3] +
 	    /*transform[5] */ 0;
-	 t[0] = refs->transform[4];
-	 t[1] = refs->transform[5];
-	 refs->transform[4] = t[4];
-	 refs->transform[5] = t[5];
+	 t[0]=refs->transform[4];
+	 t[1]=refs->transform[5];
+	 refs->transform[4]=t[4];
+	 refs->transform[5]=t[5];
 	 /* Now update the splines to match */
 	 t[4] -= t[0];
 	 t[5] -= t[1];
 	 if (t[4] != 0 || t[5] != 0) {
-	    t[0] = t[3] = 1;
-	    t[1] = t[2] = 0;
-	    for (j = 0; j < refs->layer_cnt; ++j)
+	    t[0]=t[3]=1;
+	    t[1]=t[2]=0;
+	    for (j=0; j < refs->layer_cnt; ++j)
 	       SplinePointListTransform(refs->layers[j].splines, t,
 					tpt_AllPoints);
 	 }
       } else {
-	 for (j = 0; j < refs->layer_cnt; ++j)
+	 for (j=0; j < refs->layer_cnt; ++j)
 	    SplinePointListTransform(refs->layers[j].splines, transform,
 				     tpt_AllPoints);
 	 t[0] =
@@ -661,7 +661,7 @@ static void SCTransLayer(FontViewBase * fv, SplineChar * sc, int flags, int i,
       }
       RefCharFindBounds(refs);
    }
-   for (img = sc->layers[i].images; img != NULL; img = img->next)
+   for (img=sc->layers[i].images; img != NULL; img=img->next)
       BackgroundImageTransform(sc, img, transform);
 }
 
@@ -685,46 +685,46 @@ void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
    if (sc->blended) {
       int j;
 
-      MMSet *mm = sc->parent->mm;
+      MMSet *mm=sc->parent->mm;
 
-      for (j = 0; j < mm->instance_count; ++j)
+      for (j=0; j < mm->instance_count; ++j)
 	 FVTrans(fv, mm->instances[j]->glyphs[sc->orig_pos], transform, sel,
 		 flags);
    }
 
    if (flags & fvt_alllayers) {
-      for (i = 0; i < sc->layer_cnt; ++i)
-	 SCPreserveLayer(sc, i, fv->active_layer == i);
+      for (i=0; i < sc->layer_cnt; ++i)
+	 SCPreserveLayer(sc, i, fv->active_layer==i);
    } else if (fv->sf->multilayer)
       SCPreserveState(sc, true);
    else
       SCPreserveLayer(sc, fv->active_layer, true);
    if (!(flags & fvt_dontmovewidth))
-      if (transform[0] > 0 && transform[3] > 0 && transform[1] == 0
-	  && transform[2] == 0) {
-	 int widthset = sc->widthset;
+      if (transform[0] > 0 && transform[3] > 0 && transform[1]==0
+	  && transform[2]==0) {
+	 int widthset=sc->widthset;
 
 	 SCSynchronizeWidth(sc, sc->width * transform[0] + transform[4],
 			    sc->width, fv);
 	 if (!(flags & fvt_dontsetwidth))
-	    sc->widthset = widthset;
-	 sc->vwidth = sc->vwidth * transform[3] + transform[5];
+	    sc->widthset=widthset;
+	 sc->vwidth=sc->vwidth * transform[3] + transform[5];
       }
    if (flags & fvt_scalepstpos) {
-      for (kp = sc->kerns; kp != NULL; kp = kp->next)
-	 kp->off = rint(kp->off * transform[0]);
-      for (kp = sc->vkerns; kp != NULL; kp = kp->next)
-	 kp->off = rint(kp->off * transform[3]);
-      for (pst = sc->possub; pst != NULL; pst = pst->next) {
-	 if (pst->type == pst_position)
+      for (kp=sc->kerns; kp != NULL; kp=kp->next)
+	 kp->off=rint(kp->off * transform[0]);
+      for (kp=sc->vkerns; kp != NULL; kp=kp->next)
+	 kp->off=rint(kp->off * transform[3]);
+      for (pst=sc->possub; pst != NULL; pst=pst->next) {
+	 if (pst->type==pst_position)
 	    VrTrans(&pst->u.pos, transform);
-	 else if (pst->type == pst_pair) {
+	 else if (pst->type==pst_pair) {
 	    VrTrans(&pst->u.pair.vr[0], transform);
 	    VrTrans(&pst->u.pair.vr[1], transform);
-	 } else if (pst->type == pst_lcaret) {
+	 } else if (pst->type==pst_lcaret) {
 	    int j;
 
-	    for (j = 0; j < pst->u.lcaret.cnt; ++j)
+	    for (j=0; j < pst->u.lcaret.cnt; ++j)
 	       pst->u.lcaret.carets[j] =
 		  rint(pst->u.lcaret.carets[j] * transform[0] + transform[4]);
 	 }
@@ -732,32 +732,32 @@ void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
    }
 
    if (sc->tex_height != TEX_UNDEF)
-      sc->tex_height = rint(sc->tex_height * transform[3]);
+      sc->tex_height=rint(sc->tex_height * transform[3]);
    if (sc->tex_depth != TEX_UNDEF)
-      sc->tex_depth = rint(sc->tex_depth * transform[3]);
+      sc->tex_depth=rint(sc->tex_depth * transform[3]);
    if (sc->italic_correction != TEX_UNDEF)
-      sc->italic_correction = rint(sc->italic_correction * transform[0]);
+      sc->italic_correction=rint(sc->italic_correction * transform[0]);
    if (sc->top_accent_horiz != TEX_UNDEF)
-      sc->top_accent_horiz = rint(sc->top_accent_horiz * transform[0]);
+      sc->top_accent_horiz=rint(sc->top_accent_horiz * transform[0]);
    GV_Trans(sc->vert_variants, transform, true);
    GV_Trans(sc->horiz_variants, transform, false);
    MK_Trans(sc->mathkern, transform);
 
-   for (ap = sc->anchor; ap != NULL; ap = ap->next)
+   for (ap=sc->anchor; ap != NULL; ap=ap->next)
       ApTransform(ap, transform);
    if (flags & fvt_alllayers) {
-      first = 0;
-      last = sc->layer_cnt - 1;
+      first=0;
+      last=sc->layer_cnt - 1;
    } else if (sc->parent->multilayer) {
-      first = ly_fore;
-      last = sc->layer_cnt - 1;
+      first=ly_fore;
+      last=sc->layer_cnt - 1;
    } else
-      first = last = fv->active_layer;
-   for (i = first; i <= last; ++i)
+      first=last=fv->active_layer;
+   for (i=first; i <= last; ++i)
       SCTransLayer(fv, sc, flags, i, transform, sel);
-   if (transform[1] == 0 && transform[2] == 0) {
-      if (transform[0] == 1 && transform[3] == 1 &&
-	  transform[5] == 0 && transform[4] != 0 &&
+   if (transform[1]==0 && transform[2]==0) {
+      if (transform[0]==1 && transform[3]==1 &&
+	  transform[5]==0 && transform[4] != 0 &&
 	  sc->unicodeenc != -1 && sc->unicodeenc < 0x10000 &&
 	  isalpha(sc->unicodeenc)) {
 	 SCUndoSetLBearingChange(sc, (int) rint(transform[4]));
@@ -784,54 +784,54 @@ void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
 
 void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
 		 enum fvtrans_flags flags) {
-   FontViewBase *fv = _fv;
+   FontViewBase *fv=_fv;
 
-   real transx = transform[4], transy = transform[5];
+   real transx=transform[4], transy=transform[5];
 
    DBounds bb;
 
    BasePoint base;
 
-   int i, cnt = 0, gid;
+   int i, cnt=0, gid;
 
    BDFFont *bdf;
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
 
    SFUntickAll(fv->sf);
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1 &&
+	  (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]) &&
 	  !fv->sf->glyphs[gid]->ticked) {
-	 SplineChar *sc = fv->sf->glyphs[gid];
+	 SplineChar *sc=fv->sf->glyphs[gid];
 
 	 if (onlycopydisplayed && fv->active_bitmap != NULL) {
 	    if (fv->active_bitmap->glyphs[gid] != NULL)
 	       BCTrans(fv->active_bitmap, fv->active_bitmap->glyphs[gid],
 		       bvts, fv);
 	 } else {
-	    if (otype == 1) {
+	    if (otype==1) {
 	       SplineCharFindBounds(sc, &bb);
-	       base.x = (bb.minx + bb.maxx) / 2;
-	       base.y = (bb.miny + bb.maxy) / 2;
-	       transform[4] = transx + base.x -
+	       base.x=(bb.minx + bb.maxx) / 2;
+	       base.y=(bb.miny + bb.maxy) / 2;
+	       transform[4]=transx + base.x -
 		  (transform[0] * base.x + transform[2] * base.y);
-	       transform[5] = transy + base.y -
+	       transform[5]=transy + base.y -
 		  (transform[1] * base.x + transform[3] * base.y);
 	    }
 	    FVTrans(fv, sc, transform, fv->selected, flags);
 	    if (!onlycopydisplayed) {
-	       for (bdf = fv->sf->bitmaps; bdf != NULL; bdf = bdf->next)
+	       for (bdf=fv->sf->bitmaps; bdf != NULL; bdf=bdf->next)
 		  if (gid < bdf->glyphcnt && bdf->glyphs[gid] != NULL)
 		     BCTrans(bdf, bdf->glyphs[gid], bvts, fv);
 	    }
 	 }
-	 sc->ticked = true;
+	 sc->ticked=true;
       }
    if (flags & fvt_dogrid) {
       SplinePointListTransform(fv->sf->grid.splines, transform,
@@ -841,11 +841,11 @@ void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
    if (flags & fvt_scalekernclasses) {
       KernClass *kc;
 
-      SplineFont *sf = fv->cidmaster != NULL ? fv->cidmaster : fv->sf;
+      SplineFont *sf=fv->cidmaster != NULL ? fv->cidmaster : fv->sf;
 
-      for (kc = sf->kerns; kc != NULL; kc = kc->next)
+      for (kc=sf->kerns; kc != NULL; kc=kc->next)
 	 KCTrans(kc, transform[0]);
-      for (kc = sf->vkerns; kc != NULL; kc = kc->next)
+      for (kc=sf->vkerns; kc != NULL; kc=kc->next)
 	 KCTrans(kc, transform[3]);
       if (sf->MATH != NULL)
 	 MATH_Trans(sf->MATH, transform);
@@ -853,30 +853,30 @@ void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
 }
 
 void FVOverlap(FontViewBase * fv, enum overlap_type ot) {
-   int i, cnt = 0, layer, first, last, gid;
+   int i, cnt=0, layer, first, last, gid;
 
    SplineChar *sc;
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
    SFUntickAll(fv->sf);
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1 &&
-	  SCWorthOutputting((sc = fv->sf->glyphs[gid])) && !sc->ticked) {
-	 sc->ticked = true;
+	  (gid=fv->map->map[i]) != -1 &&
+	  SCWorthOutputting((sc=fv->sf->glyphs[gid])) && !sc->ticked) {
+	 sc->ticked=true;
 	 if (!SCRoundToCluster(sc, ly_all, false, .03, .12))
 	    SCPreserveLayer(sc, fv->active_layer, false);
 	 MinimumDistancesFree(sc->md);
 	 if (sc->parent->multilayer) {
-	    first = ly_fore;
-	    last = sc->layer_cnt - 1;
+	    first=ly_fore;
+	    last=sc->layer_cnt - 1;
 	 } else
-	    first = last = fv->active_layer;
-	 for (layer = first; layer <= last; ++layer)
+	    first=last=fv->active_layer;
+	 for (layer=first; layer <= last; ++layer)
 	    sc->layers[layer].splines =
 	       SplineSetRemoveOverlap(sc, sc->layers[layer].splines, ot);
 	 SCCharChangedUpdate(sc, fv->active_layer, true);
@@ -884,31 +884,31 @@ void FVOverlap(FontViewBase * fv, enum overlap_type ot) {
 }
 
 void FVAddExtrema(FontViewBase * fv, int force_adding) {
-   int i, cnt = 0, layer, first, last, gid;
+   int i, cnt=0, layer, first, last, gid;
 
    SplineChar *sc;
 
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
-   int emsize = sf->ascent + sf->descent;
+   int emsize=sf->ascent + sf->descent;
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
    SFUntickAll(fv->sf);
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1 &&
-	  SCWorthOutputting((sc = fv->sf->glyphs[gid])) && !sc->ticked) {
-	 sc->ticked = true;
+	  (gid=fv->map->map[i]) != -1 &&
+	  SCWorthOutputting((sc=fv->sf->glyphs[gid])) && !sc->ticked) {
+	 sc->ticked=true;
 	 if (sc->parent->multilayer) {
-	    first = ly_fore;
-	    last = sc->layer_cnt - 1;
+	    first=ly_fore;
+	    last=sc->layer_cnt - 1;
 	 } else
-	    first = last = fv->active_layer;
-	 for (layer = first; layer <= last; ++layer) {
+	    first=last=fv->active_layer;
+	 for (layer=first; layer <= last; ++layer) {
 	    SCPreserveLayer(sc, layer, false);
 	    SplineCharAddExtrema(sc, sc->layers[layer].splines,
 				 force_adding ? ae_all : ae_only_good,
@@ -919,28 +919,28 @@ void FVAddExtrema(FontViewBase * fv, int force_adding) {
 }
 
 void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl) {
-   int i, cnt = 0, layer, first, last, gid;
+   int i, cnt=0, layer, first, last, gid;
 
    SplineChar *sc;
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
    SFUntickAll(fv->sf);
-   for (i = 0; i < fv->map->enccount; ++i)
-      if ((gid = fv->map->map[i]) != -1
-	  && SCWorthOutputting((sc = fv->sf->glyphs[gid])) && fv->selected[i]
+   for (i=0; i < fv->map->enccount; ++i)
+      if ((gid=fv->map->map[i]) != -1
+	  && SCWorthOutputting((sc=fv->sf->glyphs[gid])) && fv->selected[i]
 	  && !sc->ticked) {
-	 sc->ticked = true;
+	 sc->ticked=true;
 	 SCPreserveLayer(sc, fv->active_layer, false);
 	 if (sc->parent->multilayer) {
-	    first = ly_fore;
-	    last = sc->layer_cnt - 1;
+	    first=ly_fore;
+	    last=sc->layer_cnt - 1;
 	 } else
-	    first = last = fv->active_layer;
-	 for (layer = first; layer <= last; ++layer)
+	    first=last=fv->active_layer;
+	 for (layer=first; layer <= last; ++layer)
 	    sc->layers[layer].splines =
 	       SplineCharSimplify(sc, sc->layers[layer].splines, smpl);
 	 SCCharChangedUpdate(sc, fv->active_layer, true);
@@ -948,73 +948,73 @@ void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl) {
 }
 
 void FVAutoHint(FontViewBase * fv) {
-   int i, cnt = 0, gid;
+   int i, cnt=0, gid;
 
-   BlueData *bd = NULL, _bd;
+   BlueData *bd=NULL, _bd;
 
    SplineChar *sc;
 
-   if (fv->sf->mm == NULL) {
+   if (fv->sf->mm==NULL) {
       QuickBlues(fv->sf, fv->active_layer, &_bd);
-      bd = &_bd;
+      bd=&_bd;
    }
 
    /* Tick the ones we don't want to AH, untick the ones that need AH */
-   for (gid = 0; gid < fv->sf->glyphcnt; ++gid)
-      if ((sc = fv->sf->glyphs[gid]) != NULL)
-	 sc->ticked = true;
+   for (gid=0; gid < fv->sf->glyphcnt; ++gid)
+      if ((sc=fv->sf->glyphs[gid]) != NULL)
+	 sc->ticked=true;
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
-	  SCWorthOutputting(sc = fv->sf->glyphs[gid])) {
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
+	  SCWorthOutputting(sc=fv->sf->glyphs[gid])) {
 	 ++cnt;
-	 sc->ticked = false;
+	 sc->ticked=false;
       }
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
+	  (gid=fv->map->map[i]) != -1
 	  && SCWorthOutputting(fv->sf->glyphs[gid])) {
-	 sc = fv->sf->glyphs[gid];
-	 sc->manualhints = false;
+	 sc=fv->sf->glyphs[gid];
+	 sc->manualhints=false;
 	 /* Hint undoes are done in _SplineCharAutoHint */
 	 SFSCAutoHint(sc, fv->active_layer, bd);
       }
 }
 
 void FVAutoHintSubs(FontViewBase * fv) {
-   int i, cnt = 0, gid;
+   int i, cnt=0, gid;
 
    if (fv->sf->mm != NULL && fv->sf->mm->apple)
       return;
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
+	  (gid=fv->map->map[i]) != -1
 	  && SCWorthOutputting(fv->sf->glyphs[gid])) {
-	 SplineChar *sc = fv->sf->glyphs[gid];
+	 SplineChar *sc=fv->sf->glyphs[gid];
 
 	 SCFigureHintMasks(sc, fv->active_layer);
       }
 }
 
 void FVAutoCounter(FontViewBase * fv) {
-   int i, cnt = 0, gid;
+   int i, cnt=0, gid;
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
+	  (gid=fv->map->map[i]) != -1
 	  && SCWorthOutputting(fv->sf->glyphs[gid])) {
-	 SplineChar *sc = fv->sf->glyphs[gid];
+	 SplineChar *sc=fv->sf->glyphs[gid];
 
 	 SCFigureCounterMasks(sc);
       }
@@ -1023,63 +1023,63 @@ void FVAutoCounter(FontViewBase * fv) {
 void FVDontAutoHint(FontViewBase * fv) {
    int i, gid;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
+	  (gid=fv->map->map[i]) != -1
 	  && SCWorthOutputting(fv->sf->glyphs[gid])) {
-	 SplineChar *sc = fv->sf->glyphs[gid];
+	 SplineChar *sc=fv->sf->glyphs[gid];
 
-	 sc->manualhints = true;
+	 sc->manualhints=true;
       }
 }
 
-static int AllGlyphsSelected(FontViewBase * fv) {
-   SplineFont *sf = fv->sf;
+static int AllGlyphsSelected(FontViewBase *fv) {
+   SplineFont *sf=fv->sf;
 
    int gid, enc;
 
    SplineChar *sc;
 
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL)
-	 sc->ticked = false;
+   for (gid=0; gid < sf->glyphcnt; ++gid)
+      if ((sc=sf->glyphs[gid]) != NULL)
+	 sc->ticked=false;
 
-   for (enc = 0; enc < fv->map->enccount; ++enc) {
-      if (fv->selected[enc] && (gid = fv->map->map[enc]) != -1 &&
-	  (sc = sf->glyphs[gid]) != NULL)
-	 sc->ticked = true;
+   for (enc=0; enc < fv->map->enccount; ++enc) {
+      if (fv->selected[enc] && (gid=fv->map->map[enc]) != -1 &&
+	  (sc=sf->glyphs[gid]) != NULL)
+	 sc->ticked=true;
    }
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL)
+   for (gid=0; gid < sf->glyphcnt; ++gid)
+      if ((sc=sf->glyphs[gid]) != NULL)
 	 if (!sc->ticked)
 	    return (false);
 
    return (true);
 }
 
-static void ClearFpgmPrepCvt(SplineFont * sf) {
-   struct ttf_table *tab, *prev = NULL, *next;
+static void ClearFpgmPrepCvt(SplineFont *sf) {
+   struct ttf_table *tab, *prev=NULL, *next;
 
-   for (tab = sf->ttf_tables; tab != NULL; tab = next) {
-      next = tab->next;
-      if (tab->tag == CHR('c', 'v', 't', ' ') ||
-	  tab->tag == CHR('f', 'p', 'g', 'm') ||
-	  tab->tag == CHR('p', 'r', 'e', 'p')) {
-	 if (prev == NULL)
-	    sf->ttf_tables = next;
+   for (tab=sf->ttf_tables; tab != NULL; tab=next) {
+      next=tab->next;
+      if (tab->tag==CHR('c', 'v', 't', ' ') ||
+	  tab->tag==CHR('f', 'p', 'g', 'm') ||
+	  tab->tag==CHR('p', 'r', 'e', 'p')) {
+	 if (prev==NULL)
+	    sf->ttf_tables=next;
 	 else
-	    prev->next = next;
-	 tab->next = NULL;
+	    prev->next=next;
+	 tab->next=NULL;
 	 TtfTablesFree(tab);
       } else
-	 prev = tab;
+	 prev=tab;
    }
 }
 
 void FVAutoInstr(FontViewBase * fv) {
    BlueData bd;
 
-   int i, cnt = 0, gid;
+   int i, cnt=0, gid;
 
    GlobalInstrCt gic;
 
@@ -1093,16 +1093,16 @@ void FVAutoInstr(FontViewBase * fv) {
 
    InitGlobalInstrCt(&gic, fv->sf, fv->active_layer, &bd);
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
+	  (gid=fv->map->map[i]) != -1
 	  && SCWorthOutputting(fv->sf->glyphs[gid])) {
-	 SplineChar *sc = fv->sf->glyphs[gid];
+	 SplineChar *sc=fv->sf->glyphs[gid];
 
 	 NowakowskiSCAutoInstr(&gic, sc);
       }
@@ -1116,17 +1116,17 @@ void FVClearInstrs(FontViewBase * fv) {
 
    int i, gid;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
-	  && SCWorthOutputting((sc = fv->sf->glyphs[gid]))) {
+	  (gid=fv->map->map[i]) != -1
+	  && SCWorthOutputting((sc=fv->sf->glyphs[gid]))) {
 	 if (sc->ttf_instrs_len != 0) {
 	    free(sc->ttf_instrs);
-	    sc->ttf_instrs = NULL;
-	    sc->ttf_instrs_len = 0;
-	    sc->instructions_out_of_date = false;
+	    sc->ttf_instrs=NULL;
+	    sc->ttf_instrs_len=0;
+	    sc->instructions_out_of_date=false;
 	    SCCharChangedUpdate(sc, ly_none, true);
-	    sc->complained_about_ptnums = false;
+	    sc->complained_about_ptnums=false;
 	 }
       }
 }
@@ -1134,18 +1134,18 @@ void FVClearInstrs(FontViewBase * fv) {
 void FVClearHints(FontViewBase * fv) {
    int i, gid;
 
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i] &&
-	  (gid = fv->map->map[i]) != -1
+	  (gid=fv->map->map[i]) != -1
 	  && SCWorthOutputting(fv->sf->glyphs[gid])) {
-	 SplineChar *sc = fv->sf->glyphs[gid];
+	 SplineChar *sc=fv->sf->glyphs[gid];
 
-	 sc->manualhints = true;
+	 sc->manualhints=true;
 	 SCClearHints(sc);
       }
 }
 
-static int tester(SplineChar * sc, struct lookup_subtable *sub) {
+static int tester(SplineChar *sc,struct lookup_subtable *sub) {
    PST *pst;
 
    KernPair *kp;
@@ -1154,18 +1154,18 @@ static int tester(SplineChar * sc, struct lookup_subtable *sub) {
 
    AnchorPoint *ap;
 
-   if (sc == NULL)
+   if (sc==NULL)
       return (false);
 
-   for (ap = sc->anchor; ap != NULL; ap = ap->next)
-      if (ap->anchor->subtable == sub)
+   for (ap=sc->anchor; ap != NULL; ap=ap->next)
+      if (ap->anchor->subtable==sub)
 	 return (true);
-   for (pst = sc->possub; pst != NULL; pst = pst->next)
-      if (pst->subtable == sub)
+   for (pst=sc->possub; pst != NULL; pst=pst->next)
+      if (pst->subtable==sub)
 	 return (true);
-   for (isv = 0; isv < 2; ++isv)
-      for (kp = isv ? sc->vkerns : sc->kerns; kp != NULL; kp = kp->next)
-	 if (kp->subtable == sub)
+   for (isv=0; isv < 2; ++isv)
+      for (kp=isv ? sc->vkerns : sc->kerns; kp != NULL; kp=kp->next)
+	 if (kp->subtable==sub)
 	    return (true);
 
    return (false);
@@ -1181,65 +1181,65 @@ int FVBParseSelectByPST(FontViewBase * fv, struct lookup_subtable *sub,
 
    int gid;
 
-   sf = fv->sf;
-   first = -1;
-   if (search_type == 1) {	/* Select results */
-      for (i = 0; i < fv->map->enccount; ++i) {
-	 gid = fv->map->map[i];
+   sf=fv->sf;
+   first=-1;
+   if (search_type==1) {	/* Select results */
+      for (i=0; i < fv->map->enccount; ++i) {
+	 gid=fv->map->map[i];
 	 if ((fv->selected[i] =
-	      tester(gid == -1 ? NULL : sf->glyphs[gid], sub)) && first == -1)
-	    first = i;
+	      tester(gid==-1 ? NULL : sf->glyphs[gid], sub)) && first==-1)
+	    first=i;
       }
-   } else if (search_type == 2) {	/* merge results */
-      for (i = 0; i < fv->map->enccount; ++i)
+   } else if (search_type==2) {	/* merge results */
+      for (i=0; i < fv->map->enccount; ++i)
 	 if (!fv->selected[i]) {
-	    gid = fv->map->map[i];
+	    gid=fv->map->map[i];
 	    if ((fv->selected[i] =
-		 tester(gid == -1 ? NULL : sf->glyphs[gid], sub))
-		&& first == -1)
-	       first = i;
+		 tester(gid==-1 ? NULL : sf->glyphs[gid], sub))
+		&& first==-1)
+	       first=i;
 	 }
    } else {			/* restrict selection */
-      for (i = 0; i < fv->map->enccount; ++i)
+      for (i=0; i < fv->map->enccount; ++i)
 	 if (fv->selected[i]) {
-	    gid = fv->map->map[i];
+	    gid=fv->map->map[i];
 	    if ((fv->selected[i] =
-		 tester(gid == -1 ? NULL : sf->glyphs[gid], sub))
-		&& first == -1)
-	       first = i;
+		 tester(gid==-1 ? NULL : sf->glyphs[gid], sub))
+		&& first==-1)
+	       first=i;
 	 }
    }
    return (first);
 }
 
 void FVBuildAccent(FontViewBase * fv, int onlyaccents) {
-   int i, cnt = 0, gid;
+   int i, cnt=0, gid;
 
    SplineChar dummy;
 
    SplineChar *sc;
 
-   for (i = 0; i < fv->map->enccount; ++i)
-      if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+   for (i=0; i < fv->map->enccount; ++i)
+      if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  SCWorthOutputting(fv->sf->glyphs[gid]))
 	 ++cnt;
 
    SFUntickAll(fv->sf);
-   for (i = 0; i < fv->map->enccount; ++i)
+   for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i]) {
-	 gid = fv->map->map[i];
-	 sc = NULL;
+	 gid=fv->map->map[i];
+	 sc=NULL;
 	 if (gid != -1) {
-	    sc = fv->sf->glyphs[gid];
+	    sc=fv->sf->glyphs[gid];
 	    if (sc != NULL && sc->ticked)
 	       continue;
 	 }
-	 if (sc == NULL)
-	   sc = SCBuildDummy(&dummy, fv->sf, fv->map, i);
+	 if (sc==NULL)
+	   sc=SCBuildDummy(&dummy, fv->sf, fv->map, i);
 	 if (SFIsSomethingBuildable
 	     (fv->sf, sc, fv->active_layer, onlyaccents)) {
-	    sc = SFMakeChar(fv->sf, fv->map, i);
-	    sc->ticked = true;
+	    sc=SFMakeChar(fv->sf, fv->map, i);
+	    sc->ticked=true;
 	    SCBuildComposit(fv->sf, sc, fv->active_layer, fv->active_bitmap,
 			    onlycopydisplayed);
 	 }
@@ -1249,19 +1249,19 @@ void FVBuildAccent(FontViewBase * fv, int onlyaccents) {
 void FVDetachGlyphs(FontViewBase * fv) {
    int i, j, gid;
 
-   EncMap *map = fv->map;
+   EncMap *map=fv->map;
 
-   int altered = false;
+   int altered=false;
 
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
-   for (i = 0; i < map->enccount; ++i)
-      if (fv->selected[i] && (gid = map->map[i]) != -1) {
-	 altered = true;
-	 map->map[i] = -1;
-	 if (map->backmap[gid] == i) {
-	    for (j = map->enccount - 1; j >= 0 && map->map[j] != gid; --j);
-	    map->backmap[gid] = j;
+   for (i=0; i < map->enccount; ++i)
+      if (fv->selected[i] && (gid=map->map[i]) != -1) {
+	 altered=true;
+	 map->map[i]=-1;
+	 if (map->backmap[gid]==i) {
+	    for (j=map->enccount - 1; j >= 0 && map->map[j] != gid; --j);
+	    map->backmap[gid]=j;
 	 }
 	 if (sf->glyphs[gid] != NULL && sf->glyphs[gid]->altuni != NULL
 	     && map->enc != &custom)
@@ -1272,26 +1272,26 @@ void FVDetachGlyphs(FontViewBase * fv) {
 void FVDetachAndRemoveGlyphs(FontViewBase * fv) {
    int i, j, gid;
 
-   EncMap *map = fv->map;
+   EncMap *map=fv->map;
 
-   SplineFont *sf = fv->sf;
+   SplineFont *sf=fv->sf;
 
-   int flags = -1;
+   int flags=-1;
 
-   int changed = false, altered = false;
+   int changed=false, altered=false;
 
    FontViewBase *fvs;
 
-   for (i = 0; i < map->enccount; ++i)
-      if (fv->selected[i] && (gid = map->map[i]) != -1) {
-	 altered = true;
-	 map->map[i] = -1;
-	 if (map->backmap[gid] == i) {
-	    for (j = map->enccount - 1; j >= 0 && map->map[j] != gid; --j);
-	    map->backmap[gid] = j;
-	    if (j == -1) {
+   for (i=0; i < map->enccount; ++i)
+      if (fv->selected[i] && (gid=map->map[i]) != -1) {
+	 altered=true;
+	 map->map[i]=-1;
+	 if (map->backmap[gid]==i) {
+	    for (j=map->enccount - 1; j >= 0 && map->map[j] != gid; --j);
+	    map->backmap[gid]=j;
+	    if (j==-1) {
 	       SFRemoveGlyph(sf, sf->glyphs[gid], &flags);
-	       changed = true;
+	       changed=true;
 	    } else if (sf->glyphs[gid] != NULL
 		       && sf->glyphs[gid]->altuni != NULL
 		       && map->enc != &custom)
@@ -1299,7 +1299,7 @@ void FVDetachAndRemoveGlyphs(FontViewBase * fv) {
 	 }
       }
    if (changed && !fv->sf->changed) {
-      fv->sf->changed = true;
+      fv->sf->changed=true;
    }
 }
 
@@ -1314,22 +1314,22 @@ void FVMetricsCenter(FontViewBase * fv, int docenter) {
 
    memset(transform, 0, sizeof(transform));
    memset(itransform, 0, sizeof(itransform));
-   transform[0] = transform[3] = 1.0;
-   itransform[0] = itransform[3] = 1.0;
-   itransform[2] = tan(fv->sf->italicangle * 3.1415926535897932 / 180.0);
-   bvts[1].func = bvt_none;
-   bvts[0].func = bvt_transmove;
-   bvts[0].y = 0;
+   transform[0]=transform[3]=1.0;
+   itransform[0]=itransform[3]=1.0;
+   itransform[2]=tan(fv->sf->italicangle * 3.1415926535897932 / 180.0);
+   bvts[1].func=bvt_none;
+   bvts[0].func=bvt_transmove;
+   bvts[0].y=0;
    if (!fv->sf->onlybitmaps) {
-      for (i = 0; i < fv->map->enccount; ++i) {
-	 if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
-	     (sc = fv->sf->glyphs[gid]) != NULL) {
-	    if (itransform[2] == 0)
+      for (i=0; i < fv->map->enccount; ++i) {
+	 if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
+	     (sc=fv->sf->glyphs[gid]) != NULL) {
+	    if (itransform[2]==0)
 	       SplineCharFindBounds(sc, &bb);
 	    else {
 	       SplineSet *base, *temp;
 
-	       base = LayerAllSplines(&sc->layers[fv->active_layer]);
+	       base=LayerAllSplines(&sc->layers[fv->active_layer]);
 	       temp =
 		  SplinePointListTransform(SplinePointListCopy(base),
 					   itransform, tpt_AllPoints);
@@ -1338,14 +1338,14 @@ void FVMetricsCenter(FontViewBase * fv, int docenter) {
 	       SplinePointListsFree(temp);
 	    }
 	    if (docenter)
-	       transform[4] = (sc->width - (bb.maxx - bb.minx)) / 2 - bb.minx;
+	       transform[4]=(sc->width - (bb.maxx - bb.minx)) / 2 - bb.minx;
 	    else
-	       transform[4] = (sc->width - (bb.maxx - bb.minx)) / 3 - bb.minx;
+	       transform[4]=(sc->width - (bb.maxx - bb.minx)) / 3 - bb.minx;
 	    if (transform[4] != 0) {
 	       FVTrans(fv, sc, transform, NULL,
 		       fvt_dontmovewidth | fvt_alllayers);
-	       bvts[0].x = transform[4];
-	       for (bdf = fv->sf->bitmaps; bdf != NULL; bdf = bdf->next)
+	       bvts[0].x=transform[4];
+	       for (bdf=fv->sf->bitmaps; bdf != NULL; bdf=bdf->next)
 		  if (gid < bdf->glyphcnt && bdf->glyphs[gid] != NULL)
 		     BCTrans(bdf, bdf->glyphs[gid], bvts, fv);
 	    }
@@ -1355,13 +1355,13 @@ void FVMetricsCenter(FontViewBase * fv, int docenter) {
       double scale =
 	 (fv->sf->ascent +
 	  fv->sf->descent) / (double) (fv->active_bitmap->pixelsize);
-      for (i = 0; i < fv->map->enccount; ++i) {
-	 if (fv->selected[i] && (gid = fv->map->map[i]) != -1 &&
+      for (i=0; i < fv->map->enccount; ++i) {
+	 if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	     fv->sf->glyphs[gid] != NULL) {
-	    BDFChar *bc = fv->active_bitmap->glyphs[gid];
+	    BDFChar *bc=fv->active_bitmap->glyphs[gid];
 
-	    if (bc == NULL)
-	       bc = BDFMakeChar(fv->active_bitmap, fv->map, i);
+	    if (bc==NULL)
+	       bc=BDFMakeChar(fv->active_bitmap, fv->map, i);
 	    BDFCharFindBounds(bc, &ib);
 	    if (docenter)
 	       transform[4] =
@@ -1372,8 +1372,8 @@ void FVMetricsCenter(FontViewBase * fv, int docenter) {
 	    if (transform[4] != 0) {
 	       FVTrans(fv, fv->sf->glyphs[gid], transform, NULL,
 		       fvt_dontmovewidth);
-	       bvts[0].x = transform[4];
-	       for (bdf = fv->sf->bitmaps; bdf != NULL; bdf = bdf->next)
+	       bvts[0].x=transform[4];
+	       for (bdf=fv->sf->bitmaps; bdf != NULL; bdf=bdf->next)
 		  if (gid < bdf->glyphcnt && bdf->glyphs[gid] != NULL)
 		     BCTrans(bdf, bdf->glyphs[gid], bvts, fv);
 	    }
@@ -1382,7 +1382,7 @@ void FVMetricsCenter(FontViewBase * fv, int docenter) {
    }
 }
 
-static void _FVRevert(FontViewBase *fv, int tobackup) {
+static void _FVRevert(FontViewBase *fv,int tobackup) {
    SplineFont *temp,*old=fv->cidmaster?fv->cidmaster:fv->sf;
    BDFFont *bdf;
    int i;
@@ -1396,7 +1396,7 @@ static void _FVRevert(FontViewBase *fv, int tobackup) {
       /* we can only revert to backup if it's an sfd file. So we use filename */
       /*  here. In the normal case we revert to whatever file we read it from */
       /*  (sfd or not) so we use origname */
-      char *buf = malloc(strlen(old->filename) + 20);
+      char *buf=malloc(strlen(old->filename) + 20);
 
       strcpy(buf, old->filename);
       if (old->compression != 0) {
@@ -1404,17 +1404,17 @@ static void _FVRevert(FontViewBase *fv, int tobackup) {
 
 	 strcat(buf, compressors[old->compression - 1].ext);
 	 strcat(buf, "~");
-	 tmpfile = Decompress(buf, old->compression - 1);
-	 if (tmpfile == NULL)
-	    temp = NULL;
+	 tmpfile=Decompress(buf, old->compression - 1);
+	 if (tmpfile==NULL)
+	    temp=NULL;
 	 else {
-	    temp = ReadSplineFont(tmpfile, 0);
+	    temp=ReadSplineFont(tmpfile, 0);
 	    unlink(tmpfile);
 	    free(tmpfile);
 	 }
       } else {
 	 strcat(buf, "~");
-	 temp = ReadSplineFont(buf, 0);
+	 temp=ReadSplineFont(buf, 0);
       }
       free(buf);
 
@@ -1442,11 +1442,11 @@ static void _FVRevert(FontViewBase *fv, int tobackup) {
 
    if (temp->filename!=NULL) {
       free(temp->filename);
-      temp->filename = copy(old->filename);
+      temp->filename=copy(old->filename);
    }
    if (temp->origname!=NULL) {
       free(temp->origname);
-      temp->origname = copy(old->origname);
+      temp->origname=copy(old->origname);
    }
 
    temp->compression=old->compression;
@@ -1488,56 +1488,56 @@ void FVRevertBackup(FontViewBase * fv) {
 
 /*                             FV Interface                                   */
 
-FontViewBase *_FontViewCreate(SplineFont * sf) {
-   FontViewBase *fv = calloc(1, sizeof(FontViewBase));
+FontViewBase *_FontViewCreate(SplineFont *sf) {
+   FontViewBase *fv=calloc(1, sizeof(FontViewBase));
 
    int i;
 
-   fv->nextsame = sf->fv;
-   fv->active_layer = ly_fore;
-   sf->fv = fv;
+   fv->nextsame=sf->fv;
+   fv->active_layer=ly_fore;
+   sf->fv=fv;
    if (sf->mm != NULL) {
-      sf->mm->normal->fv = fv;
-      for (i = 0; i < sf->mm->instance_count; ++i)
-	 sf->mm->instances[i]->fv = fv;
+      sf->mm->normal->fv=fv;
+      for (i=0; i < sf->mm->instance_count; ++i)
+	 sf->mm->instances[i]->fv=fv;
    }
-   if (sf->subfontcnt == 0) {
-      fv->sf = sf;
+   if (sf->subfontcnt==0) {
+      fv->sf=sf;
       if (fv->nextsame != NULL) {
-	 fv->map = EncMapCopy(fv->nextsame->map);
+	 fv->map=EncMapCopy(fv->nextsame->map);
 	 fv->normal =
 	    fv->nextsame->normal ==
 	    NULL ? NULL : EncMapCopy(fv->nextsame->normal);
       } else if (sf->compacted) {
-	 fv->normal = sf->map;
-	 fv->map = CompactEncMap(EncMapCopy(sf->map), sf);
+	 fv->normal=sf->map;
+	 fv->map=CompactEncMap(EncMapCopy(sf->map), sf);
       } else {
-	 fv->map = sf->map;
-	 fv->normal = NULL;
+	 fv->map=sf->map;
+	 fv->normal=NULL;
       }
    } else {
-      fv->cidmaster = sf;
-      for (i = 0; i < sf->subfontcnt; ++i)
-	 sf->subfonts[i]->fv = fv;
-      for (i = 0; i < sf->subfontcnt; ++i)	/* Search for a subfont that contains more than ".notdef" (most significant in .gai fonts) */
+      fv->cidmaster=sf;
+      for (i=0; i < sf->subfontcnt; ++i)
+	 sf->subfonts[i]->fv=fv;
+      for (i=0; i < sf->subfontcnt; ++i)	/* Search for a subfont that contains more than ".notdef" (most significant in .gai fonts) */
 	 if (sf->subfonts[i]->glyphcnt > 1) {
-	    fv->sf = sf->subfonts[i];
+	    fv->sf=sf->subfonts[i];
 	    break;
 	 }
-      if (fv->sf == NULL)
-	 fv->sf = sf->subfonts[0];
-      sf = fv->sf;
-      if (fv->nextsame == NULL)
+      if (fv->sf==NULL)
+	 fv->sf=sf->subfonts[0];
+      sf=fv->sf;
+      if (fv->nextsame==NULL)
 	 EncMapFree(sf->map);
-      fv->map = EncMap1to1(sf->glyphcnt);
+      fv->map=EncMap1to1(sf->glyphcnt);
    }
-   fv->selected = calloc(fv->map->enccount, sizeof(char));
+   fv->selected=calloc(fv->map->enccount, sizeof(char));
 
    return (fv);
 }
 
-FontViewBase *FontViewCreate(SplineFont * sf, int hide) {
-   FontViewBase *fv = _FontViewCreate(sf);
+FontViewBase *FontViewCreate(SplineFont *sf, int hide) {
+   FontViewBase *fv=_FontViewCreate(sf);
 
    return (fv);
 }
@@ -1547,11 +1547,11 @@ FontViewBase *FVAppend(FontViewBase * fv) {
    /*  created. but we don't create any windows here, so... */
    FontViewBase *test;
 
-   if (fv_list == NULL)
-      fv_list = fv;
+   if (fv_list==NULL)
+      fv_list=fv;
    else {
-      for (test = fv_list; test->next != NULL; test = test->next);
-      test->next = fv;
+      for (test=fv_list; test->next != NULL; test=test->next);
+      test->next=fv;
    }
    return (fv);
 }
@@ -1560,22 +1560,22 @@ void FontViewFree(FontViewBase * fv) {
    int i;
    FontViewBase *prev;
 
-   if (fv->nextsame == NULL && fv->sf->fv == fv) {
+   if (fv->nextsame==NULL && fv->sf->fv==fv) {
       EncMapFree(fv->map);
       SplineFontFree(fv->cidmaster ? fv->cidmaster : fv->sf);
    } else {
       EncMapFree(fv->map);
-      if (fv->sf->fv == fv) {
-	 if (fv->cidmaster == NULL)
-	    fv->sf->fv = fv->nextsame;
+      if (fv->sf->fv==fv) {
+	 if (fv->cidmaster==NULL)
+	    fv->sf->fv=fv->nextsame;
 	 else {
-	    fv->cidmaster->fv = fv->nextsame;
-	    for (i = 0; i < fv->cidmaster->subfontcnt; ++i)
-	       fv->cidmaster->subfonts[i]->fv = fv->nextsame;
+	    fv->cidmaster->fv=fv->nextsame;
+	    for (i=0; i < fv->cidmaster->subfontcnt; ++i)
+	       fv->cidmaster->subfonts[i]->fv=fv->nextsame;
 	 }
       } else {
-	 for (prev = fv->sf->fv; prev->nextsame != fv; prev = prev->nextsame);
-	 prev->nextsame = fv->nextsame;
+	 for (prev=fv->sf->fv; prev->nextsame != fv; prev=prev->nextsame);
+	 prev->nextsame=fv->nextsame;
       }
    }
    DictionaryFree(fv->fontvars);
@@ -1585,8 +1585,8 @@ void FontViewFree(FontViewBase * fv) {
 }
 
 int FVWinInfo(FontViewBase * fv, int *cc, int *rc) {
-   *cc = 16;
-   *rc = 4;
+   *cc=16;
+   *rc=4;
    return (-1);
 }
 
@@ -1594,11 +1594,11 @@ FontViewBase *FontViewFirst(void) {
    return fv_list;
 }
 
-int SFIsActive(SplineFont * sf) {
+int SFIsActive(SplineFont *sf) {
    FontViewBase *fv;
 
-   for (fv = fv_list; fv != NULL; fv = fv->next)
-      if (fv->sf == sf)
+   for (fv=fv_list; fv != NULL; fv=fv->next)
+      if (fv->sf==sf)
 	 return (true);
 
    return (false);
@@ -1609,24 +1609,24 @@ SplineFont *FontWithThisFilename(const char *filename) {
    FontViewBase *fv;
 
    GFileGetAbsoluteName((char *) filename, buffer, sizeof(buffer));
-   for (fv = fv_list; fv != NULL; fv = fv->next) {
-      if (fv->sf->filename != NULL && strcmp(fv->sf->filename, buffer) == 0)
+   for (fv=fv_list; fv != NULL; fv=fv->next) {
+      if (fv->sf->filename != NULL && strcmp(fv->sf->filename, buffer)==0)
 	 return (fv->sf);
       else if (fv->sf->origname != NULL
-	       && strcmp(fv->sf->origname, buffer) == 0)
+	       && strcmp(fv->sf->origname, buffer)==0)
 	 return (fv->sf);
    }
    return (NULL);
 }
 
 void FontViewClose(FontViewBase * fv) {
-   if (fv_list == fv)
-      fv_list = fv->next;
+   if (fv_list==fv)
+      fv_list=fv->next;
    else {
       FontViewBase *n;
 
-      for (n = fv_list; n->next != fv; n = n->next);
-      n->next = fv->next;
+      for (n=fv_list; n->next != fv; n=n->next);
+      n->next=fv->next;
    }
    FontViewFree(fv);
 }

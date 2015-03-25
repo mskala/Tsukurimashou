@@ -1,4 +1,4 @@
-/* $Id: main.c 3775 2015-03-03 13:54:39Z mskala $ */
+/* $Id: main.c 3857 2015-03-25 13:26:40Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
  * Copyright (C) 2014  Matthew Skala
@@ -131,10 +131,10 @@ int main(int argc,char **argv) {
      exit(0);
    
    /* init things that are only needed when we get past command-line help */
-   if (default_encoding == NULL)
-     default_encoding = FindOrMakeEncoding("ISO8859-1");
-   if (default_encoding == NULL)
-     default_encoding = &custom;
+   if (default_encoding==NULL)
+     default_encoding=FindOrMakeEncoding("ISO8859-1");
+   if (default_encoding==NULL)
+     default_encoding=&custom;
 
    /* execute script, command, or interactively */
    if (command!=NULL)

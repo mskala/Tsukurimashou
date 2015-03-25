@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: baseviews.h 3862 2015-03-25 15:56:41Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,15 @@
 #   include "ffglib.h"
 #   include "splinefont.h"
 
-#   define free_with_debug(x) { fprintf(stderr,"%p FREE()\n",x); free(x); }
+#   define free_with_debug(x) { afprintf(stderr,"%p FREE()\n",x); free(x); }
 
 
 enum widthtype { wt_width, wt_lbearing, wt_rbearing, wt_bearings, wt_vwidth };
 
-enum fvtrans_flags { fvt_alllayers = 1, fvt_round_to_int = 2,
-   fvt_dontsetwidth = 4, fvt_dontmovewidth = 8, fvt_scalekernclasses = 0x10,
-   fvt_scalepstpos = 0x20, fvt_dogrid = 0x40, fvt_partialreftrans = 0x80,
-   fvt_justapply = 0x100, fvt_revert = 0x200
+enum fvtrans_flags { fvt_alllayers=1, fvt_round_to_int=2,
+   fvt_dontsetwidth=4, fvt_dontmovewidth=8, fvt_scalekernclasses=0x10,
+   fvt_scalepstpos=0x20, fvt_dogrid=0x40, fvt_partialreftrans=0x80,
+   fvt_justapply=0x100, fvt_revert=0x200
 };
 
 typedef struct drect {
@@ -94,22 +94,22 @@ enum cvtools {
    cvt_3d_rotate, cvt_perspective,
    cvt_rect, cvt_poly,
    cvt_elipse, cvt_star,
-   cvt_minify, cvt_max = cvt_minify,
-   cvt_none = -1,
-   cvt_spirog4 = cvt_curve, cvt_spirog2 = cvt_hvcurve,
-   cvt_spirocorner = cvt_corner, cvt_spiroleft = cvt_tangent,
-   cvt_spiroright = cvt_pen
+   cvt_minify, cvt_max=cvt_minify,
+   cvt_none=-1,
+   cvt_spirog4=cvt_curve, cvt_spirog2=cvt_hvcurve,
+   cvt_spirocorner=cvt_corner, cvt_spiroleft=cvt_tangent,
+   cvt_spiroright=cvt_pen
 };
 
 enum bvtools { bvt_pointer, bvt_magnify,
    bvt_pencil, bvt_line,
    bvt_shift, bvt_hand,
-   bvt_minify, bvt_max = bvt_minify, bvt_eyedropper,
+   bvt_minify, bvt_max=bvt_minify, bvt_eyedropper,
    bvt_setwidth, bvt_setvwidth,
    bvt_rect, bvt_filledrect,
    bvt_elipse, bvt_filledelipse,
-   bvt_max2 = bvt_filledelipse,
-   bvt_none = -1,
+   bvt_max2=bvt_filledelipse,
+   bvt_none=-1,
    bvt_fliph =
       0, bvt_flipv, bvt_rotate90cw, bvt_rotate90ccw, bvt_rotate180, bvt_skew,
       bvt_transmove
@@ -302,7 +302,7 @@ enum fvformats { fv_bdf, fv_ttf, fv_pk, fv_pcf, fv_mac, fv_win, fv_palm,
    fv_svg, fv_svgtemplate,
    fv_glif, fv_gliftemplate,
    fv_fig,
-   fv_pythonbase = 0x100
+   fv_pythonbase=0x100
 };
 
 extern enum undotype CopyUndoType(void);
@@ -325,9 +325,9 @@ extern void SCCopyLookupData(SplineChar * sc);
 
 extern void PasteRemoveSFAnchors(SplineFont *);
 
-extern void PasteAnchorClassMerge(SplineFont * sf, AnchorClass * into,
+extern void PasteAnchorClassMerge(SplineFont *sf, AnchorClass * into,
 				  AnchorClass * from);
-extern void PasteRemoveAnchorClass(SplineFont * sf, AnchorClass * dying);
+extern void PasteRemoveAnchorClass(SplineFont *sf, AnchorClass * dying);
 
 /**
  * Serialize and undo into a string.
@@ -399,9 +399,9 @@ extern void FVCanonicalContours(FontViewBase * fv);
 
 extern void FVCluster(FontViewBase * fv);
 
-extern void CIDSetEncMap(FontViewBase * fv, SplineFont * new);
+extern void CIDSetEncMap(FontViewBase * fv, SplineFont *new);
 
-extern void FVInsertInCID(FontViewBase * fv, SplineFont * sf);
+extern void FVInsertInCID(FontViewBase * fv, SplineFont *sf);
 
 extern void FVAutoHint(FontViewBase * fv);
 
@@ -437,7 +437,7 @@ extern int FVImportMult(FontViewBase * fv, char *filename, int toback,
 			int bf);
 extern int FVImportBDF(FontViewBase * fv, char *filename, int ispk,
 		       int toback);
-extern void MergeFont(FontViewBase * fv, SplineFont * other,
+extern void MergeFont(FontViewBase * fv, SplineFont *other,
 		      int preserveCrossFontKerning);
 extern int FVImportImages(FontViewBase * fv, char *path, int isimage,
 			  int toback, int flags);
@@ -448,7 +448,7 @@ extern void ScriptPrint(FontViewBase * fv, int type, int32 * pointsizes,
 			char *outputfile);
 extern int FVBParseSelectByPST(FontViewBase * fv, struct lookup_subtable *sub,
 			       int search_type);
-extern int SFScaleToEm(SplineFont * sf, int ascent, int descent);
+extern int SFScaleToEm(SplineFont *sf, int ascent, int descent);
 
 extern void TransHints(StemInfo * stem, real mul1, real off1, real mul2,
 		       real off2, int round_to_int);
@@ -472,7 +472,7 @@ extern void FVInline(struct fontviewbase *fv, real width, real inset);
 
 extern void FVShadow(struct fontviewbase *fv, real angle, real outline_width,
 		     real shadow_length, int wireframe);
-extern void CI_Init(struct counterinfo *ci, SplineFont * sf);
+extern void CI_Init(struct counterinfo *ci, SplineFont *sf);
 
 extern void FVEmbolden(struct fontviewbase *fv, enum embolden_type type,
 		       struct lcg_zones *zones);
@@ -492,7 +492,7 @@ struct smallcaps {
    double italic_angle, tan_ia;
 };
 
-extern void SmallCapsFindConstants(struct smallcaps *small, SplineFont * sf,
+extern void SmallCapsFindConstants(struct smallcaps *small, SplineFont *sf,
 				   int layer);
 
 enum glyphchange_type { gc_generic, gc_smallcaps, gc_subsuper, gc_max };
@@ -550,7 +550,7 @@ struct xheightinfo {
    double serif_height;
 };
 
-extern void InitXHeightInfo(SplineFont * sf, int layer,
+extern void InitXHeightInfo(SplineFont *sf, int layer,
 			    struct xheightinfo *xi);
 extern void ChangeXHeight(FontViewBase * fv, CharViewBase * cv,
 			  struct xheightinfo *xi);
@@ -665,7 +665,7 @@ extern void SC_MoreLayers(SplineChar *, Layer * old);
 
 extern void SCLayersChange(SplineChar * sc);
 
-extern void SFLayerChange(SplineFont * sf);
+extern void SFLayerChange(SplineFont *sf);
 
 extern void SCTile(SplineChar * sc, int layer);
 
@@ -680,15 +680,15 @@ extern void MVCopyChar(FontViewBase * fv, BDFFont * bdf, SplineChar * sc,
 extern void PasteIntoMV(FontViewBase * fv, BDFFont * bdf, SplineChar * sc,
 			int doclear);
 
-extern int HasLicense(SplineFont *, FILE *);
+extern int HasLicense(SplineFont *, AFILE *);
 
 extern int OFLibUploadFont(OFLibData *);
 
-enum search_flags { sv_reverse = 0x1, sv_flips = 0x2, sv_rotate = 0x4,
-   sv_scale = 0x8, sv_endpoints = 0x10
+enum search_flags { sv_reverse=0x1, sv_flips=0x2, sv_rotate=0x4,
+   sv_scale=0x8, sv_endpoints=0x10
 };
 
-enum flipset { flip_none = 0, flip_x, flip_y, flip_xy };
+enum flipset { flip_none=0, flip_x, flip_y, flip_xy };
 
 typedef struct searchdata {
    SplineChar sc_srch, sc_rpl;
@@ -766,7 +766,7 @@ struct instrdata {
    struct instrdata *next;
 };
 
-extern uint8 *_IVParse(SplineFont * sf, char *text, int *len,
+extern uint8 *_IVParse(SplineFont *sf, char *text, int *len,
 		       void (*IVError) (void *, char *, int), void *iv);
 extern char *_IVUnParseInstrs(uint8 * instrs, int instr_cnt);
 
@@ -786,7 +786,7 @@ extern int MMReblend(FontViewBase * fv, MMSet * mm);
 
 extern FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
 					 real blends[MmMax], int tonew);
-extern void FVB_MakeNamelist(FontViewBase * fv, FILE * file);
+extern void FVB_MakeNamelist(FontViewBase * fv, AFILE *file);
 
 /*
  * Code which wants the fontview to redraw its title can call here to
@@ -798,13 +798,13 @@ extern void AutoWidth2(FontViewBase * fv, int separation, int min_side,
 		       int max_side, int chunk_height, int loop_cnt);
 extern void GuessOpticalOffset(SplineChar * sc, int layer, real * _loff,
 			       real * _roff, int chunk_height);
-extern void AutoKern2(SplineFont * sf, int layer, SplineChar ** left,
+extern void AutoKern2(SplineFont *sf, int layer, SplineChar ** left,
 		      SplineChar ** right, struct lookup_subtable *into,
 		      int separation, int min_kern, int from_closest_approach,
 		      int only_closer, int chunk_height,
 		      void (*addkp) (void *data, SplineChar * left,
 				     SplineChar * r, int off), void *data);
-extern void AutoKern2NewClass(SplineFont * sf, int layer, char **leftnames,
+extern void AutoKern2NewClass(SplineFont *sf, int layer, char **leftnames,
 			      char **rightnames, int lcnt, int rcnt,
 			      void (*kcAddOffset) (void *data, int left_index,
 						   int right_index,
@@ -812,7 +812,7 @@ extern void AutoKern2NewClass(SplineFont * sf, int layer, char **leftnames,
 			      int separation, int min_kern,
 			      int from_closest_approach, int only_closer,
 			      int chunk_height);
-extern void AutoKern2BuildClasses(SplineFont * sf, int layer,
+extern void AutoKern2BuildClasses(SplineFont *sf, int layer,
 				  SplineChar ** leftglyphs,
 				  SplineChar ** rightglyphs,
 				  struct lookup_subtable *sub, int separation,

@@ -1,4 +1,4 @@
-/* $Id: unicoderange.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: unicoderange.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -49,8 +49,8 @@ struct rangeinfo {
 #define RANGEINFO_EMPTY { NULL, 0, 0 }
 
 
-enum ur_flags { ur_includeempty = 1, ur_sortbyname = 2, ur_sortbyunicode =
+enum ur_flags { ur_includeempty=1, ur_sortbyname=2, ur_sortbyunicode =
       4 };
-extern struct rangeinfo *SFUnicodeRanges(SplineFont * sf,
+extern struct rangeinfo *SFUnicodeRanges(SplineFont *sf,
 					 enum ur_flags flags);
 extern int unicoderange_cnt;

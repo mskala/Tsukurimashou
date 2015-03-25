@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 3502 2014-11-30 12:26:48Z mskala $ */
+/* $Id: parsepfa.c 3859 2015-03-25 14:20:57Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ struct fontparse {
    int instring;
    int fdindex;
    char **pending_parse;
-   FILE *sfnts;
+   AFILE *sfnts;
 
    unsigned int alreadycomplained:1;
 
@@ -72,14 +72,14 @@ struct fontparse {
    int depth;
 };
 
-static void copyenc(char *encoding[256], char *std[256]) {
+static void copyenc(char *encoding[256],char *std[256]) {
    int i;
 
-   for (i = 0; i < 256; ++i)
-      encoding[i] = copy(std[i]);
+   for (i=0; i < 256; ++i)
+      encoding[i]=copy(std[i]);
 }
 
-char *AdobeStandardEncoding[] = {
+char *AdobeStandardEncoding[]={
 /* 0000 */ ".notdef",
 /* 0001 */ ".notdef",
 /* 0002 */ ".notdef",
@@ -342,7 +342,7 @@ static void setStdEnc(char *encoding[256]) {
 }
 
 static void setLatin1Enc(char *encoding[256]) {
-   static char *latin1enc[] = {
+   static char *latin1enc[]={
 /* 0000 */ ".notdef",
 /* 0001 */ ".notdef",
 /* 0002 */ ".notdef",
@@ -605,7 +605,7 @@ static void setLatin1Enc(char *encoding[256]) {
    copyenc(encoding, latin1enc);
 }
 
-char *AdobeExpertEncoding[] = {
+char *AdobeExpertEncoding[]={
 /* 0000 */ ".notdef",
 /* 0001 */ ".notdef",
 /* 0002 */ ".notdef",
@@ -867,112 +867,112 @@ char *AdobeExpertEncoding[] = {
 static struct fontdict *MakeEmptyFont(void) {
    struct fontdict *ret;
 
-   ret = calloc(1, sizeof(struct fontdict));
-   ret->fontinfo = calloc(1, sizeof(struct fontinfo));
-   ret->chars = calloc(1, sizeof(struct pschars));
-   ret->private = calloc(1, sizeof(struct private));
-   ret->private->subrs = calloc(1, sizeof(struct pschars));
-   ret->private->private = calloc(1, sizeof(struct psdict));
-   ret->private->leniv = 4;
-   ret->encoding_name = &custom;
-   ret->fontinfo->fstype = -1;
+   ret=calloc(1, sizeof(struct fontdict));
+   ret->fontinfo=calloc(1, sizeof(struct fontinfo));
+   ret->chars=calloc(1, sizeof(struct pschars));
+   ret->private=calloc(1, sizeof(struct private));
+   ret->private->subrs=calloc(1, sizeof(struct pschars));
+   ret->private->private=calloc(1, sizeof(struct psdict));
+   ret->private->leniv=4;
+   ret->encoding_name=&custom;
+   ret->fontinfo->fstype=-1;
    return (ret);
 }
 
 static struct fontdict *PSMakeEmptyFont(void) {
-   struct fontdict *ret = MakeEmptyFont();
+   struct fontdict *ret=MakeEmptyFont();
 
-   ret->charprocs = calloc(1, sizeof(struct charprocs));
+   ret->charprocs=calloc(1, sizeof(struct charprocs));
    return (ret);
 }
 
-static char *myfgets(char *str, int len, FILE * file) {
+static char *myfgets(char *str,int len,AFILE *file) {
    char *pt, *end;
-   int ch = 0;
+   int ch=0;
 
-   for (pt = str, end = str + len - 1;
-	pt < end && (ch = getc(file)) != EOF && ch != '\r' && ch != '\n';
-	*pt++ = ch);
-   if (ch == '\n')
-      *pt++ = '\n';
-   else if (ch == '\r') {
-      *pt++ = '\r';
-      if ((ch = getc(file)) != '\n')
-	 ungetc(ch, file);
+   for (pt=str, end=str + len - 1;
+	pt < end && (ch=agetc(file)) != EOF && ch != '\r' && ch != '\n';
+	*pt++=ch);
+   if (ch=='\n')
+      *pt++='\n';
+   else if (ch=='\r') {
+      *pt++='\r';
+      if ((ch=agetc(file)) != '\n')
+	 aungetc(ch, file);
       else
-	 *pt++ = '\n';
+	 *pt++='\n';
    }
-   if (pt == str)
+   if (pt==str)
       return (NULL);
-   *pt = '\0';
+   *pt='\0';
    return (str);
 }
 
-static char *myfgetsNoNulls(char *str, int len, FILE * file) {
+static char *myfgetsNoNulls(char *str,int len,AFILE *file) {
    char *pt, *end;
-   int ch = 0;
+   int ch=0;
 
-   for (pt = str, end = str + len - 1;
-	pt < end && (ch = getc(file)) != EOF && ch != '\r' && ch != '\n';) {
+   for (pt=str, end=str + len - 1;
+	pt < end && (ch=agetc(file)) != EOF && ch != '\r' && ch != '\n';) {
       if (ch != '\0')
-	 *pt++ = ch;
+	 *pt++=ch;
    }
-   if (ch == '\n')
-      *pt++ = '\n';
-   else if (ch == '\r') {
-      *pt++ = '\r';
-      if ((ch = getc(file)) != '\n')
-	 ungetc(ch, file);
+   if (ch=='\n')
+      *pt++='\n';
+   else if (ch=='\r') {
+      *pt++='\r';
+      if ((ch=agetc(file)) != '\n')
+	 aungetc(ch, file);
       else
-	 *pt++ = '\n';
+	 *pt++='\n';
    }
-   if (pt == str)
+   if (pt==str)
       return (NULL);
-   *pt = '\0';
+   *pt='\0';
    return (str);
 }
 
-static char *getstring(char *start, FILE * in) {
+static char *getstring(char *start,AFILE *in) {
    char *end, *ret;
-   int parencnt = 0, len = 0;
+   int parencnt=0, len=0;
    char buffer[512];
 
    while (1) {
       while (*start != '\0' && *start != '(')
 	 ++start;
-      if (*start == '\0') {
-	 if (myfgetsNoNulls(buffer, sizeof(buffer), in) == NULL)
+      if (*start=='\0') {
+	 if (myfgetsNoNulls(buffer, sizeof(buffer), in)==NULL)
 	    return (copy(""));
-	 start = buffer;
+	 start=buffer;
       } else
 	 break;
    }
    ++start;
-   ret = NULL;
-   len = 1;
+   ret=NULL;
+   len=1;
    while (1) {
-      for (end = start; *end != '\0' && (*end != ')' || parencnt > 0); ++end) {
-	 if (*end == '\\' && (end[1] == '(' || end[1] == ')'))
+      for (end=start; *end != '\0' && (*end != ')' || parencnt > 0); ++end) {
+	 if (*end=='\\' && (end[1]=='(' || end[1]==')'))
 	    ++end;
-	 else if (*end == '(')
+	 else if (*end=='(')
 	    ++parencnt;
-	 else if (*end == ')')
+	 else if (*end==')')
 	    --parencnt;
       }
       if (end > start) {
-	 if (ret == NULL)
-	    ret = malloc(end - start + 1);
+	 if (ret==NULL)
+	    ret=malloc(end - start + 1);
 	 else
-	    ret = realloc(ret, len + end - start);
+	    ret=realloc(ret, len + end - start);
 	 strncpy(ret + len - 1, start, end - start);
 	 len += end - start;
-	 ret[len - 1] = '\0';
+	 ret[len - 1]='\0';
       }
       if (*end != '\0')
 	 break;
-      if (myfgetsNoNulls(buffer, sizeof(buffer), in) == NULL)
+      if (myfgetsNoNulls(buffer, sizeof(buffer), in)==NULL)
 	 return (ret);
-      start = buffer;
+      start=buffer;
    }
    return (ret);
 }
@@ -982,74 +982,74 @@ static char *gettoken(char *start) {
 
    while (*start != '\0' && *start != '/' && *start != '(')
       ++start;
-   if (*start == '/' || *start == '(')
+   if (*start=='/' || *start=='(')
       ++start;
-   for (end = start;
+   for (end=start;
 	*end != '\0' && !isspace(*end) && *end != '[' && *end != '/'
 	&& *end != '{' && *end != '(' && *end != ')'; ++end);
-   ret = malloc(end - start + 1);
+   ret=malloc(end - start + 1);
    if (end > start)
       strncpy(ret, start, end - start);
-   ret[end - start] = '\0';
+   ret[end - start]='\0';
    return (ret);
 }
 
 static int getbool(char *start) {
    while (isspace(*start))
       ++start;
-   if (*start == 'T' || *start == 't')
+   if (*start=='T' || *start=='t')
       return (1);
 
    return (0);
 }
 
-static void fillintarray(int *array, char *start, int maxentries) {
+static void fillintarray(int *array,char *start,int maxentries) {
    int i;
    char *end;
 
    while (*start != '\0' && *start != '[' && *start != '{')
       ++start;
-   if (*start == '[' || *start == '{')
+   if (*start=='[' || *start=='{')
       ++start;
-   for (i = 0; i < maxentries && *start != ']' && *start != '}'; ++i) {
-      array[i] = (int) strtod(start, &end);
-      if (start == end)
+   for (i=0; i < maxentries && *start != ']' && *start != '}'; ++i) {
+      array[i]=(int) strtod(start, &end);
+      if (start==end)
 	 return;
-      start = end;
+      start=end;
       while (isspace(*start))
 	 ++start;
    }
 }
 
-static void fillrealarray(real * array, char *start, int maxentries) {
+static void fillrealarray(real *array,char *start,int maxentries) {
    int i;
    char *end;
 
    while (*start != '\0' && *start != '[' && *start != '{')
       ++start;
-   if (*start == '[' || *start == '{')
+   if (*start=='[' || *start=='{')
       ++start;
-   for (i = 0; i < maxentries && *start != ']' && *start != '}'; ++i) {
+   for (i=0; i < maxentries && *start != ']' && *start != '}'; ++i) {
       while (isspace(*start))
 	 ++start;
-      if (isdigit(*start) || *start == '-' || *start == '.')
-	 array[i] = strtod(start, &end);
-      else if (strncmp(start, "div", 3) == 0 && i >= 2) {
+      if (isdigit(*start) || *start=='-' || *start=='.')
+	 array[i]=strtod(start, &end);
+      else if (strncmp(start, "div", 3)==0 && i >= 2) {
 	 /* Some of Luc Devroye's fonts have a "div" in the FontMatrix */
 	 array[i - 2] /= array[i - 1];
 	 i -= 2;
-	 end = start + 3;
+	 end=start + 3;
       } else
 	 return;
-      if (start == end)
+      if (start==end)
 	 return;
-      start = end;
+      start=end;
       while (isspace(*start))
 	 ++start;
    }
 }
 
-static void InitDict(struct psdict *dict, char *line) {
+static void InitDict(struct psdict *dict,char *line) {
    while (*line != '/' && *line != '\0')
       ++line;
    while (!isspace(*line) && *line != '\0')
@@ -1058,72 +1058,72 @@ static void InitDict(struct psdict *dict, char *line) {
    if (dict->next > 0) {
       int i;			/* Shouldn't happen, but did in a bad file */
 
-      dict->keys = realloc(dict->keys, dict->cnt * sizeof(char *));
-      dict->values = realloc(dict->values, dict->cnt * sizeof(char *));
-      for (i = dict->next; i < dict->cnt; ++i) {
-	 dict->keys[i] = NULL;
-	 dict->values[i] = NULL;
+      dict->keys=realloc(dict->keys, dict->cnt * sizeof(char *));
+      dict->values=realloc(dict->values, dict->cnt * sizeof(char *));
+      for (i=dict->next; i < dict->cnt; ++i) {
+	 dict->keys[i]=NULL;
+	 dict->values[i]=NULL;
       }
    } else {
-      dict->keys = calloc(dict->cnt, sizeof(char *));
-      dict->values = calloc(dict->cnt, sizeof(char *));
+      dict->keys=calloc(dict->cnt, sizeof(char *));
+      dict->values=calloc(dict->cnt, sizeof(char *));
    }
 }
 
-static void InitChars(struct pschars *chars, char *line) {
+static void InitChars(struct pschars *chars,char *line) {
    while (*line != '/' && *line != '\0')
       ++line;
    while (!isspace(*line) && *line != '\0')
       ++line;
-   chars->cnt = strtol(line, NULL, 10);
+   chars->cnt=strtol(line, NULL, 10);
    if (chars->cnt > 0) {
-      chars->keys = calloc(chars->cnt, sizeof(char *));
-      chars->values = calloc(chars->cnt, sizeof(char *));
-      chars->lens = calloc(chars->cnt, sizeof(int));
+      chars->keys=calloc(chars->cnt, sizeof(char *));
+      chars->values=calloc(chars->cnt, sizeof(char *));
+      chars->lens=calloc(chars->cnt, sizeof(int));
    }
 }
 
-static void InitCharProcs(struct charprocs *cp, char *line) {
+static void InitCharProcs(struct charprocs *cp,char *line) {
    while (*line != '/' && *line != '\0')
       ++line;
    while (!isspace(*line) && *line != '\0')
       ++line;
-   cp->cnt = strtol(line, NULL, 10);
+   cp->cnt=strtol(line, NULL, 10);
    if (cp->cnt > 0) {
-      cp->keys = calloc(cp->cnt, sizeof(char *));
-      cp->values = calloc(cp->cnt, sizeof(SplineChar *));
+      cp->keys=calloc(cp->cnt, sizeof(char *));
+      cp->values=calloc(cp->cnt, sizeof(SplineChar *));
    }
 }
 
-static int mycmp(char *str, char *within, char *end) {
+static int mycmp(char *str,char *within,char *end) {
    while (within < end) {
       if (*str != *within)
 	 return (*str - *within);
       ++str;
       ++within;
    }
-   return (*str == '\0' ? 0 : 1);
+   return (*str=='\0' ? 0 : 1);
 }
 
-static void ContinueValue(struct fontparse *fp, struct psdict *dict,
+static void ContinueValue(struct fontparse *fp,struct psdict *dict,
 			  char *line) {
-   int incomment = false;
+   int incomment=false;
 
    while (*line) {
-      if (!fp->instring && fp->depth == 0 &&
-	  (strncmp(line, "def", 3) == 0 ||
-	   strncmp(line, "|-", 2) == 0 || strncmp(line, "ND", 2) == 0)) {
+      if (!fp->instring && fp->depth==0 &&
+	  (strncmp(line, "def", 3)==0 ||
+	   strncmp(line, "|-", 2)==0 || strncmp(line, "ND", 2)==0)) {
 	 while (1) {
 	    while (fp->vpt > fp->vbuf + 1 && isspace(fp->vpt[-1]))
 	       --fp->vpt;
 	    if (fp->vpt > fp->vbuf + 8
-		&& strncmp(fp->vpt - 8, "noaccess", 8) == 0)
+		&& strncmp(fp->vpt - 8, "noaccess", 8)==0)
 	       fp->vpt -= 8;
 	    else if (fp->vpt > fp->vbuf + 8
-		     && strncmp(fp->vpt - 8, "readonly", 8) == 0)
+		     && strncmp(fp->vpt - 8, "readonly", 8)==0)
 	       fp->vpt -= 8;
 	    else if (fp->vpt > fp->vbuf + 4
-		     && strncmp(fp->vpt - 4, "bind", 4) == 0)
+		     && strncmp(fp->vpt - 4, "bind", 4)==0)
 	       fp->vpt -= 4;
 	    else
 	       break;
@@ -1133,89 +1133,89 @@ static void ContinueValue(struct fontparse *fp, struct psdict *dict,
 	 /*  converts itself into an array. We could just truncate to the */
 	 /*  default array, but I don't see any reason to do so */
 	 if (fp->pending_parse != NULL) {
-	    *fp->pending_parse = copyn(fp->vbuf, fp->vpt - fp->vbuf);
-	    fp->pending_parse = NULL;
+	    *fp->pending_parse=copyn(fp->vbuf, fp->vpt - fp->vbuf);
+	    fp->pending_parse=NULL;
 	 } else {
-	    dict->values[dict->next] = copyn(fp->vbuf, fp->vpt - fp->vbuf);
+	    dict->values[dict->next]=copyn(fp->vbuf, fp->vpt - fp->vbuf);
 	    ++dict->next;
 	 }
-	 fp->vpt = fp->vbuf;
-	 fp->multiline = false;
+	 fp->vpt=fp->vbuf;
+	 fp->multiline=false;
 	 return;
       }
       if (fp->vpt >= fp->vmax) {
-	 int len = fp->vmax - fp->vbuf + 1000, off = fp->vpt - fp->vbuf;
+	 int len=fp->vmax - fp->vbuf + 1000, off=fp->vpt - fp->vbuf;
 
-	 fp->vbuf = realloc(fp->vbuf, len);
-	 fp->vpt = fp->vbuf + off;
-	 fp->vmax = fp->vbuf + len;
+	 fp->vbuf=realloc(fp->vbuf, len);
+	 fp->vpt=fp->vbuf + off;
+	 fp->vmax=fp->vbuf + len;
       }
       if (fp->instring) {
-	 if (*line == ')')
+	 if (*line==')')
 	    --fp->instring;
       } else if (incomment) {
 	 /* Do Nothing */ ;
-      } else if (*line == '(')
+      } else if (*line=='(')
 	 ++fp->instring;
-      else if (*line == '%')
-	 incomment = true;
-      else if (*line == '[' || *line == '{')
+      else if (*line=='%')
+	 incomment=true;
+      else if (*line=='[' || *line=='{')
 	 ++fp->depth;
-      else if (*line == '}' || *line == ']')
+      else if (*line=='}' || *line==']')
 	 --fp->depth;
-      *fp->vpt++ = *line++;
+      *fp->vpt++=*line++;
    }
 }
 
-static void AddValue(struct fontparse *fp, struct psdict *dict, char *line,
+static void AddValue(struct fontparse *fp,struct psdict *dict,char *line,
 		     char *endtok) {
    char *pt;
 
    if (dict != NULL) {
       if (dict->next >= dict->cnt) {
 	 dict->cnt += 10;
-	 dict->keys = realloc(dict->keys, dict->cnt * sizeof(char *));
-	 dict->values = realloc(dict->values, dict->cnt * sizeof(char *));
+	 dict->keys=realloc(dict->keys, dict->cnt * sizeof(char *));
+	 dict->values=realloc(dict->values, dict->cnt * sizeof(char *));
       }
-      dict->keys[dict->next] = copyn(line + 1, endtok - (line + 1));
+      dict->keys[dict->next]=copyn(line + 1, endtok - (line + 1));
    }
-   pt = line + strlen(line) - 1;
+   pt=line + strlen(line) - 1;
    while (isspace(*endtok))
       ++endtok;
    while (pt > endtok && isspace(*pt))
       --pt;
    ++pt;
-   if (strncmp(pt - 3, "def", 3) == 0)
+   if (strncmp(pt - 3, "def", 3)==0)
       pt -= 3;
-   else if (strncmp(pt - 2, "|-", 2) == 0 || strncmp(pt - 2, "ND", 2) == 0)
+   else if (strncmp(pt - 2, "|-", 2)==0 || strncmp(pt - 2, "ND", 2)==0)
       pt -= 2;
    else {
-      fp->multiline = true;
+      fp->multiline=true;
       ContinueValue(fp, dict, endtok);
       return;
    }
    while (1) {
       while (pt - 1 > endtok && isspace(pt[-1]))
 	 --pt;
-      if (pt - 8 > endtok && strncmp(pt - 8, "noaccess", 8) == 0)
+      if (pt - 8 > endtok && strncmp(pt - 8, "noaccess", 8)==0)
 	 pt -= 8;
-      else if (pt - 8 > endtok && strncmp(pt - 8, "readonly", 8) == 0)
+      else if (pt - 8 > endtok && strncmp(pt - 8, "readonly", 8)==0)
 	 pt -= 8;
-      else if (pt - 4 > endtok && strncmp(pt - 4, "bind", 4) == 0)
+      else if (pt - 4 > endtok && strncmp(pt - 4, "bind", 4)==0)
 	 pt -= 4;
       else
 	 break;
    }
    if (dict != NULL) {
-      dict->values[dict->next] = copyn(endtok, pt - endtok);
+      dict->values[dict->next]=copyn(endtok, pt - endtok);
       ++dict->next;
    } else {
-      *fp->pending_parse = copyn(endtok, pt - endtok);
-      fp->pending_parse = NULL;
+      *fp->pending_parse=copyn(endtok, pt - endtok);
+      fp->pending_parse=NULL;
    }
 }
 
-static int hex(int ch1, int ch2) {
+static int hex(int ch1,int ch2) {
 /* Convert two HEX characters to one binary value. Return -1 if error */
 /* NOTE: FIXME: parsepdf has an identical routine that can be merged. */
    if (ch1 >= '0' && ch1 <= '9')
@@ -1245,81 +1245,81 @@ unsigned short r;
 #define c2	22719
 
 static void initcode(void) {
-   r = 55665;
+   r=55665;
 }
 
 static int decode(unsigned char cypher) {
-   unsigned char plain = (cypher ^ (r >> 8));
+   unsigned char plain=(cypher ^ (r >> 8));
 
-   r = (cypher + r) * c1 + c2;
+   r=(cypher + r) * c1 + c2;
    return (plain);
 }
 
-static void dumpzeros(FILE * out, unsigned char *zeros, int zcnt) {
+static void dumpzeros(AFILE *out,unsigned char *zeros,int zcnt) {
    while (--zcnt >= 0)
-      fputc(*zeros++, out);
+      aputc(*zeros++, out);
 }
 
-static void decodestr(unsigned char *str, int len) {
-   unsigned short r = 4330;
+static void decodestr(unsigned char *str,int len) {
+   unsigned short r=4330;
    unsigned char plain, cypher;
 
    while (len-- > 0) {
-      cypher = *str;
-      plain = (cypher ^ (r >> 8));
-      r = (cypher + r) * c1 + c2;
-      *str++ = plain;
+      cypher=*str;
+      plain=(cypher ^ (r >> 8));
+      r=(cypher + r) * c1 + c2;
+      *str++=plain;
    }
 }
 
-static void findstring(struct fontparse *fp, struct pschars *subrs, int index,
+static void findstring(struct fontparse *fp,struct pschars *subrs,int index,
 		       char *nametok, char *str) {
-   char buffer[1024], *bpt, *bs, *end = buffer + sizeof(buffer) - 1;
+   char buffer[1024], *bpt, *bs, *end=buffer + sizeof(buffer) - 1;
    int val;
 
    while (isspace(*str))
       ++str;
-   if (*str == '(') {
+   if (*str=='(') {
       ++str;
-      bpt = buffer;
+      bpt=buffer;
       while (*str != ')' && *str != '\0') {
 	 if (*str != '\\')
-	    val = *str++;
+	    val=*str++;
 	 else {
 	    if (isdigit(*++str)) {
-	       val = *str++ - '0';
+	       val=*str++ - '0';
 	       if (isdigit(*str)) {
-		  val = (val << 3) | (*str++ - '0');
+		  val=(val << 3) | (*str++ - '0');
 		  if (isdigit(*str))
-		     val = (val << 3) | (*str++ - '0');
+		     val=(val << 3) | (*str++ - '0');
 	       }
 	    } else
-	       val = *str++;
+	       val=*str++;
 	 }
 	 if (bpt < end)
-	    *bpt++ = val;
+	    *bpt++=val;
       }
       decodestr((unsigned char *) buffer, bpt - buffer);
-      bs = buffer + fp->fd->private->leniv;
+      bs=buffer + fp->fd->private->leniv;
       if (bpt < bs)
-	 bs = bpt;		/* garbage */
-      subrs->lens[index] = bpt - bs;
-      subrs->keys[index] = copy(nametok);
-      subrs->values[index] = malloc(bpt - bs);
+	 bs=bpt;		/* garbage */
+      subrs->lens[index]=bpt - bs;
+      subrs->keys[index]=copy(nametok);
+      subrs->values[index]=malloc(bpt - bs);
       memcpy(subrs->values[index], bs, bpt - bs);
       if (index >= subrs->next)
-	 subrs->next = index + 1;
+	 subrs->next=index + 1;
    }
 }
 
 /* Type42 charstrings are actually numbers */
-static void findnumbers(struct fontparse *fp, struct pschars *chars,
+static void findnumbers(struct fontparse *fp,struct pschars *chars,
 			char *str) {
    int val;
    char *end;
 
    while (1) {
-      int index = chars->next;
+      int index=chars->next;
 
       char *namestrt;
 
@@ -1327,22 +1327,22 @@ static void findnumbers(struct fontparse *fp, struct pschars *chars,
 	 ++str;
       if (*str != '/')
 	 break;
-      namestrt = ++str;
-      while (isalnum(*str) || *str == '.')
+      namestrt=++str;
+      while (isalnum(*str) || *str=='.')
 	 ++str;
-      *str = '\0';
-      index = chars->next;
+      *str='\0';
+      index=chars->next;
 
       ++str;
-      val = strtol(str, &end, 10);
-      chars->lens[index] = 0;
-      chars->keys[index] = copy(namestrt);
-      chars->values[index] = (void *) (intpt) val;
-      chars->next = index + 1;
-      str = end;
+      val=strtol(str, &end, 10);
+      chars->lens[index]=0;
+      chars->keys[index]=copy(namestrt);
+      chars->values[index]=(void *) (intpt) val;
+      chars->next=index + 1;
+      str=end;
       while (isspace(*str))
 	 ++str;
-      if (str[0] == 'd' && str[1] == 'e' && str[2] == 'f')
+      if (str[0]=='d' && str[1]=='e' && str[2]=='f')
 	 str += 3;
    }
 }
@@ -1350,17 +1350,17 @@ static void findnumbers(struct fontparse *fp, struct pschars *chars,
 static char *rmbinary(char *line) {
    char *pt;
 
-   for (pt = line; *pt; ++pt) {
+   for (pt=line; *pt; ++pt) {
       if ((*pt < ' ' || *pt >= 0x7f) && *pt != '\n') {
 	 if (strlen(pt) > 5) {
-	    pt[0] = '.';
-	    pt[1] = '.';
-	    pt[2] = '.';
-	    pt[3] = '\n';
-	    pt[4] = '\0';
+	    pt[0]='.';
+	    pt[1]='.';
+	    pt[2]='.';
+	    pt[3]='\n';
+	    pt[4]='\0';
 	 } else {
-	    pt[0] = '\n';
-	    pt[1] = '\0';
+	    pt[0]='\n';
+	    pt[1]='\0';
 	 }
 	 break;
       }
@@ -1372,14 +1372,14 @@ static char *rmbinary(char *line) {
 /* "n" chars. "pt" should point to final character in buffer, and not	*/
 /* not a terminating null. Return 1 if matched, else 0 if error		*/
 /* go see "Re: [Fontanvil-devel] stuck in infinite loop", 2012August22	*/
-static int matchFromBack(const char *pt, const char *str, int n) {
-   int i, num_to_check = strlen(str);
+static int matchFromBack(const char *pt,const char *str,int n) {
+   int i, num_to_check=strlen(str);
 
-   const char *strpt = str + num_to_check - 1;
+   const char *strpt=str + num_to_check - 1;
 
    if (n < num_to_check)
-      num_to_check = n;
-   for (i = 0; i < num_to_check; i++) {
+      num_to_check=n;
+   for (i=0; i < num_to_check; i++) {
       if (*pt-- != *strpt--)
 	 return (0);
    }
@@ -1392,22 +1392,22 @@ static int matchFromBack(const char *pt, const char *str, int n) {
 /* also moves "pt" back the same number of characters. This routine is	*/
 /* is part of a large patch which is best described in the mailing list	*/
 /* go see "Re: [Fontanvil-devel] stuck in infinite loop", 2012August22	*/
-static void putBack(struct fontparse *fp, FILE * f, const char *str,
+static void putBack(struct fontparse *fp,AFILE *f,const char *str,
 		    char last, char **pt) {
    const char *backpt;
 
    if (last) {
       (*pt)--;
-      if (ungetc(last, f) < 0) {
-	 fp->alreadycomplained = 1;
+      if (aungetc(last, f) < 0) {
+	 fp->alreadycomplained=1;
 	 LogError(_("Internal Err: Unable to put data back into file"));
 	 return;
       }
    }
 
-   for (backpt = str + strlen(str) - 1; backpt >= str; backpt--) {
-      if (ungetc(*backpt, f) < 0) {
-	 fp->alreadycomplained = 1;
+   for (backpt=str + strlen(str) - 1; backpt >= str; backpt--) {
+      if (aungetc(*backpt, f) < 0) {
+	 fp->alreadycomplained=1;
 	 LogError(_("Internal Err: Unable to put data back into file"));
 	 break;
       }
@@ -1415,115 +1415,115 @@ static void putBack(struct fontparse *fp, FILE * f, const char *str,
    pt -= strlen(str);
 }
 
-static void sfnts2tempfile(struct fontparse *fp, FILE * in, char *line) {
+static void sfnts2tempfile(struct fontparse *fp,AFILE *in,char *line) {
    char *pt;
-   int instring = false, firstnibble = true, sofar = 0, nibble;
-   int complained = false;
-   int ch = 0;
+   int instring=false, firstnibble=true, sofar=0, nibble;
+   int complained=false;
+   int ch=0;
 
-   fp->sfnts = tmpfile();
+   fp->sfnts=atmpfile();
 
    /* first finish off anything in the current line */
-   while ((pt = strpbrk(line, "<]")) != NULL) {
-      if (*pt == ']')
+   while ((pt=strpbrk(line, "<]")) != NULL) {
+      if (*pt==']')
 	 goto skip_to_eol;
 
-      instring = true;
+      instring=true;
       for (++pt; *pt && *pt != '>'; ++pt) {
 	 if (isspace(*pt))
 	    continue;
 	 if (isdigit(*pt))
-	    nibble = *pt - '0';
+	    nibble=*pt - '0';
 	 else if (*pt >= 'a' && *pt <= 'f')
-	    nibble = *pt - 'a' + 10;
+	    nibble=*pt - 'a' + 10;
 	 else if (*pt >= 'A' && *pt <= 'F')
-	    nibble = *pt - 'A' + 10;
+	    nibble=*pt - 'A' + 10;
 	 else {
 	    if (!complained) {
 	       LogError(_("Invalid hex digit in sfnts array\n"));
-	       complained = true;
+	       complained=true;
 	    }
 	    ++pt;
 	    continue;
 	 }
 	 if (firstnibble) {
-	    sofar = nibble << 4;
-	    firstnibble = false;
+	    sofar=nibble << 4;
+	    firstnibble=false;
 	 } else {
-	    putc(sofar | nibble, fp->sfnts);
-	    sofar = 0;
-	    firstnibble = true;
+	    aputc(sofar | nibble, fp->sfnts);
+	    sofar=0;
+	    firstnibble=true;
 	 }
       }
-      if (*pt == '>') {
-	 if (ftell(fp->sfnts) & 1) {	/* Strings must be contain an even number of bytes */
+      if (*pt=='>') {
+	 if (aftell(fp->sfnts) & 1) {	/* Strings must be contain an even number of bytes */
 	    /* But may be padded with a trailing NUL */
-	    fseek(fp->sfnts, -1, SEEK_CUR);
+	    afseek(fp->sfnts, -1, SEEK_CUR);
 	 }
 	 ++pt;
-	 instring = false;
+	 instring=false;
       }
-      line = pt;
+      line=pt;
    }
 
-   while ((ch = getc(in)) != EOF) {
-      if (ch == ']')
+   while ((ch=agetc(in)) != EOF) {
+      if (ch==']')
 	 goto skip_to_eol;
       if (isspace(ch))
 	 continue;
-      if (!instring && ch == '<') {
-	 instring = true;
-	 firstnibble = true;
-	 sofar = 0;
+      if (!instring && ch=='<') {
+	 instring=true;
+	 firstnibble=true;
+	 sofar=0;
       } else if (!instring) {
 	 if (!complained) {
 	    LogError(_
 		     ("Invalid character outside of string in sfnts array\n"));
-	    complained = true;
+	    complained=true;
 	 }
-      } else if (instring && ch == '>') {
-	 if (ftell(fp->sfnts) & 1) {	/* Strings must be contain an even number of bytes */
+      } else if (instring && ch=='>') {
+	 if (aftell(fp->sfnts) & 1) {	/* Strings must be contain an even number of bytes */
 	    /* But may be padded with a trailing NUL */
-	    fseek(fp->sfnts, -1, SEEK_CUR);
+	    afseek(fp->sfnts, -1, SEEK_CUR);
 	 }
-	 instring = false;
+	 instring=false;
       } else {
 	 if (isdigit(ch))
-	    nibble = ch - '0';
+	    nibble=ch - '0';
 	 else if (ch >= 'a' && ch <= 'f')
-	    nibble = ch - 'a' + 10;
+	    nibble=ch - 'a' + 10;
 	 else if (ch >= 'A' && ch <= 'F')
-	    nibble = ch - 'A' + 10;
+	    nibble=ch - 'A' + 10;
 	 else {
 	    if (!complained) {
 	       LogError(_("Invalid hex digit in sfnts array\n"));
-	       complained = true;
+	       complained=true;
 	    }
 	    continue;
 	 }
 	 if (firstnibble) {
-	    sofar = nibble << 4;
-	    firstnibble = false;
+	    sofar=nibble << 4;
+	    firstnibble=false;
 	 } else {
-	    putc(sofar | nibble, fp->sfnts);
-	    sofar = 0;
-	    firstnibble = true;
+	    aputc(sofar | nibble, fp->sfnts);
+	    sofar=0;
+	    firstnibble=true;
 	 }
       }
    }
  skip_to_eol:
    while (ch != EOF && ch != '\n' && ch != '\r')
-      ch = getc(in);
-   rewind(fp->sfnts);
+      ch=agetc(in);
+   arewind(fp->sfnts);
 }
 
-static void ParseSimpleEncoding(struct fontparse *fp, char *line) {
+static void ParseSimpleEncoding(struct fontparse *fp,char *line) {
    char tok[200], *pt;
 
    while (*line != '\0' && *line != ']') {
       while (isspace(*line))
 	 ++line;
-      if (*line == ']')
+      if (*line==']')
 	 break;
       if (*line != '/') {
 	 ++line;
@@ -1532,61 +1532,61 @@ static void ParseSimpleEncoding(struct fontparse *fp, char *line) {
       ++line;
       while (isspace(*line))
 	 ++line;
-      for (pt = tok;
+      for (pt=tok;
 	   !isspace(*line) && *line != '\0' && *line != '/'
 	   && *line != ']';) {
 	 if (pt < tok + sizeof(tok) - 2)
-	    *pt++ = *line++;
+	    *pt++=*line++;
 	 else
 	    ++line;
       }
-      *pt = '\0';
+      *pt='\0';
       if (fp->simple_enc_pos < 256)
-	 fp->fd->encoding[fp->simple_enc_pos++] = copy(tok);
+	 fp->fd->encoding[fp->simple_enc_pos++]=copy(tok);
    }
-   if (*line == ']') {
-      fp->simpleencoding = false;
-      fp->inencoding = false;
+   if (*line==']') {
+      fp->simpleencoding=false;
+      fp->inencoding=false;
    }
 }
 
-static void parseline(struct fontparse *fp, char *line, FILE * in) {
+static void parseline(struct fontparse *fp,char *line,AFILE *in) {
    char buffer[200], *pt, *endtok;
 
-   while (*line == ' ' || *line == '\t')
+   while (*line==' ' || *line=='\t')
       ++line;
-   if (line[0] == '%' && !fp->multiline)
+   if (line[0]=='%' && !fp->multiline)
       return;
 
    if (fp->simpleencoding) {
       ParseSimpleEncoding(fp, line);
       return;
-   } else if ((fp->inencoding && strncmp(line, "dup", 3) == 0) ||
-	      (strncmp(line, "dup ", 4) == 0 && isdigit(line[4]) &&
+   } else if ((fp->inencoding && strncmp(line, "dup", 3)==0) ||
+	      (strncmp(line, "dup ", 4)==0 && isdigit(line[4]) &&
 	       strstr(line + strlen(line) - 6, " put") != NULL
 	       && strchr(line, '/') != NULL)) {
       /* Fontographer's type3 fonts claim to be standard, but then aren't */
-      fp->fd->encoding_name = &custom;
+      fp->fd->encoding_name=&custom;
       /* Metamorphasis has multiple entries on a line */
-      while (strncmp(line, "dup", 3) == 0) {
+      while (strncmp(line, "dup", 3)==0) {
 	 char *end;
 
-	 int pos = strtol(line + 3, &end, 10);
+	 int pos=strtol(line + 3, &end, 10);
 
-	 line = end;
+	 line=end;
 	 while (isspace(*line))
 	    ++line;
-	 if (*line == '/')
+	 if (*line=='/')
 	    ++line;
-	 for (pt = buffer; !isspace(*line); *pt++ = *line++);
-	 *pt = '\0';
+	 for (pt=buffer; !isspace(*line); *pt++=*line++);
+	 *pt='\0';
 	 if (pos >= 0 && pos < 256) {
 	    free(fp->fd->encoding[pos]);
-	    fp->fd->encoding[pos] = copy(buffer);
+	    fp->fd->encoding[pos]=copy(buffer);
 	 }
 	 while (isspace(*line))
 	    ++line;
-	 if (strncmp(line, "put", 3) == 0)
+	 if (strncmp(line, "put", 3)==0)
 	    line += 3;
 	 while (isspace(*line))
 	    ++line;
@@ -1599,9 +1599,9 @@ static void parseline(struct fontparse *fp, char *line, FILE * in) {
       /* 0 1 31 { 1 index exch /.notdef put } bind for */
       int i;
 
-      for (i = 0; i < 256; ++i)
-	 if (fp->fd->encoding[i] == NULL)
-	    fp->fd->encoding[i] = copy(".notdef");
+      for (i=0; i < 256; ++i)
+	 if (fp->fd->encoding[i]==NULL)
+	    fp->fd->encoding[i]=copy(".notdef");
       return;
    } else if (fp->inencoding && strstr(line, "Encoding") != NULL
 	      && strstr(line, "put") != NULL) {
@@ -1612,33 +1612,33 @@ static void parseline(struct fontparse *fp, char *line, FILE * in) {
 
       while (isspace(*line))
 	 ++line;
-      if (strncmp(line, "Encoding ", 9) == 0) {
+      if (strncmp(line, "Encoding ", 9)==0) {
 	 line += 9;
-	 pos = strtol(line, &end, 10);
-	 line = end;
+	 pos=strtol(line, &end, 10);
+	 line=end;
 	 while (isspace(*line))
 	    ++line;
-	 if (*line == '/') {
+	 if (*line=='/') {
 	    ++line;
-	    for (pt = buffer; !isspace(*line); *pt++ = *line++);
-	    *pt = '\0';
+	    for (pt=buffer; !isspace(*line); *pt++=*line++);
+	    *pt='\0';
 	    if (pos >= 0 && pos < 256)
-	       fp->fd->encoding[pos] = copy(buffer);
+	       fp->fd->encoding[pos]=copy(buffer);
 	 }
       }
       return;
    } else if (fp->insubs) {
-      struct pschars *subrs = fp->fd->private->subrs;
+      struct pschars *subrs=fp->fd->private->subrs;
 
       while (isspace(*line))
 	 ++line;
-      if (strncmp(line, "dup ", 4) == 0) {
+      if (strncmp(line, "dup ", 4)==0) {
 	 int i;
 
 	 char *ept;
 
-	 for (line += 4; *line == ' '; ++line);
-	 i = strtol(line, &ept, 10);
+	 for (line += 4; *line==' '; ++line);
+	 i=strtol(line, &ept, 10);
 	 if (fp->ignore)
 	    /* Do Nothing */ ;
 	 else if (i < subrs->cnt) {
@@ -1646,119 +1646,119 @@ static void parseline(struct fontparse *fp, char *line, FILE * in) {
 	 } else if (!fp->alreadycomplained) {
 	    LogError(_("Index too big (must be <%d) \"%s"), subrs->cnt,
 		     rmbinary(line));
-	    fp->alreadycomplained = true;
+	    fp->alreadycomplained=true;
 	 }
-      } else if (strncmp(line, "readonly put", 12) == 0
-		 || strncmp(line, "ND", 2) == 0
-		 || strncmp(line, "|-", 2) == 0) {
-	 fp->insubs = false;
-	 fp->ignore = false;
-      } else if (*line == '\n' || *line == '\0') {
+      } else if (strncmp(line, "readonly put", 12)==0
+		 || strncmp(line, "ND", 2)==0
+		 || strncmp(line, "|-", 2)==0) {
+	 fp->insubs=false;
+	 fp->ignore=false;
+      } else if (*line=='\n' || *line=='\0') {
 	 /* Ignore blank lines */ ;
       } else if (!fp->alreadycomplained) {
 	 LogError(_("Didn't understand \"%s\" inside subs def'n"),
 		  rmbinary(line));
-	 fp->alreadycomplained = true;
+	 fp->alreadycomplained=true;
       }
    } else if (fp->inchars) {
-      struct pschars *chars = fp->fd->chars;
+      struct pschars *chars=fp->fd->chars;
 
       while (isspace(*line))
 	 ++line;
-      if (strncmp(line, "end", 3) == 0)
-	 fp->ignore = fp->inchars = false;
-      else if (*line == '\n' || *line == '\0')
+      if (strncmp(line, "end", 3)==0)
+	 fp->ignore=fp->inchars=false;
+      else if (*line=='\n' || *line=='\0')
 	 /* Ignore it */ ;
-      else if (*line != '/' || !(isalpha(line[1]) || line[1] == '.')) {
+      else if (*line != '/' || !(isalpha(line[1]) || line[1]=='.')) {
 	 LogError(_("No name for CharStrings dictionary \"%s"),
 		  rmbinary(line));
-	 fp->alreadycomplained = true;
+	 fp->alreadycomplained=true;
       } else if (fp->ignore) {
 	 /* Do Nothing */ ;
       } else if (chars->next >= chars->cnt)
 	 LogError(_("Too many entries in CharStrings dictionary \"%s"),
 		  rmbinary(line));
-      else if (fp->fd->fonttype == 42 || fp->fd->fonttype == 11
-	       || fp->fd->cidfonttype == 2)
+      else if (fp->fd->fonttype==42 || fp->fd->fonttype==11
+	       || fp->fd->cidfonttype==2)
 	 findnumbers(fp, chars, line);
       else {
-	 int i = chars->next;
+	 int i=chars->next;
 
-	 char *namestrt = ++line;
+	 char *namestrt=++line;
 
-	 while (isalnum(*line) || *line == '.')
+	 while (isalnum(*line) || *line=='.')
 	    ++line;
-	 *line = '\0';
+	 *line='\0';
 	 findstring(fp, chars, i, namestrt, line + 1);
       }
       return;
    }
-   fp->inencoding = 0;
+   fp->inencoding=0;
 
    while (isspace(*line))
       ++line;
-   endtok = NULL;
-   if (*line == '/')
-      for (endtok = line + 1;
+   endtok=NULL;
+   if (*line=='/')
+      for (endtok=line + 1;
 	   !isspace(*endtok) && *endtok != '(' && *endtok != '/'
 	   && *endtok != '{' && *endtok != '[' && *endtok != '\0'; ++endtok);
 
    if (strstr(line, "/shareddict") != NULL && strstr(line, "where") != NULL) {
-      fp->infi = fp->inbb = fp->inmetrics = fp->inmetrics2 = false;
-      fp->inprivate = fp->inblendprivate = fp->inblendfi = false;
-      fp->skipping_mbf = true;
+      fp->infi=fp->inbb=fp->inmetrics=fp->inmetrics2=false;
+      fp->inprivate=fp->inblendprivate=fp->inblendfi=false;
+      fp->skipping_mbf=true;
       return;
    }
 
-   if (mycmp("Encoding", line + 1, endtok) == 0 && !fp->doneencoding) {
+   if (mycmp("Encoding", line + 1, endtok)==0 && !fp->doneencoding) {
       if (strstr(endtok, "StandardEncoding") != NULL) {
-	 fp->fd->encoding_name = FindOrMakeEncoding("AdobeStandard");
+	 fp->fd->encoding_name=FindOrMakeEncoding("AdobeStandard");
 	 setStdEnc(fp->fd->encoding);
       } else if (strstr(endtok, "ISOLatin1Encoding") != NULL) {
-	 fp->fd->encoding_name = FindOrMakeEncoding("ISO8859-1");
+	 fp->fd->encoding_name=FindOrMakeEncoding("ISO8859-1");
 	 setLatin1Enc(fp->fd->encoding);
       } else {
-	 fp->fd->encoding_name = &custom;
-	 fp->inencoding = 1;
+	 fp->fd->encoding_name=&custom;
+	 fp->inencoding=1;
       }
-      if (fp->fd->encoding_name == NULL)
-	 fp->fd->encoding_name = &custom;
-      fp->infi = fp->inprivate = fp->inbb = fp->inmetrics = fp->inmetrics2 =
+      if (fp->fd->encoding_name==NULL)
+	 fp->fd->encoding_name=&custom;
+      fp->infi=fp->inprivate=fp->inbb=fp->inmetrics=fp->inmetrics2 =
 	 false;
-      fp->doneencoding = true;
-      while (*endtok == ' ' || *endtok == '\t')
+      fp->doneencoding=true;
+      while (*endtok==' ' || *endtok=='\t')
 	 ++endtok;
-      if (*endtok == '[') {	/* It's a literal array */
-	 fp->simpleencoding = true;
-	 fp->simple_enc_pos = 0;
+      if (*endtok=='[') {	/* It's a literal array */
+	 fp->simpleencoding=true;
+	 fp->simple_enc_pos=0;
 	 ParseSimpleEncoding(fp, endtok + 1);
       }
-   } else if (mycmp("BoundingBoxes", line + 1, endtok) == 0) {
-      fp->infi = fp->inprivate = fp->inencoding = fp->inmetrics =
-	 fp->inmetrics2 = false;
-      fp->inbb = true;
-   } else if (mycmp("Metrics", line + 1, endtok) == 0) {
-      fp->infi = fp->inprivate = fp->inbb = fp->inencoding = fp->inmetrics2 =
+   } else if (mycmp("BoundingBoxes", line + 1, endtok)==0) {
+      fp->infi=fp->inprivate=fp->inencoding=fp->inmetrics =
+	 fp->inmetrics2=false;
+      fp->inbb=true;
+   } else if (mycmp("Metrics", line + 1, endtok)==0) {
+      fp->infi=fp->inprivate=fp->inbb=fp->inencoding=fp->inmetrics2 =
 	 false;
-      fp->inmetrics = true;
-      fp->fd->metrics = calloc(1, sizeof(struct psdict));
-      fp->fd->metrics->cnt = strtol(endtok, NULL, 10);
-      fp->fd->metrics->keys = malloc(fp->fd->metrics->cnt * sizeof(char *));
-      fp->fd->metrics->values = malloc(fp->fd->metrics->cnt * sizeof(char *));
+      fp->inmetrics=true;
+      fp->fd->metrics=calloc(1, sizeof(struct psdict));
+      fp->fd->metrics->cnt=strtol(endtok, NULL, 10);
+      fp->fd->metrics->keys=malloc(fp->fd->metrics->cnt * sizeof(char *));
+      fp->fd->metrics->values=malloc(fp->fd->metrics->cnt * sizeof(char *));
    } else if (strstr(line, "/Private") != NULL
 	      && strstr(line, "/Blend") != NULL) {
-      fp->infi = fp->inbb = fp->inmetrics = fp->inmetrics2 = false;
-      fp->inprivate = fp->inblendprivate = fp->inblendfi = false;
-      fp->inblendprivate = 1;
-      fp->fd->blendprivate = calloc(1, sizeof(struct psdict));
+      fp->infi=fp->inbb=fp->inmetrics=fp->inmetrics2=false;
+      fp->inprivate=fp->inblendprivate=fp->inblendfi=false;
+      fp->inblendprivate=1;
+      fp->fd->blendprivate=calloc(1, sizeof(struct psdict));
       InitDict(fp->fd->blendprivate, line);
       return;
    } else if (strstr(line, "/FontInfo") != NULL
 	      && strstr(line, "/Blend") != NULL) {
-      fp->infi = fp->inbb = fp->inmetrics = fp->inmetrics2 = false;
-      fp->inprivate = fp->inblendprivate = fp->inblendfi = false;
-      fp->inblendfi = 1;
-      fp->fd->blendfontinfo = calloc(1, sizeof(struct psdict));
+      fp->infi=fp->inbb=fp->inmetrics=fp->inmetrics2=false;
+      fp->inprivate=fp->inblendprivate=fp->inblendfi=false;
+      fp->inblendfi=1;
+      fp->fd->blendfontinfo=calloc(1, sizeof(struct psdict));
       InitDict(fp->fd->blendfontinfo, line);
       return;
    } else if (fp->infi) {
@@ -1766,65 +1766,65 @@ static void parseline(struct fontparse *fp, char *line, FILE * in) {
 	 ContinueValue(fp, NULL, line);
 	 return;
       }
-      if (endtok == NULL
-	  && (strncmp(line, "end", 3) == 0 || strncmp(line, ">>", 2) == 0)) {
-	 fp->infi = 0;
+      if (endtok==NULL
+	  && (strncmp(line, "end", 3)==0 || strncmp(line, ">>", 2)==0)) {
+	 fp->infi=0;
 	 return;
-      } else if (endtok == NULL)
+      } else if (endtok==NULL)
 	 return;
-      if (mycmp("version", line + 1, endtok) == 0) {
+      if (mycmp("version", line + 1, endtok)==0) {
 	 free(fp->fd->fontinfo->version);
-	 fp->fd->fontinfo->version = getstring(endtok, in);
-      } else if (mycmp("Notice", line + 1, endtok) == 0) {
+	 fp->fd->fontinfo->version=getstring(endtok, in);
+      } else if (mycmp("Notice", line + 1, endtok)==0) {
 	 free(fp->fd->fontinfo->notice);
-	 fp->fd->fontinfo->notice = getstring(endtok, in);
-      } else if (mycmp("Copyright", line + 1, endtok) == 0) {	/* cff spec allows for copyright and notice */
+	 fp->fd->fontinfo->notice=getstring(endtok, in);
+      } else if (mycmp("Copyright", line + 1, endtok)==0) {	/* cff spec allows for copyright and notice */
 	 free(fp->fd->fontinfo->notice);
-	 fp->fd->fontinfo->notice = getstring(endtok, in);
-      } else if (mycmp("FullName", line + 1, endtok) == 0) {
-	 if (fp->fd->fontinfo->fullname == NULL)
-	    fp->fd->fontinfo->fullname = getstring(endtok, in);
+	 fp->fd->fontinfo->notice=getstring(endtok, in);
+      } else if (mycmp("FullName", line + 1, endtok)==0) {
+	 if (fp->fd->fontinfo->fullname==NULL)
+	    fp->fd->fontinfo->fullname=getstring(endtok, in);
 	 else
 	    free(getstring(endtok, in));
-      } else if (mycmp("FamilyName", line + 1, endtok) == 0) {
+      } else if (mycmp("FamilyName", line + 1, endtok)==0) {
 	 free(fp->fd->fontinfo->familyname);
-	 fp->fd->fontinfo->familyname = getstring(endtok, in);
-      } else if (mycmp("Weight", line + 1, endtok) == 0) {
+	 fp->fd->fontinfo->familyname=getstring(endtok, in);
+      } else if (mycmp("Weight", line + 1, endtok)==0) {
 	 free(fp->fd->fontinfo->weight);
-	 fp->fd->fontinfo->weight = getstring(endtok, in);
-      } else if (mycmp("ItalicAngle", line + 1, endtok) == 0)
-	 fp->fd->fontinfo->italicangle = strtod(endtok, NULL);
-      else if (mycmp("UnderlinePosition", line + 1, endtok) == 0)
-	 fp->fd->fontinfo->underlineposition = strtod(endtok, NULL);
-      else if (mycmp("UnderlineThickness", line + 1, endtok) == 0)
-	 fp->fd->fontinfo->underlinethickness = strtod(endtok, NULL);
-      else if (mycmp("isFixedPitch", line + 1, endtok) == 0)
-	 fp->fd->fontinfo->isfixedpitch = getbool(endtok);
-      else if (mycmp("em", line + 1, endtok) == 0)
-	 fp->fd->fontinfo->em = strtol(endtok, NULL, 10);
-      else if (mycmp("ascent", line + 1, endtok) == 0)
-	 fp->fd->fontinfo->ascent = strtol(endtok, NULL, 10);
-      else if (mycmp("descent", line + 1, endtok) == 0)
-	 fp->fd->fontinfo->descent = strtol(endtok, NULL, 10);
-      else if (mycmp("FSType", line + 1, endtok) == 0)
-	 fp->fd->fontinfo->fstype = strtol(endtok, NULL, 10);
-      else if (mycmp("BlendDesignPositions", line + 1, endtok) == 0) {
-	 fp->pending_parse = &fp->fd->fontinfo->blenddesignpositions;
+	 fp->fd->fontinfo->weight=getstring(endtok, in);
+      } else if (mycmp("ItalicAngle", line + 1, endtok)==0)
+	 fp->fd->fontinfo->italicangle=strtod(endtok, NULL);
+      else if (mycmp("UnderlinePosition", line + 1, endtok)==0)
+	 fp->fd->fontinfo->underlineposition=strtod(endtok, NULL);
+      else if (mycmp("UnderlineThickness", line + 1, endtok)==0)
+	 fp->fd->fontinfo->underlinethickness=strtod(endtok, NULL);
+      else if (mycmp("isFixedPitch", line + 1, endtok)==0)
+	 fp->fd->fontinfo->isfixedpitch=getbool(endtok);
+      else if (mycmp("em", line + 1, endtok)==0)
+	 fp->fd->fontinfo->em=strtol(endtok, NULL, 10);
+      else if (mycmp("ascent", line + 1, endtok)==0)
+	 fp->fd->fontinfo->ascent=strtol(endtok, NULL, 10);
+      else if (mycmp("descent", line + 1, endtok)==0)
+	 fp->fd->fontinfo->descent=strtol(endtok, NULL, 10);
+      else if (mycmp("FSType", line + 1, endtok)==0)
+	 fp->fd->fontinfo->fstype=strtol(endtok, NULL, 10);
+      else if (mycmp("BlendDesignPositions", line + 1, endtok)==0) {
+	 fp->pending_parse=&fp->fd->fontinfo->blenddesignpositions;
 	 AddValue(fp, NULL, line, endtok);
-      } else if (mycmp("BlendDesignMap", line + 1, endtok) == 0) {
-	 fp->pending_parse = &fp->fd->fontinfo->blenddesignmap;
+      } else if (mycmp("BlendDesignMap", line + 1, endtok)==0) {
+	 fp->pending_parse=&fp->fd->fontinfo->blenddesignmap;
 	 AddValue(fp, NULL, line, endtok);
-      } else if (mycmp("BlendAxisTypes", line + 1, endtok) == 0) {
-	 fp->pending_parse = &fp->fd->fontinfo->blendaxistypes;
+      } else if (mycmp("BlendAxisTypes", line + 1, endtok)==0) {
+	 fp->pending_parse=&fp->fd->fontinfo->blendaxistypes;
 	 AddValue(fp, NULL, line, endtok);
       } else if (!fp->alreadycomplained) {
 	 LogError(_("Didn't understand \"%s\" in font info"), rmbinary(line));
-	 fp->alreadycomplained = true;
+	 fp->alreadycomplained=true;
       }
    } else if (fp->inblend) {
-      if (endtok == NULL) {
+      if (endtok==NULL) {
 	 if (*line != '/' && strstr(line, "end") != NULL)
-	    fp->inblend = false;
+	    fp->inblend=false;
 	 return;
       }
       /* Ignore anything in the blend dict defn */
@@ -1834,10 +1834,10 @@ static void parseline(struct fontparse *fp, char *line, FILE * in) {
       if (fp->multiline) {
 	 ContinueValue(fp, subdict, line);
 	 return;
-      } else if (endtok == NULL) {
+      } else if (endtok==NULL) {
 	 if (*line != '/' && strstr(line, "end") != NULL) {
-	    fp->inblendprivate = fp->inblendfi = false;
-	    fp->inprivate = true;
+	    fp->inblendprivate=fp->inblendfi=false;
+	    fp->inprivate=true;
 	 }
 	 return;
       } else
@@ -1845,135 +1845,135 @@ static void parseline(struct fontparse *fp, char *line, FILE * in) {
    } else if (fp->inprivate) {
       if (strstr(line, "/CharStrings") != NULL
 	  && strstr(line, "dict") != NULL) {
-	 if (fp->fd->chars->next == 0) {
+	 if (fp->fd->chars->next==0) {
 	    InitChars(fp->fd->chars, line);
-	    fp->ignore = false;
+	    fp->ignore=false;
 	 } else {
-	    fp->ignore = true;
+	    fp->ignore=true;
 	    LogError(_("Ignoring duplicate /CharStrings entry\n"));
 	 }
-	 fp->inchars = 1;
-	 fp->insubs = 0;
+	 fp->inchars=1;
+	 fp->insubs=0;
 	 return;
       } else if (strstr(line, "/Subrs") != NULL) {
 	 if (fp->fd->private->subrs->next > 0) {
-	    fp->ignore = true;
+	    fp->ignore=true;
 	    LogError(_("Ignoring duplicate /Subrs entry\n"));
 	 } else {
 	    InitChars(fp->fd->private->subrs, line);
-	    fp->ignore = false;
+	    fp->ignore=false;
 	 }
-	 fp->insubs = 1;
-	 fp->inchars = 0;
+	 fp->insubs=1;
+	 fp->inchars=0;
 	 return;
       } else if (fp->multiline) {
 	 ContinueValue(fp, fp->fd->private->private, line);
 	 return;
       }
-      if (endtok == NULL) {
-	 char *pt = line;
+      if (endtok==NULL) {
+	 char *pt=line;
 
 	 if (*pt != '/')
-	    while ((pt = strstr(pt, "end")) != NULL) {
+	    while ((pt=strstr(pt, "end")) != NULL) {
 	       if (fp->inchars)
-		  fp->inchars = false;
+		  fp->inchars=false;
 	       else
-		  fp->inprivate = false;
+		  fp->inprivate=false;
 	       pt += 3;
 	    }
 	 return;
       }
-      if (mycmp("ND", line + 1, endtok) == 0
-	  || mycmp("|-", line + 1, endtok) == 0
-	  || mycmp("NP", line + 1, endtok) == 0
-	  || mycmp("|", line + 1, endtok) == 0
-	  || mycmp("RD", line + 1, endtok) == 0
-	  || mycmp("-|", line + 1, endtok) == 0
-	  || mycmp("password", line + 1, endtok) == 0
-	  || mycmp("MinFeature", line + 1, endtok) == 0)
+      if (mycmp("ND", line + 1, endtok)==0
+	  || mycmp("|-", line + 1, endtok)==0
+	  || mycmp("NP", line + 1, endtok)==0
+	  || mycmp("|", line + 1, endtok)==0
+	  || mycmp("RD", line + 1, endtok)==0
+	  || mycmp("-|", line + 1, endtok)==0
+	  || mycmp("password", line + 1, endtok)==0
+	  || mycmp("MinFeature", line + 1, endtok)==0)
 	 /* These conveigh no information, but are required */ ;
-      else if (mycmp("UniqueID", line + 1, endtok) == 0) {
-	 if (fp->fd->uniqueid == 0)
-	    fp->fd->uniqueid = strtol(endtok, NULL, 10);
+      else if (mycmp("UniqueID", line + 1, endtok)==0) {
+	 if (fp->fd->uniqueid==0)
+	    fp->fd->uniqueid=strtol(endtok, NULL, 10);
       } else {
-	 if (mycmp("lenIV", line + 1, endtok) == 0)
-	    fp->fd->private->leniv = strtol(endtok, NULL, 10);	/* We need this value */
+	 if (mycmp("lenIV", line + 1, endtok)==0)
+	    fp->fd->private->leniv=strtol(endtok, NULL, 10);	/* We need this value */
 	 AddValue(fp, fp->fd->private->private, line, endtok);
       }
    } else if (fp->incidsysteminfo) {
-      if (endtok == NULL && strncmp(line, "end", 3) == 0) {
-	 fp->incidsysteminfo = 0;
+      if (endtok==NULL && strncmp(line, "end", 3)==0) {
+	 fp->incidsysteminfo=0;
 	 return;
-      } else if (endtok == NULL)
+      } else if (endtok==NULL)
 	 return;
-      if (mycmp("Registry", line + 1, endtok) == 0) {
+      if (mycmp("Registry", line + 1, endtok)==0) {
 	 free(fp->fd->registry);
-	 fp->fd->registry = getstring(endtok, in);
-      } else if (mycmp("Ordering", line + 1, endtok) == 0) {
+	 fp->fd->registry=getstring(endtok, in);
+      } else if (mycmp("Ordering", line + 1, endtok)==0) {
 	 free(fp->fd->ordering);
-	 fp->fd->ordering = getstring(endtok, in);
-      } else if (mycmp("Supplement", line + 1, endtok) == 0)	/* cff spec allows for copyright and notice */
-	 fp->fd->supplement = strtol(endtok, NULL, 0);
+	 fp->fd->ordering=getstring(endtok, in);
+      } else if (mycmp("Supplement", line + 1, endtok)==0)	/* cff spec allows for copyright and notice */
+	 fp->fd->supplement=strtol(endtok, NULL, 0);
    } else {
       if (strstr(line, "/Private") != NULL
 	  && (strstr(line, "dict") != NULL || strstr(line, "<<") != NULL)) {
-	 fp->infi = fp->inbb = fp->inmetrics = fp->inmetrics2 = false;
-	 fp->inprivate = fp->inblendprivate = fp->inblendfi = false;
+	 fp->infi=fp->inbb=fp->inmetrics=fp->inmetrics2=false;
+	 fp->inprivate=fp->inblendprivate=fp->inblendfi=false;
 	 if (strstr(line, "/Blend") != NULL) {
-	    fp->inblendprivate = 1;
-	    fp->fd->blendprivate = calloc(1, sizeof(struct psdict));
+	    fp->inblendprivate=1;
+	    fp->fd->blendprivate=calloc(1, sizeof(struct psdict));
 	    InitDict(fp->fd->blendprivate, line);
 	 } else {
-	    fp->inprivate = 1;
+	    fp->inprivate=1;
 	    InitDict(fp->fd->private->private, line);
 	 }
 	 return;
       } else if (strstr(line, "/FontInfo") != NULL
 		 && (strstr(line, "dict") != NULL
 		     || strstr(line, "<<") != NULL)) {
-	 fp->inprivate = fp->inbb = fp->inmetrics = fp->inmetrics2 = false;
-	 fp->infi = fp->inblendprivate = fp->inblendfi = false;
+	 fp->inprivate=fp->inbb=fp->inmetrics=fp->inmetrics2=false;
+	 fp->infi=fp->inblendprivate=fp->inblendfi=false;
 	 if (strstr(line, "/Blend") != NULL) {
-	    fp->inblendfi = 1;
-	    fp->fd->blendfontinfo = calloc(1, sizeof(struct psdict));
+	    fp->inblendfi=1;
+	    fp->fd->blendfontinfo=calloc(1, sizeof(struct psdict));
 	    InitDict(fp->fd->blendfontinfo, line);
 	 } else {
 	    if (!strstr(line, "end"))
-	       fp->infi = 1;
+	       fp->infi=1;
 	 }
 	 return;
       } else if (strstr(line, "/Blend") != NULL
 		 && strstr(line, "dict") != NULL) {
-	 fp->inprivate = fp->inbb = fp->inmetrics = fp->inmetrics2 = false;
-	 fp->infi = fp->inblendprivate = fp->inblendfi = false;
-	 fp->inblend = true;
+	 fp->inprivate=fp->inbb=fp->inmetrics=fp->inmetrics2=false;
+	 fp->infi=fp->inblendprivate=fp->inblendfi=false;
+	 fp->inblend=true;
 	 return;
       } else if (strstr(line, "/sfnts") != NULL && strstr(line, "[") != NULL) {
 	 sfnts2tempfile(fp, in, line);
 	 return;
       } else if (strstr(line, "/CharStrings") != NULL
 		 && strstr(line, "dict") != NULL && fp->fd->fonttype != 3) {
-	 if (fp->fd->chars->next == 0) {
+	 if (fp->fd->chars->next==0) {
 	    InitChars(fp->fd->chars, line);
-	    fp->ignore = false;
+	    fp->ignore=false;
 	 } else {
-	    fp->ignore = true;
+	    fp->ignore=true;
 	    LogError(_("Ignoring duplicate /CharStrings entry\n"));
 	 }
-	 fp->inchars = 1;
-	 fp->insubs = 0;
-	 fp->infi = fp->inprivate = fp->inbb = fp->inmetrics =
-	    fp->inmetrics2 = false;
-	 fp->inblendprivate = fp->inblendfi = false;
+	 fp->inchars=1;
+	 fp->insubs=0;
+	 fp->infi=fp->inprivate=fp->inbb=fp->inmetrics =
+	    fp->inmetrics2=false;
+	 fp->inblendprivate=fp->inblendfi=false;
 	 return;
-      } else if (mycmp("/CharProcs", line, endtok) == 0) {
+      } else if (mycmp("/CharProcs", line, endtok)==0) {
 	 InitCharProcs(fp->fd->charprocs, line);
-	 fp->infi = fp->inprivate = fp->inbb = fp->inmetrics =
-	    fp->inmetrics2 = false;
-	 fp->insubs = 0;
+	 fp->infi=fp->inprivate=fp->inbb=fp->inmetrics =
+	    fp->inmetrics2=false;
+	 fp->insubs=0;
 	 return;
       } else if (strstr(line, "/CIDSystemInfo") != NULL) {
-	 fp->incidsysteminfo = 1;
+	 fp->incidsysteminfo=1;
 	 return;
       } else if (fp->inmetrics) {
 	 if (endtok != NULL)
@@ -1989,115 +1989,115 @@ static void parseline(struct fontparse *fp, char *line, FILE * in) {
 	 return;
       }
 
-      if (endtok == NULL) {
+      if (endtok==NULL) {
 	 if (fp->skipping_mbf);
 	 else if (fp->fdindex != -1 && strstr(line, "end") != NULL) {
 	    if (++fp->fdindex >= fp->mainfd->fdcnt)
-	       fp->fd = fp->mainfd;
+	       fp->fd=fp->mainfd;
 	    else
-	       fp->fd = fp->mainfd->fds[fp->fdindex];
+	       fp->fd=fp->mainfd->fds[fp->fdindex];
 	 }
 	 return;
       }
-      if (mycmp("FontName", line + 1, endtok) == 0) {
-	 if (fp->fd->fontname == NULL)
-	    fp->fd->fontname = gettoken(endtok);
+      if (mycmp("FontName", line + 1, endtok)==0) {
+	 if (fp->fd->fontname==NULL)
+	    fp->fd->fontname=gettoken(endtok);
 	 else
 	    free(gettoken(endtok));	/* skip it */
-      } else if (mycmp("PaintType", line + 1, endtok) == 0)
-	 fp->fd->painttype = strtol(endtok, NULL, 10);
-      else if (mycmp("FontType", line + 1, endtok) == 0)
-	 fp->fd->fonttype = strtol(endtok, NULL, 10);
-      else if (mycmp("FontMatrix", line + 1, endtok) == 0) {
-	 if (fp->fd->fontmatrix[0] == 0)
+      } else if (mycmp("PaintType", line + 1, endtok)==0)
+	 fp->fd->painttype=strtol(endtok, NULL, 10);
+      else if (mycmp("FontType", line + 1, endtok)==0)
+	 fp->fd->fonttype=strtol(endtok, NULL, 10);
+      else if (mycmp("FontMatrix", line + 1, endtok)==0) {
+	 if (fp->fd->fontmatrix[0]==0)
 	    fillrealarray(fp->fd->fontmatrix, endtok, 6);
 	 else {
 	    real temp[6];
 
 	    fillrealarray(temp, endtok, 6);
 	 }
-      } else if (mycmp("LanguageLevel", line + 1, endtok) == 0)
-	 fp->fd->languagelevel = strtol(endtok, NULL, 10);
-      else if (mycmp("WMode", line + 1, endtok) == 0)
-	 fp->fd->wmode = strtol(endtok, NULL, 10);
-      else if (mycmp("FontBBox", line + 1, endtok) == 0)
+      } else if (mycmp("LanguageLevel", line + 1, endtok)==0)
+	 fp->fd->languagelevel=strtol(endtok, NULL, 10);
+      else if (mycmp("WMode", line + 1, endtok)==0)
+	 fp->fd->wmode=strtol(endtok, NULL, 10);
+      else if (mycmp("FontBBox", line + 1, endtok)==0)
 	 fillrealarray(fp->fd->fontbb, endtok, 4);
-      else if (mycmp("UniqueID", line + 1, endtok) == 0) {
-	 if (fp->fd->uniqueid == 0)
-	    fp->fd->uniqueid = strtol(endtok, NULL, 10);
-      } else if (mycmp("UniqueId", line + 1, endtok) == 0) {
+      else if (mycmp("UniqueID", line + 1, endtok)==0) {
+	 if (fp->fd->uniqueid==0)
+	    fp->fd->uniqueid=strtol(endtok, NULL, 10);
+      } else if (mycmp("UniqueId", line + 1, endtok)==0) {
 	 LogError(_
 		  ("This font contains a \"UniqueId\" variable, but the correct name for it is\n\t\"UniqueID\" (postscript is case concious)\n"));
-	 if (fp->fd->uniqueid == 0)
-	    fp->fd->uniqueid = strtol(endtok, NULL, 10);
-      } else if (mycmp("XUID", line + 1, endtok) == 0) {
-	 if (fp->fd->xuid[0] == 0)
+	 if (fp->fd->uniqueid==0)
+	    fp->fd->uniqueid=strtol(endtok, NULL, 10);
+      } else if (mycmp("XUID", line + 1, endtok)==0) {
+	 if (fp->fd->xuid[0]==0)
 	    fillintarray(fp->fd->xuid, endtok, 20);
-      } else if (mycmp("StrokeWidth", line + 1, endtok) == 0)
-	 fp->fd->strokewidth = strtod(endtok, NULL);
-      else if (mycmp("WeightVector", line + 1, endtok) == 0) {
-	 if (fp->fd->weightvector == NULL) {
-	    fp->pending_parse = &fp->fd->weightvector;
+      } else if (mycmp("StrokeWidth", line + 1, endtok)==0)
+	 fp->fd->strokewidth=strtod(endtok, NULL);
+      else if (mycmp("WeightVector", line + 1, endtok)==0) {
+	 if (fp->fd->weightvector==NULL) {
+	    fp->pending_parse=&fp->fd->weightvector;
 	    AddValue(fp, NULL, line, endtok);
 	 }
-      } else if (mycmp("$Blend", line + 1, endtok) == 0) {
-	 fp->pending_parse = &fp->fd->blendfunc;
+      } else if (mycmp("$Blend", line + 1, endtok)==0) {
+	 fp->pending_parse=&fp->fd->blendfunc;
 	 AddValue(fp, NULL, line, endtok);
       } else if (strstr(line, "/NormalizeDesignVector") != NULL) {
-	 fp->pending_parse = &fp->fd->ndv;
+	 fp->pending_parse=&fp->fd->ndv;
 	 AddValue(fp, NULL, line, endtok);
       } else if (strstr(line, "/ConvertDesignVector") != NULL) {
-	 fp->pending_parse = &fp->fd->cdv;
+	 fp->pending_parse=&fp->fd->cdv;
 	 AddValue(fp, NULL, line, endtok);
-      } else if (mycmp("BuildChar", line + 1, endtok) == 0)
+      } else if (mycmp("BuildChar", line + 1, endtok)==0)
 	 /* Do Nothing */ ;
-      else if (mycmp("BuildGlyph", line + 1, endtok) == 0)
+      else if (mycmp("BuildGlyph", line + 1, endtok)==0)
 	 /* Do Nothing */ ;
-      else if (mycmp("CIDFontName", line + 1, endtok) == 0) {
+      else if (mycmp("CIDFontName", line + 1, endtok)==0) {
 	 free(fp->fd->cidfontname);
-	 fp->fd->cidfontname = gettoken(endtok);
-      } else if (mycmp("CIDFontVersion", line + 1, endtok) == 0) {
-	 fp->fd->cidversion = strtod(endtok, NULL);
-      } else if (mycmp("CIDFontType", line + 1, endtok) == 0)
-	 fp->fd->cidfonttype = strtol(endtok, NULL, 10);
-      else if (mycmp("UIDBase", line + 1, endtok) == 0)
-	 fp->fd->uniqueid = strtol(endtok, NULL, 10);
-      else if (mycmp("CIDMapOffset", line + 1, endtok) == 0)
-	 fp->fd->mapoffset = strtol(endtok, NULL, 10);
-      else if (mycmp("FDBytes", line + 1, endtok) == 0)
-	 fp->fd->fdbytes = strtol(endtok, NULL, 10);
-      else if (mycmp("GDBytes", line + 1, endtok) == 0)
-	 fp->fd->gdbytes = strtol(endtok, NULL, 10);
-      else if (mycmp("CIDCount", line + 1, endtok) == 0)
-	 fp->fd->cidcnt = strtol(endtok, NULL, 10);
-      else if (mycmp("FDArray", line + 1, endtok) == 0) {
+	 fp->fd->cidfontname=gettoken(endtok);
+      } else if (mycmp("CIDFontVersion", line + 1, endtok)==0) {
+	 fp->fd->cidversion=strtod(endtok, NULL);
+      } else if (mycmp("CIDFontType", line + 1, endtok)==0)
+	 fp->fd->cidfonttype=strtol(endtok, NULL, 10);
+      else if (mycmp("UIDBase", line + 1, endtok)==0)
+	 fp->fd->uniqueid=strtol(endtok, NULL, 10);
+      else if (mycmp("CIDMapOffset", line + 1, endtok)==0)
+	 fp->fd->mapoffset=strtol(endtok, NULL, 10);
+      else if (mycmp("FDBytes", line + 1, endtok)==0)
+	 fp->fd->fdbytes=strtol(endtok, NULL, 10);
+      else if (mycmp("GDBytes", line + 1, endtok)==0)
+	 fp->fd->gdbytes=strtol(endtok, NULL, 10);
+      else if (mycmp("CIDCount", line + 1, endtok)==0)
+	 fp->fd->cidcnt=strtol(endtok, NULL, 10);
+      else if (mycmp("FDArray", line + 1, endtok)==0) {
 	 int i;
 
-	 fp->mainfd = fp->fd;
-	 fp->fd->fdcnt = strtol(endtok, NULL, 10);
-	 fp->fd->fds = calloc(fp->fd->fdcnt, sizeof(struct fontdict *));
-	 for (i = 0; i < fp->fd->fdcnt; ++i)
-	    fp->fd->fds[i] = MakeEmptyFont();
-	 fp->fdindex = 0;
-	 fp->fd = fp->fd->fds[0];
-      } else if (mycmp("FontSetInit", line + 1, endtok) == 0) {
-	 fp->iscff = true;
-	 fp->iscid = false;
-      } else if (mycmp("CIDInit", line + 1, endtok) == 0) {
-	 fp->iscid = true;
-	 fp->iscff = false;
+	 fp->mainfd=fp->fd;
+	 fp->fd->fdcnt=strtol(endtok, NULL, 10);
+	 fp->fd->fds=calloc(fp->fd->fdcnt, sizeof(struct fontdict *));
+	 for (i=0; i < fp->fd->fdcnt; ++i)
+	    fp->fd->fds[i]=MakeEmptyFont();
+	 fp->fdindex=0;
+	 fp->fd=fp->fd->fds[0];
+      } else if (mycmp("FontSetInit", line + 1, endtok)==0) {
+	 fp->iscff=true;
+	 fp->iscid=false;
+      } else if (mycmp("CIDInit", line + 1, endtok)==0) {
+	 fp->iscid=true;
+	 fp->iscff=false;
       } else if (fp->skipping_mbf) {	/* Skip over the makeblendedfont defn in a multimaster font */
 	 /* Do Nothing */
       } else if (!fp->alreadycomplained) {
 	 LogError(_("Didn't understand \"%s\" in blended font defn"),
 		  rmbinary(line));
-	 fp->alreadycomplained = true;
+	 fp->alreadycomplained=true;
       }
    }
 }
 
-static void addinfo(struct fontparse *fp, char *line, char *tok,
-		    char *binstart, int binlen, FILE * in) {
+static void addinfo(struct fontparse *fp,char *line,char *tok,
+		    char *binstart, int binlen, AFILE *in) {
    char *pt;
 
    decodestr((unsigned char *) binstart, binlen);
@@ -2115,34 +2115,34 @@ static void addinfo(struct fontparse *fp, char *line, char *tok,
 	 fp->fd->private->subrs /*: fp->fd->private->othersubrs */ ;
       while (isspace(*line))
 	 ++line;
-      if (strncmp(line, "dup ", 4) == 0) {
-	 int i = strtol(line + 4, NULL, 10);
+      if (strncmp(line, "dup ", 4)==0) {
+	 int i=strtol(line + 4, NULL, 10);
 
 	 if (fp->ignore)
 	    /* Do Nothing */ ;
 	 else if (i < chars->cnt) {
 	    if (chars->values[i] != NULL)
 	       LogError(_("Duplicate definition of subroutine %d\n"), i);
-	    chars->lens[i] = binlen;
-	    chars->values[i] = malloc(binlen);
+	    chars->lens[i]=binlen;
+	    chars->values[i]=malloc(binlen);
 	    memcpy(chars->values[i], binstart, binlen);
 	    if (i >= chars->next)
-	       chars->next = i + 1;
+	       chars->next=i + 1;
 	 } else if (!fp->alreadycomplained) {
 	    LogError(_("Index too big (must be <%d) \"%s"), chars->cnt,
 		     rmbinary(line));
-	    fp->alreadycomplained = true;
+	    fp->alreadycomplained=true;
 	 }
       } else if (!fp->alreadycomplained) {
 	 LogError(_
 		  ("Didn't understand \"%s\" while adding info to private subroutines"),
 		  rmbinary(line));
-	 fp->alreadycomplained = true;
+	 fp->alreadycomplained=true;
       }
    } else if (fp->inchars) {
-      struct pschars *chars = fp->fd->chars;
+      struct pschars *chars=fp->fd->chars;
 
-      if (*tok == '\0')
+      if (*tok=='\0')
 	 LogError(_("No name for CharStrings dictionary \"%s"),
 		  rmbinary(line));
       else if (fp->ignore)
@@ -2151,25 +2151,25 @@ static void addinfo(struct fontparse *fp, char *line, char *tok,
 	 LogError(_("Too many entries in CharStrings dictionary \"%s"),
 		  rmbinary(line));
       else {
-	 int i = chars->next;
+	 int i=chars->next;
 
-	 chars->lens[i] = binlen;
-	 chars->keys[i] = copy(tok);
-	 chars->values[i] = malloc(binlen);
+	 chars->lens[i]=binlen;
+	 chars->keys[i]=copy(tok);
+	 chars->values[i]=malloc(binlen);
 	 memcpy(chars->values[i], binstart, binlen);
 	 ++chars->next;
       }
    } else if (!fp->alreadycomplained) {
       /* Special hacks for known badly formatted fonts */
       if (strstr(line, "/CharStrings") != NULL) {
-	 for (pt = line; *pt != '/'; ++pt);
-	 pt = strchr(pt + 1, '/');
+	 for (pt=line; *pt != '/'; ++pt);
+	 pt=strchr(pt + 1, '/');
 	 if (pt != NULL)
-	    *pt = '\0';
+	    *pt='\0';
 	 parseline(fp, line, in);
 	 if (pt != NULL) {
-	    *pt = '/';
-	    line = pt;
+	    *pt='/';
+	    line=pt;
 	    goto retry;
 	 }
 	 return;
@@ -2178,24 +2178,24 @@ static void addinfo(struct fontparse *fp, char *line, char *tok,
 	 /* which we need to parse using parseline;                  */
 	 /* remove the binary glyph def and retry parse; then add    */
 	 /* the glyph def back and continue parsing binary stuff     */
-	 pt = binstart;		/* start at binary, work backwards, find glyph def */
+	 pt=binstart;		/* start at binary, work backwards, find glyph def */
 	 while (--pt >= line)
 	    if (!strncmp("dup", pt, 3))
 	       break;
 	 if (pt < line)
-	    pt = NULL;
+	    pt=NULL;
 	 if (pt != NULL)
-	    *pt = '\0';
+	    *pt='\0';
 	 parseline(fp, line, in);
 	 if (pt != NULL) {
-	    *pt = 'd';
-	    line = pt;
+	    *pt='d';
+	    line=pt;
 	    goto retry;
 	 }
 	 return;
       }
       LogError(_("Shouldn't be in addinfo \"%s"), rmbinary(line));
-      fp->alreadycomplained = true;
+      fp->alreadycomplained=true;
    }
 }
 
@@ -2215,109 +2215,109 @@ static void addinfo(struct fontparse *fp, char *line, char *tok,
 /*									*/
 /*  NOTE: readhexstring!!!						*/
 /* And in files generated by GNU fontutils				*/
-static int glorpline(struct fontparse *fp, FILE * temp, char *rdtok) {
-   static char *buffer = NULL, *end;
+static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
+   static char *buffer=NULL,*end;
    char *pt, *binstart;
    int binlen;
    int ch;
-   int innum, val = 0, inbinary, cnt =
+   int innum, val=0, inbinary, cnt =
       0, inr, wasspace, nownum, nowr, nowspace, sptok;
-   char *rdline = "{string currentfile exch readstring pop}", *rpt;
-   char *rdline2 = "{string currentfile exch readhexstring pop}";
-   char *tokpt = NULL, *rdpt;
+   char *rdline="{string currentfile exch readstring pop}", *rpt;
+   char *rdline2="{string currentfile exch readhexstring pop}";
+   char *tokpt=NULL, *rdpt;
    char temptok[255];
    int intok, first;
-   int inPrivate = 0, inSubrs = 0;
-   int wasminus = false, isminus, nibble = 0, firstnibble = true, inhex;
-   int willbehex = false;
+   int inPrivate=0, inSubrs=0;
+   int wasminus=false, isminus, nibble=0, firstnibble=true, inhex;
+   int willbehex=false;
 
-   ch = getc(temp);
-   if (ch == EOF)
+   ch=agetc(temp);
+   if (ch==EOF)
       return (0);
-   ungetc(ch, temp);
+   aungetc(ch, temp);
 
-   if (buffer == NULL) {
-      buffer = malloc(3000);
-      end = buffer + 3000;
+   if (buffer==NULL) {
+      buffer=malloc(3000);
+      end=buffer + 3000;
    }
-   innum = inr = 0;
-   wasspace = 0;
-   inbinary = 0;
-   rpt = NULL;
-   rdpt = NULL;
-   inhex = 0;
-   pt = buffer;
-   binstart = NULL;
-   binlen = 0;
-   intok = 0;
-   sptok = 0;
-   first = 1;
-   temptok[0] = '\0';
-   while ((ch = getc(temp)) != EOF) {
+   innum=inr=0;
+   wasspace=0;
+   inbinary=0;
+   rpt=NULL;
+   rdpt=NULL;
+   inhex=0;
+   pt=buffer;
+   binstart=NULL;
+   binlen=0;
+   intok=0;
+   sptok=0;
+   first=1;
+   temptok[0]='\0';
+   while ((ch=agetc(temp)) != EOF) {
       if (pt >= end) {
-	 char *old = buffer;
+	 char *old=buffer;
 
-	 int len = (end - buffer) + 2000;
+	 int len=(end - buffer) + 2000;
 
-	 buffer = realloc(buffer, len);
-	 end = buffer + len;
-	 pt = buffer + (pt - old);
+	 buffer=realloc(buffer, len);
+	 end=buffer + len;
+	 pt=buffer + (pt - old);
 	 if (binstart != NULL)
-	    binstart = buffer + (binstart - old);
+	    binstart=buffer + (binstart - old);
       }
-      *pt++ = ch;
-      isminus = ch == '-' && wasspace;
-      nownum = nowspace = nowr = 0;
-      if (rpt != NULL && ch != *rpt && ch == 'h' && rpt - rdline > 25
-	  && rpt - rdline < 30 && rdline2[rpt - rdline] == 'h') {
-	 rpt = rdline2 + (rpt - rdline);
-	 willbehex = true;
+      *pt++=ch;
+      isminus=ch=='-' && wasspace;
+      nownum=nowspace=nowr=0;
+      if (rpt != NULL && ch != *rpt && ch=='h' && rpt - rdline > 25
+	  && rpt - rdline < 30 && rdline2[rpt - rdline]=='h') {
+	 rpt=rdline2 + (rpt - rdline);
+	 willbehex=true;
       }
       if (inbinary) {
-	 if (--cnt == 0)
-	    inbinary = 0;
+	 if (--cnt==0)
+	    inbinary=0;
       } else if (inhex) {
 	 if (ishexdigit(ch)) {
 	    int h;
 
 	    if (isdigit(ch))
-	       h = ch - '0';
+	       h=ch - '0';
 	    else if (ch >= 'a' && ch <= 'f')
-	       h = ch - 'a' + 10;
+	       h=ch - 'a' + 10;
 	    else
-	       h = ch - 'A' + 10;
+	       h=ch - 'A' + 10;
 	    if (firstnibble) {
-	       nibble = h;
+	       nibble=h;
 	       --pt;
 	    } else {
-	       pt[-1] = (nibble << 4) | h;
-	       if (--cnt == 0)
-		  inbinary = inhex = 0;
+	       pt[-1]=(nibble << 4) | h;
+	       if (--cnt==0)
+		  inbinary=inhex=0;
 	    }
-	    firstnibble = !firstnibble;
+	    firstnibble=!firstnibble;
 	 } else {
 	    --pt;
 	    /* skip everything not hex */
 	 }
-      } else if (ch == '/') {
-	 intok = 1;
-	 tokpt = temptok;
+      } else if (ch=='/') {
+	 intok=1;
+	 tokpt=temptok;
       } else if (intok && !isspace(ch) && ch != '{' && ch != '[') {
-	 *tokpt++ = ch;
-      } else if ((intok || sptok) && (ch == '{' || ch == '[')) {
-	 *tokpt = '\0';
-	 rpt = rdline + 1;
-	 intok = sptok = 0;
+	 *tokpt++=ch;
+      } else if ((intok || sptok) && (ch=='{' || ch=='[')) {
+	 *tokpt='\0';
+	 rpt=rdline + 1;
+	 intok=sptok=0;
       } else if (intok) {
-	 *tokpt = '\0';
-	 intok = 0;
-	 sptok = 1;
+	 *tokpt='\0';
+	 intok=0;
+	 sptok=1;
 	 /* we've just read a name; ensure that we don't have two lines */
 	 /* munged together that cause line-by-line parsing to fail     */
 	 if (!strcmp("Private", temptok)) {
-	    inPrivate = 1;
+	    inPrivate=1;
 	 } else if (!strcmp("Subrs", temptok)) {
-	    inSubrs = 1;
+	    inSubrs=1;
 	    if (inPrivate) {
 	       putBack(fp, temp, temptok, ch, &pt);
 	       putBack(fp, temp, "/", '\0', &pt);	/* starts /Subrs token */
@@ -2327,87 +2327,87 @@ static int glorpline(struct fontparse *fp, FILE * temp, char *rdtok) {
 	    if (fp->insubs) {	/* break CharStrings onto a seperate line */
 	       putBack(fp, temp, temptok, ch, &pt);
 	       putBack(fp, temp, "", '/', &pt);
-	       fp->insubs = 0;
+	       fp->insubs=0;
 	       break;
 	    }
 	 }
       } else if (sptok && isspace(ch)) {
-	 nowspace = 1;
-	 if (ch == '\n' || ch == '\r')
+	 nowspace=1;
+	 if (ch=='\n' || ch=='\r')
 	    break;
       } else if (sptok && !isdigit(ch))
-	 sptok = 0;
-      else if (rpt != NULL && ch == *rpt) {
-	 if (*++rpt == '\0') {
+	 sptok=0;
+      else if (rpt != NULL && ch==*rpt) {
+	 if (*++rpt=='\0') {
 	    /* it matched the character definition string so this is the */
 	    /*  token we want to search for */
 	    strcpy(rdtok, temptok);
-	    fp->useshexstrings = willbehex;
-	    rpt = NULL;
+	    fp->useshexstrings=willbehex;
+	    rpt=NULL;
 	 }
-      } else if (rpt != NULL && ch == ' ') {
+      } else if (rpt != NULL && ch==' ') {
 	 /* Extra spaces are ok */
       } else if (rpt != NULL) {
-	 rpt = NULL;
-	 willbehex = false;
+	 rpt=NULL;
+	 willbehex=false;
       } else if (isdigit(ch)) {
-	 sptok = 0;
-	 nownum = 1;
+	 sptok=0;
+	 nownum=1;
 	 if (innum)
-	    val = 10 * val + ch - '0';
+	    val=10 * val + ch - '0';
 	 else
-	    val = ch - '0';
+	    val=ch - '0';
       } else if (isspace(ch)) {
-	 nowspace = 1;
-	 if (ch == '\n' || ch == '\r')
+	 nowspace=1;
+	 if (ch=='\n' || ch=='\r')
 	    break;
 	 if (inSubrs && matchFromBack(pt - 2, "array", pt - buffer - 1))
 	    break;		/* Subrs may be on same line with first RD def -- seperate them */
-      } else if (wasspace && ch == *rdtok) {
-	 nowr = 1;
-	 fp->useshexstrings = willbehex;
-	 rdpt = rdtok + 1;
-      } else if (wasspace && ch == '-') {	/* fonts produced by type1fix seem to define both "RD" and "-|" which confused me. so just respond to either */
-	 nowr = 1;
-	 fp->useshexstrings = false;
-	 rdpt = "|";
-      } else if (wasspace && ch == 'R') {	/* fonts produced by type1fix seem to define both "RD" and "-|" which confused me. so just respond to either */
-	 nowr = 1;
-	 fp->useshexstrings = false;
-	 rdpt = "D";
-      } else if (inr && ch == *rdpt) {
-	 if (*++rdpt == '\0') {
-	    ch = getc(temp);
-	    *pt++ = ch;
+      } else if (wasspace && ch==*rdtok) {
+	 nowr=1;
+	 fp->useshexstrings=willbehex;
+	 rdpt=rdtok + 1;
+      } else if (wasspace && ch=='-') {	/* fonts produced by type1fix seem to define both "RD" and "-|" which confused me. so just respond to either */
+	 nowr=1;
+	 fp->useshexstrings=false;
+	 rdpt="|";
+      } else if (wasspace && ch=='R') {	/* fonts produced by type1fix seem to define both "RD" and "-|" which confused me. so just respond to either */
+	 nowr=1;
+	 fp->useshexstrings=false;
+	 rdpt="D";
+      } else if (inr && ch==*rdpt) {
+	 if (*++rdpt=='\0') {
+	    ch=agetc(temp);
+	    *pt++=ch;
 	    if (isspace(ch) && val != 0) {
-	       inhex = fp->useshexstrings;
-	       inbinary = !fp->useshexstrings;
-	       firstnibble = true;
-	       cnt = val;
-	       binstart = pt;
-	       binlen = val;
+	       inhex=fp->useshexstrings;
+	       inbinary=!fp->useshexstrings;
+	       firstnibble=true;
+	       cnt=val;
+	       binstart=pt;
+	       binlen=val;
 	    }
 	 } else
-	    nowr = 1;
-      } else if (wasminus && ch == '!') {
-	 ch = getc(temp);
-	 *pt++ = ch;
+	    nowr=1;
+      } else if (wasminus && ch=='!') {
+	 ch=agetc(temp);
+	 *pt++=ch;
 	 if (isspace(ch) && val != 0) {
-	    inhex = 1;
-	    cnt = val;
-	    binstart = pt;
-	    binlen = val;
-	    firstnibble = true;
+	    inhex=1;
+	    cnt=val;
+	    binstart=pt;
+	    binlen=val;
+	    firstnibble=true;
 	 }
       }
-      innum = nownum;
-      wasspace = nowspace;
-      inr = nowr;
-      wasminus = isminus;
-      first = 0;
+      innum=nownum;
+      wasspace=nowspace;
+      inr=nowr;
+      wasminus=isminus;
+      first=0;
    }				/* end while */
-   *pt = '\0';
-   if (binstart == NULL) {
+   *pt='\0';
+   if (binstart==NULL) {
       parseline(fp, buffer, temp);
    } else {
       addinfo(fp, buffer, temptok, binstart, binlen, temp);
@@ -2419,37 +2419,37 @@ static int nrandombytes[4];
 
 #define EODMARKLEN	16
 
-#define bgetc(extra,in)	(*(extra)=='\0' ? getc(in) : (unsigned char ) *(extra)++ )
+#define bgetc(extra,in)	(*(extra)=='\0' ? agetc(in) : (unsigned char ) *(extra)++ )
 
-static void decrypteexec(FILE * in, FILE * temp, int hassectionheads,
+static void decrypteexec(AFILE *in,AFILE *temp,int hassectionheads,
 			 char *extra) {
    int ch1, ch2, ch3, ch4, binary;
    int zcnt;
    unsigned char zeros[EODMARKLEN + 6 + 1];
-   int sect_len = 0x7fffffff;
+   int sect_len=0x7fffffff;
  
-   if (extra == (void *) 5)
-      extra = "";
+   if (extra==(void *) 5)
+      extra="";
 
    /* The PLRM defines white space to include form-feed and null. The t1_spec */
    /*  does not. The t1_spec wins here. Someone gave me a font which began */
    /*  with a formfeed and that was part of the encrypted body */
-   while ((ch1 = bgetc(extra, in)) != EOF
-	  && (ch1 == ' ' || ch1 == '\t' || ch1 == '\n' || ch1 == '\r'));
-   if (ch1 == 0200 && hassectionheads) {
+   while ((ch1=bgetc(extra, in)) != EOF
+	  && (ch1==' ' || ch1=='\t' || ch1=='\n' || ch1=='\r'));
+   if (ch1==0200 && hassectionheads) {
       /* skip the 6 byte section header in pfb files that follows eexec */
-      ch1 = bgetc(extra, in);
-      sect_len = bgetc(extra, in);
+      ch1=bgetc(extra, in);
+      sect_len=bgetc(extra, in);
       sect_len |= bgetc(extra, in) << 8;
       sect_len |= bgetc(extra, in) << 16;
       sect_len |= bgetc(extra, in) << 24;
       sect_len -= 3;
-      ch1 = bgetc(extra, in);
+      ch1=bgetc(extra, in);
    }
-   ch2 = bgetc(extra, in);
-   ch3 = bgetc(extra, in);
-   ch4 = bgetc(extra, in);
-   binary = 0;
+   ch2=bgetc(extra, in);
+   ch3=bgetc(extra, in);
+   ch4=bgetc(extra, in);
+   binary=0;
    if (ch1 < '0' || (ch1 > '9' && ch1 < 'A') || (ch1 > 'F' && ch1 < 'a')
        || (ch1 > 'f') || ch2 < '0' || (ch2 > '9' && ch2 < 'A') || (ch2 > 'F'
 								   && ch2 <
@@ -2461,95 +2461,95 @@ static void decrypteexec(FILE * in, FILE * temp, int hassectionheads,
 								   && ch4 <
 								   'a')
        || (ch4 > 'f'))
-      binary = 1;
-   if (ch1 == EOF || ch2 == EOF || ch3 == EOF || ch4 == EOF) {
+      binary=1;
+   if (ch1==EOF || ch2==EOF || ch3==EOF || ch4==EOF) {
       return;
    }
 
    initcode();
    if (binary) {
-      nrandombytes[0] = decode(ch1);
-      nrandombytes[1] = decode(ch2);
-      nrandombytes[2] = decode(ch3);
-      nrandombytes[3] = decode(ch4);
-      zcnt = 0;
-      while ((ch1 = bgetc(extra, in)) != EOF) {
+      nrandombytes[0]=decode(ch1);
+      nrandombytes[1]=decode(ch2);
+      nrandombytes[2]=decode(ch3);
+      nrandombytes[3]=decode(ch4);
+      zcnt=0;
+      while ((ch1=bgetc(extra, in)) != EOF) {
 	 --sect_len;
 	 if (hassectionheads) {
-	    if (sect_len == 0 && ch1 == 0200) {
-	       ch1 = bgetc(extra, in);
-	       sect_len = bgetc(extra, in);
+	    if (sect_len==0 && ch1==0200) {
+	       ch1=bgetc(extra, in);
+	       sect_len=bgetc(extra, in);
 	       sect_len |= bgetc(extra, in) << 8;
 	       sect_len |= bgetc(extra, in) << 16;
 	       sect_len |= bgetc(extra, in) << 24;
 	       sect_len += 1;
-	       if (ch1 == '\1')
+	       if (ch1=='\1')
 		  break;
 	    } else {
 	       dumpzeros(temp, zeros, zcnt);
-	       zcnt = 0;
-	       putc(decode(ch1), temp);
+	       zcnt=0;
+	       aputc(decode(ch1), temp);
 	    }
 	 } else {
-	    if (ch1 == '0')
+	    if (ch1=='0')
 	       ++zcnt;
 	    else {
 	       dumpzeros(temp, zeros, zcnt);
-	       zcnt = 0;
+	       zcnt=0;
 	    }
 	    if (zcnt > EODMARKLEN)
 	       break;
-	    if (zcnt == 0)
-	       putc(decode(ch1), temp);
+	    if (zcnt==0)
+	       aputc(decode(ch1), temp);
 	    else
-	       zeros[zcnt - 1] = decode(ch1);
+	       zeros[zcnt - 1]=decode(ch1);
 	 }
       }
    } else {
-      nrandombytes[0] = decode(hex(ch1, ch2));
-      nrandombytes[1] = decode(hex(ch3, ch4));
-      ch1 = bgetc(extra, in);
-      ch2 = bgetc(extra, in);
-      ch3 = bgetc(extra, in);
-      ch4 = bgetc(extra, in);
-      nrandombytes[2] = decode(hex(ch1, ch2));
-      nrandombytes[3] = decode(hex(ch3, ch4));
-      zcnt = 0;
-      while ((ch1 = bgetc(extra, in)) != EOF) {
+      nrandombytes[0]=decode(hex(ch1, ch2));
+      nrandombytes[1]=decode(hex(ch3, ch4));
+      ch1=bgetc(extra, in);
+      ch2=bgetc(extra, in);
+      ch3=bgetc(extra, in);
+      ch4=bgetc(extra, in);
+      nrandombytes[2]=decode(hex(ch1, ch2));
+      nrandombytes[3]=decode(hex(ch3, ch4));
+      zcnt=0;
+      while ((ch1=bgetc(extra, in)) != EOF) {
 	 while (ch1 != EOF && isspace(ch1))
-	    ch1 = bgetc(extra, in);
-	 while ((ch2 = bgetc(extra, in)) != EOF && isspace(ch2));
-	 if (ch1 == '0' && ch2 == '0')
+	    ch1=bgetc(extra, in);
+	 while ((ch2=bgetc(extra, in)) != EOF && isspace(ch2));
+	 if (ch1=='0' && ch2=='0')
 	    ++zcnt;
 	 else {
 	    dumpzeros(temp, zeros, zcnt);
-	    zcnt = 0;
+	    zcnt=0;
 	 }
 	 if (zcnt > EODMARKLEN)
 	    break;
-	 if (zcnt == 0)
-	    putc(decode(hex(ch1, ch2)), temp);
+	 if (zcnt==0)
+	    aputc(decode(hex(ch1, ch2)), temp);
 	 else
-	    zeros[zcnt - 1] = decode(hex(ch1, ch2));
+	    zeros[zcnt - 1]=decode(hex(ch1, ch2));
       }
    }
-   while ((ch1 = bgetc(extra, in)) == '0' || isspace(ch1));
+   while ((ch1=bgetc(extra, in))=='0' || isspace(ch1));
    if (ch1 != EOF)
-      ungetc(ch1, in);
+      aungetc(ch1, in);
 }
 
-static void decryptagain(struct fontparse *fp, FILE * temp, char *rdtok) {
+static void decryptagain(struct fontparse *fp,AFILE *temp,char *rdtok) {
    while (glorpline(fp, temp, rdtok));
 }
 
-static void parsetype3(struct fontparse *fp, FILE * in) {
+static void parsetype3(struct fontparse *fp,AFILE *in) {
    PSFontInterpretPS(in, fp->fd->charprocs, fp->fd->encoding);
 }
 
-static unsigned char *readt1str(FILE * temp, int offset, int len, int leniv) {
+static unsigned char *readt1str(AFILE *temp,int offset,int len,int leniv) {
    int i;
    unsigned char *str, *pt;
-   unsigned short r = 4330;
+   unsigned short r=4330;
    unsigned char plain, cypher;
 
    /* The CID spec doesn't mention this, but the type 1 strings are all */
@@ -2557,105 +2557,105 @@ static unsigned char *readt1str(FILE * temp, int offset, int len, int leniv) {
    /*  from fd to fd (potentially) */
    /* I'm told (by Ian Kemmish) that leniv==-1 => no eexec encryption */
 
-   fseek(temp, offset, SEEK_SET);
+   afseek(temp, offset, SEEK_SET);
    if (leniv < 0) {
-      str = pt = malloc(len + 1);
-      for (i = 0; i < len; ++i)
-	 *pt++ = getc(temp);
+      str=pt=malloc(len + 1);
+      for (i=0; i < len; ++i)
+	 *pt++=agetc(temp);
    } else {
-      for (i = 0; i < leniv; ++i) {
-	 cypher = getc(temp);
-	 plain = (cypher ^ (r >> 8));
-	 r = (cypher + r) * c1 + c2;
+      for (i=0; i < leniv; ++i) {
+	 cypher=agetc(temp);
+	 plain=(cypher ^ (r >> 8));
+	 r=(cypher + r) * c1 + c2;
       }
-      str = pt = malloc(len - leniv + 1);
+      str=pt=malloc(len - leniv + 1);
       for (; i < len; ++i) {
-	 cypher = getc(temp);
-	 plain = (cypher ^ (r >> 8));
-	 r = (cypher + r) * c1 + c2;
-	 *pt++ = plain;
+	 cypher=agetc(temp);
+	 plain=(cypher ^ (r >> 8));
+	 r=(cypher + r) * c1 + c2;
+	 *pt++=plain;
       }
    }
-   *pt = '\0';
+   *pt='\0';
    return (str);
 }
 
-static void figurecids(struct fontparse *fp, FILE * temp) {
-   struct fontdict *fd = fp->mainfd;
+static void figurecids(struct fontparse *fp,AFILE *temp) {
+   struct fontdict *fd=fp->mainfd;
    int i, j, k, val;
    int *offsets;
-   int cidcnt = fd->cidcnt;
+   int cidcnt=fd->cidcnt;
    int leniv;
 
    /* Some cid formats don't have any of these */
 
-   fd->cidstrs = malloc(cidcnt * sizeof(uint8 *));
-   fd->cidlens = malloc(cidcnt * sizeof(int16));
-   fd->cidfds = malloc((cidcnt + 1) * sizeof(int16));
-   offsets = malloc((cidcnt + 1) * sizeof(int));
+   fd->cidstrs=malloc(cidcnt * sizeof(uint8 *));
+   fd->cidlens=malloc(cidcnt * sizeof(int16));
+   fd->cidfds=malloc((cidcnt + 1) * sizeof(int16));
+   offsets=malloc((cidcnt + 1) * sizeof(int));
 
-   fseek(temp, fd->mapoffset, SEEK_SET);
-   for (i = 0; i <= fd->cidcnt; ++i) {
-      for (j = val = 0; j < fd->fdbytes; ++j)
-	 val = (val << 8) + getc(temp);
+   afseek(temp, fd->mapoffset, SEEK_SET);
+   for (i=0; i <= fd->cidcnt; ++i) {
+      for (j=val=0; j < fd->fdbytes; ++j)
+	 val=(val << 8) + agetc(temp);
       if (val >= fd->fdcnt && val != 255) {	/* 255 is a special mark */
 	 LogError(_("Invalid FD (%d) assigned to CID %d.\n"), val, i);
-	 val = 0;
+	 val=0;
       }
-      fd->cidfds[i] = val;
-      for (j = val = 0; j < fd->gdbytes; ++j)
-	 val = (val << 8) + getc(temp);
-      offsets[i] = val;
+      fd->cidfds[i]=val;
+      for (j=val=0; j < fd->gdbytes; ++j)
+	 val=(val << 8) + agetc(temp);
+      offsets[i]=val;
       if (i != 0) {
-	 fd->cidlens[i - 1] = offsets[i] - offsets[i - 1];
+	 fd->cidlens[i - 1]=offsets[i] - offsets[i - 1];
 	 if (fd->cidlens[i - 1] < 0) {
 	    LogError(_("Bad CID offset for CID %d\n"), i - 1);
-	    fd->cidlens[i - 1] = 0;
+	    fd->cidlens[i - 1]=0;
 	 }
       }
    }
 
-   for (i = 0; i < fd->cidcnt; ++i) {
-      if (fd->cidlens[i] == 0)
-	 fd->cidstrs[i] = NULL;
+   for (i=0; i < fd->cidcnt; ++i) {
+      if (fd->cidlens[i]==0)
+	 fd->cidstrs[i]=NULL;
       else {
-	 fd->cidstrs[i] = readt1str(temp, offsets[i], fd->cidlens[i],
+	 fd->cidstrs[i]=readt1str(temp, offsets[i], fd->cidlens[i],
 				    fd->fds[fd->cidfds[i]]->private->leniv);
 	 fd->cidlens[i] -= fd->fds[fd->cidfds[i]]->private->leniv;
       }
    }
    free(offsets);
 
-   for (k = 0; k < fd->fdcnt; ++k) {
-      struct private *private = fd->fds[k]->private;
-      char *ssubroff = PSDictHasEntry(private->private, "SubrMapOffset");
-      char *ssdbytes = PSDictHasEntry(private->private, "SDBytes");
-      char *ssubrcnt = PSDictHasEntry(private->private, "SubrCount");
+   for (k=0; k < fd->fdcnt; ++k) {
+      struct private *private=fd->fds[k]->private;
+      char *ssubroff=PSDictHasEntry(private->private, "SubrMapOffset");
+      char *ssdbytes=PSDictHasEntry(private->private, "SDBytes");
+      char *ssubrcnt=PSDictHasEntry(private->private, "SubrCount");
       int subroff, sdbytes, subrcnt;
 
       if (ssubroff != NULL && ssdbytes != NULL && ssubrcnt != NULL &&
-	  (subroff = strtol(ssubroff, NULL, 10)) >= 0 &&
-	  (sdbytes = strtol(ssdbytes, NULL, 10)) > 0 &&
-	  (subrcnt = strtol(ssubrcnt, NULL, 10)) > 0) {
-	 private->subrs->cnt = subrcnt;
-	 private->subrs->values = calloc(subrcnt, sizeof(char *));
-	 private->subrs->lens = calloc(subrcnt, sizeof(int));
-	 leniv = private->leniv;
-	 offsets = malloc((subrcnt + 1) * sizeof(int));
-	 fseek(temp, subroff, SEEK_SET);
-	 for (i = 0; i <= subrcnt; ++i) {
-	    for (j = val = 0; j < sdbytes; ++j)
-	       val = (val << 8) + getc(temp);
-	    offsets[i] = val;
+	  (subroff=strtol(ssubroff, NULL, 10)) >= 0 &&
+	  (sdbytes=strtol(ssdbytes, NULL, 10)) > 0 &&
+	  (subrcnt=strtol(ssubrcnt, NULL, 10)) > 0) {
+	 private->subrs->cnt=subrcnt;
+	 private->subrs->values=calloc(subrcnt, sizeof(char *));
+	 private->subrs->lens=calloc(subrcnt, sizeof(int));
+	 leniv=private->leniv;
+	 offsets=malloc((subrcnt + 1) * sizeof(int));
+	 afseek(temp, subroff, SEEK_SET);
+	 for (i=0; i <= subrcnt; ++i) {
+	    for (j=val=0; j < sdbytes; ++j)
+	       val=(val << 8) + agetc(temp);
+	    offsets[i]=val;
 	    if (i != 0)
-	       private->subrs->lens[i - 1] = offsets[i] - offsets[i - 1];
+	       private->subrs->lens[i - 1]=offsets[i] - offsets[i - 1];
 	 }
-	 for (i = 0; i < subrcnt; ++i) {
-	    private->subrs->values[i] = readt1str(temp, offsets[i],
+	 for (i=0; i < subrcnt; ++i) {
+	    private->subrs->values[i]=readt1str(temp, offsets[i],
 						  private->subrs->lens[i],
 						  leniv);
 	 }
-	 private->subrs->next = i;
+	 private->subrs->next=i;
 	 free(offsets);
       }
       PSDictRemoveEntry(private->private, "SubrMapOffset");
@@ -2664,93 +2664,93 @@ static void figurecids(struct fontparse *fp, FILE * temp) {
    }
 }
 
-static void dodata(struct fontparse *fp, FILE * in, FILE * temp) {
+static void dodata(struct fontparse *fp,AFILE *in,AFILE *temp) {
    int binary, cnt, len;
    int ch, ch2;
    char *pt;
    char fontsetname[256];
 
-   while ((ch = getc(in)) != '(' && ch != '/' && ch != EOF);
-   if (ch == '/') {
+   while ((ch=agetc(in)) != '(' && ch != '/' && ch != EOF);
+   if (ch=='/') {
       /* There appears to be no provision for a hex encoding here */
       /* Why can't they use the same format for routines with the same name? */
-      binary = true;
-      for (pt = fontsetname; (ch = getc(in)) != ' ' && ch != EOF;)
+      binary=true;
+      for (pt=fontsetname; (ch=agetc(in)) != ' ' && ch != EOF;)
 	 if (pt < fontsetname + sizeof(fontsetname) - 1)
-	    *pt++ = ch;
-      *pt = '\0';
+	    *pt++=ch;
+      *pt='\0';
    } else {
-      if ((ch = getc(in)) == 'B' || ch == 'b')
-	 binary = true;
-      else if (ch == 'H' || ch == 'h')
-	 binary = false;
+      if ((ch=agetc(in))=='B' || ch=='b')
+	 binary=true;
+      else if (ch=='H' || ch=='h')
+	 binary=false;
       else {
-	 binary = true;		/* Who knows? */
+	 binary=true;		/* Who knows? */
 	 LogError(_("Failed to parse the StartData command properly\n"));
       }
-      fontsetname[0] = '\0';
-      while ((ch = getc(in)) != ')' && ch != EOF);
+      fontsetname[0]='\0';
+      while ((ch=agetc(in)) != ')' && ch != EOF);
    }
    if (fscanf(in, "%d", &len) != 1 || len <= 0) {
-      len = 0;
+      len=0;
       LogError(_
 	       ("Failed to parse the StartData command properly, bad count\n"));
    }
-   cnt = len;
-   while (isspace(ch = getc(in)));
-   ungetc(ch, in);
-   for (pt = "StartData "; *pt; ++pt)
-      getc(in);			/* And if it didn't match, what could I do about it? */
+   cnt=len;
+   while (isspace(ch=agetc(in)));
+   aungetc(ch, in);
+   for (pt="StartData "; *pt; ++pt)
+      agetc(in);			/* And if it didn't match, what could I do about it? */
    if (binary) {
       while (cnt > 0) {
-	 ch = getc(in);
-	 putc(ch, temp);
+	 ch=agetc(in);
+	 aputc(ch, temp);
 	 --cnt;
       }
    } else {
       while (cnt > 0) {
 	 /* Hex data are allowed to contain whitespace */
-	 while (isspace(ch = getc(in)));
-	 while (isspace(ch2 = getc(in)));
-	 ch = hex(ch, ch2);
-	 putc(ch, temp);
+	 while (isspace(ch=agetc(in)));
+	 while (isspace(ch2=agetc(in)));
+	 ch=hex(ch, ch2);
+	 aputc(ch, temp);
 	 --cnt;
       }
-      if ((ch = getc(in)) != '>')
-	 ungetc(ch, in);
+      if ((ch=agetc(in)) != '>')
+	 aungetc(ch, in);
    }
-   rewind(temp);
+   arewind(temp);
    if (fp->iscid)
       figurecids(fp, temp);
    else {
-      fp->fd->sf = _CFFParse(temp, len, fontsetname);
-      fp->fd->wascff = true;
+      fp->fd->sf=_CFFParse(temp, len, fontsetname);
+      fp->fd->wascff=true;
    }
 }
 
-static void realdecrypt(struct fontparse *fp, FILE * in, FILE * temp) {
+static void realdecrypt(struct fontparse *fp,AFILE *in,AFILE *temp) {
    char buffer[1024];		/* 256 was okay, but need this much now when some lines are concatenated */
    int first, hassectionheads;
    char rdtok[20];
-   int saw_blend = false;
+   int saw_blend=false;
 
    strcpy(rdtok, "RD");
 
-   first = 1;
-   hassectionheads = 0;
+   first=1;
+   hassectionheads=0;
    while (myfgets(buffer, sizeof(buffer), in) != NULL) {
       if (strstr(buffer, "Blend") != NULL)
-	 saw_blend = true;
-      if (first && buffer[0] == '\200') {
-	 int len = strlen(buffer);
+	 saw_blend=true;
+      if (first && buffer[0]=='\200') {
+	 int len=strlen(buffer);
 
-	 hassectionheads = 1;
-	 fp->fd->wasbinary = true;
+	 hassectionheads=1;
+	 fp->fd->wasbinary=true;
 	 /* if there were a newline in the section header (in the length word) */
 	 /*  we would stop at it, and not read the full header */
 	 if (len < 6)		/* eat the header */
 	    while (len < 6) {
-	       getc(in);
+	       agetc(in);
 	       ++len;
 	 } else			/* Otherwise parse anything else on the line */
 	    parseline(fp, buffer + 6, in);
@@ -2773,34 +2773,34 @@ static void realdecrypt(struct fontparse *fp, FILE * in, FILE * temp) {
 		  (fp->fd->fonttype != 42 && fp->fd->cidfonttype != 2)) {
 	    /* gsf files are not eexec encoded, but the charstrings are encoded */
 	    InitChars(fp->fd->chars, buffer);
-	    fp->inchars = 1;
+	    fp->inchars=1;
 	    decryptagain(fp, in, rdtok);
 	    return;
 	 } else if (strstr(buffer, "/Subrs") != NULL
 		    && strstr(buffer, "array") != NULL) {
 	    /* Same case as above */
 	    InitChars(fp->fd->private->subrs, buffer);
-	    fp->insubs = 1;
+	    fp->insubs=1;
 	    decryptagain(fp, in, rdtok);
 	    return;
 	 } else if (strstr(buffer, "/Private") != NULL
 		    && (strstr(buffer, "dict") != NULL
 			|| strstr(buffer, "<<") != NULL)) {
 	    /* files produced by GNU fontutils have some of the same issues */
-	    fp->inprivate = 1;
-	    fp->infi = false;
+	    fp->inprivate=1;
+	    fp->infi=false;
 	    decryptagain(fp, in, rdtok);
 	    return;
 	 } else
 	    parseline(fp, buffer, in);
       } else
 	 parseline(fp, buffer, in);
-      first = 0;
+      first=0;
       if (strstr(buffer, "%%BeginData: ") != NULL)
 	 break;
       if (strstr(buffer, "currentfile") != NULL
 	  && strstr(buffer, "eexec") != NULL) {
-	 fp->skipping_mbf = false;
+	 fp->skipping_mbf=false;
 	 break;
       }
    }
@@ -2810,71 +2810,71 @@ static void realdecrypt(struct fontparse *fp, FILE * in, FILE * temp) {
       dodata(fp, in, temp);
    } else if (strstr(buffer, "eexec") != NULL) {
       decrypteexec(in, temp, hassectionheads, strstr(buffer, "eexec") + 5);
-      rewind(temp);
+      arewind(temp);
       decryptagain(fp, temp, rdtok);
       while (myfgets(buffer, sizeof(buffer), in) != NULL) {
 	 if (buffer[0] != '\200' || !hassectionheads)
 	    parseline(fp, buffer, in);
       }
-   } else if ((fp->fd->fonttype == 42 || fp->fd->cidfonttype == 2)
+   } else if ((fp->fd->fonttype==42 || fp->fd->cidfonttype==2)
 	      && fp->sfnts != NULL) {
-      fp->fd->sf = _SFReadTTF(fp->sfnts, 0, 0, "<Temp File>", fp->fd);
-      fclose(fp->sfnts);
+      fp->fd->sf=_SFReadTTF(fp->sfnts, 0, 0, "<Temp File>", fp->fd);
+      afclose(fp->sfnts);
    }
 }
 
-FontDict *_ReadPSFont(FILE * in) {
-   FILE *temp;
+FontDict *_ReadPSFont(AFILE *in) {
+   AFILE *temp;
    struct fontparse fp;
    char oldloc[24];
    struct stat b;
 
-   temp = tmpfile();
-   if (temp == NULL) {
+   temp=atmpfile();
+   if (temp==NULL) {
       LogError(_("Cannot open a temporary file\n"));
-      fclose(in);
+      afclose(in);
       return (NULL);
    }
 
    strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
    setlocale(LC_NUMERIC, "C");
    memset(&fp, '\0', sizeof(fp));
-   fp.fd = fp.mainfd = PSMakeEmptyFont();
-   fp.fdindex = -1;
+   fp.fd=fp.mainfd=PSMakeEmptyFont();
+   fp.fdindex=-1;
    realdecrypt(&fp, in, temp);
    free(fp.vbuf);
    setlocale(LC_NUMERIC, oldloc);
 
-   fclose(temp);
+   afclose(temp);
 
    if (fstat(fileno(in), &b) != -1) {
-      fp.fd->modificationtime = b.st_mtime;
-      fp.fd->creationtime = b.st_mtime;
+      fp.fd->modificationtime=b.st_mtime;
+      fp.fd->creationtime=b.st_mtime;
    }
    return (fp.fd);
 }
 
 FontDict *ReadPSFont(char *fontname) {
-   FILE *in;
+   AFILE *in;
 
    FontDict *fd;
 
-   in = fopen(fontname, "rb");
-   if (in == NULL) {
+   in=afopen(fontname, "rb");
+   if (in==NULL) {
       LogError(_("Cannot open %s\n"), fontname);
       return (NULL);
    }
-   fd = _ReadPSFont(in);
-   fclose(in);
+   fd=_ReadPSFont(in);
+   afclose(in);
    return (fd);
 }
 
 void PSCharsFree(struct pschars *chrs) {
    int i;
 
-   if (chrs == NULL)
+   if (chrs==NULL)
       return;
-   for (i = 0; i < chrs->next; ++i) {
+   for (i=0; i < chrs->next; ++i) {
       if (chrs->keys != NULL)
 	 free(chrs->keys[i]);
       free(chrs->values[i]);
@@ -2888,9 +2888,9 @@ void PSCharsFree(struct pschars *chrs) {
 void PSDictFree(struct psdict *dict) {
    int i;
 
-   if (dict == NULL)
+   if (dict==NULL)
       return;
-   for (i = 0; i < dict->next; ++i) {
+   for (i=0; i < dict->next; ++i) {
       if (dict->keys != NULL)
 	 free(dict->keys[i]);
       free(dict->values[i]);
@@ -2922,7 +2922,7 @@ void PSFontFree(FontDict * fd) {
    int i;
 
    if (fd->encoding != NULL)
-      for (i = 0; i < 256; ++i)
+      for (i=0; i < 256; ++i)
 	 free(fd->encoding[i]);
    free(fd->fontname);
    free(fd->cidfontname);
@@ -2932,21 +2932,21 @@ void PSFontFree(FontDict * fd) {
    PSCharsFree(fd->chars);
    PrivateFree(fd->private);
    if (fd->charprocs != NULL) {
-      for (i = 0; i < fd->charprocs->cnt; ++i)
+      for (i=0; i < fd->charprocs->cnt; ++i)
 	 free(fd->charprocs->keys[i]);
       free(fd->charprocs->keys);
       free(fd->charprocs->values);
       free(fd->charprocs);
    }
    if (fd->cidstrs != NULL) {
-      for (i = 0; i < fd->cidcnt; ++i)
+      for (i=0; i < fd->cidcnt; ++i)
 	 free(fd->cidstrs[i]);
       free(fd->cidstrs);
    }
    free(fd->cidlens);
    free(fd->cidfds);
    if (fd->fds != NULL) {
-      for (i = 0; i < fd->fdcnt; ++i)
+      for (i=0; i < fd->fdcnt; ++i)
 	 PSFontFree(fd->fds[i]);
       free(fd->fds);
    }
@@ -2961,24 +2961,24 @@ void PSFontFree(FontDict * fd) {
    free(fd);
 }
 
-char **_NamesReadPostScript(FILE * ps) {
-   char **ret = NULL;
+char **_NamesReadPostScript(AFILE *ps) {
+   char **ret=NULL;
    char buffer[2000], *pt, *end;
 
    if (ps != NULL) {
       while (fgets(buffer, sizeof(buffer), ps) != NULL) {
 	 if (strstr(buffer, "/FontName") != NULL ||
 	     strstr(buffer, "/CIDFontName") != NULL) {
-	    pt = strstr(buffer, "FontName");
+	    pt=strstr(buffer, "FontName");
 	    pt += strlen("FontName");
 	    while (isspace(*pt))
 	       ++pt;
-	    if (*pt == '/')
+	    if (*pt=='/')
 	       ++pt;
-	    for (end = pt; *end != '\0' && !isspace(*end); ++end);
-	    ret = malloc(2 * sizeof(char *));
-	    ret[0] = copyn(pt, end - pt);
-	    ret[1] = NULL;
+	    for (end=pt; *end != '\0' && !isspace(*end); ++end);
+	    ret=malloc(2 * sizeof(char *));
+	    ret[0]=copyn(pt, end - pt);
+	    ret[1]=NULL;
 	    break;
 	 } else if (strstr(buffer, "currentfile") != NULL
 		    && strstr(buffer, "eexec") != NULL)
@@ -2986,11 +2986,11 @@ char **_NamesReadPostScript(FILE * ps) {
 	 else if (strstr(buffer, "%%BeginData") != NULL)
 	    break;
       }
-      fclose(ps);
+      afclose(ps);
    }
    return (ret);
 }
 
 char **NamesReadPostScript(char *filename) {
-   return (_NamesReadPostScript(fopen(filename, "rb")));
+   return (_NamesReadPostScript(afopen(filename, "rb")));
 }

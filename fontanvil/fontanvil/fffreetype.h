@@ -1,4 +1,4 @@
-/* $Id: fffreetype.h 3788 2015-03-07 11:17:00Z mskala $ */
+/* $Id: fffreetype.h 3849 2015-03-25 10:47:47Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,7 @@ typedef struct freetypecontext {
    void *mappedfile;
    long len;
    int *glyph_indices;
+   AFILE *file;
    FT_Face face;
    struct freetypecontext *shared_ftc;	/* mappedfile, glyph_indices are shared with this ftc */
    /*  We have a new face, but that's it. This is so we can */

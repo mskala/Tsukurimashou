@@ -1,4 +1,4 @@
-/* $Id: sftextfieldP.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: sftextfieldP.h 3849 2015-03-25 10:47:47Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -83,9 +83,9 @@ extern void SFTextAreaSelect(GGadget * g, int start, int end);
 
 extern void SFTextAreaReplace(GGadget * g, const unichar_t * txt);
 
-extern int SFTFSetFontData(GGadget * g, int start, int end, SplineFont * sf,
+extern int SFTFSetFontData(GGadget * g, int start, int end, SplineFont *sf,
 			   enum sftf_fonttype, int size, int antialias);
-extern int SFTFSetFont(GGadget * g, int start, int end, SplineFont * sf);
+extern int SFTFSetFont(GGadget * g, int start, int end, SplineFont *sf);
 
 extern int SFTFSetFontType(GGadget * g, int start, int end,
 			   enum sftf_fonttype);

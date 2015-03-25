@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 3338 2014-09-30 18:25:16Z mskala $ */
+/* $Id: noprefs.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@
 
 #include <glib.h>
 
-static char *othersubrsfile = NULL;
+static char *othersubrsfile=NULL;
 
 extern int adjustwidth;
 
@@ -92,7 +92,7 @@ extern int oldformatstate;	/* in savefontdlg.c */
 
 extern int oldbitmapstate;	/* in savefontdlg.c */
 
-static int old_ttf_flags = 0, old_otf_flags = 0;
+static int old_ttf_flags=0,old_otf_flags=0;
 
 extern int old_sfnt_flags;	/* in savefont.c */
 
@@ -151,69 +151,69 @@ extern int use_freetype_to_rasterize_fv;	/* in bitmapchar.c */
 /*  UI preference files without loss of data */
 static char *xdefs_filename;
 
-static char *helpdir = NULL;	/* in uiutil.c */
+static char *helpdir=NULL;	/* in uiutil.c */
 
-static int splash = 1;
+static int splash=1;
 
-static int cv_auto_goto = 1;
+static int cv_auto_goto=1;
 
-static int OpenCharsInNewWindow = 1;
+static int OpenCharsInNewWindow=1;
 
-static float arrowAmount = 1;
+static float arrowAmount=1;
 
-static float arrowAccelFactor = 10;
+static float arrowAccelFactor=10;
 
-static float snapdistance = 3.5;
+static float snapdistance=3.5;
 
-static int stop_at_join = 0;
+static int stop_at_join=0;
 
-static int updateflex = 0;	/* in charview.c */
+static int updateflex=0;	/* in charview.c */
 
-static int ask_user_for_resolution = 1;
+static int ask_user_for_resolution=1;
 
-static int default_fv_showhmetrics = 0;	/* in fontview */
+static int default_fv_showhmetrics=0;	/* in fontview */
 
-static int default_fv_showvmetrics = 0;	/* in fontview */
+static int default_fv_showvmetrics=0;	/* in fontview */
 
-static int default_fv_glyphlabel = 0;	/* in fontview */
+static int default_fv_glyphlabel=0;	/* in fontview */
 
-static int save_to_dir = 0;	/* in fontview, use sfdir rather than sfd */
+static int save_to_dir=0;	/* in fontview,use sfdir rather than sfd */
 
-static int palettes_docked = 1;	/* in cvpalettes */
-static int cvvisible[2] = { 1, 1 }, bvvisible[3] = {
+static int palettes_docked=1;	/* in cvpalettes */
+static int cvvisible[2]={ 1,1 },bvvisible[3]={
 1, 1, 1};			/* in cvpalettes.c */
 
-static int infowindowdistance = 10;	/* in cvruler.c */
+static int infowindowdistance=10;	/* in cvruler.c */
 
-static int loacal_markextrema, loacal_markpoi, loacal_showrulers,
+static int loacal_markextrema,loacal_markpoi,loacal_showrulers,
    loacal_showcpinfo, loacal_showsidebearings, loacal_showpoints,
    loacal_showfilled, loacal_showtabs, loacal_showrefnames;
-static int oldsystem = 100;
+static int oldsystem=100;
 
 static char *oflib_username;
 
 static char *oflib_password;
 
-static int rectelipse = 0, polystar = 0, regular_star = 0;	/* from cvpalettes.c */
-static int center_out[2] = { 0, 0 };	/* from cvpalettes.c */
+static int rectelipse=0,polystar=0,regular_star=0;	/* from cvpalettes.c */
+static int center_out[2]={ 0,0 };	/* from cvpalettes.c */
 
-static float rr_radius = 0;	/* from cvpalettes.c */
+static float rr_radius=0;	/* from cvpalettes.c */
 
-static int ps_pointcnt = 5;	/* from cvpalettes.c */
+static int ps_pointcnt=5;	/* from cvpalettes.c */
 
-static float star_percent = 100;	/* from cvpalettes.c */
+static float star_percent=100;	/* from cvpalettes.c */
 
-static int debug_wins = 0;	/* in cvdebug.c */
+static int debug_wins=0;	/* in cvdebug.c */
 
-static int gridfit_dpi = 100, gridfit_depth = 1;	/* in cvgridfit.c */
+static int gridfit_dpi=100,gridfit_depth=1;	/* in cvgridfit.c */
 
-static float gridfit_pointsizex = 12;	/* in cvgridfit.c */
+static float gridfit_pointsizex=12;	/* in cvgridfit.c */
 
-static float gridfit_pointsizey = 12;	/* in cvgridfit.c */
+static float gridfit_pointsizey=12;	/* in cvgridfit.c */
 
-static int gridfit_x_sameas_y = true;	/* in cvgridfit.c */
+static int gridfit_x_sameas_y=true;	/* in cvgridfit.c */
 
-static int default_font_filter_index = 0;
+static int default_font_filter_index=0;
 
 static unichar_t *script_menu_names[SCRIPT_MENU_MAX];
 
@@ -221,7 +221,7 @@ static char *script_filenames[SCRIPT_MENU_MAX];
 
 static char *RecentFiles[RECENT_MAX];
 
-static int ItalicConstrained = true;
+static int ItalicConstrained=true;
 
 extern int clear_tt_instructions_when_needed;	/* cvundoes.c */
 
@@ -239,23 +239,23 @@ static int bv_height;		/* in bitmapview.c */
 
 static int mvshowgrid;		/* in metricsview.c */
 
-static int old_validate = true;
+static int old_validate=true;
 
-static int old_fontlog = false;
+static int old_fontlog=false;
 
-static int home_char = 'A';
+static int home_char='A';
 
-static int compact_font_on_open = 0;
+static int compact_font_on_open=0;
 
 static int oflib_automagic_preview;	/* from oflib.c */
 
 static int aa_pixelsize;	/* from anchorsaway.c */
 
-static int gfc_showhidden, gfc_dirplace;
+static int gfc_showhidden,gfc_dirplace;
 
-static char *gfc_bookmarks = NULL;
+static char *gfc_bookmarks=NULL;
 
-static char *pixmapdir = NULL;
+static char *pixmapdir=NULL;
 
 enum pref_types { pr_int, pr_real, pr_bool, pr_enum, pr_encoding, pr_string,
    pr_file, pr_namelist, pr_unicode
@@ -273,7 +273,7 @@ static struct prefs_list {
    struct enums *enums;
    unsigned int dontdisplay:1;
    char *popup;
-} core_list[] = {
+} core_list[]={
    {
    N_("OtherSubrsFile"), pr_file, &othersubrsfile, NULL, NULL, 'O', NULL,
 	 0,
@@ -489,7 +489,7 @@ static struct prefs_list {
    "ForceNamesWhenSaving", pr_namelist, &force_names_when_saving, NULL,
 	 NULL, '\0', NULL, 1, NULL}, {
    NULL, 0, NULL, NULL, NULL, '\0', NULL, 0, NULL}	/* Sentinel */
-}, extras[] = {
+}, extras[]={
 
    {
    N_("ResourceFile"), pr_file, &xdefs_filename, NULL, NULL, 'R', NULL, 0,
@@ -621,42 +621,42 @@ static struct prefs_list {
    "DefaultOTFflags", pr_int, &old_otf_flags, NULL, NULL, '\0', NULL, 1,
 	 NULL}, {
    NULL, 0, NULL, NULL, NULL, '\0', NULL, 0, NULL}	/* Sentinel */
-}, *prefs_list[] = {
+}, *prefs_list[]={
 core_list, extras, NULL};
 
 int GetPrefs(char *name, Val * val) {
    int i, j;
 
-   for (i = 0; prefs_list[i] != NULL; ++i)
-      for (j = 0; prefs_list[i][j].name != NULL; ++j) {
-	 if (strcmp(prefs_list[i][j].name, name) == 0) {
-	    struct prefs_list *pf = &prefs_list[i][j];
+   for (i=0; prefs_list[i] != NULL; ++i)
+      for (j=0; prefs_list[i][j].name != NULL; ++j) {
+	 if (strcmp(prefs_list[i][j].name, name)==0) {
+	    struct prefs_list *pf=&prefs_list[i][j];
 
-	    if (pf->type == pr_bool || pf->type == pr_int
-		|| pf->type == pr_unicode) {
-	       val->type = v_int;
-	       val->u.ival = *((int *) (pf->val));
-	    } else if (pf->type == pr_string || pf->type == pr_file) {
-	       val->type = v_str;
+	    if (pf->type==pr_bool || pf->type==pr_int
+		|| pf->type==pr_unicode) {
+	       val->type=v_int;
+	       val->u.ival=*((int *) (pf->val));
+	    } else if (pf->type==pr_string || pf->type==pr_file) {
+	       val->type=v_str;
 
 	       char *tmpstr =
 		  pf->val ? *((char **) (pf->val)) : (char *) (pf->get) ();
-	       val->u.sval = copy(tmpstr ? tmpstr : "");
+	       val->u.sval=copy(tmpstr ? tmpstr : "");
 
 	       if (!pf->val)
 		  free(tmpstr);
-	    } else if (pf->type == pr_encoding) {
-	       val->type = v_str;
-	       if (*((NameList **) (pf->val)) == NULL)
-		  val->u.sval = copy("NULL");
+	    } else if (pf->type==pr_encoding) {
+	       val->type=v_str;
+	       if (*((NameList **) (pf->val))==NULL)
+		  val->u.sval=copy("NULL");
 	       else
-		  val->u.sval = copy((*((Encoding **) (pf->val)))->enc_name);
-	    } else if (pf->type == pr_namelist) {
-	       val->type = v_str;
-	       val->u.sval = copy((*((NameList **) (pf->val)))->title);
-	    } else if (pf->type == pr_real) {
-	       val->type = v_real;
-	       val->u.fval = *((float *) (pf->val));
+		  val->u.sval=copy((*((Encoding **) (pf->val)))->enc_name);
+	    } else if (pf->type==pr_namelist) {
+	       val->type=v_str;
+	       val->u.sval=copy((*((NameList **) (pf->val)))->title);
+	    } else if (pf->type==pr_real) {
+	       val->type=v_real;
+	       val->u.fval=*((float *) (pf->val));
 	    } else
 	       return (false);
 
@@ -669,20 +669,20 @@ int GetPrefs(char *name, Val * val) {
 int SetPrefs(char *name, Val * val1, Val * val2) {
    int i, j;
 
-   for (i = 0; prefs_list[i] != NULL; ++i)
-      for (j = 0; prefs_list[i][j].name != NULL; ++j) {
-	 if (strcmp(prefs_list[i][j].name, name) == 0) {
-	    struct prefs_list *pf = &prefs_list[i][j];
+   for (i=0; prefs_list[i] != NULL; ++i)
+      for (j=0; prefs_list[i][j].name != NULL; ++j) {
+	 if (strcmp(prefs_list[i][j].name, name)==0) {
+	    struct prefs_list *pf=&prefs_list[i][j];
 
-	    if (pf->type == pr_bool || pf->type == pr_int
-		|| pf->type == pr_unicode) {
+	    if (pf->type==pr_bool || pf->type==pr_int
+		|| pf->type==pr_unicode) {
 	       if ((val1->type != v_int && val1->type != v_unicode)
 		   || val2 != NULL)
 		  return (-1);
-	       *((int *) (pf->val)) = val1->u.ival;
-	    } else if (pf->type == pr_real) {
-	       if (val1->type == v_real && val2 == NULL)
-		  *((float *) (pf->val)) = val1->u.fval;
+	       *((int *) (pf->val))=val1->u.ival;
+	    } else if (pf->type==pr_real) {
+	       if (val1->type==v_real && val2==NULL)
+		  *((float *) (pf->val))=val1->u.fval;
 	       else if (val1->type != v_int
 			|| (val2 != NULL && val2->type != v_int))
 		  return (-1);
@@ -691,38 +691,38 @@ int SetPrefs(char *name, Val * val1, Val * val2) {
 		     (val2 ==
 		      NULL ? val1->u.ival : val1->u.ival /
 		      (double) val2->u.ival);
-	    } else if (pf->type == pr_string || pf->type == pr_file) {
+	    } else if (pf->type==pr_string || pf->type==pr_file) {
 	       if (val1->type != v_str || val2 != NULL)
 		  return (-1);
 	       if (pf->set) {
 		  pf->set(val1->u.sval);
 	       } else {
 		  free(*((char **) (pf->val)));
-		  *((char **) (pf->val)) = copy(val1->u.sval);
+		  *((char **) (pf->val))=copy(val1->u.sval);
 	       }
-	    } else if (pf->type == pr_encoding) {
+	    } else if (pf->type==pr_encoding) {
 	       if (val2 != NULL)
 		  return (-1);
-	       else if (val1->type == v_str && pf->val == &default_encoding) {
-		  Encoding *enc = FindOrMakeEncoding(val1->u.sval);
+	       else if (val1->type==v_str && pf->val==&default_encoding) {
+		  Encoding *enc=FindOrMakeEncoding(val1->u.sval);
 
-		  if (enc == NULL)
+		  if (enc==NULL)
 		     return (-1);
-		  *((Encoding **) (pf->val)) = enc;
+		  *((Encoding **) (pf->val))=enc;
 	       } else
 		  return (-1);
-	    } else if (pf->type == pr_namelist) {
+	    } else if (pf->type==pr_namelist) {
 	       if (val2 != NULL)
 		  return (-1);
-	       else if (val1->type == v_str) {
-		  NameList *nl = NameListByName(val1->u.sval);
+	       else if (val1->type==v_str) {
+		  NameList *nl=NameListByName(val1->u.sval);
 
-		  if (strcmp(val1->u.sval, "NULL") == 0
+		  if (strcmp(val1->u.sval, "NULL")==0
 		      && pf->val != &namelist_for_new_fonts)
-		     nl = NULL;
-		  else if (nl == NULL)
+		     nl=NULL;
+		  else if (nl==NULL)
 		     return (-1);
-		  *((NameList **) (pf->val)) = nl;
+		  *((NameList **) (pf->val))=nl;
 	       } else
 		  return (-1);
 	    } else
@@ -740,25 +740,25 @@ char *getFontAnvilShareDir(void) {
 #      define MAX_PATH 4096
 #   endif
 
-   static char *sharedir = NULL;
+   static char *sharedir=NULL;
 
    if (!sharedir) {
       char path[MAX_PATH + 32];
-      char *c = path;
-      char *tail = 0;
-      unsigned int len = GetModuleFileNameA(NULL, path, MAX_PATH);
+      char *c=path;
+      char *tail=0;
+      unsigned int len=GetModuleFileNameA(NULL, path, MAX_PATH);
 
-      path[len] = '\0';
+      path[len]='\0';
       for (; *c; *c++) {
-	 if (*c == '\\') {
-	    tail = c;
-	    *c = '/';
+	 if (*c=='\\') {
+	    tail=c;
+	    *c='/';
 	 }
       }
       if (!tail)
-	 tail = c;
+	 tail=c;
       strcpy(tail, "/share/fontanvil");
-      sharedir = copy(path);
+      sharedir=copy(path);
    }
    return sharedir;
 #elif defined(SHAREDIR)

@@ -1,4 +1,4 @@
-/* $Id: nouiutil.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: nouiutil.c 3862 2015-03-25 15:56:41Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -38,24 +38,24 @@ void IError(const char *format, ...) {
    char buffer[400], *str;
 
    va_start(ap, format);
-   fprintf(stderr, "Internal Error: ");
+   afprintf(stderr, "Internal Error: ");
    vsnprintf(buffer, sizeof(buffer), format, ap);
-   str = utf82def_copy(buffer);
-   fprintf(stderr, "%s", str);
+   str=utf82def_copy(buffer);
+   afprintf(stderr, "%s", str);
    if (str[strlen(str) - 1] != '\n')
-      putc('\n', stderr);
+      aputc('\n', stderr);
    free(str);
    va_end(ap);
 }
 
-static void NOUI__LogError(const char *format, va_list ap) {
+static void NOUI__LogError(const char *format,va_list ap) {
    char buffer[400], *str;
 
    vsnprintf(buffer, sizeof(buffer), format, ap);
-   str = utf82def_copy(buffer);
-   fprintf(stderr, "%s", str);
+   str=utf82def_copy(buffer);
+   afprintf(stderr, "%s", str);
    if (str[strlen(str) - 1] != '\n')
-      putc('\n', stderr);
+      aputc('\n', stderr);
    free(str);
 }
 

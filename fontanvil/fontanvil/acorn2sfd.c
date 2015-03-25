@@ -1,4 +1,4 @@
-/* $Id: acorn2sfd.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: acorn2sfd.c 3862 2015-03-25 15:56:41Z mskala $ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -13,7 +13,7 @@
 #include "splinefont.h"
 #include <ustring.h>
 
-static int includestrokes = false;
+static int includestrokes=false;
 
 extern Encoding custom;
 
@@ -48,24 +48,24 @@ struct Outlines {
 };
 
 /* Little-endian */
-static int r_getushort(FILE * file) {
+static int r_getushort(AFILE *file) {
    int ch1;
 
-   ch1 = getc(file);
-   return ((getc(file) << 8) | ch1);
+   ch1=agetc(file);
+   return ((agetc(file) << 8) | ch1);
 }
 
-static int r_getshort(FILE * file) {
+static int r_getshort(AFILE *file) {
    return ((short) r_getushort(file));
 }
 
-static int r_getint(FILE * file) {
+static int r_getint(AFILE *file) {
    int ch1, ch2, ch3;
 
-   ch1 = getc(file);
-   ch2 = getc(file);
-   ch3 = getc(file);
-   return ((((((getc(file) << 8) | ch3) << 8) | ch2) << 8) | ch1);
+   ch1=agetc(file);
+   ch2=agetc(file);
+   ch3=agetc(file);
+   return ((((((agetc(file) << 8) | ch3) << 8) | ch2) << 8) | ch1);
 }
 
 static char *knownweights[] =
@@ -85,7 +85,7 @@ static char *modifierlist[] =
    { "Ital", "Obli", "Kursive", "Cursive", "Slanted",
    "Expa", "Cond", NULL
 };
-static char **mods[] = { knownweights, modifierlist, NULL };
+static char **mods[]={ knownweights,modifierlist,NULL };
 
 
 static char *GuessFamily(char *fontname) {
@@ -93,19 +93,19 @@ static char *GuessFamily(char *fontname) {
 
    int i, j;
 
-   if ((fpt = strchr(fontname, '-')) != NULL && fpt != fontname)
+   if ((fpt=strchr(fontname, '-')) != NULL && fpt != fontname)
       return (copyn(fontname, fpt - fontname));
-   if ((fpt = strchr(fontname, '.')) != NULL && fpt != fontname)
+   if ((fpt=strchr(fontname, '.')) != NULL && fpt != fontname)
       return (copyn(fontname, fpt - fontname));
 
-   for (i = 0; mods[i] != NULL; ++i)
-      for (j = 0; mods[i][j] != NULL; ++j) {
-	 pt = strstr(fontname, mods[i][j]);
-	 if (pt != NULL && (fpt == NULL || pt < fpt))
-	    fpt = pt;
+   for (i=0; mods[i] != NULL; ++i)
+      for (j=0; mods[i][j] != NULL; ++j) {
+	 pt=strstr(fontname, mods[i][j]);
+	 if (pt != NULL && (fpt==NULL || pt < fpt))
+	    fpt=pt;
       }
 
-   if (fpt == NULL)
+   if (fpt==NULL)
       return (copy(fontname));
 
    return (copyn(fontname, fpt - fontname));
@@ -114,7 +114,7 @@ static char *GuessFamily(char *fontname) {
 static char *GuessWeight(char *fontname) {
    int i;
 
-   for (i = 0; knownweights[i] != NULL; ++i)
+   for (i=0; knownweights[i] != NULL; ++i)
       if (strstr(fontname, knownweights[i]) != NULL)
 	 return (copy(realweights[i]));
 
@@ -124,142 +124,142 @@ static char *GuessWeight(char *fontname) {
 static char *despace(char *fontname) {
    char *pt, *npt;
 
-   fontname = copy(fontname);
-   for (pt = npt = fontname; *pt; ++pt)
+   fontname=copy(fontname);
+   for (pt=npt=fontname; *pt; ++pt)
       if (*pt != ' ')
-	 *npt++ = *pt;
-   *npt = '\0';
+	 *npt++=*pt;
+   *npt='\0';
    return (fontname);
 }
 
-static void readcoords(FILE * file, int is12, int *x, int *y) {
+static void readcoords(AFILE *file,int is12,int *x,int *y) {
    int ch1, ch2, ch3;
 
    if (is12) {
-      ch1 = getc(file);
-      ch2 = getc(file);
-      ch3 = getc(file);
-      ch1 = ch1 | ((ch2 & 0xf) << 8);
-      ch2 = (ch2 >> 4) | (ch3 << 4);
-      *x = (ch1 << (32 - 12)) >> (32 - 12);	/* Sign extend */
-      *y = (ch2 << (32 - 12)) >> (32 - 12);	/* Sign extend */
+      ch1=agetc(file);
+      ch2=agetc(file);
+      ch3=agetc(file);
+      ch1=ch1 | ((ch2 & 0xf) << 8);
+      ch2=(ch2 >> 4) | (ch3 << 4);
+      *x=(ch1 << (32 - 12)) >> (32 - 12);	/* Sign extend */
+      *y=(ch2 << (32 - 12)) >> (32 - 12);	/* Sign extend */
    } else {
-      *x = (signed char) getc(file);
-      *y = (signed char) getc(file);
+      *x=(signed char) agetc(file);
+      *y=(signed char) agetc(file);
    }
 }
 
-static int readcharindex(FILE * file, int twobyte) {
+static int readcharindex(AFILE *file,int twobyte) {
    if (twobyte)
       return (r_getushort(file));
    else
-      return (getc(file));
+      return (agetc(file));
 }
 
-static SplineSet *FinishSet(SplineSet * old, SplineSet * active, int closed) {
+static SplineSet *FinishSet(SplineSet *old,SplineSet *active,int closed) {
    if (active != NULL) {
-      if (active->first->me.x == active->last->me.x &&
-	  active->first->me.y == active->last->me.y &&
+      if (active->first->me.x==active->last->me.x &&
+	  active->first->me.y==active->last->me.y &&
 	  active->first != active->last) {
-	 active->first->prevcp = active->last->prevcp;
-	 active->first->noprevcp = active->last->noprevcp;
-	 active->last->prev->to = active->first;
-	 active->first->prev = active->last->prev;
+	 active->first->prevcp=active->last->prevcp;
+	 active->first->noprevcp=active->last->noprevcp;
+	 active->last->prev->to=active->first;
+	 active->first->prev=active->last->prev;
 	 SplinePointFree(active->last);
-	 active->last = active->first;
+	 active->last=active->first;
       } else if (closed) {
 	 SplineMake3(active->last, active->first);
-	 active->last = active->first;
+	 active->last=active->first;
       }
-      active->next = old;
+      active->next=old;
       return (active);
    }
    return (old);
 }
 
-static SplineSet *ReadSplineSets(FILE * file, int flags, SplineSet * old,
+static SplineSet *ReadSplineSets(AFILE *file,int flags,SplineSet *old,
 				 int closed) {
    int verb;
 
    int x1, y1, x2, y2, x3, y3;
 
-   SplineSet *active = NULL;
+   SplineSet *active=NULL;
 
    SplinePoint *next;
 
-   while ((verb = getc(file)) != EOF && (verb & 0x3) != 0) {
+   while ((verb=agetc(file)) != EOF && (verb & 0x3) != 0) {
       readcoords(file, flags & 1, &x1, &y1);
-      if ((verb & 0x3) == 1) {	/* Move to */
-	 old = FinishSet(old, active, closed);
-	 active = calloc(1, sizeof(SplineSet));
-	 active->first = active->last = calloc(1, sizeof(SplinePoint));
-	 active->first->me.x = x1;
-	 active->first->me.y = y1;
-	 active->first->nextcp = active->first->prevcp = active->first->me;
-	 active->first->nonextcp = active->first->noprevcp = true;
+      if ((verb & 0x3)==1) {	/* Move to */
+	 old=FinishSet(old, active, closed);
+	 active=calloc(1, sizeof(SplineSet));
+	 active->first=active->last=calloc(1, sizeof(SplinePoint));
+	 active->first->me.x=x1;
+	 active->first->me.y=y1;
+	 active->first->nextcp=active->first->prevcp=active->first->me;
+	 active->first->nonextcp=active->first->noprevcp=true;
       } else {
-	 if (active == NULL) {
-	    fprintf(stderr, "No initial point, assuming 0,0\n");
-	    active = calloc(1, sizeof(SplineSet));
-	    active->first = active->last = calloc(1, sizeof(SplinePoint));
-	    active->first->nonextcp = active->first->noprevcp = true;
+	 if (active==NULL) {
+	    afprintf(stderr, "No initial point, assuming 0,0\n");
+	    active=calloc(1, sizeof(SplineSet));
+	    active->first=active->last=calloc(1, sizeof(SplinePoint));
+	    active->first->nonextcp=active->first->noprevcp=true;
 	 }
-	 next = calloc(1, sizeof(SplinePoint));
-	 if ((verb & 3) == 2) {	/* Line to */
-	    next->me.x = x1;
-	    next->me.y = y1;
-	    next->nextcp = next->prevcp = next->me;
-	    next->nonextcp = next->noprevcp = true;
+	 next=calloc(1, sizeof(SplinePoint));
+	 if ((verb & 3)==2) {	/* Line to */
+	    next->me.x=x1;
+	    next->me.y=y1;
+	    next->nextcp=next->prevcp=next->me;
+	    next->nonextcp=next->noprevcp=true;
 	 } else {		/* Curve to */
 	    readcoords(file, flags & 1, &x2, &y2);
 	    readcoords(file, flags & 1, &x3, &y3);
-	    active->last->nextcp.x = x1;
-	    active->last->nextcp.y = y1;
-	    active->last->nonextcp = false;
-	    next->prevcp.x = x2;
-	    next->prevcp.y = y2;
-	    next->me.x = x3;
-	    next->me.y = y3;
-	    next->nextcp = next->me;
-	    next->nonextcp = true;
+	    active->last->nextcp.x=x1;
+	    active->last->nextcp.y=y1;
+	    active->last->nonextcp=false;
+	    next->prevcp.x=x2;
+	    next->prevcp.y=y2;
+	    next->me.x=x3;
+	    next->me.y=y3;
+	    next->nextcp=next->me;
+	    next->nonextcp=true;
 	 }
 	 SplineMake3(active->last, next);
-	 active->last = next;
+	 active->last=next;
       }
    }
-   ungetc(verb, file);
+   aungetc(verb, file);
    return (FinishSet(old, active, closed));
 }
 
-static SplineChar *ReadChar(FILE * file, struct Outlines *outline, int enc) {
+static SplineChar *ReadChar(AFILE *file,struct Outlines *outline,int enc) {
    char buffer[12];
 
    int flags, x, y, verb, ch;
 
    RefChar *r1, *r2;
 
-   SplineFont *sf = outline->sf;
+   SplineFont *sf=outline->sf;
 
-   SplineChar *sc = SFSplineCharCreate(sf);
+   SplineChar *sc=SFSplineCharCreate(sf);
 
-   flags = getc(file);
+   flags=agetc(file);
    if (!(flags & (1 << 3))) {
-      fprintf(stderr, "Character %d is a bitmap character\n", enc);
+      afprintf(stderr, "Character %d is a bitmap character\n", enc);
       return (NULL);
    }
 
-   sc->orig_pos = sf->glyphcnt++;
-   sf->glyphs[sc->orig_pos] = sc;
-   sf->map->map[enc] = sc->orig_pos;
-   sf->map->backmap[sc->orig_pos] = enc;
-   sc->unicodeenc = enc;
-   sc->changedsincelasthinted = true;	/* I don't understand the scaffold lines */
+   sc->orig_pos=sf->glyphcnt++;
+   sf->glyphs[sc->orig_pos]=sc;
+   sf->map->map[enc]=sc->orig_pos;
+   sf->map->backmap[sc->orig_pos]=enc;
+   sc->unicodeenc=enc;
+   sc->changedsincelasthinted=true;	/* I don't understand the scaffold lines */
    /* which I think are the same as hints. So no hints processed. PfaEdit */
    /* should autohint the char */
-   sc->name = copy(StdGlyphName(buffer, enc, ui_none, NULL));
-   sc->width = (outline->defxadvance * (sf->ascent + sf->descent)) / 1000;
-   sc->vwidth = (outline->defyadvance * (sf->ascent + sf->descent)) / 1000;
-   sc->widthset = true;
+   sc->name=copy(StdGlyphName(buffer, enc, ui_none, NULL));
+   sc->width=(outline->defxadvance * (sf->ascent + sf->descent)) / 1000;
+   sc->vwidth=(outline->defyadvance * (sf->ascent + sf->descent)) / 1000;
+   sc->widthset=true;
    if (outline->xadvance != NULL)
       sc->width =
 	 (outline->xadvance[enc] * (sf->ascent + sf->descent)) / 1000;
@@ -268,109 +268,109 @@ static SplineChar *ReadChar(FILE * file, struct Outlines *outline, int enc) {
 	 (outline->yadvance[enc] * (sf->ascent + sf->descent)) / 1000;
 
    if (flags & (1 << 4)) {
-      r1 = calloc(1, sizeof(RefChar));
-      r1->transform[0] = r1->transform[3] = 1;
-      r1->orig_pos = readcharindex(file, flags & (1 << 6));
+      r1=calloc(1, sizeof(RefChar));
+      r1->transform[0]=r1->transform[3]=1;
+      r1->orig_pos=readcharindex(file, flags & (1 << 6));
       if (flags & (1 << 5)) {
-	 r2 = calloc(1, sizeof(RefChar));
-	 r2->transform[0] = r2->transform[3] = 1;
-	 r2->orig_pos = readcharindex(file, flags & (1 << 6));
+	 r2=calloc(1, sizeof(RefChar));
+	 r2->transform[0]=r2->transform[3]=1;
+	 r2->orig_pos=readcharindex(file, flags & (1 << 6));
 	 readcoords(file, flags & 1, &x, &y);
-	 r2->transform[4] = x;
-	 r2->transform[5] = y;
-	 r1->next = r2;
+	 r2->transform[4]=x;
+	 r2->transform[5]=y;
+	 r1->next=r2;
       }
-      sc->layers[ly_fore].refs = r1;
+      sc->layers[ly_fore].refs=r1;
       return (sc);
    }
 
    readcoords(file, flags & 1, &x, &y);	/* bounding box, lbearing, ybase */
    readcoords(file, flags & 1, &x, &y);	/* bounding box, width,height */
 
-   sc->layers[ly_fore].splines = ReadSplineSets(file, flags, NULL, true);
-   verb = getc(file);
+   sc->layers[ly_fore].splines=ReadSplineSets(file, flags, NULL, true);
+   verb=agetc(file);
    if (verb != EOF && verb & (1 << 2)) {
       /* It looks to me as though the stroked paths are duplicates of the */
       /*  filled paths, I'm assuming they are some form of hinting (if pixel */
       /*  size is too small then just stroke, otherwise fill?) */
       /* Every character has them... */
-      /*fprintf( stderr, "There are some stroked paths in %s, you should run\n  Element->Expand Stroke on this character\n", sc->name ); */
+      /*afprintf( stderr, "There are some stroked paths in %s, you should run\n  Element->Expand Stroke on this character\n", sc->name ); */
       if (includestrokes)
 	 sc->layers[ly_fore].splines =
 	    ReadSplineSets(file, flags, sc->layers[ly_fore].splines, false);
       else
 	 ReadSplineSets(file, flags, NULL, false);	/* read and ignore */
-      verb = getc(file);
+      verb=agetc(file);
    }
    if (verb != EOF && verb & (1 << 3)) {
-      while ((ch = readcharindex(file, flags & (1 << 6))) != 0 && !feof(file)) {
-	 r1 = calloc(1, sizeof(RefChar));
-	 r1->transform[0] = r1->transform[3] = 1;
-	 r1->orig_pos = ch;
+      while ((ch=readcharindex(file, flags & (1 << 6))) != 0 && !afeof(file)) {
+	 r1=calloc(1, sizeof(RefChar));
+	 r1->transform[0]=r1->transform[3]=1;
+	 r1->orig_pos=ch;
 	 readcoords(file, flags & 1, &x, &y);
-	 r1->transform[4] = x;
-	 r1->transform[5] = y;
-	 r1->next = sc->layers[ly_fore].refs;
-	 sc->layers[ly_fore].refs = r1;
+	 r1->transform[4]=x;
+	 r1->transform[5]=y;
+	 r1->next=sc->layers[ly_fore].refs;
+	 sc->layers[ly_fore].refs=r1;
       }
    }
    return (sc);
 }
 
-static void ReadChunk(FILE * file, struct Outlines *outline, int chunk) {
-   int flag = 0x80000000;
+static void ReadChunk(AFILE *file,struct Outlines *outline,int chunk) {
+   int flag=0x80000000;
 
    int i, offsets[32];
 
    int index_start;
 
-   fseek(file, outline->chunk_offset[chunk], SEEK_SET);
+   afseek(file, outline->chunk_offset[chunk], SEEK_SET);
 
    if (outline->version >= 7)
-      flag = r_getint(file);
-   else if (outline->version == 6)
-      flag = (1 << 7);
+      flag=r_getint(file);
+   else if (outline->version==6)
+      flag=(1 << 7);
    if (!flag & 0x80000000)
-      fprintf(stderr, "Bad flag at beginning of chunk %d\n", chunk);
+      afprintf(stderr, "Bad flag at beginning of chunk %d\n", chunk);
 
-   index_start = ftell(file);
-   for (i = 0; i < 32; ++i)
-      offsets[i] = r_getint(file);
+   index_start=aftell(file);
+   for (i=0; i < 32; ++i)
+      offsets[i]=r_getint(file);
 
    if (flag & (1 << 7)) {
       /* Does this chunk have any composite characters which refer to things */
       /*  in other chunks? I don't really care so I ignore them all */
-      for (i = 0; i < ((outline->nchunks + 7) >> 3); ++i)
-	 getc(file);
+      for (i=0; i < ((outline->nchunks + 7) >> 3); ++i)
+	 agetc(file);
    }
 
-   for (i = 0; i < 32; ++i)
+   for (i=0; i < 32; ++i)
       if (offsets[i] != 0 && 32 * chunk + i < outline->metrics_n) {
-	 fseek(file, index_start + offsets[i], SEEK_SET);
+	 afseek(file, index_start + offsets[i], SEEK_SET);
 	 ReadChar(file, outline, 32 * chunk + i);
       }
 }
 
 /* Handles *?{}[] wildcards */
-static int WildMatch(char *pattern, char *name, int ignorecase) {
+static int WildMatch(char *pattern,char *name,int ignorecase) {
    char ch, *ppt, *npt, *ept;
 
-   if (pattern == NULL)
+   if (pattern==NULL)
       return (true);
 
-   while ((ch = *pattern) != '\0') {
-      if (ch == '*') {
-	 for (npt = name;; ++npt) {
+   while ((ch=*pattern) != '\0') {
+      if (ch=='*') {
+	 for (npt=name;; ++npt) {
 	    if (WildMatch(pattern + 1, npt, ignorecase))
 	       return (true);
-	    if (*npt == '\0')
+	    if (*npt=='\0')
 	       return (false);
 	 }
-      } else if (ch == '?') {
-	 if (*name == '\0')
+      } else if (ch=='?') {
+	 if (*name=='\0')
 	    return (false);
 	 ++name;
-      } else if (ch == '[') {
+      } else if (ch=='[') {
 	 /* [<char>...] matches the chars
 	    /* [<char>-<char>...] matches any char within the range (inclusive)
 	    /* the above may be concattenated and the resultant pattern matches
@@ -379,18 +379,18 @@ static int WildMatch(char *pattern, char *name, int ignorecase) {
 	    /*               the pattern
 	    /* []...] as a special case a ']' immediately after the '[' matches
 	    /*               itself and does not end the pattern */
-	 int found = 0, not = 0;
+	 int found=0, not=0;
 
 	 ++pattern;
-	 if (pattern[0] == '^') {
-	    not = 1;
+	 if (pattern[0]=='^') {
+	    not=1;
 	    ++pattern;
 	 }
-	 for (ppt = pattern; (ppt != pattern || *ppt != ']') && *ppt != '\0';
+	 for (ppt=pattern; (ppt != pattern || *ppt != ']') && *ppt != '\0';
 	      ++ppt) {
-	    ch = *ppt;
-	    if (ppt[1] == '-' && ppt[2] != ']' && ppt[2] != '\0') {
-	       int ch2 = ppt[2];
+	    ch=*ppt;
+	    if (ppt[1]=='-' && ppt[2] != ']' && ppt[2] != '\0') {
+	       int ch2=ppt[2];
 
 	       if ((*name >= ch && *name <= ch2) ||
 		   (ignorecase && islower(ch) && islower(ch2) &&
@@ -398,25 +398,25 @@ static int WildMatch(char *pattern, char *name, int ignorecase) {
 		   (ignorecase && isupper(ch) && isupper(ch2) &&
 		    *name >= tolower(ch) && *name <= tolower(ch2))) {
 		  if (!not) {
-		     found = 1;
+		     found=1;
 		     break;
 		  }
 	       } else {
 		  if (not) {
-		     found = 1;
+		     found=1;
 		     break;
 		  }
 	       }
 	       ppt += 2;
-	    } else if (ch == *name
-		       || (ignorecase && tolower(ch) == tolower(*name))) {
+	    } else if (ch==*name
+		       || (ignorecase && tolower(ch)==tolower(*name))) {
 	       if (!not) {
-		  found = 1;
+		  found=1;
 		  break;
 	       }
 	    } else {
 	       if (not) {
-		  found = 1;
+		  found=1;
 		  break;
 	       }
 	    }
@@ -425,55 +425,55 @@ static int WildMatch(char *pattern, char *name, int ignorecase) {
 	    return (false);
 	 while (*ppt != ']' && *ppt != '\0')
 	    ++ppt;
-	 pattern = ppt;
+	 pattern=ppt;
 	 ++name;
-      } else if (ch == '{') {
+      } else if (ch=='{') {
 	 /* matches any of a comma separated list of substrings */
-	 for (ppt = pattern + 1; *ppt != '\0'; ppt = ept) {
-	    for (ept = ppt; *ept != '}' && *ept != ',' && *ept != '\0';
+	 for (ppt=pattern + 1; *ppt != '\0'; ppt=ept) {
+	    for (ept=ppt; *ept != '}' && *ept != ',' && *ept != '\0';
 		 ++ept);
-	    for (npt = name; ppt < ept; ++npt, ++ppt) {
+	    for (npt=name; ppt < ept; ++npt, ++ppt) {
 	       if (*ppt != *npt
 		   && (!ignorecase || tolower(*ppt) != tolower(*npt)))
 		  break;
 	    }
-	    if (ppt == ept) {
-	       char *ecurly = ept;
+	    if (ppt==ept) {
+	       char *ecurly=ept;
 
 	       while (*ecurly != '}' && *ecurly != '\0')
 		  ++ecurly;
 	       if (WildMatch(ecurly + 1, npt, ignorecase))
 		  return (true);
 	    }
-	    if (*ept == '}')
+	    if (*ept=='}')
 	       return (false);
-	    if (*ept == ',')
+	    if (*ept==',')
 	       ++ept;
 	 }
-      } else if (ch == *name) {
+      } else if (ch==*name) {
 	 ++name;
-      } else if (ignorecase && tolower(ch) == tolower(*name)) {
+      } else if (ignorecase && tolower(ch)==tolower(*name)) {
 	 ++name;
       } else
 	 return (false);
       ++pattern;
    }
-   if (*name == '\0')
+   if (*name=='\0')
       return (true);
 
    return (false);
 }
 
-static int dirmatch(char *dirname, char *pattern, char *buffer) {
+static int dirmatch(char *dirname,char *pattern,char *buffer) {
    DIR *dir;
 
    struct dirent *ent;
 
-   dir = opendir(dirname);
-   if (dir == NULL)
+   dir=opendir(dirname);
+   if (dir==NULL)
       return (-1);		/* No dir */
 
-   while ((ent = readdir(dir)) != NULL) {
+   while ((ent=readdir(dir)) != NULL) {
       if (WildMatch(pattern, ent->d_name, true)) {
 	 strcpy(buffer, dirname);
 	 strcat(buffer, "/");
@@ -486,23 +486,23 @@ static int dirmatch(char *dirname, char *pattern, char *buffer) {
    return (0);			/* Not found */
 }
 
-static int dirfind(char *dir, char *pattern, char *buffer) {
+static int dirfind(char *dir,char *pattern,char *buffer) {
    char *pt, *space;
 
-   int ret = dirmatch(dir, pattern, buffer);
+   int ret=dirmatch(dir, pattern, buffer);
 
-   if (ret == -1) {
+   if (ret==-1) {
       /* Just in case the give us the pathspec for the Outlines file rather than the dir containing it */
-      space = copy(dir);
-      pt = strrchr(space, '/');
+      space=copy(dir);
+      pt=strrchr(space, '/');
       if (pt != NULL) {
-	 *pt = '\0';
-	 ret = dirmatch(space, pattern, buffer);
+	 *pt='\0';
+	 ret=dirmatch(space, pattern, buffer);
       }
       free(space);
    }
-   if (ret == -1)
-      ret = 0;
+   if (ret==-1)
+      ret=0;
    if (!ret) {
       strcpy(buffer, dir);
       strcat(buffer, "/");
@@ -511,10 +511,10 @@ static int dirfind(char *dir, char *pattern, char *buffer) {
    return (ret);
 }
 
-static void ReadIntmetrics(char *dir, struct Outlines *outline) {
-   char *filename = malloc(strlen(dir) + strlen("/Intmetrics") + 3);
+static void ReadIntmetrics(char *dir,struct Outlines *outline) {
+   char *filename=malloc(strlen(dir) + strlen("/Intmetrics") + 3);
 
-   FILE *file = NULL;
+   AFILE *file=NULL;
 
    int i, flags, m, n, left, right;
 
@@ -522,109 +522,109 @@ static void ReadIntmetrics(char *dir, struct Outlines *outline) {
 
    char buffer[100];
 
-   uint8 *mapping = NULL;
+   uint8 *mapping=NULL;
 
    int *widths;
 
    struct r_kern *kern;
 
    if (dirfind(dir, "IntMet?", filename))
-      file = fopen(filename, "rb");
+      file=afopen(filename, "rb");
    else if (dirfind(dir, "Intmetric?", filename))
-      file = fopen(filename, "rb");
-   if (file == NULL) {
-      fprintf(stderr,
+      file=afopen(filename, "rb");
+   if (file==NULL) {
+      afprintf(stderr,
 	      "Couldn't open %s (for advance width data)\n  Oh well, advance widths will all be wrong.\n",
 	      filename);
       free(filename);
       return;
    }
-   for (i = 0; i < 40; ++i) {
-      buffer[i] = getc(file);
-      if (buffer[i] == '\r')
-	 buffer[i] = '\0';
+   for (i=0; i < 40; ++i) {
+      buffer[i]=agetc(file);
+      if (buffer[i]=='\r')
+	 buffer[i]='\0';
    }
-   buffer[i] = '\0';
-   outline->metrics_fontname = copy(buffer);
+   buffer[i]='\0';
+   outline->metrics_fontname=copy(buffer);
    r_getint(file);		/* Must be 16 */
    r_getint(file);		/* Must be 16 */
-   n = getc(file);		/* low order byte */
-   /* version number = */ getc(file);
-   flags = getc(file);
-   n |= getc(file) << 8;	/* high order byte */
+   n=agetc(file);		/* low order byte */
+   /* version number=*/ agetc(file);
+   flags=agetc(file);
+   n |= agetc(file) << 8;	/* high order byte */
    if (flags & (1 << 5))
-      m = r_getushort(file);
+      m=r_getushort(file);
    else
-      m = 256;
+      m=256;
    if (m != 0) {
-      mapping = malloc(m);
-      for (i = 0; i < m; ++i)
-	 mapping[i] = getc(file);
-      outline->metrics_n = m;
+      mapping=malloc(m);
+      for (i=0; i < m; ++i)
+	 mapping[i]=agetc(file);
+      outline->metrics_n=m;
    } else
-      outline->metrics_n = n;
+      outline->metrics_n=n;
    if (!(flags & 1)) {
       /* I ignore bbox data */
-      for (i = 0; i < 4 * n; ++i)
+      for (i=0; i < 4 * n; ++i)
 	 r_getshort(file);
    }
    if (!(flags & 2)) {
-      widths = malloc(n * sizeof(int));
-      for (i = 0; i < n; ++i)
-	 widths[i] = r_getshort(file);
-      if (mapping == 0)
-	 outline->xadvance = widths;
+      widths=malloc(n * sizeof(int));
+      for (i=0; i < n; ++i)
+	 widths[i]=r_getshort(file);
+      if (mapping==0)
+	 outline->xadvance=widths;
       else {
-	 outline->xadvance = calloc(outline->metrics_n, sizeof(int));
-	 for (i = 0; i < m; ++i)
-	    outline->xadvance[i] = widths[mapping[i]];
+	 outline->xadvance=calloc(outline->metrics_n, sizeof(int));
+	 for (i=0; i < m; ++i)
+	    outline->xadvance[i]=widths[mapping[i]];
 	 free(widths);
       }
    }
    if (!(flags & 4)) {
-      widths = malloc(n * sizeof(int));
-      for (i = 0; i < n; ++i)
-	 widths[i] = r_getshort(file);
-      if (mapping == 0)
-	 outline->yadvance = widths;
+      widths=malloc(n * sizeof(int));
+      for (i=0; i < n; ++i)
+	 widths[i]=r_getshort(file);
+      if (mapping==0)
+	 outline->yadvance=widths;
       else {
-	 outline->yadvance = calloc(outline->metrics_n, sizeof(int));
-	 for (i = 0; i < m; ++i)
-	    outline->yadvance[i] = widths[mapping[i]];
+	 outline->yadvance=calloc(outline->metrics_n, sizeof(int));
+	 for (i=0; i < m; ++i)
+	    outline->yadvance[i]=widths[mapping[i]];
 	 free(widths);
       }
    }
 
-   outline->defxadvance = outline->defyadvance = 1000;
+   outline->defxadvance=outline->defyadvance=1000;
 
    if (flags & 8) {
-      table_base = ftell(file);
-      misc_offset = r_getshort(file);
-      kern_offset = r_getshort(file);
+      table_base=aftell(file);
+      misc_offset=r_getshort(file);
+      kern_offset=r_getshort(file);
       if (misc_offset != 0) {
-	 fseek(file, misc_offset + table_base, SEEK_SET);
+	 afseek(file, misc_offset + table_base, SEEK_SET);
 	 /* font bounding box */ r_getshort(file);
 	 r_getshort(file);
 	 r_getshort(file);
 	 r_getshort(file);
 	 if ((flags & 2))
-	    outline->defxadvance = r_getshort(file);
+	    outline->defxadvance=r_getshort(file);
 	 if ((flags & 4))
-	    outline->defyadvance = r_getshort(file);
+	    outline->defyadvance=r_getshort(file);
       }
-      if (kern_offset != 0 && !feof(file) && outline->metrics_n != 0) {
-	 fseek(file, kern_offset + table_base, SEEK_SET);
-	 outline->kerns = calloc(outline->metrics_n, sizeof(struct r_kern *));
+      if (kern_offset != 0 && !afeof(file) && outline->metrics_n != 0) {
+	 afseek(file, kern_offset + table_base, SEEK_SET);
+	 outline->kerns=calloc(outline->metrics_n, sizeof(struct r_kern *));
 	 if (flags & (1 << 6)) {
 	    /* 16 bit */
-	    while ((left = r_getshort(file)) != 0 && !feof(file)) {
-	       while ((right = r_getshort(file)) != 0) {
-		  if (!(flags & 2) && !feof(file)) {
-		     kern = malloc(sizeof(struct r_kern));
-		     kern->amount = r_getshort(file);
-		     kern->right = right;
-		     kern->next = outline->kerns[left];
-		     outline->kerns[left] = kern;
+	    while ((left=r_getshort(file)) != 0 && !afeof(file)) {
+	       while ((right=r_getshort(file)) != 0) {
+		  if (!(flags & 2) && !afeof(file)) {
+		     kern=malloc(sizeof(struct r_kern));
+		     kern->amount=r_getshort(file);
+		     kern->right=right;
+		     kern->next=outline->kerns[left];
+		     outline->kerns[left]=kern;
 		  }
 		  if (!(flags & 4))
 		     /* I don't care about vertical kerning */
@@ -632,14 +632,14 @@ static void ReadIntmetrics(char *dir, struct Outlines *outline) {
 	       }
 	    }
 	 } else {
-	    while ((left = getc(file)) != 0 && !feof(file)) {
-	       while ((right = getc(file)) != 0 && !feof(file)) {
+	    while ((left=agetc(file)) != 0 && !afeof(file)) {
+	       while ((right=agetc(file)) != 0 && !afeof(file)) {
 		  if (!(flags & 2)) {
-		     kern = malloc(sizeof(struct r_kern));
-		     kern->amount = r_getshort(file);
-		     kern->right = right;
-		     kern->next = outline->kerns[left];
-		     outline->kerns[left] = kern;
+		     kern=malloc(sizeof(struct r_kern));
+		     kern->amount=r_getshort(file);
+		     kern->right=right;
+		     kern->next=outline->kerns[left];
+		     outline->kerns[left]=kern;
 		  }
 		  if (!(flags & 4))
 		     /* I don't care about vertical kerning */
@@ -649,161 +649,151 @@ static void ReadIntmetrics(char *dir, struct Outlines *outline) {
 	 }
       }
    }
-   fclose(file);
+   afclose(file);
 }
 
-static void FixupKerns(SplineFont * sf, struct Outlines *outline) {
+static void FixupKerns(SplineFont *sf,struct Outlines *outline) {
    int i;
 
    struct r_kern *kern;
 
    KernPair *kp;
 
-   int em = sf->ascent + sf->descent;
+   int em=sf->ascent + sf->descent;
 
    int gid1, gid2;
 
    struct lookup_subtable *subtable;
 
-   if (outline->kerns == NULL)
+   if (outline->kerns==NULL)
       return;
 
-   subtable = SFSubTableFindOrMake(sf,
+   subtable=SFSubTableFindOrMake(sf,
 				   CHR('k', 'e', 'r', 'n'), CHR('l', 'a', 't',
 								'n'),
 				   gpos_pair);
 
-   for (i = 0; i < outline->metrics_n; ++i) {
-      gid1 = sf->map->map[i];
-      for (kern = outline->kerns[i]; kern != NULL; kern = kern->next) {
-	 kp = calloc(1, sizeof(KernPair));
-	 kp->off = em * kern->amount / 1000;
-	 kp->subtable = subtable;
-	 gid2 = sf->map->map[kern->right];
-	 kp->sc = sf->glyphs[gid2];
-	 kp->next = sf->glyphs[gid1]->kerns;
-	 sf->glyphs[gid1]->kerns = kp;
+   for (i=0; i < outline->metrics_n; ++i) {
+      gid1=sf->map->map[i];
+      for (kern=outline->kerns[i]; kern != NULL; kern=kern->next) {
+	 kp=calloc(1, sizeof(KernPair));
+	 kp->off=em * kern->amount / 1000;
+	 kp->subtable=subtable;
+	 gid2=sf->map->map[kern->right];
+	 kp->sc=sf->glyphs[gid2];
+	 kp->next=sf->glyphs[gid1]->kerns;
+	 sf->glyphs[gid1]->kerns=kp;
       }
    }
 }
 
-static void FixupRefs(SplineChar * sc, SplineFont * sf) {
+static void FixupRefs(SplineChar *sc,SplineFont *sf) {
    RefChar *rf, *prev, *next;
 
-   EncMap *map = sf->map;
+   EncMap *map=sf->map;
 
    int gid;
 
-   if (sc == NULL || sc->layers[ly_fore].refs == NULL)
+   if (sc==NULL || sc->layers[ly_fore].refs==NULL)
       return;
-   prev = NULL;
-   for (rf = sc->layers[ly_fore].refs; rf != NULL; rf = next) {
-      next = rf->next;
+   prev=NULL;
+   for (rf=sc->layers[ly_fore].refs; rf != NULL; rf=next) {
+      next=rf->next;
       if (rf->orig_pos < 0 || rf->orig_pos >= map->enccount ||
-	  (gid = map->map[rf->orig_pos]) == -1 || sf->glyphs[gid] == NULL) {
-	 fprintf(stderr,
+	  (gid=map->map[rf->orig_pos])==-1 || sf->glyphs[gid]==NULL) {
+	 afprintf(stderr,
 		 "%s contains a reference to a character at index %d which does not exist.\n",
 		 sc->name, rf->orig_pos);
-	 if (prev == NULL)
-	    sc->layers[ly_fore].refs = next;
+	 if (prev==NULL)
+	    sc->layers[ly_fore].refs=next;
 	 else
-	    prev->next = next;
+	    prev->next=next;
 	 free(rf);
       } else {
-	 rf->orig_pos = gid;
-	 rf->sc = sf->glyphs[gid];
-	 rf->adobe_enc = getAdobeEnc(rf->sc->name);
-	 prev = rf;
+	 rf->orig_pos=gid;
+	 rf->sc=sf->glyphs[gid];
+	 rf->adobe_enc=getAdobeEnc(rf->sc->name);
+	 prev=rf;
       }
    }
 }
 
-static void FindEncoding(SplineFont * sf, char *filename) {
+static void FindEncoding(SplineFont *sf,char *filename) {
    char *pt, *end;
-
    char pattern[12];
-
    char *otherdir;
-
    char *encfilename;
-
-   FILE *file;
-
+   AFILE *file;
    char buffer[200];
-
    int pos, gid;
 
    strcpy(pattern, "Base *");
-   pattern[4] = filename[strlen(filename) - 1];
-   pt = strrchr(filename, '/');
+   pattern[4]=filename[strlen(filename) - 1];
+   pt=strrchr(filename, '/');
    if (pt != NULL)
-      *pt = '\0';
-   otherdir = malloc(strlen(filename) + strlen("/../Encodings") + 5);
+      *pt='\0';
+   otherdir=malloc(strlen(filename) + strlen("/../Encodings") + 5);
    strcpy(otherdir, filename);
    strcat(otherdir, "/../Encodings");
-   encfilename = malloc(strlen(otherdir) + strlen("base0encoding") + 20);
+   encfilename=malloc(strlen(otherdir) + strlen("base0encoding") + 20);
 
    if (dirfind(otherdir, pattern, encfilename))
-      file = fopen(encfilename, "r");
+      file=afopen(encfilename, "r");
    else if (dirfind(filename, pattern, encfilename))
-      file = fopen(encfilename, "r");
+      file=afopen(encfilename, "r");
    free(otherdir);
 
-   if (file == NULL) {
-      fprintf(stderr, "Couldn't open %s\n", encfilename);
+   if (file==NULL) {
+      afprintf(stderr, "Couldn't open %s\n", encfilename);
       free(encfilename);
       return;
    }
 
-   pos = 0;
+   pos=0;
    while (fgets(buffer, sizeof(buffer), file) != NULL) {
-      if (*buffer == '%' || *buffer == '\n')
+      if (*buffer=='%' || *buffer=='\n')
 	 continue;
-      for (pt = buffer; *pt != '\0';) {
+      for (pt=buffer; *pt != '\0';) {
 	 while (isspace(*pt))
 	    ++pt;
-	 if (*pt == '/') {
-	    for (end = ++pt; !isspace(*end) && *end != '\0'; ++end);
-	    if ((gid = sf->map->map[pos]) != -1 && sf->glyphs[gid] != NULL) {
+	 if (*pt=='/') {
+	    for (end=++pt; !isspace(*end) && *end != '\0'; ++end);
+	    if ((gid=sf->map->map[pos]) != -1 && sf->glyphs[gid] != NULL) {
 	       free(sf->glyphs[gid]->name);
-	       sf->glyphs[gid]->name = copyn(pt, end - pt);
+	       sf->glyphs[gid]->name=copyn(pt, end - pt);
 	       sf->glyphs[gid]->unicodeenc =
 		  UniFromName(sf->glyphs[gid]->name, ui_none, &custom);
 	    }
 	    ++pos;
-	    pt = end;
+	    pt=end;
 	 } else
 	    break;
       }
    }
    free(encfilename);
-   fclose(file);
+   afclose(file);
 }
 
 static SplineFont *ReadOutline(char *dir) {
-   char *filename = malloc(strlen(dir) + strlen("/Outlines*") + 3);
-
-   FILE *file = NULL;
-
+   char *filename=malloc(strlen(dir) + strlen("/Outlines*") + 3);
+   AFILE *file=NULL;
    struct Outlines outline;
-
    int i, ch;
-
    char buffer[100];
 
    if (dirfind(dir, "Outlines*", filename))
-      file = fopen(filename, "rb");
-   if (file == NULL) {
-      fprintf(stderr, "Couldn't open %s\n", filename);
+      file=afopen(filename, "rb");
+   if (file==NULL) {
+      afprintf(stderr, "Couldn't open %s\n", filename);
       free(filename);
       return (NULL);
    }
 
-   if (getc(file) != 'F' || getc(file) != 'O' || getc(file) != 'N' || getc(file) != 'T' || getc(file) != '\0') {	/* Final null means outline font */
-      fprintf(stderr, "%s is not an acorn risc outline font file\n",
+   if (agetc(file) != 'F' || agetc(file) != 'O' || agetc(file) != 'N' || agetc(file) != 'T' || agetc(file) != '\0') {	/* Final null means outline font */
+      afprintf(stderr, "%s is not an acorn risc outline font file\n",
 	      filename);
       free(filename);
-      fclose(file);
+      afclose(file);
       return (NULL);
    }
 
@@ -811,104 +801,104 @@ static SplineFont *ReadOutline(char *dir) {
 
    ReadIntmetrics(dir, &outline);
 
-   outline.version = getc(file);
-   outline.design_size = r_getushort(file);
+   outline.version=agetc(file);
+   outline.design_size=r_getushort(file);
 
    /* bounding box, I don't care */
-   /* minx = */ r_getshort(file);
-   /* miny = */ r_getshort(file);
-   /* width = */ r_getshort(file);
-   /* height = */ r_getshort(file);
+   /* minx=*/ r_getshort(file);
+   /* miny=*/ r_getshort(file);
+   /* width=*/ r_getshort(file);
+   /* height=*/ r_getshort(file);
 
    if (outline.version < 8) {
-      outline.nchunks = 8;
-      outline.chunk_offset = malloc(9 * sizeof(int));
-      for (i = 0; i < 9; ++i)
-	 outline.chunk_offset[i] = r_getint(file);
-      outline.scaf_flags = 0;
-      outline.ns = -1;
+      outline.nchunks=8;
+      outline.chunk_offset=malloc(9 * sizeof(int));
+      for (i=0; i < 9; ++i)
+	 outline.chunk_offset[i]=r_getint(file);
+      outline.scaf_flags=0;
+      outline.ns=-1;
    } else {
-      int chunk_off = r_getint(file), pos;
+      int chunk_off=r_getint(file), pos;
 
-      outline.nchunks = r_getint(file);
-      outline.ns = r_getint(file);
-      outline.scaf_flags = r_getint(file);
-      for (i = 0; i < 5; ++i)
-	 /* MBZ = */
+      outline.nchunks=r_getint(file);
+      outline.ns=r_getint(file);
+      outline.scaf_flags=r_getint(file);
+      for (i=0; i < 5; ++i)
+	 /* MBZ=*/
 	 r_getint(file);
-      pos = ftell(file);
-      fseek(file, chunk_off, SEEK_SET);
-      outline.chunk_offset = malloc((outline.nchunks + 1) * sizeof(int));
-      for (i = 0; i <= outline.nchunks; ++i)
-	 outline.chunk_offset[i] = r_getint(file);
-      fseek(file, pos, SEEK_SET);
+      pos=aftell(file);
+      afseek(file, chunk_off, SEEK_SET);
+      outline.chunk_offset=malloc((outline.nchunks + 1) * sizeof(int));
+      for (i=0; i <= outline.nchunks; ++i)
+	 outline.chunk_offset[i]=r_getint(file);
+      afseek(file, pos, SEEK_SET);
    }
 
    /* I really have no idea what these scaffold thingies are */
-   outline.scaffold_size = r_getushort(file);
-   if (outline.ns == -1)
-      outline.ns = outline.scaffold_size / 2;
+   outline.scaffold_size=r_getushort(file);
+   if (outline.ns==-1)
+      outline.ns=outline.scaffold_size / 2;
    else if (2 * outline.ns + 1 > outline.scaffold_size)
-      fprintf(stderr, "Inconsistant scaffold count\n");
+      afprintf(stderr, "Inconsistant scaffold count\n");
    /* I don't understand the scaffold stuff. */
    /* there should be outline.ns-1 shorts of offsets, followed by a byte */
    /*  followed by the data the offsets point to. I'm just going to skip */
    /*  all of it. */
-   for (i = 0; i < outline.scaffold_size - sizeof(short); ++i)
-      getc(file);
-   for (i = 0; (ch = getc(file)) != '\0' && ch != EOF;)
+   for (i=0; i < outline.scaffold_size - sizeof(short); ++i)
+      agetc(file);
+   for (i=0; (ch=agetc(file)) != '\0' && ch != EOF;)
       if (i < sizeof(buffer) - 1)
-	 buffer[i++] = ch;
-   buffer[i] = '\0';
-   outline.fontname = strdup(buffer);
-   for (i = 0; (ch = getc(file)) != '\0' && ch != EOF;)
+	 buffer[i++]=ch;
+   buffer[i]='\0';
+   outline.fontname=strdup(buffer);
+   for (i=0; (ch=agetc(file)) != '\0' && ch != EOF;)
       if (i < sizeof(buffer) - 1)
-	 buffer[i++] = ch;
-   buffer[i] = '\0';
+	 buffer[i++]=ch;
+   buffer[i]='\0';
    /* Docs say that the word "Outlines" appears here, followed by a nul */
    /* That appears to be a lie. We seem to get a random comment */
    /* or perhaps a copyright notice */
    if (outline.metrics_fontname != NULL &&
        strmatch(outline.fontname, outline.metrics_fontname) != 0)
-      fprintf(stderr,
+      afprintf(stderr,
 	      "Warning: Fontname in metrics (%s) and fontname in outline (%s)\n do not match.\n",
 	      outline.metrics_fontname, outline.fontname);
-   i = (outline.nchunks < 8 ? 8 : outline.nchunks) * 32;
-   if (outline.metrics_n == 0 || outline.metrics_n > i)
-      outline.metrics_n = i;
+   i=(outline.nchunks < 8 ? 8 : outline.nchunks) * 32;
+   if (outline.metrics_n==0 || outline.metrics_n > i)
+      outline.metrics_n=i;
 
-   outline.sf = SplineFontEmpty();
-   outline.sf->glyphmax = outline.metrics_n;
-   outline.sf->glyphcnt = 0;
-   outline.sf->glyphs = calloc(outline.sf->glyphmax, sizeof(SplineChar *));
-   outline.sf->map = calloc(1, sizeof(EncMap));
-   outline.sf->map->enc = &custom;
-   outline.sf->map->encmax = outline.sf->map->enccount =
-      outline.sf->map->backmax = outline.sf->glyphmax;
-   outline.sf->map->map = malloc(outline.sf->glyphmax * sizeof(int32));
-   outline.sf->map->backmap = malloc(outline.sf->glyphmax * sizeof(int32));
+   outline.sf=SplineFontEmpty();
+   outline.sf->glyphmax=outline.metrics_n;
+   outline.sf->glyphcnt=0;
+   outline.sf->glyphs=calloc(outline.sf->glyphmax, sizeof(SplineChar *));
+   outline.sf->map=calloc(1, sizeof(EncMap));
+   outline.sf->map->enc=&custom;
+   outline.sf->map->encmax=outline.sf->map->enccount =
+      outline.sf->map->backmax=outline.sf->glyphmax;
+   outline.sf->map->map=malloc(outline.sf->glyphmax * sizeof(int32));
+   outline.sf->map->backmap=malloc(outline.sf->glyphmax * sizeof(int32));
    memset(outline.sf->map->map, -1, outline.sf->glyphmax * sizeof(int32));
    memset(outline.sf->map->backmap, -1, outline.sf->glyphmax * sizeof(int32));
-   outline.sf->for_new_glyphs = namelist_for_new_fonts;
-   outline.sf->fontname = despace(outline.fontname);
-   outline.sf->fullname = copy(outline.fontname);
-   outline.sf->familyname = GuessFamily(outline.fontname);
-   outline.sf->weight = GuessWeight(outline.fontname);
+   outline.sf->for_new_glyphs=namelist_for_new_fonts;
+   outline.sf->fontname=despace(outline.fontname);
+   outline.sf->fullname=copy(outline.fontname);
+   outline.sf->familyname=GuessFamily(outline.fontname);
+   outline.sf->weight=GuessWeight(outline.fontname);
    if (strcmp(buffer, "Outlines") != 0)
-      outline.sf->copyright = copy(buffer);
+      outline.sf->copyright=copy(buffer);
    strcpy(buffer, outline.fontname);
    strcat(buffer, ".sfd");
-   outline.sf->filename = copy(buffer);
+   outline.sf->filename=copy(buffer);
 
-   outline.sf->top_enc = -1;
+   outline.sf->top_enc=-1;
 
-   outline.sf->ascent = 4 * outline.design_size / 5;
-   outline.sf->descent = outline.design_size - outline.sf->ascent;
+   outline.sf->ascent=4 * outline.design_size / 5;
+   outline.sf->descent=outline.design_size - outline.sf->ascent;
 
-   outline.sf->display_antialias = true;
-   outline.sf->display_size = -24;
+   outline.sf->display_antialias=true;
+   outline.sf->display_size=-24;
 
-   for (i = 0; i < outline.nchunks; ++i) {
+   for (i=0; i < outline.nchunks; ++i) {
       if (outline.chunk_offset[i] != outline.chunk_offset[i + 1]) {
 	 ReadChunk(file, &outline, i);
       }
@@ -916,21 +906,21 @@ static SplineFont *ReadOutline(char *dir) {
 
    FixupKerns(outline.sf, &outline);
 
-   for (i = 0; i < outline.sf->glyphcnt; ++i)
+   for (i=0; i < outline.sf->glyphcnt; ++i)
       FixupRefs(outline.sf->glyphs[i], outline.sf);
 
    if (isdigit(filename[strlen(filename) - 1]))
       FindEncoding(outline.sf, filename);
 
    free(filename);
-   fclose(file);
+   afclose(file);
 
    if (!SFDWrite
        (outline.sf->filename, outline.sf, outline.sf->map, NULL, false))
-      fprintf(stderr, "Failed to write outputfile %s\n",
+      afprintf(stderr, "Failed to write outputfile %s\n",
 	      outline.sf->filename);
    else
-      fprintf(stderr, "Created: %s\n", outline.sf->filename);
+      afprintf(stderr, "Created: %s\n", outline.sf->filename);
    return (outline.sf);
 }
 
@@ -956,26 +946,26 @@ static void dohelp(void) {
 }
 
 int main(int argc, char **argv) {
-   int i, any = false;
+   int i, any=false;
 
    char *pt;
 
-   for (i = 1; i < argc; ++i) {
-      if (*argv[i] == '-') {
-	 pt = argv[i] + 1;
-	 if (*pt == '-')
+   for (i=1; i < argc; ++i) {
+      if (*argv[i]=='-') {
+	 pt=argv[i] + 1;
+	 if (*pt=='-')
 	    ++pt;
-	 if (strcmp(pt, "includestrokes") == 0)
-	    includestrokes = true;
-	 else if (strcmp(pt, "version") == 0)
+	 if (strcmp(pt, "includestrokes")==0)
+	    includestrokes=true;
+	 else if (strcmp(pt, "version")==0)
 	    doversion(NULL);
-	 else if (strlen(pt) <= 4 && strncmp(pt, "help", strlen(pt)) == 0)
+	 else if (strlen(pt) <= 4 && strncmp(pt, "help", strlen(pt))==0)
 	    dohelp();
 	 else
 	    dousage();
       } else {
 	 ReadOutline(argv[i]);
-	 any = true;
+	 any=true;
       }
    }
    if (!any)

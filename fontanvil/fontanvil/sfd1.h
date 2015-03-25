@@ -1,4 +1,4 @@
-/* $Id: sfd1.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: sfd1.h 3849 2015-03-25 10:47:47Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -119,7 +119,7 @@ typedef struct splinefont1 {
    struct gentagtype gentags;
 } SplineFont1;
 
-extern int SFFindBiggestScriptLangIndex(SplineFont * _sf, uint32 script,
+extern int SFFindBiggestScriptLangIndex(SplineFont *_sf, uint32 script,
 					uint32 lang);
 extern int SFAddScriptIndex(SplineFont1 * sf, uint32 * scripts, int scnt);
 

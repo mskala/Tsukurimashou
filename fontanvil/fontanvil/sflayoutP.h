@@ -1,4 +1,4 @@
-/* $Id: sflayoutP.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: sflayoutP.h 3849 2015-03-25 10:47:47Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -121,11 +121,11 @@ extern int LayoutInfoReplace(LayoutInfo * li, const unichar_t * str,
 			     int sel_start, int sel_end, int width);
 extern void LayoutInfo_Destroy(LayoutInfo * li);
 
-extern void SFMapFill(struct sfmaps *sfmaps, SplineFont * sf);
+extern void SFMapFill(struct sfmaps *sfmaps, SplineFont *sf);
 
-extern struct sfmaps *SFMapOfSF(LayoutInfo * li, SplineFont * sf);
+extern struct sfmaps *SFMapOfSF(LayoutInfo * li, SplineFont *sf);
 
-extern FontData *LI_FindFontData(LayoutInfo * li, SplineFont * sf,
+extern FontData *LI_FindFontData(LayoutInfo * li, SplineFont *sf,
 				 int layer, enum sftf_fonttype fonttype,
 				 int size, int antialias);
 extern FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret);
@@ -141,7 +141,7 @@ extern void LayoutInfoSetTitle(LayoutInfo * li, const unichar_t * tit,
 extern struct fontlist *LI_BreakFontList(LayoutInfo * li, int start, int end);
 
 extern int LI_SetFontData(LayoutInfo * li, int start, int end,
-			  SplineFont * sf, int layer,
+			  SplineFont *sf, int layer,
 			  enum sftf_fonttype fonttype, int size,
 			  int antialias, int width);
 #endif

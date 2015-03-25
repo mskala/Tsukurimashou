@@ -1,4 +1,4 @@
-/* $Id: sfd1.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: sfd1.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -33,67 +33,67 @@
 /* This file contains the routines needed to process an old style sfd file and*/
 /*  convert it into the new format */
 
-static void SFGuessScriptList(SplineFont1 * sf) {
+static void SFGuessScriptList(SplineFont1 *sf) {
    uint32 scripts[32], script;
 
-   int i, scnt = 0, j;
+   int i, scnt=0, j;
 
-   for (i = 0; i < sf->sf.glyphcnt; ++i)
+   for (i=0; i < sf->sf.glyphcnt; ++i)
       if (sf->sf.glyphs[i] != NULL) {
-	 script = SCScriptFromUnicode(sf->sf.glyphs[i]);
+	 script=SCScriptFromUnicode(sf->sf.glyphs[i]);
 	 if (script != 0 && script != DEFAULT_SCRIPT) {
-	    for (j = scnt - 1; j >= 0; --j)
-	       if (scripts[j] == script)
+	    for (j=scnt - 1; j >= 0; --j)
+	       if (scripts[j]==script)
 		  break;
 	    if (j < 0) {
-	       scripts[scnt++] = script;
+	       scripts[scnt++]=script;
 	       if (scnt >= 32)
 		  break;
 	    }
 	 }
       }
-   if (scnt == 0)
-      scripts[scnt++] = CHR('l', 'a', 't', 'n');
+   if (scnt==0)
+      scripts[scnt++]=CHR('l', 'a', 't', 'n');
 
    /* order scripts */
-   for (i = 0; i < scnt - 1; ++i)
-      for (j = i + 1; j < scnt; ++j) {
+   for (i=0; i < scnt - 1; ++i)
+      for (j=i + 1; j < scnt; ++j) {
 	 if (scripts[i] > scripts[j]) {
-	    script = scripts[i];
-	    scripts[i] = scripts[j];
-	    scripts[j] = script;
+	    script=scripts[i];
+	    scripts[i]=scripts[j];
+	    scripts[j]=script;
 	 }
       }
 
    if (sf->sf.cidmaster)
-      sf = (SplineFont1 *) sf->sf.cidmaster;
+      sf=(SplineFont1 *) sf->sf.cidmaster;
    else if (sf->sf.mm != NULL)
-      sf = (SplineFont1 *) sf->sf.mm->normal;
+      sf=(SplineFont1 *) sf->sf.mm->normal;
    if (sf->script_lang != NULL)
       return;
-   sf->script_lang = calloc(2, sizeof(struct script_record *));
-   sf->script_lang[0] = calloc(scnt + 1, sizeof(struct script_record));
-   sf->sli_cnt = 1;
-   for (j = 0; j < scnt; ++j) {
-      sf->script_lang[0][j].script = scripts[j];
-      sf->script_lang[0][j].langs = malloc(2 * sizeof(uint32));
-      sf->script_lang[0][j].langs[0] = DEFAULT_LANG;
-      sf->script_lang[0][j].langs[1] = 0;
+   sf->script_lang=calloc(2, sizeof(struct script_record *));
+   sf->script_lang[0]=calloc(scnt + 1, sizeof(struct script_record));
+   sf->sli_cnt=1;
+   for (j=0; j < scnt; ++j) {
+      sf->script_lang[0][j].script=scripts[j];
+      sf->script_lang[0][j].langs=malloc(2 * sizeof(uint32));
+      sf->script_lang[0][j].langs[0]=DEFAULT_LANG;
+      sf->script_lang[0][j].langs[1]=0;
    }
-   sf->script_lang[1] = NULL;
+   sf->script_lang[1]=NULL;
 }
 
-static int SLContains(struct script_record *sr, uint32 script, uint32 lang) {
+static int SLContains(struct script_record *sr,uint32 script,uint32 lang) {
    int i, j;
 
-   if (script == DEFAULT_SCRIPT || script == 0)
+   if (script==DEFAULT_SCRIPT || script==0)
       return (true);
-   for (i = 0; sr[i].script != 0; ++i) {
-      if (sr[i].script == script) {
-	 if (lang == 0)
+   for (i=0; sr[i].script != 0; ++i) {
+      if (sr[i].script==script) {
+	 if (lang==0)
 	    return (true);
-	 for (j = 0; sr[i].langs[j] != 0; ++j)
-	    if (sr[i].langs[j] == lang)
+	 for (j=0; sr[i].langs[j] != 0; ++j)
+	    if (sr[i].langs[j]==lang)
 	       return (true);
 
 	 return (false);	/* this script entry didn't contain the language. won't be any other scripts to check */
@@ -107,123 +107,123 @@ int SFAddScriptIndex(SplineFont1 * sf, uint32 * scripts, int scnt) {
 
    struct script_record *sr;
 
-   if (scnt == 0)
-      scripts[scnt++] = CHR('l', 'a', 't', 'n');	/* Need a default script preference */
-   for (i = 0; i < scnt - 1; ++i)
-      for (j = i + 1; j < scnt; ++j) {
+   if (scnt==0)
+      scripts[scnt++]=CHR('l', 'a', 't', 'n');	/* Need a default script preference */
+   for (i=0; i < scnt - 1; ++i)
+      for (j=i + 1; j < scnt; ++j) {
 	 if (scripts[i] > scripts[j]) {
-	    uint32 temp = scripts[i];
+	    uint32 temp=scripts[i];
 
-	    scripts[i] = scripts[j];
-	    scripts[j] = temp;
+	    scripts[i]=scripts[j];
+	    scripts[j]=temp;
 	 }
       }
 
    if (sf->sf.cidmaster)
-      sf = (SplineFont1 *) sf->sf.cidmaster;
-   if (sf->script_lang == NULL)	/* It's an old sfd file */
-      sf->script_lang = calloc(1, sizeof(struct script_record *));
-   for (i = 0; sf->script_lang[i] != NULL; ++i) {
-      sr = sf->script_lang[i];
-      for (j = 0; sr[j].script != 0 && j < scnt &&
-	   sr[j].script == scripts[j]; ++j);
-      if (sr[j].script == 0 && j == scnt)
+      sf=(SplineFont1 *) sf->sf.cidmaster;
+   if (sf->script_lang==NULL)	/* It's an old sfd file */
+      sf->script_lang=calloc(1, sizeof(struct script_record *));
+   for (i=0; sf->script_lang[i] != NULL; ++i) {
+      sr=sf->script_lang[i];
+      for (j=0; sr[j].script != 0 && j < scnt &&
+	   sr[j].script==scripts[j]; ++j);
+      if (sr[j].script==0 && j==scnt)
 	 return (i);
    }
 
    sf->script_lang =
       realloc(sf->script_lang, (i + 2) * sizeof(struct script_record *));
-   sf->script_lang[i + 1] = NULL;
-   sr = sf->script_lang[i] = calloc(scnt + 1, sizeof(struct script_record));
-   for (j = 0; j < scnt; ++j) {
-      sr[j].script = scripts[j];
-      sr[j].langs = malloc(2 * sizeof(uint32));
-      sr[j].langs[0] = DEFAULT_LANG;
-      sr[j].langs[1] = 0;
+   sf->script_lang[i + 1]=NULL;
+   sr=sf->script_lang[i]=calloc(scnt + 1, sizeof(struct script_record));
+   for (j=0; j < scnt; ++j) {
+      sr[j].script=scripts[j];
+      sr[j].langs=malloc(2 * sizeof(uint32));
+      sr[j].langs[0]=DEFAULT_LANG;
+      sr[j].langs[1]=0;
    }
    return (i);
 }
 
-static int SFAddScriptLangIndex(SplineFont * _sf, uint32 script, uint32 lang) {
+static int SFAddScriptLangIndex(SplineFont *_sf,uint32 script,uint32 lang) {
    int i;
 
    SplineFont1 *sf;
 
    if (_sf->cidmaster)
-      _sf = _sf->cidmaster;
+      _sf=_sf->cidmaster;
    else if (_sf->mm != NULL)
-      _sf = _sf->mm->normal;
+      _sf=_sf->mm->normal;
 
    if (_sf->sfd_version >= 2)
       IError
 	 ("SFFindBiggestScriptLangIndex called with bad version number.\n");
 
-   sf = (SplineFont1 *) _sf;
+   sf=(SplineFont1 *) _sf;
 
-   if (script == 0)
-      script = DEFAULT_SCRIPT;
-   if (lang == 0)
-      lang = DEFAULT_LANG;
-   if (sf->script_lang == NULL)
-      sf->script_lang = calloc(2, sizeof(struct script_record *));
-   for (i = 0; sf->script_lang[i] != NULL; ++i) {
-      if (sf->script_lang[i][0].script == script
-	  && sf->script_lang[i][1].script == 0
-	  && sf->script_lang[i][0].langs[0] == lang
-	  && sf->script_lang[i][0].langs[1] == 0)
+   if (script==0)
+      script=DEFAULT_SCRIPT;
+   if (lang==0)
+      lang=DEFAULT_LANG;
+   if (sf->script_lang==NULL)
+      sf->script_lang=calloc(2, sizeof(struct script_record *));
+   for (i=0; sf->script_lang[i] != NULL; ++i) {
+      if (sf->script_lang[i][0].script==script
+	  && sf->script_lang[i][1].script==0
+	  && sf->script_lang[i][0].langs[0]==lang
+	  && sf->script_lang[i][0].langs[1]==0)
 	 return (i);
    }
    sf->script_lang =
       realloc(sf->script_lang, (i + 2) * sizeof(struct script_record *));
-   sf->script_lang[i] = calloc(2, sizeof(struct script_record));
-   sf->script_lang[i][0].script = script;
-   sf->script_lang[i][0].langs = malloc(2 * sizeof(uint32));
-   sf->script_lang[i][0].langs[0] = lang;
-   sf->script_lang[i][0].langs[1] = 0;
-   sf->script_lang[i + 1] = NULL;
-   sf->sli_cnt = i + 1;
+   sf->script_lang[i]=calloc(2, sizeof(struct script_record));
+   sf->script_lang[i][0].script=script;
+   sf->script_lang[i][0].langs=malloc(2 * sizeof(uint32));
+   sf->script_lang[i][0].langs[0]=lang;
+   sf->script_lang[i][0].langs[1]=0;
+   sf->script_lang[i + 1]=NULL;
+   sf->sli_cnt=i + 1;
    return (i);
 }
 
 static int SLCount(struct script_record *sr) {
-   int sl_cnt = 0;
+   int sl_cnt=0;
 
    int i, j;
 
-   for (i = 0; sr[i].script != 0; ++i) {
-      for (j = 0; sr[i].langs[j] != 0; ++j)
+   for (i=0; sr[i].script != 0; ++i) {
+      for (j=0; sr[i].langs[j] != 0; ++j)
 	 ++sl_cnt;
    }
    return (sl_cnt);
 }
 
-int SFFindBiggestScriptLangIndex(SplineFont * _sf, uint32 script, uint32 lang) {
-   int i, best_sli = -1, best_cnt = -1, cnt;
+int SFFindBiggestScriptLangIndex(SplineFont *_sf, uint32 script, uint32 lang) {
+   int i, best_sli=-1, best_cnt=-1, cnt;
 
-   SplineFont1 *sf = (SplineFont1 *) _sf;
+   SplineFont1 *sf=(SplineFont1 *) _sf;
 
    if (_sf->sfd_version >= 2)
       IError
 	 ("SFFindBiggestScriptLangIndex called with bad version number.\n");
 
-   if (sf->script_lang == NULL)
+   if (sf->script_lang==NULL)
       SFGuessScriptList(sf);
-   for (i = 0; sf->script_lang[i] != NULL; ++i) {
+   for (i=0; sf->script_lang[i] != NULL; ++i) {
       if (SLContains(sf->script_lang[i], script, lang)) {
-	 cnt = SLCount(sf->script_lang[i]);
+	 cnt=SLCount(sf->script_lang[i]);
 	 if (cnt > best_cnt) {
-	    best_sli = i;
-	    best_cnt = cnt;
+	    best_sli=i;
+	    best_cnt=cnt;
 	 }
       }
    }
-   if (best_sli == -1)
+   if (best_sli==-1)
       return (SFAddScriptLangIndex(_sf, script, lang));
 
    return (best_sli);
 }
 
-static FeatureScriptLangList *FeaturesFromTagSli(uint32 tag, int sli,
+static FeatureScriptLangList *FeaturesFromTagSli(uint32 tag,int sli,
 						 SplineFont1 * sf) {
    FeatureScriptLangList *fl;
 
@@ -233,78 +233,78 @@ static FeatureScriptLangList *FeaturesFromTagSli(uint32 tag, int sli,
 
    int i;
 
-   fl = chunkalloc(sizeof(FeatureScriptLangList));
-   fl->featuretag = tag;
-   if (sli == SLI_NESTED || sli < 0 || sli >= sf->sli_cnt)
+   fl=chunkalloc(sizeof(FeatureScriptLangList));
+   fl->featuretag=tag;
+   if (sli==SLI_NESTED || sli < 0 || sli >= sf->sli_cnt)
       return (fl);
-   last = NULL;
-   for (sr = sf->script_lang[sli]; sr->script != 0; ++sr) {
-      cur = chunkalloc(sizeof(struct scriptlanglist));
-      cur->script = sr->script;
-      for (i = 0; sr->langs[i] != 0; ++i);
-      cur->lang_cnt = i;
+   last=NULL;
+   for (sr=sf->script_lang[sli]; sr->script != 0; ++sr) {
+      cur=chunkalloc(sizeof(struct scriptlanglist));
+      cur->script=sr->script;
+      for (i=0; sr->langs[i] != 0; ++i);
+      cur->lang_cnt=i;
       if (i > MAX_LANG)
-	 cur->morelangs = malloc((i - MAX_LANG) * sizeof(uint32));
-      for (i = 0; sr->langs[i] != 0; ++i) {
+	 cur->morelangs=malloc((i - MAX_LANG) * sizeof(uint32));
+      for (i=0; sr->langs[i] != 0; ++i) {
 	 if (i < MAX_LANG)
-	    cur->langs[i] = sr->langs[i];
+	    cur->langs[i]=sr->langs[i];
 	 else
-	    cur->morelangs[i - MAX_LANG] = sr->langs[i];
+	    cur->morelangs[i - MAX_LANG]=sr->langs[i];
       }
-      if (last == NULL)
-	 fl->scripts = cur;
+      if (last==NULL)
+	 fl->scripts=cur;
       else
-	 last->next = cur;
-      last = cur;
+	 last->next=cur;
+      last=cur;
    }
    return (fl);
 }
 
-static OTLookup *CreateLookup(SplineFont1 * sf, uint32 tag, int sli,
+static OTLookup *CreateLookup(SplineFont1 *sf,uint32 tag,int sli,
 			      int flags, enum possub_type type) {
-   OTLookup *otl = chunkalloc(sizeof(OTLookup));
+   OTLookup *otl=chunkalloc(sizeof(OTLookup));
 
    otl->lookup_type =
-      type == pst_position ? gpos_single :
-      type == pst_pair ? gpos_pair :
-      type == pst_contextpos ? gpos_context :
-      type == pst_chainpos ? gpos_contextchain :
-      type == pst_substitution ? gsub_single :
-      type == pst_alternate ? gsub_alternate :
-      type == pst_multiple ? gsub_multiple :
-      type == pst_ligature ? gsub_ligature :
-      type == pst_contextsub ? gsub_context :
-      type == pst_chainsub ? gsub_contextchain : ot_undef;
-   if (otl->lookup_type == ot_undef)
+      type==pst_position ? gpos_single :
+      type==pst_pair ? gpos_pair :
+      type==pst_contextpos ? gpos_context :
+      type==pst_chainpos ? gpos_contextchain :
+      type==pst_substitution ? gsub_single :
+      type==pst_alternate ? gsub_alternate :
+      type==pst_multiple ? gsub_multiple :
+      type==pst_ligature ? gsub_ligature :
+      type==pst_contextsub ? gsub_context :
+      type==pst_chainsub ? gsub_contextchain : ot_undef;
+   if (otl->lookup_type==ot_undef)
       IError("Unknown lookup type");
    if (otl->lookup_type < gpos_single) {
-      otl->next = sf->sf.gsub_lookups;
-      sf->sf.gsub_lookups = otl;
+      otl->next=sf->sf.gsub_lookups;
+      sf->sf.gsub_lookups=otl;
    } else {
-      otl->next = sf->sf.gpos_lookups;
-      sf->sf.gpos_lookups = otl;
+      otl->next=sf->sf.gpos_lookups;
+      sf->sf.gpos_lookups=otl;
    }
-   otl->lookup_flags = flags;
-   otl->features = FeaturesFromTagSli(tag, sli, sf);
+   otl->lookup_flags=flags;
+   otl->features=FeaturesFromTagSli(tag, sli, sf);
    /* We will set the lookup_index after we've ordered the list */
    /* We will set the lookup_name after we've assigned the index */
    /* We will add subtables as we need them */
    return (otl);
 }
 
-static OTLookup *CreateACLookup(SplineFont1 * sf, AnchorClass1 * ac) {
-   OTLookup *otl = chunkalloc(sizeof(OTLookup));
+static OTLookup *CreateACLookup(SplineFont1 *sf,AnchorClass1 *ac) {
+   OTLookup *otl=chunkalloc(sizeof(OTLookup));
 
    otl->lookup_type =
-      ac->ac.type == act_mark ? gpos_mark2base :
-      ac->ac.type == act_mkmk ? gpos_mark2mark :
-      ac->ac.type == act_curs ? gpos_cursive :
-      ac->ac.type == act_mklg ? gpos_mark2ligature : ot_undef;
-   if (otl->lookup_type == ot_undef)
+      ac->ac.type==act_mark ? gpos_mark2base :
+      ac->ac.type==act_mkmk ? gpos_mark2mark :
+      ac->ac.type==act_curs ? gpos_cursive :
+      ac->ac.type==act_mklg ? gpos_mark2ligature : ot_undef;
+   if (otl->lookup_type==ot_undef)
       IError("Unknown AnchorClass type");
-   otl->next = sf->sf.gpos_lookups;
-   sf->sf.gpos_lookups = otl;
-   otl->lookup_flags = ac->flags;
+   otl->next=sf->sf.gpos_lookups;
+   sf->sf.gpos_lookups=otl;
+   otl->lookup_flags=ac->flags;
    otl->features =
       FeaturesFromTagSli(ac->feature_tag, ac->script_lang_index, sf);
    /* We will set the lookup_index after we've ordered the list */
@@ -313,8 +313,8 @@ static OTLookup *CreateACLookup(SplineFont1 * sf, AnchorClass1 * ac) {
    return (otl);
 }
 
-static OTLookup *CreateMacLookup(SplineFont1 * sf, ASM1 * sm) {
-   OTLookup *otl = chunkalloc(sizeof(OTLookup));
+static OTLookup *CreateMacLookup(SplineFont1 *sf,ASM1 *sm) {
+   OTLookup *otl=chunkalloc(sizeof(OTLookup));
 
    int i, ch;
 
@@ -322,39 +322,39 @@ static OTLookup *CreateMacLookup(SplineFont1 * sf, ASM1 * sm) {
 
    SplineChar *sc;
 
-   otl->features = chunkalloc(sizeof(FeatureScriptLangList));
-   if (sm->sm.type == asm_kern) {
-      otl->lookup_type = kern_statemachine;
-      otl->next = sf->sf.gpos_lookups;
-      sf->sf.gpos_lookups = otl;
+   otl->features=chunkalloc(sizeof(FeatureScriptLangList));
+   if (sm->sm.type==asm_kern) {
+      otl->lookup_type=kern_statemachine;
+      otl->next=sf->sf.gpos_lookups;
+      sf->sf.gpos_lookups=otl;
       otl->features->featuretag =
 	 (sm->sm.flags & 0x8000) ? CHR('v', 'k', 'r', 'n') : CHR('k', 'e',
 								 'r', 'n');
    } else {
       otl->lookup_type =
-	 sm->sm.type == asm_indic ? morx_indic : sm->sm.type ==
+	 sm->sm.type==asm_indic ? morx_indic : sm->sm.type ==
 	 asm_context ? morx_context : morx_insert;
-      otl->next = sf->sf.gsub_lookups;
-      sf->sf.gsub_lookups = otl;
-      otl->features->featuretag = (sm->feature << 16) | (sm->setting);
-      otl->features->ismac = true;
+      otl->next=sf->sf.gsub_lookups;
+      sf->sf.gsub_lookups=otl;
+      otl->features->featuretag=(sm->feature << 16) | (sm->setting);
+      otl->features->ismac=true;
    }
-   otl->lookup_flags = 0;
+   otl->lookup_flags=0;
 
-   for (i = 4; i < sm->sm.class_cnt; ++i) {
-      for (start = sm->sm.classes[i];; start = pt) {
-	 while (*start == ' ')
+   for (i=4; i < sm->sm.class_cnt; ++i) {
+      for (start=sm->sm.classes[i];; start=pt) {
+	 while (*start==' ')
 	    ++start;
-	 if (*start == '\0')
+	 if (*start=='\0')
 	    break;
-	 for (pt = start; *pt != '\0' && *pt != ' '; ++pt);
-	 ch = *pt;
-	 *pt = '\0';
-	 sc = SFGetChar(&sf->sf, -1, start);
+	 for (pt=start; *pt != '\0' && *pt != ' '; ++pt);
+	 ch=*pt;
+	 *pt='\0';
+	 sc=SFGetChar(&sf->sf, -1, start);
 	 if (sc != NULL)
 	    FListAppendScriptLang(otl->features, SCScriptFromUnicode(sc),
 				  DEFAULT_LANG);
-	 *pt = ch;
+	 *pt=ch;
       }
    }
 
@@ -364,81 +364,81 @@ static OTLookup *CreateMacLookup(SplineFont1 * sf, ASM1 * sm) {
    return (otl);
 }
 
-static struct lookup_subtable *CreateSubtable(OTLookup * otl,
+static struct lookup_subtable *CreateSubtable(OTLookup *otl,
 					      SplineFont1 * sf) {
    struct lookup_subtable *cur, *prev;
 
-   cur = chunkalloc(sizeof(struct lookup_subtable));
-   if (otl->subtables == NULL)
-      otl->subtables = cur;
+   cur=chunkalloc(sizeof(struct lookup_subtable));
+   if (otl->subtables==NULL)
+      otl->subtables=cur;
    else {
-      for (prev = otl->subtables; prev->next != NULL; prev = prev->next);
-      prev->next = cur;
+      for (prev=otl->subtables; prev->next != NULL; prev=prev->next);
+      prev->next=cur;
    }
-   cur->lookup = otl;
-   if (otl->lookup_type == gsub_single ||
-       otl->lookup_type == gsub_multiple ||
-       otl->lookup_type == gsub_alternate ||
-       otl->lookup_type == gsub_ligature ||
-       otl->lookup_type == gpos_single || otl->lookup_type == gpos_pair)
-      cur->per_glyph_pst_or_kern = true;
-   else if (otl->lookup_type == gpos_cursive ||
-	    otl->lookup_type == gpos_mark2base ||
-	    otl->lookup_type == gpos_mark2ligature ||
-	    otl->lookup_type == gpos_mark2mark)
-      cur->anchor_classes = true;
-   if (otl->lookup_type == gpos_pair) {
+   cur->lookup=otl;
+   if (otl->lookup_type==gsub_single ||
+       otl->lookup_type==gsub_multiple ||
+       otl->lookup_type==gsub_alternate ||
+       otl->lookup_type==gsub_ligature ||
+       otl->lookup_type==gpos_single || otl->lookup_type==gpos_pair)
+      cur->per_glyph_pst_or_kern=true;
+   else if (otl->lookup_type==gpos_cursive ||
+	    otl->lookup_type==gpos_mark2base ||
+	    otl->lookup_type==gpos_mark2ligature ||
+	    otl->lookup_type==gpos_mark2mark)
+      cur->anchor_classes=true;
+   if (otl->lookup_type==gpos_pair) {
       if (otl->features != NULL &&
-	  otl->features->featuretag == CHR('v', 'k', 'r', 'n'))
-	 cur->vertical_kerning = true;
+	  otl->features->featuretag==CHR('v', 'k', 'r', 'n'))
+	 cur->vertical_kerning=true;
    }
    return (cur);
 }
 
-static OTLookup *FindNestedLookupByTag(SplineFont1 * sf, uint32 tag) {
+static OTLookup *FindNestedLookupByTag(SplineFont1 *sf,uint32 tag) {
    int isgpos;
 
    OTLookup *otl;
 
-   for (isgpos = 0; isgpos < 2; ++isgpos) {
-      for (otl = isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups;
-	   otl != NULL; otl = otl->next) {
-	 if (otl->features != NULL && otl->features->scripts == NULL
-	     && otl->features->featuretag == tag)
+   for (isgpos=0; isgpos < 2; ++isgpos) {
+      for (otl=isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups;
+	   otl != NULL; otl=otl->next) {
+	 if (otl->features != NULL && otl->features->scripts==NULL
+	     && otl->features->featuretag==tag)
 	    return (otl);
       }
    }
    return (NULL);
 }
 
-static void FPSTReplaceTagsWithLookups(FPST * fpst, SplineFont1 * sf) {
+static void FPSTReplaceTagsWithLookups(FPST *fpst,SplineFont1 *sf) {
    int i, j, k;
 
-   if (fpst->type == pst_reversesub)
+   if (fpst->type==pst_reversesub)
       return;
-   for (i = 0; i < fpst->rule_cnt; ++i) {
-      for (j = 0; j < fpst->rules[i].lookup_cnt; ++j) {
+   for (i=0; i < fpst->rule_cnt; ++i) {
+      for (j=0; j < fpst->rules[i].lookup_cnt; ++j) {
 	 OTLookup *otl =
 	    FindNestedLookupByTag(sf,
 				  (uint32) (intpt) (fpst->rules[i].lookups[j].
 						    lookup));
 	 if (otl != NULL)
-	    fpst->rules[i].lookups[j].lookup = otl;
+	    fpst->rules[i].lookups[j].lookup=otl;
 	 else {
-	    for (k = j + 1; k < fpst->rules[i].lookup_cnt; ++k)
-	       fpst->rules[i].lookups[k - 1] = fpst->rules[i].lookups[k];
+	    for (k=j + 1; k < fpst->rules[i].lookup_cnt; ++k)
+	       fpst->rules[i].lookups[k - 1]=fpst->rules[i].lookups[k];
 	    --fpst->rules[i].lookup_cnt;
 	 }
       }
    }
 }
 
-static void ASMReplaceTagsWithLookups(ASM * sm, SplineFont1 * sf) {
+static void ASMReplaceTagsWithLookups(ASM *sm,SplineFont1 *sf) {
    int i;
 
    if (sm->type != asm_context)
       return;
-   for (i = 0; i < sm->class_cnt * sm->state_cnt; ++i) {
+   for (i=0; i < sm->class_cnt * sm->state_cnt; ++i) {
       if (sm->state[i].u.context.mark_lookup != NULL)
 	 sm->state[i].u.context.mark_lookup =
 	    FindNestedLookupByTag(sf,
@@ -452,7 +452,7 @@ static void ASMReplaceTagsWithLookups(ASM * sm, SplineFont1 * sf) {
    }
 }
 
-static void ACHasBaseLig(SplineFont1 * sf, AnchorClass1 * ac) {
+static void ACHasBaseLig(SplineFont1 *sf,AnchorClass1 *ac) {
    int gid, k;
 
    SplineFont1 *subsf;
@@ -461,24 +461,24 @@ static void ACHasBaseLig(SplineFont1 * sf, AnchorClass1 * ac) {
 
    AnchorPoint *ap;
 
-   ac->has_bases = ac->has_ligatures = false;
-   if (ac->ac.type == act_mkmk || ac->ac.type == act_curs)
+   ac->has_bases=ac->has_ligatures=false;
+   if (ac->ac.type==act_mkmk || ac->ac.type==act_curs)
       return;
-   k = 0;
+   k=0;
    do {
       subsf =
-	 sf->sf.subfontcnt == 0 ? sf : (SplineFont1 *) (sf->sf.subfonts[k]);
-      for (gid = 0; gid < subsf->sf.glyphcnt; ++gid)
-	 if ((sc = subsf->sf.glyphs[gid]) != NULL) {
-	    for (ap = sc->anchor; ap != NULL; ap = ap->next) {
+	 sf->sf.subfontcnt==0 ? sf : (SplineFont1 *) (sf->sf.subfonts[k]);
+      for (gid=0; gid < subsf->sf.glyphcnt; ++gid)
+	 if ((sc=subsf->sf.glyphs[gid]) != NULL) {
+	    for (ap=sc->anchor; ap != NULL; ap=ap->next) {
 	       if (ap->anchor != (AnchorClass *) ac)
 		  continue;
-	       if (ap->type == at_basechar) {
-		  ac->has_bases = true;
+	       if (ap->type==at_basechar) {
+		  ac->has_bases=true;
 		  if (ac->has_ligatures)
 		     return;
-	       } else if (ap->type == at_baselig) {
-		  ac->has_ligatures = true;
+	       } else if (ap->type==at_baselig) {
+		  ac->has_ligatures=true;
 		  if (ac->has_bases)
 		     return;
 	       }
@@ -488,7 +488,7 @@ static void ACHasBaseLig(SplineFont1 * sf, AnchorClass1 * ac) {
    } while (k < sf->sf.subfontcnt);
 }
 
-static void ACDisassociateLigatures(SplineFont1 * sf, AnchorClass1 * ac) {
+static void ACDisassociateLigatures(SplineFont1 *sf,AnchorClass1 *ac) {
    int gid, k;
 
    SplineFont1 *subsf;
@@ -501,34 +501,34 @@ static void ACDisassociateLigatures(SplineFont1 * sf, AnchorClass1 * ac) {
 
    char *format;
 
-   lac = chunkalloc(sizeof(AnchorClass1));
-   *lac = *ac;
-   lac->ac.type = act_mklg;
-   ac->ac.next = (AnchorClass *) lac;
+   lac=chunkalloc(sizeof(AnchorClass1));
+   *lac=*ac;
+   lac->ac.type=act_mklg;
+   ac->ac.next=(AnchorClass *) lac;
 
    /* GT: Need to split some AnchorClasses into two classes, one for normal */
    /* GT:  base letters, and one for ligatures. So create a new AnchorClass */
    /* GT:  name for the ligature version */
-   format = _("Ligature %s");
-   lac->ac.name = malloc(strlen(ac->ac.name) + strlen(format) + 1);
+   format=_("Ligature %s");
+   lac->ac.name=malloc(strlen(ac->ac.name) + strlen(format) + 1);
    sprintf(lac->ac.name, format, ac->ac.name);
 
-   k = 0;
+   k=0;
    do {
       subsf =
-	 sf->sf.subfontcnt == 0 ? sf : (SplineFont1 *) (sf->sf.subfonts[k]);
-      for (gid = 0; gid < subsf->sf.glyphcnt; ++gid)
-	 if ((sc = subsf->sf.glyphs[gid]) != NULL) {
-	    for (ap = sc->anchor; ap != NULL; ap = ap->next) {
+	 sf->sf.subfontcnt==0 ? sf : (SplineFont1 *) (sf->sf.subfonts[k]);
+      for (gid=0; gid < subsf->sf.glyphcnt; ++gid)
+	 if ((sc=subsf->sf.glyphs[gid]) != NULL) {
+	    for (ap=sc->anchor; ap != NULL; ap=ap->next) {
 	       if (ap->anchor != (AnchorClass *) ac)
 		  continue;
-	       if (ap->type == at_mark) {
-		  lap = chunkalloc(sizeof(AnchorPoint));
-		  *lap = *ap;
-		  ap->next = lap;
-		  lap->anchor = (AnchorClass *) lac;
-	       } else if (ap->type == at_baselig) {
-		  ap->anchor = (AnchorClass *) lac;
+	       if (ap->type==at_mark) {
+		  lap=chunkalloc(sizeof(AnchorPoint));
+		  *lap=*ap;
+		  ap->next=lap;
+		  lap->anchor=(AnchorClass *) lac;
+	       } else if (ap->type==at_baselig) {
+		  ap->anchor=(AnchorClass *) lac;
 	       }
 	    }
 	 }
@@ -536,13 +536,13 @@ static void ACDisassociateLigatures(SplineFont1 * sf, AnchorClass1 * ac) {
    } while (k < sf->sf.subfontcnt);
 }
 
-static int TTFFeatureIndex(uint32 tag, struct table_ordering *ord) {
+static int TTFFeatureIndex(uint32 tag,struct table_ordering *ord) {
    /* This is the order in which features should be executed */
-   int cnt = 0;
+   int cnt=0;
 
    if (ord != NULL) {
-      for (cnt = 0; ord->ordered_features[cnt] != 0; ++cnt)
-	 if (ord->ordered_features[cnt] == tag)
+      for (cnt=0; ord->ordered_features[cnt] != 0; ++cnt)
+	 if (ord->ordered_features[cnt]==tag)
 	    break;
       return (cnt);
    }
@@ -644,29 +644,29 @@ static int TTFFeatureIndex(uint32 tag, struct table_ordering *ord) {
    }
 }
 
-static int GSubOrder(SplineFont1 * sf, FeatureScriptLangList * fl) {
+static int GSubOrder(SplineFont1 *sf,FeatureScriptLangList *fl) {
    struct table_ordering *ord;
 
-   int sofar = 30000, temp;
+   int sofar=30000, temp;
 
-   for (ord = sf->orders;
+   for (ord=sf->orders;
 	ord != NULL && ord->table_tag != CHR('G', 'S', 'U', 'B');
-	ord = ord->next);
-   for (; fl != NULL; fl = fl->next) {
-      temp = TTFFeatureIndex(fl->featuretag, ord);
+	ord=ord->next);
+   for (; fl != NULL; fl=fl->next) {
+      temp=TTFFeatureIndex(fl->featuretag, ord);
       if (temp < sofar)
-	 sofar = temp;
+	 sofar=temp;
    }
    return (sofar);
 }
 
-static int order_lookups(const void *_otl1, const void *_otl2) {
-   const OTLookup *otl1 = *(const OTLookup **) _otl1, *otl2 =
+static int order_lookups(const void *_otl1,const void *_otl2) {
+   const OTLookup *otl1=*(const OTLookup **) _otl1, *otl2 =
       *(const OTLookup **) _otl2;
    return (otl1->lookup_index - otl2->lookup_index);
 }
 
-static void SFDCleanupAnchorClasses(SplineFont * sf) {
+static void SFDCleanupAnchorClasses(SplineFont *sf) {
    AnchorClass *ac;
 
    AnchorPoint *ap;
@@ -676,49 +676,49 @@ static void SFDCleanupAnchorClasses(SplineFont * sf) {
 #define S_MAX	100
    uint32 scripts[S_MAX];
 
-   int merge = 0;
+   int merge=0;
 
-   for (ac = sf->anchor; ac != NULL; ac = ac->next) {
-      if (((AnchorClass1 *) ac)->script_lang_index == 0xffff) {
-	 scnt = 0;
-	 for (i = 0; i < sf->glyphcnt; ++i)
+   for (ac=sf->anchor; ac != NULL; ac=ac->next) {
+      if (((AnchorClass1 *) ac)->script_lang_index==0xffff) {
+	 scnt=0;
+	 for (i=0; i < sf->glyphcnt; ++i)
 	    if (sf->glyphs[i] != NULL) {
-	       for (ap = sf->glyphs[i]->anchor;
-		    ap != NULL && ap->anchor != ac; ap = ap->next);
+	       for (ap=sf->glyphs[i]->anchor;
+		    ap != NULL && ap->anchor != ac; ap=ap->next);
 	       if (ap != NULL && scnt < S_MAX) {
-		  uint32 script = SCScriptFromUnicode(sf->glyphs[i]);
+		  uint32 script=SCScriptFromUnicode(sf->glyphs[i]);
 
-		  if (script == 0)
+		  if (script==0)
 		     continue;
-		  for (j = 0; j < scnt; ++j)
-		     if (scripts[j] == script)
+		  for (j=0; j < scnt; ++j)
+		     if (scripts[j]==script)
 			break;
-		  if (j == scnt)
-		     scripts[scnt++] = script;
+		  if (j==scnt)
+		     scripts[scnt++]=script;
 	       }
 	    }
 	 ((AnchorClass1 *) ac)->script_lang_index =
 	    SFAddScriptIndex((SplineFont1 *) sf, scripts, scnt);
       }
-      if (((AnchorClass1 *) ac)->merge_with == 0xffff)
-	 ((AnchorClass1 *) ac)->merge_with = ++merge;
+      if (((AnchorClass1 *) ac)->merge_with==0xffff)
+	 ((AnchorClass1 *) ac)->merge_with=++merge;
    }
 #undef S_MAX
 }
 
 enum uni_interp interp_from_encoding(Encoding * enc, enum uni_interp interp) {
 
-   if (enc == NULL)
+   if (enc==NULL)
       return (interp);
 
    if (enc->is_japanese)
-      interp = ui_japanese;
+      interp=ui_japanese;
    else if (enc->is_korean)
-      interp = ui_korean;
+      interp=ui_korean;
    else if (enc->is_tradchinese)
-      interp = ui_trad_chinese;
+      interp=ui_trad_chinese;
    else if (enc->is_simplechinese)
-      interp = ui_simp_chinese;
+      interp=ui_simp_chinese;
    return (interp);
 }
 
@@ -749,53 +749,53 @@ void SFD_AssignLookups(SplineFont1 * sf) {
 
    /* Fix up some gunk from really old versions of the sfd format */
    SFDCleanupAnchorClasses(&sf->sf);
-   if (sf->sf.uni_interp == ui_unset)
-      sf->sf.uni_interp = interp_from_encoding(sf->sf.map->enc, ui_none);
+   if (sf->sf.uni_interp==ui_unset)
+      sf->sf.uni_interp=interp_from_encoding(sf->sf.map->enc, ui_none);
 
    /* Fixup for an old bug */
    if (sf->sf.pfminfo.os2_winascent < sf->sf.ascent / 4
        && !sf->sf.pfminfo.winascent_add) {
-      sf->sf.pfminfo.winascent_add = true;
-      sf->sf.pfminfo.os2_winascent = 0;
-      sf->sf.pfminfo.windescent_add = true;
-      sf->sf.pfminfo.os2_windescent = 0;
+      sf->sf.pfminfo.winascent_add=true;
+      sf->sf.pfminfo.os2_winascent=0;
+      sf->sf.pfminfo.windescent_add=true;
+      sf->sf.pfminfo.os2_windescent=0;
    }
 
    /* First handle the PSTs, no complications here */
-   k = 0;
+   k=0;
    do {
       subsf =
-	 sf->sf.subfontcnt == 0 ? sf : (SplineFont1 *) (sf->sf.subfonts[k]);
-      for (gid = 0; gid < subsf->sf.glyphcnt; ++gid)
-	 if ((sc = subsf->sf.glyphs[gid]) != NULL) {
-	    for (pst = (PST1 *) (sc->possub); pst != NULL;
-		 pst = (PST1 *) (pst->pst.next)) {
-	       if (pst->pst.type == pst_lcaret || pst->pst.subtable != NULL)
+	 sf->sf.subfontcnt==0 ? sf : (SplineFont1 *) (sf->sf.subfonts[k]);
+      for (gid=0; gid < subsf->sf.glyphcnt; ++gid)
+	 if ((sc=subsf->sf.glyphs[gid]) != NULL) {
+	    for (pst=(PST1 *) (sc->possub); pst != NULL;
+		 pst=(PST1 *) (pst->pst.next)) {
+	       if (pst->pst.type==pst_lcaret || pst->pst.subtable != NULL)
 		  continue;	/* Nothing to do, or already done */
 	       otl =
 		  CreateLookup(sf, pst->tag, pst->script_lang_index,
 			       pst->flags, pst->pst.type);
-	       sub = CreateSubtable(otl, sf);
+	       sub=CreateSubtable(otl, sf);
 	       /* There might be another PST with the same flags on this glyph */
 	       /* And we must fixup the current pst */
-	       for (pst2 = pst; pst2 != NULL;
-		    pst2 = (PST1 *) (pst2->pst.next)) {
-		  if (pst2->tag == pst->tag
-		      && pst2->script_lang_index == pst->script_lang_index
-		      && pst2->flags == pst->flags
-		      && pst2->pst.type == pst->pst.type)
-		     pst2->pst.subtable = sub;
+	       for (pst2=pst; pst2 != NULL;
+		    pst2=(PST1 *) (pst2->pst.next)) {
+		  if (pst2->tag==pst->tag
+		      && pst2->script_lang_index==pst->script_lang_index
+		      && pst2->flags==pst->flags
+		      && pst2->pst.type==pst->pst.type)
+		     pst2->pst.subtable=sub;
 	       }
-	       for (gid2 = gid + 1; gid2 < subsf->sf.glyphcnt; ++gid2)
-		  if ((sc2 = subsf->sf.glyphs[gid2]) != NULL) {
-		     for (pst2 = (PST1 *) (sc2->possub); pst2 != NULL;
-			  pst2 = (PST1 *) (pst2->pst.next)) {
-			if (pst2->tag == pst->tag
+	       for (gid2=gid + 1; gid2 < subsf->sf.glyphcnt; ++gid2)
+		  if ((sc2=subsf->sf.glyphs[gid2]) != NULL) {
+		     for (pst2=(PST1 *) (sc2->possub); pst2 != NULL;
+			  pst2=(PST1 *) (pst2->pst.next)) {
+			if (pst2->tag==pst->tag
 			    && pst2->script_lang_index ==
 			    pst->script_lang_index
-			    && pst2->flags == pst->flags
-			    && pst2->pst.type == pst->pst.type)
-			   pst2->pst.subtable = sub;
+			    && pst2->flags==pst->flags
+			    && pst2->pst.type==pst->pst.type)
+			   pst2->pst.subtable=sub;
 		     }
 		  }
 	    }
@@ -804,16 +804,16 @@ void SFD_AssignLookups(SplineFont1 * sf) {
    } while (k < sf->sf.subfontcnt);
 
    /* Now kerns. May need to merge kernclasses to kernpair lookups (different subtables, of course */
-   for (isv = 0; isv < 2; ++isv) {
-      k = 0;
+   for (isv=0; isv < 2; ++isv) {
+      k=0;
       do {
 	 subsf =
 	    sf->sf.subfontcnt ==
 	    0 ? sf : (SplineFont1 *) (sf->sf.subfonts[k]);
-	 for (gid = 0; gid < subsf->sf.glyphcnt; ++gid)
-	    if ((sc = subsf->sf.glyphs[gid]) != NULL) {
-	       for (kp = (KernPair1 *) (isv ? sc->vkerns : sc->kerns);
-		    kp != NULL; kp = (KernPair1 *) (kp->kp.next)) {
+	 for (gid=0; gid < subsf->sf.glyphcnt; ++gid)
+	    if ((sc=subsf->sf.glyphs[gid]) != NULL) {
+	       for (kp=(KernPair1 *) (isv ? sc->vkerns : sc->kerns);
+		    kp != NULL; kp=(KernPair1 *) (kp->kp.next)) {
 		  if (kp->kp.subtable != NULL)
 		     continue;	/* already done */
 		  otl =
@@ -823,34 +823,34 @@ void SFD_AssignLookups(SplineFont1 * sf) {
 								      'r',
 								      'n'),
 				  kp->sli, kp->flags, pst_pair);
-		  sub = CreateSubtable(otl, sf);
+		  sub=CreateSubtable(otl, sf);
 		  /* There might be another kp with the same flags on this glyph */
 		  /* And we must fixup the current kp */
-		  for (kp2 = kp; kp2 != NULL;
-		       kp2 = (KernPair1 *) (kp2->kp.next)) {
-		     if (kp2->sli == kp->sli && kp2->flags == kp->flags)
-			kp2->kp.subtable = sub;
+		  for (kp2=kp; kp2 != NULL;
+		       kp2=(KernPair1 *) (kp2->kp.next)) {
+		     if (kp2->sli==kp->sli && kp2->flags==kp->flags)
+			kp2->kp.subtable=sub;
 		  }
-		  for (gid2 = gid + 1; gid2 < subsf->sf.glyphcnt; ++gid2)
-		     if ((sc2 = subsf->sf.glyphs[gid2]) != NULL) {
+		  for (gid2=gid + 1; gid2 < subsf->sf.glyphcnt; ++gid2)
+		     if ((sc2=subsf->sf.glyphs[gid2]) != NULL) {
 			for (kp2 =
 			     (KernPair1 *) (isv ? sc2->vkerns : sc2->kerns);
 			     kp2 != NULL;
-			     kp2 = (KernPair1 *) (kp2->kp.next)) {
-			   if (kp2->sli == kp->sli && kp2->flags == kp->flags)
-			      kp2->kp.subtable = sub;
+			     kp2=(KernPair1 *) (kp2->kp.next)) {
+			   if (kp2->sli==kp->sli && kp2->flags==kp->flags)
+			      kp2->kp.subtable=sub;
 			}
 		     }
 		  /* And there might be a kerning class... */
 		  for (kc =
 		       (KernClass1 *) (isv ? sf->sf.vkerns : sf->sf.kerns);
-		       kc != NULL; kc = (KernClass1 *) (kc->kc.next)) {
-		     if (kc->sli == kp->sli && kc->flags == kp->flags
-			 && kc->kc.subtable == NULL) {
-			sub = CreateSubtable(otl, sf);
-			sub->per_glyph_pst_or_kern = false;
-			sub->kc = &kc->kc;
-			kc->kc.subtable = sub;
+		       kc != NULL; kc=(KernClass1 *) (kc->kc.next)) {
+		     if (kc->sli==kp->sli && kc->flags==kp->flags
+			 && kc->kc.subtable==NULL) {
+			sub=CreateSubtable(otl, sf);
+			sub->per_glyph_pst_or_kern=false;
+			sub->kc=&kc->kc;
+			kc->kc.subtable=sub;
 		     }
 		  }
 	       }
@@ -858,21 +858,21 @@ void SFD_AssignLookups(SplineFont1 * sf) {
 	 ++k;
       } while (k < sf->sf.subfontcnt);
       /* Or there might be a kerning class all by its lonesome */
-      for (kc = (KernClass1 *) (isv ? sf->sf.vkerns : sf->sf.kerns);
-	   kc != NULL; kc = (KernClass1 *) (kc->kc.next)) {
-	 if (kc->kc.subtable == NULL) {
+      for (kc=(KernClass1 *) (isv ? sf->sf.vkerns : sf->sf.kerns);
+	   kc != NULL; kc=(KernClass1 *) (kc->kc.next)) {
+	 if (kc->kc.subtable==NULL) {
 	    otl =
 	       CreateLookup(sf,
 			    isv ? CHR('v', 'k', 'r', 'n') : CHR('k', 'e', 'r',
 								'n'), kc->sli,
 			    kc->flags, pst_pair);
-	    for (kc2 = kc; kc2 != NULL; kc2 = (KernClass1 *) (kc2->kc.next)) {
-	       if (kc->sli == kc2->sli && kc->flags == kc2->flags
-		   && kc2->kc.subtable == NULL) {
-		  sub = CreateSubtable(otl, sf);
-		  sub->per_glyph_pst_or_kern = false;
-		  sub->kc = &kc2->kc;
-		  kc2->kc.subtable = sub;
+	    for (kc2=kc; kc2 != NULL; kc2=(KernClass1 *) (kc2->kc.next)) {
+	       if (kc->sli==kc2->sli && kc->flags==kc2->flags
+		   && kc2->kc.subtable==NULL) {
+		  sub=CreateSubtable(otl, sf);
+		  sub->per_glyph_pst_or_kern=false;
+		  sub->kc=&kc2->kc;
+		  kc2->kc.subtable=sub;
 	       }
 	    }
 	 }
@@ -882,35 +882,35 @@ void SFD_AssignLookups(SplineFont1 * sf) {
    /* Every FPST and ASM lives in its own lookup with one subtable */
    /* But the old format refered to nested lookups by tag, and now we refer */
    /*  to the lookup itself, so fix that up */
-   for (fpst = (FPST1 *) sf->sf.possub; fpst != NULL;
-	fpst = ((FPST1 *) fpst->fpst.next)) {
+   for (fpst=(FPST1 *) sf->sf.possub; fpst != NULL;
+	fpst=((FPST1 *) fpst->fpst.next)) {
       otl =
 	 CreateLookup(sf, fpst->tag, fpst->script_lang_index, fpst->flags,
 		      fpst->fpst.type);
-      sub = CreateSubtable(otl, sf);
-      sub->per_glyph_pst_or_kern = false;
-      sub->fpst = &fpst->fpst;
-      fpst->fpst.subtable = sub;
+      sub=CreateSubtable(otl, sf);
+      sub->per_glyph_pst_or_kern=false;
+      sub->fpst=&fpst->fpst;
+      fpst->fpst.subtable=sub;
       FPSTReplaceTagsWithLookups(&fpst->fpst, sf);
    }
-   for (sm = (ASM1 *) sf->sf.sm; sm != NULL; sm = ((ASM1 *) sm->sm.next)) {
-      otl = CreateMacLookup(sf, sm);
-      sub = CreateSubtable(otl, sf);
-      sub->per_glyph_pst_or_kern = false;
-      sub->sm = &sm->sm;
-      sm->sm.subtable = sub;
-      if (sm->sm.type == asm_context)
+   for (sm=(ASM1 *) sf->sf.sm; sm != NULL; sm=((ASM1 *) sm->sm.next)) {
+      otl=CreateMacLookup(sf, sm);
+      sub=CreateSubtable(otl, sf);
+      sub->per_glyph_pst_or_kern=false;
+      sub->sm=&sm->sm;
+      sm->sm.subtable=sub;
+      if (sm->sm.type==asm_context)
 	 ASMReplaceTagsWithLookups(&sm->sm, sf);
    }
 
    /* We retained the old nested feature tags so we could do the above conversion */
    /*  of tag to lookup. Get rid of them now */
-   for (isgpos = 0; isgpos < 2; ++isgpos) {
-      for (otl = isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups;
-	   otl != NULL; otl = otl->next) {
-	 if (otl->features != NULL && otl->features->scripts == NULL) {
+   for (isgpos=0; isgpos < 2; ++isgpos) {
+      for (otl=isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups;
+	   otl != NULL; otl=otl->next) {
+	 if (otl->features != NULL && otl->features->scripts==NULL) {
 	    chunkfree(otl->features, sizeof(FeatureScriptLangList));
-	    otl->features = NULL;
+	    otl->features=NULL;
 	 }
       }
    }
@@ -919,53 +919,53 @@ void SFD_AssignLookups(SplineFont1 * sf) {
    /*  between mark to base and mark to ligature classes. So one AC might have */
    /*  both. If so we need to turn it into two ACs, and have separate lookups */
    /*  for each */
-   for (ac = (AnchorClass1 *) (sf->sf.anchor); ac != NULL;
-	ac = (AnchorClass1 *) ac->ac.next) {
+   for (ac=(AnchorClass1 *) (sf->sf.anchor); ac != NULL;
+	ac=(AnchorClass1 *) ac->ac.next) {
       ACHasBaseLig(sf, ac);
       if (ac->has_ligatures && !ac->has_bases)
-	 ac->ac.type = act_mklg;
+	 ac->ac.type=act_mklg;
       else if (ac->has_ligatures && ac->has_bases)
 	 ACDisassociateLigatures(sf, ac);
    }
-   for (ac = (AnchorClass1 *) (sf->sf.anchor); ac != NULL;
-	ac = (AnchorClass1 *) ac->ac.next) {
-      if (ac->ac.subtable == NULL) {
-	 otl = CreateACLookup(sf, ac);
-	 sub = CreateSubtable(otl, sf);
-	 for (ac2 = ac; ac2 != NULL; ac2 = (AnchorClass1 *) ac2->ac.next) {
-	    if (ac2->feature_tag == ac->feature_tag &&
-		ac2->script_lang_index == ac->script_lang_index &&
-		ac2->flags == ac->flags &&
-		ac2->ac.type == ac->ac.type &&
-		ac2->merge_with == ac->merge_with)
-	       ac2->ac.subtable = sub;
+   for (ac=(AnchorClass1 *) (sf->sf.anchor); ac != NULL;
+	ac=(AnchorClass1 *) ac->ac.next) {
+      if (ac->ac.subtable==NULL) {
+	 otl=CreateACLookup(sf, ac);
+	 sub=CreateSubtable(otl, sf);
+	 for (ac2=ac; ac2 != NULL; ac2=(AnchorClass1 *) ac2->ac.next) {
+	    if (ac2->feature_tag==ac->feature_tag &&
+		ac2->script_lang_index==ac->script_lang_index &&
+		ac2->flags==ac->flags &&
+		ac2->ac.type==ac->ac.type &&
+		ac2->merge_with==ac->merge_with)
+	       ac2->ac.subtable=sub;
 	 }
       }
    }
 
    /* Now I want to order the gsub lookups. I shan't bother with the gpos */
    /*  lookups because I didn't before */
-   for (otl = sf->sf.gsub_lookups, cnt = 0; otl != NULL;
-	otl = otl->next, ++cnt);
+   for (otl=sf->sf.gsub_lookups, cnt=0; otl != NULL;
+	otl=otl->next, ++cnt);
    if (cnt != 0) {
-      all = malloc(cnt * sizeof(OTLookup *));
-      for (otl = sf->sf.gsub_lookups, cnt = 0; otl != NULL;
-	   otl = otl->next, ++cnt) {
-	 all[cnt] = otl;
-	 otl->lookup_index = GSubOrder(sf, otl->features);
+      all=malloc(cnt * sizeof(OTLookup *));
+      for (otl=sf->sf.gsub_lookups, cnt=0; otl != NULL;
+	   otl=otl->next, ++cnt) {
+	 all[cnt]=otl;
+	 otl->lookup_index=GSubOrder(sf, otl->features);
       }
       qsort(all, cnt, sizeof(OTLookup *), order_lookups);
-      sf->sf.gsub_lookups = all[0];
-      for (i = 1; i < cnt; ++i)
-	 all[i - 1]->next = all[i];
-      all[cnt - 1]->next = NULL;
+      sf->sf.gsub_lookups=all[0];
+      for (i=1; i < cnt; ++i)
+	 all[i - 1]->next=all[i];
+      all[cnt - 1]->next=NULL;
       free(all);
    }
 
-   for (isgpos = 0; isgpos < 2; ++isgpos) {
-      for (otl = isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups, cnt = 0;
-	   otl != NULL; otl = otl->next) {
-	 otl->lookup_index = cnt++;
+   for (isgpos=0; isgpos < 2; ++isgpos) {
+      for (otl=isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups, cnt=0;
+	   otl != NULL; otl=otl->next) {
+	 otl->lookup_index=cnt++;
 	 NameOTLookup(otl, &sf->sf);
       }
    }

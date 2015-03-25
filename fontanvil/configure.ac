@@ -454,16 +454,17 @@ AC_FUNC_MKTIME
 AC_FUNC_MMAP
 AC_FUNC_STRCOLL
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([alarm atexit dup2 endpwent])
-AC_CHECK_FUNCS([getcwd gethostbyname gettimeofday])
-AC_CHECK_FUNCS([mkdir munmap])
-AC_CHECK_FUNCS([nl_langinfo putenv rmdir])
-AC_CHECK_FUNCS([select setenv socket])
-AC_CHECK_FUNCS([strcasecmp strdup])
-AC_CHECK_FUNCS([strncasecmp])
-AC_CHECK_FUNCS([tzset uname])
+AC_CHECK_FUNCS([alarm atexit dup2 endpwent getcwd gethostbyname gettimeofday])
+AC_CHECK_FUNCS([mkdir munmap nl_langinfo putenv rmdir select])
+AC_CHECK_FUNCS([setenv socket strcasecmp strdup strncasecmp tzset uname])
 AC_CHECK_FUNC([tzset],[],
   [AC_DEFINE([_NO_TZSET],1,[Define if not using tzset.])])
+#
+AC_MSG_CHECKING([for isfinite])
+AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM([[#include <math.h>]],[[int x=isfinite(1.0);]])],
+  [AC_DEFINE([HAVE_ISFINITE],1,[Define if we have isfinite])
+   AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no])])
 #
 ############################################################################
 #

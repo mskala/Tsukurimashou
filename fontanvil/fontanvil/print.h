@@ -1,4 +1,4 @@
-/* $Id: print.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: print.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ extern int printtype;
 
 extern int use_gv;
 
-static const int printdpi = 600;
+static const int printdpi=600;
 
 enum printtype { pt_fontdisplay, pt_chars, pt_multisize, pt_fontsample };
 
@@ -55,7 +55,7 @@ struct sfbits {
    int *fonts;			/* An array of sf->charcnt/256 entries indicating */
    /* the font number of encodings on that page of   */
    /* the font. -1 => not mapped (no encodings) */
-   FILE *fontfile;
+   AFILE *fontfile;
    int cidcnt;
    unsigned int twobyte:1;
    unsigned int istype42cid:1;
@@ -76,7 +76,7 @@ typedef struct printinfo {
    int pointsize;
    int32 *pointsizes;
    int extrahspace, extravspace;
-   FILE *out;
+   AFILE *out;
    unsigned int showvm:1;
    unsigned int overflow:1;
    unsigned int done:1;

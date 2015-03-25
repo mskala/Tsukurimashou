@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: nonlineartrans.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 #   define _NONLINEARTRANS_H
 
 enum operator  {
-   op_base = 0x100,		/* Bigger than any character */
+   op_base=0x100,		/* Bigger than any character */
 
    op_x, op_y,			/* Returns current x & y values, no operands */
    op_value,			/* Returns a constant value */

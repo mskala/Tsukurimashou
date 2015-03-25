@@ -1,4 +1,4 @@
-/* $Id: mathconstants.c 2952 2014-03-15 17:28:24Z mskala $ */
+/* $Id: mathconstants.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 #define MCD(ui_name,name,msg,np) { ui_name, #name, offsetof(struct MATH,name), -1,msg,np }
 #define MCDD(ui_name,name,devtab_name,msg,np) { ui_name, #name, offsetof(struct MATH,name), offsetof(struct MATH,devtab_name),msg,np }
 
-struct math_constants_descriptor math_constants_descriptor[] = {
+struct math_constants_descriptor math_constants_descriptor[]={
    MCD(N_("ScriptPercentScaleDown:"), ScriptPercentScaleDown,
        N_("Percentage scale down for script level 1"), 0),
    MCD(N_("ScriptScriptPercentScaleDown:"), ScriptScriptPercentScaleDown,

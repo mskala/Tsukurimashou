@@ -1,4 +1,4 @@
-/* $Id: ttfinstrs.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: ttfinstrs.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2001-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 #include "ttf.h"
 #include "ttfinstrs.h"
 
-const char *ff_ttf_instrnames[] = {
+const char *ff_ttf_instrnames[]={
    "SVTCA[y-axis]",
    "SVTCA[x-axis]",
    "SPVTCA[y-axis]",
@@ -290,39 +290,39 @@ const char *ff_ttf_instrnames[] = {
    "MIRP1f"
 };
 
-uint8 *_IVParse(SplineFont * sf, char *text, int *len,
+uint8 *_IVParse(SplineFont *sf, char *text, int *len,
 		void (*IVError) (void *, char *, int), void *iv) {
    short numberstack[256];
 
-   int npos = 0, nread, i;
+   int npos=0, nread, i;
 
-   int push_left = 0, push_size = 0;
+   int push_left=0, push_size=0;
 
    char *pt;
 
    char *end, *bend, *brack;
 
-   int icnt = 0, imax = strlen(text) / 2, val, temp;
+   int icnt=0, imax=strlen(text) / 2, val, temp;
 
-   uint8 *instrs = malloc(imax);
+   uint8 *instrs=malloc(imax);
 
-   for (pt = text; *pt; ++pt) {
-      npos = 0;
+   for (pt=text; *pt; ++pt) {
+      npos=0;
       while (npos < 256) {
-	 while (*pt == ' ' || *pt == '\t')
+	 while (*pt==' ' || *pt=='\t')
 	    ++pt;
-	 if (isdigit(*pt) || *pt == '-') {
-	    val = strtol(pt, &end, 0);
+	 if (isdigit(*pt) || *pt=='-') {
+	    val=strtol(pt, &end, 0);
 	    if (val > 32767 || val < -32768) {
 	       IVError(iv, _("A value must be between [-32768,32767]"),
 		       pt - text);
 	       return (NULL);
 	    }
 
-	    pt = end;
+	    pt=end;
 
-	    if (*pt == '@') {	/* a delta control byte */
-	       if (val > 8 || val < -8 || val == 0) {
+	    if (*pt=='@') {	/* a delta control byte */
+	       if (val > 8 || val < -8 || val==0) {
 		  IVError(iv, _("A value must be between [-8,-1] or [1,8]"),
 			  pt - text);
 		  return (NULL);
@@ -335,8 +335,8 @@ uint8 *_IVParse(SplineFont * sf, char *text, int *len,
 		  return (NULL);
 	       }
 
-	       temp = val;
-	       val = strtol(pt, &end, 0);
+	       temp=val;
+	       val=strtol(pt, &end, 0);
 
 	       if (val > 15 || val < 0) {
 		  IVError(iv, _("A value must be between [0,15]"), pt - text);
@@ -349,13 +349,13 @@ uint8 *_IVParse(SplineFont * sf, char *text, int *len,
 	       else
 		  temp += 7;
 	       val += temp;
-	       pt = end;
+	       pt=end;
 	    }
 
-	    numberstack[npos++] = val;
-	 } else if (strnmatch(pt, "cvt", 3) == 0) {
+	    numberstack[npos++]=val;
+	 } else if (strnmatch(pt, "cvt", 3)==0) {
 	    pt += 3;
-	    while (*pt == ' ' || *pt == '\t')
+	    while (*pt==' ' || *pt=='\t')
 	       ++pt;
 	    if (*pt != '(') {
 	       IVError(iv,
@@ -364,9 +364,9 @@ uint8 *_IVParse(SplineFont * sf, char *text, int *len,
 		       pt - text);
 	       return (NULL);
 	    }
-	    temp = strtol(pt + 1, &end, 0);
-	    pt = end;
-	    while (*pt == ' ' || *pt == '\t')
+	    temp=strtol(pt + 1, &end, 0);
+	    pt=end;
+	    while (*pt==' ' || *pt=='\t')
 	       ++pt;
 	    if (*pt != ')') {
 	       IVError(iv,
@@ -374,19 +374,19 @@ uint8 *_IVParse(SplineFont * sf, char *text, int *len,
 		       pt - text);
 	       return (NULL);
 	    }
-	    numberstack[npos++] = TTF__getcvtval(sf, temp);
+	    numberstack[npos++]=TTF__getcvtval(sf, temp);
 	    ++pt;
 	 } else
 	    break;
       }
-      while (*pt == ' ' || *pt == '\t')
+      while (*pt==' ' || *pt=='\t')
 	 ++pt;
-      if (npos == 0 && (*pt == '\n' || *pt == '\0'))
+      if (npos==0 && (*pt=='\n' || *pt=='\0'))
 	 continue;
-      nread = 0;
-      if (push_left == -1) {
+      nread=0;
+      if (push_left==-1) {
 	 /* we need a push count */
-	 if (npos == 0)
+	 if (npos==0)
 	    IVError(iv, _("Expected a number for a push count"), pt - text);
 	 else if (numberstack[0] > 255 || numberstack[0] <= 0) {
 	    IVError(iv,
@@ -394,20 +394,20 @@ uint8 *_IVParse(SplineFont * sf, char *text, int *len,
 		    pt - text);
 	    return (NULL);
 	 } else {
-	    nread = 1;
-	    instrs[icnt++] = numberstack[0];
-	    push_left = numberstack[0];
+	    nread=1;
+	    instrs[icnt++]=numberstack[0];
+	    push_left=numberstack[0];
 	 }
       }
       if (push_left != 0 && push_left < npos - nread
-	  && (*pt == '\n' || *pt == '\0')) {
+	  && (*pt=='\n' || *pt=='\0')) {
 	 IVError(iv, _("More pushes specified than needed"), pt - text);
 	 return (NULL);
       }
       while (push_left > 0 && nread < npos) {
-	 if (push_size == 2) {
-	    instrs[icnt++] = numberstack[nread] >> 8;
-	    instrs[icnt++] = numberstack[nread++] & 0xff;
+	 if (push_size==2) {
+	    instrs[icnt++]=numberstack[nread] >> 8;
+	    instrs[icnt++]=numberstack[nread++] & 0xff;
 	 } else if (numberstack[0] > 255 || numberstack[0] < 0) {
 	    IVError(iv,
 		    _
@@ -415,61 +415,61 @@ uint8 *_IVParse(SplineFont * sf, char *text, int *len,
 		    pt - text);
 	    return (NULL);
 	 } else
-	    instrs[icnt++] = numberstack[nread++];
+	    instrs[icnt++]=numberstack[nread++];
 	 --push_left;
       }
-      if (nread < npos && push_left == 0 && (*pt == '\n' || *pt == '\0')) {
+      if (nread < npos && push_left==0 && (*pt=='\n' || *pt=='\0')) {
 	 IVError(iv, _("Unexpected number"), pt - text);
 	 return (NULL);
       }
-      if (*pt == '\n' || *pt == '\0')
+      if (*pt=='\n' || *pt=='\0')
 	 continue;
       if (push_left > 0) {
 	 IVError(iv, _("Missing pushes"), pt - text);
 	 return (NULL);
       }
       while (nread < npos) {
-	 i = nread;
+	 i=nread;
 	 if (numberstack[nread] >= 0 && numberstack[nread] <= 255) {
 	    while (i < npos && numberstack[i] >= 0 && numberstack[i] <= 255)
 	       ++i;
 	    if (i - nread <= 8)
-	       instrs[icnt++] = ttf_pushb + (i - nread) - 1;
+	       instrs[icnt++]=ttf_pushb + (i - nread) - 1;
 	    else {
-	       instrs[icnt++] = ttf_npushb;
-	       instrs[icnt++] = i - nread;
+	       instrs[icnt++]=ttf_npushb;
+	       instrs[icnt++]=i - nread;
 	    }
 	    while (nread < i)
-	       instrs[icnt++] = numberstack[nread++];
+	       instrs[icnt++]=numberstack[nread++];
 	 } else {
 	    while (i < npos && (numberstack[i] < 0 || numberstack[i] > 255))
 	       ++i;
 	    if (i - nread <= 8)
-	       instrs[icnt++] = ttf_pushw + (i - nread) - 1;
+	       instrs[icnt++]=ttf_pushw + (i - nread) - 1;
 	    else {
-	       instrs[icnt++] = ttf_npushw;
-	       instrs[icnt++] = i - nread;
+	       instrs[icnt++]=ttf_npushw;
+	       instrs[icnt++]=i - nread;
 	    }
 	    while (nread < i) {
-	       instrs[icnt++] = numberstack[nread] >> 8;
-	       instrs[icnt++] = numberstack[nread++] & 0xff;
+	       instrs[icnt++]=numberstack[nread] >> 8;
+	       instrs[icnt++]=numberstack[nread++] & 0xff;
 	    }
 	 }
       }
-      brack = NULL;
-      for (end = pt; *end != '\n' && *end != ' ' && *end != '\0'; ++end)
-	 if (*end == '[' || *end == '_')
-	    brack = end;
-      for (i = 0; i < 256; ++i)
-	 if (strnmatch(pt, ff_ttf_instrnames[i], end - pt) == 0
-	     && end - pt == strlen(ff_ttf_instrnames[i]))
+      brack=NULL;
+      for (end=pt; *end != '\n' && *end != ' ' && *end != '\0'; ++end)
+	 if (*end=='[' || *end=='_')
+	    brack=end;
+      for (i=0; i < 256; ++i)
+	 if (strnmatch(pt, ff_ttf_instrnames[i], end - pt)==0
+	     && end - pt==strlen(ff_ttf_instrnames[i]))
 	    break;
-      if (i == 256 && brack != NULL) {
-	 for (i = 0; i < 256; ++i)
-	    if (strnmatch(pt, ff_ttf_instrnames[i], brack - pt + 1) == 0)
+      if (i==256 && brack != NULL) {
+	 for (i=0; i < 256; ++i)
+	    if (strnmatch(pt, ff_ttf_instrnames[i], brack - pt + 1)==0)
 	       break;
-	 val = strtol(brack + 1, &bend, 2);	/* Stuff in brackets should be in binary */
-	 while (*bend == ' ' || *bend == '\t')
+	 val=strtol(brack + 1, &bend, 2);	/* Stuff in brackets should be in binary */
+	 while (*bend==' ' || *bend=='\t')
 	    ++bend;
 	 if (*bend != ']') {
 	    IVError(iv,
@@ -484,73 +484,73 @@ uint8 *_IVParse(SplineFont * sf, char *text, int *len,
 	 }
 	 i += val;
       }
-      pt = end;
-      instrs[icnt++] = i;
-      if (i == ttf_npushb || i == ttf_npushw
+      pt=end;
+      instrs[icnt++]=i;
+      if (i==ttf_npushb || i==ttf_npushw
 	  || (i >= ttf_pushb && i <= ttf_pushw + 7)) {
-	 push_size = (i == ttf_npushb
+	 push_size=(i==ttf_npushb
 		      || (i >= ttf_pushb && i <= ttf_pushb + 7)) ? 1 : 2;
-	 if (i == ttf_npushb || i == ttf_npushw)
-	    push_left = -1;
+	 if (i==ttf_npushb || i==ttf_npushw)
+	    push_left=-1;
 	 else if (i >= ttf_pushb && i <= ttf_pushb + 7)
-	    push_left = i - ttf_pushb + 1;
+	    push_left=i - ttf_pushb + 1;
 	 else
-	    push_left = i - ttf_pushw + 1;
+	    push_left=i - ttf_pushw + 1;
       }
-      if (*pt == '\0')
+      if (*pt=='\0')
 	 break;
    }
-   *len = icnt;
-   return (realloc(instrs, icnt == 0 ? 1 : icnt));	/* some versions of realloc abort on 0 */
+   *len=icnt;
+   return (realloc(instrs, icnt==0 ? 1 : icnt));	/* some versions of realloc abort on 0 */
 }
 
 int instr_typify(struct instrdata *id) {
-   int i, len = id->instr_cnt, cnt, j, lh;
+   int i, len=id->instr_cnt, cnt, j, lh;
 
-   uint8 *instrs = id->instrs;
+   uint8 *instrs=id->instrs;
 
    uint8 *bts;
 
-   if (id->bts == NULL)
-      id->bts = malloc(len + 1);
-   bts = id->bts;
-   for (i = lh = 0; i < len; ++i) {
-      bts[i] = bt_instr;
+   if (id->bts==NULL)
+      id->bts=malloc(len + 1);
+   bts=id->bts;
+   for (i=lh=0; i < len; ++i) {
+      bts[i]=bt_instr;
       ++lh;
-      if (instrs[i] == ttf_npushb) {
+      if (instrs[i]==ttf_npushb) {
 	 /* NPUSHB */
-	 bts[++i] = bt_cnt;
-	 cnt = instrs[i];
-	 for (j = 0; j < cnt; ++j)
-	    bts[++i] = bt_byte;
+	 bts[++i]=bt_cnt;
+	 cnt=instrs[i];
+	 for (j=0; j < cnt; ++j)
+	    bts[++i]=bt_byte;
 	 lh += 1 + cnt;
-      } else if (instrs[i] == ttf_npushw) {
+      } else if (instrs[i]==ttf_npushw) {
 	 /* NPUSHW */
-	 bts[++i] = bt_cnt;
+	 bts[++i]=bt_cnt;
 	 ++lh;
-	 cnt = instrs[i];
-	 for (j = 0; j < cnt; ++j) {
-	    bts[++i] = bt_wordhi;
-	    bts[++i] = bt_wordlo;
+	 cnt=instrs[i];
+	 for (j=0; j < cnt; ++j) {
+	    bts[++i]=bt_wordhi;
+	    bts[++i]=bt_wordlo;
 	 }
 	 lh += 1 + cnt;
-      } else if ((instrs[i] & 0xf8) == 0xb0) {
+      } else if ((instrs[i] & 0xf8)==0xb0) {
 	 /* PUSHB[n] */
-	 cnt = (instrs[i] & 7) + 1;
-	 for (j = 0; j < cnt; ++j)
-	    bts[++i] = bt_byte;
+	 cnt=(instrs[i] & 7) + 1;
+	 for (j=0; j < cnt; ++j)
+	    bts[++i]=bt_byte;
 	 lh += cnt;
-      } else if ((instrs[i] & 0xf8) == 0xb8) {
+      } else if ((instrs[i] & 0xf8)==0xb8) {
 	 /* PUSHW[n] */
-	 cnt = (instrs[i] & 7) + 1;
-	 for (j = 0; j < cnt; ++j) {
-	    bts[++i] = bt_wordhi;
-	    bts[++i] = bt_wordlo;
+	 cnt=(instrs[i] & 7) + 1;
+	 for (j=0; j < cnt; ++j) {
+	    bts[++i]=bt_wordhi;
+	    bts[++i]=bt_wordlo;
 	 }
 	 lh += cnt;
       }
    }
-   bts[i] = bt_impliedreturn;
+   bts[i]=bt_impliedreturn;
    return (lh);
 }
 
@@ -559,29 +559,29 @@ char *__IVUnParseInstrs(InstrBase * iv) {
 
    int i, l;
 
-   pt = ubuf = iv->offset = iv->scroll =
+   pt=ubuf=iv->offset=iv->scroll =
       malloc((iv->instrdata->instr_cnt * 20 + 1));
-   for (i = l = 0; i < iv->instrdata->instr_cnt; ++i) {
-      if (iv->lpos == l)
-	 iv->scroll = pt;
-      if (iv->isel_pos == l)
-	 iv->offset = pt;
-      if (iv->instrdata->bts[i] == bt_wordhi) {
+   for (i=l=0; i < iv->instrdata->instr_cnt; ++i) {
+      if (iv->lpos==l)
+	 iv->scroll=pt;
+      if (iv->isel_pos==l)
+	 iv->offset=pt;
+      if (iv->instrdata->bts[i]==bt_wordhi) {
 	 sprintf(pt, " %d",
 		 (short) ((iv->instrdata->instrs[i] << 8) | iv->instrdata->
 			  instrs[i + 1]));
 	 ++i;
-      } else if (iv->instrdata->bts[i] == bt_cnt
-		 || iv->instrdata->bts[i] == bt_byte) {
+      } else if (iv->instrdata->bts[i]==bt_cnt
+		 || iv->instrdata->bts[i]==bt_byte) {
 	 sprintf(pt, " %d", iv->instrdata->instrs[i]);
       } else {
 	 strcpy(pt, ff_ttf_instrnames[iv->instrdata->instrs[i]]);
       }
       pt += strlen(pt);
-      *pt++ = '\n';
+      *pt++='\n';
       ++l;
    }
-   *pt = '\0';
+   *pt='\0';
    return (ubuf);
 }
 
@@ -594,11 +594,11 @@ char *_IVUnParseInstrs(uint8 * instrs, int instr_cnt) {
 
    memset(&iv, 0, sizeof(iv));
    memset(&id, 0, sizeof(id));
-   iv.instrdata = &id;
-   id.instr_cnt = instr_cnt;
-   id.instrs = instrs;
+   iv.instrdata=&id;
+   id.instr_cnt=instr_cnt;
+   id.instrs=instrs;
    instr_typify(&id);
-   ret = __IVUnParseInstrs(&iv);
+   ret=__IVUnParseInstrs(&iv);
    free(id.bts);
    return (ret);
 }

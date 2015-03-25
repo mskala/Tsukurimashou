@@ -1,12 +1,12 @@
-/* $Id: crctab.c 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: crctab.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* GWW: taken from http://www.ctan.org/tex-archive/tools/macutils/crc/ */
 /*  This is the output (slightly modified) of makecrc for the binhex case */
 
 extern unsigned long binhex_crc(unsigned char *buffer, int size);
 
-static const unsigned long binhex_crcinit = 0;
+static const unsigned long binhex_crcinit=0;
 
-static unsigned short crctab[256] = {
+static unsigned short crctab[256]={
    0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
    0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
    0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6,
@@ -41,7 +41,7 @@ static unsigned short crctab[256] = {
    0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0,
 };
 
-static unsigned long binhex_updcrc(icrc, icp, icnt)
+static unsigned long binhex_updcrc(icrc,icp,icnt)
      unsigned long icrc;
 
      unsigned char *icp;
@@ -50,14 +50,14 @@ static unsigned long binhex_updcrc(icrc, icp, icnt)
 {
 #define M1 0xff
 #define M2 0xff00
-   register unsigned long crc = icrc;
+   register unsigned long crc=icrc;
 
-   register unsigned char *cp = icp;
+   register unsigned char *cp=icp;
 
-   register int cnt = icnt;
+   register int cnt=icnt;
 
    while (cnt--) {
-      crc = ((crc << 8) & M2) ^ crctab[((crc >> 8) & 0xff) ^ *cp++];
+      crc=((crc << 8) & M2) ^ crctab[((crc >> 8) & 0xff) ^ *cp++];
    }
 
    return (crc);

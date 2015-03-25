@@ -1,4 +1,4 @@
-/* $Id: ttf.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: ttf.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2001-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -333,7 +333,7 @@ struct taboff {
    uint32 checksum;		/* for table */
    uint32 offset;		/* to start of table in file */
    uint32 length;
-   FILE *data;
+   AFILE *data;
    uint16 dup_of;
    uint16 orderingval;
 };
@@ -480,26 +480,26 @@ struct os2 {
    int16 yStrikeoutPos;		/* 530/2048 *emsize */
    int16 sFamilyClass;		/* ??? 0 */
    /* high order byte is the "class", low order byte the sub class */
-   /* class = 0 => no classification */
-   /* class = 1 => old style serifs */
+   /* class=0 => no classification */
+   /* class=1 => old style serifs */
    /*      subclass 0, no class; 1 ibm rounded; 2 garalde; 3 venetian; 4 mod venitian; 5 dutch modern; 6 dutch trad; 7 contemporary; 8 caligraphic; 15 misc */
-   /* class = 2 => transitional serifs */
+   /* class=2 => transitional serifs */
    /*      subclass 0, no class; 1 drect line; 2 script; 15 misc */
-   /* class = 3 => modern serifs */
+   /* class=3 => modern serifs */
    /*      subclass: 1, italian; 2, script */
-   /* class = 4 => clarendon serifs */
+   /* class=4 => clarendon serifs */
    /*      subclass: 1, clarendon; 2, modern; 3 trad; 4 newspaper; 5 stub; 6 monotone; 7 typewriter */
-   /* class = 5 => slab serifs */
+   /* class=5 => slab serifs */
    /*      subclass: 1, monotone; 2, humanist; 3 geometric; 4 swiss; 5 typewriter */
-   /* class = 7 => freeform serifs */
+   /* class=7 => freeform serifs */
    /*      subclass: 1, modern */
-   /* class = 8 => sans serif */
+   /* class=8 => sans serif */
    /*      subclass: 1, ibm neogrotesque; 2 humanist; 3 low-x rounded; 4 high-x rounded; 5 neo-grotesque; 6 mod neo-grot; 9 typewriter; 10 matrix */
-   /* class = 9 => ornamentals */
+   /* class=9 => ornamentals */
    /*      subclass: 1, engraver; 2 black letter; 3 decorative; 4 3D */
-   /* class = 10 => scripts */
+   /* class=10 => scripts */
    /*      subclass: 1, uncial; 2 brush joined; 3 formal joined; 4 monotone joined; 5 calligraphic; 6 brush unjoined; 7 formal unjoined; 8 monotone unjoined */
-   /* class = 12 => symbolic */
+   /* class=12 => symbolic */
    /*      subclass: 3 mixed serif; 6 old style serif; 7 neo-grotesque sans; */
    char panose[10];		/* can be set to zero */
    uint32 unicoderange[4];
@@ -552,10 +552,10 @@ struct post {
 struct glyphinfo {
    struct maxp *maxp;		/* this one is given to dumpglyphs, rest blank */
    uint32 *loca;
-   FILE *glyphs;
-   FILE *hmtx;
+   AFILE *glyphs;
+   AFILE *hmtx;
    int hmtxlen;
-   FILE *vmtx;
+   AFILE *vmtx;
    int vmtxlen;
    int next_glyph;
    int glyph_len;
@@ -605,98 +605,98 @@ struct alltabs {
    struct maxp maxp;
    struct os2 os2;
    struct vorg vorg;
-   FILE *loca;
+   AFILE *loca;
    int localen;
-   FILE *name;
+   AFILE *name;
    int namelen;
-   FILE *post;
+   AFILE *post;
    int postlen;
-   FILE *gpos;			/* Used instead of kern for opentype (and other glyph positioning) */
+   AFILE *gpos;			/* Used instead of kern for opentype (and other glyph positioning) */
    int gposlen;
-   FILE *gsub;			/* Used for ligatures and other substitutions */
+   AFILE *gsub;			/* Used for ligatures and other substitutions */
    int gsublen;
-   FILE *gdef;			/* If we use mark to base we need this to tell the text processor what things are marks (the opentype docs say it is optional. They are wrong) */
+   AFILE *gdef;			/* If we use mark to base we need this to tell the text processor what things are marks (the opentype docs say it is optional. They are wrong) */
    int gdeflen;
-   FILE *kern;
+   AFILE *kern;
    int kernlen;
-   FILE *cmap;
+   AFILE *cmap;
    int cmaplen;
-   FILE *headf;
+   AFILE *headf;
    int headlen;
-   FILE *hheadf;
+   AFILE *hheadf;
    int hheadlen;
-   FILE *maxpf;
+   AFILE *maxpf;
    int maxplen;
-   FILE *os2f;
+   AFILE *os2f;
    int os2len;
-   FILE *math;
+   AFILE *math;
    int mathlen;
-   FILE *base;
+   AFILE *base;
    int baselen;
-   FILE *jstf;
+   AFILE *jstf;
    int jstflen;
-   FILE *cvtf;
+   AFILE *cvtf;
    int cvtlen;
-   FILE *fpgmf;			/* Copied from an original ttf file and dumped out. Never generated */
+   AFILE *fpgmf;			/* Copied from an original ttf file and dumped out. Never generated */
    int fpgmlen;
-   FILE *prepf;			/* Copied from an original ttf file and dumped out. Never generated */
+   AFILE *prepf;			/* Copied from an original ttf file and dumped out. Never generated */
    int preplen;
-   FILE *vheadf;
+   AFILE *vheadf;
    int vheadlen;
-   FILE *vorgf;
+   AFILE *vorgf;
    int vorglen;
-   FILE *gaspf;
+   AFILE *gaspf;
    int gasplen;
-   FILE *cfff;
+   AFILE *cfff;
    int cfflen;
-   FILE *sidf;
-   FILE *sidh;
-   FILE *charset;
-   FILE *encoding;
-   FILE *globalsubrs;
-   FILE *private;
-   FILE *charstrings;
-   FILE *fdselect;
-   FILE *fdarray;
-   FILE *bdat;			/* might be EBDT */
+   AFILE *sidf;
+   AFILE *sidh;
+   AFILE *charset;
+   AFILE *encoding;
+   AFILE *globalsubrs;
+   AFILE *private;
+   AFILE *charstrings;
+   AFILE *fdselect;
+   AFILE *fdarray;
+   AFILE *bdat;			/* might be EBDT */
    int bdatlen;
-   FILE *bloc;			/* might be EBLC */
+   AFILE *bloc;			/* might be EBLC */
    int bloclen;
-   FILE *ebsc;
+   AFILE *ebsc;
    int ebsclen;
-   FILE *prop;
+   AFILE *prop;
    int proplen;
-   FILE *opbd;
+   AFILE *opbd;
    int opbdlen;
-   FILE *acnt;
+   AFILE *acnt;
    int acntlen;
-   FILE *lcar;
+   AFILE *lcar;
    int lcarlen;
-   FILE *feat;
+   AFILE *feat;
    int featlen;
-   FILE *morx;
+   AFILE *morx;
    int morxlen;
-   FILE *bsln;
+   AFILE *bsln;
    int bslnlen;
-   FILE *pfed;
+   AFILE *pfed;
    int pfedlen;
-   FILE *tex;
+   AFILE *tex;
    int texlen;
-   FILE *bdf;
+   AFILE *bdf;
    int bdflen;
-   FILE *gvar;
+   AFILE *gvar;
    int gvarlen;
-   FILE *fvar;
+   AFILE *fvar;
    int fvarlen;
-   FILE *cvar;
+   AFILE *cvar;
    int cvarlen;
-   FILE *avar;
+   AFILE *avar;
    int avarlen;
-   FILE *fftmf;
+   AFILE *fftmf;
    int fftmlen;
-   FILE *dsigf;
+   AFILE *dsigf;
    int dsiglen;
-   FILE *hdmxf;
+   AFILE *hdmxf;
    int hdmxlen;
    int defwid, nomwid;
    int sidcnt;
@@ -736,8 +736,8 @@ struct subhead {
    uint16 first, cnt, delta, rangeoff;
 };				/* a sub header in 8/16 cmap table */
 
-enum touchflags { tf_x = 1, tf_y = 2, tf_d = 4, tf_endcontour =
-      0x80, tf_startcontour = 0x40 };
+enum touchflags { tf_x=1, tf_y=2, tf_d=4, tf_endcontour =
+      0x80, tf_startcontour=0x40 };
 
 struct ct_branch {
    uint16 classnum;
@@ -792,52 +792,52 @@ extern const char *cffnames[];
 extern const int nStdStrings;
 
     /* Open type Advanced Typography Tables */
-extern void otf_dumpgpos(struct alltabs *at, SplineFont * sf);
+extern void otf_dumpgpos(struct alltabs *at, SplineFont *sf);
 
-extern void otf_dumpgsub(struct alltabs *at, SplineFont * sf);
+extern void otf_dumpgsub(struct alltabs *at, SplineFont *sf);
 
-extern void otf_dumpgdef(struct alltabs *at, SplineFont * sf);
+extern void otf_dumpgdef(struct alltabs *at, SplineFont *sf);
 
-extern void otf_dumpbase(struct alltabs *at, SplineFont * sf);
+extern void otf_dumpbase(struct alltabs *at, SplineFont *sf);
 
-extern void otf_dumpjstf(struct alltabs *at, SplineFont * sf);
+extern void otf_dumpjstf(struct alltabs *at, SplineFont *sf);
 
-extern void otf_dump_dummydsig(struct alltabs *at, SplineFont * sf);
+extern void otf_dump_dummydsig(struct alltabs *at, SplineFont *sf);
 
 extern int gdefclass(SplineChar * sc);
 
     /* Apple Advanced Typography Tables */
-extern void aat_dumpacnt(struct alltabs *at, SplineFont * sf);
+extern void aat_dumpacnt(struct alltabs *at, SplineFont *sf);
 
-extern void ttf_dumpkerns(struct alltabs *at, SplineFont * sf);
+extern void ttf_dumpkerns(struct alltabs *at, SplineFont *sf);
 
-extern void aat_dumplcar(struct alltabs *at, SplineFont * sf);
+extern void aat_dumplcar(struct alltabs *at, SplineFont *sf);
 
-extern void aat_dumpmorx(struct alltabs *at, SplineFont * sf);
+extern void aat_dumpmorx(struct alltabs *at, SplineFont *sf);
 
-extern void aat_dumpopbd(struct alltabs *at, SplineFont * sf);
+extern void aat_dumpopbd(struct alltabs *at, SplineFont *sf);
 
-extern void aat_dumpprop(struct alltabs *at, SplineFont * sf);
+extern void aat_dumpprop(struct alltabs *at, SplineFont *sf);
 
-extern void aat_dumpbsln(struct alltabs *at, SplineFont * sf);
+extern void aat_dumpbsln(struct alltabs *at, SplineFont *sf);
 
 extern int LookupHasDefault(OTLookup * otl);
 
 extern int scriptsHaveDefault(struct scriptlanglist *sl);
 
-extern int FPSTisMacable(SplineFont * sf, FPST * fpst);
+extern int FPSTisMacable(SplineFont *sf, FPST * fpst);
 
 extern uint32 MacFeatureToOTTag(int featureType, int featureSetting);
 
 extern int OTTagToMacFeature(uint32 tag, int *featureType,
 			     int *featureSetting);
-extern uint16 *props_array(SplineFont * sf, struct glyphinfo *gi);
+extern uint16 *props_array(SplineFont *sf, struct glyphinfo *gi);
 
 extern int haslrbounds(SplineChar * sc, PST ** left, PST ** right);
 
-extern int16 *PerGlyphDefBaseline(SplineFont * sf, int *def_baseline);
+extern int16 *PerGlyphDefBaseline(SplineFont *sf, int *def_baseline);
 
-extern void FigureBaseOffsets(SplineFont * sf, int def_bsln, int offsets[32]);
+extern void FigureBaseOffsets(SplineFont *sf, int def_bsln, int offsets[32]);
 
     /* Apple variation tables */
 extern int ContourPtNumMatch(MMSet * mm, int gid);
@@ -846,7 +846,7 @@ extern int16 **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt);
 
 extern int16 **CvtFindDeltas(MMSet * mm, int *_ptcnt);
 
-extern void ttf_dumpvariations(struct alltabs *at, SplineFont * sf);
+extern void ttf_dumpvariations(struct alltabs *at, SplineFont *sf);
 
 extern struct macsettingname {
    int mac_feature_type;
@@ -855,7 +855,7 @@ extern struct macsettingname {
 } macfeat_otftag[], *user_macfeat_otftag;
 
     /* TrueType instructions */
-extern struct ttf_table *SFFindTable(SplineFont * sf, uint32 tag);
+extern struct ttf_table *SFFindTable(SplineFont *sf, uint32 tag);
 
 extern int32 memlong(uint8 * data, int table_len, int offset);
 
@@ -863,30 +863,30 @@ extern int memushort(uint8 * data, int table_len, int offset);
 
 extern void memputshort(uint8 * data, int offset, uint16 val);
 
-extern int TTF__getcvtval(SplineFont * sf, int val);
+extern int TTF__getcvtval(SplineFont *sf, int val);
 
-extern int TTF_getcvtval(SplineFont * sf, int val);
+extern int TTF_getcvtval(SplineFont *sf, int val);
 
 extern void SCinitforinstrs(SplineChar * sc);
 
 extern int SSAddPoints(SplineSet * ss, int ptcnt, BasePoint * bp,
 		       char *flags);
-extern int Macable(SplineFont * sf, OTLookup * otl);
+extern int Macable(SplineFont *sf, OTLookup * otl);
 
     /* Used by both otf and apple */
 extern int LigCaretCnt(SplineChar * sc);
 
-extern uint16 *ClassesFromNames(SplineFont * sf, char **classnames,
+extern uint16 *ClassesFromNames(SplineFont *sf, char **classnames,
 				int class_cnt, int numGlyphs,
 				SplineChar *** glyphs, int apple_kc);
-extern SplineChar **SFGlyphsFromNames(SplineFont * sf, char *names);
+extern SplineChar **SFGlyphsFromNames(SplineFont *sf, char *names);
 
 
-extern void AnchorClassOrder(SplineFont * sf);
+extern void AnchorClassOrder(SplineFont *sf);
 
-extern SplineChar **EntryExitDecompose(SplineFont * sf, AnchorClass * ac,
+extern SplineChar **EntryExitDecompose(SplineFont *sf, AnchorClass * ac,
 				       struct glyphinfo *gi);
-extern void AnchorClassDecompose(SplineFont * sf, AnchorClass * _ac,
+extern void AnchorClassDecompose(SplineFont *sf, AnchorClass * _ac,
 				 int classcnt, int *subcnts,
 				 SplineChar *** marks, SplineChar *** base,
 				 SplineChar *** lig, SplineChar *** mkmk,
@@ -897,66 +897,66 @@ extern void cvt_unix_to_1904(long long time, int32 result[2]);
 
     /* Non-standard tables */
 	/* My PfEd table for FontAnvil/PfaEdit specific info */
-extern void pfed_dump(struct alltabs *at, SplineFont * sf);
+extern void pfed_dump(struct alltabs *at, SplineFont *sf);
 
-extern void pfed_read(FILE * ttf, struct ttfinfo *info);
+extern void pfed_read(AFILE *ttf, struct ttfinfo *info);
 
 	/* The TeX table, to contain stuff the TeX people want */
-extern void tex_dump(struct alltabs *at, SplineFont * sf);
+extern void tex_dump(struct alltabs *at, SplineFont *sf);
 
-extern void tex_read(FILE * ttf, struct ttfinfo *info);
+extern void tex_read(AFILE *ttf, struct ttfinfo *info);
 
 	/* The BDF table, to contain bdf properties the X people want */
-extern int ttf_bdf_dump(SplineFont * sf, struct alltabs *at, int32 * sizes);
+extern int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32 * sizes);
 
-extern void ttf_bdf_read(FILE * ttf, struct ttfinfo *info);
+extern void ttf_bdf_read(AFILE *ttf, struct ttfinfo *info);
 
 	/* The FFTM table, to some timestamps I'd like */
-extern int ttf_fftm_dump(SplineFont * sf, struct alltabs *at);
+extern int ttf_fftm_dump(SplineFont *sf, struct alltabs *at);
 
     /* The MATH table */
-extern void otf_dump_math(struct alltabs *at, SplineFont * sf);
+extern void otf_dump_math(struct alltabs *at, SplineFont *sf);
 
-extern void otf_read_math(FILE * ttf, struct ttfinfo *info);
+extern void otf_read_math(AFILE *ttf, struct ttfinfo *info);
 
-extern void otf_read_math_used(FILE * ttf, struct ttfinfo *info);
+extern void otf_read_math_used(AFILE *ttf, struct ttfinfo *info);
 
-extern void GuessNamesFromMATH(FILE * ttf, struct ttfinfo *info);
+extern void GuessNamesFromMATH(AFILE *ttf, struct ttfinfo *info);
 
     /* Parsing advanced typography */
-extern void readmacfeaturemap(FILE * ttf, struct ttfinfo *info);
+extern void readmacfeaturemap(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfkerns(FILE * ttf, struct ttfinfo *info);
+extern void readttfkerns(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfmort(FILE * ttf, struct ttfinfo *info);
+extern void readttfmort(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfmort_glyphsused(FILE * ttf, struct ttfinfo *info);
+extern void readttfmort_glyphsused(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfopbd(FILE * ttf, struct ttfinfo *info);
+extern void readttfopbd(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttflcar(FILE * ttf, struct ttfinfo *info);
+extern void readttflcar(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfprop(FILE * ttf, struct ttfinfo *info);
+extern void readttfprop(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfbsln(FILE * ttf, struct ttfinfo *info);
+extern void readttfbsln(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfgsubUsed(FILE * ttf, struct ttfinfo *info);
+extern void readttfgsubUsed(AFILE *ttf, struct ttfinfo *info);
 
-extern void GuessNamesFromGSUB(FILE * ttf, struct ttfinfo *info);
+extern void GuessNamesFromGSUB(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfgpossub(FILE * ttf, struct ttfinfo *info, int gpos);
+extern void readttfgpossub(AFILE *ttf, struct ttfinfo *info, int gpos);
 
-extern void readttfgdef(FILE * ttf, struct ttfinfo *info);
+extern void readttfgdef(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfbase(FILE * ttf, struct ttfinfo *info);
+extern void readttfbase(AFILE *ttf, struct ttfinfo *info);
 
-extern void readttfjstf(FILE * ttf, struct ttfinfo *info);
+extern void readttfjstf(AFILE *ttf, struct ttfinfo *info);
 
 extern void VariationFree(struct ttfinfo *info);
 
-extern void readttfvariations(struct ttfinfo *info, FILE * ttf);
+extern void readttfvariations(struct ttfinfo *info, AFILE *ttf);
 
-extern struct otfname *FindAllLangEntries(FILE * ttf, struct ttfinfo *info,
+extern struct otfname *FindAllLangEntries(AFILE *ttf, struct ttfinfo *info,
 					  int id);
 
 /* Known font parameters for 'TeX ' table (fontdims, spacing params, whatever you want to call them) */
@@ -995,4 +995,4 @@ extern struct otfname *FindAllLangEntries(FILE * ttf, struct ttfinfo *info,
 #define TeX_BigOpSpace4		CHR('B','O','S','4')
 #define TeX_BigOpSpace5		CHR('B','O','S','5')
 
-extern void SFDummyUpCIDs(struct glyphinfo *gi, SplineFont * sf);
+extern void SFDummyUpCIDs(struct glyphinfo *gi, SplineFont *sf);

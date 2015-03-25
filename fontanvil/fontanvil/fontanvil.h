@@ -1,4 +1,4 @@
-/* $Id: fontanvil.h 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: fontanvil.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 #   include "splinefont.h"
 #   include "uiinterface.h"
 
-static const int unicode4_size = 17 * 65536;
+static const int unicode4_size=17 *65536;
     /* Unicode goes up to 0x10ffff */
 
 extern char *AdobeStandardEncoding[256];

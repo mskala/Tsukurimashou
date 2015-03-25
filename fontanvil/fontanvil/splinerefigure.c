@@ -1,4 +1,4 @@
-/* $Id: splinerefigure.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: splinerefigure.c 3858 2015-03-25 13:49:37Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -37,77 +37,77 @@
 /*  side effects. An error on the order of 7e-8 in splines[1].b caused */
 /*  the rasterizer to have kaniptions */
 void SplineRefigure3(Spline * spline) {
-   SplinePoint *from = spline->from, *to = spline->to;
+   SplinePoint *from=spline->from, *to=spline->to;
 
-   Spline1D *xsp = &spline->splines[0], *ysp = &spline->splines[1];
+   Spline1D *xsp=&spline->splines[0], *ysp=&spline->splines[1];
 
    Spline old;
 
-   spline->isquadratic = false;
+   spline->isquadratic=false;
    if (spline->acceptableextrema)
-      old = *spline;
-   xsp->d = from->me.x;
-   ysp->d = from->me.y;
+      old=*spline;
+   xsp->d=from->me.x;
+   ysp->d=from->me.y;
    if (from->nonextcp)
-      from->nextcp = from->me;
-   else if (from->nextcp.x == from->me.x && from->nextcp.y == from->me.y)
-      from->nonextcp = true;
+      from->nextcp=from->me;
+   else if (from->nextcp.x==from->me.x && from->nextcp.y==from->me.y)
+      from->nonextcp=true;
    if (to->noprevcp)
-      to->prevcp = to->me;
-   else if (to->prevcp.x == to->me.x && to->prevcp.y == to->me.y)
-      to->noprevcp = true;
+      to->prevcp=to->me;
+   else if (to->prevcp.x==to->me.x && to->prevcp.y==to->me.y)
+      to->noprevcp=true;
    if (from->nonextcp && to->noprevcp) {
-      spline->islinear = true;
-      xsp->c = to->me.x - from->me.x;
-      ysp->c = to->me.y - from->me.y;
-      xsp->a = xsp->b = 0;
-      ysp->a = ysp->b = 0;
+      spline->islinear=true;
+      xsp->c=to->me.x - from->me.x;
+      ysp->c=to->me.y - from->me.y;
+      xsp->a=xsp->b=0;
+      ysp->a=ysp->b=0;
    } else {
       /* from p. 393 (Operator Details, curveto) PostScript Lang. Ref. Man. (Red book) */
-      xsp->c = 3 * (from->nextcp.x - from->me.x);
-      ysp->c = 3 * (from->nextcp.y - from->me.y);
-      xsp->b = 3 * (to->prevcp.x - from->nextcp.x) - xsp->c;
-      ysp->b = 3 * (to->prevcp.y - from->nextcp.y) - ysp->c;
-      xsp->a = to->me.x - from->me.x - xsp->c - xsp->b;
-      ysp->a = to->me.y - from->me.y - ysp->c - ysp->b;
+      xsp->c=3 * (from->nextcp.x - from->me.x);
+      ysp->c=3 * (from->nextcp.y - from->me.y);
+      xsp->b=3 * (to->prevcp.x - from->nextcp.x) - xsp->c;
+      ysp->b=3 * (to->prevcp.y - from->nextcp.y) - ysp->c;
+      xsp->a=to->me.x - from->me.x - xsp->c - xsp->b;
+      ysp->a=to->me.y - from->me.y - ysp->c - ysp->b;
       if (RealNear(xsp->c, 0))
-	 xsp->c = 0;
+	 xsp->c=0;
       if (RealNear(ysp->c, 0))
-	 ysp->c = 0;
+	 ysp->c=0;
       if (RealNear(xsp->b, 0))
-	 xsp->b = 0;
+	 xsp->b=0;
       if (RealNear(ysp->b, 0))
-	 ysp->b = 0;
+	 ysp->b=0;
       if (RealNear(xsp->a, 0))
-	 xsp->a = 0;
+	 xsp->a=0;
       if (RealNear(ysp->a, 0))
-	 ysp->a = 0;
+	 ysp->a=0;
       if (xsp->a != 0
 	  && (Within16RoundingErrors(xsp->a + from->me.x, from->me.x)
 	      || Within16RoundingErrors(xsp->a + to->me.x, to->me.x)))
-	 xsp->a = 0;
+	 xsp->a=0;
       if (ysp->a != 0
 	  && (Within16RoundingErrors(ysp->a + from->me.y, from->me.y)
 	      || Within16RoundingErrors(ysp->a + to->me.y, to->me.y)))
-	 ysp->a = 0;
+	 ysp->a=0;
       SplineIsLinear(spline);
-      spline->islinear = false;
-      if (ysp->a == 0 && xsp->a == 0) {
-	 if (ysp->b == 0 && xsp->b == 0)
-	    spline->islinear = true;	/* This seems extremely unlikely... */
+      spline->islinear=false;
+      if (ysp->a==0 && xsp->a==0) {
+	 if (ysp->b==0 && xsp->b==0)
+	    spline->islinear=true;	/* This seems extremely unlikely... */
 	 else
-	    spline->isquadratic = true;	/* Only likely if we read in a TTF */
+	    spline->isquadratic=true;	/* Only likely if we read in a TTF */
       }
    }
-   if (!finite(ysp->a) || !finite(xsp->a) || !finite(ysp->c)
-       || !finite(xsp->c) || !finite(ysp->d) || !finite(xsp->d))
+   if (!isfinite(ysp->a) || !isfinite(xsp->a) || !isfinite(ysp->c)
+       || !isfinite(xsp->c) || !isfinite(ysp->d) || !isfinite(xsp->d))
       IError("NaN value in spline creation");
    LinearApproxFree(spline->approx);
-   spline->approx = NULL;
-   spline->knowncurved = false;
-   spline->knownlinear = spline->islinear;
+   spline->approx=NULL;
+   spline->knowncurved=false;
+   spline->knownlinear=spline->islinear;
    SplineIsLinear(spline);
-   spline->order2 = false;
+   spline->order2=false;
 
    if (spline->acceptableextrema) {
       /* I don't check "d", because changes to that reflect simple */
@@ -118,6 +118,6 @@ void SplineRefigure3(Spline * spline) {
 	  !RealNear(old.splines[1].a, spline->splines[1].a) ||
 	  !RealNear(old.splines[1].b, spline->splines[1].b) ||
 	  !RealNear(old.splines[1].c, spline->splines[1].c))
-	 spline->acceptableextrema = false;
+	 spline->acceptableextrema=false;
    }
 }

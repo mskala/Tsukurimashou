@@ -1,4 +1,4 @@
-/* $Id: start.c 3423 2014-10-26 18:51:07Z mskala $ */
+/* $Id: start.c 3862 2015-03-25 15:56:41Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -54,14 +54,14 @@ struct lconv localeinfo;
 static void initadobeenc(void) {
    int i, j;
 
-   for (i = 0; i < 0x100; ++i) {
-      if (strcmp(AdobeStandardEncoding[i], ".notdef") == 0)
-	 unicode_from_adobestd[i] = 0xfffd;
+   for (i=0; i < 0x100; ++i) {
+      if (strcmp(AdobeStandardEncoding[i], ".notdef")==0)
+	 unicode_from_adobestd[i]=0xfffd;
       else {
-	 j = UniFromName(AdobeStandardEncoding[i], ui_none, &custom);
-	 if (j == -1)
-	    j = 0xfffd;
-	 unicode_from_adobestd[i] = j;
+	 j=UniFromName(AdobeStandardEncoding[i], ui_none, &custom);
+	 if (j==-1)
+	    j=0xfffd;
+	 unicode_from_adobestd[i]=j;
       }
    }
 }
@@ -86,22 +86,22 @@ static void DefaultXUID(void) {
    gettimeofday(&tv, NULL);
    srand(tv.tv_usec);
    do {
-      r1 = rand() & 0x3ff;
-   } while (r1 == 0);		/* I reserve "0" for me! */
+      r1=rand() & 0x3ff;
+   } while (r1==0);		/* I reserve "0" for me! */
    gettimeofday(&tv, NULL);
    g_random_set_seed(tv.tv_usec + 1);
-   r2 = g_random_int();
+   r2=g_random_int();
    sprintf(buffer, "1021 %d %d", r1, r2);
    free(xuid);
-   xuid = copy(buffer);
+   xuid=copy(buffer);
 }
 
 #include <charset.h>		/* we still need the charsets & encoding to set local_encoding */
-static int encmatch(const char *enc, int subok) {
+static int encmatch(const char *enc,int subok) {
    static struct {
       char *name;
       int enc;
-   } encs[] = {
+   } encs[]={
       {
       "US-ASCII", e_usascii}, {
       "ASCII", e_usascii}, {
@@ -216,49 +216,49 @@ static int encmatch(const char *enc, int subok) {
    iconv_t test;
 
    free(iconv_local_encoding_name);
-   iconv_local_encoding_name = NULL;
+   iconv_local_encoding_name=NULL;
 #endif
 
    if (strchr(enc, '@') != NULL && strlen(enc) < sizeof(buffer) - 1) {
       strcpy(buffer, enc);
-      *strchr(buffer, '@') = '\0';
-      enc = buffer;
+      *strchr(buffer, '@')='\0';
+      enc=buffer;
    }
 
-   for (i = 0; encs[i].name != NULL; ++i)
-      if (strmatch(enc, encs[i].name) == 0)
+   for (i=0; encs[i].name != NULL; ++i)
+      if (strmatch(enc, encs[i].name)==0)
 	 return (encs[i].enc);
 
    if (subok) {
-      for (i = 0; encs[i].name != NULL; ++i)
+      for (i=0; encs[i].name != NULL; ++i)
 	 if (strstrmatch(enc, encs[i].name) != NULL)
 	    return (encs[i].enc);
 
 #if HAVE_ICONV_H
       /* I only try to use iconv if the encoding doesn't match one I support */
       /*  loading iconv unicode data takes a while */
-      test = iconv_open(enc, FindUnicharName());
-      if (test == (iconv_t) (-1) || test == NULL) {
-	 if (last_complaint == NULL || strcmp(last_complaint, enc) != 0) {
-	    fprintf(stderr,
+      test=iconv_open(enc, FindUnicharName());
+      if (test==(iconv_t) (-1) || test==NULL) {
+	 if (last_complaint==NULL || strcmp(last_complaint, enc) != 0) {
+	    afprintf(stderr,
 		    "Neither FontAnvil nor iconv() supports your encoding (%s) we will pretend\n you asked for latin1 instead.\n",
 		    enc);
 	    free(last_complaint);
-	    last_complaint = copy(enc);
+	    last_complaint=copy(enc);
 	 }
       } else {
-	 if (last_complaint == NULL || strcmp(last_complaint, enc) != 0) {
-	    fprintf(stderr,
+	 if (last_complaint==NULL || strcmp(last_complaint, enc) != 0) {
+	    afprintf(stderr,
 		    "FontAnvil does not support your encoding (%s), it will try to use iconv()\n or it will pretend the local encoding is latin1\n",
 		    enc);
 	    free(last_complaint);
-	    last_complaint = copy(enc);
+	    last_complaint=copy(enc);
 	 }
-	 iconv_local_encoding_name = copy(enc);
+	 iconv_local_encoding_name=copy(enc);
 	 iconv_close(test);
       }
 #else
-      fprintf(stderr,
+      afprintf(stderr,
 	      "FontAnvil does not support your encoding (%s), it will pretend the local encoding is latin1\n",
 	      enc);
 #endif
@@ -273,29 +273,29 @@ static int DefaultEncoding(void) {
    int enc;
 
 #if HAVE_LANGINFO_H
-   loc = nl_langinfo(CODESET);
-   enc = encmatch(loc, false);
+   loc=nl_langinfo(CODESET);
+   enc=encmatch(loc, false);
    if (enc != e_unknown)
       return (enc);
 #endif
-   loc = getenv("LC_ALL");
-   if (loc == NULL)
-      loc = getenv("LC_CTYPE");
-   /*if ( loc==NULL ) loc = getenv("LC_MESSAGES"); */
-   if (loc == NULL)
-      loc = getenv("LANG");
+   loc=getenv("LC_ALL");
+   if (loc==NULL)
+      loc=getenv("LC_CTYPE");
+   /*if ( loc==NULL ) loc=getenv("LC_MESSAGES"); */
+   if (loc==NULL)
+      loc=getenv("LANG");
 
-   if (loc == NULL)
+   if (loc==NULL)
       return (e_iso8859_1);
 
-   enc = encmatch(loc, false);
-   if (enc == e_unknown) {
-      loc = strrchr(loc, '.');
-      if (loc == NULL)
+   enc=encmatch(loc, false);
+   if (enc==e_unknown) {
+      loc=strrchr(loc, '.');
+      if (loc==NULL)
 	 return (e_iso8859_1);
-      enc = encmatch(loc + 1, true);
+      enc=encmatch(loc + 1, true);
    }
-   if (enc == e_unknown)
+   if (enc==e_unknown)
       return (e_iso8859_1);
 
    return (enc);
@@ -311,12 +311,12 @@ void InitSimpleStuff(void) {
       LogError("Failed to add EUC-GB12345");
 
    setlocale(LC_ALL, "");
-   localeinfo = *localeconv();
+   localeinfo=*localeconv();
    if (getenv("FF_SCRIPT_IN_LATIN1"))
-      use_utf8_in_script = false;
+      use_utf8_in_script=false;
 
    inituninameannot();		/* Note: unicodenames done after locales set */
 
    DefaultXUID();
-   local_encoding = DefaultEncoding();
+   local_encoding=DefaultEncoding();
 }

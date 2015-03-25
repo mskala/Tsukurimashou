@@ -1,4 +1,4 @@
-/* $Id: tottf.c 3441 2014-11-03 07:49:27Z mskala $ */
+/* $Id: tottf.c 3861 2015-03-25 14:52:50Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 
 #include "ttf.h"
 
-char *TTFFoundry = NULL;
+char *TTFFoundry=NULL;
 
 /* This file produces a ttf file given a splinefont. */
 
@@ -100,7 +100,7 @@ TeX
 	TeX		TeX specific info (stuff that used to live in tfm files)
 */
 
-const char *ttfstandardnames[258] = {
+const char *ttfstandardnames[258]={
    ".notdef",
    ".null",
    "nonmarkingreturn",
@@ -368,7 +368,7 @@ const char *ttfstandardnames[258] = {
    Note that the OpenType standard specifies bits for a subset
    of the Unicode blocks.
  */
-static int uniranges[][3] = {
+static int uniranges[][3]={
    {0x20, 0x7e, 0},		/* Basic Latin */
    {0xa0, 0xff, 1},		/* Latin-1 Supplement */
    {0x100, 0x17f, 2},		/* Latin Extended-A */
@@ -587,145 +587,145 @@ static int uniranges[][3] = {
    {0x100000, 0x10fffd, 90},	/* Supplementary Private Use Area-B */
 };
 
-static int32 getuint32(FILE * ttf) {
-   int ch1 = getc(ttf);
+static int32 getuint32(AFILE *ttf) {
+   int ch1=agetc(ttf);
 
-   int ch2 = getc(ttf);
+   int ch2=agetc(ttf);
 
-   int ch3 = getc(ttf);
+   int ch3=agetc(ttf);
 
-   int ch4 = getc(ttf);
+   int ch4=agetc(ttf);
 
-   if (ch4 == EOF)
+   if (ch4==EOF)
       return (EOF);
    return ((ch1 << 24) | (ch2 << 16) | (ch3 << 8) | ch4);
 }
 
-void putshort(FILE * file, int sval) {
+void putshort(AFILE *file, int sval) {
    if (sval < -32768 || sval > 65535)
       IError(_
 	     ("Attempt to output %d into a 16-bit field. It will be truncated and the file may not be useful."),
 	     sval);
-   putc((sval >> 8) & 0xff, file);
-   putc(sval & 0xff, file);
+   aputc((sval >> 8) & 0xff, file);
+   aputc(sval & 0xff, file);
 }
 
-static void putu24(FILE * file, int val) {
-   putc((val >> 16) & 0xff, file);
-   putc((val >> 8) & 0xff, file);
-   putc(val & 0xff, file);
+static void putu24(AFILE *file,int val) {
+   aputc((val >> 16) & 0xff, file);
+   aputc((val >> 8) & 0xff, file);
+   aputc(val & 0xff, file);
 }
 
-void putlong(FILE * file, int val) {
-   putc((val >> 24) & 0xff, file);
-   putc((val >> 16) & 0xff, file);
-   putc((val >> 8) & 0xff, file);
-   putc(val & 0xff, file);
+void putlong(AFILE *file, int val) {
+   aputc((val >> 24) & 0xff, file);
+   aputc((val >> 16) & 0xff, file);
+   aputc((val >> 8) & 0xff, file);
+   aputc(val & 0xff, file);
 }
 
 #define dumpabsoffset	putlong
 
-static void dumpoffset(FILE * file, int offsize, int val) {
-   if (offsize == 1)
-      putc(val, file);
-   else if (offsize == 2)
+static void dumpoffset(AFILE *file,int offsize,int val) {
+   if (offsize==1)
+      aputc(val, file);
+   else if (offsize==2)
       putshort(file, val);
-   else if (offsize == 3) {
-      putc((val >> 16) & 0xff, file);
-      putc((val >> 8) & 0xff, file);
-      putc(val & 0xff, file);
+   else if (offsize==3) {
+      aputc((val >> 16) & 0xff, file);
+      aputc((val >> 8) & 0xff, file);
+      aputc(val & 0xff, file);
    } else
       putlong(file, val);
 }
 
-static void put2d14(FILE * file, real dval) {
+static void put2d14(AFILE *file,real dval) {
    int val;
 
    int mant;
 
-   val = floor(dval);
-   mant = floor(16384. * (dval - val));
-   val = (val << 14) | mant;
+   val=floor(dval);
+   mant=floor(16384. * (dval - val));
+   val=(val << 14) | mant;
    putshort(file, val);
 }
 
-void putfixed(FILE * file, real dval) {
+void putfixed(AFILE *file, real dval) {
    int val;
 
    int mant;
 
-   val = floor(dval);
-   mant = floor(65536. * (dval - val));
-   val = (val << 16) | mant;
+   val=floor(dval);
+   mant=floor(65536. * (dval - val));
+   val=(val << 16) | mant;
    putlong(file, val);
 }
 
-int ttfcopyfile(FILE * ttf, FILE * other, int pos, char *tab_name) {
+int ttfcopyfile(AFILE *ttf, AFILE *other, int pos, char *tab_name) {
    int ch;
 
-   int ret = 1;
+   int ret=1;
 
-   if (ferror(ttf) || ferror(other)) {
+   if (aferror(ttf) || aferror(other)) {
       IError
 	 ("Disk error of some nature. Perhaps no space on device?\nGenerated font will be unusable");
-   } else if (pos != ftell(ttf)) {
+   } else if (pos != aftell(ttf)) {
       IError("File Offset wrong for ttf table (%s), %d expected %d", tab_name,
-	     ftell(ttf), pos);
+	     aftell(ttf), pos);
    }
-   rewind(other);
-   while ((ch = getc(other)) != EOF)
-      putc(ch, ttf);
-   if (ferror(other))
-      ret = 0;
-   if (fclose(other))
-      ret = 0;
+   arewind(other);
+   while ((ch=agetc(other)) != EOF)
+      aputc(ch, ttf);
+   if (aferror(other))
+      ret=0;
+   if (afclose(other))
+      ret=0;
    return (ret);
 }
 
-static void FigureFullMetricsEnd(SplineFont * sf, struct glyphinfo *gi,
+static void FigureFullMetricsEnd(SplineFont *sf,struct glyphinfo *gi,
 				 int istt) {
    /* We can reduce the size of the width array by removing a run at the end */
    /*  of the same width. So start at the end, find the width of the last */
    /*  character we'll output, then run backwards as long as we've got the */
    /*  same width */
    /* (do same thing for vertical metrics too */
-   int i, lasti, lastv, lastdefault = istt ? 3 : 1;
+   int i, lasti, lastv, lastdefault=istt ? 3 : 1;
 
    int width, vwidth;
 
-   lasti = lastv = gi->gcnt - 1;
-   for (i = gi->gcnt - 1; i > lastdefault && gi->bygid[i] == -1; --i);
+   lasti=lastv=gi->gcnt - 1;
+   for (i=gi->gcnt - 1; i > lastdefault && gi->bygid[i]==-1; --i);
    if (i >= lastdefault) {
-      width = sf->glyphs[gi->bygid[i]]->width;
-      vwidth = sf->glyphs[gi->bygid[i]]->vwidth;
-      lasti = lastv = i;
-      for (i = lasti - 1; i >= lastdefault; --i) {
+      width=sf->glyphs[gi->bygid[i]]->width;
+      vwidth=sf->glyphs[gi->bygid[i]]->vwidth;
+      lasti=lastv=i;
+      for (i=lasti - 1; i >= lastdefault; --i) {
 	 if (SCWorthOutputting(sf->glyphs[gi->bygid[i]])) {
 	    if (sf->glyphs[gi->bygid[i]]->width != width)
 	       break;
 	    else
-	       lasti = i;
+	       lasti=i;
 	 }
       }
-      gi->lasthwidth = lasti;
+      gi->lasthwidth=lasti;
       if (sf->hasvmetrics) {
-	 for (i = lastv - 1; i >= lastdefault; --i) {
+	 for (i=lastv - 1; i >= lastdefault; --i) {
 	    if (SCWorthOutputting(sf->glyphs[gi->bygid[i]])) {
 	       if (sf->glyphs[gi->bygid[i]]->vwidth != vwidth)
 		  break;
 	       else
-		  lastv = i;
+		  lastv=i;
 	    }
 	 }
-	 gi->lastvwidth = lastv;
+	 gi->lastvwidth=lastv;
       }
    } else {
-      gi->lasthwidth = 0;
-      gi->lastvwidth = 0;
+      gi->lasthwidth=0;
+      gi->lastvwidth=0;
    }
 }
 
-static void dumpghstruct(struct glyphinfo *gi, struct glyphhead *gh) {
+static void dumpghstruct(struct glyphinfo *gi,struct glyphhead *gh) {
 
    putshort(gi->glyphs, gh->numContours);
    putshort(gi->glyphs, gh->xmin);
@@ -733,13 +733,13 @@ static void dumpghstruct(struct glyphinfo *gi, struct glyphhead *gh) {
    putshort(gi->glyphs, gh->xmax);
    putshort(gi->glyphs, gh->ymax);
    if (gh->xmin < gi->xmin)
-      gi->xmin = gh->xmin;
+      gi->xmin=gh->xmin;
    if (gh->ymin < gi->ymin)
-      gi->ymin = gh->ymin;
+      gi->ymin=gh->ymin;
    if (gh->xmax > gi->xmax)
-      gi->xmax = gh->xmax;
+      gi->xmax=gh->xmax;
    if (gh->ymax > gi->ymax)
-      gi->ymax = gh->ymax;
+      gi->ymax=gh->ymax;
 }
 
 static void ttfdumpmetrics(SplineChar *sc,struct glyphinfo *gi,DBounds *b) {
@@ -761,37 +761,37 @@ static void ttfdumpmetrics(SplineChar *sc,struct glyphinfo *gi,DBounds *b) {
       putshort(gi->vmtx,sc->parent->ascent-b->maxy);
    }
 
-   if (sc->ttf_glyph == gi->lasthwidth)
-      gi->hfullcnt = sc->ttf_glyph + 1;
-   if (sc->ttf_glyph == gi->lastvwidth)
-      gi->vfullcnt = sc->ttf_glyph + 1;
+   if (sc->ttf_glyph==gi->lasthwidth)
+      gi->hfullcnt=sc->ttf_glyph + 1;
+   if (sc->ttf_glyph==gi->lastvwidth)
+      gi->vfullcnt=sc->ttf_glyph + 1;
 }
 
-static SplineSet *SCttfApprox(SplineChar * sc, int layer) {
-   SplineSet *head = NULL, *last, *ss, *tss;
+static SplineSet *SCttfApprox(SplineChar *sc,int layer) {
+   SplineSet *head=NULL, *last, *ss, *tss;
 
    RefChar *ref;
 
-   for (ss = sc->layers[layer].splines; ss != NULL; ss = ss->next) {
+   for (ss=sc->layers[layer].splines; ss != NULL; ss=ss->next) {
       tss =
 	 sc->layers[layer].
 	 order2 ? SplinePointListCopy1(ss) : SSttfApprox(ss);
-      if (head == NULL)
-	 head = tss;
+      if (head==NULL)
+	 head=tss;
       else
-	 last->next = tss;
-      last = tss;
+	 last->next=tss;
+      last=tss;
    }
-   for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next) {
-      for (ss = ref->layers[0].splines; ss != NULL; ss = ss->next) {
+   for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next) {
+      for (ss=ref->layers[0].splines; ss != NULL; ss=ss->next) {
 	 tss =
 	    sc->layers[layer].
 	    order2 ? SplinePointListCopy1(ss) : SSttfApprox(ss);
-	 if (head == NULL)
-	    head = tss;
+	 if (head==NULL)
+	    head=tss;
 	 else
-	    last->next = tss;
-	 last = tss;
+	    last->next=tss;
+	 last=tss;
       }
    }
    return (head);
@@ -807,55 +807,55 @@ static SplineSet *SCttfApprox(SplineChar * sc, int layer) {
 int SSAddPoints(SplineSet * ss, int ptcnt, BasePoint * bp, char *flags) {
    SplinePoint *sp, *first, *nextsp;
 
-   int startcnt = ptcnt;
+   int startcnt=ptcnt;
 
    if (ss->first->prev != NULL &&
-       ss->first->prev->from->nextcpindex == startcnt) {
+       ss->first->prev->from->nextcpindex==startcnt) {
       if (flags != NULL)
-	 flags[ptcnt] = 0;
-      bp[ptcnt].x = rint(ss->first->prevcp.x);
-      bp[ptcnt++].y = rint(ss->first->prevcp.y);
+	 flags[ptcnt]=0;
+      bp[ptcnt].x=rint(ss->first->prevcp.x);
+      bp[ptcnt++].y=rint(ss->first->prevcp.y);
    } else if (ss->first->ttfindex != ptcnt && ss->first->ttfindex != 0xfffe)
       IError("Unexpected point count in SSAddPoints");
 
-   first = NULL;
-   for (sp = ss->first; sp != first;) {
+   first=NULL;
+   for (sp=ss->first; sp != first;) {
       if (sp->ttfindex != 0xffff) {
 	 if (flags != NULL)
-	    flags[ptcnt] = _On_Curve;
-	 bp[ptcnt].x = rint(sp->me.x);
-	 bp[ptcnt].y = rint(sp->me.y);
-	 sp->ttfindex = ptcnt++;
+	    flags[ptcnt]=_On_Curve;
+	 bp[ptcnt].x=rint(sp->me.x);
+	 bp[ptcnt].y=rint(sp->me.y);
+	 sp->ttfindex=ptcnt++;
       } else if (!SPInterpolate(sp)) {
 	 /* If an on curve point is midway between two off curve points */
 	 /*  it may be omitted and will be interpolated on read in */
 	 if (flags != NULL)
-	    flags[ptcnt] = _On_Curve;
-	 bp[ptcnt].x = rint(sp->me.x);
-	 bp[ptcnt].y = rint(sp->me.y);
-	 sp->ttfindex = ptcnt++;
+	    flags[ptcnt]=_On_Curve;
+	 bp[ptcnt].x=rint(sp->me.x);
+	 bp[ptcnt].y=rint(sp->me.y);
+	 sp->ttfindex=ptcnt++;
       }
-      nextsp = sp->next != NULL ? sp->next->to : NULL;
-      if (sp->nextcpindex == startcnt)
+      nextsp=sp->next != NULL ? sp->next->to : NULL;
+      if (sp->nextcpindex==startcnt)
 	 /* This control point is actually our first point, not our last */
 	 break;
       if ((sp->nextcpindex != 0xffff && sp->nextcpindex != 0xfffe) ||
 	  !sp->nonextcp) {
 	 if (flags != NULL)
-	    flags[ptcnt] = 0;
-	 bp[ptcnt].x = rint(sp->nextcp.x);
-	 bp[ptcnt++].y = rint(sp->nextcp.y);
+	    flags[ptcnt]=0;
+	 bp[ptcnt].x=rint(sp->nextcp.x);
+	 bp[ptcnt++].y=rint(sp->nextcp.y);
       }
-      if (nextsp == NULL)
+      if (nextsp==NULL)
 	 break;
-      if (first == NULL)
-	 first = sp;
-      sp = nextsp;
+      if (first==NULL)
+	 first=sp;
+      sp=nextsp;
    }
    return (ptcnt);
 }
 
-static void dumppointarrays(struct glyphinfo *gi, BasePoint * bp, char *fs,
+static void dumppointarrays(struct glyphinfo *gi,BasePoint *bp,char *fs,
 			    int pc) {
    BasePoint last;
 
@@ -864,92 +864,92 @@ static void dumppointarrays(struct glyphinfo *gi, BasePoint * bp, char *fs,
    int lastflag, flagcnt;
 
    if (gi->maxp->maxPoints < pc)
-      gi->maxp->maxPoints = pc;
+      gi->maxp->maxPoints=pc;
 
    /* flags */
-   last.x = last.y = 0;
-   lastflag = -1;
-   flagcnt = 0;
-   for (i = 0; i < pc; ++i) {
-      flags = 0;
-      if (fs == NULL || fs[i])
-	 flags = _On_Curve;	/* points are on curve */
-      if (last.x == bp[i].x)
+   last.x=last.y=0;
+   lastflag=-1;
+   flagcnt=0;
+   for (i=0; i < pc; ++i) {
+      flags=0;
+      if (fs==NULL || fs[i])
+	 flags=_On_Curve;	/* points are on curve */
+      if (last.x==bp[i].x)
 	 flags |= _X_Same;
       else if (bp[i].x - last.x > -256 && bp[i].x - last.x < 255) {
 	 flags |= _X_Short;
 	 if (bp[i].x >= last.x)
 	    flags |= _X_Same;	/* In this context it means positive */
       }
-      if (last.y == bp[i].y)
+      if (last.y==bp[i].y)
 	 flags |= _Y_Same;
       else if (bp[i].y - last.y > -256 && bp[i].y - last.y < 255) {
 	 flags |= _Y_Short;
 	 if (bp[i].y >= last.y)
 	    flags |= _Y_Same;	/* In this context it means positive */
       }
-      last = bp[i];
-      if (lastflag == -1) {
-	 lastflag = flags;
-	 flagcnt = 0;
+      last=bp[i];
+      if (lastflag==-1) {
+	 lastflag=flags;
+	 flagcnt=0;
       } else if (flags != lastflag) {
 	 if (flagcnt != 0)
 	    lastflag |= _Repeat;
-	 putc(lastflag, gi->glyphs);
+	 aputc(lastflag, gi->glyphs);
 	 if (flagcnt != 0)
-	    putc(flagcnt, gi->glyphs);
-	 lastflag = flags;
-	 flagcnt = 0;
+	    aputc(flagcnt, gi->glyphs);
+	 lastflag=flags;
+	 flagcnt=0;
       } else {
-	 if (++flagcnt == 255) {
-	    putc(lastflag | _Repeat, gi->glyphs);
-	    putc(255, gi->glyphs);
-	    lastflag = -1;
-	    flagcnt = 0;
+	 if (++flagcnt==255) {
+	    aputc(lastflag | _Repeat, gi->glyphs);
+	    aputc(255, gi->glyphs);
+	    lastflag=-1;
+	    flagcnt=0;
 	 }
       }
    }
    if (lastflag != -1) {
       if (flagcnt != 0)
 	 lastflag |= _Repeat;
-      putc(lastflag, gi->glyphs);
+      aputc(lastflag, gi->glyphs);
       if (flagcnt != 0)
-	 putc(flagcnt, gi->glyphs);
+	 aputc(flagcnt, gi->glyphs);
    }
 
    /* xcoords */
-   last.x = 0;
-   for (i = 0; i < pc; ++i) {
-      if (last.x == bp[i].x)
+   last.x=0;
+   for (i=0; i < pc; ++i) {
+      if (last.x==bp[i].x)
 	 /* Do Nothing */ ;
       else if (bp[i].x - last.x > -256 && bp[i].x - last.x < 255) {
 	 if (bp[i].x >= last.x)
-	    putc(bp[i].x - last.x, gi->glyphs);
+	    aputc(bp[i].x - last.x, gi->glyphs);
 	 else
-	    putc(last.x - bp[i].x, gi->glyphs);
+	    aputc(last.x - bp[i].x, gi->glyphs);
       } else
 	 putshort(gi->glyphs, bp[i].x - last.x);
-      last.x = bp[i].x;
+      last.x=bp[i].x;
    }
    /* ycoords */
-   last.y = 0;
-   for (i = 0; i < pc; ++i) {
-      if (last.y == bp[i].y)
+   last.y=0;
+   for (i=0; i < pc; ++i) {
+      if (last.y==bp[i].y)
 	 /* Do Nothing */ ;
       else if (bp[i].y - last.y > -256 && bp[i].y - last.y < 255) {
 	 if (bp[i].y >= last.y)
-	    putc(bp[i].y - last.y, gi->glyphs);
+	    aputc(bp[i].y - last.y, gi->glyphs);
 	 else
-	    putc(last.y - bp[i].y, gi->glyphs);
+	    aputc(last.y - bp[i].y, gi->glyphs);
       } else
 	 putshort(gi->glyphs, bp[i].y - last.y);
-      last.y = bp[i].y;
+      last.y=bp[i].y;
    }
-   if (ftell(gi->glyphs) & 1)	/* Pad the file so that the next glyph */
-      putc('\0', gi->glyphs);	/* on a word boundary */
+   if (aftell(gi->glyphs) & 1)	/* Pad the file so that the next glyph */
+      aputc('\0', gi->glyphs);	/* on a word boundary */
 }
 
-static void dumpinstrs(struct glyphinfo *gi, uint8 * instrs, int cnt) {
+static void dumpinstrs(struct glyphinfo *gi,uint8 *instrs,int cnt) {
    int i;
 
    if ((gi->flags & ttf_flag_nohints)) {
@@ -959,13 +959,13 @@ static void dumpinstrs(struct glyphinfo *gi, uint8 * instrs, int cnt) {
    /* Do we ever want to call AutoHint and AutoInst here? I think not. */
 
    if (gi->maxp->maxglyphInstr < cnt)
-      gi->maxp->maxglyphInstr = cnt;
+      gi->maxp->maxglyphInstr=cnt;
    putshort(gi->glyphs, cnt);
-   for (i = 0; i < cnt; ++i)
-      putc(instrs[i], gi->glyphs);
+   for (i=0; i < cnt; ++i)
+      aputc(instrs[i], gi->glyphs);
 }
 
-static void dumpmissingglyph(SplineFont * sf, struct glyphinfo *gi,
+static void dumpmissingglyph(SplineFont *sf,struct glyphinfo *gi,
 			     int fixedwidth) {
    /* Or .notdef */
    struct glyphhead gh;
@@ -978,99 +978,99 @@ static void dumpmissingglyph(SplineFont * sf, struct glyphinfo *gi,
 
    char *stempt;
 
-   stem = 0;
+   stem=0;
    if (sf->private != NULL
-       && (stempt = PSDictHasEntry(sf->private, "StdVW")) != NULL)
-      stem = strtod(stempt, NULL);
+       && (stempt=PSDictHasEntry(sf->private, "StdVW")) != NULL)
+      stem=strtod(stempt, NULL);
    else if (sf->private != NULL
-	    && (stempt = PSDictHasEntry(sf->private, "StdHW")) != NULL)
-      stem = strtod(stempt, NULL);
+	    && (stempt=PSDictHasEntry(sf->private, "StdHW")) != NULL)
+      stem=strtod(stempt, NULL);
    if (stem <= 0)
-      stem = (sf->ascent + sf->descent) / 30;
+      stem=(sf->ascent + sf->descent) / 30;
 
-   gi->pointcounts[gi->next_glyph] = 8;
-   gi->loca[gi->next_glyph++] = ftell(gi->glyphs);
-   gi->maxp->maxContours = 2;
+   gi->pointcounts[gi->next_glyph]=8;
+   gi->loca[gi->next_glyph++]=aftell(gi->glyphs);
+   gi->maxp->maxContours=2;
 
-   gh.numContours = 2;
-   gh.ymin = 0;
-   gh.ymax = 2 * (sf->ascent + sf->descent) / 3;
-   gh.xmax = 5 * stem + (sf->ascent + sf->descent) / 10;
-   gh.xmin = stem;
+   gh.numContours=2;
+   gh.ymin=0;
+   gh.ymax=2 * (sf->ascent + sf->descent) / 3;
+   gh.xmax=5 * stem + (sf->ascent + sf->descent) / 10;
+   gh.xmin=stem;
    gh.xmax += stem;
    if (gh.ymax > sf->ascent)
-      gh.ymax = sf->ascent;
+      gh.ymax=sf->ascent;
    dumpghstruct(gi, &gh);
 
-   bp[0].x = stem;
-   bp[0].y = 0;
-   bp[1].x = stem;
-   bp[1].y = gh.ymax;
-   bp[2].x = gh.xmax;
-   bp[2].y = gh.ymax;
-   bp[3].x = gh.xmax;
-   bp[3].y = 0;
+   bp[0].x=stem;
+   bp[0].y=0;
+   bp[1].x=stem;
+   bp[1].y=gh.ymax;
+   bp[2].x=gh.xmax;
+   bp[2].y=gh.ymax;
+   bp[3].x=gh.xmax;
+   bp[3].y=0;
 
-   bp[4].x = 2 * stem;
-   bp[4].y = stem;
-   bp[5].x = gh.xmax - stem;
-   bp[5].y = stem;
-   bp[6].x = gh.xmax - stem;
-   bp[6].y = gh.ymax - stem;
-   bp[7].x = 2 * stem;
-   bp[7].y = gh.ymax - stem;
+   bp[4].x=2 * stem;
+   bp[4].y=stem;
+   bp[5].x=gh.xmax - stem;
+   bp[5].y=stem;
+   bp[6].x=gh.xmax - stem;
+   bp[6].y=gh.ymax - stem;
+   bp[7].x=2 * stem;
+   bp[7].y=gh.ymax - stem;
 
    if (!gi->ttc_composite_font) {
-      stemcvt = TTF_getcvtval(gi->sf, stem);
+      stemcvt=TTF_getcvtval(gi->sf, stem);
 
-      instrs[0] = 0xb1;		/* Pushb, 2byte */
-      instrs[1] = 1;		/* Point 1 */
-      instrs[2] = 0;		/* Point 0 */
-      instrs[3] = 0x2f;		/* MDAP, rounded (pt0) */
-      instrs[4] = 0x3c;		/* ALIGNRP, (pt1 same pos as pt0) */
-      instrs[5] = 0xb2;		/* Pushb, 3byte */
-      instrs[6] = 7;		/* Point 7 */
-      instrs[7] = 4;		/* Point 4 */
-      instrs[8] = stemcvt;	/* CVT entry for our stem width */
-      instrs[9] = 0xe0 + 0x0d;	/* MIRP, don't set rp0, minimum, rounded, black */
-      instrs[10] = 0x32;	/* SHP[rp2] (pt7 same pos as pt4) */
-      instrs[11] = 0xb1;	/* Pushb, 2byte */
-      instrs[12] = 6;		/* Point 6 */
-      instrs[13] = 5;		/* Point 5 */
-      instrs[14] = 0xc0 + 0x1c;	/* MDRP, set rp0, minimum, rounded, grey */
-      instrs[15] = 0x3c;	/* ALIGNRP, (pt6 same pos as pt5) */
-      instrs[16] = 0xb2;	/* Pushb, 3byte */
-      instrs[17] = 3;		/* Point 3 */
-      instrs[18] = 2;		/* Point 2 */
-      instrs[19] = stemcvt;	/* CVT entry for our stem width */
-      instrs[20] = 0xe0 + 0x0d;	/* MIRP, dont set rp0, minimum, rounded, black */
-      instrs[21] = 0x32;	/* SHP[rp2] (pt3 same pos as pt2) */
+      instrs[0]=0xb1;		/* Pushb, 2byte */
+      instrs[1]=1;		/* Point 1 */
+      instrs[2]=0;		/* Point 0 */
+      instrs[3]=0x2f;		/* MDAP, rounded (pt0) */
+      instrs[4]=0x3c;		/* ALIGNRP, (pt1 same pos as pt0) */
+      instrs[5]=0xb2;		/* Pushb, 3byte */
+      instrs[6]=7;		/* Point 7 */
+      instrs[7]=4;		/* Point 4 */
+      instrs[8]=stemcvt;	/* CVT entry for our stem width */
+      instrs[9]=0xe0 + 0x0d;	/* MIRP, don't set rp0, minimum, rounded, black */
+      instrs[10]=0x32;	/* SHP[rp2] (pt7 same pos as pt4) */
+      instrs[11]=0xb1;	/* Pushb, 2byte */
+      instrs[12]=6;		/* Point 6 */
+      instrs[13]=5;		/* Point 5 */
+      instrs[14]=0xc0 + 0x1c;	/* MDRP, set rp0, minimum, rounded, grey */
+      instrs[15]=0x3c;	/* ALIGNRP, (pt6 same pos as pt5) */
+      instrs[16]=0xb2;	/* Pushb, 3byte */
+      instrs[17]=3;		/* Point 3 */
+      instrs[18]=2;		/* Point 2 */
+      instrs[19]=stemcvt;	/* CVT entry for our stem width */
+      instrs[20]=0xe0 + 0x0d;	/* MIRP, dont set rp0, minimum, rounded, black */
+      instrs[21]=0x32;	/* SHP[rp2] (pt3 same pos as pt2) */
 
-      instrs[22] = 0x00;	/* SVTCA, y axis */
+      instrs[22]=0x00;	/* SVTCA, y axis */
 
-      instrs[23] = 0xb1;	/* Pushb, 2byte */
-      instrs[24] = 3;		/* Point 3 */
-      instrs[25] = 0;		/* Point 0 */
-      instrs[26] = 0x2f;	/* MDAP, rounded */
-      instrs[27] = 0x3c;	/* ALIGNRP, (pt3 same height as pt0) */
-      instrs[28] = 0xb2;	/* Pushb, 3byte */
-      instrs[29] = 5;		/* Point 5 */
-      instrs[30] = 4;		/* Point 4 */
-      instrs[31] = stemcvt;	/* CVT entry for our stem width */
-      instrs[32] = 0xe0 + 0x0d;	/* MIRP, don't set rp0, minimum, rounded, black */
-      instrs[33] = 0x32;	/* SHP[rp2] (pt5 same height as pt4) */
-      instrs[34] = 0xb2;	/* Pushb, 3byte */
-      instrs[35] = 7;		/* Point 7 */
-      instrs[36] = 6;		/* Point 6 */
-      instrs[37] = TTF_getcvtval(gi->sf, bp[6].y);	/* CVT entry for top height */
-      instrs[38] = 0xe0 + 0x1c;	/* MIRP, set rp0, minimum, rounded, grey */
-      instrs[39] = 0x3c;	/* ALIGNRP (pt7 same height as pt6) */
-      instrs[40] = 0xb2;	/* Pushb, 3byte */
-      instrs[41] = 1;		/* Point 1 */
-      instrs[42] = 2;		/* Point 2 */
-      instrs[43] = stemcvt;	/* CVT entry for our stem width */
-      instrs[44] = 0xe0 + 0x0d;	/* MIRP, dont set rp0, minimum, rounded, black */
-      instrs[45] = 0x32;	/* SHP[rp2] (pt1 same height as pt2) */
+      instrs[23]=0xb1;	/* Pushb, 2byte */
+      instrs[24]=3;		/* Point 3 */
+      instrs[25]=0;		/* Point 0 */
+      instrs[26]=0x2f;	/* MDAP, rounded */
+      instrs[27]=0x3c;	/* ALIGNRP, (pt3 same height as pt0) */
+      instrs[28]=0xb2;	/* Pushb, 3byte */
+      instrs[29]=5;		/* Point 5 */
+      instrs[30]=4;		/* Point 4 */
+      instrs[31]=stemcvt;	/* CVT entry for our stem width */
+      instrs[32]=0xe0 + 0x0d;	/* MIRP, don't set rp0, minimum, rounded, black */
+      instrs[33]=0x32;	/* SHP[rp2] (pt5 same height as pt4) */
+      instrs[34]=0xb2;	/* Pushb, 3byte */
+      instrs[35]=7;		/* Point 7 */
+      instrs[36]=6;		/* Point 6 */
+      instrs[37]=TTF_getcvtval(gi->sf, bp[6].y);	/* CVT entry for top height */
+      instrs[38]=0xe0 + 0x1c;	/* MIRP, set rp0, minimum, rounded, grey */
+      instrs[39]=0x3c;	/* ALIGNRP (pt7 same height as pt6) */
+      instrs[40]=0xb2;	/* Pushb, 3byte */
+      instrs[41]=1;		/* Point 1 */
+      instrs[42]=2;		/* Point 2 */
+      instrs[43]=stemcvt;	/* CVT entry for our stem width */
+      instrs[44]=0xe0 + 0x0d;	/* MIRP, dont set rp0, minimum, rounded, black */
+      instrs[45]=0x32;	/* SHP[rp2] (pt1 same height as pt2) */
 
       /* We've touched all points in all dimensions */
       /* Don't need any IUP */
@@ -1098,43 +1098,43 @@ static void dumpmissingglyph(SplineFont * sf, struct glyphinfo *gi,
    }
 }
 
-static void dumpblankglyph(struct glyphinfo *gi, SplineFont * sf,
+static void dumpblankglyph(struct glyphinfo *gi,SplineFont *sf,
 			   int fixedwidth) {
    int advance =
-      gi->next_glyph == 1 ? 0 : fixedwidth <=
+      gi->next_glyph==1 ? 0 : fixedwidth <=
       0 ? (sf->ascent + sf->descent) / 3 : fixedwidth;
    /* For reasons quite obscure to me, glyph 1 has an advance width of 0 */
    /* even in a mono-spaced font like CourierNew.ttf */
 
    /* These don't get a glyph header, because there are no contours */
-   gi->pointcounts[gi->next_glyph] = 0;
-   gi->loca[gi->next_glyph++] = ftell(gi->glyphs);
+   gi->pointcounts[gi->next_glyph]=0;
+   gi->loca[gi->next_glyph++]=aftell(gi->glyphs);
    putshort(gi->hmtx, advance);
    putshort(gi->hmtx, 0);
    if (sf->hasvmetrics) {
       putshort(gi->vmtx,
-	       gi->next_glyph == 2 ? 0 : (sf->ascent + sf->descent));
+	       gi->next_glyph==2 ? 0 : (sf->ascent + sf->descent));
       putshort(gi->vmtx, 0);
    }
 }
 
-static void dumpspace(SplineChar * sc, struct glyphinfo *gi) {
+static void dumpspace(SplineChar *sc,struct glyphinfo *gi) {
    /* These don't get a glyph header, because there are no contours */
    DBounds b;
 
-   gi->pointcounts[gi->next_glyph] = 0;
-   gi->loca[gi->next_glyph++] = ftell(gi->glyphs);
+   gi->pointcounts[gi->next_glyph]=0;
+   gi->loca[gi->next_glyph++]=aftell(gi->glyphs);
    memset(&b, 0, sizeof(b));
    ttfdumpmetrics(sc, gi, &b);
 }
 
-static int IsTTFRefable(SplineChar * sc, int layer) {
+static int IsTTFRefable(SplineChar *sc,int layer) {
    RefChar *ref;
 
-   if (sc->layers[layer].refs == NULL || sc->layers[layer].splines != NULL)
+   if (sc->layers[layer].refs==NULL || sc->layers[layer].splines != NULL)
       return (false);
 
-   for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next) {
+   for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next) {
       if (ref->transform[0] < -2 || ref->transform[0] > 1.999939 ||
 	  ref->transform[1] < -2 || ref->transform[1] > 1.999939 ||
 	  ref->transform[2] < -2 || ref->transform[2] > 1.999939 ||
@@ -1147,57 +1147,57 @@ static int IsTTFRefable(SplineChar * sc, int layer) {
 int RefDepth(RefChar * ref, int layer) {
    int rd, temp;
 
-   SplineChar *sc = ref->sc;
+   SplineChar *sc=ref->sc;
 
-   if (sc->layers[layer].refs == NULL || sc->layers[layer].splines != NULL)
+   if (sc->layers[layer].refs==NULL || sc->layers[layer].splines != NULL)
       return (1);
-   rd = 0;
-   for (ref = sc->layers[layer].refs; ref != NULL; ref = ref->next) {
+   rd=0;
+   for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next) {
       if (ref->transform[0] >= -2 || ref->transform[0] <= 1.999939 ||
 	  ref->transform[1] >= -2 || ref->transform[1] <= 1.999939 ||
 	  ref->transform[2] >= -2 || ref->transform[2] <= 1.999939 ||
 	  ref->transform[3] >= -2 || ref->transform[3] <= 1.999939) {
-	 temp = RefDepth(ref, layer);
+	 temp=RefDepth(ref, layer);
 	 if (temp > rd)
-	    rd = temp;
+	    rd=temp;
       }
    }
    return (rd + 1);
 }
 
-static void CountCompositeMaxPts(SplineChar * sc, struct glyphinfo *gi) {
+static void CountCompositeMaxPts(SplineChar *sc,struct glyphinfo *gi) {
    RefChar *ref;
 
-   int ptcnt = 0, index;
+   int ptcnt=0, index;
 
-   for (ref = sc->layers[gi->layer].refs; ref != NULL; ref = ref->next) {
-      if (ref->sc->ttf_glyph == -1)
+   for (ref=sc->layers[gi->layer].refs; ref != NULL; ref=ref->next) {
+      if (ref->sc->ttf_glyph==-1)
 	 continue;
-      index = ref->sc->ttf_glyph;
-      if (gi->pointcounts[index] == -1)
+      index=ref->sc->ttf_glyph;
+      if (gi->pointcounts[index]==-1)
 	 CountCompositeMaxPts(ref->sc, gi);
       ptcnt += gi->pointcounts[index];
    }
-   gi->pointcounts[sc->ttf_glyph] = ptcnt;
+   gi->pointcounts[sc->ttf_glyph]=ptcnt;
    if (gi->maxp->maxCompositPts < ptcnt)
-      gi->maxp->maxCompositPts = ptcnt;
+      gi->maxp->maxCompositPts=ptcnt;
 }
 
 /* In order3 fonts we figure out the composite point counts at the end */
 /*  when we know how many points are in each sub-glyph */
-static void RefigureCompositeMaxPts(SplineFont * sf, struct glyphinfo *gi) {
+static void RefigureCompositeMaxPts(SplineFont *sf,struct glyphinfo *gi) {
    int i;
 
-   for (i = 0; i < gi->gcnt; ++i)
+   for (i=0; i < gi->gcnt; ++i)
       if (gi->bygid[i] != -1 && sf->glyphs[gi->bygid[i]]->ttf_glyph != -1) {
-	 if (sf->glyphs[gi->bygid[i]]->layers[gi->layer].splines == NULL &&
+	 if (sf->glyphs[gi->bygid[i]]->layers[gi->layer].splines==NULL &&
 	     sf->glyphs[gi->bygid[i]]->layers[gi->layer].refs != NULL &&
-	     gi->pointcounts[i] == -1)
+	     gi->pointcounts[i]==-1)
 	    CountCompositeMaxPts(sf->glyphs[gi->bygid[i]], gi);
       }
 }
 
-static void dumpcomposite(SplineChar * sc, struct glyphinfo *gi) {
+static void dumpcomposite(SplineChar *sc,struct glyphinfo *gi) {
    struct glyphhead gh;
 
    DBounds bb;
@@ -1208,7 +1208,7 @@ static void dumpcomposite(SplineChar * sc, struct glyphinfo *gi) {
 
    RefChar *ref;
 
-   SplineChar *isc = sc->ttf_instrs == NULL && sc->parent->mm != NULL
+   SplineChar *isc=sc->ttf_instrs==NULL && sc->parent->mm != NULL
       && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
 								orig_pos] :
       sc;
@@ -1218,23 +1218,23 @@ static void dumpcomposite(SplineChar * sc, struct glyphinfo *gi) {
       IError("Glyph count wrong in ttf output");
    if (gi->next_glyph >= gi->maxp->numGlyphs)
       IError("max glyph count wrong in ttf output");
-   gi->loca[gi->next_glyph] = ftell(gi->glyphs);
+   gi->loca[gi->next_glyph]=aftell(gi->glyphs);
 
    SplineCharLayerQuickBounds(sc, gi->layer, &bb);
-   gh.numContours = -1;
-   gh.xmin = floor(bb.minx);
-   gh.ymin = floor(bb.miny);
-   gh.xmax = ceil(bb.maxx);
-   gh.ymax = ceil(bb.maxy);
+   gh.numContours=-1;
+   gh.xmin=floor(bb.minx);
+   gh.ymin=floor(bb.miny);
+   gh.xmax=ceil(bb.maxx);
+   gh.ymax=ceil(bb.maxy);
    dumpghstruct(gi, &gh);
 
-   i = ptcnt = ctcnt = 0;
-   for (ref = sc->layers[gi->layer].refs; ref != NULL; ref = ref->next, ++i) {
-      if (ref->sc->ttf_glyph == -1) {
+   i=ptcnt=ctcnt=0;
+   for (ref=sc->layers[gi->layer].refs; ref != NULL; ref=ref->next, ++i) {
+      if (ref->sc->ttf_glyph==-1) {
 	 /*if ( sc->layers[gi->layer].refs->next==NULL || any ) */
 	 continue;
       }
-      flags = 0;
+      flags=0;
       if (ref->round_translation_to_grid)
 	 flags |= _ROUND;
       if (ref->use_my_metrics)
@@ -1250,11 +1250,11 @@ static void dumpcomposite(SplineChar * sc, struct glyphinfo *gi) {
       else if (ref->transform[0] != 1.)
 	 flags |= _SCALE;	/* xy scale is same */
       if (ref->point_match) {
-	 arg1 = ref->match_pt_base;
-	 arg2 = ref->match_pt_ref;
+	 arg1=ref->match_pt_base;
+	 arg2=ref->match_pt_ref;
       } else {
-	 arg1 = rint(ref->transform[4]);
-	 arg2 = rint(ref->transform[5]);
+	 arg1=rint(ref->transform[4]);
+	 arg2=rint(ref->transform[5]);
 	 flags |= _ARGS_ARE_XY | _UNSCALED_OFFSETS;
 	 /* The values I output are the values I want to see */
 	 /* There is some very strange stuff wrongly-documented on the apple */
@@ -1269,13 +1269,13 @@ static void dumpcomposite(SplineChar * sc, struct glyphinfo *gi) {
       if (arg1 < -128 || arg1 > 127 || arg2 < -128 || arg2 > 127)
 	 flags |= _ARGS_ARE_WORDS;
       putshort(gi->glyphs, flags);
-      putshort(gi->glyphs, ref->sc->ttf_glyph == -1 ? 0 : ref->sc->ttf_glyph);
+      putshort(gi->glyphs, ref->sc->ttf_glyph==-1 ? 0 : ref->sc->ttf_glyph);
       if (flags & _ARGS_ARE_WORDS) {
 	 putshort(gi->glyphs, (short) arg1);
 	 putshort(gi->glyphs, (short) arg2);
       } else {
-	 putc((char) arg1, gi->glyphs);
-	 putc((char) arg2, gi->glyphs);
+	 aputc((char) arg1, gi->glyphs);
+	 aputc((char) arg2, gi->glyphs);
       }
       if (flags & _MATRIX) {
 	 put2d14(gi->glyphs, ref->transform[0]);
@@ -1288,8 +1288,8 @@ static void dumpcomposite(SplineChar * sc, struct glyphinfo *gi) {
       } else if (flags & _SCALE) {
 	 put2d14(gi->glyphs, ref->transform[0]);
       }
-      sptcnt = SSTtfNumberPoints(ref->layers[0].splines);
-      for (ss = ref->layers[0].splines; ss != NULL; ss = ss->next) {
+      sptcnt=SSTtfNumberPoints(ref->layers[0].splines);
+      for (ss=ref->layers[0].splines; ss != NULL; ss=ss->next) {
 	 ++ctcnt;
       }
       if (sc->layers[gi->layer].order2)
@@ -1301,29 +1301,29 @@ static void dumpcomposite(SplineChar * sc, struct glyphinfo *gi) {
 	    gi->pointcounts[ref->sc->ttf_glyph ==
 			    -1 ? 0 : ref->sc->ttf_glyph];
       else
-	 ptcnt = -1;
-      rd = RefDepth(ref, gi->layer);
+	 ptcnt=-1;
+      rd=RefDepth(ref, gi->layer);
       if (rd > gi->maxp->maxcomponentdepth)
-	 gi->maxp->maxcomponentdepth = rd;
+	 gi->maxp->maxcomponentdepth=rd;
    }
 
    if (isc->ttf_instrs_len != 0)
       dumpinstrs(gi, isc->ttf_instrs, isc->ttf_instrs_len);
 
-   gi->pointcounts[gi->next_glyph++] = ptcnt;
+   gi->pointcounts[gi->next_glyph++]=ptcnt;
    if (gi->maxp->maxnumcomponents < i)
-      gi->maxp->maxnumcomponents = i;
+      gi->maxp->maxnumcomponents=i;
    if (gi->maxp->maxCompositPts < ptcnt)
-      gi->maxp->maxCompositPts = ptcnt;
+      gi->maxp->maxCompositPts=ptcnt;
    if (gi->maxp->maxCompositCtrs < ctcnt)
-      gi->maxp->maxCompositCtrs = ctcnt;
+      gi->maxp->maxCompositCtrs=ctcnt;
 
    ttfdumpmetrics(sc, gi, &bb);
-   if (ftell(gi->glyphs) & 1)	/* Pad the file so that the next glyph */
-      putc('\0', gi->glyphs);	/* on a word boundary, can only happen if odd number of instrs */
+   if (aftell(gi->glyphs) & 1)	/* Pad the file so that the next glyph */
+      aputc('\0', gi->glyphs);	/* on a word boundary, can only happen if odd number of instrs */
 }
 
-static void dumpglyph(SplineChar * sc, struct glyphinfo *gi) {
+static void dumpglyph(SplineChar *sc,struct glyphinfo *gi) {
    struct glyphhead gh;
 
    DBounds bb;
@@ -1336,7 +1336,7 @@ static void dumpglyph(SplineChar * sc, struct glyphinfo *gi) {
 
    char *fs;
 
-   SplineChar *isc = sc->ttf_instrs == NULL && sc->parent->mm != NULL
+   SplineChar *isc=sc->ttf_instrs==NULL && sc->parent->mm != NULL
       && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
 								orig_pos] :
       sc;
@@ -1347,8 +1347,8 @@ static void dumpglyph(SplineChar * sc, struct glyphinfo *gi) {
 /*  glyph that consists of a single point. Glyphs containing two single points*/
 /*  are ok, glyphs with a single point and anything else are ok, glyphs with */
 /*  a line are ok. But a single point is not ok. Dunno why */
-   if (sc->layers[gi->layer].splines == NULL
-       && sc->layers[gi->layer].refs == NULL) {
+   if (sc->layers[gi->layer].splines==NULL
+       && sc->layers[gi->layer].refs==NULL) {
       dumpspace(sc, gi);
       return;
    }
@@ -1357,38 +1357,38 @@ static void dumpglyph(SplineChar * sc, struct glyphinfo *gi) {
       IError("Glyph count wrong in ttf output");
    if (gi->next_glyph >= gi->maxp->numGlyphs)
       IError("max glyph count wrong in ttf output");
-   gi->loca[gi->next_glyph] = ftell(gi->glyphs);
+   gi->loca[gi->next_glyph]=aftell(gi->glyphs);
 
-   ttfss = SCttfApprox(sc, gi->layer);
-   ptcnt = SSTtfNumberPoints(ttfss);
-   for (ss = ttfss, contourcnt = 0; ss != NULL; ss = ss->next) {
+   ttfss=SCttfApprox(sc, gi->layer);
+   ptcnt=SSTtfNumberPoints(ttfss);
+   for (ss=ttfss, contourcnt=0; ss != NULL; ss=ss->next) {
       ++contourcnt;
    }
-   origptcnt = ptcnt;
+   origptcnt=ptcnt;
 
    SplineSetQuickBounds(ttfss, &bb);
-   gh.numContours = contourcnt;
-   gh.xmin = floor(bb.minx);
-   gh.ymin = floor(bb.miny);
-   gh.xmax = ceil(bb.maxx);
-   gh.ymax = ceil(bb.maxy);
+   gh.numContours=contourcnt;
+   gh.xmin=floor(bb.minx);
+   gh.ymin=floor(bb.miny);
+   gh.xmax=ceil(bb.maxx);
+   gh.ymax=ceil(bb.maxy);
    dumpghstruct(gi, &gh);
    if (contourcnt > gi->maxp->maxContours)
-      gi->maxp->maxContours = contourcnt;
+      gi->maxp->maxContours=contourcnt;
    if (ptcnt > gi->maxp->maxPoints)
-      gi->maxp->maxPoints = ptcnt;
+      gi->maxp->maxPoints=ptcnt;
 
-   bp = malloc(ptcnt * sizeof(BasePoint));
-   fs = malloc(ptcnt);
-   ptcnt = contourcnt = 0;
-   for (ss = ttfss; ss != NULL; ss = ss->next) {
-      ptcnt = SSAddPoints(ss, ptcnt, bp, fs);
+   bp=malloc(ptcnt * sizeof(BasePoint));
+   fs=malloc(ptcnt);
+   ptcnt=contourcnt=0;
+   for (ss=ttfss; ss != NULL; ss=ss->next) {
+      ptcnt=SSAddPoints(ss, ptcnt, bp, fs);
       putshort(gi->glyphs, ptcnt - 1);
    }
    if (ptcnt != origptcnt)
       IError("Point count wrong calculated=%d, actual=%d in %.20s", origptcnt,
 	     ptcnt, sc->name);
-   gi->pointcounts[gi->next_glyph++] = ptcnt;
+   gi->pointcounts[gi->next_glyph++]=ptcnt;
 
    dumpinstrs(gi, isc->ttf_instrs, isc->ttf_instrs_len);
 
@@ -1400,78 +1400,78 @@ static void dumpglyph(SplineChar * sc, struct glyphinfo *gi) {
    ttfdumpmetrics(sc, gi, &bb);
 }
 
-void SFDummyUpCIDs(struct glyphinfo *gi, SplineFont * sf) {
+void SFDummyUpCIDs(struct glyphinfo *gi, SplineFont *sf) {
    int i, j, k, max;
 
    int *bygid;
 
-   max = 0;
-   for (k = 0; k < sf->subfontcnt; ++k)
+   max=0;
+   for (k=0; k < sf->subfontcnt; ++k)
       if (sf->subfonts[k]->glyphcnt > max)
-	 max = sf->subfonts[k]->glyphcnt;
-   if (max == 0)
+	 max=sf->subfonts[k]->glyphcnt;
+   if (max==0)
       return;
 
-   sf->glyphs = calloc(max, sizeof(SplineChar *));
-   sf->glyphcnt = sf->glyphmax = max;
-   for (k = 0; k < sf->subfontcnt; ++k)
-      for (i = 0; i < sf->subfonts[k]->glyphcnt; ++i)
+   sf->glyphs=calloc(max, sizeof(SplineChar *));
+   sf->glyphcnt=sf->glyphmax=max;
+   for (k=0; k < sf->subfontcnt; ++k)
+      for (i=0; i < sf->subfonts[k]->glyphcnt; ++i)
 	 if (sf->subfonts[k]->glyphs[i] != NULL)
-	    sf->glyphs[i] = sf->subfonts[k]->glyphs[i];
+	    sf->glyphs[i]=sf->subfonts[k]->glyphs[i];
 
-   if (gi == NULL)
+   if (gi==NULL)
       return;
 
-   bygid = malloc((sf->glyphcnt + 3) * sizeof(int));
+   bygid=malloc((sf->glyphcnt + 3) * sizeof(int));
    memset(bygid, 0xff, (sf->glyphcnt + 3) * sizeof(int));
 
-   j = 1;
-   for (i = 0; i < sf->glyphcnt; ++i)
+   j=1;
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 if (bygid[0] == -1 && strcmp(sf->glyphs[i]->name, ".notdef") == 0) {
-	    sf->glyphs[i]->ttf_glyph = 0;
-	    bygid[0] = i;
+	 if (bygid[0]==-1 && strcmp(sf->glyphs[i]->name, ".notdef")==0) {
+	    sf->glyphs[i]->ttf_glyph=0;
+	    bygid[0]=i;
 	 } else if (SCWorthOutputting(sf->glyphs[i])) {
-	    sf->glyphs[i]->ttf_glyph = j;
-	    bygid[j++] = i;
+	    sf->glyphs[i]->ttf_glyph=j;
+	    bygid[j++]=i;
 	 }
       }
-   gi->bygid = bygid;
-   gi->gcnt = j;
+   gi->bygid=bygid;
+   gi->gcnt=j;
 }
 
-static void AssignNotdefNull(SplineFont * sf, int *bygid, int iscff) {
+static void AssignNotdefNull(SplineFont *sf,int *bygid,int iscff) {
    int i;
 
    /* The first three glyphs are magic, glyph 0 is .notdef */
    /*  glyph 1 is .null and glyph 2 is nonmarking return */
    /*  We may generate them automagically */
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 if (bygid[0] == -1 && strcmp(sf->glyphs[i]->name, ".notdef") == 0) {
-	    sf->glyphs[i]->ttf_glyph = 0;
-	    bygid[0] = i;
-	 } else if (!iscff && bygid[1] == -1 &&
-		    (strcmp(sf->glyphs[i]->name, ".null") == 0 ||
-		     strcmp(sf->glyphs[i]->name, "uni0000") == 0 ||
-		     (i == 1
-		      && strcmp(sf->glyphs[1]->name, "glyph1") == 0))) {
-	    sf->glyphs[i]->ttf_glyph = 1;
-	    bygid[1] = i;
-	 } else if (!iscff && bygid[2] == -1 &&
-		    (strcmp(sf->glyphs[i]->name, "nonmarkingreturn") == 0 ||
-		     strcmp(sf->glyphs[i]->name, "uni000D") == 0 ||
-		     (i == 2
-		      && strcmp(sf->glyphs[2]->name, "glyph2") == 0))) {
-	    sf->glyphs[i]->ttf_glyph = 2;
-	    bygid[2] = i;
+	 if (bygid[0]==-1 && strcmp(sf->glyphs[i]->name, ".notdef")==0) {
+	    sf->glyphs[i]->ttf_glyph=0;
+	    bygid[0]=i;
+	 } else if (!iscff && bygid[1]==-1 &&
+		    (strcmp(sf->glyphs[i]->name, ".null")==0 ||
+		     strcmp(sf->glyphs[i]->name, "uni0000")==0 ||
+		     (i==1
+		      && strcmp(sf->glyphs[1]->name, "glyph1")==0))) {
+	    sf->glyphs[i]->ttf_glyph=1;
+	    bygid[1]=i;
+	 } else if (!iscff && bygid[2]==-1 &&
+		    (strcmp(sf->glyphs[i]->name, "nonmarkingreturn")==0 ||
+		     strcmp(sf->glyphs[i]->name, "uni000D")==0 ||
+		     (i==2
+		      && strcmp(sf->glyphs[2]->name, "glyph2")==0))) {
+	    sf->glyphs[i]->ttf_glyph=2;
+	    bygid[2]=i;
 	 }
       }
 }
 
-static int AssignTTFGlyph(struct glyphinfo *gi, SplineFont * sf, EncMap * map,
+static int AssignTTFGlyph(struct glyphinfo *gi,SplineFont *sf,EncMap *map,
 			  int iscff) {
-   int *bygid = malloc((sf->glyphcnt + 3) * sizeof(int));
+   int *bygid=malloc((sf->glyphcnt + 3) * sizeof(int));
 
    int i, j;
 
@@ -1479,149 +1479,149 @@ static int AssignTTFGlyph(struct glyphinfo *gi, SplineFont * sf, EncMap * map,
 
    AssignNotdefNull(sf, bygid, iscff);
 
-   j = iscff ? 1 : 3;
-   for (i = 0; i < map->enccount; ++i)
+   j=iscff ? 1 : 3;
+   for (i=0; i < map->enccount; ++i)
       if (map->map[i] != -1) {
-	 SplineChar *sc = sf->glyphs[map->map[i]];
+	 SplineChar *sc=sf->glyphs[map->map[i]];
 
-	 if (SCWorthOutputting(sc) && sc->ttf_glyph == -1
+	 if (SCWorthOutputting(sc) && sc->ttf_glyph==-1
 #if HANYANG
 	     && (!iscff || !sc->compositionunit)
 #endif
 	    ) {
-	    sc->ttf_glyph = j;
-	    bygid[j++] = sc->orig_pos;
+	    sc->ttf_glyph=j;
+	    bygid[j++]=sc->orig_pos;
 	 }
       }
 
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 SplineChar *sc = sf->glyphs[i];
+	 SplineChar *sc=sf->glyphs[i];
 
-	 if (SCWorthOutputting(sc) && sc->ttf_glyph == -1
+	 if (SCWorthOutputting(sc) && sc->ttf_glyph==-1
 #if HANYANG
 	     && (!iscff || !sc->compositionunit)
 #endif
 	    ) {
-	    sc->ttf_glyph = j;
-	    bygid[j++] = i;
+	    sc->ttf_glyph=j;
+	    bygid[j++]=i;
 	 }
       }
-   gi->bygid = bygid;
-   gi->gcnt = j;
+   gi->bygid=bygid;
+   gi->gcnt=j;
    return j;
 }
 
-static int AssignTTFBitGlyph(struct glyphinfo *gi, SplineFont * sf,
+static int AssignTTFBitGlyph(struct glyphinfo *gi,SplineFont *sf,
 			     EncMap * map, int32 * bsizes) {
    int i, j;
 
    BDFFont *bdf;
 
-   int *bygid = malloc((sf->glyphcnt + 3) * sizeof(int));
+   int *bygid=malloc((sf->glyphcnt + 3) * sizeof(int));
 
    memset(bygid, 0xff, (sf->glyphcnt + 3) * sizeof(int));
 
    AssignNotdefNull(sf, bygid, false);
 
-   for (bdf = sf->bitmaps; bdf != NULL; bdf = bdf->next) {
-      for (j = 0;
+   for (bdf=sf->bitmaps; bdf != NULL; bdf=bdf->next) {
+      for (j=0;
 	   bsizes[j] != 0 && ((bsizes[j] & 0xffff) != bdf->pixelsize
 			      || (bsizes[j] >> 16) != BDFDepth(bdf)); ++j);
-      if (bsizes[j] == 0)
+      if (bsizes[j]==0)
 	 continue;
-      for (i = 0; i < bdf->glyphcnt; ++i)
+      for (i=0; i < bdf->glyphcnt; ++i)
 	 if (!IsntBDFChar(bdf->glyphs[i]))
-	    sf->glyphs[i]->ttf_glyph = -2;
+	    sf->glyphs[i]->ttf_glyph=-2;
    }
 
-   j = 3;
-   for (i = 0; i < map->enccount; ++i)
+   j=3;
+   for (i=0; i < map->enccount; ++i)
       if (map->map[i] != -1) {
-	 SplineChar *sc = sf->glyphs[map->map[i]];
+	 SplineChar *sc=sf->glyphs[map->map[i]];
 
-	 if (sc->ttf_glyph == -2) {
-	    sc->ttf_glyph = j;
-	    bygid[j++] = sc->orig_pos;
+	 if (sc->ttf_glyph==-2) {
+	    sc->ttf_glyph=j;
+	    bygid[j++]=sc->orig_pos;
 	 }
       }
 
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 SplineChar *sc = sf->glyphs[i];
+	 SplineChar *sc=sf->glyphs[i];
 
-	 if (sc->ttf_glyph == -2) {
-	    sc->ttf_glyph = j;
-	    bygid[j++] = i;
+	 if (sc->ttf_glyph==-2) {
+	    sc->ttf_glyph=j;
+	    bygid[j++]=i;
 	 }
       }
 
-   gi->bygid = bygid;
-   gi->gcnt = j;
+   gi->bygid=bygid;
+   gi->gcnt=j;
    return j;
 }
 
-static int dumpglyphs(SplineFont * sf, struct glyphinfo *gi) {
+static int dumpglyphs(SplineFont *sf,struct glyphinfo *gi) {
    int i;
 
-   int fixed = gi->fixed_width;
+   int fixed=gi->fixed_width;
 
-   int answer, answered = -1;
+   int answer, answered=-1;
 
    QuickBlues(sf, gi->layer, &gi->bd);
    /*FindBlues(sf,gi->blues,NULL); */
 
    if (!gi->onlybitmaps) {
       if (sf->layers[gi->layer].order2)
-	 for (i = 0; i < sf->glyphcnt; ++i) {
-	    SplineChar *sc = sf->glyphs[i];
+	 for (i=0; i < sf->glyphcnt; ++i) {
+	    SplineChar *sc=sf->glyphs[i];
 
 	    if (SCWorthOutputting(sc))
 	       if (!SCPointsNumberedProperly(sc, gi->layer)) {
-		  if (answered == -1 && sc->ttf_instrs_len != 0) {
+		  if (answered==-1 && sc->ttf_instrs_len != 0) {
 		     char *buts[5];
 
-		     buts[0] = _("_Yes");
-		     buts[1] = _("Yes to _All");
-		     buts[2] = _("No _to All");
-		     buts[3] = _("_No");
-		     buts[4] = NULL;
+		     buts[0]=_("_Yes");
+		     buts[1]=_("Yes to _All");
+		     buts[2]=_("No _to All");
+		     buts[3]=_("_No");
+		     buts[4]=NULL;
 		     answer =0;
 		  } else
-		     answer = answered;
-		  if (answer == 0) {
+		     answer=answered;
+		  if (answer==0) {
 		     free(sc->ttf_instrs);
-		     sc->ttf_instrs = NULL;
-		     sc->ttf_instrs_len = 0;
+		     sc->ttf_instrs=NULL;
+		     sc->ttf_instrs_len=0;
 		  }
 		  SCNumberPoints(sc, gi->layer);
 	       }
 	 }
    }
 
-   gi->maxp->numGlyphs = gi->gcnt;
-   gi->loca = malloc((gi->maxp->numGlyphs + 1) * sizeof(uint32));
-   gi->pointcounts = malloc((gi->maxp->numGlyphs + 1) * sizeof(int32));
+   gi->maxp->numGlyphs=gi->gcnt;
+   gi->loca=malloc((gi->maxp->numGlyphs + 1) * sizeof(uint32));
+   gi->pointcounts=malloc((gi->maxp->numGlyphs + 1) * sizeof(int32));
    memset(gi->pointcounts, -1, (gi->maxp->numGlyphs + 1) * sizeof(int32));
-   gi->next_glyph = 0;
-   gi->glyphs = tmpfile();
-   gi->hmtx = tmpfile();
+   gi->next_glyph=0;
+   gi->glyphs=tmpfile();
+   gi->hmtx=tmpfile();
    if (sf->hasvmetrics)
-      gi->vmtx = tmpfile();
+      gi->vmtx=tmpfile();
    FigureFullMetricsEnd(sf, gi, true);
 
    if (fixed > 0) {
-      gi->lasthwidth = 3;
-      gi->hfullcnt = 3;
+      gi->lasthwidth=3;
+      gi->hfullcnt=3;
    }
-   for (i = 0; i < gi->gcnt; ++i) {
-      if (i == 0) {
+   for (i=0; i < gi->gcnt; ++i) {
+      if (i==0) {
 	 if (gi->bygid[0] != -1
-	     && (fixed <= 0 || sf->glyphs[gi->bygid[0]]->width == fixed))
+	     && (fixed <= 0 || sf->glyphs[gi->bygid[0]]->width==fixed))
 	    dumpglyph(sf->glyphs[gi->bygid[0]], gi);
 	 else
 	    dumpmissingglyph(sf, gi, fixed);
-      } else if (i <= 2 && gi->bygid[i] == -1)
+      } else if (i <= 2 && gi->bygid[i]==-1)
 	 dumpblankglyph(gi, sf, fixed);
       else if (gi->onlybitmaps) {
 	 if (gi->bygid[i] != -1 && sf->glyphs[gi->bygid[i]]->ttf_glyph > 0)
@@ -1634,35 +1634,35 @@ static int dumpglyphs(SplineFont * sf, struct glyphinfo *gi) {
 	       dumpglyph(sf->glyphs[gi->bygid[i]], gi);
 	 }
       }
-      if ((ftell(gi->glyphs) & 3) != 0) {
+      if ((aftell(gi->glyphs) & 3) != 0) {
 	 /* Apple says glyphs must be 16bit aligned */
-	 if (ftell(gi->glyphs) & 1)
-	    putc('\0', gi->glyphs);
+	 if (aftell(gi->glyphs) & 1)
+	    aputc('\0', gi->glyphs);
 	 /* MS says glyphs should be 32bit aligned */
-	 if (ftell(gi->glyphs) & 2)
+	 if (aftell(gi->glyphs) & 2)
 	    putshort(gi->glyphs, 0);
       }
    }
 
    /* extra location entry points to end of last glyph */
-   gi->loca[gi->next_glyph] = ftell(gi->glyphs);
+   gi->loca[gi->next_glyph]=aftell(gi->glyphs);
    /* Microsoft's Font Validator wants the last loca entry to point into the */
    /*  glyph table. I think that's an error on their part, but it's so easy */
    /*  to fix, I might as well (instead of pointing to right after the table) */
    /* Sigh. But if I do that, it complains that there's extra stuff in the */
    /*  glyph table. There's just no pleasing them */
    /* putlong(gi->glyphs,0); */
-   gi->glyph_len = ftell(gi->glyphs);
-   gi->hmtxlen = ftell(gi->hmtx);
+   gi->glyph_len=aftell(gi->glyphs);
+   gi->hmtxlen=aftell(gi->hmtx);
    /* pad out to four bytes */
    if (gi->hmtxlen & 2)
       putshort(gi->hmtx, 0);
    if (gi->loca[gi->next_glyph] & 3) {
-      for (i = 4 - (gi->loca[gi->next_glyph] & 3); i > 0; --i)
-	 putc('\0', gi->glyphs);
+      for (i=4 - (gi->loca[gi->next_glyph] & 3); i > 0; --i)
+	 aputc('\0', gi->glyphs);
    }
    if (sf->hasvmetrics) {
-      gi->vmtxlen = ftell(gi->vmtx);
+      gi->vmtxlen=aftell(gi->vmtx);
       if (gi->vmtxlen & 2)
 	 putshort(gi->vmtx, 0);
    }
@@ -1674,39 +1674,39 @@ static int dumpglyphs(SplineFont * sf, struct glyphinfo *gi) {
 }
 
 /* Generate a null glyf and loca table for X opentype bitmaps */
-static int dumpnoglyphs(SplineFont * sf, struct glyphinfo *gi) {
+static int dumpnoglyphs(SplineFont *sf,struct glyphinfo *gi) {
 
-   gi->glyphs = tmpfile();
-   gi->glyph_len = 0;
+   gi->glyphs=tmpfile();
+   gi->glyph_len=0;
    /* loca gets built in dummyloca */
    return (true);
 }
 
-static int storesid(struct alltabs *at, char *str) {
+static int storesid(struct alltabs *at,char *str) {
    int i;
 
-   FILE *news;
+   AFILE *news;
 
    char *pt;
 
    long pos;
 
    if (str != NULL) {		/* NULL is the magic string at end of array */
-      for (i = 0; cffnames[i] != NULL; ++i) {
-	 if (strcmp(cffnames[i], str) == 0)
+      for (i=0; cffnames[i] != NULL; ++i) {
+	 if (strcmp(cffnames[i], str)==0)
 	    return (i);
       }
    }
 
-   pos = ftell(at->sidf) + 1;
+   pos=aftell(at->sidf) + 1;
    if (pos >= 65536 && !at->sidlongoffset) {
-      at->sidlongoffset = true;
-      news = tmpfile();
-      rewind(at->sidh);
-      for (i = 0; i < at->sidcnt; ++i)
+      at->sidlongoffset=true;
+      news=tmpfile();
+      arewind(at->sidh);
+      for (i=0; i < at->sidcnt; ++i)
 	 putlong(news, getushort(at->sidh));
-      fclose(at->sidh);
-      at->sidh = news;
+      afclose(at->sidh);
+      at->sidh=news;
    }
    if (at->sidlongoffset)
       putlong(at->sidh, pos);
@@ -1714,39 +1714,39 @@ static int storesid(struct alltabs *at, char *str) {
       putshort(at->sidh, pos);
 
    if (str != NULL) {
-      for (pt = str; *pt; ++pt)
-	 putc(*pt, at->sidf);
+      for (pt=str; *pt; ++pt)
+	 aputc(*pt, at->sidf);
    }
    return (at->sidcnt++ + nStdStrings);
 }
 
-static void dumpint(FILE * cfff, int num) {
+static void dumpint(AFILE *cfff,int num) {
 
    if (num >= -107 && num <= 107)
-      putc(num + 139, cfff);
+      aputc(num + 139, cfff);
    else if (num >= 108 && num <= 1131) {
       num -= 108;
-      putc((num >> 8) + 247, cfff);
-      putc(num & 0xff, cfff);
+      aputc((num >> 8) + 247, cfff);
+      aputc(num & 0xff, cfff);
    } else if (num >= -1131 && num <= -108) {
-      num = -num;
+      num=-num;
       num -= 108;
-      putc((num >> 8) + 251, cfff);
-      putc(num & 0xff, cfff);
+      aputc((num >> 8) + 251, cfff);
+      aputc(num & 0xff, cfff);
    } else if (num >= -32768 && num < 32768) {
-      putc(28, cfff);
-      putc(num >> 8, cfff);
-      putc(num & 0xff, cfff);
+      aputc(28, cfff);
+      aputc(num >> 8, cfff);
+      aputc(num & 0xff, cfff);
    } else {			/* In dict data we have 4 byte ints, in type2 strings we don't */
-      putc(29, cfff);
-      putc((num >> 24) & 0xff, cfff);
-      putc((num >> 16) & 0xff, cfff);
-      putc((num >> 8) & 0xff, cfff);
-      putc(num & 0xff, cfff);
+      aputc(29, cfff);
+      aputc((num >> 24) & 0xff, cfff);
+      aputc((num >> 16) & 0xff, cfff);
+      aputc((num >> 8) & 0xff, cfff);
+      aputc(num & 0xff, cfff);
    }
 }
 
-static void dumpdbl(FILE * cfff, double d) {
+static void dumpdbl(AFILE *cfff,double d) {
    if (d - rint(d) > -.00001 && d - rint(d) < .00001)
       dumpint(cfff, (int) d);
    else {
@@ -1756,176 +1756,176 @@ static void dumpdbl(FILE * cfff, double d) {
       int sofar, n, odd;
 
       sprintf(buffer, "%g", d);
-      sofar = 0;
-      odd = true;
-      putc(30, cfff);		/* Start a double */
-      for (pt = buffer; *pt; ++pt) {
+      sofar=0;
+      odd=true;
+      aputc(30, cfff);		/* Start a double */
+      for (pt=buffer; *pt; ++pt) {
 	 if (isdigit(*pt))
-	    n = *pt - '0';
-	 else if (*pt == '.')
-	    n = 0xa;
-	 else if (*pt == '-')
-	    n = 0xe;
-	 else if ((*pt == 'E' || *pt == 'e') && pt[1] == '-') {
-	    n = 0xc;
+	    n=*pt - '0';
+	 else if (*pt=='.')
+	    n=0xa;
+	 else if (*pt=='-')
+	    n=0xe;
+	 else if ((*pt=='E' || *pt=='e') && pt[1]=='-') {
+	    n=0xc;
 	    ++pt;
-	 } else if (*pt == 'E' || *pt == 'e')
-	    n = 0xb;
+	 } else if (*pt=='E' || *pt=='e')
+	    n=0xb;
 	 else
-	    n = 0;		/* Should never happen */
+	    n=0;		/* Should never happen */
 	 if (odd) {
-	    sofar = n << 4;
-	    odd = false;
+	    sofar=n << 4;
+	    odd=false;
 	 } else {
-	    putc(sofar | n, cfff);
-	    sofar = 0;
-	    odd = true;
+	    aputc(sofar | n, cfff);
+	    sofar=0;
+	    odd=true;
 	 }
       }
-      if (sofar == 0)
-	 putc(0xff, cfff);
+      if (sofar==0)
+	 aputc(0xff, cfff);
       else
-	 putc(sofar | 0xf, cfff);
+	 aputc(sofar | 0xf, cfff);
    }
 }
 
-static void dumpoper(FILE * cfff, int oper) {
+static void dumpoper(AFILE *cfff,int oper) {
    if (oper != -1) {
       if (oper >= 256)
-	 putc(oper >> 8, cfff);
-      putc(oper & 0xff, cfff);
+	 aputc(oper >> 8, cfff);
+      aputc(oper & 0xff, cfff);
    }
 }
 
-static void dumpdbloper(FILE * cfff, double d, int oper) {
+static void dumpdbloper(AFILE *cfff,double d,int oper) {
    dumpdbl(cfff, d);
    dumpoper(cfff, oper);
 }
 
-static void dumpintoper(FILE * cfff, int v, int oper) {
+static void dumpintoper(AFILE *cfff,int v,int oper) {
    dumpint(cfff, v);
    dumpoper(cfff, oper);
 }
 
-static void dumpsizedint(FILE * cfff, int big, int num, int oper) {
+static void dumpsizedint(AFILE *cfff,int big,int num,int oper) {
    if (big) {
-      putc(29, cfff);
-      putc((num >> 24) & 0xff, cfff);
-      putc((num >> 16) & 0xff, cfff);
-      putc((num >> 8) & 0xff, cfff);
-      putc(num & 0xff, cfff);
+      aputc(29, cfff);
+      aputc((num >> 24) & 0xff, cfff);
+      aputc((num >> 16) & 0xff, cfff);
+      aputc((num >> 8) & 0xff, cfff);
+      aputc(num & 0xff, cfff);
    } else {
-      putc(28, cfff);
-      putc(num >> 8, cfff);
-      putc(num & 0xff, cfff);
+      aputc(28, cfff);
+      aputc(num >> 8, cfff);
+      aputc(num & 0xff, cfff);
    }
    dumpoper(cfff, oper);
 }
 
-static void dumpsid(FILE * cfff, struct alltabs *at, char *str, int oper) {
-   if (str == NULL)
+static void dumpsid(AFILE *cfff,struct alltabs *at,char *str,int oper) {
+   if (str==NULL)
       return;
    dumpint(cfff, storesid(at, str));
    dumpoper(cfff, oper);
 }
 
-static void DumpStrDouble(char *pt, FILE * cfff, int oper) {
+static void DumpStrDouble(char *pt,AFILE *cfff,int oper) {
    real d;
 
-   if (*pt == '[')
+   if (*pt=='[')
       ++pt;			/* For StdHW, StdVW */
-   d = strtod(pt, NULL);
+   d=strtod(pt, NULL);
    dumpdbloper(cfff, d, oper);
 }
 
-static void DumpDblArray(real * arr, int n, FILE * cfff, int oper) {
+static void DumpDblArray(real *arr,int n,AFILE *cfff,int oper) {
    int mi, i;
 
-   for (mi = n - 1; mi >= 0 && arr[mi] == 0; --mi);
+   for (mi=n - 1; mi >= 0 && arr[mi]==0; --mi);
    if (mi < 0)
       return;
    dumpdbl(cfff, arr[0]);
-   for (i = 1; i <= mi; ++i)
+   for (i=1; i <= mi; ++i)
       dumpdbl(cfff, arr[i] - arr[i - 1]);
    dumpoper(cfff, oper);
 }
 
-static void DumpStrArray(char *pt, FILE * cfff, int oper) {
-   real d, last = 0;
+static void DumpStrArray(char *pt,AFILE *cfff,int oper) {
+   real d, last=0;
 
    char *end;
 
-   while (*pt == ' ')
+   while (*pt==' ')
       ++pt;
-   if (*pt == '\0')
+   if (*pt=='\0')
       return;
-   if (*pt == '[')
+   if (*pt=='[')
       ++pt;
-   while (*pt == ' ')
+   while (*pt==' ')
       ++pt;
    while (*pt != ']' && *pt != '\0') {
-      d = strtod(pt, &end);
-      if (pt == end)		/* User screwed up. Should be a number */
+      d=strtod(pt, &end);
+      if (pt==end)		/* User screwed up. Should be a number */
 	 break;
       dumpdbl(cfff, d - last);
-      last = d;
-      pt = end;
-      while (*pt == ' ')
+      last=d;
+      pt=end;
+      while (*pt==' ')
 	 ++pt;
    }
    dumpoper(cfff, oper);
 }
 
-static void dumpcffheader(SplineFont * sf, FILE * cfff) {
-   putc('\1', cfff);		/* Major version: 1 */
-   putc('\0', cfff);		/* Minor version: 0 */
-   putc('\4', cfff);		/* Header size in bytes */
-   putc('\4', cfff);		/* Absolute Offset size. */
+static void dumpcffheader(SplineFont *sf,AFILE *cfff) {
+   aputc('\1', cfff);		/* Major version: 1 */
+   aputc('\0', cfff);		/* Minor version: 0 */
+   aputc('\4', cfff);		/* Header size in bytes */
+   aputc('\4', cfff);		/* Absolute Offset size. */
    /* I don't think there are any absolute offsets that aren't encoded */
    /*  in a dict as numbers (ie. inherently variable sized items) */
 }
 
-static void dumpcffnames(SplineFont * sf, FILE * cfff) {
+static void dumpcffnames(SplineFont *sf,AFILE *cfff) {
    char *pt;
 
    putshort(cfff, 1);		/* One font name */
-   putc('\1', cfff);		/* Offset size */
-   putc('\1', cfff);		/* Offset to first name */
-   putc('\1' + strlen(sf->fontname), cfff);
-   for (pt = sf->fontname; *pt; ++pt)
-      putc(*pt, cfff);
+   aputc('\1', cfff);		/* Offset size */
+   aputc('\1', cfff);		/* Offset to first name */
+   aputc('\1' + strlen(sf->fontname), cfff);
+   for (pt=sf->fontname; *pt; ++pt)
+      aputc(*pt, cfff);
 }
 
-static void dumpcffcharset(SplineFont * sf, struct alltabs *at) {
+static void dumpcffcharset(SplineFont *sf,struct alltabs *at) {
    int i;
 
-   at->gn_sid = calloc(at->gi.gcnt, sizeof(uint32));
-   putc(0, at->charset);
+   at->gn_sid=calloc(at->gi.gcnt, sizeof(uint32));
+   aputc(0, at->charset);
    /* I always use a format 0 charset. ie. an array of SIDs in random order */
 
    /* First element must be ".notdef" and is omitted */
 
-   for (i = 1; i < at->gi.gcnt; ++i)
+   for (i=1; i < at->gi.gcnt; ++i)
       if (at->gi.bygid[i] != -1
 	  && SCWorthOutputting(sf->glyphs[at->gi.bygid[i]])) {
-	 at->gn_sid[i] = storesid(at, sf->glyphs[at->gi.bygid[i]]->name);
+	 at->gn_sid[i]=storesid(at, sf->glyphs[at->gi.bygid[i]]->name);
 	 putshort(at->charset, at->gn_sid[i]);
       }
 }
 
-static void dumpcffcidset(SplineFont * sf, struct alltabs *at) {
+static void dumpcffcidset(SplineFont *sf,struct alltabs *at) {
    int gid, start;
 
-   putc(2, at->charset);
+   aputc(2, at->charset);
 
-   start = -1;			/* Glyph 0 always maps to CID 0, and is omitted */
-   for (gid = 1; gid < at->gi.gcnt; ++gid) {
-      if (start == -1)
-	 start = gid;
+   start=-1;			/* Glyph 0 always maps to CID 0, and is omitted */
+   for (gid=1; gid < at->gi.gcnt; ++gid) {
+      if (start==-1)
+	 start=gid;
       else if (at->gi.bygid[gid] - at->gi.bygid[start] != gid - start) {
 	 putshort(at->charset, at->gi.bygid[start]);
 	 putshort(at->charset, at->gi.bygid[gid - 1] - at->gi.bygid[start]);
-	 start = gid;
+	 start=gid;
       }
    }
    if (start != -1) {
@@ -1934,68 +1934,68 @@ static void dumpcffcidset(SplineFont * sf, struct alltabs *at) {
    }
 }
 
-static void dumpcfffdselect(SplineFont * sf, struct alltabs *at) {
+static void dumpcfffdselect(SplineFont *sf,struct alltabs *at) {
    int cid, k, lastfd, cnt;
 
    int gid;
 
-   putc(3, at->fdselect);
+   aputc(3, at->fdselect);
    putshort(at->fdselect, 0);	/* number of ranges, fill in later */
 
-   for (k = 0; k < sf->subfontcnt; ++k)
+   for (k=0; k < sf->subfontcnt; ++k)
       if (SCWorthOutputting(sf->subfonts[k]->glyphs[0]))
 	 break;
-   if (k == sf->subfontcnt)
+   if (k==sf->subfontcnt)
       --k;			/* If CID 0 not defined, put it in last font */
    putshort(at->fdselect, 0);
-   putc(k, at->fdselect);
-   lastfd = k;
-   cnt = 1;
-   for (gid = 1; gid < at->gi.gcnt; ++gid) {
-      cid = at->gi.bygid[gid];
-      for (k = 0; k < sf->subfontcnt; ++k) {
+   aputc(k, at->fdselect);
+   lastfd=k;
+   cnt=1;
+   for (gid=1; gid < at->gi.gcnt; ++gid) {
+      cid=at->gi.bygid[gid];
+      for (k=0; k < sf->subfontcnt; ++k) {
 	 if (cid < sf->subfonts[k]->glyphcnt &&
 	     SCWorthOutputting(sf->subfonts[k]->glyphs[cid]))
 	    break;
       }
-      if (k == sf->subfontcnt)
+      if (k==sf->subfontcnt)
 	 /* Doesn't map to a glyph, irrelevant */ ;
       else {
 	 if (k != lastfd) {
 	    putshort(at->fdselect, gid);
-	    putc(k, at->fdselect);
-	    lastfd = k;
+	    aputc(k, at->fdselect);
+	    lastfd=k;
 	    ++cnt;
 	 }
       }
    }
    putshort(at->fdselect, gid);
-   fseek(at->fdselect, 1, SEEK_SET);
+   afseek(at->fdselect, 1, SEEK_SET);
    putshort(at->fdselect, cnt);
-   fseek(at->fdselect, 0, SEEK_END);
+   afseek(at->fdselect, 0, SEEK_END);
 }
 
-static void dumpcffencoding(SplineFont * sf, struct alltabs *at) {
+static void dumpcffencoding(SplineFont *sf,struct alltabs *at) {
    int i, cnt, anydups;
 
-   uint32 start_pos = ftell(at->encoding);
+   uint32 start_pos=aftell(at->encoding);
 
    SplineChar *sc;
 
-   EncMap *map = at->map;
+   EncMap *map=at->map;
 
-   putc(0, at->encoding);
+   aputc(0, at->encoding);
    /* I always use a format 0 encoding. ie. an array of glyph indexes */
-   putc(0xff, at->encoding);	/* fixup later */
+   aputc(0xff, at->encoding);	/* fixup later */
 
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
-	 sf->glyphs[i]->ticked = false;
+	 sf->glyphs[i]->ticked=false;
 
-   cnt = 0;
-   anydups = 0;
-   for (i = 0; i < 256 && i < map->enccount; ++i)
-      if (map->map[i] != -1 && (sc = sf->glyphs[map->map[i]]) != NULL) {
+   cnt=0;
+   anydups=0;
+   for (i=0; i < 256 && i < map->enccount; ++i)
+      if (map->map[i] != -1 && (sc=sf->glyphs[map->map[i]]) != NULL) {
 	 if (sc->ttf_glyph > 255)
 	    continue;
 	 if (sc->ticked) {
@@ -2003,153 +2003,153 @@ static void dumpcffencoding(SplineFont * sf, struct alltabs *at) {
 	 } else if (sc->ttf_glyph > 0) {
 	    if (cnt >= 255)
 	       break;
-	    putc(i, at->encoding);
+	    aputc(i, at->encoding);
 	    ++cnt;
-	    sc->ticked = true;
+	    sc->ticked=true;
 	 }
       }
    if (anydups) {
-      fseek(at->encoding, start_pos, SEEK_SET);
-      putc(0x80, at->encoding);
-      putc(cnt, at->encoding);
-      fseek(at->encoding, 0, SEEK_END);
-      putc(anydups, at->encoding);
+      afseek(at->encoding, start_pos, SEEK_SET);
+      aputc(0x80, at->encoding);
+      aputc(cnt, at->encoding);
+      afseek(at->encoding, 0, SEEK_END);
+      aputc(anydups, at->encoding);
 
-      for (i = 0; i < sf->glyphcnt; ++i)
+      for (i=0; i < sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL)
-	    sf->glyphs[i]->ticked = false;
-      for (i = 0; i < 256 && i < map->enccount; ++i)
-	 if (map->map[i] != -1 && (sc = sf->glyphs[map->map[i]]) != NULL) {
+	    sf->glyphs[i]->ticked=false;
+      for (i=0; i < 256 && i < map->enccount; ++i)
+	 if (map->map[i] != -1 && (sc=sf->glyphs[map->map[i]]) != NULL) {
 	    if (sc->ttf_glyph > 255)
 	       continue;
 	    if (sc->ticked) {
-	       putc(i, at->encoding);
+	       aputc(i, at->encoding);
 	       putshort(at->encoding, at->gn_sid[sc->ttf_glyph]);
 	    }
-	    sc->ticked = true;
+	    sc->ticked=true;
 	 }
    } else {
-      fseek(at->encoding, start_pos + 1, SEEK_SET);
-      putc(cnt, at->encoding);
-      fseek(at->encoding, 0, SEEK_END);
+      afseek(at->encoding, start_pos + 1, SEEK_SET);
+      aputc(cnt, at->encoding);
+      afseek(at->encoding, 0, SEEK_END);
    }
    free(at->gn_sid);
-   at->gn_sid = NULL;
+   at->gn_sid=NULL;
 }
 
-static void _dumpcffstrings(FILE * file, struct pschars *strs) {
+static void _dumpcffstrings(AFILE *file,struct pschars *strs) {
    int i, len, offsize;
 
    /* First figure out the offset size */
-   len = 1;
-   for (i = 0; i < strs->next; ++i)
+   len=1;
+   for (i=0; i < strs->next; ++i)
       len += strs->lens[i];
 
    /* Then output the index size and offsets */
    putshort(file, strs->next);
    if (strs->next != 0) {
       /* presumably offsets are unsigned. But the docs don't state this in the obvious place */
-      offsize = len <= 255 ? 1 : len <= 65535 ? 2 : len <= 0xffffff ? 3 : 4;
-      putc(offsize, file);
-      len = 1;
-      for (i = 0; i < strs->next; ++i) {
+      offsize=len <= 255 ? 1 : len <= 65535 ? 2 : len <= 0xffffff ? 3 : 4;
+      aputc(offsize, file);
+      len=1;
+      for (i=0; i < strs->next; ++i) {
 	 dumpoffset(file, offsize, len);
 	 len += strs->lens[i];
       }
       dumpoffset(file, offsize, len);
 
       /* last of all the strings */
-      for (i = 0; i < strs->next; ++i) {
-	 uint8 *pt = strs->values[i], *end = pt + strs->lens[i];
+      for (i=0; i < strs->next; ++i) {
+	 uint8 *pt=strs->values[i], *end=pt + strs->lens[i];
 
 	 while (pt < end)
-	    putc(*pt++, file);
+	    aputc(*pt++, file);
       }
    }
 }
 
-static FILE *dumpcffstrings(struct pschars *strs) {
-   FILE *file = tmpfile();
+static AFILE *dumpcffstrings(struct pschars *strs) {
+   AFILE *file=tmpfile();
 
    _dumpcffstrings(file, strs);
    PSCharsFree(strs);
    return (file);
 }
 
-int SFFigureDefWidth(SplineFont * sf, int *_nomwid) {
+int SFFigureDefWidth(SplineFont *sf, int *_nomwid) {
    uint16 *widths;
 
    uint32 *cumwid;
 
-   int nomwid, defwid, i, sameval = (int) 0x80000000, maxw = 0, allsame =
+   int nomwid, defwid, i, sameval=(int) 0x80000000, maxw=0, allsame =
       true;
    int cnt, j;
 
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (SCWorthOutputting(sf->glyphs[i])) {
 	 if (maxw < sf->glyphs[i]->width)
-	    maxw = sf->glyphs[i]->width;
-	 if (sameval == 0x8000000)
-	    sameval = sf->glyphs[i]->width;
+	    maxw=sf->glyphs[i]->width;
+	 if (sameval==0x8000000)
+	    sameval=sf->glyphs[i]->width;
 	 else if (sameval != sf->glyphs[i]->width)
-	    allsame = false;
+	    allsame=false;
       }
    if (allsame) {
-      nomwid = defwid = sameval;
+      nomwid=defwid=sameval;
    } else {
       ++maxw;
       if (maxw > 65535)
-	 maxw = 3 * (sf->ascent + sf->descent);
-      widths = calloc(maxw, sizeof(uint16));
-      cumwid = calloc(maxw, sizeof(uint32));
-      defwid = 0;
-      cnt = 0;
-      for (i = 0; i < sf->glyphcnt; ++i)
+	 maxw=3 * (sf->ascent + sf->descent);
+      widths=calloc(maxw, sizeof(uint16));
+      cumwid=calloc(maxw, sizeof(uint32));
+      defwid=0;
+      cnt=0;
+      for (i=0; i < sf->glyphcnt; ++i)
 	 if (SCWorthOutputting(sf->glyphs[i]) &&
 	     sf->glyphs[i]->width >= 0 && sf->glyphs[i]->width < maxw)
 	    if (++widths[sf->glyphs[i]->width] > cnt) {
-	       defwid = sf->glyphs[i]->width;
-	       cnt = widths[defwid];
+	       defwid=sf->glyphs[i]->width;
+	       cnt=widths[defwid];
 	    }
-      widths[defwid] = 0;
-      for (i = 0; i < maxw; ++i)
-	 for (j = -107; j <= 107; ++j)
+      widths[defwid]=0;
+      for (i=0; i < maxw; ++i)
+	 for (j=-107; j <= 107; ++j)
 	    if (i + j >= 0 && i + j < maxw)
 	       cumwid[i] += widths[i + j];
-      cnt = 0;
-      nomwid = 0;
-      for (i = 0; i < maxw; ++i)
+      cnt=0;
+      nomwid=0;
+      for (i=0; i < maxw; ++i)
 	 if (cnt < cumwid[i]) {
-	    cnt = cumwid[i];
-	    nomwid = i;
+	    cnt=cumwid[i];
+	    nomwid=i;
 	 }
       free(widths);
       free(cumwid);
    }
    if (_nomwid != NULL)
-      *_nomwid = nomwid;
+      *_nomwid=nomwid;
    return (defwid);
 }
 
-static void ATFigureDefWidth(SplineFont * sf, struct alltabs *at, int subfont) {
+static void ATFigureDefWidth(SplineFont *sf,struct alltabs *at,int subfont) {
    int nomwid, defwid;
 
-   defwid = SFFigureDefWidth(sf, &nomwid);
-   if (subfont == -1)
-      at->defwid = defwid;
+   defwid=SFFigureDefWidth(sf, &nomwid);
+   if (subfont==-1)
+      at->defwid=defwid;
    else
-      at->fds[subfont].defwid = defwid;
-   if (subfont == -1)
-      at->nomwid = nomwid;
+      at->fds[subfont].defwid=defwid;
+   if (subfont==-1)
+      at->nomwid=nomwid;
    else
-      at->fds[subfont].nomwid = nomwid;
+      at->fds[subfont].nomwid=nomwid;
 }
 
-static void dumpcffprivate(SplineFont * sf, struct alltabs *at, int subfont,
+static void dumpcffprivate(SplineFont *sf,struct alltabs *at,int subfont,
 			   int subrcnt) {
    char *pt;
 
-   FILE *private = subfont == -1 ? at->private : at->fds[subfont].private;
+   AFILE *private=subfont==-1 ? at->private : at->fds[subfont].private;
 
    int mi, i;
 
@@ -2161,63 +2161,63 @@ static void dumpcffprivate(SplineFont * sf, struct alltabs *at, int subfont,
 
    real stdhw[1], stdvw[1];
 
-   int hasblue = 0, hash = 0, hasv = 0, bs;
+   int hasblue=0, hash=0, hasv=0, bs;
 
    int nomwid, defwid;
 
-   EncMap *map = at->map;
+   EncMap *map=at->map;
 
    double bluescale;
 
    /* The private dict is not in an index, so no index header. Just the data */
 
-   if (subfont == -1)
-      defwid = at->defwid;
+   if (subfont==-1)
+      defwid=at->defwid;
    else
-      defwid = at->fds[subfont].defwid;
+      defwid=at->fds[subfont].defwid;
    dumpintoper(private, defwid, 20);	/* Default Width */
-   if (subfont == -1)
-      nomwid = at->nomwid;
+   if (subfont==-1)
+      nomwid=at->nomwid;
    else
-      nomwid = at->fds[subfont].nomwid;
+      nomwid=at->fds[subfont].nomwid;
    dumpintoper(private, nomwid, 21);	/* Nominative Width */
 
-   bs = SplineFontIsFlexible(sf, at->gi.layer, at->gi.flags);
-   hasblue = PSDictHasEntry(sf->private, "BlueValues") != NULL;
-   hash = PSDictHasEntry(sf->private, "StdHW") != NULL;
-   hasv = PSDictHasEntry(sf->private, "StdVW") != NULL;
+   bs=SplineFontIsFlexible(sf, at->gi.layer, at->gi.flags);
+   hasblue=PSDictHasEntry(sf->private, "BlueValues") != NULL;
+   hash=PSDictHasEntry(sf->private, "StdHW") != NULL;
+   hasv=PSDictHasEntry(sf->private, "StdVW") != NULL;
    if (autohint_before_generate) {
       SplineFontAutoHint(sf, at->gi.layer);
    }
 
-   otherblues[0] = otherblues[1] = bluevalues[0] = bluevalues[1] = 0;
+   otherblues[0]=otherblues[1]=bluevalues[0]=bluevalues[1]=0;
    if (!hasblue) {
       FindBlues(sf, at->gi.layer, bluevalues, otherblues);
    }
 
-   stdhw[0] = stdvw[0] = 0;
+   stdhw[0]=stdvw[0]=0;
    if (!hash) {
       FindHStems(sf, stemsnaph, snapcnt);
-      mi = -1;
-      for (i = 0; stemsnaph[i] != 0 && i < 12; ++i)
-	 if (mi == -1)
-	    mi = i;
+      mi=-1;
+      for (i=0; stemsnaph[i] != 0 && i < 12; ++i)
+	 if (mi==-1)
+	    mi=i;
 	 else if (snapcnt[i] > snapcnt[mi])
-	    mi = i;
+	    mi=i;
       if (mi != -1)
-	 stdhw[0] = stemsnaph[mi];
+	 stdhw[0]=stemsnaph[mi];
    }
 
    if (!hasv) {
       FindVStems(sf, stemsnapv, snapcnt);
-      mi = -1;
-      for (i = 0; stemsnapv[i] != 0 && i < 12; ++i)
-	 if (mi == -1)
-	    mi = i;
+      mi=-1;
+      for (i=0; stemsnapv[i] != 0 && i < 12; ++i)
+	 if (mi==-1)
+	    mi=i;
 	 else if (snapcnt[i] > snapcnt[mi])
-	    mi = i;
+	    mi=i;
       if (mi != -1)
-	 stdvw[0] = stemsnapv[mi];
+	 stdvw[0]=stemsnapv[mi];
    }
 
    if (hasblue)
@@ -2225,29 +2225,29 @@ static void dumpcffprivate(SplineFont * sf, struct alltabs *at, int subfont,
    else
       DumpDblArray(bluevalues, sizeof(bluevalues) / sizeof(bluevalues[0]),
 		   private, 6);
-   if ((pt = PSDictHasEntry(sf->private, "OtherBlues")) != NULL)
+   if ((pt=PSDictHasEntry(sf->private, "OtherBlues")) != NULL)
       DumpStrArray(pt, private, 7);
    else if (!hasblue)
       DumpDblArray(otherblues, sizeof(otherblues) / sizeof(otherblues[0]),
 		   private, 7);
-   if ((pt = PSDictHasEntry(sf->private, "FamilyBlues")) != NULL)
+   if ((pt=PSDictHasEntry(sf->private, "FamilyBlues")) != NULL)
       DumpStrArray(pt, private, 8);
-   bluescale = BlueScaleFigure(sf->private, bluevalues, otherblues);
-   if ((pt = PSDictHasEntry(sf->private, "FamilyOtherBlues")) != NULL)
+   bluescale=BlueScaleFigure(sf->private, bluevalues, otherblues);
+   if ((pt=PSDictHasEntry(sf->private, "FamilyOtherBlues")) != NULL)
       DumpStrArray(pt, private, 9);
-   if ((pt = PSDictHasEntry(sf->private, "BlueScale")) != NULL)
+   if ((pt=PSDictHasEntry(sf->private, "BlueScale")) != NULL)
       DumpStrDouble(pt, private, (12 << 8) + 9);
    else if (bluescale != -1)
       dumpdbloper(private, bluescale, (12 << 8) + 9);
-   if ((pt = PSDictHasEntry(sf->private, "BlueShift")) != NULL)
+   if ((pt=PSDictHasEntry(sf->private, "BlueShift")) != NULL)
       DumpStrDouble(pt, private, (12 << 8) + 10);
    else
       dumpintoper(private, bs, (12 << 8) + 10);
-   if ((pt = PSDictHasEntry(sf->private, "BlueFuzz")) != NULL)
+   if ((pt=PSDictHasEntry(sf->private, "BlueFuzz")) != NULL)
       DumpStrDouble(pt, private, (12 << 8) + 11);
    if (hash) {
       DumpStrDouble(PSDictHasEntry(sf->private, "StdHW"), private, 10);
-      if ((pt = PSDictHasEntry(sf->private, "StemSnapH")) != NULL)
+      if ((pt=PSDictHasEntry(sf->private, "StemSnapH")) != NULL)
 	 DumpStrArray(pt, private, (12 << 8) | 12);
    } else {
       if (stdhw[0] != 0)
@@ -2257,7 +2257,7 @@ static void dumpcffprivate(SplineFont * sf, struct alltabs *at, int subfont,
    }
    if (hasv) {
       DumpStrDouble(PSDictHasEntry(sf->private, "StdVW"), private, 11);
-      if ((pt = PSDictHasEntry(sf->private, "StemSnapV")) != NULL)
+      if ((pt=PSDictHasEntry(sf->private, "StemSnapV")) != NULL)
 	 DumpStrArray(pt, private, (12 << 8) | 13);
    } else {
       if (stdvw[0] != 0)
@@ -2265,8 +2265,8 @@ static void dumpcffprivate(SplineFont * sf, struct alltabs *at, int subfont,
       DumpDblArray(stemsnapv, sizeof(stemsnapv) / sizeof(stemsnapv[0]),
 		   private, (12 << 8) | 13);
    }
-   if ((pt = PSDictHasEntry(sf->private, "ForceBold")) != NULL) {
-      dumpintoper(private, *pt == 't' || *pt == 'T', (12 << 8) | 14);
+   if ((pt=PSDictHasEntry(sf->private, "ForceBold")) != NULL) {
+      dumpintoper(private, *pt=='t' || *pt=='T', (12 << 8) | 14);
    } else if (sf->weight != NULL &&
 	      (strstrmatch(sf->weight, "Bold") != NULL ||
 	       strstrmatch(sf->weight, "Demi") != NULL ||
@@ -2275,39 +2275,39 @@ static void dumpcffprivate(SplineFont * sf, struct alltabs *at, int subfont,
 	       strstrmatch(sf->weight, "Heavy") != NULL ||
 	       strstrmatch(sf->weight, "Black") != NULL))
       dumpintoper(private, 1, (12 << 8) | 14);
-   if ((pt = PSDictHasEntry(sf->private, "LanguageGroup")) != NULL)
+   if ((pt=PSDictHasEntry(sf->private, "LanguageGroup")) != NULL)
       DumpStrDouble(pt, private, (12 << 8) + 17);
-   else if (map == NULL)
+   else if (map==NULL)
       /* Do Nothing */ ;
    else if (map->enc->is_japanese ||
 	    map->enc->is_korean ||
 	    map->enc->is_tradchinese || map->enc->is_simplechinese)
       dumpintoper(private, 1, (12 << 8) | 17);
-   if ((pt = PSDictHasEntry(sf->private, "ExpansionFactor")) != NULL)
+   if ((pt=PSDictHasEntry(sf->private, "ExpansionFactor")) != NULL)
       DumpStrDouble(pt, private, (12 << 8) + 18);
    if (subrcnt != 0)
-      dumpsizedint(private, false, ftell(private) + 3 + 1, 19);	/* Subrs */
+      dumpsizedint(private, false, aftell(private) + 3 + 1, 19);	/* Subrs */
 
-   if (subfont == -1)
-      at->privatelen = ftell(private);
+   if (subfont==-1)
+      at->privatelen=aftell(private);
    else
-      at->fds[subfont].privatelen = ftell(private);
+      at->fds[subfont].privatelen=aftell(private);
 }
 
 /* When we exit this the topdict is not complete, we still need to fill in */
 /*  values for charset,encoding,charstrings and private. Then we need to go */
 /*  back and fill in the table length (at lenpos) */
-static void dumpcfftopdict(SplineFont * sf, struct alltabs *at) {
+static void dumpcfftopdict(SplineFont *sf,struct alltabs *at) {
    char *pt, *end;
 
-   FILE *cfff = at->cfff;
+   AFILE *cfff=at->cfff;
 
    DBounds b;
 
    putshort(cfff, 1);		/* One top dict */
-   putc('\2', cfff);		/* Offset size */
+   aputc('\2', cfff);		/* Offset size */
    putshort(cfff, 1);		/* Offset to topdict */
-   at->lenpos = ftell(cfff);
+   at->lenpos=aftell(cfff);
    putshort(cfff, 0);		/* placeholder for final position (final offset in index points beyond last element) */
    dumpsid(cfff, at, sf->version, 0);
    dumpsid(cfff, at, sf->copyright, 1);
@@ -2340,26 +2340,26 @@ static void dumpcfftopdict(SplineFont * sf, struct alltabs *at) {
 		  sf->uniqueid ? sf->uniqueid : 4000000 + (rand() & 0x3ffff),
 		  13);
    SplineFontLayerFindBounds(sf, at->gi.layer, &b);
-   at->gi.xmin = b.minx;
-   at->gi.ymin = b.miny;
-   at->gi.xmax = b.maxx;
-   at->gi.ymax = b.maxy;
+   at->gi.xmin=b.minx;
+   at->gi.ymin=b.miny;
+   at->gi.xmax=b.maxx;
+   at->gi.ymax=b.maxy;
    dumpdbl(cfff, floor(b.minx));
    dumpdbl(cfff, floor(b.miny));
    dumpdbl(cfff, ceil(b.maxx));
    dumpdbloper(cfff, ceil(b.maxy), 5);
    /* We'll never set StrokeWidth */
    if (sf->xuid != NULL && sf->use_xuid) {
-      pt = sf->xuid;
-      if (*pt == '[')
+      pt=sf->xuid;
+      if (*pt=='[')
 	 ++pt;
       while (*pt && *pt != ']') {
 	 dumpint(cfff, strtol(pt, &end, 10));
-	 if (pt == end)		/* garbage in XUID */
+	 if (pt==end)		/* garbage in XUID */
 	    break;
-	 for (pt = end; *pt == ' '; ++pt);
+	 for (pt=end; *pt==' '; ++pt);
       }
-      putc(14, cfff);
+      aputc(14, cfff);
       if (sf->changed_since_xuidchanged)
 	 SFIncrementXUID(sf);
    }
@@ -2369,8 +2369,8 @@ static void dumpcfftopdict(SplineFont * sf, struct alltabs *at) {
    /* Length of, and Offset to private (oper=18) needed here (not for CID ) */
 }
 
-static int dumpcffdict(SplineFont * sf, struct alltabs *at) {
-   FILE *fdarray = at->fdarray;
+static int dumpcffdict(SplineFont *sf,struct alltabs *at) {
+   AFILE *fdarray=at->fdarray;
 
    int pstart;
 
@@ -2386,52 +2386,52 @@ static int dumpcffdict(SplineFont * sf, struct alltabs *at) {
       dumpint(fdarray, 0);
       dumpintoper(fdarray, 0, (12 << 8) | 7);
    }
-   pstart = ftell(fdarray);
+   pstart=aftell(fdarray);
    dumpsizedint(fdarray, false, 0, -1);	/* private length */
    dumpsizedint(fdarray, true, 0, 18);	/* private offset */
    return (pstart);
 }
 
-static void dumpcffdictindex(SplineFont * sf, struct alltabs *at) {
+static void dumpcffdictindex(SplineFont *sf,struct alltabs *at) {
    int i;
 
    int pos;
 
    putshort(at->fdarray, sf->subfontcnt);
-   putc('\2', at->fdarray);	/* DICTs aren't very big, and there are at most 255 */
+   aputc('\2', at->fdarray);	/* DICTs aren't very big, and there are at most 255 */
    putshort(at->fdarray, 1);	/* Offset to first dict */
-   for (i = 0; i < sf->subfontcnt; ++i)
+   for (i=0; i < sf->subfontcnt; ++i)
       putshort(at->fdarray, 0);	/* Dump offset placeholders (note there's one extra to mark the end) */
-   pos = ftell(at->fdarray) - 1;
-   for (i = 0; i < sf->subfontcnt; ++i) {
-      at->fds[i].fillindictmark = dumpcffdict(sf->subfonts[i], at);
-      at->fds[i].eodictmark = ftell(at->fdarray);
+   pos=aftell(at->fdarray) - 1;
+   for (i=0; i < sf->subfontcnt; ++i) {
+      at->fds[i].fillindictmark=dumpcffdict(sf->subfonts[i], at);
+      at->fds[i].eodictmark=aftell(at->fdarray);
       if (at->fds[i].eodictmark > 65536)
 	 IError("The DICT INDEX got too big, result won't work");
    }
-   fseek(at->fdarray, 2 * sizeof(short) + sizeof(char), SEEK_SET);
-   for (i = 0; i < sf->subfontcnt; ++i)
+   afseek(at->fdarray, 2 * sizeof(short) + sizeof(char), SEEK_SET);
+   for (i=0; i < sf->subfontcnt; ++i)
       putshort(at->fdarray, at->fds[i].eodictmark - pos);
-   fseek(at->fdarray, 0, SEEK_END);
+   afseek(at->fdarray, 0, SEEK_END);
 }
 
-static void dumpcffcidtopdict(SplineFont * sf, struct alltabs *at) {
+static void dumpcffcidtopdict(SplineFont *sf,struct alltabs *at) {
    char *pt, *end;
 
-   FILE *cfff = at->cfff;
+   AFILE *cfff=at->cfff;
 
    DBounds b;
 
-   int cidcnt = 0, k;
+   int cidcnt=0, k;
 
-   for (k = 0; k < sf->subfontcnt; ++k)
+   for (k=0; k < sf->subfontcnt; ++k)
       if (sf->subfonts[k]->glyphcnt > cidcnt)
-	 cidcnt = sf->subfonts[k]->glyphcnt;
+	 cidcnt=sf->subfonts[k]->glyphcnt;
 
    putshort(cfff, 1);		/* One top dict */
-   putc('\2', cfff);		/* Offset size */
+   aputc('\2', cfff);		/* Offset size */
    putshort(cfff, 1);		/* Offset to topdict */
-   at->lenpos = ftell(cfff);
+   at->lenpos=aftell(cfff);
    putshort(cfff, 0);		/* placeholder for final position */
    dumpsid(cfff, at, sf->cidregistry, -1);
    dumpsid(cfff, at, sf->ordering, -1);
@@ -2455,24 +2455,24 @@ static void dumpcffcidtopdict(SplineFont * sf, struct alltabs *at) {
    /*  it seems to be ignored everywhere, so we omit it */
 
    CIDLayerFindBounds(sf, at->gi.layer, &b);
-   at->gi.xmin = b.minx;
-   at->gi.ymin = b.miny;
-   at->gi.xmax = b.maxx;
-   at->gi.ymax = b.maxy;
+   at->gi.xmin=b.minx;
+   at->gi.ymin=b.miny;
+   at->gi.xmax=b.maxx;
+   at->gi.ymax=b.maxy;
    dumpdbl(cfff, floor(b.minx));
    dumpdbl(cfff, floor(b.miny));
    dumpdbl(cfff, ceil(b.maxx));
    dumpdbloper(cfff, ceil(b.maxy), 5);
    /* We'll never set StrokeWidth */
    if (sf->xuid != NULL && sf->use_xuid) {
-      pt = sf->xuid;
-      if (*pt == '[')
+      pt=sf->xuid;
+      if (*pt=='[')
 	 ++pt;
       while (*pt && *pt != ']') {
 	 dumpint(cfff, strtol(pt, &end, 10));
-	 for (pt = end; *pt == ' '; ++pt);
+	 for (pt=end; *pt==' '; ++pt);
       }
-      putc(14, cfff);
+      aputc(14, cfff);
       if (sf->changed_since_xuidchanged)
 	 SFIncrementXUID(sf);
    }
@@ -2490,10 +2490,10 @@ static void dumpcffcidtopdict(SplineFont * sf, struct alltabs *at) {
    /* Offset to FDSelect (oper=12,37) needed here */
 }
 
-static int isStdEncoding(SplineFont * sf, EncMap * map) {
+static int isStdEncoding(SplineFont *sf,EncMap *map) {
    int i;
 
-   for (i = 0; i < 256 && i < map->enccount; ++i)
+   for (i=0; i < 256 && i < map->enccount; ++i)
       if (map->map[i] != -1 && sf->glyphs[map->map[i]] != NULL)
 	 if (sf->glyphs[map->map[i]]->unicodeenc != -1)
 	    if (sf->glyphs[map->map[i]]->unicodeenc !=
@@ -2503,28 +2503,28 @@ static int isStdEncoding(SplineFont * sf, EncMap * map) {
    return (1);
 }
 
-static void finishup(SplineFont * sf, struct alltabs *at) {
+static void finishup(SplineFont *sf,struct alltabs *at) {
    int strlen, shlen, glen, enclen, csetlen, cstrlen, prvlen;
 
    int base, eotop, strhead;
 
-   int output_enc = (at->format == ff_cff && !isStdEncoding(sf, at->map));
+   int output_enc=(at->format==ff_cff && !isStdEncoding(sf, at->map));
 
    storesid(at, NULL);		/* end the strings index */
-   strlen = ftell(at->sidf) + (shlen = ftell(at->sidh));
-   glen = sizeof(short);	/* Single entry: 0, no globals */
-   enclen = ftell(at->encoding);
-   csetlen = ftell(at->charset);
-   cstrlen = ftell(at->charstrings);
-   prvlen = ftell(at->private);
-   base = ftell(at->cfff);
+   strlen=aftell(at->sidf) + (shlen=aftell(at->sidh));
+   glen=sizeof(short);	/* Single entry: 0, no globals */
+   enclen=aftell(at->encoding);
+   csetlen=aftell(at->charset);
+   cstrlen=aftell(at->charstrings);
+   prvlen=aftell(at->private);
+   base=aftell(at->cfff);
    if (base + 6 * 3 + strlen + glen + enclen + csetlen + cstrlen + prvlen >
        32767) {
-      at->cfflongoffset = true;
+      at->cfflongoffset=true;
       base += 5 * 5 + 4;
    } else
       base += 5 * 3 + 4;
-   strhead = 2 + (at->sidcnt > 1);
+   strhead=2 + (at->sidcnt > 1);
    base += strhead;
 
    dumpsizedint(at->cfff, at->cfflongoffset, base + strlen + glen, 15);	/* Charset */
@@ -2532,28 +2532,28 @@ static void finishup(SplineFont * sf, struct alltabs *at) {
       dumpsizedint(at->cfff, at->cfflongoffset, base + strlen + glen + csetlen, 16);	/* encoding offset */
    else {
       dumpsizedint(at->cfff, at->cfflongoffset, 0, 16);
-      enclen = 0;
+      enclen=0;
    }
    dumpsizedint(at->cfff, at->cfflongoffset, base + strlen + glen + csetlen + enclen, 17);	/* charstrings */
    dumpsizedint(at->cfff, at->cfflongoffset, at->privatelen, -1);
    dumpsizedint(at->cfff, at->cfflongoffset, base + strlen + glen + csetlen + enclen + cstrlen, 18);	/* private size */
-   eotop = base - strhead - at->lenpos - 1;
+   eotop=base - strhead - at->lenpos - 1;
    if (at->cfflongoffset) {
-      fseek(at->cfff, 3, SEEK_SET);
-      putc(4, at->cfff);
+      afseek(at->cfff, 3, SEEK_SET);
+      aputc(4, at->cfff);
    }
-   fseek(at->cfff, at->lenpos, SEEK_SET);
+   afseek(at->cfff, at->lenpos, SEEK_SET);
    putshort(at->cfff, eotop);
-   fseek(at->cfff, 0, SEEK_END);
+   afseek(at->cfff, 0, SEEK_END);
 
    /* String Index */
    putshort(at->cfff, at->sidcnt - 1);
    if (at->sidcnt != 1) {	/* Everybody gets an added NULL */
-      putc(at->sidlongoffset ? 4 : 2, at->cfff);
+      aputc(at->sidlongoffset ? 4 : 2, at->cfff);
       if (!ttfcopyfile(at->cfff, at->sidh, base, "CFF-StringBase"))
-	 at->error = true;
+	 at->error=true;
       if (!ttfcopyfile(at->cfff, at->sidf, base + shlen, "CFF-StringData"))
-	 at->error = true;
+	 at->error=true;
    }
 
    /* Global Subrs */
@@ -2562,28 +2562,28 @@ static void finishup(SplineFont * sf, struct alltabs *at) {
    /* Charset */
    if (!ttfcopyfile
        (at->cfff, at->charset, base + strlen + glen, "CFF-Charset"))
-      at->error = true;
+      at->error=true;
 
    /* Encoding */
    if (!ttfcopyfile
        (at->cfff, at->encoding, base + strlen + glen + csetlen,
 	"CFF-Encoding"))
-      at->error = true;
+      at->error=true;
 
    /* Char Strings */
    if (!ttfcopyfile
        (at->cfff, at->charstrings, base + strlen + glen + csetlen + enclen,
 	"CFF-CharStrings"))
-      at->error = true;
+      at->error=true;
 
    /* Private & Subrs */
    if (!ttfcopyfile
        (at->cfff, at->private,
 	base + strlen + glen + csetlen + enclen + cstrlen, "CFF-Private"))
-      at->error = true;
+      at->error=true;
 }
 
-static void finishupcid(SplineFont * sf, struct alltabs *at) {
+static void finishupcid(SplineFont *sf,struct alltabs *at) {
    int strlen, shlen, glen, csetlen, cstrlen, fdsellen, fdarrlen, prvlen;
 
    int base, eotop, strhead;
@@ -2591,107 +2591,107 @@ static void finishupcid(SplineFont * sf, struct alltabs *at) {
    int i;
 
    storesid(at, NULL);		/* end the strings index */
-   strlen = ftell(at->sidf) + (shlen = ftell(at->sidh));
-   glen = ftell(at->globalsubrs);
+   strlen=aftell(at->sidf) + (shlen=aftell(at->sidh));
+   glen=aftell(at->globalsubrs);
    /* No encodings */
-   csetlen = ftell(at->charset);
-   fdsellen = ftell(at->fdselect);
-   cstrlen = ftell(at->charstrings);
-   fdarrlen = ftell(at->fdarray);
-   base = ftell(at->cfff);
+   csetlen=aftell(at->charset);
+   fdsellen=aftell(at->fdselect);
+   cstrlen=aftell(at->charstrings);
+   fdarrlen=aftell(at->fdarray);
+   base=aftell(at->cfff);
 
-   at->cfflongoffset = true;
+   at->cfflongoffset=true;
    base += 5 * 4 + 4 + 2;	/* two of the opers below are two byte opers */
-   strhead = 2 + (at->sidcnt > 1);
+   strhead=2 + (at->sidcnt > 1);
    base += strhead;
 
-   prvlen = 0;
-   for (i = 0; i < sf->subfontcnt; ++i) {
-      fseek(at->fdarray, at->fds[i].fillindictmark, SEEK_SET);
+   prvlen=0;
+   for (i=0; i < sf->subfontcnt; ++i) {
+      afseek(at->fdarray, at->fds[i].fillindictmark, SEEK_SET);
       dumpsizedint(at->fdarray, false, at->fds[i].privatelen, -1);	/* Private len */
       dumpsizedint(at->fdarray, true, base + strlen + glen + csetlen + fdsellen + cstrlen + fdarrlen + prvlen, 18);	/* Private offset */
-      prvlen += ftell(at->fds[i].private);	/* private & subrs */
+      prvlen += aftell(at->fds[i].private);	/* private & subrs */
    }
 
    dumpsizedint(at->cfff, at->cfflongoffset, base + strlen + glen, 15);	/* charset */
    dumpsizedint(at->cfff, at->cfflongoffset, base + strlen + glen + csetlen, (12 << 8) | 37);	/* fdselect */
    dumpsizedint(at->cfff, at->cfflongoffset, base + strlen + glen + csetlen + fdsellen, 17);	/* charstrings */
    dumpsizedint(at->cfff, at->cfflongoffset, base + strlen + glen + csetlen + fdsellen + cstrlen, (12 << 8) | 36);	/* fdarray */
-   eotop = base - strhead - at->lenpos - 1;
-   fseek(at->cfff, at->lenpos, SEEK_SET);
+   eotop=base - strhead - at->lenpos - 1;
+   afseek(at->cfff, at->lenpos, SEEK_SET);
    putshort(at->cfff, eotop);
-   fseek(at->cfff, 0, SEEK_END);
+   afseek(at->cfff, 0, SEEK_END);
 
    /* String Index */
    putshort(at->cfff, at->sidcnt - 1);
    if (at->sidcnt != 1) {	/* Everybody gets an added NULL */
-      putc(at->sidlongoffset ? 4 : 2, at->cfff);
+      aputc(at->sidlongoffset ? 4 : 2, at->cfff);
       if (!ttfcopyfile(at->cfff, at->sidh, base, "CFF-StringBase"))
-	 at->error = true;
+	 at->error=true;
       if (!ttfcopyfile(at->cfff, at->sidf, base + shlen, "CFF-StringData"))
-	 at->error = true;
+	 at->error=true;
    }
 
    /* Global Subrs */
    if (!ttfcopyfile
        (at->cfff, at->globalsubrs, base + strlen, "CFF-GlobalSubrs"))
-      at->error = true;
+      at->error=true;
 
    /* Charset */
    if (!ttfcopyfile
        (at->cfff, at->charset, base + strlen + glen, "CFF-Charset"))
-      at->error = true;
+      at->error=true;
 
    /* FDSelect */
    if (!ttfcopyfile
        (at->cfff, at->fdselect, base + strlen + glen + csetlen,
 	"CFF-FDSelect"))
-      at->error = true;
+      at->error=true;
 
    /* Char Strings */
    if (!ttfcopyfile
        (at->cfff, at->charstrings, base + strlen + glen + csetlen + fdsellen,
 	"CFF-CharStrings"))
-      at->error = true;
+      at->error=true;
 
    /* FDArray (DICT Index) */
    if (!ttfcopyfile
        (at->cfff, at->fdarray,
 	base + strlen + glen + csetlen + fdsellen + cstrlen, "CFF-FDArray"))
-      at->error = true;
+      at->error=true;
 
    /* Private & Subrs */
-   prvlen = 0;
-   for (i = 0; i < sf->subfontcnt; ++i) {
-      int temp = ftell(at->fds[i].private);
+   prvlen=0;
+   for (i=0; i < sf->subfontcnt; ++i) {
+      int temp=aftell(at->fds[i].private);
 
       if (!ttfcopyfile(at->cfff, at->fds[i].private,
 		       base + strlen + glen + csetlen + fdsellen + cstrlen +
 		       fdarrlen + prvlen, "CFF-PrivateSubrs"))
-	 at->error = true;
+	 at->error=true;
       prvlen += temp;
    }
 
    free(at->fds);
 }
 
-static int dumpcffhmtx(struct alltabs *at, SplineFont * sf, int bitmaps) {
+static int dumpcffhmtx(struct alltabs *at,SplineFont *sf,int bitmaps) {
    DBounds b;
 
    SplineChar *sc;
 
    int i, cnt;
 
-   int dovmetrics = sf->hasvmetrics;
+   int dovmetrics=sf->hasvmetrics;
 
-   int width = at->gi.fixed_width;
+   int width=at->gi.fixed_width;
 
-   at->gi.hmtx = tmpfile();
+   at->gi.hmtx=tmpfile();
    if (dovmetrics)
-      at->gi.vmtx = tmpfile();
+      at->gi.vmtx=tmpfile();
    FigureFullMetricsEnd(sf, &at->gi, bitmaps);	/* Bitmap fonts use ttf convention of 3 magic glyphs */
    if (at->gi.bygid[0] != -1
-       && (sf->glyphs[at->gi.bygid[0]]->width == width || width <= 0)) {
+       && (sf->glyphs[at->gi.bygid[0]]->width==width || width <= 0)) {
       putshort(at->gi.hmtx, sf->glyphs[at->gi.bygid[0]]->width);
       SplineCharLayerFindBounds(sf->glyphs[at->gi.bygid[0]], at->gi.layer,
 				&b);
@@ -2709,10 +2709,10 @@ static int dumpcffhmtx(struct alltabs *at, SplineFont * sf, int bitmaps) {
 	 putshort(at->gi.vmtx, 0);
       }
    }
-   cnt = 1;
+   cnt=1;
    if (bitmaps) {
       if (width <= 0)
-	 width = (sf->ascent + sf->descent) / 3;
+	 width=(sf->ascent + sf->descent) / 3;
       putshort(at->gi.hmtx, width);
       putshort(at->gi.hmtx, 0);
       if (dovmetrics) {
@@ -2725,12 +2725,12 @@ static int dumpcffhmtx(struct alltabs *at, SplineFont * sf, int bitmaps) {
 	 putshort(at->gi.vmtx, sf->ascent + sf->descent);
 	 putshort(at->gi.vmtx, 0);
       }
-      cnt = 3;
+      cnt=3;
    }
 
-   for (i = cnt; i < at->gi.gcnt; ++i)
+   for (i=cnt; i < at->gi.gcnt; ++i)
       if (at->gi.bygid[i] != -1) {
-	 sc = sf->glyphs[at->gi.bygid[i]];
+	 sc=sf->glyphs[at->gi.bygid[i]];
 	 if (SCWorthOutputting(sc)) {
 	    if (i <= at->gi.lasthwidth)
 	       putshort(at->gi.hmtx, sc->width);
@@ -2742,53 +2742,53 @@ static int dumpcffhmtx(struct alltabs *at, SplineFont * sf, int bitmaps) {
 	       putshort(at->gi.vmtx, /*sf->vertical_origin- */ b.maxy);
 	    }
 	    ++cnt;
-	    if (i == at->gi.lasthwidth)
-	       at->gi.hfullcnt = cnt;
-	    if (i == at->gi.lastvwidth)
-	       at->gi.vfullcnt = cnt;
+	    if (i==at->gi.lasthwidth)
+	       at->gi.hfullcnt=cnt;
+	    if (i==at->gi.lastvwidth)
+	       at->gi.vfullcnt=cnt;
 	 }
       }
-   at->gi.hmtxlen = ftell(at->gi.hmtx);
+   at->gi.hmtxlen=aftell(at->gi.hmtx);
    if (at->gi.hmtxlen & 2)
       putshort(at->gi.hmtx, 0);
    if (dovmetrics) {
-      at->gi.vmtxlen = ftell(at->gi.vmtx);
+      at->gi.vmtxlen=aftell(at->gi.vmtx);
       if (at->gi.vmtxlen & 2)
 	 putshort(at->gi.vmtx, 0);
    }
 
-   at->gi.maxp->numGlyphs = cnt;
+   at->gi.maxp->numGlyphs=cnt;
    return (true);
 }
 
-static void dumpcffcidhmtx(struct alltabs *at, SplineFont * _sf) {
+static void dumpcffcidhmtx(struct alltabs *at,SplineFont *_sf) {
    DBounds b;
 
    SplineChar *sc;
 
-   int cid, i, cnt = 0, max;
+   int cid, i, cnt=0, max;
 
    SplineFont *sf;
 
-   int dovmetrics = _sf->hasvmetrics;
+   int dovmetrics=_sf->hasvmetrics;
 
-   at->gi.hmtx = tmpfile();
+   at->gi.hmtx=tmpfile();
    if (dovmetrics)
-      at->gi.vmtx = tmpfile();
+      at->gi.vmtx=tmpfile();
    FigureFullMetricsEnd(_sf, &at->gi, false);
 
-   max = 0;
-   for (i = 0; i < _sf->subfontcnt; ++i)
+   max=0;
+   for (i=0; i < _sf->subfontcnt; ++i)
       if (max < _sf->subfonts[i]->glyphcnt)
-	 max = _sf->subfonts[i]->glyphcnt;
-   for (cid = 0; cid < max; ++cid) {
-      for (i = 0; i < _sf->subfontcnt; ++i) {
-	 sf = _sf->subfonts[i];
+	 max=_sf->subfonts[i]->glyphcnt;
+   for (cid=0; cid < max; ++cid) {
+      for (i=0; i < _sf->subfontcnt; ++i) {
+	 sf=_sf->subfonts[i];
 	 if (cid < sf->glyphcnt && SCWorthOutputting(sf->glyphs[cid]))
 	    break;
       }
       if (i != _sf->subfontcnt) {
-	 sc = sf->glyphs[cid];
+	 sc=sf->glyphs[cid];
 	 if (sc->ttf_glyph <= at->gi.lasthwidth)
 	    putshort(at->gi.hmtx, sc->width);
 	 SplineCharLayerFindBounds(sc, at->gi.layer, &b);
@@ -2799,13 +2799,13 @@ static void dumpcffcidhmtx(struct alltabs *at, SplineFont * _sf) {
 	    putshort(at->gi.vmtx, /*sf->vertical_origin- */ b.maxy);
 	 }
 	 ++cnt;
-	 if (sc->ttf_glyph == at->gi.lasthwidth)
-	    at->gi.hfullcnt = cnt;
-	 if (sc->ttf_glyph == at->gi.lastvwidth)
-	    at->gi.vfullcnt = cnt;
-      } else if (cid == 0) {
+	 if (sc->ttf_glyph==at->gi.lasthwidth)
+	    at->gi.hfullcnt=cnt;
+	 if (sc->ttf_glyph==at->gi.lastvwidth)
+	    at->gi.vfullcnt=cnt;
+      } else if (cid==0) {
 	 /* Create a dummy entry for .notdef */
-	 sf = _sf->subfonts[0];
+	 sf=_sf->subfonts[0];
 	 putshort(at->gi.hmtx, sf->ascent + sf->descent);
 	 putshort(at->gi.hmtx, 0);
 	 ++cnt;
@@ -2815,29 +2815,29 @@ static void dumpcffcidhmtx(struct alltabs *at, SplineFont * _sf) {
 	 }
       }
    }
-   at->gi.hmtxlen = ftell(at->gi.hmtx);
+   at->gi.hmtxlen=aftell(at->gi.hmtx);
    if (at->gi.hmtxlen & 2)
       putshort(at->gi.hmtx, 0);
    if (dovmetrics) {
-      at->gi.vmtxlen = ftell(at->gi.vmtx);
+      at->gi.vmtxlen=aftell(at->gi.vmtx);
       if (at->gi.vmtxlen & 2)
 	 putshort(at->gi.vmtx, 0);
    }
 
-   at->gi.maxp->numGlyphs = cnt;
+   at->gi.maxp->numGlyphs=cnt;
 }
 
-static int dumptype2glyphs(SplineFont * sf, struct alltabs *at) {
+static int dumptype2glyphs(SplineFont *sf,struct alltabs *at) {
    int i;
 
    struct pschars *subrs, *chrs;
 
-   at->cfff = tmpfile();
-   at->sidf = tmpfile();
-   at->sidh = tmpfile();
-   at->charset = tmpfile();
-   at->encoding = tmpfile();
-   at->private = tmpfile();
+   at->cfff=tmpfile();
+   at->sidf=tmpfile();
+   at->sidh=tmpfile();
+   at->charset=tmpfile();
+   at->encoding=tmpfile();
+   at->private=tmpfile();
 
    dumpcffheader(sf, at->cfff);
    dumpcffnames(sf, at->cfff);
@@ -2847,56 +2847,56 @@ static int dumptype2glyphs(SplineFont * sf, struct alltabs *at) {
    if ((chrs =
 	SplineFont2ChrsSubrs2(sf, at->nomwid, at->defwid, at->gi.bygid,
 			      at->gi.gcnt, at->gi.flags, &subrs,
-			      at->gi.layer)) == NULL)
+			      at->gi.layer))==NULL)
       return (false);
    dumpcffprivate(sf, at, -1, subrs->next);
    if (subrs->next != 0)
       _dumpcffstrings(at->private, subrs);
-   at->charstrings = dumpcffstrings(chrs);
+   at->charstrings=dumpcffstrings(chrs);
    PSCharsFree(subrs);
-   if (at->charstrings == NULL)
+   if (at->charstrings==NULL)
       return (false);
-   if (at->format == ff_cff && !isStdEncoding(sf, at->map))
+   if (at->format==ff_cff && !isStdEncoding(sf, at->map))
       dumpcffencoding(sf, at);	/* Do this after we've assigned glyph ids */
    dumpcfftopdict(sf, at);
    finishup(sf, at);
 
-   at->cfflen = ftell(at->cfff);
+   at->cfflen=aftell(at->cfff);
    if (at->cfflen & 3) {
-      for (i = 4 - (at->cfflen & 3); i > 0; --i)
-	 putc('\0', at->cfff);
+      for (i=4 - (at->cfflen & 3); i > 0; --i)
+	 aputc('\0', at->cfff);
    }
 
    if (at->format != ff_cff)
       dumpcffhmtx(at, sf, false);
    free(at->gn_sid);
-   at->gn_sid = NULL;
+   at->gn_sid=NULL;
    return (true);
 }
 
-static int dumpcidglyphs(SplineFont * sf, struct alltabs *at) {
+static int dumpcidglyphs(SplineFont *sf,struct alltabs *at) {
    int i;
 
-   struct pschars *glbls = NULL, *chrs;
+   struct pschars *glbls=NULL, *chrs;
 
-   at->cfff = tmpfile();
-   at->sidf = tmpfile();
-   at->sidh = tmpfile();
-   at->charset = tmpfile();
-   at->fdselect = tmpfile();
-   at->fdarray = tmpfile();
-   at->globalsubrs = tmpfile();
+   at->cfff=tmpfile();
+   at->sidf=tmpfile();
+   at->sidh=tmpfile();
+   at->charset=tmpfile();
+   at->fdselect=tmpfile();
+   at->fdarray=tmpfile();
+   at->globalsubrs=tmpfile();
 
-   at->fds = calloc(sf->subfontcnt, sizeof(struct fd2data));
-   for (i = 0; i < sf->subfontcnt; ++i) {
-      at->fds[i].private = tmpfile();
+   at->fds=calloc(sf->subfontcnt, sizeof(struct fd2data));
+   for (i=0; i < sf->subfontcnt; ++i) {
+      at->fds[i].private=tmpfile();
       ATFigureDefWidth(sf->subfonts[i], at, i);
    }
    if ((chrs =
 	CID2ChrsSubrs2(sf, at->fds, at->gi.flags, &glbls,
-		       at->gi.layer)) == NULL)
+		       at->gi.layer))==NULL)
       return (false);
-   for (i = 0; i < sf->subfontcnt; ++i) {
+   for (i=0; i < sf->subfontcnt; ++i) {
       dumpcffprivate(sf->subfonts[i], at, i, at->fds[i].subrs->next);
       if (at->fds[i].subrs->next != 0)
 	 _dumpcffstrings(at->fds[i].private, at->fds[i].subrs);
@@ -2910,15 +2910,15 @@ static int dumpcidglyphs(SplineFont * sf, struct alltabs *at) {
    dumpcffcidset(sf, at);
    dumpcfffdselect(sf, at);
    dumpcffdictindex(sf, at);
-   if ((at->charstrings = dumpcffstrings(chrs)) == NULL)
+   if ((at->charstrings=dumpcffstrings(chrs))==NULL)
       return (false);
    dumpcffcidtopdict(sf, at);
    finishupcid(sf, at);
 
-   at->cfflen = ftell(at->cfff);
+   at->cfflen=aftell(at->cfff);
    if (at->cfflen & 3) {
-      for (i = 4 - (at->cfflen & 3); i > 0; --i)
-	 putc('\0', at->cfff);
+      for (i=4 - (at->cfflen & 3); i > 0; --i)
+	 aputc('\0', at->cfff);
    }
 
    if (at->format != ff_cffcid)
@@ -2926,15 +2926,15 @@ static int dumpcidglyphs(SplineFont * sf, struct alltabs *at) {
    return (true);
 }
 
-static int AnyInstructions(SplineFont * sf) {
+static int AnyInstructions(SplineFont *sf) {
    int i;
 
    if (sf->subfontcnt != 0) {
-      for (i = 0; i < sf->subfontcnt; ++i)
+      for (i=0; i < sf->subfontcnt; ++i)
 	 if (AnyInstructions(sf->subfonts[i]))
 	    return (true);
    } else {
-      for (i = 0; i < sf->glyphcnt; ++i)
+      for (i=0; i < sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL) {
 	    if (sf->glyphs[i]->ttf_instrs_len != 0)
 	       return (true);
@@ -2943,31 +2943,31 @@ static int AnyInstructions(SplineFont * sf) {
    return (false);
 }
 
-static int AnyMisleadingBitmapAdvances(SplineFont * sf, int32 * bsizes) {
+static int AnyMisleadingBitmapAdvances(SplineFont *sf,int32 *bsizes) {
    int strike, gid;
 
-   double em = sf->ascent + sf->descent;
+   double em=sf->ascent + sf->descent;
 
    BDFFont *bdf;
 
    /* Are there any bitmap glyphs whose advance width differs from the */
    /*  expected value from scaling the outline's advance width? */
 
-   if (bsizes == NULL)
+   if (bsizes==NULL)
       return (false);
-   for (strike = 0; bsizes[strike] != 0; ++strike) {
-      for (bdf = sf->bitmaps;
+   for (strike=0; bsizes[strike] != 0; ++strike) {
+      for (bdf=sf->bitmaps;
 	   bdf != NULL && (bdf->pixelsize != (bsizes[strike] & 0xffff)
 			   || BDFDepth(bdf) != (bsizes[strike] >> 16));
-	   bdf = bdf->next);
-      if (bdf == NULL)
+	   bdf=bdf->next);
+      if (bdf==NULL)
 	 continue;
-      for (gid = 0; gid < sf->glyphcnt && gid < bdf->glyphcnt; ++gid) {
-	 SplineChar *sc = sf->glyphs[gid];
+      for (gid=0; gid < sf->glyphcnt && gid < bdf->glyphcnt; ++gid) {
+	 SplineChar *sc=sf->glyphs[gid];
 
-	 BDFChar *bc = bdf->glyphs[gid];
+	 BDFChar *bc=bdf->glyphs[gid];
 
-	 if (sc == NULL || bc == NULL)
+	 if (sc==NULL || bc==NULL)
 	    continue;
 	 if ((int) rint((sc->width * bdf->pixelsize) / em) != bc->width)
 	    return (true);
@@ -2983,17 +2983,17 @@ void cvt_unix_to_1904(long long time, int32 result[2]) {
 
    int i;
 
-   tm[0] = time & 0xffff;
-   tm[1] = (time >> 16) & 0xffff;
-   tm[2] = (time >> 32) & 0xffff;
-   tm[3] = (time >> 48) & 0xffff;
+   tm[0]=time & 0xffff;
+   tm[1]=(time >> 16) & 0xffff;
+   tm[2]=(time >> 32) & 0xffff;
+   tm[3]=(time >> 48) & 0xffff;
    memset(date1970, 0, sizeof(date1970));
-   year[0] = (60 * 60 * 24 * 365L) & 0xffff;
-   year[1] = (60 * 60 * 24 * 365L) >> 16;
-   for (i = 1904; i < 1970; ++i) {
+   year[0]=(60 * 60 * 24 * 365L) & 0xffff;
+   year[1]=(60 * 60 * 24 * 365L) >> 16;
+   for (i=1904; i < 1970; ++i) {
       date1970[0] += year[0];
       date1970[1] += year[1];
-      if ((i & 3) == 0 && (i % 100 != 0 || i % 400 == 0))
+      if ((i & 3)==0 && (i % 100 != 0 || i % 400==0))
 	 date1970[0] += 24 * 60 * 60L;	/* Leap year */
       date1970[1] += (date1970[0] >> 16);
       date1970[0] &= 0xffff;
@@ -3003,18 +3003,18 @@ void cvt_unix_to_1904(long long time, int32 result[2]) {
       date1970[2] &= 0xffff;
    }
 
-   for (i = 0; i < 3; ++i) {
+   for (i=0; i < 3; ++i) {
       tm[i] += date1970[i];
       tm[i + 1] += tm[i] >> 16;
       tm[i] &= 0xffff;
    }
    tm[3] -= date1970[3];
 
-   result[0] = (tm[1] << 16) | tm[0];
-   result[1] = (tm[3] << 16) | tm[2];
+   result[0]=(tm[1] << 16) | tm[0];
+   result[1]=(tm[3] << 16) | tm[2];
 }
 
-static void sethead(struct head *head, SplineFont * sf, struct alltabs *at,
+static void sethead(struct head *head,SplineFont *sf,struct alltabs *at,
 		    enum fontformat format, int32 * bsizes) {
    time_t now;
 
@@ -3026,55 +3026,55 @@ static void sethead(struct head *head, SplineFont * sf, struct alltabs *at,
 
    float vn;
 
-   if (at->gi.xmin == 15000)
-      at->gi.xmin = 0;
-   if (at->gi.ymin == 15000)
-      at->gi.ymin = 0;
-   if (bsizes != NULL && format == ff_none) {
+   if (at->gi.xmin==15000)
+      at->gi.xmin=0;
+   if (at->gi.ymin==15000)
+      at->gi.ymin=0;
+   if (bsizes != NULL && format==ff_none) {
       if (sf->ascent > at->gi.ymax)
-	 at->gi.ymax = sf->ascent;
+	 at->gi.ymax=sf->ascent;
       if (-sf->descent < at->gi.ymin)
-	 at->gi.ymin = -sf->descent;
+	 at->gi.ymin=-sf->descent;
    }
-   head->xmin = at->gi.xmin;
-   head->ymin = at->gi.ymin;
-   head->xmax = at->gi.xmax;
-   head->ymax = at->gi.ymax;
+   head->xmin=at->gi.xmin;
+   head->ymin=at->gi.ymin;
+   head->xmax=at->gi.xmax;
+   head->ymax=at->gi.ymax;
 
-   lr = rl = arabic = 0;
-   for (i = 0; i < at->gi.gcnt; ++i)
+   lr=rl=arabic=0;
+   for (i=0; i < at->gi.gcnt; ++i)
       if (at->gi.bygid[i] != -1) {
-	 SplineChar *sc = sf->glyphs[at->gi.bygid[i]];
+	 SplineChar *sc=sf->glyphs[at->gi.bygid[i]];
 
-	 int uni = sc->unicodeenc;
+	 int uni=sc->unicodeenc;
 
 	 if (SCRightToLeft(sc))
-	    rl = 1;
+	    rl=1;
 	 else if ((uni != -1 && uni < 0x10000 && islefttoright(uni)) ||
 		  (uni >= 0x10300 && uni < 0x107ff))
-	    lr = 1;
-	 if (SCScriptFromUnicode(sc) == CHR('a', 'r', 'a', 'b'))
-	    arabic = 1;
+	    lr=1;
+	 if (SCScriptFromUnicode(sc)==CHR('a', 'r', 'a', 'b'))
+	    arabic=1;
       }
 
-   head->version = 0x00010000;
-   head->revision = sf->sfntRevision;
-   if (sf->sfntRevision == sfntRevisionUnset) {
-      head->revision = 0x00010000;
-      for (useng = sf->names; useng != NULL; useng = useng->next)
-	 if (useng->lang == 0x409)
+   head->version=0x00010000;
+   head->revision=sf->sfntRevision;
+   if (sf->sfntRevision==sfntRevisionUnset) {
+      head->revision=0x00010000;
+      for (useng=sf->names; useng != NULL; useng=useng->next)
+	 if (useng->lang==0x409)
 	    break;
       if (useng != NULL && useng->names[ttf_version] != NULL &&
-	  sscanf(useng->names[ttf_version], "Version %f", &vn) == 1) {
-	 head->revision = vn * 65536;
+	  sscanf(useng->names[ttf_version], "Version %f", &vn)==1) {
+	 head->revision=vn * 65536;
       } else if (sf->subfontcnt != 0) {
 	 int val, mant;
 
-	 val = floor(sf->cidversion);
-	 mant = floor(65536. * (sf->cidversion - val));
-	 head->revision = (val << 16) | mant;
+	 val=floor(sf->cidversion);
+	 mant=floor(65536. * (sf->cidversion - val));
+	 head->revision=(val << 16) | mant;
       } else if (sf->version != NULL) {
-	 char *pt = sf->version;
+	 char *pt=sf->version;
 
 	 double dval;
 
@@ -3083,21 +3083,21 @@ static void sethead(struct head *head, SplineFont * sf, struct alltabs *at,
 	 while (*pt && !isdigit(*pt) && *pt != '.')
 	    ++pt;
 	 if (*pt) {
-	    dval = strtod(pt, NULL);
-	    val = floor(dval);
-	    mant = floor(65536. * (dval - val));
-	    head->revision = (val << 16) | mant;
+	    dval=strtod(pt, NULL);
+	    val=floor(dval);
+	    mant=floor(65536. * (dval - val));
+	    head->revision=(val << 16) | mant;
 	 }
       }
    }
-   head->checksumAdj = 0;
-   head->magicNum = 0x5f0f3cf5;
-   head->flags = 8 | 2 | 1;	/* baseline at 0, lsbline at 0, round ppem */
+   head->checksumAdj=0;
+   head->magicNum=0x5f0f3cf5;
+   head->flags=8 | 2 | 1;	/* baseline at 0, lsbline at 0, round ppem */
    if (format >= ff_ttf && format <= ff_ttfdfont) {
       if (AnyInstructions(sf))
-	 head->flags = 0x10 | 8 | 4 | 2 | 1;	/* baseline at 0, lsbline at 0, round ppem, instructions may depend on point size, instructions change metrics */
+	 head->flags=0x10 | 8 | 4 | 2 | 1;	/* baseline at 0, lsbline at 0, round ppem, instructions may depend on point size, instructions change metrics */
       else if (AnyMisleadingBitmapAdvances(sf, bsizes))
-	 head->flags = 0x10 | 8 | 2 | 1;	/* baseline at 0, lsbline at 0, round ppem, instructions change metrics */
+	 head->flags=0x10 | 8 | 2 | 1;	/* baseline at 0, lsbline at 0, round ppem, instructions change metrics */
    }
    /* If a font contains embedded bitmaps, and if some of those bitmaps have */
    /*  a different advance width from that expected by scaling, then windows */
@@ -3113,29 +3113,29 @@ static void sethead(struct head *head, SplineFont * sf, struct alltabs *at,
       head->flags |= (1 << 8);	/* has metamorphesis effects */
    if (rl)
       head->flags |= (1 << 9);
-   indic_rearrange = 0;
-   for (sm = sf->sm; sm != NULL; sm = sm->next)
-      if (sm->type == asm_indic)
-	 indic_rearrange = true;
+   indic_rearrange=0;
+   for (sm=sf->sm; sm != NULL; sm=sm->next)
+      if (sm->type==asm_indic)
+	 indic_rearrange=true;
    if (indic_rearrange)
       head->flags |= (1 << 10);
 /* End apple flags */
    if (sf->head_optimized_for_cleartype)
       head->flags |= (1 << 13);
-   head->emunits = sf->ascent + sf->descent;
-   head->macstyle = MacStyleCode(sf, NULL);
-   head->lowestreadable = 8;
-   head->locais32 = 1;
+   head->emunits=sf->ascent + sf->descent;
+   head->macstyle=MacStyleCode(sf, NULL);
+   head->lowestreadable=8;
+   head->locais32=1;
    if (at->gi.glyph_len < 0x20000)
-      head->locais32 = 0;
+      head->locais32=0;
 
    /* I assume we've always got some neutrals (spaces, punctuation) */
    if (lr && rl)
-      head->dirhint = 0;
+      head->dirhint=0;
    else if (rl)
-      head->dirhint = -2;
+      head->dirhint=-2;
    else
-      head->dirhint = 2;
+      head->dirhint=2;
    if (rl)
       head->flags |= (1 << 9);	/* Apple documents this */
    /* if there are any indic characters, set bit 10 */
@@ -3146,8 +3146,8 @@ static void sethead(struct head *head, SplineFont * sf, struct alltabs *at,
 
 }
 
-static void sethhead(struct hhead *hhead, struct hhead *vhead,
-		     struct alltabs *at, SplineFont * sf) {
+static void sethhead(struct hhead *hhead,struct hhead *vhead,
+		     struct alltabs *at, SplineFont *sf) {
    int i, width, rbearing, height, bbearing;
 
    int ymax, ymin, xmax, xmin, off;
@@ -3157,203 +3157,203 @@ static void sethhead(struct hhead *hhead, struct hhead *vhead,
    /* Might as well fill in the vhead even if we don't use it */
    /*  we just won't dump it out if we don't want it */
 
-   width = 0x80000000;
-   rbearing = 0x7fffffff;
-   height = 0x80000000;
-   bbearing = 0x7fffffff;
-   xmax = ymax = 0x80000000;
-   xmin = ymin = 0x7fffffff;
-   for (i = 0; i < at->gi.gcnt; ++i)
+   width=0x80000000;
+   rbearing=0x7fffffff;
+   height=0x80000000;
+   bbearing=0x7fffffff;
+   xmax=ymax=0x80000000;
+   xmin=ymin=0x7fffffff;
+   for (i=0; i < at->gi.gcnt; ++i)
       if (at->gi.bygid[i] != -1) {
-	 SplineChar *sc = sf->glyphs[at->gi.bygid[i]];
+	 SplineChar *sc=sf->glyphs[at->gi.bygid[i]];
 
 	 SplineCharLayerFindBounds(sc, at->gi.layer, &bb);
 	 if (sc->width > width)
-	    width = sc->width;
+	    width=sc->width;
 	 if (sc->vwidth > height)
-	    height = sc->vwidth;
+	    height=sc->vwidth;
 	 if (sc->width - bb.maxx < rbearing)
-	    rbearing = sc->width - bb.maxx;
+	    rbearing=sc->width - bb.maxx;
 	 if (sc->vwidth - bb.maxy < bbearing)
-	    bbearing = sc->vwidth - bb.maxy;
+	    bbearing=sc->vwidth - bb.maxy;
 	 if (bb.maxy > ymax)
-	    ymax = bb.maxy;
+	    ymax=bb.maxy;
 	 if (bb.miny < ymin)
-	    ymin = bb.miny;
+	    ymin=bb.miny;
 	 if (bb.maxx > xmax)
-	    xmax = bb.maxx;
+	    xmax=bb.maxx;
 	 if (bb.minx < xmin)
-	    xmin = bb.minx;
+	    xmin=bb.minx;
       }
 
    if (at->head.ymax > ymax)
-      ymax = at->head.ymax;	/* If generated .notdef glyph is bigger than real glyphs */
+      ymax=at->head.ymax;	/* If generated .notdef glyph is bigger than real glyphs */
    if (at->head.ymin < ymin)
-      ymin = at->head.ymin;
+      ymin=at->head.ymin;
 
-   if (ymax == 0 && ymin == 0) {
+   if (ymax==0 && ymin==0) {
       /* this can happen in a bitmap only font */
-      ymax = sf->ascent;
-      ymin = -sf->descent;
+      ymax=sf->ascent;
+      ymin=-sf->descent;
    }
-   hhead->version = 0x00010000;
+   hhead->version=0x00010000;
    if (sf->pfminfo.hheadascent_add)
-      hhead->ascender = ymax + sf->pfminfo.hhead_ascent;
+      hhead->ascender=ymax + sf->pfminfo.hhead_ascent;
    else
-      hhead->ascender = sf->pfminfo.hhead_ascent;
+      hhead->ascender=sf->pfminfo.hhead_ascent;
    if (sf->pfminfo.hheaddescent_add)
-      hhead->descender = ymin + sf->pfminfo.hhead_descent;
+      hhead->descender=ymin + sf->pfminfo.hhead_descent;
    else
-      hhead->descender = sf->pfminfo.hhead_descent;
-   hhead->linegap = sf->pfminfo.linegap;
+      hhead->descender=sf->pfminfo.hhead_descent;
+   hhead->linegap=sf->pfminfo.linegap;
 
-   vhead->version = 0x00011000;
-   off = (sf->ascent + sf->descent) / 2;
-   vhead->ascender = xmax - off;
-   vhead->descender = xmin - off;
-   vhead->linegap = sf->pfminfo.linegap;
+   vhead->version=0x00011000;
+   off=(sf->ascent + sf->descent) / 2;
+   vhead->ascender=xmax - off;
+   vhead->descender=xmin - off;
+   vhead->linegap=sf->pfminfo.linegap;
 
-   at->isfixed = at->gi.fixed_width > 0;
-   hhead->maxwidth = width;
-   hhead->minlsb = at->head.xmin;
-   hhead->minrsb = rbearing;
+   at->isfixed=at->gi.fixed_width > 0;
+   hhead->maxwidth=width;
+   hhead->minlsb=at->head.xmin;
+   hhead->minrsb=rbearing;
    /* Apple's ftxvalidator says the min sidebearing should be 0 even if it isn't */
    if (hhead->minlsb > 0)
-      hhead->minlsb = 0;
+      hhead->minlsb=0;
    if (hhead->minrsb > 0)
-      hhead->minrsb = 0;
-   hhead->maxextent = at->head.xmax;
-   if (sf->italicangle == 0)
-      hhead->caretSlopeRise = 1;
+      hhead->minrsb=0;
+   hhead->maxextent=at->head.xmax;
+   if (sf->italicangle==0)
+      hhead->caretSlopeRise=1;
    else {
-      hhead->caretSlopeRise = 100;
+      hhead->caretSlopeRise=100;
       hhead->caretSlopeRun =
 	 (int) rint(100 * tan(-sf->italicangle * 3.1415926535897 / 180.));
    }
 
-   vhead->maxwidth = height;
-   vhead->minlsb = at->head.ymin;
-   vhead->minrsb = bbearing;
-   vhead->maxextent = at->head.ymax;
-   vhead->caretSlopeRise = 0;
-   vhead->caretSlopeRun = 1;
+   vhead->maxwidth=height;
+   vhead->minlsb=at->head.ymin;
+   vhead->minrsb=bbearing;
+   vhead->maxextent=at->head.ymax;
+   vhead->caretSlopeRise=0;
+   vhead->caretSlopeRun=1;
    /* Are there vertical oblique fonts? */
 
-   hhead->numMetrics = at->gi.hfullcnt;
-   vhead->numMetrics = at->gi.vfullcnt;
+   hhead->numMetrics=at->gi.hfullcnt;
+   vhead->numMetrics=at->gi.vfullcnt;
 }
 
-static void OS2WeightCheck(struct pfminfo *pfminfo, char *weight) {
-   if (weight == NULL) {
+static void OS2WeightCheck(struct pfminfo *pfminfo,char *weight) {
+   if (weight==NULL) {
       /* default it */
    } else if (strstrmatch(weight, "medi") != NULL) {
-      pfminfo->weight = 500;
-      pfminfo->panose[2] = 6;
+      pfminfo->weight=500;
+      pfminfo->panose[2]=6;
    } else if (strstrmatch(weight, "demi") != NULL ||
 	      strstrmatch(weight, "halb") != NULL ||
 	      (strstrmatch(weight, "semi") != NULL &&
 	       strstrmatch(weight, "bold") != NULL)) {
-      pfminfo->weight = 600;
-      pfminfo->panose[2] = 7;
+      pfminfo->weight=600;
+      pfminfo->panose[2]=7;
    } else if (strstrmatch(weight, "bold") != NULL ||
 	      strstrmatch(weight, "fett") != NULL ||
 	      strstrmatch(weight, "gras") != NULL) {
-      pfminfo->weight = 700;
-      pfminfo->panose[2] = 8;
+      pfminfo->weight=700;
+      pfminfo->panose[2]=8;
    } else if (strstrmatch(weight, "heavy") != NULL) {
-      pfminfo->weight = 800;
-      pfminfo->panose[2] = 9;
+      pfminfo->weight=800;
+      pfminfo->panose[2]=9;
    } else if (strstrmatch(weight, "black") != NULL) {
-      pfminfo->weight = 900;
-      pfminfo->panose[2] = 10;
+      pfminfo->weight=900;
+      pfminfo->panose[2]=10;
    } else if (strstrmatch(weight, "nord") != NULL) {
-      pfminfo->weight = 950;
-      pfminfo->panose[2] = 11;
+      pfminfo->weight=950;
+      pfminfo->panose[2]=11;
    } else if (strstrmatch(weight, "thin") != NULL) {
-      pfminfo->weight = 100;
-      pfminfo->panose[2] = 2;
+      pfminfo->weight=100;
+      pfminfo->panose[2]=2;
    } else if (strstrmatch(weight, "extra") != NULL ||
 	      strstrmatch(weight, "light") != NULL) {
-      pfminfo->weight = 200;
-      pfminfo->panose[2] = 3;
+      pfminfo->weight=200;
+      pfminfo->panose[2]=3;
    } else if (strstrmatch(weight, "light") != NULL) {
-      pfminfo->weight = 300;
-      pfminfo->panose[2] = 4;
+      pfminfo->weight=300;
+      pfminfo->panose[2]=4;
    }
 }
 
-void SFDefaultOS2Simple(struct pfminfo *pfminfo, SplineFont * sf) {
-   pfminfo->pfmfamily = 0x11;
-   pfminfo->panose[0] = 2;
-   pfminfo->weight = 400;
-   pfminfo->panose[2] = 5;
-   pfminfo->width = 5;
-   pfminfo->panose[3] = 3;
-   pfminfo->winascent_add = pfminfo->windescent_add = true;
-   pfminfo->hheadascent_add = pfminfo->hheaddescent_add = true;
-   pfminfo->typoascent_add = pfminfo->typodescent_add = true;
-   pfminfo->os2_winascent = pfminfo->os2_windescent = 0;
+void SFDefaultOS2Simple(struct pfminfo *pfminfo, SplineFont *sf) {
+   pfminfo->pfmfamily=0x11;
+   pfminfo->panose[0]=2;
+   pfminfo->weight=400;
+   pfminfo->panose[2]=5;
+   pfminfo->width=5;
+   pfminfo->panose[3]=3;
+   pfminfo->winascent_add=pfminfo->windescent_add=true;
+   pfminfo->hheadascent_add=pfminfo->hheaddescent_add=true;
+   pfminfo->typoascent_add=pfminfo->typodescent_add=true;
+   pfminfo->os2_winascent=pfminfo->os2_windescent=0;
 
    if (sf->subfonts != NULL)
-      sf = sf->subfonts[0];
-   pfminfo->linegap = pfminfo->vlinegap = pfminfo->os2_typolinegap =
+      sf=sf->subfonts[0];
+   pfminfo->linegap=pfminfo->vlinegap=pfminfo->os2_typolinegap =
       rint(.09 * (sf->ascent + sf->descent));
 }
 
 void SFDefaultOS2SubSuper(struct pfminfo *pfminfo, int emsize,
 			  double italic_angle) {
-   double s = sin(italic_angle * 3.1415926535897932 / 180.0);
+   double s=sin(italic_angle * 3.1415926535897932 / 180.0);
 
-   pfminfo->os2_supysize = pfminfo->os2_subysize = .7 * emsize;
-   pfminfo->os2_supxsize = pfminfo->os2_subxsize = .65 * emsize;
-   pfminfo->os2_subyoff = .14 * emsize;
-   pfminfo->os2_supyoff = .48 * emsize;
-   pfminfo->os2_supxoff = s * pfminfo->os2_supyoff;
-   pfminfo->os2_subxoff = -s * pfminfo->os2_subyoff;
-   pfminfo->os2_strikeysize = 102 * emsize / 2048;
-   pfminfo->os2_strikeypos = 530 * emsize / 2048;
+   pfminfo->os2_supysize=pfminfo->os2_subysize=.7 * emsize;
+   pfminfo->os2_supxsize=pfminfo->os2_subxsize=.65 * emsize;
+   pfminfo->os2_subyoff=.14 * emsize;
+   pfminfo->os2_supyoff=.48 * emsize;
+   pfminfo->os2_supxoff=s * pfminfo->os2_supyoff;
+   pfminfo->os2_subxoff=-s * pfminfo->os2_subyoff;
+   pfminfo->os2_strikeysize=102 * emsize / 2048;
+   pfminfo->os2_strikeypos=530 * emsize / 2048;
 }
 
-void SFDefaultOS2Info(struct pfminfo *pfminfo, SplineFont * sf,
+void SFDefaultOS2Info(struct pfminfo *pfminfo, SplineFont *sf,
 		      char *fontname) {
-   int samewid = -1;
+   int samewid=-1;
 
-   char *weight = sf->cidmaster == NULL ? sf->weight : sf->cidmaster->weight;
+   char *weight=sf->cidmaster==NULL ? sf->weight : sf->cidmaster->weight;
 
    if (sf->pfminfo.pfmset) {
       if (pfminfo != &sf->pfminfo)
-	 *pfminfo = sf->pfminfo;
+	 *pfminfo=sf->pfminfo;
       if (!pfminfo->panose_set) {
 	 struct pfminfo info;
 
 	 memset(&info, 0, sizeof(info));
-	 sf->pfminfo.pfmset = false;
+	 sf->pfminfo.pfmset=false;
 	 SFDefaultOS2Info(&info, sf, fontname);
-	 sf->pfminfo.pfmset = true;
+	 sf->pfminfo.pfmset=true;
 	 memcpy(pfminfo->panose, info.panose, sizeof(info.panose));
       }
    } else {
       struct pfminfo hold;
 
       if (pfminfo->hheadset || pfminfo->vheadset)
-	 hold = *pfminfo;
+	 hold=*pfminfo;
       else
-	 hold.hheadset = hold.vheadset = false;
+	 hold.hheadset=hold.vheadset=false;
       memset(pfminfo, '\0', sizeof(*pfminfo));
       SFDefaultOS2Simple(pfminfo, sf);
-      samewid = CIDOneWidth(sf);
+      samewid=CIDOneWidth(sf);
 
-      pfminfo->pfmfamily = 0x10;
+      pfminfo->pfmfamily=0x10;
       if (samewid > 0) {
-	 pfminfo->pfmfamily = 0x30;
-	 /* pfminfo->panose[3] = 9; *//* This is done later */
+	 pfminfo->pfmfamily=0x30;
+	 /* pfminfo->panose[3]=9; *//* This is done later */
       } else if (strstrmatch(fontname, "sans") != NULL)
-	 pfminfo->pfmfamily = 0x20;
+	 pfminfo->pfmfamily=0x20;
       else if (strstrmatch(fontname, "script") != NULL) {
-	 pfminfo->pfmfamily = 0x40;
-	 pfminfo->panose[0] = 3;
+	 pfminfo->pfmfamily=0x40;
+	 pfminfo->panose[0]=3;
       }
-      if (samewid == -1)
+      if (samewid==-1)
 	 pfminfo->pfmfamily |= 0x1;	/* Else it assumes monospace */
 
 /* urw uses 4 character abreviations */
@@ -3363,49 +3363,49 @@ void SFDefaultOS2Info(struct pfminfo *pfminfo, SplineFont * sf,
 
       if (strstrmatch(fontname, "ultra") != NULL &&
 	  strstrmatch(fontname, "condensed") != NULL) {
-	 pfminfo->width = 1;
-	 pfminfo->panose[3] = 8;
+	 pfminfo->width=1;
+	 pfminfo->panose[3]=8;
       } else if (strstrmatch(fontname, "extra") != NULL &&
 		 strstrmatch(fontname, "condensed") != NULL) {
-	 pfminfo->width = 2;
-	 pfminfo->panose[3] = 8;
+	 pfminfo->width=2;
+	 pfminfo->panose[3]=8;
       } else if (strstrmatch(fontname, "semi") != NULL &&
 		 strstrmatch(fontname, "condensed") != NULL) {
-	 pfminfo->width = 4;
-	 pfminfo->panose[3] = 6;
+	 pfminfo->width=4;
+	 pfminfo->panose[3]=6;
       } else if (strstrmatch(fontname, "condensed") != NULL ||
 		 strstrmatch(fontname, "narrow") != NULL) {
-	 pfminfo->width = 3;
-	 pfminfo->panose[3] = 6;
+	 pfminfo->width=3;
+	 pfminfo->panose[3]=6;
       } else if (strstrmatch(fontname, "ultra") != NULL &&
 		 strstrmatch(fontname, "expanded") != NULL) {
-	 pfminfo->width = 9;
-	 pfminfo->panose[3] = 7;
+	 pfminfo->width=9;
+	 pfminfo->panose[3]=7;
       } else if (strstrmatch(fontname, "extra") != NULL &&
 		 strstrmatch(fontname, "expanded") != NULL) {
-	 pfminfo->width = 8;
-	 pfminfo->panose[3] = 7;
+	 pfminfo->width=8;
+	 pfminfo->panose[3]=7;
       } else if (strstrmatch(fontname, "semi") != NULL &&
 		 strstrmatch(fontname, "expanded") != NULL) {
-	 pfminfo->width = 6;
-	 pfminfo->panose[3] = 5;
+	 pfminfo->width=6;
+	 pfminfo->panose[3]=5;
       } else if (strstrmatch(fontname, "expanded") != NULL) {
-	 pfminfo->width = 7;
-	 pfminfo->panose[3] = 5;
+	 pfminfo->width=7;
+	 pfminfo->panose[3]=5;
       }
       if (samewid > 0)
-	 pfminfo->panose[3] = 9;
+	 pfminfo->panose[3]=9;
       if (hold.hheadset) {
-	 pfminfo->hheadset = true;
-	 pfminfo->hheadascent_add = hold.hheadascent_add;
-	 pfminfo->hheaddescent_add = hold.hheaddescent_add;
-	 pfminfo->hhead_ascent = hold.hhead_ascent;
-	 pfminfo->hhead_descent = hold.hhead_descent;
-	 pfminfo->linegap = hold.linegap;
+	 pfminfo->hheadset=true;
+	 pfminfo->hheadascent_add=hold.hheadascent_add;
+	 pfminfo->hheaddescent_add=hold.hheaddescent_add;
+	 pfminfo->hhead_ascent=hold.hhead_ascent;
+	 pfminfo->hhead_descent=hold.hhead_descent;
+	 pfminfo->linegap=hold.linegap;
       }
       if (hold.vheadset) {
-	 pfminfo->vheadset = true;
-	 pfminfo->vlinegap = hold.vlinegap;
+	 pfminfo->vheadset=true;
+	 pfminfo->vlinegap=hold.vlinegap;
       }
    }
    if (!pfminfo->subsuper_set)
@@ -3413,12 +3413,12 @@ void SFDefaultOS2Info(struct pfminfo *pfminfo, SplineFont * sf,
 			   sf->italicangle);
 }
 
-int AlreadyMSSymbolArea(SplineFont * sf, EncMap * map) {
+int AlreadyMSSymbolArea(SplineFont *sf, EncMap * map) {
    int i;
 
-   int acnt = 0, pcnt = 0;
+   int acnt=0, pcnt=0;
 
-   for (i = 0; i < map->enccount && i < 0xffff; ++i) {
+   for (i=0; i < map->enccount && i < 0xffff; ++i) {
       if (map->map[i] != -1 && sf->glyphs[map->map[i]] != NULL &&
 	  sf->glyphs[map->map[i]]->ttf_glyph != -1) {
 	 if (i >= 0xf000 && i <= 0xf0ff)
@@ -3430,16 +3430,16 @@ int AlreadyMSSymbolArea(SplineFont * sf, EncMap * map) {
    return (pcnt > acnt);
 }
 
-void OS2FigureCodePages(SplineFont * sf, uint32 CodePage[2]) {
+void OS2FigureCodePages(SplineFont *sf, uint32 CodePage[2]) {
    int i;
 
    uint32 latin1[8];
 
-   int has_ascii, has_latin1, has_lineart = 0, has_radical =
-      0, has_summation = 0;
-   int cp852 = 0, cp775 = 0, cp861 = 0, cp860 = 0, cp857 = 0, cp855 =
-      0, cp862 = 0, cp863 = 0;
-   int cp864 = 0, cp865 = 0, cp866 = 0, cp869 = 0, cp737 = 0, cp708 = 0, mac =
+   int has_ascii, has_latin1, has_lineart=0, has_radical =
+      0, has_summation=0;
+   int cp852=0, cp775=0, cp861=0, cp860=0, cp857=0, cp855 =
+      0, cp862=0, cp863=0;
+   int cp864=0, cp865=0, cp866=0, cp869=0, cp737=0, cp708=0, mac =
       0;
    int k;
 
@@ -3448,77 +3448,77 @@ void OS2FigureCodePages(SplineFont * sf, uint32 CodePage[2]) {
    SplineFont *sub;
 
    memset(latin1, 0, sizeof(latin1));
-   k = 0;
+   k=0;
    do {
-      sub = k < sf->subfontcnt ? sf->subfonts[k] : sf;
-      for (i = 0; i < sub->glyphcnt; ++i)
-	 if ((sc = sub->glyphs[i]) != NULL) {
+      sub=k < sf->subfontcnt ? sf->subfonts[k] : sf;
+      for (i=0; i < sub->glyphcnt; ++i)
+	 if ((sc=sub->glyphs[i]) != NULL) {
 	    if (sc->unicodeenc < 256 && sc->unicodeenc >= 0)
 	       latin1[(sc->unicodeenc >> 5)] |= 1 << (sc->unicodeenc & 31);
 	 }
       ++k;
    } while (k < sf->subfontcnt);
 
-   has_ascii = latin1[1] == 0xffffffff && latin1[2] == 0xffffffff && (latin1[3] & 0x7fffffff) == 0x7fffffff;	/* DEL is not a char */
-   has_latin1 = has_ascii && (latin1[5] & ~1 & ~(1 << 0xd)) == (~1 & ~(1 << 0xd)) &&	/* Ignore nobreak space, softhyphen */
-      latin1[6] == 0xffffffff && latin1[7] == 0xffffffff;
-   CodePage[0] = CodePage[1] = 0;
+   has_ascii=latin1[1]==0xffffffff && latin1[2]==0xffffffff && (latin1[3] & 0x7fffffff)==0x7fffffff;	/* DEL is not a char */
+   has_latin1=has_ascii && (latin1[5] & ~1 & ~(1 << 0xd))==(~1 & ~(1 << 0xd)) &&	/* Ignore nobreak space, softhyphen */
+      latin1[6]==0xffffffff && latin1[7]==0xffffffff;
+   CodePage[0]=CodePage[1]=0;
 
-   k = 0;
+   k=0;
    do {
-      sub = k < sf->subfontcnt ? sf->subfonts[k] : sf;
-      for (i = 0; i < sub->glyphcnt; ++i)
-	 if ((sc = sub->glyphs[i]) != NULL) {
-	    int uni = sc->unicodeenc;
+      sub=k < sf->subfontcnt ? sf->subfonts[k] : sf;
+      for (i=0; i < sub->glyphcnt; ++i)
+	 if ((sc=sub->glyphs[i]) != NULL) {
+	    int uni=sc->unicodeenc;
 
-	    if (uni == 0xde && has_ascii)
+	    if (uni==0xde && has_ascii)
 	       CodePage[0] |= 1 << 0;	/* (ANSI) Latin1 */
-	    else if (uni == 0x255a && has_ascii) {
+	    else if (uni==0x255a && has_ascii) {
 	       CodePage[1] |= 1U << 30;	/* WE/latin1 *//* Not latin1 at all */
 	       CodePage[1] |= 1U << 31;	/* US */
-	    } else if (uni == 0x13d && has_ascii) {
+	    } else if (uni==0x13d && has_ascii) {
 	       CodePage[0] |= 1 << 1;	/* latin2 */
 	       ++cp852;
-	    } else if (uni == 0x411) {
+	    } else if (uni==0x411) {
 	       CodePage[0] |= 1 << 2;	/* cyrillic */
 	       ++cp866;
 	       ++cp855;
-	    } else if (uni == 0x405) {
+	    } else if (uni==0x405) {
 	       ++cp855;
-	    } else if (uni == 0x386) {
+	    } else if (uni==0x386) {
 	       CodePage[0] |= 1 << 3;	/* greek */
 	       ++cp869;
 	       ++cp737;
-	    } else if (uni == 0x130 && has_ascii) {
+	    } else if (uni==0x130 && has_ascii) {
 	       CodePage[0] |= 1 << 4;	/* turkish */
 	       ++cp857;
-	    } else if (uni == 0x5d0) {
+	    } else if (uni==0x5d0) {
 	       CodePage[0] |= 1 << 5;	/* hebrew */
 	       ++cp862;
-	    } else if (uni == 0x631) {
+	    } else if (uni==0x631) {
 	       CodePage[0] |= 1 << 6;	/* arabic */
 	       ++cp864;
 	       ++cp708;
-	    } else if (uni == 0x157 && has_ascii) {
+	    } else if (uni==0x157 && has_ascii) {
 	       CodePage[0] |= 1 << 7;	/* baltic */
 	       ++cp775;
-	    } else if (uni == 0x20AB && has_ascii) {
+	    } else if (uni==0x20AB && has_ascii) {
 	       CodePage[0] |= 1 << 8;	/* vietnamese */
-	    } else if (uni == 0xe45)
+	    } else if (uni==0xe45)
 	       CodePage[0] |= 1 << 16;	/* thai */
-	    else if (uni == 0x30a8)
+	    else if (uni==0x30a8)
 	       CodePage[0] |= 1 << 17;	/* japanese */
-	    else if (uni == 0x3105)
+	    else if (uni==0x3105)
 	       CodePage[0] |= 1 << 18;	/* simplified chinese */
-	    else if (uni == 0x3131)
+	    else if (uni==0x3131)
 	       CodePage[0] |= 1 << 19;	/* korean wansung */
-	    else if (uni == 0x592E)
+	    else if (uni==0x592E)
 	       CodePage[0] |= 1 << 20;	/* traditional chinese */
-	    else if (uni == 0xacf4)
+	    else if (uni==0xacf4)
 	       CodePage[0] |= 1 << 21;	/* korean Johab */
-	    else if (uni == 0x2030 && has_ascii)
+	    else if (uni==0x2030 && has_ascii)
 	       ++mac;
-	    else if (uni == 0x2665 && has_ascii)
+	    else if (uni==0x2665 && has_ascii)
 	       CodePage[0] |= 1U << 30;	/* OEM */
 	    /* the symbol bit doesn't mean it contains the glyphs in symbol */
 	    /* rather that one is using a symbol encoding. Or that there are */
@@ -3531,24 +3531,24 @@ void OS2FigureCodePages(SplineFont * sf, uint32 CodePage[2]) {
 	    /*  in otf fonts the bit means "ignore all other bits" */
 	    else if (uni >= 0xf000 && uni <= 0xf0ff)
 	       CodePage[0] |= 1U << 31;	/* symbol */
-	    else if (uni == 0xc5 && has_ascii)
+	    else if (uni==0xc5 && has_ascii)
 	       ++cp865;
-	    else if (uni == 0xe9 && has_ascii)
+	    else if (uni==0xe9 && has_ascii)
 	       ++cp863;
-	    else if (uni == 0xf5 && has_ascii)
+	    else if (uni==0xf5 && has_ascii)
 	       ++cp860;
-	    else if (uni == 0xfe && has_ascii)
+	    else if (uni==0xfe && has_ascii)
 	       ++cp861;
-	    else if (uni == 0x2524)
+	    else if (uni==0x2524)
 	       ++has_lineart;
-	    else if (uni == 0x255c)
+	    else if (uni==0x255c)
 	       ++cp866;
-	    else if (uni == 0xbd)
+	    else if (uni==0xbd)
 	       ++cp869;
-	    else if (uni == 0x221A)
-	       has_radical = true;
-	    else if (uni == 0x2211)
-	       has_summation = true;
+	    else if (uni==0x221A)
+	       has_radical=true;
+	    else if (uni==0x2211)
+	       has_summation=true;
 	 }
       ++k;
    } while (k < sf->subfontcnt);
@@ -3558,11 +3558,11 @@ void OS2FigureCodePages(SplineFont * sf, uint32 CodePage[2]) {
       CodePage[1] |= 1 << 27;	/* baltic */
    if (cp861 && has_lineart)
       CodePage[1] |= 1 << 22;	/* MS-DOS Icelandic */
-   if (cp866 == 2 && has_lineart)
+   if (cp866==2 && has_lineart)
       CodePage[1] |= 1 << 17;	/* MS DOS Russian */
-   if (cp855 == 2 && has_lineart)
+   if (cp855==2 && has_lineart)
       CodePage[1] |= 1 << 25;	/* IBM Cyrillic */
-   if (cp869 == 2 && has_lineart)
+   if (cp869==2 && has_lineart)
       CodePage[1] |= 1 << 16;	/* IBM Greek */
    if (cp737 && has_lineart && has_radical)
       CodePage[1] |= 1 << 28;	/* Greek, former 437 G */
@@ -3584,7 +3584,7 @@ void OS2FigureCodePages(SplineFont * sf, uint32 CodePage[2]) {
       CodePage[0] |= 1U << 29;	/* mac roman */
 }
 
-void OS2FigureUnicodeRanges(SplineFont * sf, uint32 Ranges[4]) {
+void OS2FigureUnicodeRanges(SplineFont *sf, uint32 Ranges[4]) {
    int i, j, k;
 
    SplineChar *sc;
@@ -3592,18 +3592,18 @@ void OS2FigureUnicodeRanges(SplineFont * sf, uint32 Ranges[4]) {
    SplineFont *sub;
 
    memset(Ranges, 0, 4 * sizeof(uint32));
-   k = 0;
+   k=0;
    do {
-      sub = k < sf->subfontcnt ? sf->subfonts[k] : sf;
-      for (i = 0; i < sub->glyphcnt; ++i)
-	 if ((sc = sub->glyphs[i]) != NULL) {
+      sub=k < sf->subfontcnt ? sf->subfonts[k] : sf;
+      for (i=0; i < sub->glyphcnt; ++i)
+	 if ((sc=sub->glyphs[i]) != NULL) {
 	    if (SCWorthOutputting(sc) && sc->unicodeenc != -1) {
 	       if (sc->unicodeenc > 0xffff)
 		  Ranges[57 >> 5] |= (1 << (57 & 31));
-	       for (j = 0; j < sizeof(uniranges) / sizeof(uniranges[0]); ++j)
+	       for (j=0; j < sizeof(uniranges) / sizeof(uniranges[0]); ++j)
 		  if (sc->unicodeenc >= uniranges[j][0] &&
 		      sc->unicodeenc <= uniranges[j][1]) {
-		     int bit = uniranges[j][2];
+		     int bit=uniranges[j][2];
 
 		     Ranges[bit >> 5] |= (1 << (bit & 31));
 		     break;
@@ -3614,7 +3614,7 @@ void OS2FigureUnicodeRanges(SplineFont * sf, uint32 Ranges[4]) {
    } while (k < sf->subfontcnt);
 }
 
-static void WinBB(SplineFont * sf, uint16 * winascent, uint16 * windescent,
+static void WinBB(SplineFont *sf,uint16 *winascent,uint16 *windescent,
 		  struct alltabs *at) {
    /* The windows ascent/descent is calculated on the ymin/max of the */
    /*  glyphs in the so called ANSI character set. I'm going to pretend */
@@ -3622,72 +3622,72 @@ static void WinBB(SplineFont * sf, uint16 * winascent, uint16 * windescent,
    /* Well, that's what is documented, but the documentation says contradictory */
    /*  things. I believe that winAscent should be the same as hhea.ascent */
 
-   *winascent = at->head.ymax;
-   *windescent = -at->head.ymin;	/* Should be positive */
+   *winascent=at->head.ymax;
+   *windescent=-at->head.ymin;	/* Should be positive */
    if (sf->cidmaster != NULL)
-      sf = sf->cidmaster;
+      sf=sf->cidmaster;
 
    if (sf->pfminfo.winascent_add)
       *winascent += sf->pfminfo.os2_winascent;
    else
-      *winascent = sf->pfminfo.os2_winascent;
+      *winascent=sf->pfminfo.os2_winascent;
    if (sf->pfminfo.windescent_add)
       *windescent += sf->pfminfo.os2_windescent;
    else
-      *windescent = sf->pfminfo.os2_windescent;
+      *windescent=sf->pfminfo.os2_windescent;
 }
 
-static void setos2(struct os2 *os2, struct alltabs *at, SplineFont * sf,
+static void setos2(struct os2 *os2,struct alltabs *at,SplineFont *sf,
 		   enum fontformat format) {
    int i, cnt1, cnt2, first, last, avg1, avg2, gid;
 
    char *pt;
 
-   static int const weightFactors[26] = { 64, 14, 27, 35, 100, 20, 14, 42, 63,
+   static int const weightFactors[26]={ 64,14,27,35,100,20,14,42,63,
       3, 6, 35, 20, 56, 56, 17, 4, 49, 56, 71, 31, 10, 18, 3, 18, 2
    };
    EncMap *map;
 
    SplineChar *sc;
 
-   int modformat = format;
+   int modformat=format;
 
-   os2->version = 1;
-   if (format == ff_otf || format == ff_otfcid)
-      os2->version = 3;
+   os2->version=1;
+   if (format==ff_otf || format==ff_otfcid)
+      os2->version=3;
    if (sf->use_typo_metrics || sf->weight_width_slope_only)
-      os2->version = 4;
+      os2->version=4;
    if (sf->os2_version != 0)
-      os2->version = sf->os2_version;
+      os2->version=sf->os2_version;
    if ((format >= ff_ttf && format <= ff_otfdfont)
        && (at->gi.flags & ttf_flag_symbol))
-      modformat = ff_ttfsym;
+      modformat=ff_ttfsym;
 
-   os2->weightClass = sf->pfminfo.weight;
-   os2->widthClass = sf->pfminfo.width;
-   os2->fstype = 0x8;
+   os2->weightClass=sf->pfminfo.weight;
+   os2->widthClass=sf->pfminfo.width;
+   os2->fstype=0x8;
    if (sf->pfminfo.fstype != -1)
-      os2->fstype = sf->pfminfo.fstype;
+      os2->fstype=sf->pfminfo.fstype;
    if (!sf->pfminfo.subsuper_set)
       SFDefaultOS2SubSuper(&sf->pfminfo, sf->ascent + sf->descent,
 			   sf->italicangle);
-   os2->ysupYSize = sf->pfminfo.os2_supysize;
-   os2->ysubXSize = sf->pfminfo.os2_subxsize;
-   os2->ysubYSize = sf->pfminfo.os2_subysize;
-   os2->ysupXSize = sf->pfminfo.os2_supxsize;
-   os2->ysubYOff = sf->pfminfo.os2_subyoff;
-   os2->ysubXOff = sf->pfminfo.os2_subxoff;
-   os2->ysupXOff = sf->pfminfo.os2_supxoff;
-   os2->ysupYOff = sf->pfminfo.os2_supyoff;
-   os2->yStrikeoutSize = sf->pfminfo.os2_strikeysize;
-   os2->yStrikeoutPos = sf->pfminfo.os2_strikeypos;
+   os2->ysupYSize=sf->pfminfo.os2_supysize;
+   os2->ysubXSize=sf->pfminfo.os2_subxsize;
+   os2->ysubYSize=sf->pfminfo.os2_subysize;
+   os2->ysupXSize=sf->pfminfo.os2_supxsize;
+   os2->ysubYOff=sf->pfminfo.os2_subyoff;
+   os2->ysubXOff=sf->pfminfo.os2_subxoff;
+   os2->ysupXOff=sf->pfminfo.os2_supxoff;
+   os2->ysupYOff=sf->pfminfo.os2_supyoff;
+   os2->yStrikeoutSize=sf->pfminfo.os2_strikeysize;
+   os2->yStrikeoutPos=sf->pfminfo.os2_strikeypos;
    os2->fsSel =
       (at->head.macstyle & 1 ? 32 : 0) | (at->head.macstyle & 2 ? 1 : 0);
    if (sf->fullname != NULL && strstrmatch(sf->fullname, "outline") != NULL)
       os2->fsSel |= 8;
-   if (os2->fsSel == 0 && sf->pfminfo.weight >= 400
+   if (os2->fsSel==0 && sf->pfminfo.weight >= 400
        && sf->pfminfo.weight <= 500)
-      os2->fsSel = 64;		/* Regular */
+      os2->fsSel=64;		/* Regular */
    if (os2->version >= 4) {
       if (strstrmatch(sf->fontname, "Obli") != NULL) {
 	 os2->fsSel &= ~1;	/* Turn off Italic */
@@ -3702,7 +3702,7 @@ static void setos2(struct os2 *os2, struct alltabs *at, SplineFont * sf,
 1)  The sTypoAscender and sTypoDescender values should sum to 2048 in
 a 2048-unit font. They indicate the position of the em square
 relative to the baseline.
-GWW: Almost, sTypoAscender-sTypoDescender == EmSize
+GWW: Almost, sTypoAscender-sTypoDescender==EmSize
 
 2)  The usWinAscent and usWinDescent values represent the maximum
 height and depth of specific glyphs within the font, and some
@@ -3712,22 +3712,22 @@ GWW: That's what's documented. But it means non-ANSI glyphs get clipped. So the
 docs are wrong.
 */
    if (sf->pfminfo.typoascent_add)
-      os2->ascender = sf->ascent + sf->pfminfo.os2_typoascent;
+      os2->ascender=sf->ascent + sf->pfminfo.os2_typoascent;
    else
-      os2->ascender = sf->pfminfo.os2_typoascent;
+      os2->ascender=sf->pfminfo.os2_typoascent;
    if (sf->pfminfo.typodescent_add)
-      os2->descender = -sf->descent + sf->pfminfo.os2_typodescent;	/* Should be neg */
+      os2->descender=-sf->descent + sf->pfminfo.os2_typodescent;	/* Should be neg */
    else
-      os2->descender = sf->pfminfo.os2_typodescent;
+      os2->descender=sf->pfminfo.os2_typodescent;
    WinBB(sf, &os2->winascent, &os2->windescent, at);
-   os2->linegap = sf->pfminfo.os2_typolinegap;
-   os2->sFamilyClass = sf->pfminfo.os2_family_class;
+   os2->linegap=sf->pfminfo.os2_typolinegap;
+   os2->sFamilyClass=sf->pfminfo.os2_family_class;
 
-   avg1 = avg2 = last = 0;
-   first = 0xffff;
-   cnt1 = cnt2 = 0;
-   for (i = 0; i < sf->glyphcnt; ++i)
-      if ((sc = sf->glyphs[i]) != NULL) {
+   avg1=avg2=last=0;
+   first=0xffff;
+   cnt1=cnt2=0;
+   for (i=0; i < sf->glyphcnt; ++i)
+      if ((sc=sf->glyphs[i]) != NULL) {
 	 if (SCWorthOutputting(sc) && sc->unicodeenc != -1) {
 	    /* Don't include the dummy glyphs (.notdef, .null, etc.) they aren't */
 	    /*  really encoded. Don't include glyphs out of BMP, OS/2 uses shorts */
@@ -3742,18 +3742,18 @@ docs are wrong.
 					   && sc->ttf_glyph > 0)) {
 	       if (sc->unicodeenc <= 0xffff) {
 		  if (sc->unicodeenc < first)
-		     first = sc->unicodeenc;
+		     first=sc->unicodeenc;
 		  if (sc->unicodeenc > last)
-		     last = sc->unicodeenc;
+		     last=sc->unicodeenc;
 	       } else {
-		  last = 0xffff;
+		  last=0xffff;
 	       }
 	    }
 	    if (sc->width != 0) {
 	       avg2 += sc->width;
 	       ++cnt2;
 	    }
-	    if (sc->unicodeenc == ' ') {
+	    if (sc->unicodeenc==' ') {
 	       avg1 += sc->width * 166;
 	       ++cnt1;
 	    } else if (sc->unicodeenc >= 'a' && sc->unicodeenc <= 'z') {
@@ -3767,7 +3767,7 @@ docs are wrong.
 	     sizeof(os2->unicoderange));
    else
       OS2FigureUnicodeRanges(sf, os2->unicoderange);
-   if (modformat == ff_ttfsym)	/* MS Symbol font has this set to zero. Does it matter? */
+   if (modformat==ff_ttfsym)	/* MS Symbol font has this set to zero. Does it matter? */
       memset(os2->unicoderange, 0, sizeof(os2->unicoderange));
 
    if (sf->pfminfo.pfmset)
@@ -3776,76 +3776,76 @@ docs are wrong.
       strncpy(os2->achVendID, TTFFoundry, 4);
    else
       memcpy(os2->achVendID, "PfEd", 4);
-   for (pt = os2->achVendID; pt < os2->achVendID && *pt != '\0'; ++pt);
+   for (pt=os2->achVendID; pt < os2->achVendID && *pt != '\0'; ++pt);
    while (pt < os2->achVendID)
-      *pt++ = ' ';		/* Pad with spaces not NUL */
+      *pt++=' ';		/* Pad with spaces not NUL */
 
    /* v1,2 & v3,4 have different ways of calculating avgCharWid. */
    /* but I'm told that using the v3 way breaks display of CJK fonts in windows */
-   os2->avgCharWid = 500;
-   os2->v1_avgCharWid = os2->v3_avgCharWid = 0;
-   if (cnt1 == 27)
-      os2->v1_avgCharWid = avg1 / 1000;
+   os2->avgCharWid=500;
+   os2->v1_avgCharWid=os2->v3_avgCharWid=0;
+   if (cnt1==27)
+      os2->v1_avgCharWid=avg1 / 1000;
    if (cnt2 != 0)
-      os2->v3_avgCharWid = avg2 / cnt2;
+      os2->v3_avgCharWid=avg2 / cnt2;
    memcpy(os2->panose, sf->pfminfo.panose, sizeof(os2->panose));
-   map = at->map;
-   if (modformat == ff_ttfsym) {
+   map=at->map;
+   if (modformat==ff_ttfsym) {
       if (sf->pfminfo.hascodepages)
 	 memcpy(os2->ulCodePage, sf->pfminfo.codepages,
 		sizeof(os2->ulCodePage));
       else {
-	 os2->ulCodePage[0] = 0x80000000;
-	 os2->ulCodePage[1] = 0;
+	 os2->ulCodePage[0]=0x80000000;
+	 os2->ulCodePage[1]=0;
       }
       if (AlreadyMSSymbolArea(sf, map)) {
-	 first = 0xf0ff;
-	 last = 0;
-	 for (i = 0xf020; i < map->enccount && i <= 0xf0ff; ++i)
-	    if ((gid = map->map[i]) != -1 && sf->glyphs[gid] != NULL &&
+	 first=0xf0ff;
+	 last=0;
+	 for (i=0xf020; i < map->enccount && i <= 0xf0ff; ++i)
+	    if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL &&
 		sf->glyphs[gid]->ttf_glyph != -1) {
 	       if (i < first)
-		  first = i;
+		  first=i;
 	       if (i > last)
-		  last = i;
+		  last=i;
 	    }
-	 for (i = 0; i < map->enccount && i <= 255; ++i)
-	    if ((gid = map->map[i]) != -1 && sf->glyphs[gid] != NULL &&
+	 for (i=0; i < map->enccount && i <= 255; ++i)
+	    if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL &&
 		sf->glyphs[gid]->ttf_glyph != -1) {
 	       if (i + 0xf000 < first)
-		  first = i + 0xf000;
+		  first=i + 0xf000;
 	       if (i + 0xf000 > last)
-		  last = i + 0xf000;
+		  last=i + 0xf000;
 	    }
-	 os2->firstcharindex = first;	/* This gets mapped to space */
-	 os2->lastcharindex = last;
+	 os2->firstcharindex=first;	/* This gets mapped to space */
+	 os2->lastcharindex=last;
       } else {
-	 first = 255;
-	 last = 0;
-	 for (i = 0; i < map->enccount && i <= 255; ++i)
-	    if ((gid = map->map[i]) != -1 && sf->glyphs[gid] != NULL &&
+	 first=255;
+	 last=0;
+	 for (i=0; i < map->enccount && i <= 255; ++i)
+	    if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL &&
 		sf->glyphs[gid]->ttf_glyph != -1) {
 	       if (i < first)
-		  first = i;
+		  first=i;
 	       if (i > last)
-		  last = i;
+		  last=i;
 	    }
-	 for (i = 0xf020; i < map->enccount && i <= 0xf0ff; ++i)
-	    if ((gid = map->map[i]) != -1 && sf->glyphs[gid] != NULL &&
+	 for (i=0xf020; i < map->enccount && i <= 0xf0ff; ++i)
+	    if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL &&
 		sf->glyphs[gid]->ttf_glyph != -1) {
 	       if (i - 0xf000 < first)
-		  first = i - 0xf000;
+		  first=i - 0xf000;
 	       if (i - 0xf000 > last)
-		  last = i - 0xf000;
+		  last=i - 0xf000;
 	    }
 	 if (first < ' ')
-	    first = ' ';
-	 os2->firstcharindex = 0xf000 + first;	/* This gets mapped to space */
-	 os2->lastcharindex = 0xf000 + last;
+	    first=' ';
+	 os2->firstcharindex=0xf000 + first;	/* This gets mapped to space */
+	 os2->lastcharindex=0xf000 + last;
       }
    } else {
-      os2->firstcharindex = first;
-      os2->lastcharindex = last;
+      os2->firstcharindex=first;
+      os2->lastcharindex=last;
       if (sf->pfminfo.hascodepages)
 	 memcpy(os2->ulCodePage, sf->pfminfo.codepages,
 		sizeof(os2->ulCodePage));
@@ -3866,69 +3866,69 @@ docs are wrong.
       /*  for OS/2. FontLab simply lies and says we have a latin1     */
       /*  code page when we don't.                                    */
       if (!sf->pfminfo.hascodepages)
-	 if ((os2->ulCodePage[0] & ~(1U << 31)) == 0
-	     && os2->ulCodePage[1] == 0)
+	 if ((os2->ulCodePage[0] & ~(1U << 31))==0
+	     && os2->ulCodePage[1]==0)
 	    os2->ulCodePage[0] |= 1;
    }
 
    if (os2->version >= 2) {
       double xh, caph;
 
-      xh = SFXHeight(sf, at->gi.layer, true);
-      caph = SFCapHeight(sf, at->gi.layer, true);
-      os2->xHeight = (xh >= 0.0 ? xh : 0);
-      os2->capHeight = (caph >= 0.0 ? caph : 0);
-      os2->defChar = 0;
-      if (format == ff_otf || format == ff_otfcid)
-	 os2->defChar = ' ';
-      os2->breakChar = ' ';
-      os2->maxContext = 1;	/* Kerning will set this to 2, ligature to whatever */
+      xh=SFXHeight(sf, at->gi.layer, true);
+      caph=SFCapHeight(sf, at->gi.layer, true);
+      os2->xHeight=(xh >= 0.0 ? xh : 0);
+      os2->capHeight=(caph >= 0.0 ? caph : 0);
+      os2->defChar=0;
+      if (format==ff_otf || format==ff_otfcid)
+	 os2->defChar=' ';
+      os2->breakChar=' ';
+      os2->maxContext=1;	/* Kerning will set this to 2, ligature to whatever */
    }
 
    if (os2->version >= 3 && os2->v3_avgCharWid != 0)
-      os2->avgCharWid = os2->v3_avgCharWid;
+      os2->avgCharWid=os2->v3_avgCharWid;
    else if (os2->v1_avgCharWid != 0)
-      os2->avgCharWid = os2->v1_avgCharWid;
+      os2->avgCharWid=os2->v1_avgCharWid;
    else if (os2->v3_avgCharWid != 0)
-      os2->avgCharWid = os2->v3_avgCharWid;
+      os2->avgCharWid=os2->v3_avgCharWid;
 }
 
 static void redoloca(struct alltabs *at) {
    int i;
 
-   at->loca = tmpfile();
+   at->loca=tmpfile();
    if (at->head.locais32) {
-      for (i = 0; i <= at->maxp.numGlyphs; ++i)
+      for (i=0; i <= at->maxp.numGlyphs; ++i)
 	 putlong(at->loca, at->gi.loca[i]);
-      at->localen = sizeof(int32) * (at->maxp.numGlyphs + 1);
+      at->localen=sizeof(int32) * (at->maxp.numGlyphs + 1);
    } else {
-      for (i = 0; i <= at->maxp.numGlyphs; ++i)
+      for (i=0; i <= at->maxp.numGlyphs; ++i)
 	 putshort(at->loca, at->gi.loca[i] / 2);
-      at->localen = sizeof(int16) * (at->maxp.numGlyphs + 1);
-      if (ftell(at->loca) & 2)
+      at->localen=sizeof(int16) * (at->maxp.numGlyphs + 1);
+      if (aftell(at->loca) & 2)
 	 putshort(at->loca, 0);
    }
    if (at->format != ff_type42 && at->format != ff_type42cid) {
       free(at->gi.loca);
-      at->gi.loca = NULL;
+      at->gi.loca=NULL;
    }
 }
 
 static void dummyloca(struct alltabs *at) {
 
-   at->loca = tmpfile();
+   at->loca=tmpfile();
    if (at->head.locais32) {
       putlong(at->loca, 0);
-      at->localen = sizeof(int32);
+      at->localen=sizeof(int32);
    } else {
       putshort(at->loca, 0);
-      at->localen = sizeof(int16);
+      at->localen=sizeof(int16);
       putshort(at->loca, 0);	/* pad it */
    }
 }
 
 static void redohead(struct alltabs *at) {
-   at->headf = tmpfile();
+   at->headf=tmpfile();
 
    putlong(at->headf, at->head.version);
    putlong(at->headf, at->head.revision);
@@ -3950,24 +3950,24 @@ static void redohead(struct alltabs *at) {
    putshort(at->headf, at->head.locais32);
    putshort(at->headf, at->head.glyphformat);
 
-   at->headlen = ftell(at->headf);
+   at->headlen=aftell(at->headf);
    if ((at->headlen & 2) != 0)
       putshort(at->headf, 0);
 }
 
-static void redohhead(struct alltabs *at, int isv) {
+static void redohhead(struct alltabs *at,int isv) {
    int i;
 
    struct hhead *head;
 
-   FILE *f;
+   AFILE *f;
 
    if (!isv) {
-      f = at->hheadf = tmpfile();
-      head = &at->hhead;
+      f=at->hheadf=tmpfile();
+      head=&at->hhead;
    } else {
-      f = at->vheadf = tmpfile();
-      head = &at->vhead;
+      f=at->vheadf=tmpfile();
+      head=&at->vhead;
    }
 
    putlong(f, head->version);
@@ -3980,24 +3980,24 @@ static void redohhead(struct alltabs *at, int isv) {
    putshort(f, head->maxextent);
    putshort(f, head->caretSlopeRise);
    putshort(f, head->caretSlopeRun);
-   for (i = 0; i < 5; ++i)
+   for (i=0; i < 5; ++i)
       putshort(f, head->mbz[i]);
    putshort(f, head->metricformat);
    putshort(f, head->numMetrics);
 
    if (!isv) {
-      at->hheadlen = ftell(f);
+      at->hheadlen=aftell(f);
       if ((at->hheadlen & 2) != 0)
 	 putshort(f, 0);
    } else {
-      at->vheadlen = ftell(f);
+      at->vheadlen=aftell(f);
       if ((at->vheadlen & 2) != 0)
 	 putshort(f, 0);
    }
 }
 
-static void redomaxp(struct alltabs *at, enum fontformat format) {
-   at->maxpf = tmpfile();
+static void redomaxp(struct alltabs *at,enum fontformat format) {
+   at->maxpf=tmpfile();
 
    putlong(at->maxpf, at->maxp.version);
    putshort(at->maxpf, at->maxp.numGlyphs);
@@ -4017,7 +4017,7 @@ static void redomaxp(struct alltabs *at, enum fontformat format) {
       putshort(at->maxpf, at->maxp.maxcomponentdepth);
    }
 
-   at->maxplen = ftell(at->maxpf);
+   at->maxplen=aftell(at->maxpf);
    if ((at->maxplen & 2) != 0)
       putshort(at->maxpf, 0);
 }
@@ -4025,7 +4025,7 @@ static void redomaxp(struct alltabs *at, enum fontformat format) {
 static void redoos2(struct alltabs *at) {
    int i;
 
-   at->os2f = tmpfile();
+   at->os2f=tmpfile();
 
    putshort(at->os2f, at->os2.version);
    putshort(at->os2f, at->os2.avgCharWid);
@@ -4043,12 +4043,12 @@ static void redoos2(struct alltabs *at) {
    putshort(at->os2f, at->os2.yStrikeoutSize);
    putshort(at->os2f, at->os2.yStrikeoutPos);
    putshort(at->os2f, at->os2.sFamilyClass);
-   for (i = 0; i < 10; ++i)
-      putc(at->os2.panose[i], at->os2f);
-   for (i = 0; i < 4; ++i)
+   for (i=0; i < 10; ++i)
+      aputc(at->os2.panose[i], at->os2f);
+   for (i=0; i < 4; ++i)
       putlong(at->os2f, at->os2.unicoderange[i]);
-   for (i = 0; i < 4; ++i)
-      putc(at->os2.achVendID[i], at->os2f);
+   for (i=0; i < 4; ++i)
+      aputc(at->os2.achVendID[i], at->os2f);
    putshort(at->os2f, at->os2.fsSel);
    putshort(at->os2f, at->os2.firstcharindex);
    putshort(at->os2f, at->os2.lastcharindex);
@@ -4070,16 +4070,16 @@ static void redoos2(struct alltabs *at) {
       putshort(at->os2f, at->os2.maxContext);
    }
 
-   at->os2len = ftell(at->os2f);
+   at->os2len=aftell(at->os2f);
    if ((at->os2len & 2) != 0)
       putshort(at->os2f, 0);
 }
 
-static void dumpgasp(struct alltabs *at, SplineFont * sf) {
+static void dumpgasp(struct alltabs *at,SplineFont *sf) {
    int i;
 
-   at->gaspf = tmpfile();
-   if (sf->gasp_cnt == 0) {
+   at->gaspf=tmpfile();
+   if (sf->gasp_cnt==0) {
       putshort(at->gaspf, 0);	/* Old version number */
       /* For fonts with no instructions always dump a gasp table which */
       /*  asks for grey and no grid fit */
@@ -4090,33 +4090,33 @@ static void dumpgasp(struct alltabs *at, SplineFont * sf) {
    } else {
       putshort(at->gaspf, sf->gasp_version);	/* New version number, with clear type info */
       putshort(at->gaspf, sf->gasp_cnt);
-      for (i = 0; i < sf->gasp_cnt; ++i) {
+      for (i=0; i < sf->gasp_cnt; ++i) {
 	 putshort(at->gaspf, sf->gasp[i].ppem);
 	 putshort(at->gaspf, sf->gasp[i].flags);
       }
    }
-   at->gasplen = ftell(at->gaspf);
+   at->gasplen=aftell(at->gaspf);
    /* This table is always 32 bit aligned */
 }
 
-static void dumpstr(FILE * file, char *str) {
+static void dumpstr(AFILE *file,char *str) {
    do {
-      putc(*str, file);
+      aputc(*str, file);
    } while (*str++ != '\0');
 }
 
-static void dumpustr(FILE * file, char *utf8_str) {
-   unichar_t *ustr = utf82u_copy(utf8_str), *pt = ustr;
+static void dumpustr(AFILE *file,char *utf8_str) {
+   unichar_t *ustr=utf82u_copy(utf8_str), *pt=ustr;
 
    do {
-      putc(*pt >> 8, file);
-      putc(*pt & 0xff, file);
+      aputc(*pt >> 8, file);
+      aputc(*pt & 0xff, file);
    } while (*pt++ != '\0');
    free(ustr);
 }
 
-static void dumppstr(FILE * file, char *str) {
-   putc(strlen(str), file);
+static void dumppstr(AFILE *file,char *str) {
+   aputc(strlen(str), file);
    fwrite(str, sizeof(char), strlen(str), file);
 }
 
@@ -4127,7 +4127,7 @@ char *utf8_verify_copy(const char *str) {
    /* guess that it's latin1 (or that copyright is the only odd char which */
    /* means a latin1 conversion will work for macs too). */
 
-   if (str == NULL)
+   if (str==NULL)
       return (NULL);
 
    if (utf8_valid(str))
@@ -4139,48 +4139,48 @@ char *utf8_verify_copy(const char *str) {
 /*  accept the font unless the name table also has entries for (3,0). I'm not */
 /*  sure if this is the case for the CJK encodings (docs don't mention that) */
 /*  but let's do it just in case */
-void DefaultTTFEnglishNames(struct ttflangname *dummy, SplineFont * sf) {
+void DefaultTTFEnglishNames(struct ttflangname *dummy, SplineFont *sf) {
    time_t now;
 
    struct tm *tm;
 
    char buffer[200];
 
-   if (dummy->names[ttf_copyright] == NULL
-       || *dummy->names[ttf_copyright] == '\0')
-      dummy->names[ttf_copyright] = utf8_verify_copy(sf->copyright);
-   if (dummy->names[ttf_family] == NULL || *dummy->names[ttf_family] == '\0')
-      dummy->names[ttf_family] = utf8_verify_copy(sf->familyname);
-   if (dummy->names[ttf_subfamily] == NULL
-       || *dummy->names[ttf_subfamily] == '\0')
-      dummy->names[ttf_subfamily] = utf8_verify_copy(SFGetModifiers(sf));
-   if (dummy->names[ttf_uniqueid] == NULL
-       || *dummy->names[ttf_uniqueid] == '\0') {
+   if (dummy->names[ttf_copyright]==NULL
+       || *dummy->names[ttf_copyright]=='\0')
+      dummy->names[ttf_copyright]=utf8_verify_copy(sf->copyright);
+   if (dummy->names[ttf_family]==NULL || *dummy->names[ttf_family]=='\0')
+      dummy->names[ttf_family]=utf8_verify_copy(sf->familyname);
+   if (dummy->names[ttf_subfamily]==NULL
+       || *dummy->names[ttf_subfamily]=='\0')
+      dummy->names[ttf_subfamily]=utf8_verify_copy(SFGetModifiers(sf));
+   if (dummy->names[ttf_uniqueid]==NULL
+       || *dummy->names[ttf_uniqueid]=='\0') {
       time(&now);
-      tm = localtime(&now);
+      tm=localtime(&now);
       sprintf(buffer, "%s : %s : %d-%d-%d",
 	      BDFFoundry ? BDFFoundry : TTFFoundry ? TTFFoundry :
 	      "FontAnvil 2.0",
 	      sf->fullname != NULL ? sf->fullname : sf->fontname, tm->tm_mday,
 	      tm->tm_mon + 1, tm->tm_year + 1900);
-      dummy->names[ttf_uniqueid] = copy(buffer);
+      dummy->names[ttf_uniqueid]=copy(buffer);
    }
-   if (dummy->names[ttf_fullname] == NULL
-       || *dummy->names[ttf_fullname] == '\0')
-      dummy->names[ttf_fullname] = utf8_verify_copy(sf->fullname);
-   if (dummy->names[ttf_version] == NULL
-       || *dummy->names[ttf_version] == '\0') {
+   if (dummy->names[ttf_fullname]==NULL
+       || *dummy->names[ttf_fullname]=='\0')
+      dummy->names[ttf_fullname]=utf8_verify_copy(sf->fullname);
+   if (dummy->names[ttf_version]==NULL
+       || *dummy->names[ttf_version]=='\0') {
       if (sf->subfontcnt != 0)
 	 sprintf(buffer, "Version %f ", sf->cidversion);
       else if (sf->version != NULL)
 	 sprintf(buffer, "Version %.20s ", sf->version);
       else
 	 strcpy(buffer, "Version 1.0");
-      dummy->names[ttf_version] = copy(buffer);
+      dummy->names[ttf_version]=copy(buffer);
    }
-   if (dummy->names[ttf_postscriptname] == NULL
-       || *dummy->names[ttf_postscriptname] == '\0')
-      dummy->names[ttf_postscriptname] = utf8_verify_copy(sf->fontname);
+   if (dummy->names[ttf_postscriptname]==NULL
+       || *dummy->names[ttf_postscriptname]=='\0')
+      dummy->names[ttf_postscriptname]=utf8_verify_copy(sf->fontname);
 }
 
 typedef struct {
@@ -4193,7 +4193,7 @@ typedef struct {
 } NameEntry;
 
 typedef struct {
-   FILE *strings;
+   AFILE *strings;
    int cur, max;
    enum fontformat format;
    Encoding *encoding_name;
@@ -4201,8 +4201,8 @@ typedef struct {
    int applemode;
 } NamTab;
 
-static int compare_entry(const void *_mn1, const void *_mn2) {
-   const NameEntry *mn1 = _mn1, *mn2 = _mn2;
+static int compare_entry(const void *_mn1,const void *_mn2) {
+   const NameEntry *mn1=_mn1, *mn2=_mn2;
 
    if (mn1->platform != mn2->platform)
       return (mn1->platform - mn2->platform);
@@ -4214,88 +4214,88 @@ static int compare_entry(const void *_mn1, const void *_mn2) {
    return (mn1->strid - mn2->strid);
 }
 
-static void AddEncodedName(NamTab * nt, char *utf8name, uint16 lang,
+static void AddEncodedName(NamTab *nt,char *utf8name,uint16 lang,
 			   uint16 strid) {
    NameEntry *ne;
 
-   int maclang, macenc = -1, specific;
+   int maclang, macenc=-1, specific;
 
-   char *macname = NULL;
+   char *macname=NULL;
 
-   if (strid == ttf_postscriptname && lang != 0x409)
+   if (strid==ttf_postscriptname && lang != 0x409)
       return;			/* Should not happen, but it did */
 
    if (nt->cur + 6 >= nt->max) {
-      if (nt->cur == 0)
-	 nt->entries = malloc((nt->max = 100) * sizeof(NameEntry));
+      if (nt->cur==0)
+	 nt->entries=malloc((nt->max=100) * sizeof(NameEntry));
       else
 	 nt->entries =
 	    realloc(nt->entries, (nt->max += 100) * sizeof(NameEntry));
    }
 
-   ne = nt->entries + nt->cur;
+   ne=nt->entries + nt->cur;
 
-   ne->platform = 3;		/* Windows */
-   ne->specific = 1;		/* unicode */
-   ne->lang = lang;
-   ne->strid = strid;
-   ne->offset = ftell(nt->strings);
-   ne->len = 2 * utf82u_strlen(utf8name);
+   ne->platform=3;		/* Windows */
+   ne->specific=1;		/* unicode */
+   ne->lang=lang;
+   ne->strid=strid;
+   ne->offset=aftell(nt->strings);
+   ne->len=2 * utf82u_strlen(utf8name);
    dumpustr(nt->strings, utf8name);
    ++ne;
 
-   if (nt->format == ff_ttfsym) {
-      *ne = ne[-1];
-      ne->specific = 0;		/* Windows "symbol" */
+   if (nt->format==ff_ttfsym) {
+      *ne=ne[-1];
+      ne->specific=0;		/* Windows "symbol" */
       ++ne;
    }
 
-   maclang = WinLangToMac(lang);
+   maclang=WinLangToMac(lang);
    if (!nt->applemode && lang != 0x409)
-      maclang = 0xffff;
+      maclang=0xffff;
    if (maclang != 0xffff) {
 #ifdef FONTANVIL_CONFIG_APPLE_UNICODE_NAMES
       if (strid != ttf_postscriptname) {
-	 *ne = ne[-1];
-	 ne->platform = 0;	/* Mac unicode */
-	 ne->specific = 0;	/* 3 => Unicode 2.0 semantics *//* 0 ("default") is also a reasonable value */
-	 ne->lang = maclang;
+	 *ne=ne[-1];
+	 ne->platform=0;	/* Mac unicode */
+	 ne->specific=0;	/* 3 => Unicode 2.0 semantics *//* 0 ("default") is also a reasonable value */
+	 ne->lang=maclang;
 	 ++ne;
       }
 #endif
 
-      macenc = MacEncFromMacLang(maclang);
-      macname = Utf8ToMacStr(utf8name, macenc, maclang);
+      macenc=MacEncFromMacLang(maclang);
+      macname=Utf8ToMacStr(utf8name, macenc, maclang);
       if (macname != NULL) {
-	 ne->platform = 1;	/* apple non-unicode encoding */
-	 ne->specific = macenc;	/* whatever */
-	 ne->lang = maclang;
-	 ne->strid = strid;
-	 ne->offset = ftell(nt->strings);
-	 ne->len = strlen(macname);
+	 ne->platform=1;	/* apple non-unicode encoding */
+	 ne->specific=macenc;	/* whatever */
+	 ne->lang=maclang;
+	 ne->strid=strid;
+	 ne->offset=aftell(nt->strings);
+	 ne->len=strlen(macname);
 	 dumpstr(nt->strings, macname);
 	 ++ne;
 	 free(macname);
       }
    }
 
-   specific = nt->encoding_name->is_korean ? 5 :	/* Wansung, korean */
+   specific=nt->encoding_name->is_korean ? 5 :	/* Wansung, korean */
       nt->encoding_name->is_japanese ? 2 :	/* SJIS */
       nt->encoding_name->is_simplechinese ? 3 :	/* packed gb2312, don't know the real name */
-      strmatch(nt->encoding_name->enc_name, "EUC-GB12345") == 0 ? 3 :	/* Lie */
+      strmatch(nt->encoding_name->enc_name, "EUC-GB12345")==0 ? 3 :	/* Lie */
       nt->encoding_name->is_tradchinese ? 4 :	/* Big5, traditional Chinese */
       -1;
    if (specific != -1) {
-      ne->platform = 3;		/* windows */
-      ne->specific = specific;	/* whatever */
-      ne->lang = lang;
-      ne->strid = strid;
-      if (macname != NULL && ((specific == 2 && macenc == 1) ||	/* Japanese */
-			      (specific == 3 && macenc == 25) ||	/* simplified chinese */
-			      (specific == 4 && macenc == 2) ||	/* traditional chinese */
-			      (specific == 5 && macenc == 3))) {	/* wansung korean */
-	 ne->offset = ne[-1].offset;
-	 ne->len = ne[-1].len;
+      ne->platform=3;		/* windows */
+      ne->specific=specific;	/* whatever */
+      ne->lang=lang;
+      ne->strid=strid;
+      if (macname != NULL && ((specific==2 && macenc==1) ||	/* Japanese */
+			      (specific==3 && macenc==25) ||	/* simplified chinese */
+			      (specific==4 && macenc==2) ||	/* traditional chinese */
+			      (specific==5 && macenc==3))) {	/* wansung korean */
+	 ne->offset=ne[-1].offset;
+	 ne->len=ne[-1].len;
       } else {
 	 char *space, *encname, *out;
 
@@ -4305,28 +4305,28 @@ static void AddEncodedName(NamTab * nt, char *utf8name, uint16 lang,
 
 	 size_t inlen, outlen;
 
-	 ne->offset = ftell(nt->strings);
-	 encname = nt->encoding_name->is_japanese ? "SJIS" :
-	    strmatch(nt->encoding_name->enc_name, "JOHAB") == 0 ? "JOHAB" :
+	 ne->offset=aftell(nt->strings);
+	 encname=nt->encoding_name->is_japanese ? "SJIS" :
+	    strmatch(nt->encoding_name->enc_name, "JOHAB")==0 ? "JOHAB" :
 	    nt->encoding_name->is_korean ? "EUC-KR" :
 	    nt->encoding_name->is_simplechinese ? "EUC-CN" :
 	    nt->encoding_name->enc_name;
-	 enc = FindOrMakeEncoding(encname);
-	 if (enc == NULL)
+	 enc=FindOrMakeEncoding(encname);
+	 if (enc==NULL)
 	    --ne;
 	 else {
-	    unichar_t *uin = utf82u_copy(utf8name);
+	    unichar_t *uin=utf82u_copy(utf8name);
 
-	    outlen = 3 * strlen(utf8name) + 10;
-	    out = space = malloc(outlen + 2);
-	    in = (char *) uin;
-	    inlen = 2 * u_strlen(uin);
+	    outlen=3 * strlen(utf8name) + 10;
+	    out=space=malloc(outlen + 2);
+	    in=(char *) uin;
+	    inlen=2 * u_strlen(uin);
 	    iconv(enc->fromunicode, NULL, NULL, NULL, NULL);	/* should not be needed, but just in case */
 	    iconv(enc->fromunicode, &in, &inlen, &out, &outlen);
-	    out[0] = '\0';
-	    out[1] = '\0';
-	    ne->offset = ftell(nt->strings);
-	    ne->len = strlen(space);
+	    out[0]='\0';
+	    out[1]='\0';
+	    ne->offset=aftell(nt->strings);
+	    ne->len=strlen(space);
 	    dumpstr(nt->strings, space);
 	    free(space);
 	    free(uin);
@@ -4334,28 +4334,28 @@ static void AddEncodedName(NamTab * nt, char *utf8name, uint16 lang,
       }
       ++ne;
    }
-   nt->cur = ne - nt->entries;
+   nt->cur=ne - nt->entries;
 }
 
-static void AddMacName(NamTab * nt, struct macname *mn, int strid) {
+static void AddMacName(NamTab *nt,struct macname *mn,int strid) {
    NameEntry *ne;
 
    if (nt->cur + 1 >= nt->max) {
-      if (nt->cur == 0)
-	 nt->entries = malloc((nt->max = 100) * sizeof(NameEntry));
+      if (nt->cur==0)
+	 nt->entries=malloc((nt->max=100) * sizeof(NameEntry));
       else
 	 nt->entries =
 	    realloc(nt->entries, (nt->max += 100) * sizeof(NameEntry));
    }
 
-   ne = nt->entries + nt->cur;
+   ne=nt->entries + nt->cur;
 
-   ne->platform = 1;		/* apple non-unicode encoding */
-   ne->specific = mn->enc;	/* whatever */
-   ne->lang = mn->lang;
-   ne->strid = strid;
-   ne->offset = ftell(nt->strings);
-   ne->len = strlen(mn->name);
+   ne->platform=1;		/* apple non-unicode encoding */
+   ne->specific=mn->enc;	/* whatever */
+   ne->lang=mn->lang;
+   ne->strid=strid;
+   ne->offset=aftell(nt->strings);
+   ne->len=strlen(mn->name);
    dumpstr(nt->strings, mn->name);
 
    ++nt->cur;
@@ -4369,11 +4369,11 @@ static void AddMacName(NamTab * nt, struct macname *mn, int strid) {
 /*  the opentype version, and tells me that they don't currently care */
 /* So ignore this */
 /* Undocumented fact: Windows insists on having a UniqueID string 3,1 */
-static void dumpnames(struct alltabs *at, SplineFont * sf,
+static void dumpnames(struct alltabs *at,SplineFont *sf,
 		      enum fontformat format) {
    int i, j;
 
-   struct ttflangname dummy, *cur, *useng = NULL;
+   struct ttflangname dummy, *cur, *useng=NULL;
 
    struct macname *mn;
 
@@ -4386,30 +4386,30 @@ static void dumpnames(struct alltabs *at, SplineFont * sf,
    struct otffeatname *fn;
 
    memset(&nt, 0, sizeof(nt));
-   nt.encoding_name = at->map->enc;
-   nt.format = format;
-   nt.applemode = at->applemode;
-   nt.strings = tmpfile();
+   nt.encoding_name=at->map->enc;
+   nt.format=format;
+   nt.applemode=at->applemode;
+   nt.strings=tmpfile();
    if ((format >= ff_ttf && format <= ff_otfdfont)
        && (at->gi.flags & ttf_flag_symbol))
-      nt.format = ff_ttfsym;
+      nt.format=ff_ttfsym;
 
    memset(&dummy, 0, sizeof(dummy));
-   for (cur = sf->names; cur != NULL; cur = cur->next) {
-      if (cur->lang == 0x409) {
-	 dummy = *cur;
-	 useng = cur;
+   for (cur=sf->names; cur != NULL; cur=cur->next) {
+      if (cur->lang==0x409) {
+	 dummy=*cur;
+	 useng=cur;
 	 break;
       }
    }
    DefaultTTFEnglishNames(&dummy, sf);
 
-   for (i = 0; i < ttf_namemax; ++i)
+   for (i=0; i < ttf_namemax; ++i)
       if (dummy.names[i] != NULL)
 	 AddEncodedName(&nt, dummy.names[i], 0x409, i);
-   for (cur = sf->names; cur != NULL; cur = cur->next) {
+   for (cur=sf->names; cur != NULL; cur=cur->next) {
       if (cur->lang != 0x409)
-	 for (i = 0; i < ttf_namemax; ++i)
+	 for (i=0; i < ttf_namemax; ++i)
 	    if (cur->names[i] != NULL)
 	       AddEncodedName(&nt, cur->names[i], cur->lang, i);
    }
@@ -4417,8 +4417,8 @@ static void dumpnames(struct alltabs *at, SplineFont * sf,
    /* The examples I've seen of the feature table only contain platform==mac */
    /*  so I'm not including apple unicode */
    if (at->feat_name != NULL) {
-      for (i = 0; at->feat_name[i].strid != 0; ++i) {
-	 for (mn = at->feat_name[i].mn; mn != NULL; mn = mn->next)
+      for (i=0; at->feat_name[i].strid != 0; ++i) {
+	 for (mn=at->feat_name[i].mn; mn != NULL; mn=mn->next)
 	    AddMacName(&nt, mn, at->feat_name[i].strid);
 	 /* I'm not sure why I keep track of these alternates (feat_name[i].smn) */
 	 /*  Dumping them out is a bad idea. It might be worth */
@@ -4428,32 +4428,32 @@ static void dumpnames(struct alltabs *at, SplineFont * sf,
       }
    }
    /* And the names used by the fvar table aren't mac unicode either */
-   for (on = at->other_names; on != NULL; on = onn) {
-      for (mn = on->mn; mn != NULL; mn = mn->next)
+   for (on=at->other_names; on != NULL; on=onn) {
+      for (mn=on->mn; mn != NULL; mn=mn->next)
 	 AddMacName(&nt, mn, on->strid);
-      onn = on->next;
+      onn=on->next;
       chunkfree(on, sizeof(*on));
    }
    /* Wow, the GPOS 'size' feature uses the name table in a very mac-like way */
    if (at->fontstyle_name_strid != 0 && sf->fontstyle_name != NULL) {
-      for (otfn = sf->fontstyle_name; otfn != NULL; otfn = otfn->next)
+      for (otfn=sf->fontstyle_name; otfn != NULL; otfn=otfn->next)
 	 AddEncodedName(&nt, otfn->name, otfn->lang,
 			at->fontstyle_name_strid);
    }
    /* As do some other features now */
-   for (fn = sf->feat_names; fn != NULL; fn = fn->next) {
-      for (otfn = fn->names; otfn != NULL; otfn = otfn->next)
+   for (fn=sf->feat_names; fn != NULL; fn=fn->next) {
+      for (otfn=fn->names; otfn != NULL; otfn=otfn->next)
 	 AddEncodedName(&nt, otfn->name, otfn->lang, fn->nid);
    }
 
    qsort(nt.entries, nt.cur, sizeof(NameEntry), compare_entry);
 
-   at->name = tmpfile();
+   at->name=tmpfile();
    putshort(at->name, 0);	/* format */
    putshort(at->name, nt.cur);	/* numrec */
    putshort(at->name, (3 + nt.cur * 6) * sizeof(int16));	/* offset to strings */
 
-   for (i = 0; i < nt.cur; ++i) {
+   for (i=0; i < nt.cur; ++i) {
       putshort(at->name, nt.entries[i].platform);
       putshort(at->name, nt.entries[i].specific);
       putshort(at->name, nt.entries[i].lang);
@@ -4463,15 +4463,15 @@ static void dumpnames(struct alltabs *at, SplineFont * sf,
    }
    if (!ttfcopyfile
        (at->name, nt.strings, (3 + nt.cur * 6) * sizeof(int16), "name-data"))
-      at->error = true;
+      at->error=true;
 
-   at->namelen = ftell(at->name);
+   at->namelen=aftell(at->name);
    if ((at->namelen & 3) != 0)
-      for (j = 4 - (at->namelen & 3); j > 0; --j)
-	 putc('\0', at->name);
+      for (j=4 - (at->namelen & 3); j > 0; --j)
+	 aputc('\0', at->name);
 
-   for (i = 0; i < ttf_namemax; ++i)
-      if (useng == NULL || dummy.names[i] != useng->names[i])
+   for (i=0; i < ttf_namemax; ++i)
+      if (useng==NULL || dummy.names[i] != useng->names[i])
 	 free(dummy.names[i]);
    free(nt.entries);
    free(at->feat_name);
@@ -4479,15 +4479,15 @@ static void dumpnames(struct alltabs *at, SplineFont * sf,
    /* Windows at one point refused to load fonts with 'name' tables bigger than 5K (decided they were insecure). */
 }
 
-static void dumppost(struct alltabs *at, SplineFont * sf,
+static void dumppost(struct alltabs *at,SplineFont *sf,
 		     enum fontformat format) {
    int pos, i, j, shouldbe;
 
-   int shorttable = (format == ff_otf || format == ff_otfcid ||
+   int shorttable=(format==ff_otf || format==ff_otfcid ||
 		     (at->gi.flags & ttf_flag_shortps));
    uint32 here;
 
-   at->post = tmpfile();
+   at->post=tmpfile();
 
    putlong(at->post, shorttable ? 0x00030000 : 0x00020000);	/* formattype */
    putfixed(at->post, sf->italicangle);
@@ -4499,30 +4499,30 @@ static void dumppost(struct alltabs *at, SplineFont * sf,
    putlong(at->post, 0);	/* no idea about memory */
    putlong(at->post, 0);	/* no idea about memory */
    if (!shorttable) {
-      here = ftell(at->post);
+      here=aftell(at->post);
       putshort(at->post, at->maxp.numGlyphs);
 
-      shouldbe = 0;
-      for (i = 0, pos = 0; i < at->maxp.numGlyphs; ++i) {
+      shouldbe=0;
+      for (i=0, pos=0; i < at->maxp.numGlyphs; ++i) {
 	 if (at->gi.bygid[i] != -1 && sf->glyphs[at->gi.bygid[i]] != NULL) {
-	    SplineChar *sc = sf->glyphs[at->gi.bygid[i]];
+	    SplineChar *sc=sf->glyphs[at->gi.bygid[i]];
 
 	    while (i > shouldbe) {
-	       if (shouldbe == 0)
+	       if (shouldbe==0)
 		  putshort(at->post, 0);	/* glyph 0 is named .notdef */
-	       else if (shouldbe == 1)
+	       else if (shouldbe==1)
 		  putshort(at->post, 1);	/* glyphs 1&2 are .null and cr */
-	       else if (shouldbe == 2)
+	       else if (shouldbe==2)
 		  putshort(at->post, 2);	/* or something */
 	       else
 		  putshort(at->post, 0);
 	       ++shouldbe;
 	    }
-	    if (strcmp(sc->name, ".notdef") == 0)
+	    if (strcmp(sc->name, ".notdef")==0)
 	       putshort(at->post, 0);
 	    else {
-	       for (j = 0; j < 258; ++j)
-		  if (strcmp(sc->name, ttfstandardnames[j]) == 0)
+	       for (j=0; j < 258; ++j)
+		  if (strcmp(sc->name, ttfstandardnames[j])==0)
 		     break;
 	       if (j != 258)
 		  putshort(at->post, j);
@@ -4536,20 +4536,20 @@ static void dumppost(struct alltabs *at, SplineFont * sf,
       }
 
       if (shouldbe != at->maxp.numGlyphs) {
-	 fseek(at->post, here, SEEK_SET);
+	 afseek(at->post, here, SEEK_SET);
 	 putshort(at->post, shouldbe);
-	 fseek(at->post, 0, SEEK_END);
+	 afseek(at->post, 0, SEEK_END);
       }
       if (pos != 0) {
-	 for (i = 0; i < at->maxp.numGlyphs; ++i)
+	 for (i=0; i < at->maxp.numGlyphs; ++i)
 	    if (at->gi.bygid[i] != -1) {
-	       SplineChar *sc = sf->glyphs[at->gi.bygid[i]];
+	       SplineChar *sc=sf->glyphs[at->gi.bygid[i]];
 
-	       if (strcmp(sc->name, ".notdef") == 0)
+	       if (strcmp(sc->name, ".notdef")==0)
 		  /* Do Nothing */ ;
 	       else {
-		  for (j = 0; j < 258; ++j)
-		     if (strcmp(sc->name, ttfstandardnames[j]) == 0)
+		  for (j=0; j < 258; ++j)
+		     if (strcmp(sc->name, ttfstandardnames[j])==0)
 			break;
 		  if (j != 258)
 		     /* Do Nothing */ ;
@@ -4559,14 +4559,14 @@ static void dumppost(struct alltabs *at, SplineFont * sf,
 	    }
       }
    }
-   at->postlen = ftell(at->post);
+   at->postlen=aftell(at->post);
    if ((at->postlen & 3) != 0)
-      for (j = 4 - (at->postlen & 3); j > 0; --j)
-	 putc('\0', at->post);
+      for (j=4 - (at->postlen & 3); j > 0; --j)
+	 aputc('\0', at->post);
 }
 
-static FILE *_Gen816Enc(SplineFont * sf, int *tlen, EncMap * map) {
-   int i, j, complained, pos, k, subheadindex, jj, isbig5 = false;
+static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
+   int i, j, complained, pos, k, subheadindex, jj, isbig5=false;
 
    uint16 table[256];
 
@@ -4580,80 +4580,80 @@ static FILE *_Gen816Enc(SplineFont * sf, int *tlen, EncMap * map) {
 
    int base2, base2bound;
 
-   FILE *sub;
+   AFILE *sub;
 
    char *encname =
       map->enc->iconv_name !=
       NULL ? map->enc->iconv_name : map->enc->enc_name;
 
-   *tlen = 0;
+   *tlen=0;
 
-   base2 = -1;
-   base2bound = -2;
+   base2=-1;
+   base2bound=-2;
    if (map->enc->is_tradchinese && strstrmatch(encname, "hkscs") != NULL) {
-      base = 0x81;
-      basebound = 0xfe;
-      subheadcnt = basebound - base + 1;
-      lbase = 0x40;
-      planesize = 191;
-   } else if (map->enc->is_tradchinese || sf->uni_interp == ui_trad_chinese) {
-      base = 0xa1;
-      basebound = 0xf9;		/* wcl-02.ttf's cmap claims to go up to fc, but everything after f9 is invalid (according to what I know of big5, f9 should be the end) */
-      subheadcnt = basebound - base + 1;
-      lbase = 0x40;
-      planesize = 191;
-      isbig5 = true;
+      base=0x81;
+      basebound=0xfe;
+      subheadcnt=basebound - base + 1;
+      lbase=0x40;
+      planesize=191;
+   } else if (map->enc->is_tradchinese || sf->uni_interp==ui_trad_chinese) {
+      base=0xa1;
+      basebound=0xf9;		/* wcl-02.ttf's cmap claims to go up to fc, but everything after f9 is invalid (according to what I know of big5, f9 should be the end) */
+      subheadcnt=basebound - base + 1;
+      lbase=0x40;
+      planesize=191;
+      isbig5=true;
    } else if (strstrmatch(encname, "euc") != NULL) {
-      base = 0xa1;
-      basebound = 0xfd;
-      lbase = 0xa1;
-      subheadcnt = basebound - base + 1;
-      planesize = 0xfe - lbase + 1;
+      base=0xa1;
+      basebound=0xfd;
+      lbase=0xa1;
+      subheadcnt=basebound - base + 1;
+      planesize=0xfe - lbase + 1;
    } else if (strstrmatch(encname, "johab") != NULL) {
-      base = 0x84;
-      basebound = 0xf9;
-      lbase = 0x31;
-      subheadcnt = basebound - base + 1;
-      planesize = 0xfe - 0x31 + 1;	/* Stupid gcc bug, thinks 0xfe- is ambiguous (exponant) */
+      base=0x84;
+      basebound=0xf9;
+      lbase=0x31;
+      subheadcnt=basebound - base + 1;
+      planesize=0xfe - 0x31 + 1;	/* Stupid gcc bug, thinks 0xfe- is ambiguous (exponant) */
    } else if (strstrmatch(encname, "sjis") != NULL
 	      || strstrmatch(encname, "cp932") != NULL) {
-      base = 129;
-      basebound = 159;
-      lbase = 64;
-      planesize = 252 - lbase + 1;
-      base2 = 0xe0;
+      base=129;
+      basebound=159;
+      lbase=64;
+      planesize=252 - lbase + 1;
+      base2=0xe0;
       /* SJIS supports "user defined characters" between 0xf040 and 0xfcfc */
       /*  there probably won't be any, but allow space for them if there are */
-      for (base2bound = 0xfc00; base2bound > 0xefff; --base2bound)
+      for (base2bound=0xfc00; base2bound > 0xefff; --base2bound)
 	 if (base2bound < map->enccount && map->map[base2bound] != -1 &&
 	     SCWorthOutputting(sf->glyphs[map->map[base2bound]]))
 	    break;
       base2bound >>= 8;
-      subheadcnt = basebound - base + 1 + base2bound - base2 + 1;
+      subheadcnt=basebound - base + 1 + base2bound - base2 + 1;
    } else {
       IError("Unsupported 8/16 encoding %s\n", map->enc->enc_name);
       return (NULL);
    }
-   plane0size = base2 == -1 ? base : base2;
-   i = 0;
+   plane0size=base2==-1 ? base : base2;
+   i=0;
    if (base2 != -1) {
-      for (i = basebound; i < base2 && i < map->enccount; ++i)
-	 if (map->map[i] == -1)
+      for (i=basebound; i < base2 && i < map->enccount; ++i)
+	 if (map->map[i]==-1)
 	    continue;
 	 else if (SCWorthOutputting(sf->glyphs[map->map[i]]))
 	    break;
-      if (i == base2 || i == map->enccount)
-	 i = 0;
+      if (i==base2 || i==map->enccount)
+	 i=0;
    }
-   if (i == 0) {
-      for (i = 0; i < base && i < map->enccount; ++i)
-	 if (map->map[i] == -1)
+   if (i==0) {
+      for (i=0; i < base && i < map->enccount; ++i)
+	 if (map->map[i]==-1)
 	    continue;
 	 else if (SCWorthOutputting(sf->glyphs[map->map[i]]))
 	    break;
    }
    if (base2 != -1) {
-      for (i = base; i <= basebound && i < map->enccount; ++i)
+      for (i=base; i <= basebound && i < map->enccount; ++i)
 	 if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
 	    ff_post_error(_("Bad Encoding"),
 			  _
@@ -4661,8 +4661,8 @@ static FILE *_Gen816Enc(SplineFont * sf, int *tlen, EncMap * map) {
 			  i);
 	    break;
 	 }
-      if (i == basebound + 1)
-	 for (i = base2; i < 256 && i < map->enccount; ++i)
+      if (i==basebound + 1)
+	 for (i=base2; i < 256 && i < map->enccount; ++i)
 	    if (map->map[i] != -1
 		&& SCWorthOutputting(sf->glyphs[map->map[i]])) {
 	       ff_post_error(_("Bad Encoding"),
@@ -4672,7 +4672,7 @@ static FILE *_Gen816Enc(SplineFont * sf, int *tlen, EncMap * map) {
 	       break;
 	    }
    } else {
-      for (i = base; i <= 256 && i < map->enccount; ++i)
+      for (i=base; i <= 256 && i < map->enccount; ++i)
 	 if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
 	    ff_post_error(_("Bad Encoding"),
 			  _
@@ -4681,15 +4681,15 @@ static FILE *_Gen816Enc(SplineFont * sf, int *tlen, EncMap * map) {
 	    break;
 	 }
    }
-   for (i = 256; i < (base << 8) && i < map->enccount; ++i)
+   for (i=256; i < (base << 8) && i < map->enccount; ++i)
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
 	 ff_post_error(_("Bad Encoding"),
 		       _("There is a character (%d) which cannot be encoded"),
 		       i);
 	 break;
       }
-   if (i == (base << 8) && base2 == -1)
-      for (i = ((basebound + 1) << 8); i < 0x10000 && i < map->enccount; ++i)
+   if (i==(base << 8) && base2==-1)
+      for (i=((basebound + 1) << 8); i < 0x10000 && i < map->enccount; ++i)
 	 if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
 	    ff_post_error(_("Bad Encoding"),
 			  _
@@ -4699,69 +4699,69 @@ static FILE *_Gen816Enc(SplineFont * sf, int *tlen, EncMap * map) {
 	 }
 
    memset(table, '\0', sizeof(table));
-   for (i = base; i <= basebound; ++i)
-      table[i] = 8 * (i - base + 1);
-   for (i = base2; i <= base2bound; ++i)
-      table[i] = 8 * (i - base2 + basebound - base + 1 + 1);
+   for (i=base; i <= basebound; ++i)
+      table[i]=8 * (i - base + 1);
+   for (i=base2; i <= base2bound; ++i)
+      table[i]=8 * (i - base2 + basebound - base + 1 + 1);
    memset(subheads, '\0', sizeof(subheads));
-   subheads[0].first = 0;
-   subheads[0].cnt = plane0size;
-   for (i = 1; i < subheadcnt + 1; ++i) {
-      subheads[i].first = lbase;
-      subheads[i].cnt = planesize;
+   subheads[0].first=0;
+   subheads[0].cnt=plane0size;
+   for (i=1; i < subheadcnt + 1; ++i) {
+      subheads[i].first=lbase;
+      subheads[i].cnt=planesize;
    }
-   glyphs = calloc(subheadcnt * planesize + plane0size, sizeof(uint16));
-   subheads[0].rangeoff = 0;
-   for (i = 0; i < plane0size && i < map->enccount; ++i)
+   glyphs=calloc(subheadcnt * planesize + plane0size, sizeof(uint16));
+   subheads[0].rangeoff=0;
+   for (i=0; i < plane0size && i < map->enccount; ++i)
       if (map->map[i] != -1 && sf->glyphs[map->map[i]] != NULL &&
 	  sf->glyphs[map->map[i]]->ttf_glyph != -1)
-	 glyphs[i] = sf->glyphs[map->map[i]]->ttf_glyph;
+	 glyphs[i]=sf->glyphs[map->map[i]]->ttf_glyph;
 
-   pos = 1;
+   pos=1;
 
-   complained = false;
-   subheadindex = 1;
-   for (jj = 0; jj < 2 || (base2 == -1 && jj < 1); ++jj)
-      for (j = ((jj == 0 ? base : base2) << 8);
-	   j <= ((jj == 0 ? basebound : base2bound) << 8); j += 0x100) {
-	 for (i = 0; i < lbase; ++i)
+   complained=false;
+   subheadindex=1;
+   for (jj=0; jj < 2 || (base2==-1 && jj < 1); ++jj)
+      for (j=((jj==0 ? base : base2) << 8);
+	   j <= ((jj==0 ? basebound : base2bound) << 8); j += 0x100) {
+	 for (i=0; i < lbase; ++i)
 	    if (!complained && map->map[i + j] != -1 &&
 		SCWorthOutputting(sf->glyphs[map->map[i + j]])) {
 	       ff_post_error(_("Bad Encoding"),
 			     _
 			     ("There is a character (%d) which is not normally in the encoding"),
 			     i + j);
-	       complained = true;
+	       complained=true;
 	    }
 	 if (isbig5) {
 	    /* big5 has a gap here. Does johab? */
-	    for (i = 0x7f; i < 0xa1; ++i)
+	    for (i=0x7f; i < 0xa1; ++i)
 	       if (!complained && map->map[i + j] != -1 &&
 		   SCWorthOutputting(sf->glyphs[map->map[i + j]])) {
 		  ff_post_error(_("Bad Encoding"),
 				_
 				("There is a character (%d) which is not normally in the encoding"),
 				i + j);
-		  complained = true;
+		  complained=true;
 	       }
 	 }
 	 memset(tempglyphs, 0, sizeof(tempglyphs));
-	 for (i = 0; i < planesize; ++i)
+	 for (i=0; i < planesize; ++i)
 	    if (map->map[j + lbase + i] != -1
 		&& sf->glyphs[map->map[j + lbase + i]] != NULL
 		&& sf->glyphs[map->map[j + lbase + i]]->ttf_glyph != -1)
-	       tempglyphs[i] = sf->glyphs[map->map[j + lbase + i]]->ttf_glyph;
-	 for (i = 1; i < pos; ++i) {
-	    int delta = 0;
+	       tempglyphs[i]=sf->glyphs[map->map[j + lbase + i]]->ttf_glyph;
+	 for (i=1; i < pos; ++i) {
+	    int delta=0;
 
-	    for (k = 0; k < planesize; ++k)
-	       if (tempglyphs[k] == 0
-		   && glyphs[plane0size + (i - 1) * planesize + k] == 0)
+	    for (k=0; k < planesize; ++k)
+	       if (tempglyphs[k]==0
+		   && glyphs[plane0size + (i - 1) * planesize + k]==0)
 		  /* Still matches */ ;
-	       else if (tempglyphs[k] == 0
-			|| glyphs[plane0size + (i - 1) * planesize + k] == 0)
+	       else if (tempglyphs[k]==0
+			|| glyphs[plane0size + (i - 1) * planesize + k]==0)
 		  break;	/* Doesn't match */
-	       else if (delta == 0)
+	       else if (delta==0)
 		  delta =
 		     (uint16) (tempglyphs[k] -
 			       glyphs[plane0size + (i - 1) * planesize + k]);
@@ -4771,14 +4771,14 @@ static FILE *_Gen816Enc(SplineFont * sf, int *tlen, EncMap * map) {
 		  /* Still matches */ ;
 	       else
 		  break;
-	    if (k == planesize) {
-	       subheads[subheadindex].delta = delta;
+	    if (k==planesize) {
+	       subheads[subheadindex].delta=delta;
 	       subheads[subheadindex].rangeoff =
 		  plane0size + (i - 1) * planesize;
 	       break;
 	    }
 	 }
-	 if (subheads[subheadindex].rangeoff == 0) {
+	 if (subheads[subheadindex].rangeoff==0) {
 	    memcpy(glyphs + (pos - 1) * planesize + plane0size, tempglyphs,
 		   planesize * sizeof(uint16));
 	    subheads[subheadindex].rangeoff =
@@ -4791,53 +4791,53 @@ static FILE *_Gen816Enc(SplineFont * sf, int *tlen, EncMap * map) {
    /* my rangeoffsets are indexes into the glyph array. That's nice and */
    /*  simple. Unfortunately ttf says they are offsets from the current */
    /*  location in the file (sort of) so we now fix them up. */
-   for (i = 0; i < subheadcnt + 1; ++i)
-      subheads[i].rangeoff = subheads[i].rangeoff * sizeof(uint16) +
+   for (i=0; i < subheadcnt + 1; ++i)
+      subheads[i].rangeoff=subheads[i].rangeoff * sizeof(uint16) +
 	 (subheadcnt - i) * sizeof(struct subhead) + sizeof(uint16);
 
-   sub = tmpfile();
-   if (sub == NULL)
+   sub=tmpfile();
+   if (sub==NULL)
       return (NULL);
 
    putshort(sub, 2);		/* 8/16 format */
    putshort(sub, 0);		/* Subtable length, we'll come back and fix this */
    putshort(sub, 0);		/* version/language, not meaningful in ms systems */
-   for (i = 0; i < 256; ++i)
+   for (i=0; i < 256; ++i)
       putshort(sub, table[i]);
-   for (i = 0; i < subheadcnt + 1; ++i) {
+   for (i=0; i < subheadcnt + 1; ++i) {
       putshort(sub, subheads[i].first);
       putshort(sub, subheads[i].cnt);
       putshort(sub, subheads[i].delta);
       putshort(sub, subheads[i].rangeoff);
    }
-   for (i = 0; i < (pos - 1) * planesize + plane0size; ++i)
+   for (i=0; i < (pos - 1) * planesize + plane0size; ++i)
       putshort(sub, glyphs[i]);
    free(glyphs);
 
-   *tlen = ftell(sub);
-   fseek(sub, 2, SEEK_SET);
+   *tlen=aftell(sub);
+   afseek(sub, 2, SEEK_SET);
    putshort(sub, *tlen);	/* Length, I said we'd come back to it */
-   rewind(sub);
+   arewind(sub);
    return (sub);
 }
 
-static FILE *Needs816Enc(SplineFont * sf, int *tlen, EncMap * map,
-			 FILE ** apple, int *appletlen) {
-   FILE *sub;
+static AFILE *Needs816Enc(SplineFont *sf,int *tlen,EncMap *map,
+			 AFILE ** apple, int *appletlen) {
+   AFILE *sub;
 
    char *encname =
       map->enc->iconv_name !=
       NULL ? map->enc->iconv_name : map->enc->enc_name;
-   EncMap *oldmap = map;
+   EncMap *oldmap=map;
 
-   EncMap *applemap = NULL;
+   EncMap *applemap=NULL;
 
    Encoding *enc;
 
-   *tlen = 0;
+   *tlen=0;
    if (apple != NULL) {
-      *apple = NULL;
-      *appletlen = 0;
+      *apple=NULL;
+      *appletlen=0;
    }
    if (sf->cidmaster != NULL || sf->subfontcnt != 0)
       return (NULL);
@@ -4854,12 +4854,12 @@ static FILE *Needs816Enc(SplineFont * sf, int *tlen, EncMap * map,
 	     strstrmatch(encname, "JP-3") != NULL))
       return (NULL);		/* No 8/16 encoding for JP2 nor JP3 */
    else if (sf->uni_interp >= ui_japanese && sf->uni_interp <= ui_korean) {
-      enc = FindOrMakeEncoding(sf->uni_interp == ui_japanese ? "sjis" :
-			       sf->uni_interp == ui_trad_chinese ? "big5" :
-			       sf->uni_interp == ui_simp_chinese ? "euc-cn" :
+      enc=FindOrMakeEncoding(sf->uni_interp==ui_japanese ? "sjis" :
+			       sf->uni_interp==ui_trad_chinese ? "big5" :
+			       sf->uni_interp==ui_simp_chinese ? "euc-cn" :
 			       "euc-kr");
       if (map->enc != enc) {
-	 map = EncMapFromEncoding(sf, enc);
+	 map=EncMapFromEncoding(sf, enc);
 	 encname =
 	    map->enc->iconv_name !=
 	    NULL ? map->enc->iconv_name : map->enc->enc_name;
@@ -4873,17 +4873,17 @@ static FILE *Needs816Enc(SplineFont * sf, int *tlen, EncMap * map,
    /* Don't know if this is true of other cjk encodings... for the moment I */
    /*  will just use standard encodings for them */
    if (strstrmatch(encname, "sjis") != NULL) {
-      enc = FindOrMakeEncoding("cp932");
+      enc=FindOrMakeEncoding("cp932");
       if (enc != NULL) {
-	 applemap = map;
-	 map = EncMapFromEncoding(sf, enc);
+	 applemap=map;
+	 map=EncMapFromEncoding(sf, enc);
       }
    } else if (strstrmatch(encname, "cp932") != NULL)
-      applemap = EncMapFromEncoding(sf, FindOrMakeEncoding("sjis"));
+      applemap=EncMapFromEncoding(sf, FindOrMakeEncoding("sjis"));
 
    if (applemap != NULL)
-      *apple = _Gen816Enc(sf, appletlen, applemap);
-   sub = _Gen816Enc(sf, tlen, map);
+      *apple=_Gen816Enc(sf, appletlen, applemap);
+   sub=_Gen816Enc(sf, tlen, map);
 
    if (applemap != NULL && applemap != oldmap)
       EncMapFree(applemap);
@@ -4892,30 +4892,30 @@ static FILE *Needs816Enc(SplineFont * sf, int *tlen, EncMap * map,
    return (sub);
 }
 
-static FILE *NeedsUCS4Table(SplineFont * sf, int *ucs4len, EncMap * map) {
-   int i = 0, j, group;
+static AFILE *NeedsUCS4Table(SplineFont *sf,int *ucs4len,EncMap *map) {
+   int i=0, j, group;
 
-   FILE *format12;
+   AFILE *format12;
 
    SplineChar *sc;
 
-   EncMap *freeme = NULL;
+   EncMap *freeme=NULL;
 
    struct altuni *altuni;
 
    if (map->enc->is_unicodefull)
-      i = 0x10000;
+      i=0x10000;
    else if (map->enc->is_custom)
-      i = 0;
+      i=0;
    else
-      i = map->enc->char_cnt;
+      i=map->enc->char_cnt;
    for (; i < map->enccount; ++i) {
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
 	 if (sf->glyphs[map->map[i]]->unicodeenc >= 0x10000)
 	    break;
-	 for (altuni = sf->glyphs[map->map[i]]->altuni;
+	 for (altuni=sf->glyphs[map->map[i]]->altuni;
 	      altuni != NULL && (altuni->unienc < 0x10000 || altuni->vs != -1
-				 || altuni->fid != 0); altuni = altuni->next);
+				 || altuni->fid != 0); altuni=altuni->next);
 	 if (altuni != NULL)
 	    break;
       }
@@ -4925,10 +4925,10 @@ static FILE *NeedsUCS4Table(SplineFont * sf, int *ucs4len, EncMap * map) {
       return (NULL);
 
    if (!map->enc->is_unicodefull)
-      map = freeme = EncMapFromEncoding(sf, FindOrMakeEncoding("ucs4"));
+      map=freeme=EncMapFromEncoding(sf, FindOrMakeEncoding("ucs4"));
 
-   format12 = tmpfile();
-   if (format12 == NULL)
+   format12=tmpfile();
+   if (format12==NULL)
       return (NULL);
 
    putshort(format12, 12);	/* Subtable format */
@@ -4937,44 +4937,44 @@ static FILE *NeedsUCS4Table(SplineFont * sf, int *ucs4len, EncMap * map) {
    putlong(format12, 0);	/* language */
    putlong(format12, 0);	/* Number of groups, we'll come back to this */
 
-   group = 0;
-   for (i = 0; i < map->enccount; ++i)
+   group=0;
+   for (i=0; i < map->enccount; ++i)
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])
 	  && sf->glyphs[map->map[i]]->unicodeenc != -1) {
-	 sc = sf->glyphs[map->map[i]];
-	 for (j = i + 1; j < map->enccount && map->map[j] != -1 &&
+	 sc=sf->glyphs[map->map[i]];
+	 for (j=i + 1; j < map->enccount && map->map[j] != -1 &&
 	      SCWorthOutputting(sf->glyphs[map->map[j]]) &&
 	      sf->glyphs[map->map[j]]->unicodeenc != -1 &&
-	      sf->glyphs[map->map[j]]->ttf_glyph == sc->ttf_glyph + j - i;
+	      sf->glyphs[map->map[j]]->ttf_glyph==sc->ttf_glyph + j - i;
 	      ++j);
 	 --j;
 	 putlong(format12, i);	/* start char code */
 	 putlong(format12, j);	/* end char code */
 	 putlong(format12, sc->ttf_glyph);
 	 ++group;
-	 i = j;			/* move to the start of the next group */
+	 i=j;			/* move to the start of the next group */
       }
-   *ucs4len = ftell(format12);
-   fseek(format12, 4, SEEK_SET);
+   *ucs4len=aftell(format12);
+   afseek(format12, 4, SEEK_SET);
    putlong(format12, *ucs4len);	/* Length, I said we'd come back to it */
    putlong(format12, 0);	/* language */
    putlong(format12, group);	/* Number of groups */
-   rewind(format12);
+   arewind(format12);
 
    if (freeme != NULL)
       EncMapFree(freeme);
    return (format12);
 }
 
-static FILE *NeedsUCS2Table(SplineFont * sf, int *ucs2len, EncMap * map,
+static AFILE *NeedsUCS2Table(SplineFont *sf,int *ucs2len,EncMap *map,
 			    int issymbol) {
    /* We always want a format 4 2byte unicode encoding map */
    /* But if it's symbol, only include encodings 0xff20 - 0xffff */
-   uint32 *avail = malloc(65536 * sizeof(uint32));
+   uint32 *avail=malloc(65536 * sizeof(uint32));
 
    int i, j, l;
 
-   int segcnt, cnt = 0, delta, rpos;
+   int segcnt, cnt=0, delta, rpos;
 
    struct cmapseg {
       uint16 start, end;
@@ -4986,31 +4986,31 @@ static FILE *NeedsUCS2Table(SplineFont * sf, int *ucs2len, EncMap * map,
 
    SplineChar *sc;
 
-   FILE *format4 = tmpfile();
+   AFILE *format4=tmpfile();
 
    memset(avail, 0xff, 65536 * sizeof(uint32));
    if (map->enc->is_unicodebmp || map->enc->is_unicodefull) {
       int gid;
 
-      for (i = 0; i < 65536 && i < map->enccount; ++i)
-	 if ((gid = map->map[i]) != -1 && sf->glyphs[gid] != NULL
+      for (i=0; i < 65536 && i < map->enccount; ++i)
+	 if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	     && sf->glyphs[gid]->ttf_glyph != -1) {
-	    avail[i] = gid;
+	    avail[i]=gid;
 	    ++cnt;
 	 }
    } else {
       struct altuni *altuni;
 
-      for (i = 0; i < sf->glyphcnt; ++i) {
-	 if ((sc = sf->glyphs[i]) != NULL && sc->ttf_glyph != -1) {
+      for (i=0; i < sf->glyphcnt; ++i) {
+	 if ((sc=sf->glyphs[i]) != NULL && sc->ttf_glyph != -1) {
 	    if (sc->unicodeenc >= 0 && sc->unicodeenc <= 0xffff) {
-	       avail[sc->unicodeenc] = i;
+	       avail[sc->unicodeenc]=i;
 	       ++cnt;
 	    }
-	    for (altuni = sc->altuni; altuni != NULL; altuni = altuni->next) {
+	    for (altuni=sc->altuni; altuni != NULL; altuni=altuni->next) {
 	       if (altuni->unienc >= 0 && altuni->unienc <= 0xffff &&
-		   altuni->vs == -1 && altuni->fid == 0) {
-		  avail[altuni->unienc] = i;
+		   altuni->vs==-1 && altuni->fid==0) {
+		  avail[altuni->unienc]=i;
 		  ++cnt;
 	       }
 	    }
@@ -5023,51 +5023,51 @@ static FILE *NeedsUCS2Table(SplineFont * sf, int *ucs2len, EncMap * map,
       memset(avail + 0xf100, 0xff, 0x0eff * sizeof(uint32));
    }
 
-   j = -1;
-   for (i = segcnt = 0; i < 65536; ++i) {
-      if (avail[i] != 0xffffffff && j == -1) {
-	 j = i;
+   j=-1;
+   for (i=segcnt=0; i < 65536; ++i) {
+      if (avail[i] != 0xffffffff && j==-1) {
+	 j=i;
 	 ++segcnt;
-      } else if (j != -1 && avail[i] == 0xffffffff)
-	 j = -1;
+      } else if (j != -1 && avail[i]==0xffffffff)
+	 j=-1;
    }
-   cmapseg = calloc(segcnt + 1, sizeof(struct cmapseg));
-   ranges = malloc(cnt * sizeof(int16));
-   j = -1;
-   for (i = segcnt = 0; i < 65536; ++i) {
-      if (avail[i] != 0xffffffff && j == -1) {
-	 j = i;
-	 cmapseg[segcnt].start = j;
+   cmapseg=calloc(segcnt + 1, sizeof(struct cmapseg));
+   ranges=malloc(cnt * sizeof(int16));
+   j=-1;
+   for (i=segcnt=0; i < 65536; ++i) {
+      if (avail[i] != 0xffffffff && j==-1) {
+	 j=i;
+	 cmapseg[segcnt].start=j;
 	 ++segcnt;
-      } else if (j != -1 && avail[i] == 0xffffffff) {
-	 cmapseg[segcnt - 1].end = i - 1;
-	 j = -1;
+      } else if (j != -1 && avail[i]==0xffffffff) {
+	 cmapseg[segcnt - 1].end=i - 1;
+	 j=-1;
       }
    }
    if (j != -1)
-      cmapseg[segcnt - 1].end = i - 1;
+      cmapseg[segcnt - 1].end=i - 1;
    /* create a dummy segment to mark the end of the table */
-   cmapseg[segcnt].start = cmapseg[segcnt].end = 0xffff;
-   cmapseg[segcnt++].delta = 1;
-   rpos = 0;
-   for (i = 0; i < segcnt - 1; ++i) {
-      l = avail[cmapseg[i].start];
-      sc = sf->glyphs[l];
-      delta = sc->ttf_glyph - cmapseg[i].start;
-      for (j = cmapseg[i].start; j <= cmapseg[i].end; ++j) {
-	 l = avail[j];
-	 sc = sf->glyphs[l];
+   cmapseg[segcnt].start=cmapseg[segcnt].end=0xffff;
+   cmapseg[segcnt++].delta=1;
+   rpos=0;
+   for (i=0; i < segcnt - 1; ++i) {
+      l=avail[cmapseg[i].start];
+      sc=sf->glyphs[l];
+      delta=sc->ttf_glyph - cmapseg[i].start;
+      for (j=cmapseg[i].start; j <= cmapseg[i].end; ++j) {
+	 l=avail[j];
+	 sc=sf->glyphs[l];
 	 if (delta != sc->ttf_glyph - j)
 	    break;
       }
       if (j > cmapseg[i].end)
-	 cmapseg[i].delta = delta;
+	 cmapseg[i].delta=delta;
       else {
-	 cmapseg[i].rangeoff = (rpos + (segcnt - i)) * sizeof(int16);
-	 for (j = cmapseg[i].start; j <= cmapseg[i].end; ++j) {
-	    l = avail[j];
-	    sc = sf->glyphs[l];
-	    ranges[rpos++] = sc->ttf_glyph;
+	 cmapseg[i].rangeoff=(rpos + (segcnt - i)) * sizeof(int16);
+	 for (j=cmapseg[i].start; j <= cmapseg[i].end; ++j) {
+	    l=avail[j];
+	    sc=sf->glyphs[l];
+	    ranges[rpos++]=sc->ttf_glyph;
 	 }
       }
    }
@@ -5078,40 +5078,40 @@ static FILE *NeedsUCS2Table(SplineFont * sf, int *ucs2len, EncMap * map,
    putshort(format4, (8 + 4 * segcnt + rpos) * sizeof(int16));
    putshort(format4, 0);	/* language/version */
    putshort(format4, 2 * segcnt);	/* segcnt */
-   for (j = 0, i = 1; i <= segcnt; i <<= 1, ++j);
+   for (j=0, i=1; i <= segcnt; i <<= 1, ++j);
    putshort(format4, i);	/* 2*2^floor(log2(segcnt)) */
    putshort(format4, j - 1);
    putshort(format4, 2 * segcnt - i);
-   for (i = 0; i < segcnt; ++i)
+   for (i=0; i < segcnt; ++i)
       putshort(format4, cmapseg[i].end);
    putshort(format4, 0);
-   for (i = 0; i < segcnt; ++i)
+   for (i=0; i < segcnt; ++i)
       putshort(format4, cmapseg[i].start);
-   for (i = 0; i < segcnt; ++i)
+   for (i=0; i < segcnt; ++i)
       putshort(format4, cmapseg[i].delta);
-   for (i = 0; i < segcnt; ++i)
+   for (i=0; i < segcnt; ++i)
       putshort(format4, cmapseg[i].rangeoff);
-   for (i = 0; i < rpos; ++i)
+   for (i=0; i < rpos; ++i)
       putshort(format4, ranges[i]);
    free(ranges);
    free(cmapseg);
-   *ucs2len = ftell(format4);
+   *ucs2len=aftell(format4);
    return (format4);
 }
 
-static FILE *NeedsVariationSequenceTable(SplineFont * sf, int *vslen,
+static AFILE *NeedsVariationSequenceTable(SplineFont *sf,int *vslen,
 					 EncMap * map) {
    /* Do we need a format 14 (unicode variation sequence) subtable? */
-   int gid, vs_cnt = 0, vs_max = 512, i, j, k, cnt, mingid, maxgid;
+   int gid, vs_cnt=0, vs_max=512, i, j, k, cnt, mingid, maxgid;
 
    struct altuni *altuni, *au;
 
-   uint32 vsbuf[512], *vses = vsbuf;
+   uint32 vsbuf[512], *vses=vsbuf;
 
-   FILE *format14;
+   AFILE *format14;
 
-   uint32 *avail = NULL;
-   enum vs_type { vs_default = (1 << 24), vs_nondefault = (2 << 24) };
+   uint32 *avail=NULL;
+   enum vs_type { vs_default=(1 << 24), vs_nondefault=(2 << 24) };
 
    SplineChar *sc;
 
@@ -5119,123 +5119,123 @@ static FILE *NeedsVariationSequenceTable(SplineFont * sf, int *vslen,
 
    int any;
 
-   mingid = maxgid = -1;
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
-      if ((sc = sf->glyphs[gid]) != NULL) {
-	 for (altuni = sc->altuni; altuni != NULL; altuni = altuni->next) {
+   mingid=maxgid=-1;
+   for (gid=0; gid < sf->glyphcnt; ++gid)
+      if ((sc=sf->glyphs[gid]) != NULL) {
+	 for (altuni=sc->altuni; altuni != NULL; altuni=altuni->next) {
 	    if (altuni->unienc != -1 && altuni->unienc < unicode4_size &&
-		altuni->vs != -1 && altuni->fid == 0) {
-	       for (i = 0; i < vs_cnt; ++i)
-		  if (vses[i] == altuni->vs)
+		altuni->vs != -1 && altuni->fid==0) {
+	       for (i=0; i < vs_cnt; ++i)
+		  if (vses[i]==altuni->vs)
 		     break;
 	       if (i >= vs_cnt) {
 		  if (i >= vs_max) {
-		     if (vses == vsbuf) {
-			vses = malloc((vs_max *= 2) * sizeof(uint32));
+		     if (vses==vsbuf) {
+			vses=malloc((vs_max *= 2) * sizeof(uint32));
 			memcpy(vses, vsbuf, sizeof(vsbuf));
 		     } else
 			vses =
 			   realloc(vses, (vs_max += 512) * sizeof(uint32));
 		  }
-		  vses[vs_cnt++] = altuni->vs;
+		  vses[vs_cnt++]=altuni->vs;
 	       }
-	       if (mingid == -1)
-		  mingid = maxgid = gid;
+	       if (mingid==-1)
+		  mingid=maxgid=gid;
 	       else
-		  maxgid = gid;
+		  maxgid=gid;
 	    }
 	 }
       }
-   if (vs_cnt == 0) {
-      *vslen = 0;
+   if (vs_cnt==0) {
+      *vslen=0;
       return (NULL);		/* No variation selectors */
    }
 
    /* Sort the variation selectors */
-   for (i = 0; i < vs_cnt; ++i)
-      for (j = i + 1; j < vs_cnt; ++j) {
+   for (i=0; i < vs_cnt; ++i)
+      for (j=i + 1; j < vs_cnt; ++j) {
 	 if (vses[i] > vses[j]) {
-	    int temp = vses[i];
+	    int temp=vses[i];
 
-	    vses[i] = vses[j];
-	    vses[j] = temp;
+	    vses[i]=vses[j];
+	    vses[j]=temp;
 	 }
       }
 
-   avail = malloc(unicode4_size * sizeof(uint32));
+   avail=malloc(unicode4_size * sizeof(uint32));
 
-   format14 = tmpfile();
+   format14=tmpfile();
    putshort(format14, 14);
    putlong(format14, 0);	/* Length, fixup later */
    putlong(format14, vs_cnt);	/* number of selectors */
 
    /* Variation selector records */
-   for (i = 0; i < vs_cnt; ++i) {
+   for (i=0; i < vs_cnt; ++i) {
       putu24(format14, vses[i]);
       putlong(format14, 0);
       putlong(format14, 0);
    }
 
-   for (i = 0; i < vs_cnt; ++i) {
+   for (i=0; i < vs_cnt; ++i) {
       memset(avail, 0, unicode4_size * sizeof(uint32));
-      any = 0;
-      for (gid = mingid; gid <= maxgid; ++gid)
-	 if ((sc = sf->glyphs[gid]) != NULL) {
-	    for (altuni = sc->altuni; altuni != NULL; altuni = altuni->next) {
+      any=0;
+      for (gid=mingid; gid <= maxgid; ++gid)
+	 if ((sc=sf->glyphs[gid]) != NULL) {
+	    for (altuni=sc->altuni; altuni != NULL; altuni=altuni->next) {
 	       if (altuni->unienc != -1 && altuni->unienc < unicode4_size &&
-		   altuni->vs == vses[i] && altuni->fid == 0) {
-		  for (au = sc->altuni; au != NULL; au = au->next)
-		     if (au->unienc == altuni->unienc && au->vs == -1
-			 && au->fid == 0)
+		   altuni->vs==vses[i] && altuni->fid==0) {
+		  for (au=sc->altuni; au != NULL; au=au->next)
+		     if (au->unienc==altuni->unienc && au->vs==-1
+			 && au->fid==0)
 			break;
-		  if (altuni->unienc == sc->unicodeenc || au != NULL) {
-		     avail[altuni->unienc] = gid | vs_default;
+		  if (altuni->unienc==sc->unicodeenc || au != NULL) {
+		     avail[altuni->unienc]=gid | vs_default;
 		     any |= vs_default;
 		  } else {
-		     avail[altuni->unienc] = gid | vs_nondefault;
+		     avail[altuni->unienc]=gid | vs_nondefault;
 		     any |= vs_nondefault;
 		  }
 	       }
 	    }
 	 }
       if (any & vs_default) {
-	 here = ftell(format14);
-	 fseek(format14, 10 + i * 11 + 3, SEEK_SET);	/* Seek to defaultUVSOffset */
+	 here=aftell(format14);
+	 afseek(format14, 10 + i * 11 + 3, SEEK_SET);	/* Seek to defaultUVSOffset */
 	 putlong(format14, here);
-	 fseek(format14, 0, SEEK_END);
-	 cnt = 0;
-	 for (j = 0; j < unicode4_size; ++j)
+	 afseek(format14, 0, SEEK_END);
+	 cnt=0;
+	 for (j=0; j < unicode4_size; ++j)
 	    if (avail[j] & vs_default) {
-	       for (k = j + 1; k < unicode4_size && (avail[k] & vs_default);
+	       for (k=j + 1; k < unicode4_size && (avail[k] & vs_default);
 		    ++k);
 	       if (k - j > 256)
-		  k = j + 256;	/* Each range is limited to 255 code points, as the count is a byte */
+		  k=j + 256;	/* Each range is limited to 255 code points, as the count is a byte */
 	       ++cnt;
-	       j = k - 1;
+	       j=k - 1;
 	    }
 	 putlong(format14, cnt);
-	 for (j = 0; j < unicode4_size; ++j)
+	 for (j=0; j < unicode4_size; ++j)
 	    if (avail[j] & vs_default) {
-	       for (k = j + 1; k < unicode4_size && (avail[k] & vs_default);
+	       for (k=j + 1; k < unicode4_size && (avail[k] & vs_default);
 		    ++k);
 	       if (k - j > 256)
-		  k = j + 256;
+		  k=j + 256;
 	       putu24(format14, j);
-	       putc(k - j - 1, format14);
-	       j = k - 1;
+	       aputc(k - j - 1, format14);
+	       j=k - 1;
 	    }
       }
       if (any & vs_nondefault) {
-	 here = ftell(format14);
-	 fseek(format14, 10 + i * 11 + 7, SEEK_SET);	/* Seek to nonDefaultUVSOffset */
+	 here=aftell(format14);
+	 afseek(format14, 10 + i * 11 + 7, SEEK_SET);	/* Seek to nonDefaultUVSOffset */
 	 putlong(format14, here);
-	 fseek(format14, 0, SEEK_END);
-	 cnt = 0;
-	 for (j = 0; j < unicode4_size; ++j)
+	 afseek(format14, 0, SEEK_END);
+	 cnt=0;
+	 for (j=0; j < unicode4_size; ++j)
 	    if (avail[j] & vs_nondefault)
 	       ++cnt;
 	 putlong(format14, cnt);
-	 for (j = 0; j < unicode4_size; ++j)
+	 for (j=0; j < unicode4_size; ++j)
 	    if (avail[j] & vs_nondefault) {
 	       putu24(format14, j);
 	       putshort(format14, sf->glyphs[avail[j] & 0xffff]->ttf_glyph);
@@ -5243,19 +5243,19 @@ static FILE *NeedsVariationSequenceTable(SplineFont * sf, int *vslen,
       }
    }
 
-   here = ftell(format14);
-   fseek(format14, 2, SEEK_SET);
+   here=aftell(format14);
+   afseek(format14, 2, SEEK_SET);
    putlong(format14, here);
-   fseek(format14, 0, SEEK_END);
+   afseek(format14, 0, SEEK_END);
    if (here & 1) {
-      putc('\0', format14);
+      aputc('\0', format14);
       ++here;
    }
    if (here & 2) {
       putshort(format14, 0);
       here += 2;
    }
-   *vslen = here;
+   *vslen=here;
 
    free(avail);
    if (vses != vsbuf)
@@ -5264,7 +5264,7 @@ static FILE *NeedsVariationSequenceTable(SplineFont * sf, int *vslen,
    return (format14);
 }
 
-static void dumpcmap(struct alltabs *at, SplineFont * sf,
+static void dumpcmap(struct alltabs *at,SplineFont *sf,
 		     enum fontformat format) {
    int i, enccnt, issmall, hasmac;
 
@@ -5272,25 +5272,25 @@ static void dumpcmap(struct alltabs *at, SplineFont * sf,
 
    SplineChar *sc;
 
-   int alreadyprivate = false;
+   int alreadyprivate=false;
 
-   int wasotf = format == ff_otf || format == ff_otfcid;
+   int wasotf=format==ff_otf || format==ff_otfcid;
 
-   EncMap *map = at->map;
+   EncMap *map=at->map;
 
-   int ucs4len = 0, ucs2len = 0, cjklen = 0, applecjklen = 0, vslen = 0;
+   int ucs4len=0, ucs2len=0, cjklen=0, applecjklen=0, vslen=0;
 
-   FILE *format12, *format4, *format2, *apple2, *format14;
+   AFILE *format12, *format4, *format2, *apple2, *format14;
 
    int mspos, ucs4pos, cjkpos, applecjkpos, vspos, start_of_macroman;
 
-   int modformat = format;
+   int modformat=format;
 
    if ((format >= ff_ttf && format <= ff_otfdfont)
        && (at->gi.flags & ttf_flag_symbol))
-      modformat = ff_ttfsym;
+      modformat=ff_ttfsym;
 
-   at->cmap = tmpfile();
+   at->cmap=tmpfile();
 
    /* MacRoman encoding table *//* Not going to bother with making this work for cid fonts */
    /* I now see that Apple doesn't restrict us to format 0 sub-tables (as */
@@ -5299,77 +5299,77 @@ static void dumpcmap(struct alltabs *at, SplineFont * sf,
    /*  for one byte ones too */
    memset(table, '\0', sizeof(table));
    if (!wasotf) {
-      table[29] = table[8] = table[0] = 1;
-      table[9] = table[13] = 2;
+      table[29]=table[8]=table[0]=1;
+      table[9]=table[13]=2;
    }
-   for (i = 0; i < 256; ++i) {
+   for (i=0; i < 256; ++i) {
       extern unichar_t MacRomanEnc[];
 
-      /* sc = SFFindExistingCharMac(sf,map,MacRomanEnc[i]); */
-      sc = SFGetChar(sf, MacRomanEnc[i], NULL);
+      /* sc=SFFindExistingCharMac(sf,map,MacRomanEnc[i]); */
+      sc=SFGetChar(sf, MacRomanEnc[i], NULL);
       if (sc != NULL && sc->ttf_glyph != -1)
-	 table[i] = sc->ttf_glyph;
+	 table[i]=sc->ttf_glyph;
    }
-   if (table[0] == 0)
-      table[0] = 1;
+   if (table[0]==0)
+      table[0]=1;
 
-   if (modformat == ff_ttfsym) {
-      alreadyprivate = AlreadyMSSymbolArea(sf, map);
+   if (modformat==ff_ttfsym) {
+      alreadyprivate=AlreadyMSSymbolArea(sf, map);
       memset(table, '\0', sizeof(table));
       if (!wasotf) {
-	 table[29] = table[8] = table[0] = 1;
-	 table[9] = table[13] = 2;
+	 table[29]=table[8]=table[0]=1;
+	 table[9]=table[13]=2;
       }
       if (!alreadyprivate) {
-	 for (i = 0; i < map->enccount && i < 256; ++i) {
-	    if (map->map[i] != -1 && (sc = sf->glyphs[map->map[i]]) != NULL &&
+	 for (i=0; i < map->enccount && i < 256; ++i) {
+	    if (map->map[i] != -1 && (sc=sf->glyphs[map->map[i]]) != NULL &&
 		sc->ttf_glyph != -1)
-	       table[i] = sc->ttf_glyph;
+	       table[i]=sc->ttf_glyph;
 	 }
-	 for (i = 0xf020; i <= 0xf0ff && i < sf->glyphcnt; ++i) {
-	    if (map->map[i] != -1 && (sc = sf->glyphs[map->map[i]]) != NULL &&
-		sc->ttf_glyph != -1 && table[i - 0xf000] == 0)
-	       table[i - 0xf000] = sc->ttf_glyph;
+	 for (i=0xf020; i <= 0xf0ff && i < sf->glyphcnt; ++i) {
+	    if (map->map[i] != -1 && (sc=sf->glyphs[map->map[i]]) != NULL &&
+		sc->ttf_glyph != -1 && table[i - 0xf000]==0)
+	       table[i - 0xf000]=sc->ttf_glyph;
 	 }
       } else {
-	 for (i = 0xf020; i <= 0xf0ff && i < sf->glyphcnt; ++i) {
-	    if (map->map[i] != -1 && (sc = sf->glyphs[map->map[i]]) != NULL &&
+	 for (i=0xf020; i <= 0xf0ff && i < sf->glyphcnt; ++i) {
+	    if (map->map[i] != -1 && (sc=sf->glyphs[map->map[i]]) != NULL &&
 		sc->ttf_glyph != -1)
-	       table[i - 0xf000] = sc->ttf_glyph;
+	       table[i - 0xf000]=sc->ttf_glyph;
 	 }
-	 for (i = 0; i < map->enccount && i < 256; ++i) {
-	    if (map->map[i] != -1 && (sc = sf->glyphs[map->map[i]]) != NULL &&
-		sc->ttf_glyph != -1 && table[i] == 0)
-	       table[i] = sc->ttf_glyph;
+	 for (i=0; i < map->enccount && i < 256; ++i) {
+	    if (map->map[i] != -1 && (sc=sf->glyphs[map->map[i]]) != NULL &&
+		sc->ttf_glyph != -1 && table[i]==0)
+	       table[i]=sc->ttf_glyph;
 	 }
       }
       /* if the user has read in a ttf symbol file then it will already have */
       /*  the right private use encoding, and we don't want to mess it up. */
       /*  The alreadyprivate flag should detect this case */
       if (!alreadyprivate) {
-	 for (i = 0; i < map->enccount && i < 256; ++i) {
-	    if (map->map[i] != -1 && (sc = sf->glyphs[map->map[i]]) != NULL) {
-	       sc->orig_pos = sc->unicodeenc;
-	       sc->unicodeenc = 0xf000 + i;
+	 for (i=0; i < map->enccount && i < 256; ++i) {
+	    if (map->map[i] != -1 && (sc=sf->glyphs[map->map[i]]) != NULL) {
+	       sc->orig_pos=sc->unicodeenc;
+	       sc->unicodeenc=0xf000 + i;
 	    }
 	 }
 	 for (; i < map->enccount; ++i) {
-	    if (map->map[i] != -1 && (sc = sf->glyphs[map->map[i]]) != NULL) {
-	       sc->orig_pos = sc->unicodeenc;
-	       sc->unicodeenc = -1;
+	    if (map->map[i] != -1 && (sc=sf->glyphs[map->map[i]]) != NULL) {
+	       sc->orig_pos=sc->unicodeenc;
+	       sc->unicodeenc=-1;
 	    }
 	 }
       }
    }
 
-   format4 = NeedsUCS2Table(sf, &ucs2len, map, modformat == ff_ttfsym);
-   apple2 = NULL;
+   format4=NeedsUCS2Table(sf, &ucs2len, map, modformat==ff_ttfsym);
+   apple2=NULL;
    if (modformat != ff_ttfsym) {
-      format12 = NeedsUCS4Table(sf, &ucs4len, map);
-      format2 = Needs816Enc(sf, &cjklen, map, &apple2, &applecjklen);
-      format14 = NeedsVariationSequenceTable(sf, &vslen, map);
+      format12=NeedsUCS4Table(sf, &ucs4len, map);
+      format2=Needs816Enc(sf, &cjklen, map, &apple2, &applecjklen);
+      format14=NeedsVariationSequenceTable(sf, &vslen, map);
    } else
-      format12 = format2 = format14 = apple2 = NULL;
+      format12=format2=format14=apple2=NULL;
 
    /* Two/Three/Four encoding table pointers, one for ms, one for mac */
    /*  usually one for mac big, just a copy of ms */
@@ -5378,20 +5378,20 @@ static void dumpcmap(struct alltabs *at, SplineFont * sf,
    /* sometimes the mac will have a slightly different cjk table */
    /* Sometimes we want a variation sequence subtable (format=14) for */
    /*  unicode platform */
-   if (modformat == ff_ttfsym) {
-      enccnt = 2;
-      hasmac = 0;
+   if (modformat==ff_ttfsym) {
+      enccnt=2;
+      hasmac=0;
    } else {
-      hasmac = 1;
-      enccnt = 3;
+      hasmac=1;
+      enccnt=3;
       if (format12 != NULL)
-	 enccnt = 5;
+	 enccnt=5;
       if (format2 != NULL) {
 	 if (strstrmatch(map->enc->enc_name, "johab") != NULL) {
 	    ++enccnt;
 	 } else {
 	    enccnt += 2;
-	    hasmac = 3;
+	    hasmac=3;
 	 }
       }
       if (format14 != NULL)
@@ -5403,16 +5403,16 @@ static void dumpcmap(struct alltabs *at, SplineFont * sf,
 
    mspos =
       2 * sizeof(uint16) + enccnt * (2 * sizeof(uint16) + sizeof(uint32));
-   ucs4pos = mspos + ucs2len;
-   cjkpos = ucs4pos + ucs4len;
-   if (apple2 == NULL) {
-      applecjkpos = cjkpos;
-      applecjklen = cjklen;
+   ucs4pos=mspos + ucs2len;
+   cjkpos=ucs4pos + ucs4len;
+   if (apple2==NULL) {
+      applecjkpos=cjkpos;
+      applecjklen=cjklen;
    } else
-      applecjkpos = cjkpos + cjklen;
+      applecjkpos=cjkpos + cjklen;
    /* applecjklen set above */
-   vspos = applecjkpos + applecjklen;
-   start_of_macroman = vspos + vslen;
+   vspos=applecjkpos + applecjklen;
+   start_of_macroman=vspos + vslen;
 
    if (hasmac & 1) {
       /* big mac table, just a copy of the ms table */
@@ -5445,23 +5445,23 @@ static void dumpcmap(struct alltabs *at, SplineFont * sf,
    if (format2 != NULL && (hasmac & 2)) {
       /* mac cjk table, often a copy of the ms table */
       putshort(at->cmap, 1);	/* mac platform */
-      putshort(at->cmap, map->enc->is_japanese || sf->uni_interp == ui_japanese ? 1 :	/* SJIS */
-	       map->enc->is_korean || sf->uni_interp == ui_korean ? 3 :	/* Korean */
-	       map->enc->is_simplechinese || sf->uni_interp == ui_simp_chinese ? 25 :	/* Simplified Chinese */
+      putshort(at->cmap, map->enc->is_japanese || sf->uni_interp==ui_japanese ? 1 :	/* SJIS */
+	       map->enc->is_korean || sf->uni_interp==ui_korean ? 3 :	/* Korean */
+	       map->enc->is_simplechinese || sf->uni_interp==ui_simp_chinese ? 25 :	/* Simplified Chinese */
 	       2);		/* Big5 */
       putlong(at->cmap, applecjkpos);
    }
 
    putshort(at->cmap, 3);	/* ms platform */
    putshort(at->cmap,		/* plat specific enc */
-	    modformat == ff_ttfsym ? 0 :	/* Symbol */
+	    modformat==ff_ttfsym ? 0 :	/* Symbol */
 	    1);			/* Unicode */
    putlong(at->cmap, mspos);	/* offset from tab start to sub tab start */
 
    if (format2 != NULL) {
       putshort(at->cmap, 3);	/* ms platform */
       putshort(at->cmap,	/* plat specific enc */
-	       strstrmatch(map->enc->enc_name, "johab") != NULL ? 6 : map->enc->is_korean || sf->uni_interp == ui_korean ? 5 : map->enc->is_japanese || sf->uni_interp == ui_japanese ? 2 : map->enc->is_simplechinese || sf->uni_interp == ui_simp_chinese ? 3 : 4);	/* Big5 */
+	       strstrmatch(map->enc->enc_name, "johab") != NULL ? 6 : map->enc->is_korean || sf->uni_interp==ui_korean ? 5 : map->enc->is_japanese || sf->uni_interp==ui_japanese ? 2 : map->enc->is_simplechinese || sf->uni_interp==ui_simp_chinese ? 3 : 4);	/* Big5 */
       putlong(at->cmap, cjkpos);	/* offset from tab start to sub tab start */
    }
 
@@ -5472,200 +5472,200 @@ static void dumpcmap(struct alltabs *at, SplineFont * sf,
    }
    if (format4 != NULL) {
       if (!ttfcopyfile(at->cmap, format4, mspos, "cmap-Unicode16"))
-	 at->error = true;
+	 at->error=true;
    }
    if (format12 != NULL) {
       if (!ttfcopyfile(at->cmap, format12, ucs4pos, "cmap-Unicode32"))
-	 at->error = true;
+	 at->error=true;
    }
    if (format2 != NULL) {
       if (!ttfcopyfile(at->cmap, format2, cjkpos, "cmap-cjk"))
-	 at->error = true;
+	 at->error=true;
    }
    if (apple2 != NULL) {
       if (!ttfcopyfile(at->cmap, apple2, applecjkpos, "cmap-applecjk"))
-	 at->error = true;
+	 at->error=true;
    }
    if (format14 != NULL) {
       if (!ttfcopyfile(at->cmap, format14, vspos, "cmap-uniVariations"))
-	 at->error = true;
+	 at->error=true;
    }
 
    /* Mac table */
-   issmall = true;
-   for (i = 0; i < 256; ++i)
+   issmall=true;
+   for (i=0; i < 256; ++i)
       if (table[i] >= 256) {
-	 issmall = false;
+	 issmall=false;
 	 break;
       }
    if (issmall) {
       putshort(at->cmap, 0);	/* format */
-      putshort(at->cmap, 262);	/* length = 256bytes + 6 header bytes */
-      putshort(at->cmap, 0);	/* language = english */
-      for (i = 0; i < 256; ++i)
-	 putc(table[i], at->cmap);
+      putshort(at->cmap, 262);	/* length=256bytes + 6 header bytes */
+      putshort(at->cmap, 0);	/* language=english */
+      for (i=0; i < 256; ++i)
+	 aputc(table[i], at->cmap);
    } else {
       putshort(at->cmap, 6);	/* format 6 */
-      putshort(at->cmap, 522);	/* length = 256short +10 header bytes */
-      putshort(at->cmap, 0);	/* language = english */
+      putshort(at->cmap, 522);	/* length=256short +10 header bytes */
+      putshort(at->cmap, 0);	/* language=english */
       putshort(at->cmap, 0);	/* first code */
       putshort(at->cmap, 256);	/* entry count */
-      for (i = 0; i < 256; ++i)
+      for (i=0; i < 256; ++i)
 	 putshort(at->cmap, table[i]);
    }
 
-   at->cmaplen = ftell(at->cmap);
+   at->cmaplen=aftell(at->cmap);
    if ((at->cmaplen & 2) != 0)
       putshort(at->cmap, 0);
 
-   if (modformat == ff_ttfsym) {
+   if (modformat==ff_ttfsym) {
       if (!alreadyprivate) {
-	 for (i = 0; i < sf->glyphcnt; ++i)
+	 for (i=0; i < sf->glyphcnt; ++i)
 	    if (sf->glyphs[i] != NULL) {
-	       sf->glyphs[i]->unicodeenc = sf->glyphs[i]->orig_pos;
-	       sf->glyphs[i]->orig_pos = i;
+	       sf->glyphs[i]->unicodeenc=sf->glyphs[i]->orig_pos;
+	       sf->glyphs[i]->orig_pos=i;
 	    }
       }
    }
 }
 
-int32 filechecksum(FILE * file) {
-   uint32 sum = 0, chunk;
+int32 filechecksum(AFILE *file) {
+   uint32 sum=0, chunk;
 
-   rewind(file);
+   arewind(file);
    while (1) {
-      chunk = getuint32(file);
-      if (feof(file) || ferror(file))
+      chunk=getuint32(file);
+      if (afeof(file) || aferror(file))
 	 break;
       sum += chunk;
    }
    return (sum);
 }
 
-static void AbortTTF(struct alltabs *at, SplineFont * sf) {
+static void AbortTTF(struct alltabs *at,SplineFont *sf) {
    int i;
 
    if (at->loca != NULL)
-      fclose(at->loca);
+      afclose(at->loca);
    if (at->name != NULL)
-      fclose(at->name);
+      afclose(at->name);
    if (at->post != NULL)
-      fclose(at->post);
+      afclose(at->post);
    if (at->gpos != NULL)
-      fclose(at->gpos);
+      afclose(at->gpos);
    if (at->gsub != NULL)
-      fclose(at->gsub);
+      afclose(at->gsub);
    if (at->gdef != NULL)
-      fclose(at->gdef);
+      afclose(at->gdef);
    if (at->kern != NULL)
-      fclose(at->kern);
+      afclose(at->kern);
    if (at->cmap != NULL)
-      fclose(at->cmap);
+      afclose(at->cmap);
    if (at->headf != NULL)
-      fclose(at->headf);
+      afclose(at->headf);
    if (at->hheadf != NULL)
-      fclose(at->hheadf);
+      afclose(at->hheadf);
    if (at->maxpf != NULL)
-      fclose(at->maxpf);
+      afclose(at->maxpf);
    if (at->os2f != NULL)
-      fclose(at->os2f);
+      afclose(at->os2f);
    if (at->cvtf != NULL)
-      fclose(at->cvtf);
+      afclose(at->cvtf);
    if (at->vheadf != NULL)
-      fclose(at->vheadf);
+      afclose(at->vheadf);
    if (at->vorgf != NULL)
-      fclose(at->vorgf);
+      afclose(at->vorgf);
    if (at->cfff != NULL)
-      fclose(at->cfff);
+      afclose(at->cfff);
 
    if (at->gi.glyphs != NULL)
-      fclose(at->gi.glyphs);
+      afclose(at->gi.glyphs);
    if (at->gi.hmtx != NULL)
-      fclose(at->gi.hmtx);
+      afclose(at->gi.hmtx);
    if (at->gi.vmtx != NULL)
-      fclose(at->gi.vmtx);
+      afclose(at->gi.vmtx);
    if (at->fpgmf != NULL)
-      fclose(at->fpgmf);
+      afclose(at->fpgmf);
    if (at->prepf != NULL)
-      fclose(at->prepf);
+      afclose(at->prepf);
    if (at->gaspf != NULL)
-      fclose(at->gaspf);
+      afclose(at->gaspf);
 
    if (at->sidf != NULL)
-      fclose(at->sidf);
+      afclose(at->sidf);
    if (at->sidh != NULL)
-      fclose(at->sidh);
+      afclose(at->sidh);
    if (at->charset != NULL)
-      fclose(at->charset);
+      afclose(at->charset);
    if (at->encoding != NULL)
-      fclose(at->encoding);
+      afclose(at->encoding);
    if (at->private != NULL)
-      fclose(at->private);
+      afclose(at->private);
    if (at->charstrings != NULL)
-      fclose(at->charstrings);
+      afclose(at->charstrings);
    if (at->fdselect != NULL)
-      fclose(at->fdselect);
+      afclose(at->fdselect);
    if (at->fdarray != NULL)
-      fclose(at->fdarray);
+      afclose(at->fdarray);
    if (at->bdat != NULL)
-      fclose(at->bdat);
+      afclose(at->bdat);
    if (at->bloc != NULL)
-      fclose(at->bloc);
+      afclose(at->bloc);
    if (at->ebsc != NULL)
-      fclose(at->ebsc);
+      afclose(at->ebsc);
 
    if (at->prop != NULL)
-      fclose(at->prop);
+      afclose(at->prop);
    if (at->opbd != NULL)
-      fclose(at->opbd);
+      afclose(at->opbd);
    if (at->acnt != NULL)
-      fclose(at->acnt);
+      afclose(at->acnt);
    if (at->lcar != NULL)
-      fclose(at->lcar);
+      afclose(at->lcar);
    if (at->feat != NULL)
-      fclose(at->feat);
+      afclose(at->feat);
    if (at->morx != NULL)
-      fclose(at->morx);
+      afclose(at->morx);
 
    if (at->pfed != NULL)
-      fclose(at->pfed);
+      afclose(at->pfed);
    if (at->tex != NULL)
-      fclose(at->tex);
+      afclose(at->tex);
 
    if (at->gvar != NULL)
-      fclose(at->gvar);
+      afclose(at->gvar);
    if (at->fvar != NULL)
-      fclose(at->fvar);
+      afclose(at->fvar);
    if (at->cvar != NULL)
-      fclose(at->cvar);
+      afclose(at->cvar);
    if (at->avar != NULL)
-      fclose(at->avar);
+      afclose(at->avar);
 
-   for (i = 0; i < sf->subfontcnt; ++i) {
+   for (i=0; i < sf->subfontcnt; ++i) {
       if (at->fds[i].private != NULL)
-	 fclose(at->fds[i].private);
+	 afclose(at->fds[i].private);
    }
    if (sf->subfontcnt != 0) {
       free(sf->glyphs);
-      sf->glyphs = NULL;
-      sf->glyphcnt = sf->glyphmax = 0;
+      sf->glyphs=NULL;
+      sf->glyphcnt=sf->glyphmax=0;
    }
    free(at->fds);
    free(at->gi.bygid);
 }
 
-int SFHasInstructions(SplineFont * sf) {
+int SFHasInstructions(SplineFont *sf) {
    int i;
 
    if (sf->mm != NULL && sf->mm->apple)
-      sf = sf->mm->normal;
+      sf=sf->mm->normal;
 
    if (sf->subfontcnt != 0)
       return (false);		/* Truetype doesn't support cid keyed fonts */
 
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 if (strcmp(sf->glyphs[i]->name, ".notdef") == 0)
+	 if (strcmp(sf->glyphs[i]->name, ".notdef")==0)
 	    continue;		/* ff produces fonts with instructions in .notdef & not elsewhere. Ignore these */
 	 if (sf->glyphs[i]->ttf_instrs != NULL)
 	    return (true);
@@ -5673,76 +5673,76 @@ int SFHasInstructions(SplineFont * sf) {
    return (false);
 }
 
-static void MaxpFromTable(struct alltabs *at, SplineFont * sf) {
+static void MaxpFromTable(struct alltabs *at,SplineFont *sf) {
    struct ttf_table *maxp;
 
-   maxp = SFFindTable(sf, CHR('m', 'a', 'x', 'p'));
-   if (maxp == NULL && sf->mm != NULL && sf->mm->apple)
-      maxp = SFFindTable(sf->mm->normal, CHR('m', 'a', 'x', 'p'));
-   if (maxp == NULL || maxp->len < 13 * sizeof(uint16))
+   maxp=SFFindTable(sf, CHR('m', 'a', 'x', 'p'));
+   if (maxp==NULL && sf->mm != NULL && sf->mm->apple)
+      maxp=SFFindTable(sf->mm->normal, CHR('m', 'a', 'x', 'p'));
+   if (maxp==NULL || maxp->len < 13 * sizeof(uint16))
       return;
    /* We can figure out the others ourselves, but these depend on the contents */
    /*  of uninterpretted tables */
-   at->maxp.maxZones = memushort(maxp->data, maxp->len, 7 * sizeof(uint16));
+   at->maxp.maxZones=memushort(maxp->data, maxp->len, 7 * sizeof(uint16));
    at->maxp.maxTwilightPts =
       memushort(maxp->data, maxp->len, 8 * sizeof(uint16));
-   at->maxp.maxStorage = memushort(maxp->data, maxp->len, 9 * sizeof(uint16));
-   at->maxp.maxFDEFs = memushort(maxp->data, maxp->len, 10 * sizeof(uint16));
-   at->maxp.maxIDEFs = memushort(maxp->data, maxp->len, 11 * sizeof(uint16));
-   at->maxp.maxStack = memushort(maxp->data, maxp->len, 12 * sizeof(uint16));
+   at->maxp.maxStorage=memushort(maxp->data, maxp->len, 9 * sizeof(uint16));
+   at->maxp.maxFDEFs=memushort(maxp->data, maxp->len, 10 * sizeof(uint16));
+   at->maxp.maxIDEFs=memushort(maxp->data, maxp->len, 11 * sizeof(uint16));
+   at->maxp.maxStack=memushort(maxp->data, maxp->len, 12 * sizeof(uint16));
 }
 
-static FILE *dumpstoredtable(SplineFont * sf, uint32 tag, int *len) {
-   struct ttf_table *tab = SFFindTable(sf, tag);
+static AFILE *dumpstoredtable(SplineFont *sf,uint32 tag,int *len) {
+   struct ttf_table *tab=SFFindTable(sf, tag);
 
-   FILE *out;
+   AFILE *out;
 
-   if (tab == NULL && sf->mm != NULL && sf->mm->apple)
-      tab = SFFindTable(sf->mm->normal, tag);
-   if (tab == NULL) {
-      *len = 0;
+   if (tab==NULL && sf->mm != NULL && sf->mm->apple)
+      tab=SFFindTable(sf->mm->normal, tag);
+   if (tab==NULL) {
+      *len=0;
       return (NULL);
    }
 
-   out = tmpfile();
+   out=tmpfile();
    fwrite(tab->data, 1, tab->len, out);
    if ((tab->len & 1))
-      putc('\0', out);
+      aputc('\0', out);
    if ((tab->len + 1) & 2)
       putshort(out, 0);
-   *len = tab->len;
+   *len=tab->len;
    return (out);
 }
 
-static FILE *dumpsavedtable(struct ttf_table *tab) {
-   FILE *out;
+static AFILE *dumpsavedtable(struct ttf_table *tab) {
+   AFILE *out;
 
-   if (tab == NULL)
+   if (tab==NULL)
       return (NULL);
 
-   out = tmpfile();
+   out=tmpfile();
    fwrite(tab->data, 1, tab->len, out);
    if ((tab->len & 1))
-      putc('\0', out);
+      aputc('\0', out);
    if ((tab->len + 1) & 2)
       putshort(out, 0);
    return (out);
 }
 
-static int tagcomp(const void *_t1, const void *_t2) {
-   struct taboff *t1 = *((struct taboff **) _t1), *t2 =
+static int tagcomp(const void *_t1,const void *_t2) {
+   struct taboff *t1=*((struct taboff **) _t1), *t2 =
       *((struct taboff **) _t2);
    return ((int) (t1->tag - t2->tag));
 }
 
-static int tcomp(const void *_t1, const void *_t2) {
-   struct taboff *t1 = *((struct taboff **) _t1), *t2 =
+static int tcomp(const void *_t1,const void *_t2) {
+   struct taboff *t1=*((struct taboff **) _t1), *t2 =
       *((struct taboff **) _t2);
    return (t1->orderingval - t2->orderingval);
 }
 
-static int tcomp2(const void *_t1, const void *_t2) {
-   struct taboff *t1 = *((struct taboff **) _t1), *t2 =
+static int tcomp2(const void *_t1,const void *_t2) {
+   struct taboff *t1=*((struct taboff **) _t1), *t2 =
       *((struct taboff **) _t2);
    if (t1->offset > t2->offset)
       return (1);
@@ -5751,28 +5751,28 @@ static int tcomp2(const void *_t1, const void *_t2) {
    return (0);
 }
 
-static void ATmaxpInit(struct alltabs *at, SplineFont * sf,
+static void ATmaxpInit(struct alltabs *at,SplineFont *sf,
 		       enum fontformat format) {
 
-   at->maxp.version = 0x00010000;
-   if (format == ff_otf || format == ff_otfcid
-       || (format == ff_none && at->applemode))
-      at->maxp.version = 0x00005000;
-   at->maxp.maxnumcomponents = 0;
-   at->maxp.maxcomponentdepth = 0;
-   at->maxp.maxZones = 2;	/* 1 would probably do, don't use twilight */
-   at->maxp.maxFDEFs = 1;	/* Not even 1 */
-   at->maxp.maxStorage = 1;	/* Not even 1 */
-   at->maxp.maxStack = 64;	/* A guess, it's probably more like 8 */
-   if (format == ff_otf || format == ff_otfcid
-       || (format == ff_none && at->applemode))
-      at->maxp.version = 0x00005000;
+   at->maxp.version=0x00010000;
+   if (format==ff_otf || format==ff_otfcid
+       || (format==ff_none && at->applemode))
+      at->maxp.version=0x00005000;
+   at->maxp.maxnumcomponents=0;
+   at->maxp.maxcomponentdepth=0;
+   at->maxp.maxZones=2;	/* 1 would probably do, don't use twilight */
+   at->maxp.maxFDEFs=1;	/* Not even 1 */
+   at->maxp.maxStorage=1;	/* Not even 1 */
+   at->maxp.maxStack=64;	/* A guess, it's probably more like 8 */
+   if (format==ff_otf || format==ff_otfcid
+       || (format==ff_none && at->applemode))
+      at->maxp.version=0x00005000;
    else
       MaxpFromTable(at, sf);
-   at->gi.maxp = &at->maxp;
+   at->gi.maxp=&at->maxp;
 }
 
-static void initATTables(struct alltabs *at, SplineFont * sf,
+static void initATTables(struct alltabs *at,SplineFont *sf,
 			 enum fontformat format, int flags) {
 
    setos2(&at->os2, at, sf, format);	/* should precede kern/ligature output */
@@ -5808,7 +5808,7 @@ static void initATTables(struct alltabs *at, SplineFont * sf,
    redoos2(at);
 }
 
-static void buildtablestructures(struct alltabs *at, SplineFont * sf,
+static void buildtablestructures(struct alltabs *at,SplineFont *sf,
 				 enum fontformat format) {
    int i;
 
@@ -5816,343 +5816,343 @@ static void buildtablestructures(struct alltabs *at, SplineFont * sf,
 
    struct ttf_table *tab;
 
-   if (format == ff_otf || format == ff_otfcid) {
-      at->tabdir.version = CHR('O', 'T', 'T', 'O');
+   if (format==ff_otf || format==ff_otfcid) {
+      at->tabdir.version=CHR('O', 'T', 'T', 'O');
 #ifdef FONTANVIL_CONFIG_APPLE_ONLY_TTF	/* This means that Windows will reject the font. In general not a good idea */
    } else if (at->applemode && !at->opentypemode) {
-      at->tabdir.version = CHR('t', 'r', 'u', 'e');
+      at->tabdir.version=CHR('t', 'r', 'u', 'e');
 #endif
    } else {
-      at->tabdir.version = 0x00010000;
+      at->tabdir.version=0x00010000;
    }
 
-   i = 0;
+   i=0;
 
    if (at->base != NULL) {
-      at->tabdir.tabs[i].tag = CHR('B', 'A', 'S', 'E');
-      at->tabdir.tabs[i].data = at->base;
-      at->tabdir.tabs[i++].length = at->baselen;
+      at->tabdir.tabs[i].tag=CHR('B', 'A', 'S', 'E');
+      at->tabdir.tabs[i].data=at->base;
+      at->tabdir.tabs[i++].length=at->baselen;
    }
 
    if (at->bsln != NULL) {
-      at->tabdir.tabs[i].tag = CHR('b', 's', 'l', 'n');
-      at->tabdir.tabs[i].data = at->bsln;
-      at->tabdir.tabs[i++].length = at->bslnlen;
+      at->tabdir.tabs[i].tag=CHR('b', 's', 'l', 'n');
+      at->tabdir.tabs[i].data=at->bsln;
+      at->tabdir.tabs[i++].length=at->bslnlen;
    }
 
    if (at->bdf != NULL) {
-      at->tabdir.tabs[i].tag = CHR('B', 'D', 'F', ' ');
-      at->tabdir.tabs[i].data = at->bdf;
-      at->tabdir.tabs[i++].length = at->bdflen;
+      at->tabdir.tabs[i].tag=CHR('B', 'D', 'F', ' ');
+      at->tabdir.tabs[i].data=at->bdf;
+      at->tabdir.tabs[i++].length=at->bdflen;
    }
 
-   if (format == ff_otf || format == ff_otfcid) {
-      at->tabdir.tabs[i].tag = CHR('C', 'F', 'F', ' ');
-      at->tabdir.tabs[i].length = at->cfflen;
-      at->tabdir.tabs[i++].data = at->cfff;
+   if (format==ff_otf || format==ff_otfcid) {
+      at->tabdir.tabs[i].tag=CHR('C', 'F', 'F', ' ');
+      at->tabdir.tabs[i].length=at->cfflen;
+      at->tabdir.tabs[i++].data=at->cfff;
    }
 
    if (at->dsigf != NULL) {
-      ebdtpos = i;
-      at->tabdir.tabs[i].tag = CHR('D', 'S', 'I', 'G');
-      at->tabdir.tabs[i].length = at->dsiglen;
-      at->tabdir.tabs[i++].data = at->dsigf;
+      ebdtpos=i;
+      at->tabdir.tabs[i].tag=CHR('D', 'S', 'I', 'G');
+      at->tabdir.tabs[i].length=at->dsiglen;
+      at->tabdir.tabs[i++].data=at->dsigf;
    }
 
    if (at->bdat != NULL && (at->msbitmaps || at->otbbitmaps)) {
-      ebdtpos = i;
-      at->tabdir.tabs[i].tag = CHR('E', 'B', 'D', 'T');
-      at->tabdir.tabs[i].length = at->bdatlen;
-      at->tabdir.tabs[i++].data = at->bdat;
+      ebdtpos=i;
+      at->tabdir.tabs[i].tag=CHR('E', 'B', 'D', 'T');
+      at->tabdir.tabs[i].length=at->bdatlen;
+      at->tabdir.tabs[i++].data=at->bdat;
    }
 
    if (at->bloc != NULL && (at->msbitmaps || at->otbbitmaps)) {
-      eblcpos = i;
-      at->tabdir.tabs[i].tag = CHR('E', 'B', 'L', 'C');
-      at->tabdir.tabs[i].data = at->bloc;
-      at->tabdir.tabs[i++].length = at->bloclen;
+      eblcpos=i;
+      at->tabdir.tabs[i].tag=CHR('E', 'B', 'L', 'C');
+      at->tabdir.tabs[i].data=at->bloc;
+      at->tabdir.tabs[i++].length=at->bloclen;
    }
 
    if (at->ebsc != NULL) {
-      at->tabdir.tabs[i].tag = CHR('E', 'B', 'S', 'C');
-      at->tabdir.tabs[i].data = at->ebsc;
-      at->tabdir.tabs[i++].length = at->ebsclen;
+      at->tabdir.tabs[i].tag=CHR('E', 'B', 'S', 'C');
+      at->tabdir.tabs[i].data=at->ebsc;
+      at->tabdir.tabs[i++].length=at->ebsclen;
    }
 
    if (at->fftmf != NULL) {
-      at->tabdir.tabs[i].tag = CHR('F', 'F', 'T', 'M');
-      at->tabdir.tabs[i].data = at->fftmf;
-      at->tabdir.tabs[i++].length = at->fftmlen;
+      at->tabdir.tabs[i].tag=CHR('F', 'F', 'T', 'M');
+      at->tabdir.tabs[i].data=at->fftmf;
+      at->tabdir.tabs[i++].length=at->fftmlen;
    }
 
    if (at->gdef != NULL) {
-      at->tabdir.tabs[i].tag = CHR('G', 'D', 'E', 'F');
-      at->tabdir.tabs[i].data = at->gdef;
-      at->tabdir.tabs[i++].length = at->gdeflen;
+      at->tabdir.tabs[i].tag=CHR('G', 'D', 'E', 'F');
+      at->tabdir.tabs[i].data=at->gdef;
+      at->tabdir.tabs[i++].length=at->gdeflen;
    }
 
    if (at->gpos != NULL) {
-      at->tabdir.tabs[i].tag = CHR('G', 'P', 'O', 'S');
-      at->tabdir.tabs[i].data = at->gpos;
-      at->tabdir.tabs[i++].length = at->gposlen;
+      at->tabdir.tabs[i].tag=CHR('G', 'P', 'O', 'S');
+      at->tabdir.tabs[i].data=at->gpos;
+      at->tabdir.tabs[i++].length=at->gposlen;
    }
 
    if (at->gsub != NULL) {
-      at->tabdir.tabs[i].tag = CHR('G', 'S', 'U', 'B');
-      at->tabdir.tabs[i].data = at->gsub;
-      at->tabdir.tabs[i++].length = at->gsublen;
+      at->tabdir.tabs[i].tag=CHR('G', 'S', 'U', 'B');
+      at->tabdir.tabs[i].data=at->gsub;
+      at->tabdir.tabs[i++].length=at->gsublen;
    }
 
    if (at->jstf != NULL) {
-      at->tabdir.tabs[i].tag = CHR('J', 'S', 'T', 'F');
-      at->tabdir.tabs[i].data = at->jstf;
-      at->tabdir.tabs[i++].length = at->jstflen;
+      at->tabdir.tabs[i].tag=CHR('J', 'S', 'T', 'F');
+      at->tabdir.tabs[i].data=at->jstf;
+      at->tabdir.tabs[i++].length=at->jstflen;
    }
 
    if (at->os2f != NULL) {
-      at->tabdir.tabs[i].tag = CHR('O', 'S', '/', '2');
-      at->tabdir.tabs[i].data = at->os2f;
-      at->tabdir.tabs[i++].length = at->os2len;
+      at->tabdir.tabs[i].tag=CHR('O', 'S', '/', '2');
+      at->tabdir.tabs[i].data=at->os2f;
+      at->tabdir.tabs[i++].length=at->os2len;
    }
 
    if (at->pfed != NULL) {
-      at->tabdir.tabs[i].tag = CHR('P', 'f', 'E', 'd');
-      at->tabdir.tabs[i].data = at->pfed;
-      at->tabdir.tabs[i++].length = at->pfedlen;
+      at->tabdir.tabs[i].tag=CHR('P', 'f', 'E', 'd');
+      at->tabdir.tabs[i].data=at->pfed;
+      at->tabdir.tabs[i++].length=at->pfedlen;
    }
 
    if (at->tex != NULL) {
-      at->tabdir.tabs[i].tag = CHR('T', 'e', 'X', ' ');
-      at->tabdir.tabs[i].data = at->tex;
-      at->tabdir.tabs[i++].length = at->texlen;
+      at->tabdir.tabs[i].tag=CHR('T', 'e', 'X', ' ');
+      at->tabdir.tabs[i].data=at->tex;
+      at->tabdir.tabs[i++].length=at->texlen;
    }
 
    if (at->math != NULL) {
-      at->tabdir.tabs[i].tag = CHR('M', 'A', 'T', 'H');
-      at->tabdir.tabs[i].data = at->math;
-      at->tabdir.tabs[i++].length = at->mathlen;
+      at->tabdir.tabs[i].tag=CHR('M', 'A', 'T', 'H');
+      at->tabdir.tabs[i].data=at->math;
+      at->tabdir.tabs[i++].length=at->mathlen;
    }
 
    if (at->vorgf != NULL) {	/* No longer generated */
-      at->tabdir.tabs[i].tag = CHR('V', 'O', 'R', 'G');
-      at->tabdir.tabs[i].data = at->vorgf;
-      at->tabdir.tabs[i++].length = at->vorglen;
+      at->tabdir.tabs[i].tag=CHR('V', 'O', 'R', 'G');
+      at->tabdir.tabs[i].data=at->vorgf;
+      at->tabdir.tabs[i++].length=at->vorglen;
    }
 
    if (at->acnt != NULL) {
-      at->tabdir.tabs[i].tag = CHR('a', 'c', 'n', 't');
-      at->tabdir.tabs[i].data = at->acnt;
-      at->tabdir.tabs[i++].length = at->acntlen;
+      at->tabdir.tabs[i].tag=CHR('a', 'c', 'n', 't');
+      at->tabdir.tabs[i].data=at->acnt;
+      at->tabdir.tabs[i++].length=at->acntlen;
    }
 
    if (at->bdat != NULL && at->applebitmaps) {
-      at->tabdir.tabs[i].tag = CHR('b', 'd', 'a', 't');
+      at->tabdir.tabs[i].tag=CHR('b', 'd', 'a', 't');
       if (!at->msbitmaps) {
-	 at->tabdir.tabs[i].data = at->bdat;
-	 at->tabdir.tabs[i++].length = at->bdatlen;
+	 at->tabdir.tabs[i].data=at->bdat;
+	 at->tabdir.tabs[i++].length=at->bdatlen;
       } else {
-	 at->tabdir.tabs[i].data = NULL;
-	 at->tabdir.tabs[i].dup_of = ebdtpos;
-	 at->tabdir.tabs[i++].length = at->tabdir.tabs[ebdtpos].length;
+	 at->tabdir.tabs[i].data=NULL;
+	 at->tabdir.tabs[i].dup_of=ebdtpos;
+	 at->tabdir.tabs[i++].length=at->tabdir.tabs[ebdtpos].length;
       }
    }
 
-   if (format == ff_none && at->applebitmaps) {
+   if (format==ff_none && at->applebitmaps) {
       /* Bitmap only fonts get a bhed table rather than a head */
-      at->tabdir.tabs[i].tag = CHR('b', 'h', 'e', 'd');
-      at->tabdir.tabs[i].data = at->headf;
-      at->tabdir.tabs[i++].length = at->headlen;
+      at->tabdir.tabs[i].tag=CHR('b', 'h', 'e', 'd');
+      at->tabdir.tabs[i].data=at->headf;
+      at->tabdir.tabs[i++].length=at->headlen;
    }
 
    if (at->bloc != NULL && at->applebitmaps) {
-      at->tabdir.tabs[i].tag = CHR('b', 'l', 'o', 'c');
+      at->tabdir.tabs[i].tag=CHR('b', 'l', 'o', 'c');
       if (!at->msbitmaps) {
-	 at->tabdir.tabs[i].data = at->bloc;
-	 at->tabdir.tabs[i++].length = at->bloclen;
+	 at->tabdir.tabs[i].data=at->bloc;
+	 at->tabdir.tabs[i++].length=at->bloclen;
       } else {
-	 at->tabdir.tabs[i].data = NULL;
-	 at->tabdir.tabs[i].dup_of = eblcpos;
-	 at->tabdir.tabs[i++].length = at->tabdir.tabs[eblcpos].length;
+	 at->tabdir.tabs[i].data=NULL;
+	 at->tabdir.tabs[i].dup_of=eblcpos;
+	 at->tabdir.tabs[i++].length=at->tabdir.tabs[eblcpos].length;
       }
    }
 
    if (at->cmap != NULL) {
-      at->tabdir.tabs[i].tag = CHR('c', 'm', 'a', 'p');
-      at->tabdir.tabs[i].data = at->cmap;
-      at->tabdir.tabs[i++].length = at->cmaplen;
+      at->tabdir.tabs[i].tag=CHR('c', 'm', 'a', 'p');
+      at->tabdir.tabs[i].data=at->cmap;
+      at->tabdir.tabs[i++].length=at->cmaplen;
    }
 
    if (format != ff_otf && format != ff_otfcid && format != ff_none) {
       if (at->cvtf != NULL) {
-	 at->tabdir.tabs[i].tag = CHR('c', 'v', 't', ' ');
-	 at->tabdir.tabs[i].data = at->cvtf;
-	 at->tabdir.tabs[i++].length = at->cvtlen;
+	 at->tabdir.tabs[i].tag=CHR('c', 'v', 't', ' ');
+	 at->tabdir.tabs[i].data=at->cvtf;
+	 at->tabdir.tabs[i++].length=at->cvtlen;
       }
    }
 
    if (at->feat != NULL) {
-      at->tabdir.tabs[i].tag = CHR('f', 'e', 'a', 't');
-      at->tabdir.tabs[i].data = at->feat;
-      at->tabdir.tabs[i++].length = at->featlen;
+      at->tabdir.tabs[i].tag=CHR('f', 'e', 'a', 't');
+      at->tabdir.tabs[i].data=at->feat;
+      at->tabdir.tabs[i++].length=at->featlen;
    }
 
    if (at->fpgmf != NULL) {
-      at->tabdir.tabs[i].tag = CHR('f', 'p', 'g', 'm');
-      at->tabdir.tabs[i].data = at->fpgmf;
-      at->tabdir.tabs[i++].length = at->fpgmlen;
+      at->tabdir.tabs[i].tag=CHR('f', 'p', 'g', 'm');
+      at->tabdir.tabs[i].data=at->fpgmf;
+      at->tabdir.tabs[i++].length=at->fpgmlen;
    }
 
    if (at->gaspf != NULL) {
-      at->tabdir.tabs[i].tag = CHR('g', 'a', 's', 'p');
-      at->tabdir.tabs[i].data = at->gaspf;
-      at->tabdir.tabs[i++].length = at->gasplen;
+      at->tabdir.tabs[i].tag=CHR('g', 'a', 's', 'p');
+      at->tabdir.tabs[i].data=at->gaspf;
+      at->tabdir.tabs[i++].length=at->gasplen;
    }
 
    if (at->gi.glyphs != NULL) {
-      at->tabdir.tabs[i].tag = CHR('g', 'l', 'y', 'f');
-      at->tabdir.tabs[i].data = at->gi.glyphs;
-      at->tabdir.tabs[i++].length = at->gi.glyph_len;
+      at->tabdir.tabs[i].tag=CHR('g', 'l', 'y', 'f');
+      at->tabdir.tabs[i].data=at->gi.glyphs;
+      at->tabdir.tabs[i++].length=at->gi.glyph_len;
    }
 
    if (at->hdmxf != NULL) {
-      at->tabdir.tabs[i].tag = CHR('h', 'd', 'm', 'x');
-      at->tabdir.tabs[i].data = at->hdmxf;
-      at->tabdir.tabs[i++].length = at->hdmxlen;
+      at->tabdir.tabs[i].tag=CHR('h', 'd', 'm', 'x');
+      at->tabdir.tabs[i].data=at->hdmxf;
+      at->tabdir.tabs[i++].length=at->hdmxlen;
    }
 
    if (format != ff_none || !at->applebitmaps) {
-      at->tabdir.tabs[i].tag = CHR('h', 'e', 'a', 'd');
-      at->tabdir.tabs[i].data = at->headf;
-      at->tabdir.tabs[i++].length = at->headlen;
+      at->tabdir.tabs[i].tag=CHR('h', 'e', 'a', 'd');
+      at->tabdir.tabs[i].data=at->headf;
+      at->tabdir.tabs[i++].length=at->headlen;
    }
 
    if (format != ff_none || !at->applemode) {
-      at->tabdir.tabs[i].tag = CHR('h', 'h', 'e', 'a');
-      at->tabdir.tabs[i].data = at->hheadf;
-      at->tabdir.tabs[i++].length = at->hheadlen;
+      at->tabdir.tabs[i].tag=CHR('h', 'h', 'e', 'a');
+      at->tabdir.tabs[i].data=at->hheadf;
+      at->tabdir.tabs[i++].length=at->hheadlen;
    } else if (at->hheadf != NULL) {
-      fclose(at->hheadf);
-      at->hheadf = NULL;
+      afclose(at->hheadf);
+      at->hheadf=NULL;
    }
 
    if (format != ff_none || !at->applemode) {
-      at->tabdir.tabs[i].tag = CHR('h', 'm', 't', 'x');
-      at->tabdir.tabs[i].data = at->gi.hmtx;
-      at->tabdir.tabs[i++].length = at->gi.hmtxlen;
+      at->tabdir.tabs[i].tag=CHR('h', 'm', 't', 'x');
+      at->tabdir.tabs[i].data=at->gi.hmtx;
+      at->tabdir.tabs[i++].length=at->gi.hmtxlen;
    }
 
    if (at->kern != NULL) {
-      at->tabdir.tabs[i].tag = CHR('k', 'e', 'r', 'n');
-      at->tabdir.tabs[i].data = at->kern;
-      at->tabdir.tabs[i++].length = at->kernlen;
+      at->tabdir.tabs[i].tag=CHR('k', 'e', 'r', 'n');
+      at->tabdir.tabs[i].data=at->kern;
+      at->tabdir.tabs[i++].length=at->kernlen;
    }
 
    if (at->lcar != NULL) {
-      at->tabdir.tabs[i].tag = CHR('l', 'c', 'a', 'r');
-      at->tabdir.tabs[i].data = at->lcar;
-      at->tabdir.tabs[i++].length = at->lcarlen;
+      at->tabdir.tabs[i].tag=CHR('l', 'c', 'a', 'r');
+      at->tabdir.tabs[i].data=at->lcar;
+      at->tabdir.tabs[i++].length=at->lcarlen;
    }
 
    if (at->loca != NULL) {
-      at->tabdir.tabs[i].tag = CHR('l', 'o', 'c', 'a');
-      at->tabdir.tabs[i].data = at->loca;
-      at->tabdir.tabs[i++].length = at->localen;
+      at->tabdir.tabs[i].tag=CHR('l', 'o', 'c', 'a');
+      at->tabdir.tabs[i].data=at->loca;
+      at->tabdir.tabs[i++].length=at->localen;
    }
 
-   at->tabdir.tabs[i].tag = CHR('m', 'a', 'x', 'p');
-   at->tabdir.tabs[i].data = at->maxpf;
-   at->tabdir.tabs[i++].length = at->maxplen;
+   at->tabdir.tabs[i].tag=CHR('m', 'a', 'x', 'p');
+   at->tabdir.tabs[i].data=at->maxpf;
+   at->tabdir.tabs[i++].length=at->maxplen;
 
    if (at->morx != NULL) {
-      at->tabdir.tabs[i].tag = CHR('m', 'o', 'r', 'x');
-      at->tabdir.tabs[i].data = at->morx;
-      at->tabdir.tabs[i++].length = at->morxlen;
+      at->tabdir.tabs[i].tag=CHR('m', 'o', 'r', 'x');
+      at->tabdir.tabs[i].data=at->morx;
+      at->tabdir.tabs[i++].length=at->morxlen;
    }
 
    if (at->name != NULL) {
-      at->tabdir.tabs[i].tag = CHR('n', 'a', 'm', 'e');
-      at->tabdir.tabs[i].data = at->name;
-      at->tabdir.tabs[i++].length = at->namelen;
+      at->tabdir.tabs[i].tag=CHR('n', 'a', 'm', 'e');
+      at->tabdir.tabs[i].data=at->name;
+      at->tabdir.tabs[i++].length=at->namelen;
    }
 
    if (at->opbd != NULL) {
-      at->tabdir.tabs[i].tag = CHR('o', 'p', 'b', 'd');
-      at->tabdir.tabs[i].data = at->opbd;
-      at->tabdir.tabs[i++].length = at->opbdlen;
+      at->tabdir.tabs[i].tag=CHR('o', 'p', 'b', 'd');
+      at->tabdir.tabs[i].data=at->opbd;
+      at->tabdir.tabs[i++].length=at->opbdlen;
    }
 
    if (at->post != NULL) {
-      at->tabdir.tabs[i].tag = CHR('p', 'o', 's', 't');
-      at->tabdir.tabs[i].data = at->post;
-      at->tabdir.tabs[i++].length = at->postlen;
+      at->tabdir.tabs[i].tag=CHR('p', 'o', 's', 't');
+      at->tabdir.tabs[i].data=at->post;
+      at->tabdir.tabs[i++].length=at->postlen;
    }
 
    if (format != ff_otf && format != ff_otfcid && format != ff_none) {
       if (at->prepf != NULL) {
-	 at->tabdir.tabs[i].tag = CHR('p', 'r', 'e', 'p');
-	 at->tabdir.tabs[i].data = at->prepf;
-	 at->tabdir.tabs[i++].length = at->preplen;
+	 at->tabdir.tabs[i].tag=CHR('p', 'r', 'e', 'p');
+	 at->tabdir.tabs[i].data=at->prepf;
+	 at->tabdir.tabs[i++].length=at->preplen;
       }
    }
 
    if (at->prop != NULL) {
-      at->tabdir.tabs[i].tag = CHR('p', 'r', 'o', 'p');
-      at->tabdir.tabs[i].data = at->prop;
-      at->tabdir.tabs[i++].length = at->proplen;
+      at->tabdir.tabs[i].tag=CHR('p', 'r', 'o', 'p');
+      at->tabdir.tabs[i].data=at->prop;
+      at->tabdir.tabs[i++].length=at->proplen;
    }
 
    if (at->vheadf != NULL) {
-      at->tabdir.tabs[i].tag = CHR('v', 'h', 'e', 'a');
-      at->tabdir.tabs[i].data = at->vheadf;
-      at->tabdir.tabs[i++].length = at->vheadlen;
+      at->tabdir.tabs[i].tag=CHR('v', 'h', 'e', 'a');
+      at->tabdir.tabs[i].data=at->vheadf;
+      at->tabdir.tabs[i++].length=at->vheadlen;
 
-      at->tabdir.tabs[i].tag = CHR('v', 'm', 't', 'x');
-      at->tabdir.tabs[i].data = at->gi.vmtx;
-      at->tabdir.tabs[i++].length = at->gi.vmtxlen;
+      at->tabdir.tabs[i].tag=CHR('v', 'm', 't', 'x');
+      at->tabdir.tabs[i].data=at->gi.vmtx;
+      at->tabdir.tabs[i++].length=at->gi.vmtxlen;
    }
 
    if (at->fvar != NULL) {
-      at->tabdir.tabs[i].tag = CHR('f', 'v', 'a', 'r');
-      at->tabdir.tabs[i].data = at->fvar;
-      at->tabdir.tabs[i++].length = at->fvarlen;
+      at->tabdir.tabs[i].tag=CHR('f', 'v', 'a', 'r');
+      at->tabdir.tabs[i].data=at->fvar;
+      at->tabdir.tabs[i++].length=at->fvarlen;
    }
    if (at->gvar != NULL) {
-      at->tabdir.tabs[i].tag = CHR('g', 'v', 'a', 'r');
-      at->tabdir.tabs[i].data = at->gvar;
-      at->tabdir.tabs[i++].length = at->gvarlen;
+      at->tabdir.tabs[i].tag=CHR('g', 'v', 'a', 'r');
+      at->tabdir.tabs[i].data=at->gvar;
+      at->tabdir.tabs[i++].length=at->gvarlen;
    }
    if (at->cvar != NULL) {
-      at->tabdir.tabs[i].tag = CHR('c', 'v', 'a', 'r');
-      at->tabdir.tabs[i].data = at->cvar;
-      at->tabdir.tabs[i++].length = at->cvarlen;
+      at->tabdir.tabs[i].tag=CHR('c', 'v', 'a', 'r');
+      at->tabdir.tabs[i].data=at->cvar;
+      at->tabdir.tabs[i++].length=at->cvarlen;
    }
    if (at->avar != NULL) {
-      at->tabdir.tabs[i].tag = CHR('a', 'v', 'a', 'r');
-      at->tabdir.tabs[i].data = at->avar;
-      at->tabdir.tabs[i++].length = at->avarlen;
+      at->tabdir.tabs[i].tag=CHR('a', 'v', 'a', 'r');
+      at->tabdir.tabs[i].data=at->avar;
+      at->tabdir.tabs[i++].length=at->avarlen;
    }
 
    if (i >= MAX_TAB)
       IError
 	 ("Miscalculation of number of tables needed. Up sizeof tabs array in struct tabdir in ttf.h");
 
-   for (tab = sf->ttf_tab_saved; tab != NULL && i < MAX_TAB; tab = tab->next) {
-      at->tabdir.tabs[i].tag = tab->tag;
-      at->tabdir.tabs[i].data = tab->temp;
-      at->tabdir.tabs[i++].length = tab->len;
+   for (tab=sf->ttf_tab_saved; tab != NULL && i < MAX_TAB; tab=tab->next) {
+      at->tabdir.tabs[i].tag=tab->tag;
+      at->tabdir.tabs[i].data=tab->temp;
+      at->tabdir.tabs[i++].length=tab->len;
    }
    if (tab != NULL)
       IError
 	 ("Some user supplied tables omitted. Up sizeof tabs array in struct tabdir in ttf.h");
 
-   at->tabdir.numtab = i;
+   at->tabdir.numtab=i;
    at->tabdir.searchRange =
       (i < 16 ? 8 : i < 32 ? 16 : i < 64 ? 32 : 64) * 16;
-   at->tabdir.entrySel = (i < 16 ? 3 : i < 32 ? 4 : i < 64 ? 5 : 6);
-   at->tabdir.rangeShift = at->tabdir.numtab * 16 - at->tabdir.searchRange;
+   at->tabdir.entrySel=(i < 16 ? 3 : i < 32 ? 4 : i < 64 ? 5 : 6);
+   at->tabdir.rangeShift=at->tabdir.numtab * 16 - at->tabdir.searchRange;
 }
 
-static int initTables(struct alltabs *at, SplineFont * sf,
+static int initTables(struct alltabs *at,SplineFont *sf,
 		      enum fontformat format, int32 * bsizes,
 		      enum bitmapformat bf, int flags) {
    int i, j, aborted, offset;
@@ -6161,49 +6161,49 @@ static int initTables(struct alltabs *at, SplineFont * sf,
 
    struct ttf_table *tab;
 
-   if (strmatch(at->map->enc->enc_name, "symbol") == 0 && format == ff_ttf)
-      format = ff_ttfsym;
+   if (strmatch(at->map->enc->enc_name, "symbol")==0 && format==ff_ttf)
+      format=ff_ttfsym;
 
-   tab = SFFindTable(sf, CHR('c', 'v', 't', ' '));
+   tab=SFFindTable(sf, CHR('c', 'v', 't', ' '));
    if (tab != NULL) {
-      at->oldcvt = tab;
-      at->oldcvtlen = tab->len;
+      at->oldcvt=tab;
+      at->oldcvtlen=tab->len;
    }
 
    SFDefaultOS2Info(&sf->pfminfo, sf, sf->fontname);
 
-   at->gi.xmin = at->gi.ymin = 15000;
-   at->gi.sf = sf;
+   at->gi.xmin=at->gi.ymin=15000;
+   at->gi.sf=sf;
    if (bf != bf_ttf && bf != bf_sfnt_dfont && bf != bf_otb
        && bf != bf_sfnt_ms)
-      bsizes = NULL;
+      bsizes=NULL;
    if (bsizes != NULL) {
-      for (i = j = 0; bsizes[i] != 0; ++i) {
-	 for (bdf = sf->bitmaps;
+      for (i=j=0; bsizes[i] != 0; ++i) {
+	 for (bdf=sf->bitmaps;
 	      bdf != NULL && (bdf->pixelsize != (bsizes[i] & 0xffff)
 			      || BDFDepth(bdf) != (bsizes[i] >> 16));
-	      bdf = bdf->next);
+	      bdf=bdf->next);
 	 if (bdf != NULL)
-	    bsizes[j++] = bsizes[i];
+	    bsizes[j++]=bsizes[i];
 	 else
 	    ff_post_error(_("Missing bitmap strike"),
 			  _
 			  ("The font database does not contain a bitmap of size %d and depth %d"),
 			  bsizes[i] & 0xffff, bsizes[i] >> 16);
       }
-      bsizes[j] = 0;
-      for (i = 0; bsizes[i] != 0; ++i);
-      at->gi.strikecnt = i;
-      if (i == 0)
-	 bsizes = NULL;
+      bsizes[j]=0;
+      for (i=0; bsizes[i] != 0; ++i);
+      at->gi.strikecnt=i;
+      if (i==0)
+	 bsizes=NULL;
    }
 
    if (sf->subfonts != NULL) {
       SFDummyUpCIDs(&at->gi, sf);	/* life is easier if we ignore the separate fonts of a cid keyed fonts and treat it as flat */
    } else if (format != ff_none)
-      AssignTTFGlyph(&at->gi, sf, at->map, format == ff_otf);
+      AssignTTFGlyph(&at->gi, sf, at->map, format==ff_otf);
    else {
-      if (bsizes == NULL) {
+      if (bsizes==NULL) {
 	 ff_post_error(_("No bitmap strikes"), _("No bitmap strikes"));
 	 AbortTTF(at, sf);
 	 return (false);
@@ -6223,26 +6223,26 @@ static int initTables(struct alltabs *at, SplineFont * sf,
 
 
    ATmaxpInit(at, sf, format);
-   if (format == ff_otf)
-      aborted = !dumptype2glyphs(sf, at);
-   else if (format == ff_otfcid)
-      aborted = !dumpcidglyphs(sf, at);
-   else if (format == ff_none && at->applebitmaps) {
-      aborted = !dumpcffhmtx(at, sf, true);	/* There is no 'hmtx' table for apple bitmap only fonts */
+   if (format==ff_otf)
+      aborted=!dumptype2glyphs(sf, at);
+   else if (format==ff_otfcid)
+      aborted=!dumpcidglyphs(sf, at);
+   else if (format==ff_none && at->applebitmaps) {
+      aborted=!dumpcffhmtx(at, sf, true);	/* There is no 'hmtx' table for apple bitmap only fonts */
       /* But we need some of the side effects of this */
-   } else if (format == ff_none && at->otbbitmaps) {
-      aborted = !dumpcffhmtx(at, sf, true);
+   } else if (format==ff_none && at->otbbitmaps) {
+      aborted=!dumpcffhmtx(at, sf, true);
       dumpnoglyphs(sf, &at->gi);
-   } else if (format == ff_none && at->msbitmaps) {
-      aborted = !dumpglyphs(sf, &at->gi);
+   } else if (format==ff_none && at->msbitmaps) {
+      aborted=!dumpglyphs(sf, &at->gi);
    } else {
       /* if format==ff_none the following will put out lots of space glyphs */
-      aborted = !dumpglyphs(sf, &at->gi);
+      aborted=!dumpglyphs(sf, &at->gi);
    }
    if (format != ff_type42 && format != ff_type42cid) {
       if (bsizes != NULL && !aborted)
 	 ttfdumpbitmap(sf, at, bsizes);
-      if (bsizes != NULL && format == ff_none && at->msbitmaps)
+      if (bsizes != NULL && format==ff_none && at->msbitmaps)
 	 ttfdumpbitmapscaling(sf, at, bsizes);
    }
    if (aborted) {
@@ -6252,7 +6252,7 @@ static int initTables(struct alltabs *at, SplineFont * sf,
 
    sethead(&at->head, sf, at, format, bsizes);
    sethhead(&at->hhead, &at->vhead, at, sf);
-   if (format == ff_none && at->otbbitmaps)
+   if (format==ff_none && at->otbbitmaps)
       dummyloca(at);
    else if (format != ff_otf && format != ff_otfcid && bf != bf_sfnt_dfont &&
 	    (format != ff_none
@@ -6274,12 +6274,12 @@ static int initTables(struct alltabs *at, SplineFont * sf,
       if ((sf->gasp_cnt != 0 || !SFHasInstructions(sf))
 	  && format != ff_type42 && format != ff_type42cid)
 	 dumpgasp(at, sf);
-      at->fpgmf = dumpstoredtable(sf, CHR('f', 'p', 'g', 'm'), &at->fpgmlen);
-      at->prepf = dumpstoredtable(sf, CHR('p', 'r', 'e', 'p'), &at->preplen);
-      at->cvtf = dumpstoredtable(sf, CHR('c', 'v', 't', ' '), &at->cvtlen);
+      at->fpgmf=dumpstoredtable(sf, CHR('f', 'p', 'g', 'm'), &at->fpgmlen);
+      at->prepf=dumpstoredtable(sf, CHR('p', 'r', 'e', 'p'), &at->preplen);
+      at->cvtf=dumpstoredtable(sf, CHR('c', 'v', 't', ' '), &at->cvtlen);
    }
-   for (tab = sf->ttf_tab_saved; tab != NULL; tab = tab->next)
-      tab->temp = dumpsavedtable(tab);
+   for (tab=sf->ttf_tab_saved; tab != NULL; tab=tab->next)
+      tab->temp=dumpsavedtable(tab);
    if (format != ff_type42 && format != ff_type42cid) {
       dumppost(at, sf, format);
       dumpcmap(at, sf, format);
@@ -6289,18 +6289,18 @@ static int initTables(struct alltabs *at, SplineFont * sf,
    }
    if (sf->subfonts != NULL) {
       free(sf->glyphs);
-      sf->glyphs = NULL;
-      sf->glyphcnt = sf->glyphmax = 0;
+      sf->glyphs=NULL;
+      sf->glyphcnt=sf->glyphmax=0;
    }
    free(at->gi.bygid);
-   at->gi.gcnt = 0;
+   at->gi.gcnt=0;
 
    buildtablestructures(at, sf, format);
-   for (i = 0; i < at->tabdir.numtab; ++i) {
-      struct taboff *tab = &at->tabdir.tabs[i];
+   for (i=0; i < at->tabdir.numtab; ++i) {
+      struct taboff *tab=&at->tabdir.tabs[i];
 
-      at->tabdir.ordered[i] = tab;
-      at->tabdir.alpha[i] = tab;
+      at->tabdir.ordered[i]=tab;
+      at->tabdir.alpha[i]=tab;
 /* This is the ordering of tables in ARIAL. I've no idea why it makes a */
 /*  difference to order them, time to do a seek seems likely to be small, but */
 /*  other people make a big thing about ordering them so I'll do it. */
@@ -6313,42 +6313,42 @@ static int initTables(struct alltabs *at, SplineFont * sf,
 /*  loca, glyf, kern, name, post, gasp, PCLT, DSIG			      */
 /* CFF in OpenType Ordering						      */
 /*  head, hhea, maxp, OS/2, name, cmap, post, CFF, (other tables, as convenient) */
-      if (format == ff_otf || format == ff_otfcid) {
-	 tab->orderingval = tab->tag == CHR('h', 'e', 'a', 'd') ? 1 :
-	    tab->tag == CHR('h', 'h', 'e', 'a') ? 2 :
-	    tab->tag == CHR('m', 'a', 'x', 'p') ? 3 :
-	    tab->tag == CHR('O', 'S', '/', '2') ? 4 :
-	    tab->tag == CHR('n', 'a', 'm', 'e') ? 5 :
-	    tab->tag == CHR('c', 'm', 'a', 'p') ? 6 :
-	    tab->tag == CHR('p', 'o', 's', 't') ? 7 :
-	    tab->tag == CHR('C', 'F', 'F', ' ') ? 8 :
-	    tab->tag == CHR('G', 'D', 'E', 'F') ? 17 :
-	    tab->tag == CHR('G', 'S', 'U', 'B') ? 18 :
-	    tab->tag == CHR('G', 'P', 'O', 'S') ? 19 : 20;
+      if (format==ff_otf || format==ff_otfcid) {
+	 tab->orderingval=tab->tag==CHR('h', 'e', 'a', 'd') ? 1 :
+	    tab->tag==CHR('h', 'h', 'e', 'a') ? 2 :
+	    tab->tag==CHR('m', 'a', 'x', 'p') ? 3 :
+	    tab->tag==CHR('O', 'S', '/', '2') ? 4 :
+	    tab->tag==CHR('n', 'a', 'm', 'e') ? 5 :
+	    tab->tag==CHR('c', 'm', 'a', 'p') ? 6 :
+	    tab->tag==CHR('p', 'o', 's', 't') ? 7 :
+	    tab->tag==CHR('C', 'F', 'F', ' ') ? 8 :
+	    tab->tag==CHR('G', 'D', 'E', 'F') ? 17 :
+	    tab->tag==CHR('G', 'S', 'U', 'B') ? 18 :
+	    tab->tag==CHR('G', 'P', 'O', 'S') ? 19 : 20;
       } else {
-	 tab->orderingval = tab->tag == CHR('h', 'e', 'a', 'd') ? 1 :
-	    tab->tag == CHR('h', 'h', 'e', 'a') ? 2 :
-	    tab->tag == CHR('m', 'a', 'x', 'p') ? 3 :
-	    tab->tag == CHR('O', 'S', '/', '2') ? 4 :
-	    tab->tag == CHR('h', 'm', 't', 'x') ? 5 :
-	    tab->tag == CHR('L', 'T', 'S', 'H') ? 6 :
-	    tab->tag == CHR('V', 'D', 'M', 'X') ? 7 :
-	    tab->tag == CHR('h', 'd', 'm', 'x') ? 8 :
-	    tab->tag == CHR('c', 'm', 'a', 'p') ? 9 :
-	    tab->tag == CHR('f', 'p', 'g', 'm') ? 10 :
-	    tab->tag == CHR('p', 'r', 'e', 'p') ? 11 :
-	    tab->tag == CHR('c', 'v', 't', ' ') ? 12 :
-	    tab->tag == CHR('l', 'o', 'c', 'a') ? 13 :
-	    tab->tag == CHR('g', 'l', 'y', 'f') ? 14 :
-	    tab->tag == CHR('k', 'e', 'r', 'n') ? 15 :
-	    tab->tag == CHR('n', 'a', 'm', 'e') ? 16 :
-	    tab->tag == CHR('p', 'o', 's', 't') ? 17 :
-	    tab->tag == CHR('g', 'a', 's', 'p') ? 18 :
-	    tab->tag == CHR('P', 'C', 'L', 'T') ? 19 :
-	    tab->tag == CHR('D', 'S', 'I', 'G') ? 20 :
-	    tab->tag == CHR('G', 'D', 'E', 'F') ? 21 :
-	    tab->tag == CHR('G', 'S', 'U', 'B') ? 22 :
-	    tab->tag == CHR('G', 'P', 'O', 'S') ? 23 : 24;
+	 tab->orderingval=tab->tag==CHR('h', 'e', 'a', 'd') ? 1 :
+	    tab->tag==CHR('h', 'h', 'e', 'a') ? 2 :
+	    tab->tag==CHR('m', 'a', 'x', 'p') ? 3 :
+	    tab->tag==CHR('O', 'S', '/', '2') ? 4 :
+	    tab->tag==CHR('h', 'm', 't', 'x') ? 5 :
+	    tab->tag==CHR('L', 'T', 'S', 'H') ? 6 :
+	    tab->tag==CHR('V', 'D', 'M', 'X') ? 7 :
+	    tab->tag==CHR('h', 'd', 'm', 'x') ? 8 :
+	    tab->tag==CHR('c', 'm', 'a', 'p') ? 9 :
+	    tab->tag==CHR('f', 'p', 'g', 'm') ? 10 :
+	    tab->tag==CHR('p', 'r', 'e', 'p') ? 11 :
+	    tab->tag==CHR('c', 'v', 't', ' ') ? 12 :
+	    tab->tag==CHR('l', 'o', 'c', 'a') ? 13 :
+	    tab->tag==CHR('g', 'l', 'y', 'f') ? 14 :
+	    tab->tag==CHR('k', 'e', 'r', 'n') ? 15 :
+	    tab->tag==CHR('n', 'a', 'm', 'e') ? 16 :
+	    tab->tag==CHR('p', 'o', 's', 't') ? 17 :
+	    tab->tag==CHR('g', 'a', 's', 'p') ? 18 :
+	    tab->tag==CHR('P', 'C', 'L', 'T') ? 19 :
+	    tab->tag==CHR('D', 'S', 'I', 'G') ? 20 :
+	    tab->tag==CHR('G', 'D', 'E', 'F') ? 21 :
+	    tab->tag==CHR('G', 'S', 'U', 'B') ? 22 :
+	    tab->tag==CHR('G', 'P', 'O', 'S') ? 23 : 24;
       }
    }
 
@@ -6359,41 +6359,41 @@ static int initTables(struct alltabs *at, SplineFont * sf,
    offset =
       sizeof(int32) + 4 * sizeof(int16) +
       at->tabdir.numtab * 4 * sizeof(int32);
-   for (i = 0; i < at->tabdir.numtab; ++i)
+   for (i=0; i < at->tabdir.numtab; ++i)
       if (at->tabdir.ordered[i]->data != NULL) {
-	 at->tabdir.ordered[i]->offset = offset;
+	 at->tabdir.ordered[i]->offset=offset;
 	 offset += ((at->tabdir.ordered[i]->length + 3) >> 2) << 2;
 	 at->tabdir.ordered[i]->checksum =
 	    filechecksum(at->tabdir.ordered[i]->data);
       }
-   for (i = 0; i < at->tabdir.numtab; ++i)
-      if (at->tabdir.ordered[i]->data == NULL) {
-	 struct taboff *tab = &at->tabdir.tabs[at->tabdir.ordered[i]->dup_of];
+   for (i=0; i < at->tabdir.numtab; ++i)
+      if (at->tabdir.ordered[i]->data==NULL) {
+	 struct taboff *tab=&at->tabdir.tabs[at->tabdir.ordered[i]->dup_of];
 
-	 at->tabdir.ordered[i]->offset = tab->offset;
-	 at->tabdir.ordered[i]->checksum = tab->checksum;
+	 at->tabdir.ordered[i]->offset=tab->offset;
+	 at->tabdir.ordered[i]->checksum=tab->checksum;
       }
 
-   tab = SFFindTable(sf, CHR('c', 'v', 't', ' '));
+   tab=SFFindTable(sf, CHR('c', 'v', 't', ' '));
    if (tab != NULL) {
       if (at->oldcvt != NULL && at->oldcvtlen < tab->len)
-	 tab->len = at->oldcvtlen;
-      else if (at->oldcvt == NULL) {
+	 tab->len=at->oldcvtlen;
+      else if (at->oldcvt==NULL) {
 	 /* We created a cvt table when we output the .notdef glyph */
 	 /*  now that means AutoInstr thinks it no longer has a blank */
 	 /*  slate to work with, and will complain, much to the user's */
 	 /*  surprise.  So get rid of it */
-	 struct ttf_table *prev = NULL;
+	 struct ttf_table *prev=NULL;
 
-	 for (tab = sf->ttf_tables; tab != NULL; prev = tab, tab = tab->next)
-	    if (tab->tag == CHR('c', 'v', 't', ' '))
+	 for (tab=sf->ttf_tables; tab != NULL; prev=tab, tab=tab->next)
+	    if (tab->tag==CHR('c', 'v', 't', ' '))
 	       break;
 	 if (tab != NULL) {
-	    if (prev == NULL)
-	       sf->ttf_tables = tab->next;
+	    if (prev==NULL)
+	       sf->ttf_tables=tab->next;
 	    else
-	       prev->next = tab->next;
-	    tab->next = NULL;
+	       prev->next=tab->next;
+	    tab->next=NULL;
 	    TtfTablesFree(tab);
 	 }
       }
@@ -6404,18 +6404,18 @@ static int initTables(struct alltabs *at, SplineFont * sf,
 static char *Tag2String(uint32 tag) {
    static char buffer[8];
 
-   buffer[0] = tag >> 24;
-   buffer[1] = tag >> 16;
-   buffer[2] = tag >> 8;
-   buffer[3] = tag;
-   buffer[4] = 0;
+   buffer[0]=tag >> 24;
+   buffer[1]=tag >> 16;
+   buffer[2]=tag >> 8;
+   buffer[3]=tag;
+   buffer[4]=0;
    return (buffer);
 }
 
-static void dumpttf(FILE * ttf, struct alltabs *at, enum fontformat format) {
+static void dumpttf(AFILE *ttf,struct alltabs *at,enum fontformat format) {
    int32 checksum;
 
-   int i, head_index = -1;
+   int i, head_index=-1;
 
    /* I can't use fwrite because I (may) have to byte swap everything */
 
@@ -6424,28 +6424,28 @@ static void dumpttf(FILE * ttf, struct alltabs *at, enum fontformat format) {
    putshort(ttf, at->tabdir.searchRange);
    putshort(ttf, at->tabdir.entrySel);
    putshort(ttf, at->tabdir.rangeShift);
-   for (i = 0; i < at->tabdir.numtab; ++i) {
-      if (at->tabdir.alpha[i]->tag == CHR('h', 'e', 'a', 'd')
-	  || at->tabdir.alpha[i]->tag == CHR('b', 'h', 'e', 'd'))
-	 head_index = i;
+   for (i=0; i < at->tabdir.numtab; ++i) {
+      if (at->tabdir.alpha[i]->tag==CHR('h', 'e', 'a', 'd')
+	  || at->tabdir.alpha[i]->tag==CHR('b', 'h', 'e', 'd'))
+	 head_index=i;
       putlong(ttf, at->tabdir.alpha[i]->tag);
       putlong(ttf, at->tabdir.alpha[i]->checksum);
       putlong(ttf, at->tabdir.alpha[i]->offset);
       putlong(ttf, at->tabdir.alpha[i]->length);
    }
 
-   for (i = 0; i < at->tabdir.numtab; ++i)
+   for (i=0; i < at->tabdir.numtab; ++i)
       if (at->tabdir.ordered[i]->data != NULL) {
 	 if (!ttfcopyfile(ttf, at->tabdir.ordered[i]->data,
 			  at->tabdir.ordered[i]->offset,
 			  Tag2String(at->tabdir.ordered[i]->tag)))
-	    at->error = true;
+	    at->error=true;
       }
 
    if (head_index != -1) {
-      checksum = filechecksum(ttf);
-      checksum = 0xb1b0afba - checksum;
-      fseek(ttf, at->tabdir.alpha[head_index]->offset + 2 * sizeof(int32),
+      checksum=filechecksum(ttf);
+      checksum=0xb1b0afba - checksum;
+      afseek(ttf, at->tabdir.alpha[head_index]->offset + 2 * sizeof(int32),
 	    SEEK_SET);
       putlong(ttf, checksum);
    }
@@ -6453,165 +6453,165 @@ static void dumpttf(FILE * ttf, struct alltabs *at, enum fontformat format) {
    /* ttfcopyfile closed all the files (except ttf) */
 }
 
-static void DumpGlyphToNameMap(char *fontname, SplineFont * sf) {
+static void DumpGlyphToNameMap(char *fontname,SplineFont *sf) {
    char *d, *e;
 
-   char *newname = malloc(strlen(fontname) + 10);
+   char *newname=malloc(strlen(fontname) + 10);
 
-   FILE *file;
+   AFILE *file;
 
    int i, k, max;
 
    SplineChar *sc;
 
    strcpy(newname, fontname);
-   d = strrchr(newname, '/');
-   if (d == NULL)
-      d = newname;
-   e = strrchr(d, '.');
-   if (e == NULL)
-      e = newname + strlen(newname);
+   d=strrchr(newname, '/');
+   if (d==NULL)
+      d=newname;
+   e=strrchr(d, '.');
+   if (e==NULL)
+      e=newname + strlen(newname);
    strcpy(e, ".g2n");
 
-   file = fopen(newname, "wb");
-   if (file == NULL) {
+   file=afopen(newname, "wb");
+   if (file==NULL) {
       LogError(_("Failed to open glyph to name map file for writing: %s\n"),
 	       newname);
       free(newname);
       return;
    }
 
-   if (sf->subfontcnt == 0)
-      max = sf->glyphcnt;
+   if (sf->subfontcnt==0)
+      max=sf->glyphcnt;
    else {
-      for (k = max = 0; k < sf->subfontcnt; ++k)
+      for (k=max=0; k < sf->subfontcnt; ++k)
 	 if (sf->subfonts[k]->glyphcnt > max)
-	    max = sf->subfonts[k]->glyphcnt;
+	    max=sf->subfonts[k]->glyphcnt;
    }
-   for (i = 0; i < max; ++i) {
-      sc = NULL;
-      if (sf->subfontcnt == 0)
-	 sc = sf->glyphs[i];
+   for (i=0; i < max; ++i) {
+      sc=NULL;
+      if (sf->subfontcnt==0)
+	 sc=sf->glyphs[i];
       else {
-	 for (k = 0; k < sf->subfontcnt; ++k)
+	 for (k=0; k < sf->subfontcnt; ++k)
 	    if (i < sf->subfonts[k]->glyphcnt)
-	       if ((sc = sf->subfonts[k]->glyphs[i]) != NULL)
+	       if ((sc=sf->subfonts[k]->glyphs[i]) != NULL)
 		  break;
       }
       if (sc != NULL && sc->ttf_glyph != -1) {
-	 fprintf(file, "GLYPHID %d\tPSNAME %s", sc->ttf_glyph, sc->name);
+	 afprintf(file, "GLYPHID %d\tPSNAME %s", sc->ttf_glyph, sc->name);
 	 if (sc->unicodeenc != -1)
-	    fprintf(file, "\tUNICODE %04X", sc->unicodeenc);
-	 putc('\n', file);
+	    afprintf(file, "\tUNICODE %04X", sc->unicodeenc);
+	 aputc('\n', file);
       }
    }
-   fclose(file);
+   afclose(file);
    free(newname);
 }
 
-static int dumpcff(struct alltabs *at, SplineFont * sf,
-		   enum fontformat format, FILE * cff) {
+static int dumpcff(struct alltabs *at,SplineFont *sf,
+		   enum fontformat format, AFILE *cff) {
    int ret;
 
-   if (format == ff_cff) {
+   if (format==ff_cff) {
       AssignTTFGlyph(&at->gi, sf, at->map, true);
-      ret = dumptype2glyphs(sf, at);
+      ret=dumptype2glyphs(sf, at);
    } else {
       SFDummyUpCIDs(&at->gi, sf);	/* life is easier if we ignore the separate fonts of a cid keyed fonts and treat it as flat */
-      ret = dumpcidglyphs(sf, at);
+      ret=dumpcidglyphs(sf, at);
       free(sf->glyphs);
-      sf->glyphs = NULL;
-      sf->glyphcnt = sf->glyphmax = 0;
+      sf->glyphs=NULL;
+      sf->glyphcnt=sf->glyphmax=0;
    }
    free(at->gi.bygid);
 
    if (!ret)
-      at->error = true;
+      at->error=true;
    else if (at->gi.flags & ps_flag_nocffsugar) {
       if (!ttfcopyfile(cff, at->cfff, 0, "CFF"))
-	 at->error = true;
+	 at->error=true;
    } else {
       long len;
 
       char buffer[80];
 
-      fprintf(cff, "%%!PS-Adobe-3.0 Resource-FontSet\n");
-      fprintf(cff, "%%%%DocumentNeedResources:ProcSet (FontSetInit)\n");
-      fprintf(cff, "%%%%Title: (FontSet/%s)\n", sf->fontname);
-      fprintf(cff, "%%%%EndComments\n");
-      fprintf(cff, "%%%%IncludeResource: ProcSet(FontSetInit)\n");
-      fprintf(cff, "%%%%BeginResource: FontSet(%s)\n", sf->fontname);
-      fprintf(cff, "/FontSetInit /ProcSet findresource begin\n");
-      fseek(at->cfff, 0, SEEK_END);
-      len = ftell(at->cfff);
-      rewind(at->cfff);
+      afprintf(cff, "%%!PS-Adobe-3.0 Resource-FontSet\n");
+      afprintf(cff, "%%%%DocumentNeedResources:ProcSet (FontSetInit)\n");
+      afprintf(cff, "%%%%Title: (FontSet/%s)\n", sf->fontname);
+      afprintf(cff, "%%%%EndComments\n");
+      afprintf(cff, "%%%%IncludeResource: ProcSet(FontSetInit)\n");
+      afprintf(cff, "%%%%BeginResource: FontSet(%s)\n", sf->fontname);
+      afprintf(cff, "/FontSetInit /ProcSet findresource begin\n");
+      afseek(at->cfff, 0, SEEK_END);
+      len=aftell(at->cfff);
+      arewind(at->cfff);
       sprintf(buffer, "/%s %ld StartData\n", sf->fontname, len);
-      fprintf(cff, "%%%%BeginData: %ld Binary Bytes\n",
+      afprintf(cff, "%%%%BeginData: %ld Binary Bytes\n",
 	      (long) (len + strlen(buffer)));
       fputs(buffer, cff);
-      if (!ttfcopyfile(cff, at->cfff, ftell(cff), "CFF"))
-	 at->error = true;
-      fprintf(cff, "\n%%%%EndData\n");
-      fprintf(cff, "%%%%EndResource\n");
-      fprintf(cff, "%%%%EOF\n");
+      if (!ttfcopyfile(cff, at->cfff, aftell(cff), "CFF"))
+	 at->error=true;
+      afprintf(cff, "\n%%%%EndData\n");
+      afprintf(cff, "%%%%EndResource\n");
+      afprintf(cff, "%%%%EOF\n");
    }
    return (!at->error);
 }
 
-static void ATinit(struct alltabs *at, SplineFont * sf, EncMap * map,
+static void ATinit(struct alltabs *at,SplineFont *sf,EncMap *map,
 		   int flags, int layer, enum fontformat format,
 		   enum bitmapformat bf, int *bsizes) {
 
-   at->gi.flags = flags;
-   at->gi.layer = layer;
-   at->gi.is_ttf = format == ff_ttf || format == ff_ttfsym
-      || format == ff_ttfmacbin || format == ff_ttfdfont;
-   at->gi.sf = sf;
-   at->applemode = (flags & ttf_flag_applemode) ? 1 : 0;
-   at->opentypemode = (flags & ttf_flag_otmode) ? 1 : 0;
-   at->msbitmaps = bsizes != NULL && at->opentypemode;
-   at->applebitmaps = bsizes != NULL && at->applemode;
-   at->gi.onlybitmaps = format == ff_none;
+   at->gi.flags=flags;
+   at->gi.layer=layer;
+   at->gi.is_ttf=format==ff_ttf || format==ff_ttfsym
+      || format==ff_ttfmacbin || format==ff_ttfdfont;
+   at->gi.sf=sf;
+   at->applemode=(flags & ttf_flag_applemode) ? 1 : 0;
+   at->opentypemode=(flags & ttf_flag_otmode) ? 1 : 0;
+   at->msbitmaps=bsizes != NULL && at->opentypemode;
+   at->applebitmaps=bsizes != NULL && at->applemode;
+   at->gi.onlybitmaps=format==ff_none;
 
-   if (bf == bf_sfnt_dfont) {
-      at->msbitmaps = false;
-      at->applebitmaps = true;
-      at->opentypemode = false;
-      at->gi.onlybitmaps = true;
+   if (bf==bf_sfnt_dfont) {
+      at->msbitmaps=false;
+      at->applebitmaps=true;
+      at->opentypemode=false;
+      at->gi.onlybitmaps=true;
    }
-   if (bf == bf_sfnt_ms) {
-      at->msbitmaps = true;
-      at->applebitmaps = false;
-      at->applemode = false;
-      at->gi.onlybitmaps = true;
+   if (bf==bf_sfnt_ms) {
+      at->msbitmaps=true;
+      at->applebitmaps=false;
+      at->applemode=false;
+      at->gi.onlybitmaps=true;
    }
-   if (bf == bf_otb) {
-      at->otbbitmaps = true;
-      at->applebitmaps = at->msbitmaps = false;
-      at->applemode = false;
-      at->gi.onlybitmaps = true;
+   if (bf==bf_otb) {
+      at->otbbitmaps=true;
+      at->applebitmaps=at->msbitmaps=false;
+      at->applemode=false;
+      at->gi.onlybitmaps=true;
    }
 
    if (bsizes != NULL && !at->applebitmaps && !at->otbbitmaps
        && !at->msbitmaps)
-      at->msbitmaps = true;	/* They asked for bitmaps, but no bitmap type selected */
-   at->gi.bsizes = bsizes;
-   at->gi.fixed_width = CIDOneWidth(sf);
-   at->isotf = format == ff_otf || format == ff_otfcid;
-   at->format = format;
-   at->next_strid = 256;
+      at->msbitmaps=true;	/* They asked for bitmaps, but no bitmap type selected */
+   at->gi.bsizes=bsizes;
+   at->gi.fixed_width=CIDOneWidth(sf);
+   at->isotf=format==ff_otf || format==ff_otfcid;
+   at->format=format;
+   at->next_strid=256;
    if (at->applemode && sf->mm != NULL && sf->mm->apple &&
-       (format == ff_ttf || format == ff_ttfsym || format == ff_ttfmacbin ||
-	format == ff_ttfdfont) && MMValid(sf->mm, false)) {
-      at->dovariations = true;
-      at->gi.dovariations = true;
-      sf = sf->mm->normal;
+       (format==ff_ttf || format==ff_ttfsym || format==ff_ttfmacbin ||
+	format==ff_ttfdfont) && MMValid(sf->mm, false)) {
+      at->dovariations=true;
+      at->gi.dovariations=true;
+      sf=sf->mm->normal;
    }
-   at->sf = sf;
-   at->map = map;
+   at->sf=sf;
+   at->map=map;
 }
 
-int _WriteTTFFont(FILE * ttf, SplineFont * sf, enum fontformat format,
+int _WriteTTFFont(AFILE *ttf, SplineFont *sf, enum fontformat format,
 		  int32 * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * map, int layer) {
    struct alltabs at;
@@ -6622,22 +6622,22 @@ int _WriteTTFFont(FILE * ttf, SplineFont * sf, enum fontformat format,
 
    /* TrueType probably doesn't need this, but OpenType does for floats in dictionaries */
    strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24] = 0;
+   oldloc[24]=0;
    setlocale(LC_NUMERIC, "C");
 
-   if (format == ff_otfcid || format == ff_cffcid) {
+   if (format==ff_otfcid || format==ff_cffcid) {
       if (sf->cidmaster)
-	 sf = sf->cidmaster;
+	 sf=sf->cidmaster;
    } else {
       if (sf->subfontcnt != 0)
-	 sf = sf->subfonts[0];
+	 sf=sf->subfonts[0];
    }
 
-   if (sf->subfontcnt == 0) {
-      anyglyphs = false;
-      for (i = sf->glyphcnt - 1; i >= 0; --i) {
+   if (sf->subfontcnt==0) {
+      anyglyphs=false;
+      for (i=sf->glyphcnt - 1; i >= 0; --i) {
 	 if (SCWorthOutputting(sf->glyphs[i])) {
-	    anyglyphs = true;
+	    anyglyphs=true;
 	    if (sf->glyphs[i]->unicodeenc != -1)
 	       break;
 	 }
@@ -6659,21 +6659,21 @@ int _WriteTTFFont(FILE * ttf, SplineFont * sf, enum fontformat format,
       }
    }
 
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
-	 sf->glyphs[i]->ttf_glyph = -1;
+	 sf->glyphs[i]->ttf_glyph=-1;
 
    memset(&at, '\0', sizeof(struct alltabs));
    ATinit(&at, sf, map, flags, layer, format, bf, bsizes);
 
-   if (format == ff_cff || format == ff_cffcid) {
+   if (format==ff_cff || format==ff_cffcid) {
       dumpcff(&at, sf, format, ttf);
    } else {
       if (initTables(&at, sf, format, bsizes, bf, flags))
 	 dumpttf(ttf, &at, format);
    }
    setlocale(LC_NUMERIC, oldloc);
-   if (at.error || ferror(ttf))
+   if (at.error || aferror(ttf))
       return (0);
 
 #ifdef __CygWin
@@ -6691,26 +6691,19 @@ int _WriteTTFFont(FILE * ttf, SplineFont * sf, enum fontformat format,
    return (1);
 }
 
-int WriteTTFFont(char *fontname, SplineFont * sf, enum fontformat format,
+int WriteTTFFont(char *fontname, SplineFont *sf, enum fontformat format,
 		 int32 * bsizes, enum bitmapformat bf, int flags,
 		 EncMap * map, int layer) {
-   FILE *ttf;
+   AFILE *ttf;
 
    int ret;
 
-   if (strstr(fontname, "://") != NULL) {
-      if ((ttf = tmpfile()) == NULL)
-	 return (0);
-   } else {
-      if ((ttf = fopen(fontname, "wb+")) == NULL)
-	 return (0);
-   }
-   ret = _WriteTTFFont(ttf, sf, format, bsizes, bf, flags, map, layer);
-   if (strstr(fontname, "://") != NULL && ret)
-      ret = URLFromFile(fontname, ttf);
+   if ((ttf=afopen(fontname, "wb+"))==NULL)
+      return (0);
+   ret=_WriteTTFFont(ttf, sf, format, bsizes, bf, flags, map, layer);
    if (ret && (flags & ttf_flag_glyphmap))
       DumpGlyphToNameMap(fontname, sf);
-   if (fclose(ttf) == -1)
+   if (afclose(ttf)==-1)
       return (0);
    return (ret);
 }
@@ -6720,11 +6713,11 @@ int WriteTTFFont(char *fontname, SplineFont * sf, enum fontformat format,
 /* ************************************************************************** */
 
 struct hexout {
-   FILE *type42;
+   AFILE *type42;
    int bytesout;
 };
 
-static void dumphex(struct hexout *hexout, FILE * temp, int length) {
+static void dumphex(struct hexout *hexout,AFILE *temp,int length) {
    int i, ch, ch1;
 
    if (length & 1)
@@ -6735,46 +6728,46 @@ static void dumphex(struct hexout *hexout, FILE * temp, int length) {
       length -= 65534;
    }
 
-   fprintf(hexout->type42, " <\n  ");
-   hexout->bytesout = 0;
-   for (i = 0; i < length; ++i) {
-      ch = getc(temp);
-      if (ch == EOF)
+   afprintf(hexout->type42, " <\n  ");
+   hexout->bytesout=0;
+   for (i=0; i < length; ++i) {
+      ch=agetc(temp);
+      if (ch==EOF)
 	 break;
       if (hexout->bytesout >= 31) {
-	 fprintf(hexout->type42, "\n  ");
-	 hexout->bytesout = 0;
+	 afprintf(hexout->type42, "\n  ");
+	 hexout->bytesout=0;
       }
-      ch1 = ch >> 4;
+      ch1=ch >> 4;
       if (ch1 >= 10)
 	 ch1 += 'A' - 10;
       else
 	 ch1 += '0';
-      putc(ch1, hexout->type42);
-      ch1 = ch & 0xf;
+      aputc(ch1, hexout->type42);
+      ch1=ch & 0xf;
       if (ch1 >= 10)
 	 ch1 += 'A' - 10;
       else
 	 ch1 += '0';
-      putc(ch1, hexout->type42);
+      aputc(ch1, hexout->type42);
       ++hexout->bytesout;
    }
-   fprintf(hexout->type42, "\n  00\n >\n");
+   afprintf(hexout->type42, "\n  00\n >\n");
 }
 
-static void dumptype42(FILE * type42, struct alltabs *at,
+static void dumptype42(AFILE *type42,struct alltabs *at,
 		       enum fontformat format) {
-   FILE *temp = tmpfile();
+   AFILE *temp=atmpfile();
 
    struct hexout hexout;
 
    int i, length;
 
    dumpttf(temp, at, format);
-   rewind(temp);
+   arewind(temp);
 
-   hexout.type42 = type42;
-   hexout.bytesout = 0;
+   hexout.type42=type42;
+   hexout.bytesout=0;
 
    /* Resort the tables into file order */
    qsort(at->tabdir.ordered, at->tabdir.numtab, sizeof(struct taboff *),
@@ -6782,18 +6775,18 @@ static void dumptype42(FILE * type42, struct alltabs *at,
 
    dumphex(&hexout, temp, at->tabdir.ordered[0]->offset);
 
-   for (i = 0; i < at->tabdir.numtab; ++i) {
+   for (i=0; i < at->tabdir.numtab; ++i) {
       if (at->tabdir.ordered[i]->length > 65534
-	  && at->tabdir.ordered[i]->tag == CHR('g', 'l', 'y', 'f')) {
-	 uint32 last = 0;
+	  && at->tabdir.ordered[i]->tag==CHR('g', 'l', 'y', 'f')) {
+	 uint32 last=0;
 
 	 int j;
 
-	 fseek(temp, at->tabdir.ordered[i]->offset, SEEK_SET);
-	 for (j = 0; j < at->maxp.numGlyphs; ++j) {
+	 afseek(temp, at->tabdir.ordered[i]->offset, SEEK_SET);
+	 for (j=0; j < at->maxp.numGlyphs; ++j) {
 	    if (at->gi.loca[j + 1] - last > 65534) {
 	       dumphex(&hexout, temp, at->gi.loca[j] - last);
-	       last = at->gi.loca[j];
+	       last=at->gi.loca[j];
 	    }
 	 }
 	 dumphex(&hexout, temp, at->gi.loca[j] - last);
@@ -6803,18 +6796,18 @@ static void dumptype42(FILE * type42, struct alltabs *at,
 	       at->tabdir.ordered[i + 1]->offset -
 	       at->tabdir.ordered[i]->offset;
 	 else {
-	    fseek(temp, 0, SEEK_END);
-	    length = ftell(temp) - at->tabdir.ordered[i]->offset;
+	    afseek(temp, 0, SEEK_END);
+	    length=aftell(temp) - at->tabdir.ordered[i]->offset;
 	 }
-	 fseek(temp, at->tabdir.ordered[i]->offset, SEEK_SET);
+	 afseek(temp, at->tabdir.ordered[i]->offset, SEEK_SET);
 	 dumphex(&hexout, temp, length);
       }
    }
 
-   fclose(temp);
+   afclose(temp);
 }
 
-int _WriteType42SFNTS(FILE * type42, SplineFont * sf, enum fontformat format,
+int _WriteType42SFNTS(AFILE *type42, SplineFont *sf, enum fontformat format,
 		      int flags, EncMap * map, int layer) {
    struct alltabs at;
 
@@ -6824,27 +6817,27 @@ int _WriteType42SFNTS(FILE * type42, SplineFont * sf, enum fontformat format,
 
    /* TrueType probably doesn't need this, but OpenType does for floats in dictionaries */
    strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24] = 0;
+   oldloc[24]=0;
    setlocale(LC_NUMERIC, "C");
 
    if (sf->subfontcnt != 0)
-      sf = sf->subfonts[0];
+      sf=sf->subfonts[0];
 
-   for (i = 0; i < sf->glyphcnt; ++i)
+   for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
-	 sf->glyphs[i]->ttf_glyph = -1;
+	 sf->glyphs[i]->ttf_glyph=-1;
 
    memset(&at, '\0', sizeof(struct alltabs));
    ATinit(&at, sf, map, flags, layer, format, bf_none, NULL);
-   at.applemode = false;
-   at.opentypemode = false;
+   at.applemode=false;
+   at.opentypemode=false;
 
    if (initTables(&at, sf, format, NULL, bf_none, flags))
       dumptype42(type42, &at, format);
    free(at.gi.loca);
 
    setlocale(LC_NUMERIC, oldloc);
-   if (at.error || ferror(type42))
+   if (at.error || aferror(type42))
       return (0);
 
    return (1);

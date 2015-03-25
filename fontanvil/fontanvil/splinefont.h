@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3501 2014-11-30 12:15:54Z mskala $ */
+/* $Id: splinefont.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,7 @@
 /* PS says at most this many instances for type1/2 mm fonts */
 # define AppleMmMax	26	/* Apple sort of has a limit of 4095,
 				 * but we only support this many */
+#include "afile.h"
 
 typedef struct ipoint {
    int x;
@@ -385,7 +386,7 @@ enum otlookup_type {
    gpos_contextchain=0x108,
    /* GPOS extension 9 */
    kern_statemachine=0x1ff
-      /* otlookup&0xff == lookup type for the appropriate table */
+      /* otlookup&0xff==lookup type for the appropriate table */
       /* otlookup>>8:     0=>GSUB, 1=>GPOS */
 };
 
@@ -1785,7 +1786,7 @@ struct ttf_table {
    int32 len, maxlen;
    uint8 *data;
    struct ttf_table *next;
-   FILE *temp;			/* Temporary storage used during generation */
+   AFILE *temp;			/* Temporary storage used during generation */
 };
 
 enum texdata_type { tex_unset, tex_text, tex_math, tex_mathext };
@@ -1992,7 +1993,7 @@ enum style_flags { sf_bold=1, sf_italic=2, sf_underline=4, sf_outline =
 struct sflist {
    SplineFont *sf;
    int32 *sizes;
-   FILE *tempttf;		/* For ttf */
+   AFILE *tempttf;		/* For ttf */
    int id;			/* For ttf */
    int *ids;			/* One for each size */
    BDFFont **bdfs;		/* Ditto */
@@ -2100,10 +2101,10 @@ extern int LoadKerningDataFromMacFOND(SplineFont *sf, char *filename,
 extern int LoadKerningDataFromMetricsFile(SplineFont *sf, char *filename,
 					  EncMap *map);
 
-extern void FeatDumpFontLookups(FILE *out, SplineFont *sf);
-extern void FeatDumpOneLookup(FILE *out, SplineFont *sf, OTLookup *otl);
+extern void FeatDumpFontLookups(AFILE *out, SplineFont *sf);
+extern void FeatDumpOneLookup(AFILE *out, SplineFont *sf, OTLookup *otl);
 
-extern void SFApplyFeatureFile(SplineFont *sf, FILE *file, char *filename);
+extern void SFApplyFeatureFile(SplineFont *sf, AFILE *file, char *filename);
 extern void SFApplyFeatureFilename(SplineFont *sf, char *filename);
 
 extern void SubsNew(SplineChar *to, enum possub_type type, int tag,
@@ -2170,7 +2171,7 @@ enum bitmapformat { bf_bdf, bf_ttf, bf_sfnt_dfont, bf_sfnt_ms, bf_otb,
    bf_none
 };
 
-extern int32 filechecksum(FILE *file);
+extern int32 filechecksum(AFILE *file);
 
 extern const char *GetAuthor(void);
 
@@ -2179,7 +2180,7 @@ extern SplineChar *SFFindExistingCharMac(SplineFont *, EncMap *map,
 extern void SC_PSDump(void (*dumpchar) (int ch, void *data), void *data,
 		      SplineChar *sc, int refs_to_splines, int pdfopers,
 		      int layer);
-extern int _WritePSFont(FILE *out, SplineFont *sf, enum fontformat format,
+extern int _WritePSFont(AFILE *out, SplineFont *sf, enum fontformat format,
 			int flags, EncMap *enc, SplineFont *fullsf,
 			int layer);
 extern int WritePSFont(char *fontname, SplineFont *sf,
@@ -2188,21 +2189,21 @@ extern int WritePSFont(char *fontname, SplineFont *sf,
 extern int WriteMacPSFont(char *fontname, SplineFont *sf,
 			  enum fontformat format, int flags, EncMap *enc,
 			  int layer);
-extern int _WriteWOFFFont(FILE *ttf, SplineFont *sf, enum fontformat format,
+extern int _WriteWOFFFont(AFILE *ttf, SplineFont *sf, enum fontformat format,
 			  int32 *bsizes, enum bitmapformat bf, int flags,
 			  EncMap *enc, int layer);
 extern int WriteWOFFFont(char *fontname, SplineFont *sf,
 			 enum fontformat format, int32 *bsizes,
 			 enum bitmapformat bf, int flags, EncMap *enc,
 			 int layer);
-extern int _WriteTTFFont(FILE *ttf, SplineFont *sf, enum fontformat format,
+extern int _WriteTTFFont(AFILE *ttf, SplineFont *sf, enum fontformat format,
 			 int32 *bsizes, enum bitmapformat bf, int flags,
 			 EncMap *enc, int layer);
 extern int WriteTTFFont(char *fontname, SplineFont *sf,
 			enum fontformat format, int32 *bsizes,
 			enum bitmapformat bf, int flags, EncMap *enc,
 			int layer);
-extern int _WriteType42SFNTS(FILE *type42, SplineFont *sf,
+extern int _WriteType42SFNTS(AFILE *type42, SplineFont *sf,
 			     enum fontformat format, int flags, EncMap *enc,
 			     int layer);
 extern int WriteMacTTFFont(char *fontname, SplineFont *sf,
@@ -2224,7 +2225,7 @@ extern long mactime(void);
 extern int WriteSVGFont(char *fontname, SplineFont *sf,
 			enum fontformat format, int flags, EncMap *enc,
 			int layer);
-extern int _WriteSVGFont(FILE *file, SplineFont *sf, enum fontformat format,
+extern int _WriteSVGFont(AFILE *file, SplineFont *sf, enum fontformat format,
 			 int flags, EncMap *enc, int layer);
 extern int WriteUFOFont(char *fontname, SplineFont *sf,
 			enum fontformat format, int flags, EncMap *enc,
@@ -3169,16 +3170,16 @@ extern int IsntBDFChar(BDFChar *bdfc);
 
 extern int CIDWorthOutputting(SplineFont *cidmaster, int enc);	/* Returns -1 on failure, font number on success */
 
-extern int AmfmSplineFont(FILE *afm, MMSet *mm, int formattype,
+extern int AmfmSplineFont(AFILE *afm, MMSet *mm, int formattype,
 			  EncMap *map, int layer);
-extern int AfmSplineFont(FILE *afm, SplineFont *sf, int formattype,
+extern int AfmSplineFont(AFILE *afm, SplineFont *sf, int formattype,
 			 EncMap *map, int docc, SplineFont *fullsf,
 			 int layer);
-extern int PfmSplineFont(FILE *pfm, SplineFont *sf, int type0, EncMap *map,
+extern int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap *map,
 			 int layer);
-extern int TfmSplineFont(FILE *afm, SplineFont *sf, int formattype,
+extern int TfmSplineFont(AFILE *afm, SplineFont *sf, int formattype,
 			 EncMap *map, int layer);
-extern int OfmSplineFont(FILE *afm, SplineFont *sf, int formattype,
+extern int OfmSplineFont(AFILE *afm, SplineFont *sf, int formattype,
 			 EncMap *map, int layer);
 extern char *EncodingName(Encoding *map);
 
@@ -3216,13 +3217,13 @@ typedef struct sfd_getfontmetadatadata {
 
 } SFD_GetFontMetaDataData;
 
-typedef void (*visitSFDFragmentFunc) (FILE *sfd, char *tokbuf,
+typedef void (*visitSFDFragmentFunc) (AFILE *sfd, char *tokbuf,
 				      SplineFont *sf, void *udata);
-extern void visitSFDFragment(FILE *sfd, SplineFont *sf,
+extern void visitSFDFragment(AFILE *sfd, SplineFont *sf,
 			     visitSFDFragmentFunc ufunc, void *udata);
 extern char *DumpSplineFontMetadata(SplineFont *sf);
 
-extern void SFD_DumpLookup(FILE *sfd, SplineFont *sf);
+extern void SFD_DumpLookup(AFILE *sfd, SplineFont *sf);
 
 extern enum uni_interp interp_from_encoding(Encoding *enc,
 					    enum uni_interp interp);
@@ -3237,21 +3238,21 @@ extern int SFDWriteBakExtended(char *locfilename,
 			       int s2d, int localPrefMaxBackupsToKeep);
 extern SplineFont *SFDRead(char *filename);
 
-extern SplineFont *_SFDRead(char *filename, FILE *sfd);
+extern SplineFont *_SFDRead(char *filename, AFILE *sfd);
 
 extern SplineFont *SFDirRead(char *filename);
 
 extern SplineChar *SFDReadOneChar(SplineFont *sf, const char *name);
 
-extern char *TTFGetFontName(FILE *ttf, int32 offset, int32 off2);
+extern char *TTFGetFontName(AFILE *ttf, int32 offset, int32 off2);
 
-extern void TTFLoadBitmaps(FILE *ttf, struct ttfinfo *info, int onlyone);
+extern void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone);
 enum ttfflags { ttf_onlystrikes=1, ttf_onlyonestrike=2, ttf_onlykerns =
       4, ttf_onlynames=8 };
-extern SplineFont *_SFReadWOFF(FILE *woff, int flags,
+extern SplineFont *_SFReadWOFF(AFILE *woff, int flags,
 			       enum openflags openflags, char *filename,
 			       struct fontdict *fd);
-extern SplineFont *_SFReadTTF(FILE *ttf, int flags, enum openflags openflags,
+extern SplineFont *_SFReadTTF(AFILE *ttf, int flags, enum openflags openflags,
 			      char *filename, struct fontdict *fd);
 extern SplineFont *SFReadTTF(char *filename, int flags,
 			     enum openflags openflags);
@@ -3261,7 +3262,7 @@ extern SplineFont *SFReadSVGMem(char *data, int flags);
 
 extern SplineFont *SFReadUFO(char *filename, int flags);
 
-extern SplineFont *_CFFParse(FILE *temp, int len, char *fontsetname);
+extern SplineFont *_CFFParse(AFILE *temp, int len, char *fontsetname);
 
 extern SplineFont *CFFParse(char *filename);
 
@@ -3273,13 +3274,13 @@ extern SplineFont *SFReadPalmPdb(char *filename, int toback);
 
 extern SplineFont *LoadSplineFont(char *filename, enum openflags);
 
-extern SplineFont *_ReadSplineFont(FILE *file, char *filename,
+extern SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 				   enum openflags openflags);
 extern SplineFont *ReadSplineFont(char *filename, enum openflags);	/* Don't use this, use LoadSF instead */
 
-extern FILE *URLToTempFile(char *url, void *lock);
+extern AFILE *URLToTempFile(char *url, void *lock);
 
-extern int URLFromFile(char *url, FILE *from);
+extern int URLFromFile(char *url, AFILE *from);
 
 extern int HttpGetBuf(char *url, char *databuf, int *datalen, void *mutex);
 
@@ -3301,7 +3302,7 @@ extern uint16 MacStyleCode(SplineFont *sf, uint16 *psstyle);
 
 extern SplineFont *SFReadIkarus(char *fontname);
 
-extern SplineFont *_SFReadPdfFont(FILE *ttf, char *filename,
+extern SplineFont *_SFReadPdfFont(AFILE *ttf, char *filename,
 				  enum openflags openflags);
 extern SplineFont *SFReadPdfFont(char *filename, enum openflags openflags);
 
@@ -3310,7 +3311,7 @@ extern char **NamesReadSFD(char *filename);
 extern char **NamesReadTTF(char *filename);
 extern char **NamesReadCFF(char *filename);
 extern char **NamesReadPostScript(char *filename);
-extern char **_NamesReadPostScript(FILE *ps);
+extern char **_NamesReadPostScript(AFILE *ps);
 extern char **NamesReadSVG(char *filename);
 extern char **NamesReadUFO(char *filename);
 extern char **NamesReadMacBinary(char *filename);
@@ -3385,11 +3386,11 @@ extern void SFSplinesFromLayers(SplineFont *sf, int tostroke);
 extern void SFSetLayerWidthsStroked(SplineFont *sf, real strokewidth);
 
 #   define UNDEFINED_WIDTH	-999999
-extern SplinePointList *SplinePointListInterpretPS(FILE *ps, int flags,
+extern SplinePointList *SplinePointListInterpretPS(AFILE *ps, int flags,
 						   int stroked, int *width);
-extern void PSFontInterpretPS(FILE *ps, struct charprocs *cp,
+extern void PSFontInterpretPS(AFILE *ps, struct charprocs *cp,
 			      char **encoding);
-extern struct enc *PSSlurpEncodings(FILE *file);
+extern struct enc *PSSlurpEncodings(AFILE *file);
 
 extern int EvaluatePS(char *str, real *stack, int size);
 
@@ -3516,23 +3517,23 @@ extern int SFFlattenByCMap(SplineFont *sf, char *cmapname);
 extern SplineFont *MakeCIDMaster(SplineFont *sf, EncMap *oldmap, int bycmap,
 				 char *cmapfilename, struct cidmap *cidmap);
 
-int getushort(FILE *ttf);
+int getushort(AFILE *ttf);
 
-int32 getlong(FILE *ttf);
+int32 getlong(AFILE *ttf);
 
-int get3byte(FILE *ttf);
+int get3byte(AFILE *ttf);
 
-real getfixed(FILE *ttf);
+real getfixed(AFILE *ttf);
 
-real get2dot14(FILE *ttf);
+real get2dot14(AFILE *ttf);
 
-void putshort(FILE *file, int sval);
+void putshort(AFILE *file, int sval);
 
-void putlong(FILE *file, int val);
+void putlong(AFILE *file, int val);
 
-void putfixed(FILE *file, real dval);
+void putfixed(AFILE *file, real dval);
 
-int ttfcopyfile(FILE *ttf, FILE *other, int pos, char *table_name);
+int ttfcopyfile(AFILE *ttf, AFILE *other, int pos, char *table_name);
 
 extern void SCCopyLayerToLayer(SplineChar *sc, int from, int to,
 			       int doclear);
@@ -3736,13 +3737,13 @@ enum font_compare_flags { fcf_outlines=1, fcf_exact =
 };
 
 extern int CompareFonts(SplineFont *sf1, EncMap *map1, SplineFont *sf2,
-			FILE *diffs, int flags);
+			AFILE *diffs, int flags);
 extern int LayersSimilar(Layer *ly1, Layer *ly2, double spline_err);
 
 #   if HANYANG
-extern void SFDDumpCompositionRules(FILE *sfd,
+extern void SFDDumpCompositionRules(AFILE *sfd,
 				    struct compositionrules *rules);
-extern struct compositionrules *SFDReadCompositionRules(FILE *sfd);
+extern struct compositionrules *SFDReadCompositionRules(AFILE *sfd);
 
 extern void SFModifyComposition(SplineFont *sf);
 
@@ -3915,13 +3916,13 @@ extern void SCImportGlif(SplineChar *sc, int layer, char *path, char *memory,
 			 int memlen, int doclear);
 extern void SCImportPS(SplineChar *sc, int layer, char *path, int doclear,
 		       int flags);
-extern void SCImportPSFile(SplineChar *sc, int layer, FILE *ps, int doclear,
+extern void SCImportPSFile(SplineChar *sc, int layer, AFILE *ps, int doclear,
 			   int flags);
 extern void SCImportPDF(SplineChar *sc, int layer, char *path, int doclear,
 			int flags);
-extern void SCImportPDFFile(SplineChar *sc, int layer, FILE *ps,
+extern void SCImportPDFFile(SplineChar *sc, int layer, AFILE *ps,
 			    int doclear, int flags);
-extern void SCImportPlateFile(SplineChar *sc, int layer, FILE *plate,
+extern void SCImportPlateFile(SplineChar *sc, int layer, AFILE *plate,
 			      int doclear, int flags);
 extern void SCAddScaleImage(SplineChar *sc, struct gimage *image,
 			    int doclear, int layer);
@@ -3929,15 +3930,15 @@ extern void SCInsertImage(SplineChar *sc, struct gimage *image, real scale,
 			  real yoff, real xoff, int layer);
 extern void SCImportFig(SplineChar *sc, int layer, char *path, int doclear);
 
-extern int _ExportPlate(FILE *pdf, SplineChar *sc, int layer);
+extern int _ExportPlate(AFILE *pdf, SplineChar *sc, int layer);
 
-extern int _ExportPDF(FILE *pdf, SplineChar *sc, int layer);
+extern int _ExportPDF(AFILE *pdf, SplineChar *sc, int layer);
 
-extern int _ExportEPS(FILE *eps, SplineChar *sc, int layer,
+extern int _ExportEPS(AFILE *eps, SplineChar *sc, int layer,
 		      int gen_preview);
-extern int _ExportSVG(FILE *svg, SplineChar *sc, int layer);
+extern int _ExportSVG(AFILE *svg, SplineChar *sc, int layer);
 
-extern int _ExportGlif(FILE *glif, SplineChar *sc, int layer);
+extern int _ExportGlif(AFILE *glif, SplineChar *sc, int layer);
 
 extern int BCExportXBM(char *filename, BDFChar *bdfc, int format);
 
@@ -4181,7 +4182,7 @@ extern SplinePoint *SplinePointListContainsPointAtXY(SplinePointList *
  * True if the spline with from/to is part of the guide splines.
  *
  * Handy for telling if the user has just clicked on a guide for example,
- * you might want to also check the active layer first with cv->b.drawmode == dm_grid
+ * you might want to also check the active layer first with cv->b.drawmode==dm_grid
  */
 extern bool isSplinePointPartOfGuide(SplineFont *sf, SplinePoint *sp);
 

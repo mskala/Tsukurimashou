@@ -1,4 +1,4 @@
-/* $Id: namehash.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: namehash.h 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2009-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -45,10 +45,10 @@ struct glyphnamehash {
 #   endif
 
 static __inline__ int hashname(const char *pt) {
-   int val = 0;
+   int val=0;
 
    while (*pt) {
-      val = (val << 3) | ((val >> 29) & 0x7);
+      val=(val << 3) | ((val >> 29) & 0x7);
       val ^= (unsigned char) (*pt - '!');
       pt++;
    }

@@ -1,4 +1,4 @@
-/* $Id: sd.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: sd.h 3849 2015-03-25 10:47:47Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -128,11 +128,11 @@ typedef struct splinedesign {
    struct dview *dvs;
 } SplineDesign, Design;
 
-extern Entity *EntityInterpretPS(FILE * ps, int *width);
+extern Entity *EntityInterpretPS(AFILE *ps, int *width);
 
 extern Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
 				  int em_size, int ascent);
-extern Entity *EntityInterpretPDFPage(FILE * pdf, int select_page);
+extern Entity *EntityInterpretPDFPage(AFILE *pdf, int select_page);
 
 extern SplinePointList *SplinesFromEntities(Entity * ent, int *flags,
 					    int is_stroked);

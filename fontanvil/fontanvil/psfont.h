@@ -1,4 +1,4 @@
-/* $Id: psfont.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: psfont.h 3849 2015-03-25 10:47:47Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -174,14 +174,14 @@ struct cidbytes {
 struct fd2data {
    int defwid, nomwid;		/* For Type2 charstrings */
    struct pschars *subrs;
-   FILE *private;		/* Subroutines get stored in the private file immediately after the private dict */
+   AFILE *private;		/* Subroutines get stored in the private file immediately after the private dict */
    int eodictmark, fillindictmark;
    int privatelen;
 };
 
 extern char *AdobeStandardEncoding[256];
 
-extern FontDict *_ReadPSFont(FILE * ps);
+extern FontDict *_ReadPSFont(AFILE *ps);
 
 extern FontDict *ReadPSFont(char *fontname);
 

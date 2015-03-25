@@ -1,4 +1,4 @@
-/* $Id: woff.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: woff.c 3862 2015-03-25 15:56:41Z mskala $ */
 /* Copyright (C) 2010-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
 
 #ifdef _NO_LIBPNG
 
-SplineFont *_SFReadWOFF(FILE * woff, int flags, enum openflags openflags,
+SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 			char *filename, struct fontdict *fd) {
    ff_post_error(_("WOFF not supported"),
 		 _
@@ -44,7 +44,7 @@ SplineFont *_SFReadWOFF(FILE * woff, int flags, enum openflags openflags,
    return (NULL);
 }
 
-int _WriteWOFFFont(FILE * woff, SplineFont * sf, enum fontformat format,
+int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 		   int32 * bsizes, enum bitmapformat bf, int flags,
 		   EncMap * enc, int layer) {
    ff_post_error(_("WOFF not supported"),
@@ -53,7 +53,7 @@ int _WriteWOFFFont(FILE * woff, SplineFont * sf, enum fontformat format,
    return (1);
 }
 
-int WriteWOFFFont(char *fontname, SplineFont * sf, enum fontformat format,
+int WriteWOFFFont(char *fontname, SplineFont *sf, enum fontformat format,
 		  int32 * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * enc, int layer) {
    ff_post_error(_("WOFF not supported"),
@@ -70,22 +70,22 @@ int CanWoff(void) {
 
 #   include <zlib.h>
 
-static void copydata(FILE * to, int off_to, FILE * from, int off_from,
+static void copydata(AFILE *to,int off_to,AFILE *from,int off_from,
 		     int len) {
    int ch, i;
 
-   fseek(to, off_to, SEEK_SET);
-   fseek(from, off_from, SEEK_SET);
-   for (i = 0; i < len; ++i) {
-      ch = getc(from);
-      putc(ch, to);
+   afseek(to, off_to, SEEK_SET);
+   afseek(from, off_from, SEEK_SET);
+   for (i=0; i < len; ++i) {
+      ch=agetc(from);
+      aputc(ch, to);
    }
 }
 
 #   define CHUNK	(128*1024)
 /* Copied with few mods from the zlib usage examples */
 
-static int decompressdata(FILE * to, int off_to, FILE * from, int off_from,
+static int decompressdata(AFILE *to,int off_to,AFILE *from,int off_from,
 			  int len, int uncomplen) {
    /* Return whether an error occurred */
    char in[CHUNK];
@@ -98,10 +98,10 @@ static int decompressdata(FILE * to, int off_to, FILE * from, int off_from,
 
    int amount;
 
-   fseek(to, off_to, SEEK_SET);
-   fseek(from, off_from, SEEK_SET);
+   afseek(to, off_to, SEEK_SET);
+   afseek(from, off_from, SEEK_SET);
    memset(&strm, 0, sizeof(strm));
-   ret = inflateInit(&strm);
+   ret=inflateInit(&strm);
    if (ret != Z_OK)
       return (true);
 
@@ -110,32 +110,32 @@ static int decompressdata(FILE * to, int off_to, FILE * from, int off_from,
 	 (void) inflateEnd(&strm);
 	 return (true);
       }
-      amount = len;
+      amount=len;
       if (amount > CHUNK)
-	 amount = CHUNK;
-      strm.avail_in = fread(in, 1, amount, from);
+	 amount=CHUNK;
+      strm.avail_in=afread(in, 1, amount, from);
       len -= strm.avail_in;
-      if (ferror(from)) {
+      if (aferror(from)) {
 	 (void) inflateEnd(&strm);
 	 return (true);
       }
-      if (strm.avail_in == 0)
+      if (strm.avail_in==0)
 	 break;
-      strm.next_in = in;
+      strm.next_in=in;
       do {
-	 strm.avail_out = CHUNK;
-	 strm.next_out = out;
-	 ret = inflate(&strm, Z_NO_FLUSH);
+	 strm.avail_out=CHUNK;
+	 strm.next_out=out;
+	 ret=inflate(&strm, Z_NO_FLUSH);
 	 if (ret != Z_OK && ret != Z_STREAM_END) {
 	    (void) inflateEnd(&strm);
 	    return (true);
 	 }
-	 amount = CHUNK - strm.avail_out;
-	 if (fwrite(out, 1, amount, to) != amount || ferror(to)) {
+	 amount=CHUNK - strm.avail_out;
+	 if (afwrite(out, 1, amount, to) != amount || aferror(to)) {
 	    (void) inflateEnd(&strm);
 	    return (true);
 	 }
-      } while (strm.avail_out == 0);
+      } while (strm.avail_out==0);
    } while (ret != Z_STREAM_END);
    (void) inflateEnd(&strm);
    if (uncomplen != strm.total_out) {
@@ -147,7 +147,7 @@ static int decompressdata(FILE * to, int off_to, FILE * from, int off_from,
    return (false);
 }
 
-static int compressOrNot(FILE * to, int off_to, FILE * from, int off_from,
+static int compressOrNot(AFILE *to,int off_to,AFILE *from,int off_from,
 			 int len, int forcecompress) {
    char in[CHUNK];
 
@@ -155,63 +155,63 @@ static int compressOrNot(FILE * to, int off_to, FILE * from, int off_from,
 
    z_stream strm;
 
-   int ret, err = 0;
+   int ret, err=0;
 
    int amount;
 
-   FILE *tmp;
+   AFILE *tmp;
 
-   int uncompLen = len;
+   int uncompLen=len;
 
    /* Empty table, nothing to do */
-   if (len == 0)
+   if (len==0)
       return (0);
 
-   fseek(from, off_from, SEEK_SET);
+   afseek(from, off_from, SEEK_SET);
    memset(&strm, 0, sizeof(strm));
-   ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
+   ret=deflateInit(&strm, Z_DEFAULT_COMPRESSION);
    if (ret != Z_OK) {
-      fprintf(stderr, "Compression initialization failed.\n");
+      afprintf(stderr, "Compression initialization failed.\n");
       return (0);
    }
-   tmp = tmpfile();
+   tmp=atmpfile();
 
    do {
       if (len <= 0) {
 	 (void) deflateEnd(&strm);
 	 break;
       }
-      amount = len;
+      amount=len;
       if (amount > CHUNK)
-	 amount = CHUNK;
-      strm.avail_in = fread(in, 1, amount, from);
+	 amount=CHUNK;
+      strm.avail_in=afread(in, 1, amount, from);
       len -= strm.avail_in;
-      if (ferror(from)) {
+      if (aferror(from)) {
 	 (void) deflateEnd(&strm);
-	 fprintf(stderr, "IO error.\n");
+	 afprintf(stderr, "IO error.\n");
 	 break;
       }
-      if (strm.avail_in == 0)
+      if (strm.avail_in==0)
 	 break;
-      strm.next_in = in;
+      strm.next_in=in;
       do {
-	 strm.avail_out = CHUNK;
-	 strm.next_out = out;
-	 ret = deflate(&strm, len == 0 ? Z_FINISH : Z_NO_FLUSH);
-	 if (ret == Z_STREAM_ERROR) {
+	 strm.avail_out=CHUNK;
+	 strm.next_out=out;
+	 ret=deflate(&strm, len==0 ? Z_FINISH : Z_NO_FLUSH);
+	 if (ret==Z_STREAM_ERROR) {
 	    (void) deflateEnd(&strm);
-	    fprintf(stderr, "Compression failed somehow.\n");
-	    err = 1;
+	    afprintf(stderr, "Compression failed somehow.\n");
+	    err=1;
 	    break;
 	 }
-	 amount = CHUNK - strm.avail_out;
-	 if (fwrite(out, 1, amount, tmp) != amount || ferror(tmp)) {
+	 amount=CHUNK - strm.avail_out;
+	 if (afwrite(out, 1, amount, tmp) != amount || aferror(tmp)) {
 	    (void) deflateEnd(&strm);
-	    fprintf(stderr, "IO Error.\n");
-	    err = 1;
+	    afprintf(stderr, "IO Error.\n");
+	    err=1;
 	    break;
 	 }
-      } while (strm.avail_out == 0);
+      } while (strm.avail_out==0);
       if (err)
 	 break;
    } while (ret != Z_STREAM_END);
@@ -219,17 +219,17 @@ static int compressOrNot(FILE * to, int off_to, FILE * from, int off_from,
 
    if (strm.total_out >= uncompLen) {
       /* Didn't actually make the data smaller, so store uncompressed */
-      fclose(tmp);
+      afclose(tmp);
       copydata(to, off_to, from, off_from, uncompLen);
       return (uncompLen);
    } else {
       copydata(to, off_to, tmp, 0, strm.total_out);
-      fclose(tmp);
+      afclose(tmp);
       return (strm.total_out);
    }
 }
 
-SplineFont *_SFReadWOFF(FILE * woff, int flags, enum openflags openflags,
+SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 			char *filename, struct fontdict * fd) {
    int flavour;
 
@@ -249,72 +249,72 @@ SplineFont *_SFReadWOFF(FILE * woff, int flags, enum openflags openflags,
 
    int tag, offset, compLen, uncompLen, checksum;
 
-   FILE *sfnt;
+   AFILE *sfnt;
 
    int here, next, tab_start;
 
-   int head_pos = -1;
+   int head_pos=-1;
 
    SplineFont *sf;
 
-   fseek(woff, 0, SEEK_END);
-   len = ftell(woff);
-   rewind(woff);
+   afseek(woff, 0, SEEK_END);
+   len=aftell(woff);
+   arewind(woff);
    if (getlong(woff) != CHR('w', 'O', 'F', 'F')) {
       LogError(_("Bad signature in WOFF"));
       return (NULL);
    }
-   flavour = getlong(woff);
-   iscff = (flavour == CHR('O', 'T', 'T', 'O'));
-   len_stated = getlong(woff);
+   flavour=getlong(woff);
+   iscff=(flavour==CHR('O', 'T', 'T', 'O'));
+   len_stated=getlong(woff);
    if (len != len_stated) {
       LogError(_
 	       ("File length as specified in the WOFF header does not match the actual file length."));
       return (NULL);
    }
 
-   num_tabs = getushort(woff);
+   num_tabs=getushort(woff);
    if (getushort(woff) != 0) {
       LogError(_("Bad WOFF header, a field which must be 0 is not."));
       return (NULL);
    }
 
-   /* total_uncompressed_sfnt_size = */
+   /* total_uncompressed_sfnt_size=*/
    getlong(woff);
-   major = getushort(woff);
-   minor = getushort(woff);
-   metaOffset = getlong(woff);
-   metaLenCompressed = getlong(woff);
-   metaLenUncompressed = getlong(woff);
-   privOffset = getlong(woff);
-   privLength = getlong(woff);
+   major=getushort(woff);
+   minor=getushort(woff);
+   metaOffset=getlong(woff);
+   metaLenCompressed=getlong(woff);
+   metaLenUncompressed=getlong(woff);
+   privOffset=getlong(woff);
+   privLength=getlong(woff);
 
-   sfnt = tmpfile();
-   if (sfnt == NULL) {
+   sfnt=atmpfile();
+   if (sfnt==NULL) {
       LogError(_("Could not open temporary file."));
       return (NULL);
    }
 
    putlong(sfnt, flavour);
    putshort(sfnt, num_tabs);
-   for (i = 1, j = 0; 2 * i <= num_tabs; i <<= 1, ++j);
+   for (i=1, j=0; 2 * i <= num_tabs; i <<= 1, ++j);
    putshort(sfnt, i * 16);
    putshort(sfnt, j);
    putshort(sfnt, (num_tabs - i) * 16);
 
    /* dummy space for table pointers */
-   tab_start = ftell(sfnt);
-   for (i = 0; i < 4 * num_tabs; ++i)
+   tab_start=aftell(sfnt);
+   for (i=0; i < 4 * num_tabs; ++i)
       putlong(sfnt, 0);
 
-   for (i = 0; i < num_tabs; ++i) {
-      tag = getlong(woff);
-      offset = getlong(woff);
-      compLen = getlong(woff);
-      uncompLen = getlong(woff);
-      checksum = getlong(woff);
+   for (i=0; i < num_tabs; ++i) {
+      tag=getlong(woff);
+      offset=getlong(woff);
+      compLen=getlong(woff);
+      uncompLen=getlong(woff);
+      checksum=getlong(woff);
       if (compLen > uncompLen || offset + compLen > len) {
-	 fclose(sfnt);
+	 afclose(sfnt);
 	 if (compLen > uncompLen)
 	    LogError(_("Invalid compressed table length for '%c%c%c%c'."),
 		     tag >> 24, tag >> 16, tag >> 8, tag);
@@ -324,37 +324,37 @@ SplineFont *_SFReadWOFF(FILE * woff, int flags, enum openflags openflags,
 		     tag >> 24, tag >> 16, tag >> 8, tag);
 	 return (NULL);
       }
-      here = ftell(woff);
-      next = ftell(sfnt);
-      fseek(sfnt, tab_start, SEEK_SET);
+      here=aftell(woff);
+      next=aftell(sfnt);
+      afseek(sfnt, tab_start, SEEK_SET);
       putlong(sfnt, tag);
       putlong(sfnt, checksum);
       putlong(sfnt, next);
       putlong(sfnt, uncompLen);
-      if (tag == CHR('h', 'e', 'a', 'd'))
-	 head_pos = next;
-      tab_start = ftell(sfnt);
-      fseek(sfnt, next, SEEK_SET);
-      if (compLen == uncompLen) {
+      if (tag==CHR('h', 'e', 'a', 'd'))
+	 head_pos=next;
+      tab_start=aftell(sfnt);
+      afseek(sfnt, next, SEEK_SET);
+      if (compLen==uncompLen) {
 	 /* Not compressed, copy verbatim */
 	 copydata(sfnt, next, woff, offset, compLen);
       } else {
-	 err = decompressdata(sfnt, next, woff, offset, compLen, uncompLen);
+	 err=decompressdata(sfnt, next, woff, offset, compLen, uncompLen);
 	 if (err) {
 	    LogError(_("Problem decompressing '%c%c%c%c' table."),
 		     tag >> 24, tag >> 16, tag >> 8, tag);
-	    fclose(sfnt);
+	    afclose(sfnt);
 	    return (NULL);
 	 }
       }
-      if ((ftell(sfnt) & 3) != 0) {
+      if ((aftell(sfnt) & 3) != 0) {
 	 /* Pad to a 4 byte boundary */
-	 if (ftell(sfnt) & 1)
-	    putc('\0', sfnt);
-	 if (ftell(sfnt) & 2)
+	 if (aftell(sfnt) & 1)
+	    aputc('\0', sfnt);
+	 if (aftell(sfnt) & 2)
 	    putshort(sfnt, 0);
       }
-      fseek(woff, here, SEEK_SET);
+      afseek(woff, here, SEEK_SET);
    }
    /* I assumed at first that the check sum would just be right */
    /*  but I've reordered the tables (probably) so I've got a different */
@@ -363,113 +363,105 @@ SplineFont *_SFReadWOFF(FILE * woff, int flags, enum openflags openflags,
    if ((openflags & of_fontlint) && head_pos != -1) {
       int checksum;
 
-      fseek(sfnt, head_pos + 8, SEEK_SET);
+      afseek(sfnt, head_pos + 8, SEEK_SET);
       putlong(sfnt, 0);		/* Clear what was there */
-      checksum = filechecksum(sfnt);	/* Recalc */
-      checksum = 0xb1b0afba - checksum;
-      fseek(sfnt, head_pos + 8, SEEK_SET);
+      checksum=filechecksum(sfnt);	/* Recalc */
+      checksum=0xb1b0afba - checksum;
+      afseek(sfnt, head_pos + 8, SEEK_SET);
       putlong(sfnt, checksum);
    }
-   rewind(sfnt);
-   sf = _SFReadTTF(sfnt, flags, openflags, filename, fd);
-   fclose(sfnt);
+   arewind(sfnt);
+   sf=_SFReadTTF(sfnt, flags, openflags, filename, fd);
+   afclose(sfnt);
 
    if (sf != NULL) {
-      sf->woffMajor = major;
-      sf->woffMinor = minor;
+      sf->woffMajor=major;
+      sf->woffMinor=minor;
    }
 
    if (sf != NULL && metaOffset != 0) {
-      char *temp = malloc(metaLenCompressed + 1);
+      char *temp=malloc(metaLenCompressed + 1);
 
-      uLongf len = metaLenUncompressed;
+      uLongf len=metaLenUncompressed;
 
-      fseek(woff, metaOffset, SEEK_SET);
-      fread(temp, 1, metaLenCompressed, woff);
-      sf->woffMetadata = malloc(metaLenUncompressed + 1);
-      sf->woffMetadata[metaLenUncompressed] = '\0';
+      afseek(woff, metaOffset, SEEK_SET);
+      afread(temp, 1, metaLenCompressed, woff);
+      sf->woffMetadata=malloc(metaLenUncompressed + 1);
+      sf->woffMetadata[metaLenUncompressed]='\0';
       uncompress(sf->woffMetadata, &len, temp, metaLenCompressed);
-      sf->woffMetadata[len] = '\0';
+      sf->woffMetadata[len]='\0';
       free(temp);
    }
 
    return (sf);
 }
 
-int _WriteWOFFFont(FILE * woff, SplineFont * sf, enum fontformat format,
+int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 		   int32 * bsizes, enum bitmapformat bf, int flags,
 		   EncMap * enc, int layer) {
    int ret;
-
-   FILE *sfnt;
-
-   int major = sf->woffMajor, minor = sf->woffMinor;
-
+   AFILE *sfnt;
+   int major=sf->woffMajor, minor=sf->woffMinor;
    int flavour, num_tabs;
-
    int filelen, len;
-
    int i;
-
    int compLen, uncompLen, newoffset;
-
    int tag, checksum, offset;
-
    int tab_start, here;
 
-   if (major == woffUnset) {
+   if (major==woffUnset) {
       struct ttflangname *useng;
 
-      major = 1;
-      minor = 0;
-      for (useng = sf->names; useng != NULL; useng = useng->next)
-	 if (useng->lang == 0x409)
+      major=1;
+      minor=0;
+      for (useng=sf->names; useng != NULL; useng=useng->next)
+	 if (useng->lang==0x409)
 	    break;
       if (useng != NULL && useng->names[ttf_version] != NULL &&
 	  sscanf(useng->names[ttf_version], "Version %d.%d", &major,
 		 &minor) >= 1) {
 	 /* All done */
       } else if (sf->subfontcnt != 0) {
-	 major = floor(sf->cidversion);
-	 minor = floor(1000. * (sf->cidversion - major));
+	 major=floor(sf->cidversion);
+	 minor=floor(1000. * (sf->cidversion - major));
       } else if (sf->version != NULL) {
-	 char *pt = sf->version;
+	 char *pt=sf->version;
 
 	 char *end;
 
 	 while (*pt && !isdigit(*pt) && *pt != '.')
 	    ++pt;
 	 if (*pt) {
-	    major = strtol(pt, &end, 10);
-	    if (*end == '.')
-	       minor = strtol(end + 1, NULL, 10);
+	    major=strtol(pt, &end, 10);
+	    if (*end=='.')
+	       minor=strtol(end + 1, NULL, 10);
 	 }
       }
    }
 
-   format = sf->subfonts != NULL ? ff_otfcid :
+   format=sf->subfonts != NULL ? ff_otfcid :
       sf->layers[layer].order2 ? ff_ttf : ff_otf;
-   sfnt = tmpfile();
-   ret = _WriteTTFFont(sfnt, sf, format, bsizes, bf, flags, enc, layer);
+   sfnt=atmpfile();
+   ret=_WriteTTFFont(sfnt, sf, format, bsizes, bf, flags, enc, layer);
    if (!ret) {
-      fclose(sfnt);
+      afclose(sfnt);
       return (ret);
    }
 
-   fseek(sfnt, 0, SEEK_END);
-   filelen = ftell(sfnt);
-   rewind(sfnt);
+   afseek(sfnt, 0, SEEK_END);
+   filelen=aftell(sfnt);
+   arewind(sfnt);
 
-   flavour = getlong(sfnt);
+   flavour=getlong(sfnt);
    /* The woff standard says we should accept all flavours of sfnt, so can't */
    /*  test flavour to make sure we've got a valid sfnt */
    /* But we can test the rest of the header for consistancy */
-   num_tabs = getushort(sfnt);
+   num_tabs=getushort(sfnt);
    (void) getushort(sfnt);
    (void) getushort(sfnt);
    (void) getushort(sfnt);
 
-   rewind(woff);
+   arewind(woff);
    putlong(woff, CHR('w', 'O', 'F', 'F'));
    putlong(woff, flavour);
    putlong(woff, 0);		/* Off: 8. total length of file, fill in later */
@@ -484,88 +476,81 @@ int _WriteWOFFFont(FILE * woff, SplineFont * sf, enum fontformat format,
    putlong(woff, 0);		/* Off: 36. Offset to private data */
    putlong(woff, 0);		/* Off: 40. Length of private data */
 
-   tab_start = ftell(woff);
-   for (i = 0; i < 5 * num_tabs; ++i)
+   tab_start=aftell(woff);
+   for (i=0; i < 5 * num_tabs; ++i)
       putlong(woff, 0);
 
-   for (i = 0; i < num_tabs; ++i) {
-      tag = getlong(sfnt);
-      checksum = getlong(sfnt);
-      offset = getlong(sfnt);
-      uncompLen = getlong(sfnt);
-      here = ftell(sfnt);
-      newoffset = ftell(woff);
+   for (i=0; i < num_tabs; ++i) {
+      tag=getlong(sfnt);
+      checksum=getlong(sfnt);
+      offset=getlong(sfnt);
+      uncompLen=getlong(sfnt);
+      here=aftell(sfnt);
+      newoffset=aftell(woff);
       compLen =
 	 compressOrNot(woff, newoffset, sfnt, offset, uncompLen, false);
-      if ((ftell(woff) & 3) != 0) {
+      if ((aftell(woff) & 3) != 0) {
 	 /* Pad to a 4 byte boundary */
-	 if (ftell(woff) & 1)
-	    putc('\0', woff);
-	 if (ftell(woff) & 2)
+	 if (aftell(woff) & 1)
+	    aputc('\0', woff);
+	 if (aftell(woff) & 2)
 	    putshort(woff, 0);
       }
-      fseek(sfnt, here, SEEK_SET);
-      fseek(woff, tab_start, SEEK_SET);
+      afseek(sfnt, here, SEEK_SET);
+      afseek(woff, tab_start, SEEK_SET);
       putlong(woff, tag);
       putlong(woff, newoffset);
       putlong(woff, compLen);
       putlong(woff, uncompLen);
       putlong(woff, checksum);
-      tab_start = ftell(woff);
-      fseek(woff, 0, SEEK_END);
+      tab_start=aftell(woff);
+      afseek(woff, 0, SEEK_END);
    }
-   fclose(sfnt);
+   afclose(sfnt);
 
    if (sf->woffMetadata != NULL) {
-      int uncomplen = strlen(sf->woffMetadata);
+      int uncomplen=strlen(sf->woffMetadata);
 
-      uLongf complen = 2 * uncomplen;
+      uLongf complen=2 * uncomplen;
 
-      char *temp = malloc(complen + 1);
+      char *temp=malloc(complen + 1);
 
-      newoffset = ftell(woff);
+      newoffset=aftell(woff);
       compress(temp, &complen, sf->woffMetadata, uncomplen);
-      fwrite(temp, 1, complen, woff);
+      afwrite(temp, 1, complen, woff);
       free(temp);
-      if ((ftell(woff) & 3) != 0) {
+      if ((aftell(woff) & 3) != 0) {
 	 /* Pad to a 4 byte boundary */
-	 if (ftell(woff) & 1)
-	    putc('\0', woff);
-	 if (ftell(woff) & 2)
+	 if (aftell(woff) & 1)
+	    aputc('\0', woff);
+	 if (aftell(woff) & 2)
 	    putshort(woff, 0);
       }
-      fseek(woff, 24, SEEK_SET);
+      afseek(woff, 24, SEEK_SET);
       putlong(woff, newoffset);
       putlong(woff, complen);
       putlong(woff, uncomplen);
-      fseek(woff, 0, SEEK_END);
+      afseek(woff, 0, SEEK_END);
    }
 
-   fseek(woff, 0, SEEK_END);
-   len = ftell(woff);
-   fseek(woff, 8, SEEK_SET);
+   afseek(woff, 0, SEEK_END);
+   len=aftell(woff);
+   afseek(woff, 8, SEEK_SET);
    putlong(woff, len);
    return (true);		/* No errors */
 }
 
-int WriteWOFFFont(char *fontname, SplineFont * sf, enum fontformat format,
+int WriteWOFFFont(char *fontname, SplineFont *sf, enum fontformat format,
 		  int32 * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * enc, int layer) {
-   FILE *woff;
+   AFILE *woff;
 
    int ret;
 
-   if (strstr(fontname, "://") != NULL) {
-      if ((woff = tmpfile()) == NULL)
-	 return (0);
-   } else {
-      if ((woff = fopen(fontname, "wb+")) == NULL)
-	 return (0);
-   }
-   ret = _WriteWOFFFont(woff, sf, format, bsizes, bf, flags, enc, layer);
-   if (strstr(fontname, "://") != NULL && ret)
-      ret = URLFromFile(fontname, woff);
-   if (fclose(woff) == -1)
+   if ((woff=afopen(fontname, "wb+"))==NULL)
+      return (0);
+   ret=_WriteWOFFFont(woff, sf, format, bsizes, bf, flags, enc, layer);
+   if (afclose(woff)==-1)
       return (0);
    return (ret);
 }

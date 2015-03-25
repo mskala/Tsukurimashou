@@ -1,4 +1,4 @@
-/* $Id: usermenu.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: usermenu.h 3857 2015-03-25 13:26:40Z mskala $ */
 #include <ggadget.h>
 
 extern SplineChar *sc_active_in_ui;
@@ -19,8 +19,8 @@ typedef int (*menu_info_check) (void *, void *);
 typedef void *menu_info_data;
 
 enum {
-   menu_fv = 0x01,
-   menu_cv = 0x02
+   menu_fv=0x01,
+   menu_cv=0x02
 };
 
 void cv_tl2listcheck(GWindow gw, struct gmenuitem *mi, GEvent * e);

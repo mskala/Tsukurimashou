@@ -1,4 +1,4 @@
-/* $Id: langfreq.c 3280 2014-09-08 17:24:23Z mskala $ */
+/* $Id: langfreq.c 3857 2015-03-25 13:26:40Z mskala $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +25,7 @@ struct letter_frequencies {
 
 
 /* This is over many languages, used when we have no specific info */
-static float word_lengths[] = {
+static float word_lengths[]={
    0.000000, 0.064717, 0.202506, 0.187441, 0.133263,
    0.111502, 0.094215, 0.071569, 0.051841, 0.035586,
    0.021651, 0.012286, 0.006966, 0.003683, 0.001541,
@@ -254,7 +254,7 @@ static float CSY_afters_40[] =
 static float CSY_afters_41[] =
    { 0, 0, 0, 0, 0, 0, 0, 0, 1.000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static struct letter_frequencies CSY_counts[] = {
+static struct letter_frequencies CSY_counts[]={
    {"a", {0.432464, 0.031587, 0.071800, 0.090461}, CSY_afters_0},
    {"b", {0.000000, 0.036345, 0.020861, 0.000631}, CSY_afters_1},
    {"c", {0.000000, 0.018688, 0.011331, 0.008886}, CSY_afters_2},
@@ -300,7 +300,7 @@ static struct letter_frequencies CSY_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* CSY */
 
-static float CSY_word_lens[] = {
+static float CSY_word_lens[]={
    0.000000, 0.046150, 0.176728, 0.113462, 0.149934, 0.169237, 0.174869,
       0.078412, 0.047572, 0.020615, 0.015037, 0.004812, 0.002187, 0.000273,
       0.000492, 0.000164, 0.000055, 0.000000, 0.000000, 0.000000, 0.000000,
@@ -308,17 +308,17 @@ static float CSY_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float CSY_all_consonants[] = {
+static float CSY_all_consonants[]={
    0.000000, 0.018427, 0.000711, 0.000219, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float CSY_consonant_run[] = {
+static float CSY_consonant_run[]={
    0.000000, 0.796697, 0.187858, 0.013973, 0.001472, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float CSY_vowel_run[] = {
+static float CSY_vowel_run[]={
    0.000000, 0.906900, 0.074713, 0.010665, 0.007401, 0.000321, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -460,7 +460,7 @@ static float NLD_afters_34[] =
 static float NLD_afters_35[] =
    { 0, 0, 0, 0, 0.695652, 0, 0, 0, 0.304348, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static struct letter_frequencies NLD_counts[] = {
+static struct letter_frequencies NLD_counts[]={
    {"a", {0.024390, 0.042671, 0.114334, 0.009916}, NLD_afters_0},
    {"b", {0.000000, 0.043781, 0.011649, 0.000308}, NLD_afters_1},
    {"c", {0.000000, 0.012923, 0.001258, 0.000015}, NLD_afters_2},
@@ -500,7 +500,7 @@ static struct letter_frequencies NLD_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* NLD */
 
-static float NLD_word_lens[] = {
+static float NLD_word_lens[]={
    0.000000, 0.003151, 0.190822, 0.254404, 0.120538, 0.082414, 0.105626,
       0.069500, 0.063151, 0.037202, 0.027825, 0.020277, 0.011760, 0.005503,
       0.004274, 0.001691, 0.001030, 0.000492, 0.000215, 0.000046, 0.000031,
@@ -508,17 +508,17 @@ static float NLD_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float NLD_all_consonants[] = {
+static float NLD_all_consonants[]={
    0.000000, 0.002506, 0.000523, 0.000000, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float NLD_consonant_run[] = {
+static float NLD_consonant_run[]={
    0.000000, 0.754949, 0.212540, 0.028519, 0.003811, 0.000181, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float NLD_vowel_run[] = {
+static float NLD_vowel_run[]={
    0.000000, 0.782897, 0.211836, 0.004677, 0.000589, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -676,7 +676,7 @@ static float ENG_afters_37[] =
    { 0.003538, 0.016547, 0, 0, 0.023508, 0.001712, 0.000114, 0, 0.015177, 0,
 0, 0.015406, 0.000114, 0.001484, 0.044505, 0, 0, 0, 0.005249, 0.871277, 0, 0, 0.000456, 0, 0.000342,
 0, 0, 0, 0, 0.000114, 0.000456, 0, 0, 0, 0, 0, 0, 0 };
-static struct letter_frequencies ENG_counts[] = {
+static struct letter_frequencies ENG_counts[]={
    {"a", {0.501060, 0.095293, 0.108824, 0.003057}, ENG_afters_0},
    {"b", {0.000530, 0.048801, 0.008651, 0.000391}, ENG_afters_1},
    {"c", {0.001767, 0.032520, 0.022667, 0.000752}, ENG_afters_2},
@@ -718,7 +718,7 @@ static struct letter_frequencies ENG_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* ENG */
 
-static float ENG_word_lens[] = {
+static float ENG_word_lens[]={
    0.000000, 0.041384, 0.244968, 0.241823, 0.169986, 0.087025, 0.073533,
       0.055951, 0.033833, 0.025196, 0.013542, 0.006853, 0.003469, 0.001813,
       0.000468, 0.000104, 0.000032, 0.000017, 0.000000, 0.000000, 0.000000,
@@ -726,17 +726,17 @@ static float ENG_word_lens[] = {
       0.000000, 0.000001
 };
 
-static float ENG_all_consonants[] = {
+static float ENG_all_consonants[]={
    0.000000, 0.000364, 0.006883, 0.002565, 0.000004, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000001, 0.000000, 0.000000,
 };
 
-static float ENG_consonant_run[] = {
+static float ENG_consonant_run[]={
    0.000000, 0.746291, 0.226731, 0.025320, 0.001647, 0.000010, 0.000001,
       0.000000, 0.000000, 0.000001, 0.000000, 0.000000
 };
 
-static float ENG_vowel_run[] = {
+static float ENG_vowel_run[]={
    0.000000, 0.869523, 0.114786, 0.015672, 0.000019, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -925,7 +925,7 @@ static float FRA_afters_42[] =
    { 0.109115, 0, 0, 0, 0.530398, 0, 0, 0.000079, 0.284670, 0.000079, 0, 0, 0,
 0, 0.029087, 0, 0, 0, 0, 0.000159, 0.015815, 0.000079, 0, 0, 0.000954, 0, 0.015656, 0.000397, 0, 0,
 0.000079, 0.012795, 0.000397, 0, 0.000159, 0, 0, 0, 0, 0, 0, 0.000079, 0 };
-static struct letter_frequencies FRA_counts[] = {
+static struct letter_frequencies FRA_counts[]={
    {"a", {0.134638, 0.047332, 0.105793, 0.045096}, FRA_afters_0},
    {"b", {0.001161, 0.021899, 0.008889, 0.000128}, FRA_afters_1},
    {"c", {0.000497, 0.072640, 0.017306, 0.006741}, FRA_afters_2},
@@ -972,7 +972,7 @@ static struct letter_frequencies FRA_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* FRA */
 
-static float FRA_word_lens[] = {
+static float FRA_word_lens[]={
    0.000000, 0.025181, 0.256787, 0.132516, 0.142587, 0.103407, 0.099858,
       0.078911, 0.062987, 0.043597, 0.027377, 0.012730, 0.007432, 0.003728,
       0.001829, 0.000656, 0.000359, 0.000042, 0.000017, 0.000000, 0.000000,
@@ -980,17 +980,17 @@ static float FRA_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float FRA_all_consonants[] = {
+static float FRA_all_consonants[]={
    0.000000, 0.001741, 0.000071, 0.000008, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float FRA_consonant_run[] = {
+static float FRA_consonant_run[]={
    0.000000, 0.759497, 0.220746, 0.019328, 0.000428, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float FRA_vowel_run[] = {
+static float FRA_vowel_run[]={
    0.000000, 0.806392, 0.172361, 0.020171, 0.001008, 0.000069, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -1147,7 +1147,7 @@ static float DEU_afters_34[] =
    { 0.001715, 0, 0, 0.063465, 0.164666, 0.087479, 0.068611, 0, 0.005146, 0,
 0, 0.017153, 0.001715, 0.080617, 0, 0, 0, 0.063465, 0.012007, 0.140652, 0.005146, 0, 0, 0, 0,
 0.010292, 0, 0, 0, 0, 0, 0.276158, 0.001715, 0, 0 };
-static struct letter_frequencies DEU_counts[] = {
+static struct letter_frequencies DEU_counts[]={
    {"a", {0.011990, 0.060185, 0.069880, 0.006894}, DEU_afters_0},
    {"b", {0.004796, 0.035694, 0.017542, 0.006734}, DEU_afters_1},
    {"c", {0.002398, 0.000521, 0.000507, 0.000040}, DEU_afters_2},
@@ -1186,7 +1186,7 @@ static struct letter_frequencies DEU_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* DEU */
 
-static float DEU_word_lens[] = {
+static float DEU_word_lens[]={
    0.000000, 0.008288, 0.118916, 0.312186, 0.150021, 0.131318, 0.107050,
       0.053048, 0.038241, 0.029376, 0.018305, 0.012780, 0.007175, 0.004134,
       0.007374, 0.000656, 0.000358, 0.000437, 0.000258, 0.000040, 0.000020,
@@ -1194,17 +1194,17 @@ static float DEU_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float DEU_all_consonants[] = {
+static float DEU_all_consonants[]={
    0.000000, 0.006877, 0.000139, 0.000000, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float DEU_consonant_run[] = {
+static float DEU_consonant_run[]={
    0.000000, 0.686703, 0.263751, 0.043695, 0.005309, 0.000533, 0.000009,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float DEU_vowel_run[] = {
+static float DEU_vowel_run[]={
    0.000000, 0.905405, 0.092181, 0.002413, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -1347,7 +1347,7 @@ static float ELL_afters_33[] =
    { 0, 0, 0, 0, 0, 0.001056, 0, 0.001056, 0.001056, 0, 0, 0, 0.053854,
 0.001056, 0, 0.006336, 0.055966, 0.229145, 0.001056, 0.003168, 0.053854, 0.176346, 0.168955,
 0.050686, 0.192186, 0, 0.001056, 0.003168, 0, 0, 0, 0, 0, 0 };
-static struct letter_frequencies ELL_counts[] = {
+static struct letter_frequencies ELL_counts[]={
    {"ΐ", {0.000000, 0.000000, 0.001601, 0.000000}, ELL_afters_0},
    {"ά", {0.000000, 0.014387, 0.029789, 0.041502}, ELL_afters_1},
    {"έ", {0.000000, 0.057881, 0.026777, 0.001328}, ELL_afters_2},
@@ -1385,7 +1385,7 @@ static struct letter_frequencies ELL_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* ELL */
 
-static float ELL_word_lens[] = {
+static float ELL_word_lens[]={
    0.000000, 0.077349, 0.120951, 0.213106, 0.131162, 0.099890, 0.128354,
       0.103081, 0.067061, 0.028361, 0.014193, 0.009267, 0.003931, 0.002119,
       0.000817, 0.000332, 0.000026, 0.000000, 0.000000, 0.000000, 0.000000,
@@ -1393,17 +1393,17 @@ static float ELL_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float ELL_all_consonants[] = {
+static float ELL_all_consonants[]={
    0.000000, 0.052970, 0.010798, 0.037194, 0.005974, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float ELL_consonant_run[] = {
+static float ELL_consonant_run[]={
    0.000000, 0.791628, 0.150499, 0.047080, 0.010342, 0.000425, 0.000027,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float ELL_vowel_run[] = {
+static float ELL_vowel_run[]={
    0.000000, 0.791348, 0.192927, 0.015444, 0.000267, 0.000014, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -1563,7 +1563,7 @@ static float IWR_afters_37[] =
 0.009450, 0.002800, 0.067203, 0.107805, 0.000350, 0.037802, 0.000350, 0.474974, 0.006300, 0.023451,
 0.007000, 0.009100, 0.022751, 0.010501, 0.026601, 0.000350, 0.019951, 0.002800, 0.022051, 0,
 0.001050, 0.021701, 0.048302, 0.005950, 0.011551 };
-static struct letter_frequencies IWR_counts[] = {
+static struct letter_frequencies IWR_counts[]={
    {"ְ", {0.000000, 0.000000, 0.000271, 0.000000}, IWR_afters_0},
    {"ִ", {0.000000, 0.000000, 0.001894, 0.000000}, IWR_afters_1},
    {"ֵ", {0.000000, 0.000000, 0.001624, 0.000000}, IWR_afters_2},
@@ -1605,7 +1605,7 @@ static struct letter_frequencies IWR_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* IWR */
 
-static float IWR_word_lens[] = {
+static float IWR_word_lens[]={
    0.000000, 0.002376, 0.175716, 0.201010, 0.268326, 0.212840, 0.089591,
       0.034896, 0.009553, 0.003316, 0.001287, 0.000247, 0.000198, 0.000297,
       0.000099, 0.000148, 0.000049, 0.000000, 0.000000, 0.000000, 0.000049,
@@ -1613,7 +1613,7 @@ static float IWR_word_lens[] = {
       0.000000, 0.000000
 };
 
-static struct letter_frequencies HIN_counts[] = {
+static struct letter_frequencies HIN_counts[]={
    {"ं", {0.000000, 0.000000, 0.035891, 0.079458}, NULL},
    {"ः", {0.000000, 0.000000, 0.000093, 0.000507}, NULL},
    {"अ", {0.000000, 0.040806, 0.000093, 0.000000}, NULL},
@@ -1679,7 +1679,7 @@ static struct letter_frequencies HIN_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* HIN */
 
-static float HIN_word_lens[] = {
+static float HIN_word_lens[]={
    0.000000, 0.100331, 0.338160, 0.212405, 0.166116, 0.102383, 0.050963,
       0.014822, 0.011629, 0.002508, 0.000456, 0.000114, 0.000000, 0.000114,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
@@ -1898,7 +1898,7 @@ static float HUN_afters_43[] =
    { 0.170732, 0, 0, 0, 0, 0, 0.146341, 0, 0.121951, 0, 0, 0.073171, 0, 0,
 0.097561, 0, 0, 0, 0, 0, 0.097561, 0, 0, 0, 0, 0.048780, 0.073171, 0.073171, 0, 0.073171, 0,
 0.024390, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static struct letter_frequencies HUN_counts[] = {
+static struct letter_frequencies HUN_counts[]={
    {"a", {0.836748, 0.084498, 0.082949, 0.087073}, HUN_afters_0},
    {"b", {0.000000, 0.032824, 0.019804, 0.006083}, HUN_afters_1},
    {"c", {0.000000, 0.005589, 0.004290, 0.000438}, HUN_afters_2},
@@ -1946,7 +1946,7 @@ static struct letter_frequencies HUN_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* HUN */
 
-static float HUN_word_lens[] = {
+static float HUN_word_lens[]={
    0.000000, 0.076561, 0.123621, 0.099990, 0.083696, 0.140117, 0.124734,
       0.100142, 0.081267, 0.054043, 0.045896, 0.030159, 0.017863, 0.010879,
       0.004757, 0.003390, 0.001720, 0.000658, 0.000506, 0.000000, 0.000000,
@@ -1954,17 +1954,17 @@ static float HUN_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float HUN_all_consonants[] = {
+static float HUN_all_consonants[]={
    0.000000, 0.003239, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float HUN_consonant_run[] = {
+static float HUN_consonant_run[]={
    0.000000, 0.741932, 0.243628, 0.012389, 0.000178, 0.001874, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float HUN_vowel_run[] = {
+static float HUN_vowel_run[]={
    0.000000, 0.978892, 0.020588, 0.000498, 0.000023, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -2090,7 +2090,7 @@ static float ITA_afters_33[] =
 static float ITA_afters_34[] =
    { 0.349547, 0, 0, 0, 0.588105, 0, 0, 0, 0.061021, 0, 0, 0, 0, 0, 0.000442,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.000884, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static struct letter_frequencies ITA_counts[] = {
+static struct letter_frequencies ITA_counts[]={
    {"a", {0.350389, 0.067801, 0.110597, 0.230215}, ITA_afters_0},
    {"b", {0.000505, 0.021537, 0.009475, 0.000000}, ITA_afters_1},
    {"c", {0.013220, 0.071198, 0.035259, 0.000000}, ITA_afters_2},
@@ -2129,7 +2129,7 @@ static struct letter_frequencies ITA_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* ITA */
 
-static float ITA_word_lens[] = {
+static float ITA_word_lens[]={
    0.000000, 0.076045, 0.214735, 0.119696, 0.090449, 0.171682, 0.096397,
       0.086628, 0.060159, 0.037343, 0.024335, 0.011719, 0.006815, 0.002425,
       0.001036, 0.000422, 0.000069, 0.000008, 0.000038, 0.000000, 0.000000,
@@ -2137,17 +2137,17 @@ static float ITA_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float ITA_all_consonants[] = {
+static float ITA_all_consonants[]={
    0.000000, 0.002533, 0.000031, 0.000000, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float ITA_consonant_run[] = {
+static float ITA_consonant_run[]={
    0.000000, 0.713476, 0.273440, 0.013079, 0.000004, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float ITA_vowel_run[] = {
+static float ITA_vowel_run[]={
    0.000000, 0.920855, 0.076637, 0.002265, 0.000243, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -2635,7 +2635,7 @@ static float JAP_afters_79[] =
 0.001283, 0.001070, 0.017112, 0.001283, 0, 0.000214, 0.000428, 0.000642, 0.003850, 0.009198,
 0.005775, 0.006417, 0.001070, 0.004706, 0.002567, 0, 0.004492, 0, 0.011123, 0, 0.018396, 0.008128,
 0.023743, 0, 0.007701, 0.021390, 0.005134, 0, 0 };
-static struct letter_frequencies JAP_counts[] = {
+static struct letter_frequencies JAP_counts[]={
    {"ぁ", {0.000000, 0.000000, 0.000085, 0.000000}, JAP_afters_0},
    {"あ", {0.000078, 0.019588, 0.005883, 0.004324}, JAP_afters_1},
    {"ぃ", {0.000000, 0.000000, 0.000340, 0.000000}, JAP_afters_2},
@@ -2719,7 +2719,7 @@ static struct letter_frequencies JAP_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* JAP */
 
-static float JAP_word_lens[] = {
+static float JAP_word_lens[]={
    0.000000, 0.296451, 0.210486, 0.162134, 0.200000, 0.079442, 0.025812,
       0.011546, 0.004287, 0.002835, 0.002374, 0.000968, 0.001083, 0.000599,
       0.000461, 0.000254, 0.000300, 0.000161, 0.000161, 0.000138, 0.000000,
@@ -2727,7 +2727,7 @@ static float JAP_word_lens[] = {
       0.000023, 0.000046
 };
 
-static struct letter_frequencies JAP_kata_counts[] = {
+static struct letter_frequencies JAP_kata_counts[]={
    {"ァ", {0.000000, 0.000000, 0.000085, 0.000000}, JAP_afters_0},
    {"ア", {0.000078, 0.019588, 0.005883, 0.004324}, JAP_afters_1},
    {"ィ", {0.000000, 0.000000, 0.000340, 0.000000}, JAP_afters_2},
@@ -2811,7 +2811,7 @@ static struct letter_frequencies JAP_kata_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* JAP */
 
-static struct letter_frequencies LTH_counts[] = {
+static struct letter_frequencies LTH_counts[]={
    {"a", {0.000000, 0.058488, 0.127579, 0.048502}, NULL},
    {"b", {0.000000, 0.048502, 0.011108, 0.000000}, NULL},
    {"c", {0.000000, 0.000000, 0.006665, 0.000000}, NULL},
@@ -2848,7 +2848,7 @@ static struct letter_frequencies LTH_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* LTH */
 
-static float LTH_word_lens[] = {
+static float LTH_word_lens[]={
    0.000000, 0.027065, 0.114504, 0.072172, 0.117280, 0.095073, 0.124913,
       0.091603, 0.081888, 0.077030, 0.101319, 0.047883, 0.015961, 0.019431,
       0.006246, 0.004858, 0.002082, 0.000000, 0.000694, 0.000000, 0.000000,
@@ -2856,17 +2856,17 @@ static float LTH_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float LTH_all_consonants[] = {
+static float LTH_all_consonants[]={
    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float LTH_consonant_run[] = {
+static float LTH_consonant_run[]={
    0.000000, 0.807419, 0.161331, 0.031250, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float LTH_vowel_run[] = {
+static float LTH_vowel_run[]={
    0.000000, 0.801170, 0.192426, 0.006405, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -3099,7 +3099,7 @@ static float PLK_afters_49[] =
 0.004190, 0.030028, 0.031192, 0.002328, 0, 0, 0, 0.024209, 0.020717, 0, 0.004423, 0, 0.293529, 0, 0,
 0, 0, 0, 0, 0, 0, 0, 0.005121, 0, 0.032356, 0, 0.023045, 0.019553, 0, 0, 0, 0, 0, 0, 0.148743, 0, 0,
 0 };
-static struct letter_frequencies PLK_counts[] = {
+static struct letter_frequencies PLK_counts[]={
    {"a", {0.096644, 0.007472, 0.103174, 0.121399}, PLK_afters_0},
    {"b", {0.000139, 0.033546, 0.014107, 0.001541}, PLK_afters_1},
    {"c", {0.000000, 0.025642, 0.023000, 0.016154}, PLK_afters_2},
@@ -3153,7 +3153,7 @@ static struct letter_frequencies PLK_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* PLK */
 
-static float PLK_word_lens[] = {
+static float PLK_word_lens[]={
    0.000000, 0.094067, 0.087297, 0.125944, 0.095893, 0.139235, 0.113070,
       0.112027, 0.087180, 0.058603, 0.038438, 0.022134, 0.012769, 0.007539,
       0.002765, 0.001722, 0.001135, 0.000091, 0.000039, 0.000039, 0.000000,
@@ -3161,17 +3161,17 @@ static float PLK_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float PLK_all_consonants[] = {
+static float PLK_all_consonants[]={
    0.000000, 0.047516, 0.003443, 0.007539, 0.002504, 0.000887, 0.000965,
       0.000222, 0.000091, 0.000000, 0.000000, 0.000000,
 };
 
-static float PLK_consonant_run[] = {
+static float PLK_consonant_run[]={
    0.000000, 0.675325, 0.231014, 0.058849, 0.024520, 0.005587, 0.003268,
       0.001270, 0.000113, 0.000048, 0.000006, 0.000000
 };
 
-static float PLK_vowel_run[] = {
+static float PLK_vowel_run[]={
    0.000000, 0.847202, 0.152116, 0.000674, 0.000007, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -3306,7 +3306,7 @@ static float RUS_afters_31[] =
    { 0, 0.017591, 0.056834, 0.016238, 0.043302, 0.052774, 0.012179, 0.040595,
 0, 0.021651, 0.040595, 0.036536, 0.051421, 0.089310, 0, 0, 0.021651, 0.077131, 0.246279, 0, 0,
 0.054127, 0.004060, 0.010825, 0.004060, 0.075778, 0, 0, 0, 0, 0.016238, 0.010825, 0 };
-static struct letter_frequencies RUS_counts[] = {
+static struct letter_frequencies RUS_counts[]={
    {"а", {0.021195, 0.006671, 0.073814, 0.081327}, RUS_afters_0},
    {"б", {0.009634, 0.057373, 0.017131, 0.004511}, RUS_afters_1},
    {"в", {0.278902, 0.097973, 0.042957, 0.016202}, RUS_afters_2},
@@ -3343,7 +3343,7 @@ static struct letter_frequencies RUS_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* RUS */
 
-static float RUS_word_lens[] = {
+static float RUS_word_lens[]={
    0.000000, 0.116531, 0.108897, 0.127926, 0.153691, 0.140387, 0.118552,
       0.082739, 0.062307, 0.039686, 0.023688, 0.014651, 0.006231, 0.002750,
       0.001347, 0.000505, 0.000112, 0.000000, 0.000000, 0.000000, 0.000000,
@@ -3351,17 +3351,17 @@ static float RUS_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float RUS_all_consonants[] = {
+static float RUS_all_consonants[]={
    0.000000, 0.050295, 0.025372, 0.003480, 0.003256, 0.001235, 0.000337,
       0.000056, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float RUS_consonant_run[] = {
+static float RUS_consonant_run[]={
    0.000000, 0.628283, 0.294164, 0.056766, 0.016981, 0.003209, 0.000454,
       0.000114, 0.000028, 0.000000, 0.000000, 0.000000
 };
 
-static float RUS_vowel_run[] = {
+static float RUS_vowel_run[]={
    0.000000, 0.914516, 0.081923, 0.003560, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -3495,7 +3495,7 @@ static float ESP_afters_31[] =
 static float ESP_afters_32[] =
    { 0, 0, 0, 0, 0.769280, 0, 0, 0, 0.135604, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0, 0, 0, 0.066838, 0.028278, 0, 0, 0, 0, 0, 0 };
-static struct letter_frequencies ESP_counts[] = {
+static struct letter_frequencies ESP_counts[]={
    {"a", {0.313341, 0.067342, 0.119703, 0.248239}, ESP_afters_0},
    {"b", {0.000000, 0.015662, 0.025169, 0.000000}, ESP_afters_1},
    {"c", {0.000000, 0.085619, 0.040123, 0.000000}, ESP_afters_2},
@@ -3532,7 +3532,7 @@ static struct letter_frequencies ESP_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* ESP */
 
-static float ESP_word_lens[] = {
+static float ESP_word_lens[]={
    0.000000, 0.067895, 0.269086, 0.113490, 0.102770, 0.108199, 0.100693,
       0.083740, 0.063740, 0.038643, 0.025900, 0.013380, 0.007202, 0.003324,
       0.001163, 0.000471, 0.000249, 0.000055, 0.000000, 0.000000, 0.000000,
@@ -3540,22 +3540,22 @@ static float ESP_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float ESP_all_consonants[] = {
+static float ESP_all_consonants[]={
    0.000000, 0.000222, 0.000055, 0.000000, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float ESP_consonant_run[] = {
+static float ESP_consonant_run[]={
    0.000000, 0.813276, 0.172621, 0.013920, 0.000183, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float ESP_vowel_run[] = {
+static float ESP_vowel_run[]={
    0.000000, 0.908487, 0.079174, 0.011741, 0.000599, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static struct letter_frequencies SAN_counts[] = {
+static struct letter_frequencies SAN_counts[]={
    {"ं", {0.000000, 0.000000, 0.019953, 0.145349}, NULL},
    {"अ", {0.002110, 0.075000, 0.000000, 0.000000}, NULL},
    {"आ", {0.000000, 0.008721, 0.000000, 0.000000}, NULL},
@@ -3605,7 +3605,7 @@ static struct letter_frequencies SAN_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* SAN */
 
-static float SAN_word_lens[] = {
+static float SAN_word_lens[]={
    0.000000, 0.216044, 0.198268, 0.179125, 0.135825, 0.105743, 0.056518,
       0.036463, 0.023701, 0.018232, 0.013218, 0.004558, 0.003191, 0.003191,
       0.003646, 0.000912, 0.000456, 0.000456, 0.000456, 0.000000, 0.000000,
@@ -3730,7 +3730,7 @@ static float SVE_afters_30[] =
    { 0.001235, 0.004938, 0.000617, 0.043827, 0, 0.001235, 0.052469, 0, 0,
 0.021605, 0.033333, 0.033333, 0.033333, 0.052469, 0, 0.038889, 0.509877, 0.040741, 0.061728, 0,
 0.070370, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static struct letter_frequencies SVE_counts[] = {
+static struct letter_frequencies SVE_counts[]={
    {"a", {0.011111, 0.050454, 0.115882, 0.091048}, SVE_afters_0},
    {"b", {0.003704, 0.040139, 0.006801, 0.000373}, SVE_afters_1},
    {"c", {0.000000, 0.001988, 0.030628, 0.000000}, SVE_afters_2},
@@ -3765,7 +3765,7 @@ static struct letter_frequencies SVE_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* SVE */
 
-static float SVE_word_lens[] = {
+static float SVE_word_lens[]={
    0.000000, 0.021879, 0.140675, 0.329484, 0.138892, 0.119728, 0.097605,
       0.050444, 0.035290, 0.024594, 0.015477, 0.010048, 0.007496, 0.002998,
       0.001904, 0.001378, 0.000972, 0.000324, 0.000203, 0.000284, 0.000041,
@@ -3773,22 +3773,22 @@ static float SVE_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float SVE_all_consonants[] = {
+static float SVE_all_consonants[]={
    0.000000, 0.001459, 0.000527, 0.000041, 0.000041, 0.000122, 0.000000,
       0.000081, 0.000122, 0.000000, 0.000000, 0.000000,
 };
 
-static float SVE_consonant_run[] = {
+static float SVE_consonant_run[]={
    0.000000, 0.682563, 0.273934, 0.037744, 0.005141, 0.000438, 0.000080,
       0.000040, 0.000060, 0.000000, 0.000000, 0.000000
 };
 
-static float SVE_vowel_run[] = {
+static float SVE_vowel_run[]={
    0.000000, 0.992850, 0.007150, 0.000000, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static struct letter_frequencies TRK_counts[] = {
+static struct letter_frequencies TRK_counts[]={
    {"a", {0.000000, 0.044978, 0.131251, 0.111694}, NULL},
    {"b", {0.000000, 0.083208, 0.008639, 0.000000}, NULL},
    {"c", {0.000000, 0.008246, 0.008473, 0.000000}, NULL},
@@ -3822,7 +3822,7 @@ static struct letter_frequencies TRK_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* TRK */
 
-static float TRK_word_lens[] = {
+static float TRK_word_lens[]={
    0.000000, 0.000000, 0.081709, 0.089955, 0.080960, 0.158921, 0.134933,
       0.121439, 0.080960, 0.097451, 0.050975, 0.043478, 0.023988, 0.013493,
       0.010495, 0.008246, 0.000750, 0.000750, 0.000000, 0.000750, 0.000750,
@@ -3830,17 +3830,17 @@ static float TRK_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float TRK_all_consonants[] = {
+static float TRK_all_consonants[]={
    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float TRK_consonant_run[] = {
+static float TRK_consonant_run[]={
    0.000000, 0.761221, 0.234081, 0.004175, 0.000261, 0.000261, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float TRK_vowel_run[] = {
+static float TRK_vowel_run[]={
    0.000000, 0.920947, 0.040525, 0.037957, 0.000285, 0.000285, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -3941,7 +3941,7 @@ static float WEL_afters_25[] =
 static float WEL_afters_26[] =
    { 0, 0, 0, 0, 0, 0, 0, 0, 1.000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0, 0, 0 };
-static struct letter_frequencies WEL_counts[] = {
+static struct letter_frequencies WEL_counts[]={
    {"a", {0.295305, 0.085526, 0.133654, 0.022534}, WEL_afters_0},
    {"b", {0.001514, 0.047436, 0.005156, 0.013187}, WEL_afters_1},
    {"c", {0.020192, 0.061712, 0.019603, 0.010691}, WEL_afters_2},
@@ -3972,7 +3972,7 @@ static struct letter_frequencies WEL_counts[] = {
    LETTER_FREQUENCIES_EMPTY
 };				/* WEL */
 
-static float WEL_word_lens[] = {
+static float WEL_word_lens[]={
    0.000000, 0.112544, 0.202761, 0.176855, 0.164640, 0.119191, 0.103909,
       0.056982, 0.030508, 0.016873, 0.007954, 0.003579, 0.002954, 0.000966,
       0.000057, 0.000000, 0.000114, 0.000057, 0.000057, 0.000000, 0.000000,
@@ -3980,17 +3980,17 @@ static float WEL_word_lens[] = {
       0.000000, 0.000000
 };
 
-static float WEL_all_consonants[] = {
+static float WEL_all_consonants[]={
    0.000000, 0.004488, 0.000739, 0.000511, 0.000000, 0.000000, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
 };
 
-static float WEL_consonant_run[] = {
+static float WEL_consonant_run[]={
    0.000000, 0.746329, 0.224509, 0.028116, 0.000977, 0.000070, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
 
-static float WEL_vowel_run[] = {
+static float WEL_vowel_run[]={
    0.000000, 0.716191, 0.249052, 0.031673, 0.002959, 0.000125, 0.000000,
       0.000000, 0.000000, 0.000000, 0.000000, 0.000000
 };
@@ -4002,7 +4002,7 @@ static struct lang_frequencies {
    float *wordlens;
    char *vowels;
    float *consonant_run, *all_consonants, *vowel_run;
-} lang_frequencies[] = {
+} lang_frequencies[]={
    {
    CHR('l', 'a', 't', 'n'), CHR('C', 'S', 'Y', ' '), N_("Czech"),
 	 CSY_counts, CSY_word_lens, "aeiouyráéíóúýěů",
@@ -4063,19 +4063,19 @@ static struct lang_frequencies {
 };
 
 /******************************************************************************/
-static int isvowel(int index, struct lang_frequencies *lf) {
+static int isvowel(int index,struct lang_frequencies *lf) {
    const char *pt;
 
    int ch, ch2;
 
-   if (lf->vowels == NULL || index == -1)
+   if (lf->vowels==NULL || index==-1)
       return (-1);
-   pt = lf->cnts[index].utf8_letter;
-   ch = utf8_ildb(&pt);
+   pt=lf->cnts[index].utf8_letter;
+   ch=utf8_ildb(&pt);
 
-   pt = lf->vowels;
-   while ((ch2 = utf8_ildb(&pt)) != 0)
-      if (ch2 == ch)
+   pt=lf->vowels;
+   while ((ch2=utf8_ildb(&pt)) != 0)
+      if (ch2==ch)
 	 return (true);
 
    return (false);
@@ -4086,12 +4086,12 @@ static int RandomWordLength(float *wl) {
 
    int i;
 
-   if (wl == NULL)
-      wl = word_lengths;
+   if (wl==NULL)
+      wl=word_lengths;
 
  retry:
-   cum = g_random_int() / (double) RAND_MAX;
-   for (i = 0; i < 30; ++i) {
+   cum=g_random_int() / (double) RAND_MAX;
+   for (i=0; i < 30; ++i) {
       if (cum < wl[i])
 	 return (i);
       cum -= wl[i];
@@ -4100,11 +4100,11 @@ static int RandomWordLength(float *wl) {
    goto retry;
 }
 
-static int SFHasUtf8Sequence(SplineFont * sf, const char *str) {
+static int SFHasUtf8Sequence(SplineFont *sf,const char *str) {
    int ch1, ch2;
 
-   ch1 = utf8_ildb(&str);
-   ch2 = utf8_ildb(&str);
+   ch1=utf8_ildb(&str);
+   ch2=utf8_ildb(&str);
 
    if (ch2 != 0 && !SCWorthOutputting(SFGetChar(sf, ch2, NULL)))
       return (false);
@@ -4112,8 +4112,8 @@ static int SFHasUtf8Sequence(SplineFont * sf, const char *str) {
    return (SCWorthOutputting(SFGetChar(sf, ch1, NULL)));
 }
 
-static int RandomChar(struct letter_frequencies *freq, int pos, int last,
-		      SplineFont * sf) {
+static int RandomChar(struct letter_frequencies *freq,int pos,int last,
+		      SplineFont *sf) {
    double cum;
 
    int i, cnt, tries;
@@ -4123,32 +4123,32 @@ static int RandomChar(struct letter_frequencies *freq, int pos, int last,
    float space[100], tot;
 
    if (last != -1) {
-      if (freq[last].frequency[MEDI] == 0 && freq[last].frequency[INIT] == 0)
+      if (freq[last].frequency[MEDI]==0 && freq[last].frequency[INIT]==0)
 	 return (-1);		/* Nothing can come after the last character */
-      if (freq[last].afters == NULL)	/* I don't always have these data */
-	 last = -1;
+      if (freq[last].afters==NULL)	/* I don't always have these data */
+	 last=-1;
    }
    if (last != -1) {
-      percent = freq[last].afters;
-      if (pos == FINA) {
+      percent=freq[last].afters;
+      if (pos==FINA) {
 	 /* Merge probabilities of being after "last" and being at the end */
 	 /*  of a word */
-	 tot = 0;
-	 for (i = 0; freq[i].utf8_letter != NULL; ++i) {
-	    space[i] = percent[i] * freq[i].frequency[FINA];
+	 tot=0;
+	 for (i=0; freq[i].utf8_letter != NULL; ++i) {
+	    space[i]=percent[i] * freq[i].frequency[FINA];
 	    tot += space[i];
 	 }
-	 if (tot == 0)
+	 if (tot==0)
 	    return (-1);
-	 for (i = 0; freq[i].utf8_letter != NULL; ++i)
+	 for (i=0; freq[i].utf8_letter != NULL; ++i)
 	    space[i] /= tot;
-	 percent = space;
+	 percent=space;
       }
-      for (tries = 0; tries < 5; ++tries) {
-	 cum = g_random_int() / (double) RAND_MAX;
-	 for (i = 0; freq[i].utf8_letter != NULL; ++i) {
+      for (tries=0; tries < 5; ++tries) {
+	 cum=g_random_int() / (double) RAND_MAX;
+	 for (i=0; freq[i].utf8_letter != NULL; ++i) {
 	    if (cum <= percent[i] && percent[i] != 0) {
-	       if (sf == NULL || SFHasUtf8Sequence(sf, freq[i].utf8_letter))
+	       if (sf==NULL || SFHasUtf8Sequence(sf, freq[i].utf8_letter))
 		  return (i);
 	       else
 		  break;
@@ -4158,11 +4158,11 @@ static int RandomChar(struct letter_frequencies *freq, int pos, int last,
       }
    }
 
-   for (tries = 0; tries < 10; ++tries) {
-      cum = g_random_int() / (double) RAND_MAX;
-      for (i = 0; freq[i].utf8_letter != NULL; ++i) {
+   for (tries=0; tries < 10; ++tries) {
+      cum=g_random_int() / (double) RAND_MAX;
+      for (i=0; freq[i].utf8_letter != NULL; ++i) {
 	 if (cum < freq[i].frequency[pos]) {
-	    if (sf == NULL || SFHasUtf8Sequence(sf, freq[i].utf8_letter))
+	    if (sf==NULL || SFHasUtf8Sequence(sf, freq[i].utf8_letter))
 	       return (i);
 	    else
 	       break;
@@ -4173,26 +4173,26 @@ static int RandomChar(struct letter_frequencies *freq, int pos, int last,
 
    /* I suppose it is possible that this font has no characters which can */
    /*  be used in this position.  */
-   for (cnt = 0; freq[cnt].utf8_letter != NULL; ++cnt);
-   if (cnt == 0)
+   for (cnt=0; freq[cnt].utf8_letter != NULL; ++cnt);
+   if (cnt==0)
       return (-1);
-   for (tries = 0; tries < 10; ++tries) {
-      i = g_random_int() % cnt;
-      if (sf == NULL || SFHasUtf8Sequence(sf, freq[i].utf8_letter))
+   for (tries=0; tries < 10; ++tries) {
+      i=g_random_int() % cnt;
+      if (sf==NULL || SFHasUtf8Sequence(sf, freq[i].utf8_letter))
 	 return (i);
    }
 
    /* try to find SOMETHING */
-   for (i = 0; freq[i].utf8_letter != NULL; ++i) {
-      if (sf == NULL || SFHasUtf8Sequence(sf, freq[i].utf8_letter))
+   for (i=0; freq[i].utf8_letter != NULL; ++i) {
+      if (sf==NULL || SFHasUtf8Sequence(sf, freq[i].utf8_letter))
 	 return (i);
    }
 
    return (-1);
 }
 
-static char *RandomWord(struct lang_frequencies *lf, SplineFont * sf) {
-   struct letter_frequencies *freq = lf->cnts;
+static char *RandomWord(struct lang_frequencies *lf,SplineFont *sf) {
+   struct letter_frequencies *freq=lf->cnts;
 
    /* I never generate words longer than 30 characters */
    /* each character is at most 2 unicode chars */
@@ -4206,31 +4206,31 @@ static char *RandomWord(struct lang_frequencies *lf, SplineFont * sf) {
 
    int vlen, clen;
 
-   int all_consonant_count = 0;
+   int all_consonant_count=0;
 
-   last = laster = -1;
+   last=laster=-1;
 
-   len = RandomWordLength(lf->wordlens);
-   pt = word_buf;
-   vlen = clen = 0;
-   for (i = 0; i < len; ++i) {
-      if (len == 1)
-	 pos = ISOL;
-      else if (i == 0)
-	 pos = INIT;
-      else if (i == len - 1)
-	 pos = FINA;
+   len=RandomWordLength(lf->wordlens);
+   pt=word_buf;
+   vlen=clen=0;
+   for (i=0; i < len; ++i) {
+      if (len==1)
+	 pos=ISOL;
+      else if (i==0)
+	 pos=INIT;
+      else if (i==len - 1)
+	 pos=FINA;
       else
-	 pos = MEDI;
-      cur = RandomChar(freq, pos, last, sf);
-      if (cur == last && laster == cur)
-	 cur = RandomChar(freq, pos, last, sf);	/* The same letter 3 times in a row is not a good idea */
+	 pos=MEDI;
+      cur=RandomChar(freq, pos, last, sf);
+      if (cur==last && laster==cur)
+	 cur=RandomChar(freq, pos, last, sf);	/* The same letter 3 times in a row is not a good idea */
       if (cur != -1 && lf->vowels) {
-	 int isv = isvowel(cur, lf);
+	 int isv=isvowel(cur, lf);
 
-	 int retry = false;
+	 int retry=false;
 
-	 if (!isv && i == len - 1 && i == clen) {
+	 if (!isv && i==len - 1 && i==clen) {
 	    /* If we've got a word with no vowels so far, and we're at the */
 	    /*  end of it, try hard for a vowel somewhere */
 	    /* Now there are some "words" with no vowels: "Mrs", "Dr", "PhD" */
@@ -4238,16 +4238,16 @@ static char *RandomWord(struct lang_frequencies *lf, SplineFont * sf) {
 	    if (len > 1 && all_consonant_count++ < 4 &&
 		g_random_int() / (double) RAND_MAX >=
 		lf->all_consonants[len]) {
-	       clen = 1;
-	       pt = word_buf;
-	       for (last = 0; freq[last].utf8_letter != NULL; ++last)
+	       clen=1;
+	       pt=word_buf;
+	       for (last=0; freq[last].utf8_letter != NULL; ++last)
 		  if (strncmp
 		      (word_buf, freq[last].utf8_letter,
-		       strlen(freq[last].utf8_letter)) == 0)
+		       strlen(freq[last].utf8_letter))==0)
 		     break;
 	       (void) utf8_ildb((const char **) &pt);
-	       laster = -1;
-	       i = 0;
+	       laster=-1;
+	       i=0;
 	       continue;
 	    }
 	 }
@@ -4271,32 +4271,32 @@ static char *RandomWord(struct lang_frequencies *lf, SplineFont * sf) {
 	    if (retry) {
 	       int j;
 
-	       for (j = 0; j < 10; ++j) {
-		  cur = RandomChar(freq, pos, last, sf);
+	       for (j=0; j < 10; ++j) {
+		  cur=RandomChar(freq, pos, last, sf);
 		  if (isvowel(cur, lf) != isv)
 		     break;
 	       }
-	       if (cur == last && laster == cur)
-		  cur = RandomChar(freq, pos, last, sf);
-	       isv = isvowel(cur, lf);
+	       if (cur==last && laster==cur)
+		  cur=RandomChar(freq, pos, last, sf);
+	       isv=isvowel(cur, lf);
 	    }
 	 }
 	 if (isv) {
-	    clen = 0;
+	    clen=0;
 	    ++vlen;
 	 } else {
-	    vlen = 0;
+	    vlen=0;
 	    ++clen;
 	 }
       }
       if (cur != -1) {
 	 strcpy(pt, freq[cur].utf8_letter);
 	 pt += strlen(pt);
-	 laster = last;
-	 last = cur;
+	 laster=last;
+	 last=cur;
       }
    }
-   *pt = '\0';
+   *pt='\0';
    return (word_buf);
 }
 
@@ -4307,7 +4307,7 @@ struct script_chars {
    unichar_t *chars;
 };
 
-static void ScriptCharInit(SplineFont * sf, uint32 script,
+static void ScriptCharInit(SplineFont *sf,uint32 script,
 			   struct script_chars *chrs) {
    int gid, cnt, k;
 
@@ -4319,28 +4319,28 @@ static void ScriptCharInit(SplineFont * sf, uint32 script,
 
    PST *pst;
 
-   cnt = 0;
-   k = 0;
+   cnt=0;
+   k=0;
    do {
-      subsf = sf->subfontcnt == 0 ? sf : sf->subfonts[k];
-      for (gid = 0; gid < subsf->glyphcnt; ++gid)
-	 if (SCWorthOutputting(sc = subsf->glyphs[gid])) {
-	    if (sc->unicodeenc == -1)
+      subsf=sf->subfontcnt==0 ? sf : sf->subfonts[k];
+      for (gid=0; gid < subsf->glyphcnt; ++gid)
+	 if (SCWorthOutputting(sc=subsf->glyphs[gid])) {
+	    if (sc->unicodeenc==-1)
 	       continue;
-	    for (pst = sc->possub; pst != NULL; pst = pst->next)
-	       if (pst->type == pst_ligature)
+	    for (pst=sc->possub; pst != NULL; pst=pst->next)
+	       if (pst->type==pst_ligature)
 		  break;
 	    if (pst != NULL)	/* Ligatures don't count */
 	       continue;
 	    if (sc->unicodeenc < 0x10000 && isupper(sc->unicodeenc))
 	       continue;
 	    if (isideoalpha(sc->unicodeenc) &&
-		ScriptFromUnicode(sc->unicodeenc, subsf) == script)
+		ScriptFromUnicode(sc->unicodeenc, subsf)==script)
 	       ++cnt;
 	    else {
-	       for (alt = sc->altuni; alt != NULL; alt = alt->next) {
-		  if (alt->vs == -1 && isideoalpha(alt->unienc) &&
-		      ScriptFromUnicode(alt->unienc, subsf) == script) {
+	       for (alt=sc->altuni; alt != NULL; alt=alt->next) {
+		  if (alt->vs==-1 && isideoalpha(alt->unienc) &&
+		      ScriptFromUnicode(alt->unienc, subsf)==script) {
 		     ++cnt;
 		     break;
 		  }
@@ -4350,31 +4350,31 @@ static void ScriptCharInit(SplineFont * sf, uint32 script,
       ++k;
    } while (k < sf->subfontcnt);
 
-   chrs->cnt = cnt;
-   chrs->chars = malloc(cnt * sizeof(unichar_t));
-   cnt = 0;
-   k = 0;
+   chrs->cnt=cnt;
+   chrs->chars=malloc(cnt * sizeof(unichar_t));
+   cnt=0;
+   k=0;
    do {
-      subsf = sf->subfontcnt == 0 ? sf : sf->subfonts[k];
-      for (gid = 0; gid < subsf->glyphcnt; ++gid)
-	 if (SCWorthOutputting(sc = subsf->glyphs[gid])) {
-	    if (sc->unicodeenc == -1)
+      subsf=sf->subfontcnt==0 ? sf : sf->subfonts[k];
+      for (gid=0; gid < subsf->glyphcnt; ++gid)
+	 if (SCWorthOutputting(sc=subsf->glyphs[gid])) {
+	    if (sc->unicodeenc==-1)
 	       continue;
 	    if (sc->unicodeenc < 0x10000 && isupper(sc->unicodeenc))
 	       continue;
-	    for (pst = sc->possub; pst != NULL; pst = pst->next)
-	       if (pst->type == pst_ligature)
+	    for (pst=sc->possub; pst != NULL; pst=pst->next)
+	       if (pst->type==pst_ligature)
 		  break;
 	    if (pst != NULL)	/* Ligatures don't count */
 	       continue;
 	    if (isideoalpha(sc->unicodeenc) &&
-		ScriptFromUnicode(sc->unicodeenc, subsf) == script)
-	       chrs->chars[cnt++] = sc->unicodeenc;
+		ScriptFromUnicode(sc->unicodeenc, subsf)==script)
+	       chrs->chars[cnt++]=sc->unicodeenc;
 	    else {
-	       for (alt = sc->altuni; alt != NULL; alt = alt->next) {
-		  if (alt->vs == -1 && isideoalpha(alt->unienc) &&
-		      ScriptFromUnicode(alt->unienc, subsf) == script) {
-		     chrs->chars[cnt++] = alt->unienc;
+	       for (alt=sc->altuni; alt != NULL; alt=alt->next) {
+		  if (alt->vs==-1 && isideoalpha(alt->unienc) &&
+		      ScriptFromUnicode(alt->unienc, subsf)==script) {
+		     chrs->chars[cnt++]=alt->unienc;
 		     break;
 		  }
 	       }
@@ -4387,26 +4387,26 @@ static void ScriptCharInit(SplineFont * sf, uint32 script,
 static char *ch2utf8(int ch) {
    static char buffer[8];
 
-   char *pt = buffer;
+   char *pt=buffer;
 
    if (ch <= 127)
-      *pt++ = ch;
+      *pt++=ch;
    else if (ch <= 0x7ff) {
-      *pt++ = 0xc0 | (ch >> 6);
-      *pt++ = 0x80 | (ch & 0x3f);
+      *pt++=0xc0 | (ch >> 6);
+      *pt++=0x80 | (ch & 0x3f);
    } else if (ch <= 0xffff) {
-      *pt++ = 0xe0 | (ch >> 12);
-      *pt++ = 0x80 | ((ch >> 6) & 0x3f);
-      *pt++ = 0x80 | (ch & 0x3f);
+      *pt++=0xe0 | (ch >> 12);
+      *pt++=0x80 | ((ch >> 6) & 0x3f);
+      *pt++=0x80 | (ch & 0x3f);
    }
-   *pt = '\0';
+   *pt='\0';
    return (buffer);
 }
 
 static char *ScriptRandomChar(struct script_chars *chrs) {
    int i;
 
-   i = g_random_int() % chrs->cnt;
+   i=g_random_int() % chrs->cnt;
    return (ch2utf8(chrs->chars[i]));
 }
 
@@ -4417,45 +4417,45 @@ static char *ScriptRandomWord(struct script_chars *chrs) {
 
    int len, i;
 
-   len = RandomWordLength(word_lengths);
-   pt = word_buf;
-   for (i = 0; i < len; ++i) {
+   len=RandomWordLength(word_lengths);
+   pt=word_buf;
+   for (i=0; i < len; ++i) {
       strcpy(pt, ScriptRandomChar(chrs));
       pt += strlen(pt);
    }
-   *pt = '\0';
+   *pt='\0';
    return (word_buf);
 }
 
 static char *RandomPara(struct lang_frequencies *lf,
-			struct script_chars *chrs, SplineFont * sf) {
+			struct script_chars *chrs, SplineFont *sf) {
    /* paragraphs will be somewhere between 20 and 84 words */
-   int i, len = 20 + (g_random_int() / (RAND_MAX >> 6));
+   int i, len=20 + (g_random_int() / (RAND_MAX >> 6));
 
 #define PARA_MAX	(84*(WORD_MAX+1)+10)
    char parabuf[PARA_MAX];
 
-   char *pt = parabuf;
+   char *pt=parabuf;
 
-   if (lf == NULL && chrs->cnt == 0)
+   if (lf==NULL && chrs->cnt==0)
       return (copy(""));
 
-   for (i = 0; i < len; ++i) {
+   for (i=0; i < len; ++i) {
       if (lf != NULL)
 	 strcpy(pt, RandomWord(lf, sf));
       else
 	 strcpy(pt, ScriptRandomWord(chrs));
       pt += strlen(pt);
-      *pt++ = ' ';
+      *pt++=' ';
    }
    if (pt > parabuf)
       --pt;
-   *pt++ = '\n';
-   *pt = '\0';
+   *pt++='\n';
+   *pt='\0';
    return (copy(parabuf));
 }
 
-char *RandomParaFromScript(uint32 script, uint32 * lang, SplineFont * sf) {
+char *RandomParaFromScript(uint32 script, uint32 * lang, SplineFont *sf) {
    int i;
 
    struct lang_frequencies *lf;
@@ -4464,27 +4464,27 @@ char *RandomParaFromScript(uint32 script, uint32 * lang, SplineFont * sf) {
 
    char *ret;
 
-   int cnt = 0;
+   int cnt=0;
 
    memset(&chrs, 0, sizeof(chrs));
-   lf = NULL;
+   lf=NULL;
 
    /* Pick a language at random for this script, (one "language" choice */
    /*  is default which means we fall through without picking anything) */
-   for (i = 0; lang_frequencies[i].script != 0; ++i) {
-      if (lang_frequencies[i].script == script)
+   for (i=0; lang_frequencies[i].script != 0; ++i) {
+      if (lang_frequencies[i].script==script)
 	 ++cnt;
    }
    if (cnt != 0) {
-      int pos = g_random_int() % (cnt + 1);
+      int pos=g_random_int() % (cnt + 1);
 
       if (pos < cnt) {
-	 cnt = 0;
-	 for (i = 0; lang_frequencies[i].script != 0; ++i) {
-	    if (lang_frequencies[i].script == script) {
-	       if (cnt == pos) {
-		  lf = &lang_frequencies[i];
-		  *lang = lang_frequencies[i].lang;
+	 cnt=0;
+	 for (i=0; lang_frequencies[i].script != 0; ++i) {
+	    if (lang_frequencies[i].script==script) {
+	       if (cnt==pos) {
+		  lf=&lang_frequencies[i];
+		  *lang=lang_frequencies[i].lang;
 		  break;
 	       }
 	       ++cnt;
@@ -4493,16 +4493,16 @@ char *RandomParaFromScript(uint32 script, uint32 * lang, SplineFont * sf) {
       }
    }
 
-   if (lf == NULL) {
+   if (lf==NULL) {
       ScriptCharInit(sf, script, &chrs);
-      *lang = CHR('d', 'f', 'l', 't');
+      *lang=CHR('d', 'f', 'l', 't');
    }
-   ret = RandomPara(lf, &chrs, sf);
+   ret=RandomPara(lf, &chrs, sf);
    free(chrs.chars);
    return (ret);
 }
 
-static int tag_compare(const void *tag1, const void *tag2) {
+static int tag_compare(const void *tag1,const void *tag2) {
    if (*(uint32 *) tag1 > *(uint32 *) tag2)
       return (1);
    else if (*(uint32 *) tag1 < *(uint32 *) tag2)
@@ -4511,41 +4511,41 @@ static int tag_compare(const void *tag1, const void *tag2) {
       return (0);
 }
 
-int SF2Scripts(SplineFont * sf, uint32 scripts[100]) {
+int SF2Scripts(SplineFont *sf, uint32 scripts[100]) {
    int scnt, s, gid, k;
    SplineFont *subsf;
    SplineChar *sc;
    uint32 script;
    PST *pst;
 
-   scnt = 0;
-   k = 0;
+   scnt=0;
+   k=0;
    do {
-      subsf = sf->subfontcnt == 0 ? sf : sf->subfonts[k];
-      for (gid = 0; gid < subsf->glyphcnt; ++gid)
-	 if (SCWorthOutputting(sc = subsf->glyphs[gid])) {
-	    if (sc->unicodeenc == -1
+      subsf=sf->subfontcnt==0 ? sf : sf->subfonts[k];
+      for (gid=0; gid < subsf->glyphcnt; ++gid)
+	 if (SCWorthOutputting(sc=subsf->glyphs[gid])) {
+	    if (sc->unicodeenc==-1
 		|| (sc->unicodeenc < 0x10000 && !isideoalpha(sc->unicodeenc)))
 	       continue;
 	    if (sc->unicodeenc < 0x10000 && isupper(sc->unicodeenc))
 	       continue;
-	    for (pst = sc->possub; pst != NULL; pst = pst->next)
-	       if (pst->type == pst_ligature)
+	    for (pst=sc->possub; pst != NULL; pst=pst->next)
+	       if (pst->type==pst_ligature)
 		  break;
 	    if (pst != NULL)	/* Ligatures don't count */
 	       continue;
-	    script = ScriptFromUnicode(sc->unicodeenc, subsf);
-	    if (script == DEFAULT_SCRIPT)
+	    script=ScriptFromUnicode(sc->unicodeenc, subsf);
+	    if (script==DEFAULT_SCRIPT)
 	       continue;
-	    for (s = 0; s < scnt; ++s)
-	       if (scripts[s] == script)
+	    for (s=0; s < scnt; ++s)
+	       if (scripts[s]==script)
 		  break;
-	    if (s == scnt)
-	       scripts[scnt++] = script;
+	    if (s==scnt)
+	       scripts[scnt++]=script;
 	 }
       ++k;
    } while (k < sf->subfontcnt);
    qsort(scripts, scnt, sizeof(uint32), tag_compare);
-   scripts[scnt] = 0;
+   scripts[scnt]=0;
    return (scnt);
 }

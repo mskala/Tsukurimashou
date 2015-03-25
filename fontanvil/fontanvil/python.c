@@ -1,4 +1,4 @@
-/* $Id: python.c 3323 2014-09-27 18:09:42Z mskala $ */
+/* $Id: python.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 #include "flaglist.h"
 
 /* These don't get translated. They are a copy of a similar list in fontinfo.c */
-static struct flaglist sfnt_name_str_ids[] = {
+static struct flaglist sfnt_name_str_ids[]={
    {"SubFamily", 2},
    {"Copyright", 0},
    {"Family", 1},
@@ -61,7 +61,7 @@ static struct flaglist sfnt_name_str_ids[] = {
 };
 
 /* These don't get translated. They are a copy of a similar list in fontinfo.c */
-static struct flaglist sfnt_name_mslangs[] = {
+static struct flaglist sfnt_name_mslangs[]={
    {"Afrikaans", 0x436},
    {"Albanian", 0x41c},
    {"Amharic", 0x45e},
@@ -291,8 +291,8 @@ static struct flaglist sfnt_name_mslangs[] = {
 const char *TTFNameIds(int id) {
    int i;
 
-   for (i = 0; sfnt_name_str_ids[i].name != NULL; ++i)
-      if (sfnt_name_str_ids[i].flag == id)
+   for (i=0; sfnt_name_str_ids[i].name != NULL; ++i)
+      if (sfnt_name_str_ids[i].flag==id)
 	 return ((char *) sfnt_name_str_ids[i].name);
 
    return (_("Unknown"));
@@ -301,13 +301,13 @@ const char *TTFNameIds(int id) {
 const char *MSLangString(int language) {
    int i;
 
-   for (i = 0; sfnt_name_mslangs[i].name != NULL; ++i)
-      if (sfnt_name_mslangs[i].flag == language)
+   for (i=0; sfnt_name_mslangs[i].name != NULL; ++i)
+      if (sfnt_name_mslangs[i].flag==language)
 	 return ((char *) sfnt_name_mslangs[i].name);
 
    language &= 0xff;
-   for (i = 0; sfnt_name_mslangs[i].name != NULL; ++i)
-      if (sfnt_name_mslangs[i].flag == language)
+   for (i=0; sfnt_name_mslangs[i].name != NULL; ++i)
+      if (sfnt_name_mslangs[i].flag==language)
 	 return ((char *) sfnt_name_mslangs[i].name);
 
    return (_("Unknown"));

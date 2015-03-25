@@ -1,4 +1,4 @@
-/* $Id: unicoderange.c 3287 2014-09-09 09:28:26Z mskala $ */
+/* $Id: unicoderange.c 3857 2015-03-25 13:26:40Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /* 2012nov14, table updates, fixes added, Jose Da Silva */
 /*
@@ -35,7 +35,7 @@
 #define ASFIRST (-1)
 
 
-struct unicoderange unicoderange[] = {
+struct unicoderange unicoderange[]={
    /* { N_("Unicode"), 0, 0x10ffff, ' ' }, */
    {N_("Unicode Basic Multilingual Plane"), 0, 0xffff, ' ', false, 0, 0},
    {N_("Basic Multilingual Plane"), 0, 0xffff, ' ', 2, 0, 0},
@@ -372,7 +372,7 @@ static struct unicoderange nonunicode =
    { N_("Non-Unicode Glyphs"), -1, -1, ASFIRST, 2, 1, 0 };
 static struct unicoderange unassigned =
    { N_("Unassigned Code Points"), 0, 0x11ffff, ASFIRST, 2, 1, 0 };
-static struct unicoderange unassignedplanes[] = {
+static struct unicoderange unassignedplanes[]={
    {"<Unassigned Plane 3>", 0x30000, 0x3ffff, ASFIRST, 2, 1, 0},
    {"<Unassigned Plane 4>", 0x40000, 0x4ffff, ASFIRST, 2, 1, 0},
    {"<Unassigned Plane 5>", 0x50000, 0x5ffff, ASFIRST, 2, 1, 0},
@@ -387,14 +387,14 @@ static struct unicoderange unassignedplanes[] = {
    UNICODERANGE_EMPTY
 };
 
-static int ucmp(const void *_ri1, const void *_ri2) {
+static int ucmp(const void *_ri1,const void *_ri2) {
 /* Compare unicode range1 to unicode range2. This routine is used to help */
 /* sort a list of ranges, returning a small value {-1,0,+1} if the start  */
 /* is the same, but the last is different, else returning a large diff if */
 /* the start of the two ranges are different. This routine used by qsort. */
-   const struct rangeinfo *ri1 = _ri1, *ri2 = _ri2;
+   const struct rangeinfo *ri1=_ri1, *ri2=_ri2;
 
-   if (ri1->range->first == ri2->range->first) {
+   if (ri1->range->first==ri2->range->first) {
       /* These two ranges are similar since they begin from same point. */
       /* Generic descriptions listed first, more precise listed after.  */
       if (ri1->range->last > ri2->range->last)
@@ -408,21 +408,21 @@ static int ucmp(const void *_ri1, const void *_ri2) {
       return (ri1->range->first - ri2->range->first);
 }
 
-static int ncmp(const void *_ri1, const void *_ri2) {
+static int ncmp(const void *_ri1,const void *_ri2) {
 /* Compare two ranges using Unicode name. This routine is used by qsort() */
-   const struct rangeinfo *ri1 = _ri1, *ri2 = _ri2;
+   const struct rangeinfo *ri1=_ri1, *ri2=_ri2;
 
    /* anything without a name goes to the end of the list */
-   if (ri1->range->name == NULL)
+   if (ri1->range->name==NULL)
       return (1);
-   if (ri2->range->name == NULL)
+   if (ri2->range->name==NULL)
       return (-1);
 
    return (strcoll(_(ri1->range->name), _(ri2->range->name)));
 }
 
 #if 0
-struct rangeinfo *SFUnicodeRanges(SplineFont * sf, enum ur_flags flags) {
+struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
 /* Find and return the Unicode range descriptions for these characters */
 /* Return NULL if out of memory to hold rangeinfo[cnt]. */
    int cnt;
@@ -433,61 +433,61 @@ struct rangeinfo *SFUnicodeRanges(SplineFont * sf, enum ur_flags flags) {
 
    struct rangeinfo *ri;
 
-   static int initialized = false;
+   static int initialized=false;
 
    if (!initialized) {
-      initialized = true;
-      for (i = cnt = 0; unicoderange[i].name != NULL; ++i)
+      initialized=true;
+      for (i=cnt=0; unicoderange[i].name != NULL; ++i)
 	 if (unicoderange[i].display) {
-	    int32 top = unicoderange[i].last;
+	    int32 top=unicoderange[i].last;
 
-	    int32 bottom = unicoderange[i].first;
+	    int32 bottom=unicoderange[i].first;
 
-	    int cnt = 0;
+	    int cnt=0;
 
-	    for (j = bottom; j <= top; ++j) {
+	    for (j=bottom; j <= top; ++j) {
 	       if (isunicodepointassigned(j))
 		  ++cnt;
 	    }
-	    unicoderange[i].unassigned = (cnt == 0);
-	    unicoderange[i].actual = cnt;
+	    unicoderange[i].unassigned=(cnt==0);
+	    unicoderange[i].actual=cnt;
 	 }
    }
 
    /* count number of ranges to return back in rangeinfo[cnt] */
-   for (i = cnt = 0; unicoderange[i].name != NULL; ++i)
+   for (i=cnt=0; unicoderange[i].name != NULL; ++i)
       if (unicoderange[i].display)
 	 ++cnt;
-   for (i = 0; unassignedplanes[i].name != NULL; ++i)
+   for (i=0; unassignedplanes[i].name != NULL; ++i)
       if (unassignedplanes[i].display)
 	 ++cnt;
    cnt += 2;			/* for nonunicode, unassigned codes */
 
    /* create memory space needed to return back rangeinfo[cnt] */
-   if ((ri = calloc(cnt + 1, sizeof(struct rangeinfo))) == NULL) {
+   if ((ri=calloc(cnt + 1, sizeof(struct rangeinfo)))==NULL) {
       NoMoreMemMessage();
       return (NULL);
    }
 
    /* populate rangeinfo[0..cnt-1] with unicoderanges we will display */
-   for (i = cnt = 0; unicoderange[i].name != NULL; ++i)
+   for (i=cnt=0; unicoderange[i].name != NULL; ++i)
       if (unicoderange[i].display)
-	 ri[cnt++].range = &unicoderange[i];
-   for (i = 0; unassignedplanes[i].name != NULL; ++i)
+	 ri[cnt++].range=&unicoderange[i];
+   for (i=0; unassignedplanes[i].name != NULL; ++i)
       if (unassignedplanes[i].display)
-	 ri[cnt++].range = &unassignedplanes[i];
-   ri[cnt++].range = &nonunicode;
-   ri[cnt++].range = &unassigned;
+	 ri[cnt++].range=&unassignedplanes[i];
+   ri[cnt++].range=&nonunicode;
+   ri[cnt++].range=&unassigned;
 
    /* count glyphs in each range */
-   for (j = 0; j < cnt - 2; ++j) {
-      int32 top = ri[j].range->last;
+   for (j=0; j < cnt - 2; ++j) {
+      int32 top=ri[j].range->last;
 
-      int32 bottom = ri[j].range->first;
+      int32 bottom=ri[j].range->first;
 
-      for (gid = 0; gid < sf->glyphcnt; ++gid)
+      for (gid=0; gid < sf->glyphcnt; ++gid)
 	 if (sf->glyphs[gid] != NULL) {
-	    int32 u = sf->glyphs[gid]->unicodeenc;
+	    int32 u=sf->glyphs[gid]->unicodeenc;
 
 	    if (u >= bottom && u <= top &&
 		(ri[j].range->unassigned || isunicodepointassigned(u)))
@@ -496,9 +496,9 @@ struct rangeinfo *SFUnicodeRanges(SplineFont * sf, enum ur_flags flags) {
    }
 
    /* non unicode glyphs (stylistic variations, etc.) */
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid < sf->glyphcnt; ++gid)
       if (sf->glyphs[gid] != NULL) {
-	 int32 u = sf->glyphs[gid]->unicodeenc;
+	 int32 u=sf->glyphs[gid]->unicodeenc;
 
 	 if (u < 0 || u > 0x11ffff)
 	    ++ri[j].cnt;
@@ -507,24 +507,24 @@ struct rangeinfo *SFUnicodeRanges(SplineFont * sf, enum ur_flags flags) {
    /* glyphs attached to code points which have not been assigned in */
    /*  the version of unicode I know about (4.1 when this was written) */
    ++j;
-   for (gid = 0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid < sf->glyphcnt; ++gid)
       if (sf->glyphs[gid] != NULL) {
-	 int32 u = sf->glyphs[gid]->unicodeenc;
+	 int32 u=sf->glyphs[gid]->unicodeenc;
 
 	 if (u >= 0 && u <= 0x11ffff && !isunicodepointassigned(u))
 	    ++ri[j].cnt;
       }
 
    if (!(flags & ur_includeempty)) {
-      for (i = j = 0; i < cnt; ++i) {
+      for (i=j=0; i < cnt; ++i) {
 	 if (ri[i].cnt != 0) {
 	    if (i != j)
-	       ri[j] = ri[i];
+	       ri[j]=ri[i];
 	    ++j;
 	 }
       }
-      ri[j].range = NULL;
-      cnt = j;
+      ri[j].range=NULL;
+      cnt=j;
    }
 
    if (flags & ur_sortbyunicode)
@@ -538,23 +538,23 @@ const char *UnicodeRange(int32 unienc) {
 /* Return the best name that describes this Unicode value */
    char *ret;
 
-   struct unicoderange *best = NULL;
+   struct unicoderange *best=NULL;
 
    int i;
 
-   ret = "Unencoded Unicode";
+   ret="Unencoded Unicode";
    if (unienc < 0)
       return (ret);
 
-   for (i = 0; unicoderange[i].name != NULL; ++i) {
+   for (i=0; unicoderange[i].name != NULL; ++i) {
       if (unienc >= unicoderange[i].first && unienc <= unicoderange[i].last) {
-	 if (best == NULL)
-	    best = &unicoderange[i];
+	 if (best==NULL)
+	    best=&unicoderange[i];
 	 else if ((unicoderange[i].first > best->first &&
 		   unicoderange[i].last <= best->last) ||
 		  (unicoderange[i].first >= best->first &&
 		   unicoderange[i].last < best->last))
-	    best = &unicoderange[i];
+	    best=&unicoderange[i];
       }
    }
    if (best != NULL)
