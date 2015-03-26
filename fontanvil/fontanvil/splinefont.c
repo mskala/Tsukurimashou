@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 3860 2015-03-25 14:30:43Z mskala $ */
+/* $Id: splinefont.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -975,7 +975,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
       if (tmpfile != NULL) {
 	 strippedname=tmpfile;
       } else {
-	 ff_post_error(_("Decompress Failed!"), _("Decompress Failed!"));
+	 ErrorMsg(2,"Decompression failed.\n");
 	 return (NULL);
       }
       compression=i + 1;
@@ -1212,18 +1212,15 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 	 }
       }
    } else if (!GFileExists(filename))
-      ff_post_error(_("Couldn't open font"),
-		    _("The requested file, %.100s, does not exist"),
-		    GFileNameTail(filename));
+      ErrorMsg(2,"The requested file, %.100s, does not exist.\n",
+                 GFileNameTail(filename));
    else if (!GFileReadable(filename))
-      ff_post_error(_("Couldn't open font"),
-		    _("You do not have permission to read %.100s"),
-		    GFileNameTail(filename));
+      ErrorMsg(2,"No read permission for %.100s\n",GFileNameTail(filename));
    else
-      ff_post_error(_("Couldn't open font"),
-		    _
-		    ("%.100s is not in a known format (or uses features of that format fontanvil does not support, or is so badly corrupted as to be unreadable)"),
-		    GFileNameTail(filename));
+      ErrorMsg(2,"The file %.100s is not in a known format, uses "
+                 "features FontAnvil does not support, or is so badly "
+                 "corrupted as to be unreadable.\n",
+               GFileNameTail(filename));
 
    if (oldstrippedname != filename)
       free(oldstrippedname);

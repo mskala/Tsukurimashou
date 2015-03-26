@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: glyphcomp.c 3863 2015-03-25 19:38:46Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1060,7 +1060,7 @@ static void GlyphDiffSCError(struct font_diff *fd,SplineChar *sc,
    va_start(ap, format);
    if (fd->last_sc==sc) {
       if (fd->held[0]) {
-	 fputs("  ", fd->diffs);
+	 afputs("  ", fd->diffs);
 /* GT: FontAnvil needs to recognize the quotes used here(“”). If you change them */
 /* GT: (in the translated strings) let me know. It currently also recognizes */
 /* GT: guillemets and a couple of other quotes as well. */
@@ -1069,7 +1069,7 @@ static void GlyphDiffSCError(struct font_diff *fd,SplineChar *sc,
 	 afprintf(fd->diffs, "   %s", fd->held);
 	 fd->held[0]='\0';
       }
-      fputs("   ", fd->diffs);
+      afputs("   ", fd->diffs);
       vfprintf(fd->diffs, format, ap);
    } else {
       vsnprintf(fd->held, sizeof(fd->held), format, ap);
@@ -1080,7 +1080,7 @@ static void GlyphDiffSCError(struct font_diff *fd,SplineChar *sc,
 
 static void GlyphDiffSCFinish(struct font_diff *fd) {
    if (fd->held[0]) {
-      fputs("  ", fd->diffs);
+      afputs("  ", fd->diffs);
       afprintf(fd->diffs, "%s", fd->held);
       fd->held[0]='\0';
    }
@@ -1393,7 +1393,7 @@ static void comparefontglyphs(struct font_diff *fd) {
 		    fd->name2);
 	 }
 	 fd->local_diff=fd->top_diff=fd->diff=true;
-	 fputs("  ", fd->diffs);
+	 afputs("  ", fd->diffs);
 	 afprintf(fd->diffs, U_("Glyph “%s” missing from %s\n"), sc->name,
 		 fd->name2);
       }
@@ -1410,7 +1410,7 @@ static void comparefontglyphs(struct font_diff *fd) {
 		    fd->name1);
 	 }
 	 fd->local_diff=fd->top_diff=fd->diff=true;
-	 fputs("  ", fd->diffs);
+	 afputs("  ", fd->diffs);
 	 afprintf(fd->diffs, U_("Glyph “%s” missing from %s\n"), sc->name,
 		 fd->name1);
 	 if (fd->flags & fcf_addmissing)
@@ -1422,7 +1422,7 @@ static void comparefontglyphs(struct font_diff *fd) {
 	 afprintf(fd->diffs, "%s", _("Outline Glyphs\n"));
       aputc(' ', fd->diffs);
       afprintf(fd->diffs, "%s", _("Glyph Differences\n"));
-      fputs("  ", fd->diffs);
+      afputs("  ", fd->diffs);
       afprintf(fd->diffs, "%s",
 	      _
 	      ("ppem is different in the two fonts, cowardly refusing to compare glyphs\n"));
@@ -1472,12 +1472,12 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 		       bdf1->pixelsize, BDFDepth(bdf1));
 	    }
 	    if (!fd->local_diff) {
-	       fputs("  ", fd->diffs);
+	       afputs("  ", fd->diffs);
 	       afprintf(fd->diffs, _("Glyphs in %s but not in %s at %d@%d\n"),
 		       fd->name1, fd->name2, bdf1->pixelsize, BDFDepth(bdf1));
 	    }
 	    fd->local_diff=fd->middle_diff=fd->top_diff=fd->diff=true;
-	    fputs("   ", fd->diffs);
+	    afputs("   ", fd->diffs);
 	    afprintf(fd->diffs,
 		    U_("Glyph “%s” missing from %s at %d@%d\n"),
 		    bdfc->sc->name, fd->name2, bdf1->pixelsize,
@@ -1497,12 +1497,12 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 		    bdf1->pixelsize, BDFDepth(bdf1));
 	 }
 	 if (!fd->local_diff) {
-	    fputs("  ", fd->diffs);
+	    afputs("  ", fd->diffs);
 	    afprintf(fd->diffs, _("Glyphs in %s but not in %s at %d@%d\n"),
 		    fd->name2, fd->name2, bdf1->pixelsize, BDFDepth(bdf1));
 	 }
 	 fd->local_diff=fd->middle_diff=fd->top_diff=fd->diff=true;
-	 fputs("   ", fd->diffs);
+	 afputs("   ", fd->diffs);
 	 afprintf(fd->diffs, U_("Glyph “%s” missing from %s at %d@%d\n"),
 		 bdfc->sc->name, fd->name1, bdf1->pixelsize, BDFDepth(bdf1));
       }
@@ -1529,7 +1529,7 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 		       bdf1->pixelsize, BDFDepth(bdf1));
 	    }
 	    if (!fd->local_diff) {
-	       fputs("  ", fd->diffs);
+	       afputs("  ", fd->diffs);
 	       afprintf(fd->diffs, _("Glyphs Differences at %d@%d\n"),
 		       bdf1->pixelsize, BDFDepth(bdf1));
 	    }
@@ -1538,13 +1538,13 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 		       0) +
 		((val & (BC_BoundingBoxMismatch | BC_BitmapMismatch)) != 0) >
 		1) {
-	       fputs(leader, fd->diffs);
+	       afputs(leader, fd->diffs);
 	       afprintf(fd->diffs, U_("Glyph “%s” differs at %d@%d\n"),
 		       bdfc->sc->name, bdf1->pixelsize, BDFDepth(bdf1));
 	       leader="    ";
 	    }
 	    if (val & SS_WidthMismatch) {
-	       fputs(leader, fd->diffs);
+	       afputs(leader, fd->diffs);
 	       afprintf(fd->diffs,
 		       U_
 		       ("Glyph “%s” has advance width %d in %s but %d in %s at %d@%d\n"),
@@ -1552,7 +1552,7 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 		       fd->name2, bdf1->pixelsize, BDFDepth(bdf1));
 	    }
 	    if (val & SS_VWidthMismatch) {
-	       fputs(leader, fd->diffs);
+	       afputs(leader, fd->diffs);
 	       afprintf(fd->diffs,
 		       U_
 		       ("Glyph “%s” has vertical advance width %d in %s but %d in %s at %d@%d\n"),
@@ -1560,7 +1560,7 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 		       fd->name2, bdf1->pixelsize, BDFDepth(bdf1));
 	    }
 	    if (val & (BC_BoundingBoxMismatch | BC_BitmapMismatch)) {
-	       fputs(leader, fd->diffs);
+	       afputs(leader, fd->diffs);
 	       afprintf(fd->diffs,
 		       U_("Glyph “%s” has a different bitmap at %d@%d\n"),
 		       bdfc->sc->name, bdf1->pixelsize, BDFDepth(bdf1));
@@ -1591,7 +1591,7 @@ static void comparebitmapstrikes(struct font_diff *fd) {
 		    fd->name2);
 	 }
 	 fd->top_diff=fd->middle_diff=fd->diff=true;
-	 fputs("  ", fd->diffs);
+	 afputs("  ", fd->diffs);
 	 afprintf(fd->diffs, _("Strike %d@%d missing from %s\n"),
 		 bdf1->pixelsize, BDFDepth(bdf1), fd->name2);
       }
@@ -1612,7 +1612,7 @@ static void comparebitmapstrikes(struct font_diff *fd) {
 		    fd->name1);
 	 }
 	 fd->top_diff=fd->middle_diff=fd->diff=true;
-	 fputs("  ", fd->diffs);
+	 afputs("  ", fd->diffs);
 	 afprintf(fd->diffs, _("Strike %d@%d missing from %s\n"),
 		 bdf2->pixelsize, BDFDepth(bdf2), fd->name1);
       }
@@ -1645,17 +1645,17 @@ static void NameCompare(struct font_diff *fd,char *name1,char *name2,
       while (*name1 != '\0') {
 	 aputc(*name1, fd->diffs);
 	 if (*name1=='\n')
-	    fputs("  ", fd->diffs);
+	    afputs("  ", fd->diffs);
 	 ++name1;
       }
       afprintf(fd->diffs, _(") while in %s it is ("), fd->name2);
       while (*name2 != '\0') {
 	 aputc(*name2, fd->diffs);
 	 if (*name2=='\n')
-	    fputs("  ", fd->diffs);
+	    afputs("  ", fd->diffs);
 	 ++name2;
       }
-      fputs(")\n", fd->diffs);
+      afputs(")\n", fd->diffs);
    }
 }
 
@@ -1688,10 +1688,10 @@ static void TtfMissingName(struct font_diff *fd,char *fontname_present,
    while (*name != '\0') {
       aputc(*name, fd->diffs);
       if (*name=='\n')
-	 fputs("  ", fd->diffs);
+	 afputs("  ", fd->diffs);
       ++name;
    }
-   fputs(")\n", fd->diffs);
+   afputs(")\n", fd->diffs);
 }
 
 static void comparefontnames(struct font_diff *fd) {
@@ -2312,7 +2312,7 @@ static void featureheader(struct font_diff *fd) {
       afprintf(fd->diffs, "%s", _("Lookup Differences\n"));
    }
    if (!fd->local_diff) {
-      fputs("  ", fd->diffs);
+      afputs("  ", fd->diffs);
       afprintf(fd->diffs, _("Lookup subtable %s (matched with %s)\n"),
 	      fd->cur_sub1->subtable_name,
 	      fd->cur_sub2 ==
@@ -2330,14 +2330,14 @@ static void complainscfeature(struct font_diff *fd,SplineChar *sc,
    va_start(ap, format);
    if (fd->last_sc==sc) {
       if (fd->held[0]) {
-	 fputs("   ", fd->diffs);
+	 afputs("   ", fd->diffs);
 	 afprintf(fd->diffs, U_("Glyph “%s” differs\n"), sc->name);
 	 afprintf(fd->diffs, "    %s", fd->held);
 	 if (fd->held[strlen(fd->held) - 1] != '\n')
 	    aputc('\n', fd->diffs);
 	 fd->held[0]='\0';
       }
-      fputs("    ", fd->diffs);
+      afputs("    ", fd->diffs);
       vfprintf(fd->diffs, format, ap);
    } else {
       vsnprintf(fd->held, sizeof(fd->held), format, ap);
@@ -2394,8 +2394,8 @@ static void complainpstfeature(struct font_diff *fd,SplineChar *sc,
 
 static void finishscfeature(struct font_diff *fd) {
    if (fd->held[0]) {
-      fputs("   ", fd->diffs);
-      fputs(fd->held, fd->diffs);
+      afputs("   ", fd->diffs);
+      afputs(fd->held, fd->diffs);
       fd->held[0]='\0';
    }
 }
@@ -2446,7 +2446,7 @@ static void comparesubtable(struct font_diff *fd) {
 	 }
       } else {
 	 featureheader(fd);
-	 fputs("   ", fd->diffs);
+	 afputs("   ", fd->diffs);
 	 afprintf(fd->diffs,
 		 _
 		 ("I can't figure out how to compare the subtable, %s, in %s to %s in %s\n"),
@@ -2580,7 +2580,7 @@ static void compareg___(struct font_diff *fd) {
 		    fd->name2);
 	 }
 	 fd->top_diff=fd->middle_diff=fd->diff=true;
-	 fputs("  ", fd->diffs);
+	 afputs("  ", fd->diffs);
 	 afprintf(fd->diffs, _("Lookup %s is not in %s\n"),
 		 otl->lookup_name, fd->name2);
       }
@@ -2604,7 +2604,7 @@ static void compareg___(struct font_diff *fd) {
 			  fd->name1, fd->name2);
 	       }
 	       fd->top_diff=fd->middle_diff=fd->diff=true;
-	       fputs("  ", fd->diffs);
+	       afputs("  ", fd->diffs);
 	       afprintf(fd->diffs, _("Lookup subtable %s is not in %s\n"),
 		       sub->subtable_name, fd->name2);
 	    }
@@ -2628,7 +2628,7 @@ static void compareg___(struct font_diff *fd) {
 		    fd->name1);
 	 }
 	 fd->top_diff=fd->middle_diff=fd->diff=true;
-	 fputs("  ", fd->diffs);
+	 afputs("  ", fd->diffs);
 	 afprintf(fd->diffs, _("Lookup %s is not in %s\n"),
 		 otl->lookup_name, fd->name1);
       }
@@ -2652,7 +2652,7 @@ static void compareg___(struct font_diff *fd) {
 			  fd->name2, fd->name1);
 	       }
 	       fd->top_diff=fd->middle_diff=fd->diff=true;
-	       fputs("  ", fd->diffs);
+	       afputs("  ", fd->diffs);
 	       afprintf(fd->diffs, _("Lookup subtable %s is not in %s\n"),
 		       sub->subtable_name, fd->name1);
 	    }

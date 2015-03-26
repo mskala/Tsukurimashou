@@ -1,4 +1,4 @@
-/* $Id: palmfonts.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: palmfonts.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -221,7 +221,7 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
 
    type=getushort(file);
    if (type==0x0090 || type==0x0092) {
-      LogError(_("Warning: Byte swapped font mark in palm font.\n"));
+      ErrorMsg(2,"Warning: Byte swapped font mark in palm font.\n");
       type=type << 8;
    }
    if ((type & 0x9000) != 0x9000)
@@ -343,7 +343,7 @@ static SplineFont *PalmTestRecord(AFILE *file,int start,int end,char *name) {
    /* Now test for a font bucket structure */
    version=agetc(file);	/* version number of font bucket format. currently 0 */
    if (version==4) {
-      LogError(_("Warning: Font Bucket version 4 treated as 0.\n"));
+      ErrorMsg(2,"Warning: Font Bucket version 4 treated as 0.\n");
       version=0;
    }
    if (version != 0)
@@ -445,8 +445,7 @@ static AFILE *MakeFewRecordPdb(char *filename,int cnt) {
    strcpy(pt2, ".pdb");
    file=afopen(fn, "wb");
    if (file==NULL) {
-      ff_post_error(_("Couldn't open file"), _("Couldn't open file %.200s"),
-		    fn);
+      ErrorMsg(2,"Couldn't open file %.200s\n",fn);
       free(fn);
       return (NULL);
    }
@@ -523,18 +522,15 @@ static int ValidMetrics(BDFFont *test,BDFFont *base,EncMap *map,int den) {
       return (true);
 
    if (test==base && map->enc->char_cnt >= 256)
-      ff_post_notice(_("Bad Metrics"),
-		     _
-		     ("Only the first 256 glyphs in the encoding will be used"));
+      ErrorMsg(1,"Only the first 256 glyphs in "
+                 "the encoding will be used.\n");
 
    for (i=0; i < map->enccount && i < 256; ++i)
       if ((gid=map->map[i]) != -1
 	  && (test->glyphs[gid] != NULL || base->glyphs[gid] != NULL)) {
 	 if (base->glyphs[gid]==NULL || test->glyphs[gid]==NULL) {
-	    ff_post_error(_("Bad Metrics"),
-			  _
-			  ("One of the fonts %1$d,%2$d is missing glyph %3$d"),
-			  test->pixelsize, base->pixelsize, i);
+	    ErrorMsg(2,"One of the fonts %1$d and %2$d is "
+                       "missing glyph %3$d\n",test->pixelsize,base->pixelsize,i);
 	    return (false);
 	 }
 	 /* Can't just use the glyph's max/min properties at this point, as some glyphs may contain */
@@ -543,25 +539,23 @@ static int ValidMetrics(BDFFont *test,BDFFont *base,EncMap *map,int den) {
 	 if (!warned &&
 	     (ib.minx < 0 || ib.maxx > test->glyphs[gid]->width ||
 	      ib.maxy >= test->ascent || ib.miny < -test->descent)) {
-	    ff_post_notice(_("Bad Metrics"),
-			   _
-			   ("In font %1$d the glyph %2$.30s either starts before 0, or extends after the advance width or is above the ascent or below the descent"),
-			   test->pixelsize, test->glyphs[gid]->sc->name);
+	    ErrorMsg(1,"In font %1$d, the glyph %2$.30s starts "
+	               "before 0, extends after the advance width, "
+	               "is above the ascent, or is below the descent.\n",
+                       test->pixelsize, test->glyphs[gid]->sc->name);
 	    warned=true;
 	 }
 	 if (!wwarned
 	     && test->glyphs[gid]->width != den * base->glyphs[gid]->width) {
-	    ff_post_notice(_("Bad Metrics"),
-			   _
-			   ("In font %1$d the advance width of glyph %2$.30s does not scale the base advance width properly, it shall be forced to the proper value"),
-			   test->pixelsize, test->glyphs[gid]->sc->name);
+	    ErrorMsg(1,"In font %1$d, the advance width of glyph %2$.30s "
+	               "does not scale the base advance width properly.  "
+                       "It will be forced to the proper value.\n",
+                       test->pixelsize,test->glyphs[gid]->sc->name);
 	    wwarned=true;
 	 }
 	 if (base->glyphs[gid]->width > 127) {
-	    ff_post_error(_("Bad Metrics"),
-			  _
-			  ("Advance width of glyph %.30s must be less than 127"),
-			  test->pixelsize, test->glyphs[gid]->sc->name);
+            ErrorMsg(2,"Advance width of glyph %.30s must be less than 127.\n",
+                       test->pixelsize,test->glyphs[gid]->sc->name);
 	    return (false);
 	 }
       }
@@ -577,9 +571,7 @@ static void PalmAddChar(uint16 *image,int rw,int rbits,
 
       if (y <= bc->ymax && y >= bc->ymin) {
 	 int bi=bc->ymax - y;
-
 	 int ipos=i * rw;
-
 	 int bipos=bi * bc->bytes_per_line;
 
 	 for (j=bc->xmin <= 0 ? 0 : bc->xmin; j < width && j <= bc->xmax;
@@ -598,13 +590,9 @@ static uint16 *BDF2Image(struct FontTag *fn,BDFFont *bdf,int **offsets,
 			 int **widths, int16 * rowWords, BDFFont * base,
 			 EncMap * map, int notdefpos) {
    int rbits, rw;
-
    int i, j, gid;
-
    uint16 *image;
-
    int den;
-
    BDFChar *bdfc;
 
    if (bdf==NULL)
@@ -706,22 +694,22 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32 * sizes,
       if (base==NULL || base->pixelsize > temp->pixelsize)
 	 base=temp;
    }
-   memset(densities, 0, sizeof(densities));
-   for (i=0; sizes[i] != 0; ++i) {
+   memset(densities,0,sizeof(densities));
+   for (i=0;sizes[i]!=0;++i) {
       temp=getbdfsize(sf, sizes[i]);
-      den=temp->pixelsize / base->pixelsize;
-      if (temp->pixelsize != base->pixelsize * den || den > 4) {
-	 ff_post_error(_("Unexpected density"),
-		       _
-		       ("One of the bitmap fonts specified, %1$d, is not an integral scale up of the smallest font, %2$d (or is too large a factor)"),
-		       temp->pixelsize, base->pixelsize);
+      den=temp->pixelsize /base->pixelsize;
+      if ((temp->pixelsize!=base->pixelsize*den) || (den>4)) {
+	 ErrorMsg(2,"One of the bitmap fonts specified, %1$d, "
+	            "is not an integral scale-up of the smallest font, "
+	            "%2$d, or is scaled up by too large a factor.\n",
+                    temp->pixelsize,base->pixelsize);
 	 return (false);
       }
       densities[den - 1]=temp;
    }
 
    dencnt=0;
-   for (i=0; i < 4; ++i) {
+   for (i=0;i<4;++i) {
       if (!ValidMetrics(densities[i], base, map, i + 1))
 	 return (false);
       if (densities[i])

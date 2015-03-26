@@ -1,4 +1,4 @@
-/* $Id: splinerefigure.c 3858 2015-03-25 13:49:37Z mskala $ */
+/* $Id: splinerefigure.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -101,7 +101,7 @@ void SplineRefigure3(Spline * spline) {
    }
    if (!isfinite(ysp->a) || !isfinite(xsp->a) || !isfinite(ysp->c)
        || !isfinite(xsp->c) || !isfinite(ysp->d) || !isfinite(xsp->d))
-      IError("NaN value in spline creation");
+      ErrorMsg(2,"NaN value in spline creation\n");
    LinearApproxFree(spline->approx);
    spline->approx=NULL;
    spline->knowncurved=false;

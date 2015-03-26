@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: baseviews.h 3868 2015-03-26 12:25:14Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,6 @@
 
 #   include "ffglib.h"
 #   include "splinefont.h"
-
-#   define free_with_debug(x) { afprintf(stderr,"%p FREE()\n",x); free(x); }
-
 
 enum widthtype { wt_width, wt_lbearing, wt_rbearing, wt_bearings, wt_vwidth };
 
@@ -341,8 +338,6 @@ extern char *UndoToString(SplineChar * sc, Undoes * undo);
  * out from one that occurs later in the code.
  */
 extern void dumpUndoChain(char *msg, SplineChar * sc, Undoes * undo);
-
-extern void ClipboardClear(void);
 
 extern SplineSet *ClipBoardToSplineSet(void);
 

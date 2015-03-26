@@ -1,4 +1,4 @@
-/* $Id: acorn2sfd.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: acorn2sfd.c 3865 2015-03-26 10:37:06Z mskala $ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -180,11 +180,8 @@ static SplineSet *FinishSet(SplineSet *old,SplineSet *active,int closed) {
 static SplineSet *ReadSplineSets(AFILE *file,int flags,SplineSet *old,
 				 int closed) {
    int verb;
-
    int x1, y1, x2, y2, x3, y3;
-
    SplineSet *active=NULL;
-
    SplinePoint *next;
 
    while ((verb=agetc(file)) != EOF && (verb & 0x3) != 0) {
@@ -199,7 +196,7 @@ static SplineSet *ReadSplineSets(AFILE *file,int flags,SplineSet *old,
 	 active->first->nonextcp=active->first->noprevcp=true;
       } else {
 	 if (active==NULL) {
-	    afprintf(stderr, "No initial point, assuming 0,0\n");
+	    ErrorMsg(1,"No initial point, assuming 0,0\n");
 	    active=calloc(1, sizeof(SplineSet));
 	    active->first=active->last=calloc(1, sizeof(SplinePoint));
 	    active->first->nonextcp=active->first->noprevcp=true;
@@ -233,18 +230,14 @@ static SplineSet *ReadSplineSets(AFILE *file,int flags,SplineSet *old,
 
 static SplineChar *ReadChar(AFILE *file,struct Outlines *outline,int enc) {
    char buffer[12];
-
    int flags, x, y, verb, ch;
-
    RefChar *r1, *r2;
-
    SplineFont *sf=outline->sf;
-
    SplineChar *sc=SFSplineCharCreate(sf);
 
    flags=agetc(file);
    if (!(flags & (1 << 3))) {
-      afprintf(stderr, "Character %d is a bitmap character\n", enc);
+      ErrorMsg(2,"Character %d is a bitmap character\n", enc);
       return (NULL);
    }
 
@@ -294,7 +287,7 @@ static SplineChar *ReadChar(AFILE *file,struct Outlines *outline,int enc) {
       /*  filled paths, I'm assuming they are some form of hinting (if pixel */
       /*  size is too small then just stroke, otherwise fill?) */
       /* Every character has them... */
-      /*afprintf( stderr, "There are some stroked paths in %s, you should run\n  Element->Expand Stroke on this character\n", sc->name ); */
+      /*afprintf( astderr, "There are some stroked paths in %s, you should run\n  Element->Expand Stroke on this character\n", sc->name ); */
       if (includestrokes)
 	 sc->layers[ly_fore].splines =
 	    ReadSplineSets(file, flags, sc->layers[ly_fore].splines, false);
@@ -319,9 +312,7 @@ static SplineChar *ReadChar(AFILE *file,struct Outlines *outline,int enc) {
 
 static void ReadChunk(AFILE *file,struct Outlines *outline,int chunk) {
    int flag=0x80000000;
-
    int i, offsets[32];
-
    int index_start;
 
    afseek(file, outline->chunk_offset[chunk], SEEK_SET);
@@ -331,7 +322,7 @@ static void ReadChunk(AFILE *file,struct Outlines *outline,int chunk) {
    else if (outline->version==6)
       flag=(1 << 7);
    if (!flag & 0x80000000)
-      afprintf(stderr, "Bad flag at beginning of chunk %d\n", chunk);
+      ErrorMsg(2,"Bad flag at beginning of chunk %d\n", chunk);
 
    index_start=aftell(file);
    for (i=0; i < 32; ++i)
@@ -533,8 +524,8 @@ static void ReadIntmetrics(char *dir,struct Outlines *outline) {
    else if (dirfind(dir, "Intmetric?", filename))
       file=afopen(filename, "rb");
    if (file==NULL) {
-      afprintf(stderr,
-	      "Couldn't open %s (for advance width data)\n  Oh well, advance widths will all be wrong.\n",
+      ErrorMsg(2,
+	      "Couldn't open %s (for advance width data)\nAdvance widths will all be wrong.\n",
 	      filename);
       free(filename);
       return;
@@ -701,7 +692,7 @@ static void FixupRefs(SplineChar *sc,SplineFont *sf) {
       next=rf->next;
       if (rf->orig_pos < 0 || rf->orig_pos >= map->enccount ||
 	  (gid=map->map[rf->orig_pos])==-1 || sf->glyphs[gid]==NULL) {
-	 afprintf(stderr,
+	 ErrorMsg(2,
 		 "%s contains a reference to a character at index %d which does not exist.\n",
 		 sc->name, rf->orig_pos);
 	 if (prev==NULL)
@@ -744,7 +735,7 @@ static void FindEncoding(SplineFont *sf,char *filename) {
    free(otherdir);
 
    if (file==NULL) {
-      afprintf(stderr, "Couldn't open %s\n", encfilename);
+      ErrorMsg(2,"Couldn't open %s\n", encfilename);
       free(encfilename);
       return;
    }
@@ -784,13 +775,13 @@ static SplineFont *ReadOutline(char *dir) {
    if (dirfind(dir, "Outlines*", filename))
       file=afopen(filename, "rb");
    if (file==NULL) {
-      afprintf(stderr, "Couldn't open %s\n", filename);
+      ErrorMsg(2,"Couldn't open %s\n", filename);
       free(filename);
       return (NULL);
    }
 
    if (agetc(file) != 'F' || agetc(file) != 'O' || agetc(file) != 'N' || agetc(file) != 'T' || agetc(file) != '\0') {	/* Final null means outline font */
-      afprintf(stderr, "%s is not an acorn risc outline font file\n",
+      ErrorMsg(2,"%s is not an acorn risc outline font file\n",
 	      filename);
       free(filename);
       afclose(file);
@@ -839,7 +830,7 @@ static SplineFont *ReadOutline(char *dir) {
    if (outline.ns==-1)
       outline.ns=outline.scaffold_size / 2;
    else if (2 * outline.ns + 1 > outline.scaffold_size)
-      afprintf(stderr, "Inconsistant scaffold count\n");
+      ErrorMsg(2,"Inconsistant scaffold count\n");
    /* I don't understand the scaffold stuff. */
    /* there should be outline.ns-1 shorts of offsets, followed by a byte */
    /*  followed by the data the offsets point to. I'm just going to skip */
@@ -860,7 +851,7 @@ static SplineFont *ReadOutline(char *dir) {
    /* or perhaps a copyright notice */
    if (outline.metrics_fontname != NULL &&
        strmatch(outline.fontname, outline.metrics_fontname) != 0)
-      afprintf(stderr,
+      ErrorMsg(2,
 	      "Warning: Fontname in metrics (%s) and fontname in outline (%s)\n do not match.\n",
 	      outline.metrics_fontname, outline.fontname);
    i=(outline.nchunks < 8 ? 8 : outline.nchunks) * 32;
@@ -917,10 +908,10 @@ static SplineFont *ReadOutline(char *dir) {
 
    if (!SFDWrite
        (outline.sf->filename, outline.sf, outline.sf->map, NULL, false))
-      afprintf(stderr, "Failed to write outputfile %s\n",
+      ErrorMsg(2,"Failed to write outputfile %s\n",
 	      outline.sf->filename);
    else
-      afprintf(stderr, "Created: %s\n", outline.sf->filename);
+      ErrorMsg(1,"Created: %s\n", outline.sf->filename);
    return (outline.sf);
 }
 

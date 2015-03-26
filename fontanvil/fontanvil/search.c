@@ -1,4 +1,4 @@
-/* $Id: search.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: search.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1058,7 +1058,7 @@ static void DoReplaceIncomplete(SplineChar *sc,SearchData *s) {
 	 sc_p=nsc_p;
       } else {
 	 if (sc_p->next==NULL) {
-	    IError("Unexpected point mismatch in replace");
+	    ErrorMsg(2,"Unexpected point mismatch in replace\n");
 	    return;
 	 }
 	 np_p=p_p->next->to;
@@ -1487,10 +1487,8 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
 	 SDCopyToSC(checksc, &sv->sc_rpl, ct_reference);
 	 SVResetPaths(sv);
 	 if (!_DoFindAll(sv) && selcnt==1)
-	    ff_post_notice(_("Not Found"),
-			   _
-			   ("The outlines of glyph %2$.30s were not found in the font %1$.60s"),
-			   sf->fontname, sf->glyphs[gid]->name);
+	    ErrorMsg(2,"The outlines of glyph %2$.30s were not found in the font %1$.60s\n",
+                     sf->fontname,sf->glyphs[gid]->name);
 	 for (j=0; j < fv->map->enccount; ++j)
 	    if (fv->selected[j])
 	       changed[j]=1;

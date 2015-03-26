@@ -1,4 +1,4 @@
-/* $Id: http.c 3860 2015-03-25 14:30:43Z mskala $ */
+/* $Id: http.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -387,8 +387,7 @@ static AFILE *HttpURLToTempFile(char *url,void *_lock) {
    if (strncasecmp(url, "http://", 7) != 0) {
       if (lock != NULL)
 	 pthread_mutex_lock(lock);
-      ff_post_error(_("Could not parse URL"),
-		    _("Got something else when expecting an http URL"));
+      ErrorMsg(2,"Got something else when expecting an http URL\n");
       if (lock != NULL)
 	 pthread_mutex_unlock(lock);
       return (NULL);
@@ -406,10 +405,7 @@ static AFILE *HttpURLToTempFile(char *url,void *_lock) {
    if (!findHTTPhost(&addr, host, port)) {
       if (lock != NULL)
 	 pthread_mutex_lock(lock);
-      ff_post_error(_("Could not find host"),
-		    _
-		    ("Could not find \"%s\"\nAre you connected to the internet?"),
-		    host);
+      ErrorMsg(2,"Could not find host %s\n",host);
       free(host);
       free(filename);
       if (lock != NULL)
@@ -420,8 +416,7 @@ static AFILE *HttpURLToTempFile(char *url,void *_lock) {
    if (soc==-1) {
       if (lock != NULL)
 	 pthread_mutex_lock(lock);
-      ff_post_error(_("Could not connect to host"),
-		    _("Could not connect to \"%s\"."), host);
+      ErrorMsg(2,"Could not connect to host %s\n",host);
       free(host);
       free(filename);
       if (lock != NULL)
@@ -445,8 +440,7 @@ static AFILE *HttpURLToTempFile(char *url,void *_lock) {
    if (write(soc, databuf, strlen(databuf))==-1) {
       if (lock != NULL)
 	 pthread_mutex_lock(lock);
-      ff_post_error(_("Could not send request"),
-		    _("Could not send request to \"%s\"."), host);
+      ErrorMsg(2,"Could not send request to %s\n", host);
       close(soc);
       free(databuf);
       free(host);
@@ -514,13 +508,11 @@ static AFILE *HttpURLToTempFile(char *url,void *_lock) {
    free(host);
    free(filename);
    if (len==-1) {
-      ff_post_error(_("Could not download data"),
-		    _("Could not download data."));
+      ErrorMsg(2,"Could not download data.\n");
       afclose(ret);
       ret=NULL;
    } else if (code < 200 || code > 299) {
-      ff_post_error(_("Could not download data"), _("HTTP return code: %d."),
-		    code);
+      ErrorMsg(2,"Could not download data, HTTP return code %d.\n",code);
       afclose(ret);
       ret=NULL;
    } else
@@ -547,25 +539,20 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
       snprintf(buffer, sizeof(buffer), _("Uploading to %s"), url);
 
    if (strncasecmp(url, "ftp://", 6) != 0) {
-      ff_post_error(_("Could not parse URL"),
-		    _("Got something else when expecting an ftp URL"));
+      ErrorMsg(2,"Got something else when expecting an ftp URL.\n");
       return (false);
    }
    filename=decomposeURL(url, &host, &port, &username, &password);
 
    if (!findFTPhost(&addr, host, port)) {
-      ff_post_error(_("Could not find host"),
-		    _
-		    ("Could not find \"%s\"\nAre you connected to the internet?"),
-		    host);
+      ErrorMsg(2,"Could not find host %s\n",host);
       free(host);
       free(filename);
       return (false);
    }
    soc=makeConnection(&addr);
    if (soc==-1) {
-      ff_post_error(_("Could not connect to host"),
-		    _("Could not connect to \"%s\"."), host);
+      ErrorMsg(2,"Could not connect to host %s\n",host);
       free(host);
       free(filename);
       return (false);
@@ -577,8 +564,7 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
 
    ChangeLine2_8(_("Logging in..."));
    if (getresponse(soc, databuf, datalen)==-1) {	/* ftp servers say "Hi" when then connect */
-      ff_post_error(_("Could not connect to host"),
-		    _("Could not connect to \"%s\"."), host);
+      ErrorMsg(2,"Could not connect to host %s\n",host);
       free(host);
       free(filename);
       free(username);
@@ -608,7 +594,7 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
    free(username);
    free(password);
    if (ftpsendr(soc, cmd, databuf, datalen) <= 0) {
-      LogError(_("Bad Username/Password\n"));
+      ErrorMsg(2,"Bad username/password\n");
       close(soc);
       free(filename);
       free(databuf);
@@ -641,15 +627,14 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
       close(soc);
       free(filename);
       free(databuf);
-      LogError(_("FTP passive Data Connect failed\n"));
+      ErrorMsg(2,"FTP passive Data Connect failed\n");
       return (0);
    }
 
    if (from==NULL) {
       sprintf(cmd, "RETR %s\r\n", filename);
       if (ftpsendr(soc, cmd, databuf, datalen) <= 0) {
-	 ff_post_error(_("Could not download data"),
-		       _("Could not find file."));
+         ErrorMsg(2,"Could not download data\n");
 	 close(data);
 	 close(soc);
 	 free(filename);
@@ -669,8 +654,7 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
    } else {
       sprintf(cmd, "STOR %s\r\n", filename);
       if (ftpsendr(soc, cmd, databuf, datalen) <= 0) {
-	 ff_post_error(_("Could not download data"),
-		       _("Could not find file."));
+         ErrorMsg(2,"Could not download data\n");
 	 close(data);
 	 close(soc);
 	 free(filename);
@@ -692,8 +676,7 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
    free(databuf);
    free(filename);
    if (len==-1) {
-      ff_post_error(_("Could not transmit data"),
-		    _("Could not transmit data."));
+         ErrorMsg(2,"Could not transmit data\n");
       if (ret != NULL)
 	 afclose(ret);
       return (false);
@@ -711,9 +694,7 @@ AFILE *URLToTempFile(char *url, void *_lock) {
 	 return (ret);
       return (NULL);
    } else {
-      ff_post_error(_("Could not parse URL"),
-		    _
-		    ("FontAnvil only handles ftp and http URLs at the moment"));
+      ErrorMsg(2,"Could not parse URL\n");
       return (NULL);
    }
 }

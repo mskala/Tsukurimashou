@@ -1,4 +1,4 @@
-/* $Id: tottfaat.c 3860 2015-03-25 14:30:43Z mskala $ */
+/* $Id: tottfaat.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -226,9 +226,8 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 	    if (version==0) {
 	       putshort(at->kern, 0);	/* subtable version */
 	       if (c > 10920)
-		  ff_post_error(_("Too many kern pairs"),
-				_
-				("The 'kern' table supports at most 10920 kern pairs in a subtable"));
+	          ErrorMsg(2,"Too many kern pairs (%d); "
+	                     "at most 10920 are supported.\n",c);
 	       putshort(at->kern, (7 + 3 * c) * sizeof(uint16));	/* subtable length */
 	       putshort(at->kern, !isv);	/* coverage, flags=hor/vert&format=0 */
 	    } else {
@@ -294,10 +293,8 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
    free(kcnt.vbreaks);
 
    if (winfail > 0)
-      ff_post_error(_("Kerning is likely to fail on Windows"),
-		    _
-		    ("Note: On Windows many apps can have problems with this font's kerning, because %d of its glyph kern pairs cannot be mapped to unicode-BMP kern pairs (eg, they have a Unicode value of -1) To avoid this, go to Generate, Options, and uncheck Old Style kern for OpenType."),
-		    winfail);
+      ErrorMsg(1,"Kerning is likely to fail on Windows, because %d kern pairs "
+                 "cannot be mapped to Unicode-BMP kern pairs.\n",winfail);
 
    if (at->applemode)
       for (isv=0; isv < 2; ++isv) {
@@ -1053,7 +1050,7 @@ static void morx_dumpLigaFeature(AFILE *temp,SplineChar ** glyphs,int gcnt,
       putshort(temp, components[i]);
    /* Do A simple check on the validity of what we've done */
    if (here + 6 * trans_cnt + 6 * acnt != aftell(temp))
-      IError("Offset wrong in morx ligature table\n");
+      ErrorMsg(2,"Offset wrong in morx ligature table\n");
    /* And finally the ligature glyph indices */
    for (i=0; i < lcnt; ++i)
       putshort(temp, lig_glyphs[i]);
@@ -1484,7 +1481,7 @@ static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
       free(subsins);
    } else if (sm->type==asm_kern) {
       if (substable_pos != aftell(temp))
-	 IError("Kern Values table in wrong place.\n");
+	 ErrorMsg(2,"Kern Values table in wrong place.\n");
       afseek(temp, start + 4 * sizeof(uint16), SEEK_SET);
       putshort(temp, substable_pos - start);	/* Point to start of insertions */
       afseek(temp, 0, SEEK_END);
@@ -2153,9 +2150,9 @@ static void morxDumpChain(struct alltabs *at,struct feature *features,
 	    if (len > 16 * 1024)
 	       len=16 * 1024;
 	    len=afread(buf, 1, len, temp);
-	    len=fwrite(buf, 1, len, at->morx);
+	    len=afwrite(buf, 1, len, at->morx);
 	    if (len <= 0) {
-	       IError("Disk error\n");
+	       ErrorMsg(2,"Disk error\n");
 	       break;
 	    }
 	    tot -= len;
@@ -2857,7 +2854,7 @@ static struct feature *featureFromSubtable(SplineFont *sf,
 	    break;
       }
       if (fl==NULL) {
-	 IError("Could not find a mac feature");
+	 ErrorMsg(2,"Could not find a mac feature\n");
 	 return NULL;
       }
    }

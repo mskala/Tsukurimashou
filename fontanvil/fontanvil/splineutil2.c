@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: splineutil2.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1280,7 +1280,7 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 	    if (++totcnt>200)
 	break;
 	    if (offn<0 || offp<0) {
-		IError("Approximation got inverse control points");
+		ErrorMsg(2,"Approximation got inverse control points\n");
 	break;
 	    }
 	}
@@ -1679,7 +1679,7 @@ static SplinePointList *SplinePointListMerge(SplineChar *sc,SplinePointList *spl
     }
 
     /* when we get here spl->first is not selected */
-    if (spl->first->selected) IError("spl->first is selected in SplinePointListMerge");
+    if (spl->first->selected) ErrorMsg(2,"spl->first is selected in SplinePointListMerge\n");
     curp=spl->first;
     selectme=NULL;
     while (1) {
@@ -4209,7 +4209,7 @@ SplineSet *SplineSetsDetectDir(SplineSet **_base,int *_lastscan) {
     dummy.layers[ly_fore].splines=base;
     ELFindEdges(&dummy,&el);
     if (el.coordmax[1]-el.coordmin[1] > 1.e6) {
-	LogError(_("Warning: Unreasonably big splines. They will be ignored.\n"));
+	ErrorMsg(2,"Warning: Unreasonably big splines. They will be ignored.\n");
        return NULL;
     }
     el.major=1;
@@ -4291,7 +4291,7 @@ int SplinePointListIsClockwise(const SplineSet *spl) {
     next=spl->next; ((SplineSet *) spl)->next=NULL;
     ELFindEdges(&dummy,&el);
     if (el.coordmax[1]-el.coordmin[1] > 1.e6) {
-	LogError(_("Warning: Unreasonably big splines. They will be ignored.\n"));
+	ErrorMsg(2,"Warning: Unreasonably big splines. They will be ignored.\n");
 	((SplineSet *) spl)->next=next;
        return -1;
     }
@@ -4334,14 +4334,14 @@ int SplinePointListIsClockwise(const SplineSet *spl) {
 			/*  it can actually happen with a single contour. I */
 			/*  think it is more likely this means a rounding error*/
 			/*  and a problem in my algorithm */
-			afprintf(stderr, "SplinePointListIsClockwise: Found error\n");
+			ErrorMsg(1,"SplinePointListIsClockwise: Found error\n");
 		    }
 		    winding += (e->up?1:-1);
 		} else if (EISameLine(pr,e,i+el.low,1))
 		    /* This just continues the line and doesn't change count */;
 		else {
 		    if ((winding<=0 && !e->up) || (winding>0 && e->up)) {
-			afprintf(stderr, "SplinePointListIsClockwise: Found error\n");
+			ErrorMsg(1,"SplinePointListIsClockwise: Found error\n");
 		       /*return -1;*/
 		    }
 		    winding += (e->up?1:-1);

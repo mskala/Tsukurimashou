@@ -1,4 +1,4 @@
-/* $Id: effects.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: effects.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -190,7 +190,7 @@ static void OrientEdges(SplineSet *base,SplineChar *sc) {
       dummy.name=sc->name;
    ELFindEdges(&dummy, &el);
    if (el.coordmax[1] - el.coordmin[1] > 1.e6) {
-      afprintf(stderr,
+      ErrorMsg(1,
 	      "Warning: Unreasonably big splines. They will be ignored.\n");
       return;
    }

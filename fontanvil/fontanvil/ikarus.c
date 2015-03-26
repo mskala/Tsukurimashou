@@ -1,4 +1,4 @@
-/* $Id: ikarus.c 3860 2015-03-25 14:30:43Z mskala $ */
+/* $Id: ikarus.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -465,8 +465,7 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
    IkarusNameFromURWNumber(sc, number);
    following=getushort(file);
    if (following != 0)
-      LogError(_
-	       ("This character (gid=%d) has a following part (%d). I'm not sure what that means, please send me (gww@silcom.com) a copy of this font so I can test with it.\n"),
+      ErrorMsg(2,"This character (gid=%d) has a following part (%d). I'm not sure what that means, please send me (gww@silcom.com) a copy of this font so I can test with it.\n",
 	       sc->orig_pos, following);
    for (i=3; i < n; ++i)
       getushort(file);		/* Just in case the name section is bigger now */
@@ -641,12 +640,10 @@ SplineFont *SFReadIkarus(char *fontname) {
 	  (ch1=='v' && ch2=='s') || (ch1=='v' && ch2=='e') ||
 	  (ch1=='s' && ch2=='c') || (ch1=='s' && ch2=='n') ||
 	  (ch1=='b' && ch2=='i') || (ch1=='g' && isdigit(ch2)))
-	 LogError(_
-		  ("This is probably a valid URW font, but it is in a format (%c%c) which FontAnvil\ndoes not support. FontAnvil only supports 'IK' format fonts.\n"),
+	 ErrorMsg(2,"This is probably a valid URW font, but it is in a format (%c%c) which FontAnvil\ndoes not support. FontAnvil only supports 'IK' format fonts.\n",
 		  ch1, ch2);
       else if (ch1==0 && ch2==0 && ilen==55)
-	 LogError(_
-		  ("This looks like an ikarus format which I have seen examples of, but for which\nI have no documentation. FontAnvil does not support it yet.\n"));
+	 ErrorMsg(2,"This looks like an ikarus format which I have seen examples of, but for which\nI have no documentation. FontAnvil does not support it yet.\n");
       afclose(file);
       return (NULL);
    } else if (ilen < 55 || hlen <= ilen) {
@@ -654,8 +651,7 @@ SplineFont *SFReadIkarus(char *fontname) {
       return (NULL);
    }
    if (ilen != 55)
-      LogError(_
-	       ("Unexpected size for name section of URW font (expected 55, got %d)\n"),
+      ErrorMsg(2,"Unexpected size for name section of URW font (expected 55, got %d)\n",
 	       ilen);
 
    afseek(file, 2 * ilen + 2, SEEK_SET);
@@ -665,8 +661,7 @@ SplineFont *SFReadIkarus(char *fontname) {
       return (NULL);
    }
    if (jlen != 12)
-      LogError(_
-	       ("Unexpected size for font info section of URW font (expected 12, got %d)\n"),
+      ErrorMsg(2,"Unexpected size for font info section of URW font (expected 12, got %d)\n",
 	       ilen);
    if (getushort(file) != 1) {	/* 1=> typeface */
       afclose(file);

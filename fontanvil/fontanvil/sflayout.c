@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: sflayout.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -660,7 +660,7 @@ static void fontlistcheck(LayoutInfo *li) {
       if (fl->start > fl->end
 	  || (fl->end != next->start && fl->end != next->start - 1)
 	  || next==fl || next->next==fl) {
-	 IError("FontList is corrupted");
+	 ErrorMsg(2,"FontList is corrupted\n");
 	 fl->next=NULL;
 	 return;
       }
@@ -922,7 +922,7 @@ void LayoutInfoInitLangSys(LayoutInfo * li, int end, uint32 script,
    struct fontlist *prev, *next;
 
    if ((li->text != NULL && li->text[0] != '\0') || li->fontlist==NULL) {
-      IError("SFTFInitLangSys can only be called during initialization");
+      ErrorMsg(2,"SFTFInitLangSys can only be called during initialization\n");
       return;
    }
    if (li->fontlist != NULL && li->fontlist->script==0) {
@@ -1192,16 +1192,13 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
    if (strstrmatch(filename, ".bmp") != NULL)
       ret=GImageWriteBmp(image, filename);
    else
-      ff_post_error(_("Unsupported image format"),
 #ifndef _NO_LIBPNG
-		    _("Unsupported image format must be bmp or png")
+      ErrorMsg(2,"Unsupported image format, must be bmp or png.\n");
 #else
-		    _("Unsupported image format must be bmp")
+      ErrorMsg(2,"Unsupported image format, must be bmp.\n");
 #endif
-	 );
    if (!ret)
-      ff_post_error(_("Could not write"), _("Could not write %.100s"),
-		    filename);
+      ErrorMsg(2,"Could not write %.100s\n",filename);
    GImageDestroy(image);
 
    LayoutInfo_Destroy(li);

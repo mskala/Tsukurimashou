@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: splineutil.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ void chunktest(void) {
    for (i=2; i < CHUNK_MAX; ++i)
       for (c=(struct chunk2 *) chunklists[i]; c != NULL; c=c->next)
 	 if (c->flag != FLAG) {
-	    afprintf(stderr, "Chunk memory list has been corrupted\n");
+	    ErrorMsg(3,"Chunk memory list has been corrupted\n");
 	    abort();
 	 }
 }
@@ -2123,7 +2123,7 @@ static void InstanciateReference(SplineFont *sf,RefChar *topref,
 	 refs->unicode_enc=rsc->unicodeenc;
 	 SCMakeDependent(dsc, rsc);
       } else {
-	 LogError(_("Couldn't find referenced character \"%s\" in %s\n"),
+	 ErrorMsg(2,"Couldn't find referenced character \"%s\" in %s\n",
 		  AdobeStandardEncoding[refs->adobe_enc], dsc->name);
 	 return;
       }
@@ -2619,8 +2619,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
    if (fd->weightvector==NULL || fd->fontinfo->blenddesignpositions==NULL
        || fd->fontinfo->blenddesignmap==NULL
        || fd->fontinfo->blendaxistypes==NULL) {
-      ff_post_error(_("Bad Multiple Master Font"),
-		    _("Bad Multiple Master Font"));
+      ErrorMsg(2,"Bad multiple master font.\n");
       SplineFontFree(sf);
       return (NULL);
    }
@@ -2641,7 +2640,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
       if (pscontext->instance_count >=
 	  sizeof(pscontext->blend_values) /
 	  sizeof(pscontext->blend_values[0])) {
-	 LogError(_("Multiple master font with more than 16 instances\n"));
+	 ErrorMsg(2,"Multiple master font with more than 16 instances\n");
 	 break;
       }
       for (pt=end; *pt==' '; ++pt);
@@ -2670,7 +2669,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
       if (pt==end)
 	 break;
       if (mm->axis_count >= sizeof(mm->axes) / sizeof(mm->axes[0])) {
-	 LogError(_("Multiple master font with more than 4 axes\n"));
+	 ErrorMsg(2,"Multiple master font with more than 4 axes\n");
 	 break;
       }
       mm->axes[mm->axis_count++]=copyn(pt, end - pt);
@@ -2678,15 +2677,15 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
    }
 
    if (mm->instance_count < (1 << mm->axis_count))
-      ff_post_error(_("Bad Multiple Master Font"),
-		    _
-		    ("This multiple master font has %1$d instance fonts, but it needs at least %2$d master fonts for %3$d axes. FontAnvil will not be able to edit this correctly"),
-		    mm->instance_count, 1 << mm->axis_count, mm->axis_count);
+      ErrorMsg(2,"This multiple master font has %1$d instance fonts, "
+                 "but it needs at least %2$d master fonts for %3$d axes.  "
+                 "FontAnvil will not be able to edit this correctly.\n",
+                 mm->instance_count,1<<mm->axis_count,mm->axis_count);
    else if (mm->instance_count > (1 << mm->axis_count))
-      ff_post_error(_("Bad Multiple Master Font"),
-		    _
-		    ("This multiple master font has %1$d instance fonts, but FontAnvil can only handle %2$d master fonts for %3$d axes. FontAnvil will not be able to edit this correctly"),
-		    mm->instance_count, 1 << mm->axis_count, mm->axis_count);
+      ErrorMsg(2,"This multiple master font has %1$d instance fonts, "
+                 "but FontAnvil can only handle %2$d master fonts for %3$d axes.  "
+                 "FontAnvil will not be able to edit this correctly.\n",
+                 mm->instance_count,1<<mm->axis_count,mm->axis_count);
    mm->positions=calloc(mm->axis_count * mm->instance_count, sizeof(real));
    pt=fd->fontinfo->blenddesignpositions;
    while (*pt==' ')
@@ -2706,8 +2705,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	 apos=0;
 	 while (*pt != ']' && *pt != '\0') {
 	    if (apos >= mm->axis_count) {
-	       LogError(_
-			("Too many axis positions specified in /BlendDesignPositions.\n"));
+	       ErrorMsg(2,"Too many axis positions specified in /BlendDesignPositions.\n");
 	       break;
 	    }
 	    mm->positions[ipos * mm->axis_count + apos]=strtod(pt, &end);
@@ -2742,8 +2740,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	 ppos=0;
 	 while (*pt != ']' && *pt != '\0') {
 	    if (ppos >= 12) {
-	       LogError(_
-			("Too many mapping data points specified in /BlendDesignMap for axis %s.\n"),
+	       ErrorMsg(2,"Too many mapping data points specified in /BlendDesignMap for axis %s.\n",
 			mm->axes[apos]);
 	       break;
 	    }
@@ -2754,8 +2751,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	       designs[ppos]=strtod(pt, &end);
 	       blends[ppos]=strtod(end, &end);
 	       if (blends[ppos] < 0 || blends[ppos] > 1) {
-		  LogError(_
-			   ("Bad value for blend in /BlendDesignMap for axis %s.\n"),
+		  ErrorMsg(2,"Bad value for blend in /BlendDesignMap for axis %s.\n",
 			   mm->axes[apos]);
 		  if (blends[ppos] < 0)
 		     blends[ppos]=0;
@@ -2774,7 +2770,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	 if (*pt==']')
 	    ++pt;
 	 if (ppos < 2)
-	    LogError(_("Bad few values in /BlendDesignMap for axis %s.\n"),
+	    ErrorMsg(2,"Bad few values in /BlendDesignMap for axis %s.\n",
 		     mm->axes[apos]);
 	 mm->axismaps[apos].points=ppos;
 	 mm->axismaps[apos].blends=malloc(ppos * sizeof(real));
@@ -2910,8 +2906,7 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
       if (fd->fds[i]->fonttype != 1 && fd->fds[i]->fonttype != 2)
 	 bad=fd->fds[i]->fonttype;
    if (bad != 0x80000000 || fd->cidfonttype != 0) {
-      LogError(_
-	       ("Could not parse a CID font, %sCIDFontType %d, %sfonttype %d\n"),
+      ErrorMsg(2,"Could not parse a CID font, %sCIDFontType %d, %sfonttype %d\n",
 	       (fd->cidfonttype != 0) ? "unexpected " : "",
 	       (bad != 0x80000000) ? "unexpected " : "", fd->cidfonttype,
 	       bad);
@@ -2919,7 +2914,7 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
       return (NULL);
    }
    if (fd->cidstrs==NULL || fd->cidcnt==0) {
-      LogError(_("CID format doesn't contain what we expected it to.\n"));
+      ErrorMsg(2,"CID format doesn't contain what we expected it to.\n");
       SplineFontFree(sf);
       return (NULL);
    }
@@ -2964,7 +2959,7 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
 	 /* There better not be any references (seac's) because we have no */
 	 /*  encoding on which to base any fixups */
 	 if (chars[i]->layers[ly_fore].refs != NULL)
-	    IError("Reference found in CID font. Can't fix it up");
+	    ErrorMsg(2,"Reference found in CID font. Can't fix it up\n");
 	 sf->subfonts[j]->glyphcnt=sf->subfonts[j]->glyphmax=i + 1;
       }
    for (i=0; i < fd->fdcnt; ++i)
@@ -4240,7 +4235,7 @@ static int AddPoint(extended x,extended y,extended t,extended s,
       if (x==pts[i].x && y==pts[i].y)
 	 return (soln);
    if (soln >= 9)
-      IError("Too many solutions!\n");
+      ErrorMsg(2,"Too many solutions.\n");
    t1s[soln]=t;
    t2s[soln]=s;
    pts[soln].x=x;
@@ -5011,7 +5006,7 @@ static int LineTangentToSplineThroughPt(Spline *s,BasePoint *pt,extended ts[4],
    int i, j, k;
 
    if (!isfinite(pt->x) || !isfinite(pt->y)) {
-      IError("Non-finite arguments passed to LineTangentToSplineThroughPt");
+      ErrorMsg(2,"Non-finite arguments passed to LineTangentToSplineThroughPt\n");
       return (-1);
    }
 
@@ -7126,7 +7121,7 @@ SplinePoint *SplineBisect(Spline * spline, extended t) {
 
 #ifdef DEBUG
    if (t <= 1e-3 || t >= 1 - 1e-3)
-      IError("Bisection to create a zero length spline");
+      ErrorMsg(2,"Bisection to create a zero length spline\n");
 #endif
    xstart.s0=xsp->d;
    ystart.s0=ysp->d;
@@ -7440,7 +7435,7 @@ static bigreal SplineMinDistanceToPoint(Spline *s,BasePoint *p) {
       }
       return (sqrt(best));
    } else if (w[4] != 0 && w[3] != 0 && w[2] != 0 && w[1] != 0) {
-      IError("Impossible condition in SplineMinDistanceToPoint");
+      ErrorMsg(2,"Impossible condition in SplineMinDistanceToPoint\n");
    } else {
       /* It's a point, minimum distance is the only distance */
       return (sqrt(off[0] * off[0] + off[1] * off[1]));

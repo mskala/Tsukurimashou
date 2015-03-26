@@ -159,7 +159,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/afile.c fontanvil/asmfpst.c fontanvil/autohint.c \
  fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
  fontanvil/bezctx_ff.c fontanvil/bitmapchar.c fontanvil/bitmapcontrol.c \
- fontanvil/bvedit.c fontanvil/clipnoui.c fontanvil/crctab.c \
+ fontanvil/bvedit.c fontanvil/crctab.c \
  fontanvil/cvexport.c fontanvil/cvimages.c fontanvil/cvundoes.c \
  fontanvil/dumpbdf.c fontanvil/dumppfa.c fontanvil/effects.c \
  fontanvil/encoding.c fontanvil/featurefile.c fontanvil/flaglist.c \
@@ -170,7 +170,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/langfreq.c fontanvil/lookups.c fontanvil/macbinary.c \
  fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \
  fontanvil/namelist.c fontanvil/nonlineartrans.c fontanvil/noprefs.c \
- fontanvil/nouiutil.c fontanvil/nowakowskittfinstr.c \
+ fontanvil/nowakowskittfinstr.c \
  fontanvil/othersubrs.c fontanvil/palmfonts.c fontanvil/parsepdf.c \
  fontanvil/parsepfa.c fontanvil/parsettfatt.c fontanvil/parsettfbmf.c \
  fontanvil/parsettf.c fontanvil/parsettfvar.c fontanvil/print.c \

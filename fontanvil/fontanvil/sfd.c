@@ -1,4 +1,4 @@
-/* $Id: sfd.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: sfd.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -525,7 +525,7 @@ static void SFDDumpSplineSet(AFILE *sfd,SplineSet *spl) {
 	 }
 	 aputc('\n', sfd);
 	 if (sp->name!=NULL) {
-	    fputs("NamedP: ", sfd);
+	    afputs("NamedP: ", sfd);
 	    SFDDumpUTF7Str(sfd, sp->name);
 	    aputc('\n', sfd);
 	 }
@@ -1160,7 +1160,7 @@ static void SFDDumpChar(AFILE *sfd,SplineChar *sc,EncMap *map,
    SFDDumpCharStartingMarker(sfd, sc);
    if ((enc=map->backmap[sc->orig_pos]) >= map->enccount) {
       if (sc->parent->cidmaster==NULL)
-	 IError("Bad reverse encoding");
+	 ErrorMsg(2,"Bad reverse encoding\n");
       enc=-1;
    }
    if (sc->unicodeenc != -1 &&
@@ -2514,12 +2514,12 @@ static int SFD_MMDump(AFILE *sfd,SplineFont *sf,EncMap *map,
    }
    if (mm->cdv != NULL) {
       afprintf(sfd, "MMCDV:\n");
-      fputs(mm->cdv, sfd);
+      afputs(mm->cdv, sfd);
       afprintf(sfd, "\nEndMMSubroutine\n");
    }
    if (mm->ndv != NULL) {
       afprintf(sfd, "MMNDV:\n");
-      fputs(mm->ndv, sfd);
+      afputs(mm->ndv, sfd);
       afprintf(sfd, "\nEndMMSubroutine\n");
    }
    for (i=0; i < mm->named_instance_count; ++i) {
@@ -3112,7 +3112,7 @@ static void rle2image(struct enc85 *dec,int rlelen,struct _GImage *base) {
    memset(base->data, 0xff, end - pt);
    while (rlelen > 0) {
       if (pt >= end) {
-	 IError("RLE failure\n");
+	 ErrorMsg(2,"RLE failure\n");
 	 while (rlelen > 0) {
 	    Dec85(dec);
 	    --rlelen;
@@ -3138,7 +3138,7 @@ static void rle2image(struct enc85 *dec,int rlelen,struct _GImage *base) {
 	 set=1;
       } else {
 	 if (pt + ((c + cnt) >> 3) > end) {
-	    IError("Run length encoded image has been corrupted.\n");
+	    ErrorMsg(2,"Run length encoded image has been corrupted.\n");
 	    break;
 	 }
 	 if (!set) {
@@ -3301,7 +3301,7 @@ static void SFDGetTtfInstrs(AFILE *sfd,SplineChar *sc) {
 }
 
 static void tterr(void *rubbish,char *message,int pos) {
-   LogError(_("When loading tt instrs from sfd: %s\n"), message);
+   ErrorMsg(2,"When loading tt instrs from sfd: %s\n", message);
 }
 
 static void SFDGetTtInstrs(AFILE *sfd,SplineChar *sc) {
@@ -3851,7 +3851,7 @@ static void SFDGetMinimumDistances(AFILE *sfd,SplineChar *sc) {
 	 md->x=true;
       getint(sfd, &val);
       if (val < -1 || val >= pt) {
-	 IError("Minimum Distance specifies bad point (%d) in sfd file\n",
+	 ErrorMsg(2,"Minimum Distance specifies bad point (%d) in sfd file\n",
 		val);
 	 err=true;
       } else if (val != -1) {
@@ -3860,12 +3860,12 @@ static void SFDGetMinimumDistances(AFILE *sfd,SplineChar *sc) {
       }
       ch=nlgetc(sfd);
       if (ch != ',') {
-	 IError("Minimum Distance lacks a comma where expected\n");
+	 ErrorMsg(2,"Minimum Distance lacks a comma where expected\n");
 	 err=true;
       }
       getint(sfd, &val);
       if (val < -1 || val >= pt) {
-	 IError("Minimum Distance specifies bad point (%d) in sfd file\n",
+	 ErrorMsg(2,"Minimum Distance specifies bad point (%d) in sfd file\n",
 		val);
 	 err=true;
       } else if (val != -1) {
@@ -4014,7 +4014,7 @@ static DeviceTable *SFDReadDeviceTable(AFILE *sfd,DeviceTable *adjust) {
       getint(sfd, &last);
       len=last - first + 1;
       if (len <= 0) {
-	 IError("Bad device table, invalid length.\n");
+	 ErrorMsg(2,"Bad device table, invalid length.\n");
 	 return (NULL);
       }
       adjust->first_pixel_size=first;
@@ -4095,7 +4095,7 @@ static AnchorPoint *SFDReadAnchorPoints(AFILE *sfd,SplineChar *sc,
 
    name=SFDReadUTF7Str(sfd);
    if (name==NULL) {
-      LogError(_("Anchor Point with no class name: %s"), sc->name);
+      ErrorMsg(2,"Anchor Point with no class name: %s\n", sc->name);
       return (lastap);
    }
    for (an=sc->parent->anchor; an != NULL && strcmp(an->name, name) != 0;
@@ -4133,7 +4133,7 @@ static AnchorPoint *SFDReadAnchorPoints(AFILE *sfd,SplineChar *sc,
       }
    }
    if (ap->anchor==NULL || ap->type==-1) {
-      LogError(_("Bad Anchor Point: %s"), sc->name);
+      ErrorMsg(2,"Bad Anchor Point: %s\n", sc->name);
       AnchorPointsFree(ap);
       return (lastap);
    }
@@ -4887,12 +4887,11 @@ static SplineChar *SFDGetChar(AFILE *sfd,SplineFont *sf,
 	 struct lookup_subtable *sub;
 
 	 if (sf->sfd_version < 2)
-	    LogError(_
-		     ("Found an new style kerning pair inside a version 1 (or lower) sfd file.\n"));
+	    ErrorMsg(2,"Found an new style kerning pair inside a version 1 (or lower) sfd file.\n");
 	 while (fscanf(sfd, "%d %d", &index, &off)==2) {
 	    sub=SFFindLookupSubtableAndFreeName(sf, SFDReadUTF7Str(sfd));
 	    if (sub==NULL) {
-	       LogError(_("KernPair with no subtable name.\n"));
+	       ErrorMsg(2,"KernPair with no subtable name.\n");
 	       break;
 	    }
 	    kp=chunkalloc(sizeof(KernPair1));
@@ -4932,8 +4931,7 @@ static SplineChar *SFDGetChar(AFILE *sfd,SplineFont *sf,
 	 int has_orig=strstr(tok, "SLIFO:") != NULL;
 
 	 if (sf->sfd_version >= 2) {
-	    IError
-	       ("Found an old style kerning pair inside a version 2 (or higher) sfd file.");
+	    ErrorMsg(3,"Found an old style kerning pair inside a version 2 (or higher) sfd file.\n");
 	    exit(1);
 	 }
 	 if (strmatch(tok, "KernsSLIF:")==0
@@ -4959,10 +4957,10 @@ static SplineChar *SFDGetChar(AFILE *sfd,SplineFont *sf,
 	       static int complained=false;
 
 	       if (!complained)
-		  IError("'%s' in %s has a script index out of bounds: %d",
+		  ErrorMsg(2,"'%s' in %s has a script index out of bounds: %d\n",
 			 isv ? "vkrn" : "kern", sc->name, sli);
 	       else
-		  IError("'%s' in %s has a script index out of bounds: %d",
+		  ErrorMsg(2,"'%s' in %s has a script index out of bounds: %d\n",
 			 isv ? "vkrn" : "kern", sc->name, sli);
 	       sli=SFFindBiggestScriptLangIndex(sli_sf,
 						  SCScriptFromUnicode(sc),
@@ -5068,16 +5066,14 @@ static SplineChar *SFDGetChar(AFILE *sfd,SplineFont *sf,
 	       static int complained=false;
 
 	       if (!complained)
-		  IError
-		     ("'%c%c%c%c' in %s has a script index out of bounds: %d",
+		  ErrorMsg(2,"'%c%c%c%c' in %s has a script index out of bounds: %d\n",
 		      (((PST1 *) pst)->tag >> 24),
 		      (((PST1 *) pst)->tag >> 16) & 0xff,
 		      (((PST1 *) pst)->tag >> 8) & 0xff,
 		      ((PST1 *) pst)->tag & 0xff, sc->name,
 		      ((PST1 *) pst)->script_lang_index);
 	       else
-		  IError
-		     ("'%c%c%c%c' in %s has a script index out of bounds: %d\n",
+		  ErrorMsg(2,"'%c%c%c%c' in %s has a script index out of bounds: %d\n",
 		      (((PST1 *) pst)->tag >> 24),
 		      (((PST1 *) pst)->tag >> 16) & 0xff,
 		      (((PST1 *) pst)->tag >> 8) & 0xff,
@@ -5091,7 +5087,7 @@ static SplineChar *SFDGetChar(AFILE *sfd,SplineFont *sf,
 	    }
 	 }
 	 if ((sf->sfd_version < 2) != old) {
-	    IError("Version mixup in PST of sfd file.");
+	    ErrorMsg(3,"Version mixup in PST of sfd file.\n");
 	    exit(1);
 	 }
 	 if (last==NULL)
@@ -5365,8 +5361,7 @@ static void SFDFixupBitmapRefs(BDFFont *bdf) {
 	       BCMakeDependent(bc, rbc);
 	       prev=head;
 	    } else {
-	       LogError(_
-			("Glyph %d in bitmap strike %d pixels refers to a missing glyph (%d)"),
+	       ErrorMsg(2,"Glyph %d in bitmap strike %d pixels refers to a missing glyph (%d)\n",
 			bc->orig_pos, bdf->pixelsize, head->gid);
 	       if (prev==NULL)
 		  bc->refs=next;
@@ -5644,8 +5639,7 @@ static void SFDFixupRefs(SplineFont *sf) {
 		     rprev=refs;
 		     if (refs->use_my_metrics) {
 			if (sc->width != refs->sc->width) {
-			   LogError(_
-				    ("Bad sfd file. Glyph %s has width %d even though it should be\n  bound to the width of %s which is %d.\n"),
+			   ErrorMsg(2,"Bad sfd file. Glyph %s has width %d even though it should be\n  bound to the width of %s which is %d.\n",
 				    sc->name, sc->width, refs->sc->name,
 				    refs->sc->width);
 			   sc->width=refs->sc->width;
@@ -5689,7 +5683,7 @@ static void SFDFixupRefs(SplineFont *sf) {
 		     }
 		  }
 		  if (index >= ksf->glyphcnt || ksf->glyphs[index]==NULL) {
-		     IError("Bad kerning information in glyph %s\n",
+		     ErrorMsg(2,"Bad kerning information in glyph %s\n",
 			    sc->name);
 		     kp->sc=NULL;
 		  } else {
@@ -5914,7 +5908,7 @@ static void SFDGetNameList(AFILE *sfd,char *tok,SplineFont *sf) {
    geteol(sfd, tok);
    nl=NameListByName(tok);
    if (nl==NULL)
-      LogError(_("Failed to find NameList: %s"), tok);
+      ErrorMsg(2,"Failed to find NameList: %s\n", tok);
    else
       sf->for_new_glyphs=nl;
 }
@@ -5980,22 +5974,21 @@ static void SFDParseChainContext(AFILE *sfd,SplineFont *sf,FPST *fpst,
 	 static int complained=false;
 
 	 if (((SplineFont1 *) sli_sf)->sli_cnt==0)
-	    IError
-	       ("'%c%c%c%c' has a script index out of bounds: %d\nYou MUST fix this manually",
+	    ErrorMsg(2,"'%c%c%c%c' has a script index out of bounds: %d\nYou MUST fix this manually\n",
 		(((FPST1 *) fpst)->tag >> 24),
 		(((FPST1 *) fpst)->tag >> 16) & 0xff,
 		(((FPST1 *) fpst)->tag >> 8) & 0xff,
 		((FPST1 *) fpst)->tag & 0xff,
 		((FPST1 *) fpst)->script_lang_index);
 	 else if (!complained)
-	    IError("'%c%c%c%c' has a script index out of bounds: %d",
+	    ErrorMsg(2,"'%c%c%c%c' has a script index out of bounds: %d\n",
 		   (((FPST1 *) fpst)->tag >> 24),
 		   (((FPST1 *) fpst)->tag >> 16) & 0xff,
 		   (((FPST1 *) fpst)->tag >> 8) & 0xff,
 		   ((FPST1 *) fpst)->tag & 0xff,
 		   ((FPST1 *) fpst)->script_lang_index);
 	 else
-	    IError("'%c%c%c%c' has a script index out of bounds: %d\n",
+	    ErrorMsg(2,"'%c%c%c%c' has a script index out of bounds: %d\n",
 		   (((FPST1 *) fpst)->tag >> 24),
 		   (((FPST1 *) fpst)->tag >> 16) & 0xff,
 		   (((FPST1 *) fpst)->tag >> 8) & 0xff,
@@ -6016,7 +6009,7 @@ static void SFDParseChainContext(AFILE *sfd,SplineFont *sf,FPST *fpst,
       fpst->subtable =
 	 SFFindLookupSubtableAndFreeName(sf, SFDReadUTF7Str(sfd));
       if (!fpst->subtable)
-	 LogError(_("Missing Subtable definition found in chained context"));
+	 ErrorMsg(2,"Missing Subtable definition found in chained context\n");
       else
 	 fpst->subtable->fpst=fpst;
    }
@@ -7302,7 +7295,7 @@ static bool SFD_GetFontMetaData(AFILE *sfd,
       int temp;
 
       if (sf->sfd_version < 2) {
-	 IError("Lookups should not happen in version 1 sfd files.");
+	 ErrorMsg(3,"Lookups should not happen in version 1 sfd files.\n");
 	 exit(1);
       }
       otl=chunkalloc(sizeof(OTLookup));
@@ -7374,7 +7367,7 @@ static bool SFD_GetFontMetaData(AFILE *sfd,
       int old=strchr(tok, '2')==NULL;
 
       if ((sf->sfd_version < 2) != old) {
-	 IError("Version mixup in Kerning Classes of sfd file.");
+	 ErrorMsg(3,"Version mixup in Kerning Classes of sfd file.\n");
 	 exit(1);
       }
       kc=chunkalloc(old ? sizeof(KernClass1) : sizeof(KernClass));
@@ -7397,11 +7390,9 @@ static bool SFD_GetFontMetaData(AFILE *sfd,
 	    kc->subtable->kc=kc;
 	 else {
 	    if (kc->subtable==NULL)
-	       LogError(_
-			("Bad SFD file, missing subtable in kernclass defn.\n"));
+	       ErrorMsg(2,"Bad SFD file, missing subtable in kernclass defn.\n");
 	    else
-	       LogError(_
-			("Bad SFD file, two kerning classes assigned to the same subtable: %s\n"),
+	       ErrorMsg(2,"Bad SFD file, two kerning classes assigned to the same subtable: %s\n",
 			kc->subtable->subtable_name);
 	    kc->subtable=NULL;
 	 }
@@ -7469,7 +7460,7 @@ static bool SFD_GetFontMetaData(AFILE *sfd,
 	 fpst=chunkalloc(sizeof(FPST1));
       }
       if ((sf->sfd_version < 2) != old) {
-	 IError("Version mixup in FPST of sfd file.");
+	 ErrorMsg(3,"Version mixup in FPST of sfd file.\n");
 	 exit(1);
       }
       if (d->lastfp==NULL)
@@ -7500,7 +7491,7 @@ static bool SFD_GetFontMetaData(AFILE *sfd,
 	 sm=chunkalloc(sizeof(ASM1));
       }
       if ((sf->sfd_version < 2) != old) {
-	 IError("Version mixup in state machine of sfd file.");
+	 ErrorMsg(3,"Version mixup in state machine of sfd file.\n");
 	 exit(1);
       }
       if (d->lastsm==NULL)
@@ -7705,8 +7696,7 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 	 int imax, jmax, kmax;
 
 	 if (sf->sfd_version >= 2) {
-	    IError
-	       ("Script lang lists should not happen in version 2 sfd files.");
+	    ErrorMsg(3,"Script lang lists should not happen in version 2 sfd files.\n");
 	    exit(1);
 	 }
 	 getint(sfd, &imax);
@@ -7862,7 +7852,7 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 	 struct table_ordering *ord;
 
 	 if (sfdversion >= 2) {
-	    IError("Table ordering specified in version 2 sfd file.\n");
+	    ErrorMsg(3,"Table ordering specified in version 2 sfd file.\n");
 	    exit(1);
 	 }
 	 ord=chunkalloc(sizeof(struct table_ordering));
@@ -8014,7 +8004,7 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 
 	 getint(sfd, &charcnt);
 	 if (charcnt < enc->char_cnt) {
-	    IError("SFD file specifies too few slots for its encoding.\n");
+	    ErrorMsg(3,"SFD file specifies too few slots for its encoding.\n");
 	    exit(1);
 	 }
 	 if (getint(sfd, &realcnt) != 1 || realcnt==-1)
@@ -8126,7 +8116,7 @@ static double SFDStartsCorrectly(AFILE *sfd,char *tok) {
    if (dval != 0 && dval != 1 && dval != 2.0 && dval != 3.0
        && !(dval > 3.09 && dval <= 3.11)
        && dval != 4.0) {
-      LogError("Bad SFD Version number %.1f", dval);
+      ErrorMsg(2,"Bad SFD Version number %.1f", dval);
       return (-1);
    }
    ch=nlgetc(sfd);

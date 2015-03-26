@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 3860 2015-03-25 14:30:43Z mskala $ */
+/* $Id: macbinary.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -292,7 +292,7 @@ static struct resource *PSToResources(AFILE *res,AFILE *pfbfile) {
    cnt=0;
    while (1) {
       if (agetc(pfbfile) != 0x80) {
-	 IError("We made a pfb file, but didn't get one. Hunh?");
+	 ErrorMsg(2,"We made a pfb file, but didn't get one.\n");
 	 return (NULL);
       }
       type=agetc(pfbfile);
@@ -759,12 +759,10 @@ uint16 _MacStyleCode(char *styles, SplineFont *sf, uint16 * psstylecode) {
    }
    if ((psstyle & psf_extend) && (psstyle & psf_condense)) {
       if (sf != NULL)
-	 LogError(_
-		  ("Warning: %s(%s) is both extended and condensed. That's impossible.\n"),
+	 ErrorMsg(2,"Warning: %s(%s) is both extended and condensed. That's impossible.\n",
 		  sf->fontname, sf->origname);
       else
-	 LogError(_
-		  ("Warning: Both extended and condensed. That's impossible.\n"));
+	 ErrorMsg(2,"Warning: Both extended and condensed. That's impossible.\n");
       psstyle &= ~psf_extend;
       stylecode &= ~sf_extend;
    }
@@ -969,9 +967,10 @@ static uint32 SFToFOND(AFILE *res,SplineFont *sf,uint32 id,int dottf,
        strmatch(map->enc->enc_name, "macintosh") != 0 &&
        strmatch(map->enc->enc_name, "macroman") != 0) {
       if (!dottf)
-	 ff_post_notice(_("The generated font won't work with ATM"),
-			_
-			("ATM requires that fonts be encoded with the Macintosh Latin encoding. This postscript font will print fine, but only the bitmap versions will be displayed on the screen"));
+	 ErrorMsg(1,"ATM requires that fonts be encoded with the Macintosh "
+	            "Latin encoding.  This postscript font will print fine, "
+	            "but only the bitmap versions will be displayed on the "
+	            "screen.\n");
       glyphenc=aftell(res);
       afseek(res, geoffset, SEEK_SET);
       putlong(res, glyphenc - geoffset + 2);
@@ -1377,9 +1376,10 @@ static uint32 SFsToFOND(AFILE *res,struct sflist *sfs,uint32 id,int format,
        strmatch(psfaces[0]->map->enc->enc_name, "macintosh") != 0 &&
        strmatch(psfaces[0]->map->enc->enc_name, "macroman") != 0) {
       if (format==ff_pfbmacbin)
-	 ff_post_notice(_("The generated font won't work with ATM"),
-			_
-			("ATM requires that fonts be encoded with the Macintosh Latin encoding. This postscript font will print fine, but only the bitmap versions will be displayed on the screen"));
+	 ErrorMsg(1,"ATM requires that fonts be encoded with the Macintosh "
+	            "Latin encoding.  This postscript font will print fine, "
+	            "but only the bitmap versions will be displayed on the "
+	            "screen.\n");
       glyphenc=aftell(res);
       afseek(res, geoffset, SEEK_SET);
       putlong(res, glyphenc - geoffset + 2);
@@ -1403,11 +1403,8 @@ static uint32 SFsToFOND(AFILE *res,struct sflist *sfs,uint32 id,int format,
 static void DumpResourceMap(AFILE *res,struct resourcetype *rtypes,
 			    enum fontformat format) {
    uint32 rfork_base=format >= ff_ttfdfont ? 0 : 128;	/* space for mac binary header */
-
    uint32 resource_base=rfork_base + 0x100;
-
    uint32 rend, rtypesstart, mend, namestart;
-
    int i, j;
 
    afseek(res, 0, SEEK_END);
@@ -2119,7 +2116,7 @@ static SplineFont *SearchPostScriptResources(AFILE *f,long rlistpos,
 
    pfb=atmpfile();
    if (pfb==NULL) {
-      LogError(_("Can't open temporary file for postscript output\n"));
+      ErrorMsg(2,"Can't open temporary file for postscript output\n");
       afseek(f, here, SEEK_SET);
       free(offsets);
       return (NULL);
@@ -2140,7 +2137,7 @@ static SplineFont *SearchPostScriptResources(AFILE *f,long rlistpos,
 	 if (rsrcids[j]==id)
 	    break;
       if (j==subcnt) {
-	 LogError(_("Missing POST resource %u\n"), id);
+	 ErrorMsg(2,"Missing POST resource %u\n", id);
 	 break;
       }
       id=id + 1;
@@ -2179,7 +2176,7 @@ static SplineFont *SearchPostScriptResources(AFILE *f,long rlistpos,
 	    max=0x800;
 	 buffer=malloc(max);
 	 if (buffer==NULL) {
-	    LogError(_("Out of memory\n"));
+	    ErrorMsg(3,"Out of memory\n");
 	    exit(1);
 	 }
       }
@@ -2293,8 +2290,7 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
 	    char *fn=copy(filename);
 
 	    fn[lparen - filename]='\0';
-	    ff_post_error(_("Not in Collection"), _("%s is not in %.100s"),
-			  find, fn);
+	    ErrorMsg(2,"Not in collection:  %s is not in %.100s\n",find,fn);
 	    free(fn);
 	 }
 	 free(find);
@@ -2322,7 +2318,7 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
 
       ttf=atmpfile();
       if (ttf==NULL) {
-	 LogError(_("Can't open temporary file for truetype output.\n"));
+	 ErrorMsg(2,"Can't open temporary file for truetype output.\n");
 	 continue;
       }
 
@@ -2847,9 +2843,8 @@ static FOND *PickFOND(FOND *fondlist,char *filename,char **name,
       if (which==-1) {
 	 char *fn=copy(filename);
 
-	 fn[lparen - filename]='\0';
-	 ff_post_error(_("Not in Collection"), _("%s is not in %.100s"), find,
-		       fn);
+	 fn[lparen-filename]='\0';
+	    ErrorMsg(2,"Not in collection:  %s is not in %.100s\n",find,fn);
 	 free(fn);
       }
       free(find);
@@ -3004,7 +2999,7 @@ static SplineFont *FindFamilyStyleKerns(SplineFont *into,EncMap *map,
       if (fond->stylekerns[i].style==style)
 	 break;
    if (i==fond->stylekerncnt) {
-      LogError(_("No kerning table for %s\n"), name);
+      ErrorMsg(2,"No kerning table for %s\n", name);
       free(name);
       return (NULL);
    }
@@ -3279,7 +3274,7 @@ static SplineFont *IsResourceInHex(AFILE *f,char *filename,int flags,
    SplineFont *ret;
 
    if (binary==NULL) {
-      LogError(_("can't create temporary file\n"));
+      ErrorMsg(2,"can't create temporary file\n");
       return (NULL);
    }
 
@@ -3464,10 +3459,9 @@ SplineFont *SFReadMacBinary(char *filename, int flags,
    SplineFont *sf=FindResourceFile(filename, flags, openflags, NULL, NULL);
 
    if (sf==NULL)
-      LogError(_("Couldn't find a font file named %s\n"), filename);
+      ErrorMsg(2,"Couldn't find a font file named %s\n", filename);
    else if (sf==(SplineFont *) (-1)) {
-      LogError(_
-	       ("%s is a mac resource file but contains no postscript or truetype fonts\n"),
+      ErrorMsg(2,"%s is a mac resource file but contains no postscript or truetype fonts\n",
 	       filename);
       sf=NULL;
    }

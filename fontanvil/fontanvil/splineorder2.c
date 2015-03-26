@@ -1,4 +1,4 @@
-/* $Id: splineorder2.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: splineorder2.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1556,7 +1556,7 @@ void SplineRefigure2(Spline * spline) {
 
 #ifdef DEBUG
    if (RealNear(from->me.x, to->me.x) && RealNear(from->me.y, to->me.y))
-      IError("Zero length spline created");
+      ErrorMsg(2,"Zero length spline created\n");
 #endif
    if (spline->acceptableextrema)
       old=*spline;
@@ -1580,7 +1580,7 @@ void SplineRefigure2(Spline * spline) {
 	 from->nextcp.x=to->prevcp.x=(from->nextcp.x + to->prevcp.x) / 2;
 	 from->nextcp.y=to->prevcp.y=(from->nextcp.y + to->prevcp.y) / 2;
       } else {
-	 IError("Invalid 2nd order spline in SplineRefigure2");
+	 ErrorMsg(2,"Invalid 2nd order spline in SplineRefigure2\n");
 #ifndef GWW_TEST
 	 /* I don't want these to go away when I'm debugging. I want to */
 	 /*  know how I got them */
@@ -1619,7 +1619,7 @@ void SplineRefigure2(Spline * spline) {
 	 spline->islinear=true;	/* This seems extremely unlikely... */
    }
    if (isnan(ysp->b) || isnan(xsp->b))
-      IError("NaN value in spline creation");
+      ErrorMsg(2,"NaN value in spline creation\n");
    LinearApproxFree(spline->approx);
    spline->approx=NULL;
    spline->knowncurved=false;

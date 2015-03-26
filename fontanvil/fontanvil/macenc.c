@@ -1,4 +1,4 @@
-/* $Id: macenc.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: macenc.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1198,7 +1198,7 @@ char *MacStrToUtf8(const char *str, int macenc, int maclang) {
    }
 
    if (macenc < 0 || macenc > 31) {
-      IError("Invalid mac encoding %d.\n", macenc);
+      ErrorMsg(2,"Invalid mac encoding %d.\n", macenc);
       return (NULL);
    }
    table=MacEncLangToTable(macenc, maclang);

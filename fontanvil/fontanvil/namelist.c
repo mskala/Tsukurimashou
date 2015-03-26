@@ -1,4 +1,4 @@
-/* $Id: namelist.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: namelist.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -334,15 +334,12 @@ NameList *LoadNamelist(char *filename) {
 	    if (strcmp(nl2->title, pt)==0)
 	       break;
 	 if (nl2==NULL) {
-	    ff_post_error(_("NameList base missing"),
-			  _
-			  ("NameList %s based on %s which could not be found"),
+	    ErrorMsg(2,"NameList %s based on %s which could not be found\n",
 			  nl->title, pt);
 	    NameListFree(nl);
 	    return (NULL);
 	 } else if (nl->basedon != NULL) {
-	    ff_post_error(_("NameList based twice"),
-			  _("NameList %s based on two NameLists"), nl->title);
+	    ErrorMsg(2,"NameList %s based on two NameLists\n",nl->title);
 	    NameListFree(nl);
 	    return (NULL);
 	 }
@@ -352,8 +349,7 @@ NameList *LoadNamelist(char *filename) {
 	 for (test=pt; *test != ' ' && *test != '\t' && *test != '\0';
 	      ++test);
 	 if (*test=='\0') {
-	    ff_post_error(_("NameList parsing error"),
-			  _("Missing rename \"to\" name %s\n%s"), nl->title,
+	    ErrorMsg(2,"Missing rename \"to\" name %s\n%s\n",nl->title,
 			  buffer);
 	    NameListFree(nl);
 	    return (NULL);
@@ -363,8 +359,7 @@ NameList *LoadNamelist(char *filename) {
 	 if ((test[0]=='-' || test[0]=='=') && test[1]=='>')
 	    for (test += 2; *test==' ' || *test=='\t'; ++test);
 	 if (*test=='\0') {
-	    ff_post_error(_("NameList parsing error"),
-			  _("Missing rename \"to\" name %s\n%s"), nl->title,
+	    ErrorMsg(2,"Missing rename \"to\" name %s\n%s\n",nl->title,
 			  buffer);
 	    NameListFree(nl);
 	    return (NULL);
@@ -383,9 +378,7 @@ NameList *LoadNamelist(char *filename) {
 	    pt += 2;
 	 uni=strtol(pt, &end, 16);
 	 if (end==pt || uni < 0 || uni >= unicode4_size) {
-	    ff_post_error(_("NameList parsing error"),
-			  _("Bad unicode value when parsing %s\n%s"),
-			  nl->title, buffer);
+	    ErrorMsg(2,"Bad unicode value when parsing %s\n%s\n",nl->title, buffer);
 	    NameListFree(nl);
 	    return (NULL);
 	 }
@@ -393,9 +386,8 @@ NameList *LoadNamelist(char *filename) {
 	 while (*pt==' ' || *pt==';' || *pt=='\t')
 	    ++pt;
 	 if (*pt=='\0') {
-	    ff_post_error(_("NameList parsing error"),
-			  _("Missing name when parsing %s for unicode %x"),
-			  nl->title, uni);
+	    ErrorMsg(2,"Missing name when parsing %s for Unicode %x\n",
+	             nl->title, uni);
 	    NameListFree(nl);
 	    return (NULL);
 	 }
@@ -404,9 +396,8 @@ NameList *LoadNamelist(char *filename) {
 		*test=='(' || *test=='[' || *test=='{' || *test=='<'
 		|| *test==')' || *test==']' || *test=='}'
 		|| *test=='>' || *test=='%' || *test=='/') {
-	       ff_post_error(_("NameList parsing error"),
-			     _("Bad name when parsing %s for unicode %x"),
-			     nl->title, uni);
+               ErrorMsg(2,"Bad name when parsing %s for unicode %x\n",
+                        nl->title,uni);
 	       NameListFree(nl);
 	       return (NULL);
 	    }
@@ -426,9 +417,8 @@ NameList *LoadNamelist(char *filename) {
 	 if (nl->unicode[up][ub][uc]==NULL)
 	    nl->unicode[up][ub][uc]=copy(pt);
 	 else {
-	    ff_post_error(_("NameList parsing error"),
-			  _("Multiple names when parsing %s for unicode %x"),
-			  nl->title, uni);
+	    ErrorMsg(2,"Multiple names when parsing %s for unicode %x\n",
+	             nl->title,uni);
 	    NameListFree(nl);
 	    return (NULL);
 	 }
@@ -493,18 +483,12 @@ void LoadNamelistDir(char *dir) {
 const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
 				  NameList * old, NameList * new,
 				  char **sofar) {
-   int i, up, ub, uc, ch, gid;
-
-   char space[80];		/* glyph names are supposed to be less<=31 chars */
-
+   int i,up,ub,uc,ch,gid;
+   char space[80];		/* glyph names are supposed to be <=31 chars */
    char tempbuf[32];
-
-   char *pt, *start, *opt, *oend;
-
+   char *pt,*start,*opt,*oend;
    const char *newsubname;
-
    SplineChar *tempsc;
-
    NameList *nl;
 
    if (sc->unicodeenc != -1) {
@@ -589,9 +573,7 @@ const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
 static void BuildHash(struct glyphnamehash *hash,SplineFont *sf,
 		      char **oldnames) {
    int gid, hv;
-
    SplineChar *sc;
-
    struct glyphnamebucket *new;
 
    memset(hash, 0, sizeof(*hash));
@@ -632,11 +614,9 @@ static void safestrcpy(char *to,const char *from) {
 
 static char *DoReplacements(struct bits *bits,int bc,char **_src,
 			    char *start) {
-   int offset=start - *_src;
-
-   int diff, i, off, allsmall=1, len;
-
-   char *ret, *last, *last_orig;
+   int offset=start-*_src;
+   int diff,i,off,allsmall=1,len;
+   char *ret,*last,*last_orig;
 
    for (diff=i=0; i < bc; ++i) {
       off=strlen(bits[i].rpl->name) - (bits[i].end - bits[i].start);
@@ -677,10 +657,8 @@ static char *DoReplacements(struct bits *bits,int bc,char **_src,
 
 static void ReplaceByHash(char **_src,struct glyphnamehash *hash) {
    struct bits bits[40];
-
-   int bc, ch;
-
-   char *start, *end;
+   int bc,ch;
+   char *start,*end;
 
    start=*_src;
    if (start==NULL)
@@ -711,18 +689,12 @@ static void ReplaceByHash(char **_src,struct glyphnamehash *hash) {
 }
 
 static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
-   int gid, i, j, h;
-
-   SplineChar *sc, *rpl;
-
+   int gid,i,j,h;
+   SplineChar *sc,*rpl;
    PST *pst;
-
    FPST *fpst;
-
    ASM *sm;
-
    struct glyphvariants *gv;
-
    KernClass *kc;
 
    for (gid=0; gid < sf->glyphcnt; ++gid)
@@ -814,15 +786,10 @@ static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
 
 char **SFTemporaryRenameGlyphsToNamelist(SplineFont *sf, NameList * new) {
    int gid;
-
    char buffer[40];
-
    const char *name;
-
    SplineChar *sc;
-
    char **ret;
-
    struct glyphnamehash hash;
 
    if (new==NULL)
@@ -848,9 +815,7 @@ char **SFTemporaryRenameGlyphsToNamelist(SplineFont *sf, NameList * new) {
 
 void SFTemporaryRestoreGlyphNames(SplineFont *sf, char **former) {
    int gid;
-
    SplineChar *sc;
-
    struct glyphnamehash hash;
 
    for (gid=0; gid < sf->glyphcnt; ++gid)
@@ -873,7 +838,6 @@ void SFTemporaryRestoreGlyphNames(SplineFont *sf, char **former) {
 
 void SFRenameGlyphsToNamelist(SplineFont *sf, NameList * new) {
    char **ret;
-
    int gid;
 
    if (new==NULL)

@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: scstyles.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ static void SSCPValidate(SplineSet *ss) {
 	 if (!sp->nonextcp
 	     && (sp->nextcp.x != nsp->prevcp.x
 		 || sp->nextcp.y != nsp->prevcp.y))
-	    IError("Invalid 2nd order");
+	    ErrorMsg(2,"Invalid 2nd order\n");
 	 sp=nsp;
 	 if (sp==ss->first)
 	    break;
@@ -2762,8 +2762,7 @@ static void SmallCapsPlacePoints(SplineSet *ss,AnchorPoint *aps,
 	       }
 	    }
 	    if (!sp->ticked) {
-	       IError
-		  ("Unticked point in remove space (smallcaps/italic/etc.)");
+	       ErrorMsg(2,"Unticked point in remove space (smallcaps/italic/etc.)\n");
 	       ptpos[sp->ptindex].new=ptpos[sp->ptindex].old;
 	    }
 	 }
@@ -3033,7 +3032,7 @@ static void LowerCaseRemoveSpace(SplineSet *ss,AnchorPoint *aps,
 	    /*  place as the previous point (A glyph which is as high as */
 	    /*  the xheight, for instance), so we can afford to ignore it */ ;
 	 else if (i==0 || i==fix->cnt - 1)
-	    IError("Failed to position end points in LowerCaseRemoveSpace");
+	    ErrorMsg(2,"Failed to position end points in LowerCaseRemoveSpace\n");
 	 for (j=i + 1; j < fix->cnt; ++j)
 	    fix->maps[j - 1]=fix->maps[j];
 	 --(fix->cnt);
@@ -3043,7 +3042,7 @@ static void LowerCaseRemoveSpace(SplineSet *ss,AnchorPoint *aps,
 
    for (j=0; j < tot; ++j) {
       if (overlaps[j].new_start==-10000) {
-	 IError("Hint zone not positioned");
+	 ErrorMsg(2,"Hint zone not positioned\n");
 	 return;
       }
    }
@@ -3796,7 +3795,7 @@ static void InterpolateControlPointsAndSet(struct ptmoves *ptmoves,int cnt) {
       if (nsp->noprevcp)
 	 nsp->prevcp=ptmoves[i + 1].newpos;
       if (isnan(ptmoves[i].newpos.y))
-	 IError("Nan value in InterpolateControlPointsAndSet\n");
+	 ErrorMsg(2,"Nan value in InterpolateControlPointsAndSet\n");
       if (sp->me.y != nsp->me.y) {
 	 sp->nextcp.y=ptmoves[i].newpos.y + (sp->nextcp.y - sp->me.y) *
 	    (ptmoves[i + 1].newpos.y - ptmoves[i].newpos.y) /
@@ -3814,7 +3813,7 @@ static void InterpolateControlPointsAndSet(struct ptmoves *ptmoves,int cnt) {
 	 }
       }
       if (isnan(sp->nextcp.y))
-	 IError("Nan value in InterpolateControlPointsAndSet\n");
+	 ErrorMsg(2,"Nan value in InterpolateControlPointsAndSet\n");
    }
    for (i=0; i < cnt; ++i)
       ptmoves[i].sp->me=ptmoves[i].newpos;
@@ -4272,7 +4271,7 @@ static SplineSet *LCG_HintedEmboldenHook(SplineSet *ss_expanded,
 	       }
 	       ptmoves[j].touched=true;
 	       if (isnan(ptmoves[j].newpos.y))
-		  IError("Nan value in LCG_HintedEmboldenHook\n");
+		  ErrorMsg(2,"Nan value in LCG_HintedEmboldenHook\n");
 	    }
 	 }
       InterpolateControlPointsAndSet(ptmoves, cnt);
@@ -4940,7 +4939,7 @@ static SplineSet *MakeBottomItalicSerif(double stemwidth,double endx,
       if ((temp=ss->first->me.x - ss->last->me.x) < 0)
 	 temp=-temp;
       if (seriftype==0 && !RealWithin(temp, stemwidth, .1))
-	 IError("Stem width doesn't match serif");
+	 ErrorMsg(2,"Stem width doesn't match serif\n");
    }
    return (ss);
 }

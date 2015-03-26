@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: scripting.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -240,9 +240,9 @@ static void traceback(Context *c) {
 	 return;
       }
       if (cnt==1)
-	 LogError(_("Called from...\n"));
+	 ErrorMsg(2,"Called from...\n");
       if (cnt > 0)
-	 LogError(_(" %s: line %d\n"), c->filename, c->lineno);
+	 ErrorMsg(2," %s: line %d\n", c->filename, c->lineno);
       calldatafree(c);
       if (c->err_env != NULL)
 	 longjmp(*c->err_env, 1);
@@ -254,15 +254,15 @@ static void traceback(Context *c) {
 
 static void showtoken(Context *c,enum token_type got) {
    if (got==tt_name || got==tt_string)
-      LogError(" \"%s\"\n", c->tok_text);
+      ErrorMsg(2," \"%s\"\n", c->tok_text);
    else if (got==tt_number)
-      LogError(" %d (0x%x)\n", c->tok_val.u.ival, c->tok_val.u.ival);
+      ErrorMsg(2," %d (0x%x)\n", c->tok_val.u.ival, c->tok_val.u.ival);
    else if (got==tt_unicode)
-      LogError(" 0u%x\n", c->tok_val.u.ival);
+      ErrorMsg(2," 0u%x\n", c->tok_val.u.ival);
    else if (got==tt_real)
-      LogError(" %g\n", c->tok_val.u.fval);
+      ErrorMsg(2," %g\n", c->tok_val.u.fval);
    else
-      LogError("\n");
+      ErrorMsg(2,"\n");
    traceback(c);
 }
 
@@ -271,10 +271,10 @@ static void expect(Context *c,enum token_type expected,enum token_type got) {
       if (verbose > 0)
 	 fflush(stdout);
       if (c->interactive)
-	 LogError(_("Error: Expected %s, got %s"),
+	 ErrorMsg(2,"Error: Expected %s, got %s\n",
 		  toknames[expected], toknames[got]);
       else
-	 LogError(_("%s: %d Expected %s, got %s"),
+	 ErrorMsg(2,"%s: %d Expected %s, got %s\n",
 		  c->filename, c->lineno, toknames[expected], toknames[got]);
       showtoken(c, got);
    }
@@ -284,9 +284,9 @@ static void unexpected(Context *c,enum token_type got) {
    if (verbose > 0)
       fflush(stdout);
    if (c->interactive)
-      LogError(_("Error: Unexpected %s found"), toknames[got]);
+      ErrorMsg(2,"Error: Unexpected %s found\n", toknames[got]);
    else
-      LogError(_("%s: %d Unexpected %s found"),
+      ErrorMsg(2,"%s: %d Unexpected %s found\n",
 	       c->filename, c->lineno, toknames[got]);
    showtoken(c, got);
 }
@@ -302,11 +302,11 @@ void ScriptError(Context * c, const char *msg) {
    if (verbose > 0)
       fflush(stdout);
    if (c->interactive)
-      LogError("Error: %s\n", t1);
+      ErrorMsg(2,"Error: %s\n", t1);
    else if (c->lineno != 0)
-      LogError(_("%s line: %d %s\n"), ufile, c->lineno, t1);
+      ErrorMsg(2,"%s line: %d %s\n", ufile, c->lineno, t1);
    else
-      LogError("%s: %s\n", ufile, t1);
+      ErrorMsg(2,"%s: %s\n", ufile, t1);
    free(ufile);
    free(t1);
    traceback(c);
@@ -320,11 +320,11 @@ void ScriptErrorString(Context * c, const char *msg, const char *name) {
    if (verbose > 0)
       fflush(stdout);
    if (c->interactive)
-      LogError("Error: %s: %s\n", t1, t2);
+      ErrorMsg(2,"Error: %s: %s\n", t1, t2);
    else if (c->lineno != 0)
-      LogError(_("%s line: %d %s: %s\n"), ufile, c->lineno, t1, t2);
+      ErrorMsg(2,"%s line: %d %s: %s\n", ufile, c->lineno, t1, t2);
    else
-      LogError("%s: %s: %s\n", ufile, t1, t2);
+      ErrorMsg(2,"%s: %s: %s\n", ufile, t1, t2);
    free(ufile);
    free(t1);
    free(t2);
@@ -346,11 +346,11 @@ void ScriptErrorF(Context * c, const char *format, ...) {
    if (verbose > 0)
       fflush(stdout);
    if (c->interactive)
-      LogError(_("Error: %s\n"), errbuf);
+      ErrorMsg(2,"Error: %s\n", errbuf);
    else if (c->lineno != 0)
-      LogError(_("%s line: %d %s\n"), ufile, c->lineno, errbuf);
+      ErrorMsg(2,"%s line: %d %s\n", ufile, c->lineno, errbuf);
    else
-      LogError("%s: %s\n", ufile, errbuf);
+      ErrorMsg(2,"%s: %s\n", ufile, errbuf);
    free(ufile);
    traceback(c);
 }
@@ -450,7 +450,7 @@ static SplineChar *GetOneSelChar(Context *c) {
 }
 
 static void prterror(void *foo,char *msg,int pos) {
-   afprintf(stderr, "%s\n", msg);
+   ErrorMsg(2,"%s\n", msg);
 }
 
 static void TableAddInstrs(SplineFont *sf,uint32 tag,int replace,
@@ -929,8 +929,7 @@ static void Reblend(Context *c,int tonew) {
 	ScriptError(c, "Bad type of array element");
       blends[i]=c->a.vals[1].u.aval->vals[i].u.ival / 65536.0;
       if (blends[i] < mm->axismaps[i].min || blends[i] > mm->axismaps[i].max)
-	LogError(_
-		 ("Warning: %dth axis value (%g) is outside the allowed range [%g,%g]\n"),
+	ErrorMsg(2,"Warning: %dth axis value (%g) is outside the allowed range [%g,%g]\n",
 		 i, blends[i], mm->axismaps[i].min, mm->axismaps[i].max);
    }
    c->curfv=MMCreateBlendedFont(mm, c->curfv, blends, tonew);
@@ -1199,8 +1198,7 @@ static void bAddDHint(Context *c) {
 	 SCGuessDHintInstances(sc, ly_fore, d);
 	 if (d->where==NULL) {
 	    DStemInfoFree(d);
-	    LogError(_
-		     ("Warning: could not figure out where the hint (%d,%d %d,%d %d,%d) is valid\n"),
+	    ErrorMsg(2,"Warning: could not figure out where the hint (%d,%d %d,%d %d,%d) is valid\n",
 		     args[0], args[1], args[2], args[3], args[4], args[5]);
 	 } else
 	    MergeDStemInfo(sc->parent, &sc->dstem, d);
@@ -1208,8 +1206,7 @@ static void bAddDHint(Context *c) {
 	 any=true;
       }
    if (!any)
-      LogError(_
-	       ("Warning: No characters selected in AddDHint(%d,%d %d,%d %d,%d)\n"),
+      ErrorMsg(2,"Warning: No characters selected in AddDHint(%d,%d %d,%d %d,%d)\n",
 	       args[0], args[1], args[2], args[3], args[4], args[5]);
 }
 
@@ -1262,7 +1259,7 @@ static void _AddHint(Context *c,int ish) {
 	 any=true;
       }
    if (!any)
-      LogError(_("Warning: No characters selected in AddHint(%d,%d,%d)\n"),
+      ErrorMsg(2,"Warning: No characters selected in AddHint(%d,%d,%d)\n",
 	       ish, start, width);
 }
 
@@ -3107,7 +3104,7 @@ static void bCut(Context *c) {
 }
 
 static void bDebugCrashFontAnvil(Context *c) {
-   afprintf(stderr,
+   ErrorMsg(3,
 	   "FontAnvil is crashing because you asked it to using the DebugCrashFontAnvil command\n");
    int *ptr=NULL;
 
@@ -3608,18 +3605,17 @@ static void bGenerateFamily(Context *c) {
 	       if (strcmp(fonts->vals[i].u.sval, fv->sf->fontname)==0)
 		  break;
       if (fv==NULL) {
-	 LogError("%s\n", fonts->vals[i].u.sval);
+	 ErrorMsg(2,"%s\n", fonts->vals[i].u.sval);
 	 ScriptError(c, "The above font is not loaded");
       }
       if (sf==NULL)
 	 sf=fv->sf;
       if (strcmp(fv->sf->familyname, sf->familyname) != 0)
-	 LogError(_
-		  ("Warning: %s has a different family name than does %s (GenerateFamily)\n"),
+	 ErrorMsg(2,"Warning: %s has a different family name than does %s (GenerateFamily)\n",
 		  fv->sf->fontname, sf->fontname);
       MacStyleCode(fv->sf, &psstyle);
       if (psstyle >= 48) {
-	 LogError("%s(%s)\n", fv->sf->origname, fv->sf->fontname);
+	 ErrorMsg(2,"%s(%s)\n", fv->sf->origname, fv->sf->fontname);
 	 ScriptError(c, "A font can't be both Condensed and Expanded");
       }
       added=false;
@@ -3649,7 +3645,7 @@ static void bGenerateFamily(Context *c) {
 		  familysfs[fc][psstyle]=fv->sf;
 		  added=true;
 	       } else {
-		  LogError(_("%s(%s) and %s(%s) 0x%x in FOND %s\n"),
+		  ErrorMsg(2,"%s(%s) and %s(%s) 0x%x in FOND %s\n",
 			   familysfs[fc][psstyle]->origname,
 			   familysfs[fc][psstyle]->fontname, fv->sf->origname,
 			   fv->sf->fontname, psstyle, fv->sf->fondname);
@@ -4151,7 +4147,7 @@ if (c->a.vals[1].type != v_str)
 		    ret->vals[cnt].type=v_void;
 /* The important things here should not be translated. We hope the user will */
 /*  never see this. Let's not translate it at all */
-		    LogError(_("Unexpected PST type in GetPosSub (%d).\n"),
+		    ErrorMsg(2,"Unexpected PST type in GetPosSub (%d).\n",
 			     pst->type);
 		    break;
 		 case pst_position:
@@ -5538,7 +5534,7 @@ static void bPostNotice(Context *c) {
    loc=c->a.vals[1].u.sval;
    t1=script2utf8_copy(loc);
    loc=utf82def_copy(t1);
-   afprintf(stderr, "%s\n", loc);
+   ErrorMsg(1,"%s\n", loc);
    free(loc);
    free(t1);
 }
@@ -6271,7 +6267,7 @@ static void bSaveTableToFile(Context *c) {
 	tab=tab->next);
    if (tab==NULL)
       ScriptErrorString(c, "No preserved table matches tag: ", tstr);
-   fwrite(tab->data, 1, tab->len, file);
+   afwrite(tab->data, 1, tab->len, file);
    afclose(file);
 }
 
@@ -8173,7 +8169,7 @@ static void bWriteStringToFile(Context *c) {
       c->return_val.u.ival=-1;
    else {
       c->return_val.u.ival =
-	 fwrite(c->a.vals[1].u.sval, 1, strlen(c->a.vals[1].u.sval), f);
+	 afwrite(c->a.vals[1].u.sval, 1, strlen(c->a.vals[1].u.sval), f);
       afclose(f);
    }
 }
@@ -8683,16 +8679,15 @@ static struct builtins {
 static void expr(Context *,Val *val);
 
 static int AddScriptLine(AFILE *script,const char *line) {
-   fpos_t pos;
-
-   if (fgetpos(script, &pos))
-      return -1;
-
-   fputs(line, script);
+   long pos;
+   
+   if ((pos=aftell(script))<0)
+     return -1;
+   afputs(line, script);
 #   ifndef _NO_LIBREADLINE
-   fputs("\n\n", script);
+   afputs("\n\n", script);
 #   endif
-   fsetpos(script, &pos);
+   afseek(script,pos,SEEK_SET);
    return agetc(script);
 }
 
@@ -8792,7 +8787,7 @@ static int cgetc(Context *c) {
 
 static void cungetc(int ch,Context *c) {
    if (c->ungotch)
-      IError("Attempt to unget two characters\n");
+      ErrorMsg(2,"Attempt to unget two characters\n");
    c->ungotch=ch;
 }
 
@@ -9120,7 +9115,7 @@ static enum token_type ff_NextToken(Context *c) {
 		 cungetc(ch, c);
 	      break;
 	   default:
-	      LogError(_("%s:%d Unexpected character %c (%d)\n"),
+	      ErrorMsg(2,"%s:%d Unexpected character %c (%d)\n",
 		       c->filename, c->lineno, ch, ch);
 	      traceback(c);
 	 }
@@ -9132,7 +9127,7 @@ static enum token_type ff_NextToken(Context *c) {
 
 static void ff_backuptok(Context *c) {
    if (c->backedup)
-      IError("%s:%d Internal Error: Attempt to back token twice\n",
+      ErrorMsg(2,"%s:%d Internal Error: Attempt to back token twice\n",
 	     c->filename, c->lineno);
    c->backedup=true;
 }

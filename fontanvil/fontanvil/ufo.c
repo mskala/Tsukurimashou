@@ -1,4 +1,4 @@
-/* $Id: ufo.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: ufo.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1008,7 +1008,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
    format=xmlGetProp(glyph, (xmlChar *) "format");
    if (xmlStrcmp(glyph->name, (const xmlChar *) "glyph") != 0 ||
        (format != NULL && xmlStrcmp(format, (xmlChar *) "1") != 0)) {
-      LogError(_("Expected glyph file with format==1"));
+      ErrorMsg(2,"Expected glyph file with format==1\n");
       xmlFreeDoc(doc);
       free(format);
       return (NULL);
@@ -1022,7 +1022,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
       if ((name==NULL)
 	  || ((name != NULL) && (tmpname != NULL)
 	      && (strcmp(glyphname, name) != 0))) {
-	 LogError(_("Bad glyph name."));
+	 ErrorMsg(2,"Bad glyph name.\n");
 	 if (tmpname != NULL) {
 	    free(tmpname);
 	    tmpname=NULL;
@@ -1121,7 +1121,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 	       RefChar *r;
 
 	       if (base==NULL)
-		  LogError(_("component with no base glyph"));
+		  ErrorMsg(2,"component with no base glyph\n");
 	       else {
 		  r=RefCharCreate();
 		  r->sc=SplineCharCreate(0);
@@ -1512,7 +1512,7 @@ static SplineChar *UFOLoadGlyph(SplineFont *sf,char *glifname,
 
    doc=xmlParseFile(glifname);
    if (doc==NULL) {
-      LogError(_("Bad glif file %s"), glifname);
+      ErrorMsg(2,"Bad glif file %s\n", glifname);
       return (NULL);
    }
    return (_UFOLoadGlyph
@@ -1533,7 +1533,7 @@ static void UFORefFixup(SplineFont *sf,SplineChar *sc) {
    for (r=sc->layers[ly_fore].refs; r != NULL; r=r->next) {
       rsc=SFGetChar(sf, -1, r->sc->name);
       if (rsc==NULL) {
-	 LogError(_("Failed to find glyph %s when fixing up references"),
+	 ErrorMsg(2,"Failed to find glyph %s when fixing up references\n",
 		  r->sc->name);
 	 if (prev==NULL)
 	    sc->layers[ly_fore].refs=r->next;
@@ -1563,13 +1563,13 @@ static void UFOLoadGlyphs(SplineFont *sf,char *glyphdir,int layerdest) {
    doc=xmlParseFile(glyphlist);
    free(glyphlist);
    if (doc==NULL) {
-      LogError(_("Bad contents.plist"));
+      ErrorMsg(2,"Bad contents.plist\n");
       return;
    }
    plist=xmlDocGetRootElement(doc);
    dict=FindNode(plist->children, "dict");
    if (xmlStrcmp(plist->name, (const xmlChar *) "plist") != 0 || dict==NULL) {
-      LogError(_("Expected property list file"));
+      ErrorMsg(2,"Expected property list file\n");
       xmlFreeDoc(doc);
       return;
    }
@@ -1644,7 +1644,7 @@ static void UFOHandleKern(SplineFont *sf,char *basedir,int isv) {
    plist=xmlDocGetRootElement(doc);
    dict=FindNode(plist->children, "dict");
    if (xmlStrcmp(plist->name, (const xmlChar *) "plist") != 0 || dict==NULL) {
-      LogError(_("Expected property list file"));
+      ErrorMsg(2,"Expected property list file\n");
       xmlFreeDoc(doc);
       return;
    }
@@ -1840,7 +1840,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
    int as=-1, ds=-1, em=-1;
 
    if (!libxml_init_base()) {
-      LogError(_("Can't find libxml2."));
+      ErrorMsg(2,"Can't find libxml2.\n");
       return (NULL);
    }
 
@@ -1854,7 +1854,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
    plist=xmlDocGetRootElement(doc);
    dict=FindNode(plist->children, "dict");
    if (xmlStrcmp(plist->name, (const xmlChar *) "plist") != 0 || dict==NULL) {
-      LogError(_("Expected property list file"));
+      ErrorMsg(2,"Expected property list file\n");
       xmlFreeDoc(doc);
       return (NULL);
    }
@@ -1961,8 +1961,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		  /* all bits are set, but this is wrong, OpenType spec says */
 		  /* bits 0, 4-7 and 10-15 must be unset, go see             */
 		  /* http://www.microsoft.com/typography/otspec/os2.htm#fst  */
-		  LogError(_
-			   ("Bad openTypeOS2type key: all bits are set. It will be ignored"));
+		  ErrorMsg(2,"Bad openTypeOS2type key: all bits are set. It will be ignored\n");
 		  sf->pfminfo.fstype=0;
 	       }
 	    } else if (xmlStrcmp(keyname + 11, (xmlChar *) "FamilyClass") ==
@@ -2134,7 +2133,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
       ds=em - as;
    }
    if (em==-1) {
-      LogError(_("This font does not specify unitsPerEm"));
+      ErrorMsg(2,"This font does not specify unitsPerEm\n");
       xmlFreeDoc(doc);
       setlocale(LC_NUMERIC, oldloc);
       SplineFontFree(sf);
@@ -2287,8 +2286,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 			if ((glyphlist =
 			     buildname(glyphdir, "contents.plist"))) {
 			   if (!GFileExists(glyphlist)) {
-			      LogError(_
-				       ("No glyphs directory or no contents file"));
+			      ErrorMsg(2,"No glyphs directory or no contents file\n");
 			   } else {
 			      // Only public.default gets mapped as a foreground layer.
 			      bg=1;
@@ -2346,7 +2344,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		     }
 		  }
 	       } else
-		 LogError(_("layercontents.plist lists no valid layers."));
+		 ErrorMsg(2,"layercontents.plist lists no valid layers.\n");
 
 	       // Free layer names.
 	       for (lcount=0; lcount < layercontentslayercount; lcount++) {
@@ -2364,7 +2362,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
       glyphdir=buildname(basedir, "glyphs");
       glyphlist=buildname(glyphdir, "contents.plist");
       if (!GFileExists(glyphlist)) {
-	 LogError(_("No glyphs directory or no contents file"));
+	 ErrorMsg(2,"No glyphs directory or no contents file\n");
       } else {
 	 UFOLoadGlyphs(sf, glyphdir, ly_fore);
 	 sf->layers[ly_fore].order2=sf->layers[ly_back].order2 =
@@ -2400,7 +2398,7 @@ SplineSet *SplinePointListInterpretGlif(SplineFont *sf, char *filename,
    SplineSet *ss;
 
    if (!libxml_init_base()) {
-      LogError(_("Can't find libxml2."));
+      ErrorMsg(2,"Can't find libxml2.\n");
       return (NULL);
    }
    if (filename != NULL)

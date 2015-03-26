@@ -1,4 +1,4 @@
-/* $Id: tottfvar.c 3859 2015-03-25 14:20:57Z mskala $ */
+/* $Id: tottfvar.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -48,13 +48,9 @@ static int PtNumbersAreSet(SplineChar *sc) {
 static int AssignPtNumbers(MMSet *mm,int gid) {
    /* None of the instances has fixed point numbers. Make them match */
    int cnt=0;
-
    SplineSet **ss;
-
    SplinePoint **sp;
-
    int i;
-
    int allavg, alllines, stillmore, ret=true;
 
    ss=malloc((mm->instance_count + 1) * sizeof(SplineSet *));
@@ -572,7 +568,7 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
 		     rint(16384 * mm->positions[i * mm->axis_count + j]));
       }
    if (aftell(at->cvar) != 8 + cnt * tuple_size)
-      IError("Data offset wrong");
+      ErrorMsg(2,"Data offset wrong\n");
 
    for (i=cnt=0; i < mm->instance_count; ++i)
       if (deltas[i] != NULL) {

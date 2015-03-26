@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: splinefill.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -92,7 +92,7 @@ bigreal TOfNextMajor(Edge * e, EdgeList * es, bigreal sought_m) {
 	 IterateSplineSolve(msp, e->t_mmin, e->t_mmax,
 			    (sought_m + es->mmin) / es->scale);
       if (new_t==-1)
-	 IError("No Solution");
+	 ErrorMsg(2,"No solution\n");
       e->m_cur =
 	 (((msp->a * new_t + msp->b) * new_t + msp->c) * new_t +
 	  msp->d) * es->scale - es->mmin;
@@ -124,7 +124,7 @@ bigreal TOfNextMajor(Edge * e, EdgeList * es, bigreal sought_m) {
 	 IterateSplineSolve(msp, e->t_mmin, e->t_mmax,
 			    (sought_m + es->mmin) / es->scale);
       if (new_t==-1)
-	 IError("No Solution");
+	 ErrorMsg(2,"No solution\n");
       e->m_cur =
 	 (((msp->a * new_t + msp->b) * new_t + msp->c) * new_t +
 	  msp->d) * es->scale - es->mmin;
@@ -243,7 +243,7 @@ static void AddEdge(EdgeList *es,Spline *sp,real tmin,real tmax) {
    e->tmax=tmax;
 
    if (e->mmin < 0 || e->mmin >= e->mmax) {
-      /*IError("Probably not serious, but we've got a zero length spline in AddEdge in %s",es->sc==NULL?<nameless>:es->sc->name); */
+      /*ErrorMsg(2,"Probably not serious, but we've got a zero length spline in AddEdge in %s\n",es->sc==NULL?<nameless>:es->sc->name); */
       free(e);
       return;
    }
@@ -337,7 +337,7 @@ static void AddMajorEdge(EdgeList *es,Spline *sp) {
       return;
    }
    if (e->mmin < 0)
-      IError("Grg!");
+      ErrorMsg(2,"Worgh!\n");
 
    if (ceil(e->m_cur) > e->mmax) {
       free(e);
@@ -895,7 +895,7 @@ void BCCompressBitmap(BDFChar * bdfc) {
 	       last=temp;
 	    }
 	    if (last != 0)
-	       IError("Sigh");
+	       ErrorMsg(2,"Szplug\n");
 	 }
 	 bdfc->xmin += off;
       }

@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 3860 2015-03-25 14:30:43Z mskala $ */
+/* $Id: parsepdf.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2012nov01, many fixes added, Jose Da Silva */
 /*
@@ -557,8 +557,7 @@ static int pdf_findobject(struct pdfcontext *pc,int num) {
       container=pc->objs[num];
       while (container != -1) {
 	 if (pc->subindex[container] != -1) {
-	    LogError(_
-		     ("Compressed object container is itself a compressed object"));
+	    ErrorMsg(2,"Compressed object container is itself a compressed object\n");
 	    return (false);
 	 }
 	 afseek(pc->pdf, pc->objs[container], SEEK_SET);
@@ -902,7 +901,7 @@ static int pdf_zfilter(AFILE *to,AFILE *from) {
    strm.next_in=Z_NULL;
    ret=inflateInit(&strm);
    if (ret != Z_OK) {
-      LogError(_("Flate decompression failed.\n"));
+      ErrorMsg(2,"Flate decompression failed.\n");
       return ret;
    }
    in=malloc(Z_CHUNK);
@@ -919,7 +918,7 @@ static int pdf_zfilter(AFILE *to,AFILE *from) {
 	 ret=inflate(&strm, Z_NO_FLUSH);
 	 if (ret==Z_NEED_DICT || ret==Z_DATA_ERROR || ret==Z_MEM_ERROR) {
 	    (void) inflateEnd(&strm);
-	    LogError(_("Flate decompression failed.\n"));
+	    ErrorMsg(2,"Flate decompression failed.\n");
 	    return ret;
 	 }
 	 afwrite(out, 1, Z_CHUNK - strm.avail_out, to);
@@ -965,11 +964,11 @@ static AFILE *pdf_defilterstream(struct pdfcontext *pc) {
    char *pt, *end;
 
    if (pc->compressed != NULL) {
-      LogError(_("A pdf stream object may not be a compressed object"));
+      ErrorMsg(2,"A pdf stream object may not be a compressed object\n");
       return (NULL);
    }
    if ((pt=PSDictHasEntry(&pc->pdfdict, "Length"))==NULL) {
-      LogError(_("A pdf stream object is missing a Length attribute"));
+      ErrorMsg(2,"A pdf stream object is missing a Length attribute\n");
       return (NULL);
    }
    length=pdf_getinteger(pt, pc);
@@ -1008,7 +1007,7 @@ static AFILE *pdf_defilterstream(struct pdfcontext *pc) {
 	 pdf_rlefilter(res, old);
 	 pt += strlen("RunLengthDecode");
       } else {
-	 LogError(_("Unsupported filter: %s"), pt);
+	 ErrorMsg(2,"Unsupported filter: %s\n", pt);
 	 afclose(old);
 	 afclose(res);
 	 return (NULL);
@@ -1330,7 +1329,7 @@ static int nextpdftoken(AFILE *file,real *val,char *tokbuf,int tbsize) {
 	 if (!isfinite(*val)) {
 /* GT: NaN is a concept in IEEE floating point which means "Not a Number" */
 /* GT: it is used to represent errors like 0/0 or sqrt(-1). */
-	    LogError(_("Bad number, infinity or nan: %s\n"), tokbuf);
+	    ErrorMsg(2,"Bad number, infinity or nan: %s\n", tokbuf);
 	    *val=0;
 	 }
 	 if (*end=='\0')	/* It's a real */
@@ -1495,7 +1494,7 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	      if (stack[sp - 1 - i].type==ps_mark)
 		 break;
 	   if (i==sp)
-	      LogError(_("No mark in ] (close array)\n"));
+	      ErrorMsg(2,"No mark in ] (close array)\n");
 	   else {
 	      struct pskeydict dict;
 
@@ -1824,7 +1823,7 @@ static SplineChar *pdf_InterpretSC(struct pdfcontext *pc,char *glyphname,
    return (sc);
 
  fail:
-   LogError(_("Syntax error while parsing type3 glyph: %s"), glyphname);
+   ErrorMsg(2,"Syntax error while parsing type3 glyph: %s\n", glyphname);
    return (NULL);
 }
 
@@ -1840,17 +1839,16 @@ static Entity *pdf_InterpretEntity(struct pdfcontext *pc,int page_num) {
    int content;
 
    if (!pdf_findobject(pc, pc->pages[page_num]) || !pdf_readdict(pc)) {
-      LogError(_("Syntax error while parsing pdf graphics"));
+      ErrorMsg(2,"Syntax error while parsing pdf graphics\n");
       return (NULL);
    }
    if ((pt=PSDictHasEntry(&pc->pdfdict, "Contents"))==NULL ||
        sscanf(pt, "%d", &content) != 1) {
-      LogError(_
-	       ("Syntax error while parsing pdf graphics: Page with no Contents"));
+      ErrorMsg(2,"Syntax error while parsing pdf graphics: Page with no Contents\n");
       return (NULL);
    }
    if (!pdf_findobject(pc, content) || !pdf_readdict(pc)) {
-      LogError(_("Syntax error while parsing pdf graphics"));
+      ErrorMsg(2,"Syntax error while parsing pdf graphics\n");
       return (NULL);
    }
    glyph_stream=pdf_defilterstream(pc);
@@ -2052,7 +2050,7 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
    }
    return;
  fail:
-   LogError(_("Syntax errors while parsing ToUnicode CMap"));
+   ErrorMsg(2,"Syntax errors while parsing ToUnicode CMap\n");
 }
 
 static int pdf_getcharprocs(struct pdfcontext *pc,char *charprocs) {
@@ -2153,7 +2151,7 @@ static SplineFont *pdf_loadtype3(struct pdfcontext *pc) {
    return (sf);
 
  fail:
-   LogError(_("Syntax errors while parsing Type3 font headers"));
+   ErrorMsg(2,"Syntax errors while parsing Type3 font headers\n");
    return (NULL);
 }
 
@@ -2195,8 +2193,7 @@ static SplineFont *pdf_loadfont(struct pdfcontext *pc,int font_num) {
    else if ((pt=PSDictHasEntry(&pc->pdfdict, "FontFile3")) != NULL)
       type=3;
    else {
-      LogError(_
-	       ("The font %s is one of the standard fonts. It isn't actually in the file."),
+      ErrorMsg(2,"The font %s is one of the standard fonts. It isn't actually in the file.\n",
 	       pc->fontnames[font_num]);
       return (NULL);
    }
@@ -2232,7 +2229,7 @@ static SplineFont *pdf_loadfont(struct pdfcontext *pc,int font_num) {
    return (sf);
 
  fail:
-   LogError(_("Unable to parse the pdf objects that make up %s"),
+   ErrorMsg(2,"Unable to parse the pdf objects that make up %s\n",
 	    pc->fontnames[font_num]);
    return (NULL);
 }
@@ -2270,13 +2267,11 @@ char **NamesReadPDF(char *filename) {
    if ((pc.pdf=afopen(filename, "r"))==NULL)
       return (NULL);
    if ((pc.objs=FindObjects(&pc))==NULL) {
-      LogError(_
-	       ("Doesn't look like a valid pdf file, couldn't find xref section"));
+      ErrorMsg(2,"Doesn't look like a valid pdf file, couldn't find xref section\n");
       goto NamesReadPDF_error;
    }
    if (pc.encrypted) {
-      LogError(_
-	       ("This pdf file contains an /Encrypt dictionary, and FontAnvil does not currently\nsupport pdf encryption"));
+      ErrorMsg(2,"This pdf file contains an /Encrypt dictionary, and FontAnvil does not currently\nsupport pdf encryption\n");
       goto NamesReadPDF_error;
    }
    if (pdf_findfonts(&pc)==0) {
@@ -2322,21 +2317,19 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
    pc.pdf=pdf;
    pc.openflags=openflags;
    if ((pc.objs=FindObjects(&pc))==NULL) {
-      LogError(_
-	       ("Doesn't look like a valid pdf file, couldn't find xref section"));
+      ErrorMsg(2,"Doesn't look like a valid pdf file, couldn't find xref section\n");
       pcFree(&pc);
       setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pc.encrypted) {
-      LogError(_
-	       ("This pdf file contains an /Encrypt dictionary, and FontAnvil does not currently\nsupport pdf encryption"));
+      ErrorMsg(2,"This pdf file contains an /Encrypt dictionary, and FontAnvil does not currently\nsupport pdf encryption\n");
       pcFree(&pc);
       setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pdf_findfonts(&pc)==0) {
-      LogError(_("This pdf file has no fonts"));
+      ErrorMsg(2,"This pdf file has no fonts\n");
       pcFree(&pc);
       setlocale(LC_NUMERIC, oldloc);
       return (NULL);
@@ -2357,8 +2350,8 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
       if (i < pc.fcnt)
 	 sf=pdf_loadfont(&pc, i);
       else
-	 ff_post_error(_("Not in Collection"), _("%s is not in %.100s"),
-		       select_this_font, filename);
+	 ErrorMsg(2,"Not in collection:  %s is not in %.100s\n",
+                    select_this_font,filename);
    } else {
       char **names;
 
@@ -2410,21 +2403,19 @@ Entity *EntityInterpretPDFPage(AFILE *pdf, int select_page) {
    pc.pdf=pdf;
    pc.openflags=0;
    if ((pc.objs=FindObjects(&pc))==NULL) {
-      LogError(_
-	       ("Doesn't look like a valid pdf file, couldn't find xref section"));
+      ErrorMsg(2,"Doesn't look like a valid pdf file, couldn't find xref section\n");
       pcFree(&pc);
       setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pc.encrypted) {
-      LogError(_
-	       ("This pdf file contains an /Encrypt dictionary, and FontAnvil does not currently\nsupport pdf encryption"));
+      ErrorMsg(2,"This pdf file contains an /Encrypt dictionary, and FontAnvil does not currently\nsupport pdf encryption\n");
       pcFree(&pc);
       setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pdf_findpages(&pc)==0) {
-      LogError(_("This pdf file has no pages"));
+      ErrorMsg(2,"This pdf file has no pages\n");
       pcFree(&pc);
       setlocale(LC_NUMERIC, oldloc);
       return (NULL);

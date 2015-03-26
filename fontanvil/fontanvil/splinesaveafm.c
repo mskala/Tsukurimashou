@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: splinesaveafm.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -45,18 +45,13 @@
 #endif
 
 extern char *zapfnomen[];
-
 extern short zapfwx[];
-
 extern short zapfbb[][4];
-
 extern char zapfexists[];
 
 static void *mygets(AFILE *file,char *buffer,int size) {
    char *end=buffer + size - 1;
-
    char *pt=buffer;
-
    int ch;
 
    while ((ch=agetc(file)) != EOF && ch != '\r' && ch != '\n' && pt < end)
@@ -379,9 +374,9 @@ static void tfmDoLigKern(SplineFont *sf,int enc,int lk_index,
 	 if (k_index > 4 * tfmd->kern_size)
 	    return;
 	 off=(sf->ascent + sf->descent) *
-	    ((tfmd->kerntab[k_index] << 24) +
-	     (tfmd->kerntab[k_index + 1] << 16) +
-	     (tfmd->kerntab[k_index + 2] << 8) + tfmd->kerntab[k_index +
+	    ((tfmd->kerntab[k_index]<<24) +
+	     (tfmd->kerntab[k_index + 1]<<16) +
+	     (tfmd->kerntab[k_index + 2]<<8) + tfmd->kerntab[k_index +
 							       3]) /
 	    (bigreal) 0x100000;
 	 KPInsert(sc1, sc2, rint(off), false);
@@ -528,7 +523,7 @@ int LoadKerningDataFromTfm(SplineFont *sf, char *filename, EncMap * map) {
    int charlist[256];
    int is_math;
    int width, height, depth;
-   real scale=(sf->ascent + sf->descent) / (bigreal) (1 << 20);
+   real scale=(sf->ascent + sf->descent) / (bigreal) (1<<20);
 
    if (file==NULL)
       return (0);
@@ -558,7 +553,7 @@ int LoadKerningDataFromTfm(SplineFont *sf, char *filename, EncMap * map) {
    tfmd.charlist=charlist;
 
    afseek(file, (6 + 1) * sizeof(int32), SEEK_SET);
-   sf->design_size=(5 * getlong(file) + (1 << 18)) >> 19;	/* TeX stores as <<20, adobe in decipoints */
+   sf->design_size=(5 * getlong(file) + (1<<18)) >> 19;	/* TeX stores as <<20, adobe in decipoints */
    afseek(file,
 	 (6 + tfmd.head_len + (tfmd.last - tfmd.first + 1)) * sizeof(int32),
 	 SEEK_SET);
@@ -669,9 +664,9 @@ static void ofmDoLigKern(SplineFont *sf,int enc,int lk_index,
 	 if (k_index > tfmd->kern_size)
 	    return;
 	 off=(sf->ascent + sf->descent) *
-	    ((tfmd->kerntab[k_index] << 24) +
-	     (tfmd->kerntab[k_index + 1] << 16) +
-	     (tfmd->kerntab[k_index + 2] << 8) + tfmd->kerntab[k_index +
+	    ((tfmd->kerntab[k_index]<<24) +
+	     (tfmd->kerntab[k_index + 1]<<16) +
+	     (tfmd->kerntab[k_index + 2]<<8) + tfmd->kerntab[k_index +
 							       3]) /
 	    (bigreal) 0x100000;
 	 KPInsert(sc1, sc2, rint(off), false);
@@ -769,7 +764,7 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
    int level, font_dir;
    int is_math;
    int width, height, depth;
-   real scale=(sf->ascent + sf->descent) / (bigreal) (1 << 20);
+   real scale=(sf->ascent + sf->descent) / (bigreal) (1<<20);
    struct tfmdata tfmd;
 
    if (file==NULL)
@@ -827,13 +822,11 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
 	 nwf + nkm + nwm + nkr + nwr + nkg + nwg + nkp + nwp;
       /* Level 2 appears to have the same structure as level 1 */
       if (level1 || level==1 || level==2)
-	 ff_post_error(_("Unlikely Ofm File"),
-		       _
-		       ("This looks like a level1 (or level2) ofm. FontAnvil only supports level0 files, and can't read a real level1 file."));
+	 ErrorMsg(2,"This looks like a level1 (or level2) ofm.  "
+	            "FontAnvil only supports level0 files, and can't read "
+	            "a real level1 file.\n");
       else
-	 ff_post_error(_("Unlikely Ofm File"),
-		       _
-		       ("This doesn't look like an ofm file, I don't know how to read it."));
+	 ErrorMsg(2,"This does not appear to be an ofm file.\n");
       afclose(file);
       return (0);
    }
@@ -846,7 +839,7 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
    tfmd.httab=calloc(tfmd.height_size, sizeof(int32));
    tfmd.widtab=calloc(tfmd.width_size, sizeof(int32));
    afseek(file, (14 + 1) * sizeof(int32), SEEK_SET);
-   sf->design_size=(5 * getlong(file) + (1 << 18)) >> 19;	/* TeX stores as <<20, adobe in decipoints */
+   sf->design_size=(5 * getlong(file) + (1<<18)) >> 19;	/* TeX stores as <<20, adobe in decipoints */
    afseek(file,
 	 (14 + tfmd.head_len +
 	  2 * (tfmd.last - tfmd.first + 1)) * sizeof(int32), SEEK_SET);
@@ -2235,7 +2228,7 @@ static int getlshort(AFILE *pfm) {
    int ch1;
 
    ch1=agetc(pfm);
-   return ((agetc(pfm) << 8) | ch1);
+   return ((agetc(pfm)<<8) | ch1);
 }
 
 static int getlint(AFILE *pfm) {
@@ -2244,7 +2237,7 @@ static int getlint(AFILE *pfm) {
    ch1=agetc(pfm);
    ch2=agetc(pfm);
    ch3=agetc(pfm);
-   return ((agetc(pfm) << 24) | (ch3 << 16) | (ch2 << 8) | ch1);
+   return ((agetc(pfm)<<24) | (ch3<<16) | (ch2<<8) | ch1);
 }
 
 static void putlshort(short val,AFILE *pfm) {
@@ -2988,7 +2981,7 @@ static int CoalesceValues(double *values,int max,int *index,int maxc) {
       if (values[0] != 0) {
 	 for (i=0; i < top && values[i] != 0; ++i);
 	 if (i==top)
-	    IError("zero must be present in tfm arrays");
+	    ErrorMsg(2,"zero must be present in tfm arrays\n");
 	 else {
 	    values[i]=values[0];
 	    values[0]=0;
@@ -3059,45 +3052,45 @@ void TeXDefaultParams(SplineFont *sf) {
    if (sf->texdata.type != tex_unset)
       return;
 
-   spacew=rint(.33 * (1 << 20));	/* 1/3 em for a space seems like a reasonable size */
+   spacew=rint(.33 * (1<<20));	/* 1/3 em for a space seems like a reasonable size */
    for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL && sf->glyphs[i]->unicodeenc==' ') {
 	 spacew =
-	    rint((sf->glyphs[i]->width << 20) / (sf->ascent + sf->descent));
+	    rint((sf->glyphs[i]->width<<20) / (sf->ascent + sf->descent));
 	 break;
       }
    QuickBlues(sf, ly_fore, &bd);
 
    memset(sf->texdata.params, 0, sizeof(sf->texdata.params));
-   sf->texdata.params[0]=rint(-sin(sf->italicangle) * (1 << 20));	/* slant */
+   sf->texdata.params[0]=rint(-sin(sf->italicangle) * (1<<20));	/* slant */
    sf->texdata.params[1]=spacew;	/* space */
    sf->texdata.params[2]=rint(spacew / 2);	/* stretch_space */
    sf->texdata.params[3]=rint(spacew / 3);	/* shrink space */
    if (bd.xheight > 0)
       sf->texdata.params[4] =
-	 rint((((double) bd.xheight) * (1 << 20)) /
+	 rint((((double) bd.xheight) * (1<<20)) /
 	      (sf->ascent + sf->descent));
-   sf->texdata.params[5]=1 << 20;	/* quad */
+   sf->texdata.params[5]=1<<20;	/* quad */
    sf->texdata.params[6]=rint(spacew / 3);	/* extra space after sentence period */
 
    /* Let's provide some vaguely reasonable defaults for math fonts */
    /*  I'll ignore math ext fonts */
    /* hmm. TeX math fonts have space, stretch, shrink set to 0 */
-   sf->texdata.params[7]=rint(.747 * (1 << 20));
-   sf->texdata.params[8]=rint(.424 * (1 << 20));
-   sf->texdata.params[9]=rint(.474 * (1 << 20));
-   sf->texdata.params[10]=rint(.756 * (1 << 20));
-   sf->texdata.params[11]=rint(.375 * (1 << 20));
-   sf->texdata.params[12]=rint(.413 * (1 << 20));
-   sf->texdata.params[13]=rint(.363 * (1 << 20));
-   sf->texdata.params[14]=rint(.289 * (1 << 20));
-   sf->texdata.params[15]=rint(.15 * (1 << 20));
-   sf->texdata.params[16]=rint(.309 * (1 << 20));
-   sf->texdata.params[17]=rint(.386 * (1 << 20));
-   sf->texdata.params[18]=rint(.05 * (1 << 20));
-   sf->texdata.params[19]=rint(2.39 * (1 << 20));
-   sf->texdata.params[20]=rint(1.01 * (1 << 20));
-   sf->texdata.params[21]=rint(.25 * (1 << 20));
+   sf->texdata.params[7]=rint(.747 * (1<<20));
+   sf->texdata.params[8]=rint(.424 * (1<<20));
+   sf->texdata.params[9]=rint(.474 * (1<<20));
+   sf->texdata.params[10]=rint(.756 * (1<<20));
+   sf->texdata.params[11]=rint(.375 * (1<<20));
+   sf->texdata.params[12]=rint(.413 * (1<<20));
+   sf->texdata.params[13]=rint(.363 * (1<<20));
+   sf->texdata.params[14]=rint(.289 * (1<<20));
+   sf->texdata.params[15]=rint(.15 * (1<<20));
+   sf->texdata.params[16]=rint(.309 * (1<<20));
+   sf->texdata.params[17]=rint(.386 * (1<<20));
+   sf->texdata.params[18]=rint(.05 * (1<<20));
+   sf->texdata.params[19]=rint(2.39 * (1<<20));
+   sf->texdata.params[20]=rint(1.01 * (1<<20));
+   sf->texdata.params[21]=rint(.25 * (1<<20));
 }
 
 static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
@@ -3128,7 +3121,7 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
    struct ligkern *o_lkarray=NULL;
    char *familyname;
    int anyITLC;
-   real scale=(1 << 20) / (double) (sf->ascent + sf->descent);
+   real scale=(1<<20) / (double) (sf->ascent + sf->descent);
    int toobig_warn=false;
 
    if (maxc==256) {
@@ -3171,9 +3164,9 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 
    memset(&header, 0, sizeof(header));
    header.checksum=0;		/* don't check checksum (I don't know how to calculate it) */
-   header.design_size=((sf->design_size << 19) + 2) / 5;
+   header.design_size=((sf->design_size<<19) + 2) / 5;
    if (header.design_size==0)
-      header.design_size=10 << 20;
+      header.design_size=10<<20;
    encname=NULL;
    /* These first two encoding names appear magic to txtopl */
    /* I tried checking that the encodings were correct, name by name, but */
@@ -3264,11 +3257,10 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 	    depths[i]=0;	/* Werner says depth should never be negative. Something about how accents are positioned */
 	 if (sc->width==0)
 	    widths[i]=1;	/* TeX/Omega use a 0 width as a flag for non-existant character. Stupid. So zero width glyphs must be given the smallest posible non-zero width, to ensure they exists. GRRR. */
-	 else if (sc->width * scale >= (16 << 20)) {
-	    LogError(_
-		     ("The width of %s is too big to fit in a tfm fix_word, it shall be truncated to the largest size allowed."),
+	 else if (sc->width * scale >= (16<<20)) {
+	    ErrorMsg(2,"The width of %s is too big to fit in a tfm fix_word, it shall be truncated to the largest size allowed.\n",
 		     sc->name);
-	    widths[i]=(16 << 20) - 1;
+	    widths[i]=(16<<20) - 1;
 	 } else
 	    widths[i]=sc->width * scale;
 	 if (sc->italic_correction != TEX_UNDEF)
@@ -3282,25 +3274,27 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 	 if (first==-1)
 	    first=i;
 	 last=i;
-	 if (widths[i] >= (16 << 20) || heights[i] >= (16 << 20) ||
-	     depths[i] >= (16 << 20) || italics[i] >= (16 << 20)) {
+	 if (widths[i] >= (16<<20) || heights[i] >= (16<<20) ||
+	     depths[i] >= (16<<20) || italics[i] >= (16<<20)) {
 	    if (!toobig_warn) {
-	       ff_post_error(_("Value exceeds tfm limitations"),
-			     _
-			     ("The width, height, depth or italic correction of %s is too big. Tfm files may not contain values bigger than 16 times the em-size of the font. Width=%g, height=%g, depth=%g, italic correction=%g"),
-			     sc->name, widths[i] / (1 << 20),
-			     heights[i] / (1 << 20), depths[i] / (1 << 20),
-			     italics[i] / (1 << 20));
+               ErrorMsg(2,"The width, height, depth, or italic correction of "
+                          "%s is too big.  Tfm files may not contain values "
+                          "bigger than 16 times the em-size of the font.  "
+                          "Width=%g, height=%g, depth=%g, "
+                          "italic correction=%g.\n",
+                          sc->name,widths[i]/(1<<20),
+                          heights[i]/(1<<20),depths[i]/(1<<20),
+                          italics[i]/(1<<20));
 	       toobig_warn=true;
 	    }
-	    if (widths[i] > (16 << 20) - 1)
-	       widths[i]=(16 << 20) - 1;
-	    if (heights[i] > (16 << 20) - 1)
-	       heights[i]=(16 << 20) - 1;
-	    if (depths[i] > (16 << 20) - 1)
-	       depths[i]=(16 << 20) - 1;
-	    if (italics[i] > (16 << 20) - 1)
-	       italics[i]=(16 << 20) - 1;
+	    if (widths[i] > (16<<20) - 1)
+	       widths[i]=(16<<20) - 1;
+	    if (heights[i] > (16<<20) - 1)
+	       heights[i]=(16<<20) - 1;
+	    if (depths[i] > (16<<20) - 1)
+	       depths[i]=(16<<20) - 1;
+	    if (italics[i] > (16<<20) - 1)
+	       italics[i]=(16<<20) - 1;
 	 }
       }
    }
@@ -3374,13 +3368,13 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 		  if (former[i]==-1)
 		     lkindex[i]=lkcnt;
 		  else {
-		     lkarray[former[i]] |= (lkcnt - former[i] - 1) << 24;
+		     lkarray[former[i]] |= (lkcnt - former[i] - 1)<<24;
 		     if (lkcnt - former[i] - 1 >= 128)
-			IError(" generating lig/kern array, jump too far.\n");
+			ErrorMsg(2," generating lig/kern array, jump too far.\n");
 		  }
 		  former[i]=lkcnt;
-		  lkarray[lkcnt++]=((lk->next==NULL ? 128U : 0U) << 24) |
-		     (lk->other_char << 16) | (lk->op << 8) | lk->remainder;
+		  lkarray[lkcnt++]=((lk->next==NULL ? 128U : 0U)<<24) |
+		     (lk->other_char<<16) | (lk->op<<8) | lk->remainder;
 		  free(lk);
 		  any=true;
 	       }
@@ -3393,18 +3387,18 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 	    if (ligkerns[i] != NULL) {
 	       lkindex[i]=lkcnt;
 	       /* long pointer into big ligkern array */
-	       lkarray[lkcnt++]=(129U << 24) | (0 << 16) | lkcnt2;
+	       lkarray[lkcnt++]=(129U<<24) | (0<<16) | lkcnt2;
 	       for (lk=ligkerns[i]; lk != NULL; lk=lknext) {
 		  lknext=lk->next;
 		  /* Here we will always skip to the next record, so the      */
 		  /* skip_byte will always be 0 (well, or 128 for stop)       */
-		  lkarray[lkcnt2++]=((lknext==NULL ? 128 : 0) << 24) |
-		     (lk->other_char << 16) | (lk->op << 8) | lk->remainder;
+		  lkarray[lkcnt2++]=((lknext==NULL ? 128 : 0)<<24) |
+		     (lk->other_char<<16) | (lk->op<<8) | lk->remainder;
 		  free(lk);
 	       }
 	    }
 	 if (lkcnt > sccnt)
-	    IError("lig/kern mixup\n");
+	    ErrorMsg(2,"lig/kern mixup\n");
 	 lkcnt=lkcnt2;
       }
    } else {
@@ -3422,7 +3416,7 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 		  else {
 		     o_lkarray[former[i]].skip |= lkcnt - former[i] - 1;
 		     if (lkcnt - former[i] - 1 >= 128)
-			IError(" generating lig/kern array, jump too far.\n");
+			ErrorMsg(2," generating lig/kern array, jump too far.\n");
 		  }
 		  former[i]=lkcnt;
 		  o_lkarray[lkcnt].skip=lk->next==NULL ? 128U : 0U;
@@ -3458,7 +3452,7 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 	       }
 	    }
 	 if (lkcnt > sccnt)
-	    IError("lig/kern mixup\n");
+	    ErrorMsg(2,"lig/kern mixup\n");
 	 lkcnt=lkcnt2;
       }
    }
@@ -3539,8 +3533,8 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
 	 if (maxc==256) {
 	    aputc(widthindex[i], tfm);
-	    aputc((heightindex[i] << 4) | depthindex[i], tfm);
-	    aputc((italicindex[i] << 2) | tags[i], tfm);
+	    aputc((heightindex[i]<<4) | depthindex[i], tfm);
+	    aputc((italicindex[i]<<2) | tags[i], tfm);
 	    aputc(tags[i]==0 ? 0 :
 		 tags[i]==1 ? lkindex[i] :
 		 tags[i]==2 ? charlistindex[i] : extenindex[i], tfm);
@@ -3588,7 +3582,7 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 
    /* kern table */
    for (i=0; i < kcnt; ++i)
-      putlong(tfm, (kerns[i] * (1 << 20)) / (sf->ascent + sf->descent));
+      putlong(tfm, (kerns[i] * (1<<20)) / (sf->ascent + sf->descent));
 
    /* extensible table */
    if (maxc==256) {
@@ -3674,17 +3668,17 @@ static enum metricsformat MetricsFormatType(char *filename) {
    if (strstr((char *) buffer, "StartMasterFontMetrics") != NULL || strstr((char *) buffer, "StarMasterFontMetrics") != NULL)	/* ff had a bug and used this file header by mistake */
       return (mf_amfm);
 
-   if (len >= 48 && sb.st_size==4 * ((buffer[0] << 8) | buffer[1]) &&
-       ((buffer[0] << 8) | buffer[1])==6 +
-       ((buffer[2] << 8) | buffer[3]) +
-       (((buffer[6] << 8) | buffer[7]) - ((buffer[4] << 8) | buffer[5]) + 1) +
-       ((buffer[8] << 8) | buffer[9]) +
-       ((buffer[10] << 8) | buffer[11]) +
-       ((buffer[12] << 8) | buffer[13]) +
-       ((buffer[14] << 8) | buffer[15]) +
-       ((buffer[16] << 8) | buffer[17]) +
-       ((buffer[18] << 8) | buffer[19]) +
-       ((buffer[20] << 8) | buffer[21]) + ((buffer[22] << 8) | buffer[23]))
+   if (len >= 48 && sb.st_size==4 * ((buffer[0]<<8) | buffer[1]) &&
+       ((buffer[0]<<8) | buffer[1])==6 +
+       ((buffer[2]<<8) | buffer[3]) +
+       (((buffer[6]<<8) | buffer[7]) - ((buffer[4]<<8) | buffer[5]) + 1) +
+       ((buffer[8]<<8) | buffer[9]) +
+       ((buffer[10]<<8) | buffer[11]) +
+       ((buffer[12]<<8) | buffer[13]) +
+       ((buffer[14]<<8) | buffer[15]) +
+       ((buffer[16]<<8) | buffer[17]) +
+       ((buffer[18]<<8) | buffer[19]) +
+       ((buffer[20]<<8) | buffer[21]) + ((buffer[22]<<8) | buffer[23]))
       return (mf_tfm);
 
    if (len >= 48 && sb.st_size==4 * BigEndianWord(buffer + 4) &&
@@ -3702,7 +3696,7 @@ static enum metricsformat MetricsFormatType(char *filename) {
       return (mf_ofm);
 
    if (len >= 6 && buffer[0]==0 && buffer[1]==1 &&
-       (buffer[2] | (buffer[3] << 8) | (buffer[4] << 16) | (buffer[5] << 24))
+       (buffer[2] | (buffer[3]<<8) | (buffer[4]<<16) | (buffer[5]<<24))
       ==sb.st_size)
       return (mf_pfm);
 

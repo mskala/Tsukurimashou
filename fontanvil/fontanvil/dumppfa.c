@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: dumppfa.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -648,7 +648,7 @@ static void dumpPattern(void (*dumpchar) (int ch,void *data),void *data,
       /*  and can't live in the content stream, so they are done elsewhere */
    } else {
       if (pattern_sc==NULL)
-	 LogError(_("No glyph named %s, used as a pattern in %s\n"),
+	 ErrorMsg(2,"No glyph named %s, used as a pattern in %s\n",
 		  pat->pattern, sc->name);
       PatternSCBounds(pattern_sc, &b);
 
@@ -2726,7 +2726,7 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
    dump_index(binary, cidbytes->gdbytes, offset);
    if (aftell(binary) !=
        (cidbytes->cidcnt + 1) * (cidbytes->fdbytes + cidbytes->gdbytes))
-      IError("CIDMap section the wrong length");
+      ErrorMsg(2,"CIDMap section the wrong length\n");
 
    offset=(cidbytes->cidcnt + 1) * (cidbytes->fdbytes + cidbytes->gdbytes) +
       (subrtot + 1) * cidbytes->gdbytes;
@@ -2745,7 +2745,7 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
    if (aftell(binary) !=
        (cidbytes->cidcnt + 1) * (cidbytes->fdbytes + cidbytes->gdbytes) +
        (subrtot + 1) * cidbytes->gdbytes)
-      IError("SubrMap section the wrong length");
+      ErrorMsg(2,"SubrMap section the wrong length\n");
 
    buffer=malloc(8192);
 
@@ -2856,7 +2856,7 @@ static int dumpcidstuff(AFILE *out,SplineFont *cidmaster,int flags,
    sprintf(buffer, "(Binary) %ld StartData ", len);
    afprintf(out, "%%%%BeginData: %ld Binary Bytes\n",
 	   (long) (len + strlen(buffer)));
-   fputs(buffer, out);
+   afputs(buffer, out);
 
    afseek(binary, 0, SEEK_SET);
    while ((len=afread(buffer, 1, sizeof(buffer), binary)) > 0)
@@ -2970,7 +2970,7 @@ int PSBitmapDump(char *filename, BDFFont * font, EncMap * map) {
    }
    file=afopen(filename, "w");
    if (file==NULL)
-      LogError(_("Can't open %s\n"), filename);
+      ErrorMsg(2,"Can't open %s\n", filename);
    else {
       for (i=0; i < font->glyphcnt; i++)
 	 if (font->glyphs[i] != NULL)

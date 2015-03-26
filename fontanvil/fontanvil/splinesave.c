@@ -1,4 +1,4 @@
-/* $Id: splinesave.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: splinesave.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -331,7 +331,7 @@ static int NumberHints(SplineChar *scs[MmMax],int instance_count) {
       if (cnt==-1)
 	 cnt=i;
       else if (cnt != i)
-	 IError("MM font with different hint counts");
+	 ErrorMsg(2,"MM font with different hint counts\n");
    }
    return (cnt);
 }
@@ -2291,7 +2291,7 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
 
    chrs->next=cnt;
    if (chrs->next > chrs->cnt)
-      IError("Character estimate failed, about to die...");
+      ErrorMsg(2,"Character estimate failed, about to die...\n");
    return (chrs);
 }
 
@@ -2417,8 +2417,7 @@ static void AddNumber2(GrowBuf *gb,real pos,int round) {
    if (pos > 32767.99 || pos < -32768) {
       /* same logic for big ints and reals */
       if (pos > 0x3fffffff || pos < -0x40000000) {
-	 LogError(_
-		  ("Number out of range: %g in type2 output (must be [-65536,65535])\n"),
+	 ErrorMsg(2,"Number out of range: %g in type2 output (must be [-65536,65535])\n",
 		  pos);
 	 if (pos > 0)
 	    pos=0x3fffffff;
@@ -3011,7 +3010,7 @@ static void DumpRefsHints(GrowBuf *gb,struct hintdb *hdb,RefChar *cur,
    }
 
    if (h==NULL && v==NULL)
-      IError("hintmask invoked when there are no hints");
+      ErrorMsg(2,"hintmask invoked when there are no hints\n");
    memset(masks, '\0', sizeof(masks));
    cnt=0;
    while (h != NULL && h->hintnumber >= 0) {
@@ -3119,7 +3118,7 @@ static void ExpandRef2(GrowBuf *gb,SplineChar *sc,struct hintdb *hdb,
       hdb->current.y==temp.y ? 22 :	/* hmoveto */
       21;			/* rmoveto */
    if (r->sc->lsidebearing==0x7fff)
-      IError("Attempt to reference an unreferenceable glyph %s", r->sc->name);
+      ErrorMsg(2,"Attempt to reference an unreferenceable glyph %s\n", r->sc->name);
 
    gi=hdb->gi;
    StartNextSubroutine(gb, hdb);
@@ -3134,21 +3133,13 @@ static void RSC2PS2(GrowBuf *gb,SplineChar *base,SplineChar *rsc,
 		    struct hintdb *hdb, BasePoint * trans,
 		    struct pschars *subrs, int flags, int layer) {
    BasePoint subtrans;
-
    int stationary=trans->x==0 && trans->y==0;
-
    RefChar *r, *unsafe=NULL;
-
    int unsafecnt=0, allwithouthints=true;
-
    int round=(flags & ps_flag_round) ? true : false;
-
    StemInfo *oldh, *oldv;
-
    int hc, vc;
-
    SplineSet *freeme, *temp;
-
    int wasntconflicted=hdb->noconflicts;
 
    if (flags & ps_flag_nohints) {

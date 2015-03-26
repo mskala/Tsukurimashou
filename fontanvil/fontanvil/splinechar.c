@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: splinechar.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -960,7 +960,7 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
    struct altuni *alt;
 
    if (sf->glyphs[sc->orig_pos] != sc)
-      IError("Bad call to SCSetMetaData");
+      ErrorMsg(2,"Bad call to SCSetMetaData\n");
 
    for (alt=sc->altuni;
 	alt != NULL && (alt->unienc != unienc || alt->vs != -1
@@ -1835,7 +1835,7 @@ void SCTickValidationState(SplineChar * sc, int layer) {
    sc->layers[layer].validation_state=vs_unknown;
    for (dlist=sc->dependents; dlist != NULL; dlist=dlist->next) {
       if (dlist->sc==sc)
-	 IError("A glyph may not depend on itself in SCTickValidationState");
+	 ErrorMsg(2,"A glyph may not depend on itself in SCTickValidationState\n");
       else
 	 SCTickValidationState(dlist->sc, layer);
    }
@@ -2008,7 +2008,7 @@ void SCCharChangedUpdate(SplineChar * sc, int layer, int changed) {
    SplineFont *sf=sc->parent;
 
    if (layer >= sc->layer_cnt) {
-      IError("Bad layer in SCCharChangedUpdate");
+      ErrorMsg(2,"Bad layer in SCCharChangedUpdate\n");
       layer=ly_fore;
    }
    if (layer >= 0 && !sc->layers[layer].background)

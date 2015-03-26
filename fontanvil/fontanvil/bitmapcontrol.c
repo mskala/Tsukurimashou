@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: bitmapcontrol.c 3866 2015-03-26 11:30:37Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -233,10 +233,8 @@ static int FVRegenBitmaps(CreateBitmapData *bd,int32 *sizes,
 	   (bdf->pixelsize != (sizes[i] & 0xffff)
 	    || BDFDepth(bdf) != (sizes[i] >> 16)); bdf=bdf->next);
       if (bdf==NULL) {
-	 ff_post_notice(_("Missing Bitmap"),
-			_
-			("Attempt to regenerate a pixel size that has not been created (%d@%d)"),
-			sizes[i] & 0xffff, sizes[i] >> 16);
+	 ErrorMsg(2,"Attempt to regenerate a pixel size that has not "
+	            "been created (%d@%d).\n",sizes[i]&0xffff,sizes[i]>>16);
 	 return (false);
       }
    }

@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: splineoverlap.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -87,10 +87,10 @@ static void SOError(const char *format,...) {
     va_list ap;
     va_start(ap,format);
     if ( glyphname==NULL )
-	afprintf(stderr, "Internal Error (overlap): " );
+	ErrorMsg(1,"Internal Error (overlap): " );
     else
-	afprintf(stderr, "Internal Error (overlap) in %s: ", glyphname );
-    vfprintf(stderr,format,ap);
+	ErrorMsg(1,"Internal Error (overlap) in %s: ", glyphname );
+    vfprintf(astderr,format,ap);
     va_end(ap);
 }
 
@@ -99,10 +99,10 @@ static void SONotify(const char *format,...) {
     va_start(ap,format);
 #ifdef FF_OVERLAP_VERBOSE
     if ( glyphname==NULL )
-	afprintf(stderr, "Note (overlap): " );
+	ErrorMsg(1,"Note (overlap): " );
     else
-	afprintf(stderr, "Note (overlap) in %s: ", glyphname );
-    vfprintf(stderr,format,ap);
+	ErrorMsg(1,"Note (overlap) in %s: ", glyphname );
+    vfprintf(astderr,format,ap);
 #endif
     va_end(ap);
 }
@@ -1459,13 +1459,7 @@ return( ilist );
     }
     if ( !id1.new )
 	id2.inter=id1.inter; // Use the senior intersection if possible.
-    /* else if ( !id2.new ) */		/* We only use id2.inter */
-	/* id1.inter=id2.inter;*/
-    // ilist=check=_AddIntersection(ilist,id1.m,id1.otherm,id1.t,id1.othert,&id2.inter);
-    // ilist=_AddIntersection(ilist,id2.m,id2.otherm,id2.t,id2.othert,&id2.inter);	/* Use id1.inter to avoid rounding errors */
     ilist=_AddIntersection(ilist,m1,m2,id1.t,id2.t,&id2.inter);
-    // if ( check!=ilist )
-	// IError("Added too many intersections.");
 ValidateMonotonic(m1);
 ValidateMonotonic(m2);
 return( ilist );
@@ -1963,15 +1957,17 @@ return( true );
 }
 
 static void DumpMonotonic(Monotonic *input) {
-  afprintf(stderr, "Monotonic: %p\n", input);
-  afprintf(stderr, "  spline: %p; tstart: %f; tstop: %f; next: %p; prev: %p; start: %p; end: %p;\n", 
+  ErrorMsg(1,"Monotonic: %p\n", input);
+  ErrorMsg(1,"  spline: %p; tstart: %f; tstop: %f; next: %p; prev: %p; start: %p; end: %p;\n", 
     input->s, input->tstart, input->tend, input->next, input->prev, input->start, input->end);
-  afprintf(stderr, "  ");
-  if (input->start != NULL) afprintf(stderr, "start: (%f, %f) ", input->start->inter.x, input->start->inter.y);
-  if (input->end != NULL) afprintf(stderr, "end: (%f, %f) ", input->end->inter.x, input->end->inter.y);
-  afprintf(stderr, "rstart: (%f, %f) ", evalSpline(input->s, input->tstart, 0), evalSpline(input->s, input->tstart, 1));
-  afprintf(stderr, "rend: (%f, %f) ", evalSpline(input->s, input->tend, 0), evalSpline(input->s, input->tend, 1));
-  afprintf(stderr, "\n");
+  ErrorMsg(1,"  ");
+  if (input->start != NULL)
+    ErrorMsg(1,"start: (%f, %f) ", input->start->inter.x, input->start->inter.y);
+  if (input->end != NULL)
+    ErrorMsg(1,"end: (%f, %f) ", input->end->inter.x, input->end->inter.y);
+  ErrorMsg(1,"rstart: (%f, %f) ", evalSpline(input->s, input->tstart, 0), evalSpline(input->s, input->tstart, 1));
+  ErrorMsg(1,"rend: (%f, %f) ", evalSpline(input->s, input->tend, 0), evalSpline(input->s, input->tend, 1));
+  ErrorMsg(1,"\n");
 }
 
 #ifdef FF_OVERLAP_VERBOSE

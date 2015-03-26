@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: autotrace.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -585,13 +585,10 @@ char **AutoTraceArgs(int ask) {
 
 void FVAutoTrace(FontViewBase * fv, int ask) {
    char **args;
-
    int i, cnt, gid;
 
    if (FindAutoTraceName()==NULL) {
-      ff_post_error(_("Can't find autotrace"),
-		    _
-		    ("Can't find autotrace program (set AUTOTRACE environment variable) or download from:\n  http://sf.net/projects/autotrace/"));
+      ErrorMsg(2,"Can't find autotrace program.\n");
       return;
    }
 
@@ -773,24 +770,16 @@ SplineFont *SFFromMF(char *filename) {
    return (NULL);
 #else
    char *tempdir;
-
    char *arglist[8];
-
    int pid, status, ac, i;
-
    SplineFont *sf=NULL;
-
    SplineChar *sc;
 
    if (FindMFName()==NULL) {
-      ff_post_error(_("Can't find mf"),
-		    _
-		    ("Can't find mf program -- metafont (set MF environment variable) or download from:\n  http://www.tug.org/\n  http://www.ctan.org/\nIt's part of the TeX distribution"));
+      ErrorMsg(2,"Can't find mf\n");
       return (NULL);
    } else if (FindAutoTraceName()==NULL) {
-      ff_post_error(_("Can't find autotrace"),
-		    _
-		    ("Can't find autotrace program (set AUTOTRACE environment variable) or download from:\n  http://sf.net/projects/autotrace/"));
+      ErrorMsg(2,"Can't find autotrace\n");
       return (NULL);
    }
    if (MfArgs()==(char *) -1 || AutoTraceArgs(false)==(char **) -1)
@@ -801,8 +790,7 @@ SplineFont *SFFromMF(char *filename) {
    /*  will put the files there. */
    tempdir=mytempdir();
    if (tempdir==NULL) {
-      ff_post_error(_("Can't create temporary directory"),
-		    _("Can't create temporary directory"));
+      ErrorMsg(2,"Can't create temporary directory\n");
       return (NULL);
    }
 
@@ -835,9 +823,7 @@ SplineFont *SFFromMF(char *filename) {
 	 char *gffile=FindGfFile(tempdir);
 
 	 if (gffile==NULL)
-	    ff_post_error(_("Can't run mf"),
-			  _
-			  ("Could not read (or perhaps find) mf output file"));
+	    ErrorMsg(2,"Can't run mf\n");
 	 else {
 	    sf=SFFromBDF(gffile, 3, true);
 	    free(gffile);
@@ -854,14 +840,12 @@ SplineFont *SFFromMF(char *filename) {
 		  }
 	       }
 	    } else
-	       ff_post_error(_("Can't run mf"),
-			     _
-			     ("Could not read (or perhaps find) mf output file"));
+	       ErrorMsg(2,"Can't run mf\n");
 	 }
       } else
-	 ff_post_error(_("Can't run mf"), _("MetaFont exited with an error"));
+	 ErrorMsg(2,"Can't run mf\n");
    } else
-      ff_post_error(_("Can't run mf"), _("Can't run mf"));
+      ErrorMsg(2,"Can't run mf\n");
    free(arglist[1]);
    cleantempdir(tempdir);
    return (sf);

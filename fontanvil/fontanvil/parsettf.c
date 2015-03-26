@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: parsettf.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -468,8 +468,7 @@ static Encoding *enc_from_platspec(int platform,int specific) {
       static int p=-1,s=-1;
 
       if (p != platform || s != specific) {
-	 LogError(_
-		  ("The truetype encoding specified by platform=%d specific=%d (which we map to %s) is not supported by your version of iconv(3).\n"),
+	 ErrorMsg(2,"The truetype encoding specified by platform=%d specific=%d (which we map to %s) is not supported by your version of iconv(3).\n",
 		  platform, specific, enc);
 	 p=platform;
 	 s=specific;
@@ -699,12 +698,8 @@ static int PickTTFFont(AFILE *ttf,char *filename,char **chosenname) {
       if (choice==-1) {
 	 char *fn=copy(filename);
 
-	 fn[lparen - filename]='\0';
-	 ff_post_error(_("Not in Collection"),
-/* GT: The user is trying to open a font file which contains multiple fonts and */
-/* GT: has asked for a font which is not in that file. */
-/* GT: The string will look like: <fontname> is not in <filename> */
-		       _("%1$s is not in %2$.100s"), find, fn);
+	 fn[lparen-filename]='\0';
+	 ErrorMsg(2,"Not in collection:  %1$s is not in %2$.100s\n",find,fn);
 	 free(fn);
       }
       free(find);
@@ -823,21 +818,18 @@ static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
        32 ? 4 : info->numtables < 64 ? 5 : 6);
    e_rs=info->numtables * 16 - e_sr;
    if (e_sr != sr || e_es != es || e_rs != rs) {
-      LogError(_
-	       ("Unexpected values for binsearch header. Based on the number of tables I\n expect searchRange=%d (not %d), entrySel=%d (not %d) rangeShift=%d (not %d)\n"),
+      ErrorMsg(2,"Unexpected values for binsearch header. Based on the number of tables I\n expect searchRange=%d (not %d), entrySel=%d (not %d) rangeShift=%d (not %d)\n",
 	       e_sr, sr, e_es, es, e_rs, rs);
       info->bad_sfnt_header=true;
    }
 
    if (info->numtables <= 0) {
-      LogError(_
-	       ("An sfnt file must contain SOME tables, but this one does not."));
+      ErrorMsg(2,"An sfnt file must contain SOME tables, but this one does not.\n");
       info->bad_sfnt_header=true;
       afseek(ttf, restore_this_pos, SEEK_SET);
       return;
    } else if (info->numtables > 1000) {
-      LogError(_
-	       ("An sfnt file may contain a large number of tables, but this one has over 1000\n and that seems like too many\n"));
+      ErrorMsg(2,"An sfnt file may contain a large number of tables, but this one has over 1000\n and that seems like too many\n");
       info->bad_sfnt_header=true;
       afseek(ttf, restore_this_pos, SEEK_SET);
       return;
@@ -851,8 +843,7 @@ static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
       tabs[i].offset=getlong(ttf);
       tabs[i].length=getlong(ttf);
       if (i != 0 && tabs[i].tag < tabs[i - 1].tag && !info->bad_sfnt_header) {
-	 LogError(_
-		  ("Table tags should be in alphabetic order in the font header\n but '%c%c%c%c', appears after '%c%c%c%c'."),
+	 ErrorMsg(2,"Table tags should be in alphabetic order in the font header\n but '%c%c%c%c', appears after '%c%c%c%c'.\n",
 		  tabs[i - 1].tag >> 24, tabs[i - 1].tag >> 16,
 		  tabs[i - 1].tag >> 8, tabs[i - 1].tag, tabs[i].tag >> 24,
 		  tabs[i].tag >> 16, tabs[i].tag >> 8, tabs[i].tag);
@@ -873,22 +864,21 @@ static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
    for (i=0; i < info->numtables - 1; ++i) {
       for (j=i + 1; j < info->numtables; ++j) {
 	 if (tabs[i].tag==tabs[j].tag) {
-	    LogError(_
-		     ("Same table tag, '%c%c%c%c', appears twice in sfnt header"),
+	    ErrorMsg(2,"Same table tag, '%c%c%c%c', appears twice in sfnt header\n",
 		     tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 		     tabs[i].tag);
 	    info->bad_sfnt_header=true;
 	 }
       }
       if (tabs[i].offset + tabs[i].length > tabs[i + 1].offset) {
-	 LogError(_("Tables '%c%c%c%c' and '%c%c%c%c' overlap"),
+	 ErrorMsg(2,"Tables '%c%c%c%c' and '%c%c%c%c' overlap\n",
 		  tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 		  tabs[i].tag, tabs[j].tag >> 24, tabs[j].tag >> 16,
 		  tabs[j].tag >> 8, tabs[j].tag);
       }
    }
    if (tabs[i].offset + tabs[i].length > file_len) {
-      LogError(_("Table '%c%c%c%c' extends beyond end of file."),
+      ErrorMsg(2,"Table '%c%c%c%c' extends beyond end of file.\n",
 	       tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 	       tabs[i].tag);
       info->bad_sfnt_header=true;
@@ -896,14 +886,14 @@ static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
 
    /* Checksums. First file as a whole, then each table */
    if (regionchecksom(ttf, 0, -1) != 0xb1b0afba) {
-      LogError(_("File checksum is incorrect."));
+      ErrorMsg(2,"File checksum is incorrect.\n");
       info->bad_sfnt_header=true;
    }
    for (i=0; i < info->numtables - 1; ++i)
       if (tabs[i].tag != CHR('h', 'e', 'a', 'd')) {
 	 if (regionchecksom(ttf, tabs[i].offset, tabs[i].length) !=
 	     tabs[i].checksum) {
-	    LogError(_("Table '%c%c%c%c' has a bad checksum."),
+	    ErrorMsg(2,"Table '%c%c%c%c' has a bad checksum.\n",
 		     tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 		     tabs[i].tag);
 	    info->bad_sfnt_header=true;
@@ -916,15 +906,14 @@ static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
       switch (tabs[i].tag) {
 	case CHR('c', 'v', 't', ' '):
 	   if (tabs[i].length & 1)
-	      LogError(_("Table '%c%c%c%c' has a bad length, must be even."),
+	      ErrorMsg(2,"Table '%c%c%c%c' has a bad length, must be even.\n",
 		       tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 		       tabs[i].tag);
 	   break;
 	case CHR('b', 'h', 'e', 'd'):	/* Fonts with bitmaps but no outlines get bhea */
 	case CHR('h', 'e', 'a', 'd'):
 	   if (tabs[i].length != 54)
-	      LogError(_
-		       ("Table '%c%c%c%c' has a bad length, must be 54 but is %d."),
+	      ErrorMsg(2,"Table '%c%c%c%c' has a bad length, must be 54 but is %d.\n",
 		       tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 		       tabs[i].tag, tabs[i].length);
 	   hashead=true;
@@ -933,16 +922,14 @@ static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
 	   hashhea=true;
 	case CHR('v', 'h', 'e', 'a'):
 	   if (tabs[i].length != 36)
-	      LogError(_
-		       ("Table '%c%c%c%c' has a bad length, must be 36 but is %d."),
+	      ErrorMsg(2,"Table '%c%c%c%c' has a bad length, must be 36 but is %d.\n",
 		       tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 		       tabs[i].tag, tabs[i].length);
 	   break;
 	case CHR('m', 'a', 'x', 'p'):
 	   hasmaxp=true;
 	   if (tabs[i].length != 32 && tabs[i].length != 6)
-	      LogError(_
-		       ("Table '%c%c%c%c' has a bad length, must be 32 or 6 but is %d."),
+	      ErrorMsg(2,"Table '%c%c%c%c' has a bad length, must be 32 or 6 but is %d.\n",
 		       tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 		       tabs[i].tag, tabs[i].length);
 	   break;
@@ -950,8 +937,7 @@ static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
 	   hasos2=true;
 	   if (tabs[i].length != 78 && tabs[i].length != 86
 	       && tabs[i].length != 96)
-	      LogError(_
-		       ("Table '%c%c%c%c' has a bad length, must be 78, 86 or 96 but is %d."),
+	      ErrorMsg(2,"Table '%c%c%c%c' has a bad length, must be 78, 86 or 96 but is %d.\n",
 		       tabs[i].tag >> 24, tabs[i].tag >> 16, tabs[i].tag >> 8,
 		       tabs[i].tag, tabs[i].length);
 	   break;
@@ -973,24 +959,23 @@ static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
       }
    }
    if (!hashead)
-      LogError(_("Missing required table: \"head\""));
+      ErrorMsg(2,"Missing required table: \"head\"\n");
    if (!hashhea)
-      LogError(_("Missing required table: \"hhea\""));
+      ErrorMsg(2,"Missing required table: \"hhea\"\n");
    if (!hasmaxp)
-      LogError(_("Missing required table: \"maxp\""));
+      ErrorMsg(2,"Missing required table: \"maxp\"\n");
    if (!haspost)
-      LogError(_("Missing required table: \"post\""));
+      ErrorMsg(2,"Missing required table: \"post\"\n");
    if (!hasname)
-      LogError(_("Missing required table: \"name\""));
+      ErrorMsg(2,"Missing required table: \"name\"\n");
    if (hasglyf && !hasloca)
-      LogError(_("Missing required table: \"loca\""));
+      ErrorMsg(2,"Missing required table: \"loca\"\n");
    if (!hasos2)
-      LogError(_("Missing \"OS/2\" table"));
+      ErrorMsg(2,"Missing \"OS/2\" table\n");
    if (!hasglyf && hasloca)
-      LogError(_("Missing required table: \"glyf\""));
+      ErrorMsg(2,"Missing required table: \"glyf\"\n");
    if (!hasglyf && !hascff)
-      LogError(_
-	       ("This font contains neither \"CFF \" nor \"glyf\"/\"loca\" tables"));
+      ErrorMsg(2,"This font contains neither \"CFF \" nor \"glyf\"/\"loca\" tables\n");
 
    free(tabs);
    afseek(ttf, restore_this_pos, SEEK_SET);
@@ -1102,8 +1087,7 @@ static int readttfheader(AFILE *ttf,struct ttfinfo *info,char *filename,
    /* typ1 is used for both type1 fonts and CID type1 fonts, I don't think a version of 'CID ' is actually used */
    if (version==CHR('t', 'y', 'p', '1')
        || version==CHR('C', 'I', 'D', ' ')) {
-      LogError(_
-	       ("Nifty, you've got one of the old Apple/Adobe type1 sfnts here\n"));
+      ErrorMsg(2,"Nifty, you've got one of the old Apple/Adobe type1 sfnts here\n");
    } else if (version != 0x00010000 && version != CHR('t', 'r', 'u', 'e') && version != 0x00020000 &&	/* Windows 3.1 Chinese version used this version for some arphic fonts */
 	      /* See discussion on freetype list, july 2004 */
 	      version != CHR('O', 'T', 'T', 'O'))
@@ -1297,40 +1281,34 @@ static int readttfheader(AFILE *ttf,struct ttfinfo *info,char *filename,
 	      }
 	   if (j==info->savecnt) {
 	      if (first) {
-		 LogError(_
-			  ("The following table(s) in the font have been ignored by FontAnvil\n"));
+		 ErrorMsg(2,"The following table(s) in the font have been ignored by FontAnvil\n");
 		 first=false;
 	      }
 	      for (k=0; stdtables[k].tag != 0; ++k)
 		 if (stdtables[k].tag==tag)
 		    break;
 	      if (stdtables[k].tag==0) {
-		 LogError(_("  Ignoring '%c%c%c%c'\n"), tag >> 24, tag >> 16,
+		 ErrorMsg(2,"  Ignoring '%c%c%c%c'\n", tag >> 24, tag >> 16,
 			  tag >> 8, tag);
 	      } else {
-		 LogError(_("  Ignoring '%c%c%c%c' %s\n"), tag >> 24,
+		 ErrorMsg(2,"  Ignoring '%c%c%c%c' %s\n", tag >> 24,
 			  tag >> 16, tag >> 8, tag, _(stdtables[k].name));
 	      }
 	   }
       }
    }
    if (info->glyphlocations_start != 0 && info->cff_start != 0)
-      LogError(_
-	       ("This font contains both truetype and PostScript glyph descriptions\n  only one will be used.\n"));
+      ErrorMsg(2,"This font contains both truetype and PostScript glyph descriptions\n  only one will be used.\n");
    else if ((info->glyphlocations_start != 0) + (info->cff_start != 0) +
 	    (info->typ1_start != 0) > 1)
-      LogError(_
-	       ("This font contains multiple glyph descriptions\n  only one will be used.\n"));
+      ErrorMsg(2,"This font contains multiple glyph descriptions\n  only one will be used.\n");
    if (info->gpos_start != 0 && info->kern_start != 0)
-      LogError(_
-	       ("This font contains both a 'kern' table and a 'GPOS' table.\n  The 'kern' table will only be read if there is no 'kern' feature in 'GPOS'.\n"));
+      ErrorMsg(2,"This font contains both a 'kern' table and a 'GPOS' table.\n  The 'kern' table will only be read if there is no 'kern' feature in 'GPOS'.\n");
    if ((info->mort_start != 0 || info->morx_start != 0)
        && info->gsub_start != 0)
-      LogError(_
-	       ("This font contains both a 'mor[tx]' table and a 'GSUB' table.\n  FF will only read feature/settings in 'morx' which do not match features\n  found in 'GSUB'.\n"));
+      ErrorMsg(2,"This font contains both a 'mor[tx]' table and a 'GSUB' table.\n  FF will only read feature/settings in 'morx' which do not match features\n  found in 'GSUB'.\n");
    if (info->base_start != 0 && info->bsln_start != 0)
-      LogError(_
-	       ("This font contains both a 'BASE' table and a 'bsln' table.\n  FontAnvil will only read one of them ('BASE').\n"));
+      ErrorMsg(2,"This font contains both a 'BASE' table and a 'bsln' table.\n  FontAnvil will only read one of them ('BASE').\n");
    return (true);
 }
 
@@ -1443,10 +1421,8 @@ static void readttfmaxp(AFILE *ttf,struct ttfinfo *info) {
       /* X11 OpenType bitmap format */ ;
       info->onlystrikes=true;
    } else if (cnt != info->glyph_cnt && info->loca_length != 0) {
-      ff_post_notice(_("Bad Glyph Count"),
-		     _
-		     ("Font file has bad glyph count field. maxp says: %d sizeof(loca)=>%d"),
-		     cnt, info->glyph_cnt);
+      ErrorMsg(2,"Font file has bad glyph count field.  maxp says: "
+                 "%d sizeof(loca)=>%d\n",cnt,info->glyph_cnt);
       info->bad_glyph_data=true;
       if (cnt > info->glyph_cnt)
 	 cnt=info->glyph_cnt;	/* Use the smaller of the two values */
@@ -1556,8 +1532,7 @@ static void ValidatePostScriptFontName(struct ttfinfo *info,char *str) {
    /*  only printable ASCII should be used */
    if (((uint8 *) str)[0]==0xef && ((uint8 *) str)[1]==0xbb
        && ((uint8 *) str)[2]==0xbf) {
-      LogError(_
-	       ("The fontname begins with the utf8 byte order sequence. This is illegal. %s"),
+      ErrorMsg(2,"The fontname begins with the utf8 byte order sequence. This is illegal. %s\n",
 	       str + 3);
       info->bad_ps_fontname=true;
       for (pt=str + 3; *pt; ++pt)
@@ -1566,8 +1541,7 @@ static void ValidatePostScriptFontName(struct ttfinfo *info,char *str) {
    strtod(str, &end);
    if ((*end=='\0' || (isdigit(str[0]) && strchr(str, '#') != NULL)) &&
        *str != '\0') {
-      ff_post_error(_("Bad Font Name"),
-		    _("A PostScript name may not be a number"));
+      ErrorMsg(2,"A Postscript name may not be a number.\n");
       info->bad_ps_fontname=true;
       *str='a';
       complained=true;
@@ -1578,10 +1552,10 @@ static void ValidatePostScriptFontName(struct ttfinfo *info,char *str) {
 	  *pt==')' || *pt==']' || *pt=='}' || *pt=='>' ||
 	  *pt=='%' || *pt=='/') {
 	 if (!complained) {
-	    ff_post_error(_("Bad Font Name"),
-			  _
-			  ("The PostScript font name \"%.63s\" is invalid.\nIt should be printable ASCII,\nmust not contain (){}[]<>%%/ or space\nand must be shorter than 63 characters"),
-			  str);
+	    ErrorMsg(2,"The PostScript font name \"%.63s\" is invalid.\n"
+	               "It should be printable ASCII,\nmust not contain "
+	               "(){}[]<>%%/ or space,\nand it must be shorter than "
+	               "63 characters.\n",str);
 	    info->bad_ps_fontname=true;
 	 }
 	 complained=true;
@@ -1592,10 +1566,10 @@ static void ValidatePostScriptFontName(struct ttfinfo *info,char *str) {
       }
    }
    if (strlen(str) > 63) {
-      ff_post_error(_("Bad Font Name"),
-		    _
-		    ("The PostScript font name \"%.63s\" is invalid.\nIt should be printable ASCII,\nmust not contain (){}[]<>%%/ or space\nand must be shorter than 63 characters"),
-		    str);
+	    ErrorMsg(2,"The PostScript font name \"%.63s\" is invalid.\n"
+	               "It should be printable ASCII,\nmust not contain "
+	               "(){}[]<>%%/ or space,\nand it must be shorter than "
+	               "63 characters.\n",str);
       info->bad_ps_fontname=true;
       str[63]='\0';
    }
@@ -1708,24 +1682,20 @@ static void TTFAddLangStr(AFILE *ttf,struct ttfinfo *info,int id,
    } else if (plat==1) {
       /* Mac string doesn't match mac unicode string */
       if (!IsSubSetOf(str, cur->names[id]))
-	 LogError(_
-		  ("Warning: Mac and Unicode entries in the 'name' table differ for the\n %s string in the language %s\n Mac String: %s\nMac Unicode String: %s\n"),
+	 ErrorMsg(2,"Warning: Mac and Unicode entries in the 'name' table differ for the\n %s string in the language %s\n Mac String: %s\nMac Unicode String: %s\n",
 		  TTFNameIds(id), MSLangString(language), str,
 		  cur->names[id]);
       else
-	 LogError(_
-		  ("Warning: Mac string is a subset of the Unicode string in the 'name' table\n for the %s string in the %s language.\n"),
+	 ErrorMsg(2,"Warning: Mac string is a subset of the Unicode string in the 'name' table\n for the %s string in the %s language.\n",
 		  TTFNameIds(id), MSLangString(language));
       free(str);
    } else if (plat==3 && (cur->frommac[id / 32] & (1 << (id & 0x1f)))) {
       if (!IsSubSetOf(cur->names[id], str))
-	 LogError(_
-		  ("Warning: Mac and Windows entries in the 'name' table differ for the\n %s string in the language %s\n Mac String: %s\nWindows String: %s\n"),
+	 ErrorMsg(2,"Warning: Mac and Windows entries in the 'name' table differ for the\n %s string in the language %s\n Mac String: %s\nWindows String: %s\n",
 		  TTFNameIds(id), MSLangString(language), cur->names[id],
 		  str);
       else
-	 LogError(_
-		  ("Warning: Mac string is a subset of the Windows string in the 'name' table\n for the %s string in the %s language.\n"),
+	 ErrorMsg(2,"Warning: Mac string is a subset of the Windows string in the 'name' table\n for the %s string in the %s language.\n",
 		  TTFNameIds(id), MSLangString(language));
       free(cur->names[id]);
       cur->names[id]=str;
@@ -2113,7 +2083,7 @@ static void readttfsimpleglyph(AFILE *ttf,struct ttfinfo *info,
       endpt[i]=getushort(ttf);
       if (i != 0 && endpt[i] < endpt[i - 1]) {
 	 info->bad_glyph_data=true;
-	 LogError(_("Bad tt font: contour ends make no sense in glyph %d.\n"),
+	 ErrorMsg(2,"Bad tt font: contour ends make no sense in glyph %d.\n",
 		  sc->orig_pos);
 	 return;
       }
@@ -2138,7 +2108,7 @@ static void readttfsimpleglyph(AFILE *ttf,struct ttfinfo *info,
 	 int cnt=agetc(ttf);
 
 	 if (i + cnt >= tot) {
-	    IError("Flag count is wrong (or total is): %d %d", i + cnt, tot);
+	    ErrorMsg(2,"Flag count is wrong (or total is): %d %d\n", i + cnt, tot);
 	    cnt=tot - i - 1;
 	 }
 	 for (j=0; j < cnt; ++j)
@@ -2149,7 +2119,7 @@ static void readttfsimpleglyph(AFILE *ttf,struct ttfinfo *info,
 	 break;
    }
    if (i != tot)
-      IError("Flag count is wrong (or total is): %d %d in glyph %d", i, tot,
+      ErrorMsg(2,"Flag count is wrong (or total is): %d %d in glyph %d\n", i, tot,
 	     sc->orig_pos);
 
    last_pos=0;
@@ -2167,12 +2137,11 @@ static void readttfsimpleglyph(AFILE *ttf,struct ttfinfo *info,
       last_pos=pts[i].x;
       if ((last_pos < gbb[0] || last_pos > gbb[2]) && (flags[i] & _On_Curve)) {
 	 if (!info->gbbcomplain || (info->openflags & of_fontlint)) {
-	    LogError(_
-		     ("A point in GID %d is outside the glyph bounding box\n"),
+	    ErrorMsg(2,"A point in GID %d is outside the glyph bounding box\n",
 		     sc->orig_pos);
 	    info->bad_glyph_data=true;
 	    if (!(info->openflags & of_fontlint))
-	       LogError(_("  Subsequent errors will not be reported.\n"));
+	       ErrorMsg(2,"  Subsequent errors will not be reported.\n");
 	    info->gbbcomplain=true;
 	 }
       }
@@ -2193,12 +2162,11 @@ static void readttfsimpleglyph(AFILE *ttf,struct ttfinfo *info,
       last_pos=pts[i].y;
       if ((last_pos < gbb[1] || last_pos > gbb[3]) && (flags[i] & _On_Curve)) {
 	 if (!info->gbbcomplain || (info->openflags & of_fontlint)) {
-	    LogError(_
-		     ("A point in GID %d is outside the glyph bounding box\n"),
+	    ErrorMsg(2,"A point in GID %d is outside the glyph bounding box\n",
 		     sc->orig_pos);
 	    info->bad_glyph_data=true;
 	    if (!(info->openflags & of_fontlint))
-	       LogError(_("  Subsequent errors will not be reported.\n"));
+	       ErrorMsg(2,"  Subsequent errors will not be reported.\n");
 	    info->gbbcomplain=true;
 	 }
       }
@@ -2216,7 +2184,7 @@ static void readttfsimpleglyph(AFILE *ttf,struct ttfinfo *info,
    free(flags);
    free(pts);
    if (afeof(ttf)) {
-      LogError(_("Reached end of file when reading simple glyph\n"));
+      ErrorMsg(2,"Reached end of file when reading simple glyph\n");
       info->bad_glyph_data=true;
    }
 }
@@ -2230,15 +2198,14 @@ static void readttfcompositglyph(AFILE *ttf,struct ttfinfo *info,
    int use_my_metrics=0;
 
    if (aftell(ttf) >= end) {
-      LogError(_("Empty composite %d\n"), sc->orig_pos);
+      ErrorMsg(2,"Empty composite %d\n", sc->orig_pos);
       info->bad_glyph_data=true;
       return;
    }
 
    do {
       if (aftell(ttf) >= end) {
-	 LogError(_
-		  ("Bad flags value, implied MORE components at end of glyph %d\n"),
+	 ErrorMsg(2,"Bad flags value, implied MORE components at end of glyph %d\n",
 		  sc->orig_pos);
 	 info->bad_glyph_data=true;
 	 break;
@@ -2247,8 +2214,7 @@ static void readttfcompositglyph(AFILE *ttf,struct ttfinfo *info,
       flags=getushort(ttf);
       cur->orig_pos=getushort(ttf);
       if (afeof(ttf) || cur->orig_pos >= info->glyph_cnt) {
-	 LogError(_
-		  ("Reference to glyph %d out of bounds when parsing 'glyf' table.\n"),
+	 ErrorMsg(2,"Reference to glyph %d out of bounds when parsing 'glyf' table.\n",
 		  cur->orig_pos);
 	 info->bad_glyph_data=true;
 	 cur->orig_pos=0;
@@ -2265,8 +2231,7 @@ static void readttfcompositglyph(AFILE *ttf,struct ttfinfo *info,
       cur->use_my_metrics=(flags & _USE_MY_METRICS) ? 1 : 0;
       if (cur->use_my_metrics) {
 	 if (use_my_metrics) {
-	    LogError(_
-		     ("Use-my-metrics flag set on at least two components in glyph %d\n"),
+	    ErrorMsg(2,"Use-my-metrics flag set on at least two components in glyph %d\n",
 		     sc->orig_pos);
 	    info->bad_glyph_data=true;
 	 } else
@@ -2342,8 +2307,7 @@ static void readttfcompositglyph(AFILE *ttf,struct ttfinfo *info,
 	 }
       }
       if (cur->orig_pos >= info->glyph_cnt) {
-	 LogError(_
-		  ("Glyph %d attempts to reference glyph %d which is outside the font\n"),
+	 ErrorMsg(2,"Glyph %d attempts to reference glyph %d which is outside the font\n",
 		  sc->orig_pos, cur->orig_pos);
 	 chunkfree(cur, sizeof(*cur));
       } else {
@@ -2354,7 +2318,7 @@ static void readttfcompositglyph(AFILE *ttf,struct ttfinfo *info,
 	 last=cur;
       }
       if (afeof(ttf)) {
-	 LogError(_("Reached end of file when reading composite glyph\n"));
+	 ErrorMsg(2,"Reached end of file when reading composite glyph\n");
 	 info->bad_glyph_data=true;
 	 break;
       }
@@ -2389,15 +2353,14 @@ static SplineChar *readttfglyph(AFILE *ttf,struct ttfinfo *info,int start,
 
    if (end > info->glyph_length) {
       if (!info->complainedbeyondglyfend)
-	 LogError(_
-		  ("Bad glyph (%d), its definition extends beyond the end of the glyf table\n"),
+	 ErrorMsg(2,"Bad glyph (%d), its definition extends beyond the end of the glyf table\n",
 		  gid);
       info->bad_glyph_data=true;
       info->complainedbeyondglyfend=true;
       SplineCharFree(sc);
       return (NULL);
    } else if (end < start) {
-      LogError(_("Bad glyph (%d), its data length is negative\n"), gid);
+      ErrorMsg(2,"Bad glyph (%d), its data length is negative\n", gid);
       SplineCharFree(sc);
       return (NULL);
    }
@@ -2417,12 +2380,11 @@ static SplineChar *readttfglyph(AFILE *ttf,struct ttfinfo *info,int start,
        && (gbb[0] < info->fbb[0] || gbb[1] < info->fbb[1]
 	   || gbb[2] > info->fbb[2] || gbb[3] > info->fbb[3])) {
       if (!info->bbcomplain || (info->openflags & of_fontlint)) {
-	 LogError(_
-		  ("Glyph bounding box data exceeds font bounding box data for GID %d\n"),
+	 ErrorMsg(2,"Glyph bounding box data exceeds font bounding box data for GID %d\n",
 		  gid);
 	 info->bad_glyph_data=true;
 	 if (!(info->openflags & of_fontlint))
-	    LogError(_("  Subsequent errors will not be reported.\n"));
+	    ErrorMsg(2,"  Subsequent errors will not be reported.\n");
 	 info->bbcomplain=true;
       }
    }
@@ -2434,13 +2396,11 @@ static SplineChar *readttfglyph(AFILE *ttf,struct ttfinfo *info,int start,
    /* because the components may not have been read in yet */
    /* I'll check against the font bb later, if validation mode */
    if (start > end) {
-      LogError(_
-	       ("Bad glyph (%d), disordered 'loca' table (start comes after end)\n"),
+      ErrorMsg(2,"Bad glyph (%d), disordered 'loca' table (start comes after end)\n",
 	       gid);
       info->bad_glyph_data=true;
    } else if (aftell(ttf) > info->glyph_start + end) {
-      LogError(_
-	       ("Bad glyph (%d), its definition extends beyond the space allowed for it\n"),
+      ErrorMsg(2,"Bad glyph (%d), its definition extends beyond the space allowed for it\n",
 	       gid);
       info->bad_glyph_data=true;
    }
@@ -2929,7 +2889,7 @@ static char **readcfffontnames(AFILE *ttf,int *cnt,struct ttfinfo *info) {
 /* GT: The CFF font type contains a thing called a name INDEX, and that INDEX */
 /* GT: is bad. It is an index of many of the names used in the CFF font. */
 /* GT: We hope the user will never see this. */
-	 LogError(_("Bad CFF name INDEX\n"));
+	 ErrorMsg(2,"Bad CFF name INDEX\n");
 	 if (info != NULL)
 	    info->bad_cff=true;
 	 while (i < count) {
@@ -3012,7 +2972,7 @@ static int readcffthing(AFILE *ttf,int *_ival,real *dval,int *operand,
       *_ival=(int) (ival | agetc(ttf));
       return (1);
    }
-   LogError(_("Unexpected value in dictionary %d\n"), ch);
+   ErrorMsg(2,"Unexpected value in dictionary %d\n", ch);
    info->bad_cff=true;
    *_ival=0;
    return (0);
@@ -3029,8 +2989,7 @@ static void skipcfft2thing(AFILE *ttf) {
    int ch;
 
 /* GT: DICT is a magic term inside CFF fonts, as is INDEX, and I guess CFF and type2 */
-   LogError(_
-	    ("FontAnvil does not support type2 programs embedded in CFF DICT INDICES.\n"));
+   ErrorMsg(2,"FontAnvil does not support type2 programs embedded in CFF DICT INDICES.\n");
    while (1) {
       ch=agetc(ttf);
       if (ch >= 247 && ch <= 254)
@@ -3180,7 +3139,7 @@ static void readcffsubrs(AFILE *ttf,struct pschars *subs,
 	 subs->values[i][j]='\0';
       } else {
 	 if (!err)
-	    LogError(_("Bad subroutine INDEX in cff font.\n"));
+	    ErrorMsg(2,"Bad subroutine INDEX in cff font.\n");
 	 info->bad_cff=true;
 	 err=true;
 	 subs->lens[i]=1;
@@ -3233,7 +3192,7 @@ static struct topdicts *readcfftopdict(AFILE *ttf,char *fontname,int len,
       if (ret==3 && oval==31 /* "T2" operator, can have 0 arguments */ ) {
 	 skipcfft2thing(ttf);
       } else if (sp==0) {
-	 LogError(_("No argument to operator\n"));
+	 ErrorMsg(2,"No argument to operator\n");
 	 info->bad_cff=true;
       } else if (ret==3)
 	 switch (oval) {
@@ -3305,7 +3264,7 @@ static struct topdicts *readcfftopdict(AFILE *ttf,char *fontname,int len,
 	      td->private_offset=stack[1];
 	      break;
 	   case (12 << 8) + 20:
-	      LogError(_("FontAnvil does not support synthetic fonts\n"));
+	      ErrorMsg(2,"FontAnvil does not support synthetic fonts\n");
 	      td->synthetic_base=stack[sp - 1];
 	      break;
 	   case (12 << 8) + 21:
@@ -3319,8 +3278,7 @@ static struct topdicts *readcfftopdict(AFILE *ttf,char *fontname,int len,
 		 td->basefontblend[i]=stack[i];
 	      break;
 	   case (12 << 8) + 24:
-	      LogError(_
-		       ("FontAnvil does not support type2 multiple master fonts\n"));
+	      ErrorMsg(2,"FontAnvil does not support type2 multiple master fonts\n");
 	      info->bad_cff=true;
 	      td->nMasters=stack[0];
 	      td->nAxes=sp - 4;
@@ -3364,10 +3322,10 @@ static struct topdicts *readcfftopdict(AFILE *ttf,char *fontname,int len,
 	      td->sid_fontname=stack[sp - 1];
 	      break;
 	   case (12 << 8) + 39:
-	      LogError(_("FontAnvil does not support Chameleon fonts\n"));;
+	      ErrorMsg(2,"FontAnvil does not support Chameleon fonts\n");;
 	      break;
 	   default:
-	      LogError(_("Unknown operator in %s: %x\n"), fontname, oval);
+	      ErrorMsg(2,"Unknown operator in %s: %x\n", fontname, oval);
 	      info->bad_cff=true;
 	      break;
 	 }
@@ -3393,7 +3351,7 @@ static void readcffprivate(AFILE *ttf,struct topdicts *td,
 
    while (aftell(ttf) < end) {
       if (afeof(ttf)) {
-	 LogError(_("End of file found when reading private dictionary.\n"));
+	 ErrorMsg(2,"End of file found when reading private dictionary.\n");
 	 break;
       }
       sp=0;
@@ -3408,7 +3366,7 @@ static void readcffprivate(AFILE *ttf,struct topdicts *td,
 	 skipcfft2thing(ttf);
       } else if (sp==0 && oval != 6 && oval != 7 && oval != 8 && oval != 9
 		 && oval != (12 << 8) + 12 && oval != (12 << 8) + 13) {
-	 LogError(_("No argument to operator %d in private dict\n"), oval);
+	 ErrorMsg(2,"No argument to operator %d in private dict\n", oval);
 	 info->bad_cff=true;
       } else if (ret==3)
 	 switch (oval) {
@@ -3510,7 +3468,7 @@ static void readcffprivate(AFILE *ttf,struct topdicts *td,
 	      td->nominalwidthx=stack[sp - 1];
 	      break;
 	   default:
-	      LogError(_("Unknown operator in %s: %x\n"), td->fontname, oval);
+	      ErrorMsg(2,"Unknown operator in %s: %x\n", td->fontname, oval);
 	      info->bad_cff=true;
 	      break;
 	 }
@@ -3564,7 +3522,7 @@ static const char *getsid(int sid,char **strings,int scnt,
    else if (sid < nStdStrings)
       return (cffnames[sid]);
    else if (sid - nStdStrings > scnt) {
-      LogError(_("Bad sid %d (must be less than %d)\n"), sid,
+      ErrorMsg(2,"Bad sid %d (must be less than %d)\n", sid,
 	       scnt + nStdStrings);
       if (info != NULL)
 	 info->bad_cff=true;
@@ -3634,7 +3592,7 @@ static void readcffenc(AFILE *ttf,struct topdicts *dict,
 	    }
 	 }
       } else {
-	 LogError(_("Unexpected encoding format in cff: %d\n"), format);
+	 ErrorMsg(2,"Unexpected encoding format in cff: %d\n", format);
 	 if (info != NULL)
 	    info->bad_cff=true;
       }
@@ -3762,7 +3720,7 @@ static void readcffset(AFILE *ttf,struct topdicts *dict,
 	       dict->charset[i++]=++first;
 	 }
       } else {
-	 LogError(_("Unexpected charset format in cff: %d\n"), format);
+	 ErrorMsg(2,"Unexpected charset format in cff: %d\n", format);
 	 if (info != NULL)
 	    info->bad_cff=true;
       }
@@ -3788,7 +3746,7 @@ static uint8 *readfdselect(AFILE *ttf,int numglyphs,struct ttfinfo *info) {
 	 end=getushort(ttf);
 	 for (j=first; j < end; ++j) {
 	    if (j >= numglyphs) {
-	       LogError(_("Bad fdselect\n"));
+	       ErrorMsg(2,"Bad fdselect\n");
 	       if (info != NULL)
 		  info->bad_cff=true;
 	    } else
@@ -3797,7 +3755,7 @@ static uint8 *readfdselect(AFILE *ttf,int numglyphs,struct ttfinfo *info) {
 	 first=end;
       }
    } else {
-      LogError(_("Didn't understand format for fdselect %d\n"), format);
+      ErrorMsg(2,"Didn't understand format for fdselect %d\n", format);
       if (info != NULL)
 	 info->bad_cff=true;
    }
@@ -4171,7 +4129,7 @@ static void cidfigure(struct ttfinfo *info,struct topdicts *dict,
       sf->glyphs[cid]->parent=sf;
       sf->glyphs[cid]->orig_pos=cid;	/* Bug! should be i, but I assume sf->chars[orig_pos]->orig_pos==orig_pos */
       if (sf->glyphs[cid]->layers[ly_fore].refs != NULL)
-	 IError("Reference found in CID font. Can't fix it up");
+	 ErrorMsg(2,"Reference found in CID font. Can't fix it up\n");
       if (cstype==2) {
 	 if (sf->glyphs[cid]->width==(int16) 0x8000)
 	    sf->glyphs[cid]->width=subdicts[j]->defaultwidthx;
@@ -4202,7 +4160,7 @@ static int readcffglyphs(AFILE *ttf,struct ttfinfo *info) {
 
    afseek(ttf, info->cff_start, SEEK_SET);
    if (agetc(ttf) != '\1') {	/* Major version */
-      LogError(_("CFF version mismatch\n"));
+      ErrorMsg(2,"CFF version mismatch\n");
       info->bad_cff=true;
       return (0);
    }
@@ -4379,27 +4337,23 @@ static void readttfwidths(AFILE *ttf,struct ttfinfo *info) {
 	 if (lastwidth > info->advanceWidthMax && info->hhea_start != 0) {
 	    if (!info->wdthcomplain || (info->openflags & of_fontlint)) {
 	       if (info->fontname != NULL && sc->name != NULL)
-		  LogError(_
-			   ("In %s, the advance width (%d) for glyph %s is greater than the maximum (%d)\n"),
+		  ErrorMsg(2,"In %s, the advance width (%d) for glyph %s is greater than the maximum (%d)\n",
 			   info->fontname, lastwidth, sc->name,
 			   info->advanceWidthMax);
 	       else
-		  LogError(_
-			   ("In GID %d the advance width (%d) is greater than the stated maximum (%d)\n"),
+		  ErrorMsg(2,"In GID %d the advance width (%d) is greater than the stated maximum (%d)\n",
 			   i, lastwidth, info->advanceWidthMax);
 	       if (!(info->openflags & of_fontlint))
-		  LogError(_("  Subsequent errors will not be reported.\n"));
+		  ErrorMsg(2,"  Subsequent errors will not be reported.\n");
 	       info->wdthcomplain=true;
 	    }
 	 }
 	 if (check_width_consistency && sc->width != lastwidth) {
 	    if (info->fontname != NULL && sc->name != NULL)
-	       LogError(_
-			("In %s, in glyph %s, 'CFF ' advance width (%d) and\n  'hmtx' width (%d) do not match. (Subsequent mismatches will not be reported)\n"),
+	       ErrorMsg(2,"In %s, in glyph %s, 'CFF ' advance width (%d) and\n  'hmtx' width (%d) do not match. (Subsequent mismatches will not be reported)\n",
 			info->fontname, sc->name, sc->width, lastwidth);
 	    else
-	       LogError(_
-			("In GID %d, 'CFF ' advance width (%d) and 'hmtx' width (%d) do not match.\n  (Subsequent mismatches will not be reported)\n"),
+	       ErrorMsg(2,"In GID %d, 'CFF ' advance width (%d) and 'hmtx' width (%d) do not match.\n  (Subsequent mismatches will not be reported)\n",
 			i, sc->width, lastwidth);
 	    info->bad_metrics=true;
 	    check_width_consistency=false;
@@ -4416,8 +4370,7 @@ static void readttfwidths(AFILE *ttf,struct ttfinfo *info) {
       }
    }
    if (i==0) {
-      LogError(_
-	       ("Invalid ttf hmtx table (or hhea), numOfLongMetrics is 0\n"));
+      ErrorMsg(2,"Invalid ttf hmtx table (or hhea), numOfLongMetrics is 0\n");
       info->bad_metrics=true;
    }
 
@@ -4488,8 +4441,7 @@ static void readttfvwidths(AFILE *ttf,struct ttfinfo *info) {
 	 info->chars[i]->vwidth=lastvwidth;
    }
    if (i==0) {
-      LogError(_
-	       ("Invalid ttf vmtx table (or vhea), numOfLongVerMetrics is 0\n"));
+      ErrorMsg(2,"Invalid ttf vmtx table (or vhea), numOfLongVerMetrics is 0\n");
       info->bad_metrics=true;
    }
 
@@ -4502,7 +4454,7 @@ static void readttfvwidths(AFILE *ttf,struct ttfinfo *info) {
 
 static int badencoding(struct ttfinfo *info) {
    if (!info->bad_cmap) {
-      LogError(_("Bad encoding information in 'cmap' table."));
+      ErrorMsg(2,"Bad encoding information in 'cmap' table.\n");
       info->bad_cmap=true;
    }
    return (-1);
@@ -4601,8 +4553,7 @@ static int SubtableIsntSupported(AFILE *ttf,uint32 offset,
 
    cmap_enc->format=format=getushort(ttf);
    if (format < 0 || (format & 1) || format > 12) {
-      LogError(_
-	       ("Encoding subtable for platform=%d, specific=%d has an unsupported format %d.\n"),
+      ErrorMsg(2,"Encoding subtable for platform=%d, specific=%d has an unsupported format %d.\n",
 	       cmap_enc->platform, cmap_enc->specific, format);
       info->bad_cmap=true;
       ret=true;
@@ -4617,8 +4568,7 @@ static int SubtableIsntSupported(AFILE *ttf,uint32 offset,
       cmap_enc->lang=getlong(ttf);
    }
    if (len==0) {
-      LogError(_
-	       ("Encoding subtable for platform=%d, specific=%d has a 0 length subtable.\n"),
+      ErrorMsg(2,"Encoding subtable for platform=%d, specific=%d has a 0 length subtable.\n",
 	       cmap_enc->platform, cmap_enc->specific);
       info->bad_cmap=true;
       ret=true;
@@ -4636,8 +4586,7 @@ static int SubtableMustBe14(AFILE *ttf,uint32 offset,struct ttfinfo *info) {
 
    format=getushort(ttf);
    if (format != 14) {
-      LogError(_
-	       ("Encoding subtable for platform=%d, specific=%d (which must be 14)\nhas an unsupported format %d.\n"),
+      ErrorMsg(2,"Encoding subtable for platform=%d, specific=%d (which must be 14)\nhas an unsupported format %d.\n",
 	       0, 5, format);
       info->bad_cmap=true;
       ret=false;
@@ -4699,7 +4648,7 @@ static void ApplyVariationSequenceSubtable(AFILE *ttf,uint32 vs_map,
 		  }
 	       }
 	       if (gid==info->glyph_cnt) {
-		  LogError(_("No glyph with unicode U+%05x in font\n"), uni);
+		  ErrorMsg(2,"No glyph with unicode U+%05x in font\n", uni);
 		  info->bad_cmap=true;
 	       } else {
 		  altuni=chunkalloc(sizeof(struct altuni));
@@ -4734,8 +4683,7 @@ static void ApplyVariationSequenceSubtable(AFILE *ttf,uint32 vs_map,
 	    } else {
 	       if (curgid >= info->glyph_cnt || curgid < 0 ||
 		   info->chars[curgid]==NULL) {
-		  LogError(_
-			   ("GID out of range (%d) in format 14 'cmap' subtable\n"),
+		  ErrorMsg(2,"GID out of range (%d) in format 14 'cmap' subtable\n",
 			   cur_gid);
 		  info->bad_cmap=true;
 	       } else {
@@ -4944,7 +4892,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
       ++usable_encs;
    }
    if (usable_encs==0) {
-      LogError(_("Could not find any valid encoding tables"));
+      ErrorMsg(2,"Could not find any valid encoding tables\n");
       free(cmap_encs);
       return;
    }
@@ -5004,7 +4952,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 
    if (i==-1) {
       if (justinuse==git_normal)
-	 LogError(_("Could not find a usable encoding table"));
+	 ErrorMsg(2,"Could not find a usable encoding table\n");
       free(cmap_encs);
       return;
    }
@@ -5110,7 +5058,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 	 for (i=0; i < segCount; ++i)
 	    endchars[i]=getushort(ttf);
 	 if (getushort(ttf) != 0)
-	    IError("Expected 0 in 'cmap' format 4 subtable");
+	    ErrorMsg(2,"Expected 0 in 'cmap' format 4 subtable\n");
 	 startchars=malloc(segCount * sizeof(uint16));
 	 for (i=0; i < segCount; ++i)
 	    startchars[i]=getushort(ttf);
@@ -5124,8 +5072,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 	 /* that's the amount of space left in the subtable and it must */
 	 /*  be filled with glyphIDs */
 	 if (len < 0) {
-	    IError
-	       ("This font has an illegal format 4 subtable with too little space for all the segments.\nThis error is not recoverable.\nBye");
+	    ErrorMsg(3,"This font has an illegal format 4 subtable with too little space for all the segments.\n");
 	    exit(1);
 	 }
 	 glyphs=malloc(len);
@@ -5142,8 +5089,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 		     info->inuse[(uint16) (j + delta[i])]=true;
 		  else if ((uint16) (j + delta[i]) >= info->glyph_cnt
 			   || info->chars[(uint16) (j + delta[i])]==NULL) {
-		     LogError(_
-			      ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
+		     ErrorMsg(2,"Attempt to encode missing glyph %d to %d (0x%x)\n",
 			      (uint16)(j+delta[i]),j,j);
 		     info->bad_cmap=true;
 		  } else {
@@ -5152,8 +5098,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 
 		     if (uenc != -1 && used[uenc]) {
 			if (!badencwarned) {
-			   LogError(_
-				    ("Multiple glyphs map to the same unicode encoding U+%04X, only one will be used\n"),
+			   ErrorMsg(2,"Multiple glyphs map to the same unicode encoding U+%04X, only one will be used\n",
 				    uenc);
 			   info->bad_cmap=true;
 			   badencwarned=true;
@@ -5182,8 +5127,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 		  else {
 		     /* This happened in mingliu.ttc(PMingLiU) */
 		     if (justinuse==git_normal) {
-			LogError(_
-				 ("Glyph index out of bounds. Was %d, must be less than %d.\n In attempt to associate a glyph with encoding %x in segment %d\n with platform=%d, specific=%d (in 'cmap')\n"),
+			ErrorMsg(2,"Glyph index out of bounds. Was %d, must be less than %d.\n In attempt to associate a glyph with encoding %x in segment %d\n with platform=%d, specific=%d (in 'cmap')\n",
 				 temp, glyph_tot, j, i, dcmap[dc].platform,
 				 dcmap[dc].specific);
 			info->bad_cmap=true;
@@ -5197,15 +5141,13 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 			/*  MS Chinese fonts (kaiu.ttf) the index */
 			/*  goes out of bounds. and MS's ttf dump */
 			/*  program says it is treated as 0 */
-			LogError(_
-				 ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
+			ErrorMsg(2,"Attempt to encode missing glyph %d to %d (0x%x)\n",
 				 index,j,j);
 			info->bad_cmap=true;
 		     } else if (justinuse==git_justinuse)
 			info->inuse[index]=1;
 		     else if (info->chars[index]==NULL) {
-			LogError(_
-				 ("Attempt to encode missing glyph %d to %d (0x%x)\n"),
+			ErrorMsg(2,"Attempt to encode missing glyph %d to %d (0x%x)\n",
 				 index,j,j);
 			info->bad_cmap=true;
 		     } else {
@@ -5214,8 +5156,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 
 			if (uenc != -1 && used[uenc]) {
 			   if (!badencwarned) {
-			      LogError(_
-				       ("Multiple glyphs map to the same unicode encoding U+%04X, only one will be used\n"),
+			      ErrorMsg(2,"Multiple glyphs map to the same unicode encoding U+%04X, only one will be used\n",
 				       uenc);
 			      info->bad_cmap=true;
 			      badencwarned=true;
@@ -5233,8 +5174,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 		  }
 	       }
 	    } else {
-	       LogError(_
-			("Use of a range offset of 0xffff to mean a missing glyph in cmap table\n"));
+	       ErrorMsg(2,"Use of a range offset of 0xffff to mean a missing glyph in cmap table\n");
 	       info->bad_cmap=true;
 	    }
 	 }
@@ -5370,8 +5310,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 	 uint32 ngroups, start, end, startglyph;
 
 	 if (!enc->is_unicodefull) {
-	    IError
-	       ("I don't support 32 bit characters except for the UCS-4 (MS platform, specific=10)");
+	    ErrorMsg(2,"32-bit characters are not supported except for the UCS-4 (MS platform, specific=10)\n");
 	    enc=FindOrMakeEncoding("UnicodeFull");
 	 }
 	 /* I'm now assuming unicode surrogate encoding, so I just ignore */
@@ -5403,8 +5342,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 	 int first, count;
 
 	 if (!enc->is_unicodefull) {
-	    IError
-	       ("I don't support 32 bit characters except for the UCS-4 (MS platform, specific=10)");
+	    ErrorMsg(2,"32-bit characters are not supported except for the UCS-4 (MS platform, specific=10)\n");
 	    enc=FindOrMakeEncoding("UnicodeFull");
 	 }
 	 first=getlong(ttf);
@@ -5425,8 +5363,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 	 uint32 ngroups, start, end, startglyph;
 
 	 if (!enc->is_unicodefull) {
-	    IError
-	       ("I don't support 32 bit characters except for the UCS-4 (MS platform, specific=10)");
+	    ErrorMsg(2,"32-bit characters are not supported except for the UCS-4 (MS platform, specific=10)\n");
 	    enc=FindOrMakeEncoding("UnicodeFull");
 	 }
 	 ngroups=getlong(ttf);
@@ -5444,7 +5381,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 	       for (i=start; i <= end; ++i) {
 		  if (startglyph + i - start >= info->glyph_cnt ||
 		      info->chars[startglyph + i - start]==NULL) {
-		     LogError(_("Bad font: Encoding data out of range.\n"));
+		     ErrorMsg(2,"Bad font: Encoding data out of range.\n");
 		     info->bad_cmap=true;
 		     break;
 		  } else {
@@ -5538,12 +5475,10 @@ static void readttfos2metrics(AFILE *ttf,struct ttfinfo *info) {
    }
 
    if (info->os2_version==0) {
-      LogError(_
-	       ("Windows will reject fonts with an OS/2 version number of 0\n"));
+      ErrorMsg(2,"Windows will reject fonts with an OS/2 version number of 0\n");
       info->bad_os2_version=true;
    } else if (info->os2_version==1 && info->cff_start != 0) {
-      LogError(_
-	       ("Windows will reject otf (cff) fonts with an OS/2 version number of 1\n"));
+      ErrorMsg(2,"Windows will reject otf (cff) fonts with an OS/2 version number of 1\n");
       info->bad_os2_version=true;
    }
 }
@@ -5659,8 +5594,7 @@ static void readttfpostnames(AFILE *ttf,struct ttfinfo *info) {
 	    /* no name */
 	    if (!notdefwarned) {
 	       notdefwarned=true;
-	       LogError(_
-			("Glyph %d is called \".notdef\", a singularly inept choice of name (only glyph 0\n may be called .notdef)\nFontAnvil will rename it.\n"),
+	       ErrorMsg(2,"Glyph %d is called \".notdef\", a singularly inept choice of name (only glyph 0\n may be called .notdef)\nFontAnvil will rename it.\n",
 			i);
 	    }
 	    free(info->chars[i]->name);
@@ -5794,8 +5728,7 @@ int ttfFindPointInSC(SplineChar * sc, int layer, int pnum, BasePoint * pos,
    }
    for (refs=sc->layers[layer].refs; refs != NULL; refs=refs->next) {
       if (refs==bound) {
-	 LogError(_
-		  ("Invalid point match. Point would be after this reference.\n"));
+	 ErrorMsg(2,"Invalid point match. Point would be after this reference.\n");
 	 return (0x800000);
       }
       ret=ttfFindPointInSC(refs->sc, ly_fore, pnum - last, pos, NULL);
@@ -5813,7 +5746,7 @@ int ttfFindPointInSC(SplineChar * sc, int layer, int pnum, BasePoint * pos,
       }
       last += ret;
       if (last > pnum) {
-	 IError("Point match failure last=%d, pnum=%d", last, pnum);
+	 ErrorMsg(2,"Point match failure last=%d, pnum=%d\n", last, pnum);
 	 return (0x800000);
       }
    }
@@ -5826,8 +5759,7 @@ static void ttfPointMatch(SplineChar *sc,RefChar *rf) {
    if (ttfFindPointInSC(sc, ly_fore, rf->match_pt_base, &sofar, rf) != -1 ||
        ttfFindPointInSC(rf->sc, ly_fore, rf->match_pt_ref, &inref,
 			NULL) != -1) {
-      LogError(_
-	       ("Could not match points in composite glyph (%d to %d) when adding %s to %s\n"),
+      ErrorMsg(2,"Could not match points in composite glyph (%d to %d) when adding %s to %s\n",
 	       rf->match_pt_base, rf->match_pt_ref, rf->sc->name, sc->name);
       return;
    }
@@ -5886,7 +5818,7 @@ static void TtfCopyTableBlindly(struct ttfinfo *info,AFILE *ttf,
    if (start==0 || len==0)
       return;
    if (len > 0x1000000) {
-      LogError(_("Unlikely length for table, so I'm ignoring it. %u\n"), len);
+      ErrorMsg(2,"Unlikely length for table, so I'm ignoring it. %u\n", len);
       return;
    }
 
@@ -5975,9 +5907,8 @@ static int readttf(AFILE *ttf,struct ttfinfo *info,char *filename) {
    if (info->bitmapdata_start != 0 && info->bitmaploc_start != 0)
       TTFLoadBitmaps(ttf, info, info->onlyonestrike);
    else if (info->onlystrikes)
-      ff_post_error(_("No Bitmap Strikes"),
-		    _("No (useable) bitmap strikes in this TTF font: %s"),
-		    filename==NULL ? "<unknown>" : filename);
+      ErrorMsg(2,"No (useable) bitmap strikes in this TTF font: %s\n",
+               filename==NULL?"<unknown>":filename);
    if (info->onlystrikes && info->bitmaps==NULL) {
       free(info->chars);
       setlocale(LC_NUMERIC, oldloc);
@@ -6140,11 +6071,9 @@ static void NameConsistancyCheck(SplineFont *sf,EncMap *map) {
 	       if (alt==NULL) {
 		  if (strcmp(sc->name, "alefmaksurainitialarabic")==0 ||
 		      strcmp(sc->name, "alefmaksuramedialarabic")==0) {
-		     LogError(_
-			      ("The names 'alefmaksurainitialarabic' and 'alefmaksuramedialarabic' in the Adobe Glyph List disagree with Unicode.  The use of these glyph names is therefore discouraged.\n"));
+		     ErrorMsg(2,"The names 'alefmaksurainitialarabic' and 'alefmaksuramedialarabic' in the Adobe Glyph List disagree with Unicode.  The use of these glyph names is therefore discouraged.\n");
 		  } else {
-		     LogError(_
-			      ("The glyph named %.30s is mapped to U+%04X.\nBut its name indicates it should be mapped to U+%04X.\n"),
+		     ErrorMsg(2,"The glyph named %.30s is mapped to U+%04X.\nBut its name indicates it should be mapped to U+%04X.\n",
 			      sc->name, sc->unicodeenc, uni);
 		  }
 	       } else if (alt->vs==0) {
@@ -6731,15 +6660,13 @@ static SplineFont *SFFillFromTTF(struct ttfinfo *info) {
 		  /* Skip it, no points */ ;
 	       else if (b.minx < info->fbb[0] || b.miny < info->fbb[1] ||
 			b.maxx > info->fbb[2] || b.maxy > info->fbb[3]) {
-		  LogError(_
-			   ("A point in %s is outside the font bounding box data.\n"),
+		  ErrorMsg(2,"A point in %s is outside the font bounding box data.\n",
 			   sc->name);
 		  info->bad_cff=true;
 	       }
 	       if (info->isFixedPitch && i > 2
 		   && sc->width != info->advanceWidthMax)
-		  LogError(_
-			   ("The advance width of %s (%d) does not match the font's advanceWidthMax (%d) and this is a fixed pitch font\n"),
+		  ErrorMsg(2,"The advance width of %s (%d) does not match the font's advanceWidthMax (%d) and this is a fixed pitch font\n",
 			   sc->name, sc->width, info->advanceWidthMax);
 	    }
 	 }
@@ -6845,7 +6772,7 @@ char **NamesReadCFF(char *filename) {
    if (cff==NULL)
       return (NULL);
    if (agetc(cff) != '\1') {	/* Major version */
-      LogError(_("CFF version mismatch\n"));
+      ErrorMsg(2,"CFF version mismatch\n");
       afclose(cff);
       return (NULL);
    }

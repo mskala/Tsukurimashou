@@ -1,4 +1,4 @@
-/* $Id: bezctx_ff.c 3858 2015-03-25 13:49:37Z mskala $ */
+/* $Id: bezctx_ff.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* This file written by George Williams to provide a gateway to fontanvil */
 /* it it a modification of Raph's bezctx_ps.c */
 #include <basics.h>
@@ -23,7 +23,7 @@ typedef struct {
 static void nancheck(bezctx_ff *bc) {
 
    if (!bc->gotnans) {		/* Called when we get passed a NaN. Complain the first time that happens */
-      LogError(_("Spiros did not converge"));
+      ErrorMsg(2,"Spiros did not converge\n");
       bc->gotnans=true;
    }
 }

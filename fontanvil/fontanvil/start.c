@@ -1,4 +1,4 @@
-/* $Id: start.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: start.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -240,7 +240,7 @@ static int encmatch(const char *enc,int subok) {
       test=iconv_open(enc, FindUnicharName());
       if (test==(iconv_t) (-1) || test==NULL) {
 	 if (last_complaint==NULL || strcmp(last_complaint, enc) != 0) {
-	    afprintf(stderr,
+	    ErrorMsg(1,
 		    "Neither FontAnvil nor iconv() supports your encoding (%s) we will pretend\n you asked for latin1 instead.\n",
 		    enc);
 	    free(last_complaint);
@@ -248,7 +248,7 @@ static int encmatch(const char *enc,int subok) {
 	 }
       } else {
 	 if (last_complaint==NULL || strcmp(last_complaint, enc) != 0) {
-	    afprintf(stderr,
+	    ErrorMsg(1,
 		    "FontAnvil does not support your encoding (%s), it will try to use iconv()\n or it will pretend the local encoding is latin1\n",
 		    enc);
 	    free(last_complaint);
@@ -258,7 +258,7 @@ static int encmatch(const char *enc,int subok) {
 	 iconv_close(test);
       }
 #else
-      afprintf(stderr,
+      ErrorMsg(1,
 	      "FontAnvil does not support your encoding (%s), it will pretend the local encoding is latin1\n",
 	      enc);
 #endif
@@ -308,7 +308,7 @@ void InitSimpleStuff(void) {
 
    if (!AddEncoding
        ("EUC-GB12345", euc_gb12345_to_uni, uni_to_euc_gb12345, 65535))
-      LogError("Failed to add EUC-GB12345");
+      ErrorMsg(2,"Failed to add EUC-GB12345\n");
 
    setlocale(LC_ALL, "");
    localeinfo=*localeconv();

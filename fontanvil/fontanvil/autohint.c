@@ -1,4 +1,4 @@
-/* $Id: autohint.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: autohint.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1115,7 +1115,7 @@ real EITOfNextMajor(EI * e, EIList * el, real sought_m) {
 
    if (msp->a==0 && msp->b==0) {
       if (msp->c==0) {
-	 IError("Hor/Vert line when not expected");
+	 ErrorMsg(2,"Hor/Vert line when not expected\n");
 	 return (0);
       }
       new_t=(sought_m - msp->d) / (msp->c);
@@ -1138,7 +1138,7 @@ real EITOfNextMajor(EI * e, EIList * el, real sought_m) {
 	 t_mmin=new_t;
       }
       if (t_mmax==t_mmin) {
-	 IError("EITOfNextMajor failed! on %s",
+	 ErrorMsg(2,"EITOfNextMajor failed! on %s\n",
 		el->sc != NULL ? el->sc->name : "Unknown");
 	 return (new_t);
       }
@@ -1894,7 +1894,7 @@ void SCGuessDHintInstances(SplineChar * sc, int layer, DStemInfo * ds) {
       ds->right=sd->right;
       ds->where=DStemAddHIFromActive(sd);
       if (ds->where==NULL)
-	 IError("Couldn't figure out where this hint is active");
+	 ErrorMsg(2,"Couldn't figure out where this hint is active\n");
    }
    GlyphDataFree(gd);
 }
@@ -1916,9 +1916,9 @@ void SCGuessHHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
    }
    sc->hconflicts=StemListAnyConflicts(sc->hstem);
    if (stem->hasconflicts) {
-      /*StemInfoReduceOverlap(sc->hstem,stem); *//* User asked for it, assume s/he knows what s/he's doing */
+      /*StemInfoReduceOverlap(sc->hstem,stem); *//* User asked for it, assume he knows what he's doing */
       if (stem->where==NULL)
-	 IError("Couldn't figure out where this hint is active");
+	 ErrorMsg(2,"Couldn't figure out where this hint is active\n");
    }
 }
 
@@ -1939,9 +1939,9 @@ void SCGuessVHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
    }
    sc->vconflicts=StemListAnyConflicts(sc->vstem);
    if (stem->hasconflicts) {
-      /*StemInfoReduceOverlap(sc->vstem,stem); *//* User asked for it, assume s/he knows what s/he's doing */
+      /*StemInfoReduceOverlap(sc->vstem,stem); *//* User asked for it, assume he knows what he's doing */
       if (stem->where==NULL)
-	 IError("Couldn't figure out where this hint is active");
+	 ErrorMsg(2,"Couldn't figure out where this hint is active\n");
    }
 }
 

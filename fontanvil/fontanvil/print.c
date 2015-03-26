@@ -1,4 +1,4 @@
-;/* $Id: print.c 3862 2015-03-25 15:56:41Z mskala $ */
+;/* $Id: print.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -611,7 +611,7 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
       int lenpos, lenstart, len;
 
       if (pattern_sc==NULL)
-	 LogError(_("No glyph named %s, used as a pattern in %s\n"),
+	 ErrorMsg(2,"No glyph named %s, used as a pattern in %s\n",
 		  pat->pattern, sc->name);
       PatternSCBounds(pattern_sc, &b);
 
@@ -1667,8 +1667,7 @@ static int PIDownloadFont(PI *pi,SplineFont *sf,EncMap *map) {
 
    sfbit->fontfile=atmpfile();
    if (sfbit->fontfile==NULL) {
-      ff_post_error(_("Failed to open temporary output file"),
-		    _("Failed to open temporary output file"));
+	 ErrorMsg(2,"Failed to open temporary output file\n");
       return (false);
    }
    if (pi->printtype==pt_pdf && sf->multilayer) {
@@ -1691,8 +1690,7 @@ static int PIDownloadFont(PI *pi,SplineFont *sf,EncMap *map) {
       error=true;
 
    if (error) {
-      ff_post_error(_("Failed to generate postscript font"),
-		    _("Failed to generate postscript font"));
+	 ErrorMsg(2,"Failed to generate Postscript font\n");
       afclose(sfbit->fontfile);
       return (false);
    }
@@ -1973,8 +1971,7 @@ static void PIFontDisplay(PI *pi) {
    while (DumpLine(pi));
 
    if (pi->chline==0)
-      ff_post_notice(_("Print Failed"),
-		     _("Warning: Font contained no glyphs"));
+	 ErrorMsg(1,"Font contained no glyphs.\n");
    else
       dump_trailer(pi);
 }
@@ -3282,20 +3279,20 @@ static void QueueIt(PI *pi) {
 	 argv[0]="gv";
 	 execvp(argv[0], argv);
       }
-      afprintf(stderr, "Failed to exec print job\n");
-      /*IError("Failed to exec print job"); *//* X Server gets confused by talking to the child */
+      ErrorMsg(2,"Failed to exec print job\n");
+      /*ErrorMsg(2,"Failed to exec print job\n"); *//* X Server gets confused by talking to the child */
       _exit(1);
    } else if (pid==-1)
-      IError("Failed to fork print job");
+      ErrorMsg(2,"Failed to fork print job\n");
    else if (pi->printtype != pt_ghostview) {
       waitpid(pid, &status, 0);
       if (!WIFEXITED(status))
-	 IError("Failed to queue print job");
+	 ErrorMsg(2,"Failed to queue print job\n");
    } else {
       sleep(1);
       if (waitpid(pid, &status, WNOHANG) > 0) {
 	 if (!WIFEXITED(status))
-	    IError("Failed to run ghostview");
+	    ErrorMsg(2,"Failed to run ghostview\n");
       }
    }
    waitpid(-1, &status, WNOHANG);	/* Clean up any zombie ghostviews */
@@ -3327,15 +3324,13 @@ void DoPrinting(PI * pi, char *filename) {
       PIChars(pi);
    arewind(pi->out);
    if (aferror(pi->out))
-      ff_post_error(_("Print Failed"),
-		    _("Failed to generate postscript in file %s"),
-		    filename==NULL ? "temporary" : filename);
+      ErrorMsg(2,"Failed to generate postscript in file %s\n",
+                 filename==NULL?"<temporary>":filename);
    if (pi->printtype != pt_file && pi->printtype != pt_pdf)
       QueueIt(pi);
    if (afclose(pi->out) != 0)
-      ff_post_error(_("Print Failed"),
-		    _("Failed to generate postscript in file %s"),
-		    filename==NULL ? "temporary" : filename);
+      ErrorMsg(2,"Failed to generate postscript in file %s\n",
+                 filename==NULL?"<temporary>":filename);
    free(pi->sfbits);
 }
 
@@ -3476,16 +3471,15 @@ void ScriptPrint(FontViewBase * fv, int type, int32 * pointsizes,
       }
       pi.out=afopen(outputfile, "wb");
       if (pi.out==NULL) {
-	 ff_post_error(_("Print Failed"),
-		       _("Failed to open file %s for output"), outputfile);
+      ErrorMsg(2,"Failed to open file %s for output\n",
+                 outputfile);
 	 return;
       }
    } else {
       outputfile=NULL;
       pi.out=atmpfile();
       if (pi.out==NULL) {
-	 ff_post_error(_("Failed to open temporary output file"),
-		       _("Failed to open temporary output file"));
+	 ErrorMsg(2,"Failed to open temporary output file\n");
 	 return;
       }
    }

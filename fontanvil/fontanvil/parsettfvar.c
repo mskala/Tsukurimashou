@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 3859 2015-03-25 14:20:57Z mskala $ */
+/* $Id: parsettfvar.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -99,37 +99,31 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
    data_off=getushort(ttf);
    cnt=getushort(ttf);
    if (cnt > 2)
-      LogError(_
-	       ("Hmm, this 'fvar' table has more count/size pairs than I expect\n"));
+      ErrorMsg(2,"Hmm, this 'fvar' table has more count/size pairs than I expect\n");
    else if (cnt < 2) {
-      LogError(_
-	       ("Hmm, this 'fvar' table has too few count/size pairs, I shan't parse it\n"));
+      ErrorMsg(2,"Hmm, this 'fvar' table has too few count/size pairs, I shan't parse it\n");
       return;
    }
    axis_count=getushort(ttf);
    if (axis_count==0 || axis_count > 4) {
       if (axis_count==0)
-	 LogError(_
-		  ("Hmm, this 'fvar' table has no axes, that doesn't make sense.\n"));
+	 ErrorMsg(2,"Hmm, this 'fvar' table has no axes, that doesn't make sense.\n");
       else
-	 LogError(_
-		  ("Hmm, this 'fvar' table has more axes than FontAnvil can handle.\n"));
+	 ErrorMsg(2,"Hmm, this 'fvar' table has more axes than FontAnvil can handle.\n");
       return;
    }
    if (getushort(ttf) != 20) {
-      LogError(_
-	       ("Hmm, this 'fvar' table has an unexpected size for an axis, I shan't parse it\n"));
+      ErrorMsg(2,"Hmm, this 'fvar' table has an unexpected size for an axis, I shan't parse it\n");
       return;
    }
    instance_count=getushort(ttf);
    if (getushort(ttf) != 4 + 4 * axis_count) {
-      LogError(_
-	       ("Hmm, this 'fvar' table has an unexpected size for an instance, I shan't parse it\n"));
+      ErrorMsg(2,"Hmm, this 'fvar' table has an unexpected size for an instance, I shan't parse it\n");
       return;
    }
    if (data_off + axis_count * 20 + instance_count * (4 + 4 * axis_count) >
        info->fvar_len) {
-      LogError(_("Hmm, this 'fvar' table is too short\n"));
+      ErrorMsg(2,"Hmm, this 'fvar' table is too short\n");
       return;
    }
 
@@ -180,8 +174,7 @@ static void parseavar(struct ttfinfo *info,AFILE *ttf) {
    }
    axis_count=getlong(ttf);
    if (axis_count != info->variations->axis_count) {
-      LogError(_
-	       ("Hmm, the axis count in the 'avar' table is different from that in the 'fvar' table.\n"));
+      ErrorMsg(2,"Hmm, the axis count in the 'avar' table is different from that in the 'fvar' table.\n");
       VariationFree(info);
       return;
    }
@@ -198,7 +191,7 @@ static void parseavar(struct ttfinfo *info,AFILE *ttf) {
       }
    }
    if (aftell(ttf) - info->avar_start > info->avar_len) {
-      LogError(_("Hmm, the 'avar' table is too long.\n"));
+      ErrorMsg(2,"Hmm, the 'avar' table is too long.\n");
       VariationFree(info);
       return;
    }
@@ -535,7 +528,7 @@ static void VaryGlyphs(struct ttfinfo *info,int tupleIndex,int gnum,
    if (info->chars[gnum]==NULL)	/* Apple doesn't support ttc so this */
       return;			/*  can't happen */
    if (points==NULL) {
-      LogError(_("Mismatched local and shared tuple flags.\n"));
+      ErrorMsg(2,"Mismatched local and shared tuple flags.\n");
       return;
    }
 
@@ -555,7 +548,7 @@ static void VaryGlyphs(struct ttfinfo *info,int tupleIndex,int gnum,
       static int warned=false;
 
       if (!warned)
-	 LogError(_("Incorrect number of deltas in glyph %d (%s)\n"), gnum,
+	 ErrorMsg(2,"Incorrect number of deltas in glyph %d (%s)\n", gnum,
 		  info->chars[gnum]->name !=
 		  NULL ? info->chars[gnum]->name : "<Nameless>");
       warned=true;
@@ -581,8 +574,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
    }
    axiscount=getushort(ttf);
    if (axiscount != info->variations->axis_count) {
-      LogError(_
-	       ("Hmm, the axis count in the 'gvar' table is different from that in the 'fvar' table.\n"));
+      ErrorMsg(2,"Hmm, the axis count in the 'gvar' table is different from that in the 'fvar' table.\n");
       VariationFree(info);
       return;
    }
@@ -593,18 +585,15 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
    dataoff=getlong(ttf) + info->gvar_start;
    if (globaltc==0 || globaltc > AppleMmMax) {
       if (globaltc==0)
-	 LogError(_
-		  ("Hmm, no global tuples specified in the 'gvar' table.\n"));
+	 ErrorMsg(2,"Hmm, no global tuples specified in the 'gvar' table.\n");
       else
-	 LogError(_
-		  ("Hmm, too many global tuples specified in the 'gvar' table.\n FontAnvil only supports %d\n"),
+	 ErrorMsg(2,"Hmm, too many global tuples specified in the 'gvar' table.\n FontAnvil only supports %d\n",
 		  AppleMmMax);
       VariationFree(info);
       return;
    }
    if (gc > info->glyph_cnt) {
-      LogError(_
-	       ("Hmm, more glyph variation data specified than there are glyphs in font.\n"));
+      ErrorMsg(2,"Hmm, more glyph variation data specified than there are glyphs in font.\n");
       VariationFree(info);
       return;
    }
@@ -654,8 +643,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
 	    tupleIndex=getushort(ttf);
 	    if (tupleIndex & 0xc000) {
 	       if (!warned)
-		  LogError(_
-			   ("Warning: Glyph %d contains either private or intermediate tuple data.\n FontAnvil supports neither.\n"),
+		  ErrorMsg(2,"Warning: Glyph %d contains either private or intermediate tuple data.\n FontAnvil supports neither.\n",
 			   g);
 	       warned=true;
 	       if (tupleIndex & 0x8000)
@@ -737,7 +725,7 @@ static void VaryCvts(struct ttfinfo *info,int tupleIndex,int *points,
       static int warned=false;
 
       if (!warned)
-	 LogError(_("Incorrect number of deltas in cvt\n"));
+	 ErrorMsg(2,"Incorrect number of deltas in cvt\n");
       warned=true;
    }
    free(deltas);
@@ -745,15 +733,10 @@ static void VaryCvts(struct ttfinfo *info,int tupleIndex,int *points,
 
 static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
    struct ttf_table *cvt;
-
    int tuplecount;
-
    uint32 offset;
-
    int *sharedpoints=NULL;
-
    int i;
-
    int warned=false;
 
    for (cvt=info->tabs; cvt != NULL && cvt->tag != CHR('c', 'v', 't', ' ');
@@ -790,8 +773,7 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
       /*  so John says there are no tuple indices. Just embedded tuples */
       if (tupleIndex & 0x4000) {
 	 if (!warned)
-	    LogError(_
-		     ("Warning: 'cvar' contains intermediate tuple data.\n FontAnvil doesn't support this.\n"));
+	    ErrorMsg(2,"Warning: 'cvar' contains intermediate tuple data.\n FontAnvil doesn't support this.\n");
 	 warned=true;
 	 if (tupleIndex & 0x8000)
 	    afseek(ttf, 2 * info->variations->axis_count, SEEK_CUR);

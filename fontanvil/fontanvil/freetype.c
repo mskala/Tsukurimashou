@@ -1,4 +1,4 @@
-/* $Id: freetype.c 3859 2015-03-25 14:20:57Z mskala $ */
+/* $Id: freetype.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -138,8 +138,7 @@ static int hasFreeTypeByteCode(void) {
 /* Here we are compiled with an old library, so if the dynamic one is new we fail */
    if (FreeTypeAtLeast(2, 3, 5)) {
       if (!complained) {
-	 LogError(_
-		  ("This version of FontAnvil expects freetype 2.3.4 or less."));
+	 ErrorMsg(2,"This version of FontAnvil expects freetype 2.3.4 or less.\n");
 	 complained=true;
       }
       return (false);
@@ -147,8 +146,7 @@ static int hasFreeTypeByteCode(void) {
 #   else
    if (!FreeTypeAtLeast(2, 3, 5)) {
       if (!complained) {
-	 LogError(_
-		  ("This version of FontAnvil expects freetype 2.3.5 or more."));
+	 ErrorMsg(2,"This version of FontAnvil expects freetype 2.3.5 or more.\n");
 	 complained=true;
       }
       return (false);
@@ -801,9 +799,8 @@ SplineSet *FreeType_GridFitChar(void *single_glyph_context, int enc,
    if (!bc_checked && ftc->isttf) {
       bc_checked=true;
       if (!hasFreeTypeByteCode())
-	 ff_post_notice(_("No ByteCode Interpreter"),
-			_
-			("These results are those of the freetype autohinter. They do not reflect the truetype instructions."));
+	 ErrorMsg(1,"These results are those of the FreeType autohinter.  "
+	            "They do not reflect the TrueType instructions.\n");
    }
 
    if (FT_Set_Char_Size

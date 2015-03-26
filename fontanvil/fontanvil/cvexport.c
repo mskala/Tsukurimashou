@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: cvexport.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -675,5 +675,5 @@ void ScriptExport(SplineFont *sf, BDFFont * bdf, int format, int gid,
    else if (bc != NULL)
       good=BCExportXBM(buffer, bc, format - 6);
    if (!good)
-      ff_post_error(_("Save Failed"), _("Save Failed"));
+      ErrorMsg(2,"Save failed\n");
 }

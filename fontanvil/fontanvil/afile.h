@@ -1,4 +1,4 @@
-/* $Id: afile.h 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: afile.h 3865 2015-03-26 10:37:06Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -23,11 +23,17 @@
 #ifndef _AFILE_H
 #define _AFILE_H
 
+#include <stdarg.h>
+
 #if 0
 #define AFILE FILE
 #else
 typedef int AFILE;
 #endif
+
+#define astdin ((AFILE *)stdin)
+#define astdout ((AFILE *)stdout)
+#define astderr ((AFILE *)stderr)
 
 AFILE *afopen(const char *,const char *);
 int afclose(AFILE *);
@@ -44,10 +50,24 @@ long aftell(AFILE *);
 int agetc(AFILE *);
 int aungetc(int,AFILE *);
 int aputc(int,AFILE *);
+int afputs(const char *,AFILE *);
 
-size_t afread(const void *,size_t, size_t,AFILE *);
+size_t afread(void *,size_t, size_t,AFILE *);
 size_t afwrite(const void *,size_t, size_t,AFILE *);
 
 int afprintf(AFILE *,const char *,...);
+int avfprintf(AFILE *,const char * restrict format,va_list);
+
+
+/*
+ * Error message levels:
+ *   0: informational (not an error, but might be written in verbose mode)
+ *   1: unavoidable warning and debug messages (occurs in normal operation
+ *      and user can't prevent it, such as overlap-related nonsense)
+ *   2: non-fatal error that the user ought to prevent
+ *   3: fatal error that terminates the program
+ */
+
+void ErrorMsg(int,const char *,...);
 
 #endif /* ndef _AFILE_H */

@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: winfonts.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -392,9 +392,8 @@ SplineFont *SFReadWinFON(char *filename, int toback) {
    afseek(fon, 0, SEEK_SET);
    if (magic != 0x200 && magic != 0x300 && magic != FON_MZ_MAGIC) {
       afclose(fon);
-      ff_post_error(_("Bad magic number"),
-		    _
-		    ("This does not appear to be a Windows FNT for FON file"));
+      ErrorMsg(2,"Bad magic number:  this does not appear to be a "
+                 "Windows FNT for FON file.\n");
       return (NULL);
    }
    sf=SplineFontBlank(256);
@@ -543,8 +542,7 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
        && font->glyphs[gid]->sc->unicodeenc==' ')
       spacesize=font->glyphs[gid]->width;
    if (badch != -1)
-      LogError(_
-	       ("At pixelsize %d the character %s either starts before the origin or extends beyond the advance width.\n"),
+      ErrorMsg(2,"At pixelsize %d the character %s either starts before the origin or extends beyond the advance width.\n",
 	       font->pixelsize, font->glyphs[badch]->sc->name);
    SFDefaultOS2Info(&pfminfo, font->sf, font->sf->fontname);
    widbytes=avgwid + spacesize;
@@ -641,7 +639,7 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    lputshort(file, widbytes);
 
    if (aftell(file) - startpos != datapos) {
-      LogError(_("Internal error in creating FNT. File offset wrong\n"));
+      ErrorMsg(2,"Internal error in creating FNT. File offset wrong\n");
       complained=true;
    }
 
@@ -673,8 +671,7 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
 	    }
 	 }
 	 if (aftell(file) - startpos != datapos + widbytes && !complained) {
-	    LogError(_
-		     ("Internal error in creating FNT. File offset wrong in bitmap data\n"));
+	    ErrorMsg(2,"Internal error in creating FNT. File offset wrong in bitmap data\n");
 	    complained=true;
 	 }
       }
@@ -708,7 +705,7 @@ int FNTFontDump(char *filename, BDFFont * font, EncMap * map, int res) {
 
    file=afopen(filename, "wb");
    if (file==NULL) {
-      LogError(_("Can't open %s\n"), filename);
+      ErrorMsg(2,"Can't open %s\n",filename);
       return (0);
    }
    ret=_FntFontDump(file, font, map, res);
@@ -868,50 +865,29 @@ static const BYTE MZ_hdr[] =
 int FONFontDump(char *filename, SplineFont *sf, int32 * sizes, int resol,
 		EncMap * map) {
    BDFFont *bdf;
-
    /* res=-1 => Guess depending on pixel size of font */
    AFILE **fntarray;
-
    int *file_lens;
-
    int num_files;
-
    int i, j;
-
    long off;
-
    char name[200];
-
    int c;
-
    char *cp;
-
    short point_size, dpi[2], align;
-
    AFILE *fon;
-
    int resource_table_len, non_resident_name_len, resident_name_len;
-
    unsigned short resource_table_off, resident_name_off, module_ref_off,
       non_resident_name_off, fontdir_off, font_off;
    char resident_name[200]="";
-
    int fontdir_len=2;
-
    char non_resident_name[200]="";
-
    IMAGE_OS2_HEADER NE_hdr;
-
    NE_TYPEINFO rc_type;
-
    NE_NAMEINFO rc_name;
-
    unsigned short first_res=0x0050, pad, res;
-
    struct _fnt_header *fnt_header;
-
    char buf[0x1000];
-
    int nread;
 
    if (sf->cidmaster != NULL)
@@ -927,10 +903,8 @@ int FONFontDump(char *filename, SplineFont *sf, int32 * sizes, int resol,
 	   (bdf->pixelsize != (sizes[i] & 0xffff)
 	    || BDFDepth(bdf) != (sizes[i] >> 16)); bdf=bdf->next);
       if (bdf==NULL) {
-	 ff_post_notice(_("Missing Bitmap"),
-			_
-			("Attempt to save a pixel size that has not been created (%d@%d)"),
-			sizes[i] & 0xffff, sizes[i] >> 16);
+	 ErrorMsg(2,"Attempt to save a pixel size that has not been created (%d@%d)\n",
+                  sizes[i]&0xffff,sizes[i]>>16);
 	 for (j=0; j < i; ++j)
 	    afclose(fntarray[j]);
 	 free(fntarray);
@@ -1010,8 +984,7 @@ int FONFontDump(char *filename, SplineFont *sf, int32 * sizes, int resol,
 
    fon=afopen(filename, "wb");
    if (fon==NULL) {
-      ff_post_error(_("Couldn't open file"),
-		    _("Could not open output file: %s"), filename);
+      ErrorMsg(2,"Could not open output file %s\n",filename);
       for (j=0; j < num_files; ++j)
 	 afclose(fntarray[j]);
       free(fntarray);

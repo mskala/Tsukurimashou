@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: parsettfbmf.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -101,8 +101,7 @@ static void ttfreadbmfglyph(AFILE *ttf,struct ttfinfo *info,
       /* metrics from EBLC */
       /* Do nothing here */
       if (metrics==NULL) {
-	 LogError(_
-		  ("Unexpected use of bitmap format 5, no metrics are appearant\n"));
+	 ErrorMsg(2,"Unexpected use of bitmap format 5, no metrics are appearant\n");
 	 info->bad_embedded_bitmap=true;
 	 /*afseek(ttf,len,SEEK_CUR); */
 	 return;
@@ -111,20 +110,17 @@ static void ttfreadbmfglyph(AFILE *ttf,struct ttfinfo *info,
       /* format 3 is obsolete */
       /* format 4 is compressed apple and I'm not supporting it (Nor is MS) */
       if (imageformat==3 && !info->obscomplain) {
-	 LogError(_
-		  ("This font contains bitmaps in the obsolete format 3 (And I can't read them)\n"));
+	 ErrorMsg(2,"This font contains bitmaps in the obsolete format 3 (And I can't read them)\n");
 	 info->bad_embedded_bitmap=true;
 	 info->obscomplain=true;
       } else if (imageformat==4) {
 	 /* Apple doesn't describe it (fully) in their spec. */
 	 /* MS doesn't support it (and doesn't describe) */
 	 /* Adobe doesn't describe it (and says MS doesn't support it) */
-	 LogError(_
-		  ("This font contains bitmaps in Apple's compressed format 4 (And I don't support that)\n"));
+	 ErrorMsg(2,"This font contains bitmaps in Apple's compressed format 4 (And I don't support that)\n");
 	 info->cmpcomplain=true;
       } else if (!info->unkcomplain) {
-	 LogError(_
-		  ("This font contains bitmaps in a format %d that I've never heard of\n"),
+	 ErrorMsg(2,"This font contains bitmaps in a format %d that I've never heard of\n",
 		  imageformat);
 	 info->bad_embedded_bitmap=true;
 	 info->unkcomplain=true;
@@ -299,8 +295,7 @@ static void BdfCRefFixup(BDFFont *bdf,int gid,int *warned,
 	 prev=head;
       } else if (!*warned) {
 	 /* Glyphs aren't named yet */
-	 LogError(_
-		  ("Glyph %d in bitmap strike %d pixels refers to a missing glyph (%d)"),
+	 ErrorMsg(2,"Glyph %d in bitmap strike %d pixels refers to a missing glyph (%d)\n",
 		  gid, bdf->pixelsize, head->gid);
 	 info->bad_embedded_bitmap=true;
 	 *warned=true;
@@ -415,8 +410,7 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
       last=getushort(ttf);
       moreoff=getlong(ttf);
       if (last < first) {
-	 LogError(_
-		  ("Bad format of subtable %d (of %d) in bloc/EBLC of strike with pixelsize=%d. First=%d, last=%d.\n"),
+	 ErrorMsg(2,"Bad format of subtable %d (of %d) in bloc/EBLC of strike with pixelsize=%d. First=%d, last=%d.\n",
 		  j, head->numIndexSubTables, bdf->pixelsize, first, last);
 	 info->bad_embedded_bitmap=true;
 	 continue;
@@ -510,7 +504,7 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 	   free(glyphs);
 	   break;
 	default:
-	   LogError(_("Didn't understand index format: %d\n"), indexformat);
+	   ErrorMsg(2,"Didn't understand index format: %d\n", indexformat);
 	   info->bad_embedded_bitmap=true;
 	   break;
       }
@@ -552,7 +546,7 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
    bigval=biggest=-1;
    for (i=j=0; i < cnt; ++i) {
       if (afeof(ttf)) {
-	 IError("End of file while reading embedded bitmaps");
+	 ErrorMsg(2,"End of file while reading embedded bitmaps\n");
 	 break;
       }
       good=true;
@@ -1142,7 +1136,7 @@ static struct bitmapSizeTable *ttfdumpstrikelocs(AFILE *bloc,AFILE *bdat,
 	(gi->bygid[j]==-1 || gi->bygid[j] >= bdf->glyphcnt
 	 || bdf->glyphs[gi->bygid[j]]==NULL); --j);
    if (j==-1) {
-      IError("No characters to output in strikes");
+      ErrorMsg(2,"No characters to output in strikes\n");
       return (NULL);
    }
 

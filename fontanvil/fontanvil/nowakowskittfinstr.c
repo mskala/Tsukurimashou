@@ -1,4 +1,4 @@
-/* $Id: nowakowskittfinstr.c 3858 2015-03-25 13:49:37Z mskala $ */
+/* $Id: nowakowskittfinstr.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by
    George Williams, Michal Nowakowski & Alexey Kryukov */
 
@@ -171,7 +171,7 @@ static uint8 *pushpoints(uint8 *instrs,int ptcnt,const int *pts) {
 
    /* It's an error to push more than STACK_DEPTH points. */
    if (ptcnt > STACK_DEPTH)
-      IError("Truetype stack overflow will occur.");
+      ErrorMsg(2,"Truetype stack overflow will occur.\n");
 
    if (ptcnt > 255 && !isword) {
       instrs=pushpoints(instrs, 255, pts);
@@ -765,13 +765,11 @@ static void init_cvt(GlobalInstrCt *gic) {
       free(cvt);
 
       if (!gic->cvt_done) {
-	 ff_post_error(_("Can't insert 'cvt'"),
-		       _
-		       ("There already exists a 'cvt' table, perhaps legacy. "
-			"FontAnvil can use it, but can't make any assumptions on "
-			"values stored there, so generated instructions will be of "
-			"lower quality. If legacy hinting is to be scrapped, it is "
-			"suggested to clear the `cvt` and repeat autoinstructing. "));
+	 ErrorMsg(1,"There already exists a 'cvt' table, perhaps legacy.  "
+                    "FontAnvil can use it, but can't make any assumptions on "
+                    "values stored there, so generated instructions will be of "
+                    "lower quality.  If legacy hinting is to be scrapped, it is "
+                    "suggested to clear the 'cvt' and repeat autoinstructing.\n");
       }
    }
 
@@ -1652,16 +1650,14 @@ static void init_fpgm(GlobalInstrCt *gic) {
 
       /* Log warning message. */
       if (!gic->fpgm_done)
-	 ff_post_error(_("Can't insert 'fpgm'"),
-		       _
-		       ("There exists a 'fpgm' code that seems incompatible with "
-			"FontAnvil's. Instructions generated will be of lower "
-			"quality. If legacy hinting is to be scrapped, it is "
-			"suggested to clear the `fpgm` and repeat autoinstructing. "
-			"It will be then possible to append user's code to "
-			"FontAnvil's 'fpgm', but due to possible future updates, "
-			"it is extremely advised to use high numbers for user's "
-			"functions."));
+	 ErrorMsg(1,"There exists an 'fpgm' code that seems incompatible with "
+                    "FontAnvil's.  Instructions generated will be of lower "
+                    "quality.  If legacy hinting is to be scrapped, it is "
+                    "suggested to clear the 'fpgm' and repeat autoinstructing.  "
+                    "It will be then possible to append user's code to "
+                    "FontAnvil's 'fpgm', but due to possible future updates, "
+                    "it is advised to use high numbers for user-defined "
+                    "functions.\n");
    }
 }
 
@@ -1972,12 +1968,10 @@ static void init_prep(GlobalInstrCt *gic) {
 
       /* Log warning message. */
       if (!gic->prep_done)
-	 ff_post_error(_("Can't insert 'prep'"),
-		       _
-		       ("There exists a 'prep' code incompatible with FontAnvil's. "
-			"It can't be guaranteed it will work well. It is suggested "
-			"to allow FontAnvil to insert its code and then append user"
-			"'s own."));
+         ErrorMsg(1,"There exists a 'prep' code incompatible with FontAnvil's.  "
+                    "It can't be guaranteed it will work well.  It is suggested "
+                    "to allow FontAnvil to insert its code and then append "
+                    "one's own.\n");
    }
 
    free(new_prep);
@@ -3240,9 +3234,9 @@ static void mark_points_affected(InstrCt *ct,StemData *target,
 	 next ? &ct->gd->points[s->to->ptindex] : &ct->gd->points[s->from->
 								  ptindex];
       if (pd==opd) {
-	 IError("The ball terminal with a key point at %.3f,%.3f\n"
+	 ErrorMsg(2,"The ball terminal with a key point at %.3f,%.3f\n"
 		"appears to be incorrectly linked to the %s stem\n"
-		"<%.3f, %.3f>",
+		"<%.3f, %.3f>\n",
 		pd->base.x, pd->base.y,
 		ct->xdir ? "vertical" : "horizontal",
 		ct->xdir ? target->left.x : target->right.y, target->width);
@@ -5363,9 +5357,9 @@ static uint8 *dogeninstructions(InstrCt *ct) {
    *(ct->pt)++=IUP_x;
 
    if ((ct->pt) - (ct->instrs) > max)
-      IError("We're about to crash.\n"
+      ErrorMsg(2,"We're about to crash.\n"
 	     "We miscalculated the glyph's instruction set length\n"
-	     "When processing TTF instructions (hinting) of %s",
+	     "When processing TTF instructions (hinting) of %s\n",
 	     ct->sc->name);
 
    if (instruct_diagonal_stems) {
@@ -5396,10 +5390,7 @@ void NowakowskiSCAutoInstr(GlobalInstrCt * gic, SplineChar * sc) {
 
    if (sc->layers[gic->layer].refs != NULL
        && sc->layers[gic->layer].splines != NULL) {
-      ff_post_error(_("Can't instruct this glyph"),
-		    _
-		    ("TrueType does not support mixed references and contours.\nIf you want instructions for %.30s you should either:\n * Unlink the reference(s)\n * Copy the inline contours into their own (unencoded\n    glyph) and make a reference to that."),
-		    sc->name);
+      ErrorMsg(2,"TrueType does not support mixed references and contours.\n");
       return;
    }
    for (ref=sc->layers[gic->layer].refs; ref != NULL; ref=ref->next) {
@@ -5410,10 +5401,11 @@ void NowakowskiSCAutoInstr(GlobalInstrCt * gic, SplineChar * sc) {
 	 break;
    }
    if (ref != NULL) {
-      ff_post_error(_("Can't instruct this glyph"),
-		    _
-		    ("TrueType does not support references which\nare scaled by more than 200%%.  But %1$.30s\nhas been in %2$.30s. Any instructions\nadded would be meaningless."),
-		    ref->sc->name, sc->name);
+      ErrorMsg(2,"TrueType does not support references which\n"
+                 "are scaled by more than 200%%.  But %1$.30s\n"
+                 "has been in %2$.30s.  Any instructions\n"
+                 "added would be meaningless.\n",
+                 ref->sc->name,sc->name);
       return;
    }
 

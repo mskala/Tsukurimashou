@@ -1,4 +1,4 @@
-/* $Id: mm.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: mm.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -778,13 +778,10 @@ int MMReblend(FontViewBase * fv, MMSet * mm) {
 
    if (fv != NULL) {
       if (olderr==(char *) -1)
-	 ff_post_error(_("Bad Multiple Master Font"),
-		       _("Various errors occurred at the selected glyphs"));
+        ErrorMsg(2,"Unspecified multiple master errors\n");
       else
-	 ff_post_error(_("Bad Multiple Master Font"),
-		       _
-		       ("The following error occurred on the selected glyphs: %.100s"),
-		       olderr);
+         ErrorMsg(2,"The following multiple master error occurred "
+                    "on the selected glyphs:  %.100s\n",olderr);
    }
    return (false);
 }
@@ -1126,46 +1123,43 @@ int MMValid(MMSet * mm, int complain) {
       if (mm->instances[i]->layers[ly_fore].order2 != mm->apple) {
 	 if (complain) {
 	    if (mm->apple)
-	       ff_post_error(_("Bad Multiple Master Font"),
-			     _
-			     ("The font %.30s contains cubic splines. It must be converted to quadratic splines before it can be used in an apple distortable font"),
-			     mm->instances[i]->fontname);
+              ErrorMsg(2,"The font %.30s contains cubic splines.  "
+                         "It must be converted to quadratic splines before "
+                         "it can be used in an Apple distortable font.\n",
+                       mm->instances[i]->fontname);
 	    else
-	       ff_post_error(_("Bad Multiple Master Font"),
-			     _
-			     ("The font %.30s contains quadratic splines. It must be converted to cubic splines before it can be used in a multiple master"),
-			     mm->instances[i]->fontname);
+              ErrorMsg(2,"The font %.30s contains quadratic splines.  "
+                         "It must be converted to cubic splines before "
+                         "it can be used in a Multiple Master font.\n",
+                       mm->instances[i]->fontname);
 	 }
 	 return (false);
       }
 
-   sf=mm->apple ? mm->normal : mm->instances[0];
+   sf=mm->apple?mm->normal:mm->instances[0];
 
    if (!mm->apple && PSDictHasEntry(sf->private, "ForceBold") != NULL &&
        PSDictHasEntry(mm->normal->private, "ForceBoldThreshold")==NULL) {
       if (complain)
-	 ff_post_error(_("Bad Multiple Master Font"),
-		       _
-		       ("There is no ForceBoldThreshold entry in the weighted font, but there is a ForceBold entry in font %30s"),
-		       sf->fontname);
+	 ErrorMsg(2,"There is no ForceBoldThreshold entry in the "
+	            "weighted font, but there is a ForceBold entry in "
+	            "font %30s.\n",sf->fontname);
       return (false);
    }
 
    for (j=mm->apple ? 0 : 1; j < mm->instance_count; ++j) {
       if (sf->glyphcnt != mm->instances[j]->glyphcnt) {
 	 if (complain)
-	    ff_post_error(_("Bad Multiple Master Font"),
-			  _
-			  ("The fonts %1$.30s and %2$.30s have a different number of glyphs or different encodings"),
-			  sf->fontname, mm->instances[j]->fontname);
+            ErrorMsg(2,"The fonts %1$.30s and %2$.30s have a different "
+                       "number of glyphs, or different encodings.\n",
+                       sf->fontname,mm->instances[j]->fontname);
 	 return (false);
       } else if (sf->layers[ly_fore].order2 !=
 		 mm->instances[j]->layers[ly_fore].order2) {
 	 if (complain)
-	    ff_post_error(_("Bad Multiple Master Font"),
-			  _
-			  ("The fonts %1$.30s and %2$.30s use different types of splines (one quadratic, one cubic)"),
-			  sf->fontname, mm->instances[j]->fontname);
+            ErrorMsg(2,"The fonts %1$.30s and %2$.30s have different "
+                       "spline orders.\n",
+                       sf->fontname,mm->instances[j]->fontname);
 	 return (false);
       }
       if (!mm->apple) {
@@ -1173,10 +1167,9 @@ int MMValid(MMSet * mm, int complain) {
 	     PSDictHasEntry(mm->normal->private,
 			    "ForceBoldThreshold")==NULL) {
 	    if (complain)
-	       ff_post_error(_("Bad Multiple Master Font"),
-			     _
-			     ("There is no ForceBoldThreshold entry in the weighted font, but there is a ForceBold entry in font %30s"),
-			     mm->instances[j]->fontname);
+	       ErrorMsg(2,"There is no ForceBoldThreshold entry in the "
+	                  "weighted font, but there is a ForceBold entry in "
+	                  "font %30s.\n",mm->instances[j]->fontname);
 	    return (false);
 	 }
 	 for (i=0; arrnames[i] != NULL; ++i) {
@@ -1184,11 +1177,11 @@ int MMValid(MMSet * mm, int complain) {
 		(PSDictHasEntry(mm->instances[j]->private, arrnames[i])) !=
 		ArrayCount(PSDictHasEntry(sf->private, arrnames[i]))) {
 	       if (complain)
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The entry \"%1$.20s\" is not present in the private dictionary of both %2$.30s and %3$.30s"),
-				arrnames[i], sf->fontname,
-				mm->instances[j]->fontname);
+		  ErrorMsg(2,"The entry \"%1$.20s\" is not present in the "
+		             "private dictionary of both %2$.30s and "
+		             "%3$.30s\n",
+                             arrnames[i], sf->fontname,
+                             mm->instances[j]->fontname);
 	       return (false);
 	    }
 	 }
@@ -1201,15 +1194,11 @@ int MMValid(MMSet * mm, int complain) {
 	     SCWorthOutputting(mm->instances[j]->glyphs[i])) {
 	    if (complain) {
 	       if (SCWorthOutputting(sf->glyphs[i]))
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s is defined in font %2$.30s but not in %3$.30s"),
+		  ErrorMsg(2,"The glyph %1$.30s is defined in font %2$.30s but not in %3$.30s\n",
 				sf->glyphs[i]->name, sf->fontname,
 				mm->instances[j]->fontname);
 	       else
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s is defined in font %2$.30s but not in %3$.30s"),
+		  ErrorMsg(2,"The glyph %1$.30s is defined in font %2$.30s but not in %3$.30s\n",
 				mm->instances[j]->glyphs[i]->name,
 				mm->instances[j]->fontname, sf->fontname);
 	    }
@@ -1220,9 +1209,7 @@ int MMValid(MMSet * mm, int complain) {
 	 if (mm->apple && sf->glyphs[i]->layers[ly_fore].refs != NULL
 	     && sf->glyphs[i]->layers[ly_fore].splines != NULL) {
 	    if (complain) {
-	       ff_post_error(_("Bad Multiple Master Font"),
-			     _
-			     ("The glyph %1$.30s in %2$.30s has both references and contours. This is not supported in a font with variations"),
+	       ErrorMsg(2,"The glyph %1$.30s in %2$.30s has both references and contours.  This is not supported in a font with variations.\n",
 			     sf->glyphs[i]->name, sf->fontname);
 	    }
 	    return (false);
@@ -1233,9 +1220,7 @@ int MMValid(MMSet * mm, int complain) {
 		&& mm->instances[j]->glyphs[i]->layers[ly_fore].splines !=
 		NULL) {
 	       if (complain) {
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s in %2$.30s has both references and contours. This is not supported in a font with variations"),
+		  ErrorMsg(2,"The glyph %1$.30s in %2$.30s has both references and contours.  This is not supported in a font with variations.\n",
 				sf->glyphs[i]->name,
 				mm->instances[j]->fontname);
 	       }
@@ -1244,9 +1229,7 @@ int MMValid(MMSet * mm, int complain) {
 	    if (ContourCount(sf->glyphs[i]) !=
 		ContourCount(mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s has a different number of contours in font %2$.30s than in %3$.30s"),
+		  ErrorMsg(2,"The glyph %1$.30s has a different number of contours in font %2$.30s than in %3$.30s\n",
 				sf->glyphs[i]->name, sf->fontname,
 				mm->instances[j]->fontname);
 	       }
@@ -1255,9 +1238,7 @@ int MMValid(MMSet * mm, int complain) {
 		       && !ContourPtMatch(sf->glyphs[i],
 					  mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s in font %2$.30s has a different number of points (or control points) on its contours than in %3$.30s"),
+		  ErrorMsg(2,"The glyph %1$.30s in font %2$.30s has a different number of points (or control points) on its contours than in %3$.30s\n",
 				sf->glyphs[i]->name, sf->fontname,
 				mm->instances[j]->fontname);
 	       }
@@ -1266,18 +1247,14 @@ int MMValid(MMSet * mm, int complain) {
 	       if (!ContourDirMatch
 		   (sf->glyphs[i], mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s in font %2$.30s has contours running in a different direction than in %3$.30s"),
+		  ErrorMsg(2,"The glyph %1$.30s in font %2$.30s has contours running in a different direction than in %3$.30s\n",
 				sf->glyphs[i]->name, sf->fontname,
 				mm->instances[j]->fontname);
 	       }
 	       return (false);
 	    } else if (!RefMatch(sf->glyphs[i], mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s in font %2$.30s has a different number of references than in %3$.30s"),
+		  ErrorMsg(2,"The glyph %1$.30s in font %2$.30s has a different number of references than in %3$.30s\n",
 				sf->glyphs[i]->name, sf->fontname,
 				mm->instances[j]->fontname);
 	       }
@@ -1286,9 +1263,7 @@ int MMValid(MMSet * mm, int complain) {
 		       && !RefTransformsMatch(sf->glyphs[i],
 					      mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s in font %2$.30s has references with different scaling or rotation (etc.) than in %3$.30s"),
+		  ErrorMsg(2,"The glyph %1$.30s in font %2$.30s has references with different scaling or rotation (etc.) than in %3$.30s\n",
 				sf->glyphs[i]->name, sf->fontname,
 				mm->instances[j]->fontname);
 	       }
@@ -1297,9 +1272,7 @@ int MMValid(MMSet * mm, int complain) {
 		       && !KernsMatch(sf->glyphs[i],
 				      mm->instances[j]->glyphs[i])) {
 	       if (complain) {
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The glyph %1$.30s in font %2$.30s has a different set of kern pairs than in %3$.30s"),
+		  ErrorMsg(2,"The glyph %1$.30s in font %2$.30s has a different set of kern pairs than in %3$.30s\n",
 				"vertical", sf->glyphs[i]->name, sf->fontname,
 				mm->instances[j]->fontname);
 	       }
@@ -1308,9 +1281,7 @@ int MMValid(MMSet * mm, int complain) {
 	 }
 	 if (mm->apple && !ContourPtNumMatch(mm, i)) {
 	    if (complain) {
-	       ff_post_error(_("Bad Multiple Master Font"),
-			     _
-			     ("The glyph %1$.30s has a different numbering of points (and control points) on its contours than in the various instances of the font"),
+	       ErrorMsg(2,"The glyph %1$.30s has a different numbering of points (and control points) on its contours than in the various instances of the font\n",
 			     sf->glyphs[i]->name);
 	    }
 	    return (false);
@@ -1321,9 +1292,7 @@ int MMValid(MMSet * mm, int complain) {
 		   (sf->glyphs[i]->hstem,
 		    mm->instances[j]->glyphs[i]->hstem)) {
 		  if (complain) {
-		     ff_post_error(_("Bad Multiple Master Font"),
-				   _
-				   ("The %1$s hints in glyph \"%2$.30s\" in font %3$.30s do not match those in %4$.30s (different number or different overlap criteria)"),
+		     ErrorMsg(2,"The %1$s hints in glyph \"%2$.30s\" in font %3$.30s do not match those in %4$.30s (different number or different overlap criteria)\n",
 				   "horizontal", sf->glyphs[i]->name,
 				   sf->fontname, mm->instances[j]->fontname);
 		  }
@@ -1333,9 +1302,7 @@ int MMValid(MMSet * mm, int complain) {
 		      (sf->glyphs[i]->vstem,
 		       mm->instances[j]->glyphs[i]->vstem)) {
 		  if (complain) {
-		     ff_post_error(_("Bad Multiple Master Font"),
-				   _
-				   ("The %1$s hints in glyph \"%2$.30s\" in font %3$.30s do not match those in %4$.30s (different number or different overlap criteria)"),
+		     ErrorMsg(2,"The %1$s hints in glyph \"%2$.30s\" in font %3$.30s do not match those in %4$.30s (different number or different overlap criteria)\n",
 				   "vertical", sf->glyphs[i]->name,
 				   sf->fontname, mm->instances[j]->fontname);
 		  }
@@ -1346,9 +1313,7 @@ int MMValid(MMSet * mm, int complain) {
 	       if (!ContourHintMaskMatch
 		   (sf->glyphs[i], mm->instances[j]->glyphs[i])) {
 		  if (complain) {
-		     ff_post_error(_("Bad Multiple Master Font"),
-				   _
-				   ("The glyph %1$.30s in font %2$.30s has a different hint mask on its contours than in %3$.30s"),
+		     ErrorMsg(2,"The glyph %1$.30s in font %2$.30s has a different hint mask on its contours than in %3$.30s\n",
 				   sf->glyphs[i]->name, sf->fontname,
 				   mm->instances[j]->fontname);
 		  }
@@ -1368,9 +1333,7 @@ int MMValid(MMSet * mm, int complain) {
 	 for (j=0; j < mm->instance_count; ++j) {
 	    if (mm->instances[j]->ttf_tables != NULL) {
 	       if (complain)
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The default font does not have a 'cvt ' table, but the instance %.30s does"),
+		  ErrorMsg(2,"The default font does not have a 'cvt ' table, but the instance %.30s does\n",
 				mm->instances[j]->fontname);
 	       return (false);
 	    }
@@ -1384,18 +1347,14 @@ int MMValid(MMSet * mm, int complain) {
 		 mm->instances[j]->ttf_tables->tag != CHR('c', 'v', 't',
 							  ' '))) {
 	       if (complain)
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("Instance fonts may only contain a 'cvt ' table, but %.30s has some other truetype table as well"),
+		  ErrorMsg(2,"Instance fonts may only contain a 'cvt ' table, but %.30s has some other truetype table as well\n",
 				mm->instances[j]->fontname);
 	       return (false);
 	    }
 	    if (mm->instances[j]->ttf_tables != NULL &&
 		mm->instances[j]->ttf_tables->len != cvt->len) {
 	       if (complain)
-		  ff_post_error(_("Bad Multiple Master Font"),
-				_
-				("The 'cvt ' table in instance %.30s is a different size from that in the default font"),
+		  ErrorMsg(2,"The 'cvt ' table in instance %.30s is a different size from that in the default font\n",
 				mm->instances[j]->fontname);
 	       return (false);
 	    }
@@ -1403,7 +1362,5 @@ int MMValid(MMSet * mm, int complain) {
       }
    }
 
-   if (complain)
-      ff_post_notice(_("OK"), _("No problems detected"));
    return (true);
 }

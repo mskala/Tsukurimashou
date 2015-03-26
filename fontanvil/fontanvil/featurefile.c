@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: featurefile.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* Copyright (C) 2012 by Khaled Hosny */
 /* Copyright (C) 2013 by Matthew Skala */
@@ -94,7 +94,7 @@ static void dump_glyphbyname(AFILE *out,SplineFont *sf,char *name) {
    SplineChar *sc=SFGetChar(sf, -1, name);
 
    if (sc==NULL)
-      LogError(_("No glyph named %s."), name);
+      ErrorMsg(2,"No glyph named %s.\n", name);
    if (sc==NULL || sc->parent->cidmaster==NULL)
       afprintf(out, "\\%s", name);
    else
@@ -136,7 +136,7 @@ static void dump_glyphnamelist(AFILE *out,SplineFont *sf,char *names) {
 	 *pt='\0';
 	 sc2=SFGetChar(sf, -1, start);
 	 if (sc2==NULL) {
-	    LogError(_("No CID named %s"), start);
+	    ErrorMsg(2,"No CID named %s\n", start);
 	    nm=start;
 	 } else {
 	    sprintf(cidbuf, "\\%d", sc2->orig_pos);
@@ -1022,8 +1022,7 @@ static void dump_contextpst(AFILE *out,SplineFont *sf,
    int i, j, k;
 
    if (fpst->format==pst_reversecoverage) {
-      IError
-	 ("I can find no documentation on how to describe reverse context chaining lookups. Lookup %s will be skipped.",
+      ErrorMsg(2,"Not known how to describe reverse context chaining lookups.  Lookup %s will be skipped.\n",
 	  sub->lookup->lookup_name);
       return;
    }
@@ -2656,7 +2655,7 @@ static void fea_handle_include(struct parseState *tok) {
 
    fea_ParseTok(tok);
    if (tok->type != tk_char || tok->tokbuf[0] != '(') {
-      LogError(_("Unparseable include on line %d of %s"),
+      ErrorMsg(2,"Unparseable include on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return;
@@ -2674,7 +2673,7 @@ static void fea_handle_include(struct parseState *tok) {
    if (ch != EOF && ch != ')') {
       while (ch != EOF && ch != ')')
 	 ch=agetc(in);
-      LogError(_("Include filename too long on line %d of %s"),
+      ErrorMsg(2,"Include filename too long on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -2683,24 +2682,24 @@ static void fea_handle_include(struct parseState *tok) {
    *pt='\0';
    if (ch != ')') {
       if (ch==EOF)
-	 LogError(_("End of file in include on line %d of %s"),
+	 ErrorMsg(2,"End of file in include on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       else
-	 LogError(_("Missing close parenthesis in include on line %d of %s"),
+	 ErrorMsg(2,"Missing close parenthesis in include on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return;
    }
 
    if (pt==namebuf) {
-      LogError(_("No filename specified in include on line %d of %s"),
+      ErrorMsg(2,"No filename specified in include on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return;
    }
 
    if (tok->inc_depth >= MAXI - 1) {
-      LogError(_("Includes nested too deeply on line %d of %s"),
+      ErrorMsg(2,"Includes nested too deeply on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return;
@@ -2717,7 +2716,7 @@ static void fea_handle_include(struct parseState *tok) {
    }
    in=afopen(filename, "r");
    if (in==NULL) {
-      LogError(_("Could not open include file (%s) on line %d of %s"),
+      ErrorMsg(2,"Could not open include file (%s) on line %d of %s\n",
 	       filename, tok->line[tok->inc_depth],
 	       tok->filename[tok->inc_depth]);
       ++tok->err_count;
@@ -2799,11 +2798,11 @@ static void fea_ParseTokWithKeywords(struct parseState *tok,int do_keywords) {
 	 ch=agetc(in);
       }
       if (isdigit(ch)) {
-	 LogError(_("Number too long on line %d of %s"),
+	 ErrorMsg(2,"Number too long on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       } else if (pt==start) {
-	 LogError(_("Missing number on line %d of %s"),
+	 ErrorMsg(2,"Missing number on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
@@ -2834,13 +2833,13 @@ static void fea_ParseTokWithKeywords(struct parseState *tok,int do_keywords) {
       aungetc(ch, in);
       if (pt > start + 31) {
 	 /* Adobe says glyphnames are 31 chars, but Mangal uses longer names */
-	 LogError(_("Name, %s%s, too long on line %d of %s"),
+	 ErrorMsg(2,"Name, %s%s, too long on line %d of %s\n",
 		  tok->tokbuf, pt >= tok->tokbuf + MAXT ? "..." : "",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 if (pt >= tok->tokbuf + MAXT)
 	    ++tok->err_count;
       } else if (pt==start) {
-	 LogError(_("Missing name on line %d of %s"),
+	 ErrorMsg(2,"Missing name on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
@@ -2884,7 +2883,7 @@ static void fea_ParseTokWithKeywords(struct parseState *tok,int do_keywords) {
 	 tok->tokbuf[1]='\0';
       } else {
 	 if (!tok->skipping) {
-	    LogError(_("Unexpected character (0x%02X) on line %d of %s"), ch,
+	    ErrorMsg(2,"Unexpected character (0x%02X) on line %d of %s\n", ch,
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -2958,7 +2957,7 @@ static int fea_ParseDeciPoints(struct parseState *tok) {
       if (ch != EOF)
 	 aungetc(ch, in);
    } else {
-      LogError(_("Expected '%s' on line %d of %s"), fea_keywords[tk_int],
+      ErrorMsg(2,"Expected '%s' on line %d of %s\n", fea_keywords[tk_int],
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       tok->value=-1;
@@ -2971,7 +2970,7 @@ static void fea_TokenMustBe(struct parseState *tok,enum toktype type,int ch) {
 
    fea_ParseTok(tok);
    if (type==tk_char && (tok->type != type || tok->tokbuf[0] != ch)) {
-      LogError(_("Expected '%c' on line %d of %s"), ch,
+      ErrorMsg(2,"Expected '%c' on line %d of %s\n", ch,
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    } else if (type != tk_char && tok->type != type) {
@@ -2979,11 +2978,10 @@ static void fea_TokenMustBe(struct parseState *tok,enum toktype type,int ch) {
 	 if (fea_keywords[tk].tok==type)
 	    break;
       if (fea_keywords[tk].name != NULL)
-	 LogError(_("Expected '%s' on line %d of %s"), fea_keywords[tk].name,
+	 ErrorMsg(2,"Expected '%s' on line %d of %s\n", fea_keywords[tk].name,
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       else
-	 LogError(_
-		  ("Expected unknown token (internal error) on line %d of %s"),
+	 ErrorMsg(2,"Expected unknown token (internal error) on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -3030,7 +3028,7 @@ static void fea_skip_to_close_curly(struct parseState *tok) {
 
 static void fea_now_semi(struct parseState *tok) {
    if (tok->type != tk_char || tok->tokbuf[0] != ';') {
-      LogError(_("Expected ';' at statement end on line %d of %s"),
+      ErrorMsg(2,"Expected ';' at statement end on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       fea_skip_to_semi(tok);
       ++tok->err_count;
@@ -3086,7 +3084,7 @@ static char *fea_lookup_class_complain(struct parseState *tok,
       }
    }
 
-   LogError(_("Use of undefined glyph class, %s, on line %d of %s"),
+   ErrorMsg(2,"Use of undefined glyph class, %s, on line %d of %s\n",
 	    classname, tok->line[tok->inc_depth],
 	    tok->filename[tok->inc_depth]);
    ++tok->err_count;
@@ -3101,7 +3099,7 @@ static struct gpos_mark *fea_lookup_markclass_complain(struct parseState *tok,
       if (strcmp(classname, test->name)==0)
 	 return (test);
    }
-   LogError(_("Use of undefined mark class, %s, on line %d of %s"), classname,
+   ErrorMsg(2,"Use of undefined mark class, %s, on line %d of %s\n", classname,
 	    tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
    ++tok->err_count;
    return (NULL);
@@ -3154,8 +3152,7 @@ static char *fea_cid_validate(struct parseState *tok,int cid) {
 
    if (tok->sf->subfontcnt==0) {
       if (!tok->warned_about_not_cid) {
-	 LogError(_
-		  ("Reference to a CID in a non-CID-keyed font on line %d of %s"),
+	 ErrorMsg(2,"Reference to a CID in a non-CID-keyed font on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 tok->warned_about_not_cid=true;
       }
@@ -3206,8 +3203,7 @@ static SplineChar *fea_glyphname_get(struct parseState *tok,char *name) {
    sc=SFGetChar(sf,-1,name);
 
    if (sf->subfontcnt != 0) {
-      LogError(_
-	       ("Reference to a glyph name in a CID-keyed font on line %d of %s"),
+      ErrorMsg(2,"Reference to a glyph name in a CID-keyed font on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return (sc);
@@ -3259,7 +3255,7 @@ static char *fea_ParseGlyphClass(struct parseState *tok) {
    if (tok->type==tk_class) {
       glyphs=fea_lookup_class_complain(tok, tok->tokbuf);
    } else if (tok->type != tk_char || tok->tokbuf[0] != '[') {
-      LogError(_("Expected '[' in glyph class definition on line %d of %s"),
+      ErrorMsg(2,"Expected '[' in glyph class definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return (NULL);
@@ -3291,8 +3287,7 @@ static char *fea_ParseGlyphClass(struct parseState *tok) {
 	    fea_ParseTok(tok);
 	    if (last_val != -1 && tok->type==tk_cid) {
 	       if (last_val >= tok->value) {
-		  LogError(_
-			   ("Invalid CID range in glyph class on line %d of %s"),
+		  ErrorMsg(2,"Invalid CID range in glyph class on line %d of %s\n",
 			   tok->line[tok->inc_depth],
 			   tok->filename[tok->inc_depth]);
 		  ++tok->err_count;
@@ -3333,8 +3328,7 @@ static char *fea_ParseGlyphClass(struct parseState *tok) {
 		  }
 	       }
 	       if (range_type==0) {
-		  LogError(_
-			   ("Invalid glyph name range in glyph class on line %d of %s"),
+		  ErrorMsg(2,"Invalid glyph name range in glyph class on line %d of %s\n",
 			   tok->line[tok->inc_depth],
 			   tok->filename[tok->inc_depth]);
 		  ++tok->err_count;
@@ -3372,8 +3366,7 @@ static char *fea_ParseGlyphClass(struct parseState *tok) {
 		  }
 	       }
 	    } else {
-	       LogError(_
-			("Unexpected token in glyph class range on line %d of %s"),
+	       ErrorMsg(2,"Unexpected token in glyph class range on line %d of %s\n",
 			tok->line[tok->inc_depth],
 			tok->filename[tok->inc_depth]);
 	       ++tok->err_count;
@@ -3385,8 +3378,7 @@ static char *fea_ParseGlyphClass(struct parseState *tok) {
 	 } else if (tok->type==tk_NULL) {
 	    contents=copy("NULL");
 	 } else {
-	    LogError(_
-		     ("Expected glyph name, cid, or class in glyph class definition on line %d of %s"),
+	    ErrorMsg(2,"Expected glyph name, cid, or class in glyph class definition on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -3496,7 +3488,7 @@ static void fea_ParseLookupFlags(struct parseState *tok) {
 	 if (tok->type==tk_char && tok->tokbuf[0]==';')
 	    break;
 	 else if (tok->type==tk_char && tok->tokbuf[0] != ',') {
-	    LogError(_("Expected ';' in lookupflags on line %d of %s"),
+	    ErrorMsg(2,"Expected ';' in lookupflags on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -3506,12 +3498,12 @@ static void fea_ParseLookupFlags(struct parseState *tok) {
 	 fea_ParseTok(tok);
       }
       if (tok->type != tk_char || tok->tokbuf[0] != ';') {
-	 LogError(_("Unexpected token in lookupflags on line %d of %s"),
+	 ErrorMsg(2,"Unexpected token in lookupflags on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
 	 fea_skip_to_semi(tok);
       } else if (val==0) {
-	 LogError(_("No flags specified in lookupflags on line %d of %s"),
+	 ErrorMsg(2,"No flags specified in lookupflags on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
@@ -3530,7 +3522,7 @@ static void fea_ParseGlyphClassDef(struct parseState *tok) {
 
    fea_ParseTok(tok);
    if (tok->type != tk_char || tok->tokbuf[0] != '=') {
-      LogError(_("Expected '=' in glyph class definition on line %d of %s"),
+      ErrorMsg(2,"Expected '=' in glyph class definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -3553,7 +3545,7 @@ static void fea_ParseLangSys(struct parseState *tok,int inside_feat) {
 
    fea_ParseTok(tok);
    if (tok->type != tk_name || !tok->could_be_tag) {
-      LogError(_("Expected tag in languagesystem on line %d of %s"),
+      ErrorMsg(2,"Expected tag in languagesystem on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -3563,7 +3555,7 @@ static void fea_ParseLangSys(struct parseState *tok,int inside_feat) {
 
    fea_ParseTok(tok);
    if (tok->type != tk_name || !tok->could_be_tag) {
-      LogError(_("Expected tag in languagesystem on line %d of %s"),
+      ErrorMsg(2,"Expected tag in languagesystem on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -3659,7 +3651,7 @@ static void fea_ParseDeviceTable(struct parseState *tok,DeviceTable *adjust) {
       } else if (tok->type==tk_char && tok->tokbuf[0]=='>') {
 	 break;
       } else if (tok->type != tk_int) {
-	 LogError(_("Expected integer in device table on line %d of %s"),
+	 ErrorMsg(2,"Expected integer in device table on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       } else {
@@ -3667,7 +3659,7 @@ static void fea_ParseDeviceTable(struct parseState *tok,DeviceTable *adjust) {
 
 	 fea_TokenMustBe(tok, tk_int, '\0');
 	 if (pixel >= sizeof(values) || pixel < 0)
-	    LogError(_("Pixel size too big in device table on line %d of %s"),
+	    ErrorMsg(2,"Pixel size too big in device table on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	 else {
@@ -3685,7 +3677,7 @@ static void fea_ParseDeviceTable(struct parseState *tok,DeviceTable *adjust) {
 	 else if (tok->type==tk_char && tok->tokbuf[0]=='>')
 	    break;
 	 else {
-	    LogError(_("Expected comma in device table on line %d of %s"),
+	    ErrorMsg(2,"Expected comma in device table on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -3712,14 +3704,14 @@ static void fea_ParseCaret(struct parseState *tok) {
       return;
    fea_ParseTok(tok);
    if (tok->type != tk_int) {
-      LogError(_("Expected integer in caret on line %d of %s"),
+      ErrorMsg(2,"Expected integer in caret on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    } else
       val=tok->value;
    fea_ParseTok(tok);
    if (tok->type != tk_char || tok->tokbuf[0] != '>') {
-      LogError(_("Expected '>' in caret on line %d of %s"),
+      ErrorMsg(2,"Expected '>' in caret on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -3743,8 +3735,7 @@ static AnchorPoint *fea_ParseAnchor(struct parseState *tok) {
 	    }
 	 }
 	 if (nap==NULL) {
-	    LogError(_
-		     ("\"%s\" is not the name of a known named anchor on line %d of %s."),
+	    ErrorMsg(2,"\"%s\" is not the name of a known named anchor on line %d of %s.\n",
 		     tok->tokbuf, tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -3779,12 +3770,12 @@ static AnchorPoint *fea_ParseAnchor(struct parseState *tok) {
 	    fea_ParseTok(tok);
 	 }
       } else {
-	 LogError(_("Expected integer in anchor on line %d of %s"),
+	 ErrorMsg(2,"Expected integer in anchor on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
    } else {
-      LogError(_("Expected 'anchor' keyword in anchor on line %d of %s"),
+      ErrorMsg(2,"Expected 'anchor' keyword in anchor on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -3798,7 +3789,7 @@ static AnchorPoint *fea_ParseAnchorClosed(struct parseState *tok) {
 
    if (tok->err_count==ecnt
        && (tok->type != tk_char || tok->tokbuf[0] != '>')) {
-      LogError(_("Expected '>' in anchor on line %d of %s"),
+      ErrorMsg(2,"Expected '>' in anchor on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -3811,7 +3802,7 @@ static void fea_ParseAnchorDef(struct parseState *tok) {
 
    ap=fea_ParseAnchor(tok);
    if (tok->type != tk_name) {
-      LogError(_("Expected name in anchor definition on line %d of %s"),
+      ErrorMsg(2,"Expected name in anchor definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -3821,8 +3812,7 @@ static void fea_ParseAnchorDef(struct parseState *tok) {
       if (strcmp(nap->name, tok->tokbuf)==0)
 	 break;
    if (nap != NULL) {
-      LogError(_
-	       ("Attempt to redefine anchor definition of \"%s\" on line %d of %s"),
+      ErrorMsg(2,"Attempt to redefine anchor definition of \"%s\" on line %d of %s\n",
 	       tok->tokbuf, tok->line[tok->inc_depth],
 	       tok->filename[tok->inc_depth]);
    } else {
@@ -3847,10 +3837,8 @@ static int fea_findLookup(struct parseState *tok,char *name) {
 
    if (SFFindLookup(tok->sf, name) != NULL) {
       if (!tok->lookup_in_sf_warned) {
-	 ff_post_notice(_("Refers to Font"),
-			_
-			("Reference to a lookup which is not in the feature file but which is in the font, %.50s"),
-			name);
+	 ErrorMsg(1,"Reference to a lookup which is not in the feature file "
+	            "but is in the font, %.50s.\n",name);
 	 tok->lookup_in_sf_warned=true;
       }
       return (true);
@@ -3880,8 +3868,7 @@ static struct vr *fea_ParseValueRecord(struct parseState *tok) {
 	 }
       }
       if (nvr==NULL) {
-	 LogError(_
-		  ("\"%s\" is not the name of a known named value record on line %d of %s."),
+	 ErrorMsg(2,"\"%s\" is not the name of a known named value record on line %d of %s.\n",
 		  tok->tokbuf, tok->line[tok->inc_depth],
 		  tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
@@ -3917,7 +3904,7 @@ static struct vr *fea_ParseValueRecord(struct parseState *tok) {
 	 vr->xoff=0;
       }
    } else {
-      LogError(_("Unexpected token in value record on line %d of %s"),
+      ErrorMsg(2,"Unexpected token in value record on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -3931,7 +3918,7 @@ static void fea_ParseValueRecordDef(struct parseState *tok) {
    fea_ParseTok(tok);
    vr=fea_ParseValueRecord(tok);
    if (tok->type != tk_name) {
-      LogError(_("Expected name in value record definition on line %d of %s"),
+      ErrorMsg(2,"Expected name in value record definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -3941,8 +3928,7 @@ static void fea_ParseValueRecordDef(struct parseState *tok) {
       if (strcmp(nvr->name, tok->tokbuf)==0)
 	 break;
    if (nvr != NULL) {
-      LogError(_
-	       ("Attempt to redefine value record definition of \"%s\" on line %d of %s"),
+      ErrorMsg(2,"Attempt to redefine value record definition of \"%s\" on line %d of %s\n",
 	       tok->tokbuf, tok->line[tok->inc_depth],
 	       tok->filename[tok->inc_depth]);
    } else {
@@ -3970,7 +3956,7 @@ static void fea_ParseMarkClass(struct parseState *tok) {
 	    (tok->type==tk_char && tok->tokbuf[0]=='['))
       class_string=fea_ParseGlyphClassGuarded(tok);
    else {
-      LogError(_("Expected name or class on line %d of %s"),
+      ErrorMsg(2,"Expected name or class on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -3978,7 +3964,7 @@ static void fea_ParseMarkClass(struct parseState *tok) {
    }
    fea_ParseTok(tok);
    if (tok->type != tk_char || tok->tokbuf[0] != '<') {
-      LogError(_("Expected anchor in mark class definition on line %d of %s"),
+      ErrorMsg(2,"Expected anchor in mark class definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -3989,8 +3975,7 @@ static void fea_ParseMarkClass(struct parseState *tok) {
    fea_ParseTok(tok);
 
    if (tok->type != tk_class) {
-      LogError(_
-	       ("Expected class name in mark class definition on line %d of %s"),
+      ErrorMsg(2,"Expected class name in mark class definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -4025,14 +4010,12 @@ static void fea_ParseBroket(struct parseState *tok,struct markedglyphs *last) {
       /*  but, of course incompatible */
       fea_TokenMustBe(tok, tk_name, '\0');
       if (last->mark_count==0) {
-	 LogError(_
-		  ("Lookups may only be specified after marked glyphs on line %d of %s"),
+	 ErrorMsg(2,"Lookups may only be specified after marked glyphs on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
       if (!fea_findLookup(tok, tok->tokbuf)) {
-	 LogError(_
-		  ("Lookups must be defined before being used on line %d of %s"),
+	 ErrorMsg(2,"Lookups must be defined before being used on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       } else
@@ -4049,12 +4032,12 @@ static void fea_ParseBroket(struct parseState *tok,struct markedglyphs *last) {
    } else if (tok->type==tk_int || tok->type==tk_name) {
       last->vr=fea_ParseValueRecord(tok);
       if (tok->type != tk_char || tok->tokbuf[0] != '>') {
-	 LogError(_("Expected '>' in value record on line %d of %s"),
+	 ErrorMsg(2,"Expected '>' in value record on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
    } else {
-      LogError(_("Unexpected token in value record on line %d of %s"),
+      ErrorMsg(2,"Unexpected token in value record on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -4091,8 +4074,7 @@ static struct markedglyphs *fea_parseCursiveSequence(struct parseState *tok,
       cur->is_name=false;
       cur->name_or_class=fea_ParseGlyphClassGuarded(tok);
    } else {
-      LogError(_
-	       ("Expected glyph or glyphclass (after cursive) on line %d of %s"),
+      ErrorMsg(2,"Expected glyph or glyphclass (after cursive) on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return (NULL);
@@ -4110,7 +4092,7 @@ static struct markedglyphs *fea_parseCursiveSequence(struct parseState *tok,
    }
 
    if (tok->type != tk_char || tok->tokbuf[0] != '<') {
-      LogError(_("Expected two anchors (after cursive) on line %d of %s"),
+      ErrorMsg(2,"Expected two anchors (after cursive) on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return (NULL);
@@ -4150,8 +4132,7 @@ static struct markedglyphs *fea_parseBaseMarkSequence(struct parseState *tok,
       cur->is_name=false;
       cur->name_or_class=fea_ParseGlyphClassGuarded(tok);
    } else {
-      LogError(_
-	       ("Expected glyph or glyphclass (after cursive) on line %d of %s"),
+      ErrorMsg(2,"Expected glyph or glyphclass (after cursive) on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return (NULL);
@@ -4167,7 +4148,7 @@ static struct markedglyphs *fea_parseBaseMarkSequence(struct parseState *tok,
    }
 
    if (tok->type != tk_char || tok->tokbuf[0] != '<') {
-      LogError(_("Expected an anchor (after base/mark) on line %d of %s"),
+      ErrorMsg(2,"Expected an anchor (after base/mark) on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return (NULL);
@@ -4222,8 +4203,7 @@ static struct markedglyphs *fea_parseLigatureSequence(struct parseState *tok,
       cur->is_name=false;
       cur->name_or_class=fea_ParseGlyphClassGuarded(tok);
    } else {
-      LogError(_
-	       ("Expected glyph or glyphclass (after ligature) on line %d of %s"),
+      ErrorMsg(2,"Expected glyph or glyphclass (after ligature) on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       return (NULL);
@@ -4238,7 +4218,7 @@ static struct markedglyphs *fea_parseLigatureSequence(struct parseState *tok,
    }
 
    if (tok->type != tk_char || tok->tokbuf[0] != '<') {
-      LogError(_("Expected an anchor (after ligature) on line %d of %s"),
+      ErrorMsg(2,"Expected an anchor (after ligature) on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       free(cur->name_or_class);
@@ -4355,15 +4335,13 @@ static struct markedglyphs *fea_ParseMarkedGlyphs(struct parseState *tok,
       } else if (tok->type==tk_lookup && last != NULL) {
 	 fea_TokenMustBe(tok, tk_name, '\0');
 	 if (last->mark_count==0) {
-	    LogError(_
-		     ("Lookups may only be specified after marked glyphs on line %d of %s"),
+	    ErrorMsg(2,"Lookups may only be specified after marked glyphs on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
 	 }
 	 if (!fea_findLookup(tok, tok->tokbuf)) {
-	    LogError(_
-		     ("Lookups must be defined before being used on line %d of %s"),
+	    ErrorMsg(2,"Lookups must be defined before being used on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -4753,7 +4731,7 @@ static struct feat_item *fea_process_sub_single(struct parseState *tok,
       if (temp != NULL) {
 	 start=glyphs->name_or_class;
 	 if (start==NULL) {
-	    LogError(_("Internal state messed up on line %d of %s"),
+	    ErrorMsg(2,"Internal state messed up on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -4793,8 +4771,7 @@ static struct feat_item *fea_process_sub_single(struct parseState *tok,
 	 if (*start=='\0' && *start2=='\0')
 	    break;
 	 else if (*start=='\0' || *start2=='\0') {
-	    LogError(_
-		     ("When a single substitution is specified by glyph classes, those classes must be of the same length on line %d of %s"),
+	    ErrorMsg(2,"When a single substitution is specified by glyph classes, those classes must be of the same length on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -4824,8 +4801,7 @@ static struct feat_item *fea_process_sub_single(struct parseState *tok,
 	 item->u2.pst->u.subs.variant=copy(temp->name);
       }
    } else {
-      LogError(_
-	       ("When a single substitution's replacement is specified by a glyph class, the thing being replaced must also be a class on line %d of %s"),
+      ErrorMsg(2,"When a single substitution's replacement is specified by a glyph class, the thing being replaced must also be a class on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -5030,8 +5006,7 @@ static FPST *fea_markedglyphs_to_fpst(struct parseState *tok,
 	 if (g->mark_count==0 && !g->hidden_marked_glyphs) {
 	    if (g->lookupname || g->vr || g->anchors || g->apmark
 		|| g->ligcomp) {
-	       LogError(_
-			("Lookup information attached to unmarked glyph on line %d of %s"),
+	       ErrorMsg(2,"Lookup information attached to unmarked glyph on line %d of %s\n",
 			tok->line[tok->inc_depth],
 			tok->filename[tok->inc_depth]);
 	       ++tok->err_count;
@@ -5054,7 +5029,7 @@ static FPST *fea_markedglyphs_to_fpst(struct parseState *tok,
 	 } else if (is_pos && g->ligcomp != NULL) {
 	    head=fea_process_pos_ligature(tok, g, NULL);
 	 } else if (is_pos) {
-	    LogError(_("Unparseable contextual sequence on line %d of %s"),
+	    ErrorMsg(2,"Unparseable contextual sequence on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -5084,8 +5059,7 @@ static void fea_ParseIgnore(struct parseState *tok) {
       is_pos=false;
 /* I don't think rsub is allowed here */
    else {
-      LogError(_
-	       ("The ignore keyword must be followed by either position or substitute on line %d of %s"),
+      ErrorMsg(2,"The ignore keyword must be followed by either position or substitute on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       is_pos=true;
@@ -5151,12 +5125,11 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 	 ++mk_num;
    }
    if (glyphs==NULL) {
-      LogError(_("Empty substitute on line %d of %s"),
+      ErrorMsg(2,"Empty substitute on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    } else if (is_reverse && (mk_num != 1 || has_lookups != 0)) {
-      LogError(_
-	       ("Reverse substitute must have exactly one marked glyph and no lookups on line %d of %s"),
+      ErrorMsg(2,"Reverse substitute must have exactly one marked glyph and no lookups on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    } else if (!glyphs->has_marks) {
@@ -5181,13 +5154,12 @@ static void fea_ParseSubstitute(struct parseState *tok) {
       } else if (cnt >= 1 && tok->type==tk_by) {
 	 rpl=fea_ParseMarkedGlyphs(tok, false, false, false);
 	 if (rpl==NULL) {
-	    LogError(_("No substitution specified on line %d of %s"),
+	    ErrorMsg(2,"No substitution specified on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
 	 } else if (rpl->has_marks) {
-	    LogError(_
-		     ("No marked glyphs allowed in replacement on line %d of %s"),
+	    ErrorMsg(2,"No marked glyphs allowed in replacement on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -5228,8 +5200,7 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 		  fea_process_sub_ligature(tok, glyphs, rpl, tok->sofar);
 	       /* Ligature */
 	    } else {
-	       LogError(_
-			("Unparseable glyph sequence in substitution on line %d of %s"),
+	       ErrorMsg(2,"Unparseable glyph sequence in substitution on line %d of %s\n",
 			tok->line[tok->inc_depth],
 			tok->filename[tok->inc_depth]);
 	       ++tok->err_count;
@@ -5237,8 +5208,7 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 	 }
 	 fea_markedglyphsFree(rpl);
       } else {
-	 LogError(_
-		  ("Expected 'by' or 'from' keywords in substitution on line %d of %s"),
+	 ErrorMsg(2,"Expected 'by' or 'from' keywords in substitution on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
@@ -5252,8 +5222,7 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 	 /* In the old syntax this would be an error, but in the new lookups */
 	 /*  can appear within the marked glyph list */
 	 if (has_lookups==0) {
-	    LogError(_
-		     ("Expected 'by' keyword in substitution on line %d of %s"),
+	    ErrorMsg(2,"Expected 'by' keyword in substitution on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -5267,8 +5236,7 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 		g==NULL ||
 		spacecount(g->name_or_class) !=
 		spacecount(rpl->name_or_class)) {
-	       LogError(_
-			("Expected a single glyph name in reverse substitution on line %d of %s"),
+	       ErrorMsg(2,"Expected a single glyph name in reverse substitution on line %d of %s\n",
 			tok->line[tok->inc_depth],
 			tok->filename[tok->inc_depth]);
 	       ++tok->err_count;
@@ -5277,7 +5245,7 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 	    }
 	 } else {
 	    if (rpl==NULL) {
-	       LogError(_("No substitution specified on line %d of %s"),
+	       ErrorMsg(2,"No substitution specified on line %d of %s\n",
 			tok->line[tok->inc_depth],
 			tok->filename[tok->inc_depth]);
 	       ++tok->err_count;
@@ -5295,8 +5263,7 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 			     && g->mark_count==g->next->mark_count) {
 		     head=fea_process_sub_ligature(tok, g, rpl, NULL);
 		  } else {
-		     LogError(_
-			      ("Unparseable contextual sequence on line %d of %s"),
+		     ErrorMsg(2,"Unparseable contextual sequence on line %d of %s\n",
 			      tok->line[tok->inc_depth],
 			      tok->filename[tok->inc_depth]);
 		     ++tok->err_count;
@@ -5345,14 +5312,14 @@ static void fea_ParsePosition(struct parseState *tok,int enumer) {
    fea_ParseTok(tok);
    for (cnt=0, g=glyphs; g != NULL; g=g->next, ++cnt);
    if (glyphs==NULL) {
-      LogError(_("Empty position on line %d of %s"),
+      ErrorMsg(2,"Empty position on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    } else if (!glyphs->has_marks) {
       /* Non-contextual */
       if (glyphs->is_cursive) {
 	 if (cnt != 1 || glyphs->ap_cnt != 2) {
-	    LogError(_("Invalid cursive position on line %d of %s"),
+	    ErrorMsg(2,"Invalid cursive position on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -5369,8 +5336,7 @@ static void fea_ParsePosition(struct parseState *tok,int enumer) {
 	 /* New syntax for mark to ligature lookups */
 	 tok->sofar=fea_process_pos_ligature(tok, glyphs, tok->sofar);
       } else {
-	 LogError(_
-		  ("Unparseable glyph sequence in position on line %d of %s"),
+	 ErrorMsg(2,"Unparseable glyph sequence in position on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
@@ -5523,7 +5489,7 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
    /* keywords are allowed in lookup names */
    fea_ParseTokWithKeywords(tok, false);
    if (tok->type != tk_name) {
-      LogError(_("Expected name in lookup on line %d of %s"),
+      ErrorMsg(2,"Expected name in lookup on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -5541,7 +5507,7 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
    } else if (tok->type==tk_useExtension)	/* I just ignore this */
       fea_ParseTok(tok);
    if (tok->type != tk_char || tok->tokbuf[0] != '{') {
-      LogError(_("Expected '{' in feature definition on line %d of %s"),
+      ErrorMsg(2,"Expected '{' in feature definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -5560,19 +5526,16 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
       if (tok->err_count > 100)
 	 break;
       if (tok->type==tk_eof) {
-	 LogError(_
-		  ("Unexpected end of file in lookup definition on line %d of %s"),
+	 ErrorMsg(2,"Unexpected end of file in lookup definition on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
 	 return;
       } else if ((ret=fea_LookupSwitch(tok))==0) {
-	 LogError(_
-		  ("Unexpected token, %s, in lookup definition on line %d of %s"),
+	 ErrorMsg(2,"Unexpected token, %s, in lookup definition on line %d of %s\n",
 		  tok->tokbuf, tok->line[tok->inc_depth],
 		  tok->filename[tok->inc_depth]);
 	 if (tok->type==tk_name && strcmp(tok->tokbuf, "subs")==0)
-	    LogError(_
-		     (" Perhaps you meant to use the keyword 'sub' rather than 'subs'?"));
+	    ErrorMsg(2," Perhaps you meant to use the keyword 'sub' rather than 'subs'?\n");
 	 ++tok->err_count;
 	 return;
       } else if (ret==2)
@@ -5607,7 +5570,7 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
    }
    fea_ParseTokWithKeywords(tok, false);
    if (tok->type != tk_name || strcmp(tok->tokbuf, lookup_name) != 0) {
-      LogError(_("Expected %s in lookup definition on line %d of %s"),
+      ErrorMsg(2,"Expected %s in lookup definition on line %d of %s\n",
 	       lookup_name, tok->line[tok->inc_depth],
 	       tok->filename[tok->inc_depth]);
       ++tok->err_count;
@@ -5651,16 +5614,14 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
       else if (lookuptype==ot_undef)
 	 lookuptype=cur;
       else if (lookuptype != cur) {
-	 LogError(_
-		  ("All entries in a lookup must have the same type on line %d of %s"),
+	 ErrorMsg(2,"All entries in a lookup must have the same type on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
 	 break;
       }
    }
    if (lookuptype==ot_undef) {
-      LogError(_
-	       ("This lookup has no effect, I can't figure out its type on line %d of %s"),
+      ErrorMsg(2,"This lookup has no effect, I can't figure out its type on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -5691,7 +5652,7 @@ static struct nameid *fea_ParseNameId(struct parseState *tok,int strid) {
    fea_ParseTok(tok);
    if (tok->type==tk_int) {
       if (tok->value != 3 && tok->value != 1) {
-	 LogError(_("Invalid platform for string on line %d of %s"),
+	 ErrorMsg(2,"Invalid platform for string on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       } else if (tok->value==1) {
@@ -5708,7 +5669,7 @@ static struct nameid *fea_ParseNameId(struct parseState *tok,int strid) {
       }
    }
    if (tok->type != tk_char || tok->tokbuf[0] != '"') {
-      LogError(_("Expected string on line %d of %s"),
+      ErrorMsg(2,"Expected string on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -5769,7 +5730,7 @@ static struct nameid *fea_ParseNameId(struct parseState *tok,int strid) {
 	    nm->utf8_str=copy("");
       }
       if (tok->type != tk_char || tok->tokbuf[0] != '"') {
-	 LogError(_("End of file found in string on line %d of %s"),
+	 ErrorMsg(2,"End of file found in string on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       } else
@@ -5868,7 +5829,7 @@ static void fea_ParseFeatureNames(struct parseState *tok,uint32 tag) {
       cur->names=head;
    }
    if (tok->type != tk_char || tok->tokbuf[0] != '}') {
-      LogError(_("Expected closing curly brace on line %d of %s"),
+      ErrorMsg(2,"Expected closing curly brace on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -5882,7 +5843,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 
    fea_ParseTag(tok);
    if (tok->type != tk_name || !tok->could_be_tag) {
-      LogError(_("Expected tag in feature on line %d of %s"),
+      ErrorMsg(2,"Expected tag in feature on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -5907,7 +5868,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 
    fea_ParseTok(tok);
    if (tok->type != tk_char || tok->tokbuf[0] != '{') {
-      LogError(_("Expected '{' in feature definition on line %d of %s"),
+      ErrorMsg(2,"Expected '{' in feature definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -5919,8 +5880,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
       if (tok->err_count > 100)
 	 break;
       if (tok->type==tk_eof) {
-	 LogError(_
-		  ("Unexpected end of file in feature definition on line %d of %s"),
+	 ErrorMsg(2,"Unexpected end of file in feature definition on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
 	 return;
@@ -5936,15 +5896,14 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 	      /* can appear inside an 'aalt' feature. I don't support it, but */
 	      /*  just parse and ignore it */
 	      if (feat_tag != CHR('a', 'a', 'l', 't')) {
-		 LogError(_
-			  ("Features inside of other features are only permitted for 'aalt' features on line %d of %s"),
+		 ErrorMsg(2,"Features inside of other features are only permitted for 'aalt' features on line %d of %s\n",
 			  tok->line[tok->inc_depth],
 			  tok->filename[tok->inc_depth]);
 		 ++tok->err_count;
 	      }
 	      fea_ParseTok(tok);
 	      if (tok->type != tk_name || !tok->could_be_tag) {
-		 LogError(_("Expected tag on line %d of %s"),
+		 ErrorMsg(2,"Expected tag on line %d of %s\n",
 			  tok->line[tok->inc_depth],
 			  tok->filename[tok->inc_depth]);
 		 ++tok->err_count;
@@ -5957,7 +5916,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 	      type=tok->type==tk_script ? ft_script : ft_lang;
 	      fea_ParseTok(tok);
 	      if (tok->type != tk_name || !tok->could_be_tag) {
-		 LogError(_("Expected tag on line %d of %s"),
+		 ErrorMsg(2,"Expected tag on line %d of %s\n",
 			  tok->line[tok->inc_depth],
 			  tok->filename[tok->inc_depth]);
 		 ++tok->err_count;
@@ -5975,7 +5934,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 		       else if (tok->type==tk_char && tok->tokbuf[0]==';')
 			  break;
 		       else {
-			  LogError(_("Expected ';' on line %d of %s"),
+			  ErrorMsg(2,"Expected ';' on line %d of %s\n",
 				   tok->line[tok->inc_depth],
 				   tok->filename[tok->inc_depth]);
 			  ++tok->err_count;
@@ -6006,8 +5965,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 	      }
 	      /* Fall on through */
 	   default:
-	      LogError(_
-		       ("Unexpected token, %s, in feature definition on line %d of %s"),
+	      ErrorMsg(2,"Unexpected token, %s, in feature definition on line %d of %s\n",
 		       tok->tokbuf, tok->line[tok->inc_depth],
 		       tok->filename[tok->inc_depth]);
 	      ++tok->err_count;
@@ -6019,7 +5977,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 
    fea_ParseTag(tok);
    if (tok->type != tk_name || !tok->could_be_tag || tok->tag != feat_tag) {
-      LogError(_("Expected '%c%c%c%c' in lookup definition on line %d of %s"),
+      ErrorMsg(2,"Expected '%c%c%c%c' in lookup definition on line %d of %s\n",
 	       feat_tag >> 24, feat_tag >> 16, feat_tag >> 8, feat_tag,
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
@@ -6086,7 +6044,7 @@ static void fea_ParseNameTable(struct parseState *tok) {
       item->u2.names=head;
    }
    if (tok->type != tk_char || tok->tokbuf[0] != '}') {
-      LogError(_("Expected closing curly brace on line %d of %s"),
+      ErrorMsg(2,"Expected closing curly brace on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    }
@@ -6108,7 +6066,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	    break;
       }
       if (keys[index].name==NULL) {
-	 LogError(_("Unknown field %s on line %d of %s"), tok->tokbuf,
+	 ErrorMsg(2,"Unknown field %s on line %d of %s\n", tok->tokbuf,
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
 	 index=-1;
@@ -6147,7 +6105,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	    tok->value =
 	       (foo[0] << 24) | (foo[1] << 16) | (foo[2] << 8) | foo[3];
 	 } else {
-	    LogError(_("Expected string on line %d of %s"),
+	    ErrorMsg(2,"Expected string on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -6157,7 +6115,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	 fea_ParseTok(tok);
       } else {
 	 if (tok->type != tk_int) {
-	    LogError(_("Expected integer on line %d of %s"),
+	    ErrorMsg(2,"Expected integer on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -6194,7 +6152,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	 }
       }
       if (tok->type != tk_char || tok->tokbuf[0] != ';') {
-	 LogError(_("Expected semicolon on line %d of %s"),
+	 ErrorMsg(2,"Expected semicolon on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
 	 fea_skip_to_close_curly(tok);
@@ -6207,7 +6165,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
       }
    }
    if (tok->type != tk_char || tok->tokbuf[0] != '}') {
-      LogError(_("Expected '}' on line %d of %s"),
+      ErrorMsg(2,"Expected '}' on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_close_curly(tok);
@@ -6239,7 +6197,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	 fea_ParseTok(tok);
 	 /* Bug. Not parsing inline classes */
 	 if (tok->type != tk_class && tok->type != tk_name) {
-	    LogError(_("Expected name or class on line %d of %s"),
+	    ErrorMsg(2,"Expected name or class on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -6274,7 +6232,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 		  || (tok->type==tk_char && tok->tokbuf[0]=='['))
 	    item->u1.class=fea_ParseGlyphClassGuarded(tok);
 	 else {
-	    LogError(_("Expected name or class on line %d of %s"),
+	    ErrorMsg(2,"Expected name or class on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -6293,7 +6251,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	    carets[len++]=tok->value;
 	 }
 	 if (tok->type != tk_char || tok->tokbuf[0] != ';') {
-	    LogError(_("Expected semicolon on line %d of %s"),
+	    ErrorMsg(2,"Expected semicolon on line %d of %s\n",
 		     tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -6316,24 +6274,23 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	       fea_ParseTok(tok);
 	       if (tok->type==tk_char && ((i < 3 && tok->tokbuf[0]==',') || (i==3 && tok->tokbuf[0]==';')));	/* skip the delimiting comma or a final semicolon */
 	       else
-		  LogError(_("Expected comma or semicolon on line %d of %s"),
+		  ErrorMsg(2,"Expected comma or semicolon on line %d of %s\n",
 			   tok->line[tok->inc_depth],
 			   tok->filename[tok->inc_depth]);
 	    } else
-	       LogError(_("Expected class on line %d of %s"),
+	       ErrorMsg(2,"Expected class on line %d of %s\n",
 			tok->line[tok->inc_depth],
 			tok->filename[tok->inc_depth]);
 	 }
       } else {
-	 LogError(_
-		  ("Expected Attach or LigatureCaret or GlyphClassDef on line %d of %s"),
+	 ErrorMsg(2,"Expected Attach or LigatureCaret or GlyphClassDef on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
 	 break;
       }
    }
    if (tok->type != tk_char || tok->tokbuf[0] != '}') {
-      LogError(_("Unexpected token in GDEF on line %d of %s"),
+      ErrorMsg(2,"Unexpected token in GDEF on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_close_curly(tok);
@@ -6374,8 +6331,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	 }
       }
       if (active==NULL) {
-	 LogError(_
-		  ("Expected either \"HorizAxis\" or \"VertAxis\" in BASE table on line %d of %s"),
+	 ErrorMsg(2,"Expected either \"HorizAxis\" or \"VertAxis\" in BASE table on line %d of %s\n",
 		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
 	 fea_skip_to_semi(tok);
@@ -6405,8 +6361,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	    fea_ParseTag(tok);
 	    if (!tok->could_be_tag) {
 	       err=1;
-	       LogError(_
-			("Expected baseline tag in BASE table on line %d of %s"),
+	       ErrorMsg(2,"Expected baseline tag in BASE table on line %d of %s\n",
 			tok->line[tok->inc_depth],
 			tok->filename[tok->inc_depth]);
 	       ++tok->err_count;
@@ -6416,8 +6371,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	       fea_ParseTok(tok);
 	       if (tok->type != tk_int) {
 		  err=1;
-		  LogError(_
-			   ("Expected an integer specifying baseline positions in BASE table on line %d of %s"),
+		  ErrorMsg(2,"Expected an integer specifying baseline positions in BASE table on line %d of %s\n",
 			   tok->line[tok->inc_depth],
 			   tok->filename[tok->inc_depth]);
 		  ++tok->err_count;
@@ -6446,8 +6400,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	       break;
 	    else if (tok->type != tk_char || tok->tokbuf[0] != ',') {
 	       err=1;
-	       LogError(_
-			("Expected comma or semicolon in BASE table on line %d of %s"),
+	       ErrorMsg(2,"Expected comma or semicolon in BASE table on line %d of %s\n",
 			tok->line[tok->inc_depth],
 			tok->filename[tok->inc_depth]);
 	       ++tok->err_count;
@@ -6455,8 +6408,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	 }
       } else {
 	 if (strcmp(tok->tokbuf + off, "MinMax") != 0) {
-	    LogError(_
-		     ("Unexpected token, %s, in BASE table on line %d of %s"),
+	    ErrorMsg(2,"Unexpected token, %s, in BASE table on line %d of %s\n",
 		     tok->tokbuf, tok->line[tok->inc_depth],
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
@@ -6464,7 +6416,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	 fea_skip_to_semi(tok);
       }
       if (tok->type != tk_char || tok->tokbuf[0] != ';') {
-	 LogError(_("Expected semicolon in BASE table on line %d of %s"),
+	 ErrorMsg(2,"Expected semicolon in BASE table on line %d of %s\n",
 		  tok->tokbuf, tok->line[tok->inc_depth],
 		  tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
@@ -6493,7 +6445,7 @@ static void fea_ParseTableDef(struct parseState *tok) {
 
    fea_ParseTag(tok);
    if (tok->type != tk_name || !tok->could_be_tag) {
-      LogError(_("Expected tag in table on line %d of %s"),
+      ErrorMsg(2,"Expected tag in table on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -6540,7 +6492,7 @@ static void fea_ParseTableDef(struct parseState *tok) {
 
    fea_ParseTag(tok);
    if (tok->type != tk_name || !tok->could_be_tag || tok->tag != table_tag) {
-      LogError(_("Expected matching tag in table on line %d of %s"),
+      ErrorMsg(2,"Expected matching tag in table on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
       fea_skip_to_semi(tok);
@@ -6647,7 +6599,7 @@ static void fea_featitemFree(struct feat_item *item) {
 	   }
 	   break;
 	default:
-	   IError("Don't know how to free a feat_item of type %d",
+	   ErrorMsg(2,"Don't know how to free a feat_item of type %d\n",
 		  item->type);
 	   break;
       }
@@ -6687,15 +6639,14 @@ static void fea_ParseFeatureFile(struct parseState *tok) {
 	   fea_ParseTableDef(tok);
 	   break;
 	case tk_anonymous:
-	   LogError(_
-		    ("FontAnvil does not support anonymous tables on line %d of %s"),
+	   ErrorMsg(2,"FontAnvil does not support anonymous tables on line %d of %s\n",
 		    tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	   fea_skip_to_close_curly(tok);
 	   break;
 	case tk_eof:
 	   goto end_loop;
 	default:
-	   LogError(_("Unexpected token, %s, on line %d of %s"), tok->tokbuf,
+	   ErrorMsg(2,"Unexpected token, %s, on line %d of %s\n", tok->tokbuf,
 		    tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
 	   ++tok->err_count;
 	   goto end_loop;
@@ -6776,7 +6727,7 @@ static void fea_ApplyLookupListPST(struct parseState *tok,
 	   l->u2.pst=NULL;	/* So we don't free it later */
 	   break;
 	default:
-	   IError("Unexpected feature type %d in a PST feature", l->type);
+	   ErrorMsg(2,"Unexpected feature type %d in a PST feature\n", l->type);
 	   break;
       }
    }
@@ -6833,7 +6784,7 @@ static void fea_ApplyLookupListContextual(struct parseState *tok,
 	   }
 	   break;
 	default:
-	   IError("Unexpected feature type %d in a FPST feature", l->type);
+	   ErrorMsg(2,"Unexpected feature type %d in a FPST feature\n", l->type);
 	   break;
       }
    }
@@ -6887,7 +6838,7 @@ static void fea_ApplyLookupListCursive(struct parseState *tok,
 	   l->u2.ap=NULL;	/* So we don't free them later */
 	   break;
 	default:
-	   IError("Unexpected feature type %d in a cursive feature", l->type);
+	   ErrorMsg(2,"Unexpected feature type %d in a cursive feature\n", l->type);
 	   break;
       }
    }
@@ -7338,7 +7289,7 @@ static OTLookup *fea_ApplyLookupList(struct parseState *tok,
 	    return (otl);
       otl=SFFindLookup(tok->sf, lookup_data->u1.lookup_name);
       if (otl==NULL)
-	 LogError(_("No lookup named %s"), lookup_data->u1.lookup_name);
+	 ErrorMsg(2,"No lookup named %s\n", lookup_data->u1.lookup_name);
       /* Can't give a line number, this is second pass */
       return (otl);
    }
@@ -7369,16 +7320,16 @@ static OTLookup *fea_ApplyLookupList(struct parseState *tok,
       else if (otl->lookup_type==ot_undef)
 	 otl->lookup_type=temp;
       else if (otl->lookup_type != temp)
-	 IError(_("Mismatch lookup types inside a parsed lookup"));
+	 ErrorMsg(2,"Mismatch lookup types inside a parsed lookup\n");
    }
    if (otl->lookup_type==ot_undef)
-      IError(_("Could not figure out a lookup type"));
+      ErrorMsg(2,"Could not figure out a lookup type\n");
    if (otl->lookup_type==gpos_mark2base ||
        otl->lookup_type==gpos_mark2ligature ||
        otl->lookup_type==gpos_mark2mark)
       fea_ApplyLookupListMark2(tok, lookup_data, otl);
    else if (mcnt != 0)
-      IError(_("Mark anchors provided when nothing can use them"));
+      ErrorMsg(2,"Mark anchors provided when nothing can use them\n");
    else if (otl->lookup_type==gpos_cursive)
       fea_ApplyLookupListCursive(tok, lookup_data, otl);
    else if (otl->lookup_type==gpos_pair)
@@ -7688,7 +7639,7 @@ static struct feat_item *fea_ApplyFeatureList(struct parseState *tok,
 	   f=f->next;
 	   continue;
 	default:
-	   IError("Unexpected feature item in feature definition %d",
+	   ErrorMsg(2,"Unexpected feature item in feature definition %d\n",
 		  f->type);
 	   f=f->next;
       }
@@ -7736,7 +7687,7 @@ static void fea_ApplyFile(struct parseState *tok,struct feat_item *item) {
 	   f=f->next;
 	   continue;
 	default:
-	   IError("Unexpected feature item in feature file %d", f->type);
+	   ErrorMsg(2,"Unexpected feature item in feature file %d\n", f->type);
 	   f=f->next;
       }
    }
@@ -7942,8 +7893,7 @@ void SFApplyFeatureFile(SplineFont *sf, AFILE *file, char *filename) {
       fea_ApplyFile(&tok, tok.sofar);
       fea_NameLookups(&tok);
    } else
-      ff_post_error("Not applied",
-		    "There were errors when parsing the feature file and the features have not been applied");
+      ErrorMsg(2,"There were errors when parsing the feature file and the features have not been applied\n");
    fea_featitemFree(tok.sofar);
    ScriptLangListFree(tok.def_langsyses);
    for (gc=tok.classes; gc != NULL; gc=gcnext) {
@@ -7977,8 +7927,7 @@ void SFApplyFeatureFilename(SplineFont *sf, char *filename) {
    AFILE *in=afopen(filename, "r");
 
    if (in==NULL) {
-      ff_post_error(_("Cannot open file"),
-		    _("Cannot open feature file %.120s"), filename);
+      ErrorMsg("Cannot open feature file %.120s\n",filename);
       return;
    }
    SFApplyFeatureFile(sf, in, filename);

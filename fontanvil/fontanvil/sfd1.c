@@ -1,4 +1,4 @@
-/* $Id: sfd1.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: sfd1.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -155,8 +155,7 @@ static int SFAddScriptLangIndex(SplineFont *_sf,uint32 script,uint32 lang) {
       _sf=_sf->mm->normal;
 
    if (_sf->sfd_version >= 2)
-      IError
-	 ("SFFindBiggestScriptLangIndex called with bad version number.\n");
+      ErrorMsg(2,"SFFindBiggestScriptLangIndex called with bad version number.\n\n");
 
    sf=(SplineFont1 *) _sf;
 
@@ -203,8 +202,7 @@ int SFFindBiggestScriptLangIndex(SplineFont *_sf, uint32 script, uint32 lang) {
    SplineFont1 *sf=(SplineFont1 *) _sf;
 
    if (_sf->sfd_version >= 2)
-      IError
-	 ("SFFindBiggestScriptLangIndex called with bad version number.\n");
+      ErrorMsg(2,"SFFindBiggestScriptLangIndex called with bad version number.\n\n");
 
    if (sf->script_lang==NULL)
       SFGuessScriptList(sf);
@@ -276,7 +274,7 @@ static OTLookup *CreateLookup(SplineFont1 *sf,uint32 tag,int sli,
       type==pst_contextsub ? gsub_context :
       type==pst_chainsub ? gsub_contextchain : ot_undef;
    if (otl->lookup_type==ot_undef)
-      IError("Unknown lookup type");
+      ErrorMsg(2,"Unknown lookup type\n");
    if (otl->lookup_type < gpos_single) {
       otl->next=sf->sf.gsub_lookups;
       sf->sf.gsub_lookups=otl;
@@ -301,7 +299,7 @@ static OTLookup *CreateACLookup(SplineFont1 *sf,AnchorClass1 *ac) {
       ac->ac.type==act_curs ? gpos_cursive :
       ac->ac.type==act_mklg ? gpos_mark2ligature : ot_undef;
    if (otl->lookup_type==ot_undef)
-      IError("Unknown AnchorClass type");
+      ErrorMsg(2,"Unknown AnchorClass type\n");
    otl->next=sf->sf.gpos_lookups;
    sf->sf.gpos_lookups=otl;
    otl->lookup_flags=ac->flags;

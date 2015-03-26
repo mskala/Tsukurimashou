@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: tottfgpos.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -387,7 +387,7 @@ static SplineChar ***generateMapList(SplineChar ** glyphs,
       sc=glyphs[i];
       maps[i]=FindSubs(sc, sub);
       if (maps[i]==NULL) {
-	 afprintf(stderr,
+	 ErrorMsg(1,
 		 "maps[%d] is null; glyphs[%d] is \"%s\"; lookup name is \"%s\".\n",
 		 i, i, (glyphs[i]->name ? glyphs[i]->name : ""),
 		 sub->subtable_name);
@@ -563,7 +563,7 @@ static void dumpcoveragetable(AFILE *gpos,SplineChar ** glyphs) {
 
    for (i=0; glyphs[i] != NULL; ++i) {
       if (glyphs[i]->ttf_glyph <= last)
-	 IError("Glyphs must be ordered when creating coverage table");
+	 ErrorMsg(2,"Glyphs must be ordered when creating coverage table\n");
       if (glyphs[i]->ttf_glyph != last + 1)
 	 ++range_cnt;
       last=glyphs[i]->ttf_glyph;
@@ -601,7 +601,7 @@ static void dumpcoveragetable(AFILE *gpos,SplineChar ** glyphs) {
 	 ++r;
       }
       if (r != range_cnt)
-	 IError("Miscounted ranges in format 2 coverage table output");
+	 ErrorMsg(2,"Miscounted ranges in format 2 coverage table output\n");
    }
 }
 
@@ -960,7 +960,7 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
    if (bits==0)
       bits=1;
    if (cnt != cnt2)
-      IError("Count mismatch in dumpGPOSsimplepos#1 %d vs %d\n", cnt, cnt2);
+      ErrorMsg(2,"Count mismatch in dumpGPOSsimplepos#1 %d vs %d\n", cnt, cnt2);
 
    putshort(gpos, same ? 1 : 2);	/* 1 means all value records same */
    coverage_pos=aftell(gpos);
@@ -1004,7 +1004,7 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
 	 if (bits & 0x80)
 	    dumpgposdevicetable(gpos, &first->u.pos.adjust->yadv);
 	 if (next_dev_tab != aftell(gpos) - coverage_pos + 2)
-	    IError("Device Table offsets wrong in simple positioning 2");
+	    ErrorMsg(2,"Device Table offsets wrong in simple positioning 2\n");
       }
    } else {
       int vr_size =
@@ -1033,7 +1033,7 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
 	 }
       }
       if (cnt != cnt2)
-	 IError("Count mismatch in dumpGPOSsimplepos#3 %d vs %d\n", cnt,
+	 ErrorMsg(2,"Count mismatch in dumpGPOSsimplepos#3 %d vs %d\n", cnt,
 		cnt2);
       if (bits & 0xf0) {
 	 for (cnt2=0; glyphs[cnt2] != NULL; ++cnt2) {
@@ -1052,7 +1052,7 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
 	 }
       }
       if (next_dev_tab != aftell(gpos) - coverage_pos + 2)
-	 IError("Device Table offsets wrong in simple positioning 2");
+	 ErrorMsg(2,"Device Table offsets wrong in simple positioning 2\n");
    }
    end=aftell(gpos);
    afseek(gpos, coverage_pos, SEEK_SET);
@@ -1291,14 +1291,12 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 	     || seconds[end_cnt][0].samewas < start_cnt)
 	    glyph_len += (bit_cnt * 2 + 2) * seconds[end_cnt][0].tot + seconds[end_cnt][0].devtablen + 2;	/* Number of secondary glyphs */
 	 if (glyph_len > 65535 && end_cnt==start_cnt) {
-	    LogError(_
-		     ("Lookup subtable %s contains a glyph %s whose kerning information takes up more than 64k bytes\n"),
+	    ErrorMsg(2,"Lookup subtable %s contains a glyph %s whose kerning information takes up more than 64k bytes\n",
 		     sub->subtable_name, glyphs[start_cnt]->name);
 	    len += glyph_len;
 	 } else if (len + glyph_len > 65535) {
 	    if (start_cnt==0)
-	       LogError(_
-			("Lookup subtable %s had to be split into several subtables\nbecause it was too big.\n"),
+	       ErrorMsg(2,"Lookup subtable %s had to be split into several subtables\nbecause it was too big.\n",
 			sub->subtable_name);
 	    break;
 	 } else
@@ -1421,9 +1419,9 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
       end=aftell(gpos);
       afseek(gpos, coverage_pos, SEEK_SET);
       if (end - start > 65535)
-	 IError(_
-		("I miscalculated the size of subtable %s, this means the kerning output is wrong."),
-		sub->subtable_name);
+	 ErrorMsg(2,"The size of subtable %s was miscalculated.  "
+                    "This means the kerning output is wrong.\n",
+                  sub->subtable_name);
       putshort(gpos, end - start);
       afseek(gpos, end, SEEK_SET);
       gtemp=glyphs[end_cnt];
@@ -1440,13 +1438,9 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 uint16 *ClassesFromNames(SplineFont *sf, char **classnames, int class_cnt,
 			 int numGlyphs, SplineChar *** glyphs, int apple_kc) {
    uint16 *class;
-
    int i;
-
    char *pt, *end, ch;
-
    SplineChar *sc, **gs=NULL;
-
    int offset=(apple_kc && classnames[0] != NULL);
 
    class=calloc(numGlyphs, sizeof(uint16));
@@ -1628,7 +1622,7 @@ static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
 	    dumpgposdevicetable(gpos, &kc->adjusts[i]);
       }
       if (next_devtab != aftell(gpos) - begin_off)
-	 IError("Device table offsets screwed up in kerning class");
+	 ErrorMsg(2,"Device table offsets screwed up in kerning class\n");
    }
    pos=aftell(gpos);
    afseek(gpos, begin_off + 4 * sizeof(uint16), SEEK_SET);
@@ -1694,16 +1688,14 @@ static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
 	 if (ac==NULL)
 	    ac=testac;
 	 else {
-	    ff_post_error(_("Two cursive anchor classes"),
-			  _
-			  ("Two cursive anchor classes in the same subtable, %s"),
-			  sub->subtable_name);
+	    ErrorMsg(2,"Two cursive anchor classes in the same subtable, %s\n",
+                     sub->subtable_name);
 	    break;
 	 }
       }
    }
    if (ac==NULL) {
-      IError("Missing anchor class for %s", sub->subtable_name);
+      ErrorMsg(2,"Missing anchor class for %s\n", sub->subtable_name);
       return;
    }
    entryexit=EntryExitDecompose(sf, ac, gi);
@@ -2051,7 +2043,7 @@ static void dumpGSUBmultiplesubs(AFILE *gsub,SplineFont *sf,
    for (cnt=0; glyphs[cnt] != NULL; ++cnt) {
       putshort(gsub, offset);
       if (maps[cnt]==NULL) {
-	 afprintf(stderr,
+	 ErrorMsg(1,
 		 "maps[%d] is null; glyphs[%d] is \"%s\"; lookup name is \"%s\".\n",
 		 cnt, cnt, (glyphs[cnt]->name ? glyphs[cnt]->name : ""),
 		 sub->subtable_name);
@@ -2545,10 +2537,10 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
    int lc;
 
    if (fpst->rule_cnt != 1)
-      IError("Bad rule cnt in coverage context lookup");
+      ErrorMsg(2,"Bad rule cnt in coverage context lookup\n");
    if (fpst->format==pst_reversecoverage
        && fpst->rules[0].u.rcoverage.always1 != 1)
-      IError("Bad input count in reverse coverage lookup");
+      ErrorMsg(2,"Bad input count in reverse coverage lookup\n");
 
    putshort(lfile, 3);		/* Sub format 3 => coverage */
    for (l=lc=0; l < fpst->rules[0].lookup_cnt; ++l)
@@ -2885,14 +2877,13 @@ static void otf_dumpALookup(AFILE *lfile,OTLookup *otl,SplineFont *sf,
 	      break;
 	 }
 	 if (aftell(lfile) - sub->subtable_offset==0) {
-	    IError("Lookup sub table, %s in %s, contains no data.\n",
+	    ErrorMsg(2,"Lookup sub table, %s in %s, contains no data.\n",
 		   sub->subtable_name, sub->lookup->lookup_name);
 	    sub->unused=true;
 	    sub->subtable_offset=-1;
 	 } else if (sub->extra_subtables==NULL &&
 		    aftell(lfile) - sub->subtable_offset > 65535)
-	    IError
-	       ("Lookup sub table, %s in %s, is too big. Will not be useable.\n",
+	    ErrorMsg(2,"Lookup sub table, %s in %s, is too big. Will not be useable.\n",
 		sub->subtable_name, sub->lookup->lookup_name);
       }
    }
@@ -3269,10 +3260,12 @@ static AFILE *g___FigureExtensionSubTables(OTLookup *all,int startoffset,
 	    }
 	    if (sub != NULL) {
 	       if (!any) {
-		  ff_post_notice(_("Lookup potentially too big"),
-				 _
-				 ("Lookup %s has an\noffset bigger than 65535 bytes. This means\nFontAnvil must use an extension lookup to output it.\nNot all applications support extension lookups."),
-				 otf->lookup_name);
+		  ErrorMsg(1,"Lookup %s has an\n"
+		             "offset bigger than 65535 bytes.  This means\n"
+		             "FontAnvil must use an extension lookup to "
+		             "write it iyt.\nNot all applications support "
+		             "extension lookups.\n",
+                           otf->lookup_name);
 		  any=true;
 	       }
 	       otf->needs_extension=true;
@@ -4039,8 +4032,7 @@ static void ttf_math_dump_italic_top(AFILE *mathf,struct alltabs *at,
 	 dumpgposdevicetable(mathf, devtab);
    }
    if (devtab_offset != aftell(mathf) - coverage_pos)
-      IError
-	 ("Actual end did not match expected end in %s table, expected=%d, actual=%d",
+      ErrorMsg(2,"Actual end did not match expected end in %s table, expected=%d, actual=%d\n",
 	  is_italic ? "italic" : "top accent", devtab_offset,
 	  aftell(mathf) - coverage_pos);
    coverage_table=aftell(mathf);
@@ -4168,8 +4160,7 @@ static void ttf_math_dump_mathkern(AFILE *mathf,struct alltabs *at,
       }
    }
    if (aftell(mathf) != coverage_pos + 4 + 8 * len)
-      IError
-	 ("Actual midpoint1 did not match expected midpoint1 in mathkern table, expected=%d, actual=%d",
+      ErrorMsg(2,"Actual midpoint1 did not match expected midpoint1 in mathkern table, expected=%d, actual=%d\n",
 	  coverage_pos + 4 + 8 * len, aftell(mathf));
 
    midpos2=kr_pos;
@@ -4188,8 +4179,7 @@ static void ttf_math_dump_mathkern(AFILE *mathf,struct alltabs *at,
 	    ttf_math_dump_mathkernvertex(mathf, &mk->bottom_left, kr_pos);
    }
    if (aftell(mathf) != midpos2)
-      IError
-	 ("Actual midpoint2 did not match expected midpoint2 in mathkern table, expected=%d, actual=%d",
+      ErrorMsg(2,"Actual midpoint2 did not match expected midpoint2 in mathkern table, expected=%d, actual=%d\n",
 	  midpos2, aftell(mathf));
 
    for (i=0; i < len; ++i) {
@@ -4205,8 +4195,7 @@ static void ttf_math_dump_mathkern(AFILE *mathf,struct alltabs *at,
 	 ttf_math_dump_mathkerndevtab(mathf, &mk->bottom_left);
    }
    if (kr_pos != aftell(mathf))
-      IError
-	 ("Actual end did not match expected end in mathkern table, expected=%d, actual=%d",
+      ErrorMsg(2,"Actual end did not match expected end in mathkern table, expected=%d, actual=%d\n",
 	  kr_pos, aftell(mathf));
 
    coverage_table=aftell(mathf);
@@ -4401,7 +4390,7 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
 						     vert_variants, sf, pos,
 						     true);
       /*if ( aftell(mathf)-start != gv_len(sf,vglyphs[i]->vert_variants)) */
-      /*IError("v gv_len incorrect"); */
+      /*ErrorMsg(2,"v gv_len incorrect\n"); */
    }
    for (i=0; i < hlen; ++i) {
       /*uint32 start=aftell(mathf); */
@@ -4410,10 +4399,10 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
 						     horiz_variants, sf, pos,
 						     false);
       /*if ( aftell(mathf)-start != gv_len(sf,hglyphs[i]->horiz_variants)) */
-      /*IError("h gv_len incorrect: %s", hglyphs[i]->name); */
+      /*ErrorMsg(2,"h gv_len incorrect: %s\n", hglyphs[i]->name); */
    }
    if (aftell(mathf) != assembly_pos)
-      IError("assembly tables at wrong place");
+      ErrorMsg(2,"assembly tables at wrong place\n");
 
    for (i=0; i < vlen; ++i)
       pos=ttf_math_dump_mathglyphassemblytable(mathf,
@@ -5071,9 +5060,7 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 	jscript=jscript->next, ++cnt) {
       base=aftell(jstf);
       if (base > 0xffff)
-	 ff_post_error(_("Failure"),
-		       _
-		       ("Offset in JSTF table is too big. The resultant font will not work."));
+	 ErrorMsg(2,"Offset in JSTF table is too big.  The font will not work.\n");
       afseek(jstf, 6 + 6 * cnt + 4, SEEK_SET);
       putshort(jstf, base);
       afseek(jstf, base, SEEK_SET);

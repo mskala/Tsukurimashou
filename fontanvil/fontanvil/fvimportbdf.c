@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 3860 2015-03-25 14:30:43Z mskala $ */
+/* $Id: fvimportbdf.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -347,7 +347,7 @@ static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
        ((xmax + 1==xmin || xmax==xmin) && ymax + 1==ymin))
       /* Empty glyph */ ;
    else if (xmax < xmin || ymax < ymin) {
-      LogError(_("Bad bounding box for %s.\n"), name);
+      ErrorMsg(2,"Bad bounding box for %s.\n",name);
       return;
    }
    i=figureProperEncoding(sf, map, b, enc, name, swidth, swidth1, encname);
@@ -494,8 +494,7 @@ static int default_ascent_descent(int *_as,int *_ds,int ascent,int descent,
 	       rint((pixelsize + pixel_size2 + ascent + descent) / 3.0);
 	    descent=pixelsize - ascent;
 	 }
-	 LogError(_
-		  ("Various specifications of PIXEL_SIZE do not match in %s"),
+	 ErrorMsg(2,"Various specifications of PIXEL_SIZE do not match in %s\n",
 		  filename);
       }
    } else if (pixelsize != -1 && ascent != -1 && descent != -1) {
@@ -519,19 +518,18 @@ static int default_ascent_descent(int *_as,int *_ds,int ascent,int descent,
       }
       if (ascent != -1 && descent != -1 && pixelsize != -1) {
 	 if (pixelsize != ascent + descent)
-	    LogError(_
-		     ("Pixel size does not match sum of Font ascent+descent in %s"),
+	    ErrorMsg(2,"Pixel size does not match sum of Font ascent+descent in %s\n",
 		     filename);
       } else if (pixelsize != -1) {
 	 ascent=rint((8 * pixelsize) / 10.0);
 	 descent=pixelsize - ascent;
       } else if (ascent != -1) {
-	 LogError(_("Guessing pixel size based on font ascent in %s"),
+	 ErrorMsg(2,"Guessing pixel size based on font ascent in %s\n",
 		  filename);
 	 descent=ascent / 4;
 	 pixelsize=ascent + descent;
       } else if (descent != -1) {
-	 LogError(_("Guessing pixel size based on font descent in %s"),
+	 ErrorMsg(2,"Guessing pixel size based on font descent in %s\n",
 		  filename);
 	 ascent=4 * descent;
 	 pixelsize=ascent + descent;
@@ -759,8 +757,7 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 
    if (*depth != 1 && *depth != 2 && *depth != 4 && *depth != 8
        && *depth != 16 && *depth != 32)
-      LogError(_
-	       ("FontAnvil does not support this bit depth %d (must be 1,2,4,8,16,32)\n"),
+      ErrorMsg(2,"FontAnvil does not support this bit depth %d (must be 1,2,4,8,16,32)\n",
 	       *depth);
 
    return (pixelsize);
@@ -1109,10 +1106,10 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 else
 	    r += get3byte(gf) + 1;
       } else if (ch==EOF) {
-	 LogError(_("Unexpected EOF in gf\n"));
+	 ErrorMsg(2,"Unexpected EOF in gf\n");
 	 break;
       } else
-	 LogError(_("Uninterpreted code in gf: %d\n"), ch);
+	 ErrorMsg(2,"Uninterpreted code in gf: %d\n", ch);
    }
    afseek(gf, pos, SEEK_SET);
    return (true);
@@ -1254,7 +1251,7 @@ static int pkgetcount(AFILE *pk,struct pkstate *st) {
 		 1);
       } else {
 	 if (st->rpt != 0)
-	    LogError(_("Duplicate repeat row count in char %d of pk file\n"),
+	    ErrorMsg(2,"Duplicate repeat row count in char %d of pk file\n",
 		     st->cc);
 	 if (i==15)
 	    st->rpt=1;
@@ -1416,8 +1413,7 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
       }
    }
    if (aftell(pk) != char_end) {
-      LogError(_
-	       ("The character, %d, was not read properly (or pk file is in bad format)\n At %ld should be %d, off by %ld\n"),
+      ErrorMsg(2,"The character, %d, was not read properly (or pk file is in bad format)\n At %ld should be %d, off by %ld\n",
 	       cc, aftell(pk), char_end, aftell(pk) - char_end);
       afseek(pk, char_end, SEEK_SET);
    }
@@ -1901,7 +1897,7 @@ static int PcfReadBitmaps(AFILE *file,struct toc *toc,BDFFont *b) {
 	 if (i < cnt - 1
 	     && offsets[i + 1] - offsets[i] !=
 	     bc->bytes_per_line * (bc->ymax - bc->ymin + 1))
-	    IError("Bad PCF glyph bitmap size");
+	    ErrorMsg(2,"Bad PCF glyph bitmap size\n");
 	 memcpy(bc->bitmap, bitmap + offsets[i],
 		bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
       }
@@ -2111,7 +2107,7 @@ static int askusersize(char *filename) {
    else {
       guess=strtol(ret, &end, 10);
       if (guess <= 0 || *end != '\0') {
-	 ff_post_error(_("Bad Number"), _("Bad Number"));
+	 ErrorMsg(2,"Bad number.\n");
 	 goto retry;
       }
    }
@@ -2299,8 +2295,7 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
       ispk=3;
    bdf=afopen(filename, "rb");
    if (bdf==NULL) {
-      ff_post_error(_("Couldn't open file"), _("Couldn't open file %.200s"),
-		    filename);
+      ErrorMsg(2,"Couldn't open file %.200s\n",filename);
       return (NULL);
    }
    if (ispk==1) {
@@ -2309,8 +2304,7 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
 		   filename);
       if (pixelsize==-2) {
 	 afclose(bdf);
-	 ff_post_error(_("Not a pk file"),
-		       _("Not a (metafont) pk file %.200s"), filename);
+	 ErrorMsg(2,"Not a (metafont) pk file %.200s\n",filename);
 	 return (NULL);
       }
    } else if (ispk==3) {	/* gf */
@@ -2319,15 +2313,13 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
 		      filename);
       if (pixelsize==-2) {
 	 afclose(bdf);
-	 ff_post_error(_("Not a gf file"),
-		       _("Not a (metafont) gf file %.200s"), filename);
+	 ErrorMsg(2,"Not a (metafont) gf file %.200s\n",filename);
 	 return (NULL);
       }
    } else if (ispk==2) {	/* pcf */
       if ((toc=pcfReadTOC(bdf))==NULL) {
 	 afclose(bdf);
-	 ff_post_error(_("Not a pcf file"), _("Not an X11 pcf file %.200s"),
-		       filename);
+	 ErrorMsg(2,"Not an X11 pcf file %.200s\n",filename);
 	 return (NULL);
       }
       pixelsize =
@@ -2336,16 +2328,14 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
       if (pixelsize==-2) {
 	 afclose(bdf);
 	 free(toc);
-	 ff_post_error(_("Not a pcf file"), _("Not an X11 pcf file %.200s"),
-		       filename);
+	 ErrorMsg(2,"Not an X11 pcf file %.200s\n",filename);
 	 return (NULL);
       }
    } else {
       if (gettoken(bdf, tok, sizeof(tok))==-1
 	  || strcmp(tok, "STARTFONT") != 0) {
 	 afclose(bdf);
-	 ff_post_error(_("Not a bdf file"), _("Not a bdf file %.200s"),
-		       filename);
+	 ErrorMsg(2,"Not a bdf file %.200s\n",filename);
 	 return (NULL);
       }
       while ((ch=agetc(bdf)) != '\n' && ch != '\r' && ch != EOF);
@@ -2436,8 +2426,7 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
       while (gf_char(bdf, sf, b, map));
    } else if (ispk==2) {
       if (!PcfParse(bdf, toc, sf, map, b, enc)) {
-	 ff_post_error(_("Not a pcf file"), _("Not an X11 pcf file %.200s"),
-		       filename);
+	 ErrorMsg(2,"Not an X11 pcf file %.200s\n",filename);
       }
    } else {
       while (gettoken(bdf, tok, sizeof(tok)) != -1) {
@@ -2499,7 +2488,7 @@ static BDFFont *_SFImportBDF(SplineFont *sf,char *filename,int ispk,
 	    filename=temp;
 	 else {
 	    free(temp);
-	    ff_post_error(_("Decompress Failed!"), _("Decompress Failed!"));
+	    ErrorMsg(2,"Decompression failed.\n");
 	    return (NULL);
 	 }
       }
@@ -2631,8 +2620,7 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
       }
    }
    if (anyb==NULL) {
-      ff_post_error(_("No Bitmap Font"),
-		    _("Could not find a bitmap font in %s"), filename);
+      ErrorMsg(2,"Could not find a bitmap font in %s\n",filename);
    } else if (toback)
       SFAddToBackground(fv->sf, anyb);
    return (any);
@@ -2641,15 +2629,10 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
 /* sf and bdf are assumed to have the same gids */
 static void SFAddToBackground(SplineFont *sf,BDFFont *bdf) {
    struct _GImage *base;
-
    GClut *clut;
-
    GImage *img;
-
    int i;
-
    SplineChar *sc;
-
    BDFChar *bdfc;
 
    real scale =

@@ -1,4 +1,4 @@
-/* $Id: svg.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: svg.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -198,7 +198,7 @@ static int svg_pathdump(AFILE *file,SplineSet *spl,int lineout,
 	    aputc('\n', file);
 	    lineout=0;
 	 }
-	 fputs(buffer, file);
+	 afputs(buffer, file);
 	 lineout += strlen(buffer);
 	 last=spl->first->me;
 	 closed=false;
@@ -257,7 +257,7 @@ static int svg_pathdump(AFILE *file,SplineSet *spl,int lineout,
 	       aputc('\n', file);
 	       lineout=0;
 	    }
-	    fputs(buffer, file);
+	    afputs(buffer, file);
 	    lineout += strlen(buffer);
 	    last=sp->to->me;
 	 }
@@ -448,7 +448,7 @@ static void DataURI_ImageDump(AFILE *file,struct gimage *img) {
 
    /* Technically we can only put a file into an URI if the whole thing is */
    /*  less than 1024 bytes long. But I shall ignore that issue */
-   imgf=tmpfile();
+   imgf=atmpfile();
 #if !defined(_NO_LIBJPEG)
    if (base->image_type==it_true) {
       done=GImageWrite_Jpeg(img, imgf, 78, false);
@@ -594,7 +594,7 @@ static void svg_dumppattern(AFILE *file,struct pattern *pattern,
       patsubname=strconcat3(scname, "-", pattern->pattern);
       svg_dumpscdefs(file, pattern_sc, patsubname, false);
    } else
-      LogError(_("No glyph named %s, used as a pattern in %s\n"),
+      ErrorMsg(2,"No glyph named %s, used as a pattern in %s\n",
 	       pattern->pattern, scname);
 
    afprintf(file, "    <pattern ");
@@ -768,7 +768,7 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
    if (!svg_sc_any(sc, layer)) {
       /* I think a space is represented by leaving out the d (path) entirely */
       /*  rather than having d="" */
-      fputs(" />\n", file);
+      afputs(" />\n", file);
    } else if (sc->parent->strokedfont) {
       /* Can't be done with a path, requires nested elements (I think) */
       afprintf(file,
@@ -783,8 +783,8 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
       if (lineout >= 255 - 4)
 	 aputc('\n', file);
       aputc('"', file);
-      fputs(" />\n  </g>\n", file);
-      fputs(endpath, file);
+      afputs(" />\n  </g>\n", file);
+      afputs(endpath, file);
    } else if (!sc->parent->multilayer) {
       afprintf(file, "d=\"");
       lineout=svg_pathdump(file, sc->layers[layer].splines, 3, true, false);
@@ -794,9 +794,9 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
       if (lineout >= 255 - 4)
 	 aputc('\n', file);
       aputc('"', file);
-      fputs(" />\n", file);
+      afputs(" />\n", file);
    } else {
-      fputs(">\n", file);
+      afputs(">\n", file);
       for (i=ly_fore; i < sc->layer_cnt && !needs_defs; ++i) {
 	 if (SSHasClip(sc->layers[i].splines))
 	    needs_defs=true;
@@ -824,7 +824,7 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
 	 afprintf(file, "  </defs>\n");
       }
       svg_dumptype3(file, sc, sc->name, true);
-      fputs(endpath, file);
+      afputs(endpath, file);
    }
 }
 
@@ -909,13 +909,13 @@ static void svg_scdump(AFILE *file,SplineChar *sc,int defwid,int encuni,
    if (best != NULL) {
       c=LigCnt(sc->parent, best, univals,
 		 sizeof(univals) / sizeof(univals[0]));
-      fputs("unicode=\"", file);
+      afputs("unicode=\"", file);
       for (i=0; i < c; ++i)
 	 if (univals[i] >= 'A' && univals[i] < 'z')
 	    aputc(univals[i], file);
 	 else
 	    afprintf(file, "&#x%x;", (unsigned int) univals[i]);
-      fputs("\" ", file);
+      afputs("\" ", file);
    } else if (encuni != -1 && encuni < 0x110000) {
       if (encuni != 0x9 &&
 	  encuni != 0xa &&
@@ -1398,9 +1398,8 @@ static xmlNodePtr SVGPickFont(xmlNodePtr *fonts,char *filename) {
       if (choice==-1) {
 	 char *fn=copy(filename);
 
-	 fn[lparen - filename]='\0';
-	 ff_post_error(_("Not in Collection"), _("%s is not in %.100s"), find,
-		       fn);
+	 fn[lparen-filename]='\0';
+	 ErrorMsg(2,"Not in collection:  %s is not in %.100s\n",find,fn);
 	 free(fn);
       }
       free(find);
@@ -1884,7 +1883,7 @@ static SplineSet *SVGParsePath(xmlChar *path) {
 			     sweep);
 	      break;
 	   default:
-	      LogError(_("Unknown type '%c' found in path specification\n"),
+	      ErrorMsg(2,"Unknown type '%c' found in path specification\n",
 		       type);
 	      break;
 	 }
@@ -2397,7 +2396,7 @@ static void xmlParseColorSource(xmlNodePtr top,char *name,DBounds *bbox,
    *_grad=NULL;
    *_epat=NULL;
    if (colour_source==NULL)
-      LogError(_("Could not find Color Source with id %s."), name);
+      ErrorMsg(2,"Could not find Color Source with id %s.\n", name);
    else
       if ((islinear =
 	   xmlStrcmp(colour_source->name, (xmlChar *) "linearGradient")==0)
@@ -2561,11 +2560,10 @@ static void xmlParseColorSource(xmlNodePtr top,char *name,DBounds *bbox,
 	    }
       }
    } else if (xmlStrcmp(colour_source->name, (xmlChar *) "pattern")==0) {
-      LogError(_
-	       ("FontAnvil does not currently parse pattern Color Sources (%s)."),
+      ErrorMsg(2,"FontAnvil does not currently parse pattern Color Sources (%s).\n",
 	       name);
    } else {
-      LogError(_("Color Source with id %s had an unexpected type %s."),
+      ErrorMsg(2,"Color Source with id %s had an unexpected type %s.\n",
 	       name, (char *) colour_source->name);
    }
 }
@@ -2690,7 +2688,7 @@ static int xmlParseColor(xmlChar *name,uint32 *color,char **url,
 	 unsigned int temp=0;
 
 	 if (sscanf((char *) name, "#%x", &temp) != 1)
-	    LogError(_("Bad hex color spec: %s\n"), (char *) name);
+	    ErrorMsg(2,"Bad hex color spec: %s\n", (char *) name);
 	 if (strlen((char *) name)==4) {
 	    *color=(((temp & 0xf00) * 0x11) << 8) |
 	       (((temp & 0x0f0) * 0x11) << 4) | (((temp & 0x00f) * 0x11));
@@ -2702,7 +2700,7 @@ static int xmlParseColor(xmlChar *name,uint32 *color,char **url,
 	 float r=0, g=0, b=0;
 
 	 if (sscanf((char *) name + 4, "%g,%g,%g", &r, &g, &b) != 3)
-	    LogError(_("Bad RGB color spec: %s\n"), (char *) name);
+	    ErrorMsg(2,"Bad RGB color spec: %s\n", (char *) name);
 	 if (strchr((char *) name, '.') != NULL) {
 	    if (r >= 1)
 	       r=1;
@@ -2737,7 +2735,7 @@ static int xmlParseColor(xmlChar *name,uint32 *color,char **url,
 	 *url=copy((char *) name);
 	 *color=COLOR_INHERITED;
       } else {
-	 LogError(_("Failed to parse color %s\n"), (char *) name);
+	 ErrorMsg(2,"Failed to parse color %s\n", (char *) name);
 	 *color=COLOR_INHERITED;
       }
    }
@@ -2818,7 +2816,7 @@ static GImage *GImageFromDataURI(char *uri) {
        strcmp(mimetype, "image/bmp")==0)
       /* These we support (if we've got the libraries) */ ;
    else {
-      LogError(_("Unsupported mime type in data URI: %s\n"), mimetype);
+      ErrorMsg(2,"Unsupported mime type in data URI: %s\n", mimetype);
       return (NULL);
    }
    tmp=atmpfile();
@@ -2882,7 +2880,7 @@ static Entity *SVGParseImage(xmlNodePtr svg) {
    if (val==NULL)
       return (NULL);
    if (strncmp((char *) val, "data:", 5) != 0) {
-      LogError(_("FontAnvil only supports embedded images in data: URIs\n"));
+      ErrorMsg(2,"FontAnvil only supports embedded images in data: URIs\n");
       free(val);
       return (NULL);		/* I can only handle data URIs */
    }
@@ -3164,7 +3162,7 @@ static Entity *_SVGParseSVG(xmlNodePtr svg,xmlNodePtr top,
 	 }
 	 free(eret);
       } else
-	 LogError(_("Could not find clippath named %s."), name);
+	 ErrorMsg(2,"Could not find clippath named %s.\n", name);
       xmlFree(name);
    }
 
@@ -3748,7 +3746,7 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	       defh=val;
 	    SFDefaultOS2Simple(&sf->pfminfo, sf);
 	 } else {
-	    LogError(_("This font does not specify units-per-em\n"));
+	    ErrorMsg(2,"This font does not specify units-per-em\n");
 	    SplineFontFree(sf);
 	    return (NULL);
 	 }
@@ -3886,7 +3884,7 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	 ++cnt;
    }
    if (sf->descent==0) {
-      LogError(_("This font does not specify font-face\n"));
+      ErrorMsg(2,"This font does not specify font-face\n");
       SplineFontFree(sf);
       return (NULL);
    }
@@ -4099,7 +4097,7 @@ static SplineFont *_SFReadSVG(xmlDocPtr doc,char *filename) {
 
    fonts=FindSVGFontNodes(doc);
    if (fonts==NULL || fonts[0]==NULL) {
-      LogError(_("This file contains no SVG fonts.\n"));
+      ErrorMsg(2,"This file contains no SVG fonts.\n");
       xmlFreeDoc(doc);
       return (NULL);
    }
@@ -4143,7 +4141,7 @@ SplineFont *SFReadSVG(char *filename, int flags) {
    char *temp=filename, *pt, *lparen;
 
    if (!libxml_init_base()) {
-      LogError(_("Can't find libxml2.\n"));
+      ErrorMsg(2,"Can't find libxml2.\n");
       return (NULL);
    }
 
@@ -4170,7 +4168,7 @@ SplineFont *SFReadSVGMem(char *data, int flags) {
    xmlDocPtr doc;
 
    if (!libxml_init_base()) {
-      LogError(_("Can't find libxml2.\n"));
+      ErrorMsg(2,"Can't find libxml2.\n");
       return (NULL);
    }
 
@@ -4194,7 +4192,7 @@ char **NamesReadSVG(char *filename) {
    xmlChar *name;
 
    if (!libxml_init_base()) {
-      LogError(_("Can't find libxml2.\n"));
+      ErrorMsg(2,"Can't find libxml2.\n");
       return (NULL);
    }
 
@@ -4242,7 +4240,7 @@ Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
    int order2;
 
    if (!libxml_init_base()) {
-      LogError(_("Can't find libxml2.\n"));
+      ErrorMsg(2,"Can't find libxml2.\n");
       return (NULL);
    }
    if (filename != NULL)
@@ -4256,7 +4254,7 @@ Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
 
    top=xmlDocGetRootElement(doc);
    if (xmlStrcmp(top->name, (xmlChar *) "svg") != 0) {
-      LogError(_("%s does not contain an <svg> element at the top\n"),
+      ErrorMsg(2,"%s does not contain an <svg> element at the top\n",
 	       filename);
       xmlFreeDoc(doc);
       return (NULL);

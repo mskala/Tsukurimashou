@@ -1,4 +1,4 @@
-/* $Id: tottf.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: tottf.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -603,8 +603,8 @@ static int32 getuint32(AFILE *ttf) {
 
 void putshort(AFILE *file, int sval) {
    if (sval < -32768 || sval > 65535)
-      IError(_
-	     ("Attempt to output %d into a 16-bit field. It will be truncated and the file may not be useful."),
+      ErrorMsg(2,"Attempt to output %d into a 16-bit field.  "
+                 "It will be truncated and the file may not be useful.\n",
 	     sval);
    aputc((sval >> 8) & 0xff, file);
    aputc(sval & 0xff, file);
@@ -662,14 +662,12 @@ void putfixed(AFILE *file, real dval) {
 
 int ttfcopyfile(AFILE *ttf, AFILE *other, int pos, char *tab_name) {
    int ch;
-
    int ret=1;
 
    if (aferror(ttf) || aferror(other)) {
-      IError
-	 ("Disk error of some nature. Perhaps no space on device?\nGenerated font will be unusable");
+      ErrorMsg(2,"Disk error of some nature. Perhaps no space on device?\nGenerated font will be unusable\n");
    } else if (pos != aftell(ttf)) {
-      IError("File Offset wrong for ttf table (%s), %d expected %d", tab_name,
+      ErrorMsg(2,"File Offset wrong for ttf table (%s), %d expected %d\n", tab_name,
 	     aftell(ttf), pos);
    }
    arewind(other);
@@ -816,7 +814,7 @@ int SSAddPoints(SplineSet * ss, int ptcnt, BasePoint * bp, char *flags) {
       bp[ptcnt].x=rint(ss->first->prevcp.x);
       bp[ptcnt++].y=rint(ss->first->prevcp.y);
    } else if (ss->first->ttfindex != ptcnt && ss->first->ttfindex != 0xfffe)
-      IError("Unexpected point count in SSAddPoints");
+      ErrorMsg(2,"Unexpected point count in SSAddPoints\n");
 
    first=NULL;
    for (sp=ss->first; sp != first;) {
@@ -1215,9 +1213,9 @@ static void dumpcomposite(SplineChar *sc,struct glyphinfo *gi) {
    int arg1, arg2;
 
    if (gi->next_glyph != sc->ttf_glyph)
-      IError("Glyph count wrong in ttf output");
+      ErrorMsg(2,"Glyph count wrong in ttf output\n");
    if (gi->next_glyph >= gi->maxp->numGlyphs)
-      IError("max glyph count wrong in ttf output");
+      ErrorMsg(2,"max glyph count wrong in ttf output\n");
    gi->loca[gi->next_glyph]=aftell(gi->glyphs);
 
    SplineCharLayerQuickBounds(sc, gi->layer, &bb);
@@ -1354,9 +1352,9 @@ static void dumpglyph(SplineChar *sc,struct glyphinfo *gi) {
    }
 
    if (gi->next_glyph != sc->ttf_glyph)
-      IError("Glyph count wrong in ttf output");
+      ErrorMsg(2,"Glyph count wrong in ttf output\n");
    if (gi->next_glyph >= gi->maxp->numGlyphs)
-      IError("max glyph count wrong in ttf output");
+      ErrorMsg(2,"max glyph count wrong in ttf output\n");
    gi->loca[gi->next_glyph]=aftell(gi->glyphs);
 
    ttfss=SCttfApprox(sc, gi->layer);
@@ -1386,7 +1384,7 @@ static void dumpglyph(SplineChar *sc,struct glyphinfo *gi) {
       putshort(gi->glyphs, ptcnt - 1);
    }
    if (ptcnt != origptcnt)
-      IError("Point count wrong calculated=%d, actual=%d in %.20s", origptcnt,
+      ErrorMsg(2,"Point count wrong calculated=%d, actual=%d in %.20s\n", origptcnt,
 	     ptcnt, sc->name);
    gi->pointcounts[gi->next_glyph++]=ptcnt;
 
@@ -1604,10 +1602,10 @@ static int dumpglyphs(SplineFont *sf,struct glyphinfo *gi) {
    gi->pointcounts=malloc((gi->maxp->numGlyphs + 1) * sizeof(int32));
    memset(gi->pointcounts, -1, (gi->maxp->numGlyphs + 1) * sizeof(int32));
    gi->next_glyph=0;
-   gi->glyphs=tmpfile();
-   gi->hmtx=tmpfile();
+   gi->glyphs=atmpfile();
+   gi->hmtx=atmpfile();
    if (sf->hasvmetrics)
-      gi->vmtx=tmpfile();
+      gi->vmtx=atmpfile();
    FigureFullMetricsEnd(sf, gi, true);
 
    if (fixed > 0) {
@@ -1676,7 +1674,7 @@ static int dumpglyphs(SplineFont *sf,struct glyphinfo *gi) {
 /* Generate a null glyf and loca table for X opentype bitmaps */
 static int dumpnoglyphs(SplineFont *sf,struct glyphinfo *gi) {
 
-   gi->glyphs=tmpfile();
+   gi->glyphs=atmpfile();
    gi->glyph_len=0;
    /* loca gets built in dummyloca */
    return (true);
@@ -1701,7 +1699,7 @@ static int storesid(struct alltabs *at,char *str) {
    pos=aftell(at->sidf) + 1;
    if (pos >= 65536 && !at->sidlongoffset) {
       at->sidlongoffset=true;
-      news=tmpfile();
+      news=atmpfile();
       arewind(at->sidh);
       for (i=0; i < at->sidcnt; ++i)
 	 putlong(news, getushort(at->sidh));
@@ -2069,7 +2067,7 @@ static void _dumpcffstrings(AFILE *file,struct pschars *strs) {
 }
 
 static AFILE *dumpcffstrings(struct pschars *strs) {
-   AFILE *file=tmpfile();
+   AFILE *file=atmpfile();
 
    _dumpcffstrings(file, strs);
    PSCharsFree(strs);
@@ -2407,7 +2405,7 @@ static void dumpcffdictindex(SplineFont *sf,struct alltabs *at) {
       at->fds[i].fillindictmark=dumpcffdict(sf->subfonts[i], at);
       at->fds[i].eodictmark=aftell(at->fdarray);
       if (at->fds[i].eodictmark > 65536)
-	 IError("The DICT INDEX got too big, result won't work");
+	 ErrorMsg(2,"The DICT INDEX got too big, result won't work\n");
    }
    afseek(at->fdarray, 2 * sizeof(short) + sizeof(char), SEEK_SET);
    for (i=0; i < sf->subfontcnt; ++i)
@@ -2686,9 +2684,9 @@ static int dumpcffhmtx(struct alltabs *at,SplineFont *sf,int bitmaps) {
 
    int width=at->gi.fixed_width;
 
-   at->gi.hmtx=tmpfile();
+   at->gi.hmtx=atmpfile();
    if (dovmetrics)
-      at->gi.vmtx=tmpfile();
+      at->gi.vmtx=atmpfile();
    FigureFullMetricsEnd(sf, &at->gi, bitmaps);	/* Bitmap fonts use ttf convention of 3 magic glyphs */
    if (at->gi.bygid[0] != -1
        && (sf->glyphs[at->gi.bygid[0]]->width==width || width <= 0)) {
@@ -2772,9 +2770,9 @@ static void dumpcffcidhmtx(struct alltabs *at,SplineFont *_sf) {
 
    int dovmetrics=_sf->hasvmetrics;
 
-   at->gi.hmtx=tmpfile();
+   at->gi.hmtx=atmpfile();
    if (dovmetrics)
-      at->gi.vmtx=tmpfile();
+      at->gi.vmtx=atmpfile();
    FigureFullMetricsEnd(_sf, &at->gi, false);
 
    max=0;
@@ -2832,12 +2830,12 @@ static int dumptype2glyphs(SplineFont *sf,struct alltabs *at) {
 
    struct pschars *subrs, *chrs;
 
-   at->cfff=tmpfile();
-   at->sidf=tmpfile();
-   at->sidh=tmpfile();
-   at->charset=tmpfile();
-   at->encoding=tmpfile();
-   at->private=tmpfile();
+   at->cfff=atmpfile();
+   at->sidf=atmpfile();
+   at->sidh=atmpfile();
+   at->charset=atmpfile();
+   at->encoding=atmpfile();
+   at->private=atmpfile();
 
    dumpcffheader(sf, at->cfff);
    dumpcffnames(sf, at->cfff);
@@ -2879,17 +2877,17 @@ static int dumpcidglyphs(SplineFont *sf,struct alltabs *at) {
 
    struct pschars *glbls=NULL, *chrs;
 
-   at->cfff=tmpfile();
-   at->sidf=tmpfile();
-   at->sidh=tmpfile();
-   at->charset=tmpfile();
-   at->fdselect=tmpfile();
-   at->fdarray=tmpfile();
-   at->globalsubrs=tmpfile();
+   at->cfff=atmpfile();
+   at->sidf=atmpfile();
+   at->sidh=atmpfile();
+   at->charset=atmpfile();
+   at->fdselect=atmpfile();
+   at->fdarray=atmpfile();
+   at->globalsubrs=atmpfile();
 
    at->fds=calloc(sf->subfontcnt, sizeof(struct fd2data));
    for (i=0; i < sf->subfontcnt; ++i) {
-      at->fds[i].private=tmpfile();
+      at->fds[i].private=atmpfile();
       ATFigureDefWidth(sf->subfonts[i], at, i);
    }
    if ((chrs =
@@ -3896,7 +3894,7 @@ docs are wrong.
 static void redoloca(struct alltabs *at) {
    int i;
 
-   at->loca=tmpfile();
+   at->loca=atmpfile();
    if (at->head.locais32) {
       for (i=0; i <= at->maxp.numGlyphs; ++i)
 	 putlong(at->loca, at->gi.loca[i]);
@@ -3916,7 +3914,7 @@ static void redoloca(struct alltabs *at) {
 
 static void dummyloca(struct alltabs *at) {
 
-   at->loca=tmpfile();
+   at->loca=atmpfile();
    if (at->head.locais32) {
       putlong(at->loca, 0);
       at->localen=sizeof(int32);
@@ -3928,7 +3926,7 @@ static void dummyloca(struct alltabs *at) {
 }
 
 static void redohead(struct alltabs *at) {
-   at->headf=tmpfile();
+   at->headf=atmpfile();
 
    putlong(at->headf, at->head.version);
    putlong(at->headf, at->head.revision);
@@ -3963,10 +3961,10 @@ static void redohhead(struct alltabs *at,int isv) {
    AFILE *f;
 
    if (!isv) {
-      f=at->hheadf=tmpfile();
+      f=at->hheadf=atmpfile();
       head=&at->hhead;
    } else {
-      f=at->vheadf=tmpfile();
+      f=at->vheadf=atmpfile();
       head=&at->vhead;
    }
 
@@ -3997,7 +3995,7 @@ static void redohhead(struct alltabs *at,int isv) {
 }
 
 static void redomaxp(struct alltabs *at,enum fontformat format) {
-   at->maxpf=tmpfile();
+   at->maxpf=atmpfile();
 
    putlong(at->maxpf, at->maxp.version);
    putshort(at->maxpf, at->maxp.numGlyphs);
@@ -4025,7 +4023,7 @@ static void redomaxp(struct alltabs *at,enum fontformat format) {
 static void redoos2(struct alltabs *at) {
    int i;
 
-   at->os2f=tmpfile();
+   at->os2f=atmpfile();
 
    putshort(at->os2f, at->os2.version);
    putshort(at->os2f, at->os2.avgCharWid);
@@ -4078,7 +4076,7 @@ static void redoos2(struct alltabs *at) {
 static void dumpgasp(struct alltabs *at,SplineFont *sf) {
    int i;
 
-   at->gaspf=tmpfile();
+   at->gaspf=atmpfile();
    if (sf->gasp_cnt==0) {
       putshort(at->gaspf, 0);	/* Old version number */
       /* For fonts with no instructions always dump a gasp table which */
@@ -4117,7 +4115,7 @@ static void dumpustr(AFILE *file,char *utf8_str) {
 
 static void dumppstr(AFILE *file,char *str) {
    aputc(strlen(str), file);
-   fwrite(str, sizeof(char), strlen(str), file);
+   afwrite(str, sizeof(char), strlen(str), file);
 }
 
 char *utf8_verify_copy(const char *str) {
@@ -4389,7 +4387,7 @@ static void dumpnames(struct alltabs *at,SplineFont *sf,
    nt.encoding_name=at->map->enc;
    nt.format=format;
    nt.applemode=at->applemode;
-   nt.strings=tmpfile();
+   nt.strings=atmpfile();
    if ((format >= ff_ttf && format <= ff_otfdfont)
        && (at->gi.flags & ttf_flag_symbol))
       nt.format=ff_ttfsym;
@@ -4448,7 +4446,7 @@ static void dumpnames(struct alltabs *at,SplineFont *sf,
 
    qsort(nt.entries, nt.cur, sizeof(NameEntry), compare_entry);
 
-   at->name=tmpfile();
+   at->name=atmpfile();
    putshort(at->name, 0);	/* format */
    putshort(at->name, nt.cur);	/* numrec */
    putshort(at->name, (3 + nt.cur * 6) * sizeof(int16));	/* offset to strings */
@@ -4487,7 +4485,7 @@ static void dumppost(struct alltabs *at,SplineFont *sf,
 		     (at->gi.flags & ttf_flag_shortps));
    uint32 here;
 
-   at->post=tmpfile();
+   at->post=atmpfile();
 
    putlong(at->post, shorttable ? 0x00030000 : 0x00020000);	/* formattype */
    putfixed(at->post, sf->italicangle);
@@ -4631,7 +4629,7 @@ static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
       base2bound >>= 8;
       subheadcnt=basebound - base + 1 + base2bound - base2 + 1;
    } else {
-      IError("Unsupported 8/16 encoding %s\n", map->enc->enc_name);
+      ErrorMsg(2,"Unsupported 8/16 encoding %s\n", map->enc->enc_name);
       return (NULL);
    }
    plane0size=base2==-1 ? base : base2;
@@ -4655,46 +4653,35 @@ static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
    if (base2 != -1) {
       for (i=base; i <= basebound && i < map->enccount; ++i)
 	 if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
-	    ff_post_error(_("Bad Encoding"),
-			  _
-			  ("There is a single byte character (%d) using one of the slots needed for double byte characters"),
-			  i);
+	    ErrorMsg(2,"The single byte character %d is using one of the "
+	               "slots needed for double-byte characters.\n",i);
 	    break;
 	 }
       if (i==basebound + 1)
 	 for (i=base2; i < 256 && i < map->enccount; ++i)
 	    if (map->map[i] != -1
 		&& SCWorthOutputting(sf->glyphs[map->map[i]])) {
-	       ff_post_error(_("Bad Encoding"),
-			     _
-			     ("There is a single byte character (%d) using one of the slots needed for double byte characters"),
-			     i);
+               ErrorMsg(2,"The single byte character %d is using one of the "
+	                  "slots needed for double-byte characters.\n",i);
 	       break;
 	    }
    } else {
       for (i=base; i <= 256 && i < map->enccount; ++i)
 	 if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
-	    ff_post_error(_("Bad Encoding"),
-			  _
-			  ("There is a single byte character (%d) using one of the slots needed for double byte characters"),
-			  i);
+               ErrorMsg(2,"The single byte character %d is using one of the "
+	                  "slots needed for double-byte characters.\n",i);
 	    break;
 	 }
    }
    for (i=256; i < (base << 8) && i < map->enccount; ++i)
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
-	 ff_post_error(_("Bad Encoding"),
-		       _("There is a character (%d) which cannot be encoded"),
-		       i);
+               ErrorMsg(2,"The character %d cannot be encoded.\n",i);
 	 break;
       }
    if (i==(base << 8) && base2==-1)
       for (i=((basebound + 1) << 8); i < 0x10000 && i < map->enccount; ++i)
 	 if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
-	    ff_post_error(_("Bad Encoding"),
-			  _
-			  ("There is a character (%d) which cannot be encoded"),
-			  i);
+               ErrorMsg(2,"The character %d cannot be encoded.\n",i);
 	    break;
 	 }
 
@@ -4727,10 +4714,8 @@ static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
 	 for (i=0; i < lbase; ++i)
 	    if (!complained && map->map[i + j] != -1 &&
 		SCWorthOutputting(sf->glyphs[map->map[i + j]])) {
-	       ff_post_error(_("Bad Encoding"),
-			     _
-			     ("There is a character (%d) which is not normally in the encoding"),
-			     i + j);
+               ErrorMsg(1,"The character %d is not normally in the "
+                          "encoding.\n",i+j);
 	       complained=true;
 	    }
 	 if (isbig5) {
@@ -4738,10 +4723,8 @@ static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
 	    for (i=0x7f; i < 0xa1; ++i)
 	       if (!complained && map->map[i + j] != -1 &&
 		   SCWorthOutputting(sf->glyphs[map->map[i + j]])) {
-		  ff_post_error(_("Bad Encoding"),
-				_
-				("There is a character (%d) which is not normally in the encoding"),
-				i + j);
+               ErrorMsg(1,"The character %d is not normally in the "
+                          "encoding.\n",i+j);
 		  complained=true;
 	       }
 	 }
@@ -4795,7 +4778,7 @@ static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
       subheads[i].rangeoff=subheads[i].rangeoff * sizeof(uint16) +
 	 (subheadcnt - i) * sizeof(struct subhead) + sizeof(uint16);
 
-   sub=tmpfile();
+   sub=atmpfile();
    if (sub==NULL)
       return (NULL);
 
@@ -4927,7 +4910,7 @@ static AFILE *NeedsUCS4Table(SplineFont *sf,int *ucs4len,EncMap *map) {
    if (!map->enc->is_unicodefull)
       map=freeme=EncMapFromEncoding(sf, FindOrMakeEncoding("ucs4"));
 
-   format12=tmpfile();
+   format12=atmpfile();
    if (format12==NULL)
       return (NULL);
 
@@ -4986,7 +4969,7 @@ static AFILE *NeedsUCS2Table(SplineFont *sf,int *ucs2len,EncMap *map,
 
    SplineChar *sc;
 
-   AFILE *format4=tmpfile();
+   AFILE *format4=atmpfile();
 
    memset(avail, 0xff, 65536 * sizeof(uint32));
    if (map->enc->is_unicodebmp || map->enc->is_unicodefull) {
@@ -5164,7 +5147,7 @@ static AFILE *NeedsVariationSequenceTable(SplineFont *sf,int *vslen,
 
    avail=malloc(unicode4_size * sizeof(uint32));
 
-   format14=tmpfile();
+   format14=atmpfile();
    putshort(format14, 14);
    putlong(format14, 0);	/* Length, fixup later */
    putlong(format14, vs_cnt);	/* number of selectors */
@@ -5290,7 +5273,7 @@ static void dumpcmap(struct alltabs *at,SplineFont *sf,
        && (at->gi.flags & ttf_flag_symbol))
       modformat=ff_ttfsym;
 
-   at->cmap=tmpfile();
+   at->cmap=atmpfile();
 
    /* MacRoman encoding table *//* Not going to bother with making this work for cid fonts */
    /* I now see that Apple doesn't restrict us to format 0 sub-tables (as */
@@ -5704,8 +5687,8 @@ static AFILE *dumpstoredtable(SplineFont *sf,uint32 tag,int *len) {
       return (NULL);
    }
 
-   out=tmpfile();
-   fwrite(tab->data, 1, tab->len, out);
+   out=atmpfile();
+   afwrite(tab->data, 1, tab->len, out);
    if ((tab->len & 1))
       aputc('\0', out);
    if ((tab->len + 1) & 2)
@@ -5720,8 +5703,8 @@ static AFILE *dumpsavedtable(struct ttf_table *tab) {
    if (tab==NULL)
       return (NULL);
 
-   out=tmpfile();
-   fwrite(tab->data, 1, tab->len, out);
+   out=atmpfile();
+   afwrite(tab->data, 1, tab->len, out);
    if ((tab->len & 1))
       aputc('\0', out);
    if ((tab->len + 1) & 2)
@@ -6133,8 +6116,7 @@ static void buildtablestructures(struct alltabs *at,SplineFont *sf,
    }
 
    if (i >= MAX_TAB)
-      IError
-	 ("Miscalculation of number of tables needed. Up sizeof tabs array in struct tabdir in ttf.h");
+      ErrorMsg(2,"Miscalculation of number of tables needed. Up sizeof tabs array in struct tabdir in ttf.h\n");
 
    for (tab=sf->ttf_tab_saved; tab != NULL && i < MAX_TAB; tab=tab->next) {
       at->tabdir.tabs[i].tag=tab->tag;
@@ -6142,8 +6124,7 @@ static void buildtablestructures(struct alltabs *at,SplineFont *sf,
       at->tabdir.tabs[i++].length=tab->len;
    }
    if (tab != NULL)
-      IError
-	 ("Some user supplied tables omitted. Up sizeof tabs array in struct tabdir in ttf.h");
+      ErrorMsg(2,"Some user supplied tables omitted. Up sizeof tabs array in struct tabdir in ttf.h\n");
 
    at->tabdir.numtab=i;
    at->tabdir.searchRange =
@@ -6186,10 +6167,9 @@ static int initTables(struct alltabs *at,SplineFont *sf,
 	 if (bdf != NULL)
 	    bsizes[j++]=bsizes[i];
 	 else
-	    ff_post_error(_("Missing bitmap strike"),
-			  _
-			  ("The font database does not contain a bitmap of size %d and depth %d"),
-			  bsizes[i] & 0xffff, bsizes[i] >> 16);
+	    ErrorMsg(2,"The font database does not contain a bitmap of "
+	               "size %d and depth %d.\n",
+                     bsizes[i]&0xffff,bsizes[i]>>16);
       }
       bsizes[j]=0;
       for (i=0; bsizes[i] != 0; ++i);
@@ -6204,7 +6184,7 @@ static int initTables(struct alltabs *at,SplineFont *sf,
       AssignTTFGlyph(&at->gi, sf, at->map, format==ff_otf);
    else {
       if (bsizes==NULL) {
-	 ff_post_error(_("No bitmap strikes"), _("No bitmap strikes"));
+	 ErrorMsg(2,"No bitmap strikes.\n");
 	 AbortTTF(at, sf);
 	 return (false);
       }
@@ -6213,10 +6193,8 @@ static int initTables(struct alltabs *at,SplineFont *sf,
    if (at->gi.gcnt >= 65535) {
       /* You might think we could use GID 65535, but it is used as a "No Glyph" */
       /*  mark in many places (cmap tables, mac substitutions to delete a glyph */
-      ff_post_error(_("Too many glyphs"),
-		    _
-		    ("The 'sfnt' format is currently limited to 65535 glyphs, and your font has %d of them."),
-		    at->gi.gcnt);
+      ErrorMsg(2,"The 'sfnt' format is currently limited to 65535 glyphs, "
+                 "and this font contains %d.\n",at->gi.gcnt);
       AbortTTF(at, sf);
       return (false);
    }
@@ -6417,7 +6395,7 @@ static void dumpttf(AFILE *ttf,struct alltabs *at,enum fontformat format) {
 
    int i, head_index=-1;
 
-   /* I can't use fwrite because I (may) have to byte swap everything */
+   /* I can't use afwrite because I (may) have to byte swap everything */
 
    putlong(ttf, at->tabdir.version);
    putshort(ttf, at->tabdir.numtab);
@@ -6475,7 +6453,7 @@ static void DumpGlyphToNameMap(char *fontname,SplineFont *sf) {
 
    file=afopen(newname, "wb");
    if (file==NULL) {
-      LogError(_("Failed to open glyph to name map file for writing: %s\n"),
+      ErrorMsg(2,"Failed to open glyph to name map file for writing: %s\n",
 	       newname);
       free(newname);
       return;
@@ -6548,7 +6526,7 @@ static int dumpcff(struct alltabs *at,SplineFont *sf,
       sprintf(buffer, "/%s %ld StartData\n", sf->fontname, len);
       afprintf(cff, "%%%%BeginData: %ld Binary Bytes\n",
 	      (long) (len + strlen(buffer)));
-      fputs(buffer, cff);
+      afputs(buffer, cff);
       if (!ttfcopyfile(cff, at->cfff, aftell(cff), "CFF"))
 	 at->error=true;
       afprintf(cff, "\n%%%%EndData\n");
@@ -6642,19 +6620,15 @@ int _WriteTTFFont(AFILE *ttf, SplineFont *sf, enum fontformat format,
 	       break;
 	 }
       }
-      if (!anyglyphs && !sf->internal_temp) {
-	 ff_post_error(_("No Encoded Glyphs"),
-		       _("Warning: Font contained no glyphs"));
-      }
+      if (!anyglyphs && !sf->internal_temp)
+	 ErrorMsg(1,"Font contains no glyphs.\n");
       if (format != ff_ttfsym && !(flags & ttf_flag_symbol)
 	  && !sf->internal_temp) {
 	 if (i < 0 && anyglyphs) {
 	    if (map->enccount <= 256) {
 		  flags |= ttf_flag_symbol;
 	    } else
-	       ff_post_error(_("No Encoded Glyphs"),
-			     _
-			     ("This font contains no glyphs with unicode encodings.\nYou will probably not be able to use the output."));
+	       ErrorMsg(1,"Font contains no glyphs with Unicode encodings.\n");
 	 }
       }
    }
@@ -6721,7 +6695,7 @@ static void dumphex(struct hexout *hexout,AFILE *temp,int length) {
    int i, ch, ch1;
 
    if (length & 1)
-      LogError(_("Table length should not be odd\n"));
+      ErrorMsg(2,"Table length should not be odd\n");
 
    while (length > 65534) {
       dumphex(hexout, temp, 65534);
@@ -6758,9 +6732,7 @@ static void dumphex(struct hexout *hexout,AFILE *temp,int length) {
 static void dumptype42(AFILE *type42,struct alltabs *at,
 		       enum fontformat format) {
    AFILE *temp=atmpfile();
-
    struct hexout hexout;
-
    int i, length;
 
    dumpttf(temp, at, format);

@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: fvcomposite.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1815,26 +1815,8 @@ static int SCMakeBaseReference(SplineChar *sc,SplineFont *sf,int layer,
 	    ch='j';
 	 rsc=SFGetChar(sf, ch, NULL);
 	 if (rsc != NULL && !sf->dotlesswarn) {
-/* GT: the string "dotlessi" is the official postscript name for the glyph */
-/* GT: containing an "i" without a dot on top of it. The name "dotlessi" */
-/* GT: should be left untranslated, though you may wish to explain what it */
-/* GT: means */
-	    ff_post_error(_("Missing Glyph..."),
-			  ch ==
-			  'i' ?
-			  _
-			  ("Your font is missing the dotlessi glyph,\nplease add it and remake your accented glyphs")
-			  :
-/* GT: Adobe decided that a dotless j glyph was needed, assigned a code */
-/* GT: point to it in the private use area, and named it "dotlessj". Then */
-/* GT: years later the Unicode people decided one was needed and assigned */
-/* GT: it U+0237, so that's now the official code point and it is named */
-/* GT: "uni0237". The name "dotlessj" is deprecated but still present in */
-/* GT: many fonts. Neither "dotlessj" nor "uni0237" should be translated */
-/* GT: because they are standard PostScript glyph names. */
-/* GT: Again you may wish to explain that these refer to a "j" without a dot */
-			  _
-			  ("Your font is missing the uni0237 glyph,\nand the deprecated dotlessj glyph,\nplease add the former and remake your accented glyphs"));
+	   ErrorMsg(2,"Missing %s glyph\n",
+	            (ch=='i')?"dotlessi":"uni0237/dotlessj");
 	    sf->dotlesswarn=true;
 	 }
       }

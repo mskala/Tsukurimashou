@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: fvfonts.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -327,7 +327,7 @@ static AnchorPoint *AnchorPointsDuplicate(AnchorPoint *base,SplineChar *sc) {
 	    break;
       cur->anchor=ac;
       if (ac==NULL) {
-	 LogError(_("No matching AnchorClass for %s"), base->anchor->name);
+	 ErrorMsg(2,"No matching AnchorClass for %s\n", base->anchor->name);
 	 chunkfree(cur, sizeof(AnchorPoint));
       } else {
 	 if (head==NULL)
@@ -990,7 +990,7 @@ static int _SFFindExistingSlot(SplineFont *sf,int unienc,const char *name) {
 	 return (-1);
       gid=sc->orig_pos;
       if (gid < 0 || gid >= sf->glyphcnt) {
-	 IError("Invalid glyph location when searching for %s", name);
+	 ErrorMsg(2,"Invalid glyph location when searching for %s\n", name);
 	 return (-1);
       }
    }
@@ -1021,7 +1021,7 @@ static void MFixupSC(SplineFont *sf,SplineChar *sc,int i) {
 	 ref->orig_pos =
 	    SFFindExistingSlot(sf, ref->sc->unicodeenc, ref->sc->name);
 	 if (ref->orig_pos==-1) {
-	    IError("Bad reference, can't fix it up");
+	    ErrorMsg(2,"Bad reference, can't fix it up\n");
 	    if (ref==sc->layers[l].refs) {
 	       sc->layers[l].refs=ref->next;
 	       goto retry;
@@ -1296,8 +1296,7 @@ void MergeFont(FontViewBase * fv, SplineFont *other,
 	       int preserveCrossFontKerning) {
 
    if (fv->sf==other) {
-      ff_post_error(_("Merging Problem"),
-		    _("Merging a font with itself achieves nothing"));
+      ErrorMsg(2,"Merging a font with itself achieves nothing\n");
       return;
    }
    if (fv->sf->cidmaster != NULL && other->subfonts != NULL &&
@@ -1305,9 +1304,12 @@ void MergeFont(FontViewBase * fv, SplineFont *other,
 	strcmp(fv->sf->cidmaster->ordering, other->ordering) != 0 ||
 	fv->sf->cidmaster->supplement < other->supplement ||
 	fv->sf->cidmaster->subfontcnt < other->subfontcnt)) {
-      ff_post_error(_("Merging Problem"),
-		    _
-		    ("When merging two CID keyed fonts, they must have the same Registry and Ordering, and the font being merged into (the mergee) must have a supplement which is at least as recent as the other's. Furthermore the mergee must have at least as many subfonts as the merger."));
+      ErrorMsg(2,
+        "When merging two CID keyed fonts, they must have the same Registry "
+        "and Ordering, and the font being merged into (the uke) must have a "
+        "supplement which is at least as recent as the other's.  "
+        "Furthermore, the uke must have at least as many subfonts as the "
+        "seme.\n");
       return;
    }
    /* Ok. when merging CID fonts... */
@@ -1361,7 +1363,7 @@ static RefChar *InterpRefs(RefChar *base,RefChar *other,real amount,
 	    last->next=cur;
 	 last=cur;
       } else
-	 LogError(_("In character %s, could not find reference to %s\n"),
+	 ErrorMsg(2,"In character %s, could not find reference to %s\n",
 		  sc->name, base->sc->name);
       base=base->next;
       if (test==other && other != NULL)
@@ -1439,8 +1441,7 @@ static SplineSet *InterpSplineSet(SplineSet *base,SplineSet *other,
 	 return (cur);
       }
       if (bp->next==NULL || bp->next->to==base->first) {
-	 LogError(_
-		  ("In character %s, there are too few points on a path in the base\n"),
+	 ErrorMsg(2,"In character %s, there are too few points on a path in the base\n",
 		  sc->name);
 	 if (bp->next != NULL) {
 	    if (bp->next->order2) {
@@ -1454,8 +1455,7 @@ static SplineSet *InterpSplineSet(SplineSet *base,SplineSet *other,
 	 }
 	 return (cur);
       } else if (op->next==NULL || op->next->to==other->first) {
-	 LogError(_
-		  ("In character %s, there are too many points on a path in the base\n"),
+	 ErrorMsg(2,"In character %s, there are too many points on a path in the base\n",
 		  sc->name);
 	 while (bp->next != NULL && bp->next->to != base->first) {
 	    bp=bp->next->to;
@@ -1556,13 +1556,12 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
    if (base->dostroke==other->dostroke)
       to->dostroke=base->dostroke;
    else
-      LogError(_
-	       ("Different settings on whether to stroke in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on whether to stroke in layer %d of %s\n",
 	       lc, sc->name);
    if (base->dofill==other->dofill)
       to->dofill=base->dofill;
    else
-      LogError(_("Different settings on whether to fill in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on whether to fill in layer %d of %s\n",
 	       lc, sc->name);
    if (base->fill_brush.col==COLOR_INHERITED
        && other->fill_brush.col==COLOR_INHERITED)
@@ -1572,8 +1571,7 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
       to->fill_brush.col =
 	 InterpColor(base->fill_brush.col, other->fill_brush.col, amount);
    else
-      LogError(_
-	       ("Different settings on whether to inherit fill color in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on whether to inherit fill color in layer %d of %s\n",
 	       lc, sc->name);
    if (base->fill_brush.opacity < 0 && other->fill_brush.opacity < 0)
       to->fill_brush.opacity=WIDTH_INHERITED;
@@ -1582,8 +1580,7 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
 	 base->fill_brush.opacity + amount * (other->fill_brush.opacity -
 					      base->fill_brush.opacity);
    else
-      LogError(_
-	       ("Different settings on whether to inherit fill opacity in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on whether to inherit fill opacity in layer %d of %s\n",
 	       lc, sc->name);
    if (base->stroke_pen.brush.col==COLOR_INHERITED
        && other->stroke_pen.brush.col==COLOR_INHERITED)
@@ -1594,8 +1591,7 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
 	 InterpColor(base->stroke_pen.brush.col, other->stroke_pen.brush.col,
 		     amount);
    else
-      LogError(_
-	       ("Different settings on whether to inherit fill color in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on whether to inherit fill color in layer %d of %s\n",
 	       lc, sc->name);
    if (base->stroke_pen.brush.opacity < 0
        && other->stroke_pen.brush.opacity < 0)
@@ -1607,8 +1603,7 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
 	 amount * (other->stroke_pen.brush.opacity -
 		   base->stroke_pen.brush.opacity);
    else
-      LogError(_
-	       ("Different settings on whether to inherit stroke opacity in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on whether to inherit stroke opacity in layer %d of %s\n",
 	       lc, sc->name);
    if (base->stroke_pen.width < 0 && other->stroke_pen.width < 0)
       to->stroke_pen.width=WIDTH_INHERITED;
@@ -1617,39 +1612,36 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
 	 base->stroke_pen.width + amount * (other->stroke_pen.width -
 					    base->stroke_pen.width);
    else
-      LogError(_
-	       ("Different settings on whether to inherit stroke width in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on whether to inherit stroke width in layer %d of %s\n",
 	       lc, sc->name);
    if (base->stroke_pen.linecap==other->stroke_pen.linecap)
       to->stroke_pen.linecap=base->stroke_pen.linecap;
    else
-      LogError(_("Different settings on stroke linecap in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on stroke linecap in layer %d of %s\n",
 	       lc, sc->name);
    if (base->stroke_pen.linejoin==other->stroke_pen.linejoin)
       to->stroke_pen.linejoin=base->stroke_pen.linejoin;
    else
-      LogError(_("Different settings on stroke linejoin in layer %d of %s\n"),
+      ErrorMsg(2,"Different settings on stroke linejoin in layer %d of %s\n",
 	       lc, sc->name);
    if (base->fill_brush.gradient != NULL || other->fill_brush.gradient != NULL
        || base->stroke_pen.brush.gradient != NULL
        || other->stroke_pen.brush.gradient != NULL)
-      LogError(_
-	       ("I can't even imagine how to attempt to interpolate gradients in layer %d of %s\n"),
+      ErrorMsg(2,"I can't even imagine how to attempt to interpolate gradients in layer %d of %s\n",
 	       lc, sc->name);
    if (base->fill_brush.pattern != NULL || other->fill_brush.pattern != NULL)
-      LogError(_("Different fill patterns in layer %d of %s\n"), lc,
+      ErrorMsg(2,"Different fill patterns in layer %d of %s\n", lc,
 	       sc->name);
    if (base->stroke_pen.brush.pattern != NULL
        || other->stroke_pen.brush.pattern != NULL)
-      LogError(_("Different stroke patterns in layer %d of %s\n"), lc,
+      ErrorMsg(2,"Different stroke patterns in layer %d of %s\n", lc,
 	       sc->name);
 
    to->splines =
       SplineSetsInterpolate(base->splines, other->splines, amount, sc);
    to->refs=InterpRefs(base->refs, other->refs, amount, sc);
    if (base->images != NULL || other->images != NULL)
-      LogError(_
-	       ("I can't even imagine how to attempt to interpolate images in layer %d of %s\n"),
+      ErrorMsg(2,"I can't even imagine how to attempt to interpolate images in layer %d of %s\n",
 	       lc, sc->name);
 }
 
@@ -1680,7 +1672,7 @@ SplineChar *SplineCharInterpolate(SplineChar * base, SplineChar * other,
       int lc=base->layer_cnt;
 
       if (lc != other->layer_cnt) {
-	 LogError(_("Different numbers of layers in %s\n"), base->name);
+	 ErrorMsg(2,"Different numbers of layers in %s\n",base->name);
 	 if (other->layer_cnt < lc)
 	    lc=other->layer_cnt;
       }
@@ -1757,18 +1749,15 @@ SplineFont *InterpolateFont(SplineFont *base, SplineFont *other,
    int i, index, lc;
 
    if (base==other) {
-      ff_post_error(_("Interpolating Problem"),
-		    _("Interpolating a font with itself achieves nothing"));
+      ErrorMsg(2,"Interpolating a font with itself achieves nothing.\n");
       return (NULL);
    } else if (base->layers[ly_fore].order2 != other->layers[ly_fore].order2) {
-      ff_post_error(_("Interpolating Problem"),
-		    _
-		    ("Interpolating between fonts with different spline orders (i.e. between postscript and truetype)"));
+      ErrorMsg(2,"Cannot interpolate between fonts with different spline "
+                 "orders, such as between Postscript and TrueType.\n");
       return (NULL);
    } else if (base->multilayer && other->multilayer) {
-      ff_post_error(_("Interpolating Problem"),
-		    _
-		    ("Interpolating between fonts with different editing types (ie. between type3 and type1)"));
+      ErrorMsg(2,"Cannot interpolate between fonts with editing types, "
+                 "such as between Type 1 and Type 3.\n");
       return (NULL);
    }
    new=SplineFontBlank(base->glyphcnt);

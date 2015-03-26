@@ -1,4 +1,4 @@
-/* $Id: lookups.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: lookups.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -704,8 +704,7 @@ static int PSTValid(SplineFont *sf,PST *pst) {
 	   *pt='\0';
 	   ret=SCWorthOutputting(SFGetChar(sf, -1, start));
 	   if (!ret) {
-	      LogError(_
-		       ("Lookup subtable contains unused glyph %s making the whole subtable invalid"),
+	      ErrorMsg(2,"Lookup subtable contains unused glyph %s making the whole subtable invalid\n",
 		       start);
 	      *pt=ch;
 	      return (false);
@@ -1688,9 +1687,8 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
       free(userfriendly);
    }
 
-   if (otl->subtables==NULL)
-      /* IError( _("Lookup with no subtables")) */ ;
-   else {
+   if (otl->subtables==NULL) {
+   } else {
       int cnt=0;
 
       for (subtable=otl->subtables; subtable != NULL;
@@ -1711,7 +1709,7 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 	    else if (subtable->anchor_classes)
 	       format=_("%s anchor %d");
 	    else {
-	       IError("Subtable status not filled in for %dth subtable of %s",
+	       ErrorMsg(2,"Subtable status not filled in for %dth subtable of %s\n",
 		      cnt, otl->lookup_name);
 	       format="%s !!!!!!!! %d";
 	    }
@@ -1936,7 +1934,7 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
    AnchorClass *ac;
 
    if (lookup_type != subsecond->lookup->lookup_type) {
-      IError("Attempt to merge lookup subtables with mismatch types");
+      ErrorMsg(2,"Attempt to merge lookup subtables with mismatch types\n");
       return;
    }
    if (lookup_type != gsub_single &&
@@ -1948,10 +1946,10 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
        lookup_type != gpos_cursive &&
        lookup_type != gpos_mark2base &&
        lookup_type != gpos_mark2ligature && lookup_type != gpos_mark2mark) {
-      IError("Attempt to merge lookup subtables with bad types");
+      ErrorMsg(2,"Attempt to merge lookup subtables with bad types\n");
       return;
    } else if (subfirst->kc != NULL || subsecond->kc != NULL) {
-      IError("Attempt to merge lookup subtables with kerning classes");
+      ErrorMsg(2,"Attempt to merge lookup subtables with kerning classes\n");
       return;
    }
 
@@ -1984,8 +1982,7 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
 		  if (fpst==NULL && spst != NULL)
 		     spst->subtable=subfirst;
 		  else if (spst != NULL) {
-		     LogError(_
-			      ("The glyph, %s, contains a %s from %s and one from %s.\nThe one from %s will be removed.\n"),
+		     ErrorMsg(2,"The glyph, %s, contains a %s from %s and one from %s.\nThe one from %s will be removed.\n",
 			      sc->name,
 			      lookup_type ==
 			      gpos_single ? _("positioning") :
@@ -2018,8 +2015,7 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
 			if (fpst==NULL)
 			   spst->subtable=subfirst;
 			else {
-			   LogError(_
-				    ("The glyph, %s, contains the same %s from %s and from %s.\nThe one from %s will be removed.\n"),
+			   ErrorMsg(2,"The glyph, %s, contains the same %s from %s and from %s.\nThe one from %s will be removed.\n",
 				    sc->name,
 				    lookup_type ==
 				    gsub_ligature ? _("ligature") :
@@ -2052,8 +2048,7 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
 			   if (fkp==NULL)
 			      skp->subtable=subfirst;
 			   else {
-			      LogError(_
-				       ("The glyph, %s, contains the same kern pair from %s and from %s.\nThe one from %s will be removed.\n"),
+			      ErrorMsg(2,"The glyph, %s, contains the same kern pair from %s and from %s.\nThe one from %s will be removed.\n",
 				       sc->name, subfirst->subtable_name,
 				       subsecond->subtable_name,
 				       subsecond->subtable_name);

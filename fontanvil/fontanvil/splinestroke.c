@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: splinestroke.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -483,7 +483,7 @@ static void LineJoin(StrokeContext *c,int atbreak) {
       /*  to add a line join */
    }
    if (pindex < 0)
-      IError("LineJoin: pindex<0");
+      ErrorMsg(2,"LineJoin: pindex<0\n");
    pslope=c->all[pindex].slope;
    nslope=done.slope;
    len=sqrt(nslope.x * nslope.x + nslope.y * nslope.y);
@@ -1112,7 +1112,7 @@ static void SquareCap(StrokeContext *c,int isend) {
    if (cc < 0)
       cc += 4;
    if (cc==0 || cc==3)
-      IError("Unexpected value in SquareCap");
+      ErrorMsg(2,"Unexpected value in SquareCap\n");
    /* We want the seam to be half-way. That means if cnt==2 it will be ON the */
    /*  corner point we add, and if cnt==1 it will be halfway along the line */
    /*  between the two new corners. */
@@ -1213,7 +1213,7 @@ static void SquareJoin(StrokeContext *c,int atbreak) {
       nindex=c->cur - 1;
    }
    if (pindex < 0)
-      IError("LineJoin: pindex<0");
+      ErrorMsg(2,"LineJoin: pindex<0\n");
    done=c->all[nindex];
    pslope=c->all[pindex].slope;
    nslope=done.slope;
@@ -1582,16 +1582,16 @@ static int WhichPolyCorner(StrokeContext *c,BasePoint *slope,
       }
    }
    if (bestl==-1 || bestr==-1)
-      IError("Failed to find corner in WhichPolyCorner");
+      ErrorMsg(2,"Failed to find corner in WhichPolyCorner\n");
    if (bestl2 != -1) {
       if (bestl + 1 != bestl2 && !(bestl2==c->n - 1 && bestl==0))
-	 IError("Unexpected multiple left corners in WhichPolyCorner");
+	 ErrorMsg(2,"Unexpected multiple left corners in WhichPolyCorner\n");
       if (bestl==0 && bestl2==c->n - 1)
 	 bestl=c->n - 1;
    }
    if (bestr2 != -1) {
       if (bestr + 1 != bestr2 && !(bestr2==c->n - 1 && bestr==0))
-	 IError("Unexpected multiple right corners in WhichPolyCorner");
+	 ErrorMsg(2,"Unexpected multiple right corners in WhichPolyCorner\n");
       if (bestr==0 && bestr2==c->n - 1)
 	 bestr=c->n - 1;
    }
@@ -1754,7 +1754,7 @@ static void PolyJoin(StrokeContext *c,int atbreak) {
       nindex=c->cur - 1;
    }
    if (pindex < 0)
-      IError("LineJoin: pindex<0");
+      ErrorMsg(2,"LineJoin: pindex<0\n");
    done=c->all[nindex];
    pslope=c->all[pindex].slope;
    nslope=done.slope;
@@ -2174,7 +2174,7 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	    gothere=true;
 	 }
 	 if (c->cur > c->max)
-	    IError("Memory corrupted");
+	    ErrorMsg(2,"Memory corrupted\n");
       }
       if (s->to->next==NULL)
 	 PolyCap(c, 1);
@@ -3395,12 +3395,12 @@ static SplineSet *RemoveBackForthLine(SplineSet *ss) {
 	       BreakLine(sp2->next, end, start, &first2, &second2);
 	       if (first1->me.x != second2->me.x
 		   || first1->me.y != second2->me.y) {
-		  IError("Confusion reighns!");
+		  ErrorMsg(2,"Confusion reighns!\n");
 		  return (ss);
 	       }
 	       if (second1->me.x != first2->me.x
 		   || second1->me.y != first2->me.y) {
-		  IError("Confusion regnas!");
+		  ErrorMsg(2,"Confusion regnas!\n");
 		  return (ss);
 	       }
 	       if (isnext || isprev) {
@@ -3415,7 +3415,7 @@ static SplineSet *RemoveBackForthLine(SplineSet *ss) {
 		     first1=first2;
 		  }
 		  if (second1 != sp2 || first2 != sp2) {
-		     IError("Confusion wiggles!\n");
+		     ErrorMsg(2,"Confusion wiggles!\n\n");
 		     return (ss);
 		  }
 		  SplineFree(sp2->prev);
@@ -3887,9 +3887,8 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
    lfragments=EdgeEffects(lfragments, c);
    lfragments=JoinFragments(lfragments, &contours, c->resolution);
    if (lfragments != NULL) {
-      IError(glyphname ==
-	     NULL ? _("Some fragments did not join") :
-	     _("Some fragments did not join in %s"), glyphname);
+      ErrorMsg(2,(glyphname==NULL)?"Some fragments did not join\n":
+	       "Some fragments did not join in %s\n", glyphname);
       for (ret=lfragments; ret->next != NULL; ret=ret->next);
       ret->next=contours;
       contours=lfragments;
@@ -3978,7 +3977,7 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
    real trans[6];
 
    if (si->stroke_type==si_centerline)
-      IError("centerline not handled");
+      ErrorMsg(2,"centerline not handled\n");
 
    memset(&c, 0, sizeof(c));
    c.resolution=si->resolution;

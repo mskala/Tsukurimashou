@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: autowidth.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1068,8 +1068,7 @@ static int AW_ReadKernPairFile(char *fn,WidthInfo *wi) {
    file=afopen(filename, "r");
    free(filename);
    if (file==NULL) {
-      ff_post_error(_("Couldn't open file"), _("Couldn't open file %.200s"),
-		    fn);
+      ErrorMsg(2,"Couldn't open file %.200s\n",fn);
       free(fn);
       return (false);
    }
@@ -1094,8 +1093,7 @@ static int AW_ReadKernPairFile(char *fn,WidthInfo *wi) {
 
    afclose(file);
    if (!figurekernsets(wi, &ks)) {
-      ff_post_error(_("No Kern Pairs"), _("No kerning pairs found in %.200s"),
-		    fn);
+      ErrorMsg(2,"No kerning pairs found in %.200s\n",fn);
       free(filename);
       kernsetsfree(&ks);
       return (false);

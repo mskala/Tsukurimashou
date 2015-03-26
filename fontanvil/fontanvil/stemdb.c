@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: stemdb.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams and Alexey Kryukov */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -724,7 +724,7 @@ static Spline *MonotonicFindAlong(Spline *line,struct st *stspace,int cnt,
 	    *other_t=stspace[i + 1].st;
 	    return (stspace[i + 1].s);
 	 }
-	 afprintf(stderr, "MonotonicFindAlong: Ran out of intersections.\n");
+	 ErrorMsg(1,"MonotonicFindAlong: Ran out of intersections.\n");
 	 return (NULL);
       }
       if (i + 1 < cnt && stspace[i + 1].s==findme)
@@ -743,14 +743,13 @@ static Spline *MonotonicFindAlong(Spline *line,struct st *stspace,int cnt,
 	      break;
 	 }
    }
-   afprintf(stderr, "MonotonicFindAlong: Never found our spline.\n");
+   ErrorMsg(1,"MonotonicFindAlong: Never found our spline.\n");
    return (NULL);
 }
 
 static int MonotonicFindStemBounds(Spline *line,struct st *stspace,int cnt,
 				   double fudge, struct stemdata *stem) {
    int i, j;
-
    int eo;			/* I do horizontal/vertical by winding number */
 
    /* But figuring winding number with respect to a */
@@ -922,7 +921,7 @@ static int FindMatchingHVEdge(struct glyphdata *gd,struct pointdata *pd,
       winding += nw;
    }
    if (space[i]==NULL) {
-      afprintf(stderr, "FindMatchinHVEdge didn't\n");
+      ErrorMsg(1,"FindMatchinHVEdge didn't\n");
       return (0);
    }
 
@@ -2564,7 +2563,7 @@ static struct stemdata *HalfStem(struct glyphdata *gd,struct pointdata *pd,
       return (NULL);		/* Zero width stems aren't interesting */
 
    if (isnan(t1))
-      IError("NaN value in HalfStem");
+      ErrorMsg(2,"NaN value in HalfStem\n");
 
    if (is_next) {
       pd->nextedges[eidx]=other;
@@ -3129,7 +3128,7 @@ static void FixupT(struct pointdata *pd,int stemidx,int isnext,int eidx) {
       t=sts[0];
    }
    if (isnan(t))
-      IError("NaN value in FixupT");
+      ErrorMsg(2,"NaN value in FixupT\n");
    if (isnext)
       pd->next_e_t[eidx]=t;
    else
@@ -4002,32 +4001,32 @@ static void FigureStemActive(struct glyphdata *gd,struct stemdata *stem) {
       }
    }
 #if GLYPH_DATA_DEBUG
-   afprintf(stderr,
+   ErrorMsg(1,
 	   "Active zones for stem l=%.2f,%.2f r=%.2f,%.2f dir=%.2f,%.2f:\n",
 	   stem->left.x, stem->left.y, stem->right.x, stem->right.y,
 	   stem->unit.x, stem->unit.y);
    for (i=0; i < lcnt; i++) {
-      afprintf(stderr, "\tleft space curved=%d\n", lspace[i].curved);
-      afprintf(stderr, "\t\tstart=%.2f,base=%.2f,curved=%d\n",
+      ErrorMsg(1,"\tleft space curved=%d\n", lspace[i].curved);
+      ErrorMsg(1,"\t\tstart=%.2f,base=%.2f,curved=%d\n",
 	      lspace[i].start, lspace[i].sbase, lspace[i].scurved);
-      afprintf(stderr, "\t\tend=%.2f,base=%.2f,curved=%d\n",
+      ErrorMsg(1,"\t\tend=%.2f,base=%.2f,curved=%d\n",
 	      lspace[i].end, lspace[i].ebase, lspace[i].ecurved);
    }
    for (i=0; i < rcnt; i++) {
-      afprintf(stderr, "\tright space curved=%d\n", rspace[i].curved);
-      afprintf(stderr, "\t\tstart=%.2f,base=%.2f,curved=%d\n",
+      ErrorMsg(1,"\tright space curved=%d\n", rspace[i].curved);
+      ErrorMsg(1,"\t\tstart=%.2f,base=%.2f,curved=%d\n",
 	      rspace[i].start, rspace[i].sbase, rspace[i].scurved);
-      afprintf(stderr, "\t\tend=%.2f,base=%.2f,curved=%d\n",
+      ErrorMsg(1,"\t\tend=%.2f,base=%.2f,curved=%d\n",
 	      rspace[i].end, rspace[i].ebase, rspace[i].ecurved);
    }
    for (i=0; i < bcnt; i++) {
-      afprintf(stderr, "\tboth space\n");
-      afprintf(stderr, "\t\tstart=%.2f,base=%.2f,curved=%d\n",
+      ErrorMsg(1,"\tboth space\n");
+      ErrorMsg(1,"\t\tstart=%.2f,base=%.2f,curved=%d\n",
 	      bothspace[i].start, bothspace[i].sbase, bothspace[i].scurved);
-      afprintf(stderr, "\t\tend=%.2f,base=%.2f,curved=%d\n",
+      ErrorMsg(1,"\t\tend=%.2f,base=%.2f,curved=%d\n",
 	      bothspace[i].end, bothspace[i].ebase, bothspace[i].ecurved);
    }
-   afprintf(stderr, "\n");
+   ErrorMsg(1,"\n");
 #endif
 
    err=(stem->unit.x==0 || stem->unit.y==0) ?
@@ -5452,27 +5451,27 @@ static void DumpGlyphData(struct glyphdata *gd) {
    struct stem_chunk *chunk;
 
    if (gd->linecnt > 0)
-      afprintf(stderr, "\nDumping line data for %s\n", gd->sc->name);
+      ErrorMsg(1,"\nDumping line data for %s\n", gd->sc->name);
    for (i=0; i < gd->linecnt; ++i) {
       line=&gd->lines[i];
-      afprintf(stderr, "line vector=%.4f,%.4f base=%.2f,%.2f length=%.4f\n",
+      ErrorMsg(1,"line vector=%.4f,%.4f base=%.2f,%.2f length=%.4f\n",
 	      line->unit.x, line->unit.y, line->online.x, line->online.y,
 	      line->length);
       for (j=0; j < line->pcnt; ++j) {
-	 afprintf(stderr, "\tpoint num=%d, x=%.2f, y=%.2f, prev=%d, next=%d\n",
+	 ErrorMsg(1,"\tpoint num=%d, x=%.2f, y=%.2f, prev=%d, next=%d\n",
 		 line->points[j]->sp->ttfindex, line->points[j]->sp->me.x,
 		 line->points[j]->sp->me.y,
 		 line->points[j]->prevline==line,
 		 line->points[j]->nextline==line);
       }
-      afprintf(stderr, "\n");
+      ErrorMsg(1,"\n");
    }
 
    if (gd->stemcnt > 0)
-      afprintf(stderr, "\nDumping stem data for %s\n", gd->sc->name);
+      ErrorMsg(1,"\nDumping stem data for %s\n", gd->sc->name);
    for (i=0; i < gd->stemcnt; ++i) {
       stem=&gd->stems[i];
-      afprintf(stderr,
+      ErrorMsg(1,
 	      "stem l=%.2f,%.2f idx=%d r=%.2f,%.2f idx=%d vector=%.4f,%.4f\n\twidth=%.2f chunk_cnt=%d len=%.4f clen=%.4f ghost=%d blue=%d toobig=%d\n\tlmin=%.2f,lmax=%.2f,rmin=%.2f,rmax=%.2f,lpcnt=%d,rpcnt=%d\n",
 	      stem->left.x, stem->left.y, stem->leftidx, stem->right.x,
 	      stem->right.y, stem->rightidx, stem->unit.x, stem->unit.y,
@@ -5482,34 +5481,34 @@ static void DumpGlyphData(struct glyphdata *gd) {
       for (j=0; j < stem->chunk_cnt; ++j) {
 	 chunk=&stem->chunks[j];
 	 if (chunk->l != NULL && chunk->r != NULL)
-	    afprintf(stderr,
+	    ErrorMsg(1,
 		    "\tchunk l=%.2f,%.2f potential=%d r=%.2f,%.2f potential=%d stub=%d\n",
 		    chunk->l->sp->me.x, chunk->l->sp->me.y, chunk->lpotential,
 		    chunk->r->sp->me.x, chunk->r->sp->me.y, chunk->rpotential,
 		    chunk->stub);
 	 else if (chunk->l != NULL)
-	    afprintf(stderr, "\tchunk l=%.2f,%.2f potential=%d\n",
+	    ErrorMsg(1,"\tchunk l=%.2f,%.2f potential=%d\n",
 		    chunk->l->sp->me.x, chunk->l->sp->me.y,
 		    chunk->lpotential);
 	 else if (chunk->r != NULL)
-	    afprintf(stderr, "\tchunk r=%.2f,%.2f potential=%d\n",
+	    ErrorMsg(1,"\tchunk r=%.2f,%.2f potential=%d\n",
 		    chunk->r->sp->me.x, chunk->r->sp->me.y,
 		    chunk->rpotential);
       }
-      afprintf(stderr, "\n");
+      ErrorMsg(1,"\n");
    }
 
    if (gd->hbundle != NULL || gd->vbundle != NULL)
-      afprintf(stderr, "\nDumping HV stem bundles for %s\n", gd->sc->name);
+      ErrorMsg(1,"\nDumping HV stem bundles for %s\n", gd->sc->name);
    if (gd->hbundle != NULL)
       for (i=0; i < gd->hbundle->cnt; i++) {
 	 stem=gd->hbundle->stemlist[i];
-	 afprintf(stderr, "H stem l=%.2f,%.2f r=%.2f,%.2f slave=%d\n",
+	 ErrorMsg(1,"H stem l=%.2f,%.2f r=%.2f,%.2f slave=%d\n",
 		 stem->left.x, stem->left.y, stem->right.x, stem->right.y,
 		 stem->master != NULL);
 	 if (stem->dep_cnt > 0)
 	    for (j=0; j < stem->dep_cnt; j++) {
-	       afprintf(stderr,
+	       ErrorMsg(1,
 		       "\tslave l=%.2f,%.2f r=%.2f,%.2f mode=%c left=%d\n",
 		       stem->dependent[j].stem->left.x,
 		       stem->dependent[j].stem->left.y,
@@ -5519,7 +5518,7 @@ static void DumpGlyphData(struct glyphdata *gd) {
 	    }
 	 if (stem->serif_cnt > 0)
 	    for (j=0; j < stem->serif_cnt; j++) {
-	       afprintf(stderr,
+	       ErrorMsg(1,
 		       "\tserif l=%.2f,%.2f r=%.2f,%.2f ball=%d left=%d\n",
 		       stem->serifs[j].stem->left.x,
 		       stem->serifs[j].stem->left.y,
@@ -5528,16 +5527,16 @@ static void DumpGlyphData(struct glyphdata *gd) {
 		       stem->serifs[j].lbase);
 	    }
       }
-   afprintf(stderr, "\n");
+   ErrorMsg(1,"\n");
    if (gd->vbundle != NULL)
       for (i=0; i < gd->vbundle->cnt; i++) {
 	 stem=gd->vbundle->stemlist[i];
-	 afprintf(stderr, "V stem l=%.2f,%.2f r=%.2f,%.2f slave=%d\n",
+	 ErrorMsg(1,"V stem l=%.2f,%.2f r=%.2f,%.2f slave=%d\n",
 		 stem->left.x, stem->left.y, stem->right.x, stem->right.y,
 		 stem->master != NULL);
 	 if (stem->dep_cnt > 0)
 	    for (j=0; j < stem->dep_cnt; j++) {
-	       afprintf(stderr,
+	       ErrorMsg(1,
 		       "\tslave l=%.2f,%.2f r=%.2f,%.2f mode=%c left=%d\n",
 		       stem->dependent[j].stem->left.x,
 		       stem->dependent[j].stem->left.y,
@@ -5547,7 +5546,7 @@ static void DumpGlyphData(struct glyphdata *gd) {
 	    }
 	 if (stem->serif_cnt > 0)
 	    for (j=0; j < stem->serif_cnt; j++) {
-	       afprintf(stderr,
+	       ErrorMsg(1,
 		       "\tserif l=%.2f,%.2f r=%.2f,%.2f ball=%d left=%d\n",
 		       stem->serifs[j].stem->left.x,
 		       stem->serifs[j].stem->left.y,
@@ -5556,25 +5555,25 @@ static void DumpGlyphData(struct glyphdata *gd) {
 		       stem->serifs[j].lbase);
 	    }
 	 if (stem->prev_c_m != NULL) {
-	    afprintf(stderr, "\tprev counter master: l=%.2f r=%.2f\n",
+	    ErrorMsg(1,"\tprev counter master: l=%.2f r=%.2f\n",
 		    stem->prev_c_m->left.x, stem->prev_c_m->right.x);
 	 }
 	 if (stem->next_c_m != NULL) {
-	    afprintf(stderr, "\tnext counter master: l=%.2f r=%.2f\n",
+	    ErrorMsg(1,"\tnext counter master: l=%.2f r=%.2f\n",
 		    stem->next_c_m->left.x, stem->next_c_m->right.x);
 	 }
       }
-   afprintf(stderr, "\n");
+   ErrorMsg(1,"\n");
 
    if (gd->ibundle != NULL)
       for (i=0; i < gd->ibundle->cnt; i++) {
 	 stem=gd->ibundle->stemlist[i];
-	 afprintf(stderr, "I stem l=%.2f,%.2f r=%.2f,%.2f slave=%d\n",
+	 ErrorMsg(1,"I stem l=%.2f,%.2f r=%.2f,%.2f slave=%d\n",
 		 stem->left.x, stem->left.y, stem->right.x, stem->right.y,
 		 stem->master != NULL);
 	 if (stem->dep_cnt > 0)
 	    for (j=0; j < stem->dep_cnt; j++) {
-	       afprintf(stderr,
+	       ErrorMsg(1,
 		       "\tslave l=%.2f,%.2f r=%.2f,%.2f mode=%c left=%d\n",
 		       stem->dependent[j].stem->left.x,
 		       stem->dependent[j].stem->left.y,
@@ -5584,7 +5583,7 @@ static void DumpGlyphData(struct glyphdata *gd) {
 	    }
 	 if (stem->serif_cnt > 0)
 	    for (j=0; j < stem->serif_cnt; j++) {
-	       afprintf(stderr,
+	       ErrorMsg(1,
 		       "\tserif l=%.2f,%.2f r=%.2f,%.2f ball=%d left=%d\n",
 		       stem->serifs[j].stem->left.x,
 		       stem->serifs[j].stem->left.y,
@@ -5593,7 +5592,7 @@ static void DumpGlyphData(struct glyphdata *gd) {
 		       stem->serifs[j].lbase);
 	    }
       }
-   afprintf(stderr, "\n");
+   ErrorMsg(1,"\n");
 }
 #endif
 
@@ -5639,7 +5638,7 @@ static void AssignPointsToStems(struct glyphdata *gd,int startnum,
    gd->bothspace=malloc(3 * gd->pcnt * sizeof(struct segment));
    gd->activespace=malloc(3 * gd->pcnt * sizeof(struct segment));
 #if GLYPH_DATA_DEBUG
-   afprintf(stderr, "Going to calculate stem active zones for %s\n",
+   ErrorMsg(1,"Going to calculate stem active zones for %s\n",
 	   gd->sc->name);
 #endif
    for (i=startnum; i < gd->stemcnt; ++i) {
@@ -6911,7 +6910,7 @@ struct glyphdata *GlyphDataBuild(SplineChar * sc, int layer, BlueData * bd,
    gd->bothspace=malloc(3 * gd->pcnt * sizeof(struct segment));
    gd->activespace=malloc(3 * gd->pcnt * sizeof(struct segment));
 #if GLYPH_DATA_DEBUG
-   afprintf(stderr, "Going to calculate stem active zones for %s\n",
+   ErrorMsg(1,"Going to calculate stem active zones for %s\n",
 	   gd->sc->name);
 #endif
    for (i=0; i < gd->stemcnt; ++i)

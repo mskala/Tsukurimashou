@@ -1,4 +1,4 @@
-/* $Id: encoding.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: encoding.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -195,15 +195,13 @@ NULL };
    }
 
    if (goodname==NULL) {
-      IError
-	 ("I can't figure out your version of iconv(). I need a name for the UCS-4 encoding and I can't find one. Reconfigure --without-iconv. Bye.");
+      ErrorMsg(3,"Cannot determine version of iconv().  A name for the UCS-4 encoding is required.\n");
       exit(1);
    }
 
    test=iconv_open(goodname, "Mac");
    if (test==(iconv_t) - 1 || test==NULL) {
-      IError
-	 ("Your version of iconv does not support the \"Mac Roman\" encoding.\nIf this causes problems, reconfigure --without-iconv.");
+      ErrorMsg(2,"This version of iconv does not support the \"Mac Roman\" encoding.\n");
    } else
       iconv_close(test);
 
@@ -214,15 +212,10 @@ NULL };
 
 static int TryEscape(Encoding *enc,char *escape_sequence) {
    char from[20], ucs[20];
-
    size_t fromlen, tolen;
-
    ICONV_CONST char *fpt;
-
    char *upt;
-
    int i, j, low;
-
    int esc_len=strlen(escape_sequence);
 
    strcpy(from, escape_sequence);
@@ -643,8 +636,7 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
    file=afopen(filename, "r");
    if (file==NULL) {
       if (orig != NULL)
-	 ff_post_error(_("Couldn't open file"),
-		       _("Couldn't open file %.200s"), orig);
+	 ErrorMsg(2,"Couldn't open file %.200s\n",orig);
       return (NULL);
    }
    ch=agetc(file);
@@ -661,8 +653,7 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
       head=PSSlurpEncodings(file);
    afclose(file);
    if (head==NULL) {
-      ff_post_error(_("Bad encoding file format"),
-		    _("Bad encoding file format"));
+      ErrorMsg(2,"Bad encoding file format\n");
       return (NULL);
    }
 
@@ -670,9 +661,7 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
 	prev=item, item=next, ++i) {
       next=item->next;
       if (item->enc_name==NULL) {
-	 ff_post_error(_("Bad encoding file format"),
-		       _
-		       ("This file contains an unnamed encoding, which cannot be named in a script"));
+	 ErrorMsg(2,"Bad encoding file format (unnamed encoding).\n");
 	 return (NULL);
       }
    }
@@ -904,18 +893,10 @@ struct cidmap *LoadMapFromFile(char *file, char *registry, char *ordering,
    cidmaps=ret;
 
    f=afopen(file, "r");
-   if (f==NULL) {
-      ff_post_error(_("Missing cidmap file"),
-		    _("Couldn't open cidmap file: %s"), file);
-   } else if (fscanf(f, "%d %d", &ret->cidmax, &ret->namemax) != 2) {
-      ff_post_error(_("Bad cidmap file"),
-		    _
-		    ("%s is not a cidmap file"),
-		    file);
-      afprintf(stderr,
-	      _
-	      ("%s is not a cidmap file"),
-	      file);
+   if (f==NULL)
+      ErrorMsg(2,"Couldn't open cidmap file: %s\n",file);
+   else if (fscanf(f, "%d %d", &ret->cidmax, &ret->namemax) != 2) {
+      ErrorMsg(2,"Bad cidmap file %s\n",file);
    } else {
       ret->unicode=calloc(ret->namemax + 1, sizeof(uint32));
       ret->name=calloc(ret->namemax + 1, sizeof(char *));
@@ -1460,19 +1441,15 @@ void SFFlatten(SplineFont *cidmaster) {
 
 int SFFlattenByCMap(SplineFont *sf, char *cmapname) {
    struct cmap *cmap;
-
    int i, j, k, l, m, extras, max, curmax, warned;
-
    int found[4];
-
    SplineChar **glyphs=NULL, *sc;
-
    FontViewBase *fvs;
 
    if (sf->cidmaster != NULL)
       sf=sf->cidmaster;
    if (sf->subfontcnt==0) {
-      ff_post_error(_("Not a CID-keyed font"), _("Not a CID-keyed font"));
+      ErrorMsg(2,"Not a CID-keyed font\n");
       return (false);
    }
    if (cmapname==NULL)
@@ -1486,7 +1463,7 @@ int SFFlattenByCMap(SplineFont *sf, char *cmapname) {
       if (max < cmap->groups[cmt_cid].ranges[i].last)
 	 max=cmap->groups[cmt_cid].ranges[i].last;
       if (cmap->groups[cmt_cid].ranges[i].last > 0x100000) {
-	 ff_post_error(_("Encoding Too Large"), _("Encoding Too Large"));
+	 ErrorMsg(2,"Encoding too large\n");
 	 cmapfree(cmap);
 	 return (false);
       }
@@ -1528,11 +1505,11 @@ int SFFlattenByCMap(SplineFont *sf, char *cmapname) {
 		     if (m < sizeof(found) / sizeof(found[0]))
 			found[m++]=l;
 		     else if (!warned) {
-			ff_post_notice(_("MultipleEncodingIgnored"),
-				       _
-				       ("The glyph at CID %d is mapped to more than %d encodings. Only the first %d are handled."),
-				       i, sizeof(found) / sizeof(found[0]),
-				       sizeof(found) / sizeof(found[0]));
+			ErrorMsg(1,"The glyph at CID %d is mapped to more "
+			           "than %d encodings.  Only the first %d "
+			           "are handled.\n",
+                                 i,sizeof(found)/sizeof(found[0]),
+                                 sizeof(found)/sizeof(found[0]));
 			warned=true;
 		     }
 		  }
@@ -1856,7 +1833,7 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
 	    map->ticked=true;
 	 }
       if (!old->ticked)
-	 IError("Unticked encmap");
+	 ErrorMsg(2,"Unticked encmap\n");
       for (bdf=sf->bitmaps; bdf != NULL; bdf=bdf->next)
 	 BDFOrigFixup(bdf, enc_cnt, sf);
       glyphs=calloc(enc_cnt, sizeof(SplineChar *));

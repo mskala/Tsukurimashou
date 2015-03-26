@@ -1,4 +1,4 @@
-/* $Id: dumpbdf.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: dumpbdf.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -484,7 +484,7 @@ int BDFFontDump(char *filename, BDFFont * font, EncMap * map, int res) {
    }
    file=afopen(filename, "w");
    if (file==NULL)
-      LogError(_("Can't open %s\n"), filename);
+      ErrorMsg(2,"Can't open %s\n", filename);
    else {
       BDFDumpHeader(file, font, map, res, &defs);
       for (i=0; i < map->enccount; ++i) {
@@ -499,7 +499,7 @@ int BDFFontDump(char *filename, BDFFont * font, EncMap * map, int res) {
       }
       afprintf(file, "ENDFONT\n");
       if (aferror(file))
-	 LogError(_("Failed to write %s\n"), filename);
+	 ErrorMsg(2,"Failed to write %s\n", filename);
       else
 	 ret=1;
       afclose(file);

@@ -1,4 +1,4 @@
-/* $Id: autowidth2.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: autowidth2.c 3866 2015-03-26 11:30:37Z mskala $ */
 /* Copyright (C) 2009-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -414,10 +414,8 @@ void AutoWidth2(FontViewBase * fv, int separation, int min_side, int max_side,
 	     || scripts[s].glyphs[i].bb.maxx > 16000
 	     || scripts[s].glyphs[i].bb.miny < -16000
 	     || scripts[s].glyphs[i].bb.maxy > 16000)
-	    ff_post_notice(_("Glyph too big"),
-			   _
-			   ("%s has a bounding box which is too big for this algorithm to work. Ignored."),
-			   sc->name);
+	    ErrorMsg(1,"Glyph too big:  %s has a bounding box which is too "
+	               "big for this algorithm to work.  Ignored.\n",sc->name);
 	 else
 	    ++scripts[s].gcnt;
       }

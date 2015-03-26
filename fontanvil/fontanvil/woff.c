@@ -1,4 +1,4 @@
-/* $Id: woff.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: woff.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2010-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -38,27 +38,24 @@
 
 SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 			char *filename, struct fontdict *fd) {
-   ff_post_error(_("WOFF not supported"),
-		 _
-		 ("This version of fontanvil cannot handle WOFF files. You need to recompile it with libpng and zlib"));
+   ErrorMsg(2,"WOFF not supported:  this requires a version of FontAnvil "
+              "built with both libpng and zlib.\n");
    return (NULL);
 }
 
 int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 		   int32 * bsizes, enum bitmapformat bf, int flags,
 		   EncMap * enc, int layer) {
-   ff_post_error(_("WOFF not supported"),
-		 _
-		 ("This version of fontanvil cannot handle WOFF files. You need to recompile it with libpng and zlib"));
+   ErrorMsg(2,"WOFF not supported:  this requires a version of FontAnvil "
+              "built with both libpng and zlib.\n");
    return (1);
 }
 
 int WriteWOFFFont(char *fontname, SplineFont *sf, enum fontformat format,
 		  int32 * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * enc, int layer) {
-   ff_post_error(_("WOFF not supported"),
-		 _
-		 ("This version of fontanvil cannot handle WOFF files. You need to recompile it with libpng and zlib"));
+   ErrorMsg(2,"WOFF not supported:  this requires a version of FontAnvil "
+              "built with both libpng and zlib.\n");
    return (1);
 }
 
@@ -139,8 +136,7 @@ static int decompressdata(AFILE *to,int off_to,AFILE *from,int off_from,
    } while (ret != Z_STREAM_END);
    (void) inflateEnd(&strm);
    if (uncomplen != strm.total_out) {
-      LogError(_
-	       ("Decompressed length did not match expected length for table"));
+      ErrorMsg(2,"Decompressed length did not match expected length for table\n");
       return (true);
    }
 
@@ -171,7 +167,7 @@ static int compressOrNot(AFILE *to,int off_to,AFILE *from,int off_from,
    memset(&strm, 0, sizeof(strm));
    ret=deflateInit(&strm, Z_DEFAULT_COMPRESSION);
    if (ret != Z_OK) {
-      afprintf(stderr, "Compression initialization failed.\n");
+      ErrorMsg(2,"Compression initialization failed.\n");
       return (0);
    }
    tmp=atmpfile();
@@ -188,7 +184,7 @@ static int compressOrNot(AFILE *to,int off_to,AFILE *from,int off_from,
       len -= strm.avail_in;
       if (aferror(from)) {
 	 (void) deflateEnd(&strm);
-	 afprintf(stderr, "IO error.\n");
+	 ErrorMsg(2,"IO error.\n");
 	 break;
       }
       if (strm.avail_in==0)
@@ -200,14 +196,14 @@ static int compressOrNot(AFILE *to,int off_to,AFILE *from,int off_from,
 	 ret=deflate(&strm, len==0 ? Z_FINISH : Z_NO_FLUSH);
 	 if (ret==Z_STREAM_ERROR) {
 	    (void) deflateEnd(&strm);
-	    afprintf(stderr, "Compression failed somehow.\n");
+	    ErrorMsg(2,"Compression failed somehow.\n");
 	    err=1;
 	    break;
 	 }
 	 amount=CHUNK - strm.avail_out;
 	 if (afwrite(out, 1, amount, tmp) != amount || aferror(tmp)) {
 	    (void) deflateEnd(&strm);
-	    afprintf(stderr, "IO Error.\n");
+	    ErrorMsg(2,"IO Error.\n");
 	    err=1;
 	    break;
 	 }
@@ -261,21 +257,20 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
    len=aftell(woff);
    arewind(woff);
    if (getlong(woff) != CHR('w', 'O', 'F', 'F')) {
-      LogError(_("Bad signature in WOFF"));
+      ErrorMsg(2,"Bad signature in WOFF\n");
       return (NULL);
    }
    flavour=getlong(woff);
    iscff=(flavour==CHR('O', 'T', 'T', 'O'));
    len_stated=getlong(woff);
    if (len != len_stated) {
-      LogError(_
-	       ("File length as specified in the WOFF header does not match the actual file length."));
+      ErrorMsg(2,"File length as specified in the WOFF header does not match the actual file length.\n");
       return (NULL);
    }
 
    num_tabs=getushort(woff);
    if (getushort(woff) != 0) {
-      LogError(_("Bad WOFF header, a field which must be 0 is not."));
+      ErrorMsg(2,"Bad WOFF header, a field which must be 0 is not.\n");
       return (NULL);
    }
 
@@ -291,7 +286,7 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 
    sfnt=atmpfile();
    if (sfnt==NULL) {
-      LogError(_("Could not open temporary file."));
+      ErrorMsg(2,"Could not open temporary file.\n");
       return (NULL);
    }
 
@@ -316,11 +311,10 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
       if (compLen > uncompLen || offset + compLen > len) {
 	 afclose(sfnt);
 	 if (compLen > uncompLen)
-	    LogError(_("Invalid compressed table length for '%c%c%c%c'."),
+	    ErrorMsg(2,"Invalid compressed table length for '%c%c%c%c'.\n",
 		     tag >> 24, tag >> 16, tag >> 8, tag);
 	 else
-	    LogError(_
-		     ("Table length stretches beyond end of file for '%c%c%c%c'."),
+	    ErrorMsg(2,"Table length stretches beyond end of file for '%c%c%c%c'.\n",
 		     tag >> 24, tag >> 16, tag >> 8, tag);
 	 return (NULL);
       }
@@ -341,7 +335,7 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
       } else {
 	 err=decompressdata(sfnt, next, woff, offset, compLen, uncompLen);
 	 if (err) {
-	    LogError(_("Problem decompressing '%c%c%c%c' table."),
+	    ErrorMsg(2,"Problem decompressing '%c%c%c%c' table.\n",
 		     tag >> 24, tag >> 16, tag >> 8, tag);
 	    afclose(sfnt);
 	    return (NULL);

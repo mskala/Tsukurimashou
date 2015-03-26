@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 3862 2015-03-25 15:56:41Z mskala $ */
+/* $Id: cvundoes.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -534,7 +534,7 @@ void UndoesFree(Undoes * undo) {
 	   UndoesFree(undo->u.composit.bitmaps);
 	   break;
 	default:
-	   IError("Unknown undo type in UndoesFree: %d", undo->undotype);
+	   ErrorMsg(2,"Unknown undo type in UndoesFree: %d\n", undo->undotype);
 	   break;
       }
       chunkfree(undo, sizeof(Undoes));
@@ -706,7 +706,7 @@ static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
 	   }
 	} break;
      default:
-	IError("Unknown undo type in SCUndoAct: %d", undo->undotype);
+	ErrorMsg(2,"Unknown undo type in SCUndoAct: %d\n", undo->undotype);
 	break;
    }
 }
@@ -777,7 +777,7 @@ static void BCUndoAct(BDFChar *bc,Undoes *undo) {
 	}
 	break;
      default:
-	IError("Unknown undo type in BCUndoAct: %d", undo->undotype);
+	ErrorMsg(2,"Unknown undo type in BCUndoAct: %d\n", undo->undotype);
 	break;
    }
 }
@@ -1082,8 +1082,7 @@ static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
 
    rsc=FindCharacter(sc->parent, paster->copied_from, ref, &fromsc);
    if (rsc != NULL)
-      IError
-	 ("We should never have called PasteNonExistantRefCheck if we had a glyph");
+      ErrorMsg(2,"We should never have called PasteNonExistantRefCheck if we had a glyph\n");
    if (fromsc==NULL) {
       if (!(*refstate & 0x4)) {
 	 char *buts[3];
@@ -1128,54 +1127,9 @@ static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
    }
 }
 
-static void SCCheckXClipboard(SplineChar *sc,int layer,int doclear) {
-      return;
-}
-
 #ifndef _NO_LIBXML
 static void XClipFontToFFClip(void) {
-   int32 len;
-
-   int i;
-
-   char *paste;
-
-   SplineFont *sf;
-
-   SplineChar *sc;
-
-   Undoes *head=NULL, *last=NULL, *cur;
-
-   paste=ClipboardRequest("application/x-font-svg", &len);
-   if (paste==NULL)
-      return;
-   sf=SFReadSVGMem(paste, 0);
-   if (sf==NULL)
-      return;
-   for (i=0; i < sf->glyphcnt; ++i)
-      if ((sc=sf->glyphs[i]) != NULL) {
-	 if (strcmp(sc->name, ".notdef")==0)
-	    continue;
-	 cur=SCCopyAll(sc, ly_fore, ct_fullcopy);
-	 if (cur != NULL) {
-	    if (head==NULL)
-	       head=cur;
-	    else
-	       last->next=cur;
-	    last=cur;
-	 }
-      }
-
-   SplineFontFree(sf);
-   free(paste);
-
-   if (head==NULL)
-      return;
-
-   CopyBufferFree();
-   copybuffer.undotype=ut_multiple;
-   copybuffer.u.multiple.mult=head;
-   copybuffer.copied_from=NULL;
+   return;
 }
 #endif
 
@@ -1225,9 +1179,9 @@ static void APMerge(SplineChar *sc,AnchorPoint *anchor) {
 	 }
       }
       if (anchor_lost_warning)
-	 ff_post_error(_("Anchor Lost"),
-		       _
-		       ("At least one anchor point was lost when pasting from one font to another because no matching anchor class could be found in the new font."));
+         ErrorMsg(2,"At least one anchor point was lost when pasting from "
+                    "one font to another because no matching anchor class "
+                    "could be found in the new font.\n");
       if (anchor==NULL)
 	 return;
    }
@@ -1249,10 +1203,8 @@ static void APMerge(SplineChar *sc,AnchorPoint *anchor) {
 	       break;
 	 }
       if (test != NULL) {
-	 ff_post_error(_("Duplicate Anchor"),
-		       _
-		       ("There is already an anchor point named %1$.40s in %2$.40s."),
-		       test->anchor->name, sc->name);
+	 ErrorMsg(2,"There is already an anchor point named %1$.40s in %2$.40s.\n",
+                  test->anchor->name, sc->name);
 	 if (prev==NULL)
 	    anchor=next;
 	 else
@@ -1314,15 +1266,10 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 		       struct sfmergecontext *mc, int *refstate,
 		       int *already_complained) {
    DBounds bb;
-
    real transform[6];
-
    int width, vwidth;
-
    int xoff=0, yoff=0;
-
    int was_empty;
-
    RefChar *ref;
 
    switch (paster->undotype) {
@@ -1495,9 +1442,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 	}
 	if (paster->u.state.refs != NULL) {
 	   RefChar *new, *refs;
-
 	   SplineChar *rsc;
-
 	   double scale=PasteFigureScale(sc->parent, paster->copied_from);
 
 	   for (refs=paster->u.state.refs; refs != NULL; refs=refs->next) {
@@ -1509,9 +1454,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 				      sf_of_container) (sc->views->container),
 				     paster->copied_from, refs, NULL);
 		 else {
-		    ff_post_error(_("Please don't do that"),
-				  _
-				  ("You may not paste a reference into this window"));
+		    ErrorMsg(2,"Cannot paste a reference here.\n");
 		    rsc=(SplineChar *) - 1;
 		 }
 	      } else
@@ -1521,9 +1464,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 	      if (rsc==(SplineChar *) - 1)
 		 /* Error above */ ;
 	      else if (rsc != NULL && SCDependsOnSC(rsc, sc))
-		 ff_post_error(_("Self-referential glyph"),
-			       _
-			       ("Attempt to make a glyph that refers to itself"));
+		 ErrorMsg(2,"Self-referential glyph.\n");
 	      else if (rsc != NULL) {
 		 new=RefCharCreate();
 		 free(new->layers);
@@ -1556,9 +1497,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 	break;
      case ut_vwidth:
 	if (!sc->parent->hasvmetrics)
-	   ff_post_error(_("No Vertical Metrics"),
-			 _
-			 ("This font does not have vertical metrics enabled.\nUse Element->Font Info to enable them."));
+	   ErrorMsg(2,"No vertical metrics.\n");
 	else {
 	   SCPreserveVWidth(sc);
 	   sc->vwidth=paster->u.width;
@@ -1901,7 +1840,7 @@ static void SCPasteLookupsMid(SplineChar *sc,Undoes *paster,int pasteinto,
    (void) FindCharacter(sc->parent, paster->copied_from,
 			paster->u.state.refs, &fromsc);
    if (fromsc==NULL) {
-      ff_post_error(_("Missing glyph"), _("Could not find original glyph"));
+      ErrorMsg(2,"Could not find original glyph.\n");
       return;
    }
    SCPasteLookups(sc, fromsc, pasteinto, list, backpairlist, mc);
@@ -1977,7 +1916,7 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 	 }
       }
       if (cnt==0) {		/* If cnt==0 then bcnt must be too */
-	 ff_post_error(_("No Lookups"), _("No lookups to copy"));
+	 ErrorMsg(2,"No lookups to copy.\n");
 	 return (NULL);
       }
       if (!doit) {
@@ -1995,10 +1934,7 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 	 }
       }
    }
-   ret =
-      ff_choose_multiple(_("Lookups"), (const char **) choices, sel,
-			 bcnt==0 ? cnt : cnt + bcnt + 1, buttons,
-			 _("Choose which lookups to copy"));
+   ret=-1;
    list=NULL;
    if (ret >= 0) {
       for (i=cnt=0; i < ftot; ++i) {
@@ -2119,11 +2055,9 @@ static void _PasteToBC(BDFChar *bc,int pixelsize,int depth,
 	}
 	BCPasteInto(bc, &paster->u.bmpstate, 0, 0, false, false);
 	for (head=paster->u.bmpstate.refs; head != NULL; head=head->next) {
-	   if (BCRefersToBC(bc, head->bdfc)) {
-	      ff_post_error(_("Self-referential glyph"),
-			    _
-			    ("Attempt to make a glyph that refers to itself"));
-	   } else {
+	   if (BCRefersToBC(bc, head->bdfc))
+              ErrorMsg(2,"Self-referential glyph.\n");
+	   else {
 	      cur=calloc(1, sizeof(BDFRefChar));
 	      memcpy(cur, head, sizeof(BDFRefChar));
 	      cur->next=bc->refs;
@@ -2194,24 +2128,17 @@ void FVCopyAnchors(FontViewBase * fv) {
    copybuffer.u.multiple.mult=head;
    copybuffer.copied_from=fv->sf;
    if (!any)
-      LogError(_("No selection\n"));
+      ErrorMsg(2,"No selection\n");
 }
 
 void FVCopy(FontViewBase * fv, enum fvcopy_type fullcopy) {
    int i, any=false;
-
    BDFFont *bdf;
-
    Undoes *head=NULL, *last=NULL, *cur;
-
    Undoes *bhead=NULL, *blast=NULL, *bcur;
-
    Undoes *state;
-
    extern int onlycopydisplayed;
-
    int gid;
-
    SplineChar *sc;
 
    /* If fullcopy==ct_fullcopy copy the glyph as is. */
@@ -2264,7 +2191,7 @@ void FVCopy(FontViewBase * fv, enum fvcopy_type fullcopy) {
       }
 
    if (!any)
-      afprintf(stderr, "No selection\n");
+      ErrorMsg(2,"No selection\n");
 
    if (head==NULL)
       return;
@@ -2317,27 +2244,17 @@ static int copybufferHasLookups(Undoes *cb) {
    return (cb->undotype==ut_statelookup);
 }
 
-void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]) {
+void PasteIntoFV(FontViewBase *fv,int pasteinto,real trans[6]) {
    Undoes *cur=NULL, *bmp;
-
    BDFFont *bdf;
-
    int i, j, cnt=0, gid;
-
    int yestoall=0, first=true;
-
    uint8 *oldsel=fv->selected;
-
    extern int onlycopydisplayed;
-
    SplineFont *sf=fv->sf, *origsf=sf;
-
    MMSet *mm=sf->mm;
-
    struct sfmergecontext mc;
-
    OTLookup **list=NULL, **backpairlist=NULL;
-
    int refstate=0, already_complained=0;
 
    memset(&mc, 0, sizeof(mc));
@@ -2349,7 +2266,7 @@ void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]) {
       if (fv->selected[i])
 	 ++cnt;
    if (cnt==0) {
-      afprintf(stderr, "No Selection\n");
+      ErrorMsg(2,"No selection\n");
       return;
    }
 
@@ -2359,26 +2276,9 @@ void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]) {
       if (list==NULL)
 	 return;
    }
-#ifndef _NO_LIBXML
-   if (copybuffer.undotype==ut_none
-       && ClipboardHasType("application/x-font-svg"))
-      XClipFontToFFClip();
-#endif
 
-   if (copybuffer.undotype==ut_none) {
-      j=-1;
-      while (1) {
-	 for (i=0; i < fv->map->enccount; ++i)
-	    if (fv->selected[i])
-	       SCCheckXClipboard(SFMakeChar(sf, fv->map, i), ly_fore,
-				 !pasteinto);
-	 ++j;
-	 if (mm==NULL || mm->normal != origsf || j >= mm->instance_count)
-	    break;
-	 sf=mm->instances[j];
-      }
+   if (copybuffer.undotype==ut_none)
       return;
-   }
 
    /* If they select exactly one character but there are more things in the */
    /*  copy buffer, then temporarily change the selection so that everything */
@@ -2445,9 +2345,7 @@ void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]) {
 	      case ut_layers:
 	      case ut_anchors:
 		 if (!sf->hasvmetrics && cur->undotype==ut_vwidth) {
-		    ff_post_error(_("No Vertical Metrics"),
-				  _
-				  ("This font does not have vertical metrics enabled.\nUse Element->Font Info to enable them."));
+		    ErrorMsg(2,"No vertical metrics in font\n");
 		    goto err;
 		 }
 		 PasteToSC(SFMakeChar(sf, fv->map, i), fv->active_layer, cur,

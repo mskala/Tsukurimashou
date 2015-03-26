@@ -1,4 +1,4 @@
-/* $Id: savefont.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: savefont.c 3869 2015-03-26 13:32:01Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -342,11 +342,8 @@ static int WriteFontLog(char *filename,SplineFont *sf,int formattype,
 static int WriteBitmaps(char *filename,SplineFont *sf,int32 *sizes,
 			int res, int bf, EncMap * map) {
    char *buf=malloc(strlen(filename) + 30), *pt, *pt2;
-
    int i;
-
    BDFFont *bdf;
-
    char *ext;
 
    /* res=-1 => Guess depending on pixel size of font */
@@ -360,18 +357,14 @@ static int WriteBitmaps(char *filename,SplineFont *sf,int32 *sizes,
 	   (bdf->pixelsize != (sizes[i] & 0xffff)
 	    || BDFDepth(bdf) != (sizes[i] >> 16)); bdf=bdf->next);
       if (bdf==NULL) {
-	 ff_post_notice(_("Missing Bitmap"),
-			_
-			("Attempt to save a pixel size that has not been created (%d@%d)"),
-			sizes[i] & 0xffff, sizes[i] >> 16);
+	 ErrorMsg(2,"Attempt to save a pixel size that has not been created (%d@%d)\n",
+                sizes[i]&0xffff,sizes[i]>>16);
 	 free(buf);
 	 return (false);
       }
 
       if (bf==bf_ptype3 && bdf->clut != NULL) {
-	 ff_post_notice(_("Missing Bitmap"),
-			_
-			("Currently, FontAnvil only supports bitmap (not bytemap) type3 output"));
+	 ErrorMsg(2,"FontAnvil supports only bitmap (not bytemap) type3 output\n");
 	 return (false);
       }
 
@@ -399,7 +392,7 @@ static int WriteBitmaps(char *filename,SplineFont *sf,int32 *sizes,
       else if (bf==bf_fnt)
 	 FNTFontDump(buf, bdf, map, res);
       else
-	 IError("Unexpected font type");
+	 ErrorMsg(2,"Unexpected font type\n");
    }
    free(buf);
    return (true);
@@ -424,8 +417,7 @@ static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 
    file=afopen(wernerfilename, "r");
    if (file==NULL) {
-      ff_post_error(_("No Sub Font Definition file"),
-		    _("No Sub Font Definition file"));
+      ErrorMsg(2,"No subfont definition file.\n");
       return (NULL);
    }
 
@@ -449,9 +441,7 @@ static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
    subfilecnt=0;
    while (fgets(buffer, sizeof(buffer), file) != NULL) {
       if (strncmp(buffer, pfaeditflag, strlen(pfaeditflag))==0) {
-	 ff_post_error(_("Wrong type of SFD file"),
-		       _
-		       ("This looks like one of FontAnvil's SplineFont DataBase files.\nNot one of TeX's SubFont Definition files.\nAn unfortunate confusion of extensions."));
+	 ErrorMsg(2,"Apparently a FontAnvil SFD instead of a TeX SFD.\n");
 	 free(mapping);
 	 return (NULL);
       }
@@ -505,7 +495,7 @@ static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 	    ++end;
 	 if (*end==':') {
 	    if (r1 >= 256 || r1 < 0)
-	       LogError(_("Bad offset: %d for subfont %s\n"), r1,
+	       ErrorMsg(2,"Bad offset: %d for subfont %s\n", r1,
 			names[subfilecnt]);
 	    else
 	       thusfar=r1;
@@ -537,8 +527,7 @@ static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 		      (map->enc->is_unicodebmp || map->enc->is_unicodefull))
 		     /* Not a character anyway. just ignore it */ ;
 		  else {
-		     LogError(_
-			      ("Warning: Encoding %d (0x%x) is mapped to at least two locations (%s@0x%02x and %s@0x%02x)\n Only one will be used here.\n"),
+		     ErrorMsg(2,"Warning: Encoding %d (0x%x) is mapped to at least two locations (%s@0x%02x and %s@0x%02x)\n Only one will be used here.\n",
 			      i, i, names[subfilecnt], thusfar,
 			      names[(mapping[modi] >> 8)],
 			      mapping[modi] & 0xff);
@@ -551,7 +540,7 @@ static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 	 }
       }
       if (thusfar > 256)
-	 LogError(_("More than 256 entries in subfont %s\n"),
+	 ErrorMsg(2,"More than 256 entries in subfont %s\n",
 		  names[subfilecnt]);
       ++subfilecnt;
       if (bpt != buffer)
@@ -567,25 +556,16 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32 *sizes,int res,
 		       int32 * mapping, int subfont, char **names,
 		       EncMap * map, int layer) {
    SplineFont temp;
-
    SplineChar *chars[256], **newchars;
-
    SplineFont *_sf;
-
    int k, i, used, base, extras;
-
    char *filename;
-
    char *spt, *pt, buf[8];
-
    RefChar *ref;
-
    int err=0;
-
    enum fontformat subtype =
       strstr(newname, ".pfa") != NULL ? ff_pfa : ff_pfb;
    EncMap encmap;
-
    int32 _mapping[256], _backmap[256];
 
    memset(&encmap, 0, sizeof(encmap));
@@ -720,18 +700,18 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32 *sizes,int res,
       !WritePSFont(filename, &temp, subtype, old_ps_flags, &encmap, sf,
 		   layer);
    if (err)
-      ff_post_error(_("Save Failed"), _("Save Failed"));
+      ErrorMsg(2,"Save failed.\n");
    if (!err && (old_ps_flags & ps_flag_afm)) {
       if (!WriteAfmFile
 	  (filename, &temp, oldformatstate, &encmap, old_ps_flags, sf,
 	   layer)) {
-	 ff_post_error(_("Afm Save Failed"), _("Afm Save Failed"));
+         ErrorMsg(2,"AFM save failed.\n");
 	 err=true;
       }
    }
    if (!err && (old_ps_flags & ps_flag_tfm)) {
       if (!WriteTfmFile(filename, &temp, oldformatstate, &encmap, layer)) {
-	 ff_post_error(_("Tfm Save Failed"), _("Tfm Save Failed"));
+         ErrorMsg(2,"TFM save failed.\n");
 	 err=true;
       }
    }
@@ -780,9 +760,7 @@ static int WriteMultiplePSFont(SplineFont *sf,char *newname,int32 *sizes,
    if (pt==NULL ||
        (strcmp(pt, ".pfa") != 0 && strcmp(pt, ".pfb") != 0
 	&& strcmp(pt, ".mult") != 0)) {
-      ff_post_error(_("Bad Extension"),
-		    _
-		    ("You must specify a standard type1 extension (.pfb or .pfa)"));
+      ErrorMsg(2,"Bad extension:  must be .pfb or .pfa\n");
       return (0);
    }
    if (wernerfilename==NULL)
@@ -927,37 +905,37 @@ int _DoSave(SplineFont *sf, char *newname, int32 * sizes, int res,
 	      break;
 	 }
       if (oerr) {
-	 ff_post_error(_("Save Failed"), _("Save Failed"));
+	 ErrorMsg(2,"Save failed.\n");
 	 err=true;
       }
    }
    if (!err && (flags & ps_flag_tfm)) {
       if (!WriteTfmFile(newname, sf, oldformatstate, map, layer)) {
-	 ff_post_error(_("Tfm Save Failed"), _("Tfm Save Failed"));
+	 ErrorMsg(2,"TFM save failed.\n");
 	 err=true;
       }
    }
    if (!err && (flags & ttf_flag_ofm)) {
       if (!WriteOfmFile(newname, sf, oldformatstate, map, layer)) {
-	 ff_post_error(_("Ofm Save Failed"), _("Ofm Save Failed"));
+	 ErrorMsg(2,"OFM save failed.\n");
 	 err=true;
       }
    }
    if (!err && (flags & ps_flag_afm)) {
       if (!WriteAfmFile(newname, sf, oldformatstate, map, flags, NULL, layer)) {
-	 ff_post_error(_("Afm Save Failed"), _("Afm Save Failed"));
+	 ErrorMsg(2,"AFM save failed.\n");
 	 err=true;
       }
    }
    if (!err && (flags & ps_flag_outputfontlog)) {
       if (!WriteFontLog(newname, sf, oldformatstate, map, flags, NULL)) {
-	 ff_post_error(_("FontLog Save Failed"), _("FontLog Save Failed"));
+	 ErrorMsg(2,"FontLog save failed.\n");
 	 err=true;
       }
    }
    if (!err && (flags & ps_flag_pfm) && !iscid) {
       if (!WritePfmFile(newname, sf, oldformatstate==ff_ptype0, map, layer)) {
-	 ff_post_error(_("Pfm Save Failed"), _("Pfm Save Failed"));
+	 ErrorMsg(2,"PFM save failed.\n");
 	 err=true;
       }
    }

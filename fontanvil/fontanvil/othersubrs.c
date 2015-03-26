@@ -1,4 +1,4 @@
-/* $Id: othersubrs.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: othersubrs.c 3869 2015-03-26 13:32:01Z mskala $ */
 #include "fontanvil.h"		/* For LogError */
 
 /* These subroutines are code by Adobe for this exact use (from T1_Spec.pdf) */
@@ -532,8 +532,7 @@ int ReadOtherSubrsFile(char *filename) {
 	 else if (sub_num < 14)
 	    osubs[sub_num]=CopyLines(lines, l, false);
 	 else if (sub_num==14)
-	    LogError(_
-		     ("Too many subroutines. We can deal with at most 14 (0-13)\n"));
+	    ErrorMsg(2,"Too many subroutines. We can deal with at most 14 (0-13)\n");
 	 ++sub_num;
 	 l=0;
       } else {

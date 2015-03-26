@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: nonlineartrans.c 3867 2015-03-26 12:09:09Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -99,8 +99,7 @@ static int gettoken(struct context *c,real *val) {
 	 if (strcmp(buffer, builtins[i].name)==0)
 	    return (builtins[i].op);
       }
-      ff_post_error(_("Bad Token"), _("Bad token \"%.30s\"\nnear ...%40s"),
-		    buffer, c->cur);
+      ErrorMsg(2,"Bad token \"%.30s\"\nnear ...%40s\n",buffer,c->cur);
       c->had_error=true;
       while ((ch=*(c->cur++))==' ');
       if (ch=='(')
@@ -147,9 +146,7 @@ static int gettoken(struct context *c,real *val) {
 	      ++c->cur;
 	      return (op_eq);
 	   }
-	   ff_post_error(_("Bad Token"),
-			 _
-			 ("Bad token. Expected \"%.10s\" got \"%.10s\"\nnear ...%40s"),
+	   ErrorMsg(2,"Bad token.  Expected \"%.10s\" got \"%.10s\"\nnear ...%40s\n",
 			 "==", "=", c->cur);
 	   c->had_error=true;
 	   return (op_eq);
@@ -158,9 +155,7 @@ static int gettoken(struct context *c,real *val) {
 	      ++c->cur;
 	      return (op_or);
 	   }
-	   ff_post_error(_("Bad Token"),
-			 _
-			 ("Bad token. Expected \"%.10s\" got \"%.10s\"\nnear ...%40s"),
+	   ErrorMsg(2,"Bad token.  Expected \"%.10s\" got \"%.10s\"\nnear ...%40s\n",
 			 "||", "|", c->cur);
 	   c->had_error=true;
 	   return (op_or);
@@ -169,9 +164,7 @@ static int gettoken(struct context *c,real *val) {
 	      ++c->cur;
 	      return (op_and);
 	   }
-	   ff_post_error(_("Bad Token"),
-			 _
-			 ("Bad token. Expected \"%.10s\" got \"%.10s\"\nnear ...%40s"),
+	   ErrorMsg(2,"Bad token.  Expected \"%.10s\" got \"%.10s\"\nnear ...%40s\n",
 			 "&&", "&", c->cur);
 	   c->had_error=true;
 	   return (op_and);
@@ -183,9 +176,7 @@ static int gettoken(struct context *c,real *val) {
 	case ',':
 	   return (ch);
 	default:
-	   ff_post_error(_("Bad Token"),
-			 _("Bad token. got \"%1$c\"\nnear ...%2$40s"), ch,
-			 c->cur);
+	   ErrorMsg(2,"Bad token. got \"%1$c\"\nnear ...%2$40s\n",ch,c->cur);
 	   c->had_error=true;
 	   *val=0;
 	   return (op_value);
@@ -194,7 +185,7 @@ static int gettoken(struct context *c,real *val) {
 
 static void backup(struct context *c,enum operator  op,real val) {
    if (c->backed_token != op_base) {
-      IError("Attempt to back up twice.\nnear ...%s\n", c->cur);
+      ErrorMsg(2,"Attempt to back up twice.\nnear ...%s\n", c->cur);
       c->had_error=true;
    }
    c->backed_token=op;
@@ -223,9 +214,8 @@ static struct expr *gete0(struct context *c) {
 	ret=getexpr(c);
 	op=gettoken(c, &val);
 	if (op != ')') {
-	   ff_post_error(_("Bad Token"),
-			 _("Bad token. Expected \"%.10s\"\nnear ...%40s"),
-			 ")", c->cur);
+	   ErrorMsg(2,"Bad token.  Expected \"%.10s\"\nnear ...%40s\n",")",
+	     c->cur);
 	   c->had_error=true;
 	}
 	return (ret);
@@ -244,26 +234,23 @@ static struct expr *gete0(struct context *c) {
 	ret->operator=op;
 	op=gettoken(c, &val);
 	if (op != '(') {
-	   ff_post_error(_("Bad Token"),
-			 _("Bad token. Expected \"%.10s\"\nnear ...%40s"),
-			 "(", c->cur);
+	   ErrorMsg(2,"Bad token.  Expected \"%.10s\"\nnear ...%40s\n","(",
+	     c->cur);
 	   c->had_error=true;
 	}
 	ret->op1=getexpr(c);
 	op=gettoken(c, &val);
 	if (ret->operator== op_atan2) {
 	   if (op != ',') {
-	      ff_post_error(_("Bad Token"),
-			    _("Bad token. Expected \"%.10s\"\nnear ...%40s"),
-			    ",", c->cur);
+	      ErrorMsg(2,"Bad token.  Expected \"%.10s\"\nnear ...%40s\n",
+	        ",", c->cur);
 	   }
 	   ret->op2=getexpr(c);
 	   op=gettoken(c, &val);
 	}
 	if (op != ')') {
-	   ff_post_error(_("Bad Token"),
-			 _("Bad token. Expected \"%.10s\"\nnear ...%40s"),
-			 ")", c->cur);
+	   ErrorMsg(2,"Bad token.  Expected \"%.10s\"\nnear ...%40s\n",
+                    ")",c->cur);
 	   c->had_error=true;
 	}
 	return (ret);
@@ -277,8 +264,7 @@ static struct expr *gete0(struct context *c) {
 	ret->op1=gete0(c);
 	return (ret);
      default:
-	ff_post_error(_("Bad Token"), _("Unexpected token.\nbefore ...%40s"),
-		      c->cur);
+	ErrorMsg(2,"Unexpected token.\nbefore ...%40s\n",c->cur);
 	c->had_error=true;
 	ret=calloc(1, sizeof(struct expr));
 	ret->operator=op_value;
@@ -409,9 +395,8 @@ static struct expr *getexpr(struct context *c) {
       ret->op2=getexpr(c);
       op=gettoken(c, &val);
       if (op != ':') {
-	 ff_post_error(_("Bad Token"),
-		       _("Bad token. Expected \"%.10s\"\nnear ...%40s"), ":",
-		       c->cur);
+	 ErrorMsg(2,"Bad token.  Expected \"%.10s\"\nnear ...%40s\n",":",
+                  c->cur);
 	 c->had_error=true;
       }
       ret->op3=getexpr(c);
@@ -430,9 +415,7 @@ struct expr *nlt_parseexpr(struct context *c, char *str) {
    ret=getexpr(c);
    if (*c->cur != '\0') {
       c->had_error=true;
-      ff_post_error(_("Bad Token"),
-		    _
-		    ("Unexpected token after expression end.\nbefore ...%40s"),
+      ErrorMsg(2,"Unexpected token after expression end.\nbefore ...%40s\n",
 		    c->cur);
    }
    if (c->had_error) {
@@ -470,9 +453,7 @@ static real evaluate_expr(struct context *c,struct expr *e) {
 	switch (e->operator ) {
 	  case op_log:
 	     if (val1 <= 0) {
-		ff_post_error(_("Bad Value"),
-			      _
-			      ("Attempt to take logarithm of %1$g in %2$.30s"),
+		ErrorMsg(2,"Attempt to take logarithm of %1$g in %2$.30s\n",
 			      val1, c->sc->name);
 		c->had_error=true;
 		return (0);
@@ -480,9 +461,7 @@ static real evaluate_expr(struct context *c,struct expr *e) {
 	     return (log(val1));
 	  case op_sqrt:
 	     if (val1 < 0) {
-		ff_post_error(_("Bad Value"),
-			      _
-			      ("Attempt to take the square root of %1$g in %2$.30s"),
+		ErrorMsg(2,"Attempt to take the square root of %1$g in %2$.30s\n",
 			      val1, c->sc->name);
 		c->had_error=true;
 		return (0);
@@ -515,8 +494,7 @@ static real evaluate_expr(struct context *c,struct expr *e) {
      case op_mod:
 	val2=evaluate_expr(c, e->op2);
 	if (val2==0) {
-	   ff_post_error(_("Bad Value"), _("Attempt to divide by 0 in %.30s"),
-			 c->sc->name);
+	   ErrorMsg(2,"Attempt to divide by 0 in %.30s\n",c->sc->name);
 	   c->had_error=true;
 	   return (0);
 	}
@@ -556,7 +534,7 @@ static real evaluate_expr(struct context *c,struct expr *e) {
 	else
 	   return (evaluate_expr(c, e->op3));
      default:
-	IError("Bad operator %d in %s\n", e->operator, c->sc->name);
+	ErrorMsg(2,"Bad operator %d in %s\n", e->operator, c->sc->name);
 	c->had_error=true;
 	return (0);
    }

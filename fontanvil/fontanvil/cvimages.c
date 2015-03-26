@@ -1,4 +1,4 @@
-/* $Id: cvimages.c 3861 2015-03-25 14:52:50Z mskala $ */
+/* $Id: cvimages.c 3865 2015-03-26 10:37:06Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -127,9 +127,7 @@ void SCImportPSFile(SplineChar * sc, int layer, AFILE *ps, int doclear,
 	 SplinePointListInterpretPS(ps, flags, sc->parent->strokedfont,
 				    &width);
       if (spl==NULL) {
-	 ff_post_error(_("Too Complex or Bad"),
-		       _
-		       ("I'm sorry this file is too complex for me to understand (or is erroneous, or is empty)"));
+	 ErrorMsg(2,"File is too complex, or bad\n");
 	 return;
       }
       if (sc->layers[layer].order2)
@@ -179,9 +177,7 @@ void SCImportPDFFile(SplineChar * sc, int layer, AFILE *pdf, int doclear,
 	 SplinesFromEntities(EntityInterpretPDFPage(pdf, -1), &flags,
 			     sc->parent->strokedfont);
       if (spl==NULL) {
-	 ff_post_error(_("Too Complex or Bad"),
-		       _
-		       ("I'm sorry this file is too complex for me to understand (or is erroneous, or is empty)"));
+	 ErrorMsg(2,"File is too complex, or bad\n");
 	 return;
       }
       if (sc->layers[layer].order2)
@@ -236,9 +232,7 @@ void SCImportSVG(SplineChar * sc, int layer, char *path, char *memory,
 	 if (espl->first->next->order2 != sc->layers[layer].order2)
 	    spl=SplineSetsConvertOrder(spl, sc->layers[layer].order2);
       if (spl==NULL) {
-	 ff_post_error(_("Too Complex or Bad"),
-		       _
-		       ("I'm sorry this file is too complex for me to understand (or is erroneous)"));
+	 ErrorMsg(2,"File is too complex, or bad\n");
 	 return;
       }
       for (espl=spl; espl->next != NULL; espl=espl->next);
@@ -273,9 +267,7 @@ void SCImportGlif(SplineChar * sc, int layer, char *path, char *memory,
       if (espl->first->next->order2 != sc->layers[layer].order2)
 	 spl=SplineSetsConvertOrder(spl, sc->layers[layer].order2);
    if (spl==NULL) {
-      ff_post_error(_("Too Complex or Bad"),
-		    _
-		    ("I'm sorry this file is too complex for me to understand (or is erroneous)"));
+	 ErrorMsg(2,"File is too complex, or bad\n");
       return;
    }
    for (espl=spl; espl->next != NULL; espl=espl->next);
@@ -1003,8 +995,7 @@ int FVImportImages(FontViewBase * fv, char *path, int format, int toback,
 	 if (format==fv_image) {
 	    image=GImageRead(start);
 	    if (image==NULL) {
-	       ff_post_error(_("Bad image file"), _("Bad image file: %.100s"),
-			     start);
+	       ErrorMsg(2,"Bad image file %.100s\n",start);
 	       return (false);
 	    }
 	    ++tot;
@@ -1035,41 +1026,29 @@ int FVImportImages(FontViewBase * fv, char *path, int format, int toback,
 	 start=endpath + 1;
       }
    if (tot==0)
-      ff_post_error(_("Nothing Selected"),
-		    _
-		    ("You must select a glyph before you can import an image into it"));
+      ErrorMsg(2,"Nothing selected\n");
    else if (endpath != NULL)
-      ff_post_error(_("More Images Than Selected Glyphs"),
-		    _("More Images Than Selected Glyphs"));
+      ErrorMsg(2,"More images than selected glyphs\n");
    return (true);
 }
 
 int FVImportImageTemplate(FontViewBase * fv, char *path, int format,
 			  int toback, int flags) {
    GImage *image;
-
    struct _GImage *base;
-
    int tot;
-
    char *ext, *name, *dirname, *pt, *end;
-
    int i, val;
-
    int isu=false, ise=false, isc=false;
-
    DIR *dir;
-
    struct dirent *entry;
-
    SplineChar *sc;
-
    char start[1025];
 
    ext=strrchr(path, '.');
    name=strrchr(path, '/');
    if (ext==NULL) {
-      ff_post_error(_("Bad Template"), _("Bad template, no extension"));
+      ErrorMsg(2,"Bad template, no extension\n");
       return (false);
    }
    if (name==NULL)
@@ -1081,8 +1060,7 @@ int FVImportImageTemplate(FontViewBase * fv, char *path, int format,
    else if (name[1]=='e')
       ise=true;
    else {
-      ff_post_error(_("Bad Template"),
-		    _("Bad template, unrecognized format"));
+      ErrorMsg(2,"Bad template, unrecognized format\n");
       return (false);
    }
    if (name < path)
@@ -1093,7 +1071,7 @@ int FVImportImageTemplate(FontViewBase * fv, char *path, int format,
    }
 
    if ((dir=opendir(dirname))==NULL) {
-      ff_post_error(_("Nothing Loaded"), _("Nothing Loaded"));
+      ErrorMsg(2,"Nothing loaded\n");
       return (false);
    }
 
@@ -1120,8 +1098,7 @@ int FVImportImageTemplate(FontViewBase * fv, char *path, int format,
       if (isu) {
 	 i=SFFindSlot(fv->sf, fv->map, val, NULL);
 	 if (i==-1) {
-	    ff_post_error(_("Unicode value not in font"),
-			  _("Unicode value (%x) not in font, ignored"), val);
+            ErrorMsg(1,"Unicode value (%x) not in font, ignored\n",val);
 	    continue;
 	 }
 	 sc=SFMakeChar(fv->sf, fv->map, i);
@@ -1129,8 +1106,7 @@ int FVImportImageTemplate(FontViewBase * fv, char *path, int format,
 	 if (val < fv->map->enccount) {
 	    /* It's there */ ;
 	 } else {
-	    ff_post_error(_("Encoding value not in font"),
-			  _("Encoding value (%x) not in font, ignored"), val);
+            ErrorMsg(1,"Encoding value (%x) not in font, ignored\n",val);
 	    continue;
 	 }
 	 sc=SFMakeChar(fv->sf, fv->map, val);
@@ -1138,14 +1114,12 @@ int FVImportImageTemplate(FontViewBase * fv, char *path, int format,
       if (format==fv_imgtemplate) {
 	 image=GImageRead(start);
 	 if (image==NULL) {
-	    ff_post_error(_("Bad image file"), _("Bad image file: %.100s"),
-			  start);
+	    ErrorMsg(2,"Bad image file: %.100s\n",start);
 	    continue;
 	 }
 	 base=image->list_len==0 ? image->u.image : image->u.images[0];
 	 if (base->image_type != it_mono) {
-	    ff_post_error(_("Bad image file"),
-			  _("Bad image file, not a bitmap: %.100s"), start);
+            ErrorMsg(2,"Bad image file, not a bitmap: %.100s\n",start);
 	    GImageDestroy(image);
 	    continue;
 	 }
@@ -1175,6 +1149,6 @@ int FVImportImageTemplate(FontViewBase * fv, char *path, int format,
    }
    closedir(dir);
    if (tot==0)
-      ff_post_error(_("Nothing Loaded"), _("Nothing Loaded"));
+      ErrorMsg(2,"Nothing loaded\n");
    return (true);
 }
