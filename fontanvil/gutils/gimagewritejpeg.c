@@ -1,4 +1,4 @@
-/* $Id: gimagewritejpeg.c 3280 2014-09-08 17:24:23Z mskala $ */
+/* $Id: gimagewritejpeg.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -70,9 +70,9 @@ static void transferImageToBuffer(struct _GImage *base, JSAMPLE * buffer,
 				  int w, int ypos) {
    JSAMPLE *pt, *end;
 
-   uint32 *ppt;
+   uint32_t *ppt;
 
-   ppt = (uint32 *) (base->data + ypos * base->bytes_per_line);
+   ppt = (uint32_t *) (base->data + ypos * base->bytes_per_line);
    if (base->image_type == it_index && base->clut == NULL) {
       unsigned char *px = (unsigned char *) ppt;
 

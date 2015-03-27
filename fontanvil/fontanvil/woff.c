@@ -1,4 +1,4 @@
-/* $Id: woff.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: woff.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2010-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 }
 
 int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
-		   int32 * bsizes, enum bitmapformat bf, int flags,
+		   int32_t * bsizes, enum bitmapformat bf, int flags,
 		   EncMap * enc, int layer) {
    ErrorMsg(2,"WOFF not supported:  this requires a version of FontAnvil "
               "built with both libpng and zlib.\n");
@@ -52,7 +52,7 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 }
 
 int WriteWOFFFont(char *fontname, SplineFont *sf, enum fontformat format,
-		  int32 * bsizes, enum bitmapformat bf, int flags,
+		  int32_t * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * enc, int layer) {
    ErrorMsg(2,"WOFF not supported:  this requires a version of FontAnvil "
               "built with both libpng and zlib.\n");
@@ -391,7 +391,7 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 }
 
 int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
-		   int32 * bsizes, enum bitmapformat bf, int flags,
+		   int32_t * bsizes, enum bitmapformat bf, int flags,
 		   EncMap * enc, int layer) {
    int ret;
    AFILE *sfnt;
@@ -535,7 +535,7 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 }
 
 int WriteWOFFFont(char *fontname, SplineFont *sf, enum fontformat format,
-		  int32 * bsizes, enum bitmapformat bf, int flags,
+		  int32_t * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * enc, int layer) {
    AFILE *woff;
 

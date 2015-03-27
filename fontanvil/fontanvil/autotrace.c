@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: autotrace.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -260,25 +260,15 @@ static char *add_arg(char *buffer,char *s) {
 
 void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    ImageList *images;
-
    SplineSet *new, *last;
-
    struct _GImage *ib;
-
    Color bgcol;
-
    int ispotrace;
-
    real transform[6];
-
    char tempname_in[1025];
-
    char tempname_out[1025];
-
    char *prog, *command, *cmd;
-
    AFILE *ps;
-
    int i, changed=false;
 
    if (sc->layers[ly_back].images==NULL)
@@ -371,6 +361,8 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 }
 #else
 
+/* FIXME this uses native FILE *s because of weirdness with autotrace */
+
 void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    ImageList *images;
    char *prog, *pt;
@@ -382,7 +374,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    char tempname[1025];
    char *arglist[30];
    int ac, i;
-   AFILE *ps;
+   FILE *ps;
    int pid, status, fd;
    int ispotrace;
 
@@ -449,7 +441,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
       /* We can't use AutoTrace's own "background-color" ignorer because */
       /*  it ignores counters as well as surrounds. So "O" would be a dark */
       /*  oval, etc. */
-      ps=atmpfile();
+      ps=tmpfile();
       if ((pid=fork())==0) {
 	 /* Child */
 	 close(1);
@@ -462,10 +454,20 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
       } else if (pid != -1) {
 	 waitpid(pid, &status, 0);
 	 if (WIFEXITED(status)) {
-	    arewind(ps);
+	    AFILE *new_tmp_file;
+	    int c;
+
+	    rewind(ps);
+	    new_tmp_file=atmpfile();
+	    
+	    while ((c=agetc(new_tmp_file))>=0) aputc(c,new_tmp_file);
+	    arewind(new_tmp_file);
+
 	    new =
-	       localSplinesFromEntities(EntityInterpretPS(ps, NULL), bgcol,
+	       localSplinesFromEntities(EntityInterpretPS(new_tmp_file, NULL), bgcol,
 					ispotrace);
+            afclose(new_tmp_file);
+
 	    transform[0]=images->xscale;
 	    transform[3]=images->yscale;
 	    transform[1]=transform[2]=0;
@@ -489,7 +491,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 	    }
 	 }
       }
-      afclose(ps);
+      fclose(ps);
       close(fd);
       unlink(tempname);		/* Might not be needed, but probably is */
    }

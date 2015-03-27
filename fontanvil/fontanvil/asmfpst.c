@@ -1,4 +1,4 @@
-/* $Id: asmfpst.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: asmfpst.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2003-2007 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -105,7 +105,7 @@ static FPST *FPSTGlyphToClass(FPST *fpst) {
 	 (&new->rules[i].u.class.ncnt)[j]=cnt;
 	 if (cnt != 0) {
 	    (&new->rules[i].u.class.nclasses)[j] =
-	       malloc(cnt * sizeof(uint16));
+	       malloc(cnt * sizeof(uint16_t));
 	    cnt=0;
 	    for (pt=(&fpst->rules[i].u.glyph.names)[j]; *pt; pt=end) {
 	       while (*pt==' ')
@@ -276,7 +276,7 @@ static struct contexttree *_FPST2Tree(FPST *fpst,struct contexttree *parent,
 
    int i, rcnt, ccnt, k, thisclass;
 
-   uint16 *classes;
+   uint16_t *classes;
 
    if (fpst != NULL) {
       me->depth=-1;
@@ -297,7 +297,7 @@ static struct contexttree *_FPST2Tree(FPST *fpst,struct contexttree *parent,
 	    me->rules[rcnt++].rule=parent->rules[i].rule;
       me->parent=parent;
    }
-   classes=malloc(me->rule_cnt * sizeof(uint16));
+   classes=malloc(me->rule_cnt * sizeof(uint16_t));
    for (i=ccnt=0; i < me->rule_cnt; ++i) {
       thisclass=me->rules[i].thisclassnum =
 	 me->rules[i].rule->u.class.allclasses[me->depth + 1];
@@ -332,7 +332,7 @@ static void FPSTBuildAllClasses(FPST *fpst) {
    for (i=0; i < fpst->rule_cnt; ++i) {
       fpst->rules[i].u.class.allclasses =
 	 malloc((fpst->rules[i].u.class.bcnt + fpst->rules[i].u.class.ncnt +
-		 fpst->rules[i].u.class.fcnt + 1) * sizeof(uint16));
+		 fpst->rules[i].u.class.fcnt + 1) * sizeof(uint16_t));
       off=fpst->rules[i].u.class.bcnt;
       for (j=0; j < off; ++j)
 	 fpst->rules[i].u.class.allclasses[j] =
@@ -541,7 +541,7 @@ static char *BuildMarkClass(SplineFont *sf) {
    return (ret);
 }
 
-static char *BuildClassNames(SplineChar ** glyphs,uint16 *map,int classnum) {
+static char *BuildClassNames(SplineChar ** glyphs,uint16_t *map,int classnum) {
    int i, len;
 
    char *ret, *pt;
@@ -565,7 +565,7 @@ static char *BuildClassNames(SplineChar ** glyphs,uint16 *map,int classnum) {
    return (ret);
 }
 
-static int FindFormLookupsForScript(SplineFont *sf,uint32 script,
+static int FindFormLookupsForScript(SplineFont *sf,uint32_t script,
 				    OTLookup * lookups[4]) {
    OTLookup *otl;
 
@@ -606,7 +606,7 @@ static int FindFormLookupsForScript(SplineFont *sf,uint32 script,
    return (false);
 }
 
-ASM *ASMFromOpenTypeForms(SplineFont *sf, uint32 script) {
+ASM *ASMFromOpenTypeForms(SplineFont *sf, uint32_t script) {
    int i, which, cg, mg;
 
    SplineChar *sc, *rsc, **classglyphs, **markglyphs;
@@ -731,14 +731,14 @@ ASM *ASMFromOpenTypeForms(SplineFont *sf, uint32 script) {
 	/* ********************** From Coverage FPST ********************** */
 static SplineChar **morx_cg_FigureClasses(SplineChar *** tables,
 					  int match_len, int ***classes,
-					  int *cc, uint16 ** mp, int *gc,
+					  int *cc, uint16_t ** mp, int *gc,
 					  FPST * fpst, SplineFont *sf,
 					  int ordered) {
    int i, j, k, mask, max, class_cnt, gcnt, gtot;
 
    SplineChar ***temp, *sc, **glyphs, **gall;
 
-   uint16 *map;
+   uint16_t *map;
 
    int *nc;
 
@@ -816,7 +816,7 @@ static SplineChar **morx_cg_FigureClasses(SplineChar *** tables,
    }
    *cc=class_cnt + 4;
    glyphs=malloc((gcnt + 1) * sizeof(SplineChar *));
-   map=malloc((gcnt + 1) * sizeof(uint16));
+   map=malloc((gcnt + 1) * sizeof(uint16_t));
    gcnt=0;
    for (i=0; i < gtot; ++i)
       if (gall[i] != NULL) {
@@ -866,7 +866,7 @@ static ASM *ASMFromCoverageFPST(SplineFont *sf,FPST *fpst,int ordered) {
 
    OTLookup *substag=r->lookups[0].lookup, *finaltag=NULL;
 
-   uint16 *map;
+   uint16_t *map;
 
    ASM *sm;
 

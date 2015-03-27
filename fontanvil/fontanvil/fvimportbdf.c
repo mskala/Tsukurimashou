@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: fvimportbdf.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -225,7 +225,7 @@ static int figureProperEncoding(SplineFont *sf,EncMap *map,BDFFont *b,
       if (i >= map->enccount || map->map[i]==-1)
 	 MakeEncChar(sf, map, i, name);
    } else {
-      int32 uni=UniFromEnc(enc, encname);
+      int32_t uni=UniFromEnc(enc, encname);
 
       if (uni==-1)
 	 uni=UniFromName(name, sf->uni_interp, map->enc);
@@ -309,12 +309,12 @@ static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
 
    int i, ch;
 
-   uint8 *pt, *end, *eol;
+   uint8_t *pt, *end, *eol;
 
    gettoken(bdf, name, sizeof(tok));
    while (gettoken(bdf, tok, sizeof(tok)) != -1) {
       if (strcmp(tok, "ENCODING")==0) {
-	 fscanf(bdf, "%d", &enc);
+	 afscanf(bdf, "%d", &enc);
 	 /* Adobe says that enc is value for Adobe Standard */
 	 /* But people don't use it that way. Adobe also says that if */
 	 /* there is no mapping in adobe standard the -1 may be followed */
@@ -322,22 +322,22 @@ static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
 	 if (enc==-1) {
 	    ch=agetc(bdf);
 	    if (ch==' ' || ch=='\t')
-	       fscanf(bdf, "%d", &enc);
+	       afscanf(bdf, "%d", &enc);
 	    else
 	       aungetc(ch, bdf);
 	 }
 	 if (enc < -1)
 	    enc=-1;
       } else if (strcmp(tok, "DWIDTH")==0)
-	 fscanf(bdf, "%d %*d", &width);
+	 afscanf(bdf, "%d %*d", &width);
       else if (strcmp(tok, "DWIDTH1")==0)
-	 fscanf(bdf, "%d %*d", &vwidth);
+	 afscanf(bdf, "%d %*d", &vwidth);
       else if (strcmp(tok, "SWIDTH")==0)
-	 fscanf(bdf, "%d %*d", &swidth);
+	 afscanf(bdf, "%d %*d", &swidth);
       else if (strcmp(tok, "SWIDTH1")==0)
-	 fscanf(bdf, "%d %*d", &swidth1);
+	 afscanf(bdf, "%d %*d", &swidth1);
       else if (strcmp(tok, "BBX")==0) {
-	 fscanf(bdf, "%d %d %d %d", &hsz, &vsz, &xmin, &ymin);
+	 afscanf(bdf, "%d %d %d %d", &hsz, &vsz, &xmin, &ymin);
 	 xmax=hsz + xmin - 1;
 	 ymax=vsz + ymin - 1;
       } else if (strcmp(tok, "BITMAP")==0)
@@ -570,14 +570,14 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
    while (gettoken(bdf, tok, sizeof(tok)) != -1) {
       if (strcmp(tok, "CHARS")==0) {
 	 cnt=0;
-	 fscanf(bdf, "%d", &cnt);
+	 afscanf(bdf, "%d", &cnt);
 	 break;
       }
       if (strcmp(tok, "STARTPROPERTIES")==0) {
 	 int cnt;
 
 	 inprops=true;
-	 fscanf(bdf, "%d", &cnt);
+	 afscanf(bdf, "%d", &cnt);
 	 if (pcnt + cnt >= pmax)
 	    dummy->props =
 	       realloc(dummy->props,
@@ -588,7 +588,7 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 	 inprops=false;
 	 continue;
       }
-      fgets(buffer, sizeof(buffer), bdf);
+      afgets(buffer, sizeof(buffer), bdf);
       buf=buffer;
       {
 	 int val;
@@ -849,9 +849,9 @@ static BDFChar *SFGrowTo(SplineFont *sf,BDFFont *b,int cc,EncMap *map) {
 }
 
 static void gf_skip_noops(AFILE *gf,char *char_name) {
-   uint8 cmd;
+   uint8_t cmd;
 
-   int32 val;
+   int32_t val;
 
    int i;
 
@@ -933,7 +933,7 @@ static int gf_postamble(AFILE *gf,int *_as,int *_ds,Encoding ** _enc,
 
    char *pt, *fpt;
 
-   int32 pos, off;
+   int32_t pos, off;
 
    afseek(gf, -4, SEEK_END);
    pos=aftell(gf);
@@ -985,7 +985,7 @@ static int gf_postamble(AFILE *gf,int *_as,int *_ds,Encoding ** _enc,
 }
 
 static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
-   int32 pos, to;
+   int32_t pos, to;
 
    int ch, enc, dx, dy, aw;
 
@@ -1122,9 +1122,9 @@ enum pk_cmd { pk_rrr1 =
    pk_pre, pk_version_number=89
 };
 static void pk_skip_noops(AFILE *pk) {
-   uint8 cmd;
+   uint8_t cmd;
 
-   int32 val;
+   int32_t val;
 
    int i;
 
@@ -1277,7 +1277,7 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
 
    struct pkstate st;
 
-   int32 char_end;
+   int32_t char_end;
 
    memset(&st, '\0', sizeof(st));
 
@@ -1789,7 +1789,7 @@ static struct pcfmetrics *pcfGetMetricsTable(AFILE *file,struct toc *toc,
    return (metrics);
 }
 
-static uint8 bitinvert[]={
+static uint8_t bitinvert[]={
    0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,
    0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,
    0x08, 0x88, 0x48, 0xc8, 0x28, 0xa8, 0x68, 0xe8,
@@ -1824,14 +1824,14 @@ static uint8 bitinvert[]={
    0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff
 };
 
-static void BitOrderInvert(uint8 *bitmap,int sizebitmaps) {
+static void BitOrderInvert(uint8_t *bitmap,int sizebitmaps) {
    int i;
 
    for (i=0; i < sizebitmaps; ++i)
       bitmap[i]=bitinvert[bitmap[i]];
 }
 
-static void TwoByteSwap(uint8 *bitmap,int sizebitmaps) {
+static void TwoByteSwap(uint8_t *bitmap,int sizebitmaps) {
    int i, t;
 
    for (i=0; i < sizebitmaps - 1; i += 2) {
@@ -1841,7 +1841,7 @@ static void TwoByteSwap(uint8 *bitmap,int sizebitmaps) {
    }
 }
 
-static void FourByteSwap(uint8 *bitmap,int sizebitmaps) {
+static void FourByteSwap(uint8_t *bitmap,int sizebitmaps) {
    int i, t;
 
    for (i=0; i < sizebitmaps - 1; i += 2) {
@@ -1859,7 +1859,7 @@ static int PcfReadBitmaps(AFILE *file,struct toc *toc,BDFFont *b) {
 
    int *offsets;
 
-   uint8 *bitmap;
+   uint8_t *bitmap;
 
    int bitmapSizes[GLYPHPADOPTIONS];
 

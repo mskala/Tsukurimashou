@@ -1,4 +1,4 @@
-/* $Id: ikarus.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: ikarus.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -406,7 +406,7 @@ static void IkarusNameFromURWNumber(SplineChar *sc,int number) {
 }
 
 static void IkarusAddContour(SplineChar *sc,int npts,BasePoint *bps,
-			     uint8 * ptype, int nesting) {
+			     uint8_t * ptype, int nesting) {
    SplinePointList *spl;
 
    SplinePoint *last, *next;
@@ -444,16 +444,16 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
 
    DBounds bb;
 
-   int32 base;
+   int32_t base;
 
    struct contour {
-      int32 offset;
+      int32_t offset;
       int dir, nest, col, npts;
    } *contours;
 
    BasePoint *bps;
 
-   uint8 *ptype;
+   uint8_t *ptype;
 
    int x, y;
 
@@ -504,7 +504,7 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
 	 ptmax=contours[i].npts;
    }
    bps=malloc(ptmax * sizeof(BasePoint));
-   ptype=malloc(ptmax * sizeof(uint8));
+   ptype=malloc(ptmax * sizeof(uint8_t));
 
    base=aftell(file);
    /* 2 words here giving length (in records/words) of image data */
@@ -617,7 +617,7 @@ SplineFont *SFReadIkarus(char *fontname) {
 
    char fnam[13], fullname[81];
 
-   int32 *offsets, *numbers;
+   int32_t *offsets, *numbers;
 
    if (file==NULL)
       return (NULL);
@@ -696,8 +696,8 @@ SplineFont *SFReadIkarus(char *fontname) {
    getushort(file);
    /* last word of last record */ getushort(file);
 
-   offsets=malloc(numchars * sizeof(int32));
-   numbers=malloc(numchars * sizeof(int32));
+   offsets=malloc(numchars * sizeof(int32_t));
+   numbers=malloc(numchars * sizeof(int32_t));
    maxnum=0;
    for (i=0; i < numchars; ++i) {
       numbers[i]=getushort(file);

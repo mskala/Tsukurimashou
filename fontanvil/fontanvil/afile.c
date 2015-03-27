@@ -1,4 +1,4 @@
-/* $Id: afile.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: afile.c 3877 2015-03-27 12:41:48Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -45,6 +45,14 @@ int aferror(AFILE *f) {
   return ferror((FILE *)f);
 }
 
+int aisatty(AFILE *f) {
+  return isatty(fileno((FILE *)f));
+}
+
+int afstat(AFILE *f,struct stat *s) {
+  return fstat(fileno((FILE *)f),s);
+}
+
 void arewind(AFILE *f) {
   rewind((FILE *)f);
 }
@@ -63,6 +71,10 @@ int agetc(AFILE *f) {
 
 int aungetc(int c,AFILE *f) {
   return ungetc(c,(FILE *)f);
+}
+
+int afgets(char *s,int z,AFILE *f) {
+  return fgets(s,z,(FILE *)f);
 }
 
 int aputc(int c,AFILE *f) {
@@ -93,6 +105,16 @@ int afprintf(AFILE *f,const char *r,...) {
 
 int avfprintf(AFILE *f,const char *r,va_list args) {
   return vfprintf((FILE *)f,r,args);
+}
+
+int afscanf(AFILE *f,const char *r,...) {
+  va_list args;
+  int rval;
+  
+  va_start(args,r);
+  rval=vfscanf((FILE *)f,r,args);
+  va_end(args);
+  return rval;
 }
 
 static int message_level=1;

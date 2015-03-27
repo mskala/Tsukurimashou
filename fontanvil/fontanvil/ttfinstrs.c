@@ -1,4 +1,4 @@
-/* $Id: ttfinstrs.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: ttfinstrs.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2001-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -290,7 +290,7 @@ const char *ff_ttf_instrnames[]={
    "MIRP1f"
 };
 
-uint8 *_IVParse(SplineFont *sf, char *text, int *len,
+uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 		void (*IVError) (void *, char *, int), void *iv) {
    short numberstack[256];
 
@@ -304,7 +304,7 @@ uint8 *_IVParse(SplineFont *sf, char *text, int *len,
 
    int icnt=0, imax=strlen(text) / 2, val, temp;
 
-   uint8 *instrs=malloc(imax);
+   uint8_t *instrs=malloc(imax);
 
    for (pt=text; *pt; ++pt) {
       npos=0;
@@ -507,9 +507,9 @@ uint8 *_IVParse(SplineFont *sf, char *text, int *len,
 int instr_typify(struct instrdata *id) {
    int i, len=id->instr_cnt, cnt, j, lh;
 
-   uint8 *instrs=id->instrs;
+   uint8_t *instrs=id->instrs;
 
-   uint8 *bts;
+   uint8_t *bts;
 
    if (id->bts==NULL)
       id->bts=malloc(len + 1);
@@ -585,7 +585,7 @@ char *__IVUnParseInstrs(InstrBase * iv) {
    return (ubuf);
 }
 
-char *_IVUnParseInstrs(uint8 * instrs, int instr_cnt) {
+char *_IVUnParseInstrs(uint8_t * instrs, int instr_cnt) {
    struct instrbase iv;
 
    struct instrdata id;

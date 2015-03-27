@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: splineutil.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1570,6 +1570,12 @@ static void BpTransform(BasePoint *to,BasePoint *from,real transform[6]) {
 
 void ApTransform(AnchorPoint * ap, real transform[6]) {
    BpTransform(&ap->me, &ap->me, transform);
+}
+
+static void SPTouchControl(SplinePoint *sp,BasePoint *which, int order2) {
+    BasePoint to = *which;
+
+    SPAdjustControl( sp, which, &to, order2 );
 }
 
 static void TransformPointExtended(SplinePoint *sp,real transform[6],
@@ -5786,18 +5792,18 @@ static struct fpst_rule *RulesCopy(struct fpst_rule *from,int cnt,
 	   t->u.class.ncnt=f->u.class.ncnt;
 	   t->u.class.bcnt=f->u.class.bcnt;
 	   t->u.class.fcnt=f->u.class.fcnt;
-	   t->u.class.nclasses=malloc(f->u.class.ncnt * sizeof(uint16));
+	   t->u.class.nclasses=malloc(f->u.class.ncnt * sizeof(uint16_t));
 	   memcpy(t->u.class.nclasses, f->u.class.nclasses,
-		  f->u.class.ncnt * sizeof(uint16));
+		  f->u.class.ncnt * sizeof(uint16_t));
 	   if (t->u.class.bcnt != 0) {
-	      t->u.class.bclasses=malloc(f->u.class.bcnt * sizeof(uint16));
+	      t->u.class.bclasses=malloc(f->u.class.bcnt * sizeof(uint16_t));
 	      memcpy(t->u.class.bclasses, f->u.class.bclasses,
-		     f->u.class.bcnt * sizeof(uint16));
+		     f->u.class.bcnt * sizeof(uint16_t));
 	   }
 	   if (t->u.class.fcnt != 0) {
-	      t->u.class.fclasses=malloc(f->u.class.fcnt * sizeof(uint16));
+	      t->u.class.fclasses=malloc(f->u.class.fcnt * sizeof(uint16_t));
 	      memcpy(t->u.class.fclasses, f->u.class.fclasses,
-		     f->u.class.fcnt * sizeof(uint16));
+		     f->u.class.fcnt * sizeof(uint16_t));
 	   }
 	   break;
 	case pst_reversecoverage:
@@ -6232,9 +6238,9 @@ KernClass *KernClassCopy(KernClass * kc) {
    *new=*kc;
    new->firsts=malloc(new->first_cnt * sizeof(char *));
    new->seconds=malloc(new->second_cnt * sizeof(char *));
-   new->offsets=malloc(new->first_cnt * new->second_cnt * sizeof(int16));
+   new->offsets=malloc(new->first_cnt * new->second_cnt * sizeof(int16_t));
    memcpy(new->offsets, kc->offsets,
-	  new->first_cnt * new->second_cnt * sizeof(int16));
+	  new->first_cnt * new->second_cnt * sizeof(int16_t));
    for (i=0; i < new->first_cnt; ++i)
       new->firsts[i]=copy(kc->firsts[i]);
    for (i=0; i < new->second_cnt; ++i)
@@ -6245,7 +6251,7 @@ KernClass *KernClassCopy(KernClass * kc) {
 	  new->first_cnt * new->second_cnt * sizeof(DeviceTable));
    for (i=new->first_cnt * new->second_cnt - 1; i >= 0; --i) {
       if (new->adjusts[i].corrections != NULL) {
-	 int8 *old=new->adjusts[i].corrections;
+	 int8_t *old=new->adjusts[i].corrections;
 
 	 int len =
 	    new->adjusts[i].last_pixel_size -

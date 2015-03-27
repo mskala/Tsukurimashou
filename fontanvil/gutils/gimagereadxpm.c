@@ -1,4 +1,4 @@
-/* $Id: gimagereadxpm.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagereadxpm.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013apr11, additional fixes and error checks done, Jose Da Silva */
 /*
@@ -381,7 +381,7 @@ GImage *GImageReadXpm(char *filename) {
    for (y = 0; y < height; ++y) {
       if (!getdata(line, lsiz, fp))
 	 goto errorGImageReadXpm;
-      pt = (uint8 *) (base->data + y * base->bytes_per_line);
+      pt = (uint8_t *) (base->data + y * base->bytes_per_line);
       ipt = NULL;
       end = pt + width;
       if (cols > 256)

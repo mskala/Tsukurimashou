@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: autowidth.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1392,7 +1392,7 @@ void FVVKernFromHKern(FontViewBase * fv) {
 	 for (i=0; i < kc->second_cnt; ++i)
 	    if (map2[i] != 0)
 	       vkc->seconds[map2[i]]=SCListToName(seconds[i]);
-	 vkc->offsets=calloc((any1 + 1) * (any2 + 1), sizeof(int16));
+	 vkc->offsets=calloc((any1 + 1) * (any2 + 1), sizeof(int16_t));
 	 vkc->adjusts=calloc((any1 + 1) * (any2 + 1), sizeof(DeviceTable));
 	 for (i=0; i < kc->first_cnt; ++i)
 	    if (map1[i] != 0) {

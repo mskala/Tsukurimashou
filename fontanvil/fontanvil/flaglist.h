@@ -1,4 +1,4 @@
-/* $Id: flaglist.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: flaglist.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* flaglist.h */
 #ifndef _FLAGLIST_H_
 #   define _FLAGLIST_H_
@@ -11,7 +11,7 @@ struct flaglist {
 };
 
 #   define FLAGLIST_EMPTY { NULL, 0 }
-#   define FLAG_UNKNOWN ((int32)0x80000000)
+#   define FLAG_UNKNOWN ((int32_t)0x80000000)
 
 extern int FindFlagByName(struct flaglist *flaglist, const char *name);
 

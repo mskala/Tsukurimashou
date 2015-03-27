@@ -1,4 +1,4 @@
-/* $Id: makeutype.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: makeutype.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -819,7 +819,7 @@ static void dump() {
    fprintf(header, "extern const unsigned short ____totitle[];\n");
    fprintf(header, "extern const unsigned short ____tomirror[];\n");
    fprintf(header, "extern const unsigned char  ____digitval[];\n");
-   fprintf(header, "extern const uint32         ____utype[];\n\n");
+   fprintf(header, "extern const uint32_t         ____utype[];\n\n");
 
    fprintf(header,
 	   "/* utype2[] binary flags used for position/layout of each unicode.org character */\n");
@@ -842,7 +842,7 @@ static void dump() {
 	   | _Right | _Left | _Overstrike | _Below | _Above | _RightEdge |
 	   _LeftEdge | _Touching);
    fprintf(header,
-	   "#define ____NOPOSDATAGIVEN\t(uint32)(-1)\t/* -1 == no position data given */\n\n");
+	   "#define ____NOPOSDATAGIVEN\t(uint32_t)(-1)\t/* -1 == no position data given */\n\n");
 
    fprintf(header,
 	   "#define combiningclass(ch)\t(____utype2[(ch)+1]&____COMBININGCLASS)\n");
@@ -850,13 +850,13 @@ static void dump() {
 	   "#define combiningposmask(ch)\t(____utype2[(ch)+1]&____COMBININGPOSMASK)\n\n");
 
    fprintf(header,
-	   "extern const uint32\t____utype2[];\t\t\t/* hold position boolean flags for each Unicode.org defined character */\n\n");
+	   "extern const uint32_t\t____utype2[];\t\t\t/* hold position boolean flags for each Unicode.org defined character */\n\n");
 
    fprintf(header,
 	   "#define isunicodepointassigned(ch) (____codepointassigned[(ch)/32]&(1<<((ch)%%32)))\n\n");
 
    fprintf(header,
-	   "extern const uint32\t____codepointassigned[];\t/* 1bit_boolean_flag x 32 = exists in Unicode.org character chart list. */\n\n");
+	   "extern const uint32_t\t____codepointassigned[];\t/* 1bit_boolean_flag x 32 = exists in Unicode.org character chart list. */\n\n");
 
    fprintf(header, "#define tolower(ch) (____tolower[(ch)+1])\n");
    fprintf(header, "#define toupper(ch) (____toupper[(ch)+1])\n");
@@ -971,7 +971,7 @@ static void dump() {
       else
 	 fprintf(data, "\n");
    }
-   fprintf(data, "const uint32 ____utype[] = { 0,\n");
+   fprintf(data, "const uint32_t ____utype[] = { 0,\n");
    for (i = 0; i < MAXC; i += j) {
       fprintf(data, " ");
       for (j = 0; j < 8 && i + j < MAXC - 1; ++j)
@@ -984,7 +984,7 @@ static void dump() {
       else
 	 fprintf(data, "\n");
    }
-   fprintf(data, "const uint32 ____utype2[] = { 0,\n");
+   fprintf(data, "const uint32_t ____utype2[] = { 0,\n");
    fprintf(data,
 	   "  /* binary flags used for physical layout of each unicode.org character */\n");
    for (i = 0; i < MAXC; i += j) {
@@ -1000,7 +1000,7 @@ static void dump() {
 	 fprintf(data, "\n");
    }
 
-   fprintf(data, "const uint32 ____codepointassigned[] = {\n");
+   fprintf(data, "const uint32_t ____codepointassigned[] = {\n");
    fprintf(data,
 	   "  /* 32 unicode.org characters represented for each data value in array */\n");
    for (i = 0; i < 0x120000 / 32; i += j) {

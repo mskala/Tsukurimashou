@@ -1,4 +1,4 @@
-/* $Id: ucharmap.c 3423 2014-10-26 18:51:07Z mskala $ */
+/* $Id: ucharmap.c 3875 2015-03-27 11:44:59Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -460,7 +460,7 @@ static int byteswapped = false;
 
 static int BytesNormal(iconv_t latin1_2_unicode) {
    union {
-      int32 s;
+      int32_t s;
       char c[4];
    } u[8];
 
@@ -554,28 +554,6 @@ static int my_iconv_setup(void) {
    return (true);
 }
 #endif
-
-unichar_t *def2u_strncpy(unichar_t * uto, const char *from, int n) {
-#if HAVE_ICONV_H
-   if (my_iconv_setup()) {
-      size_t in_left = n, out_left = sizeof(unichar_t) * n;
-
-      char *cto = (char *) uto;
-
-      iconv(to_unicode,(char **)&from,&in_left,&cto,&out_left);
-      if (cto < ((char *) uto) + 2 * n)
-	 *cto++ = '\0';
-      if (cto < ((char *) uto) + 2 * n)
-	 *cto++ = '\0';
-      if (cto < ((char *) uto) + 4 * n)
-	 *cto++ = '\0';
-      if (cto < ((char *) uto) + 4 * n)
-	 *cto++ = '\0';
-      return (uto);
-   }
-#endif
-   return (encoding2u_strncpy(uto, from, n, local_encoding));
-}
 
 char *u2def_copy(const unichar_t * ufrom) {
    int len;

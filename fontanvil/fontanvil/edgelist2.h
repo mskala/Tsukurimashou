@@ -1,4 +1,4 @@
-/* $Id: edgelist2.h 3169 2014-07-12 03:10:15Z mskala $ */
+/* $Id: edgelist2.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2004-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -64,8 +64,8 @@ typedef struct monotonic {
     extended otstart, otend;
 #endif
     struct monotonic *next, *prev;	/* along original contour */
-    uint8 xup;				/* increasing t => increasing x */
-    uint8 yup;
+    uint8_t xup;				/* increasing t => increasing x */
+    uint8_t yup;
     unsigned int isneeded : 1;
     unsigned int isunneeded : 1;
     unsigned int mutual_collapse : 1;

@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 3863 2015-03-25 19:38:46Z mskala $ */
+/* $Id: glyphcomp.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -564,7 +564,7 @@ static int SSRefCompare(const SplineSet *ss1,const SplineSet *ss2,
 
 enum Compare_Ret BitmapCompare(BDFChar * bc1, BDFChar * bc2, int err,
 			       int bb_err) {
-   uint8 *pt1, *pt2;
+   uint8_t *pt1, *pt2;
 
    int i, j, d, xlen;
 
@@ -747,7 +747,7 @@ static int CompareBitmap(Context *c,SplineChar *sc,const Undoes *cur,
    bc.ymin=cur->u.bmpstate.ymin;
    bc.ymax=cur->u.bmpstate.ymax;
    bc.bytes_per_line=cur->u.bmpstate.bytes_per_line;
-   bc.bitmap=(uint8 *) cur->u.bmpstate.bitmap;
+   bc.bitmap=(uint8_t *) cur->u.bmpstate.bitmap;
    bc.byte_data=cur->u.bmpstate.depth != 1;
    bc.width=cur->u.bmpstate.width;
    err=pixel_off_frac * (1 << BDFDepth(bdf));
@@ -1070,7 +1070,7 @@ static void GlyphDiffSCError(struct font_diff *fd,SplineChar *sc,
 	 fd->held[0]='\0';
       }
       afputs("   ", fd->diffs);
-      vfprintf(fd->diffs, format, ap);
+      avfprintf(fd->diffs, format, ap);
    } else {
       vsnprintf(fd->held, sizeof(fd->held), format, ap);
       fd->last_sc=sc;
@@ -1918,7 +1918,7 @@ static int comparekc(struct font_diff *fd,KernClass *kc1,KernClass *kc2) {
       return (false);
    if (memcmp
        (kc1->offsets, kc2->offsets,
-	kc1->first_cnt * kc2->second_cnt * sizeof(int16)) != 0)
+	kc1->first_cnt * kc2->second_cnt * sizeof(int16_t)) != 0)
       return (false);
 
    if (kc1->firsts[0]==NULL && kc2->firsts[0]==NULL)
@@ -1999,17 +1999,17 @@ static int comparefpst(struct font_diff *fd,FPST *fpst1,FPST *fpst2) {
 	 if (memcmp
 	     (fpst1->rules[i].u.class.nclasses,
 	      fpst2->rules[i].u.class.nclasses,
-	      fpst1->rules[i].u.class.ncnt * sizeof(uint16)) != 0)
+	      fpst1->rules[i].u.class.ncnt * sizeof(uint16_t)) != 0)
 	    return (false);
 	 if (fpst1->rules[i].u.class.bcnt != 0 &&
 	     memcmp(fpst1->rules[i].u.class.bclasses,
 		    fpst2->rules[i].u.class.bclasses,
-		    fpst1->rules[i].u.class.bcnt * sizeof(uint16)) != 0)
+		    fpst1->rules[i].u.class.bcnt * sizeof(uint16_t)) != 0)
 	    return (false);
 	 if (fpst1->rules[i].u.class.fcnt != 0 &&
 	     memcmp(fpst1->rules[i].u.class.fclasses,
 		    fpst2->rules[i].u.class.fclasses,
-		    fpst1->rules[i].u.class.fcnt * sizeof(uint16)) != 0)
+		    fpst1->rules[i].u.class.fcnt * sizeof(uint16_t)) != 0)
 	    return (false);
       } else if (fpst1->format==pst_coverage
 		 || fpst1->format==pst_reversecoverage) {
@@ -2338,7 +2338,7 @@ static void complainscfeature(struct font_diff *fd,SplineChar *sc,
 	 fd->held[0]='\0';
       }
       afputs("    ", fd->diffs);
-      vfprintf(fd->diffs, format, ap);
+      avfprintf(fd->diffs, format, ap);
    } else {
       vsnprintf(fd->held, sizeof(fd->held), format, ap);
       fd->last_sc=sc;

@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: parsepdf.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2012nov01, many fixes added, Jose Da Silva */
 /*
@@ -78,7 +78,7 @@ static long FindXRef(AFILE *pdf) {
 		(ch=agetc(pdf))=='x' &&
 		(ch=agetc(pdf))=='r' &&
 		(ch=agetc(pdf))=='e' && (ch=agetc(pdf))=='f') {
-	    if (fscanf(pdf, "%ld", &xrefpos) != 1)
+	    if (afscanf(pdf, "%ld", &xrefpos) != 1)
 	       return (-1);
 
 	    return (xrefpos);
@@ -133,14 +133,14 @@ static int seektrailer(AFILE *pdf,long *start,long *num,
    long pos;
 
    /* find 'trailer' and point 'pos' to the next char location after it */
-   if (!findkeyword(pdf, "trailer", NULL) || (pos=ftell(pdf))==-1)
+   if (!findkeyword(pdf, "trailer", NULL) || (pos=aftell(pdf))==-1)
       return (false);
 
    /* check if there's encryption and toggle-on the encrypt flag if yes */
    if (findkeyword(pdf, "/Encrypt", ">>")) {
       long bar;
 
-      if (fscanf(pdf, "%d %ld", &pc->enc_dict, &bar)==2)
+      if (afscanf(pdf, "%d %ld", &pc->enc_dict, &bar)==2)
 	 pc->encrypted=true;
    }
 
@@ -150,16 +150,16 @@ static int seektrailer(AFILE *pdf,long *start,long *num,
       if (findkeyword(pdf, "/Root", ">>")) {
 	 long bar;
 
-	 fscanf(pdf, "%d %ld", &pc->root, &bar);
+	 afscanf(pdf, "%d %ld", &pc->root, &bar);
       }
    }
 
    /* find '/Prev' and return values for 'start' & 'num', Exit if error */
    if (afseek(pdf, pos, SEEK_SET) != 0 ||
        !findkeyword(pdf, "/Prev", ">>") ||
-       fscanf(pdf, "%ld", &prev_xref) != 1 ||
+       afscanf(pdf, "%ld", &prev_xref) != 1 ||
        afseek(pdf, prev_xref, SEEK_SET) != 0 ||
-       fscanf(pdf, "xref %ld %ld", start, num) != 2)
+       afscanf(pdf, "xref %ld %ld", start, num) != 2)
       return (false);
 
    return (true);		/* Done! We now have 'start' and 'num' */
@@ -193,12 +193,12 @@ static long *FindObjects(struct pdfcontext *pc) {
       return (NULL);
 
    /* initialize 'start' and 'num' values if we have them here */
-   if (fscanf(pdf, "xref %ld %ld", &start, &num) != 2) {
+   if (afscanf(pdf, "xref %ld %ld", &start, &num) != 2) {
       /* otherwise, check if it is an 'obj' and try there instead */
       long foo, bar;
 
       if (afseek(pdf, xrefpos, SEEK_SET) != 0 ||
-	  fscanf(pdf, "%ld %ld", &foo, &bar) != 2)
+	  afscanf(pdf, "%ld %ld", &foo, &bar) != 2)
 	 return (NULL);
       while (isspace(ch=agetc(pdf)));
       if (ch=='o' &&
@@ -234,7 +234,7 @@ static long *FindObjects(struct pdfcontext *pc) {
 	 ret[cnt]=-2;
       }
       for (i=start; i < start + num; ++i) {
-	 if (fscanf(pdf, "%ld %d %c", &offset, &gennum, &f) != 3) {
+	 if (afscanf(pdf, "%ld %d %c", &offset, &gennum, &f) != 3) {
 	    free(gen);
 	    return (ret);
 	 }
@@ -255,7 +255,7 @@ static long *FindObjects(struct pdfcontext *pc) {
       }
       /* load the next 'start' and 'num' values and continue. */
       /* if can't get more 'start' and 'num' then we're done. */
-      if (fscanf(pdf, "%ld %ld", &start, &num) != 2 &&
+      if (afscanf(pdf, "%ld %ld", &start, &num) != 2 &&
 	  !seektrailer(pdf, &start, &num, pc)) {
 	 free(gen);
 	 return (ret);
@@ -465,7 +465,7 @@ static int pdf_readdict(struct pdfcontext *pc) {
 
 static void pdf_skipobjectheader(struct pdfcontext *pc) {
 
-   fscanf(pc->pdf, "%*d %*d obj");
+   afscanf(pc->pdf, "%*d %*d obj");
 }
 
 static int hex(int ch1,int ch2) {
@@ -581,7 +581,7 @@ static int pdf_findobject(struct pdfcontext *pc,int num) {
 	    return (false);
 	 arewind(data);
 	 for (i=0; i < n; ++i) {
-	    fscanf(data, "%d %d", &o, &offset);
+	    afscanf(data, "%d %d", &o, &offset);
 	    if (o==num)
 	       break;
 	 }
@@ -722,11 +722,11 @@ static int pdf_getinteger(char *pt,struct pdfcontext *pc) {
       return (val);
    if (val < 0 || val >= pc->ocnt || pc->objs[val]==-1)
       return (0);
-   here=ftell(pc->pdf);
+   here=aftell(pc->pdf);
    if (!pdf_findobject(pc, val))
       return (0);
    pdf=pc->compressed ? pc->compressed : pc->pdf;
-   ret=fscanf(pdf, "%d", &val);
+   ret=afscanf(pdf, "%d", &val);
    if (pc->compressed) {
       afclose(pc->compressed);
       pc->compressed=NULL;
@@ -786,7 +786,7 @@ static int pdf_findpages(struct pdfcontext *pc) {
       return (0);
 
    if (afseek(pdf, pc->objs[pc->root], SEEK_SET)==0 ||
-       !findkeyword(pdf, "/Pages", ">>") || fscanf(pdf, "%ld", &top_ref) != 1)
+       !findkeyword(pdf, "/Pages", ">>") || afscanf(pdf, "%ld", &top_ref) != 1)
       return (0);
 
    if ((pc->pages=malloc(pc->ocnt * sizeof(long)))==NULL) {
@@ -911,10 +911,10 @@ static int pdf_zfilter(AFILE *to,AFILE *from) {
       strm.avail_in=afread(in, 1, Z_CHUNK, from);
       if (strm.avail_in==0)
 	 break;
-      strm.next_in=(uint8 *) in;
+      strm.next_in=(uint8_t *) in;
       do {
 	 strm.avail_out=Z_CHUNK;
-	 strm.next_out=(uint8 *) out;
+	 strm.next_out=(uint8_t *) out;
 	 ret=inflate(&strm, Z_NO_FLUSH);
 	 if (ret==Z_NEED_DICT || ret==Z_DATA_ERROR || ret==Z_MEM_ERROR) {
 	    (void) inflateEnd(&strm);
@@ -1089,7 +1089,7 @@ static long *FindObjectsFromXREFObject(struct pdfcontext *pc,long prev_xref) {
       }
       if (pc->root==0
 	  && (pt=PSDictHasEntry(&pc->pdfdict, "Root")) != NULL) {
-	 fscanf(pdf, "%d %d", &pc->root, &bar);
+	 afscanf(pdf, "%d %d", &pc->root, &bar);
       }
       prev_xref=-1;
       if ((pt=PSDictHasEntry(&pc->pdfdict, "Prev")) != NULL) {

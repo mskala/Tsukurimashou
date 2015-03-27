@@ -1,4 +1,4 @@
-/* $Id: gimagewritexbm.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagewritexbm.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ int GImageWriteXbm(GImage * gi, char *filename) {
 
    char *pt;
 
-   uint8 *scanline;
+   uint8_t *scanline;
 
    /* This routine only exports 1-pixel mono-type images */
    if (base->image_type != it_mono) {

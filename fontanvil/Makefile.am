@@ -167,7 +167,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
  fontanvil/glyphcomp.c \
  fontanvil/http.c fontanvil/ikarus.c fontanvil/is_LIGATURE.c \
- fontanvil/langfreq.c fontanvil/lookups.c fontanvil/macbinary.c \
+ fontanvil/lookups.c fontanvil/macbinary.c \
  fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \
  fontanvil/namelist.c fontanvil/nonlineartrans.c fontanvil/noprefs.c \
  fontanvil/nowakowskittfinstr.c \

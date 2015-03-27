@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: bitmapcontrol.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -41,4 +41,4 @@ enum { bd_all, bd_selected, bd_current };
 
 extern int bdfcontrol_lastwhich;
 
-void BitmapsDoIt(CreateBitmapData * bd, int32 * sizes, int usefreetype);
+void BitmapsDoIt(CreateBitmapData * bd, int32_t * sizes, int usefreetype);

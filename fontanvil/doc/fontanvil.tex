@@ -1276,6 +1276,13 @@ home directory, and the functions to do that have been removed: LoadPrefs,
 SavePrefs.  For the moment, at least, other functions related to
 ``preference'' variables remain in the language.
 
+FontAnvil (in the current version) does not support printing fonts, because
+support for this feature necessitates a disproportionate amount of
+unportable interfacing code to talk to system-specific printing interfaces. 
+Some future version may support a stripped-down and portable printing
+feature, likely writing to files instead of the physical printer, but for
+the moment, these functions are unimplemented:  PrintFont, PrintSetup.
+
 In FontForge's history it has several times happened that function names
 were misspelled, or documented incorrectly.  After the errors were
 discovered the names were changed in the documents to reflect the designer's

@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: fvcomposite.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2081,7 +2081,7 @@ static AnchorClass *AnchorClassCursMatch(SplineChar *sc1,SplineChar *sc2,
    return (NULL);
 }
 
-static void _BCCenterAccent(BDFFont *bdf,int gid,int rgid,int ch,int basech,int italicoff,uint32 pos,	/* unicode char position info, see #define for utype2[] in utype.h */
+static void _BCCenterAccent(BDFFont *bdf,int gid,int rgid,int ch,int basech,int italicoff,uint32_t pos,	/* unicode char position info, see #define for utype2[] in utype.h */
 			    real em) {
    BDFChar *bc, *rbc;
    int ixoff, iyoff, ispacing;
@@ -2140,7 +2140,7 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 			    SplineFont *sf,int layer,int ch,
 			    BDFFont *bdf,int disp_only,SplineChar *rsc,
 			    real ia,int basech,
-			    int invert,	/* invert accent, false==0, true!=0 */			    uint32 pos
+			    int invert,	/* invert accent, false==0, true!=0 */			    uint32_t pos
 			    /* unicode char position info, see #define for utype2[] in utype.h */
 			   ) {
    real transform[6];
@@ -3180,8 +3180,8 @@ void SCBuildComposit(SplineFont *sf, SplineChar * sc, int layer,
 
 int SCAppendAccent(SplineChar * sc, int layer, char *glyph_name,	/* unicode char name */
 		   int uni,	/* unicode char value */
-		   uint32 pos
-		   /* unicode char position info, see #define for (uint32)(utype2[]) */
+		   uint32_t pos
+		   /* unicode char position info, see #define for (uint32_t)(utype2[]) */
 		   ) {
    SplineFont *sf=sc->parent;
    double ia;

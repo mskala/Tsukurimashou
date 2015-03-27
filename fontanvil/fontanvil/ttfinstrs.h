@@ -1,4 +1,4 @@
-/* $Id: ttfinstrs.h 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: ttfinstrs.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2001-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,7 @@ typedef struct instrbase {
    unsigned int inedit:1;
    struct instrdata *instrdata;
    int isel_pos;
-   int16 lheight, lpos;
+   int16_t lheight, lpos;
    char *scroll, *offset;
 } InstrBase;
 

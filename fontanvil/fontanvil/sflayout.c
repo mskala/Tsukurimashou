@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: sflayout.c 3875 2015-03-27 11:44:59Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -36,13 +36,13 @@
 #include <chardata.h>
 #include <ffglib.h>
 
-static uint32 simple_stdfeatures[] =
+static uint32_t simple_stdfeatures[] =
    { CHR('c', 'c', 'm', 'p'), CHR('l', 'o', 'c', 'a'), CHR('k', 'e', 'r',
 							   'n'), CHR('l', 'i',
 								     'g',
 								     'a'),
 CHR('c', 'a', 'l', 't'), CHR('m', 'a', 'r', 'k'), CHR('m', 'k', 'm', 'k'), REQUIRED_FEATURE, 0 };
-static uint32 arab_stdfeatures[] =
+static uint32_t arab_stdfeatures[] =
    { CHR('c', 'c', 'm', 'p'), CHR('l', 'o', 'c', 'a'), CHR('i', 's', 'o',
 							   'l'), CHR('i', 'n',
 								     'i',
@@ -50,14 +50,14 @@ static uint32 arab_stdfeatures[] =
 CHR('m', 'e', 'd', 'i'), CHR('f', 'i', 'n', 'a'), CHR('r', 'l', 'i', 'g'), CHR('l', 'i', 'g', 'a'),
 CHR('c', 'a', 'l', 't'), CHR('k', 'e', 'r', 'n'), CHR('c', 'u', 'r', 's'), CHR('m', 'a', 'r', 'k'),
 CHR('m', 'k', 'm', 'k'), REQUIRED_FEATURE, 0 };
-static uint32 hebrew_stdfeatures[] =
+static uint32_t hebrew_stdfeatures[] =
    { CHR('c', 'c', 'm', 'p'), CHR('l', 'o', 'c', 'a'), CHR('l', 'i', 'g',
 							   'a'), CHR('c', 'a',
 								     'l',
 								     't'),
 CHR('k', 'e', 'r', 'n'), CHR('m', 'a', 'r', 'k'), CHR('m', 'k', 'm', 'k'), REQUIRED_FEATURE, 0 };
 static struct {
-   uint32 script, *stdfeatures;
+   uint32_t script, *stdfeatures;
 } script_2_std[]={
    {
    CHR('l', 'a', 't', 'n'), simple_stdfeatures}, {
@@ -69,7 +69,7 @@ static struct {
    0, NULL}
 };
 
-uint32 *StdFeaturesOfScript(uint32 script) {
+uint32_t *StdFeaturesOfScript(uint32_t script) {
    int i;
 
    for (i=0; script_2_std[i].script != 0; ++i)
@@ -134,30 +134,19 @@ int LI_FDDrawChar(void *data,
    return (x);
 }
 
-uint32 *LI_TagsCopy(uint32 * tags) {
+uint32_t *LI_TagsCopy(uint32_t * tags) {
    int i;
 
-   uint32 *ret;
+   uint32_t *ret;
 
    if (tags==NULL)
       return (NULL);
    for (i=0; tags[i] != 0; ++i);
-   ret=malloc((i + 1) * sizeof(uint32));
+   ret=malloc((i + 1) * sizeof(uint32_t));
    for (i=0; tags[i] != 0; ++i)
       ret[i]=tags[i];
    ret[i]=0;
    return (ret);
-}
-
-static int TagsSame(uint32 *tags1,uint32 *tags2) {
-   int i;
-
-   if (tags1==NULL || tags2==NULL)
-      return (tags1==NULL && tags2==NULL);
-
-   for (i=0; tags1[i] != 0 && tags1[i]==tags2[i]; ++i);
-   return (tags1[i]==tags2[i]);
-   return (false);
 }
 
 static int _FDMap(FontData *fd,int uenc) {
@@ -253,7 +242,7 @@ static struct opentype_str **LineFromPara(struct opentype_str **str,
 
 static struct basescript *FindBS(struct Base *base,struct opentype_str *ch,
 				 LayoutInfo * li) {
-   uint32 script=SCScriptFromUnicode(ch->sc);
+   uint32_t script=SCScriptFromUnicode(ch->sc);
    struct basescript *bs;
 
    if (script==DEFAULT_SCRIPT) {
@@ -268,7 +257,7 @@ static struct basescript *FindBS(struct Base *base,struct opentype_str *ch,
    return (bs);
 }
 
-static uint32 FigureBaselineTag(struct opentype_str *ch,LayoutInfo *li,
+static uint32_t FigureBaselineTag(struct opentype_str *ch,LayoutInfo *li,
 				struct Base *cur_base,
 				struct Base *start_base) {
    struct basescript *bs;
@@ -285,7 +274,7 @@ static uint32 FigureBaselineTag(struct opentype_str *ch,LayoutInfo *li,
 }
 
 static int BaselineOffset(struct Base *base,struct basescript *bs,
-			  uint32 cur_bsln_tag) {
+			  uint32_t cur_bsln_tag) {
    int i;
 
    for (i=0; i < base->baseline_cnt; ++i)
@@ -307,7 +296,7 @@ static void LIFigureLineHeight(LayoutInfo *li,int l,int p) {
       FontData *start_fd=((struct fontlist *) (line[0]->fl))->fd;
       struct Base *start_base=start_fd->sf->horiz_base;
       struct basescript *start_bs=NULL;
-      uint32 start_bsln_tag=0;
+      uint32_t start_bsln_tag=0;
 
       for (i=0; line[i] != NULL; ++i)
 	 line[i]->bsln_off=0;
@@ -329,7 +318,7 @@ static void LIFigureLineHeight(LayoutInfo *li,int l,int p) {
 
 	    struct Base *base=fd->sf->horiz_base;
 
-	    uint32 cur_bsln_tag;
+	    uint32_t cur_bsln_tag;
 
 	    if (fd->sf->horiz_base==NULL)
 	       continue;
@@ -646,86 +635,6 @@ static void fontlistfree(struct fontlist *fl) {
    }
 }
 
-static void fontlistcheck(LayoutInfo *li) {
-   struct fontlist *fl, *next;
-
-   if (li->fontlist==NULL)
-      return;
-   for (fl=li->fontlist; fl != NULL; fl=next) {
-      next=fl->next;
-      if (next==NULL)
-	 break;
-      /* fontlists should either be consecutive or allow for a line break to */
-      /*  be between entries */
-      if (fl->start > fl->end
-	  || (fl->end != next->start && fl->end != next->start - 1)
-	  || next==fl || next->next==fl) {
-	 ErrorMsg(2,"FontList is corrupted\n");
-	 fl->next=NULL;
-	 return;
-      }
-   }
-}
-
-void LI_fontlistmergecheck(LayoutInfo * li) {
-   struct fontlist *fl, *next;
-   unichar_t *pt;
-
-   if (li->fontlist==NULL)
-      return;
-   fontlistcheck(li);
-   /* Make sure there is a new fontlist for each paragraph -- omit the newline */
-   /*  char from the set of glyphs to be displayed */
-   for (pt=li->text, fl=li->fontlist; *pt; ++pt) {
-      if (*pt=='\n') {
-	 while (fl != NULL && fl->end <= pt - li->text)
-	    fl=fl->next;
-	 if (fl==NULL)
-	    break;
-	 if (fl->start <= pt - li->text) {
-	    if (fl->next != NULL && fl->next->start==pt + 1 - li->text)
-	       fl->end=pt - li->text;
-	    else {
-	       next=chunkalloc(sizeof(struct fontlist));
-	       *next=*fl;
-	       fl->next=next;
-	       fl->end=pt - li->text;
-	       next->scmax=0;
-	       next->sctext=NULL;
-	       next->ottext=NULL;
-	       next->feats=LI_TagsCopy(fl->feats);
-	       next->start=pt + 1 - li->text;
-	    }
-	 }
-      }
-   }
-   fontlistcheck(li);
-   /* Now join adjacent fontlists with the same properties (except don't merge */
-   /*  over line breaks */
-   for (fl=li->fontlist; fl != NULL; fl=next) {
-      for (next=fl->next; next != NULL && ((next->fd==fl->fd &&
-					      li->text[fl->end] != '\n' &&
-					      next->lang==fl->lang
-					      && next->script==fl->script
-					      && TagsSame(next->feats,
-							  fl->feats))
-					     || fl->start==next->end);
-	   next=fl->next) {
-	 if (li->oldstart==next)
-	    li->oldstart=fl;
-	 if (li->oldend==next)
-	    li->oldend=next->next;
-	 fl->next=next->next;
-	 fl->end=next->end;
-	 free(next->feats);
-	 free(next->ottext);
-	 free(next->sctext);
-	 chunkfree(next, sizeof(struct fontlist));
-      }
-   }
-   fontlistcheck(li);
-}
-
 void LayoutInfo_Destroy(LayoutInfo * li) {
    struct sfmaps *m, *n;
    FontData *fd, *nfd;
@@ -917,37 +826,10 @@ FontData *LI_FindFontData(LayoutInfo * li, SplineFont *sf,
    return (ret);
 }
 
-void LayoutInfoInitLangSys(LayoutInfo * li, int end, uint32 script,
-			   uint32 lang) {
-   struct fontlist *prev, *next;
-
-   if ((li->text != NULL && li->text[0] != '\0') || li->fontlist==NULL) {
-      ErrorMsg(2,"SFTFInitLangSys can only be called during initialization\n");
-      return;
-   }
-   if (li->fontlist != NULL && li->fontlist->script==0) {
-      next=li->fontlist;
-   } else {
-      for (prev=li->fontlist; prev->next != NULL; prev=prev->next);
-      next=chunkalloc(sizeof(struct fontlist));
-      *next=*prev;
-      next->scmax=0;
-      next->sctext=NULL;
-      next->ottext=NULL;
-      next->feats=LI_TagsCopy(prev->feats);
-      prev->next=next;
-      next->start=prev->end;
-   }
-   next->script=script;
-   next->lang=lang;
-   next->end=end;
-   next->feats=LI_TagsCopy(StdFeaturesOfScript(script));
-}
-
 #include "scripting.h"
 static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
    int pixelsize=24;
-   uint32 scripts[200], script;
+   uint32_t scripts[200], script;
    char *lines[209];
    int i, scnt, lcnt, gid;
    /* If the font has more than 200 scripts we can't give a good sample image */
@@ -1094,7 +976,7 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
    GImage *image;
    struct _GImage *base;
    unichar_t *upt;
-   uint32 script;
+   uint32_t script;
    struct opentype_str **line;
    int ybase=0;
    Array *freeme=NULL;
@@ -1204,132 +1086,4 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
    LayoutInfo_Destroy(li);
    if (freeme != NULL)
       arrayfree(freeme);
-}
-
-#include <stdlib.h>
-#include <unistd.h>
-
-void LayoutInfoSetTitle(LayoutInfo * li, const unichar_t * tit, int width) {
-   unichar_t *old=li->oldtext;
-
-   if (u_strcmp(tit, li->text)==0)	/* If it doesn't change anything, then don't trash undoes or selection */
-      return;
-   li->oldtext=li->text;
-   li->text=u_copy(tit);	/* tit might be oldtext, so must copy before freeing */
-   free(old);
-   LI_fontlistmergecheck(li);
-   LayoutInfoRefigureLines(li, 0, -1, width);
-}
-
-static int LI_NormalizeStartEnd(LayoutInfo *li,int start,int *_end) {
-   int end=*_end;
-   int len=u_strlen(li->text);
-
-   if (li->generated==NULL) {
-      start=0;
-      end=len;
-   } else if (end==-1)
-      end=len;
-   if (end > len)
-      end=len;
-   if (start < 0)
-      start=0;
-   if (start > end)
-      start=end;
-   *_end=end;
-   return (start);
-}
-
-struct fontlist *LI_BreakFontList(LayoutInfo * li, int start, int end) {
-   /* We are going to change some item in the fontlist between start and end */
-   /* Make sure that after this call there will be an entry which starts at */
-   /*  start and (perhaps) another which ends at end */
-   struct fontlist *new, *fl, *prev, *next, *first;
-
-   if (li->fontlist==NULL) {
-      new=chunkalloc(sizeof(struct fontlist));
-      new->start=start;
-      new->end=end;
-      li->fontlist=new;
-      return (new);
-   }
-
-   prev=next=NULL;
-   for (fl=li->fontlist; fl != NULL && fl->end < start; fl=fl->next)
-      prev=fl;
-   if (fl==NULL) {
-      fl=chunkalloc(sizeof(struct fontlist));
-      *fl=*prev;
-      fl->feats=LI_TagsCopy(prev->feats);
-      fl->start=prev->end;
-      fl->end=end;
-      fl->scmax=0;
-      fl->sctext=NULL;
-      fl->ottext=NULL;
-   }
-   if (fl->start==start)
-      first=fl;
-   else {
-      new=chunkalloc(sizeof(struct fontlist));
-      *new=*fl;
-      new->feats=LI_TagsCopy(fl->feats);
-      new->start=start;
-      fl->end=start;
-      fl->next=new;
-      new->scmax=0;
-      new->sctext=NULL;
-      new->ottext=NULL;
-      first=new;
-   }
-   prev=first;
-   for (fl=first; fl != NULL && fl->start < end; fl=fl->next)
-      prev=fl;
-   if (fl==NULL && prev->end < end)
-      prev->end=end;
-   if (prev->end > end) {
-      new=chunkalloc(sizeof(struct fontlist));
-      *new=*prev;
-      new->feats=LI_TagsCopy(prev->feats);
-      new->start=end;
-      new->scmax=0;
-      new->sctext=NULL;
-      new->ottext=NULL;
-      prev->end=end;
-      prev->next=new;
-   }
-   return (first);
-}
-
-static void LI_MetaChangeCleanup(LayoutInfo *li,int start,int end,
-				 int width) {
-   LI_fontlistmergecheck(li);
-   LayoutInfoRefigureLines(li, start, end, width);
-}
-
-int LI_SetFontData(LayoutInfo * li, int start, int end, SplineFont *sf,
-		   int layer, enum sftf_fonttype fonttype, int size,
-		   int antialias, int width) {
-   /* Sets the font for the region between start and end. If start==-1 it */
-   /*  means use the current selection (and ignore end). If end==-1 it means */
-   /*  strlen(g->text) */
-   /* I'm not going to mess with making this undoable. Nor am I going to clear */
-   /*  out the undoes. So if someone does an undo after this it will undo */
-   /*  two things. Tough. */
-   FontData *cur;
-
-   struct fontlist *fl;
-
-   cur=LI_FindFontData(li, sf, layer, fonttype, size, antialias);
-   if (cur==NULL)
-      return (false);
-
-   start=LI_NormalizeStartEnd(li, start, &end);
-   fl=LI_BreakFontList(li, start, end);
-   while (fl != NULL && fl->end <= end) {
-      fl->fd=cur;
-      fl=fl->next;
-   }
-
-   LI_MetaChangeCleanup(li, start, end, width);
-   return (true);
 }

@@ -1,4 +1,4 @@
-/* $Id: tottfvar.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: tottfvar.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -333,12 +333,12 @@ static int SCPointCount(SplineChar *sc) {
    return (ptcnt);
 }
 
-int16 **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
+int16_t **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
    /* When figuring out the deltas the first thing we must do is figure */
    /*  out each point's number */
    int i, j, k, l, cnt, ptcnt;
 
-   int16 **deltas;
+   int16_t **deltas;
 
    SplineSet *ss1, *ss2;
 
@@ -352,9 +352,9 @@ int16 **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
       return (NULL);
 
    *_ptcnt=ptcnt=SCPointCount(mm->normal->glyphs[gid]) + 4;
-   deltas=malloc(2 * mm->instance_count * sizeof(int16 *));
+   deltas=malloc(2 * mm->instance_count * sizeof(int16_t *));
    for (i=0; i < 2 * mm->instance_count; ++i)
-      deltas[i]=calloc(ptcnt, sizeof(int16));
+      deltas[i]=calloc(ptcnt, sizeof(int16_t));
    for (i=0; i < mm->instance_count; ++i) {
       for (ss1=mm->normal->glyphs[gid]->layers[ly_fore].splines,
 	   ss2=mm->instances[i]->glyphs[gid]->layers[ly_fore].splines;
@@ -448,10 +448,10 @@ int16 **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
    return (deltas);
 }
 
-int16 **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
+int16_t **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
    int i, j, k, l, cnt, ptcnt;
 
-   int16 **deltas;
+   int16_t **deltas;
 
    struct ttf_table *cvt, *icvt;
 
@@ -469,15 +469,15 @@ int16 **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
       return (NULL);
 
    *_ptcnt=ptcnt=cvt->len / 2;
-   deltas=calloc(mm->instance_count, sizeof(int16 *));
+   deltas=calloc(mm->instance_count, sizeof(int16_t *));
    for (i=0; i < mm->instance_count; ++i)
       if ((icvt=mm->instances[i]->ttf_tables) != NULL) {
-	 deltas[i]=calloc(ptcnt, sizeof(int16));
+	 deltas[i]=calloc(ptcnt, sizeof(int16_t));
 	 for (j=0; j < ptcnt; ++j)
 	    deltas[i][j] =
 	       memushort(icvt->data, icvt->len,
-			 sizeof(uint16) * j) - memushort(cvt->data, cvt->len,
-							 sizeof(uint16) * j);
+			 sizeof(uint16_t) * j) - memushort(cvt->data, cvt->len,
+							 sizeof(uint16_t) * j);
       }
 
    /* Ok, each delta now contains the difference between the instance[i] points */
@@ -532,7 +532,7 @@ int16 **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
 }
 
 static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
-   int16 **deltas;
+   int16_t **deltas;
 
    int ptcnt, cnt, pcnt;
 
@@ -540,9 +540,9 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
 
    int tuple_size;
 
-   uint32 start, end;
+   uint32_t start, end;
 
-   uint16 *pts;
+   uint16_t *pts;
 
    deltas=CvtFindDeltas(mm, &ptcnt);
    for (i=cnt=0; i < mm->instance_count; ++i)
@@ -576,7 +576,7 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
 	 for (j=pcnt=0; j < ptcnt; ++j)
 	    if (deltas[i][j] != 0)
 	       ++pcnt;
-	 pts=malloc(pcnt * sizeof(uint16));
+	 pts=malloc(pcnt * sizeof(uint16_t));
 	 for (j=pcnt=0; j < ptcnt; ++j)
 	    if (deltas[i][j] != 0)
 	       pts[pcnt++]=j;
@@ -647,7 +647,7 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
       putshort(at->cvar, 0);
 }
 
-static void dumpdeltas(struct alltabs *at,int16 *deltas,int ptcnt) {
+static void dumpdeltas(struct alltabs *at,int16_t *deltas,int ptcnt) {
    int j, rj;
 
    for (j=0; j < ptcnt;) {
@@ -687,9 +687,9 @@ static void dumpdeltas(struct alltabs *at,int16 *deltas,int ptcnt) {
 static void ttf_dumpgvar(struct alltabs *at,MMSet *mm) {
    int i, j, last;
 
-   uint32 gcoordoff, glyphoffs, start, here, tupledataend, tupledatastart;
+   uint32_t gcoordoff, glyphoffs, start, here, tupledataend, tupledatastart;
 
-   int16 **deltas;
+   int16_t **deltas;
 
    int ptcnt;
 
@@ -794,7 +794,7 @@ static void ttf_dumpavar(struct alltabs *at,MMSet *mm) {
       putshort(at->avar, 0);
 }
 
-static uint32 AxisNameToTag(char *name) {
+static uint32_t AxisNameToTag(char *name) {
    char buf[4];
 
    int i;

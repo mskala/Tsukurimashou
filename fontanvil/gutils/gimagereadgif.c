@@ -1,4 +1,4 @@
-/* $Id: gimagereadgif.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagereadgif.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013jan18..22, several fixes + interlacing, Jose Da Silva */
 /*
@@ -53,7 +53,7 @@ static GImage *ProcessSavedImage(GifFileType * gif, struct SavedImage *si,
 
    long l;
 
-   uint8 *d, *iv;
+   uint8_t *d, *iv;
 
    /* Create memory to hold image, exit with NULL if not enough memory */
    if (si->ImageDesc.ColorMap != NULL)
@@ -85,7 +85,7 @@ static GImage *ProcessSavedImage(GifFileType * gif, struct SavedImage *si,
    if (il
        && ((id = (int *) malloc(si->ImageDesc.Height * sizeof(int))) == NULL
 	   || (iv =
-	       (uint8 *) malloc(si->ImageDesc.Height * sizeof(uint8))) ==
+	       (uint8_t *) malloc(si->ImageDesc.Height * sizeof(uint8_t))) ==
 	   NULL)) {
       free(ret->u.image->clut);
       free(ret);

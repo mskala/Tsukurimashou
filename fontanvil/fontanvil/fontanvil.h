@@ -1,4 +1,4 @@
-/* $Id: fontanvil.h 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: fontanvil.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ static const int unicode4_size=17 *65536;
     /* Unicode goes up to 0x10ffff */
 
 extern char *AdobeStandardEncoding[256];
-extern int32 unicode_from_adobestd[256];
+extern int32_t unicode_from_adobestd[256];
 
 /* unicode_nameannot - Deprecated, but kept for older programs to access. */
 #   if _NO_LIBUNINAMESLIST
@@ -62,7 +62,7 @@ extern int adjustwidth;
 extern int adjustlbearing;
 extern int autohint_before_generate;
 extern int seperate_hint_controls;
-extern uint32 default_background;
+extern uint32_t default_background;
 extern int use_utf8_in_script;
 extern int new_em_size;
 extern int new_fonts_are_order2;
@@ -81,20 +81,20 @@ extern int quiet;
 extern MacFeat *default_mac_feature_map;
 
 typedef struct library_version_configuration {
-   uint16 major, minor;
+   uint16_t major, minor;
    long library_source_modtime;
    char *library_source_modtime_string;
    int library_source_versiondate;
-   uint16 sizeof_me;
-   uint16 sizeof_splinefont;
-   uint16 sizeof_splinechar;
-   uint16 sizeof_fvbase;
-   uint16 sizeof_cvbase;
-   uint16 sizeof_cvcontainer;
-   uint8 config_had_devicetables;
-   uint8 config_had_multilayer;
-   uint8 config_had_python;
-   uint8 mba1;			/* Must be all ones (0xff), config values are 0,1 need to distinquish from both */
+   uint16_t sizeof_me;
+   uint16_t sizeof_splinefont;
+   uint16_t sizeof_splinechar;
+   uint16_t sizeof_fvbase;
+   uint16_t sizeof_cvbase;
+   uint16_t sizeof_cvcontainer;
+   uint8_t config_had_devicetables;
+   uint8_t config_had_multilayer;
+   uint8_t config_had_python;
+   uint8_t mba1;			/* Must be all ones (0xff), config values are 0,1 need to distinquish from both */
 } Library_Version_Configuration;
 
 extern Library_Version_Configuration library_version_configuration;

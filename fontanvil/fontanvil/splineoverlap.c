@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: splineoverlap.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -90,7 +90,7 @@ static void SOError(const char *format,...) {
 	ErrorMsg(1,"Internal Error (overlap): " );
     else
 	ErrorMsg(1,"Internal Error (overlap) in %s: ", glyphname );
-    vfprintf(astderr,format,ap);
+    avfprintf(astderr,format,ap);
     va_end(ap);
 }
 
@@ -951,12 +951,98 @@ return( (testx-basex)*(testx-basex) + (testy-basey)*(testy-basey) <=
 	(curx-basex)*(curx-basex) + (cury-basey)*(cury-basey) );
 }
 
+static void ILReplaceMono(Intersection *il,Monotonic *m,Monotonic *otherm) {
+    MList *ml;
+
+    for ( ml=il->monos; ml!=NULL; ml=ml->next ) {
+	if ( ml->m==m ) {
+	    ml->m = otherm;
+    break;
+	}
+    }
+}
+
 struct inter_data {
     Monotonic *m, *otherm;
     bigreal t, othert;
     BasePoint inter;
     int new;
 };
+
+static void SplitMonotonicAtT(Monotonic *m,int which,bigreal t,bigreal coord,
+	struct inter_data *id) {
+// Validate(m, NULL);
+    Monotonic *otherm = NULL;
+    bigreal othert;
+    real cx,cy;
+    Spline1D *sx, *sy;
+
+    sx = &m->s->splines[0]; sy = &m->s->splines[1];
+    cx = ((sx->a*t+sx->b)*t+sx->c)*t+sx->d;
+    cy = ((sy->a*t+sy->b)*t+sy->c)*t+sy->d;
+    /* t might not be tstart/tend, but it could still produce a point which */
+    /*  (after rounding errors) is at the start/end point of the monotonic */
+    if ( t<=m->tstart || t>=m->tend ||
+	    ((cx<=m->b.minx || cx>=m->b.maxx) && (cy<=m->b.miny || cy>=m->b.maxy))) {
+	struct intersection *pt=NULL;
+	if ( t-m->tstart<m->tend-t ) {
+	    t = m->tstart;
+	    otherm = m->prev;
+	    othert = m->prev->tend;
+	    pt = m->start;
+	} else {
+	    t = m->tend;
+	    otherm = m->next;
+	    othert = m->next->tstart;
+	    pt = m->end;
+	}
+	sx = &m->s->splines[0]; sy = &m->s->splines[1];
+	cx = ((sx->a*t+sx->b)*t+sx->c)*t+sx->d;
+	cy = ((sy->a*t+sy->b)*t+sy->c)*t+sy->d;
+	if ( which==1 ) cy = coord; else if ( which==0 ) cx = coord;	/* Correct for rounding errors */
+	if ( pt!=NULL ) { cx = pt->inter.x; cy = pt->inter.y; }
+	id->new = false;
+    } else {
+	SONotify("Break monotonic from t = %f to t = %f at t = %f.\n", m->tstart, m->tend, t);
+	othert = t;
+	otherm = chunkalloc(sizeof(Monotonic));
+	*otherm = *m;
+	otherm->pending = NULL;
+	m->next = otherm;
+	m->linked = otherm;
+	otherm->prev = m;
+	otherm->next->prev = otherm;
+	m->tend = t;
+	if ( otherm->end!=NULL ) {
+	    m->end = NULL;
+	    ILReplaceMono(otherm->end,m,otherm);
+	}
+	otherm->tstart = t; otherm->start = NULL;
+        otherm->tend = m->tend; otherm->end = m->end; // Frank added this.
+	m->end = NULL;
+#ifdef FF_RELATIONAL_GEOM
+        otherm->otend = m->otend;
+	m->otend = t;
+	otherm->otstart = t;
+#endif
+	if ( which==1 ) cy = coord; else if ( which==0 ) cx = coord;	/* Correct for rounding errors */
+	if ( m->xup ) {
+	    m->b.maxx = otherm->b.minx = cx;
+	} else {
+	    m->b.minx = otherm->b.maxx = cx;
+	}
+	if ( m->yup ) {
+	    m->b.maxy = otherm->b.miny = cy;
+	} else {
+	    m->b.miny = otherm->b.maxy = cy;
+	}
+	id->new = true;
+    }
+    id->m = m; id->otherm = otherm;
+    id->t = t; id->othert = othert;
+    id->inter.x = cx; id->inter.y = cy;
+// Validate(m, NULL);
+}
 
 static extended RealDistance(extended v1,extended v2) {
   if (v2 > v1) return v2 - v1;

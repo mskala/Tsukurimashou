@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: tottfgpos.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ int use_second_indic_scripts=false;
 /* scripts (for opentype) that I understand */
     /* see also list in lookups.c mapping script tags to friendly names */
 
-static uint32 scripts[][15]={
+static uint32_t scripts[][15]={
 /* Arabic */ {CHR('a', 'r', 'a', 'b'), 0x0600, 0x06ff, 0xfb50, 0xfdff,
 		 0xfe70, 0xfefe},
 /* Aramaic */ {CHR('a', 'r', 'a', 'm'), 0x820, 0x83f},
@@ -154,7 +154,7 @@ static uint32 scripts[][15]={
    {0}
 };
 
-void ScriptMainRange(uint32 script, int *start, int *end) {
+void ScriptMainRange(uint32_t script, int *start, int *end) {
    int i;
 
    for (i=0; scripts[i][0] != 0; ++i) {
@@ -167,7 +167,7 @@ void ScriptMainRange(uint32 script, int *start, int *end) {
    *start=*end=-1;
 }
 
-int ScriptIsRightToLeft(uint32 script) {
+int ScriptIsRightToLeft(uint32_t script) {
    if (script==CHR('a', 'r', 'a', 'b') || script==CHR('h', 'e', 'b', 'r')
        || script==CHR('c', 'p', 'm', 'n')
        || script==CHR('k', 'h', 'a', 'r')
@@ -179,7 +179,7 @@ int ScriptIsRightToLeft(uint32 script) {
    return (false);
 }
 
-uint32 ScriptFromUnicode(int u, SplineFont *sf) {
+uint32_t ScriptFromUnicode(int u, SplineFont *sf) {
    int s, k;
 
    if (u != -1) {
@@ -191,7 +191,7 @@ uint32 ScriptFromUnicode(int u, SplineFont *sf) {
 	    break;
       }
       if (scripts[s][0] != 0) {
-	 uint32 script=scripts[s][0];
+	 uint32_t script=scripts[s][0];
 
 	 if (use_second_indic_scripts) {
 	    /* MS has a parallel set of script tags for their new */
@@ -233,7 +233,7 @@ uint32 ScriptFromUnicode(int u, SplineFont *sf) {
    return (DEFAULT_SCRIPT);
 }
 
-uint32 SCScriptFromUnicode(SplineChar * sc) {
+uint32_t SCScriptFromUnicode(SplineChar * sc) {
    char *pt;
 
    PST *pst;
@@ -771,7 +771,7 @@ static int DevTabLen(DeviceTable *dt) {
    else
       cnt=(cnt + 7) / 8;
    cnt += 3;			/* first, last, type */
-   return (sizeof(uint16) * cnt);
+   return (sizeof(uint16_t) * cnt);
 }
 
 static int ValDevTabLen(ValDevTab *vdt) {
@@ -911,7 +911,7 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
 			      struct lookup_subtable *sub) {
    int cnt, cnt2;
 
-   int32 coverage_pos, end;
+   int32_t coverage_pos, end;
 
    PST *pst, *first=NULL;
 
@@ -977,7 +977,7 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
 	 putshort(gpos, first->u.pos.v_adv_off);
       if (bits & 0xf0) {
 	 int next_dev_tab=aftell(gpos) - coverage_pos + 2 +
-	    sizeof(int16) * ((bits & 0x10 ? 1 : 0) + (bits & 0x20 ? 1 : 0) +
+	    sizeof(int16_t) * ((bits & 0x10 ? 1 : 0) + (bits & 0x20 ? 1 : 0) +
 			     (bits & 0x40 ? 1 : 0) + (bits & 0x80 ? 1 : 0));
 	 if (bits & 0x10) {
 	    putshort(gpos, next_dev_tab);
@@ -1008,7 +1008,7 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
       }
    } else {
       int vr_size =
-	 sizeof(int16) * ((bits & 0x1 ? 1 : 0) + (bits & 0x2 ? 1 : 0) +
+	 sizeof(int16_t) * ((bits & 0x1 ? 1 : 0) + (bits & 0x2 ? 1 : 0) +
 			  (bits & 0x4 ? 1 : 0) + (bits & 0x8 ? 1 : 0) +
 			  (bits & 0x10 ? 1 : 0) + (bits & 0x20 ? 1 : 0) +
 			  (bits & 0x40 ? 1 : 0) + (bits & 0x80 ? 1 : 0));
@@ -1064,14 +1064,14 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
 }
 
 struct sckppst {
-   uint16 samewas;
-   uint16 devtablen;
-   uint16 tot;
-   uint8 isv;
-   uint8 subtable_too_big;
+   uint16_t samewas;
+   uint16_t devtablen;
+   uint16_t tot;
+   uint8_t isv;
+   uint8_t subtable_too_big;
 /* The first few fields are only meaningful in the first structure in the array*/
 /*   and provide information about the entire rest of the array */
-   uint16 other_gid;
+   uint16_t other_gid;
    SplineChar *sc;
    KernPair *kp;
    PST *pst;
@@ -1087,7 +1087,7 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 			    struct lookup_subtable *sub) {
    int cnt;
 
-   int32 coverage_pos, offset_pos, end, start, pos;
+   int32_t coverage_pos, offset_pos, end, start, pos;
 
    PST *pst;
 
@@ -1306,7 +1306,7 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 	 if (chunk_cnt >= chunk_max)
 	    sub->extra_subtables =
 	       realloc(sub->extra_subtables,
-		       ((chunk_max += 10) + 1) * sizeof(uint32));
+		       ((chunk_max += 10) + 1) * sizeof(uint32_t));
 	 sub->extra_subtables[chunk_cnt++]=aftell(gpos);
 	 sub->extra_subtables[chunk_cnt]=-1;
       }
@@ -1330,9 +1330,9 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 
 	    afseek(gpos,
 		  offset_pos + (seconds[i][0].samewas -
-				start_cnt) * sizeof(uint16), SEEK_SET);
+				start_cnt) * sizeof(uint16_t), SEEK_SET);
 	    offset=getushort(gpos);
-	    afseek(gpos, offset_pos + (i - start_cnt) * sizeof(uint16),
+	    afseek(gpos, offset_pos + (i - start_cnt) * sizeof(uint16_t),
 		  SEEK_SET);
 	    putshort(gpos, offset);
 	    afseek(gpos, 0, SEEK_END);
@@ -1368,7 +1368,7 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 	    }
 	 }
 	 pos=aftell(gpos);
-	 afseek(gpos, offset_pos + (i - start_cnt) * sizeof(uint16), SEEK_SET);
+	 afseek(gpos, offset_pos + (i - start_cnt) * sizeof(uint16_t), SEEK_SET);
 	 putshort(gpos, pos - start);
 	 afseek(gpos, pos, SEEK_SET);
 
@@ -1435,15 +1435,15 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
    free(glyphs);
 }
 
-uint16 *ClassesFromNames(SplineFont *sf, char **classnames, int class_cnt,
+uint16_t *ClassesFromNames(SplineFont *sf, char **classnames, int class_cnt,
 			 int numGlyphs, SplineChar *** glyphs, int apple_kc) {
-   uint16 *class;
+   uint16_t *class;
    int i;
    char *pt, *end, ch;
    SplineChar *sc, **gs=NULL;
    int offset=(apple_kc && classnames[0] != NULL);
 
-   class=calloc(numGlyphs, sizeof(uint16));
+   class=calloc(numGlyphs, sizeof(uint16_t));
    if (glyphs)
       *glyphs=gs=calloc(numGlyphs, sizeof(SplineChar *));
    for (i=0; i < class_cnt; ++i) {
@@ -1491,8 +1491,8 @@ static SplineChar **GlyphsFromClasses(SplineChar ** gs,int numGlyphs) {
 }
 
 static SplineChar **GlyphsFromInitialClasses(SplineChar ** gs,int numGlyphs,
-					     uint16 * classes,
-					     uint16 * initial) {
+					     uint16_t * classes,
+					     uint16_t * initial) {
    int i, j, cnt;
 
    SplineChar **glyphs;
@@ -1516,7 +1516,7 @@ static SplineChar **GlyphsFromInitialClasses(SplineChar ** gs,int numGlyphs,
    return (glyphs);
 }
 
-static void DumpClass(AFILE *gpos,uint16 *class,int numGlyphs) {
+static void DumpClass(AFILE *gpos,uint16_t *class,int numGlyphs) {
    int ranges, i, cur, first=-1, last=-1, istart;
 
    for (i=ranges=0; i < numGlyphs;) {
@@ -1559,9 +1559,9 @@ static void DumpClass(AFILE *gpos,uint16 *class,int numGlyphs) {
 static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
 			      struct lookup_subtable *sub,
 			      struct alltabs *at) {
-   uint32 begin_off=aftell(gpos), pos;
+   uint32_t begin_off=aftell(gpos), pos;
 
-   uint16 *class1, *class2;
+   uint16_t *class1, *class2;
 
    KernClass *kc=sub->kc, *test;
 
@@ -1607,7 +1607,7 @@ static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
    putshort(gpos, kc->second_cnt);
    next_devtab =
       aftell(gpos) - begin_off +
-      kc->first_cnt * kc->second_cnt * 2 * sizeof(uint16);
+      kc->first_cnt * kc->second_cnt * 2 * sizeof(uint16_t);
    for (i=0; i < kc->first_cnt * kc->second_cnt; ++i) {
       putshort(gpos, kc->offsets[i]);
       if (anydevtab && kc->adjusts[i].corrections != NULL) {
@@ -1625,19 +1625,19 @@ static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
 	 ErrorMsg(2,"Device table offsets screwed up in kerning class\n");
    }
    pos=aftell(gpos);
-   afseek(gpos, begin_off + 4 * sizeof(uint16), SEEK_SET);
+   afseek(gpos, begin_off + 4 * sizeof(uint16_t), SEEK_SET);
    putshort(gpos, pos - begin_off);
    afseek(gpos, pos, SEEK_SET);
    DumpClass(gpos, class1, at->maxp.numGlyphs);
 
    pos=aftell(gpos);
-   afseek(gpos, begin_off + 5 * sizeof(uint16), SEEK_SET);
+   afseek(gpos, begin_off + 5 * sizeof(uint16_t), SEEK_SET);
    putshort(gpos, pos - begin_off);
    afseek(gpos, pos, SEEK_SET);
    DumpClass(gpos, class2, at->maxp.numGlyphs);
 
    pos=aftell(gpos);
-   afseek(gpos, begin_off + sizeof(uint16), SEEK_SET);
+   afseek(gpos, begin_off + sizeof(uint16_t), SEEK_SET);
    putshort(gpos, pos - begin_off);
    afseek(gpos, pos, SEEK_SET);
    dumpcoveragetable(gpos, glyphs);
@@ -1680,7 +1680,7 @@ static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
 
    AnchorPoint *ap, *entry, *exit;
 
-   uint32 coverage_offset, start;
+   uint32_t coverage_offset, start;
 
    ac=NULL;
    for (testac=sf->anchor; testac != NULL; testac=testac->next) {
@@ -1804,7 +1804,7 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
 
    int j, cnt, k, l, pos, offset, tot, max;
 
-   uint32 coverage_offset, markarray_offset, subtable_start;
+   uint32_t coverage_offset, markarray_offset, subtable_start;
 
    AnchorPoint *ap, **aps;
 
@@ -1994,7 +1994,7 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
 static void dumpGSUBsimplesubs(AFILE *gsub,SplineFont *sf,
 			       struct lookup_subtable *sub) {
    int cnt;
-   int32 coverage_pos,end;
+   int32_t coverage_pos,end;
    SplineChar **glyphs,***maps;
 
    glyphs=SFOrderedGlyphsWithPSTinSubtable(sf,sub);
@@ -2025,7 +2025,7 @@ static void dumpGSUBmultiplesubs(AFILE *gsub,SplineFont *sf,
 				 struct lookup_subtable *sub) {
    int cnt, offset;
 
-   int32 coverage_pos, end;
+   int32_t coverage_pos, end;
 
    int gc;
 
@@ -2080,11 +2080,11 @@ static int AllToBeOutput(LigList *lig) {
 
 static void dumpGSUBligdata(AFILE *gsub,SplineFont *sf,
 			    struct lookup_subtable *sub, struct alltabs *at) {
-   int32 coverage_pos, next_val_pos, here, lig_list_start;
+   int32_t coverage_pos, next_val_pos, here, lig_list_start;
 
    int cnt, i, pcnt, lcnt, max=100, j;
 
-   uint16 *offsets=NULL, *ligoffsets=malloc(max * sizeof(uint16));
+   uint16_t *offsets=NULL, *ligoffsets=malloc(max * sizeof(uint16_t));
 
    SplineChar **glyphs;
 
@@ -2103,7 +2103,7 @@ static void dumpGSUBligdata(AFILE *gsub,SplineFont *sf,
    putshort(gsub, cnt);
    next_val_pos=aftell(gsub);
    if (glyphs != NULL)
-      offsets=malloc(cnt * sizeof(int16));
+      offsets=malloc(cnt * sizeof(int16_t));
    for (i=0; i < cnt; ++i)
       putshort(gsub, 0);
    for (i=0; i < cnt; ++i) {
@@ -2154,16 +2154,16 @@ static void dumpGSUBligdata(AFILE *gsub,SplineFont *sf,
 }
 
 static int ui16cmp(const void *_i1,const void *_i2) {
-   if (*(const uint16 *) _i1 > *(const uint16 *) _i2)
+   if (*(const uint16_t *) _i1 > *(const uint16_t *) _i2)
       return (1);
-   if (*(const uint16 *) _i1 < *(const uint16 *) _i2)
+   if (*(const uint16_t *) _i1 < *(const uint16_t *) _i2)
       return (-1);
 
    return (0);
 }
 
-static uint16 *FigureInitialClasses(FPST *fpst) {
-   uint16 *initial=malloc((fpst->nccnt + 1) * sizeof(uint16));
+static uint16_t *FigureInitialClasses(FPST *fpst) {
+   uint16_t *initial=malloc((fpst->nccnt + 1) * sizeof(uint16_t));
 
    int i, cnt, j;
 
@@ -2174,7 +2174,7 @@ static uint16 *FigureInitialClasses(FPST *fpst) {
       if (j==cnt)
 	 initial[cnt++]=fpst->rules[i].u.class.nclasses[0];
    }
-   qsort(initial, cnt, sizeof(uint16), ui16cmp);
+   qsort(initial, cnt, sizeof(uint16_t), ui16cmp);
    initial[cnt]=0xffff;
    return (initial);
 }
@@ -2239,7 +2239,7 @@ static int CntRulesStartingWith(FPST *fpst,SplineChar *sc) {
    return (cnt);
 }
 
-static int CntRulesStartingWithClass(FPST *fpst,uint16 cval) {
+static int CntRulesStartingWithClass(FPST *fpst,uint16_t cval) {
    int i, cnt;
 
    for (i=cnt=0; i < fpst->rule_cnt; ++i) {
@@ -2256,7 +2256,7 @@ static void dumpg___ContextChainGlyphs(AFILE *lfile,SplineFont *sf,
 
    int iscontext=fpst->type==pst_contextpos
       || fpst->type==pst_contextsub;
-   uint32 base=aftell(lfile);
+   uint32_t base=aftell(lfile);
 
    int i, cnt, subcnt, j, k, l, maxcontext, curcontext;
 
@@ -2277,7 +2277,7 @@ static void dumpg___ContextChainGlyphs(AFILE *lfile,SplineFont *sf,
    maxcontext=0;
 
    for (i=0; i < cnt; ++i) {
-      uint32 pos=aftell(lfile);
+      uint32_t pos=aftell(lfile);
 
       afseek(lfile, base + (3 + i) * sizeof(short), SEEK_SET);
       putshort(lfile, pos - base);
@@ -2288,7 +2288,7 @@ static void dumpg___ContextChainGlyphs(AFILE *lfile,SplineFont *sf,
 	 putshort(lfile, 0);
       for (j=k=0; k < fpst->rule_cnt; ++k)
 	 if (NamesStartWith(glyphs[i], fpst->rules[k].u.glyph.names)) {
-	    uint32 subpos=aftell(lfile);
+	    uint32_t subpos=aftell(lfile);
 
 	    afseek(lfile, pos + (1 + j) * sizeof(short), SEEK_SET);
 	    putshort(lfile, subpos - pos);
@@ -2356,9 +2356,9 @@ static void dumpg___ContextChainClass(AFILE *lfile,SplineFont *sf,
 
    int iscontext=fpst->type==pst_contextpos
       || fpst->type==pst_contextsub;
-   uint32 base=aftell(lfile), rulebase, pos, subpos, npos;
+   uint32_t base=aftell(lfile), rulebase, pos, subpos, npos;
 
-   uint16 *initialclasses, *iclass, *bclass, *lclass;
+   uint16_t *initialclasses, *iclass, *bclass, *lclass;
 
    SplineChar **iglyphs, **bglyphs, **lglyphs, **glyphs;
 
@@ -2395,7 +2395,7 @@ static void dumpg___ContextChainClass(AFILE *lfile,SplineFont *sf,
 			  &lglyphs, false);
    }
    pos=aftell(lfile);
-   afseek(lfile, base + sizeof(uint16), SEEK_SET);
+   afseek(lfile, base + sizeof(uint16_t), SEEK_SET);
    putshort(lfile, pos - base);
    afseek(lfile, pos, SEEK_SET);
    glyphs =
@@ -2409,42 +2409,42 @@ static void dumpg___ContextChainClass(AFILE *lfile,SplineFont *sf,
 
    if (iscontext) {
       pos=aftell(lfile);
-      afseek(lfile, base + 2 * sizeof(uint16), SEEK_SET);
+      afseek(lfile, base + 2 * sizeof(uint16_t), SEEK_SET);
       putshort(lfile, pos - base);
       afseek(lfile, pos, SEEK_SET);
       DumpClass(lfile, iclass, at->maxp.numGlyphs);
       free(iclass);
    } else {
       pos=aftell(lfile);
-      afseek(lfile, base + 2 * sizeof(uint16), SEEK_SET);
+      afseek(lfile, base + 2 * sizeof(uint16_t), SEEK_SET);
       putshort(lfile, pos - base);
       afseek(lfile, pos, SEEK_SET);
       DumpClass(lfile, bclass, at->maxp.numGlyphs);
       if (ClassesMatch(fpst->bccnt, fpst->bclass, fpst->nccnt, fpst->nclass)) {
 	 npos=pos;
-	 afseek(lfile, base + 3 * sizeof(uint16), SEEK_SET);
+	 afseek(lfile, base + 3 * sizeof(uint16_t), SEEK_SET);
 	 putshort(lfile, npos - base);
 	 afseek(lfile, 0, SEEK_END);
       } else {
 	 npos=aftell(lfile);
-	 afseek(lfile, base + 3 * sizeof(uint16), SEEK_SET);
+	 afseek(lfile, base + 3 * sizeof(uint16_t), SEEK_SET);
 	 putshort(lfile, npos - base);
 	 afseek(lfile, npos, SEEK_SET);
 	 DumpClass(lfile, iclass, at->maxp.numGlyphs);
       }
       if (ClassesMatch(fpst->fccnt, fpst->fclass, fpst->bccnt, fpst->bclass)) {
-	 afseek(lfile, base + 4 * sizeof(uint16), SEEK_SET);
+	 afseek(lfile, base + 4 * sizeof(uint16_t), SEEK_SET);
 	 putshort(lfile, pos - base);
 	 afseek(lfile, 0, SEEK_END);
       } else
 	 if (ClassesMatch
 	     (fpst->fccnt, fpst->fclass, fpst->nccnt, fpst->nclass)) {
-	 afseek(lfile, base + 4 * sizeof(uint16), SEEK_SET);
+	 afseek(lfile, base + 4 * sizeof(uint16_t), SEEK_SET);
 	 putshort(lfile, npos - base);
 	 afseek(lfile, 0, SEEK_END);
       } else {
 	 pos=aftell(lfile);
-	 afseek(lfile, base + 4 * sizeof(uint16), SEEK_SET);
+	 afseek(lfile, base + 4 * sizeof(uint16_t), SEEK_SET);
 	 putshort(lfile, pos - base);
 	 afseek(lfile, pos, SEEK_SET);
 	 DumpClass(lfile, lclass, at->maxp.numGlyphs);
@@ -2526,7 +2526,7 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
 
    int iscontext=fpst->type==pst_contextpos
       || fpst->type==pst_contextsub;
-   uint32 base=aftell(lfile), ibase, lbase, bbase;
+   uint32_t base=aftell(lfile), ibase, lbase, bbase;
 
    int i, l;
 
@@ -2557,7 +2557,7 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
 	    putshort(lfile, fpst->rules[0].lookups[i].lookup->lookup_index);
 	 }
       for (i=0; i < fpst->rules[0].u.coverage.ncnt; ++i) {
-	 uint32 pos=aftell(lfile);
+	 uint32_t pos=aftell(lfile);
 
 	 afseek(lfile, base + 6 + 2 * i, SEEK_SET);
 	 putshort(lfile, pos - base);
@@ -2603,7 +2603,7 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
 	    putshort(lfile, glyphs[i]->ttf_glyph);
       }
       for (i=0; i < fpst->rules[0].u.coverage.ncnt; ++i) {
-	 uint32 pos=aftell(lfile);
+	 uint32_t pos=aftell(lfile);
 
 	 afseek(lfile, ibase + 2 * i, SEEK_SET);
 	 putshort(lfile, pos - base);
@@ -2614,7 +2614,7 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
 	 free(glyphs);
       }
       for (i=0; i < fpst->rules[0].u.coverage.bcnt; ++i) {
-	 uint32 pos=aftell(lfile);
+	 uint32_t pos=aftell(lfile);
 
 	 afseek(lfile, bbase + 2 * i, SEEK_SET);
 	 putshort(lfile, pos - base);
@@ -2625,7 +2625,7 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
 	 free(glyphs);
       }
       for (i=0; i < fpst->rules[0].u.coverage.fcnt; ++i) {
-	 uint32 pos=aftell(lfile);
+	 uint32_t pos=aftell(lfile);
 
 	 afseek(lfile, lbase + 2 * i, SEEK_SET);
 	 putshort(lfile, pos - base);
@@ -2945,7 +2945,7 @@ static AFILE *G___figureLookups(SplineFont *sf,int is_gpos,
    final=atmpfile();
    buffer=malloc(32768);
    for (i=0; i < index; ++i) {
-      uint32 diff;
+      uint32_t diff;
 
       otl=sizeordered[i];
       afseek(lfile, otl->lookup_offset, SEEK_SET);
@@ -2984,23 +2984,23 @@ static AFILE *G___figureLookups(SplineFont *sf,int is_gpos,
 }
 
 struct feat_lookups {
-   uint32 tag;
+   uint32_t tag;
    int lcnt;
    OTLookup **lookups;
    int feature_id;		/* Initially consecutive, but may be rearranged by sorting */
-   uint32 name_param_ptr;
+   uint32_t name_param_ptr;
 };
 
 struct langsys {
-   uint32 lang;
+   uint32_t lang;
    int fc;
    int *feature_id;
    int same_as;
-   int32 offset;
+   int32_t offset;
 };
 
 struct scriptset {
-   uint32 script;
+   uint32_t script;
    int lc;
    struct langsys *langsys;
 };
@@ -3013,7 +3013,7 @@ struct ginfo {
 };
 
 static int FindOrMakeNewFeatureLookup(struct ginfo *ginfo,
-				      OTLookup ** lookups, uint32 tag) {
+				      OTLookup ** lookups, uint32_t tag) {
    int i, j;
 
    for (i=0; i < ginfo->fcnt; ++i) {
@@ -3085,7 +3085,7 @@ static int LangSysMatch(struct scriptset *s,int ils1,int ils2) {
 }
 
 static void FindFeatures(SplineFont *sf,int is_gpos,struct ginfo *ginfo) {
-   uint32 *scripts, *langs, *features;
+   uint32_t *scripts, *langs, *features;
 
    OTLookup **lookups;
 
@@ -3166,11 +3166,11 @@ static void dump_script_table(AFILE *g___,struct scriptset *ss,
 			      struct ginfo *ginfo) {
    int i, lcnt, dflt_lang=-1;
 
-   uint32 base;
+   uint32_t base;
 
    int j, req_index;
 
-   uint32 offset;
+   uint32_t offset;
 
    /* Count the languages, and find default */
    for (lcnt=0; lcnt < ss->lc; ++lcnt)
@@ -3322,7 +3322,7 @@ static AFILE *g___FigureExtensionSubTables(OTLookup *all,int startoffset,
    return (efile);
 }
 
-struct otffeatname *findotffeatname(uint32 tag, SplineFont *sf) {
+struct otffeatname *findotffeatname(uint32_t tag, SplineFont *sf) {
    struct otffeatname *fn;
 
    for (fn=sf->feat_names; fn != NULL && fn->tag != tag; fn=fn->next);
@@ -3334,11 +3334,11 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
    /*  we assume that SFFindUnusedLookups has been called */
    AFILE *lfile, *g___, *efile;
 
-   uint32 lookup_list_table_start, feature_list_table_start, here,
+   uint32_t lookup_list_table_start, feature_list_table_start, here,
       scripts_start_offset;
    struct ginfo ginfo;
 
-   int32 size_params_loc, size_params_ptr;
+   int32_t size_params_loc, size_params_ptr;
 
    int i, j, cnt, scnt, offset;
 
@@ -3466,7 +3466,7 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
 	  (fn=findotffeatname(ginfo.feat_lookups[i].tag, sf)) != NULL) {
 	 if (fn->nid==0)
 	    fn->nid=at->next_strid++;
-	 uint32 name_param_loc=aftell(g___);
+	 uint32_t name_param_loc=aftell(g___);
 
 	 afseek(g___, ginfo.feat_lookups[i].name_param_ptr, SEEK_SET);
 	 putshort(g___,
@@ -3643,7 +3643,7 @@ static void DumpLigCarets(AFILE *gdef,SplineChar *sc) {
       for (i=0; i < pst->u.lcaret.cnt - 1; ++i)
 	 for (j=i + 1; j < pst->u.lcaret.cnt; ++j)
 	    if (pst->u.lcaret.carets[i] < pst->u.lcaret.carets[j]) {
-	       int16 temp=pst->u.lcaret.carets[i];
+	       int16_t temp=pst->u.lcaret.carets[i];
 
 	       pst->u.lcaret.carets[i]=pst->u.lcaret.carets[j];
 	       pst->u.lcaret.carets[j]=temp;
@@ -3652,7 +3652,7 @@ static void DumpLigCarets(AFILE *gdef,SplineChar *sc) {
       for (i=0; i < pst->u.lcaret.cnt - 1; ++i)
 	 for (j=i + 1; j < pst->u.lcaret.cnt; ++j)
 	    if (pst->u.lcaret.carets[i] > pst->u.lcaret.carets[j]) {
-	       int16 temp=pst->u.lcaret.carets[i];
+	       int16_t temp=pst->u.lcaret.carets[i];
 
 	       pst->u.lcaret.carets[i]=pst->u.lcaret.carets[j];
 	       pst->u.lcaret.carets[j]=temp;
@@ -3660,7 +3660,7 @@ static void DumpLigCarets(AFILE *gdef,SplineChar *sc) {
    }
 
    putshort(gdef, cnt);		/* this many carets */
-   offset=sizeof(uint16) + sizeof(uint16) * cnt;
+   offset=sizeof(uint16_t) + sizeof(uint16_t) * cnt;
    for (i=0; i < cnt; ++i) {
       putshort(gdef, offset);
       offset += 4;
@@ -3901,7 +3901,7 @@ void otf_dumpgdef(struct alltabs *at, SplineFont *sf) {
 
    /* Mark Attachment Class Subtable */
    if (sf->mark_class_cnt > 0) {
-      uint16 *mclasses =
+      uint16_t *mclasses =
 	 ClassesFromNames(sf, sf->mark_classes, sf->mark_class_cnt,
 			  at->maxp.numGlyphs, NULL, false);
       pos=aftell(at->gdef);
@@ -3987,9 +3987,9 @@ static void ttf_math_dump_italic_top(AFILE *mathf,struct alltabs *at,
 
    SplineChar *sc, **glyphs;
 
-   uint32 coverage_pos, coverage_table;
+   uint32_t coverage_pos, coverage_table;
 
-   uint32 devtab_offset;
+   uint32_t devtab_offset;
 
    DeviceTable *devtab;
 
@@ -4072,7 +4072,7 @@ static int ttf_math_dump_mathkernvertex(AFILE *mathf,
 					int devtab_pos) {
    int i;
 
-   uint32 here=aftell(mathf);
+   uint32_t here=aftell(mathf);
 
    putshort(mathf, mkv->cnt - 1);
 
@@ -4113,7 +4113,7 @@ static void ttf_math_dump_mathkern(AFILE *mathf,struct alltabs *at,
 
    SplineChar *sc, **glyphs;
 
-   uint32 coverage_pos, coverage_table, kr_pos, midpos2;
+   uint32_t coverage_pos, coverage_table, kr_pos, midpos2;
 
    /* Figure out our glyph list (and count) */
    for (i=len=0; i < at->gi.gcnt; ++i)
@@ -4241,17 +4241,17 @@ static int gvc_len(struct glyphvariants *gv) {
    return (6 + 10 * gv->part_cnt);
 }
 
-static uint32 ttf_math_dump_mathglyphconstructiontable(AFILE *mathf,
+static uint32_t ttf_math_dump_mathglyphconstructiontable(AFILE *mathf,
 						       struct glyphvariants
 						       *gv, SplineFont *sf,
-						       uint32 pos, int is_v) {
+						       uint32_t pos, int is_v) {
    char *pt, *start;
 
    int ch, cnt;
 
    SplineChar *sc;
 
-   uint32 here=aftell(mathf);
+   uint32_t here=aftell(mathf);
 
    DBounds b;
 
@@ -4302,13 +4302,13 @@ static uint32 ttf_math_dump_mathglyphconstructiontable(AFILE *mathf,
    return (pos + gvc_len(gv));
 }
 
-static uint32 ttf_math_dump_mathglyphassemblytable(AFILE *mathf,
+static uint32_t ttf_math_dump_mathglyphassemblytable(AFILE *mathf,
 						   struct glyphvariants *gv,
 						   SplineFont *sf,
-						   uint32 devtab_pos) {
+						   uint32_t devtab_pos) {
    SplineChar *sc;
 
-   uint32 here=aftell(mathf);
+   uint32_t here=aftell(mathf);
 
    int i;
 
@@ -4341,7 +4341,7 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
 
    SplineChar *sc, **vglyphs, **hglyphs;
 
-   uint32 coverage_pos, coverage_table, offset, pos, assembly_pos;
+   uint32_t coverage_pos, coverage_table, offset, pos, assembly_pos;
 
    /* Figure out our glyph list (and count) */
    for (i=vlen=hlen=0; i < at->gi.gcnt; ++i)
@@ -4384,7 +4384,7 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
    }
    assembly_pos=pos=(coverage_pos - 2) + offset;
    for (i=0; i < vlen; ++i) {
-      /*uint32 start=aftell(mathf); */
+      /*uint32_t start=aftell(mathf); */
       pos=ttf_math_dump_mathglyphconstructiontable(mathf,
 						     vglyphs[i]->
 						     vert_variants, sf, pos,
@@ -4393,7 +4393,7 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
       /*ErrorMsg(2,"v gv_len incorrect\n"); */
    }
    for (i=0; i < hlen; ++i) {
-      /*uint32 start=aftell(mathf); */
+      /*uint32_t start=aftell(mathf); */
       pos=ttf_math_dump_mathglyphconstructiontable(mathf,
 						     hglyphs[i]->
 						     horiz_variants, sf, pos,
@@ -4445,7 +4445,7 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
 
    int i;
 
-   uint32 devtab_offsets[60], const_start, gi_start, v_start;
+   uint32_t devtab_offsets[60], const_start, gi_start, v_start;
 
    int bits=MathBits(at, sf);
 
@@ -4463,10 +4463,10 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
    memset(devtab_offsets, 0, sizeof(devtab_offsets));
    const_start=aftell(mathf);
    for (i=0; math_constants_descriptor[i].script_name != NULL; ++i) {
-      int16 *pos =
-	 (int16 *) (((char *) (sf->MATH)) +
+      int16_t *pos =
+	 (int16_t *) (((char *) (sf->MATH)) +
 		    math_constants_descriptor[i].offset);
-      if (pos==(int16 *) & sf->MATH->MinConnectorOverlap)
+      if (pos==(int16_t *) & sf->MATH->MinConnectorOverlap)
 	 continue;		/* Actually lives in the Variant table, not here */
       putshort(mathf, *pos);
       if (math_constants_descriptor[i].devtab_offset != -1) {
@@ -4475,16 +4475,16 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
       }
    }
    for (i=0; math_constants_descriptor[i].script_name != NULL; ++i) {
-      int16 *pos =
-	 (int16 *) (((char *) (sf->MATH)) +
+      int16_t *pos =
+	 (int16_t *) (((char *) (sf->MATH)) +
 		    math_constants_descriptor[i].offset);
       DeviceTable **devtab =
 	 (DeviceTable **) (((char *) (sf->MATH)) +
 			   math_constants_descriptor[i].devtab_offset);
-      if (pos==(int16 *) & sf->MATH->MinConnectorOverlap)
+      if (pos==(int16_t *) & sf->MATH->MinConnectorOverlap)
 	 continue;		/* Actually lives in the Variant table, not here */
       if (math_constants_descriptor[i].devtab_offset >= 0 && *devtab != NULL) {
-	 uint32 here=aftell(mathf);
+	 uint32_t here=aftell(mathf);
 
 	 afseek(mathf, devtab_offsets[i], SEEK_SET);
 	 putshort(mathf, here - const_start);
@@ -4560,7 +4560,7 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
 }
 
 struct taglist {
-   uint32 tag;
+   uint32_t tag;
    struct taglist *next;
 };
 
@@ -4687,7 +4687,7 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
 
    int i, j, cnt, lcnt;
 
-   uint32 here, bsl;
+   uint32_t here, bsl;
 
    struct basescript *bs;
 
@@ -4739,7 +4739,7 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
 
       /* BaseScript table */
       for (bs=base->scripts, cnt=0; bs != NULL; bs=bs->next, ++cnt) {
-	 uint32 bst=aftell(basef);
+	 uint32_t bst=aftell(basef);
 
 	 afseek(basef, bsl + 2 + 6 * cnt + 4, SEEK_SET);
 	 putshort(basef, bst - bsl);
@@ -4784,7 +4784,7 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
 	 for (bl=bs->langs, dflt=NULL, lcnt=0; bl != NULL;
 	      bl=bl->next)
 	    if (bl->lang != DEFAULT_LANG) {
-	       uint32 here=aftell(basef);
+	       uint32_t here=aftell(basef);
 
 	       afseek(basef, bst + 6 + 6 * lcnt + 4, SEEK_SET);
 	       putshort(basef, here - bst);
@@ -4954,8 +4954,8 @@ static void jstf_SplitTables(OTLookup ** mixed,OTLookup *** _SUB,
    *_POS=POS;
 }
 
-static uint32 jstf_dumplklist(AFILE *jstf,OTLookup ** PS,uint32 base) {
-   uint32 here;
+static uint32_t jstf_dumplklist(AFILE *jstf,OTLookup ** PS,uint32_t base) {
+   uint32_t here;
 
    int i;
 
@@ -4971,15 +4971,12 @@ static uint32 jstf_dumplklist(AFILE *jstf,OTLookup ** PS,uint32 base) {
    return (here - base);
 }
 
-static uint32 jstf_dumpmaxlookups(AFILE *jstf,SplineFont *sf,
+static uint32_t jstf_dumpmaxlookups(AFILE *jstf,SplineFont *sf,
 				  struct alltabs *at, OTLookup ** maxes,
-				  uint32 base) {
-   uint32 here, lbase;
-
+				  uint32_t base) {
+   uint32_t here, lbase;
    int cnt, i;
-
    int scnt, j;
-
    struct lookup_subtable *sub;
 
    if (maxes==NULL)
@@ -5032,13 +5029,9 @@ static uint32 jstf_dumpmaxlookups(AFILE *jstf,SplineFont *sf,
 
 void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
    AFILE *jstf;
-
    int i, cnt, lcnt, offset;
-
-   uint32 here, base;
-
+   uint32_t here, base;
    Justify *jscript;
-
    struct jstf_lang *jlang;
 
    if (sf->justify==NULL)
@@ -5119,9 +5112,9 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 	 for (i=0; i < jlang->cnt; ++i) {
 	    OTLookup **enSUB, **enPOS, **disSUB, **disPOS;
 
-	    uint32 enSUBoff, enPOSoff, disSUBoff, disPOSoff, maxOff;
+	    uint32_t enSUBoff, enPOSoff, disSUBoff, disPOSoff, maxOff;
 
-	    uint32 pbase;
+	    uint32_t pbase;
 
 	    pbase=aftell(jstf);
 	    afseek(jstf, here + 2 + i * 2, SEEK_SET);

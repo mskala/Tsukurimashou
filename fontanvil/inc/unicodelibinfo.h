@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: unicodelibinfo.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -35,15 +35,15 @@
 /* available  (oldest function listed first, latest function listed last) */
 extern void inituninameannot(void);
 
-extern char *unicode_name(int32 unienc);
+extern char *unicode_name(int32_t unienc);
 
-extern char *unicode_annot(int32 unienc);
+extern char *unicode_annot(int32_t unienc);
 
-extern int32 unicode_block_start(int32 block_i);
+extern int32_t unicode_block_start(int32_t block_i);
 
-extern int32 unicode_block_end(int32 block_i);
+extern int32_t unicode_block_end(int32_t block_i);
 
-extern char *unicode_block_name(int32 block_i);
+extern char *unicode_block_name(int32_t block_i);
 
 extern char *unicode_library_version(void);
 

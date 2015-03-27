@@ -1,4 +1,4 @@
-/* $Id: utype.c 2951 2014-03-15 16:49:47Z mskala $ */
+/* $Id: utype.c 3871 2015-03-27 08:01:10Z mskala $ */
 #include "utype.h"
 
 /* This file was generated using the program 'makeutype' */
@@ -24588,7 +24588,7 @@ const unsigned short ____tomirror[] = { 0,
    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
 };
 
-const uint32 ____utype[] = { 0,
+const uint32_t ____utype[] = { 0,
    0x00080000, 0x00080000, 0x00080000, 0x00080000, 0x00080000, 0x00080000, 0x00080000, 0x00080000,	/* 0x0000 */
    0x00080000, 0x00020010, 0x00000010, 0x00000010, 0x00000010, 0x00000010,
       0x00080000, 0x00080000,
@@ -39951,7 +39951,7 @@ const uint32 ____utype[] = { 0,
       0x00000000, 0x00000000
 };
 
-const uint32 ____utype2[] = { 0,
+const uint32_t ____utype2[] = { 0,
    /* binary flags used for physical layout of each unicode.org character */
    0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,	/* 0x0000 */
    0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -55315,7 +55315,7 @@ const uint32 ____utype2[] = { 0,
       0x00000000, 0x00000000
 };
 #if 0
-const uint32 ____codepointassigned[] = {
+const uint32_t ____codepointassigned[] = {
    /* 32 unicode.org characters represented for each data value in array */
    0x00000000, 0xffffffff, 0xffffffff, 0x7fffffff, 0x00000000, 0xffffffff, 0xffffffff, 0xffffffff,	/* 0x0000 */
    0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,

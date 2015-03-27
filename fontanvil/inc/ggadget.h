@@ -1,4 +1,4 @@
-/* $Id: ggadget.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: ggadget.h 3877 2015-03-27 12:41:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -189,7 +189,7 @@ typedef struct ggadget *GGadgetSet;
 enum sb_type { sb_upline, sb_downline, sb_uppage, sb_downpage, sb_track,
       sb_trackrelease };
 struct scrollbarinit {
-   int32 sb_min, sb_max, sb_pagesize, sb_pos;
+   int32_t sb_min, sb_max, sb_pagesize, sb_pos;
 };
 
 typedef int (*GGadgetHandler) (GGadget *, GEvent *);
@@ -227,8 +227,8 @@ typedef struct ggadgetdata {
    GBox *box;
    unichar_t mnemonic;
    unichar_t shortcut;
-   uint8 short_mask;
-   uint8 cols;			/* for rowcol */
+   uint8_t short_mask;
+   uint8_t cols;			/* for rowcol */
    short cid;
    GTextInfo *label;		/* Overloaded with a GGadgetCreateData * for hvboxes (their label is a gadget) */
    union {
@@ -297,14 +297,14 @@ struct col_init {
 
 struct matrix_data {
    union {
-      intpt md_ival;
+      intptr_t md_ival;
       double md_real;
       char *md_str;
       void *md_addr;
    } u;
-   uint8 frozen;
-   uint8 user_bits;
-   uint8 current;
+   uint8_t frozen;
+   uint8_t user_bits;
+   uint8_t current;
 };
 
 struct matrixinit {
@@ -374,7 +374,7 @@ extern int GGadgetScale(int xpos);
 
 extern int GIntGetResource(int index);
 
-extern int GStringSetResourceFileV(char *filename, uint32 checksum);
+extern int GStringSetResourceFileV(char *filename, uint32_t checksum);
 
 extern int GStringSetResourceFile(char *filename);	/* returns 1 for success, 0 for failure */
 
@@ -427,17 +427,17 @@ void GGadgetSetDesiredSize(GGadget * g, GRect * outer, GRect * inner);
 
 int GGadgetGetCid(GGadget * g);
 
-void GGadgetResize(GGadget * g, int32 width, int32 height);
+void GGadgetResize(GGadget * g, int32_t width, int32_t height);
 
-void GGadgetMove(GGadget * g, int32 x, int32 y);
+void GGadgetMove(GGadget * g, int32_t x, int32_t y);
 
-void GGadgetMoveAddToY(GGadget * g, int32 yoffset);
+void GGadgetMoveAddToY(GGadget * g, int32_t yoffset);
 
-int32 GGadgetGetX(GGadget * g);
+int32_t GGadgetGetX(GGadget * g);
 
-int32 GGadgetGetY(GGadget * g);
+int32_t GGadgetGetY(GGadget * g);
 
-void GGadgetSetY(GGadget * g, int32 y);
+void GGadgetSetY(GGadget * g, int32_t y);
 
 void GGadgetRedraw(GGadget * g);
 
@@ -483,25 +483,25 @@ void GCompletionFieldSetCompletionMode(GGadget * g, int enabled);
 
 void GGadgetClearList(GGadget * g);
 
-void GGadgetSetList(GGadget * g, GTextInfo ** ti, int32 copyit);
+void GGadgetSetList(GGadget * g, GTextInfo ** ti, int32_t copyit);
 
-GTextInfo **GGadgetGetList(GGadget * g, int32 * len);	/* Do not free!!! */
+GTextInfo **GGadgetGetList(GGadget * g, int32_t * len);	/* Do not free!!! */
 
-GTextInfo *GGadgetGetListItem(GGadget * g, int32 pos);
+GTextInfo *GGadgetGetListItem(GGadget * g, int32_t pos);
 
 GTextInfo *GGadgetGetListItemSelected(GGadget * g);
 
-void GGadgetSelectListItem(GGadget * g, int32 pos, int32 sel);
+void GGadgetSelectListItem(GGadget * g, int32_t pos, int32_t sel);
 
-void GGadgetSelectOneListItem(GGadget * g, int32 pos);
+void GGadgetSelectOneListItem(GGadget * g, int32_t pos);
 
-int32 GGadgetIsListItemSelected(GGadget * g, int32 pos);
+int32_t GGadgetIsListItemSelected(GGadget * g, int32_t pos);
 
-int32 GGadgetGetFirstListSelectedItem(GGadget * g);
+int32_t GGadgetGetFirstListSelectedItem(GGadget * g);
 
-void GGadgetScrollListToPos(GGadget * g, int32 pos);
+void GGadgetScrollListToPos(GGadget * g, int32_t pos);
 
-void GGadgetScrollListToText(GGadget * g, const unichar_t * lab, int32 sel);
+void GGadgetScrollListToText(GGadget * g, const unichar_t * lab, int32_t sel);
 
 void GGadgetSetListOrderer(GGadget * g,
 			   int (*orderer) (const void *, const void *));
@@ -542,18 +542,18 @@ void GTabSetRemoveTabByPos(GGadget * g, int pos);
 
 void GTabSetRemoveTabByName(GGadget * g, char *name);
 
-int32 GScrollBarGetPos(GGadget * g);
+int32_t GScrollBarGetPos(GGadget * g);
 
-int32 GScrollBarSetPos(GGadget * g, int32 pos);
+int32_t GScrollBarSetPos(GGadget * g, int32_t pos);
 
-int32 GScrollBarAddToPos(GGadget * g, int32 offset);
+int32_t GScrollBarAddToPos(GGadget * g, int32_t offset);
 
-void GScrollBarSetMustShow(GGadget * g, int32 sb_min, int32 sb_max,
-			   int32 sb_pagesize, int32 sb_mustshow);
-void GScrollBarSetBounds(GGadget * g, int32 sb_min, int32 sb_max,
-			 int32 sb_pagesize);
-void GScrollBarGetBounds(GGadget * g, int32 * sb_min, int32 * sb_max,
-			 int32 * sb_pagesize);
+void GScrollBarSetMustShow(GGadget * g, int32_t sb_min, int32_t sb_max,
+			   int32_t sb_pagesize, int32_t sb_mustshow);
+void GScrollBarSetBounds(GGadget * g, int32_t sb_min, int32_t sb_max,
+			 int32_t sb_pagesize);
+void GScrollBarGetBounds(GGadget * g, int32_t * sb_min, int32_t * sb_max,
+			 int32_t * sb_pagesize);
 
 void GMenuBarSetItemChecked(GGadget * g, int mid, int check);
 
@@ -814,7 +814,7 @@ GGadget *CreateFileChooser(struct gwindow *base, GGadgetData * gd,
 			   void *data);
 GGadget *CreateGadgets(struct gwindow *base, GGadgetCreateData * gcd);
 
-GTextInfo **GTextInfoArrayFromList(GTextInfo * ti, uint16 * cnt);
+GTextInfo **GTextInfoArrayFromList(GTextInfo * ti, uint16_t * cnt);
 
 typedef struct gresimage {
    GImage *image;
@@ -860,9 +860,9 @@ extern void GMenuItemArrayFree(GMenuItem * mi);
 
 extern void GMenuItem2ArrayFree(GMenuItem2 * mi);
 
-extern GMenuItem *GMenuItemArrayCopy(GMenuItem * mi, uint16 * cnt);
+extern GMenuItem *GMenuItemArrayCopy(GMenuItem * mi, uint16_t * cnt);
 
-extern GMenuItem *GMenuItem2ArrayCopy(GMenuItem2 * mi, uint16 * cnt);
+extern GMenuItem *GMenuItem2ArrayCopy(GMenuItem2 * mi, uint16_t * cnt);
 
 extern void GVisibilityBoxSetToMinWH(GGadget * g);
 

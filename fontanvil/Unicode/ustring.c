@@ -1,4 +1,4 @@
-/* $Id: ustring.c 3502 2014-11-30 12:26:48Z mskala $ */
+/* $Id: ustring.c 3875 2015-03-27 11:44:59Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,6 @@
 #include "ustring.h"
 #include "utype.h"
 
-long u_strcmp(const unichar_t * str1, const unichar_t * str2) {
-   long ch1, ch2;
-
-   while (1) {
-      ch1 = *str1++;
-      ch2 = *str2++;
-      if (ch1 != ch2 || ch1 == '\0')
-	 return (ch1 - ch2);
-   }
-}
-
 void u_strcpy(unichar_t * to, const unichar_t * from) {
    register unichar_t ch;
 
@@ -56,29 +45,8 @@ int u_strlen(register const unichar_t * str) {
    return (len);
 }
 
-static unichar_t *u_copyn(const unichar_t * pt, long n) {
-   unichar_t *res;
-
-#ifdef MEMORY_MASK
-   if (n * sizeof(unichar_t) >= MEMORY_MASK)
-      n = MEMORY_MASK / sizeof(unichar_t) - 1;
-#endif
-   res = (unichar_t *) malloc((n + 1) * sizeof(unichar_t));
-   memcpy(res, pt, n * sizeof(unichar_t));
-   res[n] = '\0';
-   return (res);
-}
-
-unichar_t *u_copy(const unichar_t * pt) {
-   if (pt)
-      return u_copyn(pt, u_strlen(pt));
-
-   return ((unichar_t *) 0);
-}
-
 unichar_t *uc_copy(const char *pt) {
    unichar_t *res, *rpt;
-
    int n;
 
    if (!pt)
@@ -117,7 +85,7 @@ char *cu_copy(const unichar_t * pt) {
 unichar_t *utf82u_strncpy(unichar_t * ubuf, const char *utf8buf, int len) {
    unichar_t *upt = ubuf, *uend = ubuf + len - 1;
 
-   const uint8 *pt = (const uint8 *) utf8buf, *end = pt + strlen(utf8buf);
+   const uint8_t *pt = (const uint8_t *) utf8buf, *end = pt + strlen(utf8buf);
 
    int w, w2;
 
@@ -240,12 +208,12 @@ char *u2utf8_copyn(const unichar_t * ubuf, int len) {
    return (NULL);
 }
 
-int32 utf8_ildb(const char **_text) {
-   int32 val = -1;
+int32_t utf8_ildb(const char **_text) {
+   int32_t val = -1;
 
    int ch;
 
-   const uint8 *text = (const uint8 *) *_text;
+   const uint8_t *text = (const uint8_t *) *_text;
 
    /* Increment and load character */
 
@@ -278,7 +246,7 @@ int32 utf8_ildb(const char **_text) {
    return (val);
 }
 
-char *utf8_idpb(char *utf8_text, uint32 ch, int flags) {
+char *utf8_idpb(char *utf8_text, uint32_t ch, int flags) {
 /* Increment and deposit character, no '\0' appended */
 /* NOTE: Unicode only needs range of 17x65535 values */
 /* and strings must be long enough to hold +4 chars. */
@@ -356,7 +324,7 @@ int utf8_valid(const char *str) {
 
 long utf82u_strlen(const char *utf8_str) {
 /* Count how many shorts needed to represent in UCS2 */
-   int32 ch;
+   int32_t ch;
 
    long len = 0;
 

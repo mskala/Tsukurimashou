@@ -1,4 +1,4 @@
-/* $Id: svg.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: svg.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ static void latin1ToUtf8Out(AFILE *file,char *str) {
    /* beware of characters above 0x80, also &, <, > (things that are magic for xml) */
    while (*str) {
       if (*str=='&' || *str=='<' || *str=='>' || (*str & 0x80))
-	 afprintf(file, "&#%d;", (uint8) * str);
+	 afprintf(file, "&#%d;", (uint8_t) * str);
       else
 	 aputc(*str, file);
       ++str;
@@ -457,7 +457,7 @@ static void DataURI_ImageDump(AFILE *file,struct gimage *img) {
 #endif
 #ifndef _NO_LIBPNG
    if (!done) {
-      done=GImageWrite_Png(img, imgf, false);
+      done=GImageWrite_Png(img, (FILE *)imgf, false);
       mimetype="image/png";
    }
 #endif
@@ -828,7 +828,7 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
    }
 }
 
-static int LigCnt(SplineFont *sf,PST *lig,int32 *univals,int max) {
+static int LigCnt(SplineFont *sf,PST *lig,int32_t *univals,int max) {
    char *pt, *end;
 
    int c=0;
@@ -865,7 +865,7 @@ static PST *HasLigature(SplineChar *sc) {
 
    int bestc=0, c;
 
-   int32 univals[50];
+   int32_t univals[50];
 
    for (pst=sc->possub; pst != NULL; pst=pst->next) {
       if (pst->type==pst_ligature) {
@@ -880,7 +880,7 @@ static PST *HasLigature(SplineChar *sc) {
    return (best);
 }
 
-static SplineChar *SCHasSubs(SplineChar *sc,uint32 tag) {
+static SplineChar *SCHasSubs(SplineChar *sc,uint32_t tag) {
    PST *pst;
 
    for (pst=sc->possub; pst != NULL; pst=pst->next) {
@@ -897,7 +897,7 @@ static void svg_scdump(AFILE *file,SplineChar *sc,int defwid,int encuni,
 
    const unichar_t *alt;
 
-   int32 univals[50];
+   int32_t univals[50];
 
    int i, c;
 
@@ -2204,7 +2204,7 @@ static SplineSet *SVGParsePoly(xmlNodePtr poly,int isgon) {
 struct svg_state {
    double linewidth;
    int dofill, dostroke;
-   uint32 fillcol, strokecol;
+   uint32_t fillcol, strokecol;
    float fillopacity, strokeopacity;
    int isvisible;
    enum linecap lc;
@@ -2212,9 +2212,9 @@ struct svg_state {
    real transform[6];
    DashType dashes[DASH_MAX];
    SplineSet *clippath;
-   uint8 free_clip;
-   uint32 currentColor;
-   uint32 stopColor;
+   uint8_t free_clip;
+   uint32_t currentColor;
+   uint32_t stopColor;
    float stopOpacity;
 };
 
@@ -2377,7 +2377,7 @@ static real parseGCoord(xmlChar *prop,int bb_units,real bb_low,
    return (val);
 }
 
-static int xmlParseColor(xmlChar *name,uint32 *color,char **url,
+static int xmlParseColor(xmlChar *name,uint32_t *color,char **url,
 			 struct svg_state *st);
 
 static void xmlParseColorSource(xmlNodePtr top,char *name,DBounds *bbox,
@@ -2640,13 +2640,13 @@ static void xmlApplyColourSources(xmlNodePtr top,Entity *head,
    }
 }
 
-static int xmlParseColor(xmlChar *name,uint32 *color,char **url,
+static int xmlParseColor(xmlChar *name,uint32_t *color,char **url,
 			 struct svg_state *st) {
    int doit, i;
 
    static struct {
       char *name;
-      uint32 col;
+      uint32_t col;
    } stdcols[]={
       {
       "red", 0xff0000}, {
@@ -3336,7 +3336,7 @@ static SplineChar *SVGParseGlyphArgs(xmlNodePtr glyph,int defh,int defv,
 
    xmlChar *name, *form, *glyphname, *unicode, *orientation;
 
-   uint32 *u;
+   uint32_t *u;
 
    char buffer[100];
 
@@ -3435,7 +3435,7 @@ static SplineChar *SVGParseGlyph(SplineFont *sf,xmlNodePtr glyph,int defh,
 static void SVGLigatureFixupCheck(SplineChar *sc,xmlNodePtr glyph) {
    xmlChar *unicode;
 
-   uint32 *u;
+   uint32_t *u;
 
    int len, len2;
 
@@ -3522,7 +3522,7 @@ static void SVGLigatureFixupCheck(SplineChar *sc,xmlNodePtr glyph) {
 
 static char *SVGGetNames(SplineFont *sf,xmlChar *g,xmlChar *utf8,
 			 SplineChar ** sc) {
-   uint32 *u=NULL;
+   uint32_t *u=NULL;
 
    char *names;
 
@@ -3593,7 +3593,7 @@ static void SVGParseKern(SplineFont *sf,xmlNodePtr kern,int isv) {
 
    SplineChar *sc1, *sc2;
 
-   uint32 script;
+   uint32_t script;
 
    struct lookup_subtable *subtable;
 

@@ -1,4 +1,4 @@
-/* $Id: edgelist.h 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: edgelist.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ typedef struct edgelist {
    real omin, omax;
    real scale;
    int bytes_per_line;
-   uint8 *bitmap;
+   uint8_t *bitmap;
    Edge *last, *splinesetfirst;
    SplineChar *sc;
    int layer;

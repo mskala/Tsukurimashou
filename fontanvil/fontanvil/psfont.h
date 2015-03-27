@@ -1,4 +1,4 @@
-/* $Id: psfont.h 3849 2015-03-25 10:47:47Z mskala $ */
+/* $Id: psfont.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -138,9 +138,9 @@ typedef struct fontdict {
    int fdbytes;
    int gdbytes;
    int cidcnt;
-   uint8 **cidstrs;
-   int16 *cidlens;
-   int16 *cidfds;
+   uint8_t **cidstrs;
+   int16_t *cidlens;
+   int16_t *cidfds;
 /* CFF stuff */
    struct splinefont *sf;
 /* MM stuff */

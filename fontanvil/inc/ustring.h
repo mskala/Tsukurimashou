@@ -1,4 +1,4 @@
-/* $Id: ustring.h 3423 2014-10-26 18:51:07Z mskala $ */
+/* $Id: ustring.h 3875 2015-03-27 11:44:59Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,6 @@ extern char *copy(const char *);
 
 extern char *copyn(const char *, long);
 
-extern unichar_t *u_copy(const unichar_t *);
-
 extern unichar_t *u_copynallocm(const unichar_t * pt, long n, long m);
 
 extern unichar_t *uc_copyn(const char *, int);
@@ -52,8 +50,6 @@ extern char *cu_copyn(const unichar_t * pt, int len);
 extern char *cu_copy(const unichar_t *);
 
 extern long uc_strcmp(const unichar_t *, const char *);
-
-extern long u_strcmp(const unichar_t *, const unichar_t *);
 
 extern long uc_strncmp(const unichar_t *, const char *, int);
 
@@ -142,14 +138,14 @@ extern unichar_t *u_strstartmatch(const unichar_t * initial,
 extern unichar_t *cu_strstartmatch(const char *initial,
 				   const unichar_t * full);
 
-extern int32 utf8_ildb(const char **utf8_text);
+extern int32_t utf8_ildb(const char **utf8_text);
 
 #   define UTF8IDPB_NOZERO 1	/* Allow for 0 encoded as a non-zero utf8 0xc0:0x80 char */
 #   define UTF8IDPB_OLDLIMIT 2	/* Today's utf8 is agreed to be limited to {0..0x10FFFF} */
 #   define UTF8IDPB_UCS2 8	/* Encode {0...0xffff} as 16bit ucs2 type values */
 #   define UTF8IDPB_UTF16 16	/* Encode {0...0x10ffff} as 16bit utf16 type values */
 #   define UTF8IDPB_UTF32 32	/* Encode {0...0x10ffff} as 32bit utf32 type values */
-extern char *utf8_idpb(char *utf8_text, uint32 ch, int flags);
+extern char *utf8_idpb(char *utf8_text, uint32_t ch, int flags);
 
 extern char *utf8_db(char *utf8_text);
 
@@ -197,7 +193,6 @@ extern unichar_t *encoding2u_strncpy(unichar_t * uto, const char *from, int n,
 				     enum encoding cs);
 extern char *u2encoding_strncpy(char *to, const unichar_t * ufrom, int n,
 				enum encoding cs);
-extern unichar_t *def2u_strncpy(unichar_t * uto, const char *from, int n);
 
 extern char *u2def_strncpy(char *to, const unichar_t * ufrom, int n);
 

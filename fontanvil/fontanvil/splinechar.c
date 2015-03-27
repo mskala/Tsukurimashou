@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: splinechar.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1700,20 +1700,20 @@ int SCValidate(SplineChar * sc, int layer, int force) {
       /* If we have a maxp table then do some truetype checks */
       /* these are only errors for fontlint, we'll fix them up when we */
       /*  generate the font -- but fontlint needs to know this stuff */
-      int pt_max=memushort(tab->data, tab->len, 3 * sizeof(uint16));
+      int pt_max=memushort(tab->data, tab->len, 3 * sizeof(uint16_t));
 
-      int path_max=memushort(tab->data, tab->len, 4 * sizeof(uint16));
+      int path_max=memushort(tab->data, tab->len, 4 * sizeof(uint16_t));
 
       int composit_pt_max =
-	 memushort(tab->data, tab->len, 5 * sizeof(uint16));
+	 memushort(tab->data, tab->len, 5 * sizeof(uint16_t));
       int composit_path_max =
-	 memushort(tab->data, tab->len, 6 * sizeof(uint16));
-      int instr_len_max=memushort(tab->data, tab->len, 13 * sizeof(uint16));
+	 memushort(tab->data, tab->len, 6 * sizeof(uint16_t));
+      int instr_len_max=memushort(tab->data, tab->len, 13 * sizeof(uint16_t));
 
-      int num_comp_max=memushort(tab->data, tab->len, 14 * sizeof(uint16));
+      int num_comp_max=memushort(tab->data, tab->len, 14 * sizeof(uint16_t));
 
       int comp_depth_max =
-	 memushort(tab->data, tab->len, 15 * sizeof(uint16));
+	 memushort(tab->data, tab->len, 15 * sizeof(uint16_t));
       int rd, rdtest;
 
       /* Already figured out two of these */
@@ -1842,7 +1842,7 @@ void SCTickValidationState(SplineChar * sc, int layer) {
 }
 
 void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {
-   uint8 *instrs=sc->ttf_instrs==NULL && sc->parent->mm != NULL
+   uint8_t *instrs=sc->ttf_instrs==NULL && sc->parent->mm != NULL
       && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
 								orig_pos]->
       ttf_instrs : sc->ttf_instrs;
@@ -1948,7 +1948,7 @@ void SCHintsChanged(SplineChar * sc) {
 }
 
 void instrcheck(SplineChar * sc, int layer) {
-   uint8 *instrs=sc->ttf_instrs==NULL && sc->parent->mm != NULL
+   uint8_t *instrs=sc->ttf_instrs==NULL && sc->parent->mm != NULL
       && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
 								orig_pos]->
       ttf_instrs : sc->ttf_instrs;

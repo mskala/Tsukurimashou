@@ -1,4 +1,4 @@
-/* $Id: ufo.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: ufo.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1633,7 +1633,7 @@ static void UFOHandleKern(SplineFont *sf,char *basedir,int isv) {
    SplineChar *sc, *ssc;
    KernPair *kp;
    char *end;
-   uint32 script;
+   uint32_t script;
 
    if (GFileExists(fname))
       doc=xmlParseFile(fname);
@@ -1810,7 +1810,7 @@ static long UFOGetBits(xmlDocPtr doc,xmlNodePtr value) {
    return (mask);
 }
 
-static void UFOGetBitArray(xmlDocPtr doc,xmlNodePtr value,uint32 *res,
+static void UFOGetBitArray(xmlDocPtr doc,xmlNodePtr value,uint32_t *res,
 			   int len) {
    xmlNodePtr kid;
    int index;

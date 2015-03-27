@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: stemdb.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2005-2012 by George Williams and Alexey Kryukov */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1369,7 +1369,7 @@ static BasePoint MiddleUnit(BasePoint *unit1,BasePoint *unit2) {
    return (ret);
 }
 
-static uint8 IsStubOrIntersection(struct glyphdata *gd,BasePoint *dir1,
+static uint8_t IsStubOrIntersection(struct glyphdata *gd,BasePoint *dir1,
 				  struct pointdata *pd1,
 				  struct pointdata *pd2, int is_next1,
 				  int is_next2) {
@@ -1575,7 +1575,7 @@ static void SwapEdges(struct glyphdata *gd,struct stemdata *stem) {
    }
 }
 
-static int StemFitsHV(struct stemdata *stem,int is_x,uint8 mask) {
+static int StemFitsHV(struct stemdata *stem,int is_x,uint8_t mask) {
    int i, cnt;
 
    double loff, roff;
@@ -2128,7 +2128,7 @@ static struct stemdata *NewStem(struct glyphdata *gd,BasePoint *dir,
 
 static int ParallelToDir(struct pointdata *pd,int checknext,BasePoint *dir,
 			 BasePoint * opposite, SplinePoint * basesp,
-			 uint8 is_stub) {
+			 uint8_t is_stub) {
 
    BasePoint n, o, *base=&basesp->me;
 
@@ -2299,7 +2299,7 @@ static int IsDiagonalEnd(struct glyphdata *gd,
 static struct stemdata *TestStem(struct glyphdata *gd,struct pointdata *pd,
 				 BasePoint * dir, SplinePoint * match,
 				 int is_next, int is_next2,
-				 int require_existing, uint8 is_stub,
+				 int require_existing, uint8_t is_stub,
 				 int eidx) {
    struct pointdata *pd2;
 
@@ -2732,7 +2732,7 @@ static int BuildStem(struct glyphdata *gd,struct pointdata *pd,int is_next,
 
    int tp, fp, t_needs_recalc=false, ret=0;
 
-   uint8 tstub=0, fstub=0;
+   uint8_t tstub=0, fstub=0;
 
    BasePoint opposite;
 
@@ -3699,7 +3699,7 @@ static int AddLineSegment(struct stemdata *stem,struct segment *space,
 
    double b;
 
-   uint8 extr;
+   uint8_t extr;
 
    if (pd==NULL || (sp=pd->sp)==NULL || sp->ticked ||
        sp->next==NULL || sp->prev==NULL)
@@ -4676,7 +4676,7 @@ static void FindRefPointsNew(struct glyphdata *gd,struct stemdata *stem) {
 
    SplinePoint *sp, *tsp;
 
-   uint8 *lextr, *rextr;
+   uint8_t *lextr, *rextr;
 
    is_x=(int) rint(stem->unit.y);
    lpos=((real *) & stem->left.x)[!is_x];

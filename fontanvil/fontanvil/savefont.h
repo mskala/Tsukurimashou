@@ -1,4 +1,4 @@
-/* $Id: savefont.h 3849 2015-03-25 10:47:47Z mskala $ */
+/* $Id: savefont.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,6 @@ void PrepareUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer);
 
 void RestoreUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer);
 
-int _DoSave(SplineFont *sf, char *newname, int32 * sizes, int res,
+int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
 	    EncMap * map, char *subfontdefinition, int layer);
 int CheckIfTransparent(SplineFont *sf);

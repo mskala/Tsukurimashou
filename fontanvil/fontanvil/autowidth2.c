@@ -1,4 +1,4 @@
-/* $Id: autowidth2.c 3866 2015-03-26 11:30:37Z mskala $ */
+/* $Id: autowidth2.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2009-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -138,7 +138,7 @@ static void aw2_figure_all_sidebearing(AW_Data *all) {
 
    int width, changed;
 
-   uint8 *rsel=calloc(all->fv->map->enccount, sizeof(char));
+   uint8_t *rsel=calloc(all->fv->map->enccount, sizeof(char));
 
    real denom=(all->sf->ascent + all->sf->descent) / DENOM_FACTOR_OF_EMSIZE;
 
@@ -357,7 +357,7 @@ static void aw2_handlescript(AW_Data *all) {
 void AutoWidth2(FontViewBase * fv, int separation, int min_side, int max_side,
 		int chunk_height, int loop_cnt) {
    struct scriptlist {
-      uint32 script;
+      uint32_t script;
       AW_Glyph *glyphs;
       int gcnt;
    } *scripts;
@@ -390,7 +390,7 @@ void AutoWidth2(FontViewBase * fv, int separation, int min_side, int max_side,
 	  (sc=sf->glyphs[gid]) != NULL && !sc->ticked &&
 	  HasUseMyMetrics(sc, fv->active_layer)==NULL) {
 	 /* If Use My Metrics is set, then we can't change the width (which we grab from a refchar) */
-	 uint32 script;
+	 uint32_t script;
 
 	 script=SCScriptFromUnicode(sc);
 	 for (s=0; s < scnt; ++s) {

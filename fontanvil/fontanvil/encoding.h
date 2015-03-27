@@ -1,4 +1,4 @@
-/* $Id: encoding.h 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: encoding.h 3871 2015-03-27 08:01:10Z mskala $ */
 #ifndef _ENCODING_H
 #   define _ENCODING_H
 
@@ -13,7 +13,7 @@ struct cidmap {
    int supplement, maxsupple;
    int cidmax;			/* Max cid found in the charset */
    int namemax;			/* Max cid with useful info */
-   uint32 *unicode;
+   uint32_t *unicode;
    char **name;
    struct cidaltuni *alts;
    struct cidmap *next;

@@ -1,4 +1,4 @@
-/* $Id: gimage.c 3327 2014-09-29 07:50:49Z mskala $ */
+/* $Id: gimage.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  */
 #include "gimage.h"
 
-GImage *GImageCreate(enum image_type type, int32 width, int32 height) {
+GImage *GImageCreate(enum image_type type, int32_t width, int32_t height) {
 /* Prepare to get a bitmap image. Cleanup and return NULL if not enough memory */
    GImage *gi;
 
@@ -51,7 +51,7 @@ GImage *GImageCreate(enum image_type type, int32 width, int32 height) {
    base->data = NULL;
    base->clut = NULL;
    base->trans = COLOR_UNKNOWN;
-   if ((base->data = (uint8 *) malloc(height * base->bytes_per_line)) == NULL)
+   if ((base->data = (uint8_t *) malloc(height * base->bytes_per_line)) == NULL)
       goto errorGImageCreate;
    if (type == it_index) {
       if ((base->clut = (GClut *) calloc(1, sizeof(GClut))) == NULL) {
@@ -69,7 +69,7 @@ GImage *GImageCreate(enum image_type type, int32 width, int32 height) {
    return (NULL);
 }
 
-GImage *_GImage_Create(enum image_type type, int32 width, int32 height) {
+GImage *_GImage_Create(enum image_type type, int32_t width, int32_t height) {
    GImage *gi;
 
    struct _GImage *base;
@@ -259,7 +259,7 @@ static void GImageBlendOver(GImage * dest, GImage * src, GRect * from, int x, in
 
    int i, j, a, r, g, b;
 
-   uint32 *dpt, *spt;
+   uint32_t *dpt, *spt;
 
    dbase = dest->u.image;
    sbase = src->u.image;
@@ -276,11 +276,11 @@ static void GImageBlendOver(GImage * dest, GImage * src, GRect * from, int x, in
 
    for (i = 0; i < from->height; ++i) {
       dpt =
-	 (uint32 *) (dbase->data + (i + y) * dbase->bytes_per_line +
-		     x * sizeof(uint32));
+	 (uint32_t *) (dbase->data + (i + y) * dbase->bytes_per_line +
+		     x * sizeof(uint32_t));
       spt =
-	 (uint32 *) (sbase->data + (i + from->y) * sbase->bytes_per_line +
-		     from->x * sizeof(uint32));
+	 (uint32_t *) (sbase->data + (i + from->y) * sbase->bytes_per_line +
+		     from->x * sizeof(uint32_t));
 
       for (j = 0; j < from->width; j++) {
 	 a = COLOR_ALPHA(*spt);

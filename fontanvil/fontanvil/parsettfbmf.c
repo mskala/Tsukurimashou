@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: parsettfbmf.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ struct bigmetrics {
 /* ************************************************************************** */
 
 static void ttfreadbmfglyph(AFILE *ttf,struct ttfinfo *info,
-			    int32 offset, int32 len,
+			    int32_t offset, int32_t len,
 			    struct bigmetrics *metrics, int imageformat,
 			    int gid, BDFFont * bdf) {
    BDFChar *bdfc;
@@ -181,18 +181,18 @@ static void ttfreadbmfglyph(AFILE *ttf,struct ttfinfo *info,
    }
    if (imageformat != 8 && imageformat != 9)
       bdfc->bitmap =
-	 calloc(metrics->height * bdfc->bytes_per_line, sizeof(uint8));
+	 calloc(metrics->height * bdfc->bytes_per_line, sizeof(uint8_t));
 
    if (imageformat==8 || imageformat==9) {
       /* composite */
       num=getushort(ttf);
-      bdfc->bitmap=calloc(1, sizeof(uint8));
+      bdfc->bitmap=calloc(1, sizeof(uint8_t));
       bdfc->bytes_per_line=1;
       for (i=0; i < num; ++i) {
 	 ref=calloc(1, sizeof(BDFRefChar));
 	 ref->gid=getushort(ttf);
-	 ref->xoff=(int8) agetc(ttf);
-	 ref->yoff=(int8) agetc(ttf);
+	 ref->xoff=(int8_t) agetc(ttf);
+	 ref->yoff=(int8_t) agetc(ttf);
 	 if (prev==NULL)
 	    bdfc->refs=ref;
 	 else
@@ -397,7 +397,7 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 
    int indexformat, imageformat, size, num, moreoff;
 
-   int32 offset, *glyphoffsets, *glyphs, loc;
+   int32_t offset, *glyphoffsets, *glyphs, loc;
 
    int first, last;
 
@@ -426,7 +426,7 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
       switch (indexformat) {
 	case 1:
 	case 3:
-	   glyphoffsets=malloc((last - first + 2) * sizeof(int32));
+	   glyphoffsets=malloc((last - first + 2) * sizeof(int32_t));
 	   for (i=0; i < (last - first + 2); ++i)
 	      glyphoffsets[i] =
 		 indexformat==3 ? getushort(ttf) : getlong(ttf);
@@ -463,8 +463,8 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 	   break;
 	case 4:
 	   num=getlong(ttf);
-	   glyphoffsets=malloc((num + 1) * sizeof(int32));
-	   glyphs=malloc((num + 1) * sizeof(int32));
+	   glyphoffsets=malloc((num + 1) * sizeof(int32_t));
+	   glyphs=malloc((num + 1) * sizeof(int32_t));
 	   for (g=0; g < num + 1; ++g) {
 	      glyphs[g]=getushort(ttf);
 	      glyphoffsets[g]=getushort(ttf);
@@ -489,7 +489,7 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 	   big.vbearingY=(signed char) agetc(ttf);
 	   big.vadvance=agetc(ttf);
 	   num=getlong(ttf);
-	   glyphs=malloc((num + 1) * sizeof(int32));
+	   glyphs=malloc((num + 1) * sizeof(int32_t));
 	   for (g=0; g < num; ++g) {
 	      glyphs[g]=getushort(ttf);
 	   }
@@ -778,7 +778,7 @@ static struct bdfcharlist *BDFAddDefaultGlyphs(BDFFont *bdf,int format) {
       glyph1.width=glyph2.width=width;
       glyph1.vwidth=glyph2.vwidth=bdf->pixelsize;
       glyph1.bytes_per_line=glyph2.bytes_per_line=1;	/* Needs to be 1 or BCRegularizeBitmap gets upset */
-      glyph1.bitmap=glyph2.bitmap=(uint8 *) "";
+      glyph1.bitmap=glyph2.bitmap=(uint8_t *) "";
       glyph1.orig_pos=1;
       glyph2.orig_pos=2;
       if (nullpos==-1) {
@@ -823,9 +823,9 @@ static void ttfdumpbigmetrics(AFILE *bdat,BDFChar *bc) {
    aputc(bc->vwidth, bdat);	/* vert advance width */
 }
 
-static int32 ttfdumpf1_6bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
+static int32_t ttfdumpf1_6bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
    /* format 1 character dump. small metrics, byte aligned data */
-   int32 pos=aftell(bdat);
+   int32_t pos=aftell(bdat);
 
    int r, c, val;
 
@@ -862,10 +862,10 @@ static int32 ttfdumpf1_6bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
    return (pos);
 }
 
-static int32 ttfdumpf2_7bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf,
+static int32_t ttfdumpf2_7bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf,
 			      int do_metrics) {
    /* format 2 character dump. small metrics, bit aligned data */
-   int32 pos=aftell(bdat);
+   int32_t pos=aftell(bdat);
 
    int r, c, ch, bit, sh;
 
@@ -910,9 +910,9 @@ static int32 ttfdumpf2_7bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf,
    return (pos);
 }
 
-static int32 ttfdumpf8_9bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
+static int32_t ttfdumpf8_9bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
    /* format 8 character dump. small metrics, component data */
-   int32 pos=aftell(bdat);
+   int32_t pos=aftell(bdat);
 
    int numc=0;
 
@@ -938,39 +938,39 @@ static int32 ttfdumpf8_9bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
 }
 
 struct sbitLineMetrics {
-   int8 ascender;
-   int8 descender;
-   uint8 widthMax;
-   int8 caretRise;
-   int8 caretRun;
-   int8 caretOff;
-   int8 minoriginsb;
-   int8 minAdvancesb;
-   int8 maxbeforebl;
-   int8 minafterbl;
-   int8 pad1, pad2;
+   int8_t ascender;
+   int8_t descender;
+   uint8_t widthMax;
+   int8_t caretRise;
+   int8_t caretRun;
+   int8_t caretOff;
+   int8_t minoriginsb;
+   int8_t minAdvancesb;
+   int8_t maxbeforebl;
+   int8_t minafterbl;
+   int8_t pad1, pad2;
 };
 
 struct bitmapSizeTable {
-   int32 subtableoffset;
-   int32 tablesize;
-   int32 numsubtables;
-   int32 colorRef;
+   int32_t subtableoffset;
+   int32_t tablesize;
+   int32_t numsubtables;
+   int32_t colorRef;
    struct sbitLineMetrics hori, vert;
-   uint16 startGlyph;
-   uint16 endGlyph;
-   uint8 ppemX;
-   uint8 ppemY;
-   uint8 bitdepth;
-   int8 flags;
+   uint16_t startGlyph;
+   uint16_t endGlyph;
+   uint8_t ppemX;
+   uint8_t ppemY;
+   uint8_t bitdepth;
+   int8_t flags;
    struct bitmapSizeTable *next;
    unsigned int error:1;
 };
 
 struct indexarray {
-   uint16 first;
-   uint16 last;
-   uint32 additionalOffset;
+   uint16_t first;
+   uint16_t last;
+   uint32_t additionalOffset;
    struct indexarray *next;
 };
 
@@ -1049,7 +1049,7 @@ static void BCPreserveAndExpand(BDFChar *bc,IBounds *ib) {
    bc->backup->xmax=bc->xmax;
    bc->backup->ymin=bc->ymin;
    bc->backup->ymax=bc->ymax;
-   bc->backup->bitmap=calloc(bc->bytes_per_line * bmp_width, sizeof(uint8));
+   bc->backup->bitmap=calloc(bc->bytes_per_line * bmp_width, sizeof(uint8_t));
    memcpy(bc->backup->bitmap, bc->bitmap, bc->bytes_per_line * bmp_width);
 
    BCExpandBitmapToEmBox(bc, ib->minx, ib->miny, ib->maxx, ib->maxy);
@@ -1122,7 +1122,7 @@ static struct bitmapSizeTable *ttfdumpstrikelocs(AFILE *bloc,AFILE *bdat,
 
    AFILE *subtables=atmpfile();
 
-   int32 pos=aftell(bloc), startofsubtables, base, stlen;
+   int32_t pos=aftell(bloc), startofsubtables, base, stlen;
 
    BDFChar *bc, *bc2;
 
@@ -1266,7 +1266,7 @@ static struct bitmapSizeTable *ttfdumpstrikelocs(AFILE *bloc,AFILE *bdat,
    /* now output the pointers */
    for (cur=head, cnt=0; cur != NULL; cur=cur->next)
       ++cnt;
-   startofsubtables=cnt * (2 * sizeof(short) + sizeof(int32));
+   startofsubtables=cnt * (2 * sizeof(short) + sizeof(int32_t));
    size->numsubtables=cnt;
    for (cur=head; cur != NULL; cur=cur->next) {
       putshort(bloc, cur->first);
@@ -1303,7 +1303,7 @@ static void dumpbitmapSizeTable(AFILE *bloc,struct bitmapSizeTable *size) {
    aputc(size->flags, bloc);
 }
 
-void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32 * sizes) {
+void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    int i, j;
 
    static struct bitmapSizeTable space;
@@ -1368,7 +1368,7 @@ void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32 * sizes) {
 	 at->error=true;
    }
 
-   afseek(at->bloc, 2 * sizeof(int32), SEEK_SET);
+   afseek(at->bloc, 2 * sizeof(int32_t), SEEK_SET);
    for (cur=head; cur != NULL; cur=cur->next)
       dumpbitmapSizeTable(at->bloc, cur);
 
@@ -1393,7 +1393,7 @@ void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32 * sizes) {
    ttf_bdf_dump(sf, at, sizes);
 }
 
-static BDFFont *BDFSelect(SplineFont *sf,int32 *sizes,int wanted) {
+static BDFFont *BDFSelect(SplineFont *sf,int32_t *sizes,int wanted) {
    int i;
 
    int best=-1;
@@ -1416,7 +1416,7 @@ static BDFFont *BDFSelect(SplineFont *sf,int32 *sizes,int wanted) {
    return (bdf);
 }
 
-void ttfdumpbitmapscaling(SplineFont *sf, struct alltabs *at, int32 * sizes) {
+void ttfdumpbitmapscaling(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    int i, cnt;
 
    BDFFont *bdf;

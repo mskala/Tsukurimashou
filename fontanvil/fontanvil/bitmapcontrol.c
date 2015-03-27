@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 3866 2015-03-26 11:30:37Z mskala $ */
+/* $Id: bitmapcontrol.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ static BDFFont *BDFNew(SplineFont *sf,int pixel_size,int depth) {
    return (new);
 }
 
-static void SFRemoveUnwantedBitmaps(SplineFont *sf,int32 *sizes) {
+static void SFRemoveUnwantedBitmaps(SplineFont *sf,int32_t *sizes) {
    BDFFont *bdf, *prev, *next;
 
    FontViewBase *fv;
@@ -84,7 +84,7 @@ static void SFRemoveUnwantedBitmaps(SplineFont *sf,int32 *sizes) {
    }
 }
 
-static void SFFigureBitmaps(SplineFont *sf,int32 *sizes,int usefreetype,
+static void SFFigureBitmaps(SplineFont *sf,int32_t *sizes,int usefreetype,
 			    int rasterize, int layer) {
    BDFFont *bdf;
 
@@ -138,7 +138,7 @@ static int SizeExists(BDFFont *list,int size) {
    return (false);
 }
 
-static void FVScaleBitmaps(FontViewBase *fv,int32 *sizes,int rasterize) {
+static void FVScaleBitmaps(FontViewBase *fv,int32_t *sizes,int rasterize) {
    BDFFont *bdf, *scale;
 
    int i, cnt=0;
@@ -167,7 +167,7 @@ static void FVScaleBitmaps(FontViewBase *fv,int32 *sizes,int rasterize) {
    SFRemoveUnwantedBitmaps(fv->sf, sizes);
 }
 
-static void ReplaceBDFC(SplineFont *sf,int32 *sizes,int gid,
+static void ReplaceBDFC(SplineFont *sf,int32_t *sizes,int gid,
 			void *freetypecontext, int usefreetype, int layer) {
    BDFFont *bdf;
 
@@ -216,7 +216,7 @@ static void ReplaceBDFC(SplineFont *sf,int32 *sizes,int gid,
    }
 }
 
-static int FVRegenBitmaps(CreateBitmapData *bd,int32 *sizes,
+static int FVRegenBitmaps(CreateBitmapData *bd,int32_t *sizes,
 			  int usefreetype) {
    FontViewBase *fv=bd->fv, *selfv=bd->which==bd_all ? NULL : fv;
 
@@ -295,7 +295,7 @@ static void BDFClearGlyph(BDFFont *bdf,int gid,int pass) {
 }
 
 
-static int FVRemoveBitmaps(CreateBitmapData *bd,int32 *sizes) {
+static int FVRemoveBitmaps(CreateBitmapData *bd,int32_t *sizes) {
    FontViewBase *fv=bd->fv;
 
    SplineFont *sf=bd->sf, *bdfsf =
@@ -332,7 +332,7 @@ static int FVRemoveBitmaps(CreateBitmapData *bd,int32 *sizes) {
    return (true);
 }
 
-void BitmapsDoIt(CreateBitmapData * bd, int32 * sizes, int usefreetype) {
+void BitmapsDoIt(CreateBitmapData * bd, int32_t * sizes, int usefreetype) {
 
    if (bd->isavail==-1)
       FVRemoveBitmaps(bd, sizes);
@@ -363,7 +363,7 @@ void BitmapsDoIt(CreateBitmapData * bd, int32 * sizes, int usefreetype) {
 }
 
 
-int BitmapControl(FontViewBase * fv, int32 * sizes, int isavail,
+int BitmapControl(FontViewBase * fv, int32_t * sizes, int isavail,
 		  int rasterize) {
    CreateBitmapData bd;
 

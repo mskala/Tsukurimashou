@@ -1,4 +1,4 @@
-/* $Id: encoding.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: encoding.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ typedef int (*EncFunc) (int);
 
 Encoding *default_encoding=NULL;
 
-static int32 tex_base_encoding[]={
+static int32_t tex_base_encoding[]={
    0x0000, 0x02d9, 0xfb01, 0xfb02, 0x2044, 0x02dd, 0x0141, 0x0142,
    0x02db, 0x02da, 0x000a, 0x02d8, 0x2212, 0x000d, 0x017d, 0x017e,
    0x02c7, 0x0131, 0xf6be, 0xfb00, 0xfb03, 0xfb04, 0x2260, 0x221e,
@@ -77,7 +77,7 @@ static int32 tex_base_encoding[]={
    0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff
 };
 
-static int32 unicode_from_MacSymbol[]={
+static int32_t unicode_from_MacSymbol[]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -259,7 +259,7 @@ static Encoding *_FindOrMakeEncoding(const char *name,int make_it) {
    char buffer[20];
    const char *iconv_name;
    Encoding temp;
-   uint8 good[256];
+   uint8_t good[256];
    int i, j, any, all;
    char from[8], ucs[20];
    size_t fromlen, tolen;
@@ -575,7 +575,7 @@ static void DeleteEncoding(Encoding *me) {
 static Encoding *ParseConsortiumEncodingFile(AFILE *file) {
    char buffer[200];
 
-   int32 encs[0x10000];
+   int32_t encs[0x10000];
 
    int enc, unienc, max;
 
@@ -584,7 +584,7 @@ static Encoding *ParseConsortiumEncodingFile(AFILE *file) {
    memset(encs, 0, sizeof(encs));
    max=-1;
 
-   while (fgets(buffer, sizeof(buffer), file) != NULL) {
+   while (afgets(buffer, sizeof(buffer), file) != NULL) {
       if (ishexdigit(buffer[0])) {
 	 if (sscanf(buffer, "%x %x", (unsigned *) &enc, (unsigned *) &unienc)
 	    ==2 && enc < 0x10000 && enc >= 0) {
@@ -604,8 +604,8 @@ static Encoding *ParseConsortiumEncodingFile(AFILE *file) {
    item=calloc(1, sizeof(Encoding));
    item->only_1byte=item->has_1byte=true;
    item->char_cnt=max;
-   item->unicode=malloc(max * sizeof(int32));
-   memcpy(item->unicode, encs, max * sizeof(int32));
+   item->unicode=malloc(max * sizeof(int32_t));
+   memcpy(item->unicode, encs, max * sizeof(int32_t));
    return (item);
 }
 
@@ -895,13 +895,13 @@ struct cidmap *LoadMapFromFile(char *file, char *registry, char *ordering,
    f=afopen(file, "r");
    if (f==NULL)
       ErrorMsg(2,"Couldn't open cidmap file: %s\n",file);
-   else if (fscanf(f, "%d %d", &ret->cidmax, &ret->namemax) != 2) {
+   else if (afscanf(f, "%d %d", &ret->cidmax, &ret->namemax) != 2) {
       ErrorMsg(2,"Bad cidmap file %s\n",file);
    } else {
-      ret->unicode=calloc(ret->namemax + 1, sizeof(uint32));
+      ret->unicode=calloc(ret->namemax + 1, sizeof(uint32_t));
       ret->name=calloc(ret->namemax + 1, sizeof(char *));
       while (1) {
-	 cnt=fscanf(f, "%d..%d %x", &cid1, &cid2, (unsigned *) &uni);
+	 cnt=afscanf(f, "%d..%d %x", &cid1, &cid2, (unsigned *) &uni);
 	 if (cnt <= 0)
 	    break;
 	 if (cid1 > ret->namemax)
@@ -912,11 +912,11 @@ struct cidmap *LoadMapFromFile(char *file, char *registry, char *ordering,
 	    for (i=cid1; i <= cid2; ++i)
 	       ret->unicode[i]=uni++;
 	 } else if (cnt==1) {
-	    if (fscanf(f, "%x", (unsigned *) &uni)==1) {
+	    if (afscanf(f, "%x", (unsigned *) &uni)==1) {
 	       ret->unicode[cid1]=uni;
 	       ch=agetc(f);
 	       while (ch==',') {
-		  if (fscanf(f, "%x", (unsigned *) &uni)==1) {
+		  if (afscanf(f, "%x", (unsigned *) &uni)==1) {
 		     struct cidaltuni *alt =
 			chunkalloc(sizeof(struct cidaltuni));
 		     alt->next=ret->alts;
@@ -927,7 +927,7 @@ struct cidmap *LoadMapFromFile(char *file, char *registry, char *ordering,
 		  ch=agetc(f);
 	       }
 	       aungetc(ch, f);
-	    } else if (fscanf(f, " /%s", name)==1)
+	    } else if (afscanf(f, " /%s", name)==1)
 	       ret->name[cid1]=copy(name);
 	 }
       }
@@ -1120,7 +1120,7 @@ static void SFEncodeToMap(SplineFont *sf,struct cidmap *map) {
 enum cmaptype { cmt_out=-1, cmt_coderange, cmt_notdefs, cmt_cid, cmt_max };
 
 struct coderange {
-   uint32 first, last, cid;
+   uint32_t first, last, cid;
 };
 
 struct cmap {
@@ -1194,7 +1194,7 @@ static struct cmap *ParseCMap(char *filename) {
 
    cmap=calloc(1, sizeof(struct cmap));
    in=cmt_out;
-   while (fgets(buf2, sizeof(buf2), file) != NULL) {
+   while (afgets(buf2, sizeof(buf2), file) != NULL) {
       for (pt=buf2; isspace(*pt); ++pt);
       if (in==cmt_out) {
 	 if (*pt=='/') {
@@ -1251,9 +1251,9 @@ static struct cmap *ParseCMap(char *filename) {
 }
 
 static void CompressCMap(struct cmap *cmap) {
-   int32 i, j, k, pos, base;
+   int32_t i, j, k, pos, base;
 
-   uint32 min, oldmax;
+   uint32_t min, oldmax;
 
    /* we can't really deal with three and four byte encodings */
    /*  so if we get one arrange for the sf itself to do a remap */
@@ -1395,12 +1395,12 @@ static SplineFont *CIDFlatten(SplineFont *cidmaster,SplineChar ** glyphs,
 	 if (fvs->map->encmax < new->glyphcnt)
 	    fvs->map->map =
 	       realloc(fvs->map->map,
-		       (fvs->map->encmax=new->glyphcnt) * sizeof(int32));
+		       (fvs->map->encmax=new->glyphcnt) * sizeof(int32_t));
 	 fvs->map->enccount=new->glyphcnt;
 	 if (fvs->map->backmax < new->glyphcnt)
 	    fvs->map->backmap =
 	       realloc(fvs->map->backmap,
-		       (fvs->map->backmax=new->glyphcnt) * sizeof(int32));
+		       (fvs->map->backmax=new->glyphcnt) * sizeof(int32_t));
 	 for (j=0; j < new->glyphcnt; ++j)
 	    fvs->map->map[j]=fvs->map->backmap[j]=j;
       }
@@ -1540,9 +1540,9 @@ int SFFlattenByCMap(SplineFont *sf, char *cmapname) {
 	    map->map =
 	       realloc(map->map,
 		       (map->encmax=map->enccount =
-			max + extras) * sizeof(int32));
-	    memset(map->map, -1, map->enccount * sizeof(int32));
-	    memset(map->backmap, -1, sf->glyphcnt * sizeof(int32));
+			max + extras) * sizeof(int32_t));
+	    memset(map->map, -1, map->enccount * sizeof(int32_t));
+	    memset(map->backmap, -1, sf->glyphcnt * sizeof(int32_t));
 	    map->remap=cmap->remap;
 	    cmap->remap=NULL;
 	 }
@@ -1823,9 +1823,9 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
 	    if (enc_cnt > map->backmax) {
 	       free(map->backmap);
 	       map->backmax=enc_cnt;
-	       map->backmap=malloc(enc_cnt * sizeof(int32));
+	       map->backmap=malloc(enc_cnt * sizeof(int32_t));
 	    }
-	    memset(map->backmap, -1, enc_cnt * sizeof(int32));
+	    memset(map->backmap, -1, enc_cnt * sizeof(int32_t));
 	    for (i=0; i < map->enccount; ++i)
 	       if (map->map[i] != -1)
 		  if (map->backmap[map->map[i]]==-1)
@@ -1850,11 +1850,11 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
 
    if (old->enccount < enc_cnt) {
       if (old->encmax < enc_cnt) {
-	 old->map=realloc(old->map, enc_cnt * sizeof(int32));
+	 old->map=realloc(old->map, enc_cnt * sizeof(int32_t));
 	 old->encmax=enc_cnt;
       }
       memset(old->map + old->enccount, -1,
-	     (enc_cnt - old->enccount) * sizeof(int32));
+	     (enc_cnt - old->enccount) * sizeof(int32_t));
       old->enccount=enc_cnt;
    }
    old->enc=new_enc;
@@ -1907,7 +1907,7 @@ int SFForceEncoding(SplineFont *sf, EncMap * old, Encoding * new_enc) {
 EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
    int i, j, extras, found, base, unmax;
 
-   int32 *encoded, *unencoded;
+   int32_t *encoded, *unencoded;
 
    EncMap *map;
 
@@ -1925,9 +1925,9 @@ EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
       base=256;
    else if (enc->char_cnt <= 0x10000)
       base=0x10000;
-   encoded=malloc(base * sizeof(int32));
-   memset(encoded, -1, base * sizeof(int32));
-   unencoded=malloc(sf->glyphcnt * sizeof(int32));
+   encoded=malloc(base * sizeof(int32_t));
+   memset(encoded, -1, base * sizeof(int32_t));
+   unencoded=malloc(sf->glyphcnt * sizeof(int32_t));
    unmax=sf->glyphcnt;
 
    for (i=extras=0; i < sf->glyphcnt; ++i)
@@ -1952,7 +1952,7 @@ EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
 	       /*  hurt to leave the code (it's from when we encoded duplicates see below) */
 	       if (extras >= unmax)
 		  unencoded =
-		     realloc(unencoded, (unmax += 300) * sizeof(int32));
+		     realloc(unencoded, (unmax += 300) * sizeof(int32_t));
 	       unencoded[extras++]=i;
 	    }
 	    for (altuni=sc->altuni; altuni != NULL; altuni=altuni->next) {
@@ -2001,12 +2001,12 @@ EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
 
    map=chunkalloc(sizeof(EncMap));
    map->enccount=map->encmax=base + extras;
-   map->map=malloc(map->enccount * sizeof(int32));
-   memcpy(map->map, encoded, base * sizeof(int32));
-   memcpy(map->map + base, unencoded, extras * sizeof(int32));
+   map->map=malloc(map->enccount * sizeof(int32_t));
+   memcpy(map->map, encoded, base * sizeof(int32_t));
+   memcpy(map->map + base, unencoded, extras * sizeof(int32_t));
    map->backmax=sf->glyphcnt;
-   map->backmap=malloc(sf->glyphcnt * sizeof(int32));
-   memset(map->backmap, -1, sf->glyphcnt * sizeof(int32));	/* Just in case there are some unencoded glyphs (duplicates perhaps) */
+   map->backmap=malloc(sf->glyphcnt * sizeof(int32_t));
+   memset(map->backmap, -1, sf->glyphcnt * sizeof(int32_t));	/* Just in case there are some unencoded glyphs (duplicates perhaps) */
    for (i=map->enccount - 1; i >= 0; --i)
       if (map->map[i] != -1)
 	 map->backmap[map->map[i]]=i;
@@ -2020,14 +2020,14 @@ EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
 
 EncMap *CompactEncMap(EncMap *map, SplineFont *sf) {
    int i,inuse,gid;
-   int32 *newmap;
+   int32_t *newmap;
 
    inuse=0;
    for (i=0;i<map->enccount;i++)
       if (((gid=map->map[i])!=-1) && SCWorthOutputting(sf->glyphs[gid]))
 	 inuse++;
 
-   newmap=malloc(inuse*sizeof(int32));
+   newmap=malloc(inuse*sizeof(int32_t));
    for (i=inuse=0; i < map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && SCWorthOutputting(sf->glyphs[gid]))
 	 newmap[inuse++]=gid;
@@ -2036,7 +2036,7 @@ EncMap *CompactEncMap(EncMap *map, SplineFont *sf) {
    map->enccount=inuse;
    map->encmax=inuse;
    map->enc=&custom;
-   memset(map->backmap,-1,sf->glyphcnt*sizeof(int32));
+   memset(map->backmap,-1,sf->glyphcnt*sizeof(int32_t));
    for (i=inuse-1;i>=0;i--)
       if ((gid=map->map[i])!=-1)
 	 map->backmap[gid]=i;
@@ -2194,7 +2194,7 @@ static int MapAddEncodingSlot(EncMap *map,int gid) {
    int enc;
 
    if (map->enccount >= map->encmax)
-      map->map=realloc(map->map, (map->encmax += 10) * sizeof(int32));
+      map->map=realloc(map->map, (map->encmax += 10) * sizeof(int32_t));
    enc=map->enccount++;
    map->map[enc]=gid;
    map->backmap[gid]=enc;
@@ -2225,8 +2225,8 @@ static int MapAddEnc(SplineFont *sf,SplineChar *sc,EncMap *basemap,
 
    if (gid >= map->backmax) {
       map->backmap =
-	 realloc(map->backmap, (map->backmax += 10) * sizeof(int32));
-      memset(map->backmap + map->backmax - 10, -1, 10 * sizeof(int32));
+	 realloc(map->backmap, (map->backmax += 10) * sizeof(int32_t));
+      memset(map->backmap + map->backmax - 10, -1, 10 * sizeof(int32_t));
    }
    if (map->enc->psnames != NULL) {
       /* Check for multiple encodings */
@@ -2294,7 +2294,7 @@ void SFAddGlyphAndEncode(SplineFont *sf, SplineChar * sc, EncMap * basemap,
 	 if (gid >= map->backmax)
 	    map->backmap =
 	       realloc(map->backmap,
-		       (map->backmax=gid + 10) * sizeof(int32));
+		       (map->backmax=gid + 10) * sizeof(int32_t));
 	 map->backmap[gid]=-1;
       }
    } else {
@@ -2325,7 +2325,7 @@ void SFAddGlyphAndEncode(SplineFont *sf, SplineChar * sc, EncMap * basemap,
 	       if (gid >= map->backmax)
 		  map->backmap =
 		     realloc(map->backmap,
-			     (map->backmax=gid + 10) * sizeof(int32));
+			     (map->backmax=gid + 10) * sizeof(int32_t));
 	       map->backmap[gid]=-1;
 	    }
       }
@@ -2486,7 +2486,7 @@ void MMMatchGlyphs(MMSet * mm) {
       SFMatchGlyphs(mm->normal, base, true);
 }
 
-int32 UniFromEnc(int enc, Encoding * encname) {
+int32_t UniFromEnc(int enc, Encoding * encname) {
    char from[20];
 
    unichar_t to[20];
@@ -2567,7 +2567,7 @@ int32 UniFromEnc(int enc, Encoding * encname) {
    return (-1);
 }
 
-int32 EncFromUni(int32 uni, Encoding * enc) {
+int32_t EncFromUni(int32_t uni, Encoding * enc) {
    unichar_t from[20];
 
    unsigned char to[20];
@@ -2621,7 +2621,7 @@ int32 EncFromUni(int32 uni, Encoding * enc) {
    return (-1);
 }
 
-int32 EncFromName(const char *name, enum uni_interp interp,
+int32_t EncFromName(const char *name, enum uni_interp interp,
 		  Encoding * encname) {
    int i;
 
@@ -2667,8 +2667,8 @@ void SFExpandGlyphCount(SplineFont *sf, int newcnt) {
 	 if (newcnt > fv->map->backmax)
 	    fv->map->backmap =
 	       realloc(fv->map->backmap,
-		       (fv->map->backmax=newcnt + 5) * sizeof(int32));
-	 memset(fv->map->backmap + old, -1, (newcnt - old) * sizeof(int32));
+		       (fv->map->backmax=newcnt + 5) * sizeof(int32_t));
+	 memset(fv->map->backmap + old, -1, (newcnt - old) * sizeof(int32_t));
       }
    }
 }

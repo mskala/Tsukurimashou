@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: parsettfvar.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -244,11 +244,11 @@ static int *readpackeddeltas(AFILE *ttf,int n) {
       } else if (runcnt & 0x40) {
 	 /* runcnt shorts from the stack */
 	 for (j=0; j <= (runcnt & 0x3f) && i < n; ++j)
-	    deltas[i++]=(int16) getushort(ttf);
+	    deltas[i++]=(int16_t) getushort(ttf);
       } else {
 	 /* runcnt signed bytes from the stack */
 	 for (j=0; j <= (runcnt & 0x3f) && i < n; ++j)
-	    deltas[i++]=(int8) agetc(ttf);
+	    deltas[i++]=(int8_t) agetc(ttf);
       }
       if (j <= (runcnt & 0x3f)) {
 	 if (n > 0)
@@ -561,7 +561,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
    /* I'm only going to support a subset of the gvar. Only the global tuples */
    int axiscount, globaltc, gvarflags, gc, i, j, g;
 
-   uint32 tupoff, dataoff, *gvars;
+   uint32_t tupoff, dataoff, *gvars;
 
    struct variations *v=info->variations;
 
@@ -598,7 +598,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
       return;
    }
 
-   gvars=malloc((gc + 1) * sizeof(uint32));
+   gvars=malloc((gc + 1) * sizeof(uint32_t));
    if (gvarflags & 1) {		/* 32 bit data */
       for (i=0; i <= gc; ++i)
 	 gvars[i]=getlong(ttf) + dataoff;
@@ -621,7 +621,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
       if (gvars[g] != gvars[g + 1]) {
 	 int tc;
 
-	 uint32 datoff;
+	 uint32_t datoff;
 
 	 int *sharedpoints=NULL;
 
@@ -629,7 +629,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
 	 tc=getushort(ttf);
 	 datoff=gvars[g] + getushort(ttf);
 	 if (tc & 0x8000) {
-	    uint32 here=aftell(ttf);
+	    uint32_t here=aftell(ttf);
 
 	    afseek(ttf, datoff, SEEK_SET);
 	    sharedpoints=readpackedpoints(ttf);
@@ -653,7 +653,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
 	    } else {
 	       int *localpoints=NULL;
 
-	       uint32 here=aftell(ttf);
+	       uint32_t here=aftell(ttf);
 
 	       afseek(ttf, datoff, SEEK_SET);
 	       if (tupleIndex & 0x2000)
@@ -712,7 +712,7 @@ static void VaryCvts(struct ttfinfo *info,int tupleIndex,int *points,
    struct variations *v=info->variations;
 
    if (points[0]==ALL_POINTS)
-      pcnt=origcvt->len / sizeof(uint16);
+      pcnt=origcvt->len / sizeof(uint16_t);
    else {
       for (pcnt=0; points[pcnt] != END_OF_POINTS; ++pcnt);
    }
@@ -734,7 +734,7 @@ static void VaryCvts(struct ttfinfo *info,int tupleIndex,int *points,
 static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
    struct ttf_table *cvt;
    int tuplecount;
-   uint32 offset;
+   uint32_t offset;
    int *sharedpoints=NULL;
    int i;
    int warned=false;
@@ -757,7 +757,7 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
    /*  but John Jenkins tells me that shared points don't apply to cvar */
    /*  Might as well parse it just in case */
    if (tuplecount & 0x8000) {
-      uint32 here=aftell(ttf);
+      uint32_t here=aftell(ttf);
 
       afseek(ttf, offset, SEEK_SET);
       sharedpoints=readpackedpoints(ttf);
@@ -782,7 +782,7 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
       } else {
 	 int *localpoints=NULL;
 
-	 uint32 here;
+	 uint32_t here;
 
 	 int j, k, ti;
 
@@ -791,7 +791,7 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
 	    real *coords =
 	       malloc(info->variations->axis_count * sizeof(real));
 	    for (j=0; j < info->variations->axis_count; ++j)
-	       coords[j]=((int16) getushort(ttf)) / 16384.0;
+	       coords[j]=((int16_t) getushort(ttf)) / 16384.0;
 	    for (k=0; k < info->variations->tuple_count; ++k) {
 	       for (j=0; j < info->variations->axis_count; ++j)
 		  if (coords[j] != info->variations->tuples[k].coords[j])

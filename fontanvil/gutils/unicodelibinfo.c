@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.c 3423 2014-10-26 18:51:07Z mskala $ */
+/* $Id: unicodelibinfo.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -97,7 +97,7 @@ void inituninameannot(void) {
 #endif
 }
 
-char *unicode_name(int32 unienc) {
+char *unicode_name(int32_t unienc) {
 /* Return the unicode name for the value given from a data library.	  */
 /* If there's no data available for this code, or no library, return NULL */
 /* User should free the return string when finished with this information */
@@ -236,7 +236,7 @@ static int unicode_block_check(int block_i) {
 }
 #endif
 
-char *unicode_annot(int32 unienc) {
+char *unicode_annot(int32_t unienc) {
 /* Return the unicode annotation for the value given from a data library. */
 /* If there's no data available for this code, or no library, return NULL */
 /* User should free the return string when finished with this information */
@@ -278,7 +278,7 @@ char *unicode_annot(int32 unienc) {
 #endif
 }
 
-int32 unicode_block_start(int32 block_i) {
+int32_t unicode_block_start(int32_t block_i) {
 /* Return the unicode value for the start of next unicode block. If no	  */
 /* library or data available, then return -1.				  */
 
@@ -287,7 +287,7 @@ int32 unicode_block_start(int32 block_i) {
    //fprintf(stderr,"no block library\n");
    return (-1);
 #else
-   int32 unistart;
+   int32_t unistart;
 
    unistart = -1;
 #   ifndef _NO_LIBUNINAMESLIST
@@ -305,7 +305,7 @@ int32 unicode_block_start(int32 block_i) {
 #endif
 }
 
-int32 unicode_block_end(int32 block_i) {
+int32_t unicode_block_end(int32_t block_i) {
 /* Return the unicode value for the end of this unicode block. If there	  */
 /* is no library or data available, then return -1			  */
 
@@ -314,7 +314,7 @@ int32 unicode_block_end(int32 block_i) {
    //fprintf(stderr,"no block library\n");
    return (-1);
 #else
-   int32 uniend;
+   int32_t uniend;
 
    uniend = -1;
 #   ifndef _NO_LIBUNINAMESLIST
@@ -332,7 +332,7 @@ int32 unicode_block_end(int32 block_i) {
 #endif
 }
 
-char *unicode_block_name(int32 block_i) {
+char *unicode_block_name(int32_t block_i) {
 /* Return the unicode name for this unicode block. If there is no library */
 /* then return NULL							  */
 

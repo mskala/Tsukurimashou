@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: cvexport.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -539,7 +539,7 @@ int BCExportXBM(char *filename, BDFChar * bdfc, int format) {
    int ret;
    int tot;
    int scale, i;
-   uint8 *pt, *end;
+   uint8_t *pt, *end;
 
    memset(&gi, '\0', sizeof(gi));
    memset(&base, '\0', sizeof(base));

@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: scstyles.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -185,8 +185,8 @@ static int ds_cmp(const void *_s1,const void *_s2) {
 
 #define czone_top 2
 #define czone_bot 1
-static uint8 GetStemCounterZone(StemData *stem,DBounds *orig_b) {
-   uint8 ret=0, by_x;
+static uint8_t GetStemCounterZone(StemData *stem,DBounds *orig_b) {
+   uint8_t ret=0, by_x;
 
    int i;
 
@@ -215,7 +215,7 @@ static uint8 GetStemCounterZone(StemData *stem,DBounds *orig_b) {
 
 static double GetCounterBlackSpace(GlyphData *gd,StemData ** dstems,
 				   int dcnt, DBounds * orig_b, double cstart,
-				   double cend, double pos, uint8 czone,
+				   double cend, double pos, uint8_t czone,
 				   struct genericchange *gc, int x_dir) {
 
    double ldist, rdist, lrdist, is, ie, temp, black=0;
@@ -341,7 +341,7 @@ static double ScaleCounter(GlyphData *gd,StemData ** dstems,int dcnt,
 
    double black25, black75, white25, white75, gen25, gen75, ret;
 
-   uint8 pczone, nczone;
+   uint8_t pczone, nczone;
 
    min=x_dir ? orig_b->minx : orig_b->miny;
    max=x_dir ? orig_b->maxx : orig_b->maxy;
@@ -837,7 +837,7 @@ static void PosStemPoints(GlyphData *gd,struct genericchange *genchange,
 
    int i, j, best_is_l;
 
-   uint8 flag=x_dir ? tf_x : tf_y;
+   uint8_t flag=x_dir ? tf_x : tf_y;
 
    PointData *pd;
 
@@ -973,7 +973,7 @@ static void InterpolateStrong(GlyphData *gd,DBounds *orig_b,
 			      DBounds * new_b, int x_dir) {
    int i;
 
-   uint8 mask, flag=x_dir ? tf_x : tf_y;
+   uint8_t mask, flag=x_dir ? tf_x : tf_y;
 
    double coord, new;
 
@@ -1010,7 +1010,7 @@ static void InterpolateWeak(GlyphData *gd,DBounds *orig_b,DBounds *new_b,
 
    int i;
 
-   uint8 mask, flag=x_dir ? tf_x : tf_y;
+   uint8_t mask, flag=x_dir ? tf_x : tf_y;
 
    double coord, new, min, max, min_new, max_new;
 
@@ -1366,7 +1366,7 @@ static int CorrectDPointPos(GlyphData *gd,PointData *pd,StemData *stem,
 
    int i, found=0;
 
-   uint8 flag=x_dir ? tf_x : tf_y;
+   uint8_t flag=x_dir ? tf_x : tf_y;
 
    double ndot, pdot, coord_orig, coord_new, base_orig, base_new;
 
@@ -1442,7 +1442,7 @@ static void ShiftDependent(GlyphData *gd,PointData *pd,StemData *stem,
 			   DBounds * orig_b, DBounds * new_b, double cscale,
 			   int next, int is_l, int x_dir) {
 
-   uint8 flag=x_dir ? tf_x : tf_y;
+   uint8_t flag=x_dir ? tf_x : tf_y;
 
    int i, scnt, from_min;
 
@@ -2285,7 +2285,7 @@ void SmallCapsFindConstants(struct smallcaps *small, SplineFont *sf,
 }
 
 static void MakeLookups(SplineFont *sf,OTLookup ** lookups,int ltn,
-			int crl, int grk, int symbols, uint32 ftag) {
+			int crl, int grk, int symbols, uint32_t ftag) {
    OTLookup *any=NULL;
 
    int i;
@@ -2385,7 +2385,7 @@ static void MakeSCLookups(SplineFont *sf,struct lookup_subtable **c2sc,
 
    int i;
 
-   uint32 ucfeat, lcfeat;
+   uint32_t ucfeat, lcfeat;
 
    memset(lc2sc, 0, sizeof(lc2sc));
    memset(lsmcp, 0, sizeof(lsmcp));
@@ -2473,7 +2473,7 @@ static SplineChar *MakeSmallCapName(char *buffer,int bufsize,
 }
 
 static SplineChar *MakeSmallCapGlyphSlot(SplineFont *sf,SplineChar *cap_sc,
-					 uint32 script,
+					 uint32_t script,
 					 struct lookup_subtable **c2sc,
 					 struct lookup_subtable **smcp,
 					 FontViewBase * fv,
@@ -3136,7 +3136,7 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 		 && (isupper(sc->unicodeenc) || islower(sc->unicodeenc)
 		     || (sc->unicodeenc >= 0xfb00
 			 && sc->unicodeenc <= 0xfb06)))) {
-	    uint32 script=SCScriptFromUnicode(sc);
+	    uint32_t script=SCScriptFromUnicode(sc);
 
 	    if (script==CHR('l', 'a', 't', 'n'))
 	       ++ltn, ++cnt;
@@ -3167,7 +3167,7 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 		 && (isupper(sc->unicodeenc) || islower(sc->unicodeenc)
 		     || (sc->unicodeenc >= 0xfb00
 			 && sc->unicodeenc <= 0xfb06)))) {
-	    uint32 script=SCScriptFromUnicode(sc);
+	    uint32_t script=SCScriptFromUnicode(sc);
 
 	    if (script != CHR('l', 'a', 't', 'n') &&
 		script != CHR('g', 'r', 'e', 'k') &&
@@ -3211,7 +3211,7 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 		 && (isupper(sc->unicodeenc) || islower(sc->unicodeenc)
 		     || (sc->unicodeenc >= 0xfb00
 			 && sc->unicodeenc <= 0xfb06)))) {
-	    uint32 script=SCScriptFromUnicode(sc);
+	    uint32_t script=SCScriptFromUnicode(sc);
 
 	    if (script != CHR('l', 'a', 't', 'n') &&
 		script != CHR('g', 'r', 'e', 'k') &&
@@ -3697,7 +3697,7 @@ struct ptmoves {
    BasePoint pdir, ndir;
    double factor;
    BasePoint newpos;
-   uint8 touched;
+   uint8_t touched;
 };
 
 static int MaxContourCount(SplineSet *ss) {
@@ -4387,7 +4387,7 @@ static void SCEmbolden(SplineChar *sc,struct lcg_zones *zones,int layer) {
 }
 
 static struct {
-   uint32 script;
+   uint32_t script;
    SplineSet *(*embolden_hook) (SplineSet *, struct lcg_zones *, SplineChar *,
 				int layer);
 } script_hooks[]={
@@ -4490,7 +4490,7 @@ static void PerGlyphInit(SplineChar *sc,struct lcg_zones *zones,
 	 }
       }
       if (zones->embolden_hook==NULL) {
-	 uint32 script=SCScriptFromUnicode(sc);
+	 uint32_t script=SCScriptFromUnicode(sc);
 
 	 for (j=0; script_hooks[j].script != 0; ++j) {
 	    if (script==script_hooks[j].script) {

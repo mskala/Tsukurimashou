@@ -1,4 +1,4 @@
-/* $Id: unicoderange.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: unicoderange.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /* 2012nov14, table updates, fixes added, Jose Da Silva */
 /*
@@ -429,7 +429,7 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
 
    int i, gid;
 
-   int32 j;
+   int32_t j;
 
    struct rangeinfo *ri;
 
@@ -439,9 +439,9 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
       initialized=true;
       for (i=cnt=0; unicoderange[i].name != NULL; ++i)
 	 if (unicoderange[i].display) {
-	    int32 top=unicoderange[i].last;
+	    int32_t top=unicoderange[i].last;
 
-	    int32 bottom=unicoderange[i].first;
+	    int32_t bottom=unicoderange[i].first;
 
 	    int cnt=0;
 
@@ -481,13 +481,13 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
 
    /* count glyphs in each range */
    for (j=0; j < cnt - 2; ++j) {
-      int32 top=ri[j].range->last;
+      int32_t top=ri[j].range->last;
 
-      int32 bottom=ri[j].range->first;
+      int32_t bottom=ri[j].range->first;
 
       for (gid=0; gid < sf->glyphcnt; ++gid)
 	 if (sf->glyphs[gid] != NULL) {
-	    int32 u=sf->glyphs[gid]->unicodeenc;
+	    int32_t u=sf->glyphs[gid]->unicodeenc;
 
 	    if (u >= bottom && u <= top &&
 		(ri[j].range->unassigned || isunicodepointassigned(u)))
@@ -498,7 +498,7 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
    /* non unicode glyphs (stylistic variations, etc.) */
    for (gid=0; gid < sf->glyphcnt; ++gid)
       if (sf->glyphs[gid] != NULL) {
-	 int32 u=sf->glyphs[gid]->unicodeenc;
+	 int32_t u=sf->glyphs[gid]->unicodeenc;
 
 	 if (u < 0 || u > 0x11ffff)
 	    ++ri[j].cnt;
@@ -509,7 +509,7 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
    ++j;
    for (gid=0; gid < sf->glyphcnt; ++gid)
       if (sf->glyphs[gid] != NULL) {
-	 int32 u=sf->glyphs[gid]->unicodeenc;
+	 int32_t u=sf->glyphs[gid]->unicodeenc;
 
 	 if (u >= 0 && u <= 0x11ffff && !isunicodepointassigned(u))
 	    ++ri[j].cnt;
@@ -534,7 +534,7 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
    return (ri);
 }
 
-const char *UnicodeRange(int32 unienc) {
+const char *UnicodeRange(int32_t unienc) {
 /* Return the best name that describes this Unicode value */
    char *ret;
 

@@ -1,4 +1,4 @@
-/* $Id: gimagereadbmp.c 3326 2014-09-29 07:28:28Z mskala $ */
+/* $Id: gimagereadbmp.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 #include "gimage.h"
 #include "gimagebmpP.h"
 #include <string.h>
-GImage *_GImage_Create(enum image_type type, int32 width, int32 height);
+GImage *_GImage_Create(enum image_type type, int32_t width, int32_t height);
 
 static int getshort(FILE * fp) {
 /* Get Little-Endian short 16bit value. Return value if okay, -1 if error */
@@ -391,7 +391,7 @@ static GImage *GImageRead_Bmp(FILE * file) {
    /* Create memory-space to read-in bmp file */
    if ((bmp.bitsperpixel >= 16 &&
 	(bmp.int32_pixels =
-	 (uint32 *) (malloc(bmp.height * bmp.width * sizeof(uint32)))) ==
+	 (uint32_t *) (malloc(bmp.height * bmp.width * sizeof(uint32_t)))) ==
 	NULL) || (bmp.bitsperpixel == 1
 		  && (bmp.byte_pixels =
 		      (unsigned char
@@ -418,9 +418,9 @@ static GImage *GImageRead_Bmp(FILE * file) {
 	 goto errorGImageMemBmp;
       }
       if (bmp.bitsperpixel >= 16) {
-	 ret->u.image->data = (uint8 *) bmp.int32_pixels;
+	 ret->u.image->data = (uint8_t *) bmp.int32_pixels;
       } else if (bmp.bitsperpixel != 1) {
-	 ret->u.image->data = (uint8 *) bmp.byte_pixels;
+	 ret->u.image->data = (uint8_t *) bmp.byte_pixels;
       }
    } else {
       if (bmp.bitsperpixel >= 16) {
@@ -433,7 +433,7 @@ static GImage *GImageRead_Bmp(FILE * file) {
 	    l = bmp.height - 1 - i;
 	    memcpy(base->data + l * base->bytes_per_line,
 		   bmp.int32_pixels + i * bmp.width,
-		   bmp.width * sizeof(uint32));
+		   bmp.width * sizeof(uint32_t));
 	 }
 	 free(bmp.int32_pixels);
       } else if (bmp.bitsperpixel != 1) {

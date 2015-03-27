@@ -1,4 +1,4 @@
-/* $Id: gioP.h 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gioP.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ struct stdfuncs {
    void (*PostError) (GIOControl * gc);
    void (*RequestAuthorization) (GIOControl * gc);
    struct hostdata *(*LookupHost) (char *name);
-     int32(*getauth) (struct giocontrol *);
+     int32_t(*getauth) (struct giocontrol *);
    void (*FreeDirEntries) (GDirEntry * lst);
    void (*reportheaders) (char *, ...);
 #   ifdef HAVE_PTHREAD_H

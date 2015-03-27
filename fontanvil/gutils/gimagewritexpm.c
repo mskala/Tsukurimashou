@@ -1,4 +1,4 @@
-/* $Id: gimagewritexpm.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagewritexpm.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013apr13, added mono + grey Jose Da Silva */
 /*
@@ -58,7 +58,7 @@ int GImageWriteXpm(GImage * gi, char *filename) {
 
    char *pt, *color_type;
 
-   uint8 *scanline;
+   uint8_t *scanline;
 
    int i, j;
 

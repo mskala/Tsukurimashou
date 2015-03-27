@@ -1,4 +1,4 @@
-/* $Id: namelist.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: namelist.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -320,7 +320,7 @@ NameList *LoadNamelist(char *filename) {
    if (pt != NULL)
       *pt='\0';
 
-   while (fgets(buffer, sizeof(buffer), file) != NULL) {
+   while (afgets(buffer, sizeof(buffer), file) != NULL) {
       if (buffer[0]=='#' || buffer[0]=='\n' || buffer[0]=='\r')
 	 continue;
       len=strlen(buffer);

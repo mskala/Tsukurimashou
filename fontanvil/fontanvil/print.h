@@ -1,4 +1,4 @@
-/* $Id: print.h 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: print.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ typedef struct printinfo {
    EncMap *mainmap;
    enum printtype pt;
    int pointsize;
-   int32 *pointsizes;
+   int32_t *pointsizes;
    int extrahspace, extravspace;
    AFILE *out;
    unsigned int showvm:1;

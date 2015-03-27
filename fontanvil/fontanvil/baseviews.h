@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 3868 2015-03-26 12:25:14Z mskala $ */
+/* $Id: baseviews.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -119,11 +119,11 @@ typedef struct bvtfunc {
 } BVTFunc;
 
 struct freetype_raster {
-   int16 rows, cols;
-   int16 as, lb;
-   int16 bytes_per_row;
-   int16 num_greys;
-   uint8 *bitmap;
+   int16_t rows, cols;
+   int16_t as, lb;
+   int16_t bytes_per_row;
+   int16_t num_greys;
+   uint8_t *bitmap;
 };
 
 struct cvcontainer {
@@ -152,8 +152,8 @@ typedef struct charviewbase {
    struct fontviewbase *fv;
    SplineChar *sc;
    Layer *layerheads[dm_max];
-   uint8 drawmode;
-   uint16 ft_gridfitwidth;
+   uint8_t drawmode;
+   uint16_t ft_gridfitwidth;
    SplineSet *gridfit;
    struct cvcontainer *container;	/* The sv (or whatever) within which this view is embedded (if it is embedded) */
 } CharViewBase;
@@ -191,7 +191,7 @@ typedef struct fontviewbase {
    SplineFont *cidmaster;	/* If CID keyed, contains master font */
    int active_layer;
    BDFFont *active_bitmap;	/* Set if the fontview displays a bitmap strike */
-   uint8 *selected;		/* Current selection */
+   uint8_t *selected;		/* Current selection */
 #   ifndef _NO_FFSCRIPT
    struct dictionary *fontvars;	/* Scripting */
 #   endif
@@ -225,8 +225,8 @@ typedef struct {
    int notsafeforwork;
    int oflicense;
    char *previewimage;		/* NULL => No image */
-   uint8 upload_license;
-   uint8 upload_fontlog;
+   uint8_t upload_license;
+   uint8_t upload_fontlog;
    char *upload_id;		/* Way to manipulate upload on OFLib */
 } OFLibData;
 
@@ -375,7 +375,7 @@ extern void FVJoin(FontViewBase * fv);
 extern void FVBuildDuplicate(FontViewBase * fv);
 
 extern void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
-		    uint8 * sel, enum fvtrans_flags);
+		    uint8_t * sel, enum fvtrans_flags);
 extern void FVTransFunc(void *_fv, real transform[6], int otype,
 			BVTFunc * bvts, enum fvtrans_flags);
 extern void FVReencode(FontViewBase * fv, Encoding * enc);
@@ -438,7 +438,7 @@ extern int FVImportImages(FontViewBase * fv, char *path, int isimage,
 			  int toback, int flags);
 extern int FVImportImageTemplate(FontViewBase * fv, char *path, int isimage,
 				 int toback, int flags);
-extern void ScriptPrint(FontViewBase * fv, int type, int32 * pointsizes,
+extern void ScriptPrint(FontViewBase * fv, int type, int32_t * pointsizes,
 			char *samplefile, unichar_t * sample,
 			char *outputfile);
 extern int FVBParseSelectByPST(FontViewBase * fv, struct lookup_subtable *sub,
@@ -505,7 +505,7 @@ struct fixed_maps {
 
 struct genericchange {
    enum glyphchange_type gc;
-   uint32 feature_tag;
+   uint32_t feature_tag;
    char *glyph_extension;
    char *extension_for_letters, *extension_for_symbols;
    double stem_height_scale, stem_width_scale;
@@ -516,10 +516,10 @@ struct genericchange {
    double hcounter_scale, hcounter_add;
    double lsb_scale, lsb_add;
    double rsb_scale, rsb_add;
-   uint8 center_in_hor_advance;
-   uint8 use_vert_mapping;
-   uint8 do_smallcap_symbols;
-   uint8 petite;		/* generate petite caps rather than smallcaps */
+   uint8_t center_in_hor_advance;
+   uint8_t use_vert_mapping;
+   uint8_t do_smallcap_symbols;
+   uint8_t petite;		/* generate petite caps rather than smallcaps */
    double vcounter_scale, vcounter_add;	/* If not using mapping */
    double v_scale;		/* If using mapping */
    struct fixed_maps m;
@@ -609,8 +609,8 @@ extern BDFFloat *BDFFloatConvert(BDFFloat * sel, int newdepth, int olddepth);
 
 extern void BDFFloatFree(BDFFloat * sel);
 
-extern void BCMergeReferences(BDFChar * base, BDFChar * cur, int8 xoff,
-			      int8 yoff);
+extern void BCMergeReferences(BDFChar * base, BDFChar * cur, int8_t xoff,
+			      int8_t yoff);
 extern BDFChar *BDFGetMergedChar(BDFChar * bc);
 
 extern void BCUnlinkThisReference(struct fontviewbase *fv, BDFChar * bc);
@@ -744,28 +744,28 @@ extern void LookupInit(void);
 
 extern int UserFeaturesDiffer(void);
 
-extern uint32 *StdFeaturesOfScript(uint32 script);
+extern uint32_t *StdFeaturesOfScript(uint32_t script);
 
 enum byte_types { bt_instr, bt_cnt, bt_byte, bt_wordhi, bt_wordlo,
       bt_impliedreturn };
 struct instrdata {
-   uint8 *instrs;
+   uint8_t *instrs;
    int instr_cnt, max;
-   uint8 *bts;
+   uint8_t *bts;
    unsigned int changed:1;
    unsigned int in_composit:1;
    SplineFont *sf;
    SplineChar *sc;
-   uint32 tag;
+   uint32_t tag;
    struct instrdlg *id;
    struct instrdata *next;
 };
 
-extern uint8 *_IVParse(SplineFont *sf, char *text, int *len,
+extern uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 		       void (*IVError) (void *, char *, int), void *iv);
-extern char *_IVUnParseInstrs(uint8 * instrs, int instr_cnt);
+extern char *_IVUnParseInstrs(uint8_t * instrs, int instr_cnt);
 
-extern int BitmapControl(FontViewBase * fv, int32 * sizes, int isavail,
+extern int BitmapControl(FontViewBase * fv, int32_t * sizes, int isavail,
 			 int rasterize);
 extern void FVSetWidthScript(FontViewBase * fv, enum widthtype wtype, int val,
 			     int incr);

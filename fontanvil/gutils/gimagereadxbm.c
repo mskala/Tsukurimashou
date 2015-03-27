@@ -1,4 +1,4 @@
-/* $Id: gimagereadxbm.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagereadxbm.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013feb15, fileread and mem error checks, plus test for short, Jose Da Silva */
 /*
@@ -51,7 +51,7 @@ GImage *GImageReadXbm(char *filename) {
 
    long pixels;
 
-   uint8 *scanline;
+   uint8_t *scanline;
 
    if ((file = fopen(filename, "r")) == NULL) {
       fprintf(stderr, "Can't open \"%s\"\n", filename);

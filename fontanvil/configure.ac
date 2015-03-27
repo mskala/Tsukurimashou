@@ -443,6 +443,7 @@ AC_CHECK_HEADERS([iconv.h])
 AC_C_BIGENDIAN
 AC_TYPE_PID_T
 AX_PTHREAD
+AX_CREATE_STDINT_H
 #
 ############################################################################
 #

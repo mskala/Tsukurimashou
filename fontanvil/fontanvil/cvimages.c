@@ -1,4 +1,4 @@
-/* $Id: cvimages.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: cvimages.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -300,7 +300,7 @@ static BasePoint *slurppoints(AFILE *fig,SplineFont *sf,int cnt) {
    real ascent=11 * 1200 * sf->ascent / (sf->ascent + sf->descent);
 
    for (i=0; i < cnt; ++i) {
-      fscanf(fig, "%d %d", &x, &y);
+      afscanf(fig, "%d %d", &x, &y);
       bps[i].x=x * scale;
       bps[i].y=(ascent - y) * scale;
    }
@@ -322,7 +322,7 @@ static SplineSet *slurpcompound(AFILE *fig,SplineChar *sc,
 				SplineSet * sofar) {
    int ch;
 
-   fscanf(fig, "%*d %*d %*d %*d");
+   afscanf(fig, "%*d %*d %*d %*d");
    while ((ch=agetc(fig)) != '\n' && ch != EOF);
    sofar=slurpcompoundguts(fig, sc, sofar);
    return (sofar);
@@ -372,7 +372,7 @@ static SplineSet *slurparc(AFILE *fig,SplineChar *sc,SplineSet *sofar) {
       11 * 1200 * sc->parent->ascent / (sc->parent->ascent +
 					sc->parent->descent);
 
-   fscanf(fig,
+   afscanf(fig,
 	  "%d %*d %*d %*d %*d %*d %*d %*d %*f %*d %d %d %d %f %f %d %d %*d %*d %d %d",
 	  &sub, &dir, &fa, &ba, &cx, &cy, &_sx, &_sy, &_ex, &_ey);
    while ((ch=agetc(fig)) != '\n' && ch != EOF);
@@ -446,7 +446,7 @@ static SplineSet *slurpelipse(AFILE *fig,SplineChar *sc,SplineSet *sofar) {
 
    /* I ignore the angle */
 
-   fscanf(fig,
+   afscanf(fig,
 	  "%d %*d %*d %*d %*d %*d %*d %*d %*f %d %f %d %d %d %d %*d %*d %*d %*d",
 	  &sub, &dir, &angle, &cx, &cy, &rx, &ry);
    while ((ch=agetc(fig)) != '\n' && ch != EOF);
@@ -511,7 +511,7 @@ static SplineSet *slurppolyline(AFILE *fig,SplineChar *sc,
 
    int i;
 
-   fscanf(fig, "%d %*d %*d %*d %*d %*d %*d %*d %*f %*d %*d %d %d %d %d",
+   afscanf(fig, "%d %*d %*d %*d %*d %*d %*d %*d %*f %*d %*d %d %d %d %d",
 	  &sub, &radius, &fa, &ba, &cnt);
    /* sub==1 => polyline, 2=>box, 3=>polygon, 4=>arc-box, 5=>imported eps bb */
    while ((ch=agetc(fig)) != '\n' && ch != EOF);
@@ -809,7 +809,7 @@ static SplineSet *slurpspline(AFILE *fig,SplineChar *sc,SplineSet *sofar) {
 
    int i;
 
-   fscanf(fig, "%d %*d %*d %*d %*d %*d %*d %*d %*f %*d %d %d %d",
+   afscanf(fig, "%d %*d %*d %*d %*d %*d %*d %*d %*f %*d %d %d %d",
 	  &sub, &fa, &ba, &cnt);
    while ((ch=agetc(fig)) != '\n' && ch != EOF);
    /* I ignore arrow lines */
@@ -823,9 +823,9 @@ static SplineSet *slurpspline(AFILE *fig,SplineChar *sc,SplineSet *sofar) {
    xs.closed=(sub & 1);
    for (i=0; i < cnt; ++i)
 #ifdef FONTANVIL_CONFIG_USE_DOUBLE
-      fscanf(fig, "%lf", &xs.s[i]);
+      afscanf(fig, "%lf", &xs.s[i]);
 #else
-      fscanf(fig, "%f", &xs.s[i]);
+      afscanf(fig, "%f", &xs.s[i]);
 #endif
    /* the spec says that the last point of a closed path will duplicate the */
    /* first, but it doesn't seem to */
@@ -847,11 +847,10 @@ static SplineSet *slurpspline(AFILE *fig,SplineChar *sc,SplineSet *sofar) {
 static SplineSet *slurpcompoundguts(AFILE *fig,SplineChar *sc,
 				    SplineSet * sofar) {
    int oc;
-
    int ch;
 
    while (1) {
-      fscanf(fig, "%d", &oc);
+      afscanf(fig, "%d", &oc);
       if (afeof(fig) || oc==-6)
 	 return (sofar);
       switch (oc) {

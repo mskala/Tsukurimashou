@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: ttfspecial.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -52,13 +52,13 @@ struct PfEd_subtabs {
    int next;
    struct {
       AFILE *data;
-      uint32 tag;
-      uint32 offset;
+      uint32_t tag;
+      uint32_t offset;
    } subtabs[MAX_SUBTABLE_TYPES];
 };
 
 static void PfEd_FontComment(SplineFont *sf,struct PfEd_subtabs *pfed,
-			     uint32 tag) {
+			     uint32_t tag) {
    AFILE *fcmt;
 
    char *pt;
@@ -85,7 +85,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
 			       struct glyphinfo *gi) {
    int i, j, k, any, cnt, last, skipped;
 
-   uint32 offset;
+   uint32_t offset;
 
    SplineChar *sc, *sc2;
 
@@ -135,7 +135,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
 		  putshort(cmnt, i);
 		  putshort(cmnt, last);
 		  putlong(cmnt, offset);
-		  offset += sizeof(uint32) * (last - i + 2);
+		  offset += sizeof(uint32_t) * (last - i + 2);
 	       } else if (j==2) {
 		  for (; i <= last; ++i) {
 		     if (gi->bygid[i]==-1
@@ -162,7 +162,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
       if (j==0) {
 	 putshort(cmnt, cnt);
 	 offset =
-	    2 * sizeof(short) + cnt * (2 * sizeof(short) + sizeof(uint32));
+	    2 * sizeof(short) + cnt * (2 * sizeof(short) + sizeof(uint32_t));
       }
    }
    if (aftell(cmnt) & 1)
@@ -262,7 +262,7 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
 }
 
 static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
-			 OTLookup * lookups, uint32 tag) {
+			 OTLookup * lookups, uint32_t tag) {
    OTLookup *otl;
 
    int lcnt, scnt, ascnt, acnt, s, a;
@@ -411,7 +411,7 @@ static void pfed_glyph_layer(AFILE *layr,Layer *layer,int do_spiro) {
 
    SplinePoint *sp;
 
-   uint32 base;
+   uint32_t base;
 
    int mod, was_implicit;
 
@@ -455,7 +455,7 @@ static void pfed_glyph_layer(AFILE *layr,Layer *layer,int do_spiro) {
 
    contour_cnt=0;
    for (ss=layer->splines; ss != NULL; ss=ss->next, ++contour_cnt) {
-      uint32 pos=aftell(layr);
+      uint32_t pos=aftell(layr);
 
       afseek(layr, base + 6 + 4 * contour_cnt, SEEK_SET);
       putshort(layr, pos - base);
@@ -729,9 +729,9 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 
    SplineChar *sc, *sc2;
 
-   uint32 offset;
+   uint32_t offset;
 
-   uint32 *glyph_data_offset_location;
+   uint32_t *glyph_data_offset_location;
 
    for (i=0; i < gi->gcnt; ++i)
       if (gi->bygid[i] != -1)
@@ -748,7 +748,7 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 	 }
 
    offset=aftell(layr);
-   glyph_data_offset_location=calloc(gi->gcnt, sizeof(uint32));
+   glyph_data_offset_location=calloc(gi->gcnt, sizeof(uint32_t));
    for (j=0; j < 4; ++j) {
       cnt=0;
       for (i=0; i < gi->gcnt; ++i)
@@ -773,7 +773,7 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 		  putshort(layr, i);
 		  putshort(layr, last);
 		  putlong(layr, offset);
-		  offset += sizeof(uint32) * (last - i + 1);
+		  offset += sizeof(uint32_t) * (last - i + 1);
 	       } else if (j==2) {
 		  for (; i <= last; ++i) {
 		     if (gi->bygid[i]==-1
@@ -788,7 +788,7 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 		  for (; i <= last; ++i) {
 		     if (gi->bygid[i] != -1
 			 && (sc=sf->glyphs[gi->bygid[i]])->ticked) {
-			uint32 pos=aftell(layr);
+			uint32_t pos=aftell(layr);
 
 			afseek(layr, glyph_data_offset_location[i], SEEK_SET);
 			putlong(layr, pos);	/* Offset relative to start of subtable==start of file */
@@ -801,7 +801,7 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 	    }
 	 }
       if (j==0) {
-	 offset += sizeof(short) + cnt * (2 * sizeof(short) + sizeof(uint32));
+	 offset += sizeof(short) + cnt * (2 * sizeof(short) + sizeof(uint32_t));
 	 putshort(layr, cnt);
       }
    }
@@ -816,9 +816,9 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
    /*  if the foreground is cubic and output is quad then the foreground */
    /*  Any other layers                               */
    /* Check if any of these data exist                */
-   uint8 has_spiro=0;
+   uint8_t has_spiro=0;
 
-   uint8 *otherlayers;
+   uint8_t *otherlayers;
 
    int i, name_off, l, cnt, sofar;
 
@@ -826,7 +826,7 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
 
    AFILE *layr;
 
-   otherlayers=calloc(sf->layer_cnt, sizeof(uint8));
+   otherlayers=calloc(sf->layer_cnt, sizeof(uint8_t));
 
    /* We don't need to check in bygid order. We just want to know existance */
    /* We don't check for refs because a reference to an empty glyph is empty too */
@@ -886,7 +886,7 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
 
    sofar=0;
    if (has_spiro) {
-      uint32 pos=aftell(layr);
+      uint32_t pos=aftell(layr);
 
       afseek(layr, 4 + 0 * 8 + 4, SEEK_SET);
       putlong(layr, pos);
@@ -896,7 +896,7 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
    }
    for (l=0; l < sf->layer_cnt; ++l)
       if (otherlayers[l]) {
-	 uint32 pos=aftell(layr);
+	 uint32_t pos=aftell(layr);
 
 	 afseek(layr, 4 + sofar * 8 + 4, SEEK_SET);
 	 putlong(layr, pos);
@@ -919,7 +919,7 @@ void pfed_dump(struct alltabs *at, SplineFont *sf) {
 
    int i;
 
-   uint32 offset;
+   uint32_t offset;
 
    memset(&pfed, 0, sizeof(pfed));
    if (at->gi.flags & ttf_flag_pfed_comments) {
@@ -945,7 +945,7 @@ void pfed_dump(struct alltabs *at, SplineFont *sf) {
    at->pfed=file=atmpfile();
    putlong(file, 0x00010000);	/* Version number */
    putlong(file, pfed.next);	/* sub-table count */
-   offset=2 * sizeof(uint32) + 2 * pfed.next * sizeof(uint32);
+   offset=2 * sizeof(uint32_t) + 2 * pfed.next * sizeof(uint32_t);
    for (i=0; i < pfed.next; ++i) {
       putlong(file, pfed.subtabs[i].tag);
       putlong(file, offset);
@@ -967,7 +967,7 @@ void pfed_dump(struct alltabs *at, SplineFont *sf) {
 /* *************************          Input         ************************* */
 
 static void pfed_readfontcomment(AFILE *ttf,struct ttfinfo *info,
-				 uint32 base, uint32 tag) {
+				 uint32_t base, uint32_t tag) {
    int len;
 
    char *start, *pt, *end;
@@ -1001,7 +1001,7 @@ static void pfed_readfontcomment(AFILE *ttf,struct ttfinfo *info,
       info->fontcomments=start;
 }
 
-static char *pfed_read_utf8(AFILE *ttf,uint32 start) {
+static char *pfed_read_utf8(AFILE *ttf,uint32_t start) {
    int ch, len;
 
    char *str, *pt;
@@ -1018,10 +1018,10 @@ static char *pfed_read_utf8(AFILE *ttf,uint32 start) {
    return (str);
 }
 
-static char *pfed_read_ucs2_len(AFILE *ttf,uint32 offset,int len) {
+static char *pfed_read_ucs2_len(AFILE *ttf,uint32_t offset,int len) {
    char *pt, *str;
 
-   uint32 uch, uch2;
+   uint32_t uch, uch2;
 
    int i;
 
@@ -1050,7 +1050,7 @@ static char *pfed_read_ucs2_len(AFILE *ttf,uint32 offset,int len) {
    return (realloc(str, pt - str));
 }
 
-static char *pfed_read_utf8_len(AFILE *ttf,uint32 offset,int len) {
+static char *pfed_read_utf8_len(AFILE *ttf,uint32_t offset,int len) {
    char *pt, *str;
 
    int i;
@@ -1067,17 +1067,17 @@ static char *pfed_read_utf8_len(AFILE *ttf,uint32 offset,int len) {
 }
 
 static void pfed_readcvtcomments(AFILE *ttf,struct ttfinfo *info,
-				 uint32 base) {
+				 uint32_t base) {
    int count, i;
 
-   uint16 *offsets;
+   uint16_t *offsets;
 
    afseek(ttf, base, SEEK_SET);
    if (getushort(ttf) != 0)
       return;			/* Bad version number */
    count=getushort(ttf);
 
-   offsets=malloc(count * sizeof(uint16));
+   offsets=malloc(count * sizeof(uint16_t));
    info->cvt_names=malloc((count + 1) * sizeof(char *));
    for (i=0; i < count; ++i)
       offsets[i]=getushort(ttf);
@@ -1091,15 +1091,15 @@ static void pfed_readcvtcomments(AFILE *ttf,struct ttfinfo *info,
 }
 
 static void pfed_readglyphcomments(AFILE *ttf,struct ttfinfo *info,
-				   uint32 base) {
+				   uint32_t base) {
    int n, i, j;
 
    struct grange {
       int start, end;
-      uint32 offset;
+      uint32_t offset;
    } *grange;
 
-   uint32 offset, next;
+   uint32_t offset, next;
 
    int use_utf8;
 
@@ -1123,7 +1123,7 @@ static void pfed_readglyphcomments(AFILE *ttf,struct ttfinfo *info,
       for (j=grange[i].start; j <= grange[i].end; ++j) {
 	 afseek(ttf,
 	       base + grange[i].offset + (j -
-					  grange[i].start) * sizeof(uint32),
+					  grange[i].start) * sizeof(uint32_t),
 	       SEEK_SET);
 	 offset=getlong(ttf);
 	 next=getlong(ttf);
@@ -1141,10 +1141,10 @@ static void pfed_readglyphcomments(AFILE *ttf,struct ttfinfo *info,
    free(grange);
 }
 
-static void pfed_readcolours(AFILE *ttf,struct ttfinfo *info,uint32 base) {
+static void pfed_readcolours(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    int n, i, j, start, end;
 
-   uint32 col;
+   uint32_t col;
 
    afseek(ttf, base, SEEK_SET);
    if (getushort(ttf) != 0)
@@ -1164,7 +1164,7 @@ static void pfed_readcolours(AFILE *ttf,struct ttfinfo *info,uint32 base) {
 }
 
 static void pfed_readlookupnames(AFILE *ttf,struct ttfinfo *info,
-				 uint32 base, OTLookup * lookups) {
+				 uint32_t base, OTLookup * lookups) {
    OTLookup *otl;
 
    struct lookup_subtable *sub;
@@ -1258,7 +1258,7 @@ static float pfed_get_coord(AFILE *ttf,int mod) {
 }
 
 static void pfed_read_normal_contour(AFILE *ttf,SplineSet *ss,
-				     uint32 base, int type) {
+				     uint32_t base, int type) {
    SplinePoint *sp, *current;
 
    int verb, v, m;
@@ -1390,7 +1390,7 @@ static void pfed_read_normal_contour(AFILE *ttf,SplineSet *ss,
 }
 
 static void pfed_read_spiro_contour(AFILE *ttf,SplineSet *ss,
-				    uint32 base, int type) {
+				    uint32_t base, int type) {
    int i, ch;
 
    afseek(ttf, base, SEEK_SET);
@@ -1431,7 +1431,7 @@ static void pfed_read_spiro_contour(AFILE *ttf,SplineSet *ss,
 }
 
 static void pfed_read_glyph_layer(AFILE *ttf,struct ttfinfo *info,
-				  Layer * ly, uint32 base, int type,
+				  Layer * ly, uint32_t base, int type,
 				  int version) {
    int cc, ic, rc, i, j;
 
@@ -1503,7 +1503,7 @@ static void pfed_read_glyph_layer(AFILE *ttf,struct ttfinfo *info,
    free(contours);
 }
 
-static void pfed_readguidelines(AFILE *ttf,struct ttfinfo *info,uint32 base) {
+static void pfed_readguidelines(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    int i, v, h, off;
    int version;
    SplinePoint *sp, *nsp;
@@ -1581,9 +1581,9 @@ static void pfed_redo_refs(SplineChar *sc,int layer) {
 }
 
 static void pfed_read_layer(AFILE *ttf,struct ttfinfo *info,int layer,
-			    int type, uint32 base, uint32 start,
+			    int type, uint32_t base, uint32_t start,
 			    int version) {
-   uint32 *loca=calloc(info->glyph_cnt, sizeof(uint32));
+   uint32_t *loca=calloc(info->glyph_cnt, sizeof(uint32_t));
 
    int i, j;
 
@@ -1593,7 +1593,7 @@ static void pfed_read_layer(AFILE *ttf,struct ttfinfo *info,int layer,
 
    struct range {
       int start, last;
-      uint32 offset;
+      uint32_t offset;
    } *ranges;
 
    afseek(ttf, start, SEEK_SET);
@@ -1630,7 +1630,7 @@ static void pfed_read_layer(AFILE *ttf,struct ttfinfo *info,int layer,
 }
 
 static void pfed_readotherlayers(AFILE *ttf,struct ttfinfo *info,
-				 uint32 base) {
+				 uint32_t base) {
    int i, l, lcnt, spiro_index, gid;
 
    int version;
@@ -1733,7 +1733,7 @@ void pfed_read(AFILE *ttf, struct ttfinfo *info) {
    int n, i;
 
    struct tagoff {
-      uint32 tag, offset;
+      uint32_t tag, offset;
    } tagoff[MAX_SUBTABLE_TYPES + 30];
 
    afseek(ttf, info->pfed_start, SEEK_SET);
@@ -1793,10 +1793,10 @@ void pfed_read(AFILE *ttf, struct ttfinfo *info) {
 }
 
 /* 'TeX ' table format is as follows...				 */
-/* uint32  version number 0x00010000				 */
-/* uint32  subtable count					 */
-/* struct { uint32 tab, offset } tag/offset for first subtable	 */
-/* struct { uint32 tab, offset } tag/offset for second subtable	 */
+/* uint32_t  version number 0x00010000				 */
+/* uint32_t  subtable count					 */
+/* struct { uint32_t tab, offset } tag/offset for first subtable	 */
+/* struct { uint32_t tab, offset } tag/offset for second subtable	 */
 /* ...								 */
 
 /* 'TeX ' 'ftpm' font parameter subtable format			 */
@@ -1807,18 +1807,18 @@ void pfed_read(AFILE *ttf, struct ttfinfo *info) {
 /* 'TeX ' 'htdp' per-glyph height/depth subtable format		 */
 /*  short  version number 0					 */
 /*  short  glyph-count						 */
-/*  array[glyph-count] of { int16 height,depth }		 */
+/*  array[glyph-count] of { int16_t height,depth }		 */
 
 /* 'TeX ' 'itlc' per-glyph italic correction subtable		 */
 /*  short  version number 0					 */
 /*  short  glyph-count						 */
-/*  array[glyph-count] of int16 italic_correction		 */
+/*  array[glyph-count] of int16_t italic_correction		 */
 
 /* !!!!!!!!!!! OBSOLETE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 /* 'TeX ' 'sbsp' per-glyph sub/super script positioning subtable */
 /*  short  version number 0					 */
 /*  short  glyph-count						 */
-/*  array[glyph-count] of { int16 sub,super }			 */
+/*  array[glyph-count] of { int16_t sub,super }			 */
 
 #undef MAX_SUBTABLE_TYPES
 #define MAX_SUBTABLE_TYPES	4
@@ -1827,12 +1827,12 @@ struct TeX_subtabs {
    int next;
    struct {
       AFILE *data;
-      uint32 tag;
-      uint32 offset;
+      uint32_t tag;
+      uint32_t offset;
    } subtabs[MAX_SUBTABLE_TYPES];
 };
 
-static uint32 tex_text_params[]={
+static uint32_t tex_text_params[]={
    TeX_Slant,
    TeX_Space,
    TeX_Stretch,
@@ -1843,7 +1843,7 @@ static uint32 tex_text_params[]={
    0
 };
 
-static uint32 tex_math_params[]={
+static uint32_t tex_math_params[]={
    TeX_Slant,
    TeX_Space,
    TeX_Stretch,
@@ -1869,7 +1869,7 @@ static uint32 tex_math_params[]={
    0
 };
 
-static uint32 tex_mathext_params[]={
+static uint32_t tex_mathext_params[]={
    TeX_Slant,
    TeX_Space,
    TeX_Stretch,
@@ -1897,7 +1897,7 @@ static void TeX_dumpFontParams(SplineFont *sf,struct TeX_subtabs *tex,
 
    int i, pcnt;
 
-   uint32 *tags;
+   uint32_t *tags;
 
    if (sf->texdata.type==tex_unset)
       return;
@@ -2011,7 +2011,7 @@ void tex_dump(struct alltabs *at, SplineFont *sf) {
 
    int i;
 
-   uint32 offset;
+   uint32_t offset;
 
    if (!(at->gi.flags & ttf_flag_TeXtable))
       return;
@@ -2027,7 +2027,7 @@ void tex_dump(struct alltabs *at, SplineFont *sf) {
    at->tex=file=atmpfile();
    putlong(file, 0x00010000);	/* Version number */
    putlong(file, tex.next);	/* sub-table count */
-   offset=2 * sizeof(uint32) + 2 * tex.next * sizeof(uint32);
+   offset=2 * sizeof(uint32_t) + 2 * tex.next * sizeof(uint32_t);
    for (i=0; i < tex.next; ++i) {
       putlong(file, tex.subtabs[i].tag);
       putlong(file, offset);
@@ -2050,15 +2050,15 @@ void tex_dump(struct alltabs *at, SplineFont *sf) {
 /* *************************    The 'TeX ' table    ************************* */
 /* *************************          Input         ************************* */
 
-static void TeX_readFontParams(AFILE *ttf,struct ttfinfo *info,uint32 base) {
+static void TeX_readFontParams(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    int i, pcnt;
-   static uint32 *alltags[] =
+   static uint32_t *alltags[] =
       { tex_text_params, tex_math_params, tex_mathext_params };
    int j, k;
 
-   uint32 tag;
+   uint32_t tag;
 
-   int32 val;
+   int32_t val;
 
    afseek(ttf, base, SEEK_SET);
    if (getushort(ttf) != 0)	/* Don't know how to read this version of the subtable */
@@ -2085,7 +2085,7 @@ static void TeX_readFontParams(AFILE *ttf,struct ttfinfo *info,uint32 base) {
    }
 }
 
-static void TeX_readHeightDepth(AFILE *ttf,struct ttfinfo *info,uint32 base) {
+static void TeX_readHeightDepth(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    int i, gcnt;
 
    afseek(ttf, base, SEEK_SET);
@@ -2104,7 +2104,7 @@ static void TeX_readHeightDepth(AFILE *ttf,struct ttfinfo *info,uint32 base) {
    }
 }
 
-static void TeX_readItalicCorr(AFILE *ttf,struct ttfinfo *info,uint32 base) {
+static void TeX_readItalicCorr(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    int i, gcnt;
 
    afseek(ttf, base, SEEK_SET);
@@ -2125,7 +2125,7 @@ void tex_read(AFILE *ttf, struct ttfinfo *info) {
    int n, i;
 
    struct tagoff {
-      uint32 tag, offset;
+      uint32_t tag, offset;
    } tagoff[MAX_SUBTABLE_TYPES + 30];
 
    afseek(ttf, info->tex_start, SEEK_SET);
@@ -2179,8 +2179,8 @@ an array of (num_items) items that look like:
 	ULONG	item_name	: offset in string table to item name
 	USHORT	item_type	: item type: 0 => non-property string (e.g. COMMENT)
 					     1 => non-property atom (e.g. FONT)
-					     2 => non-property int32
-					     3 => non-property uint32
+					     2 => non-property int32_t
+					     3 => non-property uint32_t
 					  0x10 => flag for a property, ored
 						  with above value types)
 	ULONG	item_value	: item value.
@@ -2250,7 +2250,7 @@ static char *MergeComments(BDFFont *bdf) {
 
 #define AMAX	50
 
-int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32 * sizes) {
+int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    AFILE *strings;
 
    struct atomoff {
@@ -2505,7 +2505,7 @@ void ttf_bdf_read(AFILE *ttf, struct ttfinfo *info) {
 /*  date of font's (not file's) creation */
 /*  date of font's modification */
 int ttf_fftm_dump(SplineFont *sf, struct alltabs *at) {
-   int32 results[2];
+   int32_t results[2];
 
    at->fftmf=atmpfile();
 

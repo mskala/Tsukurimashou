@@ -1,4 +1,4 @@
-/* $Id: start.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: start.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@
 #include "unicodelibinfo.h"
 #include "gb12345.h"
 
-int32 unicode_from_adobestd[256];
+int32_t unicode_from_adobestd[256];
 
 struct lconv localeinfo;
 

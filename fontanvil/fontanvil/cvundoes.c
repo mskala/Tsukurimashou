@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: cvundoes.c 3873 2015-03-27 10:44:51Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -52,8 +52,8 @@ int maxundoes=120;		/* -1 is infinite */
 
 int preserve_hint_undoes=true;
 
-static uint8 *bmpcopy(uint8 *bitmap,int bytes_per_line,int lines) {
-   uint8 *ret=malloc(bytes_per_line * lines);
+static uint8_t *bmpcopy(uint8_t *bitmap,int bytes_per_line,int lines) {
+   uint8_t *ret=malloc(bytes_per_line * lines);
 
    memcpy(ret, bitmap, bytes_per_line * lines);
    return (ret);
@@ -615,7 +615,7 @@ static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
      case ut_hints:{
 	   void *hints=UHintCopy(sc, false);
 
-	   uint8 *instrs=sc->ttf_instrs;
+	   uint8_t *instrs=sc->ttf_instrs;
 
 	   int instrs_len=sc->ttf_instrs_len;
 
@@ -664,7 +664,7 @@ static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
 		|| undo->undotype==ut_statename)) {
 	      void *hints=UHintCopy(sc, false);
 
-	      uint8 *instrs=sc->ttf_instrs;
+	      uint8_t *instrs=sc->ttf_instrs;
 
 	      int instrs_len=sc->ttf_instrs_len;
 
@@ -726,7 +726,7 @@ void SCDoUndo(SplineChar * sc, int layer) {
 }
 
 static void BCUndoAct(BDFChar *bc,Undoes *undo) {
-   uint8 *b;
+   uint8_t *b;
 
    int temp;
 
@@ -945,7 +945,7 @@ static Undoes *SCCopyAllLayer(SplineChar *sc,enum fvcopy_type full,
 	 cur->u.state.hints=UHintCopy(sc, true);
 	 if (copyttfinstr) {
 	    cur->u.state.instrs =
-	       (uint8 *) copyn((char *) sc->ttf_instrs, sc->ttf_instrs_len);
+	       (uint8_t *) copyn((char *) sc->ttf_instrs, sc->ttf_instrs_len);
 	    cur->u.state.instrs_len=sc->ttf_instrs_len;
 	 }
 	 cur->u.state.unicodeenc=sc->unicodeenc;
@@ -1075,9 +1075,7 @@ static int BCRefersToBC(BDFChar *parent,BDFChar *child) {
 static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
 				     RefChar * ref, int *refstate) {
    SplineChar *rsc=NULL, *fromsc;
-
    SplineSet *new, *spl;
-
    int yes=3;
 
    rsc=FindCharacter(sc->parent, paster->copied_from, ref, &fromsc);
@@ -1127,14 +1125,7 @@ static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
    }
 }
 
-#ifndef _NO_LIBXML
-static void XClipFontToFFClip(void) {
-   return;
-}
-#endif
-
 static double PasteFigureScale(SplineFont *newsf,SplineFont *oldsf) {
-
    if (newsf==oldsf)
       return (1.0);
    if (!SFIsActive(oldsf))	/* Font we copied from has been closed */
@@ -1416,7 +1407,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 		     && sc->layers[layer].order2
 		     && InstrsSameParent(sc, paster->copied_from)) {
 		    sc->ttf_instrs =
-		       (uint8 *) copyn((char *) paster->u.state.instrs,
+		       (uint8_t *) copyn((char *) paster->u.state.instrs,
 				       paster->u.state.instrs_len);
 		    sc->ttf_instrs_len=paster->u.state.instrs_len;
 		 } else {
@@ -2009,7 +2000,7 @@ static Undoes *BCCopyAll(BDFChar *bc,int pixelsize,int depth,
 	 }
       } else {			/* Or just make a reference */
 	 cur->u.bmpstate.bytes_per_line=1;
-	 cur->u.bmpstate.bitmap=calloc(1, sizeof(uint8));
+	 cur->u.bmpstate.bitmap=calloc(1, sizeof(uint8_t));
 
 	 ref=calloc(1, sizeof(BDFRefChar));
 	 ref->bdfc=bc;
@@ -2249,7 +2240,7 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,real trans[6]) {
    BDFFont *bdf;
    int i, j, cnt=0, gid;
    int yestoall=0, first=true;
-   uint8 *oldsel=fv->selected;
+   uint8_t *oldsel=fv->selected;
    extern int onlycopydisplayed;
    SplineFont *sf=fv->sf, *origsf=sf;
    MMSet *mm=sf->mm;

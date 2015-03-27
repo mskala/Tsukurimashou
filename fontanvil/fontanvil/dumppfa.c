@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: dumppfa.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -598,8 +598,8 @@ static void dumpGradient(void (*dumpchar) (int ch,void *data),void *data,
 				    1].offset) / (grad->grad_stops[j].offset -
 						  grad->grad_stops[j -
 								   1].offset);
-	       uint32 col1=grad->grad_stops[j - 1].col;
-	       uint32 col2=grad->grad_stops[j].col;
+	       uint32_t col1=grad->grad_stops[j - 1].col;
+	       uint32_t col2=grad->grad_stops[j].col;
 	       int red, green, blue;
 
 	       if (col1==COLOR_INHERITED)
@@ -775,11 +775,11 @@ static void InitFilter(struct psfilter *ps,
    ps->data=data;
 }
 
-static void Filter(struct psfilter *ps,uint8 ch) {
+static void Filter(struct psfilter *ps,uint8_t ch) {
    ps->ascii85encode=(ps->ascii85encode << 8) | ch;
    if (++ps->ascii85n==4) {
       int ch5, ch4, ch3, ch2, ch1;
-      uint32 val=ps->ascii85encode;
+      uint32_t val=ps->ascii85encode;
 
       if (val==0) {
 	 (ps->dumpchar) ('z', ps->data);
@@ -810,7 +810,7 @@ static void Filter(struct psfilter *ps,uint8 ch) {
 }
 
 static void FlushFilter(struct psfilter *ps) {
-   uint32 val=ps->ascii85encode;
+   uint32_t val=ps->ascii85encode;
    int n=ps->ascii85n;
 
    if (n != 0) {
@@ -843,15 +843,15 @@ static void FlushFilter(struct psfilter *ps) {
 /*  proc (as opposed to executing) */
 /* So I can't use run length filters or other compression technique */
 
-static void FilterStr(struct psfilter *ps,uint8 *pt,int len) {
-   uint8 *end=pt + len;
+static void FilterStr(struct psfilter *ps,uint8_t *pt,int len) {
+   uint8_t *end=pt + len;
 
    while (pt < end)
       Filter(ps, *pt++);
 }
 
 static void PSDumpBinaryData(void (*dumpchar) (int ch,void *data),
-			     void *data, uint8 * bytes, int rows,
+			     void *data, uint8_t * bytes, int rows,
 			     int bytes_per_row, int useful_bytes_per_row) {
    struct psfilter ps;
    int i, j, cnt, group_cnt;
@@ -862,10 +862,10 @@ static void PSDumpBinaryData(void (*dumpchar) (int ch,void *data),
       dumpf(dumpchar, data, "{<~");
       InitFilter(&ps, dumpchar, data);
       if (bytes_per_row==useful_bytes_per_row)
-	 FilterStr(&ps, (uint8 *) bytes, rows * bytes_per_row);
+	 FilterStr(&ps, (uint8_t *) bytes, rows * bytes_per_row);
       else
 	 for (i=0; i < rows; ++i) {
-	    FilterStr(&ps, (uint8 *) (bytes + i * bytes_per_row),
+	    FilterStr(&ps, (uint8_t *) (bytes + i * bytes_per_row),
 		      useful_bytes_per_row);
 	 }
       FlushFilter(&ps);
@@ -884,7 +884,7 @@ static void PSDumpBinaryData(void (*dumpchar) (int ch,void *data),
 	 }
 	 InitFilter(&ps, dumpchar, data);
 	 for (j=0; j < cnt && i < rows; ++i, ++j) {
-	    FilterStr(&ps, (uint8 *) (bytes + i * bytes_per_row),
+	    FilterStr(&ps, (uint8_t *) (bytes + i * bytes_per_row),
 		      useful_bytes_per_row);
 	 }
 	 FlushFilter(&ps);
@@ -902,8 +902,8 @@ static void PSDump24BinaryData(void (*dumpchar) (int ch,void *data),
 			       void *data, struct _GImage *base) {
    struct psfilter ps;
    int i, j, cnt, group_cnt;
-   register uint32 val;
-   register uint32 *pt, *end;
+   register uint32_t val;
+   register uint32_t *pt, *end;
    const int max_string=65536;
 
    if (3 * base->width * base->height < max_string) {
@@ -911,7 +911,7 @@ static void PSDump24BinaryData(void (*dumpchar) (int ch,void *data),
       dumpf(dumpchar, data, "{<~");
       InitFilter(&ps, dumpchar, data);
       for (i=0; i < base->height; ++i) {
-	 pt=(uint32 *) (base->data + i * base->bytes_per_line);
+	 pt=(uint32_t *) (base->data + i * base->bytes_per_line);
 	 end=pt + base->width;
 	 while (pt < end) {
 	    val=*pt++;
@@ -936,7 +936,7 @@ static void PSDump24BinaryData(void (*dumpchar) (int ch,void *data),
 	 }
 	 InitFilter(&ps, dumpchar, data);
 	 for (j=0; j < cnt && i < base->height; ++i, ++j) {
-	    pt=(uint32 *) (base->data + i * base->bytes_per_line);
+	    pt=(uint32_t *) (base->data + i * base->bytes_per_line);
 	    end=pt + base->width;
 	    while (pt < end) {
 	       val=*pt++;
@@ -966,7 +966,7 @@ static void PSDrawMonoImg(void (*dumpchar) (int ch,void *data),void *data,
       dumpf(dumpchar, data, "true ");
    dumpf(dumpchar, data, "[%d 0 0 %d 0 %d]\n",
 	 base->width, -base->height, base->height);
-   PSDumpBinaryData(dumpchar, data, (uint8 *) base->data, base->height,
+   PSDumpBinaryData(dumpchar, data, (uint8_t *) base->data, base->height,
 		    base->bytes_per_line, (base->width + 7) / 8);
 
    dumpf(dumpchar, data, "%s\n", use_imagemask ? "imagemask" : "image");
@@ -1349,7 +1349,7 @@ static int dumpcharprocs(void (*dumpchar) (int ch,void *data),void *data,
 }
 
 static struct pschars *initsubrs(int needsflex,MMSet *mm) {
-   extern const uint8 *const subrs[10];
+   extern const uint8_t *const subrs[10];
    extern const int subrslens[10];
    int i;
    struct pschars *sub;
@@ -1357,10 +1357,10 @@ static struct pschars *initsubrs(int needsflex,MMSet *mm) {
    sub=calloc(1, sizeof(struct pschars));
    sub->cnt=10;
    sub->lens=malloc(10 * sizeof(int));
-   sub->values=malloc(10 * sizeof(uint8 *));
+   sub->values=malloc(10 * sizeof(uint8_t *));
    for (i=0; i < 5; ++i) {
       ++sub->next;
-      sub->values[i]=(uint8 *) copyn((const char *) subrs[i], subrslens[i]);
+      sub->values[i]=(uint8_t *) copyn((const char *) subrs[i], subrslens[i]);
       sub->lens[i]=subrslens[i];
    }
    sub->next=5;
@@ -1369,7 +1369,7 @@ static struct pschars *initsubrs(int needsflex,MMSet *mm) {
       for (; i < 10 && cnts[i - 5] * mm->instance_count < 22; ++i) {
 	 ++sub->next;
 	 sub->values[i] =
-	    (uint8 *) copyn((const char *) subrs[i], subrslens[i]);
+	    (uint8_t *) copyn((const char *) subrs[i], subrslens[i]);
 	 sub->values[i][0] += cnts[i - 5] * mm->instance_count;
 	 sub->lens[i]=subrslens[i];
       }
@@ -2544,7 +2544,7 @@ static void dumptype0stuff(AFILE *out,SplineFont *sf,EncMap *map) {
    char *notdefname;
    int i, j;
    extern char *zapfnomen[];
-   extern int8 zapfexists[];
+   extern int8_t zapfexists[];
 
    dumpreencodeproc(out);
    notdefname=dumpnotdefenc(out, sf);
@@ -2621,7 +2621,7 @@ static void dumptype0stuff(AFILE *out,SplineFont *sf,EncMap *map) {
    afprintf(out, "%%%%EOF\n");
 }
 
-static void dumpt1str(AFILE *binary,uint8 *data,int len,int leniv) {
+static void dumpt1str(AFILE *binary,uint8_t *data,int len,int leniv) {
    if (leniv==-1)
       afwrite(data, sizeof(1), len, binary);
    else
@@ -2898,21 +2898,6 @@ int _WritePSFont(AFILE *out, SplineFont *sf, enum fontformat format,
    if (aferror(out) || err)
       return (0);
 
-#ifdef __CygWin
-   /* Modern versions of windows want the execute bit set on a ttf file */
-   /*  It might also be needed for a postscript font, but I haven't checked */
-   /* It isn't needed on the pfb file, but is on the pfm, so this code */
-   /*  isn't really useful */
-   /* I've no idea what this corresponds to in windows, nor any idea on */
-   /*  how to set it from the windows UI, but this seems to work */
-   {
-      struct stat buf;
-
-      fstat(fileno(out), &buf);
-      fchmod(fileno(out), S_IXUSR | buf.st_mode);
-   }
-#endif
-
    return (true);
 }
 
@@ -2948,10 +2933,10 @@ static void dumpimageproc(AFILE *file,BDFChar *bdfc,BDFFont *font) {
 	   width, height, width, -height);
    InitFilter(&ps, (DumpChar) fputc, file);
    if (bdfc->bytes_per_line==(width + 7) / 8)
-      FilterStr(&ps, (uint8 *) bdfc->bitmap, height * bdfc->bytes_per_line);
+      FilterStr(&ps, (uint8_t *) bdfc->bitmap, height * bdfc->bytes_per_line);
    else
       for (i=0; i < height; ++i)
-	 FilterStr(&ps, (uint8 *) (bdfc->bitmap + i * bdfc->bytes_per_line),
+	 FilterStr(&ps, (uint8_t *) (bdfc->bitmap + i * bdfc->bytes_per_line),
 		   (width + 7) / 8);
    FlushFilter(&ps);
    afprintf(file, "} imagemask } bind def\n");

@@ -1,4 +1,4 @@
-/* $Id: spiro.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: spiro.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /* 2013sep19-22, error handling and cleanup fixes in Spiro.c, Jose Da Silva */
 /*
@@ -40,7 +40,7 @@ SplineSet *SpiroCP2SplineSet(spiro_cp * spiros) {
    return (NULL);
 }
 
-spiro_cp *SplineSet2SpiroCP(SplineSet * ss, uint16 * cnt) {
+spiro_cp *SplineSet2SpiroCP(SplineSet * ss, uint16_t * cnt) {
    return (NULL);
 }
 
@@ -136,7 +136,7 @@ SplineSet *SpiroCP2SplineSet(spiro_cp * spiros) {
    return (ss);
 }
 
-spiro_cp *SplineSet2SpiroCP(SplineSet * ss, uint16 * _cnt) {
+spiro_cp *SplineSet2SpiroCP(SplineSet * ss, uint16_t * _cnt) {
    /* I don't know a good way to do this. I hope including a couple of */
    /*  mid-points on every spline will do a reasonable job */
    SplinePoint *sp;

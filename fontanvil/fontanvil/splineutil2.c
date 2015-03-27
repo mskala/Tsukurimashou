@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: splineutil2.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3063,7 +3063,7 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 	DBounds *b) {
     /* First find the extrema, if any */
     bigreal t[4], min;
-    uint8 rmfrom[4], rmto[4];
+    uint8_t rmfrom[4], rmto[4];
     int p, i,j, p_s, mini, restart, forced;
     SplinePoint *sp;
     real len;

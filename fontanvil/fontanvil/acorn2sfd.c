@@ -1,4 +1,4 @@
-/* $Id: acorn2sfd.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: acorn2sfd.c 3872 2015-03-27 09:43:03Z mskala $ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -513,7 +513,7 @@ static void ReadIntmetrics(char *dir,struct Outlines *outline) {
 
    char buffer[100];
 
-   uint8 *mapping=NULL;
+   uint8_t *mapping=NULL;
 
    int *widths;
 
@@ -741,7 +741,7 @@ static void FindEncoding(SplineFont *sf,char *filename) {
    }
 
    pos=0;
-   while (fgets(buffer, sizeof(buffer), file) != NULL) {
+   while (afgets(buffer,sizeof(buffer),file)!=NULL) {
       if (*buffer=='%' || *buffer=='\n')
 	 continue;
       for (pt=buffer; *pt != '\0';) {
@@ -866,10 +866,10 @@ static SplineFont *ReadOutline(char *dir) {
    outline.sf->map->enc=&custom;
    outline.sf->map->encmax=outline.sf->map->enccount =
       outline.sf->map->backmax=outline.sf->glyphmax;
-   outline.sf->map->map=malloc(outline.sf->glyphmax * sizeof(int32));
-   outline.sf->map->backmap=malloc(outline.sf->glyphmax * sizeof(int32));
-   memset(outline.sf->map->map, -1, outline.sf->glyphmax * sizeof(int32));
-   memset(outline.sf->map->backmap, -1, outline.sf->glyphmax * sizeof(int32));
+   outline.sf->map->map=malloc(outline.sf->glyphmax * sizeof(int32_t));
+   outline.sf->map->backmap=malloc(outline.sf->glyphmax * sizeof(int32_t));
+   memset(outline.sf->map->map, -1, outline.sf->glyphmax * sizeof(int32_t));
+   memset(outline.sf->map->backmap, -1, outline.sf->glyphmax * sizeof(int32_t));
    outline.sf->for_new_glyphs=namelist_for_new_fonts;
    outline.sf->fontname=despace(outline.fontname);
    outline.sf->fullname=copy(outline.fontname);

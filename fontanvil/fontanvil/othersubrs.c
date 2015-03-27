@@ -1,45 +1,45 @@
-/* $Id: othersubrs.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: othersubrs.c 3872 2015-03-27 09:43:03Z mskala $ */
 #include "fontanvil.h"		/* For LogError */
 
 /* These subroutines are code by Adobe for this exact use (from T1_Spec.pdf) */
 
 	/* 3 0 callothersubr pop pop setcurrentpoint return */
-static const uint8 subrs0[] =
+static const uint8_t subrs0[] =
    { 3 + 139, 0 + 139, 12, 16, 12, 17, 12, 17, 12, 33, 11 };
 	/* 0 1 callothersubr return */
-static const uint8 subrs1[]={ 0 + 139,1 + 139,12,16,11 };
+static const uint8_t subrs1[]={ 0 + 139,1 + 139,12,16,11 };
 
 	/* 0 2 callothersubr return */
-static const uint8 subrs2[]={ 0 + 139,2 + 139,12,16,11 };
+static const uint8_t subrs2[]={ 0 + 139,2 + 139,12,16,11 };
 
 	/* return */
-static const uint8 subrs3[]={ 11 };
+static const uint8_t subrs3[]={ 11 };
 
 	/* This one I created myself to do hint substitution */
 	/* <subr number presumed to be on stack> 1 3 callother pop callsubr */
-static const uint8 subrs4[]={ 1 + 139,3 + 139,12,16,12,17,10,11 };
+static const uint8_t subrs4[]={ 1 + 139,3 + 139,12,16,12,17,10,11 };
 
 	/* These others from adobe for multiple master */
 	/* They need some fix up before they are used (the stack count depends on the # instances). */
 	/* <n> 14 callothersubr pop return */
-static const uint8 subrs5[]={ 139,14 + 139,12,16,12,17,11 };
+static const uint8_t subrs5[]={ 139,14 + 139,12,16,12,17,11 };
 
 	/* 2*<n> 15 callothersubr pop pop return */
-static const uint8 subrs6[]={ 139,15 + 139,12,16,12,17,12,17,11 };
+static const uint8_t subrs6[]={ 139,15 + 139,12,16,12,17,12,17,11 };
 
 	/* 3*<n> 16 callothersubr pop pop pop return */
-static const uint8 subrs7[] =
+static const uint8_t subrs7[] =
    { 139, 16 + 139, 12, 16, 12, 17, 12, 17, 12, 17, 11 };
 	/* 4*<n> 17 callothersubr pop pop pop pop return */
-static const uint8 subrs8[] =
+static const uint8_t subrs8[] =
    { 139, 17 + 139, 12, 16, 12, 17, 12, 17, 12, 17, 12, 17, 11 };
 	/* 6*<n> 18 callothersubr pop pop pop pop  pop pop return */
-static const uint8 subrs9[] =
+static const uint8_t subrs9[] =
    { 139, 18 + 139, 12, 16, 12, 17, 12, 17, 12, 17, 12, 17, 12, 17, 12, 17,
 11 };
 
 
-const uint8 *const subrs[]={ subrs0, subrs1, subrs2, subrs3, subrs4,
+const uint8_t *const subrs[]={ subrs0, subrs1, subrs2, subrs3, subrs4,
    subrs5, subrs6, subrs7, subrs8, subrs9
 };
 
@@ -516,7 +516,7 @@ int ReadOtherSubrsFile(char *filename) {
 
    if (os==NULL)
       return (false);
-   while (fgets(buffer, sizeof(buffer), os) != NULL) {
+   while (afgets(buffer, sizeof(buffer), os) != NULL) {
       int len=strlen(buffer);
 
       if (len > 0 && (buffer[len - 1]=='\r' || buffer[len - 1]=='\n')) {

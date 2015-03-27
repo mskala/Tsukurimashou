@@ -1,4 +1,4 @@
-/* $Id: autowidth2.h 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: autowidth2.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2009-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ typedef struct aw_data {
    SplineFont *sf;
    FontViewBase *fv;
    int layer;
-   /*uint32 *script_list; */
+   /*uint32_t *script_list; */
    AW_Glyph *glyphs;
    int gcnt;
    int *visual_separation;	/* array[gcnt][gcnt] of my guess at the visual */

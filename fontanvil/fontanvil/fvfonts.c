@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: fvfonts.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -299,9 +299,9 @@ PST *PSTCopy(PST * base, SplineChar * sc, struct sfmergecontext *mc) {
 	 cur->u.pair.vr[0].adjust=ValDevTabCopy(base->u.pair.vr[0].adjust);
 	 cur->u.pair.vr[1].adjust=ValDevTabCopy(base->u.pair.vr[1].adjust);
       } else if (cur->type==pst_lcaret) {
-	 cur->u.lcaret.carets=malloc(cur->u.lcaret.cnt * sizeof(uint16));
+	 cur->u.lcaret.carets=malloc(cur->u.lcaret.cnt * sizeof(uint16_t));
 	 memcpy(cur->u.lcaret.carets, base->u.lcaret.carets,
-		cur->u.lcaret.cnt * sizeof(uint16));
+		cur->u.lcaret.cnt * sizeof(uint16_t));
       } else if (cur->type==pst_substitution || cur->type==pst_multiple
 		 || cur->type==pst_alternate)
 	 cur->u.subs.variant=copy(cur->u.subs.variant);
@@ -425,9 +425,9 @@ static void ASMsAdd(SplineFont *into,SplineFont *from,
       if (nsm->type==asm_kern) {
 	 for (i=nsm->class_cnt * nsm->state_cnt - 1; i >= 0; --i) {
 	    nsm->state[i].u.kern.kerns =
-	       malloc(nsm->state[i].u.kern.kcnt * sizeof(int16));
+	       malloc(nsm->state[i].u.kern.kcnt * sizeof(int16_t));
 	    memcpy(nsm->state[i].u.kern.kerns, sm->state[i].u.kern.kerns,
-		   nsm->state[i].u.kern.kcnt * sizeof(int16));
+		   nsm->state[i].u.kern.kcnt * sizeof(int16_t));
 	 }
       } else if (nsm->type==asm_context) {
 	 for (i=0; i < nsm->class_cnt * nsm->state_cnt; ++i) {
@@ -1534,7 +1534,7 @@ static KernPair *InterpKerns(KernPair *kp1,KernPair *kp2,real amount,
    return (head);
 }
 
-static uint32 InterpColor(uint32 col1,uint32 col2,real amount) {
+static uint32_t InterpColor(uint32_t col1,uint32_t col2,real amount) {
    int r1,g1,b1,r2,b2,g2;
 
    r1=(col1 >> 16) & 0xff;

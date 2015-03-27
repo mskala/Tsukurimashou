@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: splinefont.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -473,7 +473,7 @@ int SFScaleToEm(SplineFont *sf, int as, int des) {
    bigreal scale;
    real transform[6];
    BVTFunc bvts;
-   uint8 *oldselected=sf->fv->selected;
+   uint8_t *oldselected=sf->fv->selected;
    enum fvtrans_flags trans_flags =
       fvt_alllayers | fvt_round_to_int | fvt_dontsetwidth |
       fvt_scalekernclasses | fvt_scalepstpos | fvt_dogrid;
@@ -648,9 +648,9 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
       }
    } else {
       /* Skip the first three lines, header info */
-      fgets(linebuffer, linelenmax + 3, file);
-      fgets(linebuffer, linelenmax + 3, file);
-      fgets(linebuffer, linelenmax + 3, file);
+      afgets(linebuffer, linelenmax + 3, file);
+      afgets(linebuffer, linelenmax + 3, file);
+      afgets(linebuffer, linelenmax + 3, file);
       pt=linebuffer;
       while ((ch=agetc(file)) != EOF) {
 	 if (ch=='\n') {

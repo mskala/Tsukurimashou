@@ -1,4 +1,4 @@
-/* $Id: gimagewritepng.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagewritepng.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -36,13 +36,6 @@ static int a_file_must_define_something = 0;	/* ANSI says so */
 
 #   include <png.h>
 
-#   define int32 _int32
-#   define uint32 _uint32
-#   define int16 _int16
-#   define uint16 _uint16
-#   define int8 _int8
-#   define uint8 _uint8
-
 #   include "gimage.h"
 
 static void user_error_fn(png_structp png_ptr, png_const_charp error_msg) {
@@ -60,27 +53,16 @@ static void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg) {
 
 int GImageWrite_Png(GImage * gi, FILE * fp, int progressive) {
    struct _GImage *base = gi->list_len == 0 ? gi->u.image : gi->u.images[0];
-
    png_structp png_ptr;
-
    png_infop info_ptr;
-
    png_byte **rows;
-
    int i;
-
    int bit_depth;
-
    int color_type;
-
    int num_palette;
-
    png_bytep trans_alpha = NULL;
-
    png_color_16p trans_color = NULL;
-
    png_colorp palette = NULL;
-
    png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
 				     (void *) NULL, user_error_fn,
 				     user_warning_fn);

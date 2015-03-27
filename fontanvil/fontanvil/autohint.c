@@ -1,4 +1,4 @@
-/* $Id: autohint.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: autohint.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2364,7 +2364,7 @@ static int FigureCounters(StemInfo *stems,HintMask mask) {
 void SCFigureCounterMasks(SplineChar * sc) {
    HintMask masks[30];
 
-   uint32 script;
+   uint32_t script;
 
    StemInfo *h;
 

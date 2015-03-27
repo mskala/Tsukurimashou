@@ -1,4 +1,4 @@
-/* $Id: freetype.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: freetype.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,7 @@ struct freetype_raster *FreeType_GetRaster(void *single_glyph_context,
 
 SplineSet *FreeType_GridFitChar(void *single_glyph_context,
 				int enc, real ptsizey, real ptsizex, int dpi,
-				uint16 * width, SplineChar * sc, int depth,
+				uint16_t * width, SplineChar * sc, int depth,
 				int scaled) {
    return (NULL);
 }
@@ -234,11 +234,7 @@ void FreeTypeFreeContext(void *freetypecontext) {
    if (ftc->shared_ftc)
       return;
    if (ftc->mappedfile)
-#   if defined(__MINGW32__)
-      UnmapViewOfFile(ftc->mappedfile);
-#   else
-      munmap(ftc->mappedfile, ftc->len);
-#   endif
+      free(ftc->mappedfile);
    if (ftc->file != NULL)
       afclose(ftc->file);
    free(ftc->glyph_indices);
@@ -256,7 +252,7 @@ static void *__FreeTypeFontContext(FT_Library context,
     */
    FTC *ftc;
    SplineChar **old=sf->glyphs, **new;
-   uint8 *selected=fv != NULL ? fv->selected : NULL;
+   uint8_t *selected=fv != NULL ? fv->selected : NULL;
    EncMap *map =
       fv != NULL ? fv->map : sf->fv != NULL ? sf->fv->map : sf->map;
    int i, cnt, notdefpos;
@@ -398,32 +394,12 @@ static void *__FreeTypeFontContext(FT_Library context,
 	 }
       }
 
-      afseek(ftc->file, 0, SEEK_END);
+      afseek(ftc->file,0,SEEK_END);
       ftc->len=aftell(ftc->file);
-#   if defined (__MINGW32__)
-      ftc->mappedfile=NULL;
-      {
-	 int fd=_fileno(ftc->file);
+      arewind(ftc->file);
+      ftc->mappedfile=malloc(ftc->len);
+      afread(ftc->mappedfile,1,ftc->len,ftc->file);
 
-	 if (fd != -1) {
-	    HANDLE handle=CreateFileMapping((HANDLE) _get_osfhandle(fd),
-					      NULL, PAGE_READONLY, 0,
-					      ftc->len, NULL);
-	    if (handle != NULL) {
-	       ftc->mappedfile=MapViewOfFile(handle, FILE_MAP_READ,
-					       0, 0, ftc->len);
-	       CloseHandle(handle);
-	    }
-	 }
-	 if (ftc->mappedfile==NULL)
-	    goto fail;
-      }
-#   else
-      ftc->mappedfile =
-	 mmap(NULL, ftc->len, PROT_READ, MAP_PRIVATE, fileno(ftc->file), 0);
-      if (ftc->mappedfile==MAP_FAILED)
-	 goto fail;
-#   endif
       if (sf->glyphs != old) {
 	 free(sf->glyphs);
 	 sf->glyphs=old;
@@ -521,7 +497,7 @@ static BDFChar *BdfCFromBitmap(FT_Bitmap *bitmap,int bitmap_left,
 
 static BDFChar *BDFCReClut(BDFChar *bdfc) {
    /* Made for something with a bit depth of 4, but we use 8 here */
-   uint8 *pt, *end;
+   uint8_t *pt, *end;
 
    if (bdfc==NULL)
       return (NULL);
@@ -783,7 +759,7 @@ static FT_Outline_Funcs outlinefuncs={
 
 SplineSet *FreeType_GridFitChar(void *single_glyph_context, int enc,
 				real ptsizey, real ptsizex, int dpi,
-				uint16 * width, SplineChar * sc, int depth,
+				uint16_t * width, SplineChar * sc, int depth,
 				int scaled) {
    FT_GlyphSlot slot;
 
@@ -1097,11 +1073,11 @@ static SplineSet *RStrokeOutline(struct reflayer *layer,SplineChar *sc) {
 }
 
 static void MergeBitmaps(FT_Bitmap *bitmap,FT_Bitmap *newstuff,
-			 struct brush *brush, uint8 * clipmask, double scale,
+			 struct brush *brush, uint8_t * clipmask, double scale,
 			 DBounds * bbox, SplineChar * sc) {
    int i, j;
 
-   uint32 col=brush->col;
+   uint32_t col=brush->col;
 
    if (col==COLOR_INHERITED)
       col=0x000000;
@@ -1233,7 +1209,7 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
       bitmap.num_grays=256;
       bitmap.pixel_mode=ft_pixel_mode_grays;
    }
-   bitmap.buffer=calloc(bitmap.pitch * bitmap.rows, sizeof(uint8));
+   bitmap.buffer=calloc(bitmap.pitch * bitmap.rows, sizeof(uint8_t));
    memset(&temp, 0, sizeof(temp));
    if (sc->parent->multilayer && !(sc->layer_cnt==2 &&
 				   !sc->layers[ly_fore].dostroke &&
@@ -1272,7 +1248,7 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
       /* Can only get here if multilayer */
       err=0;
       for (i=ly_fore; i < sc->layer_cnt; ++i) {
-	 uint8 *clipmask=NULL;
+	 uint8_t *clipmask=NULL;
 
 	 if (SSHasClip(sc->layers[i].splines)) {
 	    memset(temp.buffer, 0, temp.pitch * temp.rows);

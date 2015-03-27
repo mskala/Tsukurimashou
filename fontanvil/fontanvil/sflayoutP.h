@@ -1,4 +1,4 @@
-/* $Id: sflayoutP.h 3849 2015-03-25 10:47:47Z mskala $ */
+/* $Id: sflayoutP.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -49,17 +49,17 @@ typedef struct fontdata {
 } FontData;
 
 struct lineheights {
-   int32 y;
-   int16 as, fh;
-   uint16 p, linelen;
-   uint32 start_pos;
+   int32_t y;
+   int16_t as, fh;
+   uint16_t p, linelen;
+   uint32_t start_pos;
 };
 
 struct fontlist {
    int start, end;		/* starting and ending characters [start,end) */
    /*  always break at newline & will omit it between fontlists */
-   uint32 *feats;		/* Ends with a 0 entry */
-   uint32 script, lang;
+   uint32_t *feats;		/* Ends with a 0 entry */
+   uint32_t script, lang;
    FontData *fd;
    SplineChar **sctext;
    int scmax;
@@ -70,8 +70,8 @@ struct fontlist {
 struct sfmaps {
    SplineFont *sf;
    EncMap *map;
-   int16 sfbit_id;
-   int16 notdef_gid;
+   int16_t sfbit_id;
+   int16_t notdef_gid;
    SplineChar *fake_notdef;
    struct sfmaps *next;
 };
@@ -83,9 +83,9 @@ struct paras {
 
 typedef struct layoutinfo {
    unichar_t *text, *oldtext;	/* Input glyphs (in unicode) */
-   int16 lcnt, lmax;
+   int16_t lcnt, lmax;
    struct opentype_str ***lines;	/* pointers into the paras array */
-   int16 xmax;
+   int16_t xmax;
    struct lineheights *lineheights;
    struct fontlist *fontlist, *oldfontlist;
    struct sfmaps *sfmaps;
@@ -109,7 +109,7 @@ extern int LI_FDDrawChar(void *data,
 								      Color
 								      col),
 			 struct opentype_str *osc, int x, int y, Color col);
-extern uint32 *LI_TagsCopy(uint32 * tags);
+extern uint32_t *LI_TagsCopy(uint32_t * tags);
 
 extern struct fontlist *LI_fontlistcopy(struct fontlist *fl);
 
@@ -130,8 +130,8 @@ extern FontData *LI_FindFontData(LayoutInfo * li, SplineFont *sf,
 				 int size, int antialias);
 extern FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret);
 
-extern void LayoutInfoInitLangSys(LayoutInfo * li, int end, uint32 script,
-				  uint32 lang);
+extern void LayoutInfoInitLangSys(LayoutInfo * li, int end, uint32_t script,
+				  uint32_t lang);
 extern LayoutInfo *LIConvertToPrint(LayoutInfo * li, int width, int height,
 				    int dpi);
 extern SplineSet *LIConvertToSplines(LayoutInfo * li, double dpi, int order2);

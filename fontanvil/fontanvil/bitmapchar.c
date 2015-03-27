@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: bitmapchar.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -313,7 +313,7 @@ static int BDFPropReplace(BDFFont *bdf,const char *key,const char *value) {
 }
 
 static void def_Charset_Col(SplineFont *sf,EncMap *map,char *buffer) {
-   uint32 codepages[2];
+   uint32_t codepages[2];
 
    /* A buffer with 250 bytes should be more than big enough */
 

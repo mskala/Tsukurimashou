@@ -1,4 +1,4 @@
-/* $Id: gimagereadpng.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagereadpng.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -37,13 +37,6 @@ static void *a_file_must_define_something =
 #else
 
 #   include <png.h>
-
-#   define int32 _int32
-#   define uint32 _uint32
-#   define int16 _int16
-#   define uint16 _uint16
-#   define int8 _int8
-#   define uint8 _uint8
 
 #   include "gimage.h"
 
@@ -213,11 +206,11 @@ GImage *GImageRead_Png(FILE * fp) {
    if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGB
        || png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGB_ALPHA) {
       /* PNG orders its bytes as AABBGGRR instead of 00RRGGBB */
-      uint32 *ipt, *iend;
+      uint32_t *ipt, *iend;
 
-      for (ipt = (uint32 *) (base->data), iend =
+      for (ipt = (uint32_t *) (base->data), iend =
 	   ipt + base->width * base->height; ipt < iend; ++ipt) {
-	 uint32 r, g, b, a = *ipt & 0xff000000;
+	 uint32_t r, g, b, a = *ipt & 0xff000000;
 
 	 r = (*ipt) & 0xff;
 	 g = (*ipt >> 8) & 0xff;

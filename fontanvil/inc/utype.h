@@ -1,4 +1,4 @@
-/* $Id: utype.h 2918 2014-03-07 16:09:49Z mskala $ */
+/* $Id: utype.h 3871 2015-03-27 08:01:10Z mskala $ */
 #ifndef _UTYPE_H
 #   define _UTYPE_H
 
@@ -107,7 +107,7 @@ extern const unsigned char ____digitval[];
 
 #   define isdecompositionnormative(ch) (____utype[(ch)+1]&____DECOMPNORM)
 
-extern const uint32 ____utype[];	/* hold character type features for each Unicode.org defined character */
+extern const uint32_t ____utype[];	/* hold character type features for each Unicode.org defined character */
 
 /* utype2[] binary flags used for position/layout of each unicode.org character */
 #   define ____COMBININGCLASS	0xff
@@ -125,16 +125,16 @@ extern const uint32 ____utype[];	/* hold character type features for each Unicod
 #   define ____RIGHTEDGE		0x40000
 #   define ____TOUCHING		0x100000
 #   define ____COMBININGPOSMASK	0x1fff00
-#   define ____NOPOSDATAGIVEN	(uint32)(-1)	/* -1 == no position data given */
+#   define ____NOPOSDATAGIVEN	(uint32_t)(-1)	/* -1 == no position data given */
 
 #   define combiningclass(ch)	(____utype2[(ch)+1]&____COMBININGCLASS)
 #   define combiningposmask(ch)	(____utype2[(ch)+1]&____COMBININGPOSMASK)
 
-extern const uint32 ____utype2[];	/* hold position boolean flags for each Unicode.org defined character */
+extern const uint32_t ____utype2[];	/* hold position boolean flags for each Unicode.org defined character */
 
 #   define isunicodepointassigned(ch) (____codepointassigned[(ch)/32]&(1<<((ch)%32)))
 
-extern const uint32 ____codepointassigned[];	/* 1bit_boolean_flag x 32 = exists in Unicode.org character chart list. */
+extern const uint32_t ____codepointassigned[];	/* 1bit_boolean_flag x 32 = exists in Unicode.org character chart list. */
 
 #   define tolower(ch) (____tolower[(ch)+1])
 #   define toupper(ch) (____toupper[(ch)+1])

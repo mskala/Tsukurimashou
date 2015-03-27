@@ -1,4 +1,4 @@
-/* $Id: makebuildtables.c 3502 2014-11-30 12:26:48Z mskala $ */
+/* $Id: makebuildtables.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -509,8 +509,8 @@ struct {
 };
 
 struct transform {
-   uint32 oldstate;
-   uint32 newstate;
+   uint32_t oldstate;
+   uint32_t newstate;
    unichar_t resch;
    struct transform *next;
 } *info[95] = {
@@ -612,7 +612,7 @@ void dumpinfo() {
    fprintf(out, "    { 0 },\n");
    fprintf(out, "};\n\n");
    fprintf(out,
-	   "uint32 _gdraw_chrs_any=ANY, _gdraw_chrs_ctlmask=GREEK, _gdraw_chrs_metamask=0;\n");
+	   "uint32_t _gdraw_chrs_any=ANY, _gdraw_chrs_ctlmask=GREEK, _gdraw_chrs_metamask=0;\n");
    fclose(out);
 }
 
@@ -629,7 +629,7 @@ char *mygets(FILE * in, char *buffer) {
    return (buffer);
 }
 
-void AddTransform(int ch, uint32 oldstate, uint32 newstate,
+void AddTransform(int ch, uint32_t oldstate, uint32_t newstate,
 		  unsigned short resch) {
    struct transform *trans;
 

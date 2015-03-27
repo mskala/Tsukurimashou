@@ -1,4 +1,4 @@
-/* $Id: gimagewritegimage.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagewritegimage.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013mar3, bug-fixes plus type-formatting, Jose Da Silva */
 /*
@@ -35,16 +35,16 @@ static void WriteBase(FILE * file, struct _GImage *base, char *stem,
 /* This routine is called and used by GImageWriteGImage() */
    int i, j, k;
 
-   uint32 *ipt;
+   uint32_t *ipt;
 
-   uint8 *pt;
+   uint8_t *pt;
 
    long val;
 
    if (base->image_type == it_true) {
-      fprintf(file, "static uint32 %s%d_data[] = {\n", stem, instance);
+      fprintf(file, "static uint32_t %s%d_data[] = {\n", stem, instance);
       for (i = 0; i < base->height; ++i) {
-	 ipt = (uint32 *) (base->data + i * base->bytes_per_line);
+	 ipt = (uint32_t *) (base->data + i * base->bytes_per_line);
 	 for (j = 0; j < base->width;) {
 	    fprintf(file, j == 0 ? "    " : "\t");
 	    for (k = 0; k < 8 && j < base->width; ++k, ++j, ++ipt) {
@@ -57,9 +57,9 @@ static void WriteBase(FILE * file, struct _GImage *base, char *stem,
 	 }
       }
    } else {
-      fprintf(file, "static uint8 %s%d_data[] = {\n", stem, instance);
+      fprintf(file, "static uint8_t %s%d_data[] = {\n", stem, instance);
       for (i = 0; i < base->height; ++i) {
-	 pt = (uint8 *) (base->data + i * base->bytes_per_line);
+	 pt = (uint8_t *) (base->data + i * base->bytes_per_line);
 	 for (j = 0; j < base->bytes_per_line;) {
 	    fprintf(file, j == 0 ? "    " : "\t");
 	    for (k = 0; k < 8 && j < base->bytes_per_line; ++k, ++j, ++pt)
@@ -93,7 +93,7 @@ static void WriteBase(FILE * file, struct _GImage *base, char *stem,
    fprintf(file, "    %d,%ld,%ld,%ld,\n", (int) base->delay,
 	   (long) base->width, (long) base->height,
 	   (long) base->bytes_per_line);
-   fprintf(file, "    (uint8 *) %s%d_data,\n", stem, instance);
+   fprintf(file, "    (uint8_t *) %s%d_data,\n", stem, instance);
    if (base->clut == NULL)
       fprintf(file, "    NULL,\n");
    else

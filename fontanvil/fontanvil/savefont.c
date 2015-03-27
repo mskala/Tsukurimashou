@@ -1,4 +1,4 @@
-/* $Id: savefont.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: savefont.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -339,7 +339,7 @@ static int WriteFontLog(char *filename,SplineFont *sf,int formattype,
    return (true);
 }
 
-static int WriteBitmaps(char *filename,SplineFont *sf,int32 *sizes,
+static int WriteBitmaps(char *filename,SplineFont *sf,int32_t *sizes,
 			int res, int bf, EncMap * map) {
    char *buf=malloc(strlen(filename) + 30), *pt, *pt2;
    int i;
@@ -398,14 +398,14 @@ static int WriteBitmaps(char *filename,SplineFont *sf,int32 *sizes,
    return (true);
 }
 
-static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
+static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 				 int *max, char ***_names, EncMap * map) {
    /* one entry for each char, >=1 => that subfont, 0=>not mapped, -1 => end of char mark */
    int cnt=0, subfilecnt=0, thusfar;
    int k, warned=false;
-   uint32 r1, r2, i, modi;
+   uint32_t r1, r2, i, modi;
    SplineFont *_sf;
-   int32 *mapping;
+   int32_t *mapping;
    AFILE *file;
    char buffer[200], *bpt;
    char *end, *pt;
@@ -428,18 +428,18 @@ static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 	 cnt=_sf->glyphcnt;
    } while (k < sf->subfontcnt);
 
-   mapping=calloc(cnt + 1, sizeof(int32));
-   memset(mapping, -1, (cnt + 1) * sizeof(int32));
+   mapping=calloc(cnt + 1, sizeof(int32_t));
+   memset(mapping, -1, (cnt + 1) * sizeof(int32_t));
    mapping[cnt]=-2;
    *max=0;
 
-   while (fgets(buffer, sizeof(buffer), file) != NULL)
+   while (afgets(buffer, sizeof(buffer), file) != NULL)
       ++subfilecnt;
    names=malloc((subfilecnt + 1) * sizeof(char *));
 
    arewind(file);
    subfilecnt=0;
-   while (fgets(buffer, sizeof(buffer), file) != NULL) {
+   while (afgets(buffer, sizeof(buffer), file) != NULL) {
       if (strncmp(buffer, pfaeditflag, strlen(pfaeditflag))==0) {
 	 ErrorMsg(2,"Apparently a FontAnvil SFD instead of a TeX SFD.\n");
 	 free(mapping);
@@ -467,7 +467,7 @@ static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 	    strcat(bpt, buffer);
 	    if (!loop)
 	       break;
-	    if (fgets(buffer, sizeof(buffer), file)==NULL)
+	    if (afgets(buffer, sizeof(buffer), file)==NULL)
 	       break;
 	    pt=buffer + strlen(buffer) - 1;
 	 }
@@ -552,8 +552,8 @@ static int32 *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
    return (mapping);
 }
 
-static int SaveSubFont(SplineFont *sf,char *newname,int32 *sizes,int res,
-		       int32 * mapping, int subfont, char **names,
+static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
+		       int32_t * mapping, int subfont, char **names,
 		       EncMap * map, int layer) {
    SplineFont temp;
    SplineChar *chars[256], **newchars;
@@ -566,7 +566,7 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32 *sizes,int res,
    enum fontformat subtype =
       strstr(newname, ".pfa") != NULL ? ff_pfa : ff_pfb;
    EncMap encmap;
-   int32 _mapping[256], _backmap[256];
+   int32_t _mapping[256], _backmap[256];
 
    memset(&encmap, 0, sizeof(encmap));
    encmap.enccount=encmap.encmax=encmap.backmax=256;
@@ -741,12 +741,12 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32 *sizes,int res,
 }
 
 /* ttf2tfm supports multiple sfd files. I do not. */
-static int WriteMultiplePSFont(SplineFont *sf,char *newname,int32 *sizes,
+static int WriteMultiplePSFont(SplineFont *sf,char *newname,int32_t *sizes,
 			       int res, char *wernerfilename, EncMap * map,
 			       int layer) {
    int err=0, tofree=false, max, filecnt;
 
-   int32 *mapping;
+   int32_t *mapping;
 
    char *path;
 
@@ -816,7 +816,7 @@ int CheckIfTransparent(SplineFont *sf) {
    return (false);
 }
 
-int _DoSave(SplineFont *sf, char *newname, int32 * sizes, int res,
+int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
 	    EncMap * map, char *subfontdefinition, int layer) {
    char *path;
 
@@ -1035,8 +1035,8 @@ void RestoreUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
       }
 }
 
-static int32 *AllBitmapSizes(SplineFont *sf) {
-   int32 *sizes=NULL;
+static int32_t *AllBitmapSizes(SplineFont *sf) {
+   int32_t *sizes=NULL;
 
    BDFFont *bdf;
 
@@ -1051,7 +1051,7 @@ static int32 *AllBitmapSizes(SplineFont *sf) {
       }
       if (i==1)
 	 break;
-      sizes=malloc((cnt + 1) * sizeof(int32));
+      sizes=malloc((cnt + 1) * sizeof(int32_t));
    }
    sizes[cnt]=0;
    return (sizes);
@@ -1065,7 +1065,7 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
    static char *bitmaps[] =
       { "bdf", "ttf", "dfont", "ttf", "otb", "bin", "fon", "fnt", "pdb",
 "pt3", NULL };
-   int32 *sizes=NULL;
+   int32_t *sizes=NULL;
 
    char *end=filename + strlen(filename);
 

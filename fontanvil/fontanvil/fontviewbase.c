@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: fontviewbase.c 3872 2015-03-27 09:43:03Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -94,13 +94,9 @@ static int UnselectedDependents(FontViewBase *fv,int gid) {
 
 void FVClear(FontViewBase * fv) {
    int i;
-
    BDFFont *bdf;
-
    int refstate=0;
-
    char *buts[6];
-
    int yes, unsel, gid;
 
    /* refstate==0 => ask, refstate==1 => clearall, refstate==-1 => skip all */
@@ -599,7 +595,7 @@ static void KCTrans(KernClass *kc,double scale) {
 }
 
 static void SCTransLayer(FontViewBase *fv,SplineChar *sc,int flags,int i,
-			 real transform[6], uint8 * sel) {
+			 real transform[6], uint8_t * sel) {
    int j;
 
    RefChar *refs;
@@ -673,7 +669,7 @@ static void SCTransLayer(FontViewBase *fv,SplineChar *sc,int flags,int i,
 /* If sel is NULL then we transform the reference */
 /* if flags&fvt_partialreftrans then we always just transform the offsets */
 void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
-	     uint8 * sel, enum fvtrans_flags flags) {
+	     uint8_t * sel, enum fvtrans_flags flags) {
    AnchorPoint *ap;
 
    int i, first, last;

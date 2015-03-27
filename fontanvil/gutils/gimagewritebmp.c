@@ -1,4 +1,4 @@
-/* $Id: gimagewritebmp.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagewritebmp.c 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -115,7 +115,7 @@ int GImageWrite_Bmp(GImage * gi, FILE * file) {
       int pad = 0;
 
       if (bitsperpixel == 24) {
-	 uint32 *pt = (uint32 *) (base->data + row * base->bytes_per_line);
+	 uint32_t *pt = (uint32_t *) (base->data + row * base->bytes_per_line);
 
 	 for (col = 0; col < base->width; ++col) {
 	    putc(COLOR_BLUE(pt[col]), file);

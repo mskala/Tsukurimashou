@@ -1,4 +1,4 @@
-/* $Id: unicoderange.h 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: unicoderange.h 3871 2015-03-27 08:01:10Z mskala $ */
 /* Copyright (C) 2006-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,12 @@
 
 extern struct unicoderange {
    char *name;			/* The range's name */
-   int32 first, last, defined;
+   int32_t first, last, defined;
    /* The first codepoint, last codepoint in the range */
    /*  and a codepoint which actually has a character */
    /*  associated with it */
-   uint8 display;
-   uint8 unassigned;		/* No characters in this range are assigned */
+   uint8_t display;
+   uint8_t unassigned;		/* No characters in this range are assigned */
    int actual;			/* Count of assigned codepoints in this range */
 } unicoderange[];
 

@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: scripting.c 3877 2015-03-27 12:41:48Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -453,8 +453,8 @@ static void prterror(void *foo,char *msg,int pos) {
    ErrorMsg(2,"%s\n", msg);
 }
 
-static void TableAddInstrs(SplineFont *sf,uint32 tag,int replace,
-			   uint8 * instrs, int icnt) {
+static void TableAddInstrs(SplineFont *sf,uint32_t tag,int replace,
+			   uint8_t * instrs, int icnt) {
    struct ttf_table *tab;
 
    for (tab=sf->ttf_tables; tab != NULL && tab->tag != tag;
@@ -478,7 +478,7 @@ static void TableAddInstrs(SplineFont *sf,uint32 tag,int replace,
       memcpy(tab->data, instrs, icnt);
       tab->len=icnt;
    } else {
-      uint8 *newi=malloc(icnt + tab->len);
+      uint8_t *newi=malloc(icnt + tab->len);
 
       memcpy(newi, tab->data, tab->len);
       memcpy(newi + tab->len, instrs, icnt);
@@ -490,7 +490,7 @@ static void TableAddInstrs(SplineFont *sf,uint32 tag,int replace,
 }
 
 static void GlyphAddInstrs(SplineChar *sc,int replace,
-			   uint8 * instrs, int icnt) {
+			   uint8_t * instrs, int icnt) {
 
    if (replace) {
       free(sc->ttf_instrs);
@@ -506,7 +506,7 @@ static void GlyphAddInstrs(SplineChar *sc,int replace,
       memcpy(sc->ttf_instrs, instrs, icnt);
       sc->ttf_instrs_len=icnt;
    } else {
-      uint8 *newi=malloc(icnt + sc->ttf_instrs_len);
+      uint8_t *newi=malloc(icnt + sc->ttf_instrs_len);
 
       memcpy(newi, sc->ttf_instrs, sc->ttf_instrs_len);
       memcpy(newi + sc->ttf_instrs_len, instrs, icnt);
@@ -516,7 +516,7 @@ static void GlyphAddInstrs(SplineChar *sc,int replace,
    }
 }
 
-static int32 ParseTag(Context *c,Val *tagstr,int macok,int *wasmac) {
+static int32_t ParseTag(Context *c,Val *tagstr,int macok,int *wasmac) {
    char tag[4];
    int feat, set;
    char *str;
@@ -607,9 +607,9 @@ static FeatureScriptLangList *ParseFeatureList(Context *c,Array *a) {
 	    sl->lang_cnt=langs->argc;
 	    if (langs->argc > MAX_LANG)
 	       sl->morelangs =
-		  malloc((langs->argc - MAX_LANG) * sizeof(uint32));
+		  malloc((langs->argc - MAX_LANG) * sizeof(uint32_t));
 	    for (l=0; l < langs->argc; ++l) {
-	       uint32 lang=ParseTag(c, &langs->vals[l], false, &wasmac);
+	       uint32_t lang=ParseTag(c, &langs->vals[l], false, &wasmac);
 
 	       if (l < MAX_LANG)
 		  sl->langs[l]=lang;
@@ -622,8 +622,8 @@ static FeatureScriptLangList *ParseFeatureList(Context *c,Array *a) {
    return (flhead);
 }
 
-static int FSLMatch(FeatureScriptLangList *fl,uint32 feat_tag,
-		    uint32 script, uint32 lang) {
+static int FSLMatch(FeatureScriptLangList *fl,uint32_t feat_tag,
+		    uint32_t script, uint32_t lang) {
    struct scriptlanglist *sl;
    int l;
 
@@ -632,7 +632,7 @@ static int FSLMatch(FeatureScriptLangList *fl,uint32 feat_tag,
 	 for (sl=fl->scripts; sl != NULL; sl=sl->next) {
 	    if (sl->script==script || script==CHR('*', ' ', ' ', ' ')) {
 	       for (l=0; l < sl->lang_cnt; ++l) {
-		  uint32 lng =
+		  uint32_t lng =
 		     l <
 		     MAX_LANG ? sl->langs[l] : sl->morelangs[l - MAX_LANG];
 		  if (lng==lang || lang==CHR('*', ' ', ' ', ' '))
@@ -732,15 +732,15 @@ static void SCReplaceWith(SplineChar *dest,SplineChar *src) {
    SCCharChangedUpdate(dest, ly_fore, true);
 }
 
-static void FVApplySubstitution(FontViewBase *fv,uint32 script,uint32 lang,
-				uint32 feat_tag) {
+static void FVApplySubstitution(FontViewBase *fv,uint32_t script,uint32_t lang,
+				uint32_t feat_tag) {
    SplineFont *sf=fv->sf, *sf_sl=sf;
    SplineChar *sc, *replacement, *sc2;
    PST *pst;
    EncMap *map=fv->map;
    int i, gid, gid2;
    SplineChar **replacements;
-   uint8 *removes;
+   uint8_t *removes;
    int flags=-1;
    
    if (sf_sl->cidmaster != NULL)
@@ -751,7 +751,7 @@ static void FVApplySubstitution(FontViewBase *fv,uint32 script,uint32 lang,
    /* I used to do replaces and removes as I went along, and then Werner */
    /*  gave me a font were "a" was replaced by "b" replaced by "a" */
    replacements=calloc(sf->glyphcnt, sizeof(SplineChar *));
-   removes=calloc(sf->glyphcnt, sizeof(uint8));
+   removes=calloc(sf->glyphcnt, sizeof(uint8_t));
    
    for (i=0; i < map->enccount; ++i)
       if (fv->selected[i] &&
@@ -801,7 +801,7 @@ static void FVApplySubstitution(FontViewBase *fv,uint32 script,uint32 lang,
 }
 
 static void Bitmapper(Context *c,int isavail) {
-   int32 *sizes;
+   int32_t *sizes;
    int i;
    int rasterize=true;
 
@@ -817,7 +817,7 @@ static void Bitmapper(Context *c,int isavail) {
 	 ScriptError(c, "Bad type of argument");
       rasterize=c->a.vals[2].u.ival;
    }
-   sizes=malloc((c->a.vals[1].u.aval->argc + 1) * sizeof(int32));
+   sizes=malloc((c->a.vals[1].u.aval->argc + 1) * sizeof(int32_t));
    for (i=0; i < c->a.vals[1].u.aval->argc; ++i) {
       sizes[i]=c->a.vals[1].u.aval->vals[i].u.ival;
       if ((sizes[i] >> 16)==0)
@@ -863,7 +863,7 @@ static void _SetFontNames(Context *c,SplineFont *sf) {
    SFReplaceFontnameBDFProps(c->curfv->sf);
 }
 
-static char *Tag2Str(uint32 tag,int ismac) {
+static char *Tag2Str(uint32_t tag,int ismac) {
    char buffer[20];
 
    if (ismac)
@@ -935,13 +935,13 @@ static void Reblend(Context *c,int tonew) {
    c->curfv=MMCreateBlendedFont(mm, c->curfv, blends, tonew);
 }
 
-static void setint16(int16 *val,Context *c) {
+static void setint16(int16_t *val,Context *c) {
    if (c->a.vals[2].type != v_int)
       ScriptError(c, "Bad argument type");
    *val=c->a.vals[2].u.ival;
 }
 
-static void setss16(int16 *val,SplineFont *sf,Context *c) {
+static void setss16(int16_t *val,SplineFont *sf,Context *c) {
    if (c->a.vals[2].type != v_int)
       ScriptError(c, "Bad argument type");
    *val=c->a.vals[2].u.ival;
@@ -1324,9 +1324,9 @@ static void bAddInstrs(Context *c) {
    SplineChar *sc=NULL;
    int icnt;
 
-   uint8 *instrs;
+   uint8_t *instrs;
 
-   uint32 tag=0;
+   uint32_t tag=0;
 
    SplineFont *sf=c->curfv->sf;
    int i;
@@ -1871,7 +1871,7 @@ static void bAddVHint(Context *c) {
 }
 
 static void bAppendAccent(Context *c) {
-   int pos=____NOPOSDATAGIVEN;	/* unicode char pos info, see #define for (uint32)(utype2[]) */
+   int pos=____NOPOSDATAGIVEN;	/* unicode char pos info, see #define for (uint32_t)(utype2[]) */
    char *glyph_name=NULL;	/* unicode char name */
    int uni=-1;		/* unicode char value */
    int ret;
@@ -1888,10 +1888,10 @@ static void bAppendAccent(Context *c) {
    else
      uni=c->a.vals[1].u.ival;
    if (c->a.argc==3)
-     pos=(uint32) (c->a.vals[2].u.ival);
+     pos=(uint32_t) (c->a.vals[2].u.ival);
    
    sc=GetOneSelChar(c);
-   ret=SCAppendAccent(sc, ly_fore, glyph_name, uni, (uint32) (pos));
+   ret=SCAppendAccent(sc, ly_fore, glyph_name, uni, (uint32_t) (pos));
    if (ret==1)
      ScriptError(c, "No base character reference found");
    else if (ret==2)
@@ -1899,7 +1899,7 @@ static void bAppendAccent(Context *c) {
 }
 
 static void bApplySubstitution(Context *c) {
-   uint32 tags[3];
+   uint32_t tags[3];
    int i;
    
    if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str ||
@@ -1963,8 +1963,8 @@ static void bAskUser(Context *c) {
    free(loc);
    buffer[0]='\0';
    c->return_val.type=v_str;
-   if (fgets(buffer, sizeof(buffer), stdin)==NULL) {
-      clearerr(stdin);
+   if (afgets(buffer, sizeof(buffer),astdin)==NULL) {
+      clearerr(astdin);
       c->return_val.u.sval=copy("");
    } else if (buffer[0]=='\0' || buffer[0]=='\n' || buffer[0]=='\r')
 	c->return_val.u.sval=copy(def);
@@ -2091,11 +2091,11 @@ static void bCIDChangeSubFont(Context *c) {
       c->curfv->selected=calloc(newsf->glyphcnt, sizeof(char));
       if (newsf->glyphcnt > map->encmax)
 	 map->map =
-	    realloc(map->map, (map->encmax=newsf->glyphcnt) * sizeof(int32));
+	    realloc(map->map, (map->encmax=newsf->glyphcnt) * sizeof(int32_t));
       if (newsf->glyphcnt > map->backmax)
 	 map->backmap =
 	    realloc(map->backmap,
-		    (map->backmax=newsf->glyphcnt) * sizeof(int32));
+		    (map->backmax=newsf->glyphcnt) * sizeof(int32_t));
       for (i=0; i < newsf->glyphcnt; ++i)
 	 map->map[i]=map->backmap[i]=i;
       map->enccount=newsf->glyphcnt;
@@ -2801,9 +2801,9 @@ if (c->a.vals[1].type != v_str)
 }
 
 static void bClearTable(Context *c) {
-   uint32 tag;
+   uint32_t tag;
 
-   uint8 _tag[4];
+   uint8_t _tag[4];
 
    SplineFont *sf=c->curfv->sf;
 
@@ -2880,7 +2880,7 @@ static void bCompareFonts(Context *c) {
    flags=c->a.vals[3].u.ival;
 
    if (strcmp(c->a.vals[2].u.sval, "-")==0)
-      diffs=stdout;
+      diffs=astdout;
    else
       diffs=afopen(c->a.vals[2].u.sval, "w");
    if (diffs==NULL)
@@ -3575,7 +3575,7 @@ static void bGenerateFamily(Context *c) {
    Array *fonts;
    FontViewBase *fv;
    int i, j, fc, added;
-   uint16 psstyle;
+   uint16_t psstyle;
    int fondcnt=0, fondmax=10;
    SFArray *familysfs=NULL;
    char *t;
@@ -3787,7 +3787,7 @@ static void bGetCvtAt(Context *c) {
       ScriptError(c, "Cvt table is either not present or too short");
    c->return_val.type=v_int;
    c->return_val.u.ival=memushort(tab->data, tab->len,
-				    sizeof(uint16) * c->a.vals[1].u.ival);
+				    sizeof(uint16_t) * c->a.vals[1].u.ival);
 }
 
 static void bGetEnv(Context *c) {
@@ -3975,7 +3975,7 @@ if (c->a.vals[1].type != v_str)
 static void bGetMaxpValue(Context *c) {
    SplineFont *sf=c->curfv->sf;
    struct ttf_table *tab;
-   uint8 *data, dummy[32];
+   uint8_t *data, dummy[32];
 
    if (c->a.vals[1].type != v_str)
       ScriptError(c, "Bad argument type");
@@ -3993,17 +3993,17 @@ static void bGetMaxpValue(Context *c) {
 
    c->return_val.type=v_int;
    if (strmatch(c->a.vals[1].u.sval, "Zones")==0)
-      c->return_val.u.ival=memushort(data, 32, 7 * sizeof(uint16));
+      c->return_val.u.ival=memushort(data, 32, 7 * sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "TwilightPntCnt")==0)
-      c->return_val.u.ival=memushort(data, 32, 8 * sizeof(uint16));
+      c->return_val.u.ival=memushort(data, 32, 8 * sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "StorageCnt")==0)
-      c->return_val.u.ival=memushort(data, 32, 9 * sizeof(uint16));
+      c->return_val.u.ival=memushort(data, 32, 9 * sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "MaxStackDepth")==0)
-      c->return_val.u.ival=memushort(data, 32, 12 * sizeof(uint16));
+      c->return_val.u.ival=memushort(data, 32, 12 * sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "FDEFs")==0)
-      c->return_val.u.ival=memushort(data, 32, 10 * sizeof(uint16));
+      c->return_val.u.ival=memushort(data, 32, 10 * sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "IDEFs")==0)
-      c->return_val.u.ival=memushort(data, 32, 11 * sizeof(uint16));
+      c->return_val.u.ival=memushort(data, 32, 11 * sizeof(uint16_t));
    else
       ScriptErrorString(c, "Unknown 'maxp' field: ", c->a.vals[1].u.sval);
 }
@@ -4369,7 +4369,7 @@ static void bHFlip(Context *c) {
 
 static void bHasPreservedTable(Context *c) {
    SplineFont *sf=c->curfv->sf;
-   uint32 tag;
+   uint32_t tag;
    char *tstr, *end;
    struct ttf_table *tab;
 
@@ -4858,7 +4858,7 @@ static char **GetFontNames(char *filename) {
 
 static void bLoadTableFromFile(Context *c) {
    SplineFont *sf=c->curfv->sf;
-   uint32 tag;
+   uint32_t tag;
    char *tstr, *end;
    struct ttf_table *tab;
    AFILE *file;
@@ -4886,7 +4886,7 @@ static void bLoadTableFromFile(Context *c) {
    free(t);
    if (file==NULL)
       ScriptErrorString(c, "Could not open file: ", c->a.vals[2].u.sval);
-   if (fstat(fileno(file), &statb)==-1)
+   if (afstat(file,&statb)==-1)
       ScriptErrorString(c, "fstat() failed on: ", c->a.vals[2].u.sval);
    len=statb.st_size;
 
@@ -5466,7 +5466,7 @@ static void bOrd(Context *c) {
 	  || c->a.vals[2].u.ival > strlen(c->a.vals[1].u.sval))
 	 ScriptError(c, "Bad value for argument");
       c->return_val.type=v_int;
-      c->return_val.u.ival=(uint8) c->a.vals[1].u.sval[c->a.vals[2].u.ival];
+      c->return_val.u.ival=(uint8_t) c->a.vals[1].u.sval[c->a.vals[2].u.ival];
    } else {
       int i, len=strlen(c->a.vals[1].u.sval);
 
@@ -5477,7 +5477,7 @@ static void bOrd(Context *c) {
       for (i=0; i < len; ++i) {
 	 c->return_val.u.aval->vals[i].type=v_int;
 	 c->return_val.u.aval->vals[i].u.ival =
-	    (uint8) c->a.vals[1].u.sval[i];
+	    (uint8_t) c->a.vals[1].u.sval[i];
       }
    }
 }
@@ -5578,89 +5578,11 @@ static void bPrint(Context *c) {
 /****************************************************************************/
 
 static void bPrintFont(Context *c) {
-   int type, i, inlinesample=false;
-   int32 *pointsizes=NULL;
-   char *samplefile=NULL, *output=NULL;
-   unichar_t *sample=NULL;
-   char *t;
-   char *locfilename=NULL;
-
-   type=c->a.vals[1].u.ival;
-   if (c->a.vals[1].type != v_int || type < 0 || type > 4)
-      ScriptError(c, "Bad type for first argument");
-   if (type==4) {
-      type=3;
-      inlinesample=true;
-   }
-   if (c->a.argc >= 3) {
-      if (c->a.vals[2].type==v_int) {
-	 if (c->a.vals[2].u.ival > 0) {
-	    pointsizes=calloc(2, sizeof(int32));
-	    pointsizes[0]=c->a.vals[2].u.ival;
-	 }
-      } else if (c->a.vals[2].type==v_arr) {
-	 Array *a=c->a.vals[2].u.aval;
-
-	 pointsizes=malloc((a->argc + 1) * sizeof(int32));
-	 for (i=0; i < a->argc; ++i) {
-	    if (a->vals[i].type != v_int)
-	       ScriptError(c, "Bad type for array contents");
-	    pointsizes[i]=a->vals[i].u.ival;
-	 }
-	 pointsizes[i]=0;
-      } else
-	 ScriptError(c, "Bad type for second argument");
-   }
-   if (c->a.argc >= 4) {
-      if (c->a.vals[3].type != v_str)
-	 ScriptError(c, "Bad type for third argument");
-      else if (*c->a.vals[3].u.sval != '\0') {
-	 samplefile=c->a.vals[3].u.sval;
-	 if (inlinesample) {
-	    sample=utf82u_copy(samplefile);
-	    samplefile=NULL;
-	 } else {
-	    t=script2utf8_copy(samplefile);
-	    samplefile=locfilename=utf82def_copy(t);
-	    free(t);
-	 }
-      }
-   }
-   if (c->a.argc >= 5) {
-      if (c->a.vals[4].type != v_str)
-	 ScriptError(c, "Bad type for fourth argument");
-      else if (*c->a.vals[4].u.sval != '\0')
-	 output=c->a.vals[4].u.sval;
-   }
-   ScriptPrint(c->curfv, type, pointsizes, samplefile, sample, output);
-   free(pointsizes);
-   free(locfilename);
-   /* ScriptPrint frees sample for us */
+   ScriptError(c,"Printing fonts is currently unimplemented.");
 }
 
 static void bPrintSetup(Context *c) {
-
-/* bPrintSetupc->a.argc != 2 && c->a.argc != 3 && c->a.argc != 5 */
-   if (c->a.vals[1].type != v_int)
-      ScriptError(c, "Bad type for first argument");
-   if (c->a.argc >= 3 && c->a.vals[2].type != v_str)
-      ScriptError(c, "Bad type for second argument");
-   if (c->a.argc==5) {
-      if (c->a.vals[3].type != v_int)
-	 ScriptError(c, "Bad type for third argument");
-      if (c->a.vals[4].type != v_int)
-	 ScriptError(c, "Bad type for fourth argument");
-      pagewidth=c->a.vals[3].u.ival;
-      pageheight=c->a.vals[4].u.ival;
-   }
-   if (c->a.vals[1].u.ival < 0 || c->a.vals[1].u.ival > 5)
-      ScriptError(c, "First argument out of range [0,5]");
-
-   printtype=c->a.vals[1].u.ival;
-   if (c->a.argc >= 3 && printtype==4)
-      printcommand=copy(c->a.vals[2].u.sval);
-   else if (c->a.argc >= 3 && (printtype==0 || printtype==1))
-      printlazyprinter=copy(c->a.vals[2].u.sval);
+   ScriptError(c,"Printing fonts is currently unimplemented.");
 }
 
 static void bPrivateGuess(Context *c) {
@@ -5898,7 +5820,7 @@ if (c->a.vals[1].type != v_str)
 
 static void bRemovePreservedTable(Context *c) {
    SplineFont *sf=c->curfv->sf;
-   uint32 tag;
+   uint32_t tag;
    char *tstr, *end;
    struct ttf_table *tab, *prev;
 
@@ -5976,7 +5898,7 @@ static void bReplaceCvtAt(Context *c) {
 	tab != NULL && tab->tag != CHR('c', 'v', 't', ' '); tab=tab->next);
    if (tab==NULL || c->a.vals[1].u.ival >= tab->len / 2)
       ScriptError(c, "Cvt table is either not present or too short");
-   memputshort(tab->data, sizeof(uint16) * c->a.vals[1].u.ival,
+   memputshort(tab->data, sizeof(uint16_t) * c->a.vals[1].u.ival,
 	       c->a.vals[2].u.ival);
 }
 
@@ -6236,7 +6158,7 @@ static void bSave(Context *c) {
 
 static void bSaveTableToFile(Context *c) {
    SplineFont *sf=c->curfv->sf;
-   uint32 tag;
+   uint32_t tag;
    char *tstr, *end;
    struct ttf_table *tab;
    AFILE *file;
@@ -6730,9 +6652,9 @@ if (c->a.vals[1].type != v_int)
 	 memset(c->curfv->selected + map->enccount, 0,
 		newcnt - map->enccount);
 	 map->map =
-	    realloc(map->map, (map->encmax=newcnt + 10) * sizeof(int32));
+	    realloc(map->map, (map->encmax=newcnt + 10) * sizeof(int32_t));
 	 memset(map->map + map->enccount, -1,
-		(newcnt - map->enccount) * sizeof(int32));
+		(newcnt - map->enccount) * sizeof(int32_t));
       }
    }
    map->enccount=newcnt;
@@ -7080,17 +7002,17 @@ static void bSetMaxpValue(Context *c) {
       tab->len=tab->maxlen=32;
    }
    if (strmatch(c->a.vals[1].u.sval, "Zones")==0)
-      memputshort(tab->data, 7 * sizeof(uint16), c->a.vals[2].u.ival);
+      memputshort(tab->data, 7 * sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "TwilightPntCnt")==0)
-      memputshort(tab->data, 8 * sizeof(uint16), c->a.vals[2].u.ival);
+      memputshort(tab->data, 8 * sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "StorageCnt")==0)
-      memputshort(tab->data, 9 * sizeof(uint16), c->a.vals[2].u.ival);
+      memputshort(tab->data, 9 * sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "MaxStackDepth")==0)
-      memputshort(tab->data, 12 * sizeof(uint16), c->a.vals[2].u.ival);
+      memputshort(tab->data, 12 * sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "FDEFs")==0)
-      memputshort(tab->data, 10 * sizeof(uint16), c->a.vals[2].u.ival);
+      memputshort(tab->data, 10 * sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "IDEFs")==0)
-      memputshort(tab->data, 11 * sizeof(uint16), c->a.vals[2].u.ival);
+      memputshort(tab->data, 11 * sizeof(uint16_t), c->a.vals[2].u.ival);
    else
       ScriptErrorString(c, "Unknown 'maxp' field: ", c->a.vals[1].u.sval);
 }
@@ -8013,10 +7935,10 @@ static void bUnlinkReference(Context *c) {
 }
 
 static void bUtf8(Context *c) {
-   uint32 buf[2];
+   uint32_t buf[2];
    int i;
 
-   uint32 *temp;
+   uint32_t *temp;
 
    if (c->a.vals[1].type==v_int) {
       if (c->a.vals[1].u.ival < 0 || c->a.vals[1].u.ival > 0x10ffff)
@@ -8028,7 +7950,7 @@ static void bUtf8(Context *c) {
    } else if (c->a.vals[1].type==v_arr || c->a.vals[1].type==v_arrfree) {
       Array *arr=c->a.vals[1].u.aval;
 
-      temp=malloc((arr->argc + 1) * sizeof(int32));
+      temp=malloc((arr->argc + 1) * sizeof(int32_t));
       for (i=0; i < arr->argc; ++i) {
 	 if (arr->vals[i].type != v_int)
 	    ScriptError(c, "Bad type for argument");
@@ -8697,7 +8619,7 @@ ssize_t getline(char **lineptr, size_t * n, AFILE *stream);
 ssize_t getline(char **lineptr, size_t * n, AFILE *stream) {
    int size=1024;
    char *s=calloc(size + 1, sizeof(char));
-   char *ret=fgets(s, size, stream);
+   char *ret=afgets(s, size, stream);
 
    if (!ret) {
       free(s);
@@ -8718,7 +8640,7 @@ static int _buffered_cgetc(Context *c) {
 
 	 static size_t lbsize=0;
 
-	 if (getline(&linebuf, &lbsize, stdin) > 0) {
+	 if (getline(&linebuf, &lbsize,astdin) > 0) {
 	    ch=AddScriptLine(c->script, linebuf);
 	 } else {
 	    if (linebuf) {
@@ -10358,7 +10280,7 @@ static AFILE *CopyNonSeekableFile(AFILE *former) {
    int ch;
 
    AFILE *temp=atmpfile();
-   int istty=isatty(fileno(former)) && former==stdin;
+   int istty=aisatty(former) && former==astdin;
 
    if (temp==NULL)
       return (former);
@@ -10424,8 +10346,8 @@ static void RunScriptInterpreter(char *script_name,AFILE *script_file,
    /* If the file is not seekable, we copy it into a seekable file.
     * On Mac OS/X fseek/ftell appear to be broken and return success even
     * for terminals.  They should return -1, EBADF */
-   if (aftell(c.script)==-1 || isatty(fileno(c.script))) {
-      if (c.script==stdin) {
+   if (aftell(c.script)==-1 || aisatty(c.script)) {
+      if (c.script==astdin) {
 	 c.script=atmpfile();
 	 if (c.script)
 	   c.interactive=true;
@@ -10453,7 +10375,7 @@ static void RunScriptInterpreter(char *script_name,AFILE *script_file,
 	 ff_backuptok(&c);
 	 ff_statement(&c);
       }
-      if ((c.script!=stdin) && (c.script!=NULL))
+      if ((c.script!=astdin) && (c.script!=NULL))
 	afclose(c.script);
    } else
      ScriptError(&c,"Internal null file error");
@@ -10482,7 +10404,7 @@ void ExecuteOneScriptCommand(char *command,
 }
 
 void ExecuteScriptCommandsInteractively(int script_argc,char **script_argv) {
-   RunScriptInterpreter("<stdin>",stdin,script_argc,script_argv);
+   RunScriptInterpreter("<stdin>",astdin,script_argc,script_argv);
 }
 
 void ExecuteScriptFile(char *script_filename,

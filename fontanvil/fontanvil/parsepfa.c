@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: parsepfa.c 3877 2015-03-27 12:41:48Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1337,7 +1337,7 @@ static void findnumbers(struct fontparse *fp,struct pschars *chars,
       val=strtol(str, &end, 10);
       chars->lens[index]=0;
       chars->keys[index]=copy(namestrt);
-      chars->values[index]=(void *) (intpt) val;
+      chars->values[index]=(void *) (intptr_t) val;
       chars->next=index + 1;
       str=end;
       while (isspace(*str))
@@ -2586,9 +2586,9 @@ static void figurecids(struct fontparse *fp,AFILE *temp) {
 
    /* Some cid formats don't have any of these */
 
-   fd->cidstrs=malloc(cidcnt * sizeof(uint8 *));
-   fd->cidlens=malloc(cidcnt * sizeof(int16));
-   fd->cidfds=malloc((cidcnt + 1) * sizeof(int16));
+   fd->cidstrs=malloc(cidcnt * sizeof(uint8_t *));
+   fd->cidlens=malloc(cidcnt * sizeof(int16_t));
+   fd->cidfds=malloc((cidcnt + 1) * sizeof(int16_t));
    offsets=malloc((cidcnt + 1) * sizeof(int));
 
    afseek(temp, fd->mapoffset, SEEK_SET);
@@ -2688,7 +2688,7 @@ static void dodata(struct fontparse *fp,AFILE *in,AFILE *temp) {
       fontsetname[0]='\0';
       while ((ch=agetc(in)) != ')' && ch != EOF);
    }
-   if (fscanf(in, "%d", &len) != 1 || len <= 0) {
+   if (afscanf(in, "%d", &len) != 1 || len <= 0) {
       len=0;
       ErrorMsg(2,"Failed to parse the StartData command properly, bad count\n");
    }
@@ -2843,7 +2843,7 @@ FontDict *_ReadPSFont(AFILE *in) {
 
    afclose(temp);
 
-   if (fstat(fileno(in), &b) != -1) {
+   if (afstat(in,&b) != -1) {
       fp.fd->modificationtime=b.st_mtime;
       fp.fd->creationtime=b.st_mtime;
    }
@@ -2962,7 +2962,7 @@ char **_NamesReadPostScript(AFILE *ps) {
    char buffer[2000], *pt, *end;
 
    if (ps != NULL) {
-      while (fgets(buffer, sizeof(buffer), ps) != NULL) {
+      while (afgets(buffer, sizeof(buffer), ps) != NULL) {
 	 if (strstr(buffer, "/FontName") != NULL ||
 	     strstr(buffer, "/CIDFontName") != NULL) {
 	    pt=strstr(buffer, "FontName");
