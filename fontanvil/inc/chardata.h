@@ -1,5 +1,5 @@
-/* $Id: chardata.h 2918 2014-03-07 16:09:49Z mskala $ */
-#include <basics.h>
+/* $Id: chardata.h 3879 2015-03-28 11:08:16Z mskala $ */
+#include "fontanvil.h"
 
 struct charmap {
    int first, last;

@@ -2,7 +2,7 @@
 
 #
 # Makefile for FontAnvil
-# Copyright (C) 2014  Matthew Skala
+# Copyright (C) 2014, 2015  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -127,28 +127,29 @@ dist_man_MANS = \
   fontanvil/sfddiff.1
 
 noinst_HEADERS = \
-  inc/basics.h inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
+  inc/fontanvil.h \
+  inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
   inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
   inc/gimage.h inc/gio.h \
   inc/gresource.h inc/gwidget.h inc/intl.h inc/ustring.h \
   inc/utype.h \
-  fontanvil/afile.h fontanvil/sftextfieldP.h \
-  fontanvil/configure-fontanvil.h fontanvil/views.h fontanvil/is_LIGATURE.h \
-  fontanvil/flaglist.h fontanvil/charview_private.h \
-  fontanvil/autowidth2.h fontanvil/configure-fontanvil.h fontanvil/fontanvil.h \
-  fontanvil/libffstamp.h fontanvil/psfont.h fontanvil/stemdb.h \
-  fontanvil/autowidth.h fontanvil/delta.h fontanvil/fontanvilvw.h \
-  fontanvil/lookups.h fontanvil/savefont.h fontanvil/ttf.h \
-  fontanvil/baseviews.h fontanvil/fvmetrics.h fontanvil/mm.h \
-  fontanvil/scriptfuncs.h fontanvil/ttfinstrs.h fontanvil/edgelist2.h \
-  fontanvil/namehash.h fontanvil/scripting.h fontanvil/uiinterface.h \
-  fontanvil/bezctx_ff.h fontanvil/edgelist.h \
-  fontanvil/nonlineartrans.h fontanvil/sd.h fontanvil/unicoderange.h \
-  fontanvil/bitmapcontrol.h fontanvil/encoding.h \
-  fontanvil/search.h fontanvil/usermenu.h fontanvil/fffreetype.h \
-  fontanvil/PfEd.h fontanvil/sfd1.h \
-  fontanvil/sflayoutP.h fontanvil/print.h fontanvil/splinefont.h \
-  fontanvil/cvruler.h fontanvil/ffglib.h fontanvil/gb12345.h
+  inc/afile.h inc/sftextfieldP.h \
+  inc/configure-fontanvil.h inc/views.h inc/is_LIGATURE.h \
+  inc/flaglist.h inc/charview_private.h \
+  inc/autowidth2.h inc/configure-fontanvil.h inc/fontanvil.h \
+  inc/libffstamp.h inc/psfont.h inc/stemdb.h \
+  inc/autowidth.h inc/delta.h inc/fontanvilvw.h \
+  inc/lookups.h inc/savefont.h inc/ttf.h \
+  inc/baseviews.h inc/fvmetrics.h inc/mm.h \
+  inc/scriptfuncs.h inc/ttfinstrs.h inc/edgelist2.h \
+  inc/namehash.h inc/scripting.h inc/uiinterface.h \
+  inc/bezctx_ff.h inc/edgelist.h \
+  inc/nonlineartrans.h inc/sd.h inc/unicoderange.h \
+  inc/bitmapcontrol.h inc/encoding.h \
+  inc/search.h inc/usermenu.h inc/fffreetype.h \
+  inc/PfEd.h inc/sfd1.h \
+  inc/sflayoutP.h inc/print.h inc/splinefont.h \
+  inc/cvruler.h inc/ffglib.h inc/gb12345.h
 
 noinst_LIBRARIES = \
   Unicode/libgunicode.a \
@@ -176,7 +177,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/parsettf.c fontanvil/parsettfvar.c fontanvil/print.c \
  fontanvil/psread.c fontanvil/pua.c fontanvil/python.c fontanvil/savefont.c \
  fontanvil/scripting.c fontanvil/scstyles.c fontanvil/search.c \
- fontanvil/sfd1.c fontanvil/sfd.c fontanvil/sflayout.c fontanvil/sfundo.h \
+ fontanvil/sfd1.c fontanvil/sfd.c fontanvil/sflayout.c inc/sfundo.h \
  fontanvil/spiro.c fontanvil/splinechar.c fontanvil/splinefill.c \
  fontanvil/splinefont.c fontanvil/splineorder2.c fontanvil/splineoverlap.c \
  fontanvil/splinesaveafm.c fontanvil/splinesave.c fontanvil/splinestroke.c \

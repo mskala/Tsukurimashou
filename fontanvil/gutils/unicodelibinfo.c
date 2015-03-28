@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: unicodelibinfo.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 
 #include "unicodelibinfo.h"
 #include <ustring.h>
-#include "../fontanvil/ffglib.h"
+#include "ffglib.h"
 #include <glib/gprintf.h>
 
 #ifndef _NO_LIBUNINAMESLIST

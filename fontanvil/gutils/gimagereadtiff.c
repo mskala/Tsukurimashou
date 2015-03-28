@@ -1,4 +1,4 @@
-/* $Id: gimagereadtiff.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimagereadtiff.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013feb15, added file and mem error checks, Jose Da Silva */
 /*
@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <basics.h>
+#include "fontanvil.h"
 #include <fontanvil-config.h>
 
 #ifdef _NO_LIBTIFF

@@ -1,4 +1,4 @@
-/* $Id: dump.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: dump.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <charset.h>
-#include <basics.h>
+#include "fontanvil.h"
 
 char *alphabets[] = { "8859-1.TXT", "8859-2.TXT", "8859-3.TXT", "8859-4.TXT",
    "8859-5.TXT", "8859-6.TXT", "8859-7.TXT", "8859-8.TXT", "8859-9.TXT",
@@ -1386,7 +1386,7 @@ int main(int argc, char **argv) {
    fprintf(output, GeneratedFileMessage);
    fprintf(header, GeneratedFileMessage);
 
-   fprintf(header, "#include <basics.h>\n\n");
+   fprintf(header, "#include \"fontanvil.h\"\n\n");
    fprintf(header,
 	   "struct charmap {\n    int first, last;\n    unsigned char **table;\n    unichar_t *totable;\n};\n");
    fprintf(header,

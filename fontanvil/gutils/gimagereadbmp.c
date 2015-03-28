@@ -1,4 +1,4 @@
-/* $Id: gimagereadbmp.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimagereadbmp.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ static int getshort(FILE * fp) {
    return ((ch2 << 8) | ch1);
 }
 
-static long getlong(FILE * fp, long *value) {
+static long getlong_le(FILE * fp, long *value) {
 /* Get Little-Endian long 32bit int value. Return 0 if okay, -1 if error. */
    int ch1, ch2, ch3, ch4;
 
@@ -70,10 +70,10 @@ static int fillbmpheader(FILE * fp, struct bmpheader *head) {
    long temp;
 
    if (fgetc(fp) != 'B' || getc(fp) != 'M' ||	/* Bad format */
-       getlong(fp, &head->size) ||
+       getlong_le(fp, &head->size) ||
        (head->mbz1 = getshort(fp)) < 0 ||
        (head->mbz2 = getshort(fp)) < 0 ||
-       getlong(fp, &head->offset) || getlong(fp, &head->headersize))
+       getlong_le(fp, &head->offset) || getlong_le(fp, &head->headersize))
       return (-1);
 
    if (head->headersize == 12) {	/* Windows 2.0 format, also OS/2 */
@@ -85,16 +85,16 @@ static int fillbmpheader(FILE * fp, struct bmpheader *head) {
       //head->colorsused=0;
       //head->compression=0;
    } else {
-      if (getlong(fp, &head->width) ||
-	  getlong(fp, &head->height) ||
+      if (getlong_le(fp, &head->width) ||
+	  getlong_le(fp, &head->height) ||
 	  (head->planes = getshort(fp)) < 0 ||
 	  (head->bitsperpixel = getshort(fp)) < 0 ||
-	  getlong(fp, &head->compression) ||
-	  getlong(fp, &head->imagesize) ||
-	  getlong(fp, &head->ignore1) ||
-	  getlong(fp, &head->ignore2) ||
-	  getlong(fp, &head->colorsused) ||
-	  getlong(fp, &head->colorsimportant))
+	  getlong_le(fp, &head->compression) ||
+	  getlong_le(fp, &head->imagesize) ||
+	  getlong_le(fp, &head->ignore1) ||
+	  getlong_le(fp, &head->ignore2) ||
+	  getlong_le(fp, &head->colorsused) ||
+	  getlong_le(fp, &head->colorsimportant))
 	 return (-1);
    }
    if (head->height < 0)
@@ -138,28 +138,28 @@ static int fillbmpheader(FILE * fp, struct bmpheader *head) {
 	 return (-1);
    }
    if (head->compression == 3 || head->headersize == 108) {
-      if (getlong(fp, &head->red_mask) ||
-	  getlong(fp, &head->green_mask) || getlong(fp, &head->blue_mask))
+      if (getlong_le(fp, &head->red_mask) ||
+	  getlong_le(fp, &head->green_mask) || getlong_le(fp, &head->blue_mask))
 	 return (-1);
       head->red_shift = bitshift(head->red_mask);
       head->green_shift = bitshift(head->green_mask);
       head->blue_shift = bitshift(head->blue_mask);
    }
 
-   if (head->headersize == 108 && (getlong(fp, &temp) ||	/* alpha_mask */
-				   getlong(fp, &temp) ||	/* color space type */
-				   getlong(fp, &temp) ||	/* redx */
-				   getlong(fp, &temp) ||	/* redy */
-				   getlong(fp, &temp) ||	/* redz */
-				   getlong(fp, &temp) ||	/* greenx */
-				   getlong(fp, &temp) ||	/* greeny */
-				   getlong(fp, &temp) ||	/* greenz */
-				   getlong(fp, &temp) ||	/* bluex */
-				   getlong(fp, &temp) ||	/* bluey */
-				   getlong(fp, &temp) ||	/* bluez */
-				   getlong(fp, &temp) ||	/* gammared */
-				   getlong(fp, &temp) ||	/* gammagreen */
-				   getlong(fp, &temp)) /* gammablue */ )
+   if (head->headersize == 108 && (getlong_le(fp, &temp) ||	/* alpha_mask */
+				   getlong_le(fp, &temp) ||	/* color space type */
+				   getlong_le(fp, &temp) ||	/* redx */
+				   getlong_le(fp, &temp) ||	/* redy */
+				   getlong_le(fp, &temp) ||	/* redz */
+				   getlong_le(fp, &temp) ||	/* greenx */
+				   getlong_le(fp, &temp) ||	/* greeny */
+				   getlong_le(fp, &temp) ||	/* greenz */
+				   getlong_le(fp, &temp) ||	/* bluex */
+				   getlong_le(fp, &temp) ||	/* bluey */
+				   getlong_le(fp, &temp) ||	/* bluez */
+				   getlong_le(fp, &temp) ||	/* gammared */
+				   getlong_le(fp, &temp) ||	/* gammagreen */
+				   getlong_le(fp, &temp)) /* gammablue */ )
       return (-1);
 
    return (0);
@@ -353,7 +353,7 @@ static int readpixels(FILE * file, struct bmpheader *head) {
 	 for (j = 0; j < head->width; ++j) {
 	    long pix;
 
-	    if (getlong(file, &pix))
+	    if (getlong_le(file, &pix))
 	       return (1);
 	    head->int32_pixels[ii + j] =
 	       COLOR_CREATE((pix & head->red_mask) >> head->red_shift,

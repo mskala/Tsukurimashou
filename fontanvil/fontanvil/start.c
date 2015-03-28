@@ -1,4 +1,4 @@
-/* $Id: start.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: start.c 3880 2015-03-28 11:27:22Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 #include "splinefont.h"
 #include <stdarg.h>
 #include <stdio.h>
-#include <basics.h>
+#include "fontanvil.h"
 #include <ustring.h>
 #include <gfile.h>
 #include <time.h>
@@ -312,8 +312,6 @@ void InitSimpleStuff(void) {
 
    setlocale(LC_ALL, "");
    localeinfo=*localeconv();
-   if (getenv("FF_SCRIPT_IN_LATIN1"))
-      use_utf8_in_script=false;
 
    inituninameannot();		/* Note: unicodenames done after locales set */
 

@@ -1,5 +1,5 @@
-/* $Id: flaglist.c 3857 2015-03-25 13:26:40Z mskala $ */
-#include <basics.h>
+/* $Id: flaglist.c 3879 2015-03-28 11:08:16Z mskala $ */
+#include "fontanvil.h"
 #include <string.h>
 #include "flaglist.h"
 

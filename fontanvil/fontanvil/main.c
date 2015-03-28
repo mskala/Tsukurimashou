@@ -1,4 +1,4 @@
-/* $Id: main.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: main.c 3880 2015-03-28 11:27:22Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
  * Copyright (C) 2014  Matthew Skala
@@ -23,6 +23,7 @@
 
 #include <string.h>
 
+#include "scripting.h"
 #include "fontanvilvw.h"
 #include "getopt.h"
 

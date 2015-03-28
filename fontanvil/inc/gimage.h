@@ -1,4 +1,4 @@
-/* $Id: gimage.h 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimage.h 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  */
 #ifndef _GIMAGE_H
 #   define _GIMAGE_H
-#   include <basics.h>
+#   include "fontanvil.h"
 
 typedef uint32_t Color;
 

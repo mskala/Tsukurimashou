@@ -1,4 +1,4 @@
-/* $Id: gwwintl.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gwwintl.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2008 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <basics.h>
+#include "fontanvil.h"
 #include <intl.h>
 
 char *sgettext(const char *msgid) {

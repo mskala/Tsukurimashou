@@ -1,4 +1,4 @@
-/* $Id: gimagereadras.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagereadras.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013jan30..feb5, additional fixes and error checks done, Jose Da Silva */
 /*
@@ -46,7 +46,7 @@ enum types { TypeOld, TypeStandard, TypeByteEncoded, TypeRGB, TypeTIFF,
       TypeIFF };
 enum cluts { ClutNone, ClutRGB, ClutRaw };
 
-static int getlong(FILE * fp, long *value) {
+static int getlong_le(FILE * fp, long *value) {
 /* Get Big-Endian long (32bit int) value. Return 0 if okay, -1 if error	*/
    int ch1, ch2, ch3, ch4;
 
@@ -61,13 +61,13 @@ static int getlong(FILE * fp, long *value) {
 
 static int getrasheader(SUNRASTER * head, FILE * fp) {
 /* Get Header info. Return 0 if read input file okay, -1 if read error	*/
-   if (getlong(fp, &head->MagicNumber) ||
+   if (getlong_le(fp, &head->MagicNumber) ||
        (head->MagicNumber != SUN_RAS_MAGIC
 	&& head->MagicNumber != LITTLE_ENDIAN_MAGIC)
-       || getlong(fp, &head->Width) || getlong(fp, &head->Height)
-       || getlong(fp, &head->Depth) || getlong(fp, &head->Length)
-       || getlong(fp, &head->Type) || getlong(fp, &head->ColorMapType)
-       || getlong(fp, &head->ColorMapLength))
+       || getlong_le(fp, &head->Width) || getlong_le(fp, &head->Height)
+       || getlong_le(fp, &head->Depth) || getlong_le(fp, &head->Length)
+       || getlong_le(fp, &head->Type) || getlong_le(fp, &head->ColorMapType)
+       || getlong_le(fp, &head->ColorMapLength))
       return (-1);
 
    /* Check if header information okay (only try Big-Endian for now).  */

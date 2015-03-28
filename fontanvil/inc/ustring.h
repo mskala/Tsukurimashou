@@ -1,4 +1,4 @@
-/* $Id: ustring.h 3875 2015-03-27 11:44:59Z mskala $ */
+/* $Id: ustring.h 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 #   include <stdarg.h>
 #   include <string.h>
 #   include <memory.h>
-#   include <basics.h>
+#   include "fontanvil.h"
 #   include <charset.h>
 
 extern char *copy(const char *);

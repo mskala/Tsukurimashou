@@ -1,4 +1,4 @@
-/* $Id: gutils.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gutils.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "basics.h"
+#include "fontanvil.h"
 
 #include <stdio.h>
 #include <math.h>

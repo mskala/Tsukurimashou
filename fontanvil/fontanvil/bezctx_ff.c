@@ -1,7 +1,7 @@
-/* $Id: bezctx_ff.c 3869 2015-03-26 13:32:01Z mskala $ */
+/* $Id: bezctx_ff.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* This file written by George Williams to provide a gateway to fontanvil */
 /* it it a modification of Raph's bezctx_ps.c */
-#include <basics.h>
+#include "fontanvil.h"
 #include <stdio.h>
 
 #ifndef _NO_LIBSPIRO

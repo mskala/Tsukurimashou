@@ -1,4 +1,4 @@
-/* $Id: gimagereadgif.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimagereadgif.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013jan18..22, several fixes + interlacing, Jose Da Silva */
 /*
@@ -35,7 +35,7 @@ static int a_file_must_define_something = 0;	/* ANSI says so */
 
 #else /* We can build with gif_lib - therefore import gif files */
 
-#   include <basics.h>
+#   include "fontanvil.h"
 #   include <string.h>
 #   include "gimage.h"
 #   include <gif_lib.h>

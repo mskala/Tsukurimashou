@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3877 2015-03-27 12:41:48Z mskala $ */
+/* $Id: scripting.c 3880 2015-03-28 11:27:22Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,6 @@
 #include "unicodelibinfo.h"
 
 int running_script=true;
-int use_utf8_in_script=true;
 
 static int verbose=-1;
 
@@ -101,23 +100,19 @@ static void ff_statement(Context *c);
 static char **GetFontNames(char *filename);
 
 static char *utf82script_copy(const char *ustr) {
-   return (use_utf8_in_script ? copy(ustr) : utf8_2_latin1_copy(ustr));
+   return copy(ustr);
 }
 
 static char *script2utf8_copy(const char *str) {
-   return (use_utf8_in_script ? copy(str) : latin1_2_utf8_copy(str));
+   return copy(str);
 }
 
 static char *script2latin1_copy(const char *str) {
-   if (!use_utf8_in_script)
-      return (copy(str));
-   else {
-      unichar_t *t=utf82u_copy(str);
-      char *ret=cu_copy(t);
+   unichar_t *t=utf82u_copy(str);
+   char *ret=cu_copy(t);
 
-      free(t);
-      return (ret);
-   }
+   free(t);
+   return (ret);
 }
 
 void arrayfree(Array * a) {

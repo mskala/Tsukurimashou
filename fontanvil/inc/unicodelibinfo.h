@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.h 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: unicodelibinfo.h 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 #   define _GUTILS_UNICODELIBINFO_H_
 
 #   include <fontanvil-config.h>
-#   include <basics.h>
+#   include "fontanvil.h"
 
 /* These functions are used with uninameslist or unicodenames library, if */
 /* available  (oldest function listed first, latest function listed last) */

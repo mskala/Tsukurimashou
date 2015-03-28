@@ -1,4 +1,4 @@
-/* $Id: sfd.c 3877 2015-03-27 12:41:48Z mskala $ */
+/* $Id: sfd.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -7526,15 +7526,6 @@ static int SFD_GetFontMetaData(AFILE *sfd,
    return true;
 }
 
-static void SFTimesFromFile(SplineFont *sf,AFILE *file) {
-   struct stat b;
-
-   if (fstat(file,&b) != -1) {
-      sf->modificationtime=b.st_mtime;
-      sf->creationtime=b.st_mtime;
-   }
-}
-
 static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 			       int fromdir, char *dirname, float sfdversion) {
    SplineFont *sf;
@@ -8089,8 +8080,13 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
       AltUniFigure(sf, sf->map, true);
    if (sf->sfd_version < 2)
       SFD_AssignLookups((SplineFont1 *) sf);
-   if (!hadtimes)
-      SFTimesFromFile(sf, sfd);
+   if (!hadtimes) {
+      time_t now;
+      
+      time(&now);
+      sf->creationtime=now;
+      sf->modificationtime=now;
+   }
 
    SFDFixupUndoRefs(sf);
    return (sf);

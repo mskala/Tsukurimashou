@@ -1,4 +1,4 @@
-/* $Id: gimagereadrgb.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagereadrgb.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ struct sgiheader {
 #define VERBATIM	0
 #define RLE		1
 
-static int getlong(FILE * fp, long *value) {
+static int getlong_le(FILE * fp, long *value) {
 /* Get Big-Endian long (32bit int) value. Return 0 if okay, -1 if error	*/
    int ch1, ch2, ch3, ch4;
 
@@ -80,11 +80,11 @@ static int getsgiheader(struct sgiheader *head, FILE * fp) {
        (head->width = getshort(fp)) < 0 ||
        (head->height = getshort(fp)) < 0 ||
        (head->chans = getshort(fp)) < 0 ||
-       getlong(fp, &head->pixmin) ||
-       getlong(fp, &head->pixmax) ||
+       getlong_le(fp, &head->pixmin) ||
+       getlong_le(fp, &head->pixmax) ||
        fread(head->dummy, sizeof(head->dummy), 1, fp) < 1 ||
        fread(head->imagename, sizeof(head->imagename), 1, fp) < 1 ||
-       getlong(fp, &head->colormap) ||
+       getlong_le(fp, &head->colormap) ||
        fread(head->pad, sizeof(head->pad), 1, fp) < 1)
       return (-1);
 
@@ -111,7 +111,7 @@ static int readlongtab(FILE * fp, unsigned long *tab, long tablen) {
    long i;
 
    for (i = 0; i < tablen; ++i)
-      if (getlong(fp, &tab[i]))
+      if (getlong_le(fp, &tab[i]))
 	 return (-1);		/* had a read error */
 
    return (0);			/* read everything okay */
@@ -157,18 +157,18 @@ static int find_scanline(FILE * fp, struct sgiheader *header, int cur,
       }
    }
    while (header->bpc != 1) {
-      if (getlong(fp, &val))
+      if (getlong_le(fp, &val))
 	 return (-2);
       if ((cnt = (ch & 0x7f)) == 0)
 	 return (0);
       if (ch & 0x80) {
 	 while (--cnt >= 0) {
-	    if (getlong(fp, &val))
+	    if (getlong_le(fp, &val))
 	       return (-2);
 	    *pt++ = scalecolor(header, val);
 	 }
       } else {
-	 if (getlong(fp, &val))
+	 if (getlong_le(fp, &val))
 	    return (-2);
 	 val = scalecolor(header, val);
 	 while (--cnt >= 0)

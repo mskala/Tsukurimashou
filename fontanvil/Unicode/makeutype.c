@@ -1,4 +1,4 @@
-/* $Id: makeutype.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: makeutype.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <basics.h>
+#include "fontanvil.h"
 
 /*#define MAXC		0x600		/* Last upper/lower case dicodomy is Armenian 0x580, er, nope. 1fff (greek and latin extended) then full-width 0xff00 */
 #define MAXC	65536
@@ -750,7 +750,7 @@ static void dump() {
    fprintf(header,
 	   "#include <ctype.h>\t\t/* Include here so we can control it. If a system header includes it later bad things happen */\n");
    fprintf(header,
-	   "#include <basics.h>\t\t/* Include here so we can use pre-defined int types to correctly size constant data arrays. */\n");
+	   "#include \"fontanvil.h\"\t\t/* Include here so we can use pre-defined int types to correctly size constant data arrays. */\n");
    fprintf(header, "#ifdef tolower\n");
    fprintf(header, "# undef tolower\n");
    fprintf(header, "#endif\n");

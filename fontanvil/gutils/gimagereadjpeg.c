@@ -1,4 +1,4 @@
-/* $Id: gimagereadjpeg.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimagereadjpeg.c 3879 2015-03-28 11:08:16Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ static int a_file_must_define_something = 0;	/* ANSI says so */
 
 #else /* We can build with jpeglib - therefore import jpg files */
 
-#   include <basics.h>
+#   include "fontanvil.h"
 #   include <sys/types.h>
 #   include <stdio.h>
 #   include <jpeglib.h>
