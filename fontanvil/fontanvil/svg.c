@@ -1,4 +1,4 @@
-/* $Id: svg.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: svg.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2003-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -467,11 +467,11 @@ static void DataURI_ImageDump(AFILE *file,struct gimage *img) {
    }
 
    afprintf(file, "%s;base64,", mimetype);
-   arewind(imgf);
+   afseek(imgf,0,SEEK_SET);
 
    /* Now do base64 output conversion */
 
-   arewind(imgf);
+   afseek(imgf,0,SEEK_SET);
    ch=agetc(imgf);
    ch_on_line=0;
    while (ch != EOF) {
@@ -2828,7 +2828,7 @@ static GImage *GImageFromDataURI(char *uri) {
 	 ++uri;
       }
    }
-   arewind(tmp);
+   afseek(tmp,0,SEEK_SET);
 #   ifndef _NO_LIBPNG
    if (strcmp(mimetype, "image/png")==0)
       img=GImageRead_Png(tmp);

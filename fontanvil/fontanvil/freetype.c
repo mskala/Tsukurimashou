@@ -1,4 +1,4 @@
-/* $Id: freetype.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: freetype.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -396,7 +396,7 @@ static void *__FreeTypeFontContext(FT_Library context,
 
       afseek(ftc->file,0,SEEK_END);
       ftc->len=aftell(ftc->file);
-      arewind(ftc->file);
+      afseek(ftc->file,0,SEEK_SET);
       ftc->mappedfile=malloc(ftc->len);
       afread(ftc->mappedfile,1,ftc->len,ftc->file);
 

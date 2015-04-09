@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: splinefont.h 3901 2015-04-09 11:48:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2177,7 +2177,7 @@ extern const char *GetAuthor(void);
 
 extern SplineChar *SFFindExistingCharMac(SplineFont *, EncMap *map,
 					 int unienc);
-extern void SC_PSDump(void (*dumpchar) (int ch, void *data), void *data,
+extern void SC_PSDump(AFILE *f,
 		      SplineChar *sc, int refs_to_splines, int pdfopers,
 		      int layer);
 extern int _WritePSFont(AFILE *out, SplineFont *sf, enum fontformat format,

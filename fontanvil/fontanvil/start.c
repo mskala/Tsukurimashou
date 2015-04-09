@@ -1,4 +1,4 @@
-/* $Id: start.c 3880 2015-03-28 11:27:22Z mskala $ */
+/* $Id: start.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -302,6 +302,9 @@ static int DefaultEncoding(void) {
 }
 
 void InitSimpleStuff(void) {
+   astderr=afpopen(stderr);
+   astdin=afpopen(stdin);
+   astdout=afpopen(stdout);
 
    initrand();
    initadobeenc();

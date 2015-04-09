@@ -1,4 +1,4 @@
-/* $Id: main.c 3880 2015-03-28 11:27:22Z mskala $ */
+/* $Id: main.c 3882 2015-03-29 14:15:05Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
  * Copyright (C) 2014  Matthew Skala
@@ -104,14 +104,14 @@ int main(int argc,char **argv) {
    if (show_version || is_interactive) {
       puts(PACKAGE_STRING " (" FONTANVIL_VERSIONDATE ") <"
 	      PACKAGE_URL ">\n\n"
-	   "Copyright (C) 2000-2014  George Williams\n"
-	   "Copyright (C) 2014       Matthew Skala\n"
+	   "Copyright (C) 2000-2014   George Williams\n"
+	   "Copyright (C) 2014, 2015  Matthew Skala\n"
 	   "License GPLv3+: GNU GPL version 3 "
 	      "<http://gnu.org/licenses/gpl-3.0.html>\n"
 	   "Some parts of this software are also available "
 	      "under other licenses.\n"
-	   "This is free software: you are free to change and redistribute "
-	   "it.\nThere is NO WARRANTY, to the extent permitted by law.");
+	   "This is free software:  you are free to change and redistribute "
+	   "it.\nThere is NO WARRANTY whatsoever.");
       if (is_interactive)
 	puts("\nUse \"Quit()\" or end-of-file to exit the interpreter.");
    }

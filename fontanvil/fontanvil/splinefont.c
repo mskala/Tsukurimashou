@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: splinefont.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -625,7 +625,7 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
       } else
 	 ++linelen;
    }
-   arewind(file);
+   afseek(file,0,SEEK_SET);
 
    /* tar outputs its table of contents as a simple list of names */
    /* zip includes a bunch of other info, headers (and lines for directories) */
@@ -1049,7 +1049,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
       afseek(file, 98, SEEK_SET);
       ch9=agetc(file);
       ch10=agetc(file);
-      arewind(file);
+      afseek(file,0,SEEK_SET);
       if ((ch1==0 && ch2==1 && ch3==0 && ch4==0) ||
 	  (ch1=='O' && ch2=='T' && ch3=='T' && ch4=='O') ||
 	  (ch1=='t' && ch2=='r' && ch3=='u' && ch4=='e') ||

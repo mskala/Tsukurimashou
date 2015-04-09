@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: parsepdf.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2012nov01, many fixes added, Jose Da Silva */
 /*
@@ -579,7 +579,7 @@ static int pdf_findobject(struct pdfcontext *pc,int num) {
 	 data=pdf_defilterstream(pc);
 	 if (data==NULL)
 	    return (false);
-	 arewind(data);
+	 afseek(data,0,SEEK_SET);
 	 for (i=0; i < n; ++i) {
 	    afscanf(data, "%d %d", &o, &offset);
 	    if (o==num)
@@ -803,7 +803,7 @@ static int pdf_findpages(struct pdfcontext *pc) {
 static void pdf_hexfilter(AFILE *to,AFILE *from) {
    int ch1, ch2;
 
-   arewind(from);
+   afseek(from,0,SEEK_SET);
    while ((ch1=agetc(from)) != EOF) {
       while (!ishexdigit(ch1) && ch1 != EOF)
 	 ch1=agetc(from);
@@ -821,7 +821,7 @@ static void pdf_85filter(AFILE *to,AFILE *from) {
 
    int cnt;
 
-   arewind(from);
+   afseek(from,0,SEEK_SET);
    while (1) {
       while (isspace(ch1=agetc(from)));
       if (ch1==EOF || ch1=='~')
@@ -892,7 +892,7 @@ static int pdf_zfilter(AFILE *to,AFILE *from) {
    int ret;
 
    /* Initialize */
-   arewind(from);
+   afseek(from,0,SEEK_SET);
    memset(&strm, 0, sizeof(strm));
    strm.zalloc=Z_NULL;
    strm.zfree=Z_NULL;
@@ -934,7 +934,7 @@ static int pdf_zfilter(AFILE *to,AFILE *from) {
 static void pdf_rlefilter(AFILE *to,AFILE *from) {
    int ch1, ch2, i;
 
-   arewind(from);
+   afseek(from,0,SEEK_SET);
    while ((ch1=agetc(from)) != EOF && ch1 != 0x80) {	/* 0x80 => EOD */
       if (ch1 <= 127) {
 	 for (i=0; i <= ch1; ++i) {	/* copy ch1+1 bytes directly */
@@ -982,7 +982,7 @@ static AFILE *pdf_defilterstream(struct pdfcontext *pc) {
       if ((ch=agetc(pdf)) != EOF)
 	 aputc(ch, res);
    }
-   arewind(res);
+   afseek(res,0,SEEK_SET);
 
    if ((pt=PSDictHasEntry(&pc->pdfdict, "Filter"))==NULL)
       return (res);
@@ -1805,7 +1805,7 @@ static SplineChar *pdf_InterpretSC(struct pdfcontext *pc,char *glyphname,
    glyph_stream=pdf_defilterstream(pc);
    if (glyph_stream==NULL)
       return (NULL);
-   arewind(glyph_stream);
+   afseek(glyph_stream,0,SEEK_SET);
 
    memset(&ec, '\0', sizeof(ec));
    ec.fromtype3=true;
@@ -1854,7 +1854,7 @@ static Entity *pdf_InterpretEntity(struct pdfcontext *pc,int page_num) {
    glyph_stream=pdf_defilterstream(pc);
    if (glyph_stream==NULL)
       return (NULL);
-   arewind(glyph_stream);
+   afseek(glyph_stream,0,SEEK_SET);
 
    memset(&ec, '\0', sizeof(ec));
    memset(&dummy, 0, sizeof(dummy));
@@ -1961,7 +1961,7 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
    file=pdf_defilterstream(pc);
    if (file==NULL)
       return;
-   arewind(file);
+   afseek(file,0,SEEK_SET);
 
    mappings=calloc(sf->glyphcnt, sizeof(long));
    while (pdf_getprotectedtok(file, tok) >= 0) {
@@ -2073,7 +2073,7 @@ static int pdf_getcharprocs(struct pdfcontext *pc,char *charprocs) {
       aputc(*charprocs, temp);
       ++charprocs;
    }
-   arewind(temp);
+   afseek(temp,0,SEEK_SET);
    pc->pdf=temp;
    ret=pdf_readdict(pc);
    pc->pdf=pdf;
@@ -2203,7 +2203,7 @@ static SplineFont *pdf_loadfont(struct pdfcontext *pc,int font_num) {
    file=pdf_defilterstream(pc);
    if (file==NULL)
       return (NULL);
-   arewind(file);
+   afseek(file,0,SEEK_SET);
    if (type==1) {
       FontDict *fd;
 
@@ -2218,7 +2218,7 @@ static SplineFont *pdf_loadfont(struct pdfcontext *pc,int font_num) {
 
       afseek(file, 0, SEEK_END);
       len=aftell(file);
-      arewind(file);
+      afseek(file,0,SEEK_SET);
       sf=_CFFParse(file, len, pc->fontnames[font_num]);
    }
    afclose(file);

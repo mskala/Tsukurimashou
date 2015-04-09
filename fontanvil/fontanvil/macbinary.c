@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: macbinary.c 3897 2015-04-08 09:44:20Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -277,14 +277,15 @@ struct macbinaryheader {
 static struct resource *PSToResources(AFILE *res,AFILE *pfbfile) {
    /* split the font up into as many small resources as we need and return */
    /*  an array pointing to the start of each */
-   struct stat statb;
+   off_t pfbsize;
    int cnt, type;
    struct resource *resstarts;
    int len, i;
 
-   afstat(pfbfile,&statb);
-   cnt=3 * (statb.st_size + 0x800) / (0x800 - 2) + 1;	/* should be (usually) a vast over estimate */
-   resstarts=calloc(cnt + 1, sizeof(struct resource));
+   pfbsize=afilesize(pfbfile);
+   cnt=3*(pfbsize+0x800)/(0x800-2)+1;
+   /* should be (usually) a vast overestimate */
+   resstarts=calloc(cnt+1,sizeof(struct resource));
 
    cnt=0;
    while (1) {
@@ -328,14 +329,14 @@ static struct resource *PSToResources(AFILE *res,AFILE *pfbfile) {
 
 static uint32_t TTFToResource(AFILE *res,AFILE *ttffile) {
    /* A truetype font just gets dropped into a resource */
-   struct stat statb;
+   off_t ttfsize;
    int ch;
    uint32_t resstart;
 
-   afstat(ttffile,&statb);
+   ttfsize=afilesize(ttffile);
    resstart=aftell(res);
 
-   putlong(res,statb.st_size);
+   putlong(res,ttfsize);
    while ((ch=agetc(ttffile)) != EOF)
       aputc(ch, res);
    return (resstart);
@@ -1732,7 +1733,7 @@ int WriteMacPSFont(char *filename, SplineFont *sf, enum fontformat format,
 
    WriteDummyMacHeaders(res);
    memset(resources, '\0', sizeof(resources));
-   arewind(temppfb);
+   afseek(temppfb,0,SEEK_SET);
 
    resources[0].tag=CHR('P', 'O', 'S', 'T');
    resources[0].res=PSToResources(res, temppfb);
@@ -1794,7 +1795,7 @@ int WriteMacTTFFont(char *filename, SplineFont *sf, enum fontformat format,
       WriteDummyMacHeaders(res);
    memset(rlist, '\0', sizeof(rlist));
    memset(resources, '\0', sizeof(resources));
-   arewind(tempttf);
+   afseek(tempttf,0,SEEK_SET);
 
    r=0;
    resources[r].tag=CHR('s', 'f', 'n', 't');
@@ -1978,7 +1979,7 @@ int WriteMacFamily(char *filename, struct sflist *sfs, enum fontformat format,
 	       afclose(sfsub->tempttf);
 	    return (0);
 	 }
-	 arewind(sfi->tempttf);
+	 afseek(sfi->tempttf,0,SEEK_SET);
       }
    }
 
@@ -2189,7 +2190,7 @@ static SplineFont *SearchPostScriptResources(AFILE *f,long rlistpos,
    aputc((len >> 8) & 0xff, pfb);
    aputc(len & 0xff, pfb);
    afseek(f, here, SEEK_SET);
-   arewind(pfb);
+   afseek(pfb,0,SEEK_SET);
    if (flags & ttf_onlynames)
       return ((SplineFont *) _NamesReadPostScript(pfb));	/* This closes the font for us */
 
@@ -2339,7 +2340,7 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
 	 afwrite(buffer, 1, temp, ttf);
 	 len += temp;
       }
-      arewind(ttf);
+      afseek(ttf,0,SEEK_SET);
       sf=_SFReadTTF(ttf, flags, openflags, NULL, NULL);
       afclose(ttf);
       if (sf != NULL) {
@@ -3061,7 +3062,7 @@ static SplineFont *MightBeTrueType(AFILE *binary,int32_t pos,int32_t dlen,
       afwrite(buffer, 1, len, temp);
       dlen -= len;
    }
-   arewind(temp);
+   afseek(temp,0,SEEK_SET);
    sf=_SFReadTTF(temp, flags, openflags, NULL, NULL);
    afclose(temp);
    free(buffer);
@@ -3307,7 +3308,7 @@ static SplineFont *IsResourceInHex(AFILE *f,char *filename,int flags,
       }
    }
 
-   arewind(binary);
+   afseek(binary,0,SEEK_SET);
    ch=agetc(binary);		/* Name length */
    /* skip name */
    for (i=0; i < ch; ++i)

@@ -1,4 +1,4 @@
-/* $Id: print.c 3873 2015-03-27 10:44:51Z mskala $ */
+/* $Id: print.c 3901 2015-04-09 11:48:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -287,8 +287,7 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
       afprintf(pi->out, ">>\n");
       afprintf(pi->out, " stream \n");
       lenstart=aftell(pi->out);
-      SC_PSDump((void (*)(int, void *)) fputc, pi->out, pattern_sc, true,
-		true, ly_all);
+      SC_PSDump(pi->out,pattern_sc,true,true,ly_all);
       len=aftell(pi->out) - lenstart;
       afprintf(pi->out, " endstream\n");
       afprintf(pi->out, "endobj\n");

@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: autowidth.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1082,7 +1082,7 @@ static int AW_ReadKernPairFile(char *fn,WidthInfo *wi) {
       else if (ch==0xff && ch2==0xfe)
 	 format=2;		/* byte-swapped ucs2 */
       else
-	 arewind(file);
+	 afseek(file,0,SEEK_SET);
    } else
       aungetc(ch, file);
 

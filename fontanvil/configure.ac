@@ -441,6 +441,7 @@ AC_CHECK_HEADERS([iconv.h])
 # Checks for typedefs, structures, and compiler characteristics.
 #
 AC_C_BIGENDIAN
+AC_CHECK_TYPES([off_t])
 AC_TYPE_PID_T
 AX_PTHREAD
 AX_CREATE_STDINT_H
@@ -455,7 +456,8 @@ AC_FUNC_MKTIME
 AC_FUNC_MMAP
 AC_FUNC_STRCOLL
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([alarm atexit dup2 endpwent getcwd gethostbyname gettimeofday])
+AC_CHECK_FUNCS([alarm atexit dup2 endpwent fseeko ftello])
+AC_CHECK_FUNCS([getcwd gethostbyname gettimeofday])
 AC_CHECK_FUNCS([mkdir munmap nl_langinfo putenv rmdir select])
 AC_CHECK_FUNCS([setenv socket strcasecmp strdup strncasecmp tzset uname])
 AC_CHECK_FUNC([tzset],[],

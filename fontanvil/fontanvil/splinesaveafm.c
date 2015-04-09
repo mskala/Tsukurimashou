@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 3875 2015-03-27 11:44:59Z mskala $ */
+/* $Id: splinesaveafm.c 3897 2015-04-08 09:44:20Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3620,7 +3620,7 @@ enum metricsformat { mf_none, mf_afm, mf_amfm, mf_tfm, mf_ofm, mf_pfm,
 static enum metricsformat MetricsFormatType(char *filename) {
    AFILE *file=afopen(filename, "rb");
    unsigned char buffer[200];
-   struct stat sb;
+   off_t metsize;
    int len;
 
    if (file==NULL)
@@ -3628,7 +3628,7 @@ static enum metricsformat MetricsFormatType(char *filename) {
 
    len=afread(buffer, 1, sizeof(buffer) - 1, file);
    buffer[len]='\0';
-   afstat(file,&sb);
+   metsize=afilesize(file);
    afclose(file);
 
    if (strstr((char *) buffer, "StartFontMetrics") != NULL)
@@ -3636,7 +3636,7 @@ static enum metricsformat MetricsFormatType(char *filename) {
    if (strstr((char *) buffer, "StartMasterFontMetrics") != NULL || strstr((char *) buffer, "StarMasterFontMetrics") != NULL)	/* ff had a bug and used this file header by mistake */
       return (mf_amfm);
 
-   if (len >= 48 && sb.st_size==4 * ((buffer[0]<<8) | buffer[1]) &&
+   if (len >= 48 && metsize==4 * ((buffer[0]<<8) | buffer[1]) &&
        ((buffer[0]<<8) | buffer[1])==6 +
        ((buffer[2]<<8) | buffer[3]) +
        (((buffer[6]<<8) | buffer[7]) - ((buffer[4]<<8) | buffer[5]) + 1) +
@@ -3649,7 +3649,7 @@ static enum metricsformat MetricsFormatType(char *filename) {
        ((buffer[20]<<8) | buffer[21]) + ((buffer[22]<<8) | buffer[23]))
       return (mf_tfm);
 
-   if (len >= 48 && sb.st_size==4 * BigEndianWord(buffer + 4) &&
+   if (len >= 48 && metsize==4 * BigEndianWord(buffer + 4) &&
        BigEndianWord(buffer)==0 &&
        BigEndianWord(buffer + 4)==14 +
        BigEndianWord(buffer + 8) +
@@ -3665,7 +3665,7 @@ static enum metricsformat MetricsFormatType(char *filename) {
 
    if (len >= 6 && buffer[0]==0 && buffer[1]==1 &&
        (buffer[2] | (buffer[3]<<8) | (buffer[4]<<16) | (buffer[5]<<24))
-      ==sb.st_size)
+      ==metsize)
       return (mf_pfm);
 
    /* I don't see any distinquishing marks for a feature file */

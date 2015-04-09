@@ -1,4 +1,4 @@
-/* $Id: http.c 3865 2015-03-26 10:37:06Z mskala $ */
+/* $Id: http.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -516,7 +516,7 @@ static AFILE *HttpURLToTempFile(char *url,void *_lock) {
       afclose(ret);
       ret=NULL;
    } else
-      arewind(ret);
+      afseek(ret,0,SEEK_SET);
    if (lock != NULL)
       pthread_mutex_unlock(lock);
    return (ret);
@@ -650,7 +650,7 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
 	 afwrite(databuf, 1, len, ret);
       }
       *to=ret;
-      arewind(ret);
+      afseek(ret,0,SEEK_SET);
    } else {
       sprintf(cmd, "STOR %s\r\n", filename);
       if (ftpsendr(soc, cmd, databuf, datalen) <= 0) {
@@ -664,7 +664,7 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
 
       ChangeLine2_8(_("Uploading font..."));
 
-      arewind(from);
+      afseek(from,0,SEEK_SET);
       while ((len=afread(databuf, 1, datalen, from)) > 0) {
 	 if ((len=write(data, databuf, len)) < 0)
 	    break;

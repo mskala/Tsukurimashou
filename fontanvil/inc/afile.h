@@ -1,4 +1,4 @@
-/* $Id: afile.h 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: afile.h 3899 2015-04-08 17:07:48Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -26,32 +26,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <sys/stat.h>
 
-typedef int AFILE;
+#include "fontanvil-config.h"
 
-#define astdin ((AFILE *)stdin)
-#define astdout ((AFILE *)stdout)
-#define astderr ((AFILE *)stderr)
+#ifndef HAVE_OFF_T
+typedef long off_t;
+#endif
+
+typedef struct _AFILE AFILE;
+
+extern AFILE *astdin,*astdout,*astderr;
 
 AFILE *afopen(const char *,const char *);
+AFILE *afpopen(FILE *);
 int afclose(AFILE *);
 
 AFILE *atmpfile(void);
+AFILE *ps_obfuscated_afile(AFILE *,int);
+AFILE *base85_afile(AFILE *);
 
 int afeof(AFILE *);
 int aferror(AFILE *);
 int aisatty(AFILE *);
 
-int afstat(AFILE *,struct stat *);
-
-void arewind(AFILE *);
-int afseek(AFILE *,long,int);
-long aftell(AFILE *);
+int afseek(AFILE *,off_t,int);
+off_t aftell(AFILE *);
+off_t afilesize(AFILE *);
 
 int agetc(AFILE *);
 int aungetc(int,AFILE *);
-int afgets(char *,int,AFILE *);
+char *afgets(char *,int,AFILE *);
 
 int aputc(int,AFILE *);
 int afputs(const char *,AFILE *);

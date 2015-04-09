@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: cvexport.c 3901 2015-04-09 11:48:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -132,7 +132,7 @@ int _ExportEPS(AFILE *eps, SplineChar * sc, int layer, int preview) {
    afprintf(eps, "%%%%Page \"%s\" 1\n", sc->name);
 
    afprintf(eps, "gsave newpath\n");
-   SC_PSDump((void (*)(int, void *)) fputc, eps, sc, true, false, layer);
+   SC_PSDump(eps,sc,true,false,layer);
    if (sc->parent->multilayer)
       afprintf(eps, "grestore\n");
    else if (sc->parent->strokedfont)
@@ -216,7 +216,7 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
    afprintf(pdf, " << /Length 5 0 R >> \n");
    afprintf(pdf, " stream \n");
    streamstart=aftell(pdf);
-   SC_PSDump((void (*)(int, void *)) fputc, pdf, sc, true, true, layer);
+   SC_PSDump(pdf,sc,true,true,layer);
    if (sc->parent->multilayer)
       /* Already filled or stroked */ ;
    else if (sc->parent->strokedfont)

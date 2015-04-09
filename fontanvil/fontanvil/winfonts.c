@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: winfonts.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -918,7 +918,7 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
 	 return (false);
       }
 
-      arewind(fntarray[i]);
+      afseek(fntarray[i],0,SEEK_SET);
       lgetushort(fntarray[i]);
       file_lens[i]=lgetlong(fntarray[i]);
       afseek(fntarray[i], 0x44, SEEK_SET);
@@ -932,7 +932,7 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
       while ((c=agetc(fntarray[i])) != 0 && c != EOF)
 	 *cp++=c;
       *cp='\0';
-      arewind(fntarray[i]);
+      afseek(fntarray[i],0,SEEK_SET);
 
       fontdir_len += 0x74 + strlen(name) + 1;
       if (i==0) {
@@ -1112,7 +1112,7 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
    for (res=first_res, i=0; i < num_files; i++, res++) {
       lputshort(fon, res);
 
-      arewind(fntarray[i]);
+      afseek(fntarray[i],0,SEEK_SET);
       afread(buf, 0x72, 1, fntarray[i]);
       fnt_header=(struct _fnt_header *) buf;
       fnt_header->fi.dfBitsOffset=0;	/* I can ignore endianness here. all is 0 */
@@ -1136,7 +1136,7 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
       aputc(0x00, fon);
 
    for (res=first_res, i=0; i < num_files; i++, res++) {
-      arewind(fntarray[i]);
+      afseek(fntarray[i],0,SEEK_SET);
 
       while (1) {
 	 nread=afread(buf, 1, sizeof(buf), fntarray[i]);

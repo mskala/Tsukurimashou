@@ -1,4 +1,4 @@
-/* $Id: woff.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: woff.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2010-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -255,7 +255,7 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 
    afseek(woff, 0, SEEK_END);
    len=aftell(woff);
-   arewind(woff);
+   afseek(woff,0,SEEK_SET);
    if (getlong(woff) != CHR('w', 'O', 'F', 'F')) {
       ErrorMsg(2,"Bad signature in WOFF\n");
       return (NULL);
@@ -364,7 +364,7 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
       afseek(sfnt, head_pos + 8, SEEK_SET);
       putlong(sfnt, checksum);
    }
-   arewind(sfnt);
+   afseek(sfnt,0,SEEK_SET);
    sf=_SFReadTTF(sfnt, flags, openflags, filename, fd);
    afclose(sfnt);
 
@@ -444,7 +444,7 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 
    afseek(sfnt, 0, SEEK_END);
    filelen=aftell(sfnt);
-   arewind(sfnt);
+   afseek(sfnt,0,SEEK_SET);
 
    flavour=getlong(sfnt);
    /* The woff standard says we should accept all flavours of sfnt, so can't */
@@ -455,7 +455,7 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
    (void) getushort(sfnt);
    (void) getushort(sfnt);
 
-   arewind(woff);
+   afseek(woff,0,SEEK_SET);
    putlong(woff, CHR('w', 'O', 'F', 'F'));
    putlong(woff, flavour);
    putlong(woff, 0);		/* Off: 8. total length of file, fill in later */

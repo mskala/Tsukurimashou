@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 3877 2015-03-27 12:41:48Z mskala $ */
+/* $Id: parsepfa.c 3897 2015-04-08 09:44:20Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1513,7 +1513,7 @@ static void sfnts2tempfile(struct fontparse *fp,AFILE *in,char *line) {
  skip_to_eol:
    while (ch != EOF && ch != '\n' && ch != '\r')
       ch=agetc(in);
-   arewind(fp->sfnts);
+   afseek(fp->sfnts,0,SEEK_SET);
 }
 
 static void ParseSimpleEncoding(struct fontparse *fp,char *line) {
@@ -2715,7 +2715,7 @@ static void dodata(struct fontparse *fp,AFILE *in,AFILE *temp) {
       if ((ch=agetc(in)) != '>')
 	 aungetc(ch, in);
    }
-   arewind(temp);
+   afseek(temp,0,SEEK_SET);
    if (fp->iscid)
       figurecids(fp, temp);
    else {
@@ -2806,7 +2806,7 @@ static void realdecrypt(struct fontparse *fp,AFILE *in,AFILE *temp) {
       dodata(fp, in, temp);
    } else if (strstr(buffer, "eexec") != NULL) {
       decrypteexec(in, temp, hassectionheads, strstr(buffer, "eexec") + 5);
-      arewind(temp);
+      afseek(temp,0,SEEK_SET);
       decryptagain(fp, temp, rdtok);
       while (myfgets(buffer, sizeof(buffer), in) != NULL) {
 	 if (buffer[0] != '\200' || !hassectionheads)
@@ -2823,7 +2823,6 @@ FontDict *_ReadPSFont(AFILE *in) {
    AFILE *temp;
    struct fontparse fp;
    char oldloc[24];
-   struct stat b;
 
    temp=atmpfile();
    if (temp==NULL) {
@@ -2843,10 +2842,6 @@ FontDict *_ReadPSFont(AFILE *in) {
 
    afclose(temp);
 
-   if (afstat(in,&b) != -1) {
-      fp.fd->modificationtime=b.st_mtime;
-      fp.fd->creationtime=b.st_mtime;
-   }
    return (fp.fd);
 }
 

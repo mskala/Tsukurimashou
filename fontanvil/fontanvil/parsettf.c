@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 3877 2015-03-27 12:41:48Z mskala $ */
+/* $Id: parsettf.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -4276,7 +4276,7 @@ static int readtyp1glyphs(AFILE *ttf,struct ttfinfo *info) {
    tmp=atmpfile();
    for (i=0; i < info->typ1_length; ++i)
       aputc(agetc(ttf), tmp);
-   arewind(tmp);
+   afseek(tmp,0,SEEK_SET);
    fd=_ReadPSFont(tmp);
    afclose(tmp);
    if (fd != NULL) {

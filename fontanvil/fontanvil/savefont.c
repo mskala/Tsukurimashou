@@ -1,4 +1,4 @@
-/* $Id: savefont.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: savefont.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -437,7 +437,7 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
       ++subfilecnt;
    names=malloc((subfilecnt + 1) * sizeof(char *));
 
-   arewind(file);
+   afseek(file,0,SEEK_SET);
    subfilecnt=0;
    while (afgets(buffer, sizeof(buffer), file) != NULL) {
       if (strncmp(buffer, pfaeditflag, strlen(pfaeditflag))==0) {

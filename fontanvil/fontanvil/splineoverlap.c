@@ -2715,13 +2715,28 @@ static void FigureNeeds(Monotonic *ms,int which,extended test,Monotonic **space,
 		MonosMarkConnected(m,needed,test,which);
 		/* m->isneeded=needed; m->isunneeded=!needed; */
 		/* m->when_set=test;		*//* Debugging */
-	    } else if ( m->isneeded!=needed || m->isunneeded!=!needed ) {
-		SOError( "monotonic is both needed and unneeded (%g,%g)->(%g,%g). %s=%g (prev=%g)\n",
-		    (double) (((m->s->splines[0].a*m->tstart+m->s->splines[0].b)*m->tstart+m->s->splines[0].c)*m->tstart+m->s->splines[0].d),
-		    (double) (((m->s->splines[1].a*m->tstart+m->s->splines[1].b)*m->tstart+m->s->splines[1].c)*m->tstart+m->s->splines[1].d),
-		    (double) (((m->s->splines[0].a*m->tend  +m->s->splines[0].b)*m->tend  +m->s->splines[0].c)*m->tend  +m->s->splines[0].d),
-		    (double) (((m->s->splines[1].a*m->tend  +m->s->splines[1].b)*m->tend  +m->s->splines[1].c)*m->tend  +m->s->splines[1].d),
-		    which ? "y" : "x", (double) test, (double) m->when_set );
+	    } else if (m->isneeded!=needed || m->isunneeded!=!needed) {
+	       SOError("monotonic is both needed and unneeded "
+		       "(%g,%g)->(%g,%g). %s=%g (prev=%g)\n",
+		       (double)(((m->s->splines[0].a*m->tstart+
+				  m->s->splines[0].b)*m->tstart+
+				 m->s->splines[0].c)*m->tstart+
+				m->s->splines[0].d),
+		       (double)(((m->s->splines[1].a*m->tstart+
+				  m->s->splines[1].b)*m->tstart+
+				 m->s->splines[1].c)*m->tstart+
+				m->s->splines[1].d),
+		       (double)(((m->s->splines[0].a*m->tend+
+				  m->s->splines[0].b)*m->tend+
+				 m->s->splines[0].c)*m->tend+
+				m->s->splines[0].d),
+		       (double)(((m->s->splines[1].a*m->tend+
+				  m->s->splines[1].b)*m->tend+
+				 m->s->splines[1].c)*m->tend+
+				m->s->splines[1].d),
+		       which?"y":"x",
+		       (double)test,
+		       (double) m->when_set );
 	    }
 	}
 	winding=nwinding;

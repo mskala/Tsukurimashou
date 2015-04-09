@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: autotrace.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -461,7 +461,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 	    new_tmp_file=atmpfile();
 	    
 	    while ((c=agetc(new_tmp_file))>=0) aputc(c,new_tmp_file);
-	    arewind(new_tmp_file);
+	    afseek(new_tmp_file,0,SEEK_SET);
 
 	    new =
 	       localSplinesFromEntities(EntityInterpretPS(new_tmp_file, NULL), bgcol,

@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: tottfgpos.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -3547,12 +3547,12 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
 
    buf=malloc(8096);
    if (efile != NULL) {
-      arewind(efile);
+      afseek(efile,0,SEEK_SET);
       while ((i=afread(buf, 1, 8096, efile)) > 0)
 	 afwrite(buf, 1, i, g___);
       afclose(efile);
    }
-   arewind(lfile);
+   afseek(lfile,0,SEEK_SET);
    while ((i=afread(buf, 1, 8096, lfile)) > 0)
       afwrite(buf, 1, i, g___);
    afclose(lfile);

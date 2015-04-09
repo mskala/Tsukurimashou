@@ -1,4 +1,4 @@
-/* $Id: tottf.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: tottf.c 3881 2015-03-29 11:53:17Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -670,7 +670,7 @@ int ttfcopyfile(AFILE *ttf, AFILE *other, int pos, char *tab_name) {
       ErrorMsg(2,"File Offset wrong for ttf table (%s), %d expected %d\n", tab_name,
 	     aftell(ttf), pos);
    }
-   arewind(other);
+   afseek(other,0,SEEK_SET);
    while ((ch=agetc(other)) != EOF)
       aputc(ch, ttf);
    if (aferror(other))
@@ -1700,7 +1700,7 @@ static int storesid(struct alltabs *at,char *str) {
    if (pos >= 65536 && !at->sidlongoffset) {
       at->sidlongoffset=true;
       news=atmpfile();
-      arewind(at->sidh);
+      afseek(at->sidh,0,SEEK_SET);
       for (i=0; i < at->sidcnt; ++i)
 	 putlong(news, getushort(at->sidh));
       afclose(at->sidh);
@@ -4800,7 +4800,7 @@ static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
    *tlen=aftell(sub);
    afseek(sub, 2, SEEK_SET);
    putshort(sub, *tlen);	/* Length, I said we'd come back to it */
-   arewind(sub);
+   afseek(sub,0,SEEK_SET);
    return (sub);
 }
 
@@ -4942,7 +4942,7 @@ static AFILE *NeedsUCS4Table(SplineFont *sf,int *ucs4len,EncMap *map) {
    putlong(format12, *ucs4len);	/* Length, I said we'd come back to it */
    putlong(format12, 0);	/* language */
    putlong(format12, group);	/* Number of groups */
-   arewind(format12);
+   afseek(format12,0,SEEK_SET);
 
    if (freeme != NULL)
       EncMapFree(freeme);
@@ -5515,7 +5515,7 @@ static void dumpcmap(struct alltabs *at,SplineFont *sf,
 int32_t filechecksum(AFILE *file) {
    uint32_t sum=0, chunk;
 
-   arewind(file);
+   afseek(file,0,SEEK_SET);
    while (1) {
       chunk=getuint32(file);
       if (afeof(file) || aferror(file))
@@ -6522,7 +6522,7 @@ static int dumpcff(struct alltabs *at,SplineFont *sf,
       afprintf(cff, "/FontSetInit /ProcSet findresource begin\n");
       afseek(at->cfff, 0, SEEK_END);
       len=aftell(at->cfff);
-      arewind(at->cfff);
+      afseek(at->cfff,0,SEEK_SET);
       sprintf(buffer, "/%s %ld StartData\n", sf->fontname, len);
       afprintf(cff, "%%%%BeginData: %ld Binary Bytes\n",
 	      (long) (len + strlen(buffer)));
@@ -6724,7 +6724,7 @@ static void dumptype42(AFILE *type42,struct alltabs *at,
    int i, length;
 
    dumpttf(temp, at, format);
-   arewind(temp);
+   afseek(temp,0,SEEK_SET);
 
    hexout.type42=type42;
    hexout.bytesout=0;

@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3880 2015-03-28 11:27:22Z mskala $ */
+/* $Id: scripting.c 3897 2015-04-08 09:44:20Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@
 #include <math.h>
 #include <setjmp.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
 #include <locale.h>
@@ -1953,13 +1952,13 @@ static void bAskUser(Context *c) {
    if (c->a.argc==3)
      def=c->a.vals[2].u.sval;
    
-   printf("%s", loc);
+   printf("%s",loc);
    free(t1);
    free(loc);
    buffer[0]='\0';
    c->return_val.type=v_str;
-   if (afgets(buffer, sizeof(buffer),astdin)==NULL) {
-      clearerr(astdin);
+   if (fgets(buffer,sizeof(buffer),stdin)==NULL) {
+      clearerr(stdin);
       c->return_val.u.sval=copy("");
    } else if (buffer[0]=='\0' || buffer[0]=='\n' || buffer[0]=='\r')
 	c->return_val.u.sval=copy(def);
@@ -4760,7 +4759,7 @@ static void bLoadFileToString(Context *c) {
    else {
       afseek(f, 0, SEEK_END);
       len=aftell(f);
-      arewind(f);
+      afseek(f,0,SEEK_SET);
       c->return_val.u.sval=malloc(len + 1);
       len=afread(c->return_val.u.sval, 1, len, f);
       c->return_val.u.sval[len]='\0';
@@ -4858,7 +4857,6 @@ static void bLoadTableFromFile(Context *c) {
    struct ttf_table *tab;
    AFILE *file;
    int len;
-   struct stat statb;
    char *t;
    char *locfilename;
 
@@ -4881,9 +4879,9 @@ static void bLoadTableFromFile(Context *c) {
    free(t);
    if (file==NULL)
       ScriptErrorString(c, "Could not open file: ", c->a.vals[2].u.sval);
-   if (afstat(file,&statb)==-1)
-      ScriptErrorString(c, "fstat() failed on: ", c->a.vals[2].u.sval);
-   len=statb.st_size;
+   len=afilesize(file);
+   if (len<0)
+     ScriptErrorString(c, "afilesize () failed on ",c->a.vals[2].u.sval);
 
    for (tab=sf->ttf_tab_saved; tab != NULL && tab->tag != tag;
 	tab=tab->next);
@@ -10268,32 +10266,19 @@ static void ff_statement(Context *c) {
       ScriptError(c, "Unterminated ff_statement");
 }
 
+/* we know this is never called on stdin.  FIXME it should be abstracted too */
 static AFILE *CopyNonSeekableFile(AFILE *former) {
-/* Copy input stream or Standard input into an internal tmpfile  */
-/* that can then be used for running FontAnvil or Python scripts */
-/* The tmpfile automatically closes/deletes when FontAnvil exits */
    int ch;
-
    AFILE *temp=atmpfile();
-   int istty=aisatty(former) && former==astdin;
 
    if (temp==NULL)
       return (former);
 
-   if (istty) {
-      printf
-	 ("Type in your script file. Processing will not begin until all the script\n");
-      printf(" has been input (ie. until you have pressed ^D)\n> ");
-   }
    while ((ch=agetc(former)) >= 0) {
       aputc(ch, temp);
-      if (ch=='\n' && istty)
-	 printf("> ");
    }
-   if (istty)
-      printf("\n");
 
-   arewind(temp);
+   afseek(temp,0,SEEK_SET);
    return (temp);
 }
 
@@ -10389,7 +10374,7 @@ void ExecuteOneScriptCommand(char *command,
    script_file=atmpfile();
    if (script_file) {
       afwrite(command,1,strlen(command),script_file);
-      arewind(script_file);
+      afseek(script_file,0,SEEK_SET);
       RunScriptInterpreter("<command-string>",script_file,
 			   script_argc,script_argv);
    } else {
