@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: splineutil2.c 3902 2015-04-10 06:17:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without

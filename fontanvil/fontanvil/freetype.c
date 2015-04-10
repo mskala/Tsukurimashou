@@ -1,4 +1,4 @@
-/* $Id: freetype.c 3881 2015-03-29 11:53:17Z mskala $ */
+/* $Id: freetype.c 3906 2015-04-10 21:07:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -413,6 +413,7 @@ static void *__FreeTypeFontContext(FT_Library context,
    return (ftc);
 
  fail:
+   ErrorMsg(2,"Failure building FreeType font context\n");
    sf->internal_temp=false;
    GlyphHashFree(sf);
    FreeTypeFreeContext(ftc);

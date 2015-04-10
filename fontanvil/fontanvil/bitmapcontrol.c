@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: bitmapcontrol.c 3906 2015-04-10 21:07:28Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -219,22 +219,20 @@ static void ReplaceBDFC(SplineFont *sf,int32_t *sizes,int gid,
 static int FVRegenBitmaps(CreateBitmapData *bd,int32_t *sizes,
 			  int usefreetype) {
    FontViewBase *fv=bd->fv, *selfv=bd->which==bd_all ? NULL : fv;
-
    SplineFont *sf=bd->sf, *subsf, *bdfsf =
-      sf->cidmaster != NULL ? sf->cidmaster : sf;
+     sf->cidmaster != NULL ? sf->cidmaster : sf;
    int i, j;
-
    BDFFont *bdf;
-
    void *freetypecontext=NULL;
-
+   
    for (i=0; sizes[i] != 0; ++i) {
-      for (bdf=bdfsf->bitmaps; bdf != NULL &&
-	   (bdf->pixelsize != (sizes[i] & 0xffff)
-	    || BDFDepth(bdf) != (sizes[i] >> 16)); bdf=bdf->next);
+      for (bdf=bdfsf->bitmaps;
+	   bdf != NULL && (bdf->pixelsize != (sizes[i] & 0xffff)
+			   || BDFDepth(bdf) != (sizes[i] >> 16));
+	   bdf=bdf->next);
       if (bdf==NULL) {
 	 ErrorMsg(2,"Attempt to regenerate a pixel size that has not "
-	            "been created (%d@%d).\n",sizes[i]&0xffff,sizes[i]>>16);
+		  "been created (%d@%d).\n",sizes[i]&0xffff,sizes[i]>>16);
 	 return (false);
       }
    }
@@ -250,31 +248,31 @@ static int FVRegenBitmaps(CreateBitmapData *bd,int32_t *sizes,
       if (bdfsf->subfontcnt != 0 && bd->which==bd_all) {
 	 for (j=0; j < bdfsf->subfontcnt; ++j) {
 	    subsf=bdfsf->subfonts[j];
+	    if (usefreetype && freetypecontext==NULL)
+	      freetypecontext =
+	      FreeTypeFontContext(subsf, NULL, selfv, bd->layer);
 	    for (i=0; i < subsf->glyphcnt; ++i) {
 	       if (SCWorthOutputting(subsf->glyphs[i])) {
-		  if (usefreetype && freetypecontext==NULL)
-		     freetypecontext =
-			FreeTypeFontContext(subsf, NULL, selfv, bd->layer);
 		  ReplaceBDFC(subsf, sizes, i, freetypecontext, usefreetype,
 			      bd->layer);
 	       }
 	    }
 	    if (freetypecontext)
-	       FreeTypeFreeContext(freetypecontext);
+	      FreeTypeFreeContext(freetypecontext);
 	    freetypecontext=NULL;
 	 }
       } else {
+	 if (usefreetype && freetypecontext==NULL)
+	   freetypecontext =
+	   FreeTypeFontContext(sf, NULL, selfv, bd->layer);
 	 for (i=0; i < fv->map->enccount; ++i) {
 	    if (fv->selected[i] || bd->which==bd_all) {
-	       if (usefreetype && freetypecontext==NULL)
-		  freetypecontext =
-		     FreeTypeFontContext(sf, NULL, selfv, bd->layer);
 	       ReplaceBDFC(sf, sizes, fv->map->map[i], freetypecontext,
 			   usefreetype, bd->layer);
 	    }
 	 }
 	 if (freetypecontext)
-	    FreeTypeFreeContext(freetypecontext);
+	   FreeTypeFreeContext(freetypecontext);
 	 freetypecontext=NULL;
       }
    }

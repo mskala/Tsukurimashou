@@ -1,4 +1,4 @@
-/* $Id: afile.c 3900 2015-04-08 17:58:02Z mskala $ */
+/* $Id: afile.c 3905 2015-04-10 11:10:14Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -35,6 +35,7 @@
 #define FP_MAGIC (MAGIC_PRIME*101+MAGIC_OFFSET)
 #define PSOB_MAGIC (MAGIC_PRIME*103+MAGIC_OFFSET)
 #define B85_MAGIC (MAGIC_PRIME*107+MAGIC_OFFSET)
+#define MEM_MAGIC (MAGIC_PRIME*109+MAGIC_OFFSET)
 
 #define MAGICAL(f) (((f)!=NULL) && ((f)->magic%MAGIC_PRIME==MAGIC_OFFSET))
 
@@ -735,8 +736,166 @@ AFILE *afpopen(FILE *fp) {
 
 /**********************************************************************/
 
+typedef struct _MEM_AFILE {
+   int magic;
+   AFILE_VTBL *vtbl;
+   char *buffer;
+   size_t allocated,used;
+   off_t ptr;
+} MEM_AFILE;
+
+static int mem_fclose(AFILE *f) {
+   int rval;
+   
+   free(((MEM_AFILE *)f)->buffer);
+   ((MEM_AFILE *)f)->buffer=NULL;
+   f->magic=0;
+   free(f);
+   return 0;
+}
+
+static int mem_feof(AFILE *f) {
+   return ((MEM_AFILE *)f)->ptr==((MEM_AFILE *)f)->used;
+}
+
+static int mem_zero(AFILE *f) {
+   return 0;
+}
+
+#define MEM_CHUNK_SIZE 4096
+#define MEM_CHUNK_MASK (MEM_CHUNK_SIZE-1)
+#define MEM_CHUNK_SHIFT 3072
+
+static void mem_resize(MEM_AFILE *f,size_t new_size) {
+   if ((new_size&MEM_CHUNK_MASK)>MEM_CHUNK_SHIFT)
+     new_size+=MEM_CHUNK_SIZE;
+   new_size&=~MEM_CHUNK_MASK;
+   new_size+=MEM_CHUNK_SHIFT;
+
+   f->buffer=(char *)realloc(f->buffer,new_size);
+   memset(f->buffer+f->allocated,0,new_size-f->allocated);
+   f->allocated=new_size;
+}
+
+static int mem_fseek(AFILE *f,off_t offset,int whence) {
+   switch (whence) {
+    case SEEK_SET:
+      if (offset<0)
+	return -1;
+      ((MEM_AFILE *)f)->ptr=offset;
+      break;
+
+    case SEEK_CUR:
+      if (-offset>((MEM_AFILE *)f)->ptr)
+	return -1;
+      ((MEM_AFILE *)f)->ptr+=offset;
+      break;
+
+    case SEEK_END:
+      if (-offset>((MEM_AFILE *)f)->used)
+	return -1;
+      ((MEM_AFILE *)f)->ptr=((MEM_AFILE *)f)->used+offset;
+      break;
+
+    default:
+      return -1;
+      break;
+   }
+   
+   if (((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->allocated)
+     mem_resize((MEM_AFILE *)f,((MEM_AFILE *)f)->ptr);
+   return 0;
+}
+
+static off_t mem_ftell(AFILE *f) {
+   return ((MEM_AFILE *)f)->ptr;
+}
+
+static size_t mem_fread(void *ptr,size_t size,size_t nmemb,AFILE *f) {
+   size_t rsize;
+
+   if (ptr==NULL)
+     return -1;
+   if (((MEM_AFILE *)f)->used<((MEM_AFILE *)f)->ptr)
+     return -1;
+   if ((size<=0) || (nmemb<=0))
+     return 0;
+
+   rsize=size*nmemb;
+   if (rsize>((MEM_AFILE *)f)->used-((MEM_AFILE *)f)->ptr) {
+      rsize=((MEM_AFILE *)f)->used-((MEM_AFILE *)f)->ptr;
+      rsize/=size;
+      rsize*=size;
+   }
+   
+   memcpy(ptr,((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr,rsize);
+   ((MEM_AFILE *)f)->ptr+=rsize;
+
+   return rsize/size;
+}
+
+static size_t mem_fwrite(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
+   if (ptr==NULL)
+     return -1;
+   if ((size<=0) || (nmemb<=0))
+     return 0;
+
+   if (((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->used)
+     ((MEM_AFILE *)f)->used=((MEM_AFILE *)f)->ptr;
+   
+   size*=nmemb;
+   if (((MEM_AFILE *)f)->ptr+size>((MEM_AFILE *)f)->allocated)
+     mem_resize((MEM_AFILE *)f,((MEM_AFILE *)f)->ptr+size);
+   
+   memcpy(((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr,ptr,size);
+   ((MEM_AFILE *)f)->ptr+=size;
+   if (((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->used)
+     ((MEM_AFILE *)f)->used=((MEM_AFILE *)f)->ptr;
+   
+   return nmemb;
+}
+
+static int mem_ungetc(int c,AFILE *f) {
+   if (c==EOF)
+     return EOF;
+
+   if (((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->used)
+     ((MEM_AFILE *)f)->used=((MEM_AFILE *)f)->ptr;
+
+   if (((MEM_AFILE *)f)->used>=((MEM_AFILE *)f)->allocated)
+     mem_resize((MEM_AFILE *)f,((MEM_AFILE *)f)->used+1);
+   
+   if (((MEM_AFILE *)f)->used>=((MEM_AFILE *)f)->ptr)
+     memmove(((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr+1,
+	     ((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr,
+	     ((MEM_AFILE *)f)->used-((MEM_AFILE *)f)->ptr+1);
+
+   ((MEM_AFILE *)f)->buffer[((MEM_AFILE *)f)->ptr]=c;
+   ((MEM_AFILE *)f)->used++;
+   
+   return (unsigned char)c;
+}
+
+static AFILE_VTBL mem_afile_vtbl={
+   &mem_fclose,&mem_feof,&mem_zero,&mem_zero,&mem_fseek,&mem_ftell,
+   &mem_fread,&mem_fwrite,&mem_ungetc,
+};
+
 AFILE *atmpfile(void) {
-  return afpopen(tmpfile());
+   MEM_AFILE *rval;
+   
+   rval=(MEM_AFILE *)malloc(sizeof(MEM_AFILE));
+   if (rval==NULL)
+     return NULL;
+
+   rval->magic=MEM_MAGIC;
+   rval->vtbl=&mem_afile_vtbl;
+   rval->buffer=NULL;
+   rval->allocated=0;
+   rval->used=0;
+   rval->ptr=0;
+
+   return (AFILE *)rval;
 }
 
 /**********************************************************************/
@@ -948,13 +1107,11 @@ static size_t b85_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
 	 uint32_t val=((B85_AFILE *)f)->ascii85encode;
 	 
 	 if (val==0) {
-	    rrval=aputc('z',((B85_AFILE *)f)->inner);
-	    if (rrval<0)
+	    if (aputc('z',((B85_AFILE *)f)->inner)<0)
 	      break;
 	    ((B85_AFILE *)f)->ascii85n=0;
 	    if (++(((B85_AFILE *)f)->ascii85bytes_per_line)>=76) {
-	       rrval=aputc('\n',((B85_AFILE *)f)->inner);
-	       if (rrval<0)
+	       if (aputc('\n',((B85_AFILE *)f)->inner)<0)
 		 break;
 	       ((B85_AFILE *)f)->ascii85bytes_per_line=0;
 	    }
@@ -968,15 +1125,13 @@ static size_t b85_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
 	    val/=85;
 	    ch2=val%85;
 	    ch1=val/85;
-	    rrval=afprintf(((B85_AFILE *)f)->inner,"%c%c%c%c%c",
-			   ch1+'!',ch2+'!',ch3+'!',ch4+'!',ch5+'!');
-	    if (rrval<0)
+	    if (afprintf(((B85_AFILE *)f)->inner,"%c%c%c%c%c",
+			 ch1+'!',ch2+'!',ch3+'!',ch4+'!',ch5+'!')<0)
 	      break;
 	    ((B85_AFILE *)f)->ascii85encode=0;
 	    ((B85_AFILE *)f)->ascii85n=0;
 	    if ((((B85_AFILE *)f)->ascii85bytes_per_line+=5)>=80) {
-	       rrval=aputc('\n',((B85_AFILE *)f)->inner);
-	       if (rrval<0)
+	       if (aputc('\n',((B85_AFILE *)f)->inner)<0)
 		 break;
 	       ((B85_AFILE *)f)->ascii85bytes_per_line=0;
 	    }
@@ -1056,7 +1211,7 @@ void ErrorMsg(int level,const char *format,...) {
 
   if (level>=message_level) {
     va_start(args,format);
-    vfprintf((FILE *)astderr,format,args);
+    avfprintf(astderr,format,args);
     va_end(args);
   }
 }
