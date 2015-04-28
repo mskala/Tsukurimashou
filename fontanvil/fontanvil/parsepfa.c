@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 3897 2015-04-08 09:44:20Z mskala $ */
+/* $Id: parsepfa.c 3931 2015-04-24 12:32:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2223,7 +2223,7 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
    char *rdline2="{string currentfile exch readhexstring pop}";
    char *tokpt=NULL, *rdpt;
    char temptok[255];
-   int intok, first;
+   int intok;
    int inPrivate=0, inSubrs=0;
    int wasminus=false, isminus, nibble=0, firstnibble=true, inhex;
    int willbehex=false;
@@ -2248,7 +2248,6 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
    binlen=0;
    intok=0;
    sptok=0;
-   first=1;
    temptok[0]='\0';
    while ((ch=agetc(temp)) != EOF) {
       if (pt >= end) {
@@ -2401,7 +2400,6 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
       wasspace=nowspace;
       inr=nowr;
       wasminus=isminus;
-      first=0;
    }				/* end while */
    *pt='\0';
    if (binstart==NULL) {

@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3897 2015-04-08 09:44:20Z mskala $ */
+/* $Id: scripting.c 3931 2015-04-24 12:32:54Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -4088,27 +4088,16 @@ static void bGetOS2Value(Context *c) {
 }
 
 static void bGetPosSub(Context *c) {
-   SplineFont *sf=c->curfv->sf, *sf_sl=sf;
-
+   SplineFont *sf=c->curfv->sf;
    EncMap *map=c->curfv->map;
-
    SplineChar *sc;
    int i, j, k, cnt, subcnt, found, gid;
-
    SplineChar dummy;
    Array *ret, *temp;
-
    PST *pst;
-
    KernPair *kp;
    char *pt, *start;
-
    struct lookup_subtable *sub;
-
-   if (sf_sl->cidmaster != NULL)
-      sf_sl=sf_sl->cidmaster;
-   else if (sf_sl->mm != NULL)
-      sf_sl=sf_sl->mm->normal;
 
    found=GetOneSelCharIndex(c);
    gid=map->map[found];
@@ -10314,7 +10303,7 @@ static void RunScriptInterpreter(char *script_name,AFILE *script_file,
    /* copy and convert the arguments */
    c.a.vals[0].type=v_str;
    tstr=def2utf8_copy(script_name);
-   c.a.vals[i].u.sval=utf82script_copy(tstr);
+   c.a.vals[0].u.sval=utf82script_copy(tstr);
    free(tstr);
    for (i=0;i<script_argc;i++) {
       c.a.vals[i+1].type=v_str;

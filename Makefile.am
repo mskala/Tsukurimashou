@@ -234,7 +234,7 @@ t1asm_t1asm_SOURCES = \
 dist_noinst_SCRIPTS = \
   hamlog/hamlog \
   hamlog/select.hl hamlog/swi-ham.pl hamlog/ecl-ham.ecl hamlog/gp-ham.pl \
-  pe/bdf.pe pe/fontlint.pe pe/getbearings.pe pe/kern-font.pe \
+  pe/bdf.pe pe/bdf-kludge.pe pe/fontlint.pe pe/getbearings.pe pe/kern-font.pe \
   pe/makepngs.pe pe/rmo.pe \
   tools/add-flog tools/autodep tools/build-plot tools/livecode \
   tools/make-ass tools/make-book tools/make-cfghl tools/make-cover \
@@ -840,6 +840,17 @@ sfd/$(subst _,-,$1).sfd: \
 	    "$(ansi_cleareol)", \
 	    $(TSU_V_REDIR))
 
+if COND_BMK
+bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf: \
+  bdf/.dirstamp pe/bdf.pe sfd/$(subst _,-,$1).sfd
+	$(TSU_V_BDF) bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf
+	$(AM_V_at)$(FONTANVIL) -lang=ff -script $(mvp)/pe/bdf-kludge.pe \
+	  $(subst -,,$(subst $(space),,$(XLAT_$1))) $(subst _,-,$1) \
+	  $(TSU_V_REDIR)
+	$(AM_V_at)mv -f \
+	  bdf/$(subst -,,$(subst $(space),,$(XLAT_$1)))-100.bdf \
+	  bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf
+else
 bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf: \
   bdf/.dirstamp pe/bdf.pe sfd/$(subst _,-,$1).sfd
 	$(TSU_V_BDF) bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf
@@ -849,6 +860,7 @@ bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf: \
 	$(AM_V_at)mv -f \
 	  bdf/$(subst -,,$(subst $(space),,$(XLAT_$1)))-100.bdf \
 	  bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf
+endif
 
 # this rule also, silently, builds the *-bearing.pe script
 fea/$(subst _,-,$1)-ktmp.fea: \

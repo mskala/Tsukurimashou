@@ -187,7 +187,7 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.68])
-AC_INIT([FontAnvil],[0.1],[mskala@ansuz.sooke.bc.ca],[fontanvil],
+AC_INIT([FontAnvil],[0.2],[mskala@ansuz.sooke.bc.ca],[fontanvil],
   [[http://tsukurimashou.sourceforge.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([config])

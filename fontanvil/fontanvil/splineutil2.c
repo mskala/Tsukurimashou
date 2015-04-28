@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 3902 2015-04-10 06:17:40Z mskala $ */
+/* $Id: splineutil2.c 3931 2015-04-24 12:32:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -1609,101 +1609,6 @@ void SSRemoveStupidControlPoints(SplineSet *base) {
 
     for (spl=base; spl!=NULL; spl=spl->next)
 	RemoveStupidControlPoints(spl);
-}
-
-static SplinePointList *SplinePointListMerge(SplineChar *sc,SplinePointList *spl,int type) {
-    Spline *spline, *first;
-    SplinePoint *nextp, *curp, *selectme;
-    int all, any;
-
-
-    /* If the entire splineset is selected, it should merge into oblivion */
-    first=NULL;
-    if (sc->inspiro && hasspiro()) {
-	int i,j;
-	any=false; all=true;
-	for (i=0; i<spl->spiro_cnt-1; ++i)
-	    if (SPIRO_SELECTED(&spl->spiros[i]))
-		any=true;
-	    else
-		all=false;
-	if (all)
-	 return NULL;
-	else if (any) {
-	    for (i=0; i<spl->spiro_cnt-1; ++i)
-		if (SPIRO_SELECTED(&spl->spiros[i])) {
-		    for (j=i+1; j<spl->spiro_cnt ; ++j)
-			spl->spiros[j-1]=spl->spiros[j];
-		    --spl->spiro_cnt;
-		}
-	    SSRegenerateFromSpiros(spl);
-	}
-       return spl;
-    }
-
-    any=all=spl->first->selected;
-    for (spline=spl->first->next; spline!=NULL && spline!=first && all; spline=spline->to->next) {
-	if (spline->to->selected) any=true;
-	else all=false;
-	if (first==NULL) first=spline;
-    }
-    if (spl->first->next!=NULL && spl->first->next->to==spl->first &&
-	    spl->first->nonextcp && spl->first->noprevcp)
-	all=true;		/* Merge away any splines which are just dots */
-    if (all)
-     return NULL;			/* Some one else should free it and reorder the spline set list */
-    RemoveZeroLengthSplines(spl,true,.3);
-
-    if (spl->first!=spl->last) {
-	/* If the spline isn't closed, then any selected points at the ends */
-	/*  get deleted */
-	while (spl->first->selected) {
-	    nextp=spl->first->next->to;
-	    SplineFree(spl->first->next);
-	    SplinePointMDFree(sc,spl->first);
-	    spl->first=nextp;
-	    nextp->prev=NULL;
-	}
-	while (spl->last->selected) {
-	    nextp=spl->last->prev->from;
-	    SplineFree(spl->last->prev);
-	    SplinePointMDFree(sc,spl->last);
-	    spl->last=nextp;
-	    nextp->next=NULL;
-	}
-    } else {
-	while (spl->first->selected) {
-	    spl->first=spl->first->next->to;
-	    spl->last=spl->first;
-	}
-    }
-
-    /* when we get here spl->first is not selected */
-    if (spl->first->selected) ErrorMsg(2,"spl->first is selected in SplinePointListMerge\n");
-    curp=spl->first;
-    selectme=NULL;
-    while (1) {
-	while (!curp->selected) {
-	    if (curp->next==NULL)
-		curp=NULL;
-	    else
-		curp=curp->next->to;
-	    if (curp==spl->first || curp==NULL)
-	break;
-	}
-	if (curp==NULL || !curp->selected)
-    break;
-	for (nextp=curp->next->to; nextp->selected; nextp=nextp->next->to);
-	/* we don't need to check for the end of the splineset here because */
-	/*  we know that spl->last is not selected */
-	SplinesRemoveBetween(sc,curp->prev->from,nextp,type);
-	curp=nextp;
-	selectme=nextp;
-    }
-    if (selectme!=NULL) selectme->selected=true;
-    if (any)
-	SplineSetSpirosClear(spl);
-   return spl;
 }
 
 static int SPisExtremum(SplinePoint *sp) {
@@ -3452,56 +3357,6 @@ static void SFChangeXUID(SplineFont *sf,int random) {
 
 void SFIncrementXUID(SplineFont *sf) {
     SFChangeXUID(sf,false);
-}
-
-void SPAverageCps(SplinePoint *sp) {
-   bigreal pangle, nangle, angle, plen, nlen, c, s;
-   if (( sp->pointtype==pt_curve || sp->pointtype==pt_hvcurve) &&
-       sp->prev && sp->next ) {
-      if ( sp->noprevcp )
-	pangle = atan2(sp->me.y-sp->prev->from->me.y,sp->me.x-sp->prev->from->me.x);
-      else
-	pangle = atan2(sp->me.y-sp->prevcp.y,sp->me.x-sp->prevcp.x);
-      if ( sp->nonextcp )
-	nangle = atan2(sp->next->to->me.y-sp->me.y,sp->next->to->me.x-sp->me.x);
-      else
-	nangle = atan2(sp->nextcp.y-sp->me.y,sp->nextcp.x-sp->me.x);
-      if ( pangle<0 && nangle>0 && nangle-pangle>=3.1415926 )
-	pangle += 2*3.1415926535897932;
-      else if ( pangle>0 && nangle<0 && pangle-nangle>=3.1415926 )
-	nangle += 2*3.1415926535897932;
-      angle = (nangle+pangle)/2;
-      plen = -sqrt((sp->me.y-sp->prevcp.y)*(sp->me.y-sp->prevcp.y) +
-		   (sp->me.x-sp->prevcp.x)*(sp->me.x-sp->prevcp.x));
-      nlen = sqrt((sp->nextcp.y-sp->me.y)*(sp->nextcp.y-sp->me.y) +
-		  (sp->nextcp.x-sp->me.x)*(sp->nextcp.x-sp->me.x));
-      c = cos(angle); s=sin(angle);
-      sp->nextcp.x = c*nlen + sp->me.x;
-      sp->nextcp.y = s*nlen + sp->me.y;
-      sp->prevcp.x = c*plen + sp->me.x;
-      sp->prevcp.y = s*plen + sp->me.y;
-      SplineRefigure(sp->prev);
-      SplineRefigure(sp->next);
-   } else if ( sp->pointtype==pt_tangent && sp->prev && sp->next ) {
-      if ( !sp->noprevcp ) {
-	 nangle = atan2(sp->next->to->me.y-sp->me.y,sp->next->to->me.x-sp->me.x);
-	 plen = -sqrt((sp->me.y-sp->prevcp.y)*(sp->me.y-sp->prevcp.y) +
-		      (sp->me.x-sp->prevcp.x)*(sp->me.x-sp->prevcp.x));
-	 c = cos(nangle); s=sin(nangle);
-	 sp->prevcp.x = c*plen + sp->me.x;
-	 sp->prevcp.y = s*plen + sp->me.y;
-	 SplineRefigure(sp->prev);
-      }
-      if ( !sp->nonextcp ) {
-	 pangle = atan2(sp->me.y-sp->prev->from->me.y,sp->me.x-sp->prev->from->me.x);
-	 nlen = sqrt((sp->nextcp.y-sp->me.y)*(sp->nextcp.y-sp->me.y) +
-		     (sp->nextcp.x-sp->me.x)*(sp->nextcp.x-sp->me.x));
-	 c = cos(pangle); s=sin(pangle);
-	 sp->nextcp.x = c*nlen + sp->me.x;
-	 sp->nextcp.y = s*nlen + sp->me.y;
-	 SplineRefigure(sp->next);
-      }
-   }
 }
 
 void SplineCharTangentNextCP(SplinePoint *sp) {

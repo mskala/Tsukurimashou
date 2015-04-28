@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3512 2014-12-02 08:05:37Z mskala $])
+AC_REVISION([$Id: configure.ac 3909 2015-04-13 11:48:25Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -221,28 +221,30 @@ AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
 AC_PATH_PROGS([CHECKSUM],[sha256sum sha1sum md5sum cksum wc],[no])
 AC_ARG_VAR([EXPECT],[Expect])
-AC_PATH_PROG([EXPECT],[expect])
+AC_PATH_PROG([EXPECT],[$EXPECT expect])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AC_ARG_VAR([FONTANVIL],[FontAnvil])
-AC_PATH_PROGS([FONTANVIL],[fontanvil fontforge])
+AC_PATH_PROGS([FONTANVIL],[$FONTANVIL fontanvil fontforge])
 AC_ARG_VAR([FONTLINT_FLAGS],[Flags for fontlint])
 AC_PATH_TOOL([GDB],[gdb])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
-AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])
+AS_IF([test "x$KLEKNEV" = "x"],
+  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])],
+  [])
 AC_PATH_PROG([MAKE],[make])
 AC_ARG_VAR([MPOST],[MetaPost])
-AC_PATH_PROG([MPOST],[mpost])
+AC_PATH_PROG([MPOST],[$MPOST mpost])
 AC_ARG_VAR([PERL],[Perl])
-AC_PATH_PROG([PERL],[perl])
+AC_PATH_PROG([PERL],[$PERL perl])
 AS_IF([unames=`uname -s` ; test "x$unames" = 'xDarwin'],
   [AC_PATH_PROGS([PROLOG],[swipl eclipse gprolog],[])],
   [AC_PATH_PROGS([PROLOG],[pl swipl eclipse gprolog],[])])
-AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
+AC_ARG_VAR([XDVIPDFMX],[$XDVIPDFMX xdvipdfmx])
 AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
-AC_PATH_PROG([XELATEX],[xelatex])
+AC_PATH_PROG([XELATEX],[$XELATEX xelatex])
 #
 gmake_version=unknown
 missing_gmake_version=yes
@@ -317,6 +319,11 @@ AX_AM_JOBSERVER
 #
 # Define user options
 #
+AC_ARG_ENABLE([bitmap-kludge],
+  [AS_HELP_STRING([--enable-bitmap-kludge],
+    [generate bitmaps in 1000-glyph blocks])],
+    [enable_bitmap_kludge=yes],
+    [enable_bitmap_kludge=no])
 AC_ARG_ENABLE([build-hacking],
   [AS_HELP_STRING([--disable-build-hacking],
     [turn off Autotools compatibility test])],
@@ -386,6 +393,8 @@ AC_ARG_WITH([prolog],
     [with_prolog=auto])
 #
 # Process user options
+#
+AM_CONDITIONAL([COND_BMK],[test '!' "$enable_bitmap_kludge" = no])
 #
 tsu_colour=yes
 AS_IF([test "x$enable_colour_build" = "xyes"],
@@ -504,6 +513,74 @@ AC_SUBST([enable_styles])
 # Evaluate what we can and can't do
 #
 
+AC_MSG_CHECKING([whether PGF 2.10 workaround is needed])
+need_pgf_workaround=no
+AS_VERSION_COMPARE([$pgf_version],[2.10],[],[need_pgf_workaround=yes])
+AM_CONDITIONAL([COND_PGFWORKAROUND],[test "x$need_pgf_workaround" = "xyes"])
+AC_MSG_RESULT([$need_pgf_workaround])
+
+AC_MSG_CHECKING([safety of silent build rules])
+can_silent_rules=yes
+AS_IF([test "x$EXPECT" = "x"],
+  [missing_expect=yes
+   can_silent_rules=no])
+AC_MSG_RESULT([$can_silent_rules])
+
+AC_MSG_CHECKING([FontAnvil at least 0.2])
+fontanvil_version="`$FONTANVIL --version 2> /dev/null | $PERL -ne 'print \$1 if /FontAnvil (\d+\.\d+)/'`"
+AS_VERSION_COMPARE([$fontanvil_version],[0.2],
+  [fontanvil_recent=no],[fontanvil_recent=yes],[fontanvil_recent=yes])
+AC_MSG_RESULT([$fontanvil_recent])
+
+AC_MSG_CHECKING([FontAnvil debuggery])
+can_ffdebug=yes
+AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
+  [missing_fontanvil=yes
+   can_ffdebug=no])
+AS_IF([test "x$CC" = "x"],
+  [missing_cc=yes
+   can_ffdebug=no])
+AS_IF([test "x$GREP" = "x"],
+  [missing_grep=yes
+   can_ffdebug=no])
+AS_IF([test "x$GDB" = "x"],
+  [missing_gdb=yes
+   can_ffdebug=no])
+AS_IF([test "$can_ffdebug" = "yes"],
+  [gdb_result=`echo q | $GDB -q -n -s $FONTANVIL 2> /dev/null | $GREP 'no debug'`
+   AS_IF([test "x$gdb_result" = "x"],[],
+     [missing_ff_debugsymbols=yes
+      can_ffdebug=no])])
+AC_MSG_RESULT([$can_ffdebug])
+
+AC_MSG_CHECKING([whether FontAnvil accepts AddExtrema(1)])
+echo '#!/usr/local/bin/fontforge' > ffaetest.pe
+echo 'New();AddExtrema(1);' >> ffaetest.pe
+AS_IF([$FONTANVIL -script ffaetest.pe >& /dev/null],
+  [ae_arg_okay=yes],[ae_arg_okay=no])
+rm ffaetest.pe
+AC_SUBST([ae_arg_okay])
+AC_MSG_RESULT([$ae_arg_okay])
+
+AC_MSG_CHECKING([build-system hackability])
+can_bshack=yes
+AS_IF([test "x$AUTOCONF" = "x"],
+  [missing_autoconf=yes
+   can_bshack=no])
+AS_IF([test "x$AUTOMAKE" = "x"],
+  [missing_automake=yes
+   can_bshack=no])
+AS_IF([test "x$PERL" = "x" || test "x$AUTOCONF" = "x"],[],
+  [autoconf_version=dnl
+`autoconf --version | perl -ne 'print $1 if /^autoconf.*(\d+\.\d+)/'`
+   AS_VERSION_COMPARE([$autoconf_version],[2.65],
+     [missing_autoconf_version=yes
+      can_bshack=no])
+   AS_VERSION_COMPARE([$autoconf_version],[2.75],[],[],
+     [excessive_autoconf_version=yes
+      can_bshack=no])])
+AC_MSG_RESULT([$can_bshack])
+
 can_build=yes
 
 AC_MSG_CHECKING([core prerequisites])
@@ -539,6 +616,10 @@ can_proportional=yes
 AS_IF([test "x$CC" = "x"],
   [missing_cc=yes
    can_proportional=no])
+AS_IF([test '!' "x$fontanvil_recent" = "xyes"],
+  [AS_IF([test '!' "x$enable_bitmap_kludge" = "xyes"],
+     [missing_bitmaps=yes
+      can_proportional=no])])
 AS_IF([test "$enable_proportional" = "yes" && test "$can_proportional" = "no"],
   [can_build=no])
 AC_MSG_RESULT([$can_proportional])
@@ -614,68 +695,6 @@ AS_IF([test '!' "x$enable_proofs" = "xno"],
 AS_IF([test '!' "$enable_proofs" = "no" && test "$can_proofs" = "no"],
   [can_build=no])
 AC_MSG_RESULT([$can_proofs])
-
-AC_MSG_CHECKING([whether PGF 2.10 workaround is needed])
-need_pgf_workaround=no
-AS_VERSION_COMPARE([$pgf_version],[2.10],[],[need_pgf_workaround=yes])
-AM_CONDITIONAL([COND_PGFWORKAROUND],[test "x$need_pgf_workaround" = "xyes"])
-AC_MSG_RESULT([$need_pgf_workaround])
-
-AC_MSG_CHECKING([safety of silent build rules])
-can_silent_rules=yes
-AS_IF([test "x$EXPECT" = "x"],
-  [missing_expect=yes
-   can_silent_rules=no])
-AC_MSG_RESULT([$can_silent_rules])
-
-AC_MSG_CHECKING([FontAnvil debuggery])
-can_ffdebug=yes
-AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
-  [missing_fontanvil=yes
-   can_ffdebug=no])
-AS_IF([test "x$CC" = "x"],
-  [missing_cc=yes
-   can_ffdebug=no])
-AS_IF([test "x$GREP" = "x"],
-  [missing_grep=yes
-   can_ffdebug=no])
-AS_IF([test "x$GDB" = "x"],
-  [missing_gdb=yes
-   can_ffdebug=no])
-AS_IF([test "$can_ffdebug" = "yes"],
-  [gdb_result=`echo q | $GDB -q -n -s $FONTANVIL 2> /dev/null | $GREP 'no debug'`
-   AS_IF([test "x$gdb_result" = "x"],[],
-     [missing_ff_debugsymbols=yes
-      can_ffdebug=no])])
-AC_MSG_RESULT([$can_ffdebug])
-
-AC_MSG_CHECKING([build-system hackability])
-can_bshack=yes
-AS_IF([test "x$AUTOCONF" = "x"],
-  [missing_autoconf=yes
-   can_bshack=no])
-AS_IF([test "x$AUTOMAKE" = "x"],
-  [missing_automake=yes
-   can_bshack=no])
-AS_IF([test "x$PERL" = "x" || test "x$AUTOCONF" = "x"],[],
-  [autoconf_version=dnl
-`autoconf --version | perl -ne 'print $1 if /^autoconf.*(\d+\.\d+)/'`
-   AS_VERSION_COMPARE([$autoconf_version],[2.65],
-     [missing_autoconf_version=yes
-      can_bshack=no])
-   AS_VERSION_COMPARE([$autoconf_version],[2.75],[],[],
-     [excessive_autoconf_version=yes
-      can_bshack=no])])
-AC_MSG_RESULT([$can_bshack])
-
-AC_MSG_CHECKING([whether FontForge accepts AddExtrema(1)])
-echo '#!/usr/local/bin/fontforge' > ffaetest.pe
-echo 'New();AddExtrema(1);' >> ffaetest.pe
-AS_IF([$FONTANVIL -script ffaetest.pe >& /dev/null],
-  [ae_arg_okay=yes],[ae_arg_okay=no])
-rm ffaetest.pe
-AC_SUBST([ae_arg_okay])
-AC_MSG_RESULT([$ae_arg_okay])
 #
 ############################################################################
 #
@@ -799,6 +818,8 @@ AS_IF([test '!' "x$enable_proportional" = "xno" \
    AS_ECHO(["One or more prerequisites for proportional spacing and kerning are missing:"])
    AS_IF([test "$missing_cc" = "yes"],
      [AS_ECHO(["   Any C compiler"])])
+   AS_IF([test "$missing_bitmaps" = "yes"],
+     [AS_ECHO(["   FontAnvil 0.2 or later, or --enable-bitmap-kludge"])])
    AS_ECHO(["Without the above it is not possible to build proportionally spaced fonts."])
    AS_ECHO(["Use the --disable-proportional option, or install all prerequisites."])
    ])

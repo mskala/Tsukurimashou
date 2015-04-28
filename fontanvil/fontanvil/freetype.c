@@ -1,4 +1,4 @@
-/* $Id: freetype.c 3906 2015-04-10 21:07:28Z mskala $ */
+/* $Id: freetype.c 3907 2015-04-11 18:07:32Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -241,10 +241,10 @@ void FreeTypeFreeContext(void *freetypecontext) {
    free(ftc);
 }
 
-static void *__FreeTypeFontContext(FT_Library context,
-			    SplineFont *sf, SplineChar * sc,
-			    FontViewBase * fv, int layer, enum fontformat ff,
-			    int flags, void *shared_ftc) {
+void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
+			   FontViewBase * fv, int layer, enum fontformat ff,
+			   int flags, void *shared_ftc) {
+
    /* build up a temporary font consisting of:
     *  sc!=NULL   => Just that character (and its references)
     *  fv!=NULL   => selected characters
@@ -257,7 +257,9 @@ static void *__FreeTypeFontContext(FT_Library context,
       fv != NULL ? fv->map : sf->fv != NULL ? sf->fv->map : sf->map;
    int i, cnt, notdefpos;
 
-   if (context==NULL)
+   if (!hasFreeType())
+      return (NULL);
+   if (ff_ft_context==NULL)
       return (NULL);
    if (sf->multilayer || sf->strokedfont)
       return (NULL);
@@ -309,11 +311,12 @@ static void *__FreeTypeFontContext(FT_Library context,
 	 /* like the metricsview, which may expect the full glyph set */
 	 /* available, and will crash if that is not the case */
 	 /* So if anything needs autohinting, do it now */
-	 if ((ff==ff_pfb || ff==ff_pfa || ff==ff_otf || ff==ff_otfcid)
+	 if ((ff==ff_pfb || ff==ff_pfa || ff==ff_otf || ff==ff_otfcid ||
+	      ff==ff_cff)
 	     && autohint_before_generate) {
 	    extern int preserve_hint_undoes;	/* users don't expect that rasterizing the glyph will cause an undo */
 	    int phu=preserve_hint_undoes;	/* if metrics view & char view are open, and a change is made in */
-
+	    
 	    /*  the char view, then metrics view rasterize glyph, changes hints, */
 	    /*  adds a hint undo. And suddenly Undo does the wrong thing. It */
 	    /*  undoes the hint change (which the user probably hasn't noticed) */
@@ -335,23 +338,24 @@ static void *__FreeTypeFontContext(FT_Library context,
       }
       sf->internal_temp=true;
       switch (ff) {
-	case ff_pfb:
-	case ff_pfa:
-	   if (!_WritePSFont(ftc->file, sf, ff, 0, map, NULL, layer))
-	      goto fail;
-	   break;
-	case ff_ttf:
-	case ff_ttfsym:
-	   ftc->isttf=true;
-	   /* Fall through.... */
-	case ff_otf:
-	case ff_otfcid:
-	   if (!_WriteTTFFont
-	       (ftc->file, sf, ff, NULL, bf_none, flags, map, layer))
-	      goto fail;
-	   break;
-	default:
+       case ff_pfb:
+       case ff_pfa:
+	 if (!_WritePSFont(ftc->file, sf, ff, 0, map, NULL, layer))
 	   goto fail;
+	 break;
+       case ff_ttf:
+       case ff_ttfsym:
+	 ftc->isttf=true;
+	 /* Fall through.... */
+       case ff_cff:
+       case ff_otf:
+       case ff_otfcid:
+	 if (!_WriteTTFFont
+	     (ftc->file, sf, ff, NULL, bf_none, flags|ps_flag_nocffsugar, map, layer))
+	   goto fail;
+	 break;
+       default:
+	 goto fail;
       }
       sf->internal_temp=false;
 
@@ -406,14 +410,14 @@ static void *__FreeTypeFontContext(FT_Library context,
       }
    }
 
-   if (FT_New_Memory_Face(context, ftc->mappedfile, ftc->len, 0, &ftc->face))
+   if ((i=FT_New_Memory_Face(ff_ft_context, ftc->mappedfile, ftc->len, 0, &ftc->face)))
       goto fail;
    GlyphHashFree(sf);		/* If we created a tiny font, our hash table may reflect that */
 
    return (ftc);
 
  fail:
-   ErrorMsg(2,"Failure building FreeType font context\n");
+   ErrorMsg(2,"Failure building FreeType font context %d\n",i);
    sf->internal_temp=false;
    GlyphHashFree(sf);
    FreeTypeFreeContext(ftc);
@@ -422,17 +426,6 @@ static void *__FreeTypeFontContext(FT_Library context,
       sf->glyphs=old;
    }
    return (NULL);
-}
-
-void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
-			   FontViewBase * fv, int layer, enum fontformat ff,
-			   int flags, void *shared_ftc) {
-
-   if (!hasFreeType())
-      return (NULL);
-
-   return (__FreeTypeFontContext(ff_ft_context, sf, sc, fv,
-				 layer, ff, flags, shared_ftc));
 }
 
 static void BCTruncateToDepth(BDFChar *bdfc,int depth) {

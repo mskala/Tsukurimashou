@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 3901 2015-04-09 11:48:49Z mskala $ */
+/* $Id: cvexport.c 3931 2015-04-24 12:32:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -38,13 +38,10 @@
 
 static void EpsGeneratePreview(AFILE *eps,SplineChar *sc,int layer,
 			       DBounds * b) {
-   double scale, temp;
-
-   int pixelsize, depth;
-
+   double scale,temp;
+   int pixelsize,depth;
    BDFChar *bdfc;
-
-   int i, j;
+   int i,j;
 
    /* Try for a preview that fits within a 72x72 box */
    if (b->maxx==b->minx || b->maxy==b->miny)
@@ -54,7 +51,6 @@ static void EpsGeneratePreview(AFILE *eps,SplineChar *sc,int layer,
    if (temp < scale)
       scale=temp;
    pixelsize=rint((sc->parent->ascent + sc->parent->descent) * scale);
-   scale=pixelsize / (double) (sc->parent->ascent + sc->parent->descent);
 
    depth=4;
    bdfc=SplineCharFreeTypeRasterizeNoHints(sc, layer, pixelsize, 72, 4);

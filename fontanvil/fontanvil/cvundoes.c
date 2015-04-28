@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 3873 2015-03-27 10:44:51Z mskala $ */
+/* $Id: cvundoes.c 3931 2015-04-24 12:32:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -231,84 +231,6 @@ static void FixupRefChars(SplineChar *sc,RefChar *urefs,int layer) {
       while (urefs != NULL) {
 	 SCReinstanciateRefChar(sc, urefs, layer);
 	 SCMakeDependent(sc, urefs->sc);
-	 urefs=urefs->next;
-      }
-   }
-}
-
-static int BDFRefCharsMatch(BDFRefChar *urefs,BDFRefChar *crefs) {
-   /* I assume they are in the same order */
-   while (urefs != NULL && crefs != NULL) {
-      if (urefs->bdfc != crefs->bdfc ||
-	  urefs->xoff != crefs->xoff || urefs->yoff != crefs->yoff)
-	 return (false);
-      urefs=urefs->next;
-      crefs=crefs->next;
-   }
-   if (urefs==NULL && crefs==NULL)
-      return (true);
-
-   return (false);
-}
-
-static BDFRefChar *BDFRefCharInList(BDFRefChar *search,BDFRefChar *list) {
-   while (list != NULL) {
-      if (search->bdfc==list->bdfc &&
-	  search->xoff==list->xoff && search->yoff==list->yoff)
-	 return (list);
-      list=list->next;
-   }
-   return (NULL);
-}
-
-static void FixupBDFRefChars(BDFChar *bc,BDFRefChar *urefs) {
-   BDFRefChar *crefs, *cend, *cprev, *unext, *cnext;
-
-   crefs=bc->refs;
-   cprev=NULL;
-   while (crefs != NULL && urefs != NULL) {
-      if (urefs->bdfc==crefs->bdfc &&
-	  urefs->xoff==crefs->xoff && urefs->yoff==crefs->yoff) {
-	 unext=urefs->next;
-	 crefs->selected=urefs->selected;
-	 free(urefs);
-	 urefs=unext;
-	 cprev=crefs;
-	 crefs=crefs->next;
-      } else if ((cend=BDFRefCharInList(urefs, crefs->next)) != NULL) {
-	 /* if the undo refchar matches something further down the char's */
-	 /*  ref list, then that means we need to delete everything on the */
-	 /*  char's list between the two */
-	 while (crefs != cend) {
-	    cnext=crefs->next;
-	    BCRemoveDependent(bc, crefs);
-	    crefs=cnext;
-	 }
-      } else {			/* urefs isn't on the list. Add it here */
-	 unext=urefs->next;
-	 urefs->next=crefs;
-	 if (cprev==NULL)
-	    bc->refs=urefs;
-	 else
-	    cprev->next=urefs;
-	 cprev=urefs;
-	 BCMakeDependent(bc, urefs->bdfc);
-	 urefs=unext;
-      }
-   }
-   if (crefs != NULL) {
-      while (crefs != NULL) {
-	 cnext=crefs->next;
-	 BCRemoveDependent(bc, crefs);
-	 crefs=cnext;
-      }
-   } else if (urefs != NULL) {
-      if (cprev==NULL)
-	 bc->refs=urefs;
-      else
-	 cprev->next=urefs;
-      while (urefs != NULL) {
-	 BCMakeDependent(bc, urefs->bdfc);
 	 urefs=urefs->next;
       }
    }
@@ -582,15 +504,11 @@ void SCUndoSetLBearingChange(SplineChar * sc, int lbc) {
 }
 
 Undoes *SCPreserveWidth(SplineChar * sc) {
-   Undoes *undo;
-
-      return (NULL);
+   return (NULL);
 }
 
 Undoes *SCPreserveVWidth(SplineChar * sc) {
-   Undoes *undo;
-
-      return (NULL);
+   return (NULL);
 }
 
 static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
@@ -723,63 +641,6 @@ void SCDoUndo(SplineChar * sc, int layer) {
    sc->layers[layer].redoes=undo;
    SCCharChangedUpdate(sc, layer, undo->was_modified);
    return;
-}
-
-static void BCUndoAct(BDFChar *bc,Undoes *undo) {
-   uint8_t *b;
-
-   int temp;
-
-   BDFFloat *sel;
-
-   BDFRefChar *ref, *head, *prev=NULL, *uhead=NULL;
-
-   switch (undo->undotype) {
-     case ut_bitmap:{
-	   temp=bc->width;
-	   bc->width=undo->u.bmpstate.width;
-	   undo->u.bmpstate.width=temp;
-	   temp=bc->xmin;
-	   bc->xmin=undo->u.bmpstate.xmin;
-	   undo->u.bmpstate.xmin=temp;
-	   temp=bc->xmax;
-	   bc->xmax=undo->u.bmpstate.xmax;
-	   undo->u.bmpstate.xmax=temp;
-	   temp=bc->ymin;
-	   bc->ymin=undo->u.bmpstate.ymin;
-	   undo->u.bmpstate.ymin=temp;
-	   temp=bc->ymax;
-	   bc->ymax=undo->u.bmpstate.ymax;
-	   undo->u.bmpstate.ymax=temp;
-	   temp=bc->bytes_per_line;
-	   bc->bytes_per_line=undo->u.bmpstate.bytes_per_line;
-	   undo->u.bmpstate.bytes_per_line=temp;
-	   b=bc->bitmap;
-	   bc->bitmap=undo->u.bmpstate.bitmap;
-	   undo->u.bmpstate.bitmap=b;
-	   sel=bc->selection;
-	   bc->selection=undo->u.bmpstate.selection;
-	   undo->u.bmpstate.selection=sel;
-
-	   if (!BDFRefCharsMatch(undo->u.bmpstate.refs, bc->refs)) {
-	      for (head=bc->refs; head != NULL; head=head->next) {
-		 ref=calloc(1, sizeof(BDFRefChar));
-		 memcpy(ref, head, sizeof(BDFRefChar));
-		 if (prev != NULL)
-		    prev->next=ref;
-		 else
-		    uhead=ref;
-		 prev=ref;
-	      }
-	      FixupBDFRefChars(bc, undo->u.bmpstate.refs);
-	      undo->u.bmpstate.refs=uhead;
-	   }
-	}
-	break;
-     default:
-	ErrorMsg(2,"Unknown undo type in BCUndoAct: %d\n", undo->undotype);
-	break;
-   }
 }
 
 /* **************************** Cut, Copy & Paste *************************** */
@@ -1004,8 +865,8 @@ static Undoes *SCCopyAll(SplineChar *sc,int layer,enum fvcopy_type full) {
 	 }
       }
       return (ret);
-   } else
-      return (SCCopyAllLayer(sc, full, layer));
+   }
+   return (SCCopyAllLayer(sc, full, layer));
 }
 
 static SplineChar *FindCharacter(SplineFont *into,SplineFont *from,
@@ -1097,7 +958,6 @@ static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
 	 buts[0]=_("Don't Warn Again");
 	 buts[1]=_("_OK");
 	 buts[2]=NULL;
-	 yes=1;
       }
    } else {
       if (!(*refstate & 0x3)) {
@@ -1213,12 +1073,8 @@ static void APMerge(SplineChar *sc,AnchorPoint *anchor) {
 
 static int InstrsSameParent(SplineChar *sc,SplineFont *copied_from) {
    static SplineFont *dontask_parent=NULL,*dontask_copied_from;
-
    static int dontask_ret=0;
-
    char *buts[5];
-
-   int ret;
 
    if (sc->parent==copied_from)
       return (true);
@@ -1471,9 +1327,8 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 		 sc->layers[layer].refs=new;
 		 SCReinstanciateRefChar(sc, new, layer);
 		 SCMakeDependent(sc, rsc);
-	      } else {
-		 PasteNonExistantRefCheck(sc, paster, refs, refstate);
-	      }
+	      } else
+		PasteNonExistantRefCheck(sc, paster, refs, refstate);
 	   }
 	}
 	SCCharChangedUpdate(sc, layer, true);
@@ -1519,10 +1374,7 @@ static void PasteToSC(SplineChar *sc,int layer,Undoes *paster,
 		      int *already_complained) {
    if (paster->undotype==ut_layers && sc->parent->multilayer) {
       int lc, start, layer;
-
       Undoes *pl;
-
-      Layer *old=sc->layers;
 
       for (lc=0, pl=paster->u.multiple.mult; pl != NULL;
 	   pl=pl->next, ++lc);
@@ -1569,42 +1421,41 @@ static void PasteToSC(SplineChar *sc,int layer,Undoes *paster,
 }
 
 static void DevTabInto(struct vr *vr) {
-   ValDevTab *adjust;
+   ValDevTab adjust;
 
    if (vr->adjust==NULL)
       return;			/* Nothing to do */
-   adjust=chunkalloc(sizeof(ValDevTab));
-   *adjust=*vr->adjust;
-   if (adjust->xadjust.corrections != NULL) {
-      adjust->xadjust.corrections =
-	 malloc(adjust->xadjust.last_pixel_size -
-		adjust->xadjust.first_pixel_size + 1);
-      memcpy(adjust->xadjust.corrections, vr->adjust->xadjust.corrections,
-	     adjust->xadjust.last_pixel_size -
-	     adjust->xadjust.first_pixel_size + 1);
+   adjust=*vr->adjust;
+   if (adjust.xadjust.corrections != NULL) {
+      adjust.xadjust.corrections =
+	 malloc(adjust.xadjust.last_pixel_size -
+		adjust.xadjust.first_pixel_size + 1);
+      memcpy(adjust.xadjust.corrections, vr->adjust->xadjust.corrections,
+	     adjust.xadjust.last_pixel_size -
+	     adjust.xadjust.first_pixel_size + 1);
    }
-   if (adjust->yadjust.corrections != NULL) {
-      adjust->yadjust.corrections =
-	 malloc(adjust->yadjust.last_pixel_size -
-		adjust->yadjust.first_pixel_size + 1);
-      memcpy(adjust->yadjust.corrections, vr->adjust->yadjust.corrections,
-	     adjust->yadjust.last_pixel_size -
-	     adjust->yadjust.first_pixel_size + 1);
+   if (adjust.yadjust.corrections != NULL) {
+      adjust.yadjust.corrections =
+	 malloc(adjust.yadjust.last_pixel_size -
+		adjust.yadjust.first_pixel_size + 1);
+      memcpy(adjust.yadjust.corrections, vr->adjust->yadjust.corrections,
+	     adjust.yadjust.last_pixel_size -
+	     adjust.yadjust.first_pixel_size + 1);
    }
-   if (adjust->xadv.corrections != NULL) {
-      adjust->xadv.corrections =
-	 malloc(adjust->xadv.last_pixel_size - adjust->xadv.first_pixel_size +
+   if (adjust.xadv.corrections != NULL) {
+      adjust.xadv.corrections =
+	 malloc(adjust.xadv.last_pixel_size - adjust.xadv.first_pixel_size +
 		1);
-      memcpy(adjust->xadv.corrections, vr->adjust->xadv.corrections,
-	     adjust->xadv.last_pixel_size - adjust->xadv.first_pixel_size +
+      memcpy(adjust.xadv.corrections, vr->adjust->xadv.corrections,
+	     adjust.xadv.last_pixel_size - adjust.xadv.first_pixel_size +
 	     1);
    }
-   if (adjust->yadv.corrections != NULL) {
-      adjust->yadv.corrections =
-	 malloc(adjust->yadv.last_pixel_size - adjust->yadv.first_pixel_size +
+   if (adjust.yadv.corrections != NULL) {
+      adjust.yadv.corrections =
+	 malloc(adjust.yadv.last_pixel_size - adjust.yadv.first_pixel_size +
 		1);
-      memcpy(adjust->yadv.corrections, vr->adjust->yadv.corrections,
-	     adjust->yadv.last_pixel_size - adjust->yadv.first_pixel_size +
+      memcpy(adjust.yadv.corrections, vr->adjust->yadv.corrections,
+	     adjust.yadv.last_pixel_size - adjust.yadv.first_pixel_size +
 	     1);
    }
 }
@@ -1703,27 +1554,16 @@ static void SCPasteLookups(SplineChar *sc,SplineChar *fromsc,
 			   OTLookup ** backpairlist,
 			   struct sfmergecontext *mc) {
    PST *frompst, *pst;
-
    int isv, gid;
-
    KernPair *fromkp, *kp;
-
    AnchorPoint *fromap, *ap;
-
    AnchorClass *ac;
-
    int i;
-
    OTLookup *otl;
-
    struct lookup_subtable *sub;
-
    SplineFont *fromsf;
-
    SplineChar *othersc;
-
    SplineChar *test, *test2;
-
    int changed=false;
 
    for (frompst=fromsc->possub; frompst != NULL; frompst=frompst->next) {

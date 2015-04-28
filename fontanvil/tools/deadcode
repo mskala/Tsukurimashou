@@ -48,7 +48,8 @@ while (<*/*.[ch]>) {
   while (<SRC>) {
     if (!/^\s*extern.*;/) {
       foreach $symbol (@statics) {
-        if (/\b$symbol\b/ && (!/^\s*static.*$symbol\s*\(.*\)\s*;/)) {
+        if (/\b$symbol\b/ && (!/^\s*static.*$symbol\s*\(.*\)\s*;/) &&
+            (!/ErrorMsg.*".*$symbol.*"/)) {
           $static_used{$symbol}++;
         }
       }

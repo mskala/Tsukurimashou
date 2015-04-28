@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 3881 2015-03-29 11:53:17Z mskala $ */
+/* $Id: parsepdf.c 3931 2015-04-24 12:32:54Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2012nov01, many fixes added, Jose Da Silva */
 /*
@@ -994,19 +994,15 @@ static AFILE *pdf_defilterstream(struct pdfcontext *pc) {
       *end='\0';
       old=res;
       res=atmpfile();
-      if (strmatch("ASCIIHexDecode", pt)==0) {
-	 pdf_hexfilter(res, old);
-	 pt += strlen("ASCIIHexDecode");
-      } else if (strmatch("ASCII85Decode", pt)==0) {
-	 pdf_85filter(res, old);
-	 pt += strlen("ASCII85Decode");
-      } else if (strmatch("FlateDecode", pt)==0 && haszlib()) {
-	 pdf_zfilter(res, old);
-	 pt += strlen("FlateDecode");
-      } else if (strmatch("RunLengthDecode", pt)==0) {
-	 pdf_rlefilter(res, old);
-	 pt += strlen("RunLengthDecode");
-      } else {
+      if (strmatch("ASCIIHexDecode", pt)==0)
+	pdf_hexfilter(res, old);
+      else if (strmatch("ASCII85Decode", pt)==0)
+	pdf_85filter(res, old);
+      else if (strmatch("FlateDecode", pt)==0 && haszlib())
+	pdf_zfilter(res, old);
+      else if (strmatch("RunLengthDecode", pt)==0)
+	pdf_rlefilter(res, old);
+      else {
 	 ErrorMsg(2,"Unsupported filter: %s\n", pt);
 	 afclose(old);
 	 afclose(res);
@@ -2042,6 +2038,7 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
 	 memcpy(prevtok, tok, 200);
    }
    afclose(file);
+   free(mappings);
    /* If this is not a cid font, then regenerate the font encoding (so that it is no */
    /* longer identified as MacRoman) */
    if (sf->map != NULL && basesf==sf) {

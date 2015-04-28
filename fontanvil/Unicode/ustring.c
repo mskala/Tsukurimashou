@@ -1,4 +1,4 @@
-/* $Id: ustring.c 3875 2015-03-27 11:44:59Z mskala $ */
+/* $Id: ustring.c 3932 2015-04-28 13:40:33Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -157,29 +157,6 @@ char *latin1_2_utf8_copy(const char *lbuf) {
    len = strlen(lbuf);
    utf8buf = (char *) malloc(2 * len + 1);
    return (latin1_2_utf8_strcpy(utf8buf, lbuf));
-}
-
-char *utf8_2_latin1_copy(const char *utf8buf) {
-   int len;
-
-   int ch;
-
-   char *lbuf, *pt;
-
-   const char *upt;
-
-   if (utf8buf == NULL)
-      return (NULL);
-
-   len = strlen(utf8buf);
-   pt = lbuf = (char *) malloc(len + 1);
-   for (upt = utf8buf; (ch = utf8_ildb(&upt)) != '\0';)
-      if (ch >= 0xff)
-	 *pt++ = '?';
-      else
-	 *pt++ = ch;
-   *pt = '\0';
-   return (lbuf);
 }
 
 char *u2utf8_copy(const unichar_t * ubuf) {
