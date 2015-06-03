@@ -117,7 +117,7 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 AC_PREREQ([2.67])
 AC_INIT([Kleknev],
 	[0.1pre], [mskala@ansuz.sooke.bc.ca], [kleknev],
-	[[http://tsukurimashou.sourceforge.jp/]])
+	[[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign color-tests parallel-tests silent-rules])

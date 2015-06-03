@@ -55,24 +55,23 @@ SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
 TSU_V_REDIR=$(if $(AM_V_at),>& /dev/null)
 
 if COND_COLOUR
-  ECHO_ANSI=echo -e
-  ansi_default=\e[0m
-  ansi_red=\e[31m
-  ansi_green=\e[32m
-  ansi_yellow=\e[33m
-  ansi_blue=\e[34m
-  ansi_magenta=\e[35m
-  ansi_cyan=\e[36m
-  ansi_pink=\e[35;1m
-  ansi_white=\e[37;1m
-  ansi_cleareol=\e[K
+  escchar:=$(strip $(shell echo x | tr 'x' '\033'))
+  ansi_default=$(escchar)[0m
+  ansi_red=$(escchar)[31m
+  ansi_green=$(escchar)[32m
+  ansi_yellow=$(escchar)[33m
+  ansi_blue=$(escchar)[34m
+  ansi_magenta=$(escchar)[35m
+  ansi_cyan=$(escchar)[36m
+  ansi_pink=$(escchar)[35;1m
+  ansi_white=$(escchar)[37;1m
+  ansi_cleareol=$(escchar)[K
   ansi_clearescaped=\033\[K
-  ansi_home=\e[1G
-  am__@andt@v_CC_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CC    " $@;
-  am__@andt@v_CCLD_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
-  am__@andt@v_GEN_0=@echo -e "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
+  ansi_home=$(escchar)[1G
+  am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
+  am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
+  am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
 else
-  ECHO_ANSI=echo
   ansi_default=
   ansi_red=
   ansi_green=
@@ -89,32 +88,32 @@ endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
 TSU_V_CP_=$(TSU_V_CP_$(AM_DEFAULT_VERBOSITY))
-TSU_V_CP_0=@$(ECHO_ANSI) \
+TSU_V_CP_0=@echo \
   "$(ansi_cleareol)  $(ansi_default)CP$(ansi_default)    " $@;
 
 TSU_V_MT1=$(TSU_V_MT1_$(V))
 TSU_V_MT1_=$(TSU_V_MT1_$(AM_DEFAULT_VERBOSITY))
-TSU_V_MT1_0=$(ECHO_ANSI) \
+TSU_V_MT1_0=echo \
   "$(ansi_cleareol)  $(ansi_blue)MT1$(ansi_default)   " $@;
 
 TSU_V_NAPERL=$(TSU_V_NAPERL_$(V))
 TSU_V_NAPERL_=$(TSU_V_NAPERL_$(AM_DEFAULT_VERBOSITY))
-TSU_V_NAPERL_0=$(ECHO_ANSI) \
+TSU_V_NAPERL_0=echo \
   "$(ansi_cleareol)  $(ansi_magenta)PERL$(ansi_default)  " $@;
 
 TSU_V_TEX=$(TSU_V_TEX_$(V))
 TSU_V_TEX_=$(TSU_V_TEX_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TEX_0=@$(ECHO_ANSI) \
+TSU_V_TEX_0=@echo \
   "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " $@;
 
 TSU_V_TEXL=$(TSU_V_TEXL_$(V))
 TSU_V_TEXL_=$(TSU_V_TEXL_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TEXL_0=$(ECHO_ANSI) \
+TSU_V_TEXL_0=echo \
   "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " "$@($$I)";
 
 TSU_V_TTF=$(TSU_V_TTF_$(V))
 TSU_V_TTF_=$(TSU_V_TTF_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TTF_0=$(ECHO_ANSI) \
+TSU_V_TTF_0=echo \
   "$(ansi_cleareol)  $(ansi_cyan)TTF$(ansi_default)   " $@;
 
 ############################################################################

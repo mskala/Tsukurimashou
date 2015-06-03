@@ -19,19 +19,19 @@ Subtitle[ja]: パラメタほうしきフォントファミリ
 
 Nav-Bar.
         <a href="./index.php.$v{lang}">Project Home</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/devel/">Developer Dashboard</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/releases/">Downloads</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/images">Screenshots</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/scm/">SVN</a> |
+        <a href="http://osdn.jp/projects/tsukurimashou/devel/">Developer Dashboard</a> |
+        <a href="http://osdn.jp/projects/tsukurimashou/releases/">Downloads</a> |
+        <a href="http://osdn.jp/projects/tsukurimashou/images">Screenshots</a> |
+        <a href="http://osdn.jp/projects/tsukurimashou/scm/">SVN</a> |
         <a href="https://github.com/mskala/Tsukurimashou">Github</a> |
         <a href="https://www.ohloh.net/p/tsukurimashou">Ohloh</a>
 .
 Nav-Bar[ja].
         <a href="./index.php.$v{lang}">プロジェクトホーム</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/devel/">開発ダッシュボード</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/releases/">ダウンロード</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/images">スクショ</a> |
-        <a href="http://sourceforge.jp/projects/tsukurimashou/scm/">ＳＶＮ</a> |
+        <a href="http://osdn.jp/projects/tsukurimashou/devel/">開発ダッシュボード</a> |
+        <a href="http://osdn.jp/projects/tsukurimashou/releases/">ダウンロード</a> |
+        <a href="http://osdn.jp/projects/tsukurimashou/images">スクショ</a> |
+        <a href="http://osdn.jp/projects/tsukurimashou/scm/">ＳＶＮ</a> |
         <a href="https://github.com/mskala/Tsukurimashou">Ｇｉｔｈｕｂ</a> |
         <a href="https://www.ohloh.net/p/tsukurimashou">Ｏｈｌｏｈ</a>
 .
@@ -69,8 +69,8 @@ Bottom-Four.
 <li><a href="http://www.csse.monash.edu.au/~jwb/edict.html">EDICT</a></li>
 </ul>
 
-<p><a href="http://sourceforge.jp/"><img
-src="http://sourceforge.jp/sflogo.php?group_id=5643&type=2" width="125"
+<p><a href="http://osdn.jp/"><img
+src="http://osdn.jp/sflogo.php?group_id=5643&type=2" width="125"
 height="39" border="0" alt="SourceForge.JP"></a></p>
 .
 Bottom-Four[ja].
@@ -82,8 +82,8 @@ Bottom-Four[ja].
 <li><a href="http://www.csse.monash.edu.au/~jwb/edict.html">EDICT</a></li>
 </ul>
 
-<p><a href="http://sourceforge.jp/"><img
-src="http://sourceforge.jp/sflogo.php?group_id=5643&type=2" width="125"
+<p><a href="http://osdn.jp/"><img
+src="http://osdn.jp/sflogo.php?group_id=5643&type=2" width="125"
 height="39" border="0" alt="SourceForge.JP"></a></p>
 .
 
@@ -95,7 +95,7 @@ Footer.
         <a href="mailto:mskala@ansuz.sooke.bc.ca">Matthew Skala</a><br />
       </span>
 
-      <strong>URI</strong> http://tsukurimashou.sourceforge.jp/$URI
+      <strong>URI</strong> http://tsukurimashou.osdn.jp/$URI
       &bull; <strong>Updated</strong> $update_time
 .
 Footer[ja].
@@ -103,7 +103,7 @@ Footer[ja].
         このページの問題で<a href="mailto:mskala@ansuz.sooke.bc.ca">Matthew Skala</a>に連絡してください<br />
       </span>
 
-      <strong>ＵＲＩ</strong> http://tsukurimashou.sourceforge.jp/$URI
+      <strong>ＵＲＩ</strong> http://tsukurimashou.osdn.jp/$URI
       &bull; <strong>修正</strong> $update_time
 .
 EVAL $v{footer}=~s/\$update_time/$update_time/;

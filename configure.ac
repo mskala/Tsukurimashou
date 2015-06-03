@@ -193,14 +193,14 @@ Fine tuning of the installation directories:\
 #
 AC_PREREQ([2.67])
 AC_INIT([Tsukurimashou],[0.9],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],
-  [[http://tsukurimashou.sourceforge.jp/]])
+  [[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules subdir-objects])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3909 2015-04-13 11:48:25Z mskala $])
+AC_REVISION([$Id: configure.ac 3995 2015-06-03 12:34:24Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -765,7 +765,7 @@ AS_IF([test "$can_core" = "no"],
   [AS_ECHO([])
    AS_ECHO(["One or more prerequisites for the Tsukurimashou core are missing:"])
    AS_IF([test "$missing_fontanvil" = "yes"],
-     [AS_ECHO(["   FontAnvil             http://fontforge.sourceforge.net/"])])
+     [AS_ECHO(["   FontAnvil             http://tsukurimashou.osdn.jp/fontanvil.php"])])
    AS_IF([test "$missing_gmake" = "yes"],
      [AS_ECHO(["   GNU Make >=3.82       http://www.gnu.org/software/make/"])])
    AS_IF([test "$missing_mpost" = "yes"],
@@ -878,7 +878,7 @@ AS_IF([test '!' "x$enable_silent_rules" = "xno" \
    AS_ECHO(["Silent build rules are enabled (which is the default and recommended)"])
    AS_ECHO(["but Expect was not found.  This situation is dangerous because if mkfont1"])
    AS_ECHO(["fails during the build, it may sit waiting for input without producing"])
-   AS_ECHO(["a message.  Install Expect from http://sourceforge.net/projects/expect/ ,"])
+   AS_ECHO(["a message.  Install Expect from http://www.nist.gov/el/msid/expect.cfm ,"])
    AS_ECHO(["let configure know where it is through the EXPECT environment variable if"])
    AS_ECHO(["it is not in your PATH, use --disable-silent-rules, or accept the risk of"])
    AS_ECHO(["this type of failure."])

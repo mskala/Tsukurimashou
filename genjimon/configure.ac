@@ -192,14 +192,14 @@ Fine tuning of the installation directories:\
 AC_PREREQ([2.67])
 AC_INIT([Genjimon],
 	[0.3pre], [mskala@ansuz.sooke.bc.ca], [genjimon],
-	[[http://tsukurimashou.sourceforge.jp/]])
+	[[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([genjimon-black.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
+AC_REVISION([$Id: configure.ac 3995 2015-06-03 12:34:24Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES

@@ -188,7 +188,7 @@ Fine tuning of the installation directories:\
 #
 AC_PREREQ([2.68])
 AC_INIT([FontAnvil],[0.2],[mskala@ansuz.sooke.bc.ca],[fontanvil],
-  [[http://tsukurimashou.sourceforge.jp/]])
+  [[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE([foreign check-news color-tests

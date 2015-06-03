@@ -187,14 +187,14 @@ Fine tuning of the installation directories:\
 AC_PREREQ([2.67])
 AC_INIT([OCR],
 	[0.3pre], [mskala@ansuz.sooke.bc.ca], [ocr],
-	[[http://tsukurimashou.sourceforge.jp/]])
+	[[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([msk-ocra.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 2945 2014-03-11 19:14:11Z mskala $])
+AC_REVISION([$Id: configure.ac 3995 2015-06-03 12:34:24Z mskala $])
 AC_COPYRIGHT([public domain])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES

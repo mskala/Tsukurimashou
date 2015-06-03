@@ -160,7 +160,7 @@ TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
 AC_PREREQ([2.67])
 AC_INIT([IDSgrep],
 	[0.5.1], [mskala@ansuz.sooke.bc.ca], [idsgrep],
-	[[http://tsukurimashou.sourceforge.jp/idsgrep.php]])
+	[[http://tsukurimashou.osdn.jp/idsgrep.php]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign color-tests parallel-tests silent-rules])

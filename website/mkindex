@@ -73,8 +73,8 @@ close(REL);
 
 open(REL,'release-dump.txt');
 while (<REL>) {
-  $demourl=$1 if m!(http://sourceforge\S+demo.pdf/)!;
-  $kcurl=$1 if m!(http://sourceforge\S+kanjichart.pdf/)!;
+  $demourl=$1 if m!(http://osdn\S+demo.pdf/)!;
+  $kcurl=$1 if m!(http://osdn\S+kanjichart.pdf/)!;
   $this_pkg_link=$1 if m!$tpl_pat! && ($this_pkg_link eq '');
 }
 close(REL);
@@ -124,7 +124,7 @@ print <<EOF;
 
     <div id="header">
       <div class="superHeader">
-        <a href="http://sourceforge.jp/" title="Hosted by SourceForge.JP">SourceForge.JP</a> |
+        <a href="http://osdn.jp/" title="Hosted by SourceForge.JP">SourceForge.JP</a> |
         <a href="./$v{filename}.php.$v{other_lang}" title="$v{other_lang_title}"><img src="$v{other_lang_flag}" />&nbsp;$v{other_lang_title}</a>
       </div>
 
