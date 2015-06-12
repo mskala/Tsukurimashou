@@ -815,6 +815,7 @@ otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf: otf/.dirstamp \
 	    otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf \
 	    "$(ansi_cleareol)", \
 	    $(TSU_V_REDIR))
+	$(AM_V_at)rm -f "sfd/#$(subst _,-,$1).sfd"
 
 endef
 
@@ -839,6 +840,7 @@ sfd/$(subst _,-,$1).sfd: \
 	    sfd/$(subst _,-,$1).sfd \
 	    "$(ansi_cleareol)", \
 	    $(TSU_V_REDIR))
+	$(AM_V_at)rm -f "sfd/#$(subst _,-,$1).sfd"
 
 if COND_BMK
 bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf: \

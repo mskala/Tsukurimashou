@@ -3,7 +3,7 @@
 $cpynotice=<<EOF;
 #
 # Font assembly script generator for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -207,7 +207,7 @@ SetFontNames(_CCFileName,\$2,\$3,"","Copyright 2011, 2012, 2013 Matthew Skala.  
 MergeFeature("fea/"+\$1+"-name.fea");
 LoadNamelist("tsukurimashou.nam");
 RenameGlyphs("tsukurimashou");
-Save("sfd/"+\$1+".sfd");
+Save("sfd/#"+\$1+".sfd");
 EOF
 
 $in_page=-1;
@@ -255,7 +255,7 @@ sub simple_copy {
       sprintf("\n  Select(%d);if (WorthOutputting())\n",$start%256);
     $actual_copies.=
       sprintf('    Select(%d,%d);',$start%256,$start%256+($end-$start));
-    $actual_copies.='Copy();Close();Open("sfd/"+$1+".sfd");';
+    $actual_copies.='Copy();Close();Open("sfd/#"+$1+".sfd");';
     $actual_copies.=
       sprintf('Select(0u%04x,0u%04x);Paste();',$start,$end);
     $actual_copies.=
@@ -299,7 +299,7 @@ print $actual_copies;
 # make precomposed combinations
 print <<'EOF';
 Print(102);
-Open("sfd/"+$1+".sfd");
+Open("sfd/#"+$1+".sfd");
 EOF
 sub precompose {
    ($dest,$base,@other)=@_;
@@ -342,7 +342,7 @@ EOF
 # do some cleaning
 print <<'EOF';
 Print(99);
-Open("sfd/"+$1+".sfd");
+Open("sfd/#"+$1+".sfd");
 Print(98);
 SelectAll();SetTeXParams(1,12,0,800,0,0,440,800,0);
 Print(97);
