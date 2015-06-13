@@ -26,7 +26,7 @@
 
 \phantomsection\belowpdfbookmark{Title Page}{bkm:title}
 
-{\Huge FontAnvil 0.1}
+{\Huge FontAnvil 0.2}
 
 \vspace*{1.5in}
 
@@ -52,7 +52,7 @@ Visit the FontAnvil home page at
 \vspace*{1in}
 
 FontAnvil user manual\\
-Copyright \copyright\ 2014\quad Matthew Skala
+Copyright \copyright\ 2014, 2015\quad Matthew Skala
 
 \vspace{\baselineskip}
 
@@ -347,14 +347,14 @@ invoking any other script interpreter.
 FontAnvil's command-line syntax attempts to achieve some degree of FontForge
 compatibility.  However, as of March~2014, FontForge contains at least six
 different command-line
-parsers,\footnote{https://github.com/fontforge/fontforge/issues/1277} and
+parsers,\footnotemark{} and
 also sometimes hands its command lines off to Python for parsing, so that
 options interact in complicated ways with each other, with compile-time
 settings, with operating system shebang support and whether stdin is a
 terminal or pipe, and so on.  FontAnvil does not attempt to match all of
 this behaviour exactly.
 \end{framed}
-
+\footnotetext{https://github.com/fontforge/fontforge/issues/1277}
 
 
 FontAnvil uses GNU \texttt{getopt\_long\_only} to parse command-line
@@ -1264,7 +1264,8 @@ WriteStringToFile,
 
 \section{Built-in functions in FontAnvil and not in FontForge}
 
-No such functions at the moment.
+Shell:  takes one argument, the name of a shell command to execute.  Returns
+the return value from doing so.
 
 \section{Built-in functions in FontForge and not in FontAnvil}
 

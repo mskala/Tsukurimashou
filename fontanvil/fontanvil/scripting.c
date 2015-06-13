@@ -1,4 +1,4 @@
-/* $Id: scripting.c 3931 2015-04-24 12:32:54Z mskala $ */
+/* $Id: scripting.c 4011 2015-06-13 13:25:26Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -5733,16 +5733,11 @@ static void bRemoveOverlap(Context *c) {
 
 static void bRemovePosSub(Context *c) {
    SplineFont *sf=c->curfv->sf, *sf_sl=sf;
-
    EncMap *map=c->curfv->map;
-
    SplineChar *sc;
    int i, gid, is_v;
-
    PST *pst, *next, *prev;
-
    KernPair *kp, *kpnext, *kpprev;
-
    struct lookup_subtable *sub;
 
    if (sf_sl->cidmaster != NULL)
@@ -6838,14 +6833,11 @@ static void bSetGasp(Context *c) {
 static void bSetGlyphChanged(Context *c) {
    int i, gid;
    int changed_or_not, changed_any=false;
-
    FontViewBase *fv=c->curfv;
-
    EncMap *map=fv->map;
-
    SplineFont *sf=fv->sf;
 
-if (c->a.vals[1].type != v_int)
+   if (c->a.vals[1].type != v_int)
       ScriptError(c, "Bad argument type");
    changed_or_not=c->a.vals[1].u.ival ? true : false;
 
@@ -6896,9 +6888,7 @@ if (c->a.vals[1].type != v_str)
 
 static void bSetGlyphTeX(Context *c) {
    SplineFont *sf=c->curfv->sf;
-
    EncMap *map=c->curfv->map;
-
    SplineChar *sc;
    int found;
 
@@ -7001,12 +6991,9 @@ static void bSetMaxpValue(Context *c) {
 
 static void bSetOS2Value(Context *c) {
    int i;
-
    SplineFont *sf=c->curfv->sf;
-
    if (c->a.vals[1].type != v_str)
       ScriptError(c, "Bad argument type");
-
    SFDefaultOS2Info(&sf->pfminfo, sf, sf->fontname);
 
    if (strmatch(c->a.vals[1].u.sval, "Weight")==0) {
@@ -7322,15 +7309,22 @@ static void bShadow(Context *c) {
       a=c->a.vals[1].u.ival;
    else
       a=c->a.vals[1].u.fval;
-   FVShadow(c->curfv, a * 3.1415926535897932 / 180.,
+   FVShadow(c->curfv, a * 3.1415926535897932 / 180.0,
 	    c->a.vals[2].u.ival, c->a.vals[3].u.ival, false);
 }
 
+static void bShell(Context *c) {
+   if (c->a.vals[1].type!=v_str)
+     ScriptError(c, "Bad argument type");
+   c->return_val.type=v_int;
+   c->return_val.u.ival=system(c->a.vals[1].u.sval);
+}
+
 static void bSimplify(Context *c) {
-   static struct simplifyinfo smpl={ sf_normal,0.75,0.2,10,0,0,0 };
-   smpl.err=(c->curfv->sf->ascent + c->curfv->sf->descent) / 1000.;
-   smpl.linefixup=(c->curfv->sf->ascent + c->curfv->sf->descent) / 500.;
-   smpl.linelenmax=(c->curfv->sf->ascent + c->curfv->sf->descent) / 100.;
+   static struct simplifyinfo smpl={sf_normal,0.75,0.2,10,0,0,0};
+   smpl.err=(c->curfv->sf->ascent+c->curfv->sf->descent)/1000.0;
+   smpl.linefixup=(c->curfv->sf->ascent+c->curfv->sf->descent)/500.0;
+   smpl.linelenmax=(c->curfv->sf->ascent+c->curfv->sf->descent)/100.0;
 
    if (c->a.argc >= 3 && c->a.argc <= 7) {
       if (c->a.vals[1].type != v_int
@@ -7378,7 +7372,7 @@ static void bSimplify(Context *c) {
 static void bSin(Context *c) {
    double val;
 
-if (c->a.vals[1].type==v_real)
+   if (c->a.vals[1].type==v_real)
       val=c->a.vals[1].u.fval;
    else if (c->a.vals[1].type==v_int)
       val=c->a.vals[1].u.ival;
@@ -8263,7 +8257,7 @@ static void btoupper(Context *c) {
 
 static struct builtins {
    char *name;
-   void (*func) (Context *);
+   void (*func)(Context *);
    int nofontok;
    int minargs,maxargs;
 } builtins[]={
@@ -8529,6 +8523,7 @@ static struct builtins {
    {"SetVWidth", bSetVWidth, 0,2,3},
    {"SetWidth", bSetWidth, 0,2,3},
    {"Shadow", bShadow, 0,4,4},
+   {"Shell",bShell,1,2,2},
    {"Simplify", bSimplify, 0,0,-1},
    {"Sin", bSin, 1,2,2},
    {"SizeOf", bSizeOf, 1,2,2},

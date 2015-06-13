@@ -271,13 +271,14 @@ doc/fontanvil.pdf: doc/fontanvil.tex \
 
 MOSTLYCLEANFILES = \
   *~ */*~ \
-  fontanvil/fontimage fontanvil/fontlink fontanvil/sfddiff \
+  fontanvil/fontimage fontanvil/fontlint fontanvil/sfddiff \
+  tests/atconfig \
   $(MO_FILES) $(noinst_FILES)
   
 CLEANFILES =
 
 DISTCLEANFILES = \
-  aminclude.am \
+  aminclude.am _stdint.h \
   inc/fontanvil-config.h inc/stamp-h1
 
 MAINTAINERCLEANFILES = \
