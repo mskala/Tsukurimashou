@@ -1,4 +1,4 @@
-/* $Id: savefont.c 3881 2015-03-29 11:53:17Z mskala $ */
+/* $Id: savefont.c 4015 2015-06-14 09:50:55Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -282,9 +282,6 @@ static int WriteOfmFile(char *filename,SplineFont *sf,int formattype,
    return (ret);
 }
 
-#ifndef FONTANVIL_CONFIG_WRITE_PFM
-static
-#endif
 int WritePfmFile(char *filename, SplineFont *sf, int type0, EncMap * map,
 		 int layer) {
    char *buf=malloc(strlen(filename) + 6), *pt, *pt2;

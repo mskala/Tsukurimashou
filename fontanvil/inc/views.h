@@ -1,4 +1,4 @@
-/* $Id: views.h 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: views.h 4016 2015-06-14 11:46:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -154,7 +154,7 @@ enum { charview_cvtabssz=100 };
 
 typedef struct charview {
    CharViewBase b;
-   uint32_t showback[BACK_LAYER_MAX / 32];
+   uint32_t showback[265 / 32];
    unsigned int showfore:1;
    unsigned int showgrids:1;
    unsigned int showhhints:1;
@@ -292,7 +292,7 @@ typedef struct charview {
    struct freetype_raster *raster, *oldraster;
    DebugView *dv;
    uint32_t mmvisible;
-   char *former_names[FORMER_MAX];
+   char *former_names[10];
    int former_cnt;
    AnchorPoint *apmine, *apmatch;
    SplineChar *apsc;
@@ -699,10 +699,9 @@ extern char *GetPostScriptFontName(char *defdir, int mult);
 
 extern void MergeKernInfo(SplineFont *sf, EncMap * map);
 
-#   ifdef FONTANVIL_CONFIG_WRITE_PFM
 extern int WritePfmFile(char *filename, SplineFont *sf, int type0,
 			EncMap * map);
-#   endif
+
 extern int SFGenerateFont(SplineFont *sf, int layer, int family,
 			  EncMap * map);
 
@@ -726,8 +725,6 @@ extern void PythonUI_Init(void);
 extern void SCStroke(SplineChar * sc);
 
 extern void PfaEditSetFallback(void);
-
-extern void RecentFilesRemember(char *filename);
 
 extern void LastFonts_Save(void);
 
@@ -865,8 +862,6 @@ extern void mb2DoGetText(GMenuItem2 * mb);
 extern void mbDoGetText(GMenuItem * mb);
 
 extern void OFLibBrowse(void);
-
-extern int RecentFilesAny(void);
 
 extern void _aplistbuild(struct gmenuitem *mi, SplineFont *sf,
 			 void (*func) (GWindow, struct gmenuitem *,

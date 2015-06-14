@@ -1,4 +1,4 @@
-/* $Id: afile.c 3905 2015-04-10 11:10:14Z mskala $ */
+/* $Id: afile.c 4014 2015-06-14 09:50:22Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -650,6 +650,34 @@ int afscanf(AFILE *f,const char *r,...) {
    
    va_end(args);
    return (rval==0 && error)?-1:rval;
+}
+
+ssize_t agetline(char **lineptr,size_t *buf_size,AFILE *f) {
+   size_t n=0;
+   int c;
+
+   if (*lineptr==NULL)
+     *buf_size=0;
+   
+   while (1) {
+      if (n+1>=*buf_size) {
+	 *buf_size=(5*n)/4;
+	 if (*buf_size<80)
+	   *buf_size=80;
+	 *lineptr=(char *)realloc(*lineptr,*buf_size);
+      }
+      c=agetc(f);
+
+      if (c<0)
+	break;
+      
+      (*lineptr)[n++]=c;
+      if (c=='\n')
+	break;
+   }
+   
+   (*lineptr)[n]='\0';
+   return c>=0?n:-1;
 }
 
 /**********************************************************************/

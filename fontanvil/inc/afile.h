@@ -1,4 +1,4 @@
-/* $Id: afile.h 3899 2015-04-08 17:07:48Z mskala $ */
+/* $Id: afile.h 4014 2015-06-14 09:50:22Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -67,6 +67,8 @@ int afprintf(AFILE *,const char *,...);
 int avfprintf(AFILE *,const char * restrict format,va_list);
 
 int afscanf(AFILE *,const char *,...);
+
+ssize_t agetline(char **,size_t *,AFILE *);
 
 /*
  * Error message levels:

@@ -1,4 +1,4 @@
-/* $Id: fontanvil.h 3880 2015-03-28 11:27:22Z mskala $ */
+/* $Id: fontanvil.h 4016 2015-06-14 11:46:40Z mskala $ */
 /*
  * Global header for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -52,7 +52,6 @@ extern void NoMoreMemMessage(void);
 /* random nonsense from PfaEdit... should go elsewhere */
 
 #   include <fontanvil-config.h>
-#   include "configure-fontanvil.h"
 #   include "fontanvil.h"
 #   include <stdio.h>
 #   include <string.h>

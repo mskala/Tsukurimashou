@@ -456,7 +456,7 @@ AC_FUNC_MKTIME
 AC_FUNC_MMAP
 AC_FUNC_STRCOLL
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([alarm atexit dup2 endpwent fseeko ftello])
+AC_CHECK_FUNCS([alarm atexit dup2 endpwent fesetround fseeko ftello])
 AC_CHECK_FUNCS([getcwd gethostbyname gettimeofday])
 AC_CHECK_FUNCS([mkdir munmap nl_langinfo putenv rmdir select])
 AC_CHECK_FUNCS([setenv socket strcasecmp strdup strncasecmp tzset uname])

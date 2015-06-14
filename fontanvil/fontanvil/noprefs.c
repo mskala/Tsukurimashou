@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: noprefs.c 4016 2015-06-14 11:46:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -218,8 +218,6 @@ static int default_font_filter_index=0;
 static unichar_t *script_menu_names[SCRIPT_MENU_MAX];
 
 static char *script_filenames[SCRIPT_MENU_MAX];
-
-static char *RecentFiles[RECENT_MAX];
 
 static int ItalicConstrained=true;
 

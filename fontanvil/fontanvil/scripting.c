@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4011 2015-06-13 13:25:26Z mskala $ */
+/* $Id: scripting.c 4014 2015-06-14 09:50:22Z mskala $ */
 /* Copyright (C) 2002-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -8027,8 +8027,6 @@ static void bWorthOutputting(Context *c) {
    c->return_val.u.ival=gid != -1 && SCWorthOutputting(sf->glyphs[gid]);
 }
 
-#   ifdef FONTANVIL_CONFIG_WRITE_PFM
-
 static void bWritePfm(Context *c) {
    SplineFont *sf=c->curfv->sf;
    char *t;
@@ -8043,7 +8041,6 @@ static void bWritePfm(Context *c) {
    free(locfilename);
    free(t);
 }
-#   endif
 
 static void bWriteStringToFile(Context *c) {
    AFILE *f;
@@ -8567,9 +8564,7 @@ static struct builtins {
    {"Wireframe", bWireframe, 0,4,4},
    {"WorthOutputting", bWorthOutputting, 0,1,2},
    {"WriteStringToFile", bWriteStringToFile, 1,3,4},
-#   ifdef FONTANVIL_CONFIG_WRITE_PFM
    {"WritePfm", bWritePfm, 0,2,2},
-#   endif
    {NULL, 0, 0,0,-1},
 };
 
@@ -8590,23 +8585,6 @@ static int AddScriptLine(AFILE *script,const char *line) {
    return agetc(script);
 }
 
-#   if defined(__MINGW32__)
-
-ssize_t getline(char **lineptr, size_t * n, AFILE *stream);
-ssize_t getline(char **lineptr, size_t * n, AFILE *stream) {
-   int size=1024;
-   char *s=calloc(size + 1, sizeof(char));
-   char *ret=afgets(s, size, stream);
-
-   if (!ret) {
-      free(s);
-      return -1;
-   }
-   return s;
-}
-
-#   endif
-
 static int _buffered_cgetc(Context *c) {
    if (c->interactive) {
       int ch;
@@ -8614,11 +8592,10 @@ static int _buffered_cgetc(Context *c) {
       if ((ch=agetc(c->script)) < 0) {
 #   ifdef _NO_LIBREADLINE
 	 static char *linebuf=NULL;
-
 	 static size_t lbsize=0;
 
-	 if (getline(&linebuf, &lbsize,astdin) > 0) {
-	    ch=AddScriptLine(c->script, linebuf);
+	 if (agetline(&linebuf,&lbsize,astdin) > 0) {
+	    ch=AddScriptLine(c->script,linebuf);
 	 } else {
 	    if (linebuf) {
 	       free(linebuf);

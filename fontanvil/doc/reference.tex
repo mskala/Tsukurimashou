@@ -1,0 +1,1559 @@
+\chapter{Language reference}
+
+\begin{framed}
+I did not invent the PE scripting language, and the person who did never
+fully specified or documented it.  This documentation is based partly on
+reverse engineering; is descriptive, not prescriptive; and may not be
+complete, nor even correct as far as it goes.  The only way to be sure
+what a PE script will really do is to run it and find out, like
+Rikki-Tikki-Tavi.
+\end{framed}
+
+\section{Basic syntax}
+
+Scripts are text files.  The traditional filename extension is \texttt{.pe}~;
+scripts in the wild have also been seen using a \texttt{.ff} extension.
+
+Comments may be marked in any of these ways:
+\begin{verbatim}
+# hash for a shell-like comment to the end of the line
+
+// two slashes for a C++-like comment to the end of the line
+
+/*
+C-style comment delimiters,
+which may cover multiple lines.
+*/
+\end{verbatim}
+
+FontForge looks for a shebang line at the top, pointing at itself, and may
+also attempt to recognize command-line options there to distinguish between
+PE scripts and Python scripts.  FontAnvil only supports PE scripts and is
+planned to more or less ignore the shebang; however, this code has not yet
+been worked over since its importation from FontForge and may not really
+work as desired at the moment.
+
+\begin{framed}
+Newlines are syntactically significant, marking the ends of
+statements.
+To continue a statement onto more than one line, you must use a backslash to
+escape the newline.  
+\end{framed}
+
+Semicolons also mark the ends of statements, and may be used to join
+multiple statements onto a single line.  Semicolons at the ends of lines
+create empty statements, which are ignored.
+
+\begin{framed}
+PE script is case sensitive for reserved words, variable names,
+and built-in function names.
+\end{framed}
+
+\section{Data types, variables, and scope}
+
+Values have associated types.  Variables can hold values of arbitrary type
+and remember what type they are.  The types are:
+\begin{itemize}
+\item integer
+\item floating-point number
+\item Unicode code point (note that this is a distinct data type from
+``integer'')
+\item string
+\item array
+\end{itemize}
+
+Syntax for constant values looks like this:
+\begin{verbatim}
+# integers in decimal, hexadecimal, or octal, using C syntax
+123     # first digit nonzero means decimal
+0x52    # first digits 0x means hex, this is 82 decimal
+041     # first digit zero and not hex means octal, this is 33 decimal
+
+# floating-point numbers indicated by the decimal point; note the decimal
+# point is always . regardless of locale
+123.45  # basic decimal float
+4.9e5   # scientific notation, this is 490000
+
+# Unicode code points are hexadecimal numbers marked by 0u
+0u1f4a9 # everybody's favourite
+
+# strings have single or double quotes
+'Single'
+"double"
+"foo\bar" # \n for newline
+# it is not clear what other escapes may exist
+
+# array literals use square brackets and commas
+[1,2,3,0uABC,'foo']
+\end{verbatim}
+
+\begin{framed}
+Literal string constants in PE script syntax are limited to 256 characters. 
+You can, however, construct longer strings with multiple literals and the
+concatenation operator.
+\end{framed}
+
+\begin{framed}
+The language seems intended to allow arrays to have more than one dimension
+(i.e.\ each element of an array may itself be an array) but such arrays are
+currently broken in both FontForge and FontAnvil, and usually cause the
+interpreter to crash.  I hope to fix this bug in FontAnvil, but if I fix it
+and FontForge doesn't, then any scripts that make use of multidimensional
+arrays will be incompatible with FontForge.
+\end{framed}
+
+\section{Operators}
+
+FIXME
+
+\section{Control structures}
+
+FIXME
+
+\section{Most of the built-in functions}
+
+FIXME
+
+This section should document the functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\PEFuncRef{ATan2}
+
+\noindent\texttt{ATan2(}\textit{y}, \textit{x}\texttt{)}
+
+Returns the arctangent of $y/x$ in radians, using the signs of the arguments
+to choose the quadrant.  \emph{Note the order of the arguments, with $y$
+first.}  This function mimics the behaviour of the C math library
+\texttt{atan2()} function.  This function may be used without a
+loaded font.
+
+\PEFuncRef{AddATT}
+
+\noindent\texttt{AddATT(}, \ldots\texttt{)}
+
+\PEFuncRef{AddAccent}
+
+\noindent\texttt{AddAccent(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{AddAnchorClass}
+
+\noindent\texttt{AddAnchorClass(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{AddAnchorPoint}
+
+\noindent\texttt{AddAnchorPoint(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{AddDHint}
+
+\noindent\texttt{AddDHint(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{AddExtrema}
+
+\noindent\texttt{AddExtrema(}\textit{arg}\texttt{)}
+
+\PEFuncRef{AddHHint}
+
+\noindent\texttt{AddHHint(}, \ldots\texttt{)}
+
+\PEFuncRef{AddInstrs}
+
+\noindent\texttt{AddInstrs(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{AddLookup}
+
+\noindent\texttt{AddLookup(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{AddLookupSubtable}
+
+\noindent\texttt{AddLookupSubtable(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{AddPosSub}
+
+\noindent\texttt{AddPosSub(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{AddSizeFeature}
+
+\noindent\texttt{AddSizeFeature(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{AddVHint}
+
+\noindent\texttt{AddVHint(}, \ldots\texttt{)}
+
+\PEFuncRef{ApplySubstitution}
+
+\noindent\texttt{ApplySubstitution(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Array}
+
+\noindent\texttt{Array(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{AskUser}
+
+\noindent\texttt{AskUser(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{AutoCounter}
+
+\noindent\texttt{AutoCounter(}\texttt{)}
+
+\PEFuncRef{AutoHint}
+
+\noindent\texttt{AutoHint(}\texttt{)}
+
+\PEFuncRef{AutoInstr}
+
+\noindent\texttt{AutoInstr(}\texttt{)}
+
+\PEFuncRef{AutoKern}
+
+\noindent\texttt{AutoKern(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{AutoTrace}
+
+\noindent\texttt{AutoTrace(}, \ldots\texttt{)}
+
+\PEFuncRef{AutoWidth}
+
+\noindent\texttt{AutoWidth(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+
+\PEFuncRef{Autotrace}
+
+\noindent\texttt{Autotrace(}\texttt{)}
+
+\PEFuncRef{BitmapsAvail}
+
+\noindent\texttt{BitmapsAvail(}, \ldots\texttt{)}
+
+\PEFuncRef{BitmapsRegen}
+
+\noindent\texttt{BitmapsRegen(}, \ldots\texttt{)}
+
+\PEFuncRef{BuildAccented}
+
+\noindent\texttt{BuildAccented(}\texttt{)}
+
+\PEFuncRef{BuildComposite}
+
+\noindent\texttt{BuildComposite(}\texttt{)}
+
+\PEFuncRef{BuildDuplicate}
+
+\noindent\texttt{BuildDuplicate(}\texttt{)}
+
+\PEFuncRef{CIDChangeSubFont}
+
+\noindent\texttt{CIDChangeSubFont(}\textit{arg}\texttt{)}
+
+\PEFuncRef{CIDFlatten}
+
+\noindent\texttt{CIDFlatten(}\texttt{)}
+
+\PEFuncRef{CIDFlattenByCMap}
+
+\noindent\texttt{CIDFlattenByCMap(}\textit{arg}\texttt{)}
+
+\PEFuncRef{CIDSetFontNames}
+
+\noindent\texttt{CIDSetFontNames(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{CanonicalContours}
+
+\noindent\texttt{CanonicalContours(}\texttt{)}
+
+\PEFuncRef{CanonicalStart}
+
+\noindent\texttt{CanonicalStart(}\texttt{)}
+
+\PEFuncRef{Ceil}
+
+\noindent\texttt{Ceil(}\textit{x}\texttt{)}
+
+Returns $\lceil x \rceil$.  That is the ceiling of $x$, or the greatest
+integer less than or equal to $x$.  This function may be used without a
+loaded font.
+
+\PEFuncRef{CenterInWidth}
+
+\noindent\texttt{CenterInWidth(}\texttt{)}
+
+\PEFuncRef{ChangePrivateEntry}
+
+\noindent\texttt{ChangePrivateEntry(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{ChangeWeight}
+
+\noindent\texttt{ChangeWeight(}[\textit{arg}]\texttt{)}
+
+\PEFuncRef{CharCnt}
+
+\noindent\texttt{CharCnt(}\texttt{)}
+
+\PEFuncRef{CharInfo}
+
+\noindent\texttt{CharInfo(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{CheckForAnchorClass}
+
+\noindent\texttt{CheckForAnchorClass(}\textit{arg}\texttt{)}
+
+\PEFuncRef{Chr}
+
+\noindent\texttt{Chr(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Clear}
+
+\noindent\texttt{Clear(}\texttt{)}
+
+\PEFuncRef{ClearBackground}
+
+\noindent\texttt{ClearBackground(}\texttt{)}
+
+\PEFuncRef{ClearCharCounterMasks}
+
+\noindent\texttt{ClearCharCounterMasks(}\texttt{)}
+
+\PEFuncRef{ClearGlyphCounterMasks}
+
+\noindent\texttt{ClearGlyphCounterMasks(}\texttt{)}
+
+\PEFuncRef{ClearHints}
+
+\noindent\texttt{ClearHints(}[\textit{arg}]\texttt{)}
+
+\PEFuncRef{ClearInstrs}
+
+\noindent\texttt{ClearInstrs(}\texttt{)}
+
+\PEFuncRef{ClearPrivateEntry}
+
+\noindent\texttt{ClearPrivateEntry(}\textit{arg}\texttt{)}
+
+\PEFuncRef{ClearTable}
+
+\noindent\texttt{ClearTable(}\textit{arg}\texttt{)}
+
+\PEFuncRef{Close}
+
+\noindent\texttt{Close(}\texttt{)}
+
+\PEFuncRef{CompareFonts}
+
+\noindent\texttt{CompareFonts(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{CompareGlyphs}
+
+\noindent\texttt{CompareGlyphs(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{ControlAfmLigatureOutput}
+
+\noindent\texttt{ControlAfmLigatureOutput(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{ConvertByCMap}
+
+\noindent\texttt{ConvertByCMap(}\textit{arg}\texttt{)}
+
+\PEFuncRef{ConvertToCID}
+
+\noindent\texttt{ConvertToCID(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Copy}
+
+\noindent\texttt{Copy(}\texttt{)}
+
+\PEFuncRef{CopyAnchors}
+
+\noindent\texttt{CopyAnchors(}\texttt{)}
+
+\PEFuncRef{CopyFgToBg}
+
+\noindent\texttt{CopyFgToBg(}\texttt{)}
+
+\PEFuncRef{CopyGlyphFeatures}
+
+\noindent\texttt{CopyGlyphFeatures(}, \ldots\texttt{)}
+
+\PEFuncRef{CopyLBearing}
+
+\noindent\texttt{CopyLBearing(}\texttt{)}
+
+\PEFuncRef{CopyRBearing}
+
+\noindent\texttt{CopyRBearing(}\texttt{)}
+
+\PEFuncRef{CopyReference}
+
+\noindent\texttt{CopyReference(}\texttt{)}
+
+\PEFuncRef{CopyUnlinked}
+
+\noindent\texttt{CopyUnlinked(}\texttt{)}
+
+\PEFuncRef{CopyVWidth}
+
+\noindent\texttt{CopyVWidth(}\texttt{)}
+
+\PEFuncRef{CopyWidth}
+
+\noindent\texttt{CopyWidth(}\texttt{)}
+
+\PEFuncRef{CorrectDirection}
+
+\noindent\texttt{CorrectDirection(}\textit{arg}\texttt{)}
+
+\PEFuncRef{Cos}
+
+\noindent\texttt{Cos(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Cut}
+
+\noindent\texttt{Cut(}\texttt{)}
+
+\PEFuncRef{DebugCrashFontForge}
+
+\noindent\texttt{DebugCrashFontForge(}, \ldots\texttt{)}
+
+\PEFuncRef{DefaultATT}
+
+\noindent\texttt{DefaultATT(}, \ldots\texttt{)}
+
+\PEFuncRef{DefaultOtherSubrs}
+
+\noindent\texttt{DefaultOtherSubrs(}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{DefaultRoundToGrid}
+
+\noindent\texttt{DefaultRoundToGrid(}\texttt{)}
+
+\PEFuncRef{DefaultUseMyMetrics}
+
+\noindent\texttt{DefaultUseMyMetrics(}\texttt{)}
+
+\PEFuncRef{DetachAndRemoveGlyphs}
+
+\noindent\texttt{DetachAndRemoveGlyphs(}, \ldots\texttt{)}
+
+\PEFuncRef{DetachGlyphs}
+
+\noindent\texttt{DetachGlyphs(}, \ldots\texttt{)}
+
+\PEFuncRef{DontAutoHint}
+
+\noindent\texttt{DontAutoHint(}\texttt{)}
+
+\PEFuncRef{DrawsSomething}
+
+\noindent\texttt{DrawsSomething(}\textit{arg}\texttt{)}
+
+\PEFuncRef{Error}
+
+\noindent\texttt{Error(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Exp}
+
+\noindent\texttt{Exp(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{ExpandStroke}
+
+\noindent\texttt{ExpandStroke(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{Export}
+
+\noindent\texttt{Export(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{FileAccess}
+
+\noindent\texttt{FileAccess(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{FindIntersections}
+
+\noindent\texttt{FindIntersections(}\texttt{)}
+
+\PEFuncRef{FindOrAddCvtIndex}
+
+\noindent\texttt{FindOrAddCvtIndex(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Floor}
+
+\noindent\texttt{Floor(}\textit{arg}\texttt{)}
+
+Returns $\lfloor x \rfloor$.  That is the floor of $x$, or the least
+integer greater than or equal to $x$.  This function may be used without a
+loaded font.
+
+\PEFuncRef{FontImage}
+
+\noindent\texttt{FontImage(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+
+\PEFuncRef{FontsInFile}
+
+\noindent\texttt{FontsInFile(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Generate}
+
+\noindent\texttt{Generate(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{GenerateFamily}
+
+\noindent\texttt{GenerateFamily(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{GenerateFeatureFile}
+
+\noindent\texttt{GenerateFeatureFile(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{GetAnchorPoints}
+
+\noindent\texttt{GetAnchorPoints(}, \ldots\texttt{)}
+
+\PEFuncRef{GetCvtAt}
+
+\noindent\texttt{GetCvtAt(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetEnv}
+
+\noindent\texttt{GetEnv(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{GetFontBoundingBox}
+
+\noindent\texttt{GetFontBoundingBox(}\texttt{)}
+
+\PEFuncRef{GetLookupInfo}
+
+\noindent\texttt{GetLookupInfo(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetLookupOfSubtable}
+
+\noindent\texttt{GetLookupOfSubtable(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetLookupSubtables}
+
+\noindent\texttt{GetLookupSubtables(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetLookups}
+
+\noindent\texttt{GetLookups(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetMaxpValue}
+
+\noindent\texttt{GetMaxpValue(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetOS2Value}
+
+\noindent\texttt{GetOS2Value(}, \ldots\texttt{)}
+
+\PEFuncRef{GetPosSub}
+
+\noindent\texttt{GetPosSub(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetPref}
+
+\noindent\texttt{GetPref(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{GetPrivateEntry}
+
+\noindent\texttt{GetPrivateEntry(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetSubtableOfAnchorClass}
+
+\noindent\texttt{GetSubtableOfAnchorClass(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GetTTFName}
+
+\noindent\texttt{GetTTFName(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{GetTeXParam}
+
+\noindent\texttt{GetTeXParam(}\textit{arg}\texttt{)}
+
+\PEFuncRef{GlyphInfo}
+
+\noindent\texttt{GlyphInfo(}, \ldots\texttt{)}
+
+\PEFuncRef{HFlip}
+
+\noindent\texttt{HFlip(}\textit{arg}\texttt{)}
+
+\PEFuncRef{HasPreservedTable}
+
+\noindent\texttt{HasPreservedTable(}\textit{arg}\texttt{)}
+
+\PEFuncRef{HasPrivateEntry}
+
+\noindent\texttt{HasPrivateEntry(}\textit{arg}\texttt{)}
+
+\PEFuncRef{Import}
+
+\noindent\texttt{Import(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+
+\PEFuncRef{InFont}
+
+\noindent\texttt{InFont(}[\textit{arg}]\texttt{)}
+
+\PEFuncRef{Inline}
+
+\noindent\texttt{Inline(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Int}
+
+\noindent\texttt{Int(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{InterpolateFonts}
+
+\noindent\texttt{InterpolateFonts(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{IsAlNum}
+
+\noindent\texttt{IsAlNum(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{IsAlpha}
+
+\noindent\texttt{IsAlpha(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{IsDigit}
+
+\noindent\texttt{IsDigit(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{IsFinite}
+
+\noindent\texttt{IsFinite(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{IsHexDigit}
+
+\noindent\texttt{IsHexDigit(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{IsLower}
+
+\noindent\texttt{IsLower(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{IsNan}
+
+\noindent\texttt{IsNan(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{IsSpace}
+
+\noindent\texttt{IsSpace(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{IsUpper}
+
+\noindent\texttt{IsUpper(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Italic}
+
+\noindent\texttt{Italic(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{Join}
+
+\noindent\texttt{Join(}\texttt{)}
+
+\PEFuncRef{LoadEncodingFile}
+
+\noindent\texttt{LoadEncodingFile(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{LoadNamelist}
+
+\noindent\texttt{LoadNamelist(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{LoadNamelistDir}
+
+\noindent\texttt{LoadNamelistDir(}[\textit{arg}]\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{LoadStringFromFile}
+
+\noindent\texttt{LoadStringFromFile(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{LoadTableFromFile}
+
+\noindent\texttt{LoadTableFromFile(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Log}
+
+\noindent\texttt{Log(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{LookupStoreLigatureInAfm}
+
+\noindent\texttt{LookupStoreLigatureInAfm(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{MMAxisBounds}
+
+\noindent\texttt{MMAxisBounds(}\textit{arg}\texttt{)}
+
+\PEFuncRef{MMAxisNames}
+
+\noindent\texttt{MMAxisNames(}\texttt{)}
+
+\PEFuncRef{MMBlendToNewFont}
+
+\noindent\texttt{MMBlendToNewFont(}, \ldots\texttt{)}
+
+\PEFuncRef{MMChangeInstance}
+
+\noindent\texttt{MMChangeInstance(}\textit{arg}\texttt{)}
+
+\PEFuncRef{MMChangeWeight}
+
+\noindent\texttt{MMChangeWeight(}, \ldots\texttt{)}
+
+\PEFuncRef{MMInstanceNames}
+
+\noindent\texttt{MMInstanceNames(}\texttt{)}
+
+\PEFuncRef{MMWeightedName}
+
+\noindent\texttt{MMWeightedName(}\texttt{)}
+
+\PEFuncRef{MakeLine}
+
+\noindent\texttt{MakeLine(}, \ldots\texttt{)}
+
+\PEFuncRef{MergeFeature}
+
+\noindent\texttt{MergeFeature(}\textit{arg}\texttt{)}
+
+\PEFuncRef{MergeFonts}
+
+\noindent\texttt{MergeFonts(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{MergeKern}
+
+\noindent\texttt{MergeKern(}\textit{arg}\texttt{)}
+
+\PEFuncRef{MergeLookupSubtables}
+
+\noindent\texttt{MergeLookupSubtables(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{MergeLookups}
+
+\noindent\texttt{MergeLookups(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Move}
+
+\noindent\texttt{Move(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{MoveReference}
+
+\noindent\texttt{MoveReference(}\textit{arg}, \textit{arg}, \textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{MultipleEncodingsToReferences}
+
+\noindent\texttt{MultipleEncodingsToReferences(}\texttt{)}
+
+\PEFuncRef{NameFromUnicode}
+
+\noindent\texttt{NameFromUnicode(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{NearlyHvCps}
+
+\noindent\texttt{NearlyHvCps(}[\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{NearlyHvLines}
+
+\noindent\texttt{NearlyHvLines(}[\textit{arg}]\texttt{)}
+
+\PEFuncRef{NearlyLines}
+
+\noindent\texttt{NearlyLines(}[\textit{arg}]\texttt{)}
+
+\PEFuncRef{New}
+
+\noindent\texttt{New(}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{NonLinearTransform}
+
+\noindent\texttt{NonLinearTransform(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Open}
+
+\noindent\texttt{Open(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Ord}
+
+\noindent\texttt{Ord(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Outline}
+
+\noindent\texttt{Outline(}\textit{arg}\texttt{)}
+
+\PEFuncRef{OverlapIntersect}
+
+\noindent\texttt{OverlapIntersect(}\texttt{)}
+
+\PEFuncRef{Paste}
+
+\noindent\texttt{Paste(}\texttt{)}
+
+\PEFuncRef{PasteInto}
+
+\noindent\texttt{PasteInto(}\texttt{)}
+
+\PEFuncRef{PasteWithOffset}
+
+\noindent\texttt{PasteWithOffset(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{PositionReference}
+
+\noindent\texttt{PositionReference(}\textit{arg}, \textit{arg}, \textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{PostNotice}
+
+\noindent\texttt{PostNotice(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Pow}
+
+\noindent\texttt{Pow(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{PreloadCidmap}
+
+\noindent\texttt{PreloadCidmap(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Print}
+
+\noindent\texttt{Print(}, \ldots\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{PrintFont}
+
+\noindent\texttt{PrintFont(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{PrintSetup}
+
+\noindent\texttt{PrintSetup(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{PrivateGuess}
+
+\noindent\texttt{PrivateGuess(}\textit{arg}\texttt{)}
+
+\PEFuncRef{Quit}
+
+\noindent\texttt{Quit(}[\textit{arg}]\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Rand}
+
+\noindent\texttt{Rand(}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{ReadOtherSubrsFile}
+
+\noindent\texttt{ReadOtherSubrsFile(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Real}
+
+\noindent\texttt{Real(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Reencode}
+
+\noindent\texttt{Reencode(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{RemoveAllKerns}
+
+\noindent\texttt{RemoveAllKerns(}\texttt{)}
+
+\PEFuncRef{RemoveAllVKerns}
+
+\noindent\texttt{RemoveAllVKerns(}\texttt{)}
+
+\PEFuncRef{RemoveAnchorClass}
+
+\noindent\texttt{RemoveAnchorClass(}\textit{arg}\texttt{)}
+
+\PEFuncRef{RemoveDetachedGlyphs}
+
+\noindent\texttt{RemoveDetachedGlyphs(}, \ldots\texttt{)}
+
+\PEFuncRef{RemoveLookup}
+
+\noindent\texttt{RemoveLookup(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{RemoveLookupSubtable}
+
+\noindent\texttt{RemoveLookupSubtable(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{RemoveOverlap}
+
+\noindent\texttt{RemoveOverlap(}\texttt{)}
+
+\PEFuncRef{RemovePosSub}
+
+\noindent\texttt{RemovePosSub(}\textit{arg}\texttt{)}
+
+\PEFuncRef{RemovePreservedTable}
+
+\noindent\texttt{RemovePreservedTable(}\textit{arg}\texttt{)}
+
+\PEFuncRef{RenameGlyphs}
+
+\noindent\texttt{RenameGlyphs(}\textit{arg}\texttt{)}
+
+\PEFuncRef{ReplaceCharCounterMasks}
+
+\noindent\texttt{ReplaceCharCounterMasks(}\textit{arg}\texttt{)}
+
+\PEFuncRef{ReplaceCvtAt}
+
+\noindent\texttt{ReplaceCvtAt(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{ReplaceGlyphCounterMasks}
+
+\noindent\texttt{ReplaceGlyphCounterMasks(}\textit{arg}\texttt{)}
+
+\PEFuncRef{ReplaceWithReference}
+
+\noindent\texttt{ReplaceWithReference(}[\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{Revert}
+
+\noindent\texttt{Revert(}\texttt{)}
+
+\PEFuncRef{RevertToBackup}
+
+\noindent\texttt{RevertToBackup(}\texttt{)}
+
+\PEFuncRef{Rotate}
+
+\noindent\texttt{Rotate(}\textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{Round}
+
+\noindent\texttt{Round(}\textit{arg}\texttt{)}
+
+Returns the nearest integer to $x$, with ties broken by returning the
+nearest \emph{even} integer.  This behaviour may differ on nonstandard
+systems that lack the \texttt{fesetround()} library function.
+This function may be used without a loaded font.
+
+\PEFuncRef{RoundToCluster}
+
+\noindent\texttt{RoundToCluster(}[\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{RoundToInt}
+
+\noindent\texttt{RoundToInt(}\textit{arg}\texttt{)}
+
+Round coordinates in selected glyphs.  See \texttt{Round()} for rounding a
+real number to an integer.
+
+\PEFuncRef{SameGlyphAs}
+
+\noindent\texttt{SameGlyphAs(}\texttt{)}
+
+\PEFuncRef{Save}
+
+\noindent\texttt{Save(}[\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{SaveTableToFile}
+
+\noindent\texttt{SaveTableToFile(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Scale}
+
+\noindent\texttt{Scale(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{ScaleToEm}
+
+\noindent\texttt{ScaleToEm(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Select}
+
+\noindent\texttt{Select(}, \ldots\texttt{)}
+
+\PEFuncRef{SelectAll}
+
+\noindent\texttt{SelectAll(}\texttt{)}
+
+\PEFuncRef{SelectAllInstancesOf}
+
+\noindent\texttt{SelectAllInstancesOf(}, \ldots\texttt{)}
+
+\PEFuncRef{SelectBitmap}
+
+\noindent\texttt{SelectBitmap(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SelectByATT}
+
+\noindent\texttt{SelectByATT(}, \ldots\texttt{)}
+
+\PEFuncRef{SelectByColor}
+
+\noindent\texttt{SelectByColor(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SelectByColour}
+
+\noindent\texttt{SelectByColour(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SelectByPosSub}
+
+\noindent\texttt{SelectByPosSub(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SelectChanged}
+
+\noindent\texttt{SelectChanged(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SelectFewer}
+
+\noindent\texttt{SelectFewer(}\textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{SelectFewerSingletons}
+
+\noindent\texttt{SelectFewerSingletons(}\textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{SelectGlyphsBoth}
+
+\noindent\texttt{SelectGlyphsBoth(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SelectGlyphsReferences}
+
+\noindent\texttt{SelectGlyphsReferences(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SelectGlyphsSplines}
+
+\noindent\texttt{SelectGlyphsSplines(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SelectHintingNeeded}
+
+\noindent\texttt{SelectHintingNeeded(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SelectIf}
+
+\noindent\texttt{SelectIf(}, \ldots\texttt{)}
+
+\PEFuncRef{SelectInvert}
+
+\noindent\texttt{SelectInvert(}\texttt{)}
+
+\PEFuncRef{SelectMore}
+
+\noindent\texttt{SelectMore(}\textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{SelectMoreIf}
+
+\noindent\texttt{SelectMoreIf(}\textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{SelectMoreSingletons}
+
+\noindent\texttt{SelectMoreSingletons(}\textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{SelectMoreSingletonsIf}
+
+\noindent\texttt{SelectMoreSingletonsIf(}\textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{SelectNone}
+
+\noindent\texttt{SelectNone(}\texttt{)}
+
+\PEFuncRef{SelectSingletons}
+
+\noindent\texttt{SelectSingletons(}, \ldots\texttt{)}
+
+\PEFuncRef{SelectSingletonsIf}
+
+\noindent\texttt{SelectSingletonsIf(}, \ldots\texttt{)}
+
+\PEFuncRef{SelectWorthOutputting}
+
+\noindent\texttt{SelectWorthOutputting(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetCharCnt}
+
+\noindent\texttt{SetCharCnt(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetCharColor}
+
+\noindent\texttt{SetCharColor(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetCharComment}
+
+\noindent\texttt{SetCharComment(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetCharCounterMask}
+
+\noindent\texttt{SetCharCounterMask(}\textit{arg}, \textit{arg}, \ldots\texttt{)}
+
+\PEFuncRef{SetCharName}
+
+\noindent\texttt{SetCharName(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetFeatureList}
+
+\noindent\texttt{SetFeatureList(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetFondName}
+
+\noindent\texttt{SetFondName(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetFontHasVerticalMetrics}
+
+\noindent\texttt{SetFontHasVerticalMetrics(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetFontNames}
+
+\noindent\texttt{SetFontNames(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{SetFontOrder}
+
+\noindent\texttt{SetFontOrder(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetGasp}
+
+\noindent\texttt{SetGasp(}, \ldots\texttt{)}
+
+\PEFuncRef{SetGlyphChanged}
+
+\noindent\texttt{SetGlyphChanged(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetGlyphClass}
+
+\noindent\texttt{SetGlyphClass(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetGlyphColor}
+
+\noindent\texttt{SetGlyphColor(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetGlyphComment}
+
+\noindent\texttt{SetGlyphComment(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetGlyphCounterMask}
+
+\noindent\texttt{SetGlyphCounterMask(}, \ldots\texttt{)}
+
+\PEFuncRef{SetGlyphName}
+
+\noindent\texttt{SetGlyphName(}, \ldots\texttt{)}
+
+\PEFuncRef{SetGlyphTeX}
+
+\noindent\texttt{SetGlyphTeX(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+
+\PEFuncRef{SetItalicAngle}
+
+\noindent\texttt{SetItalicAngle(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetKern}
+
+\noindent\texttt{SetKern(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetLBearing}
+
+\noindent\texttt{SetLBearing(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetMacStyle}
+
+\noindent\texttt{SetMacStyle(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetMaxpValue}
+
+\noindent\texttt{SetMaxpValue(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetOS2Value}
+
+\noindent\texttt{SetOS2Value(}, \ldots\texttt{)}
+
+\PEFuncRef{SetPanose}
+
+\noindent\texttt{SetPanose(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetPref}
+
+\noindent\texttt{SetPref(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{SetRBearing}
+
+\noindent\texttt{SetRBearing(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetTTFName}
+
+\noindent\texttt{SetTTFName(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetTeXParams}
+
+\noindent\texttt{SetTeXParams(}, \ldots\texttt{)}
+
+\PEFuncRef{SetUnicodeValue}
+
+\noindent\texttt{SetUnicodeValue(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetUniqueID}
+
+\noindent\texttt{SetUniqueID(}\textit{arg}\texttt{)}
+
+\PEFuncRef{SetVKern}
+
+\noindent\texttt{SetVKern(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetVWidth}
+
+\noindent\texttt{SetVWidth(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{SetWidth}
+
+\noindent\texttt{SetWidth(}\textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Shadow}
+
+\noindent\texttt{Shadow(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{Shell}
+
+\noindent\texttt{Shell(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Simplify}
+
+\noindent\texttt{Simplify(}, \ldots\texttt{)}
+
+\PEFuncRef{Sin}
+
+\noindent\texttt{Sin(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{SizeOf}
+
+\noindent\texttt{SizeOf(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Skew}
+
+\noindent\texttt{Skew(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{SmallCaps}
+
+\noindent\texttt{SmallCaps(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+\PEFuncRef{Sqrt}
+
+\noindent\texttt{Sqrt(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{StrJoin}
+
+\noindent\texttt{StrJoin(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{StrSplit}
+
+\noindent\texttt{StrSplit(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strcasecmp}
+
+\noindent\texttt{Strcasecmp(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strcasestr}
+
+\noindent\texttt{Strcasestr(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strftime}
+
+\noindent\texttt{Strftime(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strlen}
+
+\noindent\texttt{Strlen(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strrstr}
+
+\noindent\texttt{Strrstr(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strskipint}
+
+\noindent\texttt{Strskipint(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strstr}
+
+\noindent\texttt{Strstr(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strsub}
+
+\noindent\texttt{Strsub(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strtod}
+
+\noindent\texttt{Strtod(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Strtol}
+
+\noindent\texttt{Strtol(}\textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{SubstitutionPoints}
+
+\noindent\texttt{SubstitutionPoints(}\texttt{)}
+
+\PEFuncRef{Tan}
+
+\noindent\texttt{Tan(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{ToLower}
+
+\noindent\texttt{ToLower(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{ToMirror}
+
+\noindent\texttt{ToMirror(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{ToString}
+
+\noindent\texttt{ToString(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{ToUpper}
+
+\noindent\texttt{ToUpper(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Transform}
+
+\noindent\texttt{Transform(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{TypeOf}
+
+\noindent\texttt{TypeOf(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UCodePoint}
+
+\noindent\texttt{UCodePoint(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{Ucs4}
+
+\noindent\texttt{Ucs4(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UnicodeAnnotationFromLib}
+
+\noindent\texttt{UnicodeAnnotationFromLib(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UnicodeBlockEndFromLib}
+
+\noindent\texttt{UnicodeBlockEndFromLib(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UnicodeBlockNameFromLib}
+
+\noindent\texttt{UnicodeBlockNameFromLib(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UnicodeBlockStartFromLib}
+
+\noindent\texttt{UnicodeBlockStartFromLib(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UnicodeFromName}
+
+\noindent\texttt{UnicodeFromName(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UnicodeNameFromLib}
+
+\noindent\texttt{UnicodeNameFromLib(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UnicodeNamesListVersion}
+
+\noindent\texttt{UnicodeNamesListVersion(}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{UnlinkReference}
+
+\noindent\texttt{UnlinkReference(}\texttt{)}
+
+\PEFuncRef{Utf8}
+
+\noindent\texttt{Utf8(}\textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{VFlip}
+
+\noindent\texttt{VFlip(}\textit{arg}\texttt{)}
+
+\PEFuncRef{VKernFromHKern}
+
+\noindent\texttt{VKernFromHKern(}\texttt{)}
+
+\PEFuncRef{Validate}
+
+\noindent\texttt{Validate(}[\textit{arg}]\texttt{)}
+
+\PEFuncRef{Wireframe}
+
+\noindent\texttt{Wireframe(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+\PEFuncRef{WorthOutputting}
+
+\noindent\texttt{WorthOutputting(}\textit{arg}\texttt{)}
+
+\PEFuncRef{WriteStringToFile}
+
+\noindent\texttt{WriteStringToFile(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+This function may be used without a loaded font.
+
+\PEFuncRef{WritePfm}
+
+\noindent\texttt{WritePfm(}\textit{arg}\texttt{)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Built-in functions in FontAnvil and not in FontForge}
+
+\PEFuncRef{Shell}
+
+Shell:  takes one argument, the name of a shell command to execute.  Returns
+the return value from doing so.
+
+\section{Built-in functions in FontForge and not in FontAnvil}
+
+Because FontAnvil does not support plugins, these built-in functions have
+been removed from the language:  LoadPlugin, LoadPluginDir.
+
+Similarly, FontAnvil does not store persistent preferences in the user's
+home directory, and the functions to do that have been removed: LoadPrefs,
+SavePrefs.  For the moment, at least, other functions related to
+``preference'' variables remain in the language.
+
+FontAnvil (in the current version) does not support printing fonts, because
+support for this feature necessitates a disproportionate amount of
+unportable interfacing code to talk to system-specific printing interfaces. 
+Some future version may support a stripped-down and portable printing
+feature, likely writing to files instead of the physical printer, but for
+the moment, these functions are unimplemented:  PrintFont, PrintSetup.
+
+In FontForge's history it has several times happened that function names
+were misspelled, or documented incorrectly.  After the errors were
+discovered the names were changed in the documents to reflect the designer's
+intentions, but the wrong names were kept in the code as aliases of the
+correct ones, in order to avoid breaking any existing scripts that might
+have relied on them.  The plan is to remove most if not all of these in
+FontAnvil, bringing the code closer to the documentation.  To date, the
+function aliases of this kind removed from FontAnvil are: bAutoCounter,
+bDontAutoHint, bSubstitutionPoints, BuildComposit, GetPrefs.
+
+In mainline FontForge, some functions were deprecated and had their
+implementations replaced by error messages.  In FontAnvil these functions
+have been removed entirely:  PrivateToCvt, RemoveATT.
+
+\section{Other notes}
+
+FIXME
+

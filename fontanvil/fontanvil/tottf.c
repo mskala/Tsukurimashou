@@ -1,4 +1,4 @@
-/* $Id: tottf.c 3881 2015-03-29 11:53:17Z mskala $ */
+/* $Id: tottf.c 4016 2015-06-14 11:46:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -4252,16 +4252,6 @@ static void AddEncodedName(NamTab *nt,char *utf8name,uint16_t lang,
    if (!nt->applemode && lang != 0x409)
       maclang=0xffff;
    if (maclang != 0xffff) {
-#ifdef FONTANVIL_CONFIG_APPLE_UNICODE_NAMES
-      if (strid != ttf_postscriptname) {
-	 *ne=ne[-1];
-	 ne->platform=0;	/* Mac unicode */
-	 ne->specific=0;	/* 3 => Unicode 2.0 semantics *//* 0 ("default") is also a reasonable value */
-	 ne->lang=maclang;
-	 ++ne;
-      }
-#endif
-
       macenc=MacEncFromMacLang(maclang);
       macname=Utf8ToMacStr(utf8name, macenc, maclang);
       if (macname != NULL) {
@@ -5801,10 +5791,6 @@ static void buildtablestructures(struct alltabs *at,SplineFont *sf,
 
    if (format==ff_otf || format==ff_otfcid) {
       at->tabdir.version=CHR('O', 'T', 'T', 'O');
-#ifdef FONTANVIL_CONFIG_APPLE_ONLY_TTF	/* This means that Windows will reject the font. In general not a good idea */
-   } else if (at->applemode && !at->opentypemode) {
-      at->tabdir.version=CHR('t', 'r', 'u', 'e');
-#endif
    } else {
       at->tabdir.version=0x00010000;
    }

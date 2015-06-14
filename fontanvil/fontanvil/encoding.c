@@ -1,4 +1,4 @@
-/* $Id: encoding.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: encoding.c 4017 2015-06-14 16:46:33Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -2076,21 +2076,13 @@ static void BCProtectUndoes(Undoes *undo,BDFChar *bc) {
 
 void SFRemoveGlyph(SplineFont *sf, SplineChar * sc, int *flags) {
    struct splinecharlist *dep, *dnext;
-
    struct bdfcharlist *bdep, *bdnext;
-
    RefChar *rf, *refs, *rnext;
-
    BDFRefChar *bref, *brnext, *brprev;
-
    KernPair *kp, *kprev;
-
    int i;
-
    BDFFont *bdf;
-
    BDFChar *bfc, *dbc;
-
    int layer;
 
    if (sc==NULL)
@@ -2177,7 +2169,7 @@ void SFRemoveGlyph(SplineFont *sf, SplineChar * sc, int *flags) {
 	       BCProtectUndoes(dbc->undoes, bfc);
 	       BCProtectUndoes(dbc->redoes, bfc);
 	    }
-	 for (bref=bfc->refs; refs != NULL; bref=brnext) {
+	 for (bref=bfc->refs; bref != NULL; bref=brnext) {
 	    brnext=bref->next;
 	    BCRemoveDependent(bfc, bref);
 	 }

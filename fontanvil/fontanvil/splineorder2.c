@@ -1,4 +1,4 @@
-/* $Id: splineorder2.c 3867 2015-03-26 12:09:09Z mskala $ */
+/* $Id: splineorder2.c 4016 2015-06-14 11:46:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -556,7 +556,6 @@ static SplinePoint *__ttfApprox(Spline *ps,real tmin,real tmax,
    return (_ttfapprox(ps, tmin, tmax, start));
 }
 
-#if !defined(FONTANVIL_CONFIG_NON_SYMMETRIC_QUADRATIC_CONVERSION)
 typedef struct qpoint {
    BasePoint bp;
    BasePoint cp;
@@ -935,7 +934,6 @@ static int PrettyApprox(Spline *ps,bigreal tmin,bigreal tmax,
    }
    return (-1);
 }
-#endif
 
 static SplinePoint *AlreadyQuadraticCheck(Spline *ps,SplinePoint *start) {
    SplinePoint *sp;
@@ -984,13 +982,9 @@ static SplinePoint *AlreadyQuadraticCheck(Spline *ps,SplinePoint *start) {
 }
 
 static SplinePoint *ttfApprox(Spline *ps,SplinePoint *start) {
-#if !defined(FONTANVIL_CONFIG_NON_SYMMETRIC_QUADRATIC_CONVERSION)
    extended magicpoints[6], last;
-
    int cnt, i, j, qcnt, test_level;
-
    QPoint data[8 * 10];
-
    int round_to_int =
       /* The end points are at integer points, or one coord is at half while */
       /*  the other is at an integer (ie. condition for ttf interpolated point) */
@@ -1014,7 +1008,6 @@ static SplinePoint *ttfApprox(Spline *ps,SplinePoint *start) {
 	ps->to->me.y==ps->to->prevcp.y &&
 	ps->to->me.x != ps->to->prevcp.x &&
 	2 * ps->to->me.x==rint(2 * ps->to->me.x)));
-#endif
    SplinePoint *ret;
 
 /* Divide the spline up at extrema and points of inflection. The first	*/
@@ -1027,7 +1020,6 @@ static SplinePoint *ttfApprox(Spline *ps,SplinePoint *start) {
    if ((ret=AlreadyQuadraticCheck(ps, start)) != NULL)
       return (ret);
 
-#if !defined(FONTANVIL_CONFIG_NON_SYMMETRIC_QUADRATIC_CONVERSION)
    qcnt=1;
    data[0].bp=ps->from->me;
    data[0].t=0;
@@ -1082,7 +1074,6 @@ static SplinePoint *ttfApprox(Spline *ps,SplinePoint *start) {
       if (qcnt != -1)
 	 return (CvtDataToSplines(data, 1, qcnt, start));
    }
-#endif
 
    return (__ttfApprox(ps, 0, 1, start));
 }

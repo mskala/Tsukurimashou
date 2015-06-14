@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: bitmapchar.c 4016 2015-06-14 11:46:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -83,9 +83,6 @@ struct std_bdf_props StandardProps[]={
    {"FIGURE_WIDTH", prt_int | prt_property, true},
    {"AVG_LOWERCASE_WIDTH", prt_int | prt_property, true},
    {"AVG_UPPERCASE_WIDTH", prt_int | prt_property, true},
-#ifdef FONTANVIL_CONFIG_BDF_GLYPH_RANGES
-   {"_XFREE86_GLYPH_RANGES", prt_string | prt_property, true},
-#endif
    {"WEIGHT", prt_uint | prt_property, false},
    {"DESTINATION", prt_uint | prt_property, false},
    {"MIN_SPACE", prt_int | prt_property, false},
@@ -267,24 +264,6 @@ static void BDFPropAppendString(BDFFont *bdf,char *keyword,char *value) {
       bdf->props[i].type=prt_string | prt_property;
    bdf->props[i].u.str=copy(value);
 }
-
-#ifdef FONTANVIL_CONFIG_BDF_GLYPH_RANGES
-static void BDFPropClearKey(BDFFont *bdf,char *keyword) {
-   int i, j;
-
-   for (i=j=0; i < bdf->prop_cnt; ++i) {
-      if (strcmp(bdf->props[i].name, keyword)==0) {
-	 free(bdf->props[i].name);
-	 if ((bdf->props[i].type & ~prt_property)==prt_string ||
-	     (bdf->props[i].type & ~prt_property)==prt_atom)
-	    free(bdf->props[i].u.str);
-      } else if (i != j) {
-	 bdf->props[j++]=bdf->props[i];
-      } else
-	 ++j;
-   }
-}
-#endif /* FONTANVIL_CONFIG_BDF_GLYPH_RANGES */
 
 static int BDFPropReplace(BDFFont *bdf,const char *key,const char *value) {
    int i;
@@ -708,59 +687,6 @@ void Default_XLFD(BDFFont * bdf, EncMap * map, int res) {
    BDFPropAddString(bdf, "FONT", buffer, NULL);
 }
 
-static int GenerateGlyphRanges(BDFFont *font) {
-#ifdef FONTANVIL_CONFIG_BDF_GLYPH_RANGES
-   char buffer[300], *pt, *end, add[30];
-
-   int i, j, max, cnt=0;
-
-   /* I gather that the _XFREE86_GLYPH_RANGES property has been dropped */
-   /*  because it was felt that the metrics data would allow users to */
-   /*  determine whether a character was in the font or not. I'm not in */
-   /*  complete agreement with that argument because there are several */
-   /*  zero-width spaces whose presence is not specified by the metrics */
-   /*  but it is almost irrelevant whether they are present or not (though */
-   /*  guessing wrong would present you with a "DEFAULT_CHAR" rather than */
-   /*  nothing) */
-
-   if (map->enc->is_unicodebmp || map->enc->is_unicodefull)
-      max=map->enc->char_cnt;
-   else
-      return (0);
-   BDFPropClearKey(font, "_XFREE86_GLYPH_RANGES");
-   pt=buffer;
-   end=pt + sizeof(buffer);
-   for (i=0; i < font->glyphcnt && i < max; ++i)
-      if (!IsntBDFChar(font->glyphs[i])) {
-	 for (j=i + 1;
-	      j < font->glyphcnt && j < max && !IsntBDFChar(font->glyphs[j]);
-	      ++j);
-	 --j;
-	 if (j==i)
-	    sprintf(add, "%d ", i);
-	 else
-	    sprintf(add, "%d_%d ", i, j);
-	 i=j;
-	 if (pt + strlen(add) >= end) {
-	    pt[-1]='\0';	/* was a space */
-	    BDFPropAppendString(font, "_XFREE86_GLYPH_RANGES", buffer);
-	    pt=buffer;
-	    ++cnt;
-	 }
-	 strcpy(pt, add);
-	 pt += strlen(pt);
-      }
-   if (pt != buffer) {
-      pt[-1]='\0';		/* was a space */
-      BDFPropAppendString(font, "_XFREE86_GLYPH_RANGES", buffer);
-      ++cnt;
-   }
-   return (cnt);
-#else
-   return (0);
-#endif /* FONTANVIL_CONFIG_BDF_GLYPH_RANGES */
-}
-
 void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
    char *xlfd=BdfPropHasString(bdf, "FONT", NULL);
 
@@ -944,11 +870,6 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
 	 BDFPropAddInt(bdf, "AVG_UPPERCASE_WIDTH", uc_sum * 10 / uc_cnt,
 		       onlyme);
    }
-
-   /* Normally this does nothing, but fontanvil may be configured to generate */
-   /*  the obsolete _XFREE86_GLYPH_RANGES property, and if so this will */
-   /*  generate them */
-   GenerateGlyphRanges(bdf);
 
    /* MIN_SPACE, MAX_SPACE & END_SPACE are judgement calls and I shan't default them */
    /* also SMALL_CAP_SIZE, STRIKEOUT_ASCENT, STRIKEOUT_DESCENT, DESTINATION */

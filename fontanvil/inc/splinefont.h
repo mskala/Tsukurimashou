@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 3901 2015-04-09 11:48:49Z mskala $ */
+/* $Id: splinefont.h 4016 2015-06-14 11:46:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
 # define _SPLINEFONT_H
 
 # include "fontanvil.h"
-# include "configure-fontanvil.h"
 # include <iconv.h>
 /* libiconv.h defines iconv as taking a const pointer for inbuf.
  * iconv doesn't.  OH, JOY!  A new version of libiconv does not use

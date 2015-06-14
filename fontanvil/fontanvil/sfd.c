@@ -1,4 +1,4 @@
-/* $Id: sfd.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: sfd.c 4016 2015-06-14 11:46:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -4203,42 +4203,6 @@ static PST1 *LigaCreateFromOldStyleMultiple(PST1 *liga) {
    return (last);
 }
 
-#ifdef FONTANVIL_CONFIG_CVT_OLD_MAC_FEATURES
-static struct {
-   int feature, setting;
-   uint32_t tag;
-} formertags[]={
-   {
-   1, 6, CHR('M', 'L', 'O', 'G')}, {
-   1, 8, CHR('M', 'R', 'E', 'B')}, {
-   1, 10, CHR('M', 'D', 'L', 'G')}, {
-   1, 12, CHR('M', 'S', 'L', 'G')}, {
-   1, 14, CHR('M', 'A', 'L', 'G')}, {
-   8, 0, CHR('M', 'S', 'W', 'I')}, {
-   8, 2, CHR('M', 'S', 'W', 'F')}, {
-   8, 4, CHR('M', 'S', 'L', 'I')}, {
-   8, 6, CHR('M', 'S', 'L', 'F')}, {
-   8, 8, CHR('M', 'S', 'N', 'F')}, {
-   22, 1, CHR('M', 'W', 'I', 'D')}, {
-   27, 1, CHR('M', 'U', 'C', 'M')}, {
-   103, 2, CHR('M', 'W', 'I', 'D')}, {
--1, -1, 0xffffffff},};
-
-static void CvtOldMacFeature(PST1 *pst) {
-   int i;
-
-   if (pst->macfeature)
-      return;
-   for (i=0; formertags[i].feature != -1; ++i) {
-      if (pst->tag==formertags[i].tag) {
-	 pst->macfeature=true;
-	 pst->tag=(formertags[i].feature << 16) | formertags[i].setting;
-	 return;
-      }
-   }
-}
-#endif
-
 static void SFDSetEncMap(SplineFont *sf,int orig_pos,int enc) {
    EncMap *map=sf->map;
 
@@ -5134,10 +5098,6 @@ static SplineChar *SFDGetChar(AFILE *sfd,SplineFont *sf,
 		  last=(PST *) LigaCreateFromOldStyleMultiple((PST1 *) pst);
 	    }
 	 }
-#ifdef FONTANVIL_CONFIG_CVT_OLD_MAC_FEATURES
-	 if (old)
-	    CvtOldMacFeature((PST1 *) pst);
-#endif
       } else if (strmatch(tok, "Colour:")==0) {
 	 uint32_t temp;
 

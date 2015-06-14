@@ -134,9 +134,9 @@ noinst_HEADERS = \
   inc/gresource.h inc/gwidget.h inc/intl.h inc/ustring.h \
   inc/utype.h \
   inc/afile.h inc/sftextfieldP.h \
-  inc/configure-fontanvil.h inc/views.h inc/is_LIGATURE.h \
+  inc/views.h inc/is_LIGATURE.h \
   inc/flaglist.h inc/charview_private.h \
-  inc/autowidth2.h inc/configure-fontanvil.h inc/fontanvil.h \
+  inc/autowidth2.h inc/fontanvil.h \
   inc/libffstamp.h inc/psfont.h inc/stemdb.h \
   inc/autowidth.h inc/delta.h inc/fontanvilvw.h \
   inc/lookups.h inc/savefont.h inc/ttf.h \
@@ -227,13 +227,17 @@ gutils_libgutils_a_LDFLAGS = $(GLIB_LIBS)
 
 dist_doc_DATA = doc/fontanvil.pdf
 
+texfiles = \
+  doc/building.tex doc/datamodel.tex doc/fontanvil.tex \
+  doc/intro.tex doc/reference.tex doc/running.tex
+
 EXTRA_DIST = COPYING README \
   Unicode/README.TXT \
-  doc/fontanvil.tex doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
+  $(texfiles) doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
   fontanvil/fontimage.pe fontanvil/fontlint.pe fontanvil/sfddiff.pe \
   $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) share/default-n
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-theme-2012 --enable-debug
+DISTCHECK_CONFIGURE_FLAGS = --enable-debug
 
 # FIXME FontForge claims that splinerefigure.c requires special handling
 # to avoid optimization.  Look into this.
@@ -260,8 +264,10 @@ fontanvil/sfddiff: fontanvil/sfddiff.pe
 
 # PDF DOCUMENTATION
 
-doc/fontanvil.pdf: doc/fontanvil.tex \
+doc/fontanvil.pdf: $(texfiles) \
   doc/quixote-dore.jpg doc/quixote-daumier.jpg
+	cd doc ; $(PDFLATEX) fontanvil.tex
+	cd doc ; makeindex fontanvil.idx
 	cd doc ; $(PDFLATEX) fontanvil.tex
 	cd doc ; $(PDFLATEX) fontanvil.tex
 
