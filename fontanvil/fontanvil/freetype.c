@@ -1,6 +1,7 @@
-/* $Id: freetype.c 3907 2015-04-11 18:07:32Z mskala $ */
-/* Copyright (C) 2000-2012 by George Williams */
-/*
+/* $Id: freetype.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* Copyright (C) 2000-2012  George Williams
+ * Copyright (C) 2015  Matthew Skala
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *

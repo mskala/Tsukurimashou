@@ -1,6 +1,7 @@
-/* $Id: dumpbdf.c 3869 2015-03-26 13:32:01Z mskala $ */
-/* Copyright (C) 2000-2012 by George Williams */
-/*
+/* $Id: dumpbdf.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* Copyright (C) 2000-2012  George Williams
+ * Copyright (C) 2015  Matthew Skala
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *

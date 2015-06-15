@@ -1,7 +1,7 @@
-/* $Id: gb12345.h 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: gb12345.h 4019 2015-06-14 17:52:39Z mskala $ */
 /*
  * Prototypes for FontAnvil to use GB12345 without a "plugin"
- * Copyright (C) 2014  Matthew Skala
+ * Copyright (C) 2014, 2015  Matthew Skala
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

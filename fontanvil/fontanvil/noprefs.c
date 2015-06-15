@@ -1,6 +1,7 @@
-/* $Id: noprefs.c 4016 2015-06-14 11:46:40Z mskala $ */
-/* Copyright (C) 2000-2012 by George Williams */
-/*
+/* $Id: noprefs.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* Copyright (C) 2000-2012  George Williams
+ * Copyright (C) 2015  Matthew Skala
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *

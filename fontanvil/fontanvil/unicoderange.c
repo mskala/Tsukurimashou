@@ -1,7 +1,7 @@
-/* $Id: unicoderange.c 3871 2015-03-27 08:01:10Z mskala $ */
-/* Copyright (C) 2006-2012 by George Williams */
-/* 2012nov14, table updates, fixes added, Jose Da Silva */
-/*
+/* $Id: unicoderange.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* Copyright (C) 2006-2012  George Williams
+ * Copyright (C) 2015  Matthew Skala
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *

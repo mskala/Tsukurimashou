@@ -186,14 +186,22 @@ loaded font.
 
 \PEFuncRef{Array}
 
-\noindent\texttt{Array(}\textit{arg}\texttt{)}
+\noindent\texttt{Array(}\textit{size}\texttt{)}
 
+Creates and returns a value of array type, with the given number of
+elements initialized to void.
 This function may be used without a loaded font.
 
 \PEFuncRef{AskUser}
 
-\noindent\texttt{AskUser(}\textit{arg}, \textit{arg}\texttt{)}
+\noindent\texttt{AskUser(}\textit{prompt}, [\textit{default}]\texttt{)}
 
+Asks the user a question.  The string \textit{prompt} is written out to
+standard output, and the next line from standard input is captured to become
+the return value.  A line is terminated by a newline character, which will
+be included in the return value.  On error, or if the user enters a blank
+line, the return value will be \textit{default} if specified, or an empty
+string if not.
 This function may be used without a loaded font.
 
 \PEFuncRef{AutoCounter}
@@ -272,8 +280,8 @@ This function may be used without a loaded font.
 
 \noindent\texttt{Ceil(}\textit{x}\texttt{)}
 
-Returns $\lceil x \rceil$.  That is the ceiling of $x$, or the greatest
-integer less than or equal to $x$.  This function may be used without a
+Returns $\lceil x \rceil$.  That is the ceiling of $x$, or the least
+integer greater than or equal to $x$.  This function may be used without a
 loaded font.
 
 \PEFuncRef{CenterInWidth}
@@ -290,7 +298,10 @@ loaded font.
 
 \PEFuncRef{CharCnt}
 
-\noindent\texttt{CharCnt(}\texttt{)}
+\noindent\texttt{CharCnt()}
+
+Return the number of glyph slots in the current font, including both encoded
+and unencoded slots.
 
 \PEFuncRef{CharInfo}
 
@@ -302,13 +313,30 @@ loaded font.
 
 \PEFuncRef{Chr}
 
-\noindent\texttt{Chr(}\textit{arg}\texttt{)}
+\noindent\texttt{Chr(}\textit{int}\texttt{)}
 
-This function may be used without a loaded font.
+Takes a single integer in the range -128 to 255 and returns a string
+containing that byte, folding negative values into two's complement
+notation.
+
+\noindent\texttt{Chr(}\textit{array}\texttt{)}
+
+Takes an array of integers in the range -128 to 255 and returns a string
+consisting of those bytes.
+
+This function may be used without a loaded font.  Note that the integers are
+\emph{byte} values.  Code points U+0080 and beyond may be constructed by
+spelling them out in UTF-8.  It is also possible, but not recommended, to
+construct strings that are invalid UTF-8.
+
+I have submitted a patch to FontForge, but as of the current writing (June
+2015), FontForge does not document its support of negative numbers, and
+documents but does not correctly implement array-valued
+arguments.  FontAnvil behaves as documented here.
 
 \PEFuncRef{Clear}
 
-\noindent\texttt{Clear(}\texttt{)}
+\noindent\texttt{Clear()}
 
 \PEFuncRef{ClearBackground}
 
@@ -408,8 +436,9 @@ This function may be used without a loaded font.
 
 \PEFuncRef{Cos}
 
-\noindent\texttt{Cos(}\textit{arg}\texttt{)}
+\noindent\texttt{Cos(}\textit{theta}\texttt{)}
 
+Returns the cosine of \textit{theta}, which is measured in radians.
 This function may be used without a loaded font.
 
 \PEFuncRef{Cut}
@@ -418,7 +447,12 @@ This function may be used without a loaded font.
 
 \PEFuncRef{DebugCrashFontForge}
 
-\noindent\texttt{DebugCrashFontForge(}, \ldots\texttt{)}
+\noindent\texttt{DebugCrashFontForge(}\ldots\texttt{)}
+
+Causes FontAnvil [sic] to attempt to write to a null pointer, which should
+crash the interpreter.  This may be of some use in debugging.  Arguments are
+ignored.  Function name retained for compatibility.  In FontForge, this
+function requires a loaded font, but that limitation is removed in FontAnvil.
 
 \PEFuncRef{DefaultATT}
 
@@ -456,14 +490,15 @@ This function may be used without a loaded font.
 
 \PEFuncRef{Error}
 
-\noindent\texttt{Error(}\textit{arg}\texttt{)}
+\noindent\texttt{Error(}\textit{msg}\texttt{)}
 
 This function may be used without a loaded font.
 
 \PEFuncRef{Exp}
 
-\noindent\texttt{Exp(}\textit{arg}\texttt{)}
+\noindent\texttt{Exp(}\textit{x}\texttt{)}
 
+Compute the exponential function, $e^x$.
 This function may be used without a loaded font.
 
 \PEFuncRef{ExpandStroke}
@@ -492,8 +527,8 @@ This function may be used without a loaded font.
 
 \noindent\texttt{Floor(}\textit{arg}\texttt{)}
 
-Returns $\lfloor x \rfloor$.  That is the floor of $x$, or the least
-integer greater than or equal to $x$.  This function may be used without a
+Returns $\lfloor x \rfloor$.  That is the floor of $x$, or the greatest
+integer less than or equal to $x$.  This function may be used without a
 loaded font.
 
 \PEFuncRef{FontImage}
@@ -616,8 +651,12 @@ This function may be used without a loaded font.
 
 \PEFuncRef{Int}
 
-\noindent\texttt{Int(}\textit{arg}\texttt{)}
+\noindent\texttt{Int(}\textit{x}\texttt{)}
 
+Converts a real number or Unicode code point value to an integer, by means
+of the C compiler's type coercion.  In the case of real numbers, that means
+$x$ will be rounded toward zero.  An integer argument will be returned
+unchanged.
 This function may be used without a loaded font.
 
 \PEFuncRef{InterpolateFonts}
@@ -716,8 +755,10 @@ This function may be used without a loaded font.
 
 \PEFuncRef{Log}
 
-\noindent\texttt{Log(}\textit{arg}\texttt{)}
+\noindent\texttt{Log(}\textit{x}\texttt{)}
 
+Returns $\ln x$, that is the natural (base $e$) logarithm.  This is an error
+if $x$ is zero, negative, or not a number.
 This function may be used without a loaded font.
 
 \PEFuncRef{LookupStoreLigatureInAfm}
@@ -1003,7 +1044,8 @@ This function may be used without a loaded font.
 
 \noindent\texttt{RoundToInt(}\textit{arg}\texttt{)}
 
-Round coordinates in selected glyphs.  See \texttt{Round()} for rounding a
+Round coordinates in selected glyphs.  See
+\hyperref[func:Round]{\texttt{Round()}} for rounding a
 real number to an integer.
 
 \PEFuncRef{SameGlyphAs}

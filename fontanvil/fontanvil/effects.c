@@ -1,6 +1,7 @@
-/* $Id: effects.c 3865 2015-03-26 10:37:06Z mskala $ */
-/* Copyright (C) 2003-2012 by George Williams */
-/*
+/* $Id: effects.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* Copyright (C) 2003-2012  George Williams
+ * Copyright (C) 2015  Matthew Skala
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *

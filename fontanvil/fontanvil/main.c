@@ -1,7 +1,7 @@
-/* $Id: main.c 3882 2015-03-29 14:15:05Z mskala $ */
+/* $Id: main.c 4019 2015-06-14 17:52:39Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
- * Copyright (C) 2014  Matthew Skala
+ * Copyright (C) 2014, 2015  Matthew Skala
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
  * mskala@ansuz.sooke.bc.ca
  */
 
+#include <fenv.h>
 #include <string.h>
 
 #include "scripting.h"
@@ -132,6 +133,9 @@ int main(int argc,char **argv) {
      exit(0);
    
    /* init things that are only needed when we get past command-line help */
+#ifdef HAVE_FESETROUND
+   fesetround(FE_TONEAREST);
+#endif
    if (default_encoding==NULL)
      default_encoding=FindOrMakeEncoding("ISO8859-1");
    if (default_encoding==NULL)

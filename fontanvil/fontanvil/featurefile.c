@@ -1,8 +1,8 @@
-/* $Id: featurefile.c 3872 2015-03-27 09:43:03Z mskala $ */
-/* Copyright (C) 2000-2012 by George Williams */
-/* Copyright (C) 2012 by Khaled Hosny */
-/* Copyright (C) 2013 by Matthew Skala */
-/*
+/* $Id: featurefile.c 4021 2015-06-14 18:20:41Z mskala $ */
+/* Copyright (C) 2000-2012  George Williams
+ * Copyright (C) 2012  Khaled Hosny
+ * Copyright (C) 2013, 2014, 2015  Matthew Skala
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *

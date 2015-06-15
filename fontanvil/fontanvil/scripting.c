@@ -1,6 +1,7 @@
-/* $Id: scripting.c 4014 2015-06-14 09:50:22Z mskala $ */
-/* Copyright (C) 2002-2012 by George Williams */
-/*
+/* $Id: scripting.c 4023 2015-06-15 16:06:16Z mskala $ */
+/* Copyright (C) 2002-2012  George Williams
+ * Copyright (C) 2015  Matthew Skala
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -1942,8 +1943,8 @@ static void bArray(Context *c) {
 static void bAskUser(Context *c) {
    char *quest, *def="";
    char buffer[300];
-   char *t1=script2utf8_copy(quest);
-   char *loc=utf82def_copy(t1);
+   char *t1;
+   char *loc;
 
    if (c->a.vals[1].type != v_str
        || (c->a.argc==3 && c->a.vals[2].type != v_str))
@@ -1952,9 +1953,13 @@ static void bAskUser(Context *c) {
    if (c->a.argc==3)
      def=c->a.vals[2].u.sval;
    
+   t1=script2utf8_copy(quest);
+   loc=utf82def_copy(t1);
+
    printf("%s",loc);
    free(t1);
    free(loc);
+
    buffer[0]='\0';
    c->return_val.type=v_str;
    if (fgets(buffer,sizeof(buffer),stdin)==NULL) {
@@ -2699,7 +2704,7 @@ static void bChr(Context *c) {
       for (i=0; i < arr->argc; ++i) {
 	 if (arr->vals[i].type != v_int)
 	    ScriptError(c, "Bad type for argument");
-	 else if (c->a.vals[1].u.ival < -128 || c->a.vals[1].u.ival > 255)
+	 else if (arr->vals[i].u.ival < -128 || arr->vals[i].u.ival > 255)
 	    ScriptError(c, "Bad value for argument");
 	 temp[i]=arr->vals[i].u.ival;
       }
@@ -3097,9 +3102,9 @@ static void bCut(Context *c) {
    FVClear(c->curfv);
 }
 
-static void bDebugCrashFontAnvil(Context *c) {
+static void bDebugCrashFontForge(Context *c) {
    ErrorMsg(3,
-	   "FontAnvil is crashing because you asked it to using the DebugCrashFontAnvil command\n");
+	   "FontAnvil is crashing because you asked it to using the DebugCrashFontForge command\n");
    int *ptr=NULL;
 
    *ptr=1;
@@ -8328,7 +8333,7 @@ static struct builtins {
    {"CorrectDirection", bCorrectDirection, 0,1,2},
    {"Cos", bCos, 1,2,2},
    {"Cut", bCut, 0,1,1},
-   {"DebugCrashFontForge", bDebugCrashFontAnvil, 0,0,-1},
+   {"DebugCrashFontForge", bDebugCrashFontForge, 1,0,-1},
    {"DefaultATT", bDefaultATT, 0,0,-1},
    {"DefaultOtherSubrs", bDefaultOtherSubrs, 1,1,1},
    {"DefaultRoundToGrid", bDefaultRoundToGrid, 0,1,1},

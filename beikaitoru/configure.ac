@@ -4,7 +4,7 @@
 
 #
 # Configuration source for Beikaitoru
-# Copyright (C) 2012, 2013, 2014  Matthew Skala
+# Copyright (C) 2012, 2013, 2014, 2015  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([subfont.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3995 2015-06-03 12:34:24Z mskala $])
+AC_REVISION([$Id: configure.ac 4019 2015-06-14 17:52:39Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2013 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
