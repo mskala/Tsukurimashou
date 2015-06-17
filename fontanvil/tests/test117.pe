@@ -1,0 +1,11 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/ecrm1000.pfa fonts/ecrm1000.tfm
+
+Quit(77) # Needs a missing font file
+
+Open("tests/fonts/ecrm1000.pfa")
+MergeKern("tests/fonts/ecrm1000.tfm")
+Generate("ttmp/ecrm.ttf","",0x200)
+Open("ttmp/ecrm.ttf")
+GetCoverageCounts()
+Quit()

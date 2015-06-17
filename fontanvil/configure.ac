@@ -196,7 +196,6 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests
 AC_CONFIG_SRCDIR([fontanvil/main.c])
 AC_CONFIG_HEADERS([inc/fontanvil-config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_TESTDIR([tests],[fontanvil])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
@@ -256,6 +255,14 @@ AC_PATH_PROG([PDFLATEX],[pdflatex])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
 AC_PATH_PROG([UNZIP],[unzip],[unzip])
+AC_PATH_PROG([VALGRIND],[valgrind])
+AS_IF([test "x$VALGRIND" = "x"],
+  [VALGRIND_FLAGS=],
+  [uname=`uname`
+   AS_IF([test "x$uname" = "xDawrin"],
+     [VALGRIND_FLAGS='--dsymutil=yes --leak-check=full'],
+     [VALGRIND_FLAGS='--leak-check=full'])])
+AC_SUBST([VALGRIND_FLAGS])
 #
 gmake_version=unknown
 missing_gmake_version=yes

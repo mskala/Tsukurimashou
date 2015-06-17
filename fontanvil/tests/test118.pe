@@ -1,0 +1,17 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/NimbusLGCUni-Regular.sfd
+
+#tests whether we get unicode encodings right when there are multiple encodings
+# per glyph
+#tests whether we get references right in postscript fonts
+
+Open("tests/fonts/NimbusLGCUni-Regular.sfd")
+Generate("ttmp/Nimbus.otf")
+Generate("ttmp/Nimbus.ttf")
+Generate("ttmp/Nimbus.pfb")
+"helper118A.pe"("tests/fonts/NimbusLGCUni-Regular.sfd","ttmp/Nimbus.otf")
+"helper118A.pe"("tests/fonts/NimbusLGCUni-Regular.sfd","ttmp/Nimbus.ttf")
+"helper118B.pe"("tests/fonts/NimbusLGCUni-Regular.sfd","ttmp/Nimbus.otf")
+"helper118B.pe"("tests/fonts/NimbusLGCUni-Regular.sfd","ttmp/Nimbus.pfb")
+GetCoverageCounts()
+Quit()

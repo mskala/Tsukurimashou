@@ -1,0 +1,8 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/merged.cff
+
+Quit(77) # Needs a missing font file
+
+Open("tests/fonts/merged.cff")
+GetCoverageCounts()
+Quit()

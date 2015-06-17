@@ -1,0 +1,9 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/cmbsy10.pfb
+#Make sure merge fonts works...
+
+Quit(77) # Needs a missing font file
+
+New();
+MergeFonts("tests/fonts/cmbsy10.pfb")
+GetCoverageCounts()

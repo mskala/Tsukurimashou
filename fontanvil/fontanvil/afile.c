@@ -1,4 +1,4 @@
-/* $Id: afile.c 4014 2015-06-14 09:50:22Z mskala $ */
+/* $Id: afile.c 4026 2015-06-17 08:27:06Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -376,6 +376,7 @@ int afscanf(AFILE *f,const char *r,...) {
        case '\t':
        case '\v':
 	 convspec=' ';
+	 rptr++;
 	 break;
 
        default:

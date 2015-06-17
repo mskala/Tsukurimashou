@@ -103,6 +103,29 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 
 ############################################################################
 
+# TESTING
+
+# must go before "filenames for autotools"
+
+TEST_EXTENSIONS = .pe
+PE_LOG_COMPILER = @VALGRIND@ @VALGRIND_FLAGS@ $(builddir)/fontanvil/fontanvil
+
+TESTS = \
+  tests/test001.pe tests/test002.pe tests/test003.pe tests/test004.pe \
+  tests/test005.pe tests/test006.pe tests/test007.pe tests/test008.pe \
+  tests/test009.pe tests/test010.pe tests/test101.pe tests/test102.pe \
+  tests/test103.pe tests/test104.pe tests/test105.pe tests/test106.pe \
+  tests/test107.pe tests/test108.pe tests/test109.pe tests/test110.pe \
+  tests/test111.pe tests/test112.pe tests/test113.pe tests/test114.pe \
+  tests/test115.pe tests/test116.pe tests/test117.pe tests/test118.pe \
+  tests/test119.pe tests/test120.pe tests/test121.pe tests/test122.pe \
+  tests/test123.pe tests/test124.pe tests/test125.pe tests/test126.pe \
+  tests/test127.pe
+
+$(TESTS): ttmp/.dirstamp
+
+############################################################################
+
 # FILENAMES FOR AUTOTOOLS
 
 AM_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
@@ -120,8 +143,10 @@ BUILT_SOURCES = Makefile
 
 bin_PROGRAMS = fontanvil/fontanvil
 
+dist_noinst_SCRIPTS = $(TESTS)
 nodist_bin_SCRIPTS = \
   fontanvil/fontimage fontanvil/fontlint fontanvil/sfddiff
+
 dist_man_MANS = \
   fontanvil/fontanvil.1 fontanvil/fontimage.1 fontanvil/fontlint.1 \
   fontanvil/sfddiff.1
@@ -163,7 +188,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/bvedit.c fontanvil/crctab.c \
  fontanvil/cvexport.c fontanvil/cvimages.c fontanvil/cvundoes.c \
  fontanvil/dumpbdf.c fontanvil/dumppfa.c fontanvil/effects.c \
- fontanvil/encoding.c fontanvil/featurefile.c fontanvil/flaglist.c \
+ fontanvil/encoding.c fontanvil/featurefile.c \
  fontanvil/fontviewbase.c fontanvil/freetype.c fontanvil/fvcomposite.c \
  fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
  fontanvil/glyphcomp.c \
@@ -185,7 +210,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/start.c fontanvil/stemdb.c fontanvil/svg.c \
  fontanvil/tottfaat.c fontanvil/tottfgpos.c fontanvil/tottf.c \
  fontanvil/tottfvar.c fontanvil/ttfinstrs.c fontanvil/ttfspecial.c \
- fontanvil/ufo.c fontanvil/unicoderange.c fontanvil/utils.c \
+ fontanvil/ufo.c fontanvil/unicoderange.c \
  fontanvil/winfonts.c fontanvil/woff.c fontanvil/zapfnomen.c \
  fontanvil/splinerefigure.c fontanvil/gb12345.c
 
@@ -235,7 +260,18 @@ EXTRA_DIST = COPYING README \
   Unicode/README.TXT \
   $(texfiles) doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
   fontanvil/fontimage.pe fontanvil/fontlint.pe fontanvil/sfddiff.pe \
-  $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) share/default-n
+  $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) share/default-n \
+  tests/fonts/AHBugs.sfd tests/fonts/AddExtremumTest.sfd \
+  tests/fonts/Ambrosia.sfd tests/fonts/AmbrosiaBold.sfd \
+  tests/fonts/AmbrosiaItalic.sfd tests/fonts/Caliban.sfd \
+  tests/fonts/CaslonMM.sfd tests/fonts/DataURI.sfd \
+  tests/fonts/DejaVuSerif.sfd tests/fonts/FormalScript.sfd \
+  tests/fonts/Hinting.sfd tests/fonts/ItalicHand.sfd \
+  tests/fonts/NimbusLGCUni-Regular.sfd tests/fonts/NumberPoints.sfd \
+  tests/fonts/OmittedCharBugs.sfd tests/fonts/OverlapBugs.sfd \
+  tests/fonts/QuadraticConversionBug.sfd tests/fonts/SimplifyBugs.sfd \
+  tests/fonts/SplineOverlapBug1.sfd tests/fonts/VKern.sfd \
+  tests/fonts/dvng10a-crash.sfd tests/fonts/feta20.pfb
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-debug
 
@@ -285,7 +321,8 @@ CLEANFILES =
 
 DISTCLEANFILES = \
   aminclude.am _stdint.h \
-  inc/fontanvil-config.h inc/stamp-h1
+  inc/fontanvil-config.h inc/stamp-h1 \
+  */.dirstamp
 
 MAINTAINERCLEANFILES = \
   inc/fontanvil-config.h.in
@@ -304,6 +341,15 @@ kill-empty:
 	$(call kill_empty,otf/*.otf)
 
 .PHONY: kill-empty
+
+############################################################################
+
+# DIRSTAMPS
+
+ttmp/.dirstamp:
+	$(AM_V_GEN)
+	$(AM_V_at)$(MKDIR_P) ttmp
+	$(AM_V_at)echo directory created > ttmp/.dirstamp
 
 ############################################################################
 

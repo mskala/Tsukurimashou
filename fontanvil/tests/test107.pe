@@ -1,0 +1,6 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/Ambrosia*.sfd
+#Make sure we can generate a font family
+
+helper107.pe("tests/fonts/Ambrosia.sfd", "tests/fonts/AmbrosiaBold.sfd", "tests/fonts/AmbrosiaItalic.sfd");
+GetCoverageCounts()

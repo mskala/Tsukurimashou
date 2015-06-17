@@ -1,0 +1,11 @@
+#!/usr/local/bin/fontanvil
+#Copy/Paste (in scripts) broke (and crashed) when I made them look at the
+# real clipboard.
+
+New()
+Select("a")
+Copy()
+#Used to crash here
+Paste()
+#Used to crash here
+GetCoverageCounts()

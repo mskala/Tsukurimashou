@@ -47,7 +47,7 @@ echo 'x' | idsgrep \
   -f /dev/null -f /dev/null -f /dev/null -f /dev/null -f /dev/null \
   -f /dev/null -f /dev/null -f /dev/null -f /dev/null -f /dev/null \
   'y' 2> /dev/null
-wc -l < upd-out.$$ > upd-outb.$$
+wc -l < upd-out.$$ | tr -d ' 	'> upd-outb.$$
 if echo 160 | diff upd-outb.$$ -
 then
   rm -f upd-out.$$ upd-outb.$$ upd-gf$$.ttf

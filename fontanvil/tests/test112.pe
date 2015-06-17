@@ -1,0 +1,37 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/QuadraticConversionBug.sfd, fonts/CourierNew.ttf
+#Make sure quadratic conversion works...
+
+Quit(77) # Needs a missing font file
+
+Open("tests/fonts/QuadraticConversionBug.sfd");
+# the following use to crash (when in a script)
+SetFontOrder(2);
+Save("ttmp/QuadraticConversionBug2.sfd")
+Close()
+# this used to give us IErrors
+Open("ttmp/QuadraticConversionBug2.sfd")
+Close()
+
+# Ok. We can do the conversion without egregious errors. But are the glyphs similar?
+Open("tests/fonts/QuadraticConversionBug.sfd");
+Reencode("Original");
+SelectAll()
+Copy()
+SetFontOrder(2);
+CompareGlyphs(-1,1.5)
+Close()
+
+#Now can we go to cubic?
+Open("tests/fonts/CourierNew.ttf");
+Generate("ttmp/CourierNew.pfb")
+SetFontOrder(3);
+Save("ttmp/CourierNew.sfd")
+Close()
+Open("ttmp/CourierNew.pfb")
+Close()
+Open("ttmp/CourierNew.sfd")
+Close()
+
+GetCoverageCounts()
+Quit()

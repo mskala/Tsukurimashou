@@ -1,0 +1,69 @@
+#!/usr/local/bin/fontanvil
+
+Open("tests/fonts/Caliban.sfd");
+Print( "...Opened Caliban")
+SelectAll()
+AutoHint();
+Print("...AutoHinted");
+Save("ttmp/Caliban.sfd");
+Print("...Saved As");
+Save("ttmp/Caliban.sfdir");
+Print("...Saved As dir");
+Generate("ttmp/Caliban.ps","bdf",-1);
+Print( "...Generated type0")
+Generate("ttmp/Caliban.ttf","ms",2);
+Print( "...Generated ttf w/ ms bitmaps")
+Generate("ttmp/Caliban.ttf","apple",-1);
+Print( "...Generated ttf w/ apple bitmaps")
+Generate("ttmp/Caliban.otf","ms",-1);
+Print( "...Generated otf w/ ms bitmaps")
+Generate("ttmp/Caliban.otf","ttf",0x80);
+Print( "...Generated otf w/ both apple and ot modes set (& bitmaps)")
+Generate("ttmp/Caliban.dfont","sbit",-1);
+Print( "...Generated sbit")
+Generate("ttmp/Caliban.","otb",-1);
+Print( "...Generated X11 opentype bitmap")
+Generate("ttmp/Caliban.dfont","dfont",-1);
+Print( "...Generated dfont w/ apple bitmaps")
+SetFontOrder(2);
+ClearTable("cvt ")
+SelectAll()
+AutoInstr();
+Print("...AutoInstructed");
+Generate("ttmp/Caliban.ttf","apple",-1);
+Print( "...Generated ttf w/ apple bitmaps (again) and instructions")
+Close();
+
+Open("ttmp/Caliban.sfd");
+Print( "...Read sfd")
+Close();
+Open("ttmp/Caliban.sfdir");
+Print( "...Read sfdir")
+Close();
+Open("ttmp/Caliban.ps");
+Print( "...Read type0 (if FontForge did not understand /CalibanBase, then that is ok)")
+Close();
+Open("ttmp/Caliban.ttf");
+Print( "...Read ttf")
+Close();
+Open("ttmp/Caliban.otf");
+Print( "...Read otf")
+Close();
+Open("ttmp/Caliban.dfont");
+Print( "...Read dfont")
+Close();
+Open("ttmp/Caliban.otb");
+Print( "...Read otb")
+Close();
+Open("ttmp/Caliban-10.bdf");
+Generate("ttmp/Caliban.dfont","sbit",-1);
+Print( "...Read bdf & Generated sbit")
+Close();
+
+New();
+Save("ttmp/foo.sfd");
+Print( "...Saved new font")
+Close();
+
+GetCoverageCounts()
+Quit()

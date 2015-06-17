@@ -1,0 +1,13 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/OverlapBugs.sfd
+#Needs: fonts/feta20.pfb
+#Make sure remove overlap sort of works...
+
+Open("tests/fonts/OverlapBugs.sfd")
+SelectAll();
+RemoveOverlap();
+
+Open("tests/fonts/feta20.pfb");
+SelectAll();
+RemoveOverlap();
+GetCoverageCounts()

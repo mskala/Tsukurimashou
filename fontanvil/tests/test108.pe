@@ -1,0 +1,8 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/ItalicHand.sfd
+#Make sure we can generate GPOS, GSUB and morx tables without crashing.
+
+Open("tests/fonts/ItalicHand.sfd")
+Generate("ttmp/ItalicHand.ttf","",0);
+Generate("ttmp/ItalicHand.ttf","",16);
+GetCoverageCounts()
