@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4030 2015-06-17 14:05:20Z mskala $ */
+/* $Id: scripting.c 4031 2015-06-17 18:38:53Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -8581,9 +8581,11 @@ static struct builtins {
 static void bGetCoverageCounts(Context *c) {
    int i;
    
+   afputs("-----BEGIN FONTANVIL COVERAGE COUNTS-----\n",astdout);
    for (i=0;builtins[i].name;i++) {
       afprintf(astdout,"%-30s %20lu\n",builtins[i].name,builtins[i].count);
    }
+   afputs("-----END FONTANVIL COVERAGE COUNTS-----\n",astdout);
 }
 
 /* ******************************* Interpreter ****************************** */

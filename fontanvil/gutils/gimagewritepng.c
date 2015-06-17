@@ -1,4 +1,4 @@
-/* $Id: gimagewritepng.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimagewritepng.c 4031 2015-06-17 18:38:53Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -51,8 +51,18 @@ static void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg) {
    fprintf(stderr, "%s\n", warning_msg);
 }
 
-int GImageWrite_Png(GImage * gi, FILE * fp, int progressive) {
-   struct _GImage *base = gi->list_len == 0 ? gi->u.image : gi->u.images[0];
+
+static void fa_png_write_cb(png_structp png_ptr,void *data,uint32_t length) {
+   if (afwrite(data,1,length,(AFILE *)png_ptr->io_ptr)<0)
+      png_error(png_ptr,"Error writing PNG");
+}
+
+static void fa_png_flush_cb(png_structp png_ptr) {
+   /* NOOP */
+}
+
+int GImageWrite_Png(GImage *gi,AFILE *fp,int progressive) {
+   struct _GImage *base = gi->list_len==0?gi->u.image:gi->u.images[0];
    png_structp png_ptr;
    png_infop info_ptr;
    png_byte **rows;
@@ -60,12 +70,12 @@ int GImageWrite_Png(GImage * gi, FILE * fp, int progressive) {
    int bit_depth;
    int color_type;
    int num_palette;
-   png_bytep trans_alpha = NULL;
-   png_color_16p trans_color = NULL;
-   png_colorp palette = NULL;
-   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
-				     (void *) NULL, user_error_fn,
-				     user_warning_fn);
+   png_bytep trans_alpha=NULL;
+   png_color_16p trans_color=NULL;
+   png_colorp palette=NULL;
+   png_ptr=png_create_write_struct(PNG_LIBPNG_VER_STRING,
+				   (void *) NULL, user_error_fn,
+				   user_warning_fn);
 
    if (!png_ptr) {
       return (false);
@@ -82,11 +92,11 @@ int GImageWrite_Png(GImage * gi, FILE * fp, int progressive) {
    if (setjmp(*png_set_longjmp_fn(png_ptr, longjmp, sizeof(jmp_buf))))
 #   endif
    {
-      png_destroy_write_struct(&png_ptr, (png_infopp) NULL);
+      png_destroy_write_struct(&png_ptr,(png_infopp)NULL);
       return (false);
    }
 
-   png_init_io(png_ptr, fp);
+   png_set_write_fn(png_ptr,fp,&fa_png_write_cb,&fa_png_flush_cb);
 
    bit_depth = 8;
    num_palette = base->clut == NULL ? 2 : base->clut->clut_len;
@@ -161,17 +171,17 @@ int GImageWrite_Png(GImage * gi, FILE * fp, int progressive) {
    return (1);
 }
 
-int GImageWritePng(GImage * gi, char *filename, int progressive) {
-   FILE *fp;
+int GImageWritePng(GImage *gi,char *filename,int progressive) {
+   AFILE *fp;
 
    int ret;
 
    /* open the file */
-   fp = fopen(filename, "wb");
+   fp=afopen(filename, "wb");
    if (!fp)
       return (false);
-   ret = GImageWrite_Png(gi, fp, progressive);
-   fclose(fp);
+   ret=GImageWrite_Png(gi,fp,progressive);
+   afclose(fp);
    return (ret);
 }
 

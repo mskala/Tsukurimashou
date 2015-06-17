@@ -1,4 +1,4 @@
-/* $Id: gimage.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: gimage.h 4031 2015-06-17 18:38:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -219,9 +219,8 @@ extern GImage *GImageRead_Png(FILE * fp);
 
 extern GImage *GImageReadPng(char *filename);
 
-extern int GImageWrite_Png(GImage * gi, FILE * fp, int progressive);
-
-extern int GImageWritePng(GImage * gi, char *filename, int progressive);
+extern int GImageWrite_Png(GImage *gi,AFILE *fp,int progressive);
+extern int GImageWritePng(GImage *gi, char *filename,int progressive);
 
 extern GImage *GImageReadGif(char *filename);
 extern int GImageWriteGif(GImage * gi, char *filename, int progressive);

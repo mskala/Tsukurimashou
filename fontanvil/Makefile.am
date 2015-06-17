@@ -107,8 +107,9 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 
 # must go before "filenames for autotools"
 
-TEST_EXTENSIONS = .pe
+TEST_EXTENSIONS = .pe .pl
 PE_LOG_COMPILER = @VALGRIND@ @VALGRIND_FLAGS@ $(builddir)/fontanvil/fontanvil
+PL_LOG_COMPILER = @PERL@
 
 TESTS = \
   tests/test001.pe tests/test002.pe tests/test003.pe tests/test004.pe \
@@ -120,7 +121,10 @@ TESTS = \
   tests/test115.pe tests/test116.pe tests/test117.pe tests/test118.pe \
   tests/test119.pe tests/test120.pe tests/test121.pe tests/test122.pe \
   tests/test123.pe tests/test124.pe tests/test125.pe tests/test126.pe \
-  tests/test127.pe
+  tests/test127.pe \
+  tests/coverage.pl
+
+tests/coverage.log: $(patsubst %.pe,%.log,$(filter tests/%.pe,$(TESTS)))
 
 $(TESTS): ttmp/.dirstamp
 
