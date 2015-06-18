@@ -1,4 +1,4 @@
-/* $Id: afile.c 4026 2015-06-17 08:27:06Z mskala $ */
+/* $Id: afile.c 4035 2015-06-18 16:00:10Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -784,7 +784,7 @@ static int mem_fclose(AFILE *f) {
 }
 
 static int mem_feof(AFILE *f) {
-   return ((MEM_AFILE *)f)->ptr==((MEM_AFILE *)f)->used;
+   return ((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->used;
 }
 
 static int mem_zero(AFILE *f) {
@@ -849,6 +849,10 @@ static size_t mem_fread(void *ptr,size_t size,size_t nmemb,AFILE *f) {
      return -1;
    if ((size<=0) || (nmemb<=0))
      return 0;
+   if (((MEM_AFILE *)f)->used==((MEM_AFILE *)f)->ptr) {
+      ((MEM_AFILE *)f)->ptr++;
+      return -1; /* make "end of file" true */
+   }
 
    rsize=size*nmemb;
    if (rsize>((MEM_AFILE *)f)->used-((MEM_AFILE *)f)->ptr) {
@@ -891,8 +895,8 @@ static int mem_ungetc(int c,AFILE *f) {
    if (((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->used)
      ((MEM_AFILE *)f)->used=((MEM_AFILE *)f)->ptr;
 
-   if (((MEM_AFILE *)f)->used>=((MEM_AFILE *)f)->allocated)
-     mem_resize((MEM_AFILE *)f,((MEM_AFILE *)f)->used+1);
+   if (((MEM_AFILE *)f)->used+2>((MEM_AFILE *)f)->allocated)
+     mem_resize((MEM_AFILE *)f,((MEM_AFILE *)f)->used+2);
    
    if (((MEM_AFILE *)f)->used>=((MEM_AFILE *)f)->ptr)
      memmove(((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr+1,

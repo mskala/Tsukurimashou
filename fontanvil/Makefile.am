@@ -108,7 +108,12 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 # must go before "filenames for autotools"
 
 TEST_EXTENSIONS = .pe .pl
-PE_LOG_COMPILER = @VALGRIND@ @VALGRIND_FLAGS@ $(builddir)/fontanvil/fontanvil
+if COND_VALGRIND
+  PE_LOG_COMPILER = @VALGRIND@ @VALGRIND_FLAGS@ \
+    $(builddir)/fontanvil/fontanvil
+else
+  PE_LOG_COMPILER = $(builddir)/fontanvil/fontanvil
+endif
 PL_LOG_COMPILER = @PERL@
 
 TESTS = \

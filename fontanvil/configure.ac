@@ -255,14 +255,17 @@ AC_PATH_PROG([PDFLATEX],[pdflatex])
 AC_ARG_VAR([PERL],[Perl])
 AC_PATH_PROG([PERL],[perl])
 AC_PATH_PROG([UNZIP],[unzip],[unzip])
+#
+AC_ARG_VAR([VALGRIND],[Valgrind])
 AC_PATH_PROG([VALGRIND],[valgrind])
+AC_ARG_VAR([VALGRIND_FLAGS],[options for Valgrind])
+AC_SUBST([VALGRIND_FLAGS])
 AS_IF([test "x$VALGRIND" = "x"],
   [VALGRIND_FLAGS=],
   [uname=`uname`
-   AS_IF([test "x$uname" = "xDawrin"],
-     [VALGRIND_FLAGS='--dsymutil=yes --leak-check=full'],
-     [VALGRIND_FLAGS='--leak-check=full'])])
-AC_SUBST([VALGRIND_FLAGS])
+   AS_IF([test "x$uname" = "xDarwin"],
+     [VALGRIND_FLAGS='--dsymutil=yes --leak-check=full --track-origins=yes'],
+     [VALGRIND_FLAGS='--leak-check=full --track-origins=yes'])])
 #
 gmake_version=unknown
 missing_gmake_version=yes
@@ -515,6 +518,12 @@ AS_IF([test x"${my_real_type}" = x"double"],
     [AC_MSG_ERROR([Floating point type '${my_real_type}' not recognized.])],
     [])])
 #
+AC_ARG_ENABLE([valgrind],
+  [AS_HELP_STRING([--disable-valgrind],
+    [don't use Valgrind for tests even if available])],
+    [enable_valgrind=no],
+    [enable_valgrind=yes])
+#
 # Process user options
 #
 tsu_colour=yes
@@ -527,6 +536,8 @@ AM_CONDITIONAL([COND_COLOUR],[test '!' "$tsu_colour" = no])
 AS_IF([test "x$enable_silent_rules" = "x"],
   [enable_silent_rules=yes
    AM_DEFAULT_VERBOSITY=0])
+#
+AM_CONDITIONAL([COND_VALGRIND],[test '!' "$enable_valgrind" = no])
 #
 ############################################################################
 #

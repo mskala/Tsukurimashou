@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: tottf.c 4035 2015-06-18 16:00:10Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -589,13 +589,12 @@ static int uniranges[][3]={
 };
 
 static int32_t getuint32(AFILE *ttf) {
-   int ch1=agetc(ttf);
-
-   int ch2=agetc(ttf);
-
-   int ch3=agetc(ttf);
-
-   int ch4=agetc(ttf);
+   int32_t ch1,ch2,ch3,ch4;
+   
+   ch1=agetc(ttf);
+   ch2=agetc(ttf);
+   ch3=agetc(ttf);
+   ch4=agetc(ttf);
 
    if (ch4==EOF)
       return (EOF);
@@ -5504,7 +5503,7 @@ static void dumpcmap(struct alltabs *at,SplineFont *sf,
 }
 
 int32_t filechecksum(AFILE *file) {
-   uint32_t sum=0, chunk;
+   uint32_t sum=0,chunk;
 
    afseek(file,0,SEEK_SET);
    while (1) {
@@ -6124,11 +6123,8 @@ static int initTables(struct alltabs *at,SplineFont *sf,
 		      enum fontformat format, int32_t * bsizes,
 		      enum bitmapformat bf, int flags) {
    int i, j, aborted, offset;
-
    BDFFont *bdf;
-
    struct ttf_table *tab;
-
    if (strmatch(at->map->enc->enc_name, "symbol")==0 && format==ff_ttf)
       format=ff_ttfsym;
 
@@ -6379,7 +6375,6 @@ static char *Tag2String(uint32_t tag) {
 
 static void dumpttf(AFILE *ttf,struct alltabs *at,enum fontformat format) {
    int32_t checksum;
-
    int i, head_index=-1;
 
    /* I can't use afwrite because I (may) have to byte swap everything */
@@ -6409,10 +6404,10 @@ static void dumpttf(AFILE *ttf,struct alltabs *at,enum fontformat format) {
 
    if (head_index != -1) {
       checksum=filechecksum(ttf);
-      checksum=0xb1b0afba - checksum;
+      checksum=0xb1b0afba-checksum;
       afseek(ttf, at->tabdir.alpha[head_index]->offset + 2 * sizeof(int32_t),
 	    SEEK_SET);
-      putlong(ttf, checksum);
+      putlong(ttf,checksum);
    }
 
    /* ttfcopyfile closed all the files (except ttf) */
@@ -6420,13 +6415,9 @@ static void dumpttf(AFILE *ttf,struct alltabs *at,enum fontformat format) {
 
 static void DumpGlyphToNameMap(char *fontname,SplineFont *sf) {
    char *d, *e;
-
    char *newname=malloc(strlen(fontname) + 10);
-
    AFILE *file;
-
    int i, k, max;
-
    SplineChar *sc;
 
    strcpy(newname, fontname);

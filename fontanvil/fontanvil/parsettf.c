@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: parsettf.c 4035 2015-06-18 16:00:10Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -784,27 +784,21 @@ static int32_t regionchecksom(AFILE *file,int start,int len) {
 }
 
 static void ValidateTTFHead(AFILE *ttf,struct ttfinfo *info) {
-   /* When doing font lint we want to check the ttf header and make */
-   /*  sure all the offsets and lengths are valid, and the checksums */
-   /*  match. Most of the time this is just extra work and we don't */
-   /*  bather */
+   /* When doing fontlint we want to check the ttf header and make */
+   /* sure all the offsets and lengths are valid, and the checksums */
+   /* match. Most of the time this is just extra work and we don't */
+   /* bother */
    uint32_t restore_this_pos=aftell(ttf);
-
    struct tt_tables {
       uint32_t tag;
       uint32_t checksum;
       uint32_t offset;
       uint32_t length;
    } *tabs, temp;
-
    int i, j;
-
    uint32_t file_len;
-
    int sr, es, rs, e_sr, e_es, e_rs;
-
    int hashead, hashhea, hasmaxp, masos2, haspost, hasname, hasos2;
-
    int hasloca, hascff, hasglyf;
 
    info->numtables=getushort(ttf);

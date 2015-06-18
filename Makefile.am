@@ -131,6 +131,12 @@ TSU_V_NAPERL_=$(TSU_V_NAPERL_$(AM_DEFAULT_VERBOSITY))
 TSU_V_NAPERL_0=echo \
   "$(ansi_cleareol)  $(ansi_magenta)PERL$(ansi_default)  " $@;
 
+TSU_V_RM=$(TSU_V_RM_$(V))
+TSU_V_RM_=$(TSU_V_RM_$(AM_DEFAULT_VERBOSITY))
+TSU_V_RM_0=@echo \
+  "$(ansi_cleareol)   $(ansi_red)RM$(ansi_default)   "
+TSU_V_RM_1=@true
+
 TSU_V_NASKIP=$(TSU_V_NASKIP_$(V))
 TSU_V_NASKIP_=$(TSU_V_NASKIP_$(AM_DEFAULT_VERBOSITY))
 TSU_V_NASKIP_0=printf '%s%s%s' \
@@ -271,10 +277,21 @@ MOSTLYCLEANFILES = \
   mp/mande-a[c-f].mp mp/mande-[b-d][0-9a-f].mp mp/.hglstamp \
   otf/KazouemashouPuruufu.otf \
   pe/assemble-font.pe pe/make-empty.pe pe/*-bearing.pe \
-  pfb/*.afm pfb/*.pfb \
-  pfbtmp/*.pfb prf/*.prf sfd/*.sfd sum/*.sum \
+  sfd/*.sfd \
   tsukurimashou.nam \
   txt/fontlog.txt txt/tsukurimashou.eids
+
+mostlyclean-local:
+	$(TSU_V_RM) 'pfb/*.afm'
+	$(AM_V_at)find pfb -name '*.afm' | xargs rm -f
+	$(TSU_V_RM) 'pfb/*.pfb'
+	$(AM_V_at)find pfb -name '*.pfb' | xargs rm -f
+	$(TSU_V_RM) 'pfbtmp/*.pfb'
+	$(AM_V_at)find pfbtmp -name '*.pfb' | xargs rm -f
+	$(TSU_V_RM) 'prf/*.prf'
+	$(AM_V_at)find prf -name '*.prf' | xargs rm -f
+	$(TSU_V_RM) 'sum/*.sum'
+	$(AM_V_at)find sum -name '*.sum' | xargs rm -f
 
 CLEANFILES = \
   otf/Tsukurimashou*.otf \
