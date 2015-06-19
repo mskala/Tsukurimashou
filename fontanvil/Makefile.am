@@ -221,7 +221,8 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/tottfvar.c fontanvil/ttfinstrs.c fontanvil/ttfspecial.c \
  fontanvil/ufo.c fontanvil/unicoderange.c \
  fontanvil/winfonts.c fontanvil/woff.c fontanvil/zapfnomen.c \
- fontanvil/splinerefigure.c fontanvil/gb12345.c
+ fontanvil/splinerefigure.c fontanvil/gb12345.c \
+ fontanvil/pescript.l
 
 fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a \
 	$(top_builddir)/gutils/libgutils.a

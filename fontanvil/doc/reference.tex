@@ -80,8 +80,16 @@ Syntax for constant values looks like this:
 # strings have single or double quotes
 'Single'
 "double"
-"foo\bar" # \n for newline
-# it is not clear what other escapes may exist
+"foo\nbar" # \n for newline, in both kinds of strings
+"foo\
+bar" # backslash continues string past a line break, this is "foobar"
+"foo\\bar" # backslash escapes other characters, this is "foo\bar" 
+'"' # a string normally ends with the same quote that opened it
+
+# unescaped newline also validly ends a string, but don't do this!
+# current FontAnvil supports it for FontForge compatibility
+# some future version may make it an error
+"foo
 
 # array literals use square brackets and commas
 [1,2,3,0uABC,'foo']

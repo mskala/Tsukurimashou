@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4031 2015-06-17 18:38:53Z mskala $ */
+/* $Id: scripting.c 4038 2015-06-19 14:28:15Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -8592,101 +8592,6 @@ static void bGetCoverageCounts(Context *c) {
 
 static void expr(Context *,Val *val);
 
-static int AddScriptLine(AFILE *script,const char *line) {
-   long pos;
-   
-   if ((pos=aftell(script))<0)
-     return -1;
-   afputs(line, script);
-#   ifndef _NO_LIBREADLINE
-   afputs("\n\n", script);
-#   endif
-   afseek(script,pos,SEEK_SET);
-   return agetc(script);
-}
-
-static int _buffered_cgetc(Context *c) {
-   if (c->interactive) {
-      int ch;
-
-      if ((ch=agetc(c->script)) < 0) {
-#   ifdef _NO_LIBREADLINE
-	 static char *linebuf=NULL;
-	 static size_t lbsize=0;
-
-	 if (agetline(&linebuf,&lbsize,astdin) > 0) {
-	    ch=AddScriptLine(c->script,linebuf);
-	 } else {
-	    if (linebuf) {
-	       free(linebuf);
-	       linebuf=NULL;
-	    }
-	 }
-#   else
-	 char *line=readline("> ");
-
-	 if (line) {
-	    ch=AddScriptLine(c->script, line);
-	    add_history(line);
-	    free(line);
-	 }
-#   endif
-	 if (ch < 0) {
-	    /* stdin is closed, so stop reading from it */
-	    c->interactive=0;
-	 }
-      }
-      return ch;
-   }
-   return agetc(c->script);
-}
-
-static int _cgetc(Context *c) {
-   int ch;
-
-   ch=_buffered_cgetc(c);
-   if (verbose > 0)
-      putchar(ch);
-   if (ch=='\r') {
-      int nch=_buffered_cgetc(c);
-
-      if (nch != '\n')
-	 aungetc(nch, c->script);
-      else if (verbose > 0)
-	 putchar('\n');
-      ch='\n';
-      ++c->lineno;
-   } else if (ch=='\n')
-      ++c->lineno;
-   return (ch);
-}
-
-static int cgetc(Context *c) {
-   int ch;
-
-   if (c->ungotch) {
-      ch=c->ungotch;
-      c->ungotch=0;
-      return (ch);
-   }
- tail_recursion:
-   ch=_cgetc(c);
-   if (ch=='\\') {
-      ch=_cgetc(c);
-      if (ch=='\n')
-	 goto tail_recursion;
-      c->ungotch=ch;
-      ch='\\';
-   }
-   return (ch);
-}
-
-static void cungetc(int ch,Context *c) {
-   if (c->ungotch)
-      ErrorMsg(2,"Attempt to unget two characters\n");
-   c->ungotch=ch;
-}
-
 static long ctell(Context *c) {
    long pos=aftell(c->script);
 
@@ -8701,70 +8606,34 @@ static void cseek(Context *c,long pos) {
    c->backedup=false;
 }
 
-static enum token_type ff_NextToken(Context *c) {
+static enum token_type old_ff_NextToken(Context *c) {
    int ch, nch;
    enum token_type tok=tt_error;
 
-   if (c->backedup) {
-      c->backedup=false;
-      return (c->tok);
-   }
    do {
-      ch=cgetc(c);
-      nch=cgetc(c);
-      cungetc(nch, c);
-      if (isalpha(ch) || ch=='$' || ch=='_'
-	  || (ch=='.' && !isdigit(nch)) || ch=='@') {
-	 char *pt=c->tok_text, *end=c->tok_text + TOK_MAX;
-
-	 int toolong=false;
-
-	 while ((isalnum(ch) || ch=='$' || ch=='_' || ch=='.'
-		 || ch=='@') && pt < end) {
-	    *pt++=ch;
-	    ch=cgetc(c);
-	 }
-	 *pt='\0';
-	 while (isalnum(ch) || ch=='$' || ch=='_' || ch=='.') {
-	    ch=cgetc(c);
-	    toolong=true;
-	 }
-	 cungetc(ch, c);
-	 tok=tt_name;
-	 if (toolong)
-	    ScriptError(c, "Name too long");
-	 else {
-	    int i;
-
-	    for (i=0; keywords[i].name != NULL; ++i)
-	       if (strcmp(keywords[i].name, c->tok_text)==0) {
-		  tok=keywords[i].tok;
-		  break;
-	       }
-	 }
-      } else if (isdigit(ch) || ch=='.') {
+	if (isdigit(ch) || ch=='.') {
 	 int val=0;
 
 	 double fval=0, dval, div;
 
 	 tok=tt_number;
-	 nch=cgetc(c);
-	 cungetc(nch, c);
+/*	 nch=cgetc(c);
+	 cungetc(nch, c); */
 	 if (ch != '0' || nch=='.') {
 	    while (isdigit(ch)) {
 	       val=10 * val + (ch - '0');
-	       ch=cgetc(c);
+/*	       ch=cgetc(c); */
 	    }
 	    fval=val;
 	    if (ch=='.') {
 	       tok=tt_real;
 	       dval=0;
 	       div=1;
-	       ch=cgetc(c);
+/*	       ch=cgetc(c); */
 	       while (isdigit(ch)) {
 		  dval=10 * dval + (ch - '0');
 		  div *= 10;
-		  ch=cgetc(c);
+/*		  ch=cgetc(c); */
 	       }
 	       fval=val + (dval / div);
 	    }
@@ -8772,16 +8641,16 @@ static enum token_type ff_NextToken(Context *c) {
 	       int s=1, e=0;
 
 	       tok=tt_real;
-	       ch=cgetc(c);
-	       if (ch=='+')
+/*	       ch=cgetc(c); */
+/*	       if (ch=='+')
 		  ch=cgetc(c);
-	       else if (ch=='-') {
+	       else */ if (ch=='-') {
 		  s=-1;
-		  ch=cgetc(c);
+/*		  ch=cgetc(c); */
 	       }
 	       while (isdigit(ch)) {
 		  e=10 * e + (ch - '0');
-		  ch=cgetc(c);
+/*		  ch=cgetc(c); */
 	       }
 	       if (s < 0) {
 		  while (e > 0) {
@@ -8795,28 +8664,8 @@ static enum token_type ff_NextToken(Context *c) {
 		  }
 	       }
 	    }
-	 } else if (isdigit(ch=cgetc(c))) {
-	    while (isdigit(ch) && ch < '8') {
-	       val=8 * val + (ch - '0');
-	       ch=cgetc(c);
-	    }
-	 } else if (ch=='X' || ch=='x' || ch=='u' || ch=='U') {
-	    if (ch=='u' || ch=='U')
-	       tok=tt_unicode;
-	    ch=cgetc(c);
-	    while (isdigit(ch) || (ch >= 'a' && ch <= 'f')
-		   || (ch >= 'A' && ch <= 'F')) {
-	       if (isdigit(ch))
-		  ch -= '0';
-	       else if (ch >= 'a' && ch <= 'f')
-		  ch += 10 - 'a';
-	       else
-		  ch += 10 - 'A';
-	       val=16 * val + ch;
-	       ch=cgetc(c);
-	    }
 	 }
-	 cungetc(ch, c);
+/*	 cungetc(ch, c); */
 	 if (tok==tt_real) {
 	    c->tok_val.u.fval=fval;
 	    c->tok_val.type=v_real;
@@ -8826,17 +8675,15 @@ static enum token_type ff_NextToken(Context *c) {
 	 }
       } else if (ch=='\'' || ch=='"') {
 	 int quote=ch;
-
 	 char *pt=c->tok_text, *end=c->tok_text + TOK_MAX;
-
 	 int toolong=false;
 
-	 ch=cgetc(c);
+/*	 ch=cgetc(c); */
 	 while (ch != EOF && ch != '\r' && ch != '\n' && ch != quote) {
 	    if (ch=='\\') {
-	       ch=cgetc(c);
+/*	       ch=cgetc(c); */
 	       if (ch=='\n' || ch=='\r') {
-		  cungetc(ch, c);
+/*		  cungetc(ch, c); */
 		  ch='\\';
 	       } else if (ch==EOF)
 		  ch='\\';
@@ -8847,176 +8694,32 @@ static enum token_type ff_NextToken(Context *c) {
 	       *pt++=ch;
 	    else
 	       toolong=true;
-	    ch=cgetc(c);
+/*	    ch=cgetc(c); */
 	 }
 	 *pt='\0';
-	 if (ch=='\n' || ch=='\r')
-	    cungetc(ch, c);
+/*	 if (ch=='\n' || ch=='\r')
+	    cungetc(ch, c); */
 	 tok=tt_string;
 	 if (toolong)
 	    ScriptError(c, "String too long");
-      } else
-	 switch (ch) {
-	   case EOF:
-	      tok=tt_eof;
-	      break;
-	   case ' ':
-	   case '\t':
-	      /* Ignore spaces */
-	      break;
-	   case '#':
-	      /* Ignore comments */
-	      while ((ch=cgetc(c)) != EOF && ch != '\r' && ch != '\n');
-	      if (ch=='\r' || ch=='\n')
-		 cungetc(ch, c);
-	      break;
-	   case '(':
-	      tok=tt_lparen;
-	      break;
-	   case ')':
-	      tok=tt_rparen;
-	      break;
-	   case '[':
-	      tok=tt_lbracket;
-	      break;
-	   case ']':
-	      tok=tt_rbracket;
-	      break;
-	   case ',':
-	      tok=tt_comma;
-	      break;
-	   case ':':
-	      tok=tt_colon;
-	      break;
-	   case ';':
-	   case '\n':
-	   case '\r':
-	      tok=tt_eos;
-	      break;
-	   case '-':
-	      tok=tt_minus;
-	      ch=cgetc(c);
-	      if (ch=='=')
-		 tok=tt_minuseq;
-	      else if (ch=='-')
-		 tok=tt_decr;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '+':
-	      tok=tt_plus;
-	      ch=cgetc(c);
-	      if (ch=='=')
-		 tok=tt_pluseq;
-	      else if (ch=='+')
-		 tok=tt_incr;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '!':
-	      tok=tt_not;
-	      ch=cgetc(c);
-	      if (ch=='=')
-		 tok=tt_ne;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '~':
-	      tok=tt_bitnot;
-	      break;
-	   case '*':
-	      tok=tt_mul;
-	      ch=cgetc(c);
-	      if (ch=='=')
-		 tok=tt_muleq;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '%':
-	      tok=tt_mod;
-	      ch=cgetc(c);
-	      if (ch=='=')
-		 tok=tt_modeq;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '/':
-	      ch=cgetc(c);
-	      if (ch=='/') {
-		 /* another comment to eol */ ;
-		 while ((ch=cgetc(c)) != EOF && ch != '\r' && ch != '\n');
-		 if (ch=='\r' || ch=='\n')
-		    cungetc(ch, c);
-	      } else if (ch=='*') {
-		 int found=false;
-
-		 ch=cgetc(c);
-		 while (!found || ch != '/') {
-		    if (ch==EOF)
-		       break;
-		    if (ch=='*')
-		       found=true;
-		    else
-		       found=false;
-		    ch=cgetc(c);
-		 }
-	      } else if (ch=='=') {
-		 tok=tt_diveq;
-	      } else {
-		 tok=tt_div;
-		 cungetc(ch, c);
-	      }
-	      break;
-	   case '&':
-	      tok=tt_bitand;
-	      ch=cgetc(c);
-	      if (ch=='&')
-		 tok=tt_and;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '|':
-	      tok=tt_bitor;
-	      ch=cgetc(c);
-	      if (ch=='|')
-		 tok=tt_or;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '^':
-	      tok=tt_xor;
-	      break;
-	   case '=':
-	      tok=tt_assign;
-	      ch=cgetc(c);
-	      if (ch=='=')
-		 tok=tt_eq;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '>':
-	      tok=tt_gt;
-	      ch=cgetc(c);
-	      if (ch=='=')
-		 tok=tt_ge;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   case '<':
-	      tok=tt_lt;
-	      ch=cgetc(c);
-	      if (ch=='=')
-		 tok=tt_le;
-	      else
-		 cungetc(ch, c);
-	      break;
-	   default:
-	      ErrorMsg(2,"%s:%d Unexpected character %c (%d)\n",
-		       c->filename, c->lineno, ch, ch);
-	      traceback(c);
-	 }
+      }
    } while (tok==tt_error);
 
+   c->tok=tok;
+   return (tok);
+}
+
+enum token_type yylex(Context *);
+
+static enum token_type ff_NextToken(Context *c) {
+   int ch, nch;
+   enum token_type tok=tt_error;
+
+   if (c->backedup) {
+      c->backedup=false;
+      return (c->tok);
+   }
+   while (tok==tt_error) tok=yylex(c);
    c->tok=tok;
    return (tok);
 }
