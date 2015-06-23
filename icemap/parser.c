@@ -86,7 +86,7 @@ NODE *get_token(PARSER_STATE *ps) {
       switch (state) {
        
        case 1: /* reading keyword */
-	 if (isalpha(ch))
+	 if (isalpha(ch) || (ch=='_'))
 	   buf[in_buf++]=tolower(ch);
 	 else {
 	    ungetc(ch,ps->file_stack->fp);
@@ -356,7 +356,7 @@ NODE *get_token(PARSER_STATE *ps) {
 	    buf_size=100;
 	    in_buf=0;
 	    start_of_line=0;
-	 } else
+	 } else if (ch!=';')
 	   buf[in_buf++]=ch;
 	 break;
 	 
@@ -535,6 +535,29 @@ static void handle_string_or_null(PARSER_STATE *ps,char **val,char *name) {
 
 /**********************************************************************/
 
+static void handle_id(PARSER_STATE *ps) {
+   NODE *id_tok;
+
+   if (context_stack==NULL) {
+      parse_error(ps,"cannot set map ID without a context");
+      exit(1);
+   }
+   
+   if (context_stack->id!=NULL)
+     free(context_stack->id);
+
+   ps->ignore_semicolon=0;
+   id_tok=get_token(ps);
+   ps->ignore_semicolon=1;
+   if ((id_tok->type!=nt_string) && (id_tok->type!=nt_keyword)) {
+      parse_error(ps,"map ID isn't a string or identifier");
+      node_delete(id_tok);
+      return;
+   }
+   context_stack->id=strdup(id_tok->cp);
+   node_delete(id_tok);
+}
+
 static void handle_priority(PARSER_STATE *ps) {
    NODE *tok;
    
@@ -623,7 +646,25 @@ void parse(void) {
 
 	    else if (strcmp(token->cp,"}")==0)
 	      handle_closing_brace(&ps);
+
+	    else if (strcmp(token->cp,"cfile")==0)
+	      handle_c_file(&ps);
+
+	    else if (strcmp(token->cp,"cwrite")==0)
+	      handle_c_write(&ps);
 	    
+	    else if (strcmp(token->cp,"generate")==0)
+	      handle_generate(&ps);
+
+	    else if (strcmp(token->cp,"hfile")==0)
+	      handle_h_file(&ps);
+
+	    else if (strcmp(token->cp,"hwrite")==0)
+	      handle_h_write(&ps);
+	    
+	    else if (strcmp(token->cp,"id")==0)
+	      handle_id(&ps);
+
 	    else if (strcmp(token->cp,"parserx")==0)
 	      handle_string_or_null(&ps,
 				    &(context_stack->parse_regex),"parserx");

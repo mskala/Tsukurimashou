@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4038 2015-06-19 14:28:15Z mskala $ */
+/* $Id: scripting.c 4043 2015-06-23 13:50:07Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1942,10 +1942,11 @@ static void bArray(Context *c) {
 
 static void bAskUser(Context *c) {
    char *quest, *def="";
-   char buffer[300];
+   char *line=NULL;
    char *t1;
    char *loc;
-
+   size_t lbsize=0;
+   
    if (c->a.vals[1].type != v_str
        || (c->a.argc==3 && c->a.vals[2].type != v_str))
      ScriptError(c, "Expected string argument");
@@ -1955,22 +1956,35 @@ static void bAskUser(Context *c) {
    
    t1=script2utf8_copy(quest);
    loc=utf82def_copy(t1);
-
+   
    printf("%s",loc);
    free(t1);
    free(loc);
-
-   buffer[0]='\0';
+   
    c->return_val.type=v_str;
-   if (fgets(buffer,sizeof(buffer),stdin)==NULL) {
-      clearerr(stdin);
+   
+#   ifdef _NO_LIBREADLINE
+   if (agetline(&line,&lbsize,astdin)<0) {
+      if (line!=NULL) free(line);
+      line=NULL;
+   }
+#   else
+   line=readline("");
+   lbsize=strlen(line);
+   line=(char *)realloc(line,lbsize+2);
+   strcat(line,"\n");
+#   endif
+   
+   if (line==NULL) {
       c->return_val.u.sval=copy("");
-   } else if (buffer[0]=='\0' || buffer[0]=='\n' || buffer[0]=='\r')
-	c->return_val.u.sval=copy(def);
-   else {
-      t1=def2utf8_copy(buffer);
+   } else if (line[0]=='\0' || line[0]=='\n' || line[0]=='\r') {
+      free(line);
+      c->return_val.u.sval=copy(def);
+   } else {
+      t1=def2utf8_copy(line);
       c->return_val.u.sval=utf82script_copy(t1);
       free(t1);
+      free(line);
    }
 }
 
@@ -8592,137 +8606,15 @@ static void bGetCoverageCounts(Context *c) {
 
 static void expr(Context *,Val *val);
 
-static long ctell(Context *c) {
-   long pos=aftell(c->script);
-
-   if (c->ungotch)
-      --pos;
-   return (pos);
-}
+void ff_FlushScanner(void);
 
 static void cseek(Context *c,long pos) {
    afseek(c->script, pos, SEEK_SET);
-   c->ungotch=0;
    c->backedup=false;
+   ff_FlushScanner();
 }
 
-static enum token_type old_ff_NextToken(Context *c) {
-   int ch, nch;
-   enum token_type tok=tt_error;
-
-   do {
-	if (isdigit(ch) || ch=='.') {
-	 int val=0;
-
-	 double fval=0, dval, div;
-
-	 tok=tt_number;
-/*	 nch=cgetc(c);
-	 cungetc(nch, c); */
-	 if (ch != '0' || nch=='.') {
-	    while (isdigit(ch)) {
-	       val=10 * val + (ch - '0');
-/*	       ch=cgetc(c); */
-	    }
-	    fval=val;
-	    if (ch=='.') {
-	       tok=tt_real;
-	       dval=0;
-	       div=1;
-/*	       ch=cgetc(c); */
-	       while (isdigit(ch)) {
-		  dval=10 * dval + (ch - '0');
-		  div *= 10;
-/*		  ch=cgetc(c); */
-	       }
-	       fval=val + (dval / div);
-	    }
-	    if (ch=='e' || ch=='E') {
-	       int s=1, e=0;
-
-	       tok=tt_real;
-/*	       ch=cgetc(c); */
-/*	       if (ch=='+')
-		  ch=cgetc(c);
-	       else */ if (ch=='-') {
-		  s=-1;
-/*		  ch=cgetc(c); */
-	       }
-	       while (isdigit(ch)) {
-		  e=10 * e + (ch - '0');
-/*		  ch=cgetc(c); */
-	       }
-	       if (s < 0) {
-		  while (e > 0) {
-		     fval /= 10.0;
-		     --e;
-		  }
-	       } else {
-		  while (e > 0) {
-		     fval *= 10.0;
-		     --e;
-		  }
-	       }
-	    }
-	 }
-/*	 cungetc(ch, c); */
-	 if (tok==tt_real) {
-	    c->tok_val.u.fval=fval;
-	    c->tok_val.type=v_real;
-	 } else {
-	    c->tok_val.u.ival=val;
-	    c->tok_val.type=tok==tt_number ? v_int : v_unicode;
-	 }
-      } else if (ch=='\'' || ch=='"') {
-	 int quote=ch;
-	 char *pt=c->tok_text, *end=c->tok_text + TOK_MAX;
-	 int toolong=false;
-
-/*	 ch=cgetc(c); */
-	 while (ch != EOF && ch != '\r' && ch != '\n' && ch != quote) {
-	    if (ch=='\\') {
-/*	       ch=cgetc(c); */
-	       if (ch=='\n' || ch=='\r') {
-/*		  cungetc(ch, c); */
-		  ch='\\';
-	       } else if (ch==EOF)
-		  ch='\\';
-	       else if (ch=='n')
-		  ch='\n';
-	    }
-	    if (pt < end)
-	       *pt++=ch;
-	    else
-	       toolong=true;
-/*	    ch=cgetc(c); */
-	 }
-	 *pt='\0';
-/*	 if (ch=='\n' || ch=='\r')
-	    cungetc(ch, c); */
-	 tok=tt_string;
-	 if (toolong)
-	    ScriptError(c, "String too long");
-      }
-   } while (tok==tt_error);
-
-   c->tok=tok;
-   return (tok);
-}
-
-enum token_type yylex(Context *);
-
-static enum token_type ff_NextToken(Context *c) {
-   int ch, nch;
-   enum token_type tok=tt_error;
-
-   if (c->backedup) {
-      c->backedup=false;
-      return (c->tok);
-   }
-   while (tok==tt_error) tok=yylex(c);
-   c->tok=tok;
-   return (tok);
-}
+enum token_type ff_NextToken(Context *c);
 
 static void ff_backuptok(Context *c) {
    if (c->backedup)
@@ -9708,7 +9600,7 @@ static void expr(Context *c,Val *val) {
 }
 
 static void doforeach(Context *c) {
-   long here=ctell(c);
+   long here=aftell(c->script);
    int lineno=c->lineno;
    enum token_type tok;
    int i, selsize;
@@ -9766,7 +9658,7 @@ static void doforeach(Context *c) {
 }
 
 static void dowhile(Context *c) {
-   long here=ctell(c);
+   long here=aftell(c->script);
    int lineno=c->lineno;
    enum token_type tok;
    Val val;

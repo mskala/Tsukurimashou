@@ -1,4 +1,4 @@
-/* $Id: afile.c 4035 2015-06-18 16:00:10Z mskala $ */
+/* $Id: afile.c 4040 2015-06-20 14:03:08Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -277,8 +277,8 @@ static double scan_double(AFILE *f,int *error) {
       /* digits after decimal point */
       c=agetc(f);
       while ((c>='0') && (c<='9')) {
-	 rval+=((c-'0')*fraction);
 	 fraction/=10.0;
+	 rval+=((c-'0')*fraction);
 	 *error=0;
 	 c=agetc(f);
       }

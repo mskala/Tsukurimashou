@@ -41,6 +41,9 @@ void handle_opening_brace(PARSER_STATE *ps) {
       ctx->dupe_priority=dp_error;
       ctx->skip_regex=NULL;
       ctx->parse_regex=NULL;
+      ctx->c_file=default_c_file;
+      ctx->h_file=default_h_file;
+      ctx->generator=NULL;
 
    } else {
       ctx->id=strdup(context_stack->id);
@@ -55,6 +58,17 @@ void handle_opening_brace(PARSER_STATE *ps) {
 	ctx->parse_regex=strdup(ctx->parent->parse_regex);
       else
 	ctx->parse_regex=NULL;
+
+      if (ctx->parent->c_file!=NULL)
+	ctx->c_file=strdup(ctx->parent->c_file);
+      else
+	ctx->c_file=NULL;
+      if (ctx->parent->h_file!=NULL)
+	ctx->h_file=strdup(ctx->parent->h_file);
+      else
+	ctx->h_file=NULL;
+      
+      ctx->generator=ctx->parent->generator;
    }
 
    context_stack=ctx;
@@ -71,8 +85,24 @@ void handle_closing_brace(PARSER_STATE *ps) {
       exit(1);
    }
    
-   /* FIXME handle actually generating the code */
+   /* first, attempt whatever the user asked for */
+   if (context_stack->generator!=NULL)
+     context_stack->generator(context_stack);
+
+   /* then look for a generator that actually likes this kind of data */
+   if ((context_stack->generator==NULL) &&
+       (prefer_basic_array(context_stack)>0))
+     gen_basic_array(context_stack);
+
+   /* finally, just try for any generator */
+   if (context_stack->generator==NULL)
+     gen_basic_array(context_stack);
    
+   if (context_stack->generator==NULL) {
+      parse_error(ps,"no code generator for these data types");
+      exit(1);
+   }
+
    arrow_map_delete(&(context_stack->am));
    
    free(context_stack->id);
@@ -87,3 +117,29 @@ void handle_closing_brace(PARSER_STATE *ps) {
 
    ps->ignore_semicolon=1;
 }
+
+/**********************************************************************/
+
+static void gen_nothing(CONTEXT *c) {
+   /* NOOP */
+}
+
+void handle_generate(PARSER_STATE *ps) {
+   NODE *tok;
+   
+   ps->ignore_semicolon=0;
+   tok=get_token(ps);
+
+   if (tok->type!=nt_keyword)
+     parse_error(ps,"generate target must be a keyword");
+   else if (strcmp(tok->cp,"basic_array")==0)
+     context_stack->generator=gen_basic_array;
+   else if (strcmp(tok->cp,"nothing")==0)
+     context_stack->generator=gen_nothing;
+   else
+     parse_error(ps,"unknown generate target keyword %s",tok->cp);
+   
+   node_delete(tok);
+   ps->ignore_semicolon=1;
+}
+

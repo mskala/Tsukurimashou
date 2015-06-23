@@ -61,15 +61,6 @@ m4_define([TSUKU_DELETE_CMDLINE_OPTION],
 ])
            ])
 
-# FIXME these directory deletions are from Tsukurimashou - audit them for
-# appropriateness to FontAnvil!
-
-# exec-prefix is special because it's an install dir option without "dir"
-TSUKU_DELETE_CMDLINE_OPTION([exec-prefix])
-TSUKU_DEFINITION_SUBST([_AC_INIT_PARSE_ARGS],
-                         [for ac_var in\([^#]*\)\bexec_prefix\b],
-                         [for ac_var in\1])
-
 # Delete unwanted non-install-dir options
 TSUKU_DELETE_CMDLINE_OPTION([gas])
 TSUKU_DELETE_CMDLINE_OPTION([nfp])
@@ -94,7 +85,6 @@ m4_define([TSUKU_DELETE_INSTDIR_OPTION],
                                   [])])
 
 # Delete nearly all of the default install dirs
-TSUKU_DELETE_INSTDIR_OPTION([bin])
 TSUKU_DELETE_INSTDIR_OPTION([data])
 TSUKU_DELETE_INSTDIR_OPTION([dvi])
 TSUKU_DELETE_INSTDIR_OPTION([html])
@@ -111,54 +101,6 @@ TSUKU_DELETE_INSTDIR_OPTION([ps])
 TSUKU_DELETE_INSTDIR_OPTION([sbin])
 TSUKU_DELETE_INSTDIR_OPTION([sharedstate])
 TSUKU_DELETE_INSTDIR_OPTION([sysconf])
-
-# generate a "case" pattern matching chunk
-#   TSUKU_CASE_PATTERN_CHUNK(option,shortest,before,after)
-m4_define([TSUKU_CASE_PATTERN_CHUNK],
-  [$3$1$4[]m4_if([$1],[$2],[],
-  [TSUKU_CASE_PATTERN_CHUNK(m4_substr($1,0,m4_eval(m4_len($1)-1)),
-      [$2],[$3],[$4])])])
-
-# Add a new installation directory
-#   TSUKU_ADD_INSTDIR_OPTION(dirname,under,default,help,abbrev,casebefore)
-m4_define([TSUKU_ADD_INSTDIR_OPTION],
-          [TSUKU_DEFINITION_SUBST([_AC_INIT_PARSE_ARGS],
-                                  [AC_SUBST(\[$2\].*)dnl\
-],
-                                  [\&AC_SUBST([$1dir],['${$2}/$3'])dnl\
-])
-           TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
-                                  [\
-\(.*--$2=.*\)\
-],
-                                  m4_expand([\
-\1\
-AS_HELP_STRING([--$1dir=DIR],m4_expand([$4 @<:@m4_toupper([$2])/$3@:>@]))\
-]))
-           TSUKU_DEFINITION_SUBST([_AC_INIT_PARSE_ARGS],
-                                  [\
-\(.*$6.*\)\
-],
-                                  [\
-  -$1dir[]TSUKU_CASE_PATTERN_CHUNK([$1dir],[$5],[ | --],[])@:}@
-    ac_prev=$1dir ;;
-  -$1dir=*TSUKU_CASE_PATTERN_CHUNK([$1dir],[$5],[ | --],[=*])@:}@
-    $1dir=$ac_optarg ;;\
-\
-\1\
-])
-           TSUKU_DEFINITION_SUBST([_AC_INIT_PARSE_ARGS],
-                                  [for ac_var in\([^#]*.\b$2\)\b],
-                                  [for ac_var in\1 $1dir])])
-
-# Add our new directories
-TSUKU_ADD_INSTDIR_OPTION([font],[datarootdir],[fonts],[fonts],
-  [f],[obsolete gas option])
-TSUKU_ADD_INSTDIR_OPTION([ttf],[fontdir],[TTF],
-  [TrueType fonts (parasite only)],
-  [tt],[ --prefix ])
-TSUKU_ADD_INSTDIR_OPTION([otf],[fontdir],[OTF],[OpenType fonts],
-  [ot],[ --prefix ])
 
 # Reduce the ridiculous verbosity of Autoconf's help message
 TSUKU_DEFINITION_SUBST([_AC_INIT_HELP],
@@ -187,7 +129,7 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.68])
-AC_INIT([FontAnvil],[0.2],[mskala@ansuz.sooke.bc.ca],[fontanvil],
+AC_INIT([FontAnvil],[0.3],[mskala@ansuz.sooke.bc.ca],[fontanvil],
   [[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([config])
@@ -199,7 +141,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
-AC_COPYRIGHT([Copyright (C) 2014 Matthew Skala])
+AC_COPYRIGHT([Copyright (C) 2014, 2015 Matthew Skala])
 AC_SUBST([release_date],["March 2, 2014"])
 AM_SILENT_RULES
 AC_USE_SYSTEM_EXTENSIONS
@@ -209,11 +151,11 @@ AC_USE_SYSTEM_EXTENSIONS
 # Pass version numbers and dates
 #
 AC_DEFINE([FONTANVIL_VERSION_MAJOR],[0],[FontAnvil Major Version])
-AC_DEFINE([FONTANVIL_VERSION_MINOR],[1],[FontAnvil Minor Version])
+AC_DEFINE([FONTANVIL_VERSION_MINOR],[3],[FontAnvil Minor Version])
 AC_SUBST([VERSION_MAJOR],[0])
-AC_SUBST([VERSION_MINOR],[1])
+AC_SUBST([VERSION_MINOR],[3])
 AC_SUBST([VERSION_PATCH],[0])
-AC_SUBST([FONTANVIL_VERSION],[0.1.0])
+AC_SUBST([FONTANVIL_VERSION],[0.3.0])
 FONTANVIL_MODTIME="`date '+%s'`L"
 FONTANVIL_MODTIME_STR="`date +'%H:%M %Z %e-%b-%Y'`"
 FONTANVIL_VERSIONDATE="`date '+%Y%m%d'`"
@@ -246,6 +188,10 @@ AC_PROG_SED
 AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
 AC_PATH_PROG([GZIP],[gzip])
+AC_ARG_VAR([ICEMAP],[Icemap])
+AC_PATH_PROG([ICEMAP],[icemap])
+AS_IF([test "x$ICEMAP" = "xno"],[ICEMAP=])
+AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "x"])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])
 AC_PATH_PROG([MAKE],[make])
@@ -502,7 +448,7 @@ AC_ARG_ENABLE([color-build],[dnl],[],[enable_color_build=yes])
 #
 AC_ARG_ENABLE([debug],
   [AS_HELP_STRING([--enable-debug],[turn on debug build])],
-  [enable_debug=yes],
+  [],
   [enable_debug=no])
 AS_IF([test "x$enable_debug" = xyes],
   [CFLAGS="$CFLAGS -g -O0" ; CPPFLAGS="$CPPFLAGS -g -O0"])
@@ -519,11 +465,11 @@ AS_IF([test x"${my_real_type}" = x"double"],
     [AC_MSG_ERROR([Floating point type '${my_real_type}' not recognized.])],
     [])])
 #
-AC_ARG_ENABLE([valgrind],
-  [AS_HELP_STRING([--disable-valgrind],
-    [don't use Valgrind for tests even if available])],
-    [enable_valgrind=no],
-    [enable_valgrind=yes])
+AC_ARG_WITH([valgrind],
+  [AS_HELP_STRING([--with-valgrind],
+    [use Valgrind for tests if available])],
+    [],
+    [with_valgrind=no])
 #
 # Process user options
 #
@@ -538,7 +484,7 @@ AS_IF([test "x$enable_silent_rules" = "x"],
   [enable_silent_rules=yes
    AM_DEFAULT_VERBOSITY=0])
 #
-AM_CONDITIONAL([COND_VALGRIND],[test '!' "$enable_valgrind" = no])
+AM_CONDITIONAL([COND_VALGRIND],[test '!' "$with_valgrind" = no])
 #
 ############################################################################
 #

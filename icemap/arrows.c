@@ -1,6 +1,6 @@
 /*
  * Add arrows to the current mapping context
- * Copyright (C) 2014  Matthew Skala
+ * Copyright (C) 2014, 2015  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ void arrow_map_new(ARROW_MAP *am) {
    am->num_buckets=16;
    for (i=0;i<am->num_buckets;i++)
      am->arrows[i]=NULL;
+   am->first_key=NULL;
+   am->last_key=NULL;
 }
 
 void arrow_map_copy(ARROW_MAP *zm,ARROW_MAP *am) {
@@ -44,6 +46,8 @@ void arrow_map_copy(ARROW_MAP *zm,ARROW_MAP *am) {
    zm->arrows=(NODE **)malloc(sizeof(NODE *)*am->num_buckets);
    zm->num_arrows=am->num_arrows;
    zm->num_buckets=am->num_buckets;
+   zm->first_key=am->first_key;
+   zm->last_key=am->last_key;
 
    for (i=0;i<zm->num_buckets;i++) {
      zm->arrows[i]=NULL;
@@ -76,6 +80,8 @@ void arrow_map_delete(ARROW_MAP *am) {
 	node_delete(am->arrows[i]);
 	am->arrows[i]=n;
      }
+   am->first_key=NULL;
+   am->last_key=NULL;
    
    free(am->arrows);
 }
@@ -129,7 +135,7 @@ int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp) {
    NODE *n,**new_arrows;
    int i;
 
-#if 1
+#if 0
    if (k->type==nt_int)
      printf("%d",k->x);
    else
@@ -183,6 +189,11 @@ int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp) {
       
       v->refs++;
       k->nodes=v;
+      
+      if ((am->first_key==NULL) || (atom_cmp(k,am->first_key)==-1))
+	am->first_key=k;
+      if ((am->last_key==NULL) || (atom_cmp(k,am->last_key)==1))
+	am->last_key=k;
       
       am->num_arrows++;
       if (am->num_arrows>am->num_buckets) {

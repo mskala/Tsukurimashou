@@ -1,6 +1,6 @@
 /*
  * General header file for Icemap
- * Copyright (C) 2014  Matthew Skala
+ * Copyright (C) 2014, 2015  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,12 +30,12 @@
 
 typedef enum _NODE_TYPE {
    nt_keyword,
-     nt_parser_file,
-     nt_eof,
-     nt_int,
-     nt_int_range,
-     nt_string,
-     nt_map_entry
+   nt_parser_file,
+   nt_eof,
+   nt_int,
+   nt_int_range,
+   nt_string,
+   nt_map_entry
 } NODE_TYPE;
 
 typedef struct _NODE {
@@ -80,6 +80,7 @@ typedef enum _DUPE_PRIORITY {
 typedef struct _ARROW_MAP {
    NODE **arrows;
    int num_arrows,num_buckets;
+   NODE *first_key,*last_key;
 } ARROW_MAP;
 
 void arrow_map_new(ARROW_MAP *am);
@@ -102,12 +103,36 @@ typedef struct _CONTEXT {
    ARROW_MAP am;
    DUPE_PRIORITY dupe_priority;
    char *skip_regex,*parse_regex;
+   char *c_file,*h_file;
+   void (*generator)(struct _CONTEXT *);
 } CONTEXT;
 
 extern CONTEXT *context_stack;
 
 void handle_opening_brace(PARSER_STATE *ps);
 void handle_closing_brace(PARSER_STATE *ps);
+void handle_generate(PARSER_STATE *ps);
+
+/**********************************************************************/
+
+/* arrays.c */
+
+int prefer_basic_array(CONTEXT *c);
+void gen_basic_array(CONTEXT *c);
+
+/**********************************************************************/
+
+/* fileout.c */
+
+extern char *default_c_file,*default_h_file;
+
+FILE *open_output_file(char *);
+void close_output_files(void);
+
+void handle_c_file(PARSER_STATE *ps);
+void handle_h_file(PARSER_STATE *ps);
+void handle_c_write(PARSER_STATE *ps);
+void handle_h_write(PARSER_STATE *ps);
 
 /**********************************************************************/
 

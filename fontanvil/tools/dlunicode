@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+mkdir -p unicode
+mkdir -p unicode/apple
+
+for fn in Blocks.txt ; do \
+  wget -N -nd -P unicode http://unicode.org/Public/UCD/latest/ucd/$fn ; \
+done
+
+wget -N -nd -P unicode/apple -r -l1 -np \
+  http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/

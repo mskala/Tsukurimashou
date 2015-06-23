@@ -1,130 +1,4 @@
-\chapter{Language reference}
-
-\begin{framed}
-I did not invent the PE scripting language, and the person who did never
-fully specified or documented it.  This documentation is based partly on
-reverse engineering; is descriptive, not prescriptive; and may not be
-complete, nor even correct as far as it goes.  The only way to be sure
-what a PE script will really do is to run it and find out, like
-Rikki-Tikki-Tavi.
-\end{framed}
-
-\section{Basic syntax}
-
-Scripts are text files.  The traditional filename extension is \texttt{.pe}~;
-scripts in the wild have also been seen using a \texttt{.ff} extension.
-
-Comments may be marked in any of these ways:
-\begin{verbatim}
-# hash for a shell-like comment to the end of the line
-
-// two slashes for a C++-like comment to the end of the line
-
-/*
-C-style comment delimiters,
-which may cover multiple lines.
-*/
-\end{verbatim}
-
-FontForge looks for a shebang line at the top, pointing at itself, and may
-also attempt to recognize command-line options there to distinguish between
-PE scripts and Python scripts.  FontAnvil only supports PE scripts and is
-planned to more or less ignore the shebang; however, this code has not yet
-been worked over since its importation from FontForge and may not really
-work as desired at the moment.
-
-\begin{framed}
-Newlines are syntactically significant, marking the ends of
-statements.
-To continue a statement onto more than one line, you must use a backslash to
-escape the newline.  
-\end{framed}
-
-Semicolons also mark the ends of statements, and may be used to join
-multiple statements onto a single line.  Semicolons at the ends of lines
-create empty statements, which are ignored.
-
-\begin{framed}
-PE script is case sensitive for reserved words, variable names,
-and built-in function names.
-\end{framed}
-
-\section{Data types, variables, and scope}
-
-Values have associated types.  Variables can hold values of arbitrary type
-and remember what type they are.  The types are:
-\begin{itemize}
-\item integer
-\item floating-point number
-\item Unicode code point (note that this is a distinct data type from
-``integer'')
-\item string
-\item array
-\end{itemize}
-
-Syntax for constant values looks like this:
-\begin{verbatim}
-# integers in decimal, hexadecimal, or octal, using C syntax
-123     # first digit nonzero means decimal
-0x52    # first digits 0x means hex, this is 82 decimal
-041     # first digit zero and not hex means octal, this is 33 decimal
-
-# floating-point numbers indicated by the decimal point; note the decimal
-# point is always . regardless of locale
-123.45  # basic decimal float
-4.9e5   # scientific notation, this is 490000
-
-# Unicode code points are hexadecimal numbers marked by 0u
-0u1f4a9 # everybody's favourite
-
-# strings have single or double quotes
-'Single'
-"double"
-"foo\nbar" # \n for newline, in both kinds of strings
-"foo\
-bar" # backslash continues string past a line break, this is "foobar"
-"foo\\bar" # backslash escapes other characters, this is "foo\bar" 
-'"' # a string normally ends with the same quote that opened it
-
-# unescaped newline also validly ends a string, but don't do this!
-# current FontAnvil supports it for FontForge compatibility
-# some future version may make it an error
-"foo
-
-# array literals use square brackets and commas
-[1,2,3,0uABC,'foo']
-\end{verbatim}
-
-\begin{framed}
-Literal string constants in PE script syntax are limited to 256 characters. 
-You can, however, construct longer strings with multiple literals and the
-concatenation operator.
-\end{framed}
-
-\begin{framed}
-The language seems intended to allow arrays to have more than one dimension
-(i.e.\ each element of an array may itself be an array) but such arrays are
-currently broken in both FontForge and FontAnvil, and usually cause the
-interpreter to crash.  I hope to fix this bug in FontAnvil, but if I fix it
-and FontForge doesn't, then any scripts that make use of multidimensional
-arrays will be incompatible with FontForge.
-\end{framed}
-
-\section{Operators}
-
-FIXME
-
-\section{Control structures}
-
-FIXME
-
-\section{Most of the built-in functions}
-
-FIXME
-
-This section should document the functions.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Reference to built-in functions}
 
 \PEFuncRef{ATan2}
 
@@ -211,6 +85,10 @@ be included in the return value.  On error, or if the user enters a blank
 line, the return value will be \textit{default} if specified, or an empty
 string if not.
 This function may be used without a loaded font.
+
+If \FFdiff FontAnvil was compiled with readline support, then
+\texttt{AskUser()} will allow command-line editing.  This is a
+FontAnvil extension, not supported by FontForge.
 
 \PEFuncRef{AutoCounter}
 
@@ -337,10 +215,10 @@ This function may be used without a loaded font.  Note that the integers are
 spelling them out in UTF-8.  It is also possible, but not recommended, to
 construct strings that are invalid UTF-8.
 
-I have submitted a patch to FontForge, but as of the current writing (June
-2015), FontForge does not document its support of negative numbers, and
-documents but does not correctly implement array-valued
-arguments.  FontAnvil behaves as documented here.
+I \FFdiff have submitted a patch to FontForge, but as of the current writing
+(June 2015), FontForge does not document its support of negative numbers,
+and documents but does not correctly implement array-valued arguments. 
+FontAnvil behaves as documented here.
 
 \PEFuncRef{Clear}
 
@@ -459,8 +337,9 @@ This function may be used without a loaded font.
 
 Causes FontAnvil [sic] to attempt to write to a null pointer, which should
 crash the interpreter.  This may be of some use in debugging.  Arguments are
-ignored.  Function name retained for compatibility.  In FontForge, this
-function requires a loaded font, but that limitation is removed in FontAnvil.
+ignored.  Function name retained for compatibility.  In \FFdiff FontForge,
+this function requires a loaded font, but that limitation is removed in
+FontAnvil.
 
 \PEFuncRef{DefaultATT}
 
@@ -573,7 +452,7 @@ Print (to standard output) a table listing all the built-in functions in the
 interpreter and how many times each one has been called in the current run
 of FontAnvil; this information may be useful in verifying the coverage of an
 interpreter test suite.
-This function may be used without a loaded font.  This function is a
+This function may be used without a loaded font.  This \FFdiff function is a
 FontAnvil extension and is not available in FontForge.  The details of its
 operation may change in some future version.
 
@@ -1575,18 +1454,20 @@ This function may be used without a loaded font.
 \PEFuncRef{WritePfm}
 
 \noindent\texttt{WritePfm(}\textit{arg}\texttt{)}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Built-in functions in FontAnvil and not in FontForge}
 
 \PEFuncRef{Shell}
 
-Shell:  takes one argument, the name of a shell command to execute.  Returns
+Shell:  \FFdiff takes
+one argument, the name of a shell command to execute.  Returns
 the return value from doing so.
 
 \section{Built-in functions in FontForge and not in FontAnvil}
 
-Because FontAnvil does not support plugins, these built-in functions have
+Because \FFdiff FontAnvil does not support plugins, these built-in functions have
 been removed from the language:  LoadPlugin, LoadPluginDir.
 
 Similarly, FontAnvil does not store persistent preferences in the user's
@@ -1614,8 +1495,3 @@ bDontAutoHint, bSubstitutionPoints, BuildComposit, GetPrefs.
 In mainline FontForge, some functions were deprecated and had their
 implementations replaced by error messages.  In FontAnvil these functions
 have been removed entirely:  PrivateToCvt, RemoveATT.
-
-\section{Other notes}
-
-FIXME
-

@@ -1,6 +1,6 @@
-/* $Id: pescript.l 4046 2015-06-23 20:32:49Z mskala $ */
+/* $Id: feascan.l 4046 2015-06-23 20:32:49Z mskala $ */
 /*
- * Tokenizer for FontAnvil PE script
+ * Tokenizer for Adobe-style feature files
  * Copyright (C) 2015  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify

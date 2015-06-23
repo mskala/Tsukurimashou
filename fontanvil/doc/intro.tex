@@ -1,4 +1,4 @@
-% $Id: intro.tex 4013 2015-06-13 13:58:54Z mskala $
+% $Id: intro.tex 4043 2015-06-23 13:50:07Z mskala $
 
 \chapter{Introduction}
 
@@ -40,71 +40,23 @@ development, it is frequently the case that the stable and correct execution
 of scripts is not at the top of the priority list, and bugs in script
 processing are fixed late if at all.
 
-There was a recent proposal to remove PE script from FontForge entirely,
-which if adopted would be fatal to systems that depend on it, and not at all
-adequately addressed by the concommitant proposal to encourage current PE
-script users to ``upgrade'' to Python.  That particular proposal was not
-immediately implemented, but it seems clear that the writing is on the wall
-for continued FontForge support of PE script.  The mere \emph{risk} of
-possibly losing PE scripting in up-to-date versions of widely-used Linux
-distributions at some unspecified point in the future is a big problem for
-the Tsukurimashou Project.  FontForge for all its good points can no longer
-be thought of as a stable platform for non-interactive font manipulation;
-its priorities are other things entirely.  But my own project absolutely
-requires a stable platform for non-interactive font manipulation.  FontAnvil
-is intended to fill the gap.
+FontAnvil is intended to be a stable PE script interpreter for use by the
+Tsukurimashou Project, to eliminate the dependence on a third-party package
+whose strategic goals are not closely aligned to Tsukurimashou's.  FontForge
+may well stop supporting PE script entirely in the future; if Tsukurimashou
+is to survive, then Tsukurimashou cannot be dependent on FontForge.
 
-FontAnvil's development is driven by the needs of the Tsukurimashou Project,
-but my hope is that it will also be useful to the many other projects
-currently using PE scripts for non-interactive font processing.  I am also a
-member of the FontForge development team, and I hope that FontAnvil's
-existence will reduce the pressure on the FontForge team to continue
-development of code that is outside most of the team's interests and
-expertise.  Splitting the PE script interpreter into a standalone package
-should be beneficial to almost everyone involved.
+\clearpage
 
-Some plans and goals for FontAnvil are:
-\begin{itemize}
-\item Whatever Tsukurimashou needs from a font manipulation script
-  interpreter.
-\item Return statements indented to the same level as the surrounding code.
-\item A ``remove overlaps'' command that works.
-\item No GUI, Python, or exotic dependencies.
-\item No recursive Autotools.
-\item Correct memory management.
-\item Simple directory and linking structure (in particular, no
-  unnecessary shared libraries).
-\item Main code repository in Subversion.
-\end{itemize}
-
-FontAnvil's departure point from FontForge was at this tagged revision on
-Github: \url{https://github.com/mskala/fontforge/releases/tag/fontanvil}. 
-That is not a mainline FontForge revision; it was synthesized by merging the
-mainline master as of roughly February 5, 2014 with a few patches from other
-branches that were current as of the beginning of March.  From there I
-copied the code into a private Subversion server (private because I don't
-want to publish some intermediate revisions that lack proper copyright
-notices) and ripped out most of the code that was not required by FontAnvil,
-that being the majority of the package.  I simplified the structure of the
-package and the build system along the way.  Removing the last traces of
-dead code will be a long-term project.  The first public revision of
-FontAnvil was added as a subdirectory to the Tsukurimashou Project's
-Subversion server on March 4, 2014.  Future releases will be available through
-Tsukurimashou's Web site.
-
-Since FontAnvil and FontForge are free software under compatible license
-terms and share many potential users and one developer, there is some
-possibility for cross-pollination and sharing of code and ideas between the
-two.  However, I do not think it is likely that I will spend much time
-trying to import future development from FontForge into FontAnvil, nor that
-the FontForge team will spend much time trying to import future development
-from FontAnvil into FontForge.  Not much future development on either
-project will be particularly relevant to the other.  The two projects have
-different goals and policies and are likely to diverge.  However, since PE
-script is mature and neither side is likely to drastically change the
-language, I think it is likely that for the most part FontAnvil and
-FontForge will be able to run each other's scripts for as long as FontForge
-chooses to include a PE script interpreter.
+Only \FFdiff a small amount of effort is likely to be made by the
+maintainers of FontAnvil and FontForge to retain compatibility with each
+other.  The PE script language is mature and unlikely to change in too many
+drastic ways, so most scripts written for one interpreter should run
+correctly on the other for a long time, but already (about one year after
+the first release of FontAnvil) each interpreter has minor features not
+supported by the other, and it is likely they will continue to diverge.  In
+this manual, notes on known differences between FontAnvil and FontForge are
+marked by an \textit{ff} symbol in the margin.
 
 Of all the parts of a forge, an anvil is simple,
 an anvil is trustworthy, and most of all, \emph{an anvil is stable}.

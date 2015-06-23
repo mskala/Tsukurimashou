@@ -46,12 +46,15 @@ to create or open a font and make it current.  The \texttt{Close()} built-in
 function removes the current font from the set of open fonts (without saving
 it to disk---that must be done as a separate operation if saving is desired)
 and places the interpreter back into the state of having no current font. 
-Note that the existence of a no-font state is a difference between PE script
-and the FontForge GUI.  The GUI insists on always having at least one open
-font and always having a current font, enforcing this rule by automatically
-loading fonts from earlier editing sessions, automatically creating a new
-empty font if the load fails, choosing another open font to be current when
-one is closed, and terminating the program when the last font is closed.
+
+The \FFdiff existence of a no-font state is a difference between PE script
+interpreters (both FontAnvil and FontForge when run as a command-line
+interpreter) and the FontForge GUI.  The GUI insists on always having at
+least one open font and always having a current font, enforcing this rule by
+automatically loading fonts from earlier editing sessions, automatically
+creating a new empty font if the load fails, choosing another open font to
+be current when one is closed, and terminating the program when the last
+font is closed.
 
 \section{Glyphs and slots}
 

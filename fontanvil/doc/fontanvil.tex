@@ -1,10 +1,11 @@
-% $Id: fontanvil.tex 4022 2015-06-15 09:45:21Z mskala $
+% $Id: fontanvil.tex 4041 2015-06-20 15:28:39Z mskala $
 
-\documentclass[11pt]{report}
+\documentclass[11pt,twoside]{report}
 
 \usepackage{framed}
 \usepackage[scaled]{helvet}
-\usepackage[margin=1.25in,top=0.85in]{geometry}
+\usepackage[margin=1.25in,top=0.85in,
+            marginparwidth=0.25in,marginparsep=0.5in]{geometry}
 \usepackage{makeidx}
 \usepackage{tikz}
 \usepackage{tocloft}
@@ -27,6 +28,8 @@
 \index{#1@{\texttt{#1()}}|smhv}
 
 }
+
+\newcommand{\FFdiff}{\marginpar{\Huge \raisebox{-1.0ex}{\textit{ff}}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -120,6 +123,7 @@ Anvil clip-art by ``Gerald\_{}G,'' public domain.
 \input{building.tex}
 \input{running.tex}
 \input{datamodel.tex}
+\input{language.tex}
 \input{reference.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

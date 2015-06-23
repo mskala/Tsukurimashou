@@ -60,8 +60,10 @@ void node_delete(NODE *n) {
 int atom_cmp(NODE *x,NODE *y) {
    if ((x==NULL) || (y==NULL))
      return -2;
-   if (x->type!=y->type)
-     return -2;
+   if (x->type<y->type)
+     return -1;
+   if (x->type>y->type)
+     return 1;
    if (x->type==nt_string)
      return strcmp(x->cp,y->cp);
    if (x->type!=nt_int)

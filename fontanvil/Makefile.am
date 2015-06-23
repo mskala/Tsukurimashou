@@ -80,6 +80,11 @@ else
   ansi_home=
 endif
 
+TSU_V_ICE=$(TSU_V_ICE_$(V))
+TSU_V_ICE_=$(TSU_V_ICE_$(AM_DEFAULT_VERBOSITY))
+TSU_V_ICE_0=echo \
+  "$(ansi_cleareol)  $(ansi_cyan)ICE$(ansi_default)   " $@;
+
 TSU_V_MAKE=$(TSU_V_MAKE_$(V))
 TSU_V_MAKE_=$(TSU_V_MAKE_$(AM_DEFAULT_VERBOSITY))
 TSU_V_MAKE_0=@$(ECHO_ANSI) \
@@ -97,12 +102,6 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 
 ############################################################################
 
-# CONDITIONAL OPTIONS
-
-# none coded yet
-
-############################################################################
-
 # TESTING
 
 # must go before "filenames for autotools"
@@ -117,6 +116,7 @@ endif
 PL_LOG_COMPILER = @PERL@
 
 TESTS = \
+  tests/arithmetic.pe \
   tests/test001.pe tests/test002.pe tests/test003.pe tests/test004.pe \
   tests/test005.pe tests/test006.pe tests/test007.pe tests/test008.pe \
   tests/test009.pe tests/test010.pe tests/test101.pe tests/test102.pe \
@@ -131,7 +131,7 @@ TESTS = \
 
 tests/coverage.log: $(patsubst %.pe,%.log,$(filter tests/%.pe,$(TESTS)))
 
-$(TESTS): ttmp/.dirstamp
+$(TESTS): ttmp/.dirstamp fontanvil/fontanvil
 
 ############################################################################
 
@@ -152,7 +152,7 @@ BUILT_SOURCES = Makefile
 
 bin_PROGRAMS = fontanvil/fontanvil
 
-dist_noinst_SCRIPTS = $(TESTS)
+dist_noinst_SCRIPTS = $(TESTS) tools/dlunicode
 nodist_bin_SCRIPTS = \
   fontanvil/fontimage fontanvil/fontlint fontanvil/sfddiff
 
@@ -264,7 +264,7 @@ dist_doc_DATA = doc/fontanvil.pdf
 
 texfiles = \
   doc/building.tex doc/datamodel.tex doc/fontanvil.tex \
-  doc/intro.tex doc/reference.tex doc/running.tex
+  doc/intro.tex doc/language.tex doc/reference.tex doc/running.tex
 
 EXTRA_DIST = COPYING README \
   Unicode/README.TXT \
@@ -287,6 +287,21 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-debug
 
 # FIXME FontForge claims that splinerefigure.c requires special handling
 # to avoid optimization.  Look into this.
+
+############################################################################
+
+# ICEMAP
+
+if COND_ICEMAP
+
+%.c:%.im $(ICEMAP)
+	$(TSU_V_ICE)$(ICEMAP) -C$@ -H$(patsubst %.c,%.h,$@) < $<
+
+fontanvil/macenctab.c: fontanvil/macenctab.im
+
+fontanvil/macenctab.h: fontanvil/macenctab.c
+
+endif
 
 ############################################################################
 

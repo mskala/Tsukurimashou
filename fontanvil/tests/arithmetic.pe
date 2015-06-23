@@ -1,0 +1,155 @@
+#!/usr/local/bin/fontanvil
+
+y=0
+
+x=1+2.0*3e1/.4e-001
+Print("1+2.0*3e1/.4e-001 = "+ToString(x))
+if (x<1500.99999)
+  y=1
+  Print('ERROR')
+elsif (x>1501.00001)
+  y=1
+  Print('ERROR')
+endif
+
+x=ATan2(2,3)
+Print("ATan2(2,3) = "+ToString(x))
+if (x<0.5880026)
+  y=1
+  Print('ERROR')
+elsif (x>0.5880027)
+  y=1
+  Print('ERROR')
+endif
+
+x=Ceil(4.26)
+Print("Ceil(4.26) = "+ToString(x))
+if (x!=5.0)
+  y=1
+  Print('ERROR')
+endif
+
+x=Cos(-1.6)
+Print("Cos(-1.6) = "+ToString(x))
+if (x<-0.0291996)
+  y=1
+  Print('ERROR')
+elsif (x>-0.0291995)
+  y=1
+  Print('ERROR')
+endif
+
+x=Exp(3.1)
+Print("Exp(3.1) = "+ToString(x))
+if (x<22.1979512)
+  y=1
+  Print('ERROR')
+elsif (x>22.1979513)
+  y=1
+  Print('ERROR')
+endif
+
+x=Floor(-9.6)
+Print("Floor(-9.6) = "+ToString(x))
+if (x!=-10)
+  y=1
+  Print('ERROR')
+endif
+
+x=Int(1.2)
+Print("Int(1.2) = "+ToString(x))
+if (x!=1)
+  y=1
+  Print('ERROR')
+endif
+
+if (IsNan(Log(-1)))
+  Print("Log(-1) is a nan");
+else
+  Print("Log(-1) is not a nan");
+  y=1;
+  Print('ERROR')
+endif
+if (IsNan(Log(5)))
+  Print("Log(5) is a nan");
+  y=1;
+  Print('ERROR')
+else
+  Print("Log(5) is not a nan");
+endif
+
+x=Log(4.97)
+Print("Log(4.97) = "+ToString(x))
+if (x<1.6034198)
+  y=1
+  Print('ERROR')
+elsif (x>1.6034199)
+  y=1
+  Print('ERROR')
+endif
+
+x=Pow(2,0.526315)
+Print("Pow(2,0.526315) = "+ToString(x))
+if (x<1.0371549)
+  y=1
+  Print('ERROR')
+elsif (x>1.0371550)
+  y=1
+  Print('ERROR')
+endif
+
+Print('Three random numbers:  '+Rand()+' '+Rand()+' '+Rand())
+
+x=1/1000
+Print("1/1000 (as integers) = "+ToString(x))
+if (x!=0)
+  y=1
+  Print('ERROR')
+endif
+
+x=Real(1)/1000
+Print("Real(1)/1000 = "+ToString(x))
+if (x!=0.001)
+  y=1
+  Print('ERROR')
+endif
+
+x=Round(1.8)
+Print("Round(1.8) = "+ToString(x))
+if (x!=2)
+  y=1
+  Print('ERROR')
+endif
+
+x=Sin(2.6)
+Print("Sin(2.6) = "+ToString(x))
+if (x<0.5155013)
+  y=1
+  Print('ERROR')
+elsif (x>0.5155014)
+  y=1
+  Print('ERROR')
+endif
+
+x=Sqrt(3.0)
+Print("Sqrt(3.0) = "+ToString(x))
+if (x<1.7320508)
+  y=1
+  Print('ERROR')
+elsif (x>1.7320509)
+  y=1
+  Print('ERROR')
+endif
+
+x=Tan(0.4)
+Print("Tan(0.4) = "+ToString(x))
+if (x<0.4227932)
+  y=1
+  Print('ERROR')
+elsif (x>0.4227933)
+  y=1
+  Print('ERROR')
+endif
+
+GetCoverageCounts()
+Quit(y)

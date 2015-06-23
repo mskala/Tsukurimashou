@@ -1,6 +1,6 @@
 /*
  * Code generator for static maps
- * Copyright (C) 2014  Matthew Skala
+ * Copyright (C) 2014, 2015  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "icemap.h"
 #include "getopt.h"
@@ -27,7 +28,9 @@
 /**********************************************************************/
 
 static struct option long_opts[] = {
+   {"c-file",required_argument,NULL,'C'},
    {"help",no_argument,NULL,'h'},
+   {"h-file",required_argument,NULL,'H'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
 };
@@ -44,17 +47,29 @@ int main(int argc,char **argv) {
    char c;
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"Vh",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"C:H:Vh",long_opts,NULL))!=-1) {
       switch (c) {
+	 
+       case 'C':
+	 if (default_c_file!=NULL)
+	   free(default_c_file);
+	 default_c_file=strdup(optarg);
+	 break;
+
+       case 'h':
+	 show_help=1;
+	 break;
+
+       case 'H':
+	 if (default_h_file!=NULL)
+	   free(default_h_file);
+	 default_h_file=strdup(optarg);
+	 break;
 
        case 'V':
 	 show_version=1;
 	 break;
 	 
-       case 'h':
-	 show_help=1;
-	 break;
-
        default:
 	 break;
       }
@@ -78,5 +93,6 @@ int main(int argc,char **argv) {
      exit(0);
 
    parse();
+   close_output_files();
    return 0;
 }

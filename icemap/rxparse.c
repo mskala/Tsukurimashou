@@ -120,6 +120,7 @@ void handle_rxparse(PARSER_STATE *ps) {
 
    } else if (strcmp(tok->cp,"->")==0) {
       reading_ranges=0;
+      end_field=start_field;
 
    } else if (strcmp(tok->cp,"..")==0) {
       node_delete(tok);

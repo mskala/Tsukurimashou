@@ -1,4 +1,4 @@
-% $Id: building.tex 4013 2015-06-13 13:58:54Z mskala $
+% $Id: building.tex 4043 2015-06-23 13:50:07Z mskala $
 
 \chapter{Building FontAnvil}
 
@@ -74,6 +74,34 @@ make
 make install
 \end{verbatim}
 
+\section{Testing}
+
+FontAnvil includes a test suite, available by running \texttt{make check}. 
+Most of the tests are inherited from FontForge, and the test suite had been
+unmaintained and unused in FontForge for several years before FontAnvil
+picked it up.  As a result, it does not have good coverage, and some of the
+tests require files that I cannot legally ship.  In some cases I have not
+even been able to identify what the missing files are.  If you run the test
+suite, you should expect many of the tests to be skipped for missing
+necessary files, and some of them to fail; and even if by some chance you
+managed to get the entire suite to pass, it is unlikely that that would
+really mean the software was working properly.  Having a better test suite
+and software that passes it are long-term goals for the project.
+
+After running the tests, you can read the file \texttt{tests/coverage.log}
+to see a summary of how many of the PE script built-in functions were
+covered by the test suite.  As of this writing, it is about 15\%.
+
+The option \texttt{--enable-valgrind} to \texttt{configure} will make the
+test suite run inside Valgrind, if you have that installed.  Valgrind
+makes the tests much slower, and (with the latest versions as of this
+writing) it causes at least one of them to fail on Mac OS X through no fault
+of FontAnvil's, because of Valgrind's lack of support for features used by
+the Mac system libraries.  For these reasons it is not the default. 
+However, if enabled it will produce a lot more information in the log files
+about the many ways in which FontAnvil abuses memory, and that may be useful
+in debugging.
+
 \section{FontAnvil and Tsukurimashou}
 
 FontAnvil's reason for existence is to support Tsukurimashou, and its source
@@ -81,8 +109,7 @@ control repository is a subdirectory of the Tsukurimashou source control
 repository, but FontAnvil is not a ``parasite'' of Tsukurimashou in the
 technical sense of that term defined by the Tsukurimashou build system. 
 Building Tsukurimashou will not automatically also build FontAnvil.
-FontAnvil does not require Tsukurimashou to build.  (The very latest
-development verion of) Tsukurimashou will look
+FontAnvil does not require Tsukurimashou to build.  Tsukurimashou will look
 for FontAnvil and use it if found, but will not look inside its own
 subdirectories---only in the usual PATH search used for other utility
 programs.  If Tsukurimashou does not find an executable in the search path
@@ -106,4 +133,3 @@ repository---that is why it's there---but the semi-automated gateway from
 Subversion to Git is one-way.  Do not file tickets for FontAnvil on Github.
 
 \clearpage
-

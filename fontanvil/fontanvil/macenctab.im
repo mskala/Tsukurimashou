@@ -1,0 +1,70 @@
+# Mac encoding table translations
+
+cfile "fontanvil/macenctab.c"
+hfile "fontanvil/macenctab.h"
+
+cwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN macenctab.im INSTEAD! */
+
+EOF
+
+hwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN macenctab.im INSTEAD! */
+
+EOF
+
+parserx "^([0-9A-Fx]+)\t(<[LR]+>\\+)?([0-9A-Fx]+)\t";
+skiprx "^\s+#";
+generate basic_array;
+
+priority last;
+
+0x0..0xFF => 0x0..0xFF;
+0->0;
+
+{ id macenc_arabic;
+  rxparse "unicode/apple/ARABIC.TXT" x1 -> x3; }
+
+{ id macenc_centeuro;
+  rxparse "unicode/apple/CENTEURO.TXT" x1 -> x3; }
+
+{ id macenc_croatian;
+  rxparse "unicode/apple/CROATIAN.TXT" x1 -> x3; }
+
+{ id macenc_cyrillic;
+  rxparse "unicode/apple/CYRILLIC.TXT" x1 -> x3; }
+
+{ id macenc_devanagari;
+  rxparse "unicode/apple/DEVANAGA.TXT" x1 -> x3; }
+
+{ id macenc_farsi;
+  rxparse "unicode/apple/FARSI.TXT" x1 -> x3; }
+
+{ id macenc_greek;
+  rxparse "unicode/apple/GREEK.TXT" x1 -> x3; }
+
+{ id macenc_gujarati;
+  rxparse "unicode/apple/GUJARATI.TXT" x1 -> x3; }
+
+{ id macenc_gurmukhi;
+  rxparse "unicode/apple/GURMUKHI.TXT" x1 -> x3; }
+
+{ id macenc_hebrew;
+  rxparse "unicode/apple/HEBREW.TXT" x1 -> x3; }
+
+{ id macenc_iceland;
+  rxparse "unicode/apple/ICELAND.TXT" x1 -> x3; }
+
+{ id macenc_romanian;
+  rxparse "unicode/apple/ROMANIAN.TXT" x1 -> x3; }
+
+{ id macenc_MacRomanEnc;
+  rxparse "unicode/apple/ROMAN.TXT" x1 -> x3; }
+
+{ id macenc_thai;
+  rxparse "unicode/apple/THAI.TXT" x1 -> x3; }
+
+{ id macenc_turkish;
+  rxparse "unicode/apple/TURKISH.TXT" x1 -> x3; }
+
+generate nothing;
