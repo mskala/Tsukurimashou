@@ -1,6 +1,6 @@
 /*
  * Static map contexts, high-level handling
- * Copyright (C) 2014  Matthew Skala
+ * Copyright (C) 2014, 2015  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,9 @@
 
 CONTEXT *context_stack=NULL;
 
+#define STR_FROM_PARENT(field) \
+   ctx->field=(ctx->parent->field?strdup(ctx->parent->field):NULL)
+
 void handle_opening_brace(PARSER_STATE *ps) {
    CONTEXT *ctx;
    int i;
@@ -44,31 +47,28 @@ void handle_opening_brace(PARSER_STATE *ps) {
       ctx->c_file=default_c_file;
       ctx->h_file=default_h_file;
       ctx->generator=NULL;
+      ctx->key_c_type=NULL;
+      ctx->value_c_type=NULL;
+      ctx->quote_policy=qp_strings;
+      ctx->leaves=0;
 
    } else {
       ctx->id=strdup(context_stack->id);
       arrow_map_copy(&(ctx->am),&(context_stack->am));
       ctx->dupe_priority=context_stack->dupe_priority;
 
-      if (ctx->parent->skip_regex!=NULL)
-	ctx->skip_regex=strdup(ctx->parent->skip_regex);
-      else
-	ctx->skip_regex=NULL;
-      if (ctx->parent->parse_regex!=NULL)
-	ctx->parse_regex=strdup(ctx->parent->parse_regex);
-      else
-	ctx->parse_regex=NULL;
-
-      if (ctx->parent->c_file!=NULL)
-	ctx->c_file=strdup(ctx->parent->c_file);
-      else
-	ctx->c_file=NULL;
-      if (ctx->parent->h_file!=NULL)
-	ctx->h_file=strdup(ctx->parent->h_file);
-      else
-	ctx->h_file=NULL;
+      STR_FROM_PARENT(skip_regex);
+      STR_FROM_PARENT(parse_regex);
+      STR_FROM_PARENT(c_file);
+      STR_FROM_PARENT(h_file);
       
       ctx->generator=ctx->parent->generator;
+      
+      STR_FROM_PARENT(key_c_type);
+      STR_FROM_PARENT(value_c_type);
+      
+      ctx->quote_policy=ctx->parent->quote_policy;
+      ctx->leaves=0;
    }
 
    context_stack=ctx;
@@ -82,25 +82,31 @@ void handle_closing_brace(PARSER_STATE *ps) {
 
    if (context_stack==NULL) {
       parse_error(ps,"unexpected closing brace");
+      close_output_files();
       exit(1);
    }
    
-   /* first, attempt whatever the user asked for */
-   if (context_stack->generator!=NULL)
-     context_stack->generator(context_stack);
-
-   /* then look for a generator that actually likes this kind of data */
-   if ((context_stack->generator==NULL) &&
-       (prefer_basic_array(context_stack)>0))
-     gen_basic_array(context_stack);
-
-   /* finally, just try for any generator */
-   if (context_stack->generator==NULL)
-     gen_basic_array(context_stack);
+   /* only write out the map if we aren't a parent */
+   if (context_stack->leaves==0) {
    
-   if (context_stack->generator==NULL) {
-      parse_error(ps,"no code generator for these data types");
-      exit(1);
+      /* first, attempt whatever the user asked for */
+      if (context_stack->generator!=NULL)
+	context_stack->generator(context_stack);
+      
+      /* then look for a generator that actually likes this kind of data */
+      if ((context_stack->generator==NULL) &&
+	  (prefer_basic_array(context_stack)>0))
+	gen_basic_array(context_stack);
+      
+      /* finally, just try for any generator */
+      if (context_stack->generator==NULL)
+	gen_basic_array(context_stack);
+      
+      if (context_stack->generator==NULL) {
+	 parse_error(ps,"no code generator for these data types");
+	 close_output_files();
+	 exit(1);
+      }
    }
 
    arrow_map_delete(&(context_stack->am));
@@ -110,6 +116,14 @@ void handle_closing_brace(PARSER_STATE *ps) {
      free(context_stack->skip_regex);
    if (context_stack->parse_regex!=NULL)
      free(context_stack->parse_regex);
+   if (context_stack->c_file!=NULL)
+     free(context_stack->c_file);
+   if (context_stack->h_file!=NULL)
+     free(context_stack->h_file);
+   if (context_stack->key_c_type!=NULL)
+     free(context_stack->key_c_type);
+   if (context_stack->value_c_type!=NULL)
+     free(context_stack->value_c_type);
 
    ctx=context_stack->parent;
    free(context_stack);
@@ -138,6 +152,28 @@ void handle_generate(PARSER_STATE *ps) {
      context_stack->generator=gen_nothing;
    else
      parse_error(ps,"unknown generate target keyword %s",tok->cp);
+   context_stack->leaves=0;
+   
+   node_delete(tok);
+   ps->ignore_semicolon=1;
+}
+
+void handle_quote_policy(PARSER_STATE *ps) {
+   NODE *tok;
+   
+   ps->ignore_semicolon=0;
+   tok=get_token(ps);
+
+   if (tok->type!=nt_keyword)
+     parse_error(ps,"quote policy must be a keyword");
+   else if (strcmp(tok->cp,"strings")==0)
+     context_stack->quote_policy=qp_strings;
+   else if (strcmp(tok->cp,"everything")==0)
+     context_stack->quote_policy=qp_everything;
+   else if (strcmp(tok->cp,"nothing")==0)
+     context_stack->quote_policy=qp_nothing;
+   else
+     parse_error(ps,"unknown quote policy keyword %s",tok->cp);
    
    node_delete(tok);
    ps->ignore_semicolon=1;

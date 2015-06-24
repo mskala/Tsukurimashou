@@ -93,9 +93,17 @@ int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp);
 void add_one_arrow(PARSER_STATE *ps);
 void add_many_arrows(PARSER_STATE *ps);
 
+void arrow_map_remap_keys(ARROW_MAP *,ARROW_MAP *,ARROW_MAP *,
+			    DUPE_PRIORITY);
+void arrow_map_remap_values(ARROW_MAP *,ARROW_MAP *,ARROW_MAP *);
+
 /**********************************************************************/
 
 /* context.c */
+
+typedef enum _QUOTE_POLICY {
+   qp_strings,qp_nothing,qp_everything
+} QUOTE_POLICY;
 
 typedef struct _CONTEXT {
    struct _CONTEXT *parent;
@@ -105,6 +113,9 @@ typedef struct _CONTEXT {
    char *skip_regex,*parse_regex;
    char *c_file,*h_file;
    void (*generator)(struct _CONTEXT *);
+   char *key_c_type,*value_c_type;
+   QUOTE_POLICY quote_policy;
+   int leaves;
 } CONTEXT;
 
 extern CONTEXT *context_stack;
@@ -112,6 +123,7 @@ extern CONTEXT *context_stack;
 void handle_opening_brace(PARSER_STATE *ps);
 void handle_closing_brace(PARSER_STATE *ps);
 void handle_generate(PARSER_STATE *ps);
+void handle_quote_policy(PARSER_STATE *ps);
 
 /**********************************************************************/
 
@@ -125,14 +137,33 @@ void gen_basic_array(CONTEXT *c);
 /* fileout.c */
 
 extern char *default_c_file,*default_h_file;
+extern int delete_failed;
 
-FILE *open_output_file(char *);
+NODE *open_output_file(char *);
 void close_output_files(void);
+
+void of_write(NODE *,char *,...);
+void of_write_wrapped(NODE *,char *,...);
+
+void of_indent(NODE *,int);
+void of_unindent(NODE *,int);
 
 void handle_c_file(PARSER_STATE *ps);
 void handle_h_file(PARSER_STATE *ps);
 void handle_c_write(PARSER_STATE *ps);
 void handle_h_write(PARSER_STATE *ps);
+
+/**********************************************************************/
+
+/* icemap.c */
+
+extern int exit_code;
+
+/**********************************************************************/
+
+/* remap.c */
+
+void handle_remap(PARSER_STATE *ps);
 
 /**********************************************************************/
 

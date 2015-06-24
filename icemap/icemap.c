@@ -31,6 +31,7 @@ static struct option long_opts[] = {
    {"c-file",required_argument,NULL,'C'},
    {"help",no_argument,NULL,'h'},
    {"h-file",required_argument,NULL,'H'},
+   {"keep-failed",no_argument,NULL,'k'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
 };
@@ -42,12 +43,14 @@ static void usage_message(void) {
    exit(1);
 }
 
+int exit_code=-0xDEAD;
+
 int main(int argc,char **argv) {
    int show_version=0,show_help=0;
    char c;
 
    /* loop on command-line options */
-   while ((c=getopt_long(argc,argv,"C:H:Vh",long_opts,NULL))!=-1) {
+   while ((c=getopt_long(argc,argv,"C:H:Vhk",long_opts,NULL))!=-1) {
       switch (c) {
 	 
        case 'C':
@@ -59,11 +62,15 @@ int main(int argc,char **argv) {
        case 'h':
 	 show_help=1;
 	 break;
-
+	 
        case 'H':
 	 if (default_h_file!=NULL)
 	   free(default_h_file);
 	 default_h_file=strdup(optarg);
+	 break;
+
+       case 'k':
+	 delete_failed=0;
 	 break;
 
        case 'V':
@@ -78,7 +85,7 @@ int main(int argc,char **argv) {
    /* deal with version and help */
    if (show_version)
      puts(PACKAGE_STRING "\n\n"
-	  "Copyright (C) 2014  Matthew Skala\n"
+	  "Copyright (C) 2014, 2015  Matthew Skala\n"
 	  "License GPLv3: GNU GPL version 3 <http://gnu.org/licenses/gpl-3.0.html>\n"
 	  "This is free software: you are free to change and redistribute it.\n"
 	  "There is NO WARRANTY, to the extent permitted by law.");
@@ -93,6 +100,9 @@ int main(int argc,char **argv) {
      exit(0);
 
    parse();
+   
+   if (exit_code==-0xDEAD)
+     exit_code=0;
    close_output_files();
-   return 0;
+   return exit_code;
 }

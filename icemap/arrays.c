@@ -31,9 +31,9 @@ int prefer_basic_array(CONTEXT *c) {
    
    if ((c->am.first_key!=NULL) && (c->am.first_key->type==nt_int) &&
        (c->am.last_key!=NULL) && (c->am.last_key->type==nt_int)) {
-      if ((c->am.last_key->x-c->am.first_key->x)<=100)
+      if ((c->am.last_key->x-c->am.first_key->x)<100)
 	return 3;
-      else if ((c->am.last_key->x-c->am.first_key->x)<=5000)
+      else if ((c->am.last_key->x-c->am.first_key->x)<5000)
 	return 2;
       else
 	return 1;
@@ -43,15 +43,16 @@ int prefer_basic_array(CONTEXT *c) {
 }
 
 void gen_basic_array(CONTEXT *c) {
-   FILE *cf,*hf;
-   char *ots="int ";
+   NODE *cf,*hf;
+   char *ots,*maybe_space;
    int i;
    NODE *k,*v;
+   CONTEXT *ctx;
    
    /* check:  can we proceed? */
    if ((c->am.first_key!=NULL) && (c->am.first_key->type==nt_int) &&
        (c->am.last_key!=NULL) && (c->am.last_key->type==nt_int))
-     c->generator=&gen_basic_array;
+     c->generator=gen_basic_array;
    else {
       c->generator=NULL;
       return;
@@ -62,29 +63,48 @@ void gen_basic_array(CONTEXT *c) {
    
    k=node_new();
    k->type=nt_int;
+   
+   if (c->value_c_type==NULL)
+     ots="int";
+   else
+     ots=c->value_c_type;
+   maybe_space=(ots[strlen(ots)-1]=='*')?"":" ";
 
-   fprintf(hf,"/* basic array lookup for map \"%s\" */\n\n",
-	  c->id);
-   fprintf(hf,"extern %s__icemap_%s_array[];\n",
-	   ots,c->id);
-   fprintf(hf,"#define %s_lookup(idx) (__icemap_%s_array[(idx)-%d])\n\n",
-	   c->id,c->id,c->am.first_key->x);
+   of_write(hf,"/* basic array lookup for map \"%s\" */\n\n",
+	    c->id);
+   of_write(hf,"extern %s%s__icemap_%s_array[];\n",
+	    ots,maybe_space,c->id);
+   if (c->am.first_key->x==0)
+     of_write(hf,"#define %s_lookup(idx) \\\n"
+	      "  (__icemap_%s_array[(idx)])\n\n",
+	      c->id,c->id);
+   else
+     of_write(hf,"#define %s_lookup(idx) \\\n"
+	      "  (__icemap_%s_array[(idx)-%d])\n\n",
+	      c->id,c->id,c->am.first_key->x);
 
-   fprintf(cf,"/* basic array lookup for map \"%s\" */\n\n",
-	  c->id);
-   fprintf(cf,"%s__icemap_%s_array[%d]={\n",
-	   ots,c->id,c->am.last_key->x-c->am.first_key->x);
+   of_write(cf,"/* basic array lookup for map \"%s\" */\n\n",
+	    c->id);
+   of_write(cf,"%s%s__icemap_%s_array[%d]={\n",
+	    ots,maybe_space,c->id,c->am.last_key->x-c->am.first_key->x+1);
+   of_indent(cf,2);
+
    for (i=c->am.first_key->x;i<=c->am.last_key->x;i++) {
       k->x=i;
       v=arrow_map_lookup(&(c->am),k);
       if (v==NULL)
-	fputs("  0, /* missing key */\n",cf);
+	of_write_wrapped(cf,"0 /* missing key */,");
       else if (v->type==nt_int)
-	fprintf(cf,"  %d,\n",v->x);
+	of_write_wrapped(cf,"0x%X,",v->x);
       else
-	fprintf(cf,"  \"%s\",\n",v->cp);
+	of_write_wrapped(cf,"\"%s\",",v->cp);
    }
-   fputs("};\n\n",cf);
-   
+
+   of_unindent(cf,2);
+   of_write(cf,"\n};\n\n");
+
    node_delete(k);
+
+   for (ctx=context_stack->parent;ctx;ctx=ctx->parent)
+     ctx->leaves++;
 }

@@ -143,17 +143,20 @@ AC_PROG_MKDIR_P
 AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
 AC_ARG_VAR([EXPECT],[Expect])
-AC_PATH_PROG([EXPECT],[expect])
+AS_IF([test "x$EXPECT" = "x"],
+  [AC_PATH_PROG([EXPECT],[expect])])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
-AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh])
+AS_IF([test "x$KLEKNEV" = "x"],
+  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh])])
 AS_IF([dname=`AS_DIRNAME(["$KLEKNEV"])`; test `cd "$dname"; pwd` = `pwd`],
   [KLEKNEV=/bin/sh
    AC_MSG_WARN([Can't profile build using the very binary we're building])])
 AC_ARG_VAR([PERL],[Perl])
-AC_PATH_PROG([PERL],[perl])
+AS_IF([test "x$PERL" = "x"],
+  [AC_PATH_PROG([PERL],[perl])])
 #
 ############################################################################
 #

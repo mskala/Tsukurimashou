@@ -19,8 +19,10 @@
  * mskala@ansuz.sooke.bc.ca
  */
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "icemap.h"
 
@@ -28,17 +30,18 @@
 
 char *default_c_file=NULL,*default_h_file=NULL;
 static NODE *opened_files=NULL;
+int delete_failed=1;
 
 /**********************************************************************/
 
-FILE *open_output_file(char *fn) {
+NODE *open_output_file(char *fn) {
    NODE *tfn;
    
    if (fn==NULL)
      return NULL;
    for (tfn=opened_files;tfn;tfn=tfn->next)
      if (strcmp(tfn->cp,fn)==0)
-       return tfn->fp;
+       return tfn;
 
    tfn=node_new();
    tfn->type=nt_parser_file;
@@ -46,8 +49,10 @@ FILE *open_output_file(char *fn) {
    opened_files=tfn;
    tfn->cp=strdup(fn);
    tfn->fp=fopen(fn,"w");
+   tfn->x=0;
+   tfn->y=0;
    
-   return tfn->fp;
+   return tfn;
 }
 
 void close_output_files(void) {
@@ -56,10 +61,87 @@ void close_output_files(void) {
    while (opened_files!=NULL) {
       tfn=opened_files;
       opened_files=tfn->next;
-      if (tfn->fp!=NULL)
-	fclose(tfn->fp);
+      if (tfn->fp!=NULL) {
+	 if (exit_code && delete_failed)
+	   unlink(tfn->cp);
+	 fclose(tfn->fp);
+      }
       node_delete(tfn);
    }
+}
+
+/**********************************************************************/
+
+#ifndef HAVE_VASPRINTF
+#endif
+
+void of_write(NODE *n,char *f,...) {
+   va_list val;
+   char *buf,*scan;
+
+   va_start(val,f);
+   vasprintf(&buf,f,val);
+   va_end(val);
+   fputs(buf,n->fp);
+
+   for (scan=buf;*scan;scan++) {
+      if (*scan=='\n')
+	n->x=0;
+      else if (*scan=='\t')
+	n->x=((n->x&~7)+8);
+      else
+	n->x++;
+   }
+   
+   free(buf);
+}
+
+void of_write_wrapped(NODE *n,char *f,...) {
+   va_list val;
+   char *buf,*scan;
+   int nx;
+
+   for (;n->x<n->y;n->x++)
+     putc(' ',n->fp);
+   
+   va_start(val,f);
+   vasprintf(&buf,f,val);
+   va_end(val);
+
+   for (scan=buf,nx=n->x;*scan;scan++) {
+      if (*scan=='\n')
+	break;
+      else if (*scan=='\t')
+	nx=((nx&~7)+8);
+      else
+	nx++;
+   }
+   
+   if (nx>=72) {
+      putc('\n',n->fp);
+      for (n->x=0;n->x<n->y;n->x++)
+	putc(' ',n->fp);
+   }
+   fputs(buf,n->fp);
+
+   for (scan=buf;*scan;scan++) {
+      if (*scan=='\n')
+	n->x=0;
+      else if (*scan=='\t')
+	n->x=((n->x&~7)+8);
+      else
+	n->x++;
+   }
+   
+   free(buf);
+}
+
+void of_indent(NODE *n,int i) {
+   n->y+=i;
+}
+
+void of_unindent(NODE *n,int i) {
+   n->y-=i;
 }
 
 /**********************************************************************/
@@ -69,6 +151,7 @@ void handle_c_file(PARSER_STATE *ps) {
 
    if (context_stack==NULL) {
       parse_error(ps,"cannot set C file name without a context");
+      close_output_files();
       exit(1);
    }
    
@@ -92,6 +175,7 @@ void handle_h_file(PARSER_STATE *ps) {
 
    if (context_stack==NULL) {
       parse_error(ps,"cannot set H file name without a context");
+      close_output_files();
       exit(1);
    }
    
@@ -111,11 +195,11 @@ void handle_h_file(PARSER_STATE *ps) {
 }
 
 void handle_c_write(PARSER_STATE *ps) {
-   NODE *text_tok;
-   FILE *f;
+   NODE *text_tok,*f;
 
    if (context_stack==NULL) {
       parse_error(ps,"cannot write to C file without a context");
+      close_output_files();
       exit(1);
    }
 
@@ -134,17 +218,17 @@ void handle_c_write(PARSER_STATE *ps) {
       node_delete(text_tok);
       return;
    }
-   fputs(text_tok->cp,f);
+   of_write(f,"%s",text_tok->cp);
 
    node_delete(text_tok);
 }
 
 void handle_h_write(PARSER_STATE *ps) {
-   NODE *text_tok;
-   FILE *f;
+   NODE *text_tok,*f;
 
    if (context_stack==NULL) {
       parse_error(ps,"cannot write to H file without a context");
+      close_output_files();
       exit(1);
    }
 
@@ -163,7 +247,8 @@ void handle_h_write(PARSER_STATE *ps) {
       node_delete(text_tok);
       return;
    }
-   fputs(text_tok->cp,f);
+   of_write(f,"%s",text_tok->cp);
 
    node_delete(text_tok);
 }
+

@@ -135,7 +135,7 @@ int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp) {
    NODE *n,**new_arrows;
    int i;
 
-#if 0
+#if 1
    if (k->type==nt_int)
      printf("%d",k->x);
    else
@@ -223,6 +223,79 @@ int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp) {
 
 /**********************************************************************/
 
+void arrow_map_remap_keys(ARROW_MAP *zm,ARROW_MAP *am,ARROW_MAP *bm,
+			 DUPE_PRIORITY dp) {
+   int i,j;
+   NODE *ni,*nk,*nv;
+
+   zm->arrows=(NODE **)malloc(sizeof(NODE *)*am->num_buckets);
+   zm->num_arrows=0;
+   zm->num_buckets=am->num_buckets;
+   zm->first_key=NULL;
+   zm->last_key=NULL;
+
+   for (i=0;i<zm->num_buckets;i++)
+     zm->arrows[i]=NULL;
+   
+   for (i=0;i<zm->num_buckets;i++) {
+      for (ni=am->arrows[i];ni!=NULL;ni=ni->next) {
+	 nv=arrow_map_lookup(bm,ni);
+	 if (nv==NULL)
+	   nv=ni;
+	 nk=node_new();
+
+	 nk->type=nv->type;
+	 if (nk->type==nt_string)
+	   nk->cp=strdup(nv->cp);
+	 else
+	   nk->x=nv->x;
+
+	 raw_add_arrow(zm,nk,ni->nodes,dp);
+	 node_delete(nk);
+      }
+   }
+}
+
+void arrow_map_remap_values(ARROW_MAP *zm,ARROW_MAP *am,ARROW_MAP *bm) {
+   int i;
+   NODE *ni,*nk,*nv;
+   
+   zm->arrows=(NODE **)malloc(sizeof(NODE *)*am->num_buckets);
+   zm->num_arrows=am->num_arrows;
+   zm->num_buckets=am->num_buckets;
+   zm->first_key=NULL;
+   zm->last_key=NULL;
+
+   for (i=0;i<zm->num_buckets;i++) {
+     zm->arrows[i]=NULL;
+
+     for (ni=am->arrows[i];ni!=NULL;ni=ni->next) {
+	nv=arrow_map_lookup(bm,ni->nodes);
+	if (nv==NULL)
+	  nv=ni->nodes;
+	nk=node_new();
+
+	nk->type=ni->type;
+	if (nk->type==nt_string)
+	  nk->cp=strdup(ni->cp);
+	else
+	  nk->x=ni->x;
+	nk->nodes=nv;
+	nk->nodes->refs++;
+	
+	nk->next=zm->arrows[i];
+	zm->arrows[i]=nk;
+
+	if ((zm->first_key==NULL) || (atom_cmp(nk,zm->first_key)==-1))
+	  zm->first_key=nk;
+	if ((zm->last_key==NULL) || (atom_cmp(nk,zm->last_key)==1))
+	  zm->last_key=nk;
+     }
+   }
+}
+
+/**********************************************************************/
+
 void add_one_arrow(PARSER_STATE *ps) {
    NODE *val;
 
@@ -241,6 +314,7 @@ void add_one_arrow(PARSER_STATE *ps) {
 	parse_error(ps,"duplicate key %s",ps->first_token->cp);
       else
 	parse_error(ps,"duplicate key %d",ps->first_token->x);
+      close_output_files();
       exit(1);
    }
 
@@ -332,6 +406,7 @@ void add_many_arrows(PARSER_STATE *ps) {
 	   parse_error(ps,"duplicate key %s",key->cp);
 	 else
 	   parse_error(ps,"duplicate key %d",key->x);
+	 close_output_files();
 	 exit(1);
       }
       node_delete(key);

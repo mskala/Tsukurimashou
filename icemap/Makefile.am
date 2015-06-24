@@ -2,7 +2,7 @@
 
 #
 # Makefile source for Icemap
-# Copyright (C) 2014  Matthew Skala
+# Copyright (C) 2014, 2015  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -118,7 +118,7 @@ bin_PROGRAMS = icemap
 AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 
 icemap_SOURCES = icemap.c icemap.h \
-  arrays.c arrows.c context.c fileout.c nodes.c parser.c rxparse.c
+  arrays.c arrows.c context.c fileout.c nodes.c parser.c remap.c rxparse.c
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS)
 

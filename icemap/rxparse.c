@@ -1,6 +1,6 @@
 /*
  * Regular-expression mapping parser
- * Copyright (C) 2014  Matthew Skala
+ * Copyright (C) 2014, 2015  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -275,6 +275,7 @@ void handle_rxparse(PARSER_STATE *ps) {
 		     else
 		       fprintf(stderr,"%s line %d: duplicate key %d\n",
 			       wet.we_wordv[file_num],line_num,ks->x);
+		     close_output_files();
 		     exit(1);
 		  }
 		  tok=node_new();
@@ -294,6 +295,7 @@ void handle_rxparse(PARSER_STATE *ps) {
 	       else
 		 fprintf(stderr,"%s line %d: duplicate key %d\n",
 			 wet.we_wordv[file_num],line_num,ks->x);
+	       close_output_files();
 	       exit(1);
 	    }
 

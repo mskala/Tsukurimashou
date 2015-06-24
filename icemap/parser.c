@@ -1,6 +1,6 @@
 /*
- * Code generator for static maps
- * Copyright (C) 2014  Matthew Skala
+ * Icemap input language parser
+ * Copyright (C) 2014, 2015  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ void parse_error(PARSER_STATE *ps,char *message,...) {
    vfprintf(stderr,message,val);
    va_end(val);
    fputc('\n',stderr);
+   exit_code=1;
 }
 
 /**********************************************************************/
@@ -400,6 +401,7 @@ NODE *get_token(PARSER_STATE *ps) {
 	  case ';': /* semicolon separates statements */
 	    if (!(ps->ignore_semicolon)) {
 	       parse_error(ps,"unexpected semicolon");
+	       close_output_files();
 	       exit(1);
 	    } else
 	      continue;
@@ -533,6 +535,27 @@ static void handle_string_or_null(PARSER_STATE *ps,char **val,char *name) {
    ps->ignore_semicolon=1;
 }
 
+static void handle_string_id_or_null(PARSER_STATE *ps,char **val,char *name) {
+   NODE *tok;
+   
+   tok=get_token(ps);
+   if ((tok->type==nt_keyword) && (strcmp(tok->cp,"null")==0)) {
+      if (*val!=NULL)
+	free(*val);
+      *val=NULL;
+
+   } else if ((tok->type==nt_string) || (tok->type==nt_keyword)) {
+      if (*val!=NULL)
+	free(*val);
+      *val=strdup(tok->cp);
+
+   } else
+     parse_error(ps,"%s must be string or null",name);
+
+   node_delete(tok);
+   ps->ignore_semicolon=1;
+}
+
 /**********************************************************************/
 
 static void handle_id(PARSER_STATE *ps) {
@@ -540,6 +563,7 @@ static void handle_id(PARSER_STATE *ps) {
 
    if (context_stack==NULL) {
       parse_error(ps,"cannot set map ID without a context");
+      close_output_files();
       exit(1);
    }
    
@@ -614,6 +638,7 @@ void parse(void) {
 		(strcmp(token->cp,"include")==0)))) {
 	 parse_error(&ps,
 		     "cannot do anything without a context except open one");
+	 close_output_files();
 	 exit(1);
       }
       
@@ -665,19 +690,35 @@ void parse(void) {
 	    else if (strcmp(token->cp,"id")==0)
 	      handle_id(&ps);
 
+	    else if (strcmp(token->cp,"keytype")==0)
+	      handle_string_id_or_null(&ps,
+				       &(context_stack->key_c_type),
+				       "keytype");
+
 	    else if (strcmp(token->cp,"parserx")==0)
 	      handle_string_or_null(&ps,
 				    &(context_stack->parse_regex),"parserx");
 
 	    else if (strcmp(token->cp,"priority")==0)
 	      handle_priority(&ps);
-	    
+
+	    else if (strcmp(token->cp,"quote")==0)
+	      handle_quote_policy(&ps);
+
+	    else if (strcmp(token->cp,"remap")==0)
+	      handle_remap(&ps);
+
 	    else if (strcmp(token->cp,"rxparse")==0)
 	      handle_rxparse(&ps);
 	    
 	    else if (strcmp(token->cp,"skiprx")==0)
 	      handle_string_or_null(&ps,
 				    &(context_stack->skip_regex),"skiprx");
+
+	    else if (strcmp(token->cp,"valtype")==0)
+	      handle_string_id_or_null(&ps,
+				       &(context_stack->value_c_type),
+				       "valtype");
 	    
 	    else {
 	       parse_error(&ps,"unknown token %s",token->cp);

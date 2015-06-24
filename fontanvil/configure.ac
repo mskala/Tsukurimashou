@@ -189,22 +189,29 @@ AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
 AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([ICEMAP],[Icemap])
-AC_PATH_PROG([ICEMAP],[icemap])
+AS_IF([test "x$ICEMAP" = "x"],
+  [AC_PATH_PROG([ICEMAP],[icemap])])
 AS_IF([test "x$ICEMAP" = "xno"],[ICEMAP=])
 AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "x"])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
-AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])
+AS_IF([test "x$KLEKNEV" = "x"],
+  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])])
+AC_PATH_PROG([KPSEWHICH],[kpsewhich])
+AM_CONDITIONAL([COND_KPSEWHICH],[test '!' "x$KPSEWHICH" = "x"])
 AC_PATH_PROG([MAKE],[make])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([MSGFMT],[msgfmt],[msgfmt])
 AC_ARG_VAR([PDFLATEX],[PDFLaTeX])
-AC_PATH_PROG([PDFLATEX],[pdflatex])
+AS_IF([test "x$PDFLATEX" = "x"],
+  [AC_PATH_PROG([PDFLATEX],[pdflatex])])
 AC_ARG_VAR([PERL],[Perl])
-AC_PATH_PROG([PERL],[perl])
+AS_IF([test "x$PERL" = "x"],
+  [AC_PATH_PROG([PERL],[perl])])
 AC_PATH_PROG([UNZIP],[unzip],[unzip])
 #
 AC_ARG_VAR([VALGRIND],[Valgrind])
-AC_PATH_PROG([VALGRIND],[valgrind])
+AS_IF([test "x$VALGRIND" = "x"],
+  [AC_PATH_PROG([VALGRIND],[valgrind])])
 AC_ARG_VAR([VALGRIND_FLAGS],[options for Valgrind])
 AC_SUBST([VALGRIND_FLAGS])
 AS_IF([test "x$VALGRIND" = "x"],
@@ -432,6 +439,8 @@ AC_COMPILE_IFELSE(
 #
 AC_SYS_LONG_FILE_NAMES
 AX_AM_JOBSERVER
+AS_IF([test '!' "x$KPSEWHICH" = "x"],[eightrenc=`$KPSEWHICH 8r.enc`])
+AC_SUBST([eightrenc])
 #
 ############################################################################
 #

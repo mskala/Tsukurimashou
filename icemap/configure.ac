@@ -145,9 +145,11 @@ AC_PATH_PROG([AUTOMAKE],[automake])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
-AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh])
+AS_IF([test "x$KLEKNEV" = "x"],
+  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh])])
 AC_ARG_VAR([PERL],[Perl])
-AC_PATH_PROG([PERL],[perl])
+AS_IF([test "x$PERL" = "x"],
+  [AC_PATH_PROG([PERL],[perl])])
 #
 ############################################################################
 #
@@ -189,7 +191,7 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 #
 AX_FUNC_GETOPT_LONG
-# AC_CHECK_FUNCS_ONCE([])
+AC_CHECK_FUNCS([vasprintf])
 #
 ############################################################################
 #

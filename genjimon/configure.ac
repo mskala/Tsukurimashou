@@ -199,7 +199,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([genjimon-black.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 3995 2015-06-03 12:34:24Z mskala $])
+AC_REVISION([$Id: configure.ac 4050 2015-06-24 18:42:21Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -216,22 +216,29 @@ AC_PROG_MKDIR_P
 AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
 AC_ARG_VAR([EXPECT],[Expect])
-AC_PATH_PROG([EXPECT],[expect])
+AS_IF([test "x$EXPECT" = "x"],
+  [AC_PATH_PROG([EXPECT],[expect])])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AC_ARG_VAR([FONTANVIL],[FontAnvil])
-AC_PATH_PROG([FONTANVIL],[fontanvil])
+AS_IF([test "x$FONTANVIL" = "x"],
+  [AC_PATH_PROG([FONTANVIL],[fontanvil])])
 AX_CHECK_GNU_MAKE
 AC_ARG_VAR([KLEKNEV],[Kleknev])
-AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])
+AS_IF([test "x$KLEKNEV" = "x"],
+  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])])
 AC_ARG_VAR([MPOST],[MetaPost])
-AC_PATH_PROG([MPOST],[mpost])
+AS_IF([test "x$MPOST" = "x"],
+  [AC_PATH_PROG([MPOST],[mpost])])
 AC_ARG_VAR([PERL],[Perl])
-AC_PATH_PROG([PERL],[perl])
+AS_IF([test "x$PERL" = "x"],
+  [AC_PATH_PROG([PERL],[perl])])
 AC_ARG_VAR([T1ASM],[t1asm])
 AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
-AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])
+AS_IF([test "x$XDVIPDFMX" = "x"],
+  [AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
-AC_PATH_PROG([XELATEX],[xelatex])
+AS_IF([test "x$XELATEX" = "x"],
+  [AC_PATH_PROG([XELATEX],[xelatex])])
 #
 ############################################################################
 #

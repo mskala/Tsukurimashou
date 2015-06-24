@@ -187,17 +187,21 @@ AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
 AC_PATH_PROGS([CHECKSUM],[sha256sum sha1sum md5sum cksum wc],[no])
 AC_ARG_VAR([EXPECT],[Expect])
-AC_PATH_PROG([EXPECT],[expect])
+AS_IF([test "x$EXPECT" = "x"],
+  [AC_PATH_PROG([EXPECT],[expect])])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
 AC_PATH_PROG([ICONV],[iconv])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
-AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])
+AS_IF([test "x$KLEKNEV" = "x"],
+  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])])
 AC_ARG_VAR([PERL],[Perl])
-AC_PATH_PROG([PERL],[perl])
+AS_IF([test "x$PERL" = "x"],
+  [AC_PATH_PROG([PERL],[perl])])
 AC_ARG_VAR([XELATEX],[XeLaTeX],[no])
-AC_PATH_PROG([XELATEX],[xelatex])
+AS_IF([test "x$XELATEX" = "x"],
+  [AC_PATH_PROG([XELATEX],[xelatex])])
 #
 ############################################################################
 #

@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4035 2015-06-18 16:00:10Z mskala $ */
+/* $Id: tottf.c 4047 2015-06-24 11:48:13Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -5276,10 +5276,9 @@ static void dumpcmap(struct alltabs *at,SplineFont *sf,
       table[9]=table[13]=2;
    }
    for (i=0; i < 256; ++i) {
-      extern unichar_t MacRomanEnc[];
+      extern unichar_t __icemap_macenc_macromanenc_array[];
 
-      /* sc=SFFindExistingCharMac(sf,map,MacRomanEnc[i]); */
-      sc=SFGetChar(sf, MacRomanEnc[i], NULL);
+      sc=SFGetChar(sf, __icemap_macenc_macromanenc_array[i], NULL);
       if (sc != NULL && sc->ttf_glyph != -1)
 	 table[i]=sc->ttf_glyph;
    }

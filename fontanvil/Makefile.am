@@ -183,7 +183,8 @@ noinst_HEADERS = \
   inc/search.h inc/usermenu.h inc/fffreetype.h \
   inc/PfEd.h inc/sfd1.h \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
-  inc/cvruler.h inc/ffglib.h inc/gb12345.h
+  inc/cvruler.h inc/ffglib.h inc/gb12345.h \
+  fontanvil/macenctab.h fontanvil/nonmactab.h
 
 noinst_LIBRARIES = \
   Unicode/libgunicode.a \
@@ -222,7 +223,9 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/ufo.c fontanvil/unicoderange.c \
  fontanvil/winfonts.c fontanvil/woff.c fontanvil/zapfnomen.c \
  fontanvil/splinerefigure.c fontanvil/gb12345.c \
- fontanvil/pescript.l
+ fontanvil/pescript.l \
+ fontanvil/macenctab.im fontanvil/nonmactab.im \
+ fontanvil/macenctab.c fontanvil/nonmactab.c
 
 fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a \
 	$(top_builddir)/gutils/libgutils.a
@@ -261,6 +264,7 @@ gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a
 gutils_libgutils_a_LDFLAGS = $(GLIB_LIBS)
 
 dist_doc_DATA = doc/fontanvil.pdf
+dist_noinst_DATA = fontanvil/8r.enc fontanvil/glyphlist.txt
 
 texfiles = \
   doc/building.tex doc/datamodel.tex doc/fontanvil.tex \
@@ -298,8 +302,23 @@ if COND_ICEMAP
 	$(TSU_V_ICE)$(ICEMAP) -C$@ -H$(patsubst %.c,%.h,$@) < $<
 
 fontanvil/macenctab.c: fontanvil/macenctab.im
-
 fontanvil/macenctab.h: fontanvil/macenctab.c
+fontanvil/nonmactab.c: fontanvil/nonmactab.im \
+  fontanvil/texbase.dat fontanvil/glyphlist.txt
+fontanvil/nonmactab.h: fontanvil/nonmactab.c
+
+if COND_KPSEWHICH
+
+fontanvil/8r.enc: @eightrenc@
+	$(AM_V_GEN)
+	$(AM_V_at)cp $< $@
+
+endif
+
+fontanvil/texbase.dat: fontanvil/8r.enc
+	$(AM_V_GEN)
+	$(AM_V_at)$(PERL) -pe \
+	  's/\%.*//;s!/TeXBase1Encoding!!;s/\s/\n/g;' $< > $@
 
 endif
 

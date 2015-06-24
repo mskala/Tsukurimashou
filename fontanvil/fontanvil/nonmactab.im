@@ -1,0 +1,40 @@
+# Non-Mac encoding tables
+
+# $Id: nonmactab.im 4050 2015-06-24 18:42:21Z mskala $
+
+# this file collects various encoding-related tables other than the Mac
+# encodings from macenc.c
+
+cfile "fontanvil/nonmactab.c"
+hfile "fontanvil/nonmactab.h"
+
+cwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN nonmactab.im INSTEAD! */
+
+#include "_stdint.h"
+
+EOF
+
+hwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN nonmactab.im INSTEAD! */
+
+#include "_stdint.h"
+
+EOF
+
+{ id enc_texbase;
+  valtype "int32_t";
+
+  parserx "^/([\.A-Za-z]+)";
+  rxparse "fontanvil/texbase.dat" -1 -> 1;
+
+  remap values {
+    priority first;
+    parserx "^([^;]+);([0-9A-F]+)";
+    skiprx "^\s*#";
+    rxparse "fontanvil/glyphlist.txt" 1 -> x2;
+    ".notdef" -> 0;
+  }
+
+  generate basic_array;
+}

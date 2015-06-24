@@ -1,32 +1,87 @@
 # Mac encoding table translations
 
+# $Id: macenctab.im 4050 2015-06-24 18:42:21Z mskala $
+
 cfile "fontanvil/macenctab.c"
 hfile "fontanvil/macenctab.h"
 
 cwrite <<EOF;
 /* GENERATED FILE - EDIT THE SOURCE IN macenctab.im INSTEAD! */
 
+/* Comment from George Williams in the part of the FontForge macenc.c
+ * source file which these auto-generated tables replace:
+
+     The original data for these mappings may be found at
+       http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/
+     unfortunately this site does not contain all the macintosh encodings
+     so we leave some blank
+
+     Response (indirectly) from charsets@apple.com when asked about the
+     missing encodings:
+
+        > I don't believe any of those additional scripts are actually
+        > defined as character encodings. He can safely ignore anything
+        > that's not in the Apple folder on the Unicode site.
+        >
+        > I monitor charsets@apple.com and don't recall seeing any e-mail
+        > on this subject. It's possible it got lost in the voluminous
+        > spam the address receives.
+        >
+        > Deborah
+
+     I find this perplexing (unless the script is defined but unused, how can
+     it fail to have a defined encoding), but will accept it.
+
+ * George wrote that at some unspecified distant point in the past.  As of
+ * the current writing (Matthew Skala, June 2015), there are other tables
+ * available at the Unicode Consortium URL mentioned above, that were not
+ * included in the FontForge source file.  Notes below decribe what I think
+ * is going on with those files.
+ *
+ * For the moment these lookups cover only Mac 8-bit encodings.  I may add
+ * 16-bit encodings if I can figure out how the FontForge code handles them.
+ */
+
+#include <ustring.h>
+
+#include "_stdint.h"
+
 EOF
 
 hwrite <<EOF;
 /* GENERATED FILE - EDIT THE SOURCE IN macenctab.im INSTEAD! */
 
+#include <ustring.h>
+
+#include "_stdint.h"
+
 EOF
 
 parserx "^([0-9A-Fx]+)\t(<[LR]+>\\+)?([0-9A-Fx]+)\t";
 skiprx "^\s+#";
+
 generate basic_array;
+valtype unichar_t;
 
 priority last;
-
 0x0..0xFF => 0x0..0xFF;
-0->0;
+0->0;  # work around an Icemap bug that maps 0 to null pointer?
+rxparse "unicode/apple/ROMAN.TXT" x1 -> x3; # Mac Roman serves as a default
 
 { id macenc_arabic;
   rxparse "unicode/apple/ARABIC.TXT" x1 -> x3; }
 
+# notes in CELTIC.TXT indicate that it shares the encoding code 0 with
+# Mac Roman, and is invoked if and only if the local system is running
+# in region code 50 or 79.
+
 { id macenc_centeuro;
   rxparse "unicode/apple/CENTEURO.TXT" x1 -> x3; }
+
+# CHINSIMP.TXT and CHINTRAD.TXT are 16-bit encodings
+
+# CORPCHAR.TXT describes Apple's PUA usage and is not an encoding
+# in the same way as these others
 
 { id macenc_croatian;
   rxparse "unicode/apple/CROATIAN.TXT" x1 -> x3; }
@@ -37,8 +92,15 @@ priority last;
 { id macenc_devanagari;
   rxparse "unicode/apple/DEVANAGA.TXT" x1 -> x3; }
 
+# notes in DINGBATS.TXT indicate that it shares the encoding code 0 with
+# Mac Roman, and is invoked if and only if the font name is "Zapf Dingbats"
+
 { id macenc_farsi;
   rxparse "unicode/apple/FARSI.TXT" x1 -> x3; }
+
+# notes in GAELIC.TXT indicate that it shares the encoding code 0 with
+# Mac Roman, and is invoked if and only if the local system is running
+# in region code 81.
 
 { id macenc_greek;
   rxparse "unicode/apple/GREEK.TXT" x1 -> x3; }
@@ -55,11 +117,31 @@ priority last;
 { id macenc_iceland;
   rxparse "unicode/apple/ICELAND.TXT" x1 -> x3; }
 
+# notes in INUIT.TXT indicate that it shares the encoding code 28 with
+# Ethiopic, even though we don't have a file for Ethiopic, and is invoked
+# instead of Ethiopic if and only if the local system is running in
+# region code 78, Nunavut.
+
+# JAPANESE.TXT and KOREAN.TXT are 16-bit encodings
+
+# KEYBOARD.TXT shares the encoding code 0 with MacRoman and is unique to
+# an old system font called ".Keyboard"
+
+{ id macenc_macromanenc; }
+
 { id macenc_romanian;
   rxparse "unicode/apple/ROMANIAN.TXT" x1 -> x3; }
 
-{ id macenc_MacRomanEnc;
-  rxparse "unicode/apple/ROMAN.TXT" x1 -> x3; }
+# Notes in SYMBOL.TXT indicate that it shares the encoding code 0 with
+# MacRoman.  This table replaces a FontForge array in encoding.c, not
+# in macenc.c, and it differs slightly from what was there in FontForge
+# because the FontForge version mapped a bunch of characters to Apple
+# corporate PUA code points.  Those characters are marked as "for
+# Unicode 3.2 and later" in SYMBOL.TXT, so presumably, FontForge's
+# array predates Unicode 3.2.  FontAnvil will use the latest available data.
+{ id macenc_symbol;
+  valtype "int32_t";
+  rxparse "unicode/apple/SYMBOL.TXT" x1 -> x3; }
 
 { id macenc_thai;
   rxparse "unicode/apple/THAI.TXT" x1 -> x3; }
@@ -67,4 +149,6 @@ priority last;
 { id macenc_turkish;
   rxparse "unicode/apple/TURKISH.TXT" x1 -> x3; }
 
-generate nothing;
+# notes in UKRAINE.TXT indicate it shares the encoding code 7 with Cyrillic
+# (i.e. Russian), and is invoked if the system region code is 62 or the
+# system script code is NOT 7.

@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4019 2015-06-14 17:52:39Z mskala $])
+AC_REVISION([$Id: configure.ac 4050 2015-06-24 18:42:21Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -221,30 +221,35 @@ AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
 AC_PATH_PROGS([CHECKSUM],[sha256sum sha1sum md5sum cksum wc],[no])
 AC_ARG_VAR([EXPECT],[Expect])
-AC_PATH_PROG([EXPECT],[$EXPECT expect])
+AS_IF([test "x$EXPECT" = "x"],
+  [AC_PATH_PROG([EXPECT],[expect])])
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AC_ARG_VAR([FONTANVIL],[FontAnvil])
-AC_PATH_PROGS([FONTANVIL],[$FONTANVIL fontanvil fontforge])
+AS_IF([test "x$FONTANVIL" = "x"],
+  [AC_PATH_PROGS([FONTANVIL],[fontanvil fontforge])])
 AC_ARG_VAR([FONTLINT_FLAGS],[Flags for fontlint])
 AC_PATH_TOOL([GDB],[gdb])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AS_IF([test "x$KLEKNEV" = "x"],
-  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])],
-  [])
+  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])])
 AC_PATH_PROG([MAKE],[make])
 AC_ARG_VAR([MPOST],[MetaPost])
-AC_PATH_PROG([MPOST],[$MPOST mpost])
+AS_IF([test "x$MPOST" = "x"],
+  [AC_PATH_PROG([MPOST],[mpost])])
 AC_ARG_VAR([PERL],[Perl])
-AC_PATH_PROG([PERL],[$PERL perl])
+AS_IF([test "x$PERL" = "x"],
+  [AC_PATH_PROG([PERL],[perl])])
 AS_IF([unames=`uname -s` ; test "x$unames" = 'xDarwin'],
   [AC_PATH_PROGS([PROLOG],[swipl eclipse gprolog],[])],
   [AC_PATH_PROGS([PROLOG],[pl swipl eclipse gprolog],[])])
-AC_ARG_VAR([XDVIPDFMX],[$XDVIPDFMX xdvipdfmx])
-AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])
+AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
+AS_IF([test "x$XDVIPDFMX" = "x"],
+  [AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
-AC_PATH_PROG([XELATEX],[$XELATEX xelatex])
+AS_IF([test "x$XELATEX" = "x"],
+  [AC_PATH_PROG([XELATEX],[$xelatex])])
 #
 gmake_version=unknown
 missing_gmake_version=yes
