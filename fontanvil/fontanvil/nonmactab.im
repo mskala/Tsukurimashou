@@ -1,6 +1,6 @@
 # Non-Mac encoding tables
 
-# $Id: nonmactab.im 4050 2015-06-24 18:42:21Z mskala $
+# $Id: nonmactab.im 4060 2015-06-25 13:05:46Z mskala $
 
 # this file collects various encoding-related tables other than the Mac
 # encodings from macenc.c
@@ -22,19 +22,51 @@ hwrite <<EOF;
 
 EOF
 
+########################################################################
+
+# TeX base encoding
+
+# This is the native encoding of TeX, made obsolete by LaTeX and other
+# macro packages, which define their own encodings.  Some really old
+# fonts are presumably still encoded in TeX base encoding.
+
+# Source material is 8r.enc from the TeX distribution (which translates
+# encoding numbers into Postscript names) composed with the Adobe Glyph
+# List, which translates Postscript names into Unicode.  We distribute
+# the AGL and 8r.enc, as well as looking for a local TeX distribution and
+# possibly updating our copy of 8r.enc from that.
+
 { id enc_texbase;
   valtype "int32_t";
 
   parserx "^/([\.A-Za-z]+)";
-  rxparse "fontanvil/texbase.dat" -1 -> 1;
+  rxparse "dat/texbase.dat" -1 -> 1;
 
   remap values {
     priority first;
     parserx "^([^;]+);([0-9A-F]+)";
     skiprx "^\s*#";
-    rxparse "fontanvil/glyphlist.txt" 1 -> x2;
+    rxparse "dat/glyphlist.txt" 1 -> x2;
     ".notdef" -> 0;
   }
 
   generate basic_array;
 }
+
+########################################################################
+
+# encodings for which FontForge code needs tables, but not yet icemapped
+
+# Unicode table location known
+
+# JIS 201
+# JIS 208
+# KSC 5601
+# Johab (Windows code page 1361)
+# Adobe standard
+
+# Unicode table location not known
+
+# GB2312
+# Big5 HKSCS
+

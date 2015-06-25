@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: fontviewbase.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1439,11 +1439,11 @@ static void _FVRevert(FontViewBase *fv,int tobackup) {
 
    if (temp->filename!=NULL) {
       free(temp->filename);
-      temp->filename=copy(old->filename);
+      temp->filename=fastrdup(old->filename);
    }
    if (temp->origname!=NULL) {
       free(temp->origname);
-      temp->origname=copy(old->origname);
+      temp->origname=fastrdup(old->origname);
    }
 
    temp->compression=old->compression;

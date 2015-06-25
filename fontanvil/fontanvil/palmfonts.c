@@ -1,4 +1,4 @@
-/* $Id: palmfonts.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: palmfonts.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -76,14 +76,14 @@ static SplineFont *MakeContainer(struct font *fn,char *family,char *style) {
    free(sf->familyname);
    free(sf->fontname);
    free(sf->fullname);
-   sf->familyname=copy(family);
+   sf->familyname=fastrdup(family);
    sf->fontname=malloc(strlen(family) + strlen(style) + 2);
    strcpy(sf->fontname, family);
    if (*style != '\0') {
       strcat(sf->fontname, "-");
       strcat(sf->fontname, style);
    }
-   sf->fullname=copy(sf->fontname);
+   sf->fullname=fastrdup(sf->fontname);
 
    free(sf->copyright);
    sf->copyright=NULL;
@@ -103,7 +103,7 @@ static SplineFont *MakeContainer(struct font *fn,char *family,char *style) {
       }
    sc=SFMakeChar(sf, map, 256);
    free(sc->name);
-   sc->name=copy(".notdef");
+   sc->name=fastrdup(".notdef");
    sc->width=fn->chars[i].width * em / fn->frectheight;
    sc->widthset=true;
    return (sf);

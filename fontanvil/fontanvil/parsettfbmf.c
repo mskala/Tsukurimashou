@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: parsettfbmf.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -592,7 +592,7 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
 	 sprintf(buf, "%d", sizes[i].ppem);
       else
 	 sprintf(buf, "%d@%d", sizes[i].ppem, sizes[i].depth);
-      choices[i]=copy(buf);
+      choices[i]=fastrdup(buf);
    }
    /* When loading a ttf font with only bitmaps, and there's only one strike */
    /*  then just load that strike. Don't ask */

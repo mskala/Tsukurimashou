@@ -1,4 +1,4 @@
-/* $Id: mm.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: mm.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -136,7 +136,7 @@ static char *_MMMakeFontname(MMSet *mm,real *normalized,char **fullname) {
 
    *fullname=ret;
 
-   ret=copy(ret);
+   ret=fastrdup(ret);
    for (pt=*fullname, pt2=ret; *pt != '\0'; ++pt)
       if (pt==hyphen)
 	 *pt2++='-';
@@ -183,7 +183,7 @@ static char *_MMGuessWeight(MMSet *mm,real *normalized,char *def) {
    else
       ret="Black";
    free(def);
-   return (copy(ret));
+   return (fastrdup(ret));
 }
 
 char *MMGuessWeight(MMSet * mm, int ipos, char *def) {
@@ -325,7 +325,7 @@ static SplineChar *SFMakeGlyphLike(SplineFont *sf,int gid,
    sc->widthset=true;
    sc->vwidth=bsc->vwidth;
    free(sc->name);
-   sc->name=copy(bsc->name);
+   sc->name=fastrdup(bsc->name);
    sc->unicodeenc=bsc->unicodeenc;
    return (sc);
 }
@@ -825,17 +825,17 @@ SplineFont *_MMNewFont(MMSet * mm, int index, char *familyname,
    free(sf->familyname);
    free(sf->fullname);
    free(sf->weight);
-   sf->familyname=copy(familyname);
+   sf->familyname=fastrdup(familyname);
    if (index==-1) {
-      sf->fontname=copy(familyname);
+      sf->fontname=fastrdup(familyname);
       for (pt1=pt2=sf->fontname; *pt1; ++pt1)
 	 if (*pt1 != ' ')
 	    *pt2++=*pt1;
       *pt2='\0';
-      sf->fullname=copy(familyname);
+      sf->fullname=fastrdup(familyname);
    } else
       sf->fontname=_MMMakeFontname(mm, normalized, &sf->fullname);
-   sf->weight=copy("All");
+   sf->weight=fastrdup("All");
 
    base=NULL;
    if (mm->normal != NULL)
@@ -850,7 +850,7 @@ SplineFont *_MMNewFont(MMSet * mm, int index, char *familyname,
 
    if (base != NULL) {
       free(sf->xuid);
-      sf->xuid=copy(base->xuid);
+      sf->xuid=fastrdup(base->xuid);
       free(sf->glyphs);
       sf->glyphs=calloc(base->glyphcnt, sizeof(SplineChar *));
       sf->glyphcnt=sf->glyphmax=base->glyphcnt;
@@ -858,10 +858,10 @@ SplineFont *_MMNewFont(MMSet * mm, int index, char *familyname,
       sf->ascent=base->ascent;
       sf->descent=base->descent;
       free(sf->origname);
-      sf->origname=copy(base->origname);
+      sf->origname=fastrdup(base->origname);
       if (index < 0) {
 	 free(sf->copyright);
-	 sf->copyright=copy(base->copyright);
+	 sf->copyright=fastrdup(base->copyright);
       }
       /* Make sure we get the encoding exactly right */
       for (i=0; i < base->glyphcnt; ++i)

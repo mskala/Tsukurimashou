@@ -1,4 +1,4 @@
-/* $Id: http.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: http.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -93,7 +93,7 @@ static int findhost(struct sockaddr_in *addr,char *hostname) {
 	  hostent->h_length);
    if (hostent->h_length < sizeof(last_addr)) {	/* Cache the last hostname, in case they ask for it again */
       free(last_host);
-      last_host=copy(hostname);
+      last_host=fastrdup(hostname);
       last_len=hostent->h_length;
       memcpy(last_addr, hostent->h_addr_list[rand() % i], hostent->h_length);
    }
@@ -324,7 +324,7 @@ static char *decomposeURL(const char *url,char **host,int *port,
    pt=strstr(url, "://");
    if (pt==NULL) {
       *host=NULL;
-      return (copy(url));
+      return (fastrdup(url));
    }
    strncpy(proto, url, pt - url < sizeof(proto) ? pt - url : sizeof(proto));
    proto[(pt - url)]='\0';
@@ -333,9 +333,9 @@ static char *decomposeURL(const char *url,char **host,int *port,
    pt2=strchr(pt, '/');
    if (pt2==NULL) {
       pt2=pt + strlen(pt);
-      path=copy("/");
+      path=fastrdup("/");
    } else {
-      path=copy(pt2);
+      path=fastrdup(pt2);
    }
 
    upt=strchr(pt, '@');
@@ -576,11 +576,11 @@ static int FtpURLAndTempFile(char *url,AFILE ** to,AFILE *from) {
    free(host);
 
    if (username==NULL) {
-      username=copy("anonymous");
+      username=fastrdup("anonymous");
       if (password==NULL)
-	 password=copy("FontAnvil");
+	 password=fastrdup("FontAnvil");
    } else if (password==NULL)
-      password=copy("");
+      password=fastrdup("");
 
    sprintf(cmd, "USER %s\r\n", username);
    if (ftpsendr(soc, cmd, databuf, datalen)==-1) {

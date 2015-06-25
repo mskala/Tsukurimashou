@@ -1,4 +1,4 @@
-/* $Id: woff.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: woff.c 4054 2015-06-25 11:15:19Z mskala $ */
 /* Copyright (C) 2010-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -58,10 +58,6 @@ int WriteWOFFFont(char *fontname, SplineFont *sf, enum fontformat format,
    ErrorMsg(2,"WOFF not supported:  this requires a version of FontAnvil "
               "built with both libpng and zlib.\n");
    return (1);
-}
-
-int CanWoff(void) {
-   return (0);
 }
 
 #else /* ! _NO_LIBPNG */
@@ -548,10 +544,6 @@ int WriteWOFFFont(char *fontname, SplineFont *sf, enum fontformat format,
    if (afclose(woff)==-1)
       return (0);
    return (ret);
-}
-
-int CanWoff(void) {
-   return (true);
 }
 
 #endif /* ! _NO_LIBPNG */

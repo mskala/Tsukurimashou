@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: parsepdf.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -224,7 +224,6 @@ static long *FindObjects(struct pdfcontext *pc) {
 	    free(ret_old);
 	    free(gen);
 	    free(gen_old);
-	    NoMoreMemMessage();
 	    pc->ocnt=0;
 	    return (NULL);
 	 }
@@ -319,7 +318,6 @@ static char *pdf_getname(struct pdfcontext *pc) {
 
 	 if ((temp=realloc(pc->tokbuf, (pc->tblen += 300)))==NULL) {
 	    /* error, but don't need to free realloc memory */
-	    NoMoreMemMessage();
 	    return (NULL);
 	 }
 	 pt=temp + (pt - pc->tokbuf);
@@ -437,7 +435,7 @@ static int pdf_readdict(struct pdfcontext *pc) {
    agetc(pdf);			/* Eat the second '<' */
 
    while (1) {
-      key=copy(pdf_getname(pc));
+      key=fastrdup(pdf_getname(pc));
       if (key==NULL) {
 	 if (pc->compressed != NULL) {	/* We've read the whole object */
 	    afclose(pc->compressed);	/* so close the compressed */
@@ -445,7 +443,7 @@ static int pdf_readdict(struct pdfcontext *pc) {
 	 }
 	 return (true);
       }
-      value=copy(pdf_getdictvalue(pc));
+      value=fastrdup(pdf_getdictvalue(pc));
       if (value==NULL || strcmp(value, "null")==0)
 	 free(key);
       else {
@@ -648,7 +646,7 @@ static int pdf_findfonts(struct pdfcontext *pc) {
 	       sscanf(desc, "%d", &dnum);
 	       if (*pt=='/' || *pt=='(')
 		  ++pt;
-	       tpt=copy(pt);
+	       tpt=fastrdup(pt);
 
 	       dnum=pdf_getdescendantfont(pc, dnum);
 	       if (dnum > 0) {
@@ -692,7 +690,7 @@ static int pdf_findfonts(struct pdfcontext *pc) {
 	       pc->fontobjs[k]=i;
 	       if (*pt=='/' || *pt=='(')
 		  ++pt;
-	       pc->fontnames[k++]=tpt=copy(pt);
+	       pc->fontnames[k++]=tpt=fastrdup(pt);
 	       for (pt=tpt; *pt; ++pt) {
 		  if (*pt=='#' && ishexdigit(pt[1]) && ishexdigit(pt[2])) {
 		     *tpt++=hex(pt[1], pt[2]);
@@ -747,7 +745,7 @@ static void pdf_addpages(struct pdfcontext *pc,int obj) {
 	    pc->pages[pc->pcnt++]=obj;
 	 } else if (strcmp(pt, "/Pages")==0) {
 	    if ((pt=PSDictHasEntry(&pc->pdfdict, "Kids")) != NULL) {
-	       char *kids=copy(pt);
+	       char *kids=fastrdup(pt);
 
 	       for (pt=kids; *pt != ']' && *pt != '\0';) {
 		  if (*pt=='[' || isspace(*pt)) {
@@ -790,7 +788,6 @@ static int pdf_findpages(struct pdfcontext *pc) {
       return (0);
 
    if ((pc->pages=malloc(pc->ocnt * sizeof(long)))==NULL) {
-      NoMoreMemMessage();
       return (0);
    }
    pdf_addpages(pc, top_ref);
@@ -1114,7 +1111,6 @@ static long *FindObjectsFromXREFObject(struct pdfcontext *pc,long prev_xref) {
 	       pc->subindex=sub_old;
 	    if (gen==NULL)
 	       gen=gen_old;
-	    NoMoreMemMessage();
 	    goto FindObjectsFromXREFObjectError_ReleaseMemAndExit;
 	 }
 	 memset(ret + cnt, -1, sizeof(long) * (start + num - cnt));
@@ -1470,7 +1466,7 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	case pt_namelit:
 	   if (sp < sizeof(stack) / sizeof(stack[0])) {
 	      stack[sp].type=ps_lit;
-	      stack[sp++].u.str=copy(tokbuf);
+	      stack[sp++].u.str=fastrdup(tokbuf);
 	   }
 	   break;
 	case pt_true:
@@ -1806,7 +1802,7 @@ static SplineChar *pdf_InterpretSC(struct pdfcontext *pc,char *glyphname,
    memset(&ec, '\0', sizeof(ec));
    ec.fromtype3=true;
    ec.sc=sc=SplineCharCreate(2);
-   sc->name=copy(glyphname);
+   sc->name=fastrdup(glyphname);
 
    _InterpretPdf(glyph_stream, pc, &ec);
    sc->width=ec.width;
@@ -1881,12 +1877,12 @@ static void add_mapping(SplineFont *basesf,long *mappings,int *uvals,
    SplineChar *sc;
 
    name =
-      copy(StdGlyphName
+      fastrdup(StdGlyphName
 	   (buffer, uvals[0], sf->uni_interp, sf->for_new_glyphs));
    name=realloc(name, strlen(name) + 8);
    for (i=1; i < nuni; i++) {
       nname =
-	 copy(StdGlyphName
+	 fastrdup(StdGlyphName
 	      (buffer, uvals[i], sf->uni_interp, sf->for_new_glyphs));
       name=realloc(name, strlen(name) + strlen(nname) + 10);
       strcat(name, "_");
@@ -2103,8 +2099,8 @@ static SplineFont *pdf_loadtype3(struct pdfcontext *pc) {
    if (sscanf(fontmatrix, "[%lg", &emsize) != 1 || emsize==0)
       goto fail;
    emsize=1.0 / emsize;
-   enc=copy(enc);
-   name=copy(name + 1);
+   enc=fastrdup(enc);
+   name=fastrdup(name + 1);
 
    if (!pdf_getcharprocs(pc, cp))
       goto fail;
@@ -2116,8 +2112,8 @@ static SplineFont *pdf_loadtype3(struct pdfcontext *pc) {
       free(sf->fullname);
       free(sf->familyname);
       sf->fontname=name;
-      sf->familyname=copy(name);
-      sf->fullname=copy(name);
+      sf->familyname=fastrdup(name);
+      sf->fullname=fastrdup(name);
    }
    free(sf->copyright);
    sf->copyright=NULL;
@@ -2277,7 +2273,7 @@ char **NamesReadPDF(char *filename) {
    if ((list=malloc((pc.fcnt + 1) * sizeof(char *)))==NULL)
       goto NamesReadPDF_error;
    for (i=0; i < pc.fcnt; ++i)
-      if ((list[i]=copy(pc.fontnames[i]))==NULL)
+      if ((list[i]=fastrdup(pc.fontnames[i]))==NULL)
 	 goto NamesReadPDFlist_error;
    list[i]=NULL;
    afclose(pc.pdf);
@@ -2333,7 +2329,7 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
    }
    // parse the chosen font name
    if ((pt=strchr(filename, '(')) != NULL) {
-      select_this_font=copy(pt + 1);
+      select_this_font=fastrdup(pt + 1);
       if ((pt=strchr(select_this_font, ')')) != NULL)
 	 *pt='\0';
    }
@@ -2356,7 +2352,7 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
 
       names=malloc((pc.fcnt + 1) * sizeof(unichar_t *));
       for (i=0; i < pc.fcnt; ++i)
-	 names[i]=copy(pc.fontnames[i]);
+	 names[i]=fastrdup(pc.fontnames[i]);
       names[i]=NULL;
       choice=0;
 

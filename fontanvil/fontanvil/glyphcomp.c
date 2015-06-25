@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: glyphcomp.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2006-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1371,7 +1371,7 @@ static void FDAddMissingGlyph(struct font_diff *fd,SplineChar *sc2) {
    sc->vwidth=sc2->vwidth;
    sc->widthset=sc2->widthset;
    free(sc->name);
-   sc->name=copy(sc2->name);
+   sc->name=fastrdup(sc2->name);
    sc->unicodeenc=sc2->unicodeenc;
    SCAddBackgrounds(sc, sc2, fd);
 }

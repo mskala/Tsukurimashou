@@ -1,4 +1,4 @@
-/* $Id: bvedit.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: bvedit.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1040,7 +1040,7 @@ BDFFont *BitmapFontScaleTo(BDFFont * old, int to) {
    new->pixelsize=to;
    new->ascent=(old->ascent * to + .5) / old->pixelsize;
    new->descent=to - new->ascent;
-   new->foundry=copy(old->foundry);
+   new->foundry=fastrdup(old->foundry);
    new->res=-1;
    for (i=0; i < old->glyphcnt; ++i) {
       if (old->clut==NULL) {

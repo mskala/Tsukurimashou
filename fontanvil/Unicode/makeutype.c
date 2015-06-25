@@ -1,4 +1,4 @@
-/* $Id: makeutype.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: makeutype.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -408,7 +408,7 @@ static void readin(void) {
 	       strcat(buf2, " ");
 	       strcat(buf2, oldname);
 	    }
-	    names[index] = strdup(buf2);
+	    names[index] = fastrdup(buf2);
 	 }
       }
    }

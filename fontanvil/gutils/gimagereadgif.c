@@ -1,4 +1,4 @@
-/* $Id: gimagereadgif.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: gimagereadgif.c 4063 2015-06-25 13:57:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013jan18..22, several fixes + interlacing, Jose Da Silva */
 /*
@@ -74,7 +74,6 @@ static GImage *ProcessSavedImage(GifFileType * gif, struct SavedImage *si,
 	 if ((ret->u.image->clut =
 	      (GClut *) calloc(1, sizeof(GClut))) == NULL) {
 	 free(ret);
-	 NoMoreMemMessage();
 	 return (NULL);
       }
    } else
@@ -91,7 +90,6 @@ static GImage *ProcessSavedImage(GifFileType * gif, struct SavedImage *si,
       free(ret);
       free(id);
       free(iv);
-      NoMoreMemMessage();
       return (NULL);
    }
 
@@ -203,7 +201,6 @@ GImage *GImageReadGif(char *filename) {
    if ((images =
 	(GImage **) malloc(gif->ImageCount * sizeof(GImage *))) == NULL) {
       DGifCloseFile(gif);
-      NoMoreMemMessage();
       return (NULL);
    }
    il = gif->SavedImages[0].ImageDesc.Interlace;

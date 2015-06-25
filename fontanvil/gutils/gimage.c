@@ -1,4 +1,4 @@
-/* $Id: gimage.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimage.c 4063 2015-06-25 13:57:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,6 @@ GImage *GImageCreate(enum image_type type, int32_t width, int32_t height) {
  errorGImageCreate:
    free(base);
    free(gi);
-   NoMoreMemMessage();
    return (NULL);
 }
 
@@ -100,7 +99,6 @@ GImage *_GImage_Create(enum image_type type, int32_t width, int32_t height) {
  error_GImage_Create:
    free(base);
    free(gi);
-   NoMoreMemMessage();
    return (NULL);
 }
 
@@ -148,7 +146,6 @@ GImage *GImageCreateAnimation(GImage ** images, int n) {
    if (gi == NULL || imgs == NULL) {
       free(gi);
       free(imgs);
-      NoMoreMemMessage();
       return (NULL);
    }
    

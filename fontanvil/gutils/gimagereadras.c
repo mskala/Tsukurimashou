@@ -1,4 +1,4 @@
-/* $Id: gimagereadras.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: gimagereadras.c 4063 2015-06-25 13:57:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013jan30..feb5, additional fixes and error checks done, Jose Da Silva */
 /*
@@ -92,7 +92,6 @@ static GImage *ReadRasBitmap(GImage * ret, int width, int height, FILE * fp) {
 
    len = ((width + 15) / 16) * 2;	/* pad out to 16 bits */
    if ((buf = (unsigned char *) malloc(len * sizeof(unsigned char))) == NULL) {
-      NoMoreMemMessage();
       GImageDestroy(ret);
       return (NULL);
    }

@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: cvundoes.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -812,8 +812,8 @@ static Undoes *SCCopyAllLayer(SplineChar *sc,enum fvcopy_type full,
 	 }
 	 cur->u.state.unicodeenc=sc->unicodeenc;
 	 if (copymetadata && layer==ly_fore) {
-	    cur->u.state.charname=copy(sc->name);
-	    cur->u.state.comment=copy(sc->comment);
+	    cur->u.state.charname=fastrdup(sc->name);
+	    cur->u.state.comment=fastrdup(sc->comment);
 	    cur->u.state.possub=PSTCopy(sc->possub, sc, NULL);
 	 } else {
 	    cur->u.state.charname=NULL;
@@ -1479,12 +1479,12 @@ static void PSTInto(SplineChar *sc,PST *pst,PST *frompst,
    }
    if (pst->type==pst_substitution || pst->type==pst_alternate ||
        pst->type==pst_multiple)
-      pst->u.subs.variant=copy(frompst->u.subs.variant);
+      pst->u.subs.variant=fastrdup(frompst->u.subs.variant);
    else if (pst->type==pst_ligature) {
-      pst->u.lig.components=copy(frompst->u.lig.components);
+      pst->u.lig.components=fastrdup(frompst->u.lig.components);
       pst->u.lig.lig=sc;
    } else if (pst->type==pst_pair) {
-      pst->u.pair.paired=copy(frompst->u.pair.paired);
+      pst->u.pair.paired=fastrdup(frompst->u.pair.paired);
       pst->u.pair.vr=chunkalloc(sizeof(struct vr[2]));
       memcpy(pst->u.pair.vr, frompst->u.pair.vr, sizeof(struct vr[2]));
       DevTabInto(&pst->u.pair.vr[0]);
@@ -1721,7 +1721,7 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 		|| (otl->lookup_type==gpos_pair && HasNonClass(otl))) {
 	       if (doit) {
 		  list1[cnt]=otl;
-		  choices[cnt++]=copy(otl->lookup_name);
+		  choices[cnt++]=fastrdup(otl->lookup_name);
 		  if (otl->lookup_type==gpos_pair) {
 /* GT: I'm not happy with this phrase. Suggestions for improvements are welcome */
 /* GT:  Here I am generating a list of lookup names representing data that can */
@@ -1760,7 +1760,7 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 	    choices[cnt]=NULL;
 	    list2=NULL;
 	 } else {
-	    choices[cnt]=copy("-");
+	    choices[cnt]=fastrdup("-");
 	    choices[bcnt + cnt + 1]=NULL;
 	    list2=malloc(bcnt * sizeof(OTLookup *));
 	 }

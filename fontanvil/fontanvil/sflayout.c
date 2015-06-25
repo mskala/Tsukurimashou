@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 3875 2015-03-27 11:44:59Z mskala $ */
+/* $Id: sflayout.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -668,7 +668,7 @@ void SFMapFill(struct sfmaps *sfmaps, SplineFont *sf) {
       SplineChar *notdef=SFSplineCharCreate(sf);
 
       sfmaps->fake_notdef=notdef;
-      notdef->name=copy(".notdef");
+      notdef->name=fastrdup(".notdef");
       notdef->parent=sf;
       notdef->width=(sf->ascent + sf->descent);
       if (sf->cidmaster==NULL)
@@ -843,7 +843,7 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
       pixelsize=arr->vals[0].u.ival;
 
    scnt=0;
-   lines[0]=copy(sf->fullname != NULL ? sf->fullname : sf->fontname);
+   lines[0]=fastrdup(sf->fullname != NULL ? sf->fullname : sf->fontname);
    lcnt=1;
    for (gid=0; gid < sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL) {
@@ -887,7 +887,7 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
 	   case CHR('h', 'a', 'n', 'i'):
 	      /* Chinese Tranditional */
 	      lines[lcnt++] =
-		 copy("道可道非常道，名可名非常名。");
+		 fastrdup("道可道非常道，名可名非常名。");
 	      /* Japanese */
 	      str =
 		 "吾輩は猫である（夏目漱石）：吾輩は猫である";
@@ -895,7 +895,7 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
 	   case CHR('k', 'a', 'n', 'a'):
 	      /* Hiragana */
 	      lines[lcnt++] =
-		 copy
+		 fastrdup
 		 ("あいうえおかがきぎくぐけこさざしじすせそただちぢつてとなにぬねのはばぱひふへほまみむ");
 	      /* Katakana */
 	      str =
@@ -927,7 +927,7 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
 	    }
 	 }
 	 if (anyhere) {
-	    lines[lcnt++]=copy(str);
+	    lines[lcnt++]=fastrdup(str);
 	    scripts[scnt++]=script;
 	    anyscript=true;
 	 }
@@ -949,7 +949,7 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
       }
       *pt='\0';
       if (i > 0) {
-	 lines[lcnt++]=copy(buffer);
+	 lines[lcnt++]=fastrdup(buffer);
 	 scripts[scnt++]=DEFAULT_SCRIPT;
       }
    }

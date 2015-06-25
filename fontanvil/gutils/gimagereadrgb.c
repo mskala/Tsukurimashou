@@ -1,4 +1,4 @@
-/* $Id: gimagereadrgb.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: gimagereadrgb.c 4063 2015-06-25 13:57:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -132,7 +132,6 @@ static int find_scanline(FILE * fp, struct sgiheader *header, int cur,
 	 return (0);
       }
    if ((pt = ptrtab[cur] = (unsigned char *) malloc(header->width)) == NULL) {
-      NoMoreMemMessage();
       return (-1);
    }
    if (fseek(fp, starttab[cur], 0) != 0)
@@ -244,7 +243,6 @@ GImage *GImageReadRgb(char *filename) {
 	   (unsigned char **) calloc(1,
 				     tablen * sizeof(unsigned char *))) ==
 	  NULL) {
-	 NoMoreMemMessage();
 	 goto errorGImageReadRgbMem;
       }
       if (readlongtab(fp, starttab, tablen))
@@ -328,7 +326,6 @@ GImage *GImageReadRgb(char *filename) {
 		     (unsigned char *) malloc(header.width *
 					      sizeof(unsigned char))) ==
 		 NULL)) {
-	    NoMoreMemMessage();
 	    goto errorGImageReadRgbMem;
 	 }
 	 if (header.bpc == 1) {

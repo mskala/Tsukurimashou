@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: dumppfa.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -185,8 +185,8 @@ struct psdict *PSDictCopy(struct psdict *dict) {
    ret->keys=calloc(ret->cnt, sizeof(char *));
    ret->values=calloc(ret->cnt, sizeof(char *));
    for (i=0; i < dict->next; ++i) {
-      ret->keys[i]=copy(dict->keys[i]);
-      ret->values[i]=copy(dict->values[i]);
+      ret->keys[i]=fastrdup(dict->keys[i]);
+      ret->values[i]=fastrdup(dict->values[i]);
    }
 
    return (ret);
@@ -256,12 +256,12 @@ int PSDictChangeEntry(struct psdict *dict,char *key,char *newval) {
 	 dict->keys=realloc(dict->keys,dict->cnt*sizeof(char *));
 	 dict->values=realloc(dict->values,dict->cnt*sizeof(char *));
       }
-      dict->keys[dict->next]=copy(key);
+      dict->keys[dict->next]=fastrdup(key);
       dict->values[dict->next]=NULL;
       ++dict->next;
    }
    free(dict->values[i]);
-   dict->values[i]=copy(newval);
+   dict->values[i]=fastrdup(newval);
    return (i);
 }
 

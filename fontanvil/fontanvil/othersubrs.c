@@ -1,4 +1,4 @@
-/* $Id: othersubrs.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: othersubrs.c 4064 2015-06-25 14:15:40Z mskala $ */
 #include "fontanvil.h"		/* For LogError */
 
 /* These subroutines are code by Adobe for this exact use (from T1_Spec.pdf) */
@@ -474,7 +474,7 @@ static const char **CopyLines(char **lines,int l,int is_copyright) {
 
    if (l==0 && !is_copyright) {
       ret=malloc(2 * sizeof(char *));
-      ret[0]=copy("{}");
+      ret[0]=fastrdup("{}");
       ret[1]=NULL;
       return (ret);
    }
@@ -540,7 +540,7 @@ int ReadOtherSubrsFile(char *filename) {
 	    lmax += 100;
 	    lines=realloc(lines, lmax * sizeof(char *));
 	 }
-	 lines[l++]=copy(buffer);
+	 lines[l++]=fastrdup(buffer);
       }
    }
    afclose(os);
@@ -549,7 +549,7 @@ int ReadOtherSubrsFile(char *filename) {
       return (false);
    while (sub_num < 14) {
       osubs[sub_num]=calloc(2, sizeof(char *));
-      osubs[sub_num][0]=copy("{}");
+      osubs[sub_num][0]=fastrdup("{}");
       ++sub_num;
    }
    DefaultOtherSubrs();

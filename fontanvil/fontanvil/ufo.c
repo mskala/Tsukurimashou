@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: ufo.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -842,7 +842,7 @@ char **NamesReadUFO(char *filename) {
       if (strcmp(buffer, "fontName") != 0) {
 	 if (get_thingy(info, buffer, "string") != NULL) {
 	    ret=calloc(2, sizeof(char *));
-	    ret[0]=copy(buffer);
+	    ret[0]=fastrdup(buffer);
 	    afclose(info);
 	    return (ret);
 	 }
@@ -1018,7 +1018,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
    tmpname=(char *) xmlGetProp(glyph, (xmlChar *) "name");
    if (glyphname != NULL) {
       // We use the provided name from the glyph listing since the specification says to trust that one more.
-      name=copy(glyphname);
+      name=fastrdup(glyphname);
       // But we still fetch the internally listed name for verification and fail on a mismatch.
       if ((name==NULL)
 	  || ((name != NULL) && (tmpname != NULL)
@@ -1045,7 +1045,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
    if (name==NULL && glifname != NULL) {
       char *pt=strrchr(glifname, '/');
 
-      name=copy(pt + 1);
+      name=fastrdup(pt + 1);
       for (pt=cpt=name; *cpt != '\0'; ++cpt) {
 	 if (*cpt != '_')
 	    *pt++=*cpt;
@@ -1054,7 +1054,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
       }
       *pt='\0';
    } else if (name==NULL)
-      name=copy("nameless");
+      name=fastrdup("nameless");
    // We assign a placeholder name if no name exists.
    // We create a new SplineChar 
    if (existingglyph != NULL) {
@@ -1268,7 +1268,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		     sp=SplinePointCreate(x, y);
 		     sp->dontinterpolate=1;
 		     if (pname != NULL) {
-			sp->name=copy(pname);
+			sp->name=fastrdup(pname);
 		     }
 		     if (smooth==1)
 			sp->pointtype=pt_curve;
@@ -1340,7 +1340,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 					     (pre[1].y + pre[0].y) / 2);
 			sp->ttfindex=0xffff;
 			if (pname != NULL) {
-			   sp->name=copy(pname);
+			   sp->name=fastrdup(pname);
 			}
 			sp->nextcp=pre[1];
 			sp->nonextcp=false;
@@ -1378,7 +1378,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			   SplinePointCreate((x + pre[0].x) / 2,
 					     (y + pre[0].y) / 2);
 			if (pname != NULL) {
-			   sp->name=copy(pname);
+			   sp->name=fastrdup(pname);
 			}
 			sp->prevcp=pre[0];
 			sp->noprevcp=false;
@@ -2147,23 +2147,23 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
       if (stylename != NULL && sf->familyname != NULL)
 	 sf->fontname=strconcat3(sf->familyname, "-", stylename);
       else
-	 sf->fontname=copy("Untitled");
+	 sf->fontname=fastrdup("Untitled");
    }
    if (sf->fullname==NULL) {
       if (stylename != NULL && sf->familyname != NULL)
 	 sf->fullname=strconcat3(sf->familyname, " ", stylename);
       else
-	 sf->fullname=copy(sf->fontname);
+	 sf->fullname=fastrdup(sf->fontname);
    }
    if (sf->familyname==NULL)
-      sf->familyname=copy(sf->fontname);
+      sf->familyname=fastrdup(sf->fontname);
    free(stylename);
    if (sf->weight==NULL)
-      sf->weight=copy("Regular");
+      sf->weight=fastrdup("Regular");
    if (sf->version==NULL && sf->names != NULL &&
        sf->names->names[ttf_version] != NULL &&
        strncmp(sf->names->names[ttf_version], "Version ", 8)==0)
-      sf->version=copy(sf->names->names[ttf_version] + 8);
+      sf->version=fastrdup(sf->names->names[ttf_version] + 8);
    xmlFreeDoc(doc);
 
    char *layercontentsname=buildname(basedir, "layercontents.plist");
@@ -2252,10 +2252,10 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		     // Fail silently on allocation failure; it's highly unlikely.
 		     if (layernames != NULL) {
 			layernames[2 * layercontentslayercount] =
-			   copy((char *) (layerlabel));
+			   fastrdup((char *) (layerlabel));
 			if (layernames[2 * layercontentslayercount]) {
 			   layernames[(2 * layercontentslayercount) + 1] =
-			      copy((char *) (layerglyphdirname));
+			      fastrdup((char *) (layerglyphdirname));
 			   if (layernames[(2 * layercontentslayercount) + 1])
 			      layercontentslayercount++;	// We increment only if both pointers are valid so as to avoid read problems later.
 			   else

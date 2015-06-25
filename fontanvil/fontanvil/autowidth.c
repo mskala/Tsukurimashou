@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: autowidth.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1065,7 +1065,7 @@ static int AW_ReadKernPairFile(char *fn,WidthInfo *wi) {
    unichar_t buffer[300];
    struct kernsets ks;
 
-   filename=utf82def_copy(fn);
+   filename=fastrdup(fn);
    file=afopen(filename, "r");
    free(filename);
    if (file==NULL) {
@@ -1510,7 +1510,7 @@ int AutoKernScript(FontViewBase * fv, int spacing, int threshold,
       AW_ScriptSerifChecker(&wi);
       AW_InitCharPairs(&wi);
    } else {
-      if (!AW_ReadKernPairFile(copy(kernfile), &wi))
+      if (!AW_ReadKernPairFile(strdup(kernfile), &wi))
 	 return (false);
    }
    wi.done=true;

@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: scstyles.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2170,7 +2170,7 @@ static double CaseMajorVerticalStemWidth(SplineFont *sf,int layer,
 	 dummy.layer_cnt=2;
 	 dummy.layers=layers;
 	 dummy.parent=sc->parent;
-	 dummy.name=copy("Fake");
+	 dummy.name=fastrdup("Fake");
 
 	 dummy.layers[ly_fore].order2=sc->layers[layer].order2;
 	 dummy.layers[ly_fore].splines =
@@ -2501,7 +2501,7 @@ static SplineChar *MakeSmallCapGlyphSlot(SplineFont *sf,SplineChar *cap_sc,
       enc=fv->map->enccount;
    sc_sc=SFMakeChar(sf, fv->map, enc);
    free(sc_sc->name);
-   sc_sc->name=copy(buffer);
+   sc_sc->name=fastrdup(buffer);
    SFHashGlyph(sf, sc_sc);
 
    pst=chunkalloc(sizeof(PST));
@@ -2512,7 +2512,7 @@ static SplineChar *MakeSmallCapGlyphSlot(SplineFont *sf,SplineChar *cap_sc,
       script==CHR('g', 'r', 'e', 'k') ? 2 : 3;
    pst->subtable=c2sc[script_index];
    pst->type=pst_substitution;
-   pst->u.subs.variant=copy(buffer);
+   pst->u.subs.variant=fastrdup(buffer);
 
    /* Adobe's convention seems to be that symbols get both the lc and the uc */
    /*  feature attached to them. */
@@ -2522,7 +2522,7 @@ static SplineChar *MakeSmallCapGlyphSlot(SplineFont *sf,SplineChar *cap_sc,
       lc_sc->possub=pst;
       pst->subtable=smcp[script_index];
       pst->type=pst_substitution;
-      pst->u.subs.variant=copy(buffer);
+      pst->u.subs.variant=fastrdup(buffer);
    }
    return (sc_sc);
 }

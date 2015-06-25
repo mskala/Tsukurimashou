@@ -1,4 +1,4 @@
-/* $Id: fontanvil.h 4016 2015-06-14 11:46:40Z mskala $ */
+/* $Id: fontanvil.h 4064 2015-06-25 14:15:40Z mskala $ */
 /*
  * Global header for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -36,9 +36,6 @@
 # define false 0
 typedef uint32_t unichar_t;
 
-/* this is a wart and should be removed */
-extern void NoMoreMemMessage(void);
-
 /* this should be moved elsewhere */
 #ifndef HAVE_ISFINITE
 #define isfinite finite
@@ -46,6 +43,8 @@ extern void NoMoreMemMessage(void);
 
 /* need AFILE globally to unify error reporting */
 #include "afile.h"
+
+extern char *fastrdup(const char *);
 
 /**********************************************************************/
 

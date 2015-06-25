@@ -1,4 +1,4 @@
-/* $Id: savefont.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: savefont.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -447,7 +447,7 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
       bpt=buffer;
       if ((*pt != '\n' && *pt != '\r') || (pt > buffer && pt[-1]=='\\') ||
 	  (pt > buffer + 1 && pt[-2]=='\\' && isspace(pt[-1]))) {
-	 bpt=copy("");
+	 bpt=fastrdup("");
 	 while (1) {
 	    loop=false;
 	    if ((*pt != '\n' && *pt != '\r')
@@ -673,7 +673,7 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
 	 strcpy(pt + len, pt + 2);
       memcpy(pt, names[subfont], len);
    }
-   temp.fontname=copy(spt);
+   temp.fontname=fastrdup(spt);
    temp.fullname=malloc(strlen(temp.fullname) + strlen(names[subfont]) + 3);
    strcpy(temp.fullname, sf->fullname);
    strcat(temp.fullname, " ");
@@ -775,7 +775,7 @@ static int WriteMultiplePSFont(SplineFont *sf,char *newname,int32_t *sizes,
    filecnt=1;
    if ((old_ps_flags & ps_flag_afm))
       filecnt=2;
-   path=def2utf8_copy(newname);
+   path=fastrdup(newname);
    free(path);
 
    for (i=0; i <= max && !err; ++i)
@@ -839,7 +839,7 @@ int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
    if (oldformatstate <= ff_cffcid && oldbitmapstate==bf_otb)
       flags=old_psotb_flags;
 
-   path=def2utf8_copy(newname);
+   path=fastrdup(newname);
    free(path);
    if (oldformatstate != ff_none) {
       int oerr=0;

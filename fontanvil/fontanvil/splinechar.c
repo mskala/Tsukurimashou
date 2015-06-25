@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splinechar.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -501,7 +501,7 @@ void SCClearAll(SplineChar * sc, int layer) {
    if (copymetadata) {
       sc->unicodeenc=-1;
       free(sc->name);
-      sc->name=copy(".notdef");
+      sc->name=fastrdup(".notdef");
       PSTFree(sc->possub);
       sc->possub=NULL;
    }
@@ -994,7 +994,7 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 		     sprintf(buffer, "uni%04X", sf->glyphs[i]->unicodeenc);
 		  else
 		     sprintf(buffer, "u%04X", sf->glyphs[i]->unicodeenc);
-		  sf->glyphs[i]->name=copy(buffer);
+		  sf->glyphs[i]->name=fastrdup(buffer);
 	       } else {
 		  sf->glyphs[i]->name=sc->name;
 		  sc->name=NULL;
@@ -1025,7 +1025,7 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
       if (sc->name != NULL)
 	 SFGlyphRenameFixup(sf, sc->name, name, false);
       free(sc->name);
-      sc->name=copy(name);
+      sc->name=fastrdup(name);
       sc->namechanged=true;
       GlyphHashFree(sf);
    }
@@ -1049,7 +1049,7 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
    free(sc->comment);
    sc->comment=NULL;
    if (comment != NULL && *comment != '\0')
-      sc->comment=copy(comment);
+      sc->comment=fastrdup(comment);
 
    return (true);
 }

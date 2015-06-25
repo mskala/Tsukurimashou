@@ -1,4 +1,4 @@
-/* $Id: macenc.c 4047 2015-06-24 11:48:13Z mskala $ */
+/* $Id: macenc.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1680,7 +1680,7 @@ struct macname *MacNameCopy(struct macname *mn) {
       cur=chunkalloc(sizeof(struct macname));
       cur->enc=mn->enc;
       cur->lang=mn->lang;
-      cur->name=copy(mn->name);
+      cur->name=fastrdup(mn->name);
       if (head==NULL)
 	 head=cur;
       else

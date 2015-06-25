@@ -1,4 +1,4 @@
-/* $Id: memory.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: memory.c 4063 2015-06-25 13:57:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,22 +29,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ustring.h"
-
-
-void NoMoreMemMessage(void) {
-/* Output an 'Out of memory' message, then continue */
-   fprintf(stderr, "Out of memory\n");
-}
-
-char *copy(const char *str) {
-   char *ret;
-
-   if (str == NULL)
-      return (NULL);
-   ret = (char *) malloc(strlen(str) + 1);
-   strcpy(ret, str);
-   return (ret);
-}
 
 char *copyn(const char *str, long n) {
    char *ret;

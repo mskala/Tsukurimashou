@@ -1,4 +1,4 @@
-/* $Id: splinesave.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splinesave.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1899,7 +1899,7 @@ static void SetupType1Chrs(struct pschars *chrs,struct pschars *subrs,
       if (gb->sc==NULL)
 	 continue;
       if (!iscid)
-	 chrs->keys[i]=copy(gb->sc->name);
+	 chrs->keys[i]=fastrdup(gb->sc->name);
       for (k=0; k < 2; ++k)
 	 if (k != 0 || gb->sc->ttf_glyph != 0x7fff) {
 	    uint8_t *vals;
@@ -3282,7 +3282,7 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
 
       if (gb->sc==NULL)
 	 continue;
-      chrs->keys[i]=copy(gb->sc->name);
+      chrs->keys[i]=fastrdup(gb->sc->name);
       for (k=0; k < 2; ++k)
 	 if (k != 0 || gb->sc->lsidebearing != 0x7fff) {
 	    for (j=0; j < gb->bcnt; ++j) {
@@ -3529,7 +3529,7 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
 
       struct glyphbits *gb=&gi.gb[i];
 
-      chrs->keys[i]=copy(gb->sc->name);
+      chrs->keys[i]=fastrdup(gb->sc->name);
       for (j=0; j < gb->bcnt; ++j) {
 	 len += gb->bits[j].dlen;
 	 if (gi.psubrs[gb->bits[j].psub_index].idx==-1)

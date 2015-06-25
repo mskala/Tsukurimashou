@@ -1,4 +1,4 @@
-/* $Id: acorn2sfd.c 3872 2015-03-27 09:43:03Z mskala $ */
+/* $Id: acorn2sfd.c 4064 2015-06-25 14:15:40Z mskala $ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -106,7 +106,7 @@ static char *GuessFamily(char *fontname) {
       }
 
    if (fpt==NULL)
-      return (copy(fontname));
+      return (fastrdup(fontname));
 
    return (copyn(fontname, fpt - fontname));
 }
@@ -116,15 +116,15 @@ static char *GuessWeight(char *fontname) {
 
    for (i=0; knownweights[i] != NULL; ++i)
       if (strstr(fontname, knownweights[i]) != NULL)
-	 return (copy(realweights[i]));
+	 return (fastrdup(realweights[i]));
 
-   return (copy("Regular"));
+   return (fastrdup("Regular"));
 }
 
 static char *despace(char *fontname) {
    char *pt, *npt;
 
-   fontname=copy(fontname);
+   fontname=fastrdup(fontname);
    for (pt=npt=fontname; *pt; ++pt)
       if (*pt != ' ')
 	 *npt++=*pt;
@@ -249,7 +249,7 @@ static SplineChar *ReadChar(AFILE *file,struct Outlines *outline,int enc) {
    sc->changedsincelasthinted=true;	/* I don't understand the scaffold lines */
    /* which I think are the same as hints. So no hints processed. PfaEdit */
    /* should autohint the char */
-   sc->name=copy(StdGlyphName(buffer, enc, ui_none, NULL));
+   sc->name=fastrdup(StdGlyphName(buffer, enc, ui_none, NULL));
    sc->width=(outline->defxadvance * (sf->ascent + sf->descent)) / 1000;
    sc->vwidth=(outline->defyadvance * (sf->ascent + sf->descent)) / 1000;
    sc->widthset=true;
@@ -484,7 +484,7 @@ static int dirfind(char *dir,char *pattern,char *buffer) {
 
    if (ret==-1) {
       /* Just in case the give us the pathspec for the Outlines file rather than the dir containing it */
-      space=copy(dir);
+      space=fastrdup(dir);
       pt=strrchr(space, '/');
       if (pt != NULL) {
 	 *pt='\0';
@@ -536,7 +536,7 @@ static void ReadIntmetrics(char *dir,struct Outlines *outline) {
 	 buffer[i]='\0';
    }
    buffer[i]='\0';
-   outline->metrics_fontname=copy(buffer);
+   outline->metrics_fontname=fastrdup(buffer);
    r_getint(file);		/* Must be 16 */
    r_getint(file);		/* Must be 16 */
    n=agetc(file);		/* low order byte */
@@ -841,7 +841,7 @@ static SplineFont *ReadOutline(char *dir) {
       if (i < sizeof(buffer) - 1)
 	 buffer[i++]=ch;
    buffer[i]='\0';
-   outline.fontname=strdup(buffer);
+   outline.fontname=fastrdup(buffer);
    for (i=0; (ch=agetc(file)) != '\0' && ch != EOF;)
       if (i < sizeof(buffer) - 1)
 	 buffer[i++]=ch;
@@ -872,14 +872,14 @@ static SplineFont *ReadOutline(char *dir) {
    memset(outline.sf->map->backmap, -1, outline.sf->glyphmax * sizeof(int32_t));
    outline.sf->for_new_glyphs=namelist_for_new_fonts;
    outline.sf->fontname=despace(outline.fontname);
-   outline.sf->fullname=copy(outline.fontname);
+   outline.sf->fullname=fastrdup(outline.fontname);
    outline.sf->familyname=GuessFamily(outline.fontname);
    outline.sf->weight=GuessWeight(outline.fontname);
    if (strcmp(buffer, "Outlines") != 0)
-      outline.sf->copyright=copy(buffer);
+      outline.sf->copyright=fastrdup(buffer);
    strcpy(buffer, outline.fontname);
    strcat(buffer, ".sfd");
-   outline.sf->filename=copy(buffer);
+   outline.sf->filename=fastrdup(buffer);
 
    outline.sf->top_enc=-1;
 

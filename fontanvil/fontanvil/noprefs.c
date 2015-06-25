@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: noprefs.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -640,19 +640,19 @@ int GetPrefs(char *name, Val * val) {
 
 	       char *tmpstr =
 		  pf->val ? *((char **) (pf->val)) : (char *) (pf->get) ();
-	       val->u.sval=copy(tmpstr ? tmpstr : "");
+	       val->u.sval=fastrdup(tmpstr ? tmpstr : "");
 
 	       if (!pf->val)
 		  free(tmpstr);
 	    } else if (pf->type==pr_encoding) {
 	       val->type=v_str;
 	       if (*((NameList **) (pf->val))==NULL)
-		  val->u.sval=copy("NULL");
+		  val->u.sval=fastrdup("NULL");
 	       else
-		  val->u.sval=copy((*((Encoding **) (pf->val)))->enc_name);
+		  val->u.sval=fastrdup((*((Encoding **) (pf->val)))->enc_name);
 	    } else if (pf->type==pr_namelist) {
 	       val->type=v_str;
-	       val->u.sval=copy((*((NameList **) (pf->val)))->title);
+	       val->u.sval=fastrdup((*((NameList **) (pf->val)))->title);
 	    } else if (pf->type==pr_real) {
 	       val->type=v_real;
 	       val->u.fval=*((float *) (pf->val));
@@ -697,7 +697,7 @@ int SetPrefs(char *name, Val * val1, Val * val2) {
 		  pf->set(val1->u.sval);
 	       } else {
 		  free(*((char **) (pf->val)));
-		  *((char **) (pf->val))=copy(val1->u.sval);
+		  *((char **) (pf->val))=fastrdup(val1->u.sval);
 	       }
 	    } else if (pf->type==pr_encoding) {
 	       if (val2 != NULL)
@@ -757,7 +757,7 @@ char *getFontAnvilShareDir(void) {
       if (!tail)
 	 tail=c;
       strcpy(tail, "/share/fontanvil");
-      sharedir=copy(path);
+      sharedir=fastrdup(path);
    }
    return sharedir;
 #elif defined(SHAREDIR)

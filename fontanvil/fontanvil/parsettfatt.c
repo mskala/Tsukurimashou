@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: parsettfatt.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -152,7 +152,7 @@ static char *GlyphsToNames(struct ttfinfo *info,uint16_t *glyphs,
    char *ret, *pt;
 
    if (glyphs==NULL)
-      return (copy(""));
+      return (fastrdup(""));
 
    /* Adobe produces coverage tables containing duplicate glyphs in */
    /*  GaramondPremrPro.otf. We want unique glyphs, so enforce that */
@@ -178,7 +178,7 @@ static char *GlyphsToNames(struct ttfinfo *info,uint16_t *glyphs,
 	    ErrorMsg(2,"GID out of range.\n");
 	    info->bad_ot=true;
 	 }
-	 return (copy(""));
+	 return (fastrdup(""));
       }
       if (info->chars[glyphs[i]] != NULL)
 	 len += strlen(info->chars[glyphs[i]]->name) + 1;
@@ -487,7 +487,7 @@ static void addPairPos(struct ttfinfo *info,int glyph1,int glyph2,
       pos->next=info->chars[glyph1]->possub;
       info->chars[glyph1]->possub=pos;
       pos->u.pair.vr=chunkalloc(sizeof(struct vr[2]));
-      pos->u.pair.paired=copy(info->chars[glyph2]->name);
+      pos->u.pair.paired=fastrdup(info->chars[glyph2]->name);
       pos->u.pair.vr[0].xoff=vr1->xplacement;
       pos->u.pair.vr[0].yoff=vr1->yplacement;
       pos->u.pair.vr[0].h_adv_off=vr1->xadvance;
@@ -794,7 +794,7 @@ static void gposCursiveSubTable(AFILE *ttf,int stoffset,
 
    class=chunkalloc(sizeof(AnchorClass));
    snprintf(buf, sizeof(buf), _("Cursive-%d"), info->anchor_class_cnt++);
-   class->name=copy(buf);
+   class->name=fastrdup(buf);
    subtable->anchor_classes=true;
    class->subtable=subtable;
    class->type=act_curs;
@@ -836,7 +836,7 @@ static AnchorClass **MarkGlyphsProcessMarks(AFILE *ttf,int markoffset,
    for (i=0; i < classcnt; ++i) {
       snprintf(buf, sizeof(buf), _("Anchor-%d"), info->anchor_class_cnt + i);
       classes[i]=ac=chunkalloc(sizeof(AnchorClass));
-      ac->name=copy(buf);
+      ac->name=fastrdup(buf);
       subtable->anchor_classes=true;
       ac->subtable=subtable;
       /*ac->merge_with=info->anchor_merge_cnt+1; */
@@ -2033,7 +2033,7 @@ static void gsubSimpleSubTable(AFILE *ttf,int stoffset,struct ttfinfo *info,
 	       pos->subtable=subtable;
 	       pos->next=info->chars[glyphs[i]]->possub;
 	       info->chars[glyphs[i]]->possub=pos;
-	       pos->u.subs.variant=copy(info->chars[which]->name);
+	       pos->u.subs.variant=fastrdup(info->chars[which]->name);
 	    }
 	 }
    }
@@ -3541,7 +3541,7 @@ static void TTF_SetProp(struct ttfinfo *info,int gnum,int prop) {
 			       DEFAULT_LANG);
 	 pst->next=info->chars[gnum]->possub;
 	 info->chars[gnum]->possub=pst;
-	 pst->u.subs.variant=copy(info->chars[gnum + offset]->name);
+	 pst->u.subs.variant=fastrdup(info->chars[gnum + offset]->name);
       }
    }
 }
@@ -3774,7 +3774,7 @@ static SplineChar *CreateBadGid(struct ttfinfo *info,int badgid) {
    fake=SplineCharCreate(2);
    fake->orig_pos=badgid;
    sprintf(name, "Out-Of-Range-GID-%d", badgid);
-   fake->name=copy(name);
+   fake->name=fastrdup(name);
    fake->widthset=true;	/* So it doesn't just vanish on us */
    fake->width=fake->vwidth=info->emsize;
    info->badgids[info->badgid_cnt++]=fake;
@@ -3829,7 +3829,7 @@ static void TTF_SetMortSubs(struct ttfinfo *info,int gnum,int gsubs) {
    pst->next=sc->possub;
    sc->possub=pst;
    pst->u.subs.variant =
-      gsubs != 0xffff ? copy(ssc->name) : copy(MAC_DELETED_GLYPH_NAME);
+      gsubs != 0xffff ? fastrdup(ssc->name) : fastrdup(MAC_DELETED_GLYPH_NAME);
 }
 
 static void mort_apply_values(struct ttfinfo *info,int gfirst,int glast,
@@ -5796,7 +5796,7 @@ static struct glyphvariants *ttf_math_read_gvtable(AFILE *ttf,
 		(sc=info->chars[gid]) != NULL && sc->name==NULL) {
 	       snprintf(buffer, sizeof(buffer), "%.30s.%csize%d",
 			basesc->name, isv ? 'v' : 'h', i);
-	       sc->name=copy(buffer);
+	       sc->name=fastrdup(buffer);
 	    }
 	 }
       } else {
@@ -5867,11 +5867,11 @@ static struct glyphvariants *ttf_math_read_gvtable(AFILE *ttf,
 	       }
 	       snprintf(buffer, sizeof(buffer), "%.30s.%s",
 			basesc->name, ext);
-	       sc->name=copy(buffer);
+	       sc->name=fastrdup(buffer);
 	    }
 	 } else {
 	    if (gid < info->glyph_cnt && (sc=info->chars[gid]) != NULL) {
-	       gv->parts[j].component=copy(sc->name);
+	       gv->parts[j].component=fastrdup(sc->name);
 	       gv->parts[j].startConnectorLength=start;
 	       gv->parts[j].endConnectorLength=end;
 	       gv->parts[j].fullAdvance=full;
@@ -6456,7 +6456,7 @@ static void NameOTJSTFLookup(OTLookup *otl,struct ttfinfo *info) {
 	       info->jstf_lang >> 16, info->jstf_lang >> 8, info->jstf_lang,
 	       info->jstf_script >> 24, info->jstf_script >> 16,
 	       info->jstf_script >> 8, info->jstf_script);
-   otl->lookup_name=copy(buffer);
+   otl->lookup_name=fastrdup(buffer);
 
    cnt=0;
    for (subtable=otl->subtables; subtable != NULL;
@@ -6467,7 +6467,7 @@ static void NameOTJSTFLookup(OTLookup *otl,struct ttfinfo *info) {
 	 else
 	    format=_("%s subtable %d");
 	 snprintf(buffer, sizeof(buffer), format, otl->lookup_name, cnt);
-	 subtable->subtable_name=copy(buffer);
+	 subtable->subtable_name=fastrdup(buffer);
       }
    }
 }

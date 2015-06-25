@@ -198,7 +198,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/bvedit.c fontanvil/crctab.c \
  fontanvil/cvexport.c fontanvil/cvimages.c fontanvil/cvundoes.c \
  fontanvil/dumpbdf.c fontanvil/dumppfa.c fontanvil/effects.c \
- fontanvil/encoding.c fontanvil/featurefile.c \
+ fontanvil/encoding.c fontanvil/fastring.c fontanvil/featurefile.c \
  fontanvil/fontviewbase.c fontanvil/freetype.c fontanvil/fvcomposite.c \
  fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
  fontanvil/glyphcomp.c \
@@ -231,20 +231,11 @@ fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a \
 	$(top_builddir)/gutils/libgutils.a
 
 Unicode_libgunicode_a_SOURCES = \
-  Unicode/charset/alphabet.c Unicode/charset/big5.c \
   Unicode/charset/big5hkscs.c Unicode/charset/gb2312.c \
-  Unicode/charset/iso_8859_10.c Unicode/charset/iso_8859_11.c \
-  Unicode/charset/iso_8859_13.c Unicode/charset/iso_8859_14.c \
-  Unicode/charset/iso_8859_15.c Unicode/charset/iso_8859_1.c \
-  Unicode/charset/iso_8859_2.c Unicode/charset/iso_8859_3.c \
-  Unicode/charset/iso_8859_4.c Unicode/charset/iso_8859_5.c \
-  Unicode/charset/iso_8859_6.c Unicode/charset/iso_8859_7.c \
-  Unicode/charset/iso_8859_8.c Unicode/charset/iso_8859_9.c \
   Unicode/charset/jis201.c Unicode/charset/jis.c Unicode/charset/johab.c \
-  Unicode/charset/koi8_r.c Unicode/charset/ksc5601.c Unicode/charset/mac.c \
-  Unicode/charset/MacSymbol.c Unicode/charset/win.c \
-  Unicode/charset/ZapfDingbats.c Unicode/ArabicForms.c Unicode/char.c \
-  Unicode/memory.c Unicode/ucharmap.c Unicode/unialt.c Unicode/ustring.c \
+  Unicode/charset/ksc5601.c \
+  Unicode/ArabicForms.c Unicode/char.c \
+  Unicode/memory.c Unicode/unialt.c Unicode/ustring.c \
   Unicode/utype.c Unicode/combiners.h
 
 gutils_libgutils_a_SOURCES = \
@@ -264,7 +255,7 @@ gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a
 gutils_libgutils_a_LDFLAGS = $(GLIB_LIBS)
 
 dist_doc_DATA = doc/fontanvil.pdf
-dist_noinst_DATA = fontanvil/8r.enc fontanvil/glyphlist.txt
+dist_noinst_DATA = dat/8r.enc dat/glyphlist.txt
 
 texfiles = \
   doc/building.tex doc/datamodel.tex doc/fontanvil.tex \
@@ -294,6 +285,29 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-debug
 
 ############################################################################
 
+# CFLOW
+
+if COND_CFLOW
+
+# rule straight out of the cflow manual
+
+CFLOW_FLAGS=-i _x --cpp
+
+fontanvil_fontanvil_CFLOW_INPUT=$(fontanvil_fontanvil_OBJECTS:.$(OBJEXT)=.c)
+fontanvil/fontanvil.cflow: \
+  $(fontanvil_fontanvil_CFLOW_INPUT) Makefile tools/cflow.rc
+	$(TSU_V_GEN)
+	$(TSU_V_at)CFLOWRC=$(top_srcdir)/tools/cflow.rc \
+	  cflow -o$@ $(CFLOW_FLAGS) $(DEFS) \
+	    $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	    $(fontanvil_fontanvil_CFLOW_INPUT) 2> /dev/null
+
+charts: fontanvil/fontanvil.cflow
+
+endif
+
+############################################################################
+
 # ICEMAP
 
 if COND_ICEMAP
@@ -304,18 +318,18 @@ if COND_ICEMAP
 fontanvil/macenctab.c: fontanvil/macenctab.im
 fontanvil/macenctab.h: fontanvil/macenctab.c
 fontanvil/nonmactab.c: fontanvil/nonmactab.im \
-  fontanvil/texbase.dat fontanvil/glyphlist.txt
+  dat/texbase.dat dat/glyphlist.txt
 fontanvil/nonmactab.h: fontanvil/nonmactab.c
 
 if COND_KPSEWHICH
 
-fontanvil/8r.enc: @eightrenc@
+dat/8r.enc: @eightrenc@
 	$(AM_V_GEN)
 	$(AM_V_at)cp $< $@
 
 endif
 
-fontanvil/texbase.dat: fontanvil/8r.enc
+dat/texbase.dat: dat/8r.enc
 	$(AM_V_GEN)
 	$(AM_V_at)$(PERL) -pe \
 	  's/\%.*//;s!/TeXBase1Encoding!!;s/\s/\n/g;' $< > $@

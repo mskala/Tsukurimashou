@@ -1,4 +1,4 @@
-/* $Id: svg.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: svg.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1372,9 +1372,9 @@ static xmlNodePtr SVGPickFont(xmlNodePtr *fonts,char *filename) {
    for (cnt=0; fonts[cnt] != NULL; ++cnt) {
       name=xmlGetProp(fonts[cnt], (xmlChar *) "id");
       if (name==NULL) {
-	 names[cnt]=copy("nameless-font");
+	 names[cnt]=fastrdup("nameless-font");
       } else {
-	 names[cnt]=copy((char *) name);
+	 names[cnt]=fastrdup((char *) name);
 	 xmlFree(name);
       }
    }
@@ -1388,7 +1388,7 @@ static xmlNodePtr SVGPickFont(xmlNodePtr *fonts,char *filename) {
       pt=filename;
    if (pt != NULL && (lparen=strchr(pt, '(')) != NULL
        && strchr(lparen, ')') != NULL) {
-      char *find=copy(lparen + 1);
+      char *find=fastrdup(lparen + 1);
 
       pt=strchr(find, ')');
       if (pt != NULL)
@@ -1397,7 +1397,7 @@ static xmlNodePtr SVGPickFont(xmlNodePtr *fonts,char *filename) {
 	 if (strcmp(names[choice], find)==0)
 	    break;
       if (choice==-1) {
-	 char *fn=copy(filename);
+	 char *fn=fastrdup(filename);
 
 	 fn[lparen-filename]='\0';
 	 ErrorMsg(2,"Not in collection:  %s is not in %.100s\n",find,fn);
@@ -2733,7 +2733,7 @@ static int xmlParseColor(xmlChar *name,uint32_t *color,char **url,
 	    *color=(((int) r) << 16) | (((int) g) << 8) | (((int) b));
 	 }
       } else if (url != NULL && strncmp((char *) name, "url(#", 5)==0) {
-	 *url=copy((char *) name);
+	 *url=fastrdup((char *) name);
 	 *color=COLOR_INHERITED;
       } else {
 	 ErrorMsg(2,"Failed to parse color %s\n", (char *) name);
@@ -3386,7 +3386,7 @@ static SplineChar *SVGParseGlyphArgs(xmlNodePtr glyph,int defh,int defv,
    if (glyphname != NULL) {
       if (sc->unicodeenc==-1)
 	 sc->unicodeenc=UniFromName((char *) glyphname, ui_none, &custom);
-      sc->name=copy((char *) glyphname);
+      sc->name=fastrdup((char *) glyphname);
       xmlFree(glyphname);
    } else if (orientation != NULL && *orientation=='v'
 	      && sc->unicodeenc != -1) {
@@ -3394,7 +3394,7 @@ static SplineChar *SVGParseGlyphArgs(xmlNodePtr glyph,int defh,int defv,
 	 sprintf(buffer, "uni%04X.vert", sc->unicodeenc);
       else
 	 sprintf(buffer, "u%04X.vert", sc->unicodeenc);
-      sc->name=copy(buffer);
+      sc->name=fastrdup(buffer);
    }
    /* we finish off defaulting the glyph name in the parseglyph routine */
    if (form != NULL)
@@ -3409,7 +3409,7 @@ static SplineChar *SVGParseMissing(SplineFont *sf,xmlNodePtr notdef,
    SplineChar *sc=SVGParseGlyphArgs(notdef, defh, defv, sf);
 
    sc->parent=sf;
-   sc->name=copy(".notdef");
+   sc->name=fastrdup(".notdef");
    sc->unicodeenc=0;
    SVGParseGlyphBody(sc, notdef, flags);
    return (sc);
@@ -3425,9 +3425,9 @@ static SplineChar *SVGParseGlyph(SplineFont *sf,xmlNodePtr glyph,int defh,
    if (sc->name==NULL) {
       if (sc->unicodeenc==-1) {
 	 sprintf(buffer, "glyph%d", enc);
-	 sc->name=copy(buffer);
+	 sc->name=fastrdup(buffer);
       } else
-	 sc->name=copy(StdGlyphName(buffer, sc->unicodeenc, ui_none, NULL));
+	 sc->name=fastrdup(StdGlyphName(buffer, sc->unicodeenc, ui_none, NULL));
    }
    SVGParseGlyphBody(sc, glyph, flags);
    return (sc);
@@ -3511,7 +3511,7 @@ static void SVGLigatureFixupCheck(SplineChar *sc,xmlNodePtr glyph) {
 	 if (strncmp(sc->name, "glyph", 5)==0 && isdigit(sc->name[5])) {
 	    /* It's a default name, we can do better */
 	    free(sc->name);
-	    sc->name=copy(comp);
+	    sc->name=fastrdup(comp);
 	    for (pt=sc->name; *pt; ++pt)
 	       if (*pt==' ')
 		  *pt='_';
@@ -3723,7 +3723,7 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
    }
    name=xmlGetProp(font, (xmlChar *) "id");
    if (name != NULL) {
-      sf->fontname=copy((char *) name);
+      sf->fontname=fastrdup((char *) name);
       xmlFree(name);
    }
 
@@ -3755,47 +3755,47 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	 if (name != NULL) {
 	    if (strchr((char *) name, ',') != NULL)
 	       *strchr((char *) name, ',')='\0';
-	    sf->familyname=copy((char *) name);
+	    sf->familyname=fastrdup((char *) name);
 	    xmlFree(name);
 	 }
 	 name=xmlGetProp(kids, (xmlChar *) "font-weight");
 	 if (name != NULL) {
 	    if (strnmatch((char *) name, "normal", 6)==0) {
 	       sf->pfminfo.weight=400;
-	       sf->weight=copy("Regular");
+	       sf->weight=fastrdup("Regular");
 	       sf->pfminfo.panose[2]=5;
 	    } else if (strnmatch((char *) name, "bold", 4)==0) {
 	       sf->pfminfo.weight=700;
-	       sf->weight=copy("Bold");
+	       sf->weight=fastrdup("Bold");
 	       sf->pfminfo.panose[2]=8;
 	    } else {
 	       sf->pfminfo.weight=strtod((char *) name, NULL);
 	       if (sf->pfminfo.weight <= 100) {
-		  sf->weight=copy("Thin");
+		  sf->weight=fastrdup("Thin");
 		  sf->pfminfo.panose[2]=2;
 	       } else if (sf->pfminfo.weight <= 200) {
-		  sf->weight=copy("Extra-Light");
+		  sf->weight=fastrdup("Extra-Light");
 		  sf->pfminfo.panose[2]=3;
 	       } else if (sf->pfminfo.weight <= 300) {
-		  sf->weight=copy("Light");
+		  sf->weight=fastrdup("Light");
 		  sf->pfminfo.panose[2]=4;
 	       } else if (sf->pfminfo.weight <= 400) {
-		  sf->weight=copy("Regular");
+		  sf->weight=fastrdup("Regular");
 		  sf->pfminfo.panose[2]=5;
 	       } else if (sf->pfminfo.weight <= 500) {
-		  sf->weight=copy("Medium");
+		  sf->weight=fastrdup("Medium");
 		  sf->pfminfo.panose[2]=6;
 	       } else if (sf->pfminfo.weight <= 600) {
-		  sf->weight=copy("DemiBold");
+		  sf->weight=fastrdup("DemiBold");
 		  sf->pfminfo.panose[2]=7;
 	       } else if (sf->pfminfo.weight <= 700) {
-		  sf->weight=copy("Bold");
+		  sf->weight=fastrdup("Bold");
 		  sf->pfminfo.panose[2]=8;
 	       } else if (sf->pfminfo.weight <= 800) {
-		  sf->weight=copy("Heavy");
+		  sf->weight=fastrdup("Heavy");
 		  sf->pfminfo.panose[2]=9;
 	       } else {
-		  sf->weight=copy("Black");
+		  sf->weight=fastrdup("Black");
 		  sf->pfminfo.panose[2]=10;
 	       }
 	    }
@@ -3890,14 +3890,14 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
       return (NULL);
    }
    if (sf->weight==NULL)
-      sf->weight=copy("Regular");
+      sf->weight=fastrdup("Regular");
    if (sf->fontname==NULL && sf->familyname==NULL)
       sf->fontname=GetNextUntitledName();
    if (sf->familyname==NULL)
-      sf->familyname=copy(sf->fontname);
+      sf->familyname=fastrdup(sf->fontname);
    if (sf->fontname==NULL)
       sf->fontname=EnforcePostScriptName(sf->familyname);
-   sf->fullname=copy(sf->fontname);
+   sf->fullname=fastrdup(sf->fontname);
 
    /* Give ourselves an xuid, just in case they want to convert to PostScript */
    if (xuid != NULL) {
@@ -4150,7 +4150,7 @@ SplineFont *SFReadSVG(char *filename, int flags) {
    if (pt==NULL)
       pt=filename;
    if ((lparen=strchr(pt, '(')) != NULL && strchr(lparen, ')') != NULL) {
-      temp=copy(filename);
+      temp=fastrdup(filename);
       pt=temp + (lparen - filename);
       *pt='\0';
    }
@@ -4214,9 +4214,9 @@ char **NamesReadSVG(char *filename) {
    for (cnt=0; fonts[cnt] != NULL; ++cnt) {
       name=xmlGetProp(fonts[cnt], (xmlChar *) "id");
       if (name==NULL) {
-	 ret[cnt]=copy("nameless-font");
+	 ret[cnt]=fastrdup("nameless-font");
       } else {
-	 ret[cnt]=copy((char *) name);
+	 ret[cnt]=fastrdup((char *) name);
 	 xmlFree(name);
       }
    }

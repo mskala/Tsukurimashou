@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4035 2015-06-18 16:00:10Z mskala $ */
+/* $Id: parsettf.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -681,7 +681,7 @@ static int PickTTFFont(AFILE *ttf,char *filename,char **chosenname) {
    /* Now someone will complain about "Nafees(Updated).ttc(fo(ob)ar)" */
    if ((lparen=strrchr(pt, '(')) != NULL &&
        (rparen=strrchr(lparen, ')')) != NULL && rparen[1]=='\0') {
-      char *find=copy(lparen + 1);
+      char *find=fastrdup(lparen + 1);
 
       pt=strchr(find, ')');
       if (pt != NULL)
@@ -697,7 +697,7 @@ static int PickTTFFont(AFILE *ttf,char *filename,char **chosenname) {
 	    choice=-1;
       }
       if (choice==-1) {
-	 char *fn=copy(filename);
+	 char *fn=fastrdup(filename);
 
 	 fn[lparen-filename]='\0';
 	 ErrorMsg(2,"Not in collection:  %1$s is not in %2$.100s\n",find,fn);
@@ -709,7 +709,7 @@ static int PickTTFFont(AFILE *ttf,char *filename,char **chosenname) {
 
    if (choice != -1) {
       afseek(ttf, offsets[choice], SEEK_SET);
-      *chosenname=copy(names[choice]);
+      *chosenname=fastrdup(names[choice]);
    }
    for (i=0; i < j; ++i)
       free(names[i]);
@@ -1571,7 +1571,7 @@ static void ValidatePostScriptFontName(struct ttfinfo *info,char *str) {
 }
 
 char *EnforcePostScriptName(char *old) {
-   char *end, *pt, *npt, *str=copy(old);
+   char *end, *pt, *npt, *str=fastrdup(old);
 
    if (old==NULL)
       return (old);
@@ -1755,7 +1755,7 @@ static char *FindLangEntry(struct ttfinfo *info,int id) {
 	   cur=cur->next);
    if (cur==NULL)
       return (NULL);
-   ret=copy(cur->names[id]);
+   ret=fastrdup(cur->names[id]);
    return (ret);
 }
 
@@ -1869,9 +1869,9 @@ static void readttfcopyrights(AFILE *ttf,struct ttfinfo *info) {
    /* OpenType spec says the version string should begin with "Version " and */
    /*  end with a space and have a number in between */
    if (info->version==NULL)
-      info->version=copy("1.0");
+      info->version=fastrdup("1.0");
    else if (strnmatch(info->version, "Version ", 8)==0) {
-      char *temp=copy(info->version + 8);
+      char *temp=fastrdup(info->version + 8);
 
       if (temp[strlen(temp) - 1]==' ')
 	 temp[strlen(temp) - 1]='\0';
@@ -1880,9 +1880,9 @@ static void readttfcopyrights(AFILE *ttf,struct ttfinfo *info) {
    }
    if (info->fontname==NULL) {
       if (info->fullname != NULL)
-	 info->fontname=stripspaces(copy(info->fullname));
+	 info->fontname=stripspaces(fastrdup(info->fullname));
       if (info->fontname==NULL && info->familyname != NULL)
-	 info->fontname=stripspaces(copy(info->familyname));
+	 info->fontname=stripspaces(fastrdup(info->familyname));
       if (info->fontname != NULL)
 	 ValidatePostScriptFontName(info, info->fontname);
    }
@@ -2887,7 +2887,7 @@ static char **readcfffontnames(AFILE *ttf,int *cnt,struct ttfinfo *info) {
 	 if (info != NULL)
 	    info->bad_cff=true;
 	 while (i < count) {
-	    names[i]=copy("");
+	    names[i]=fastrdup("");
 	    ++i;
 	 }
 	 --i;
@@ -3784,7 +3784,7 @@ static char *realarray2str(real *array,int size,int must_be_even) {
    if (i==-1)
       return (NULL);
    if (i==0 && array[0]==1234567)	/* Special marker for a null array */
-      return (copy("[]"));
+      return (fastrdup("[]"));
    if (must_be_even && !(i & 1) && array[i] < 0)
       ++i;			/* Someone gave us a bluevalues of [-20 0] and we reported [-20] */
    ret=pt=malloc((i + 1) * 20 + 12);
@@ -3800,7 +3800,7 @@ static char *realarray2str(real *array,int size,int must_be_even) {
 static void privateadd(struct psdict *private,char *key,char *value) {
    if (value==NULL)
       return;
-   private->keys[private->next]=copy(key);
+   private->keys[private->next]=fastrdup(key);
    private->values[private->next++]=value;
 }
 
@@ -3810,7 +3810,7 @@ static void privateaddint(struct psdict *private,char *key,int val) {
    if (val==0)
       return;
    sprintf(buf, "%d", val);
-   privateadd(private, key, copy(buf));
+   privateadd(private, key, fastrdup(buf));
 }
 
 static void privateaddintarray(struct psdict *private,char *key,int val) {
@@ -3819,7 +3819,7 @@ static void privateaddintarray(struct psdict *private,char *key,int val) {
    if (val==0)
       return;
    sprintf(buf, "[%d]", val);
-   privateadd(private, key, copy(buf));
+   privateadd(private, key, fastrdup(buf));
 }
 
 static void privateaddreal(struct psdict *private,char *key,double val,
@@ -3829,7 +3829,7 @@ static void privateaddreal(struct psdict *private,char *key,double val,
    if (val==def)
       return;
    sprintf(buf, "%g", val);
-   privateadd(private, key, copy(buf));
+   privateadd(private, key, fastrdup(buf));
 }
 
 static void cffprivatefillup(struct psdict *private,struct topdicts *dict) {
@@ -3866,7 +3866,7 @@ static void cffprivatefillup(struct psdict *private,struct topdicts *dict) {
 			    sizeof(dict->stemsnapv) /
 			    sizeof(dict->stemsnapv[0]), false));
    if (dict->forcebold)
-      privateadd(private, "ForceBold", copy("true"));
+      privateadd(private, "ForceBold", fastrdup("true"));
    if (dict->forceboldthreshold != 0)
       privateaddreal(private, "ForceBoldThreshold", dict->forceboldthreshold,
 		     0);
@@ -3888,7 +3888,7 @@ static SplineFont *cffsffillup(struct topdicts *subdict,char **strings,
       char buffer[40];
 
       sprintf(buffer, "UntitledSubFont_%d", ++nameless);
-      sf->fontname=copy(buffer);
+      sf->fontname=fastrdup(buffer);
    }
 
    if (subdict->fontmatrix[0]==0)
@@ -3988,8 +3988,8 @@ static void cffinfofillup(struct ttfinfo *info,struct topdicts *dict,
    }
    if (dict->ros_registry != -1) {
       info->cidregistry =
-	 copy(getsid(dict->ros_registry, strings, scnt, info));
-      info->ordering=copy(getsid(dict->ros_ordering, strings, scnt, info));
+	 fastrdup(getsid(dict->ros_registry, strings, scnt, info));
+      info->ordering=fastrdup(getsid(dict->ros_ordering, strings, scnt, info));
       info->supplement=dict->ros_supplement;
       info->cidfontversion=dict->cidfontversion;
    }
@@ -4284,8 +4284,8 @@ static int readtyp1glyphs(AFILE *ttf,struct ttfinfo *info) {
       if (sf->subfontcnt != 0) {
 	 info->subfontcnt=sf->subfontcnt;
 	 info->subfonts=sf->subfonts;
-	 info->cidregistry=copy(sf->cidregistry);
-	 info->ordering=copy(sf->ordering);
+	 info->cidregistry=fastrdup(sf->cidregistry);
+	 info->ordering=fastrdup(sf->ordering);
 	 info->supplement=sf->supplement;
 	 info->cidfontversion=sf->cidversion;
 	 sf->subfonts=NULL;
@@ -4672,7 +4672,7 @@ static void ApplyVariationSequenceSubtable(AFILE *ttf,uint32_t vs_map,
 		  char buffer[32];
 
 		  sprintf(buffer, "u%04X.vs%04X", uni, vs_data[i].vs);
-		  sc->name=copy(buffer);
+		  sc->name=fastrdup(buffer);
 	       }
 	    } else {
 	       if (curgid >= info->glyph_cnt || curgid < 0 ||
@@ -4797,7 +4797,7 @@ N_("Script|Traditional Chinese"), N_("Script|Korean"),
 	      8 ? "mixed 16-bit and 32-bit coverage" : cmap_encs[i].format ==
 	      10 ? "Trimmed array" : cmap_encs[i].format ==
 	      12 ? "Segmented coverage" : "Unknown format");
-      choices[i]=copy(buffer);
+      choices[i]=fastrdup(buffer);
    }
    ret=def;
    for (i=0; i < enccnt; ++i)
@@ -5529,7 +5529,7 @@ static void readttfpostnames(AFILE *ttf,struct ttfinfo *info) {
 	    if (indexes[i] != 0 || i==0)
 	       if (indexes[i] < info->glyph_cnt
 		   && info->chars[indexes[i]] != NULL)
-		  info->chars[indexes[i]]->name=copy(ttfstandardnames[i]);	/* Too many fonts have badly named glyphs to deduce encoding from name */
+		  info->chars[indexes[i]]->name=fastrdup(ttfstandardnames[i]);	/* Too many fonts have badly named glyphs to deduce encoding from name */
 	 gcbig += 258;
 	 for (i=258; i < gcbig; ++i) {
 	    char *nm;
@@ -5623,7 +5623,7 @@ static void readttfpostnames(AFILE *ttf,struct ttfinfo *info) {
 	       }
 	    }
 	 }
-	 info->chars[i]->name=copy(name);
+	 info->chars[i]->name=fastrdup(name);
       }
 
    /* If we have a GSUB table we can give some unencoded glyphs names */
@@ -5656,7 +5656,7 @@ static void readttfpostnames(AFILE *ttf,struct ttfinfo *info) {
 		 (int) info->map->backmap[i]);
       else
 	 sprintf(buffer, "glyph%d", i);
-      info->chars[i]->name=copy(buffer);
+      info->chars[i]->name=fastrdup(buffer);
    }
 }
 
@@ -6128,20 +6128,20 @@ static char *AxisNameConvert(uint32_t tag) {
    char buffer[8];
 
    if (tag==CHR('w', 'g', 'h', 't'))
-      return (copy("Weight"));
+      return (fastrdup("Weight"));
    if (tag==CHR('w', 'd', 't', 'h'))
-      return (copy("Width"));
+      return (fastrdup("Width"));
    if (tag==CHR('o', 'p', 's', 'z'))
-      return (copy("OpticalSize"));
+      return (fastrdup("OpticalSize"));
    if (tag==CHR('s', 'l', 'n', 't'))
-      return (copy("Slant"));
+      return (fastrdup("Slant"));
 
    buffer[0]=tag >> 24;
    buffer[1]=tag >> 16;
    buffer[2]=tag >> 8;
    buffer[3]=tag & 0xff;
    buffer[4]=0;
-   return (copy(buffer));
+   return (fastrdup(buffer));
 }
 
 static struct macname *FindMacName(struct ttfinfo *info,int strid) {
@@ -6167,8 +6167,8 @@ static SplineFont *SFFromTuple(SplineFont *basesf,struct variations *v,
    sf->display_antialias=basesf->display_antialias;
 
    sf->fontname=MMMakeMasterFontname(mm, tuple, &sf->fullname);
-   sf->familyname=copy(basesf->familyname);
-   sf->weight=copy("All");
+   sf->familyname=fastrdup(basesf->familyname);
+   sf->weight=fastrdup("All");
    sf->italicangle=basesf->italicangle;
    sf->strokewidth=basesf->strokewidth;
    sf->strokedfont=basesf->strokedfont;
@@ -6443,7 +6443,7 @@ static SplineFont *SFFillFromTTF(struct ttfinfo *info) {
    sf->mark_set_names=info->mark_set_names;
 
    if (info->fd != NULL) {	/* Special hack for type42 fonts */
-      sf->fontname=copy(info->fd->fontname);
+      sf->fontname=fastrdup(info->fd->fontname);
       sf->uniqueid=info->fd->uniqueid;
       sf->xuid=XUIDFromFD(info->fd->xuid);
       if (info->fd->fontinfo != NULL) {
@@ -6470,14 +6470,14 @@ static SplineFont *SFFillFromTTF(struct ttfinfo *info) {
 	 sf->fontname=EnforcePostScriptName("UntitledTTF");
    }
    if (sf->fullname==NULL)
-      sf->fullname=copy(sf->fontname);
+      sf->fullname=fastrdup(sf->fontname);
    if (sf->familyname==NULL)
-      sf->familyname=copy(sf->fontname);
+      sf->familyname=fastrdup(sf->fontname);
    if (sf->weight==NULL) {
       if (info->weight != NULL)
 	 sf->weight=info->weight;
       else if (info->pfminfo.pfmset)
-	 sf->weight=copy(info->pfminfo.weight <= 100 ? "Thin" :
+	 sf->weight=fastrdup(info->pfminfo.weight <= 100 ? "Thin" :
 			   info->pfminfo.weight <= 200 ? "Extra-Light" :
 			   info->pfminfo.weight <= 300 ? "Light" :
 			   info->pfminfo.weight <= 400 ? "Book" :
@@ -6486,7 +6486,7 @@ static SplineFont *SFFillFromTTF(struct ttfinfo *info) {
 			   info->pfminfo.weight <= 700 ? "Bold" :
 			   info->pfminfo.weight <= 800 ? "Heavy" : "Black");
       else
-	 sf->weight=copy("");
+	 sf->weight=fastrdup("");
    } else
       free(info->weight);
    if (sf->copyright==NULL)
@@ -6712,7 +6712,7 @@ SplineFont *SFReadTTF(char *filename, int flags, enum openflags openflags) {
       pt=filename;
    if ((lparen=strrchr(pt, '(')) != NULL &&
        (rparen=strrchr(lparen, ')')) != NULL && rparen[1]=='\0') {
-      temp=copy(filename);
+      temp=fastrdup(filename);
       pt=temp + (lparen - filename);
       *pt='\0';
    }

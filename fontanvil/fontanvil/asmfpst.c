@@ -1,4 +1,4 @@
-/* $Id: asmfpst.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: asmfpst.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2003-2007  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -61,7 +61,7 @@ static char **classcopy(char **names,int nextclass) {
    ret=malloc(nextclass * sizeof(char *));
    ret[0]=NULL;
    for (i=1; i < nextclass; ++i)
-      ret[i]=copy(names[i]);
+      ret[i]=fastrdup(names[i]);
    return (ret);
 }
 
@@ -122,7 +122,7 @@ static FPST *FPSTGlyphToClass(FPST *fpst) {
 	       if (k==nextclass) {
 		  if (nextclass >= max)
 		     names=realloc(names, (max += 100) * sizeof(char *));
-		  names[nextclass++]=copy(pt);
+		  names[nextclass++]=fastrdup(pt);
 	       }
 	       *end=ch;
 	       (&new->rules[i].u.class.nclasses)[j][cnt++]=k;
@@ -1064,7 +1064,7 @@ static ASM *ASMFromClassFPST(SplineFont *sf,FPST *fpst,
    sm->classes=malloc(sm->class_cnt * sizeof(char *));
    sm->classes[0]=sm->classes[1]=sm->classes[2]=sm->classes[3]=NULL;
    for (i=1; i < fpst->nccnt; ++i)
-      sm->classes[i + 3]=copy(fpst->nclass[i]);
+      sm->classes[i + 3]=fastrdup(fpst->nclass[i]);
    if (fpst->subtable->lookup->lookup_flags & pst_ignorecombiningmarks)
       sm->classes[sm->class_cnt - 1]=BuildMarkClass(sf);
 

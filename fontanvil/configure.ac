@@ -187,15 +187,17 @@ AC_PROG_RANLIB
 AC_PROG_SED
 AC_PATH_PROG([AUTOCONF],[autoconf])
 AC_PATH_PROG([AUTOMAKE],[automake])
+AC_PATH_PROG([CFLOW],[cflow])
+AM_CONDITIONAL([COND_CFLOW],[test '!' "x$CFLOW" = "x"])
 AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([ICEMAP],[Icemap])
 AS_IF([test "x$ICEMAP" = "x"],
-  [AC_PATH_PROG([ICEMAP],[icemap])])
+  [AC_PATH_PROG([ICEMAP],[icemap],[],[$PATH:$PWD/../icemap])])
 AS_IF([test "x$ICEMAP" = "xno"],[ICEMAP=])
 AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "x"])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AS_IF([test "x$KLEKNEV" = "x"],
-  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])])
+  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])])
 AC_PATH_PROG([KPSEWHICH],[kpsewhich])
 AM_CONDITIONAL([COND_KPSEWHICH],[test '!' "x$KPSEWHICH" = "x"])
 AC_PATH_PROG([MAKE],[make])

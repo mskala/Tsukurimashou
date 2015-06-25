@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4043 2015-06-23 13:50:07Z mskala $ */
+/* $Id: scripting.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -100,11 +100,11 @@ static void ff_statement(Context *c);
 static char **GetFontNames(char *filename);
 
 static char *utf82script_copy(const char *ustr) {
-   return copy(ustr);
+   return fastrdup(ustr);
 }
 
 static char *script2utf8_copy(const char *str) {
-   return copy(str);
+   return fastrdup(str);
 }
 
 static char *script2latin1_copy(const char *str) {
@@ -138,7 +138,7 @@ static Array *arraycopy(Array *a) {
    memcpy(c->vals, a->vals, c->argc * sizeof(Val));
    for (i=0; i < a->argc; ++i) {
       if (a->vals[i].type==v_str)
-	 c->vals[i].u.sval=copy(a->vals[i].u.sval);
+	 c->vals[i].u.sval=fastrdup(a->vals[i].u.sval);
       else if (a->vals[i].type==v_arr)
 	 c->vals[i].u.aval=arraycopy(a->vals[i].u.aval);
    }
@@ -151,7 +151,7 @@ static void array_copy_into(Array *dest,int offset,Array *src) {
    memcpy(dest->vals + offset, src->vals, src->argc * sizeof(Val));
    for (i=0; i < src->argc; ++i) {
       if (src->vals[i].type==v_str)
-	 dest->vals[i + offset].u.sval=copy(src->vals[i].u.sval);
+	 dest->vals[i + offset].u.sval=fastrdup(src->vals[i].u.sval);
       else if (src->vals[i].type==v_arr)
 	 dest->vals[i + offset].u.aval=arraycopy(src->vals[i].u.aval);
    }
@@ -196,7 +196,7 @@ static void DicaNewEntry(struct dictionary *dica,char *name,Val *val) {
       dica->entries =
 	 realloc(dica->entries, dica->max * sizeof(struct dictentry));
    }
-   dica->entries[dica->cnt].name=copy(name);
+   dica->entries[dica->cnt].name=fastrdup(name);
    dica->entries[dica->cnt].val.type=v_void;
    val->type=v_lval;
    val->u.lval=&dica->entries[dica->cnt].val;
@@ -288,7 +288,7 @@ static void unexpected(Context *c,enum token_type got) {
 
 void ScriptError(Context * c, const char *msg) {
    char *t1=script2utf8_copy(msg);
-   char *ufile=def2utf8_copy(c->filename);
+   char *ufile=fastrdup(c->filename);
 
    /* All of fontanvil's internal errors are in ASCII where there is */
    /* no difference between latin1 and utf8. User errors are a different */
@@ -310,7 +310,7 @@ void ScriptError(Context * c, const char *msg) {
 void ScriptErrorString(Context * c, const char *msg, const char *name) {
    char *t1=script2utf8_copy(msg);
    char *t2=script2utf8_copy(name);
-   char *ufile=def2utf8_copy(c->filename);
+   char *ufile=fastrdup(c->filename);
 
    if (verbose > 0)
       fflush(stdout);
@@ -327,7 +327,7 @@ void ScriptErrorString(Context * c, const char *msg, const char *name) {
 }
 
 void ScriptErrorF(Context * c, const char *format, ...) {
-   char *ufile=def2utf8_copy(c->filename);
+   char *ufile=fastrdup(c->filename);
 
    /* All string arguments here assumed to be utf8 */
    char errbuf[400];
@@ -363,7 +363,7 @@ static char *forcePSName_copy(Context *c,char *str) {
 			   "Invalid character in PostScript name token (probably fontname): ",
 			   str);
    }
-   return (copy(str));
+   return (fastrdup(str));
 }
 
 static char *forceASCIIcopy(Context *c,char *str) {
@@ -373,14 +373,14 @@ static char *forceASCIIcopy(Context *c,char *str) {
       if (*pt < ' ' || *pt >= 0x7f)
 	 ScriptErrorString(c, "Invalid ASCII character in: ", str);
    }
-   return (copy(str));
+   return (fastrdup(str));
 }
 
 static void dereflvalif(Val *val) {
    if (val->type==v_lval) {
       *val=*val->u.lval;
       if (val->type==v_str)
-	 val->u.sval=copy(val->u.sval);
+	 val->u.sval=fastrdup(val->u.sval);
    }
 }
 
@@ -389,8 +389,7 @@ static void PrintVal(Val *val) {
 
    if (val->type==v_str) {
       char *t1=script2utf8_copy(val->u.sval);
-
-      char *loc=utf82def_copy(t1);
+      char *loc=fastrdup(t1);
 
       printf("%s", loc);
       free(loc);
@@ -870,7 +869,7 @@ static char *Tag2Str(uint32_t tag,int ismac) {
       buffer[3]=tag & 0xff;
       buffer[4]='\0';
    }
-   return (copy(buffer));
+   return (fastrdup(buffer));
 }
 
 static void os2getint(int val,Context *c) {
@@ -983,7 +982,7 @@ static void bAddAnchorClass(Context *c) {
 
    ac=chunkalloc(sizeof(AnchorClass));
 
-   ac->name=copy(c->a.vals[1].u.sval);
+   ac->name=fastrdup(c->a.vals[1].u.sval);
    for (t=sf->anchor; t != NULL; t=t->next)
       if (strcmp(ac->name, t->name)==0)
 	 break;
@@ -1444,7 +1443,7 @@ static void bAddLookup(Context *c) {
    }
    otl->lookup_type=type;
    otl->lookup_flags=c->a.vals[3].u.ival;
-   otl->lookup_name=copy(c->a.vals[1].u.sval);
+   otl->lookup_name=fastrdup(c->a.vals[1].u.sval);
    otl->features=ParseFeatureList(c, c->a.vals[4].u.aval);
    if (otl->features != NULL
        && (otl->features->featuretag==CHR('l', 'i', 'g', 'a')
@@ -1489,7 +1488,7 @@ static void bAddLookupSubtable(Context *c) {
    }
    sub=chunkalloc(sizeof(struct lookup_subtable));
    sub->lookup=otl;
-   sub->subtable_name=copy(c->a.vals[2].u.sval);
+   sub->subtable_name=fastrdup(c->a.vals[2].u.sval);
    if (after != NULL) {
       sub->next=after->next;
       after->next=sub;
@@ -1580,7 +1579,7 @@ if (c->a.vals[1].type != v_str)
       temp.u.pos.h_adv_off=c->a.vals[4].u.ival;
       temp.u.pos.v_adv_off=c->a.vals[5].u.ival;
    } else if (temp.type==pst_pair) {
-      temp.u.pair.paired=copy(c->a.vals[2].u.sval);
+      temp.u.pair.paired=fastrdup(c->a.vals[2].u.sval);
       temp.u.pair.vr=chunkalloc(sizeof(struct vr[2]));
       temp.u.pair.vr[0].xoff=c->a.vals[3].u.ival;
       temp.u.pair.vr[0].yoff=c->a.vals[4].u.ival;
@@ -1591,7 +1590,7 @@ if (c->a.vals[1].type != v_str)
       temp.u.pair.vr[1].h_adv_off=c->a.vals[9].u.ival;
       temp.u.pair.vr[1].v_adv_off=c->a.vals[10].u.ival;
    } else {
-      temp.u.subs.variant=copy(c->a.vals[2].u.sval);
+      temp.u.subs.variant=fastrdup(c->a.vals[2].u.sval);
       if (temp.type==pst_ligature)
 	 temp.u.lig.lig=sc;
    }
@@ -1652,7 +1651,7 @@ static void bAddSizeFeature(Context *c) {
 	    found_english=true;
 	 cur=chunkalloc(sizeof(*cur));
 	 cur->lang=subarr->vals[0].u.ival;
-	 cur->name=copy(subarr->vals[1].u.sval);
+	 cur->name=fastrdup(subarr->vals[1].u.sval);
 	 if (last==NULL)
 	    sf->fontstyle_name=cur;
 	 else
@@ -1955,7 +1954,7 @@ static void bAskUser(Context *c) {
      def=c->a.vals[2].u.sval;
    
    t1=script2utf8_copy(quest);
-   loc=utf82def_copy(t1);
+   loc=fastrdup(t1);
    
    printf("%s",loc);
    free(t1);
@@ -1976,12 +1975,12 @@ static void bAskUser(Context *c) {
 #   endif
    
    if (line==NULL) {
-      c->return_val.u.sval=copy("");
+      c->return_val.u.sval=fastrdup("");
    } else if (line[0]=='\0' || line[0]=='\n' || line[0]=='\r') {
       free(line);
-      c->return_val.u.sval=copy(def);
+      c->return_val.u.sval=fastrdup(def);
    } else {
-      t1=def2utf8_copy(line);
+      t1=fastrdup(line);
       c->return_val.u.sval=utf82script_copy(t1);
       free(t1);
       free(line);
@@ -2136,7 +2135,7 @@ static void bCIDFlattenByCMap(Context *c) {
       ScriptError(c, "Argument must be a filename");
 
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    if (!SFFlattenByCMap(sf, locfilename))
       ScriptErrorString(c, "Can't find (or can't parse) cmap file",
 			c->a.vals[1].u.sval);
@@ -2547,7 +2546,7 @@ static void bCharInfo(Context *c) {
    } else {
       if (strmatch(c->a.vals[1].u.sval, "Name")==0) {
 	 c->return_val.type=v_str;
-	 c->return_val.u.sval=copy(sc->name);
+	 c->return_val.u.sval=fastrdup(sc->name);
       } else if (strmatch(c->a.vals[1].u.sval, "Unicode")==0)
 	 c->return_val.u.ival=sc->unicodeenc;
       else if (strmatch(c->a.vals[1].u.sval, "Encoding")==0)
@@ -2583,25 +2582,25 @@ static void bCharInfo(Context *c) {
 	 c->return_val.type=v_str;
 	 switch (sc->glyph_class) {
 	   case 0:
-	      c->return_val.u.sval=copy("automatic");
+	      c->return_val.u.sval=fastrdup("automatic");
 	      break;
 	   case 1:
-	      c->return_val.u.sval=copy("none");
+	      c->return_val.u.sval=fastrdup("none");
 	      break;
 	   case 2:
-	      c->return_val.u.sval=copy("base");
+	      c->return_val.u.sval=fastrdup("base");
 	      break;
 	   case 3:
-	      c->return_val.u.sval=copy("ligature");
+	      c->return_val.u.sval=fastrdup("ligature");
 	      break;
 	   case 4:
-	      c->return_val.u.sval=copy("mark");
+	      c->return_val.u.sval=fastrdup("mark");
 	      break;
 	   case 5:
-	      c->return_val.u.sval=copy("component");
+	      c->return_val.u.sval=fastrdup("component");
 	      break;
 	   default:
-	      c->return_val.u.sval=copy("unknown");
+	      c->return_val.u.sval=fastrdup("unknown");
 	      break;
 	 }
       } else if (strmatch(c->a.vals[1].u.sval, "RefName")==0 ||
@@ -2616,7 +2615,7 @@ static void bCharInfo(Context *c) {
 	 for (i=0, layer=0; layer < sc->layer_cnt; ++layer) {
 	    for (ref=sc->layers[layer].refs; ref != NULL;
 		 ref=ref->next, ++i) {
-	       c->return_val.u.aval->vals[i].u.sval=copy(ref->sc->name);
+	       c->return_val.u.aval->vals[i].u.sval=fastrdup(ref->sc->name);
 	       c->return_val.u.aval->vals[i].type=v_str;
 	    }
 	 }
@@ -2645,7 +2644,7 @@ static void bCharInfo(Context *c) {
 	 }
       } else if (strmatch(c->a.vals[1].u.sval, "Comment")==0) {
 	 c->return_val.type=v_str;
-	 c->return_val.u.sval=sc->comment ? copy(sc->comment) : copy("");
+	 c->return_val.u.sval=sc->comment ? fastrdup(sc->comment) : fastrdup("");
       } else {
 	 SplineCharFindBounds(sc, &b);
 	 if (strmatch(c->a.vals[1].u.sval, "LBearing")==0)
@@ -2710,7 +2709,7 @@ static void bChr(Context *c) {
       buf[0]=c->a.vals[1].u.ival;
       buf[1]=0;
       c->return_val.type=v_str;
-      c->return_val.u.sval=copy(buf);
+      c->return_val.u.sval=fastrdup(buf);
    } else if (c->a.vals[1].type==v_arr || c->a.vals[1].type==v_arrfree) {
       Array *arr=c->a.vals[1].u.aval;
 
@@ -2900,7 +2899,7 @@ static void bCompareFonts(Context *c) {
       ScriptErrorString(c, "Failed to open output file", c->a.vals[2].u.sval);
 
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    free(t);
    t=GFileMakeAbsoluteName(locfilename);
    free(locfilename);
@@ -2991,7 +2990,7 @@ static void bConvertByCMap(Context *c) {
       ScriptErrorString(c, "Already a cid-keyed font",
 			sf->cidmaster->fontname);
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    MakeCIDMaster(sf, c->curfv->map, true, locfilename, NULL);
    free(t);
    free(locfilename);
@@ -3347,7 +3346,7 @@ static void bExport(Context *c) {
       ScriptError(c, "Bad type of arguments");
 
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   pt=utf82def_copy(t);
+   pt=fastrdup(t);
    free(t);
    sprintf(buffer, "%%n_%%f.%.4s", pt);
    format_spec=buffer;
@@ -3498,7 +3497,7 @@ static void bFontsInFile(Context *c) {
    if (c->a.vals[1].type != v_str)
       ScriptError(c, "FontsInFile expects a filename");
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    ret=GetFontNames(locfilename);
    free(t);
    free(locfilename);
@@ -3550,7 +3549,7 @@ static void bGenerate(Context *c) {
 			   c->a.vals[6].u.sval);
    }
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    if (!GenerateScript
        (sf, locfilename, bitmaptype, fmflags, res, subfontdirectory, NULL,
 	c->curfv->normal==NULL ? c->curfv->map : c->curfv->normal,
@@ -3694,7 +3693,7 @@ static void bGenerateFamily(Context *c) {
    free(familysfs);
 
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    if (!GenerateScript(sf, locfilename, bitmaptype, fmflags, -1, NULL, sfs,
 		       c->curfv->normal ==
 		       NULL ? c->curfv->map : c->curfv->normal, NULL,
@@ -3727,7 +3726,7 @@ static void bGenerateFeatureFile(Context *c) {
    }
 
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    out=afopen(locfilename, "w");
    if (out==NULL)
       ScriptError(c, "Failed to open output file");
@@ -3776,9 +3775,9 @@ static void bGetAnchorPoints(Context *c) {
 	 temp->vals=calloc(5, sizeof(Val));
       }
       temp->vals[0].type=v_str;
-      temp->vals[0].u.sval=copy(ap->anchor->name);
+      temp->vals[0].u.sval=fastrdup(ap->anchor->name);
       temp->vals[1].type=v_str;
-      temp->vals[1].u.sval=copy(FindNameOfFlag(ap_types, ap->type));
+      temp->vals[1].u.sval=fastrdup(FindNameOfFlag(ap_types, ap->type));
       temp->vals[2].type=v_real;
       temp->vals[2].u.fval=ap->me.x;
       temp->vals[3].type=v_real;
@@ -3813,7 +3812,7 @@ static void bGetEnv(Context *c) {
       ScriptErrorString(c, "Unknown Preference variable",
 			c->a.vals[1].u.sval);
    c->return_val.type=v_str;
-   c->return_val.u.sval=strdup(env);
+   c->return_val.u.sval=fastrdup(env);
 }
 
 static void bGetFontBoundingBox(Context *c) {
@@ -3855,7 +3854,7 @@ static void bGetLookupInfo(Context *c) {
    c->return_val.u.aval->vals=malloc(3 * sizeof(Val));
    c->return_val.u.aval->vals[0].type=v_str;
    c->return_val.u.aval->vals[0].u.sval =
-      copy(otl->lookup_type ==
+      fastrdup(otl->lookup_type ==
 	   gpos_single ? "GPOS_single" : otl->lookup_type ==
 	   gpos_pair ? "GPOS_pair" : otl->lookup_type ==
 	   gpos_cursive ? "GPOS_cursive" : otl->lookup_type ==
@@ -3928,7 +3927,7 @@ if (c->a.vals[1].type != v_str)
    if (sub==NULL)
       ScriptErrorString(c, "Unknown lookup subtable", c->a.vals[1].u.sval);
    c->return_val.type=v_str;
-   c->return_val.u.sval=copy(sub->lookup->lookup_name);
+   c->return_val.u.sval=fastrdup(sub->lookup->lookup_name);
 }
 
 static void bGetLookupSubtables(Context *c) {
@@ -3951,7 +3950,7 @@ if (c->a.vals[1].type != v_str)
    c->return_val.u.aval->vals=malloc(cnt * sizeof(Val));
    for (sub=otl->subtables, cnt=0; sub != NULL; sub=sub->next, ++cnt) {
       c->return_val.u.aval->vals[cnt].type=v_str;
-      c->return_val.u.aval->vals[cnt].u.sval=copy(sub->subtable_name);
+      c->return_val.u.aval->vals[cnt].u.sval=fastrdup(sub->subtable_name);
    }
 }
 
@@ -3982,7 +3981,7 @@ if (c->a.vals[1].type != v_str)
    c->return_val.u.aval->vals=malloc(cnt * sizeof(Val));
    for (otl=base, cnt=0; otl != NULL; otl=otl->next, ++cnt) {
       c->return_val.u.aval->vals[cnt].type=v_str;
-      c->return_val.u.aval->vals[cnt].u.sval=copy(otl->lookup_name);
+      c->return_val.u.aval->vals[cnt].u.sval=fastrdup(otl->lookup_name);
    }
 }
 
@@ -4156,7 +4155,7 @@ if (c->a.vals[1].type != v_str)
 		 case pst_position:
 		    temp->argc=6;
 		    temp->vals=calloc(7, sizeof(Val));
-		    temp->vals[1].u.sval=copy("Position");
+		    temp->vals[1].u.sval=fastrdup("Position");
 		    for (k=2; k < 6; ++k) {
 		       temp->vals[k].type=v_int;
 		       temp->vals[k].u.ival=(&pst->u.pos.xoff)[(k - 2)];
@@ -4165,9 +4164,9 @@ if (c->a.vals[1].type != v_str)
 		 case pst_pair:
 		    temp->argc=11;
 		    temp->vals=calloc(11, sizeof(Val));
-		    temp->vals[1].u.sval=copy("Pair");
+		    temp->vals[1].u.sval=fastrdup("Pair");
 		    temp->vals[2].type=v_str;
-		    temp->vals[2].u.sval=copy(pst->u.pair.paired);
+		    temp->vals[2].u.sval=fastrdup(pst->u.pair.paired);
 		    for (k=3; k < 11; ++k) {
 		       temp->vals[k].type=v_int;
 		       temp->vals[k].u.ival =
@@ -4177,9 +4176,9 @@ if (c->a.vals[1].type != v_str)
 		 case pst_substitution:
 		    temp->argc=3;
 		    temp->vals=calloc(4, sizeof(Val));
-		    temp->vals[1].u.sval=copy("Substitution");
+		    temp->vals[1].u.sval=fastrdup("Substitution");
 		    temp->vals[2].type=v_str;
-		    temp->vals[2].u.sval=copy(pst->u.subs.variant);
+		    temp->vals[2].u.sval=fastrdup(pst->u.subs.variant);
 		    break;
 		 case pst_alternate:
 		 case pst_multiple:
@@ -4194,7 +4193,7 @@ if (c->a.vals[1].type != v_str)
 		    temp->argc=2 + subcnt;
 		    temp->vals=calloc(2 + subcnt, sizeof(Val));
 		    temp->vals[1].u.sval =
-		       copy(pst->type ==
+		       fastrdup(pst->type ==
 			    pst_alternate ? "AltSubs" : pst->type ==
 			    pst_multiple ? "MultSubs" : "Ligature");
 		    for (pt=pst->u.mult.components, subcnt=0; *pt;) {
@@ -4214,7 +4213,7 @@ if (c->a.vals[1].type != v_str)
 	       }
 	       if (ret->vals[cnt].type==v_arr) {
 		  temp->vals[0].type=v_str;
-		  temp->vals[0].u.sval=copy(pst->subtable->subtable_name);
+		  temp->vals[0].u.sval=fastrdup(pst->subtable->subtable_name);
 		  temp->vals[1].type=v_str;
 	       }
 	    }
@@ -4232,11 +4231,11 @@ if (c->a.vals[1].type != v_str)
 		     temp->argc=11;
 		     temp->vals=calloc(temp->argc, sizeof(Val));
 		     temp->vals[0].type=v_str;
-		     temp->vals[0].u.sval=copy(kp->subtable->subtable_name);
+		     temp->vals[0].u.sval=fastrdup(kp->subtable->subtable_name);
 		     temp->vals[1].type=v_str;
-		     temp->vals[1].u.sval=copy("Pair");
+		     temp->vals[1].u.sval=fastrdup("Pair");
 		     temp->vals[2].type=v_str;
-		     temp->vals[2].u.sval=copy(kp->sc->name);
+		     temp->vals[2].u.sval=fastrdup(kp->sc->name);
 		     for (k=3; k < 11; ++k) {
 			temp->vals[k].type=v_int;
 			temp->vals[k].u.ival=0;
@@ -4280,9 +4279,9 @@ if (c->a.vals[1].type != v_str)
    if (c->curfv->sf->private==NULL ||
        (i =
 	PSDictFindEntry(c->curfv->sf->private, c->a.vals[1].u.sval))==-1)
-      c->return_val.u.sval=copy("");
+      c->return_val.u.sval=fastrdup("");
    else
-      c->return_val.u.sval=copy(c->curfv->sf->private->values[i]);
+      c->return_val.u.sval=fastrdup(c->curfv->sf->private->values[i]);
 }
 
 static void bGetSubtableOfAnchorClass(Context *c) {
@@ -4302,7 +4301,7 @@ if (c->a.vals[1].type != v_str)
       ScriptErrorString(c, "Unknown anchor class", c->a.vals[1].u.sval);
    c->return_val.type=v_str;
    c->return_val.u.sval =
-      copy(ac->subtable ? ac->subtable->subtable_name : "");
+      fastrdup(ac->subtable ? ac->subtable->subtable_name : "");
 }
 
 static void bGetTTFName(Context *c) {
@@ -4325,9 +4324,9 @@ static void bGetTTFName(Context *c) {
 
    for (ln=sf->names; ln != NULL && ln->lang != lang; ln=ln->next);
    if (ln==NULL || ln->names[strid]==NULL)
-      c->return_val.u.sval=copy("");
+      c->return_val.u.sval=fastrdup("");
    else
-      c->return_val.u.sval=copy(ln->names[strid]);
+      c->return_val.u.sval=fastrdup(ln->names[strid]);
 }
 
 static void bGetTeXParam(Context *c) {
@@ -4417,7 +4416,7 @@ static void bImport(Context *c) {
       ScriptError(c, "Bad type of argument");
 
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    filename=GFileMakeAbsoluteName(locfilename);
    free(locfilename);
    free(t);
@@ -4548,7 +4547,7 @@ static void bInterpolateFonts(Context *c) {
    else
       percent=c->a.vals[1].u.fval;
    t=script2utf8_copy(c->a.vals[2].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    sf=LoadSplineFont(locfilename, openflags);
    free(t);
    free(locfilename);
@@ -4742,7 +4741,7 @@ static void bLoadEncodingFile(Context *c) {
       ScriptError(c, "Bad argument type");
 
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    ParseEncodingFile(locfilename,
 		     (c->a.argc >= 3 ? c->a.vals[2].u.sval : NULL));
    free(locfilename);
@@ -4758,13 +4757,13 @@ static void bLoadFileToString(Context *c) {
       ScriptError(c, "Bad type of argument");
    c->return_val.type=v_str;
    _name=script2utf8_copy(c->a.vals[1].u.sval);
-   name=utf82def_copy(_name);
+   name=fastrdup(_name);
    free(_name);
    f=afopen(name, "rb");
    free(name);
 
    if (f==NULL)
-      c->return_val.u.sval=copy("");
+      c->return_val.u.sval=fastrdup("");
    else {
       afseek(f, 0, SEEK_END);
       len=aftell(f);
@@ -4782,7 +4781,7 @@ static void bLoadNamelist(Context *c) {
    if (c->a.vals[1].type != v_str)
       ScriptError(c, "Bad type of argument");
    _name=script2utf8_copy(c->a.vals[1].u.sval);
-   name=utf82def_copy(_name);
+   name=fastrdup(_name);
    free(_name);
    LoadNamelist(name);
    free(name);
@@ -4795,7 +4794,7 @@ static void bLoadNamelistDir(Context *c) {
       if (c->a.vals[1].type != v_str)
 	 ScriptError(c, "Bad type of argument");
       _dir=script2utf8_copy(c->a.vals[1].u.sval);
-      dir=utf82def_copy(_dir);
+      dir=fastrdup(_dir);
       free(_dir);
    }
    LoadNamelistDir(dir);
@@ -4882,7 +4881,7 @@ static void bLoadTableFromFile(Context *c) {
    tag |= (tstr + 3 < end ? tstr[3] : ' ');
 
    t=script2utf8_copy(c->a.vals[2].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    file=afopen(locfilename, "rb");
    free(locfilename);
    free(t);
@@ -4970,7 +4969,7 @@ if (mm==NULL)
    c->return_val.u.aval->vals=malloc(mm->axis_count * sizeof(Val));
    for (i=0; i < mm->axis_count; ++i) {
       c->return_val.u.aval->vals[i].type=v_str;
-      c->return_val.u.aval->vals[i].u.sval=copy(mm->axes[i]);
+      c->return_val.u.aval->vals[i].u.sval=fastrdup(mm->axes[i]);
    }
 }
 
@@ -5026,7 +5025,7 @@ if (mm==NULL)
    c->return_val.u.aval->vals=malloc(mm->instance_count * sizeof(Val));
    for (i=0; i < mm->instance_count; ++i) {
       c->return_val.u.aval->vals[i].type=v_str;
-      c->return_val.u.aval->vals[i].u.sval=copy(mm->instances[i]->fontname);
+      c->return_val.u.aval->vals[i].u.sval=fastrdup(mm->instances[i]->fontname);
    }
 }
 
@@ -5037,7 +5036,7 @@ if (mm==NULL)
       ScriptError(c, "Not a multiple master font");
 
    c->return_val.type=v_str;
-   c->return_val.u.sval=copy(mm->normal->fontname);
+   c->return_val.u.sval=fastrdup(mm->normal->fontname);
 }
 
 static void bMakeLine(Context *c) {
@@ -5072,7 +5071,7 @@ static void bMergeFonts(Context *c) {
       openflags=c->a.vals[2].u.ival;
    }
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    sf=LoadSplineFont(locfilename, openflags);
    free(t);
    free(locfilename);
@@ -5091,7 +5090,7 @@ static void bMergeKern(Context *c) {
       ScriptError(c, "Bad type of arguments");
 
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    if (!LoadKerningDataFromMetricsFile
        (c->curfv->sf, locfilename, c->curfv->map))
       ScriptError(c, "Failed to find kern info in file");
@@ -5301,7 +5300,7 @@ static void bNameFromUnicode(Context *c) {
 
    c->return_val.type=v_str;
    c->return_val.u.sval =
-      copy(StdGlyphName
+      fastrdup(StdGlyphName
 	   (buffer, c->a.vals[1].u.ival, uniinterp, for_new_glyphs));
 }
 
@@ -5444,7 +5443,7 @@ static void bOpen(Context *c) {
       openflags=c->a.vals[2].u.ival;
    }
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    sf=LoadSplineFont(locfilename, openflags);
    free(t);
    free(locfilename);
@@ -5535,7 +5534,7 @@ static void bPostNotice(Context *c) {
    
    loc=c->a.vals[1].u.sval;
    t1=script2utf8_copy(loc);
-   loc=utf82def_copy(t1);
+   loc=fastrdup(t1);
    ErrorMsg(1,"%s\n", loc);
    free(loc);
    free(t1);
@@ -5988,7 +5987,7 @@ static char *ToString(Val *val) {
    char buffer[40];
 
    if (val->type==v_str) {
-      return (copy(val->u.sval));
+      return (fastrdup(val->u.sval));
    } else if (val->type==v_arr || val->type==v_arrfree) {
       char **results, *ret, *pt;
 
@@ -6030,7 +6029,7 @@ static char *ToString(Val *val) {
       sprintf(buffer, "<void>");
    else
       sprintf(buffer, "<" "???" ">");
-   return (copy(buffer));
+   return (fastrdup(buffer));
 }
 
 static void bRoundToCluster(Context *c) {
@@ -6119,7 +6118,7 @@ static void bSave(Context *c) {
 		     "If an argument is given to Save it must be a filename");
 
       t=script2utf8_copy(c->a.vals[1].u.sval);
-      locfilename=utf82def_copy(t);
+      locfilename=fastrdup(t);
       pt=strrchr(locfilename, '.');
       if (pt != NULL && strmatch(pt, ".sfdir")==0)
 	 s2d=true;
@@ -6175,7 +6174,7 @@ static void bSaveTableToFile(Context *c) {
    tag |= (tstr + 3 < end ? tstr[3] : ' ');
 
    t=script2utf8_copy(c->a.vals[2].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    file=afopen(locfilename, "wb");
    free(locfilename);
    free(t);
@@ -6733,7 +6732,7 @@ static void bSetCharName(Context *c) {
    sc=GetOneSelChar(c);
    uni=sc->unicodeenc;
    name=c->a.vals[1].u.sval;
-   comment=copy(sc->comment);
+   comment=fastrdup(sc->comment);
 
    if (c->a.argc != 3 || c->a.vals[2].u.ival) {
       uni=UniFromName(name, c->curfv->sf->uni_interp, c->curfv->map->enc);
@@ -7199,7 +7198,7 @@ if (c->a.vals[1].type != v_int || c->a.vals[2].type != v_int ||
    else if (strid < 0 || strid >= ttf_namemax)
       ScriptError(c, "Bad value for string id");
 
-   u=copy(c->a.vals[3].u.sval);
+   u=fastrdup(c->a.vals[3].u.sval);
    if (*u=='\0') {
       free(u);
       u=NULL;
@@ -7270,15 +7269,15 @@ static void bSetUnicodeValue(Context *c) {
       ScriptError(c, "Bad argument type");
    sc=GetOneSelChar(c);
    uni=c->a.vals[1].u.ival;
-   name=copy(sc->name);
-   comment=copy(sc->comment);
+   name=fastrdup(sc->name);
+   comment=fastrdup(sc->comment);
 
    if (c->a.argc != 3 || c->a.vals[2].u.ival) {
       char buffer[400];
 
       free(name);
       name =
-	 copy(StdGlyphName
+	 fastrdup(StdGlyphName
 	      (buffer, uni, c->curfv->sf->uni_interp,
 	       c->curfv->sf->for_new_glyphs));
    }
@@ -7623,7 +7622,7 @@ static void bStrSplit(Context *c) {
       } else {
 	 if (*pt != '\0') {
 	    c->return_val.u.aval->vals[cnt].type=v_str;
-	    c->return_val.u.aval->vals[cnt].u.sval=copy(pt);
+	    c->return_val.u.aval->vals[cnt].u.sval=fastrdup(pt);
 	 }
       }
    }
@@ -7675,7 +7674,7 @@ static void bStrftime(Context *c) {
       (void) setlocale(LC_TIME, oldloc);
 
    c->return_val.type=v_str;
-   c->return_val.u.sval=copy(buffer);
+   c->return_val.u.sval=fastrdup(buffer);
 }
 
 static void bStrlen(Context *c) {
@@ -7821,7 +7820,7 @@ static void bTypeOf(Context *c) {
    };
 
    c->return_val.type=v_str;
-   c->return_val.u.sval=copy(typenames[c->a.vals[1].type]);
+   c->return_val.u.sval=fastrdup(typenames[c->a.vals[1].type]);
 }
 
 static void bUCS4(Context *c) {
@@ -7923,7 +7922,7 @@ if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_unicode)
 
 static void bUnicodeNamesListVersion(Context *c) {
    c->return_val.type=v_str;
-   c->return_val.u.sval=strdup(PACKAGE_STRING " (" FONTANVIL_VERSIONDATE ")");
+   c->return_val.u.sval=fastrdup(PACKAGE_STRING " (" FONTANVIL_VERSIONDATE ")");
 }
 
 static void bUnlinkReference(Context *c) {
@@ -8055,7 +8054,7 @@ static void bWritePfm(Context *c) {
      ScriptError(c, "Bad type of argument");
    
    t=script2utf8_copy(c->a.vals[1].u.sval);
-   locfilename=utf82def_copy(t);
+   locfilename=fastrdup(t);
    if (!WritePfmFile(c->a.vals[1].u.sval, sf, 0, c->curfv->map))
      ScriptError(c, "Save failed");
    free(locfilename);
@@ -8075,7 +8074,7 @@ static void bWriteStringToFile(Context *c) {
       append=c->a.vals[3].u.ival;
    }
    _name=script2utf8_copy(c->a.vals[2].u.sval);
-   name=utf82def_copy(_name);
+   name=fastrdup(_name);
    free(_name);
    f=afopen(name, append ? "ab" : "wb");
    free(name);
@@ -8201,7 +8200,7 @@ static void btolower(Context *c) {
 
    if (c->a.vals[1].type==v_str) {
       c->return_val.type=v_str;
-      c->return_val.u.sval=pt=copy(ipt=c->a.vals[1].u.sval);
+      c->return_val.u.sval=pt=fastrdup(ipt=c->a.vals[1].u.sval);
       while (*ipt) {
 	 ch=utf8_ildb(&ipt);
 	 if (ch==-1)
@@ -8227,7 +8226,7 @@ static void btomirror(Context *c) {
 
    if (c->a.vals[1].type==v_str) {
       c->return_val.type=v_str;
-      c->return_val.u.sval=pt=copy(ipt=c->a.vals[1].u.sval);
+      c->return_val.u.sval=pt=fastrdup(ipt=c->a.vals[1].u.sval);
       while (*ipt) {
 	 ch=utf8_ildb(&ipt);
 	 if (ch==-1)
@@ -8253,7 +8252,7 @@ static void btoupper(Context *c) {
 
    if (c->a.vals[1].type==v_str) {
       c->return_val.type=v_str;
-      c->return_val.u.sval=pt=copy(ipt=c->a.vals[1].u.sval);
+      c->return_val.u.sval=pt=fastrdup(ipt=c->a.vals[1].u.sval);
       while (*ipt) {
 	 ch=utf8_ildb(&ipt);
 	 if (ch==-1)
@@ -8852,7 +8851,7 @@ static void handlename(Context *c,Val *val) {
 	       }
 	    }
 	    val->type=v_str;
-	    t=def2utf8_copy(sf==NULL ? "" :
+	    t=fastrdup(sf==NULL ? "" :
 			      sf->filename !=
 			      NULL ? sf->filename : sf->origname);
 	    val->u.sval=utf82script_copy(t);
@@ -8905,7 +8904,7 @@ static void handlename(Context *c,Val *val) {
 	       }
 	    }
 	    val->type=v_str;
-	    val->u.sval=copy(sf==NULL ? "" : sf->fontname);
+	    val->u.sval=fastrdup(sf==NULL ? "" : sf->fontname);
 	 } else if (strcmp(name, "$fontname")==0
 		    || strcmp(name, "$familyname")==0
 		    || strcmp(name, "$fullname")==0
@@ -8919,7 +8918,7 @@ static void handlename(Context *c,Val *val) {
 	    if (c->curfv==NULL)
 	       ScriptError(c, "No current font");
 	    val->type=v_str;
-	    t=copy(strcmp(name, "$fontname")==0 ? c->curfv->sf->fontname :
+	    t=fastrdup(strcmp(name, "$fontname")==0 ? c->curfv->sf->fontname :
 		     name[2]=='a' ? c->curfv->sf->familyname :
 		     name[2]=='u' ? c->curfv->sf->fullname :
 		     name[2]=='e' ? c->curfv->sf->weight :
@@ -8929,7 +8928,7 @@ static void handlename(Context *c,Val *val) {
 		     c->curfv->sf->version);
 	    val->u.sval=utf82script_copy(t);
 	    if (val->u.sval==NULL)
-	       val->u.sval=copy("");
+	       val->u.sval=fastrdup("");
 	    free(t);
 	 } else if (strcmp(name, "$iscid")==0) {
 	    if (c->curfv==NULL)
@@ -8947,11 +8946,11 @@ static void handlename(Context *c,Val *val) {
 	       ScriptError(c, "No current font");
 	    val->type=v_str;
 	    if (c->curfv->sf->cidmaster==NULL)
-	       val->u.sval=copy("");
+	       val->u.sval=fastrdup("");
 	    else {
 	       SplineFont *sf=c->curfv->sf->cidmaster;
 
-	       t=copy(strcmp(name, "$cidfontname")==0 ? sf->fontname :
+	       t=fastrdup(strcmp(name, "$cidfontname")==0 ? sf->fontname :
 			name[5]=='a' ? sf->familyname :
 			name[5]=='u' ? sf->fullname :
 			name[5]=='e' ? sf->weight : sf->copyright);
@@ -9046,7 +9045,7 @@ static void handlename(Context *c,Val *val) {
 	 } else if (strcmp(name, "$version")==0) {
 	    val->type=v_str;
 	    sprintf(name, "%d", FONTANVIL_VERSIONDATE_RAW);
-	    val->u.sval=copy(name);
+	    val->u.sval=fastrdup(name);
 	 } else if (strcmp(name, "$haspython")==0) {
 	    val->type=v_int;
 	    val->u.ival=0;
@@ -9094,7 +9093,7 @@ static void term(Context *c,Val *val) {
       *val=c->tok_val;
    } else if (tok==tt_string) {
       val->type=v_str;
-      val->u.sval=copy(c->tok_text);
+      val->u.sval=fastrdup(c->tok_text);
    } else if (tok==tt_name) {
       handlename(c, val);
    } else if (tok==tt_minus || tok==tt_plus || tok==tt_not
@@ -9163,7 +9162,7 @@ static void term(Context *c,Val *val) {
 	       } else if (strcmp(c->tok_text, "t")==0) {
 		  pt=strrchr(val->u.sval, '/');
 		  if (pt != NULL) {
-		     char *ret=copy(pt + 1);
+		     char *ret=fastrdup(pt + 1);
 
 		     free(val->u.sval);
 		     val->u.sval=ret;
@@ -9181,7 +9180,7 @@ static void term(Context *c,Val *val) {
 		     pt=val->u.sval;
 		  ept=strrchr(pt, '.');
 		  if (ept != NULL) {
-		     char *ret=copy(ept + 1);
+		     char *ret=fastrdup(ept + 1);
 
 		     free(val->u.sval);
 		     val->u.sval=ret;
@@ -9889,12 +9888,12 @@ static void RunScriptInterpreter(char *script_name,AFILE *script_file,
 
    /* copy and convert the arguments */
    c.a.vals[0].type=v_str;
-   tstr=def2utf8_copy(script_name);
+   tstr=fastrdup(script_name);
    c.a.vals[0].u.sval=utf82script_copy(tstr);
    free(tstr);
    for (i=0;i<script_argc;i++) {
       c.a.vals[i+1].type=v_str;
-      tstr=def2utf8_copy(script_argv[i]);
+      tstr=fastrdup(script_argv[i]);
       c.a.vals[i+1].u.sval=utf82script_copy(tstr);
       free(tstr);
    }

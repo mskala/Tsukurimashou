@@ -1,4 +1,4 @@
-/* $Id: fsys.c 3502 2014-11-30 12:26:48Z mskala $ */
+/* $Id: fsys.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2004 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -203,7 +203,7 @@ char *GFileMakeAbsoluteName(char *name) {
    char buffer[1025];
 
    GFileGetAbsoluteName(name, buffer, sizeof(buffer));
-   return (copy(buffer));
+   return (fastrdup(buffer));
 }
 
 char *GFileNameTail(const char *oldname) {

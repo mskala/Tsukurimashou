@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: winfonts.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -265,10 +265,10 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
    sf->pfminfo.pfmset=true;
    if (fntheader.copyright[0] != '\0') {
       free(sf->copyright);
-      sf->copyright=copy(fntheader.copyright);
+      sf->copyright=fastrdup(fntheader.copyright);
    }
    free(sf->weight);
-   sf->weight=copy(fntheader.weight <= 100 ? "Thin" :
+   sf->weight=fastrdup(fntheader.weight <= 100 ? "Thin" :
 		     fntheader.weight <= 200 ? "Extralight" :
 		     fntheader.weight <= 300 ? "Light" :
 		     fntheader.weight <= 400 ? "Normal" :
@@ -298,7 +298,7 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
    free(sf->fullname);
    sf->fullname=temp;
    free(sf->fontname);
-   sf->fontname=copy(sf->fullname);
+   sf->fontname=fastrdup(sf->fullname);
    for (pt=spt=sf->fontname; *spt; ++spt)
       if (*spt != ' ')
 	 *pt++=*spt;

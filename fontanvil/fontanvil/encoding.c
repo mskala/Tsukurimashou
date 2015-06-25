@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4050 2015-06-24 18:42:21Z mskala $ */
+/* $Id: encoding.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -375,9 +375,9 @@ static Encoding *_FindOrMakeEncoding(const char *name,int make_it) {
 
    enc=chunkalloc(sizeof(Encoding));
    *enc=temp;
-   enc->enc_name=copy(name);
+   enc->enc_name=fastrdup(name);
    if (iconv_name != name)
-      enc->iconv_name=copy(iconv_name);
+      enc->iconv_name=fastrdup(iconv_name);
    enc->next=enclist;
    enc->builtin=true;
    enclist=enc;
@@ -443,7 +443,7 @@ int AddEncoding(char *name, EncFunc enc_to_uni, EncFunc uni_to_enc, int max) {
       return (0);		/* Failure */
 
    enc=chunkalloc(sizeof(Encoding));
-   enc->enc_name=copy(name);
+   enc->enc_name=fastrdup(name);
    enc->next=enclist;
    enclist=enc;
    enc->tounicode_func=enc_to_uni;
@@ -582,7 +582,7 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
    if (ch=='#' || ch=='0') {
       head=ParseConsortiumEncodingFile(file);
       if (encodingname)
-	 head->enc_name=copy(encodingname);
+	 head->enc_name=fastrdup(encodingname);
    } else
       head=PSSlurpEncodings(file);
    afclose(file);
@@ -608,7 +608,7 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
       for (item=enclist; item->next != NULL; item=item->next);
       item->next=head;
    }
-   return (copy(head->enc_name));
+   return (fastrdup(head->enc_name));
 }
 
 /* ************************************************************************** */
@@ -788,8 +788,8 @@ static struct cidmap *MakeDummyMap(char *registry,char *ordering,
 				   int supplement) {
    struct cidmap *ret=malloc(sizeof(struct cidmap));
 
-   ret->registry=copy(registry);
-   ret->ordering=copy(ordering);
+   ret->registry=fastrdup(registry);
+   ret->ordering=fastrdup(ordering);
    ret->supplement=ret->maxsupple=supplement;
    ret->cidmax=ret->namemax=0;
    ret->unicode=NULL;
@@ -817,8 +817,8 @@ struct cidmap *LoadMapFromFile(char *file, char *registry, char *ordering,
    ret->supplement=ret->maxsupple=strtol(pt, NULL, 10);
    if (supplement > ret->maxsupple)
       ret->maxsupple=supplement;
-   ret->registry=copy(registry);
-   ret->ordering=copy(ordering);
+   ret->registry=fastrdup(registry);
+   ret->ordering=fastrdup(ordering);
    ret->alts=NULL;
    ret->cidmax=ret->namemax=0;
    ret->unicode=NULL;
@@ -862,7 +862,7 @@ struct cidmap *LoadMapFromFile(char *file, char *registry, char *ordering,
 	       }
 	       aungetc(ch, f);
 	    } else if (afscanf(f, " /%s", name)==1)
-	       ret->name[cid1]=copy(name);
+	       ret->name[cid1]=fastrdup(name);
 	 }
       }
       afclose(f);
@@ -1266,13 +1266,13 @@ static SplineFont *CIDFlatten(SplineFont *cidmaster,SplineChar ** glyphs,
    if (cidmaster==NULL)
       return (NULL);
    new=SplineFontEmpty();
-   new->fontname=copy(cidmaster->fontname);
-   new->fullname=copy(cidmaster->fullname);
-   new->familyname=copy(cidmaster->familyname);
-   new->weight=copy(cidmaster->weight);
-   new->copyright=copy(cidmaster->copyright);
+   new->fontname=fastrdup(cidmaster->fontname);
+   new->fullname=fastrdup(cidmaster->fullname);
+   new->familyname=fastrdup(cidmaster->familyname);
+   new->weight=fastrdup(cidmaster->weight);
+   new->copyright=fastrdup(cidmaster->copyright);
    sprintf(buffer, "%g", cidmaster->cidversion);
-   new->version=copy(buffer);
+   new->version=fastrdup(buffer);
    new->italicangle=cidmaster->italicangle;
    new->upos=cidmaster->upos;
    new->uwidth=cidmaster->uwidth;
@@ -1310,10 +1310,10 @@ static SplineFont *CIDFlatten(SplineFont *cidmaster,SplineChar ** glyphs,
    new->features=cidmaster->features;
    cidmaster->features=NULL;
    new->macstyle=cidmaster->macstyle;
-   new->origname=copy(cidmaster->origname);
+   new->origname=fastrdup(cidmaster->origname);
    new->display_size=cidmaster->display_size;
    /* Don't copy private */
-   new->xuid=copy(cidmaster->xuid);
+   new->xuid=fastrdup(cidmaster->xuid);
    new->glyphs=glyphs;
    new->glyphcnt=new->glyphmax=charcnt;
    for (j=0; j < charcnt; ++j)
@@ -1606,8 +1606,8 @@ SplineFont *MakeCIDMaster(SplineFont *sf, EncMap * oldmap, int bycmap,
 	 SplineFontFree(cidmaster);
 	 return (NULL);
       }
-      cidmaster->cidregistry=copy(map->registry);
-      cidmaster->ordering=copy(map->ordering);
+      cidmaster->cidregistry=fastrdup(map->registry);
+      cidmaster->ordering=fastrdup(map->ordering);
       cidmaster->supplement=map->supplement;
       SFEncodeToMap(sf, map);
    }
@@ -1622,11 +1622,11 @@ SplineFont *MakeCIDMaster(SplineFont *sf, EncMap * oldmap, int bycmap,
    else if (strstrmatch(cidmaster->ordering, "Korea") != NULL)
       cidmaster->uni_interp=ui_korean;
    sf->uni_interp=cidmaster->uni_interp;
-   cidmaster->fontname=copy(sf->fontname);
-   cidmaster->fullname=copy(sf->fullname);
-   cidmaster->familyname=copy(sf->familyname);
-   cidmaster->weight=copy(sf->weight);
-   cidmaster->copyright=copy(sf->copyright);
+   cidmaster->fontname=fastrdup(sf->fontname);
+   cidmaster->fullname=fastrdup(sf->fullname);
+   cidmaster->familyname=fastrdup(sf->familyname);
+   cidmaster->weight=fastrdup(sf->weight);
+   cidmaster->copyright=fastrdup(sf->copyright);
    cidmaster->cidversion=1.0;
    cidmaster->display_antialias=sf->display_antialias;
    cidmaster->display_size=sf->display_size;
@@ -1801,7 +1801,7 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
 	 SCBuildDummy(&dummy, sf, old, i);
 	 sf->glyphs[j]->unicodeenc=dummy.unicodeenc;
 	 free(sf->glyphs[j]->name);
-	 sf->glyphs[j]->name=copy(dummy.name);
+	 sf->glyphs[j]->name=fastrdup(dummy.name);
       }
    /* We just changed the unicode values for most glyphs */
    /* but any references to them will have the old values, and that's bad, so fix 'em up */
@@ -1928,7 +1928,7 @@ EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
 	 if (encoded[j] != -1 && enc->psnames[j] != NULL &&
 	     strcmp(sf->glyphs[encoded[j]]->name, enc->psnames[j]) != 0) {
 	    free(sf->glyphs[encoded[j]]->name);
-	    sf->glyphs[encoded[j]]->name=copy(enc->psnames[j]);
+	    sf->glyphs[encoded[j]]->name=fastrdup(enc->psnames[j]);
 	 }
       }
    }
@@ -2282,7 +2282,7 @@ static SplineChar *SplineCharMatch(SplineFont *parent,SplineChar *sc) {
 
    scnew->parent=parent;
    scnew->orig_pos=sc->orig_pos;
-   scnew->name=copy(sc->name);
+   scnew->name=fastrdup(sc->name);
    scnew->unicodeenc=sc->unicodeenc;
    scnew->width=sc->width;
    scnew->vwidth=sc->vwidth;

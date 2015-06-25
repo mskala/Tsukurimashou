@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: bitmapchar.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -170,7 +170,7 @@ static void BDFPropAddString(BDFFont *bdf,char *keyword,char *value,
 	    realloc(bdf->props,
 		    (bdf->prop_max += 10) * sizeof(BDFProperties));
       ++bdf->prop_cnt;
-      bdf->props[i].name=copy(keyword);
+      bdf->props[i].name=fastrdup(keyword);
    }
    if (strcmp(keyword, "FONT")==0)
       bdf->props[i].type=prt_atom;
@@ -178,7 +178,7 @@ static void BDFPropAddString(BDFFont *bdf,char *keyword,char *value,
       bdf->props[i].type=prt_string;
    else
       bdf->props[i].type=prt_string | prt_property;
-   bdf->props[i].u.str=copy(value);
+   bdf->props[i].u.str=fastrdup(value);
 }
 
 static void BDFPropAddInt(BDFFont *bdf,char *keyword,int value,
@@ -201,7 +201,7 @@ static void BDFPropAddInt(BDFFont *bdf,char *keyword,int value,
 	    realloc(bdf->props,
 		    (bdf->prop_max += 10) * sizeof(BDFProperties));
       ++bdf->prop_cnt;
-      bdf->props[i].name=copy(keyword);
+      bdf->props[i].name=fastrdup(keyword);
    }
    if (IsUnsignedBDFKey(keyword))
       bdf->props[i].type=prt_uint | prt_property;
@@ -256,14 +256,14 @@ static void BDFPropAppendString(BDFFont *bdf,char *keyword,char *value) {
       bdf->props =
 	 realloc(bdf->props, (bdf->prop_max += 10) * sizeof(BDFProperties));
    ++bdf->prop_cnt;
-   bdf->props[i].name=copy(keyword);
+   bdf->props[i].name=fastrdup(keyword);
    if (strcmp(keyword, "COMMENT")==0)
       bdf->props[i].type=prt_string;
    else if (strcmp(keyword, "FONT")==0)
       bdf->props[i].type=prt_atom;
    else
       bdf->props[i].type=prt_string | prt_property;
-   bdf->props[i].u.str=copy(value);
+   bdf->props[i].u.str=fastrdup(value);
 }
 
 static int BDFPropReplace(BDFFont *bdf,const char *key,const char *value) {
@@ -284,7 +284,7 @@ static int BDFPropReplace(BDFFont *bdf,const char *key,const char *value) {
 	       (bdf->props[i].type & prt_property) | prt_string;
 	 pt=strchr(value, '\n');
 	 if (pt==NULL)
-	    bdf->props[i].u.str=copy(value);
+	    bdf->props[i].u.str=fastrdup(value);
 	 else
 	    bdf->props[i].u.str=copyn(value, pt - value);
 	 return (true);

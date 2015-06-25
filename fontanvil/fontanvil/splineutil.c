@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splineutil.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1450,7 +1450,7 @@ SplinePointList *SplinePointListCopy1(const SplinePointList * spl) {
 	 memcpy(cpt->hintmask, pt->hintmask, sizeof(HintMask));
       }
       if (pt->name != NULL) {
-	 cpt->name=copy(pt->name);
+	 cpt->name=fastrdup(pt->name);
       }
       cpt->next=cpt->prev=NULL;
       if (cur->first==NULL)
@@ -2314,11 +2314,11 @@ static void SplineFontMetaData(SplineFont *sf,struct fontdict *fd) {
    if (sf->fontname==NULL)
       sf->fontname=GetNextUntitledName();
    if (sf->fullname==NULL)
-      sf->fullname=copy(sf->fontname);
+      sf->fullname=fastrdup(sf->fontname);
    if (sf->familyname==NULL)
-      sf->familyname=copy(sf->fontname);
+      sf->familyname=fastrdup(sf->fontname);
    if (sf->weight==NULL)
-      sf->weight=copy("");
+      sf->weight=fastrdup("");
    if (fd->modificationtime != 0) {
       sf->modificationtime=fd->modificationtime;
       sf->creationtime=fd->creationtime;
@@ -2345,8 +2345,8 @@ static void SplineFontMetaData(SplineFont *sf,struct fontdict *fd) {
    fd->private->private=NULL;
    PSDictRemoveEntry(sf->private, "OtherSubrs");
 
-   sf->cidregistry=copy(fd->registry);
-   sf->ordering=copy(fd->ordering);
+   sf->cidregistry=fastrdup(fd->registry);
+   sf->ordering=fastrdup(fd->ordering);
    sf->supplement=fd->supplement;
    sf->pfminfo.fstype=fd->fontinfo->fstype;
    if (sf->ordering != NULL) {
@@ -2789,8 +2789,8 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	 ++pt;
    }
 
-   mm->cdv=copy(fd->cdv);
-   mm->ndv=copy(fd->ndv);
+   mm->cdv=fastrdup(fd->cdv);
+   mm->ndv=fastrdup(fd->ndv);
 
    origweight=fd->fontinfo->weight;
 
@@ -2801,7 +2801,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
       free(fd->fontname);
       free(fd->fontinfo->fullname);
       fd->fontname=MMMakeMasterFontname(mm, ipos, &fd->fontinfo->fullname);
-      fd->fontinfo->weight=MMGuessWeight(mm, ipos, copy(origweight));
+      fd->fontinfo->weight=MMGuessWeight(mm, ipos, fastrdup(origweight));
       if (fd->blendfontinfo != NULL) {
 	 for (item=0; item < 3; ++item) {
 	    static char *names[] =
@@ -5593,9 +5593,9 @@ static struct fpst_rule *RulesCopy(struct fpst_rule *from,int cnt,
       t=to + i;
       switch (format) {
 	case pst_glyphs:
-	   t->u.glyph.names=copy(f->u.glyph.names);
-	   t->u.glyph.back=copy(f->u.glyph.back);
-	   t->u.glyph.fore=copy(f->u.glyph.fore);
+	   t->u.glyph.names=fastrdup(f->u.glyph.names);
+	   t->u.glyph.back=fastrdup(f->u.glyph.back);
+	   t->u.glyph.fore=fastrdup(f->u.glyph.fore);
 	   break;
 	case pst_class:
 	   t->u.class.ncnt=f->u.class.ncnt;
@@ -5616,7 +5616,7 @@ static struct fpst_rule *RulesCopy(struct fpst_rule *from,int cnt,
 	   }
 	   break;
 	case pst_reversecoverage:
-	   t->u.rcoverage.replacements=copy(f->u.rcoverage.replacements);
+	   t->u.rcoverage.replacements=fastrdup(f->u.rcoverage.replacements);
 	case pst_coverage:
 	   t->u.coverage.ncnt=f->u.coverage.ncnt;
 	   t->u.coverage.bcnt=f->u.coverage.bcnt;
@@ -5624,18 +5624,18 @@ static struct fpst_rule *RulesCopy(struct fpst_rule *from,int cnt,
 	   t->u.coverage.ncovers =
 	      malloc(f->u.coverage.ncnt * sizeof(char *));
 	   for (j=0; j < t->u.coverage.ncnt; ++j)
-	      t->u.coverage.ncovers[j]=copy(f->u.coverage.ncovers[j]);
+	      t->u.coverage.ncovers[j]=fastrdup(f->u.coverage.ncovers[j]);
 	   if (t->u.coverage.bcnt != 0) {
 	      t->u.coverage.bcovers =
 		 malloc(f->u.coverage.bcnt * sizeof(char *));
 	      for (j=0; j < t->u.coverage.bcnt; ++j)
-		 t->u.coverage.bcovers[j]=copy(f->u.coverage.bcovers[j]);
+		 t->u.coverage.bcovers[j]=fastrdup(f->u.coverage.bcovers[j]);
 	   }
 	   if (t->u.coverage.fcnt != 0) {
 	      t->u.coverage.fcovers =
 		 malloc(f->u.coverage.fcnt * sizeof(char *));
 	      for (j=0; j < t->u.coverage.fcnt; ++j)
-		 t->u.coverage.fcovers[j]=copy(f->u.coverage.fcovers[j]);
+		 t->u.coverage.fcovers[j]=fastrdup(f->u.coverage.fcovers[j]);
 	   }
 	   break;
       }
@@ -5661,24 +5661,24 @@ FPST *FPSTCopy(FPST * fpst) {
       nfpst->nclass=malloc(nfpst->nccnt * sizeof(char *));
       nfpst->nclassnames=malloc(nfpst->nccnt * sizeof(char *));
       for (i=0; i < nfpst->nccnt; ++i) {
-	 nfpst->nclass[i]=copy(fpst->nclass[i]);
-	 nfpst->nclassnames[i]=copy(fpst->nclassnames[i]);
+	 nfpst->nclass[i]=fastrdup(fpst->nclass[i]);
+	 nfpst->nclassnames[i]=fastrdup(fpst->nclassnames[i]);
       }
    }
    if (nfpst->bccnt != 0) {
       nfpst->bclass=malloc(nfpst->bccnt * sizeof(char *));
       nfpst->bclassnames=malloc(nfpst->bccnt * sizeof(char *));
       for (i=0; i < nfpst->bccnt; ++i) {
-	 nfpst->bclass[i]=copy(fpst->bclass[i]);
-	 nfpst->bclassnames[i]=copy(fpst->bclassnames[i]);
+	 nfpst->bclass[i]=fastrdup(fpst->bclass[i]);
+	 nfpst->bclassnames[i]=fastrdup(fpst->bclassnames[i]);
       }
    }
    if (nfpst->fccnt != 0) {
       nfpst->fclass=malloc(nfpst->fccnt * sizeof(char *));
       nfpst->fclassnames=malloc(nfpst->fccnt * sizeof(char *));
       for (i=0; i < nfpst->fccnt; ++i) {
-	 nfpst->fclass[i]=copy(fpst->fclass[i]);
-	 nfpst->fclassnames[i]=copy(fpst->fclassnames[i]);
+	 nfpst->fclass[i]=fastrdup(fpst->fclass[i]);
+	 nfpst->fclassnames[i]=fastrdup(fpst->fclassnames[i]);
       }
    }
    nfpst->rules=RulesCopy(fpst->rules, fpst->rule_cnt, fpst->format);
@@ -5863,7 +5863,7 @@ static struct pattern *PatternCopy(struct pattern *old,real transform[6]) {
    pat=chunkalloc(sizeof(struct pattern));
 
    *pat=*old;
-   pat->pattern=copy(old->pattern);
+   pat->pattern=fastrdup(old->pattern);
    if (transform != NULL)
       MatMultiply(pat->transform, transform, pat->transform);
    return (pat);
@@ -6051,9 +6051,9 @@ KernClass *KernClassCopy(KernClass * kc) {
    memcpy(new->offsets, kc->offsets,
 	  new->first_cnt * new->second_cnt * sizeof(int16_t));
    for (i=0; i < new->first_cnt; ++i)
-      new->firsts[i]=copy(kc->firsts[i]);
+      new->firsts[i]=fastrdup(kc->firsts[i]);
    for (i=0; i < new->second_cnt; ++i)
-      new->seconds[i]=copy(kc->seconds[i]);
+      new->seconds[i]=fastrdup(kc->seconds[i]);
    new->adjusts =
       calloc(new->first_cnt * new->second_cnt, sizeof(DeviceTable));
    memcpy(new->adjusts, kc->adjusts,

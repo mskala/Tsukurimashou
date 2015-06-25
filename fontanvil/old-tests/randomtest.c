@@ -1,4 +1,4 @@
-/* $Id: randomtest.c 3502 2014-11-30 12:26:48Z mskala $ */
+/* $Id: randomtest.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2005 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -222,7 +222,7 @@ static void FindFonts(char **fontdirs, char **extensions) {
 		  exit(1);
 	       }
 	    }
-	    fontlist[fcnt].name = strdup(buffer);
+	    fontlist[fcnt].name = fastrdup(buffer);
 	    fontlist[fcnt].len = statb.st_size;
 	    figurefiletype(&fontlist[fcnt]);
 	    ++fcnt;

@@ -1,4 +1,4 @@
-/* $Id: psread.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: psread.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -323,7 +323,7 @@ static void pushio(IO *wrapper,AFILE *ps,char *macro,int cnt) {
 
    io->prev=wrapper->top;
    io->ps=ps;
-   io->macro=io->start=copy(macro);
+   io->macro=io->start=fastrdup(macro);
    io->backedup=EOF;
    if (cnt==-1) {
       io->cnt=1;
@@ -854,7 +854,7 @@ static void copyarray(struct pskeydict *to,struct pskeydict *from,
       to->entries[i]=oldent[i];
       if (to->entries[i].type==ps_string || to->entries[i].type==ps_instr
 	  || to->entries[i].type==ps_lit)
-	 to->entries[i].u.str=copy(to->entries[i].u.str);
+	 to->entries[i].u.str=fastrdup(to->entries[i].u.str);
       else if (to->entries[i].type==ps_array
 	       || to->entries[i].type==ps_dict)
 	 copyarray(&to->entries[i].u.dict, &oldent[i].u.dict, tofrees);
@@ -877,7 +877,7 @@ static int aload(int sp,struct psstack *stack,int stacktop,
 	    stack[sp].u=dict.entries[i].u;
 	    if (stack[sp].type==ps_string || stack[sp].type==ps_instr ||
 		stack[sp].type==ps_lit)
-	       stack[sp].u.str=copy(stack[sp].u.str);
+	       stack[sp].u.str=fastrdup(stack[sp].u.str);
 /* The following is incorrect behavior, but as I don't do garbage collection */
 /*  and I'm not going to implement reference counts, this will work in most cases */
 	    else if (stack[sp].type==ps_array)
@@ -1329,7 +1329,7 @@ static void HandleType3Reference(IO *wrapper,EntityChar *ec,
    tok=nextpstoken(wrapper, &dval, tokbuf, toksize);
    if (tok != pt_namelit)
       return;			/* Hunh. I don't understand it. I give up */
-   glyphname=copy(tokbuf);
+   glyphname=fastrdup(tokbuf);
    tok=nextpstoken(wrapper, &dval, tokbuf, toksize);
    if (strcmp(tokbuf, "get") != 0) {
       free(glyphname);
@@ -1466,23 +1466,23 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	    if (sp < sizeof(stack) / sizeof(stack[0])) {
 	       stack[sp].type=ps_instr;
 	       if (gb.pt==NULL)
-		  stack[sp++].u.str=copy("");
+		  stack[sp++].u.str=fastrdup("");
 	       else {
 		  *gb.pt='\0';
 		  gb.pt=gb.base;
-		  stack[sp++].u.str=copy(gb.base);
+		  stack[sp++].u.str=fastrdup(gb.base);
 	       }
 	    }
 	 }
       } else if (tok==pt_unknown && (kv=lookup(&dict, tokbuf)) != NULL) {
 	 if (kv->type==ps_instr)
-	    pushio(wrapper, NULL, copy(kv->u.str), 0);
+	    pushio(wrapper, NULL, fastrdup(kv->u.str), 0);
 	 else if (sp < sizeof(stack) / sizeof(stack[0])) {
 	    stack[sp].type=kv->type;
 	    stack[sp++].u=kv->u;
 	    if (kv->type==ps_instr || kv->type==ps_lit
 		|| kv->type==ps_string)
-	       stack[sp - 1].u.str=copy(stack[sp - 1].u.str);
+	       stack[sp - 1].u.str=fastrdup(stack[sp - 1].u.str);
 	    else if (kv->type==ps_array || kv->type==ps_dict) {
 	       copyarray(&stack[sp - 1].u.dict, &stack[sp - 1].u.dict,
 			 &tofrees);
@@ -1620,7 +1620,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 stack[sp]=stack[sp - 1];
 		 if (stack[sp].type==ps_string || stack[sp].type==ps_instr
 		     || stack[sp].type==ps_lit)
-		    stack[sp].u.str=copy(stack[sp].u.str);
+		    stack[sp].u.str=fastrdup(stack[sp].u.str);
 		 /* The following is incorrect behavior, but as I don't do garbage collection */
 		 /*  and I'm not going to implement reference counts, this will work in most cases */
 		 else if (stack[sp].type==ps_array)
@@ -1640,7 +1640,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		       if (stack[sp].type==ps_string
 			   || stack[sp].type==ps_instr
 			   || stack[sp].type==ps_lit)
-			  stack[sp].u.str=copy(stack[sp].u.str);
+			  stack[sp].u.str=fastrdup(stack[sp].u.str);
 		       /* The following is incorrect behavior, but as I don't do garbage collection */
 		       /*  and I'm not going to implement reference counts, this will work in most cases */
 		       else if (stack[sp].type==ps_array)
@@ -1671,7 +1671,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		    if (stack[sp].type==ps_string
 			|| stack[sp].type==ps_instr
 			|| stack[sp].type==ps_lit)
-		       stack[sp].u.str=copy(stack[sp].u.str);
+		       stack[sp].u.str=fastrdup(stack[sp].u.str);
 		    /* The following is incorrect behavior, but as I don't do garbage collection */
 		    /*  and I'm not going to implement reference counts, this will work in most cases */
 		    else if (stack[sp].type==ps_array)
@@ -2067,7 +2067,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		    stack[sp - 1].type=kv->type;
 		    stack[sp - 1].u=kv->u;
 		    if (kv->type==ps_instr || kv->type==ps_lit)
-		       stack[sp - 1].u.str=copy(stack[sp - 1].u.str);
+		       stack[sp - 1].u.str=fastrdup(stack[sp - 1].u.str);
 		 } else
 		    stack[sp - 1].type=ps_instr;
 	      }
@@ -2209,7 +2209,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 				      tokbufsize);
 	      } else if (sp < sizeof(stack) / sizeof(stack[0])) {
 		 stack[sp].type=ps_lit;
-		 stack[sp++].u.str=copy(tokbuf);
+		 stack[sp++].u.str=fastrdup(tokbuf);
 	      }
 	      break;
 	   case pt_exec:
@@ -3540,9 +3540,9 @@ void PSFontInterpretPS(AFILE *ps, struct charprocs *cp, char **encoding) {
 	 }
 	 if (cp->next < cp->cnt) {
 	    sc=SplineCharCreate(2);
-	    cp->keys[cp->next]=copy(tokbuf);
+	    cp->keys[cp->next]=fastrdup(tokbuf);
 	    cp->values[cp->next++]=sc;
-	    sc->name=copy(tokbuf);
+	    sc->name=fastrdup(tokbuf);
 	    SCInterpretPS(ps, sc, &flags);
 	 } else {
 	    memset(&dummy, 0, sizeof(dummy));
@@ -3621,7 +3621,7 @@ Encoding *PSSlurpEncodings(AFILE *file) {
 	   nextpstoken(&wrapper, &dval, tokbuf, sizeof(tokbuf))) != pt_eof) {
       encname=NULL;
       if (tok==pt_namelit) {
-	 encname=copy(tokbuf);
+	 encname=fastrdup(tokbuf);
 	 tok=nextpstoken(&wrapper, &dval, tokbuf, sizeof(tokbuf));
       }
       if (tok != pt_openarray && tok != pt_opencurly)
@@ -3647,10 +3647,10 @@ Encoding *PSSlurpEncodings(AFILE *file) {
 	       /* Used not to do this, but there are several legal names */
 	       /*  for some slots and people get unhappy (rightly) if we */
 	       /*  use the wrong one */
-	       names[i]=copy(tokbuf);
+	       names[i]=fastrdup(tokbuf);
 	       any=1;
 	    } else {
-	       names[i]=copy(tokbuf);
+	       names[i]=fastrdup(tokbuf);
 	       any=1;
 	    }
 	 }
@@ -3943,7 +3943,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
    if (!is_type2 && context->instance_count > 1)
       memset(unblended, 0, sizeof(unblended));
 
-   ret->name=copy(name);
+   ret->name=fastrdup(name);
    ret->unicodeenc=-1;
    ret->width=(int16_t) 0x8000;
    if (name==NULL)

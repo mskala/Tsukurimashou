@@ -1,4 +1,4 @@
-/* $Id: gimagereadtiff.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: gimagereadtiff.c 4063 2015-06-25 13:57:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013feb15, added file and mem error checks, Jose Da Silva */
 /*
@@ -66,7 +66,6 @@ GImage *GImageReadTiff(char *filename) {
    if ((ret = GImageCreate(it_true, w, h)) == NULL)
       goto errorGImageReadTiffMem;
    if ((raster = (uint32_t *) malloc(w * h * sizeof(uint32_t))) == NULL) {
-      NoMoreMemMessage();
       goto errorGImageReadTiffMem;
    }
 

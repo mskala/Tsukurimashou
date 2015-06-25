@@ -249,7 +249,7 @@ AS_IF([test "x$XDVIPDFMX" = "x"],
   [AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])])
 AC_ARG_VAR([XELATEX],[XeLaTeX])
 AS_IF([test "x$XELATEX" = "x"],
-  [AC_PATH_PROG([XELATEX],[$xelatex])])
+  [AC_PATH_PROG([XELATEX],[xelatex])])
 #
 gmake_version=unknown
 missing_gmake_version=yes

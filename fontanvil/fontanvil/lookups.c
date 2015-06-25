@@ -1,4 +1,4 @@
-/* $Id: lookups.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: lookups.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1337,7 +1337,7 @@ char *SuffixFromTags(FeatureScriptLangList * fl) {
    while (fl != NULL) {
       for (i=0; tags2suffix[i].tag != 0; ++i)
 	 if (tags2suffix[i].tag==fl->featuretag)
-	    return (copy(tags2suffix[i].suffix));
+	    return (fastrdup(tags2suffix[i].suffix));
       fl=fl->next;
    }
    return (NULL);
@@ -1566,7 +1566,7 @@ char *TagFullName(SplineFont *sf, uint32_t tag, int ismac, int onlyifknown) {
 	    ubuf[7]='\0';
       }
    }
-   return (copy(ubuf));
+   return (fastrdup(ubuf));
 }
 
 
@@ -1607,7 +1607,7 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 	    lookuptype=S_("LookupType|Unknown");
 	 for (fl=otl->features; fl != NULL && !fl->ismac; fl=fl->next);
 	 if (fl==NULL)
-	    userfriendly=copy(lookuptype);
+	    userfriendly=fastrdup(lookuptype);
 	 else {
 	    userfriendly=malloc(strlen(lookuptype) + 10);
 	    sprintf(userfriendly, "%s '%c%c%c%c'", lookuptype,
@@ -1653,7 +1653,7 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 		 localscripts[j].text != NULL
 		 && script_tag != localscripts[j].tag; ++j);
 	    if (localscripts[j].text != NULL)
-	       script=copy(S_((char *) localscripts[j].text));
+	       script=fastrdup(S_((char *) localscripts[j].text));
 	    else {
 	       buf[0]='\'';
 	       buf[1]=fl->scripts->script >> 24;
@@ -1662,7 +1662,7 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 	       buf[4]=fl->scripts->script & 0xff;
 	       buf[5]='\'';
 	       buf[6]=0;
-	       script=copy(buf);
+	       script=fastrdup(buf);
 	    }
 	 }
       }
@@ -2086,7 +2086,7 @@ static char **ClassCopy(int class_cnt,char **classes) {
       return (NULL);
    newclasses=malloc(class_cnt * sizeof(char *));
    for (i=0; i < class_cnt; ++i)
-      newclasses[i]=copy(classes[i]);
+      newclasses[i]=fastrdup(classes[i]);
    return (newclasses);
 }
 
@@ -2175,9 +2175,9 @@ static FPST *SF_AddFPST(struct sfmergecontext *mc,FPST *fpst,
 
       switch (newfpst->format) {
 	case pst_glyphs:
-	   r->u.glyph.names=copy(r->u.glyph.names);
-	   r->u.glyph.back=copy(r->u.glyph.back);
-	   r->u.glyph.fore=copy(r->u.glyph.fore);
+	   r->u.glyph.names=fastrdup(r->u.glyph.names);
+	   r->u.glyph.back=fastrdup(r->u.glyph.back);
+	   r->u.glyph.fore=fastrdup(r->u.glyph.fore);
 	   break;
 	case pst_class:
 	   r->u.class.nclasses=malloc(r->u.class.ncnt * sizeof(uint16_t));
@@ -2205,7 +2205,7 @@ static FPST *SF_AddFPST(struct sfmergecontext *mc,FPST *fpst,
 	      ClassCopy(r->u.rcoverage.bcnt, r->u.rcoverage.bcovers);
 	   r->u.rcoverage.fcovers =
 	      ClassCopy(r->u.rcoverage.fcnt, r->u.rcoverage.fcovers);
-	   r->u.rcoverage.replacements=copy(r->u.rcoverage.replacements);
+	   r->u.rcoverage.replacements=fastrdup(r->u.rcoverage.replacements);
 	   break;
       }
    }
@@ -2239,8 +2239,8 @@ static ASM *SF_AddASM(struct sfmergecontext *mc,ASM *sm,
       for (i=0; i < newsm->class_cnt * newsm->state_cnt; ++i) {
 	 struct asm_state *this=&newsm->state[i];
 
-	 this->u.insert.mark_ins=copy(this->u.insert.mark_ins);
-	 this->u.insert.cur_ins=copy(this->u.insert.cur_ins);
+	 this->u.insert.mark_ins=fastrdup(this->u.insert.mark_ins);
+	 this->u.insert.cur_ins=fastrdup(this->u.insert.cur_ins);
       }
    } else if (newsm->type==asm_context) {
       for (i=0; i < newsm->class_cnt * newsm->state_cnt; ++i) {
@@ -2331,7 +2331,7 @@ static int SF_SCAddPST(SplineChar *tosc,PST *pst,
 
    switch (newpst->type) {
      case pst_pair:
-	newpst->u.pair.paired=copy(pst->u.pair.paired);
+	newpst->u.pair.paired=fastrdup(pst->u.pair.paired);
 	newpst->u.pair.vr=chunkalloc(sizeof(struct vr[2]));
 	memcpy(newpst->u.pair.vr, pst->u.pair.vr, sizeof(struct vr[2]));
 	break;
@@ -2341,7 +2341,7 @@ static int SF_SCAddPST(SplineChar *tosc,PST *pst,
      case pst_substitution:
      case pst_alternate:
      case pst_multiple:
-	newpst->u.subs.variant=copy(pst->u.subs.variant);
+	newpst->u.subs.variant=fastrdup(pst->u.subs.variant);
 	break;
    }
    return (true);
@@ -2647,7 +2647,7 @@ static OTLookup *_OTLookupCopyInto(struct sfmergecontext *mc,
       *sub=*from_sub;
       sub->lookup=otl;
       sub->subtable_name=strconcat(mc->prefix, from_sub->subtable_name);
-      sub->suffix=copy(sub->suffix);
+      sub->suffix=fastrdup(sub->suffix);
       if (last==NULL)
 	 otl->subtables=sub;
       else
@@ -4142,7 +4142,7 @@ static int gvfixup(struct glyphvariants *gv,char *old,char *new) {
    for (i=0; i < gv->part_cnt; ++i) {
       if (strcmp(gv->parts[i].component, old)==0) {
 	 free(gv->parts[i].component);
-	 gv->parts[i].component=copy(new);
+	 gv->parts[i].component=fastrdup(new);
 	 ret=true;
       }
    }
@@ -4176,7 +4176,7 @@ void SFGlyphRenameFixup(SplineFont *sf, char *old, char *new,
       for (gid=0; gid < sf->glyphcnt; ++gid)
 	 if ((sc=sf->glyphs[gid]) != NULL) {
 	    if (rename_related_glyphs && glyphnameIsComponent(sc->name, old)) {
-	       char *newer=copy(sc->name);
+	       char *newer=fastrdup(sc->name);
 
 	       rplglyphname(&newer, old, new);
 	       SFGlyphRenameFixup(master, sc->name, newer, true);

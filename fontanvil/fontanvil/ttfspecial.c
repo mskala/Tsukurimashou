@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: ttfspecial.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1661,7 +1661,7 @@ static void pfed_readotherlayers(AFILE *ttf,struct ttfinfo *info,
    non_spiro_cnt=0;
    for (i=0; i < lcnt; ++i) {
       if (layers[i].name_off==0)
-	 layers[i].name=copy("Unnamed");
+	 layers[i].name=fastrdup("Unnamed");
       else {
 	 layers[i].name=pfed_read_utf8(ttf, base + layers[i].name_off);
 	 if (layers[i].type==1 && strcmp(layers[i].name, "Spiro")==0)
@@ -2232,7 +2232,7 @@ static char *MergeComments(BDFFont *bdf) {
 	 len += strlen(bdf->props[i].u.atom) + 1;
    }
    if (len==0)
-      return (copy(""));
+      return (fastrdup(""));
 
    str=malloc(len + 1);
    len=0;
@@ -2413,13 +2413,13 @@ static int CheckForNewlines(BDFFont *bdf,int k) {
       start=pt;
       while (*pt != '\n' && *pt != '\0')
 	 ++pt;
-      bdf->props[k + i].name=copy(bdf->props[k].name);
+      bdf->props[k + i].name=fastrdup(bdf->props[k].name);
       bdf->props[k + i].type=bdf->props[k].type;
       bdf->props[k + i].u.atom=copyn(start, pt - start);
       if (*pt=='\n')
 	 ++pt;
    }
-   pt=copy(bdf->props[k].u.atom);
+   pt=fastrdup(bdf->props[k].u.atom);
    free(bdf->props[k].u.atom);
    bdf->props[k].u.atom=pt;
    return (k + cnt);

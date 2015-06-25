@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: fvfonts.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -291,10 +291,10 @@ PST *PSTCopy(PST * base, SplineChar * sc, struct sfmergecontext *mc) {
       *cur=*base;
       cur->subtable=MCConvertSubtable(mc, base->subtable);
       if (cur->type==pst_ligature) {
-	 cur->u.lig.components=copy(cur->u.lig.components);
+	 cur->u.lig.components=fastrdup(cur->u.lig.components);
 	 cur->u.lig.lig=sc;
       } else if (cur->type==pst_pair) {
-	 cur->u.pair.paired=copy(cur->u.pair.paired);
+	 cur->u.pair.paired=fastrdup(cur->u.pair.paired);
 	 cur->u.pair.vr=chunkalloc(sizeof(struct vr[2]));
 	 memcpy(cur->u.pair.vr, base->u.pair.vr, sizeof(struct vr[2]));
 	 cur->u.pair.vr[0].adjust=ValDevTabCopy(base->u.pair.vr[0].adjust);
@@ -305,7 +305,7 @@ PST *PSTCopy(PST * base, SplineChar * sc, struct sfmergecontext *mc) {
 		cur->u.lcaret.cnt * sizeof(uint16_t));
       } else if (cur->type==pst_substitution || cur->type==pst_multiple
 		 || cur->type==pst_alternate)
-	 cur->u.subs.variant=copy(cur->u.subs.variant);
+	 cur->u.subs.variant=fastrdup(cur->u.subs.variant);
       if (head==NULL)
 	 head=cur;
       else
@@ -361,7 +361,7 @@ static void AnchorClassesAdd(SplineFont *into,SplineFont *from,
 	 cur=chunkalloc(sizeof(AnchorClass));
 	 *cur=*fac;
 	 cur->next=NULL;
-	 cur->name=copy(cur->name);
+	 cur->name=fastrdup(cur->name);
 	 cur->subtable =
 	    cur->subtable ? MCConvertSubtable(mc, cur->subtable) : NULL;
 	 if (last==NULL)
@@ -418,7 +418,7 @@ static void ASMsAdd(SplineFont *into,SplineFont *from,
       nsm->subtable->sm=nsm;
       nsm->classes=malloc(nsm->class_cnt * sizeof(char *));
       for (i=0; i < nsm->class_cnt; ++i)
-	 nsm->classes[i]=copy(sm->classes[i]);
+	 nsm->classes[i]=fastrdup(sm->classes[i]);
       nsm->state =
 	 malloc(nsm->class_cnt * nsm->state_cnt * sizeof(struct asm_state));
       memcpy(nsm->state, sm->state,
@@ -443,9 +443,9 @@ static void ASMsAdd(SplineFont *into,SplineFont *from,
       } else if (nsm->type==asm_insert) {
 	 for (i=nsm->class_cnt * nsm->state_cnt - 1; i >= 0; --i) {
 	    nsm->state[i].u.insert.mark_ins =
-	       copy(sm->state[i].u.insert.mark_ins);
+	       fastrdup(sm->state[i].u.insert.mark_ins);
 	    nsm->state[i].u.insert.cur_ins =
-	       copy(sm->state[i].u.insert.cur_ins);
+	       fastrdup(sm->state[i].u.insert.cur_ins);
 	 }
       }
    }
@@ -558,7 +558,7 @@ SplineChar *SplineCharCopy(SplineChar * sc, SplineFont *into,
    }
    nsc->parent=into;
    nsc->orig_pos=-2;
-   nsc->name=copy(sc->name);
+   nsc->name=fastrdup(sc->name);
    nsc->hstem=StemInfoCopy(nsc->hstem);
    nsc->vstem=StemInfoCopy(nsc->vstem);
    nsc->dstem=DStemInfoCopy(nsc->dstem);
@@ -911,7 +911,7 @@ SplineChar *SFGetChar(SplineFont *sf, int unienc, const char *name) {
       else {
 	 char *tmp;
 
-	 if ((tmp=copy(name))) {
+	 if ((tmp=fastrdup(name))) {
 	    tmp[pt - name]='\0';
 	    ind=SFCIDFindCID(sf, unienc, tmp + (start - name));
 	    tmp[pt - name]=ch;
@@ -955,12 +955,12 @@ SplineChar *SFGetOrMakeChar(SplineFont *sf, int unienc, const char *name) {
       }
       sc->unicodeenc=unienc;
       if (name != NULL)
-	 sc->name=copy(name);
+	 sc->name=fastrdup(name);
       else {
 	 char buffer[40];
 
 	 sprintf(buffer, "glyph%d", sf->glyphcnt);
-	 sc->name=copy(buffer);
+	 sc->name=fastrdup(buffer);
       }
       SFAddGlyphAndEncode(sf, sc, NULL, -1);
       /*SCLigDefault(sc); */
@@ -1663,7 +1663,7 @@ SplineChar *SplineCharInterpolate(SplineChar * base, SplineChar * other,
    sc->layers[ly_fore].undoes=sc->layers[ly_back].undoes=NULL;
    sc->layers[ly_fore].redoes=sc->layers[ly_back].redoes=NULL;
    sc->kerns=NULL;
-   sc->name=copy(base->name);
+   sc->name=fastrdup(base->name);
    sc->width=base->width + amount * (other->width - base->width);
    sc->vwidth=base->vwidth + amount * (other->vwidth - base->vwidth);
    sc->lsidebearing =
@@ -1772,7 +1772,7 @@ SplineFont *InterpolateFont(SplineFont *base, SplineFont *other,
       if (lc > 2)
 	 memset(new->layers + 2, 0, (lc - 2) * sizeof(LayerInfo));
       for (i=2; i < lc; ++i) {
-	 new->layers[i].name=copy(base->layers[i].name);
+	 new->layers[i].name=fastrdup(base->layers[i].name);
 	 new->layers[i].background=base->layers[i].background;
 	 new->layers[i].order2=base->layers[i].order2;
       }

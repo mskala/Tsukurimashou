@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splinesaveafm.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -161,7 +161,7 @@ int LoadKerningDataFromAfm(SplineFont *sf, char *filename, EncMap * map) {
 		     liga->next=sc1->possub;
 		     sc1->possub=liga;
 		     liga->u.lig.lig=sc1;
-		     liga->u.lig.components=copy(buf2);
+		     liga->u.lig.components=fastrdup(buf2);
 		  }
 	       }
 	    }
@@ -179,7 +179,7 @@ static void CheckMMAfmFile(SplineFont *sf,char *amfm_filename,
    char *temp, *pt;
 
    free(sf->fontname);
-   sf->fontname=copy(fontname);
+   sf->fontname=fastrdup(fontname);
 
    temp =
       malloc(strlen(amfm_filename) + strlen(fontname) + strlen(".afm") + 1);
@@ -209,7 +209,7 @@ int LoadKerningDataFromAmfm(SplineFont *sf, char *filename, EncMap * map) {
       file=afopen(filename, "r");
    pt=strstrmatch(filename, ".amfm");
    if (pt != NULL) {
-      char *afmname=copy(filename);
+      char *afmname=fastrdup(filename);
 
       strcpy(afmname + (pt - filename), isupper(pt[1]) ? ".AFM" : ".afm");
       LoadKerningDataFromAfm(mm->normal, afmname, map);
@@ -507,7 +507,7 @@ static void tfmDoExten(SplineFont *sf,int i,struct tfmdata *tfmd,int left,
 	 len=b.maxx;
       else
 	 len=b.maxy;
-      (*gvbase)->parts[j].component=copy(bats[j]->name);
+      (*gvbase)->parts[j].component=fastrdup(bats[j]->name);
       (*gvbase)->parts[j].is_extender=bats[j]==bits[3];
       (*gvbase)->parts[j].startConnectorLength=len / 4;
       (*gvbase)->parts[j].endConnectorLength=len / 4;
@@ -751,7 +751,7 @@ static void ofmDoExten(SplineFont *sf,int i,struct tfmdata *tfmd,int left,
 	 len=b.maxx;
       else
 	 len=b.maxy;
-      (*gvbase)->parts[j].component=copy(bats[j]->name);
+      (*gvbase)->parts[j].component=fastrdup(bats[j]->name);
       (*gvbase)->parts[j].is_extender=bats[j]==bits[3];
       (*gvbase)->parts[j].startConnectorLength=len / 4;
       (*gvbase)->parts[j].endConnectorLength=len / 4;
@@ -1387,7 +1387,7 @@ static char *NameFrom(struct cc_data *this,int *unicode,int u,int uni) {
    int i, len;
 
    if (uni != -1)
-      return (copy(StdGlyphName(buffer, uni, ui_none, NULL)));
+      return (fastrdup(StdGlyphName(buffer, uni, ui_none, NULL)));
    if (u != -1 && (unicode[0] < 0x370 || unicode[0] > 0x3ff)) {
       /* Don't use the unicode decomposition to get a name for greek */
       /*  glyphs. We'd get acute for tonos, etc. */
@@ -2178,12 +2178,12 @@ void SFKernClassTempDecompose(SplineFont *sf, int isv) {
       otl->lookup_type=gpos_pair;
       otl->lookup_flags=kc->subtable->lookup->lookup_flags;
       otl->features=FeatureListCopy(kc->subtable->lookup->features);
-      otl->lookup_name=copy(_("<Temporary kerning>"));
+      otl->lookup_name=fastrdup(_("<Temporary kerning>"));
       otl->temporary_kern=otl->store_in_afm=true;
       otl->subtables=chunkalloc(sizeof(struct lookup_subtable));
       otl->subtables->lookup=otl;
       otl->subtables->per_glyph_pst_or_kern=true;
-      otl->subtables->subtable_name=copy(_("<Temporary kerning>"));
+      otl->subtables->subtable_name=fastrdup(_("<Temporary kerning>"));
 
       first=KernClassToSC(sf, kc->firsts, kc->first_cnt);
       last=KernClassToSC(sf, kc->seconds, kc->second_cnt);

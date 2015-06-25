@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4047 2015-06-24 11:48:13Z mskala $ */
+/* $Id: tottf.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -4129,7 +4129,7 @@ char *utf8_verify_copy(const char *str) {
       return (NULL);
 
    if (utf8_valid(str))
-      return (copy(str));	/* Either in ASCII (good) or appears to be utf8 */
+      return (fastrdup(str));	/* Either in ASCII (good) or appears to be utf8 */
    return (latin1_2_utf8_copy(str));
 }
 
@@ -4161,7 +4161,7 @@ void DefaultTTFEnglishNames(struct ttflangname *dummy, SplineFont *sf) {
 	      "FontAnvil 2.0",
 	      sf->fullname != NULL ? sf->fullname : sf->fontname, tm->tm_mday,
 	      tm->tm_mon + 1, tm->tm_year + 1900);
-      dummy->names[ttf_uniqueid]=copy(buffer);
+      dummy->names[ttf_uniqueid]=fastrdup(buffer);
    }
    if (dummy->names[ttf_fullname]==NULL
        || *dummy->names[ttf_fullname]=='\0')
@@ -4174,7 +4174,7 @@ void DefaultTTFEnglishNames(struct ttflangname *dummy, SplineFont *sf) {
 	 sprintf(buffer, "Version %.20s ", sf->version);
       else
 	 strcpy(buffer, "Version 1.0");
-      dummy->names[ttf_version]=copy(buffer);
+      dummy->names[ttf_version]=fastrdup(buffer);
    }
    if (dummy->names[ttf_postscriptname]==NULL
        || *dummy->names[ttf_postscriptname]=='\0')

@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: autotrace.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -241,7 +241,7 @@ static char *mytempdir(void) {
    while (1) {
       sprintf(eon, "%04X_mf%d", getpid(), ++cnt);
       if (mkdir(buffer, 0770)==0)
-	 return (copy(buffer));
+	 return (fastrdup(buffer));
       else if (errno != EEXIST)
 	 return (NULL);
       if (++tries > 100)
@@ -713,7 +713,7 @@ static char *FindGfFile(char *tempdir) {
 	    strcpy(buffer, tempdir);
 	    strcat(buffer, "/");
 	    strcat(buffer, ent->d_name);
-	    ret=copy(buffer);
+	    ret=fastrdup(buffer);
 	    break;
 	 }
       }
@@ -746,7 +746,7 @@ static void cleantempdir(char *tempdir) {
 	 /*  which might mean we could not read it properly. So save up the */
 	 /*  things we need to delete and trash them later */
 	 if (cnt < 99)
-	    todelete[cnt++]=copy(buffer);
+	    todelete[cnt++]=fastrdup(buffer);
       }
       closedir(temp);
       todelete[cnt]=NULL;
@@ -760,7 +760,7 @@ static void cleantempdir(char *tempdir) {
 
 void MfArgsInit(void) {
    if (mf_args==NULL)
-      mf_args=copy("\\scrollmode; mode=proof ; mag=2; input");
+      mf_args=fastrdup("\\scrollmode; mode=proof ; mag=2; input");
 }
 
 static char *MfArgs(void) {

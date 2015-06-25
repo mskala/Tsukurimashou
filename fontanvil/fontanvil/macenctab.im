@@ -1,6 +1,6 @@
 # Mac encoding table translations
 
-# $Id: macenctab.im 4050 2015-06-24 18:42:21Z mskala $
+# $Id: macenctab.im 4059 2015-06-25 12:21:44Z mskala $
 
 cfile "fontanvil/macenctab.c"
 hfile "fontanvil/macenctab.h"
@@ -66,17 +66,17 @@ valtype unichar_t;
 priority last;
 0x0..0xFF => 0x0..0xFF;
 0->0;  # work around an Icemap bug that maps 0 to null pointer?
-rxparse "unicode/apple/ROMAN.TXT" x1 -> x3; # Mac Roman serves as a default
+rxparse "dat/apple/ROMAN.TXT" x1 -> x3; # Mac Roman serves as a default
 
 { id macenc_arabic;
-  rxparse "unicode/apple/ARABIC.TXT" x1 -> x3; }
+  rxparse "dat/apple/ARABIC.TXT" x1 -> x3; }
 
 # notes in CELTIC.TXT indicate that it shares the encoding code 0 with
 # Mac Roman, and is invoked if and only if the local system is running
 # in region code 50 or 79.
 
 { id macenc_centeuro;
-  rxparse "unicode/apple/CENTEURO.TXT" x1 -> x3; }
+  rxparse "dat/apple/CENTEURO.TXT" x1 -> x3; }
 
 # CHINSIMP.TXT and CHINTRAD.TXT are 16-bit encodings
 
@@ -84,38 +84,38 @@ rxparse "unicode/apple/ROMAN.TXT" x1 -> x3; # Mac Roman serves as a default
 # in the same way as these others
 
 { id macenc_croatian;
-  rxparse "unicode/apple/CROATIAN.TXT" x1 -> x3; }
+  rxparse "dat/apple/CROATIAN.TXT" x1 -> x3; }
 
 { id macenc_cyrillic;
-  rxparse "unicode/apple/CYRILLIC.TXT" x1 -> x3; }
+  rxparse "dat/apple/CYRILLIC.TXT" x1 -> x3; }
 
 { id macenc_devanagari;
-  rxparse "unicode/apple/DEVANAGA.TXT" x1 -> x3; }
+  rxparse "dat/apple/DEVANAGA.TXT" x1 -> x3; }
 
 # notes in DINGBATS.TXT indicate that it shares the encoding code 0 with
 # Mac Roman, and is invoked if and only if the font name is "Zapf Dingbats"
 
 { id macenc_farsi;
-  rxparse "unicode/apple/FARSI.TXT" x1 -> x3; }
+  rxparse "dat/apple/FARSI.TXT" x1 -> x3; }
 
 # notes in GAELIC.TXT indicate that it shares the encoding code 0 with
 # Mac Roman, and is invoked if and only if the local system is running
 # in region code 81.
 
 { id macenc_greek;
-  rxparse "unicode/apple/GREEK.TXT" x1 -> x3; }
+  rxparse "dat/apple/GREEK.TXT" x1 -> x3; }
 
 { id macenc_gujarati;
-  rxparse "unicode/apple/GUJARATI.TXT" x1 -> x3; }
+  rxparse "dat/apple/GUJARATI.TXT" x1 -> x3; }
 
 { id macenc_gurmukhi;
-  rxparse "unicode/apple/GURMUKHI.TXT" x1 -> x3; }
+  rxparse "dat/apple/GURMUKHI.TXT" x1 -> x3; }
 
 { id macenc_hebrew;
-  rxparse "unicode/apple/HEBREW.TXT" x1 -> x3; }
+  rxparse "dat/apple/HEBREW.TXT" x1 -> x3; }
 
 { id macenc_iceland;
-  rxparse "unicode/apple/ICELAND.TXT" x1 -> x3; }
+  rxparse "dat/apple/ICELAND.TXT" x1 -> x3; }
 
 # notes in INUIT.TXT indicate that it shares the encoding code 28 with
 # Ethiopic, even though we don't have a file for Ethiopic, and is invoked
@@ -130,7 +130,7 @@ rxparse "unicode/apple/ROMAN.TXT" x1 -> x3; # Mac Roman serves as a default
 { id macenc_macromanenc; }
 
 { id macenc_romanian;
-  rxparse "unicode/apple/ROMANIAN.TXT" x1 -> x3; }
+  rxparse "dat/apple/ROMANIAN.TXT" x1 -> x3; }
 
 # Notes in SYMBOL.TXT indicate that it shares the encoding code 0 with
 # MacRoman.  This table replaces a FontForge array in encoding.c, not
@@ -141,13 +141,13 @@ rxparse "unicode/apple/ROMAN.TXT" x1 -> x3; # Mac Roman serves as a default
 # array predates Unicode 3.2.  FontAnvil will use the latest available data.
 { id macenc_symbol;
   valtype "int32_t";
-  rxparse "unicode/apple/SYMBOL.TXT" x1 -> x3; }
+  rxparse "dat/apple/SYMBOL.TXT" x1 -> x3; }
 
 { id macenc_thai;
-  rxparse "unicode/apple/THAI.TXT" x1 -> x3; }
+  rxparse "dat/apple/THAI.TXT" x1 -> x3; }
 
 { id macenc_turkish;
-  rxparse "unicode/apple/TURKISH.TXT" x1 -> x3; }
+  rxparse "dat/apple/TURKISH.TXT" x1 -> x3; }
 
 # notes in UKRAINE.TXT indicate it shares the encoding code 7 with Cyrillic
 # (i.e. Russian), and is invoked if the system region code is 62 or the

@@ -1,4 +1,4 @@
-/* $Id: gimagereadbmp.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: gimagereadbmp.c 4063 2015-06-25 13:57:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -401,7 +401,6 @@ static GImage *GImageRead_Bmp(FILE * file) {
 	   (unsigned char
 	    *) (malloc(bmp.height * bmp.width * sizeof(unsigned char)))) ==
        NULL) {
-      NoMoreMemMessage();
       return (NULL);
    }
 
@@ -414,7 +413,6 @@ static GImage *GImageRead_Bmp(FILE * file) {
 			  16 ? it_true : bmp.bitsperpixel !=
 			  1 ? it_index : it_mono, bmp.width,
 			  bmp.height)) == NULL) {
-	 NoMoreMemMessage();
 	 goto errorGImageMemBmp;
       }
       if (bmp.bitsperpixel >= 16) {
@@ -425,7 +423,6 @@ static GImage *GImageRead_Bmp(FILE * file) {
    } else {
       if (bmp.bitsperpixel >= 16) {
 	 if ((ret = GImageCreate(it_true, bmp.width, bmp.height)) == NULL) {
-	    NoMoreMemMessage();
 	    goto errorGImageMemBmp;
 	 }
 	 base = ret->u.image;
@@ -438,7 +435,6 @@ static GImage *GImageRead_Bmp(FILE * file) {
 	 free(bmp.int32_pixels);
       } else if (bmp.bitsperpixel != 1) {
 	 if ((ret = GImageCreate(it_index, bmp.width, bmp.height)) == NULL) {
-	    NoMoreMemMessage();
 	    goto errorGImageMemBmp;
 	 }
 	 base = ret->u.image;
@@ -450,7 +446,6 @@ static GImage *GImageRead_Bmp(FILE * file) {
 	 free(bmp.byte_pixels);
       } else {
 	 if ((ret = GImageCreate(it_mono, bmp.width, bmp.height)) == NULL) {
-	    NoMoreMemMessage();
 	    goto errorGImageMemBmp;
 	 }
 	 base = ret->u.image;
@@ -470,7 +465,6 @@ static GImage *GImageRead_Bmp(FILE * file) {
       ret->u.image->clut->trans_index = COLOR_UNKNOWN;
    } else if (ret->u.image->image_type == it_mono && bmp.colorsused != 0) {
       if ((ret->u.image->clut = (GClut *) (calloc(1, sizeof(GClut)))) == NULL) {
-	 NoMoreMemMessage();
 	 goto errorGImageMemBmp;
       }
       ret->u.image->clut->clut_len = bmp.colorsused;

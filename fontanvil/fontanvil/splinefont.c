@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splinefont.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -215,7 +215,7 @@ static SplineChar *_SFMakeChar(SplineFont *sf,EncMap *map,int enc) {
 
       sc=SFSplineCharCreate(sf);
       sc->unicodeenc=dummy.unicodeenc;
-      sc->name=copy(dummy.name);
+      sc->name=fastrdup(dummy.name);
       sc->width=dummy.width;
       sc->vwidth=dummy.vwidth;
       sc->orig_pos=0xffff;
@@ -642,7 +642,7 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
 	    *pt='\0';
 	    /* Blessed if I know what encoded was used for filenames */
 	    /*  inside the tar file. I shall assume utf8, faut de mieux */
-	    files[fcnt++]=copy(linebuffer);
+	    files[fcnt++]=fastrdup(linebuffer);
 	    pt=linebuffer;
 	 } else
 	    *pt++=ch;
@@ -662,7 +662,7 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
 	    /* Blessed if I know what encoded was used for filenames */
 	    /*  inside the zip file. I shall assume utf8, faut de mieux */
 	    if (pt - linebuffer >= 28 && pt[-1] != '/')
-	       files[fcnt++]=copy(linebuffer + 28);
+	       files[fcnt++]=fastrdup(linebuffer + 28);
 	    pt=linebuffer;
 	 } else
 	    *pt++=ch;
@@ -738,7 +738,7 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
    if (choice==-1)
       name=NULL;
    else
-      name=copy(files[choice]);
+      name=fastrdup(files[choice]);
 
    for (i=0; i < fcnt; ++i)
       free(files[i]);
@@ -886,7 +886,7 @@ static char *ForceFileToHaveName(AFILE *file,char *exten) {
 	    afwrite(buffer, 1, len, newfile);
 	 afclose(newfile);
       }
-      return (copy(tmpfilename));	/* The filename does not exist */
+      return (fastrdup(tmpfilename));	/* The filename does not exist */
    }
 }
 
@@ -918,7 +918,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
    /* Now someone will complain about "Nafees(Updated).ttc(fo(ob)ar)" */
    if ((paren=strrchr(pt, '(')) != NULL &&
        (rparen=strrchr(paren, ')')) != NULL && rparen[1]=='\0') {
-      strippedname=copy(filename);
+      strippedname=fastrdup(filename);
       strippedname[paren - filename]='\0';
    }
 
@@ -993,9 +993,9 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
    strncpy(ubuf, _("Loading font from "), sizeof(ubuf) - 1);
    len=strlen(ubuf);
    if (!wasurl || i==-1)	/* If it wasn't compressed, or it wasn't an url, then the fullname is reasonable, else use the original name */
-      strncat(ubuf, temp=def2utf8_copy(GFileNameTail(fullname)), 100);
+      strncat(ubuf, temp=fastrdup(GFileNameTail(fullname)), 100);
    else
-      strncat(ubuf, temp=def2utf8_copy(GFileNameTail(filename)), 100);
+      strncat(ubuf, temp=fastrdup(GFileNameTail(filename)), 100);
    free(temp);
    ubuf[100 + len]='\0';
 
@@ -1183,7 +1183,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
       if (compression != 0) {
 	 free(sf->filename);
 	 *strrchr(oldstrippedname, '.')='\0';
-	 sf->filename=copy(oldstrippedname);
+	 sf->filename=fastrdup(oldstrippedname);
       }
       if (fromsfd)
 	 sf->compression=compression;
@@ -1201,7 +1201,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 	 strcat(norm->origname, sf->chosenname);
 	 strcat(norm->origname, ")");
       } else
-	 norm->origname=copy(filename);
+	 norm->origname=fastrdup(filename);
       free(norm->chosenname);
       norm->chosenname=NULL;
       if (sf->mm != NULL) {
@@ -1209,7 +1209,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 
 	 for (j=0; j < sf->mm->instance_count; ++j) {
 	    free(sf->mm->instances[j]->origname);
-	    sf->mm->instances[j]->origname=copy(norm->origname);
+	    sf->mm->instances[j]->origname=fastrdup(norm->origname);
 	 }
       }
    } else if (!GFileExists(filename))
@@ -1256,7 +1256,7 @@ char *ToAbsolute(char *filename) {
    char buffer[1025];
 
    GFileGetAbsoluteName(filename, buffer, sizeof(buffer));
-   return (copy(buffer));
+   return (fastrdup(buffer));
 }
 
 SplineFont *LoadSplineFont(char *filename, enum openflags openflags) {
@@ -1794,7 +1794,7 @@ int SFPrivateGuess(SplineFont *sf, int layer, struct psdict *private,
    char *oldloc;
    int ret;
 
-   oldloc=copy(setlocale(LC_NUMERIC, NULL));
+   oldloc=fastrdup(setlocale(LC_NUMERIC, NULL));
    setlocale(LC_NUMERIC, "C");
    ret=true;
 

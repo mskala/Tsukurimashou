@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: parsepfa.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -77,7 +77,7 @@ static void copyenc(char *encoding[256],char *std[256]) {
    int i;
 
    for (i=0; i < 256; ++i)
-      encoding[i]=copy(std[i]);
+      encoding[i]=fastrdup(std[i]);
 }
 
 char *AdobeStandardEncoding[]={
@@ -943,7 +943,7 @@ static char *getstring(char *start,AFILE *in) {
 	 ++start;
       if (*start=='\0') {
 	 if (myfgetsNoNulls(buffer, sizeof(buffer), in)==NULL)
-	    return (copy(""));
+	    return (fastrdup(""));
 	 start=buffer;
       } else
 	 break;
@@ -1305,7 +1305,7 @@ static void findstring(struct fontparse *fp,struct pschars *subrs,int index,
       if (bpt < bs)
 	 bs=bpt;		/* garbage */
       subrs->lens[index]=bpt - bs;
-      subrs->keys[index]=copy(nametok);
+      subrs->keys[index]=fastrdup(nametok);
       subrs->values[index]=malloc(bpt - bs);
       memcpy(subrs->values[index], bs, bpt - bs);
       if (index >= subrs->next)
@@ -1337,7 +1337,7 @@ static void findnumbers(struct fontparse *fp,struct pschars *chars,
       ++str;
       val=strtol(str, &end, 10);
       chars->lens[index]=0;
-      chars->keys[index]=copy(namestrt);
+      chars->keys[index]=fastrdup(namestrt);
       chars->values[index]=(void *) (intptr_t) val;
       chars->next=index + 1;
       str=end;
@@ -1542,7 +1542,7 @@ static void ParseSimpleEncoding(struct fontparse *fp,char *line) {
       }
       *pt='\0';
       if (fp->simple_enc_pos < 256)
-	 fp->fd->encoding[fp->simple_enc_pos++]=copy(tok);
+	 fp->fd->encoding[fp->simple_enc_pos++]=fastrdup(tok);
    }
    if (*line==']') {
       fp->simpleencoding=false;
@@ -1582,7 +1582,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 *pt='\0';
 	 if (pos >= 0 && pos < 256) {
 	    free(fp->fd->encoding[pos]);
-	    fp->fd->encoding[pos]=copy(buffer);
+	    fp->fd->encoding[pos]=fastrdup(buffer);
 	 }
 	 while (isspace(*line))
 	    ++line;
@@ -1601,7 +1601,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 
       for (i=0; i < 256; ++i)
 	 if (fp->fd->encoding[i]==NULL)
-	    fp->fd->encoding[i]=copy(".notdef");
+	    fp->fd->encoding[i]=fastrdup(".notdef");
       return;
    } else if (fp->inencoding && strstr(line, "Encoding") != NULL
 	      && strstr(line, "put") != NULL) {
@@ -1623,7 +1623,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	    for (pt=buffer; !isspace(*line); *pt++=*line++);
 	    *pt='\0';
 	    if (pos >= 0 && pos < 256)
-	       fp->fd->encoding[pos]=copy(buffer);
+	       fp->fd->encoding[pos]=fastrdup(buffer);
 	 }
       }
       return;
@@ -2152,7 +2152,7 @@ static void addinfo(struct fontparse *fp,char *line,char *tok,
 	 int i=chars->next;
 
 	 chars->lens[i]=binlen;
-	 chars->keys[i]=copy(tok);
+	 chars->keys[i]=fastrdup(tok);
 	 chars->values[i]=malloc(binlen);
 	 memcpy(chars->values[i], binstart, binlen);
 	 ++chars->next;

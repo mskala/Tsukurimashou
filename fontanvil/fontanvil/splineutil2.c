@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splineutil2.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3231,7 +3231,7 @@ char *GetNextUntitledName(void) {
     char buffer[80];
 
     sprintf(buffer, "Untitled%d", untitled_cnt++);
-   return copy(buffer);
+   return fastrdup(buffer);
 }
 
 SplineFont *SplineFontEmpty(void) {
@@ -3264,9 +3264,9 @@ SplineFont *SplineFontEmpty(void) {
 
     sf->layer_cnt=2;
     sf->layers=calloc(2,sizeof(LayerInfo));
-    sf->layers[0].name=copy(_("Back"));
+    sf->layers[0].name=fastrdup(_("Back"));
     sf->layers[0].background=true;
-    sf->layers[1].name=copy(_("Fore"));
+    sf->layers[1].name=fastrdup(_("Fore"));
     sf->layers[1].background=false;
     sf->grid.background=true;
 
@@ -3282,25 +3282,25 @@ SplineFont *SplineFontBlank(int charcnt) {
 
     sf=SplineFontEmpty();
     sf->fontname=GetNextUntitledName();
-    sf->fullname=copy(sf->fontname);
-    sf->familyname=copy(sf->fontname);
+    sf->fullname=fastrdup(sf->fontname);
+    sf->familyname=fastrdup(sf->fontname);
     sprintf(buffer, "%s.sfd", sf->fontname);
     sf->origname=ToAbsolute(buffer);
-    sf->weight=copy("Regular");
+    sf->weight=fastrdup("Regular");
     time(&now);
     tm=localtime(&now);
     if (author!=NULL)
 	sprintf(buffer, "Copyright (c) %d, %.50s", tm->tm_year+1900, author);
     else
 	sprintf(buffer, "Copyright (c) %d, Anonymous", tm->tm_year+1900);
-    sf->copyright=copy(buffer);
+    sf->copyright=fastrdup(buffer);
     if (xuid!=NULL) {
 	sf->xuid=malloc(strlen(xuid)+20);
 	sprintf(sf->xuid,"[%s %d]", xuid, (rand()&0xffffff));
     }
     sprintf(buffer, "%d-%d-%d: Created with FontAnvil", tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday);
-    sf->comments=copy(buffer);
-    sf->version=copy("001.000");
+    sf->comments=fastrdup(buffer);
+    sf->version=fastrdup("001.000");
     sf->ascent=rint(new_em_size*.8); sf->descent=new_em_size-sf->ascent;
     sf->upos=-rint(new_em_size*.1); sf->uwidth=rint(new_em_size*.05);		/* defaults for cff */
     sf->glyphcnt=0;

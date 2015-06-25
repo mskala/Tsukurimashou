@@ -1,4 +1,4 @@
-/* $Id: gimagereadxpm.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimagereadxpm.c 4063 2015-06-25 13:57:09Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* 2013apr11, additional fixes and error checks done, Jose Da Silva */
 /*
@@ -266,7 +266,6 @@ static union hash *parse_colors(FILE * fp, unsigned char *line, int lsiz,
    int i, j;
 
    if ((tab = (union hash *) malloc(256 * sizeof(union hash))) == NULL) {
-      NoMoreMemMessage();
       return (NULL);
    }
 
@@ -282,7 +281,6 @@ static union hash *parse_colors(FILE * fp, unsigned char *line, int lsiz,
 	 if (sub[line[j]].table == NULL) {
 	    if ((sub[line[j]].table =
 		 (union hash *) malloc(256 * sizeof(union hash))) == NULL) {
-	       NoMoreMemMessage();
 	       freetab(tab, nchars);
 	       return (NULL);
 	    }
@@ -351,7 +349,6 @@ GImage *GImageReadXpm(char *filename) {
    if ((line =
 	(unsigned char *) malloc((lsiz = nchar * width + 20) *
 				 sizeof(unsigned char))) == NULL) {
-      NoMoreMemMessage();
       goto errorGImageReadXpmMem;
    }
 

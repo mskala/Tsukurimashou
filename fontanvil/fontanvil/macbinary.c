@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: macbinary.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1044,7 +1044,7 @@ static struct sflistlist *FondSplitter(struct sflist *sfs,int *fondcnt) {
 	     && strcmp(last->sf->fondname, sfs->sf->familyname)==0)
 	    break;
       cur->fondname =
-	 copy(last==NULL ? sfs->sf->familyname : sfs->sf->fontname);
+	 fastrdup(last==NULL ? sfs->sf->familyname : sfs->sf->fontname);
       lastl=sfsl=cur;
       ++fc;
    }
@@ -1074,10 +1074,10 @@ static struct sflistlist *FondSplitter(struct sflist *sfs,int *fondcnt) {
 	    if (strcmp(test->fondname, start->sf->fondname)==0)
 	       break;
 	 if (test==NULL)
-	    cur->fondname=copy(start->sf->fondname);
+	    cur->fondname=fastrdup(start->sf->fondname);
       }
       if (cur->fondname==NULL)
-	 cur->fondname=copy(start->sf->fontname);
+	 cur->fondname=fastrdup(start->sf->fontname);
       if (lastl != NULL)
 	 lastl->next=cur;
       lastl=cur;
@@ -2254,7 +2254,7 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
 	    char buffer[32];
 
 	    sprintf(buffer, "Nameless%d", i);
-	    names[i]=copy(buffer);
+	    names[i]=fastrdup(buffer);
 	 }
 	 afseek(f, here, SEEK_SET);
       }
@@ -2268,7 +2268,7 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
       /* Now someone will complain about "Nafees(Updated).ttc(fo(ob)ar)" */
       if ((lparen=strrchr(pt, '(')) != NULL &&
 	  (rparen=strrchr(lparen, ')')) != NULL && rparen[1]=='\0') {
-	 char *find=copy(lparen + 1);
+	 char *find=fastrdup(lparen + 1);
 
 	 pt=strchr(find, ')');
 	 if (pt != NULL)
@@ -2284,7 +2284,7 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
 	       which=-1;
 	 }
 	 if (which==-1) {
-	    char *fn=copy(filename);
+	    char *fn=fastrdup(filename);
 
 	    fn[lparen - filename]='\0';
 	    ErrorMsg(2,"Not in collection:  %s is not in %.100s\n",find,fn);
@@ -2294,7 +2294,7 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
       } else
 	which=0;
       if (lparen==NULL && which != -1)
-	 chosenname=copy(names[which]);
+	 chosenname=fastrdup(names[which]);
       for (i=0; i < subcnt; ++i)
 	 free(names[i]);
       free(names);
@@ -2485,7 +2485,7 @@ static FOND *BuildFondList(AFILE *f,long rlistpos,int subcnt,
 	 ch1=agetc(f);
 	 afread(name, 1, ch1, f);
 	 name[ch1]='\0';
-	 cur->fondname=copy(name);
+	 cur->fondname=fastrdup(name);
       }
 
       offset += 4;
@@ -2746,7 +2746,7 @@ static char *BuildName(char *family,int style) {
       strcat(buffer, "Condensed");
    if (style & sf_extend)
       strcat(buffer, "Extended");
-   return (copy(buffer));
+   return (fastrdup(buffer));
 }
 
 static int GuessStyle(char *fontname,int *styles,int style_cnt) {
@@ -2786,7 +2786,7 @@ static FOND *PickFOND(FOND *fondlist,char *filename,char **name,
       pt=filename;
    if ((lparen=strchr(filename, '(')) != NULL
        && strchr(lparen, ')') != NULL) {
-      find=copy(lparen + 1);
+      find=fastrdup(lparen + 1);
       pt=strchr(find, ')');
       if (pt != NULL)
 	 *pt='\0';
@@ -2795,7 +2795,7 @@ static FOND *PickFOND(FOND *fondlist,char *filename,char **name,
 	    if (test->psnames[i] != NULL
 		&& strcmp(find, test->psnames[i])==0) {
 	       *style=(i & 3) | ((i & ~3) << 1);	/* PS styles skip underline bit */
-	       *name=copy(test->psnames[i]);
+	       *name=fastrdup(test->psnames[i]);
 	       return (test);
 	    }
       }
@@ -2838,7 +2838,7 @@ static FOND *PickFOND(FOND *fondlist,char *filename,char **name,
       if (which==-1 && strstrmatch(find, test->fondname) != NULL)
 	 which=GuessStyle(find, styles, cnt);
       if (which==-1) {
-	 char *fn=copy(filename);
+	 char *fn=fastrdup(filename);
 
 	 fn[lparen-filename]='\0';
 	    ErrorMsg(2,"Not in collection:  %s is not in %.100s\n",find,fn);
@@ -2852,7 +2852,7 @@ static FOND *PickFOND(FOND *fondlist,char *filename,char **name,
 
    if (which != -1) {
       fond=fonds[which];
-      *name=copy(names[which]);
+      *name=fastrdup(names[which]);
       *style=styles[which];
    }
    for (i=0; i < cnt; ++i)
@@ -2914,15 +2914,15 @@ static SplineFont *SearchBitmapResources(AFILE *f,long rlistpos,int subcnt,
    free(sf->fontname);
    sf->fontname=name;
    free(sf->familyname);
-   sf->familyname=copy(fond->fondname);
-   sf->fondname=copy(fond->fondname);
+   sf->familyname=fastrdup(fond->fondname);
+   sf->fondname=fastrdup(fond->fondname);
    free(sf->fullname);
-   sf->fullname=copy(name);
+   sf->fullname=fastrdup(name);
    free(sf->origname);
    sf->origname=NULL;
    if (style & sf_bold) {
       free(sf->weight);
-      sf->weight=copy("Bold");
+      sf->weight=fastrdup("Bold");
    }
    free(sf->copyright);
    sf->copyright=NULL;
@@ -2943,7 +2943,7 @@ static SplineFont *SearchBitmapResources(AFILE *f,long rlistpos,int subcnt,
 	 sc=SFSplineCharCreate(sf);
 	 sc->orig_pos=sf->glyphcnt;
 	 sf->glyphs[sf->glyphcnt++]=sc;
-	 sc->name=copy(".notdef");
+	 sc->name=fastrdup(".notdef");
 	 sc->width =
 	    (widths[fond->last + 1 - fond->first] * 1000L + (1 << 11)) >> 12;
 	 sc->widthset=true;
@@ -3366,7 +3366,7 @@ static SplineFont *IsResourceInFile(char *filename,int flags,
    if ((pt=strrchr(filename, '/'))==NULL)
       pt=filename;
    if ((lparen=strchr(pt, '(')) != NULL && strchr(lparen, ')') != NULL) {
-      temp=copy(filename);
+      temp=fastrdup(filename);
       temp[lparen - filename]='\0';
    }
    f=afopen(temp, "rb");

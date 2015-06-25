@@ -1,16 +1,25 @@
 #!/bin/bash
 
-mkdir -p unicode
+mkdir -p dat
 for fn in Blocks.txt ; do \
-  wget -N -nd -P unicode http://unicode.org/Public/UCD/latest/ucd/$fn ; \
+  wget -N -nd -P dat http://unicode.org/Public/UCD/latest/ucd/$fn ; \
 done
 
-mkdir -p unicode/apple
-wget -N -nd -P unicode/apple -r -l1 -np \
-  http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/
-rm -f unicode/apple/index* unicode/apple/robots*
+wget -N -nd -P dat \
+  http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
+wget -N -nd -P dat \
+  http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+wget -N -nd -P dat \
+  http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/KSC/KSC5601.TXT
+wget -N -nd -P dat \
+  http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/KSC/JOHAB.TXT
 
-mkdir -p unicode/adobe
-wget -N -nd -P unicode/adobe -r -l1 -np \
+mkdir -p dat/apple
+wget -N -nd -P dat/apple -r -l1 -np \
+  http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/
+rm -f dat/apple/index* dat/apple/robots*
+
+mkdir -p dat/adobe
+wget -N -nd -P dat/adobe -r -l1 -np \
   http://www.unicode.org/Public/MAPPINGS/VENDORS/ADOBE/
-rm -f unicode/adobe/index* unicode/adobe/robots*
+rm -f dat/adobe/index* dat/adobe/robots*

@@ -1,4 +1,4 @@
-/* $Id: print.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: print.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -233,7 +233,7 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
 	    realloc(gr->pattern_objs, (gr->pattern_max) * sizeof(int));
       }
       makePatName(buffer, ref, sc, layer, !isfill, true);
-      gr->pattern_names[gr->pattern_cnt]=copy(buffer);
+      gr->pattern_names[gr->pattern_cnt]=fastrdup(buffer);
       gr->pattern_objs[gr->pattern_cnt++]=pdf_addobject(pi);
       afprintf(pi->out, "<<\n");
       afprintf(pi->out, "  /Type /Pattern\n");
@@ -261,7 +261,7 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
 	    realloc(gr->pattern_objs, (gr->pattern_max) * sizeof(int));
       }
       makePatName(buffer, ref, sc, layer, !isfill, false);
-      gr->pattern_names[gr->pattern_cnt]=copy(buffer);
+      gr->pattern_names[gr->pattern_cnt]=fastrdup(buffer);
       gr->pattern_objs[gr->pattern_cnt++]=pdf_addobject(pi);
       afprintf(pi->out, "<<\n");
       afprintf(pi->out, "  /Type /Pattern\n");
@@ -349,7 +349,7 @@ static void pdf_ImageCheck(PI *pi,struct glyph_res *gr,ImageList *images,
 	    realloc(gr->image_objs, (gr->image_max) * sizeof(int));
       }
       sprintf(buffer, "%s_ly%d_%d_image", sc->name, layer, icnt);
-      gr->image_names[gr->image_cnt]=copy(buffer);
+      gr->image_names[gr->image_cnt]=fastrdup(buffer);
       gr->image_objs[gr->image_cnt++]=pdf_addobject(pi);
       ++icnt;
 

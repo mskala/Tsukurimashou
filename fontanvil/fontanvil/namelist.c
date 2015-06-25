@@ -1,4 +1,4 @@
-/* $Id: namelist.c 4045 2015-06-23 16:52:10Z mskala $ */
+/* $Id: namelist.c 4064 2015-06-25 14:15:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -314,7 +314,7 @@ NameList *LoadNamelist(char *filename) {
       pt=filename;
    else
       ++pt;
-   nl->title=def2utf8_copy(pt);
+   nl->title=fastrdup(pt);
    pt=strrchr(nl->title, '.');
    if (pt != NULL)
       *pt='\0';
@@ -366,8 +366,8 @@ NameList *LoadNamelist(char *filename) {
 	 if (rn_cnt >= rn_max - 1)
 	    nl->renames =
 	       realloc(nl->renames, (rn_max += 20) * sizeof(struct renames));
-	 nl->renames[rn_cnt].from=copy(pt);
-	 nl->renames[rn_cnt].to=copy(test);
+	 nl->renames[rn_cnt].from=fastrdup(pt);
+	 nl->renames[rn_cnt].to=fastrdup(test);
 	 nl->renames[++rn_cnt].from=NULL;	/* End mark */
       } else {
 	 pt=buffer;
@@ -403,7 +403,7 @@ NameList *LoadNamelist(char *filename) {
 	    if (*test & 0x80) {
 	       uses_unicode=true;
 	       if (nl->a_utf8_name==NULL)
-		  nl->a_utf8_name=copy(pt);
+		  nl->a_utf8_name=fastrdup(pt);
 	    }
 	 }
 	 up=uni >> 16;
@@ -414,7 +414,7 @@ NameList *LoadNamelist(char *filename) {
 	 if (nl->unicode[up][ub]==NULL)
 	    nl->unicode[up][ub]=calloc(256, sizeof(char *));
 	 if (nl->unicode[up][ub][uc]==NULL)
-	    nl->unicode[up][ub][uc]=copy(pt);
+	    nl->unicode[up][ub][uc]=fastrdup(pt);
 	 else {
 	    ErrorMsg(2,"Multiple names when parsing %s for unicode %x\n",
 	             nl->title,uni);
@@ -705,7 +705,7 @@ static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
 		 rpl=HashFind(hash, pst->u.subs.variant);	/* variant is at same location as paired */
 		 if (rpl != NULL) {
 		    free(pst->u.subs.variant);
-		    pst->u.subs.variant=copy(rpl->name);
+		    pst->u.subs.variant=fastrdup(rpl->name);
 		 }
 		 break;
 	      case pst_alternate:
@@ -801,7 +801,7 @@ char **SFTemporaryRenameGlyphsToNamelist(SplineFont *sf, NameList * new) {
 	    RenameGlyphToNamelist(buffer, sc, sf->for_new_glyphs, new, ret);
 	 if (name != sc->name) {
 	    ret[gid]=sc->name;
-	    sc->name=copy(name);
+	    sc->name=fastrdup(name);
 	 }
       }
 
