@@ -1,4 +1,4 @@
-/* $Id: pescript.l 4046 2015-06-23 20:32:49Z mskala $ */
+/* $Id: pescript.l 4069 2015-06-28 19:55:59Z mskala $ */
 /*
  * Tokenizer for FontAnvil PE script
  * Copyright (C) 2015  Matthew Skala
@@ -119,53 +119,12 @@ void ff_FlushScanner(void) {
 %}
 
 %option noyywrap
+%option nodefault
 
 %x sq_string dq_string line_comment c_comment
 
 %top{
 /* GENERATED FILE.  EDIT THE SOURCE IN pescript.l INSTEAD! */
-
-#define yymaxdepth pe_maxdepth
-#define yyparse pe_parse
-#define yylex   pe_lex
-#define yyerror pe_error
-#define yylval  pe_lval
-#define yychar  pe_char
-#define yydebug pe_debug
-#define yypact  pe_pact
-#define yyr1    pe_r1
-#define yyr2    pe_r2
-#define yydef   pe_def
-#define yychk   pe_chk
-#define yypgo   pe_pgo
-#define yyact   pe_act
-#define yyexca  pe_exca
-#define yyerrflag pe_errflag
-#define yynerrs pe_nerrs
-#define yyps    pe_ps
-#define yypv    pe_pv
-#define yys     pe_s
-#define yy_yys  pe_yys
-#define yystate pe_state
-#define yytmp   pe_tmp
-#define yyv     pe_v
-#define yy_yyv  pe_yyv
-#define yyval   pe_val
-#define yylloc  pe_lloc
-#define yyreds  pe_reds
-#define yytoks  pe_toks
-#define yylhs   pe_yylhs
-#define yylen   pe_yylen
-#define yydefred pe_yydefred
-#define yydgoto  pe_yydgoto
-#define yysindex pe_yysindex
-#define yyrindex pe_yyrindex
-#define yygindex pe_yygindex
-#define yytable  pe_yytable
-#define yycheck  pe_yycheck
-#define yyname   pe_yyname
-#define yyrule   pe_yyrule
-
 }
 
 %%
@@ -270,9 +229,9 @@ break	return (c->tok=tt_break);
       if ((yytext[i]>='0') && (yytext[i]<='9'))
 	val-='0';
       else if ((yytext[i]>='A') && (yytext[i]<='F'))
-	val-='A';
+	val-=('A'-10);
       else
-	val-='a';
+	val-=('a'-10);
    }
    c->tok_val.u.ival=val;
    if ((yytext[1]=='x') || (yytext[1]=='X'))
@@ -338,12 +297,14 @@ break	return (c->tok=tt_break);
    yymore();
 }
 
-#|\/\/	BEGIN(line_comment);
+\#|\/\/	BEGIN(line_comment);
 <line_comment>[\n\r]	{ BEGIN(INITIAL); yyless(0); }
 <line_comment>.*	/* ignore contents of line comment */
 
 \/\*	BEGIN(c_comment);
 <c_comment>\*\/	BEGIN(INITIAL);
+<c_comment>.*	/* ignore contents of C comment */
+<c_comment>\n	/* ignore contents of C comment */
 
 <<EOF>>	return (c->tok=tt_eof);
 [ \t]	/* ignore spaces */
@@ -381,4 +342,4 @@ break	return (c->tok=tt_break);
 \<	return (c->tok=tt_lt);
 \<=	return (c->tok=tt_le);
 
-.	/* FIXME other characters are errors, return tt_error */
+.	/* FIXME other characters are errors, complain */

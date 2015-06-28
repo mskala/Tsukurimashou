@@ -145,6 +145,7 @@ AM_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
 AM_LDFLAGS = \
   $(FREETYPE_LIBS) $(GIFLIB_CFLAGS) $(GLIB_LIBS) $(LIBPNG_LIBS) \
   $(LIBTIFF_LIBS) $(ZLIB_LIBS)
+AM_LFLAGS = -s -P`basename $* | sed 's,l$$,,'` -olex.yy.c
 
 # needed to work around an Automake macro bug
 # see http://permalink.gmane.org/gmane.comp.sysutils.autoconf.archive-maintainers/626
@@ -184,7 +185,7 @@ noinst_HEADERS = \
   inc/PfEd.h inc/sfd1.h \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
   inc/cvruler.h inc/ffglib.h inc/gb12345.h \
-  fontanvil/macenctab.h fontanvil/nonmactab.h
+  fontanvil/feascan.h fontanvil/macenctab.h fontanvil/nonmactab.h
 
 noinst_LIBRARIES = \
   Unicode/libgunicode.a \
@@ -223,7 +224,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/ufo.c fontanvil/unicoderange.c \
  fontanvil/winfonts.c fontanvil/woff.c fontanvil/zapfnomen.c \
  fontanvil/splinerefigure.c fontanvil/gb12345.c \
- fontanvil/pescript.l \
+ fontanvil/feascan.l fontanvil/pescript.l \
  fontanvil/macenctab.im fontanvil/nonmactab.im \
  fontanvil/macenctab.c fontanvil/nonmactab.c
 
@@ -293,7 +294,8 @@ if COND_CFLOW
 
 CFLOW_FLAGS=-i _x --cpp
 
-fontanvil_fontanvil_CFLOW_INPUT=$(fontanvil_fontanvil_OBJECTS:.$(OBJEXT)=.c)
+fontanvil_fontanvil_CFLOW_INPUT= \
+  $(fontanvil_fontanvil_OBJECTS:.$(OBJEXT)=.c)
 fontanvil/fontanvil.cflow: \
   $(fontanvil_fontanvil_CFLOW_INPUT) Makefile tools/cflow.rc
 	$(TSU_V_GEN)

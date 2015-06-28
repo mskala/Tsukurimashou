@@ -607,9 +607,23 @@ AC_OUTPUT
 #
 # Display a status table
 #
-
-# FIXME FIXME FIXME
-
+AS_ECHO([])
+TSU_COLOURISE([Configuration status],[5])AS_ECHO([])
+AS_ECHO([])
+TSU_COLOURISE([Requirements for all builds],[7])AS_ECHO([])
+AS_ECHO([])
+TSU_COLOURISE([Requirements for source control builds],[7])AS_ECHO([])
+AS_ECHO_N([autoconf       ])
+# AS_IF([test "x$AUTOCONF" = "x"],
+#   [TSU_COLOURISE([yes],[2])],[TSU_COLOURISE([no],[3])])AS_ECHO([])
+# AS_ECHO_N([automake       ])
+# AS_IF([test "x$AUTOMAKE" = "x"],
+#   [TSU_COLOURISE([yes],[2])],[TSU_COLOURISE([no],[3])])AS_ECHO([])
+AS_ECHO([])
+TSU_COLOURISE([Optional items],[7])AS_ECHO([])
+# AS_ECHO_N([cflow          ])
+# AS_IF([test "x$CFLOW" = "x"],
+#   [TSU_COLOURISE([yes],[2])],[TSU_COLOURISE([no],[3])])AS_ECHO([])
 #
 # Warn about missing prerequisites
 #

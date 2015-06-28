@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: tottfgpos.c 4069 2015-06-28 19:55:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3261,11 +3261,12 @@ static AFILE *g___FigureExtensionSubTables(OTLookup *all,int startoffset,
 	    }
 	    if (sub != NULL) {
 	       if (!any) {
-		  ErrorMsg(1,"Lookup %s has an\n"
-		             "offset bigger than 65535 bytes.  This means\n"
-		             "FontAnvil must use an extension lookup to "
-		             "write it iyt.\nNot all applications support "
-		             "extension lookups.\n",
+		  ErrorMsg(1,
+			   "Lookup %s has an offset bigger than "
+			   "65535 bytes.  This means\n"
+			   "FontAnvil must use an extension lookup "
+			   "to write it.  Not all\n"
+			   "applications support extension lookups.\n",
                            otf->lookup_name);
 		  any=true;
 	       }

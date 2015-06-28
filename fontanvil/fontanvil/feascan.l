@@ -1,4 +1,4 @@
-/* $Id: feascan.l 4046 2015-06-23 20:32:49Z mskala $ */
+/* $Id: feascan.l 4069 2015-06-28 19:55:59Z mskala $ */
 /*
  * Tokenizer for Adobe-style feature files
  * Copyright (C) 2015  Matthew Skala
@@ -23,362 +23,347 @@
 %{
 
 #include <math.h>
-
-#ifndef _NO_LIBREADLINE
-#   include <readline/readline.h>
-#   include <readline/history.h>
-#endif
+#include <string.h>
 
 #include "fontanvil.h"
-#include "scripting.h"
+#include "gfile.h"
+#include "ustring.h"
+#include "feascan.h"
 
-static int verbose=-1;
+#define YY_DECL void fea_ParseTok(struct parseState *tok,TOKENIZER_MODE tm)
 
-#define YY_DECL enum token_type ff_NextToken(Context *c)
-
-static Context *global_context; /* Eww. */
-
-static int AddScriptLine(AFILE *script,const char *line) {
-   long pos;
-   
-   if ((pos=aftell(script))<0)
-     return -1;
-   afputs(line, script);
-#   ifndef _NO_LIBREADLINE
-   afputs("\n\n", script);
-#   endif
-   afseek(script,pos,SEEK_SET);
-   return agetc(script);
-}
-
-static int _buffered_cgetc(void) {
-   if (global_context->interactive) {
-      int ch;
-
-      if ((ch=agetc(global_context->script)) < 0) {
-#   ifdef _NO_LIBREADLINE
-	 static char *linebuf=NULL;
-	 static size_t lbsize=0;
-
-	 if (agetline(&linebuf,&lbsize,astdin) > 0) {
-	    ch=AddScriptLine(global_context->script,linebuf);
-	 } else {
-	    if (linebuf) {
-	       free(linebuf);
-	       linebuf=NULL;
-	    }
-	 }
-#   else
-	 char *line=readline("> ");
-
-	 if (line) {
-	    ch=AddScriptLine(global_context->script, line);
-	    add_history(line);
-	    free(line);
-	 }
-#   endif
-	 if (ch < 0) {
-	    /* stdin is closed, so stop reading from it */
-	    global_context->interactive=0;
-	 }
-      }
-      return ch;
-   }
-   return agetc(global_context->script);
-}
-
-static int _cgetc(void) {
-   int ch;
-
-   ch=_buffered_cgetc();
-   if (verbose > 0)
-      putchar(ch);
-   if (ch=='\r') {
-      int nch=_buffered_cgetc();
-
-      if (nch != '\n')
-	 aungetc(nch, global_context->script);
-      else if (verbose > 0)
-	 putchar('\n');
-      ch='\n';
-      ++global_context->lineno;
-   } else if (ch=='\n')
-      ++global_context->lineno;
-   return (ch);
-}
-
-void ff_FlushScanner(void) {
-   YY_FLUSH_BUFFER;
-}
-
-/* FIXME this is straight out of the flex manual */
-
+/* FIXME it'd be nice to make this do better buffering */
 #define YY_INPUT(buf,result,max_size) \
-  { int ch=_cgetc(); result=(ch<0)?YY_NULL:(buf[0]=ch,1); }
+   { int ch=agetc((AFILE *)yyin); result=(ch<0)?YY_NULL:(buf[0]=ch,1); }
 
 %}
 
 %option noyywrap
+%option nodefault
 
-%x sq_string dq_string line_comment c_comment
+%s kw_allowed hexint tenths
+%x in_string
 
 %top{
-/* GENERATED FILE.  EDIT THE SOURCE IN pescript.l INSTEAD! */
-
-#define yymaxdepth pe_maxdepth
-#define yyparse pe_parse
-#define yylex   pe_lex
-#define yyerror pe_error
-#define yylval  pe_lval
-#define yychar  pe_char
-#define yydebug pe_debug
-#define yypact  pe_pact
-#define yyr1    pe_r1
-#define yyr2    pe_r2
-#define yydef   pe_def
-#define yychk   pe_chk
-#define yypgo   pe_pgo
-#define yyact   pe_act
-#define yyexca  pe_exca
-#define yyerrflag pe_errflag
-#define yynerrs pe_nerrs
-#define yyps    pe_ps
-#define yypv    pe_pv
-#define yys     pe_s
-#define yy_yys  pe_yys
-#define yystate pe_state
-#define yytmp   pe_tmp
-#define yyv     pe_v
-#define yy_yyv  pe_yyv
-#define yyval   pe_val
-#define yylloc  pe_lloc
-#define yyreds  pe_reds
-#define yytoks  pe_toks
-#define yylhs   pe_yylhs
-#define yylen   pe_yylen
-#define yydefred pe_yydefred
-#define yydgoto  pe_yydgoto
-#define yysindex pe_yysindex
-#define yyrindex pe_yyrindex
-#define yygindex pe_yygindex
-#define yytable  pe_yytable
-#define yycheck  pe_yycheck
-#define yyname   pe_yyname
-#define yyrule   pe_yyrule
+/* GENERATED FILE.  EDIT THE SOURCE IN feascan.l INSTEAD! */
 
 }
 
 %%
 
 %{
-   int string_length;
-
-   if (c->backedup) {
-      c->backedup=false;
-      return (c->tok);
+   char *string_in_progress;
+   int string_buffer_size,string_buffer_ptr;
+   
+   if (tok->backedup) {
+      tok->backedup=false;
+      return;
    }
 
-   global_context=c;
+   if (yyin==NULL)
+     yyin=(FILE *)(tok->inlist[tok->inc_depth]);
+
+   switch (tm) {
+    case tm_nokw:
+      BEGIN(INITIAL);
+      break;
+    case tm_hexint:
+      BEGIN(hexint);
+      break;
+    case tm_tenths:
+      BEGIN(tenths);
+      break;
+    case tm_string:
+      BEGIN(in_string);
+      string_in_progress=(char *)malloc(80);
+      string_buffer_size=80;
+      string_buffer_ptr=0;
+      string_in_progress[0]='\0';
+      break;
+    case tm_generic:
+    default:
+      BEGIN(kw_allowed);
+      break;
+   }
+   
+   tok->could_be_tag=false;
 %}
 
-\\[\r\n]	/* skip line continuation */
+<in_string>\\([0-9a-fA-F]{1,4})	{
+   int i;
+   uint32_t uval=0;
 
-if	return (c->tok=tt_if);
-else	return (c->tok=tt_else);
-elseif	return (c->tok=tt_elseif);
-endif	return (c->tok=tt_endif);
-while	return (c->tok=tt_while);
-foreach	return (c->tok=tt_foreach);
-endloop	return (c->tok=tt_endloop);
-shift	return (c->tok=tt_shift);
-return	return (c->tok=tt_return);
-break	return (c->tok=tt_break);
-
-\.|\.[A-Za-z\$_@\.][A-Za-z0-9\$_@\.]*|[A-Za-z\$_@][A-Za-z0-9\$_@\.]*	{
-   if (yyleng>=TOK_MAX) {
-      ScriptError(c,"Name too long");
-   } else {
-      memcpy(c->tok_text,yytext,yyleng);
-      c->tok_text[yyleng]='\0';
-      return (c->tok=tt_name);
+   if (string_buffer_ptr+4>=string_buffer_size) {
+      string_buffer_size*=5;
+      string_buffer_size/=4;
+      string_in_progress=(char *)realloc(string_in_progress,
+					 string_buffer_size);
    }
-}
 
-(([1-9][0-9]*)|0)?\.[0-9]*([eE][+\-]?[0-9]+)?|[1-9][0-9]*[eE][+\-]?[0-9]+	{
-   double rval,fraction;
-   int exp_sign,exponent,i;
-   
-   rval=0.0;
-   fraction=1.0;
-   exp_sign=1;
-   exponent=0;
-   
-   /* digits before decimal point */
-   for (i=0;(i<yyleng) && (yytext[i]>='0') && (yytext[i]<='9');i++) {
-      rval*=10.0;
-      rval+=(yytext[i]-'0');
-   }
-  
-   /* decimal point and digits after it */
-   if ((i<yyleng) && (yytext[i]=='.'))
-     for (i++;(i<yyleng) && (yytext[i]>='0') && (yytext[i]<='9');i++) {
-	fraction/=10.0;
-	rval+=((yytext[i]-'0')*fraction);
-     }
-
-   /* exponent */
-   if ((i<yyleng) && ((yytext[i]=='e') || (yytext[i]=='E'))) {
-      
-      /* sign of exponent */
-      i++;
-      if (yytext[i]=='-') {
-	 exp_sign=-1;
-	 i++;
-      } else if (yytext[i]=='+')
-	   i++;
-   
-      /* value of exponent */
-      for (;(i<yyleng) && (yytext[i]>='0') && (yytext[i]<='9');i++) {
-	 exponent*=10;
-	 exponent+=(yytext[i]-'0');
-      }
-   }
-   
-   c->tok_val.u.fval=rval*pow(10.0,exponent*exp_sign);
-   c->tok_val.type=v_real;
-   return (c->tok=tt_real);
-}
-
-0[0-7]*	{
-   int i,val=0;
-   
    for (i=1;i<yyleng;i++) {
-      val*=8;
-      val+=(yytext[i]-'0');
-   }
-   c->tok_val.u.ival=val;
-   c->tok_val.type=v_int;
-   return (c->tok=tt_number);
-}
-
-0[xXuU][0-9a-fA-F]*	{
-   int i,val=0;
-   
-   for (i=2;i<yyleng;i++) {
-      val*=16;
-      val+=yytext[i];
+      uval*=16;
       if ((yytext[i]>='0') && (yytext[i]<='9'))
-	val-='0';
+	uval+=(yytext[i]-'0');
       else if ((yytext[i]>='A') && (yytext[i]<='F'))
-	val-='A';
+	uval+=(yytext[i]-'A'+10);
       else
-	val-='a';
+	uval+=(yytext[i]-'a'+10);
    }
-   c->tok_val.u.ival=val;
-   if ((yytext[1]=='x') || (yytext[1]=='X'))
-      c->tok_val.type=v_int;
-   else
-     c->tok_val.type=v_unicode;
-   return (c->tok=tt_number);
+   string_buffer_ptr=utf8_idpb(string_in_progress+string_buffer_ptr,uval,0)
+     -string_in_progress;
+   string_in_progress[string_buffer_ptr]='\0';
+}
+<in_string>(\n|\r|\r\n)	{ tok->line[tok->inc_depth]++; }
+<in_string>\"	{
+   tok->nm=string_in_progress;
+   BEGIN(INITIAL);
+   return;
+}
+<in_string>(\\?)(.|\n)	{
+   int i;
+
+   if (string_buffer_ptr+1>=string_buffer_size) {
+      string_buffer_size*=5;
+      string_buffer_size/=4;
+      string_in_progress=(char *)realloc(string_in_progress,
+					 string_buffer_size);
+   }
+
+   string_in_progress[string_buffer_ptr++]=yytext[yyleng-1];
+   string_in_progress[string_buffer_ptr]='\0';
 }
 
-[1-9][0-9]*	{
-   int i,val=0;
+\#.*(\n|\r|\r\n)	{ tok->line[tok->inc_depth]++; }
+(\n|\r|\r\n)	{ tok->line[tok->inc_depth]++; }
+[ \t]+	/* skip whitespace */
+
+<<EOF>>	{
+   if (tok->inc_depth>0) {
+      afclose(tok->inlist[tok->inc_depth]);
+      free(tok->filename[tok->inc_depth]);
+      yyin=(FILE *)(tok->inlist[--tok->inc_depth]);
+      yypop_buffer_state();
+   } else {
+      tok->type=tk_eof;
+      strcpy(tok->tokbuf,"EOF");
+      return;
+   }
+}
+
+<kw_allowed>{
    
-   for (i=0;i<yyleng;i++) {
-      val*=10;
-      val+=(yytext[i]-'0');
-   }
-   c->tok_val.u.ival=val;
-   c->tok_val.type=v_int;
-   return (c->tok=tt_number);
+include[ \t]*\([ \t]*[^ \t\)]+[ \t]*\)	{
+   char *cp=yytext+7,*fn,*fn2;
+   AFILE *in;
+   
+   /* find and mark end of filename */
+   while (*cp!='(') cp++;
+   cp++;
+   while ((*cp==' ') || (*cp=='\t')) cp++;
+   fn=cp;
+   while ((*cp!=' ') && (*cp!='\t') && (*cp!=')')) cp++;
+   *cp='\0';
+   
+   do {
+   
+      if (tok->inc_depth>=MAXI-1) {
+	 ErrorMsg(2,"Includes nested too deeply on line %d of %s\n",
+		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
+	 ++tok->err_count;
+	 break;
+      }
+      
+      if ((*fn=='/') ||
+	  ((cp=strrchr(tok->filename[tok->inc_depth],'/'))==NULL))
+	fn2=fastrdup(fn);
+      else {
+	 *cp='\0';
+	 fn2=GFileAppendFile(tok->filename[tok->inc_depth],fn,false);
+	 *cp='/';
+      }
+      
+      in=afopen(fn2,"r");
+      if (in==NULL) {
+	 ErrorMsg(2,"Could not open include file (%s) on line %d of %s\n",
+		  fn2,tok->line[tok->inc_depth],
+		  tok->filename[tok->inc_depth]);
+	 tok->err_count++;
+	 free(fn2);
+	 break;
+      }
+      
+      tok->inc_depth++;
+      tok->filename[tok->inc_depth]=fn2;
+      tok->inlist[tok->inc_depth]=in;
+      tok->line[tok->inc_depth]=1;
+
+      yyin=(FILE *)in;
+      yypush_buffer_state(yy_create_buffer(yyin,YY_BUF_SIZE));
+
+   } while (0);
 }
 
-[\'\"]	{
-   string_length=0;
-   if (yytext[0]=='\'') {
-     BEGIN(sq_string);
+anchor		{ tok->type=tk_anchor; return; }
+anonymous	{ tok->type=tk_anonymous; return; }
+by		{ tok->type=tk_by; return; }
+caret		{ tok->type=tk_caret; return; }
+cursive		{ tok->type=tk_cursive; return; }
+device		{ tok->type=tk_device; return; }
+enumerate	{ tok->type=tk_enumerate; return; }
+excludeDFLT	{ tok->type=tk_excludeDFLT; return; }
+exclude_dflt	{ tok->type=tk_exclude_dflt; return; }
+feature		{ tok->type=tk_feature; return; }
+from		{ tok->type=tk_from; return; }
+ignore		{ tok->type=tk_ignore; return; }
+IgnoreBaseGlyphs	{ tok->type=tk_IgnoreBaseGlyphs; return; }
+IgnoreLigatures	{ tok->type=tk_IgnoreLigatures; return; }
+IgnoreMarks	{ tok->type=tk_IgnoreMarks; return; }
+includeDFLT	{ tok->type=tk_includeDFLT; return; }
+include_dflt	{ tok->type=tk_include_dflt; return; }
+language	{ tok->type=tk_language; return; }
+languagesystem	{ tok->type=tk_languagesystem; return; }
+lookup		{ tok->type=tk_lookup; return; }
+lookupflag	{ tok->type=tk_lookupflag; return; }
+mark		{ tok->type=tk_mark; return; }
+nameid		{ tok->type=tk_nameid; return; }
+NULL		{ tok->type=tk_NULL; return; }
+parameters	{ tok->type=tk_parameters; return; }
+position	{ tok->type=tk_position; return; }
+required	{ tok->type=tk_required; return; }
+RightToLeft	{ tok->type=tk_RightToLeft; return; }
+script		{ tok->type=tk_script; return; }
+substitute	{ tok->type=tk_substitute; return; }
+subtable	{ tok->type=tk_subtable; return; }
+table		{ tok->type=tk_table; return; }
+useExtension	{ tok->type=tk_useExtension; return; }
+
+anchorDef	{ tok->type=tk_anchorDef; return; }
+valueRecordDef	{ tok->type=tk_valueRecordDef; return; }
+contourpoint	{ tok->type=tk_contourpoint; return; }
+MarkAttachmentType	{ tok->type=tk_MarkAttachmentType; return; }
+UseMarkFilteringSet	{ tok->type=tk_UseMarkFilteringSet; return; }
+reversesub	{ tok->type=tk_reversesub; return; }
+markClass	{ tok->type=tk_markClass; return; }
+base		{ tok->type=tk_base; return; }
+ligature	{ tok->type=tk_ligature; return; }
+ligComponent	{ tok->type=tk_ligComponent; return; }
+featureNames	{ tok->type=tk_featureNames; return; }
+
+sub	{ tok->type=tk_substitute; return; }
+pos	{ tok->type=tk_position; return; }
+rsub	{ tok->type=tk_reversesub; return; }
+enum	{ tok->type=tk_enumerate; return; }
+anon	{ tok->type=tk_anonymous; return; }
+
+}
+
+<hexint>[+\-\\]?[0-9A-FXa-fx]+	{
+   char *buf;
+   
+   buf=(char *)malloc(yyleng+1);
+   memcpy(buf,yytext,yyleng);
+   buf[yyleng]='\0';
+   if (yytext[0]=='\\') {
+      tok->type=tk_cid;
+      tok->value=strtol(buf+1,NULL,0);
    } else {
-     BEGIN(dq_string);
+      tok->type=tk_int;
+      tok->value=strtol(buf,NULL,0);
    }
+   free(buf);
+   return;
 }
-<sq_string>[\'\n\r]	{
-   BEGIN(INITIAL);
-   if (string_length>=TOK_MAX) {
-      ScriptError(c,"String too long");
+
+<tenths>[+\-]?[0-9]+\.[0-9]+	{
+   char *buf;
+   
+   buf=(char *)malloc(yyleng+1);
+   memcpy(buf,yytext,yyleng);
+   buf[yyleng]='\0';
+   tok->type=tk_int;
+   tok->value=rint(strtod(buf,NULL)*10);
+   free(buf);
+   return;
+}
+
+[+\-\\]?[0-9]+	{
+   char *buf;
+
+   buf=(char *)malloc(yyleng+1);
+   memcpy(buf,yytext,yyleng);
+   buf[yyleng]='\0';
+   if (yytext[0]=='\\') {
+      tok->type=tk_cid;
+      tok->value=strtol(buf+1,NULL,10);
    } else {
-      memcpy(c->tok_text,yytext,string_length);
-      c->tok_text[string_length]='\0';
-      return (c->tok=tt_string);
+      tok->type=tk_int;
+      tok->value=strtol(buf,NULL,10);
    }
+   free(buf);
+   return;
 }
-<dq_string>[\"\n\r]	{
-   BEGIN(INITIAL);
-   if (string_length>=TOK_MAX) {
-      ScriptError(c,"String too long");
+
+[@_\\A-Za-z0-9][A-Za-z0-9_\.]*|OS\/2	{
+   int start=0;
+   
+   tok->type=tk_name;
+   if (yytext[0]=='@') {
+      tok->type=tk_class;
+      start=1;
+   } else if (yytext[0]=='\\')
+	start=1;
+   strncpy(tok->tokbuf,yytext+start,yyleng-start>MAXT?MAXT+1:yyleng-start+1);
+   tok->tokbuf[MAXT]='\0';
+
+   if (yyleng>31+start) {
+      /* Adobe says glyphnames are 31 chars, but Mangal uses longer names */
+      ErrorMsg(2,"Name, %s%s, too long on line %d of %s\n",
+	       tok->tokbuf, yyleng-start>MAXT? "..." : "",
+	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
+      if (yyleng-start>MAXT)
+	tok->err_count++;
+
+   } else if (yyleng==start) {
+      ErrorMsg(2,"Missing name on line %d of %s\n",
+	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
+      tok->err_count++;
+
    } else {
-      memcpy(c->tok_text,yytext,string_length);
-      c->tok_text[string_length]='\0';
-      return (c->tok=tt_string);
+      if ((tok->type==tk_name) && (yyleng<=4)) {
+	 tok->could_be_tag=true;
+	 switch (yyleng) {
+	  case 4:
+	    tok->tag=(yytext[0]<<24)|(yytext[1]<<16)|(yytext[2]<<8)|yytext[3];
+	    break;
+	  case 3:
+	    tok->tag=(yytext[0]<<24)|(yytext[1]<<16)|(yytext[2]<<8)|0x20;
+	    break;
+	  case 2:
+	    tok->tag=(yytext[0]<<24)|(yytext[1]<<16)|0x2020;
+	    break;
+	  case 1:
+	  default:
+	    tok->tag=(yytext[0]<<24)|0x202020;
+	    break;
+	 }
+      }
+      return;
    }
 }
-<sq_string,dq_string>\\[\n\r]	yymore();
-<sq_string,dq_string>\\n	{
-   yytext[string_length++]='\n';
-   yymore();
-}
-<sq_string,dq_string>\\.	{
-   yytext[string_length++]=yytext[yyleng-1];
-   yymore();
-}
-<sq_string,dq_string>.	{
-   if (string_length<yyleng-1)
-     yytext[string_length]=yytext[yyleng-1];
-   string_length++;
-   yymore();
+
+[;,\-=\'\"{}\[\]<>()]	{
+   tok->type=tk_char;
+   tok->tokbuf[0]=yytext[0];
+   tok->tokbuf[1]='\0';
+   return;
 }
 
-#|\/\/	BEGIN(line_comment);
-<line_comment>[\n\r]	{ BEGIN(INITIAL); yyless(0); }
-<line_comment>.*	/* ignore contents of line comment */
-
-\/\*	BEGIN(c_comment);
-<c_comment>\*\/	BEGIN(INITIAL);
-
-<<EOF>>	return (c->tok=tt_eof);
-[ \t]	/* ignore spaces */
-\(	return (c->tok=tt_lparen);
-\)	return (c->tok=tt_rparen);
-\[	return (c->tok=tt_lbracket);
-\]	return (c->tok=tt_rbracket);
-,	return (c->tok=tt_comma);
-:	return (c->tok=tt_colon);
-[;\n\r]	return (c->tok=tt_eos);
--	return (c->tok=tt_minus);
--=	return (c->tok=tt_minuseq);
---	return (c->tok=tt_decr);
-\+	return (c->tok=tt_plus);
-\+=	return (c->tok=tt_pluseq);
-\+\+	return (c->tok=tt_incr);
-!	return (c->tok=tt_not);
-!=	return (c->tok=tt_ne);
-~	return (c->tok=tt_bitnot);
-\*	return (c->tok=tt_mul);
-\*=	return (c->tok=tt_muleq);
-%	return (c->tok=tt_mod);
-%=	return (c->tok=tt_modeq);
-\/	return (c->tok=tt_div);
-\/=	return (c->tok=tt_diveq);
-&	return (c->tok=tt_bitand);
-&&	return (c->tok=tt_and);
-\|	return (c->tok=tt_bitor);
-\|\|	return (c->tok=tt_or);
-\^	return (c->tok=tt_xor);
-=	return (c->tok=tt_assign);
-==	return (c->tok=tt_eq);
->	return (c->tok=tt_gt);
->=	return (c->tok=tt_ge);
-\<	return (c->tok=tt_lt);
-\<=	return (c->tok=tt_le);
-
-.	/* FIXME other characters are errors, return tt_error */
+.	{
+   if (!tok->skipping) {
+      ErrorMsg(2,"Unexpected character (0x%02X) on line %d of %s\n",
+	       yytext[0],
+	       tok->line[tok->inc_depth],
+	       tok->filename[tok->inc_depth]);
+      ++tok->err_count;
+   }
+}

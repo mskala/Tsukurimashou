@@ -200,7 +200,7 @@ AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4050 2015-06-24 18:42:21Z mskala $])
+AC_REVISION([$Id: configure.ac 4068 2015-06-28 13:36:21Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -943,6 +943,14 @@ AS_IF([test '!' "x$enable_parasites" = "xnone" && test "$can_full_idsgrep" = "no
      [AS_ECHO(["   BuDDy                 https://sourceforge.net/projects/buddy/"])])
    AS_ECHO(["Without these things, IDSgrep can still be built if enabled, and will"])
    AS_ECHO(["still run, but some features may be missing."])
+   ])
+
+AS_IF([test "x$fontanvil_recent" = "xno" && test -d "$srcdir/fontanvil"],
+  [AS_ECHO([])
+   AS_ECHO(["No recent version of FontAnvil is installed, but the"])
+   AS_ECHO(["Tsukurimashou source directory contains FontAnvil sources."])
+   AS_ECHO(["It is recommended to build and install FontAnvil before"])
+   AS_ECHO(["attempting to build Tsukurimashou."])
    ])
 
 #

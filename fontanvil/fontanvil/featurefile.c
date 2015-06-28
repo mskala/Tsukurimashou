@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: featurefile.c 4069 2015-06-28 19:55:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -2369,7 +2369,7 @@ static int fea_classesIntersect(char *class1,char *class2) {
 
 #define SKIP_SPACES(s, i)                       \
     do {                                        \
-        while ((s)[i]==' ')                   \
+        while ((s)[i]==' ')                     \
             i++;                                \
     }                                           \
     while (0)
@@ -2441,89 +2441,7 @@ static char *fea_classesSplit(char *class1,char *class2) {
    return (intersection);
 }
 
-enum toktype { tk_name, tk_class, tk_int, tk_char, tk_cid, tk_eof,
-/* keywords */
-   tk_firstkey,
-   tk_anchor =
-      tk_firstkey, tk_anonymous, tk_by, tk_caret, tk_cursive, tk_device,
-   tk_enumerate, tk_excludeDFLT, tk_exclude_dflt, tk_feature, tk_from,
-   tk_ignore, tk_ignoreDFLT, tk_ignoredflt, tk_IgnoreBaseGlyphs,
-   tk_IgnoreLigatures, tk_IgnoreMarks, tk_include, tk_includeDFLT,
-   tk_include_dflt, tk_language, tk_languagesystem, tk_lookup,
-   tk_lookupflag, tk_mark, tk_nameid, tk_NULL, tk_parameters, tk_position,
-   tk_required, tk_RightToLeft, tk_script, tk_substitute, tk_subtable,
-   tk_table, tk_useExtension,
-/* Additional keywords in the 2008 draft */
-   tk_anchorDef, tk_valueRecordDef, tk_contourpoint,
-   tk_MarkAttachmentType, tk_UseMarkFilteringSet,
-   tk_markClass, tk_reversesub, tk_base, tk_ligature, tk_ligComponent,
-   tk_featureNames
-};
-
-struct glyphclasses {
-   char *classname, *glyphs;
-   struct glyphclasses *next;
-};
-
-struct namedanchor {
-   char *name;
-   AnchorPoint *ap;
-   struct namedanchor *next;
-};
-
-struct namedvalue {
-   char *name;
-   struct vr *vr;
-   struct namedvalue *next;
-};
-
-struct gdef_mark {
-   char *name;
-   int index;
-   char *glyphs;
-};
-
-/* GPOS mark classes may have multiple definitions each added a glyph
- * class and anchor, these are linked under "same" */
-struct gpos_mark {
-   char *name;
-   char *glyphs;
-   AnchorPoint *ap;
-   struct gpos_mark *same, *next;
-   int name_used;		/* Same "markClass" can be used in any mark type lookup, or indeed in multiple lookups of the same type */
-} *gpos_mark;
-
-#define MAXT	80
-#define MAXI	5
-struct parseState {
-   char tokbuf[MAXT + 1];
-   long value;
-   enum toktype type;
-   uint32_t tag;
-   int could_be_tag;
-   AFILE *inlist[MAXI];
-   int inc_depth;
-   int line[MAXI];
-   char *filename[MAXI];
-   int err_count;
-   unsigned int warned_about_not_cid:1;
-   unsigned int lookup_in_sf_warned:1;
-   unsigned int in_vkrn:1;
-   unsigned int backedup:1;
-   unsigned int skipping:1;
-   SplineFont *sf;
-   struct scriptlanglist *def_langsyses;
-   struct glyphclasses *classes;
-   struct namedanchor *namedAnchors;
-   struct namedvalue *namedValueRs;
-   struct feat_item *sofar;
-   int base;			/* normally numbers are base 10, but in the case of languages in stringids, they can be octal or hex */
-   OTLookup *created, *last;	/* Ordered, but not sorted into GSUB, GPOS yet */
-   AnchorClass *accreated;
-   int gm_cnt[2], gm_max[2], gm_pos[2];
-   struct gdef_mark *gdef_mark[2];
-   struct gpos_mark *gpos_mark;
-};
+#include "feascan.h"
 
 static struct keywords {
    char *name;
@@ -2645,330 +2563,15 @@ static struct tablekeywords os2_keys[]={
    TABLEKEYWORDS_EMPTY
 };
 
-
-static void fea_ParseTok(struct parseState *tok);
-
-static void fea_handle_include(struct parseState *tok) {
-   AFILE *in;
-   char namebuf[1025], *pt, *filename;
-   int ch;
-
-   fea_ParseTok(tok);
-   if (tok->type != tk_char || tok->tokbuf[0] != '(') {
-      ErrorMsg(2,"Unparseable include on line %d of %s\n",
-	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-      ++tok->err_count;
-      return;
-   }
-
-   in=tok->inlist[tok->inc_depth];
-   ch=agetc(in);
-   while (isspace(ch))
-      ch=agetc(in);
-   pt=namebuf;
-   while (ch != EOF && ch != ')' && pt < namebuf + sizeof(namebuf) - 1) {
-      *pt++=ch;
-      ch=agetc(in);
-   }
-   if (ch != EOF && ch != ')') {
-      while (ch != EOF && ch != ')')
-	 ch=agetc(in);
-      ErrorMsg(2,"Include filename too long on line %d of %s\n",
-	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-      ++tok->err_count;
-   }
-   while (pt >= namebuf + 1 && isspace(pt[-1]))
-      --pt;
-   *pt='\0';
-   if (ch != ')') {
-      if (ch==EOF)
-	 ErrorMsg(2,"End of file in include on line %d of %s\n",
-		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-      else
-	 ErrorMsg(2,"Missing close parenthesis in include on line %d of %s\n",
-		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-      ++tok->err_count;
-      return;
-   }
-
-   if (pt==namebuf) {
-      ErrorMsg(2,"No filename specified in include on line %d of %s\n",
-	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-      ++tok->err_count;
-      return;
-   }
-
-   if (tok->inc_depth >= MAXI - 1) {
-      ErrorMsg(2,"Includes nested too deeply on line %d of %s\n",
-	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-      ++tok->err_count;
-      return;
-   }
-
-   if (*namebuf=='/' ||
-       (pt=strrchr(tok->filename[tok->inc_depth], '/'))==NULL)
-      filename=fastrdup(namebuf);
-   else {
-      *pt='\0';
-      filename =
-	 GFileAppendFile(tok->filename[tok->inc_depth], namebuf, false);
-      *pt='/';
-   }
-   in=afopen(filename, "r");
-   if (in==NULL) {
-      ErrorMsg(2,"Could not open include file (%s) on line %d of %s\n",
-	       filename, tok->line[tok->inc_depth],
-	       tok->filename[tok->inc_depth]);
-      ++tok->err_count;
-      free(filename);
-      return;
-   }
-
-   ++tok->inc_depth;
-   tok->filename[tok->inc_depth]=filename;
-   tok->inlist[tok->inc_depth]=in;
-   tok->line[tok->inc_depth]=1;
-   fea_ParseTok(tok);
-}
-
-static void fea_ParseTokWithKeywords(struct parseState *tok,int do_keywords) {
-   AFILE *in=tok->inlist[tok->inc_depth];
-   int ch, peekch;
-   char *pt, *start;
-
-   if (tok->backedup) {
-      tok->backedup=false;
-      return;
-   }
-
- skip_whitespace:
-   ch=agetc(in);
-   while (isspace(ch) || ch=='#') {
-      if (ch=='#')
-	 while ((ch=agetc(in)) != EOF && ch != '\n' && ch != '\r');
-      if (ch=='\n' || ch=='\r') {
-	 if (ch=='\r') {
-	    ch=agetc(in);
-	    if (ch != '\n')
-	       aungetc(ch, in);
-	 }
-	 ++tok->line[tok->inc_depth];
-      }
-      ch=agetc(in);
-   }
-
-   tok->could_be_tag=0;
-   if (ch==EOF) {
-      if (tok->inc_depth > 0) {
-	 afclose(tok->inlist[tok->inc_depth]);
-	 free(tok->filename[tok->inc_depth]);
-	 in=tok->inlist[--tok->inc_depth];
-	 goto skip_whitespace;
-      }
-      tok->type=tk_eof;
-      strcpy(tok->tokbuf, "EOF");
-      return;
-   }
-
-   start=pt=tok->tokbuf;
-   if (ch=='\\' || ch=='-') {
-      peekch=agetc(in);
-      aungetc(peekch, in);
-   }
-
-   if (isdigit(ch) || ch=='+'
-       || ((ch=='-' || ch=='\\') && isdigit(peekch))) {
-      tok->type=tk_int;
-      if (ch=='-' || ch=='+') {
-	 if (ch=='-') {
-	    *pt++=ch;
-	    start=pt;
-	 }
-	 ch=agetc(in);
-      } else if (ch=='\\') {
-	 ch=agetc(in);
-	 tok->type=tk_cid;
-      }
-      while ((isdigit(ch) ||
-	      (tok->base==0
-	       && (ch=='x' || ch=='X' || (ch >= 'a' && ch <= 'f')
-		   || (ch >= 'A' && ch <= 'F'))))
-	     && pt < tok->tokbuf + 15) {
-	 *pt++=ch;
-	 ch=agetc(in);
-      }
-      if (isdigit(ch)) {
-	 ErrorMsg(2,"Number too long on line %d of %s\n",
-		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-	 ++tok->err_count;
-      } else if (pt==start) {
-	 ErrorMsg(2,"Missing number on line %d of %s\n",
-		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-	 ++tok->err_count;
-      }
-      aungetc(ch, in);
-      *pt='\0';
-      tok->value=strtol(tok->tokbuf, NULL, tok->base);
-      return;
-   } else if (ch=='@' || ch=='_' || ch=='\\' || isalnum(ch)) {	/* Names can't start with dot */
-      int check_keywords=true;
-
-      tok->type=tk_name;
-      if (ch=='@') {
-	 tok->type=tk_class;
-	 *pt++=ch;
-	 start=pt;
-	 ch=agetc(in);
-	 check_keywords=false;
-      } else if (ch=='\\') {
-	 ch=agetc(in);
-	 check_keywords=false;
-      }
-      while (isalnum(ch) || ch=='_' || ch=='.') {
-	 if (pt < tok->tokbuf + MAXT)
-	    *pt++=ch;
-	 ch=agetc(in);
-      }
-      *pt='\0';
-      aungetc(ch, in);
-      if (pt > start + 31) {
-	 /* Adobe says glyphnames are 31 chars, but Mangal uses longer names */
-	 ErrorMsg(2,"Name, %s%s, too long on line %d of %s\n",
-		  tok->tokbuf, pt >= tok->tokbuf + MAXT ? "..." : "",
-		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-	 if (pt >= tok->tokbuf + MAXT)
-	    ++tok->err_count;
-      } else if (pt==start) {
-	 ErrorMsg(2,"Missing name on line %d of %s\n",
-		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-	 ++tok->err_count;
-      }
-
-      if (check_keywords && do_keywords) {
-	 int i;
-
-	 for (i=tk_firstkey; fea_keywords[i].name != NULL; ++i) {
-	    if (strcmp(fea_keywords[i].name, tok->tokbuf)==0) {
-	       tok->type=fea_keywords[i].tok;
-	       break;
-	    }
-	 }
-	 if (tok->type==tk_include)
-	    fea_handle_include(tok);
-      }
-      if (tok->type==tk_name && pt - tok->tokbuf <= 4 && pt != tok->tokbuf) {
-	 unsigned char tag[4];
-
-	 tok->could_be_tag=true;
-	 memset(tag, ' ', 4);
-	 tag[0]=tok->tokbuf[0];
-	 if (tok->tokbuf[1] != '\0') {
-	    tag[1]=tok->tokbuf[1];
-	    if (tok->tokbuf[2] != '\0') {
-	       tag[2]=tok->tokbuf[2];
-	       if (tok->tokbuf[3] != '\0')
-		  tag[3]=tok->tokbuf[3];
-	    }
-	 }
-	 tok->tag=(tag[0] << 24) | (tag[1] << 16) | (tag[2] << 8) | tag[3];
-      }
-   } else {
-      /* I've already handled the special characters # @ and \ */
-      /*  so don't treat them as errors here, if they occur they will be out of context */
-      if (ch==';' || ch==',' || ch=='-' || ch=='=' || ch=='\''
-	  || ch=='"' || ch=='{' || ch=='}' || ch=='[' || ch==']'
-	  || ch=='<' || ch=='>' || ch=='(' || ch==')') {
-	 tok->type=tk_char;
-	 tok->tokbuf[0]=ch;
-	 tok->tokbuf[1]='\0';
-      } else {
-	 if (!tok->skipping) {
-	    ErrorMsg(2,"Unexpected character (0x%02X) on line %d of %s\n", ch,
-		     tok->line[tok->inc_depth],
-		     tok->filename[tok->inc_depth]);
-	    ++tok->err_count;
-	 }
-	 goto skip_whitespace;
-      }
-   }
-}
-
-static void fea_ParseTok(struct parseState *tok) {
-   fea_ParseTokWithKeywords(tok, true);
-}
-
-static void fea_ParseTag(struct parseState *tok) {
-   /* The tag used for OS/2 doesn't get parsed properly */
-   /* So if we know we are looking for a tag do some fixups */
-
-   fea_ParseTok(tok);
-   if (tok->type==tk_name && tok->could_be_tag &&
-       tok->tag==CHR('O', 'S', ' ', ' ')) {
-      AFILE *in=tok->inlist[tok->inc_depth];
-
-      int ch;
-
-      ch=agetc(in);
-      if (ch=='/') {
-	 ch=agetc(in);
-	 if (ch=='2') {
-	    tok->tag=CHR('O', 'S', '/', '2');
-	 } else {
-	    tok->tag=CHR('O', 'S', '/', ' ');
-	    aungetc(ch, in);
-	 }
-      } else
-	 aungetc(ch, in);
-   }
-   if (tok->type != tk_name && tok->type != tk_eof &&
-       strlen(tok->tokbuf)==4 && isalnum(tok->tokbuf[0])) {
-      tok->type=tk_name;
-      tok->could_be_tag=true;
-      tok->tag =
-	 CHR(tok->tokbuf[0], tok->tokbuf[1], tok->tokbuf[2], tok->tokbuf[3]);
-   }
-}
-
 static void fea_UnParseTok(struct parseState *tok) {
    tok->backedup=true;
 }
 
-static int fea_ParseDeciPoints(struct parseState *tok) {
-   /* When parsing size features floating point numbers are allowed */
-   /*  but they should be converted to ints by multiplying by 10 */
-   /* (not my convention) */
-
-   fea_ParseTok(tok);
-   if (tok->type==tk_int) {
-      AFILE *in=tok->inlist[tok->inc_depth];
-      char *pt=tok->tokbuf + strlen(tok->tokbuf);
-      int ch;
-
-      ch=agetc(in);
-      if (ch=='.') {
-	 *pt++=ch;
-	 while ((ch=agetc(in)) != EOF && isdigit(ch)) {
-	    if (pt < tok->tokbuf + sizeof(tok->tokbuf) - 1)
-	       *pt++=ch;
-	 }
-	 *pt='\0';
-	 tok->value=rint(strtod(tok->tokbuf, NULL) * 10.0);
-      }
-      if (ch != EOF)
-	 aungetc(ch, in);
-   } else {
-      ErrorMsg(2,"Expected '%s' on line %d of %s\n", fea_keywords[tk_int],
-	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-      ++tok->err_count;
-      tok->value=-1;
-   }
-   return (tok->value);
-}
 
 static void fea_TokenMustBe(struct parseState *tok,enum toktype type,int ch) {
    int tk;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (type==tk_char && (tok->type != type || tok->tokbuf[0] != ch)) {
       ErrorMsg(2,"Expected '%c' on line %d of %s\n", ch,
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -2991,7 +2594,7 @@ static void fea_skip_to_semi(struct parseState *tok) {
    int nest=0;
 
    while (tok->type != tk_char || tok->tokbuf[0] != ';' || nest > 0) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type==tk_char) {
 	 if (tok->tokbuf[0]=='{')
 	    ++nest;
@@ -3013,7 +2616,7 @@ static void fea_skip_to_close_curly(struct parseState *tok) {
    /* and floating point numbers. So don't complain about unknown chars when */
    /*  in a table (that's skipping) */
    while (tok->type != tk_char || tok->tokbuf[0] != '}' || nest > 0) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type==tk_char) {
 	 if (tok->tokbuf[0]=='{')
 	    ++nest;
@@ -3037,7 +2640,7 @@ static void fea_now_semi(struct parseState *tok) {
 }
 
 static void fea_end_statement(struct parseState *tok) {
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    fea_now_semi(tok);
 }
 
@@ -3268,7 +2871,7 @@ static char *fea_ParseGlyphClass(struct parseState *tok) {
       int v1, v2;
 
       while (1) {
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 if (tok->type==tk_char && tok->tokbuf[0]==']')
 	    break;
 	 if (tok->type==tk_class) {
@@ -3284,7 +2887,7 @@ static char *fea_ParseGlyphClass(struct parseState *tok) {
 	    last_val=-1;
 	    contents=fea_glyphname_validate(tok, tok->tokbuf);
 	 } else if (tok->type==tk_char && tok->tokbuf[0]=='-') {
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	    if (last_val != -1 && tok->type==tk_cid) {
 	       if (last_val >= tok->value) {
 		  ErrorMsg(2,"Invalid CID range in glyph class on line %d of %s\n",
@@ -3461,7 +3064,7 @@ static void fea_ParseLookupFlags(struct parseState *tok) {
    int val=0;
    struct feat_item *item;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type==tk_int) {
       val=tok->value;
       fea_end_statement(tok);
@@ -3484,7 +3087,7 @@ static void fea_ParseLookupFlags(struct parseState *tok) {
 	    fea_TokenMustBe(tok, tk_class, '\0');
 	    val |= fea_ParseMarkAttachClass(tok, is_set);
 	 }
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 if (tok->type==tk_char && tok->tokbuf[0]==';')
 	    break;
 	 else if (tok->type==tk_char && tok->tokbuf[0] != ',') {
@@ -3495,7 +3098,7 @@ static void fea_ParseLookupFlags(struct parseState *tok) {
 	    fea_skip_to_semi(tok);
 	    break;
 	 }
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
       }
       if (tok->type != tk_char || tok->tokbuf[0] != ';') {
 	 ErrorMsg(2,"Unexpected token in lookupflags on line %d of %s\n",
@@ -3520,7 +3123,7 @@ static void fea_ParseGlyphClassDef(struct parseState *tok) {
    char *classname=fastrdup(tok->tokbuf);
    char *contents;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type != tk_char || tok->tokbuf[0] != '=') {
       ErrorMsg(2,"Expected '=' in glyph class definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -3528,7 +3131,7 @@ static void fea_ParseGlyphClassDef(struct parseState *tok) {
       fea_skip_to_semi(tok);
       return;
    }
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    contents=fea_ParseGlyphClass(tok);
    if (contents==NULL) {
       fea_skip_to_semi(tok);
@@ -3543,7 +3146,7 @@ static void fea_ParseLangSys(struct parseState *tok,int inside_feat) {
    struct scriptlanglist *sl;
    int l;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type != tk_name || !tok->could_be_tag) {
       ErrorMsg(2,"Expected tag in languagesystem on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -3553,7 +3156,7 @@ static void fea_ParseLangSys(struct parseState *tok,int inside_feat) {
    }
    script=tok->tag;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type != tk_name || !tok->could_be_tag) {
       ErrorMsg(2,"Expected tag in languagesystem on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -3644,7 +3247,7 @@ static void fea_ParseDeviceTable(struct parseState *tok,DeviceTable *adjust) {
       return;
 
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (first && tok->type==tk_NULL) {
 	 fea_TokenMustBe(tok, tk_char, '>');
 	 break;
@@ -3671,7 +3274,7 @@ static void fea_ParseDeviceTable(struct parseState *tok,DeviceTable *adjust) {
 	    else if (pixel > max)
 	       max=pixel;
 	 }
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 if (tok->type==tk_char && tok->tokbuf[0]==',')
 	    /* That's right... */ ;
 	 else if (tok->type==tk_char && tok->tokbuf[0]=='>')
@@ -3702,14 +3305,14 @@ static void fea_ParseCaret(struct parseState *tok) {
    fea_TokenMustBe(tok, tk_caret, '\0');
    if (tok->type != tk_caret)
       return;
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type != tk_int) {
       ErrorMsg(2,"Expected integer in caret on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
       ++tok->err_count;
    } else
       val=tok->value;
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type != tk_char || tok->tokbuf[0] != '>') {
       ErrorMsg(2,"Expected '>' in caret on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -3723,10 +3326,10 @@ static AnchorPoint *fea_ParseAnchor(struct parseState *tok) {
    struct namedanchor *nap;
 
    if (tok->type==tk_anchor || tok->type==tk_anchorDef) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type==tk_NULL) {
 	 ap=NULL;
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
       } else if (tok->type==tk_name) {
 	 for (nap=tok->namedAnchors; nap != NULL; nap=nap->next) {
 	    if (strcmp(nap->name, tok->tokbuf)==0) {
@@ -3740,22 +3343,22 @@ static AnchorPoint *fea_ParseAnchor(struct parseState *tok) {
 		     tok->filename[tok->inc_depth]);
 	    ++tok->err_count;
 	 }
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
       } else if (tok->type==tk_int) {
 	 ap=chunkalloc(sizeof(AnchorPoint));
 	 ap->me.x=tok->value;
 	 fea_TokenMustBe(tok, tk_int, '\0');
 	 ap->me.y=tok->value;
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 if (tok->type==tk_contourpoint)
 	    fea_TokenMustBe(tok, tk_int, ' ');
 	 /* FF had a bug and produced anchor points with x y c instead of x y <contourpoint c> */
 	 if (tok->type==tk_int) {
 	    ap->ttf_pt_index=tok->value;
 	    ap->has_ttf_pt=true;
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	 } else if (tok->type==tk_char && tok->tokbuf[0]=='<') {
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	    if (tok->type==tk_contourpoint) {
 	       fea_TokenMustBe(tok, tk_int, ' ');
 	       ap->ttf_pt_index=tok->value;
@@ -3767,7 +3370,7 @@ static AnchorPoint *fea_ParseAnchor(struct parseState *tok) {
 	       fea_TokenMustBe(tok, tk_char, '<');
 	       fea_ParseDeviceTable(tok, &ap->yadjust);
 	    }
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	 }
       } else {
 	 ErrorMsg(2,"Expected integer in anchor on line %d of %s\n",
@@ -3873,18 +3476,18 @@ static struct vr *fea_ParseValueRecord(struct parseState *tok) {
 		  tok->filename[tok->inc_depth]);
 	 ++tok->err_count;
       }
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
    } else if (tok->type==tk_int) {
       vr=chunkalloc(sizeof(struct vr));
       vr->xoff=tok->value;
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type==tk_int) {
 	 vr->yoff=tok->value;
 	 fea_TokenMustBe(tok, tk_int, '\0');
 	 vr->h_adv_off=tok->value;
 	 fea_TokenMustBe(tok, tk_int, '\0');
 	 vr->v_adv_off=tok->value;
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 if (tok->type==tk_char && tok->tokbuf[0]=='<') {
 	    vr->adjust=chunkalloc(sizeof(struct valdev));
 	    fea_ParseDeviceTable(tok, &vr->adjust->xadjust);
@@ -3894,7 +3497,7 @@ static struct vr *fea_ParseValueRecord(struct parseState *tok) {
 	    fea_ParseDeviceTable(tok, &vr->adjust->xadv);
 	    fea_TokenMustBe(tok, tk_char, '<');
 	    fea_ParseDeviceTable(tok, &vr->adjust->yadv);
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	 }
       } else if (tok->type==tk_char && tok->tokbuf[0]=='>') {
 	 if (tok->in_vkrn)
@@ -3915,7 +3518,7 @@ static void fea_ParseValueRecordDef(struct parseState *tok) {
    struct vr *vr;
    struct namedvalue *nvr;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    vr=fea_ParseValueRecord(tok);
    if (tok->type != tk_name) {
       ErrorMsg(2,"Expected name in value record definition on line %d of %s\n",
@@ -3947,7 +3550,7 @@ static void fea_ParseMarkClass(struct parseState *tok) {
    AnchorPoint *ap;
    struct gpos_mark *gm, *ngm;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type==tk_name)
       class_string=fea_glyphname_validate(tok, tok->tokbuf);
    else if (tok->type==tk_cid)
@@ -3962,7 +3565,7 @@ static void fea_ParseMarkClass(struct parseState *tok) {
       fea_skip_to_semi(tok);
       return;
    }
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type != tk_char || tok->tokbuf[0] != '<') {
       ErrorMsg(2,"Expected anchor in mark class definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -3970,9 +3573,9 @@ static void fea_ParseMarkClass(struct parseState *tok) {
       fea_skip_to_semi(tok);
       return;
    }
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    ap=fea_ParseAnchorClosed(tok);
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
 
    if (tok->type != tk_class) {
       ErrorMsg(2,"Expected class name in mark class definition on line %d of %s\n",
@@ -4004,7 +3607,7 @@ static void fea_ParseBroket(struct parseState *tok,struct markedglyphs *last) {
    /* We've read the open broket. Might find: value record, anchor, lookup */
    /* (lookups are my extension) */
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type==tk_lookup) {
       /* This is a concept I introduced, Adobe has done something similar */
       /*  but, of course incompatible */
@@ -4055,7 +3658,7 @@ static struct markedglyphs *fea_parseCursiveSequence(struct parseState *tok,
    struct markedglyphs *cur;
    char *contents;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type==tk_name || tok->type==tk_cid) {
       if (tok->type==tk_name)
 	 contents=fea_glyphname_validate(tok, tok->tokbuf);
@@ -4080,7 +3683,7 @@ static struct markedglyphs *fea_parseCursiveSequence(struct parseState *tok,
       return (NULL);
    }
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (allow_marks && tok->type==tk_char
        && (tok->tokbuf[0]=='\'' || tok->tokbuf[0]=='"')) {
       if (mark_state->last_mark != tok->tokbuf[0]) {
@@ -4088,7 +3691,7 @@ static struct markedglyphs *fea_parseCursiveSequence(struct parseState *tok,
 	 mark_state->last_mark=tok->tokbuf[0];
       }
       cur->mark_count=mark_state->mark_cnt;
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
    }
 
    if (tok->type != tk_char || tok->tokbuf[0] != '<') {
@@ -4115,7 +3718,7 @@ static struct markedglyphs *fea_parseBaseMarkSequence(struct parseState *tok,
    char *contents;
    int apm_max=0;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type==tk_name || tok->type==tk_cid) {
       if (tok->type==tk_name)
 	 contents=fea_glyphname_validate(tok, tok->tokbuf);
@@ -4140,11 +3743,11 @@ static struct markedglyphs *fea_parseBaseMarkSequence(struct parseState *tok,
    cur->is_mark2base=is_base;
    cur->is_mark2mark=!is_base;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (allow_marks && tok->type==tk_char && tok->tokbuf[0]=='\'') {
       /* only one type of mark in v1.8 */
       cur->mark_count=++mark_state->mark_cnt;
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
    }
 
    if (tok->type != tk_char || tok->tokbuf[0] != '<') {
@@ -4166,10 +3769,10 @@ static struct markedglyphs *fea_parseBaseMarkSequence(struct parseState *tok,
       cur->apmark[cur->apm_cnt++].mark_class =
 	 fea_lookup_markclass_complain(tok, tok->tokbuf);
 
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (allow_marks && tok->type==tk_char && tok->tokbuf[0]=='\'') {
 	 cur->apmark[cur->apm_cnt - 1].mark_count=++mark_state->mark_cnt;
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
       }
    }
    fea_UnParseTok(tok);
@@ -4186,7 +3789,7 @@ static struct markedglyphs *fea_parseLigatureSequence(struct parseState *tok,
    struct ligcomponent *lc;
    int skip;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type==tk_name || tok->type==tk_cid) {
       if (tok->type==tk_name)
 	 contents=fea_glyphname_validate(tok, tok->tokbuf);
@@ -4210,11 +3813,11 @@ static struct markedglyphs *fea_parseLigatureSequence(struct parseState *tok,
    }
    cur->is_mark2lig=true;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (allow_marks && tok->type==tk_char && tok->tokbuf[0]=='\'') {
       /* only one type of mark in v1.8 */
       cur->mark_count=++mark_state->mark_cnt;
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
    }
 
    if (tok->type != tk_char || tok->tokbuf[0] != '<') {
@@ -4246,7 +3849,7 @@ static struct markedglyphs *fea_parseLigatureSequence(struct parseState *tok,
 	 /*  <anchor NULL> with no following mark class */
 	 skip=0;
 	 if (lc->apmark[lc->apm_cnt].ap==NULL) {
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	    fea_UnParseTok(tok);
 	    if (tok->type != tk_mark)
 	       skip=true;
@@ -4258,10 +3861,10 @@ static struct markedglyphs *fea_parseLigatureSequence(struct parseState *tok,
 	       fea_lookup_markclass_complain(tok, tok->tokbuf);
 	 }
 
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 if (allow_marks && tok->type==tk_char && tok->tokbuf[0]=='\'') {
 	    lc->apmark[lc->apm_cnt - 1].mark_count=++mark_state->mark_cnt;
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	 }
       }
       if (tok->type != tk_ligComponent)
@@ -4275,7 +3878,7 @@ static struct markedglyphs *fea_parseLigatureSequence(struct parseState *tok,
 static struct markedglyphs *fea_ParseMarkedGlyphs(struct parseState *tok,
 						  int is_pos, int allow_marks,
 						  int allow_lookups) {
-   struct markedglyphs *head=NULL, *last=NULL, *prev=NULL, *cur;
+   struct markedglyphs *head=NULL,*last=NULL,*prev=NULL,*cur;
    char *contents;
 
 /* v1.6 pos <glyph>|<class> <anchor> mark <glyph>|<class> */
@@ -4285,9 +3888,9 @@ static struct markedglyphs *fea_ParseMarkedGlyphs(struct parseState *tok,
 /*                 [ligComponent [<anchor> mark <named mark class>]+]* */
    struct mark_state mark_state;
 
-   memset(&mark_state, 0, sizeof(mark_state));
+   memset(&mark_state,0,sizeof(mark_state));
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       cur=NULL;
       if (is_pos && tok->type==tk_cursive)
 	 cur=fea_parseCursiveSequence(tok, allow_marks, &mark_state);
@@ -5052,7 +4655,7 @@ static void fea_ParseIgnore(struct parseState *tok) {
 
    /* ignore [pos|sub] <marked glyph sequence> (, <marked g sequence>)* */
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type==tk_position)
       is_pos=true;
    else if (tok->type==tk_substitute)
@@ -5074,7 +4677,7 @@ static void fea_ParseIgnore(struct parseState *tok) {
       if (is_pos)
 	 fpst->type=pst_chainpos;
       fea_markedglyphsFree(glyphs);
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type != tk_char || tok->tokbuf[0] != ',')
 	 break;
    }
@@ -5116,7 +4719,7 @@ static void fea_ParseSubstitute(struct parseState *tok) {
    SplineChar *sc;
    struct feat_item *item, *head;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    for (cnt=has_lookups=mk_num=0, g=glyphs; g != NULL;
 	g=g->next, ++cnt) {
       if (g->lookupname != NULL)
@@ -5138,7 +4741,7 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 	 /* Alternate subs */
 	 char *alts;
 
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 alts=fea_ParseGlyphClassGuarded(tok);
 	 sc=fea_glyphname_get(tok, glyphs->name_or_class);
 	 if (sc != NULL) {
@@ -5309,7 +4912,7 @@ static void fea_ParsePosition(struct parseState *tok,int enumer) {
       fea_ParseMarkedGlyphs(tok, true, true, false), *g;
    int cnt;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    for (cnt=0, g=glyphs; g != NULL; g=g->next, ++cnt);
    if (glyphs==NULL) {
       ErrorMsg(2,"Empty position on line %d of %s\n",
@@ -5487,7 +5090,7 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
    int has_single, has_multiple;
 
    /* keywords are allowed in lookup names */
-   fea_ParseTokWithKeywords(tok, false);
+   fea_ParseTok(tok,tm_nokw);
    if (tok->type != tk_name) {
       ErrorMsg(2,"Expected name in lookup on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -5496,7 +5099,7 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
       return;
    }
    lookup_name=fastrdup(tok->tokbuf);
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (could_be_stat && tok->type==tk_char && tok->tokbuf[0]==';') {
       item=chunkalloc(sizeof(struct feat_item));
       item->type=ft_lookup_ref;
@@ -5505,7 +5108,7 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
       tok->sofar=item;
       return;
    } else if (tok->type==tk_useExtension)	/* I just ignore this */
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
    if (tok->type != tk_char || tok->tokbuf[0] != '{') {
       ErrorMsg(2,"Expected '{' in feature definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -5522,7 +5125,7 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
 
    first_after_mark=NULL;
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->err_count > 100)
 	 break;
       if (tok->type==tk_eof) {
@@ -5568,7 +5171,7 @@ static void fea_ParseLookupDef(struct parseState *tok,int could_be_stat) {
 	 }
       }
    }
-   fea_ParseTokWithKeywords(tok, false);
+   fea_ParseTok(tok,tm_nokw);
    if (tok->type != tk_name || strcmp(tok->tokbuf, lookup_name) != 0) {
       ErrorMsg(2,"Expected %s in lookup definition on line %d of %s\n",
 	       lookup_name, tok->line[tok->inc_depth],
@@ -5649,7 +5252,7 @@ static struct nameid *fea_ParseNameId(struct parseState *tok,int strid) {
    /* string in double quotes \XX escapes to MacLatin (for 1) */
    /* I only store 3,1 strings */
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type==tk_int) {
       if (tok->value != 3 && tok->value != 1) {
 	 ErrorMsg(2,"Invalid platform for string on line %d of %s\n",
@@ -5658,14 +5261,18 @@ static struct nameid *fea_ParseNameId(struct parseState *tok,int strid) {
       } else if (tok->value==1) {
 	 specific=language=0;
       }
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type==tk_int) {
 	 specific=tok->value;
-	 tok->base=0;
-	 fea_TokenMustBe(tok, tk_int, '\0');
-	 language=tok->value;
-	 tok->base=10;
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_hexint);
+	 if (tok->type==tk_int)
+	   language=tok->value;
+	 else {
+	    ErrorMsg(2,"Language is not an integer on line %d of %s\n",
+		     tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
+	    ++tok->err_count;
+	 }
+	 fea_ParseTok(tok,tm_generic);
       }
    }
    if (tok->type != tk_char || tok->tokbuf[0] != '"') {
@@ -5681,62 +5288,21 @@ static struct nameid *fea_ParseNameId(struct parseState *tok,int strid) {
 	 nm->platform=platform;
 	 nm->specific=specific;
 	 nm->language=language;
-      } else
+	 fea_ParseTok(tok,tm_string);
+	 nm->utf8_str=tok->nm;
+	 tok->nm=NULL;
+      } else {
 	 nm=NULL;
-      max=0;
-      pt=0;
-      start=NULL;
-      while ((ch=agetc(in)) != EOF && ch != '"') {
-	 if (ch=='\n' || ch=='\r')
-	    continue;		/* Newline characters are ignored here */
-	 /*  may be specified with backslashes */
-	 if (ch=='\\') {
-	    int i, dmax=platform==3 ? 4 : 2;
-
-	    value=0;
-	    for (i=0; i < dmax; ++i) {
-	       ch=agetc(in);
-	       if (!ishexdigit(ch)) {
-		  aungetc(ch, in);
-		  break;
-	       }
-	       if (ch >= 'a' && ch <= 'f')
-		  ch -= ('a' - 10);
-	       else if (ch >= 'A' && ch <= 'F')
-		  ch -= ('A' - 10);
-	       else
-		  ch -= '0';
-	       value <<= 4;
-	       value |= ch;
-	    }
-	 } else
-	    value=ch;
-	 if (nm != NULL) {
-	    if (pt - start + 3 >= max) {
-	       int off=pt - start;
-
-	       start=realloc(start, (max += 100) + 1);
-	       pt=start + off;
-	    }
-	    pt=utf8_idpb(pt, value, 0);
+	 fea_ParseTok(tok,tm_string);
+	 if (tok->nm!=NULL) {
+	    free(tok->nm);
+	    tok->nm=NULL;
 	 }
       }
-      if (nm != NULL) {
-	 if (pt) {
-	    *pt='\0';
-	    nm->utf8_str=fastrdup(start);
-	    free(start);
-	 } else
-	    nm->utf8_str=fastrdup("");
-      }
-      if (tok->type != tk_char || tok->tokbuf[0] != '"') {
-	 ErrorMsg(2,"End of file found in string on line %d of %s\n",
-		  tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
-	 ++tok->err_count;
-      } else
-	 fea_end_statement(tok);
+      
+      fea_end_statement(tok);
    }
-   return (nm);
+   return nm;
 }
 
 static struct feat_item *fea_ParseParameters(struct parseState *tok,
@@ -5750,9 +5316,12 @@ static struct feat_item *fea_ParseParameters(struct parseState *tok,
 
    memset(params, 0, sizeof(params));
    for (i=0; i < 4; ++i) {
-      params[i]=fea_ParseDeciPoints(tok);
-      if (tok->type==tk_char && tok->tokbuf[0]==';')
+      fea_ParseTok(tok,tm_tenths);
+      if (tok->type==tk_char && tok->tokbuf[0]==';') {
+	 fea_UnParseTok(tok);
 	 break;
+      }
+      params[i]=tok->value;
    }
    fea_end_statement(tok);
 
@@ -5802,7 +5371,7 @@ static void fea_ParseFeatureNames(struct parseState *tok,uint32_t tag) {
    /* name [<string attibute>] string; */
 
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type != tk_name && strcmp(tok->tokbuf, "name") != 0)	/* "name" is only a keyword here */
 	 break;
       temp=fea_ParseNameId(tok, -1);
@@ -5841,7 +5410,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
    int type, ret;
    int has_single, has_multiple;
 
-   fea_ParseTag(tok);
+   fea_ParseTok(tok,tm_nokw);
    if (tok->type != tk_name || !tok->could_be_tag) {
       ErrorMsg(2,"Expected tag in feature on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -5866,7 +5435,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
    item->next=tok->sofar;
    tok->sofar=item;
 
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    if (tok->type != tk_char || tok->tokbuf[0] != '{') {
       ErrorMsg(2,"Expected '{' in feature definition on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -5876,7 +5445,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
    }
 
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->err_count > 100)
 	 break;
       if (tok->type==tk_eof) {
@@ -5901,7 +5470,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 			  tok->filename[tok->inc_depth]);
 		 ++tok->err_count;
 	      }
-	      fea_ParseTok(tok);
+	      fea_ParseTok(tok,tm_generic);
 	      if (tok->type != tk_name || !tok->could_be_tag) {
 		 ErrorMsg(2,"Expected tag on line %d of %s\n",
 			  tok->line[tok->inc_depth],
@@ -5914,7 +5483,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 	   case tk_language:
 	      /* If no lang specified after script use 'dflt', if no script specified before a language use 'latn' */
 	      type=tok->type==tk_script ? ft_script : ft_lang;
-	      fea_ParseTok(tok);
+	      fea_ParseTok(tok,tm_generic);
 	      if (tok->type != tk_name || !tok->could_be_tag) {
 		 ErrorMsg(2,"Expected tag on line %d of %s\n",
 			  tok->line[tok->inc_depth],
@@ -5924,7 +5493,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 		 item=fea_AddFeatItem(tok, type, tok->tag);
 		 if (type==ft_lang) {
 		    while (1) {
-		       fea_ParseTok(tok);
+		       fea_ParseTok(tok,tm_generic);
 		       if (tok->type==tk_include_dflt)
 			  /* Unneeded */ ;
 		       else if (tok->type==tk_exclude_dflt)
@@ -5975,7 +5544,7 @@ static void fea_ParseFeatureDef(struct parseState *tok) {
 	 break;
    }
 
-   fea_ParseTag(tok);
+   fea_ParseTok(tok,tm_nokw);
    if (tok->type != tk_name || !tok->could_be_tag || tok->tag != feat_tag) {
       ErrorMsg(2,"Expected '%c%c%c%c' in lookup definition on line %d of %s\n",
 	       feat_tag >> 24, feat_tag >> 16, feat_tag >> 8, feat_tag,
@@ -6025,7 +5594,7 @@ static void fea_ParseNameTable(struct parseState *tok) {
    /* nameid <id> [<string attibute>] string; */
 
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type != tk_nameid)
 	 break;
       fea_TokenMustBe(tok, tk_int, '\0');
@@ -6058,7 +5627,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
    struct feat_item *item;
 
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type != tk_name)
 	 break;
       for (index=0; keys[index].name != NULL; ++index) {
@@ -6076,7 +5645,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	 tv->index=index;
       } else
 	 tv=NULL;
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (strcmp(tok->tokbuf, "Vendor")==0 && tv != NULL) {
 	 /* This takes a 4 character string */
 	 /* of course strings aren't part of the syntax, but it takes one anyway */
@@ -6112,7 +5681,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	    chunkfree(tv, sizeof(*tv));
 	    tv=NULL;
 	 }
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
       } else {
 	 if (tok->type != tk_int) {
 	    ErrorMsg(2,"Expected integer on line %d of %s\n",
@@ -6121,7 +5690,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	    ++tok->err_count;
 	    chunkfree(tv, sizeof(*tv));
 	    tv=NULL;
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	 } else {
 	    if (tv != NULL)
 	       tv->value=tok->value;
@@ -6141,14 +5710,14 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	       if (is_panose)
 		  tv->panose_vals[0]=tv->value;
 	       for (i=1;; ++i) {
-		  fea_ParseTok(tok);
+		  fea_ParseTok(tok,tm_generic);
 		  if (tok->type != tk_int)
 		     break;
 		  if (is_panose && i < 10 && tv != NULL)
 		     tv->panose_vals[i]=tok->value;
 	       }
 	    } else
-	       fea_ParseTok(tok);
+	       fea_ParseTok(tok,tm_generic);
 	 }
       }
       if (tok->type != tk_char || tok->tokbuf[0] != ';') {
@@ -6190,11 +5759,11 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
    int len=0, max=0;
 
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->type != tk_name)
 	 break;
       if (strcmp(tok->tokbuf, "Attach")==0) {
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 /* Bug. Not parsing inline classes */
 	 if (tok->type != tk_class && tok->type != tk_name) {
 	    ErrorMsg(2,"Expected name or class on line %d of %s\n",
@@ -6204,7 +5773,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	    fea_skip_to_semi(tok);
 	 } else {
 	    while (1) {
-	       fea_ParseTok(tok);
+	       fea_ParseTok(tok,tm_generic);
 	       if (tok->type != tk_int)
 		  break;
 	    }
@@ -6223,7 +5792,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	 item->next=tok->sofar;
 	 tok->sofar=item;
 
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 if (tok->type==tk_name)
 	    item->u1.class=fea_glyphname_validate(tok, tok->tokbuf);
 	 else if (tok->type==tk_cid)
@@ -6240,7 +5809,7 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	    continue;
 	 }
 	 while (1) {
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	    if (tok->type==tk_int)
 	       /* Not strictly cricket, but I'll accept it */ ;
 	    else if (tok->type==tk_char && tok->tokbuf[0]=='<')
@@ -6267,11 +5836,11 @@ static void fea_ParseGDEFTable(struct parseState *tok) {
 	 item->next=tok->sofar;
 	 tok->sofar=item;
 	 for (i=0; i < 4; ++i) {
-	    fea_ParseTok(tok);
+	    fea_ParseTok(tok,tm_generic);
 	    if (tok->type==tk_char && ((i < 3 && tok->tokbuf[0]==',') || (i==3 && tok->tokbuf[0]==';')));	/* Skip the placeholder for a missing class definition or a final semicolon */
 	    else if (tok->type==tk_class) {
 	       item->u1.gdef_classes[i]=fea_ParseGlyphClassGuarded(tok);
-	       fea_ParseTok(tok);
+	       fea_ParseTok(tok,tm_generic);
 	       if (tok->type==tk_char && ((i < 3 && tok->tokbuf[0]==',') || (i==3 && tok->tokbuf[0]==';')));	/* skip the delimiting comma or a final semicolon */
 	       else
 		  ErrorMsg(2,"Expected comma or semicolon on line %d of %s\n",
@@ -6316,7 +5885,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 
    memset(&h, 0, sizeof(h));
    memset(&v, 0, sizeof(v));
-   fea_ParseTok(tok);
+   fea_ParseTok(tok,tm_generic);
    while ((tok->type != tk_char || tok->tokbuf[0] != '}')
 	  && tok->type != tk_eof) {
       active=NULL;
@@ -6337,28 +5906,26 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	 fea_skip_to_semi(tok);
 	 if (tok->type==tk_char && tok->tokbuf[0]=='}')
 	    fea_UnParseTok(tok);
-	 fea_ParseTok(tok);
+	 fea_ParseTok(tok,tm_generic);
 	 continue;
       }
-      if (strcmp(tok->tokbuf + off, "BaseTagList")==0) {
+      if (strcmp(tok->tokbuf+off,"BaseTagList")==0) {
 	 cnt=0;
-	 while ((fea_ParseTag(tok), tok->could_be_tag)) {
-	    if (cnt <= sizeof(baselines) / sizeof(baselines[0]))
+	 while ((fea_ParseTok(tok,tm_nokw),tok->could_be_tag)) {
+	    if (cnt<=sizeof(baselines)/sizeof(baselines[0]))
 	       baselines[cnt++]=tok->tag;
 	 }
 	 active->baseline_cnt=cnt;
-	 active->baseline_tags=malloc(cnt * sizeof(uint32_t));
-	 memcpy(active->baseline_tags, baselines, cnt * sizeof(uint32_t));
+	 active->baseline_tags=malloc(cnt*sizeof(uint32_t));
+	 memcpy(active->baseline_tags,baselines,cnt*sizeof(uint32_t));
       } else if (strcmp(tok->tokbuf + off, "BaseScriptList")==0) {
 	 last=NULL;
-	 while ((fea_ParseTag(tok), tok->could_be_tag)) {
+	 while ((fea_ParseTok(tok,tm_nokw), tok->could_be_tag)) {
 	    uint32_t script_tag=tok->tag;
-
 	    uint32_t base_tag;
-
 	    int err=0;
 
-	    fea_ParseTag(tok);
+	    fea_ParseTok(tok,tm_nokw);
 	    if (!tok->could_be_tag) {
 	       err=1;
 	       ErrorMsg(2,"Expected baseline tag in BASE table on line %d of %s\n",
@@ -6368,7 +5935,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	    } else
 	       base_tag=tok->tag;
 	    for (i=0; i < cnt && !err; ++i) {
-	       fea_ParseTok(tok);
+	       fea_ParseTok(tok,tm_generic);
 	       if (tok->type != tk_int) {
 		  err=1;
 		  ErrorMsg(2,"Expected an integer specifying baseline positions in BASE table on line %d of %s\n",
@@ -6395,7 +5962,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 		  }
 	       }
 	    }
-	    fea_ParseTag(tok);
+	    fea_ParseTok(tok,tm_nokw);
 	    if (tok->type==tk_char && tok->tokbuf[0]==';')
 	       break;
 	    else if (tok->type != tk_char || tok->tokbuf[0] != ',') {
@@ -6423,7 +5990,7 @@ static void fea_ParseBaseTable(struct parseState *tok) {
 	 if (tok->type==tk_char && tok->tokbuf[0]=='}')
 	    fea_UnParseTok(tok);
       }
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
    }
    if (tok->err_count==0) {
       if (h.baseline_cnt != 0) {
@@ -6443,7 +6010,7 @@ static void fea_ParseTableDef(struct parseState *tok) {
    uint32_t table_tag;
    struct feat_item *item;
 
-   fea_ParseTag(tok);
+   fea_ParseTok(tok,tm_nokw);
    if (tok->type != tk_name || !tok->could_be_tag) {
       ErrorMsg(2,"Expected tag in table on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -6490,7 +6057,7 @@ static void fea_ParseTableDef(struct parseState *tok) {
 	break;
    }
 
-   fea_ParseTag(tok);
+   fea_ParseTok(tok,tm_nokw);
    if (tok->type != tk_name || !tok->could_be_tag || tok->tag != table_tag) {
       ErrorMsg(2,"Expected matching tag in table on line %d of %s\n",
 	       tok->line[tok->inc_depth], tok->filename[tok->inc_depth]);
@@ -6610,7 +6177,7 @@ static void fea_featitemFree(struct feat_item *item) {
 
 static void fea_ParseFeatureFile(struct parseState *tok) {
    while (1) {
-      fea_ParseTok(tok);
+      fea_ParseTok(tok,tm_generic);
       if (tok->err_count > 100)
 	 break;
       switch (tok->type) {
@@ -7878,7 +7445,6 @@ void SFApplyFeatureFile(SplineFont *sf, AFILE *file, char *filename) {
    tok.line[0]=1;
    tok.filename[0]=filename;
    tok.inlist[0]=file;
-   tok.base=10;
    if (sf->cidmaster)
       sf=sf->cidmaster;
    tok.sf=sf;
