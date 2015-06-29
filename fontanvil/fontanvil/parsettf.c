@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: parsettf.c 4071 2015-06-29 09:11:43Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -5498,7 +5498,8 @@ static void readttfpostnames(AFILE *ttf,struct ttfinfo *info) {
    /*  (even type42)                                                         */
    if (xuid != NULL && info->fd==NULL && info->xuid==NULL) {
       info->xuid=malloc(strlen(xuid) + 20);
-      sprintf(info->xuid, "[%s %d]", xuid, (rand() & 0xffffff));
+      sprintf(info->xuid,"[%s %d]",xuid,
+	      (sfmt_genrand_uint32(&fa_sfmt)&0xffffff));
    }
 
    if (info->postscript_start != 0) {

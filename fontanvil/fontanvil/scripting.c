@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: scripting.c 4073 2015-06-29 09:41:13Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -5615,7 +5615,12 @@ static void bQuit(Context *c) {
 
 static void bRand(Context *c) {
    c->return_val.type=v_int;
-   c->return_val.u.ival=rand();
+   c->return_val.u.ival=sfmt_genrand_uint32(&fa_sfmt)&0x7FFFFFFF;
+}
+
+static void bRandReal(Context *c) {
+   c->return_val.type=v_real;
+   c->return_val.u.fval=sfmt_to_real2(sfmt_genrand_uint32(&fa_sfmt));
 }
 
 static void bReadOtherSubrsFile(Context *c) {
@@ -8455,6 +8460,7 @@ static struct builtins {
    {"PrivateGuess", bPrivateGuess, 0,2,2,0},
    {"Quit", bQuit, 1,0,2,0},
    {"Rand", bRand, 1,1,1,0},
+   {"RandReal", bRandReal, 1,1,1,0},
    {"ReadOtherSubrsFile", bReadOtherSubrsFile, 1,2,2,0},
    {"Real", bReal, 1,2,2,0},
    {"Reencode", bReencode, 0,2,3,0},
@@ -9310,14 +9316,16 @@ static void add(Context *c,Val *val) {
 	 dereflvalif(val);
 	 dereflvalif(&other);
 	 if (val->type==v_str
-	     && (other.type==v_str || other.type==v_int)
+	     && (other.type==v_str || other.type==v_int || other.type==v_real)
 	     && tok==tt_plus) {
 	    char *ret, *temp;
-
-	    char buffer[10];
+	    char buffer[24];
 
 	    if (other.type==v_int) {
 	       sprintf(buffer, "%d", other.u.ival);
+	       temp=buffer;
+	    } else if (other.type==v_real) {
+	       sprintf(buffer, "%g", other.u.fval);
 	       temp=buffer;
 	    } else
 	       temp=other.u.sval;

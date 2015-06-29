@@ -116,7 +116,7 @@ endif
 PL_LOG_COMPILER = @PERL@
 
 TESTS = \
-  tests/arithmetic.pe \
+  tests/arithmetic.pe tests/feamerge.pe \
   tests/test001.pe tests/test002.pe tests/test003.pe tests/test004.pe \
   tests/test005.pe tests/test006.pe tests/test007.pe tests/test008.pe \
   tests/test009.pe tests/test010.pe tests/test101.pe tests/test102.pe \
@@ -127,9 +127,11 @@ TESTS = \
   tests/test119.pe tests/test120.pe tests/test121.pe tests/test122.pe \
   tests/test123.pe tests/test124.pe tests/test125.pe tests/test126.pe \
   tests/test127.pe \
-  tests/coverage.pl
+  tests/coverage.pl tests/feart.pl
 
 tests/coverage.log: $(patsubst %.pe,%.log,$(filter tests/%.pe,$(TESTS)))
+
+tests/feart.log: tests/feamerge.log
 
 $(TESTS): ttmp/.dirstamp fontanvil/fontanvil
 
@@ -182,7 +184,8 @@ noinst_HEADERS = \
   inc/nonlineartrans.h inc/sd.h inc/unicoderange.h \
   inc/bitmapcontrol.h inc/encoding.h \
   inc/search.h inc/usermenu.h inc/fffreetype.h \
-  inc/PfEd.h inc/sfd1.h \
+  inc/PfEd.h inc/SFMT.h inc/SFMT-params.h inc/SFMT-params19937.h \
+  inc/SFMT-common.h inc/sfd1.h \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
   inc/cvruler.h inc/ffglib.h inc/gb12345.h \
   fontanvil/feascan.h fontanvil/macenctab.h fontanvil/nonmactab.h
@@ -213,8 +216,8 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/parsettf.c fontanvil/parsettfvar.c fontanvil/print.c \
  fontanvil/psread.c fontanvil/pua.c fontanvil/python.c fontanvil/savefont.c \
  fontanvil/scripting.c fontanvil/scstyles.c fontanvil/search.c \
- fontanvil/sfd1.c fontanvil/sfd.c fontanvil/sflayout.c inc/sfundo.h \
- fontanvil/spiro.c fontanvil/splinechar.c fontanvil/splinefill.c \
+ fontanvil/SFMT.c fontanvil/sfd1.c fontanvil/sfd.c fontanvil/sflayout.c \
+ inc/sfundo.h fontanvil/spiro.c fontanvil/splinechar.c fontanvil/splinefill.c \
  fontanvil/splinefont.c fontanvil/splineorder2.c fontanvil/splineoverlap.c \
  fontanvil/splinesaveafm.c fontanvil/splinesave.c fontanvil/splinestroke.c \
  fontanvil/splineutil2.c fontanvil/splineutil.c \

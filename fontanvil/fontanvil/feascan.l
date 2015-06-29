@@ -1,4 +1,4 @@
-/* $Id: feascan.l 4069 2015-06-28 19:55:59Z mskala $ */
+/* $Id: feascan.l 4070 2015-06-29 06:49:37Z mskala $ */
 /*
  * Tokenizer for Adobe-style feature files
  * Copyright (C) 2015  Matthew Skala
@@ -31,10 +31,13 @@
 #include "feascan.h"
 
 #define YY_DECL void fea_ParseTok(struct parseState *tok,TOKENIZER_MODE tm)
+   
+static struct parseState *gtok;
 
 /* FIXME it'd be nice to make this do better buffering */
 #define YY_INPUT(buf,result,max_size) \
-   { int ch=agetc((AFILE *)yyin); result=(ch<0)?YY_NULL:(buf[0]=ch,1); }
+   { int ch=agetc(gtok->inlist[gtok->inc_depth]); \
+      result=(ch<0)?YY_NULL:(buf[0]=ch,1); }
 
 %}
 
@@ -60,8 +63,8 @@
       return;
    }
 
-   if (yyin==NULL)
-     yyin=(FILE *)(tok->inlist[tok->inc_depth]);
+   yyin=NULL;
+   gtok=tok;
 
    switch (tm) {
     case tm_nokw:
@@ -141,7 +144,6 @@
    if (tok->inc_depth>0) {
       afclose(tok->inlist[tok->inc_depth]);
       free(tok->filename[tok->inc_depth]);
-      yyin=(FILE *)(tok->inlist[--tok->inc_depth]);
       yypop_buffer_state();
    } else {
       tok->type=tk_eof;
@@ -197,8 +199,7 @@ include[ \t]*\([ \t]*[^ \t\)]+[ \t]*\)	{
       tok->inlist[tok->inc_depth]=in;
       tok->line[tok->inc_depth]=1;
 
-      yyin=(FILE *)in;
-      yypush_buffer_state(yy_create_buffer(yyin,YY_BUF_SIZE));
+      yypush_buffer_state(yy_create_buffer(NULL,YY_BUF_SIZE));
 
    } while (0);
 }

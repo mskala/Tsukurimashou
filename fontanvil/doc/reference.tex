@@ -838,9 +838,37 @@ This function may be used without a loaded font.
 
 \PEFuncRef{Rand}
 
-\noindent\texttt{Rand(}\texttt{)}
+\noindent\texttt{Rand()}
 
-This function may be used without a loaded font.
+Returns something called ``a random integer.''
+
+FontForge \FFdiff does not document what that means.  In fact, in FontForge
+it means whatever comes out of a call to the C
+library \texttt{rand()} function, and what that actually is will vary
+depending on the host platform.  FontAnvil uses a bundled copy of the
+SIMD-oriented Fast Mersenne Twister by Saito and Matsumoto.  The return
+values are uniformly distributed over the integers 0 to $2^{31}-1$, that is
+0 to 2147483647 (32-bit integers from the generator with the high bit forced
+to zero to prevent signedness problems).  The generator is seeded from the
+system clock and process ID when the interpreter starts.  The same generator
+instance is used throughout FontAnvil wherever random numbers are called
+for, including in operations that do not obviously involve randomization (as
+a result of UUID generation and such).  Thus, scripts should not depend on
+its producing a consistent sequence of numbers.
+
+This function may be used without a loaded font.  See \texttt{RandReal()}
+for a related function that may be of use.
+
+\PEFuncRef{RandReal}
+
+\noindent\texttt{RandReal()}
+
+Return a pseudorandom real number in the interval $[0,1)$.  This uses the
+same underlying generator as \texttt{Rand()}, which see; but its output
+range may be more convenient.  In principle, \texttt{RandReal()} may also
+have slightly better precision, because it uses all 32 bits of the PRNG
+output.  This \FFdiff function is a FontAnvil extension and is not available
+in FontForge.  This function may be used without a loaded font.
 
 \PEFuncRef{ReadOtherSubrsFile}
 

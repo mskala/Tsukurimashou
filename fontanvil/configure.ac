@@ -609,33 +609,129 @@ AC_OUTPUT
 #
 AS_ECHO([])
 TSU_COLOURISE([Configuration status],[5])AS_ECHO([])
+#
 AS_ECHO([])
 TSU_COLOURISE([Requirements for all builds],[7])AS_ECHO([])
-AS_ECHO([])
-TSU_COLOURISE([Requirements for source control builds],[7])AS_ECHO([])
-AS_ECHO_N([autoconf       ])
-# AS_IF([test "x$AUTOCONF" = "x"],
-#   [TSU_COLOURISE([yes],[2])],[TSU_COLOURISE([no],[3])])AS_ECHO([])
-# AS_ECHO_N([automake       ])
-# AS_IF([test "x$AUTOMAKE" = "x"],
-#   [TSU_COLOURISE([yes],[2])],[TSU_COLOURISE([no],[3])])AS_ECHO([])
+AS_ECHO_N(["gzip              "])
+  AS_IF([test "x$GZIP" = "x"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://gzip.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["perl              "])
+  AS_IF([test "x$PERL" = "x"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://perl.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+#
+AS_IF([test -e "$srcdir/.checked_out"],[
+  AS_ECHO([])
+  TSU_COLOURISE([Requirements for source control builds],[7])AS_ECHO([])
+  AS_ECHO_N(["autoconf          "])
+    AS_IF([test "x$AUTOCONF" = "x"],
+      [TSU_COLOURISE([no],[1])
+       AS_ECHO_N(["     http://gnu.org/software/autoconf/"])],
+      [TSU_COLOURISE([yes],[2])])
+    AS_ECHO([])
+  AS_ECHO_N(["automake          "])
+    AS_IF([test "x$AUTOMAKE" = "x"],
+      [TSU_COLOURISE([no],[1])
+       AS_ECHO_N(["     http://gnu.org/software/automake/"])],
+      [TSU_COLOURISE([yes],[2])])
+    AS_ECHO([])
+  AS_ECHO_N(["icemap            "])
+    AS_IF([test "x$ICEMAP" = "x"],
+      [TSU_COLOURISE([no],[1])
+       AS_ECHO_N(["     http://tsukurimashou.osdn.jp/"])],
+      [TSU_COLOURISE([yes],[2])])
+    AS_ECHO([])
+  AS_ECHO_N(["lex               "])
+    AS_IF([test "x$LEX" = "x"],
+      [TSU_COLOURISE([no],[1])
+       AS_ECHO_N(["     http://flex.sourceforge.net/"])],
+      [TSU_COLOURISE([yes],[2])])
+    AS_ECHO([])
+  ])
+#
 AS_ECHO([])
 TSU_COLOURISE([Optional items],[7])AS_ECHO([])
-# AS_ECHO_N([cflow          ])
-# AS_IF([test "x$CFLOW" = "x"],
-#   [TSU_COLOURISE([yes],[2])],[TSU_COLOURISE([no],[3])])AS_ECHO([])
-#
-# Warn about missing prerequisites
-#
-
-# FontForge's advisory URLs, for reference when revising this section:
-# freetype_url="http://www.freetype.org/"
-# giflib_url="http://giflib.sourceanvil.net/"
-# libpng_url="http://www.libpng.org/"
-# libxml_url="http://www.xmlsoft.org/"
-# libspiro_url="https://github.com/fontanvil/libspiro"
-# libuninameslist_url="https://github.com/fontanvil/libuninameslist"
-# libunicodenames_url="https://bitbucket.org/sortsmill/libunicodenames"
-# libreadline_url="http://www.gnu.org/software/readline"
-# libjpeg_url="http://en.wikipedia.org/wiki/Libjpeg"
-# libtiff_url="http://en.wikipedia.org/wiki/Libtiff"
+AS_ECHO_N(["cflow             "])
+  AS_IF([test "x$CFLOW" = "x"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://gnu.org/software/cflow/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["giflib            "])
+  AS_IF([test "x$with_giflib" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://giflib.sourceforge.net/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["kleknev           "])
+  AS_IF([test "x$KLEKNEV" = "x"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://tsukurimashou.osdn.jp/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["libjpeg           "])
+  AS_IF([test "x$with_libjpeg" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://ijg.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["libpng            "])
+  AS_IF([test "x$with_libpng" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://libpng.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["libreadline       "])
+  AS_IF([test "x$with_libreadline" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://gnu.org/software/readline/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["libspiro          "])
+  AS_IF([test "x$with_libspiro" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     https://github.com/fontforge/libspiro/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["libtiff           "])
+  AS_IF([test "x$with_libtiff" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://libtiff.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["libunicodenames   "])
+  AS_IF([test "x$with_libunicodenames" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     https://bitbucket.org/sortsmill/libunicodenames/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["libuninameslist   "])
+  AS_IF([test "x$with_libuninameslist" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     https://github.com/fontforge/libuninameslist/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["libxml            "])
+  AS_IF([test "x$with_libxml" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://xmlsoft.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["TeX               "])
+  AS_IF([test "x$KPSEWHICH" = "x"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://tug.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["valgrind          "])
+  AS_IF([test "x$VALGRIND" = "x"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://valgrind.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO([])

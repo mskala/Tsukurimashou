@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: dumppfa.c 4071 2015-06-29 09:11:43Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1833,7 +1833,7 @@ static void dumprequiredfontinfo(AFILE *f, SplineFont *sf, int format,
       cnt += 7;
 
    if (sf->uniqueid==0)
-      uniqueid=4000000 + (rand() & 0x3ffff);
+      uniqueid=4000000+(sfmt_genrand_uint32(&fa_sfmt)&0x3ffff);
    else
       uniqueid=sf->uniqueid;
    sf->tempuniqueid=uniqueid;
@@ -2100,7 +2100,7 @@ static void dumptype42(AFILE *out,SplineFont *sf,int format,int flags,
    dumpfontinfo(out, sf, format);
 
    if (sf->uniqueid==0)
-      uniqueid=4000000 + (rand() & 0x3ffff);
+      uniqueid=4000000+(sfmt_genrand_uint32(&fa_sfmt)&0x3ffff);
    else
       uniqueid=sf->uniqueid;
    sf->tempuniqueid=uniqueid;
@@ -2556,7 +2556,7 @@ static int dumpcidstuff(AFILE *out,SplineFont *cidmaster,int flags,
    if (cidmaster->use_uniqueid) {
       afprintf(out, "/UIDBase %d def\n",
 	      cidmaster->uniqueid?cidmaster->uniqueid:4000000 +
-	      (rand() & 0x3ffff));
+	      (sfmt_genrand_uint32(&fa_sfmt)&0x3ffff));
       if (cidmaster->xuid != NULL && cidmaster->use_xuid) {
 	 afprintf(out, "/XUID %s def\n", cidmaster->xuid);
 	 /* SFIncrementXUID(cidmaster); *//* Unique ID managment in CID fonts is too complex for this simple trick to work */

@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: splineutil2.c 4071 2015-06-29 09:11:43Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3296,7 +3296,8 @@ SplineFont *SplineFontBlank(int charcnt) {
     sf->copyright=fastrdup(buffer);
     if (xuid!=NULL) {
 	sf->xuid=malloc(strlen(xuid)+20);
-	sprintf(sf->xuid,"[%s %d]", xuid, (rand()&0xffffff));
+	sprintf(sf->xuid,"[%s %d]",xuid,
+		(sfmt_genrand_uint32(&fa_sfmt)&0xffffff));
     }
     sprintf(buffer, "%d-%d-%d: Created with FontAnvil", tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday);
     sf->comments=fastrdup(buffer);
@@ -3340,7 +3341,7 @@ static void SFChangeXUID(SplineFont *sf,int random) {
     else
 	++pt;
     if (random)
-	val=rand()&0xffffff;
+	val=sfmt_genrand_uint32(&fa_sfmt)&0xffffff;
     else {
 	val=strtol(pt,NULL,10);
 	val=(val+1)&0xffffff;

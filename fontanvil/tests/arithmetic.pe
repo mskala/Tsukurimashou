@@ -98,7 +98,8 @@ elsif (x>1.0371550)
   Print('ERROR')
 endif
 
-Print('Three random numbers:  '+Rand()+' '+Rand()+' '+Rand())
+Print('Three random integers:  '+Rand()+' '+Rand()+' '+Rand())
+Print('Three random reals:  '+RandReal()+' '+RandReal()+' '+RandReal())
 
 x=1/1000
 Print("1/1000 (as integers) = "+ToString(x))

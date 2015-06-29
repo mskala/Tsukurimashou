@@ -1,4 +1,4 @@
-/* $Id: start.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: start.c 4071 2015-06-29 09:11:43Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -47,6 +47,9 @@
 
 #include "unicodelibinfo.h"
 #include "gb12345.h"
+#include "SFMT.h"
+
+sfmt_t fa_sfmt;
 
 int32_t unicode_from_adobestd[256];
 
@@ -69,10 +72,13 @@ static void initadobeenc(void) {
 
 static void initrand(void) {
    struct timeval tv;
+   uint32_t seed[3];
 
    gettimeofday(&tv, NULL);
-   srand(tv.tv_usec);
-   g_random_set_seed(tv.tv_usec);
+   seed[0]=tv.tv_sec;
+   seed[1]=tv.tv_usec;
+   seed[2]=getpid();
+   sfmt_init_by_array(&fa_sfmt,seed,3);
 }
 
 static void DefaultXUID(void) {
@@ -84,15 +90,10 @@ static void DefaultXUID(void) {
    char buffer[50];
    struct timeval tv;
 
+   r1=sfmt_genrand_uint32(&fa_sfmt)&0x3ff;
    gettimeofday(&tv, NULL);
-   srand(tv.tv_usec);
-   do {
-      r1=rand() & 0x3ff;
-   } while (r1==0);		/* I reserve "0" for me! */
-   gettimeofday(&tv, NULL);
-   g_random_set_seed(tv.tv_usec + 1);
-   r2=g_random_int();
-   sprintf(buffer, "1021 %d %d", r1, r2);
+   r2=sfmt_genrand_uint32(&fa_sfmt)&0x7FFFFFF;
+   sprintf(buffer, "1021 %d %d", r1+1, r2);
    free(xuid);
    xuid=fastrdup(buffer);
 }
@@ -111,8 +112,6 @@ void InitSimpleStuff(void) {
 
    setlocale(LC_ALL, "");
    localeinfo=*localeconv();
-
    inituninameannot();		/* Note: unicodenames done after locales set */
-
    DefaultXUID();
 }

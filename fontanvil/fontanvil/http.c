@@ -1,4 +1,4 @@
-/* $Id: http.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: http.c 4071 2015-06-29 09:11:43Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -89,13 +89,16 @@ static int findhost(struct sockaddr_in *addr,char *hostname) {
 	 return (0);
    }
    for (i=0; hostent->h_addr_list[i] != NULL; ++i);
-   memcpy(&addr->sin_addr, hostent->h_addr_list[rand() % i],
+   memcpy(&addr->sin_addr,
+	  hostent->h_addr_list[sfmt_genrand_uint32(&fa_sfmt)%i],
 	  hostent->h_length);
    if (hostent->h_length < sizeof(last_addr)) {	/* Cache the last hostname, in case they ask for it again */
       free(last_host);
       last_host=fastrdup(hostname);
       last_len=hostent->h_length;
-      memcpy(last_addr, hostent->h_addr_list[rand() % i], hostent->h_length);
+      memcpy(last_addr,
+	     hostent->h_addr_list[sfmt_genrand_uint32(&fa_sfmt)%i],
+	     hostent->h_length);
    }
    endhostent();
    return (1);

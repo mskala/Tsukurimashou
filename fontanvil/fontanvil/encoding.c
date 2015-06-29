@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: encoding.c 4070 2015-06-29 06:49:37Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -962,7 +962,7 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
 	    maybefile=NULL;
 	 }
       } else {
-	 file=utf82def_copy(uret);
+	 file=fastrdup(uret);
 	 free(uret);
       }
    }

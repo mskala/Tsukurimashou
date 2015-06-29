@@ -1,4 +1,4 @@
-/* $Id: fontanvil.h 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: fontanvil.h 4071 2015-06-29 09:11:43Z mskala $ */
 /*
  * Global header for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -45,6 +45,13 @@ typedef uint32_t unichar_t;
 #include "afile.h"
 
 extern char *fastrdup(const char *);
+
+/**********************************************************************/
+
+#define SFMT_MEXP 19937
+#include "SFMT.h"
+
+extern sfmt_t fa_sfmt;
 
 /**********************************************************************/
 

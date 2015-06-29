@@ -1,4 +1,4 @@
-/* $Id: psread.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: psread.c 4071 2015-06-29 09:11:43Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -4228,16 +4228,14 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 sp -= 3;
 	      }
 	      break;
-	   case 23:		/* random */
-	      /* This function returns something (0,1]. It's not clear to me */
-	      /*  if rand includes 0 and RAND_MAX or not, but this approach */
-	      /*  should work no matter what */
-	      do {
-		 stack[sp]=(rand() / (RAND_MAX - 1));
-	      } while (stack[sp]==0 || stack[sp] > 1);
-	      ++sp;
-	      break;
-	   case 16:		/* callothersubr */
+	  case 23:		/* random */
+	    /* This function returns something (0,1]. It's not clear to me */
+	    /*  if rand includes 0 and RAND_MAX or not, but this approach */
+	    /*  should work no matter what */
+	    stack[sp]=1.0-sfmt_to_real2(sfmt_genrand_uint32(&fa_sfmt));
+	    sp++;
+	    break;
+	  case 16:		/* callothersubr */
 	      /* stack[sp-1] is the number of the thing to call in the othersubr array */
 	      /* stack[sp-2] is the number of args to grab off our stack and put on the */
 	      /*  real postscript stack */

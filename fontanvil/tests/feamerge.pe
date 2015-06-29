@@ -1,0 +1,33 @@
+#!/usr/local/bin/fontanvil
+
+if (FileAccess("../sfd/tsuku-kg.sfd")<0)
+  Quit(77)
+endif
+if (FileAccess("../fea/tsuku.fea")<0)
+  Quit(77)
+endif
+if (FileAccess("../fea/tsuku-kg-name.fea")<0)
+  Quit(77)
+endif
+if (FileAccess("../fea/monospace.fea")<0)
+  Quit(77)
+endif
+
+Open("../sfd/tsuku-kg.sfd")
+MergeFeature("../fea/tsuku.fea")
+MergeFeature("../fea/tsuku-kg-name.fea")
+MergeFeature("../fea/monospace.fea")
+Generate("ttmp/TsukurimashouKaku.otf")
+GenerateFeatureFile("ttmp/tsuku-kg1.fea")
+Close()
+
+Open("../sfd/tsuku-kg.sfd")
+MergeFeature("ttmp/tsuku-kg1.fea")
+GenerateFeatureFile("ttmp/tsuku-kg2.fea")
+Close()
+
+Open("../sfd/tsuku-kg.sfd")
+MergeFeature("ttmp/tsuku-kg2.fea")
+GenerateFeatureFile("ttmp/tsuku-kg3.fea")
+
+Quit(0)
