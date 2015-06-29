@@ -142,7 +142,7 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2014, 2015 Matthew Skala])
-AC_SUBST([release_date],["March 2, 2014"])
+AC_SUBST([release_date],["June 29, 2015"])
 AM_SILENT_RULES
 AC_USE_SYSTEM_EXTENSIONS
 #

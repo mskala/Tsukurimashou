@@ -4,7 +4,14 @@
 
 Quit(77) # need a font...
 
-Open("tests/fonts/HanSans-Bold.otf");
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/HanSans-Bold.otf");
 Print( "...Read HanSans-Bold.otf")
 Generate("ttmp/HansSansBold.otf");
 Print( "...Generated otf (cid)")

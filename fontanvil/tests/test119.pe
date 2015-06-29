@@ -5,7 +5,14 @@
 # control points, but must not be because the instructions depend on it
 # being there.
 
-Open("tests/fonts/DejaVuSerif.sfd")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/DejaVuSerif.sfd")
 Reencode("original")
 cnt=CharCnt()
 ptcnts = Array(cnt)

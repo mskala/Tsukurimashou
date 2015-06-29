@@ -1,32 +1,39 @@
 #!/usr/local/bin/fontanvil
 
-if (FileAccess("../sfd/tsuku-kg.sfd")<0)
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"../sfd/tsuku-kg.sfd")<0)
   Quit(77)
 endif
-if (FileAccess("../fea/tsuku.fea")<0)
+if (FileAccess(srcdir+"../fea/tsuku.fea")<0)
   Quit(77)
 endif
-if (FileAccess("../fea/tsuku-kg-name.fea")<0)
+if (FileAccess(srcdir+"../fea/tsuku-kg-name.fea")<0)
   Quit(77)
 endif
-if (FileAccess("../fea/monospace.fea")<0)
+if (FileAccess(srcdir+"../fea/monospace.fea")<0)
   Quit(77)
 endif
 
-Open("../sfd/tsuku-kg.sfd")
-MergeFeature("../fea/tsuku.fea")
-MergeFeature("../fea/tsuku-kg-name.fea")
-MergeFeature("../fea/monospace.fea")
+Open(srcdir+"../sfd/tsuku-kg.sfd")
+MergeFeature(srcdir+"../fea/tsuku.fea")
+MergeFeature(srcdir+"../fea/tsuku-kg-name.fea")
+MergeFeature(srcdir+"../fea/monospace.fea")
 Generate("ttmp/TsukurimashouKaku.otf")
 GenerateFeatureFile("ttmp/tsuku-kg1.fea")
 Close()
 
-Open("../sfd/tsuku-kg.sfd")
+Open(srcdir+"../sfd/tsuku-kg.sfd")
 MergeFeature("ttmp/tsuku-kg1.fea")
 GenerateFeatureFile("ttmp/tsuku-kg2.fea")
 Close()
 
-Open("../sfd/tsuku-kg.sfd")
+Open(srcdir+"../sfd/tsuku-kg.sfd")
 MergeFeature("ttmp/tsuku-kg2.fea")
 GenerateFeatureFile("ttmp/tsuku-kg3.fea")
 

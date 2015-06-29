@@ -3,11 +3,18 @@
 #Needs: fonts/feta20.pfb
 #Make sure remove overlap sort of works...
 
-Open("tests/fonts/OverlapBugs.sfd")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/OverlapBugs.sfd")
 SelectAll();
 RemoveOverlap();
 
-Open("tests/fonts/feta20.pfb");
+Open(srcdir+"tests/fonts/feta20.pfb");
 SelectAll();
 RemoveOverlap();
 GetCoverageCounts()

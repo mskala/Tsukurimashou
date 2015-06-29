@@ -4,6 +4,13 @@
 # exist, then we'd get random crashes. (Characters would not exist because
 # they would be empty and would be omitted when saving the sfd).
 
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
 Print("A warning about 'Bad kerning' is ok")
-Open("tests/fonts/OmittedCharBugs.sfd")
+Open(srcdir+"tests/fonts/OmittedCharBugs.sfd")
 GetCoverageCounts()

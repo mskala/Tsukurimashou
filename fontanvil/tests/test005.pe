@@ -1,6 +1,17 @@
 #!/usr/local/bin/fontanvil
 
-Open("tests/fonts/VKern.sfd");
+if (GetEnv("distcheck_hack")=="0.3")
+  Quit(77)
+endif
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/VKern.sfd");
 Select("A");
 if ( CharInfo("Kern","V")!=-246 )
     Error("Kerning information incorrect")

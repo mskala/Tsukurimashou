@@ -1,7 +1,14 @@
 #!/usr/local/bin/fontanvil
 #Needs: fonts/CaslonMM.sfd
 
-Open("tests/fonts/CaslonMM.sfd");
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/CaslonMM.sfd");
 Generate("ttmp/Caslon.mm.pfa")
 Close()
 Open("ttmp/Caslon.mm.pfa")

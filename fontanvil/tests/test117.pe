@@ -3,7 +3,14 @@
 
 Quit(77) # Needs a missing font file
 
-Open("tests/fonts/ecrm1000.pfa")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/ecrm1000.pfa")
 MergeKern("tests/fonts/ecrm1000.tfm")
 Generate("ttmp/ecrm.ttf","",0x200)
 Open("ttmp/ecrm.ttf")

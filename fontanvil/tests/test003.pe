@@ -4,7 +4,14 @@
 
 Quit(77) # need a font...
 
-Open("tests/fonts/MunhwaGothic-Bold");
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/MunhwaGothic-Bold");
 Print( "...Read MunhwaGothic-Bold (ps cid)")
 Generate("ttmp/MunhwaGothic-Bold.otf");
 Print( "...Generated otf (cid)")

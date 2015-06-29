@@ -1,7 +1,18 @@
 #!/usr/local/bin/fontanvil
 #Needs: fonts/DataURI.sfd
 
-Open("tests/fonts/DataURI.sfd");
+if (GetEnv("distcheck_hack")=="0.3")
+  Quit(77)
+endif
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/DataURI.sfd");
 Generate("ttmp/DataURI.svg");
 Generate("ttmp/DataURI.pt3");
 Open("ttmp/DataURI.svg");

@@ -2,5 +2,14 @@
 #Needs: fonts/Ambrosia*.sfd
 #Make sure we can generate a font family
 
-helper107.pe("tests/fonts/Ambrosia.sfd", "tests/fonts/AmbrosiaBold.sfd", "tests/fonts/AmbrosiaItalic.sfd");
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+helper107.pe(srcdir+"tests/fonts/Ambrosia.sfd", \
+  srcdir+"tests/fonts/AmbrosiaBold.sfd", \
+  srcdir+"tests/fonts/AmbrosiaItalic.sfd");
 GetCoverageCounts()

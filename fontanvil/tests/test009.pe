@@ -4,7 +4,14 @@
 
 Quit(77) # needs a missing file
 
-Open("tests/fonts/Ambrosia.pt3");
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/Ambrosia.pt3");
 Print( "...Read Ambrosia.pt3")
 Generate("ttmp/Ambrosia.pt3");
 Print( "...Generated type3")

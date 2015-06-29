@@ -5,12 +5,19 @@
 
 Quit(77) # need a font...
 
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
 #Yes, mingliu doesn't work without the ttf instructions, but that is irrelevant
 #here. I'm just looking for the smallest ttc file I've got.
 
 Print( "...It's ok to get errors about 'Attempt to encode missing glyphs'")
 Print( " or 'Glyph index out of bounds'")
-Open("tests/fonts/mingliu.ttc(PMingLiU)");
+Open(srcdir+"tests/fonts/mingliu.ttc(PMingLiU)");
 Print( "...Read mingliu.ttc(PMingLiU)")
 Generate("ttmp/pmingliu.ttf","bdf");
 Print( "...Generated ttf")

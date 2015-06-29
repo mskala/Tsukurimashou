@@ -3,7 +3,14 @@
 
 #Another point number test based on glyphs from deja-vu
 
-Open("tests/fonts/NumberPoints.sfd")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/NumberPoints.sfd")
 Reencode("original")
 cnt=CharCnt()
 ptcnts = Array(cnt)

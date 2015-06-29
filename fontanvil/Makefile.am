@@ -90,6 +90,12 @@ TSU_V_MAKE_=$(TSU_V_MAKE_$(AM_DEFAULT_VERBOSITY))
 TSU_V_MAKE_0=@$(ECHO_ANSI) \
   "$(ansi_cleareol)  $(ansi_white)MAKE$(ansi_default)  " $@;
 
+TSU_V_RM=$(TSU_V_RM_$(V))
+TSU_V_RM_=$(TSU_V_RM_$(AM_DEFAULT_VERBOSITY))
+TSU_V_RM_0=@echo \
+  "$(ansi_cleareol)   $(ansi_red)RM$(ansi_default)   "
+TSU_V_RM_1=@true
+
 TSU_V_TEX=$(TSU_V_TEX_$(V))
 TSU_V_TEX_=$(TSU_V_TEX_$(AM_DEFAULT_VERBOSITY))
 TSU_V_TEX_0=@$(ECHO_ANSI) \
@@ -270,6 +276,7 @@ EXTRA_DIST = COPYING README \
   $(texfiles) doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
   fontanvil/fontimage.pe fontanvil/fontlint.pe fontanvil/sfddiff.pe \
   $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) share/default-n \
+  tests/helper107.pe tests/helper118A.pe tests/helper118B.pe \
   tests/fonts/AHBugs.sfd tests/fonts/AddExtremumTest.sfd \
   tests/fonts/Ambrosia.sfd tests/fonts/AmbrosiaBold.sfd \
   tests/fonts/AmbrosiaItalic.sfd tests/fonts/Caliban.sfd \
@@ -281,8 +288,6 @@ EXTRA_DIST = COPYING README \
   tests/fonts/QuadraticConversionBug.sfd tests/fonts/SimplifyBugs.sfd \
   tests/fonts/SplineOverlapBug1.sfd tests/fonts/VKern.sfd \
   tests/fonts/dvng10a-crash.sfd tests/fonts/feta20.pfb
-
-DISTCHECK_CONFIGURE_FLAGS = --enable-debug
 
 # FIXME FontForge claims that splinerefigure.c requires special handling
 # to avoid optimization.  Look into this.
@@ -336,6 +341,7 @@ endif
 
 dat/texbase.dat: dat/8r.enc
 	$(AM_V_GEN)
+	$(AM_V_at)mkdir -p dat
 	$(AM_V_at)$(PERL) -pe \
 	  's/\%.*//;s!/TeXBase1Encoding!!;s/\s/\n/g;' $< > $@
 
@@ -380,6 +386,10 @@ MOSTLYCLEANFILES = \
   tests/atconfig \
   $(MO_FILES) $(noinst_FILES)
   
+mostlyclean-local:
+	$(TSU_V_RM) 'ttmp'
+	$(AM_V_at)rm -rf ttmp
+
 CLEANFILES =
 
 DISTCLEANFILES = \

@@ -3,7 +3,14 @@
 
 #Check that AddExtrema doesn't distort the curve (by much).
 
-Open("tests/fonts/AddExtremumTest.sfd")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/AddExtremumTest.sfd")
 Reencode("Original")
 SelectAll()
 Copy()

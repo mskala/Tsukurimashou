@@ -3,8 +3,15 @@
 
 Quit(77) # needs a missing file
 
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
 # Check that our new subroutine usage in cff fonts produces an equivalent font.
-Open("tests/fonts/MinionPro-Regular.otf")
+Open(srcdir+"tests/fonts/MinionPro-Regular.otf")
 Generate("ttmp/MinionPro.otf")
 Open("ttmp/MinionPro.otf");
 #comparing fonts exactly doesn't work because ff will remove control points
@@ -13,7 +20,7 @@ if ( CompareFonts("tests/fonts/MinionPro-Regular.otf","/dev/null",0x1|0x8|0x20)!
     Error("!!!! Otf Font differed");
 endif
 
-Open("tests/fonts/MinionPro-Regular.otf")
+Open(srcdir+"tests/fonts/MinionPro-Regular.otf")
 if ( SizeOf(GetLookups("GSUB"))<=0 )
   Error("No lookups")
 endif

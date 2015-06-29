@@ -2,7 +2,14 @@
 #Needs: fonts/SimplifyBugs.sfd
 #Make sure simplify works...
 
-Open("tests/fonts/SimplifyBugs.sfd")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/SimplifyBugs.sfd")
 SelectAll();
 Simplify(28,1);
 GetCoverageCounts()

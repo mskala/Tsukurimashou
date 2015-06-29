@@ -2,7 +2,14 @@
 #Needs: fonts/Ambrosia.sfd
 #Make sure we can generate truetype instructions
 
-Open("tests/fonts/Ambrosia.sfd")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/Ambrosia.sfd")
 SetPref("DetectDiagonalStems",1)
 SelectAll()
 AutoHint()

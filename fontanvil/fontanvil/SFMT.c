@@ -23,6 +23,9 @@ extern "C" {
 
 #include <string.h>
 #include <assert.h>
+   
+#define SFMT_MEXP 19937
+
 #include "SFMT.h"
 #include "SFMT-params.h"
 #include "SFMT-common.h"

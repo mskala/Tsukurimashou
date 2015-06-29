@@ -4,7 +4,14 @@
 
 Quit(77) # needs a missing file
 
-Open("tests/fonts/n019003l.pfb");
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/n019003l.pfb");
 Generate("ttmp/NimbusSansRegular.otf","ttf",0x80);
 Close();
 Open("ttmp/NimbusSansRegular.otf");

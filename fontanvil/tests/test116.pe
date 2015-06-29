@@ -3,6 +3,13 @@
 
 Quit(77) # Needs a missing font file
 
-Open("tests/fonts/merged.cff")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/merged.cff")
 GetCoverageCounts()
 Quit()

@@ -4,7 +4,18 @@
 #Check that AutoHint does what it should
 #Check that generating type1/2 retain those hints
 
-Open("tests/fonts/Hinting.sfd")
+if (GetEnv("distcheck_hack")=="0.3")
+  Quit(77)
+endif
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/Hinting.sfd")
 Reencode("Original")
 SelectAll()
 Copy()

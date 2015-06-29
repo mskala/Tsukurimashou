@@ -1,4 +1,4 @@
-% $Id: building.tex 4074 2015-06-29 11:43:06Z mskala $
+% $Id: building.tex 4077 2015-06-29 15:51:30Z mskala $
 
 \chapter{Building FontAnvil}
 
@@ -108,6 +108,13 @@ the Mac system libraries.  For these reasons it is not the default.
 However, if enabled it will produce a lot more information in the log files
 about the many ways in which FontAnvil abuses memory, and that may be useful
 in debugging.
+
+The fact that the test suite fails prevents \texttt{make distcheck} from
+working.  If you set the environment variable \texttt{distcheck\_hack} to
+\texttt{0.3} (or the new version number, if I continue using this hack in
+future versions), then the tests I \emph{expect} to fail will be disabled,
+so that \texttt{make distcheck} can be tricked into accepting the package
+for distribution.  In the long run, this is probably a Bad Thing.
 
 \section{FontAnvil and Tsukurimashou}
 

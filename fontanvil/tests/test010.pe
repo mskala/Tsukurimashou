@@ -2,9 +2,16 @@
 
 Quit(77) # needs a missing file
 
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
 #Print("....I expect this test to generate some error messages");
 #Print(".... But it should not crash, nor terminate with an error status");
-Open("tests/fonts/GillSans.dfont");
+Open(srcdir+"tests/fonts/GillSans.dfont");
 SelectAll();
 Simplify();
 Print("....Simplified");

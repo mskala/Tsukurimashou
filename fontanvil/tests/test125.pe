@@ -1,9 +1,20 @@
 #!/usr/local/bin/fontanvil
 #Needs: fonts/MinionPro-Regular.fea
 
+if (GetEnv("distcheck_hack")=="0.3")
+  Quit(77)
+endif
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
 # Check that detach glyph works
 New()
-MergeFeature("tests/fonts/MinionPro-Regular.fea")
+MergeFeature(srcdir+"tests/fonts/MinionPro-Regular.fea")
 Generate("ttmp/Untitled2.otf")
 Open("ttmp/Untitled2.otf")
 if ( SizeOf(GetLookups("GSUB"))<=0 )
@@ -12,7 +23,7 @@ endif
 Close()
 
 New()
-MergeFeature("tests/fonts/ffMinionPro-Regular.fea")
+MergeFeature(srcdir+"tests/fonts/ffMinionPro-Regular.fea")
 Generate("ttmp/Untitled2.otf")
 Open("ttmp/Untitled2.otf")
 if ( SizeOf(GetLookups("GSUB"))<=0 )

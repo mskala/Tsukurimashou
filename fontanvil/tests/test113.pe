@@ -4,7 +4,14 @@
 
 Quit(77) # Needs a missing font file
 
-Open("tests/fonts/CourierNew.ttf");
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/CourierNew.ttf");
 Generate("ttmp/CourierNew.ttf")
 Close()
 Open("ttmp/CourierNew.ttf")

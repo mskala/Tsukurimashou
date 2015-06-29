@@ -3,7 +3,14 @@
 #Used to have a bug in AutoHint so that it would go into an infinite loop
 # on a path containing a 0 length spline.
 
-Open("tests/fonts/AHBugs.sfd")
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"tests/fonts/AHBugs.sfd")
 SelectAll()
 AutoHint()
 GetCoverageCounts()

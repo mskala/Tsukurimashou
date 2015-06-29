@@ -1,4 +1,4 @@
-/* $Id: pescript.l 4069 2015-06-28 19:55:59Z mskala $ */
+/* $Id: pescript.l 4077 2015-06-29 15:51:30Z mskala $ */
 /*
  * Tokenizer for FontAnvil PE script
  * Copyright (C) 2015  Matthew Skala
@@ -24,12 +24,13 @@
 
 #include <math.h>
 
+#include "fontanvil.h"
+
 #ifndef _NO_LIBREADLINE
 #   include <readline/readline.h>
 #   include <readline/history.h>
 #endif
 
-#include "fontanvil.h"
 #include "scripting.h"
 
 static int verbose=-1;

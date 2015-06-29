@@ -3,47 +3,54 @@
 
 Quit(77) # needs a missing file
 
-names = FontsInFile("tests/fonts/non-existant-file");
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+names = FontsInFile(srcdir+"tests/fonts/non-existant-file");
 if ( SizeOf(names)!=0 )
   Error("Incorrect behavior on non existant font file" );
 endif
 
-names = FontsInFile("tests/fonts/mingliu.ttc");
+names = FontsInFile(srcdir+"tests/fonts/mingliu.ttc");
 if ( SizeOf(names)!=2 )
   Error("Incorrect name count on mingliu.ttc" );
 elseif ( names[0]!="MingLiU" || names[1]!="PMingLiU" )
   Error("Incorrect names read from mingliu.ttc ("+names[0]+","+names[1]+")" );
 endif
 
-names = FontsInFile("tests/fonts/GillSans.dfont");
+names = FontsInFile(srcdir+"tests/fonts/GillSans.dfont");
 if ( SizeOf(names)!=6 )
   Error("Incorrect name count on GillSans.dfont" );
 elseif ( names[0]!="Gill Sans Light" || names[1]!="Gill Sans Bold" || names[2]!="Gill Sans Light Italic" || names[3]!="Gill Sans Italic" || names[4]!="Gill Sans Bold Italic" || names[5]!="Gill Sans" )
   Error("Incorrect names read from GillSans.dfont ("+names[0]+","+names[1]+","+names[2]+","+names[3]+","+names[4]+","+names[5]+")" );
 endif
 
-names = FontsInFile("tests/fonts/ItalicHand.sfd");
+names = FontsInFile(srcdir+"tests/fonts/ItalicHand.sfd");
 if ( SizeOf(names)!=1 )
   Error("Incorrect name count on ItalicHand.sfd" );
 elseif ( names[0]!="ItalicHand" )
   Error("Incorrect names read from ItalicHand.sfd ("+names[0]+")" );
 endif
 
-names = FontsInFile("tests/fonts/ItalicHand.svg");
+names = FontsInFile(srcdir+"tests/fonts/ItalicHand.svg");
 if ( SizeOf(names)!=1 )
   Error("Incorrect name count on ItalicHand.svg" );
 elseif ( names[0]!="ItalicHand" )
   Error("Incorrect names read from ItalicHand.svg ("+names[0]+")" );
 endif
 
-names = FontsInFile("tests/fonts/MunhwaGothic-Bold");
+names = FontsInFile(srcdir+"tests/fonts/MunhwaGothic-Bold");
 if ( SizeOf(names)!=1 )
   Error("Incorrect name count on MunhwaGothic-Bold" );
 elseif ( names[0]!="MunhwaGothic-Bold" )
   Error("Incorrect names read from MunhwaGothic-Bold ("+names[0]+")" );
 endif
 
-names = FontsInFile("tests/fonts/Caliban.otf");
+names = FontsInFile(srcdir+"tests/fonts/Caliban.otf");
 if ( SizeOf(names)!=1 )
   Error("Incorrect name count on Caliban.otf" );
 elseif ( names[0]!="Caliban" )

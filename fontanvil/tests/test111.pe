@@ -4,6 +4,13 @@
 
 Quit(77) # Needs a missing font file
 
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
 New();
-MergeFonts("tests/fonts/cmbsy10.pfb")
+MergeFonts(srcdir+"tests/fonts/cmbsy10.pfb")
 GetCoverageCounts()
