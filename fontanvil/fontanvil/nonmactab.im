@@ -1,12 +1,9 @@
 # Non-Mac encoding tables
 
-# $Id: nonmactab.im 4060 2015-06-25 13:05:46Z mskala $
+# $Id: nonmactab.im 4092 2015-07-05 15:40:41Z mskala $
 
 # this file collects various encoding-related tables other than the Mac
 # encodings from macenc.c
-
-cfile "fontanvil/nonmactab.c"
-hfile "fontanvil/nonmactab.h"
 
 cwrite <<EOF;
 /* GENERATED FILE - EDIT THE SOURCE IN nonmactab.im INSTEAD! */
@@ -55,18 +52,112 @@ EOF
 
 ########################################################################
 
+# JIS-0201
+
+# Source:
+#    http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
+
+{ id "enc_jis0201";
+  valtype "int32_t";
+
+  0..0xFF -> 0;
+  priority last;
+  parserx "^([0-9a-fxA-FX]+)\t([0-9a-fxA-FX]+)"
+  rxparse "dat/JIS0201.TXT" x1 -> x2;
+
+  generate basic_array;
+}
+
+########################################################################
+
+# JIS-0208
+
+# Source:
+#    http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+
+{ id "enc_jis0208";
+  valtype "int32_t";
+
+  parserx "^([0-9a-fxA-FX]+)\t([0-9a-fxA-FX]+)\t([0-9a-fxA-FX]+)"
+  rxparse "dat/JIS0208.TXT" x2 -> x3;
+
+  generate cascade;
+}
+
+########################################################################
+
+# KSC 5601
+
+# Source:
+#    http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/KSC/KSC5601.TXT
+
+{ id "enc_ksc5601";
+  valtype "int32_t";
+
+  parserx "^([0-9a-fxA-FX]+)\t([0-9a-fxA-FX]+)"
+  rxparse "dat/KSC5601.TXT" x1 -> x2;
+
+  generate cascade;
+}
+
+########################################################################
+
+# Big5 HKSCS
+
+# Source:
+#    file Unihan_OtherMappings.txt inside
+#    http://unicode.org/Public/UCD/latest/ucd/Unihan.zip
+
+{ id "enc_big5hkscs";
+  valtype "int32_t";
+
+  parserx "^U\+([0-9a-fxA-FX]+)\t(kBigFive|kHKSCS)\t([0-9a-fxA-FX]+)"
+  rxparse "dat/Unihan_OtherMappings.txt" x3 -> x1;
+
+  generate cascade;
+}
+
+########################################################################
+
+# GB-2312
+
+# Source:
+#    file Unihan_OtherMappings.txt inside
+#    http://unicode.org/Public/UCD/latest/ucd/Unihan.zip
+# filtered through a Perl script into gb2313.dat
+
+{ id "enc_gb2312";
+  valtype "int32_t";
+
+  parserx "([0-9a-fxA-FX]+)\t([0-9a-fxA-FX]+)"
+  rxparse "dat/gb2312.dat" x1 -> x2;
+
+  generate cascade;
+}
+
+########################################################################
+
+# Johab
+
+# This is apparently some kind of obsolete Korean encoding.  Windows
+# designates it "Code Page 1361," but does not have much actual
+# support for it, and there's very little information on the Net.
+
+# Source:
+#    http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/KSC/JOHAB.TXT
+
+{ id "enc_johab";
+  valtype "int32_t";
+
+  parserx "([0-9a-fxA-FX]+)\t([0-9a-fxA-FX]+)"
+  rxparse "dat/JOHAB.TXT" x1 -> x2;
+
+  generate cascade;
+}
+
+########################################################################
+
 # encodings for which FontForge code needs tables, but not yet icemapped
 
-# Unicode table location known
-
-# JIS 201
-# JIS 208
-# KSC 5601
-# Johab (Windows code page 1361)
 # Adobe standard
-
-# Unicode table location not known
-
-# GB2312
-# Big5 HKSCS
 

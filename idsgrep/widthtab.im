@@ -1,0 +1,51 @@
+# $Id$
+
+id "width";
+
+cfile "widthtab.c"
+hfile "widthtab.h"
+
+cwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN widthtab.im INSTEAD! */
+
+#include "_stdint.h"
+
+EOF
+
+hwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN widthtab.im INSTEAD! */
+
+#include "_stdint.h"
+
+EOF
+
+priority first;
+
+0x0000..0x001F -> 0; # controls
+0x1160..0x11FF -> 0; # hangul vowels and finals
+0x2460..0x257F -> 2; # enclosed letters, digits, box drawing
+0x2776..0x2793 -> 2; # circled dingbat letters and numbers
+0x3248..0x324F -> 2; # more circled numbers
+
+parserx "^([0-9A-FXa-fx]+)\\.\\.([0-9A-FXa-fx]+);([NAHWF]|Na)";
+rxparse "EastAsianWidth.txt" x1..x2->3;
+parserx "^([0-9A-FXa-fx]+);([NAHWF]|Na)";
+rxparse "EastAsianWidth.txt" x1->2;
+
+parserx "^([0-9A-FXa-fx]+);[^;]+;(M[en]|C[cf])";
+rxparse "UnicodeData.txt" x1->2;
+
+remap values {
+  "F" -> 2;
+  "W" -> 2;
+  "H" -> 1;
+  "N" -> 1;
+  "Na" -> 1;
+  "A" -> 1;
+  "Me" -> 0;
+  "Mn" -> 0;
+  "Cc" -> 0;
+  "Cf" -> 0;
+}
+
+remap keys { encode utf8; }

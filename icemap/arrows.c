@@ -135,7 +135,7 @@ int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp) {
    NODE *n,**new_arrows;
    int i;
 
-#if 1
+#if 0
    if (k->type==nt_int)
      printf("%d",k->x);
    else
@@ -183,11 +183,25 @@ int raw_add_arrow(ARROW_MAP *am,NODE *k,NODE *v,DUPE_PRIORITY dp) {
       }
 
    } else {
-      k->refs++;
+      n=node_new();
+      n->type=k->type;
+      if (k->type==nt_string)
+	n->cp=strdup(k->cp);
+      else
+	n->x=k->x;
+      k=n;
+
       k->next=am->arrows[h];
       am->arrows[h]=k;
       
-      v->refs++;
+      n=node_new();
+      n->type=v->type;
+      if (v->type==nt_string)
+	n->cp=strdup(v->cp);
+      else
+	n->x=v->x;
+      v=n;
+
       k->nodes=v;
       
       if ((am->first_key==NULL) || (atom_cmp(k,am->first_key)==-1))
@@ -297,7 +311,8 @@ void arrow_map_remap_values(ARROW_MAP *zm,ARROW_MAP *am,ARROW_MAP *bm) {
 /**********************************************************************/
 
 void add_one_arrow(PARSER_STATE *ps) {
-   NODE *val;
+   NODE *val,*tk;
+   int i;
 
    if ((ps->first_token==NULL) || (ps->first_token->next!=NULL)) {
       parse_error(ps,"-> needs exactly one key");
@@ -308,7 +323,20 @@ void add_one_arrow(PARSER_STATE *ps) {
 
    if ((val->type!=nt_int) && (val->type!=nt_string))
       parse_error(ps,"-> needs a string or integer as value");
-   else if (!raw_add_arrow(&(context_stack->am),ps->first_token,val,
+   else if (ps->first_token->type==nt_int_range) {
+      for (i=ps->first_token->x;i<=ps->first_token->y;i++) {
+	 tk=node_new();
+	 tk->type=nt_int;
+	 tk->x=i;
+	 if (!raw_add_arrow(&(context_stack->am),tk,val,
+			    context_stack->dupe_priority)) {
+	    parse_error(ps,"duplicate key %d",tk->x);
+	    close_output_files();
+	    exit(1);
+	 }
+	 node_delete(tk);
+      }
+   } else if (!raw_add_arrow(&(context_stack->am),ps->first_token,val,
 			   context_stack->dupe_priority)) {
       if (ps->first_token->type==nt_string)
 	parse_error(ps,"duplicate key %s",ps->first_token->cp);
@@ -365,7 +393,6 @@ void add_many_arrows(PARSER_STATE *ps) {
       
 	 if ((vals->type==nt_keyword) && (strcmp(vals->cp,"..")==0)) {
 	    complete_int_range(ps,val);
-	    node_delete(vals);
 	    vals=val;
 	    val=NULL;
 	    vals->x++; /* already saw first element */

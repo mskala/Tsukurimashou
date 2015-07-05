@@ -24,9 +24,7 @@
 #include <string.h>
 
 #include "idsgrep.h"
-
-/* from widthtab.c */
-int idsgrep_utf8cw(char *);
+#include "widthtab.h"
 
 int cook_output=0;
 int colourize_output=0;
@@ -147,7 +145,7 @@ void wrap_write(char *cp,int len,FILE *f) {
 	    }
 	 }
 	 
-	 buffered_columns+=idsgrep_utf8cw(cp+i);
+	 buffered_columns+=width_lookup(cp+i);
 	 while (1) {
 	    wrap_buffer[buffered_bytes++]=cp[i++];
 	    if ((i>=len) || ((cp[i]&0xC0)!=0x80))
@@ -167,7 +165,7 @@ void wrap_write(char *cp,int len,FILE *f) {
       } else {
 	 j=char_length(cp+i);
 	 fwrite(cp+i,1,j,f);
-	 current_column+=idsgrep_utf8cw(cp+i);
+	 current_column+=width_lookup(cp+i);
 
 	 i+=j;
       }

@@ -136,9 +136,6 @@ endif
 MAYBE_CJKVIDATA=$(foreach ver,g t j k v x h a,\
   $(if $(findstring $(ver),$(enable_cjkvi_style)),\
   cjkvi-$(ver).eids cjkvi-$(ver).bvec ))
-if COND_WIDTHTAB
-  noinst_PROGRAMS = mkwcw
-endif
 
 ############################################################################
 
@@ -180,7 +177,7 @@ endif
 STANDALONE_QVFG:=
 EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  gnugetopt.h idsgrep.tex idsgrep.bib widths.txt mkwcw.c
+  gnugetopt.h idsgrep.tex idsgrep.bib widthtab.im
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
@@ -200,8 +197,6 @@ AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 idsgrep_SOURCES = \
   assoc.c bitvec.c cook.c hash.c idsgrep.c idsgrep.h match.c \
   parse.c regex.c unilist.c userpred.c widthtab.c
-
-mkwcw_SOURCES = mkwcw.c
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS) $(BUDDY_LIBS)
 
@@ -283,9 +278,10 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 # BUILD THE WIDTH TABLE
 
 if COND_WIDTHTAB
-widthtab.c: mkwcw widths.txt EastAsianWidth.txt UnicodeData.txt
-	cat widths.txt EastAsianWidth.txt | ./mkwcw N UnicodeData.txt \
-	  > widthtab.c
+widthtab.c: widthtab.im $(ICEMAP) EastAsianWidth.txt UnicodeData.txt
+	$(ICEMAP) widthtab.im
+
+widthtab.h: widthtab.c
 endif
 
 ############################################################################

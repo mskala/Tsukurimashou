@@ -241,9 +241,7 @@ fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a \
 	$(top_builddir)/gutils/libgutils.a
 
 Unicode_libgunicode_a_SOURCES = \
-  Unicode/charset/big5hkscs.c Unicode/charset/gb2312.c \
-  Unicode/charset/jis201.c Unicode/charset/jis.c Unicode/charset/johab.c \
-  Unicode/charset/ksc5601.c \
+  Unicode/charset/johab.c \
   Unicode/ArabicForms.c Unicode/char.c \
   Unicode/memory.c Unicode/unialt.c Unicode/ustring.c \
   Unicode/utype.c Unicode/combiners.h
@@ -323,12 +321,12 @@ endif
 if COND_ICEMAP
 
 %.c:%.im $(ICEMAP)
-	$(TSU_V_ICE)$(ICEMAP) -C$@ -H$(patsubst %.c,%.h,$@) < $<
+	$(TSU_V_ICE)$(ICEMAP) -C$@ -H$(patsubst %.c,%.h,$@) $<
 
 fontanvil/macenctab.c: fontanvil/macenctab.im
 fontanvil/macenctab.h: fontanvil/macenctab.c
 fontanvil/nonmactab.c: fontanvil/nonmactab.im \
-  dat/texbase.dat dat/glyphlist.txt
+  dat/texbase.dat dat/gb2312.dat dat/glyphlist.txt
 fontanvil/nonmactab.h: fontanvil/nonmactab.c
 
 if COND_KPSEWHICH
@@ -344,6 +342,13 @@ dat/texbase.dat: dat/8r.enc
 	$(AM_V_at)mkdir -p dat
 	$(AM_V_at)$(PERL) -pe \
 	  's/\%.*//;s!/TeXBase1Encoding!!;s/\s/\n/g;' $< > $@
+
+dat/gb2312.dat: dat/Unihan_OtherMappings.txt
+	$(AM_V_GEN)
+	$(AM_V_at)mkdir -p dat
+	$(AM_V_at)$(PERL) -n \
+	  -e 'printf "%02X%02X\t%s\n",$$2+161,$$3+161,$$1 ' \
+	  -e 'if /U\+([0-9a-f]{4})\tkGB0\t(\d\d)(\d\d)/i;' $< > $@
 
 endif
 

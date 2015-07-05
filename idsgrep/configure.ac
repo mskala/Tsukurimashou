@@ -192,6 +192,11 @@ AS_IF([test "x$EXPECT" = "x"],
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
+AC_ARG_VAR([ICEMAP],[Icemap])
+AS_IF([test "x$ICEMAP" = "x"],
+  [AC_PATH_PROG([ICEMAP],[icemap],[],[$PATH:$PWD/../icemap])])
+AS_IF([test "x$ICEMAP" = "xno"],[ICEMAP=])
+AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "x"])
 AC_PATH_PROG([ICONV],[iconv])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AS_IF([test "x$KLEKNEV" = "x"],

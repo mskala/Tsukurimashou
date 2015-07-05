@@ -1,9 +1,11 @@
 #!/bin/bash
 
 mkdir -p dat
-for fn in Blocks.txt ; do \
+for fn in Blocks.txt Unihan.zip ; do \
   wget -N -nd -P dat http://unicode.org/Public/UCD/latest/ucd/$fn ; \
 done
+
+cd dat ; unzip -o Unihan.zip ; cd ..
 
 wget -N -nd -P dat \
   http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT

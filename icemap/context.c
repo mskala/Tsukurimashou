@@ -78,7 +78,8 @@ void handle_opening_brace(PARSER_STATE *ps) {
 
 void handle_closing_brace(PARSER_STATE *ps) {
    CONTEXT *ctx;
-   int i;
+   int i,j;
+   void (*pref_gen)(struct _CONTEXT *);
 
    if (context_stack==NULL) {
       parse_error(ps,"unexpected closing brace");
@@ -94,11 +95,30 @@ void handle_closing_brace(PARSER_STATE *ps) {
 	context_stack->generator(context_stack);
       
       /* then look for a generator that actually likes this kind of data */
-      if ((context_stack->generator==NULL) &&
-	  (prefer_basic_array(context_stack)>0))
-	gen_basic_array(context_stack);
+      if (context_stack->generator==NULL) {
+	 j=0;
+	 pref_gen=NULL;
+	 if ((i=prefer_wide_cascade(context_stack))>j) {
+	    j=i;
+	    pref_gen=gen_wide_cascade;
+	 }
+	 if ((i=prefer_cascade(context_stack))>j) {
+	    j=i;
+	    pref_gen=gen_cascade;
+	 }
+	 if ((i=prefer_basic_array(context_stack))>j) {
+	    j=i;
+	    pref_gen=gen_basic_array;
+	 }
+	 if (pref_gen!=NULL)
+	   pref_gen(context_stack);
+      }
       
       /* finally, just try for any generator */
+      if (context_stack->generator==NULL)
+	gen_wide_cascade(context_stack);
+      if (context_stack->generator==NULL)
+	gen_cascade(context_stack);
       if (context_stack->generator==NULL)
 	gen_basic_array(context_stack);
       
@@ -148,6 +168,10 @@ void handle_generate(PARSER_STATE *ps) {
      parse_error(ps,"generate target must be a keyword");
    else if (strcmp(tok->cp,"basic_array")==0)
      context_stack->generator=gen_basic_array;
+   else if (strcmp(tok->cp,"cascade")==0)
+     context_stack->generator=gen_cascade;
+   else if (strcmp(tok->cp,"wide_cascade")==0)
+     context_stack->generator=gen_wide_cascade;
    else if (strcmp(tok->cp,"nothing")==0)
      context_stack->generator=gen_nothing;
    else
@@ -178,4 +202,3 @@ void handle_quote_policy(PARSER_STATE *ps) {
    node_delete(tok);
    ps->ignore_semicolon=1;
 }
-

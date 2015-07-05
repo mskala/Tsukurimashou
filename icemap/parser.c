@@ -609,15 +609,39 @@ static void handle_priority(PARSER_STATE *ps) {
 
 /**********************************************************************/
 
-void parse(void) {
+void parse(int argc,char **argv,int optind) {
    PARSER_STATE ps;
    NODE *token,*tmp;
+   int i;
+   
+   ps.file_stack=NULL;
+   for (i=argc-1;i>=optind;i--) {
+      tmp=node_new();
+      tmp->type=nt_parser_file;
+      tmp->cp=strdup(argv[i]);
+      tmp->x=0;
+      tmp->next=ps.file_stack;
+      ps.file_stack=tmp;
 
-   ps.file_stack=node_new();
-   ps.file_stack->type=nt_parser_file;
-   ps.file_stack->fp=stdin;
-   ps.file_stack->cp=strdup("<stdin>");
-   ps.file_stack->x=1;
+      tmp->fp=fopen(argv[i],"r");
+      if (tmp->fp==NULL) {
+	 parse_error(&ps,"cannot open input file");
+	 free(tmp->cp);
+	 tmp->cp=NULL;
+	 ps.file_stack=tmp->next;
+	 node_delete(tmp);
+	 continue;
+      }
+      tmp->x=1;
+   }
+
+   if (ps.file_stack==NULL) {
+      ps.file_stack=node_new();
+      ps.file_stack->type=nt_parser_file;
+      ps.file_stack->fp=stdin;
+      ps.file_stack->cp=strdup("<stdin>");
+      ps.file_stack->x=1;
+   }
 
    ps.first_token=NULL;
    ps.last_token=NULL;
@@ -677,6 +701,12 @@ void parse(void) {
 
 	    else if (strcmp(token->cp,"cwrite")==0)
 	      handle_c_write(&ps);
+	    
+	    else if (strcmp(token->cp,"decode")==0)
+	      handle_encode(&ps,0);
+	    
+	    else if (strcmp(token->cp,"encode")==0)
+	      handle_encode(&ps,1);
 	    
 	    else if (strcmp(token->cp,"generate")==0)
 	      handle_generate(&ps);

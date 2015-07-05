@@ -1,4 +1,4 @@
-/* $Id: feascan.l 4070 2015-06-29 06:49:37Z mskala $ */
+/* $Id: feascan.l 4087 2015-07-02 12:44:08Z mskala $ */
 /*
  * Tokenizer for Adobe-style feature files
  * Copyright (C) 2015  Matthew Skala
@@ -96,7 +96,7 @@ static struct parseState *gtok;
    int i;
    uint32_t uval=0;
 
-   if (string_buffer_ptr+4>=string_buffer_size) {
+   if (string_buffer_ptr+5>=string_buffer_size) {
       string_buffer_size*=5;
       string_buffer_size/=4;
       string_in_progress=(char *)realloc(string_in_progress,

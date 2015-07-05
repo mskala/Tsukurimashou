@@ -32,6 +32,7 @@ static struct option long_opts[] = {
    {"help",no_argument,NULL,'h'},
    {"h-file",required_argument,NULL,'H'},
    {"keep-failed",no_argument,NULL,'k'},
+   {"quiet",no_argument,NULL,'q'},
    {"version",no_argument,NULL,'V'},
    {0,0,0,0},
 };
@@ -44,6 +45,7 @@ static void usage_message(void) {
 }
 
 int exit_code=-0xDEAD;
+int quiet=0;
 
 int main(int argc,char **argv) {
    int show_version=0,show_help=0;
@@ -72,6 +74,10 @@ int main(int argc,char **argv) {
        case 'k':
 	 delete_failed=0;
 	 break;
+	 
+       case 'q':
+	 quiet=1;
+	 break;
 
        case 'V':
 	 show_version=1;
@@ -94,12 +100,16 @@ int main(int argc,char **argv) {
      puts("Usage: " PACKAGE_TARNAME " [OPTION]... [FILE]...\n\n"
 	  "Options:\n"
 	  "  -V, --version             display version and license\n"
-	  "  -h, --help                display this help");
+	  "  -h, --help                display this help\n\n"
+	  "  -C, --c-file=<file>       set default C source code file\n"
+	  "  -H, --h-file=<file>       set default header file\n"
+	  "  -k, --keep-failed         do not delete output on failure\n"
+	  "  -q, --quiet               do not give progress reports\n");
    
    if (show_version || show_help)
      exit(0);
 
-   parse();
+   parse(argc,argv,optind);
    
    if (exit_code==-0xDEAD)
      exit_code=0;

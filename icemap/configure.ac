@@ -166,6 +166,12 @@ AM_COND_IF([COND_PARASITE],
 #
 # Checks for libraries.
 #
+AC_CHECK_LIB([bdd],[bdd_init],[
+  have_buddy=yes
+  AC_DEFINE([HAVE_BUDDY],[1],
+    [Define to 1 if BuDDy is available])
+  ],[have_buddy=no])
+AM_CONDITIONAL([COND_BUDDY],[test '!' "$have_buddy" = no])
 AX_PATH_LIB_PCRE([have_pcre=yes
   AC_DEFINE([HAVE_PCRE],[1],
     [Define to 1 if Perl Compatible Regular Expressions library is available])
@@ -243,5 +249,7 @@ AC_OUTPUT
 #
 # Warn about missing prerequisites
 #
+AS_IF([test "x$have_buddy" = "xyes"],[],
+  [AC_MSG_WARN([BuDDy is missing])])
 AS_IF([test "x$have_pcre" = "xyes"],[],
   [AC_MSG_WARN([PCRE is missing])])

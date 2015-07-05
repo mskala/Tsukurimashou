@@ -118,9 +118,10 @@ bin_PROGRAMS = icemap
 AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 
 icemap_SOURCES = icemap.c icemap.h \
-  arrays.c arrows.c context.c fileout.c nodes.c parser.c remap.c rxparse.c
+  arrays.c arrows.c cascade.c context.c encode.c fileout.c \
+  nodes.c parser.c remap.c rxparse.c
 
-LDADD = @LIBOBJS@ $(PCRE_LIBS)
+LDADD = @LIBOBJS@ $(PCRE_LIBS) -lbdd
 
 # man1_MANS = icemap.1
 

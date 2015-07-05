@@ -1,5 +1,0 @@
-0000..001F;0 # controls
-1160..11FF;0 # hangul vowels and finals
-2460..257F;W # enclosed letters, digits, box drawing
-2776..2793;W # circled dingbat letters and numbers
-3248..324F;W # more circled numbers

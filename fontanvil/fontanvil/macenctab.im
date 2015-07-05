@@ -1,9 +1,6 @@
 # Mac encoding table translations
 
-# $Id: macenctab.im 4059 2015-06-25 12:21:44Z mskala $
-
-cfile "fontanvil/macenctab.c"
-hfile "fontanvil/macenctab.h"
+# $Id: macenctab.im 4092 2015-07-05 15:40:41Z mskala $
 
 cwrite <<EOF;
 /* GENERATED FILE - EDIT THE SOURCE IN macenctab.im INSTEAD! */
@@ -65,7 +62,6 @@ valtype unichar_t;
 
 priority last;
 0x0..0xFF => 0x0..0xFF;
-0->0;  # work around an Icemap bug that maps 0 to null pointer?
 rxparse "dat/apple/ROMAN.TXT" x1 -> x3; # Mac Roman serves as a default
 
 { id macenc_arabic;

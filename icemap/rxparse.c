@@ -142,7 +142,7 @@ void handle_rxparse(PARSER_STATE *ps) {
       node_delete(tok);
       
       tok=get_token(ps);
-      if ((tok->type!=nt_keyword) || (strcmp(tok->cp,"=>")!=0)) {
+      if ((tok->type!=nt_keyword) || (strcmp(tok->cp,"->")!=0)) {
 	 parse_error(ps,"rxparse syntax error");
 	 free(fnglob);
 	 node_delete(tok);

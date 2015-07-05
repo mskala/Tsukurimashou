@@ -67,7 +67,7 @@ void parse_error(PARSER_STATE *ps,char *message,...);
 NODE *get_token(PARSER_STATE *ps);
 void complete_int_range(PARSER_STATE *ps,NODE *start_tok);
 
-void parse(void);
+void parse(int,char **,int);
 
 /**********************************************************************/
 
@@ -134,6 +134,22 @@ void gen_basic_array(CONTEXT *c);
 
 /**********************************************************************/
 
+/* cascade.c */
+
+int prefer_cascade(CONTEXT *c);
+void gen_cascade(CONTEXT *c);
+
+int prefer_wide_cascade(CONTEXT *c);
+void gen_wide_cascade(CONTEXT *c);
+
+/**********************************************************************/
+
+/* encode.c */
+
+void handle_encode(PARSER_STATE *,int);
+
+/**********************************************************************/
+
 /* fileout.c */
 
 extern char *default_c_file,*default_h_file;
@@ -158,6 +174,7 @@ void handle_h_write(PARSER_STATE *ps);
 /* icemap.c */
 
 extern int exit_code;
+extern int quiet;
 
 /**********************************************************************/
 
