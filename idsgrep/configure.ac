@@ -475,7 +475,7 @@ AC_DEFINE_UNQUOTED([DICTDIR],["$flat_dictdir"],
   [Default location of dictionaries])
 #
 AC_SUBST([andt],[])
-AC_CONFIG_FILES([Makefile idsgrep.1 config.tex])
+AC_CONFIG_FILES([Makefile idsgrep.1 mitsuba.cfg])
 AC_OUTPUT
 #
 ############################################################################

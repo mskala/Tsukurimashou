@@ -346,6 +346,8 @@ void gen_cascade(CONTEXT *c) {
    }
 
    /* now ready to generate code */
+   if (!quiet)
+     puts("\nGenerating code.");
    cf=open_output_file(c->c_file);
    hf=open_output_file(c->h_file);
    if (c->value_c_type==NULL)
@@ -451,9 +453,11 @@ void gen_cascade(CONTEXT *c) {
 	      c->id,ots,maybe_space,c->id,
 	      min_out-1);
    
-   /* FIXME free a bunch of storage */
+   /* free data structures */
+   for (i=0;i<8;i++) free(child[i]);
    bdd_done();
 
+   /* record fact that we have written code */
    for (ctx=context_stack->parent;ctx;ctx=ctx->parent)
      ctx->leaves++;
 }

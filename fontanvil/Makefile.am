@@ -48,7 +48,6 @@ TSU_V_REDIR=$(if $(AM_V_at),>& /dev/null)
 
 if COND_COLOUR
   escchar:=$(strip $(shell echo x | tr 'x' '\033'))
-  ECHO_ANSI=echo
   ansi_default=$(escchar)[0m
   ansi_red=$(escchar)[31m
   ansi_green=$(escchar)[32m
@@ -65,7 +64,6 @@ if COND_COLOUR
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
 else
-  ECHO_ANSI=echo
   ansi_default=
   ansi_red=
   ansi_green=
@@ -82,12 +80,12 @@ endif
 
 TSU_V_ICE=$(TSU_V_ICE_$(V))
 TSU_V_ICE_=$(TSU_V_ICE_$(AM_DEFAULT_VERBOSITY))
-TSU_V_ICE_0=echo \
+TSU_V_ICE_0=@echo \
   "$(ansi_cleareol)  $(ansi_cyan)ICE$(ansi_default)   " $@;
 
 TSU_V_MAKE=$(TSU_V_MAKE_$(V))
 TSU_V_MAKE_=$(TSU_V_MAKE_$(AM_DEFAULT_VERBOSITY))
-TSU_V_MAKE_0=@$(ECHO_ANSI) \
+TSU_V_MAKE_0=@echo \
   "$(ansi_cleareol)  $(ansi_white)MAKE$(ansi_default)  " $@;
 
 TSU_V_RM=$(TSU_V_RM_$(V))
@@ -98,12 +96,12 @@ TSU_V_RM_1=@true
 
 TSU_V_TEX=$(TSU_V_TEX_$(V))
 TSU_V_TEX_=$(TSU_V_TEX_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TEX_0=@$(ECHO_ANSI) \
+TSU_V_TEX_0=@echo \
   "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " $@;
 
 TSU_V_TEXL=$(TSU_V_TEXL_$(V))
 TSU_V_TEXL_=$(TSU_V_TEXL_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TEXL_0=$(ECHO_ANSI) \
+TSU_V_TEXL_0=echo \
   "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " "$@($$I)";
 
 ############################################################################

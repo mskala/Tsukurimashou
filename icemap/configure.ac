@@ -147,6 +147,9 @@ AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AS_IF([test "x$KLEKNEV" = "x"],
   [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh])])
+AC_ARG_VAR([PDFLATEX],[PDFLaTeX],[no])
+AS_IF([test "x$PDFLATEX" = "x"],
+  [AC_PATH_PROG([PDFLATEX],[pdflatex])])
 AC_ARG_VAR([PERL],[Perl])
 AS_IF([test "x$PERL" = "x"],
   [AC_PATH_PROG([PERL],[perl])])

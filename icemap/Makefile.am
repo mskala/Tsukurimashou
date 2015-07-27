@@ -123,6 +123,8 @@ icemap_SOURCES = icemap.c icemap.h \
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS) -lbdd
 
+dist_pdf_DATA = icemap.pdf
+
 # man1_MANS = icemap.1
 
 ############################################################################
@@ -140,6 +142,15 @@ MAINTAINERCLEANFILES =
 ############################################################################
 
 # PDF DOCUMENTATION
+
+icemap.pdf: icemap.tex mitsuba.cls
+	$(AM_V_at)I=1;$(TSU_V_TEXL) \
+	  $(expect_start)$(PDFLATEX) $(mvp)/icemap.tex $(expect_end)
+#	export BIBINPUTS=$(mvp) ; bibtex icemap.aux $(TSU_V_REDIR) ; \
+#	I=2;$(TSU_V_TEXL) \
+#	  $(expect_start)$(PDFLATEX) $(mvp)/icemap.tex $(expect_end) ; \
+#	I=3;$(TSU_V_TEXL) \
+#	  $(expect_start)$(PDFLATEX) $(mvp)/icemap.tex $(expect_end)
 
 ############################################################################
 
@@ -175,6 +186,9 @@ automake_rules = here
 # PARASITE BUILD
 
 if COND_PARASITE
+
+mitsuba.cls: ../mitsuba/mitsuba.cls
+	$(TSU_V_CP) cp $< $@
 
 m4/ax_add_am_macro.m4: ../m4/ax_add_am_macro.m4
 	$(TSU_V_CP) cp $< $@

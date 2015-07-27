@@ -1,114 +1,7 @@
-\documentclass[twocolumn]{report}
-
-\usepackage{fontspec}
-
-\usepackage{amsfonts}
-\usepackage{calc}
-\usepackage{manfnt}
-\usepackage[rigidchapters]{titlesec}
-\usepackage{tocloft}
-\usepackage{url}
+\documentclass{mitsuba}
 
 \title{IDSgrep, version \idsgrepversion}
 \author{Matthew Skala}
-
-\input{config.tex}
-
-\setlength{\topmargin}{0.25in}
-\setlength{\headheight}{0pt}
-\setlength{\headsep}{0pt}
-
-\setlength{\oddsidemargin}{\paperwidth*2/17-1in}
-\setlength{\marginparsep}{\paperwidth*1/68}
-\setlength{\marginparwidth}{\paperwidth*1/17}
-\setlength{\columnsep}{1em}
-\setlength{\textwidth}{\paperwidth*13/17}
-\setlength{\textheight}{8.5in}
-
-\setlength{\parindent}{1.5em}
-
-\makeatletter
-\dimen@=\f@size\p@\dimen@6\dimen@\divide\dimen@5\edef\l@rgesize{\the\dimen@}
-\dimen@=\f@size\p@\dimen@2\dimen@\edef\@hugesize{\the\dimen@}
-
-\renewcommand\maketitle{%
-  \begin{titlepage}%
-    \let\footnotesize\small
-    \let\footnoterule\relax
-    \let \footnote \thanks
-    \vspace*{\fill}
-    \vspace*{\fill}
-    {\sffamily\bfseries\huge \hfill\@title\hfill\null\par}
-    \vspace{\fill}
-    {\sffamily\bfseries\Large \hfill\@author\hfill\null\par}
-    \vspace{\fill}
-    \vspace{\fill}
-    \vspace{\fill}
-    \vspace{\fill}
-    \vspace{\fill}
-    {\sffamily\bfseries\Large \hfill\@date\par}
-    \vspace*{\fill}
-    \@thanks\par
-    \null
-  \end{titlepage}%
-  \setcounter{footnote}{0}%
-  \global\let\thanks\relax
-  \global\let\maketitle\relax
-  \global\let\@thanks\@empty
-  \global\let\@author\@empty
-  \global\let\@date\@empty
-  \global\let\@title\@empty
-  \global\let\title\relax
-  \global\let\author\relax
-  \global\let\date\relax
-  \global\let\and\relax
-}
-
-\def\@maketitle{%
-  \newpage\noindent
-  \null
-  \begingroup
-    \let\footnote\thanks
-    {\fontsize{\@hugesize}{2\baselineskip}\sffamily\bfseries\selectfont
-      \@title\,\leaders\hrule height 0.2ex\hfill\null}\par\noindent
-    {\fontsize{\l@rgesize}{\baselineskip}\sffamily\bfseries
-      \@author\hfill\@date}\par
-  \endgroup
-  \dimen@=0.5\baselineskip\relax\advance\dimen@-0.5\p@\relax
-  \vspace{\dimen@}\noindent
-}
-
-\newcommand{\ch@pterform@t}[1]{%
-  \begin{@twocolumnfalse}%
-    \fontsize{\@hugesize}{3\baselineskip}\sffamily\bfseries\selectfont
-    #1\,\leaders\hrule height 0.2ex\hfill\null
-  \end{@twocolumnfalse}%
-}%
-\titlespacing*{\chapter}{0pt}{6\baselineskip}{2\baselineskip}
-\titleformat{\chapter}[hang]{}{}{0pt}{\ch@pterform@t}
-
-\titleformat{\section}[runin]%
-   {\fontsize{\l@rgesize}{\baselineskip}\sffamily\bfseries}{}{0pt}{}%
-   [\,\leaders\hrule height 0.16ex\hfill\null\\]
-\titlespacing*{\section}{0pt}{\baselineskip}{0pt}
-
-\titleformat{\subsection}[runin]{\sffamily\bfseries}{}{0pt}{}
-\titlespacing*{\subsection}{0pt}{\baselineskip}{0.666em}
-
-\titleformat{\subsubsection}[runin]{\rmfamily\scshape}{}{0pt}{}
-\titlespacing*{\subsubsection}{0pt}{\baselineskip}{0.666em}
-
-\titleformat{\paragraph}[runin]{\rmfamily\itshape}{}{0pt}{}
-\titlespacing*{\paragraph}{\parindent}{0pt}{0.666em}
-
-\raggedbottom
-\makeatother
-
-\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-
-\newcommand{\DangerousBend}{\marginpar{\large\hfill\dbend\hfill\null}}
-\newcommand{\DangerousSection}{\marginpar{\large\hfill
-\raisebox{-0.5\baselineskip}[0pt][0pt]{\dbend}\hfill\null}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,27 +11,6 @@
 
 \maketitle
 
-\setcounter{page}{2}
-
-\renewcommand{\cfttoctitlefont}{%
-  \huge\sffamily\bfseries}
-\renewcommand{\cftaftertoctitle}{%
-  {\huge\,\leaders\hrule height 0.2ex\hfill\null\vspace*{-4ex}}}
-
-\def\gobbtohfil#1{%
-  \begingroup\if#1\hfil\else\aftergroup\gobbtohfil\fi\endgroup}
-
-\renewcommand{\cftchappresnum}{\gobbtohfil}
-\renewcommand{\cftchapnumwidth}{0pt}
-\renewcommand{\cftchapfont}{\sffamily\bfseries}
-\renewcommand{\cftchappagefont}{\sffamily\bfseries}
-
-\renewcommand{\cftsecpresnum}{\gobbtohfil}
-\renewcommand{\cftsecnumwidth}{0pt}
-
-\renewcommand{\cftsubsecpresnum}{\gobbtohfil}
-\renewcommand{\cftsubsecnumwidth}{0pt}
-
 \tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -147,7 +19,6 @@
 
 \chapter{Quick start}
 
-\noindent
 Use \texttt{idsgrep} much as you would use \texttt{grep}:
 
 \begin{quotation}
@@ -245,7 +116,6 @@ things in detail; for now, here are some examples.
 
 \chapter{Introduction}
 
-\noindent
 The Han character set is open-ended.  Although a few thousand characters
 suffice to write the languages most commonly written in Han script
 (namely Chinese and Japanese) most of the time, popular standards define
@@ -1237,8 +1107,6 @@ a conversion program if necessary.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Technical details}
-
-\noindent
 
 This section is intended to describe IDSgrep's syntax and matching procedure
 in complete precise detail; and those things are, in turn, designed to be
@@ -2241,8 +2109,6 @@ See the comments in \texttt{mkwcw.c} for further details on its use.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Bit vector indices}
-
-\noindent
 
 Executive summary:  if you leave it on the default settings and skip this
 chapter, it should just work.

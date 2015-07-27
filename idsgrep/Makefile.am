@@ -221,7 +221,7 @@ MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
 
 # PDF DOCUMENTATION
 
-idsgrep.pdf: idsgrep.tex config.tex idsgrep.bib \
+idsgrep.pdf: idsgrep.tex mitsuba.cls mitsuba.cfg idsgrep.bib \
   @with_tsuku_build@/otf/TsukurimashouMincho.otf
 	$(AM_V_at)I=1;$(TSU_V_TEXL) \
 	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end) ; \
@@ -295,6 +295,9 @@ automake_rules = here
 # PARASITE BUILD
 
 if COND_PARASITE
+
+mitsuba.cls: ../mitsuba/mitsuba.cls
+	$(TSU_V_CP) cp $< $@
 
 m4/ax_add_am_macro.m4: ../m4/ax_add_am_macro.m4
 	$(TSU_V_CP) cp $< $@
