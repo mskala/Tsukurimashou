@@ -72,7 +72,7 @@ vardef build_kanji.dotcliff_enclose(text contents) =
 enddef;
 
 vardef build_kanji.flag_enclose(expr xs,ys)(text contents) =
-  push_pbox_toexpand("build_kanji.dotcliff_enclose");
+  push_pbox_toexpand("build_kanji.flag_enclose");
   perl_structure:=perl_structure&"'eids.u2FF8.u5C38.1_',";
   string flag_enclose.ps;
   flag_enclose.ps:=perl_structure;

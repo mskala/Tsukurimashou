@@ -202,6 +202,15 @@ vardef kanji.greight.humble =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.retard =
+  push_pbox_toexpand("kanji.greight.retard");
+  build_kanji.road_enclose(build_kanji.level(
+    kanji.radical.narrow_flag;
+    build_kanji.sscale(xyscaled (0.76,0.65) shifted (40,-120))
+      (kanji.grthree.sheep)));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.turn_away =
   push_pbox_toexpand("kanji.greight.turn_away");
   build_kanji.road_enclose(kanji.greight.dismiss);
@@ -307,6 +316,12 @@ endtsuglyph;
 % itsu/so "turn away"
 begintsuglyph("uni9038",56);
   kanji.greight.turn_away;
+  tsu_render;
+endtsuglyph;
+
+% chi/oku "retard"
+begintsuglyph("uni9045",69);
+  kanji.greight.retard;
   tsu_render;
 endtsuglyph;
 
