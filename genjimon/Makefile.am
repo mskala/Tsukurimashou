@@ -148,7 +148,7 @@ BUILT_SOURCES=Makefile
 # QVFG and FPEVCGF are DIST and SCRIPTS in ROT13, to keep Automake
 # from recognizing them
 
-STANDALONE_QVFG:=fntbase.mp genjimon.mp
+STANDALONE_QVFG:=fntbase.mp genjimon.mp mitsuba.cls
 EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
   genfont.mp $(wildcard genjimon-*.mp) genjimon.tex
@@ -252,8 +252,10 @@ GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
 
 # PDF DOCUMENTATION
 
-genjimon.pdf: genjimon.tex \
+genjimon.pdf: genjimon.tex mitsuba.cls \
   GenjimonMedium.ttf GenjimonReverse.ttf GenjimonWhite.ttf GenjimonBlack.ttf
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) \
+	  $(mvp)/genjimon$(expect_end)
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) \
 	  $(mvp)/genjimon$(expect_end)
 
@@ -281,6 +283,9 @@ fntbase.mp: ../mp/fntbase.mp
 	$(TSU_V_CP) cp $< $@
 
 genjimon.mp: ../mp/genjimon.mp
+	$(TSU_V_CP) cp $< $@
+
+mitsuba.cls: ../mitsuba/mitsuba.cls
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_add_am_macro.m4: ../m4/ax_add_am_macro.m4

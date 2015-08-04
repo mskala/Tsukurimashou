@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: noprefs.c 4119 2015-07-30 12:46:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -177,8 +177,6 @@ static int default_fv_showhmetrics=0;	/* in fontview */
 static int default_fv_showvmetrics=0;	/* in fontview */
 
 static int default_fv_glyphlabel=0;	/* in fontview */
-
-static int save_to_dir=0;	/* in fontview,use sfdir rather than sfd */
 
 static int palettes_docked=1;	/* in cvpalettes */
 static int cvvisible[2]={ 1,1 },bvvisible[3]={
@@ -539,9 +537,8 @@ static struct prefs_list {
    "DefaultFVShowVmetrics", pr_int, &default_fv_showvmetrics, NULL, NULL,
 	 '\0', NULL, 1, NULL}, {
    "DefaultFVGlyphLabel", pr_int, &default_fv_glyphlabel, NULL, NULL, 'S',
-	 NULL, 1, NULL}, {
-   "SaveToDir", pr_int, &save_to_dir, NULL, NULL, 'S', NULL, 1, NULL}, {
-   "PalettesDocked", pr_bool, &palettes_docked, NULL, NULL, '\0', NULL, 1,
+	 NULL, 1, NULL},
+   { "PalettesDocked", pr_bool, &palettes_docked, NULL, NULL, '\0', NULL, 1,
 	 NULL}, {
    "CVVisible0", pr_bool, &cvvisible[0], NULL, NULL, '\0', NULL, 1, NULL}, {
    "CVVisible1", pr_bool, &cvvisible[1], NULL, NULL, '\0', NULL, 1, NULL}, {

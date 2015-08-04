@@ -1,70 +1,42 @@
-% $Id: fontanvil.tex 4077 2015-06-29 15:51:30Z mskala $
+% $Id: fontanvil.tex 4119 2015-07-30 12:46:27Z mskala $
 
-\documentclass[11pt,twoside]{report}
+\documentclass{mitsuba}
 
 \usepackage{framed}
-\usepackage[scaled]{helvet}
-\usepackage[margin=1.25in,top=0.85in,
-            marginparwidth=0.25in,marginparsep=0.5in]{geometry}
 \usepackage{makeidx}
 \usepackage{tikz}
-\usepackage{tocloft}
-\usepackage{xcolor}
-
-\definecolor{darkgreen}{rgb}{0,0.35,0}
-\definecolor{purplish}{rgb}{0.4,0,0.6}
-
-\usepackage[letterpaper,breaklinks,bookmarks,plainpages=false,
-   colorlinks,citecolor=darkgreen,linkcolor=purplish]{hyperref}
 
 \makeindex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\setlength{\FrameRule}{\fboxrule}
+\setlength{\FrameSep}{0.5em}
+\setlength{\OuterFrameSep}{0.5em}
+
 \newcommand{\smhv}[1]{\textsf{\textbf{#1}}}
 
-\newcommand{\PEFuncRef}[1]{
-\subsection*{#1}\label{func:#1}
+\newcommand{\PEFuncRef}[1]{%
+\section*{#1}\label{func:#1}%
 \index{#1@{\texttt{#1()}}|smhv}
 
 }
 
-\newcommand{\FFdiff}{\marginpar{\Huge \raisebox{-1.0ex}{\textit{ff}}}}
+\newcommand{\FFdiff}{\marginpar{\LARGE \raisebox{-1.0ex}{\textit{ff}}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{FontAnvil 0.3}
+\author{Matthew Skala}
+\date{\today}
 
 \begin{document}
-\pagestyle{headings}
+
+\maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\thispagestyle{empty}
-\begin{center}\LARGE
-
-\vspace*{\fill}
-
-\phantomsection\belowpdfbookmark{Title Page}{bkm:title}
-
-{\Huge FontAnvil 0.3}
-
-\vspace*{1.5in}
-
-\includegraphics{anvil.pdf}
-
-\vspace*{\fill}
-
-\end{center}
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\thispagestyle{plain}
-\vspace*{\fill}
-
-\phantomsection\belowpdfbookmark{Copyright}{bkm:copyright}
-
-\begin{minipage}{\linewidth}
-\noindent
+\begin{copyrightpage}
 Visit the FontAnvil home page at
 \url{http://tsukurimashou.osdn.jp/fontanvil.php}
 
@@ -104,16 +76,9 @@ chapter of this document for more information.
 \vspace{\baselineskip}
 
 Anvil clip-art by ``Gerald\_{}G,'' public domain.
-
-\end{minipage}
-
-\clearpage
+\end{copyrightpage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\phantomsection\belowpdfbookmark{Contents}{bkm:contents}
-\renewcommand\contentsname{Contents}
-\renewcommand{\cftbeforesubsecskip}{0pt}
 
 \tableofcontents
 
@@ -201,6 +166,8 @@ the file, define the significant ordering of glyphs in a font.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \appendix
+
+\onecolumn
 
 \chapter{Licensing}
 
@@ -315,6 +282,8 @@ Project, its licensing is not identical to that of other things included in
 the Tsukurimashou Project.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\twocolumn
 
 \clearpage
 \phantomsection\currentpdfbookmark{Index}{bkm:index}

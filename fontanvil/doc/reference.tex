@@ -1,8 +1,10 @@
-\chapter{Reference to built-in functions}
+\chapter{Function and variable reference}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ATan2}
 
-\noindent\texttt{ATan2(}\textit{y}, \textit{x}\texttt{)}
+\texttt{ATan2(}\textit{y}, \textit{x}\texttt{)}
 
 Returns the arctangent of $y/x$ in radians, using the signs of the arguments
 to choose the quadrant.  \emph{Note the order of the arguments, with $y$
@@ -10,73 +12,222 @@ first.}  This function mimics the behaviour of the C math library
 \texttt{atan2()} function.  This function may be used without a
 loaded font.
 
-\PEFuncRef{AddATT}
-
-\noindent\texttt{AddATT(}, \ldots\texttt{)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddAccent}
 
-\noindent\texttt{AddAccent(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddAccent(}\textit{accent}, [\textit{pos-flags}]\texttt{)}
+
+Perform one step in the process of building a composite glyph from a base
+and an accent.  This involves three glyph slots:
+\begin{itemize}
+  \item The base glyph, which might be a letter, like e.  This must exist
+    somewhere in the font.
+  \item The glyph slot that will contain the composite, which might be an
+    accented-letter glyph like \"{e}.  When \texttt{AddAccent()} is called,
+    this slot must be selected and must be the only thing selected.  It must
+    already contain a reference to the base glyph, and that must be the
+    first reference.
+  \item The glyph slot containing the accent itself.  This must be specified
+    as the first argument to \texttt{AddAccent()}, either as a string which
+    names the accent glyph slot or as a Unicode code point.
+\end{itemize}
+
+FontAnvil will attempt to place the accent in the composite glyph slot, in
+an appropriate position relative to the base.  Without the second argument,
+it will choose that position depending on the Unicode value of the accent. 
+The second argument if specified may be one of the
+following integer flags.  In principle, it could a bitwise OR of more than
+one of them, but that makes very little sense.
+
+\begin{tabular}{r|l}
+  flag & position \\ \hline
+  0x100 & Above \\
+  0x200 & Below \\
+  0x400 & Overstrike \\
+  0x800 & Left \\
+  0x1000 & Right \\
+  0x4000 & Center Left \\
+  0x8000 & Center Right \\
+  0x10000 & Centered Outside \\ 
+  0x20000 & Outside \\
+  0x40000 & Left Edge \\
+  0x80000 & Right Edge \\
+  0x100000  & Touching
+\end{tabular}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddAnchorClass}
 
-\noindent\texttt{AddAnchorClass(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddAnchorClass(}\textit{name}, \textit{type},
+  \textit{subtable}\texttt{)}
+
+Add an anchor class (for use with OpenType GPOS features) to the current
+font.  All three arguments are required, and are strings.  The first is the
+name of the class; the second is one of \texttt{"default"},
+\texttt{"mk-mk"}, or \texttt{"cursive"}, indicating the general kind of
+attachment (mark to base, mark to mark, or cursive, respectively); and the
+third is the name of the lookup subtable in which the class will be used.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddAnchorPoint}
 
-\noindent\texttt{AddAnchorPoint(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddAnchorPoint(}\textit{name}, \textit{type}, \textit{x},
+  \textit{y}, [\textit{lig-index}]\texttt{)}
+
+Add an anchor point for mark attachment to the currently selected glyph. 
+It is an error to attempt this if no, or more than one, glyph is selected. 
+The \textit{name} argument specifies the class, such as was used in
+\textit{AddAnchorClass()}.  The type should be one of \texttt{"mark"},
+\texttt{"basechar"} (syn.\ \texttt{"base"}), \texttt{"baselig"} (syn.\
+\texttt{"ligature"}, \texttt{"basemark"}, \texttt{"cursentry"} (syn.\
+\texttt{"entry"}, \texttt{"cursexit"} (syn.\ \texttt{"exit"}), or
+\texttt{"default"}.  The \texttt{"default"} choice attempts to guess an
+appropriate type.  The \textit{x} and \textit{y} arguments specify the
+coordinates of the anchor.  The final argument is required if and only if
+the type is base ligature.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddDHint}
 
-\noindent\texttt{AddDHint(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddDHint(}$x_1$, $y_1$, $x_2$, $y_2$, $x_\mathrm{u}$,
+  $y_\mathrm{u}$\texttt{)}
+
+Add a diagonal hint to any selected glyphs.  A diagonal hint is specified by
+three pairs of X-Y coordinates:  $(x_1,y_1)$ and $(x_2,y_2)$, which specify
+two points on opposite sides of the diagonal stem, and
+$(x_\mathrm{u},y_\mathrm{u})$, which
+specifies a unit vector in the direction of the stem.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddExtrema}
 
-\noindent\texttt{AddExtrema(}\textit{arg}\texttt{)}
+\texttt{AddExtrema(}[\textit{really}]\texttt{)}
+
+Add extra points to spline segments (that is, break them into smaller
+segments) in the selected glyph slots to ensure that segments achieve their
+maximum and minimum X and Y values at endpoints and not in between. 
+This is a technical requirement of some font formats.
+
+If an extremum occurs very near but not at the endpoint of a segment, then
+\texttt{AddExtrema()} will by default skip processing that extremum in order
+to avoid creating a very short segment.  Specify a nonzero integer for the
+optional argument \textit{really} to force adding extrema in such cases.
+
+Rounding coordinates in a font to integer values will often cause the
+splines to break the points-at-extrema rule, and adding points at extrema
+will often break the integer-coordinates rule required by the same font
+formats!  I do not know of a sequence of rounding, extrema-adding, and
+simplification operations without manual intervention that will reliably
+bring a font into compliance with both rules.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddHHint}
 
-\noindent\texttt{AddHHint(}, \ldots\texttt{)}
+\texttt{AddHHint(}\textit{start},\textit{width}\texttt{)}
+
+Add a horizontal hint to any selected glyphs, starting at X coordinate
+\textit{start} and extending for distance \textit{width}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddInstrs}
 
-\noindent\texttt{AddInstrs(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddInstrs(}\textit{dest}, \textit{replace}, \textit{instrs}\texttt{)}
+
+Add Microsoft-style rasterization hints (``instructions'') to the font. 
+These can be stored either in a TrueType table, or in an individual glyph,
+as determined by the string argument \textit{dest}.  If \textit{dest} is
+\texttt{"fpgm"} or \texttt{"prep"}, then the instructions will go in the
+table of that name; if it is an empty string then the instructions will go
+in any selected characters; and otherwise, the string value will be taken as
+the name of the glyph where the instructions will go.  Glyphs actually named
+``fpgm'' or ``prep'' apparently can only be specified by the selection
+mechanism.
+
+The \textit{replace} argument should be an integer; if it is nonzero then
+the new instructions replace any currently in the specified destination, and
+if it is zero then they are appended to any already present.  The
+\textit{instrs} argument should be a string containing the instructions. 
+This is code in a primitive assembly language for the TrueType instructions
+bytecode interpreter.  The syntax defined by the TrueType standard appears
+to be supported, with some undocumented but optional extensions proprietary
+to FontForge (and inherited by FontAnvil).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddLookup}
 
-\noindent\texttt{AddLookup(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddLookup(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddLookupSubtable}
 
-\noindent\texttt{AddLookupSubtable(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddLookupSubtable(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddPosSub}
 
-\noindent\texttt{AddPosSub(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{AddPosSub(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddSizeFeature}
 
-\noindent\texttt{AddSizeFeature(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{AddSizeFeature(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddVHint}
 
-\noindent\texttt{AddVHint(}, \ldots\texttt{)}
+\texttt{AddVHint(}\textit{start},\textit{width}\texttt{)}
+
+Add a vertical hint to any selected glyphs, starting at Y coordinate
+\textit{start} and extending for distance \textit{width}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ApplySubstitution}
 
-\noindent\texttt{ApplySubstitution(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{ApplySubstitution(}\textit{script},\textit{lang},\textit{feature}\texttt{)}
+
+Apply OpenType-style substitutions to selected glyphs.  All three arguments
+should be strings of up to four characters, which will be blank-padded if
+shorter; the \textit{script} and \textit{lang} tags (but not
+\textit{feature}) may also have the wildcard value * (a single asterisk),
+which matches everything.  FontAnvil will apply any substitution rules in
+the current font for the selected glyphs that match the specified script,
+language, and feature (or ignoring the checks for script or language if
+applying the wildcard); glyph slots for which a substitution is found will
+be replaced with the contents of the slots specified by the substitution
+rules.
+
+Context-dependent substitutions appear to be ignored, and it is not
+specified what happens if the result of the subsitution rule is not exactly
+one glyph.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Array}
 
-\noindent\texttt{Array(}\textit{size}\texttt{)}
+\texttt{Array(}\textit{size}\texttt{)}
 
 Creates and returns a value of array type, with the given number of
 elements initialized to void.
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{AskUser}
 
-\noindent\texttt{AskUser(}\textit{prompt}, [\textit{default}]\texttt{)}
+\texttt{AskUser(}\textit{prompt}, [\textit{default}]\texttt{)}
 
 Asks the user a question.  The string \textit{prompt} is written out to
 standard output, and the next line from standard input is captured to become
@@ -90,116 +241,220 @@ If \FFdiff FontAnvil was compiled with readline support, then
 \texttt{AskUser()} will allow command-line editing.  This is a
 FontAnvil extension, not supported by FontForge.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{AutoCounter}
 
-\noindent\texttt{AutoCounter(}\texttt{)}
+\texttt{AutoCounter(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AutoHint}
 
-\noindent\texttt{AutoHint(}\texttt{)}
+\texttt{AutoHint()}
+
+Automatically generate Adobe-style rasterization hints for selected
+glyphs.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AutoInstr}
 
-\noindent\texttt{AutoInstr(}\texttt{)}
+\texttt{AutoInstr()}
+
+Automatically generate Microsoft-style rasterization hints (that is,
+``instructions'') for selected glyphs.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AutoKern}
 
-\noindent\texttt{AutoKern(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AutoKern(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AutoTrace}
 
-\noindent\texttt{AutoTrace(}, \ldots\texttt{)}
+\texttt{AutoTrace(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AutoWidth}
 
-\noindent\texttt{AutoWidth(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+\texttt{AutoWidth(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
 
-\PEFuncRef{Autotrace}
-
-\noindent\texttt{Autotrace(}\texttt{)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{BitmapsAvail}
 
-\noindent\texttt{BitmapsAvail(}, \ldots\texttt{)}
+\texttt{BitmapsAvail(} \textit{sizes}, [\textit{rasterized}]\ldots\texttt{)}
+
+Choose the set of bitmap or greymap sizes (``strikes'') that will be stored
+in the current font.  The \textit{sizes} argument should be a list of
+integers; these are either plain numbers of pixels (implicitly specifying
+one bit per pixel black and white bitmaps); or bit-field encoded numbers
+specifying both a pixel size (in the least significant 16 bits) and a number
+of bits per pixel (in the higher bits).  For instance, 0x8000C specifies a
+12 pixel greymap font with eight bits per pixel.
+
+If any sizes are specified that are not already in the font, they will be
+added.  If any sizes are not specified but exist in the font, they will be
+removed; so the final list of sizes will match what was specified.  Any
+newly-created strikes will be filled in with rasterized versions of the
+splines in the font, if \textit{rasterized} is not specified or is a nonzero
+integer; the new strikes will be blank if \textit{rasterized} is zero.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{BitmapsRegen}
 
-\noindent\texttt{BitmapsRegen(}, \ldots\texttt{)}
+\texttt{BitmapsRegen(}, \textit{sizes}\texttt{)}
+
+Render bitmaps from the splines in the current font.  The list of bitmap
+sizes (and bit depths, in the case of greymap strikes) is specified as an
+array in the same format as with \texttt{BitmapsAvail()}.  All the specified
+sizes must already exist.  Their contents will be replaced with the results
+of the rendering; any other existing sizes are not changed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{BuildAccented}
 
-\noindent\texttt{BuildAccented(}\texttt{)}
+\texttt{BuildAccented()}
+
+If any selected glyphs are accented letters (determined by Unicode code
+points, according to George Williams's undocumented rules), then replace
+them with composite glyphs formed by references to base and accent glyphs,
+in an unspecified way.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{BuildComposite}
 
-\noindent\texttt{BuildComposite(}\texttt{)}
+\texttt{BuildComposite()}
+
+If any selected glyphs fall into a category described as ``ligatures and
+whatnot'' (determined by Unicode code points, according to George Williams's
+undocumented rules), then replace them with composite glyphs formed by
+references to other glyphs, in an unspecified way.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{BuildDuplicate}
 
-\noindent\texttt{BuildDuplicate(}\texttt{)}
+\texttt{BuildDuplicate()}
+
+For all selected glyph slots, if the glyph slot is associated with a Unicode
+code point that is an alternate of some other Unicode code point according
+to undocumented rules, and there is a glyph in the other code point's slot,
+then point the current glyph slot to that other glyph, thereby creating a
+deprecated multi-slot glyph structure.  What happens to any former glyph in
+the current slot is not clear; the code looks like it may leak the memory.
+
+The intended use of this function seems to have been mainly to build
+fonts with backward compatibility to certain Chinese encodings (perhaps
+based on early versions of Unicode without full coverage) that placed glyphs
+in the PUA for characters that are also (now) found at standard code points.
+
+Do not use this function.  It is kept in FontAnvil (for the moment, quite
+possibly to be removed some day) for backward compatibility, because some
+scripts may depend on the built-in rules.  Because they are undocumented,
+those are not easy to reproduce with other functions.  Creating multi-slot
+glyph structures in general is deprecated in the relevant font standards and
+so should rarely be attempted; and if you really need a multi-slot glyph
+structure, the \texttt{SameGlyphAs()} function is a more controllable way to
+build them.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CIDChangeSubFont}
 
-\noindent\texttt{CIDChangeSubFont(}\textit{arg}\texttt{)}
+\texttt{CIDChangeSubFont(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CIDFlatten}
 
-\noindent\texttt{CIDFlatten(}\texttt{)}
+\texttt{CIDFlatten(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CIDFlattenByCMap}
 
-\noindent\texttt{CIDFlattenByCMap(}\textit{arg}\texttt{)}
+\texttt{CIDFlattenByCMap(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CIDSetFontNames}
 
-\noindent\texttt{CIDSetFontNames(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{CIDSetFontNames(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CanonicalContours}
 
-\noindent\texttt{CanonicalContours(}\texttt{)}
+\texttt{CanonicalContours(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CanonicalStart}
 
-\noindent\texttt{CanonicalStart(}\texttt{)}
+\texttt{CanonicalStart(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Ceil}
 
-\noindent\texttt{Ceil(}\textit{x}\texttt{)}
+\texttt{Ceil(}\textit{x}\texttt{)}
 
 Returns $\lceil x \rceil$.  That is the ceiling of $x$, or the least
 integer greater than or equal to $x$.  This function may be used without a
 loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{CenterInWidth}
 
-\noindent\texttt{CenterInWidth(}\texttt{)}
+\texttt{CenterInWidth(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ChangePrivateEntry}
 
-\noindent\texttt{ChangePrivateEntry(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{ChangePrivateEntry(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ChangeWeight}
 
-\noindent\texttt{ChangeWeight(}[\textit{arg}]\texttt{)}
+\texttt{ChangeWeight(}[\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CharCnt}
 
-\noindent\texttt{CharCnt()}
+\texttt{CharCnt()}
 
 Return the number of glyph slots in the current font, including both encoded
 and unencoded slots.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{CharInfo}
 
-\noindent\texttt{CharInfo(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{CharInfo(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CheckForAnchorClass}
 
-\noindent\texttt{CheckForAnchorClass(}\textit{arg}\texttt{)}
+\texttt{CheckForAnchorClass(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Chr}
 
-\noindent\texttt{Chr(}\textit{int}\texttt{)}
+\texttt{Chr(}\textit{int}\texttt{)}
 
 Takes a single integer in the range -128 to 255 and returns a string
 containing that byte, folding negative values into two's complement
@@ -208,132 +463,196 @@ notation.
 \noindent\texttt{Chr(}\textit{array}\texttt{)}
 
 Takes an array of integers in the range -128 to 255 and returns a string
-consisting of those bytes.
+consisting of those bytes.  This is the inverse of the \texttt{Ord()}
+function; see also \texttt{Utf8()} and \texttt{Ucs4()}, which operate on
+Unicode strings and code points instead of byte values.
 
 This function may be used without a loaded font.  Note that the integers are
 \emph{byte} values.  Code points U+0080 and beyond may be constructed by
 spelling them out in UTF-8.  It is also possible, but not recommended, to
 construct strings that are invalid UTF-8.
 
+Since strings are stored in null-terminated form internally, passing a zero,
+although not reported as an error, will cause the string to terminate
+immediately before the zero.  It is not possible to create a string value in
+PE Script that meaningfully \emph{contains} a zero byte.
+
 I \FFdiff have submitted a patch to FontForge, but as of the current writing
-(June 2015), FontForge does not document its support of negative numbers,
+(June 2015), FontForge does not document its support of zero and
+negative numbers,
 and documents but does not correctly implement array-valued arguments. 
 FontAnvil behaves as documented here.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{Clear}
 
-\noindent\texttt{Clear()}
+\texttt{Clear()}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ClearBackground}
 
-\noindent\texttt{ClearBackground(}\texttt{)}
+\texttt{ClearBackground(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ClearCharCounterMasks}
 
-\noindent\texttt{ClearCharCounterMasks(}\texttt{)}
+\texttt{ClearCharCounterMasks(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ClearGlyphCounterMasks}
 
-\noindent\texttt{ClearGlyphCounterMasks(}\texttt{)}
+\texttt{ClearGlyphCounterMasks(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ClearHints}
 
-\noindent\texttt{ClearHints(}[\textit{arg}]\texttt{)}
+\texttt{ClearHints(}[\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ClearInstrs}
 
-\noindent\texttt{ClearInstrs(}\texttt{)}
+\texttt{ClearInstrs(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ClearPrivateEntry}
 
-\noindent\texttt{ClearPrivateEntry(}\textit{arg}\texttt{)}
+\texttt{ClearPrivateEntry(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ClearTable}
 
-\noindent\texttt{ClearTable(}\textit{arg}\texttt{)}
+\texttt{ClearTable(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Close}
 
-\noindent\texttt{Close(}\texttt{)}
+\texttt{Close(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CompareFonts}
 
-\noindent\texttt{CompareFonts(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{CompareFonts(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CompareGlyphs}
 
-\noindent\texttt{CompareGlyphs(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{CompareGlyphs(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ControlAfmLigatureOutput}
 
-\noindent\texttt{ControlAfmLigatureOutput(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{ControlAfmLigatureOutput(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ConvertByCMap}
 
-\noindent\texttt{ConvertByCMap(}\textit{arg}\texttt{)}
+\texttt{ConvertByCMap(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ConvertToCID}
 
-\noindent\texttt{ConvertToCID(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{ConvertToCID(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Copy}
 
-\noindent\texttt{Copy(}\texttt{)}
+\texttt{Copy(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyAnchors}
 
-\noindent\texttt{CopyAnchors(}\texttt{)}
+\texttt{CopyAnchors(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyFgToBg}
 
-\noindent\texttt{CopyFgToBg(}\texttt{)}
+\texttt{CopyFgToBg(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyGlyphFeatures}
 
-\noindent\texttt{CopyGlyphFeatures(}, \ldots\texttt{)}
+\texttt{CopyGlyphFeatures(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyLBearing}
 
-\noindent\texttt{CopyLBearing(}\texttt{)}
+\texttt{CopyLBearing(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyRBearing}
 
-\noindent\texttt{CopyRBearing(}\texttt{)}
+\texttt{CopyRBearing(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyReference}
 
-\noindent\texttt{CopyReference(}\texttt{)}
+\texttt{CopyReference(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyUnlinked}
 
-\noindent\texttt{CopyUnlinked(}\texttt{)}
+\texttt{CopyUnlinked(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyVWidth}
 
-\noindent\texttt{CopyVWidth(}\texttt{)}
+\texttt{CopyVWidth(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CopyWidth}
 
-\noindent\texttt{CopyWidth(}\texttt{)}
+\texttt{CopyWidth(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{CorrectDirection}
 
-\noindent\texttt{CorrectDirection(}\textit{arg}\texttt{)}
+\texttt{CorrectDirection(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Cos}
 
-\noindent\texttt{Cos(}\textit{theta}\texttt{)}
+\texttt{Cos(}\textit{theta}\texttt{)}
 
 Returns the cosine of \textit{theta}, which is measured in radians.
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{Cut}
 
-\noindent\texttt{Cut(}\texttt{)}
+\texttt{Cut(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{DebugCrashFontForge}
 
-\noindent\texttt{DebugCrashFontForge(}\ldots\texttt{)}
+\texttt{DebugCrashFontForge(}\ldots\texttt{)}
 
 Causes FontAnvil [sic] to attempt to write to a null pointer, which should
 crash the interpreter.  This may be of some use in debugging.  Arguments are
@@ -341,112 +660,152 @@ ignored.  Function name retained for compatibility.  In \FFdiff FontForge,
 this function requires a loaded font, but that limitation is removed in
 FontAnvil.
 
-\PEFuncRef{DefaultATT}
-
-\noindent\texttt{DefaultATT(}, \ldots\texttt{)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{DefaultOtherSubrs}
 
-\noindent\texttt{DefaultOtherSubrs(}\texttt{)}
+\texttt{DefaultOtherSubrs(}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{DefaultRoundToGrid}
 
-\noindent\texttt{DefaultRoundToGrid(}\texttt{)}
+\texttt{DefaultRoundToGrid(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{DefaultUseMyMetrics}
 
-\noindent\texttt{DefaultUseMyMetrics(}\texttt{)}
+\texttt{DefaultUseMyMetrics(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{DetachAndRemoveGlyphs}
 
-\noindent\texttt{DetachAndRemoveGlyphs(}, \ldots\texttt{)}
+\texttt{DetachAndRemoveGlyphs(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{DetachGlyphs}
 
-\noindent\texttt{DetachGlyphs(}, \ldots\texttt{)}
+\texttt{DetachGlyphs(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{DontAutoHint}
 
-\noindent\texttt{DontAutoHint(}\texttt{)}
+\texttt{DontAutoHint(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{DrawsSomething}
 
-\noindent\texttt{DrawsSomething(}\textit{arg}\texttt{)}
+\texttt{DrawsSomething(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Error}
 
-\noindent\texttt{Error(}\textit{msg}\texttt{)}
+\texttt{Error(}\textit{msg}\texttt{)}
 
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{Exp}
 
-\noindent\texttt{Exp(}\textit{x}\texttt{)}
+\texttt{Exp(}\textit{x}\texttt{)}
 
 Compute the exponential function, $e^x$.
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{ExpandStroke}
 
-\noindent\texttt{ExpandStroke(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{ExpandStroke(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Export}
 
-\noindent\texttt{Export(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Export(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{FileAccess}
 
-\noindent\texttt{FileAccess(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{FileAccess(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{FindIntersections}
 
-\noindent\texttt{FindIntersections(}\texttt{)}
+\texttt{FindIntersections(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{FindOrAddCvtIndex}
 
-\noindent\texttt{FindOrAddCvtIndex(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{FindOrAddCvtIndex(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Floor}
 
-\noindent\texttt{Floor(}\textit{arg}\texttt{)}
+\texttt{Floor(}\textit{arg}\texttt{)}
 
 Returns $\lfloor x \rfloor$.  That is the floor of $x$, or the greatest
 integer less than or equal to $x$.  This function may be used without a
 loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{FontImage}
 
-\noindent\texttt{FontImage(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+\texttt{FontImage(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{FontsInFile}
 
-\noindent\texttt{FontsInFile(}\textit{arg}\texttt{)}
+\texttt{FontsInFile(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{Generate}
 
-\noindent\texttt{Generate(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{Generate(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GenerateFamily}
 
-\noindent\texttt{GenerateFamily(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{GenerateFamily(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GenerateFeatureFile}
 
-\noindent\texttt{GenerateFeatureFile(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{GenerateFeatureFile(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetAnchorPoints}
 
-\noindent\texttt{GetAnchorPoints(}, \ldots\texttt{)}
+\texttt{GetAnchorPoints(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetCoverageCounts}
 
-\noindent\texttt{GetCoverageCounts()}
+\texttt{GetCoverageCounts()}
 
 Print (to standard output) a table listing all the built-in functions in the
 interpreter and how many times each one has been called in the current run
@@ -456,101 +815,147 @@ This function may be used without a loaded font.  This \FFdiff function is a
 FontAnvil extension and is not available in FontForge.  The details of its
 operation may change in some future version.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{GetCvtAt}
 
-\noindent\texttt{GetCvtAt(}\textit{arg}\texttt{)}
+\texttt{GetCvtAt(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetEnv}
 
-\noindent\texttt{GetEnv(}\textit{arg}\texttt{)}
+\texttt{GetEnv(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetFontBoundingBox}
 
-\noindent\texttt{GetFontBoundingBox(}\texttt{)}
+\texttt{GetFontBoundingBox(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetLookupInfo}
 
-\noindent\texttt{GetLookupInfo(}\textit{arg}\texttt{)}
+\texttt{GetLookupInfo(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetLookupOfSubtable}
 
-\noindent\texttt{GetLookupOfSubtable(}\textit{arg}\texttt{)}
+\texttt{GetLookupOfSubtable(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetLookupSubtables}
 
-\noindent\texttt{GetLookupSubtables(}\textit{arg}\texttt{)}
+\texttt{GetLookupSubtables(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetLookups}
 
-\noindent\texttt{GetLookups(}\textit{arg}\texttt{)}
+\texttt{GetLookups(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetMaxpValue}
 
-\noindent\texttt{GetMaxpValue(}\textit{arg}\texttt{)}
+\texttt{GetMaxpValue(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetOS2Value}
 
-\noindent\texttt{GetOS2Value(}, \ldots\texttt{)}
+\texttt{GetOS2Value(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetPosSub}
 
-\noindent\texttt{GetPosSub(}\textit{arg}\texttt{)}
+\texttt{GetPosSub(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetPref}
 
-\noindent\texttt{GetPref(}\textit{arg}\texttt{)}
+\texttt{GetPref(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{GetPrivateEntry}
 
-\noindent\texttt{GetPrivateEntry(}\textit{arg}\texttt{)}
+\texttt{GetPrivateEntry(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetSubtableOfAnchorClass}
 
-\noindent\texttt{GetSubtableOfAnchorClass(}\textit{arg}\texttt{)}
+\texttt{GetSubtableOfAnchorClass(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetTTFName}
 
-\noindent\texttt{GetTTFName(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{GetTTFName(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GetTeXParam}
 
-\noindent\texttt{GetTeXParam(}\textit{arg}\texttt{)}
+\texttt{GetTeXParam(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{GlyphInfo}
 
-\noindent\texttt{GlyphInfo(}, \ldots\texttt{)}
+\texttt{GlyphInfo(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{HFlip}
 
-\noindent\texttt{HFlip(}\textit{arg}\texttt{)}
+\texttt{HFlip(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{HasPreservedTable}
 
-\noindent\texttt{HasPreservedTable(}\textit{arg}\texttt{)}
+\texttt{HasPreservedTable(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{HasPrivateEntry}
 
-\noindent\texttt{HasPrivateEntry(}\textit{arg}\texttt{)}
+\texttt{HasPrivateEntry(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Import}
 
-\noindent\texttt{Import(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+\texttt{Import(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{InFont}
 
-\noindent\texttt{InFont(}[\textit{arg}]\texttt{)}
+\texttt{InFont(}[\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Inline}
 
-\noindent\texttt{Inline(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Inline(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Int}
 
-\noindent\texttt{Int(}\textit{x}\texttt{)}
+\texttt{Int(}\textit{x}\texttt{)}
 
 Converts a real number or Unicode code point value to an integer, by means
 of the C compiler's type coercion.  In the case of real numbers, that means
@@ -558,310 +963,468 @@ $x$ will be rounded toward zero.  An integer argument will be returned
 unchanged.
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{InterpolateFonts}
 
-\noindent\texttt{InterpolateFonts(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{InterpolateFonts(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsAlNum}
 
-\noindent\texttt{IsAlNum(}\textit{arg}\texttt{)}
+\texttt{IsAlNum(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsAlpha}
 
-\noindent\texttt{IsAlpha(}\textit{arg}\texttt{)}
+\texttt{IsAlpha(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsDigit}
 
-\noindent\texttt{IsDigit(}\textit{arg}\texttt{)}
+\texttt{IsDigit(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsFinite}
 
-\noindent\texttt{IsFinite(}\textit{arg}\texttt{)}
+\texttt{IsFinite(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsHexDigit}
 
-\noindent\texttt{IsHexDigit(}\textit{arg}\texttt{)}
+\texttt{IsHexDigit(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsLower}
 
-\noindent\texttt{IsLower(}\textit{arg}\texttt{)}
+\texttt{IsLower(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsNan}
 
-\noindent\texttt{IsNan(}\textit{arg}\texttt{)}
+\texttt{IsNan(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsSpace}
 
-\noindent\texttt{IsSpace(}\textit{arg}\texttt{)}
+\texttt{IsSpace(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{IsUpper}
 
-\noindent\texttt{IsUpper(}\textit{arg}\texttt{)}
+\texttt{IsUpper(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Italic}
 
-\noindent\texttt{Italic(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{Italic(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Join}
 
-\noindent\texttt{Join(}\texttt{)}
+\texttt{Join(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{LoadEncodingFile}
 
-\noindent\texttt{LoadEncodingFile(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{LoadEncodingFile(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{LoadNamelist}
 
-\noindent\texttt{LoadNamelist(}\textit{arg}\texttt{)}
+\texttt{LoadNamelist(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{LoadNamelistDir}
 
-\noindent\texttt{LoadNamelistDir(}[\textit{arg}]\texttt{)}
+\texttt{LoadNamelistDir(}[\textit{arg}]\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{LoadStringFromFile}
 
-\noindent\texttt{LoadStringFromFile(}\textit{arg}\texttt{)}
+\texttt{LoadStringFromFile(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{LoadTableFromFile}
 
-\noindent\texttt{LoadTableFromFile(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{LoadTableFromFile(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Log}
 
-\noindent\texttt{Log(}\textit{x}\texttt{)}
+\texttt{Log(}\textit{x}\texttt{)}
 
 Returns $\ln x$, that is the natural (base $e$) logarithm.  This is an error
 if $x$ is zero, negative, or not a number.
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{LookupStoreLigatureInAfm}
 
-\noindent\texttt{LookupStoreLigatureInAfm(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{LookupStoreLigatureInAfm(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MMAxisBounds}
 
-\noindent\texttt{MMAxisBounds(}\textit{arg}\texttt{)}
+\texttt{MMAxisBounds(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MMAxisNames}
 
-\noindent\texttt{MMAxisNames(}\texttt{)}
+\texttt{MMAxisNames(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MMBlendToNewFont}
 
-\noindent\texttt{MMBlendToNewFont(}, \ldots\texttt{)}
+\texttt{MMBlendToNewFont(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MMChangeInstance}
 
-\noindent\texttt{MMChangeInstance(}\textit{arg}\texttt{)}
+\texttt{MMChangeInstance(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MMChangeWeight}
 
-\noindent\texttt{MMChangeWeight(}, \ldots\texttt{)}
+\texttt{MMChangeWeight(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MMInstanceNames}
 
-\noindent\texttt{MMInstanceNames(}\texttt{)}
+\texttt{MMInstanceNames(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MMWeightedName}
 
-\noindent\texttt{MMWeightedName(}\texttt{)}
+\texttt{MMWeightedName(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MakeLine}
 
-\noindent\texttt{MakeLine(}, \ldots\texttt{)}
+\texttt{MakeLine(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MergeFeature}
 
-\noindent\texttt{MergeFeature(}\textit{arg}\texttt{)}
+\texttt{MergeFeature(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MergeFonts}
 
-\noindent\texttt{MergeFonts(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{MergeFonts(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MergeKern}
 
-\noindent\texttt{MergeKern(}\textit{arg}\texttt{)}
+\texttt{MergeKern(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MergeLookupSubtables}
 
-\noindent\texttt{MergeLookupSubtables(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{MergeLookupSubtables(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MergeLookups}
 
-\noindent\texttt{MergeLookups(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{MergeLookups(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Move}
 
-\noindent\texttt{Move(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Move(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MoveReference}
 
-\noindent\texttt{MoveReference(}\textit{arg}, \textit{arg}, \textit{arg}, \ldots\texttt{)}
+\texttt{MoveReference(}\textit{arg}, \textit{arg}, \textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{MultipleEncodingsToReferences}
 
-\noindent\texttt{MultipleEncodingsToReferences(}\texttt{)}
+\texttt{MultipleEncodingsToReferences(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{NameFromUnicode}
 
-\noindent\texttt{NameFromUnicode(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{NameFromUnicode(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{NearlyHvCps}
 
-\noindent\texttt{NearlyHvCps(}[\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{NearlyHvCps(}[\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{NearlyHvLines}
 
-\noindent\texttt{NearlyHvLines(}[\textit{arg}]\texttt{)}
+\texttt{NearlyHvLines(}[\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{NearlyLines}
 
-\noindent\texttt{NearlyLines(}[\textit{arg}]\texttt{)}
+\texttt{NearlyLines(}[\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{New}
 
-\noindent\texttt{New(}\texttt{)}
+\texttt{New(}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{NonLinearTransform}
 
-\noindent\texttt{NonLinearTransform(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{NonLinearTransform(}\textit{xexp}, \textit{yexp}\texttt{)}
+
+Transform all the X and Y coordinates in the selected glyphs according to
+two expressions given as strings.  The expressions are defined in a language
+unique to this function, which can be summarized as follows, from highest to
+lowest precedence class, with evaluation from left to right within a class:
+\begin{itemize}
+  \item constant reals, constant integers, and the variables \texttt{x} and
+    \texttt{y}
+  \item \texttt{!}, \texttt{()}, \texttt{sin()}, \texttt{cos()},
+    \texttt{tan()}, \texttt{log()}, \texttt{exp()}, \texttt{sqrt()},
+    \texttt{abs()}, \texttt{rint()}, \texttt{floor()},
+    \texttt{ceil()}
+  \item \texttt{\textasciicircum}
+  \item \texttt{*}, \texttt{/}, \texttt{\%}
+  \item \texttt{+}, \texttt{-}
+  \item \texttt{==}, \texttt{!=}, \texttt{>=}, \texttt{>}, \texttt{<=},
+    \texttt{<=}, \texttt{<}
+  \item \texttt{\&\&}, \texttt{||}
+  \item \texttt{?~:} (C-style ternary question mark)
+\end{itemize}
+
+The FontForge \FFdiff code base supports this function, but only as a
+compile-time option that is turned off by default.  Thus, most actual
+installations of FontForge will not support it.  It is unconditionally
+enabled in FontAnvil.  FontForge documents \texttt{x} and \texttt{y} as
+being the only atomic values available in the \texttt{NonLinearTransform()}
+expression language (no integers or reals), but that is obviously
+incorrect.  FontForge also incorrectly documents \texttt{float()} as a
+function available in the language, instead of \texttt{floor()}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Open}
 
-\noindent\texttt{Open(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Open(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Ord}
 
-\noindent\texttt{Ord(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Ord(}\textit{str}\texttt{)}
+
+Converts a string to an array of integers in the range 1 to 255,
+representing the byte values in the string.  Note 0 is not included
+because PE Script strings cannot contain zero bytes.
+This is the inverse of the \texttt{Chr()}
+function; see also \texttt{Utf8()} and \texttt{Ucs4()}, which operate on
+Unicode strings and code points instead of byte values.
+
+\texttt{Ord(}\textit{str}, \textit{pos}\texttt{)}
+
+With the optional \textit{pos} argument, \texttt{Ord()} returns a single
+integer instead of an array, representing the byte value at the given
+zero-based index into the string.
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Outline}
 
-\noindent\texttt{Outline(}\textit{arg}\texttt{)}
+\texttt{Outline(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{OverlapIntersect}
 
-\noindent\texttt{OverlapIntersect(}\texttt{)}
+\texttt{OverlapIntersect(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Paste}
 
-\noindent\texttt{Paste(}\texttt{)}
+\texttt{Paste(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{PasteInto}
 
-\noindent\texttt{PasteInto(}\texttt{)}
+\texttt{PasteInto(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{PasteWithOffset}
 
-\noindent\texttt{PasteWithOffset(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{PasteWithOffset(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{PositionReference}
 
-\noindent\texttt{PositionReference(}\textit{arg}, \textit{arg}, \textit{arg}, \ldots\texttt{)}
+\texttt{PositionReference(}\textit{arg}, \textit{arg}, \textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{PostNotice}
 
-\noindent\texttt{PostNotice(}\textit{arg}\texttt{)}
+\texttt{PostNotice(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Pow}
 
-\noindent\texttt{Pow(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Pow(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{PreloadCidmap}
 
-\noindent\texttt{PreloadCidmap(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{PreloadCidmap(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Print}
 
-\noindent\texttt{Print(}, \ldots\texttt{)}
+\texttt{Print(}, \ldots\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{PrintFont}
 
-\noindent\texttt{PrintFont(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{PrintFont(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{PrintSetup}
 
-\noindent\texttt{PrintSetup(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{PrintSetup(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{PrivateGuess}
 
-\noindent\texttt{PrivateGuess(}\textit{arg}\texttt{)}
+\texttt{PrivateGuess(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Quit}
 
-\noindent\texttt{Quit(}[\textit{arg}]\texttt{)}
+\texttt{Quit(}[\textit{arg}]\texttt{)}
 
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{Rand}
 
-\noindent\texttt{Rand()}
+\texttt{Rand()}
 
-Returns something called ``a random integer.''
-
-FontForge \FFdiff does not document what that means.  In fact, in FontForge
-it means whatever comes out of a call to the C
-library \texttt{rand()} function, and what that actually is will vary
-depending on the host platform.  FontAnvil uses a bundled copy of the
-SIMD-oriented Fast Mersenne Twister by Saito and Matsumoto.  The return
-values are uniformly distributed over the integers 0 to $2^{31}-1$, that is
-0 to 2147483647 (32-bit integers from the generator with the high bit forced
-to zero to prevent signedness problems).  The generator is seeded from the
-system clock and process ID when the interpreter starts.  The same generator
-instance is used throughout FontAnvil wherever random numbers are called
-for, including in operations that do not obviously involve randomization (as
-a result of UUID generation and such).  Thus, scripts should not depend on
-its producing a consistent sequence of numbers.
+Return something called ``a random integer.''  FontForge \FFdiff does not
+document what that means.  In fact, in FontForge it means whatever comes out
+of a call to the C library \texttt{rand()} function, and what that actually
+is will vary depending on the host platform.  FontAnvil uses a bundled copy
+of the SIMD-oriented Fast Mersenne Twister by Saito and Matsumoto.  The
+return values are uniformly distributed over the integers 0 to $2^{31}-1$,
+that is 0 to 2147483647 (32-bit integers from the generator with the high
+bit forced to zero to prevent signedness problems).  The generator is seeded
+from the system clock and process ID when the interpreter starts.  The same
+generator instance is used throughout FontAnvil wherever random numbers are
+called for, including in operations that do not obviously involve
+randomization (as a result of UUID generation and such).  Thus, scripts
+should not depend on its producing a consistent sequence of numbers.
 
 This function may be used without a loaded font.  See \texttt{RandReal()}
 for a related function that may be of use.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{RandReal}
 
-\noindent\texttt{RandReal()}
+\texttt{RandReal()}
 
 Return a pseudorandom real number in the interval $[0,1)$.  This uses the
 same underlying generator as \texttt{Rand()}, which see; but its output
@@ -870,656 +1433,957 @@ have slightly better precision, because it uses all 32 bits of the PRNG
 output.  This \FFdiff function is a FontAnvil extension and is not available
 in FontForge.  This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{ReadOtherSubrsFile}
 
-\noindent\texttt{ReadOtherSubrsFile(}\textit{arg}\texttt{)}
+\texttt{ReadOtherSubrsFile(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Real}
 
-\noindent\texttt{Real(}\textit{arg}\texttt{)}
+\texttt{Real(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{Reencode}
 
-\noindent\texttt{Reencode(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Reencode(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemoveAllKerns}
 
-\noindent\texttt{RemoveAllKerns(}\texttt{)}
+\texttt{RemoveAllKerns(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemoveAllVKerns}
 
-\noindent\texttt{RemoveAllVKerns(}\texttt{)}
+\texttt{RemoveAllVKerns(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemoveAnchorClass}
 
-\noindent\texttt{RemoveAnchorClass(}\textit{arg}\texttt{)}
+\texttt{RemoveAnchorClass(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemoveDetachedGlyphs}
 
-\noindent\texttt{RemoveDetachedGlyphs(}, \ldots\texttt{)}
+\texttt{RemoveDetachedGlyphs(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemoveLookup}
 
-\noindent\texttt{RemoveLookup(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{RemoveLookup(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemoveLookupSubtable}
 
-\noindent\texttt{RemoveLookupSubtable(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{RemoveLookupSubtable(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemoveOverlap}
 
-\noindent\texttt{RemoveOverlap(}\texttt{)}
+\texttt{RemoveOverlap(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemovePosSub}
 
-\noindent\texttt{RemovePosSub(}\textit{arg}\texttt{)}
+\texttt{RemovePosSub(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RemovePreservedTable}
 
-\noindent\texttt{RemovePreservedTable(}\textit{arg}\texttt{)}
+\texttt{RemovePreservedTable(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RenameGlyphs}
 
-\noindent\texttt{RenameGlyphs(}\textit{arg}\texttt{)}
+\texttt{RenameGlyphs(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ReplaceCharCounterMasks}
 
-\noindent\texttt{ReplaceCharCounterMasks(}\textit{arg}\texttt{)}
+\texttt{ReplaceCharCounterMasks(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ReplaceCvtAt}
 
-\noindent\texttt{ReplaceCvtAt(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{ReplaceCvtAt(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ReplaceGlyphCounterMasks}
 
-\noindent\texttt{ReplaceGlyphCounterMasks(}\textit{arg}\texttt{)}
+\texttt{ReplaceGlyphCounterMasks(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ReplaceWithReference}
 
-\noindent\texttt{ReplaceWithReference(}[\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{ReplaceWithReference(}[\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Revert}
 
-\noindent\texttt{Revert(}\texttt{)}
+\texttt{Revert()}
+
+Reload the current font from its file on disk (which must exist).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RevertToBackup}
 
-\noindent\texttt{RevertToBackup(}\texttt{)}
+\texttt{RevertToBackup()}
+
+Reload the current font from its backup file (the one ending in
+\textasciitilde, not a numbered revision), if one exists.  This is only
+meaningful for fonts that are SFD files for which a backup was created by a
+previous \texttt{Save()}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Rotate}
 
-\noindent\texttt{Rotate(}\textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{Rotate(}\textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Round}
 
-\noindent\texttt{Round(}\textit{arg}\texttt{)}
+\texttt{Round(}\textit{arg}\texttt{)}
 
 Returns the nearest integer to $x$, with ties broken by returning the
 nearest \emph{even} integer.  This behaviour may differ on nonstandard
 systems that lack the \texttt{fesetround()} library function.
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{RoundToCluster}
 
-\noindent\texttt{RoundToCluster(}[\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{RoundToCluster(}[\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{RoundToInt}
 
-\noindent\texttt{RoundToInt(}\textit{arg}\texttt{)}
+\texttt{RoundToInt(}\textit{arg}\texttt{)}
 
 Round coordinates in selected glyphs.  See
 \hyperref[func:Round]{\texttt{Round()}} for rounding a
 real number to an integer.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{SameGlyphAs}
 
-\noindent\texttt{SameGlyphAs(}\texttt{)}
+\texttt{SameGlyphAs(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Save}
 
-\noindent\texttt{Save(}[\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{Save(}[\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SaveTableToFile}
 
-\noindent\texttt{SaveTableToFile(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SaveTableToFile(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Scale}
 
-\noindent\texttt{Scale(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{Scale(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ScaleToEm}
 
-\noindent\texttt{ScaleToEm(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{ScaleToEm(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Select}
 
-\noindent\texttt{Select(}, \ldots\texttt{)}
+\texttt{Select(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectAll}
 
-\noindent\texttt{SelectAll(}\texttt{)}
+\texttt{SelectAll(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectAllInstancesOf}
 
-\noindent\texttt{SelectAllInstancesOf(}, \ldots\texttt{)}
+\texttt{SelectAllInstancesOf(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectBitmap}
 
-\noindent\texttt{SelectBitmap(}\textit{arg}\texttt{)}
+\texttt{SelectBitmap(}\textit{arg}\texttt{)}
 
-\PEFuncRef{SelectByATT}
-
-\noindent\texttt{SelectByATT(}, \ldots\texttt{)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectByColor}
 
-\noindent\texttt{SelectByColor(}\textit{arg}\texttt{)}
+\texttt{SelectByColor(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectByColour}
 
-\noindent\texttt{SelectByColour(}\textit{arg}\texttt{)}
+\texttt{SelectByColour(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectByPosSub}
 
-\noindent\texttt{SelectByPosSub(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SelectByPosSub(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectChanged}
 
-\noindent\texttt{SelectChanged(}\textit{arg}\texttt{)}
+\texttt{SelectChanged(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectFewer}
 
-\noindent\texttt{SelectFewer(}\textit{arg}, \ldots\texttt{)}
+\texttt{SelectFewer(}\textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectFewerSingletons}
 
-\noindent\texttt{SelectFewerSingletons(}\textit{arg}, \ldots\texttt{)}
+\texttt{SelectFewerSingletons(}\textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectGlyphsBoth}
 
-\noindent\texttt{SelectGlyphsBoth(}\textit{arg}\texttt{)}
+\texttt{SelectGlyphsBoth(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectGlyphsReferences}
 
-\noindent\texttt{SelectGlyphsReferences(}\textit{arg}\texttt{)}
+\texttt{SelectGlyphsReferences(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectGlyphsSplines}
 
-\noindent\texttt{SelectGlyphsSplines(}\textit{arg}\texttt{)}
+\texttt{SelectGlyphsSplines(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectHintingNeeded}
 
-\noindent\texttt{SelectHintingNeeded(}\textit{arg}\texttt{)}
+\texttt{SelectHintingNeeded(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectIf}
 
-\noindent\texttt{SelectIf(}, \ldots\texttt{)}
+\texttt{SelectIf(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectInvert}
 
-\noindent\texttt{SelectInvert(}\texttt{)}
+\texttt{SelectInvert(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectMore}
 
-\noindent\texttt{SelectMore(}\textit{arg}, \ldots\texttt{)}
+\texttt{SelectMore(}\textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectMoreIf}
 
-\noindent\texttt{SelectMoreIf(}\textit{arg}, \ldots\texttt{)}
+\texttt{SelectMoreIf(}\textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectMoreSingletons}
 
-\noindent\texttt{SelectMoreSingletons(}\textit{arg}, \ldots\texttt{)}
+\texttt{SelectMoreSingletons(}\textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectMoreSingletonsIf}
 
-\noindent\texttt{SelectMoreSingletonsIf(}\textit{arg}, \ldots\texttt{)}
+\texttt{SelectMoreSingletonsIf(}\textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectNone}
 
-\noindent\texttt{SelectNone(}\texttt{)}
+\texttt{SelectNone(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectSingletons}
 
-\noindent\texttt{SelectSingletons(}, \ldots\texttt{)}
+\texttt{SelectSingletons(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectSingletonsIf}
 
-\noindent\texttt{SelectSingletonsIf(}, \ldots\texttt{)}
+\texttt{SelectSingletonsIf(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SelectWorthOutputting}
 
-\noindent\texttt{SelectWorthOutputting(}\textit{arg}\texttt{)}
+\texttt{SelectWorthOutputting(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetCharCnt}
 
-\noindent\texttt{SetCharCnt(}\textit{arg}\texttt{)}
+\texttt{SetCharCnt(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetCharColor}
 
-\noindent\texttt{SetCharColor(}\textit{arg}\texttt{)}
+\texttt{SetCharColor(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetCharComment}
 
-\noindent\texttt{SetCharComment(}\textit{arg}\texttt{)}
+\texttt{SetCharComment(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetCharCounterMask}
 
-\noindent\texttt{SetCharCounterMask(}\textit{arg}, \textit{arg}, \ldots\texttt{)}
+\texttt{SetCharCounterMask(}\textit{arg}, \textit{arg}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetCharName}
 
-\noindent\texttt{SetCharName(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetCharName(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetFeatureList}
 
-\noindent\texttt{SetFeatureList(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetFeatureList(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetFondName}
 
-\noindent\texttt{SetFondName(}\textit{arg}\texttt{)}
+\texttt{SetFondName(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetFontHasVerticalMetrics}
 
-\noindent\texttt{SetFontHasVerticalMetrics(}\textit{arg}\texttt{)}
+\texttt{SetFontHasVerticalMetrics(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetFontNames}
 
-\noindent\texttt{SetFontNames(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{SetFontNames(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetFontOrder}
 
-\noindent\texttt{SetFontOrder(}\textit{arg}\texttt{)}
+\texttt{SetFontOrder(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetGasp}
 
-\noindent\texttt{SetGasp(}, \ldots\texttt{)}
+\texttt{SetGasp(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetGlyphChanged}
 
-\noindent\texttt{SetGlyphChanged(}\textit{arg}\texttt{)}
+\texttt{SetGlyphChanged(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetGlyphClass}
 
-\noindent\texttt{SetGlyphClass(}\textit{arg}\texttt{)}
+\texttt{SetGlyphClass(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetGlyphColor}
 
-\noindent\texttt{SetGlyphColor(}\textit{arg}\texttt{)}
+\texttt{SetGlyphColor(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetGlyphComment}
 
-\noindent\texttt{SetGlyphComment(}\textit{arg}\texttt{)}
+\texttt{SetGlyphComment(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetGlyphCounterMask}
 
-\noindent\texttt{SetGlyphCounterMask(}, \ldots\texttt{)}
+\texttt{SetGlyphCounterMask(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetGlyphName}
 
-\noindent\texttt{SetGlyphName(}, \ldots\texttt{)}
+\texttt{SetGlyphName(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetGlyphTeX}
 
-\noindent\texttt{SetGlyphTeX(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+\texttt{SetGlyphTeX(}\textit{arg}, \textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetItalicAngle}
 
-\noindent\texttt{SetItalicAngle(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetItalicAngle(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetKern}
 
-\noindent\texttt{SetKern(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetKern(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetLBearing}
 
-\noindent\texttt{SetLBearing(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetLBearing(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetMacStyle}
 
-\noindent\texttt{SetMacStyle(}\textit{arg}\texttt{)}
+\texttt{SetMacStyle(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetMaxpValue}
 
-\noindent\texttt{SetMaxpValue(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetMaxpValue(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetOS2Value}
 
-\noindent\texttt{SetOS2Value(}, \ldots\texttt{)}
+\texttt{SetOS2Value(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetPanose}
 
-\noindent\texttt{SetPanose(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetPanose(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetPref}
 
-\noindent\texttt{SetPref(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetPref(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetRBearing}
 
-\noindent\texttt{SetRBearing(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetRBearing(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetTTFName}
 
-\noindent\texttt{SetTTFName(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetTTFName(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetTeXParams}
 
-\noindent\texttt{SetTeXParams(}, \ldots\texttt{)}
+\texttt{SetTeXParams(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetUnicodeValue}
 
-\noindent\texttt{SetUnicodeValue(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetUnicodeValue(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetUniqueID}
 
-\noindent\texttt{SetUniqueID(}\textit{arg}\texttt{)}
+\texttt{SetUniqueID(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetVKern}
 
-\noindent\texttt{SetVKern(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetVKern(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetVWidth}
 
-\noindent\texttt{SetVWidth(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetVWidth(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SetWidth}
 
-\noindent\texttt{SetWidth(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{SetWidth(}\textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Shadow}
 
-\noindent\texttt{Shadow(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{Shadow(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Shell}
 
-\noindent\texttt{Shell(}\textit{arg}\texttt{)}
+\texttt{Shell(}\textit{command}\texttt{)}
 
-This function may be used without a loaded font.
+Execute a command in the system shell, via the C library \texttt{system(3)}
+call.  Returns the integer return value from doing so.  All the usual
+security considerations associated with shell interfaces apply.
+This function may be used without a loaded font.  This \FFdiff function is a
+FontAnvil extension and is not available in FontForge.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Simplify}
 
-\noindent\texttt{Simplify(}, \ldots\texttt{)}
+\texttt{Simplify(}, \ldots\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Sin}
 
-\noindent\texttt{Sin(}\textit{arg}\texttt{)}
+\texttt{Sin(}\textit{theta}\texttt{)}
 
+Returns the sine of \textit{theta}, which is measured in radians.
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SizeOf}
 
-\noindent\texttt{SizeOf(}\textit{arg}\texttt{)}
+\texttt{SizeOf(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Skew}
 
-\noindent\texttt{Skew(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{Skew(}\textit{arg}, \textit{arg}, [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SmallCaps}
 
-\noindent\texttt{SmallCaps(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+\texttt{SmallCaps(}[\textit{arg}], [\textit{arg}], [\textit{arg}], [\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Sqrt}
 
-\noindent\texttt{Sqrt(}\textit{arg}\texttt{)}
+\texttt{Sqrt(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{StrJoin}
 
-\noindent\texttt{StrJoin(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{StrJoin(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{StrSplit}
 
-\noindent\texttt{StrSplit(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{StrSplit(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strcasecmp}
 
-\noindent\texttt{Strcasecmp(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Strcasecmp(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strcasestr}
 
-\noindent\texttt{Strcasestr(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Strcasestr(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strftime}
 
-\noindent\texttt{Strftime(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+\texttt{Strftime(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strlen}
 
-\noindent\texttt{Strlen(}\textit{arg}\texttt{)}
+\texttt{Strlen(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strrstr}
 
-\noindent\texttt{Strrstr(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Strrstr(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strskipint}
 
-\noindent\texttt{Strskipint(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Strskipint(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strstr}
 
-\noindent\texttt{Strstr(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Strstr(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strsub}
 
-\noindent\texttt{Strsub(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{Strsub(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strtod}
 
-\noindent\texttt{Strtod(}\textit{arg}\texttt{)}
+\texttt{Strtod(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Strtol}
 
-\noindent\texttt{Strtol(}\textit{arg}, \textit{arg}\texttt{)}
+\texttt{Strtol(}\textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{SubstitutionPoints}
 
-\noindent\texttt{SubstitutionPoints(}\texttt{)}
+\texttt{SubstitutionPoints(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Tan}
 
-\noindent\texttt{Tan(}\textit{arg}\texttt{)}
+\texttt{Tan(}\textit{theta}\texttt{)}
 
+Returns the tangent of \textit{theta}, which is measured in radians.
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ToLower}
 
-\noindent\texttt{ToLower(}\textit{arg}\texttt{)}
+\texttt{ToLower(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ToMirror}
 
-\noindent\texttt{ToMirror(}\textit{arg}\texttt{)}
+\texttt{ToMirror(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ToString}
 
-\noindent\texttt{ToString(}\textit{arg}\texttt{)}
+\texttt{ToString(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{ToUpper}
 
-\noindent\texttt{ToUpper(}\textit{arg}\texttt{)}
+\texttt{ToUpper(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Transform}
 
-\noindent\texttt{Transform(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{Transform(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{TypeOf}
 
-\noindent\texttt{TypeOf(}\textit{arg}\texttt{)}
+\texttt{TypeOf(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UCodePoint}
 
-\noindent\texttt{UCodePoint(}\textit{arg}\texttt{)}
+\texttt{UCodePoint(}\textit{int}\texttt{)}
 
-This function may be used without a loaded font.
+Cast an integer to the special ``Unicode code point'' data type required by
+some other scripting functions.  This function may be used without a loaded
+font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Ucs4}
 
-\noindent\texttt{Ucs4(}\textit{arg}\texttt{)}
+\texttt{Ucs4(}\textit{str}\texttt{)}
 
-This function may be used without a loaded font.
+Decode a UTF-8 string into an array of integers (not actually UCS4, despite
+the name) expressing the code points
+in the string.  Handling of illegal UTF-8, including encoded surrogate code
+points, is undefined.  This is the inverse of the \texttt{Utf8()} function;
+see also \texttt{Chr()} and \texttt{Ord()}, which operate on byte values
+instead of code points.  This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UnicodeAnnotationFromLib}
 
-\noindent\texttt{UnicodeAnnotationFromLib(}\textit{arg}\texttt{)}
+\texttt{UnicodeAnnotationFromLib(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UnicodeBlockEndFromLib}
 
-\noindent\texttt{UnicodeBlockEndFromLib(}\textit{arg}\texttt{)}
+\texttt{UnicodeBlockEndFromLib(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UnicodeBlockNameFromLib}
 
-\noindent\texttt{UnicodeBlockNameFromLib(}\textit{arg}\texttt{)}
+\texttt{UnicodeBlockNameFromLib(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UnicodeBlockStartFromLib}
 
-\noindent\texttt{UnicodeBlockStartFromLib(}\textit{arg}\texttt{)}
+\texttt{UnicodeBlockStartFromLib(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UnicodeFromName}
 
-\noindent\texttt{UnicodeFromName(}\textit{arg}\texttt{)}
+\texttt{UnicodeFromName(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UnicodeNameFromLib}
 
-\noindent\texttt{UnicodeNameFromLib(}\textit{arg}\texttt{)}
+\texttt{UnicodeNameFromLib(}\textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UnicodeNamesListVersion}
 
-\noindent\texttt{UnicodeNamesListVersion(}\texttt{)}
+\texttt{UnicodeNamesListVersion(}\texttt{)}
 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{UnlinkReference}
 
-\noindent\texttt{UnlinkReference(}\texttt{)}
+\texttt{UnlinkReference(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Utf8}
 
-\noindent\texttt{Utf8(}\textit{arg}\texttt{)}
+\texttt{Utf8(}\textit{codes}\texttt{)}
 
+Encode an array of integers in the range 0 to 0x10FFFF, or a such single
+integer, into a UTF-8 string.  Surrogate code point values will result in
+an illegal UTF-8 result, and zeroes will prematurely terminate the output. 
+This is the inverse of the \texttt{Ucs4()} function; see also \texttt{Chr()}
+and \texttt{Ord()}, which operate on byte values instead of code points. 
 This function may be used without a loaded font.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{VFlip}
 
-\noindent\texttt{VFlip(}\textit{arg}\texttt{)}
+\texttt{VFlip(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{VKernFromHKern}
 
-\noindent\texttt{VKernFromHKern(}\texttt{)}
+\texttt{VKernFromHKern(}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Validate}
 
-\noindent\texttt{Validate(}[\textit{arg}]\texttt{)}
+\texttt{Validate(}[\textit{arg}]\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{Wireframe}
 
-\noindent\texttt{Wireframe(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{Wireframe(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{WorthOutputting}
 
-\noindent\texttt{WorthOutputting(}\textit{arg}\texttt{)}
+\texttt{WorthOutputting(}\textit{arg}\texttt{)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{WriteStringToFile}
 
-\noindent\texttt{WriteStringToFile(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{WriteStringToFile(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
 
 This function may be used without a loaded font.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \PEFuncRef{WritePfm}
 
-\noindent\texttt{WritePfm(}\textit{arg}\texttt{)}
+\texttt{WritePfm(}\textit{arg}\texttt{)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Built-in functions in FontAnvil and not in FontForge}
-
-\PEFuncRef{Shell}
-
-Shell:  \FFdiff takes
-one argument, the name of a shell command to execute.  Returns
-the return value from doing so.
-
 \section{Built-in functions in FontForge and not in FontAnvil}
 
-Because \FFdiff FontAnvil does not support plugins, these built-in functions have
-been removed from the language:  LoadPlugin, LoadPluginDir.
+\texttt{LoadPlugin()}\FFdiff\\
+\texttt{LoadPluginDir()}
 
-Similarly, FontAnvil does not store persistent preferences in the user's
-home directory, and the functions to do that have been removed: LoadPrefs,
-SavePrefs.  For the moment, at least, other functions related to
-``preference'' variables remain in the language.
+Removed because FontAnvil does not use plugins.
 
-FontAnvil (in the current version) does not support printing fonts, because
-support for this feature necessitates a disproportionate amount of
-unportable interfacing code to talk to system-specific printing interfaces. 
-Some future version may support a stripped-down and portable printing
-feature, likely writing to files instead of the physical printer, but for
-the moment, these functions are unimplemented:  PrintFont, PrintSetup.
+\noindent
+\texttt{LoadPrefs()}\FFdiff\\
+\texttt{SavePrefs()}
 
-In FontForge's history it has several times happened that function names
-were misspelled, or documented incorrectly.  After the errors were
-discovered the names were changed in the documents to reflect the designer's
-intentions, but the wrong names were kept in the code as aliases of the
-correct ones, in order to avoid breaking any existing scripts that might
-have relied on them.  The plan is to remove most if not all of these in
-FontAnvil, bringing the code closer to the documentation.  To date, the
-function aliases of this kind removed from FontAnvil are: bAutoCounter,
-bDontAutoHint, bSubstitutionPoints, BuildComposit, GetPrefs.
+Removed because, to ensure consistent results from scripts, FontAnvil does
+not store per-user ``preferences'' between runs.  For the moment, other
+functions related to FontForge-style preference variables remain in the
+language, but the values of these variables are initialized to defaults at
+the start of each script run.
 
-In mainline FontForge, some functions were deprecated and had their
-implementations replaced by error messages.  In FontAnvil these functions
-have been removed entirely:  PrivateToCvt, RemoveATT.
+\noindent
+\texttt{PrintFont()}\FFdiff\\
+\texttt{PrintSetup()}
+
+Removed because of the grossly disproportionate amount of unportable
+interfacing code needed to talk to the native printing interfaces on each
+operating system.  Some future version may support a more portable printing
+feature, likely involving writing to files instead of interfacing directly
+to the printer drivers.
+
+\noindent
+\texttt{Autotrace()}\FFdiff\\
+\texttt{bAutoCounter()}\\
+\texttt{bDontAutoHint()}\\
+\texttt{bSubstitutionPoints()}\\
+\texttt{BuildComposit()}\\
+\texttt{GetPrefs()}
+
+Misspellings of documented function names which FontForge once supported by
+mistake and now retains for compatibility with hypothetical deployed
+scripts that might have depended upon them.  No such deployed scripts are
+actually known to exist.  FontAnvil does not retain the misspelled names.
+
+\noindent
+\texttt{AddATT()}\FFdiff\\
+\texttt{DefaultATT()}\\
+\texttt{PrivateToCvt()}\\
+\texttt{RemoveATT()}\\
+\texttt{SelectByATT()}
+
+Deprecated functions that only produce error messages in FontForge; removed
+entirely in FontAnvil.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Built-in variables}
+

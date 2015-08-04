@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4073 2015-06-29 09:41:13Z mskala $ */
+/* $Id: scripting.c 4119 2015-07-30 12:46:27Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -961,11 +961,6 @@ static void bATan2(Context *c) {
      ScriptError(c, "Bad type for argument");
    c->return_val.type=v_real;
    c->return_val.u.fval=atan2(val1, val2);
-}
-
-static void bAddATT(Context *c) {
-   ScriptError(c,
-	       "This scripting function no longer works, replaced by AddPosSub.");
 }
 
 static void bAddAnchorClass(Context *c) {
@@ -2036,7 +2031,7 @@ static void bAutoWidth(Context *c) {
    AutoWidth2(c->curfv, sep, min, max, 0, 1);
 }
 
-static void bAutotrace(Context *c) {
+static void bAutoTrace(Context *c) {
    FVAutoTrace(c->curfv, false);
 }
 
@@ -3121,10 +3116,6 @@ static void bDebugCrashFontForge(Context *c) {
    int *ptr=NULL;
 
    *ptr=1;
-}
-
-static void bDefaultATT(Context *c) {
-   ScriptError(c, "This scripting function no longer works.");
 }
 
 static void bDefaultOtherSubrs(Context *c) {
@@ -6103,7 +6094,6 @@ static void bSave(Context *c) {
    SplineFont *sf=c->curfv->sf;
    char *t, *pt;
    char *locfilename;
-   int s2d=false;
    int localRevisionsToRetain=-1;
 
    // Grab the optional number of backups that are desired argument
@@ -6125,17 +6115,15 @@ static void bSave(Context *c) {
       t=script2utf8_copy(c->a.vals[1].u.sval);
       locfilename=fastrdup(t);
       pt=strrchr(locfilename, '.');
-      if (pt != NULL && strmatch(pt, ".sfdir")==0)
-	 s2d=true;
 
       int rc=SFDWriteBakExtended(locfilename,
-				   sf, c->curfv->map, c->curfv->normal, s2d,
+				   sf, c->curfv->map, c->curfv->normal,
 				   localRevisionsToRetain);
 
       if (!rc)
 	 ScriptError(c, "Save failed");
 
-      /* Hmmm. We don't set the filename, nor the save_to_dir bit */
+      /* Hmmm.  We don't set the filename. */
       free(t);
       free(locfilename);
    } else {
@@ -6147,9 +6135,8 @@ static void bSave(Context *c) {
 	 * If there are no existing backup files, don't start creating them here.
 	 * Otherwise, save as many as the user wants.
 	 */
-      int s2d=false;
       int rc=SFDWriteBakExtended(sf->filename,
-				   sf, c->curfv->map, c->curfv->normal, s2d,
+				   sf, c->curfv->map, c->curfv->normal,
 				   localRevisionsToRetain);
 
       if (!rc)
@@ -6324,11 +6311,6 @@ static void bSelectBitmap(Context *c) {
       ScriptError(c, "No matching bitmap");
       c->curfv->active_bitmap=bdf;
    }
-}
-
-static void bSelectByATT(Context *c) {
-   ScriptError(c,
-	       "This scripting function no longer works. It has been replace by SelectByPosSub");
 }
 
 static void bSelectByColor(Context *c) {
@@ -8286,7 +8268,6 @@ static struct builtins {
    unsigned long count;
 } builtins[]={
    {"ATan2", bATan2, 1,3,3,0},
-   {"AddATT", bAddATT, 0,0,-1,0},
    {"AddAccent", bAppendAccent, 0,2,3,0},
    {"AddAnchorClass", bAddAnchorClass, 0,4,4,0},
    {"AddAnchorPoint", bAddAnchorPoint, 0,5,6,0},
@@ -8306,9 +8287,8 @@ static struct builtins {
    {"AutoHint", bAutoHint, 0,1,1,0},
    {"AutoInstr", bAutoInstr, 0,1,1,0},
    {"AutoKern", bAutoKern, 0,4,5,0},
-   {"AutoTrace", bAutotrace, 0,0,-1,0},	/* Oops. docs say upperT, old scripts expect lowert */
+   {"AutoTrace", bAutoTrace, 0,0,-1,0},
    {"AutoWidth", bAutoWidth, 0,2,4,0},
-   {"Autotrace", bAutotrace, 0,1,1,0},
    {"BitmapsAvail", bBitmapsAvail, 0,0,-1,0},
    {"BitmapsRegen", bBitmapsRegen, 0,0,-1,0},
    {"BuildAccented", bBuildAccented, 0,1,1,0},
@@ -8356,7 +8336,6 @@ static struct builtins {
    {"Cos", bCos, 1,2,2,0},
    {"Cut", bCut, 0,1,1,0},
    {"DebugCrashFontForge", bDebugCrashFontForge, 1,0,-1,0},
-   {"DefaultATT", bDefaultATT, 0,0,-1,0},
    {"DefaultOtherSubrs", bDefaultOtherSubrs, 1,1,1,0},
    {"DefaultRoundToGrid", bDefaultRoundToGrid, 0,1,1,0},
    {"DefaultUseMyMetrics", bDefaultUseMyMetrics, 0,1,1,0},
@@ -8493,7 +8472,6 @@ static struct builtins {
    {"SelectAll", bSelectAll, 0,1,1,0},
    {"SelectAllInstancesOf", bSelectAllInstancesOf, 0,0,-1,0},
    {"SelectBitmap", bSelectBitmap, 0,2,2,0},
-   {"SelectByATT", bSelectByATT, 0,0,-1,0},
    {"SelectByColor", bSelectByColor, 0,2,2,0},
    {"SelectByColour", bSelectByColor, 0,2,2,0},
    {"SelectByPosSub", bSelectByPosSub, 0,3,3,0},

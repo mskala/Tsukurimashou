@@ -1,0 +1,99 @@
+\documentclass{mitsuba}
+
+\usepackage{kantlipsum}
+\usepackage{layouts}
+
+\title{Mitsuba test document}
+\author{Marko V. Kant}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\chapter{Introduction}
+
+\kant[1]
+
+\section{A section}
+
+\kant[2-5]
+
+\section{Another section}
+
+\kant[6-8]
+
+Animals, as the Chinese philosophers were well aware, can most conveniently
+and efficaciously (not to mention with great auspicion) be divided into:
+\begin{itemize}
+\item those that belong to the Emperor,
+\item embalmed ones,
+\item those that are trained,
+\item suckling pigs,
+\item mermaids,
+\item fabulous ones,
+\item stray dogs,
+\item those included in the present classification,
+\item those that tremble as if they were mad,
+\item innumerable ones,
+\item those drawn with a very fine camelhair brush,
+\item others,
+\item those that have just broken a flower vase,
+\item those that from a long way off look like flies.
+\item \kant[36-38]
+\end{itemize}
+
+\kant[9-10]
+
+\kant[22-35]
+
+\chapter{Discussion}
+
+\section{Point}
+
+\kant[11-15]
+
+\section{Counterpoint}
+
+\kant[16]
+
+\subsubsection{Foo}
+
+\kant[17]
+
+\subsubsection{Bar}
+
+\kant[18]
+
+\subsubsection{Baz}
+
+\kant[19]
+
+\subsubsection{Quux}
+
+\kant[20]
+
+\chapter{Conclusion}
+
+\kant[21]
+
+\clearpage
+
+\begin{figure*}
+\currentpage
+\printheadingsfalse
+\oddpagelayouttrue
+\twocolumnlayouttrue
+\pagedesign
+\caption{Odd page layout}
+\end{figure*}
+
+\begin{figure*}
+\currentlist
+\printheadingsfalse
+\listdesign
+\caption{List layout}
+\end{figure*}
+
+\end{document}

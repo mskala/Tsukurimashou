@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: sfd.c 4119 2015-07-30 12:46:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2707,13 +2707,7 @@ static int SFDDoesAnyBackupExist(char *filename) {
 
 static int SFDWriteBak(SplineFont *sf,EncMap *map,EncMap *normal) {
    char *buf=0, *buf2=NULL;
-
    int ret;
-
-   if (sf->save_to_dir) {
-      ret=SFDWrite(sf->filename, sf, map, normal, true);
-      return (ret);
-   }
 
    if (sf->cidmaster != NULL)
       sf=sf->cidmaster;
@@ -2776,9 +2770,6 @@ static int SFDWriteBak(SplineFont *sf,EncMap *map,EncMap *normal) {
 /*
  * Handle creation of potential implicit revisions when saving.
  *
- * If s2d is set then we are saving to an sfdir and no revisions are
- * created.
- *
  * If localRevisionsToRetain==0 then no revisions are made.
  *
  * If localRevisionsToRetain > 0 then it is taken as an explict number
@@ -2791,21 +2782,12 @@ static int SFDWriteBak(SplineFont *sf,EncMap *map,EncMap *normal) {
  */
 int SFDWriteBakExtended(char *locfilename,
 			SplineFont *sf, EncMap * map, EncMap * normal,
-			int s2d, int localRevisionsToRetain) {
+			int localRevisionsToRetain) {
    int rc=0;
-
-   if (s2d) {
-      rc=SFDWrite(locfilename, sf, map, normal, s2d);
-      return rc;
-   }
-
-
    int cacheRevisionsToRetain=prefRevisionsToRetain;
-
    char *cacheSFFilename=sf->filename;
 
    sf->filename=locfilename;
-   sf->save_to_dir=s2d;
 
    if (localRevisionsToRetain < 0) {
       // If there are no backups, then don't start creating any
@@ -6343,7 +6325,6 @@ static SplineFont *SFD_FigureDirType(SplineFont *sf,char *tok,
    dir=opendir(dirname);
    if (dir==NULL)
       return (sf);
-   sf->save_to_dir=true;
    while ((ent=readdir(dir)) != NULL) {
       pt=strrchr(ent->d_name, EXT_CHAR);
       if (pt==NULL)

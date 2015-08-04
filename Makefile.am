@@ -224,6 +224,7 @@ EXTRA_DIST:=COPYING.GPL3 \
   doc/bkstyle.tex doc/demo.tex doc/jamotest.tex doc/proofs.tex \
   doc/usermanual.tex \
   $(wildcard $(mvp)/fsc/*.fsc) \
+  mitsuba/mitsuba.cls \
   t1asm/README t1asm/t1asm.1 \
   $(filter-out \
     $(wildcard $(mvp)/mp/mande-a[c-f].mp) \

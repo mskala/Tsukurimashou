@@ -78,6 +78,11 @@ else
   ansi_home=
 endif
 
+TSU_V_CP =$(TSU_V_CP_$(V))
+TSU_V_CP_=$(TSU_V_CP_$(AM_DEFAULT_VERBOSITY))
+TSU_V_CP_0=@$(ECHO_ANSI) \
+  "$(ansi_cleareol)  $(ansi_default)CP$(ansi_default)    " $@;
+
 TSU_V_ICE=$(TSU_V_ICE_$(V))
 TSU_V_ICE_=$(TSU_V_ICE_$(AM_DEFAULT_VERBOSITY))
 TSU_V_ICE_0=@echo \
@@ -159,9 +164,6 @@ BUILT_SOURCES = Makefile
 
 bin_PROGRAMS = fontanvil/fontanvil
 
-dist_noinst_SCRIPTS = $(TESTS) tools/dlunicode
-nodist_bin_SCRIPTS = \
-  fontanvil/fontimage fontanvil/fontlint fontanvil/sfddiff
 
 dist_man_MANS = \
   fontanvil/fontanvil.1 fontanvil/fontimage.1 fontanvil/fontlint.1 \
@@ -267,7 +269,13 @@ texfiles = \
   doc/building.tex doc/datamodel.tex doc/fontanvil.tex \
   doc/intro.tex doc/language.tex doc/reference.tex doc/running.tex
 
-EXTRA_DIST = COPYING README \
+# QVFG and FPEVCGF are DIST and SCRIPTS in ROT13, to keep Automake
+# from recognizing them
+
+STANDALONE_QVFG:=doc/mitsuba.cls
+EXTRA_DIST:= \
+  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
+  COPYING README \
   Unicode/README.TXT \
   $(texfiles) doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
   fontanvil/fontimage.pe fontanvil/fontlint.pe fontanvil/sfddiff.pe \
@@ -284,6 +292,13 @@ EXTRA_DIST = COPYING README \
   tests/fonts/QuadraticConversionBug.sfd tests/fonts/SimplifyBugs.sfd \
   tests/fonts/SplineOverlapBug1.sfd tests/fonts/VKern.sfd \
   tests/fonts/dvng10a-crash.sfd tests/fonts/feta20.pfb
+
+STANDALONE_FPEVCGF:=
+dist_noinst_SCRIPTS:= \
+  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
+  $(TESTS) tools/dlunicode
+nodist_bin_SCRIPTS = \
+  fontanvil/fontimage fontanvil/fontlint fontanvil/sfddiff
 
 # FIXME FontForge claims that splinerefigure.c requires special handling
 # to avoid optimization.  Look into this.
@@ -372,7 +387,7 @@ fontanvil/sfddiff: fontanvil/sfddiff.pe
 
 # PDF DOCUMENTATION
 
-doc/fontanvil.pdf: $(texfiles) \
+doc/fontanvil.pdf: $(texfiles) doc/mitsuba.cls \
   doc/quixote-dore.jpg doc/quixote-daumier.jpg
 	cd doc ; $(PDFLATEX) fontanvil.tex
 	cd doc ; makeindex fontanvil.idx
@@ -432,5 +447,16 @@ ttmp/.dirstamp:
 # AUTOMAKE'S RULES WILL GO HERE
 
 automake_rules = here
+
+############################################################################
+
+# PARASITE BUILD
+
+if COND_PARASITE
+
+doc/mitsuba.cls: ../mitsuba/mitsuba.cls
+	$(TSU_V_CP) cp $< $@
+
+endif
 
 ############################################################################

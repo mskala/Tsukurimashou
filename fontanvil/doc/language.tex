@@ -16,9 +16,9 @@ scripts in the wild have also been seen using a \texttt{.ff} extension.
 
 Comments may be marked in any of these ways:
 \begin{verbatim}
-# hash for a shell-like comment to the end of the line
+# hash for shell-like line comment
 
-// two slashes for a C++-like comment to the end of the line
+// two slashes for C++-like line comment
 
 /*
 C-style comment delimiters,
@@ -63,40 +63,47 @@ and remember what type they are.  The types are:
 \item floating-point number
 \item Unicode code point (note that this is a distinct data type from
 ``integer'')
-\item string
+\item string (of bytes, usually assumed to be UTF-8; null terminated)
 \item array
+\item void
 \end{itemize}
 
 Syntax for constant values looks like this:
 \begin{verbatim}
-# integers in decimal, hexadecimal, or octal, using C syntax
-123     # first digit nonzero means decimal
-0x52    # first digits 0x means hex, this is 82 decimal
-041     # first digit zero and not hex means octal, this is 33 decimal
+# integers in decimal, hexadecimal, or
+# octal, using C syntax
+123     # first digit nonzero for decimal
+0x52    # 0x prefix for hex
+041     # 0 prefix but not hex means octal
 
-# floating-point numbers indicated by the decimal point; note the decimal
-# point is always . regardless of locale
+# floating-point numbers indicated by the
+# decimal point; note the decimal point
+# is always . regardless of locale
 123.45  # basic decimal float
-4.9e5   # scientific notation, this is 490000
+4.9e5   # scientific notation, = 490000.0
 
-# Unicode code points are hexadecimal numbers marked by 0u
+# Unicode code points are hexadecimal
+# numbers marked by 0u
 0u1f4a9 # everybody's favourite
 
 # strings have single or double quotes
 'Single'
 "double"
-"foo\nbar" # \n for newline, in both kinds of strings
+"foo\nbar" # \n for newline, in both
 "foo\
-bar" # backslash continues string past a line break, this is "foobar"
-"foo\\bar" # backslash escapes other characters, this is "foo\bar" 
-'"' # a string normally ends with the same quote that opened it
+bar" # backslash continues string past
+     # a line break, this is "foobar"
+"foo\\bar" # backslash makes other chars
+           # literal, this is "foo\bar" 
+'"' # same quote starts and ends string
 
-# unescaped newline also validly ends a string, but don't do this!
-# current FontAnvil supports it for FontForge compatibility
-# some future version may make it an error
+# unescaped newline also validly ends a
+# string, but don't do this!
+# current FontAnvil supports it for
+# FontForge compatibility only
 "foo
 
-# array literals use square brackets and commas
+# square brackets and commas for arrays
 [1,2,3,0uABC,'foo']
 \end{verbatim}
 

@@ -238,6 +238,17 @@ PKG_PROG_PKG_CONFIG
 #
 ############################################################################
 #
+# Check for parasite build
+#
+AC_MSG_CHECKING([whether we are building as a parasite])
+AM_CONDITIONAL([COND_PARASITE],
+  [grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null])
+AM_COND_IF([COND_PARASITE],
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])])
+#
+############################################################################
+#
 # Checks for libraries.
 #
 AC_SEARCH_LIBS([cos],[m])

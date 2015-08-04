@@ -1,9 +1,6 @@
-\documentclass[12pt]{article}
+\documentclass{mitsuba}
 
 \usepackage{bigstrut}
-\usepackage{fontspec}
-\usepackage{hyperref}
-\usepackage{url}
 
 \title{Genjimon fonts, v0.2}
 \author{Matthew Skala}
@@ -18,7 +15,7 @@
 
 \maketitle
 
-\section{Genjimon}
+\chapter{Genjimon}
 
 The \textit{Genjimon} (lit.~``Genji crests'') are a set of 54 abstract
 visual designs associated with Japanese culture.  They as used as chapter
@@ -164,14 +161,14 @@ something interesting or unusual to do with them.
 \url{mailto:mskala@ansuz.sooke.bc.ca}\\
 \textit{October 2, 2012}
 
-\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\onecolumn
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{\baselineskip}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Genjimon Medium}
+\chapter{Genjimon Medium}
 
 {\fontspec[Scale=3.5,ExternalLocation]{GenjimonMedium.ttf}
 ABCDEFGHI
@@ -186,11 +183,9 @@ jklmnopqr
 
 stuvwxyz\{}
 
-\clearpage
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Genjimon Reverse}
+\chapter{Genjimon Reverse}
 
 {\fontspec[Scale=3.5,ExternalLocation]{GenjimonReverse.ttf}
 ABCDEFGHI
@@ -205,11 +200,9 @@ jklmnopqr
 
 stuvwxyz\{}
 
-\clearpage
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Genjimon White}
+\chapter{Genjimon White}
 
 {\fontspec[Scale=3.5,ExternalLocation]{GenjimonWhite.ttf}
 ABCDEFGHI
@@ -224,11 +217,9 @@ jklmnopqr
 
 stuvwxyz\{}
 
-\clearpage
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Genjimon Black}
+\chapter{Genjimon Black}
 
 {\fontspec[Scale=3.5,ExternalLocation]{GenjimonBlack.ttf}
 ABCDEFGHI
@@ -243,11 +234,9 @@ jklmnopqr
 
 stuvwxyz\{}
 
-\clearpage
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Genjimon Round}
+\chapter{Genjimon Round}
 
 {\fontspec[Scale=3.5,ExternalLocation]{GenjimonRound.ttf}
 ABCDEFGHI
@@ -262,11 +251,9 @@ jklmnopqr
 
 stuvwxyz\{}
 
-\clearpage
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Genjimon Round Outline}
+\chapter{Genjimon Round Outline}
 
 {\fontspec[Scale=3.5,ExternalLocation]{GenjimonRoundOutline.ttf}
 ABCDEFGHI
@@ -285,68 +272,70 @@ stuvwxyz\{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Encoding table}
+\twocolumn
+
+\chapter{Encoding table}
 
 \begin{tabular}{rrccl}
  dec & hex & key & mon & chapter \\ \hline \bigstrut[t]
-  65 & 41 & A & \genji{\large A} & \#1 Kiritsubo \\
-  66 & 42 & B & \genji{\large B} & \#2 Hahakigi \\
-  67 & 43 & C & \genji{\large C} & \#3 Utsusemi \\
-  68 & 44 & D & \genji{\large D} & \#4 Yuugao \\
-  69 & 45 & E & \genji{\large E} & \#5 Wakamurasaki \\
-  70 & 46 & F & \genji{\large F} & \#6 Suetsumuhana \\
-  71 & 47 & G & \genji{\large G} & \#7 Momiji no Ga \\
-  72 & 48 & H & \genji{\large H} & \#8 Hana no En \\
-  73 & 49 & I & \genji{\large I} & \#9 Aoi \\
-  74 & 4a & J & \genji{\large J} & \#10 Sakaki \\
-  75 & 4b & K & \genji{\large K} & \#11 Hana Chiru Sato \\
-  76 & 4c & L & \genji{\large L} & \#12 Suma \\
-  77 & 4d & M & \genji{\large M} & \#13 Akashi \\
-  78 & 4e & N & \genji{\large N} & \#14 Miotsukushi \\
-  79 & 4f & O & \genji{\large O} & \#15 Yomogyuu \\
-  80 & 50 & P & \genji{\large P} & \#16 Sekiya \\
-  81 & 51 & Q & \genji{\large Q} & \#17 Eawase \\
-  82 & 52 & R & \genji{\large R} & \#18 Matsukaze \\
-  83 & 53 & S & \genji{\large S} & \#19 Usugumo \\
-  84 & 54 & T & \genji{\large T} & \#20 Asagao \\
-  85 & 55 & U & \genji{\large U} & \#21 Otome \\
-  86 & 56 & V & \genji{\large V} & \#22 Tamakazura \\
-  87 & 57 & W & \genji{\large W} & \#23 Hatsune \\
-  88 & 58 & X & \genji{\large X} & \#24 Kochou \\
-  89 & 59 & Y & \genji{\large Y} & \#25 Hotaru \\
-  90 & 5a & Z & \genji{\large Z} & \#26 Tokonatsu \\
-  91 & 5b & [ & \genji{\large [} & \#27 Kagaribi \\
+  65 & 41 & A & \genji{\large A} & 1 Kiritsubo \\
+  66 & 42 & B & \genji{\large B} & 2 Hahakigi \\
+  67 & 43 & C & \genji{\large C} & 3 Utsusemi \\
+  68 & 44 & D & \genji{\large D} & 4 Yuugao \\
+  69 & 45 & E & \genji{\large E} & 5 Wakamurasaki \\
+  70 & 46 & F & \genji{\large F} & 6 Suetsumuhana \\
+  71 & 47 & G & \genji{\large G} & 7 Momiji no Ga \\
+  72 & 48 & H & \genji{\large H} & 8 Hana no En \\
+  73 & 49 & I & \genji{\large I} & 9 Aoi \\
+  74 & 4a & J & \genji{\large J} & 10 Sakaki \\
+  75 & 4b & K & \genji{\large K} & 11 Hana Chiru Sato \\
+  76 & 4c & L & \genji{\large L} & 12 Suma \\
+  77 & 4d & M & \genji{\large M} & 13 Akashi \\
+  78 & 4e & N & \genji{\large N} & 14 Miotsukushi \\
+  79 & 4f & O & \genji{\large O} & 15 Yomogyuu \\
+  80 & 50 & P & \genji{\large P} & 16 Sekiya \\
+  81 & 51 & Q & \genji{\large Q} & 17 Eawase \\
+  82 & 52 & R & \genji{\large R} & 18 Matsukaze \\
+  83 & 53 & S & \genji{\large S} & 19 Usugumo \\
+  84 & 54 & T & \genji{\large T} & 20 Asagao \\
+  85 & 55 & U & \genji{\large U} & 21 Otome \\
+  86 & 56 & V & \genji{\large V} & 22 Tamakazura \\
+  87 & 57 & W & \genji{\large W} & 23 Hatsune \\
+  88 & 58 & X & \genji{\large X} & 24 Kochou \\
+  89 & 59 & Y & \genji{\large Y} & 25 Hotaru \\
+  90 & 5a & Z & \genji{\large Z} & 26 Tokonatsu \\
+  91 & 5b & [ & \genji{\large [} & 27 Kagaribi \\
 \end{tabular}
 
 \begin{tabular}{rrccl}
  dec & hex & key & mon & chapter \\ \hline \bigstrut[t]
-  97 & 61 & a & \genji{\large a} & \#28 Nowaki \\
-  98 & 62 & b & \genji{\large b} & \#29 Miyuki \\
-  99 & 63 & c & \genji{\large c} & \#30 Fujibakama \\
-  100 & 64 & d & \genji{\large d} & \#31 Makibashira \\
-  101 & 65 & e & \genji{\large e} & \#32 Umegae \\
-  102 & 66 & f & \genji{\large f} & \#33 Fuji no Uraba \\
-  103 & 67 & g & \genji{\large g} & \#34 Wakana no Jou \\
-  104 & 68 & h & \genji{\large h} & \#35 Wakana no Ge \\
-  105 & 69 & i & \genji{\large i} & \#36 Kashiwagi \\
-  106 & 6a & j & \genji{\large j} & \#37 Yokobue \\
-  107 & 6b & k & \genji{\large k} & \#38 Suzumushi \\
-  108 & 6c & l & \genji{\large l} & \#39 Yuugiri \\
-  109 & 6d & m & \genji{\large m} & \#40 Minori \\
-  110 & 6e & n & \genji{\large n} & \#41 Maboroshi \\
-  111 & 6f & o & \genji{\large o} & \#42 Ninounomiya \\
-  112 & 70 & p & \genji{\large p} & \#43 Koubai \\
-  113 & 71 & q & \genji{\large q} & \#44 Takegawa \\
-  114 & 72 & r & \genji{\large r} & \#45 Hashihime \\
-  115 & 73 & s & \genji{\large s} & \#46 Shii ga Moto \\
-  116 & 74 & t & \genji{\large t} & \#47 Agemaki \\
-  117 & 75 & u & \genji{\large u} & \#48 Sawarabi \\
-  118 & 76 & v & \genji{\large v} & \#49 Yadorigi \\
-  119 & 77 & w & \genji{\large w} & \#50 Azumaya \\
-  120 & 78 & x & \genji{\large x} & \#51 Ukifune \\
-  121 & 79 & y & \genji{\large y} & \#52 Kagerou \\
-  122 & 7a & z & \genji{\large z} & \#53 Tenarai \\
-  123 & 7b & \{ & \genji{\large \{} & \#54 Yume no Ukihashi
+  97 & 61 & a & \genji{\large a} & 28 Nowaki \\
+  98 & 62 & b & \genji{\large b} & 29 Miyuki \\
+  99 & 63 & c & \genji{\large c} & 30 Fujibakama \\
+  100 & 64 & d & \genji{\large d} & 31 Makibashira \\
+  101 & 65 & e & \genji{\large e} & 32 Umegae \\
+  102 & 66 & f & \genji{\large f} & 33 Fuji no Uraba \\
+  103 & 67 & g & \genji{\large g} & 34 Wakana no Jou \\
+  104 & 68 & h & \genji{\large h} & 35 Wakana no Ge \\
+  105 & 69 & i & \genji{\large i} & 36 Kashiwagi \\
+  106 & 6a & j & \genji{\large j} & 37 Yokobue \\
+  107 & 6b & k & \genji{\large k} & 38 Suzumushi \\
+  108 & 6c & l & \genji{\large l} & 39 Yuugiri \\
+  109 & 6d & m & \genji{\large m} & 40 Minori \\
+  110 & 6e & n & \genji{\large n} & 41 Maboroshi \\
+  111 & 6f & o & \genji{\large o} & 42 Ninounomiya \\
+  112 & 70 & p & \genji{\large p} & 43 Koubai \\
+  113 & 71 & q & \genji{\large q} & 44 Takegawa \\
+  114 & 72 & r & \genji{\large r} & 45 Hashihime \\
+  115 & 73 & s & \genji{\large s} & 46 Shii ga Moto \\
+  116 & 74 & t & \genji{\large t} & 47 Agemaki \\
+  117 & 75 & u & \genji{\large u} & 48 Sawarabi \\
+  118 & 76 & v & \genji{\large v} & 49 Yadorigi \\
+  119 & 77 & w & \genji{\large w} & 50 Azumaya \\
+  120 & 78 & x & \genji{\large x} & 51 Ukifune \\
+  121 & 79 & y & \genji{\large y} & 52 Kagerou \\
+  122 & 7a & z & \genji{\large z} & 53 Tenarai \\
+  123 & 7b & \{ & \genji{\large \{} & 54 Yume no Ukihashi
 \end{tabular}
 
 \end{document}

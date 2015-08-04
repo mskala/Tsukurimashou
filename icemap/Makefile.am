@@ -104,7 +104,7 @@ endif
 # QVFG and FPEVCGF are DIST and SCRIPTS in ROT13, to keep Automake
 # from recognizing them
 
-STANDALONE_QVFG:=
+STANDALONE_QVFG:=mitsuba.cls
 EXTRA_DIST:= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG))
 

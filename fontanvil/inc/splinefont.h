@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splinefont.h 4119 2015-07-30 12:46:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1837,7 +1837,6 @@ typedef struct splinefont {
    /* enough and has created a bit */
    /* to mean "really use them" */
    unsigned int weight_width_slope_only:1;	/* This bit seems stupid to me */
-   unsigned int save_to_dir:1;	/* Loaded from an sfdir collection rather than a simple sfd file */
    unsigned int head_optimized_for_cleartype:1;	/* Bit in the 'head' flags field, if unset "East Asian fonts in the Windows Presentation Framework (Avalon) will not be hinted" */
    unsigned int ticked:1;
    unsigned int internal_temp:1;	/* Internal temporary font to be passed to freetype for rasterizing. Don't complain about oddities. Don't generate GPOS/GSUB tables, etc. */
@@ -3235,7 +3234,7 @@ extern Encoding *FindOrMakeEncoding(const char *name);
 
 extern int SFDWriteBakExtended(char *locfilename,
 			       SplineFont *sf, EncMap *map, EncMap *normal,
-			       int s2d, int localPrefMaxBackupsToKeep);
+			       int localPrefMaxBackupsToKeep);
 extern SplineFont *SFDRead(char *filename);
 
 extern SplineFont *_SFDRead(char *filename, AFILE *sfd);
