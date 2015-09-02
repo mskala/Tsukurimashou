@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: stemdb.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams and Alexey Kryukov
  * Copyright (C) 2015  Matthew Skala
  *
@@ -74,7 +74,6 @@ static int GetBlueFuzz(SplineFont *sf) {
 
 static int IsUnitHV(BasePoint *unit,int strict) {
    double angle=atan2(unit->y, unit->x);
-
    double deviation=(strict) ? stem_slope_error : stub_slope_error;
 
    if (fabs(angle) >= PI / 2 - deviation && fabs(angle) <= PI / 2 + deviation)
@@ -136,11 +135,8 @@ int UnitsParallel(BasePoint * u1, BasePoint * u2, int strict) {
 
 static int IsInflectionPoint(struct glyphdata *gd,struct pointdata *pd) {
    SplinePoint *sp=pd->sp;
-
    double CURVATURE_THRESHOLD=1e-9;
-
    struct spline *prev, *next;
-
    double in, out;
 
    if (sp->prev==NULL || sp->next==NULL || !pd->colinear)
@@ -193,9 +189,7 @@ static int SplineFigureOpticalSlope(Spline *s,int start_at_from,
    /*  it should be initialized to the unit vector determined by the appropriate cp */
    /*  if the function returns true, it will be set to a unit vector in the average direction */
    BasePoint pos, *base, average_dir, normal;
-
    double t, len, incr, off;
-
    double dx, dy, ax, ay, d, a;
 
    /* The vector is already nearly vertical/horizontal, no need to modify */
@@ -272,9 +266,7 @@ static int IsSplinePeak(struct glyphdata *gd,struct pointdata *pd,int outer,
 
 static void PointInit(struct glyphdata *gd,SplinePoint *sp,SplineSet *ss) {
    struct pointdata *pd, *prevpd=NULL, *nextpd=NULL;
-
    double len, same;
-
    int hv;
 
    if (sp->ptindex >= gd->pcnt)
@@ -438,7 +430,6 @@ static void PointInit(struct glyphdata *gd,SplinePoint *sp,SplineSet *ss) {
 
 static int BBoxIntersectsLine(Spline *s,Spline *line) {
    double t, x, y;
-
    DBounds b;
 
    b.minx=b.maxx=s->from->me.x;
@@ -504,9 +495,7 @@ static int stcmp(const void *_p1,const void *_p2) {
 
 static int line_pt_cmp(const void *_p1,const void *_p2) {
    struct pointdata *const *pd1=_p1, *const *pd2=_p2;
-
    struct linedata *line;
-
    double ppos1=0, ppos2=0;
 
    if ((*pd1)->prevline != NULL &&
@@ -558,7 +547,6 @@ static int proj_cmp(const void *_p1,const void *_p2) {
 static void AssignStemToPoint(struct pointdata *pd,struct stemdata *stem,
 			      int is_next, int left) {
    struct stemdata ***stems;
-
    int i, *stemcnt, **is_l;
 
    stems=(is_next) ? &pd->nextstems : &pd->prevstems;
@@ -579,7 +567,6 @@ static void AssignStemToPoint(struct pointdata *pd,struct stemdata *stem,
 int IsStemAssignedToPoint(struct pointdata *pd, struct stemdata *stem,
 			  int is_next) {
    struct stemdata **stems;
-
    int i, stemcnt;
 
    stems=(is_next) ? pd->nextstems : pd->prevstems;
@@ -594,7 +581,6 @@ int IsStemAssignedToPoint(struct pointdata *pd, struct stemdata *stem,
 
 static int GetValidPointDataIndex(struct glyphdata *gd,SplinePoint *sp,
 				  struct stemdata *stem) {
-
    struct pointdata *tpd;
 
    if (sp==NULL)
@@ -617,9 +603,7 @@ static int GetValidPointDataIndex(struct glyphdata *gd,SplinePoint *sp,
 
 static int LineType(struct st *st,int i,int cnt,Spline *line) {
    SplinePoint *sp;
-
    BasePoint nextcp, prevcp, here;
-
    double dn, dp;
 
    if (st[i].st > .01 && st[i].st < .99)
@@ -670,11 +654,8 @@ static int LineType(struct st *st,int i,int cnt,Spline *line) {
 
 static int MonotonicOrder(Spline ** sspace,Spline *line,struct st *stspace) {
    Spline *s;
-
    int i, j, k, cnt;
-
    BasePoint pts[9];
-
    extended lts[10], sts[10];
 
    for (i=j=0; (s=sspace[j]) != NULL; ++j) {
@@ -705,9 +686,7 @@ static int MonotonicOrder(Spline ** sspace,Spline *line,struct st *stspace) {
 static Spline *MonotonicFindAlong(Spline *line,struct st *stspace,int cnt,
 				  Spline * findme, double *other_t) {
    Spline *s;
-
    int i;
-
    int eo;			/* I do horizontal/vertical by winding number */
 
    /* But figuring winding number with respect to a */
@@ -757,13 +736,9 @@ static int MonotonicFindStemBounds(Spline *line,struct st *stspace,int cnt,
    /* diagonal line is hard. So I use even-odd */
    /* instead. */
    double pos, npos;
-
    double lmin=(stem->lmin < -fudge) ? stem->lmin : -fudge;
-
    double lmax=(stem->lmax > fudge) ? stem->lmax : fudge;
-
    double rmin=(stem->rmin < -fudge) ? stem->rmin : -fudge;
-
    double rmax=(stem->rmax > fudge) ? stem->rmax : fudge;
 
    lmin -= .0001;
@@ -823,7 +798,6 @@ static int MonotonicFindStemBounds(Spline *line,struct st *stspace,int cnt,
 static int MatchWinding(struct monotonic **space,int i,int nw,int winding,
 			int which, int idx) {
    struct monotonic *m;
-
    int j, cnt=0;
 
    if ((nw < 0 && winding > 0) || (nw > 0 && winding < 0)) {
@@ -855,19 +829,12 @@ static int MatchWinding(struct monotonic **space,int i,int nw,int winding,
 static int FindMatchingHVEdge(struct glyphdata *gd,struct pointdata *pd,
 			      int is_next, Spline ** edges, double *other_t,
 			      double *dist) {
-
    double test, t, start, end;
-
    int which;
-
    Spline *s;
-
    Monotonic *m;
-
    int winding, nw, i, j, ret=0;
-
    struct monotonic **space;
-
    BasePoint *dir, d, hv;
 
    /* Things are difficult if we go exactly through the point. Move off */
@@ -980,15 +947,10 @@ static BasePoint PerturbAlongSpline(Spline *s,BasePoint *bp,double t) {
 static void MakeVirtualLine(struct glyphdata *gd,BasePoint *perturbed,
 			    BasePoint * dir, Spline * myline,
 			    SplinePoint * end1, SplinePoint * end2) {
-
    BasePoint norm, absnorm;
-
    SplineSet *spl;
-
    Spline *s, *first;
-
    double t1, t2;
-
    int i, cnt;
 
    if (gd->stspace==NULL) {
@@ -1065,21 +1027,14 @@ static void MakeVirtualLine(struct glyphdata *gd,BasePoint *perturbed,
 
 static int FindMatchingEdge(struct glyphdata *gd,struct pointdata *pd,
 			    int is_next, Spline ** edges) {
-
    BasePoint *dir, vert, perturbed, diff;
-
    Spline myline;
-
    SplinePoint end1, end2;
-
    double *other_t =
       is_next==2 ? &pd->both_e_t : is_next ? pd->next_e_t : pd->prev_e_t;
    double *dist=is_next ? pd->next_dist : pd->prev_dist;
-
    double t;
-
    Spline *s;
-
    int cnt;
 
    dist[0]=0;
@@ -1132,9 +1087,7 @@ static int FindMatchingEdge(struct glyphdata *gd,struct pointdata *pd,
 static int StillStem(struct glyphdata *gd,double fudge,BasePoint *pos,
 		     struct stemdata *stem) {
    Spline myline;
-
    SplinePoint end1, end2;
-
    int cnt, ret;
 
    MakeVirtualLine(gd, pos, &stem->unit, &myline, &end1, &end2);
@@ -1145,9 +1098,7 @@ static int StillStem(struct glyphdata *gd,double fudge,BasePoint *pos,
 
 static int CornerCorrectSide(struct pointdata *pd,int x_dir,int is_l) {
    int corner=(x_dir) ? pd->x_corner : pd->y_corner;
-
    int start=((x_dir && is_l) || (!x_dir && !is_l));
-
    double unit_p, unit_n;
 
    unit_p=(&pd->prevunit.x)[!x_dir];
@@ -1160,17 +1111,11 @@ static int CornerCorrectSide(struct pointdata *pd,int x_dir,int is_l) {
 
 static int IsCorrectSide(struct glyphdata *gd,struct pointdata *pd,
 			 int is_next, int is_l, BasePoint * dir) {
-
    Spline *sbase, myline;
-
    SplinePoint *sp=pd->sp, end1, end2;
-
    BasePoint perturbed;
-
    int i, hv, is_x, ret=false, winding=0, cnt, eo;
-
    double t, test;
-
    struct monotonic **space, *m;
 
    hv=IsUnitHV(dir, true);
@@ -1224,17 +1169,11 @@ static int IsCorrectSide(struct glyphdata *gd,struct pointdata *pd,
 static struct linedata *BuildLine(struct glyphdata *gd,struct pointdata *pd,
 				  int is_next) {
    int i;
-
    BasePoint *dir, *base, *start, *end;
-
    struct pointdata **pspace=gd->pspace, *pd2;
-
    int pcnt=0, is_l, hv;
-
    double dist_error;
-
    struct linedata *line;
-
    double off, firstoff, lastoff, lmin=0, lmax=0;
 
    dir=is_next ? &pd->nextunit : &pd->prevunit;
@@ -1345,9 +1284,7 @@ static struct linedata *BuildLine(struct glyphdata *gd,struct pointdata *pd,
 
 static BasePoint MiddleUnit(BasePoint *unit1,BasePoint *unit2) {
    BasePoint u1, u2, ret;
-
    double hyp;
-
    int hv;
 
    u1=*unit1;
@@ -1375,19 +1312,12 @@ static uint8_t IsStubOrIntersection(struct glyphdata *gd,BasePoint *dir1,
 				  struct pointdata *pd2, int is_next1,
 				  int is_next2) {
    int i;
-
    int exc=0;
-
    double dist, off, ext, norm1, norm2, opp, angle;
-
    double mid_err=(stem_slope_error + stub_slope_error) / 2;
-
    SplinePoint *sp1, *sp2, *nsp;
-
    BasePoint hvdir, *dir2, *odir1, *odir2;
-
    struct pointdata *npd;
-
    struct linedata *line;
 
    sp1=pd1->sp;
@@ -1500,15 +1430,10 @@ static uint8_t IsStubOrIntersection(struct glyphdata *gd,BasePoint *dir1,
 /* them to vertical. In such a case we have to swap their edges too.  */
 static void SwapEdges(struct glyphdata *gd,struct stemdata *stem) {
    BasePoint tpos;
-
    struct pointdata *tpd;
-
    struct linedata *tl;
-
    struct stem_chunk *chunk;
-
    double toff;
-
    int i, j, temp;
 
    tpos=stem->left;
@@ -1578,11 +1503,8 @@ static void SwapEdges(struct glyphdata *gd,struct stemdata *stem) {
 
 static int StemFitsHV(struct stemdata *stem,int is_x,uint8_t mask) {
    int i, cnt;
-
    double loff, roff;
-
    double lmin=0, lmax=0, rmin=0, rmax=0;
-
    struct stem_chunk *chunk;
 
    cnt=stem->chunk_cnt;
@@ -1624,9 +1546,7 @@ static int StemFitsHV(struct stemdata *stem,int is_x,uint8_t mask) {
 
 static int LineFitsHV(struct linedata *line) {
    int i, cnt, is_x, hv;
-
    double off, min=0, max=0;
-
    struct pointdata *pd;
 
    cnt=line->pcnt;
@@ -1656,9 +1576,7 @@ static int LineFitsHV(struct linedata *line) {
 
 static int OnStem(struct stemdata *stem,BasePoint *test,int left) {
    double dist_error, off;
-
    BasePoint *dir=&stem->unit;
-
    double max=0, min=0;
 
    /* Diagonals are harder to align */
@@ -1690,11 +1608,8 @@ static int OnStem(struct stemdata *stem,BasePoint *test,int left) {
 static int BothOnStem(struct stemdata *stem,BasePoint *test1,
 		      BasePoint * test2, int force_hv, int strict, int cove) {
    double dist_error, off1, off2;
-
    BasePoint dir=stem->unit;
-
    int hv, hv_strict;
-
    double lmax=0, lmin=0, rmax=0, rmin=0;
 
    hv=(force_hv) ? IsUnitHV(&dir, false) : IsUnitHV(&dir, true);
@@ -1757,11 +1672,8 @@ static int BothOnStem(struct stemdata *stem,BasePoint *test1,
 static int RecalcStemOffsets(struct stemdata *stem,BasePoint *dir,int left,
 			     int right) {
    double off, err;
-
    double lmin=0, lmax=0, rmin=0, rmax=0;
-
    struct stem_chunk *chunk;
-
    int i;
 
    if (!left && !right)
@@ -1830,25 +1742,15 @@ static struct stem_chunk *AddToStem(struct glyphdata *gd,
 				    struct pointdata *pd1,
 				    struct pointdata *pd2, int is_next1,
 				    int is_next2, int cheat) {
-
    int is_potential1=false, is_potential2=true;
-
    struct stem_chunk *chunk=NULL;
-
    BasePoint *dir=&stem->unit;
-
    BasePoint *test;
-
    int lincr=1, rincr=1;
-
    double off, dist_error;
-
    double loff=0, roff=0;
-
    double min=0, max=0;
-
    int i, in, ip, cpidx;
-
    struct pointdata *pd, *npd, *ppd;
 
    if (cheat || stem->positioned)
@@ -2007,13 +1909,9 @@ static struct stem_chunk *AddToStem(struct glyphdata *gd,
 static struct stemdata *FindStem(struct glyphdata *gd,struct pointdata *pd,
 				 struct pointdata *pd2, BasePoint * dir,
 				 int is_next2, int de) {
-
    int i, cove, test_left, hv, stemcnt;
-
    struct stemdata *stem;
-
    SplinePoint *match;
-
    BasePoint newdir;
 
    match=pd2->sp;
@@ -2083,9 +1981,7 @@ static struct stemdata *FindStem(struct glyphdata *gd,struct pointdata *pd,
 
 static struct stemdata *NewStem(struct glyphdata *gd,BasePoint *dir,
 				BasePoint * pos1, BasePoint * pos2) {
-
    struct stemdata *stem=&gd->stems[gd->stemcnt++];
-
    double width;
 
    stem->unit=*dir;
@@ -2130,11 +2026,8 @@ static struct stemdata *NewStem(struct glyphdata *gd,BasePoint *dir,
 static int ParallelToDir(struct pointdata *pd,int checknext,BasePoint *dir,
 			 BasePoint * opposite, SplinePoint * basesp,
 			 uint8_t is_stub) {
-
    BasePoint n, o, *base=&basesp->me;
-
    SplinePoint *sp;
-
    double angle, mid_err=(stem_slope_error + stub_slope_error) / 2;
 
    sp=pd->sp;
@@ -2162,7 +2055,6 @@ static int ParallelToDir(struct pointdata *pd,int checknext,BasePoint *dir,
 
 static int NearlyParallel(BasePoint *dir,Spline *other,double t) {
    BasePoint odir;
-
    double olen;
 
    odir.x =
@@ -2192,9 +2084,7 @@ static struct stemdata *FindOrMakeHVStem(struct glyphdata *gd,
 					 struct pointdata *pd2, int is_h,
 					 int require_existing) {
    int i, cove=false;
-
    struct stemdata *stem;
-
    BasePoint dir;
 
    dir.x=(is_h) ? 1 : 0;
@@ -2229,13 +2119,9 @@ static int IsDiagonalEnd(struct glyphdata *gd,
    /* Then let's create a vertical stem between the two points */
    /* (and a horizontal stem if the thing is rotated 90 degrees) */
    double width, length1, length2, dist1, dist2;
-
    BasePoint *pt1, *pt2, *dir1, *dir2, *prevdir1, *prevdir2;
-
    SplinePoint *prevsp1, *prevsp2;
-
    struct pointdata *prevpd1, *prevpd2;
-
    int hv;
 
    if (pd1->colinear || pd2->colinear)
@@ -2303,19 +2189,12 @@ static struct stemdata *TestStem(struct glyphdata *gd,struct pointdata *pd,
 				 int require_existing, uint8_t is_stub,
 				 int eidx) {
    struct pointdata *pd2;
-
    struct stemdata *stem, *destem;
-
    struct stem_chunk *chunk;
-
    struct linedata *otherline;
-
    double width;
-
    struct linedata *line, *line2;
-
    BasePoint *mdir, middle;
-
    int de=false, hv, l_changed;
 
    width=(match->me.x - pd->sp->me.x) * dir->y -
@@ -2447,9 +2326,7 @@ static struct stemdata *TestStem(struct glyphdata *gd,struct pointdata *pd,
 
 static double FindSameSlope(Spline *s,BasePoint *dir,double close_to) {
    double a, b, c, desc;
-
    double t1, t2;
-
    double d1, d2;
 
    if (s==NULL)
@@ -2487,7 +2364,6 @@ static int HalfStemNoOpposite(struct glyphdata *gd,struct pointdata *pd,
 			      struct stemdata *stem, BasePoint * dir,
 			      int is_next) {
    int i, ret=0, allowleft, allowright, hv, corner;
-
    struct stemdata *tstem;
 
    for (i=0; i < gd->stemcnt; ++i) {
@@ -2521,15 +2397,10 @@ static struct stemdata *HalfStem(struct glyphdata *gd,struct pointdata *pd,
 				 double other_t, int is_next, int eidx) {
    /* Find the spot on other where the slope is the same as dir */
    double t1;
-
    double width;
-
    BasePoint match;
-
    struct stemdata *stem=NULL, *tstem;
-
    struct pointdata *pd2=NULL, *tpd;
-
    int i;
 
    t1=FindSameSlope(other, dir, other_t);
@@ -2606,9 +2477,7 @@ static struct stemdata *HalfStem(struct glyphdata *gd,struct pointdata *pd,
 static int ConnectsAcross(struct glyphdata *gd,SplinePoint *sp,
 			  int is_next, Spline * findme, int eidx) {
    struct pointdata *pd=&gd->points[sp->ptindex];
-
    Spline *other, *test;
-
    BasePoint dir;
 
    other=(is_next) ? pd->nextedges[eidx] : pd->prevedges[eidx];
@@ -2645,13 +2514,9 @@ static int ConnectsAcross(struct glyphdata *gd,SplinePoint *sp,
 static int ConnectsAcrossToStem(struct glyphdata *gd,struct pointdata *pd,
 				int is_next, struct stemdata *target,
 				int is_l, int eidx) {
-
    Spline *other, *test;
-
    BasePoint dir;
-
    struct pointdata *tpd;
-
    int ecnt, stemidx;
 
    ecnt=(is_next) ? pd->next_e_cnt : pd->prev_e_cnt;
@@ -2694,7 +2559,6 @@ static int ConnectsAcrossToStem(struct glyphdata *gd,struct pointdata *pd,
 static double RecalcT(Spline *base,SplinePoint *from,SplinePoint *to,
 		      double curt) {
    double baselen, fromlen, tolen, ret;
-
    Spline *cur;
 
    baselen=SplineLength(base);
@@ -2718,25 +2582,15 @@ static double RecalcT(Spline *base,SplinePoint *from,SplinePoint *to,
 static int BuildStem(struct glyphdata *gd,struct pointdata *pd,int is_next,
 		     int require_existing, int has_existing, int eidx) {
    BasePoint *dir;
-
    Spline *other, *cur;
-
    double t;
-
    double tod, fromd, dist;
-
    SplinePoint *testpt, *topt, *frompt;
-
    struct linedata *line;
-
    struct pointdata *testpd, *topd, *frompd;
-
    int tp, fp, t_needs_recalc=false, ret=0;
-
    uint8_t tstub=0, fstub=0;
-
    BasePoint opposite;
-
    struct stemdata *stem=NULL;
 
    if (is_next) {
@@ -2870,13 +2724,9 @@ static int BuildStem(struct glyphdata *gd,struct pointdata *pd,int is_next,
 
 static void AssignLinePointsToStems(struct glyphdata *gd) {
    struct pointdata *pd;
-
    struct stemdata *stem;
-
    struct linedata *line;
-
    struct stem_chunk *chunk;
-
    int i, j, stem_hv, line_hv, needs_hv=false;
 
    for (i=0; i < gd->stemcnt; ++i)
@@ -2942,13 +2792,9 @@ static struct stemdata *DiagonalCornerStem(struct glyphdata *gd,
 					   struct pointdata *pd,
 					   int require_existing) {
    Spline *other=pd->bothedge;
-
    struct pointdata *pfrom=NULL, *pto=NULL, *pd2=NULL, *pd3=NULL;
-
    double width, length;
-
    struct stemdata *stem;
-
    struct stem_chunk *chunk;
 
    pfrom=&gd->points[other->from->ptindex];
@@ -2995,9 +2841,7 @@ static struct stemdata *DiagonalCornerStem(struct glyphdata *gd,
 
 static int chunk_cmp(const void *_p1,const void *_p2) {
    const struct stem_chunk *ch1=_p1, *ch2=_p2;
-
    struct stemdata *stem;
-
    double loff1=0, roff1=0, loff2=0, roff2=0;
 
    stem=ch1->parent;
@@ -3033,7 +2877,6 @@ static int chunk_cmp(const void *_p1,const void *_p2) {
 
 static int stem_cmp(const void *_p1,const void *_p2) {
    struct stemdata *const *st1=_p1, *const *st2=_p2;
-
    double start1, end1, start2, end2;
 
    if (fabs((*st1)->unit.x) > fabs((*st1)->unit.y)) {
@@ -3067,19 +2910,12 @@ static void FixupT(struct pointdata *pd,int stemidx,int isnext,int eidx) {
    /*  (because things get hard at intersections) so our t is only an approx- */
    /*  imation. We can do a lot better now */
    Spline *s;
-
    Spline myline;
-
    SplinePoint end1, end2;
-
    double width, t, sign, len, dot;
-
    BasePoint pts[9];
-
    extended lts[10], sts[10];
-
    BasePoint diff;
-
    struct stemdata *stem;
 
    if (pd==NULL || stemidx==-1)
@@ -3140,15 +2976,10 @@ static void FixupT(struct pointdata *pd,int stemidx,int isnext,int eidx) {
 /*	4 -- analyze segments (not just single points)    */
 static int IsSplinePeak(struct glyphdata *gd,struct pointdata *pd,
 			int outer, int is_x, int flags) {
-
    double base, next, prev, nextctl, prevctl, unit_p, unit_n;
-
    Spline *s, *snext, *sprev;
-
    struct monotonic **space, *m;
-
    int wprev, wnext, i, desired;
-
    SplinePoint *sp=pd->sp;
 
    base=((real *) & sp->me.x)[!is_x];
@@ -3220,13 +3051,9 @@ static int IsSplinePeak(struct glyphdata *gd,struct pointdata *pd,
 static struct pointdata *FindClosestOpposite(struct stemdata *stem,
 					     struct stem_chunk **chunk,
 					     SplinePoint * sp, int *next) {
-
    struct pointdata *pd, *ret=NULL;
-
    struct stem_chunk *testchunk;
-
    double test, proj=1e4;
-
    int i, is_l;
 
    for (i=0; i < stem->chunk_cnt; ++i) {
@@ -3259,19 +3086,12 @@ static struct pointdata *FindClosestOpposite(struct stemdata *stem,
 
 static int ValueChunk(struct glyphdata *gd,struct vchunk *vchunks,
 		      int chcnt, int idx, int l_base) {
-
    int peak1=0, peak2=0, val=0;
-
    int i, is_x, base_next, opp_next;
-
    struct pointdata *base, *opp, *frompd, *topd;
-
    struct stem_chunk *chunk=vchunks[idx].chunk, *tchunk;
-
    struct stemdata *stem=chunk->parent;
-
    double norm, dist;
-
    Spline *sbase, *sopp, *other;
 
    /* If a stem was already present before generating glyph data, */
@@ -3377,15 +3197,10 @@ static int ValueChunk(struct glyphdata *gd,struct vchunk *vchunks,
 static void CheckPotential(struct glyphdata *gd,struct pointdata *pd,
 			   int is_next) {
    int i, j, is_l, next1, stemcnt, val;
-
    int val_cnt=0;
-
    BasePoint *lunit, *runit;
-
    struct stemdata **stems;
-
    struct vchunk *vchunks;
-
    struct stem_chunk *cur;
 
    stemcnt=(is_next) ? pd->nextcnt : pd->prevcnt;
@@ -3445,15 +3260,10 @@ static void CheckPotential(struct glyphdata *gd,struct pointdata *pd,
 static int StemIsActiveAt(struct glyphdata *gd,struct stemdata *stem,
 			  double stempos) {
    BasePoint pos, cpos, mpos;
-
    int which;
-
    double test;
-
    double lmin, lmax, rmin, rmax, loff, roff, minoff, maxoff;
-
    struct monotonic **space, *m;
-
    int winding, nw, closest, i, j;
 
    pos.x=stem->left.x + stempos * stem->unit.x;
@@ -3521,21 +3331,13 @@ static int StemIsActiveAt(struct glyphdata *gd,struct stemdata *stem,
 static int WalkSpline(struct glyphdata *gd,struct pointdata *pd,int gonext,
 		      struct stemdata *stem, int is_l, int force_ac,
 		      BasePoint * res) {
-
    int i, curved;
-
    double off, dist, min, max;
-
    double incr, err;
-
    double t, ratio, width;
-
    Spline *s;
-
    BasePoint *base, *nunit, pos, good;
-
    SplinePoint *sp, *nsp;
-
    struct pointdata *npd;
 
    err=(IsUnitHV(&stem->unit, true)) ? dist_error_hv : dist_error_diag;
@@ -3650,9 +3452,7 @@ static int WalkSpline(struct glyphdata *gd,struct pointdata *pd,int gonext,
 static int AdjustForImperfectSlopeMatch(SplinePoint *sp,BasePoint *pos,
 					BasePoint * newpos,
 					struct stemdata *stem, int is_l) {
-
    double poff, err, min, max;
-
    BasePoint *base;
 
    base=(is_l) ? &stem->left : &stem->right;
@@ -3685,21 +3485,13 @@ static int AdjustForImperfectSlopeMatch(SplinePoint *sp,BasePoint *pos,
 static int AddLineSegment(struct stemdata *stem,struct segment *space,
 			  int cnt, int is_l, struct pointdata *pd,
 			  int base_next, struct glyphdata *gd) {
-
    double s, e, t, dot;
-
    BasePoint stemp, etemp;
-
    BasePoint *start, *end, *par_unit;
-
    int same_dir, corner=0, par;
-
    int scurved=false, ecurved=false, c, hv;
-
    SplinePoint *sp, *psp, *nsp;
-
    double b;
-
    uint8_t extr;
 
    if (pd==NULL || (sp=pd->sp)==NULL || sp->ticked ||
@@ -3817,7 +3609,6 @@ static int InActive(double projection,struct segment *segments,int cnt) {
 
 static int MergeSegments(struct segment *space,int cnt) {
    int i, j;
-
    double middle;
 
    for (i=j=0; i < cnt; ++i, ++j) {
@@ -3875,21 +3666,13 @@ static int MergeSegmentsFinal(struct segment *space,int cnt) {
 
 static void FigureStemActive(struct glyphdata *gd,struct stemdata *stem) {
    int i, j, pcnt=0;
-
    struct pointdata *pd, **pspace=gd->pspace;
-
    struct stem_chunk *chunk;
-
    struct segment *lspace=gd->lspace, *rspace=gd->rspace;
-
    struct segment *bothspace=gd->bothspace, *activespace=gd->activespace;
-
    int lcnt, rcnt, bcnt, bpos, acnt, cove, startset, endset;
-
    double middle, width, len, clen, gap, lseg, rseg;
-
    double err, lmin, rmax, loff, roff, last, s, e, sbase, ebase;
-
    double proj, proj2, proj3, orig_proj, ptemp;
 
    width=stem->width;
@@ -4168,12 +3951,10 @@ static void FigureStemActive(struct glyphdata *gd,struct stemdata *stem) {
 	  stem->chunks[i + 1].stemcheat==3 &&
 	  (chunk->l==stem->chunks[i + 1].l ||
 	   chunk->r==stem->chunks[i + 1].r)) {
-
 	 SplinePoint *sp=chunk->l==stem->chunks[i + 1].l ?
 	    chunk->l->sp : chunk->r->sp;
 	 proj=(sp->me.x - stem->left.x) * stem->unit.x +
 	    (sp->me.y - stem->left.y) * stem->unit.y;
-
 	 SplinePoint *sp2=chunk->l==stem->chunks[i + 1].l ?
 	    chunk->r->sp : chunk->l->sp;
 	 SplinePoint *sp3=chunk->l==stem->chunks[i + 1].l ?
@@ -4243,9 +4024,7 @@ static void FigureStemActive(struct glyphdata *gd,struct stemdata *stem) {
 
 static void GDStemsFixupIntersects(struct glyphdata *gd) {
    int i, j, stemidx;
-
    struct stemdata *stem;
-
    struct stem_chunk *chunk;
 
    for (i=0; i < gd->stemcnt; ++i) {
@@ -4270,7 +4049,6 @@ static void GDStemsFixupIntersects(struct glyphdata *gd) {
 
 static int StemsWouldConflict(struct stemdata *stem1,struct stemdata *stem2) {
    double loff, roff, s1, s2, e1, e2;
-
    int acnt1, acnt2;
 
    if (stem1==stem2 || !UnitsParallel(&stem1->unit, &stem2->unit, true))
@@ -4310,11 +4088,8 @@ static int StemsWouldConflict(struct stemdata *stem1,struct stemdata *stem2) {
 /* active zones, as they are calculated against each stem's unit vector */
 static void GDNormalizeStubs(struct glyphdata *gd) {
    int i, j, hv;
-
    struct stemdata *stem;
-
    struct stem_chunk *chunk;
-
    BasePoint newdir;
 
    for (i=0; i < gd->stemcnt; ++i) {
@@ -4351,21 +4126,13 @@ static void GDNormalizeStubs(struct glyphdata *gd) {
 
 static void GDFindUnlikelyStems(struct glyphdata *gd) {
    double width, minl, ratio;
-
    int i, j, k, stem_cnt, ls_cnt, rs_cnt, ltick, rtick;
-
    struct pointdata *lpd, *rpd;
-
    Spline *ls, *rs;
-
    SplinePoint *lsp, *rsp;
-
    BasePoint *lunit, *runit, *slunit, *srunit, *sunit;
-
    struct stemdata *stem, *stem1, *tstem;
-
    struct stemdata **tstems, **lstems, **rstems;
-
    struct stem_chunk *chunk;
 
    GDStemsFixupIntersects(gd);
@@ -4600,9 +4367,7 @@ static void GDFindUnlikelyStems(struct glyphdata *gd) {
 
 static int StemPointOnDiag(struct glyphdata *gd,struct stemdata *stem,
 			   struct pointdata *pd) {
-
    struct stemdata *tstem;
-
    int i, is_next, stemcnt;
 
    if (gd->only_hv || pd->colinear)
@@ -4622,11 +4387,8 @@ static int StemPointOnDiag(struct glyphdata *gd,struct stemdata *stem,
 
 static void FindRefPointsExisting(struct glyphdata *gd,struct stemdata *stem) {
    int i;
-
    int pos, lbase, rbase, is_x;
-
    struct stem_chunk *chunk;
-
    struct pointdata *pd;
 
    is_x=(int) rint(stem->unit.y);
@@ -4664,19 +4426,12 @@ static void FindRefPointsExisting(struct glyphdata *gd,struct stemdata *stem) {
 
 static void FindRefPointsNew(struct glyphdata *gd,struct stemdata *stem) {
    int i, j;
-
    int pos, lpos, rpos, testpos, is_x;
-
    int lval, rval;
-
    struct stem_chunk *chunk;
-
    struct pointdata *lmost1, *lmost2, *rmost1, *rmost2;
-
    double llen, prevllen, rlen, prevrlen;
-
    SplinePoint *sp, *tsp;
-
    uint8_t *lextr, *rextr;
 
    is_x=(int) rint(stem->unit.y);
@@ -4790,15 +4545,10 @@ static void FindRefPointsNew(struct glyphdata *gd,struct stemdata *stem) {
 
 static void NormalizeStem(struct glyphdata *gd,struct stemdata *stem) {
    int i;
-
    int is_x, lval, rval, val, lset, rset, best;
-
    double loff=0, roff=0;
-
    BasePoint lold, rold;
-
    SplinePoint *lbest, *rbest;
-
    struct stem_chunk *chunk;
 
    /* First sort the stem chunks by their coordinates */
@@ -4945,19 +4695,12 @@ static void NormalizeStem(struct glyphdata *gd,struct stemdata *stem) {
 
 static void AssignPointsToBBoxHint(struct glyphdata *gd,DBounds *bounds,
 				   struct stemdata *stem, int is_v) {
-
    double min, max, test, left, right;
-
    double dist, prevdist;
-
    int i, j;
-
    int lcnt=0, rcnt=0, closest;
-
    BasePoint dir;
-
    SplinePoint **lpoints, **rpoints;
-
    struct pointdata *pd, *pd1, *pd2;
 
    lpoints=calloc(gd->pcnt, sizeof(SplinePoint *));
@@ -5014,13 +4757,9 @@ static void AssignPointsToBBoxHint(struct glyphdata *gd,DBounds *bounds,
 static void CheckForBoundingBoxHints(struct glyphdata *gd) {
    /* Adobe seems to add hints at the bounding boxes of glyphs with no hints */
    int i, hv;
-
    int hcnt=0, vcnt=0;
-
    double cw, ch;
-
    struct stemdata *stem, *hstem=NULL, *vstem=NULL;
-
    DBounds bounds;
 
    SplineCharFindBounds(gd->sc, &bounds);
@@ -5079,13 +4818,9 @@ static struct stemdata *FindOrMakeGhostStem(struct glyphdata *gd,
 					    SplinePoint * sp, int blue,
 					    double width) {
    int i, j, hasl, hasr;
-
    struct stemdata *stem=NULL, *tstem;
-
    struct stem_chunk *chunk;
-
    BasePoint dir, left, right;
-
    double min, max;
 
    dir.x=1;
@@ -5148,7 +4883,6 @@ static struct stemdata *FindOrMakeGhostStem(struct glyphdata *gd,
 static int AddGhostSegment(struct pointdata *pd,int cnt,double base,
 			   struct segment *space) {
    double s, e, temp, pos, spos, epos;
-
    SplinePoint *sp, *nsp, *nsp2, *psp, *psp2;
 
    sp=nsp=psp=pd->sp;
@@ -5219,11 +4953,8 @@ static int AddGhostSegment(struct pointdata *pd,int cnt,double base,
 
 static void FigureGhostActive(struct glyphdata *gd,struct stemdata *stem) {
    int acnt, i;
-
    real len=0;
-
    struct segment *activespace=gd->activespace;
-
    struct pointdata *valid;
 
    if (!stem->ghost)
@@ -5262,15 +4993,10 @@ static void CheckForGhostHints(struct glyphdata *gd) {
    /*  If we find any such hints we must remove them, and replace them with */
    /*  ghost hints. The bottom hint has height -21, and the top -20 */
    BlueData *bd=&gd->bd;
-
    struct stemdata *stem;
-
    struct stem_chunk *chunk;
-
    struct pointdata *pd;
-
    real base;
-
    int i, j, leftfound, rightfound, has_h, peak, fuzz;
 
    fuzz=gd->fuzz;
@@ -5359,11 +5085,8 @@ static void CheckForGhostHints(struct glyphdata *gd) {
 
 static void MarkDStemCorner(struct glyphdata *gd,struct pointdata *pd) {
    int x_dir=pd->x_corner;
-
    int hv, is_l, i, peak, has_stem=false;
-
    struct stemdata *stem;
-
    BasePoint left, right, unit;
 
    for (i=0; i < pd->prevcnt && !has_stem; i++) {
@@ -5413,9 +5136,7 @@ static void MarkDStemCorner(struct glyphdata *gd,struct pointdata *pd) {
 
 static void MarkDStemCorners(struct glyphdata *gd) {
    struct stemdata *stem;
-
    struct stem_chunk *schunk, *echunk;
-
    int i;
 
    for (i=0; i < gd->stemcnt; ++i) {
@@ -5444,11 +5165,8 @@ static void MarkDStemCorners(struct glyphdata *gd) {
 #if GLYPH_DATA_DEBUG
 static void DumpGlyphData(struct glyphdata *gd) {
    int i, j;
-
    struct stemdata *stem;
-
    struct linedata *line;
-
    struct stem_chunk *chunk;
 
    if (gd->linecnt > 0)
@@ -5600,11 +5318,8 @@ static void DumpGlyphData(struct glyphdata *gd) {
 static void AssignPointsToStems(struct glyphdata *gd,int startnum,
 				DBounds * bounds) {
    int i;
-
    struct pointdata *pd;
-
    struct stemdata *stem=NULL;
-
    BasePoint dir;
 
    for (i=0; i < gd->pcnt; ++i)
@@ -5696,7 +5411,6 @@ struct glyphdata *DStemInfoToStemData(struct glyphdata *gd, DStemInfo * dsi) {
 static void _StemInfoToStemData(struct glyphdata *gd,StemInfo *si,
 				DBounds * bounds, int is_v, int *startcnt) {
    struct stemdata *stem;
-
    BasePoint dir, left, right;
 
    dir.x=!is_v;
@@ -5730,7 +5444,6 @@ static void _StemInfoToStemData(struct glyphdata *gd,StemInfo *si,
 struct glyphdata *StemInfoToStemData(struct glyphdata *gd, StemInfo * si,
 				     int is_v) {
    DBounds bounds;
-
    int startcnt;
 
    if (si==NULL)
@@ -5746,7 +5459,6 @@ struct glyphdata *StemInfoToStemData(struct glyphdata *gd, StemInfo * si,
 static int ValidConflictingStem(struct stemdata *stem1,
 				struct stemdata *stem2) {
    int x_dir=fabs(stem1->unit.y) > fabs(stem1->unit.x);
-
    double s1, e1, s2, e2, temp;
 
    s1=(&stem1->left.x)[!x_dir] -
@@ -5805,7 +5517,6 @@ static int ValidConflictingStem(struct stemdata *stem1,
 
 static int HasDependentStem(struct stemdata *master,struct stemdata *slave) {
    int i;
-
    struct stemdata *tstem;
 
    if (slave->master != NULL && master->dep_cnt > 0) {
@@ -5821,9 +5532,7 @@ static int HasDependentStem(struct stemdata *master,struct stemdata *slave) {
 static int PreferEndDep(struct stemdata *stem,
 			struct stemdata *smaster, struct stemdata *emaster,
 			char s_type, char e_type) {
-
    int hv=IsUnitHV(&stem->unit, true);
-
    double sdist, edist;
 
    if (!hv)
@@ -5849,15 +5558,10 @@ static int PreferEndDep(struct stemdata *stem,
 
 static void LookForMasterHVStem(struct stemdata *stem,BlueData *bd) {
    struct stemdata *tstem, *smaster=NULL, *emaster=NULL;
-
    struct stembundle *bundle=stem->bundle;
-
    double start, end, tstart, tend;
-
    double ssdist, sedist, esdist, eedist;
-
    double smin, smax, emin, emax, tsmin, tsmax, temin, temax;
-
    int is_x, i, link_to_s, stype, etype, allow_s, allow_e;
 
    is_x=(bundle->unit.x==1);
@@ -6083,7 +5787,6 @@ static void LookForMasterHVStem(struct stemdata *stem,BlueData *bd) {
 /* dependencies and clean them now */
 static void ClearUnneededDeps(struct stemdata *stem) {
    struct stemdata *master;
-
    int i, j;
 
    if (stem->confl_cnt==1 &&
@@ -6103,13 +5806,9 @@ static void ClearUnneededDeps(struct stemdata *stem) {
 
 static void GDBundleStems(struct glyphdata *gd,int maxtoobig,int needs_deps) {
    struct stemdata *stem, *tstem;
-
    int i, j, k, hv, hasl, hasr, stem_cnt;
-
    struct pointdata *lpd, *rpd;
-
    double dmove;
-
    DBounds bounds;
 
    /* Some checks for undesired stems which we couldn't do earlier  */
@@ -6270,13 +5969,9 @@ static void GDBundleStems(struct glyphdata *gd,int maxtoobig,int needs_deps) {
 static void AddSerifOrBall(struct glyphdata *gd,
 			   struct stemdata *master, struct stemdata *slave,
 			   int lbase, int is_ball) {
-
    struct dependent_serif *tserif;
-
    struct pointdata *spd, *bpd=NULL;
-
    double width, min, max;
-
    int i, j, refidx, scnt, next;
 
    if (lbase) {
@@ -6329,17 +6024,11 @@ static void AddSerifOrBall(struct glyphdata *gd,
 
 static int IsBall(struct glyphdata *gd,
 		  struct pointdata *pd, struct stemdata *master, int lbase) {
-
    double max, min, dot, coord;
-
    BasePoint *lbp, *rbp, *dir;
-
    Spline *test;
-
    struct pointdata *nbase, *pbase, *tpd;
-
    struct stem_chunk *chunk;
-
    int i, is_x, peak_passed;
 
    if (pd==NULL || (pd->x_extr != 1 && pd->y_extr != 1))
@@ -6408,17 +6097,11 @@ static int IsBall(struct glyphdata *gd,
 
 static void GetSerifData(struct glyphdata *gd,struct stemdata *stem) {
    int i, j, is_x, stem_cnt;
-
    int snext, enext, eidx, allow_s, allow_e, s_ball, e_ball;
-
    struct stem_chunk *chunk;
-
    struct stemdata *tstem, *smaster=NULL, *emaster=NULL;
-
    struct pointdata *spd, *epd;
-
    struct stembundle *bundle;
-
    double start, end, tstart, tend, smend, emstart;
 
    is_x=(IsUnitHV(&stem->unit, true)==1);
@@ -6530,7 +6213,6 @@ static void GetSerifData(struct glyphdata *gd,struct stemdata *stem) {
 
 static double ActiveOverlap(struct stemdata *stem1,struct stemdata *stem2) {
    int is_x, i, j=0;
-
    double base1, base2, s1, e1, s2, e2, s, e, len=0;
 
    is_x=(IsUnitHV(&stem1->unit, true)==2);
@@ -6561,9 +6243,7 @@ static double ActiveOverlap(struct stemdata *stem1,struct stemdata *stem2) {
 
 static int StemPairsSimilar(struct stemdata *s1,struct stemdata *s2,
 			    struct stemdata *ts1, struct stemdata *ts2) {
-
    int normal, reversed, ret;
-
    double olen1, olen2;
 
    /* Stem widths in the second pair should be nearly the same as */
@@ -6596,11 +6276,8 @@ static int StemPairsSimilar(struct stemdata *s1,struct stemdata *s2,
 
 static void FindCounterGroups(struct glyphdata *gd,int is_v) {
    struct stembundle *bundle=is_v ? gd->vbundle : gd->hbundle;
-
    struct stemdata *curm, *prevm, *cur, *prev;
-
    int i, j;
-
    double mdist, dist;
 
    prevm=NULL;
@@ -6644,19 +6321,12 @@ static void FindCounterGroups(struct glyphdata *gd,int is_v) {
 struct glyphdata *GlyphDataInit(SplineChar * sc, int layer, double em_size,
 				int only_hv) {
    struct glyphdata *gd;
-
    struct pointdata *pd;
-
    int i;
-
    SplineSet *ss;
-
    SplinePoint *sp;
-
    Monotonic *m;
-
    int cnt;
-
    double iangle;
 
    /* We only hint one layer at a time */
@@ -6782,19 +6452,12 @@ struct glyphdata *GlyphDataInit(SplineChar * sc, int layer, double em_size,
 struct glyphdata *GlyphDataBuild(SplineChar * sc, int layer, BlueData * bd,
 				 int use_existing) {
    struct glyphdata *gd;
-
    struct pointdata *pd;
-
    struct stemdata *stem;
-
    BasePoint dir;
-
    struct stem_chunk *chunk;
-
    int i, j, only_hv, startcnt, stemcnt, ecnt, hv, has_h, has_v;
-
    double em_size;
-
    DBounds bounds;
 
    only_hv=(!detect_diagonal_stems && (!use_existing || sc->dstem==NULL));

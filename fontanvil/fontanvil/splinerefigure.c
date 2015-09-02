@@ -1,4 +1,4 @@
-/* $Id: splinerefigure.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splinerefigure.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -39,9 +39,7 @@
 /*  the rasterizer to have kaniptions */
 void SplineRefigure3(Spline * spline) {
    SplinePoint *from=spline->from, *to=spline->to;
-
    Spline1D *xsp=&spline->splines[0], *ysp=&spline->splines[1];
-
    Spline old;
 
    spline->isquadratic=false;

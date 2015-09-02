@@ -1,4 +1,4 @@
-/* $Id: bezctx_ff.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: bezctx_ff.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* This file written by George Williams to provide a gateway to fontanvil */
 /* it it a modification of Raph's bezctx_ps.c */
 #include "fontanvil.h"
@@ -52,7 +52,6 @@ static void bezctx_ff_moveto(bezctx *z,double x,double y,int is_open) {
 /* This routine creates a linear spline from the previous point specified to this one */
 static void bezctx_ff_lineto(bezctx *z,double x,double y) {
    bezctx_ff *bc=(bezctx_ff *) z;
-
    SplinePoint *sp;
 
    if (!isfinite(x) || !isfinite(y)) {
@@ -69,13 +68,9 @@ static void bezctx_ff_lineto(bezctx *z,double x,double y) {
 static void
 bezctx_ff_quadto(bezctx * z, double xm, double ym, double x3, double y3) {
    bezctx_ff *bc=(bezctx_ff *) z;
-
    double x0, y0;
-
    double x1, y1;
-
    double x2, y2;
-
    SplinePoint *sp;
 
    if (!isfinite(xm) || !isfinite(ym) || !isfinite(x3) || !isfinite(y3)) {
@@ -105,7 +100,6 @@ static void
 bezctx_ff_curveto(bezctx * z, double x1, double y1, double x2, double y2,
 		  double x3, double y3) {
    bezctx_ff *bc=(bezctx_ff *) z;
-
    SplinePoint *sp;
 
    if (!isfinite(x1) || !isfinite(y1) ||
@@ -147,7 +141,6 @@ bezctx *new_bezctx_ff(void) {
 /* Finishes an old FontAnvil bezier context, and returns the contour which was created */
 struct splinepointlist *bezctx_ff_close(bezctx * z) {
    bezctx_ff *bc=(bezctx_ff *) z;
-
    SplineSet *ss=bc->ss;
 
    if (!bc->is_open && ss != NULL) {

@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: tottf.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -590,7 +590,7 @@ static int uniranges[][3]={
 
 static int32_t getuint32(AFILE *ttf) {
    int32_t ch1,ch2,ch3,ch4;
-   
+
    ch1=agetc(ttf);
    ch2=agetc(ttf);
    ch3=agetc(ttf);
@@ -640,7 +640,6 @@ static void dumpoffset(AFILE *file,int offsize,int val) {
 
 static void put2d14(AFILE *file,real dval) {
    int val;
-
    int mant;
 
    val=floor(dval);
@@ -651,7 +650,6 @@ static void put2d14(AFILE *file,real dval) {
 
 void putfixed(AFILE *file, real dval) {
    int val;
-
    int mant;
 
    val=floor(dval);
@@ -688,7 +686,6 @@ static void FigureFullMetricsEnd(SplineFont *sf,struct glyphinfo *gi,
    /*  same width */
    /* (do same thing for vertical metrics too */
    int i, lasti, lastv, lastdefault=istt ? 3 : 1;
-
    int width, vwidth;
 
    lasti=lastv=gi->gcnt - 1;
@@ -767,7 +764,6 @@ static void ttfdumpmetrics(SplineChar *sc,struct glyphinfo *gi,DBounds *b) {
 
 static SplineSet *SCttfApprox(SplineChar *sc,int layer) {
    SplineSet *head=NULL, *last, *ss, *tss;
-
    RefChar *ref;
 
    for (ss=sc->layers[layer].splines; ss != NULL; ss=ss->next) {
@@ -804,7 +800,6 @@ static SplineSet *SCttfApprox(SplineChar *sc,int layer) {
 
 int SSAddPoints(SplineSet * ss, int ptcnt, BasePoint * bp, char *flags) {
    SplinePoint *sp, *first, *nextsp;
-
    int startcnt=ptcnt;
 
    if (ss->first->prev != NULL &&
@@ -856,9 +851,7 @@ int SSAddPoints(SplineSet * ss, int ptcnt, BasePoint * bp, char *flags) {
 static void dumppointarrays(struct glyphinfo *gi,BasePoint *bp,char *fs,
 			    int pc) {
    BasePoint last;
-
    int i, flags;
-
    int lastflag, flagcnt;
 
    if (gi->maxp->maxPoints < pc)
@@ -967,13 +960,9 @@ static void dumpmissingglyph(SplineFont *sf,struct glyphinfo *gi,
 			     int fixedwidth) {
    /* Or .notdef */
    struct glyphhead gh;
-
    BasePoint bp[10];
-
    uint8_t instrs[50];
-
    int stemcvt, stem;
-
    char *stempt;
 
    stem=0;
@@ -1144,7 +1133,6 @@ static int IsTTFRefable(SplineChar *sc,int layer) {
 
 int RefDepth(RefChar * ref, int layer) {
    int rd, temp;
-
    SplineChar *sc=ref->sc;
 
    if (sc->layers[layer].refs==NULL || sc->layers[layer].splines != NULL)
@@ -1165,7 +1153,6 @@ int RefDepth(RefChar * ref, int layer) {
 
 static void CountCompositeMaxPts(SplineChar *sc,struct glyphinfo *gi) {
    RefChar *ref;
-
    int ptcnt=0, index;
 
    for (ref=sc->layers[gi->layer].refs; ref != NULL; ref=ref->next) {
@@ -1197,15 +1184,10 @@ static void RefigureCompositeMaxPts(SplineFont *sf,struct glyphinfo *gi) {
 
 static void dumpcomposite(SplineChar *sc,struct glyphinfo *gi) {
    struct glyphhead gh;
-
    DBounds bb;
-
    int i, ptcnt, ctcnt, flags, sptcnt, rd;
-
    SplineSet *ss;
-
    RefChar *ref;
-
    SplineChar *isc=sc->ttf_instrs==NULL && sc->parent->mm != NULL
       && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
 								orig_pos] :
@@ -1323,17 +1305,11 @@ static void dumpcomposite(SplineChar *sc,struct glyphinfo *gi) {
 
 static void dumpglyph(SplineChar *sc,struct glyphinfo *gi) {
    struct glyphhead gh;
-
    DBounds bb;
-
    SplineSet *ss, *ttfss;
-
    int contourcnt, ptcnt, origptcnt;
-
    BasePoint *bp;
-
    char *fs;
-
    SplineChar *isc=sc->ttf_instrs==NULL && sc->parent->mm != NULL
       && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
 								orig_pos] :
@@ -1400,7 +1376,6 @@ static void dumpglyph(SplineChar *sc,struct glyphinfo *gi) {
 
 void SFDummyUpCIDs(struct glyphinfo *gi, SplineFont *sf) {
    int i, j, k, max;
-
    int *bygid;
 
    max=0;
@@ -1470,7 +1445,6 @@ static void AssignNotdefNull(SplineFont *sf,int *bygid,int iscff) {
 static int AssignTTFGlyph(struct glyphinfo *gi,SplineFont *sf,EncMap *map,
 			  int iscff) {
    int *bygid=malloc((sf->glyphcnt + 3) * sizeof(int));
-
    int i, j;
 
    memset(bygid, 0xff, (sf->glyphcnt + 3) * sizeof(int));
@@ -1513,9 +1487,7 @@ static int AssignTTFGlyph(struct glyphinfo *gi,SplineFont *sf,EncMap *map,
 static int AssignTTFBitGlyph(struct glyphinfo *gi,SplineFont *sf,
 			     EncMap * map, int32_t * bsizes) {
    int i, j;
-
    BDFFont *bdf;
-
    int *bygid=malloc((sf->glyphcnt + 3) * sizeof(int));
 
    memset(bygid, 0xff, (sf->glyphcnt + 3) * sizeof(int));
@@ -1561,9 +1533,7 @@ static int AssignTTFBitGlyph(struct glyphinfo *gi,SplineFont *sf,
 
 static int dumpglyphs(SplineFont *sf,struct glyphinfo *gi) {
    int i;
-
    int fixed=gi->fixed_width;
-
    int answer, answered=-1;
 
    QuickBlues(sf, gi->layer, &gi->bd);
@@ -1682,11 +1652,8 @@ static int dumpnoglyphs(SplineFont *sf,struct glyphinfo *gi) {
 
 static int storesid(struct alltabs *at,char *str) {
    int i;
-
    AFILE *news;
-
    char *pt;
-
    long pos;
 
    if (str != NULL) {		/* NULL is the magic string at end of array */
@@ -1750,7 +1717,6 @@ static void dumpdbl(AFILE *cfff,double d) {
    else {
       /* The type2 strings have a fixed format, but the dict data does not */
       char buffer[20], *pt;
-
       int sofar, n, odd;
 
       sprintf(buffer, "%g", d);
@@ -1850,7 +1816,6 @@ static void DumpDblArray(real *arr,int n,AFILE *cfff,int oper) {
 
 static void DumpStrArray(char *pt,AFILE *cfff,int oper) {
    real d, last=0;
-
    char *end;
 
    while (*pt==' ')
@@ -1934,7 +1899,6 @@ static void dumpcffcidset(SplineFont *sf,struct alltabs *at) {
 
 static void dumpcfffdselect(SplineFont *sf,struct alltabs *at) {
    int cid, k, lastfd, cnt;
-
    int gid;
 
    aputc(3, at->fdselect);
@@ -1975,11 +1939,8 @@ static void dumpcfffdselect(SplineFont *sf,struct alltabs *at) {
 
 static void dumpcffencoding(SplineFont *sf,struct alltabs *at) {
    int i, cnt, anydups;
-
    uint32_t start_pos=aftell(at->encoding);
-
    SplineChar *sc;
-
    EncMap *map=at->map;
 
    aputc(0, at->encoding);
@@ -2076,9 +2037,7 @@ static AFILE *dumpcffstrings(struct pschars *strs) {
 
 int SFFigureDefWidth(SplineFont *sf, int *_nomwid) {
    uint16_t *widths;
-
    uint32_t *cumwid;
-
    int nomwid, defwid, i, sameval=(int) 0x80000000, maxw=0, allsame =
       true;
    int cnt, j;
@@ -2146,25 +2105,15 @@ static void ATFigureDefWidth(SplineFont *sf,struct alltabs *at,int subfont) {
 static void dumpcffprivate(SplineFont *sf,struct alltabs *at,int subfont,
 			   int subrcnt) {
    char *pt;
-
    AFILE *private=subfont==-1 ? at->private : at->fds[subfont].private;
-
    int mi, i;
-
    real bluevalues[14], otherblues[10];
-
    real snapcnt[12];
-
    real stemsnaph[12], stemsnapv[12];
-
    real stdhw[1], stdvw[1];
-
    int hasblue=0, hash=0, hasv=0, bs;
-
    int nomwid, defwid;
-
    EncMap *map=at->map;
-
    double bluescale;
 
    /* The private dict is not in an index, so no index header. Just the data */
@@ -2297,9 +2246,7 @@ static void dumpcffprivate(SplineFont *sf,struct alltabs *at,int subfont,
 /*  back and fill in the table length (at lenpos) */
 static void dumpcfftopdict(SplineFont *sf,struct alltabs *at) {
    char *pt, *end;
-
    AFILE *cfff=at->cfff;
-
    DBounds b;
 
    putshort(cfff, 1);		/* One top dict */
@@ -2369,7 +2316,6 @@ static void dumpcfftopdict(SplineFont *sf,struct alltabs *at) {
 
 static int dumpcffdict(SplineFont *sf,struct alltabs *at) {
    AFILE *fdarray=at->fdarray;
-
    int pstart;
 
    /* according to the PSRef Man v3, only fontname, fontmatrix and private */
@@ -2392,7 +2338,6 @@ static int dumpcffdict(SplineFont *sf,struct alltabs *at) {
 
 static void dumpcffdictindex(SplineFont *sf,struct alltabs *at) {
    int i;
-
    int pos;
 
    putshort(at->fdarray, sf->subfontcnt);
@@ -2415,11 +2360,8 @@ static void dumpcffdictindex(SplineFont *sf,struct alltabs *at) {
 
 static void dumpcffcidtopdict(SplineFont *sf,struct alltabs *at) {
    char *pt, *end;
-
    AFILE *cfff=at->cfff;
-
    DBounds b;
-
    int cidcnt=0, k;
 
    for (k=0; k < sf->subfontcnt; ++k)
@@ -2503,9 +2445,7 @@ static int isStdEncoding(SplineFont *sf,EncMap *map) {
 
 static void finishup(SplineFont *sf,struct alltabs *at) {
    int strlen, shlen, glen, enclen, csetlen, cstrlen, prvlen;
-
    int base, eotop, strhead;
-
    int output_enc=(at->format==ff_cff && !isStdEncoding(sf, at->map));
 
    storesid(at, NULL);		/* end the strings index */
@@ -2583,9 +2523,7 @@ static void finishup(SplineFont *sf,struct alltabs *at) {
 
 static void finishupcid(SplineFont *sf,struct alltabs *at) {
    int strlen, shlen, glen, csetlen, cstrlen, fdsellen, fdarrlen, prvlen;
-
    int base, eotop, strhead;
-
    int i;
 
    storesid(at, NULL);		/* end the strings index */
@@ -2675,13 +2613,9 @@ static void finishupcid(SplineFont *sf,struct alltabs *at) {
 
 static int dumpcffhmtx(struct alltabs *at,SplineFont *sf,int bitmaps) {
    DBounds b;
-
    SplineChar *sc;
-
    int i, cnt;
-
    int dovmetrics=sf->hasvmetrics;
-
    int width=at->gi.fixed_width;
 
    at->gi.hmtx=atmpfile();
@@ -2761,13 +2695,9 @@ static int dumpcffhmtx(struct alltabs *at,SplineFont *sf,int bitmaps) {
 
 static void dumpcffcidhmtx(struct alltabs *at,SplineFont *_sf) {
    DBounds b;
-
    SplineChar *sc;
-
    int cid, i, cnt=0, max;
-
    SplineFont *sf;
-
    int dovmetrics=_sf->hasvmetrics;
 
    at->gi.hmtx=atmpfile();
@@ -2827,7 +2757,6 @@ static void dumpcffcidhmtx(struct alltabs *at,SplineFont *_sf) {
 
 static int dumptype2glyphs(SplineFont *sf,struct alltabs *at) {
    int i;
-
    struct pschars *subrs, *chrs;
 
    at->cfff=atmpfile();
@@ -2874,7 +2803,6 @@ static int dumptype2glyphs(SplineFont *sf,struct alltabs *at) {
 
 static int dumpcidglyphs(SplineFont *sf,struct alltabs *at) {
    int i;
-
    struct pschars *glbls=NULL, *chrs;
 
    at->cfff=atmpfile();
@@ -2943,9 +2871,7 @@ static int AnyInstructions(SplineFont *sf) {
 
 static int AnyMisleadingBitmapAdvances(SplineFont *sf,int32_t *bsizes) {
    int strike, gid;
-
    double em=sf->ascent + sf->descent;
-
    BDFFont *bdf;
 
    /* Are there any bitmap glyphs whose advance width differs from the */
@@ -2962,7 +2888,6 @@ static int AnyMisleadingBitmapAdvances(SplineFont *sf,int32_t *bsizes) {
 	 continue;
       for (gid=0; gid < sf->glyphcnt && gid < bdf->glyphcnt; ++gid) {
 	 SplineChar *sc=sf->glyphs[gid];
-
 	 BDFChar *bc=bdf->glyphs[gid];
 
 	 if (sc==NULL || bc==NULL)
@@ -2976,9 +2901,7 @@ static int AnyMisleadingBitmapAdvances(SplineFont *sf,int32_t *bsizes) {
 
 void cvt_unix_to_1904(long long time, int32_t result[2]) {
    uint32_t date1970[4], tm[4];
-
    uint32_t year[2];
-
    int i;
 
    tm[0]=time & 0xffff;
@@ -3015,13 +2938,9 @@ void cvt_unix_to_1904(long long time, int32_t result[2]) {
 static void sethead(struct head *head,SplineFont *sf,struct alltabs *at,
 		    enum fontformat format, int32_t * bsizes) {
    time_t now;
-
    int i, lr, rl, indic_rearrange, arabic;
-
    ASM *sm;
-
    struct ttflangname *useng;
-
    float vn;
 
    if (at->gi.xmin==15000)
@@ -3043,7 +2962,6 @@ static void sethead(struct head *head,SplineFont *sf,struct alltabs *at,
    for (i=0; i < at->gi.gcnt; ++i)
       if (at->gi.bygid[i] != -1) {
 	 SplineChar *sc=sf->glyphs[at->gi.bygid[i]];
-
 	 int uni=sc->unicodeenc;
 
 	 if (SCRightToLeft(sc))
@@ -3073,9 +2991,7 @@ static void sethead(struct head *head,SplineFont *sf,struct alltabs *at,
 	 head->revision=(val << 16) | mant;
       } else if (sf->version != NULL) {
 	 char *pt=sf->version;
-
 	 double dval;
-
 	 int val, mant;
 
 	 while (*pt && !isdigit(*pt) && *pt != '.')
@@ -3147,9 +3063,7 @@ static void sethead(struct head *head,SplineFont *sf,struct alltabs *at,
 static void sethhead(struct hhead *hhead,struct hhead *vhead,
 		     struct alltabs *at, SplineFont *sf) {
    int i, width, rbearing, height, bbearing;
-
    int ymax, ymin, xmax, xmin, off;
-
    DBounds bb;
 
    /* Might as well fill in the vhead even if we don't use it */
@@ -3315,7 +3229,6 @@ void SFDefaultOS2SubSuper(struct pfminfo *pfminfo, int emsize,
 void SFDefaultOS2Info(struct pfminfo *pfminfo, SplineFont *sf,
 		      char *fontname) {
    int samewid=-1;
-
    char *weight=sf->cidmaster==NULL ? sf->weight : sf->cidmaster->weight;
 
    if (sf->pfminfo.pfmset) {
@@ -3413,7 +3326,6 @@ void SFDefaultOS2Info(struct pfminfo *pfminfo, SplineFont *sf,
 
 int AlreadyMSSymbolArea(SplineFont *sf, EncMap * map) {
    int i;
-
    int acnt=0, pcnt=0;
 
    for (i=0; i < map->enccount && i < 0xffff; ++i) {
@@ -3430,9 +3342,7 @@ int AlreadyMSSymbolArea(SplineFont *sf, EncMap * map) {
 
 void OS2FigureCodePages(SplineFont *sf, uint32_t CodePage[2]) {
    int i;
-
    uint32_t latin1[8];
-
    int has_ascii, has_latin1, has_lineart=0, has_radical =
       0, has_summation=0;
    int cp852=0, cp775=0, cp861=0, cp860=0, cp857=0, cp855 =
@@ -3440,9 +3350,7 @@ void OS2FigureCodePages(SplineFont *sf, uint32_t CodePage[2]) {
    int cp864=0, cp865=0, cp866=0, cp869=0, cp737=0, cp708=0, mac =
       0;
    int k;
-
    SplineChar *sc;
-
    SplineFont *sub;
 
    memset(latin1, 0, sizeof(latin1));
@@ -3584,9 +3492,7 @@ void OS2FigureCodePages(SplineFont *sf, uint32_t CodePage[2]) {
 
 void OS2FigureUnicodeRanges(SplineFont *sf, uint32_t Ranges[4]) {
    int i, j, k;
-
    SplineChar *sc;
-
    SplineFont *sub;
 
    memset(Ranges, 0, 4 * sizeof(uint32_t));
@@ -3638,16 +3544,12 @@ static void WinBB(SplineFont *sf,uint16_t *winascent,uint16_t *windescent,
 static void setos2(struct os2 *os2,struct alltabs *at,SplineFont *sf,
 		   enum fontformat format) {
    int i, cnt1, cnt2, first, last, avg1, avg2, gid;
-
    char *pt;
-
    static int const weightFactors[26]={ 64,14,27,35,100,20,14,42,63,
       3, 6, 35, 20, 56, 56, 17, 4, 49, 56, 71, 31, 10, 18, 3, 18, 2
    };
    EncMap *map;
-
    SplineChar *sc;
-
    int modformat=format;
 
    os2->version=1;
@@ -3955,9 +3857,7 @@ static void redohead(struct alltabs *at) {
 
 static void redohhead(struct alltabs *at,int isv) {
    int i;
-
    struct hhead *head;
-
    AFILE *f;
 
    if (!isv) {
@@ -4139,9 +4039,7 @@ char *utf8_verify_copy(const char *str) {
 /*  but let's do it just in case */
 void DefaultTTFEnglishNames(struct ttflangname *dummy, SplineFont *sf) {
    time_t now;
-
    struct tm *tm;
-
    char buffer[200];
 
    if (dummy->names[ttf_copyright]==NULL
@@ -4215,9 +4113,7 @@ static int compare_entry(const void *_mn1,const void *_mn2) {
 static void AddEncodedName(NamTab *nt,char *utf8name,uint16_t lang,
 			   uint16_t strid) {
    NameEntry *ne;
-
    int maclang, macenc=-1, specific;
-
    char *macname=NULL;
 
    if (strid==ttf_postscriptname && lang != 0x409)
@@ -4286,11 +4182,8 @@ static void AddEncodedName(NamTab *nt,char *utf8name,uint16_t lang,
 	 ne->len=ne[-1].len;
       } else {
 	 char *space, *encname, *out;
-
 	 ICONV_CONST char *in;
-
 	 Encoding *enc;
-
 	 size_t inlen, outlen;
 
 	 ne->offset=aftell(nt->strings);
@@ -4360,17 +4253,11 @@ static void AddMacName(NamTab *nt,struct macname *mn,int strid) {
 static void dumpnames(struct alltabs *at,SplineFont *sf,
 		      enum fontformat format) {
    int i, j;
-
    struct ttflangname dummy, *cur, *useng=NULL;
-
    struct macname *mn;
-
    struct other_names *on, *onn;
-
    NamTab nt;
-
    struct otfname *otfn;
-
    struct otffeatname *fn;
 
    memset(&nt, 0, sizeof(nt));
@@ -4470,7 +4357,6 @@ static void dumpnames(struct alltabs *at,SplineFont *sf,
 static void dumppost(struct alltabs *at,SplineFont *sf,
 		     enum fontformat format) {
    int pos, i, j, shouldbe;
-
    int shorttable=(format==ff_otf || format==ff_otfcid ||
 		     (at->gi.flags & ttf_flag_shortps));
    uint32_t here;
@@ -4555,21 +4441,13 @@ static void dumppost(struct alltabs *at,SplineFont *sf,
 
 static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
    int i, j, complained, pos, k, subheadindex, jj, isbig5=false;
-
    uint16_t table[256];
-
    struct subhead subheads[128];
-
    uint16_t *glyphs;
-
    uint16_t tempglyphs[256];
-
    int base, lbase, basebound, subheadcnt, planesize, plane0size;
-
    int base2, base2bound;
-
    AFILE *sub;
-
    char *encname =
       map->enc->iconv_name !=
       NULL ? map->enc->iconv_name : map->enc->enc_name;
@@ -4797,14 +4675,11 @@ static AFILE *_Gen816Enc(SplineFont *sf,int *tlen,EncMap *map) {
 static AFILE *Needs816Enc(SplineFont *sf,int *tlen,EncMap *map,
 			 AFILE ** apple, int *appletlen) {
    AFILE *sub;
-
    char *encname =
       map->enc->iconv_name !=
       NULL ? map->enc->iconv_name : map->enc->enc_name;
    EncMap *oldmap=map;
-
    EncMap *applemap=NULL;
-
    Encoding *enc;
 
    *tlen=0;
@@ -4867,13 +4742,9 @@ static AFILE *Needs816Enc(SplineFont *sf,int *tlen,EncMap *map,
 
 static AFILE *NeedsUCS4Table(SplineFont *sf,int *ucs4len,EncMap *map) {
    int i=0, j, group;
-
    AFILE *format12;
-
    SplineChar *sc;
-
    EncMap *freeme=NULL;
-
    struct altuni *altuni;
 
    if (map->enc->is_unicodefull)
@@ -4944,21 +4815,15 @@ static AFILE *NeedsUCS2Table(SplineFont *sf,int *ucs2len,EncMap *map,
    /* We always want a format 4 2byte unicode encoding map */
    /* But if it's symbol, only include encodings 0xff20 - 0xffff */
    uint32_t *avail=malloc(65536 * sizeof(uint32_t));
-
    int i, j, l;
-
    int segcnt, cnt=0, delta, rpos;
-
    struct cmapseg {
       uint16_t start, end;
       uint16_t delta;
       uint16_t rangeoff;
    } *cmapseg;
-
    uint16_t *ranges;
-
    SplineChar *sc;
-
    AFILE *format4=atmpfile();
 
    memset(avail, 0xff, 65536 * sizeof(uint32_t));
@@ -5076,20 +4941,13 @@ static AFILE *NeedsVariationSequenceTable(SplineFont *sf,int *vslen,
 					 EncMap * map) {
    /* Do we need a format 14 (unicode variation sequence) subtable? */
    int gid, vs_cnt=0, vs_max=512, i, j, k, cnt, mingid, maxgid;
-
    struct altuni *altuni, *au;
-
    uint32_t vsbuf[512], *vses=vsbuf;
-
    AFILE *format14;
-
    uint32_t *avail=NULL;
    enum vs_type { vs_default=(1 << 24), vs_nondefault=(2 << 24) };
-
    SplineChar *sc;
-
    uint32_t here;
-
    int any;
 
    mingid=maxgid=-1;
@@ -5240,23 +5098,14 @@ static AFILE *NeedsVariationSequenceTable(SplineFont *sf,int *vslen,
 static void dumpcmap(struct alltabs *at,SplineFont *sf,
 		     enum fontformat format) {
    int i, enccnt, issmall, hasmac;
-
    uint16_t table[256];
-
    SplineChar *sc;
-
    int alreadyprivate=false;
-
    int wasotf=format==ff_otf || format==ff_otfcid;
-
    EncMap *map=at->map;
-
    int ucs4len=0, ucs2len=0, cjklen=0, applecjklen=0, vslen=0;
-
    AFILE *format12, *format4, *format2, *apple2, *format14;
-
    int mspos, ucs4pos, cjkpos, applecjkpos, vspos, start_of_macroman;
-
    int modformat=format;
 
    if ((format >= ff_ttf && format <= ff_otfdfont)
@@ -5666,7 +5515,6 @@ static void MaxpFromTable(struct alltabs *at,SplineFont *sf) {
 
 static AFILE *dumpstoredtable(SplineFont *sf,uint32_t tag,int *len) {
    struct ttf_table *tab=SFFindTable(sf, tag);
-
    AFILE *out;
 
    if (tab==NULL && sf->mm != NULL && sf->mm->apple)
@@ -5783,9 +5631,7 @@ static void initATTables(struct alltabs *at,SplineFont *sf,
 static void buildtablestructures(struct alltabs *at,SplineFont *sf,
 				 enum fontformat format) {
    int i;
-
    int ebdtpos, eblcpos;
-
    struct ttf_table *tab;
 
    if (format==ff_otf || format==ff_otfcid) {
@@ -6487,7 +6333,6 @@ static int dumpcff(struct alltabs *at,SplineFont *sf,
 	 at->error=true;
    } else {
       long len;
-
       char buffer[80];
 
       afprintf(cff, "%%!PS-Adobe-3.0 Resource-FontSet\n");
@@ -6570,9 +6415,7 @@ int _WriteTTFFont(AFILE *ttf, SplineFont *sf, enum fontformat format,
 		  int32_t * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * map, int layer) {
    struct alltabs at;
-
    char oldloc[25];
-
    int i, anyglyphs;
 
    /* TrueType probably doesn't need this, but OpenType does for floats in dictionaries */
@@ -6634,7 +6477,6 @@ int WriteTTFFont(char *fontname, SplineFont *sf, enum fontformat format,
 		 int32_t * bsizes, enum bitmapformat bf, int flags,
 		 EncMap * map, int layer) {
    AFILE *ttf;
-
    int ret;
 
    if ((ttf=afopen(fontname, "wb+"))==NULL)
@@ -6716,7 +6558,6 @@ static void dumptype42(AFILE *type42,struct alltabs *at,
       if (at->tabdir.ordered[i]->length > 65534
 	  && at->tabdir.ordered[i]->tag==CHR('g', 'l', 'y', 'f')) {
 	 uint32_t last=0;
-
 	 int j;
 
 	 afseek(temp, at->tabdir.ordered[i]->offset, SEEK_SET);
@@ -6747,9 +6588,7 @@ static void dumptype42(AFILE *type42,struct alltabs *at,
 int _WriteType42SFNTS(AFILE *type42, SplineFont *sf, enum fontformat format,
 		      int flags, EncMap * map, int layer) {
    struct alltabs at;
-
    char oldloc[25];
-
    int i;
 
    /* TrueType probably doesn't need this, but OpenType does for floats in dictionaries */

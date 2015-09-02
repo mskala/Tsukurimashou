@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: bitmapcontrol.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,7 +35,6 @@ int bdfcontrol_lastwhich=bd_selected;
 
 static BDFFont *BDFNew(SplineFont *sf,int pixel_size,int depth) {
    BDFFont *new=chunkalloc(sizeof(BDFFont));
-
    int linear_scale=1 << (depth / 2);
 
    new->sf=sf;
@@ -52,9 +51,7 @@ static BDFFont *BDFNew(SplineFont *sf,int pixel_size,int depth) {
 
 static void SFRemoveUnwantedBitmaps(SplineFont *sf,int32_t *sizes) {
    BDFFont *bdf, *prev, *next;
-
    FontViewBase *fv;
-
    int i;
 
    for (prev=NULL, bdf=sf->bitmaps; bdf != NULL; bdf=next) {
@@ -88,9 +85,7 @@ static void SFRemoveUnwantedBitmaps(SplineFont *sf,int32_t *sizes) {
 static void SFFigureBitmaps(SplineFont *sf,int32_t *sizes,int usefreetype,
 			    int rasterize, int layer) {
    BDFFont *bdf;
-
    int i, first;
-
    void *freetypecontext=NULL;
 
    SFRemoveUnwantedBitmaps(sf, sizes);
@@ -141,7 +136,6 @@ static int SizeExists(BDFFont *list,int size) {
 
 static void FVScaleBitmaps(FontViewBase *fv,int32_t *sizes,int rasterize) {
    BDFFont *bdf, *scale;
-
    int i, cnt=0;
 
    for (i=0; sizes[i] != 0; ++i)
@@ -171,9 +165,7 @@ static void FVScaleBitmaps(FontViewBase *fv,int32_t *sizes,int rasterize) {
 static void ReplaceBDFC(SplineFont *sf,int32_t *sizes,int gid,
 			void *freetypecontext, int usefreetype, int layer) {
    BDFFont *bdf;
-
    BDFChar *bdfc, temp;
-
    int i;
 
    if (gid==-1 || gid >= sf->glyphcnt || sf->glyphs[gid]==NULL)
@@ -225,7 +217,7 @@ static int FVRegenBitmaps(CreateBitmapData *bd,int32_t *sizes,
    int i, j;
    BDFFont *bdf;
    void *freetypecontext=NULL;
-   
+
    for (i=0; sizes[i] != 0; ++i) {
       for (bdf=bdfsf->bitmaps;
 	   bdf != NULL && (bdf->pixelsize != (sizes[i] & 0xffff)
@@ -296,13 +288,10 @@ static void BDFClearGlyph(BDFFont *bdf,int gid,int pass) {
 
 static int FVRemoveBitmaps(CreateBitmapData *bd,int32_t *sizes) {
    FontViewBase *fv=bd->fv;
-
    SplineFont *sf=bd->sf, *bdfsf =
       sf->cidmaster != NULL ? sf->cidmaster : sf;
    int i, j, pass;
-
    BDFFont *bdf;
-
    int gid;
 
    /* The two passes are because we want to make sure any windows open on */

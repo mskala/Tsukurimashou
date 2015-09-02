@@ -1,4 +1,4 @@
-/* $Id: woff.c 4054 2015-06-25 11:15:19Z mskala $ */
+/* $Id: woff.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2010-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -83,13 +83,9 @@ static int decompressdata(AFILE *to,int off_to,AFILE *from,int off_from,
 			  int len, int uncomplen) {
    /* Return whether an error occurred */
    char in[CHUNK];
-
    char out[CHUNK];
-
    z_stream strm;
-
    int ret;
-
    int amount;
 
    afseek(to, off_to, SEEK_SET);
@@ -143,17 +139,11 @@ static int decompressdata(AFILE *to,int off_to,AFILE *from,int off_from,
 static int compressOrNot(AFILE *to,int off_to,AFILE *from,int off_from,
 			 int len, int forcecompress) {
    char in[CHUNK];
-
    char out[CHUNK];
-
    z_stream strm;
-
    int ret, err=0;
-
    int amount;
-
    AFILE *tmp;
-
    int uncompLen=len;
 
    /* Empty table, nothing to do */
@@ -225,29 +215,17 @@ static int compressOrNot(AFILE *to,int off_to,AFILE *from,int off_from,
 SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 			char *filename, struct fontdict * fd) {
    int flavour;
-
    int iscff;
-
    int len, len_stated;
-
    int num_tabs;
-
    int major, minor;
-
    int metaOffset, metaLenCompressed, metaLenUncompressed;
-
    int privOffset, privLength;
-
    int i, j, err;
-
    int tag, offset, compLen, uncompLen, checksum;
-
    AFILE *sfnt;
-
    int here, next, tab_start;
-
    int head_pos=-1;
-
    SplineFont *sf;
 
    afseek(woff, 0, SEEK_END);
@@ -372,7 +350,6 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 
    if (sf != NULL && metaOffset != 0) {
       char *temp=malloc(metaLenCompressed + 1);
-
       uLongf len=metaLenUncompressed;
 
       afseek(woff, metaOffset, SEEK_SET);
@@ -417,7 +394,6 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 	 minor=floor(1000. * (sf->cidversion - major));
       } else if (sf->version != NULL) {
 	 char *pt=sf->version;
-
 	 char *end;
 
 	 while (*pt && !isdigit(*pt) && *pt != '.')
@@ -501,9 +477,7 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 
    if (sf->woffMetadata != NULL) {
       int uncomplen=strlen(sf->woffMetadata);
-
       uLongf complen=2 * uncomplen;
-
       char *temp=malloc(complen + 1);
 
       newoffset=aftell(woff);
@@ -535,7 +509,6 @@ int WriteWOFFFont(char *fontname, SplineFont *sf, enum fontformat format,
 		  int32_t * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * enc, int layer) {
    AFILE *woff;
-
    int ret;
 
    if ((woff=afopen(fontname, "wb+"))==NULL)

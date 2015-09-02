@@ -1,4 +1,4 @@
-/* $Id: afile.c 4040 2015-06-20 14:03:08Z mskala $ */
+/* $Id: afile.c 4157 2015-09-02 07:55:07Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -104,7 +104,7 @@ off_t aftell(AFILE *f) {
 
 off_t afilesize(AFILE *f) {
    off_t saved,rval;
-   
+
    saved=aftell(f);
    if (afseek(f,0,SEEK_END)<0)
      return -1;
@@ -117,7 +117,7 @@ off_t afilesize(AFILE *f) {
 int agetc(AFILE *f) {
    size_t got;
    char c;
-   
+
    got=afread((void *)&c,sizeof(char),1,f);
    if (got!=1)
      return -1;
@@ -185,7 +185,7 @@ static int afprintf_buffer_size=0;
 int afprintf(AFILE *f,const char *r,...) {
   va_list args;
   int rval;
-  
+
   va_start(args,r);
   rval=avfprintf(f,r,args);
   va_end(args);
@@ -201,7 +201,7 @@ int avfprintf(AFILE *f,const char *r,va_list args) {
 	 afprintf_buffer=(char *)malloc(100);
 	 afprintf_buffer_size=100;
       }
-      
+
       va_copy(copied_args,args);
       size=vsnprintf(afprintf_buffer,afprintf_buffer_size,r,copied_args);
       va_end(copied_args);
@@ -217,7 +217,7 @@ int avfprintf(AFILE *f,const char *r,va_list args) {
 	 if (size<0) return size;
 	 if (size>afprintf_buffer_size) return -1;
       }
-      
+
       return f->vtbl->fwrite_fn(afprintf_buffer,1,size,f);
 
    } else
@@ -226,7 +226,7 @@ int avfprintf(AFILE *f,const char *r,va_list args) {
 
 static void skip_whitespace(AFILE *f) {
    int c;
-   
+
    while (1) {
       c=agetc(f);
       if ((c!=' ') && (c!='\f') && (c!='\n') &&
@@ -240,15 +240,15 @@ static void skip_whitespace(AFILE *f) {
 static double scan_double(AFILE *f,int *error) {
    double rval,fraction;
    int main_sign,exp_sign,exponent,c;
-   
+
    rval=0.0;
    fraction=1.0;
    main_sign=1;
    exp_sign=1;
    exponent=0;
-   
+
    *error=1;
-   
+
    /* sign */
    c=agetc(f);
    if (c=='-') {
@@ -256,7 +256,7 @@ static double scan_double(AFILE *f,int *error) {
       c=agetc(f);
    } else if (c=='+')
 	c=agetc(f);
-   
+
    /* digits before decimal point */
    while ((c>='0') && (c<='9')) {
       rval*=10.0;
@@ -264,7 +264,7 @@ static double scan_double(AFILE *f,int *error) {
       *error=0;
       c=agetc(f);
    }
-   
+
    if (c<0)
      return rval*main_sign;
    else if ((c!='.') && (c!='e') && (c!='E')) {
@@ -282,7 +282,7 @@ static double scan_double(AFILE *f,int *error) {
 	 *error=0;
 	 c=agetc(f);
       }
-      
+
       if (c<0)
 	return rval*main_sign;
       else if ((c!='e') && (c!='E')) {
@@ -290,9 +290,9 @@ static double scan_double(AFILE *f,int *error) {
 	 return rval*main_sign;
       }
    }
-   
+
    /* assertion:  c=='e' or c=='E' */
-   
+
    /* sign of exponent */
    c=agetc(f);
    *error=1;
@@ -301,7 +301,7 @@ static double scan_double(AFILE *f,int *error) {
       c=agetc(f);
    } else if (c=='+')
 	c=agetc(f);
-   
+
    /* exponent */
    while ((c>=0) && (c<='9')) {
       exponent*=10;
@@ -309,10 +309,10 @@ static double scan_double(AFILE *f,int *error) {
       *error=0;
       c=agetc(f);
    }
-   
+
    if (c>=0)
      aungetc(c,f);
-   
+
    return main_sign*rval*pow(10.0,exponent*exp_sign);
 }
 
@@ -325,13 +325,13 @@ int afscanf(AFILE *f,const char *r,...) {
    unsigned long read_uint;
    double read_double;
    char *read_cptr;
-   
+
    if ((!MAGICAL(f)) || (r==NULL))
      return -1;
-   
+
    va_start(args,r);
    rptr=r;
-   
+
    while (*rptr) {
       /* find a conversion specifier */
       switch (*rptr) {
@@ -344,12 +344,12 @@ int afscanf(AFILE *f,const char *r,...) {
 	  case 'l':
 	    modifier=*(rptr++);
 	    break;
-	    
+
 	  default:
 	    modifier='\0';
 	    break;
 	 }
-	 
+
 	 switch (*rptr) {
 	  case 'c':
 	  case 'd':
@@ -360,7 +360,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	  case 'x':
 	    convspec=*(rptr++);
 	    break;
-	    
+
 	  default:
 	    ErrorMsg(3,"Bad afscanf conversion specifier %c\n",*rptr);
 	    error=1;
@@ -368,7 +368,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	    break;
 	 }
 	 break;
-	 
+
        case ' ':
        case '\f':
        case '\n':
@@ -384,10 +384,10 @@ int afscanf(AFILE *f,const char *r,...) {
 	 modifier=*(rptr++);
 	 break;
       }
-      
+
       if (error)
 	break;
-      
+
       /* process the specifier */
       switch (convspec) {
        case 'c': /* character by code */
@@ -405,7 +405,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	    }
 	 }
 	 break;
- 
+
        case 'd': /* decimal int */
 	 skip_whitespace(f);
 	 error=1;
@@ -418,7 +418,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	    c=agetc(f);
 	 } else
 	   sign=1;
-	 
+
 	 read_int=0;
 	 while (1) {
 	    if ((c>='0') && (c<='9')) {
@@ -439,7 +439,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	     case '*':
 	       /* do nothing */
 	       break;
-	       
+
 	     case 'h':
 	       *(va_arg(args,short *))=read_int;
 	       rval++;
@@ -449,7 +449,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	       *(va_arg(args,long *))=read_int;
 	       rval++;
 	       break;
-	       
+
 	     default:
 	       *(va_arg(args,int *))=read_int;
 	       rval++;
@@ -457,7 +457,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	    }
 	 }
 	 break;
-	 
+
        case 'f':
        case 'g':
 	 skip_whitespace(f);
@@ -467,12 +467,12 @@ int afscanf(AFILE *f,const char *r,...) {
 	     case '*':
 	       /* do nothing */
 	       break;
-	       
+
 	     case 'l':
 	       *(va_arg(args,double *))=read_double;
 	       rval++;
 	       break;
-	       
+
 	     default:
 	       *(va_arg(args,float *))=read_double;
 	       rval++;
@@ -480,7 +480,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	    }
 	 }
 	 break;
-	 
+
        case 's': /* buffer overflow me harder */
 	 skip_whitespace(f);
 
@@ -494,7 +494,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	    rval=0;
 	    break;
 	 }
-	 
+
 	 error=1;
 	 while (1) {
 	    c=agetc(f);
@@ -508,19 +508,19 @@ int afscanf(AFILE *f,const char *r,...) {
 	       break;
 	    }
 	 }
-	 
+
 	 if (read_cptr && !error) {
 	    *(read_cptr)='\0';
 	    rval++;
 	 }
 
 	 break;
-	 
+
        case 'u': /* unsigned decimal int */
 	 skip_whitespace(f);
 	 error=1;
 	 read_uint=0;
-	 
+
 	 while (1) {
 	    c=agetc(f);
 	    if ((c>='0') && (c<='9')) {
@@ -549,7 +549,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	       *(va_arg(args,unsigned long *))=read_uint;
 	       rval++;
 	       break;
-	       
+
 	     default:
 	       *(va_arg(args,unsigned int *))=read_uint;
 	       rval++;
@@ -557,7 +557,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	    }
 	 }
 	 break;
-	 
+
        case 'x': /* signed hexadecimal integer */
 	 skip_whitespace(f);
 
@@ -571,13 +571,13 @@ int afscanf(AFILE *f,const char *r,...) {
 	    c=agetc(f);
 	 } else
 	   sign=1;
-	 
+
 	 if (c=='0') {
 	    c=agetc(f);
 	    if ((c=='x') || ('c'=='X'))
 	      c=agetc(f);
 	 }
-	 
+
 	 read_int=0;
 	 while (1) {
 	    if ((c>='0') && (c<='9')) {
@@ -608,7 +608,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	     case '*':
 	       /* do nothing */
 	       break;
-	       
+
 	     case 'h':
 	       *(va_arg(args,short *))=read_int;
 	       rval++;
@@ -618,7 +618,7 @@ int afscanf(AFILE *f,const char *r,...) {
 	       *(va_arg(args,long *))=read_int;
 	       rval++;
 	       break;
-	       
+
 	     default:
 	       *(va_arg(args,int *))=read_int;
 	       rval++;
@@ -626,11 +626,11 @@ int afscanf(AFILE *f,const char *r,...) {
 	    }
 	 }
 	 break;
-	 
+
        case ' ': /* skip whitespace */
 	 skip_whitespace(f);
 	 break;
-	 
+
        case '\0': /* search for literal char */
 	 c=agetc(f);
 	 if (c!=modifier) {
@@ -645,10 +645,10 @@ int afscanf(AFILE *f,const char *r,...) {
 	 rval=0;
 	 break;
       }
-      
+
       if (error) break;
    }
-   
+
    va_end(args);
    return (rval==0 && error)?-1:rval;
 }
@@ -659,7 +659,7 @@ ssize_t agetline(char **lineptr,size_t *buf_size,AFILE *f) {
 
    if (*lineptr==NULL)
      *buf_size=0;
-   
+
    while (1) {
       if (n+1>=*buf_size) {
 	 *buf_size=(5*n)/4;
@@ -671,12 +671,12 @@ ssize_t agetline(char **lineptr,size_t *buf_size,AFILE *f) {
 
       if (c<0)
 	break;
-      
+
       (*lineptr)[n++]=c;
       if (c=='\n')
 	break;
    }
-   
+
    (*lineptr)[n]='\0';
    return c>=0?n:-1;
 }
@@ -691,7 +691,7 @@ typedef struct _FP_AFILE {
 
 static int fp_fclose(AFILE *f) {
    int rval;
-   
+
    rval=fclose(((FP_AFILE *)f)->fp);
    f->magic=0;
    free(f);
@@ -749,7 +749,7 @@ AFILE *afopen(const char *filename,const char *mode) {
 
 AFILE *afpopen(FILE *fp) {
    FP_AFILE *rval;
-   
+
    if (fp==NULL)
      return NULL;
    rval=(FP_AFILE *)malloc(sizeof(FP_AFILE));
@@ -775,7 +775,7 @@ typedef struct _MEM_AFILE {
 
 static int mem_fclose(AFILE *f) {
    int rval;
-   
+
    free(((MEM_AFILE *)f)->buffer);
    ((MEM_AFILE *)f)->buffer=NULL;
    f->magic=0;
@@ -830,7 +830,7 @@ static int mem_fseek(AFILE *f,off_t offset,int whence) {
       return -1;
       break;
    }
-   
+
    if (((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->allocated)
      mem_resize((MEM_AFILE *)f,((MEM_AFILE *)f)->ptr);
    return 0;
@@ -860,7 +860,7 @@ static size_t mem_fread(void *ptr,size_t size,size_t nmemb,AFILE *f) {
       rsize/=size;
       rsize*=size;
    }
-   
+
    memcpy(ptr,((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr,rsize);
    ((MEM_AFILE *)f)->ptr+=rsize;
 
@@ -875,16 +875,16 @@ static size_t mem_fwrite(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
 
    if (((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->used)
      ((MEM_AFILE *)f)->used=((MEM_AFILE *)f)->ptr;
-   
+
    size*=nmemb;
    if (((MEM_AFILE *)f)->ptr+size>((MEM_AFILE *)f)->allocated)
      mem_resize((MEM_AFILE *)f,((MEM_AFILE *)f)->ptr+size);
-   
+
    memcpy(((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr,ptr,size);
    ((MEM_AFILE *)f)->ptr+=size;
    if (((MEM_AFILE *)f)->ptr>((MEM_AFILE *)f)->used)
      ((MEM_AFILE *)f)->used=((MEM_AFILE *)f)->ptr;
-   
+
    return nmemb;
 }
 
@@ -897,7 +897,7 @@ static int mem_ungetc(int c,AFILE *f) {
 
    if (((MEM_AFILE *)f)->used+2>((MEM_AFILE *)f)->allocated)
      mem_resize((MEM_AFILE *)f,((MEM_AFILE *)f)->used+2);
-   
+
    if (((MEM_AFILE *)f)->used>=((MEM_AFILE *)f)->ptr)
      memmove(((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr+1,
 	     ((MEM_AFILE *)f)->buffer+((MEM_AFILE *)f)->ptr,
@@ -905,7 +905,7 @@ static int mem_ungetc(int c,AFILE *f) {
 
    ((MEM_AFILE *)f)->buffer[((MEM_AFILE *)f)->ptr]=c;
    ((MEM_AFILE *)f)->used++;
-   
+
    return (unsigned char)c;
 }
 
@@ -916,7 +916,7 @@ static AFILE_VTBL mem_afile_vtbl={
 
 AFILE *atmpfile(void) {
    MEM_AFILE *rval;
-   
+
    rval=(MEM_AFILE *)malloc(sizeof(MEM_AFILE));
    if (rval==NULL)
      return NULL;
@@ -980,7 +980,7 @@ static size_t psob_fread(void *ptr,size_t size,size_t nmemb,AFILE *f) {
 static size_t psob_bin_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
    size_t i,rval,rrval;
    uint8_t cypher;
-   
+
    rval=0;
    for (i=0;i<size*nmemb;i++) {
       cypher=((const uint8_t *)ptr)[i]^(((PSOB_AFILE *)f)->r>>8);
@@ -1000,12 +1000,12 @@ static size_t psob_bin_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) 
 static size_t psob_hex_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
    size_t i,rval,rrval;
    uint8_t cypher,ch[2];
-   
+
    rval=0;
    for (i=0;i<size*nmemb;i++) {
       cypher=((const uint8_t *)ptr)[i]^(((PSOB_AFILE *)f)->r>>8);
       ((PSOB_AFILE *)f)->r=(cypher+((PSOB_AFILE *)f)->r)*c1+c2;
-      
+
       ch[0]=cypher>>4;
       if (ch[0]<=9)
 	ch[0]+='0';
@@ -1017,7 +1017,7 @@ static size_t psob_hex_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) 
 	ch[1]+='0';
       else
 	ch[1]+=('A'-10);
-      
+
       rrval=afwrite(&ch,1,2,((PSOB_AFILE *)f)->inner);
 
       if (rrval==2) {
@@ -1056,24 +1056,23 @@ static AFILE_VTBL psob_hex_afile_vtbl={
 
 AFILE *ps_obfuscated_afile(AFILE *f,int dobinary) {
    static uint8_t randombytes[4]={0xAA,0x55,0x3E,0x4D};
-
    PSOB_AFILE *rval;
 
    if (!MAGICAL(f))
      return NULL;
-   
+
    randombytes[0] += 3;
    randombytes[1] += 5;
    randombytes[2] += 7;
    randombytes[3] += 11;
-   
+
    rval=(PSOB_AFILE *)malloc(sizeof(PSOB_AFILE));
    rval->magic=PSOB_MAGIC;
    rval->vtbl=dobinary?&psob_bin_afile_vtbl:&psob_hex_afile_vtbl;
    rval->inner=f;
    rval->r=55665;
    rval->hexline=0;
-   
+
    if (dobinary) {
       uint16_t r;
       uint8_t cypher;
@@ -1129,16 +1128,16 @@ typedef struct _B85_AFILE {
 
 static size_t b85_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
    size_t i,rval,rrval;
-   
+
    rval=0;
    for (i=0;i<size*nmemb;i++) {
-      
+
       ((B85_AFILE *)f)->ascii85encode=
 	(((B85_AFILE *)f)->ascii85encode<<8)|((uint8_t *)ptr)[i];
       if (++(((B85_AFILE *)f)->ascii85n)==4) {
 	 int ch5,ch4,ch3,ch2,ch1;
 	 uint32_t val=((B85_AFILE *)f)->ascii85encode;
-	 
+
 	 if (val==0) {
 	    if (aputc('z',((B85_AFILE *)f)->inner)<0)
 	      break;
@@ -1148,7 +1147,7 @@ static size_t b85_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
 		 break;
 	       ((B85_AFILE *)f)->ascii85bytes_per_line=0;
 	    }
-	    
+
 	 } else {
 	    ch5=val%85;
 	    val/=85;
@@ -1173,7 +1172,7 @@ static size_t b85_write(const void *ptr,size_t size,size_t nmemb,AFILE *f) {
 	 rval++;
       }
    }
-   
+
    if ((rval==0) && (size*nmemb>0))
      rval=-1;
    return rval;
@@ -1184,7 +1183,7 @@ static int b85_fclose(AFILE *f) {
    int n=((B85_AFILE *)f)->ascii85n;
    int ch5,ch4,ch3,ch2,ch1;
    int rval=0;
-   
+
    if (n!=0) {      
       while (n++<4)
 	val<<=8;
@@ -1224,14 +1223,14 @@ AFILE *base85_afile(AFILE *f) {
 
    if (!MAGICAL(f))
      return NULL;
-   
+
    rval=(B85_AFILE *)malloc(sizeof(B85_AFILE));
    rval->ascii85encode=0;
    rval->ascii85n=0;
    rval->ascii85bytes_per_line=0;
    rval->magic=B85_MAGIC;
    rval->vtbl=&b85_afile_vtbl;
-   
+
    return (AFILE *)rval;
 }
 

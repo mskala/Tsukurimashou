@@ -1,4 +1,4 @@
-/* $Id: is_LIGATURE.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: is_LIGATURE.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* This is a generated file. */
 
 #include <stdlib.h>
@@ -67,7 +67,6 @@ static unsigned int matching_codepoints[528]={
 
 static int compare_codepoints(const void *codepoint1,const void *codepoint2) {
    const unsigned int *cp1=(const unsigned int *) codepoint1;
-
    const unsigned int *cp2=(const unsigned int *) codepoint2;
 
    return ((*cp1 < *cp2) ? -1 : ((*cp1==*cp2) ? 0 : 1));

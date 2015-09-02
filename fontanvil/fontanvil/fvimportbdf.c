@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: fvimportbdf.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -36,9 +36,7 @@
 
 static char *cleancopy(char *name) {
    char *fpt, *tpt;
-
    char *temp=NULL;
-
    char buf[200];
 
    fpt=tpt=name;
@@ -68,7 +66,6 @@ static char *cleancopy(char *name) {
 
    if (*name=='\0') {
       char buffer[20];
-
       static int unique=0;
 
       sprintf(buffer, "$u%d", ++unique);
@@ -115,9 +112,7 @@ from The Open Group.
 void SFDefaultAscent(SplineFont *sf) {
    if (sf->onlybitmaps) {
       double scaled_sum=0, cnt=0;
-
       int em=sf->ascent + sf->descent;
-
       BDFFont *b;
 
       for (b=sf->bitmaps; b != NULL; b=b->next) {
@@ -134,7 +129,6 @@ void SFDefaultAscent(SplineFont *sf) {
 
 static int gettoken(AFILE *bdf,char *tokbuf,int size) {
    char *pt=tokbuf, *end=tokbuf + size - 2;
-
    int ch;
 
    while (isspace(ch=agetc(bdf)));
@@ -177,7 +171,6 @@ static void ExtendSF(SplineFont *sf,EncMap *map,int enc,int set) {
 static SplineChar *MakeEncChar(SplineFont *sf,EncMap *map,int enc,
 			       char *name) {
    int uni;
-
    SplineChar *sc;
 
    ExtendSF(sf, map, enc, false);
@@ -242,7 +235,6 @@ static int figureProperEncoding(SplineFont *sf,EncMap *map,BDFFont *b,
    if (i==-1 || i >= map->enccount) {
       /* try adding it to the end of the font */
       int j;
-
       int encmax=map->enc->char_cnt;
 
       for (j=map->enccount - 1; j >= encmax &&
@@ -298,17 +290,12 @@ struct metrics {
 static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
 		       int depth, struct metrics *defs, Encoding * encname) {
    BDFChar *bc;
-
    char name[40], tok[100];
-
    int enc=-1, width=defs->dwidth, xmin=0, xmax=0, ymin=0, ymax =
       0, hsz, vsz;
    int swidth=defs->swidth, swidth1=defs->swidth1;
-
    int vwidth=defs->dwidth1;
-
    int i, ch;
-
    uint8_t *pt, *end, *eol;
 
    gettoken(bdf, name, sizeof(tok));
@@ -456,7 +443,6 @@ static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
 
 static Encoding *BDFParseEnc(char *encname,int encoff) {
    Encoding *enc;
-
    char buffer[200];
 
    enc=NULL;
@@ -548,15 +534,10 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 			struct metrics *defs, int *upos, int *uwidth,
 			BDFFont * dummy, char *filename) {
    int pixelsize=-1, pixel_size2=-1, point_size=-1;
-
    int ascent=-1, descent=-1, enc, cnt;
-
    char tok[100], encname[100], weight[100], italic[100], buffer[300], *buf;
-
    int found_copyright=0;
-
    int inprops=false;
-
    int pcnt=0, pmax=0;
 
    *depth=1;
@@ -592,7 +573,6 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
       buf=buffer;
       {
 	 int val;
-
 	 char *end, *eol;
 
 	 if (pcnt >= pmax)
@@ -630,7 +610,6 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 	     (buf, "-%*[^-]-%99[^-]-%99[^-]-%99[^-]-%*[^-]-", family, weight,
 	      italic) != 0) {
 	    char *pt=buf;
-
 	    int dcnt=0;
 
 	    while (*pt=='-' && dcnt < 7) {
@@ -730,7 +709,6 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 	 found_copyright=true;
       } else if (strcmp(tok, "COMMENT")==0 && !found_copyright) {
 	 char *pt=comments + strlen(comments);
-
 	 char *eoc=comments + 1000 - 1;	/* ...here */
 
 	 strncpy(pt, buf, eoc - pt);
@@ -800,9 +778,7 @@ enum gf_cmd { gf_paint_0=0, gf_paint_1=1, gf_paint_63=63,
 
 static BDFChar *SFGrowTo(SplineFont *sf,BDFFont *b,int cc,EncMap *map) {
    char buf[20];
-
    int gid;
-
    BDFChar *bc;
 
    if (cc >= map->enccount) {
@@ -850,11 +826,8 @@ static BDFChar *SFGrowTo(SplineFont *sf,BDFFont *b,int cc,EncMap *map) {
 
 static void gf_skip_noops(AFILE *gf,char *char_name) {
    uint8_t cmd;
-
    int32_t val;
-
    int i;
-
    char buffer[257];
 
    if (char_name)
@@ -924,15 +897,10 @@ static int gf_postamble(AFILE *gf,int *_as,int *_ds,Encoding ** _enc,
 			char *family, char *mods, char *full,
 			char *filename) {
    int pixelsize=-1;
-
    int ch;
-
    int design_size, pixels_per_point;
-
    double size;
-
    char *pt, *fpt;
-
    int32_t pos, off;
 
    afseek(gf, -4, SEEK_END);
@@ -986,17 +954,11 @@ static int gf_postamble(AFILE *gf,int *_as,int *_ds,Encoding ** _enc,
 
 static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
    int32_t pos, to;
-
    int ch, enc, dx, dy, aw;
-
    int min_c, max_c, min_r, max_r, w;
-
    int r, c, col, cnt, i;
-
    int gid;
-
    BDFChar *bc;
-
    char charname[256];
 
    /* We assume we are positioned within the postamble. we read one char_loc */
@@ -1123,9 +1085,7 @@ enum pk_cmd { pk_rrr1 =
 };
 static void pk_skip_noops(AFILE *pk) {
    uint8_t cmd;
-
    int32_t val;
-
    int i;
 
    while (1) {
@@ -1177,13 +1137,9 @@ static void pk_skip_noops(AFILE *pk) {
 static int pk_header(AFILE *pk,int *_as,int *_ds,Encoding ** _enc,
 		     char *family, char *mods, char *full, char *filename) {
    int pixelsize=-1;
-
    int ch, i;
-
    int design_size, pixels_per_point;
-
    double size;
-
    char *pt, *fpt;
 
    pk_skip_noops(pk);
@@ -1264,19 +1220,12 @@ static int pkgetcount(AFILE *pk,struct pkstate *st) {
 
 static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
    int flag=agetc(pk);
-
    int black, size_is_2;
-
    int pl, cc, tfm, w, h, hoff, voff, dm, dx, dy;
-
    int i, ch, j, r, c, cnt;
-
    int gid;
-
    BDFChar *bc;
-
    struct pkstate st;
-
    int32_t char_end;
 
    memset(&st, '\0', sizeof(st));
@@ -1540,7 +1489,6 @@ static int getformint16(AFILE *file,int format) {
 
 static struct toc *pcfReadTOC(AFILE *file) {
    int cnt, i;
-
    struct toc *toc;
 
    if (getint32(file) != PCF_FILE_VERSION)
@@ -1623,13 +1571,9 @@ static int pcf_properties(AFILE *file,struct toc *toc,int *_as,int *_ds,
 			  Encoding ** _enc, char *family, char *mods,
 			  char *full, BDFFont * dummy, char *filename) {
    int pixelsize=-1, point_size=-1, res=-1;
-
    int ascent=-1, descent=-1, enc=0;
-
    char encname[101], weight[101], italic[101];
-
    int cnt, i, format, strl, dash_cnt;
-
    struct props {
       int name_offset;
       int isStr;
@@ -1637,7 +1581,6 @@ static int pcf_properties(AFILE *file,struct toc *toc,int *_as,int *_ds,
       char *name;
       char *value;
    } *props;
-
    char *strs, *pt;
 
    family[0]='\0';
@@ -1765,7 +1708,6 @@ static int pcf_properties(AFILE *file,struct toc *toc,int *_as,int *_ds,
 static struct pcfmetrics *pcfGetMetricsTable(AFILE *file,struct toc *toc,
 					     int which, int *metrics_cnt) {
    int format, cnt, i;
-
    struct pcfmetrics *metrics;
 
    if (!pcfSeekToType(file, toc, which))
@@ -1856,11 +1798,8 @@ static void FourByteSwap(uint8_t *bitmap,int sizebitmaps) {
 
 static int PcfReadBitmaps(AFILE *file,struct toc *toc,BDFFont *b) {
    int format, cnt, i, sizebitmaps, j;
-
    int *offsets;
-
    uint8_t *bitmap;
-
    int bitmapSizes[GLYPHPADOPTIONS];
 
    if (!pcfSeekToType(file, toc, PCF_BITMAPS))
@@ -1906,7 +1845,6 @@ static int PcfReadBitmaps(AFILE *file,struct toc *toc,BDFFont *b) {
 
       for (i=0; i < cnt; ++i) {
 	 BDFChar *bc=b->glyphs[i];
-
 	 int bpl=((bc->bytes_per_line + pad - 1) / pad) * pad;
 
 	 for (j=bc->ymin; j <= bc->ymax; ++j)
@@ -1924,11 +1862,8 @@ static void PcfReadEncodingsNames(AFILE *file,struct toc *toc,
 				  SplineFont *sf, EncMap * map, BDFFont * b,
 				  Encoding * encname) {
    int format, cnt, i, stringsize;
-
    int *offsets=NULL;
-
    char *string=NULL;
-
    int *encs;
 
    encs=malloc(b->glyphcnt * sizeof(int));
@@ -2012,13 +1947,10 @@ static int PcfReadSWidths(AFILE *file,struct toc *toc,BDFFont *b) {
 static int PcfParse(AFILE *file,struct toc *toc,SplineFont *sf,
 		    EncMap * map, BDFFont * b, Encoding * encname) {
    int metrics_cnt;
-
    struct pcfmetrics *metrics =
       pcfGetMetricsTable(file, toc, PCF_METRICS, &metrics_cnt);
    int mcnt=metrics_cnt;
-
    BDFChar **new, **mult;
-
    int i, multcnt;
 
    if (metrics==NULL)
@@ -2087,11 +2019,8 @@ static int PcfParse(AFILE *file,struct toc *toc,SplineFont *sf,
 
 static int askusersize(char *filename) {
    char *pt;
-
    int guess;
-
    char *ret, *end;
-
    char def[10];
 
    for (pt=filename; *pt && !isdigit(*pt); ++pt);
@@ -2116,7 +2045,6 @@ static int askusersize(char *filename) {
 
 static int alreadyexists(int pixelsize) {
    int ret;
-
    char *buts[3];
 
    buts[0]=_("_OK");
@@ -2129,9 +2057,7 @@ static int alreadyexists(int pixelsize) {
 static void BDFForceEnc(SplineFont *sf,EncMap *map) {
 /* jisx0208, jisx0212, ISO10646, ISO8859 */
    int i;
-
    BDFFont *bdf=sf->bitmaps;
-
    static struct bdf_2_ff_enc {
       char *bdf, *ff;
    } bdf_2_ff_enc[]={
@@ -2145,7 +2071,6 @@ static void BDFForceEnc(SplineFont *sf,EncMap *map) {
       NULL, NULL}
    };
    char *fn, *pt;
-
    Encoding *enc;
 
    for (i=0; i < bdf->prop_cnt; ++i)
@@ -2173,9 +2098,7 @@ static void BDFForceEnc(SplineFont *sf,EncMap *map) {
 
 void SFSetFontName(SplineFont *sf, char *family, char *mods, char *fullname) {
    char *full;
-
    char *n;
-
    char *pt, *tpt;
 
    n=malloc(strlen(family) + strlen(mods) + 2);
@@ -2506,7 +2429,6 @@ static BDFFont *_SFImportBDF(SplineFont *sf,char *filename,int ispk,
 
 static void SFSetupBitmap(SplineFont *sf,BDFFont *strike,EncMap *map) {
    int i;
-
    SplineChar *sc;
 
    strike->sf=sf;
@@ -2573,13 +2495,9 @@ static void SFAddToBackground(SplineFont *sf,BDFFont *bdf);
 
 int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
    BDFFont *b, *anyb=NULL;
-
    char buf[300];
-
    char *eod, *fpt, *file, *full;
-
    int fcnt, any=0;
-
    int oldenccnt=fv->map->enccount;
 
    eod=strrchr(filename, '/');
@@ -2634,7 +2552,6 @@ static void SFAddToBackground(SplineFont *sf,BDFFont *bdf) {
    int i;
    SplineChar *sc;
    BDFChar *bdfc;
-
    real scale =
       (sf->ascent + sf->descent) / (double) (bdf->ascent + bdf->descent);
    real yoff=sf->ascent - bdf->ascent * scale;
@@ -2677,9 +2594,7 @@ static void SFAddToBackground(SplineFont *sf,BDFFont *bdf) {
 
 int FVImportMult(FontViewBase * fv, char *filename, int toback, int bf) {
    SplineFont *strikeholder, *sf=fv->sf;
-
    BDFFont *strikes;
-
    char buf[300];
 
    snprintf(buf, sizeof(buf), _("Loading font from %.100s"), filename);
@@ -2716,9 +2631,7 @@ int FVImportMult(FontViewBase * fv, char *filename, int toback, int bf) {
 
 SplineFont *SFFromBDF(char *filename, int ispk, int toback) {
    SplineFont *sf=SplineFontBlank(256);
-
    EncMap *map=EncMapNew(256, 256, &custom);
-
    BDFFont *bdf;
 
    sf->onlybitmaps=true;
@@ -2739,15 +2652,10 @@ void SFCheckPSBitmap(SplineFont *sf) {
    /*  (and make sure all bitmaps are the same size */
    /* If so, create a bitmap version of the font too */
    int i, j;
-
    SplineChar *sc;
-
    ImageList *il=NULL;
-
    double scale=0;
-
    BDFFont *bdf;
-
    BDFChar *bdfc;
 
    struct _GImage *base;

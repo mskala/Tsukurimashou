@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: cvexport.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -77,15 +77,10 @@ static void EpsGeneratePreview(AFILE *eps,SplineChar *sc,int layer,
 
 int _ExportEPS(AFILE *eps, SplineChar * sc, int layer, int preview) {
    DBounds b;
-
    time_t now;
-
    struct tm *tm;
-
    int ret;
-
    char oldloc[24];
-
    const char *author=GetAuthor();
 
    strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
@@ -145,7 +140,6 @@ int _ExportEPS(AFILE *eps, SplineChar * sc, int layer, int preview) {
 
 static int ExportEPS(char *filename,SplineChar *sc,int layer) {
    AFILE *eps;
-
    int ret;
 
    eps=afopen(filename, "w");
@@ -160,21 +154,13 @@ static int ExportEPS(char *filename,SplineChar *sc,int layer) {
 int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
 /* TODO: Note, maybe this routine can be combined with print.c dump_pdfprologue() */
    DBounds b;
-
    time_t now;
-
    struct tm *tm;
-
    int ret;
-
    char oldloc[24];
-
    int _objlocs[8], xrefloc, streamstart, streamlength, resid, nextobj;
-
    int *objlocs=_objlocs;
-
    const char *author=GetAuthor();
-
    int i;
 
    SFUntickAll(sc->parent);
@@ -261,7 +247,6 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
    nextobj=7;
    if (sc->parent->multilayer) {
       PI pi;
-
       int resobj;
 
       memset(&pi, 0, sizeof(pi));
@@ -304,7 +289,6 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
 
 static int ExportPDF(char *filename,SplineChar *sc,int layer) {
    AFILE *eps;
-
    int ret;
 
    eps=afopen(filename, "w");
@@ -319,13 +303,9 @@ static int ExportPDF(char *filename,SplineChar *sc,int layer) {
 
 int _ExportPlate(AFILE *plate, SplineChar * sc, int layer) {
    char oldloc[24];
-
    int do_open;
-
    SplineSet *ss;
-
    spiro_cp *spiros;
-
    int i, ret;
 
    strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
@@ -367,7 +347,6 @@ int _ExportPlate(AFILE *plate, SplineChar * sc, int layer) {
 
 static int ExportPlate(char *filename,SplineChar *sc,int layer) {
    AFILE *plate;
-
    int ret;
 
    plate=afopen(filename, "w");
@@ -381,7 +360,6 @@ static int ExportPlate(char *filename,SplineChar *sc,int layer) {
 
 static int ExportSVG(char *filename,SplineChar *sc,int layer) {
    AFILE *svg;
-
    int ret;
 
    svg=afopen(filename, "w");
@@ -395,7 +373,6 @@ static int ExportSVG(char *filename,SplineChar *sc,int layer) {
 
 static int ExportGlif(char *filename,SplineChar *sc,int layer) {
    AFILE *glif;
-
    int ret;
 
    glif=afopen(filename, "w");
@@ -413,11 +390,8 @@ static void FigDumpPt(AFILE *fig,BasePoint *me,real scale,real ascent) {
 
 static void FigSplineSet(AFILE *fig,SplineSet *spl,int spmax,int asc) {
    SplinePoint *sp;
-
    int cnt;
-
    real scale=7 * 1200.0 / spmax;
-
    real ascent=11 * 1200 * asc / spmax;
 
    while (spl != NULL) {
@@ -596,11 +570,8 @@ int BCExportXBM(char *filename, BDFChar * bdfc, int format) {
 static void MakeExportName(char *buffer,int blen,char *format_spec,
 			   SplineChar * sc, EncMap * map) {
    char *end=buffer + blen - 3;
-
    char *pt, *bend;
-
    char unicode[8];
-
    int ch;
 
    while (*format_spec && buffer < end) {

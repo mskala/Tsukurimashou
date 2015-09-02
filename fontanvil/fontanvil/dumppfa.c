@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4071 2015-06-29 09:11:43Z mskala $ */
+/* $Id: dumppfa.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -450,7 +450,6 @@ static void dumpGradient(AFILE *f,
 	 aputc('\n',f);
 	 for (i=0; i <= 100; ++i) {
 	    int col;
-
 	    double t=grad->grad_stops[0].offset +
 	       (grad->grad_stops[grad->stop_cnt - 1].offset -
 		grad->grad_stops[0].offset) * i / 100.0;
@@ -632,7 +631,7 @@ static void PSDumpBinaryData(AFILE *f,uint8_t *bytes,int rows,
    AFILE *ps;
    int i,j,cnt,group_cnt;
    const int max_string=65536;
-   
+
    if (useful_bytes_per_row * rows < max_string) {
       /* It all fits in one string. Easy peasy */
       afputs("{<~",f);
@@ -773,7 +772,6 @@ static void PSBuildImageIndexDict(AFILE *f,struct _GImage *base) {
 }
 
 static void PSDrawImg(AFILE *f,struct _GImage *base) {
-
    if (base->image_type==it_index) {
       PSSetIndexColors(f, base->clut);
       PSBuildImageIndexDict(f, base);
@@ -1005,7 +1003,6 @@ void SC_PSDump(AFILE *f,
       }
       if (sc->layers[i].images != NULL) {
 	 ImageList *img;
-
 	 int icnt=0;
 
 	 afputs(pdfopers?"q\n":"gsave\n",f);
@@ -1670,7 +1667,6 @@ static void dumpfontinfo(AFILE *f,
    }
    if (format==ff_mma || format==ff_mmb) {
       MMSet *mm=sf->mm;
-
       int j, k;
 
       afputs(" /BlendDesignPositions [",f);
@@ -1730,9 +1726,7 @@ static void dumpfontcomments(AFILE *f, SplineFont *sf, int format) {
       afprintf(f,"%%%%LanguageLevel: 3\n");
    else if (sf->multilayer && format==ff_ptype3) {
       int gid, ly;
-
       SplineChar *sc;
-
       int had_pat=0, had_grad=0;
 
       for (gid=0; gid < sf->glyphcnt; ++gid)
@@ -1983,7 +1977,7 @@ static void dumpencodedstuff(AFILE *f,SplineFont *sf, int format,
    AFILE *obfs;
 
    obfs=ps_obfuscated_afile(f,(format==ff_pfb)||(format==ff_mmb));
-   
+
    dumpprivatestuff(obfs,sf,NULL,flags,format,map,layer);
    if (format==ff_ptype0) {
       aputc('/',obfs);

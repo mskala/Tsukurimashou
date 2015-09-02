@@ -1,4 +1,4 @@
-/* $Id: dumpbdf.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: dumpbdf.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -47,9 +47,7 @@ static void calculate_bounding_box(BDFFont *font,
 				   int *fbb_width, int *fbb_height,
 				   int *fbb_lbearing, int *fbb_descent) {
    int minx=0, maxx=0, miny=0, maxy=0;
-
    BDFChar *bdfc;
-
    int i;
 
    for (i=0; i < font->glyphcnt; ++i) {
@@ -94,11 +92,8 @@ static void BDFDumpChar(AFILE *file,BDFFont *font,BDFChar *bdfc,int enc,
 			EncMap * map, int *dups,
 			struct metric_defaults *defs) {
    int r, c;
-
    int bpl;
-
    int em=(font->sf->ascent + font->sf->descent);	/* Just in case em isn't 1000, be prepared to normalize */
-
    int isdup=false;
 
    BCCompressBitmap(bdfc);
@@ -131,7 +126,6 @@ static void BDFDumpChar(AFILE *file,BDFFont *font,BDFChar *bdfc,int enc,
       for (c=0; c < bpl; ++c) {
 	 if (font->clut==NULL || font->clut->clut_len==256) {
 	    int n1=bdfc->bitmap[r * bdfc->bytes_per_line + c] >> 4;
-
 	    int n2=bdfc->bitmap[r * bdfc->bytes_per_line + c] & 0xf;
 
 	    if (n1 >= 10)
@@ -172,9 +166,7 @@ static void BDFDumpChar(AFILE *file,BDFFont *font,BDFChar *bdfc,int enc,
 
 static void figureDefMetrics(BDFFont *font,struct metric_defaults *defs) {
    int i, maxi;
-
    int width[256], vwidth[256];
-
    BDFChar *wsc[256], *vsc[256], *bdfc;
 
    defs->metricssets=MS_Hor | MS_Vert;
@@ -268,19 +260,12 @@ static void BPSet(BDFFont *font,char *key,int *val,double scale,
 static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
 			  int res, struct metric_defaults *defs) {
    char temp[200];
-
    int fbb_height, fbb_width, fbb_descent, fbb_lbearing;
-
    int pcnt;
-
    int em=font->sf->ascent + font->sf->descent;
-
    int i;
-
    struct xlfd_components components;
-
    int old_prop_cnt=font->prop_cnt;
-
    int resolution_mismatch=false;
 
    if (old_prop_cnt==0)
@@ -460,19 +445,12 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
 
 int BDFFontDump(char *filename, BDFFont * font, EncMap * map, int res) {
    char buffer[300];
-
    AFILE *file;
-
    int i, enc, gid;
-
    int ret=0;
-
    char *encodingname=EncodingName(map->enc);
-
    int dups=0;
-
    struct metric_defaults defs;
-
    BDFChar *bdfc;
 
    for (i=0; i < map->enccount; i++)

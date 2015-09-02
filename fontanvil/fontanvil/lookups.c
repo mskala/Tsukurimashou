@@ -1,4 +1,4 @@
-/* $Id: lookups.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: lookups.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1621,11 +1621,8 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 	 fl=otl->features;
       if (fl != NULL && fl->scripts != NULL) {
 	 char buf[8];
-
 	 int j;
-
 	 struct scriptlanglist *sl, *found, *found2;
-
 	 uint32_t script_tag=fl->scripts->script;
 
 	 found=found2=NULL;
@@ -2560,7 +2557,6 @@ int FeatureOrderId(int isgpos, FeatureScriptLangList * fl) {
 void SortInsertLookup(SplineFont *sf, OTLookup * newotl) {
    int isgpos=newotl->lookup_type >= gpos_start;
    int pos;
-
    OTLookup *prev, *otl;
 
    pos=FeatureOrderId(isgpos, newotl->features);
@@ -2718,10 +2714,8 @@ static int NeedsPrefix(SplineFont *into_sf,SplineFont *from_sf,
 struct lookup_data {
    struct opentype_str *str;
    int cnt, max;
-
    uint32_t script;
    SplineFont *sf;
-
    struct lookup_subtable *lig_owner;
    int lcnt, lmax;
    SplineChar ***ligs;		/* For each ligature we have an array of SplineChars that are its components preceded by the ligature glyph itself */
@@ -3242,7 +3236,6 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	    for (i=bskipglyphs(lookup_flags, data, pos - 1), cpos=0;
 		 i >= 0; i=bskipglyphs(lookup_flags, data, i - 1)) {
 	       char *name=data->str[i].sc->name;
-
 	       int len=strlen(name);
 
 	       if (strncmp(name, pt, len) != 0
@@ -3285,7 +3278,6 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	 for (i=pos, cpos=0; i < data->cnt && *pt != '\0';
 	      i=skipglyphs(lookup_flags, data, i + 1)) {
 	    char *name=data->str[i].sc->name;
-
 	    int len=strlen(name);
 
 	    if (strncmp(name, pt, len) != 0
@@ -3344,7 +3336,6 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	    for (i=retpos; i < data->cnt && *pt != '\0';
 		 i=skipglyphs(lookup_flags, data, i + 1)) {
 	       char *name=data->str[i].sc->name;
-
 	       int len=strlen(name);
 
 	       if (strncmp(name, pt, len) != 0
@@ -4019,7 +4010,6 @@ static void doreplace(char **haystack,char *start,char *search,char *rpl,
       }
    } else {
       char *base=*haystack;
-
       char *new=malloc(pt - base + strlen(pt) + rlen - slen + 1);
 
       memcpy(new, base, start - base);

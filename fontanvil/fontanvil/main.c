@@ -1,4 +1,5 @@
-/* $Id: main.c 4019 2015-06-14 17:52:39Z mskala $ */
+
+/* $Id: main.c 4155 2015-09-02 07:43:27Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
  * Copyright (C) 2014, 2015  Matthew Skala
@@ -53,7 +54,7 @@ int main(int argc,char **argv) {
    char *command=NULL;
    char **new_argv;
    int show_version=0,show_help=0,is_interactive=1;
-   
+
    /* init things that must be ready before command line handling */
    /* FIXME: are these really needed so early?  or at all? */
    InitSimpleStuff();
@@ -116,7 +117,7 @@ int main(int argc,char **argv) {
       if (is_interactive)
 	puts("\nUse \"Quit()\" or end-of-file to exit the interpreter.");
    }
-   
+
    if (show_help) {
       puts("Usage: " PACKAGE_TARNAME " [OPTION]... [SCRIPT] [ARGUMENT]...\n\n"
 	   "Options:\n"
@@ -128,10 +129,10 @@ int main(int argc,char **argv) {
 	   "  -h, --help, --usage    display this help\n"
 	   "  -v, --version          display version and copyright");
    }
-   
+
    if (show_version || show_help)
      exit(0);
-   
+
    /* init things that are only needed when we get past command-line help */
 #ifdef HAVE_FESETROUND
    fesetround(FE_TONEAREST);
@@ -150,14 +151,14 @@ int main(int argc,char **argv) {
      ExecuteScriptCommandsInteractively(argc-optind-1,argv+optind+1);
    else
      ExecuteScriptFile(argv[optind],argc-optind-1,argv+optind+1);
-   
+
    /* clean up */
    /* FIXME this is dead code in FontForge, do we really need it after all? */
 #ifndef _NO_LIBUNICODENAMES
    uninm_names_db_close(names_db);      /* close this database before exiting */
    uninm_blocks_db_close(blocks_db);
 #endif
-   
+
    /* successful exit */
    return 0;
 }

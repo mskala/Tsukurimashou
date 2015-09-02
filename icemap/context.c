@@ -89,7 +89,7 @@ void handle_closing_brace(PARSER_STATE *ps) {
    
    /* only write out the map if we aren't a parent */
    if (context_stack->leaves==0) {
-   
+
       /* first, attempt whatever the user asked for */
       if (context_stack->generator!=NULL)
 	context_stack->generator(context_stack);
@@ -123,7 +123,11 @@ void handle_closing_brace(PARSER_STATE *ps) {
 	gen_basic_array(context_stack);
       
       if (context_stack->generator==NULL) {
-	 parse_error(ps,"no code generator for these data types");
+	 if (context_stack->am.num_arrows==0)
+	   parse_error(ps,"no arrows in map (%s)",context_stack->id);
+	 else
+	   parse_error(ps,"no code generator for these data types (%s)",
+		       context_stack->id);
 	 close_output_files();
 	 exit(1);
       }

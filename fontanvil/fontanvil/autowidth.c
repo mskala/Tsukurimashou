@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: autowidth.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -82,11 +82,8 @@ Autokern has similar ideas, but is simpler:
 
 static void AW_AutoKern(WidthInfo *wi) {
    struct charpair *cp;
-
    SplineChar *lsc, *rsc;
-
    int i, diff;
-
    KernPair *kp;
 
    for (i=0; i < wi->pcnt; ++i) {
@@ -123,7 +120,6 @@ static void AW_AutoKern(WidthInfo *wi) {
 
 static real SplineFindMinXAtY(Spline *spline,real y,real min) {
    extended t, t1, t2, tbase, val;
-
    Spline1D *xsp;
 
    if (y > spline->from->me.y && y > spline->from->nextcp.y &&
@@ -187,9 +183,7 @@ static void PtFindEdges(real x,real y,struct charone *ch,WidthInfo *wi) {
 static void SplineFindEdges(Spline *spline,struct charone *ch,
 			    WidthInfo * wi) {
    Spline1D *xsp, *ysp;
-
    extended t1, t2;
-
    double t, toff, ymin, ymax;
 
    /* first try the end points */
@@ -252,7 +246,6 @@ static real SSFindMinXAtY(SplineSet *spl,real y,real min) {
 static real SSIsMinXAtYCurved(SplineSet *spl,real y,real oldmin,
 			      int *curved) {
    Spline *sp, *first;
-
    real min;
 
    while (spl != NULL) {
@@ -289,7 +282,6 @@ static void SSFindEdges(SplineSet *spl,struct charone *ch,WidthInfo *wi) {
 
 static real SCFindMinXAtY(SplineChar *sc,int layer,real y) {
    real min=NOTREACHED;
-
    RefChar *ref;
 
    min=SSFindMinXAtY(sc->layers[layer].splines, y, NOTREACHED);
@@ -300,9 +292,7 @@ static real SCFindMinXAtY(SplineChar *sc,int layer,real y) {
 
 static int SCIsMinXAtYCurved(SplineChar *sc,int layer,real y) {
    real min=NOTREACHED;
-
    int curved=false;
-
    RefChar *ref;
 
    min=SSFindMinXAtY(sc->layers[layer].splines, y, NOTREACHED);
@@ -313,11 +303,8 @@ static int SCIsMinXAtYCurved(SplineChar *sc,int layer,real y) {
 
 static void SCFindEdges(struct charone *ch,WidthInfo *wi) {
    RefChar *ref;
-
    SplineChar *sc;
-
    int i;
-
    DBounds bb;
 
    SplineCharQuickConservativeBounds(ch->sc, &bb);
@@ -373,11 +360,8 @@ static void SCFindEdges(struct charone *ch,WidthInfo *wi) {
 /*  that extends around every point on the edge */
 static void PairFindDistance(struct charpair *cp,WidthInfo *wi) {
    int i, j, wasserif, wasseriff;
-
    real sum, cnt, min, fudge, minf, temp;
-
    struct charone *left=cp->left, *right=cp->right;
-
    int fudgerange;
 
    fudgerange=rint(wi->caph / (20 * wi->decimation));
@@ -450,13 +434,9 @@ static void PairFindDistance(struct charpair *cp,WidthInfo *wi) {
 
 static void AW_FindFontParameters(WidthInfo *wi) {
    DBounds bb;
-
    SplineFont *sf=wi->sf;
-
    int i, j, si=-1;
-
    real caph, ds, xh, serifsize, angle, ca, seriflength=0;
-
    int cnt;
    static unichar_t caps[] =
       { 'A', 'Z', 0x391, 0x3a9, 0x40f, 0x418, 0x41a, 0x42f, 0 };
@@ -657,13 +637,9 @@ static void AW_FindFontParameters(WidthInfo *wi) {
 
 real SFGuessItalicAngle(SplineFont *sf) {
    static char *easyserif="IBDEFHKLNPR";
-
    int i, si;
-
    real as, topx, bottomx;
-
    DBounds bb;
-
    double angle;
 
    for (i=0; easyserif[i] != '\0'; ++i)
@@ -689,7 +665,6 @@ real SFGuessItalicAngle(SplineFont *sf) {
 
 static void AW_InitCharPairs(WidthInfo *wi) {
    int i, j;
-
    struct charpair *cp;
 
    wi->pcnt=wi->lcnt * wi->rcnt;
@@ -749,9 +724,7 @@ int KernThreshold(SplineFont *sf, int cnt) {
    /* We want only cnt kerning pairs in the entire font. Any pair whose */
    /*  absolute offset is less than the threshold should be removed */
    int *totals, tot;
-
    int high, i, val;
-
    KernPair *kp;
 
    if (cnt==0)		/* Infinite */
@@ -787,7 +760,6 @@ int KernThreshold(SplineFont *sf, int cnt) {
 
 static void AW_KernRemoveBelowThreshold(SplineFont *sf,int threshold) {
    int i;
-
    KernPair *kp, *prev, *next;
 
    if (threshold==0)
@@ -828,7 +800,6 @@ struct kernsets {
 static unichar_t *ugetstr(AFILE *file,int format,unichar_t *buffer,
 			  int len) {
    int ch, ch2;
-
    unichar_t *upt=buffer;
 
    if (format==0) {
@@ -959,13 +930,9 @@ static void AW_ScriptSerifChecker(WidthInfo *wi) {
 
 static int figurekernsets(WidthInfo *wi,struct kernsets *ks) {
    int i, j, k, cnt, lcnt, max;
-
    unichar_t *ch2s;
-
    unichar_t *cpt, *upt;
-
    struct charpair *cp;
-
    SplineFont *sf=wi->sf;
 
    if (ks->cur==0)
@@ -1106,9 +1073,7 @@ static int AW_ReadKernPairFile(char *fn,WidthInfo *wi) {
 
 void FVRemoveKerns(FontViewBase * fv) {
    int changed=false;
-
    SplineFont *sf=fv->sf;
-
    OTLookup *otl, *notl;
 
    if (sf->cidmaster != NULL)
@@ -1130,9 +1095,7 @@ void FVRemoveKerns(FontViewBase * fv) {
 
 void FVRemoveVKerns(FontViewBase * fv) {
    int changed=false;
-
    SplineFont *sf=fv->sf;
-
    OTLookup *otl, *notl;
 
    if (sf->cidmaster != NULL)
@@ -1173,9 +1136,7 @@ static SplineChar *SCHasVertVariant(SplineChar *sc) {
 
 static SplineChar **CharNamesToVertSC(SplineFont *sf,char *names) {
    char *pt, *end, ch;
-
    int cnt;
-
    SplineChar **list;
 
    if (names==NULL || *names=='\0')
@@ -1210,7 +1171,6 @@ static SplineChar **CharNamesToVertSC(SplineFont *sf,char *names) {
 
 static char *SCListToName(SplineChar ** sclist) {
    int i, len;
-
    char *names, *pt;
 
    for (i=len=0; sclist[i] != NULL; ++i)
@@ -1245,11 +1205,8 @@ struct lookupmap {
 static struct lookup_subtable *VSubtableFromH(struct lookupmap *lookupmap,
 					      struct lookup_subtable *sub) {
    int i, lc, sc;
-
    OTLookup *otl;
-
    struct lookup_subtable *nsub, *prev, *test, *ls;
-
    FeatureScriptLangList *fl;
 
    for (i=0; i < lookupmap->sc; ++i)
@@ -1320,21 +1277,13 @@ static struct lookup_subtable *VSubtableFromH(struct lookupmap *lookupmap,
 
 void FVVKernFromHKern(FontViewBase * fv) {
    int i, j;
-
    KernPair *kp, *vkp;
-
    SplineChar *sc1, *sc2;
-
    KernClass *kc, *vkc;
-
    SplineChar ***firsts, ***seconds;
-
    int any1, any2;
-
    SplineFont *sf=fv->sf;
-
    int *map1, *map2;
-
    struct lookupmap lookupmap;
 
    FVRemoveVKerns(fv);
@@ -1482,7 +1431,6 @@ static struct charone **autowidthBuildCharList(FontViewBase *fv,
 int AutoKernScript(FontViewBase * fv, int spacing, int threshold,
 		   struct lookup_subtable *sub, char *kernfile) {
    WidthInfo wi;
-
    SplineFont *sf=fv->sf;
 
    memset(&wi, '\0', sizeof(wi));

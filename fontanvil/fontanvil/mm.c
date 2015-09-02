@@ -1,4 +1,4 @@
-/* $Id: mm.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: mm.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -48,7 +48,6 @@ char *MMAxisAbrev(char *axis_name) {
 
 bigreal MMAxisUnmap(MMSet * mm, int axis, bigreal ncv) {
    struct axismap *axismap=&mm->axismaps[axis];
-
    int j;
 
    if (ncv <= axismap->blends[0])
@@ -69,9 +68,7 @@ bigreal MMAxisUnmap(MMSet * mm, int axis, bigreal ncv) {
 
 static char *_MMMakeFontname(MMSet *mm,real *normalized,char **fullname) {
    char *pt, *pt2, *hyphen=NULL;
-
    char *ret=NULL;
-
    int i, j;
 
    if (mm->apple) {
@@ -153,9 +150,7 @@ char *MMMakeMasterFontname(MMSet * mm, int ipos, char **fullname) {
 
 static char *_MMGuessWeight(MMSet *mm,real *normalized,char *def) {
    int i;
-
    char *ret;
-
    real design;
 
    for (i=0; i < mm->axis_count; ++i) {
@@ -193,7 +188,6 @@ char *MMGuessWeight(MMSet * mm, int ipos, char *def) {
 /* Given a postscript array of scalars, what's the ipos'th element? */
 char *MMExtractNth(char *pt, int ipos) {
    int i;
-
    char *end;
 
    while (*pt==' ')
@@ -217,7 +211,6 @@ char *MMExtractNth(char *pt, int ipos) {
 /* return the array composed of the ipos'th element of each sub-array */
 char *MMExtractArrayNth(char *pt, int ipos) {
    char *hold[40], *ret;
-
    int i, j, len;
 
    while (*pt==' ')
@@ -266,9 +259,7 @@ char *MMExtractArrayNth(char *pt, int ipos) {
 void MMKern(SplineFont *sf, SplineChar * first, SplineChar * second,
 	    int diff, struct lookup_subtable *sub, KernPair * oldkp) {
    MMSet *mm=sf->mm;
-
    KernPair *kp;
-
    int i;
 
    /* If the user creates a kern pair in one font of a multiple master set */
@@ -281,7 +272,6 @@ void MMKern(SplineFont *sf, SplineChar * first, SplineChar * second,
    if (sf==mm->normal || oldkp==NULL) {
       for (i=-1; i < mm->instance_count; ++i) {
 	 SplineFont *cur=i==-1 ? mm->normal : mm->instances[i];
-
 	 SplineChar *psc, *ssc;
 
 	 if (cur==sf)		/* Done in caller */
@@ -332,21 +322,13 @@ static SplineChar *SFMakeGlyphLike(SplineFont *sf,int gid,
 
 static char *_MMBlendChar(MMSet *mm,int gid) {
    int i, j, worthit=-1;
-
    int all, any, any2, all2, anyend, allend, diff;
-
    SplineChar *sc;
-
    SplinePointList *spls[MmMax], *spl, *spllast;
-
    SplinePoint *tos[MmMax], *to;
-
    RefChar *refs[MmMax], *ref, *reflast;
-
    KernPair *kp0, *kptest, *kp, *kplast;
-
    StemInfo *hs[MmMax], *h, *hlast;
-
    real width;
 
    for (i=0; i < mm->instance_count; ++i) {
@@ -615,7 +597,6 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 
 char *MMBlendChar(MMSet * mm, int gid) {
    char *ret;
-
    RefChar *ref;
 
    if (gid >= mm->normal->glyphcnt)
@@ -635,13 +616,9 @@ char *MMBlendChar(MMSet * mm, int gid) {
 
 static struct psdict *BlendPrivate(struct psdict *private,MMSet *mm) {
    struct psdict *other;
-
    real sum, val;
-
    char *data;
-
    int i, j, k, cnt;
-
    char *values[MmMax], buffer[32], *space, *pt, *end;
 
    other=mm->instances[0]->private;
@@ -730,11 +707,8 @@ static struct psdict *BlendPrivate(struct psdict *private,MMSet *mm) {
 
 int MMReblend(FontViewBase * fv, MMSet * mm) {
    char *olderr, *err;
-
    int i, first=-1;
-
    SplineFont *sf=mm->instances[0];
-
    RefChar *ref;
 
    olderr=NULL;
@@ -813,9 +787,7 @@ void MMWeightsUnMap(real weights[MmMax], real axiscoords[4], int axis_count) {
 SplineFont *_MMNewFont(MMSet * mm, int index, char *familyname,
 		       real * normalized) {
    SplineFont *sf, *base;
-
    char *pt1, *pt2;
-
    int i;
 
    sf=SplineFontNew();
@@ -881,11 +853,8 @@ SplineFont *MMNewFont(MMSet * mm, int index, char *familyname) {
 FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
 				  real blends[MmMax], int tonew) {
    real oldblends[MmMax];
-
    SplineFont *hold=mm->normal;
-
    int i;
-
    real axispos[4];
 
    for (i=0; i < mm->instance_count; ++i) {
@@ -931,7 +900,6 @@ FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
 
 static int ContourCount(SplineChar *sc) {
    SplineSet *spl;
-
    int i;
 
    for (spl=sc->layers[ly_fore].splines, i=0; spl != NULL;
@@ -941,7 +909,6 @@ static int ContourCount(SplineChar *sc) {
 
 static int ContourPtMatch(SplineChar *sc1,SplineChar *sc2) {
    SplineSet *spl1, *spl2;
-
    SplinePoint *sp1, *sp2;
 
    for (spl1=sc1->layers[ly_fore].splines, spl2 =
@@ -982,7 +949,6 @@ static int ContourDirMatch(SplineChar *sc1,SplineChar *sc2) {
 
 static int ContourHintMaskMatch(SplineChar *sc1,SplineChar *sc2) {
    SplineSet *spl1, *spl2;
-
    SplinePoint *sp1, *sp2;
 
    for (spl1=sc1->layers[ly_fore].splines, spl2 =
@@ -1040,7 +1006,6 @@ static int RefTransformsMatch(SplineChar *sc1,SplineChar *sc2) {
    /*  so if rotation, skewing, scaling, etc. differ then we can't deal with */
    /*  it. */
    RefChar *r1=sc1->layers[ly_fore].refs;
-
    RefChar *r2=sc2->layers[ly_fore].refs;
 
    while (r1 != NULL && r2 != NULL) {
@@ -1089,7 +1054,6 @@ static int KernsMatch(SplineChar *sc1,SplineChar *sc2) {
 
 static int ArrayCount(char *val) {
    char *end;
-
    int cnt;
 
    if (val==NULL)
@@ -1111,7 +1075,6 @@ static int ArrayCount(char *val) {
 
 int MMValid(MMSet * mm, int complain) {
    int i, j;
-
    SplineFont *sf;
    static char *arrnames[] =
       { "BlueValues", "OtherBlues", "FamilyBlues", "FamilyOtherBlues",

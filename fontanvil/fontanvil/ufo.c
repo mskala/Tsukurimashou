@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: ufo.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -156,7 +156,6 @@ static int _GlifDump(AFILE *glif,SplineChar *sc,int layer) {
       /*  I've been asked to do that too */
       if (sc->layers[layer].refs != NULL) {
 	 RefChar **refs;
-
 	 int i, cnt;
 
 	 for (cnt=0, ref=sc->layers[layer].refs; ref != NULL;
@@ -1180,13 +1179,9 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		  if (sname != NULL) {
 		     /* make an AP and if necessary an AC */
 		     AnchorPoint *ap=chunkalloc(sizeof(AnchorPoint));
-
 		     AnchorClass *ac;
-
 		     char *namep=*sname=='_' ? sname + 1 : sname;
-
 		     char *xs=(char *) xmlGetProp(points, (xmlChar *) "x");
-
 		     char *ys=(char *) xmlGetProp(points, (xmlChar *) "y");
 
 		     ap->me.x=strtod(xs, NULL);
@@ -1218,9 +1213,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 	       for (points=contour->children; points != NULL;
 		    points=points->next) {
 		  char *xs, *ys, *type, *pname, *smooths;
-
 		  double x, y;
-
 		  int smooth=0;
 
 		  // We discard any entities in the splineset that are not points.
@@ -1591,7 +1584,6 @@ static void UFOLoadGlyphs(SplineFont *sf,char *glyphdir,int layerdest) {
 	 char *glyphname =
 	    (char *) xmlNodeListGetString(doc, keys->children, true);
 	 int newsc=0;
-
 	 SplineChar *existingglyph=NULL;
 
 	 if (glyphname != NULL) {
@@ -1977,12 +1969,10 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 	       sf->pfminfo.weight=strtol((char *) valname, &end, 10);
 	    else if (xmlStrcmp(keyname + 11, (xmlChar *) "VendorID")==0) {
 	       const int os2_vendor_sz=sizeof(sf->pfminfo.os2_vendor);
-
 	       const int valname_len=c_strlen(valname);
 
 	       if (valname && valname_len <= os2_vendor_sz)
 		  strncpy(sf->pfminfo.os2_vendor, valname, valname_len);
-
 	       char *temp=sf->pfminfo.os2_vendor + os2_vendor_sz - 1;
 
 	       while (*temp==0 && temp >= sf->pfminfo.os2_vendor)
@@ -2165,7 +2155,6 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
        strncmp(sf->names->names[ttf_version], "Version ", 8)==0)
       sf->version=fastrdup(sf->names->names[ttf_version] + 8);
    xmlFreeDoc(doc);
-
    char *layercontentsname=buildname(basedir, "layercontents.plist");
    char **layernames=NULL;
 
@@ -2173,11 +2162,8 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
       return (NULL);
    } else if (GFileExists(layercontentsname)) {
       xmlDocPtr layercontentsdoc=NULL;
-
       xmlNodePtr layercontentsplist=NULL;
-
       xmlNodePtr layercontentsdict=NULL;
-
       xmlNodePtr layercontentslayer=NULL;
       xmlNodePtr layercontentsvalue=NULL;
       int layercontentslayercount=0;
@@ -2207,7 +2193,6 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		   (layercontentslayer->name,
 		    (const xmlChar *) "array")==0) {
 		  xmlChar *layerlabel=NULL;
-
 		  xmlChar *layerglyphdirname=NULL;
 
 		  layercontentsvaluecount=0;

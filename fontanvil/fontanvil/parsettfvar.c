@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: parsettfvar.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -55,7 +55,6 @@
 
 void VariationFree(struct ttfinfo *info) {
    int i, j;
-
    struct variations *variation=info->variations;
 
    if (variation==NULL)
@@ -91,7 +90,6 @@ void VariationFree(struct ttfinfo *info) {
 
 static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
    int data_off, axis_count, instance_count, cnt;
-
    int i, j;
 
    afseek(ttf, info->fvar_start, SEEK_SET);
@@ -161,7 +159,6 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
 
 static void parseavar(struct ttfinfo *info,AFILE *ttf) {
    int axis_count, pair_count;
-
    int i, j;
 
    if (info->variations==NULL || info->avar_start==0
@@ -200,9 +197,7 @@ static void parseavar(struct ttfinfo *info,AFILE *ttf) {
 
 static SplineChar **InfoCopyGlyphs(struct ttfinfo *info) {
    SplineChar **chars=malloc(info->glyph_cnt * sizeof(SplineChar *));
-
    int i;
-
    RefChar *r;
 
    for (i=0; i < info->glyph_cnt; ++i) {
@@ -230,7 +225,6 @@ static SplineChar **InfoCopyGlyphs(struct ttfinfo *info) {
 #define BAD_DELTA	0x10001
 static int *readpackeddeltas(AFILE *ttf,int n) {
    int *deltas;
-
    int runcnt, i, j;
 
    deltas=malloc(n * sizeof(int));
@@ -264,7 +258,6 @@ static int *readpackeddeltas(AFILE *ttf,int n) {
 
 static int *readpackedpoints(AFILE *ttf) {
    int *points;
-
    int n, runcnt, i, j, first;
 
    n=agetc(ttf);
@@ -318,11 +311,8 @@ static int TuplesMatch(struct variations *v,int vtest,int dbase) {
 
 static int PointCount(SplineChar *sc) {
    int i;
-
    RefChar *ref;
-
    SplineSet *ss;
-
    SplinePoint *sp;
 
    if (sc->layers[ly_fore].refs != NULL)
@@ -350,9 +340,7 @@ static void SCShiftAllBy(SplineChar *sc,int xd,int yd) {
    /* If they change the left/right side-bearing, I think that means everything */
    /*  should be shifted over */
    SplineSet *ss;
-
    SplinePoint *sp;
-
    RefChar *ref;
 
    if (xd==0 && yd==0)
@@ -388,13 +376,9 @@ static void VaryGlyph(SplineChar *sc,int *points,int *xdeltas,
 		      int *ydeltas, int pcnt) {
    /* A character contains either composites or contours */
    int i, j;
-
    RefChar *ref;
-
    SplineSet *ss;
-
    SplinePoint *sp;
-
    Spline *s, *first;
 
    if (points[0]==ALL_POINTS) {
@@ -521,9 +505,7 @@ static void VaryGlyphs(struct ttfinfo *info,int tupleIndex,int gnum,
    /*  designs. well variations for [0,1] describes that design, but the */
    /*  design for [1,1] includes the variations [0,1], [1,0], and [1,1] */
    int pcnt, tc;
-
    int *xdeltas, *ydeltas;
-
    struct variations *v=info->variations;
 
    if (info->chars[gnum]==NULL)	/* Apple doesn't support ttc so this */
@@ -561,11 +543,8 @@ static void VaryGlyphs(struct ttfinfo *info,int tupleIndex,int gnum,
 static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
    /* I'm only going to support a subset of the gvar. Only the global tuples */
    int axiscount, globaltc, gvarflags, gc, i, j, g;
-
    uint32_t tupoff, dataoff, *gvars;
-
    struct variations *v=info->variations;
-
    int warned=false;
 
    afseek(ttf, info->gvar_start, SEEK_SET);
@@ -621,9 +600,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
    for (g=0; g < gc; ++g)
       if (gvars[g] != gvars[g + 1]) {
 	 int tc;
-
 	 uint32_t datoff;
-
 	 int *sharedpoints=NULL;
 
 	 afseek(ttf, gvars[g], SEEK_SET);
@@ -653,7 +630,6 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
 		  afseek(ttf, 4 * axiscount, SEEK_CUR);
 	    } else {
 	       int *localpoints=NULL;
-
 	       uint32_t here=aftell(ttf);
 
 	       afseek(ttf, datoff, SEEK_SET);
@@ -681,7 +657,6 @@ static void AlterEntry(struct ttf_table *cvt,int i,int delta) {
 static void VaryCvt(struct tuples *tuple,int *points,int *deltas,
 		    int pcnt, struct ttf_table *orig_cvt) {
    struct ttf_table *cvt;
-
    int i;
 
    if ((cvt=tuple->cvt)==NULL) {
@@ -707,9 +682,7 @@ static void VaryCvts(struct ttfinfo *info,int tupleIndex,int *points,
    /*  design for [1,1] includes the variations [0,1], [1,0], and [1,1] */
    /* And same is true of cvar */
    int pcnt, tc;
-
    int *deltas;
-
    struct variations *v=info->variations;
 
    if (points[0]==ALL_POINTS)
@@ -782,9 +755,7 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
 	    afseek(ttf, 4 * info->variations->axis_count, SEEK_CUR);
       } else {
 	 int *localpoints=NULL;
-
 	 uint32_t here;
-
 	 int j, k, ti;
 
 	 ti=tupleIndex & 0xfff;

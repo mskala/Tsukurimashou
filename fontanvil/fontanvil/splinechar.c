@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: splinechar.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -45,7 +45,6 @@ int clear_tt_instructions_when_needed=true;
 
 void SCClearRounds(SplineChar * sc, int layer) {
    SplineSet *ss;
-
    SplinePoint *sp;
 
    for (ss=sc->layers[layer].splines; ss != NULL; ss=ss->next) {
@@ -80,11 +79,8 @@ RefChar *HasUseMyMetrics(SplineChar * sc, int layer) {
 void SCSynchronizeWidth(SplineChar * sc, real newwidth, real oldwidth,
 			FontViewBase * flagfv) {
    BDFFont *bdf;
-
    struct splinecharlist *dlist;
-
    RefChar *r=HasUseMyMetrics(sc, ly_fore);
-
    int isprobablybase;
 
    sc->widthset=true;
@@ -146,15 +142,10 @@ void SCSynchronizeWidth(SplineChar * sc, real newwidth, real oldwidth,
 /*  in them, after all */
 void SCSynchronizeLBearing(SplineChar * sc, real off, int layer) {
    struct splinecharlist *dlist;
-
    RefChar *ref;
-
    DStemInfo *d;
-
    StemInfo *h;
-
    HintInstance *hi;
-
    int isprobablybase;
 
    for (h=sc->vstem; h != NULL; h=h->next)
@@ -203,11 +194,8 @@ void SCSynchronizeLBearing(SplineChar * sc, real off, int layer) {
 static int _SCRefNumberPoints2(SplineSet ** _rss,SplineChar *sc,int pnum,
 			       int layer) {
    SplineSet *ss, *rss=*_rss;
-
    SplinePoint *sp, *rsp;
-
    RefChar *r;
-
    int starts_with_cp, startcnt;
 
    for (ss=sc->layers[layer].splines; ss != NULL;
@@ -263,9 +251,7 @@ static int SCRefNumberPoints2(RefChar *ref,int pnum,int layer) {
 
 int SSTtfNumberPoints(SplineSet * ss) {
    int pnum=0;
-
    SplinePoint *sp;
-
    int starts_with_cp;
 
    for (; ss != NULL; ss=ss->next) {
@@ -297,7 +283,6 @@ int SSTtfNumberPoints(SplineSet * ss) {
 
 static int SSPsNumberPoints(SplineChar *sc,SplineSet *splines,int pnum) {
    SplineSet *ss;
-
    SplinePoint *sp;
 
    for (ss=splines; ss != NULL; ss=ss->next) {
@@ -326,11 +311,8 @@ static int SSPsNumberPoints(SplineChar *sc,SplineSet *splines,int pnum) {
 
 int SCNumberPoints(SplineChar * sc, int layer) {
    int pnum=0;
-
    SplineSet *ss;
-
    SplinePoint *sp;
-
    RefChar *ref;
 
    if (sc->layers[layer].order2) {	/* TrueType and its complexities. I ignore svg here */
@@ -373,13 +355,9 @@ int SCNumberPoints(SplineChar * sc, int layer) {
 
 int SCPointsNumberedProperly(SplineChar * sc, int layer) {
    int pnum=0, skipit;
-
    SplineSet *ss;
-
    SplinePoint *sp;
-
    int starts_with_cp;
-
    int start_pnum;
 
    if (sc->layers[layer].splines != NULL && sc->layers[layer].refs != NULL)
@@ -523,7 +501,6 @@ void SCClearBackground(SplineChar * sc) {
 
 void SCCopyLayerToLayer(SplineChar * sc, int from, int to, int doclear) {
    SplinePointList *fore, *temp;
-
    RefChar *ref, *oldref;
 
    SCPreserveLayer(sc, to, false);
@@ -562,7 +539,6 @@ void SCCopyLayerToLayer(SplineChar * sc, int from, int to, int doclear) {
 
 int BpColinear(BasePoint * first, BasePoint * mid, BasePoint * last) {
    BasePoint dist_f, unit_f, dist_l, unit_l;
-
    bigreal len, off_l, off_f;
 
    dist_f.x=first->x - mid->x;
@@ -591,7 +567,6 @@ int BpColinear(BasePoint * first, BasePoint * mid, BasePoint * last) {
 
 int BpWithin(BasePoint * first, BasePoint * mid, BasePoint * last) {
    BasePoint dist_mf, unit_mf, dist_lf, unit_lf;
-
    bigreal len, off_lf, off_mf, len2;
 
    dist_mf.x=mid->x - first->x;
@@ -666,7 +641,6 @@ static void SpiroRound2Int(spiro_cp *cp,real factor) {
 void SplineSetsRound2Int(SplineSet * spl, real factor, int inspiro,
 			 int onlysel) {
    SplinePoint *sp;
-
    int i;
 
    for (; spl != NULL; spl=spl->next) {
@@ -697,9 +671,7 @@ void SplineSetsRound2Int(SplineSet * spl, real factor, int inspiro,
 static void SplineSetsChangeCoord(SplineSet *spl,real old,real new,
 				  int isy, int inspiro) {
    SplinePoint *sp;
-
    int changed;
-
    int i;
 
    for (; spl != NULL; spl=spl->next) {
@@ -760,13 +732,9 @@ static void SplineSetsChangeCoord(SplineSet *spl,real old,real new,
 
 void SCRound2Int(SplineChar * sc, int layer, real factor) {
    RefChar *r;
-
    AnchorPoint *ap;
-
    StemInfo *stems;
-
    real old, new;
-
    int first, last;
 
    for (stems=sc->hstem; stems != NULL; stems=stems->next) {
@@ -880,7 +848,6 @@ void AltUniAdd_DontCheckDups(SplineChar * sc, int uni) {
 
 void SCOrderAP(SplineChar * sc) {
    int lc=0, cnt=0, out=false, i, j;
-
    AnchorPoint *ap, **array;
 
    /* Order so that first ligature index comes first */
@@ -925,7 +892,6 @@ void UnlinkThisReference(FontViewBase * fv, SplineChar * sc, int layer) {
       dnext=dep->next;
       if (fv==NULL || !fv->selected[fv->map->backmap[dep->sc->orig_pos]]) {
 	 SplineChar *dsc=dep->sc;
-
 	 RefChar *rf, *rnext;
 
 	 /* May be more than one reference to us, colon has two refs to period */
@@ -953,11 +919,8 @@ static int MultipleNames(void) {
 int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 		  const char *comment) {
    SplineFont *sf=sc->parent;
-
    int i, mv=0;
-
    int isnotdef, samename=false, sameuni=false;
-
    struct altuni *alt;
 
    if (sf->glyphs[sc->orig_pos] != sc)
@@ -1004,9 +967,7 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 	 }
       if (sc->unicodeenc != unienc) {
 	 struct splinecharlist *scl;
-
 	 int layer;
-
 	 RefChar *ref;
 
 	 for (scl=sc->dependents; scl != NULL; scl=scl->next) {
@@ -1057,13 +1018,9 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 static int CheckBluePair(char *blues,char *others,int bluefuzz,
 			 int magicpointsize) {
    int bound=2 * bluefuzz + 1;
-
    int bluevals[10 + 14], cnt, pos=0, maxzoneheight;
-
    int err=0;
-
    char *end;
-
    char oldloc[25];
 
    strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
@@ -1150,9 +1107,7 @@ static int CheckBluePair(char *blues,char *others,int bluefuzz,
 
 static int CheckStdW(struct psdict *dict,char *key) {
    char *str_val, *end;
-
    char oldloc[25];
-
    bigreal val;
 
    if ((str_val=PSDictHasEntry(dict, key))==NULL)
@@ -1183,13 +1138,9 @@ static int CheckStdW(struct psdict *dict,char *key) {
 
 static int CheckStemSnap(struct psdict *dict,char *snapkey,char *stdkey) {
    char *str_val, *end;
-
    char oldloc[25];
-
    bigreal std_val=-1;
-
    bigreal stems[12], temp;
-
    int cnt, found;
 
    /* At most 12 double values, in order, must include Std?W value, array */
@@ -1244,15 +1195,10 @@ static int CheckStemSnap(struct psdict *dict,char *snapkey,char *stdkey) {
 
 int ValidatePrivate(SplineFont *sf) {
    int errs=0;
-
    char *blues, *bf, *test, *end;
-
    char oldloc[25];
-
    int fuzz=1;
-
    bigreal bluescale=.039625;
-
    int magicpointsize;
 
    if (sf->private==NULL)
@@ -1322,9 +1268,7 @@ int ValidatePrivate(SplineFont *sf) {
 
 static int SFValidNameList(SplineFont *sf,char *list) {
    char *start, *pt;
-
    int ch;
-
    SplineChar *sc;
 
    for (start=list;;) {
@@ -1354,9 +1298,7 @@ int BPTooFar(BasePoint * bp1, BasePoint * bp2) {
 
 AnchorClass *SCValidateAnchors(SplineChar * sc) {
    SplineFont *sf=sc->parent;
-
    AnchorClass *ac;
-
    AnchorPoint *ap;
 
    if (sf==NULL)
@@ -1400,9 +1342,7 @@ static int UniMatch(int vs,int uni,SplineChar *sc) {
 
 StemInfo *SCHintOverlapInMask(SplineChar * sc, HintMask * hm) {
    int hi1, hi2, hcnt=0;
-
    StemInfo *h1, *h2;
-
    int v;
 
    for (v=0; v < 2; ++v) {
@@ -1449,41 +1389,23 @@ StemInfo *SCHintOverlapInMask(SplineChar * sc, HintMask * hm) {
 
 int SCValidate(SplineChar * sc, int layer, int force) {
    SplineSet *ss;
-
    Spline *s1, *s2, *s, *first;
-
    SplinePoint *sp;
-
    RefChar *ref;
-
    int lastscan=-1;
-
    int cnt, path_cnt, pt_cnt;
-
    StemInfo *h;
-
    SplineSet *base;
-
    bigreal len2, bound2, x, y;
-
    extended extrema[4];
-
    PST *pst;
-
    struct ttf_table *tab;
-
    extern int allow_utf8_glyphnames;
-
    RefChar *r;
-
    BasePoint lastpt;
-
    int gid, k;
-
    SplineFont *cid, *sf;
-
    SplineChar *othersc;
-
    struct altuni *alt;
 
    if ((sc->layers[layer].validation_state & vs_known) && !force)
@@ -1702,17 +1624,13 @@ int SCValidate(SplineChar * sc, int layer, int force) {
       /* these are only errors for fontlint, we'll fix them up when we */
       /*  generate the font -- but fontlint needs to know this stuff */
       int pt_max=memushort(tab->data, tab->len, 3 * sizeof(uint16_t));
-
       int path_max=memushort(tab->data, tab->len, 4 * sizeof(uint16_t));
-
       int composit_pt_max =
 	 memushort(tab->data, tab->len, 5 * sizeof(uint16_t));
       int composit_path_max =
 	 memushort(tab->data, tab->len, 6 * sizeof(uint16_t));
       int instr_len_max=memushort(tab->data, tab->len, 13 * sizeof(uint16_t));
-
       int num_comp_max=memushort(tab->data, tab->len, 14 * sizeof(uint16_t));
-
       int comp_depth_max =
 	 memushort(tab->data, tab->len, 15 * sizeof(uint16_t));
       int rd, rdtest;
@@ -1848,13 +1766,9 @@ void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {
 								orig_pos]->
       ttf_instrs : sc->ttf_instrs;
    struct splinecharlist *dep;
-
    SplineSet *ss;
-
    SplinePoint *sp;
-
    AnchorPoint *ap;
-
    int had_ap, had_dep, had_instrs;
 
    had_ap=had_dep=had_instrs=0;

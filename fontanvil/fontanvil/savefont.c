@@ -1,4 +1,4 @@
-/* $Id: savefont.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: savefont.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -75,11 +75,8 @@ static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
 			EncMap * map, int flags, SplineFont *fullsf,
 			int layer) {
    char *buf=malloc(strlen(filename) + 6), *pt, *pt2;
-
    AFILE *afm;
-
    int ret;
-
    int subtype=formattype;
 
    if ((formattype==ff_mma || formattype==ff_mmb) && sf->mm != NULL) {
@@ -111,7 +108,6 @@ static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
 
    if ((formattype==ff_mma || formattype==ff_mmb) && sf->mm != NULL) {
       MMSet *mm=sf->mm;
-
       int i;
 
       for (i=0; i < mm->instance_count; ++i) {
@@ -161,13 +157,9 @@ static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
 static int WriteTfmFile(char *filename,SplineFont *sf,int formattype,
 			EncMap * map, int layer) {
    char *buf=malloc(strlen(filename) + 6), *pt, *pt2;
-
    AFILE *tfm, *enc;
-
    int ret;
-
    int i;
-
    char *encname;
 
    strcpy(buf, filename);
@@ -225,13 +217,9 @@ static int WriteTfmFile(char *filename,SplineFont *sf,int formattype,
 static int WriteOfmFile(char *filename,SplineFont *sf,int formattype,
 			EncMap * map, int layer) {
    char *buf=malloc(strlen(filename) + 6), *pt, *pt2;
-
    AFILE *tfm, *enc;
-
    int ret;
-
    int i;
-
    char *encname;
    char *texparamnames[] =
       { "SLANT", "SPACE", "STRETCH", "SHRINK", "XHEIGHT", "QUAD",
@@ -286,9 +274,7 @@ static int WriteOfmFile(char *filename,SplineFont *sf,int formattype,
 int WritePfmFile(char *filename, SplineFont *sf, int type0, EncMap * map,
 		 int layer) {
    char *buf=malloc(strlen(filename) + 6), *pt, *pt2;
-
    AFILE *pfm;
-
    int ret;
 
    strcpy(buf, filename);
@@ -312,7 +298,6 @@ int WritePfmFile(char *filename, SplineFont *sf, int type0, EncMap * map,
 static int WriteFontLog(char *filename,SplineFont *sf,int formattype,
 			EncMap * map, int flags, SplineFont *fullsf) {
    char *buf=malloc(strlen(filename) + 12), *pt;
-
    AFILE *flog;
 
    if (sf->fontlog==NULL || *sf->fontlog=='\0')
@@ -663,7 +648,6 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
       strcat(filename, names[subfont]);
    else {
       int len=strlen(names[subfont]);
-
       int l;
 
       if (len > 2) {
@@ -743,15 +727,10 @@ static int WriteMultiplePSFont(SplineFont *sf,char *newname,int32_t *sizes,
 			       int res, char *wernerfilename, EncMap * map,
 			       int layer) {
    int err=0, tofree=false, max, filecnt;
-
    int32_t *mapping;
-
    char *path;
-
    int i;
-
    char **names;
-
    char *pt;
 
    pt=strrchr(newname, '.');
@@ -793,7 +772,6 @@ static int WriteMultiplePSFont(SplineFont *sf,char *newname,int32_t *sizes,
 int CheckIfTransparent(SplineFont *sf) {
    /* Type3 doesn't support translucent fills */
    int i, j;
-
    char *buts[3];
 
    buts[0]=_("_Yes");
@@ -817,9 +795,7 @@ int CheckIfTransparent(SplineFont *sf) {
 int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
 	    EncMap * map, char *subfontdefinition, int layer) {
    char *path;
-
    int err=false;
-
    int iscid=oldformatstate==ff_cid || oldformatstate==ff_cffcid ||
       oldformatstate==ff_otfcid || oldformatstate==ff_otfciddfont;
    int flags=0;
@@ -843,7 +819,6 @@ int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
    free(path);
    if (oldformatstate != ff_none) {
       int oerr=0;
-
       int bmap=oldbitmapstate;
 
       if (bmap==bf_otb)
@@ -987,13 +962,9 @@ int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
 
 void PrepareUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
    int gid;
-
    SplineChar *sc;
-
    RefChar *ref, *refnext;
-
    extern int maxundoes;
-
    int old_maxundoes=maxundoes;
 
    if (maxundoes==0)
@@ -1022,7 +993,6 @@ void PrepareUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
 
 void RestoreUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
    int gid;
-
    SplineChar *sc;
 
    for (gid=0; gid < sf->glyphcnt; ++gid)
@@ -1035,9 +1005,7 @@ void RestoreUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
 
 static int32_t *AllBitmapSizes(SplineFont *sf) {
    int32_t *sizes=NULL;
-
    BDFFont *bdf;
-
    int i, cnt;
 
    for (i=0; i < 2; ++i) {
@@ -1064,17 +1032,11 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
       { "bdf", "ttf", "dfont", "ttf", "otb", "bin", "fon", "fnt", "pdb",
 "pt3", NULL };
    int32_t *sizes=NULL;
-
    char *end=filename + strlen(filename);
-
    struct sflist *sfi;
-
    char *freeme=NULL;
-
    int ret;
-
    struct sflist *sfl;
-
    char **former;
 
    if (sf->bitmaps==NULL)

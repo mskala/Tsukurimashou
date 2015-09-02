@@ -1,4 +1,4 @@
-/* $Id: unicoderange.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: unicoderange.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2006-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -426,13 +426,9 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
 /* Find and return the Unicode range descriptions for these characters */
 /* Return NULL if out of memory to hold rangeinfo[cnt]. */
    int cnt;
-
    int i, gid;
-
    int32_t j;
-
    struct rangeinfo *ri;
-
    static int initialized=false;
 
    if (!initialized) {
@@ -440,9 +436,7 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
       for (i=cnt=0; unicoderange[i].name != NULL; ++i)
 	 if (unicoderange[i].display) {
 	    int32_t top=unicoderange[i].last;
-
 	    int32_t bottom=unicoderange[i].first;
-
 	    int cnt=0;
 
 	    for (j=bottom; j <= top; ++j) {
@@ -482,7 +476,6 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
    /* count glyphs in each range */
    for (j=0; j < cnt - 2; ++j) {
       int32_t top=ri[j].range->last;
-
       int32_t bottom=ri[j].range->first;
 
       for (gid=0; gid < sf->glyphcnt; ++gid)
@@ -537,9 +530,7 @@ struct rangeinfo *SFUnicodeRanges(SplineFont *sf, enum ur_flags flags) {
 const char *UnicodeRange(int32_t unienc) {
 /* Return the best name that describes this Unicode value */
    char *ret;
-
    struct unicoderange *best=NULL;
-
    int i;
 
    ret="Unencoded Unicode";

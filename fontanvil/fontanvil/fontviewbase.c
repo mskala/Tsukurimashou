@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: fontviewbase.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -76,7 +76,6 @@ static int BCUnselectedDependents(FontViewBase *fv,BDFChar *bc) {
 
 static int UnselectedDependents(FontViewBase *fv,int gid) {
    int ret=false;
-
    BDFFont *bdf;
 
    if (onlycopydisplayed && fv->active_bitmap==NULL) {
@@ -150,7 +149,6 @@ void FVClear(FontViewBase * fv) {
 
 void FVClearBackground(FontViewBase * fv) {
    SplineFont *sf=fv->sf;
-
    int i, gid;
 
    if (onlycopydisplayed && fv->active_bitmap != NULL)
@@ -279,11 +277,8 @@ static void LinkEncToGid(FontViewBase *fv,int enc,int gid) {
 
 void FVSameGlyphAs(FontViewBase * fv) {
    SplineFont *sf=fv->sf;
-
    RefChar *base=CopyContainsRef(sf);
-
    int i;
-
    EncMap *map=fv->map;
 
    if (base==NULL || fv->cidmaster != NULL)
@@ -296,14 +291,11 @@ void FVSameGlyphAs(FontViewBase * fv) {
 
 void FVBuildDuplicate(FontViewBase * fv) {
    extern const int cns14pua[], amspua[];
-
    const int *pua =
       fv->sf->uni_interp==ui_trad_chinese ? cns14pua : fv->sf->uni_interp ==
       ui_ams ? amspua : NULL;
    int i, cnt=0, gid;
-
    SplineChar dummy;
-
    const unichar_t *pt;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -313,7 +305,6 @@ void FVBuildDuplicate(FontViewBase * fv) {
    for (i=0; i < fv->map->enccount; ++i)
       if (fv->selected[i]) {
 	 SplineChar *sc;
-
 	 int baseuni=0;
 
 	 if ((gid=fv->map->map[i])==-1
@@ -598,11 +589,8 @@ static void KCTrans(KernClass *kc,double scale) {
 static void SCTransLayer(FontViewBase *fv,SplineChar *sc,int flags,int i,
 			 real transform[6], uint8_t * sel) {
    int j;
-
    RefChar *refs;
-
    real t[6];
-
    ImageList *img;
 
    SplinePointListTransform(sc->layers[i].splines, transform, tpt_AllPoints);
@@ -672,16 +660,12 @@ static void SCTransLayer(FontViewBase *fv,SplineChar *sc,int flags,int i,
 void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
 	     uint8_t * sel, enum fvtrans_flags flags) {
    AnchorPoint *ap;
-
    int i, first, last;
-
    KernPair *kp;
-
    PST *pst;
 
    if (sc->blended) {
       int j;
-
       MMSet *mm=sc->parent->mm;
 
       for (j=0; j < mm->instance_count; ++j)
@@ -782,15 +766,10 @@ void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
 void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
 		 enum fvtrans_flags flags) {
    FontViewBase *fv=_fv;
-
    real transx=transform[4], transy=transform[5];
-
    DBounds bb;
-
    BasePoint base;
-
    int i, cnt=0, gid;
-
    BDFFont *bdf;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -837,7 +816,6 @@ void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
 
    if (flags & fvt_scalekernclasses) {
       KernClass *kc;
-
       SplineFont *sf=fv->cidmaster != NULL ? fv->cidmaster : fv->sf;
 
       for (kc=sf->kerns; kc != NULL; kc=kc->next)
@@ -851,7 +829,6 @@ void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
 
 void FVOverlap(FontViewBase * fv, enum overlap_type ot) {
    int i, cnt=0, layer, first, last, gid;
-
    SplineChar *sc;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -882,11 +859,8 @@ void FVOverlap(FontViewBase * fv, enum overlap_type ot) {
 
 void FVAddExtrema(FontViewBase * fv, int force_adding) {
    int i, cnt=0, layer, first, last, gid;
-
    SplineChar *sc;
-
    SplineFont *sf=fv->sf;
-
    int emsize=sf->ascent + sf->descent;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -917,7 +891,6 @@ void FVAddExtrema(FontViewBase * fv, int force_adding) {
 
 void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl) {
    int i, cnt=0, layer, first, last, gid;
-
    SplineChar *sc;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -946,9 +919,7 @@ void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl) {
 
 void FVAutoHint(FontViewBase * fv) {
    int i, cnt=0, gid;
-
    BlueData *bd=NULL, _bd;
-
    SplineChar *sc;
 
    if (fv->sf->mm==NULL) {
@@ -1032,9 +1003,7 @@ void FVDontAutoHint(FontViewBase * fv) {
 
 static int AllGlyphsSelected(FontViewBase *fv) {
    SplineFont *sf=fv->sf;
-
    int gid, enc;
-
    SplineChar *sc;
 
    for (gid=0; gid < sf->glyphcnt; ++gid)
@@ -1075,9 +1044,7 @@ static void ClearFpgmPrepCvt(SplineFont *sf) {
 
 void FVAutoInstr(FontViewBase * fv) {
    BlueData bd;
-
    int i, cnt=0, gid;
-
    GlobalInstrCt gic;
 
    /* If all glyphs are selected, then no legacy hint will remain after */
@@ -1110,7 +1077,6 @@ void FVAutoInstr(FontViewBase * fv) {
 
 void FVClearInstrs(FontViewBase * fv) {
    SplineChar *sc;
-
    int i, gid;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -1144,11 +1110,8 @@ void FVClearHints(FontViewBase * fv) {
 
 static int tester(SplineChar *sc,struct lookup_subtable *sub) {
    PST *pst;
-
    KernPair *kp;
-
    int isv;
-
    AnchorPoint *ap;
 
    if (sc==NULL)
@@ -1171,11 +1134,8 @@ static int tester(SplineChar *sc,struct lookup_subtable *sub) {
 int FVBParseSelectByPST(FontViewBase * fv, struct lookup_subtable *sub,
 			int search_type) {
    int i;
-
    SplineFont *sf;
-
    int first;
-
    int gid;
 
    sf=fv->sf;
@@ -1211,9 +1171,7 @@ int FVBParseSelectByPST(FontViewBase * fv, struct lookup_subtable *sub,
 
 void FVBuildAccent(FontViewBase * fv, int onlyaccents) {
    int i, cnt=0, gid;
-
    SplineChar dummy;
-
    SplineChar *sc;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -1245,11 +1203,8 @@ void FVBuildAccent(FontViewBase * fv, int onlyaccents) {
 
 void FVDetachGlyphs(FontViewBase * fv) {
    int i, j, gid;
-
    EncMap *map=fv->map;
-
    int altered=false;
-
    SplineFont *sf=fv->sf;
 
    for (i=0; i < map->enccount; ++i)
@@ -1268,15 +1223,10 @@ void FVDetachGlyphs(FontViewBase * fv) {
 
 void FVDetachAndRemoveGlyphs(FontViewBase * fv) {
    int i, j, gid;
-
    EncMap *map=fv->map;
-
    SplineFont *sf=fv->sf;
-
    int flags=-1;
-
    int changed=false, altered=false;
-
    FontViewBase *fvs;
 
    for (i=0; i < map->enccount; ++i)
@@ -1487,7 +1437,6 @@ void FVRevertBackup(FontViewBase * fv) {
 
 FontViewBase *_FontViewCreate(SplineFont *sf) {
    FontViewBase *fv=calloc(1, sizeof(FontViewBase));
-
    int i;
 
    fv->nextsame=sf->fv;

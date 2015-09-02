@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: nonlineartrans.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -67,9 +67,7 @@ void nlt_exprfree(struct expr *e) {
 
 static int gettoken(struct context *c,real *val) {
    int ch, i;
-
    char *end, *pt;
-
    char buffer[40];
 
    if (c->backed_token != op_base) {
@@ -198,9 +196,7 @@ static struct expr *getexpr(struct context *c);
 
 static struct expr *gete0(struct context *c) {
    real val=0;
-
    enum operator  op=gettoken(c, &val);
-
    struct expr *ret;
 
    switch (op) {
@@ -276,9 +272,7 @@ static struct expr *gete0(struct context *c) {
 
 static struct expr *gete1(struct context *c) {
    real val=0;
-
    enum operator  op;
-
    struct expr *ret, *op1;
 
    op1=gete0(c);
@@ -297,9 +291,7 @@ static struct expr *gete1(struct context *c) {
 
 static struct expr *gete2(struct context *c) {
    real val=0;
-
    enum operator  op;
-
    struct expr *ret, *op1;
 
    op1=gete1(c);
@@ -318,9 +310,7 @@ static struct expr *gete2(struct context *c) {
 
 static struct expr *gete3(struct context *c) {
    real val=0;
-
    enum operator  op;
-
    struct expr *ret, *op1;
 
    op1=gete2(c);
@@ -339,9 +329,7 @@ static struct expr *gete3(struct context *c) {
 
 static struct expr *gete4(struct context *c) {
    real val=0;
-
    enum operator  op;
-
    struct expr *ret, *op1;
 
    op1=gete3(c);
@@ -361,9 +349,7 @@ static struct expr *gete4(struct context *c) {
 
 static struct expr *gete5(struct context *c) {
    real val=0;
-
    enum operator  op;
-
    struct expr *ret, *op1;
 
    op1=gete4(c);
@@ -382,9 +368,7 @@ static struct expr *gete5(struct context *c) {
 
 static struct expr *getexpr(struct context *c) {
    real val=0;
-
    enum operator  op;
-
    struct expr *ret, *op1;
 
    op1=gete5(c);
@@ -556,7 +540,6 @@ static real NL_expr(struct context *c,struct expr *e) {
 
 static void NLTransPoint(SplinePoint *sp,struct context *c) {
    BasePoint old, off, delta;
-
    int fixup=true;
 
    old=sp->me;
@@ -615,15 +598,10 @@ static void NLTransPoint(SplinePoint *sp,struct context *c) {
 static void SplineSetNLTrans(SplineSet *ss,struct context *c,
 			     int everything) {
    SplinePoint *first, *last, *next;
-
    SplinePoint *sp;
-
    TPoint mids[20];
-
    bigreal t;
-
    int i;
-
    Spline1D *xsp, *ysp;
 
    /* When doing a linear transform, all we need to do is transform the */
@@ -712,9 +690,7 @@ static void SplineSetNLTrans(SplineSet *ss,struct context *c,
 
 static void _SCNLTrans(SplineChar *sc,struct context *c,int layer) {
    SplineSet *ss;
-
    RefChar *ref;
-
    int i, last, first;
 
    if (sc->layer_cnt==ly_fore + 1 &&
@@ -746,11 +722,8 @@ static void _SCNLTrans(SplineChar *sc,struct context *c,int layer) {
 
 void _SFNLTrans(FontViewBase * fv, struct context *c) {
    SplineChar *sc;
-
    RefChar *ref;
-
    int i, gid;
-
    int layer=fv->active_layer;
 
    SFUntickAll(fv->sf);

@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: fvcomposite.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1329,7 +1329,6 @@ int SFIsRotatable(SplineFont *sf, SplineChar * sc, int layer) {
    } else if (strstr(sc->name, ".vert") != NULL
 	      || strstr(sc->name, ".vrt2") != NULL) {
       int ret;
-
       char *temp;
 
       end=strchr(sc->name, '.');
@@ -1552,7 +1551,6 @@ static real SCFindTopXRange(SplineChar *sc,int layer,DBounds *bounds,
 static real SCFindBottomXRange(SplineChar *sc,int layer,DBounds *bounds,
 			       real ia) {
    RefChar *rf;
-
    real yextreme=0x80000;
 
    /* a char with no splines (ie. a space) must have an lbearing of 0 */
@@ -1664,9 +1662,7 @@ static int SCStemCheck(SplineFont *sf,int layer,int basech,DBounds *bb,
    }
    if (sc->dstem != NULL) {
       double himin, himax, hibase, roff, temp;
-
       double lbx=0, rbx=0, lbxtest, rbxtest;
-
       HintInstance *hi;
 
       for (d=sc->dstem; d != NULL; d=d->next) {
@@ -2014,7 +2010,6 @@ static void TurnOffUseMyMetrics(SplineChar *sc) {
    /*  change the metrics, we should turn off "use my metrics" on the base */
    /*  reference */
    RefChar *refs;
-
    int ly;
 
    for (ly=ly_fore; ly < sc->layer_cnt; ++ly)
@@ -2439,7 +2434,7 @@ static void SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 			   int disp_only, real ia, int basech, char *dot) {
    int invert=false;		/* invert accent, false==0, true!=0 */
    SplineChar *rsc;
-   
+
    rsc=GetGoodAccentGlyph(sf,ch,basech,&invert,ia,dot,sc);
 
    /* find a location to put an accent on this character */
@@ -2803,7 +2798,6 @@ static void DoRotation(SplineFont *sf,SplineChar *sc,int layer,
    } else {
       if (strncmp(sc->name, "vertuni", 7)==0 && strlen(sc->name)==11) {
 	 char *end;
-
 	 int uni=strtol(sc->name + 7, &end, 16);
 
 	 if (*end != '\0'

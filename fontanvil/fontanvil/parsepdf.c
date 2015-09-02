@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: parsepdf.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -65,7 +65,6 @@ struct pdfcontext {
 static long FindXRef(AFILE *pdf) {
 /* Find 'startxref' in FILE pdf and return the value found, else return -1 */
    int ch;
-
    long xrefpos;
 
    if (afseek(pdf, -5 - 2 - 8 - 2 - 10 - 2, SEEK_END)==0) {
@@ -91,11 +90,8 @@ static long FindXRef(AFILE *pdf) {
 static int findkeyword(AFILE *pdf,char *keyword,char *end) {
 /* Find Keyword in file pdf. Stop looking if reach end or get a file-error */
    char buffer[60];
-
    int len=strlen(keyword);
-
    int end_len=end==NULL ? 0 : strlen(end);
-
    int ch, i;
 
    /* exit with error if 'keyword' or 'end' too big to test */
@@ -129,7 +125,6 @@ static int seektrailer(AFILE *pdf,long *start,long *num,
 		       struct pdfcontext *pc) {
 /* seek 'trailer' and then return values for 'start' and 'num'. Exit if error. */
    long prev_xref;
-
    long pos;
 
    /* find 'trailer' and point 'pos' to the next char location after it */
@@ -171,21 +166,13 @@ static long *FindObjects(struct pdfcontext *pc) {
 /* Find and return a list of file pointers to XREFObjects in this pdf file. */
 /* Return NULL if any file-reading error encountered, or if lack of memory. */
    AFILE *pdf=pc->pdf;
-
    long xrefpos;
-
    long *ret, *ret_old;
-
    int *gen, *gen_old;
-
    int ch;
-
    long cnt, i, start, num;
-
    long offset;
-
    int gennum;
-
    char f;
 
    /* find the XREF location and point to that position. Exit if error */
@@ -278,7 +265,6 @@ static int pdf_peekch(AFILE *pdf) {
 static int pdf_skipwhitespace(struct pdfcontext *pc) {
 /* Skip pdf white spaces. Return -1 if EOF or get file error. */
    AFILE *pdf=pc->compressed ? pc->compressed : pc->pdf;
-
    int ch;
 
    /* get next char and loop forever until EOF or file error */
@@ -298,9 +284,7 @@ static int pdf_skipwhitespace(struct pdfcontext *pc) {
 static char *pdf_getname(struct pdfcontext *pc) {
 /* return name. return NULL if errors found */
    AFILE *pdf=pc->compressed ? pc->compressed : pc->pdf;
-
    int ch;
-
    char *pt=pc->tokbuf, *end=pc->tokbuf + pc->tblen;
 
    /* first, skip any white spaces in front of name */
@@ -335,11 +319,8 @@ static char *pdf_getname(struct pdfcontext *pc) {
 
 static char *pdf_getdictvalue(struct pdfcontext *pc) {
    AFILE *pdf=pc->compressed ? pc->compressed : pc->pdf;
-
    int ch;
-
    char *pt=pc->tokbuf, *end=pc->tokbuf + pc->tblen;
-
    int dnest=0, anest=0, strnest;
 
    pdf_skipwhitespace(pc);
@@ -420,9 +401,7 @@ static void PSDictClear(struct psdict *dict) {
 
 static int pdf_readdict(struct pdfcontext *pc) {
    AFILE *pdf=pc->compressed ? pc->compressed : pc->pdf;
-
    char *key, *value;
-
    int ch;
 
    PSDictClear(&pc->pdfdict);
@@ -493,7 +472,6 @@ static int hex(int ch1,int ch2) {
 
 static int pdf_getprotectedtok(AFILE *stream,char *tokbuf) {
    char *pt=tokbuf, *end=tokbuf + 100 - 2;
-
    int ch;
 
    while (isspace(ch=agetc(stream)));
@@ -534,9 +512,7 @@ static int pdf_getinteger(char *pt,struct pdfcontext *pc);
 
 static int pdf_findobject(struct pdfcontext *pc,int num) {
    int first_offset, n, i, o, offset, container;
-
    AFILE *data;
-
    char *pt;
 
    if (pc->compressed != NULL) {
@@ -597,7 +573,6 @@ static int pdf_findobject(struct pdfcontext *pc,int num) {
 
 static int pdf_getdescendantfont(struct pdfcontext *pc,int num) {
    char *pt;
-
    int nnum;
 
    if (pdf_findobject(pc, num) && pdf_readdict(pc)) {
@@ -617,7 +592,6 @@ static int pdf_getdescendantfont(struct pdfcontext *pc,int num) {
 
 static int pdf_findfonts(struct pdfcontext *pc) {
    int i, j, k=0, dnum, cnum;
-
    char *pt, *tpt, *cmap, *desc;
 
    pc->fontobjs=malloc(pc->ocnt * sizeof(long));
@@ -708,9 +682,7 @@ static int pdf_findfonts(struct pdfcontext *pc) {
 
 static int pdf_getinteger(char *pt,struct pdfcontext *pc) {
    int val, ret;
-
    long here;
-
    AFILE *pdf;
 
    if (pt==NULL)
@@ -752,7 +724,6 @@ static void pdf_addpages(struct pdfcontext *pc,int obj) {
 		     ++pt;
 		  } else {
 		     int o=strtol(pt, &end, 10);
-
 		     int r;
 
 		     r=strtol(end, &end, 10);
@@ -775,7 +746,6 @@ static void pdf_addpages(struct pdfcontext *pc,int obj) {
 
 static int pdf_findpages(struct pdfcontext *pc) {
    AFILE *pdf=pc->pdf;
-
    long top_ref;
 
    /* I could just find all the Page objects, but they would not be in order then */
@@ -813,9 +783,7 @@ static void pdf_hexfilter(AFILE *to,AFILE *from) {
 
 static void pdf_85filter(AFILE *to,AFILE *from) {
    int ch1, ch2, ch3, ch4, ch5;
-
    unsigned int val;
-
    int cnt;
 
    afseek(from,0,SEEK_SET);
@@ -881,11 +849,8 @@ static int haszlib(void) {
 /* Copied with few mods from the zlib howto */
 static int pdf_zfilter(AFILE *to,AFILE *from) {
    char *in;
-
    char *out;
-
    z_stream strm;
-
    int ret;
 
    /* Initialize */
@@ -955,9 +920,7 @@ static AFILE *pdf_defilterstream(struct pdfcontext *pc) {
    /* Then apply each de-filter sequentially reading from one file, writing */
    /*  to another */
    AFILE *res, *old, *pdf=pc->pdf;
-
    int i, length, ch;
-
    char *pt, *end;
 
    if (pc->compressed != NULL) {
@@ -1036,19 +999,12 @@ static int getuvalue(AFILE *f,int len,long *val) {
 
 static long *FindObjectsFromXREFObject(struct pdfcontext *pc,long prev_xref) {
    char *pt;
-
    long *ret, *ret_old, *sub_old;
-
    int *gen, *gen_old;
-
    long cnt=0, i, start, num;
-
    int bar;
-
    int typewidth, offwidth, genwidth;
-
    long type, offset, gennum;
-
    AFILE *xref_stream, *pdf=pc->pdf;
 
    while (prev_xref != -1) {
@@ -1211,7 +1167,6 @@ static char *toknames[]={ "m","l","c","v",
 
 static int nextpdftoken(AFILE *file,real *val,char *tokbuf,int tbsize) {
    int ch, r, i;
-
    char *pt, *end;
 
    /* Eat whitespace and comments. Comments last to eol */
@@ -1395,21 +1350,13 @@ static void freestuff(struct psstack *stack,int sp) {
 
 static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
    SplinePointList *cur=NULL, *head=NULL;
-
    BasePoint current;
-
    int tok, i, j;
-
    struct psstack stack[100];
-
    real dval;
-
    int sp=0;
-
    SplinePoint *pt;
-
    real transform[6], t[6];
-
    struct graphicsstate {
       real transform[6];
       BasePoint current;
@@ -1418,25 +1365,15 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
       Color fore_stroke, fore_fill;
       DashType dashes[DASH_MAX];
    } gsaves[30];
-
    int gsp=0;
-
    Color fore_stroke=COLOR_INHERITED, fore_fill=COLOR_INHERITED;
-
    int linecap=lc_inherited, linejoin=lj_inherited;
-
    real linewidth=WIDTH_INHERITED;
-
    DashType dashes[DASH_MAX];
-
    int dash_offset=0;
-
    Entity *ent;
-
    char oldloc[25];
-
    char tokbuf[100];
-
    const int tokbufsize=100;
 
    strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
@@ -1657,9 +1594,7 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	case pt_rect:
 	   if (sp >= 4) {
 	      SplinePointList *spl=chunkalloc(sizeof(SplinePointList));
-
 	      SplinePoint *first, *second, *third, *fourth;
-
 	      BasePoint temp1, temp2;
 
 	      spl->first=spl->last=pt;
@@ -1783,11 +1718,8 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 static SplineChar *pdf_InterpretSC(struct pdfcontext *pc,char *glyphname,
 				   char *objnum, int *flags) {
    int gn=strtol(objnum, NULL, 10);
-
    EntityChar ec;
-
    AFILE *glyph_stream;
-
    SplineChar *sc;
 
    if (gn <= 0 || gn >= pc->ocnt || pc->objs[gn]==-1)
@@ -1821,13 +1753,9 @@ static SplineChar *pdf_InterpretSC(struct pdfcontext *pc,char *glyphname,
 
 static Entity *pdf_InterpretEntity(struct pdfcontext *pc,int page_num) {
    EntityChar ec;
-
    SplineChar dummy;
-
    AFILE *glyph_stream;
-
    char *pt;
-
    int content;
 
    if (!pdf_findobject(pc, pc->pages[page_num]) || !pdf_readdict(pc)) {
@@ -1867,13 +1795,9 @@ static Entity *pdf_InterpretEntity(struct pdfcontext *pc,int page_num) {
 static void add_mapping(SplineFont *basesf,long *mappings,int *uvals,
 			int nuni, int gid, int cmap_from_cid, int cur) {
    int i, ndups, pos;
-
    char suffix[8], *name, *nname, buffer[400];
-
    SplineFont *sf=basesf->subfontcnt > 0 ? basesf->subfonts[0] : basesf;
-
    struct altuni *altuni, *prev;
-
    SplineChar *sc;
 
    name =
@@ -1939,13 +1863,9 @@ static void add_mapping(SplineFont *basesf,long *mappings,int *uvals,
 static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
 			int font_num) {
    AFILE *file;
-
    int i, j, gid, start, end, uni, cur=0, nuni, nhex, nchars, lo, *uvals;
-
    long *mappings;
-
    char tok[200], *ccval, prevtok[200];
-
    SplineFont *sf=basesf->subfontcnt > 0 ? basesf->subfonts[0] : basesf;
 
    if (!pdf_findobject(pc, pc->cmapobjs[font_num]) || !pdf_readdict(pc))
@@ -2048,9 +1968,7 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
 
 static int pdf_getcharprocs(struct pdfcontext *pc,char *charprocs) {
    int cp=strtol(charprocs, NULL, 10);
-
    AFILE *temp, *pdf=pc->pdf;
-
    int ret;
 
    /* An indirect reference? */
@@ -2076,15 +1994,10 @@ static int pdf_getcharprocs(struct pdfcontext *pc,char *charprocs) {
 
 static SplineFont *pdf_loadtype3(struct pdfcontext *pc) {
    char *enc, *cp, *fontmatrix, *name;
-
    double emsize;
-
    SplineFont *sf;
-
    int flags=-1;
-
    int i;
-
    struct psdict *charprocdict;
 
    name=PSDictHasEntry(&pc->pdfdict, "Name");
@@ -2158,11 +2071,8 @@ static AFILE *pdf_insertpfbsections(AFILE *file,struct pdfcontext *pc) {
 
 static SplineFont *pdf_loadfont(struct pdfcontext *pc,int font_num) {
    char *pt;
-
    int fd, type, ff;
-
    AFILE *file;
-
    SplineFont *sf;
 
    if (!pdf_findobject(pc, pc->fontobjs[font_num]) || !pdf_readdict(pc))
@@ -2247,11 +2157,8 @@ static void pcFree(struct pdfcontext *pc) {
 
 char **NamesReadPDF(char *filename) {
    struct pdfcontext pc;
-
    char oldloc[24];
-
    int i;
-
    char **list;
 
    strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
@@ -2295,13 +2202,9 @@ char **NamesReadPDF(char *filename) {
 SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
 			   enum openflags openflags) {
    char *select_this_font=NULL, *pt;
-
    struct pdfcontext pc;
-
    SplineFont *sf=NULL;
-
    char oldloc[24];
-
    int i;
 
    strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
@@ -2347,7 +2250,6 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
                     select_this_font,filename);
    } else {
       char **names;
-
       int choice;
 
       names=malloc((pc.fcnt + 1) * sizeof(unichar_t *));
@@ -2370,7 +2272,6 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
 
 SplineFont *SFReadPdfFont(char *filename, enum openflags openflags) {
    SplineFont *sf;
-
    AFILE *pdf;
 
    pdf=afopen(filename, "r");

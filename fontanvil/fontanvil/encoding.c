@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4070 2015-06-29 06:49:37Z mskala $ */
+/* $Id: encoding.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -82,7 +82,6 @@ const char *FindUnicharName(void) {
    /* Even worse, both accept UCS-2, but under iconv it means native byte */
    /*  ordering and under libiconv it means big-endian */
    iconv_t test;
-
    static char *goodname=NULL;
    static char *names[] =
       { "UCS-4-INTERNAL", "UCS-4", "UCS4", "ISO-10646-UCS-4", "UTF-32",
@@ -90,7 +89,6 @@ NULL };
    static char *namesle[]={ "UCS-4LE","UTF-32LE",NULL };
    static char *namesbe[]={ "UCS-4BE","UTF-32BE",NULL };
    char **testnames;
-
    int i;
 
    union {
@@ -419,7 +417,6 @@ Encoding *FindOrMakeEncoding(const char *name) {
 /* Plugin API */
 int AddEncoding(char *name, EncFunc enc_to_uni, EncFunc uni_to_enc, int max) {
    Encoding *enc;
-
    int i;
 
    for (enc=enclist; enc != NULL; enc=enc->next) {
@@ -476,7 +473,6 @@ static void EncodingFree(Encoding *item) {
 
 static void DeleteEncoding(Encoding *me) {
    FontViewBase *fv;
-
    Encoding *prev;
 
    if (me->builtin)
@@ -508,11 +504,8 @@ static void DeleteEncoding(Encoding *me) {
     /* # is a comment character (to eol) */
 static Encoding *ParseConsortiumEncodingFile(AFILE *file) {
    char buffer[200];
-
    int32_t encs[0x10000];
-
    int enc, unienc, max;
-
    Encoding *item;
 
    memset(encs, 0, sizeof(encs));
@@ -556,13 +549,9 @@ static void RemoveMultiples(Encoding *item) {
 
 char *ParseEncodingFile(char *filename, char *encodingname) {
    AFILE *file;
-
    char *orig=filename;
-
    Encoding *head, *item, *prev, *next;
-
    char *buf, *name;
-
    int i, ch;
 
    if (filename==NULL)
@@ -624,9 +613,7 @@ int CIDFromName(char *name, SplineFont *cidmaster) {
    /*  cid 504 */
    /* Other convention "cid-504.vert" */
    int len=strlen(cidmaster->ordering);
-
    int cid;
-
    char *end;
 
    if (strncmp(name, cidmaster->ordering, len)==0) {
@@ -647,7 +634,6 @@ int CIDFromName(char *name, SplineFont *cidmaster) {
 
 int CID2NameUni(struct cidmap *map, int cid, char *buffer, int len) {
    int enc=-1;
-
    const char *temp;
 
    if (map==NULL)
@@ -672,7 +658,6 @@ int CID2NameUni(struct cidmap *map, int cid, char *buffer, int len) {
 
 int NameUni2CID(struct cidmap *map, int uni, const char *name) {
    int i;
-
    struct cidaltuni *alts;
 
    if (map==NULL)
@@ -697,7 +682,6 @@ int NameUni2CID(struct cidmap *map, int uni, const char *name) {
 struct altuni *CIDSetAltUnis(struct cidmap *map, int cid) {
    /* Some CIDs are mapped to several unicode code points, damn it */
    struct altuni *sofar=NULL, *alt;
-
    struct cidaltuni *alts;
 
    for (alts=map->alts; alts != NULL; alts=alts->next) {
@@ -719,15 +703,10 @@ int MaxCID(struct cidmap *map) {
 static char *SearchDirForCidMap(char *dir,char *registry,char *ordering,
 				int supplement, char **maybefile) {
    char maybe[FILENAME_MAX + 1];
-
    struct dirent *ent;
-
    DIR *d;
-
    int len, rlen=strlen(registry), olen=strlen(ordering);
-
    char *pt, *end, *ret;
-
    int test, best=-1;
 
    if (dir==NULL)
@@ -803,13 +782,9 @@ static struct cidmap *MakeDummyMap(char *registry,char *ordering,
 struct cidmap *LoadMapFromFile(char *file, char *registry, char *ordering,
 			       int supplement) {
    struct cidmap *ret=malloc(sizeof(struct cidmap));
-
    char *pt=strrchr(file, '.');
-
    AFILE *f;
-
    int cid1, cid2, uni, cnt, i, ch;
-
    char name[100];
 
    while (pt > file && isdigit(pt[-1]))
@@ -979,11 +954,8 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
 
 static void SFApplyOrdering(SplineFont *sf,int glyphcnt) {
    SplineChar **glyphs, *sc;
-
    int i;
-
    RefChar *refs, *rnext, *rprev;
-
    SplineSet *new, *spl;
 
    /* Remove references to characters which aren't in the new map (if any) */
@@ -1028,7 +1000,6 @@ static void SFApplyOrdering(SplineFont *sf,int glyphcnt) {
 /* Convert a normal font to a cid font, rearranging glyphs into cid order */
 static void SFEncodeToMap(SplineFont *sf,struct cidmap *map) {
    SplineChar *sc;
-
    int i, max=0, anyextras=0;
 
    for (i=0; i < sf->glyphcnt; ++i)
@@ -1106,17 +1077,11 @@ static char *readpsstr(char *str) {
 
 static struct cmap *ParseCMap(char *filename) {
    char buf2[200];
-
    AFILE *file;
-
    struct cmap *cmap;
-
    char *end, *pt;
-
    int val, pos;
-
    enum cmaptype in;
-
    static const char *bcsr="begincodespacerange",*bndr =
       "beginnotdefrange", *bcr="begincidrange";
    static const char *reg="/Registry",*ord="/Ordering",*sup =
@@ -1186,7 +1151,6 @@ static struct cmap *ParseCMap(char *filename) {
 
 static void CompressCMap(struct cmap *cmap) {
    int32_t i, j, k, pos, base;
-
    uint32_t min, oldmax;
 
    /* we can't really deal with three and four byte encodings */
@@ -1254,13 +1218,9 @@ static void CompressCMap(struct cmap *cmap) {
 static SplineFont *CIDFlatten(SplineFont *cidmaster,SplineChar ** glyphs,
 		       int charcnt) {
    FontViewBase *fvs;
-
    SplineFont *new;
-
    char buffer[20];
-
    BDFFont *bdf;
-
    int j;
 
    if (cidmaster==NULL)
@@ -1346,7 +1306,6 @@ static SplineFont *CIDFlatten(SplineFont *cidmaster,SplineChar ** glyphs,
 
 void SFFlatten(SplineFont *cidmaster) {
    SplineChar **glyphs;
-
    int i, j, max;
 
    if (cidmaster==NULL)
@@ -1502,7 +1461,6 @@ static int Enc2CMap(struct cmap *cmap,int enc) {
 static void SFEncodeToCMap(SplineFont *cidmaster,SplineFont *sf,
 			   EncMap * oldmap, struct cmap *cmap) {
    SplineChar *sc, *GID0=NULL;
-
    int i, max=0, anyextras=0;
 
    cidmaster->cidregistry=cmap->registry;
@@ -1543,9 +1501,7 @@ static void SFEncodeToCMap(SplineFont *cidmaster,SplineFont *sf,
 /*  is meaningful. Set the master to the subfont with the most glyphs */
 static void CIDMasterAsDes(SplineFont *sf) {
    SplineFont *cidmaster=sf->cidmaster;
-
    SplineFont *best;
-
    int i, cid, cnt, bcnt;
 
    if (cidmaster==NULL)
@@ -1566,7 +1522,6 @@ static void CIDMasterAsDes(SplineFont *sf) {
       best=cidmaster->subfonts[0];
    if (best != NULL) {
       double ratio=1000.0 / (best->ascent + best->descent);
-
       int ascent=rint(best->ascent * ratio);
 
       if (cidmaster->ascent != ascent || cidmaster->descent != 1000 - ascent) {
@@ -1579,11 +1534,8 @@ static void CIDMasterAsDes(SplineFont *sf) {
 SplineFont *MakeCIDMaster(SplineFont *sf, EncMap * oldmap, int bycmap,
 			  char *cmapfilename, struct cidmap *cidmap) {
    SplineFont *cidmaster;
-
    struct cidmap *map;
-
    struct cmap *cmap;
-
    FontViewBase *fvs;
 
    cidmaster=SplineFontEmpty();
@@ -1672,7 +1624,6 @@ SplineFont *MakeCIDMaster(SplineFont *sf, EncMap * oldmap, int bycmap,
 
 static void BDFOrigFixup(BDFFont *bdf,int orig_cnt,SplineFont *sf) {
    BDFChar **glyphs;
-
    int i;
 
    if (bdf->glyphmax >= orig_cnt) {
@@ -1699,9 +1650,7 @@ static void BDFOrigFixup(BDFFont *bdf,int orig_cnt,SplineFont *sf) {
 
 static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
    int enc_cnt, i;
-
    BDFFont *bdf;
-
    FontViewBase *fvs;
 
    /* Normally we base our encoding process on unicode code points. */
@@ -1730,9 +1679,7 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
       for (i=0; i < sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL) {
 	    struct splinecharlist *scl;
-
 	    int layer;
-
 	    RefChar *ref;
 
 	    for (scl=sf->glyphs[i]->dependents; scl != NULL;
@@ -1795,7 +1742,6 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
    for (i=0; i < old->enccount && i < enc_cnt; ++i)
       if (old->map[i] != -1 && sf->glyphs[old->map[i]] != NULL) {
 	 SplineChar dummy;
-
 	 int j=old->map[i];
 
 	 SCBuildDummy(&dummy, sf, old, i);
@@ -1808,9 +1754,7 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
    for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 struct splinecharlist *scl;
-
 	 int layer;
-
 	 RefChar *ref;
 
 	 for (scl=sf->glyphs[i]->dependents; scl != NULL; scl=scl->next) {
@@ -1826,7 +1770,6 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
 int SFForceEncoding(SplineFont *sf, EncMap * old, Encoding * new_enc) {
    if (sf->mm != NULL) {
       MMSet *mm=sf->mm;
-
       int i;
 
       for (i=0; i < mm->instance_count; ++i)
@@ -1840,13 +1783,9 @@ int SFForceEncoding(SplineFont *sf, EncMap * old, Encoding * new_enc) {
 
 EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
    int i, j, extras, found, base, unmax;
-
    int32_t *encoded, *unencoded;
-
    EncMap *map;
-
    struct altuni *altuni;
-
    SplineChar *sc;
 
    if (enc==NULL)
@@ -1909,7 +1848,6 @@ EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
    if (enc->is_unicodefull && (sf->uni_interp==ui_trad_chinese ||
 			       sf->uni_interp==ui_ams)) {
       extern const int cns14pua[], amspua[];
-
       const int *pua=sf->uni_interp==ui_ams ? amspua : cns14pua;
 
       for (i=0xe000; i < 0xf8ff; ++i) {
@@ -2129,7 +2067,6 @@ static int MapAddEncodingSlot(EncMap *map,int gid) {
 
 static void FVAddEncodingSlot(FontViewBase *fv,int gid) {
    EncMap *map=fv->map;
-
    int enc;
 
    enc=MapAddEncodingSlot(map, gid);
@@ -2193,9 +2130,7 @@ static int MapAddEnc(SplineFont *sf,SplineChar *sc,EncMap *basemap,
 void SFAddGlyphAndEncode(SplineFont *sf, SplineChar * sc, EncMap * basemap,
 			 int baseenc) {
    int gid, mapfound=false;
-
    FontViewBase *fv;
-
    BDFFont *bdf;
 
    if (sf->cidmaster==NULL) {
@@ -2293,9 +2228,7 @@ static SplineChar *SplineCharMatch(SplineFont *parent,SplineChar *sc) {
 void SFMatchGlyphs(SplineFont *sf, SplineFont *target, int addempties) {
    /* reorder sf so that its glyphs array is the same as that in target */
    int i, j, cnt, cnt2;
-
    SplineChar **glyphs;
-
    BDFFont *bdf;
 
    for (i=0; i < sf->glyphcnt; ++i)
@@ -2352,9 +2285,7 @@ void SFMatchGlyphs(SplineFont *sf, SplineFont *target, int addempties) {
 void MMMatchGlyphs(MMSet * mm) {
    /* reorder all instances so that they have the same orig_pos */
    int i, j, index, lasthole;
-
    SplineFont *sf, *base=NULL;
-
    SplineChar *sc, *scnew, *sc2;
 
    for (i=0; i < mm->instance_count; ++i)
@@ -2414,13 +2345,9 @@ void MMMatchGlyphs(MMSet * mm) {
 
 int32_t UniFromEnc(int enc, Encoding * encname) {
    char from[20];
-
    unichar_t to[20];
-
    ICONV_CONST char *fpt;
-
    char *tpt;
-
    size_t fromlen, tolen;
 
    if (encname->is_custom || encname->is_original)
@@ -2476,7 +2403,6 @@ int32_t UniFromEnc(int enc, Encoding * encname) {
 
 	    printf("UniFromEnc(ret1) %ld\n", t);
 	    unichar_t low16=t & 0xFFFF;
-
 	    unichar_t high16=t >> 16;
 
 	    t=(low16 << 16) | high16;
@@ -2495,15 +2421,10 @@ int32_t UniFromEnc(int enc, Encoding * encname) {
 
 int32_t EncFromUni(int32_t uni, Encoding * enc) {
    unichar_t from[20];
-
    unsigned char to[20];
-
    ICONV_CONST char *fpt;
-
    char *tpt;
-
    size_t fromlen, tolen;
-
    int i;
 
    if (enc->is_custom || enc->is_original || enc->is_compact || uni==-1)
@@ -2571,7 +2492,6 @@ int32_t EncFromName(const char *name, enum uni_interp interp,
 
 void SFExpandGlyphCount(SplineFont *sf, int newcnt) {
    int old=sf->glyphcnt;
-
    FontViewBase *fv;
 
    if (old >= newcnt)

@@ -1,4 +1,4 @@
-/* $Id: tottfvar.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: tottfvar.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -176,9 +176,7 @@ static int AssignPtNumbers(MMSet *mm,int gid) {
 
 static int MatchPoints(SplineFont *sffixed,SplineFont *sfother,int gid) {
    SplineChar *fixed, *other;
-
    SplineSet *ss1, *ss2;
-
    SplinePoint *sp1, *sp2;
 
    fixed=sffixed->glyphs[gid];
@@ -247,7 +245,6 @@ static int MatchPoints(SplineFont *sffixed,SplineFont *sfother,int gid) {
 
 int ContourPtNumMatch(MMSet * mm, int gid) {
    SplineFont *sf;
-
    int i;
 
    if (!mm->apple)
@@ -283,7 +280,6 @@ int ContourPtNumMatch(MMSet * mm, int gid) {
    }
    if (mm->normal->glyphs[gid]->layers[ly_fore].refs != NULL) {
       RefChar *r;
-
       int cnt, c;
 
       for (r=mm->normal->glyphs[gid]->layers[ly_fore].refs, cnt=0;
@@ -325,7 +321,6 @@ int ContourPtNumMatch(MMSet * mm, int gid) {
 
 static int SCPointCount(SplineChar *sc) {
    int ptcnt=0;
-
    RefChar *r;
 
    ptcnt=SSTtfNumberPoints(sc->layers[ly_fore].splines);
@@ -338,13 +333,9 @@ int16_t **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
    /* When figuring out the deltas the first thing we must do is figure */
    /*  out each point's number */
    int i, j, k, l, cnt, ptcnt;
-
    int16_t **deltas;
-
    SplineSet *ss1, *ss2;
-
    SplinePoint *sp1, *sp2;
-
    RefChar *r1, *r2;
 
    if (!ContourPtNumMatch(mm, gid))
@@ -451,9 +442,7 @@ int16_t **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
 
 int16_t **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
    int i, j, k, l, cnt, ptcnt;
-
    int16_t **deltas;
-
    struct ttf_table *cvt, *icvt;
 
    for (cvt=mm->normal->ttf_tables;
@@ -534,15 +523,10 @@ int16_t **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
 
 static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
    int16_t **deltas;
-
    int ptcnt, cnt, pcnt;
-
    int i, j, rj, big;
-
    int tuple_size;
-
    uint32_t start, end;
-
    uint16_t *pts;
 
    deltas=CvtFindDeltas(mm, &ptcnt);
@@ -687,11 +671,8 @@ static void dumpdeltas(struct alltabs *at,int16_t *deltas,int ptcnt) {
 
 static void ttf_dumpgvar(struct alltabs *at,MMSet *mm) {
    int i, j, last;
-
    uint32_t gcoordoff, glyphoffs, start, here, tupledataend, tupledatastart;
-
    int16_t **deltas;
-
    int ptcnt;
 
    at->gvar=atmpfile();
@@ -797,7 +778,6 @@ static void ttf_dumpavar(struct alltabs *at,MMSet *mm) {
 
 static uint32_t AxisNameToTag(char *name) {
    char buf[4];
-
    int i;
 
    if (strmatch(name, "Weight")==0)
@@ -866,7 +846,6 @@ static void ttf_dumpfvar(struct alltabs *at,MMSet *mm) {
 
 void ttf_dumpvariations(struct alltabs *at, SplineFont *sf) {
    MMSet *mm=sf->mm;
-
    int i, j;
 
    for (j=0; j < sf->glyphcnt; ++j)

@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 4119 2015-07-30 12:46:27Z mskala $ */
+/* $Id: noprefs.c 4155 2015-09-02 07:43:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -634,7 +634,6 @@ int GetPrefs(char *name, Val * val) {
 	       val->u.ival=*((int *) (pf->val));
 	    } else if (pf->type==pr_string || pf->type==pr_file) {
 	       val->type=v_str;
-
 	       char *tmpstr =
 		  pf->val ? *((char **) (pf->val)) : (char *) (pf->get) ();
 	       val->u.sval=fastrdup(tmpstr ? tmpstr : "");
@@ -735,7 +734,6 @@ char *getFontAnvilShareDir(void) {
 #   ifndef MAX_PATH
 #      define MAX_PATH 4096
 #   endif
-
    static char *sharedir=NULL;
 
    if (!sharedir) {

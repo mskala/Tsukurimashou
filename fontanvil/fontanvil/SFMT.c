@@ -23,7 +23,7 @@ extern "C" {
 
 #include <string.h>
 #include <assert.h>
-   
+
 #define SFMT_MEXP 19937
 
 #include "SFMT.h"
@@ -347,7 +347,6 @@ void sfmt_fill_array64(sfmt_t * sfmt, uint64_t *array, int size) {
  */
 void sfmt_init_gen_rand(sfmt_t * sfmt, uint32_t seed) {
     int i;
-
     uint32_t *psfmt32 = &sfmt->state[0].u[0];
 
     psfmt32[idxof(0)] = seed;

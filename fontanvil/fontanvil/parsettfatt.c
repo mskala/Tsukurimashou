@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: parsettfatt.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1981,9 +1981,7 @@ static void gsubSimpleSubTable(AFILE *ttf,int stoffset,struct ttfinfo *info,
 		      && info->chars[which] != NULL
 		      && info->chars[which]->name==NULL) {
 		     char *basename=info->chars[glyphs[i]]->name;
-
 		     char *str;
-
 		     char tag[5], *pt=tag;
 
 		     for (j=0;
@@ -2264,7 +2262,6 @@ static void gsubLigatureSubTable(AFILE *ttf,int stoffset,
 	       }
 	       if (k==cc) {
 		  char *str=malloc(len + 6), *pt;
-
 		  char tag[5];
 
 		  tag[0]=fl->featuretag >> 24;
@@ -3208,7 +3205,6 @@ void readttfgdef(AFILE *ttf, struct ttfinfo *info) {
 
    if (mac != 0) {
       uint16_t *mclasses=getClassDefTable(ttf, info->gdef_start + mac, info);
-
       const char *format_spec=_("MarkClass-%d");
 
       info->mark_class_cnt=ClassFindCnt(mclasses, info->glyph_cnt);
@@ -3228,7 +3224,6 @@ void readttfgdef(AFILE *ttf, struct ttfinfo *info) {
       afseek(ttf, info->gdef_start + mas, SEEK_SET);
       if (getushort(ttf)==1) {	/* Version number of Mark GLyph Sets Table */
 	 uint32_t *offsets;
-
 	 uint16_t *glyphs;
 
 	 info->mark_set_cnt=getushort(ttf);
@@ -3957,7 +3952,6 @@ static void mort_figure_ligatures(struct statemachine *sm,int lcp,int off,
 	       /* Do Nothing, ttc file probably */
 	    } else {
 	       char *comp;
-
 	       int err=false;
 
 	       for (len=0, j=lcp; j < sm->lcp; ++j)
@@ -4046,7 +4040,6 @@ static void follow_mort_state(struct statemachine *sm,int offset,int class,
    }
    for (class=class_bottom; class < class_top; ++class) {
       int ent=sm->data[offset + class];
-
       int newState =
 	 memushort(sm->data, sm->length, sm->entryOffset + 4 * ent);
       int flags =
@@ -4113,7 +4106,6 @@ static void morx_figure_ligatures(struct statemachine *sm,int lcp,
 	       /* Nothing to do */
 	    } else {
 	       char *comp;
-
 	       int err=false;
 
 	       for (len=0, j=lcp; j < sm->lcp; ++j) {
@@ -5396,7 +5388,6 @@ void readttfkerns(AFILE *ttf, struct ttfinfo *info) {
 	    /* format 3, horizontal kerning data (as classes limited to 256 entries) */
 	    /*  OpenType's spec doesn't document this */
 	    int gc, kv, flags;
-
 	    int16_t *kvs;
 
 	    gc=getushort(ttf);
@@ -5658,7 +5649,6 @@ static void ttf_math_read_mathkernv(AFILE *ttf,uint32_t start,
 
    for (i=0; i < cnt; ++i) {
       DeviceTable *dv;
-
       uint32_t offset;
 
       if (mkv->mkd[i].height_adjusts != NULL) {
@@ -5693,7 +5683,6 @@ static void ttf_math_read_mathkern(AFILE *ttf,struct ttfinfo *info,
 				   uint32_t start) {
    int coverage, cnt, i;
    uint16_t *glyphs;
-
    struct koff {
       uint16_t tr, tl, br, bl;
    } *koff;
@@ -6091,9 +6080,7 @@ void readttfbase(AFILE *ttf, struct ttfinfo *info) {
 	 for (i=0; i < basescriptcnt; ++i)
 	    if (bs[i].offset != 0) {
 	       int basevalues, defminmax;
-
 	       int langsyscnt;
-
 	       struct tagoff *ls;
 
 	       afseek(ttf, bs[i].offset, SEEK_SET);
@@ -6114,7 +6101,6 @@ void readttfbase(AFILE *ttf, struct ttfinfo *info) {
 	       curScript->script=bs[i].tag;
 	       if (basevalues != 0) {
 		  int coordcnt;
-
 		  int *coords;
 
 		  afseek(ttf, bs[i].offset + basevalues, SEEK_SET);
@@ -6231,7 +6217,6 @@ void readttfbsln(AFILE *ttf, struct ttfinfo *info) {
 	 offsets[i]=(int16_t) getushort(ttf);
    } else if (format==2 || format==3) {
       int stdGID=getushort(ttf);
-
       int ptnum;
 
       if (stdGID >= info->glyph_cnt || (sc=info->chars[stdGID])==NULL)
@@ -6537,9 +6522,7 @@ static struct jstf_lang *jstf_lang(AFILE *ttf,uint32_t base,
       ret->prios[i].maxExtend=(void *) (intptr_t) getushort(ttf);
    for (i=0; i < cnt; ++i) {
       int enSub, disSub, enPos, disPos, maxShrink, maxExtend;
-
       int enSub2, disSub2, enPos2, disPos2;
-
       uint32_t pbase=base + off + (intptr_t) ret->prios[i].maxExtend;
 
       afseek(ttf, pbase, SEEK_SET);

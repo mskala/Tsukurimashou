@@ -1,4 +1,4 @@
-/* $Id: ttfinstrs.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: ttfinstrs.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2001-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -294,17 +294,11 @@ const char *ff_ttf_instrnames[]={
 uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 		void (*IVError) (void *, char *, int), void *iv) {
    short numberstack[256];
-
    int npos=0, nread, i;
-
    int push_left=0, push_size=0;
-
    char *pt;
-
    char *end, *bend, *brack;
-
    int icnt=0, imax=strlen(text) / 2, val, temp;
-
    uint8_t *instrs=malloc(imax);
 
    for (pt=text; *pt; ++pt) {
@@ -507,9 +501,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 
 int instr_typify(struct instrdata *id) {
    int i, len=id->instr_cnt, cnt, j, lh;
-
    uint8_t *instrs=id->instrs;
-
    uint8_t *bts;
 
    if (id->bts==NULL)
@@ -557,7 +549,6 @@ int instr_typify(struct instrdata *id) {
 
 char *__IVUnParseInstrs(InstrBase * iv) {
    char *ubuf, *pt;
-
    int i, l;
 
    pt=ubuf=iv->offset=iv->scroll =
@@ -588,9 +579,7 @@ char *__IVUnParseInstrs(InstrBase * iv) {
 
 char *_IVUnParseInstrs(uint8_t * instrs, int instr_cnt) {
    struct instrbase iv;
-
    struct instrdata id;
-
    char *ret;
 
    memset(&iv, 0, sizeof(iv));

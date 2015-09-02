@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: macbinary.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -108,9 +108,7 @@ static uint16_t HashToId(char *fontname,SplineFont *sf,EncMap *map) {
 
    /* A FOND ID should be between these two numbers for roman script (I think) */
    uint32_t hash=0;
-
    int i, gid;
-
    SplineChar *sc;
 
    /* Figure out what language we've got */
@@ -203,7 +201,6 @@ static uint16_t HashToId(char *fontname,SplineFont *sf,EncMap *map) {
 static int IsMacMonospaced(SplineFont *sf,EncMap *map) {
    /* Only look at first 256 */
    int i;
-
    double width=0x80000000;
 
    for (i=0; i < 256 && i < map->enccount; ++i) {
@@ -222,7 +219,6 @@ static int IsMacMonospaced(SplineFont *sf,EncMap *map) {
 static double SFMacWidthMax(SplineFont *sf,EncMap *map) {
    /* Only look at first 256 */
    int i, gid;
-
    double width=-1;
 
    for (i=0; i < 256 && i < map->enccount; ++i) {
@@ -240,7 +236,6 @@ static double SFMacWidthMax(SplineFont *sf,EncMap *map) {
 static int SFMacAnyKerns(SplineFont *sf,EncMap *map) {
    /* Only look at first 256 */
    int i, cnt=0, gid;
-
    KernPair *kp;
 
    for (i=0; i < 256 && i < map->enccount; ++i) {
@@ -370,15 +365,11 @@ static int BDFCCopyBitmaps(uint8_t ** rows,int offset,BDFChar *bdfc,
 
 static uint32_t BDFToNFNT(AFILE *res,BDFFont *bdf,EncMap *map) {
    short widths[258], lbearings[258], locs[258] /*, idealwidths[256] */ ;
-
    uint8_t **rows=malloc(bdf->pixelsize * sizeof(uint8_t *));
-
    int i, k, width, kernMax=1, descentMax=bdf->descent - 1, rectMax =
       1, widMax=3;
    uint32_t rlenpos=aftell(res), end, owloc, owpos;
-
    int gid;
-
    BDFChar *bdfc;
 
    for (i=0; i < map->enccount; i++)
@@ -496,7 +487,6 @@ static uint32_t DummyNFNT(AFILE *res,BDFFont *bdf,EncMap *map) {
    int i, width, kernMax=1, descentMax=bdf->descent - 1, rectMax =
       1, widMax=3;
    uint32_t rlenpos=aftell(res);
-
    int gid;
 
    for (i=width=0; i < 256 && i < map->enccount; ++i)
@@ -538,9 +528,7 @@ static uint32_t DummyNFNT(AFILE *res,BDFFont *bdf,EncMap *map) {
 static struct resource *SFToNFNTs(AFILE *res,SplineFont *sf,int32_t *sizes,
 				  EncMap * map) {
    int i, baseresid=HashToId(sf->fontname, sf, map);
-
    struct resource *resstarts;
-
    BDFFont *bdf;
 
    if (sf->cidmaster != NULL)
@@ -569,13 +557,9 @@ static struct resource *SFToNFNTs(AFILE *res,SplineFont *sf,int32_t *sizes,
 static struct resource *SFsToNFNTs(AFILE *res,struct sflist *sfs,
 				   int baseresid) {
    int i, j, cnt;
-
    struct resource *resstarts;
-
    BDFFont *bdf;
-
    struct sflist *sfi;
-
    SplineFont *sf;
 
    cnt=0;
@@ -622,9 +606,7 @@ static struct resource *BuildDummyNFNTlist(AFILE *res,SplineFont *sf,
 					   int32_t * sizes, int baseresid,
 					   EncMap * map) {
    int i;
-
    struct resource *resstarts;
-
    BDFFont *bdf;
 
    if (sf->cidmaster != NULL)
@@ -654,13 +636,9 @@ static struct resource *BuildDummyNFNTfamilyList(AFILE *res,
 						 struct sflist *sfs,
 						 int baseresid) {
    int i, j, cnt;
-
    struct resource *resstarts;
-
    BDFFont *bdf;
-
    struct sflist *sfi;
-
    SplineFont *sf;
 
    cnt=0;
@@ -787,15 +765,11 @@ uint16_t MacStyleCode(SplineFont *sf, uint16_t * psstylecode) {
 static uint32_t SFToFOND(AFILE *res,SplineFont *sf,uint32_t id,int dottf,
 		       int32_t * sizes, EncMap * map) {
    uint32_t rlenpos=aftell(res), widoffpos, widoffloc, kernloc, styleloc, end;
-
    int i, j, k, cnt, strcnt, fontclass, stylecode, glyphenc, geoffset,
       realstylecode;
    int gid;
-
    KernPair *kp;
-
    DBounds b;
-
    char *pt;
 
    /* Fonds are generally marked system heap and sometimes purgeable (resource flags) */
@@ -1016,11 +990,8 @@ struct sflistlist {
 
 static struct sflistlist *FondSplitter(struct sflist *sfs,int *fondcnt) {
    struct sflist *psfaces[48], *sfi, *last, *start;
-
    struct sflistlist *sfsl=NULL, *lastl=NULL, *cur, *test;
-
    uint16_t psstyle;
-
    int fc=0;
 
    sfi=sfs;
@@ -1093,7 +1064,6 @@ static struct sflistlist *FondSplitter(struct sflist *sfs,int *fondcnt) {
 
 static void SFListListFree(struct sflistlist *sfsl) {
    struct sflist *last=NULL;
-
    struct sflistlist *sfli, *sflnext;
 
    /* free the fond list and restore the sfs list */
@@ -1111,32 +1081,20 @@ static void SFListListFree(struct sflistlist *sfsl) {
 static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
 			int bf) {
    uint32_t rlenpos=aftell(res), widoffpos, widoffloc, kernloc, styleloc, end;
-
    int i, j, k, cnt, scnt, kcnt, pscnt, strcnt, fontclass, glyphenc, geoffset;
-
    int gid;
-
    int size;
-
    uint16_t psstyle, stylecode;
-
    int exact, famlen, has_hyphen;
-
    char *familyname;
-
    KernPair *kp;
-
    DBounds b;
 
    /* Fonds are generally marked system heap and sometimes purgeable (resource flags) */
    struct sflist *faces[96];
-
    struct sflist *psfaces[48];
-
    SplineFont *sf;
-
    struct sflist *sfi;
-
    char *pt;
 
    memset(faces, 0, sizeof(faces));
@@ -1522,13 +1480,9 @@ long mactime(void) {
 
 static int DumpMacBinaryHeader(AFILE *res,struct macbinaryheader *mb) {
    uint8_t header[128], *hpt;
-
    char buffer[256], *pt, *dpt;
-
    uint32_t len;
-
    time_t now;
-
    int crc;
 
    if (mb->macfilename==NULL) {
@@ -1680,15 +1634,10 @@ static void MakeMacPSName(char buffer[63],SplineFont *sf) {
 int WriteMacPSFont(char *filename, SplineFont *sf, enum fontformat format,
 		   int flags, EncMap * map, int layer) {
    AFILE *res, *temppfb;
-
    int ret=1;
-
    struct resourcetype resources[2];
-
    struct macbinaryheader header;
-
    int lcfn=false, lcfam=false;
-
    char buffer[63];
 
    temppfb=atmpfile();
@@ -1761,13 +1710,9 @@ int WriteMacTTFFont(char *filename, SplineFont *sf, enum fontformat format,
 		    int32_t * bsizes, enum bitmapformat bf, int flags,
 		    EncMap * map, int layer) {
    AFILE *res, *tempttf;
-
    int ret=1, r;
-
    struct resourcetype resources[4];
-
    struct resource rlist[3][2], *dummynfnts=NULL;
-
    struct macbinaryheader header;
 
    tempttf=atmpfile();
@@ -1838,15 +1783,10 @@ int WriteMacTTFFont(char *filename, SplineFont *sf, enum fontformat format,
 int WriteMacBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
 		    int is_dfont, EncMap * map) {
    AFILE *res;
-
    int ret=1;
-
    struct resourcetype resources[3];
-
    struct resource rlist[2][2];
-
    struct macbinaryheader header;
-
    char *binfilename, *pt, *dpt;
 
    /* The filename we've been given is for the outline font, which might or */
@@ -1918,25 +1858,15 @@ int WriteMacBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
 int WriteMacFamily(char *filename, struct sflist *sfs, enum fontformat format,
 		   enum bitmapformat bf, int flags, int layer) {
    AFILE *res;
-
    int ret=1, r, i;
-
    struct resourcetype resources[4];
-
    struct resource *rlist;
-
    struct macbinaryheader header;
-
    struct sflist *sfi, *sfsub;
-
    char buffer[80];
-
    int freefilename=0;
-
    char *pt;
-
    int id, fondcnt;
-
    struct sflistlist *sfsl, *sfli;
 
    if (format==ff_pfbmacbin) {
@@ -2071,15 +2001,10 @@ static SplineFont *SearchPostScriptResources(AFILE *f,long rlistpos,
 					     int subcnt, long rdata_pos,
 					     long name_list, int flags) {
    long here=aftell(f);
-
    long *offsets, lenpos;
-
    int rname=-1, tmp;
-
    int ch1, ch2;
-
    int len, type, i, j, rlen;
-
    unsigned short id, *rsrcids;
 
    /* I don't pretend to understand the rational behind the format of a */
@@ -2087,13 +2012,9 @@ static SplineFont *SearchPostScriptResources(AFILE *f,long rlistpos,
    /*  maximum chunk size is 0x800, each section (ascii, binary, ascii, eof) */
    /*  has its own set of chunks (ie chunks don't cross sections) */
    char *buffer=NULL;
-
    int max=0;
-
    AFILE *pfb;
-
    FontDict *fd;
-
    SplineFont *sf;
 
    afseek(f, rlistpos, SEEK_SET);
@@ -2211,30 +2132,19 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
 				      char *filename, int flags,
 				      enum openflags openflags) {
    long here, start=aftell(f);
-
    long roff;
-
    int rname=-1;
-
    int ch1, ch2;
-
    int len, i, rlen, ilen;
 
    /* The sfnt resource is just a copy of the ttf file */
    char *buffer=NULL;
-
    int max=0;
-
    AFILE *ttf;
-
    SplineFont *sf;
-
    int which=0;
-
    char **names;
-
    char *pt, *lparen, *rparen;
-
    char *chosenname=NULL;
 
    afseek(f, rlistpos, SEEK_SET);
@@ -2420,7 +2330,6 @@ struct MacFontRec {
 
 static void FondListFree(FOND *list) {
    FOND *next;
-
    int i;
 
    while (list != NULL) {
@@ -2450,19 +2359,12 @@ static void FondListFree(FOND *list) {
 static FOND *BuildFondList(AFILE *f,long rlistpos,int subcnt,
 			   long rdata_pos, long name_list, int flags) {
    long here, start=aftell(f);
-
    long offset;
-
    int rname=-1;
-
    char name[300];
-
    int ch1, ch2;
-
    int i, j, k, cnt, isfixed;
-
    FOND *head=NULL, *cur;
-
    long widoff, kernoff, styleoff;
 
    afseek(f, rlistpos, SEEK_SET);
@@ -2548,9 +2450,7 @@ static FOND *BuildFondList(AFILE *f,long rlistpos,int subcnt,
       }
       if (styleoff != 0) {
 	 uint8_t stringoffsets[48];
-
 	 int strcnt, stringlen, format;
-
 	 char **strings, *pt;
 
 	 afseek(f, styleoff, SEEK_SET);
@@ -2603,7 +2503,6 @@ static FOND *BuildFondList(AFILE *f,long rlistpos,int subcnt,
 static BDFChar *NFNTCvtBitmap(struct MacFontRec *font,int index,
 			      SplineFont *sf, int gid) {
    BDFChar *bdfc;
-
    int i, j, bits, bite, bit;
 
    bdfc=chunkalloc(sizeof(BDFChar));
@@ -2626,7 +2525,6 @@ static BDFChar *NFNTCvtBitmap(struct MacFontRec *font,int index,
    bite=font->locs[index + 1];
    for (i=0; i < font->fRectHeight; ++i) {
       uint16_t *test=font->fontImage + i * font->rowWords;
-
       uint8_t *bpt=bdfc->bitmap + i * bdfc->bytes_per_line;
 
       for (bit=bits, j=0; bit < bite; ++bit, ++j) {
@@ -2640,17 +2538,11 @@ static BDFChar *NFNTCvtBitmap(struct MacFontRec *font,int index,
 
 static void LoadNFNT(AFILE *f,long offset,SplineFont *sf,int size) {
    long here=aftell(f);
-
    long baseow;
-
    long ow;
-
    int i, gid;
-
    struct MacFontRec font;
-
    BDFFont *bdf;
-
    SplineChar *sc;
 
    offset += 4;			/* skip over the length */
@@ -2751,7 +2643,6 @@ static char *BuildName(char *family,int style) {
 
 static int GuessStyle(char *fontname,int *styles,int style_cnt) {
    int which, style;
-
    char *stylenames=_GetModifiers(fontname, NULL, NULL);
 
    style=_MacStyleCode(stylenames, NULL, NULL);
@@ -2765,21 +2656,13 @@ static int GuessStyle(char *fontname,int *styles,int style_cnt) {
 static FOND *PickFOND(FOND *fondlist,char *filename,char **name,
 		      int *style) {
    int i, j;
-
    FOND *test;
-
    uint8_t stylesused[96];
-
    char **names;
-
    FOND **fonds, *fond;
-
    int *styles;
-
    int cnt, which;
-
    char *pt, *lparen;
-
    char *find=NULL;
 
    if ((pt=strrchr(filename, '/')) != NULL)
@@ -2871,27 +2754,16 @@ static SplineFont *SearchBitmapResources(AFILE *f,long rlistpos,int subcnt,
 					 char *filename, FOND * fondlist,
 					 int flags) {
    long start=aftell(f);
-
    long roff;
-
    int rname=-1;
-
    int ch1, ch2;
-
    int i, j;
-
    int res_id;
-
    char *name;
-
    FOND *fond;
-
    int style;
-
    SplineFont *sf;
-
    int find_id;
-
    SplineChar *sc;
 
    fond=PickFOND(fondlist, filename, &name, &style);
@@ -2976,17 +2848,11 @@ static SplineFont *SearchBitmapResources(AFILE *f,long rlistpos,int subcnt,
 static SplineFont *FindFamilyStyleKerns(SplineFont *into,EncMap *map,
 					FOND * fondlist, char *filename) {
    char *name;
-
    int style;
-
    FOND *fond;
-
    int i, j;
-
    int ch1, ch2, offset;
-
    KernPair *kp;
-
    SplineChar *sc1, *sc2;
 
    fond=PickFOND(fondlist, filename, &name, &style);
@@ -3034,16 +2900,12 @@ static SplineFont *FindFamilyStyleKerns(SplineFont *into,EncMap *map,
 static SplineFont *MightBeTrueType(AFILE *binary,int32_t pos,int32_t dlen,
 				   int flags, enum openflags openflags) {
    AFILE *temp=atmpfile();
-
    char *buffer=malloc(8192);
-
    int len;
-
    SplineFont *sf;
 
    if (flags & ttf_onlynames) {
       char **ret;
-
       char *temp=TTFGetFontName(binary, pos, pos);
 
       if (temp==NULL)
@@ -3079,19 +2941,12 @@ static SplineFont *IsResourceFork(AFILE *f,long offset,char *filename,
    /*  the resource fork will actually start somewhere in the middle of the */
    /*  file, not at the beginning */
    unsigned char buffer[16], buffer2[16];
-
    long rdata_pos, map_pos, type_list, name_list, rpos;
-
    int32_t rdata_len, map_len;
-
    uint32_t nfnt_pos, font_pos, fond_pos;
-
    unsigned long tag;
-
    int i, cnt, subcnt, nfnt_subcnt=0, font_subcnt=0, fond_subcnt=0;
-
    SplineFont *sf;
-
    FOND *fondlist=NULL;
 
    afseek(f, offset, SEEK_SET);
@@ -3198,7 +3053,6 @@ static SplineFont *IsResourceInBinary(AFILE *f,char *filename,int flags,
 				      enum openflags openflags,
 				      SplineFont *into, EncMap * map) {
    unsigned char header[128];
-
    unsigned long offset, dlen, rlen;
 
    if (afread(header, 1, 128, f) != 128)
@@ -3259,15 +3113,11 @@ static SplineFont *IsResourceInHex(AFILE *f,char *filename,int flags,
    /* convert file from 6bit to 8bit */
    /* interesting data is enclosed between two colons */
    AFILE *binary=atmpfile();
-
    char *sixbit =
       "!\"#$%&'()*+,-012345689@ABCDEFGHIJKLMNPQRSTUVXYZ[`abcdefhijklmpqr";
    int ch, val, cnt, i, dlen, rlen;
-
    unsigned char header[20];
-
    char *pt;
-
    SplineFont *ret;
 
    if (binary==NULL) {
@@ -3404,9 +3254,7 @@ static SplineFont *FindResourceFile(char *filename,int flags,
 				    enum openflags openflags,
 				    SplineFont *into, EncMap * map) {
    char *spt, *pt, *dpt;
-
    char buffer[1400];
-
    SplineFont *sf;
 
    if ((sf=IsResourceInFile(filename, flags, openflags, into, map)))

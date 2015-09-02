@@ -1,4 +1,4 @@
-/* $Id: sfd1.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: sfd1.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -36,7 +36,6 @@
 
 static void SFGuessScriptList(SplineFont1 *sf) {
    uint32_t scripts[32], script;
-
    int i, scnt=0, j;
 
    for (i=0; i < sf->sf.glyphcnt; ++i)
@@ -105,7 +104,6 @@ static int SLContains(struct script_record *sr,uint32_t script,uint32_t lang) {
 
 int SFAddScriptIndex(SplineFont1 * sf, uint32_t * scripts, int scnt) {
    int i, j;
-
    struct script_record *sr;
 
    if (scnt==0)
@@ -147,7 +145,6 @@ int SFAddScriptIndex(SplineFont1 * sf, uint32_t * scripts, int scnt) {
 
 static int SFAddScriptLangIndex(SplineFont *_sf,uint32_t script,uint32_t lang) {
    int i;
-
    SplineFont1 *sf;
 
    if (_sf->cidmaster)
@@ -187,7 +184,6 @@ static int SFAddScriptLangIndex(SplineFont *_sf,uint32_t script,uint32_t lang) {
 
 static int SLCount(struct script_record *sr) {
    int sl_cnt=0;
-
    int i, j;
 
    for (i=0; sr[i].script != 0; ++i) {
@@ -199,7 +195,6 @@ static int SLCount(struct script_record *sr) {
 
 int SFFindBiggestScriptLangIndex(SplineFont *_sf, uint32_t script, uint32_t lang) {
    int i, best_sli=-1, best_cnt=-1, cnt;
-
    SplineFont1 *sf=(SplineFont1 *) _sf;
 
    if (_sf->sfd_version >= 2)
@@ -225,11 +220,8 @@ int SFFindBiggestScriptLangIndex(SplineFont *_sf, uint32_t script, uint32_t lang
 static FeatureScriptLangList *FeaturesFromTagSli(uint32_t tag,int sli,
 						 SplineFont1 * sf) {
    FeatureScriptLangList *fl;
-
    struct script_record *sr;
-
    struct scriptlanglist *cur, *last;
-
    int i;
 
    fl=chunkalloc(sizeof(FeatureScriptLangList));
@@ -314,11 +306,8 @@ static OTLookup *CreateACLookup(SplineFont1 *sf,AnchorClass1 *ac) {
 
 static OTLookup *CreateMacLookup(SplineFont1 *sf,ASM1 *sm) {
    OTLookup *otl=chunkalloc(sizeof(OTLookup));
-
    int i, ch;
-
    char *pt, *start;
-
    SplineChar *sc;
 
    otl->features=chunkalloc(sizeof(FeatureScriptLangList));
@@ -396,7 +385,6 @@ static struct lookup_subtable *CreateSubtable(OTLookup *otl,
 
 static OTLookup *FindNestedLookupByTag(SplineFont1 *sf,uint32_t tag) {
    int isgpos;
-
    OTLookup *otl;
 
    for (isgpos=0; isgpos < 2; ++isgpos) {
@@ -453,11 +441,8 @@ static void ASMReplaceTagsWithLookups(ASM *sm,SplineFont1 *sf) {
 
 static void ACHasBaseLig(SplineFont1 *sf,AnchorClass1 *ac) {
    int gid, k;
-
    SplineFont1 *subsf;
-
    SplineChar *sc;
-
    AnchorPoint *ap;
 
    ac->has_bases=ac->has_ligatures=false;
@@ -489,15 +474,10 @@ static void ACHasBaseLig(SplineFont1 *sf,AnchorClass1 *ac) {
 
 static void ACDisassociateLigatures(SplineFont1 *sf,AnchorClass1 *ac) {
    int gid, k;
-
    SplineFont1 *subsf;
-
    SplineChar *sc;
-
    AnchorPoint *ap, *lap;
-
    AnchorClass1 *lac;
-
    char *format;
 
    lac=chunkalloc(sizeof(AnchorClass1));
@@ -645,7 +625,6 @@ static int TTFFeatureIndex(uint32_t tag,struct table_ordering *ord) {
 
 static int GSubOrder(SplineFont1 *sf,FeatureScriptLangList *fl) {
    struct table_ordering *ord;
-
    int sofar=30000, temp;
 
    for (ord=sf->orders;
@@ -667,14 +646,11 @@ static int order_lookups(const void *_otl1,const void *_otl2) {
 
 static void SFDCleanupAnchorClasses(SplineFont *sf) {
    AnchorClass *ac;
-
    AnchorPoint *ap;
-
    int i, j, scnt;
 
 #define S_MAX	100
    uint32_t scripts[S_MAX];
-
    int merge=0;
 
    for (ac=sf->anchor; ac != NULL; ac=ac->next) {
@@ -723,27 +699,16 @@ enum uni_interp interp_from_encoding(Encoding * enc, enum uni_interp interp) {
 
 void SFD_AssignLookups(SplineFont1 * sf) {
    PST1 *pst, *pst2;
-
    int isv;
-
    KernPair1 *kp, *kp2;
-
    KernClass1 *kc, *kc2;
-
    FPST1 *fpst;
-
    ASM1 *sm;
-
    AnchorClass1 *ac, *ac2;
-
    int gid, gid2, cnt, i, k, isgpos;
-
    SplineFont1 *subsf;
-
    SplineChar *sc, *sc2;
-
    OTLookup *otl, **all;
-
    struct lookup_subtable *sub;
 
    /* Fix up some gunk from really old versions of the sfd format */

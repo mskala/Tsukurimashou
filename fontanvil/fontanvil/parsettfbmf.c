@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: parsettfbmf.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -59,11 +59,8 @@ static void ttfreadbmfglyph(AFILE *ttf,struct ttfinfo *info,
 			    struct bigmetrics *metrics, int imageformat,
 			    int gid, BDFFont * bdf) {
    BDFChar *bdfc;
-
    BDFRefChar *ref, *prev=NULL;
-
    struct bigmetrics big;
-
    int i, j, ch, l, p, num;
 
    if (gid >= bdf->glyphcnt)
@@ -284,7 +281,6 @@ static void ttfreadbmfglyph(AFILE *ttf,struct ttfinfo *info,
 static void BdfCRefFixup(BDFFont *bdf,int gid,int *warned,
 			 struct ttfinfo *info) {
    BDFChar *me=bdf->glyphs[gid], *bdfc;
-
    BDFRefChar *head, *prev=NULL, *next;
 
    for (head=me->refs; head != NULL; head=next) {
@@ -320,9 +316,7 @@ static void BdfCRefFixup(BDFFont *bdf,int gid,int *warned,
 
 static void BdfRefFixup(BDFFont *bdf,struct ttfinfo *info) {
    int i;
-
    int warned=false;
-
    BDFChar *bc;
 
    /* Associate each reference with its parent glyph and recalculate */
@@ -362,7 +356,6 @@ static void BdfCleanup(BDFFont *bdf,struct ttfinfo *info) {
    /* For cid keyed fonts we want to order things by cid rather than  */
    /*  by gid so we may also need to move things around               */
    int i, cnt;
-
    BDFChar **glyphs, *bdfc;
 
    if (info->subfonts==NULL) {
@@ -395,13 +388,9 @@ static void BdfCleanup(BDFFont *bdf,struct ttfinfo *info) {
 static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 			      struct ttfsizehead *head, BDFFont * bdf) {
    int i, j, g;
-
    int indexformat, imageformat, size, num, moreoff;
-
    int32_t offset, *glyphoffsets, *glyphs, loc;
-
    int first, last;
-
    struct bigmetrics big;
 
    afseek(ttf, info->bitmaploc_start + head->indexSubTableArrayOffset,
@@ -517,19 +506,12 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 
 void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
    int i, cnt, j, k, good, glyphcnt;
-
    int bigval, biggest;
-
    struct ttfsizehead *sizes;
-
    BDFFont *bdf, *last;
-
    const char **choices;
-
    char *sel;
-
    char buf[300];
-
    char *buttons[3];
 
    buttons[0]=_("_Yes");
@@ -688,11 +670,8 @@ static struct bdfcharlist *BDFAddDefaultGlyphs(BDFFont *bdf,int format) {
    /*  fake outlines, so look at the spline font not the bitmap font for the */
    /*  magic glyphs */
    int width, w, i, j, bit, blpos=0;
-
    SplineFont *sf=bdf->sf;
-
    int notdefpos=-1, nullpos=-1, nmretpos=-1;
-
    int extracnt=format==ff_otf || format==ff_otfcid ? 1 : 3;
 
    width=0x7ffff;
@@ -827,7 +806,6 @@ static void ttfdumpbigmetrics(AFILE *bdat,BDFChar *bc) {
 static int32_t ttfdumpf1_6bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
    /* format 1 character dump. small metrics, byte aligned data */
    int32_t pos=aftell(bdat);
-
    int r, c, val;
 
    if (bdf->sf->hasvmetrics)
@@ -867,7 +845,6 @@ static int32_t ttfdumpf2_7bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf,
 			      int do_metrics) {
    /* format 2 character dump. small metrics, bit aligned data */
    int32_t pos=aftell(bdat);
-
    int r, c, ch, bit, sh;
 
    if (do_metrics) {
@@ -914,9 +891,7 @@ static int32_t ttfdumpf2_7bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf,
 static int32_t ttfdumpf8_9bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
    /* format 8 character dump. small metrics, component data */
    int32_t pos=aftell(bdat);
-
    int numc=0;
-
    BDFRefChar *head;
 
    if (bdf->sf->hasvmetrics)
@@ -977,7 +952,6 @@ struct indexarray {
 
 static void FillLineMetrics(struct bitmapSizeTable *size,BDFFont *bdf) {
    int i, first;
-
    BDFChar *bc;
 
    memset(&size->hori, 0, sizeof(struct sbitLineMetrics));
@@ -1058,9 +1032,7 @@ static void BCPreserveAndExpand(BDFChar *bc,IBounds *ib) {
 
 static void DetectWidthGroups(struct glyphinfo *gi,BDFFont *bdf,int apple) {
    BDFChar *bc, *bc2;
-
    IBounds ib, ib2;
-
    int i, j, cnt, final;
 
    for (i=0; i < gi->gcnt; ++i)
@@ -1116,19 +1088,12 @@ static struct bitmapSizeTable *ttfdumpstrikelocs(AFILE *bloc,AFILE *bdat,
 						 struct bdfcharlist *defs,
 						 struct glyphinfo *gi) {
    struct bitmapSizeTable *size=calloc(1, sizeof(struct bitmapSizeTable));
-
    struct indexarray *cur, *last=NULL, *head=NULL;
-
    int i, j, final, cnt;
-
    AFILE *subtables=atmpfile();
-
    int32_t pos=aftell(bloc), startofsubtables, base, stlen;
-
    BDFChar *bc, *bc2;
-
    int depth=BDFDepth(bdf), format, mwidth, mheight;
-
    struct bdfcharlist *def;
 
    for (i=0; i < gi->gcnt && gi->bygid[i] < bdf->glyphcnt &&
@@ -1306,15 +1271,10 @@ static void dumpbitmapSizeTable(AFILE *bloc,struct bitmapSizeTable *size) {
 
 void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    int i, j;
-
    static struct bitmapSizeTable space;
-
    struct bitmapSizeTable *head=NULL, *cur, *last;
-
    BDFFont *bdf;
-
    BDFChar *bc;
-
    struct bdfcharlist *bl;
 
    at->bdat=atmpfile();
@@ -1396,9 +1356,7 @@ void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
 
 static BDFFont *BDFSelect(SplineFont *sf,int32_t *sizes,int wanted) {
    int i;
-
    int best=-1;
-
    BDFFont *bdf;
 
    if (wanted <= (sizes[0] & 0xffff)) {
@@ -1419,9 +1377,7 @@ static BDFFont *BDFSelect(SplineFont *sf,int32_t *sizes,int wanted) {
 
 void ttfdumpbitmapscaling(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    int i, cnt;
-
    BDFFont *bdf;
-
    static int expected_sizes[]={ 8,9,10,11,12,13,14,15,16,17,18,
       19, 20, 21, 22, 23, 24, 25, 30, 32, 33, 40, 0
    };

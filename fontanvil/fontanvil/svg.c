@@ -1,4 +1,4 @@
-/* $Id: svg.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: svg.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -56,24 +56,17 @@ static void latin1ToUtf8Out(AFILE *file,char *str) {
 
 static int svg_outfontheader(AFILE *file,SplineFont *sf,int layer) {
    int defwid=SFFigureDefWidth(sf, NULL);
-
    struct pfminfo info;
-
    static const char *condexp[] =
       { "squinchy", "ultra-condensed", "extra-condensed",
       "condensed", "semi-condensed", "normal", "semi-expanded", "expanded",
       "extra-expanded", "ultra-expanded", "broad"
    };
    DBounds bb;
-
    BlueData bd;
-
    char *hash, *hasv, ch;
-
    int minu, maxu, i;
-
    time_t now;
-
    const char *author=GetAuthor();
 
    memset(&info, 0, sizeof(info));
@@ -178,11 +171,8 @@ static int svg_outfontheader(AFILE *file,SplineFont *sf,int layer) {
 static int svg_pathdump(AFILE *file,SplineSet *spl,int lineout,
 			int forceclosed, int do_clips) {
    BasePoint last;
-
    char buffer[85];
-
    int closed=false;
-
    Spline *sp, *first;
 
    /* as I see it there is nothing to be gained by optimizing out the */
@@ -405,11 +395,8 @@ static SplineSet *TransBy(SplineSet *ss,real trans[4]) {
 
 static int svg_sc_any(SplineChar *sc,int layer) {
    int i, j;
-
    int any;
-
    RefChar *ref;
-
    int first, last;
 
    first=last=layer;
@@ -435,11 +422,8 @@ static int base64tab[]={
 
 static void DataURI_ImageDump(AFILE *file,struct gimage *img) {
    char *mimetype=NULL;
-
    AFILE *imgf;
-
    int done=false;
-
    int threechars[3], fourchars[4], i, ch, ch_on_line;
 
 #if !defined( _NO_LIBJPEG)
@@ -510,9 +494,7 @@ static void svg_dumpgradient(AFILE *file,struct gradient *gradient,
 			     char *scname, SplineChar * nested, int layer,
 			     int is_fill) {
    int i;
-
    Color csame;
-
    float osame;
 
    afprintf(file, "    <%s ",
@@ -588,7 +570,6 @@ static void svg_dumppattern(AFILE *file,struct pattern *pattern,
 			    char *scname, SplineChar * base,
 			    SplineChar * nested, int layer, int is_fill) {
    SplineChar *pattern_sc=SFGetChar(base->parent, -1, pattern->pattern);
-
    char *patsubname=NULL;
 
    if (pattern_sc != NULL) {
@@ -662,7 +643,6 @@ static void svg_layer_defs(AFILE *file,SplineSet *splines,
 static void svg_dumpscdefs(AFILE *file,SplineChar *sc,char *name,
 			   int istop) {
    int i, j;
-
    RefChar *ref;
 
    for (i=ly_fore; i < sc->layer_cnt; ++i) {
@@ -682,11 +662,8 @@ static void svg_dumpscdefs(AFILE *file,SplineChar *sc,char *name,
 
 static void svg_dumptype3(AFILE *file,SplineChar *sc,char *name,int istop) {
    int i, j;
-
    RefChar *ref;
-
    ImageList *images;
-
    SplineSet *transed;
 
    for (i=ly_fore; i < sc->layer_cnt; ++i) {
@@ -759,11 +736,8 @@ static void svg_dumptype3(AFILE *file,SplineChar *sc,char *name,int istop) {
 static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
 			   int layer) {
    RefChar *ref;
-
    int lineout;
-
    int i, j;
-
    int needs_defs=0;
 
    if (!svg_sc_any(sc, layer)) {
@@ -831,9 +805,7 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
 
 static int LigCnt(SplineFont *sf,PST *lig,int32_t *univals,int max) {
    char *pt, *end;
-
    int c=0;
-
    SplineChar *sc;
 
    if (lig->type != pst_ligature)
@@ -863,9 +835,7 @@ static int LigCnt(SplineFont *sf,PST *lig,int32_t *univals,int max) {
 
 static PST *HasLigature(SplineChar *sc) {
    PST *pst, *best=NULL;
-
    int bestc=0, c;
-
    int32_t univals[50];
 
    for (pst=sc->possub; pst != NULL; pst=pst->next) {
@@ -895,11 +865,8 @@ static SplineChar *SCHasSubs(SplineChar *sc,uint32_t tag) {
 static void svg_scdump(AFILE *file,SplineChar *sc,int defwid,int encuni,
 		       int vs, int layer) {
    PST *best=NULL;
-
    const unichar_t *alt;
-
    int32_t univals[50];
-
    int i, c;
 
    best=HasLigature(sc);
@@ -1009,9 +976,7 @@ static void fputkerns(AFILE *file,char *names) {
 
 static void svg_dumpkerns(AFILE *file,SplineFont *sf,int isv) {
    int i, j;
-
    KernPair *kp;
-
    KernClass *kc;
 
    for (i=0; i < sf->glyphcnt; ++i)
@@ -1087,9 +1052,7 @@ static int UnformedUni(int uni) {
 
 static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
    int defwid, i, formeduni;
-
    char oldloc[25];
-
    struct altuni *altuni;
 
    strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
@@ -1129,7 +1092,6 @@ static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
 	    /*  fonts not use the unicode encodings for formed arabic */
 	    /*  but should use simple substitutions instead */
 	    int arab_off=sc->unicodeenc - 0x600;
-
 	    SplineChar *formed;
 
 	    formed=SCHasSubs(sc, CHR('i', 'n', 'i', 't'));
@@ -1176,7 +1138,6 @@ static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
 int WriteSVGFont(char *fontname, SplineFont *sf, enum fontformat format,
 		 int flags, EncMap * map, int layer) {
    AFILE *file;
-
    int ret;
 
    if ((file=afopen(fontname, "w+"))==NULL)
@@ -1192,9 +1153,7 @@ int WriteSVGFont(char *fontname, SplineFont *sf, enum fontformat format,
 
 int _ExportSVG(AFILE *svg, SplineChar * sc, int layer) {
    char oldloc[24], *end;
-
    int em_size;
-
    DBounds b;
 
    SplineCharLayerFindBounds(sc, layer, &b);
@@ -1284,7 +1243,6 @@ static int libxml_init_base() {
 /* Find a node with the given id */
 static xmlNodePtr XmlFindID(xmlNodePtr xml,char *name) {
    xmlChar *id;
-
    xmlNodePtr child, ret;
 
    id=xmlGetProp(xml, (xmlChar *) "id");
@@ -1305,7 +1263,6 @@ static xmlNodePtr XmlFindID(xmlNodePtr xml,char *name) {
 
 static xmlNodePtr XmlFindURI(xmlNodePtr xml,char *name) {
    xmlNodePtr ret;
-
    char *pt, ch;
 
    if (strncmp(name, "url(#", 5) != 0)
@@ -1344,7 +1301,6 @@ static int _FindSVGFontNodes(xmlNodePtr node,xmlNodePtr *fonts,int cnt,
 
 static xmlNodePtr *FindSVGFontNodes(xmlDocPtr doc) {
    xmlNodePtr *fonts=NULL;
-
    int cnt;
 
    fonts=calloc(100, sizeof(xmlNodePtr));	/* If the file has more than 100 fonts in it then it's foolish to expect the user to pick out one, so let's limit ourselves to 100 */
@@ -1358,13 +1314,9 @@ static xmlNodePtr *FindSVGFontNodes(xmlDocPtr doc) {
 
 static xmlNodePtr SVGPickFont(xmlNodePtr *fonts,char *filename) {
    int cnt;
-
    char **names;
-
    xmlChar *name;
-
    char *pt, *lparen;
-
    int choice;
 
    for (cnt=0; fonts[cnt] != NULL; ++cnt);
@@ -1433,21 +1385,13 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 			double x, double y, double rx, double ry,
 			double axisrot, int large_arc, int sweep) {
    double cosr, sinr;
-
    double x1p, y1p;
-
    double lambda, factor;
-
    double cxp, cyp, cx, cy;
-
    double tmpx, tmpy, t2x, t2y;
-
    double startangle, delta, a;
-
    SplinePoint *final, *sp;
-
    BasePoint arcp[4], prevcp[4], nextcp[4], firstcp[2];
-
    int i, j, ia, firstia;
    static double sines[]={ 0,1,0,-1,0,1,0,-1,0,1,0,-1 };
    static double cosines[]={ 1,0,-1,0,1,0,-1,0,1,0,-1,0 };
@@ -1553,13 +1497,9 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
       }
       if (i != 0) {
 	 double firsta=firstia * PI / 2;
-
 	 double d=(firsta - startangle) / 2;
-
 	 double th=startangle + d;
-
 	 double hypot=1 / cos(d);
-
 	 BasePoint temp;
 
 	 t2x=rx * cos(th) * hypot;
@@ -1586,7 +1526,6 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
       }
       {
 	 double hypot, c, s;
-
 	 BasePoint temp;
 
 	 if (i==0) {
@@ -1597,9 +1536,7 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 	    s=sin(th);
 	 } else {
 	    double lasta=delta < 0 ? a + PI / 2 : a - PI / 2;
-
 	    double d=(startangle + delta - lasta);
-
 	    double th=lasta + d / 2;
 
 	    hypot=1.0 / cos(d / 2);
@@ -1626,19 +1563,12 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 
 static SplineSet *SVGParsePath(xmlChar *path) {
    BasePoint current;
-
    SplineSet *head=NULL, *last=NULL, *cur=NULL;
-
    SplinePoint *sp;
-
    int type='M';
-
    double x1, x2, x, y1, y2, y, rx, ry, axisrot;
-
    int large_arc, sweep;
-
    int order2=0;
-
    char *end;
 
    current.x=current.y=0;
@@ -1898,7 +1828,6 @@ static SplineSet *SVGParseExtendedPath(xmlNodePtr svg,xmlNodePtr top) {
    /* Inkscape exends paths by allowing a sprio representation */
    /* But their representation looks nothing like spiros and I can't guess at it */
    xmlChar *outline /*, *effect, *spirooutline */ ;
-
    SplineSet *head=NULL;
 
    outline=xmlGetProp(svg, (xmlChar *) "d");
@@ -1912,11 +1841,8 @@ static SplineSet *SVGParseExtendedPath(xmlNodePtr svg,xmlNodePtr top) {
 static SplineSet *SVGParseRect(xmlNodePtr rect) {
    /* x,y,width,height,rx,ry */
    double x, y, width, height, rx, ry;
-
    char *num;
-
    SplinePoint *sp;
-
    SplineSet *cur;
 
    num=(char *) xmlGetProp(rect, (xmlChar *) "x");
@@ -2035,11 +1961,8 @@ static SplineSet *SVGParseRect(xmlNodePtr rect) {
 static SplineSet *SVGParseLine(xmlNodePtr line) {
    /* x1,y1, x2,y2 */
    double x, y, x2, y2;
-
    char *num;
-
    SplinePoint *sp1, *sp2;
-
    SplineSet *cur;
 
    num=(char *) xmlGetProp(line, (xmlChar *) "x1");
@@ -2080,11 +2003,8 @@ static SplineSet *SVGParseEllipse(xmlNodePtr ellipse,int iscircle) {
    /* cx,cy,rx,ry */
    /* cx,cy,r */
    double cx, cy, rx, ry;
-
    char *num;
-
    SplinePoint *sp;
-
    SplineSet *cur;
 
    num=(char *) xmlGetProp(ellipse, (xmlChar *) "cx");
@@ -2158,11 +2078,8 @@ static SplineSet *SVGParseEllipse(xmlNodePtr ellipse,int iscircle) {
 static SplineSet *SVGParsePoly(xmlNodePtr poly,int isgon) {
    /* points */
    double x, y;
-
    char *pts, *end;
-
    SplinePoint *sp;
-
    SplineSet *cur;
 
    pts=(char *) xmlGetProp(poly, (xmlChar *) "points");
@@ -2221,9 +2138,7 @@ struct svg_state {
 
 static void SVGFigureTransform(struct svg_state *st,char *name) {
    real trans[6], res[6];
-
    double a, cx, cy;
-
    char *pt, *paren, *end;
 
    /* matrix(a,b,c,d,e,f)
@@ -2308,9 +2223,7 @@ static void SVGFigureTransform(struct svg_state *st,char *name) {
 static void SVGuseTransform(struct svg_state *st,xmlNodePtr use,
 			    xmlNodePtr symbol) {
    double x, y, uwid, uheight, swid, sheight;
-
    char *num, *end;
-
    real trans[6];
 
    num=(char *) xmlGetProp(use, (xmlChar *) "x");
@@ -2367,7 +2280,6 @@ static void SVGuseTransform(struct svg_state *st,xmlNodePtr use,
 static real parseGCoord(xmlChar *prop,int bb_units,real bb_low,
 			real bb_high) {
    char *end;
-
    double val=strtod((char *) prop, &end);
 
    if (*end=='%')
@@ -2385,13 +2297,9 @@ static void xmlParseColorSource(xmlNodePtr top,char *name,DBounds *bbox,
 				struct svg_state *st, struct gradient **_grad,
 				struct epattern **_epat) {
    xmlNodePtr colour_source=XmlFindURI(top, name);
-
    int islinear;
-
    xmlChar *prop;
-
    xmlNodePtr kid;
-
    int scnt;
 
    *_grad=NULL;
@@ -2404,7 +2312,6 @@ static void xmlParseColorSource(xmlNodePtr top,char *name,DBounds *bbox,
 	  || xmlStrcmp(colour_source->name,
 		       (xmlChar *) "radialGradient")==0) {
       struct gradient *grad=chunkalloc(sizeof(struct gradient));
-
       int bbox_units;
 
       *_grad=grad;
@@ -2468,7 +2375,6 @@ static void xmlParseColorSource(xmlNodePtr top,char *name,DBounds *bbox,
 	 grad->radius=0;
       } else {
 	 double offx=(bbox->maxx - bbox->minx) / 2;
-
 	 double offy=(bbox->maxy - bbox->miny) / 2;
 
 	 grad->stop.x=(bbox->minx + bbox->maxx) / 2;
@@ -2579,11 +2485,8 @@ static void xmlApplyColourSources(xmlNodePtr top,Entity *head,
 				  char *fill_colour_source,
 				  char *stroke_colour_source) {
    DBounds b, ssb;
-
    Entity *e;
-
    struct gradient *grad;
-
    struct epattern *epat;
 
    memset(&b, 0, sizeof(b));
@@ -2644,7 +2547,6 @@ static void xmlApplyColourSources(xmlNodePtr top,Entity *head,
 static int xmlParseColor(xmlChar *name,uint32_t *color,char **url,
 			 struct svg_state *st) {
    int doit, i;
-
    static struct {
       char *name;
       uint32_t col;
@@ -2762,7 +2664,6 @@ static int base64ch(int ch) {
 
 static void DecodeBase64ToFile(AFILE *tmp,char *str) {
    char fourchars[4];
-
    int i;
 
    while (*str) {
@@ -3008,7 +2909,6 @@ static void SVGFigureStyle(struct svg_state *st,char *name,
 	       st->dashes[1]=0;
 	    } else {
 	       int i;
-
 	       char *pt, *end;
 
 	       pt=propbuf;
@@ -3037,17 +2937,11 @@ static void SVGFigureStyle(struct svg_state *st,char *name,
 static Entity *_SVGParseSVG(xmlNodePtr svg,xmlNodePtr top,
 			    struct svg_state *inherit) {
    struct svg_state st;
-
    xmlChar *name;
-
    xmlNodePtr kid;
-
    Entity *ehead, *elast, *eret;
-
    SplineSet *head;
-
    int treat_symbol_as_g=false;
-
    char *fill_colour_source=NULL, *stroke_colour_source=NULL;
 
    if (svg==NULL)
@@ -3118,7 +3012,6 @@ static Entity *_SVGParseSVG(xmlNodePtr svg,xmlNodePtr top,
 	 st.dashes[1]=0;
       } else {
 	 int i;
-
 	 xmlChar *pt, *end;
 
 	 pt=name;
@@ -3148,7 +3041,6 @@ static Entity *_SVGParseSVG(xmlNodePtr svg,xmlNodePtr top,
 
       if (clip != NULL && xmlStrcmp(clip->name, (xmlChar *) "clipPath")==0) {
 	 const xmlChar *temp=clip->name;
-
 	 struct svg_state null_state;
 
 	 memset(&null_state, 0, sizeof(null_state));
@@ -3252,9 +3144,7 @@ static Entity *_SVGParseSVG(xmlNodePtr svg,xmlNodePtr top,
 
 static Entity *SVGParseSVG(xmlNodePtr svg,int em_size,int ascent) {
    struct svg_state st;
-
    char *num, *end;
-
    double x, y, swidth, sheight, width=1, height=1;
 
    memset(&st, 0, sizeof(st));
@@ -3334,11 +3224,8 @@ static void SVGParseGlyphBody(SplineChar *sc,xmlNodePtr glyph,int *flags) {
 static SplineChar *SVGParseGlyphArgs(xmlNodePtr glyph,int defh,int defv,
 				     SplineFont *sf) {
    SplineChar *sc=SFSplineCharCreate(sf);
-
    xmlChar *name, *form, *glyphname, *unicode, *orientation;
-
    uint32_t *u;
-
    char buffer[100];
 
    name=xmlGetProp(glyph, (xmlChar *) "horiz-adv-x");
@@ -3418,7 +3305,6 @@ static SplineChar *SVGParseMissing(SplineFont *sf,xmlNodePtr notdef,
 static SplineChar *SVGParseGlyph(SplineFont *sf,xmlNodePtr glyph,int defh,
 				 int defv, int enc, int *flags) {
    char buffer[400];
-
    SplineChar *sc=SVGParseGlyphArgs(glyph, defh, defv, sf);
 
    sc->parent=sf;
@@ -3435,13 +3321,9 @@ static SplineChar *SVGParseGlyph(SplineFont *sf,xmlNodePtr glyph,int defh,
 
 static void SVGLigatureFixupCheck(SplineChar *sc,xmlNodePtr glyph) {
    xmlChar *unicode;
-
    uint32_t *u;
-
    int len, len2;
-
    SplineChar **chars, *any=NULL;
-
    char *comp, *pt;
 
    unicode=xmlGetProp(glyph, (xmlChar *) "unicode");
@@ -3524,13 +3406,9 @@ static void SVGLigatureFixupCheck(SplineChar *sc,xmlNodePtr glyph) {
 static char *SVGGetNames(SplineFont *sf,xmlChar *g,xmlChar *utf8,
 			 SplineChar ** sc) {
    uint32_t *u=NULL;
-
    char *names;
-
    int len, i, ch;
-
    SplineChar *temp;
-
    char *pt, *gpt;
 
    *sc=NULL;
@@ -3585,17 +3463,11 @@ static char *SVGGetNames(SplineFont *sf,xmlChar *g,xmlChar *utf8,
 
 static void SVGParseKern(SplineFont *sf,xmlNodePtr kern,int isv) {
    xmlChar *k, *g1, *u1, *g2, *u2;
-
    double off;
-
    char *c1, *c2;
-
    char *pt1, *pt2, *end1, *end2;
-
    SplineChar *sc1, *sc2;
-
    uint32_t script;
-
    struct lookup_subtable *subtable;
 
    k=xmlGetProp(kern, (xmlChar *) "k");
@@ -3696,17 +3568,11 @@ static void SVGParseKern(SplineFont *sf,xmlNodePtr kern,int isv) {
 
 static SplineFont *SVGParseFont(xmlNodePtr font) {
    int cnt, flags=-1;
-
    xmlNodePtr kids;
-
    int defh=0, defv=0;
-
    xmlChar *name;
-
    SplineFont *sf;
-
    EncMap *map;
-
    int i;
 
    sf=SplineFontEmpty();
@@ -3840,7 +3706,6 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	 name=xmlGetProp(kids, (xmlChar *) "panose-1");
 	 if (name != NULL) {
 	    char *pt, *end;
-
 	    int i;
 
 	    for (i=0, pt=(char *) name; i < 10 && *pt; pt=end, ++i) {
@@ -4006,7 +3871,6 @@ int SFLFindOrder(SplineFont *sf, int layerdest) {
 
 static void SPLSetOrder(SplineSet *ss,int order2) {
    Spline *s, *first;
-
    SplinePoint *from, *to;
 
    while (ss != NULL) {
@@ -4089,11 +3953,8 @@ void SFLSetOrder(SplineFont *sf, int layerdest, int order2) {
 
 static SplineFont *_SFReadSVG(xmlDocPtr doc,char *filename) {
    xmlNodePtr *fonts, font;
-
    SplineFont *sf;
-
    char oldloc[25];
-
    char *chosenname=NULL;
 
    fonts=FindSVGFontNodes(doc);
@@ -4138,7 +3999,6 @@ static SplineFont *_SFReadSVG(xmlDocPtr doc,char *filename) {
 
 SplineFont *SFReadSVG(char *filename, int flags) {
    xmlDocPtr doc;
-
    char *temp=filename, *pt, *lparen;
 
    if (!libxml_init_base()) {
@@ -4183,13 +4043,9 @@ SplineFont *SFReadSVGMem(char *data, int flags) {
 
 char **NamesReadSVG(char *filename) {
    xmlNodePtr *fonts;
-
    xmlDocPtr doc;
-
    char **ret=NULL;
-
    int cnt;
-
    xmlChar *name;
 
    if (!libxml_init_base()) {
@@ -4231,13 +4087,9 @@ char **NamesReadSVG(char *filename) {
 Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
 			   int em_size, int ascent) {
    xmlDocPtr doc;
-
    xmlNodePtr top;
-
    char oldloc[25];
-
    Entity *ret;
-
    int order2;
 
    if (!libxml_init_base()) {

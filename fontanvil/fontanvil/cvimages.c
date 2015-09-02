@@ -1,4 +1,4 @@
-/* $Id: cvimages.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: cvimages.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -36,11 +36,8 @@
 
 void SCAppendEntityLayers(SplineChar * sc, Entity * ent) {
    int cnt, pos;
-
    Entity *e, *enext;
-
    Layer *old=sc->layers;
-
    SplineSet *ss;
 
    for (e=ent, cnt=0; e != NULL; e=e->next, ++cnt);
@@ -111,9 +108,7 @@ void SCAppendEntityLayers(SplineChar * sc, Entity * ent) {
 void SCImportPSFile(SplineChar * sc, int layer, AFILE *ps, int doclear,
 		    int flags) {
    SplinePointList *spl, *espl;
-
    SplineSet **head;
-
    int empty, width;
 
    if (ps==NULL)
@@ -165,7 +160,6 @@ void SCImportPS(SplineChar * sc, int layer, char *path, int doclear,
 void SCImportPDFFile(SplineChar * sc, int layer, AFILE *pdf, int doclear,
 		     int flags) {
    SplinePointList *spl, *espl;
-
    SplineSet **head;
 
    if (pdf==NULL)
@@ -302,7 +296,6 @@ GImage *ImageAlterClut(GImage * image) {
 	 GImage *new=GImageCreate(it_mono, base->width, base->height);
 
 	 struct _GImage *nbase=new->u.image;
-
 	 int i, j;
 
 	 memset(nbase->data, 0, nbase->height * nbase->bytes_per_line);
@@ -384,11 +377,8 @@ int FVImportImages(FontViewBase * fv, char *path, int format, int toback,
 
    /*struct _GImage *base; */
    int tot;
-
    char *start=path, *endpath=path;
-
    int i;
-
    SplineChar *sc;
 
    tot=0;

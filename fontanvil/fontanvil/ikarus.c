@@ -1,4 +1,4 @@
-/* $Id: ikarus.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: ikarus.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -409,9 +409,7 @@ static void IkarusNameFromURWNumber(SplineChar *sc,int number) {
 static void IkarusAddContour(SplineChar *sc,int npts,BasePoint *bps,
 			     uint8_t * ptype, int nesting) {
    SplinePointList *spl;
-
    SplinePoint *last, *next;
-
    int i, cw;
 
    spl=chunkalloc(sizeof(SplinePointList));
@@ -442,20 +440,14 @@ static void IkarusAddContour(SplineChar *sc,int npts,BasePoint *bps,
 
 static void IkarusReadChar(SplineChar *sc,AFILE *file) {
    int n, i, j, number, following, units, ncontours, ptmax;
-
    DBounds bb;
-
    int32_t base;
-
    struct contour {
       int32_t offset;
       int dir, nest, col, npts;
    } *contours;
-
    BasePoint *bps;
-
    uint8_t *ptype;
-
    int x, y;
 
    /* record len of char=*/ getushort(file);
@@ -605,19 +597,12 @@ static void IkarusFontname(SplineFont *sf,char *fullname,char *fnam) {
 
 SplineFont *SFReadIkarus(char *fontname) {
    SplineFont *sf;
-
    AFILE *file=afopen(fontname, "rb");
-
    int ch1, ch2, rpos, wpos, i;
-
    int hlen, ilen, jlen, llen, mlen;
-
    int numchars, maxnum, opt_pt_size;
-
    double italic_angle;
-
    char fnam[13], fullname[81];
-
    int32_t *offsets, *numbers;
 
    if (file==NULL)

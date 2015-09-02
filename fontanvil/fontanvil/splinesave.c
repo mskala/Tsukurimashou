@@ -1,4 +1,4 @@
-/* $Id: splinesave.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: splinesave.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -230,7 +230,6 @@ static void StartNextSubroutine(GrowBuf *gb,struct hintdb *hdb) {
 
 static int hashfunc(uint8_t *data,int len) {
    uint8_t *end=data + len;
-
    unsigned int hash=0, r;
 
    while (data < end) {
@@ -244,11 +243,8 @@ static int hashfunc(uint8_t *data,int len) {
 
 static void BreakSubroutine(GrowBuf *gb,struct hintdb *hdb) {
    GlyphInfo *gi;
-
    struct potentialsubrs *ps;
-
    int hash;
-
    int pi;
 
    if (hdb==NULL)
@@ -313,7 +309,6 @@ static void MoveSubrsToChar(GlyphInfo *gi) {
 
 static int NumberHints(SplineChar *scs[MmMax],int instance_count) {
    int i, j, cnt=-1;
-
    StemInfo *s;
 
    for (j=0; j < instance_count; ++j) {
@@ -339,9 +334,7 @@ static int NumberHints(SplineChar *scs[MmMax],int instance_count) {
 
 static void MarkTranslationRefs(SplineFont *sf,int layer) {
    int i;
-
    SplineChar *sc;
-
    RefChar *r;
 
    for (i=0; i < sf->glyphcnt; ++i)
@@ -366,9 +359,7 @@ static bigreal myround(bigreal pos,int round) {
 
 static void AddNumber(GrowBuf *gb,real pos,int round) {
    int dodiv=0;
-
    int val;
-
    unsigned char *str;
 
    if (gb->pt + 8 >= gb->end)
@@ -432,7 +423,6 @@ static void AddNumber(GrowBuf *gb,real pos,int round) {
 static void AddData(GrowBuf *gb,bigreal data[MmMax][6],int instances,
 		    int num_coords, int round) {
    int allsame=true, alls[6];
-
    int i, j, chunk, min, max, subr;
 
    for (j=0; j < num_coords; ++j) {
@@ -492,11 +482,8 @@ int CvtPsStem3(GrowBuf * gb, SplineChar * scs[MmMax], int instance_count,
    StemInfo *h1, *h2, *h3;
 
    StemInfo _h1, _h2, _h3;
-
    bigreal data[MmMax][6];
-
    int i;
-
    real off;
 
    for (i=0; i < instance_count; ++i) {
@@ -571,11 +558,8 @@ static void CvtPsHints(GrowBuf *gb,SplineChar *scs[MmMax],
 		       int instance_count, int ishstem, int round, int iscjk,
 		       real * offsets) {
    StemInfo *hs[MmMax];
-
    bigreal data[MmMax][6];
-
    int i;
-
    real off;
 
    for (i=0; i < instance_count; ++i)
@@ -611,9 +595,7 @@ static void CvtPsMasked(GrowBuf *gb,SplineChar *scs[MmMax],
 			int instance_count, int ishstem, int round,
 			uint8_t mask[12]) {
    StemInfo *hs[MmMax];
-
    bigreal data[MmMax][6], off;
-
    int i;
 
    for (i=0; i < instance_count; ++i)
@@ -647,11 +629,8 @@ static int FigureCounters(StemInfo *stems,real *hints,int base,
 			  real offset, int countermask_cnt,
 			  HintMask * counters) {
    StemInfo *h;
-
    int pos=base + 1, subbase, cnt=0;
-
    real last=offset;
-
    int i;
 
    for (i=0; i < countermask_cnt; ++i) {
@@ -678,7 +657,6 @@ static int FigureCounters(StemInfo *stems,real *hints,int base,
 
 static void CounterHints1(GrowBuf *gb,SplineChar *sc,int round) {
    real hints[HntMax * 2 + 2];	/* At most 96 hints, no hint used more than once */
-
    int pos, i, j;
 
    if (sc->countermask_cnt==0)
@@ -739,7 +717,6 @@ static void SubrsCheck(struct pschars *subrs) {
 /*  and all the other conditions are met */
 static int FindOrBuildHintSubr(struct hintdb *hdb,uint8_t mask[12],int round) {
    struct mhlist *mh;
-
    GrowBuf gb;
 
    for (mh=hdb->sublist; mh != NULL; mh=mh->next) {
@@ -792,7 +769,6 @@ static void CallTransformedHintSubr(GrowBuf *gb,struct hintdb *hdb,
 				    BasePoint trans[MmMax],
 				    int instance_count, int round) {
    HintMask hm;
-
    int s;
 
    if (HintMaskFromTransformedRef(refs[0], &trans[0], scs[0], &hm)==NULL)
@@ -808,7 +784,6 @@ static void CallTransformedHintSubr(GrowBuf *gb,struct hintdb *hdb,
 static void HintSetup(GrowBuf *gb,struct hintdb *hdb,SplinePoint *to,
 		      int round, int break_subr) {
    int s;
-
    int i;
 
    if (to->hintmask==NULL || hdb->noconflicts)
@@ -844,9 +819,7 @@ static void _moveto(GrowBuf *gb,DBasePoint *current,BasePoint *to,
 		    int instance_count, int line, int round,
 		    struct hintdb *hdb) {
    BasePoint temp[MmMax];
-
    int i, samex, samey;
-
    bigreal data[MmMax][6];
 
    if (gb->pt + 18 >= gb->end)
@@ -898,7 +871,6 @@ static void moveto(GrowBuf *gb,DBasePoint *current,
 		   Spline * splines[MmMax], int instance_count, int line,
 		   int round, struct hintdb *hdb) {
    BasePoint to[MmMax];
-
    int i;
 
    if (!line)
@@ -914,7 +886,6 @@ static void splmoveto(GrowBuf *gb,DBasePoint *current,
 		      SplineSet * spl[MmMax], int instance_count, int line,
 		      int round, struct hintdb *hdb) {
    BasePoint to[MmMax];
-
    int i;
 
    if (!line)
@@ -958,7 +929,6 @@ static void refmoveto(GrowBuf *gb,DBasePoint *current,
 		      BasePoint rpos[MmMax], int instance_count, int line,
 		      int round, struct hintdb *hdb, RefChar * refs[MmMax]) {
    BasePoint to[MmMax];
-
    int i;
 
    if (!line)
@@ -979,9 +949,7 @@ static void curveto(GrowBuf *gb,DBasePoint *current,
    BasePoint temp1[MmMax], temp2[MmMax], temp3[MmMax], *c0[MmMax], *c1[MmMax],
       *s1[MmMax];
    bigreal data[MmMax][6];
-
    int i, op, opcnt;
-
    int vh, hv;
 
    if (hdb != NULL)
@@ -1075,15 +1043,10 @@ static void flexto(GrowBuf *gb,DBasePoint current[MmMax],
 		   Spline * pspline[MmMax], int instance_count, int round,
 		   struct hintdb *hdb) {
    BasePoint *c0, *c1, *mid, *end=NULL;
-
    Spline *nspline;
-
    BasePoint offsets[MmMax][8];
-
    int i, j;
-
    BasePoint temp1, temp2, temp3, temp;
-
    bigreal data[MmMax][6];
 
    for (j=0; j < instance_count; ++j) {
@@ -1183,9 +1146,7 @@ static void _CvtPsSplineSet(GrowBuf *gb,SplinePointList *spl[MmMax],
 			    int round, struct hintdb *hdb, int is_order2,
 			    int stroked) {
    Spline *spline[MmMax], *first;
-
    SplinePointList temp[MmMax], *freeme=NULL;
-
    int i;
 
    if (is_order2) {
@@ -1287,13 +1248,9 @@ static int IsSeacable(GrowBuf *gb,SplineChar *scs[MmMax],
    /* can be at most two chars in a seac (actually must be exactly 2, but */
    /*  I'll put in a space if there's only one (and if splace is blank) */
    RefChar *r1, *r2, *rt, *refs;
-
    RefChar space, t1, t2;
-
    DBounds b;
-
    int i, j, swap;
-
    bigreal data[MmMax][6];
 
    for (j=0; j < instance_count; ++j)
@@ -1387,7 +1344,6 @@ static int IsSeacable(GrowBuf *gb,SplineChar *scs[MmMax],
 
    for (j=0; j < instance_count; ++j) {
       SplineChar *r2sc=scs[j]->parent->glyphs[r2->sc->orig_pos];
-
       RefChar *r3, t3;
 
       SplineCharFindBounds(r2sc, &b);
@@ -1438,7 +1394,6 @@ static int SCNeedsSubsPts(SplineChar *sc,enum fontformat format,int layer) {
       return (_SCNeedsSubsPts(sc, layer));
    } else {
       MMSet *mm=sc->parent->mm;
-
       int i;
 
       for (i=0; i < mm->instance_count; ++i)
@@ -1457,9 +1412,7 @@ static void ExpandRef1(GrowBuf *gb,SplineChar *scs[MmMax],
 		       DBasePoint current[MmMax], struct pschars *subrs,
 		       int round, int iscjk, int layer) {
    BasePoint *bpt;
-
    BasePoint rtrans[MmMax], rpos[MmMax];
-
    int i;
 
    for (i=0; i < instance_count; ++i) {
@@ -1528,17 +1481,11 @@ static void RSC2PS1(GrowBuf *gb,SplineChar *base[MmMax],
 		    DBasePoint current[MmMax], int flags, int iscjk,
 		    int instance_count, int layer) {
    BasePoint subtrans[MmMax];
-
    SplineChar *rscs[MmMax];
-
    int round=(flags & ps_flag_round) ? true : false;
-
    RefChar *refs[MmMax];
-
    SplineSet *spls[MmMax], *freeme[MmMax];
-
    int i;
-
    int wasntconflicted=hdb->noconflicts;
 
    for (i=0; i < instance_count; ++i) {
@@ -1608,31 +1555,18 @@ static unsigned char *SplineChar2PS(SplineChar *sc,int *len,int round,
 				    int flags, enum fontformat format,
 				    GlyphInfo * gi) {
    DBounds b;
-
    GrowBuf gb;
-
    DBasePoint current[MmMax];
-
    unsigned char *ret;
-
    struct hintdb hintdb, *hdb=NULL;
-
    StemInfo *oldh[MmMax], *oldv[MmMax];
-
    int hc[MmMax], vc[MmMax];
-
    BasePoint trans[MmMax];
-
    int instance_count, i;
-
    SplineChar *scs[MmMax];
-
    bigreal data[MmMax][6];
-
    MMSet *mm=sc->parent->mm;
-
    HintMask *hm[MmMax];
-
    int fixuphm=false;
 
    if (!(flags & ps_flag_nohints) && SCNeedsSubsPts(sc, format, gi->layer))
@@ -1789,9 +1723,7 @@ int SFOneWidth(SplineFont *sf) {
 
 int CIDOneWidth(SplineFont *_sf) {
    int width, i;
-
    int k;
-
    SplineFont *sf;
 
    if (_sf->cidmaster != NULL)
@@ -1848,7 +1780,6 @@ int SFIsCJK(SplineFont *sf, EncMap * map) {
 
 static void SetupType1Subrs(struct pschars *subrs,GlyphInfo *gi) {
    int scnt, call_size;
-
    int i;
 
    scnt=subrs->next;
@@ -1893,7 +1824,6 @@ static void SetupType1Chrs(struct pschars *chrs,struct pschars *subrs,
    /* If the glyph does not go into a subr then everything goes into the char */
    for (i=0; i < gi->glyphcnt; ++i) {
       int len=0;
-
       struct glyphbits *gb=&gi->gb[i];
 
       if (gb->sc==NULL)
@@ -1989,19 +1919,12 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
 				     struct pschars *subrs, int flags,
 				     enum fontformat format, int layer) {
    struct pschars *chrs=calloc(1, sizeof(struct pschars));
-
    int i, cnt, instance_count;
-
    int fixed;
-
    int notdef_pos;
-
    MMSet *mm=sf->mm;
-
    int round=(flags & ps_flag_round) ? true : false;
-
    GlyphInfo gi;
-
    SplineChar dummynotdef, *sc;
 
    if ((format==ff_mma || format==ff_mmb) && mm != NULL) {
@@ -2099,20 +2022,14 @@ struct pschars *CID2ChrsSubrs(SplineFont *cidmaster,
 			      struct cidbytes *cidbytes, int flags,
 			      int layer) {
    struct pschars *chrs=calloc(1, sizeof(struct pschars));
-
    int i, cnt, cid;
-
    SplineFont *sf=NULL;
-
    struct fddata *fd;
-
    int round=(flags & ps_flag_round) ? true : false;
 
    /* I don't support mm cid files. I don't think adobe does either */
    GlyphInfo gi;
-
    int notdef_subfont;
-
    SplineChar dummynotdef, *sc;
 
    cnt=0;
@@ -2203,7 +2120,6 @@ static real myround2(real pos,int round) {
 
 static void AddNumber2(GrowBuf *gb,real pos,int round) {
    int val, factor;
-
    unsigned char *str;
 
    if (gb->pt + 5 >= gb->end)
@@ -2338,11 +2254,8 @@ static void moveto2(GrowBuf *gb,struct hintdb *hdb,SplinePoint *to,
 static Spline *lineto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 		       Spline * done, int round) {
    int cnt, hv, hvcnt;
-
    Spline *test, *lastgood, *lasthvgood;
-
    BasePoint temp1, temp2, *tom, *fromm;
-
    int donehm;
 
    lastgood=NULL;
@@ -2466,11 +2379,8 @@ static Spline *lineto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 static Spline *curveto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 			Spline * done, int round) {
    int cnt=0, hv;
-
    Spline *first;
-
    DBasePoint start;
-
    int donehm;
 
    HintSetup2(gb, hdb, spline->to, true);
@@ -2607,7 +2517,6 @@ static Spline *curveto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 static void flexto2(GrowBuf *gb,struct hintdb *hdb,Spline *pspline,
 		    int round) {
    BasePoint *c0, *c1, *mid, *end, *nc0, *nc1;
-
    Spline *nspline;
 
    c0=&pspline->from->nextcp;
@@ -2673,9 +2582,7 @@ static void flexto2(GrowBuf *gb,struct hintdb *hdb,Spline *pspline,
 static void CvtPsSplineSet2(GrowBuf *gb,SplinePointList *spl,
 			    struct hintdb *hdb, int is_order2, int round) {
    Spline *spline, *first;
-
    SplinePointList temp, *freeme=NULL;
-
    int unhinted=true;;
 
    if (is_order2)
@@ -2741,7 +2648,6 @@ static void CvtPsSplineSet2(GrowBuf *gb,SplinePointList *spl,
 static void DumpHints(GrowBuf *gb,StemInfo *h,int oper,int midoper,
 		      int round) {
    real last=0, cur;
-
    int cnt;
 
    if (h==NULL)
@@ -2790,9 +2696,7 @@ static void DumpRefsHints(GrowBuf *gb,struct hintdb *hdb,RefChar *cur,
 			  StemInfo * h, StemInfo * v, BasePoint * trans,
 			  int round, int layer) {
    uint8_t masks[12];
-
    int cnt, sets=0;
-
    StemInfo *rs;
 
    /* trans has already been rounded (whole char is translated by an integral amount) */
@@ -2884,9 +2788,7 @@ static void ExpandRef2(GrowBuf *gb,SplineChar *sc,struct hintdb *hdb,
 		       RefChar * r, BasePoint * trans,
 		       struct pschars *subrs, int round, int layer) {
    BasePoint *bpt;
-
    BasePoint temp, rtrans;
-
    GlyphInfo *gi;
 
    /* The only refs I deal with here have no hint conflicts within them */
@@ -3026,21 +2928,13 @@ static unsigned char *SplineChar2PS2(SplineChar *sc,int *len,int nomwid,
 				     int defwid, struct pschars *subrs,
 				     int flags, GlyphInfo * gi) {
    GrowBuf gb;
-
    unsigned char *ret;
-
    struct hintdb hdb;
-
    StemInfo *oldh, *oldv;
-
    int hc, vc;
-
    SplineChar *scs[MmMax];
-
    int round=(flags & ps_flag_round) ? true : false;
-
    HintMask *hm=NULL;
-
    BasePoint trans;
 
    if (autohint_before_generate && sc->changedsincelasthinted &&
@@ -3121,9 +3015,7 @@ static void Type2NotDefSplines(SplineFont *sf,SplineChar *sc,int layer) {
    /*  but they don't, they look like truetype notdefs. And Ralf Stubner */
    /*  points out that the spec says they should. So make a box here */
    int stem, ymax;
-
    SplineSet *inner, *ss;
-
    StemInfo *h, *hints;
 
    stem=(sf->ascent + sf->descent) / 20;
@@ -3181,13 +3073,9 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
 				      const int *bygid, int cnt, int flags,
 				      struct pschars **_subrs, int layer) {
    struct pschars *subrs, *chrs;
-
    int i, j, k, scnt;
-
    SplineChar *sc;
-
    GlyphInfo gi;
-
    SplineChar dummynotdef;
 
    if (!autohint_before_generate && !(flags & ps_flag_nohints))
@@ -3275,9 +3163,7 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
    chrs->keys=malloc(cnt * sizeof(char *));
    for (i=0; i < cnt; ++i) {
       int len=0;
-
       uint8_t *vals;
-
       struct glyphbits *gb=&gi.gb[i];
 
       if (gb->sc==NULL)
@@ -3395,20 +3281,15 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
 			       int flags, struct pschars **_glbls,
 			       int layer) {
    struct pschars *chrs, *glbls;
-
    int i, j, cnt, cid, max, fd;
-
    int *scnts;
-
    SplineChar *sc;
-
    SplineFont *sf=NULL;
 
    /* In a cid-keyed font, cid 0 is defined to be .notdef so there are no */
    /*  special worries. If it is defined we use it. If it is not defined */
    /*  we add it. */
    GlyphInfo gi;
-
    SplineChar dummynotdef;
 
    max=0;
@@ -3526,7 +3407,6 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
    chrs->keys=malloc(cnt * sizeof(char *));
    for (i=0; i < cnt; ++i) {
       int len=0;
-
       struct glyphbits *gb=&gi.gb[i];
 
       chrs->keys[i]=fastrdup(gb->sc->name);

@@ -1,4 +1,4 @@
-/* $Id: splineorder2.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splineorder2.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -62,17 +62,11 @@
 static int comparespline(Spline *ps,Spline *ttf,real tmin,real tmax,
 			 real err) {
    int dim=0, other;
-
    real dx, dy, ddim, dt, t;
-
    real d, o;
-
    real ttf_t, sq, val;
-
    DBounds bb;
-
    extended ts[3];
-
    int i;
 
    /* Are all points on ttf near points on ps? */
@@ -198,7 +192,6 @@ static int comparespline(Spline *ps,Spline *ttf,real tmin,real tmax,
 static SplinePoint *MakeQuadSpline(SplinePoint *start,Spline *ttf,real x,
 				   real y, real tmax, SplinePoint * oldend) {
    Spline *new=chunkalloc(sizeof(Spline));
-
    SplinePoint *end=chunkalloc(sizeof(SplinePoint));
 
    if (tmax==1) {
@@ -240,7 +233,6 @@ static int buildtestquads(Spline *ttf,real xmin,real ymin,real cx,
 			  real cy, real x, real y, real tmin, real t,
 			  real err, Spline * ps, DBounds * psbb) {
    real fudge, normal, para;
-
    BasePoint segdir, cpdir;
 
    /* test the control points are reasonable */
@@ -281,9 +273,7 @@ static int buildtestquads(Spline *ttf,real xmin,real ymin,real cx,
 
 static SplinePoint *LinearSpline(Spline *ps,SplinePoint *start,real tmax) {
    real x, y;
-
    Spline *new=chunkalloc(sizeof(Spline));
-
    SplinePoint *end=chunkalloc(sizeof(SplinePoint));
 
    x=((ps->splines[0].a * tmax + ps->splines[0].b) * tmax +
@@ -320,23 +310,14 @@ static SplinePoint *LinearSpline(Spline *ps,SplinePoint *start,real tmax) {
 static SplinePoint *_ttfapprox(Spline *ps,real tmin,real tmax,
 			       SplinePoint * start) {
    int dim=0;
-
    real dx, dy, ddim, dt, t, err;
-
    real x, y, xmin, ymin;
-
    real dxdtmin, dydtmin, dxdt, dydt;
-
    SplinePoint *sp;
-
    real cx, cy;
-
    Spline ttf;
-
    int cnt=-1, forceit, unforceable;
-
    BasePoint end, rend, dend;
-
    DBounds bb;
 
    rend.x =
@@ -511,11 +492,8 @@ static SplinePoint *_ttfapprox(Spline *ps,real tmin,real tmax,
 static SplinePoint *__ttfApprox(Spline *ps,real tmin,real tmax,
 				SplinePoint * start) {
    extended inflect[2];
-
    int i=0;
-
    SplinePoint *end;
-
    Spline *s, *next;
 
    end=_ttfapprox(ps, tmin, tmax, start);
@@ -566,9 +544,7 @@ typedef struct qpoint {
 static int comparedata(Spline *ps,QPoint *data,int qfirst,int qlast,
 		       int round_to_int, int test_level) {
    Spline ttf;
-
    int i;
-
    bigreal err=round_to_int ? 1.5 : 1;
 
    if (qfirst==qlast)		/* happened (was a bug) */
@@ -610,7 +586,6 @@ static int comparedata(Spline *ps,QPoint *data,int qfirst,int qlast,
 static SplinePoint *CvtDataToSplines(QPoint *data,int qfirst,int qlast,
 				     SplinePoint * start) {
    SplinePoint *end;
-
    int i;
 
    for (i=qfirst; i < qlast; ++i) {
@@ -630,7 +605,6 @@ static SplinePoint *CvtDataToSplines(QPoint *data,int qfirst,int qlast,
 
 static int SplineWithWellBehavedControlPoints(Spline *ps) {
    BasePoint splineunit;
-
    bigreal splinelen, npos, ppos;
 
    splineunit.x=ps->to->me.x - ps->from->me.x;
@@ -653,17 +627,11 @@ static int PrettyApprox(Spline *ps,bigreal tmin,bigreal tmax,
 			QPoint * data, int qcnt, int round_to_int,
 			int test_level) {
    int ptcnt, q, i;
-
    bigreal distance, dx, dy, tstart;
-
    BasePoint end, mid, slopemin, slopemid, slopeend;
-
    BasePoint splineunit, start;
-
    bigreal splinelen, midpos, lastpos, lastpos2, cppos;
-
    int do_good_spline_check;
-
    QPoint data2[12];
 
    if (qcnt==-1)
@@ -1113,7 +1081,6 @@ static void ttfCleanup(SplinePoint *from) {
 
 SplineSet *SSttfApprox(SplineSet * ss) {
    SplineSet *ret=chunkalloc(sizeof(SplineSet));
-
    Spline *spline, *first;
 
    ret->first=chunkalloc(sizeof(SplinePoint));
@@ -1171,13 +1138,9 @@ SplineSet *SplineSetsTTFApprox(SplineSet * ss) {
 static void ImproveB3CPForQuadratic(real from,real *_ncp,real *_pcp,
 				    real to) {
    real ncp=*_ncp, pcp=*_pcp;
-
    real noff, poff;
-
    real c, b, best;
-
    int err, i, besti;
-
    real offs[9];
 
    if ((noff=ncp / 32768.0) < 0)
@@ -1250,9 +1213,7 @@ static void ImproveB3CPForQuadratic(real from,real *_ncp,real *_pcp,
 
 SplineSet *SSPSApprox(SplineSet * ss) {
    SplineSet *ret=chunkalloc(sizeof(SplineSet));
-
    Spline *spline, *first;
-
    SplinePoint *to;
 
    ret->first=chunkalloc(sizeof(SplinePoint));
@@ -1373,7 +1334,6 @@ static void SCConvertRefs(SplineChar *sc,int layer) {
 
 void SFConvertLayerToOrder2(SplineFont *_sf, int layer) {
    int i, k;
-
    SplineFont *sf;
 
    if (_sf->cidmaster != NULL)
@@ -1402,9 +1362,7 @@ void SFConvertLayerToOrder2(SplineFont *_sf, int layer) {
 
 void SFConvertGridToOrder2(SplineFont *_sf) {
    int k;
-
    SplineSet *new;
-
    SplineFont *sf;
 
    if (_sf->cidmaster != NULL)
@@ -1436,11 +1394,8 @@ void SFConvertToOrder2(SplineFont *_sf) {
 
 void SCConvertLayerToOrder3(SplineChar * sc, int layer) {
    SplineSet *new;
-
    RefChar *ref;
-
    AnchorPoint *ap;
-
    int has_order2_layer_still, i;
 
    new=SplineSetsPSApprox(sc->layers[layer].splines);
@@ -1479,7 +1434,6 @@ void SCConvertLayerToOrder3(SplineChar * sc, int layer) {
 
 void SFConvertLayerToOrder3(SplineFont *_sf, int layer) {
    int i, k;
-
    SplineFont *sf;
 
    if (_sf->cidmaster != NULL)
@@ -1505,9 +1459,7 @@ void SFConvertLayerToOrder3(SplineFont *_sf, int layer) {
 
 void SFConvertGridToOrder3(SplineFont *_sf) {
    int k;
-
    SplineSet *new;
-
    SplineFont *sf;
 
    if (_sf->cidmaster != NULL)
@@ -1541,9 +1493,7 @@ void SFConvertToOrder3(SplineFont *_sf) {
 
 void SplineRefigure2(Spline * spline) {
    SplinePoint *from=spline->from, *to=spline->to;
-
    Spline1D *xsp=&spline->splines[0], *ysp=&spline->splines[1];
-
    Spline old;
 
 #ifdef DEBUG
@@ -1672,15 +1622,10 @@ static int IsHV(Spline *spline,int isfrom) {
 
 void SplineRefigureFixup(Spline * spline) {
    SplinePoint *from, *to, *prev, *next;
-
    BasePoint foff, toff, unit, new;
-
    bigreal len;
-
    enum pointtype fpt, tpt;
-
    int done=false;
-
    extern int snaptoint;
 
    if (!spline->order2) {

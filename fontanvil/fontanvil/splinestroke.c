@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splinestroke.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -198,7 +198,6 @@ static int AdjustedSplineLength(Spline *s) {
    /*  (radius-curvature+c->radius)/radius-curvature                      */
    /*  For each segment and them sum that. But that's too hard */
    bigreal len=SplineLength(s);
-
    bigreal xdiff=s->to->me.x - s->from->me.x, ydiff =
       s->to->me.y - s->from->me.y;
    bigreal distance=sqrt(xdiff * xdiff + ydiff * ydiff);
@@ -228,7 +227,6 @@ static enum hittest PolygonHitTest(BasePoint *poly,BasePoint *polyslopes,
    /* Sigh. Rounding errors. dot may be off by a very small amount */
    /*  (the polyslopes need to be unit vectors for this test to work) */
    int i, zero_cnt=0, outside=false;
-
    bigreal dx, dy, dot, bestd=0;
 
    for (i=0; i < n; ++i) {
@@ -281,13 +279,9 @@ static enum hittest PolygonHitTest(BasePoint *poly,BasePoint *polyslopes,
 
 static void LineCap(StrokeContext *c,int isend) {
    int cnt, i, start, end, incr;
-
    BasePoint base, base2, slope, slope2, halfleft, halfright;
-
    StrokePoint done;
-
    StrokePoint *p;
-
    bigreal factor, si, co;
 
    cnt=ceil(c->radius / c->resolution);
@@ -456,17 +450,11 @@ static void LineJoin(StrokeContext *c,int atbreak) {
    BasePoint nslope, pslope, curslope, nextslope, base, final, inter,
       center, vector, rot, temp, diff_angle, incr_angle;
    bigreal len, dot, normal_dot, factor;
-
    int bends_left;
-
    StrokePoint done;
-
    StrokePoint *p, *pp;
-
    int pindex;
-
    int cnt, cnt1, i, was_neg;
-
    int force_bevel;
 
    /* atbreak means that we are dealing with a closed contour, and we have */
@@ -679,7 +667,6 @@ static void LineJoin(StrokeContext *c,int atbreak) {
       while (1) {
 	 if (c->cur >= c->max) {
 	    int extras=400;
-
 	    int off=pp - c->all;
 
 	    c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
@@ -735,7 +722,6 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 
 static void FindSlope(StrokeContext *c,Spline *s,bigreal t,bigreal tdiff) {
    StrokePoint *p=&c->all[c->cur - 1];
-
    bigreal len;
 
    p->sp=s;
@@ -797,14 +783,11 @@ static void FindSlope(StrokeContext *c,Spline *s,bigreal t,bigreal tdiff) {
 
 static void HideStrokePointsCircle(StrokeContext *c) {
    int i, j;
-
    bigreal xdiff, ydiff, dist2sq, dist1sq;
-
    bigreal res2=c->resolution * c->resolution, res_bound=100 * res2;
 
    for (i=c->cur - 1; i >= 0; --i) {
       StrokePoint *p=&c->all[i];
-
       Spline *myline=p->sp->knownlinear ? p->sp : NULL;
 
       if (p->line || p->circle)
@@ -875,9 +858,7 @@ static void HideStrokePointsCircle(StrokeContext *c) {
    /* now see if any miter join polygons (or square cap polys) cover anything */
    for (j=0; j < c->ecur; ++j) {
       BasePoint slopes[4];
-
       bigreal len;
-
       struct extrapoly *ep=&c->ep[j];
 
       for (i=0; i < ep->ptcnt; ++i) {
@@ -910,15 +891,10 @@ static void HideStrokePointsCircle(StrokeContext *c) {
 
 static void FindStrokePointsCircle(SplineSet *ss,StrokeContext *c) {
    Spline *s, *first;
-
    bigreal length;
-
    int i, len;
-
    bigreal diff, t;
-
    int open=ss->first->prev==NULL;
-
    int gothere=false;
 
    first=NULL;
@@ -1082,15 +1058,10 @@ static int WhichSquareCorner(BasePoint *slope,bigreal t,int *right_trace) {
 
 static void SquareCap(StrokeContext *c,int isend) {
    int cnt, i, start, end, incr;
-
    int start_corner, end_corner, cc, nc;
-
    BasePoint slope, slope1, slope2;
-
    StrokePoint done;
-
    StrokePoint *p;
-
    bigreal t;
 
    /* PostScript has all sorts of funky line endings for circular points */
@@ -1195,15 +1166,10 @@ static void SquareCap(StrokeContext *c,int isend) {
 
 static void SquareJoin(StrokeContext *c,int atbreak) {
    BasePoint nslope, pslope, base, slope, me;
-
    bigreal dot;
-
    int bends_left, start, end, cnt, lastc, nc;
-
    StrokePoint done;
-
    StrokePoint *p;
-
    int pindex, nindex, i;
 
    if (atbreak) {
@@ -1297,9 +1263,7 @@ static void SquareJoin(StrokeContext *c,int atbreak) {
 
 static void HideStrokePointsSquare(StrokeContext *c) {
    int i, j;
-
    bigreal xdiff, ydiff, dist1, dist2;
-
    bigreal res_bound=10 * c->resolution;
 
    /* Similar to the case for a circular pen, except the hit test for a square */
@@ -1307,7 +1271,6 @@ static void HideStrokePointsSquare(StrokeContext *c) {
 
    for (i=c->cur - 1; i >= 0; --i) {
       StrokePoint *p=&c->all[i];
-
       Spline *myline=p->sp->knownlinear ? p->sp : NULL;
 
       if (p->line || p->circle)
@@ -1389,19 +1352,12 @@ static int SquareWhichExtreme(StrokePoint *before,StrokePoint *after) {
 
 static void FindStrokePointsSquare(SplineSet *ss,StrokeContext *c) {
    Spline *s, *first;
-
    bigreal length;
-
    int i, len, cnt;
-
    bigreal diff, t;
-
    int open=ss->first->prev==NULL;
-
    int gothere=false;
-
    int lt, rt;
-
    bigreal factor;
 
    cnt=ceil(2 * c->radius / c->resolution);
@@ -1452,9 +1408,7 @@ static void FindStrokePointsSquare(SplineSet *ss,StrokeContext *c) {
 	    p->rt=rt;
 	 } else {
 	    StrokePoint final, base, afters;
-
 	    BasePoint slopel, sloper;
-
 	    int k, needsafter=false;
 
 	    p->left.x=p->me.x + c->radius * SquareCorners[p[-1].lt].x;
@@ -1552,9 +1506,7 @@ static int WhichPolyCorner(StrokeContext *c,BasePoint *slope,
    /*  an edge there will be two. There will never be three because this  */
    /*  is a convex poly and there are no unnecessary points */
    int bestl, bestl2, bestr, bestr2;
-
    bigreal bestl_off, off, bestr_off;
-
    int i;
 
    bestl_off=bestr_off=-1;
@@ -1602,15 +1554,10 @@ static int WhichPolyCorner(StrokeContext *c,BasePoint *slope,
 
 static void PolyCap(StrokeContext *c,int isend) {
    int cnt, i, start, end, incr;
-
    int start_corner, end_corner, cc, nc, bc;
-
    BasePoint slope1, slope2, base1, base2;
-
    StrokePoint done;
-
    StrokePoint *p;
-
    bigreal t;
 
    /* Again, we don't worry about funny line endings, we just draw the bit of */
@@ -1731,15 +1678,10 @@ static void PolyCap(StrokeContext *c,int isend) {
 
 static void PolyJoin(StrokeContext *c,int atbreak) {
    BasePoint nslope, pslope, base, slope, me;
-
    bigreal dot;
-
    int bends_left, dir;
-
    StrokePoint done;
-
    StrokePoint *p;
-
    int pindex, nindex, start, end, cnt, lastc, nc, i;
 
    /* atbreak means that we are dealing with a close contour, and we have */
@@ -1846,13 +1788,9 @@ static void PolyJoin(StrokeContext *c,int atbreak) {
 
 static void HideStrokePointsPoly(StrokeContext *c) {
    int i, j;
-
    bigreal xdiff, ydiff, dist1sq, dist2sq;
-
    BasePoint rel;
-
    bigreal res2=c->resolution * c->resolution, res_bound=100 * res2;
-
    enum hittest hit;
 
    /* Similar to the case for a circular pen, except the hit test for a poly */
@@ -1861,7 +1799,6 @@ static void HideStrokePointsPoly(StrokeContext *c) {
 
    for (i=c->cur - 1; i >= 0; --i) {
       StrokePoint *p=&c->all[i];
-
       Spline *myline=p->sp->knownlinear ? p->sp : NULL;
 
       if (p->line || p->circle)
@@ -1939,7 +1876,6 @@ static void HideStrokePointsPoly(StrokeContext *c) {
 static int PolyWhichExtreme(StrokeContext *c,int corner,int bends_left,
 			    StrokePoint * before, StrokePoint * after) {
    bigreal by, ay, sy;
-
    int ret;
 
    if (bends_left) {
@@ -1979,23 +1915,14 @@ static int PolyWhichExtreme(StrokeContext *c,int corner,int bends_left,
 
 static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
    Spline *s, *first;
-
    bigreal length;
-
    int i, len, bends_left, k;
-
    bigreal diff, t, factor;
-
    int open=ss->first->prev==NULL;
-
    int gothere=false, stuff_happened;
-
    int lt, rt, oldlt, oldrt, nlt, nrt;
-
    BasePoint basel, baser, slopel, sloper;
-
    int cnt, ldiff, rdiff, dir;
-
    StrokePoint final, base, saveend;
 
    cnt=c->longest_edge / c->resolution;
@@ -2080,7 +2007,6 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	    }
 	    if (ldiff < 0 || rdiff < 0) {
 	       int local_nlt=ldiff < 0 ? nlt : oldlt;
-
 	       int local_nrt=rdiff < 0 ? nrt : oldrt;
 
 	       final=base=p[-1];
@@ -2113,7 +2039,6 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	    }
 	    if (ldiff > 0 || rdiff > 0) {
 	       int local_nlt=ldiff > 0 ? nlt : oldlt;
-
 	       int local_nrt=rdiff > 0 ? nrt : oldrt;
 
 	       final=base=saveend;
@@ -2191,11 +2116,8 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 
 static void SSRemoveColinearPoints(SplineSet *ss) {
    SplinePoint *sp, *nsp, *nnsp;
-
    BasePoint dir, ndir;
-
    bigreal len;
-
    int removed;
 
    sp=ss->first;
@@ -2309,9 +2231,7 @@ static SplinePoint *SpOnCircle(int i,bigreal radius,BasePoint *center) {
 static SplinePointList *SinglePointStroke(SplinePoint *sp,
 					  struct strokecontext *c) {
    SplineSet *ret;
-
    SplinePoint *sp1, *sp2;
-
    int i;
 
    ret=chunkalloc(sizeof(SplineSet));
@@ -2381,7 +2301,6 @@ static void LeftSlopeAtPos(struct strokecontext *c,int pos,int prev,
    /*  that's not the case for line caps and joins (will be for internal  */
    /*  poly edges */
    bigreal len;
-
    int i;
 
    if ((prev && pos==0) || (!prev && pos==c->cur - 1)) {
@@ -2440,13 +2359,9 @@ static SplinePoint *LeftPointFromContext(struct strokecontext *c,int *_pos,
    /*  walk back one to find the slope, but if things are hidden we can walk */
    /*  arbetrarily far */
    int pos=*_pos, start_pos=pos, orig_pos=pos;
-
    BasePoint posslope, startslope, inter;
-
    SplinePoint *ret;
-
    bigreal normal_dot, len1, len2;
-
    bigreal res_bound=16 * c->resolution * c->resolution;
 
    *newcontour=false;
@@ -2557,7 +2472,6 @@ static void RightSlopeAtPos(struct strokecontext *c,int pos,int prev,
    /*  that's not the case for line caps and joins (will be for internal  */
    /*  poly edges */
    bigreal len;
-
    int i;
 
    if ((prev && pos==0) || (!prev && pos==c->cur - 1)) {
@@ -2598,13 +2512,9 @@ static void RightSlopeAtPos(struct strokecontext *c,int pos,int prev,
 static SplinePoint *RightPointFromContext(struct strokecontext *c,int *_pos,
 					  int *newcontour) {
    int pos=*_pos, start_pos=pos, orig_pos=pos;
-
    BasePoint posslope, startslope, inter;
-
    SplinePoint *ret;
-
    bigreal normal_dot, len1, len2;
-
    bigreal res_bound=16 * c->resolution * c->resolution;
 
    *newcontour=false;
@@ -2807,9 +2717,7 @@ static void AddUnhiddenPoints(StrokeContext *c) {
    /*  approximation routines can get local maxima -- at the right place  */
    /*  but too much or too little */
    int start, end, mid;
-
    int i, any;
-
    bigreal xdiff, ydiff;
 
    if (c==NULL || c->all==NULL)
@@ -2917,11 +2825,8 @@ static void AddUnhiddenPoints(StrokeContext *c) {
 static void PointJoint(SplinePoint *base,SplinePoint *other,
 		       bigreal resolution) {
    BasePoint inter, off;
-
    SplinePoint *hasnext, *hasprev;
-
    bigreal xdiff, ydiff, len, len2;
-
    int bad=false;
 
    if (other->next==NULL && other->prev==NULL) {
@@ -3014,9 +2919,7 @@ static void PointJoint(SplinePoint *base,SplinePoint *other,
 static SplineSet *JoinFragments(SplineSet *fragments,SplineSet ** contours,
 				bigreal resolution) {
    bigreal res2=resolution * resolution;
-
    SplineSet *prev, *cur, *test, *test2, *next, *prev2;
-
    bigreal xdiff, ydiff;
 
    /* Remove any single point fragments */
@@ -3110,9 +3013,7 @@ static SplineSet *JoinFragments(SplineSet *fragments,SplineSet ** contours,
 
 static int Linelike(SplineSet *ss,bigreal resolution) {
    BasePoint slope;
-
    bigreal len, dot;
-
    Spline *s;
 
    if (ss->first->prev != NULL)
@@ -3150,9 +3051,7 @@ static int Linelike(SplineSet *ss,bigreal resolution) {
 /*  fix the right way */
 static SplineSet *EdgeEffects(SplineSet *fragments,StrokeContext *c) {
    SplineSet *cur, *test, *prev, *next;
-
    bigreal r2;
-
    Spline *s;
 
 /* If we have a very thin horizontal stem, so thin that the inside stroke is */
@@ -3207,9 +3106,7 @@ static SplineSet *EdgeEffects(SplineSet *fragments,StrokeContext *c) {
    r2 *= r2;
    for (cur=fragments; cur != NULL; cur=cur->next) {
       bigreal xdiff=cur->last->me.x - cur->first->me.x;
-
       bigreal ydiff=cur->last->me.y - cur->first->me.y;
-
       bigreal len=xdiff * xdiff + ydiff * ydiff;
 
       if (len != 0 && len <= r2) {
@@ -3268,9 +3165,7 @@ static SplineSet *EdgeEffects(SplineSet *fragments,StrokeContext *c) {
 static int ReversedLines(Spline *line1,Spline *line2,SplinePoint ** start,
 			 SplinePoint ** end) {
    BasePoint slope1, slope2;
-
    bigreal len1, len2, normal_off;
-
    int f1, f2, t1, t2;
 
    slope1.x=line1->to->me.x - line1->from->me.x;
@@ -3362,9 +3257,7 @@ static void BreakLine(Spline *s,SplinePoint *begin,SplinePoint *end,
 
 static SplineSet *RemoveBackForthLine(SplineSet *ss) {
    SplinePoint *sp, *start, *end /*, *nsp, *psp */ ;
-
    SplineSet *other, *test;
-
    SplinePoint *sp2, *first1, *first2, *second1, *second2;
 
    /*int removed=true; */
@@ -3509,17 +3402,11 @@ static int InterpolateTPoints(StrokeContext *c,int start_pos,int end_pos,
    /* But we have the original spline. We can add as many points between */
    /*  start and end as we like */
    bigreal start_t, end_t, t, diff_t;
-
    bigreal start_x, end_x, x, diff_x, start_y, end_y, y, diff_y, r2;
-
    BasePoint slope, me;
-
    Spline *s;
-
    int lt, rt;
-
    int i, j;
-
    bigreal len;
 
    if (start_pos==0)
@@ -3650,13 +3537,9 @@ static int InterpolateTPoints(StrokeContext *c,int start_pos,int end_pos,
 
 static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
    int end_pos, i, start_pos=0, pos, ipos;
-
    SplinePoint *first=NULL, *last=NULL, *cur;
-
    SplineSet *ret=NULL;
-
    SplineSet *lfragments, *rfragments, *contours;
-
    int tot, jump, extras, skip, skip_cnt, newcontour;
 
    /* Normally there will be one contour along the left side, and one contour */
@@ -3725,7 +3608,6 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
 	    skip_cnt=0;
 	    for (i=0; i <= tot; ++i) {
 	       TPoint *tpt=c->tpt + i;
-
 	       StrokePoint *spt=c->all + ipos;
 
 	       tpt->x=spt->left.x;
@@ -3816,7 +3698,6 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
 	    skip_cnt=0;
 	    for (i=0; i <= tot; ++i) {
 	       TPoint *tpt=c->tpt + i;
-
 	       StrokePoint *spt=c->all + ipos;
 
 	       tpt->x=spt->right.x;
@@ -3902,7 +3783,6 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
 static SplineSet *SplineSet_Stroke(SplineSet *ss,struct strokecontext *c,
 				   int order2) {
    SplineSet *base;
-
    SplineSet *ret;
 
    base=SplinePointListCopy(ss);
@@ -3962,19 +3842,12 @@ static SplineSet *SplineSets_Stroke(SplineSet *ss,struct strokecontext *c,
 
 SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
    StrokeContext c;
-
    SplineSet *first, *last, *cur, *ret, *active, *anext;
-
    SplinePoint *sp, *nsp;
-
    int n, max;
-
    bigreal d2, maxd2, len, maxlen;
-
    DBounds b;
-
    BasePoint center;
-
    real trans[6];
 
    if (si->stroke_type==si_centerline)
@@ -4131,13 +4004,9 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
 
 void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
    FontViewBase *fv=_fv;
-
    int layer=fv->active_layer;
-
    SplineSet *temp;
-
    int i, cnt=0, gid;
-
    SplineChar *sc;
 
    for (i=0; i < fv->map->enccount; ++i)

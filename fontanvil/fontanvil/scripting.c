@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4119 2015-07-30 12:46:27Z mskala $ */
+/* $Id: scripting.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -331,7 +331,6 @@ void ScriptErrorF(Context * c, const char *format, ...) {
 
    /* All string arguments here assumed to be utf8 */
    char errbuf[400];
-
    va_list ap;
 
    va_start(ap, format);
@@ -421,7 +420,6 @@ static void PrintVal(Val *val) {
 
 static int GetOneSelCharIndex(Context *c) {
    FontViewBase *fv=c->curfv;
-
    EncMap *map=fv->map;
    int i, found=-1;
 
@@ -544,7 +542,6 @@ static int32_t ParseTag(Context *c,Val *tagstr,int macok,int *wasmac) {
 
 static FeatureScriptLangList *ParseFeatureList(Context *c,Array *a) {
    FeatureScriptLangList *flhead=NULL, *fltail, *fl;
-
    struct scriptlanglist *sltail, *sl;
    int f, s, l;
    int wasmac;
@@ -642,15 +639,11 @@ static int FSLMatch(FeatureScriptLangList *fl,uint32_t feat_tag,
 
 static void SCReplaceWith(SplineChar *dest,SplineChar *src) {
    int opos=dest->orig_pos, uenc=dest->unicodeenc;
-
    Undoes *u[2], *r1;
-
    struct splinecharlist *scl=dest->dependents;
-
    RefChar *refs;
    int layer, last;
    int lc;
-
    Layer *layers;
 
    if (src==dest)
@@ -736,7 +729,7 @@ static void FVApplySubstitution(FontViewBase *fv,uint32_t script,uint32_t lang,
    SplineChar **replacements;
    uint8_t *removes;
    int flags=-1;
-   
+
    if (sf_sl->cidmaster != NULL)
       sf_sl=sf_sl->cidmaster;
    else if (sf_sl->mm != NULL)
@@ -746,7 +739,7 @@ static void FVApplySubstitution(FontViewBase *fv,uint32_t script,uint32_t lang,
    /*  gave me a font were "a" was replaced by "b" replaced by "a" */
    replacements=calloc(sf->glyphcnt, sizeof(SplineChar *));
    removes=calloc(sf->glyphcnt, sizeof(uint8_t));
-   
+
    for (i=0; i < map->enccount; ++i)
       if (fv->selected[i] &&
 	  (gid=map->map[i]) != -1 && (sc=sf->glyphs[gid]) != NULL) {
@@ -910,14 +903,14 @@ static void Reblend(Context *c,int tonew) {
    real blends[MmMax];
    MMSet *mm=c->curfv->sf->mm;
    int i;
-   
+
    if (mm==NULL)
      ScriptError(c, "Not a multiple master font");
    else if (c->a.vals[1].type==v_arr)
      ScriptError(c, "Bad type of argument");
    else if (c->a.vals[1].u.aval->argc != mm->axis_count)
      ScriptError(c, "Incorrect number of blend values");
-   
+
    for (i=0; i < mm->axis_count; ++i) {
       if (c->a.vals[1].u.aval->vals[i].type != v_int)
 	ScriptError(c, "Bad type of array element");
@@ -946,7 +939,7 @@ static void setss16(int16_t *val,SplineFont *sf,Context *c) {
 
 static void bATan2(Context *c) {
    double val1, val2;
-   
+
    if (c->a.vals[1].type==v_real)
      val1=c->a.vals[1].u.fval;
    else if (c->a.vals[1].type==v_int)
@@ -1023,7 +1016,7 @@ static void bAddAnchorPoint(Context *c) {
        (c->a.vals[3].type != v_int && c->a.vals[3].type != v_real) ||
        (c->a.vals[4].type != v_int && c->a.vals[4].type != v_real))
      ScriptError(c, "Bad type for argument");
-   
+
    for (t=sf->anchor; t != NULL; t=t->next)
      if (strcmp(c->a.vals[1].u.sval, t->name)==0)
        break;
@@ -1031,7 +1024,7 @@ static void bAddAnchorPoint(Context *c) {
      ScriptErrorString(c,
 		       "This font does not contain an anchor class with this name: ",
 		       c->a.vals[1].u.sval);
-   
+
    sc=GetOneSelChar(c);
    if (strmatch(c->a.vals[2].u.sval, "mark")==0)
      type=at_mark;
@@ -1052,7 +1045,7 @@ static void bAddAnchorPoint(Context *c) {
    else if (strmatch(c->a.vals[2].u.sval, "default")==0) {
       int val=IsAnchorClassUsed(sc, t);
       PST *pst;
-      
+
       for (pst=sc->possub; pst != NULL && pst->type != pst_ligature;
 	   pst=pst->next);
       type =
@@ -1073,7 +1066,7 @@ static void bAddAnchorPoint(Context *c) {
    } else
      ScriptErrorString(c, "Unknown type for anchor point: ",
 		       c->a.vals[2].u.sval);
-   
+
    if (type==at_baselig) {
       if (c->a.argc != 6)
 	ScriptError(c, "Wrong number of arguments");
@@ -1084,7 +1077,7 @@ static void bAddAnchorPoint(Context *c) {
       if (c->a.argc != 5)
 	ScriptError(c, "Wrong number of arguments");
    }
-   
+
    if ((type==at_baselig && t->type != act_mklg) ||
        (type==at_basechar && t->type != act_mark) ||
        (type==at_basemark && t->type != act_mkmk) ||
@@ -1095,7 +1088,7 @@ static void bAddAnchorPoint(Context *c) {
 					  && t->type != act_curs))
      ScriptError(c,
 		 "Type of anchor class does not match type requested for anchor point");
-   
+
    for (ap=sc->anchor; ap != NULL; ap=ap->next) {
       if (ap->anchor==t) {
 	 if (type==at_centry || type==at_cexit) {
@@ -1111,7 +1104,7 @@ static void bAddAnchorPoint(Context *c) {
    if (ap != NULL)
      ScriptError(c,
 		 "This character already has an Anchor Point in the given anchor class");
-   
+
    ap=chunkalloc(sizeof(AnchorPoint));
    ap->anchor=t;
    ap->me.x =
@@ -1202,15 +1195,10 @@ static void bAddDHint(Context *c) {
 static void _AddHint(Context *c,int ish) {
    int i, any, gid;
    int start, width;
-
    FontViewBase *fv=c->curfv;
-
    SplineFont *sf=fv->sf;
-
    EncMap *map=fv->map;
-
    SplineChar *sc;
-
    StemInfo *h;
 
    if (c->a.vals[1].type==v_int)
@@ -1264,9 +1252,7 @@ static void bAddExtrema(Context *c) {
 
 static void SCMakeLine(SplineChar *sc) {
    int ly, last;
-
    SplinePointList *spl;
-
    SplinePoint *sp;
    int changed=false;
 
@@ -1309,17 +1295,12 @@ static void bAddHHint(Context *c) {
 
 static void bAddInstrs(Context *c) {
    int replace;
-
    SplineChar *sc=NULL;
    int icnt;
-
    uint8_t *instrs;
-
    uint32_t tag=0;
-
    SplineFont *sf=c->curfv->sf;
    int i;
-
    EncMap *map=c->curfv->map;
 
    if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_int
@@ -1597,11 +1578,8 @@ if (c->a.vals[1].type != v_str)
 
 static void bAddSizeFeature(Context *c) {
    int i, found_english;
-
    struct array *arr, *subarr;
-
    struct otfname *cur, *last;
-
    SplineFont *sf=c->curfv->sf;
 
    sf->fontstyle_id=sf->design_range_bottom=sf->design_range_top=0;
@@ -1661,10 +1639,8 @@ static void bAddSizeFeature(Context *c) {
 static void FigureSplExt(SplineSet *spl,int pos,int xextrema,
 			 double minmax[2]) {
    Spline *s, *first;
-
    extended ts[3];
    int oth=!xextrema, i;
-
    double val;
 
    while (spl != NULL) {
@@ -1707,7 +1683,6 @@ static void FigureExtrema(Context *c,SplineChar *sc,int pos,int xextrema) {
    /* If xextrama is false, then pos is an x value and we want min/max y */
    double minmax[2];
    int layer, l, last;
-
    RefChar *r;
 
    minmax[0]=1e20;
@@ -1740,14 +1715,10 @@ static void FigureExtrema(Context *c,SplineChar *sc,int pos,int xextrema) {
 static void FigureProfile(Context *c,SplineChar *sc,int pos,int xextrema) {
 #   define MAXSECT 100
    SplineSet *spl;
-
    Spline *s, *first;
-
    extended ts[3];
    int oth=!xextrema, i, j=0, l, m;
-
    double *val=NULL, temp;
-
    RefChar *r;
 
    spl=sc->layers[ly_fore].splines;
@@ -1871,14 +1842,14 @@ static void bAppendAccent(Context *c) {
      ScriptError(c, "Bad argument type");
    else if (c->a.argc==3 && c->a.vals[2].type != v_int)
      ScriptError(c, "Bad argument type");
-   
+
    if (c->a.vals[1].type==v_str)
      glyph_name=c->a.vals[1].u.sval;
    else
      uni=c->a.vals[1].u.ival;
    if (c->a.argc==3)
      pos=(uint32_t) (c->a.vals[2].u.ival);
-   
+
    sc=GetOneSelChar(c);
    ret=SCAppendAccent(sc, ly_fore, glyph_name, uni, (uint32_t) (pos));
    if (ret==1)
@@ -1890,14 +1861,14 @@ static void bAppendAccent(Context *c) {
 static void bApplySubstitution(Context *c) {
    uint32_t tags[3];
    int i;
-   
+
    if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str ||
        c->a.vals[3].type != v_str)
      ScriptError(c, "Bad argument type");
    for (i=0; i < 3; ++i) {
       char *str=c->a.vals[i + 1].u.sval;
       char temp[4];
-      
+
       memset(temp, ' ', 4);
       if (*str) {
 	 temp[0]=*str;
@@ -1940,23 +1911,23 @@ static void bAskUser(Context *c) {
    char *t1;
    char *loc;
    size_t lbsize=0;
-   
+
    if (c->a.vals[1].type != v_str
        || (c->a.argc==3 && c->a.vals[2].type != v_str))
      ScriptError(c, "Expected string argument");
    quest=c->a.vals[1].u.sval;
    if (c->a.argc==3)
      def=c->a.vals[2].u.sval;
-   
+
    t1=script2utf8_copy(quest);
    loc=fastrdup(t1);
-   
+
    printf("%s",loc);
    free(t1);
    free(loc);
-   
+
    c->return_val.type=v_str;
-   
+
 #   ifdef _NO_LIBREADLINE
    if (agetline(&line,&lbsize,astdin)<0) {
       if (line!=NULL) free(line);
@@ -1968,7 +1939,7 @@ static void bAskUser(Context *c) {
    line=(char *)realloc(line,lbsize+2);
    strcat(line,"\n");
 #   endif
-   
+
    if (line==NULL) {
       c->return_val.u.sval=fastrdup("");
    } else if (line[0]=='\0' || line[0]=='\n' || line[0]=='\r') {
@@ -2037,7 +2008,6 @@ static void bAutoTrace(Context *c) {
 
 static void bBitmapsAvail(Context *c) {
    int shows_bitmap=false;
-
    BDFFont *bdf;
 
    if (c->curfv->active_bitmap != NULL) {
@@ -2076,7 +2046,6 @@ static void bBuildDuplicate(Context *c) {
 
 static void bCIDChangeSubFont(Context *c) {
    SplineFont *sf=c->curfv->sf, *newsf;
-
    EncMap *map=c->curfv->map;
    int i;
 
@@ -2148,9 +2117,7 @@ static void bCIDSetFontNames(Context *c) {
 
 static void bCanonicalContours(Context *c) {
    FontViewBase *fv=c->curfv;
-
    EncMap *map=fv->map;
-
    SplineFont *sf=fv->sf;
    int i, gid;
 
@@ -2162,9 +2129,7 @@ static void bCanonicalContours(Context *c) {
 
 static void bCanonicalStart(Context *c) {
    FontViewBase *fv=c->curfv;
-
    EncMap *map=fv->map;
-
    SplineFont *sf=fv->sf;
    int i, gid;
 
@@ -2187,7 +2152,6 @@ static void bCenterInWidth(Context *c) {
 
 static int ParseCharIdent(Context *c,Val *val,int signal_error) {
    SplineFont *sf=c->curfv->sf;
-
    EncMap *map=c->curfv->map;
    int bottom=-1;
 
@@ -2326,7 +2290,6 @@ if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str)
 
 static void bChangeWeight(Context *c) {
    enum embolden_type type=embolden_auto;
-
    struct lcg_zones zones;
 
    memset(&zones, 0, sizeof(zones));
@@ -2502,7 +2465,6 @@ static void bCharInfo(Context *c) {
 	 c->return_val.u.ival=0;
 	 if (sf->glyphs[gid2] != NULL) {
 	    KernPair *kp;
-
 	    KernClass *kc;
 
 	    for (kp=sc->kerns; kp != NULL && kp->sc != sf->glyphs[gid2];
@@ -2679,7 +2641,6 @@ static struct flaglist ap_types[]={
 
 static void bCheckForAnchorClass(Context *c) {
    AnchorClass *t;
-
    SplineFont *sf=c->curfv->sf;
 
 if (c->a.vals[1].type != v_str)
@@ -2755,9 +2716,7 @@ static void bClearHints(Context *c) {
       FVClearHints(c->curfv);
    else if (c->a.vals[1].type==v_str) {
       int x_dir=0, y_dir=0;
-
       int i, gid;
-
       FontViewBase *fv=c->curfv;
 
       if (strmatch(c->a.vals[1].u.sval, "vertical")==0)
@@ -2809,11 +2768,8 @@ if (c->a.vals[1].type != v_str)
 
 static void bClearTable(Context *c) {
    uint32_t tag;
-
    uint8_t _tag[4];
-
    SplineFont *sf=c->curfv->sf;
-
    struct ttf_table *table, *prev;
 
    if (c->a.vals[1].type != v_str)
@@ -2875,7 +2831,6 @@ static void bCompareFonts(Context *c) {
    /* output to a file (used /dev/null if no output wanted) */
    /* flags control what tests are done                     */
    SplineFont *sf2=NULL;
-
    AFILE *diffs;
    int flags;
    char *t, *locfilename;
@@ -2993,7 +2948,6 @@ static void bConvertByCMap(Context *c) {
 
 static void bConvertToCID(Context *c) {
    SplineFont *sf=c->curfv->sf;
-
    struct cidmap *map;
 
    if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str
@@ -3132,9 +3086,7 @@ static void bDefaultRoundToGrid(Context *c) {
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
-
 	 RefChar *r;
-
 	 int changed=false;
 
 	 for (r=sc->layers[ly_fore].refs; r != NULL; r=r->next) {
@@ -3160,9 +3112,7 @@ static void bDefaultUseMyMetrics(Context *c) {
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
-
 	 RefChar *r, *match=NULL, *goodmatch=NULL;
-
 	 int already=false;
 
 	 for (r=sc->layers[ly_fore].refs; r != NULL; r=r->next) {
@@ -3214,7 +3164,6 @@ static void bDontAutoHint(Context *c) {
 
 static void bDrawsSomething(Context *c) {
    SplineFont *sf=c->curfv->sf;
-
    EncMap *map=c->curfv->map;
    int gid;
 
@@ -3260,7 +3209,6 @@ static void bExp(Context *c) {
 
 static void bExpandStroke(Context *c) {
    StrokeInfo si;
-
    double args[8];
    int i;
 
@@ -3826,9 +3774,7 @@ static void bGetFontBoundingBox(Context *c) {
 
 static void bGetLookupInfo(Context *c) {
    OTLookup *otl;
-
    FeatureScriptLangList *fl;
-
    struct scriptlanglist *sl;
    int fcnt, scnt, l;
    Array *farray, *sarray, *larray;
@@ -3923,7 +3869,6 @@ if (c->a.vals[1].type != v_str)
 
 static void bGetLookupSubtables(Context *c) {
    OTLookup *otl;
-
    struct lookup_subtable *sub;
    int cnt;
 
@@ -3948,7 +3893,6 @@ if (c->a.vals[1].type != v_str)
 static void bGetLookups(Context *c) {
    OTLookup *otl, *base;
    int cnt;
-
    SplineFont *sf=c->curfv->sf;
 
    if (sf->cidmaster)
@@ -4014,7 +3958,6 @@ static void bGetMaxpValue(Context *c) {
 
 static void bGetOS2Value(Context *c) {
    int i;
-
    SplineFont *sf=c->curfv->sf;
 
    if (c->a.vals[1].type != v_str)
@@ -4277,7 +4220,6 @@ if (c->a.vals[1].type != v_str)
 
 static void bGetSubtableOfAnchorClass(Context *c) {
    AnchorClass *ac;
-
    SplineFont *sf=c->curfv->sf;
 
 if (c->a.vals[1].type != v_str)
@@ -4479,7 +4421,6 @@ static void bImport(Context *c) {
 
 static void bInFont(Context *c) {
    SplineFont *sf=c->curfv->sf;
-
    EncMap *map=c->curfv->map;
 
    c->return_val.type=v_int;
@@ -4518,7 +4459,6 @@ static void bInt(Context *c) {
 static void bInterpolateFonts(Context *c) {
    SplineFont *sf;
    int openflags=0;
-
    float percent;
    char *t;
    char *locfilename;
@@ -4924,7 +4864,6 @@ if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_int)
 
 static void bMMAxisBounds(Context *c) {
    int i, axis;
-
    MMSet *mm=c->curfv->sf->mm;
 
 if (c->a.vals[1].type != v_int)
@@ -4948,7 +4887,6 @@ if (c->a.vals[1].type != v_int)
 
 static void bMMAxisNames(Context *c) {
    int i;
-
    MMSet *mm=c->curfv->sf->mm;
 
 if (mm==NULL)
@@ -4970,7 +4908,6 @@ static void bMMBlendToNewFont(Context *c) {
 
 static void bMMChangeInstance(Context *c) {
    int i;
-
    MMSet *mm=c->curfv->sf->mm;
 
 if (mm==NULL)
@@ -5004,7 +4941,6 @@ static void bMMChangeWeight(Context *c) {
 
 static void bMMInstanceNames(Context *c) {
    int i;
-
    MMSet *mm=c->curfv->sf->mm;
 
 if (mm==NULL)
@@ -5032,11 +4968,8 @@ if (mm==NULL)
 
 static void bMakeLine(Context *c) {
    int i, gid;
-
    FontViewBase *fv=c->curfv;
-
    SplineFont *sf=fv->sf;
-
    EncMap *map=fv->map;
 
    for (i=0; i < map->enccount; ++i)
@@ -5109,7 +5042,6 @@ if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str)
 
 static void bMergeLookups(Context *c) {
    OTLookup *otl1, *otl2;
-
    struct lookup_subtable *sub;
 
 if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str)
@@ -5140,7 +5072,6 @@ if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str)
 static void bMove(Context *c) {
    real trans[6];
    int otype=1;
-
    BVTFunc bvts[2];
 
    trans[0]=trans[3]=1;
@@ -5390,7 +5321,6 @@ static void bNearlyLines(Context *c) {
       if ((gid=c->curfv->map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
-
 	 int changed=false;
 
 	 SCPreserveState(sc, false);
@@ -5519,10 +5449,10 @@ static void bPositionReference(Context *c) {
 static void bPostNotice(Context *c) {
    char *t1;
    char *loc;
-   
+
    if (c->a.vals[1].type != v_str)
      ScriptError(c, "Expected string argument");
-   
+
    loc=c->a.vals[1].u.sval;
    t1=script2utf8_copy(loc);
    loc=fastrdup(t1);
@@ -5671,7 +5601,6 @@ if (c->a.vals[1].type != v_str
 
 static void bRemoveAnchorClass(Context *c) {
    AnchorClass *t;
-
    SplineFont *sf=c->curfv->sf;
 
 if (c->a.vals[1].type != v_str)
@@ -5853,7 +5782,6 @@ if (c->a.vals[1].type != v_str)
 
 static void bReplaceCharCounterMasks(Context *c) {
    HintMask *cm;
-
    SplineChar *sc;
    int i, j, cnt;
    Array *arr;
@@ -5881,7 +5809,6 @@ if (c->a.vals[1].type != v_arr)
 
 static void bReplaceCvtAt(Context *c) {
    SplineFont *sf=c->curfv->sf;
-
    struct ttf_table *tab;
 
    if (c->a.vals[1].type != v_int || c->a.vals[2].type != v_int)
@@ -5923,9 +5850,7 @@ static void bRevertToBackup(Context *c) {
 static void bRotate(Context *c) {
    real trans[6];
    int otype=1;
-
    BVTFunc bvts[2];
-
    double a, ox, oy;
 
 /* bRotatec->a.argc==1 || c->a.argc==3 || c->a.argc > 4 */
@@ -5986,7 +5911,6 @@ static char *ToString(Val *val) {
       return (fastrdup(val->u.sval));
    } else if (val->type==v_arr || val->type==v_arrfree) {
       char **results, *ret, *pt;
-
       int len;
 
       results=malloc(val->u.aval->argc * sizeof(char *));
@@ -6115,7 +6039,6 @@ static void bSave(Context *c) {
       t=script2utf8_copy(c->a.vals[1].u.sval);
       locfilename=fastrdup(t);
       pt=strrchr(locfilename, '.');
-
       int rc=SFDWriteBakExtended(locfilename,
 				   sf, c->curfv->map, c->curfv->normal,
 				   localRevisionsToRetain);
@@ -6184,12 +6107,9 @@ static void bSaveTableToFile(Context *c) {
 static void bScale(Context *c) {
    real trans[6];
    int otype=1;
-
    BVTFunc bvts[2];
-
    double xfact, yfact;
    int i;
-
    double args[6];
 
    /* Arguments:
@@ -6316,9 +6236,7 @@ static void bSelectBitmap(Context *c) {
 static void bSelectByColor(Context *c) {
    int col, sccol;
    int i, any=0;
-
    EncMap *map=c->curfv->map;
-
    SplineFont *sf=c->curfv->sf;
 
 if (c->a.vals[1].type != v_str && c->a.vals[1].type != v_int)
@@ -6647,9 +6565,7 @@ if (c->a.vals[1].type != v_int)
 
 static void bSetCharColor(Context *c) {
    SplineFont *sf=c->curfv->sf;
-
    EncMap *map=c->curfv->map;
-
    SplineChar *sc;
    int i;
 
@@ -6960,7 +6876,6 @@ static void bSetMacStyle(Context *c) {
 
 static void bSetMaxpValue(Context *c) {
    SplineFont *sf=c->curfv->sf;
-
    struct ttf_table *tab;
 
    if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_int)
@@ -7169,7 +7084,6 @@ static void bSetTTFName(Context *c) {
    SplineFont *sf=c->curfv->sf;
    char *u;
    int lang, strid;
-
    struct ttflangname *prev, *ln;
 
    if (sf->cidmaster != NULL)
@@ -7406,12 +7320,9 @@ static void bSkew(Context *c) {
       4 => angle, origin-x, origin-y
       5 => angle-numerator, angle-denom, origin-x, origin-y
     */
-
    real trans[6];
    int otype=1;
-
    BVTFunc bvts[2];
-
    double a;
 
    for (i=1; i < c->a.argc; ++i) {
@@ -7464,7 +7375,6 @@ static void bSmallCaps(Context *c) {
       .small=&small
    };
    double h_scale, v_scale=0.66;
-
    double stem_h, stem_w=0.93;
 
    /* Arguments:
@@ -7713,7 +7623,7 @@ static void bStrstr(Context *c) {
 
    if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str)
      ScriptError(c, "Bad type for argument");
-   
+
    c->return_val.type=v_int;
    pt=strstr(c->a.vals[1].u.sval, c->a.vals[2].u.sval);
    c->return_val.u.ival=pt==NULL ? -1 : pt - c->a.vals[1].u.sval;
@@ -7784,7 +7694,6 @@ static void bToString(Context *c) {
 
 static void bTransform(Context *c) {
    real trans[6];
-
    BVTFunc bvts[1];
    int i;
 
@@ -7813,7 +7722,6 @@ static void bTypeOf(Context *c) {
 static void bUCS4(Context *c) {
    if (c->a.vals[1].type==v_str) {
       const char *pt=c->a.vals[1].u.sval;
-
       int i, len=g_utf8_strlen(pt, -1);
 
       c->return_val.type=v_arrfree;
@@ -7919,7 +7827,6 @@ static void bUnlinkReference(Context *c) {
 static void bUtf8(Context *c) {
    uint32_t buf[2];
    int i;
-
    uint32_t *temp;
 
    if (c->a.vals[1].type==v_int) {
@@ -8039,7 +7946,7 @@ static void bWritePfm(Context *c) {
    char *locfilename;
    if (c->a.vals[1].type != v_str)
      ScriptError(c, "Bad type of argument");
-   
+
    t=script2utf8_copy(c->a.vals[1].u.sval);
    locfilename=fastrdup(t);
    if (!WritePfmFile(c->a.vals[1].u.sval, sf, 0, c->curfv->map))
@@ -8577,7 +8484,7 @@ static struct builtins {
 
 static void bGetCoverageCounts(Context *c) {
    int i;
-   
+
    afputs("-----BEGIN FONTANVIL COVERAGE COUNTS-----\n",astdout);
    for (i=0;builtins[i].name;i++) {
       afprintf(astdout,"%-30s %20lu\n",builtins[i].name,builtins[i].count);
@@ -8786,7 +8693,6 @@ static void handlename(Context *c,Val *val) {
    enum token_type tok;
    int temp;
    char *pt;
-
    SplineFont *sf;
 
    strcpy(name, c->tok_text);
@@ -8963,9 +8869,7 @@ static void handlename(Context *c,Val *val) {
 	    val->u.ival=ValidatePrivate(c->curfv->sf);
 	 } else if (strcmp(name, "$bitmaps")==0) {
 	    SplineFont *sf;
-
 	    BDFFont *bdf;
-
 	    int cnt;
 
 	    if (c->curfv==NULL)
@@ -8988,9 +8892,7 @@ static void handlename(Context *c,Val *val) {
 	    }
 	 } else if (strcmp(name, "$panose")==0) {
 	    SplineFont *sf;
-
 	    struct pfminfo pfminfo;
-
 	    int cnt;
 
 	    if (c->curfv==NULL)
@@ -9009,7 +8911,6 @@ static void handlename(Context *c,Val *val) {
 	    }
 	 } else if (strcmp(name, "$selection")==0) {
 	    EncMap *map;
-
 	    int i;
 
 	    if (c->curfv==NULL)
@@ -9498,7 +9399,6 @@ static void assign(Context *c,Val *val) {
 	    ScriptError(c, "Void found on right side of assignment");
 	 else if (tok==tt_assign) {
 	    Val temp;
-
 	    int argi;
 
 	    temp=*val->u.lval;
@@ -9554,7 +9454,6 @@ static void assign(Context *c,Val *val) {
 		    (other.type==v_str || other.type==v_int
 		     || other.type==v_real)) {
 	    char *ret, *temp;
-
 	    char buffer[20];
 
 	    if (other.type==v_int) {

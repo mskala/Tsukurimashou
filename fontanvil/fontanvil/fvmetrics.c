@@ -1,4 +1,4 @@
-/* $Id: fvmetrics.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: fvmetrics.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -36,17 +36,11 @@
 static void DoChar(SplineChar *sc,CreateWidthData *wd,FontViewBase *fv,
 		   BDFChar * bc) {
    real transform[6];
-
    DBounds bb;
-
    IBounds ib;
-
    int width=0;
-
    BVTFunc bvts[2];
-
    BDFFont *bdf;
-
    RefChar *r=HasUseMyMetrics(sc, fv->active_layer);
 
    /* Can't change the horizontal or vertical advance if there's a "use my metrics" bit set */
@@ -195,9 +189,7 @@ static void DoChar(SplineChar *sc,CreateWidthData *wd,FontViewBase *fv,
 
 void FVDoit(CreateWidthData * wd) {
    FontViewBase *fv=(FontViewBase *) (wd->_fv);
-
    int i;
-
    BDFChar *bc;
 
    if (fv->sf->onlybitmaps && fv->active_bitmap != NULL

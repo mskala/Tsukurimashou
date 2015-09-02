@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 4069 2015-06-28 19:55:59Z mskala $ */
+/* $Id: tottfgpos.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -236,15 +236,10 @@ uint32_t ScriptFromUnicode(int u, SplineFont *sf) {
 
 uint32_t SCScriptFromUnicode(SplineChar * sc) {
    char *pt;
-
    PST *pst;
-
    SplineFont *sf;
-
    int i;
-
    unsigned uni;
-
    FeatureScriptLangList *features;
 
    if (sc==NULL)
@@ -261,7 +256,6 @@ uint32_t SCScriptFromUnicode(SplineChar * sc) {
       for (++pt; *pt != '\0' && *pt != '_' && *pt != '.'; ++pt);
    if (*pt != '\0') {
       char *str=copyn(sc->name, pt - sc->name);
-
       int uni=sf==NULL
 	 || sf->fv==NULL ? UniFromName(str, ui_none,
 					 &custom) : UniFromName(str,
@@ -321,15 +315,10 @@ static void GlyphMapFree(SplineChar *** map) {
 
 static SplineChar **FindSubs(SplineChar *sc,struct lookup_subtable *sub) {
    SplineChar *spc[30], **space=spc;
-
    int max=sizeof(spc) / sizeof(spc[0]);
-
    int cnt=0;
-
    char *pt, *start;
-
    SplineChar *subssc, **ret;
-
    PST *pst;
 
    for (pst=sc->possub; pst != NULL; pst=pst->next) {
@@ -375,11 +364,8 @@ static SplineChar **FindSubs(SplineChar *sc,struct lookup_subtable *sub) {
 static SplineChar ***generateMapList(SplineChar ** glyphs,
 				     struct lookup_subtable *sub) {
    int cnt;
-
    SplineChar *sc;
-
    int i;
-
    SplineChar ***maps=NULL;
 
    for (cnt=0; glyphs[cnt] != NULL; ++cnt);
@@ -406,14 +392,11 @@ void AnchorClassDecompose(SplineFont *sf, AnchorClass * _ac, int classcnt,
    /*  (and the cnt-1 classes after it) */
    /*  and distributing in the four possible anchor types */
    int i, j, k, gid, gmax;
-
    struct sclist {
       int cnt;
       SplineChar **glyphs;
    } heads[at_max];
-
    AnchorPoint *test;
-
    AnchorClass *ac;
 
    memset(heads, 0, sizeof(heads));
@@ -491,9 +474,7 @@ SplineChar **EntryExitDecompose(SplineFont *sf, AnchorClass * ac,
 				struct glyphinfo *gi) {
    /* Run through the font finding all characters with this anchor class */
    int i, j, cnt, gmax, gid;
-
    SplineChar **array;
-
    AnchorPoint *test;
 
    array=NULL;
@@ -524,11 +505,8 @@ SplineChar **EntryExitDecompose(SplineFont *sf, AnchorClass * ac,
 
 static void AnchorGuessContext(SplineFont *sf,struct alltabs *at) {
    int i;
-
    int maxbase=0, maxmark=0, basec, markc;
-
    AnchorPoint *ap;
-
    int hascursive=0;
 
    /* the order in which we examine the glyphs does not matter here, so */
@@ -616,7 +594,6 @@ static SplineChar **SFOrderedGlyphsWithPSTinSubtable(SplineFont *sf,
 						     struct lookup_subtable
 						     *sub) {
    SplineChar **glyphs=SFGlyphsWithPSTinSubtable(sf, sub);
-
    int cnt, i, k;
 
    if (glyphs==NULL)
@@ -634,9 +611,7 @@ static SplineChar **SFOrderedGlyphsWithPSTinSubtable(SplineFont *sf,
 
 SplineChar **SFGlyphsFromNames(SplineFont *sf, char *names) {
    int cnt, ch;
-
    char *pt, *end;
-
    SplineChar *sc, **glyphs;
 
    if (names==NULL)
@@ -671,7 +646,6 @@ SplineChar **SFGlyphsFromNames(SplineFont *sf, char *names) {
 
 static SplineChar **OrderedGlyphsFromNames(SplineFont *sf,char *names) {
    SplineChar **glyphs=SFGlyphsFromNames(sf, names);
-
    int i, j;
 
    if (glyphs==NULL || glyphs[0]==NULL)
@@ -722,7 +696,6 @@ static int devtaboffsetsize(DeviceTable *dt) {
 
 static void dumpgposdevicetable(AFILE *gpos,DeviceTable *dt) {
    int type;
-
    int i, cnt, b;
 
    if (dt==NULL || dt->corrections==NULL)
@@ -758,7 +731,6 @@ static void dumpgposdevicetable(AFILE *gpos,DeviceTable *dt) {
 
 static int DevTabLen(DeviceTable *dt) {
    int type;
-
    int cnt;
 
    if (dt==NULL || dt->corrections==NULL)
@@ -862,7 +834,6 @@ static int gposmaskeddumpdevtab(AFILE *gpos,DeviceTable *dt,int bits,
 
 static int DevTabsSame(DeviceTable *dt1,DeviceTable *dt2) {
    DeviceTable _dt;
-
    int i;
 
    if (dt1==NULL && dt2==NULL)
@@ -911,13 +882,9 @@ static int ValDevTabsSame(ValDevTab *vdt1,ValDevTab *vdt2) {
 static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
 			      struct lookup_subtable *sub) {
    int cnt, cnt2;
-
    int32_t coverage_pos, end;
-
    PST *pst, *first=NULL;
-
    int bits=0, same=true;
-
    SplineChar **glyphs;
 
    glyphs=SFOrderedGlyphsWithPSTinSubtable(sf, sub);
@@ -1087,25 +1054,15 @@ static int cmp_gid(const void *_s1,const void *_s2) {
 static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 			    struct lookup_subtable *sub) {
    int cnt;
-
    int32_t coverage_pos, offset_pos, end, start, pos;
-
    PST *pst;
-
    KernPair *kp;
-
    int vf1=0, vf2=0, i, j, k, tot, bit_cnt, v;
-
    int start_cnt, end_cnt;
-
    int chunk_cnt, chunk_max;
-
    SplineChar *sc, **glyphs, *gtemp;
-
    struct sckppst **seconds;
-
    int devtablen;
-
    int next_dev_tab;
 
    /* Figure out all the data we need. First the glyphs with kerning info */
@@ -1476,7 +1433,6 @@ uint16_t *ClassesFromNames(SplineFont *sf, char **classnames, int class_cnt,
 
 static SplineChar **GlyphsFromClasses(SplineChar ** gs,int numGlyphs) {
    int i, cnt;
-
    SplineChar **glyphs;
 
    for (i=cnt=0; i < numGlyphs; ++i)
@@ -1495,7 +1451,6 @@ static SplineChar **GlyphsFromInitialClasses(SplineChar ** gs,int numGlyphs,
 					     uint16_t * classes,
 					     uint16_t * initial) {
    int i, j, cnt;
-
    SplineChar **glyphs;
 
    for (i=cnt=0; i < numGlyphs; ++i) {
@@ -1561,17 +1516,11 @@ static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
 			      struct lookup_subtable *sub,
 			      struct alltabs *at) {
    uint32_t begin_off=aftell(gpos), pos;
-
    uint16_t *class1, *class2;
-
    KernClass *kc=sub->kc, *test;
-
    SplineChar **glyphs;
-
    int i, isv;
-
    int anydevtab=false;
-
    int next_devtab;
 
    putshort(gpos, 2);		/* format 2 of the pair adjustment subtable */
@@ -1674,13 +1623,9 @@ static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
 				  struct lookup_subtable *sub,
 				  struct glyphinfo *gi) {
    AnchorClass *ac, *testac;
-
    SplineChar **entryexit;
-
    int cnt, offset, j;
-
    AnchorPoint *ap, *entry, *exit;
-
    uint32_t coverage_offset, start;
 
    ac=NULL;
@@ -1772,7 +1717,6 @@ static int orderglyph(const void *_sc1,const void *_sc2) {
 
 static SplineChar **allmarkglyphs(SplineChar *** glyphlist,int classcnt) {
    SplineChar **glyphs;
-
    int i, tot, k;
 
    if (classcnt==1)
@@ -1802,13 +1746,9 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
 			       SplineChar *** marks, SplineChar ** base,
 			       int classcnt, struct glyphinfo *gi) {
    AnchorClass *ac=NULL;
-
    int j, cnt, k, l, pos, offset, tot, max;
-
    uint32_t coverage_offset, markarray_offset, subtable_start;
-
    AnchorPoint *ap, **aps;
-
    SplineChar **markglyphs;
 
    for (cnt=0; base[cnt] != NULL; ++cnt);
@@ -2025,11 +1965,8 @@ static void dumpGSUBsimplesubs(AFILE *gsub,SplineFont *sf,
 static void dumpGSUBmultiplesubs(AFILE *gsub,SplineFont *sf,
 				 struct lookup_subtable *sub) {
    int cnt, offset;
-
    int32_t coverage_pos, end;
-
    int gc;
-
    SplineChar **glyphs, ***maps;
 
    glyphs=SFOrderedGlyphsWithPSTinSubtable(sf, sub);
@@ -2082,15 +2019,10 @@ static int AllToBeOutput(LigList *lig) {
 static void dumpGSUBligdata(AFILE *gsub,SplineFont *sf,
 			    struct lookup_subtable *sub, struct alltabs *at) {
    int32_t coverage_pos, next_val_pos, here, lig_list_start;
-
    int cnt, i, pcnt, lcnt, max=100, j;
-
    uint16_t *offsets=NULL, *ligoffsets=malloc(max * sizeof(uint16_t));
-
    SplineChar **glyphs;
-
    LigList *ll;
-
    struct splinecharlist *scl;
 
    glyphs=SFOrderedGlyphsWithPSTinSubtable(sf, sub);
@@ -2165,7 +2097,6 @@ static int ui16cmp(const void *_i1,const void *_i2) {
 
 static uint16_t *FigureInitialClasses(FPST *fpst) {
    uint16_t *initial=malloc((fpst->nccnt + 1) * sizeof(uint16_t));
-
    int i, cnt, j;
 
    for (i=cnt=0; i < fpst->rule_cnt; ++i) {
@@ -2182,9 +2113,7 @@ static uint16_t *FigureInitialClasses(FPST *fpst) {
 
 static SplineChar **OrderedInitialGlyphs(SplineFont *sf,FPST *fpst) {
    SplineChar **glyphs, *sc;
-
    int i, j, cnt, ch;
-
    char *pt, *names;
 
    glyphs=malloc((fpst->rule_cnt + 1) * sizeof(SplineChar *));
@@ -2254,15 +2183,11 @@ static void dumpg___ContextChainGlyphs(AFILE *lfile,SplineFont *sf,
 				       struct lookup_subtable *sub,
 				       struct alltabs *at) {
    FPST *fpst=sub->fpst;
-
    int iscontext=fpst->type==pst_contextpos
       || fpst->type==pst_contextsub;
    uint32_t base=aftell(lfile);
-
    int i, cnt, subcnt, j, k, l, maxcontext, curcontext;
-
    SplineChar **glyphs, **subglyphs;
-
    int lc;
 
    glyphs=OrderedInitialGlyphs(sf, fpst);
@@ -2354,17 +2279,12 @@ static void dumpg___ContextChainClass(AFILE *lfile,SplineFont *sf,
 				      struct lookup_subtable *sub,
 				      struct alltabs *at) {
    FPST *fpst=sub->fpst;
-
    int iscontext=fpst->type==pst_contextpos
       || fpst->type==pst_contextsub;
    uint32_t base=aftell(lfile), rulebase, pos, subpos, npos;
-
    uint16_t *initialclasses, *iclass, *bclass, *lclass;
-
    SplineChar **iglyphs, **bglyphs, **lglyphs, **glyphs;
-
    int i, ii, cnt, subcnt, j, k, l, maxcontext, curcontext;
-
    int lc;
 
    putshort(lfile, 2);		/* Sub format 2 => class */
@@ -2524,17 +2444,12 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
 					 struct lookup_subtable *sub,
 					 struct alltabs *at) {
    FPST *fpst=sub->fpst;
-
    int iscontext=fpst->type==pst_contextpos
       || fpst->type==pst_contextsub;
    uint32_t base=aftell(lfile), ibase, lbase, bbase;
-
    int i, l;
-
    SplineChar **glyphs;
-
    int curcontext;
-
    int lc;
 
    if (fpst->rule_cnt != 1)
@@ -2670,15 +2585,10 @@ static void dumpg___ContextChain(AFILE *lfile,SplineFont *sf,
 static void AnchorsAway(AFILE *lfile,SplineFont *sf,
 			struct lookup_subtable *sub, struct glyphinfo *gi) {
    SplineChar **base, **lig, **mkmk;
-
    AnchorClass *ac, *acfirst;
-
    SplineChar ***marks;
-
    int *subcnts;
-
    int cmax, classcnt;
-
    int i;
 
    marks=malloc((cmax=20) * sizeof(SplineChar **));
@@ -2752,9 +2662,7 @@ static int FPSTRefersToOTL(FPST *fpst,OTLookup *otl) {
 
 static int OnlyMac(OTLookup *otl,OTLookup *all) {
    FeatureScriptLangList *features=otl->features;
-
    int anymac=0;
-
    struct lookup_subtable *sub;
 
    switch (otl->lookup_type) {
@@ -2894,21 +2802,13 @@ static void otf_dumpALookup(AFILE *lfile,OTLookup *otl,SplineFont *sf,
 static AFILE *G___figureLookups(SplineFont *sf,int is_gpos,
 			       struct alltabs *at) {
    OTLookup *otl;
-
    struct lookup_subtable *sub;
-
    int index, i, j;
-
    AFILE *final;
-
    AFILE *lfile=atmpfile();
-
    OTLookup **sizeordered;
-
    OTLookup *all=is_gpos ? sf->gpos_lookups : sf->gsub_lookups;
-
    char *buffer;
-
    int len;
 
    index=0;
@@ -3073,7 +2973,6 @@ static int numeric_order(const void *_i1,const void *_i2) {
 
 static int LangSysMatch(struct scriptset *s,int ils1,int ils2) {
    struct langsys *ls1=&s->langsys[ils1], *ls2=&s->langsys[ils2];
-
    int i;
 
    if (ls1->fc != ls2->fc)
@@ -3087,9 +2986,7 @@ static int LangSysMatch(struct scriptset *s,int ils1,int ils2) {
 
 static void FindFeatures(SplineFont *sf,int is_gpos,struct ginfo *ginfo) {
    uint32_t *scripts, *langs, *features;
-
    OTLookup **lookups;
-
    int sc, lc, fc, j;
 
    memset(ginfo, 0, sizeof(struct ginfo));
@@ -3136,7 +3033,6 @@ static void FindFeatures(SplineFont *sf,int is_gpos,struct ginfo *ginfo) {
    for (sc=0; sc < ginfo->sc; ++sc) {
       for (lc=0; lc < ginfo->scripts[sc].lc; ++lc) {
 	 int fcmax=ginfo->scripts[sc].langsys[lc].fc;
-
 	 int *feature_id=ginfo->scripts[sc].langsys[lc].feature_id;
 
 	 for (fc=0; fc < fcmax; ++fc) {
@@ -3166,11 +3062,8 @@ static void FindFeatures(SplineFont *sf,int is_gpos,struct ginfo *ginfo) {
 static void dump_script_table(AFILE *g___,struct scriptset *ss,
 			      struct ginfo *ginfo) {
    int i, lcnt, dflt_lang=-1;
-
    uint32_t base;
-
    int j, req_index;
-
    uint32_t offset;
 
    /* Count the languages, and find default */
@@ -3224,15 +3117,10 @@ static void dump_script_table(AFILE *g___,struct scriptset *ss,
 static AFILE *g___FigureExtensionSubTables(OTLookup *all,int startoffset,
 					  int is_gpos) {
    OTLookup *otf;
-
    struct lookup_subtable *sub;
-
    int len, len2, gotmore;
-
    AFILE *efile;
-
    int i, offset, cnt;
-
    int any=false;
 
    if (all==NULL)
@@ -3335,21 +3223,14 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
    /* Dump out either a gpos or a gsub table. gpos handles kerns, gsub ligs */
    /*  we assume that SFFindUnusedLookups has been called */
    AFILE *lfile, *g___, *efile;
-
    uint32_t lookup_list_table_start, feature_list_table_start, here,
       scripts_start_offset;
    struct ginfo ginfo;
-
    int32_t size_params_loc, size_params_ptr;
-
    int i, j, cnt, scnt, offset;
-
    OTLookup *otf, *all;
-
    struct lookup_subtable *sub;
-
    char *buf;
-
    struct otffeatname *fn;
 
    for (fn=sf->feat_names; fn != NULL; fn=fn->next)
@@ -3606,7 +3487,6 @@ void otf_dumpgsub(struct alltabs *at, SplineFont *sf) {
 
 int LigCaretCnt(SplineChar * sc) {
    PST *pst;
-
    int j, cnt;
 
    for (pst=sc->possub; pst != NULL; pst=pst->next) {
@@ -3628,7 +3508,6 @@ int LigCaretCnt(SplineChar * sc) {
 
 static void DumpLigCarets(AFILE *gdef,SplineChar *sc) {
    PST *pst;
-
    int i, j, offset, cnt;
 
    for (pst=sc->possub; pst != NULL; pst=pst->next) {
@@ -3677,7 +3556,6 @@ static void DumpLigCarets(AFILE *gdef,SplineChar *sc) {
 
 static int glyphnameinlist(char *haystack,char *name) {
    char *start, *pt;
-
    int ch, match, slen=strlen(name);
 
    for (pt=haystack;;) {
@@ -3701,13 +3579,9 @@ static int glyphnameinlist(char *haystack,char *name) {
 
 static int ReferencedByGSUB(SplineChar *sc) {
    PST *pst;
-
    SplineFont *sf=sc->parent;
-
    int gid;
-
    SplineChar *testsc;
-
    char *name=sc->name;
 
    /* If it is itself a ligature it will be referenced by GSUB */
@@ -3731,7 +3605,6 @@ static int ReferencedByGSUB(SplineChar *sc) {
 
 int gdefclass(SplineChar * sc) {
    PST *pst;
-
    AnchorPoint *ap;
 
    if (sc->glyph_class != 0)
@@ -3782,11 +3655,8 @@ void otf_dumpgdef(struct alltabs *at, SplineFont *sf) {
    /* All my example fonts contain a ligature caret list subtable, which is */
    /*  empty. Odd, but perhaps important */
    int i, j, k, lcnt, needsclass;
-
    int pos, offset;
-
    int cnt, start, last, lastval;
-
    SplineChar **glyphs, *sc;
 
    /* Don't look in the cidmaster if we are only dumping one subfont */
@@ -3957,7 +3827,6 @@ enum math_bits { mb_constants=0x01, mb_italic=0x02, mb_topaccent=0x04,
 
 static int MathBits(struct alltabs *at,SplineFont *sf) {
    int i, gid, ret;
-
    SplineChar *sc;
 
    ret=sf->MATH ? mb_constants : 0;
@@ -3986,13 +3855,9 @@ static int MathBits(struct alltabs *at,SplineFont *sf) {
 static void ttf_math_dump_italic_top(AFILE *mathf,struct alltabs *at,
 				     SplineFont *sf, int is_italic) {
    int i, gid, len;
-
    SplineChar *sc, **glyphs;
-
    uint32_t coverage_pos, coverage_table;
-
    uint32_t devtab_offset;
-
    DeviceTable *devtab;
 
    /* Figure out our glyph list (and count) */
@@ -4048,7 +3913,6 @@ static void ttf_math_dump_italic_top(AFILE *mathf,struct alltabs *at,
 static void ttf_math_dump_extended(AFILE *mathf,struct alltabs *at,
 				   SplineFont *sf) {
    int i, gid, len;
-
    SplineChar *sc, **glyphs;
 
    for (i=len=0; i < at->gi.gcnt; ++i)
@@ -4073,7 +3937,6 @@ static int ttf_math_dump_mathkernvertex(AFILE *mathf,
 					struct mathkernvertex *mkv,
 					int devtab_pos) {
    int i;
-
    uint32_t here=aftell(mathf);
 
    putshort(mathf, mkv->cnt - 1);
@@ -4112,9 +3975,7 @@ static void ttf_math_dump_mathkerndevtab(AFILE *mathf,
 static void ttf_math_dump_mathkern(AFILE *mathf,struct alltabs *at,
 				   SplineFont *sf) {
    int i, gid, len;
-
    SplineChar *sc, **glyphs;
-
    uint32_t coverage_pos, coverage_table, kr_pos, midpos2;
 
    /* Figure out our glyph list (and count) */
@@ -4210,9 +4071,7 @@ static void ttf_math_dump_mathkern(AFILE *mathf,struct alltabs *at,
 
 static int gv_len(SplineFont *sf,struct glyphvariants *gv) {
    char *pt, *start;
-
    int ch, cnt;
-
    SplineChar *sc;
 
    if (gv==NULL || (gv->variants==NULL && gv->part_cnt==0))
@@ -4248,13 +4107,9 @@ static uint32_t ttf_math_dump_mathglyphconstructiontable(AFILE *mathf,
 						       *gv, SplineFont *sf,
 						       uint32_t pos, int is_v) {
    char *pt, *start;
-
    int ch, cnt;
-
    SplineChar *sc;
-
    uint32_t here=aftell(mathf);
-
    DBounds b;
 
    putshort(mathf, gv->part_cnt==0 ? 0 : pos - here);
@@ -4309,9 +4164,7 @@ static uint32_t ttf_math_dump_mathglyphassemblytable(AFILE *mathf,
 						   SplineFont *sf,
 						   uint32_t devtab_pos) {
    SplineChar *sc;
-
    uint32_t here=aftell(mathf);
-
    int i;
 
    if (gv->part_cnt==0)
@@ -4340,9 +4193,7 @@ static uint32_t ttf_math_dump_mathglyphassemblytable(AFILE *mathf,
 static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
 				       SplineFont *sf) {
    int i, gid, vlen, hlen;
-
    SplineChar *sc, **vglyphs, **hglyphs;
-
    uint32_t coverage_pos, coverage_table, offset, pos, assembly_pos;
 
    /* Figure out our glyph list (and count) */
@@ -4444,11 +4295,8 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
 
 void otf_dump_math(struct alltabs *at, SplineFont *sf) {
    AFILE *mathf;
-
    int i;
-
    uint32_t devtab_offsets[60], const_start, gi_start, v_start;
-
    int bits=MathBits(at, sf);
 
    if (sf->MATH==NULL)
@@ -4596,7 +4444,6 @@ static struct taglist *sorttaglist(struct taglist *list,
 				   int (*compar) (const void *,
 						  const void *)) {
    struct taglist *t, **array;
-
    int i, cnt;
 
    if (list==NULL || list->next==NULL)
@@ -4622,9 +4469,7 @@ static void _base_sort(struct Base *base) {
    /* Sort the language lists in each script */
    /* Sort the feature lists in each language */
    int i, j, pos, tag;
-
    struct basescript *bs;
-
    struct baselangextent *langs;
 
    if (base==NULL)
@@ -4670,7 +4515,6 @@ void SFBaseSort(SplineFont *sf) {
 
 static void dump_minmax(AFILE *basef,struct baselangextent *bl) {
    struct baselangextent *fl;
-
    int fcnt;
 
    putshort(basef, bl->descent);
@@ -4686,15 +4530,10 @@ static void dump_minmax(AFILE *basef,struct baselangextent *bl) {
 
 void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
    AFILE *basef;
-
    int i, j, cnt, lcnt;
-
    uint32_t here, bsl;
-
    struct basescript *bs;
-
    struct baselangextent *bl, *dflt;
-
    int offset;
 
    if (sf->horiz_base==NULL && sf->vert_base==NULL)
@@ -4805,11 +4644,8 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
 
 static int jscriptsort(const void *_s1,const void *_s2) {
    const Justify *const *__s1=(const Justify * const *) _s1;
-
    const Justify *const *__s2=(const Justify * const *) _s2;
-
    const Justify *s1=*__s1;
-
    const Justify *s2=*__s2;
 
    if (s1->script > s2->script)
@@ -4826,7 +4662,6 @@ static int jlangsort(const void *_s1,const void *_s2) {
    const struct jstf_lang *const *__s2 =
       (const struct jstf_lang * const *) _s2;
    const struct jstf_lang *s1=*__s1;
-
    const struct jstf_lang *s2=*__s2;
 
    if (s1->lang==s2->lang)
@@ -4845,11 +4680,8 @@ static int jlangsort(const void *_s1,const void *_s2) {
 
 static int lookup_order(const void *_s1,const void *_s2) {
    const OTLookup *const *__s1=(const OTLookup * const *) _s1;
-
    const OTLookup *const *__s2=(const OTLookup * const *) _s2;
-
    const OTLookup *s1=*__s1;
-
    const OTLookup *s2=*__s2;
 
    if (s1->lookup_index > s2->lookup_index)
@@ -4865,9 +4697,7 @@ static void SFJstfSort(SplineFont *sf) {
    /* languages must be ordered within scripts */
    /* lookup lists must be ordered */
    Justify *jscript, **scripts;
-
    int i, cnt, lmax;
-
    struct jstf_lang **langs;
 
    for (cnt=0, jscript=sf->justify; jscript != NULL;
@@ -4918,7 +4748,6 @@ static void jstf_SplitTables(OTLookup ** mixed,OTLookup *** _SUB,
    /* mixed contains both gsub and gpos lookups. put them into their own */
    /* lists, and then sort them */
    int cnt, s, p;
-
    OTLookup **SUB, **POS;
 
    if (mixed==NULL || mixed[0]==NULL) {
@@ -4958,7 +4787,6 @@ static void jstf_SplitTables(OTLookup ** mixed,OTLookup *** _SUB,
 
 static uint32_t jstf_dumplklist(AFILE *jstf,OTLookup ** PS,uint32_t base) {
    uint32_t here;
-
    int i;
 
    if (PS==NULL)
@@ -5077,7 +4905,6 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 
       if (jscript->extenders != NULL) {
 	 SplineChar **glyphs;
-
 	 int gcnt, g;
 
 	 here=aftell(jstf);
@@ -5113,9 +4940,7 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 	    putshort(jstf, 0);
 	 for (i=0; i < jlang->cnt; ++i) {
 	    OTLookup **enSUB, **enPOS, **disSUB, **disPOS;
-
 	    uint32_t enSUBoff, enPOSoff, disSUBoff, disPOSoff, maxOff;
-
 	    uint32_t pbase;
 
 	    pbase=aftell(jstf);

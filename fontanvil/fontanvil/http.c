@@ -1,4 +1,4 @@
-/* $Id: http.c 4071 2015-06-29 09:11:43Z mskala $ */
+/* $Id: http.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -71,13 +71,9 @@ enum conversation_type { ct_savecookies, ct_slurpdata, ct_getuserid,
 
 static int findhost(struct sockaddr_in *addr,char *hostname) {
    struct hostent *hostent;
-
    int i;
-
    static int last_len;
-
    static char last_addr[40];
-
    static char *last_host=NULL;
 
    if (last_host != NULL && strcmp(last_host, hostname)==0) {
@@ -108,7 +104,6 @@ static pthread_mutex_t host_lock=PTHREAD_MUTEX_INITIALIZER;
 
 static int findHTTPhost(struct sockaddr_in *addr,char *hostname,int port) {
    struct servent *servent;
-
    int ret;
 
    pthread_mutex_lock(&host_lock);
@@ -128,7 +123,6 @@ static int findHTTPhost(struct sockaddr_in *addr,char *hostname,int port) {
 
 static int findFTPhost(struct sockaddr_in *addr,char *hostname,int port) {
    struct servent *servent;
-
    int ret;
 
    pthread_mutex_lock(&host_lock);
@@ -155,9 +149,7 @@ static int findFTPhost(struct sockaddr_in *addr,char *hostname,int port) {
 /*  record that we sent the command */
 static int ftpsend(int ctl,char *cmd) {
    struct timeval tv;
-
    fd_set wts;
-
    int i=0, ret=0;
 
  restart:
@@ -188,13 +180,9 @@ static int ftpsend(int ctl,char *cmd) {
 /* Similar thing for read */
 static int getresponse(int ctl,char *buf,int buflen) {
    struct timeval tv;
-
    fd_set rds;
-
    int len;
-
    int ret=false, i;
-
    char *pt, *start;
 
  restart:
@@ -271,7 +259,6 @@ static int ftpsendpassive(int ctl,struct sockaddr_in *data_addr,char *buf,
 
 static int getTCPsocket() {
    struct protoent *protoent;
-
    int proto;
 
    if ((protoent=getprotobyname("tcp")) != NULL)
@@ -285,9 +272,7 @@ static int getTCPsocket() {
 #   else
    {
       int soc=socket(PF_INET, SOCK_STREAM, proto);
-
       int value=1;
-
       socklen_t len=sizeof(value);
 
       if (soc != -1)

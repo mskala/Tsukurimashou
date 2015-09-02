@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 4071 2015-06-29 09:11:43Z mskala $ */
+/* $Id: splineutil2.c 4155 2015-09-02 07:43:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -400,7 +400,7 @@ static int _ApproximateSplineFromPoints(SplinePoint *from,SplinePoint *to,
     int nrescnt=0, prescnt=0;
     bigreal nmin, nmax, pmin, pmax, test, ptest;
     bigreal bx, by, cx, cy;
-	    
+
     memset(&nres,0,sizeof(nres)); memset(&pres,0,sizeof(pres));
 
     /* Add the initial and end points */
@@ -928,7 +928,7 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
     /* If all the selected points are at the same spot, and one of the */
     /*  end-points is also at that spot, then just copy the control point */
     /* But our caller seems to have done that for us */
-    
+
     /* If the two end-points are corner points then allow the slope to vary */
     /* Or if one end-point is a tangent but the point defining the tangent's */
     /*  slope is being removed then allow the slope to vary */
@@ -1124,7 +1124,7 @@ Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from, SplinePoint *to,
 
     trylen=(to->me.x-from->me.x)*fromunit.x + (to->me.y-from->me.y)*fromunit.y;
     if (trylen>flen) flen=trylen;
-    
+
     trylen=(from->me.x-to->me.x)*tounit.x + (from->me.y-to->me.y)*tounit.y;
     if (trylen>tlen) tlen=trylen;
 
@@ -1417,7 +1417,7 @@ static TPoint *SplinesFigureTPsBetween(SplinePoint *from,SplinePoint *to,
     if (lens!=_lens) free(lens);
 
     *tot=i;
-	
+
    return tp;
 }
 
@@ -1457,7 +1457,7 @@ void SplinesRemoveBetween(SplineChar *sc, SplinePoint *from, SplinePoint *to,int
 	sp=np->next;
 	SplinePointMDFree(sc,np);
     }
-    
+
     free(tp);
 
     SplinePointReCategorize(from,oldfpt);
@@ -1700,7 +1700,7 @@ static bigreal SecondDerivative(Spline *s,bigreal t) {
 
    return top/(dxdt*dxdt);
 }
-    
+
 
 /* Does the second derivative change sign around this point? If so we should */
 /*  retain it for truetype */
@@ -2909,7 +2909,7 @@ static int ForceEndPointExtrema(Spline *s,int isto) {
 	SplineRefigure(s);
        return true;	/* We changed the slope */
     }
-    
+
     if ((xdiff=cp->x - end->me.x)<0) xdiff=-xdiff;
     if ((ydiff=cp->y - end->me.y)<0) ydiff=-ydiff;
 
@@ -3112,7 +3112,7 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 		    }
 		}
 	    }
-		
+
 	    if (t[i]<=0 || t[i]>=1.0) {
 		--p;
 		for (j=i; j<p; ++j) {
@@ -3167,7 +3167,7 @@ Spline *SplineAddExtrema(Spline *s,int always,real lenbound, real offsetbound,
 	/*  recompute them than to try and figure out what they map to on the */
 	/*  new spline */
     }
-   
+
    return s;
 }
 
@@ -3436,7 +3436,7 @@ void BP_HVForce(BasePoint *vector) {
 	vector->x=0;
     }
 }
-    
+
 #define NICE_PROPORTION	.39
 void SplineCharDefaultNextCP(SplinePoint *base) {
     SplinePoint *prev=NULL, *next;
@@ -3920,7 +3920,7 @@ SplineSet *SplineSetReverse(SplineSet *spl) {
 
 void SplineSetsUntick(SplineSet *spl) {
     Spline *spline, *first;
-    
+
     while (spl!=NULL) {
 	first=NULL;
 	spl->first->isintersection=false;
@@ -3938,7 +3938,7 @@ void SplineSetsUntick(SplineSet *spl) {
 
 static void SplineSetTick(SplineSet *spl) {
     Spline *spline, *first;
-    
+
     first=NULL;
     for (spline=spl->first->next; spline!=first && spline!=NULL; spline=spline->to->next) {
 	spline->isticked=true;
@@ -3948,7 +3948,7 @@ static void SplineSetTick(SplineSet *spl) {
 
 static SplineSet *SplineSetOfSpline(SplineSet *spl,Spline *search) {
     Spline *spline, *first;
-    
+
     while (spl!=NULL) {
 	first=NULL;
 	for (spline=spl->first->next; spline!=first && spline!=NULL; spline=spline->to->next) {
@@ -4293,7 +4293,7 @@ int PointsDiagonalable(SplineFont *sf,BasePoint **bp,BasePoint *unit) {
     base=bp[0];
     for (i=1; i<4; i++) {
         line1[0]=base; line1[1]=bp[i];
-        
+
         k=0;
         for (j=1; j<4; j++) {
             if (j != i)

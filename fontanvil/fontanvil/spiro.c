@@ -1,4 +1,4 @@
-/* $Id: spiro.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: spiro.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
 *
@@ -53,11 +53,8 @@ static int has_spiro=true;
 SplineSet *SpiroCP2SplineSet(spiro_cp * spiros) {
 /* Create a SplineSet from the given spiros_code_points.*/
    int n;
-
    int any=0;
-
    SplineSet *ss;
-
    int lastty=0;
 
    if (spiros==NULL)
@@ -99,7 +96,6 @@ SplineSet *SpiroCP2SplineSet(spiro_cp * spiros) {
 #   endif
       } else {
 	 int i;
-
 	 spiro_cp *nspiros;
 
 	 if ((nspiros=malloc((n + 1) * sizeof(spiro_cp)))==NULL) {
@@ -140,11 +136,8 @@ spiro_cp *SplineSet2SpiroCP(SplineSet * ss, uint16_t * _cnt) {
    /* I don't know a good way to do this. I hope including a couple of */
    /*  mid-points on every spline will do a reasonable job */
    SplinePoint *sp;
-
    Spline *s;
-
    int cnt;
-
    spiro_cp *ret;
 
    for (cnt=0, sp=ss->first;;) {
@@ -236,7 +229,6 @@ void SSRegenerateFromSpiros(SplineSet * spl) {
 /* Regenerate an updated SplineSet from SpiroCPs after edits are done. */
    if (spl->spiro_cnt <= 1 || !has_spiro)
       return;
-
    SplineSet *temp=SpiroCP2SplineSet(spl->spiros);
 
    if (temp != NULL) {
@@ -248,7 +240,6 @@ void SSRegenerateFromSpiros(SplineSet * spl) {
    } else {
       /* Didn't converge... or something ...therefore let's fake-it. */
       int i;
-
       SplinePoint *sp, *first, *last;
 
       if ((last=first =

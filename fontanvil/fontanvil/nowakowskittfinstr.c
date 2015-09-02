@@ -1,4 +1,4 @@
-/* $Id: nowakowskittfinstr.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: nowakowskittfinstr.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2000-2012 by
    George Williams, Michal Nowakowski & Alexey Kryukov */
 
@@ -488,11 +488,9 @@ static void GICImportBlues(GlobalInstrCt *gic) {
    int bluecnt=0;
    int i, j, cnt;
    real *values;
-
    int HasPSBlues =
       (PSDictHasEntry(gic->sf->private, "BlueValues") != NULL) ||
       (PSDictHasEntry(gic->sf->private, "OtherBlues") != NULL);
-
    int HasPSFamilyBlues =
       (PSDictHasEntry(gic->sf->private, "FamilyBlues") != NULL) ||
       (PSDictHasEntry(gic->sf->private, "FamilyOtherBlues") != NULL);
@@ -1621,7 +1619,6 @@ static void init_fpgm(GlobalInstrCt *gic) {
       0x23,			//   SWAP
       0x2d			// ENDF
    };
-
    struct ttf_table *tab=SFFindTable(gic->sf, CHR('f', 'p', 'g', 'm'));
 
    if (tab==NULL) {
@@ -1761,7 +1758,6 @@ static uint8_t *normalize_stem(uint8_t *prep_head,int xdir,StdStem *stem,
 
       for (i=7; i < 32768; i++) {
 	 int width_parent=compute_stem_width(xdir, stem->snapto, EM, i);
-
 	 int width_me=compute_stem_width(xdir, stem, EM, i);
 
 	 if (width_parent != width_me) {
@@ -1901,7 +1897,6 @@ static void init_prep(GlobalInstrCt *gic) {
       0x59,			// EIF
       0x1d			// SCVTCI
    };
-
    int preplen=sizeof(new_prep_preamble);
    int prepmaxlen=preplen;
    uint8_t *new_prep, *prep_head;
@@ -2213,7 +2208,6 @@ static int IsExtremum(int xdir,int p,SplinePoint *sp) {
 
 static int IsCornerExtremum(int xdir,int *contourends,BasePoint *bp,int p) {
    int PrevPoint=PrevOnContour(contourends, p);
-
    int NextPoint=NextOnContour(contourends, p);
 
    return xdir ?
@@ -2925,7 +2919,6 @@ static void optimize_strongpts_step2(InstrCt *ct) {
       /* ...for each point of "edge" (would be better called "zone" here) */
       for (i=0; i < ct->edge.othercnt; i++) {
 	 int pt=others[i];
-
 	 double pt_coord=(ct->xdir) ? ct->bp[pt].x : ct->bp[pt].y;
 
 	 /* In first pass, we sweep only off-curve points */
@@ -2938,11 +2931,8 @@ static void optimize_strongpts_step2(InstrCt *ct) {
 	 /* check path backward and forward */
 	 for (forward=0; forward < 2; forward++) {
 	    int closed=0;
-
 	    int pt_max=pt, pt_min=pt;
-
 	    double coord_max=pt_coord, coord_min=pt_coord;
-
 	    int curr=forward ? NextOnContour(contourends, pt) :
 	       PrevOnContour(contourends, pt);
 
@@ -3550,7 +3540,6 @@ static void fixup_blue_pts(BlueZone *b1,BlueZone *b2) {
 static void check_blue_pts(InstrCt *ct) {
    BasePoint *bp=ct->bp;
    BlueZone *blues=ct->gic->blues;
-
    int i, j, bluecnt=ct->gic->bluecnt;
 
    for (i=0; i < bluecnt; i++)
@@ -4434,7 +4423,6 @@ static int SetFreedomVector(uint8_t ** instrs,int pnum,int ptcnt,
 			    uint8_t * touched, DiagPointInfo * diagpts,
 			    BasePoint * norm, BasePoint * fv, int pvset,
 			    int fpgm_ok) {
-
    int i, pushpts[3];
    PointData *start=NULL, *end=NULL;
    BasePoint newfv;
@@ -4610,7 +4598,6 @@ static int DStemHasSnappableCorners(InstrCt *ct,StemData *stem,
 static uint8_t *SnapDStemCorners(InstrCt *ct,StemData *stem,PointData *pd1,
 			       PointData * pd2, BasePoint * fv) {
    uint8_t *instrs, *touched;
-
    int xbase, ybase;
 
    instrs=ct->pt;

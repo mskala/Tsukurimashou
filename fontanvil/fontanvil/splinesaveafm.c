@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: splinesaveafm.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -330,7 +330,6 @@ struct tfmdata {
    int kern_size;
    int esize;
    int param_size;
-
    uint8_t *kerntab;
    uint8_t *ligkerntab;
    uint8_t *ext;
@@ -338,7 +337,6 @@ struct tfmdata {
    uint8_t *dptab;
    uint8_t *httab;
    uint8_t *widtab;
-
    int *charlist;
 };
 
@@ -499,7 +497,6 @@ static void tfmDoExten(SplineFont *sf,int i,struct tfmdata *tfmd,int left,
    (*gvbase)->parts=calloc(cnt, sizeof(struct gv_part));
    for (j=0; j < cnt; ++j) {
       DBounds b;
-
       bigreal len;
 
       SplineCharFindBounds(bats[j], &b);
@@ -743,7 +740,6 @@ static void ofmDoExten(SplineFont *sf,int i,struct tfmdata *tfmd,int left,
    (*gvbase)->parts=calloc(cnt, sizeof(struct gv_part));
    for (j=0; j < cnt; ++j) {
       DBounds b;
-
       bigreal len;
 
       SplineCharFindBounds(bats[j], &b);
@@ -2317,9 +2313,7 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
    long size, devname, facename, extmetrics, exttable, driverinfo, kernpairs,
       pos;
    DBounds b;
-
    int style;
-
    int windows_encoding;
 
    if (map->enc->is_japanese ||
@@ -2819,7 +2813,6 @@ static int FindExtensions(SplineFont *sf,struct extension *extensions,
    for (i=0; i < maxc && i < map->enccount; ++i)
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]])) {
 	 SplineChar *sc=sf->glyphs[map->map[i]];
-
 	 struct glyphvariants *gv;
 
 	 gv=NULL;
@@ -2917,7 +2910,6 @@ static int CoalesceValues(double *values,int max,int *index,int maxc) {
       for (j=i + 1; j <= maxc; ++j) {
 	 if (values[i] > values[j]) {
 	    int l=backindex[i];
-
 	    double val=values[i];
 
 	    backindex[i]=backindex[j];

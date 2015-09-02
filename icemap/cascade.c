@@ -78,6 +78,7 @@ typedef struct _QUEUE_ENTRY {
    BDD *results;
    int child[8];
    int byte,shift;
+   int reorder_gen;
 } QUEUE_ENTRY;
 
 void gen_cascade(CONTEXT *c) {
@@ -90,11 +91,14 @@ void gen_cascade(CONTEXT *c) {
    QUEUE_ENTRY *queue;
    int queue_max,queue_low,queue_high,vi,vj;
    BDD *child[8];
+   int reorder_serial=0;
    
    /* check:  can we proceed? */
    if ((c->am.first_key==NULL) || (c->am.last_key==NULL) ||
-       (c->am.first_key->type!=c->am.last_key->type))
-     return;
+       (c->am.first_key->type!=c->am.last_key->type)) {
+      c->generator=NULL;
+      return;
+   }
    min_out=INT_MAX;
    max_out=INT_MIN;
    for (i=0;i<c->am.num_buckets;i++)
@@ -235,6 +239,7 @@ void gen_cascade(CONTEXT *c) {
    queue_low=0;
    queue_high=1;
    queue[0].results=result_bdds;
+   queue[0].reorder_gen=-1;
 
    /* process the queue */
    while (queue_low<queue_high) {
@@ -253,8 +258,12 @@ void gen_cascade(CONTEXT *c) {
       }
 
       /* optimize for the current queue entry */
-      reorder_focus=queue[queue_low].results;
-      bdd_reorder(BDD_REORDER_WIN2ITE);
+      if (queue[queue_low].reorder_gen!=reorder_serial) {
+	 reorder_focus=queue[queue_low].results;
+	 bdd_reorder(BDD_REORDER_WIN2ITE);
+	 if (bdd_reorder_gain()!=0)
+	   reorder_serial++;
+      }
 
       /* find the variable on which we want to branch */
       vj=num_bits_in-1;
@@ -333,6 +342,7 @@ void gen_cascade(CONTEXT *c) {
 	 queue[queue_low].child[i]=j;
 	 if (j==queue_high) {
 	    /* yes - adopt it into queue, and now we need another buffer */
+	    queue[queue_high].reorder_gen=reorder_serial;
 	    queue_high++;
 	    child[i]=(BDD *)malloc(num_bits_out*sizeof(BDD));
 	    
@@ -507,8 +517,10 @@ void gen_wide_cascade(CONTEXT *c) {
    
    /* check:  can we proceed? */
    if ((c->am.first_key==NULL) || (c->am.last_key==NULL) ||
-       (c->am.first_key->type!=c->am.last_key->type))
-     return;
+       (c->am.first_key->type!=c->am.last_key->type)) {
+      c->generator=NULL;
+      return;
+   }
    min_out=INT_MAX;
    max_out=INT_MIN;
    for (i=0;i<c->am.num_buckets;i++)
@@ -547,6 +559,11 @@ void gen_wide_cascade(CONTEXT *c) {
 	num_bits_in++;
    }
    
+   /* report status */
+   if (!quiet)
+     printf("Generating wide cascade map %s with %d arrows.\n",
+	    c->id,c->am.num_arrows);
+
    /* figure out how many output bits we are generating */
    num_bits_out=0;
    while ((1<<num_bits_out)<=max_out-min_out)

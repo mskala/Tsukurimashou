@@ -1,4 +1,4 @@
-/* $Id: tottfaat.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: tottfaat.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -80,11 +80,8 @@ struct kerncounts {
 static int CountKerns(struct alltabs *at,SplineFont *sf,
 		      struct kerncounts *kcnt) {
    int i, cnt, vcnt, j, kccnt=0, vkccnt=0, ksm=0, mh, mv;
-
    KernPair *kp;
-
    KernClass *kc;
-
    ASM *sm;
 
    cnt=mh=vcnt=mv=0;
@@ -186,25 +183,15 @@ static int CountKerns(struct alltabs *at,SplineFont *sf,
 static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 			    int tupleIndex, int version) {
    struct kerncounts kcnt;
-
    int i, j, k, m, c, gid, tot, km;
-
    KernPair *kp;
-
    KernClass *kc;
-
    ASM *sm;
-
    uint16_t *glnum, *offsets;
-
    int isv;
-
    int tupleMask=tupleIndex==-1 ? 0 : 0x2000;
-
    int b, bmax;
-
    int *breaks;
-
    int winfail=0;
 
    if (CountKerns(at, sf, &kcnt)==0)
@@ -303,9 +290,7 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 	    if (LookupHasDefault(kc->subtable->lookup)) {
 	       /* If we are here, we must be using version 1 */
 	       uint32_t len_pos=aftell(at->kern), pos;
-
 	       uint16_t *class1, *class2;
-
 	       int first_cnt=kc->first_cnt;
 
 	       /* OpenType fonts can actually have a set of glyphs in class[0] of */
@@ -385,13 +370,9 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 
 void ttf_dumpkerns(struct alltabs *at, SplineFont *sf) {
    int i, mmcnt=0, sum;
-
    int version;
-
    MMSet *mm=at->dovariations ? sf->mm : NULL;
-
    struct kerncounts kcnt;
-
    int must_use_old_style=0;
 
    if (!at->applemode
@@ -456,7 +437,6 @@ void ttf_dumpkerns(struct alltabs *at, SplineFont *sf) {
 
 static PST *haslcaret(SplineChar *sc) {
    PST *pst;
-
    int j;
 
    for (pst=sc->possub; pst != NULL && pst->type != pst_lcaret;
@@ -477,11 +457,8 @@ static PST *haslcaret(SplineChar *sc) {
 
 void aat_dumplcar(struct alltabs *at, SplineFont *sf) {
    int i, j, k, l, seg_cnt, tot, last, offset;
-
    PST *pst;
-
    AFILE *lcar=NULL;
-
    SplineChar *sc;
 
    /* We do four passes. The first just calculates how much space we will need */
@@ -708,13 +685,9 @@ static struct feature *aat_dumpmorx_substitutions(struct alltabs *at,
 						  struct lookup_subtable
 						  *sub) {
    int i, k, gcnt;
-
    SplineChar *sc, *msc, **glyphs;
-
    uint16_t *maps;
-
    struct feature *cur;
-
    PST *pst;
 
    for (k=0; k < 2; ++k) {
@@ -803,37 +776,21 @@ static void morx_dumpLigaFeature(AFILE *temp,SplineChar ** glyphs,int gcnt,
 				 struct alltabs *at, SplineFont *sf,
 				 int ignoremarks) {
    LigList *l;
-
    struct splinecharlist *comp;
-
    uint16_t *used=calloc(at->maxp.numGlyphs, sizeof(uint16_t));
-
    SplineChar **cglyphs;
-
    uint16_t *map;
-
    int i, j, k, class, state_max, state_cnt, base, last;
-
    uint32_t start;
-
    struct transition **states;
-
    struct trans_entries *trans;
-
    int trans_cnt;
-
    int maxccnt=0;
-
    int acnt, lcnt, charcnt;
-
    uint32_t *actions;
-
    uint16_t *components, *lig_glyphs;
-
    uint32_t here;
-
    struct splinecharlist *scl;
-
    int anymarks;
 
    /* figure out the classes (one for each character used to make a lig) */
@@ -1072,11 +1029,8 @@ static struct feature *aat_dumpmorx_ligatures(struct alltabs *at,
 					      struct feature *features,
 					      struct lookup_subtable *sub) {
    int i, k, gcnt;
-
    SplineChar *sc, *ssc, **glyphs;
-
    struct feature *cur;
-
    LigList *l;
 
    glyphs=malloc((at->maxp.numGlyphs + 1) * sizeof(SplineChar *));
@@ -1118,13 +1072,9 @@ static struct feature *aat_dumpmorx_ligatures(struct alltabs *at,
 static void morx_dumpnestedsubs(AFILE *temp,SplineFont *sf,OTLookup *otl,
 				struct glyphinfo *gi) {
    int i, j, gcnt;
-
    PST *pst;
-
    SplineChar **glyphs, *sc;
-
    uint16_t *map;
-
    struct lookup_subtable *sub=otl->subtables;	/* Mac can't have more than one subtable/lookup */
 
    for (j=0; j < 2; ++j) {
@@ -1156,11 +1106,8 @@ static void morx_dumpnestedsubs(AFILE *temp,SplineFont *sf,OTLookup *otl,
 
 static uint16_t *NamesToGlyphs(SplineFont *sf,char *names,uint16_t *cnt) {
    char *pt, *start;
-
    int c, ch;
-
    uint16_t *ret;
-
    SplineChar *sc;
 
    for (c=0, pt=names; *pt; ++pt)
@@ -1190,35 +1137,24 @@ static uint16_t *NamesToGlyphs(SplineFont *sf,char *names,uint16_t *cnt) {
 static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
 			SplineFont *sf) {
    int i, j, k, gcnt, ch;
-
    char *pt, *end;
-
    uint16_t *map;
-
    SplineChar **glyphs, *sc;
-
    int stcnt, tcnt;
-
    struct ins {
       char *names;
       uint16_t len, pos;
       uint16_t *glyphs;
    } *subsins=NULL;
-
    OTLookup **subslookups=NULL;
-
    uint32_t start, here, substable_pos, state_offset;
-
    struct transdata {
       uint16_t transition, mark_index, cur_index;
    } *transdata;
-
    struct trans {
       uint16_t ns, flags, mi, ci;
    } *trans;
-
    int ismort=sm->type==asm_kern;
-
    AFILE *kernvalues;
 
    for (i=0; i < sf->glyphcnt; ++i)
@@ -1547,9 +1483,7 @@ static int IsOtfArabicFormFeature(OTLookup *otl) {
 
 static int HasCursiveConnectionSM(SplineFont *sf) {
    int featureType, featureSetting;
-
    uint32_t tag;
-
    ASM *sm;
 
    if (OTTagToMacFeature
@@ -1570,15 +1504,10 @@ static int HasCursiveConnectionSM(SplineFont *sf) {
 
 static uint32_t *FormedScripts(SplineFont *sf) {
    OTLookup *otl;
-
    uint32_t *ret=NULL;
-
    int scnt=0, smax=0;
-
    FeatureScriptLangList *fl;
-
    struct scriptlanglist *sl;
-
    int i;
 
    for (otl=sf->gsub_lookups; otl != NULL; otl=otl->next) {
@@ -1614,7 +1543,6 @@ static uint32_t *FormedScripts(SplineFont *sf) {
 
 int Macable(SplineFont *sf, OTLookup * otl) {
    int ft, fs;
-
    FeatureScriptLangList *features;
 
    switch (otl->lookup_type) {
@@ -1663,13 +1591,9 @@ static struct feature *aat_dumpmorx_cvtopentypeforms(struct alltabs *at,
 						     struct feature
 						     *features) {
    ASM *sm;
-
    uint32_t *scripts;
-
    int featureType, featureSetting;
-
    int i;
-
    OTLookup *otl;
 
    if (sf->cidmaster != NULL)
@@ -1712,7 +1636,6 @@ static struct feature *featuresReverse(struct feature *features) {
 
 static struct feature *featuresOrderByType(struct feature *features) {
    struct feature *f, **all;
-
    int i, j, cnt /*, saw_default */ ;
 
    for (cnt=0, f=features; f != NULL; f=f->next, ++cnt);
@@ -1792,7 +1715,6 @@ static struct feature *AddExclusiveNoops(SplineFont *sf,
 
 static void SetExclusiveOffs(struct feature *features) {
    struct feature *f, *n;
-
    int offFlags;
 
    /* mutually exclusive features need to have a setting which does nothing */
@@ -1816,19 +1738,12 @@ static void SetExclusiveOffs(struct feature *features) {
 static void aat_dumpfeat(struct alltabs *at,SplineFont *sf,
 			 struct feature *feature) {
    int scnt, fcnt, cnt;
-
    struct feature *f, *n, *p;
-
    int k;
-
    uint32_t offset;
-
    int strid=at->next_strid;
-
    int fn=0;
-
    MacFeat *mf, *smf;
-
    struct macsetting *ms, *sms;
 
    /* Dump the 'feat' table which is a connection between morx features and */
@@ -1952,11 +1867,8 @@ static void aat_dumpfeat(struct alltabs *at,SplineFont *sf,
 static int featuresAssignFlagsChains(struct feature *features,
 				     struct feature *feature_by_type) {
    int bit, cnt, chain, fcnt, i, mybit;
-
    struct feature *f, *n, *p;
-
    uint16_t chains_features[32];
-
    uint32_t chains_bitindex[32];	/* Index for bit of first setting of this feature */
 
    if (features==NULL)
@@ -2040,17 +1952,11 @@ static void morxDumpChain(struct alltabs *at,struct feature *features,
 			  struct feature *features_by_type, int chain,
 			  AFILE *temp) {
    uint32_t def_flags=0;
-
    struct feature *f, *n;
-
    uint32_t chain_start, end;
-
    char *buf;
-
    int len, tot, fs_cnt, sub_cnt;
-
    struct feature *all[32];
-
    int i, offFlags, last_ri=-1, last_f=-1, ri;
 
    memset(all, 0, sizeof(all));
@@ -2175,13 +2081,9 @@ static void morxDumpChain(struct alltabs *at,struct feature *features,
 
 void aat_dumpmorx(struct alltabs *at, SplineFont *sf) {
    AFILE *temp=atmpfile();
-
    struct feature *features=NULL, *features_by_type;
-
    int nchains, i;
-
    OTLookup *otl;
-
    struct lookup_subtable *sub;
 
    /* Arabic Form features all need to be merged together and formed into */
@@ -2380,17 +2282,11 @@ void aat_dumpopbd(struct alltabs *at, SplineFont *_sf) {
 
 uint16_t *props_array(SplineFont *sf, struct glyphinfo *gi) {
    uint16_t *props;
-
    int i;
-
    SplineChar *sc, *bsc;
-
    int dir, isfloat, isbracket, offset, doit=false;
-
    AnchorPoint *ap;
-
    PST *pst;
-
    int p;
 
    props=calloc(gi->gcnt + 1, sizeof(uint16_t));
@@ -2496,9 +2392,7 @@ uint16_t *props_array(SplineFont *sf, struct glyphinfo *gi) {
 
 void aat_dumpprop(struct alltabs *at, SplineFont *sf) {
    uint16_t *props=props_array(sf, &at->gi);
-
    uint32_t bin_srch_header;
-
    int i, j, cnt;
 
    if (props==NULL)
@@ -2574,17 +2468,11 @@ static int BslnFromTag(uint32_t tag) {
 
 int16_t *PerGlyphDefBaseline(SplineFont *sf, int *def_baseline) {
    int16_t *baselines=malloc(sf->glyphcnt * sizeof(int16_t));
-
    int gid, bsln, i, any;
-
    SplineChar *sc;
-
    int counts[32];		/* Apple supports a max of 32 baselines, but only 5 are defined */
-
    struct Base *base=sf->horiz_base;
-
    struct basescript *bs;
-
    int bestbsln, bestcnt;
 
    memset(counts, 0, sizeof(counts));
@@ -2655,9 +2543,7 @@ int16_t *PerGlyphDefBaseline(SplineFont *sf, int *def_baseline) {
 
 void FigureBaseOffsets(SplineFont *sf, int def_bsln, int offsets[32]) {
    struct Base *base=sf->horiz_base;
-
    struct basescript *bs=base->scripts;
-
    int i;
 
    memset(offsets, 0xff, 32 * sizeof(int));
@@ -2694,11 +2580,8 @@ void FigureBaseOffsets(SplineFont *sf, int def_bsln, int offsets[32]) {
 
 void aat_dumpbsln(struct alltabs *at, SplineFont *sf) {
    int def_baseline;
-
    int offsets[32];
-
    int16_t *baselines;
-
    int i, gid, j, bsln, cnt;
 
    if (sf->horiz_base==NULL || sf->horiz_base->baseline_cnt==0 ||
@@ -2782,7 +2665,6 @@ void aat_dumpbsln(struct alltabs *at, SplineFont *sf) {
 
 uint32_t MacFeatureToOTTag(int featureType, int featureSetting) {
    int i;
-
    struct macsettingname *msn =
       user_macfeat_otftag ? user_macfeat_otftag : macfeat_otftag;
 
@@ -2796,7 +2678,6 @@ uint32_t MacFeatureToOTTag(int featureType, int featureSetting) {
 
 int OTTagToMacFeature(uint32_t tag, int *featureType, int *featureSetting) {
    int i;
-
    struct macsettingname *msn =
       user_macfeat_otftag ? user_macfeat_otftag : macfeat_otftag;
 
@@ -2820,7 +2701,6 @@ int OTTagToMacFeature(uint32_t tag, int *featureType, int *featureSetting) {
 
 static struct feature *featureFromTag(SplineFont *sf,uint32_t tag) {
    int ft, fs;
-
    struct feature *feat;
 
    feat=chunkalloc(sizeof(struct feature));
@@ -2842,7 +2722,6 @@ static struct feature *featureFromTag(SplineFont *sf,uint32_t tag) {
 static struct feature *featureFromSubtable(SplineFont *sf,
 					   struct lookup_subtable *sub) {
    FeatureScriptLangList *fl;
-
    int ft, fs;
 
    for (fl=sub->lookup->features; fl != NULL; fl=fl->next) {

@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: parsepfa.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -66,9 +66,7 @@ struct fontparse {
    int fdindex;
    char **pending_parse;
    AFILE *sfnts;
-
    unsigned int alreadycomplained:1;
-
    char *vbuf, *vmax, *vpt;
    int depth;
 };
@@ -1321,7 +1319,6 @@ static void findnumbers(struct fontparse *fp,struct pschars *chars,
 
    while (1) {
       int index=chars->next;
-
       char *namestrt;
 
       while (isspace(*str))
@@ -1375,7 +1372,6 @@ static char *rmbinary(char *line) {
 /* go see "Re: [Fontanvil-devel] stuck in infinite loop", 2012August22	*/
 static int matchFromBack(const char *pt,const char *str,int n) {
    int i, num_to_check=strlen(str);
-
    const char *strpt=str + num_to_check - 1;
 
    if (n < num_to_check)
@@ -1570,7 +1566,6 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
       /* Metamorphasis has multiple entries on a line */
       while (strncmp(line, "dup", 3)==0) {
 	 char *end;
-
 	 int pos=strtol(line + 3, &end, 10);
 
 	 line=end;
@@ -1607,7 +1602,6 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	      && strstr(line, "put") != NULL) {
       /* Saw a type 3 font with lines like "Encoding 1 /_a0 put" */
       char *end;
-
       int pos;
 
       while (isspace(*line))
@@ -1634,7 +1628,6 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 ++line;
       if (strncmp(line, "dup ", 4)==0) {
 	 int i;
-
 	 char *ept;
 
 	 for (line += 4; *line==' '; ++line);
@@ -1683,7 +1676,6 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 findnumbers(fp, chars, line);
       else {
 	 int i=chars->next;
-
 	 char *namestrt=++line;
 
 	 while (isalnum(*line) || *line=='.')
@@ -2253,7 +2245,6 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
    while ((ch=agetc(temp)) != EOF) {
       if (pt >= end) {
 	 char *old=buffer;
-
 	 int len=(end - buffer) + 2000;
 
 	 buffer=realloc(buffer, len);
@@ -2423,7 +2414,7 @@ static void decrypteexec(AFILE *in,AFILE *temp,int hassectionheads,
    int zcnt;
    unsigned char zeros[EODMARKLEN + 6 + 1];
    int sect_len=0x7fffffff;
- 
+
    if (extra==(void *) 5)
       extra="";
 
@@ -2846,7 +2837,6 @@ FontDict *_ReadPSFont(AFILE *in) {
 
 FontDict *ReadPSFont(char *fontname) {
    AFILE *in;
-
    FontDict *fd;
 
    in=afopen(fontname, "rb");

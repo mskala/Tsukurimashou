@@ -1,4 +1,4 @@
-/* $Id: stamper.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: stamper.c 4156 2015-09-02 07:51:02Z mskala $ */
 /*
  * This program is used to create a 'release date' time stamp when it is time for the
  * next fontanvil release build. See fontanvil/GNUmakefile.in
@@ -13,7 +13,6 @@ static const char *months[] =
 
 int main(int argc, char **argv) {
    time_t now;
-
    struct tm *tm;
 
    time(&now);

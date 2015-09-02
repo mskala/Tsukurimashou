@@ -1,4 +1,4 @@
-/* $Id: effects.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: effects.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -34,13 +34,9 @@
 
 void FVOutline(FontViewBase * fv, real width) {
    StrokeInfo si;
-
    SplineSet *temp, *spl;
-
    int i, cnt=0, changed, gid;
-
    SplineChar *sc;
-
    int layer=fv->active_layer;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -72,13 +68,9 @@ void FVOutline(FontViewBase * fv, real width) {
 
 void FVInline(FontViewBase * fv, real width, real inset) {
    StrokeInfo si;
-
    SplineSet *temp, *spl, *temp2;
-
    int i, cnt=0, changed, gid;
-
    SplineChar *sc;
-
    int layer=fv->active_layer;
 
    for (i=0; i < fv->map->enccount; ++i)
@@ -121,9 +113,7 @@ static SplineSet *SpMove(SplinePoint *sp,real offset,
 			 SplineSet * cur, SplineSet * lines,
 			 SplineSet * spl) {
    SplinePoint *new;
-
    SplineSet *line;
-
    BasePoint test;
 
    new=chunkalloc(sizeof(SplinePoint));
@@ -158,17 +148,11 @@ static SplineSet *SpMove(SplinePoint *sp,real offset,
 
 static void OrientEdges(SplineSet *base,SplineChar *sc) {
    SplineSet *spl;
-
    Spline *s, *first;
-
    EIList el;
-
    EI *active=NULL, *apt, *e;
-
    SplineChar dummy;
-
    Layer layers[2];
-
    int i, waschange, winding, change;
 
    for (spl=base; spl != NULL; spl=spl->next) {
@@ -232,13 +216,9 @@ static SplineSet *AddVerticalExtremaAndMove(SplineSet *base,
 					    SplineChar * sc,
 					    SplineSet ** _lines) {
    SplineSet *spl, *head=NULL, *last=NULL, *cur, *lines=NULL;
-
    Spline *s, *first;
-
    SplinePoint *sp, *found, *new;
-
    real t[2];
-
    int p;
 
    if (shadow_length==0)
@@ -363,7 +343,6 @@ static SplineSet *AddVerticalExtremaAndMove(SplineSet *base,
 
 static void SSCleanup(SplineSet *spl) {
    SplinePoint *sp;
-
    Spline *s, *first;
 
    /* look for likely rounding errors (caused by the two rotations) and */
@@ -472,11 +451,8 @@ static void SSCleanup(SplineSet *spl) {
 
 static bigreal IntersectLine(Spline *spline1,Spline *spline2) {
    extended t1s[10], t2s[10];
-
    BasePoint pts[9];
-
    bigreal mint=1;
-
    int i;
 
    if (!SplinesIntersect(spline1, spline2, pts, t1s, t2s))
@@ -495,7 +471,6 @@ static bigreal IntersectLine(Spline *spline1,Spline *spline2) {
 
 static int ClipLineTo3D(Spline *line,SplineSet *spl) {
    bigreal t=-1, cur;
-
    Spline *s, *first;
 
    while (spl != NULL) {
@@ -527,15 +502,10 @@ static int ClipLineTo3D(Spline *line,SplineSet *spl) {
 static extended *BottomFindIntersections(Spline *bottom,SplineSet *lines,
 					 SplineSet * spl) {
    extended *ts;
-
    int tcnt, tmax;
-
    extended t1s[26], t2s[26];
-
    BasePoint pts[25];
-
    Spline *first, *s;
-
    int i, j;
 
    tmax=100;
@@ -617,11 +587,8 @@ static SplinePoint *SplinePointMidCreate(Spline *s,bigreal t) {
 static int MidLineCompetes(Spline *s,bigreal t,bigreal shadow_length,
 			   SplineSet * spl) {
    SplinePoint *to=SplinePointMidCreate(s, t);
-
    SplinePoint *from=SplinePointCreate(to->me.x - shadow_length, to->me.y);
-
    Spline *line=SplineMake(from, to, s->order2);
-
    int ret;
 
    ret=ClipLineTo3D(line, spl);
@@ -634,9 +601,7 @@ static int MidLineCompetes(Spline *s,bigreal t,bigreal shadow_length,
 static void SplineComplete(SplineSet *cur,Spline *s,bigreal t_of_from,
 			   bigreal t_of_to) {
    SplinePoint *to;
-
    bigreal dt=t_of_to - t_of_from;
-
    Spline1D x, y;
 
    /* Very similar to SplineBisect */
@@ -714,13 +679,9 @@ static SplineSet *MergeLinesToBottoms(SplineSet *bottoms,SplineSet *lines) {
 static SplineSet *ClipBottomTo3D(SplineSet *bottom,SplineSet *lines,
 				 SplineSet * spl, bigreal shadow_length) {
    SplineSet *head=NULL, *last=NULL, *cur, *next;
-
    Spline *s;
-
    extended *ts;
-
    SplinePoint *sp;
-
    int i;
 
    while (bottom != NULL) {
@@ -788,7 +749,6 @@ static SplineSet *ClipBottomTo3D(SplineSet *bottom,SplineSet *lines,
 static SplineSet *ClipTo3D(SplineSet *bottoms,SplineSet *lines,
 			   SplineSet * spl, bigreal shadow_length) {
    SplineSet *temp;
-
    SplineSet *head;
 
    for (temp=lines; temp != NULL; temp=temp->next) {
@@ -808,13 +768,9 @@ static SplineSet *ClipTo3D(SplineSet *bottoms,SplineSet *lines,
 SplineSet *SSShadow(SplineSet * spl, real angle, real outline_width,
 		    real shadow_length, SplineChar * sc, int wireframe) {
    real trans[6];
-
    StrokeInfo si;
-
    SplineSet *internal, *temp, *bottom, *fatframe, *lines;
-
    int isfore=spl==sc->layers[ly_fore].splines;
-
    int order2=false;
 
    if (spl==NULL)
@@ -889,9 +845,7 @@ SplineSet *SSShadow(SplineSet * spl, real angle, real outline_width,
 void FVShadow(FontViewBase * fv, real angle, real outline_width,
 	      real shadow_length, int wireframe) {
    int i, cnt=0, gid;
-
    SplineChar *sc;
-
    int layer=fv->active_layer;
 
    for (i=0; i < fv->map->enccount; ++i)

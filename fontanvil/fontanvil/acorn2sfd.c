@@ -1,4 +1,4 @@
-/* $Id: acorn2sfd.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: acorn2sfd.c 4157 2015-09-02 07:55:07Z mskala $ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -90,7 +90,6 @@ static char **mods[]={ knownweights,modifierlist,NULL };
 
 static char *GuessFamily(char *fontname) {
    char *fpt, *pt;
-
    int i, j;
 
    if ((fpt=strchr(fontname, '-')) != NULL && fpt != fontname)
@@ -457,7 +456,6 @@ static int WildMatch(char *pattern,char *name,int ignorecase) {
 
 static int dirmatch(char *dirname,char *pattern,char *buffer) {
    DIR *dir;
-
    struct dirent *ent;
 
    dir=opendir(dirname);
@@ -479,7 +477,6 @@ static int dirmatch(char *dirname,char *pattern,char *buffer) {
 
 static int dirfind(char *dir,char *pattern,char *buffer) {
    char *pt, *space;
-
    int ret=dirmatch(dir, pattern, buffer);
 
    if (ret==-1) {
@@ -504,19 +501,12 @@ static int dirfind(char *dir,char *pattern,char *buffer) {
 
 static void ReadIntmetrics(char *dir,struct Outlines *outline) {
    char *filename=malloc(strlen(dir) + strlen("/Intmetrics") + 3);
-
    AFILE *file=NULL;
-
    int i, flags, m, n, left, right;
-
    int kern_offset, table_base, misc_offset;
-
    char buffer[100];
-
    uint8_t *mapping=NULL;
-
    int *widths;
-
    struct r_kern *kern;
 
    if (dirfind(dir, "IntMet?", filename))
@@ -645,15 +635,10 @@ static void ReadIntmetrics(char *dir,struct Outlines *outline) {
 
 static void FixupKerns(SplineFont *sf,struct Outlines *outline) {
    int i;
-
    struct r_kern *kern;
-
    KernPair *kp;
-
    int em=sf->ascent + sf->descent;
-
    int gid1, gid2;
-
    struct lookup_subtable *subtable;
 
    if (outline->kerns==NULL)
@@ -680,9 +665,7 @@ static void FixupKerns(SplineFont *sf,struct Outlines *outline) {
 
 static void FixupRefs(SplineChar *sc,SplineFont *sf) {
    RefChar *rf, *prev, *next;
-
    EncMap *map=sf->map;
-
    int gid;
 
    if (sc==NULL || sc->layers[ly_fore].refs==NULL)
@@ -938,7 +921,6 @@ static void dohelp(void) {
 
 int main(int argc, char **argv) {
    int i, any=false;
-
    char *pt;
 
    for (i=1; i < argc; ++i) {

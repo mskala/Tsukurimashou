@@ -1,4 +1,4 @@
-/* $Id: othersubrs.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: othersubrs.c 4155 2015-09-02 07:43:27Z mskala $ */
 #include "fontanvil.h"		/* For LogError */
 
 /* These subroutines are code by Adobe for this exact use (from T1_Spec.pdf) */
@@ -469,7 +469,6 @@ const char *mmfindfont[]={
 
 static const char **CopyLines(char **lines,int l,int is_copyright) {
    const char **ret;
-
    int i;
 
    if (l==0 && !is_copyright) {

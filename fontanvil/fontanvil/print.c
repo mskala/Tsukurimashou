@@ -1,4 +1,4 @@
-/* $Id: print.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: print.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -160,7 +160,6 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
 	 /*  off all the offsets, I'll just assume they are all percent */
 	 for (i=0; i <= 100; ++i) {
 	    int col;
-
 	    double t=grad->grad_stops[0].offset +
 	       (grad->grad_stops[grad->stop_cnt - 1].offset -
 		grad->grad_stops[0].offset) * i / 100.0;
@@ -179,7 +178,6 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
 						  grad->grad_stops[j -
 								   1].offset);
 	       uint32_t col1=grad->grad_stops[j - 1].col;
-
 	       uint32_t col2=grad->grad_stops[j].col;
 
 	       if (col1==COLOR_INHERITED)
@@ -386,9 +384,7 @@ static void pdf_ImageCheck(PI *pi,struct glyph_res *gr,ImageList *images,
 
 	 for (i=0; i < base->width * base->height; ++i, ++pt) {
 	    int red=(*pt >> 16) & 0xff;
-
 	    int green=(*pt >> 8) & 0xff;
-
 	    int blue=(*pt) & 0xff;
 
 	    aputc(red, pi->out);

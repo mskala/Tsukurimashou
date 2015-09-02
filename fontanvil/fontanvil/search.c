@@ -1,4 +1,4 @@
-/* $Id: search.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: search.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -72,15 +72,10 @@ static int BPMatches(BasePoint *sc_p1,BasePoint *sc_p2,BasePoint *p_p1,
 static int SPMatchesF(SplinePoint *sp,SearchData *s,SplineSet *path,
 		      SplinePoint * sc_path_first, int substring) {
    SplinePoint *sc_sp, *nsc_sp, *p_sp, *np_sp;
-
    int flip, flipmax;
-
    bigreal rot, scale;
-
    int saw_sc_first=false, first_of_path;
-
    BasePoint p_unit, pend_unit, sc_unit;
-
    bigreal len, temp;
 
    s->matched_sp=sp;
@@ -94,7 +89,6 @@ static int SPMatchesF(SplinePoint *sp,SearchData *s,SplineSet *path,
    p_sp=path->first;
    if (s->endpoints) {
       SplinePoint *p_prevsp=p_sp;
-
       SplinePoint *psc_sp;
 
       p_sp=p_sp->next->to;
@@ -114,7 +108,6 @@ static int SPMatchesF(SplinePoint *sp,SearchData *s,SplineSet *path,
    }
    if (s->endpoints) {
       SplinePoint *p_nextsp=path->last;
-
       SplinePoint *p_end=p_nextsp->prev->from;
 
       if (sp->next==NULL)
@@ -378,7 +371,6 @@ static int SPMatchesF(SplinePoint *sp,SearchData *s,SplineSet *path,
 	    return (false);
 	 if (s->tryrotate && s->endpoints && np_sp->next==NULL) {
 	    int xsign=(flip & 1) ? -1 : 1, ysign=(flip & 2) ? -1 : 1;
-
 	    SplinePoint *sc_prevsp;
 
 	    /* if ( sc_sp->prev==NULL ) *//* Already checked this above */
@@ -664,7 +656,6 @@ static void SVBuildTrans(SearchData *s,real transform[6]) {
 static void SVFigureTranslation(SearchData *s,BasePoint *p,
 				SplinePoint * sp) {
    real transform[6];
-
    BasePoint res;
 
    SVBuildTrans(s, transform);
@@ -677,7 +668,6 @@ static void SVFigureTranslation(SearchData *s,BasePoint *p,
 static int SPMatches(SplinePoint *sp,SearchData *s,SplineSet *path,
 		     SplinePoint * sc_path_first, int oriented) {
    real transform[6];
-
    BasePoint *p, res;
 
    if (oriented) {
@@ -706,9 +696,7 @@ static int SCMatchesIncomplete(SplineChar *sc,SearchData *s,
 			       int startafter) {
    /* don't look in refs because we can't do a replace there */
    SplineSet *spl;
-
    SplinePoint *sp;
-
    int layer=s->fv->active_layer;
 
    for (spl=startafter ? s->matched_spl : sc->layers[layer].splines;
@@ -741,13 +729,9 @@ static int SCMatchesIncomplete(SplineChar *sc,SearchData *s,
 static int SCMatchesFull(SplineChar *sc,SearchData *s) {
    /* don't look to match paths in refs because we can't do a replace there */
    SplineSet *spl, *s_spl, *s_r_spl;
-
    SplinePoint *sp;
-
    RefChar *r, *s_r;
-
    int i, first, ref_first;
-
    int layer=s->fv->active_layer;
 
    s->matched_ss=s->matched_refs=s->matched_ss_start=0;
@@ -889,7 +873,6 @@ static SplinePoint *RplInsertSP(SplinePoint *after,SplinePoint *nrpl,
 				SplinePoint * rpl, SearchData * s,
 				BasePoint * fudge) {
    SplinePoint *new=chunkalloc(sizeof(SplinePoint));
-
    real transform[6];
 
    SVBuildTrans(s, transform);
@@ -934,7 +917,6 @@ static SplinePoint *RplInsertSP(SplinePoint *after,SplinePoint *nrpl,
 static void FudgeFigure(SplineChar *sc,SearchData *s,SplineSet *path,
 			BasePoint * fudge) {
    SplinePoint *search, *searchrel, *found, *foundrel;
-
    real xoff, yoff;
 
    fudge->x=fudge->y=0;
@@ -972,13 +954,9 @@ static void FudgeFigure(SplineChar *sc,SearchData *s,SplineSet *path,
 
 static void DoReplaceIncomplete(SplineChar *sc,SearchData *s) {
    SplinePoint *sc_p, *nsc_p, *p_p, *np_p, *r_p, *nr_p;
-
    BasePoint fudge;
-
    SplineSet *path, *rpath;
-
    SplinePoint dummy;
-
    Spline dummysp;
 
    if (s->wasreversed) {
@@ -1115,9 +1093,7 @@ static int HeuristiclyBadMatch(SplineChar *sc,SearchData *s) {
    /* so if, after removing matched contours we are left with a single counter */
    /*  clockwise contour, don't accept the match */
    int contour_cnt, i;
-
    SplineSet *spl;
-
    int layer=s->fv->active_layer;
 
    contour_cnt=0;
@@ -1138,15 +1114,10 @@ static int HeuristiclyBadMatch(SplineChar *sc,SearchData *s) {
 
 static void DoReplaceFull(SplineChar *sc,SearchData *s) {
    int i;
-
    RefChar *r, *rnext, *new;
-
    SplinePointList *spl, *snext, *sprev, *temp;
-
    real transform[6], subtrans[6];
-
    SplinePoint *sp;
-
    int layer=s->fv->active_layer;
 
    /* first remove those bits that matched */
@@ -1248,7 +1219,6 @@ void SVResetPaths(SearchData * sv) {
 
    if (sv->subpatternsearch) {
       int i;
-
       SplinePoint *sp;
 
       for (sp=sv->path->first, i=0;;) {
@@ -1311,7 +1281,6 @@ int SearchChar(SearchData * sv, int gid, int startafter) {
 
 int DoRpl(SearchData * sv) {
    RefChar *r;
-
    int layer=sv->fv->active_layer;
 
    /* Make sure we don't generate any self referential characters... */
@@ -1335,7 +1304,6 @@ int DoRpl(SearchData * sv) {
 
 int _DoFindAll(SearchData * sv) {
    int i, any=0, gid;
-
    SplineChar *startcur=sv->curchar;
 
    for (i=0; i < sv->fv->map->enccount; ++i) {
@@ -1425,7 +1393,6 @@ static int IsASingleReferenceOrEmpty(SplineChar *sc,int layer) {
 static void SDCopyToSC(SplineChar *checksc,SplineChar *into,
 		       enum fvcopy_type full) {
    int i;
-
    RefChar *ref;
 
    for (i=0; i < into->layer_cnt; ++i) {
@@ -1453,13 +1420,9 @@ static void SDCopyToSC(SplineChar *checksc,SplineChar *into,
 
 void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
    SearchData *sv;
-
    uint8_t *selected, *changed;
-
    SplineFont *sf=fv->sf;
-
    int i, j, selcnt=0, gid;
-
    SplineChar *checksc;
 
    sv=SDFillup(calloc(1, sizeof(SearchData)), fv);

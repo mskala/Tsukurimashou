@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4069 2015-06-28 19:55:59Z mskala $ */
+/* $Id: featurefile.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -199,7 +199,6 @@ static void gdef_markclasscheck(AFILE *out,SplineFont *sf,OTLookup *otl) {
 	 for (otl=gpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
 	      otl=otl->next) {
 	    int index=(otl->lookup_flags >> 8) & 0xff;
-
 	    int sindex=(otl->lookup_flags >> 16) & 0xffff;
 
 	    if (index != 0) {
@@ -855,7 +854,6 @@ static void dump_contextpstcoverage(AFILE *out,SplineFont *sf,
 	    if (sub->fpst->effectively_by_glyphs) {
 	       /* Build up THE combination of input glyphs */
 	       int len, n;
-
 	       char *start;
 
 	       for (n=len=0; n < r->u.coverage.ncnt; ++n)
@@ -887,7 +885,6 @@ static int ClassUsed(FPST *fpst,int which,int class_num) {
 
    for (j=0; j < fpst->rule_cnt; ++j) {
       struct fpst_rule *r=&fpst->rules[j];
-
       int cnt =
 	 which==0 ? r->u.class.ncnt : which ==
 	 1 ? r->u.class.bcnt : r->u.class.fcnt;
@@ -1076,7 +1073,6 @@ static void dump_contextpst(AFILE *out,SplineFont *sf,
 	 for (k=i + 1; k < r->lookup_cnt; ++k) {
 	    if (r->lookups[i].seq > r->lookups[k].seq) {
 	       int s=r->lookups[i].seq;
-
 	       OTLookup *otl=r->lookups[i].lookup;
 
 	       r->lookups[i].seq=r->lookups[k].seq;
@@ -1181,7 +1177,6 @@ static void dump_anchors(AFILE *out,SplineFont *sf,
 	       SplineChar *sc;
 	       AnchorPoint *ap;
 	    } *marks=NULL;
-
 	    int cnt, max;
 
 	    cnt=max=0;
@@ -1732,7 +1727,6 @@ static void dump_gdef(AFILE *out,SplineFont *sf) {
    int i, gid, j, k, l, lcnt, needsclasses, hasclass[4], clsidx;
    SplineChar *sc;
    SplineFont *_sf;
-
    struct lglyphs {
       SplineChar *sc;
       PST *pst;
@@ -1875,7 +1869,6 @@ static void dump_baseaxis(AFILE *out,SplineFont *sf,struct Base *axis,
    afprintf(out, "  %sAxis.BaseScriptList\n", key);
    for (script=axis->scripts; script != NULL; script=script->next) {
       uint32_t scrtag=script->script;
-
       uint32_t tag=axis->baseline_tags[script->def_baseline];
 
       afprintf(out, "\t%c%c%c%c", scrtag >> 24, scrtag >> 16, scrtag >> 8,
@@ -2053,7 +2046,6 @@ static void dump_gsubgpos(AFILE *out,SplineFont *sf) {
 	    } else
 	       for (s=0; scripts[s] != 0; ++s) {
 		  uint32_t *langs=SFLangsInScript(sf, isgpos, scripts[s]);
-
 		  int firsts=true;
 
 		  for (l=0; langs[l] != 0; ++l) {
@@ -2669,9 +2661,7 @@ static char *fea_lookup_class_complain(struct parseState *tok,
    for (mtest=tok->gpos_mark; mtest != NULL; mtest=mtest->next) {
       if (strcmp(classname, mtest->name)==0) {
 	 struct gpos_mark *sames;
-
 	 int len=0;
-
 	 char *ret, *pt;
 
 	 for (sames=mtest; sames != NULL; sames=sames->same)
@@ -2727,7 +2717,6 @@ static void fea_AddClassDef(struct parseState *tok,char *classname,
 
 static int fea_AddGlyphs(char **_glyphs,int *_max,int cnt,char *contents) {
    int len=strlen(contents);
-
    char *glyphs=*_glyphs;
 
    /* Append a glyph name, etc. to a glyph class */
@@ -3387,7 +3376,6 @@ static AnchorPoint *fea_ParseAnchor(struct parseState *tok) {
 
 static AnchorPoint *fea_ParseAnchorClosed(struct parseState *tok) {
    int ecnt=tok->err_count;
-
    AnchorPoint *ap=fea_ParseAnchor(tok);
 
    if (tok->err_count==ecnt
@@ -4422,7 +4410,6 @@ static struct feat_item *fea_process_sub_ligature(struct parseState *tok,
    sc=fea_glyphname_get(tok, rpl->name_or_class);
    if (sc != NULL) {
       int len=0;
-
       char *space;
 
       for (g=glyphs; g != NULL && g->mark_count==glyphs->mark_count;
@@ -4774,7 +4761,6 @@ static void fea_ParseSubstitute(struct parseState *tok) {
 		       && rpl->is_name) {
 	       /* Multiple substitution */
 	       int len=0;
-
 	       char *mult;
 
 	       for (g=rpl; g != NULL; g=g->next)
@@ -5029,56 +5015,56 @@ static int fea_LookupSwitch(struct parseState *tok) {
     case tk_class:
       fea_ParseGlyphClassDef(tok);
       break;
-      
+
     case tk_anchorDef:
       fea_ParseAnchorDef(tok);
       break;
-      
+
     case tk_valueRecordDef:
       fea_ParseValueRecordDef(tok);
       break;
-      
+
     case tk_markClass:
       fea_ParseMarkClass(tok);
       break;
-      
+
     case tk_lookupflag:
       fea_ParseLookupFlags(tok);
       break;
-      
+
     case tk_ignore:
       fea_ParseIgnore(tok);
       break;
-      
+
     case tk_enumerate:
       fea_TokenMustBe(tok, tk_position, '\0');
       enumer=true;
       /* FALL THROUGH */
-      
+
     case tk_position:
       fea_ParsePosition(tok, enumer);
       break;
-      
+
     case tk_substitute:
     case tk_reversesub:
       fea_ParseSubstitute(tok);
       enumer=false;
       break;
-      
+
     case tk_subtable:
       fea_AddFeatItem(tok, ft_subtable, 0);
       fea_TokenMustBe(tok, tk_char, ';');
       break;
-      
+
     case tk_char:
       if (tok->tokbuf[0]=='}')
 	return (2);
       /* FALL THROUGH */
-      
+
     default:
       return (0);
    }
-   
+
    return (1);
 }
 
@@ -5299,7 +5285,7 @@ static struct nameid *fea_ParseNameId(struct parseState *tok,int strid) {
 	    tok->nm=NULL;
 	 }
       }
-      
+
       fea_end_statement(tok);
    }
    return nm;
@@ -5654,9 +5640,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	    tv->value=tok->tag;
 	 else if (tok->type==tk_char && tok->tokbuf[0]=='"') {
 	    uint8_t foo[4];
-
 	    int ch;
-
 	    AFILE *in=tok->inlist[tok->inc_depth];
 
 	    memset(foo, ' ', sizeof(foo));
@@ -5697,7 +5681,6 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 	    if (strcmp(keys[index].name, "FontRevision")==0) {
 	       /* Can take a float */
 	       AFILE *in=tok->inlist[tok->inc_depth];
-
 	       int ch=agetc(in);
 
 	       if (ch=='.')
@@ -6844,7 +6827,6 @@ static OTLookup *fea_ApplyLookupList(struct parseState *tok,
    /* An ap is for cursive types for the u1.sc and u2.ap (an entry and an exit ap) */
    /* An ap is for mark2 types for the base u1.sc and u2.ap and mark_class */
    OTLookup *otl;
-
    int kcnt, mcnt;
    struct feat_item *l;
    enum otlookup_type temp;
@@ -6966,7 +6948,6 @@ static void fea_NameID2NameTable(SplineFont *sf,struct nameid *names) {
 static void fea_TableByKeywords(SplineFont *sf,struct feat_item *f) {
    struct tablevalues *tv;
    struct tablekeywords *offsets=f->u1.offsets, *cur;
-
    int i;
 
    if (!sf->pfminfo.pfmset) {
@@ -7294,7 +7275,6 @@ static void fea_NameLookups(struct parseState *tok) {
       if (otl->lookup_name != NULL
 	  && SFFindLookup(sf, otl->lookup_name) != NULL) {
 	 int cnt=0;
-
 	 char *namebuf=malloc(strlen(otl->lookup_name) + 8);
 
 	 /* Name already in use, modify it */
@@ -7341,9 +7321,7 @@ static void fea_NameLookups(struct parseState *tok) {
       if (an != NULL) {
 	 /* merge acs, only one ap mark and one ap base per ac per glyph */
 	 int gid;
-
 	 SplineChar *sc;
-
 	 AnchorPoint *newapb, *newapbprev, *newapm, *newapmprev, *oldapb,
 	    *oldapm, *ap, *lastap;
 	 for (gid=0; gid < sf->glyphcnt; ++gid) {

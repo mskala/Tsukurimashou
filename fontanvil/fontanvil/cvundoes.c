@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: cvundoes.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -84,9 +84,7 @@ RefChar *RefCharsCopyState(SplineChar * sc, int layer) {
 static SplinePointList *RefCharsCopyUnlinked(SplinePointList *sofar,
 					     SplineChar * sc, int layer) {
    RefChar *crefs;
-
    SplinePointList *last=NULL, *new;
-
    int l;
 
    if (layer < 0 || sc->layers[layer].refs==NULL)
@@ -314,9 +312,7 @@ static void UHintListFree(void *hints) {
 
 static void *UHintCopy(SplineChar *sc,int docopy) {
    StemInfo *h=sc->hstem, *v=sc->vstem, *last=NULL;
-
    DStemInfo *d=sc->dstem;
-
    void *ret=NULL;
 
    if (docopy) {
@@ -356,9 +352,7 @@ static void *UHintCopy(SplineChar *sc,int docopy) {
 
 static void ExtractHints(SplineChar *sc,void *hints,int docopy) {
    StemInfo *h=NULL, *v=NULL, *p;
-
    DStemInfo *d=NULL;
-
    StemInfo *pv=NULL, *pd=NULL;
 
    p=NULL;
@@ -403,7 +397,6 @@ static void ExtractHints(SplineChar *sc,void *hints,int docopy) {
 
 void UndoesFree(Undoes * undo) {
    Undoes *unext;
-
    BDFRefChar *head, *next;
 
    while (undo != NULL) {
@@ -485,7 +478,6 @@ Undoes *SCPreserveState(SplineChar * sc, int dohints) {
    if (sc->parent->multilayer)
       for (i=ly_fore + 1; i < sc->layer_cnt; ++i)
 	 SCPreserveLayer(sc, i, false);
-
    Undoes *ret=SCPreserveLayer(sc, ly_fore, dohints);
 
 /*     collabclient_SCPreserveStateCalled( sc ); */
@@ -533,9 +525,7 @@ static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
 	} break;
      case ut_hints:{
 	   void *hints=UHintCopy(sc, false);
-
 	   uint8_t *instrs=sc->ttf_instrs;
-
 	   int instrs_len=sc->ttf_instrs_len;
 
 	   ExtractHints(sc, undo->u.state.hints, false);
@@ -555,7 +545,6 @@ static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
 
 	   if (layer==ly_fore) {
 	      int width=sc->width;
-
 	      int vwidth=sc->vwidth;
 
 	      if (sc->width != undo->u.state.width)
@@ -582,9 +571,7 @@ static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
 	       (undo->undotype==ut_statehint
 		|| undo->undotype==ut_statename)) {
 	      void *hints=UHintCopy(sc, false);
-
 	      uint8_t *instrs=sc->ttf_instrs;
-
 	      int instrs_len=sc->ttf_instrs_len;
 
 	      ExtractHints(sc, undo->u.state.hints, false);
@@ -607,11 +594,8 @@ static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
 	   }
 	   if (layer==ly_fore && undo->undotype==ut_statename) {
 	      char *temp=sc->name;
-
 	      int uni=sc->unicodeenc;
-
 	      PST *possub=sc->possub;
-
 	      char *comment=sc->comment;
 
 	      sc->name=undo->u.state.charname;
@@ -763,7 +747,6 @@ void CopyBufferClearCopiedFrom(SplineFont *dying) {
 
 int getAdobeEnc(char *name) {
    extern char *AdobeStandardEncoding[256];
-
    int i;
 
    for (i=0; i < 256; ++i)
@@ -777,9 +760,7 @@ int getAdobeEnc(char *name) {
 static Undoes *SCCopyAllLayer(SplineChar *sc,enum fvcopy_type full,
 			      int layer) {
    Undoes *cur;
-
    RefChar *ref;
-
    extern int copymetadata, copyttfinstr;
 
    /* If full==ct_fullcopy copy the glyph as is. */
@@ -946,9 +927,7 @@ static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
    if (fromsc==NULL) {
       if (!(*refstate & 0x4)) {
 	 char *buts[3];
-
 	 char buf[80];
-
 	 const char *name;
 
 	 if (ref->unicode_enc==-1)
@@ -1000,7 +979,6 @@ static int anchor_lost_warning=false;
 
 static void APMerge(SplineChar *sc,AnchorPoint *anchor) {
    AnchorPoint *ap, *prev, *next, *test;
-
    AnchorClass *ac;
 
    if (anchor==NULL)
@@ -1691,11 +1669,8 @@ static int HasNonClass(OTLookup *otl) {
 static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 				   int is_same) {
    int cnt, bcnt, ftot=0, doit, isgpos, i, ret;
-
    char **choices=NULL, *sel;
-
    OTLookup *otl, **list1=NULL, **list2=NULL, **list, **blist;
-
    char *buttons[3];
 
    buttons[0]=_("_OK");
@@ -1732,7 +1707,6 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 /* GT:  is the second glyph in the kerning pair, and that's what this line */
 /* GT:  refers to. The "%s" will be filled in with the lookup name */
 		     char *format=_("Second glyph of %s");
-
 		     char *space =
 			malloc(strlen(format) + strlen(otl->lookup_name) + 1);
 		     sprintf(space, format, otl->lookup_name);
@@ -1812,7 +1786,6 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 static Undoes *BCCopyAll(BDFChar *bc,int pixelsize,int depth,
 			 enum fvcopy_type full) {
    Undoes *cur;
-
    BDFRefChar *ref, *head;
 
    cur=chunkalloc(sizeof(Undoes));
@@ -1933,9 +1906,7 @@ static void _PasteToBC(BDFChar *bc,int pixelsize,int depth,
 
 void FVCopyAnchors(FontViewBase * fv) {
    Undoes *head=NULL, *last=NULL, *cur;
-
    int i, any=false, gid;
-
    SplineChar *sc;
 
    CopyBufferFreeGrab();
@@ -2039,7 +2010,6 @@ static BDFFont *BitmapCreateCheck(FontViewBase *fv,int *yestoall,int first,
    BDFFont *bdf=NULL;
    if (*yestoall > 0 && first) {
       char *buts[5];
-
       char buf[20];
 
       if (depth != 1)
@@ -2119,7 +2089,6 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,real trans[6]) {
    if (cnt==1 && cur->undotype==ut_multiple
        && cur->u.multiple.mult->next != NULL) {
       Undoes *tot;
-
       int j;
 
       for (cnt=0, tot=cur->u.multiple.mult; tot != NULL;

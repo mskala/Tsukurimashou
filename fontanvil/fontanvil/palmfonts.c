@@ -1,4 +1,4 @@
-/* $Id: palmfonts.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: palmfonts.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -63,13 +63,9 @@ struct font {
 
 static SplineFont *MakeContainer(struct font *fn,char *family,char *style) {
    SplineFont *sf;
-
    int em;
-
    int i;
-
    EncMap *map;
-
    SplineChar *sc;
 
    sf=SplineFontBlank(256);
@@ -113,15 +109,10 @@ static SplineFont *MakeContainer(struct font *fn,char *family,char *style) {
 static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
 			    struct font *fn, int density) {
    int pixelsize=density * fn->frectheight / 72;
-
    BDFFont *bdf;
-
    uint16_t *fontImage;
-
    int imagesize, index, i;
-
    int gid;
-
    EncMap *map=sf->map;
 
    for (bdf=sf->bitmaps; bdf != NULL && bdf->pixelsize != pixelsize;
@@ -157,7 +148,6 @@ static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
 
       if ((gid=map->map[enc]) != -1 && fn->chars[index].width != -1) {
 	 BDFChar *bdfc;
-
 	 int i, j, bits, bite, bit;
 
 	 bdfc=chunkalloc(sizeof(BDFChar));
@@ -182,7 +172,6 @@ static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
 	 bite=density * fn->chars[index + 1].start / 72;
 	 for (i=0; i < density * fn->frectheight / 72; ++i) {
 	    uint16_t *test=fontImage + i * density * fn->rowwords / 72;
-
 	    uint8_t *bpt=bdfc->bitmap + i * bdfc->bytes_per_line;
 
 	    for (bit=bits, j=0; bit < bite; ++bit, ++j) {
@@ -198,26 +187,17 @@ static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
 static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
 				char *style) {
    int type;
-
    int frectwidth, descent;
-
    int owtloc;
-
    int pos=aftell(file);
-
    struct density {
       int density;
       int offset;
    } density[10];
-
    int dencount, i;
-
    struct font fn;
-
    int imagepos=0;
-
    SplineFont *sf;
-
    int maxbit;
 
    type=getushort(file);
@@ -303,9 +283,7 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
 
 static char *palmreadstring(AFILE *file) {
    int pos=aftell(file);
-
    int i, ch;
-
    char *str, *pt;
 
    for (i=0; (ch=agetc(file)) != 0 && ch != EOF; ++i);
@@ -319,13 +297,9 @@ static char *palmreadstring(AFILE *file) {
 
 static SplineFont *PalmTestRecord(AFILE *file,int start,int end,char *name) {
    int here=aftell(file);
-
    int type, size, pos;
-
    SplineFont *sf=NULL;
-
    char *family=NULL, *style=NULL;
-
    int version;
 
    if (end <= start)
@@ -374,13 +348,9 @@ static SplineFont *PalmTestRecord(AFILE *file,int start,int end,char *name) {
 
 SplineFont *SFReadPalmPdb(char *filename, int toback) {
    char name[33];
-
    AFILE *file;
-
    int num_records, i, file_end;
-
    int offset, next_offset;
-
    SplineFont *sf;
 
    file=afopen(filename, "rb");
@@ -427,11 +397,8 @@ SplineFont *SFReadPalmPdb(char *filename, int toback) {
 
 static AFILE *MakeFewRecordPdb(char *filename,int cnt) {
    AFILE *file;
-
    char *fn=malloc(strlen(filename) + 8), *pt1, *pt2;
-
    long now;
-
    int i;
 
    strcpy(fn, filename);
@@ -514,9 +481,7 @@ static int ValidMetrics(BDFFont *test,BDFFont *base,EncMap *map,int den) {
    /* All glyphs must fit within 0,advance-width */
    /* All advance widths must be den*base->advance_width */
    int i, gid;
-
    int warned=false, wwarned=false;
-
    IBounds ib;
 
    if (test==NULL)

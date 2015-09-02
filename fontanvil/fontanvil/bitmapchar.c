@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: bitmapchar.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -212,11 +212,8 @@ static void BDFPropAddInt(BDFFont *bdf,char *keyword,int value,
 
 static char *AllSame(BDFFont *font,int *avg,int *cnt) {
    int c=0, a=0, common=-1;
-
    int i;
-
    BDFChar *bdfc;
-
    int cell=-1;
 
    /* Return 'P' if a proporitional font */
@@ -268,7 +265,6 @@ static void BDFPropAppendString(BDFFont *bdf,char *keyword,char *value) {
 
 static int BDFPropReplace(BDFFont *bdf,const char *key,const char *value) {
    int i;
-
    char *pt;
 
    for (i=0; i < bdf->prop_cnt; ++i)
@@ -339,9 +335,7 @@ static void def_Charset_Col(SplineFont *sf,EncMap *map,char *buffer) {
 
 void SFReplaceEncodingBDFProps(SplineFont *sf, EncMap * map) {
    BDFFont *bdf;
-
    char buffer[250];
-
    char reg[100], enc[40], *pt, *bpt;
 
    def_Charset_Col(sf, map, buffer);
@@ -432,9 +426,7 @@ static void decomposename(BDFFont *font,char *fontname,char *family_name,
 			  char *weight_name, char *slant, char *stylename,
 			  char *squeeze, char *sffamily, char *sfweight) {
    char *ital, *bold, *style, *compress;
-
    char ich='\0', bch='\0', sch='\0', cch='\0';
-
    char *pt;
 
    if (*fontname=='-') {
@@ -591,15 +583,11 @@ void XLFD_GetComponents(char *xlfd, struct xlfd_components *components) {
 void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
 			   struct xlfd_components *components) {
    int avg, cnt, pnt;
-
    char *mono;
-
    char family_name[80], weight_name[60], slant[10], stylename[40],
       squeeze[40];
    char *sffn=*font->sf->fontname ? font->sf->fontname : "Untitled";
-
    char reg[100], enc[40];
-
    int old_res;
 
    mono=AllSame(font, &avg, &cnt);
@@ -674,7 +662,6 @@ void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
 
 void Default_XLFD(BDFFont * bdf, EncMap * map, int res) {
    char buffer[800];
-
    struct xlfd_components components;
 
    XLFD_CreateComponents(bdf, map, res, &components);
@@ -690,9 +677,7 @@ void Default_XLFD(BDFFont * bdf, EncMap * map, int res) {
 
 void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
    char *xlfd=BdfPropHasString(bdf, "FONT", NULL);
-
    struct xlfd_components components;
-
    int x_h=-1, cap_h=-1, def_ch=-1, gid;
 
    if ((gid=SFFindExistingSlot(bdf->sf, 'x', NULL)) != -1
@@ -824,7 +809,6 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
 
    {
       char *selection="0123456789$";
-
       int width=-1;
 
       while (*selection != '\0') {
@@ -843,9 +827,7 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
 
    {
       int gid;
-
       int lc_cnt, lc_sum, uc_cnt, uc_sum;
-
       BDFChar *bdfc;
 
       lc_cnt=lc_sum=uc_cnt=uc_sum=0;
@@ -905,13 +887,9 @@ void BDFDefaultProps(BDFFont * bdf, EncMap * map, int res) {
 
 BDFChar *BDFMakeGID(BDFFont * bdf, int gid) {
    SplineFont *sf=bdf->sf;
-
    SplineChar *sc;
-
    BDFChar *bc;
-
    int i;
-
    extern int use_freetype_to_rasterize_fv;
 
    if (gid==-1)

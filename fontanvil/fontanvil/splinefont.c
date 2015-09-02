@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: splinefont.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -106,11 +106,9 @@ SplineChar *SCBuildDummy(SplineChar *dummy,SplineFont *sf,EncMap *map,
 
    if (sf->cidmaster != NULL)
      dummy->name=namebuf;
-
    else if (map->enc->psnames!=NULL && i<map->enc->char_cnt &&
 	    map->enc->psnames[i]!=NULL)
       dummy->name=map->enc->psnames[i];
-
    else if (dummy->unicodeenc==-1)
      dummy->name=NULL;
 
@@ -433,7 +431,6 @@ static void SFScalePrivate(SplineFont *sf,double scale) {
 
    for (i=0; integerscalethese[i] != NULL; ++i) {
       char *str=PSDictHasEntry(sf->private, integerscalethese[i]);
-
       char *new=iscaleString(str, scale);
 
       if (new != NULL)
@@ -442,7 +439,6 @@ static void SFScalePrivate(SplineFont *sf,double scale) {
    }
    for (i=0; scalethese[i] != NULL; ++i) {
       char *str=PSDictHasEntry(sf->private, scalethese[i]);
-
       char *new=scaleString(str, scale);
 
       if (new != NULL)
@@ -879,7 +875,6 @@ static char *ForceFileToHaveName(AFILE *file,char *exten) {
       if (access(tmpfilename, F_OK)==-1 &&
 	  (newfile=afopen(tmpfilename, "w")) != NULL) {
 	 char buffer[1024];
-
 	 int len;
 
 	 while ((len=afread(buffer, 1, sizeof(buffer), file)) > 0)
@@ -1279,7 +1274,6 @@ SplineFont *LoadSplineFont(char *filename, enum openflags openflags) {
       /* For some reason Adobe distributes CID keyed fonts (both OTF and */
       /*  postscript) as extensionless files */
       int ok=false;
-
       AFILE *test=afopen(filename, "rb");
 
       if (test != NULL) {

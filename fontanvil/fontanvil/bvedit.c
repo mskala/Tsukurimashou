@@ -1,4 +1,4 @@
-/* $Id: bvedit.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: bvedit.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -178,7 +178,6 @@ void BCTransFunc(BDFChar * bc, enum bvtools type, int xoff, int yoff) {
 	    pt=bc->bitmap + i * bc->bytes_per_line;
 	    for (j=0; j <= (bc->xmax - bc->xmin) / 2; ++j) {
 	       int nj=bc->xmax - bc->xmin - j;
-
 	       int temp=pt[nj];
 
 	       pt[nj]=pt[j];
@@ -318,13 +317,9 @@ void BCRotateCharForVert(BDFChar * bc, BDFChar * from, BDFFont * frombdf) {
 
 static void BCExpandBitmap(BDFChar *bc,int x,int y) {
    int xmin, xmax, bpl, ymin, ymax;
-
    uint8_t *bitmap;
-
    int i, j, nj;
-
    uint8_t *pt, *npt;
-
    SplineChar *sc;
 
    if (x < bc->xmin || x > bc->xmax || y < bc->ymin || y > bc->ymax) {
@@ -419,7 +414,6 @@ BDFFloat *BDFFloatCopy(BDFFloat * sel) {
 
 BDFFloat *BDFFloatConvert(BDFFloat * sel, int todepth, int fromdepth) {
    BDFFloat *new;
-
    int i, j, fdiv, tdiv;
 
    if (sel==NULL)
@@ -469,9 +463,7 @@ BDFFloat *BDFFloatConvert(BDFFloat * sel, int todepth, int fromdepth) {
 void BCFlattenFloat(BDFChar * bc) {
    /* flatten any floating selection */
    BDFFloat *sel=bc->selection;
-
    int x, y;
-
    uint8_t *bpt, *spt;
 
    if (sel != NULL) {
@@ -505,7 +497,6 @@ void BCFlattenFloat(BDFChar * bc) {
 void BCPasteInto(BDFChar * bc, BDFChar * rbc, int ixoff, int iyoff,
 		 int invert, int cleartoo) {
    int x, y, bx, rx;
-
    uint8_t *bpt, *rpt;
 
    x=0;
@@ -577,9 +568,7 @@ BDFChar *BDFGetMergedChar(BDFChar * bc) {
 int BDFCharQuickBounds(BDFChar * bc, IBounds * bb, int8_t xoff, int8_t yoff,
 		       int use_backup, int first) {
    int has_bitmap=false;
-
    int xmin, xmax, ymin, ymax;
-
    BDFRefChar *head;
 
    if (use_backup && bc->backup != NULL) {
@@ -674,9 +663,7 @@ void BDFCharFindBounds(BDFChar * bc, IBounds * bb) {
 /* be restored later */
 void BCPrepareForOutput(BDFChar * bc, int mergeall) {
    int bmp_has_image=false, bmp_width;
-
    int i;
-
    IBounds ib;
 
    bmp_width=(bc->ymax - bc->ymin + 1);
@@ -829,13 +816,9 @@ void BCUnlinkThisReference(struct fontviewbase *fv, BDFChar * bc) {
 
 static BDFChar *BCScale(BDFChar *old,int from,int to) {
    BDFChar *new;
-
    int x, y, ox, oy, oxs, oys, oxend, oyend;
-
    real tot, scale;
-
    real yscale, xscale;
-
    real dto=to;
 
    if (old==NULL || old->byte_data)
@@ -918,15 +901,10 @@ static BDFChar *BCScale(BDFChar *old,int from,int to) {
 static BDFChar *BCScaleGrey(BDFChar *old,int from,int from_depth,int to,
 			    int to_depth) {
    BDFChar *new;
-
    int x, y, ox, oy, oxs, oys, oxend, oyend;
-
    real tot, scale, bscale;
-
    real yscale, xscale;
-
    real dto=to;
-
    real max=(1 << to_depth);
 
    if (old==NULL || !old->byte_data)
@@ -1022,11 +1000,8 @@ static BDFChar *BCScaleGrey(BDFChar *old,int from,int from_depth,int to,
 
 BDFFont *BitmapFontScaleTo(BDFFont * old, int to) {
    BDFFont *new=chunkalloc(sizeof(BDFFont));
-
    int i;
-
    int to_depth=(to >> 16), old_depth=1;
-
    int linear_scale=1 << (to_depth / 2);
 
    to &= 0xffff;

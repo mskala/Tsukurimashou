@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: sflayout.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -136,7 +136,6 @@ int LI_FDDrawChar(void *data,
 
 uint32_t *LI_TagsCopy(uint32_t * tags) {
    int i;
-
    uint32_t *ret;
 
    if (tags==NULL)
@@ -247,7 +246,6 @@ static struct basescript *FindBS(struct Base *base,struct opentype_str *ch,
 
    if (script==DEFAULT_SCRIPT) {
       struct fontlist *fl=ch->fl;
-
       SplineChar *sc=fl->sctext[ch->orig_index];
 
       script=SCScriptFromUnicode(sc);
@@ -315,9 +313,7 @@ static void LIFigureLineHeight(LayoutInfo *li,int l,int p) {
 					      start_fd->sf->descent));
 	 for (i=1; line[i] != NULL; ++i) {
 	    FontData *fd=((struct fontlist *) (line[i]->fl))->fd;
-
 	    struct Base *base=fd->sf->horiz_base;
-
 	    uint32_t cur_bsln_tag;
 
 	    if (fd->sf->horiz_base==NULL)
@@ -363,7 +359,6 @@ static void LIFigureLineHeight(LayoutInfo *li,int l,int p) {
 	 last=fl;
       if (last != NULL) {
 	 FontData *fd=last->fd;
-
 	 double scale =
 	    fd->pointsize * li->dpi / (72.0 *
 				       (fd->sf->ascent + fd->sf->descent));
@@ -756,7 +751,6 @@ FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret) {
       }
       if (ftc==NULL) {
 	 int flags=0;
-
 	 int ff=ret->fonttype==sftf_pfb ? ff_pfb :
 	    ret->fonttype==sftf_ttf ? ff_ttf : ff_otf;
 	 ftc =

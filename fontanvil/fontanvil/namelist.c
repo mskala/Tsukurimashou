@@ -1,4 +1,4 @@
-/* $Id: namelist.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: namelist.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -66,7 +66,6 @@ struct psbucket {
 
 static void psaddbucket(const char *name,int uni) {
    int hash=hashname(name);
-
    struct psbucket *buck=calloc(1, sizeof(struct psbucket));
 
    buck->name=name;
@@ -92,7 +91,6 @@ static void NameListHash(NameList *nl) {
 
 static void psinitnames(void) {
    int i;
-
    NameList *nl;
 
    agl.next=&agl_nf;
@@ -114,9 +112,7 @@ static void psreinitnames(void) {
    /*  which means we must remove all the old hash entries before we can put */
    /*  in the new ones */
    int i;
-
    struct psbucket *cur, *prev;
-
    NameList *nl;
 
    for (i=0; i < HASH_SIZE; ++i) {
@@ -135,11 +131,8 @@ static void psreinitnames(void) {
 
 int UniFromName(const char *name, enum uni_interp interp, Encoding * encname) {
    int i=-1;
-
    char *end;
-
    struct psbucket *buck;
-
    int _recognizePUA=recognizePUA;
 
    if (strncmp(name, "uni", 3)==0) {
@@ -161,9 +154,7 @@ int UniFromName(const char *name, enum uni_interp interp, Encoding * encname) {
       else if (encname != NULL && !encname->is_unicodefull &&
 	       (interp==ui_ams || interp==ui_trad_chinese)) {
 	 int j;
-
 	 extern const int cns14pua[], amspua[];
-
 	 const int *pua=interp==ui_ams ? amspua : cns14pua;
 
 	 for (j=0xf8ff - 0xe000; j >= 0; --j)
@@ -193,9 +184,7 @@ int UniFromName(const char *name, enum uni_interp interp, Encoding * encname) {
 const char *StdGlyphName(char *buffer, int uni, enum uni_interp interp,
 			 NameList * for_this_font) {
    const char *name=NULL;
-
    NameList *nl;
-
    int up, ub, uc;
 
    if (for_this_font==NULL)
@@ -208,7 +197,6 @@ const char *StdGlyphName(char *buffer, int uni, enum uni_interp interp,
       if (uni >= 0xe000 && uni <= 0xf8ff &&
 	  (interp==ui_trad_chinese || for_this_font==&ams)) {
 	 extern const int cns14pua[], amspua[];
-
 	 const int *pua=interp==ui_trad_chinese ? cns14pua : amspua;
 
 	 if (pua[uni - 0xe000] != 0)
@@ -242,7 +230,6 @@ NameList *DefaultNameListForNewFonts(void) {
 
 NameList *NameListByName(char *name) {
    const char *nameTex="ΤεΧ Names";
-
    NameList *nl;
 
    /* ΤεΧ is hard tp type e.g. from scripting, so accept TeX as alias */

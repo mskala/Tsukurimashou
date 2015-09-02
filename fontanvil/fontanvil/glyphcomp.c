@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: glyphcomp.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2006-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -54,9 +54,7 @@ static void GCError3(Context *c,const char *frmt,const char *str,int size,
 
 static double FindNewT(double pos,const Spline1D *s,double old_t) {
    extended ts[3];
-
    int i;
-
    double closest;
 
    CubicSolve(s, pos, ts);
@@ -77,13 +75,9 @@ static int NearSplineSet(BasePoint *here,const SplineSet *ss,
 			 const Spline ** last_found, double *last_t,
 			 double err) {
    const Spline *first, *s, *best_s;
-
    extended ts[3];
-
    double dx, dy, adx, ady, best, best_t, t;
-
    BasePoint test;
-
    int i, j;
    static double offset[]={ 0,.5,-.5 };
 
@@ -302,9 +296,7 @@ static int AllPointsMatch(const SplinePoint *start1,
 			  const SplinePoint * start2, real err,
 			  SplinePoint ** _hmfail) {
    double dx, dy;
-
    const SplinePoint *sp1=start1, *sp2=start2;
-
    SplinePoint *hmfail=NULL;
 
    while (1) {
@@ -364,19 +356,12 @@ enum Compare_Ret SSsCompare(const SplineSet * ss1, const SplineSet * ss2,
 			    real pt_err, real spline_err,
 			    SplinePoint ** _hmfail) {
    int cnt1, cnt2, bestcnt;
-
    const SplineSet *ss, *s2s, *bestss;
-
    enum Compare_Ret info=0;
-
    int allmatch;
-
    DBounds *b1, *b2;
-
    const SplineSet **match;
-
    double diff, delta, bestdiff;
-
    double dx, dy;
 
    *_hmfail=NULL;
@@ -505,15 +490,10 @@ static int SSRefCompare(const SplineSet *ss1,const SplineSet *ss2,
    /* Convert all references to contours */
    /* Note: Hintmasks are trashed */
    SplineSet *head1;
-
    SplineSet *head2;
-
    SplineSet *temp, *tail;
-
    const RefChar *r;
-
    int ret, layer;
-
    SplinePoint *junk;
 
    head1=SplinePointListCopy(ss1);
@@ -566,13 +546,9 @@ static int SSRefCompare(const SplineSet *ss1,const SplineSet *ss2,
 enum Compare_Ret BitmapCompare(BDFChar * bc1, BDFChar * bc2, int err,
 			       int bb_err) {
    uint8_t *pt1, *pt2;
-
    int i, j, d, xlen;
-
    int mask;
-
    int xmin, xmax, ymin, ymax, c1, c2;
-
    int failed=0;
 
    if (bc1->byte_data != bc2->byte_data)
@@ -649,9 +625,7 @@ enum Compare_Ret BitmapCompare(BDFChar * bc1, BDFChar * bc2, int err,
 
 static int RefCheck(const RefChar *ref1,const RefChar *ref2) {
    const RefChar *r1, *r2;
-
    int i;
-
    int ptmatchdiff=0;
 
    for (r2=ref2; r2 != NULL; r2=r2->next)
@@ -776,7 +750,6 @@ static int CompareBitmap(Context *c,SplineChar *sc,const Undoes *cur,
 
 static int CompareHints(SplineChar *sc,const void *_test) {
    StemInfo *h=sc->hstem, *v=sc->vstem;
-
    const StemInfo *test=_test;
 
    if (test != NULL && test->hinttype==ht_h) {
@@ -819,11 +792,8 @@ static int CompareSplines(Context *c,SplineChar *sc,const Undoes *cur,
 			  real pt_err, real spline_err, int comp_hints,
 			  int diffs_are_errors) {
    int ret=0, failed=0, temp, ly;
-
    const Undoes *layer;
-
    real err=pt_err > 0 ? pt_err : spline_err;
-
    SplinePoint *hmfail;
 
    switch (cur->undotype) {
@@ -1111,9 +1081,7 @@ static int SCCompareHints(SplineChar *sc1,SplineChar *sc2) {
 static int fdRefCheck(struct font_diff *fd,SplineChar *sc1,
 		      RefChar * ref1, RefChar * ref2, int complain) {
    RefChar *r1, *r2;
-
    int i;
-
    int ret=true;
 
    for (r2=ref2; r2 != NULL; r2=r2->next)
@@ -1187,7 +1155,6 @@ static int fdRefCheck(struct font_diff *fd,SplineChar *sc1,
 static void SCAddBackgrounds(SplineChar *sc1,SplineChar *sc2,
 			     struct font_diff *fd) {
    SplineSet *last;
-
    RefChar *ref;
 
    SplinePointListsFree(sc1->layers[ly_back].splines);
@@ -1221,9 +1188,7 @@ static void SCAddBackgrounds(SplineChar *sc1,SplineChar *sc2,
 static void SCCompare(SplineChar *sc1,SplineChar *sc2,
 		      struct font_diff *fd) {
    int layer, last;
-
    int val;
-
    SplinePoint *hmfail;
 
    if (sc1->parent->multilayer && sc1->layer_cnt != sc2->layer_cnt)
@@ -1360,7 +1325,6 @@ static void SCCompare(SplineChar *sc1,SplineChar *sc2,
 
 static void FDAddMissingGlyph(struct font_diff *fd,SplineChar *sc2) {
    SplineChar *sc;
-
    int enc;
 
    enc=SFFindSlot(fd->sf1, fd->map1, sc2->unicodeenc, sc2->name);
@@ -1378,9 +1342,7 @@ static void FDAddMissingGlyph(struct font_diff *fd,SplineChar *sc2) {
 
 static void comparefontglyphs(struct font_diff *fd) {
    int gid1, gid2;
-
    SplineChar *sc, *sc2;
-
    SplineFont *sf1=fd->sf1, *sf2=fd->sf2;
 
    fd->top_diff=fd->local_diff=false;
@@ -1442,7 +1404,6 @@ static void comparefontglyphs(struct font_diff *fd) {
 static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 				BDFFont * bdf2) {
    BDFChar *bdfc, *bdfc2;
-
    int gid1, gid2;
 
    for (gid1=0; gid1 < bdf1->glyphcnt; ++gid1)
@@ -1519,7 +1480,6 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 	 }
 	 if (bdfc2 != NULL) {
 	    int val=BitmapCompare(bdfc, bdfc2, 0, 0);
-
 	    char *leader="   ";
 
 	    if (!fd->top_diff)
@@ -1574,7 +1534,6 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 
 static void comparebitmapstrikes(struct font_diff *fd) {
    SplineFont *sf1=fd->sf1, *sf2=fd->sf2;
-
    BDFFont *bdf1, *bdf2;
 
    fd->top_diff=fd->middle_diff=fd->local_diff=false;
@@ -1697,9 +1656,7 @@ static void TtfMissingName(struct font_diff *fd,char *fontname_present,
 
 static void comparefontnames(struct font_diff *fd) {
    SplineFont *sf1=fd->sf1, *sf2=fd->sf2;
-
    struct ttflangname *names1, *names2;
-
    int id;
 
    fd->top_diff=fd->middle_diff=fd->local_diff=false;
@@ -1863,7 +1820,6 @@ static int compareap(struct font_diff *fd,AnchorPoint *ap1,
 
 static int classcmp(char *str1,char *str2) {
    int cnt1, cnt2, ch1, ch2;
-
    char *pt1, *pt2, *start1, *start2;
 
    /* Sometimes classes are in the same order and all is easy */
@@ -2063,19 +2019,12 @@ static int comparelookupsubtable(struct font_diff *fd,
 				 struct lookup_subtable *sub1,
 				 struct lookup_subtable *sub2) {
    int gid1;
-
    SplineChar *sc1, *sc2;
-
    PST *pst1, *pst2;
-
    AnchorPoint *ap1, *ap2;
-
    int test_anchors, test_psts, test_kerns;
-
    int lookup_type;
-
    int isv;
-
    KernPair *kp1, *kp2;
 
    /* These are complex to check and involve testing nested lookups which we */
@@ -2182,13 +2131,9 @@ static int comparelookupsubtable(struct font_diff *fd,
 
 static void MatchLookups(struct font_diff *fd) {
    int lcnt, scnt, scnt2;
-
    OTLookup *otl, *otl2;
-
    SplineFont *sf1=fd->sf1, *sf2=fd->sf2;
-
    int exactness;
-
    struct lookup_subtable *sub, *sub2;
 
    if (sf1->cidmaster)
@@ -2403,19 +2348,12 @@ static void finishscfeature(struct font_diff *fd) {
 
 static void comparesubtable(struct font_diff *fd) {
    int gid1;
-
    SplineChar *sc1, *sc2;
-
    PST *pst1, *pst2;
-
    AnchorPoint *ap1, *ap2;
-
    int isv;
-
    KernPair *kp1, *kp2;
-
    int test_anchors, test_psts, test_kerns;
-
    int lookup_type;
 
    fd->last_sc=NULL;
@@ -2558,7 +2496,6 @@ static void comparesubtable(struct font_diff *fd) {
 
 static void compareg___(struct font_diff *fd) {
    OTLookup *otl;
-
    struct lookup_subtable *sub;
 
    fd->top_diff=fd->middle_diff=fd->local_diff=false;

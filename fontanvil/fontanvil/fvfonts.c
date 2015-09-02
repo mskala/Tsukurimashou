@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: fvfonts.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -709,7 +709,6 @@ static void GlyphHashCreate(SplineFont *sf) {
 void SFHashGlyph(SplineFont *sf, SplineChar * sc) {
    /* sc just got added to the font. Put it in the lookup */
    int hash;
-
    struct glyphnamebucket *new;
 
    if (sf->glyphnames==NULL)
@@ -1377,7 +1376,7 @@ static void InterpPoint(SplineSet *cur,SplinePoint *base,
 			SplinePoint * other, real amount) {
    SplinePoint *p=chunkalloc(sizeof(SplinePoint));
    int order2;
-   
+
    order2=
       base->prev != NULL ? base->prev->order2 : base->next !=
       NULL ? base->next->order2 : false;

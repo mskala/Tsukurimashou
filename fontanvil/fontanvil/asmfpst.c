@@ -1,4 +1,4 @@
-/* $Id: asmfpst.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: asmfpst.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2003-2007  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -52,7 +52,6 @@ int ClassesMatch(int cnt1, char **classes1, int cnt2, char **classes2) {
 
 static char **classcopy(char **names,int nextclass) {
    char **ret;
-
    int i;
 
    if (nextclass <= 1)
@@ -67,11 +66,8 @@ static char **classcopy(char **names,int nextclass) {
 
 static FPST *FPSTGlyphToClass(FPST *fpst) {
    FPST *new;
-
    int nextclass=0, i, j, k, max, cnt, ch;
-
    char *pt, *end;
-
    char **names;
 
    if (fpst->format != pst_glyphs)
@@ -210,7 +206,6 @@ static OTLookup *RuleHasSubsHere(struct fpst_rule *rule,int depth) {
 
 static OTLookup *RulesAllSameSubsAt(struct contexttree *me,int pos) {
    int i;
-
    OTLookup *tag=(OTLookup *) 0x01, *newtag;	/* Can't use 0 as an "unused" flag because it is perfectly valid for there to be no substititution. But then all rules must have no subs */
 
    for (i=0; i < me->rule_cnt; ++i) {
@@ -274,9 +269,7 @@ static int TreeFollowBranches(SplineFont *sf,struct contexttree *me,
 static struct contexttree *_FPST2Tree(FPST *fpst,struct contexttree *parent,
 				      int class) {
    struct contexttree *me=chunkalloc(sizeof(struct contexttree));
-
    int i, rcnt, ccnt, k, thisclass;
-
    uint16_t *classes;
 
    if (fpst != NULL) {
@@ -394,7 +387,6 @@ static struct contexttree *FPST2Tree(SplineFont *sf,FPST *fpst) {
 
 static struct contexttree *TreeNext(struct contexttree *cur) {
    struct contexttree *p;
-
    int i;
 
    if (cur->branch_cnt != 0)
@@ -419,11 +411,8 @@ static struct contexttree *TreeNext(struct contexttree *cur) {
 
 int FPSTisMacable(SplineFont *sf, FPST * fpst) {
    int i;
-
    int featureType, featureSetting;
-
    struct contexttree *ret;
-
    FeatureScriptLangList *fl;
 
    if (fpst->type != pst_contextsub && fpst->type != pst_chainsub)
@@ -503,7 +492,6 @@ static int IsMarkChar(SplineChar *sc) {
 
 static char *GlyphListToNames(SplineChar ** classglyphs) {
    int i, len;
-
    char *ret, *pt;
 
    for (i=len=0; classglyphs[i] != NULL; ++i)
@@ -523,9 +511,7 @@ static char *GlyphListToNames(SplineChar ** classglyphs) {
 
 static char *BuildMarkClass(SplineFont *sf) {
    SplineChar *sc, **markglyphs;
-
    int i, mg;
-
    char *ret;
 
    mg=0;
@@ -544,7 +530,6 @@ static char *BuildMarkClass(SplineFont *sf) {
 
 static char *BuildClassNames(SplineChar ** glyphs,uint16_t *map,int classnum) {
    int i, len;
-
    char *ret, *pt;
 
    for (i=len=0; glyphs[i] != NULL; ++i) {
@@ -569,11 +554,8 @@ static char *BuildClassNames(SplineChar ** glyphs,uint16_t *map,int classnum) {
 static int FindFormLookupsForScript(SplineFont *sf,uint32_t script,
 				    OTLookup * lookups[4]) {
    OTLookup *otl;
-
    FeatureScriptLangList *fl;
-
    struct scriptlanglist *sl;
-
    int which;
 
    memset(lookups, 0, 4 * sizeof(OTLookup *));
@@ -609,15 +591,10 @@ static int FindFormLookupsForScript(SplineFont *sf,uint32_t script,
 
 ASM *ASMFromOpenTypeForms(SplineFont *sf, uint32_t script) {
    int i, which, cg, mg;
-
    SplineChar *sc, *rsc, **classglyphs, **markglyphs;
-
    PST *pst;
-
    OTLookup *lookups[4];
-
    ASM *sm;
-
    int flags;
 
    if (!FindFormLookupsForScript(sf, script, lookups))
@@ -736,13 +713,9 @@ static SplineChar **morx_cg_FigureClasses(SplineChar *** tables,
 					  FPST * fpst, SplineFont *sf,
 					  int ordered) {
    int i, j, k, mask, max, class_cnt, gcnt, gtot;
-
    SplineChar ***temp, *sc, **glyphs, **gall;
-
    uint16_t *map;
-
    int *nc;
-
    int *next;
 
    /* For each glyph used, figure out what coverage tables it gets used in */
@@ -856,19 +829,12 @@ static SplineChar **morx_cg_FigureClasses(SplineChar *** tables,
 
 static ASM *ASMFromCoverageFPST(SplineFont *sf,FPST *fpst,int ordered) {
    SplineChar ***tables, **glyphs;
-
    int **classes, class_cnt, gcnt;
-
    int i, j, k, match_len;
-
    struct fpst_rule *r=&fpst->rules[0];
-
    int subspos=r->u.coverage.bcnt + r->lookups[0].seq;
-
    OTLookup *substag=r->lookups[0].lookup, *finaltag=NULL;
-
    uint16_t *map;
-
    ASM *sm;
 
    /* In one very specific case we can support two substitutions */
@@ -1002,13 +968,11 @@ static struct asm_state *AnyActiveSubstrings(struct contexttree *tree,
 					     struct asm_state *trans,
 					     int classcnt) {
    struct fpc *any=&cur->rules[0].rule->u.class;
-
    int i, rc, j, b;
 
    for (i=1; i <= cur->depth; ++i) {
       for (rc=0; rc < tree->rule_cnt; ++rc) {
 	 struct fpc *r=&tree->rules[rc].rule->u.class;
-
 	 int ok=true;
 
 	 for (j=0; j <= cur->depth - i; ++j) {
@@ -1047,9 +1011,7 @@ static int FailureTrans(struct asm_state *trans) {
 static ASM *ASMFromClassFPST(SplineFont *sf,FPST *fpst,
 			     struct contexttree *tree) {
    ASM *sm;
-
    struct contexttree *cur;
-
    int i;
 
    sm=chunkalloc(sizeof(ASM));
@@ -1107,9 +1069,7 @@ static ASM *ASMFromClassFPST(SplineFont *sf,FPST *fpst,
 
 ASM *ASMFromFPST(SplineFont *sf, FPST * fpst, int ordered) {
    FPST *tempfpst=fpst;
-
    struct contexttree *tree=NULL;
-
    ASM *sm;
 
    if (fpst->format==pst_glyphs)

@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splinefill.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -138,7 +138,6 @@ static int SlopeLess(Edge *e,Edge *p,int other) {
    Spline1D *psp=&p->spline->splines[other];
    Spline1D *msp=&e->spline->splines[!other];
    Spline1D *qsp=&p->spline->splines[!other];
-
    real os=(3 * osp->a * e->t_cur + 2 * osp->b) * e->t_cur + osp->c,
       ps=(3 * psp->a * p->t_cur + 2 * psp->b) * p->t_cur + psp->c;
    real ms=(3 * msp->a * e->t_cur + 2 * msp->b) * e->t_cur + msp->c,
@@ -437,7 +436,6 @@ static void AddSpline(EdgeList *es,Spline *sp) {
    if (es->interesting) {
       /* Also store up points of extrema in X as interesting (we got the endpoints, just internals now) */
       extended ot1, ot2;
-
       int mpos;
 
       SplineFindExtrema(osp, &ot1, &ot2);
@@ -889,7 +887,6 @@ void BCCompressBitmap(BDFChar * bdfc) {
 	    last=0;
 	    for (j=bdfc->bytes_per_line - 1; j >= 0; --j) {
 	       int index=i * bdfc->bytes_per_line + j;
-
 	       int temp=bdfc->bitmap[index] >> (8 - off);
 
 	       bdfc->bitmap[index]=(bdfc->bitmap[index] << off) | last;
@@ -1310,7 +1307,6 @@ int GradientHere(bigreal scale, DBounds * bbox, int iy, int ix,
 	  grad->grad_stops[i - 1].offset) / (grad->grad_stops[i].offset -
 					     grad->grad_stops[i - 1].offset);
       uint32_t col1=grad->grad_stops[i - 1].col;
-
       uint32_t col2=grad->grad_stops[i].col;
 
       if (col1==COLOR_INHERITED)
@@ -1591,9 +1587,7 @@ static BDFChar *_SplineCharRasterize(SplineChar *sc,int layer,
 	 InitializeHints(sc, &es);
 	 if (sc->parent->multilayer) {
 	    uint8_t *bytemap=calloc(es.cnt * es.bytes_per_line * 8, 1);
-
 	    int layer, i;
-
 	    RefChar *rf;
 
 	    for (layer=ly_fore; layer < sc->layer_cnt; ++layer) {

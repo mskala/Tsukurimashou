@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: splineoverlap.c 4155 2015-09-02 07:43:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -412,7 +412,7 @@ ValidateMListTs_IF_VERBOSE(il->monos)
     // Add the new item to the monotonic list for the input intersection.
     ml->next=il->monos;
     il->monos=ml;
-    
+
     ml->s=m->s; // Set the spline.
     ml->m=m;			/* This may change. We'll fix it up later */
     ml->t=t;
@@ -1257,7 +1257,7 @@ return( true );
 	    }
 	    if ( t1p==t1 && t2p==t2 )
 	break;
-    
+
 	    x1p=((s1->splines[0].a*t1p + s1->splines[0].b)*t1p + s1->splines[0].c)*t1p + s1->splines[0].d;
 	    x2p=((s2->splines[0].a*t2p + s2->splines[0].b)*t2p + s2->splines[0].c)*t2p + s2->splines[0].d;
 	    y1p=((s1->splines[1].a*t1p + s1->splines[1].b)*t1p + s1->splines[1].c)*t1p + s1->splines[1].d;
@@ -3179,7 +3179,6 @@ static SplineSet *JoinAContour(Intersection *startil,MList *ml) {
 	    if ( ml==NULL )
 		for ( ml=curil->monos; ml!=NULL && !ml->m->isneeded; ml=ml->next );
 	} else {
-	    
 	    int k; MList *bestml; bigreal bestdot;
 	    for ( k=0; k<2; ++k ) {
 		bestml=NULL; bestdot=-2;
@@ -3692,7 +3691,7 @@ return( -1 );
     }
 return( t1 );
 }
-	
+
 void SSRemoveBacktracks(SplineSet *ss) {
     SplinePoint *sp;
 
@@ -3775,7 +3774,7 @@ static int BetweenForCollinearPoints( SplinePoint* a,SplinePoint* middle,SplineP
     if( a->me.x <= middle->me.x && middle->me.x <= b->me.x )
 	if( a->me.y <= middle->me.y && middle->me.y <= b->me.y )
 	    return 1;
-    
+
     return ret;
 }
 
@@ -3816,7 +3815,7 @@ static SplineSet *SSRemoveReversals(SplineSet *base) {
 		    SplinePoint *nsp=sp->next->to;
 		    SplinePoint *psp=sp->prev->from;
 		    SplinePoint *isp=0;
-		    
+
 		    if ( psp->me.x==nsp->me.x && psp->me.y==nsp->me.y &&
 			    psp->nextcp.x==nsp->prevcp.x && psp->nextcp.y==nsp->prevcp.y )
 		    {

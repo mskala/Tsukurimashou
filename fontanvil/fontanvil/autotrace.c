@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: autotrace.c 4156 2015-09-02 07:51:02Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -60,21 +60,14 @@ int preferpotrace=false;
 static SplinePointList *localSplinesFromEntities(Entity *ent,Color bgcol,
 						 int ispotrace) {
    Entity *enext;
-
    SplinePointList *head =
       NULL, *last, *test, *next, *prev, *new, *nlast, *temp;
    int clockwise;
-
    SplineChar sc;
-
    StrokeInfo si;
-
    DBounds bb, sbb;
-
    int removed;
-
    real fudge;
-
    Layer layers[2];
 
    /* We have a problem. The autotrace program includes contours for the */
@@ -203,7 +196,6 @@ static SplinePointList *localSplinesFromEntities(Entity *ent,Color bgcol,
 /* I think this is total paranoia. but it's annoying to have linker complaints... */
 static int mytempnam(char *buffer) {
    char *dir;
-
    int fd;
 
    /* char *old; */
@@ -222,11 +214,8 @@ static int mytempnam(char *buffer) {
 
 static char *mytempdir(void) {
    char buffer[1025];
-
    char *dir, *eon;
-
    static int cnt=0;
-
    int tries=0;
 
    if ((dir=getenv("TMPDIR")) != NULL)
@@ -460,7 +449,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 
 	    rewind(ps);
 	    new_tmp_file=atmpfile();
-	    
+
 	    while ((c=agetc(new_tmp_file))>=0) aputc(c,new_tmp_file);
 	    afseek(new_tmp_file,0,SEEK_SET);
 
@@ -503,9 +492,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 
 static char **makevector(const char *str) {
    char **vector;
-
    const char *start, *pt;
-
    int i, cnt;
 
    if (str==NULL)
@@ -535,7 +522,6 @@ static char **makevector(const char *str) {
 
 static char *flatten(char *const *args) {
    char *ret, *rpt;
-
    int j, i, len;
 
    if (args==NULL)
@@ -646,11 +632,8 @@ char *ProgramExists(char *prog, char *buffer) {
 
 char *FindAutoTraceName(void) {
    static int searched=0;
-
    static int waspotraceprefered;
-
    static char *name=NULL;
-
    char buffer[1025];
 
    if (searched && waspotraceprefered==preferpotrace)
@@ -680,9 +663,7 @@ char *FindAutoTraceName(void) {
 
 char *FindMFName(void) {
    static int searched=0;
-
    static char *name=NULL;
-
    char buffer[1025];
 
    if (searched)
@@ -698,9 +679,7 @@ char *FindMFName(void) {
 
 static char *FindGfFile(char *tempdir) {
    DIR *temp;
-
    struct dirent *ent;
-
    char buffer[1025], *ret=NULL;
 
    temp=opendir(tempdir);
@@ -724,13 +703,9 @@ static char *FindGfFile(char *tempdir) {
 
 static void cleantempdir(char *tempdir) {
    DIR *temp;
-
    struct dirent *ent;
-
    char buffer[1025], *eod;
-
    char *todelete[100];
-
    int cnt=0;
 
    temp=opendir(tempdir);

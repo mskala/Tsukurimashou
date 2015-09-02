@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: winfonts.c 4157 2015-09-02 07:55:07Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -186,17 +186,11 @@ static void lputlong(AFILE *f,int val) {
 
 static int FNT_Load(AFILE *fnt,SplineFont *sf) {
    struct fntheader fntheader;
-
    struct v3chars charinfo[258];	/* Max size */
-
    int i, j, k, ch;
-
    uint32_t base=aftell(fnt);
-
    char *pt, *spt, *temp;
-
    BDFFont *bdf;
-
    BDFChar *bdfc;
 
    memset(&fntheader, 0, sizeof(fntheader));
@@ -375,15 +369,10 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
 
 SplineFont *SFReadWinFON(char *filename, int toback) {
    AFILE *fon;
-
    int magic, i, shift_size;
-
    SplineFont *sf;
-
    uint32_t neoffset, recoffset, recend;
-
    int font_count;
-
    BDFFont *bdf, *next;
 
    fon=afopen(filename, "rb");
@@ -440,7 +429,6 @@ SplineFont *SFReadWinFON(char *filename, int toback) {
       }
       for (i=0; i < font_count; ++i) {
 	 uint32_t here=aftell(fon);
-
 	 uint32_t offset=lgetushort(fon) << shift_size;
 
 	 afseek(fon, offset, SEEK_SET);	/* FontDirEntries need a +4 here */
@@ -481,21 +469,13 @@ SplineFont *SFReadWinFON(char *filename, int toback) {
 
 static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    uint32_t startpos, endpos, namelocpos, datapos, namepos;
-
    int i, j, k, l;
-
    int ch;
-
    int cnt, badch, defch;
-
    int first, last, avgwid, maxwid, samewid, maxy, miny, widbytes, spacesize;
-
    struct pfminfo pfminfo;
-
    int complained=false;
-
    int gid;
-
    BDFChar *bdfc;
 
    if (font->clut != NULL)
@@ -648,7 +628,6 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    widbytes=0;
    for (i=first; i <= last; ++i) {
       int gid=map->map[i];
-
       BDFChar *bdfc=gid==-1 ? NULL : font->glyphs[gid];
 
       if (bdfc != NULL && bdfc->width > 0) {
@@ -701,7 +680,6 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
 
 int FNTFontDump(char *filename, BDFFont * font, EncMap * map, int res) {
    AFILE *file;
-
    int ret;
 
    file=afopen(filename, "wb");
