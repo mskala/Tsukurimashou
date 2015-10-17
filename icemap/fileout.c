@@ -37,8 +37,10 @@ int delete_failed=1;
 NODE *open_output_file(char *fn) {
    NODE *tfn;
    
-   if (fn==NULL)
-     return NULL;
+   if (fn==NULL) {
+      fputs("cannot open null file\n",stderr);
+      exit(1);
+   }
    for (tfn=opened_files;tfn;tfn=tfn->next)
      if (strcmp(tfn->cp,fn)==0)
        return tfn;

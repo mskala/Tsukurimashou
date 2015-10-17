@@ -106,12 +106,13 @@ endif
 
 STANDALONE_QVFG:=mitsuba.cls
 EXTRA_DIST:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG))
+  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
+  inttest.c
 
 STANDALONE_FPEVCGF:=
-dist_noinst_SCRIPTS:= \
+dist_noinst_SCRIPTS= \
   $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
-  $(GCOV_TESTS)
+  $(GCOV_TESTS) test/rmgcda test/gcov
 
 bin_PROGRAMS = icemap
 
@@ -156,7 +157,19 @@ icemap.pdf: icemap.tex mitsuba.cls
 
 # TESTING
 
-GCOV_TESTS =
+IM_TESTS = \
+  test/basicarray test/remap
+
+define IMDEP_RECIPE
+$1.log: inttest.c
+
+endef
+
+$(foreach test,$(IM_TESTS),$(eval $(call IMDEP_RECIPE,$(test))))
+
+GCOV_TESTS = \
+  test/help \
+  $(IM_TESTS)
 
 define GCDEP_RECIPE
 $1.log: test/rmgcda.log

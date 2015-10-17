@@ -1,0 +1,14 @@
+#!/bin/sh
+
+for srcfile in *.c
+do
+  ( gcov -r $srcfile || gcov $srcfile ) > /dev/null 2> /dev/null
+done
+rm -f mkwcw.c.gcov
+if perl -CS ./check-coverage *.c.gcov
+then
+  exit 0
+else
+  grep -E -A3 -B3 '(#####)|(SNH)' *.c.gcov
+  exit 1
+fi

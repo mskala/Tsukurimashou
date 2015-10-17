@@ -1,0 +1,53 @@
+#!/bin/sh
+
+mkdir rmtmp$$
+cd rmtmp$$
+
+cat > rm.im <<EOF
+valtype "char *";
+
+0 -> "alice";
+1 -> "zach";
+2 -> "yendred";
+"three" -> "dave";
+"four" -> "ethel";
+5 -> "fred";
+
+remap values {
+  "zach" -> "bob";
+  "yendred" -> "carol";
+  "wilma" -> "prunella";
+}
+
+remap keys {
+  "three" -> 3;
+  "five" -> 5;
+  "four" -> 4;
+}
+EOF
+
+err=0
+
+../icemap -C map.c -H map.h rm.im || err=$?
+if test $err = 0
+then
+  gcc -I. -DSTRINGVAL -o inttest ../inttest.c map.c || err=$?
+fi
+if test $err = 0 ; then ./inttest 0 5 > results.dat || err=$? ; fi
+
+cat > target.dat <<EOF
+TOP
+0 -> "alice"
+1 -> "bob"
+2 -> "carol"
+3 -> "dave"
+4 -> "ethel"
+5 -> "fred"
+BOTTOM
+EOF
+if test $err = 0 ; then diff target.dat results.dat || err=$? ; fi
+
+cd ..
+rm -rf rmtmp$$
+
+exit $err
