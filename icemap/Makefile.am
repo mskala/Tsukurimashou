@@ -158,7 +158,7 @@ icemap.pdf: icemap.tex mitsuba.cls
 # TESTING
 
 IM_TESTS = \
-  test/basicarray test/remap
+  test/basicarray test/big5 test/bigger5 test/remap
 
 define IMDEP_RECIPE
 $1.log: inttest.c

@@ -1,6 +1,6 @@
 # Mac encoding table translations
 
-# $Id: macenctab.im 4092 2015-07-05 15:40:41Z mskala $
+# $Id: macenctab.im 4274 2015-10-17 16:53:23Z mskala $
 
 cwrite <<EOF;
 /* GENERATED FILE - EDIT THE SOURCE IN macenctab.im INSTEAD! */
@@ -32,7 +32,7 @@ cwrite <<EOF;
  * George wrote that at some unspecified distant point in the past.  As of
  * the current writing (Matthew Skala, June 2015), there are other tables
  * available at the Unicode Consortium URL mentioned above, that were not
- * included in the FontForge source file.  Notes below decribe what I think
+ * included in the FontForge source file.  Notes below describe what I think
  * is going on with those files.
  *
  * For the moment these lookups cover only Mac 8-bit encodings.  I may add

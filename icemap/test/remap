@@ -31,7 +31,7 @@ err=0
 ../icemap -C map.c -H map.h rm.im || err=$?
 if test $err = 0
 then
-  gcc -I. -DSTRINGVAL -o inttest ../inttest.c map.c || err=$?
+  gcc -g -O0 -I. -DSTRINGVAL -o inttest ../inttest.c map.c || err=$?
 fi
 if test $err = 0 ; then ./inttest 0 5 > results.dat || err=$? ; fi
 

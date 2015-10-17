@@ -1,0 +1,35 @@
+#!/bin/sh
+
+if test '!' -r ../fontanvil/dat/Unihan_OtherMappings.txt
+then
+  exit 77
+fi
+
+mkdir bbtmp$$
+cd bbtmp$$
+
+cat > bb.im <<EOF
+id "map";
+
+cwrite <<FOE;
+typedef signed char int8_t;
+typedef long int32_t;
+FOE
+
+parserx "^U\\\\+([0-9a-fxA-FX]+)[\\t ]+(kBigFive|kHKSCS)[\\t ]+([0-9a-fxA-FX]+)"
+rxparse "../../fontanvil/dat/Unihan_OtherMappings.txt" x3 -> x1;
+EOF
+
+err=0
+
+../icemap -C map.c -H map.h bb.im || err=$?
+if test $err = 0
+then
+  gcc -g -O0 -I. -o inttest ../inttest.c map.c || err=$?
+fi
+if test $err = 0 ; then ./inttest 0 195028 > results.dat || err=$? ; fi
+
+cd ..
+rm -rf bbtmp$$
+
+exit $err

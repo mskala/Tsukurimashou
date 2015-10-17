@@ -1,0 +1,241 @@
+#!/bin/sh
+
+mkdir b5tmp$$
+cd b5tmp$$
+
+cat > b5.im <<EOF
+id "map";
+
+cwrite <<FOE;
+typedef signed char int8_t;
+FOE
+
+parserx "^U\\\\+([0-9a-fxA-FX]+)[\\t ]+(kBigFive|kHKSCS)[\\t ]+([0-9a-fxA-FX]+)"
+rxparse "big5.dat" x3 -> x1;
+EOF
+
+# note this is NOT correct translation data - edited from the real table
+# to create a better test case
+cat > big5.dat <<EOF
+U+57CE	kBigFive	ABB0
+U+57CF	kBigFive	D4BA
+U+57D0	kBigFive	D156
+U+57D1	kBigFive	D14D
+U+57D2	kBigFive	AE48
+U+57D3	kBigFive	D14C
+U+57D4	kHKSCS	96F5
+U+57D5	kBigFive	D4B1
+U+57D6	kHKSCS	92E6
+U+57D7	kHKSCS	9F42
+U+57D8	kBigFive	B0EC
+U+57D9	kBigFive	B0F0
+U+57DA	kBigFive	D4C1
+U+57DB	kBigFive	D4AF
+U+57DC	kBigFive	D4BD
+U+57DD	kBigFive	B0F1
+U+57DE	kBigFive	D4BF
+U+57DF	kHKSCS	FB67
+U+57E0	kBigFive	D4C5
+U+57E1	kBigFive	D4C9
+U+57E2	kBigFive	D4C0
+U+57E3	kBigFive	D4B4
+U+57E4	kBigFive	D4BC
+U+57E5	kHKSCS	99A9
+U+57E6	kBigFive	D4CA
+U+57E7	kBigFive	D4C8
+U+57E8	kBigFive	D4BE
+U+57E9	kBigFive	D4B9
+U+57EA	kBigFive	D4B2
+U+57EB	kBigFive	D8A6
+U+57EC	kBigFive	D4B0
+U+57ED	kBigFive	B0F5
+U+57EE	kBigFive	D4B7
+U+57EF	kBigFive	B0F6
+U+57F0	kBigFive	B0F2
+U+57F1	kBigFive	D4AD
+U+57F2	kBigFive	D4C3
+U+57F3	kBigFive	D4B5
+U+57F4	kHKSCS	FAE6
+U+57F5	kBigFive	D4B3
+U+57F6	kBigFive	D4C6
+U+57F7	kBigFive	B0F3
+U+57F8	kHKSCS	FB69
+U+57F9	kBigFive	D4CC
+U+57FA	kBigFive	B0ED
+U+57FB	kBigFive	B0EF
+U+57FC	kBigFive	D4BB
+U+57FD	kBigFive	D4B6
+U+57FE	kBigFive	AE4B
+U+57FF	kBigFive	B0EE
+U+5800	kBigFive	D4B8
+U+5801	kBigFive	D4C7
+U+5802	kBigFive	D4CB
+U+5803	kBigFive	D4C2
+U+5804	kBigFive	D4C4
+U+5805	kHKSCS	97E5
+U+5806	kBigFive	D4AE
+U+5807	kHKSCS	87C8
+U+5808	kBigFive	D8A1
+U+5809	kBigFive	D8AA
+U+580A	kBigFive	D8A9
+U+580B	kBigFive	B3FA
+U+580C	kBigFive	D8A2
+U+580D	kBigFive	B3FB
+U+580E	kBigFive	B3F9
+U+580F	kHKSCS	967D
+U+5810	kBigFive	D8A4
+U+5811	kBigFive	B3F6
+U+5812	kBigFive	D8A8
+U+5813	kHKSCS	FB6C
+U+5814	kBigFive	D8A3
+U+5815	kBigFive	D8A5
+U+5816	kBigFive	D87D
+U+5817	kBigFive	B3F4
+U+5818	kBigFive	D8B2
+U+5819	kBigFive	D8B1
+U+581A	kBigFive	D8AE
+U+581B	kBigFive	B3F3
+U+581C	kBigFive	B3F7
+U+581D	kBigFive	B3F8
+U+581E	kBigFive	D14B
+U+581F	kBigFive	D8AB
+U+5820	kBigFive	B3F5
+U+5821	kBigFive	B0F4
+U+5822	kBigFive	D8AD
+U+5823	kBigFive	D87E
+U+5824	kBigFive	D8B0
+U+5825	kBigFive	D8AF
+U+5826	kHKSCS	99A2
+U+5827	kBigFive	D8B3
+U+5828	kBigFive	DCEF
+U+5829	kBigFive	D8AC
+U+582A	kHKSCS	9ABB
+U+582B	kHKSCS	9A65
+U+582C	kHKSCS	944E
+U+582D	kBigFive	D8A7
+U+582E	kBigFive	DCE7
+U+582F	kBigFive	B6F4
+U+5830	kBigFive	B6F7
+U+5831	kBigFive	B6F2
+EOF
+
+err=0
+
+../icemap -C map.c -H map.h b5.im || err=$?
+if test $err = 0
+then
+  gcc -g -O0 -I. -o inttest ../inttest.c map.c || err=$?
+fi
+if test $err = 0 ; then ./inttest 22478 22578 > results.dat || err=$? ; fi
+
+cat > target.dat <<EOF
+TOP
+22478 -> 22572
+22479 -> 22568
+22480 -> 22489
+22481 -> 22493
+22482 -> 22577
+22483 -> 22555
+22484 -> 22551
+22485 -> 22560
+22486 -> 22480
+22487 -> 22556
+22488 -> 22557
+22489 -> 22542
+22490 -> 22539
+22491 -> 22541
+22492 -> 22500
+22493 -> 22543
+22494 -> 22563
+22495 -> 22494
+22496 -> 22498
+22497 -> 22536
+22498 -> 22566
+22499 -> 22548
+22500 -> 22544
+22501 -> 22533
+22502 -> 22486
+22503 -> 22574
+22504 -> 22546
+22505 -> 22520
+22506 -> 22537
+22507 -> 22559
+22508 -> 22488
+22509 -> 22522
+22510 -> 22527
+22511 -> 22568
+22512 -> 22489
+22513 -> 22493
+22514 -> 22577
+22515 -> 22555
+22516 -> 22551
+22517 -> 22560
+22518 -> 22545
+22519 -> 22556
+22520 -> 22557
+22521 -> 22542
+22522 -> 22539
+22523 -> 22541
+22524 -> 22500
+22525 -> 22543
+22526 -> 22563
+22527 -> 22494
+22528 -> 22498
+22529 -> 22490
+22530 -> 22487
+22531 -> 22514
+22532 -> 22532
+22533 -> 22496
+22534 -> 22518
+22535 -> 22529
+22536 -> 22482
+22537 -> 22497
+22538 -> 22502
+22539 -> 22526
+22540 -> 22483
+22541 -> 22481
+22542 -> 22572
+22543 -> 22565
+22544 -> 22564
+22545 -> 22553
+22546 -> 22552
+22547 -> 22567
+22548 -> 22499
+22549 -> 22515
+22550 -> 22480
+22551 -> 22510
+22552 -> 22528
+22553 -> 22505
+22554 -> 22479
+22555 -> 22524
+22556 -> 22500
+22557 -> 22492
+22558 -> 22504
+22559 -> 22494
+22560 -> 22498
+22561 -> 22536
+22562 -> 22540
+22563 -> 22548
+22564 -> 22544
+22565 -> 22549
+22566 -> 22507
+22567 -> 22573
+22568 -> 22546
+22569 -> 22538
+22570 -> 22537
+22571 -> 22559
+22572 -> 22569
+22573 -> 22562
+22574 -> 22554
+22575 -> 22565
+22576 -> 22564
+22577 -> 22553
+22578 -> 22552
+BOTTOM
+EOF
+if test $err = 0 ; then diff target.dat results.dat || err=$? ; fi
+
+cd ..
+rm -rf b5tmp$$
+
+exit $err

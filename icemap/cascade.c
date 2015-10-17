@@ -227,7 +227,8 @@ void gen_cascade(CONTEXT *c) {
       bdd_intaddvarblock(0,num_bits_in-1,1);
    } else {
      for (i=0;i<num_bits_in;i+=3)
-	bdd_intaddvarblock(i,i+2,0);
+	bdd_intaddvarblock(i,(
+			      i+2<num_bits_in)?(i+2):(num_bits_in-1),0);
    }
 
    /* set callback for reordering */
@@ -502,6 +503,7 @@ typedef struct _WC_QUEUE_ENTRY {
    BDD *results;
    int child[64];
    int byte,shift;
+   int reorder_gen;
 } WC_QUEUE_ENTRY;
 
 void gen_wide_cascade(CONTEXT *c) {
@@ -514,6 +516,7 @@ void gen_wide_cascade(CONTEXT *c) {
    QUEUE_ENTRY *queue;
    int queue_max,queue_low,queue_high,vi,vj;
    BDD *child[8];
+   int reorder_serial=0;
    
    /* check:  can we proceed? */
    if ((c->am.first_key==NULL) || (c->am.last_key==NULL) ||
@@ -575,6 +578,7 @@ void gen_wide_cascade(CONTEXT *c) {
    bdd_setmaxincrease(500000);
    bdd_setvarnum(num_bits_in);
    bdd_gbc_hook(NULL);
+   bdd_error_hook(1); /* deliberate segfault! */
    
    /* initialize the BDDs that represent the table */
    keys_bdd=bddfalse;
@@ -645,7 +649,7 @@ void gen_wide_cascade(CONTEXT *c) {
       bdd_intaddvarblock(0,num_bits_in-1,1);
    } else {
      for (i=0;i<num_bits_in;i+=3)
-	bdd_intaddvarblock(i,i+2,0);
+	bdd_intaddvarblock(i,(i+2<num_bits_in)?(i+2):(num_bits_in-1),0);
    }
 
    /* set callback for reordering */
@@ -657,6 +661,7 @@ void gen_wide_cascade(CONTEXT *c) {
    queue_low=0;
    queue_high=1;
    queue[0].results=result_bdds;
+   queue[0].reorder_gen=-1;
 
    /* process the queue */
    while (queue_low<queue_high) {
@@ -669,8 +674,13 @@ void gen_wide_cascade(CONTEXT *c) {
       }
 
       /* optimize for the current queue entry */
-      reorder_focus=queue[queue_low].results;
-      bdd_reorder(BDD_REORDER_WIN2ITE);
+      if (queue[queue_low].reorder_gen!=reorder_serial) {
+	 reorder_focus=queue[queue_low].results;
+	 bdd_reorder(BDD_REORDER_WIN2ITE);
+	 if (bdd_reorder_gain()!=0)
+	   reorder_serial++;
+      }
+      
 
       /* find the variable on which we want to branch */
       vj=num_bits_in-1;
@@ -752,6 +762,7 @@ void gen_wide_cascade(CONTEXT *c) {
 	 queue[queue_low].child[i]=j;
 	 if (j==queue_high) {
 	    /* yes - adopt it into queue, and now we need another buffer */
+	    queue[queue_high].reorder_gen=reorder_serial;
 	    queue_high++;
 	    child[i]=(BDD *)malloc(num_bits_out*sizeof(BDD));
 	    

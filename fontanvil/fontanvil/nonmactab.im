@@ -1,6 +1,6 @@
 # Non-Mac encoding tables
 
-# $Id: nonmactab.im 4159 2015-09-02 09:41:09Z mskala $
+# $Id: nonmactab.im 4274 2015-10-17 16:53:23Z mskala $
 
 # this file collects various encoding-related tables other than the Mac
 # encodings from macenc.c
@@ -46,8 +46,6 @@ EOF
     rxparse "dat/glyphlist.txt" 1 -> x2;
     ".notdef" -> 0;
   }
-
-  generate basic_array;
 }
 
 ########################################################################
@@ -63,8 +61,6 @@ EOF
 
   parserx "^U\\+([0-9a-fxA-FX]+)[\t ]+(kBigFive|kHKSCS)[\t ]+([0-9a-fxA-FX]+)"
   rxparse "dat/Unihan_OtherMappings.txt" x3 -> x1;
-
-  generate basic_array;
 }
 
 ########################################################################
@@ -81,8 +77,6 @@ EOF
   priority last;
   parserx "^([0-9a-fxA-FX]+)[\t ]+([0-9a-fxA-FX]+)"
   rxparse "dat/JIS0201.TXT" x1 -> x2;
-
-  generate basic_array;
 }
 
 ########################################################################
@@ -97,8 +91,6 @@ EOF
 
   parserx "^([0-9a-fxA-FX]+)[\t ]+([0-9a-fxA-FX]+)[\t ]+([0-9a-fxA-FX]+)"
   rxparse "dat/JIS0208.TXT" x2 -> x3;
-
-  generate cascade;
 }
 
 ########################################################################
@@ -113,8 +105,6 @@ EOF
 
   parserx "^([0-9a-fxA-FX]+)[\t ]+([0-9a-fxA-FX]+)"
   rxparse "dat/KSC5601.TXT" x1 -> x2;
-
-  generate basic_array;
 }
 
 ########################################################################
@@ -131,8 +121,6 @@ EOF
 
   parserx "^([0-9a-fxA-FX]+)[\t ]+([0-9a-fxA-FX]+)"
   rxparse "dat/gb2312.dat" x1 -> x2;
-
-  generate basic_array;
 }
 
 ########################################################################
@@ -151,8 +139,6 @@ EOF
 
   parserx "^([0-9a-fxA-FX]+)[\t ]+([0-9a-fxA-FX]+)"
   rxparse "dat/JOHAB.TXT" x1 -> x2;
-
-  generate basic_array;
 }
 
 ########################################################################
