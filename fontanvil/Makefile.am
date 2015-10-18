@@ -125,22 +125,22 @@ endif
 PL_LOG_COMPILER = @PERL@
 
 TESTS = \
-  tests/arithmetic.pe tests/feamerge.pe \
-  tests/test001.pe tests/test002.pe tests/test003.pe tests/test004.pe \
-  tests/test005.pe tests/test006.pe tests/test007.pe tests/test008.pe \
-  tests/test009.pe tests/test010.pe tests/test101.pe tests/test102.pe \
-  tests/test103.pe tests/test104.pe tests/test105.pe tests/test106.pe \
-  tests/test107.pe tests/test108.pe tests/test109.pe tests/test110.pe \
-  tests/test111.pe tests/test112.pe tests/test113.pe tests/test114.pe \
-  tests/test115.pe tests/test116.pe tests/test117.pe tests/test118.pe \
-  tests/test119.pe tests/test120.pe tests/test121.pe tests/test122.pe \
-  tests/test123.pe tests/test124.pe tests/test125.pe tests/test126.pe \
-  tests/test127.pe \
-  tests/coverage.pl tests/feart.pl
+  test/arithmetic.pe test/feamerge.pe \
+  test/test001.pe test/test002.pe test/test003.pe test/test004.pe \
+  test/test005.pe test/test006.pe test/test007.pe test/test008.pe \
+  test/test009.pe test/test010.pe test/test101.pe test/test102.pe \
+  test/test103.pe test/test104.pe test/test105.pe test/test106.pe \
+  test/test107.pe test/test108.pe test/test109.pe test/test110.pe \
+  test/test111.pe test/test112.pe test/test113.pe test/test114.pe \
+  test/test115.pe test/test116.pe test/test117.pe test/test118.pe \
+  test/test119.pe test/test120.pe test/test121.pe test/test122.pe \
+  test/test123.pe test/test124.pe test/test125.pe test/test126.pe \
+  test/test127.pe \
+  test/coverage.pl test/doccov.pl test/feart.pl
 
-tests/coverage.log: $(patsubst %.pe,%.log,$(filter tests/%.pe,$(TESTS)))
+test/coverage.log: $(patsubst %.pe,%.log,$(filter test/%.pe,$(TESTS)))
 
-tests/feart.log: tests/feamerge.log
+test/feart.log: test/feamerge.log
 
 $(TESTS): ttmp/.dirstamp fontanvil/fontanvil
 
@@ -280,18 +280,18 @@ EXTRA_DIST:= \
   $(texfiles) doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
   fontanvil/fontimage.pe fontanvil/fontlint.pe fontanvil/sfddiff.pe \
   $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) share/default-n \
-  tests/helper107.pe tests/helper118A.pe tests/helper118B.pe \
-  tests/fonts/AHBugs.sfd tests/fonts/AddExtremumTest.sfd \
-  tests/fonts/Ambrosia.sfd tests/fonts/AmbrosiaBold.sfd \
-  tests/fonts/AmbrosiaItalic.sfd tests/fonts/Caliban.sfd \
-  tests/fonts/CaslonMM.sfd tests/fonts/DataURI.sfd \
-  tests/fonts/DejaVuSerif.sfd tests/fonts/FormalScript.sfd \
-  tests/fonts/Hinting.sfd tests/fonts/ItalicHand.sfd \
-  tests/fonts/NimbusLGCUni-Regular.sfd tests/fonts/NumberPoints.sfd \
-  tests/fonts/OmittedCharBugs.sfd tests/fonts/OverlapBugs.sfd \
-  tests/fonts/QuadraticConversionBug.sfd tests/fonts/SimplifyBugs.sfd \
-  tests/fonts/SplineOverlapBug1.sfd tests/fonts/VKern.sfd \
-  tests/fonts/dvng10a-crash.sfd tests/fonts/feta20.pfb
+  test/helper107.pe test/helper118A.pe test/helper118B.pe \
+  test/fonts/AHBugs.sfd test/fonts/AddExtremumTest.sfd \
+  test/fonts/Ambrosia.sfd test/fonts/AmbrosiaBold.sfd \
+  test/fonts/AmbrosiaItalic.sfd test/fonts/Caliban.sfd \
+  test/fonts/CaslonMM.sfd test/fonts/DataURI.sfd \
+  test/fonts/DejaVuSerif.sfd test/fonts/FormalScript.sfd \
+  test/fonts/Hinting.sfd test/fonts/ItalicHand.sfd \
+  test/fonts/NimbusLGCUni-Regular.sfd test/fonts/NumberPoints.sfd \
+  test/fonts/OmittedCharBugs.sfd test/fonts/OverlapBugs.sfd \
+  test/fonts/QuadraticConversionBug.sfd test/fonts/SimplifyBugs.sfd \
+  test/fonts/SplineOverlapBug1.sfd test/fonts/VKern.sfd \
+  test/fonts/dvng10a-crash.sfd test/fonts/feta20.pfb
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
@@ -334,7 +334,7 @@ endif
 if COND_ICEMAP
 
 %.c:%.im $(ICEMAP)
-	$(TSU_V_ICE)$(ICEMAP) -C$@ -H$(patsubst %.c,%.h,$@) $<
+	$(TSU_V_ICE)$(ICEMAP) -C$@ -H$(patsubst %.c,%.h,$@) $< $(TSU_V_REDIR)
 
 fontanvil/macenctab.c: fontanvil/macenctab.im
 fontanvil/macenctab.h: fontanvil/macenctab.c
@@ -372,16 +372,19 @@ endif
 PESCRIPT_HEADER = "\#!$(bindir)/fontanvil"
 
 fontanvil/fontimage: fontanvil/fontimage.pe
-	echo "${PESCRIPT_HEADER}" | cat - $< > $@
-	chmod +x $@
+	$(AM_V_GEN)
+	$(AM_V_at)echo "${PESCRIPT_HEADER}" | cat - $< > $@
+	$(AM_V_at)chmod +x $@
 
 fontanvil/fontlint: fontanvil/fontlint.pe
-	echo "${PESCRIPT_HEADER}" | cat - $< > $@
-	chmod +x $@
+	$(AM_V_GEN)
+	$(AM_V_at)echo "${PESCRIPT_HEADER}" | cat - $< > $@
+	$(AM_V_at)chmod +x $@
 
 fontanvil/sfddiff: fontanvil/sfddiff.pe
-	echo "${PESCRIPT_HEADER}" | cat - $< > $@
-	chmod +x $@
+	$(AM_V_GEN)
+	$(AM_V_at)echo "${PESCRIPT_HEADER}" | cat - $< > $@
+	$(AM_V_at)chmod +x $@
 
 ############################################################################
 
@@ -389,10 +392,13 @@ fontanvil/sfddiff: fontanvil/sfddiff.pe
 
 doc/fontanvil.pdf: $(texfiles) doc/mitsuba.cls \
   doc/quixote-dore.jpg doc/quixote-daumier.jpg
-	cd doc ; $(PDFLATEX) fontanvil.tex
-	cd doc ; makeindex fontanvil.idx
-	cd doc ; $(PDFLATEX) fontanvil.tex
-	cd doc ; $(PDFLATEX) fontanvil.tex
+	$(AM_V_at)I=1;$(TSU_V_TEXL) cd doc ; \
+	  $(PDFLATEX) fontanvil.tex $(TSU_V_REDIR)
+	$(AM_V_at)cd doc ; makeindex fontanvil.idx $(TSU_V_REDIR)
+	$(AM_V_at)I=2;$(TSU_V_TEXL) cd doc ; \
+	  $(PDFLATEX) fontanvil.tex $(TSU_V_REDIR)
+	$(AM_V_at)I=3;$(TSU_V_TEXL) cd doc ; \
+	  $(PDFLATEX) fontanvil.tex $(TSU_V_REDIR)
 
 ############################################################################
 
@@ -401,7 +407,7 @@ doc/fontanvil.pdf: $(texfiles) doc/mitsuba.cls \
 MOSTLYCLEANFILES = \
   *~ */*~ \
   fontanvil/fontimage fontanvil/fontlint fontanvil/sfddiff \
-  tests/atconfig \
+  test/atconfig \
   $(MO_FILES) $(noinst_FILES)
   
 mostlyclean-local:

@@ -1,0 +1,19 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/Ambrosia.sfd
+#Make sure we can generate truetype instructions
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"test/fonts/Ambrosia.sfd")
+SetPref("DetectDiagonalStems",1)
+SelectAll()
+AutoHint()
+SetFontOrder(2)
+AutoInstr()
+Generate("ttmp/Ambrosia.ttf")
+GetCoverageCounts()

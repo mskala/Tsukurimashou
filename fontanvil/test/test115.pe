@@ -1,0 +1,17 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/n019003l.pfb
+
+Quit(77) # Needs a missing font file
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"test/fonts/n019003l.pfb");
+SelectAll();
+ReplaceWithReference();
+GetCoverageCounts()
+Quit()

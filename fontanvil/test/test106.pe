@@ -1,0 +1,16 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/OmittedCharBugs.sfd
+#If we had a font with references or kern pairs to a character that did not
+# exist, then we'd get random crashes. (Characters would not exist because
+# they would be empty and would be omitted when saving the sfd).
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Print("A warning about 'Bad kerning' is ok")
+Open(srcdir+"test/fonts/OmittedCharBugs.sfd")
+GetCoverageCounts()

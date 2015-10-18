@@ -666,7 +666,10 @@ FontAnvil.
 
 \texttt{DefaultOtherSubrs(}\texttt{)}
 
-This function may be used without a loaded font.
+Set the global store of ``other subroutines,'' which are fragments of
+PostScript code used for special purposes within PostScript fonts, to its
+default contents specified by Adobe.  This function may be used without a
+loaded font.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -827,7 +830,10 @@ operation may change in some future version.
 
 \texttt{GetEnv(}\textit{arg}\texttt{)}
 
+Return the string value of an environment variable, or an empty string if
+the variable requested does not exist.
 This function may be used without a loaded font.
+In \FFdiff FontForge, requesting a non-existent variable is an error.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

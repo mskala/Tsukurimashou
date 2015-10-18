@@ -1,0 +1,16 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/CaslonMM.sfd
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"test/fonts/CaslonMM.sfd");
+Generate("ttmp/Caslon.mm.pfa")
+Close()
+Open("ttmp/Caslon.mm.pfa")
+GetCoverageCounts()
+Quit()

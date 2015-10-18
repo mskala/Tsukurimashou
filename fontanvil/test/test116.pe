@@ -1,0 +1,15 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/merged.cff
+
+Quit(77) # Needs a missing font file
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"test/fonts/merged.cff")
+GetCoverageCounts()
+Quit()

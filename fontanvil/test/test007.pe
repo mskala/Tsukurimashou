@@ -1,0 +1,22 @@
+#!/usr/local/bin/fontanvil
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"test/fonts/FormalScript.sfd");
+Generate("ttmp/FormalScript.otf","ttf",0x80);
+Close();
+Open("ttmp/FormalScript.otf");
+Close();
+
+Open(srcdir+"test/fonts/dvng10a-crash.sfd");
+Generate("ttmp/Deva.otf","ttf",0x80);
+Close();
+Open("ttmp/Deva.otf");
+Close();
+GetCoverageCounts()
+Quit()

@@ -1,0 +1,15 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/Ambrosia*.sfd
+#Make sure we can generate a font family
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+helper107.pe(srcdir+"test/fonts/Ambrosia.sfd", \
+  srcdir+"test/fonts/AmbrosiaBold.sfd", \
+  srcdir+"test/fonts/AmbrosiaItalic.sfd");
+GetCoverageCounts()

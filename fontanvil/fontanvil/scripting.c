@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: scripting.c 4276 2015-10-18 09:35:56Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3748,8 +3748,7 @@ static void bGetEnv(Context *c) {
    if (c->a.vals[1].type != v_str)
       ScriptError(c, "Bad type for argument");
    if ((env=getenv(c->a.vals[1].u.sval))==NULL)
-      ScriptErrorString(c, "Unknown Preference variable",
-			c->a.vals[1].u.sval);
+     env="";
    c->return_val.type=v_str;
    c->return_val.u.sval=fastrdup(env);
 }

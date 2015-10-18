@@ -28,6 +28,7 @@
 /**********************************************************************/
 
 static struct option long_opts[] = {
+   {"bdd-error-segfault",no_argument,NULL,2},
    {"c-file",required_argument,NULL,'C'},
    {"help",no_argument,NULL,'h'},
    {"h-file",required_argument,NULL,'H'},
@@ -46,6 +47,7 @@ static void usage_message(void) {
 
 int exit_code=-0xDEAD;
 int quiet=0;
+int bdd_error_segfault=0;
 
 int main(int argc,char **argv) {
    int show_version=0,show_help=0;
@@ -54,6 +56,10 @@ int main(int argc,char **argv) {
    /* loop on command-line options */
    while ((c=getopt_long(argc,argv,"C:H:Vhk",long_opts,NULL))!=-1) {
       switch (c) {
+
+       case 2:
+	 bdd_error_segfault=1;
+	 break;
 	 
        case 'C':
 	 if (default_c_file!=NULL)
@@ -95,7 +101,7 @@ int main(int argc,char **argv) {
 	  "License GPLv3: GNU GPL version 3 <http://gnu.org/licenses/gpl-3.0.html>\n"
 	  "This is free software: you are free to change and redistribute it.\n"
 	  "There is NO WARRANTY, to the extent permitted by law.");
-   
+
    if (show_help)
      puts("Usage: " PACKAGE_TARNAME " [OPTION]... [FILE]...\n\n"
 	  "Options:\n"
@@ -104,7 +110,9 @@ int main(int argc,char **argv) {
 	  "  -C, --c-file=<file>       set default C source code file\n"
 	  "  -H, --h-file=<file>       set default header file\n"
 	  "  -k, --keep-failed         do not delete output on failure\n"
-	  "  -q, --quiet               do not give progress reports\n");
+	  "  -q, --quiet               do not give progress reports\n"
+	  "  --bdd-error-segfault      "
+	    "segfault on BDD errors (for debugging)\n");
    
    if (show_version || show_help)
      exit(0);

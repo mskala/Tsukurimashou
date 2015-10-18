@@ -1,0 +1,20 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/OverlapBugs.sfd
+#Needs: fonts/feta20.pfb
+#Make sure remove overlap sort of works...
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+Open(srcdir+"test/fonts/OverlapBugs.sfd")
+SelectAll();
+RemoveOverlap();
+
+Open(srcdir+"test/fonts/feta20.pfb");
+SelectAll();
+RemoveOverlap();
+GetCoverageCounts()

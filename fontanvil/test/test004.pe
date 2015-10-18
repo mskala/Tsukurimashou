@@ -1,0 +1,26 @@
+#!/usr/local/bin/fontanvil
+#Needs: fonts/mingliu.ttc
+# but any other ttc file would do (gulim works just fine).
+# (also needs chunkalloc turned on with 384M memory)
+
+Quit(77) # need a font...
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+#Yes, mingliu doesn't work without the ttf instructions, but that is irrelevant
+#here. I'm just looking for the smallest ttc file I've got.
+
+Print( "...It's ok to get errors about 'Attempt to encode missing glyphs'")
+Print( " or 'Glyph index out of bounds'")
+Open(srcdir+"test/fonts/mingliu.ttc(PMingLiU)");
+Print( "...Read mingliu.ttc(PMingLiU)")
+Generate("ttmp/pmingliu.ttf","bdf");
+Print( "...Generated ttf")
+Close();
+GetCoverageCounts()
+Quit()

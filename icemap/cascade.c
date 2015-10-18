@@ -153,8 +153,9 @@ void gen_cascade(CONTEXT *c) {
    bdd_setmaxincrease(500000);
    bdd_setvarnum(num_bits_in);
    bdd_gbc_hook(NULL);
-   bdd_error_hook(1); /* deliberate segfault! */
-   
+   if (bdd_error_segfault)
+     bdd_error_hook((bddinthandler)1);
+
    /* initialize the BDDs that represent the table */
    keys_bdd=bddfalse;
    result_bdds=(BDD *)malloc(num_bits_out*sizeof(BDD));
@@ -578,7 +579,8 @@ void gen_wide_cascade(CONTEXT *c) {
    bdd_setmaxincrease(500000);
    bdd_setvarnum(num_bits_in);
    bdd_gbc_hook(NULL);
-   bdd_error_hook(1); /* deliberate segfault! */
+   if (bdd_error_segfault)
+     bdd_error_hook((bddinthandler)1);
    
    /* initialize the BDDs that represent the table */
    keys_bdd=bddfalse;
@@ -630,11 +632,14 @@ void gen_wide_cascade(CONTEXT *c) {
 
    /* simplify the BDDs */
    for (i=0;i<num_bits_out;i++) {
-      printf("/* %d ",bdd_nodecount(result_bdds[i]));
+      if (!quiet)
+	printf("Simplifying BDD for bit %d from %d ",
+	       i,bdd_nodecount(result_bdds[i]));
       x=bdd_addref(bdd_simplify(result_bdds[i],keys_bdd));
       bdd_delref(result_bdds[i]);
       result_bdds[i]=x;
-      printf("-> %d */\n",bdd_nodecount(result_bdds[i]));
+      if (!quiet)
+	printf("to %d nodes\n",bdd_nodecount(result_bdds[i]));
    }
 
    /* set up blocks for variable reordering */
@@ -685,7 +690,6 @@ void gen_wide_cascade(CONTEXT *c) {
       /* find the variable on which we want to branch */
       vj=num_bits_in-1;
       for (i=0;i<num_bits_out;i++) {
-	 printf("%d %d\n",i,queue[queue_low].results[i]);
 	 if ((queue[queue_low].results[i]!=bddfalse) &&
 	     (queue[queue_low].results[i]!=bddtrue)) {
 	    j=bdd_var2level(bdd_var(queue[queue_low].results[i]));
@@ -750,8 +754,6 @@ void gen_wide_cascade(CONTEXT *c) {
 
 	 /* prepare a sentinel queue entry (guaranteed to match) */
 	 queue[queue_high].results=child[i];
-	 for (j=0;j<num_bits_out;j++)
-	   printf("q[%d][%d]=%d\n",queue_high,j,queue[queue_high].results[j]);
 	 
 	 /* search for a matching queue entry */
 	 for (j=0;
@@ -773,7 +775,6 @@ void gen_wide_cascade(CONTEXT *c) {
 
       /* proceed to next queue entry */
       queue_low++;
-      printf("%d\n",queue_low);
    }
 
    /* now ready to generate code */

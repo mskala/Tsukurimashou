@@ -175,6 +175,7 @@ void handle_h_write(PARSER_STATE *ps);
 
 extern int exit_code;
 extern int quiet;
+extern int bdd_error_segfault;
 
 /**********************************************************************/
 
