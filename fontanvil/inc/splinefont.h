@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4119 2015-07-30 12:46:27Z mskala $ */
+/* $Id: splinefont.h 4280 2015-10-19 19:09:28Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -4048,6 +4048,8 @@ extern int SSHasClip(SplineSet *ss);
 extern int SSHasDrawn(SplineSet *ss);
 
 extern void GradientFree(struct gradient *grad);
+
+extern struct gradient *GradientCopy(struct gradient *old,real transform[6]);
 
 extern void PatternFree(struct pattern *pat);
 

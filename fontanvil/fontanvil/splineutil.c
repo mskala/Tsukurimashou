@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: splineutil.c 4280 2015-10-19 19:09:28Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -5708,7 +5708,7 @@ void PatternFree(struct pattern *pat) {
    chunkfree(pat, sizeof(struct pattern));
 }
 
-static struct gradient *GradientCopy(struct gradient *old,real transform[6]) {
+struct gradient *GradientCopy(struct gradient *old,real transform[6]) {
    struct gradient *grad=chunkalloc(sizeof(struct gradient));
 
    if (old==NULL)

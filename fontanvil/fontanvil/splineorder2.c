@@ -1,4 +1,4 @@
-/* $Id: splineorder2.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: splineorder2.c 4279 2015-10-19 13:20:55Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1045,6 +1045,16 @@ static SplinePoint *ttfApprox(Spline *ps,SplinePoint *start) {
    }
 
    return (__ttfApprox(ps, 0, 1, start));
+}
+
+SplinePoint *SplineTtfApprox(Spline *ps) {
+      SplinePoint *from;
+   
+      from=chunkalloc(sizeof(SplinePoint));
+      *from=*ps->from;
+      from->hintmask=NULL;
+      ttfApprox(ps,from);
+      return from;
 }
 
 static void ttfCleanup(SplinePoint *from) {

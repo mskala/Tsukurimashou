@@ -152,10 +152,10 @@ AM_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   "-I$(top_srcdir)/fontanvil" "-DSHAREDIR=\"${MY_SHAREDIR}\"" \
   "-DDOCDIR=\"${MY_DOCDIR}\"" \
   $(FREETYPE_CFLAGS) $(GIFLIB_CFLAGS) $(GLIB_CFLAGS) $(LIBPNG_CFLAGS) \
-  $(LIBTIFF_CFLAGS) $(ZLIB_CFLAGS)
+  $(LIBTIFF_CFLAGS) $(LIBXML2_CFLAGS) $(ZLIB_CFLAGS)
 AM_LDFLAGS = \
   $(FREETYPE_LIBS) $(GIFLIB_CFLAGS) $(GLIB_LIBS) $(LIBPNG_LIBS) \
-  $(LIBTIFF_LIBS) $(ZLIB_LIBS)
+  $(LIBTIFF_LIBS) $(LIBXML2_LIBS) $(ZLIB_LIBS)
 AM_LFLAGS = -s -P`basename $* | sed 's,l$$,,'` -olex.yy.c
 
 # needed to work around an Automake macro bug

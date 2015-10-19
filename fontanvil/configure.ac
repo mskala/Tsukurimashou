@@ -303,11 +303,11 @@ AC_ARG_WITH([libunicodenames],
    [Unicode name database [auto]])],
    [],
    [with_libunicodenames=auto])
-AC_ARG_WITH([libxml],
- [AS_HELP_STRING([--with-libxml=PATH],
+AC_ARG_WITH([libxml2],
+ [AS_HELP_STRING([--with-libxml2=PATH],
    [XML file format library [auto]])],
    [],
-   [with_libxml=auto])
+   [with_libxml2=auto])
 #
 # process library enable options
 #
@@ -394,15 +394,15 @@ AS_IF([test '!' "x$with_libuninameslist" = xno],
   [],
   [AC_DEFINE([_NO_LIBUNINAMESLIST],1,[Define if not using libuninameslist.])])
 #
-AC_ARG_VAR([LIBXML_CFLAGS],[C compiler flags for libxml])
-AC_ARG_VAR([LIBXML_LIBS],[linker flags for libxml])
-PKG_CHECK_MODULES([LIBXML],[libxml],[],[with_libxml=no])
-AM_CONDITIONAL([COND_LIBXML],[test '!' "x$with_libxml" = xno])
-AC_SUBST([LIBXML_CFLAGS])
-AC_SUBST([LIBXML_LIBS])
-AS_IF([test '!' "x$with_libxml" = xno],
+AC_ARG_VAR([LIBXML2_CFLAGS],[C compiler flags for libxml2])
+AC_ARG_VAR([LIBXML2_LIBS],[linker flags for libxml2])
+PKG_CHECK_MODULES([LIBXML2],[libxml-2.0],[],[with_libxml2=no])
+AM_CONDITIONAL([COND_LIBXML2],[test '!' "x$with_libxml2" = xno])
+AC_SUBST([LIBXML2_CFLAGS])
+AC_SUBST([LIBXML2_LIBS])
+AS_IF([test '!' "x$with_libxml2" = xno],
   [],
-  [AC_DEFINE([_NO_LIBXML],1,[Define if not using libxml.])])
+  [AC_DEFINE([_NO_LIBXML],1,[Define if not using libxml2.])])
 #
 ############################################################################
 #
@@ -727,8 +727,8 @@ AS_ECHO_N(["libuninameslist   "])
      AS_ECHO_N(["     https://github.com/fontforge/libuninameslist/"])],
     [TSU_COLOURISE([yes],[2])])
   AS_ECHO([])
-AS_ECHO_N(["libxml            "])
-  AS_IF([test "x$with_libxml" = "xno"],
+AS_ECHO_N(["libxml2           "])
+  AS_IF([test "x$with_libxml2" = "xno"],
     [TSU_COLOURISE([no],[3])
      AS_ECHO_N(["     http://xmlsoft.org/"])],
     [TSU_COLOURISE([yes],[2])])

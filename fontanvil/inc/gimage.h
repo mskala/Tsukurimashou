@@ -1,4 +1,4 @@
-/* $Id: gimage.h 4031 2015-06-17 18:38:53Z mskala $ */
+/* $Id: gimage.h 4280 2015-10-19 19:09:28Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -192,6 +192,8 @@ extern Color GDrawColorBrighten(Color col, int by);
 extern int GImageWriteGImage(GImage * gi, char *filename);
 
 extern int GImageWriteBmp(GImage * gi, char *filename);
+
+extern GImage *GImageRead_Bmp(AFILE *file);
 
 extern GImage *GImageReadBmp(char *filename);
 

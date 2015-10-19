@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: ufo.c 4279 2015-10-19 13:20:55Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1969,10 +1969,13 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 	       sf->pfminfo.weight=strtol((char *) valname, &end, 10);
 	    else if (xmlStrcmp(keyname + 11, (xmlChar *) "VendorID")==0) {
 	       const int os2_vendor_sz=sizeof(sf->pfminfo.os2_vendor);
-	       const int valname_len=c_strlen(valname);
+	       int valname_len;
 
-	       if (valname && valname_len <= os2_vendor_sz)
-		  strncpy(sf->pfminfo.os2_vendor, valname, valname_len);
+	       if (valname &&
+		   (valname_len=strlen((const char *)valname))
+		   <=os2_vendor_sz)
+		  strncpy(sf->pfminfo.os2_vendor,(const char *)valname,
+			  valname_len);
 	       char *temp=sf->pfminfo.os2_vendor + os2_vendor_sz - 1;
 
 	       while (*temp==0 && temp >= sf->pfminfo.os2_vendor)
