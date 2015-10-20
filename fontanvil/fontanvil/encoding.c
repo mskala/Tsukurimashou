@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: encoding.c 4288 2015-10-20 13:06:01Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,12 +35,28 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <gfile.h>
-#include "encoding.h"
 #include "ffglib.h"
 #include <glib/gprintf.h>
 
 #include "macenctab.h"
 #include "nonmactab.h"
+
+struct cidaltuni {
+   struct cidaltuni *next;
+   int uni;
+   int cid;
+};
+
+struct cidmap {
+   char *registry, *ordering;
+   int supplement, maxsupple;
+   int cidmax;			/* Max cid found in the charset */
+   int namemax;			/* Max cid with useful info */
+   uint32_t *unicode;
+   char **name;
+   struct cidaltuni *alts;
+   struct cidmap *next;
+};
 
 typedef int (*EncFunc) (int);
 

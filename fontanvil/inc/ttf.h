@@ -1,4 +1,4 @@
-/* $Id: ttf.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: ttf.h 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2001-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -807,9 +807,6 @@ extern void otf_dump_dummydsig(struct alltabs *at, SplineFont *sf);
 
 extern int gdefclass(SplineChar * sc);
 
-    /* Apple Advanced Typography Tables */
-extern void aat_dumpacnt(struct alltabs *at, SplineFont *sf);
-
 extern void ttf_dumpkerns(struct alltabs *at, SplineFont *sf);
 
 extern void aat_dumplcar(struct alltabs *at, SplineFont *sf);
@@ -868,8 +865,6 @@ extern int TTF__getcvtval(SplineFont *sf, int val);
 
 extern int TTF_getcvtval(SplineFont *sf, int val);
 
-extern void SCinitforinstrs(SplineChar * sc);
-
 extern int SSAddPoints(SplineSet * ss, int ptcnt, BasePoint * bp,
 		       char *flags);
 extern int Macable(SplineFont *sf, OTLookup * otl);
@@ -882,8 +877,6 @@ extern uint16_t *ClassesFromNames(SplineFont *sf, char **classnames,
 				SplineChar *** glyphs, int apple_kc);
 extern SplineChar **SFGlyphsFromNames(SplineFont *sf, char *names);
 
-
-extern void AnchorClassOrder(SplineFont *sf);
 
 extern SplineChar **EntryExitDecompose(SplineFont *sf, AnchorClass * ac,
 				       struct glyphinfo *gi);

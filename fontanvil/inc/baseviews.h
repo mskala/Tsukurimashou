@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: baseviews.h 4282 2015-10-20 07:48:12Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -303,52 +303,13 @@ enum fvformats { fv_bdf, fv_ttf, fv_pk, fv_pcf, fv_mac, fv_win, fv_palm,
    fv_pythonbase=0x100
 };
 
-extern enum undotype CopyUndoType(void);
-
-extern int CopyContainsSomething(void);
-
-extern int CopyContainsBitmap(void);
-
-extern int CopyContainsVectors(void);
-
 extern const Undoes *CopyBufferGet(void);
 
 extern RefChar *CopyContainsRef(SplineFont *);
 
-extern char **CopyGetPosSubData(enum possub_type *type,
-				SplineFont ** copied_from, int pst_depth);
-extern void CopyReference(SplineChar * sc);
-
-extern void SCCopyLookupData(SplineChar * sc);
-
 extern void PasteRemoveSFAnchors(SplineFont *);
 
-extern void PasteAnchorClassMerge(SplineFont *sf, AnchorClass * into,
-				  AnchorClass * from);
 extern void PasteRemoveAnchorClass(SplineFont *sf, AnchorClass * dying);
-
-/**
- * Serialize and undo into a string.
- * You must free() the returned string.
- */
-extern char *UndoToString(SplineChar * sc, Undoes * undo);
-
-/**
- * Dump a list of undos for a splinechar starting at the given 'undo'.
- * msg is used as a header message so that a dump at a particular time stands
- * out from one that occurs later in the code.
- */
-extern void dumpUndoChain(char *msg, SplineChar * sc, Undoes * undo);
-
-extern SplineSet *ClipBoardToSplineSet(void);
-
-extern void BCCopySelected(BDFChar * bc, int pixelsize, int depth);
-
-extern void BCCopyReference(BDFChar * bc, int pixelsize, int depth);
-
-extern void PasteToBC(BDFChar * bc, int pixelsize, int depth);
-
-extern void FVCopyWidth(FontViewBase * fv, enum undotype ut);
 
 extern void FVCopyAnchors(FontViewBase * fv);
 enum fvcopy_type { ct_fullcopy, ct_reference, ct_lookups, ct_unlinkrefs };
@@ -367,10 +328,6 @@ extern void FVClear(FontViewBase * fv);
 
 extern void FVUnlinkRef(FontViewBase * fv);
 
-extern void FVUndo(FontViewBase * fv);
-
-extern void FVRedo(FontViewBase * fv);
-
 extern void FVJoin(FontViewBase * fv);
 
 extern void FVBuildDuplicate(FontViewBase * fv);
@@ -379,25 +336,10 @@ extern void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
 		    uint8_t * sel, enum fvtrans_flags);
 extern void FVTransFunc(void *_fv, real transform[6], int otype,
 			BVTFunc * bvts, enum fvtrans_flags);
-extern void FVReencode(FontViewBase * fv, Encoding * enc);
 
 extern void FVOverlap(FontViewBase * fv, enum overlap_type ot);
 
 extern void FVAddExtrema(FontViewBase * fv, int force_adding);
-
-extern void FVCorrectDir(FontViewBase * fv);
-
-extern void FVRound2Int(FontViewBase * fv, real factor);
-
-extern void FVCanonicalStart(FontViewBase * fv);
-
-extern void FVCanonicalContours(FontViewBase * fv);
-
-extern void FVCluster(FontViewBase * fv);
-
-extern void CIDSetEncMap(FontViewBase * fv, SplineFont *new);
-
-extern void FVInsertInCID(FontViewBase * fv, SplineFont *sf);
 
 extern void FVAutoHint(FontViewBase * fv);
 
@@ -412,8 +354,6 @@ extern void FVAutoInstr(FontViewBase * fv);
 extern void FVClearInstrs(FontViewBase * fv);
 
 extern void FVClearHints(FontViewBase * fv);
-
-extern void SCAutoTrace(SplineChar * sc, int layer, int ask);
 
 extern char *FindAutoTraceName(void);
 
@@ -439,9 +379,6 @@ extern int FVImportImages(FontViewBase * fv, char *path, int isimage,
 			  int toback, int flags);
 extern int FVImportImageTemplate(FontViewBase * fv, char *path, int isimage,
 				 int toback, int flags);
-extern void ScriptPrint(FontViewBase * fv, int type, int32_t * pointsizes,
-			char *samplefile, unichar_t * sample,
-			char *outputfile);
 extern int FVBParseSelectByPST(FontViewBase * fv, struct lookup_subtable *sub,
 			       int search_type);
 extern int SFScaleToEm(SplineFont *sf, int ascent, int descent);
@@ -454,12 +391,6 @@ extern void VrTrans(struct vr *vr, real transform[6]);
 
 extern int SFNLTrans(FontViewBase * fv, char *x_expr, char *y_expr);
 
-extern int SSNLTrans(SplineSet * ss, char *x_expr, char *y_expr);
-
-extern int SCNLTrans(SplineChar * sc, int layer, char *x_expr, char *y_expr);
-
-extern void FVPointOfView(FontViewBase * fv, struct pov_data *);
-
 extern void FVStrokeItScript(void *fv, StrokeInfo * si, int pointless);
 
 extern void FVOutline(struct fontviewbase *fv, real width);
@@ -468,13 +399,9 @@ extern void FVInline(struct fontviewbase *fv, real width, real inset);
 
 extern void FVShadow(struct fontviewbase *fv, real angle, real outline_width,
 		     real shadow_length, int wireframe);
-extern void CI_Init(struct counterinfo *ci, SplineFont *sf);
 
 extern void FVEmbolden(struct fontviewbase *fv, enum embolden_type type,
 		       struct lcg_zones *zones);
-extern void FVCondenseExtend(struct fontviewbase *fv, struct counterinfo *ci);
-
-extern void ScriptSCCondenseExtend(SplineChar * sc, struct counterinfo *ci);
 
 struct smallcaps {
    double lc_stem_width, uc_stem_width;
@@ -536,36 +463,20 @@ struct genericchange {
 
 extern void FVAddSmallCaps(FontViewBase * fv,
 			   struct genericchange *genchange);
-extern void FVGenericChange(FontViewBase * fv,
-			    struct genericchange *genchange);
-extern void CVGenericChange(CharViewBase * cv,
-			    struct genericchange *genchange);
 
 struct xheightinfo {
    double xheight_current, xheight_desired;
    double serif_height;
 };
 
-extern void InitXHeightInfo(SplineFont *sf, int layer,
-			    struct xheightinfo *xi);
-extern void ChangeXHeight(FontViewBase * fv, CharViewBase * cv,
-			  struct xheightinfo *xi);
-extern SplineSet *SSControlStems(SplineSet * ss, double stemwidthscale,
-				 double stemheightscale, double hscale,
-				 double vscale, double xheight);
 extern void MakeItalic(FontViewBase * fv, CharViewBase * cv, ItalicInfo * ii);
 
-extern int FVReplaceAll(FontViewBase * fv, SplineSet * find, SplineSet * rpl,
-			double fudge, int flags);
 extern void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge);
-
-extern void FVCorrectReferences(FontViewBase * fv);
 
 extern void _FVSimplify(FontViewBase * fv, struct simplifyinfo *smpl);
 
 extern void UnlinkThisReference(FontViewBase * fv, SplineChar * sc,
 				int layer);
-extern FontViewBase *ViewPostScriptFont(char *filename, int openflags);
 
 extern void FVBuildAccent(FontViewBase * fv, int onlyaccents);
 
@@ -575,17 +486,9 @@ extern void FVRemoveVKerns(FontViewBase * fv);
 
 extern void FVVKernFromHKern(FontViewBase * fv);
 
-extern void FVAddUnencoded(FontViewBase * fv, int cnt);
-
-extern void FVRemoveUnused(FontViewBase * fv);
-
-extern void FVCompact(FontViewBase * fv);
-
 extern void FVDetachGlyphs(FontViewBase * fv);
 
 extern void FVDetachAndRemoveGlyphs(FontViewBase * fv);
-
-extern int AutoWidthScript(FontViewBase * fv, int spacing);
 
 extern int AutoKernScript(FontViewBase * fv, int spacing, int threshold,
 			  struct lookup_subtable *sub, char *kernfile);
@@ -596,14 +499,11 @@ extern void DictionaryFree(struct dictionary *dica);
 
 extern void BCTrans(BDFFont * bdf, BDFChar * bc, BVTFunc * bvts,
 		    FontViewBase * fv);
-extern void BCSetPoint(BDFChar * bc, int x, int y, int color);
 
 extern void BCTransFunc(BDFChar * bc, enum bvtools type, int xoff, int yoff);
 
 extern void skewselect(BVTFunc * bvtf, real t);
 
-extern BDFFloat *BDFFloatCreate(BDFChar * bc, int xmin, int xmax, int ymin,
-				int ymax, int clear);
 extern BDFFloat *BDFFloatCopy(BDFFloat * sel);
 
 extern BDFFloat *BDFFloatConvert(BDFFloat * sel, int newdepth, int olddepth);
@@ -618,67 +518,8 @@ extern void BCUnlinkThisReference(struct fontviewbase *fv, BDFChar * bc);
 
 extern int CVLayer(CharViewBase * cv);
 
-extern Undoes *CVPreserveStateHints(CharViewBase * cv);
-
-extern Undoes *CVPreserveState(CharViewBase * cv);
-
-extern Undoes *_CVPreserveTState(CharViewBase * cv, PressedOn *);
-
-extern Undoes *CVPreserveWidth(CharViewBase * cv, int width);
-
-extern Undoes *CVPreserveVWidth(CharViewBase * cv, int vwidth);
-
-extern void CVDoRedo(CharViewBase * cv);
-
-extern void CVDoUndo(CharViewBase * cv);
-
-extern void _CVRestoreTOriginalState(CharViewBase * cv, PressedOn * p);
-
-extern void _CVUndoCleanup(CharViewBase * cv, PressedOn * p);
-
-extern void CVRemoveTopUndo(CharViewBase * cv);
-
-extern void CopySelected(CharViewBase * cv, int doanchors);
-
-extern void CVCopyGridFit(CharViewBase * cv);
-
-extern void CopyWidth(CharViewBase * cv, enum undotype);
-
-extern void PasteToCV(CharViewBase * cv);
-
-extern void CVYPerspective(CharViewBase * cv, bigreal x_vanish,
-			   bigreal y_vanish);
-extern void ScriptSCEmbolden(SplineChar * sc, int layer,
-			     enum embolden_type type,
-			     struct lcg_zones *zones);
-extern void CVEmbolden(CharViewBase * cv, enum embolden_type type,
-		       struct lcg_zones *zones);
 extern void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc,
 			     int layer, int do_undoes);
-extern void SCClearSelPt(SplineChar * sc);
-
-extern void SC_MoreLayers(SplineChar *, Layer * old);
-
-extern void SCLayersChange(SplineChar * sc);
-
-extern void SFLayerChange(SplineFont *sf);
-
-extern void SCTile(SplineChar * sc, int layer);
-
-extern void _CVMenuMakeLine(CharViewBase * cv, int do_arc,
-			    int ellipse_to_back);
-    /* Ellipse to back is a debugging flag and adds the generated ellipse to */
-    /*  the background layer so we can look at it. I thought it might actually */
-    /*  be useful, so I left it in. Activated with the Alt key in the menu */
-
-extern void MVCopyChar(FontViewBase * fv, BDFFont * bdf, SplineChar * sc,
-		       enum fvcopy_type fullcopy);
-extern void PasteIntoMV(FontViewBase * fv, BDFFont * bdf, SplineChar * sc,
-			int doclear);
-
-extern int HasLicense(SplineFont *, AFILE *);
-
-extern int OFLibUploadFont(OFLibData *);
 
 enum search_flags { sv_reverse=0x1, sv_flips=0x2, sv_rotate=0x4,
    sv_scale=0x8, sv_endpoints=0x10
@@ -722,10 +563,6 @@ typedef struct searchdata {
    int last_gid;
 } SearchData;
 
-extern struct searchdata *SDFromContour(FontViewBase * fv, SplineSet * find,
-					double fudge, int flags);
-extern SplineChar *SDFindNext(struct searchdata *sv);
-
 extern struct python_import_export {
    struct _object *import;	/* None becomes NULL */
    struct _object *export;	/* None becomes NULL */
@@ -735,15 +572,7 @@ extern struct python_import_export {
    char *all_extensions;
 } *py_ie;
 
-extern void PyFF_SCExport(SplineChar * sc, int ie_index, char *filename,
-			  int layer);
-extern void PyFF_SCImport(SplineChar * sc, int ie_index, char *filename,
-			  int layer, int clear);
-extern void PyFF_InitFontHook(FontViewBase * fv);
-
 extern void LookupInit(void);
-
-extern int UserFeaturesDiffer(void);
 
 extern uint32_t *StdFeaturesOfScript(uint32_t script);
 
@@ -776,46 +605,12 @@ extern void FVRevert(FontViewBase * fv);
 
 extern void FVRevertBackup(FontViewBase * fv);
 
-extern void FVRevertGlyph(FontViewBase * fv);
-
 extern int MMReblend(FontViewBase * fv, MMSet * mm);
 
 extern FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
 					 real blends[MmMax], int tonew);
-extern void FVB_MakeNamelist(FontViewBase * fv, AFILE *file);
-
-/*
- * Code which wants the fontview to redraw its title can call here to
- * have that happen.
- */
-extern void FVTitleUpdate(FontViewBase * fv);
 
 extern void AutoWidth2(FontViewBase * fv, int separation, int min_side,
 		       int max_side, int chunk_height, int loop_cnt);
-extern void GuessOpticalOffset(SplineChar * sc, int layer, real * _loff,
-			       real * _roff, int chunk_height);
-extern void AutoKern2(SplineFont *sf, int layer, SplineChar ** left,
-		      SplineChar ** right, struct lookup_subtable *into,
-		      int separation, int min_kern, int from_closest_approach,
-		      int only_closer, int chunk_height,
-		      void (*addkp) (void *data, SplineChar * left,
-				     SplineChar * r, int off), void *data);
-extern void AutoKern2NewClass(SplineFont *sf, int layer, char **leftnames,
-			      char **rightnames, int lcnt, int rcnt,
-			      void (*kcAddOffset) (void *data, int left_index,
-						   int right_index,
-						   int offset), void *data,
-			      int separation, int min_kern,
-			      int from_closest_approach, int only_closer,
-			      int chunk_height);
-extern void AutoKern2BuildClasses(SplineFont *sf, int layer,
-				  SplineChar ** leftglyphs,
-				  SplineChar ** rightglyphs,
-				  struct lookup_subtable *sub, int separation,
-				  int min_kern, int touching, int only_closer,
-				  int autokern, real good_enough);
-
-extern void MVSelectFirstKerningTable(struct metricsview *mv);
-
 
 #endif

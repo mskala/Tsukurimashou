@@ -1,4 +1,4 @@
-/* $Id: intl.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: intl.h 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -71,8 +71,6 @@
 #   define S_(str) sgettext(str)
 /* For messages in the shortcuts domain */
 #   define H_(str)		(str)
-
-extern void GResourceUseGetText(void);
 
 char *sgettext(const char *msgid);
 

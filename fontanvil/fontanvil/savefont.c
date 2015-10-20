@@ -1,4 +1,4 @@
-/* $Id: savefont.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: savefont.c 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -31,7 +31,6 @@
 #include "gfile.h"
 #include "gresource.h"
 #include "utype.h"
-#include "gio.h"
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>

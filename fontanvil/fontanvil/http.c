@@ -1,4 +1,4 @@
-/* $Id: http.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: http.c 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -29,7 +29,6 @@
 #include "fontanvilvw.h"
 #include <ustring.h>
 #include <utype.h>
-#include <gio.h>
 
 #if defined(__MINGW32__)
 AFILE *URLToTempFile(char *url, void *_lock) {

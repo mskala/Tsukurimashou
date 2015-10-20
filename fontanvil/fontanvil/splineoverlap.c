@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 4155 2015-09-02 07:43:27Z mskala $ */
+/* $Id: splineoverlap.c 4284 2015-10-20 08:52:37Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,8 +35,6 @@
 # include <ieeefp.h>		/* Solaris defines isnan in ieeefp rather than math.h */
 #endif
 #include <stdarg.h>
-
-#include <gwidget.h>		/* For PostNotice */
 
 /* First thing we do is divide each spline into a set of sub-splines each of */
 /*  which is monotonic in both x and y (always increasing or decreasing)     */

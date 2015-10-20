@@ -1,4 +1,4 @@
-/* $Id: giomime.c 2936 2014-03-10 18:14:07Z mskala $ */
+/* $Id: giomime.c 4286 2015-10-20 10:46:56Z mskala $ */
 //////////////////////////////////////////////////
 // The below code is from sortsmill
 //
@@ -19,8 +19,6 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <glib.h>
-#include <gio/gio.h>
-#include "gio.h"
 #include "ustring.h"
 
 

@@ -1,4 +1,4 @@
-/* $Id: gresource.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: gresource.h 4285 2015-10-20 09:10:39Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -29,7 +29,7 @@
 #ifndef _GRESOURCE_H
 #   define _GRESOURCE_H
 
-#   include "gdraw.h"
+#   include "gimage.h"
 
 enum res_type { rt_int, rt_double, rt_bool /* int */ , rt_color, rt_string };
 

@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: cvundoes.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -211,7 +211,7 @@ static void FixupRefChars(SplineChar *sc,RefChar *urefs,int layer) {
 	 else
 	    cprev->next=urefs;
 	 cprev=urefs;
-	 SCReinstanciateRefChar(sc, urefs, layer);
+	 SCReinstantiateRefChar(sc, urefs, layer);
 	 SCMakeDependent(sc, urefs->sc);
 	 urefs=unext;
       }
@@ -228,7 +228,7 @@ static void FixupRefChars(SplineChar *sc,RefChar *urefs,int layer) {
       else
 	 cprev->next=urefs;
       while (urefs != NULL) {
-	 SCReinstanciateRefChar(sc, urefs, layer);
+	 SCReinstantiateRefChar(sc, urefs, layer);
 	 SCMakeDependent(sc, urefs->sc);
 	 urefs=urefs->next;
       }
@@ -1160,7 +1160,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 					  transform, tpt_AllPoints);
 	      for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next) {
 		 ref->transform[4] += width;
-		 SCReinstanciateRefChar(sc, ref, layer);
+		 SCReinstantiateRefChar(sc, ref, layer);
 	      }
 	   } else {
 	      xoff=sc->width;
@@ -1304,7 +1304,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 		 new->sc=rsc;
 		 new->next=sc->layers[layer].refs;
 		 sc->layers[layer].refs=new;
-		 SCReinstanciateRefChar(sc, new, layer);
+		 SCReinstantiateRefChar(sc, new, layer);
 		 SCMakeDependent(sc, rsc);
 	      } else
 		PasteNonExistantRefCheck(sc, paster, refs, refstate);

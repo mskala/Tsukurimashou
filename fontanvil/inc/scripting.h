@@ -1,4 +1,4 @@
-/* $Id: scripting.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: scripting.h 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -115,13 +115,6 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
  /* Returns 1 if the addition was successful, 2 if it replaced a previous func */
  /* Returns 0 on failure (ie. if it attempts to replace a builtin function) */
 typedef void (*UserDefScriptFunc) (Context *);
-
-extern int AddScriptingCommand(char *name, UserDefScriptFunc func,
-			       int needs_font);
-
- /* Returns whether a user defined scripting command already exists with the */
- /*  given name */
-extern UserDefScriptFunc HasUserScriptingCommand(char *name);
 
  /* Various error routines. */
 void ScriptError(Context * c, const char *msg);

@@ -1,4 +1,4 @@
-/* $Id: dumpbdf.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: dumpbdf.c 4285 2015-10-20 09:10:39Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -28,7 +28,7 @@
  */
 #include "fontanvil.h"
 #include "splinefont.h"
-#include <gdraw.h>		/* for the defn of GClut for greymaps */
+#include <gimage.h>		/* for the defn of GClut for greymaps */
 #include <string.h>
 #include <ustring.h>
 #include <utype.h>

@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4280 2015-10-19 19:09:28Z mskala $ */
+/* $Id: splineutil.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2043,7 +2043,7 @@ void SCMakeDependent(SplineChar * dependent, SplineChar * base) {
    }
 }
 
-static void InstanciateReference(SplineFont *sf,RefChar *topref,
+static void InstantiateReference(SplineFont *sf,RefChar *topref,
 				 RefChar * refs, real transform[6],
 				 SplineChar * dsc, int layer) {
    real trans[6];
@@ -2092,7 +2092,7 @@ static void InstanciateReference(SplineFont *sf,RefChar *topref,
 	 rf->transform[5] * transform[2] + transform[4];
       trans[5]=rf->transform[4] * transform[1] +
 	 rf->transform[5] * transform[3] + transform[5];
-      InstanciateReference(sf, topref, rf, trans, rsc, layer);
+      InstantiateReference(sf, topref, rf, trans, rsc, layer);
    }
    rsc->ticked=false;
 
@@ -2341,11 +2341,11 @@ static void TransByFontMatrix(SplineFont *sf,real fontmatrix[6]) {
       if ((sc=sf->glyphs[i]) != NULL) {
 	 for (refs=sc->layers[ly_fore].refs; refs != NULL;
 	      refs=refs->next)
-	    SCReinstanciateRefChar(sc, refs, ly_fore);
+	    SCReinstantiateRefChar(sc, refs, ly_fore);
       }
 }
 
-void SFInstanciateRefs(SplineFont *sf) {
+void SFInstantiateRefs(SplineFont *sf) {
    int i, layer;
    RefChar *refs, *next, *pr;
 
@@ -2362,7 +2362,7 @@ void SFInstanciateRefs(SplineFont *sf) {
 		 refs=next) {
 	       next=refs->next;
 	       sc->ticked=true;
-	       InstanciateReference(sf, refs, refs, refs->transform, sc,
+	       InstantiateReference(sf, refs, refs, refs->transform, sc,
 				    layer);
 	       if (refs->sc != NULL) {
 		  SplineSetFindBounds(refs->layers[0].splines, &refs->bb);
@@ -2481,7 +2481,7 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
 	 /* SCLigDefault(sf->glyphs[i]); *//* Also reads from AFM file, but it probably doesn't exist */
       }
    }
-   SFInstanciateRefs(sf);
+   SFInstantiateRefs(sf);
    if (fd->metrics != NULL) {
       for (i=0; i < fd->metrics->next; ++i) {
 	 int width=strtol(fd->metrics->values[i], NULL, 10);
@@ -2983,7 +2983,7 @@ void RefCharFindBounds(RefChar * rf) {
    rf->bb.maxy += extra;
 }
 
-void SCReinstanciateRefChar(SplineChar * sc, RefChar * rf, int layer) {
+void SCReinstantiateRefChar(SplineChar * sc, RefChar * rf, int layer) {
    SplinePointList *new, *last;
    RefChar *refs;
    int i, j;

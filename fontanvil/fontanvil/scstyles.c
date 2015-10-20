@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: scstyles.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2961,7 +2961,7 @@ static void BuildSCLigatures(SplineChar *sc_sc,SplineChar *cap_sc,
 	 width += rsc->width;
 	 r->next=NULL;
 	 SCMakeDependent(sc_sc, rsc);
-	 SCReinstanciateRefChar(sc_sc, r, layer);
+	 SCReinstantiateRefChar(sc_sc, r, layer);
 	 if (rlast==NULL)
 	    sc_sc->layers[layer].refs=r;
 	 else
@@ -3129,7 +3129,7 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 			genchange->use_vert_mapping ? genchange->
 			v_scale : genchange->vcounter_scale;
 		     SCMakeDependent(sc_sc, rsc);
-		     SCReinstanciateRefChar(sc_sc, r, fv->active_layer);
+		     SCReinstantiateRefChar(sc_sc, r, fv->active_layer);
 		     if (rlast==NULL)
 			sc_sc->layers[fv->active_layer].refs=r;
 		     else
@@ -6696,7 +6696,7 @@ static void ItalReplaceWithReferenceTo(SplineChar *sc,int layer,int uni) {
    newref->layer_cnt=0;
    newref->sc=replacement;
    sc->layers[layer].refs=newref;
-   SCReinstanciateRefChar(sc, newref, layer);
+   SCReinstantiateRefChar(sc, newref, layer);
    SCMakeDependent(sc, replacement);
 }
 
@@ -6724,7 +6724,7 @@ static void ItalReplaceWithRotated(SplineChar *sc,int layer,int uni,
    newref->layer_cnt=0;
    newref->sc=replacement;
    sc->layers[layer].refs=newref;
-   SCReinstanciateRefChar(sc, newref, layer);
+   SCReinstantiateRefChar(sc, newref, layer);
    SCMakeDependent(sc, replacement);
 }
 

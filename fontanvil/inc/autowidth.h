@@ -1,4 +1,4 @@
-/* $Id: autowidth.h 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: autowidth.h 4282 2015-10-20 07:48:12Z mskala $ */
 
 struct charone {
    real lbearing, rmax;
@@ -50,8 +50,6 @@ typedef struct widthinfo {
 } WidthInfo;
 
 #define NOTREACHED	-9999.0
-
-extern void AW_AutoWidth(WidthInfo * wi);
 
 extern SplineFont *aw_old_sf;
 

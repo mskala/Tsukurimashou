@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: sfd.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -30,14 +30,13 @@
 #include "splinefont.h"
 #include "baseviews.h"
 #include "views.h"
-#include <gdraw.h>
+#include <gimage.h>
 #include <ustring.h>
 #include <math.h>
 #include <utype.h>
 #include <unistd.h>
 #include <locale.h>
 #include <gfile.h>
-#include <gwidget.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -5248,7 +5247,7 @@ static void SFDFixupRef(SplineChar *sc,RefChar *ref,int layer) {
 	    SFDFixupRef(ref->sc, rf, layer);
       }
    }
-   SCReinstanciateRefChar(sc, ref, layer);
+   SCReinstantiateRefChar(sc, ref, layer);
    SCMakeDependent(sc, ref->sc);
 }
 

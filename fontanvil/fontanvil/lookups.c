@@ -1,4 +1,4 @@
-/* $Id: lookups.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: lookups.c 4288 2015-10-20 13:06:01Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,7 +35,14 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "ttf.h"
-#include "lookups.h"
+
+struct sllk {
+      uint32_t script;
+      int cnt, max;
+      OTLookup **lookups;
+      int lcnt, lmax;
+      uint32_t *langs;
+};
 
 struct opentype_feature_friendlynames friendlies[]={
    {CHR('a', 'a', 'l', 't'), "aalt", N_("Access All Alternates"),

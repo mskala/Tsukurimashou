@@ -1,4 +1,4 @@
-/* $Id: fvmetrics.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: fvmetrics.h 4284 2015-10-20 08:52:37Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -44,8 +44,4 @@ typedef struct createwidthdata {
    SplineChar *_sc;
 } CreateWidthData;
 
-extern void CVDoit(CreateWidthData * wd);
-
 extern void FVDoit(CreateWidthData * wd);
-
-extern void GenericVDoit(CreateWidthData * wd);

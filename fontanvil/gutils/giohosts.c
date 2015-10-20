@@ -1,4 +1,4 @@
-/* $Id: giohosts.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: giohosts.c 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -25,10 +25,14 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "giofuncP.h"
+#include "fontanvil.h"
 #include "gfile.h"
 #include "ustring.h"
 #include "utype.h"
+
+#   ifdef HAVE_PTHREAD_H
+#      include <pthread.h>
+#   endif
 
 #if !defined(__MINGW32__)
 #   include <netdb.h>

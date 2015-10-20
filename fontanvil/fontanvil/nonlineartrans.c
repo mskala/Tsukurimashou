@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: nonlineartrans.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -742,7 +742,7 @@ void _SFNLTrans(FontViewBase * fv, struct context *c) {
 	 /* A reference doesn't really work after a non-linear transform */
 	 /*  but let's do the obvious thing */
 	 for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next)
-	    SCReinstanciateRefChar(sc, ref, layer);
+	    SCReinstantiateRefChar(sc, ref, layer);
 	 SCCharChangedUpdate(sc, fv->active_layer, true);
       }
 }

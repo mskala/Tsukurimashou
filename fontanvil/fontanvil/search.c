@@ -1,4 +1,4 @@
-/* $Id: search.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: search.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1166,7 +1166,7 @@ static void DoReplaceFull(SplineChar *sc,SearchData *s) {
       new->next=sc->layers[layer].refs;
       new->selected=true;
       sc->layers[layer].refs=new;
-      SCReinstanciateRefChar(sc, new, layer);
+      SCReinstantiateRefChar(sc, new, layer);
       SCMakeDependent(sc, new->sc);
       if (sc->layers[layer].order2 &&
 	  !sc->layers[layer].background &&

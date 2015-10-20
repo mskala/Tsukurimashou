@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: nonlineartrans.h 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -79,7 +79,4 @@ extern struct expr *nlt_parseexpr(struct context *c, char *str);
 
 extern void nlt_exprfree(struct expr *e);
 
-extern void CVNLTrans(CharViewBase * cv, struct context *c);
-
-extern void SPLPoV(SplineSet * spl, struct pov_data *pov, int only_selected);
 #endif

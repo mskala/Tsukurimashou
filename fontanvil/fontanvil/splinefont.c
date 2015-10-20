@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: splinefont.c 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -36,7 +36,6 @@
 #include <sys/stat.h>
 #include <gfile.h>
 #include <time.h>
-#include "unicoderange.h"
 #include "psfont.h"
 #include <locale.h>
 
@@ -249,10 +248,6 @@ SplineChar *SFMakeChar(SplineFont *sf, EncMap * map, int enc) {
    return (_SFMakeChar(sf, map, enc));
 }
 
-struct unicoderange specialnames[]={
-   UNICODERANGE_EMPTY
-};
-
 int NameToEncoding(SplineFont *sf, EncMap * map, const char *name) {
    int enc, uni, i, ch;
    char *end, *freeme=NULL;
@@ -306,13 +301,6 @@ int NameToEncoding(SplineFont *sf, EncMap * map, const char *name) {
    } else {
       if (enc==-1) {
 	 uni=UniFromName(name, sf->uni_interp, map->enc);
-	 if (uni < 0) {
-	    for (i=0; specialnames[i].name != NULL; ++i)
-	       if (strcmp(name, specialnames[i].name)==0) {
-		  uni=specialnames[i].first;
-		  break;
-	       }
-	 }
 	 if (uni < 0 && name[1]=='\0')
 	    uni=name[0];
       }

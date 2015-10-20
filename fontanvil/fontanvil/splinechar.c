@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: splinechar.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -531,7 +531,7 @@ void SCCopyLayerToLayer(SplineChar * sc, int from, int to, int doclear) {
       oldref->next=ref=RefCharsCopyState(sc, from);
    }
    for (; ref != NULL; ref=ref->next) {
-      SCReinstanciateRefChar(sc, ref, to);
+      SCReinstantiateRefChar(sc, ref, to);
       SCMakeDependent(sc, ref->sc);
    }
    SCCharChangedUpdate(sc, to, true);
@@ -883,7 +883,7 @@ void SCOrderAP(SplineChar * sc) {
 
 void UnlinkThisReference(FontViewBase * fv, SplineChar * sc, int layer) {
    /* We are about to clear out sc. But somebody refers to it and that we */
-   /*  aren't going to delete. So (if the user asked us to) instanciate sc */
+   /*  aren't going to delete. So (if the user asked us to) instantiate sc */
    /*  into all characters which refer to it and which aren't about to be */
    /*  cleared out */
    struct splinecharlist *dep, *dnext;
@@ -1907,7 +1907,7 @@ void TTFPointMatches(SplineChar * sc, int layer, int top) {
 		|| ref->transform[5] != there.y - here.y) {
 	       ref->transform[4]=there.x - here.x;
 	       ref->transform[5]=there.y - here.y;
-	       SCReinstanciateRefChar(sc, ref, layer);
+	       SCReinstantiateRefChar(sc, ref, layer);
 	       if (!top)
 		  SCCharChangedUpdate(sc, layer, true);
 	    }

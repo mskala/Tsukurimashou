@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: ttfspecial.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1514,7 +1514,7 @@ static void pfed_redo_refs(SplineChar *sc,int layer) {
 	 continue;
       if (!refs->sc->ticked)
 	 pfed_redo_refs(refs->sc, layer);
-      SCReinstanciateRefChar(sc, refs, layer);
+      SCReinstantiateRefChar(sc, refs, layer);
    }
 }
 

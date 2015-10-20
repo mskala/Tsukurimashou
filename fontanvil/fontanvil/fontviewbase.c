@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: fontviewbase.c 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -30,7 +30,6 @@
 #include "baseviews.h"
 #include "psfont.h"
 #include <gfile.h>
-#include <gio.h>
 #include <ustring.h>
 #include <utype.h>
 #include <chardata.h>

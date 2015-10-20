@@ -1,4 +1,4 @@
-/* $Id: gimageread.c 2929 2014-03-08 16:02:40Z mskala $ */
+/* $Id: gimageread.c 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
 #include <string.h>
 #include <ustring.h>
 
-#include "gio.h"
 #include "gfile.h"
 
 GImage *GImageRead(char *filename) {

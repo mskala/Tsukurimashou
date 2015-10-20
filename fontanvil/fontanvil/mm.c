@@ -1,4 +1,4 @@
-/* $Id: mm.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: mm.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -607,7 +607,7 @@ char *MMBlendChar(MMSet * mm, int gid) {
       SplineChar *sc=mm->normal->glyphs[gid];
 
       for (ref=sc->layers[ly_fore].refs; ref != NULL; ref=ref->next) {
-	 SCReinstanciateRefChar(sc, ref, ly_fore);
+	 SCReinstantiateRefChar(sc, ref, ly_fore);
 	 SCMakeDependent(sc, ref->sc);
       }
    }
@@ -742,7 +742,7 @@ int MMReblend(FontViewBase * fv, MMSet * mm) {
       if (sf->glyphs[i] != NULL) {
 	 for (ref=sf->glyphs[i]->layers[ly_fore].refs; ref != NULL;
 	      ref=ref->next) {
-	    SCReinstanciateRefChar(sf->glyphs[i], ref, ly_fore);
+	    SCReinstantiateRefChar(sf->glyphs[i], ref, ly_fore);
 	    SCMakeDependent(sf->glyphs[i], ref->sc);
 	 }
       }

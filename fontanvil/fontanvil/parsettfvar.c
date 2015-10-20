@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: parsettfvar.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -32,7 +32,6 @@
 #include <ustring.h>
 #include <math.h>
 #include <locale.h>
-#include <gwidget.h>
 #include "ttf.h"
 
 /***************************************************************************/
@@ -368,7 +367,7 @@ static void SCShiftAllBy(SplineChar *sc,int xd,int yd) {
    for (ref=sc->layers[ly_fore].refs; ref != NULL; ref=ref->next) {
       ref->transform[4] += xd;
       ref->transform[5] += yd;
-      SCReinstanciateRefChar(sc, ref, ly_fore);
+      SCReinstantiateRefChar(sc, ref, ly_fore);
    }
 }
 
@@ -388,7 +387,7 @@ static void VaryGlyph(SplineChar *sc,int *points,int *xdeltas,
 	    if (xdeltas[i] != 0 || ydeltas[i] != 0) {
 	       ref->transform[4] += xdeltas[i];
 	       ref->transform[5] += ydeltas[i];
-	       SCReinstanciateRefChar(sc, ref, ly_fore);
+	       SCReinstantiateRefChar(sc, ref, ly_fore);
 	    }
 	 }
       } else {
@@ -425,7 +424,7 @@ static void VaryGlyph(SplineChar *sc,int *points,int *xdeltas,
 	       if (xdeltas[j] != 0 || ydeltas[j] != 0) {
 		  ref->transform[4] += xdeltas[j];
 		  ref->transform[5] += ydeltas[j];
-		  SCReinstanciateRefChar(sc, ref, ly_fore);
+		  SCReinstantiateRefChar(sc, ref, ly_fore);
 	       }
 	       ++j;
 	    }

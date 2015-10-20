@@ -1,4 +1,4 @@
-/* $Id: svg.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: svg.c 4288 2015-10-20 13:06:01Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1209,7 +1209,7 @@ char **NamesReadSVG(char *filename) {
    return (NULL);
 }
 
-static SplineSet *SplinePointListInterpretSVG(char *filename,char *memory,
+SplineSet *SplinePointListInterpretSVG(char *filename,char *memory,
 				       int memlen, int em_size, int ascent,
 				       int is_stroked) {
    return (NULL);
@@ -4025,22 +4025,6 @@ SplineFont *SFReadSVG(char *filename, int flags) {
    return (_SFReadSVG(doc, filename));
 }
 
-SplineFont *SFReadSVGMem(char *data, int flags) {
-   xmlDocPtr doc;
-
-   if (!libxml_init_base()) {
-      ErrorMsg(2,"Can't find libxml2.\n");
-      return (NULL);
-   }
-
-   doc=xmlParseMemory(data, strlen(data));
-   if (doc==NULL) {
-      /* Can I get an error message from libxml? */
-      return (NULL);
-   }
-   return (_SFReadSVG(doc, NULL));
-}
-
 char **NamesReadSVG(char *filename) {
    xmlNodePtr *fonts;
    xmlDocPtr doc;
@@ -4131,7 +4115,7 @@ Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
    return (ret);
 }
 
-static SplineSet *SplinePointListInterpretSVG(char *filename,char *memory,
+SplineSet *SplinePointListInterpretSVG(char *filename,char *memory,
 				       int memlen, int em_size, int ascent,
 				       int is_stroked) {
    Entity *ret =

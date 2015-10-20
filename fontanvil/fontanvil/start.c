@@ -1,4 +1,4 @@
-/* $Id: start.c 4071 2015-06-29 09:11:43Z mskala $ */
+/* $Id: start.c 4284 2015-10-20 08:52:37Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -38,7 +38,6 @@
 #include <sys/time.h>
 #include <locale.h>
 #include <unistd.h>
-#include <dynamic.h>
 #ifdef __Mac
 #   include <stdlib.h>		/* getenv,setenv */
 #endif

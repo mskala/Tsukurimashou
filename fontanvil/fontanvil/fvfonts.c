@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: fvfonts.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1036,7 +1036,7 @@ static void MFixupSC(SplineFont *sf,SplineChar *sc,int i) {
 	    ref->sc=sf->glyphs[ref->orig_pos];
 	    if (!ref->sc->ticked)
 	       MFixupSC(sf, ref->sc, ref->orig_pos);
-	    SCReinstanciateRefChar(sc, ref, l);
+	    SCReinstantiateRefChar(sc, ref, l);
 	    SCMakeDependent(sc, ref->sc);
 	 }
       }
@@ -1729,7 +1729,7 @@ static void IFixupSC(SplineFont *sf,SplineChar *sc,int i) {
 	    SFFindExistingSlot(sf, ref->sc->unicodeenc, ref->sc->name);
 	 ref->sc=sf->glyphs[ref->orig_pos];
 	 IFixupSC(sf, ref->sc, ref->orig_pos);
-	 SCReinstanciateRefChar(sc, ref, ly_fore);
+	 SCReinstantiateRefChar(sc, ref, ly_fore);
 	 SCMakeDependent(sc, ref->sc);
       }
 }

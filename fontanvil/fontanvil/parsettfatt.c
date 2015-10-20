@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: parsettfatt.c 4284 2015-10-20 08:52:37Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -33,7 +33,6 @@
 #include <math.h>
 #include <locale.h>
 #include <stdlib.h>
-#include <ggadget.h>		/* For GTextInfo */
 #include "ttf.h"
 
 static uint16_t *getAppleClassTable(AFILE *ttf,int classdef_offset,int cnt,

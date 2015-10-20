@@ -1,4 +1,4 @@
-/* $Id: uiinterface.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: uiinterface.h 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -39,8 +39,6 @@ const char *MSLangString(int);
 
 struct val;
 
-extern void SavePrefs(void);
-extern void LoadPrefs(void);
 extern int GetPrefs(char *name,struct val *value);
 extern int SetPrefs(char *name,struct val *val1,struct val *val2);
 extern char *getFontAnvilShareDir(void);
@@ -48,9 +46,9 @@ extern char *getFontAnvilShareDir(void);
 struct splinechar;
 
 /* The hints of the glyph have changed */
-void SCHintsChanged(struct splinechar *);
+extern void SCHintsChanged(struct splinechar *);
 
-void SCCharChangedUpdate(struct splinechar *,int,int);
+extern void SCCharChangedUpdate(struct splinechar *,int,int);
 
 struct bdfchar;
 
@@ -61,38 +59,38 @@ struct fontviewbase;
 struct bdffont;
 
 /* Create a new font view. Whatever that may entail */
-struct fontviewbase *FontViewCreate(struct splinefont *,int hide);
+extern struct fontviewbase *FontViewCreate(struct splinefont *,int hide);
 
 /* Create a new font view but without attaching it to a window */
-struct fontviewbase *_FontViewCreate(struct splinefont *);
+extern struct fontviewbase *_FontViewCreate(struct splinefont *);
 
 /* Free a font view (we assume all windows have already been destroyed) */
-void FontViewClose(struct fontviewbase *);
+extern void FontViewClose(struct fontviewbase *);
 
 /* Free a font view (we assume all windows have already been destroyed) */
-void FontViewFree(struct fontviewbase *);
+extern void FontViewFree(struct fontviewbase *);
 
 /* Retrieve the window's size in rows and columns */
-int FVWinInfo(struct fontviewbase *, int *cols, int *rows);
+extern int FVWinInfo(struct fontviewbase *, int *cols, int *rows);
 
 /* Is this font currently open? (It was open once, this check is to make   */
 /*  sure the user hasn't closed it since they copied from it -- so we can  */
 /*  follow references appropriately if the font we are pasting into doesn't */
 /*  have the needed glyph */
-int SFIsActive(struct splinefont *);
+extern int SFIsActive(struct splinefont *);
 
 /* Sometimes we just need a fontview, any fontview as a last resort fallback */
-struct fontviewbase *FontViewFirst(void);
+extern struct fontviewbase *FontViewFirst(void);
 
 /* Append this fontview to the list of them */
-struct fontviewbase *FVAppend(struct fontviewbase *);
+extern struct fontviewbase *FVAppend(struct fontviewbase *);
 
 /* Look through all loaded fontviews and see if any contains a font */
 /*  which lives in the given filename */
-struct splinefont *FontWithThisFilename(const char *);
+extern struct splinefont *FontWithThisFilename(const char *);
 
 /* deselect any selected glyphs */
-void FVDeselectAll(struct fontviewbase *);
+extern void FVDeselectAll(struct fontviewbase *);
 
 extern const char *TTFNameIds(int id);
 

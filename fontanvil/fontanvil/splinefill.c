@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: splinefill.c 4285 2015-10-20 09:10:39Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -31,7 +31,7 @@
 #include <string.h>
 #include <ustring.h>
 #include <math.h>
-#include "gdraw.h"
+#include "gimage.h"
 #include "splinefont.h"
 #include "edgelist.h"
 

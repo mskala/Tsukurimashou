@@ -87,6 +87,26 @@ while (<*/*.[ch]>) {
   close(SRC);
 }
 
+@declist=();
+while (<*/*.h>) {
+  $fn=$_;
+  print "{$fn}\n";
+  open(SRC,$fn);
+  while (<SRC>) {
+    next unless (/^extern.*\s\**(\w+)\(/);
+    $declared{$1}=$fn;
+    push @declist,$1;
+  }
+  close(SRC);
+}
+
+foreach $extern (@declist) {
+  if ($extern_used{$extern}<1) {
+    print $declared{$extern}.
+      " declares extern $extern but no file defines it\n";
+  }
+}
+print "\n";
 foreach $extern (@questionable_externs) {
   if ($extern_used{$extern}<2) {
     print $extern_defined{$extern}.

@@ -1,4 +1,4 @@
-/* $Id: sflayoutP.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: sflayoutP.h 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -112,14 +112,8 @@ extern int LI_FDDrawChar(void *data,
 			 struct opentype_str *osc, int x, int y, Color col);
 extern uint32_t *LI_TagsCopy(uint32_t * tags);
 
-extern struct fontlist *LI_fontlistcopy(struct fontlist *fl);
-
-extern void LI_fontlistmergecheck(LayoutInfo * li);
-
 extern void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
 				    int end_of_change, int width);
-extern int LayoutInfoReplace(LayoutInfo * li, const unichar_t * str,
-			     int sel_start, int sel_end, int width);
 extern void LayoutInfo_Destroy(LayoutInfo * li);
 
 extern void SFMapFill(struct sfmaps *sfmaps, SplineFont *sf);
@@ -131,18 +125,4 @@ extern FontData *LI_FindFontData(LayoutInfo * li, SplineFont *sf,
 				 int size, int antialias);
 extern FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret);
 
-extern void LayoutInfoInitLangSys(LayoutInfo * li, int end, uint32_t script,
-				  uint32_t lang);
-extern LayoutInfo *LIConvertToPrint(LayoutInfo * li, int width, int height,
-				    int dpi);
-extern SplineSet *LIConvertToSplines(LayoutInfo * li, double dpi, int order2);
-
-extern void LayoutInfoSetTitle(LayoutInfo * li, const unichar_t * tit,
-			       int width);
-extern struct fontlist *LI_BreakFontList(LayoutInfo * li, int start, int end);
-
-extern int LI_SetFontData(LayoutInfo * li, int start, int end,
-			  SplineFont *sf, int layer,
-			  enum sftf_fonttype fonttype, int size,
-			  int antialias, int width);
 #endif

@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: fvcomposite.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1722,7 +1722,7 @@ void _SCAddRef(SplineChar * sc, SplineChar * rsc, int layer,
    ref->next=sc->layers[layer].refs;
    sc->layers[layer].refs=ref;
    memcpy(ref->transform, transform, sizeof(real[6]));
-   SCReinstanciateRefChar(sc, ref, layer);
+   SCReinstantiateRefChar(sc, ref, layer);
    SCMakeDependent(sc, rsc);
 }
 

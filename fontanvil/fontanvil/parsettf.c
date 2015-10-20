@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: parsettf.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -32,7 +32,6 @@
 #include <ustring.h>
 #include <math.h>
 #include <locale.h>
-#include <gwidget.h>
 #include "ttf.h"
 
 #include "nonmactab.h"
@@ -5613,7 +5612,7 @@ int ttfFixupRef(SplineChar ** chars, int i) {
 	 ref->adobe_enc=getAdobeEnc(ref->sc->name);
 	 if (ref->point_match)
 	    ttfPointMatch(chars[i], ref);
-	 SCReinstanciateRefChar(chars[i], ref, ly_fore);
+	 SCReinstantiateRefChar(chars[i], ref, ly_fore);
 	 SCMakeDependent(chars[i], ref->sc);
 	 prev=ref;
       }
@@ -5920,7 +5919,7 @@ static void UseGivenEncoding(SplineFont *sf,struct ttfinfo *info) {
    /* A CFF font could contain type1 charstrings, or a type2 font could use */
    /*  the depreciated convention that endchar =~ seac */
    if (info->cff_length != 0)
-      SFInstanciateRefs(sf);
+      SFInstantiateRefs(sf);
 
    for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
@@ -6016,7 +6015,7 @@ static SplineFont *SFFromTuple(SplineFont *basesf,struct variations *v,
    for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 for (r=sf->glyphs[i]->layers[ly_fore].refs; r != NULL; r=r->next)
-	    SCReinstanciateRefChar(sf->glyphs[i], r, ly_fore);
+	    SCReinstantiateRefChar(sf->glyphs[i], r, ly_fore);
       }
 
    sf->ttf_tables=v->tuples[tuple].cvt;

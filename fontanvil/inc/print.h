@@ -1,4 +1,4 @@
-/* $Id: print.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: print.h 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -116,10 +116,6 @@ extern struct printdefaults {
 } pdefs[];
 
 /* defaults for print from fontview, charview, metricsview */
-
-extern void PI_Init(PI * pi, FontViewBase * fv, SplineChar * sc);
-
-extern void DoPrinting(PI * pi, char *filename);
 
 extern int PdfDumpGlyphResources(PI * pi, SplineChar * sc);
 

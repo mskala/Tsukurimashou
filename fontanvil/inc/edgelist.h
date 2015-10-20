@@ -1,4 +1,4 @@
-/* $Id: edgelist.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: edgelist.h 4284 2015-10-20 08:52:37Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -151,8 +151,6 @@ extern real EITOfNextMajor(EI * e, EIList * el, real sought_m);
 extern int EISameLine(EI * e, EI * n, real i, int major);
 
 extern int EISkipExtremum(EI * e, real i, int major);
-
-extern EI *EIActiveEdgesFindStem(EI * apt, real i, int major);
 
 extern EI *EIActiveListReorder(EI * active, int *change);
 

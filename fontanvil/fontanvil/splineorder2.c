@@ -1,4 +1,4 @@
-/* $Id: splineorder2.c 4279 2015-10-19 13:20:55Z mskala $ */
+/* $Id: splineorder2.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1337,7 +1337,7 @@ static void SCConvertRefs(SplineChar *sc,int layer) {
    for (rf=sc->layers[layer].refs; rf != NULL; rf=rf->next) {
       if (!rf->sc->ticked)
 	 SCConvertRefs(rf->sc, layer);
-      SCReinstanciateRefChar(sc, rf, layer);	/* Conversion is done by reinstanciating */
+      SCReinstantiateRefChar(sc, rf, layer);	/* Conversion is done by reinstanciating */
       /* Since the base thing will have been converted, all we do is copy its data */
    }
 }

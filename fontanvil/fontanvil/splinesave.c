@@ -1,4 +1,4 @@
-/* $Id: splinesave.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: splinesave.c 4284 2015-10-20 08:52:37Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -34,7 +34,6 @@
 #include <ustring.h>
 #include <string.h>
 #include <utype.h>
-#include <gwidget.h>
 
 int autohint_before_generate=1;
 

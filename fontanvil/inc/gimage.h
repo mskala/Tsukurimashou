@@ -1,4 +1,4 @@
-/* $Id: gimage.h 4280 2015-10-19 19:09:28Z mskala $ */
+/* $Id: gimage.h 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -137,57 +137,11 @@ extern GImage *_GImage_Create(enum image_type type, int32_t width,
 			      int32_t height);
 extern void GImageDestroy(GImage * gi);
 
-extern GImage *GImageAddImageBefore(GImage * dest, GImage * src, int pos);
-
-extern GImage *GImageBaseGetSub(struct _GImage *base, enum image_type it,
-				GRect * src, GClut * nclut, RevCMap * rev);
-extern GImage *GImageGetSub(GImage * image, enum image_type it, GRect * src,
-			    GClut * nclut, RevCMap * rev);
-extern int GImageInsertToBase(struct _GImage *tobase, GImage * from,
-			      GRect * src, RevCMap * rev, int to_x, int to_y,
-			      enum pastetrans_type ptt);
-extern int GImageInsert(GImage * to, GImage * from, GRect * src,
-			RevCMap * rev, int to_x, int to_y,
-			enum pastetrans_type ptt);
-extern Color _GImageGetPixelColor(struct _GImage *base, int x, int y);	/* Obsolete */
-
-extern Color GImageGetPixelColor(GImage * base, int x, int y);	/* Obsolete */
-
-extern Color GImageGetPixelRGBA(GImage * base, int x, int y);
-
 extern int GImageGetWidth(GImage *);
 
 extern int GImageGetHeight(GImage *);
 
-extern void *GImageGetUserData(GImage * img);
-
-extern void GImageSetUserData(GImage * img, void *userdata);
-
-extern void GImageResize(struct _GImage *tobase, struct _GImage *fbase,
-			 GRect * src, RevCMap * rev);
-extern GImage *GImageResize32(GImage * from, GRect * src, int width,
-			      int height, Color trans);
-extern GImage *GImageResizeSame(GImage * from, GRect * src, int width,
-				int height, RevCMap * rev);
-extern RevCMap *GClutReverse(GClut * clut, int side_size);
-
 void GClut_RevCMapFree(RevCMap * rev);
-
-extern GClut *GImageFindCLUT(GImage * image, GClut * clut, int clutmax);
-
-extern int GImageSameClut(GClut * clut, GClut * nclut);
-
-extern int GImageGreyClut(GClut * clut);
-
-extern Color GImageColourFName(unichar_t * name);
-
-extern Color _GImage_ColourFName(char *name);
-
-extern char *GImageNameFColour(Color col);
-
-extern Color GDrawColorDarken(Color col, int by);
-
-extern Color GDrawColorBrighten(Color col, int by);
 
 extern int GImageWriteGImage(GImage * gi, char *filename);
 
@@ -238,21 +192,4 @@ extern void GImageDrawRect(GImage * img, GRect * r, Color col);
 
 extern void GImageDrawImage(GImage * dest, GImage * src, GRect * junk, int x,
 			    int y);
-
-extern void gRGB2HSL(struct hslrgb *col);
-
-extern void gHSL2RGB(struct hslrgb *col);
-
-extern void gRGB2HSV(struct hslrgb *col);
-
-extern void gHSV2RGB(struct hslrgb *col);
-
-extern void gColor2Hslrgb(struct hslrgb *col, Color from);
-
-extern void gColor2Hslrgba(struct hslrgba *col, Color from);
-
-extern Color gHslrgb2Color(struct hslrgb *col);
-
-extern Color gHslrgba2Color(struct hslrgba *col);
-
 #endif

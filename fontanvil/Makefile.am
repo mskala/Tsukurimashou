@@ -171,29 +171,29 @@ dist_man_MANS = \
 
 noinst_HEADERS = \
   inc/fontanvil.h \
-  inc/chardata.h inc/charset.h inc/dynamic.h inc/fileutil.h \
-  inc/fontanvil-config.h inc/gdraw.h inc/gfile.h inc/ggadget.h \
-  inc/gimage.h inc/gio.h \
-  inc/gresource.h inc/gwidget.h inc/intl.h inc/ustring.h \
+  inc/chardata.h inc/charset.h inc/fileutil.h \
+  inc/fontanvil-config.h inc/gfile.h \
+  inc/gimage.h \
+  inc/gresource.h inc/intl.h inc/ustring.h \
   inc/utype.h \
-  inc/afile.h inc/sftextfieldP.h \
-  inc/views.h inc/is_LIGATURE.h \
-  inc/flaglist.h inc/charview_private.h \
+  inc/afile.h \
+  inc/views.h \
+  inc/flaglist.h \
   inc/autowidth2.h inc/fontanvil.h \
   inc/libffstamp.h inc/psfont.h inc/stemdb.h \
-  inc/autowidth.h inc/delta.h inc/fontanvilvw.h \
-  inc/lookups.h inc/savefont.h inc/ttf.h \
+  inc/autowidth.h inc/fontanvilvw.h \
+  inc/savefont.h inc/ttf.h \
   inc/baseviews.h inc/fvmetrics.h inc/mm.h \
   inc/scriptfuncs.h inc/ttfinstrs.h inc/edgelist2.h \
   inc/namehash.h inc/scripting.h inc/uiinterface.h \
   inc/bezctx_ff.h inc/edgelist.h \
-  inc/nonlineartrans.h inc/sd.h inc/unicoderange.h \
-  inc/bitmapcontrol.h inc/encoding.h \
-  inc/search.h inc/usermenu.h inc/fffreetype.h \
+  inc/nonlineartrans.h inc/sd.h \
+  inc/bitmapcontrol.h \
+  inc/search.h inc/fffreetype.h \
   inc/PfEd.h inc/SFMT.h inc/SFMT-params.h inc/SFMT-params19937.h \
   inc/SFMT-common.h inc/sfd1.h \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
-  inc/cvruler.h inc/ffglib.h inc/gb12345.h \
+  inc/ffglib.h inc/gb12345.h \
   fontanvil/feascan.h fontanvil/macenctab.h fontanvil/nonmactab.h
 
 noinst_LIBRARIES = \
@@ -212,7 +212,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/fontviewbase.c fontanvil/freetype.c fontanvil/fvcomposite.c \
  fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
  fontanvil/glyphcomp.c \
- fontanvil/http.c fontanvil/ikarus.c fontanvil/is_LIGATURE.c \
+ fontanvil/http.c fontanvil/ikarus.c \
  fontanvil/lookups.c fontanvil/macbinary.c \
  fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \
  fontanvil/namelist.c fontanvil/nonlineartrans.c fontanvil/noprefs.c \
@@ -230,7 +230,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/start.c fontanvil/stemdb.c fontanvil/svg.c \
  fontanvil/tottfaat.c fontanvil/tottfgpos.c fontanvil/tottf.c \
  fontanvil/tottfvar.c fontanvil/ttfinstrs.c fontanvil/ttfspecial.c \
- fontanvil/ufo.c fontanvil/unicoderange.c \
+ fontanvil/ufo.c \
  fontanvil/winfonts.c fontanvil/woff.c fontanvil/zapfnomen.c \
  fontanvil/splinerefigure.c fontanvil/gb12345.c \
  fontanvil/feascan.l fontanvil/pescript.l \
@@ -254,9 +254,8 @@ gutils_libgutils_a_SOURCES = \
   gutils/gimagereadxpm.c gutils/gimagewritebmp.c gutils/gimagewritegimage.c \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
   gutils/gimagewritexpm.c gutils/giohosts.c gutils/giomime.c \
-  gutils/giotrans.c gutils/giofuncP.h gutils/gioP.h gutils/gutils.c \
-  gutils/gwwintl.c gutils/unicodelibinfo.c inc/unicodelibinfo.h \
-  gutils/gioftpP.h
+  gutils/giotrans.c gutils/gutils.c \
+  gutils/gwwintl.c gutils/unicodelibinfo.c inc/unicodelibinfo.h
 gutils_libgutils_a_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   $(GLIB_CFLAGS)
 gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a

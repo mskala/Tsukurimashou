@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4279 2015-10-19 13:20:55Z mskala $ */
+/* $Id: ufo.c 4287 2015-10-20 11:54:06Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -992,6 +992,37 @@ static StemInfo *GlifParseHints(xmlDocPtr doc,xmlNodePtr dict,
    return (head);
 }
 
+/* Finds or adds an AnchorClass of the given name. Resets it to have the given subtable if not NULL */
+static AnchorClass *SFFindOrAddAnchorClass(SplineFont *sf,char *name,struct lookup_subtable *sub) {
+   AnchorClass *ac;
+   int actype = act_unknown;
+   for ( ac=sf->anchor; ac!=NULL; ac=ac->next )
+     if (strcmp(name,ac->name)==0)
+       break;
+   if ( ac!=NULL && ( sub==NULL || ac->subtable==sub ) )
+     return( ac );
+   if ( sub!=NULL )
+     actype = sub->lookup->lookup_type==gpos_cursive ? act_curs :
+     sub->lookup->lookup_type==gpos_mark2base ? act_mark :
+     sub->lookup->lookup_type==gpos_mark2ligature ? act_mklg :
+     sub->lookup->lookup_type==gpos_mark2mark ? act_mkmk :
+     act_unknown;
+   if ( ac==NULL ) {
+      ac=chunkalloc(sizeof(AnchorClass));
+      ac->subtable=sub;
+      ac->type=actype;
+      ac->name=fastrdup(name);
+      ac->next=sf->anchor;
+      sf->anchor=ac;
+   }
+   else if ((sub!=NULL) && (ac->subtable!=sub)) {
+      ac->subtable=sub;
+      ac->type=actype;
+   }
+   return ac;
+}
+
+
 static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 				 char *glifname, char *glyphname,
 				 SplineChar * existingglyph, int layerdest) {
@@ -1540,7 +1571,7 @@ static void UFORefFixup(SplineFont *sf,SplineChar *sc) {
 	 SplineCharFree(r->sc);
 	 r->sc=rsc;
 	 prev=r;
-	 SCReinstanciateRefChar(sc, r, ly_fore);
+	 SCReinstantiateRefChar(sc, r, ly_fore);
       }
    }
 }

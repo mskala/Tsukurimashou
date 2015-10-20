@@ -1,4 +1,4 @@
-/* $Id: giotrans.c 3280 2014-09-08 17:24:23Z mskala $ */
+/* $Id: giotrans.c 4286 2015-10-20 10:46:56Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "giofuncP.h"
+#include "fontanvil.h"
 #include "ustring.h"
 
 struct transtab {

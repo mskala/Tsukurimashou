@@ -1,4 +1,4 @@
-/* $Id: gutils.c 3879 2015-03-28 11:08:16Z mskala $ */
+/* $Id: gutils.c 4285 2015-10-20 09:10:39Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@
 #endif
 #include <stdarg.h>
 #include <time.h>
-#include <gdraw.h>		/* For image defn */
+#include <gimage.h>		/* For image defn */
 
 #ifdef __CygWin
 #   include <sys/types.h>

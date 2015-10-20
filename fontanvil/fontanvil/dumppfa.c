@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: dumppfa.c 4285 2015-10-20 09:10:39Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -42,7 +42,7 @@
 #include <time.h>
 #include "psfont.h"
 #include "splinefont.h"
-#include <gdraw.h>		/* For image defn */
+#include <gimage.h>		/* For image defn */
 #include "print.h"		/* For makePatName */
 
 #ifdef __CygWin
