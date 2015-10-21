@@ -1,4 +1,4 @@
-/* $Id: gimagereadpng.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimagereadpng.c 4289 2015-10-20 16:13:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -59,40 +59,32 @@ static void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg) {
    fprintf(stderr, "%s\n", warning_msg);
 }
 
-GImage *GImageRead_Png(FILE * fp) {
+GImage *GImageRead_Png(AFILE * fp) {
    GImage *ret = NULL;
-
    struct _GImage *base;
-
    png_structp png_ptr;
-
    png_infop info_ptr;
-
    png_bytep *row_pointers = NULL;
-
    png_bytep trans_alpha;
-
    int num_trans;
-
    png_color_16p trans_color;
-
    int i;
 
    if (libpng == NULL)
       if (!loadpng())
-	 return (NULL);
+	 return NULL;
 
    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
 				    (void *) NULL, user_error_fn,
 				    user_warning_fn);
 
    if (!png_ptr)
-      return (NULL);
+      return NULL;
 
    info_ptr = png_create_info_struct(png_ptr);
    if (!info_ptr) {
       png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
-      return (NULL);
+      return NULL;
    }
 #   if (PNG_LIBPNG_VER < 10500)
    if (setjmp(png_ptr->jmpbuf))
@@ -107,7 +99,7 @@ GImage *GImageRead_Png(FILE * fp) {
 	 free(row_pointers);
       }
       /* If we get here, we had a problem reading the file */
-      return (NULL);
+      return NULL;
    }
 
    png_init_io(png_ptr, fp);
@@ -155,9 +147,7 @@ GImage *GImageRead_Png(FILE * fp) {
 		      png_get_image_height(png_ptr, info_ptr));
    else {
       png_colorp palette;
-
       int num_palette;
-
       GClut *clut;
 
       ret =
@@ -227,15 +217,14 @@ GImage *GImageRead_Png(FILE * fp) {
 
 GImage *GImageReadPng(char *filename) {
    GImage *ret = NULL;
+   AFILE *fp;
 
-   FILE *fp;
-
-   fp = fopen(filename, "rb");
+   fp=afopen(filename, "rb");
    if (!fp)
-      return (NULL);
+      return NULL;
 
    ret = GImageRead_Png(fp);
-   fclose(fp);
-   return (ret);
+   afclose(fp);
+   return ret;
 }
 #endif

@@ -14,8 +14,6 @@ AutoHint();
 Print("...AutoHinted");
 Save("ttmp/Caliban.sfd");
 Print("...Saved As");
-Save("ttmp/Caliban.sfdir");
-Print("...Saved As dir");
 Generate("ttmp/Caliban.ps","bdf",-1);
 Print( "...Generated type0")
 Generate("ttmp/Caliban.ttf","ms",2);
@@ -43,9 +41,6 @@ Close();
 
 Open("ttmp/Caliban.sfd");
 Print( "...Read sfd")
-Close();
-Open("ttmp/Caliban.sfdir");
-Print( "...Read sfdir")
 Close();
 Open("ttmp/Caliban.ps");
 Print( "...Read type0 (if FontForge did not understand /CalibanBase, then that is ok)")

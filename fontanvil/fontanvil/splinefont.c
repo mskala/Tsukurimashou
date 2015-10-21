@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4286 2015-10-20 10:46:56Z mskala $ */
+/* $Id: splinefont.c 4293 2015-10-21 12:14:09Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -666,17 +666,14 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
       return (onlyname);
    }
 
-   /* Suppose they've got an archive of a directory format font? I mean a ufo */
-   /*  or a sfdir. It won't show up in the list of files (because either     */
+   /* Suppose they've got an archive of a UFO directory? */
+   /*  It won't show up in the list of files (because either */
    /*  tar or I have removed all directories from that list) */
    pt=strrchr(files[0], '/');
    if (pt != NULL) {
       if ((pt-files[0]>4
 	   && (strncasecmp(pt-4,".ufo",4)==0
-	       || strncasecmp(pt-4,"_ufo",4)==0))
-	  || (pt-files[0]>6
-	      && (strncasecmp(pt-6,".sfdir",6)==0
-		  || strncasecmp(pt-6,"_sfdir",6)== 0))) {
+	       || strncasecmp(pt-4,"_ufo",4)==0))) {
 	 /* Ok, looks like a potential directory font. Now is EVERYTHING */
 	 /*  in the archive inside this guy? */
 	 for (i=0; i < fcnt; ++i)
@@ -796,7 +793,7 @@ char *Unarchive(char *name, char **_archivedir) {
    }
 
    /* I tried sending everything to stdout, but that doesn't work if the */
-   /*  output is a directory file (ufo, sfdir) */
+   /*  output is a directory file */
    unarchivecmd=malloc(strlen(archivers[i].unarchive) + 1 +
 			 strlen(archivers[i].listargs) + 1 +
 			 strlen(name) + 1 +
@@ -997,7 +994,6 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 /* checked=='c'   => cff */
 /* checked=='S'   => svg */
 /* checked=='f'   => sfd */
-/* checked=='F'   => sfdir */
 /* checked=='b'   => bdf */
 /* checked=='i'   => ikarus */
    if (!wasurl && GFileIsDir(strippedname)) {
@@ -1008,13 +1004,6 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
       if (GFileExists(temp)) {
 	 sf=SFReadUFO(strippedname, 0);
 	 checked='u';
-      } else {
-	 strcpy(temp, strippedname);
-	 strcat(temp, "/font.props");
-	 if (GFileExists(temp)) {
-	    sf=SFDirRead(strippedname);
-	    checked='F';
-	 }
       }
       free(temp);
       if (file != NULL)

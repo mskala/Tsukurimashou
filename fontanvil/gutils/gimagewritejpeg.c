@@ -1,4 +1,4 @@
-/* $Id: gimagewritejpeg.c 3871 2015-03-27 08:01:10Z mskala $ */
+/* $Id: gimagewritejpeg.c 4289 2015-10-20 16:13:40Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -153,13 +153,54 @@ static void setColorSpace(struct jpeg_compress_struct *cinfo,
    }
 }
 
+#define JPEG_BUFFER_SIZE 4096
+
+typedef struct _FA_JPEG_DESTMGR {
+   struct jpeg_destination_mgr pub;
+   AFILE *fp;
+   char buffer[JPEG_BUFFER_SIZE];
+} FA_JPEG_DESTMGR;
+
+static void fajpeg_init_destination(j_compress_ptr cinfo) {
+   cinfo->dest->next_output_byte=
+     (JOCTET *)(&(((FA_JPEG_DESTMGR *)cinfo->dest)->buffer));
+   cinfo->dest->free_in_buffer=JPEG_BUFFER_SIZE;
+}
+
+static boolean fajpeg_empty_output_buffer(j_compress_ptr cinfo) {
+   afwrite(&(((FA_JPEG_DESTMGR *)cinfo->dest)->buffer),
+	   sizeof(char),JPEG_BUFFER_SIZE,
+	   ((FA_JPEG_DESTMGR *)cinfo->dest)->fp);
+   fajpeg_init_destination(cinfo);
+   return TRUE;
+}
+
+static void fajpeg_term_destination(j_compress_ptr cinfo) {
+   afwrite(&(((FA_JPEG_DESTMGR *)cinfo->dest)->buffer),
+	   sizeof(char),
+	   JPEG_BUFFER_SIZE-cinfo->dest->free_in_buffer,
+	   ((FA_JPEG_DESTMGR *)cinfo->dest)->fp);
+   fajpeg_init_destination(cinfo);
+}
+
+static void fajpeg_afile_dest(j_compress_ptr cinfo,AFILE *outfile) {
+   FA_JPEG_DESTMGR *dm;
+   
+   dm=(FA_JPEG_DESTMGR *)malloc(sizeof(FA_JPEG_DESTMGR));
+   
+   dm->fp=outfile;
+   dm->pub.init_destination=fajpeg_init_destination;
+   dm->pub.empty_output_buffer=fajpeg_empty_output_buffer;
+   dm->pub.term_destination=fajpeg_term_destination;
+   
+   cinfo->dest=(struct jpeg_destination_mgr *)dm;
+}
+
 /* quality is a number between 0 and 100 */
-int GImageWrite_Jpeg(GImage * gi, FILE * outfile, int quality,
+int GImageWrite_Jpeg(GImage *gi,AFILE *outfile,int quality,
 		     int progressive) {
    struct _GImage *base = gi->list_len == 0 ? gi->u.image : gi->u.images[0];
-
    struct jpeg_compress_struct cinfo;
-
    struct my_error_mgr jerr;
 
    JSAMPROW row_pointer[1];	/* pointer to JSAMPLE row[s] */
@@ -172,7 +213,7 @@ int GImageWrite_Jpeg(GImage * gi, FILE * outfile, int quality,
    }
    jpeg_CreateCompress(&cinfo, JPEG_LIB_VERSION,
 		       (size_t) sizeof(struct jpeg_compress_struct));
-   jpeg_stdio_dest(&cinfo, outfile);
+   fajpeg_afile_dest(&cinfo, outfile);
 
    cinfo.image_width = base->width;
    cinfo.image_height = base->height;
@@ -196,10 +237,12 @@ int GImageWrite_Jpeg(GImage * gi, FILE * outfile, int quality,
       (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
    }
    jpeg_finish_compress(&cinfo);
+   free(cinfo.dest);
+   cinfo.dest=NULL;
    jpeg_destroy_compress(&cinfo);
    if (cinfo.in_color_space != JCS_GRAYSCALE)
       free(row_pointer[0]);
-   return (1);
+   return 1;
 }
 
 #endif

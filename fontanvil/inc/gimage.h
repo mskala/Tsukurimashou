@@ -1,4 +1,4 @@
-/* $Id: gimage.h 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: gimage.h 4291 2015-10-21 09:27:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -165,13 +165,13 @@ extern GImage *GImageReadTiff(char *filename);
 
 extern GImage *GImageReadJpeg(char *filename);
 
-extern GImage *GImageRead_Jpeg(FILE * fp);
+extern GImage *GImageRead_Jpeg(AFILE *fp);
 
-extern int GImageWrite_Jpeg(GImage * gi, FILE * outfile, int quality,
+extern int GImageWrite_Jpeg(GImage *gi,AFILE *outfile,int quality,
 			    int progressive);
-extern int GImageWriteJpeg(GImage * gi, char *filename, int quality,
+extern int GImageWriteJpeg(GImage *gi,char *filename,int quality,
 			   int progressive);
-extern GImage *GImageRead_Png(FILE * fp);
+extern GImage *GImageRead_Png(AFILE *fp);
 
 extern GImage *GImageReadPng(char *filename);
 
@@ -188,8 +188,10 @@ extern GImage *GImageReadRgb(char *filename);	/* SGI */
 
 extern GImage *GImageRead(char *filename);
 
-extern void GImageDrawRect(GImage * img, GRect * r, Color col);
+extern void GImageDrawRect(GImage *img, GRect *r, Color col);
 
-extern void GImageDrawImage(GImage * dest, GImage * src, GRect * junk, int x,
+extern void GImageDrawImage(GImage *dest,GImage *src,GRect *junk,int x,
 			    int y);
+
+extern int GImageWrite_Bmp(GImage *gi,AFILE *file);
 #endif

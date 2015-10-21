@@ -1,4 +1,4 @@
-/* $Id: svg.c 4288 2015-10-20 13:06:01Z mskala $ */
+/* $Id: svg.c 4291 2015-10-21 09:27:40Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -436,22 +436,22 @@ static void DataURI_ImageDump(AFILE *file,struct gimage *img) {
    imgf=atmpfile();
 #if !defined(_NO_LIBJPEG)
    if (base->image_type==it_true) {
-      done=GImageWrite_Jpeg(img, imgf, 78, false);
+      done=GImageWrite_Jpeg(img,imgf,78,false);
       mimetype="image/jpeg";
    }
 #endif
 #ifndef _NO_LIBPNG
    if (!done) {
-      done=GImageWrite_Png(img, (FILE *)imgf, false);
+      done=GImageWrite_Png(img,imgf,false);
       mimetype="image/png";
    }
 #endif
    if (!done) {
-      GImageWrite_Bmp(img, imgf);
+      GImageWrite_Bmp(img,imgf);
       mimetype="image/bmp";
    }
 
-   afprintf(file, "%s;base64,", mimetype);
+   afprintf(file,"%s;base64,",mimetype);
    afseek(imgf,0,SEEK_SET);
 
    /* Now do base64 output conversion */
@@ -2723,7 +2723,7 @@ static GImage *GImageFromDataURI(char *uri) {
    }
    tmp=atmpfile();
    if (is_base64)
-      DecodeBase64ToFile(tmp, uri);
+      DecodeBase64ToFile(tmp,uri);
    else {
       while (*uri) {
 	 aputc(*uri, tmp);
@@ -2750,7 +2750,7 @@ static GImage *GImageFromDataURI(char *uri) {
 }
 
 static Entity *SVGParseImage(xmlNodePtr svg) {
-   double x=0, y=0, width=1, height=1;
+   double x=0,y=0,width=1,height=1;
    GImage *img;
    struct _GImage *base;
    Entity *ent;
@@ -2786,11 +2786,11 @@ static Entity *SVGParseImage(xmlNodePtr svg) {
       free(val);
       return (NULL);		/* I can only handle data URIs */
    }
-   img=GImageFromDataURI((char *) val);
+   img=GImageFromDataURI((char *)val);
    free(val);
    if (img==NULL)
       return (NULL);
-   base=img->list_len==0 ? img->u.image : img->u.images[0];
+   base=img->list_len==0?img->u.image:img->u.images[0];
 
    ent=chunkalloc(sizeof(Entity));
    ent->type=et_image;
