@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: fvcomposite.c 4304 2015-10-24 19:05:22Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2158,7 +2158,7 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
    if ((temp=SFGetAlternate(sf, basech, NULL, false)) != NULL
        && haschar(sf, *temp, NULL))
       baserch=*temp;
-   /* Similarly in Ø or ø, we really want to base the accents on O or o */
+   /* Similarly in \O or \o, we really want to base the accents on O or o */
    if (baserch==0xf8)
       baserch='o';
    else if (baserch==0xd8)

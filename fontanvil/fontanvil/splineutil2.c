@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 4155 2015-09-02 07:43:27Z mskala $ */
+/* $Id: splineutil2.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3264,9 +3264,9 @@ SplineFont *SplineFontEmpty(void) {
 
     sf->layer_cnt=2;
     sf->layers=calloc(2,sizeof(LayerInfo));
-    sf->layers[0].name=fastrdup(_("Back"));
+    sf->layers[0].name=fastrdup("Back");
     sf->layers[0].background=true;
-    sf->layers[1].name=fastrdup(_("Fore"));
+    sf->layers[1].name=fastrdup("Fore");
     sf->layers[1].background=false;
     sf->grid.background=true;
 

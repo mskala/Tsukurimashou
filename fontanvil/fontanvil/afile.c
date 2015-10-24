@@ -1,4 +1,4 @@
-/* $Id: afile.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: afile.c 4303 2015-10-24 16:59:22Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -1225,11 +1225,12 @@ AFILE *base85_afile(AFILE *f) {
      return NULL;
 
    rval=(B85_AFILE *)malloc(sizeof(B85_AFILE));
+   rval->magic=B85_MAGIC;
+   rval->vtbl=&b85_afile_vtbl;
+   rval->inner=f;
    rval->ascii85encode=0;
    rval->ascii85n=0;
    rval->ascii85bytes_per_line=0;
-   rval->magic=B85_MAGIC;
-   rval->vtbl=&b85_afile_vtbl;
 
    return (AFILE *)rval;
 }

@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4300 2015-10-24 13:03:29Z mskala $ */
+/* $Id: featurefile.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -7322,7 +7322,7 @@ static void fea_NameLookups(struct parseState *tok) {
 	 char buf[50];
 
 	 do {
-	    snprintf(buf, sizeof(buf), _("Anchor-%d"), acnt++);
+	    snprintf(buf, sizeof(buf), "Anchor-%d", acnt++);
 	    for (an=sf->anchor; an != NULL && strcmp(an->name, buf) != 0;
 		 an=an->next);
 	 } while (an != NULL);

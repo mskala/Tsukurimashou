@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: tottf.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1546,13 +1546,6 @@ static int dumpglyphs(SplineFont *sf,struct glyphinfo *gi) {
 	    if (SCWorthOutputting(sc))
 	       if (!SCPointsNumberedProperly(sc, gi->layer)) {
 		  if (answered==-1 && sc->ttf_instrs_len != 0) {
-		     char *buts[5];
-
-		     buts[0]=_("_Yes");
-		     buts[1]=_("Yes to _All");
-		     buts[2]=_("No _to All");
-		     buts[3]=_("_No");
-		     buts[4]=NULL;
 		     answer =0;
 		  } else
 		     answer=answered;

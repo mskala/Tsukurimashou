@@ -1,4 +1,4 @@
-/* $Id: fontanvil.h 4071 2015-06-29 09:11:43Z mskala $ */
+/* $Id: fontanvil.h 4302 2015-10-24 15:00:46Z mskala $ */
 /*
  * Global header for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -61,7 +61,6 @@ extern sfmt_t fa_sfmt;
 #   include "fontanvil.h"
 #   include <stdio.h>
 #   include <string.h>
-#   include <intl.h>
 #   include "splinefont.h"
 #   include "uiinterface.h"
 

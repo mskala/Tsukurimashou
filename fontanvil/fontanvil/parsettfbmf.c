@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: parsettfbmf.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -512,11 +512,6 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
    const char **choices;
    char *sel;
    char buf[300];
-   char *buttons[3];
-
-   buttons[0]=_("_Yes");
-   buttons[1]=_("_No");
-   buttons[2]=NULL;
 
    afseek(ttf, info->bitmaploc_start, SEEK_SET);
 					/* version=*/ getlong(ttf);
@@ -640,7 +635,7 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
       else
 	 last->next=bdf;
       last=bdf;
-      snprintf(buf, sizeof(buf), _("%d pixel bitmap"), sizes[i].ppem);
+      snprintf(buf, sizeof(buf), "%d pixel bitmap", sizes[i].ppem);
       readttfbitmapfont(ttf, info, &sizes[i], bdf);
    }
    free(sizes);

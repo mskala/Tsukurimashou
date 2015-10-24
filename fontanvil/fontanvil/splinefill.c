@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 4285 2015-10-20 09:10:39Z mskala $ */
+/* $Id: splinefill.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1675,8 +1675,8 @@ BDFFont *SplineFontToBDFHeader(SplineFont *_sf, int pixelsize, int indicate) {
    scale=pixelsize / (real) (sf->ascent + sf->descent);
 
    if (indicate) {
-      sprintf(size, _("%d pixels"), pixelsize);
-      strcpy(aa, _("Generating bitmap font"));
+      sprintf(size,"%d pixels",pixelsize);
+      strcpy(aa,"Generating bitmap font");
       if (sf->fontname != NULL) {
 	 strcat(aa, ": ");
 	 strncat(aa, sf->fontname, sizeof(aa) - strlen(aa));
@@ -1839,8 +1839,8 @@ BDFFont *SplineFontAntiAlias(SplineFont *_sf, int layer, int pixelsize,
    }
    scale=pixelsize / (real) (sf->ascent + sf->descent);
 
-   sprintf(size, _("%d pixels"), pixelsize);
-   strcpy(aa, _("Generating anti-alias font"));
+   sprintf(size,"%d pixels",pixelsize);
+   strcpy(aa,"Generating anti-alias font");
    if (sf->fontname != NULL) {
       strcat(aa, ": ");
       strncat(aa, sf->fontname, sizeof(aa) - strlen(aa));

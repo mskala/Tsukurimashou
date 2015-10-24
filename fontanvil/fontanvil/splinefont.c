@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4293 2015-10-21 12:14:09Z mskala $ */
+/* $Id: splinefont.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -970,7 +970,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 
    /* If there are no pfaedit windows, give them something to look at */
    /*  immediately. Otherwise delay a bit */
-   strncpy(ubuf, _("Loading font from "), sizeof(ubuf) - 1);
+   strncpy(ubuf,"Loading font from ",sizeof(ubuf)-1);
    len=strlen(ubuf);
    if (!wasurl || i==-1)	/* If it wasn't compressed, or it wasn't an url, then the fullname is reasonable, else use the original name */
       strncat(ubuf, temp=fastrdup(GFileNameTail(fullname)), 100);
@@ -1209,15 +1209,10 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
        && (sf->pfminfo.fstype & 0xff)==0x0002) {
       /* Ok, they have told us from a script they have access to the font */
    } else if (!fromsfd && sf != NULL && (sf->pfminfo.fstype & 0xff)==0x0002) {
-      char *buts[3];
-
-      buts[0]=_("_Yes");
-      buts[1]=_("_No");
-      buts[2]=NULL;
       SplineFontFree(sf);
-      return (NULL);
+      return NULL;
    }
-   return (sf);
+   return sf;
 }
 
 SplineFont *ReadSplineFont(char *filename, enum openflags openflags) {

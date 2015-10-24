@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: fvimportbdf.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2044,13 +2044,6 @@ static int askusersize(char *filename) {
 }
 
 static int alreadyexists(int pixelsize) {
-   int ret;
-   char *buts[3];
-
-   buts[0]=_("_OK");
-   buts[1]=_("_Cancel");
-   buts[2]=NULL;
-
    return true;
 }
 
@@ -2509,7 +2502,7 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
       fpt += 2;
    }
 
-   sprintf(buf, _("Loading font from %.100s"), filename);
+   sprintf(buf, "Loading font from %.100s", filename);
 
    file=eod + 1;
    do {
@@ -2520,7 +2513,7 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
       strcpy(full, filename);
       strcat(full, "/");
       strcat(full, file);
-      sprintf(buf, _("Loading font from %.100s"), filename);
+      sprintf(buf, "Loading font from %.100s", filename);
       b=_SFImportBDF(fv->sf, full, ispk, toback, fv->map);
       free(full);
       if (b != NULL) {
@@ -2597,7 +2590,7 @@ int FVImportMult(FontViewBase * fv, char *filename, int toback, int bf) {
    BDFFont *strikes;
    char buf[300];
 
-   snprintf(buf, sizeof(buf), _("Loading font from %.100s"), filename);
+   snprintf(buf, sizeof(buf), "Loading font from %.100s", filename);
 
    if (bf==bf_ttf)
       strikeholder =

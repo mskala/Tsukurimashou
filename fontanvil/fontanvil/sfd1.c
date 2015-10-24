@@ -1,4 +1,4 @@
-/* $Id: sfd1.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: sfd1.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -488,7 +488,7 @@ static void ACDisassociateLigatures(SplineFont1 *sf,AnchorClass1 *ac) {
    /* GT: Need to split some AnchorClasses into two classes, one for normal */
    /* GT:  base letters, and one for ligatures. So create a new AnchorClass */
    /* GT:  name for the ligature version */
-   format=_("Ligature %s");
+   format="Ligature %s";
    lac->ac.name=malloc(strlen(ac->ac.name) + strlen(format) + 1);
    sprintf(lac->ac.name, format, ac->ac.name);
 

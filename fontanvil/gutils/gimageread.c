@@ -1,4 +1,4 @@
-/* $Id: gimageread.c 4298 2015-10-24 10:00:42Z mskala $ */
+/* $Id: gimageread.c 4304 2015-10-24 19:05:22Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -31,47 +31,55 @@
 
 #include "gfile.h"
 
-/* FIXME rewrite this to work better without GNOME! */
-
 GImage *GImageRead(char *filename) {
-/* Go read an input image file. Return NULL if cannot guess file type */
-   char *mime, *pt;
+   char *mime,*pt;
+   unsigned char buffer[80];
+   AFILE *fp;
 
-   if (filename == NULL)
+   if (filename==NULL)
       return (NULL);
 
-   /* Try finding correct routine to use based on GTK mime type */
    if (GFileExists(filename)) {
-      mime = "application/octet-stream";
+      fp=afopen(filename,"rb");
+      if (fp==NULL)
+	return NULL;
+      memset(buffer,0,80);
+      afread(buffer,1,80,fp);
+      afclose(fp);
+      
+      if ((buffer[0]=='B') && (buffer[1]=='M') && (buffer[15]==0) &&
+	  ((buffer[14]==12) || (buffer[14]==40) || (buffer[14]==64) ||
+	      (buffer[14]==124) || (buffer[14]==108) || (buffer[14]==128)))
+	return GImageReadBmp(filename);
 
-      if (strcasecmp(mime, "image/bmp") == 0)
-	 return (GImageReadBmp(filename));
-      else if (strcasecmp(mime, "image/x-xbitmap") == 0)
-	 return (GImageReadXbm(filename));
-      else if (strcasecmp(mime, "image/x-xpixmap") == 0)
-	 return (GImageReadXpm(filename));
+      if (strncmp(buffer,"/* XPM */",9)==0)
+	 return GImageReadXpm(filename);
+      
 #ifndef _NO_LIBTIFF
-      else if (strcasecmp(mime, "image/tiff") == 0)
-	 return (GImageReadTiff(filename));
+      if ((memcmp(buffer,"II*",4)==0) || (memcmp(buffer,"MM\0*",4)==0))
+	 return GImageReadTiff(filename);
 #endif
+
 #ifndef _NO_LIBJPEG
-      else if (strcasecmp(mime, "image/jpeg") == 0)
-	 return (GImageReadJpeg(filename));
+      if ((buffer[0]==0xFF) && (buffer[1]==0xD8))
+	return GImageReadJpeg(filename);
 #endif
+
 #ifndef _NO_LIBPNG
-      else if (strcasecmp(mime, "image/png") == 0)
-	 return (GImageReadPng(filename));
+      if (memcmp(buffer,"\x89PNG\x0D\x0A\x1A\x0A",8)==0)
+	 return GImageReadPng(filename);
 #endif
+
 #ifndef _NO_LIBUNGIF
-      else if (strcasecmp(mime, "image/gif") == 0)
-	 return (GImageReadGif(filename));
+      if (memcmp(buffer,"GIF8",4)==0)
+	return GImageReadGif(filename);
 #endif
-      else if (strcasecmp(mime, "image/x-cmu-raster") == 0 ||
-	       strcasecmp(mime, "image/x-sun-raster") == 0)
-	 return (GImageReadRas(filename));	/* Sun raster */
-      else if (strcasecmp(mime, "image/x-rgb") == 0 ||
-	       strcasecmp(mime, "image/x-sgi") == 0)
-	 return (GImageReadRgb(filename));	/* SGI format */
+      if ((memcmp(buffer,"\361\0\100\273",4)==0) ||
+	  (memcmp(buffer,"\x59\xA6\x6A\x95",4)==0))
+	 return GImageReadRas(filename);	/* CMU or Sun raster */
+
+      if ((buffer[0]==1) && (buffer[1]==218))
+	 return GImageReadRgb(filename);	/* SGI format */
    }
 
    /* Try finding correct routine to use based on filename suffix */

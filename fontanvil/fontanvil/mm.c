@@ -1,4 +1,4 @@
-/* $Id: mm.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: mm.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -333,23 +333,19 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 
    for (i=0; i < mm->instance_count; ++i) {
       if (mm->instances[i]->layers[ly_fore].order2)
-	 return (_
-		 ("One of the multiple master instances contains quadratic splines. It must be converted to cubic splines before it can be used in a multiple master"));
+	 return "One of the multiple master instances contains quadratic splines. It must be converted to cubic splines before it can be used in a multiple master";
       if (gid >= mm->instances[i]->glyphcnt)
-	 return (_
-		 ("The different instances of this mm have a different number of glyphs"));
+	 return "The different instances of this mm have a different number of glyphs";
       if (SCWorthOutputting(mm->instances[i]->glyphs[gid])) {
 	 if (worthit==-1)
 	    worthit=true;
 	 else if (worthit != true)
-	    return (_
-		    ("This glyph is defined in one instance font but not in another"));
+	    return "This glyph is defined in one instance font but not in another";
       } else {
 	 if (worthit==-1)
 	    worthit=false;
 	 else if (worthit != false)
-	    return (_
-		    ("This glyph is defined in one instance font but not in another"));
+	    return "This glyph is defined in one instance font but not in another";
       }
    }
 
@@ -409,11 +405,9 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
       }
    }
    if (any)
-      return (_
-	      ("This glyph contains a different number of references in different instances"));
+      return "This glyph contains a different number of references in different instances";
    if (diff)
-      return (_
-	      ("A reference in this glyph refers to a different encoding in different instances"));
+      return "A reference in this glyph refers to a different encoding in different instances";
 
    /* Blend Width */
    width=0;
@@ -484,8 +478,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	       all2=false;
 	 }
 	 if (!all2 && any2)
-	    return (_
-		    ("A contour in this glyph contains a different number of points in different instances"));
+	    return "A contour in this glyph contains a different number of points in different instances";
 	 anyend=false;
 	 allend=true;
 	 for (i=0; i < mm->instance_count; ++i) {
@@ -500,8 +493,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	    break;
 	 }
 	 if (anyend)
-	    return (_
-		    ("A contour in this glyph contains a different number of points in different instances"));
+	    return "A contour in this glyph contains a different number of points in different instances";
       }
       any=false;
       all=true;
@@ -514,8 +506,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
       }
    }
    if (any)
-      return (_
-	      ("This glyph contains a different number of contours in different instances"));
+      return "This glyph contains a different number of contours in different instances";
 
    /* Blend hints */
    for (j=0; j < 2; ++j) {
@@ -559,8 +550,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	 }
       }
       if (any)
-	 return (_
-		 ("This glyph contains a different number of hints in different instances"));
+	 return "This glyph contains a different number of hints in different instances";
    }
 
    /* Blend kernpairs */
@@ -577,8 +567,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	    if (kptest->sc->orig_pos==kp0->sc->orig_pos)
 	       break;
 	 if (kptest==NULL)
-	    return (_
-		    ("This glyph contains different kerning pairs in different instances"));
+	    return "This glyph contains different kerning pairs in different instances";
 	 off += kptest->off * mm->defweights[i];
       }
       kp=chunkalloc(sizeof(KernPair));
@@ -600,8 +589,7 @@ char *MMBlendChar(MMSet * mm, int gid) {
    RefChar *ref;
 
    if (gid >= mm->normal->glyphcnt)
-      return (_
-	      ("The different instances of this mm have a different number of glyphs"));
+      return "The different instances of this mm have a different number of glyphs";
    ret=_MMBlendChar(mm, gid);
    if (mm->normal->glyphs[gid] != NULL) {
       SplineChar *sc=mm->normal->glyphs[gid];

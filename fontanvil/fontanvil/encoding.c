@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4300 2015-10-24 13:03:29Z mskala $ */
+/* $Id: encoding.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1002,13 +1002,6 @@ static void SFEncodeToMap(SplineFont *sf,struct cidmap *map) {
       } else if (sc != NULL)
 	 sc->orig_pos=-1;
 
-   if (anyextras) {
-      char *buttons[3];
-
-      buttons[0]=_("_Delete");
-      buttons[1]=_("_Add");
-      buttons[2]=NULL;
-   }
    SFApplyOrdering(sf, max + 1);
 }
 

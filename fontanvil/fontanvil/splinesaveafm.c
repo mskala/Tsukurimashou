@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: splinesaveafm.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2174,12 +2174,12 @@ void SFKernClassTempDecompose(SplineFont *sf, int isv) {
       otl->lookup_type=gpos_pair;
       otl->lookup_flags=kc->subtable->lookup->lookup_flags;
       otl->features=FeatureListCopy(kc->subtable->lookup->features);
-      otl->lookup_name=fastrdup(_("<Temporary kerning>"));
+      otl->lookup_name=fastrdup("<Temporary kerning>");
       otl->temporary_kern=otl->store_in_afm=true;
       otl->subtables=chunkalloc(sizeof(struct lookup_subtable));
       otl->subtables->lookup=otl;
       otl->subtables->per_glyph_pst_or_kern=true;
-      otl->subtables->subtable_name=fastrdup(_("<Temporary kerning>"));
+      otl->subtables->subtable_name=fastrdup("<Temporary kerning>");
 
       first=KernClassToSC(sf, kc->firsts, kc->first_cnt);
       last=KernClassToSC(sf, kc->seconds, kc->second_cnt);

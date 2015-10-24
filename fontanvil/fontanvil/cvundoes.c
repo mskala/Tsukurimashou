@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: cvundoes.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -926,7 +926,6 @@ static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
       ErrorMsg(2,"We should never have called PasteNonExistantRefCheck if we had a glyph\n");
    if (fromsc==NULL) {
       if (!(*refstate & 0x4)) {
-	 char *buts[3];
 	 char buf[80];
 	 const char *name;
 
@@ -935,19 +934,9 @@ static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
 	 else
 	    name =
 	       StdGlyphName(buf, ref->unicode_enc, ui_none, (NameList *) - 1);
-	 buts[0]=_("Don't Warn Again");
-	 buts[1]=_("_OK");
-	 buts[2]=NULL;
       }
    } else {
       if (!(*refstate & 0x3)) {
-	 char *buts[5];
-
-	 buts[0]=_("_Yes");
-	 buts[1]=_("Yes to _All");
-	 buts[2]=_("No _to All");
-	 buts[3]=_("_No");
-	 buts[4]=NULL;
 	 yes=0;
       }
       if ((*refstate & 1) || yes <= 1) {
@@ -1053,17 +1042,11 @@ static void APMerge(SplineChar *sc,AnchorPoint *anchor) {
 static int InstrsSameParent(SplineChar *sc,SplineFont *copied_from) {
    static SplineFont *dontask_parent=NULL,*dontask_copied_from;
    static int dontask_ret=0;
-   char *buts[5];
 
    if (sc->parent==copied_from)
       return (true);
    if (sc->parent==dontask_parent && copied_from==dontask_copied_from)
       return (dontask_ret);
-   buts[0]=_("_Yes");
-   buts[3]=_("_No");
-   buts[1]=_("Yes to _All");
-   buts[2]=_("No _to All");
-   buts[4]=NULL;
    return (true);
 }
 
@@ -1671,11 +1654,6 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
    int cnt, bcnt, ftot=0, doit, isgpos, i, ret;
    char **choices=NULL, *sel;
    OTLookup *otl, **list1=NULL, **list2=NULL, **list, **blist;
-   char *buttons[3];
-
-   buttons[0]=_("_OK");
-   buttons[1]=_("_Cancel");
-   buttons[2]=NULL;
 
    *backpairlist=NULL;
 
@@ -1706,7 +1684,7 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 /* GT:  pair. But we can also (separatedly) copy data where the current glyph */
 /* GT:  is the second glyph in the kerning pair, and that's what this line */
 /* GT:  refers to. The "%s" will be filled in with the lookup name */
-		     char *format=_("Second glyph of %s");
+		     char *format="Second glyph of %s";
 		     char *space =
 			malloc(strlen(format) + strlen(otl->lookup_name) + 1);
 		     sprintf(space, format, otl->lookup_name);
@@ -2009,18 +1987,6 @@ static BDFFont *BitmapCreateCheck(FontViewBase *fv,int *yestoall,int first,
    int yes=0;
    BDFFont *bdf=NULL;
    if (*yestoall > 0 && first) {
-      char *buts[5];
-      char buf[20];
-
-      if (depth != 1)
-	 sprintf(buf, "%d@%d", pixelsize, depth);
-      else
-	 sprintf(buf, "%d", pixelsize);
-      buts[0]=_("_Yes");
-      buts[1]=_("Yes to _All");
-      buts[2]=_("No _to All");
-      buts[3]=_("_No");
-      buts[4]=NULL;
       yes=1;
    }
    if (yes==1 || *yestoall) {

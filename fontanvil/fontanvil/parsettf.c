@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: parsettf.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -952,78 +952,78 @@ static struct tablenames {
    char *name;
 } stdtables[]={
    {
-   CHR('a', 'c', 'n', 't'), N_("accent attachment table")}, {
-   CHR('a', 'v', 'a', 'r'), N_("axis variation table")}, {
-   CHR('B', 'A', 'S', 'E'), N_("Baseline table (OT version)")}, {
-   CHR('b', 'd', 'a', 't'), N_("bitmap data table (AAT version)")}, {
-   CHR('B', 'D', 'F', ' '), N_("BDF bitmap properties table")}, {
-   CHR('b', 'h', 'e', 'd'), N_("bitmap font header table")}, {
-   CHR('b', 'l', 'o', 'c'), N_("bitmap location table (AAT version)")}, {
-   CHR('b', 's', 'l', 'n'), N_("baseline table (AAT version)")}, {
+   CHR('a', 'c', 'n', 't'), "accent attachment table"}, {
+   CHR('a', 'v', 'a', 'r'), "axis variation table"}, {
+   CHR('B', 'A', 'S', 'E'), "Baseline table (OT version)"}, {
+   CHR('b', 'd', 'a', 't'), "bitmap data table (AAT version)"}, {
+   CHR('B', 'D', 'F', ' '), "BDF bitmap properties table"}, {
+   CHR('b', 'h', 'e', 'd'), "bitmap font header table"}, {
+   CHR('b', 'l', 'o', 'c'), "bitmap location table (AAT version)"}, {
+   CHR('b', 's', 'l', 'n'), "baseline table (AAT version)"}, {
    CHR('C', 'F', 'F', ' '),
-	 N_("PostScript font program (Compact Font Format)")}, {
-   CHR('C', 'I', 'D', ' '), N_("Obsolete table for a type1 CID keyed font")}, {
-   CHR('c', 'm', 'a', 'p'), N_("character code mapping table")}, {
-   CHR('c', 'v', 'a', 'r'), N_("CVT variation table")}, {
-   CHR('c', 'v', 't', ' '), N_("control value table")}, {
-   CHR('D', 'S', 'I', 'G'), N_("digital signature table")}, {
-   CHR('E', 'B', 'D', 'T'), N_("bitmap data table (OT version)")}, {
-   CHR('E', 'B', 'L', 'C'), N_("bitmap location table (OT version)")}, {
-   CHR('E', 'B', 'S', 'C'), N_("embedded bitmap scaling control table")}, {
-   CHR('E', 'L', 'U', 'A'), N_("electronic end user license table")}, {
-   CHR('f', 'd', 's', 'c'), N_("font descriptor table")}, {
-   CHR('f', 'e', 'a', 't'), N_("layout feature table")}, {
-   CHR('F', 'e', 'a', 't'), N_("SIL Graphite layout feature table")}, {
-   CHR('F', 'F', 'T', 'M'), N_("FontAnvil time stamp table")}, {
-   CHR('f', 'm', 't', 'x'), N_("font metrics table")}, {
-   CHR('f', 'p', 'g', 'm'), N_("font program table")}, {
-   CHR('f', 'v', 'a', 'r'), N_("font variation table")}, {
+	 "PostScript font program (Compact Font Format)"}, {
+   CHR('C', 'I', 'D', ' '), "Obsolete table for a type1 CID keyed font"}, {
+   CHR('c', 'm', 'a', 'p'), "character code mapping table"}, {
+   CHR('c', 'v', 'a', 'r'), "CVT variation table"}, {
+   CHR('c', 'v', 't', ' '), "control value table"}, {
+   CHR('D', 'S', 'I', 'G'), "digital signature table"}, {
+   CHR('E', 'B', 'D', 'T'), "bitmap data table (OT version)"}, {
+   CHR('E', 'B', 'L', 'C'), "bitmap location table (OT version)"}, {
+   CHR('E', 'B', 'S', 'C'), "embedded bitmap scaling control table"}, {
+   CHR('E', 'L', 'U', 'A'), "electronic end user license table"}, {
+   CHR('f', 'd', 's', 'c'), "font descriptor table"}, {
+   CHR('f', 'e', 'a', 't'), "layout feature table"}, {
+   CHR('F', 'e', 'a', 't'), "SIL Graphite layout feature table"}, {
+   CHR('F', 'F', 'T', 'M'), "FontAnvil time stamp table"}, {
+   CHR('f', 'm', 't', 'x'), "font metrics table"}, {
+   CHR('f', 'p', 'g', 'm'), "font program table"}, {
+   CHR('f', 'v', 'a', 'r'), "font variation table"}, {
    CHR('g', 'a', 's', 'p'),
-	 N_("grid-fitting and scan-conversion procedure table")}, {
-   CHR('G', 'D', 'E', 'F'), N_("glyph definition table")}, {
-   CHR('G', 'l', 'a', 't'), N_("Graphite glyph attribute table")}, {
-   CHR('G', 'l', 'o', 'c'), N_("Graphite glyph location in Glat table")}, {
-   CHR('g', 'l', 'y', 'f'), N_("glyph outline table")}, {
-   CHR('G', 'P', 'O', 'S'), N_("glyph positioning table")}, {
-   CHR('g', 'v', 'a', 'r'), N_("glyph variation table")}, {
-   CHR('G', 'S', 'U', 'B'), N_("glyph substitution table")}, {
-   CHR('h', 'd', 'm', 'x'), N_("horizontal device metrics table")}, {
-   CHR('h', 'e', 'a', 'd'), N_("font header table")}, {
-   CHR('h', 'h', 'e', 'a'), N_("horizontal header table")}, {
-   CHR('h', 'm', 't', 'x'), N_("horizontal metrics table")}, {
-   CHR('h', 's', 't', 'y'), N_("horizontal style table")}, {
-   CHR('j', 'u', 's', 't'), N_("justification table (AAT version)")}, {
-   CHR('J', 'S', 'T', 'F'), N_("justification table (OT version)")}, {
-   CHR('k', 'e', 'r', 'n'), N_("kerning table")}, {
-   CHR('l', 'c', 'a', 'r'), N_("ligature caret table")}, {
-   CHR('l', 'o', 'c', 'a'), N_("glyph location table")}, {
-   CHR('L', 'T', 'S', 'H'), N_("linear threshold table")}, {
-   CHR('M', 'A', 'T', 'H'), N_("math table")}, {
-   CHR('m', 'a', 'x', 'p'), N_("maximum profile table")}, {
-   CHR('M', 'M', 'S', 'D'), N_("Multi-Master table, obsolete")}, {
-   CHR('M', 'M', 'F', 'X'), N_("Multi-Master table, obsolete")}, {
-   CHR('m', 'o', 'r', 't'), N_("metamorphosis table")}, {
-   CHR('m', 'o', 'r', 'x'), N_("extended metamorphosis table")}, {
-   CHR('n', 'a', 'm', 'e'), N_("name table")}, {
-   CHR('o', 'p', 'b', 'd'), N_("optical bounds table")}, {
-   CHR('O', 'S', '/', '2'), N_("OS/2 and Windows specific metrics table")}, {
-   CHR('P', 'C', 'L', 'T'), N_("PCL 5 data table")}, {
-   CHR('P', 'f', 'E', 'd'), N_("FontAnvil font debugging table")}, {
+	 "grid-fitting and scan-conversion procedure table"}, {
+   CHR('G', 'D', 'E', 'F'), "glyph definition table"}, {
+   CHR('G', 'l', 'a', 't'), "Graphite glyph attribute table"}, {
+   CHR('G', 'l', 'o', 'c'), "Graphite glyph location in Glat table"}, {
+   CHR('g', 'l', 'y', 'f'), "glyph outline table"}, {
+   CHR('G', 'P', 'O', 'S'), "glyph positioning table"}, {
+   CHR('g', 'v', 'a', 'r'), "glyph variation table"}, {
+   CHR('G', 'S', 'U', 'B'), "glyph substitution table"}, {
+   CHR('h', 'd', 'm', 'x'), "horizontal device metrics table"}, {
+   CHR('h', 'e', 'a', 'd'), "font header table"}, {
+   CHR('h', 'h', 'e', 'a'), "horizontal header table"}, {
+   CHR('h', 'm', 't', 'x'), "horizontal metrics table"}, {
+   CHR('h', 's', 't', 'y'), "horizontal style table"}, {
+   CHR('j', 'u', 's', 't'), "justification table (AAT version)"}, {
+   CHR('J', 'S', 'T', 'F'), "justification table (OT version)"}, {
+   CHR('k', 'e', 'r', 'n'), "kerning table"}, {
+   CHR('l', 'c', 'a', 'r'), "ligature caret table"}, {
+   CHR('l', 'o', 'c', 'a'), "glyph location table"}, {
+   CHR('L', 'T', 'S', 'H'), "linear threshold table"}, {
+   CHR('M', 'A', 'T', 'H'), "math table"}, {
+   CHR('m', 'a', 'x', 'p'), "maximum profile table"}, {
+   CHR('M', 'M', 'S', 'D'), "Multi-Master table, obsolete"}, {
+   CHR('M', 'M', 'F', 'X'), "Multi-Master table, obsolete"}, {
+   CHR('m', 'o', 'r', 't'), "metamorphosis table"}, {
+   CHR('m', 'o', 'r', 'x'), "extended metamorphosis table"}, {
+   CHR('n', 'a', 'm', 'e'), "name table"}, {
+   CHR('o', 'p', 'b', 'd'), "optical bounds table"}, {
+   CHR('O', 'S', '/', '2'), "OS/2 and Windows specific metrics table"}, {
+   CHR('P', 'C', 'L', 'T'), "PCL 5 data table"}, {
+   CHR('P', 'f', 'E', 'd'), "FontAnvil font debugging table"}, {
    CHR('p', 'o', 's', 't'),
-	 N_("glyph name and PostScript compatibility table")}, {
-   CHR('p', 'r', 'e', 'p'), N_("control value program table")}, {
-   CHR('p', 'r', 'o', 'p'), N_("properties table")}, {
-   CHR('S', 'i', 'l', 'f'), N_("SIL Graphite rule table")}, {
-   CHR('S', 'i', 'l', 'l'), N_("(unspecified) SIL Graphite table")}, {
-   CHR('S', 'i', 'l', 't'), N_("unknown SIL table")}, {
-   CHR('T', 'e', 'X', ' '), N_("TeX table")}, {
-   CHR('t', 'r', 'a', 'k'), N_("tracking table")}, {
-   CHR('T', 'Y', 'P', '1'), N_("Obsolete table for a type1 font")}, {
-   CHR('V', 'D', 'M', 'X'), N_("vertical device metrics table")}, {
-   CHR('v', 'h', 'e', 'a'), N_("vertical header table")}, {
-   CHR('v', 'm', 't', 'x'), N_("vertical metrics table")}, {
-   CHR('V', 'O', 'R', 'G'), N_("vertical origin table")}, {
-   CHR('Z', 'a', 'p', 'f'), N_("glyph reference table")}, {
+	 "glyph name and PostScript compatibility table"}, {
+   CHR('p', 'r', 'e', 'p'), "control value program table"}, {
+   CHR('p', 'r', 'o', 'p'), "properties table"}, {
+   CHR('S', 'i', 'l', 'f'), "SIL Graphite rule table"}, {
+   CHR('S', 'i', 'l', 'l'), "(unspecified) SIL Graphite table"}, {
+   CHR('S', 'i', 'l', 't'), "unknown SIL table"}, {
+   CHR('T', 'e', 'X', ' '), "TeX table"}, {
+   CHR('t', 'r', 'a', 'k'), "tracking table"}, {
+   CHR('T', 'Y', 'P', '1'), "Obsolete table for a type1 font"}, {
+   CHR('V', 'D', 'M', 'X'), "vertical device metrics table"}, {
+   CHR('v', 'h', 'e', 'a'), "vertical header table"}, {
+   CHR('v', 'm', 't', 'x'), "vertical metrics table"}, {
+   CHR('V', 'O', 'R', 'G'), "vertical origin table"}, {
+   CHR('Z', 'a', 'p', 'f'), "glyph reference table"}, {
    0, NULL}
 };
 
@@ -1256,7 +1256,7 @@ static int readttfheader(AFILE *ttf,struct ttfinfo *info,char *filename,
 			  tag >> 8, tag);
 	      } else {
 		 ErrorMsg(2,"  Ignoring '%c%c%c%c' %s\n", tag >> 24,
-			  tag >> 16, tag >> 8, tag, _(stdtables[k].name));
+			  tag >> 16, tag >> 8, tag, stdtables[k].name);
 	      }
 	   }
       }
@@ -1665,13 +1665,6 @@ static void TTFAddLangStr(AFILE *ttf,struct ttfinfo *info,int id,
       else if (running_script)
 	 ret=3;
       else {
-	 char *buts[5];
-
-	 buts[0]=_("Use _First");
-	 buts[1]=_("First to _All");
-	 buts[2]=_("Second _to All");
-	 buts[3]=_("Use _Second");
-	 buts[4]=NULL;
 	 ret =0;
       }
       if (ret==0 || ret==1)
@@ -4590,17 +4583,17 @@ static int PickCMap(struct cmap_encs *cmap_encs,int enccnt,int def) {
    char **choices, *encname;
    int i, ret;
    static char *macscripts[] =
-      { N_("Script|Roman"), N_("Script|Japanese"),
-N_("Script|Traditional Chinese"), N_("Script|Korean"),
-      N_("Script|Arabic"), N_("Script|Hebrew"), N_("Script|Greek"),
+      { "Script|Roman", "Script|Japanese",
+"Script|Traditional Chinese", "Script|Korean",
+      "Script|Arabic", "Script|Hebrew", "Script|Greek",
 /* GT: Don't ask me what RSymbol means, I don't know either. It's in apple's */
 /* GT:  docs though */
-      N_("Script|Cyrillic"), N_("Script|RSymbol"), N_("Script|Devanagari"),
-/* 10*/ N_("Script|Gurmukhi"), N_("Script|Gujarati"), NULL, NULL, NULL,
+      "Script|Cyrillic", "Script|RSymbol", "Script|Devanagari",
+/* 10*/ "Script|Gurmukhi", "Script|Gujarati", NULL, NULL, NULL,
       NULL, NULL, NULL, NULL, NULL,
-/* 20*/ NULL, N_("Script|Thai"), NULL, NULL, NULL,
-	 N_("Script|Simplified Chinese"),
-      NULL, NULL, NULL, N_("Script|Central European"),
+/* 20*/ NULL, "Script|Thai", NULL, NULL, NULL,
+	 "Script|Simplified Chinese",
+      NULL, NULL, NULL, "Script|Central European",
 /* 30*/ NULL, NULL, NULL
    };
 
@@ -4609,40 +4602,38 @@ N_("Script|Traditional Chinese"), N_("Script|Korean"),
       encname=NULL;
       if (cmap_encs[i].platform==1 && cmap_encs[i].specific < 32) {
 	 encname=macscripts[cmap_encs[i].specific];
-	 if (encname != NULL)
-	    encname=S_(encname);
       } else if (cmap_encs[i].platform==0) {
 	 switch (cmap_encs[i].specific) {
 	   case 0:
-	      encname=N_("Unicode 1.0");
+	      encname="Unicode 1.0";
 	      break;
 	   case 1:
-	      encname=N_("Unicode 1.1");
+	      encname="Unicode 1.1";
 	      break;
 	   case 2:
-	      encname=N_("ISO 10646:1993");
+	      encname="ISO 10646:1993";
 	      break;
 	   case 3:
-	      encname=N_("Unicode 2.0+, BMP only");
+	      encname="Unicode 2.0+, BMP only";
 	      break;
 	   case 4:
-	      encname=N_("Unicode 2.0+, all planes");
+	      encname="Unicode 2.0+, all planes";
 	      break;
 	 }
       } else if (cmap_encs[i].platform==3 && cmap_encs[i].specific==0)
-	 encname=N_("\"Symbol\"");
+	 encname="\"Symbol\"";
       if (encname==NULL)
 	 encname=cmap_encs[i].enc->enc_name;
 
       sprintf(buffer, "%d (%s) %d %s %s  %s",
 	      cmap_encs[i].platform,
-	      cmap_encs[i].platform==0 ? _("Unicode") :
-	      cmap_encs[i].platform==1 ? _("Apple") :
-	      cmap_encs[i].platform==2 ? _("ISO (Deprecated)") :
-	      cmap_encs[i].platform==3 ? _("MicroSoft") :
-	      cmap_encs[i].platform==4 ? _("Custom") :
-	      cmap_encs[i].platform==7 ? _("FreeType internals") :
-	      _("Unknown"),
+	      cmap_encs[i].platform==0 ? "Unicode" :
+	      cmap_encs[i].platform==1 ? "Apple" :
+	      cmap_encs[i].platform==2 ? "ISO (Deprecated)" :
+	      cmap_encs[i].platform==3 ? "MicroSoft" :
+	      cmap_encs[i].platform==4 ? "Custom" :
+	      cmap_encs[i].platform==7 ? "FreeType internals" :
+	      "Unknown",
 	      cmap_encs[i].specific,
 	      encname,
 	      cmap_encs[i].platform==1
@@ -5686,14 +5677,6 @@ static int readttf(AFILE *ttf,struct ttfinfo *info,char *filename) {
    if (!info->onlystrikes &&
        info->glyphlocations_start != 0 && info->glyph_start != 0 &&
        info->cff_start != 0) {
-      char *buts[4];
-      int choice;
-
-      buts[0]=_("TTF 'glyf'");
-      buts[1]=_("OTF 'CFF '");
-      buts[2]=_("_Cancel");
-      buts[3]=NULL;
-      choice =0;
       info->cff_start=0;
    }
 

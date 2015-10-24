@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: autowidth.c 4304 2015-10-24 19:05:22Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -75,9 +75,9 @@ Autokern has similar ideas, but is simpler:
 	Again check for overlap (<dspace>/4 in any zone)
     Kerning by the left character can always propigate to dependents
     Kerning by the right char should not
-	(ie. A and À kern the same with V
-	 but V kerns differently with e and é-- the accent gets in the way)
-    No, I think it is better not to propigate kerning.
+	(i.e. A and \`A kern the same with V
+	 but V kerns differently with e and \'{e}-- the accent gets in the way)
+    No, I think it is better not to propagate kerning.
 */
 
 static void AW_AutoKern(WidthInfo *wi) {

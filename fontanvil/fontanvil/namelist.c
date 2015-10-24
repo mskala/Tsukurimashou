@@ -1,4 +1,4 @@
-/* $Id: namelist.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: namelist.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -237,7 +237,7 @@ NameList *NameListByName(char *name) {
       name=(char *) nameTex;
 
    for (nl=&agl; nl != NULL; nl=nl->next) {
-      if (strcmp(_(nl->title), name)==0 || strcmp(nl->title, name)==0)
+      if (strcmp(nl->title, name)==0 || strcmp(nl->title, name)==0)
 	 return (nl);
    }
    return (NULL);
@@ -3948,7 +3948,7 @@ static const char **agl_sans_p0[]={
 
 static NameList agl_sans={
    NULL,
-   N_("AGL without afii"),
+   "AGL without afii",
    {agl_sans_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL, NULL},
    NULL, NULL, 0, NULL
@@ -4734,7 +4734,7 @@ static const char **agl_nf_p0[]={
 
 static NameList agl_nf={
    NULL,
-   N_("AGL For New Fonts"),
+   "AGL For New Fonts",
    {agl_nf_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL, NULL},
    NULL, NULL, 0, NULL
@@ -6815,7 +6815,7 @@ static const char **agl_p0[]={
 
 static NameList agl={
    &agl_sans,
-   N_("Adobe Glyph List"),
+   "Adobe Glyph List",
    {agl_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL},
    NULL, NULL, 0, NULL
@@ -8119,7 +8119,7 @@ static const char **adobepua_p0[]={
 
 static NameList adobepua={
    &agl,
-   N_("AGL with PUA"),
+   "AGL with PUA",
    {adobepua_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL, NULL},
    NULL, NULL, 0, NULL
@@ -8646,7 +8646,7 @@ static const char **greeksc_p0[]={
 
 static NameList greeksc={
    &adobepua,
-   N_("Greek small caps"),
+   "Greek small caps",
    {greeksc_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL, NULL},
    NULL, NULL, 0, NULL
@@ -11763,7 +11763,7 @@ static const char **tex_p0[]={
 
 static NameList tex={
    &agl,
-   NU_("ΤεΧ Names"),
+   "ΤεΧ Names",
    {tex_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL},
    NULL, NULL, 0, NULL
@@ -15139,7 +15139,7 @@ static const char **ams_p0[]={
 
 static NameList ams={
    &tex,
-   N_("AMS Names"),
+   "AMS Names",
    {ams_p0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     NULL, NULL, NULL, NULL, NULL},
    NULL, NULL, 0, NULL

@@ -178,7 +178,7 @@ noinst_HEADERS = \
   inc/chardata.h inc/charset.h inc/fileutil.h \
   inc/fontanvil-config.h inc/gfile.h \
   inc/gimage.h \
-  inc/gresource.h inc/intl.h inc/ustring.h \
+  inc/gresource.h inc/ustring.h \
   inc/utype.h \
   inc/afile.h \
   inc/views.h \
@@ -257,7 +257,7 @@ gutils_libgutils_a_SOURCES = \
   gutils/gimagereadxpm.c gutils/gimagewritebmp.c gutils/gimagewritegimage.c \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
   gutils/gimagewritexpm.c gutils/gutils.c \
-  gutils/gwwintl.c gutils/unicodelibinfo.c inc/unicodelibinfo.h
+  gutils/unicodelibinfo.c inc/unicodelibinfo.h
 gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a
 
 dist_doc_DATA = doc/fontanvil.pdf

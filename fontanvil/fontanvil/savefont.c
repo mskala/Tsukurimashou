@@ -1,4 +1,4 @@
-/* $Id: savefont.c 4286 2015-10-20 10:46:56Z mskala $ */
+/* $Id: savefont.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -771,11 +771,6 @@ static int WriteMultiplePSFont(SplineFont *sf,char *newname,int32_t *sizes,
 int CheckIfTransparent(SplineFont *sf) {
    /* Type3 doesn't support translucent fills */
    int i, j;
-   char *buts[3];
-
-   buts[0]=_("_Yes");
-   buts[1]=_("_Cancel");
-   buts[2]=NULL;
 
    for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {

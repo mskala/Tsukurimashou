@@ -1,4 +1,4 @@
-/* $Id: python.c 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: python.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -296,7 +296,7 @@ const char *TTFNameIds(int id) {
       if (sfnt_name_str_ids[i].flag==id)
 	 return ((char *) sfnt_name_str_ids[i].name);
 
-   return (_("Unknown"));
+   return "Unknown";
 }
 
 const char *MSLangString(int language) {
@@ -311,5 +311,5 @@ const char *MSLangString(int language) {
       if (sfnt_name_mslangs[i].flag==language)
 	 return ((char *) sfnt_name_mslangs[i].name);
 
-   return (_("Unknown"));
+   return "Unknown";
 }

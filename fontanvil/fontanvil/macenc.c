@@ -1,4 +1,4 @@
-/* $Id: macenc.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: macenc.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1697,127 +1697,127 @@ static struct {
    int code;
 } localmaclang[]={
    {
-   N_("English"), 0}, {
-   N_("French"), 1}, {
-   N_("German"), 2}, {
-   N_("Italian"), 3}, {
-   N_("Dutch"), 4}, {
-   N_("Swedish"), 5}, {
-   N_("Spanish"), 6}, {
-   N_("Danish"), 7}, {
-   N_("Portuguese"), 8}, {
-   N_("Norwegian"), 9}, {
-   N_("Lang|Hebrew"), 10}, {
-   N_("Japanese"), 11}, {
-   N_("Lang|Arabic"), 12}, {
-   N_("Finnish"), 13}, {
-   N_("Lang|Greek"), 14}, {
-   N_("Icelandic"), 15}, {
-   N_("Maltese"), 16}, {
-   N_("Turkish"), 17}, {
-   N_("Croatian"), 18}, {
-   N_("Traditional Chinese"), 19}, {
-   N_("Urdu"), 20}, {
-   N_("Hindi"), 21}, {
-   N_("Lang|Thai"), 22}, {
-   N_("Korean"), 23}, {
-   N_("Lithuanian"), 24}, {
-   N_("Polish"), 25}, {
-   N_("Hungarian"), 26}, {
-   N_("Estonian"), 27}, {
-   N_("Latvian"), 28}, {
-   N_("Sami (Lappish)"), 29}, {
-   N_("Faroese (Icelandic)"), 30},
+   "English", 0}, {
+   "French", 1}, {
+   "German", 2}, {
+   "Italian", 3}, {
+   "Dutch", 4}, {
+   "Swedish", 5}, {
+   "Spanish", 6}, {
+   "Danish", 7}, {
+   "Portuguese", 8}, {
+   "Norwegian", 9}, {
+   "Lang|Hebrew", 10}, {
+   "Japanese", 11}, {
+   "Lang|Arabic", 12}, {
+   "Finnish", 13}, {
+   "Lang|Greek", 14}, {
+   "Icelandic", 15}, {
+   "Maltese", 16}, {
+   "Turkish", 17}, {
+   "Croatian", 18}, {
+   "Traditional Chinese", 19}, {
+   "Urdu", 20}, {
+   "Hindi", 21}, {
+   "Lang|Thai", 22}, {
+   "Korean", 23}, {
+   "Lithuanian", 24}, {
+   "Polish", 25}, {
+   "Hungarian", 26}, {
+   "Estonian", 27}, {
+   "Latvian", 28}, {
+   "Sami (Lappish)", 29}, {
+   "Faroese (Icelandic)", 30},
 /* GT: See the long comment at "Property|New" */
 /* GT: The msgstr should contain a translation of "Farsi/Persian"), ignore "Lang|" */
    {
-   N_("Lang|Farsi/Persian"), 31}, {
-   N_("Russian"), 32}, {
-   N_("Simplified Chinese"), 33}, {
-   N_("Flemish"), 34}, {
-   N_("Irish Gaelic"), 35}, {
-   N_("Albanian"), 36}, {
-   N_("Romanian"), 37}, {
-   N_("Czech"), 38}, {
-   N_("Slovak"), 39}, {
-   N_("Slovenian"), 40}, {
-   N_("Yiddish"), 41}, {
-   N_("Serbian"), 42}, {
-   N_("Macedonian"), 43}, {
-   N_("Bulgarian"), 44}, {
-   N_("Ukrainian"), 45}, {
-   N_("Byelorussian"), 46}, {
-   N_("Uzbek"), 47}, {
-   N_("Kazakh"), 48}, {
-   N_("Axerbaijani (Cyrillic)"), 49}, {
-   N_("Axerbaijani (Arabic)"), 50}, {
-   N_("Lang|Armenian"), 51}, {
-   N_("Lang|Georgian"), 52}, {
-   N_("Moldavian"), 53}, {
-   N_("Kirghiz"), 54}, {
-   N_("Tajiki"), 55}, {
-   N_("Turkmen"), 56}, {
-   N_("Mongolian (Mongolian)"), 57}, {
-   N_("Mongolian (cyrillic)"), 58}, {
-   N_("Pashto"), 59}, {
-   N_("Kurdish"), 60}, {
-   N_("Kashmiri"), 61}, {
-   N_("Sindhi"), 62}, {
-   N_("Lang|Tibetan"), 63}, {
-   N_("Nepali"), 64}, {
-   N_("Sanskrit"), 65}, {
-   N_("Marathi"), 66}, {
-   N_("Lang|Bengali"), 67}, {
-   N_("Assamese"), 68}, {
-   N_("Lang|Gujarati"), 69}, {
-   N_("Punjabi"), 70}, {
-   N_("Lang|Oriya"), 71}, {
-   N_("Lang|Malayalam"), 72}, {
-   N_("Lang|Kannada"), 73}, {
-   N_("Lang|Tamil"), 74}, {
-   N_("Lang|Telugu"), 75}, {
-   N_("Lang|Sinhalese"), 76}, {
-   N_("Burmese"), 77}, {
-   N_("Lang|Khmer"), 78}, {
-   N_("Lang|Lao"), 79}, {
-   N_("Vietnamese"), 80}, {
-   N_("Indonesian"), 81}, {
-   N_("Lang|Tagalog"), 82}, {
-   N_("Malay (roman)"), 83}, {
-   N_("Malay (arabic)"), 84}, {
-   N_("Lang|Amharic"), 85}, {
-   N_("Tigrinya"), 86}, {
-   N_("Galla"), 87}, {
-   N_("Somali"), 88}, {
-   N_("Swahili"), 89}, {
-   N_("Kinyarwanda/Ruanda"), 90}, {
-   N_("Rundi"), 91}, {
-   N_("Nyanja/Chewa"), 92}, {
-   N_("Malagasy"), 93}, {
-   N_("Esperanto"), 94}, {
-   N_("Welsh"), 128}, {
-   N_("Basque"), 129}, {
-   N_("Catalan"), 130}, {
-   N_("Lang|Latin"), 131}, {
-   N_("Quechua"), 132}, {
-   N_("Guarani"), 133}, {
-   N_("Aymara"), 134}, {
-   N_("Tatar"), 135}, {
-   N_("Lang|Uighur"), 136}, {
-   N_("Dzongkha"), 137}, {
-   N_("Javanese (roman)"), 138}, {
-   N_("Sundanese (roman)"), 139}, {
-   N_("Galician"), 140}, {
-   N_("Afrikaans"), 141}, {
-   N_("Breton"), 142}, {
-   N_("Inuktitut"), 143}, {
-   N_("Scottish Gaelic"), 144}, {
-   N_("Manx Gaelic"), 145}, {
-   N_("Irish Gaelic (with dot)"), 146}, {
-   N_("Tongan"), 147}, {
-   N_("Greek (polytonic)"), 148}, {
-   N_("Greenlandic"), 149}, {
-   N_("Azebaijani (roman)"), 150}, {
+   "Lang|Farsi/Persian", 31}, {
+   "Russian", 32}, {
+   "Simplified Chinese", 33}, {
+   "Flemish", 34}, {
+   "Irish Gaelic", 35}, {
+   "Albanian", 36}, {
+   "Romanian", 37}, {
+   "Czech", 38}, {
+   "Slovak", 39}, {
+   "Slovenian", 40}, {
+   "Yiddish", 41}, {
+   "Serbian", 42}, {
+   "Macedonian", 43}, {
+   "Bulgarian", 44}, {
+   "Ukrainian", 45}, {
+   "Byelorussian", 46}, {
+   "Uzbek", 47}, {
+   "Kazakh", 48}, {
+   "Axerbaijani (Cyrillic)", 49}, {
+   "Axerbaijani (Arabic)", 50}, {
+   "Lang|Armenian", 51}, {
+   "Lang|Georgian", 52}, {
+   "Moldavian", 53}, {
+   "Kirghiz", 54}, {
+   "Tajiki", 55}, {
+   "Turkmen", 56}, {
+   "Mongolian (Mongolian)", 57}, {
+   "Mongolian (cyrillic)", 58}, {
+   "Pashto", 59}, {
+   "Kurdish", 60}, {
+   "Kashmiri", 61}, {
+   "Sindhi", 62}, {
+   "Lang|Tibetan", 63}, {
+   "Nepali", 64}, {
+   "Sanskrit", 65}, {
+   "Marathi", 66}, {
+   "Lang|Bengali", 67}, {
+   "Assamese", 68}, {
+   "Lang|Gujarati", 69}, {
+   "Punjabi", 70}, {
+   "Lang|Oriya", 71}, {
+   "Lang|Malayalam", 72}, {
+   "Lang|Kannada", 73}, {
+   "Lang|Tamil", 74}, {
+   "Lang|Telugu", 75}, {
+   "Lang|Sinhalese", 76}, {
+   "Burmese", 77}, {
+   "Lang|Khmer", 78}, {
+   "Lang|Lao", 79}, {
+   "Vietnamese", 80}, {
+   "Indonesian", 81}, {
+   "Lang|Tagalog", 82}, {
+   "Malay (roman)", 83}, {
+   "Malay (arabic)", 84}, {
+   "Lang|Amharic", 85}, {
+   "Tigrinya", 86}, {
+   "Galla", 87}, {
+   "Somali", 88}, {
+   "Swahili", 89}, {
+   "Kinyarwanda/Ruanda", 90}, {
+   "Rundi", 91}, {
+   "Nyanja/Chewa", 92}, {
+   "Malagasy", 93}, {
+   "Esperanto", 94}, {
+   "Welsh", 128}, {
+   "Basque", 129}, {
+   "Catalan", 130}, {
+   "Lang|Latin", 131}, {
+   "Quechua", 132}, {
+   "Guarani", 133}, {
+   "Aymara", 134}, {
+   "Tatar", 135}, {
+   "Lang|Uighur", 136}, {
+   "Dzongkha", 137}, {
+   "Javanese (roman)", 138}, {
+   "Sundanese (roman)", 139}, {
+   "Galician", 140}, {
+   "Afrikaans", 141}, {
+   "Breton", 142}, {
+   "Inuktitut", 143}, {
+   "Scottish Gaelic", 144}, {
+   "Manx Gaelic", 145}, {
+   "Irish Gaelic (with dot)", 146}, {
+   "Tongan", 147}, {
+   "Greek (polytonic)", 148}, {
+   "Greenlandic", 149}, {
+   "Azebaijani (roman)", 150}, {
    NULL, 0}
 };
 
@@ -1825,11 +1825,11 @@ char *MacLanguageFromCode(int code) {
    int i;
 
    if (code==-1)
-      return (_("Unspecified Language"));
+      return "Unspecified Language";
 
    for (i=0; localmaclang[i].name != NULL; ++i)
       if (code==localmaclang[i].code)
-	 return (S_(localmaclang[i].name));
+	 return localmaclang[i].name;
 
-   return (_("Unknown Language"));
+   return "Unknown Language";
 }

@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: parsettfatt.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -792,7 +792,7 @@ static void gposCursiveSubTable(AFILE *ttf,int stoffset,
    }
 
    class=chunkalloc(sizeof(AnchorClass));
-   snprintf(buf, sizeof(buf), _("Cursive-%d"), info->anchor_class_cnt++);
+   snprintf(buf, sizeof(buf), "Cursive-%d", info->anchor_class_cnt++);
    class->name=fastrdup(buf);
    subtable->anchor_classes=true;
    class->subtable=subtable;
@@ -833,7 +833,7 @@ static AnchorClass **MarkGlyphsProcessMarks(AFILE *ttf,int markoffset,
    SplineChar *sc;
 
    for (i=0; i < classcnt; ++i) {
-      snprintf(buf, sizeof(buf), _("Anchor-%d"), info->anchor_class_cnt + i);
+      snprintf(buf, sizeof(buf), "Anchor-%d", info->anchor_class_cnt + i);
       classes[i]=ac=chunkalloc(sizeof(AnchorClass));
       ac->name=fastrdup(buf);
       subtable->anchor_classes=true;
@@ -2463,7 +2463,7 @@ static void readttfsizeparameters(AFILE *ttf,int32_t broken_pos,
 
    if (info->last_size_pos != 0) {
       ErrorMsg(2,"This font, %s, has multiple GPOS 'size' features. I'm not sure how to interpret that. I shall pick one arbitrarily.\n",
-	       info->fontname==NULL ? _("<Untitled>") : info->fontname);
+	       info->fontname==NULL ? "<Untitled>" : info->fontname);
       info->bad_ot=true;
       return;
    }
@@ -3204,7 +3204,7 @@ void readttfgdef(AFILE *ttf, struct ttfinfo *info) {
 
    if (mac != 0) {
       uint16_t *mclasses=getClassDefTable(ttf, info->gdef_start + mac, info);
-      const char *format_spec=_("MarkClass-%d");
+      const char *format_spec="MarkClass-%d";
 
       info->mark_class_cnt=ClassFindCnt(mclasses, info->glyph_cnt);
       info->mark_classes =
@@ -3218,7 +3218,7 @@ void readttfgdef(AFILE *ttf, struct ttfinfo *info) {
       free(mclasses);
    }
    if (mas != 0) {
-      const char *format_spec=_("MarkSet-%d");
+      const char *format_spec="MarkSet-%d";
 
       afseek(ttf, info->gdef_start + mas, SEEK_SET);
       if (getushort(ttf)==1) {	/* Version number of Mark GLyph Sets Table */
@@ -3493,11 +3493,11 @@ static OTLookup *NewMacSubsLookup(struct ttfinfo *info,OTLookup *parent,
 /* GT: a statemachine. The %s is the name of the statemachine('s lookup) */
 /* GT: and the %d is n, where this lookup is the n'th defined for this state */
 /* GT: machine */
-   format=_("%s nested-substitutions %d");
+   format="%s nested-substitutions %d";
    name=malloc(strlen(parent->lookup_name) + strlen(format) + 10);
    sprintf(name, format, parent->lookup_name, nest_index);
    otl->lookup_name=name;
-   otl->subtables->subtable_name=strconcat3(name, " ", _("subtable"));
+   otl->subtables->subtable_name=strconcat3(name, " ", "subtable");
    OTLAppend(info, otl, false);
    subs[nest_index]=otl;
    return (otl);
@@ -6426,16 +6426,14 @@ static void NameOTJSTFLookup(OTLookup *otl,struct ttfinfo *info) {
 /* GT: This string is used to generate a name for an OpenType lookup. */
 /* GT:  the %c%c... is the language followed by the script (OT tags) */
       snprintf(buffer, sizeof(buffer),
-	       _
-	       ("JSTF shrinkage max at priority %d #%d for %c%c%c%c in %c%c%c%c"),
+	       "JSTF shrinkage max at priority %d #%d for %c%c%c%c in %c%c%c%c",
 	       info->jstf_prio, info->jstf_lcnt++, info->jstf_lang >> 24,
 	       info->jstf_lang >> 16, info->jstf_lang >> 8, info->jstf_lang,
 	       info->jstf_script >> 24, info->jstf_script >> 16,
 	       info->jstf_script >> 8, info->jstf_script);
    else
       snprintf(buffer, sizeof(buffer),
-	       _
-	       ("JSTF extension max at priority %d #%d for %c%c%c%c in %c%c%c%c"),
+	       "JSTF extension max at priority %d #%d for %c%c%c%c in %c%c%c%c",
 	       info->jstf_prio, info->jstf_lcnt++, info->jstf_lang >> 24,
 	       info->jstf_lang >> 16, info->jstf_lang >> 8, info->jstf_lang,
 	       info->jstf_script >> 24, info->jstf_script >> 16,
@@ -6447,9 +6445,9 @@ static void NameOTJSTFLookup(OTLookup *otl,struct ttfinfo *info) {
 	subtable=subtable->next, ++cnt) {
       if (subtable->subtable_name==NULL) {
 	 if (subtable==otl->subtables && subtable->next==NULL)
-	    format=_("%s subtable");
+	    format="%s subtable";
 	 else
-	    format=_("%s subtable %d");
+	    format="%s subtable %d";
 	 snprintf(buffer, sizeof(buffer), format, otl->lookup_name, cnt);
 	 subtable->subtable_name=fastrdup(buffer);
       }

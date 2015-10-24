@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4286 2015-10-20 10:46:56Z mskala $ */
+/* $Id: fontviewbase.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -95,7 +95,6 @@ void FVClear(FontViewBase * fv) {
    int i;
    BDFFont *bdf;
    int refstate=0;
-   char *buts[6];
    int yes, unsel, gid;
 
    /* refstate==0 => ask, refstate==1 => clearall, refstate==-1 => skip all */
@@ -105,12 +104,6 @@ void FVClear(FontViewBase * fv) {
 	 /* If we are messing with the outline character, check for dependencies */
 	 if (refstate <= 0 && (unsel=UnselectedDependents(fv, gid))) {
 	    if (refstate==0) {
-	       buts[0]=_("_Yes");
-	       buts[1]=_("Yes to _All");
-	       buts[2]=_("_Unlink All");
-	       buts[3]=_("No _to All");
-	       buts[4]=_("_No");
-	       buts[5]=NULL;
 	       yes=2;
 	       refstate=-2;
 	    }

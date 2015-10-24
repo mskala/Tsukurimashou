@@ -1,4 +1,4 @@
-/* $Id: ttfinstrs.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: ttfinstrs.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2001-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -309,7 +309,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 	 if (isdigit(*pt) || *pt=='-') {
 	    val=strtol(pt, &end, 0);
 	    if (val > 32767 || val < -32768) {
-	       IVError(iv, _("A value must be between [-32768,32767]"),
+	       IVError(iv,"A value must be between [-32768,32767]",
 		       pt - text);
 	       return (NULL);
 	    }
@@ -318,7 +318,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 
 	    if (*pt=='@') {	/* a delta control byte */
 	       if (val > 8 || val < -8 || val==0) {
-		  IVError(iv, _("A value must be between [-8,-1] or [1,8]"),
+		  IVError(iv,"A value must be between [-8,-1] or [1,8]",
 			  pt - text);
 		  return (NULL);
 	       }
@@ -326,7 +326,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 	       pt++;
 
 	       if (!isdigit(*pt)) {
-		  IVError(iv, _("Number expected"), pt - text);
+		  IVError(iv,"Number expected",pt-text);
 		  return (NULL);
 	       }
 
@@ -334,7 +334,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 	       val=strtol(pt, &end, 0);
 
 	       if (val > 15 || val < 0) {
-		  IVError(iv, _("A value must be between [0,15]"), pt - text);
+		  IVError(iv,"A value must be between [0,15]",pt-text);
 		  return (NULL);
 	       }
 
@@ -354,8 +354,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 	       ++pt;
 	    if (*pt != '(') {
 	       IVError(iv,
-		       _
-		       ("Missing left parenthesis in command to get a cvt index"),
+		       "Missing left parenthesis in command to get a cvt index",
 		       pt - text);
 	       return (NULL);
 	    }
@@ -365,7 +364,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 	       ++pt;
 	    if (*pt != ')') {
 	       IVError(iv,
-		       _("Missing right paren in command to get a cvt index"),
+		       "Missing right paren in command to get a cvt index",
 		       pt - text);
 	       return (NULL);
 	    }
@@ -382,10 +381,10 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
       if (push_left==-1) {
 	 /* we need a push count */
 	 if (npos==0)
-	    IVError(iv, _("Expected a number for a push count"), pt - text);
+	    IVError(iv, "Expected a number for a push count", pt - text);
 	 else if (numberstack[0] > 255 || numberstack[0] <= 0) {
 	    IVError(iv,
-		    _("The push count must be a number between 0 and 255"),
+		    "The push count must be a number between 0 and 255",
 		    pt - text);
 	    return (NULL);
 	 } else {
@@ -396,7 +395,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
       }
       if (push_left != 0 && push_left < npos - nread
 	  && (*pt=='\n' || *pt=='\0')) {
-	 IVError(iv, _("More pushes specified than needed"), pt - text);
+	 IVError(iv, "More pushes specified than needed", pt - text);
 	 return (NULL);
       }
       while (push_left > 0 && nread < npos) {
@@ -405,8 +404,7 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 	    instrs[icnt++]=numberstack[nread++] & 0xff;
 	 } else if (numberstack[0] > 255 || numberstack[0] < 0) {
 	    IVError(iv,
-		    _
-		    ("A value to be pushed by a byte push must be between 0 and 255"),
+		    "A value to be pushed by a byte push must be between 0 and 255",
 		    pt - text);
 	    return (NULL);
 	 } else
@@ -414,13 +412,13 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 	 --push_left;
       }
       if (nread < npos && push_left==0 && (*pt=='\n' || *pt=='\0')) {
-	 IVError(iv, _("Unexpected number"), pt - text);
+	 IVError(iv, "Unexpected number", pt - text);
 	 return (NULL);
       }
       if (*pt=='\n' || *pt=='\0')
 	 continue;
       if (push_left > 0) {
-	 IVError(iv, _("Missing pushes"), pt - text);
+	 IVError(iv, "Missing pushes", pt - text);
 	 return (NULL);
       }
       while (nread < npos) {
@@ -468,13 +466,12 @@ uint8_t *_IVParse(SplineFont *sf, char *text, int *len,
 	    ++bend;
 	 if (*bend != ']') {
 	    IVError(iv,
-		    _
-		    ("Missing right bracket in command (or bad binary value in bracket)"),
+		    "Missing right bracket in command (or bad binary value in bracket)",
 		    pt - text);
 	    return (NULL);
 	 }
 	 if (val >= 32) {
-	    IVError(iv, _("Bracketted value is too large"), pt - text);
+	    IVError(iv, "Bracketed value is too large", pt - text);
 	    return (NULL);
 	 }
 	 i += val;

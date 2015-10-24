@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 4300 2015-10-24 13:03:29Z mskala $ */
+/* $Id: noprefs.c 4302 2015-10-24 15:00:46Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -270,186 +270,150 @@ static struct prefs_list {
    char *popup;
 } core_list[]={
    {
-   N_("OtherSubrsFile"), pr_file, &othersubrsfile, NULL, NULL, 'O', NULL,
+   "OtherSubrsFile", pr_file, &othersubrsfile, NULL, NULL, 'O', NULL,
 	 0,
-	 N_
-	 ("If you wish to replace Adobe's OtherSubrs array (for Type1 fonts)\nwith an array of your own, set this to point to a file containing\na list of up to 14 PostScript subroutines. Each subroutine must\nbe preceded by a line starting with '%%%%' (any text before the\nfirst '%%%%' line will be treated as an initial copyright notice).\nThe first three subroutines are for flex hints, the next for hint\nsubstitution (this MUST be present), the 14th (or 13 as the\nnumbering actually starts with 0) is for counter hints.\nThe subroutines should not be enclosed in a [ ] pair.")},
+	 "If you wish to replace Adobe's OtherSubrs array (for Type1 fonts)\nwith an array of your own, set this to point to a file containing\na list of up to 14 PostScript subroutines. Each subroutine must\nbe preceded by a line starting with '%%%%' (any text before the\nfirst '%%%%' line will be treated as an initial copyright notice).\nThe first three subroutines are for flex hints, the next for hint\nsubstitution (this MUST be present), the 14th (or 13 as the\nnumbering actually starts with 0) is for counter hints.\nThe subroutines should not be enclosed in a [ ] pair."},
    {
-   N_("NewCharset"), pr_encoding, &default_encoding, NULL, NULL, 'N', NULL,
-	 0, N_("Default encoding for\nnew fonts")}, {
-   N_("NewEmSize"), pr_int, &new_em_size, NULL, NULL, 'S', NULL, 0,
-	 N_("The default size of the Em-Square in a newly created font.")}, {
-   N_("NewFontsQuadratic"), pr_bool, &new_fonts_are_order2, NULL, NULL,
+   "NewCharset", pr_encoding, &default_encoding, NULL, NULL, 'N', NULL,
+	 0, "Default encoding for\nnew fonts"}, {
+   "NewEmSize", pr_int, &new_em_size, NULL, NULL, 'S', NULL, 0,
+	 "The default size of the Em-Square in a newly created font."}, {
+   "NewFontsQuadratic", pr_bool, &new_fonts_are_order2, NULL, NULL,
 	 'Q', NULL, 0,
-	 N_
-	 ("Whether new fonts should contain splines of quadratic (truetype)\nor cubic (postscript & opentype).")},
+	 "Whether new fonts should contain splines of quadratic (truetype)\nor cubic (postscript & opentype)."},
    {
-   N_("FreeTypeInFontView"), pr_bool, &use_freetype_to_rasterize_fv, NULL,
+   "FreeTypeInFontView", pr_bool, &use_freetype_to_rasterize_fv, NULL,
 	 NULL, 'O', NULL, 0,
-	 N_
-	 ("Use the FreeType rasterizer (when available)\nto rasterize glyphs in the font view.\nThis generally results in better quality.")},
+	 "Use the FreeType rasterizer (when available)\nto rasterize glyphs in the font view.\nThis generally results in better quality."},
    {
-   N_("LoadedFontsAsNew"), pr_bool, &loaded_fonts_same_as_new, NULL, NULL,
+   "LoadedFontsAsNew", pr_bool, &loaded_fonts_same_as_new, NULL, NULL,
 	 'L', NULL, 0,
-	 N_
-	 ("Whether fonts loaded from the disk should retain their splines\nwith the original order (quadratic or cubic), or whether the\nsplines should be converted to the default order for new fonts\n(see NewFontsQuadratic).")},
+	 "Whether fonts loaded from the disk should retain their splines\nwith the original order (quadratic or cubic), or whether the\nsplines should be converted to the default order for new fonts\n(see NewFontsQuadratic)."},
    {
-   N_("PreferCJKEncodings"), pr_bool, &prefer_cjk_encodings, NULL, NULL,
+   "PreferCJKEncodings", pr_bool, &prefer_cjk_encodings, NULL, NULL,
 	 'C', NULL, 0,
-	 N_
-	 ("When loading a truetype or opentype font which has both a unicode\nand a CJK encoding table, use this flag to specify which\nshould be loaded for the font.")},
+	 "When loading a truetype or opentype font which has both a unicode\nand a CJK encoding table, use this flag to specify which\nshould be loaded for the font."},
    {
-   N_("AskUserForCMap"), pr_bool, &ask_user_for_cmap, NULL, NULL, 'O',
+   "AskUserForCMap", pr_bool, &ask_user_for_cmap, NULL, NULL, 'O',
 	 NULL, 0,
-	 N_
-	 ("When loading a font in sfnt format (TrueType, OpenType, etc.),\nask the user to specify which cmap to use initially.")},
+	 "When loading a font in sfnt format (TrueType, OpenType, etc.),\nask the user to specify which cmap to use initially."},
    {
-   N_("PreserveTables"), pr_string, &SaveTablesPref, NULL, NULL, 'P', NULL,
+   "PreserveTables", pr_string, &SaveTablesPref, NULL, NULL, 'P', NULL,
 	 0,
-	 N_
-	 ("Enter a list of 4 letter table tags, separated by commas.\nFontAnvil will make a binary copy of these tables when it\nloads a True/OpenType font, and will output them (unchanged)\nwhen it generates the font. Do not include table tags which\nFontAnvil thinks it understands.")},
+	 "Enter a list of 4 letter table tags, separated by commas.\nFontAnvil will make a binary copy of these tables when it\nloads a True/OpenType font, and will output them (unchanged)\nwhen it generates the font. Do not include table tags which\nFontAnvil thinks it understands."},
    {
-   N_("ItalicConstrained"), pr_bool, &ItalicConstrained, NULL, NULL, '\0',
+   "ItalicConstrained", pr_bool, &ItalicConstrained, NULL, NULL, '\0',
 	 NULL, 0,
-	 N_
-	 ("In the Outline View, the Shift key constrains motion to be parallel to the ItalicAngle rather than constraining it to be vertical.")},
+	 "In the Outline View, the Shift key constrains motion to be parallel to the ItalicAngle rather than constraining it to be vertical."},
    {
-   N_("SnapToInt"), pr_bool, &snaptoint, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("When the user clicks in the editing window, round the location to the nearest integers.")},
+   "SnapToInt", pr_bool, &snaptoint, NULL, NULL, '\0', NULL, 0,
+	 "When the user clicks in the editing window, round the location to the nearest integers."},
    {
-   N_("JoinSnap"), pr_real, &joinsnap, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("The Edit->Join command will join points which are this close together\nA value of 0 means they must be coincident")},
+   "JoinSnap", pr_real, &joinsnap, NULL, NULL, '\0', NULL, 0,
+	 "The Edit->Join command will join points which are this close together\nA value of 0 means they must be coincident"},
    {
-   N_("CopyMetaData"), pr_bool, &copymetadata, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("When copying glyphs from the font view, also copy the\nglyphs' metadata (name, encoding, comment, etc).")},
+   "CopyMetaData", pr_bool, &copymetadata, NULL, NULL, '\0', NULL, 0,
+	 "When copying glyphs from the font view, also copy the\nglyphs' metadata (name, encoding, comment, etc)."},
    {
-   N_("UndoDepth"), pr_int, &maxundoes, NULL, NULL, '\0', NULL, 0,
-	 N_("The maximum number of Undoes/Redoes stored in a glyph")}, {
-   N_("AutoWidthSync"), pr_bool, &adjustwidth, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("Changing the width of a glyph\nchanges the widths of all accented\nglyphs based on it.")},
+   "UndoDepth", pr_int, &maxundoes, NULL, NULL, '\0', NULL, 0,
+	 "The maximum number of Undoes/Redoes stored in a glyph"}, {
+   "AutoWidthSync", pr_bool, &adjustwidth, NULL, NULL, '\0', NULL, 0,
+	 "Changing the width of a glyph\nchanges the widths of all accented\nglyphs based on it."},
    {
-   N_("AutoLBearingSync"), pr_bool, &adjustlbearing, NULL, NULL, '\0',
+   "AutoLBearingSync", pr_bool, &adjustlbearing, NULL, NULL, '\0',
 	 NULL, 0,
-	 N_
-	 ("Changing the left side bearing\nof a glyph adjusts the lbearing\nof other references in all accented\nglyphs based on it.")},
+	 "Changing the left side bearing\nof a glyph adjusts the lbearing\nof other references in all accented\nglyphs based on it."},
    {
-   N_("ClearInstrsBigChanges"), pr_bool,
+   "ClearInstrsBigChanges", pr_bool,
 	 &clear_tt_instructions_when_needed, NULL, NULL, 'C', NULL, 0,
-	 N_
-	 ("Instructions in a TrueType font refer to\npoints by number, so if you edit a glyph\nin such a way that some points have different\nnumbers (add points, remove them, etc.) then\nthe instructions will be applied to the wrong\npoints with disasterous results.\n  Normally FontAnvil will remove the instructions\nif it detects that the points have been renumbered\nin order to avoid the above problem. You may turn\nthis behavior off -- but be careful!")},
+	 "Instructions in a TrueType font refer to\npoints by number, so if you edit a glyph\nin such a way that some points have different\nnumbers (add points, remove them, etc.) then\nthe instructions will be applied to the wrong\npoints with disasterous results.\n  Normally FontAnvil will remove the instructions\nif it detects that the points have been renumbered\nin order to avoid the above problem. You may turn\nthis behavior off -- but be careful!"},
    {
-   N_("CopyTTFInstrs"), pr_bool, &copyttfinstr, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("When copying glyphs from the font view, also copy the\nglyphs' metadata (name, encoding, comment, etc).")},
+   "CopyTTFInstrs", pr_bool, &copyttfinstr, NULL, NULL, '\0', NULL, 0,
+	 "When copying glyphs from the font view, also copy the\nglyphs' metadata (name, encoding, comment, etc)."},
    {
-   N_("AccentOffsetPercent"), pr_int, &accent_offset, NULL, NULL, '\0',
+   "AccentOffsetPercent", pr_int, &accent_offset, NULL, NULL, '\0',
 	 NULL, 0,
-	 N_
-	 ("The percentage of an em by which an accent is offset from its base glyph in Build Accent")},
+	 "The percentage of an em by which an accent is offset from its base glyph in Build Accent"},
    {
-   N_("AccentCenterLowest"), pr_bool, &GraveAcuteCenterBottom, NULL, NULL,
+   "AccentCenterLowest", pr_bool, &GraveAcuteCenterBottom, NULL, NULL,
 	 '\0', NULL, 0,
-	 N_
-	 ("When placing grave and acute accents above letters, should\nFontAnvil center them based on their full width, or\nshould it just center based on the lowest point\nof the accent.")},
+	 "When placing grave and acute accents above letters, should\nFontAnvil center them based on their full width, or\nshould it just center based on the lowest point\nof the accent."},
    {
-   N_("CharCenterHighest"), pr_bool, &CharCenterHighest, NULL, NULL, '\0',
+   "CharCenterHighest", pr_bool, &CharCenterHighest, NULL, NULL, '\0',
 	 NULL, 0,
-	 N_
-	 ("When centering an accent over a glyph, should the accent\nbe centered on the highest point(s) of the glyph,\nor the middle of the glyph?")},
+	 "When centering an accent over a glyph, should the accent\nbe centered on the highest point(s) of the glyph,\nor the middle of the glyph?"},
    {
-   N_("PreferSpacingAccents"), pr_bool, &PreferSpacingAccents, NULL, NULL,
+   "PreferSpacingAccents", pr_bool, &PreferSpacingAccents, NULL, NULL,
 	 '\0', NULL, 0,
-	 N_
-	 ("Use spacing accents (Unicode: 02C0-02FF) rather than\ncombining accents (Unicode: 0300-036F) when\nbuilding accented glyphs.")},
+	 "Use spacing accents (Unicode: 02C0-02FF) rather than\ncombining accents (Unicode: 0300-036F) when\nbuilding accented glyphs."},
    {
-   N_("PreferPotrace"), pr_bool, &preferpotrace, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("FontAnvil supports two different helper applications to do autotracing\n autotrace and potrace\nIf your system only has one it will use that one, if you have both\nuse this option to tell FontAnvil which to pick.")},
+   "PreferPotrace", pr_bool, &preferpotrace, NULL, NULL, '\0', NULL, 0,
+	 "FontAnvil supports two different helper applications to do autotracing\n autotrace and potrace\nIf your system only has one it will use that one, if you have both\nuse this option to tell FontAnvil which to pick."},
    {
-   N_("AutotraceArgs"), pr_string, NULL, GetAutoTraceArgs,
+   "AutotraceArgs", pr_string, NULL, GetAutoTraceArgs,
 	 SetAutoTraceArgs, '\0', NULL, 0,
-	 N_
-	 ("Extra arguments for configuring the autotrace program\n(either autotrace or potrace)")},
+	 "Extra arguments for configuring the autotrace program\n(either autotrace or potrace)"},
    {
-   N_("AutotraceAsk"), pr_bool, &autotrace_ask, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("Ask the user for autotrace arguments each time autotrace is invoked")},
+   "AutotraceAsk", pr_bool, &autotrace_ask, NULL, NULL, '\0', NULL, 0,
+	 "Ask the user for autotrace arguments each time autotrace is invoked"},
    {
-   N_("MfArgs"), pr_string, &mf_args, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("Commands to pass to mf (metafont) program, the filename will follow these")},
+   "MfArgs", pr_string, &mf_args, NULL, NULL, '\0', NULL, 0,
+	 "Commands to pass to mf (metafont) program, the filename will follow these"},
    {
-   N_("MfAsk"), pr_bool, &mf_ask, NULL, NULL, '\0', NULL, 0,
-	 N_("Ask the user for mf commands each time mf is invoked")}, {
-   N_("MfClearBg"), pr_bool, &mf_clearbackgrounds, NULL, NULL, '\0', NULL,
+   "MfAsk", pr_bool, &mf_ask, NULL, NULL, '\0', NULL, 0,
+	 "Ask the user for mf commands each time mf is invoked"}, {
+   "MfClearBg", pr_bool, &mf_clearbackgrounds, NULL, NULL, '\0', NULL,
 	 0,
-	 N_
-	 ("FontAnvil loads large images into the background of each glyph\nprior to autotracing them. You may retain those\nimages to look at after mf processing is complete, or\nremove them to save space")},
+	 "FontAnvil loads large images into the background of each glyph\nprior to autotracing them. You may retain those\nimages to look at after mf processing is complete, or\nremove them to save space"},
    {
-   N_("MfShowErr"), pr_bool, &mf_showerrors, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("MetaFont (mf) generates lots of verbiage to stdout.\nMost of the time I find it an annoyance but it is\nimportant to see if something goes wrong.")},
+   "MfShowErr", pr_bool, &mf_showerrors, NULL, NULL, '\0', NULL, 0,
+	 "MetaFont (mf) generates lots of verbiage to stdout.\nMost of the time I find it an annoyance but it is\nimportant to see if something goes wrong."},
    {
-   N_("FoundryName"), pr_string, &BDFFoundry, NULL, NULL, 'F', NULL, 0,
-	 N_("Name used for foundry field in bdf\nfont generation")}, {
-   N_("TTFFoundry"), pr_string, &TTFFoundry, NULL, NULL, 'T', NULL, 0,
-	 N_
-	 ("Name used for Vendor ID field in\nttf (OS/2 table) font generation.\nMust be no more than 4 characters")},
+   "FoundryName", pr_string, &BDFFoundry, NULL, NULL, 'F', NULL, 0,
+	 "Name used for foundry field in bdf\nfont generation"}, {
+   "TTFFoundry", pr_string, &TTFFoundry, NULL, NULL, 'T', NULL, 0,
+	 "Name used for Vendor ID field in\nttf (OS/2 table) font generation.\nMust be no more than 4 characters"},
    {
-   N_("NewFontNameList"), pr_namelist, &namelist_for_new_fonts, NULL, NULL,
+   "NewFontNameList", pr_namelist, &namelist_for_new_fonts, NULL, NULL,
 	 '\0', NULL, 0,
-	 N_
-	 ("FontAnvil will use this namelist when assigning\nglyph names to code points in a new font.")},
+	 "FontAnvil will use this namelist when assigning\nglyph names to code points in a new font."},
    {
-   N_("RecognizePUANames"), pr_bool, &recognizePUA, NULL, NULL, 'U', NULL,
+   "RecognizePUANames", pr_bool, &recognizePUA, NULL, NULL, 'U', NULL,
 	 0,
-	 N_
-	 ("Once upon a time, Adobe assigned PUA (public use area) encodings\nfor many stylistic variants of characters (small caps, old style\nnumerals, etc.). Adobe no longer believes this to be a good idea,\nand recommends that these encodings be ignored.\n\n The assignments were originally made because most applications\ncould not handle OpenType features for accessing variants. Adobe\nnow believes that all apps that matter can now do so. Applications\nlike Word and OpenOffice still can't handle these features, so\n fontanvil's default behavior is to ignore Adobe's current\nrecommendations.\n\nNote: This does not affect figuring out unicode from the font's encoding,\nit just controls determining unicode from a name.")},
+	 "Once upon a time, Adobe assigned PUA (public use area) encodings\nfor many stylistic variants of characters (small caps, old style\nnumerals, etc.). Adobe no longer believes this to be a good idea,\nand recommends that these encodings be ignored.\n\n The assignments were originally made because most applications\ncould not handle OpenType features for accessing variants. Adobe\nnow believes that all apps that matter can now do so. Applications\nlike Word and OpenOffice still can't handle these features, so\n fontanvil's default behavior is to ignore Adobe's current\nrecommendations.\n\nNote: This does not affect figuring out unicode from the font's encoding,\nit just controls determining unicode from a name."},
    {
-   N_("UnicodeGlyphNames"), pr_bool, &allow_utf8_glyphnames, NULL, NULL,
+   "UnicodeGlyphNames", pr_bool, &allow_utf8_glyphnames, NULL, NULL,
 	 'O', NULL, 0,
-	 N_
-	 ("Allow the full unicode character set in glyph names.\nThis does not conform to adobe's glyph name standard.\nSuch names should be for internal use only and\nshould NOT end up in production fonts.")},
+	 "Allow the full unicode character set in glyph names.\nThis does not conform to adobe's glyph name standard.\nSuch names should be for internal use only and\nshould NOT end up in production fonts."},
    {
-   N_("XUID-Base"), pr_string, &xuid, NULL, NULL, 'X', NULL, 0,
-	 N_
-	 ("If specified this should be a space separated list of integers each\nless than 16777216 which uniquely identify your organization\nFontAnvil will generate a random number for the final component.")},
+   "XUID-Base", pr_string, &xuid, NULL, NULL, 'X', NULL, 0,
+	 "If specified this should be a space separated list of integers each\nless than 16777216 which uniquely identify your organization\nFontAnvil will generate a random number for the final component."},
    {
-   N_("AskBDFResolution"), pr_bool, &ask_user_for_resolution, NULL, NULL,
+   "AskBDFResolution", pr_bool, &ask_user_for_resolution, NULL, NULL,
 	 'B', NULL, 0,
-	 N_
-	 ("When generating a set of BDF fonts ask the user\nto specify the screen resolution of the fonts\notherwise FontAnvil will guess depending on the pixel size.")},
+	 "When generating a set of BDF fonts ask the user\nto specify the screen resolution of the fonts\notherwise FontAnvil will guess depending on the pixel size."},
    {
-   N_("AutoHint"), pr_bool, &autohint_before_generate, NULL, NULL, 'H',
-	 NULL, 0, N_("AutoHint changed glyphs before generating a font")}, {
-   N_("HintBoundingBoxes"), pr_bool, &hint_bounding_boxes, NULL, NULL,
+   "AutoHint", pr_bool, &autohint_before_generate, NULL, NULL, 'H',
+	 NULL, 0, "AutoHint changed glyphs before generating a font"}, {
+   "HintBoundingBoxes", pr_bool, &hint_bounding_boxes, NULL, NULL,
 	 '\0', NULL, 0,
-	 N_
-	 ("FontAnvil will place vertical or horizontal hints to describe the bounding boxes of suitable glyphs.")},
+	 "FontAnvil will place vertical or horizontal hints to describe the bounding boxes of suitable glyphs."},
    {
-   N_("HintDiagonalEnds"), pr_bool, &hint_diagonal_ends, NULL, NULL, '\0',
+   "HintDiagonalEnds", pr_bool, &hint_diagonal_ends, NULL, NULL, '\0',
 	 NULL, 0,
-	 N_
-	 ("FontAnvil will place vertical or horizontal hints at the ends of diagonal stems.")},
+	 "FontAnvil will place vertical or horizontal hints at the ends of diagonal stems."},
    {
-   N_("HintDiagonalInter"), pr_bool, &hint_diagonal_intersections, NULL,
+   "HintDiagonalInter", pr_bool, &hint_diagonal_intersections, NULL,
 	 NULL, '\0', NULL, 0,
-	 N_
-	 ("FontAnvil will place vertical or horizontal hints at the intersections of diagonal stems.")},
+	 "FontAnvil will place vertical or horizontal hints at the intersections of diagonal stems."},
    {
-   N_("DetectDiagonalStems"), pr_bool, &detect_diagonal_stems, NULL, NULL,
+   "DetectDiagonalStems", pr_bool, &detect_diagonal_stems, NULL, NULL,
 	 '\0', NULL, 0,
-	 N_
-	 ("FontAnvil will generate diagonal stem hints, which then can be used by the AutoInstr command.")},
+	 "FontAnvil will generate diagonal stem hints, which then can be used by the AutoInstr command."},
    {
-   N_("UseNewIndicScripts"), pr_bool, &use_second_indic_scripts, NULL,
+   "UseNewIndicScripts", pr_bool, &use_second_indic_scripts, NULL,
 	 NULL, 'C', NULL, 0,
-	 N_
-	 ("MS has changed (in August 2006) the inner workings of their Indic shaping\nengine, and to disambiguate this change has created a parallel set of script\ntags (generally ending in '2') for Indic writing systems. If you are working\nwith the new system set this flag, if you are working with the old unset it.\n(if you aren't doing Indic work, this flag is irrelevant).")},
+	 "MS has changed (in August 2006) the inner workings of their Indic shaping\nengine, and to disambiguate this change has created a parallel set of script\ntags (generally ending in '2') for Indic writing systems. If you are working\nwith the new system set this flag, if you are working with the old unset it.\n(if you aren't doing Indic work, this flag is irrelevant)."},
    {
    "AntiAlias", pr_bool, &default_fv_antialias, NULL, NULL, '\0', NULL, 1,
 	 NULL}, {
@@ -487,48 +451,39 @@ static struct prefs_list {
 }, extras[]={
 
    {
-   N_("ResourceFile"), pr_file, &xdefs_filename, NULL, NULL, 'R', NULL, 0,
-	 N_
-	 ("When FontAnvil starts up, it loads display related resources from a\nproperty on the screen. Sometimes it is useful to be able to store\nthese resources in a file. These resources are only read at start\nup, so changing this has no effect until the next time you start\nFontAnvil.")},
+   "ResourceFile", pr_file, &xdefs_filename, NULL, NULL, 'R', NULL, 0,
+	 "When FontAnvil starts up, it loads display related resources from a\nproperty on the screen. Sometimes it is useful to be able to store\nthese resources in a file. These resources are only read at start\nup, so changing this has no effect until the next time you start\nFontAnvil."},
    {
-   N_("HelpDir"), pr_file, &helpdir, NULL, NULL, 'H', NULL, 0,
-	 N_
-	 ("The directory on your local system in which FontAnvil will search for help\nfiles.  If a file is not found there, then FontAnvil will look for it on the net.")},
+   "HelpDir", pr_file, &helpdir, NULL, NULL, 'H', NULL, 0,
+	 "The directory on your local system in which FontAnvil will search for help\nfiles.  If a file is not found there, then FontAnvil will look for it on the net."},
    {
-   N_("SplashScreen"), pr_bool, &splash, NULL, NULL, 'S', NULL, 0,
-	 N_("Show splash screen on start-up")}, {
-   N_("GlyphAutoGoto"), pr_bool, &cv_auto_goto, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("Typing a normal character in the glyph view window changes the window to look at that character")},
+   "SplashScreen", pr_bool, &splash, NULL, NULL, 'S', NULL, 0,
+	 "Show splash screen on start-up"}, {
+   "GlyphAutoGoto", pr_bool, &cv_auto_goto, NULL, NULL, '\0', NULL, 0,
+	 "Typing a normal character in the glyph view window changes the window to look at that character"},
    {
-   N_("OpenCharsInNewWindow"), pr_bool, &OpenCharsInNewWindow, NULL, NULL,
+   "OpenCharsInNewWindow", pr_bool, &OpenCharsInNewWindow, NULL, NULL,
 	 '\0', NULL, 0,
-	 N_
-	 ("When double clicking on a character in the font view\nopen that character in a new window, otherwise\nreuse an existing one.")},
+	 "When double clicking on a character in the font view\nopen that character in a new window, otherwise\nreuse an existing one."},
    {
-   N_("ArrowMoveSize"), pr_real, &arrowAmount, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("The number of em-units by which an arrow key will move a selected point")},
+   "ArrowMoveSize", pr_real, &arrowAmount, NULL, NULL, '\0', NULL, 0,
+	 "The number of em-units by which an arrow key will move a selected point"},
    {
-   N_("ArrowAccelFactor"), pr_real, &arrowAccelFactor, NULL, NULL, '\0',
+   "ArrowAccelFactor", pr_real, &arrowAccelFactor, NULL, NULL, '\0',
 	 NULL, 0,
-	 N_
-	 ("Holding down the Shift key will speed up arrow key motion by this factor")},
+	 "Holding down the Shift key will speed up arrow key motion by this factor"},
    {
-   N_("SnapDistance"), pr_real, &snapdistance, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("When the mouse pointer is within this many pixels\nof one of the various interesting features (baseline,\nwidth, grid splines, etc.) the pointer will snap\nto that feature.")},
+   "SnapDistance", pr_real, &snapdistance, NULL, NULL, '\0', NULL, 0,
+	 "When the mouse pointer is within this many pixels\nof one of the various interesting features (baseline,\nwidth, grid splines, etc.) the pointer will snap\nto that feature."},
    {
-   N_("StopAtJoin"), pr_bool, &stop_at_join, NULL, NULL, '\0', NULL, 0,
-	 N_
-	 ("When dragging points in the outline view a join may occur\n(two open contours may connect at their endpoints). When\nthis is On a join will cause FontAnvil to stop moving the\nselection (as if the user had released the mouse button).\nThis is handy if your fingers are inclined to wiggle a bit.")},
+   "StopAtJoin", pr_bool, &stop_at_join, NULL, NULL, '\0', NULL, 0,
+	 "When dragging points in the outline view a join may occur\n(two open contours may connect at their endpoints). When\nthis is On a join will cause FontAnvil to stop moving the\nselection (as if the user had released the mouse button).\nThis is handy if your fingers are inclined to wiggle a bit."},
    {
-   N_("UpdateFlex"), pr_bool, &updateflex, NULL, NULL, '\0', NULL, 0,
-	 N_("Figure out flex hints after every change")}, {
-   N_("AskBDFResolution"), pr_bool, &ask_user_for_resolution, NULL, NULL,
+   "UpdateFlex", pr_bool, &updateflex, NULL, NULL, '\0', NULL, 0,
+	 "Figure out flex hints after every change"}, {
+   "AskBDFResolution", pr_bool, &ask_user_for_resolution, NULL, NULL,
 	 'B', NULL, 0,
-	 N_
-	 ("When generating a set of BDF fonts ask the user\nto specify the screen resolution of the fonts\notherwise FontAnvil will guess depending on the pixel size.")},
+	 "When generating a set of BDF fonts ask the user\nto specify the screen resolution of the fonts\notherwise FontAnvil will guess depending on the pixel size."},
    {
    "DefaultFVShowHmetrics", pr_int, &default_fv_showhmetrics, NULL, NULL,
 	 '\0', NULL, 1, NULL}, {
@@ -550,7 +505,7 @@ static struct prefs_list {
    "MarkPointsOfInflect", pr_int, &loacal_markpoi, NULL, NULL, '\0', NULL,
 	 1, NULL}, {
    "ShowRulers", pr_bool, &loacal_showrulers, NULL, NULL, '\0', NULL, 1,
-	 N_("Display rulers in the Outline Glyph View")}, {
+	 "Display rulers in the Outline Glyph View"}, {
    "ShowCPInfo", pr_int, &loacal_showcpinfo, NULL, NULL, '\0', NULL, 1, NULL},
    {
    "ShowSideBearings", pr_int, &loacal_showsidebearings, NULL, NULL, '\0',
