@@ -1,4 +1,4 @@
-/* $Id: start.c 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: start.c 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -41,8 +41,6 @@
 #ifdef __Mac
 #   include <stdlib.h>		/* getenv,setenv */
 #endif
-
-#include <glib.h>
 
 #include "unicodelibinfo.h"
 #include "gb12345.h"

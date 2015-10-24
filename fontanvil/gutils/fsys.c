@@ -1,4 +1,4 @@
-/* $Id: fsys.c 4064 2015-06-25 14:15:40Z mskala $ */
+/* $Id: fsys.c 4299 2015-10-24 10:24:40Z mskala $ */
 /* Copyright (C) 2000-2004 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>		/* for mkdir */
 #include <unistd.h>
-#include <glib.h>
 #include <errno.h>		/* for mkdir_p */
 
 

@@ -1,4 +1,4 @@
-/* $Id: gimagereadpng.c 4289 2015-10-20 16:13:40Z mskala $ */
+/* $Id: gimagereadpng.c 4298 2015-10-24 10:00:42Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ static void *a_file_must_define_something =
 #else
 
 #   include <png.h>
-
 #   include "gimage.h"
 
 static void *libpng = (void *) 1;
@@ -59,42 +58,47 @@ static void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg) {
    fprintf(stderr, "%s\n", warning_msg);
 }
 
-GImage *GImageRead_Png(AFILE * fp) {
-   GImage *ret = NULL;
+static void fapng_read_data(png_structp png_ptr,
+			    png_bytep data,png_size_t length) {
+   afread(data,1,length,(AFILE *)png_get_io_ptr(png_ptr));
+}
+
+GImage *GImageRead_Png(AFILE *fp) {
+   GImage *ret=NULL;
    struct _GImage *base;
    png_structp png_ptr;
    png_infop info_ptr;
-   png_bytep *row_pointers = NULL;
+   png_bytep *row_pointers=NULL;
    png_bytep trans_alpha;
    int num_trans;
    png_color_16p trans_color;
    int i;
 
-   if (libpng == NULL)
+   if (libpng==NULL)
       if (!loadpng())
 	 return NULL;
 
-   png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
-				    (void *) NULL, user_error_fn,
-				    user_warning_fn);
+   png_ptr=png_create_read_struct(PNG_LIBPNG_VER_STRING,
+				  (void *) NULL, user_error_fn,
+				  user_warning_fn);
 
    if (!png_ptr)
       return NULL;
 
-   info_ptr = png_create_info_struct(png_ptr);
+   info_ptr=png_create_info_struct(png_ptr);
    if (!info_ptr) {
-      png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
+      png_destroy_read_struct(&png_ptr,(png_infopp)NULL,(png_infopp)NULL);
       return NULL;
    }
-#   if (PNG_LIBPNG_VER < 10500)
+#   if (PNG_LIBPNG_VER<10500)
    if (setjmp(png_ptr->jmpbuf))
 #   else
-   if (setjmp(*png_set_longjmp_fn(png_ptr, longjmp, sizeof(jmp_buf))))
+   if (setjmp(*png_set_longjmp_fn(png_ptr,longjmp,sizeof(jmp_buf))))
 #   endif
    {
       /* Free all of the memory associated with the png_ptr and info_ptr */
       png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
-      if (ret != NULL) {
+      if (ret!=NULL) {
 	 GImageDestroy(ret);
 	 free(row_pointers);
       }
@@ -102,7 +106,7 @@ GImage *GImageRead_Png(AFILE * fp) {
       return NULL;
    }
 
-   png_init_io(png_ptr, fp);
+   png_set_read_fn(png_ptr,(voidp)fp,fapng_read_data);
    png_read_info(png_ptr, info_ptr);
    png_set_strip_16(png_ptr);
    if ((png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_GRAY

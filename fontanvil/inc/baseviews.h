@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 4282 2015-10-20 07:48:12Z mskala $ */
+/* $Id: baseviews.h 4299 2015-10-24 10:24:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -29,7 +29,6 @@
 #ifndef _BASEVIEWS_H
 #   define _BASEVIEWS_H
 
-#   include "ffglib.h"
 #   include "splinefont.h"
 
 enum widthtype { wt_width, wt_lbearing, wt_rbearing, wt_bearings, wt_vwidth };
@@ -75,8 +74,6 @@ typedef struct pressedOn {
    int spiro_index;		/* index of a clicked spiro_cp, or */
    /* if they clicked on the spline between spiros, */
    /* this is the spiro indexof the preceding spiro */
-   GList_Glib *pretransform_spl;	/* If we want to draw an image of the original spl while doing something
-					 * this is a copy of that original spl */
 } PressedOn;
 
 /* Note: These are ordered as they are displayed in the tools palette */

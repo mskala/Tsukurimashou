@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: autotrace.c 4299 2015-10-24 10:24:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -43,8 +43,6 @@
 #include <stdlib.h>		/* for getenv */
 #include <errno.h>		/* for errors */
 #include <dirent.h>		/* for opendir,etc. */
-
-#include "ffglib.h"
 
 int preferpotrace=false;
 
@@ -208,7 +206,7 @@ static int mytempnam(char *buffer) {
    else
       strcpy(buffer, P_tmpdir);
    strcat(buffer, "/PfaEdXXXXXX");
-   fd=g_mkstemp(buffer);
+   fd=mkstemp(buffer);
    return (fd);
 }
 

@@ -1,5 +1,6 @@
-/* $Id: ustring.c 3932 2015-04-28 13:40:33Z mskala $ */
+/* $Id: ustring.c 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
+/* Copyright (C) 2015 Matthew Skala */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -297,6 +298,39 @@ int utf8_valid(const char *str) {
 	 return (false);
 
    return (true);
+}
+
+long utf8_strlen(const char *s) {
+   long rval=0;
+   int cneeded=0;
+   
+   if (s==NULL)
+     return 0;
+   while (*s) {
+      if (cneeded>0) {
+	 if ((*s&0xC0)==0x80)
+	   cneeded--;
+	 else {
+	    cneeded=0;
+	    rval--;
+	 }
+      } else if ((*s&0x80)==0)
+	   rval++;
+      else if ((*s&0xE0)==0xC0) {
+	 rval++;
+	 cneeded=1;
+      } else if ((*s&0xF0)==0xE0) {
+	 rval++;
+	 cneeded=2;
+      } else if ((*s&0xF8)==0xF0) {
+	 rval++;
+	 cneeded=3;
+      }
+      s++;
+   }
+   if (cneeded>0)
+     rval--;
+   return rval;
 }
 
 long utf82u_strlen(const char *utf8_str) {

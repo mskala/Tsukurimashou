@@ -1,4 +1,4 @@
-/* $Id: gimageread.c 4286 2015-10-20 10:46:56Z mskala $ */
+/* $Id: gimageread.c 4298 2015-10-24 10:00:42Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,8 @@
 
 #include "gfile.h"
 
+/* FIXME rewrite this to work better without GNOME! */
+
 GImage *GImageRead(char *filename) {
 /* Go read an input image file. Return NULL if cannot guess file type */
    char *mime, *pt;
@@ -40,7 +42,7 @@ GImage *GImageRead(char *filename) {
 
    /* Try finding correct routine to use based on GTK mime type */
    if (GFileExists(filename)) {
-      mime = GIOGetMimeType(filename, true);
+      mime = "application/octet-stream";
 
       if (strcasecmp(mime, "image/bmp") == 0)
 	 return (GImageReadBmp(filename));

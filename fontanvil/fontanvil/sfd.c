@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4294 2015-10-21 13:40:14Z mskala $ */
+/* $Id: sfd.c 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -41,11 +41,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <limits.h>		/* For NAME_MAX or _POSIX_NAME_MAX */
-
-#define GTimer GTimer_GTK
-#include <glib.h>
-#undef GTimer
-
+#include <time.h>
 
 #ifndef NAME_MAX
 #   ifndef  _POSIX_NAME_MAX

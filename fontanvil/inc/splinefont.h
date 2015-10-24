@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4288 2015-10-20 13:06:01Z mskala $ */
+/* $Id: splinefont.h 4298 2015-10-24 10:00:42Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2282,6 +2282,7 @@ extern void SplineFree(Spline *spline);
 
 extern SplinePoint *SplinePointCreate(real x, real y);
 extern void SplinePointFree(SplinePoint *sp);
+extern void SplinePointMDFree(SplineChar *sc,SplinePoint *sp);
 extern void SplinePointListFree(SplinePointList *spl);
 extern void SplinePointListMDFree(SplineChar *sc, SplinePointList *spl);
 extern void SplinePointListsFree(SplinePointList *head);
@@ -2544,6 +2545,8 @@ extern void SCRefToSplines(SplineChar *sc, RefChar *rf, int layer);
 extern void RefCharFindBounds(RefChar *rf);
 
 extern void SCReinstantiateRefChar(SplineChar *sc, RefChar *rf, int layer);
+
+extern void SCRemoveDependent(SplineChar * dependent, RefChar * rf, int layer);
 
 extern void SFInstantiateRefs(SplineFont *sf);
 
@@ -3100,6 +3103,9 @@ extern SplineFont *SFReadTTF(char *filename, int flags,
 extern SplineFont *SFReadSVG(char *filename, int flags);
 
 extern SplineFont *SFReadUFO(char *filename, int flags);
+extern SplineSet *SplinePointListInterpretGlif(SplineFont *sf, char *filename,
+					       char *memory, int memlen, int em_size,
+					       int ascent, int is_stroked);
 
 extern SplineFont *_CFFParse(AFILE *temp, int len, char *fontsetname);
 
@@ -3116,8 +3122,6 @@ extern SplineFont *LoadSplineFont(char *filename, enum openflags);
 extern SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 				   enum openflags openflags);
 extern SplineFont *ReadSplineFont(char *filename, enum openflags);	/* Don't use this, use LoadSF instead */
-
-extern AFILE *URLToTempFile(char *url, void *lock);
 
 extern void ArchiveCleanup(char *archivedir);
 

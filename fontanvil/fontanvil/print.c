@@ -1,4 +1,4 @@
-/* $Id: print.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: print.c 4299 2015-10-24 10:24:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -33,7 +33,6 @@
 #include <time.h>
 #include <unistd.h>
 #include <ustring.h>
-#include <ffglib.h>
 #include "utype.h"
 #include <sys/types.h>
 #if !defined(__MINGW32__)

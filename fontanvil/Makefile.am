@@ -150,11 +150,15 @@ $(TESTS): ttmp/.dirstamp fontanvil/fontanvil
 
 AM_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   "-I$(top_srcdir)/fontanvil" "-DSHAREDIR=\"${MY_SHAREDIR}\"" \
-  "-DDOCDIR=\"${MY_DOCDIR}\"" \
-  $(FREETYPE_CFLAGS) $(GIFLIB_CFLAGS) $(GLIB_CFLAGS) $(LIBPNG_CFLAGS) \
-  $(LIBTIFF_CFLAGS) $(LIBXML2_CFLAGS) $(ZLIB_CFLAGS)
+  "-DDOCDIR=\"${MY_DOCDIR}\""
+AM_CFLAGS = \
+  $(FREETYPE_CFLAGS) $(GIFLIB_CFLAGS) $(LIBPNG_CFLAGS) \
+  $(LIBTIFF_CFLAGS) $(LIBXML2_CFLAGS) $(ZLIB_CFLAGS) \
+  -Werror=implicit-function-declaration \
+  -Wno-deprecated-declarations \
+  -pedantic-errors -Wno-pedantic
 AM_LDFLAGS = \
-  $(FREETYPE_LIBS) $(GIFLIB_CFLAGS) $(GLIB_LIBS) $(LIBPNG_LIBS) \
+  $(FREETYPE_LIBS) $(GIFLIB_CFLAGS) $(LIBPNG_LIBS) \
   $(LIBTIFF_LIBS) $(LIBXML2_LIBS) $(ZLIB_LIBS)
 AM_LFLAGS = -s -P`basename $* | sed 's,l$$,,'` -olex.yy.c
 
@@ -193,7 +197,7 @@ noinst_HEADERS = \
   inc/PfEd.h inc/SFMT.h inc/SFMT-params.h inc/SFMT-params19937.h \
   inc/SFMT-common.h inc/sfd1.h \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
-  inc/ffglib.h inc/gb12345.h \
+  inc/gb12345.h \
   fontanvil/feascan.h fontanvil/macenctab.h fontanvil/nonmactab.h
 
 noinst_LIBRARIES = \
@@ -211,8 +215,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/encoding.c fontanvil/fastring.c fontanvil/featurefile.c \
  fontanvil/fontviewbase.c fontanvil/freetype.c fontanvil/fvcomposite.c \
  fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
- fontanvil/glyphcomp.c \
- fontanvil/http.c fontanvil/ikarus.c \
+ fontanvil/glyphcomp.c fontanvil/ikarus.c \
  fontanvil/lookups.c fontanvil/macbinary.c \
  fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \
  fontanvil/namelist.c fontanvil/nonlineartrans.c fontanvil/noprefs.c \
@@ -253,13 +256,9 @@ gutils_libgutils_a_SOURCES = \
   gutils/gimagereadrgb.c gutils/gimagereadtiff.c gutils/gimagereadxbm.c \
   gutils/gimagereadxpm.c gutils/gimagewritebmp.c gutils/gimagewritegimage.c \
   gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
-  gutils/gimagewritexpm.c gutils/giohosts.c gutils/giomime.c \
-  gutils/giotrans.c gutils/gutils.c \
+  gutils/gimagewritexpm.c gutils/gutils.c \
   gutils/gwwintl.c gutils/unicodelibinfo.c inc/unicodelibinfo.h
-gutils_libgutils_a_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
-  $(GLIB_CFLAGS)
 gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a
-gutils_libgutils_a_LDFLAGS = $(GLIB_LIBS)
 
 dist_doc_DATA = doc/fontanvil.pdf
 dist_noinst_DATA = dat/8r.enc dat/glyphlist.txt

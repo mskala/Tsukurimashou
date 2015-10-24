@@ -1,4 +1,4 @@
-/* $Id: views.h 4285 2015-10-20 09:10:39Z mskala $ */
+/* $Id: views.h 4299 2015-10-24 10:24:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -29,7 +29,6 @@
 #ifndef _VIEWS_H
 #   define _VIEWS_H
 
-#   include "ffglib.h"
 #   include "baseviews.h"
 
 #include "gimage.h"
@@ -404,7 +403,6 @@ typedef struct fontview {
    int sel_index;
    struct lookup_subtable *cur_subtable;
    struct qg_data *qg;
-   GPid pid_webfontserver;
 } FontView;
 
 typedef struct findsel {

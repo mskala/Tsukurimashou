@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4276 2015-10-18 09:35:56Z mskala $ */
+/* $Id: scripting.c 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -31,7 +31,6 @@
 #include <gfile.h>
 #include <utype.h>
 #include <ustring.h>
-#include <ffglib.h>
 #include <chardata.h>
 #include <unistd.h>
 #include <math.h>
@@ -51,6 +50,7 @@
 #include "scripting.h"
 #include "scriptfuncs.h"
 #include "flaglist.h"
+#include "views.h"
 
 #include "unicodelibinfo.h"
 
@@ -7721,7 +7721,7 @@ static void bTypeOf(Context *c) {
 static void bUCS4(Context *c) {
    if (c->a.vals[1].type==v_str) {
       const char *pt=c->a.vals[1].u.sval;
-      int i, len=g_utf8_strlen(pt, -1);
+      int i, len=utf8_strlen(pt);
 
       c->return_val.type=v_arrfree;
       c->return_val.u.aval=malloc(sizeof(Array));

@@ -1,4 +1,4 @@
-/* $Id: ustring.h 4288 2015-10-20 13:06:01Z mskala $ */
+/* $Id: ustring.h 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -64,6 +64,8 @@ extern int utf8_valid(const char *str);
 extern char *latin1_2_utf8_strcpy(char *utf8buf, const char *lbuf);
 
 extern char *latin1_2_utf8_copy(const char *lbuf);
+
+extern long utf8_strlen(const char *);
 
 extern long utf82u_strlen(const char *utf8_str);	/* Count how many shorts needed to represent in UCS2 */
 

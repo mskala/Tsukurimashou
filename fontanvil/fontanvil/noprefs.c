@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 4155 2015-09-02 07:43:27Z mskala $ */
+/* $Id: noprefs.c 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -48,8 +48,6 @@
 #if defined(__MINGW32__)
 #   include <windows.h>
 #endif
-
-#include <glib.h>
 
 static char *othersubrsfile=NULL;
 

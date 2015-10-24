@@ -254,7 +254,6 @@ AM_COND_IF([COND_PARASITE],
 AC_SEARCH_LIBS([cos],[m])
 #
 PKG_CHECK_MODULES([FREETYPE],[freetype2])
-PKG_CHECK_MODULES([GLIB],[glib-2.0 >= 2.6 gio-2.0])
 AC_SEARCH_LIBS([iconv],[iconv])
 PKG_CHECK_MODULES([ZLIB],[zlib],[],[AC_SEARCH_LIBS([inflate],[z])])
 #

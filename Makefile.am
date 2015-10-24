@@ -356,7 +356,8 @@ if COND_PROLOG_SWI
 endif
 
 MAYBE_CHL_TICKLER:=\
-  $(if $(filter-out x$(PFBSTAMP),x$(shell cat chl-stamp)),chl-tickler)
+  $(if $(filter-out x$(PFBSTAMP),x$(shell \
+    cat chl-stamp 2> /dev/null)),chl-tickler)
 
 chl-tickler:
 
@@ -367,7 +368,8 @@ hamlog/config.hl: tools/make-cfghl \
   hamlog/.dirstamp mp/.dirstamp mp/.hglstamp \
   $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp)) \
   $(MAYBE_CHL_TICKLER)
-	$(AM_V_at)if ( test "x$(PFBSTAMP)" = "x`cat chl-stamp`" ) \
+	$(AM_V_at)if ( test "x$(PFBSTAMP)" = \
+	  "x`cat chl-stamp 2> /dev/null`" ) \
 	  && ( test -s hamlog/config.hl ) ; then \
 	  $(TSU_V_NASKIP) \
 	  true ; \
@@ -530,8 +532,8 @@ PAGEFILES=$(strip $(foreach page,\
     $(1)$(subst _,-,$(2))-$(page)$(3))))
 
 MAYBE_PFB_TICKLER:=\
-  $(if $(filter-out x$(PFBSTAMP),x$(shell cat pfb-stamp* | sort | uniq)),\
-    pfb-tickler)
+  $(if $(filter-out x$(PFBSTAMP),x$(shell \
+    cat pfb-stamp* 2> /dev/null | sort | uniq)),pfb-tickler)
 
 pfb-tickler:
 
@@ -546,13 +548,14 @@ makefile-pfb.inc: \
 	  makefile-pfb-2.inc makefile-pfb-3.inc \
 	  makefile-pfb-4.inc makefile-pfb-5.inc \
 	  makefile-pfb-6.inc makefile-pfb-7.inc
-	$(AM_V_at)cat makefile-pfb-?.inc > makefile-pfb.inc
+	$(AM_V_at)cat makefile-pfb-?.inc > makefile-pfb.inc 2> /dev/null
 
 makefile-pfb-%.inc: \
   makefile-vars.inc tools/mpdep mp/.hglstamp \
   $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp)) \
   $(MAYBE_PFB_TICKLER)
-	$(AM_V_at)if ( test "x$(PFBSTAMP)" = "x`cat pfb-stamp-$*`" ) \
+	$(AM_V_at)if ( test "x$(PFBSTAMP)" = \
+	  "x`cat pfb-stamp-$* 2> /dev/null`" ) \
 	  && ( test -s makefile-pfb-$*.inc ) ; then \
 	  $(TSU_V_NASKIP) \
 	  true ; \

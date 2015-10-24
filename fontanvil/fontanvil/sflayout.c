@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: sflayout.c 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@
 #include <ustring.h>
 #include <utype.h>
 #include <chardata.h>
-#include <ffglib.h>
 
 static uint32_t simple_stdfeatures[] =
    { CHR('c', 'c', 'm', 'p'), CHR('l', 'o', 'c', 'a'), CHR('k', 'e', 'r',
@@ -991,7 +990,7 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
    cnt=arr->argc / 2;
    len=1;
    for (i=0; i < cnt; ++i)
-      len += g_utf8_strlen(arr->vals[2 * i + 1].u.sval, -1) + 1;
+      len += utf8_strlen(arr->vals[2 * i + 1].u.sval) + 1;
 
    li->text=malloc(len * sizeof(unichar_t));
    len=0;
@@ -1012,7 +1011,7 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
       script=DEFAULT_SCRIPT;
       for (upt=li->text + len; *upt && script==DEFAULT_SCRIPT; ++upt)
 	 script=ScriptFromUnicode(*upt, NULL);
-      len += g_utf8_strlen(arr->vals[2 * i + 1].u.sval, -1);
+      len += utf8_strlen(arr->vals[2 * i + 1].u.sval);
       li->text[len++]='\n';
 
       last->end=len - 1;

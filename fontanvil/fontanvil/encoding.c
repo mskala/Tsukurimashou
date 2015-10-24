@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4288 2015-10-20 13:06:01Z mskala $ */
+/* $Id: encoding.c 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,8 +35,6 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <gfile.h>
-#include "ffglib.h"
-#include <glib/gprintf.h>
 
 #include "macenctab.h"
 #include "nonmactab.h"
@@ -299,12 +297,12 @@ static Encoding *_FindOrMakeEncoding(const char *name,int make_it) {
    temp.builtin=true;
    temp.tounicode=iconv_open(FindUnicharName(), iconv_name);
    if (temp.tounicode==(iconv_t) - 1 || temp.tounicode==NULL)
-      return (NULL);		/* Iconv doesn't recognize this name */
+      return NULL;		/* Iconv doesn't recognize this name */
    temp.fromunicode=iconv_open(iconv_name, FindUnicharName());
    if (temp.fromunicode==(iconv_t) - 1 || temp.fromunicode==NULL) {
       /* This should never happen, but if it does... */
       iconv_close(temp.tounicode);
-      return (NULL);
+      return NULL;
    }
 
    memset(good, 0, sizeof(good));
@@ -383,9 +381,9 @@ static Encoding *_FindOrMakeEncoding(const char *name,int make_it) {
       }
    }
    if (!temp.has_1byte && !temp.has_2byte)
-      return (NULL);
+      return NULL;
    if (!make_it)
-      return (NULL);
+      return NULL;
 
    enc=chunkalloc(sizeof(Encoding));
    *enc=temp;
@@ -539,7 +537,7 @@ static Encoding *ParseConsortiumEncodingFile(AFILE *file) {
    }
 
    if (max==-1)
-      return (NULL);
+      return NULL;
 
    ++max;
    if (max < 256)
@@ -576,12 +574,12 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
    if (file==NULL) {
       if (orig != NULL)
 	 ErrorMsg(2,"Couldn't open file %.200s\n",orig);
-      return (NULL);
+      return NULL;
    }
    ch=agetc(file);
    if (ch==EOF) {
       afclose(file);
-      return (NULL);
+      return NULL;
    }
    aungetc(ch, file);
    if (ch=='#' || ch=='0') {
@@ -593,7 +591,7 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
    afclose(file);
    if (head==NULL) {
       ErrorMsg(2,"Bad encoding file format\n");
-      return (NULL);
+      return NULL;
    }
 
    for (i=0, prev=NULL, item=head; item != NULL;
@@ -601,7 +599,7 @@ char *ParseEncodingFile(char *filename, char *encodingname) {
       next=item->next;
       if (item->enc_name==NULL) {
 	 ErrorMsg(2,"Bad encoding file format (unnamed encoding).\n");
-	 return (NULL);
+	 return NULL;
       }
    }
    for (item=head; item != NULL; item=item->next)
@@ -726,7 +724,7 @@ static char *SearchDirForCidMap(char *dir,char *registry,char *ordering,
    int test, best=-1;
 
    if (dir==NULL)
-      return (NULL);
+      return NULL;
 
    if (*maybefile != NULL) {
       char *pt=strrchr(*maybefile, '.');
@@ -738,7 +736,7 @@ static char *SearchDirForCidMap(char *dir,char *registry,char *ordering,
 
    d=opendir(dir);
    if (d==NULL)
-      return (NULL);
+      return NULL;
    while ((ent=readdir(d)) != NULL) {
       if ((len=strlen(ent->d_name)) < 8)
 	 continue;
@@ -776,7 +774,7 @@ static char *SearchDirForCidMap(char *dir,char *registry,char *ordering,
       strcat(ret, maybe);
       *maybefile=ret;
    }
-   return (NULL);
+   return NULL;
 }
 
 static struct cidmap *MakeDummyMap(char *registry,char *ordering,
@@ -866,14 +864,12 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
    struct cidmap *map, *maybe=NULL;
    char *file, *maybefile=NULL;
    int maybe_sup=-1;
-   char *buts[3], *buts2[3], *buts3[3];
-   gchar *buf=NULL;
    int ret;
 
    if (sf != NULL && sf->cidmaster)
       sf=sf->cidmaster;
    if (sf != NULL && sf->loading_cid_map)
-      return (NULL);
+      return NULL;
 
    for (map=cidmaps; map != NULL; map=map->next) {
       if (strcmp(map->registry, registry)==0
@@ -911,9 +907,6 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
 	 maybe_sup=maybe->supplement;
       if (sf != NULL)
 	 sf->loading_cid_map=true;
-      buts[0]=_("_Use It");
-      buts[1]=_("_Search");
-      buts[2]=NULL;
       ret=0;
       if (sf != NULL)
 	 sf->loading_cid_map=false;
@@ -927,34 +920,15 @@ struct cidmap *FindCidMap(char *registry, char *ordering, int supplement,
    }
 
    if (file==NULL) {
-      char *uret;
-
-      buf=g_strdup_printf("%s-%s-*.cidmap", registry, ordering);
       if (maybe==NULL && maybefile==NULL) {
-	 buts3[0]=_("_Browse");
-	 buts3[1]=_("_Give Up");
-	 buts3[2]=NULL;
 	 ret=0;
-	 g_free(buf);
-	 buf=NULL;
-      }
-      uret=NULL;
-      if (uret==NULL) {
-	 buts2[0]="_Use It";
-	 buts2[1]="_Search";
-	 buts2[2]=NULL;
-	 if (maybe==NULL && maybefile==NULL)
-	    /* No luck */ ;
-	 else if (maybe!=NULL) {
-	    maybe->maxsupple=supplement;
-	    return (maybe);
-	 } else {
-	    file=maybefile;
-	    maybefile=NULL;
-	 }
+	 /* No luck */ ;
+      } else if (maybe!=NULL) {
+	 maybe->maxsupple=supplement;
+	 return (maybe);
       } else {
-	 file=fastrdup(uret);
-	 free(uret);
+	 file=maybefile;
+	 maybefile=NULL;
       }
    }
 
@@ -1105,7 +1079,7 @@ static struct cmap *ParseCMap(char *filename) {
 
    file=afopen(filename, "r");
    if (file==NULL)
-      return (NULL);
+      return NULL;
 
    cmap=calloc(1, sizeof(struct cmap));
    in=cmt_out;
@@ -1240,7 +1214,7 @@ static SplineFont *CIDFlatten(SplineFont *cidmaster,SplineChar ** glyphs,
    int j;
 
    if (cidmaster==NULL)
-      return (NULL);
+      return NULL;
    new=SplineFontEmpty();
    new->fontname=fastrdup(cidmaster->fontname);
    new->fullname=fastrdup(cidmaster->fullname);
@@ -1558,12 +1532,12 @@ SplineFont *MakeCIDMaster(SplineFont *sf, EncMap * oldmap, int bycmap,
    if (bycmap) {
       if (cmapfilename==NULL) {
 	 SplineFontFree(cidmaster);
-	 return (NULL);
+	 return NULL;
       }
       cmap=ParseCMap(cmapfilename);
       if (cmap==NULL) {
 	 SplineFontFree(cidmaster);
-	 return (NULL);
+	 return NULL;
       }
       CompressCMap(cmap);
       SFEncodeToCMap(cidmaster, sf, oldmap, cmap);
@@ -1572,7 +1546,7 @@ SplineFont *MakeCIDMaster(SplineFont *sf, EncMap * oldmap, int bycmap,
       map=cidmap;
       if (map==NULL) {
 	 SplineFontFree(cidmaster);
-	 return (NULL);
+	 return NULL;
       }
       cidmaster->cidregistry=fastrdup(map->registry);
       cidmaster->ordering=fastrdup(map->ordering);
@@ -1805,7 +1779,7 @@ EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
    SplineChar *sc;
 
    if (enc==NULL)
-      return (NULL);
+      return NULL;
 
    base=enc->char_cnt;
    if (enc->is_original)

@@ -1,4 +1,4 @@
-/* $Id: gimagewritepng.c 4032 2015-06-18 09:50:10Z mskala $ */
+/* $Id: gimagewritepng.c 4298 2015-10-24 10:00:42Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,8 @@ static void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg) {
 }
 
 
-static void fa_png_write_cb(png_structp png_ptr,void *data,uint32_t length) {
+static void fa_png_write_cb(png_structp png_ptr,png_bytep data,
+			    png_size_t length) {
    if (afwrite(data,1,length,(AFILE *)png_get_io_ptr(png_ptr))<0)
       png_error(png_ptr,"Error writing PNG");
 }

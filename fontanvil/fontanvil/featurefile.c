@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: featurefile.c 4300 2015-10-24 13:03:29Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -43,8 +43,6 @@
 #include <utype.h>
 #include <ustring.h>
 #include <locale.h>
-
-#include "ffglib.h"
 
 /* Adobe's opentype feature file */
 /* Which suffers incompatible changes according to Adobe's whim */
@@ -1911,20 +1909,10 @@ static void UniOut(AFILE *out,char *name) {
    }
 }
 
-static gboolean dump_header_languagesystem_hash_fe(gpointer key,
-						   gpointer value,
-						   gpointer user_data) {
-   AFILE *out=(AFILE *) user_data;
-
-   afprintf(out, "\nlanguagesystem %s;", (char *) key);
-   return 0;
-}
-
-static gint tree_strcasecmp(gconstpointer a,gconstpointer b,
-			    gpointer user_data) {
-   (void) user_data;
-   return g_ascii_strcasecmp(a, b);
-}
+typedef struct _STR_LIST {
+   char *h;
+   struct _STR_LIST *t;
+} STR_LIST;
 
 static void dump_header_languagesystem(AFILE *out,SplineFont *sf) {
    int isgpos;
@@ -1932,7 +1920,7 @@ static void dump_header_languagesystem(AFILE *out,SplineFont *sf) {
    OTLookup *otl;
    FeatureScriptLangList *fl;
    struct scriptlanglist *sl;
-   GTree *ht=g_tree_new_full(tree_strcasecmp, 0, free, NULL);
+   STR_LIST *ht=NULL,*nl,*tmp;
 
    for (isgpos=0; isgpos < 2; ++isgpos) {
       uint32_t *feats =
@@ -1964,7 +1952,26 @@ static void dump_header_languagesystem(AFILE *out,SplineFont *sf) {
 					     scripts[s] >> 8, scripts[s],
 					     langs[l] >> 24, langs[l] >> 16,
 					     langs[l] >> 8, langs[l]);
-				    g_tree_insert(ht, fastrdup(key), "");
+				    nl=(STR_LIST *)malloc(sizeof(STR_LIST));
+				    nl->h=fastrdup(key);
+				    
+				    if (ht==NULL) {
+				       nl->t=NULL;
+				       ht=nl;
+				    } else {
+				       for (tmp=ht;(tmp->t!=NULL) &&
+					    (strcasecmp(tmp->t->h,key)<0);
+					    tmp=tmp->t);
+				       if ((tmp->t!=NULL) && (strcasecmp(tmp->t->h,key)==0))
+					 free(nl);
+				       else {
+					  nl->t=tmp->t;
+					  tmp->t=nl;
+					  
+					  if (ht==nl->t)
+					    ht=nl;
+				       }
+				    }
 				 }
 			      }
 			}
@@ -1974,8 +1981,13 @@ static void dump_header_languagesystem(AFILE *out,SplineFont *sf) {
 	 }
       }
    }
-
-   g_tree_foreach(ht, dump_header_languagesystem_hash_fe, out);
+   
+   while (ht) {
+      tmp=ht;
+      ht=ht->t;
+      afprintf(out,"\nlanguagesystem %s;",tmp->h);
+      free(tmp);
+   }
    afprintf(out, "\n");
 }
 
