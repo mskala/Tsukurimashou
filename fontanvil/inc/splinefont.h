@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4298 2015-10-24 10:00:42Z mskala $ */
+/* $Id: splinefont.h 4301 2015-10-24 13:35:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3085,8 +3085,6 @@ extern int SFDWriteBakExtended(char *locfilename,
 extern SplineFont *SFDRead(char *filename);
 
 extern SplineFont *_SFDRead(char *filename, AFILE *sfd);
-
-extern SplineFont *SFDirRead(char *filename);
 
 extern char *TTFGetFontName(AFILE *ttf, int32_t offset, int32_t off2);
 

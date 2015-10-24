@@ -408,7 +408,7 @@ AS_IF([test '!' "x$with_libxml2" = xno],
 # Checks for header files.
 #
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h ieeefp.h])
-AC_CHECK_HEADERS([memory.h netdb.h netinet/in.h pthread.h])
+AC_CHECK_HEADERS([memory.h netdb.h netinet/in.h])
 AC_CHECK_HEADERS([strings.h sys/ioctl.h sys/socket.h sys/time.h unistd.h])
 AC_CHECK_HEADERS([iconv.h])
 #
@@ -419,7 +419,6 @@ AC_CHECK_HEADERS([iconv.h])
 AC_C_BIGENDIAN
 AC_CHECK_TYPES([off_t])
 AC_TYPE_PID_T
-AX_PTHREAD
 AX_CREATE_STDINT_H
 #
 ############################################################################

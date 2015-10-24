@@ -1,4 +1,4 @@
-/* $Id: gimage.h 4291 2015-10-21 09:27:40Z mskala $ */
+/* $Id: gimage.h 4301 2015-10-24 13:35:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -159,8 +159,6 @@ extern int GImageWriteXpm(GImage * gi, char *filename);
 
 extern GImage *GImageReadXpm(char *filename);
 
-extern int GImageWriteEps(GImage * gi, char *filename);
-
 extern GImage *GImageReadTiff(char *filename);
 
 extern GImage *GImageReadJpeg(char *filename);
@@ -169,8 +167,6 @@ extern GImage *GImageRead_Jpeg(AFILE *fp);
 
 extern int GImageWrite_Jpeg(GImage *gi,AFILE *outfile,int quality,
 			    int progressive);
-extern int GImageWriteJpeg(GImage *gi,char *filename,int quality,
-			   int progressive);
 extern GImage *GImageRead_Png(AFILE *fp);
 
 extern GImage *GImageReadPng(char *filename);
@@ -179,7 +175,6 @@ extern int GImageWrite_Png(GImage *gi,AFILE *fp,int progressive);
 extern int GImageWritePng(GImage *gi, char *filename,int progressive);
 
 extern GImage *GImageReadGif(char *filename);
-extern int GImageWriteGif(GImage * gi, char *filename, int progressive);
 extern GImage *GImageCreateAnimation(GImage ** images, int n);
 
 extern GImage *GImageReadRas(char *filename);	/* Sun Raster */
