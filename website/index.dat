@@ -44,11 +44,11 @@ Main-Text[ja].
 .
 
 Right-Side.
-          <h1><a href="http://sourceforge.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> Latest Releases</h1>
+          <h1><a href="http://osdn.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> Latest Releases</h1>
 $release_news
 .
 Right-Side[ja].
-          <h1><a href="http://sourceforge.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> 新しいリリース</h1>
+          <h1><a href="http://osdn.jp/projects/tsukurimashou/releases/rss"><img src="rss.png"></a> 新しいリリース</h1>
 $release_news
 .
 LATE-EVAL $v{right_side}=~s/\$release_news/$release_news/;

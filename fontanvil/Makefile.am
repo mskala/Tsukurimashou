@@ -207,35 +207,42 @@ noinst_LIBRARIES = \
 fontanvil_fontanvil_SOURCES = \
  fontanvil/main.c \
  fontanvil/afile.c fontanvil/asmfpst.c fontanvil/autohint.c \
- fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
+   fontanvil/autotrace.c fontanvil/autowidth.c fontanvil/autowidth2.c \
  fontanvil/bezctx_ff.c fontanvil/bitmapchar.c fontanvil/bitmapcontrol.c \
- fontanvil/bvedit.c fontanvil/crctab.c \
- fontanvil/cvexport.c fontanvil/cvimages.c fontanvil/cvundoes.c \
- fontanvil/dumpbdf.c fontanvil/dumppfa.c fontanvil/effects.c \
- fontanvil/encoding.c fontanvil/fastring.c fontanvil/featurefile.c \
- fontanvil/fontviewbase.c fontanvil/freetype.c fontanvil/fvcomposite.c \
- fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
- fontanvil/glyphcomp.c fontanvil/ikarus.c \
- fontanvil/lookups.c fontanvil/macbinary.c \
- fontanvil/macenc.c fontanvil/mathconstants.c fontanvil/mm.c \
+   fontanvil/bvedit.c \
+ fontanvil/crctab.c fontanvil/cvexport.c fontanvil/cvimages.c \
+   fontanvil/cvundoes.c \
+ fontanvil/dumpbdf.c fontanvil/dumppfa.c \
+ fontanvil/effects.c fontanvil/encoding.c \
+ fontanvil/fastring.c fontanvil/featurefile.c fontanvil/fontviewbase.c \
+   fontanvil/freetype.c fontanvil/fsys.c fontanvil/fvcomposite.c \
+   fontanvil/fvfonts.c fontanvil/fvimportbdf.c fontanvil/fvmetrics.c \
+ fontanvil/gb12345.c fontanvil/gimage.c fontanvil/glyphcomp.c \
+ fontanvil/ikarus.c \
+ fontanvil/lookups.c \
+ fontanvil/macbinary.c fontanvil/macenc.c fontanvil/mathconstants.c \
+   fontanvil/mm.c \
  fontanvil/namelist.c fontanvil/nonlineartrans.c fontanvil/noprefs.c \
- fontanvil/nowakowskittfinstr.c \
- fontanvil/othersubrs.c fontanvil/palmfonts.c fontanvil/parsepdf.c \
- fontanvil/parsepfa.c fontanvil/parsettfatt.c fontanvil/parsettfbmf.c \
- fontanvil/parsettf.c fontanvil/parsettfvar.c fontanvil/print.c \
- fontanvil/psread.c fontanvil/pua.c fontanvil/python.c fontanvil/savefont.c \
- fontanvil/scripting.c fontanvil/scstyles.c fontanvil/search.c \
- fontanvil/SFMT.c fontanvil/sfd1.c fontanvil/sfd.c fontanvil/sflayout.c \
- inc/sfundo.h fontanvil/spiro.c fontanvil/splinechar.c fontanvil/splinefill.c \
- fontanvil/splinefont.c fontanvil/splineorder2.c fontanvil/splineoverlap.c \
- fontanvil/splinesaveafm.c fontanvil/splinesave.c fontanvil/splinestroke.c \
- fontanvil/splineutil2.c fontanvil/splineutil.c \
- fontanvil/start.c fontanvil/stemdb.c fontanvil/svg.c \
+   fontanvil/nowakowskittfinstr.c \
+ fontanvil/othersubrs.c \
+ fontanvil/palmfonts.c fontanvil/parsepdf.c fontanvil/parsepfa.c \
+   fontanvil/parsettfatt.c fontanvil/parsettfbmf.c fontanvil/parsettf.c \
+   fontanvil/parsettfvar.c fontanvil/print.c fontanvil/psread.c \
+   fontanvil/pua.c fontanvil/python.c \
+ fontanvil/savefont.c fontanvil/scripting.c fontanvil/scstyles.c \
+   fontanvil/search.c fontanvil/SFMT.c fontanvil/sfd1.c fontanvil/sfd.c \
+   fontanvil/sflayout.c inc/sfundo.h fontanvil/spiro.c \
+   fontanvil/splinechar.c fontanvil/splinefill.c fontanvil/splinefont.c \
+   fontanvil/splineorder2.c fontanvil/splineoverlap.c \
+   fontanvil/splinerefigure.c fontanvil/splinesaveafm.c \
+   fontanvil/splinesave.c fontanvil/splinestroke.c fontanvil/splineutil2.c \
+   fontanvil/splineutil.c fontanvil/start.c fontanvil/stemdb.c \
+   fontanvil/svg.c \
  fontanvil/tottfaat.c fontanvil/tottfgpos.c fontanvil/tottf.c \
- fontanvil/tottfvar.c fontanvil/ttfinstrs.c fontanvil/ttfspecial.c \
+   fontanvil/tottfvar.c fontanvil/ttfinstrs.c fontanvil/ttfspecial.c \
  fontanvil/ufo.c \
- fontanvil/winfonts.c fontanvil/woff.c fontanvil/zapfnomen.c \
- fontanvil/splinerefigure.c fontanvil/gb12345.c \
+   fontanvil/winfonts.c fontanvil/woff.c \
+ fontanvil/zapfnomen.c \
  fontanvil/feascan.l fontanvil/pescript.l \
  fontanvil/macenctab.im fontanvil/nonmactab.im \
  fontanvil/macenctab.c fontanvil/nonmactab.c
@@ -250,13 +257,7 @@ Unicode_libgunicode_a_SOURCES = \
   Unicode/utype.c Unicode/combiners.h
 
 gutils_libgutils_a_SOURCES = \
-  gutils/fsys.c gutils/gimage.c \
-  gutils/gimagebmpP.h gutils/gimageread.c gutils/gimagereadbmp.c gutils/gimagereadgif.c \
-  gutils/gimagereadjpeg.c gutils/gimagereadpng.c gutils/gimagereadras.c \
-  gutils/gimagereadrgb.c gutils/gimagereadtiff.c gutils/gimagereadxbm.c \
-  gutils/gimagereadxpm.c gutils/gimagewritebmp.c gutils/gimagewritegimage.c \
-  gutils/gimagewritejpeg.c gutils/gimagewritepng.c gutils/gimagewritexbm.c \
-  gutils/gimagewritexpm.c gutils/gutils.c \
+  gutils/gutils.c \
   gutils/unicodelibinfo.c inc/unicodelibinfo.h
 gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a
 

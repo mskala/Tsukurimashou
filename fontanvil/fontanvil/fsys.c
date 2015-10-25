@@ -1,4 +1,4 @@
-/* $Id: fsys.c 4299 2015-10-24 10:24:40Z mskala $ */
+/* $Id: fsys.c 4305 2015-10-25 10:51:24Z mskala $ */
 /* Copyright (C) 2000-2004 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without

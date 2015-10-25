@@ -1728,7 +1728,7 @@ collection of Extended Ideographic Description Sequences (EIDSes) describing
 the construction of the kanji in the font.  This is the interface to
 IDSgrep, a program for searching kanji according to powerful
 criteria on their visual structure.  IDSgrep is available from the same
-SourceForge.JP project that hosts Tsukurimashou; see that package and its
+OSDN Japan project that hosts Tsukurimashou; see that package and its
 documentation for more information on EIDS format and how to use it.
 
 With or without IDSgrep, Tsukurimashou may be used to typeset the special
@@ -2711,13 +2711,13 @@ necessary to build from a checkout, beyond those used to build from a
 distribution.  Building from a checkout requires Autotools, as well as
 either Subversion or Git to check out the sources in the first place.
 
-First, check out the project by anonymous Subversion from SourceForge Japan:
+First, check out the project by anonymous Subversion from OSDN Japan:
 \begin{verbatim}
 svn checkout https://svn.osdn.jp/svnroot/tsukurimashou/trunk \
    ./tsukurimashou
 \end{verbatim}
 
-SourceForge is the preferred repository, but you may instead obtain it from
+OSDN is the preferred repository, but you may instead obtain it from
 Github:
 \begin{verbatim}
 git clone https://github.com/mskala/Tsukurimashou.git
@@ -2815,22 +2815,22 @@ limitations, it's a fun thing to run in a loop in a window to get some idea
 of where the build stands beyond the endless columns of MT1/PERL/RMO
 messages put out by \texttt{make}.
 
-\item \texttt{udcpyright}: check that all years in which each file was modified
-are included in its copyright notice.  This assumes one has an SVN checkout
-in the current directory---intended to be a checkout from my private SVN
-repository, but it would probably work with one from the SourceForge
-repository as well.  It scans all SVN-controlled files for anything that
-looks like the project's standard copyright notice, and then reports on any
-files for which the set of years mentioned in the notice does not match the
-set of years in which SVN has log entries for that file.  The idea is that
-once a modified version of the file has been checked into SVN in a given
-year, it has been ``published'' in that year and the year should be
-mentioned in the copyright notice; but when a new year comes we don't want
-to just go through and modify all files solely to insert another year in the
-copyright notice.  By running this every so often, and manually updating the
-notices when appropriate, the hundreds of copyright notices in the project
-should painlessly converge on correctly reflecting the years in which files
-were actually changed.
+\item \texttt{udcpyright}: check that all years in which each file was
+modified are included in its copyright notice.  This assumes one has an SVN
+checkout in the current directory---intended to be a checkout from my
+private SVN repository, but it would probably work with one from the
+OSDN repository as well.  It scans all SVN-controlled files for
+anything that looks like the project's standard copyright notice, and then
+reports on any files for which the set of years mentioned in the notice does
+not match the set of years in which SVN has log entries for that file.  The
+idea is that once a modified version of the file has been checked into SVN
+in a given year, it has been ``published'' in that year and the year should
+be mentioned in the copyright notice; but when a new year comes we don't
+want to just go through and modify all files solely to insert another year
+in the copyright notice.  By running this every so often, and manually
+updating the notices when appropriate, the hundreds of copyright notices in
+the project should painlessly converge on correctly reflecting the years in
+which files were actually changed.
 
 \end{itemize}
 

@@ -1,4 +1,4 @@
-/* $Id: acorn2sfd.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: acorn2sfd.c 4305 2015-10-25 10:51:24Z mskala $ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -902,7 +902,7 @@ static void dousage(void) {
    printf("acorn2sfd [options] {acorndirs}\n");
    printf("\t-version\t (prints the version of acorn2sfd and exits)\n");
    printf("\t-help\t\t (prints a brief help text and exits)\n");
-   printf("For more information see:\n\thttp://pfaedit.sourceforge.net/\n");
+   printf("For more information see:\n\thttp://tsukurimashou.osdn.jp/\n");
    printf("Send bug reports to:\tgww@silcom.com\n");
    exit(0);
 }
