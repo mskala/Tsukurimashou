@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 4286 2015-10-20 10:46:56Z mskala $ */
+/* $Id: cvexport.c 4308 2015-10-25 12:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -80,7 +80,6 @@ int _ExportEPS(AFILE *eps, SplineChar * sc, int layer, int preview) {
    struct tm *tm;
    int ret;
    char oldloc[24];
-   const char *author=GetAuthor();
 
    strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
    setlocale(LC_NUMERIC, "C");
@@ -92,8 +91,6 @@ int _ExportEPS(AFILE *eps, SplineChar * sc, int layer, int preview) {
    afprintf(eps, "%%%%Pages: 0\n");
    afprintf(eps, "%%%%Title: %s from %s\n", sc->name, sc->parent->fontname);
    afprintf(eps, "%%%%Creator: FontAnvil\n");
-   if (author != NULL)
-      afprintf(eps, "%%%%Author: %s\n", author);
    time(&now);
    tm=localtime(&now);
    afprintf(eps, "%%%%CreationDate: %d:%02d %d-%d-%d\n", tm->tm_hour,
@@ -159,7 +156,6 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
    char oldloc[24];
    int _objlocs[8], xrefloc, streamstart, streamlength, resid, nextobj;
    int *objlocs=_objlocs;
-   const char *author=GetAuthor();
    int i;
 
    SFUntickAll(sc->parent);
@@ -239,8 +235,6 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
    }
 #endif
    afprintf(pdf, "    /Title (%s from %s)\n", sc->name, sc->parent->fontname);
-   if (author != NULL)
-      afprintf(pdf, "    /Author (%s)\n", author);
    afprintf(pdf, " >>\n");
 
    nextobj=7;

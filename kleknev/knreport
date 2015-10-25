@@ -354,6 +354,9 @@ sub scan_start {
   if ($element eq 'a') {
     $capturing_arg=1;
     push @process_argv,'';
+  } elsif ($element eq 'char') {
+    $process_argv[$#process_argv].=chr($attributes{'num'})
+      if $capturing_arg;
   } elsif ($element eq 'e') {
     $pid=undef;
     $pidserial=0;
@@ -503,7 +506,10 @@ print (('='x78)."\n") if $opt_timeline;
 %active_parents=();
 $parser=$scan->parse_start();
 $parser->parse_more("<?xml version=\"1.0\" ?>\n<logfile>\n");
-while (<>) { $parser->parse_more($_); }
+while (<>) {
+  s/&#(\d+);/<char num="$1" \/>/g;
+  $parser->parse_more($_);
+}
 $parser->parse_more("</logfile>\n");
 $parser->parse_done();
 
@@ -611,8 +617,10 @@ sub form_table {
   print "$headline\n";
   print 'class              n            total      '
        .'    minimum     mean  maximum';
-  print '                linear histogram' if $opt_linear;
-  print '           logarithmic histogram' if $opt_logarithmic;
+  if ($opt_histogram) {
+    print '                linear histogram' if $opt_linear;
+    print '           logarithmic histogram' if $opt_logarithmic;
+  }
   print "\n";
 
   foreach (@categories) {
@@ -627,10 +635,10 @@ sub form_table {
       &form_f8($stats{"$schema:$_:${tag}_min"}),
       &form_f8($stats{"$schema:$_:$tag"}/$stats{"$schema:$_:count"}),
       &form_f8($stats{"$schema:$_:${tag}_max"});
-    print '  '.&form_histogram($schema,$_,$tag,30)
-      if $opt_histogram && $opt_linear;
-    print '  '.&form_log_histogram($schema,$_,$tag,30)
-      if $opt_histogram && $opt_logarithmic;
+    if ($opt_histogram) {
+      print '  '.&form_histogram($schema,$_,$tag,30) if $opt_linear;
+      print '  '.&form_log_histogram($schema,$_,$tag,30) if $opt_logarithmic;
+    }
     print "\n";
   }
   print "\n";

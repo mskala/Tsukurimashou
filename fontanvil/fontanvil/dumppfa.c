@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4285 2015-10-20 09:10:39Z mskala $ */
+/* $Id: dumppfa.c 4308 2015-10-25 12:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1700,7 +1700,6 @@ static void dumpfontinfo(AFILE *f,
 
 static void dumpfontcomments(AFILE *f, SplineFont *sf, int format) {
    time_t now;
-   const char *author=GetAuthor();
 
    time(&now);
    /* Werner points out that the DSC Version comment has a very specific */
@@ -1718,8 +1717,6 @@ static void dumpfontcomments(AFILE *f, SplineFont *sf, int format) {
       afprintf(f,"%%Version: %s\n", sf->version);
    }
    afprintf(f,"%%%%CreationDate: %s", ctime(&now));
-   if (author != NULL)
-      afprintf(f,"%%%%Creator: %s\n", author);
 
    if (format==ff_cid || format==ff_cffcid || format==ff_type42cid ||
        format==ff_cff || format==ff_type42)

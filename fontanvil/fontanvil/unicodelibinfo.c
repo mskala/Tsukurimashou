@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.c 4299 2015-10-24 10:24:40Z mskala $ */
+/* $Id: unicodelibinfo.c 4309 2015-10-25 12:18:15Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without

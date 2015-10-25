@@ -1,4 +1,4 @@
-/* $Id: svg.c 4291 2015-10-21 09:27:40Z mskala $ */
+/* $Id: svg.c 4308 2015-10-25 12:13:49Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -67,7 +67,6 @@ static int svg_outfontheader(AFILE *file,SplineFont *sf,int layer) {
    char *hash, *hasv, ch;
    int minu, maxu, i;
    time_t now;
-   const char *author=GetAuthor();
 
    memset(&info, 0, sizeof(info));
    SFDefaultOS2Info(&info, sf, sf->fontname);
@@ -84,12 +83,8 @@ static int svg_outfontheader(AFILE *file,SplineFont *sf,int layer) {
    }
    afprintf(file, "<svg>\n");
    time(&now);
-   afprintf(file, "<metadata>\nCreated by FontAnvil %d at %s",
+   afprintf(file, "<metadata>\nCreated by FontAnvil %d at %s\n",
 	   FONTANVIL_VERSIONDATE_RAW, ctime(&now));
-   if (author != NULL)
-      afprintf(file, " By %s\n", author);
-   else
-      afprintf(file, "\n");
    if (sf->copyright != NULL) {
       latin1ToUtf8Out(file, sf->copyright);
       aputc('\n', file);

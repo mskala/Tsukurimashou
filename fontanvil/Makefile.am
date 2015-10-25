@@ -198,11 +198,11 @@ noinst_HEADERS = \
   inc/SFMT-common.h inc/sfd1.h \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
   inc/gb12345.h \
+  inc/unicodelibinfo.h \
   fontanvil/feascan.h fontanvil/macenctab.h fontanvil/nonmactab.h
 
 noinst_LIBRARIES = \
-  Unicode/libgunicode.a \
-  gutils/libgutils.a
+  Unicode/libgunicode.a
 
 fontanvil_fontanvil_SOURCES = \
  fontanvil/main.c \
@@ -240,26 +240,20 @@ fontanvil_fontanvil_SOURCES = \
    fontanvil/svg.c \
  fontanvil/tottfaat.c fontanvil/tottfgpos.c fontanvil/tottf.c \
    fontanvil/tottfvar.c fontanvil/ttfinstrs.c fontanvil/ttfspecial.c \
- fontanvil/ufo.c \
-   fontanvil/winfonts.c fontanvil/woff.c \
+ fontanvil/ufo.c fontanvil/unicodelibinfo.c \
+ fontanvil/winfonts.c fontanvil/woff.c \
  fontanvil/zapfnomen.c \
  fontanvil/feascan.l fontanvil/pescript.l \
  fontanvil/macenctab.im fontanvil/nonmactab.im \
  fontanvil/macenctab.c fontanvil/nonmactab.c
 
-fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a \
-	$(top_builddir)/gutils/libgutils.a
+fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a
 
 Unicode_libgunicode_a_SOURCES = \
   Unicode/charset/johab.c \
   Unicode/ArabicForms.c Unicode/char.c \
   Unicode/memory.c Unicode/unialt.c Unicode/ustring.c \
   Unicode/utype.c Unicode/combiners.h
-
-gutils_libgutils_a_SOURCES = \
-  gutils/gutils.c \
-  gutils/unicodelibinfo.c inc/unicodelibinfo.h
-gutils_libgutils_a_LIBADD = $(top_builddir)/Unicode/libgunicode.a
 
 dist_doc_DATA = doc/fontanvil.pdf
 dist_noinst_DATA = dat/8r.enc dat/glyphlist.txt

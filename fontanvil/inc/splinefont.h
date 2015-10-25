@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4301 2015-10-24 13:35:59Z mskala $ */
+/* $Id: splinefont.h 4308 2015-10-25 12:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2167,8 +2167,6 @@ enum bitmapformat { bf_bdf, bf_ttf, bf_sfnt_dfont, bf_sfnt_ms, bf_otb,
 };
 
 extern int32_t filechecksum(AFILE *file);
-
-extern const char *GetAuthor(void);
 
 extern void SC_PSDump(AFILE *f,
 		      SplineChar *sc, int refs_to_splines, int pdfopers,

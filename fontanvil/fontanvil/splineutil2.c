@@ -1,4 +1,4 @@
-/* $Id: splineutil2.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: splineutil2.c 4308 2015-10-25 12:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3278,7 +3278,6 @@ SplineFont *SplineFontBlank(int charcnt) {
     char buffer[200];
     time_t now;
     struct tm *tm;
-    const char *author=GetAuthor();
 
     sf=SplineFontEmpty();
     sf->fontname=GetNextUntitledName();
@@ -3289,10 +3288,7 @@ SplineFont *SplineFontBlank(int charcnt) {
     sf->weight=fastrdup("Regular");
     time(&now);
     tm=localtime(&now);
-    if (author!=NULL)
-	sprintf(buffer, "Copyright (c) %d, %.50s", tm->tm_year+1900, author);
-    else
-	sprintf(buffer, "Copyright (c) %d, Anonymous", tm->tm_year+1900);
+    sprintf(buffer, "Copyright (c) %d", tm->tm_year+1900);
     sf->copyright=fastrdup(buffer);
     if (xuid!=NULL) {
 	sf->xuid=malloc(strlen(xuid)+20);
