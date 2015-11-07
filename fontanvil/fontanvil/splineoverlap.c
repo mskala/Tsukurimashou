@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: splineoverlap.c 4310 2015-10-27 15:29:50Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -74,36 +74,34 @@
 /*  The free up our temporary data structures, merge in any open splinesets  */
 /*	free the old closed splinesets					     */
 
-// Frank recommends using the following macro whenever making changes
-// to this code and capturing and diffing output in order to track changes
-// in errors and reports.
-// (The pointers tend to clutter the diff a bit.)
-// #define FF_OVERLAP_VERBOSE
-
 static char *glyphname=NULL;
 
 static void SOError(const char *format,...) {
-    va_list ap;
-    va_start(ap,format);
-    if ( glyphname==NULL )
-	ErrorMsg(1,"Internal Error (overlap): " );
-    else
-	ErrorMsg(1,"Internal Error (overlap) in %s: ", glyphname );
-    avfprintf(astderr,format,ap);
-    va_end(ap);
+   va_list ap;
+
+   va_start(ap,format);
+   if (message_level<=1) {
+      if (glyphname==NULL)
+	afputs("Internal Error (overlap): ",astderr);
+      else
+	afprintf(astderr,"Internal Error (overlap) in %s: ",glyphname);
+      avfprintf(astderr,format,ap);
+   }
+   va_end(ap);
 }
 
 static void SONotify(const char *format,...) {
     va_list ap;
-    va_start(ap,format);
-#ifdef FF_OVERLAP_VERBOSE
-    if ( glyphname==NULL )
-	ErrorMsg(1,"Note (overlap): " );
-    else
-	ErrorMsg(1,"Note (overlap) in %s: ", glyphname );
-    vfprintf(astderr,format,ap);
-#endif
-    va_end(ap);
+   
+   va_start(ap,format);
+   if (message_level<=0) {
+      if ( glyphname==NULL )
+	afputs("Note (overlap): ",astderr);
+      else
+	afprintf(astderr,"Note (overlap) in %s: ",glyphname);
+      avfprintf(astderr,format,ap);
+   }
+   va_end(ap);
 }
 
 static void ValidateMListT(struct mlist *input) {
@@ -123,11 +121,7 @@ static void ValidateMListTs(struct mlist *input) {
   for (current=input; current != NULL; current=current->next) ValidateMListT(current);
 }
 
-#ifdef FF_OVERLAP_VERBOSE
 #define ValidateMListTs_IF_VERBOSE(input) ValidateMListTs(input);
-#else
-#define ValidateMListTs_IF_VERBOSE(input) 
-#endif
 
 extended evalSpline(Spline *s, extended t, int dim) {
   return ((s->splines[dim].a*t+s->splines[dim].b)*t+s->splines[dim].c)*t+s->splines[dim].d;
@@ -1412,9 +1406,9 @@ static Intersection *AddIntersection(Intersection *ilist,Monotonic *m1,
     extended ot1=t1, ot2=t2;
     for ( il=ilist; il!=NULL; il=il->next )
 ValidateMListTs_IF_VERBOSE(il->monos)
-    /* This is just a join between two adjacent monotonics. There might already*/
-    /*  be an intersection there, but if there be, we've already found it */
-    /* Do this now, because no point wasting the time it takes to ImproveInter*/
+    /* This is just a join between two adjacent monotonics. There might already */
+    /*  be an intersection there, but if there is, we've already found it */
+    /* Do this now, because no point wasting the time it takes to ImproveInter */
     if (( m1->next==m2 && (t1==t2 || (t1==1.0 && t2==0.0))) ||
 	( m2->next==m1 && (t2==t1 || (t2==1.0 && t1==0.0))) )
 return( ilist );
@@ -1423,7 +1417,7 @@ return( ilist );
     if ( !ImproveInter(m1,m2,&t1,&t2,inter))
 return( ilist );
 
-    /* Yeah, I know we just did this, but ImproveInter might have smoothed out*/
+    /* Yeah, I know we just did this, but ImproveInter might have smoothed out */
     /*  some rounding errors */
     if (( m1->next==m2 && (t1==t2 || (t1==1.0 && t2==0.0))) ||
 	( m2->next==m1 && (t2==t1 || (t2==1.0 && t1==0.0))) )
@@ -1582,7 +1576,7 @@ static void AddPreIntersection(Monotonic *m1,Monotonic *m2,
     PreIntersection *p;
 
     /* This is just a join between two adjacent monotonics. There might already*/
-    /*  be an intersection there, but if there be, we've already found it */
+    /*  be an intersection there, but if there is, we've already found it */
     /* Do this now, because no point wasting the time it takes to ImproveInter*/
     if (( m1->next==m2 && (t1==t2 || (t1==1.0 && t2==0.0))) ||
 	( m2->next==m1 && (t2==t1 || (t2==1.0 && t1==0.0))) )
@@ -2055,11 +2049,7 @@ static void DumpMonotonic(Monotonic *input) {
   ErrorMsg(1,"\n");
 }
 
-#ifdef FF_OVERLAP_VERBOSE
 #define FF_DUMP_MONOTONIC_IF_VERBOSE(m) DumpMonotonic(m);
-#else
-#define FF_DUMP_MONOTONIC_IF_VERBOSE(m) 
-#endif
 
 static Monotonic *FindMonoContaining(Monotonic *base,bigreal t) {
     Monotonic *m;
@@ -2101,44 +2091,49 @@ return( NULL );
 }
 
 static Intersection *TurnPreInter2Inter(Monotonic *ms) {
-    PreIntersection *p, *pnext;
-    Intersection *ilist=NULL;
-    Monotonic *m1, *m2;
-
-    for ( ; ms!=NULL; ms=ms->linked ) {
-	for ( p=ms->pending; p!=NULL; p=pnext ) {
-	    pnext=p->next;
-	    m1=FindMonoContaining(p->m1,p->t1);
-	    if ( m1==NULL ) {
-		m1=FindMonoContaining(p->m1,p->t1-1e-06);
-		if ( m1 != NULL )
-		    p->t1=m1->tend;
-	    }
-	    if ( m1==NULL ) {
-		m1=FindMonoContaining(p->m1,p->t1+1e-06);
-		if ( m1 != NULL )
-		    p->t1=m1->tstart;
-	    }
-	    m2=FindMonoContaining(p->m2,p->t2);
-	    if ( m2==NULL ) {
-		m2=FindMonoContaining(p->m2,p->t2-1e-06);
-		if ( m2 != NULL )
-		    p->t2=m2->tend;
-	    }
-	    if ( m2==NULL ) {
-		m2=FindMonoContaining(p->m2,p->t2+1e-06);
-		if ( m2 != NULL )
-		    p->t2=m2->tstart;
-	    }
-	    if ( p->is_close )
-		ilist=AddCloseIntersection(ilist,m1,m2,p->t1,p->t2,&p->inter);
-	    else
-		ilist=AddIntersection(ilist,m1,m2,p->t1,p->t2,&p->inter);
-	    chunkfree(p,sizeof(PreIntersection));
-	}
-	ms->pending=NULL;
-    }
-return( ilist );
+   PreIntersection *p;
+   Intersection *ilist=NULL;
+   Monotonic *m1, *m2;
+   
+   for ( ; ms!=NULL; ms=ms->linked ) {
+      ErrorMsg(1,"monotonic %p\n",(void *)ms);
+      while (ms->pending!=NULL) {
+	 p=ms->pending;
+	 ms->pending=p->next;
+	 p->next=NULL;
+	 ErrorMsg(1,"    pending %p\n",(void *)p);
+	 
+	 m1=FindMonoContaining(p->m1,p->t1);
+	 if ( m1==NULL ) {
+	    m1=FindMonoContaining(p->m1,p->t1-1e-06);
+	    if ( m1 != NULL )
+	      p->t1=m1->tend;
+	 }
+	 if ( m1==NULL ) {
+	    m1=FindMonoContaining(p->m1,p->t1+1e-06);
+	    if ( m1 != NULL )
+	      p->t1=m1->tstart;
+	 }
+	 m2=FindMonoContaining(p->m2,p->t2);
+	 if ( m2==NULL ) {
+	    m2=FindMonoContaining(p->m2,p->t2-1e-06);
+	    if ( m2 != NULL )
+	      p->t2=m2->tend;
+	 }
+	 if ( m2==NULL ) {
+	    m2=FindMonoContaining(p->m2,p->t2+1e-06);
+	    if ( m2 != NULL )
+	      p->t2=m2->tstart;
+	 }
+	 if ( p->is_close )
+	   ilist=AddCloseIntersection(ilist,m1,m2,p->t1,p->t2,&p->inter);
+	 else
+	   ilist=AddIntersection(ilist,m1,m2,p->t1,p->t2,&p->inter);
+	 ErrorMsg(1,"    freeing %p\n",(void *)p);
+	 chunkfree(p,sizeof(PreIntersection));
+      }
+   }
+   return( ilist );
 }
 
 static void FigureProperMonotonicsAtIntersections(Intersection *ilist) {

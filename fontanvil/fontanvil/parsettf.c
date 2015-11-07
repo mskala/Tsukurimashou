@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: parsettf.c 4340 2015-11-07 11:56:21Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -4550,6 +4550,7 @@ static void ApplyVariationSequenceSubtable(AFILE *ttf,uint32_t vs_map,
 	 }
       }
    }
+   free(vs_data);
 }
 
 static enum uni_interp amscheck(struct ttfinfo *info,EncMap *map) {

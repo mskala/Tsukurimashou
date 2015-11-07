@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: parsettfatt.c 4340 2015-11-07 11:56:21Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -240,8 +240,10 @@ static uint16_t *getCoverageTable(AFILE *ttf,int coverage_offset,
       if (aftell(ttf) + 2 * cnt > info->g_bounds) {
 	 ErrorMsg(2,"coverage table extends beyond end of table\n");
 	 info->bad_ot=true;
-	 if (aftell(ttf) > info->g_bounds)
+	 if (aftell(ttf) > info->g_bounds) {
+	    free(glyphs);
 	    return (NULL);
+         }
 	 cnt=(info->g_bounds - aftell(ttf)) / 2;
       }
       for (i=0; i < cnt; ++i) {
@@ -588,6 +590,7 @@ static void gposKernSubTable(AFILE *ttf,int stoffset,struct ttfinfo *info,
       if (glyphs==NULL) {
 /* GT: This continues a multi-line error message, hence the leading space */
 	 ErrorMsg(2," Bad pairwise kerning table, ignored\n");
+	 free(ps_offsets);
 	 return;
       }
       for (i=0; i < cnt; ++i)
@@ -640,6 +643,8 @@ static void gposKernSubTable(AFILE *ttf,int stoffset,struct ttfinfo *info,
       if (glyphs==NULL) {
 /* GT: This continues a multi-line error message, hence the leading space */
 	 ErrorMsg(2," Bad kerning class table, ignored\n");
+	 free(class1);
+	 free(class2);
 	 return;
       }
       afseek(ttf, foffset, SEEK_SET);	/* come back */
@@ -993,8 +998,11 @@ static void gposMarkSubTable(AFILE *ttf,uint32_t stoffset,
    /* as is the (first) mark table */
    classes=MarkGlyphsProcessMarks(ttf, stoffset + markoffset,
 				    info, l, subtable, markglyphs, classcnt);
-   if (classes==NULL)
+   if (classes==NULL) {
+      free(baseglyphs);
+      free(markglyphs);
       return;
+   }
    switch (l->otlookup->lookup_type) {
      case gpos_mark2base:
      case gpos_mark2mark:
@@ -1758,7 +1766,7 @@ static void g___ContextSubTable3(AFILE *ttf,int stoffset,
       fpst->rules=rule=calloc(1, sizeof(struct fpst_rule));
       fpst->rule_cnt=1;
       rule->u.coverage.ncnt=gcnt;
-      rule->u.coverage.ncovers=malloc(gcnt * sizeof(char **));
+      rule->u.coverage.ncovers=(char **)malloc(gcnt*sizeof(char *));
       for (i=0; i < gcnt; ++i) {
 	 glyphs=getCoverageTable(ttf, stoffset + coverage[i], info);
 	 rule->u.coverage.ncovers[i]=GlyphsToNames(info, glyphs, true);
@@ -1834,6 +1842,7 @@ static void g___ChainingSubTable3(AFILE *ttf,int stoffset,
    if (justinuse==git_justinuse) {
       /* Nothing to do. This lookup doesn't really reference any glyphs */
       /*  any lookups it invokes will be processed on their own */
+      free(sl);
    } else {
       fpst=chunkalloc(sizeof(FPST));
       fpst->type=gpos ? pst_chainpos : pst_chainsub;
@@ -1847,7 +1856,7 @@ static void g___ChainingSubTable3(AFILE *ttf,int stoffset,
       fpst->rule_cnt=1;
 
       rule->u.coverage.bcnt=bcnt;
-      rule->u.coverage.bcovers=malloc(bcnt * sizeof(char **));
+      rule->u.coverage.bcovers=(char **)malloc(bcnt*sizeof(char *));
       for (i=0; i < bcnt; ++i) {
 	 glyphs=getCoverageTable(ttf, stoffset + bcoverage[i], info);
 	 rule->u.coverage.bcovers[i]=GlyphsToNames(info, glyphs, true);
@@ -1855,7 +1864,7 @@ static void g___ChainingSubTable3(AFILE *ttf,int stoffset,
       }
 
       rule->u.coverage.ncnt=gcnt;
-      rule->u.coverage.ncovers=malloc(gcnt * sizeof(char **));
+      rule->u.coverage.ncovers=(char **)malloc(gcnt*sizeof(char *));
       for (i=0; i < gcnt; ++i) {
 	 glyphs=getCoverageTable(ttf, stoffset + coverage[i], info);
 	 rule->u.coverage.ncovers[i]=GlyphsToNames(info, glyphs, true);
@@ -1863,7 +1872,7 @@ static void g___ChainingSubTable3(AFILE *ttf,int stoffset,
       }
 
       rule->u.coverage.fcnt=fcnt;
-      rule->u.coverage.fcovers=malloc(fcnt * sizeof(char **));
+      rule->u.coverage.fcovers=(char **)malloc(fcnt*sizeof(char *));
       for (i=0; i < fcnt; ++i) {
 	 glyphs=getCoverageTable(ttf, stoffset + fcoverage[i], info);
 	 rule->u.coverage.fcovers[i]=GlyphsToNames(info, glyphs, true);

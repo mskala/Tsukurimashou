@@ -699,11 +699,17 @@ void parse(int argc,char **argv,int optind) {
 	    else if (strcmp(token->cp,"cfile")==0)
 	      handle_c_file(&ps);
 
+	    else if (strcmp(token->cp,"construct")==0)
+	      handle_construct(&ps);
+
 	    else if (strcmp(token->cp,"cwrite")==0)
 	      handle_c_write(&ps);
 	    
 	    else if (strcmp(token->cp,"decode")==0)
 	      handle_encode(&ps,0);
+	    
+	    else if (strcmp(token->cp,"define")==0)
+	      handle_define(&ps);
 	    
 	    else if (strcmp(token->cp,"encode")==0)
 	      handle_encode(&ps,1);
@@ -737,6 +743,9 @@ void parse(int argc,char **argv,int optind) {
 
 	    else if (strcmp(token->cp,"remap")==0)
 	      handle_remap(&ps);
+
+	    else if (strcmp(token->cp,"return")==0)
+	      handle_return(&ps);
 
 	    else if (strcmp(token->cp,"rxparse")==0)
 	      handle_rxparse(&ps);

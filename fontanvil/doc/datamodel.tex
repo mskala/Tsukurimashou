@@ -337,3 +337,165 @@ not move with cut and pasted glyph data.
 
 FIXME
 
+\section{Syntax, semantics, round trips, and reproducibility}
+
+It is a very common complaint from users of font editors that someone loaded
+a file, saved it without making any other changes, and ``the result was not
+the same.''  Such complaints are often filed as bugs in the FontForge bug
+tracker.  Dealing with them is not so easy as it might appear on the
+surface, because what it means for two files to be ``the same'' is not so
+simple as whether they contain the same sequence of bytes.  This section is
+intended to clarify some of the relevant issues as they relate to FontAnvil,
+and let users know what are and are not reasonable expectations about the
+system's behaviour.
+
+Consider the two ASCII strings ``\texttt{1.5}'' and
+``\texttt{1.50000000000}''; are those the same?  As strings, they are not. 
+But if these strings are representations of a real number, they represent
+the same real number.  So if an editor loads one and saves the other, the
+bytes in the file will have changed but the number will not have changed. 
+We can say that the \emph{syntax} has changed but the \emph{semantics} have
+not.  These are terms borrowed from the field of linguistics, where they
+describe different levels of abstraction in the study of a language: syntax
+refers to questions like what sequences of words are grammatically valid
+sentences, while semantics refers to the meanings of words.
+
+Note that if ASCII strings represent floating point numbers in low machine
+precision, we might even have ``\texttt{1.50000000000}'' and
+``\texttt{1.49999999999}'' referring to the same number.  The ``number''
+that matters is the machine-precision binary number; two strings that both
+result in the same machine-precision binary number are two strings with the
+same meaning even if a human translating them instead to exact real numbers
+would see a difference.
+
+When FontAnvil, or any other font editor, loads a file from disk, the file
+is converted into an in-memory representation that is designed to store the
+semantics of the font.  When it saves the file, that in-memory
+representation is converted into the disk file format.  As a result of this
+process, in general it is reasonable to expect that loading and saving a
+file will preserve the semantics of the data in the file, but in general
+\emph{it is not reasonable to expect aspects of syntax beyond semantics to
+be preserved.}
+
+The result of a round-trip through any editor will in general be a file with
+the same semantics, but not necessarily the same syntax.  In general that
+statement is true of all software that edits complicated file formats,
+including word processors and image editors as well as all font editors, not
+only FontAnvil.  For reasons unknown to me, users of font editors seem
+especially inclined to be surprised by the loss of non-semantic information
+and to report it as a claimed ``bug,'' even though this is the normal,
+expected, and pretty much inevitable behaviour of most computer
+software.
+
+Further confusion may ensue when a file is round-tripped through more than
+one on-disk format, because different formats may define different
+semantics, sometimes at the ontological level; that is, different formats
+may be based on different models of what are the important concepts in the
+problem domain.  For instance, some font formats make heavy use of
+``references,'' which allow part of one glyph to automatically incorporate
+another glyph.  Other font formats just do not contain references at all. 
+Some font formats use quadratic splines to represent curves, while others
+use cubic splines, and each of these is only approximately capable of
+representing data from the other; a loss of precision necessarily occurs
+when converting between them.  In general, information from one
+format may need to be changed in irreversible semantic ways or even
+discarded in order to convert a font to another format.  Converting back and
+getting even the same semantics, let alone the same syntax, is not always a
+reasonable expectation.  This issue is somewhat analogous to what occurs
+when translating text successively through two or more very different human
+languages.
+
+The FontAnvil in-memory format attempts to be able to represent all the
+semantic information in all the on-disk formats that FontAnvil supports; but
+it still represents semantics only.  Since FontAnvil descends from FontForge
+which descends from PfaEdit which was originally an editor for Postscript
+only, the FontAnvil in-memory format may have some bias toward a Postscript
+data model.  It nonetheless is intended to cover the semantics of all the
+formats FontAnvil supports.
+
+The FontAnvil SFD ``native'' format is a special on-disk format intended to
+represent the semantics of the in-memory format as accurately as possible;
+so, by design, it should be possible to round-trip between a font in memory
+and a font on disk in SFD format, with no loss of semantics.  However, it is
+still possible to find syntactic distinctions in SFD files that will not be
+preserved by loading and saving.  For instance, one can mess around with
+external software to re-arrange the sequence of glyphs in an on-disk SFD
+file, only to have one's tampering automatically undone the next time the
+file is loaded and saved because the order of entries in the file is not
+semantic and all that really counts is the glyph numbers stored in the
+appropriate fields.
+
+From this general picture there emerge several points that describe how
+FontAnvil relates to the syntax and semantics of font files.
+
+\begin{itemize}
+\item FontAnvil attempts to preserve semantics of font files through
+a round trip of loading from and saving to any one supported foreign format. 
+\item FontAnvil attempts to preserve semantics of font files through 
+a round trip of loading a foreign format, saving and loading the data in SFD
+format, and then saving back to the same foreign format.
+\item When loading from one foreign format and saving to another, FontAnvil
+attempts to preserve whatever semantics make sense in both formats; but a
+round trip from one foreign format to another and back may not be lossless.
+\item FontAnvil does not attempt to preserve syntax of any file format
+beyond the semantics of the font inside, and in general it should be
+expected that it usually \emph{will} change syntax.
+\item FontAnvil does not attempt to preserve SFD file semantics specific to
+features FontForge includes and FontAnvil does not; for instance, pickled
+Python objects.
+\item FontAnvil does not support SFD-like files written or
+edited by software other than FontAnvil itself, except versions of FontForge
+close to the Git repository version current as of March 2014.
+\item FontAnvil does not support FontForge SFDir (SFD split into a directory
+instead of a single file) format.
+\end{itemize}
+
+The Debian Project has recently embarked on a misguided project to demand
+``reproducibility'' of everything in their world, which they define as
+having the ability to compile software many times under different
+circumstances and get byte for byte syntactically identical output.  I call
+this \emph{extreme reproducibility} to allow distinguishing it from weaker
+properties that might also be called reproducibility, and to emphasize what
+an outlandish and cumbersome form this one actually is.  Several purported
+reasons for extreme reproducibility to be desirable are put forward by the
+project.  The claim that extreme reproducibility would be nice for security
+is true, because multiple parties can independently compile something, check
+that they got the same result, and thus be sure that they are all either
+uncompromised or compromised in the same way.  But not everything that would
+be nice to have is worth what it costs.
+
+Absent rigorous audits of everything else that can go wrong, an extreme
+reproducibility demand is far from a guarantee of security.  Demanding
+extreme reproducibility precludes embedding metadata about the circumstances
+of a build in the built file; as soon as there's so much as a timestamp
+inside a file, byte for byte comparisons break.  Metadata is especially
+important and useful in fonts and typesetting; and third-party file formats
+in this application domain often have specific requirements for timestamps
+and even per-save random ID numbers to be included in the files, making it
+difficult to obey the file format definitions while also having extreme
+reproducibility.
+
+Randomized algorithms, and computations in which multiple threads work
+simultaneously, may often generate differing but in some sense close enough
+results when run more than once; anything of that nature is forbidden by
+extreme reproducibility.  Cryptographic signature algorithms often require
+the opposite of extreme reproducibility, with one-time nonce values that (on
+pain of destroying the security guarantees) must \emph{never} be the same
+from one run to the next; any part of a build process that involves such a
+signature must be carefully segregated from any parts that are attempting to
+guarantee extreme reproducibility.
+
+With all that in mind, FontAnvil rejects the extreme form of
+reproducibility, but embraces the weaker common-sense reproducibility
+principle that running the same process more than once should produce
+functionally identical results.
+
+\begin{itemize}
+\item FontAnvil scripts are intended to be \emph{semantically} reproducible:
+running the same script on the same inputs with the same FontAnvil binary
+should produce output with the same meaning.
+\item It is not the policy of the FontAnvil project to make any attempt
+at \emph{syntactic} reproducibility, it is not reasonable to expect
+output to be byte for byte identical from one run to another, and in
+general, the contrary should be expected.
+\end{itemize}

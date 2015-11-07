@@ -1,4 +1,4 @@
-/* $Id: asmfpst.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: asmfpst.c 4340 2015-11-07 11:56:21Z mskala $ */
 /* Copyright (C) 2003-2007  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1083,9 +1083,9 @@ ASM *ASMFromFPST(SplineFont *sf, FPST * fpst, int ordered) {
 	 TreeFree(tree);
       } else
 	 sm=NULL;
-      if (tempfpst != fpst)
-	 FPSTFree(tempfpst);
    }
+   if (tempfpst != fpst)
+     FPSTFree(tempfpst);
    /* This is a temporary value. It should be replaced if we plan to */
    /*  retain this state machine */
    if (sm != NULL)

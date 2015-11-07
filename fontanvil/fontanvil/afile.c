@@ -1,4 +1,4 @@
-/* $Id: afile.c 4303 2015-10-24 16:59:22Z mskala $ */
+/* $Id: afile.c 4310 2015-10-27 15:29:50Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -199,6 +199,7 @@ int avfprintf(AFILE *f,const char *r,va_list args) {
    if (MAGICAL(f)) {
       if (afprintf_buffer==NULL) {
 	 afprintf_buffer=(char *)malloc(100);
+	 memset(afprintf_buffer,0,100);
 	 afprintf_buffer_size=100;
       }
 
@@ -212,6 +213,7 @@ int avfprintf(AFILE *f,const char *r,va_list args) {
 	 free(afprintf_buffer);
 	 afprintf_buffer_size=size+50;
 	 afprintf_buffer=(char *)malloc(afprintf_buffer_size);
+	 memset(afprintf_buffer,0,afprintf_buffer_size);
 
 	 size=vsnprintf(afprintf_buffer,afprintf_buffer_size,r,args);
 	 if (size<0) return size;
@@ -1237,7 +1239,7 @@ AFILE *base85_afile(AFILE *f) {
 
 /**********************************************************************/
 
-static int message_level=1;
+int message_level=2;
 
 void ErrorMsg(int level,const char *format,...) {
   va_list args;

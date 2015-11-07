@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: featurefile.c 4340 2015-11-07 11:56:21Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -604,6 +604,26 @@ static AnchorPoint *apfind_entry_exit(SplineFont *sf,OTLookup *otl,
    return (entry);
 }
 
+static char *reverseGlyphNames(char *str) {
+   char *ret;
+   char *rpt,*pt,*start,*spt;
+
+   if (str==NULL)
+     return NULL;
+
+   rpt=ret=(char *)malloc(strlen(str)+1);
+   *ret='\0';
+   for (pt=str+strlen(str);pt>str;pt=start) {
+      for (start=pt-1;(start>=str) && (*start!=' ');start--);
+      for (spt=start+1;spt<pt;)
+	*rpt++=*spt++;
+      *rpt++=' ';
+   }
+   if (rpt>ret)
+     rpt[-1]='\0';
+   return ret;
+}
+
 static void dump_contextpstglyphs(AFILE *out,SplineFont *sf,
 				  struct lookup_subtable *sub,
 				  struct fpst_rule *r, int in_ignore) {
@@ -617,8 +637,12 @@ static void dump_contextpstglyphs(AFILE *out,SplineFont *sf,
    space.u.pair.vr=pairvr;
 
    if (r->u.glyph.back != NULL) {
-      dump_glyphnamelist(out, sf, r->u.glyph.back);
-      aputc(' ', out);
+      char *temp;
+      
+      temp=reverseGlyphNames(r->u.glyph.back);
+      dump_glyphnamelist(out,sf,temp);
+      free(temp);
+      aputc(' ',out);
    }
    last_start=last_end=NULL;
    for (pt=r->u.glyph.names;;) {
@@ -4564,7 +4588,13 @@ static FPST *fea_markedglyphs_to_fpst(struct parseState *tok,
       r->lookups[i].seq=i;
 
    if (all_single) {
-      g=fea_glyphs_to_names(glyphs, bcnt, &r->u.glyph.back);
+      char *temp=NULL;
+      
+      /* backtrack glyphs should be in reverse order, but they are in
+       * natural order in the feature file, so we reverse them */
+      g=fea_glyphs_to_names(glyphs,bcnt,&temp);
+      r->u.glyph.back=reverseGlyphNames(temp);
+      free(temp);
       g=fea_glyphs_to_names(g, ncnt, &r->u.glyph.names);
       g=fea_glyphs_to_names(g, fcnt, &r->u.glyph.fore);
    } else {

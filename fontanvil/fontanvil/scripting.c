@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4300 2015-10-24 13:03:29Z mskala $ */
+/* $Id: scripting.c 4344 2015-11-07 17:08:00Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -53,6 +53,7 @@
 #include "views.h"
 
 #include "unicodelibinfo.h"
+#include "unicodelib.h"
 
 int running_script=true;
 
@@ -1519,7 +1520,7 @@ if (c->a.vals[1].type != v_str)
 
    sub=SFFindLookupSubtable(c->curfv->sf, c->a.vals[1].u.sval);
    if (sub==NULL)
-      ScriptErrorString(c, "Unknown lookup subtable", c->a.vals[2].u.sval);
+      ScriptErrorString(c, "Unknown lookup subtable", c->a.vals[1].u.sval);
 
    if (sub->lookup->lookup_type==gpos_single) {
       temp.type=pst_position;
@@ -7760,36 +7761,43 @@ if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_unicode)
 }
 
 static void bUnicodeBlockEndFromLib(Context *c) {
-/* If the library is available, then get the official Nth block end */
-   if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_unicode)
-      ScriptError(c, "Bad type for argument");
-   c->return_val.type=v_int;
+   struct unicode_block *temp;
 
-   c->return_val.u.ival=unicode_block_end(c->a.vals[1].u.ival);
+   if (c->a.vals[1].type!=v_int && c->a.vals[1].type!=v_unicode)
+     ScriptError(c, "Bad type for argument");
+   c->return_val.type=v_str;
+
+   if ((temp=unicode_blocks_lookup(c->a.vals[1].u.ival))==NULL)
+     c->return_val.u.ival=-1;
+   else
+     c->return_val.u.ival=temp->end;
 }
 
 static void bUnicodeBlockNameFromLib(Context *c) {
-/* If the library is available, then get the official Nth block name */
-   char *temp;
-
-   if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_unicode)
-      ScriptError(c, "Bad type for argument");
+   struct unicode_block *temp;
+   
+   if (c->a.vals[1].type!=v_int && c->a.vals[1].type!=v_unicode)
+     ScriptError(c, "Bad type for argument");
    c->return_val.type=v_str;
-
-   if ((temp=unicode_block_name(c->a.vals[1].u.ival))==NULL) {
-      temp=malloc(1 * sizeof(char));
-      *temp='\0';
-   }
-   c->return_val.u.sval=temp;
+   
+   if ((temp=unicode_blocks_lookup(c->a.vals[1].u.ival))==NULL) {
+      c->return_val.u.sval=malloc(1 * sizeof(char));
+      *(c->return_val.u.sval)='\0';
+   } else
+     c->return_val.u.sval=fastrdup(temp->name);
 }
 
 static void bUnicodeBlockStartFromLib(Context *c) {
-/* If the library is available, then get the official Nth block start */
-if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_unicode)
-      ScriptError(c, "Bad type for argument");
-   c->return_val.type=v_int;
+   struct unicode_block *temp;
 
-   c->return_val.u.ival=unicode_block_start(c->a.vals[1].u.ival);
+   if (c->a.vals[1].type!=v_int && c->a.vals[1].type!=v_unicode)
+     ScriptError(c, "Bad type for argument");
+   c->return_val.type=v_str;
+
+   if ((temp=unicode_blocks_lookup(c->a.vals[1].u.ival))==NULL)
+     c->return_val.u.ival=-1;
+   else
+     c->return_val.u.ival=temp->start;
 }
 
 static void bUnicodeFromName(Context *c) {

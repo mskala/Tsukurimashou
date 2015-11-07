@@ -119,7 +119,7 @@ bin_PROGRAMS = icemap
 AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
 
 icemap_SOURCES = icemap.c icemap.h \
-  arrays.c arrows.c cascade.c context.c encode.c fileout.c \
+  arrays.c arrows.c cascade.c construct.c context.c encode.c fileout.c \
   nodes.c parser.c remap.c rxparse.c
 
 LDADD = @LIBOBJS@ $(PCRE_LIBS) -lbdd
@@ -145,11 +145,13 @@ MAINTAINERCLEANFILES =
 # PDF DOCUMENTATION
 
 icemap.pdf: icemap.tex mitsuba.cls
+	$(TSU_V_TEX)
 	$(AM_V_at)I=1;$(TSU_V_TEXL) \
-	  $(expect_start)$(PDFLATEX) $(mvp)/icemap.tex $(expect_end)
+	  $(PDFLATEX) $(mvp)/icemap.tex $(TSU_V_REDIR)
+	$(AM_V_at)makeindex $(mvp)/icemap.idx $(TSU_V_REDIR)
+	$(AM_V_at)I=2;$(TSU_V_TEXL) \
+	  $(PDFLATEX) $(mvp)/icemap.tex $(TSU_V_REDIR)
 #	export BIBINPUTS=$(mvp) ; bibtex icemap.aux $(TSU_V_REDIR) ; \
-#	I=2;$(TSU_V_TEXL) \
-#	  $(expect_start)$(PDFLATEX) $(mvp)/icemap.tex $(expect_end) ; \
 #	I=3;$(TSU_V_TEXL) \
 #	  $(expect_start)$(PDFLATEX) $(mvp)/icemap.tex $(expect_end)
 

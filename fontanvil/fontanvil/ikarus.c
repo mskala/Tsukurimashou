@@ -1,4 +1,4 @@
-/* $Id: ikarus.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: ikarus.c 4340 2015-11-07 11:56:21Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -648,7 +648,7 @@ SplineFont *SFReadIkarus(char *fontname) {
    }
    if (jlen != 12)
       ErrorMsg(2,"Unexpected size for font info section of URW font (expected 12, got %d)\n",
-	       ilen);
+	       jlen);
    if (getushort(file) != 1) {	/* 1=> typeface */
       afclose(file);
       return (NULL);

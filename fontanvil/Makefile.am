@@ -135,7 +135,7 @@ TESTS = \
   test/test115.pe test/test116.pe test/test117.pe test/test118.pe \
   test/test119.pe test/test120.pe test/test121.pe test/test122.pe \
   test/test123.pe test/test124.pe test/test125.pe test/test126.pe \
-  test/test127.pe \
+  test/test127.pe test/test128.pe \
   test/coverage.pl test/doccov.pl test/feart.pl
 
 test/coverage.log: $(patsubst %.pe,%.log,$(filter test/%.pe,$(TESTS)))
@@ -156,7 +156,8 @@ AM_CFLAGS = \
   $(LIBTIFF_CFLAGS) $(LIBXML2_CFLAGS) $(ZLIB_CFLAGS) \
   -Werror=implicit-function-declaration \
   -Wno-deprecated-declarations \
-  -pedantic-errors -Wno-pedantic
+  -pedantic-errors -Wno-pedantic \
+  -Wno-pointer-sign
 AM_LDFLAGS = \
   $(FREETYPE_LIBS) $(GIFLIB_CFLAGS) $(LIBPNG_LIBS) \
   $(LIBTIFF_LIBS) $(LIBXML2_LIBS) $(ZLIB_LIBS)
@@ -199,7 +200,8 @@ noinst_HEADERS = \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
   inc/gb12345.h \
   inc/unicodelibinfo.h \
-  fontanvil/feascan.h fontanvil/macenctab.h fontanvil/nonmactab.h
+  fontanvil/feascan.h fontanvil/macenctab.h fontanvil/nonmactab.h \
+  fontanvil/unicodelib.h
 
 noinst_LIBRARIES = \
   Unicode/libgunicode.a
@@ -244,8 +246,8 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/winfonts.c fontanvil/woff.c \
  fontanvil/zapfnomen.c \
  fontanvil/feascan.l fontanvil/pescript.l \
- fontanvil/macenctab.im fontanvil/nonmactab.im \
- fontanvil/macenctab.c fontanvil/nonmactab.c
+ fontanvil/macenctab.im fontanvil/nonmactab.im fontanvil/unicodelib.im \
+ fontanvil/macenctab.c fontanvil/nonmactab.c fontanvil/unicodelib.c
 
 fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a
 
@@ -334,6 +336,8 @@ fontanvil/macenctab.h: fontanvil/macenctab.c
 fontanvil/nonmactab.c: fontanvil/nonmactab.im \
   dat/texbase.dat dat/gb2312.dat dat/glyphlist.txt
 fontanvil/nonmactab.h: fontanvil/nonmactab.c
+fontanvil/unicodelib.c: fontanvil/unicodelib.im
+fontanvil/unicodelib.h: fontanvil/unicodelib.c
 
 if COND_KPSEWHICH
 

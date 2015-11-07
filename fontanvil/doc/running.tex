@@ -23,7 +23,6 @@ this behaviour exactly.
 \end{framed}
 \footnotetext{https://github.com/fontforge/fontforge/issues/1277}
 
-
 FontAnvil uses GNU \texttt{getopt\_long\_only} to parse command-line
 arguments; this has the consequence that long options may be specified with
 \texttt{-} (one hyphen) or \texttt{-{}-} (two hyphens) as the flag sequence;
@@ -58,7 +57,21 @@ hyphen.  Options recognized are as follows.
   ``\texttt{ff}'' then it will be ignored for compatibility.  Any other
   value is a fatal error.
 
-  \item[\texttt{-nosplash}, \texttt{-quiet}, \texttt{-script}, \texttt{-i}]
+  \item[\texttt{-quiet}, \texttt{-q}]
+  Reduce the verbosity of error, warning, and informational messages sent to
+  standard error.  This option may be specified more than once to reduce the
+  messages even further.  Note it may not function exactly like the
+  similarly-named option in FontForge.  FontForge often ignores the
+  command-line option and controls message verbosity in some modules by
+  other means including compile-time options, while FontAnvil attempts to
+  unify all verbosity control under this one option.
+
+  \item[\texttt{-verbose}, \texttt{-V}]
+  Increase the verbosity of error, warning, and informational messages sent
+  to standard error.  This option may be specified more than once to
+  increase the messages even further.
+
+  \item[\texttt{-nosplash}, \texttt{-script}, \texttt{-i}]
   Ignored for compatibility.
 
   \item[\texttt{-version}, \texttt{-v}]
@@ -157,4 +170,3 @@ keystrokes (such as up and down arrows to recall earlier-typed command
 lines) become available in this mode, and there are some minor changes to
 the output formatting (in particular, the display of a command prompt) to
 make it friendlier for interactive users.
-

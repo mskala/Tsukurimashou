@@ -1,7 +1,12 @@
 \documentclass{mitsuba}
 
+\usepackage{makeidx}
+\usepackage{syntax}
+
 \title{Icemap}
 \author{Matthew Skala}
+
+\makeindex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -214,15 +219,380 @@ format into C.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Icemap language concepts}
+\chapter{Quick start example}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Examples}
+\chapter{Icemap control language}
+
+This chapter describes the syntax and function of the Icemap control
+language, using a somewhat informal variant of Backus-Naur Form which I do
+not propose to define precisely, but which should be clear to anyone
+familiar with such language descriptions.  The grammar described here is
+ambiguous (in the technical sense), but I include some informal notes on
+how the parser resolves the ambiguities.
+
+To \index{BNF} summarize the notation:
+\syntax{<angle bracketed names>} denote nonterminals (language
+constructions defined elsewhere); double colon equals~\syntax{::=} denotes
+the definition of a nonterminal; \syntax{`quoted typewriter font'} denotes
+literal single characters or C-style
+backslash escapes for control characters;
+\syntax{"unquoted typewriter font"} denotes strings of literal characters
+(keywords).  The star~\syntax{*}, plus~\syntax{+}, and question
+mark~\syntax{?} denote respectively zero or more, one or more, and zero or one
+copies of the preceding symbol, as in typical Unix regular expressions.
+The star is not greedy.
+Similarly, dot~\syntax{.} and square bracketed character classes
+like~\syntax{["a-z"]} are interpreted as in Unix regular expressions.
+Giving multiple definitions for a nonterminal means any of the definitions
+could apply; such optionality is also denoted by the pipe~\syntax{|}.
+
+\section{Core syntax}
+
+Whitespace,\index{whitespace} defined as in the Unix C locale, is generally
+ignored in Icemap control files, except that whitespace separates tokens,
+and end-of-line sequences are special to the definitions of line-based
+comments and here documents.  \emph{Whitespace will only be mentioned in
+syntax rules where it is relevant.}
+
+\begin{grammar}
+<whitespace> ::= <ws char>*
+
+<ws char> ::= `\ ' | `\\t' | `\\v' | `\\f' | `\\r' | <EOL>
+
+<EOL> ::= `\\n'
+\end{grammar}
+
+Icemap\index{comments} accepts C-like slash-star comments and shell-like
+line-based comments introduced by the hash character.  C comments do not
+have any special handling of nesting (as in C itself), and either kind of
+comment is treated like whitespace by the parser.  Comments will not be
+further mentioned in syntax rules; they are implicitly allowed between
+tokens.
+
+\begin{grammar}
+<comment> ::= <C comment> | <hash comment>
+
+<C comment> ::= `/' `*' .* `*' `/'
+
+<hash comment> ::= `#' ["^\\n"]* <EOL>
+\end{grammar}
+
+Statements\index{semicolons} generally end with an optional semicolon. 
+There are some cases where using it removes some ambiguity in parsing, for
+instance between two successive multi-map arrow statements, but its main
+purpose is to enable earlier detection of typing errors.  The semicolon (if
+not safely inside a string) causes an error anywhere except at the end of a
+statement.  Multiple semicolons may be used.
+
+\begin{grammar}
+<;> ::= `;'*
+\end{grammar}
+
+Apart from whitespace, comments, and optional semicolons, Icemap control
+files are sequences of tokens.\index{tokens} There are three kinds of
+tokens: ``words'' (which serve semantically as both keywords and
+identifiers); strings; and integers.  Strings and integers are called
+value tokens; words and strings are called ids.
+
+\begin{grammar}
+<value> ::= <string> | <integer>
+
+<id> ::= <word> | <string>
+\end{grammar}
+
+Words\index{words} are sequences either of alphabet letters and underscores,
+or of punctuation marks (basically, anything not a letter, numeral, or
+underscore).  Punctuation-mark words are preempted by other uses of the
+characters in question; for instance, minus before a digit becomes part of a
+negative-valued integer token, and two less-thans will introduce a here
+document.  The detailed definition of which characters count as punctuation
+in which contexts is thus complicated, and not given here.  Note that
+numeric characters are not allowed in words, and will be parsed separately
+as integer tokens even if not whitespace-separated from a preceding word;
+similarly, whitespace is not necessary to separate an alphabetic word from a
+punctuation word.  Words are not case sensitive\index{case sensitive!words
+aren't} and are \emph{transformed to
+lower case} during parsing, a fact which may be significant when defining C
+identifiers that will appear in Icemap's output.
+
+\begin{grammar}
+<word> ::= ["a-zA-Z_"]+
+
+<word> ::= ["^a-zA-Z0-9_"]+
+\end{grammar}
+
+Strings\index{strings} may be quoted with double quotes, in which case they
+accept C-like backslash escapes, or as line-based ``here documents'' as in
+the shell.  I will not attempt to give BNF for exactly how escaping works
+inside quoted strings, but all the usual backslash escapes from C are
+accepted.  Hexadecimal escapes like \verb|\x1F| must have exactly two digits
+and octal escapes like \verb|\037| exactly three; the more complicated
+end-of-sequence detection rules of C do not apply.  Character codes in
+escapes refer to byte values (not UTF-8).  Zero bytes are used as
+end-of-string markers internally and thus cannot usefully be included in
+strings.
+
+Here documents\index{here documents} are much as in the shell.  They start
+with two less-thans and a tag that will be used to mark the end of the
+string, such as \verb|<<EOF|.  Semicolon after the tag is optional, but
+there must be nothing further on the line.  The parser actually accepts a
+few other strings as tags beyond the formal definition of ``word'' above,
+but only alphabetic words are recommended for use.  After defining the tag,
+subsequent lines of input are captured into the string, without other
+interpretation (in particular, comments are not removed), up to but not
+including a line consisting of only the tag.  Note that the end-of-line
+characters at the ends of lines, including the last line, are included in
+the here document (so it is impossible to enter a string this way that does
+not end in an end-of-line, unless it is empty).
+
+\begin{grammar}
+<string> ::= <quoted string> | <here document>
+
+<quoted string> ::= `\"' .* `\"'
+
+<line> ::= ["^\\n"]* <EOL>
+
+<here document> ::= `<' `<' <word> <;> <EOL> <line>* <word> <EOL>
+\end{grammar}
+
+Integers\index{integers} may start with an optional minus sign, and then are
+hexadecimal (indicated by the prefix \verb|0x| or \verb|0X|), octal
+(indicated by an initial zero), or decimal (otherwise), much as in C.
+
+\begin{grammar}
+<integer> ::= <decimal int> | <octal int> | <hex int>
+
+<decimal int> ::= `-'? ["1-9"] ["0-9"]*
+
+<octal int> ::= `-'? `0' ["0-7"]*
+
+<hex int> ::= `-'? `0' ["xX"] ["0-9a-fA-F"]*
+\end{grammar}
+
+At the top level, control files consist of sequences of statements. 
+
+\begin{grammar}
+<control file> ::= <statement>*
+\end{grammar}
+
+\section{Include files}
+
+Other\index{include@\texttt{include}} control files can be included with the
+keyword \verb|include|.  The string value given will be wildcard expanded as
+a shell pattern via \verb|wordexp()|, and \emph{all} matching files will be
+included.  Includes may be nested.
+
+\begin{grammar}
+<statement> ::= "include" <string> <;>
+\end{grammar}
+
+\section{Contexts and mapping arrows}
+
+Curly braces\index{curly braces} open and close contexts.\index{contexts}
+Contexts may be nested, and there is an implicit outer context surrounding
+the entire input.  Because of the way the parser works it is technically
+possible (though certainly not recommended) to ``close'' the implicit outer
+context with an unbalanced closing brace; after that the parser will enter a
+state where the only allowed actions are to include a file and to open a new
+outermost context with an opening curly brace.  Similarly, at the end of the
+input (EOF of the outermost file, outside any includes), all currently-open
+contexts will be automatically closed as if an appropriate number of closing
+braces had been inserted, but it is undesirable to depend upon this
+behaviour either.
+
+\begin{grammar}
+<statement> ::= `\{' <statement>* `\}' <;>
+\end{grammar}
+
+Contexts\index{contexts!inheritance} contain a number of different pieces of
+information, and in general, whenever a context is opened, it inherits
+copies of everything in its parent at that moment.  Changes within a context
+affect that context, and any children or descendants opened after the
+change, but do not affect the parent or further ancestors.
+
+When a context is closed, that will usually result in the creation of a map,
+that is, chunks of code to be written to the output C and H files.  If so,
+Icemap increments a ``leaves generated''\index{leaves generated} counter on
+all ancestors of the context that generated the map.  A non-zero value for
+this counter prevents a context from generating a map itself when it closes. 
+The counter is always initialized to zero when the context opens, \emph{not}
+inherited from the parent context.  The effect of this behaviour is that, in
+the ordinary course of things, only the bottom-level contexts which have no
+children of their own will actually result in output to the C and H files. 
+Higher-level contexts would typically be used to set default values to be
+shared among their children.  Some details of how this works can be
+overridden by other statements described later.
+
+The most important thing a context may contain is a collection of key-value
+pairs, where the key and the value may each be an integer or a string.  The
+arrow statement\index{arrow!single@single (\texttt{->})}
+adds a single such pair to the current context.
+
+\begin{grammar}
+<statement> ::= <value> `-' `>' <value> <;>
+\end{grammar}
+
+It is also possible to add several pairs at once, by listing all the keys
+followed by \syntax{"=>"}\index{arrow!multiple@multiple (\texttt{=>})} and
+the corresponding values.  The two lists may
+each contain single strings or integers, and ranges of integers indicated by
+a start and end with \texttt{..} in between, which is equivalent to listing
+all the integers from the start to the end inclusive as single items.  The
+list of keys and list of values must contain the same number of items after
+evaluation of ranges.
+
+\begin{grammar}
+<statement> ::= <vrange>* `=' `>' <vrange>* <;>
+
+<vrange> ::= <value>
+
+<vrange> ::= <integer> `.' `.' <integer>
+\end{grammar}
+
+\section{Generating maps}
+
+The\index{id@\texttt{id}} \texttt{id} statement sets a C-language identifier for the generated
+mapping code, to allow distinguishing multiple maps in the same source
+files.  The default is ``\texttt{map}.''  The value may be specified as
+an unquoted word token, in which case it must be valid as such, or as a
+string, in which case as far as Icemap is concerned it may be anything. 
+To be useful, it ought to consist of characters accepted in C identifiers.
+
+\begin{grammar}
+<statement> ::= "id" <id> <;>
+\end{grammar}
+
+The\index{generate@\texttt{generate}} \texttt{generate} statement chooses
+the algorithm used by the mapping code. 
+The\index{generate@\texttt{generate}!nothing@\texttt{nothing}}
+``\texttt{nothing}'' option means no map will be generated by the current
+context, and the generated-leaves counters of ancestor contexts will not be
+incremented; that may be useful in a context created for its side effects
+and not intended to be used directly as a map.
+
+FIXME talk about available choices
+\index{generate@\texttt{generate}!basic\_array@\texttt{basic\_array}}
+\index{generate@\texttt{generate}!cascade@\texttt{cascade}}
+\index{generate@\texttt{generate}!wide\_cascade@\texttt{wide\_cascade}}
+
+The\index{generate@\texttt{generate}!don't use inside remap@don't use inside
+\texttt{remap}} special contexts created inside \texttt{remap} statements do
+not generate maps directly nor in the ordinary way.  The remapping behaviour
+is implemented by setting the same internal field that would be set by
+\texttt{generate} to a special value not available through the control-file
+\texttt{generate} statement.  The \texttt{generate} statement should not be
+used inside such contexts; if used, it will convert the inner context into
+an ordinary child context as if ``\syntax{"remap"}'' had not been in force.
+
+If no \texttt{generate} value is chosen for an ordinary context that would
+normally generate a map, then Icemap will attempt to choose one
+automatically that is appropriate to the types and ranges of keys and values
+in the map.
+
+Using \texttt{generate} in a context resets that context's leaves generated
+counter to zero, so that it \emph{will} in fact generate a map, even if it
+had children, provided nothing else changes.  This behaviour creates two
+important use cases for \texttt{generate} in a parent context:  use it
+before defining the children, and it will set a default map type for them
+while the parent generates no map of its own; or use \texttt{generate} after
+the children to force the parent to generate a map of its own and set the
+type of that map.
+
+\begin{grammar}
+<statement> ::= "generate" <maptype> <;>
+
+<maptype> ::= "basic_array" | "cascade" | "wide_cascade" | "nothing"
+\end{grammar}
+
+\section{Writing to files}
+
+Icemap generates its map code into two files, a C file (C language
+implementation) and an H file (C language header).  The names for these
+files can be set by the \texttt{cfile} and \texttt{hfile} statements in the
+control file (whose values are automatically inherited into child contexts). 
+Global default filenames can also be set with command-line options when
+Icemap is invoked, but the statements within the control file override the
+command-line options.  It is a fatal error to do something that requires
+writing to the C and H files if names for them have not been set in at least
+one of these places.
+
+\begin{grammar}
+<statement> ::= "cfile" <string> <;>
+
+<statement> ::= "hfile" <string> <;>
+\end{grammar}
+
+Arbitrary chunks of C source code, such as licensing comments and
+header-file includes, can be included in the C and H files with the
+\texttt{cwrite} and \texttt{hwrite} statements.  Note that these take effect
+immediately, using the current values of the C and H filenames, when the
+write statements are parsed---even if the current context is a
+\texttt{generate nothing} context or similar, and creates no map when it
+closes.
+
+\begin{grammar}
+<statement> ::= "cwrite" <string> <;>
+
+<statement> ::= "hwrite" <string> <;>
+\end{grammar}
+
+\section{Built-in mappings}
+
+Icemap offers built-in encoding and decoding of UTF-8.  These statements are
+intended for use inside \texttt{remap} blocks, to convert a mapping table in
+the parent context from referring to Unicode code point numbers (integers)
+to the literal characters (short strings) or vice versa.  The \texttt{encode
+utf-8} statement is equivalent to a sequence of 1114112 arrow statements
+mapping each single-character (possibly multi-byte) string as a key to its
+equivalent code point number (as an integer), and the \texttt{decode utf8}
+statement is equivalent to the same sequence of arrows in the opposite
+direction.  Note that ``\texttt{utf-8}'' is a bit of syntactic trickery; the
+parser actually looks for the word token \texttt{utf} followed by an integer
+token that could be equal to 8 or -8.  Omitting the space between them, and
+spelling the eight in decimal instead of some other way, are just
+suggestions for making the code readable.
+
+\begin{grammar}
+<statement> ::= "encode" "utf" <integer> <;>
+
+<statement> ::= "decode" "utf" <integer> <;>
+\end{grammar}
+
+\begin{grammar}
+<statement> ::= "keytype" <id> <;>
+
+<statement> ::= "valtype" <id> <;>
+\end{grammar}
+
+\begin{grammar}
+<statement> ::= "parserx" <id> <;>
+
+<statement> ::= "skiprx" <id> <;>
+
+<statement> ::= "rxparse" <FIXME> <;>
+\end{grammar}
+
+\begin{grammar}
+<statement> ::= "priority" <priority> <;>
+
+<priority> ::= "error" | "first" | "last" | "min" | "max"
+\end{grammar}
+
+\begin{grammar}
+<statement> ::= "quote" <FIXME> <;>
+\end{grammar}
+
+\begin{grammar}
+<statement> ::= "remap" <rmdir> `\{' <statement>* `\}' <;>
+
+<rmdir> ::= "values" | "vals" | "keys"
+\end{grammar}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Reference}
+\printindex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

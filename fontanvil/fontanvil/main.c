@@ -1,5 +1,5 @@
 
-/* $Id: main.c 4155 2015-09-02 07:43:27Z mskala $ */
+/* $Id: main.c 4310 2015-10-27 15:29:50Z mskala $ */
 /*
  * Main program and command line processing for FontAnvil
  * Copyright (C) 2014, 2015  Matthew Skala
@@ -46,6 +46,7 @@ static struct option long_opts[]={
    {"script",0,NULL,'i'},
    {"usage",0,NULL,'h'},
    {"version",0,NULL,'v'},
+   {"verbose",0,NULL,'V'},
    {0,0,0,0},
 };
 
@@ -60,7 +61,7 @@ int main(int argc,char **argv) {
    InitSimpleStuff();
 
    /* loop on command-line options */
-   while ((c=getopt_long_only(argc,argv,"+c:dhil:v",long_opts,NULL))!=-1) {
+   while ((c=getopt_long_only(argc,argv,"+c:dhil:qvV",long_opts,NULL))!=-1) {
       switch (c) {
 
        case 'c':
@@ -89,9 +90,17 @@ int main(int argc,char **argv) {
 	 }
 	 break;
 
+       case 'q':
+	 message_level++;
+	 break;
+
        case 'v':
 	 show_version=1;
 	 is_interactive=0;
+	 break;
+
+       case 'V':
+	 message_level--;
 	 break;
 
        default:
@@ -125,7 +134,9 @@ int main(int argc,char **argv) {
 	   "  -d, --dry              syntax check with minimal execution\n" 
 	   "  -l, --lang ff          specify language (only ff is valid)\n"
 	   "  -i, --nosplash         ignored for compatibility\n"
-	   "      --quiet, --script  ignored for compatibility\n"
+	   "  -q, --quiet            print fewer error/info messages\n"
+	   "  -V, --verbose          print more error/info messages\n"
+	   "      --script           ignored for compatibility\n"
 	   "  -h, --help, --usage    display this help\n"
 	   "  -v, --version          display version and copyright");
    }

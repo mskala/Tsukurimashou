@@ -1,4 +1,4 @@
-/* $Id: afile.h 4014 2015-06-14 09:50:22Z mskala $ */
+/* $Id: afile.h 4310 2015-10-27 15:29:50Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -79,6 +79,7 @@ ssize_t agetline(char **,size_t *,AFILE *);
  *   3: fatal error that terminates the program
  */
 
+extern int message_level;
 void ErrorMsg(int,const char *,...);
 
 #endif /* ndef _AFILE_H */

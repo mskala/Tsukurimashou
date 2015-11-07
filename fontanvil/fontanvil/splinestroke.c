@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: splinestroke.c 4340 2015-11-07 11:56:21Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3426,7 +3426,7 @@ static int InterpolateTPoints(StrokeContext *c,int start_pos,int end_pos,
       }
       for (i=0; i < 5; ++i) {
 	 c->tpt[i].x=me.x + slope.x * (i + 1);
-	 c->tpt[i].x=me.y + slope.y * (i + 1);
+	 c->tpt[i].y=me.y + slope.y * (i + 1);
 	 c->tpt[i].t=(i + 1) / 6.0;
       }
       return (5);

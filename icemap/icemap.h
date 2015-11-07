@@ -105,6 +105,12 @@ typedef enum _QUOTE_POLICY {
    qp_strings,qp_nothing,qp_everything
 } QUOTE_POLICY;
 
+typedef struct _SUBMAP {
+   struct _SUBMAP *next;
+   char *name;
+   ARROW_MAP am;
+} SUBMAP;
+
 typedef struct _CONTEXT {
    struct _CONTEXT *parent;
    char *id;
@@ -116,6 +122,8 @@ typedef struct _CONTEXT {
    char *key_c_type,*value_c_type;
    QUOTE_POLICY quote_policy;
    int leaves;
+   SUBMAP *submaps;
+   int return_pointer;   
 } CONTEXT;
 
 extern CONTEXT *context_stack;
@@ -124,6 +132,7 @@ void handle_opening_brace(PARSER_STATE *ps);
 void handle_closing_brace(PARSER_STATE *ps);
 void handle_generate(PARSER_STATE *ps);
 void handle_quote_policy(PARSER_STATE *ps);
+void handle_return(PARSER_STATE *ps);
 
 /**********************************************************************/
 
@@ -141,6 +150,13 @@ void gen_cascade(CONTEXT *c);
 
 int prefer_wide_cascade(CONTEXT *c);
 void gen_wide_cascade(CONTEXT *c);
+
+/**********************************************************************/
+
+/* construct.c */
+
+void handle_define(PARSER_STATE *);
+void handle_construct(PARSER_STATE *);
 
 /**********************************************************************/
 

@@ -1,4 +1,4 @@
-/* $Id: lookups.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: lookups.c 4340 2015-11-07 11:56:21Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1147,7 +1147,7 @@ void SFRemoveLookupSubTable(SplineFont *sf, struct lookup_subtable *sub,
 
       k=0;
       do {
-	 _sf=sf->subfontcnt==0 ? sf : sf->subfonts[i];
+	 _sf=sf->subfontcnt==0 ? sf : sf->subfonts[k];
 	 for (i=0; i < _sf->glyphcnt; ++i)
 	    if ((sc=_sf->glyphs[i]) != NULL) {
 	       for (pst=sc->possub, prev=NULL; pst != NULL; pst=next) {

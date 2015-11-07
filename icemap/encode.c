@@ -39,8 +39,8 @@ void handle_encode(PARSER_STATE *ps,int dir) {
    else if (strcmp(tok->cp,"utf")==0) {
       node_delete(tok);
       tok=get_token(ps);
-      if ((tok->type!=nt_int) || (tok->x!=8))
-	parse_error(ps,"unknwon encoding type");
+      if ((tok->type!=nt_int) || ((tok->x!=8) && (tok->x!=-8)))
+	parse_error(ps,"unknown encoding type");
       else {
 	 encoded=node_new();
 	 encoded->type=nt_string;

@@ -1,0 +1,41 @@
+# Icemap definitions for Unicode "library" data
+
+# $Id$
+
+cwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN unicodelib.im INSTEAD! */
+
+struct unicode_block {
+   int start,end;
+   const char *name;
+};
+
+EOF
+
+hwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN unicodelib.im INSTEAD! */
+
+struct unicode_block {
+   int start,end;
+   const char *name;
+};
+
+EOF
+
+########################################################################
+
+# Unicode blocks
+
+{ id unicode_blocks;
+  valtype "struct unicode_block";
+  quote nothing;
+  return pointer;
+  generate basic_array;
+
+  parserx "^([0-9A-FXa-fx]+)\\.\\.([0-9A-FXa-fx]+); (.*)";
+  define start { rxparse "dat/Blocks.txt" -1->x1; }
+  define end { rxparse "dat/Blocks.txt" -1->x2; }
+  define name { rxparse "dat/Blocks.txt" -1->3; }
+  rxparse "dat/Blocks.txt" -1->-1;
+  construct [ { %start , %end , "\"" $name "\"" } ]
+}

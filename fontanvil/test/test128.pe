@@ -1,0 +1,5 @@
+#!/usr/local/bin/fontanvil
+# Tests buffer overflow condition in StrSplit
+
+ToString(StrSplit("a;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",";",1));
+GetCoverageCounts()

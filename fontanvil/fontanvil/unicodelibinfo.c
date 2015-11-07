@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.c 4309 2015-10-25 12:18:15Z mskala $ */
+/* $Id: unicodelibinfo.c 4344 2015-11-07 17:08:00Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -27,15 +27,11 @@
  */
 
 #include "unicodelibinfo.h"
+#include "unicodelib.h"
 #include <ustring.h>
 
 #ifndef _NO_LIBUNINAMESLIST
 #   include <uninameslist.h>
-#else
-struct unicode_block {
-   int start, end;
-   const char *name;
-};
 #endif
 
 const struct unicode_nameannot *const *const *_UnicodeNameAnnot = NULL;	/* deprecated */
@@ -273,87 +269,5 @@ char *unicode_annot(int32_t unienc) {
 #   endif
 
    return (annot_data);
-#endif
-}
-
-int32_t unicode_block_start(int32_t block_i) {
-/* Return the unicode value for the start of next unicode block. If no	  */
-/* library or data available, then return -1.				  */
-
-#if _NO_LIBUNINAMESLIST && _NO_LIBUNICODENAMES
-   /* no nameslist library available to use */
-   //fprintf(stderr,"no block library\n");
-   return (-1);
-#else
-   int32_t unistart;
-
-   unistart = -1;
-#   ifndef _NO_LIBUNINAMESLIST
-   /* old libuninameslist library code */
-   if ((unistart = unicode_block_check(block_i)) >= 0)
-      unistart = _UnicodeBlock[unistart].start;
-   //fprintf(stderr,"use old code library, got values of %d %d\n",block_i,unistart);
-#   else
-   /* libunicodesnames library code */
-   unistart = uninm_block_start(blocks_db, (unsigned int) (block_i));
-   //fprintf(stderr,"libunicodes library ->%s<-\n",name_data\n");
-#   endif
-
-   return (unistart);
-#endif
-}
-
-int32_t unicode_block_end(int32_t block_i) {
-/* Return the unicode value for the end of this unicode block. If there	  */
-/* is no library or data available, then return -1			  */
-
-#if _NO_LIBUNINAMESLIST && _NO_LIBUNICODENAMES
-   /* no nameslist library available to use */
-   //fprintf(stderr,"no block library\n");
-   return (-1);
-#else
-   int32_t uniend;
-
-   uniend = -1;
-#   ifndef _NO_LIBUNINAMESLIST
-   /* old libuninameslist library code */
-   if ((uniend = unicode_block_check(block_i)) >= 0)
-      uniend = _UnicodeBlock[uniend].end;
-   //fprintf(stderr,"use old code library, got values of %d %d\n",block_i,uniend);
-#   else
-   /* libunicodesnames library code */
-   uniend = uninm_block_end(blocks_db, (unsigned int) (block_i));
-   //fprintf(stderr,"libunicodes library ->%s<-\n",name_data\n");
-#   endif
-
-   return (uniend);
-#endif
-}
-
-char *unicode_block_name(int32_t block_i) {
-/* Return the unicode name for this unicode block. If there is no library */
-/* then return NULL							  */
-
-#if _NO_LIBUNINAMESLIST && _NO_LIBUNICODENAMES
-   /* no nameslist library code available to use */
-   //fprintf(stderr,"no library\n");
-   return (NULL);
-#else
-   char *name_data = NULL;
-
-#   ifndef _NO_LIBUNINAMESLIST
-   int i;
-
-   /* old libuninameslist library code */
-   if ((i = unicode_block_check(block_i)) >= 0)
-      name_data = copy(_UnicodeBlock[i].name);
-   //fprintf(stderr,"use old code library, got values of %d %d %s\n",i,block_i,name_data);
-#   else
-   /* libunicodesnames library code */
-   name_data = copy(uninm_block_name(blocks_db, (unsigned int) (block_i)));
-   //fprintf(stderr,"libunicodes library ->%s<-\n",name_data\n");
-#   endif
-
-   return (name_data);
 #endif
 }

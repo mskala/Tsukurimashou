@@ -95,10 +95,6 @@ TSU_V_TEXL_0=$(ECHO_ANSI) \
 
 if COND_BUDDY
    BUDDY_LIBS=-lbdd
-else
-if COND_WIDTHTAB
-$(error Cannot use --enable-widthtab without BuDDy)
-endif
 endif
 if COND_CHISE_IDS
    MAYBE_CIDATA=chise.eids chise.bvec
@@ -277,7 +273,7 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 
 # BUILD THE WIDTH TABLE
 
-if COND_WIDTHTAB
+if COND_ICEMAP
 widthtab.c: widthtab.im $(ICEMAP) EastAsianWidth.txt UnicodeData.txt
 	$(ICEMAP) widthtab.im
 

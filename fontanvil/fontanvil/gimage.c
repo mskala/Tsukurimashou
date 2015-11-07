@@ -1,4 +1,4 @@
-/* $Id: gimage.c 4307 2015-10-25 11:55:51Z mskala $ */
+/* $Id: gimage.c 4310 2015-10-27 15:29:50Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* Copyright (C) 2015  Matthew Skala */
 /*
@@ -1316,7 +1316,7 @@ GImage *GImageRead_Png(AFILE *fp) {
       return NULL;
    }
 
-   png_set_read_fn(png_ptr,(voidp)fp,fapng_read_data);
+   png_set_read_fn(png_ptr,(void *)fp,fapng_read_data);
    png_read_info(png_ptr, info_ptr);
    png_set_strip_16(png_ptr);
    if ((png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_GRAY

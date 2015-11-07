@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: cvundoes.c 4340 2015-11-07 11:56:21Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1483,7 +1483,7 @@ static void APInto(SplineChar *sc,AnchorPoint *ap,AnchorPoint *fromap,
 	 malloc(ap->yadjust.last_pixel_size - ap->yadjust.first_pixel_size +
 		1);
       memcpy(ap->yadjust.corrections, fromap->yadjust.corrections,
-	     ap->yadjust.last_pixel_size - ap->xadjust.first_pixel_size + 1);
+	     ap->yadjust.last_pixel_size - ap->yadjust.first_pixel_size + 1);
    }
 }
 

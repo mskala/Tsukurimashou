@@ -51,6 +51,8 @@ void handle_opening_brace(PARSER_STATE *ps) {
       ctx->value_c_type=NULL;
       ctx->quote_policy=qp_strings;
       ctx->leaves=0;
+      ctx->submaps=NULL;
+      ctx->return_pointer=0;
 
    } else {
       ctx->id=strdup(context_stack->id);
@@ -69,6 +71,8 @@ void handle_opening_brace(PARSER_STATE *ps) {
       
       ctx->quote_policy=ctx->parent->quote_policy;
       ctx->leaves=0;
+      ctx->submaps=ctx->parent->submaps;
+      ctx->return_pointer=ctx->parent->return_pointer;
    }
 
    context_stack=ctx;
@@ -80,6 +84,7 @@ void handle_closing_brace(PARSER_STATE *ps) {
    CONTEXT *ctx;
    int i,j;
    void (*pref_gen)(struct _CONTEXT *);
+   SUBMAP *sm,*psm;
 
    if (context_stack==NULL) {
       parse_error(ps,"unexpected closing brace");
@@ -148,6 +153,18 @@ void handle_closing_brace(PARSER_STATE *ps) {
      free(context_stack->key_c_type);
    if (context_stack->value_c_type!=NULL)
      free(context_stack->value_c_type);
+   
+   if (context_stack->parent==NULL)
+     psm=NULL;
+   else
+     psm=context_stack->parent->submaps;
+   while (context_stack->submaps!=psm) {
+      sm=context_stack->submaps;
+      context_stack->submaps=sm->next;
+      free(sm->name);
+      arrow_map_delete(&(sm->am));
+      free(sm);
+   }
 
    ctx=context_stack->parent;
    free(context_stack);
@@ -202,6 +219,25 @@ void handle_quote_policy(PARSER_STATE *ps) {
      context_stack->quote_policy=qp_nothing;
    else
      parse_error(ps,"unknown quote policy keyword %s",tok->cp);
+   
+   node_delete(tok);
+   ps->ignore_semicolon=1;
+}
+
+void handle_return(PARSER_STATE *ps) {
+   NODE *tok;
+   
+   ps->ignore_semicolon=0;
+   tok=get_token(ps);
+
+   if (tok->type!=nt_keyword)
+     parse_error(ps,"return policy must be a keyword");
+   else if (strcmp(tok->cp,"pointer")==0)
+     context_stack->return_pointer=1;
+   else if (strcmp(tok->cp,"value")==0)
+     context_stack->return_pointer=0;
+   else
+     parse_error(ps,"unknown return policy keyword %s",tok->cp);
    
    node_delete(tok);
    ps->ignore_semicolon=1;
