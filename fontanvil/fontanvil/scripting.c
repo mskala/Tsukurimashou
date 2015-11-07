@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4344 2015-11-07 17:08:00Z mskala $ */
+/* $Id: scripting.c 4346 2015-11-07 20:53:44Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -7765,7 +7765,7 @@ static void bUnicodeBlockEndFromLib(Context *c) {
 
    if (c->a.vals[1].type!=v_int && c->a.vals[1].type!=v_unicode)
      ScriptError(c, "Bad type for argument");
-   c->return_val.type=v_str;
+   c->return_val.type=v_int;
 
    if ((temp=unicode_blocks_lookup(c->a.vals[1].u.ival))==NULL)
      c->return_val.u.ival=-1;
@@ -7792,7 +7792,7 @@ static void bUnicodeBlockStartFromLib(Context *c) {
 
    if (c->a.vals[1].type!=v_int && c->a.vals[1].type!=v_unicode)
      ScriptError(c, "Bad type for argument");
-   c->return_val.type=v_str;
+   c->return_val.type=v_int;
 
    if ((temp=unicode_blocks_lookup(c->a.vals[1].u.ival))==NULL)
      c->return_val.u.ival=-1;

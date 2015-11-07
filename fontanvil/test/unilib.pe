@@ -1,0 +1,74 @@
+#!/usr/local/bin/fontanvil
+
+y=0
+
+x=UnicodeNamesListVersion();
+Print("UnicodeNamesListVersion() = "+x);
+
+x=UnicodeBlockNameFromLib(0);
+Print("UnicodeBlockNameFromLib(0) = "+x);
+if (x!='Basic Latin')
+  y=1
+  Print('ERROR');
+endif
+if (0)
+x=UnicodeBlockNameFromLib(-1000);
+Print("UnicodeBlockNameFromLib(-1000) = "+x);
+if (x!='')
+  y=1
+  Print('ERROR');
+endif
+x=UnicodeBlockNameFromLib(100000);
+Print("UnicodeBlockNameFromLib(100000) = "+x);
+if (x!='')
+  y=1
+  Print('ERROR');
+endif
+endif
+
+x=UnicodeBlockStartFromLib(0);
+Print("UnicodeBlockStartFromLib(0) = "+ToString(x));
+if (x!=0)
+  y=1
+  Print('ERROR');
+endif
+x=UnicodeBlockStartFromLib(-100);
+Print("UnicodeBlockStartFromLib(-100) = "+ToString(x));
+if (x!=-1)
+  y=1
+  Print('ERROR');
+endif
+x=UnicodeBlockStartFromLib(978346);
+Print("UnicodeBlockStartFromLib(978346) = "+ToString(x));
+if (x!=-1)
+  y=1
+  Print('ERROR');
+endif
+
+x=UnicodeBlockEndFromLib(0);
+Print("UnicodeBlockEndFromLib(0) = "+ToString(x));
+if (x!=0x7F)
+  y=1
+  Print('ERROR');
+endif
+x=UnicodeBlockEndFromLib(-200);
+Print("UnicodeBlockEndFromLib(-200) = "+ToString(x));
+if (x!=-1)
+  y=1
+  Print('ERROR');
+endif
+x=UnicodeBlockEndFromLib(797834);
+Print("UnicodeBlockEndFromLib(797834) = "+ToString(x));
+if (x!=-1)
+  y=1
+  Print('ERROR');
+endif
+
+x=UnicodeNameFromLib(65);
+Print("UnicodeNameFromLib(65) = "+x);
+
+x=UnicodeAnnotationFromLib(65);
+Print("UnicodeAnnotationFromLib(65) = "+x);
+
+GetCoverageCounts()
+Quit(0)

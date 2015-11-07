@@ -708,9 +708,12 @@ void parse(int argc,char **argv,int optind) {
 	    else if (strcmp(token->cp,"decode")==0)
 	      handle_encode(&ps,0);
 	    
+	    else if (strcmp(token->cp,"default")==0)
+	      handle_default(&ps);
+
 	    else if (strcmp(token->cp,"define")==0)
 	      handle_define(&ps);
-	    
+
 	    else if (strcmp(token->cp,"encode")==0)
 	      handle_encode(&ps,1);
 	    

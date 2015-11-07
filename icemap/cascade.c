@@ -377,6 +377,7 @@ void gen_cascade(CONTEXT *c) {
    else
      of_write(hf,"extern %s%s%s_lookup(int);\n",
 	      ots,maybe_space,c->id);
+   of_write(hf,"#define %s_count (%d)\n",c->id,c->am.num_arrows);
 
    /* choose a size for table entries */
    es="int8_t";
@@ -795,6 +796,7 @@ void gen_wide_cascade(CONTEXT *c) {
    else
      of_write(hf,"extern %s%s%s_lookup(int);\n",
 	      ots,maybe_space,c->id);
+   of_write(hf,"#define %s_count (%d)\n",c->id,c->am.num_arrows);
 
    /* choose a size for table entries */
    es="int8_t";

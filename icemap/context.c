@@ -53,6 +53,8 @@ void handle_opening_brace(PARSER_STATE *ps) {
       ctx->leaves=0;
       ctx->submaps=NULL;
       ctx->return_pointer=0;
+      ctx->default_policy=dp_fail;
+      ctx->default_value=NULL;
 
    } else {
       ctx->id=strdup(context_stack->id);
@@ -73,6 +75,10 @@ void handle_opening_brace(PARSER_STATE *ps) {
       ctx->leaves=0;
       ctx->submaps=ctx->parent->submaps;
       ctx->return_pointer=ctx->parent->return_pointer;
+      ctx->default_policy=ctx->parent->default_policy;
+      ctx->default_value=ctx->parent->default_value;
+      if (ctx->default_value!=NULL)
+	ctx->default_value->refs++;
    }
 
    context_stack=ctx;
@@ -165,6 +171,9 @@ void handle_closing_brace(PARSER_STATE *ps) {
       arrow_map_delete(&(sm->am));
       free(sm);
    }
+   
+   if (context_stack->default_value!=NULL)
+     node_delete(context_stack->default_value);
 
    ctx=context_stack->parent;
    free(context_stack);
@@ -242,3 +251,32 @@ void handle_return(PARSER_STATE *ps) {
    node_delete(tok);
    ps->ignore_semicolon=1;
 }
+
+void handle_default(PARSER_STATE *ps) {
+   NODE *tok;
+
+   if (context_stack->default_value!=NULL) {
+      node_delete(context_stack->default_value);
+      context_stack->default_value=NULL;
+   }
+   
+   ps->ignore_semicolon=0;
+   tok=get_token(ps);
+
+   if (tok->type!=nt_keyword) {
+      context_stack->default_policy=dp_value;
+      context_stack->default_value=tok;
+      tok->refs++;
+   } else if (strcmp(tok->cp,"any")==0)
+	context_stack->default_policy=dp_any;
+   else if (strcmp(tok->cp,"fail")==0)
+     context_stack->default_policy=dp_fail;
+   else if (strcmp(tok->cp,"null")==0)
+     context_stack->default_policy=dp_null;
+   else
+     parse_error(ps,"unknown default policy keyword %s",tok->cp);
+   
+   node_delete(tok);
+   ps->ignore_semicolon=1;
+}
+

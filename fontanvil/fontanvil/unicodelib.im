@@ -31,6 +31,7 @@ EOF
   quote nothing;
   return pointer;
   generate basic_array;
+  default null;
 
   parserx "^([0-9A-FXa-fx]+)\\.\\.([0-9A-FXa-fx]+); (.*)";
   define start { rxparse "dat/Blocks.txt" -1->x1; }

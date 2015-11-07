@@ -105,6 +105,10 @@ typedef enum _QUOTE_POLICY {
    qp_strings,qp_nothing,qp_everything
 } QUOTE_POLICY;
 
+typedef enum _DEFAULT_POLICY {
+   dp_fail,dp_any,dp_null,dp_value
+} DEFAULT_POLICY;
+
 typedef struct _SUBMAP {
    struct _SUBMAP *next;
    char *name;
@@ -123,7 +127,9 @@ typedef struct _CONTEXT {
    QUOTE_POLICY quote_policy;
    int leaves;
    SUBMAP *submaps;
-   int return_pointer;   
+   int return_pointer;
+   DEFAULT_POLICY default_policy;
+   NODE *default_value;
 } CONTEXT;
 
 extern CONTEXT *context_stack;
@@ -133,6 +139,7 @@ void handle_closing_brace(PARSER_STATE *ps);
 void handle_generate(PARSER_STATE *ps);
 void handle_quote_policy(PARSER_STATE *ps);
 void handle_return(PARSER_STATE *ps);
+void handle_default(PARSER_STATE *ps);
 
 /**********************************************************************/
 

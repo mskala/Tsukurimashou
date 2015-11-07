@@ -125,7 +125,7 @@ endif
 PL_LOG_COMPILER = @PERL@
 
 TESTS = \
-  test/arithmetic.pe test/feamerge.pe \
+  test/arithmetic.pe test/feamerge.pe test/unilib.pe \
   test/test001.pe test/test002.pe test/test003.pe test/test004.pe \
   test/test005.pe test/test006.pe test/test007.pe test/test008.pe \
   test/test009.pe test/test010.pe test/test101.pe test/test102.pe \

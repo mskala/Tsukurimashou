@@ -37,4 +37,5 @@ Open(srcdir+"../sfd/tsuku-kg.sfd")
 MergeFeature("ttmp/tsuku-kg2.fea")
 GenerateFeatureFile("ttmp/tsuku-kg3.fea")
 
+GetCoverageCounts()
 Quit(0)
