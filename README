@@ -10,7 +10,7 @@ to Tsukurimashou development through Sourceforge.JP, not through Github.
 QUICK START FROM SOURCE CONTROL CHECKOUT
 
 autoreconf -i
-./config
+./configure
 make download
 make
 
