@@ -202,6 +202,8 @@ automake_rules = here
 
 if COND_PARASITE
 
+download:
+
 mitsuba.cls: ../mitsuba/mitsuba.cls
 	$(TSU_V_CP) cp $< $@
 

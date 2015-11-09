@@ -190,6 +190,8 @@ automake_rules = here
 
 if COND_PARASITE
 
+download:
+
 m4/ax_add_am_macro.m4: ../m4/ax_add_am_macro.m4
 	$(TSU_V_CP) cp $< $@
 

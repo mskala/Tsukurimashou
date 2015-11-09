@@ -483,7 +483,8 @@ makefile-vars.inc: \
 	  >> makefile-vars.inc
 	$(AM_V_at)echo EARLY_PARASITES=`$(HAMLOG) 'P' \
 	  'early_parasite_available(P),want_early_parasite(P)' \
-	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER)` \
+	  hamlog/config.hl $(mvp)/hamlog/select.hl \
+	  $(HAMLOG_AFTER) | sort -r` \
 	  >> makefile-vars.inc
 	$(AM_V_at)echo PARASITES=`$(HAMLOG) 'P' \
 	  'parasite_available(P),want_parasite(P)' \

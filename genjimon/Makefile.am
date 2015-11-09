@@ -279,6 +279,8 @@ automake_rules = here
 
 if COND_PARASITE
 
+download:
+
 fntbase.mp: ../mp/fntbase.mp
 	$(TSU_V_CP) cp $< $@
 

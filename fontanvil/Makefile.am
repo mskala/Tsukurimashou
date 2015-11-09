@@ -326,6 +326,9 @@ endif
 
 # ICEMAP
 
+download:
+	tools/dlunicode
+
 if COND_ICEMAP
 
 %.c:%.im $(ICEMAP)

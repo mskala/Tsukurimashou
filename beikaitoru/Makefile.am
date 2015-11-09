@@ -1,11 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-# PLEASE NOTE:  The Free Software Foundation's copyright notice, which will
-# appear above this note in the generated Makefile.in, applies to the
-# portions of the generated Makefile.in that come from automake.
-# Matthew Skala's copyright notice, below, applies to the portions that are
-# his work.  Distributors of the composite file must comply with both.
-
 #
 # Makefile for Beikaitoru
 # Copyright (C) 2012, 2013, 2014, 2015  Matthew Skala
@@ -365,6 +359,8 @@ automake_rules = here
 # PARASITE BUILD
 
 if COND_PARASITE
+
+download:
 
 fntbase.mp: ../mp/fntbase.mp
 	$(TSU_V_CP) cp $< $@
