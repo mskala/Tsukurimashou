@@ -59,7 +59,7 @@ $(error This Makefile must be edited by Perl code in config.status before use)
 
 SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
   $(wildcard /bin/bash),/bin/bash,/bin/sh))
-SUBDIRS = . $(PARASITES)
+SUBDIRS = $(EARLY_PARASITES) . $(PARASITES)
 
 ############################################################################
 
@@ -385,6 +385,8 @@ hamlog/config.hl: tools/make-cfghl \
 	    '@enable_ot_features@' >> hamlog/config.hl ; \
 	  $(PERL) -CSD $(mvp)/tools/make-cfghl parasite \
 	    '@enable_parasites@' >> hamlog/config.hl ; \
+	  $(PERL) -CSD $(mvp)/tools/make-cfghl early_parasite \
+	    '@enable_parasites@' >> hamlog/config.hl ; \
 	  if test "x$(enable_proportional)" = "xyes" ; then \
 	    echo proportional_enabled. >> hamlog/config.hl ; \
 	  else \
@@ -477,6 +479,10 @@ makefile-vars.inc: \
 	  >> makefile-vars.inc
 	$(AM_V_at)echo OVERLAY_TOKS=`$(HAMLOG) 'T' \
 	  'overlay_fname(T)' \
+	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER)` \
+	  >> makefile-vars.inc
+	$(AM_V_at)echo EARLY_PARASITES=`$(HAMLOG) 'P' \
+	  'early_parasite_available(P),want_early_parasite(P)' \
 	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER)` \
 	  >> makefile-vars.inc
 	$(AM_V_at)echo PARASITES=`$(HAMLOG) 'P' \
@@ -1041,7 +1047,7 @@ doc/%.xdv doc/%.toc doc/%.aux doc/%.log: \
 	$(TSU_V_TEX)
 	$(AM_V_at)(cd doc ; \
 	  rm -f $*.aux $*.out ; \
-	  echo "\\tsukudrafttrue" > $*-draft.tex ; \
+	  echo '\\tsukudrafttrue' > $*-draft.tex ; \
 	  export PROGRESS_MESSAGE=$@ ; \
 	  $(expect_start)$(XELATEX) -shell-escape -no-pdf \
 	    $(realpath $<) $(expect_end) )
@@ -1051,8 +1057,8 @@ doc/%.xdv doc/%.toc doc/%.aux doc/%.log: \
 	  export PROGRESS_MESSAGE="$@($$I)" ; \
 	  case "$$I""$*" in \
 	    $(PROOF_ND_PASS)proofs) \
-	      echo "\\tsukudraftfalse" > $*-draft.tex ;; \
-	    2book*) echo "\\tsukudraftfalse" > $*-draft.tex ;; \
+	      echo '\\tsukudraftfalse' > $*-draft.tex ;; \
+	    2book*) echo '\\tsukudraftfalse' > $*-draft.tex ;; \
 	  esac ; \
 	  $(expect_start)$(XELATEX) -shell-escape -no-pdf \
 	    $(realpath $<) $(expect_end) ; \

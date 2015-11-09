@@ -331,13 +331,13 @@ if COND_ICEMAP
 %.c:%.im $(ICEMAP)
 	$(TSU_V_ICE)$(ICEMAP) -C$@ -H$(patsubst %.c,%.h,$@) $< $(TSU_V_REDIR)
 
-fontanvil/macenctab.c: fontanvil/macenctab.im
-fontanvil/macenctab.h: fontanvil/macenctab.c
-fontanvil/nonmactab.c: fontanvil/nonmactab.im \
+fontanvil/macenctab.h: fontanvil/macenctab.im
+fontanvil/macenctab.c: fontanvil/macenctab.h
+fontanvil/nonmactab.h: fontanvil/nonmactab.im \
   dat/texbase.dat dat/gb2312.dat dat/glyphlist.txt
-fontanvil/nonmactab.h: fontanvil/nonmactab.c
-fontanvil/unicodelib.c: fontanvil/unicodelib.im
-fontanvil/unicodelib.h: fontanvil/unicodelib.c
+fontanvil/nonmactab.c: fontanvil/nonmactab.h
+fontanvil/unicodelib.h: fontanvil/unicodelib.im
+fontanvil/unicodelib.c: fontanvil/unicodelib.h
 
 if COND_KPSEWHICH
 
@@ -361,6 +361,12 @@ dat/gb2312.dat: dat/Unihan_OtherMappings.txt
 	  -e 'if /U\+([0-9a-f]{4})\tkGB0\t(\d\d)(\d\d)/i;' $< > $@
 
 endif
+
+fontanvil/encoding.o: fontanvil/macenctab.h fontanvil/nonmactab.h
+fontanvil/macenc.o: fontanvil/macenctab.h
+fontanvil/parsettf.o: fontanvil/nonmactab.h
+fontanvil/scripting.o: fontanvil/unicodelib.h
+fontanvil/unicodelibinfo.o: fontanvil/unicodelib.h
 
 ############################################################################
 

@@ -193,8 +193,6 @@ AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([ICEMAP],[Icemap])
 AS_IF([test "x$ICEMAP" = "x"],
   [AC_PATH_PROG([ICEMAP],[icemap],[],[$PATH:$PWD/../icemap])])
-AS_IF([test "x$ICEMAP" = "xno"],[ICEMAP=])
-AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "x"])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AS_IF([test "x$KLEKNEV" = "x"],
   [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/../kleknev])])
@@ -244,8 +242,12 @@ AC_MSG_CHECKING([whether we are building as a parasite])
 AM_CONDITIONAL([COND_PARASITE],
   [grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null])
 AM_COND_IF([COND_PARASITE],
-  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([yes])
+   AS_IF([test "x$ICEMAP" = "x"],
+     [AC_MSG_WARN([Depending on locally-built Icemap])
+      ICEMAP=$PWD/../icemap/icemap])],
   [AC_MSG_RESULT([no])])
+AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "xno"])
 #
 ############################################################################
 #

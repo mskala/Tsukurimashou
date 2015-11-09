@@ -197,10 +197,11 @@ AC_INIT([Tsukurimashou],[0.9],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules subdir-objects])
+AM_EXTRA_RECURSIVE_TARGETS([download])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4068 2015-06-28 13:36:21Z mskala $])
+AC_REVISION([$Id: configure.ac 4359 2015-11-09 17:39:29Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -226,14 +227,17 @@ AS_IF([test "x$EXPECT" = "x"],
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AC_ARG_VAR([FONTANVIL],[FontAnvil])
 AS_IF([test "x$FONTANVIL" = "x"],
-  [AC_PATH_PROGS([FONTANVIL],[fontanvil fontforge])])
+  [PWD=`pwd`
+   AC_PATH_PROGS([FONTANVIL],[fontanvil fontforge],
+    [],[$PATH:$PWD/fontanvil/fontanvil])])
 AC_ARG_VAR([FONTLINT_FLAGS],[Flags for fontlint])
 AC_PATH_TOOL([GDB],[gdb])
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([GZIP],[gzip])
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AS_IF([test "x$KLEKNEV" = "x"],
-  [AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])])
+  [PWD=`pwd`
+   AC_PATH_PROG([KLEKNEV],[kleknev],[/bin/sh],[$PATH:$PWD/kleknev])])
 AC_PATH_PROG([MAKE],[make])
 AC_ARG_VAR([MPOST],[MetaPost])
 AS_IF([test "x$MPOST" = "x"],
@@ -368,9 +372,9 @@ AC_ARG_ENABLE([ot-features],
      enable_ot_features='all,-pfed'])
 AC_ARG_ENABLE([parasites],
   [AS_HELP_STRING([--enable-parasites[=TAGS]],
-    [Parasite package(s) to build [none]])],
+    [Parasite package(s) to build [auto]])],
     [],
-    [enable_parasites='none'])
+    [enable_parasites='auto'])
 AC_ARG_ENABLE([proofs],
   [AS_HELP_STRING([--enable-proofs=[yes|no|book]],
     [proofs and pretty-printed source [no]])],
@@ -417,9 +421,18 @@ AC_SUBST([enable_docs])
 #
 AC_SUBST([enable_ot_features])
 #
+AC_CONFIG_SUBDIRS([icemap fontanvil beikaitoru genjimon idsgrep kleknev ocr])
+AS_IF([test "x$enable_parasites" = "xauto"],
+ [AS_IF([test '!' "x$FONTANVIL" = "x"],
+   [enable_parasites=none],
+   [local_fontanvil_kludge=yes
+    AS_IF([test -s fontanvil/fontanvil/unicodelib.h || test -x icemap/icemap],
+     [enable_parasites=fontanvil],
+     [local_icemap_kludge=yes
+      enable_parasites=icemap,fontanvil
+      AS_IF([test '!' -s fontanvil/dat/Blocks.txt],
+        [dl_unicode_warn=yes])])])])
 AC_SUBST([enable_parasites])
-AS_IF([test "x$enable_parasites" = "xnone"],[],
-      [AC_CONFIG_SUBDIRS([beikaitoru genjimon icemap idsgrep kleknev ocr])])
 #
 AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AS_IF([test "$with_kanjidic2" = "auto"],[
@@ -567,6 +580,15 @@ rm ffaetest.pe
 AC_SUBST([ae_arg_okay])
 AC_MSG_RESULT([$ae_arg_okay])
 
+AS_IF([test "x$FONTANVIL" = "x" && test "x$local_fontanvil_kludge" = "xyes"],
+  [AC_MSG_WARN([Depending on locally-built FontAnvil])
+   FONTANVIL=`pwd`/fontanvil/fontanvil/fontanvil
+   fontanvil_recent=yes
+   missing_fontanvil=no
+   can_ffdebug=yes
+   ae_arg_okay=yes
+   ])
+
 AC_MSG_CHECKING([build-system hackability])
 can_bshack=yes
 AS_IF([test "x$AUTOCONF" = "x"],
@@ -584,15 +606,22 @@ AS_IF([test "x$PERL" = "x" || test "x$AUTOCONF" = "x"],[],
    AS_VERSION_COMPARE([$autoconf_version],[2.75],[],[],
      [excessive_autoconf_version=yes
       can_bshack=no])])
+AS_IF([test "x$PERL" = "x" || test "x$AUTOMAKE" = "x"],[],
+  [automake_version=dnl
+`automake --version | perl -ne 'print $1 if /^automake.*(\d+\.\d+)/'`
+   AS_VERSION_COMPARE([$automake_version],[1.13],
+     [missing_automake_version=yes
+      can_bshack=no])])
 AC_MSG_RESULT([$can_bshack])
 
 can_build=yes
 
 AC_MSG_CHECKING([core prerequisites])
 can_core=yes
-AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
-  [missing_fontanvil=yes
-   can_core=no])
+AS_IF([test '!' "x$local_fontanvil_kludge" = "xyes"],
+  [AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
+    [missing_fontanvil=yes
+     can_core=no])])
 AS_IF([test "x$_cv_gnu_make_command" = "x"],
   [missing_gmake=yes
    can_core=no])
@@ -918,9 +947,11 @@ AS_IF([test '!' "x$enable_build_hacking" = "xno" && test "$can_bshack" = "no"],
       AS_ECHO(["      whose internals this code was designed to subvert; beware."])])
    AS_IF([test "$missing_automake" = "yes"],
      [AS_ECHO(["   GNU Automake          http://www.gnu.org/software/automake/"])])
-   AS_ECHO(["Unless you intend to hack the build system, and know what that means,"])
-   AS_ECHO(["this condition is harmless.  Use --disable-build-hacking to turn off"])
-   AS_ECHO(["this message."])
+   AS_IF([test "$missing_automake_version" = "yes"],
+     [AS_ECHO(["   Your Autoconf is older than 1.13; it is unlikely to work."])])
+   AS_ECHO(["This condition is harmless unless you plan to hack the build system"])
+   AS_ECHO(["or build from a version control checkout.  Use --disable-build-hacking"])
+   AS_ECHO(["to turn off this message."])
    ])
 
 AS_IF([test '!' "x$ae_arg_okay" = "xyes"],
@@ -945,13 +976,34 @@ AS_IF([test '!' "x$enable_parasites" = "xnone" && test "$can_full_idsgrep" = "no
    AS_ECHO(["still run, but some features may be missing."])
    ])
 
-AS_IF([test "x$fontanvil_recent" = "xno" && test -d "$srcdir/fontanvil"],
+AS_IF([test "x$local_fontanvil_kludge" = "xyes"],
   [AS_ECHO([])
-   AS_ECHO(["No recent version of FontAnvil is installed, but the"])
-   AS_ECHO(["Tsukurimashou source directory contains FontAnvil sources."])
-   AS_ECHO(["It is recommended to build and install FontAnvil before"])
-   AS_ECHO(["attempting to build Tsukurimashou."])
-   ])
+   AS_ECHO(["Warning:  Neither FontForge nor FontAnvil could be found already built,"])
+   AS_ECHO(["but the Tsukurimashou sources usually include the FontAnvil sources in a"])
+   AS_ECHO(["subdirectory.  The build system will attempt to configure and build"])
+   AS_ECHO(["FontAnvil there automatically, with default settings, before building"])
+   AS_ECHO(["Tsukurimashou.  Do this by hand first if you require greater control over"])
+   AS_ECHO(["the FontAnvil build options."])])
+
+AS_IF([test "x$local_icemap_kludge" = "xyes"],
+  [AS_ECHO([])
+   AS_ECHO(["Warning:  Building FontAnvil in the current configuration requires Icemap."])
+   AS_ECHO(["Like FontAnvil itself, the sources for Icemap are usually included with"])
+   AS_ECHO(["Tsukurimashou and the build system will attempt to build it automatically."])
+   AS_ECHO(["Do this by hand first (before FontAnvil) for greater control."])])
+
+AS_IF([test "x$dl_unicode_warn" = "xyes"],
+  [AS_ECHO([])
+   AS_ECHO(["Warning:  When building FontAnvil with Icemap, several files of character"])
+   AS_ECHO(["property data from the Unicode Consortium are required.  Run make download"])
+   AS_ECHO(["before plain make to automatically download them (requires an Internet"])
+   AS_ECHO(["connection, wget, and unzip) or consult the documentation for other"])
+   AS_ECHO(["possibilities.  The download target is recursive and running it from"])
+   AS_ECHO(["the top directory will also attempt to fetch dictionary data for IDSgrep."])
+   AS_ECHO(["Run make download in the fontanvil/ directory to only fetch what is"])
+   AS_ECHO(["required by FontAnvil.  This step will NOT be taken automatically, on"])
+   AS_ECHO(["the principle that build systems should never make network connections"])
+   AS_ECHO(["without a specific user request to do so."])])
 
 #
 # Prognosticate

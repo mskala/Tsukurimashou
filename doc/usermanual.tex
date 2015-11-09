@@ -2726,42 +2726,39 @@ git clone https://github.com/mskala/Tsukurimashou.git
 Either of these commands downloads the sources from the repository and
 creates a subdirectory called ``tsukurimashou'' in the current directory.
 
-You should build FontAnvil first; although FontForge should work if you have
-it, FontAnvil is preferred for building Tsukurimashou, especially from
-development checkouts.  Run autoreconf twice with automake
--{}-add-missing in between, to set up FontAnvil's build system:
+Use autoreconf to build the build system itself:
 \begin{verbatim}
-cd tsukurimashou/fontanvil
-autoreconf
-automake --add-missing
-autoreconf
+cd tsukurimashou
+autoreconf -i
 \end{verbatim}
 
-The above commands are likely to produce many error and warning messages,
-but should work, nonetheless.
+The autoreconf command is likely to produce many error and warning messages,
+but should work, nonetheless.  The \texttt{-i} option tells it to create
+missing files.
 
-Configure, build, and install FontAnvil.  Make any appropriate substitutions
-to these commands for your local configuration.
+Building Tsukurimashou requires FontAnvil (or FontForge); if you do not
+already have that installed, then the Tsukurimashou configure script will
+automatically build FontAnvil.  However, some C source files for FontAnvil
+are not actually written under human control, but by the Icemap utility.  If
+you were building from a distribution tarball, those files would be included
+ready-made; in a version control checkout, they must be built using Icemap,
+and that means Icemap in turn must be built.  So the configure script will
+automatically build Icemap if that is not found already installed on your
+system.
+
+The C sources build by Icemap for FontAnvil are based on Unicode character
+database information which must be downloaded from the Unicode Consortium;
+so there is an extra ``\texttt{make download}'' step necessary before the
+main build, when building from a source control checkout.  Thus:
 \begin{verbatim}
-# already in tsukurimashou/fontanvil
 ./configure
+make download
 make
-make install
 \end{verbatim}
 
-Now more or less the same steps can be used to set up the main Tsukurimashou
-build system in the parent directory.  Here it is necessary to run
-autoheader as well as automake.
-\begin{verbatim}
-cd ..
-autoreconf
-autoheader
-automake --add-missing
-autoreconf
-\end{verbatim}
-
-At this point the configure script should have been created, and you can
-proceed to build as if from a distribution.
+When \texttt{configure} and \texttt{make} run in a clean checkout, they will
+probably go through a couple of repetitive cycles of re-building the
+Makefiles.  This should be harmless.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
