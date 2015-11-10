@@ -1,6 +1,6 @@
 %
 % Punctuation for Tsukurimashou
-% Copyright (C) 2011, 2013  Matthew Skala
+% Copyright (C) 2011, 2013, 2015  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -425,7 +425,7 @@ vardef punct.full_stop =
       xscaled (1.5*tsu_punct_size+tsu_brush_max.brpunct*100)
       yscaled (1.5*tsu_punct_size+tsu_brush_max.brpunct*100
         *tsu_brush_shape.brpunct)
-      rotated tsu_pbrush_angle
+      rotated tsu_brush_angle.brpunct
       shifted (170,50));
   else:
     push_stroke(fullcircle scaled (1.5*tsu_punct_size) shifted (170,50),

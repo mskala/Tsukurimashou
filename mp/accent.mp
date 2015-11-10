@@ -1,6 +1,6 @@
 %
 % Accents for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2015  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -243,26 +243,26 @@ vardef tsu_accent.ringabove =
   push_anchor(-anc_ring,accent_default[anc_ring]);
   push_lcblob(fullcircle rotated 45
     scaled (2*tsu_punct_size+20*tsu_brush_max.brletter)
-    shifted ((500,vmetric(0.83-0.03*mincho)-10)
+    shifted ((500,vmetric(0.93-0.03*mincho)-10)
       transformed tsu_rescale_xform)
     transformed inverse tsu_rescale_xform);
   set_bokeepshape(0);
   if 2*tsu_punct_size-110*tsu_brush_max.brletter>10:
     push_lcblob(reverse fullcircle rotated 45
       scaled (2*tsu_punct_size-110*tsu_brush_max.brletter)
-      shifted ((500,vmetric(0.83-0.03*mincho)-10)
+      shifted ((500,vmetric(0.93-0.03*mincho)-10)
         transformed tsu_rescale_xform)
       transformed inverse tsu_rescale_xform);
     set_bokeepshape(0);
   fi;
-  push_anchor(anc_upper,accent_default[anc_upper] shifted (0,170));
-  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,170));
-  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,170));
-  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,170));
-  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,170));
-  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,170));
+  push_anchor(anc_upper,accent_default[anc_upper] shifted (0,210));
+  push_anchor(anc_grave,accent_default[anc_grave] shifted (0,210));
+  push_anchor(anc_acute,accent_default[anc_acute] shifted (0,210));
+  push_anchor(anc_wide,accent_default[anc_wide] shifted (0,210));
+  push_anchor(anc_tilde,accent_default[anc_tilde] shifted (0,210));
+  push_anchor(anc_ring,accent_default[anc_ring] shifted (0,210));
   push_anchor(anc_caron_comma,
-              accent_default[anc_caron_comma] shifted (0,170));
+              accent_default[anc_caron_comma] shifted (0,210));
 enddef;
 
 vardef tsu_accent.slash =

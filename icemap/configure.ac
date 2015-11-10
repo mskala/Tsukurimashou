@@ -170,10 +170,11 @@ AM_COND_IF([COND_PARASITE],
 # Checks for libraries.
 #
 AC_CHECK_LIB([bdd],[bdd_init],[
-  have_buddy=yes
-  AC_DEFINE([HAVE_BUDDY],[1],
-    [Define to 1 if BuDDy is available])
-  ],[have_buddy=no])
+  AC_CHECK_HEADER([bdd.h],[
+    have_buddy=yes
+    AC_DEFINE([HAVE_BUDDY],[1],
+      [Define to 1 if BuDDy is available])
+  ],[have_buddy=no])],[have_buddy=no])
 AM_CONDITIONAL([COND_BUDDY],[test '!' "$have_buddy" = no])
 AX_PATH_LIB_PCRE([have_pcre=yes
   AC_DEFINE([HAVE_PCRE],[1],

@@ -201,7 +201,7 @@ AM_EXTRA_RECURSIVE_TARGETS([download])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4359 2015-11-09 17:39:29Z mskala $])
+AC_REVISION([$Id: configure.ac 4373 2015-11-10 18:54:41Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -215,6 +215,7 @@ AC_PROG_CC_C_O
 AC_PROG_CPP
 AC_PROG_GREP
 AC_PROG_INSTALL
+AM_PROG_LEX
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_MKDIR_P
@@ -284,9 +285,17 @@ AC_CHECK_LIB([m], [pow])
 AX_PERL_MODULE_VERSION([XML::Parser 2.36],[have_perlxml=yes],
   [have_perlxml=no
    can_full_idsgrep=no])
-AC_CHECK_LIB([bdd],[bdd_init],[have_buddy=yes],
+AC_CHECK_LIB([bdd],[bdd_init],[
+  AC_CHECK_HEADER([bdd.h],[
+    have_buddy=yes
+    AC_DEFINE([HAVE_BUDDY],[1],
+      [Define to 1 if BuDDy is available])],
+    [have_buddy=no
+     can_full_idsgrep=no
+     can_icemap=no])],
   [have_buddy=no
-   can_full_idsgrep=no])
+   can_full_idsgrep=no
+   can_icemap=no])
 PKG_CHECK_MODULES([PCRE],[libpcre],[have_pcre=yes],
   [have_pcre=no
    can_full_idsgrep=no])
@@ -426,6 +435,7 @@ AS_IF([test "x$enable_parasites" = "xauto"],
  [AS_IF([test '!' "x$FONTANVIL" = "x"],
    [enable_parasites=none],
    [local_fontanvil_kludge=yes
+    AS_IF([$LEX --version 2> /dev/null],[],[can_fontanvil=no])
     AS_IF([test -s fontanvil/fontanvil/unicodelib.h || test -x icemap/icemap],
      [enable_parasites=fontanvil],
      [local_icemap_kludge=yes
@@ -622,6 +632,12 @@ AS_IF([test '!' "x$local_fontanvil_kludge" = "xyes"],
   [AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
     [missing_fontanvil=yes
      can_core=no])])
+AS_IF([test "x$local_fontanvil_kludge" = "xyes"],
+  [AS_IF([test "x$can_fontanvil" = "xno"],
+    [can_build=no])])
+AS_IF([test "x$local_icemap_kludge" = "xyes"],
+  [AS_IF([test "x$can_icemap" = "xno"],
+    [can_build=no])])
 AS_IF([test "x$_cv_gnu_make_command" = "x"],
   [missing_gmake=yes
    can_core=no])
@@ -963,7 +979,7 @@ AS_IF([test '!' "x$ae_arg_okay" = "xyes"],
    AS_ECHO(["fontlint are likely to report errors."])
    ])
 
-AS_IF([test '!' "x$enable_parasites" = "xnone" && test "$can_full_idsgrep" = "no"],
+AS_IF([test '!' "x$enable_parasites" = "xnone" && test "x$can_full_idsgrep" = "xno"],
   [AS_ECHO([])
    AS_ECHO(["One or more optional libraries for IDSgrep are missing:"])
    AS_IF([test '!' "$have_perlxml" = "yes"],
@@ -1005,6 +1021,21 @@ AS_IF([test "x$dl_unicode_warn" = "xyes"],
    AS_ECHO(["the principle that build systems should never make network connections"])
    AS_ECHO(["without a specific user request to do so."])])
 
+AS_IF([test "x$can_fontanvil" = "xno"],
+  [AS_ECHO([])
+   AS_ECHO(["One or more dependencies needed by FontAnvil are missing:"])
+   AS_IF([$LEX --version 2> /dev/null],[],
+     [AS_ECHO(["   flex                  http://flex.sourceforge.net/"])])
+   AS_ECHO(["Since the current configuration requires FontAnvil, this blocks the build."])
+   ])
+
+AS_IF([test "x$can_icemap" = "xno"],
+  [AS_ECHO([])
+   AS_ECHO(["One or more libraries needed by Icemap are missing:"])
+   AS_IF([test '!' "$have_buddy" = "yes"],
+     [AS_ECHO(["   BuDDy                 https://sourceforge.net/projects/buddy/"])])
+   AS_ECHO(["Since the current configuration requires Icemap, this blocks the build."])
+   ])
 #
 # Prognosticate
 #

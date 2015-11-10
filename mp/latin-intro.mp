@@ -1,6 +1,6 @@
 %
 % Shared code for Tsukurimashou latin
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2015  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ accent_default[anc_acute]=identity
   shifted (500-0.4*tsu_punct_size,vmetric(0.75));
 accent_default[anc_wide]=identity xscaled 0.75 shifted (500,vmetric(0.75));
 accent_default[anc_tilde]=identity xscaled 0.75 shifted (500,vmetric(0.75));
-accent_default[anc_ring]=identity shifted (500,vmetric(0.75));
+accent_default[anc_ring]=identity shifted (500,vmetric(0.93));
 accent_default[anc_caron_comma]=identity shifted (730,vmetric(0.93));
 accent_default[anc_lower]=identity shifted (500,vmetric(-0.26));
 accent_default[anc_lower_connect]=identity shifted (500,vmetric(0));

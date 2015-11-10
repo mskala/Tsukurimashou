@@ -1,6 +1,6 @@
 %
 % Unicode page FF (Full-width and Half-width Forms) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2015  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ begintsuglyph("uniFF01",1);
         xscaled (tsu_punct_size+tsu_brush_max.brpunct*100)
         yscaled (tsu_punct_size+tsu_brush_max.brpunct*100
           *tsu_brush_shape.brpunct)
-        rotated tsu_pbrush_angle
+        rotated tsu_brush_angle.brpunct
         shifted (500,30));
    else:
      push_stroke(fullcircle scaled tsu_punct_size shifted (500,30),
@@ -307,8 +307,9 @@ begintsuglyph("uniFF1F",31);
    if tsu_brush_max.brpunct*100>=tsu_punct_size:
      push_lcblob(fullcircle
         xscaled (tsu_punct_size+tsu_brush_max.brpunct*100)
-        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100*tsu_brush_shape.brpunct)
-        rotated tsu_pbrush_angle
+        yscaled (tsu_punct_size+tsu_brush_max.brpunct*100*
+                 tsu_brush_shape.brpunct)
+        rotated tsu_brush_angle.brpunct
         shifted (480,10));
      r:=tsu_brush_max.brpunct*100;
    else:

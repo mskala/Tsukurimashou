@@ -276,12 +276,16 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 download:
 	-wget -N -nd \
 	  http://www.unicode.org/Public/UNIDATA/EastAsianWidth.txt
+	-wget -N -nd \
+	  http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+
+cook.o: widthtab.h
 
 if COND_ICEMAP
-widthtab.c: widthtab.im $(ICEMAP) EastAsianWidth.txt UnicodeData.txt
+widthtab.h: widthtab.im $(ICEMAP) EastAsianWidth.txt UnicodeData.txt
 	$(ICEMAP) widthtab.im
 
-widthtab.h: widthtab.c
+widthtab.c: widthtab.h
 endif
 
 ############################################################################

@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: ufo.c 4373 2015-11-10 18:54:41Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -38,6 +38,7 @@
 #include <locale.h>
 #include <chardata.h>
 #include <gfile.h>
+#include <limits.h>
 #include <ustring.h>
 #include <unistd.h>
 #include <sys/types.h>

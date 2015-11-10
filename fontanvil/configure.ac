@@ -422,6 +422,20 @@ AC_C_BIGENDIAN
 AC_CHECK_TYPES([off_t])
 AC_TYPE_PID_T
 AX_CREATE_STDINT_H
+WARNING_CFLAGS=
+AX_CHECK_COMPILE_FLAG([-Werror=implicit-function-declaration],
+  [WARNING_CFLAGS="$WARNING_CFLAGS -Werror=implicit-function-declaration"],
+  [],[])
+AX_CHECK_COMPILE_FLAG([-Wno-deprecated-declarations],
+  [WARNING_CFLAGS="$WARNING_CFLAGS -Wno-deprecated-declarations"],[],[])
+AX_CHECK_COMPILE_FLAG([-Wpedantic],
+  [AX_CHECK_COMPILE_FLAG([-pedantic-errors],
+    [WARNING_CFLAGS="$WARNING_CFLAGS -pedantic-errors"],[],[])
+   WARNING_CFLAGS="$WARNING_CFLAGS -Wno-pedantic"],
+  [],[])
+AX_CHECK_COMPILE_FLAG([-Wno-pointer-sign],
+  [WARNING_CFLAGS="$WARNING_CFLAGS -Wno-pointer-sign"],[],[])
+AC_SUBST([WARNING_CFLAGS])
 #
 ############################################################################
 #
@@ -658,10 +672,10 @@ AS_IF([test -e "$srcdir/.checked_out"],[
       [TSU_COLOURISE([yes],[2])])
     AS_ECHO([])
   AS_ECHO_N(["lex               "])
-    AS_IF([test "x$LEX" = "x"],
+    AS_IF([$LEX --version 2> /dev/null],
+      [TSU_COLOURISE([yes],[2])],
       [TSU_COLOURISE([no],[1])
-       AS_ECHO_N(["     http://flex.sourceforge.net/"])],
-      [TSU_COLOURISE([yes],[2])])
+       AS_ECHO_N(["     http://flex.sourceforge.net/"])])
     AS_ECHO([])
   ])
 #

@@ -153,11 +153,7 @@ AM_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   "-DDOCDIR=\"${MY_DOCDIR}\""
 AM_CFLAGS = \
   $(FREETYPE_CFLAGS) $(GIFLIB_CFLAGS) $(LIBPNG_CFLAGS) \
-  $(LIBTIFF_CFLAGS) $(LIBXML2_CFLAGS) $(ZLIB_CFLAGS) \
-  -Werror=implicit-function-declaration \
-  -Wno-deprecated-declarations \
-  -pedantic-errors -Wno-pedantic \
-  -Wno-pointer-sign
+  $(LIBTIFF_CFLAGS) $(LIBXML2_CFLAGS) $(WARNING_CFLAGS) $(ZLIB_CFLAGS)
 AM_LDFLAGS = \
   $(FREETYPE_LIBS) $(GIFLIB_CFLAGS) $(LIBPNG_LIBS) \
   $(LIBTIFF_LIBS) $(LIBXML2_LIBS) $(ZLIB_LIBS)
@@ -331,8 +327,8 @@ download:
 
 if COND_ICEMAP
 
-%.c:%.im $(ICEMAP)
-	$(TSU_V_ICE)$(ICEMAP) -C$@ -H$(patsubst %.c,%.h,$@) $< $(TSU_V_REDIR)
+%.h:%.im $(ICEMAP)
+	$(TSU_V_ICE)$(ICEMAP) -H$@ -C$(patsubst %.h,%.c,$@) $< $(TSU_V_REDIR)
 
 fontanvil/macenctab.h: fontanvil/macenctab.im
 fontanvil/macenctab.c: fontanvil/macenctab.h

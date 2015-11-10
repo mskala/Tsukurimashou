@@ -869,9 +869,9 @@ vardef calc_mbrush_size =
   );
   alternate_adjust:=abs(mbrush_height-mbrush_width);
   if tsu_brush_max.brletter>0.75:
-    serif_size:=2;
+    serif_size:=1.5;
   else:
-    serif_size:=2*((tsu_brush_max.brletter/0.75)**(1/3));
+    serif_size:=1.5*((tsu_brush_max.brletter/0.75)**(1/3));
   fi;
   mincho_blob_size:=sqrt(tsu_brush_max.brletter/0.75);
   (sbrush_width,sbrush_height)=urcorner (
