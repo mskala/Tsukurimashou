@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4300 2015-10-24 13:03:29Z mskala $ */
+/* $Id: sfd.c 4378 2015-11-11 17:09:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -5363,35 +5363,40 @@ static void SFDGetNameList(AFILE *sfd,char *tok,SplineFont *sf) {
 
 static OTLookup *SFD_ParseNestedLookup(AFILE *sfd,SplineFont *sf,int old) {
    uint32_t tag;
-   int ch, isgpos;
+   int ch;
    OTLookup *otl;
    char *name;
 
    while ((ch=nlgetc(sfd))==' ');
    if (ch=='~')
       return (NULL);
+
    else if (old) {
-      if (ch != '\'')
+      if (ch!='\'')
 	 return (NULL);
 
-      aungetc(ch, sfd);
+      aungetc(ch,sfd);
       tag=gettag(sfd);
-      return ((OTLookup *) (intptr_t) tag);
+      return ((OTLookup *)(intptr_t)tag);
+
    } else {
-      aungetc(ch, sfd);
+      aungetc(ch,sfd);
       name=SFDReadUTF7Str(sfd);
       if (name==NULL)
-	 return (NULL);
-      for (isgpos=0; isgpos < 2; ++isgpos) {
-	 for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	      otl=otl->next) {
-	    if (strcmp(name, otl->lookup_name)==0)
-	       goto break2;
-	 }
-      }
-    break2:
+	 return NULL;
+
+      for (otl=sf->gsub_lookups;
+	   otl!=NULL;otl=otl->next)
+	if (strcmp(name,otl->lookup_name)==0)
+	  break;
+      
+      if (otl==NULL)
+	for (otl=sf->gpos_lookups;otl!=NULL;otl=otl->next)
+	  if (strcmp(name,otl->lookup_name)==0)
+	    break;
+      
       free(name);
-      return (otl);
+      return otl;
    }
 }
 

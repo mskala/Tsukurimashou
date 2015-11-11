@@ -201,7 +201,7 @@ AM_EXTRA_RECURSIVE_TARGETS([download])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4373 2015-11-10 18:54:41Z mskala $])
+AC_REVISION([$Id: configure.ac 4374 2015-11-11 06:44:31Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -430,7 +430,7 @@ AC_SUBST([enable_docs])
 #
 AC_SUBST([enable_ot_features])
 #
-AC_CONFIG_SUBDIRS([icemap fontanvil beikaitoru genjimon idsgrep kleknev ocr])
+AC_CONFIG_SUBDIRS([kleknev icemap fontanvil beikaitoru genjimon idsgrep ocr])
 AS_IF([test "x$enable_parasites" = "xauto"],
  [AS_IF([test '!' "x$FONTANVIL" = "x"],
    [enable_parasites=none],
@@ -964,7 +964,7 @@ AS_IF([test '!' "x$enable_build_hacking" = "xno" && test "$can_bshack" = "no"],
    AS_IF([test "$missing_automake" = "yes"],
      [AS_ECHO(["   GNU Automake          http://www.gnu.org/software/automake/"])])
    AS_IF([test "$missing_automake_version" = "yes"],
-     [AS_ECHO(["   Your Autoconf is older than 1.13; it is unlikely to work."])])
+     [AS_ECHO(["   Your Automake is older than 1.13; it is unlikely to work."])])
    AS_ECHO(["This condition is harmless unless you plan to hack the build system"])
    AS_ECHO(["or build from a version control checkout.  Use --disable-build-hacking"])
    AS_ECHO(["to turn off this message."])

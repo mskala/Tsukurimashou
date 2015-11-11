@@ -1,6 +1,6 @@
 # Non-Mac encoding tables
 
-# $Id: nonmactab.im 4274 2015-10-17 16:53:23Z mskala $
+# $Id: nonmactab.im 4379 2015-11-11 17:10:01Z mskala $
 
 # this file collects various encoding-related tables other than the Mac
 # encodings from macenc.c
@@ -137,7 +137,7 @@ EOF
 { id "enc_johab";
   valtype "int32_t";
 
-  parserx "^([0-9a-fxA-FX]+)[\t ]+([0-9a-fxA-FX]+)"
+  parserx "^(0x[89A-Fa-f][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[\t ]+([0-9a-fxA-FX]+)"
   rxparse "dat/JOHAB.TXT" x1 -> x2;
 }
 

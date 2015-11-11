@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: fvimportbdf.c 4378 2015-11-11 17:09:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2020,27 +2020,28 @@ static int PcfParse(AFILE *file,struct toc *toc,SplineFont *sf,
 static int askusersize(char *filename) {
    char *pt;
    int guess;
-   char *ret, *end;
+   char *ret,*end;
    char def[10];
 
-   for (pt=filename; *pt && !isdigit(*pt); ++pt);
-   guess=strtol(pt, NULL, 10);
-   if (guess != 0)
-      sprintf(def, "%d", guess);
+   for (pt=filename;*pt && !isdigit(*pt);pt++);
+   guess=strtol(pt,NULL,10);
+   if (guess!=0)
+     sprintf(def,"%d",guess);
    else
-      *def='\0';
- retry:
-   ret =def;
-   if (ret==NULL)
-      guess=-1;
-   else {
-      guess=strtol(ret, &end, 10);
-      if (guess <= 0 || *end != '\0') {
-	 ErrorMsg(2,"Bad number.\n");
-	 goto retry;
+     *def='\0';
+   while (1) {
+      ret=def;
+      if (ret==NULL)
+	guess=-1;
+      else {
+	 guess=strtol(ret,&end,10);
+	 if ((guess<=0) || (*end!='\0')) {
+	    ErrorMsg(2,"Bad number.\n");
+	    continue;
+	 }
       }
+      return guess;
    }
-   return (guess);
 }
 
 static int alreadyexists(int pixelsize) {

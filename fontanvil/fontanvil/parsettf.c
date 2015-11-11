@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4340 2015-11-07 11:56:21Z mskala $ */
+/* $Id: parsettf.c 4379 2015-11-11 17:10:01Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -4382,7 +4382,7 @@ static int umodenc(int enc,int modtype,struct ttfinfo *info) {
       enc=enc_ksc5601_lookup(enc);
    } else if (modtype==6 /* Johab */ ) {
       if (enc > 0x8400)
-	 enc=unicode_from_johab[enc - 0x8400];
+	 enc=enc_johab_lookup(enc);
       else if (enc > 0x100)
 	 enc=badencoding(info);
    }

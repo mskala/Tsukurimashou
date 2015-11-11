@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4340 2015-11-07 11:56:21Z mskala $ */
+/* $Id: cvundoes.c 4378 2015-11-11 17:09:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2113,7 +2113,12 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,real trans[6]) {
 	      case ut_anchors:
 		 if (!sf->hasvmetrics && cur->undotype==ut_vwidth) {
 		    ErrorMsg(2,"No vertical metrics in font\n");
-		    goto err;
+		    if (oldsel != fv->selected)
+		      free(oldsel);
+		    SFFinishMergeContext(&mc);
+		    free(list);
+		    free(backpairlist);
+		    return;
 		 }
 		 PasteToSC(SFMakeChar(sf, fv->map, i), fv->active_layer, cur,
 			   fv, pasteinto, trans, &mc, &refstate,
@@ -2198,7 +2203,7 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,real trans[6]) {
 	    }
 	 }
       }
- err:
+
    if (oldsel != fv->selected)
       free(oldsel);
    SFFinishMergeContext(&mc);

@@ -1,10 +1,28 @@
 # Icemap definitions for Unicode "library" data
 
-# $Id$
+# $Id: unicodelib.im 4381 2015-11-11 19:42:25Z mskala $
 
 cwrite <<EOF;
 /* GENERATED FILE - EDIT THE SOURCE IN unicodelib.im INSTEAD! */
 
+#include "_stdint.h"
+
+EOF
+
+hwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN unicodelib.im INSTEAD! */
+
+#include "_stdint.h"
+
+EOF
+
+########################################################################
+
+# Unicode blocks
+
+# straightforward list of the Unicode blocks and their code point ranges
+
+cwrite <<EOF;
 struct unicode_block {
    int start,end;
    const char *name;
@@ -13,18 +31,12 @@ struct unicode_block {
 EOF
 
 hwrite <<EOF;
-/* GENERATED FILE - EDIT THE SOURCE IN unicodelib.im INSTEAD! */
-
 struct unicode_block {
    int start,end;
    const char *name;
 };
 
 EOF
-
-########################################################################
-
-# Unicode blocks
 
 { id unicode_blocks;
   valtype "struct unicode_block";
@@ -39,4 +51,98 @@ EOF
   define name { rxparse "dat/Blocks.txt" -1->3; }
   rxparse "dat/Blocks.txt" -1->-1;
   construct [ { %start , %end , "\"" $name "\"" } ]
+}
+
+########################################################################
+
+# Arabic forms
+
+# this is a lookup table of miscellaneous information about Arabic
+# characters; the base characters are U+0600 through U+06FF but each
+# of those may have up to four other forms, typically in the FBxx and
+# FExx ranges.
+
+# the file UnicodeData.txt is used here as a simple map from
+# code point to canonical name and back
+
+cwrite <<EOF;
+struct arabic_form {
+   uint16_t initial,medial,final,isolated;
+};
+
+EOF
+
+hwrite <<EOF;
+struct arabic_form {
+   uint16_t initial,medial,final,isolated;
+};
+
+EOF
+
+{ id arabic_forms;
+  valtype "struct arabic_form";
+  quote nothing;
+  generate basic_array;
+  default fail;
+  priority last;
+
+  # the four forms are straightforward:  check whether there is a canonical
+  # name consisting of the base character's name suffixed by " FOO FORM" and
+  # overwrite the code point in the relevant column of the table, if so.
+  # along the way we verify that it starts with "ARABIC LETTER"
+  define initial {
+    parserx "^(06[0-9A-Fa-f][0-9A-Fa-f]);([^;]+);";
+    rxparse "dat/UnicodeData.txt" x1->2;
+    remap values {
+      parserx "^[0-9A-Fa-f]+;((ARABIC LETTER [^;]+) INITIAL FORM);";
+      rxparse "dat/UnicodeData.txt" 2->1;
+    }
+    remap values {
+      parserx "^([0-9A-Fa-f]+);([^;]+);";
+      rxparse "dat/UnicodeData.txt" 2->x1;
+    }
+  }
+  define medial {
+    parserx "^(06[0-9A-Fa-f][0-9A-Fa-f]);([^;]+);";
+    rxparse "dat/UnicodeData.txt" x1->2;
+    remap values {
+      parserx "^[0-9A-Fa-f]+;((ARABIC LETTER [^;]+) MEDIAL FORM);";
+      rxparse "dat/UnicodeData.txt" 2->1;
+    }
+    remap values {
+      parserx "^([0-9A-Fa-f]+);([^;]+);";
+      rxparse "dat/UnicodeData.txt" 2->x1;
+    }
+  }
+  define final {
+    parserx "^(06[0-9A-Fa-f][0-9A-Fa-f]);([^;]+);";
+    rxparse "dat/UnicodeData.txt" x1->2;
+    remap values {
+      parserx "^[0-9A-Fa-f]+;((ARABIC LETTER [^;]+) FINAL FORM);";
+      rxparse "dat/UnicodeData.txt" 2->1;
+    }
+    remap values {
+      parserx "^([0-9A-Fa-f]+);([^;]+);";
+      rxparse "dat/UnicodeData.txt" 2->x1;
+    }
+  }
+  define isolated {
+    parserx "^(06[0-9A-Fa-f][0-9A-Fa-f]);([^;]+);";
+    rxparse "dat/UnicodeData.txt" x1->2;
+    remap values {
+      parserx "^[0-9A-Fa-f]+;((ARABIC LETTER [^;]+) ISOLATED FORM);";
+      rxparse "dat/UnicodeData.txt" 2->1;
+    }
+    remap values {
+      parserx "^([0-9A-Fa-f]+);([^;]+);";
+      rxparse "dat/UnicodeData.txt" 2->x1;
+    }
+  }
+
+  0x600..0x6FF->0;
+
+  construct [ { %initial , %medial , %final , %isolated } ]
+  
+  # U+061D is just hatched out in the Unicode table
+  0x61D->"{0,0,0,0} /* undefined code point */";
 }

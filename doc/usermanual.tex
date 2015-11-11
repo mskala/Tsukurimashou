@@ -2324,7 +2324,8 @@ must have at least the following:
   \item GNU Make 3.82 or later (non-GNU versions will not work;
     earlier versions will not work).
   \item Metapost (this comes with most \TeX/\LaTeX\ installations)
-  \item An interpreter of PE scripts.  FontAnvil is preferred.  FontForge
+  \item An interpreter of PE scripts.  FontAnvil is preferred, and included
+     with the Tsukurimashou sources.  FontForge
      will also work, as long as it retains support for ``native'' scripting.
 \end{itemize}
 
@@ -2410,7 +2411,7 @@ covered, which is important for my own development efforts in planning what
 to design next and knowing when to release.
 
 The build system for Tsukurimashou is fairly elaborate; it may seem like
-overkill, but given that I'm running on a daily basis over the course of
+overkill, but given that I'm running it on a daily basis over the course of
 years, it's important that it should be pleasant for me and efficient in
 time consumption.  Thus it defaults to ``silent'' build rules, uses pretty
 ANSI colours, and does a bunch of complicated checks on whether file
@@ -2437,7 +2438,9 @@ can specify a comma-separated list of commands to include and exclude
 subsets of things.  This syntax is actually translated into Hamlog code and
 evaluated by the logic-programming system during build.  It may be easier
 to understand by example than to explain rigorously, but here is an attempt
-at a precise explanation: a specification consists of a sequence of commands
+at a precise explanation.
+
+A specification consists of a sequence of commands
 separated by commas or spaces.  Each command either adds or subtracts some
 subset of the things being configured, to or from the currently selected
 subset which is initially empty.  A command consists of one or more
@@ -2506,8 +2509,16 @@ so that for instance Anbiruteki might be selected via ``tsuku\&mg\&eq.''
 The ``-{}-enable-parasites'' option allows this kind of include/exclude
 selection for parasite packages (see next subsection).  The supported tokens
 are ``all,'' ``none,'' and the names of the parasites, currently
-``beikaitoru,'' ``genjimon,'' ``idsgrep,'' and ``ocr.''
-The default is ``none.''
+``beikaitoru,'' ``fontanvil,'' ``genjimon,'' ``icemap,'' ``idsgrep,''
+``kleknev,'' and ``ocr.''
+
+The default parasite setting is ``auto'' (note:  not a supported token
+itself); this enables a special bootstrapping mode in which the configure
+script will conditionally enable fontanvil and icemap as necessary for the
+local configuration.  Normally, that means FontAnvil will be built if there
+is no FontForge or FontAnvil already on the system; Icemap is not required
+for building from a source distribution, but will be built in a version
+control checkout situation.
 
 The ``make dist'' target defaults to building a ZIP file only, instead of
 GNU's recommended tar-gzip.  This decision was made in order to be
@@ -2598,11 +2609,11 @@ article ``Recursive Make Considered Harmful,'' available at
 \url{http://miller.emu.id.au/pmiller/books/rmch/}.  The fonts as such are
 all built from a single large Makefile.  However, in the current version
 there is also some use of recursive Make and recursive Autotools to support
-the parasite packages (next section), should those be enabled (by default,
-they are not).  Some notes on the design of the build (prior to the
-introduction of parasites) are in my Web log article at
-\url{http://ansuz.sooke.bc.ca/entry/226}.  I will probably write a similar
-article about the parasite mechanism at some point in the future.
+the parasite packages (next section), should those be enabled.  Some notes
+on the design of the build (prior to the introduction of parasites) are in
+my Web log article at \url{http://ansuz.sooke.bc.ca/entry/226}.  I will
+probably write a similar article about the parasite mechanism at some point
+in the future.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2639,7 +2650,8 @@ capable of building a standalone distribution of itself with the ``make
 dist'' target.  Parasites will generally look for a Tsukrimashou Project
 build in the parent directory and connect to it if one is found.
 
-The current parasites are Beikaitoru, Genjimon, IDSgrep, Kleknev, and OCR. 
+The current parasites are Beikaitoru, FontAnvil, Genjimon, Icemap,
+IDSgrep, Kleknev, and OCR. 
 Each of these has its own detailed documentation, which see; the notes here
 are just a summary to give some idea of what the packages are all about. 
 Most of these existed in some form prior to the introduction of the parasite
@@ -2664,10 +2676,18 @@ top-level project distribution.
     includes the Japanese character range omitted from most other revivals.
     GPLv3 with font embedding exception.
 
+  \item{FontAnvil} A PE script interpreter, for editing fonts under program
+    control.  Overall package GPLv3, some parts also available under
+    BSD-style and other licenses.
+
   \item{Genjimon} A set of standalone fonts for the Genjimon symbols, which
     in the main Tsukurimashou fonts occupy the private-use code points
     U+F17C1 to U+F17F6.  In the standalone fonts, they are mapped into the
     ASCII range for easier access.  GPLv3 with font embedding exception.
+
+  \item{Icemap} A code generator for static maps.  This allows easier
+    maintenance of otherwise hardcoded tables of Unicode data built into
+    FontAnvil and IDSgrep.  GPLv3.
 
   \item{IDSgrep} A program for searching databases of tree structures stored
     in ``extended ideographic description sequence'' (EIDS) format.  This is
@@ -2685,19 +2705,13 @@ top-level project distribution.
     environment variable) collect a bunch of performance information that
     can be analysed by a separate reporting program to provide some insight
     into where all the time goes during a long build.  See my Web log
-    article at 
+    article at \url{http://ansuz.sooke.bc.ca/entry/260}.
 
   \item{OCR} Freely usable vector versions of the standard OCR A and OCR B
     fonts, based on the work of Tor Lillqvist, Richard B.\ Wales, and
     Norbert Schwarz.  License terms vary, but the fonts should all be
     freely usable.
 \end{description}
-
-FontAnvil is not a parasite in this sense, but a separate package that
-happens to share the Tsukurimashou version-control repository.  It cannot be
-enabled through the Tsukurimashou configure script, but must be built
-and installed as an additional step (usually before building Tsukurimashou,
-if you wish to build and install them both).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2708,10 +2722,21 @@ associated tools, you can check out the source code from version control.
 Since the version control system stores only the source code as such, not
 any files that can be automatically generated, some additional steps are
 necessary to build from a checkout, beyond those used to build from a
-distribution.  Building from a checkout requires Autotools, as well as
-either Subversion or Git to check out the sources in the first place.
+distribution.
 
-First, check out the project by anonymous Subversion from OSDN Japan:
+Building from a source control checkout requires some additional
+dependencies not needed, or not so strictly needed, when building from a
+distribution package:
+\begin{itemize}
+  \item recent GNU Autotools, including in particular Automake at least 1.13;
+  \item the BuDDy binary decision diagrams library;
+  \item lex (preferably flex);
+  \item several files of Unicode character database information (there is a
+    script to download these automatically, which if used will require wget
+    and unzip).
+\end{itemize}
+
+Check out the project by anonymous Subversion from OSDN Japan:
 \begin{verbatim}
 svn checkout https://svn.osdn.jp/svnroot/tsukurimashou/trunk \
    ./tsukurimashou
@@ -2733,8 +2758,8 @@ autoreconf -i
 \end{verbatim}
 
 The autoreconf command is likely to produce many error and warning messages,
-but should work, nonetheless.  The \texttt{-i} option tells it to create
-missing files.
+but should work nonetheless if the Autotools versions are suitable.  The
+\texttt{-i} option tells it to create missing files.
 
 Building Tsukurimashou requires FontAnvil (or FontForge); if you do not
 already have that installed, then the Tsukurimashou configure script will
@@ -2743,13 +2768,14 @@ are not actually written under human control, but by the Icemap utility.  If
 you were building from a distribution tarball, those files would be included
 ready-made; in a version control checkout, they must be built using Icemap,
 and that means Icemap in turn must be built.  So the configure script will
-automatically build Icemap if that is not found already installed on your
-system.
+automatically build Icemap too, if you have neither FontAnvil nor Icemap
+already.
 
 The C sources build by Icemap for FontAnvil are based on Unicode character
 database information which must be downloaded from the Unicode Consortium;
 so there is an extra ``\texttt{make download}'' step necessary before the
-main build, when building from a source control checkout.  Thus:
+main build, when building from a source control checkout in the Icemap,
+FontAnvil, Tsukurimashou scenario.  Thus:
 \begin{verbatim}
 ./configure
 make download
@@ -2758,7 +2784,17 @@ make
 
 When \texttt{configure} and \texttt{make} run in a clean checkout, they will
 probably go through a couple of repetitive cycles of re-building the
-Makefiles.  This should be harmless.
+Makefiles.  This repetition should be harmless.
+
+Icemap is also used by IDSgrep, and the IDSgrep configure script, unlike
+FontAnvil's, will not speculatively configure the package to use an Icemap
+binary that does not yet exist.  That means building IDSgrep in a completely
+fresh version control checkout, on a system where Icemap does not yet exist,
+will not work without additional human intervention.  Build Icemap first
+(either by itself or by doing a top-level Tsukurimashou build), and then run
+the IDSgrep configure (either by itself, or by running the top-level
+configure a second time with an appropriate \texttt{-{}-enable-parasites}
+setting), to allow IDSgrep to build with the freshly-compiled Icemap.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

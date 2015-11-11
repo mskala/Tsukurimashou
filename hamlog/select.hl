@@ -80,7 +80,7 @@ spacing(proportional):-proportional_enabled.
 % styles needed for proofs
 
 proof_style(F,S,W,proportional):-
-  family(F),style(F,S),weight(W),want_style(F,S,W,proportional).
+  family(F),style(F,S),weight(W),proof_style(F,S,W,monospace).
 proof_style(tsukurimashou,kaku,normal,monospace).
 proof_style(tsukurimashou,mincho,normal,monospace).
 proof_style(mandeubsida,dodum,normal,monospace).
@@ -88,6 +88,7 @@ proof_style(mandeubsida,batang,normal,monospace).
 proof_style(tsuita,atama,normal,monospace).
 proof_style(tsuita,soku,normal,monospace).
 proof_style(blackletter_lolita,cosette,normal,monospace).
+proof_style(kazoemashou,seisuu,normal,monospace).
 
 proof_style_short(F,S,W,P):-
   proof_style(FA,SA,WA,PA),
@@ -318,6 +319,9 @@ style_jkxlat(F,S,W,P,_X,FX,SX,WX,PX):-
 
 cfg_style(all,_F,_S,_W,_P).
 cfg_style(none,_F,_S,_W,_P):-fail.
+
+cfg_style(proofs,F,S,W,P):-
+  proof_style(F,S,W,P).
 
 cfg_style(N,F,_S,_W,_P):-family(N), =(N,F).
 cfg_style(N,F,S,_W,_P):-style(F,N), =(N,S).

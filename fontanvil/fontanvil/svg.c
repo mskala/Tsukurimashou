@@ -1,4 +1,4 @@
-/* $Id: svg.c 4308 2015-10-25 12:13:49Z mskala $ */
+/* $Id: svg.c 4380 2015-11-11 19:38:13Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -38,6 +38,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "sd.h"
+#include "unicodelib.h"
 
 /* ************************************************************************** */
 /* ****************************    SVG Output    **************************** */
@@ -1086,29 +1087,36 @@ static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
 	    /* The conventions now (as I understand them) suggest that */
 	    /*  fonts not use the unicode encodings for formed arabic */
 	    /*  but should use simple substitutions instead */
-	    int arab_off=sc->unicodeenc - 0x600;
 	    SplineChar *formed;
 
 	    formed=SCHasSubs(sc, CHR('i', 'n', 'i', 't'));
 	    if (SCWorthOutputting(formed) && formed->unicodeenc==-1 &&
-		!formed->ticked && ArabicForms[arab_off].initial != 0)
-	       svg_scdump(file, formed, defwid, ArabicForms[arab_off].initial,
+		!formed->ticked &&
+		arabic_forms_lookup(sc->unicodeenc).initial != 0)
+	       svg_scdump(file, formed, defwid,
+	                  arabic_forms_lookup(sc->unicodeenc).initial,
 			  -1, layer);
 	    formed=SCHasSubs(sc, CHR('m', 'e', 'd', 'i'));
 	    if (SCWorthOutputting(formed) && formed->unicodeenc==-1 &&
-		!formed->ticked && ArabicForms[arab_off].medial != 0)
-	       svg_scdump(file, formed, defwid, ArabicForms[arab_off].medial,
+		!formed->ticked &&
+		arabic_forms_lookup(sc->unicodeenc).medial != 0)
+	       svg_scdump(file, formed, defwid,
+	                  arabic_forms_lookup(sc->unicodeenc).medial,
 			  -1, layer);
 	    formed=SCHasSubs(sc, CHR('f', 'i', 'n', 'a'));
 	    if (SCWorthOutputting(formed) && formed->unicodeenc==-1 &&
-		!formed->ticked && ArabicForms[arab_off].final != 0)
-	       svg_scdump(file, formed, defwid, ArabicForms[arab_off].final,
+		!formed->ticked &&
+		arabic_forms_lookup(sc->unicodeenc).final != 0)
+	       svg_scdump(file, formed, defwid,
+	                  arabic_forms_lookup(sc->unicodeenc).final,
 			  -1, layer);
 	    formed=SCHasSubs(sc, CHR('i', 's', 'o', 'l'));
 	    if (SCWorthOutputting(formed) && formed->unicodeenc==-1 &&
-		!formed->ticked && ArabicForms[arab_off].isolated != 0)
+		!formed->ticked &&
+		arabic_forms_lookup(sc->unicodeenc).isolated != 0)
 	       svg_scdump(file, formed, defwid,
-			  ArabicForms[arab_off].isolated, -1, layer);
+			  arabic_forms_lookup(sc->unicodeenc).isolated,
+			  -1, layer);
 	 }
       }
    }
@@ -3254,13 +3262,13 @@ static SplineChar *SVGParseGlyphArgs(xmlNodePtr glyph,int defh,int defv,
 	 sc->unicodeenc=u[0];
 	 if (form != NULL && u[0] >= 0x600 && u[0] <= 0x6ff) {
 	    if (xmlStrcmp(form, (xmlChar *) "initial")==0)
-	       sc->unicodeenc=ArabicForms[u[0] - 0x600].initial;
+	       sc->unicodeenc=arabic_forms_lookup(u[0]).initial;
 	    else if (xmlStrcmp(form, (xmlChar *) "medial")==0)
-	       sc->unicodeenc=ArabicForms[u[0] - 0x600].medial;
+	       sc->unicodeenc=arabic_forms_lookup(u[0]).medial;
 	    else if (xmlStrcmp(form, (xmlChar *) "final")==0)
-	       sc->unicodeenc=ArabicForms[u[0] - 0x600].final;
+	       sc->unicodeenc=arabic_forms_lookup(u[0]).final;
 	    else if (xmlStrcmp(form, (xmlChar *) "isolated")==0)
-	       sc->unicodeenc=ArabicForms[u[0] - 0x600].isolated;
+	       sc->unicodeenc=arabic_forms_lookup(u[0]).isolated;
 	 }
       }
       free(u);

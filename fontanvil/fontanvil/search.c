@@ -1,4 +1,4 @@
-/* $Id: search.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: search.c 4378 2015-11-11 17:09:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -828,7 +828,7 @@ static int SCMatchesFull(SplineChar *sc,SearchData *s) {
 	 s->matched_ss |= 1 << i;
       first=false;
    }
-   return (true);
+   return true;
 }
 
 static int AdjustBP(BasePoint *changeme,BasePoint *rel,

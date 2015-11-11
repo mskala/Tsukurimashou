@@ -672,7 +672,7 @@ AS_IF([test -e "$srcdir/.checked_out"],[
       [TSU_COLOURISE([yes],[2])])
     AS_ECHO([])
   AS_ECHO_N(["lex               "])
-    AS_IF([$LEX --version 2> /dev/null],
+    AS_IF([$LEX --version > /dev/null 2> /dev/null],
       [TSU_COLOURISE([yes],[2])],
       [TSU_COLOURISE([no],[1])
        AS_ECHO_N(["     http://flex.sourceforge.net/"])])

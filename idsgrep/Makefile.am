@@ -333,6 +333,9 @@ m4/ax_perl_module_version.m4: ../m4/ax_perl_module_version.m4
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
 	$(TSU_V_CP) cp $< $@
 
+UnicodeData.txt: ../fontanvil/dat/UnicodeData.txt
+	$(TSU_V_CP) cp $< $@
+
 endif
 
 ############################################################################

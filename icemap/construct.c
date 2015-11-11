@@ -130,8 +130,10 @@ static void go_variable(PARSER_STATE *ps,CONSTRUCTION *cst,NODE *key) {
    
    n=arrow_map_lookup(&(sm->am),key);
 
-   if (n->type==nt_string)
-     cst->result=strdup(n->cp);
+   if (n==NULL) {
+      cst->result=strdup("0 /* missing key */");
+   } else if (n->type==nt_string)
+	cst->result=strdup(n->cp);
    else {
       cst->result=(char *)malloc(24*sizeof(char));
       sprintf(cst->result,"%d",n->x);
@@ -161,8 +163,10 @@ static void go_hex_var(PARSER_STATE *ps,CONSTRUCTION *cst,NODE *key) {
    
    n=arrow_map_lookup(&(sm->am),key);
 
-   if (n->type==nt_string)
-     cst->result=strdup(n->cp);
+   if (n==NULL) {
+      cst->result=strdup("0 /* missing key */");
+   } else if (n->type==nt_string)
+	cst->result=strdup(n->cp);
    else {
       cst->result=(char *)malloc(20*sizeof(char));
       sprintf(cst->result,"0x%X",n->x);

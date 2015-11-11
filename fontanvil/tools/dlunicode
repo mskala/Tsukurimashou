@@ -8,6 +8,9 @@ done
 cd dat ; unzip -o Unihan.zip ; cd ..
 
 wget -N -nd -P dat \
+  http://unicode.org/Public/UNIDATA/UnicodeData.txt
+
+wget -N -nd -P dat \
   http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
 wget -N -nd -P dat \
   http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT

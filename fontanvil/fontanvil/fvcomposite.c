@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4304 2015-10-24 19:05:22Z mskala $ */
+/* $Id: fvcomposite.c 4380 2015-11-11 19:38:13Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -31,6 +31,8 @@
 #include <math.h>
 #include <utype.h>
 #include <ustring.h>
+
+#include "unicodelib.h"
 
 int accent_offset=6;
 int GraveAcuteCenterBottom=1;
@@ -1034,12 +1036,12 @@ static const unichar_t *arabicfixup(SplineFont *sf,const unichar_t *upt,
       } else if (*pt < 0x600 || *pt > 0x6ff)
 	 *apt=*pt;
       else if (ini) {
-	 *apt=ArabicForms[*pt - 0x600].initial;
+	 *apt=arabic_forms_lookup(*pt).initial;
 	 ini=false;
       } else if (pt[1]==' ' || (pt[1]=='\0' && final))
-	 *apt=ArabicForms[*pt - 0x600].final;
+	 *apt=arabic_forms_lookup(*pt).final;
       else
-	 *apt=ArabicForms[*pt - 0x600].medial;
+	 *apt=arabic_forms_lookup(*pt).medial;
       if (!haschar(sf, *apt, NULL))
 	 break;
    }
@@ -2887,7 +2889,7 @@ static int SCMakeRightToLeftLig(SplineChar *sc,SplineFont *sf,
    pt=start + cnt - 1;
    ch=*pt;
    if (ch >= 0x621 && ch <= 0x6ff) {
-      alt_ch=ArabicForms[ch - 0x600].final;
+      alt_ch=arabic_forms_lookup(ch).final;
       if (alt_ch != 0 && haschar(sf, alt_ch, NULL))
 	 ch=alt_ch;
    }
@@ -2896,9 +2898,9 @@ static int SCMakeRightToLeftLig(SplineChar *sc,SplineFont *sf,
 	 ch=*pt;
 	 if (ch >= 0x621 && ch <= 0x6ff) {
 	    if (pt==start)
-	       alt_ch=ArabicForms[ch - 0x600].initial;
+	       alt_ch=arabic_forms_lookup(ch).initial;
 	    else
-	       alt_ch=ArabicForms[ch - 0x600].medial;
+	       alt_ch=arabic_forms_lookup(ch).medial;
 	    if (alt_ch != 0 && haschar(sf, alt_ch, NULL))
 	       ch=alt_ch;
 	 }

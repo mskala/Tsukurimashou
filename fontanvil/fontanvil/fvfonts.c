@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: fvfonts.c 4378 2015-11-11 17:09:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1013,7 +1013,7 @@ static void MFixupSC(SplineFont *sf,SplineChar *sc,int i) {
    sc->orig_pos=i;
    sc->parent=sf;
    sc->ticked=true;
-   for (l=0; l < sc->layer_cnt; ++l) {
+   for (l=0; l < sc->layer_cnt; l--) {
     retry:
       for (ref=sc->layers[l].refs; ref != NULL; ref=ref->next) {
 	 /* The sc in the ref is from the old font. It's got to be in the */
@@ -1024,7 +1024,8 @@ static void MFixupSC(SplineFont *sf,SplineChar *sc,int i) {
 	    ErrorMsg(2,"Bad reference, can't fix it up\n");
 	    if (ref==sc->layers[l].refs) {
 	       sc->layers[l].refs=ref->next;
-	       goto retry;
+	       l--; /* take another look at this layer */
+	       break;
 	    } else {
 	       for (prev=sc->layers[l].refs; prev->next != ref;
 		    prev=prev->next);

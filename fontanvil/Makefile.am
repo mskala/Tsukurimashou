@@ -248,8 +248,7 @@ fontanvil_fontanvil_SOURCES = \
 fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a
 
 Unicode_libgunicode_a_SOURCES = \
-  Unicode/charset/johab.c \
-  Unicode/ArabicForms.c Unicode/char.c \
+  Unicode/char.c \
   Unicode/memory.c Unicode/unialt.c Unicode/ustring.c \
   Unicode/utype.c Unicode/combiners.h
 
@@ -333,7 +332,8 @@ if COND_ICEMAP
 fontanvil/macenctab.h: fontanvil/macenctab.im
 fontanvil/macenctab.c: fontanvil/macenctab.h
 fontanvil/nonmactab.h: fontanvil/nonmactab.im \
-  dat/texbase.dat dat/gb2312.dat dat/glyphlist.txt
+  dat/texbase.dat dat/gb2312.dat dat/glyphlist.txt \
+  dat/UnicodeData.txt
 fontanvil/nonmactab.c: fontanvil/nonmactab.h
 fontanvil/unicodelib.h: fontanvil/unicodelib.im
 fontanvil/unicodelib.c: fontanvil/unicodelib.h
@@ -358,13 +358,14 @@ dat/gb2312.dat: dat/Unihan_OtherMappings.txt
 	$(AM_V_at)$(PERL) -n \
 	  -e 'printf "%02X%02X\t%s\n",$$2+161,$$3+161,$$1 ' \
 	  -e 'if /U\+([0-9a-f]{4})\tkGB0\t(\d\d)(\d\d)/i;' $< > $@
-
 endif
 
 fontanvil/encoding.o: fontanvil/macenctab.h fontanvil/nonmactab.h
+fontanvil/fvcomposite.o: fontanvil/unicodelib.h
 fontanvil/macenc.o: fontanvil/macenctab.h
 fontanvil/parsettf.o: fontanvil/nonmactab.h
 fontanvil/scripting.o: fontanvil/unicodelib.h
+fontanvil/svg.o: fontanvil/unicodelib.h
 fontanvil/unicodelibinfo.o: fontanvil/unicodelib.h
 
 ############################################################################
@@ -463,6 +464,39 @@ automake_rules = here
 if COND_PARASITE
 
 doc/mitsuba.cls: ../mitsuba/mitsuba.cls
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_add_am_macro.m4: ../m4/ax_add_am_macro.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_am_jobserver.m4: ../m4/ax_am_jobserver.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_am_macros.m4: ../m4/ax_am_macros.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_append_to_file.m4: ../m4/ax_append_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_check_gnu_make.m4: ../m4/ax_check_gnu_make.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_count_cpus.m4: ../m4/ax_count_cpus.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_create_stdint_h.m4: ../m4/ax_create_stdint_h.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
+	$(TSU_V_CP) cp $< $@
+
+dat/UnicodeData.txt: ../idsgrep/UnicodeData.txt
 	$(TSU_V_CP) cp $< $@
 
 endif
