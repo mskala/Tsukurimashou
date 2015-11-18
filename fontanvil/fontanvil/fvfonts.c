@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 4378 2015-11-11 17:09:49Z mskala $ */
+/* $Id: fvfonts.c 4407 2015-11-17 11:55:23Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1013,8 +1013,7 @@ static void MFixupSC(SplineFont *sf,SplineChar *sc,int i) {
    sc->orig_pos=i;
    sc->parent=sf;
    sc->ticked=true;
-   for (l=0; l < sc->layer_cnt; l--) {
-    retry:
+   for (l=0; l < sc->layer_cnt; l++) {
       for (ref=sc->layers[l].refs; ref != NULL; ref=ref->next) {
 	 /* The sc in the ref is from the old font. It's got to be in the */
 	 /*  new font too (was either already there or just got copied) */

@@ -1,4 +1,4 @@
-/* $Id: svg.c 4380 2015-11-11 19:38:13Z mskala $ */
+/* $Id: svg.c 4385 2015-11-12 18:54:42Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -861,7 +861,7 @@ static SplineChar *SCHasSubs(SplineChar *sc,uint32_t tag) {
 static void svg_scdump(AFILE *file,SplineChar *sc,int defwid,int encuni,
 		       int vs, int layer) {
    PST *best=NULL;
-   const unichar_t *alt;
+   unichar_t alt;
    int32_t univals[50];
    int i, c;
 
@@ -897,15 +897,9 @@ static void svg_scdump(AFILE *file,SplineChar *sc,int defwid,int encuni,
 	       encuni != '"' && encuni != '&' &&
 	       encuni != '<' && encuni != '>')
 	 afprintf(file, "unicode=\"%c\" ", encuni);
-      else if (encuni < 0x10000 &&
-	       (isarabisolated(encuni) || isarabinitial(encuni)
-		|| isarabmedial(encuni) || isarabfinal(encuni))
-	       && unicode_alternates[encuni >> 8] != NULL
-	       && (alt =
-		   unicode_alternates[encuni >> 8][encuni & 0xff]) != NULL
-	       && alt[1]=='\0')
+      else if ((alt=(unichar_t)arabic_base_forms_lookup(encuni)))
 	 /* For arabic forms use the base representation in the 0600 block */
-	 afprintf(file, "unicode=\"&#x%x;\" ", alt[0]);
+	 afprintf(file, "unicode=\"&#x%x;\" ", alt);
       else
 	 afprintf(file, "unicode=\"&#x%x;\" ", encuni);
       if (vs != -1)

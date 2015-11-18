@@ -201,7 +201,7 @@ AM_EXTRA_RECURSIVE_TARGETS([download])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4374 2015-11-11 06:44:31Z mskala $])
+AC_REVISION([$Id: configure.ac 4401 2015-11-15 16:58:52Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -771,7 +771,7 @@ AC_OUTPUT
 # Display a status table
 #
 AS_ECHO([])
-TSU_COLOURISE([Configuration status],[5])AS_ECHO([])
+TSU_COLOURISE([Tsukurimashou configuration status],[5])AS_ECHO([])
 AS_ECHO([])
 TSU_COLOURISE([Component              Want    Can],[7])AS_ECHO([])
 TSU_TABLE_LINE([Tsukurimashou core     ],[always  ],[yes],[$can_core])
@@ -1029,7 +1029,7 @@ AS_IF([test "x$can_fontanvil" = "xno"],
    AS_ECHO(["Since the current configuration requires FontAnvil, this blocks the build."])
    ])
 
-AS_IF([test "x$can_icemap" = "xno"],
+AS_IF([test "x$can_icemap" = "xno" && test "x$local_icemap_kludge" = "xyes"],
   [AS_ECHO([])
    AS_ECHO(["One or more libraries needed by Icemap are missing:"])
    AS_IF([test '!' "$have_buddy" = "yes"],

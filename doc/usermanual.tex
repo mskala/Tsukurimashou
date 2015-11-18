@@ -2502,7 +2502,9 @@ Tsukurimashou Kaku fonts, in all weights and both monospace and
 proportional, \emph{except} no ``Extra Light'' fonts.  The atomic tokens for
 this selection include the standard ``all'' and ``none,'' and the short
 name tokens and Hamlog atoms for all the families, styles, weights, and
-spacings currently supported.  See Section~\ref{sec:fontnames} for more
+spacings currently supported.  The token ``proofs'' may also be used as a
+shortcut for enabling all the styles needed to generate proof documents.
+See Section~\ref{sec:fontnames} for more
 about the naming of fonts, and note that these are the pre-rewriting names,
 so that for instance Anbiruteki might be selected via ``tsuku\&mg\&eq.''
 
@@ -2731,9 +2733,9 @@ distribution package:
   \item recent GNU Autotools, including in particular Automake at least 1.13;
   \item the BuDDy binary decision diagrams library;
   \item lex (preferably flex);
-  \item several files of Unicode character database information (there is a
-    script to download these automatically, which if used will require wget
-    and unzip).
+  \item several files of Unicode character database information; and 
+  \item if using the built-in support for automatically downloading the
+    Unicode database files, then wget and unzip.
 \end{itemize}
 
 Check out the project by anonymous Subversion from OSDN Japan:
@@ -2757,9 +2759,17 @@ cd tsukurimashou
 autoreconf -i
 \end{verbatim}
 
-The autoreconf command is likely to produce many error and warning messages,
-but should work nonetheless if the Autotools versions are suitable.  The
-\texttt{-i} option tells it to create missing files.
+The \texttt{-i} option tells autoreconf to create missing files.  This
+command is likely to produce many error and warning messages, but should
+work nonetheless if the Autotools versions are suitable.  In particular,
+note that when autoreconf runs it may generate repeated ``underquoted
+definition'' warnings in relation to files in /usr/share/aclocal or similar. 
+\emph{This is the fault of some other package on your system;} it is not
+related to Tsukurimashou and should be harmless to the Tsukurimashou build. 
+The issue is that many packages (IMLIB is one common culprit) install M4
+files globally to provide customized Autoconf tests, and then if those files
+are buggy, autoreconf complains whenever it is invoked even if, as here, the
+buggy files are not actually being used.
 
 Building Tsukurimashou requires FontAnvil (or FontForge); if you do not
 already have that installed, then the Tsukurimashou configure script will
@@ -2771,18 +2781,32 @@ and that means Icemap in turn must be built.  So the configure script will
 automatically build Icemap too, if you have neither FontAnvil nor Icemap
 already.
 
-The C sources build by Icemap for FontAnvil are based on Unicode character
-database information which must be downloaded from the Unicode Consortium;
-so there is an extra ``\texttt{make download}'' step necessary before the
-main build, when building from a source control checkout in the Icemap,
-FontAnvil, Tsukurimashou scenario.  Thus:
+Running configure with no options should be able to generate a usable
+configuration if the necessary prerequisites are available, but it is likely
+to give some warnings suggesting better options.
+
 \begin{verbatim}
 ./configure
+\end{verbatim}
+
+Read any warnings produced, run \texttt{./configure -{}-help} for more
+information or check other sections of this document, and if you wish, run
+the configure script again with your choice of other options.  For instance:
+\begin{verbatim}
+./configure --enable-ot-features=all
+\end{verbatim}
+
+The C sources built by Icemap for FontAnvil are based on Unicode character
+database information which must be downloaded from the Unicode Consortium;
+so there is an extra ``\texttt{make download}'' step (or manual equivalent)
+necessary before the main build, when building from a source control
+checkout in the Icemap, FontAnvil, Tsukurimashou scenario.  Thus:
+\begin{verbatim}
 make download
 make
 \end{verbatim}
 
-When \texttt{configure} and \texttt{make} run in a clean checkout, they will
+When \texttt{make} runs in a completely new checkout, it will
 probably go through a couple of repetitive cycles of re-building the
 Makefiles.  This repetition should be harmless.
 
@@ -2790,11 +2814,18 @@ Icemap is also used by IDSgrep, and the IDSgrep configure script, unlike
 FontAnvil's, will not speculatively configure the package to use an Icemap
 binary that does not yet exist.  That means building IDSgrep in a completely
 fresh version control checkout, on a system where Icemap does not yet exist,
-will not work without additional human intervention.  Build Icemap first
+will not work without additional human intervention.  IDSgrep will, however,
+find and use a built Icemap in a sibling directory even if Icemap has not
+been installed on the system globally.
+
+So to build IDSgrep from a version-control checkout, build Icemap first
 (either by itself or by doing a top-level Tsukurimashou build), and then run
 the IDSgrep configure (either by itself, or by running the top-level
 configure a second time with an appropriate \texttt{-{}-enable-parasites}
-setting), to allow IDSgrep to build with the freshly-compiled Icemap.
+setting), to allow IDSgrep to build with the freshly-compiled Icemap.  These
+extra steps are not necessary when building IDSgrep from a distribution
+tarball, because the Icemap-generated sources will be included in the
+distribution automatically.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

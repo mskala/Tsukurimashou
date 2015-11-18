@@ -47,7 +47,6 @@ TSU_V_REDIR=$(if $(AM_V_at),>& /dev/null)
 
 if COND_COLOUR
   escchar:=$(strip $(shell echo x | tr 'x' '\033'))
-  ECHO_ANSI=echo
   ansi_default=$(escchar)[0m
   ansi_red=$(escchar)[31m
   ansi_green=$(escchar)[32m
@@ -64,7 +63,6 @@ if COND_COLOUR
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
 else
-  ECHO_ANSI=echo
   ansi_default=
   ansi_red=
   ansi_green=
@@ -81,12 +79,12 @@ endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
 TSU_V_CP_=$(TSU_V_CP_$(AM_DEFAULT_VERBOSITY))
-TSU_V_CP_0=@$(ECHO_ANSI) \
+TSU_V_CP_0=@echo \
   "$(ansi_cleareol)  $(ansi_default)CP$(ansi_default)    " $@;
 
 TSU_V_TEXL=$(TSU_V_TEXL_$(V))
 TSU_V_TEXL_=$(TSU_V_TEXL_$(AM_DEFAULT_VERBOSITY))
-TSU_V_TEXL_0=$(ECHO_ANSI) \
+TSU_V_TEXL_0=echo \
   "$(ansi_cleareol)  $(ansi_green)TEX$(ansi_default)   " "$@($$I)";
 
 ############################################################################
@@ -235,6 +233,9 @@ m4/ax_perl_module_version.m4: ../m4/ax_perl_module_version.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
 	$(TSU_V_CP) cp $< $@
 
 endif

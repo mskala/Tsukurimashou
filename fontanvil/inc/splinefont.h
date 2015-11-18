@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4308 2015-10-25 12:13:49Z mskala $ */
+/* $Id: splinefont.h 4394 2015-11-14 21:44:10Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3191,8 +3191,8 @@ extern int SFIsSomethingBuildable(SplineFont *sf, SplineChar *sc, int layer,
 				  int onlyaccents);
 extern int SFIsRotatable(SplineFont *sf, SplineChar *sc, int layer);
 
-extern void SCBuildComposit(SplineFont *sf, SplineChar *sc, int layer,
-			    BDFFont *bmp, int disp_only);
+extern void SCBuildComposite(SplineFont *sf, SplineChar *sc, int layer,
+			     BDFFont *bmp, int disp_only);
 extern int SCAppendAccent(SplineChar *sc, int layer, char *glyph_name,
 			  int uni, uint32_t pos);
 extern const unichar_t *SFGetAlternate(SplineFont *sf, int base,

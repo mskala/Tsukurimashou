@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4346 2015-11-07 20:53:44Z mskala $ */
+/* $Id: scripting.c 4416 2015-11-18 19:47:50Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -7480,44 +7480,44 @@ static void bStrJoin(Context *c) {
 }
 
 static void bStrSplit(Context *c) {
-   char *pt, *pt2, *str1, *str2;
-   int max=-1, len2, cnt, k;
+   char *pt,*pt2,*str1,*str2;
+   int max=-1,len2,cnt,k;
 
-   if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str)
-      ScriptError(c, "Bad type for argument");
-   else if (c->a.argc==4 && c->a.vals[3].type != v_int)
-      ScriptError(c, "Bad type for argument");
+   if ((c->a.vals[1].type!=v_str) || (c->a.vals[2].type!=v_str))
+     ScriptError(c,"Bad type for argument");
+   else if ((c->a.argc==4) && (c->a.vals[3].type!=v_int))
+     ScriptError(c,"Bad type for argument");
    else if (c->a.argc==4)
-      max=c->a.vals[3].u.ival;
+     max=c->a.vals[3].u.ival;
 
    str1=c->a.vals[1].u.sval;
    str2=c->a.vals[2].u.sval;
    len2=strlen(str2);
 
-   for (k=0; k < 2; ++k) {
+   for (k=0;k<2;k++) {
       cnt=0;
       pt=str1;
-      while ((pt2=strstr(pt, str2)) != NULL) {
+      while ((pt2=strstr(pt,str2))!=NULL) {
 	 if (k) {
-	    if (max != -1 && cnt >= max)
-	       break;
+	    if ((max!=-1) && (cnt>=max))
+	      break;
 	    c->return_val.u.aval->vals[cnt].type=v_str;
-	    c->return_val.u.aval->vals[cnt].u.sval=copyn(pt, pt2 - pt);
+	    c->return_val.u.aval->vals[cnt].u.sval=copyn(pt,pt2-pt);
 	 }
-	 ++cnt;
-	 pt=pt2 + len2;
+	 cnt++;
+	 pt=pt2+len2;
       }
-      if (!k) {
-	 if (*pt != '\0')
-	    ++cnt;
-	 if (max != -1 && cnt > max)
-	    cnt=max;
+      if (k==0) {
+	 if (*pt!='\0')
+	   cnt++;
+	 if ((max!=-1) && (cnt>max))
+	   cnt=max;
 	 c->return_val.type=v_arrfree;
 	 c->return_val.u.aval=malloc(sizeof(Array));
 	 c->return_val.u.aval->argc=cnt;
-	 c->return_val.u.aval->vals=malloc(cnt * sizeof(Val));
+	 c->return_val.u.aval->vals=malloc(cnt*sizeof(Val));
       } else {
-	 if (*pt != '\0') {
+	 if ((*pt!='\0') && ((max==-1) || (cnt<max))) {
 	    c->return_val.u.aval->vals[cnt].type=v_str;
 	    c->return_val.u.aval->vals[cnt].u.sval=fastrdup(pt);
 	 }

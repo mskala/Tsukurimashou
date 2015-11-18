@@ -79,16 +79,18 @@ spacing(proportional):-proportional_enabled.
 
 % styles needed for proofs
 
-proof_style(F,S,W,proportional):-
-  family(F),style(F,S),weight(W),proof_style(F,S,W,monospace).
-proof_style(tsukurimashou,kaku,normal,monospace).
-proof_style(tsukurimashou,mincho,normal,monospace).
-proof_style(mandeubsida,dodum,normal,monospace).
+proof_style(blackletter_lolita,cosette,normal,monospace).
+proof_style(kazoemashou,seisuu,normal,proportional).
 proof_style(mandeubsida,batang,normal,monospace).
+proof_style(mandeubsida,dodum,normal,monospace).
 proof_style(tsuita,atama,normal,monospace).
 proof_style(tsuita,soku,normal,monospace).
-proof_style(blackletter_lolita,cosette,normal,monospace).
-proof_style(kazoemashou,seisuu,normal,monospace).
+proof_style(tsukurimashou,kaku,normal,monospace).
+proof_style(tsukurimashou,kaku,normal,proportional).
+proof_style(tsukurimashou,maru,extrabold,monospace).
+proof_style(tsukurimashou,maru,extrabold,proportional).
+proof_style(tsukurimashou,mincho,normal,proportional).
+proof_style(tsukurimashou,mincho,normal,monospace).
 
 proof_style_short(F,S,W,P):-
   proof_style(FA,SA,WA,PA),

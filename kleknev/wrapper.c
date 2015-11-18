@@ -1,6 +1,6 @@
 /*
  * Profiling wrapper for shell-based systems (shared code)
- * Copyright (C) 2013  Matthew Skala
+ * Copyright (C) 2013, 2015  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,21 @@
 
 #include "_stdint.h"
 
+#include "config.h"
 #include "kleknev.h"
+
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 255
+#endif
+
+#ifndef HAVE_CLOCK_GETTIME
+#ifndef HAVE_STRUCT_TIMEVAL_TV_USEC
+struct timeval {
+   time_t tv_sec;        /* seconds since 1 January 1970 */
+   suseconds_t tv_usec;  /* microseconds */
+};
+#endif
+#endif
 
 extern char **environ;
 
@@ -84,7 +98,12 @@ int do_wrapper(char *to_wrap,int argc,char **argv) {
    char *log_fn,*ppid_str;
    FILE *log_file;
    pid_t pid,ppid,child;
+#ifdef HAVE_CLOCK_GETTIME
    struct timespec walltime;
+#else
+   struct timeval walltime;
+#endif
+   
    char hostname[HOST_NAME_MAX];
    struct rusage rusage;
    int child_status,i,j;
@@ -123,7 +142,11 @@ int do_wrapper(char *to_wrap,int argc,char **argv) {
 
       /* get data for log entry */
       pid=getpid();
+#ifdef HAVE_CLOCK_GETTIME
       clock_gettime(CLOCK_REALTIME,&walltime);
+#else
+      gettimeofday(&walltime,NULL);
+#endif
       gethostname(hostname,HOST_NAME_MAX);
       hostname[HOST_NAME_MAX-1]='\0';
       ppid_str=getenv("KLEKNEV_PID");
@@ -139,8 +162,13 @@ int do_wrapper(char *to_wrap,int argc,char **argv) {
       /* write start of entry, first few fields */
       if ((fputs("<e>\n",log_file)<0) ||
 	  (fprintf(log_file,"  <pid value=\"%d\" />\n",pid)<0) ||
+#ifdef HAVE_CLOCK_GETTIME
 	  (fprintf(log_file,"  <wallTime sec=\"%d\" nSec=\"%ld\" />\n",
 		   walltime.tv_sec,walltime.tv_nsec)<0) ||
+#else
+	  (fprintf(log_file,"  <wallTime sec=\"%d\" nSec=\"%ld\" />\n",
+		   walltime.tv_sec,walltime.tv_usec*1000)<0) ||
+#endif
 	  (fprintf(log_file,"  <hostName name=\"%s\" />\n",hostname)<0) ||
 	  (ppid_str &&
 	      (fprintf(log_file,"  <parentPid value=\"%d\" />\n",ppid)<0)) ||
@@ -217,13 +245,22 @@ int do_wrapper(char *to_wrap,int argc,char **argv) {
    if (can_proceed) {
 
       /* get data for log entry */
+#ifdef HAVE_CLOCK_GETTIME
       clock_gettime(CLOCK_REALTIME,&walltime);
+#else
+      gettimeofday(&walltime,NULL);
+#endif
 
       /* write entry */
       if ((fputs("<e>\n",log_file)<0) ||
 	  (fprintf(log_file,"  <pid value=\"%d\" />\n",pid)<0) ||
+#ifdef HAVE_CLOCK_GETTIME
 	  (fprintf(log_file,"  <wallTime sec=\"%d\" nSec=\"%ld\" />\n",
 		   walltime.tv_sec,walltime.tv_nsec)<0) ||
+#else
+	  (fprintf(log_file,"  <wallTime sec=\"%d\" nSec=\"%ld\" />\n",
+		   walltime.tv_sec,walltime.tv_usec*1000)<0) ||
+#endif
 	  (fprintf(log_file,"  <hostName name=\"%s\" />\n",hostname)<0) ||
 	  (fprintf(log_file,"  <exitStatus value=\"%d\" />\n",
 		   WEXITSTATUS(child_status))<0) ||

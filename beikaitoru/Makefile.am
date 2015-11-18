@@ -389,6 +389,9 @@ m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
 	$(TSU_V_CP) cp $< $@
 
+m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
+	$(TSU_V_CP) cp $< $@
+
 mp2pf: ../tools/mp2pf
 	$(TSU_V_CP) cp $< $@
 

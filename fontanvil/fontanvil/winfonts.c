@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: winfonts.c 4394 2015-11-14 21:44:10Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -530,7 +530,8 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    if (cnt != 0)
       avgwid=rint(avgwid / (bigreal) cnt);
    gid=map->map['X'];
-   if (font->glyphs[gid] != NULL && font->glyphs[gid]->sc != NULL &&
+   if (gid!=-1 &&
+       font->glyphs[gid] != NULL && font->glyphs[gid]->sc != NULL &&
        font->glyphs[gid]->sc->unicodeenc=='X')
       avgwid=font->glyphs[gid]->width;
 

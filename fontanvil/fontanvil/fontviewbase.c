@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: fontviewbase.c 4394 2015-11-14 21:44:10Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1187,8 +1187,8 @@ void FVBuildAccent(FontViewBase * fv, int onlyaccents) {
 	     (fv->sf, sc, fv->active_layer, onlyaccents)) {
 	    sc=SFMakeChar(fv->sf, fv->map, i);
 	    sc->ticked=true;
-	    SCBuildComposit(fv->sf, sc, fv->active_layer, fv->active_bitmap,
-			    onlycopydisplayed);
+	    SCBuildComposite(fv->sf, sc, fv->active_layer, fv->active_bitmap,
+			     onlycopydisplayed);
 	 }
       }
 }

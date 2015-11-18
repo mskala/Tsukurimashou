@@ -199,7 +199,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([genjimon-black.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4050 2015-06-24 18:42:21Z mskala $])
+AC_REVISION([$Id: configure.ac 4409 2015-11-18 08:50:51Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -221,7 +221,8 @@ AS_IF([test "x$EXPECT" = "x"],
 AM_CONDITIONAL([COND_EXPECT],[test '!' "x$EXPECT" = "x"])
 AC_ARG_VAR([FONTANVIL],[FontAnvil])
 AS_IF([test "x$FONTANVIL" = "x"],
-  [AC_PATH_PROG([FONTANVIL],[fontanvil])])
+  [AC_PATH_PROGS([FONTANVIL],[fontanvil fontforge],[],
+     [$PATH:$PWD/../fontanvil/fontanvil])])
 AX_CHECK_GNU_MAKE
 AC_ARG_VAR([KLEKNEV],[Kleknev])
 AS_IF([test "x$KLEKNEV" = "x"],
@@ -306,3 +307,47 @@ AS_IF([test "x$enable_silent_rules" = "x"],
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+#
+############################################################################
+#
+# Display a status table
+#
+AS_ECHO([])
+TSU_COLOURISE([Genjimon configuration status],[5])AS_ECHO([])
+#
+AS_ECHO([])
+TSU_COLOURISE([Requirements for all builds],[7])AS_ECHO([])
+AS_ECHO_N(["FontAnvil         "])
+  AS_IF([test "x$FONTANVIL" = "x"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://tsukurimashou.osdn.jp/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["MetaPost          "])
+  AS_IF([test "x$MPOST" = "x"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://tug.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["perl              "])
+  AS_IF([test "x$PERL" = "x"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://perl.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+#
+AS_ECHO([])
+TSU_COLOURISE([Optional items],[7])AS_ECHO([])
+AS_ECHO_N(["kleknev           "])
+  AS_IF([test "x$KLEKNEV" = "x"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://tsukurimashou.osdn.jp/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["XeLaTeX           "])
+  AS_IF([test "x$XELATEX" = "x"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://tug.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO([])

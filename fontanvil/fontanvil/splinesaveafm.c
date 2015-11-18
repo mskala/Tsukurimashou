@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: splinesaveafm.c 4385 2015-11-12 18:54:42Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1330,7 +1330,7 @@ static int FigureUnicodes(int *unicode,SplineChar *sc,int u) {
       return (-1);
    if (sc->unicodeenc==-1)
       return (FigureName(unicode, sc->name, u));
-   if (isdecompositionnormative(sc->unicodeenc) && sc->unicodeenc >= 65536 &&
+   if ((sc->unicodeenc<65536) && isdecompositionnormative(sc->unicodeenc) &&
        unicode_alternates[sc->unicodeenc >> 8] != NULL &&
        (upt =
 	unicode_alternates[sc->unicodeenc >> 8][sc->unicodeenc & 0xff]) !=

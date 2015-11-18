@@ -204,6 +204,17 @@ AS_IF([test "x$KLEKNEV" = "x"],
 AC_ARG_VAR([PERL],[Perl])
 AS_IF([test "x$PERL" = "x"],
   [AC_PATH_PROG([PERL],[perl])])
+AC_ARG_VAR([VALGRIND],[Valgrind])
+AS_IF([test "x$VALGRIND" = "x"],
+  [AC_PATH_PROG([VALGRIND],[valgrind])])
+AC_ARG_VAR([VALGRIND_FLAGS],[options for Valgrind])
+AC_SUBST([VALGRIND_FLAGS])
+AS_IF([test "x$VALGRIND" = "x"],
+  [VALGRIND_FLAGS=],
+  [uname=`uname`
+   AS_IF([test "x$uname" = "xDarwin"],
+     [VALGRIND_FLAGS='--dsymutil=yes --leak-check=full --track-origins=yes'],
+     [VALGRIND_FLAGS='--leak-check=full --track-origins=yes'])])
 AC_ARG_VAR([XELATEX],[XeLaTeX],[no])
 AS_IF([test "x$XELATEX" = "x"],
   [AC_PATH_PROG([XELATEX],[xelatex])])
@@ -432,6 +443,12 @@ AS_IF([test "$enable_edict_decomp" = "no"],
       [edict_decomp=])
 AC_SUBST([edict_decomp])
 #
+AC_ARG_WITH([valgrind],
+  [AS_HELP_STRING([--with-valgrind],
+    [use Valgrind for tests if available])],
+    [],
+    [with_valgrind=no])
+#
 # Process user options
 #
 tsu_colour=yes
@@ -473,11 +490,97 @@ AC_OUTPUT
 #
 ############################################################################
 #
-# Warn about missing prerequisites
+# Display a status table
 #
-AS_IF([test "x$have_perlxml" = "xyes"],[],
-  [AC_MSG_WARN([XML::Parser is missing, KanjiVG dictionary disabled])])
-AS_IF([test "x$have_buddy" = "xyes"],[],
-  [AC_MSG_WARN([BuDDy is missing, binary decision diagrams disabled])])
-AS_IF([test "x$have_pcre" = "xyes"],[],
-  [AC_MSG_WARN([PCRE is missing, regular expression search disabled])])
+AS_ECHO([])
+TSU_COLOURISE([IDSgrep configuration status],[5])AS_ECHO([])
+#
+AS_ECHO([])
+TSU_COLOURISE([Requirements for all builds],[7])AS_ECHO([])
+AS_ECHO_N(["gzip              "])
+  AS_IF([test "x$GZIP" = "x"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://gzip.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["perl              "])
+  AS_IF([test "x$PERL" = "x"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://perl.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+#
+AS_IF([test -e "$srcdir/.checked_out"],[
+  AS_ECHO([])
+  TSU_COLOURISE([Requirements for source control builds],[7])AS_ECHO([])
+  AS_ECHO_N(["autoconf          "])
+    AS_IF([test "x$AUTOCONF" = "x"],
+      [TSU_COLOURISE([no],[1])
+       AS_ECHO_N(["     http://gnu.org/software/autoconf/"])],
+      [TSU_COLOURISE([yes],[2])])
+    AS_ECHO([])
+  AS_ECHO_N(["automake          "])
+    AS_IF([test "x$AUTOMAKE" = "x"],
+      [TSU_COLOURISE([no],[1])
+       AS_ECHO_N(["     http://gnu.org/software/automake/"])],
+      [TSU_COLOURISE([yes],[2])])
+    AS_ECHO([])
+  AS_ECHO_N(["icemap            "])
+    AS_IF([test "x$ICEMAP" = "x"],
+      [TSU_COLOURISE([no],[1])
+       AS_ECHO_N(["     http://tsukurimashou.osdn.jp/"])],
+      [TSU_COLOURISE([yes],[2])])
+    AS_ECHO([])
+  ])
+#
+AS_ECHO([])
+TSU_COLOURISE([Optional items],[7])AS_ECHO([])
+AS_ECHO_N(["BuDDy             "])
+  AS_IF([test '!' "x$have_buddy" = "xyes"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     https://sourceforge.net/projects/buddy/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["CHISE IDS         "])
+  AS_IF([test "x$with_chise_ids" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://git.chise.org/git/chise/ids.git"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["EDICT2            "])
+  AS_IF([test "x$with_edict2" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://www.edrdg.org/jmdict/edict.html"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["KanjiVG           "])
+  AS_IF([test "x$with_kanjivg" = "xno"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://kanjivg.tagaini.net"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["kleknev           "])
+  AS_IF([test "x$KLEKNEV" = "x"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://tsukurimashou.osdn.jp/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["PCRE              "])
+  AS_IF([test '!' "x$have_pcre" = "xyes"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://www.pcre.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["valgrind          "])
+  AS_IF([test "x$VALGRIND" = "x"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://valgrind.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["XML::Parser       "])
+  AS_IF([test '!' "x$have_perlxml" = "xyes"],
+    [TSU_COLOURISE([no],[3])
+     AS_ECHO_N(["     http://search.cpan.org/~toddr/XML-Parser/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO([])

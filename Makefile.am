@@ -1,11 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-# PLEASE NOTE:  The Free Software Foundation's copyright notice, which will
-# appear above this note in the generated Makefile.in, applies to the
-# portions of the generated Makefile.in that come from automake.
-# Matthew Skala's copyright notice, below, applies to the portions that are
-# his work.  Distributors of the composite file must comply with both.
-
 #
 # Makefile for Tsukurimashou
 # Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
@@ -161,7 +155,7 @@ TSU_V_RMO_0=echo \
 TSU_V_SFD=$(TSU_V_SFD_$(V))
 TSU_V_SFD_=$(TSU_V_SFD_$(AM_DEFAULT_VERBOSITY))
 TSU_V_SFD_0=@echo \
-  "$(ansi_cleareol)  $(ansi_cyan)SFD$(ansi_default)   "
+  "$(ansi_cleareol)  $(ansi_yellow)SFD$(ansi_default)   "
 TSU_V_SFD_1=@true
 
 TSU_V_TEX=$(TSU_V_TEX_$(V))
@@ -967,6 +961,7 @@ makefile-pdf.inc: makefile-vars.inc \
   doc/demo.tex doc/usermanual.tex doc/proofs.tex doc/bkstyle.tex \
   tools/make-kchart $(MAYBE_KANJIDIC2)
 	$(TSU_V_PERL)
+	$(AM_V_at)echo ' ' > makefile-pdf.inc
 	$(AM_V_at)for doc in proofs $(MAINTAINER_DOCS); do \
 	  FDEPS=`$(doc_font_script) $(mvp)/doc/$$doc.tex` ; \
 	  echo doc/$$doc.xdv doc/$$doc.toc doc/$$doc.aux: \
@@ -1048,7 +1043,8 @@ doc/%.xdv doc/%.toc doc/%.aux doc/%.log: \
 	$(TSU_V_TEX)
 	$(AM_V_at)(cd doc ; \
 	  rm -f $*.aux $*.out ; \
-	  echo '\\tsukudrafttrue' > $*-draft.tex ; \
+	  $(PERL) -e 'print chr(92)."tsukudrafttrue".chr(10);' \
+	    > $*-draft.tex ; \
 	  export PROGRESS_MESSAGE=$@ ; \
 	  $(expect_start)$(XELATEX) -shell-escape -no-pdf \
 	    $(realpath $<) $(expect_end) )
@@ -1058,8 +1054,10 @@ doc/%.xdv doc/%.toc doc/%.aux doc/%.log: \
 	  export PROGRESS_MESSAGE="$@($$I)" ; \
 	  case "$$I""$*" in \
 	    $(PROOF_ND_PASS)proofs) \
-	      echo '\\tsukudraftfalse' > $*-draft.tex ;; \
-	    2book*) echo '\\tsukudraftfalse' > $*-draft.tex ;; \
+	      $(PERL) -e 'print chr(92)."tsukudraftfalse".chr(10);' \
+	        > $*-draft.tex ;; \
+	    2book*) $(PERL) -e 'print chr(92)."tsukudraftfalse".chr(10);' \
+	        > $*-draft.tex ;; \
 	  esac ; \
 	  $(expect_start)$(XELATEX) -shell-escape -no-pdf \
 	    $(realpath $<) $(expect_end) ; \
@@ -1183,7 +1181,7 @@ txt/area-problems.txt: \
 	  cat area/$$style-[0-9a-f][0-9a-f]-before.area \
 	    area/$$style-[0-9a-f][0-9a-f][0-9a-f]-before.area | sort | \
 	  join - area/$$style-after.area | \
-	  perl -nae 'print if $$F[2]>0.8*$$F[1]+100' ; \
+	  $(PERL) -nae 'print if $$F[2]>0.8*$$F[1]+100' ; \
 	done ) | sort > txt/area-problems.txt
 
 check-areas: txt/area-problems.txt

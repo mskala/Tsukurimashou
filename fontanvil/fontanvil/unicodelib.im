@@ -1,6 +1,6 @@
 # Icemap definitions for Unicode "library" data
 
-# $Id: unicodelib.im 4381 2015-11-11 19:42:25Z mskala $
+# $Id: unicodelib.im 4385 2015-11-12 18:54:42Z mskala $
 
 cwrite <<EOF;
 /* GENERATED FILE - EDIT THE SOURCE IN unicodelib.im INSTEAD! */
@@ -146,3 +146,175 @@ EOF
   # U+061D is just hatched out in the Unicode table
   0x61D->"{0,0,0,0} /* undefined code point */";
 }
+
+########################################################################
+
+# Arabic base forms
+
+# new table for FontAnvil, created to replace one of the applications of
+# the complicated "unicode_alternates" array.  This is essentially the
+# inverse of the arabic_forms table, a lookup *from* alternate forms
+# *to* the corresponding base forms in the 06xx range.
+
+{ id arabic_base_forms;
+  valtype "uint16_t";
+  priority last;
+  default 0;
+  generate basic_array;
+
+  # first map code point to base name
+  parserx "^([0-9A-Fa-f]+);(ARABIC LETTER [^;]+) (INITIAL|MEDIAL|FINAL|ISOLATED) FORM;";
+  rxparse "dat/UnicodeData.txt" x1->2;
+
+  # then map base name to code point
+  remap values {
+    parserx "^(06[0-9A-Fa-f][0-9A-Fa-f]);([^;]+);";
+    rxparse "dat/UnicodeData.txt" 2->x1;
+  }
+
+  # clean up remaining string keys, i.e. "UIGHUR KAZAKH KIRGHIZ ALEF MAKSURA"
+  remap values {
+    parserx "^[0-9A-Fa-f]+(;)(ARABIC LETTER [^;]+) (INITIAL|MEDIAL|FINAL|ISOLATED) FORM;";
+    rxparse "dat/UnicodeData.txt" 2->1;
+  }
+  remap values { ";"->0; }
+}
+
+########################################################################
+
+# "has alternates"
+
+# FontForge contains an elaborate cascading table listing "alternate"
+# code points (as null-terminated UTF-16 strings) for characters in the
+# Unicode BMP.  It seldom does anything with this information except test
+# whether the list of alternates is empty.  The table defined here represents
+# only that bit of information, reverse engineered from the FontForge
+# makeutype.c file.  Unfortunately, not all the decisions made in
+# defining it are documented in that file, nor, apparently, anywhere.
+
+{ id has_alternates;
+  priority last;
+
+  # initialize map with code point -> canonical name, BMP only
+  parserx "^([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]);([^;]+);";
+  rxparse "dat/UnicodeData.txt" x1->2;
+
+  # where Arabic isolated alternates exist, map to semicolon
+  remap values {
+    parserx "^[0-9A-Fa-f]+;(ARABIC LETTER [^;]+) ISOLATED FORM(;)";
+    rxparse "dat/UnicodeData.txt" 1->2;
+  }
+
+  # where a tag in <> with hex digits is present, map to semicolon
+  remap values {
+    parserx "^[0-9A-Fa-f]+;([^;]+)(;)[^<]*<[^>]+> *[0-9A-Fa-f][0-9A-Fa-f]";
+    rxparse "dat/UnicodeData.txt" 1->2;
+  }
+
+  # convert the semicolons to integer 1
+  remap values { ";"->1; }
+
+  # convert all remaining names to integer 0 (two steps, via semicolon)
+  remap values {
+    parserx "^[0-9A-Fa-f]+;([^;]+)(;)";
+    rxparse "dat/UnicodeData.txt" 1->2;
+  }
+  remap values { ";"->0; }
+
+  # handcrufted overrides courtesy George Williams
+
+  0x152->1;0x153->1;0x110->1;0x138->1;0x182->1;0x189->1;0x19E->1;0x19F->1;
+  0x1A9->1;0x1C0->1;0x1C1->1;
+
+  0x269->1;0x278->1;0x299->1;0x292->1;0x29C->1;0x2B9->1;0x2BA->1;0x2BC->1;
+  0x2C4->1;0x2C6->1;0x2C8->1;0x2DC->1;
+  0x2E0..0x2E4->1;
+
+  0x301..0x303->1;
+  0x308->1;0x30A->1;0x30B->1;0x30E->1;0x327->1;0x374->1;0x375->1;0x37A->1;
+  0x37E->1;
+  0x391..0x393->1;
+  0x395..0x397->1;
+  0x399->1;0x39A->1;0x39C->1;0x39D->1;0x39F->1;0x3A1->1;0x3A4->1;0x3A5->1;
+  0x3A7->1;0x3BA->1;0x3BF->1;0x3C1->1;0x3C7->1;
+
+  0x405->1;0x406->1;0x408->1;0x410->1;0x412->1;0x413->1;0x415->1;0x41A->1;
+  0x41C..0x422->1;
+  0x424->1;0x425->1;0x430->1;0x435->1;0x43A->1;
+  0x43E..0x441->1;
+  0x443->1;0x445->1;0x455->1;0x456->1;0x458->1;0x470->1;0x471->1;0x4AE->1;
+  0x4C0->1;0x4D4->1;0x4D5->1;0x4E0->1;0x4E1->1;0x4E8->1;0x4E9->1;
+
+  0x54F->1;0x555->1;0x570->1;0x578->1;0x57A->1;0x57D->1;0x581->1;0x582->1;
+  0x584->1;0x585->1;0x589->1;
+  0x5F0..0x5F2->1;
+
+  0x60C->1;0x66A->1;0x66C->1;0x66D->1;0x6D4->1;
+
+  0x1101->1;0x1104->1;0x1108->1;0x110A->1;0x110D->1;
+  0x1113..0x113B->1;
+  0x113D->1;0x113F->1;
+  0x1141..0x114B->1;
+  0x114D->1;0x114F->1;
+  0x1151..0x1153->1;
+  0x1156..0x1158->1;
+  0x1162->1;0x1164->1;0x1166->1;0x1168->1;
+  0x116A..0x116C->1;
+  0x116F..0x1171->1;
+  0x1174->1;
+  0x1176..0x119D->1;
+  0x119F..0x11A2->1;
+  0x11A8..0x11F9->1;
+
+  0x13A0..0x13A2->1;
+  0x13A9..0x13AC->1;
+  0x13B1->1;0x13B3->1;0x13B7->1;0x13BB->1;0x13BE->1;0x13C0->1;0x13C2->1;
+  0x13C3->1;0x13CF->1;0x13D9->1;0x13DA->1;0x13DE->1;0x13DF->1;0x13E2->1;
+  0x13E6->1;0x13F4->1;
+
+  0x2000->1;0x2001->1;
+  0x2010..0x2016->1;
+  0x2018->1;0x2019->1;0x201C->1;0x201D->1;
+  0x2024..0x2026->1;
+  0x2032->1;0x2033->1;0x2035->1;0x2036->1;0x2039->1;0x203A->1;0x203C->1;
+  0x2048->1;0x2049->1;
+  
+  0x2126->1;
+
+  0x2205->1;0x2206->1;0x220F->1;0x2211->1;0x2212->1;
+  0x2215..0x2219->1;
+  0x2223->1;0x2225->1;0x2236->1;0x223C->1;0x226A->1;0x226B->1;0x2299->1;
+  0x22C4->1;0x22C5->1;0x22EF->1;0x2303->1;
+  0x2373..0x2375->1;
+  0x237A->1;
+
+  0x2400..0x2422->1;
+
+  0x2500->1;0x2502->1;0x25B3->1;0x25B8->1;0x25BD->1;0x25C7->1;0x25E6->1;
+
+  0x2662->1;
+
+  0x2731->1;0x2758->1;0x2762->1;
+
+  0x2E28->1;0x2E29->1;
+
+  0x3001->1;
+  0x3008..0x300B->1;
+
+  0x3131..0x318E->1;
+
+  0xFF5F->1;0xFF60->1;
+}
+
+########################################################################
+
+# "ASCII version"
+
+# This is another distillation of the former FontForge "alternates"
+# table, the only place where FontForge actually looks at the content
+# of the strings instead of presence/absence of alternates.  For many
+# non-ASCII characters, the table lists an ASCII strings to be used
+# as a substitute in contexts where only ASCII is accepted.  These
+# substitution are ugly, but more or less the same ones FontForge used.
+
+# TODO - waiting for hash table support in Icemap

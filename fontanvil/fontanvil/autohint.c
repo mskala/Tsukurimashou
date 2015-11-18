@@ -1,4 +1,4 @@
-/* $Id: autohint.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: autohint.c 4393 2015-11-14 15:53:29Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,6 +35,7 @@
 #include <utype.h>
 #include <chardata.h>
 #include "edgelist.h"
+#include "hinttab.h"
 
 /* to create a type 1 font we must come up with the following entries for the
   private dictionary:
@@ -84,329 +85,152 @@ static void MergeZones(real zone1[5],real zone2[5]) {
 /*  the same set of letter shapes and have all evolved together and have */
 /*  various common features (ascenders, descenders, lower case, etc.). Other */
 /*  scripts don't fit */
-void FindBlues(SplineFont *sf, int layer, real blues[14],
-	       real otherblues[10]) {
-   real caph[5], xh[5], ascenth[5], digith[5], descenth[5], base[5];
-   real otherdigits[5];
-   int i, j, k;
+void FindBlues(SplineFont *sf,int layer,real blues[14],real otherblues[10]) {
+   real zone[7][5];
+   int i,j,k;
    DBounds b;
+   
+   /* zero out all zones */
+   for (i=0;i<7;i++)
+     for (j=0;j<5;j++)
+       zone[i][j]=0;
+   
+   /* first pass:  compute statistics on things that might define the zones */
+   for (i=0;i<sf->glyphcnt;i++)
+     if ((sf->glyphs[i]!=NULL) &&
+	 (sf->glyphs[i]->layers[layer].splines!=NULL)) {
+	int enc,blue_class;
 
-   /* Go through once to get some idea of the average value so we can weed */
-   /*  out undesirables */
-   caph[0]=caph[1]=caph[2]=xh[0]=xh[1]=xh[2]=0;
-   ascenth[0]=ascenth[1]=ascenth[2]=digith[0]=digith[1]=digith[2] =
-      0;
-   descenth[0]=descenth[1]=descenth[2]=base[0]=base[1]=base[2]=0;
-   otherdigits[0]=otherdigits[1]=otherdigits[2]=0;
-   for (i=0; i < sf->glyphcnt; ++i) {
-      if (sf->glyphs[i] != NULL
-	  && sf->glyphs[i]->layers[layer].splines != NULL) {
-	 int enc=sf->glyphs[i]->unicodeenc;
-	 const unichar_t *upt;
+	enc=sf->glyphs[i]->unicodeenc;
+	blue_class=blue_zone_class_lookup(enc);
+	
+	if (blue_class==0)
+	  continue;
+	SplineCharFindBounds(sf->glyphs[i],&b);
+	if ((b.miny==0) && (b.maxy==0))
+	  continue;
 
-	 if (enc < 0x10000 && isalnum(enc) &&
-	     ((enc >= 32 && enc < 128) || enc==0xfe || enc==0xf0
-	      || enc==0xdf || enc==0x131 || (enc >= 0x391 && enc <= 0x3f3)
-	      || (enc >= 0x400 && enc <= 0x4e9))) {
-	    /* no accented characters (or ligatures) */
-	    if (unicode_alternates[enc >> 8] != NULL &&
-		(upt=unicode_alternates[enc >> 8][enc & 0xff]) != NULL &&
-		upt[1] != '\0')
-	       continue;
-	    SplineCharFindBounds(sf->glyphs[i], &b);
-	    if (b.miny==0 && b.maxy==0)
-	       continue;
-	    if (enc=='g' || enc=='j' || enc=='p' || enc=='q'
-		|| enc=='y' || enc==0xfe || enc==0x3c1 /* rho */  ||
-		enc==0x3c6 /* phi */  ||
-		enc==0x3c7 /* chi */  ||
-		enc==0x3c8 /* psi */  ||
-		enc==0x440 /* cyr er */  ||
-		enc==0x443 /* cyr u */  ||
-		enc==0x444 /* cyr ef */ ) {
-	       descenth[0] += b.miny;
-	       descenth[1] += b.miny * b.miny;
-	       ++descenth[2];
-	    } else if (enc=='x' || enc=='r' || enc=='o' || enc=='e' ||
-		       enc=='s' || enc=='c' || enc=='h' || enc=='k' ||
-		       enc=='l' || enc=='m' || enc=='n' ||
-		       enc==0x3b5 /* epsilon */  ||
-		       enc==0x3b9 /* iota */  ||
-		       enc==0x3ba /* kappa */  ||
-		       enc==0x3bf /* omicron */  ||
-		       enc==0x3c3 /* sigma */  ||
-		       enc==0x3c5 /* upsilon */  ||
-		       enc==0x430 /* cyr a */  ||
-		       enc==0x432 /* cyr ve */  ||
-		       enc==0x433 /* cyr ge */  ||
-		       enc==0x435 /* cyr e */  ||
-		       enc==0x436 /* cyr zhe */  ||
-		       enc==0x438 /* cyr i */  ||
-		       enc==0x43a /* cyr ka */  ||
-		       enc==0x43d /* cyr en */  ||
-		       enc==0x43e /* cyr o */  ||
-		       enc==0x441 /* cyr es */  ||
-		       enc==0x445 /* cyr ha */  ||
-		       enc==0x447 /* cyr che */  ||
-		       enc==0x448 /* cyr sha */  ||
-		       enc==0x44f /* cyr ya */ ) {
-	       base[0] += b.miny;
-	       base[1] += b.miny * b.miny;
-	       ++base[2];
-	    }
-	    /* careful of lowercase digits, 6 and 8 should be ascenders */
-	    if (enc=='6' || enc=='8') {
-	       digith[0] += b.maxy;
-	       digith[1] += b.maxy * b.maxy;
-	       ++digith[2];
-	    } else if (enc < 0x10000 && isdigit(enc)) {
-	       otherdigits[0] += b.maxy;
-	       otherdigits[1] += b.maxy * b.maxy;
-	       ++otherdigits[2];
-	    } else if (enc < 0x10000 && isupper(enc) && enc != 0x462
-		       && enc != 0x490) {
-	       caph[0] += b.maxy;
-	       caph[1] += b.maxy * b.maxy;
-	       ++caph[2];
-	    } else if (enc=='b' || enc=='d' || enc=='f' || enc=='h'
-		       || enc=='k' || enc=='l' || enc==0xf0
-		       || enc==0xfe || enc==0xdf || enc==0x3b2
-		       || enc==0x3b6 || enc==0x3b8 || enc==0x3bb
-		       || enc==0x3be
-		       || enc ==
-		       0x431
-		       /* cyr be *//* || enc==0x444 - ef may have varible height */
-		       ) {
-	       ascenth[0] += b.maxy;
-	       ascenth[1] += b.maxy * b.maxy;
-	       ++ascenth[2];
-	    } else if (enc=='c' || enc=='e' || enc=='o' || enc=='s'
-		       || enc=='u' || enc=='u' || enc=='v' || enc=='w'
-		       || enc=='x' || enc=='y' || enc=='z'
-		       || enc==0x3b5 /* epsilon */  ||
-		       enc==0x3b9 /* iota */  ||
-		       enc==0x3ba /* kappa */  ||
-		       enc==0x3bc /* mu */  ||
-		       enc==0x3bd /* nu */  ||
-		       enc==0x3bf /* omicron */  ||
-		       enc==0x3c0 /* pi */  ||
-		       enc==0x3c1 /* rho */  ||
-		       enc==0x3c5 /* upsilon */  ||
-		       enc==0x433 /* cyr ge */  ||
-		       enc==0x435 /* cyr e */  ||
-		       enc==0x436 /* cyr zhe */  ||
-		       enc==0x438 /* cyr i */  ||
-		       enc==0x43b /* cyr el */  ||
-		       enc==0x43d /* cyr en */  ||
-		       enc==0x43e /* cyr o */  ||
-		       enc==0x43f /* cyr pe */  ||
-		       enc==0x440 /* cyr er */  ||
-		       enc==0x441 /* cyr es */  ||
-		       enc==0x442 /* cyr te */  ||
-		       enc==0x443 /* cyr u */  ||
-		       enc==0x445 /* cyr ha */  ||
-		       enc==0x446 /* cyr tse */  ||
-		       enc==0x447 /* cyr che */  ||
-		       enc==0x448 /* cyr sha */  ||
-		       enc==0x449 /* cyr shcha */  ||
-		       enc==0x44a /* cyr hard sign */  ||
-		       enc==0x44b /* cyr yery */  ||
-		       enc==0x44c /* cyr soft sign */  ||
-		       enc==0x44d /* cyr reversed e */  ||
-		       enc==0x44f /* cyr ya */ ) {
-	       xh[0] += b.maxy;
-	       xh[1] += b.maxy * b.maxy;
-	       ++xh[2];
-	    }
-	 }
-      }
+	/* check all seven proto-blue zones */
+	for (j=0;j<7;j++)
+	  if ((blue_class&(1<<j))!=0) {
+	     if ((j==bzci_base) || (j==bzci_descenth)) {
+		zone[j][0]+=b.miny;
+		zone[j][1]+=(b.miny*b.miny);
+	     } else {
+		zone[j][0]+=b.maxy;
+		zone[j][1]+=(b.maxy*b.maxy);
+	     }
+	     zone[j][2]++;
+	  }
+     }
+   
+   /* check whether numerals are old style */
+   if ((zone[bzci_digith][2]>0) && (zone[bzci_otherdigits][2]>0) &&
+       ((zone[bzci_otherdigits][0]/zone[bzci_otherdigits][2])>
+	   0.95*(zone[bzci_digith][0]/zone[bzci_digith][2]))) {
+      /* no, 6 and 8 are about the same height as the others */
+      /* in that case, accumulate others with 6 and 8 */
+      zone[bzci_digith][0]+=zone[bzci_otherdigits][0];
+      zone[bzci_digith][1]+=zone[bzci_otherdigits][1];
+      zone[bzci_digith][2]+=zone[bzci_otherdigits][2];
    }
-   if (otherdigits[2] > 0 && digith[2] > 0) {
-      if (otherdigits[0] / otherdigits[2] >= .95 * digith[0] / digith[2]) {
-	 /* all digits are about the same height, not lowercase */
-	 digith[0] += otherdigits[0];
-	 digith[1] += otherdigits[1];
-	 digith[2] += otherdigits[2];
-      }
+   /* note "other digits" are not further used */
+   
+   /* compute sample mean and std. dev., for samples of 2 or items */
+   for (j=0;j<6;j++)
+     if (zone[j][2]>1) {
+	zone[j][1]=sqrt((zone[j][1]-zone[j][0]*zone[j][0])/(zone[j][2]-1));
+	zone[j][0]/=zone[j][2];
+     }
+   /* initial acceptance range is +-1 sigma from mean */
+
+   /* force zero to be included in base acceptance range */
+   if (zone[bzci_base][0]+zone[bzci_base][1]<0)
+     zone[bzci_base][1]=-zone[bzci_base][0];
+   if (zone[bzci_base][0]-zone[bzci_base][1]>0)
+     zone[bzci_base][1]=zone[bzci_base][0];
+
+   /* second pass:  find range of accepted values */
+   for (i=0;i<sf->glyphcnt;i++)
+     if ((sf->glyphs[i]!=NULL) &&
+	 (sf->glyphs[i]->layers[layer].splines!=NULL)) {
+	int enc,blue_class;
+
+	enc=sf->glyphs[i]->unicodeenc;
+	blue_class=blue_zone_class_lookup(enc);
+	
+	if (blue_class==0)
+	  continue;
+	SplineCharFindBounds(sf->glyphs[i],&b);
+	if ((b.miny==0) && (b.maxy==0))
+	  continue;
+	
+	/* "other" digits are now counted as digits */
+	if ((blue_class&bzcm_otherdigits)!=0)
+	  blue_class|=bzcm_digith;
+
+	/* check six remaining proto-blue zones */
+	for (j=0;j<6;j++)
+	  AddBlue(((j==bzci_base) || (j==bzci_descenth))?b.miny:b.maxy,
+		  zone[j],
+		  ((j==bzci_base) && ((enc=='O') || (enc=='o'))) ||
+		  ((j==bzci_xh) && ((enc=='x') || (enc=='o'))));
+     }
+   
+   /* GW: "the descent blue zone merges into the base zone" */
+   MergeZones(zone[bzci_descenth],zone[bzci_base]);
+   MergeZones(zone[bzci_xh],zone[bzci_base]);
+   MergeZones(zone[bzci_ascenth],zone[bzci_caph]);
+   MergeZones(zone[bzci_digith],zone[bzci_caph]);
+   MergeZones(zone[bzci_xh],zone[bzci_caph]);
+   MergeZones(zone[bzci_ascenth],zone[bzci_digith]);
+   MergeZones(zone[bzci_xh],zone[bzci_digith]);
+
+   /* empty output arrays */
+   if (otherblues!=NULL)
+     for (i=0;i<10;i++)
+       otherblues[i]=0;
+   for (i=0;i<14;i++)
+     blues[i]=0;
+
+   /* copy descent zone into "other blues" array, if both exist */
+   if ((otherblues!=NULL) && (zone[bzci_descenth][2]!=0)) {
+      otherblues[0]=zone[bzci_descenth][3];
+      otherblues[1]=zone[bzci_descenth][4];
    }
 
-   if (xh[2] > 1) {
-      xh[1]=sqrt((xh[1] - xh[0] * xh[0] / xh[2]) / (xh[2] - 1));
-      xh[0] /= xh[2];
-   }
-   if (ascenth[2] > 1) {
-      ascenth[1] =
-	 sqrt((ascenth[1] -
-	       ascenth[0] * ascenth[0] / ascenth[2]) / (ascenth[2] - 1));
-      ascenth[0] /= ascenth[2];
-   }
-   if (caph[2] > 1) {
-      caph[1]=sqrt((caph[1] - caph[0] * caph[0] / caph[2]) / (caph[2] - 1));
-      caph[0] /= caph[2];
-   }
-   if (digith[2] > 1) {
-      digith[1] =
-	 sqrt((digith[1] - digith[0] * digith[0] / digith[2]) / (digith[2] -
-								 1));
-      digith[0] /= digith[2];
-   }
-   if (base[2] > 1) {
-      base[1]=sqrt((base[1] - base[0] * base[0] / base[2]) / (base[2] - 1));
-      base[0] /= base[2];
-   }
-   if (descenth[2] > 1) {
-      descenth[1] =
-	 sqrt((descenth[1] -
-	       descenth[0] * descenth[0] / descenth[2]) / (descenth[2] - 1));
-      descenth[0] /= descenth[2];
-   }
-
-   /* we'll accept values between +/- 1sd of the mean */
-   /* array[0]==mean, array[1]==sd, array[2]==cnt, array[3]=min, array[4]==max */
-   if (base[0] + base[1] < 0)
-      base[1]=-base[0];	/* Make sure 0 is within the base bluezone */
-   caph[3]=caph[4]=0;
-   xh[3]=xh[4]=0;
-   ascenth[3]=ascenth[4]=0;
-   digith[3]=digith[4]=0;
-   descenth[3]=descenth[4]=0;
-   base[3]=base[4]=0;
-   for (i=0; i < sf->glyphcnt; ++i)
-      if (sf->glyphs[i] != NULL) {
-	 int enc=sf->glyphs[i]->unicodeenc;
-	 const unichar_t *upt;
-
-	 if (enc < 0x10000 && isalnum(enc) &&
-	     ((enc >= 32 && enc < 128) || enc==0xfe || enc==0xf0
-	      || enc==0xdf || (enc >= 0x391 && enc <= 0x3f3)
-	      || (enc >= 0x400 && enc <= 0x4e9))) {
-	    /* no accented characters (or ligatures) */
-	    if (unicode_alternates[enc >> 8] != NULL &&
-		(upt=unicode_alternates[enc >> 8][enc & 0xff]) != NULL &&
-		upt[1] != '\0')
-	       continue;
-	    SplineCharFindBounds(sf->glyphs[i], &b);
-	    if (b.miny==0 && b.maxy==0)
-	       continue;
-	    if (enc=='g' || enc=='j' || enc=='p' || enc=='q'
-		|| enc=='y' || enc==0xfe || enc==0x3c6 || enc==0x3c8
-		|| enc==0x440 || enc==0x443 || enc==0x444) {
-	       AddBlue(b.miny, descenth, false);
-	    } else {
-	       /* O and o get forced into the baseline blue value even if they */
-	       /*  are beyond 1 sd */
-	       AddBlue(b.miny, base, enc=='O' || enc=='o');
-	    }
-	    if (enc < 0x10000 && isdigit(enc)) {
-	       AddBlue(b.maxy, digith, false);
-	    } else if (enc < 0x10000 && isupper(enc)) {
-	       AddBlue(b.maxy, caph, enc=='O');
-	    } else if (enc=='b' || enc=='d' || enc=='f' || enc=='h'
-		       || enc=='k' || enc=='l' || enc=='t'
-		       || enc==0xf0 || enc==0xfe || enc==0xdf
-		       || enc==0x3b2 || enc==0x3b6 || enc==0x3b8
-		       || enc==0x3bb || enc==0x3be || enc==0x431) {
-	       AddBlue(b.maxy, ascenth, false);
-	    } else if (enc=='c' || enc=='e' || enc=='o' || enc=='s'
-		       || enc=='u' || enc=='u' || enc=='v' || enc=='w'
-		       || enc=='x' || enc=='y' || enc=='z'
-		       || enc==0x3b5 /* epsilon */  ||
-		       enc==0x3b9 /* iota */  ||
-		       enc==0x3ba /* kappa */  ||
-		       enc==0x3bc /* mu */  ||
-		       enc==0x3bd /* nu */  ||
-		       enc==0x3bf /* omicron */  ||
-		       enc==0x3c0 /* pi */  ||
-		       enc==0x3c1 /* rho */  ||
-		       enc==0x3c5 /* upsilon */  ||
-		       enc==0x433 /* cyr ge */  ||
-		       enc==0x435 /* cyr e */  ||
-		       enc==0x436 /* cyr zhe */  ||
-		       enc==0x438 /* cyr i */  ||
-		       enc==0x43b /* cyr el */  ||
-		       enc==0x43d /* cyr en */  ||
-		       enc==0x43e /* cyr o */  ||
-		       enc==0x43f /* cyr pe */  ||
-		       enc==0x440 /* cyr er */  ||
-		       enc==0x441 /* cyr es */  ||
-		       enc==0x442 /* cyr te */  ||
-		       enc==0x443 /* cyr u */  ||
-		       enc==0x445 /* cyr ha */  ||
-		       enc==0x446 /* cyr tse */  ||
-		       enc==0x447 /* cyr che */  ||
-		       enc==0x448 /* cyr sha */  ||
-		       enc==0x449 /* cyr shcha */  ||
-		       enc==0x44a /* cyr hard sign */  ||
-		       enc==0x44b /* cyr yery */  ||
-		       enc==0x44c /* cyr soft sign */  ||
-		       enc==0x44d /* cyr reversed e */  ||
-		       enc==0x44f /* cyr ya */ ) {
-	       AddBlue(b.maxy, xh, enc=='o' || enc=='x');
-	    }
-	 }
-      }
-
-   /* the descent blue zone merges into the base zone */
-   MergeZones(descenth, base);
-   MergeZones(xh, base);
-   MergeZones(ascenth, caph);
-   MergeZones(digith, caph);
-   MergeZones(xh, caph);
-   MergeZones(ascenth, digith);
-   MergeZones(xh, digith);
-
-   if (otherblues != NULL)
-      for (i=0; i < 10; ++i)
-	 otherblues[i]=0;
-   for (i=0; i < 14; ++i)
-      blues[i]=0;
-
-   if (otherblues != NULL && descenth[2] != 0) {
-      otherblues[0]=descenth[3];
-      otherblues[1]=descenth[4];
-   }
+   /* copy five standard blue zones into output array if they exist */
    i=0;
-   if (base[2]==0
-       && (xh[2] != 0 || ascenth[2] != 0 || caph[2] != 0 || digith[2] != 0)) {
-      /* base line blue value must be present if any other value is */
-      /*  make one up if we don't have one */
+   if ((zone[bzci_base][2]==0) &&
+       ((zone[bzci_xh][2]!=0) ||
+	   (zone[bzci_caph][2]!=0) ||
+	   (zone[bzci_digith][2]!=0) ||
+	   (zone[bzci_ascenth][2]!=0))) {
+      /* must have a "base" blue zone if any of these other four are
+       * present, so supply a fake one */
       blues[0]=-20;
       blues[1]=0;
       i=2;
-   } else if (base[2] != 0) {
-      blues[0]=base[3];
-      blues[1]=base[4];
-      i=2;
    }
-   if (xh[2] != 0) {
-      blues[i++]=xh[3];
-      blues[i++]=xh[4];
-   }
-   if (caph[2] != 0) {
-      blues[i++]=caph[3];
-      blues[i++]=caph[4];
-   }
-   if (digith[2] != 0) {
-      blues[i++]=digith[3];
-      blues[i++]=digith[4];
-   }
-   if (ascenth[2] != 0) {
-      blues[i++]=ascenth[3];
-      blues[i++]=ascenth[4];
-   }
+   for (j=0;j<5;j++)
+     if (zone[j][2]!=0) {
+	blues[i++]=zone[j][3];
+	blues[i++]=zone[j][4];
+     }
 
-   for (j=0; j < i; j += 2)
-      for (k=j + 2; k < i; k += 2) {
-	 if (blues[j] > blues[k]) {
-	    real temp=blues[j];
-
-	    blues[j]=blues[k];
-	    blues[k]=temp;
-	    temp=blues[j + 1];
-	    blues[j + 1]=blues[k + 1];
-	    blues[k + 1]=temp;
-	 }
-      }
+   /* sort */
+   for (j=0;j<i;j+=2)
+     for (k=j+2;k<i;k+=2) {
+	if (blues[j]>blues[k]) {
+	   real temp=blues[j];
+	   
+	   blues[j]=blues[k];
+	   blues[k]=temp;
+	   temp=blues[j+1];
+	   blues[j+1]=blues[k+1];
+	   blues[k+1]=temp;
+	}
+     }
 }
 
 static int PVAddBlues(BlueData *bd,int bcnt,char *pt) {

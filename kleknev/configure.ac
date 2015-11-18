@@ -173,8 +173,9 @@ AM_COND_IF([COND_PARASITE],
 #
 # Checks for libraries.
 #
-AX_PERL_MODULE_VERSION([XML::Parser 2.36],[],
-  [AC_MSG_WARN([XML::Parser is missing])])
+AX_PERL_MODULE_VERSION([XML::Parser 2.36],[have_perlxml=yes],
+  [AC_MSG_WARN([XML::Parser is missing])
+   have_perlxml=no])
 #
 ############################################################################
 #
@@ -187,6 +188,7 @@ AX_CREATE_STDINT_H
 #
 # Checks for typedefs, structures, and compiler characteristics.
 #
+AC_CHECK_MEMBERS([struct timeval.tv_usec])
 AC_CHECK_SIZEOF([int])
 AC_TYPE_SIZE_T
 #
@@ -195,7 +197,8 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 #
 AX_FUNC_GETOPT_LONG
-# AC_CHECK_FUNCS_ONCE([])
+AC_CHECK_FUNCS_ONCE([clock_gettime gettimeofday])
+AC_SEARCH_LIBS([clock_gettime],[rt])
 #
 ############################################################################
 #
@@ -252,3 +255,26 @@ AS_IF([test "x$enable_silent_rules" = "x"],
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+#
+############################################################################
+#
+# Display a status table
+#
+AS_ECHO([])
+TSU_COLOURISE([Kleknev configuration status],[5])AS_ECHO([])
+#
+AS_ECHO([])
+TSU_COLOURISE([Requirements for all builds],[7])AS_ECHO([])
+AS_ECHO_N(["perl              "])
+  AS_IF([test "x$PERL" = "x"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://perl.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO_N(["XML::Parser       "])
+  AS_IF([test '!' "x$have_perlxml" = "xyes"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://search.cpan.org/~toddr/XML-Parser/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
+AS_ECHO([])

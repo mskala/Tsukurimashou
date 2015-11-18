@@ -2,7 +2,7 @@
 
 #
 # Make a cover for Tsukurimashou book proofs
-# Copyright (C) 2014  Matthew Skala
+# Copyright (C) 2014, 2015  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,9 +35,11 @@ use utf8;
 while (<>) {
   if (/THIS IS PART ([IVX]+)\./) {
     $partrom=$1;
-  } elsif (/THIS PART'S NAME IS (.+?)\./) {
+  }
+  if (/THIS PART'S NAME IS (.+?)\./) {
     $partname=$1;
-  } elsif (/Output written.*\(([0-9]+) pages/) {
+  }
+  if (/Output written.*\(([0-9]+) pages/) {
     $npages=$1;
   }
 }
@@ -109,7 +111,7 @@ EOF
 }
 
 print <<EOF;
-\\setmainfont[Mapping=tex-text]{TsukurimashouKakuPS}
+\\setmainfont[Mapping=tex-text,Path={../otf/}]{TsukurimashouKakuPS}
 
 \\begin{document}
 \\pagestyle{empty}

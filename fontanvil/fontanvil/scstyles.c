@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: scstyles.c 4394 2015-11-14 21:44:10Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3099,7 +3099,7 @@ void FVAddSmallCaps(FontViewBase * fv, struct genericchange *genchange) {
 	    if (achar==NULL)
 	       achar=sc_sc;
 	    if (SFGetAlternate(sf, sc->unicodeenc, sc, false) != NULL)
-	       SCBuildComposit(sf, sc_sc, fv->active_layer, NULL, true);
+	       SCBuildComposite(sf, sc_sc, fv->active_layer, NULL, true);
 	    if (sc_sc->layers[fv->active_layer].refs==NULL) {
 	       RefChar *rlast=NULL;
 
@@ -7152,38 +7152,4 @@ void MakeItalic(FontViewBase * fv, CharViewBase * cv, ItalicInfo * ii) {
    }
    detect_diagonal_stems=dds;
    ItalicInfoFreeContents(ii);
-}
-
-/* ************************************************************************** */
-/* ***************************** Change X-Height **************************** */
-/* ************************************************************************** */
-
-static void SCChangeXHeight(SplineChar *sc,int layer,
-			    struct xheightinfo *xi) {
-   const unichar_t *alts;
-
-   if (sc->layers[layer].refs != NULL &&
-       ((alts=SFGetAlternate(sc->parent, sc->unicodeenc, sc, true)) != NULL
-	&& alts[1] != 0))
-      SCBuildComposit(sc->parent, sc, layer, NULL, true);
-   else {
-      SCPreserveLayer(sc, layer, true);
-      _SCChangeXHeight(sc, layer, xi);
-      SCCharChangedUpdate(sc, layer, true);
-   }
-}
-
-static int FVChangeXHeight(FontViewBase *fv,SplineChar *sc,int layer,
-			   struct xheightinfo *xi) {
-   RefChar *ref;
-
-   sc->ticked=true;
-   for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next) {
-      if (!ref->sc->ticked && IsSelected(fv, ref->sc)) {
-	 if (!FVChangeXHeight(fv, ref->sc, layer, xi))
-	    return (false);
-      }
-   }
-   SCChangeXHeight(sc, layer, xi);
-   return true;
 }

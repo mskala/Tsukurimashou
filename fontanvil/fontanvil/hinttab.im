@@ -1,0 +1,315 @@
+# Icemap definitions used in hinting
+
+# $Id: hinttab.im 4393 2015-11-14 15:53:29Z mskala $
+
+cwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN hinttab.im INSTEAD! */
+
+#include "_stdint.h"
+
+EOF
+
+hwrite <<EOF;
+/* GENERATED FILE - EDIT THE SOURCE IN hinttab.im INSTEAD! */
+
+#include "_stdint.h"
+
+EOF
+
+########################################################################
+
+# blue zone class
+
+# Running text in Latin, Cyrillic, or a few other scripts typically has
+# some strong horizontal lines in it.  For instance, you can draw a line
+# that will be more or less touched by the bottoms of all non-descender
+# letters, and another that will be touched by the tops of all non-ascender
+# lowercase letters.
+
+# In a high quality vector font, these lines will only be touched
+# *approximately*.  It may be for instance that the top of the "o" bulges
+# a little above the line that would exactly hit the top of the "x".
+# This comes about because of optical illusions:  the eye tends to perceive
+# the top of the curve on the "o" as being a little lower than it really
+# is, so the designer will make the heights of "o" and "x" deliberately
+# NOT the same so that they will LOOK the same.  But when rendering to a
+# relatively low-resolution bitmap where the smallest difference that can
+# exist is one pixel, we want to undo that correction and make them really
+# be the same height.
+
+# Thus:  part of the hinting information for a font includes a set of
+# so-called blue zones, which are intervals of the vertical axis such that
+# if two vertical metrics (heights of horizontal lines) fall within the
+# same blue zone, the renderer will fudge them to hit the same pixel.
+
+# FontForge includes an elaborate set of heuristics for guessing the blue
+# zones from the vector font data.  It makes one pass where it computes
+# the mean and standard deviation of certain metrics for certain glyphs;
+# then on a second pass, for each blue zone it trims outliers from the
+# set, computes the range of the remaining values, and uses that as the
+# blue zone.  The sets of glyphs and metrics used for each blue zone are
+# determined by a mixture of the "alternate" definitions in the Unicode
+# data; the return values of ctype.h macros (which may or may not depend
+# on LC_* environment variables at run time); and hardcoded decisions.
+# Although it appears that these classification decisions are meant to
+# be consistent between the two passes of the algorithm, I'm not confident
+# that they really are, because the logic of the rules is expressed
+# differently in the two places where it is written.
+
+# FontAnvil attempts to factor the rules as much as possible into the
+# following mapping table.  It is intended that the classification decisions
+# embedded in this table should be closely similar to those of FontForge,
+# but they will probably not be identical.
+
+# Keys are Unicode code point numbers.  Values are sums of the following
+# flags, corresponding to the seven blue zones used in FontForge's
+# internal calculation:
+
+hwrite <<EOF;
+/* "base" bottom of descenderless letters */
+#define bzci_base 0
+#define bzcm_base 1
+
+/* "xh" top of ascenderless lowercase letters like "x" */
+#define bzci_xh 1
+#define bzcm_xh 2
+
+/* "caph" top of most uppercase letters */
+#define bzci_caph 2
+#define bzcm_caph 4
+
+/* "digith" top of numerals */
+#define bzci_digith 3
+#define bzcm_digith 8
+
+/* "ascenth" top of lowercase letters with ascenders like "b" and "d" */
+#define bzci_ascenth 4
+#define bzcm_ascenth 16
+
+/* "descenth" bottom of descenders as in "p" and "q" */
+#define bzci_descenth 5
+#define bzcm_descenth 32
+
+/* "otherdigits" top of numerals except "6" and "8" (used internally) */
+#define bzci_otherdigits 6
+#define bzcm_otherdigits 64
+
+EOF
+
+{ id blue_zone_class;
+  priority last;
+  default 0;
+
+  # overall limits on character ranges we care about
+  #   ASCII core
+  32..128=>32..128;
+  #   sharp s
+  0xDF->0xDF;
+  #   eth
+  0xF0->0xF0;
+  #   thorn
+  0xFE->0xFE;
+  #   dotless i
+  0x131->0x131;
+  #   Greek
+  0x391..0x3F3=>0x391..0x3F3;
+  #   Cyrillic
+  0x400..0x4E9=>0x400..0x4E9;
+
+  # classify according to bottom metric
+  define bottom {
+
+    # descenders (hardcoded list from FontForge)
+    "g"->32;
+    "j"->32;
+    "p"->32;
+    "q"->32;
+    "y"->32;
+    0xFE->32;  # thorn
+    0x3C1->32; # rho
+    0x3C6->32; # phi
+    0x3C7->32; # chi
+    0x3C8->32; # psi
+    0x440->32; # cyr er
+    0x443->32; # cyr u
+    0x444->32; # cyr ef
+
+    # no descenders (hardcoded list from FontForge)
+    "c"->1;
+    "e"->1;
+    "h"->1;
+    "k"->1;
+    "l"->1;
+    "m"->1;
+    "n"->1;
+    "o"->1;
+    "r"->1;
+    "s"->1;
+    "x"->1;
+    0x3B5->1; # epsilon
+    0x3B9->1; # iota
+    0x3BA->1; # kappa
+    0x3BF->1; # omicron
+    0x3C3->1; # sigma
+    0x3C5->1; # upsilon
+    0x430->1; # cyr a
+    0x432->1; # cyr ve
+    0x433->1; # cyr ge
+    0x435->1; # cyr e
+    0x436->1; # cyr zhe
+    0x438->1; # cyr i
+    0x43A->1; # cyr ka
+    0x43D->1; # cyr en
+    0x43E->1; # cyr o
+    0x441->1; # cyr es
+    0x445->1; # cyr ha
+    0x447->1; # cyr che
+    0x448->1; # cyr sha
+    0x44F->1; # cyr ya
+
+    remap keys { decode utf-8; }
+    priority first;
+    32..0x4E9->0;
+  }
+
+  # classify according to top metric
+  define top {
+
+    # categories from the Unicode list:  decimal digits, upper and title case
+    parserx "^([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]).*;(Nd|Lu|Lt)";
+    rxparse "dat/UnicodeData.txt" x1->2;
+    remap values {
+      "Nd"->64;
+      "Lu"->4;
+      "Lt"->4;
+    }
+    
+    # exceptional upper-case letters, from FontForge source
+    0x462->0;
+    0x490->0;
+    
+    # "6" and "8" are special, in "digits" right from the start
+    0x36->8; # "6"
+    0x38->8; # "8"
+
+    # ascenders (hardcoded list from FontForge)
+    "b"->16;
+    "d"->16;
+    "f"->16;
+    "h"->16;
+    "k"->16;
+    "l"->16;
+    0xDF->16;  # sharp s
+    0xF0->16;  # eth
+    0xFE->16;  # thorn
+    0x3B2->16; # beta
+    0x3B6->16; # zeta
+    0x3B8->16; # theta
+    0x3BB->16; # lambda
+    0x3BE->16; # xi
+    0x431->16; # cyr be
+    # George wrote and commented out 0x444 here, saying cyr ef may have
+    # variable height
+
+    # no ascenders (hardcoded list from FontForge)
+    "c"->2;
+    "e"->2;
+    "o"->2;
+    "s"->2;
+    "u"->2; # listed twice in FontForge for some reason
+    "v"->2;
+    "w"->2;
+    "x"->2;
+    "y"->2;
+    "z"->2;
+    0x3b5->2; # epsilon
+    0x3b9->2; # iota
+    0x3ba->2; # kappa
+    0x3bc->2; # mu
+    0x3bd->2; # nu
+    0x3bf->2; # omicron
+    0x3c0->2; # pi
+    0x3c1->2; # rho
+    0x3c5->2; # upsilon
+    0x433->2; # cyr ge
+    0x435->2; # cyr e
+    0x436->2; # cyr zhe
+    0x438->2; # cyr i
+    0x43b->2; # cyr el
+    0x43d->2; # cyr en
+    0x43e->2; # cyr o
+    0x43f->2; # cyr pe
+    0x440->2; # cyr er
+    0x441->2; # cyr es
+    0x442->2; # cyr te
+    0x443->2; # cyr u
+    0x445->2; # cyr ha
+    0x446->2; # cyr tse
+    0x447->2; # cyr che
+    0x448->2; # cyr sha
+    0x449->2; # cyr shcha
+    0x44a->2; # cyr hard sign
+    0x44b->2; # cyr yery
+    0x44c->2; # cyr soft sign
+    0x44d->2; # cyr reversed e
+    0x44f->2; # cyr ya
+
+    # default none
+    remap keys { decode utf-8; }
+    priority first;
+    32..0x4E9->0;
+  }
+
+  # add up the results
+  construct [ $bottom + $top ]
+  remap values {
+    "0+0"->0;
+    "0+2"->2;
+    "0+4"->4;
+    "0+8"->8;
+    "0+16"->16;
+    "0+64"->64;
+
+    "1+0"->1;
+    "1+2"->3;
+    "1+4"->5;
+    "1+8"->9;
+    "1+16"->17;
+    "1+64"->65;
+
+    "32+0"->32;
+    "32+2"->34;
+    "32+4"->36;
+    "32+8"->40;
+    "32+16"->48;
+    "32+64"->96;
+  }
+
+  # remove everything that has an expansion sequence of more than one
+  # character in the Unicode table; assumed to mean it is an accented
+  # or ligature character
+  remap keys {
+    parserx "^([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])(;).*[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f] [0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f];";
+    rxparse "dat/UnicodeData.txt" x1->2;
+    remap values { ";"->0; }
+    priority first;
+    32..0x4E9=>32..0x4E9;
+  }
+
+  # remove everything that has a class other than alphanumeric
+  remap keys {
+    parserx "^([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])(;)";
+    rxparse "dat/UnicodeData.txt" x1->2;
+    remap values { ";"->0; }
+    remap keys {
+      parserx "^([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])(;).*;(Lu|Ll|Lt|Nd)";
+      rxparse "dat/UnicodeData.txt" x1->2;
+    }
+    remap keys { ";"->0; }
+    priority first;
+    32..0x4E9=>32..0x4E9;
+  }
+
+  remap keys { 0->32; }
+  32->0;
+}

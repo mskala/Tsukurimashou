@@ -409,9 +409,9 @@ AS_IF([test '!' "x$with_libxml2" = xno],
 #
 # Checks for header files.
 #
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h ieeefp.h])
-AC_CHECK_HEADERS([memory.h netdb.h netinet/in.h])
-AC_CHECK_HEADERS([strings.h sys/ioctl.h sys/socket.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h ieeefp.h])
+AC_CHECK_HEADERS([memory.h])
+AC_CHECK_HEADERS([strings.h sys/time.h unistd.h])
 AC_CHECK_HEADERS([iconv.h])
 #
 ############################################################################
@@ -524,97 +524,6 @@ AM_CONDITIONAL([COND_VALGRIND],[test '!' "$with_valgrind" = no])
 #
 ############################################################################
 #
-# Evaluate what we can and can't do
-#
-
-can_build=yes
-
-AC_MSG_CHECKING([core prerequisites])
-can_core=yes
-AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
-  [missing_fontanvil=yes
-   can_core=no])
-AS_IF([test "x$_cv_gnu_make_command" = "x"],
-  [missing_gmake=yes
-   can_core=no])
-AS_IF([test '!' "x$missing_gmake_version" = "xno"],
-  [missing_gmake=yes
-   can_core=no])
-AS_IF([test "x$MPOST" = "x"],
-  [missing_mpost=yes
-   can_core=no],
-  [mpost_version=`$MPOST --version | $PERL -ne 'print $1 if /MetaPost\s+(@<:@0-9.@:>@+)/'`
-   AS_VERSION_COMPARE([$mpost_version],[1.501],
-     [mpost_version_warn=yes])
-   ])
-AS_IF([test "x$PERL" = "x"],
-  [missing_perl=yes
-   can_core=no])
-AS_IF([test "$tsu_prolog_style" = "unknown"],
-  [missing_prolog=yes
-   can_core=no])
-AS_IF([test '!' "$ac_cv_sys_long_file_names" = "yes"],[can_core=no])
-AS_IF([test "$can_core" = "no"],[can_build=no])
-AC_MSG_RESULT([$can_core])
-
-AC_MSG_CHECKING([proportional spacing prerequisites])
-can_proportional=yes
-AS_IF([test "x$CC" = "x"],
-  [missing_cc=yes
-   can_proportional=no])
-AS_IF([test "$enable_proportional" = "yes" && test "$can_proportional" = "no"],
-  [can_build=no])
-AC_MSG_RESULT([$can_proportional])
-
-AC_MSG_CHECKING([safety of silent build rules])
-can_silent_rules=yes
-AS_IF([test "x$EXPECT" = "x"],
-  [missing_expect=yes
-   can_silent_rules=no])
-AC_MSG_RESULT([$can_silent_rules])
-
-AC_MSG_CHECKING([FontAnvil debuggery])
-can_ffdebug=yes
-AS_IF([test "x$FONTANVIL" = "x" || test '!' -r "$FONTANVIL"],
-  [missing_fontanvil=yes
-   can_ffdebug=no])
-AS_IF([test "x$CC" = "x"],
-  [missing_cc=yes
-   can_ffdebug=no])
-AS_IF([test "x$GREP" = "x"],
-  [missing_grep=yes
-   can_ffdebug=no])
-AS_IF([test "x$GDB" = "x"],
-  [missing_gdb=yes
-   can_ffdebug=no])
-AS_IF([test "$can_ffdebug" = "yes"],
-  [gdb_result=`echo q | $GDB -q -n -s $FONTANVIL 2> /dev/null | $GREP 'no debug'`
-   AS_IF([test "x$gdb_result" = "x"],[],
-     [missing_ff_debugsymbols=yes
-      can_ffdebug=no])])
-AC_MSG_RESULT([$can_ffdebug])
-
-AC_MSG_CHECKING([build-system hackability])
-can_bshack=yes
-AS_IF([test "x$AUTOCONF" = "x"],
-  [missing_autoconf=yes
-   can_bshack=no])
-AS_IF([test "x$AUTOMAKE" = "x"],
-  [missing_automake=yes
-   can_bshack=no])
-AS_IF([test "x$PERL" = "x" || test "x$AUTOCONF" = "x"],[],
-  [autoconf_version=dnl
-`autoconf --version | perl -ne 'print $1 if /^autoconf.*(\d+\.\d+)/'`
-   AS_VERSION_COMPARE([$autoconf_version],[2.65],
-     [missing_autoconf_version=yes
-      can_bshack=no])
-   AS_VERSION_COMPARE([$autoconf_version],[2.75],[],[],
-     [excessive_autoconf_version=yes
-      can_bshack=no])])
-AC_MSG_RESULT([$can_bshack])
-#
-############################################################################
-#
 # Generate output
 #
 AH_TOP([#ifndef _FF_CONFIG_H
@@ -624,8 +533,13 @@ AC_SUBST([andt],[])
 AC_SUBST([HOST],["$host"])
 AC_SUBST([MACAPP])
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([fontanvil/GNUmakefile])
-AC_CONFIG_FILES([fontanvil/darwinsetup],[chmod +x fontanvil/darwinsetup])
+AC_CONFIG_COMMANDS([fix-makefile],
+  [if test '!' "x$ICEMAP" = "x" ; then $PERL -i -pe \
+'s/^(@<:@a-z\-@:>@+:) (\$\(BUILT_SOURCES\))/'\
+'\1\n\t@\$(MAKE) -q \2 || \$(MAKE) \$(AM_MAKEFLAGS) \2/'\
+   Makefile ; fi],
+  [PERL=$PERL
+   ICEMAP=$ICEMAP])
 AC_OUTPUT
 #
 ############################################################################
@@ -633,7 +547,7 @@ AC_OUTPUT
 # Display a status table
 #
 AS_ECHO([])
-TSU_COLOURISE([Configuration status],[5])AS_ECHO([])
+TSU_COLOURISE([FontAnvil configuration status],[5])AS_ECHO([])
 #
 AS_ECHO([])
 TSU_COLOURISE([Requirements for all builds],[7])AS_ECHO([])

@@ -80,7 +80,7 @@ endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
 TSU_V_CP_=$(TSU_V_CP_$(AM_DEFAULT_VERBOSITY))
-TSU_V_CP_0=@$(ECHO_ANSI) \
+TSU_V_CP_0=@echo \
   "$(ansi_cleareol)  $(ansi_default)CP$(ansi_default)    " $@;
 
 TSU_V_ICE=$(TSU_V_ICE_$(V))
@@ -159,12 +159,19 @@ AM_LDFLAGS = \
   $(LIBTIFF_LIBS) $(LIBXML2_LIBS) $(ZLIB_LIBS)
 AM_LFLAGS = -s -P`basename $* | sed 's,l$$,,'` -olex.yy.c
 
-# needed to work around an Automake macro bug
+ICEMAP_INPUTS = \
+ fontanvil/hinttab.im fontanvil/macenctab.im \
+ fontanvil/nonmactab.im fontanvil/unicodelib.im
+
+# non-empty value needed here to work around an Automake macro bug
 # see http://permalink.gmane.org/gmane.comp.sysutils.autoconf.archive-maintainers/626
-BUILT_SOURCES = Makefile
+# "Makefile" was used before we had things we wanted to include for real
+# BUILT_SOURCES = Makefile
+BUILT_SOURCES = \
+  fontanvil/feascan.c fontanvil/feascan.h \
+  $(ICEMAP_INPUTS:.im=.c) $(ICEMAP_INPUTS:.im=.h)
 
 bin_PROGRAMS = fontanvil/fontanvil
-
 
 dist_man_MANS = \
   fontanvil/fontanvil.1 fontanvil/fontimage.1 fontanvil/fontlint.1 \
@@ -196,8 +203,7 @@ noinst_HEADERS = \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
   inc/gb12345.h \
   inc/unicodelibinfo.h \
-  fontanvil/feascan.h fontanvil/macenctab.h fontanvil/nonmactab.h \
-  fontanvil/unicodelib.h
+  fontanvil/feascan.h $(ICEMAP_INPUTS:.im=.h)
 
 noinst_LIBRARIES = \
   Unicode/libgunicode.a
@@ -242,8 +248,7 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/winfonts.c fontanvil/woff.c \
  fontanvil/zapfnomen.c \
  fontanvil/feascan.l fontanvil/pescript.l \
- fontanvil/macenctab.im fontanvil/nonmactab.im fontanvil/unicodelib.im \
- fontanvil/macenctab.c fontanvil/nonmactab.c fontanvil/unicodelib.c
+ $(ICEMAP_INPUTS:.im=.c)
 
 fontanvil_fontanvil_LDADD = $(top_builddir)/Unicode/libgunicode.a
 
@@ -329,12 +334,16 @@ if COND_ICEMAP
 %.h:%.im $(ICEMAP)
 	$(TSU_V_ICE)$(ICEMAP) -H$@ -C$(patsubst %.h,%.c,$@) $< $(TSU_V_REDIR)
 
+fontanvil/hinttab.h: fontanvil/hinttab.im
+fontanvil/hinttab.c: fontanvil/hinttab.h
+
 fontanvil/macenctab.h: fontanvil/macenctab.im
 fontanvil/macenctab.c: fontanvil/macenctab.h
+
 fontanvil/nonmactab.h: fontanvil/nonmactab.im \
-  dat/texbase.dat dat/gb2312.dat dat/glyphlist.txt \
-  dat/UnicodeData.txt
+  dat/texbase.dat dat/gb2312.dat dat/glyphlist.txt
 fontanvil/nonmactab.c: fontanvil/nonmactab.h
+
 fontanvil/unicodelib.h: fontanvil/unicodelib.im
 fontanvil/unicodelib.c: fontanvil/unicodelib.h
 
@@ -359,14 +368,6 @@ dat/gb2312.dat: dat/Unihan_OtherMappings.txt
 	  -e 'printf "%02X%02X\t%s\n",$$2+161,$$3+161,$$1 ' \
 	  -e 'if /U\+([0-9a-f]{4})\tkGB0\t(\d\d)(\d\d)/i;' $< > $@
 endif
-
-fontanvil/encoding.o: fontanvil/macenctab.h fontanvil/nonmactab.h
-fontanvil/fvcomposite.o: fontanvil/unicodelib.h
-fontanvil/macenc.o: fontanvil/macenctab.h
-fontanvil/parsettf.o: fontanvil/nonmactab.h
-fontanvil/scripting.o: fontanvil/unicodelib.h
-fontanvil/svg.o: fontanvil/unicodelib.h
-fontanvil/unicodelibinfo.o: fontanvil/unicodelib.h
 
 ############################################################################
 
@@ -496,8 +497,9 @@ m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
 	$(TSU_V_CP) cp $< $@
 
-dat/UnicodeData.txt: ../idsgrep/UnicodeData.txt
-	$(TSU_V_CP) cp $< $@
+dat/UnicodeData.txt: $(wildcard ../idsgrep/UnicodeData.txt)
+	$(TSU_V_CP) if test -s ../idsgrep/UnicodeData.txt ; \
+	  then cp ../idsgrep/UnicodeData.txt $@ ; fi
 
 endif
 

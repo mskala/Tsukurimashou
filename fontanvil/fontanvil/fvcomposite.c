@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4380 2015-11-11 19:38:13Z mskala $ */
+/* $Id: fvcomposite.c 4394 2015-11-14 21:44:10Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1165,8 +1165,7 @@ const unichar_t *SFGetAlternate(SplineFont *sf, int base, SplineChar * sc,
        adobes_pua_alts[base - 0xf600] != 0)
       return (adobes_pua_alts[base - 0xf600]);
 
-   if (base==-1 || base >= 65536 || unicode_alternates[base >> 8]==NULL ||
-       (upt=unicode_alternates[base >> 8][base & 0xff])==NULL)
+   if (base==-1 || base >= 65536 || (has_alternates_lookup(base)==0))
       return (SFAlternateFromLigature(sf, base, sc));
 
    /* The definitions of some of the greek letters may make some */
@@ -3064,7 +3063,7 @@ static void SCSetReasonableLBearing(SplineChar *sc,SplineChar *base,
    SCSynchronizeWidth(sc, sc->width + xoff, sc->width, NULL);
 }
 
-void SCBuildComposit(SplineFont *sf, SplineChar * sc, int layer,
+void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
 		     BDFFont * bdf, int disp_only) {
    const unichar_t *pt, *apt;
    unichar_t ch;
