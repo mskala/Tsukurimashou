@@ -1,13 +1,15 @@
 #!/usr/local/bin/fontanvil
-#Needs: fonts/merged.cff
-
-Quit(77) # Needs a missing font file
 
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
 else
   srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/merged.cff"))
+  Print("SKIPPING because we don't have merged.cff")
+  Quit(77)
 endif
 
 Open(srcdir+"test/fonts/merged.cff")

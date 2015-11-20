@@ -2,6 +2,7 @@
 #Needs: fonts/QuadraticConversionBug.sfd, fonts/CourierNew.ttf
 #Make sure quadratic conversion works...
 
+Print("SKIPPING because we don't have QuadraticConversionBug.sfd and CourierNew.ttf")
 Quit(77) # Needs a missing font file
 
 srcdir=GetEnv("srcdir")

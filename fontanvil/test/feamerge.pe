@@ -8,15 +8,19 @@ else
 endif
 
 if (FileAccess(srcdir+"../sfd/tsuku-kg.sfd")<0)
+  Print("SKIPPING because we don't have sfd/tsuku-kg.sfd")
   Quit(77)
 endif
 if (FileAccess(srcdir+"../fea/tsuku.fea")<0)
+  Print("SKIPPING because we don't have fea/tsuku.fea")
   Quit(77)
 endif
 if (FileAccess(srcdir+"../fea/tsuku-kg-name.fea")<0)
+  Print("SKIPPING because we don't have fea/tsuku-kg-name.fea")
   Quit(77)
 endif
 if (FileAccess(srcdir+"../fea/monospace.fea")<0)
+  Print("SKIPPING because we don't have fea/monospace.fea")
   Quit(77)
 endif
 

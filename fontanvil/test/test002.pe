@@ -2,13 +2,16 @@
 #Needs: fonts/HanSans-Bold.otf
 # but any other otf cid font would do.
 
-Quit(77) # need a font...
-
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
 else
   srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/HanSans-Bold.otf"))
+  Print("SKIPPING because we don't have HanSans-Bold.otf")
+  Quit(77)
 endif
 
 Open(srcdir+"test/fonts/HanSans-Bold.otf");

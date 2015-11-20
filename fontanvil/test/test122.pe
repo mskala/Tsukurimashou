@@ -1,10 +1,10 @@
 #!/usr/local/bin/fontanvil
-#Needs: fonts/Hinting.sfd
 
 #Check that AutoHint does what it should
 #Check that generating type1/2 retain those hints
 
 if (GetEnv("distcheck_hack")=="0.3")
+  Print("SKIPPING because we don't have Hinting.sfd")
   Quit(77)
 endif
 

@@ -3,13 +3,16 @@
 # but any other ttc file would do (gulim works just fine).
 # (also needs chunkalloc turned on with 384M memory)
 
-Quit(77) # need a font...
-
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
 else
   srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/mingliu.ttc"))
+  Print("SKIPPING because we don't have mingliu.ttc")
+  Quit(77)
 endif
 
 #Yes, mingliu doesn't work without the ttf instructions, but that is irrelevant

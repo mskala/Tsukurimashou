@@ -1,12 +1,15 @@
 #!/usr/local/bin/fontanvil
 
-Quit(77) # needs a missing file
-
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
 else
   srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/GillSans.dfont"))
+  Print("SKIPPING because we don't have GillSans.dfont")
+  Quit(77)
 endif
 
 #Print("....I expect this test to generate some error messages");

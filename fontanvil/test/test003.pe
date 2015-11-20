@@ -2,13 +2,16 @@
 #Needs: fonts/MunhwaGothic-Bold
 # but any other non-otf cid font would do.
 
-Quit(77) # need a font...
-
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
 else
   srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/MunhwaGothic-Bold"))
+  Print("SKIPPING because we don't have MunhwaGothic-Bold")
+  Quit(77)
 endif
 
 Open(srcdir+"test/fonts/MunhwaGothic-Bold");

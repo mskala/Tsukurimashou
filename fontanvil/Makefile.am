@@ -142,6 +142,15 @@ test/coverage.log: $(patsubst %.pe,%.log,$(filter test/%.pe,$(TESTS)))
 
 test/feart.log: test/feamerge.log
 
+if COND_KPSEWHICH
+test/test111.log: test/fonts/cmbsy10.pfb
+
+test/fonts/cmbsy10.pfb:
+	$(AM_V_GEN)
+	$(AM_V_at)cp `$(KPSEWHICH) cmbsy10.pfb` $@
+
+endif
+
 $(TESTS): ttmp/.dirstamp fontanvil/fontanvil
 
 ############################################################################
@@ -278,7 +287,9 @@ EXTRA_DIST:= \
   test/helper107.pe test/helper118A.pe test/helper118B.pe \
   test/fonts/AHBugs.sfd test/fonts/AddExtremumTest.sfd \
   test/fonts/Ambrosia.sfd test/fonts/AmbrosiaBold.sfd \
-  test/fonts/AmbrosiaItalic.sfd test/fonts/Caliban.sfd \
+  test/fonts/AmbrosiaItalic.sfd \
+  test/fonts/BrushScriptX-Italic.pfa test/fonts/BrushScriptX-Italic.tfm \
+  test/fonts/Caliban.sfd \
   test/fonts/CaslonMM.sfd test/fonts/DataURI.sfd \
   test/fonts/DejaVuSerif.sfd test/fonts/FormalScript.sfd \
   test/fonts/Hinting.sfd test/fonts/ItalicHand.sfd \
@@ -287,6 +298,8 @@ EXTRA_DIST:= \
   test/fonts/QuadraticConversionBug.sfd test/fonts/SimplifyBugs.sfd \
   test/fonts/SplineOverlapBug1.sfd test/fonts/VKern.sfd \
   test/fonts/dvng10a-crash.sfd test/fonts/feta20.pfb
+
+
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
@@ -348,7 +361,6 @@ fontanvil/unicodelib.h: fontanvil/unicodelib.im
 fontanvil/unicodelib.c: fontanvil/unicodelib.h
 
 if COND_KPSEWHICH
-
 dat/8r.enc: @eightrenc@
 	$(AM_V_GEN)
 	$(AM_V_at)cp $< $@

@@ -2,13 +2,16 @@
 #Needs: fonts/Ambrosia.pt3
 # check that we can read and generate type3 fonts
 
-Quit(77) # needs a missing file
-
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
 else
   srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/Ambrosia.pt3"))
+  Print("SKIPPING because we don't have Ambrosia.pt3")
+  Quit(77)
 endif
 
 Open(srcdir+"test/fonts/Ambrosia.pt3");

@@ -2,13 +2,16 @@
 #Needs: fonts/n019003l.pfb
 # Another test that contextual chaining tables do not cause crashes.
 
-Quit(77) # needs a missing file
-
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
 else
   srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/n019003l.pfb"))
+  Print("SKIPPING because we don't have n019003l.pfb")
+  Quit(77)
 endif
 
 Open(srcdir+"test/fonts/n019003l.pfb");

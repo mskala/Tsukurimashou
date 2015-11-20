@@ -1,13 +1,15 @@
 #!/usr/local/bin/fontanvil
-#Needs: fonts/MinionPro-Regular.otf
-
-Quit(77) # needs a missing file
 
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
 else
   srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/MinionPro-Regular.otf"))
+  Print("SKIPPING because we don't have MinionPro-Regular.otf")
+  Quit(77)
 endif
 
 # Check that our new subroutine usage in cff fonts produces an equivalent font.
