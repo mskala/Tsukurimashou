@@ -1,6 +1,6 @@
 # Icemap definitions used in hinting
 
-# $Id: hinttab.im 4393 2015-11-14 15:53:29Z mskala $
+# $Id: hinttab.im 4424 2015-11-21 16:47:07Z mskala $
 
 cwrite <<EOF;
 /* GENERATED FILE - EDIT THE SOURCE IN hinttab.im INSTEAD! */
@@ -312,4 +312,7 @@ EOF
 
   remap keys { 0->32; }
   32->0;
+
+  priority first;
+  32..0x4E9->0;
 }

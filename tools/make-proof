@@ -2,7 +2,7 @@
 
 #
 # Font proof generator for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -110,10 +110,7 @@ $prefix=~s!/tools/make-proof$!!;
   807=>'Other shared kanji',
   1000=>'U+0000 to U+2FFF',
   1048=>'U+3000 to U+4DFF',
-  1078=>'U+4E00 to U+61FF',
-  1098=>'U+6200 to U+75FF',
-  1118=>'U+7600 to U+89FF',
-  1138=>'U+8A00 to U+9FFF',
+  # breaks automatically inserted between U+4E00 and U+9FFF
   1247=>'U+A000 to U+10FFFF',
   5900=>'Mandeubsida core',
   10082=>'Mandeubsida alternates',
@@ -138,6 +135,42 @@ while (<$prefix/mp/*.mp>) {
 }
 while (<./mp/*.mp>) {
   $srcfiles{$_}=1;
+}
+
+# scan to count kanji
+foreach (sort keys %srcfiles) {
+  next unless /tsuku-([0-9a-f][0-9a-f])\.mp/;
+  $page=hex("0x$1");
+  next unless ($page>=0x4E) && ($page<0xA0);
+  open(MP,$_);
+  while (<MP>) {
+    if (/begintsuglyph\("uni([0-9a-f][0-9a-f])[0-9a-f][0-9a-f]"/i) {
+      $kcount[hex("0x$1")]++;
+      $ktotal++;
+    }
+  }
+  close(MP);
+}
+
+# decide volume split
+$nkvols=int($ktotal/420+0.5);
+$pvtarget=$ktotal/$nkvols;
+@volmin=(0x4E);
+@volmax=(0x4E);
+$volcount=0;
+for ($i=0x4E;$i<=0x9F;$i++) {
+  if (abs(($volcount+$kcount[$i])-$pvtarget)<=abs($volcount-$pvtarget)) {
+    $volmax[$#volmax]=$i;
+  } else {
+    push @volmin,$i;
+    push @volmax,$i;
+    $volcount-=$pvtarget;
+  }
+  $volcount+=$kcount[$i];
+}
+for ($i=0;$i<$nkvols;$i++) {
+  $partbefore{1000+$volmin[$i]}=
+    sprintf('U+%04X to U+%04X',$volmin[$i],$volmax[$i]);
 }
 
 # assign priorities to the source files
@@ -577,7 +610,7 @@ foreach $file (@files) {
       $pnum=hex("0x$page");
     }
     if (/^begintsuglyph\("(.*)",(\d+)\)/) {
-      if ($moved_picture{"$glp.$1"} ne '') {
+      if ($moved_picture{"$glp.$1"} eq '') {
         printf "\n\\Picture{%s}{%s%02X}","$glp.$1",$page,$2;
         printf "{%s}{%d}{%d}{%s,%s}{%s,%s}{%s}%%\n  {%s}\n\n",
           &setgl(($pnum<<8)+$2,$1),$leftside{"$glp.$1"},$rightside{"$glp.$1"},

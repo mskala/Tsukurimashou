@@ -1,4 +1,4 @@
-/* $Id: autohint.c 4393 2015-11-14 15:53:29Z mskala $ */
+/* $Id: autohint.c 4424 2015-11-21 16:47:07Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -136,10 +136,11 @@ void FindBlues(SplineFont *sf,int layer,real blues[14],real otherblues[10]) {
    }
    /* note "other digits" are not further used */
    
-   /* compute sample mean and std. dev., for samples of 2 or items */
+   /* compute sample mean and std. dev., for samples of 2 or more items */
    for (j=0;j<6;j++)
      if (zone[j][2]>1) {
-	zone[j][1]=sqrt((zone[j][1]-zone[j][0]*zone[j][0])/(zone[j][2]-1));
+	zone[j][1]=sqrt((zone[j][1]-zone[j][0]*zone[j][0]/zone[j][2])
+			/(zone[j][2]-1));
 	zone[j][0]/=zone[j][2];
      }
    /* initial acceptance range is +-1 sigma from mean */
@@ -222,10 +223,12 @@ void FindBlues(SplineFont *sf,int layer,real blues[14],real otherblues[10]) {
    for (j=0;j<i;j+=2)
      for (k=j+2;k<i;k+=2) {
 	if (blues[j]>blues[k]) {
-	   real temp=blues[j];
+	   real temp;
 	   
+	   temp=blues[j];
 	   blues[j]=blues[k];
 	   blues[k]=temp;
+
 	   temp=blues[j+1];
 	   blues[j+1]=blues[k+1];
 	   blues[k+1]=temp;
