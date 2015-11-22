@@ -1,4 +1,4 @@
-/* $Id: tottfaat.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: tottfaat.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1071,34 +1071,38 @@ static struct feature *aat_dumpmorx_ligatures(struct alltabs *at,
 
 static void morx_dumpnestedsubs(AFILE *temp,SplineFont *sf,OTLookup *otl,
 				struct glyphinfo *gi) {
-   int i, j, gcnt;
+   int i,gcnt;
    PST *pst;
    SplineChar **glyphs, *sc;
    uint16_t *map;
    struct lookup_subtable *sub=otl->subtables;	/* Mac can't have more than one subtable/lookup */
 
-   for (j=0; j < 2; ++j) {
-      gcnt=0;
-      for (i=0; i < gi->gcnt; ++i)
-	 if (gi->bygid[i] != -1) {
-	    for (pst=sf->glyphs[gi->bygid[i]]->possub;
-		 pst != NULL && pst->subtable != sub; pst=pst->next);
-	    if (pst != NULL && pst->type==pst_substitution &&
-		(sc=SFGetChar(sf, -1, pst->u.subs.variant)) != NULL &&
-		sc->ttf_glyph != -1) {
-	       if (j) {
-		  glyphs[gcnt]=sf->glyphs[gi->bygid[i]];
-		  map[gcnt]=sc->ttf_glyph;
-	       }
-	       ++gcnt;
-	    }
-	 }
-      if (!j) {
-	 glyphs=malloc((gcnt + 1) * sizeof(SplineChar *));
-	 map=malloc(gcnt * sizeof(uint16_t));
-	 glyphs[gcnt]=NULL;
-      }
-   }
+   gcnt=0;
+   for (i=0; i < gi->gcnt; ++i)
+     if (gi->bygid[i] != -1) {
+	for (pst=sf->glyphs[gi->bygid[i]]->possub;
+	     pst != NULL && pst->subtable != sub; pst=pst->next);
+	if (pst != NULL && pst->type==pst_substitution &&
+	    (sc=SFGetChar(sf, -1, pst->u.subs.variant)) != NULL &&
+	    sc->ttf_glyph != -1)
+	  ++gcnt;
+     }
+   glyphs=malloc((gcnt + 1) * sizeof(SplineChar *));
+   map=malloc(gcnt * sizeof(uint16_t));
+   glyphs[gcnt]=NULL;
+   gcnt=0;
+   for (i=0; i < gi->gcnt; ++i)
+     if (gi->bygid[i] != -1) {
+	for (pst=sf->glyphs[gi->bygid[i]]->possub;
+	     pst != NULL && pst->subtable != sub; pst=pst->next);
+	if (pst != NULL && pst->type==pst_substitution &&
+	    (sc=SFGetChar(sf, -1, pst->u.subs.variant)) != NULL &&
+	    sc->ttf_glyph != -1) {
+	   glyphs[gcnt]=sf->glyphs[gi->bygid[i]];
+	   map[gcnt]=sc->ttf_glyph;
+	   ++gcnt;
+	}
+     }
    morx_lookupmap(temp, glyphs, map, gcnt);
    free(glyphs);
    free(map);
@@ -1510,7 +1514,7 @@ static uint32_t *FormedScripts(SplineFont *sf) {
    struct scriptlanglist *sl;
    int i;
 
-   for (otl=sf->gsub_lookups; otl != NULL; otl=otl->next) {
+   for (otl=sf->gsplookups[0]; otl != NULL; otl=otl->next) {
       if (otl->lookup_type==gsub_single) {
 	 for (fl=otl->features; fl != NULL; fl=fl->next) {
 	    if (fl->featuretag==CHR('i', 'n', 'i', 't') ||
@@ -1601,7 +1605,7 @@ static struct feature *aat_dumpmorx_cvtopentypeforms(struct alltabs *at,
    else if (sf->mm != NULL)
       sf=sf->mm->normal;
 
-   for (otl=sf->gsub_lookups; otl != NULL; otl=otl->next)
+   for (otl=sf->gsplookups[0];otl!=NULL;otl=otl->next)
       if (Macable(sf, otl) && otl->lookup_type==gsub_single
 	  && IsOtfArabicFormFeature(otl))
 	 otl->ticked=true;
@@ -2091,13 +2095,13 @@ void aat_dumpmorx(struct alltabs *at, SplineFont *sf) {
    /*  we handle all of them. After that we ignore all of them. Note: if */
    /*  OpenType has them happening in different orders, that information */
    /*  will be lost. All will be processed at once. */
-   for (otl=sf->gsub_lookups; otl != NULL; otl=otl->next)
+   for (otl=sf->gsplookups[0];otl!=NULL;otl=otl->next)
       otl->ticked=false;
 
    SFLigaturePrepare(sf);
 
    /* Retain the same lookup ordering */
-   for (otl=sf->gsub_lookups; otl != NULL; otl=otl->next) {
+   for (otl=sf->gsplookups[0];otl!=NULL;otl=otl->next) {
       if (!Macable(sf, otl))
 	 continue;
       if (otl->lookup_type==gsub_single && IsOtfArabicFormFeature(otl)) {

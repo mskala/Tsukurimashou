@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: stemdb.c 4426 2015-11-21 21:20:17Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams and Alexey Kryukov
  * Copyright (C) 2015  Matthew Skala
  *
@@ -954,26 +954,33 @@ static void MakeVirtualLine(struct glyphdata *gd,BasePoint *perturbed,
    int i, cnt;
 
    if (gd->stspace==NULL) {
-      for (i=0; i < 2; ++i) {
 	 cnt=0;
-	 for (spl=gd->sc->layers[gd->layer].splines; spl != NULL;
-	      spl=spl->next) {
-	    first=NULL;
-	    if (spl->first->prev != NULL) {
-	       for (s=spl->first->next; s != first; s=s->to->next) {
-		  if (first==NULL)
-		     first=s;
-		  if (i)
-		     gd->sspace[cnt]=s;
-		  ++cnt;
-	       }
+      for (spl=gd->sc->layers[gd->layer].splines; spl != NULL;
+	   spl=spl->next) {
+	 first=NULL;
+	 if (spl->first->prev != NULL) {
+	    for (s=spl->first->next; s != first; s=s->to->next) {
+	       if (first==NULL)
+		 first=s;
+	       ++cnt;
 	    }
 	 }
-	 if (!i) {
-	    gd->scnt=cnt;
-	    gd->sspace=malloc((cnt + 1) * sizeof(Spline *));
-	 } else
-	    gd->sspace[cnt]=NULL;
+      }
+      gd->scnt=cnt;
+      gd->sspace=malloc((cnt + 1) * sizeof(Spline *));
+      cnt=0;
+      for (spl=gd->sc->layers[gd->layer].splines; spl != NULL;
+	   spl=spl->next) {
+	 first=NULL;
+	 if (spl->first->prev != NULL) {
+	    for (s=spl->first->next; s != first; s=s->to->next) {
+	       if (first==NULL)
+		 first=s;
+	       gd->sspace[cnt]=s;
+	       ++cnt;
+	    }
+	 }
+	 gd->sspace[cnt]=NULL;
       }
       gd->stspace=malloc((3 * cnt + 2) * sizeof(struct st));
       SplineCharFindBounds(gd->sc, &gd->size);

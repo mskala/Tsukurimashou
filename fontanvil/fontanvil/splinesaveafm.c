@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4385 2015-11-12 18:54:42Z mskala $ */
+/* $Id: splinesaveafm.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2074,13 +2074,13 @@ void SFKernCleanup(SplineFont *sf, int isv) {
 	       p=kp;
 	 }
       }
-   for (otl=sf->gpos_lookups, otlp=NULL; otl != NULL; otl=otln) {
+   for (otl=sf->gsplookups[1],otlp=NULL;otl!=NULL;otl=otln) {
       otln=otl->next;
       if (otl->temporary_kern) {
 	 if (otlp != NULL)
 	    otlp->next=otln;
 	 else
-	    sf->gpos_lookups=otln;
+	    sf->gsplookups[1]=otln;
 	 OTLookupFree(otl);
       } else
 	 otlp=otl;
@@ -2169,8 +2169,8 @@ void SFKernClassTempDecompose(SplineFont *sf, int isv) {
    for (kc=head; kc != NULL; kc=kc->next) {
 
       otl=chunkalloc(sizeof(OTLookup));
-      otl->next=sf->gpos_lookups;
-      sf->gpos_lookups=otl;
+      otl->next=sf->gsplookups[1];
+      sf->gsplookups[1]=otl;
       otl->lookup_type=gpos_pair;
       otl->lookup_flags=kc->subtable->lookup->lookup_flags;
       otl->features=FeatureListCopy(kc->subtable->lookup->features);

@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: tottfgpos.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -279,15 +279,13 @@ uint32_t SCScriptFromUnicode(SplineChar * sc) {
       sf=sf->cidmaster;
    else if (sf->mm != NULL)
       sf=sf->mm->normal;
-   for (i=0; i < 2; ++i) {
-      for (pst=sc->possub; pst != NULL; pst=pst->next) {
-	 if (pst->type==pst_lcaret)
-	    continue;
-	 for (features=pst->subtable->lookup->features; features != NULL;
-	      features=features->next) {
-	    if (features->scripts != NULL)
-	       return (features->scripts->script);
-	 }
+   for (pst=sc->possub; pst != NULL; pst=pst->next) {
+      if (pst->type==pst_lcaret)
+	continue;
+      for (features=pst->subtable->lookup->features; features != NULL;
+	   features=features->next) {
+	 if (features->scripts != NULL)
+	   return (features->scripts->script);
       }
    }
    return (ScriptFromUnicode(sc->unicodeenc, sf));
@@ -2807,7 +2805,7 @@ static AFILE *G___figureLookups(SplineFont *sf,int is_gpos,
    AFILE *final;
    AFILE *lfile=atmpfile();
    OTLookup **sizeordered;
-   OTLookup *all=is_gpos ? sf->gpos_lookups : sf->gsub_lookups;
+   OTLookup *all=sf->gsplookups[is_gpos];
    char *buffer;
    int len;
 
@@ -2837,7 +2835,7 @@ static AFILE *G___figureLookups(SplineFont *sf,int is_gpos,
    /*  subtables -- since the extension subtable would be required for all */
    /*  subtables in the lookup, so might as well keep them all together */
    sizeordered=malloc(index * sizeof(OTLookup *));
-   for (otl=is_gpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
+   for (otl=sf->gsplookups[is_gpos]; otl != NULL;
 	otl=otl->next)
       if (otl->lookup_index != -1)
 	 sizeordered[otl->lookup_index]=otl;
@@ -3367,7 +3365,7 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
    free(ginfo.feat_lookups);
 
 /* Now the lookups */
-   all=is_gpos ? sf->gpos_lookups : sf->gsub_lookups;
+   all=sf->gsplookups[is_gpos];
    for (cnt=0, otf=all; otf != NULL; otf=otf->next) {
       if (otf->lookup_index != -1)
 	 ++cnt;

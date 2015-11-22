@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: ttfspecial.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -203,8 +203,8 @@ static void PfEd_CvtComments(SplineFont *sf,struct PfEd_subtabs *pfed) {
 
 static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
 			 struct glyphinfo *gi) {
-   int i, j, k, any, cnt, last;
-   SplineChar *sc, *sc2;
+   int i,k,any,cnt,last;
+   SplineChar *sc,*sc2;
    AFILE *colr;
 
    any=0;
@@ -223,35 +223,48 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
    pfed->subtabs[pfed->next++].data=colr=atmpfile();
 
    putshort(colr, 0);		/* sub-table version number */
-   for (j=0; j < 2; ++j) {
-      cnt=0;
-      for (i=0; i < gi->gcnt; ++i)
-	 if (gi->bygid[i] != -1) {
-	    sc=sf->glyphs[gi->bygid[i]];
-	    if (sc != NULL && sc->color != COLOR_DEFAULT) {
-	       last=i;
-	       for (k=i + 1; k < gi->gcnt; ++k) {
-		  if (gi->bygid[k]==-1)
-		     break;
-		  sc2=sf->glyphs[gi->bygid[k]];
-		  if (sc2->color != sc->color)
-		     break;
-		  last=k;
-	       }
-	       ++cnt;
-	       if (j==1) {
-		  putshort(colr, i);
-		  putshort(colr, last);
-		  putlong(colr, sc->color);
-	       }
-	       i=last;
-	    }
-	 }
-      if (j==0)
-	 putshort(colr, cnt);
-   }
+   cnt=0;
+   for (i=0; i < gi->gcnt; ++i)
+     if (gi->bygid[i] != -1) {
+	sc=sf->glyphs[gi->bygid[i]];
+	if (sc != NULL && sc->color != COLOR_DEFAULT) {
+	   last=i;
+	   for (k=i + 1; k < gi->gcnt; ++k) {
+	      if (gi->bygid[k]==-1)
+		break;
+	      sc2=sf->glyphs[gi->bygid[k]];
+	      if (sc2->color != sc->color)
+		break;
+	      last=k;
+	   }
+	   ++cnt;
+	   i=last;
+	}
+     }
+   putshort(colr, cnt);
+   cnt=0;
+   for (i=0; i < gi->gcnt; ++i)
+     if (gi->bygid[i] != -1) {
+	sc=sf->glyphs[gi->bygid[i]];
+	if (sc != NULL && sc->color != COLOR_DEFAULT) {
+	   last=i;
+	   for (k=i + 1; k < gi->gcnt; ++k) {
+	      if (gi->bygid[k]==-1)
+		break;
+	      sc2=sf->glyphs[gi->bygid[k]];
+	      if (sc2->color != sc->color)
+		break;
+	      last=k;
+	   }
+	   ++cnt;
+	   putshort(colr, i);
+	   putshort(colr, last);
+	   putlong(colr, sc->color);
+	   i=last;
+	}
+     }
    if (aftell(colr) & 2)
-      putshort(colr, 0);
+     putshort(colr, 0);
 }
 
 static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
@@ -891,8 +904,8 @@ void pfed_dump(struct alltabs *at, SplineFont *sf) {
    if (at->gi.flags & ttf_flag_pfed_colors)
       PfEd_Colours(sf, &pfed, &at->gi);
    if ((at->gi.flags & ttf_flag_pfed_lookupnames) && at->opentypemode) {
-      PfEd_Lookups(sf, &pfed, sf->gsub_lookups, GSUB_TAG);
-      PfEd_Lookups(sf, &pfed, sf->gpos_lookups, GPOS_TAG);
+      PfEd_Lookups(sf, &pfed, sf->gsplookups[0], GSUB_TAG);
+      PfEd_Lookups(sf, &pfed, sf->gsplookups[1], GPOS_TAG);
    }
    if (at->gi.flags & ttf_flag_pfed_guides)
       PfEd_Guides(sf, &pfed);
@@ -1698,12 +1711,12 @@ void pfed_read(AFILE *ttf, struct ttfinfo *info) {
 	case GPOS_TAG:
 	   pfed_readlookupnames(ttf, info,
 				info->pfed_start + tagoff[i].offset,
-				info->gpos_lookups);
+				info->gsplookups[1]);
 	   break;
 	case GSUB_TAG:
 	   pfed_readlookupnames(ttf, info,
 				info->pfed_start + tagoff[i].offset,
-				info->gsub_lookups);
+				info->gsplookups[0]);
 	   break;
 	case layr_TAG:
 	   pfed_readotherlayers(ttf, info,

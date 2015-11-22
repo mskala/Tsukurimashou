@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4416 2015-11-18 19:47:50Z mskala $ */
+/* $Id: scripting.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1411,12 +1411,9 @@ static void bAddLookup(Context *c) {
    if (after != NULL) {
       otl->next=after->next;
       after->next=otl;
-   } else if (type >= gpos_start) {
-      otl->next=sf->gpos_lookups;
-      sf->gpos_lookups=otl;
    } else {
-      otl->next=sf->gsub_lookups;
-      sf->gsub_lookups=otl;
+      otl->next=sf->gsplookups[(type>=gpos_start)?1:0];
+      sf->gsplookups[(type>=gpos_start)?1:0]=otl;
    }
    otl->lookup_type=type;
    otl->lookup_flags=c->a.vals[3].u.ival;
@@ -1454,8 +1451,7 @@ static void bAddLookupSubtable(Context *c) {
       sf=sf->cidmaster;
 
    for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (test=isgpos ? sf->gpos_lookups : sf->gsub_lookups; test != NULL;
-	   test=test->next) {
+      for (test=sf->gsplookups[isgpos];test!=NULL;test=test->next) {
 	 for (sub=test->subtables; sub != NULL; sub=sub->next)
 	    if (strcmp(sub->subtable_name, c->a.vals[2].u.sval)==0)
 	       ScriptErrorString(c,
@@ -3898,16 +3894,16 @@ static void bGetLookups(Context *c) {
    if (sf->cidmaster)
       sf=sf->cidmaster;
 
-if (c->a.vals[1].type != v_str)
-      ScriptError(c, "Bad type for argument");
-
+   if (c->a.vals[1].type != v_str)
+     ScriptError(c, "Bad type for argument");
+   
    if (strmatch(c->a.vals[1].u.sval, "GPOS")==0)
-      base=sf->gpos_lookups;
+     base=sf->gsplookups[1];
    else if (strmatch(c->a.vals[1].u.sval, "GSUB")==0)
-      base=sf->gsub_lookups;
+     base=sf->gsplookups[0];
    else
-      ScriptError(c,
-		  "Argument to \"GetLookups\" must be either \"GPOS\" or \"GSUB\"");
+     ScriptError(c,"Argument to \"GetLookups\" must be either "
+		 "\"GPOS\" or \"GSUB\"");
 
    for (otl=base, cnt=0; otl != NULL; otl=otl->next, ++cnt);
    c->return_val.type=v_arrfree;

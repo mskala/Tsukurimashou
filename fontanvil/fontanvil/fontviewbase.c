@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4394 2015-11-14 21:44:10Z mskala $ */
+/* $Id: fontviewbase.c 4425 2015-11-21 21:05:38Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1107,20 +1107,22 @@ static int tester(SplineChar *sc,struct lookup_subtable *sub) {
    AnchorPoint *ap;
 
    if (sc==NULL)
-      return (false);
+      return false;
 
-   for (ap=sc->anchor; ap != NULL; ap=ap->next)
+   for (ap=sc->anchor;ap!=NULL;ap=ap->next)
       if (ap->anchor->subtable==sub)
-	 return (true);
-   for (pst=sc->possub; pst != NULL; pst=pst->next)
+	 return true;
+   for (pst=sc->possub;pst!=NULL;pst=pst->next)
       if (pst->subtable==sub)
-	 return (true);
-   for (isv=0; isv < 2; ++isv)
-      for (kp=isv ? sc->vkerns : sc->kerns; kp != NULL; kp=kp->next)
-	 if (kp->subtable==sub)
-	    return (true);
+	 return true;
+   for (kp=sc->kerns;kp!=NULL;kp=kp->next)
+     if (kp->subtable==sub)
+       return true;
+   for (kp=sc->vkerns;kp!=NULL;kp=kp->next)
+     if (kp->subtable==sub)
+       return true;
 
-   return (false);
+   return false;
 }
 
 int FVBParseSelectByPST(FontViewBase * fv, struct lookup_subtable *sub,

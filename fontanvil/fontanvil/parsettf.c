@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4379 2015-11-11 17:10:01Z mskala $ */
+/* $Id: parsettf.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -5775,10 +5775,10 @@ static int readttf(AFILE *ttf,struct ttfinfo *info,char *filename) {
    /* Load the 'kern' table if the GPOS table either didn't exist or didn't */
    /*  contain any kerning info */
    if (info->kern_start != 0
-       && !LookupListHasFeature(info->gpos_lookups, CHR('k', 'e', 'r', 'n')))
+       && !LookupListHasFeature(info->gsplookups[1], CHR('k', 'e', 'r', 'n')))
       readttfkerns(ttf, info);
    if (info->opbd_start != 0
-       && !LookupListHasFeature(info->gpos_lookups, CHR('l', 'f', 'b', 'd')))
+       && !LookupListHasFeature(info->gsplookups[1], CHR('l', 'f', 'b', 'd')))
       readttfopbd(ttf, info);
    if (info->gsub_start != 0)
       readttfgpossub(ttf, info, false);
@@ -6315,8 +6315,8 @@ static SplineFont *SFFillFromTTF(struct ttfinfo *info) {
    sf->possub=info->possub;
    sf->sm=info->sm;
    sf->features=info->features;
-   sf->gpos_lookups=info->gpos_lookups;
-   sf->gsub_lookups=info->gsub_lookups;
+   sf->gsplookups[0]=info->gsplookups[0];
+   sf->gsplookups[1]=info->gsplookups[1];
 
    last[0]=sf->ttf_tables;
    last[1]=NULL;
@@ -6406,8 +6406,7 @@ static SplineFont *SFFillFromTTF(struct ttfinfo *info) {
       OTLookup *otl;
 
       for (isgpos=0; isgpos < 2; ++isgpos)
-	 for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	      otl=otl->next)
+	 for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next)
 	    otl->features=FLOrder(otl->features);
    }
 

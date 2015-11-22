@@ -1,4 +1,4 @@
-/* $Id: sfd1.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: sfd1.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -268,13 +268,8 @@ static OTLookup *CreateLookup(SplineFont1 *sf,uint32_t tag,int sli,
       type==pst_chainsub ? gsub_contextchain : ot_undef;
    if (otl->lookup_type==ot_undef)
       ErrorMsg(2,"Unknown lookup type\n");
-   if (otl->lookup_type < gpos_single) {
-      otl->next=sf->sf.gsub_lookups;
-      sf->sf.gsub_lookups=otl;
-   } else {
-      otl->next=sf->sf.gpos_lookups;
-      sf->sf.gpos_lookups=otl;
-   }
+   otl->next=sf->sf.gsplookups[(otl->lookup_type<gpos_single)?0:1];
+   sf->sf.gsplookups[(otl->lookup_type<gpos_single)?0:1]=otl;
    otl->lookup_flags=flags;
    otl->features=FeaturesFromTagSli(tag, sli, sf);
    /* We will set the lookup_index after we've ordered the list */
@@ -293,8 +288,8 @@ static OTLookup *CreateACLookup(SplineFont1 *sf,AnchorClass1 *ac) {
       ac->ac.type==act_mklg ? gpos_mark2ligature : ot_undef;
    if (otl->lookup_type==ot_undef)
       ErrorMsg(2,"Unknown AnchorClass type\n");
-   otl->next=sf->sf.gpos_lookups;
-   sf->sf.gpos_lookups=otl;
+   otl->next=sf->sf.gsplookups[1];
+   sf->sf.gsplookups[1]=otl;
    otl->lookup_flags=ac->flags;
    otl->features =
       FeaturesFromTagSli(ac->feature_tag, ac->script_lang_index, sf);
@@ -313,8 +308,8 @@ static OTLookup *CreateMacLookup(SplineFont1 *sf,ASM1 *sm) {
    otl->features=chunkalloc(sizeof(FeatureScriptLangList));
    if (sm->sm.type==asm_kern) {
       otl->lookup_type=kern_statemachine;
-      otl->next=sf->sf.gpos_lookups;
-      sf->sf.gpos_lookups=otl;
+      otl->next=sf->sf.gsplookups[1];
+      sf->sf.gsplookups[1]=otl;
       otl->features->featuretag =
 	 (sm->sm.flags & 0x8000) ? CHR('v', 'k', 'r', 'n') : CHR('k', 'e',
 								 'r', 'n');
@@ -322,8 +317,8 @@ static OTLookup *CreateMacLookup(SplineFont1 *sf,ASM1 *sm) {
       otl->lookup_type =
 	 sm->sm.type==asm_indic ? morx_indic : sm->sm.type ==
 	 asm_context ? morx_context : morx_insert;
-      otl->next=sf->sf.gsub_lookups;
-      sf->sf.gsub_lookups=otl;
+      otl->next=sf->sf.gsplookups[0];
+      sf->sf.gsplookups[0]=otl;
       otl->features->featuretag=(sm->feature << 16) | (sm->setting);
       otl->features->ismac=true;
    }
@@ -388,8 +383,7 @@ static OTLookup *FindNestedLookupByTag(SplineFont1 *sf,uint32_t tag) {
    OTLookup *otl;
 
    for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (otl=isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups;
-	   otl != NULL; otl=otl->next) {
+      for (otl=sf->sf.gsplookups[isgpos];otl!=NULL;otl=otl->next) {
 	 if (otl->features != NULL && otl->features->scripts==NULL
 	     && otl->features->featuretag==tag)
 	    return (otl);
@@ -869,9 +863,8 @@ void SFD_AssignLookups(SplineFont1 * sf) {
 
    /* We retained the old nested feature tags so we could do the above conversion */
    /*  of tag to lookup. Get rid of them now */
-   for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (otl=isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups;
-	   otl != NULL; otl=otl->next) {
+   for (isgpos=0;isgpos<2;isgpos++) {
+      for (otl=sf->sf.gsplookups[isgpos];otl!=NULL;otl=otl->next) {
 	 if (otl->features != NULL && otl->features->scripts==NULL) {
 	    chunkfree(otl->features, sizeof(FeatureScriptLangList));
 	    otl->features=NULL;
@@ -909,28 +902,27 @@ void SFD_AssignLookups(SplineFont1 * sf) {
 
    /* Now I want to order the gsub lookups. I shan't bother with the gpos */
    /*  lookups because I didn't before */
-   for (otl=sf->sf.gsub_lookups, cnt=0; otl != NULL;
+   for (otl=sf->sf.gsplookups[0], cnt=0; otl != NULL;
 	otl=otl->next, ++cnt);
    if (cnt != 0) {
       all=malloc(cnt * sizeof(OTLookup *));
-      for (otl=sf->sf.gsub_lookups, cnt=0; otl != NULL;
+      for (otl=sf->sf.gsplookups[0], cnt=0; otl != NULL;
 	   otl=otl->next, ++cnt) {
 	 all[cnt]=otl;
 	 otl->lookup_index=GSubOrder(sf, otl->features);
       }
       qsort(all, cnt, sizeof(OTLookup *), order_lookups);
-      sf->sf.gsub_lookups=all[0];
+      sf->sf.gsplookups[0]=all[0];
       for (i=1; i < cnt; ++i)
 	 all[i - 1]->next=all[i];
       all[cnt - 1]->next=NULL;
       free(all);
    }
 
-   for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (otl=isgpos ? sf->sf.gpos_lookups : sf->sf.gsub_lookups, cnt=0;
-	   otl != NULL; otl=otl->next) {
+   for (isgpos=0;isgpos<2;isgpos++) {
+      for (otl=sf->sf.gsplookups[isgpos],cnt=0;otl!=NULL;otl=otl->next) {
 	 otl->lookup_index=cnt++;
-	 NameOTLookup(otl, &sf->sf);
+	 NameOTLookup(otl,&sf->sf);
       }
    }
 }

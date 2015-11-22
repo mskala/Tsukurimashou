@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 4304 2015-10-24 19:05:22Z mskala $ */
+/* $Id: glyphcomp.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2006-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2119,9 +2119,8 @@ static void MatchLookups(struct font_diff *fd) {
    fd->sf1_mst=sf1;
    fd->sf2_mst=sf2;
 
-   for (scnt=lcnt=0, otl =
-	fd->is_gpos ? sf1->gpos_lookups : sf1->gsub_lookups; otl != NULL;
-	otl=otl->next, ++lcnt) {
+   for (scnt=lcnt=0,otl=sf1->gsplookups[fd->is_gpos];otl!=NULL;
+	otl=otl->next,lcnt++) {
       otl->lookup_index=lcnt;
       otl->ticked=false;
       for (sub=otl->subtables; sub != NULL; sub=sub->next, ++scnt)
@@ -2132,12 +2131,11 @@ static void MatchLookups(struct font_diff *fd) {
    fd->scnt1=scnt;
    fd->s2match1=calloc(scnt, sizeof(OTLookup *));
 
-   for (scnt=lcnt=0, otl =
-	fd->is_gpos ? sf2->gpos_lookups : sf2->gsub_lookups; otl != NULL;
-	otl=otl->next, ++lcnt) {
+   for (scnt=lcnt=0,otl=sf2->gsplookups[fd->is_gpos];otl!=NULL;
+	otl=otl->next,lcnt++) {
       otl->lookup_index=lcnt;
       otl->ticked=false;
-      for (sub=otl->subtables; sub != NULL; sub=sub->next, ++scnt)
+      for (sub=otl->subtables;sub!=NULL;sub=sub->next,scnt++)
 	 sub->subtable_offset=scnt;
    }
    fd->lcnt2=lcnt;
@@ -2145,9 +2143,8 @@ static void MatchLookups(struct font_diff *fd) {
    fd->scnt1=scnt;
    fd->s1match2=calloc(scnt, sizeof(OTLookup *));
 
-   for (otl=fd->is_gpos ? sf1->gpos_lookups : sf1->gsub_lookups;
-	otl != NULL; otl=otl->next) {
-      for (otl2=fd->is_gpos ? sf2->gpos_lookups : sf2->gsub_lookups;
+   for (otl=sf1->gsplookups[fd->is_gpos];otl!=NULL;otl=otl->next) {
+      for (otl2=sf2->gsplookups[fd->is_gpos];
 	   otl2 != NULL; otl2=otl2->next) {
 	 if (otl->lookup_type != otl2->lookup_type || otl2->ticked)
 	    continue;
@@ -2172,11 +2169,11 @@ static void MatchLookups(struct font_diff *fd) {
 
    for (exactness=3; exactness >= 0; --exactness) {
       for (lcnt=0, otl =
-	   fd->is_gpos ? sf1->gpos_lookups : sf1->gsub_lookups; otl != NULL;
-	   otl=otl->next, ++lcnt) {
+	   fd->sf1->gsplookups[fd->is_gpos];otl!=NULL;
+	   otl=otl->next,lcnt++) {
 	 if (otl->ticked)
 	    continue;
-	 for (otl2=fd->is_gpos ? sf2->gpos_lookups : sf2->gsub_lookups;
+	 for (otl2=sf2->gsplookups[fd->is_gpos];
 	      otl2 != NULL; otl2=otl2->next) {
 	    if (otl2->ticked)
 	       continue;
@@ -2194,8 +2191,8 @@ static void MatchLookups(struct font_diff *fd) {
       }
    }
 
-   for (lcnt=0, otl=fd->is_gpos ? sf1->gpos_lookups : sf1->gsub_lookups;
-	otl != NULL; otl=otl->next, ++lcnt) {
+   for (lcnt=0,sf1->gsplookups[fd->is_gpos];
+	otl != NULL; otl=otl->next,lcnt++) {
       if ((otl2=fd->l2match1[lcnt])==NULL)
 	 break;
       for (scnt=0, sub=otl->subtables; sub != NULL;
@@ -2468,9 +2465,8 @@ static void compareg___(struct font_diff *fd) {
    MatchLookups(fd);
 
    fd->middle_diff=false;
-   for (otl =
-	fd->is_gpos ? fd->sf1_mst->gpos_lookups : fd->sf1_mst->gsub_lookups;
-	otl != NULL; otl=otl->next) {
+   for (otl=fd->sf1_mst->gsplookups[fd->is_gpos];
+	otl!=NULL;otl=otl->next) {
       if (fd->l2match1[otl->lookup_index]==NULL) {
 	 if (!fd->top_diff)
 	    afprintf(fd->diffs, "%s",
@@ -2489,9 +2485,8 @@ static void compareg___(struct font_diff *fd) {
       }
    }
    fd->middle_diff=false;
-   for (otl =
-	fd->is_gpos ? fd->sf1_mst->gpos_lookups : fd->sf1_mst->gsub_lookups;
-	otl != NULL; otl=otl->next) {
+   for (otl=fd->sf1_mst->gsplookups[fd->is_gpos];
+	otl!=NULL;otl=otl->next) {
       if (fd->l2match1[otl->lookup_index] != NULL) {
 	 for (sub=otl->subtables; sub != NULL; sub=sub->next) {
 	    if (fd->s2match1[sub->subtable_offset]==NULL) {
@@ -2516,9 +2511,8 @@ static void compareg___(struct font_diff *fd) {
    }
 
    fd->middle_diff=false;
-   for (otl =
-	fd->is_gpos ? fd->sf2_mst->gpos_lookups : fd->sf2_mst->gsub_lookups;
-	otl != NULL; otl=otl->next) {
+   for (otl=fd->sf2_mst->gsplookups[fd->is_gpos];
+	otl!=NULL;otl=otl->next) {
       if (fd->l1match2[otl->lookup_index]==NULL) {
 	 if (!fd->top_diff)
 	    afprintf(fd->diffs, "%s",
@@ -2537,9 +2531,8 @@ static void compareg___(struct font_diff *fd) {
       }
    }
    fd->middle_diff=false;
-   for (otl =
-	fd->is_gpos ? fd->sf2_mst->gpos_lookups : fd->sf2_mst->gsub_lookups;
-	otl != NULL; otl=otl->next) {
+   for (otl=fd->sf2_mst->gsplookups[fd->is_gpos];
+	otl!=NULL;otl=otl->next) {
       if (fd->l1match2[otl->lookup_index] != NULL) {
 	 for (sub=otl->subtables; sub != NULL; sub=sub->next) {
 	    if (fd->s1match2[sub->subtable_offset]==NULL) {
@@ -2564,9 +2557,8 @@ static void compareg___(struct font_diff *fd) {
    }
 
    fd->middle_diff=false;
-   for (otl =
-	fd->is_gpos ? fd->sf1_mst->gpos_lookups : fd->sf1_mst->gsub_lookups;
-	otl != NULL; otl=otl->next) {
+   for (otl=fd->sf1_mst->gsplookups[fd->is_gpos];
+	otl!=NULL;otl=otl->next) {
       if (fd->l1match2[otl->lookup_index] != NULL) {
 	 for (sub=otl->subtables; sub != NULL; sub=sub->next) {
 	    if (fd->s2match1[sub->subtable_offset] != NULL) {

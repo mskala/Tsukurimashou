@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4378 2015-11-11 17:09:49Z mskala $ */
+/* $Id: sfd.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1805,8 +1805,7 @@ static int SFD_DumpSplineFontMetadata(AFILE *sfd,SplineFont *sf) {
    /* Must come before any kerning classes, anchor classes, conditional psts */
    /* state machines, psts, kerning pairs, etc. */
    for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	   otl=otl->next) {
+      for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next) {
 	 afprintf(sfd, "Lookup: %d %d %d ", otl->lookup_type,
 		 otl->lookup_flags, otl->store_in_afm);
 	 SFDDumpUTF7Str(sfd, otl->lookup_name);
@@ -5363,7 +5362,7 @@ static void SFDGetNameList(AFILE *sfd,char *tok,SplineFont *sf) {
 
 static OTLookup *SFD_ParseNestedLookup(AFILE *sfd,SplineFont *sf,int old) {
    uint32_t tag;
-   int ch;
+   int ch,isgpos;
    OTLookup *otl;
    char *name;
 
@@ -5385,13 +5384,8 @@ static OTLookup *SFD_ParseNestedLookup(AFILE *sfd,SplineFont *sf,int old) {
       if (name==NULL)
 	 return NULL;
 
-      for (otl=sf->gsub_lookups;
-	   otl!=NULL;otl=otl->next)
-	if (strcmp(name,otl->lookup_name)==0)
-	  break;
-      
-      if (otl==NULL)
-	for (otl=sf->gpos_lookups;otl!=NULL;otl=otl->next)
+      for (isgpos=0;isgpos<0;isgpos++)
+	for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next)
 	  if (strcmp(name,otl->lookup_name)==0)
 	    break;
       
@@ -6551,19 +6545,11 @@ static int SFD_GetFontMetaData(AFILE *sfd,
       getint(sfd, &temp);
       otl->store_in_afm=temp;
       otl->lookup_name=SFDReadUTF7Str(sfd);
-      if (otl->lookup_type < gpos_single) {
-	 if (d->lastsotl==NULL)
-	    sf->gsub_lookups=otl;
-	 else
-	    d->lastsotl->next=otl;
-	 d->lastsotl=otl;
-      } else {
-	 if (d->lastpotl==NULL)
-	    sf->gpos_lookups=otl;
-	 else
-	    d->lastpotl->next=otl;
-	 d->lastpotl=otl;
-      }
+      if (d->lastsotl==NULL)
+	sf->gsplookups[(otl->lookup_type<gpos_single)?0:1]=otl;
+      else
+	d->lastsotl->next=otl;
+      d->lastsotl=otl;
       SFDParseLookup(sfd, sf, otl);
    } else if (strmatch(tok, "MarkAttachClasses:")==0) {
       getint(sfd, &sf->mark_class_cnt);

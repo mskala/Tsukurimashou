@@ -1,4 +1,4 @@
-/* $Id: lookups.c 4340 2015-11-07 11:56:21Z mskala $ */
+/* $Id: lookups.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -432,7 +432,7 @@ a GPOS, but he says the GPOS won't work without a GSUB.)
    /* So here always give scripts for both (see comment above) no */
    /*  matter what they asked for */
    for (gpos=0; gpos < 2; ++gpos) {
-      for (test=gpos ? sf->gpos_lookups : sf->gsub_lookups; test != NULL;
+      for (test=sf->gsplookups[gpos]; test != NULL;
 	   test=test->next) {
 	 if (test->unused)
 	    continue;
@@ -479,7 +479,7 @@ uint32_t *SFLangsInScript(SplineFont *sf, int gpos, uint32_t script) {
    for (g=0; g < 2; ++g) {
       if ((gpos==0 && g==1) || (gpos==1 && g==0))
 	 continue;
-      for (test=g ? sf->gpos_lookups : sf->gsub_lookups; test != NULL;
+      for (test=sf->gsplookups[g]; test != NULL;
 	   test=test->next) {
 	 if (test->unused)
 	    continue;
@@ -547,7 +547,7 @@ uint32_t *SFFeaturesInScriptLang(SplineFont *sf, int gpos, uint32_t script,
    for (isg=0; isg < 2; ++isg) {
       if (gpos >= 0 && isg != gpos)
 	 continue;
-      for (test=isg ? sf->gpos_lookups : sf->gsub_lookups; test != NULL;
+      for (test=sf->gsplookups[isg]; test != NULL;
 	   test=test->next) {
 	 if (test->unused)
 	    continue;
@@ -639,7 +639,7 @@ OTLookup **SFLookupsInScriptLangFeature(SplineFont *sf, int gpos,
    FeatureScriptLangList *fl;
    struct scriptlanglist *sl;
 
-   for (test=gpos ? sf->gpos_lookups : sf->gsub_lookups; test != NULL;
+   for (test=sf->gsplookups[gpos]; test != NULL;
 	test=test->next) {
       if (test->unused)
 	 continue;
@@ -827,8 +827,8 @@ void SFFindUnusedLookups(SplineFont *sf) {
    /*  such, then obviously it is used. But more distributed info takes more */
    /*  work. So mark anything easy as used, and anything difficult as unused */
    /* We'll work on the difficult things later */
-   for (gpos=0; gpos < 2; ++gpos) {
-      for (test=gpos ? _sf->gpos_lookups : _sf->gsub_lookups; test != NULL;
+   for (gpos=0;gpos<2;gpos++) {
+      for (test=_sf->gsplookups[gpos]; test != NULL;
 	   test=test->next) {
 	 for (sub=test->subtables; sub != NULL; sub=sub->next) {
 	    if (sub->kc != NULL || sub->fpst != NULL || sub->sm != NULL) {
@@ -905,7 +905,7 @@ void SFFindUnusedLookups(SplineFont *sf) {
 
    /* Now for each lookup, a lookup is unused if ALL subtables are unused */
    for (gpos=0; gpos < 2; ++gpos) {
-      for (test=gpos ? _sf->gpos_lookups : _sf->gsub_lookups; test != NULL;
+      for (test=_sf->gsplookups[gpos]; test != NULL;
 	   test=test->next) {
 	 test->unused=test->empty=true;
 	 for (sub=test->subtables; sub != NULL; sub=sub->next) {
@@ -923,7 +923,7 @@ void SFFindUnusedLookups(SplineFont *sf) {
    /*  format. But now I need to tease them out and learn which lookups are */
    /*  used in GPOS and which in JSTF (and conceivably which get duplicated */
    /*  and placed in both) */
-   for (test=sf->gpos_lookups; test != NULL; test=test->next) {
+   for (test=sf->gsplookups[1]; test != NULL; test=test->next) {
       test->only_jstf=test->in_jstf=test->in_gpos=false;
       if (test->features != NULL)
 	 test->in_gpos=true;
@@ -954,13 +954,13 @@ void SFFindUnusedLookups(SplineFont *sf) {
 	 }
       }
    }
-   for (test=sf->gpos_lookups; test != NULL; test=test->next) {
+   for (test=sf->gsplookups[1]; test != NULL; test=test->next) {
       if (test->in_gpos
 	  && (test->lookup_type==gpos_context
 	      || test->lookup_type==gpos_contextchain))
 	 TickLookupKids(test);
    }
-   for (test=sf->gpos_lookups; test != NULL; test=test->next)
+   for (test=sf->gsplookups[1]; test != NULL; test=test->next)
       test->only_jstf=test->in_jstf && !test->in_gpos;
 }
 
@@ -968,8 +968,8 @@ void SFFindClearUnusedLookupBits(SplineFont *sf) {
    OTLookup *test;
    int gpos;
 
-   for (gpos=0; gpos < 2; ++gpos) {
-      for (test=gpos ? sf->gpos_lookups : sf->gsub_lookups; test != NULL;
+   for (gpos=0;gpos<2;gpos++) {
+      for (test=sf->gsplookups[gpos];test!=NULL;
 	   test=test->next) {
 	 test->unused=false;
 	 test->empty=false;
@@ -1026,7 +1026,7 @@ static void RemoveNestedReferences(SplineFont *sf,int isgpos,
    struct lookup_subtable *sub;
    int i, j, k;
 
-   for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
+   for (otl=sf->gsplookups[isgpos];otl!=NULL;
 	otl=otl->next) {
       if (otl->lookup_type==morx_context) {
 	 for (sub=otl->subtables; sub != NULL; sub=sub->next) {
@@ -1209,20 +1209,18 @@ void SFRemoveLookup(SplineFont *sf, OTLookup * otl, int remove_acs) {
       SFRemoveLookupSubTable(sf, sub, remove_acs);
    }
 
-   for (prev=NULL, test=sf->gpos_lookups; test != NULL && test != otl;
-	prev=test, test=test->next);
+   for (prev=NULL,test=sf->gsplookups[1];(test!=NULL) && (test!=otl);
+	prev=test,test=test->next);
    if (test==NULL) {
-      isgpos=false;
-      for (prev=NULL, test=sf->gsub_lookups; test != NULL && test != otl;
-	   prev=test, test=test->next);
+      isgpos=0;
+      for (prev=NULL,test=sf->gsplookups[0];(test!=NULL) && (test!=otl);
+	   prev=test,test=test->next);
    } else
-      isgpos=true;
+      isgpos=1;
    if (prev != NULL)
       prev->next=otl->next;
-   else if (isgpos)
-      sf->gpos_lookups=otl->next;
    else
-      sf->gsub_lookups=otl->next;
+      sf->gsplookups[isgpos]=otl->next;
 
    RemoveNestedReferences(sf, isgpos, otl);
    RemoveJSTFReferences(sf, otl);
@@ -1242,11 +1240,11 @@ struct lookup_subtable *SFFindLookupSubtable(SplineFont *sf, char *name) {
    if (name==NULL)
       return (NULL);
 
-   for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
+   for (isgpos=0;isgpos<2;isgpos++) {
+      for (otl=sf->gsplookups[isgpos];otl!=NULL;
 	   otl=otl->next) {
-	 for (sub=otl->subtables; sub != NULL; sub=sub->next) {
-	    if (strcmp(name, sub->subtable_name)==0)
+	 for (sub=otl->subtables;sub!=NULL;sub=sub->next) {
+	    if (strcmp(name,sub->subtable_name)==0)
 	       return (sub);
 	 }
       }
@@ -1259,7 +1257,7 @@ struct lookup_subtable *SFFindLookupSubtableAndFreeName(SplineFont *sf,
    struct lookup_subtable *sub=SFFindLookupSubtable(sf, name);
 
    free(name);
-   return (sub);
+   return sub;
 }
 
 OTLookup *SFFindLookup(SplineFont *sf, char *name) {
@@ -1270,16 +1268,15 @@ OTLookup *SFFindLookup(SplineFont *sf, char *name) {
       sf=sf->cidmaster;
 
    if (name==NULL)
-      return (NULL);
+      return NULL;
 
-   for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	   otl=otl->next) {
-	 if (strcmp(name, otl->lookup_name)==0)
-	    return (otl);
+   for (isgpos=0;isgpos<2;isgpos++) {
+      for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next) {
+	 if (strcmp(name,otl->lookup_name)==0)
+	    return otl;
       }
    }
-   return (NULL);
+   return NULL;
 }
 
 void FListAppendScriptLang(FeatureScriptLangList * fl, uint32_t script_tag,
@@ -2567,16 +2564,14 @@ void SortInsertLookup(SplineFont *sf, OTLookup * newotl) {
    OTLookup *prev, *otl;
 
    pos=FeatureOrderId(isgpos, newotl->features);
-   for (prev=NULL, otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups;
-	otl != NULL && FeatureOrderId(isgpos, newotl->features) < pos;
-	prev=otl, otl=otl->next);
+   for (prev=NULL,otl=sf->gsplookups[isgpos];
+	otl!=NULL && FeatureOrderId(isgpos,newotl->features)<pos;
+	prev=otl,otl=otl->next);
    newotl->next=otl;
    if (prev != NULL)
       prev->next=newotl;
-   else if (isgpos)
-      sf->gpos_lookups=newotl;
    else
-      sf->gsub_lookups=newotl;
+      sf->gsplookups[isgpos]=newotl;
 }
 
 /* Before may be:
@@ -2588,7 +2583,7 @@ void SortInsertLookup(SplineFont *sf, OTLookup * newotl) {
 static void OrderNewLookup(SplineFont *into_sf,OTLookup *otl,
 			   OTLookup * before) {
    int isgpos=otl->lookup_type >= gpos_start;
-   OTLookup **head=isgpos ? &into_sf->gpos_lookups : &into_sf->gsub_lookups;
+   OTLookup **head=into_sf->gsplookups+isgpos;
    OTLookup *prev;
 
    if (before==(OTLookup *) - 2)
@@ -3984,8 +3979,7 @@ struct opentype_str *ApplyTickedFeatures(SplineFont *sf, uint32_t * flist,
 	 templang=DEFAULT_LANG;
       free(langs);
 
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	   otl=otl->next) {
+      for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next) {
 	 uint32_t tag;
 
 	 if ((tag=FSLLMatches(otl->features, flist, script, templang)) != 0)
@@ -4277,7 +4271,7 @@ struct lookup_subtable *SFSubTableFindOrMake(SplineFont *sf, uint32_t tag,
 
    if (sf->cidmaster)
       sf=sf->cidmaster;
-   base=isgpos ? &sf->gpos_lookups : &sf->gsub_lookups;
+   base=sf->gsplookups+isgpos;
    for (otl=*base; otl != NULL; otl=otl->next) {
       if (otl->lookup_type==lookup_type &&
 	  FeatureScriptTagInFeatureScriptList(tag, script, otl->features)) {

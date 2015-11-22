@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 4304 2015-10-24 19:05:22Z mskala $ */
+/* $Id: autowidth.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1079,7 +1079,7 @@ void FVRemoveKerns(FontViewBase * fv) {
    if (sf->cidmaster != NULL)
       sf=sf->cidmaster;
 
-   for (otl=sf->gpos_lookups; otl != NULL; otl=notl) {
+   for (otl=sf->gsplookups[1]; otl != NULL; otl=notl) {
       notl=otl->next;
       if (otl->lookup_type==gpos_pair &&
 	  FeatureTagInFeatureScriptList(CHR('k', 'e', 'r', 'n'),
@@ -1101,7 +1101,7 @@ void FVRemoveVKerns(FontViewBase * fv) {
    if (sf->cidmaster != NULL)
       sf=sf->cidmaster;
 
-   for (otl=sf->gpos_lookups; otl != NULL; otl=notl) {
+   for (otl=sf->gsplookups[1]; otl != NULL; otl=notl) {
       notl=otl->next;
       if (otl->lookup_type==gpos_pair &&
 	  FeatureTagInFeatureScriptList(CHR('v', 'k', 'r', 'n'),
@@ -1214,7 +1214,7 @@ static struct lookup_subtable *VSubtableFromH(struct lookupmap *lookupmap,
 	 return (lookupmap->smap[i].to);
 
    if (lookupmap->lmap==NULL) {
-      for (otl=lookupmap->sf->gpos_lookups, lc=sc=0; otl != NULL;
+      for (otl=lookupmap->sf->gsplookups[1], lc=sc=0; otl != NULL;
 	   otl=otl->next) {
 	 if (otl->lookup_type==gpos_pair) {
 	    ++lc;
@@ -1379,53 +1379,51 @@ void FVVKernFromHKern(FontViewBase * fv) {
 /* Scripting hooks */
 
 static struct charone **autowidthBuildCharList(FontViewBase *fv,
-					       SplineFont *sf, int *tot,
-					       int *rtot, int *ipos,
+					       SplineFont *sf,int *tot,
+					       int *rtot,int *ipos,
 					       int iswidth) {
-   int i, cnt, doit, s;
+   int i,cnt,doit,s;
    struct charone **ret=NULL;
    EncMap *map=fv->map;
    int gid;
 
-   for (doit=0; doit < 2; ++doit) {
-      for (i=cnt=0; i < map->enccount && cnt < 300; ++i) {
-	 if (fv->selected[i] && (gid=map->map[i]) != -1
-	     && SCWorthOutputting(sf->glyphs[gid])) {
-	    if (doit)
-	       ret[cnt++]=AW_MakeCharOne(sf->glyphs[gid]);
-	    else
-	       ++cnt;
-	 }
-      }
+   for (i=0,cnt=0;(i<map->enccount) && (cnt<300);i++)
+     if (fv->selected[i] && ((gid=map->map[i])!=-1)
+	 && SCWorthOutputting(sf->glyphs[gid]))
+       cnt++;
 
-      if (!doit)
-	 ret=malloc((cnt + 2) * sizeof(struct charone *));
-      else {
-	 *rtot=cnt;
-	 if (iswidth &&		/* I always want 'I' in the character list when doing widths */
-	     /*  or at least when doing widths of LGC alphabets where */
-	     /*  concepts like serifs make sense */
-	     ((ret[0]->sc->unicodeenc >= 'A'
-	       && ret[0]->sc->unicodeenc < 0x530)
-	      || (ret[0]->sc->unicodeenc >= 0x1d00
-		  && ret[0]->sc->unicodeenc < 0x2000))) {
-	    for (s=0; s < cnt; ++s)
-	       if (ret[s]->sc->unicodeenc=='I')
-		  break;
-	    if (s==cnt) {
-	       i=SFFindExistingSlot(sf, 'I', NULL);
-	       if (i != -1)
-		  ret[cnt++]=AW_MakeCharOne(sf->glyphs[i]);
-	       else
-		  s=-1;
-	    }
-	    *ipos=s;
-	 }
-	 ret[cnt]=NULL;
+   ret=malloc((cnt+2)*sizeof(struct charone *));
+
+   for (i=0,cnt=0;(i<map->enccount) && (cnt<300);i++)
+     if (fv->selected[i] && ((gid=map->map[i])!=-1)
+	 && SCWorthOutputting(sf->glyphs[gid]))
+       ret[cnt++]=AW_MakeCharOne(sf->glyphs[gid]);
+
+   *rtot=cnt;
+   if (iswidth &&
+       /* I always want 'I' in the character list when doing widths */
+       /*  or at least when doing widths of LGC alphabets where */
+       /*  concepts like serifs make sense */
+       ((ret[0]->sc->unicodeenc>='A'
+	 && ret[0]->sc->unicodeenc<0x530)
+	|| (ret[0]->sc->unicodeenc>=0x1d00
+	    && ret[0]->sc->unicodeenc<0x2000))) {
+      for (s=0;s<cnt;s++)
+	if (ret[s]->sc->unicodeenc=='I')
+	  break;
+      if (s==cnt) {
+	 i=SFFindExistingSlot(sf,'I',NULL);
+	 if (i!=-1)
+	   ret[cnt++]=AW_MakeCharOne(sf->glyphs[i]);
+	 else
+	   s=-1;
       }
+      *ipos=s;
    }
+   ret[cnt]=NULL;
+
    *tot=cnt;
-   return (ret);
+   return ret;
 }
 
 int AutoKernScript(FontViewBase * fv, int spacing, int threshold,

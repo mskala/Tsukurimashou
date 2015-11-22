@@ -1,4 +1,4 @@
-/* $Id: asmfpst.c 4340 2015-11-07 11:56:21Z mskala $ */
+/* $Id: asmfpst.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2003-2007  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -559,7 +559,7 @@ static int FindFormLookupsForScript(SplineFont *sf,uint32_t script,
    int which;
 
    memset(lookups, 0, 4 * sizeof(OTLookup *));
-   for (otl=sf->gsub_lookups; otl != NULL; otl=otl->next)
+   for (otl=sf->gsplookups[0];otl!=NULL;otl=otl->next)
       if (!otl->unused && otl->lookup_type==gsub_single) {
 	 for (fl=otl->features; fl != NULL; fl=fl->next) {
 	    if (fl->featuretag==CHR('i', 'n', 'i', 't'))

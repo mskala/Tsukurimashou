@@ -1,4 +1,4 @@
-/* $Id: ttf.h 4286 2015-10-20 10:46:56Z mskala $ */
+/* $Id: ttf.h 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2001-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -261,7 +261,8 @@ struct ttfinfo {
 
    KernClass *khead, *klast, *vkhead, *vklast;
 
-   OTLookup *gpos_lookups, *gsub_lookups, *cur_lookups;
+   OTLookup *gsplookups[2];
+   OTLookup *cur_lookups;
 
    OTLookup *mort_subs_lookup, *mort_pos_lookup2;
    int mort_r2l, mort_tag_mac, mort_feat, mort_setting, mort_is_nested;

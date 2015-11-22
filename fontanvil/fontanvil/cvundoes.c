@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4378 2015-11-11 17:09:49Z mskala $ */
+/* $Id: cvundoes.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1651,73 +1651,87 @@ static int HasNonClass(OTLookup *otl) {
 
 static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 				   int is_same) {
-   int cnt, bcnt, ftot=0, doit, isgpos, i, ret;
+   int cnt, bcnt, ftot=0, isgpos, i, ret;
    char **choices=NULL, *sel;
    OTLookup *otl, **list1=NULL, **list2=NULL, **list, **blist;
 
    *backpairlist=NULL;
 
-   for (doit=0; doit < 2; ++doit) {
-      bcnt=cnt=0;
-      for (isgpos=0; isgpos < 2; ++isgpos) {
-	 for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	      otl=otl->next) {
-	    if (otl->lookup_type==gsub_single
-		|| otl->lookup_type==gsub_multiple
-		|| otl->lookup_type==gsub_alternate
-		|| otl->lookup_type==gsub_ligature
-		|| otl->lookup_type==gpos_single
-		|| otl->lookup_type==gpos_cursive
-		|| otl->lookup_type==gpos_mark2base
-		|| otl->lookup_type==gpos_mark2ligature
-		|| otl->lookup_type==gpos_mark2mark
-		|| (otl->lookup_type==gpos_pair && HasNonClass(otl))) {
-	       if (doit) {
-		  list1[cnt]=otl;
-		  choices[cnt++]=fastrdup(otl->lookup_name);
-		  if (otl->lookup_type==gpos_pair) {
-/* GT: I'm not happy with this phrase. Suggestions for improvements are welcome */
-/* GT:  Here I am generating a list of lookup names representing data that can */
-/* GT:  be copied from one glyph to another. For a kerning (pairwise) lookup */
-/* GT:  the first entry in the list (marked by the lookup name by itself) will */
-/* GT:  mean all data where the current glyph is the first glyph in a kerning */
-/* GT:  pair. But we can also (separatedly) copy data where the current glyph */
-/* GT:  is the second glyph in the kerning pair, and that's what this line */
-/* GT:  refers to. The "%s" will be filled in with the lookup name */
-		     char *format="Second glyph of %s";
-		     char *space =
-			malloc(strlen(format) + strlen(otl->lookup_name) + 1);
-		     sprintf(space, format, otl->lookup_name);
-		     list2[bcnt]=otl;
-		     choices[ftot + 1 + bcnt++]=space;
-		  }
-	       } else {
-		  ++cnt;
-		  if (otl->lookup_type==gpos_pair)
-		     ++bcnt;
-	       }
-	    }
-	 }
-      }
-      if (cnt==0) {		/* If cnt==0 then bcnt must be too */
-	 ErrorMsg(2,"No lookups to copy.\n");
-	 return (NULL);
-      }
-      if (!doit) {
-	 ftot=cnt;
-	 choices=malloc((cnt + bcnt + 2) * sizeof(char *));
-	 sel=calloc(cnt + bcnt + 1, 1);
-	 list1=malloc(cnt * sizeof(OTLookup *));
-	 if (bcnt==0) {
-	    choices[cnt]=NULL;
-	    list2=NULL;
-	 } else {
-	    choices[cnt]=fastrdup("-");
-	    choices[bcnt + cnt + 1]=NULL;
-	    list2=malloc(bcnt * sizeof(OTLookup *));
-	 }
-      }
+   bcnt=cnt=0;
+   for (isgpos=0;isgpos<2;isgpos++)
+     for (otl=sf->gsplookups[isgpos]; otl != NULL;
+	  otl=otl->next) {
+	if (otl->lookup_type==gsub_single
+	    || otl->lookup_type==gsub_multiple
+	    || otl->lookup_type==gsub_alternate
+	    || otl->lookup_type==gsub_ligature
+	    || otl->lookup_type==gpos_single
+	    || otl->lookup_type==gpos_cursive
+	    || otl->lookup_type==gpos_mark2base
+	    || otl->lookup_type==gpos_mark2ligature
+	    || otl->lookup_type==gpos_mark2mark
+	    || (otl->lookup_type==gpos_pair && HasNonClass(otl))) {
+	   ++cnt;
+	   if (otl->lookup_type==gpos_pair)
+	     ++bcnt;
+	}
+     }
+   if (cnt==0) {		/* If cnt==0 then bcnt must be too */
+      ErrorMsg(2,"No lookups to copy.\n");
+      return (NULL);
    }
+   ftot=cnt;
+   choices=malloc((cnt + bcnt + 2) * sizeof(char *));
+   sel=calloc(cnt + bcnt + 1, 1);
+   list1=malloc(cnt * sizeof(OTLookup *));
+   if (bcnt==0) {
+      choices[cnt]=NULL;
+      list2=NULL;
+   } else {
+      choices[cnt]=fastrdup("-");
+      choices[bcnt + cnt + 1]=NULL;
+      list2=malloc(bcnt * sizeof(OTLookup *));
+   }
+
+   bcnt=cnt=0;
+   for (isgpos=0;isgpos<2;isgpos++)
+     for (otl=sf->gsplookups[isgpos]; otl != NULL;
+	  otl=otl->next) {
+	if (otl->lookup_type==gsub_single
+	    || otl->lookup_type==gsub_multiple
+	    || otl->lookup_type==gsub_alternate
+	    || otl->lookup_type==gsub_ligature
+	    || otl->lookup_type==gpos_single
+	    || otl->lookup_type==gpos_cursive
+	    || otl->lookup_type==gpos_mark2base
+	    || otl->lookup_type==gpos_mark2ligature
+	    || otl->lookup_type==gpos_mark2mark
+	    || (otl->lookup_type==gpos_pair && HasNonClass(otl))) {
+	   list1[cnt]=otl;
+	   choices[cnt++]=fastrdup(otl->lookup_name);
+	   if (otl->lookup_type==gpos_pair) {
+	      /* GT: I'm not happy with this phrase. Suggestions for improvements are welcome */
+	      /* GT:  Here I am generating a list of lookup names representing data that can */
+	      /* GT:  be copied from one glyph to another. For a kerning (pairwise) lookup */
+	      /* GT:  the first entry in the list (marked by the lookup name by itself) will */
+	      /* GT:  mean all data where the current glyph is the first glyph in a kerning */
+	      /* GT:  pair. But we can also (separatedly) copy data where the current glyph */
+	      /* GT:  is the second glyph in the kerning pair, and that's what this line */
+	      /* GT:  refers to. The "%s" will be filled in with the lookup name */
+	      char *format="Second glyph of %s";
+	      char *space =
+		malloc(strlen(format) + strlen(otl->lookup_name) + 1);
+	      sprintf(space, format, otl->lookup_name);
+	      list2[bcnt]=otl;
+	      choices[ftot + 1 + bcnt++]=space;
+	   }
+	}
+     }
+   if (cnt==0) {		/* If cnt==0 then bcnt must be too */
+      ErrorMsg(2,"No lookups to copy.\n");
+      return (NULL);
+   }
+
    ret=-1;
    list=NULL;
    if (ret >= 0) {

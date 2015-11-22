@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 4407 2015-11-17 11:55:23Z mskala $ */
+/* $Id: fvfonts.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -118,10 +118,9 @@ struct lookup_subtable *MCConvertSubtable(struct sfmergecontext *mc,
       mc->prefix=strconcat(mc->sf_from->fontname, "-");
       for (doit=0; doit < 2; ++doit) {
 	 lcnt=scnt=0;
-	 for (isgpos=0; isgpos < 2; ++isgpos) {
-	    for (otl =
-		 isgpos ? mc->sf_from->gpos_lookups : mc->sf_from->
-		 gsub_lookups; otl != NULL; otl=otl->next) {
+	 for (isgpos=0; isgpos < 2; isgpos++) {
+	    for (otl=mc->sf_from->gsplookups[isgpos];otl!=NULL;
+		 otl=otl->next) {
 	       if (doit) {
 		  mc->lks[lcnt].from=otl;
 		  temp=strconcat(mc->prefix, otl->lookup_name);
@@ -263,17 +262,15 @@ void SFFinishMergeContext(struct sfmergecontext *mc) {
       otl=mc->lks[l].to;
       isgpos=(otl->lookup_type >= gpos_start);
       if (last==NULL || (last->lookup_type >= gpos_start) != isgpos) {
-	 last=isgpos ? mc->sf_to->gpos_lookups : mc->sf_to->gsub_lookups;
+	 last=mc->sf_to->gsplookups[isgpos];
 	 if (last != NULL)
 	    while (last->next != NULL)
 	       last=last->next;
       }
       if (last != NULL)
 	 last->next=otl;
-      else if (isgpos)
-	 mc->sf_to->gpos_lookups=otl;
       else
-	 mc->sf_to->gsub_lookups=otl;
+	 mc->sf_to->gsplookups[isgpos]=otl;
       last=otl;
    }
 

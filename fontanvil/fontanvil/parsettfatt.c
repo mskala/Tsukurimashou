@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 4340 2015-11-07 11:56:21Z mskala $ */
+/* $Id: parsettfatt.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2785,16 +2785,14 @@ static struct lookup *readttflookups(AFILE *ttf,int32_t pos,
       /* Add any JSTF lookups to the end of the GPOS list. they have the */
       /*  same format, we'll treat them as GPOS internally, and separate */
       /*  them out when we generate the new font */
-      if (info->gpos_lookups==NULL)
-	 info->gpos_lookups=info->cur_lookups;
+      if (info->gsplookups[1]==NULL)
+	 info->gsplookups[1]=info->cur_lookups;
       else {
-	 for (end=info->gpos_lookups; end->next != NULL; end=end->next);
+	 for (end=info->gsplookups[1];end->next!=NULL;end=end->next);
 	 end->next=info->cur_lookups;
       }
-   } else if (isgpos)
-      info->gpos_lookups=info->cur_lookups;
-   else
-      info->gsub_lookups=info->cur_lookups;
+   } else
+     info->gsplookups[isgpos]=info->cur_lookups;
    return (lookups);
 }
 
@@ -3161,8 +3159,8 @@ static void ProcessGPOSGSUB(AFILE *ttf,struct ttfinfo *info,int gpos,
 
    LookupsFree(lookups);
    if (inusetype != git_normal && !gpos) {
-      OTLookupListFree(info->gsub_lookups);
-      info->gsub_lookups=info->cur_lookups=NULL;
+      OTLookupListFree(info->gsplookups[0]);
+      info->gsplookups[0]=info->cur_lookups=NULL;
    }
 }
 
@@ -3434,12 +3432,12 @@ static void OTLAppend(struct ttfinfo *info,OTLookup *otl,int gpos) {
    OTLookup *prev;
    int pos=0;
 
-   if (gpos && info->gpos_lookups==NULL)
-      info->gpos_lookups=otl;
-   else if (!gpos && info->gsub_lookups==NULL)
-      info->gsub_lookups=otl;
+   if (gpos && info->gsplookups[1]==NULL)
+      info->gsplookups[1]=otl;
+   else if (!gpos && info->gsplookups[0]==NULL)
+      info->gsplookups[0]=otl;
    else {
-      prev=gpos ? info->gpos_lookups : info->gsub_lookups;
+      prev=info->gsplookups[gpos];
       pos=1;
       while (prev->next != NULL) {
 	 prev=prev->next;
@@ -3454,7 +3452,7 @@ static void OTLRemove(struct ttfinfo *info,OTLookup *otl,int gpos) {
    /* Remove the most recent lookup. We got bad data and can't use it */
    OTLookup *prev, **base;
 
-   base=gpos ? &info->gpos_lookups : &info->gsub_lookups;
+   base=info->gsplookups+gpos;
    if (*base==otl)
       *base=NULL;
    else if (*base != NULL) {
@@ -4972,18 +4970,18 @@ static int InfoHasGSUBTag(struct ttfinfo *info,uint32_t tag,
    if (apple_lookup_type==0 ||	/* Indic rearrangement */
        apple_lookup_type==1 ||	/* Contextual substitution */
        apple_lookup_type==5)	/* Contextual insertion */
-      return (false);		/* These types can either not be represented in OT */
+      return false;		/* These types can either not be represented in OT */
    /* or not converted to AAT -- so we'd better read them */
    /* We can't really do contextual ligatures either, but we parse that table */
    /*  for the non-contextual ligs (which is most of them) */
 
-   for (otl=info->gsub_lookups; otl != NULL; otl=otl->next) {
-      for (feat=otl->features; feat != NULL; feat=feat->next) {
+   for (otl=info->gsplookups[0];otl!=NULL;otl=otl->next) {
+      for (feat=otl->features;feat!=NULL;feat=feat->next) {
 	 if (feat->featuretag==tag && Macable(NULL, otl))
-	    return (true);
+	    return true;
       }
    }
-   return (false);
+   return false;
 }
 
 static void FeatMarkAsEnabled(struct ttfinfo *info,int featureType,
@@ -6393,7 +6391,7 @@ static OTLookup **jstf_subpos(AFILE *ttf,uint32_t base,int Sub,int Pos,
 	    info->bad_ot=true;
 	    return (NULL);
 	 }
-	 ret[i]=findLookupByIndex(info->gsub_lookups, index);
+	 ret[i]=findLookupByIndex(info->gsplookups[0],index);
 	 if (ret[i]==NULL) {
 	    ErrorMsg(2,"Lookup index (%d) out of bounds in GSUB from JSTF table.\n",
 		     index);
@@ -6413,7 +6411,7 @@ static OTLookup **jstf_subpos(AFILE *ttf,uint32_t base,int Sub,int Pos,
 	    info->bad_ot=true;
 	    return (NULL);
 	 }
-	 ret[i + scnt]=findLookupByIndex(info->gpos_lookups, index);
+	 ret[i + scnt]=findLookupByIndex(info->gsplookups[1],index);
 	 if (ret[i + scnt]==NULL) {
 	    ErrorMsg(2,"Lookup index (%d) out of bounds in GPOS from JSTF table.\n",
 		     index);

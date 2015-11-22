@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4394 2015-11-14 21:44:10Z mskala $ */
+/* $Id: splinefont.h 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1882,7 +1882,7 @@ typedef struct splinefont {
    struct kernclasslistdlg *kcld, *vkcld;
    struct kernclassdlg *kcd;
    struct texdata texdata;
-   OTLookup *gsub_lookups, *gpos_lookups;
+   OTLookup *gsplookups[2];
    /* Apple morx subtables become gsub, and kern subtables become gpos */
    AnchorClass *anchor;
    KernClass *kerns, *vkerns;

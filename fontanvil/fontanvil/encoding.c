@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: encoding.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1231,10 +1231,10 @@ static SplineFont *CIDFlatten(SplineFont *cidmaster,SplineChar ** glyphs,
    cidmaster->bitmaps=NULL;	/* don't free 'em */
    for (bdf=new->bitmaps; bdf != NULL; bdf=bdf->next)
       bdf->sf=new;
-   new->gpos_lookups=cidmaster->gpos_lookups;
-   cidmaster->gpos_lookups=NULL;
-   new->gsub_lookups=cidmaster->gsub_lookups;
-   cidmaster->gsub_lookups=NULL;
+   new->gsplookups[0]=cidmaster->gsplookups[0];
+   cidmaster->gsplookups[0]=NULL;
+   new->gsplookups[1]=cidmaster->gsplookups[1];
+   cidmaster->gsplookups[1]=NULL;
    new->kerns=cidmaster->kerns;
    new->vkerns=cidmaster->vkerns;
    cidmaster->kerns=cidmaster->vkerns=NULL;
@@ -1363,66 +1363,68 @@ int SFFlattenByCMap(SplineFont *sf, char *cmapname) {
    }
    sf=CIDFlatten(sf, glyphs, curmax);
 
-   warned=true;
    for (fvs=sf->fv; fvs != NULL; fvs=fvs->nextsame) {
       EncMap *map=fvs->map;
 
-      for (j=0; j < 2; ++j) {
-	 extras=0;
-	 for (i=0; i < curmax; ++i) {
-	    sc=glyphs[i];
-	    if (sc != NULL) {
-	       m=0;
-	       for (l=0; l < cmap->groups[cmt_cid].n; ++l) {
-		  if (i >= cmap->groups[cmt_cid].ranges[l].cid &&
-		      i <= cmap->groups[cmt_cid].ranges[l].cid +
-		      cmap->groups[cmt_cid].ranges[l].last -
-		      cmap->groups[cmt_cid].ranges[l].first) {
-		     if (m < sizeof(found) / sizeof(found[0]))
-			found[m++]=l;
-		     else if (!warned) {
-			ErrorMsg(1,"The glyph at CID %d is mapped to more "
-			           "than %d encodings.  Only the first %d "
-			           "are handled.\n",
-                                 i,sizeof(found)/sizeof(found[0]),
-                                 sizeof(found)/sizeof(found[0]));
-			warned=true;
-		     }
-		  }
+      j=0;
+      extras=0;
+      for (i=0; i < curmax; ++i) {
+	 sc=glyphs[i];
+	 if (sc != NULL) {
+	    m=0;
+	    for (l=0; l < cmap->groups[cmt_cid].n; ++l) {
+	       if (i >= cmap->groups[cmt_cid].ranges[l].cid &&
+		   i <= cmap->groups[cmt_cid].ranges[l].cid +
+		   cmap->groups[cmt_cid].ranges[l].last -
+		   cmap->groups[cmt_cid].ranges[l].first) {
+		  if (m < sizeof(found) / sizeof(found[0]))
+		    found[m++]=l;
 	       }
-	       if (m==0) {
-		  if (j) {
-		     map->map[max + extras]=sc->orig_pos;
-		     map->backmap[sc->orig_pos]=max + extras;
-		  }
-		  ++extras;
-	       } else {
-		  if (j) {
-		     int p=cmap->groups[cmt_cid].ranges[found[0]].first +
-			i - cmap->groups[cmt_cid].ranges[found[0]].cid;
-		     map->map[p]=sc->orig_pos;
-		     map->backmap[sc->orig_pos]=p;
-		     for (l=1; l < m; ++l) {
-			int pos =
-			   cmap->groups[cmt_cid].ranges[found[l]].first + i -
-			   cmap->groups[cmt_cid].ranges[found[l]].cid;
-			map->map[pos]=sc->orig_pos;
-		     }
-		  }
+	       if (m==0)
+		 ++extras;
+	    }
+	 }
+      }
+      map->map =
+	realloc(map->map,
+		(map->encmax=map->enccount =
+		    max + extras) * sizeof(int32_t));
+      memset(map->map, -1, map->enccount * sizeof(int32_t));
+      memset(map->backmap, -1, sf->glyphcnt * sizeof(int32_t));
+      map->remap=cmap->remap;
+      cmap->remap=NULL;
+      
+      extras=0;
+      for (i=0; i < curmax; ++i) {
+	 sc=glyphs[i];
+	 if (sc != NULL) {
+	    m=0;
+	    for (l=0; l < cmap->groups[cmt_cid].n; ++l) {
+	       if (i >= cmap->groups[cmt_cid].ranges[l].cid &&
+		   i <= cmap->groups[cmt_cid].ranges[l].cid +
+		   cmap->groups[cmt_cid].ranges[l].last -
+		   cmap->groups[cmt_cid].ranges[l].first) {
+		  if (m < sizeof(found) / sizeof(found[0]))
+		    found[m++]=l;
+	       }
+	    }
+	    if (m==0) {
+	       map->map[max + extras]=sc->orig_pos;
+	       map->backmap[sc->orig_pos]=max + extras;
+	       ++extras;
+	    } else {
+	       int p=cmap->groups[cmt_cid].ranges[found[0]].first +
+		 i - cmap->groups[cmt_cid].ranges[found[0]].cid;
+	       map->map[p]=sc->orig_pos;
+	       map->backmap[sc->orig_pos]=p;
+	       for (l=1; l < m; ++l) {
+		  int pos =
+		    cmap->groups[cmt_cid].ranges[found[l]].first + i -
+		    cmap->groups[cmt_cid].ranges[found[l]].cid;
+		  map->map[pos]=sc->orig_pos;
 	       }
 	    }
 	 }
-	 if (!j) {
-	    map->map =
-	       realloc(map->map,
-		       (map->encmax=map->enccount =
-			max + extras) * sizeof(int32_t));
-	    memset(map->map, -1, map->enccount * sizeof(int32_t));
-	    memset(map->backmap, -1, sf->glyphcnt * sizeof(int32_t));
-	    map->remap=cmap->remap;
-	    cmap->remap=NULL;
-	 }
-	 warned=true;
       }
    }
    cmapfree(cmap);
@@ -1575,10 +1577,10 @@ SplineFont *MakeCIDMaster(SplineFont *sf, EncMap * oldmap, int bycmap,
    cidmaster->subfontcnt=1;
    cidmaster->subfonts=calloc(2, sizeof(SplineFont *));
    cidmaster->subfonts[0]=sf;
-   cidmaster->gpos_lookups=sf->gpos_lookups;
-   sf->gpos_lookups=NULL;
-   cidmaster->gsub_lookups=sf->gsub_lookups;
-   sf->gsub_lookups=NULL;
+   cidmaster->gsplookups[0]=sf->gsplookups[0];
+   sf->gsplookups[0]=NULL;
+   cidmaster->gsplookups[1]=sf->gsplookups[1];
+   sf->gsplookups[1]=NULL;
    cidmaster->horiz_base=sf->horiz_base;
    sf->horiz_base=NULL;
    cidmaster->vert_base=sf->vert_base;

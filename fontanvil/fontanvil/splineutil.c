@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: splineutil.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -6273,8 +6273,8 @@ void SplineFontFree(SplineFont *sf) {
       SplineFontFree(sf->subfonts[i]);
    free(sf->subfonts);
    GlyphHashFree(sf);
-   OTLookupListFree(sf->gpos_lookups);
-   OTLookupListFree(sf->gsub_lookups);
+   OTLookupListFree(sf->gsplookups[0]);
+   OTLookupListFree(sf->gsplookups[1]);
    KernClassListFree(sf->kerns);
    KernClassListFree(sf->vkerns);
    FPSTFree(sf->possub);

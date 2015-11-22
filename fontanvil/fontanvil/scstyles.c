@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 4394 2015-11-14 21:44:10Z mskala $ */
+/* $Id: scstyles.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2292,7 +2292,7 @@ static void MakeSCLookups(SplineFont *sf,struct lookup_subtable **c2sc,
    }
    if (sf->cidmaster)
       sf=sf->cidmaster;
-   for (test=sf->gsub_lookups; test != NULL; test=test->next)
+   for (test=sf->gsplookups[0]; test != NULL; test=test->next)
       if (test->lookup_type==gsub_single) {
 	 for (fl=test->features; fl != NULL; fl=fl->next) {
 	    if (fl->featuretag==ucfeat || fl->featuretag==lcfeat) {

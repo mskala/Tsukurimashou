@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4340 2015-11-07 11:56:21Z mskala $ */
+/* $Id: featurefile.c 4427 2015-11-22 17:13:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -190,21 +190,20 @@ static void gdef_markclasscheck(AFILE *out,SplineFont *sf,OTLookup *otl) {
 
    needed=calloc(sf->mark_class_cnt, 1);
    setsneeded=calloc(sf->mark_set_cnt, 1);
-   if (otl != NULL) {
+   if (otl!=NULL) {
       any=MarkNeeded(needed, setsneeded, otl);
    } else {
       for (gpos=0; gpos < 2; ++gpos) {
-	 for (otl=gpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	      otl=otl->next) {
-	    int index=(otl->lookup_flags >> 8) & 0xff;
-	    int sindex=(otl->lookup_flags >> 16) & 0xffff;
+	 for (otl=sf->gsplookups[gpos];otl!=NULL;otl=otl->next) {
+	    int index=(otl->lookup_flags>>8)&0xFF;
+	    int sindex=(otl->lookup_flags>>16)&0xFFFF;
 
-	    if (index != 0) {
-	       any |= 1;
+	    if (index!=0) {
+	       any|=1;
 	       needed[index]=true;
 	    }
-	    if (otl->lookup_flags & pst_usemarkfilteringset) {
-	       any |= 2;
+	    if (otl->lookup_flags&pst_usemarkfilteringset) {
+	       any|=2;
 	       setsneeded[sindex]=true;
 	    }
 	 }
@@ -1345,16 +1344,12 @@ static void dump_anchors(AFILE *out,SplineFont *sf,
 static void number_subtables(SplineFont *sf) {
    OTLookup *otl;
    struct lookup_subtable *sub;
-   int isgpos, cnt;
+   int isgpos,cnt=0;
 
-   cnt=0;
-   for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	   otl=otl->next) {
-	 for (sub=otl->subtables; sub != NULL; sub=sub->next)
-	    sub->subtable_offset=cnt++;
-      }
-   }
+   for (isgpos=0;isgpos<2;isgpos++)
+     for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next)
+       for (sub=otl->subtables;sub!=NULL;sub=sub->next)
+	 sub->subtable_offset=cnt++;
 }
 
 static int fea_bad_contextual_nestedlookup(SplineFont *sf,FPST *fpst,
@@ -1707,10 +1702,9 @@ static void untick_lookups(SplineFont *sf) {
    OTLookup *otl;
    int isgpos;
 
-   for (isgpos=0; isgpos < 2; ++isgpos)
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	   otl=otl->next)
-	 otl->ticked=false;
+   for (isgpos=0;isgpos<2;isgpos++)
+     for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next)
+       otl->ticked=false;
 }
 
 void FeatDumpOneLookup(AFILE *out, SplineFont *sf, OTLookup * otl) {
@@ -1952,16 +1946,14 @@ static void dump_header_languagesystem(AFILE *out,SplineFont *sf) {
       if (feats[0] != 0) {
 	 uint32_t *scripts=SFScriptsInLookups(sf, isgpos);
 
-	 note_nested_lookups_used_twice(isgpos ? sf->gpos_lookups : sf->
-					gsub_lookups);
+	 note_nested_lookups_used_twice(sf->gsplookups[isgpos]);
 	 for (i=0; feats[i] != 0; ++i) {
 
 	    for (s=0; scripts[s] != 0; ++s) {
 	       uint32_t *langs=SFLangsInScript(sf, isgpos, scripts[s]);
 
 	       for (l=0; langs[l] != 0; ++l) {
-		  for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups;
-		       otl != NULL; otl=otl->next) {
+		  for (sf->gsplookups[isgpos];otl!=NULL;otl=otl->next) {
 		     for (fl=otl->features; fl != NULL; fl=fl->next)
 			if (fl->featuretag==feats[i]) {
 			   for (sl=fl->scripts; sl != NULL; sl=sl->next)
@@ -2031,10 +2023,8 @@ static void dump_gsubgpos(AFILE *out,SplineFont *sf) {
 	 uint32_t *scripts=SFScriptsInLookups(sf, isgpos);
 
 	 afprintf(out, "\n# %s \n\n", isgpos ? "GPOS" : "GSUB");
-	 note_nested_lookups_used_twice(isgpos ? sf->gpos_lookups : sf->
-					gsub_lookups);
-	 for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	      otl=otl->next)
+	 note_nested_lookups_used_twice(sf->gsplookups[isgpos]);
+	 for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next)
 	    if (otl->features != NULL && !otl->unused)	/* Nested lookups will be output with the lookups which invoke them */
 	       dump_lookup(out, sf, otl);
 	 for (i=0; feats[i] != 0; ++i) {
@@ -2087,8 +2077,8 @@ static void dump_gsubgpos(AFILE *out,SplineFont *sf) {
 		  for (l=0; langs[l] != 0; ++l) {
 		     int first=true;
 
-		     for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups;
-			  otl != NULL; otl=otl->next) {
+		     for (otl=sf->gsplookups[isgpos];otl!=NULL;
+			  otl=otl->next) {
 			for (fl=otl->features; fl != NULL; fl=fl->next)
 			   if (fl->featuretag==feats[i]) {
 			      for (sl=fl->scripts; sl != NULL;
@@ -2148,18 +2138,17 @@ static void preparenames(SplineFont *sf) {
    struct scriptlanglist *sl;
 
    cnt=0;
-   for (isgpos=0; isgpos < 2; ++isgpos)
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	   otl=otl->next)
-	 ++cnt;
+   for (isgpos=0;isgpos<2;isgpos++)
+     for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next)
+       cnt++;
    if (cnt==0)
       return;
+
    names=malloc(cnt * sizeof(char *));
    featbuf[4]=scriptbuf[4]=0;
    cnt=0;
    for (isgpos=0; isgpos < 2; ++isgpos) {
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	   otl=otl->next) {
+      for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next) {
 	 name=lookupname(otl);
 	 for (try=0;; ++try) {
 	    for (i=0; i < cnt; ++i)
@@ -2219,8 +2208,7 @@ static void cleanupnames(SplineFont *sf) {
    OTLookup *otl;
 
    for (isgpos=0; isgpos < 2; ++isgpos)
-      for (otl=isgpos ? sf->gpos_lookups : sf->gsub_lookups; otl != NULL;
-	   otl=otl->next) {
+      for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next) {
 	 free(otl->tempname);
 	 otl->tempname=NULL;
       }
@@ -7298,20 +7286,17 @@ static struct feat_item *fea_reverseList(struct feat_item *f) {
 
 static void fea_NameLookups(struct parseState *tok) {
    SplineFont *sf=tok->sf;
-   OTLookup *gpos_last=NULL, *gsub_last=NULL, *otl, *otlnext;
-   int gp_cnt=0, gs_cnt=0, acnt;
-   AnchorClass *ac, *acnext, *an;
+   OTLookup *gsp_last[2]={NULL,NULL},*otl,*otlnext;
+   int t,gsp_cnt[2]={0,0},acnt;
+   AnchorClass *ac,*acnext,*an;
 
-   for (otl=sf->gpos_lookups; otl != NULL; otl=otl->next) {
-      otl->lookup_index=gp_cnt++;
-      gpos_last=otl;
-   }
-   for (otl=sf->gsub_lookups; otl != NULL; otl=otl->next) {
-      otl->lookup_index=gs_cnt++;
-      gsub_last=otl;
-   }
+   for (t=0;t<2;t++)
+     for (otl=sf->gsplookups[t];otl!=NULL;otl=otl->next) {
+	otl->lookup_index=gsp_cnt[t]++;
+	gsp_last[t]=otl;
+     }
 
-   for (otl=tok->created; otl != NULL; otl=otlnext) {
+   for (otl=tok->created;otl!=NULL;otl=otlnext) {
       otlnext=otl->next;
       otl->next=NULL;
       if (otl->lookup_name != NULL
@@ -7326,21 +7311,13 @@ static void fea_NameLookups(struct parseState *tok) {
 	 free(otl->lookup_name);
 	 otl->lookup_name=namebuf;
       }
-      if (otl->lookup_type < gpos_start) {
-	 if (gsub_last==NULL)
-	    sf->gsub_lookups=otl;
-	 else
-	    gsub_last->next=otl;
-	 gsub_last=otl;
-	 otl->lookup_index=gs_cnt++;
-      } else {
-	 if (gpos_last==NULL)
-	    sf->gpos_lookups=otl;
-	 else
-	    gpos_last->next=otl;
-	 gpos_last=otl;
-	 otl->lookup_index=gp_cnt++;
-      }
+      t=(otl->lookup_type<gpos_start)?0:1;
+      if (gsp_last[t]==NULL)
+	sf->gsplookups[t]=otl;
+      else
+	gsp_last[t]->next=otl;
+      gsp_last[t]=otl;
+      otl->lookup_index=gsp_cnt[t]++;
       NameOTLookup(otl, sf);	/* But only if it has no name */
    }
 
