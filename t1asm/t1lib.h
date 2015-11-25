@@ -50,6 +50,9 @@ int crcbuf(int crc, unsigned int len, const char *buf);
 extern void error(const char *, ...);
 extern void fatal_error(const char *, ...);
 
+/* this def added by Matthew Skala for Tsukurimashou bundling */
+#define VERSION "1.37 (Tsukurimashou)"
+
 #ifdef __cplusplus
 }
 #endif

@@ -265,6 +265,8 @@ AC_TYPE_SIZE_T
 AX_C___ATTRIBUTE__
 TSU_C_ANON_UNION_STRUCT
 TSU_C_GCC_BUILTIN_BSWAP
+AX_CHECK_COMPILE_FLAG([--no-inline],[NO_INLINE=--no-inline],[NO_INLINE=],[])
+AC_SUBST([NO_INLINE])
 #
 ############################################################################
 #
@@ -486,6 +488,13 @@ AC_DEFINE_UNQUOTED([DICTDIR],["$flat_dictdir"],
 #
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile idsgrep.1 mitsuba.cfg])
+AC_CONFIG_COMMANDS([fix-makefile],
+  [$PERL -i -pe \
+'s#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
+'\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
+'\t-\$(A''M_V_at)\1rm -\2f \3#;' \
+   Makefile],
+  [PERL=$PERL])
 AC_OUTPUT
 #
 ############################################################################

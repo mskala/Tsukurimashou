@@ -24,7 +24,7 @@ Nav-Bar.
         <a href="http://osdn.jp/projects/tsukurimashou/images">Screenshots</a> |
         <a href="http://osdn.jp/projects/tsukurimashou/scm/">SVN</a> |
         <a href="https://github.com/mskala/Tsukurimashou">Github</a> |
-        <a href="https://www.ohloh.net/p/tsukurimashou">Ohloh</a>
+        <a href="http://tsukurimashou.osdn.jp/cibuild.php">CI build</a>
 .
 Nav-Bar[ja].
         <a href="./index.php.$v{lang}">プロジェクトホーム</a> |
@@ -33,7 +33,7 @@ Nav-Bar[ja].
         <a href="http://osdn.jp/projects/tsukurimashou/images">スクショ</a> |
         <a href="http://osdn.jp/projects/tsukurimashou/scm/">ＳＶＮ</a> |
         <a href="https://github.com/mskala/Tsukurimashou">Ｇｉｔｈｕｂ</a> |
-        <a href="https://www.ohloh.net/p/tsukurimashou">Ｏｈｌｏｈ</a>
+        <a href="http://tsukurimashou.osdn.jp/cibuild.php">ＣＩビルド</a>
 .
 LATE-EVAL $v{nav_bar}=~s/\$v\{lang\}/$v{lang}/g;
 

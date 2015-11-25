@@ -129,7 +129,7 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.68])
-AC_INIT([FontAnvil],[0.3],[mskala@ansuz.sooke.bc.ca],[fontanvil],
+AC_INIT([FontAnvil],[0.4pre],[mskala@ansuz.sooke.bc.ca],[fontanvil],
   [[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([config])
@@ -142,7 +142,7 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2014, 2015 Matthew Skala])
-AC_SUBST([release_date],["June 29, 2015"])
+AC_SUBST([release_date],["November 24, 2015"])
 AM_SILENT_RULES
 AC_USE_SYSTEM_EXTENSIONS
 #
@@ -536,7 +536,10 @@ AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([fix-makefile],
   [if test '!' "x$ICEMAP" = "x" ; then $PERL -i -pe \
 's/^(@<:@a-z\-@:>@+:) (\$\(BUILT_SOURCES\))/'\
-'\1\n\t@\$(MAKE) -q \2 || \$(MAKE) \$(AM_MAKEFLAGS) \2/'\
+'\1\n\t@\$(MAKE) -q \2 || \$(MAKE) \$(AM_MAKEFLAGS) \2/;'\
+'s#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
+'\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
+'\t-\$(A''M_V_at)\1rm -\2f \3#;' \
    Makefile ; fi],
   [PERL=$PERL
    ICEMAP=$ICEMAP])

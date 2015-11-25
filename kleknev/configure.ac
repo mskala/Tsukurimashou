@@ -254,6 +254,13 @@ AS_IF([test "x$enable_silent_rules" = "x"],
 #
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_COMMANDS([fix-makefile],
+  [$PERL -i -pe \
+'s#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
+'\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
+'\t-\$(A''M_V_at)\1rm -\2f \3#;' \
+   Makefile],
+  [PERL=$PERL])
 AC_OUTPUT
 #
 ############################################################################

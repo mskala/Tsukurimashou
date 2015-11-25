@@ -10,9 +10,7 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+/* MS - removed load of config.h, we don't really want that */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

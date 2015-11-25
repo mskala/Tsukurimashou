@@ -47,9 +47,7 @@
 
 /* Note: this is ANSI C. */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+/* MS - removed load of config.h, we don't really want that */
 #if defined(_MSDOS) || defined(_WIN32)
 # include <fcntl.h>
 # include <io.h>

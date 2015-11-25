@@ -194,7 +194,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([msk-ocra.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4409 2015-11-18 08:50:51Z mskala $])
+AC_REVISION([$Id: configure.ac 4432 2015-11-23 20:44:26Z mskala $])
 AC_COPYRIGHT([public domain])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -310,6 +310,13 @@ AC_MSG_RESULT([$ae_arg_okay])
 #
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_COMMANDS([fix-makefile],
+  [$PERL -i -pe \
+'s#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
+'\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
+'\t-\$(A''M_V_at)\1rm -\2f \3#;' \
+   Makefile],
+  [PERL=$PERL])
 AC_OUTPUT
 #
 ############################################################################

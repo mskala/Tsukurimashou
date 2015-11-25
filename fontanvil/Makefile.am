@@ -63,6 +63,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
+  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -76,6 +77,7 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
+  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
@@ -155,17 +157,64 @@ $(TESTS): ttmp/.dirstamp fontanvil/fontanvil
 
 ############################################################################
 
+# CONDITIONAL OPTIONS
+
+if COND_GIFLIB
+  MAYBE_GIFLIB_CF=$(GIFLIB_CFLAGS)
+  MAYBE_GIFLIB_LD=$(GIFLIB_LIBS)
+endif
+if COND_LIBJPEG
+  MAYBE_LIBJPEG_CF=$(LIBJPEG_CFLAGS)
+  MAYBE_LIBJPEG_LD=$(LIBJPEG_LIBS)
+endif
+if COND_LIBPNG
+  MAYBE_LIBPNG_CF=$(LIBPNG_CFLAGS)
+  MAYBE_LIBPNG_LD=$(LIBPNG_LIBS)
+endif
+if COND_LIBREADLINE
+  MAYBE_LIBREADLINE_CF=$(LIBREADLINE_CFLAGS)
+  MAYBE_LIBREADLINE_LD=$(LIBREADLINE_LIBS)
+endif
+if COND_LIBSPIRO
+  MAYBE_LIBSPIRO_CF=$(LIBSPIRO_CFLAGS)
+  MAYBE_LIBSPIRO_LD=$(LIBSPIRO_LIBS)
+endif
+if COND_LIBTIFF
+  MAYBE_LIBTIFF_CF=$(LIBTIFF_CFLAGS)
+  MAYBE_LIBTIFF_LD=$(LIBTIFF_LIBS)
+endif
+if COND_LIBUNICODENAMES
+  MAYBE_LIBUNICODENAMES_CF=$(LIBUNICODENAMES_CFLAGS)
+  MAYBE_LIBUNICODENAMES_LD=$(LIBUNICODENAMES_LIBS)
+endif
+if COND_LIBUNINAMESLIST
+  MAYBE_LIBUNINAMESLIST_CF=$(LIBUNINAMESLIST_CFLAGS)
+  MAYBE_LIBUNINAMESLIST_LD=$(LIBUNINAMESLIST_LIBS)
+endif
+if COND_LIBXML2
+  MAYBE_LIBXML2_CF=$(LIBXML2_CFLAGS)
+  MAYBE_LIBXML2_LD=$(LIBXML2_LIBS)
+endif
+
+
+############################################################################
+
 # FILENAMES FOR AUTOTOOLS
 
 AM_CPPFLAGS = "-I$(top_builddir)/inc" "-I$(top_srcdir)/inc" \
   "-I$(top_srcdir)/fontanvil" "-DSHAREDIR=\"${MY_SHAREDIR}\"" \
   "-DDOCDIR=\"${MY_DOCDIR}\""
 AM_CFLAGS = \
-  $(FREETYPE_CFLAGS) $(GIFLIB_CFLAGS) $(LIBPNG_CFLAGS) \
-  $(LIBTIFF_CFLAGS) $(LIBXML2_CFLAGS) $(WARNING_CFLAGS) $(ZLIB_CFLAGS)
+  $(FREETYPE_CFLAGS) $(MAYBE_GIFLIB_CF) $(MAYBE_LIBJPEG_CF) \
+  $(MAYBE_LIBPNG_CF) $(MAYBE_LIBREADLINE_CF) $(MAYBE_LIBSPIRO_CF) \
+  $(MAYBE_LIBTIFF_CF) $(MAYBE_LIBUNICODENAMES_CF) \
+  $(MAYBE_LIBUNINAMESLIST_CF) $(MAYBE_LIBXML2_CF) \
+  $(ZLIB_CFLAGS) $(WARNING_CFLAGS)
 AM_LDFLAGS = \
-  $(FREETYPE_LIBS) $(GIFLIB_CFLAGS) $(LIBPNG_LIBS) \
-  $(LIBTIFF_LIBS) $(LIBXML2_LIBS) $(ZLIB_LIBS)
+  $(FREETYPE_LIBS) $(MAYBE_GIFLIB_LD) $(MAYBE_LIBJPEG_LD) \
+  $(MAYBE_LIBPNG_LD) $(MAYBE_LIBREADLINE_LD) $(MAYBE_LIBSPIRO_LD) \
+  $(MAYBE_LIBTIFF_LD) $(MAYBE_LIBUNICODENAMES_LD) \
+  $(MAYBE_LIBUNINAMESLIST_LD) $(MAYBE_LIBXML2_LD) $(ZLIB_LIBS)
 AM_LFLAGS = -s -P`basename $* | sed 's,l$$,,'` -olex.yy.c
 
 ICEMAP_INPUTS = \

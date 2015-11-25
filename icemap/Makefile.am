@@ -62,6 +62,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
+  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -75,12 +76,19 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
+  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
 TSU_V_CP_=$(TSU_V_CP_$(AM_DEFAULT_VERBOSITY))
 TSU_V_CP_0=@echo \
   "$(ansi_cleareol)  $(ansi_default)CP$(ansi_default)    " $@;
+
+TSU_V_RM=$(TSU_V_RM_$(V))
+TSU_V_RM_=$(TSU_V_RM_$(AM_DEFAULT_VERBOSITY))
+TSU_V_RM_0=@echo \
+  "$(ansi_cleareol)   $(ansi_red)RM$(ansi_default)   "
+TSU_V_RM_1=@true
 
 TSU_V_TEXL=$(TSU_V_TEXL_$(V))
 TSU_V_TEXL_=$(TSU_V_TEXL_$(AM_DEFAULT_VERBOSITY))
@@ -92,7 +100,7 @@ TSU_V_TEXL_0=echo \
 # CONDITIONAL OPTIONS
 
 if COND_GCOV
-   MAYBE_COVERAGE=--coverage --no-inline
+   MAYBE_COVERAGE=--coverage @NO_INLINE@
 endif
 
 ############################################################################
