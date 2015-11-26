@@ -57,7 +57,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
-  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -71,7 +71,7 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
-  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
@@ -123,7 +123,7 @@ if COND_DOCS
     MAYBE_DOCS=ocr.pdf
 endif
 if COND_EXPECT
-  expect_start= $(if $(AM_V_at),$(EXPECT) -c \
+  expect_start= $(if $(AM_V_at),'$(EXPECT)' -c \
     'log_user 0 ; spawn -noecho sh -c ")
   expect_end= $(if $(AM_V_at), " ; \
     expect -timeout -1 \
@@ -190,13 +190,13 @@ DISTCLEANFILES = \
 	$(MKDIR_P) $*.tmp ; \
 	$(LN_S) -f $(realpath $(mvp))/*.mp $*.tmp/ ; \
 	$(LN_S) -f $(realpath .)/*.mp $*.tmp/ ; \
-	(cd $*.tmp ; $(expect_start)$(MPOST) $*.mp$(expect_end) ) ; \
-	if $(GREP) -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
+	(cd $*.tmp ; $(expect_start)'$(MPOST)' $*.mp$(expect_end) ) ; \
+	if '$(GREP)' -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
 	$(TSU_V_NAPERL) \
-	$(PERL) -CSD $(mvp)/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
-	(cd $*.tmp ; $(realpath @T1ASM@) -b $*.p $*.pfb ) ; \
+	'$(PERL)' -CSD $(mvp)/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
+	(cd $*.tmp ; '$(realpath @T1ASM@)' -b $*.p $*.pfb ) ; \
 	if test -r $*.tmp/$*.pfb \
-	  && $(GREP) -q 'output files\? written' $*.tmp/$*.log; then \
+	  && '$(GREP)' -q 'output files\? written' $*.tmp/$*.log; then \
 	  mv -f $*.tmp/$*.pfb . ; \
 	else \
 	  echo "ERROR BUILDING" $@ ; \
@@ -229,7 +229,7 @@ msk-ocrb10xfg.pfb: msk-ocrb10xfg.mp msk-ocrbdef.mp msk-ocrbmac.mp
 msk-ocrb10xbg.pfb: msk-ocrb10xbg.mp msk-ocrbdef.mp msk-ocrbmac.mp
 
 %.rmo: %.pfb rmo.pe
-	$(AM_V_at)$(TSU_V_RMO)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_RMO)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/rmo.pe $*.pfb $(TSU_V_REDIR)
 	$(AM_V_at)touch $*.rmo
 
@@ -259,52 +259,52 @@ msk-ocrb10xfg.rmo: msk-ocrb10xfg.pfb
 
 OCRA.pfb OCRA.afm OCRA.ttf OCRA.otf: msk-ocra10.rmo \
   ocra-@ae_arg_okay@.pe ocra.fea
-	$(AM_V_at)$(TSU_V_OTF)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_OTF)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/ocra-@ae_arg_okay@.pe \
 	  $(mvp)/ocra.fea $(TSU_V_REDIR)
 
 OCRB.pfb OCRB.afm OCRB.ttf OCRB.otf: \
   msk-ocrb10.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
-	$(AM_V_at)$(TSU_V_OTF)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_OTF)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/ocrb-@ae_arg_okay@.pe '' '' "Regular" 0 \
 	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBE.pfb OCRBE.afm OCRBE.ttf OCRBE.otf: \
   msk-ocrb10efg.rmo msk-ocrb10ebg.rmo \
   ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
-	$(AM_V_at)$(TSU_V_OTF)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_OTF)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/ocrb-@ae_arg_okay@.pe 'e' 'E' "Inverted Sharp" 1 \
 	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBF.pfb OCRBF.afm OCRBF.ttf OCRBF.otf: \
   msk-ocrb10ffg.rmo msk-ocrb10fbg.rmo \
   ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
-	$(AM_V_at)$(TSU_V_OTF)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_OTF)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/ocrb-@ae_arg_okay@.pe 'f' 'F' "Outline" 1 \
 	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBG.pfb OCRBG.afm OCRBG.ttf OCRBG.otf: \
   msk-ocrb10g.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
-	$(AM_V_at)$(TSU_V_OTF)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_OTF)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/ocrb-@ae_arg_okay@.pe 'g' 'G' "Slanted Outline" 0 \
 	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBL.pfb OCRBL.afm OCRBL.ttf OCRBL.otf: \
   msk-ocrb10l.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
-	$(AM_V_at)$(TSU_V_OTF)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_OTF)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/ocrb-@ae_arg_okay@.pe 'l' 'L' "Slanted" 0 \
 	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBS.pfb OCRBS.afm OCRBS.ttf OCRBS.otf: \
   msk-ocrb10s.rmo ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
-	$(AM_V_at)$(TSU_V_OTF)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_OTF)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/ocrb-@ae_arg_okay@.pe 's' 'S' "Sharp" 0 \
 	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
 OCRBX.pfb OCRBX.afm OCRBX.ttf OCRBX.otf: \
   msk-ocrb10xfg.rmo msk-ocrb10xbg.rmo \
   ocrb-@ae_arg_okay@.pe ocrbnames.pe ocrb.fea
-	$(AM_V_at)$(TSU_V_OTF)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)$(TSU_V_OTF)'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/ocrb-@ae_arg_okay@.pe 'x' 'X' "Inverted" 1 \
 	  $(mvp)/ocrb.fea $(TSU_V_REDIR)
 
@@ -313,14 +313,15 @@ OCRBX.pfb OCRBX.afm OCRBX.ttf OCRBX.otf: \
 # PDF DOCUMENTATION
 
 ocr.pdf: OCRA.otf OCRB.otf ocr.tex
-	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) $(mvp)/ocr$(expect_end)
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
+	  $(mvp)/ocr$(expect_end)
 
 ############################################################################
 
 # TESTING
 
 TESTS = $(dist_otf_DATA) $(dist_ttf_DATA) $(dist_type1_DATA)
-LOG_COMPILER = $(FONTANVIL) -lang=ff -script fontlint.pe
+LOG_COMPILER = '$(FONTANVIL)' -lang=ff -script fontlint.pe
 
 ############################################################################
 
@@ -361,6 +362,9 @@ m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4

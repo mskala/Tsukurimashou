@@ -71,7 +71,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
-  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -85,7 +85,7 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
-  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
@@ -132,7 +132,7 @@ if COND_DOCS
     MAYBE_DOCS=genjimon.pdf
 endif
 if COND_EXPECT
-  expect_start= $(if $(AM_V_at),$(EXPECT) -c \
+  expect_start= $(if $(AM_V_at),'$(EXPECT)' -c \
     'log_user 0 ; spawn -noecho sh -c ")
   expect_end= $(if $(AM_V_at), " ; \
     expect -timeout -1 \
@@ -194,13 +194,13 @@ DISTCLEANFILES = aminclude.am
 	$(MKDIR_P) $*.tmp ; \
 	$(LN_S) -f $(realpath $(mvp))/*.mp $*.tmp/ ; \
 	$(LN_S) -f $(realpath .)/*.mp $*.tmp/ ; \
-	(cd $*.tmp ; $(expect_start)$(MPOST) $*.mp$(expect_end) ) ; \
-	if $(GREP) -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
+	(cd $*.tmp ; $(expect_start)'$(MPOST)' $*.mp$(expect_end) ) ; \
+	if '$(GREP)' -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
 	$(TSU_V_NAPERL) \
-	$(PERL) -CSD $(mvp)/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
-	(cd $*.tmp ; $(realpath @T1ASM@) -b $*.p $*.pfb ) ; \
+	'$(PERL)' -CSD $(mvp)/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
+	(cd $*.tmp ; '$(realpath @T1ASM@)' -b $*.p $*.pfb ) ; \
 	if test -r $*.tmp/$*.pfb \
-	  && $(GREP) -q 'output files\? written' $*.tmp/$*.log; then \
+	  && '$(GREP)' -q 'output files\? written' $*.tmp/$*.log; then \
 	  mv -f $*.tmp/$*.pfb . ; \
 	else \
 	  echo "ERROR BUILDING" $@ ; \
@@ -228,32 +228,32 @@ genjimon-routline.pfb: genjimon-routline.mp
 
 GenjimonMedium.ttf: genjimon-medium.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTANVIL) -lang=ff -script \
+	'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/makettf.pe medium Medium $(TSU_V_REDIR)
 
 GenjimonReverse.ttf: genjimon-reverse.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTANVIL) -lang=ff -script \
+	'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/makettf.pe reverse Reverse $(TSU_V_REDIR)
 
 GenjimonWhite.ttf: genjimon-white.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTANVIL) -lang=ff -script \
+	'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/makettf.pe white White $(TSU_V_REDIR)
 
 GenjimonBlack.ttf: genjimon-black.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTANVIL) -lang=ff -script \
+	'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/makettf.pe black Black $(TSU_V_REDIR)
 
 GenjimonRound.ttf: genjimon-round.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTANVIL) -lang=ff -script \
+	'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/makettf.pe round Round $(TSU_V_REDIR)
 
 GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
 	$(AM_V_at)$(TSU_V_TTF) \
-	$(FONTANVIL) -lang=ff -script \
+	'$(FONTANVIL)' -lang=ff -script \
 	  $(mvp)/makettf.pe routline RoundOutline $(TSU_V_REDIR)
 
 ############################################################################
@@ -262,9 +262,9 @@ GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
 
 genjimon.pdf: genjimon.tex mitsuba.cls \
   GenjimonMedium.ttf GenjimonReverse.ttf GenjimonWhite.ttf GenjimonBlack.ttf
-	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) \
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
 	  $(mvp)/genjimon$(expect_end)
-	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) \
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
 	  $(mvp)/genjimon$(expect_end)
 
 ############################################################################
@@ -273,7 +273,7 @@ genjimon.pdf: genjimon.tex mitsuba.cls \
 
 TESTS = $(dist_ttf_DATA)
 TEST_EXTENSIONS = .ttf
-TTF_LOG_COMPILER = $(FONTANVIL) -lang=ff -script fontlint.pe
+TTF_LOG_COMPILER = '$(FONTANVIL)' -lang=ff -script fontlint.pe
 
 ############################################################################
 
@@ -320,6 +320,9 @@ m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4

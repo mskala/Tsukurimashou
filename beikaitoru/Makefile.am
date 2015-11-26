@@ -71,7 +71,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
-  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -85,7 +85,7 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
-  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
@@ -142,7 +142,7 @@ if COND_DOCS
     MAYBE_DOCS=beikaitoru.pdf
 endif
 if COND_EXPECT
-  expect_start= $(if $(AM_V_at),$(EXPECT) -c \
+  expect_start= $(if $(AM_V_at),'$(EXPECT)' -c \
     'log_user 0 ; spawn -noecho sh -c ")
   expect_end= $(if $(AM_V_at), " ; \
     expect -timeout -1 \
@@ -231,13 +231,13 @@ pfbtmp/$(1).pfb: pfbtmp/.dirstamp subfont.mp \
 	$$(LN_S) -f $$(realpath .)/*.mp $(1).tmp/ ; \
 	$$(LN_S) -f $$(realpath .)/*.dat $(1).tmp/ ; \
 	echo "fontno:=$(1);" > $(1).tmp/fontno.mp ; \
-	(cd $(1).tmp ; $$(expect_start)$$(MPOST) subfont.mp$$(expect_end) ) ; \
-	if $$(GREP) -q '^! ' $(1).tmp/subfont.log ; then exit 1 ; fi ; \
+	(cd $(1).tmp ; $$(expect_start)'$$(MPOST)' subfont.mp$$(expect_end) ) ; \
+	if '$$(GREP)' -q '^! ' $(1).tmp/subfont.log ; then exit 1 ; fi ; \
 	$$(TSU_V_NAPERL) \
-	$$(PERL) -CSD $$(mvp)/mp2pf $(1).tmp/subfont $$(TSU_V_REDIR) ; \
-	(cd $(1).tmp ; $$(realpath @T1ASM@) -b subfont.p subfont.pfb ) ; \
+	'$$(PERL)' -CSD $$(mvp)/mp2pf $(1).tmp/subfont $$(TSU_V_REDIR) ; \
+	(cd $(1).tmp ; '$$(realpath @T1ASM@)' -b subfont.p subfont.pfb ) ; \
 	if test -r $(1).tmp/subfont.pfb \
-	  && $$(GREP) -q 'output files\? written' $(1).tmp/subfont.log; then \
+	  && '$$(GREP)' -q 'output files\? written' $(1).tmp/subfont.log; then \
 	  mv -f $(1).tmp/subfont.pfb pfbtmp/$(1).pfb ; \
 	else \
 	  echo "ERROR BUILDING" $$@ ; \
@@ -249,7 +249,7 @@ pfbtmp/$(1).pfb: pfbtmp/.dirstamp subfont.mp \
 
 pfb/$(1).pfb: pfbtmp/$(1).pfb pfb/.dirstamp pe/rmo.pe
 	$$(AM_V_at)$$(TSU_V_RMO) \
-	$$(FONTANVIL) -lang=ff -script \
+	'$$(FONTANVIL)' -lang=ff -script \
 	  $$(mvp)/pe/rmo.pe pfbtmp/$(1).pfb pfb/$(1).pfb \
 	  $$(TSU_V_REDIR)
 endef
@@ -272,7 +272,7 @@ merged/$(1).sfd: pe/merge.pe merged/.dirstamp \
   pfb/$(1).4.pfb pfb/$(1).5.pfb pfb/$(1).6.pfb pfb/$(1).7.pfb \
   pfb/$(1).8.pfb pfb/$(1).9.pfb
 	$(AM_V_at)$$(TSU_V_SFD) \
-	  $(FONTANVIL) -lang=ff -script \
+	  '$(FONTANVIL)' -lang=ff -script \
 	    $(mvp)/pe/merge.pe $(1) @ae_arg_okay@ \
 	  $(TSU_V_REDIR)
 endef
@@ -286,52 +286,52 @@ $(eval $(call MERGED_RECIPE,$(ten)$(uni)))))
 define OTF_RECIPES
 otf/Beikaitoru$(1)0$(2).otf: otf/.dirstamp merged/$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe $(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)00.pe $(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)1$(2).otf: otf/.dirstamp merged/1$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 1$(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 1$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)2$(2).otf: otf/.dirstamp merged/2$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 2$(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 2$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)3$(2).otf: otf/.dirstamp merged/3$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 3$(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 3$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)4$(2).otf: otf/.dirstamp merged/4$(2).sfd pe/otf-$(1)00.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 4$(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)00.pe 4$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)5$(2).otf: otf/.dirstamp merged/$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe $(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)50.pe $(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)6$(2).otf: otf/.dirstamp merged/1$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 1$(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 1$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)7$(2).otf: otf/.dirstamp merged/2$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 2$(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 2$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)8$(2).otf: otf/.dirstamp merged/3$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 3$(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 3$(2) \
 	  $(TSU_V_REDIR)
 
 otf/Beikaitoru$(1)9$(2).otf: otf/.dirstamp merged/4$(2).sfd pe/otf-$(1)50.pe
 	$(AM_V_at)$$(TSU_V_OTF) \
-	  $(FONTANVIL) -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 4$(2) \
+	  '$(FONTANVIL)' -lang=ff -script $(mvp)/pe/otf-$(1)50.pe 4$(2) \
 	  $(TSU_V_REDIR)
 
 endef
@@ -346,7 +346,7 @@ $(eval $(call OTF_RECIPES,$(hun),$(uni)))))
 
 beikaitoru.pdf: beikaitoru.tex \
   otf/Beikaitoru406.otf otf/Beikaitoru506.otf
-	$(AM_V_at)$(TSU_V_TEX)$(expect_start)$(XELATEX) \
+	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
 	  $(mvp)/beikaitoru$(expect_end)
 
 ############################################################################
@@ -354,7 +354,7 @@ beikaitoru.pdf: beikaitoru.tex \
 # TESTING
 
 TESTS = $(dist_otf_DATA) $(dist_ttf_DATA) $(dist_type1_DATA)
-LOG_COMPILER = $(FONTANVIL) -lang=ff -script pe/fontlint.pe
+LOG_COMPILER = '$(FONTANVIL)' -lang=ff -script pe/fontlint.pe
 
 ############################################################################
 
@@ -395,6 +395,12 @@ m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4

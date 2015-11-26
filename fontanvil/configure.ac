@@ -227,7 +227,7 @@ AC_MSG_CHECKING([GNU Make version])
 AS_IF([test "x$PERL" = "x" || test "x$MAKE" = "x"],[],
   [missing_gmake_version=no
 gmake_version=dnl
-`$MAKE --version | perl -ne 'print $1 if /^GNU Make.*(\d+\.\d+)/'`
+`"$MAKE" --version | perl -ne 'print $1 if /^GNU Make.*(\d+\.\d+)/'`
    AS_VERSION_COMPARE([$gmake_version],[3.82],
      [missing_gmake_version=yes])])
 AC_MSG_RESULT([$gmake_version])
@@ -255,7 +255,8 @@ AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "xno"])
 #
 AC_SEARCH_LIBS([cos],[m])
 #
-PKG_CHECK_MODULES([FREETYPE],[freetype2])
+PKG_CHECK_MODULES([FREETYPE],[freetype2],
+  [have_freetype2=yes],[have_freetype2=no])
 AC_SEARCH_LIBS([iconv],[iconv])
 PKG_CHECK_MODULES([ZLIB],[zlib],[],[AC_SEARCH_LIBS([inflate],[z])])
 #
@@ -466,7 +467,7 @@ AC_COMPILE_IFELSE(
 #
 AC_SYS_LONG_FILE_NAMES
 AX_AM_JOBSERVER
-AS_IF([test '!' "x$KPSEWHICH" = "x"],[eightrenc=`$KPSEWHICH 8r.enc`])
+AS_IF([test '!' "x$KPSEWHICH" = "x"],[eightrenc=`"$KPSEWHICH" 8r.enc`])
 AC_SUBST([eightrenc])
 #
 ############################################################################
@@ -534,13 +535,14 @@ AC_SUBST([HOST],["$host"])
 AC_SUBST([MACAPP])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([fix-makefile],
-  [if test '!' "x$ICEMAP" = "x" ; then $PERL -i -pe \
+  [if test '!' "x$ICEMAP" = "x" ; then "$PERL" -i -pe \
 's/^(@<:@a-z\-@:>@+:) (\$\(BUILT_SOURCES\))/'\
-'\1\n\t@\$(MAKE) -q \2 || \$(MAKE) \$(AM_MAKEFLAGS) \2/;'\
+'\1\n\t@\$(MAKE) -q \2 || \$(MAKE) \$(AM_MAKEFLAGS) \2/;' Makefile ; fi ; \
+"$PERL" -i -pe \
 's#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
 '\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
 '\t-\$(A''M_V_at)\1rm -\2f \3#;' \
-   Makefile ; fi],
+   Makefile],
   [PERL=$PERL
    ICEMAP=$ICEMAP])
 AC_OUTPUT
@@ -554,6 +556,12 @@ TSU_COLOURISE([FontAnvil configuration status],[5])AS_ECHO([])
 #
 AS_ECHO([])
 TSU_COLOURISE([Requirements for all builds],[7])AS_ECHO([])
+AS_ECHO_N(["freetype2         "])
+  AS_IF([test "x$have_freetype2" = "xno"],
+    [TSU_COLOURISE([no],[1])
+     AS_ECHO_N(["     http://freetype.org/"])],
+    [TSU_COLOURISE([yes],[2])])
+  AS_ECHO([])
 AS_ECHO_N(["gzip              "])
   AS_IF([test "x$GZIP" = "x"],
     [TSU_COLOURISE([no],[1])
@@ -677,3 +685,13 @@ AS_ECHO_N(["valgrind          "])
     [TSU_COLOURISE([yes],[2])])
   AS_ECHO([])
 AS_ECHO([])
+TSU_BAD_PATHS
+AS_IF([test "x$has_bad_paths" = "xyes"],
+  [AS_ECHO([])
+   AS_ECHO(["The following pathnames contain illegal characters, such as spaces:"])
+   AS_ECHO(["$all_bad_paths"])
+   AS_ECHO(["Autotools-based build systems like this one cannot be expected to work"])
+   AS_ECHO(["with such pathnames.  The system will attempt to continue anyway, but it"])
+   AS_ECHO(["is quite likely to fail.  It would be better to eliminate all illegal"])
+   AS_ECHO(["characters from pathnames before continuing."])
+   ])

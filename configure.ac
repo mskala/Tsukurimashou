@@ -201,7 +201,7 @@ AM_EXTRA_RECURSIVE_TARGETS([download])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4432 2015-11-23 20:44:26Z mskala $])
+AC_REVISION([$Id: configure.ac 4447 2015-11-26 16:27:44Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -262,7 +262,7 @@ AC_MSG_CHECKING([GNU Make version])
 AS_IF([test "x$PERL" = "x" || test "x$MAKE" = "x"],[],
   [missing_gmake_version=no
 gmake_version=dnl
-`$MAKE --version | perl -ne 'print $1 if /^GNU Make.*(\d+\.\d+)/'`
+`"$MAKE" --version | perl -ne 'print $1 if /^GNU Make.*(\d+\.\d+)/'`
    AS_VERSION_COMPARE([$gmake_version],[3.82],
      [missing_gmake_version=yes])])
 AC_MSG_RESULT([$gmake_version])
@@ -435,7 +435,7 @@ AS_IF([test "x$enable_parasites" = "xauto"],
  [AS_IF([test '!' "x$FONTANVIL" = "x"],
    [enable_parasites=none],
    [local_fontanvil_kludge=yes
-    AS_IF([$LEX --version 2> /dev/null],[],[can_fontanvil=no])
+    AS_IF(["$LEX" --version 2> /dev/null],[],[can_fontanvil=no])
     AS_IF([test -s fontanvil/fontanvil/unicodelib.h || test -x icemap/icemap],
      [enable_parasites=fontanvil],
      [local_icemap_kludge=yes
@@ -540,6 +540,7 @@ AC_SUBST([enable_styles])
 #
 # Evaluate what we can and can't do
 #
+TSU_BAD_PATHS
 
 AC_MSG_CHECKING([whether PGF 2.10 workaround is needed])
 need_pgf_workaround=no
@@ -555,7 +556,7 @@ AS_IF([test "x$EXPECT" = "x"],
 AC_MSG_RESULT([$can_silent_rules])
 
 AC_MSG_CHECKING([FontAnvil at least 0.2])
-fontanvil_version="`$FONTANVIL --version 2> /dev/null | $PERL -ne 'print \$1 if /FontAnvil (\d+\.\d+)/'`"
+fontanvil_version="`"$FONTANVIL" --version 2> /dev/null | "$PERL" -ne 'print \$1 if /FontAnvil (\d+\.\d+)/'`"
 AS_VERSION_COMPARE([$fontanvil_version],[0.2],
   [fontanvil_recent=no],[fontanvil_recent=yes],[fontanvil_recent=yes])
 AC_MSG_RESULT([$fontanvil_recent])
@@ -575,7 +576,7 @@ AS_IF([test "x$GDB" = "x"],
   [missing_gdb=yes
    can_ffdebug=no])
 AS_IF([test "$can_ffdebug" = "yes"],
-  [gdb_result=`echo q | $GDB -q -n -s $FONTANVIL 2> /dev/null | $GREP 'no debug'`
+  [gdb_result=`echo q | "$GDB" -q -n -s "$FONTANVIL" 2> /dev/null | "$GREP" 'no debug'`
    AS_IF([test "x$gdb_result" = "x"],[],
      [missing_ff_debugsymbols=yes
       can_ffdebug=no])])
@@ -584,7 +585,7 @@ AC_MSG_RESULT([$can_ffdebug])
 AC_MSG_CHECKING([whether FontAnvil accepts AddExtrema(1)])
 echo '#!/usr/local/bin/fontforge' > ffaetest.pe
 echo 'New();AddExtrema(1);' >> ffaetest.pe
-AS_IF([$FONTANVIL -script ffaetest.pe >& /dev/null],
+AS_IF(["$FONTANVIL" -script ffaetest.pe >& /dev/null],
   [ae_arg_okay=yes],[ae_arg_okay=no])
 rm ffaetest.pe
 AC_SUBST([ae_arg_okay])
@@ -647,7 +648,7 @@ AS_IF([test '!' "x$missing_gmake_version" = "xno"],
 AS_IF([test "x$MPOST" = "x"],
   [missing_mpost=yes
    can_core=no],
-  [mpost_version=`$MPOST --version | $PERL -ne 'print $1 if /MetaPost\s+(@<:@0-9.@:>@+)/'`
+  [mpost_version=`"$MPOST" --version | "$PERL" -ne 'print $1 if /MetaPost\s+(@<:@0-9.@:>@+)/'`
    AS_VERSION_COMPARE([$mpost_version],[1.501],
      [mpost_version_warn=yes])
    ])
@@ -683,7 +684,7 @@ AS_IF([test "x$XELATEX" = "x"],
   [missing_xelatex=yes
    can_docs=no],
   [kprcs=`kpsewhich pgfrcs.code.tex`
-   pgf_version=`cat $kprcs /dev/null | $PERL -ne 'print $1 if /^@<:@^%@:>@+pgfversion\{(.*)\}/'`
+   pgf_version=`cat $kprcs /dev/null | "$PERL" -ne 'print $1 if /^@<:@^%@:>@+pgfversion\{(.*)\}/'`
    AS_VERSION_COMPARE([$pgf_version],[2.00],
      [missing_pgf_version=yes
       can_docs=no])
@@ -724,7 +725,7 @@ AS_IF([test "x$XELATEX" = "x"],
   [missing_xelatex=yes
    can_proofs=no],
   [kprcs=`kpsewhich pgfrcs.code.tex`
-   pgf_version=`cat $kprcs /dev/null | $PERL -ne 'print $1 if /^@<:@^%@:>@+pgfversion\{(.*)\}/'`
+   pgf_version=`cat $kprcs /dev/null | "$PERL" -ne 'print $1 if /^@<:@^%@:>@+pgfversion\{(.*)\}/'`
    AS_VERSION_COMPARE([$pgf_version],[2.00],
      [missing_pgf_version=yes
       can_proofs=no])
@@ -734,8 +735,8 @@ AS_IF([test '!' "$enable_proportional" = "yes" \
   [missing_proportional=yes
    can_proofs=no])
 AS_IF([test '!' "x$enable_proofs" = "xno"],
-  [$PERL -CSD $srcdir/tools/make-cfghl style "$enable_styles" > cdp-temp.hl
-   cdp_result=`$PERL -CSD $srcdir/hamlog/hamlog 'Y' \
+  ["$PERL" -CSD $srcdir/tools/make-cfghl style "$enable_styles" > cdp-temp.hl
+   cdp_result=`"$PERL" -CSD $srcdir/hamlog/hamlog 'Y' \
      'can_do_proofs(Y)' cdp-temp.hl $srcdir/hamlog/select.hl`
    rm -f cdp-temp.hl
    AS_IF([test '!' "x$cdp_result" = "xyes"],
@@ -745,6 +746,7 @@ AS_IF([test '!' "x$enable_proofs" = "xno"],
 AS_IF([test '!' "$enable_proofs" = "no" && test "$can_proofs" = "no"],
   [can_build=no])
 AC_MSG_RESULT([$can_proofs])
+AS_IF([test "x$has_bad_paths" = "xyes"],[can_build=no])
 #
 ############################################################################
 #
@@ -753,7 +755,7 @@ AC_MSG_RESULT([$can_proofs])
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([fix-makefile],
-  [$PERL -i -pe \
+  ["$PERL" -i -pe \
 's/ZZZZHACKZZZZ\s*=\s*//;$_="" if /\$\(error This Makefile must be /;'\
 's#(\$\(AUTOMAKE\) --foreign( Makefile)?)(?! && ./config)#'\
 '\1 && \$(SHELL) ./config.status fix-makefile#;'\
@@ -791,7 +793,7 @@ AS_IF([test "x$enable_proofs" = "xbook"],
      [$enable_proofs],[$can_proofs])])
 AS_IF([test "x$enable_jobserver" = "xno"],
   [TSU_TABLE_LINE([parallel build jobs    ],[no],[no],[yes])],
-  [wantline=`$PERL -e 'printf "%-8s","'$enable_jobserver/$CPU_COUNT'"'`
+  [wantline=`"$PERL" -e 'printf "%-8s","'$enable_jobserver/$CPU_COUNT'"'`
    TSU_TABLE_LINE([parallel build jobs    ],[$wantline],[yes],
      [yes])])
 TSU_TABLE_LINE([silent build rules     ],[$enable_silent_rules],
@@ -1024,10 +1026,20 @@ AS_IF([test "x$dl_unicode_warn" = "xyes"],
    AS_ECHO(["the principle that build systems should never make network connections"])
    AS_ECHO(["without a specific user request to do so."])])
 
+AS_IF([test "x$has_bad_paths" = "xyes"],
+  [AS_ECHO([])
+   AS_ECHO(["The following pathnames contain illegal characters, such as spaces:"])
+   AS_ECHO(["$all_bad_paths"])
+   AS_ECHO(["Autotools-based build systems like this one cannot be expected to work"])
+   AS_ECHO(["with such pathnames.  The system will attempt to continue anyway, but it"])
+   AS_ECHO(["is quite likely to fail.  It would be better to eliminate all illegal"])
+   AS_ECHO(["characters from pathnames before continuing."])
+   ])
+
 AS_IF([test "x$can_fontanvil" = "xno"],
   [AS_ECHO([])
    AS_ECHO(["One or more dependencies needed by FontAnvil are missing:"])
-   AS_IF([$LEX --version 2> /dev/null],[],
+   AS_IF(["$LEX" --version 2> /dev/null],[],
      [AS_ECHO(["   flex                  http://flex.sourceforge.net/"])])
    AS_ECHO(["Since the current configuration requires FontAnvil, this blocks the build."])
    ])

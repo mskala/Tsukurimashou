@@ -62,7 +62,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo -e "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo -e "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
-  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -76,7 +76,7 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
-  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
@@ -100,7 +100,7 @@ TSU_V_TEXL_0=echo \
 # CONDITIONAL OPTIONS
 
 if COND_EXPECT
-  expect_start= $(if $(AM_V_at),$(EXPECT) -c \
+  expect_start= $(if $(AM_V_at),'$(EXPECT)' -c \
     'log_user 0 ; spawn -noecho sh -c ")
   expect_end= $(if $(AM_V_at), " ; \
     expect -timeout -1 \
@@ -226,6 +226,9 @@ m4/ax_perl_module_version.m4: ../m4/ax_perl_module_version.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4

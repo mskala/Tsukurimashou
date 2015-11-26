@@ -62,7 +62,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
-  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -76,7 +76,7 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
-  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
@@ -109,7 +109,7 @@ if COND_DOCS
     MAYBE_DOCS=idsgrep.pdf
 endif
 if COND_EXPECT
-  expect_start= $(if $(AM_V_at),$(EXPECT) -c \
+  expect_start= $(if $(AM_V_at),'$(EXPECT)' -c \
     'log_user 0 ; spawn -noecho sh -c ")
   expect_end= $(if $(AM_V_at), " ; \
     expect -timeout -1 \
@@ -226,12 +226,12 @@ MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
 idsgrep.pdf: idsgrep.tex mitsuba.cls mitsuba.cfg idsgrep.bib \
   @with_tsuku_build@/otf/TsukurimashouMincho.otf
 	$(AM_V_at)I=1;$(TSU_V_TEXL) \
-	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end) ; \
+	  $(expect_start)'$(XELATEX)' $(mvp)/idsgrep.tex $(expect_end) ; \
 	export BIBINPUTS=$(mvp) ; bibtex idsgrep.aux $(TSU_V_REDIR) ; \
 	I=2;$(TSU_V_TEXL) \
-	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end) ; \
+	  $(expect_start)'$(XELATEX)' $(mvp)/idsgrep.tex $(expect_end) ; \
 	I=3;$(TSU_V_TEXL) \
-	  $(expect_start)$(XELATEX) $(mvp)/idsgrep.tex $(expect_end)
+	  $(expect_start)'$(XELATEX)' $(mvp)/idsgrep.tex $(expect_end)
 
 ############################################################################
 
@@ -239,30 +239,30 @@ idsgrep.pdf: idsgrep.tex mitsuba.cls mitsuba.cfg idsgrep.bib \
 
 chise.eids: $(wildcard @with_chise_ids@/IDS-*.txt) chise2eids
 	$(AM_V_GEN)
-	$(AM_V_at)$(PERL) -CDS $(mvp)/chise2eids \
+	$(AM_V_at)'$(PERL)' -CDS $(mvp)/chise2eids \
 	  @with_chise_ids@ @with_chise_ids@/IDS-*.txt \
 	  > chise.eids 2> chise.errs
 	@echo `wc -l < chise.errs` errors detected in CHISE IDS
 
 cjkvi-%.eids: cjkvi-ids.txt cjkvi2eids
 	$(AM_V_GEN)
-	$(AM_V_at)$(PERL) -CDS $(mvp)/cjkvi2eids $* \
+	$(AM_V_at)'$(PERL)' -CDS $(mvp)/cjkvi2eids $* \
 	  $(mvp)/cjkvi-ids.txt > cjkvi-$*.eids
 
 edict.eids: @with_edict2@ @edict_decomp@ ed22eids
 	$(AM_V_GEN)
-	$(AM_V_at)$(GZIP) -cd @with_edict2@ \
-	  | $(ICONV) -feuc-jp -tutf-8 \
-	  | $(PERL) -CDS $(mvp)/ed22eids @edict_decomp@ > edict.eids
+	$(AM_V_at)'$(GZIP)' -cd @with_edict2@ \
+	  | '$(ICONV)' -feuc-jp -tutf-8 \
+	  | '$(PERL)' -CDS $(mvp)/ed22eids @edict_decomp@ > edict.eids
 
 kanjivg.eids: @with_kanjivg@ kvg2eids
 	$(AM_V_GEN)
-	$(AM_V_at)if $(PERL) \
+	$(AM_V_at)if '$(PERL)' \
 	  -e 'read STDIN,$$_,2;exit 1 if unpack("n",$$_)!=8075' \
 	  < @with_kanjivg@ ; \
-	then $(GZIP) -cd @with_kanjivg@ \
-	  | $(PERL) -CS $(mvp)/kvg2eids > kanjivg.eids ; \
-	else $(PERL) -CS $(mvp)/kvg2eids < @with_kanjivg@ > kanjivg.eids ; fi
+	then '$(GZIP)' -cd @with_kanjivg@ \
+	  | '$(PERL)' -CS $(mvp)/kvg2eids > kanjivg.eids ; \
+	else '$(PERL)' -CS $(mvp)/kvg2eids < @with_kanjivg@ > kanjivg.eids ; fi
 
 @with_tsuku_build@/otf/TsukurimashouMincho.otf:
 	cd @with_tsuku_build@ ; \
@@ -275,7 +275,7 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 	$(LN_S) -f @with_tsuku_build@/txt/tsukurimashou.eids \
 	  tsukurimashou.eids
 
-%.bvec: idsgrep %.eids
+%.bvec: idsgrep$(EXEEXT) %.eids
 	$(AM_V_GEN)
 	$(AM_V_at)./idsgrep -G $*.eids > $*.bvec
 
@@ -341,6 +341,9 @@ m4/ax_perl_module_version.m4: ../m4/ax_perl_module_version.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4

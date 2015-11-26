@@ -63,7 +63,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
-  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -77,7 +77,7 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
-  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_CP =$(TSU_V_CP_$(V))
@@ -119,12 +119,12 @@ TSU_V_TEXL_0=echo \
 
 TEST_EXTENSIONS = .pe .pl
 if COND_VALGRIND
-  PE_LOG_COMPILER = @VALGRIND@ @VALGRIND_FLAGS@ \
-    $(builddir)/fontanvil/fontanvil
+  PE_LOG_COMPILER = '@VALGRIND@' @VALGRIND_FLAGS@ \
+    '$(builddir)/fontanvil/fontanvil$(EXEEXT)'
 else
-  PE_LOG_COMPILER = $(builddir)/fontanvil/fontanvil
+  PE_LOG_COMPILER = '$(builddir)/fontanvil/fontanvil$(EXEEXT)'
 endif
-PL_LOG_COMPILER = @PERL@
+PL_LOG_COMPILER = '@PERL@'
 
 TESTS = \
   test/arithmetic.pe test/feamerge.pe test/ocrblue.pe test/unilib.pe \
@@ -153,7 +153,7 @@ test/fonts/cmbsy10.pfb:
 
 endif
 
-$(TESTS): ttmp/.dirstamp fontanvil/fontanvil
+$(TESTS): ttmp/.dirstamp fontanvil/fontanvil$(EXEEXT)
 
 ############################################################################
 
@@ -195,7 +195,6 @@ if COND_LIBXML2
   MAYBE_LIBXML2_CF=$(LIBXML2_CFLAGS)
   MAYBE_LIBXML2_LD=$(LIBXML2_LIBS)
 endif
-
 
 ############################################################################
 
@@ -392,7 +391,7 @@ download:
 if COND_ICEMAP
 
 %.h:%.im $(ICEMAP)
-	$(TSU_V_ICE)$(ICEMAP) -H$@ -C$(patsubst %.h,%.c,$@) $< $(TSU_V_REDIR)
+	$(TSU_V_ICE)'$(ICEMAP)' -H$@ -C$(patsubst %.h,%.c,$@) $< $(TSU_V_REDIR)
 
 fontanvil/hinttab.h: fontanvil/hinttab.im
 fontanvil/hinttab.c: fontanvil/hinttab.h
@@ -417,13 +416,13 @@ endif
 dat/texbase.dat: dat/8r.enc
 	$(AM_V_GEN)
 	$(AM_V_at)mkdir -p dat
-	$(AM_V_at)$(PERL) -pe \
+	$(AM_V_at)'$(PERL)' -pe \
 	  's/\%.*//;s!/TeXBase1Encoding!!;s/\s/\n/g;' $< > $@
 
 dat/gb2312.dat: dat/Unihan_OtherMappings.txt
 	$(AM_V_GEN)
 	$(AM_V_at)mkdir -p dat
-	$(AM_V_at)$(PERL) -n \
+	$(AM_V_at)'$(PERL)' -n \
 	  -e 'printf "%02X%02X\t%s\n",$$2+161,$$3+161,$$1 ' \
 	  -e 'if /U\+([0-9a-f]{4})\tkGB0\t(\d\d)(\d\d)/i;' $< > $@
 endif
@@ -432,7 +431,7 @@ endif
 
 # PE SCRIPTS
 
-PESCRIPT_HEADER = "\#!$(bindir)/fontanvil"
+PESCRIPT_HEADER = "\#!$(bindir)/fontanvil$(EXEEXT)"
 
 fontanvil/fontimage: fontanvil/fontimage.pe
 	$(AM_V_GEN)
@@ -456,12 +455,12 @@ fontanvil/sfddiff: fontanvil/sfddiff.pe
 doc/fontanvil.pdf: $(texfiles) doc/mitsuba.cls \
   doc/quixote-dore.jpg doc/quixote-daumier.jpg
 	$(AM_V_at)I=1;$(TSU_V_TEXL) cd doc ; \
-	  $(PDFLATEX) fontanvil.tex $(TSU_V_REDIR)
+	  '$(PDFLATEX)' fontanvil.tex $(TSU_V_REDIR)
 	$(AM_V_at)cd doc ; makeindex fontanvil.idx $(TSU_V_REDIR)
 	$(AM_V_at)I=2;$(TSU_V_TEXL) cd doc ; \
-	  $(PDFLATEX) fontanvil.tex $(TSU_V_REDIR)
+	  '$(PDFLATEX)' fontanvil.tex $(TSU_V_REDIR)
 	$(AM_V_at)I=3;$(TSU_V_TEXL) cd doc ; \
-	  $(PDFLATEX) fontanvil.tex $(TSU_V_REDIR)
+	  '$(PDFLATEX)' fontanvil.tex $(TSU_V_REDIR)
 
 ############################################################################
 
@@ -491,7 +490,7 @@ MAINTAINERCLEANFILES = \
 
 # KILL EMPTY FILES
 
-kill_empty=@$(PERL) \
+kill_empty=@'$(PERL)' \
   -e 'while (<$(1)>) { if (-f && -z _) {' \
   -e 'print "DELETING EMPTY FILE $$_\n"; `rm $$_`; } }'
 
@@ -551,6 +550,9 @@ m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4

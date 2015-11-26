@@ -14,9 +14,18 @@ Tsukurimashou in particular, FontAnvil has no GUI and, to a reasonable
 extent, avoids dependencies on external packages.</P>
 
 <P>Read the <A HREF="fontanvil.pdf">FontAnvil user's manual</A> (PDF).</P>
+
+<P>Use of FontAnvil on Windows is not officially supported, and the
+Tsukurimashou Project does not provide official binary packages of FontAnvil
+for any platform.  Only the source code is officially supported, and only
+under Linux and Mac.  However, a user has graciously contributed some
+<A HREF="http://sourceforge.net/projects/fontforgebuilds/files/fontanvil/">unofficial
+binary packages</A> for Windows.</P>
 .
 Main-Text[ja].
 <P>ごめんなさい。このページは、とりあえず日本語の翻訳がありません。</P>
 
 <P><A HREF="fontanvil.pdf">ＦｏｎｔＡｎｖｉｌのユーザーマニュアル</A>（英語のＰＤＦ）</P>
+
+<P><A HREF="http://sourceforge.net/projects/fontforgebuilds/files/fontanvil/">Windowsの非公式バイナリー</A></P>
 .

@@ -208,7 +208,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([subfont.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4432 2015-11-23 20:44:26Z mskala $])
+AC_REVISION([$Id: configure.ac 4447 2015-11-26 16:27:44Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2013 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -312,7 +312,7 @@ AS_IF([test "x$enable_silent_rules" = "x"],
 AC_MSG_CHECKING([whether FontAnvil accepts AddExtrema(1)])
 echo '#!/usr/local/bin/fontforge' > ffaetest.pe
 echo 'New();AddExtrema(1);' >> ffaetest.pe
-AS_IF([$FONTANVIL -script ffaetest.pe >& /dev/null],
+AS_IF(["$FONTANVIL" -script ffaetest.pe >& /dev/null],
   [ae_arg_okay=yes],[ae_arg_okay=no])
 rm ffaetest.pe
 AC_SUBST([ae_arg_okay])
@@ -325,7 +325,7 @@ AC_MSG_RESULT([$ae_arg_okay])
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([fix-makefile],
-  [$PERL -i -pe \
+  ["$PERL" -i -pe \
 's#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
 '\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
 '\t-\$(A''M_V_at)\1rm -\2f \3#;' \
@@ -376,3 +376,13 @@ AS_ECHO_N(["XeLaTeX           "])
     [TSU_COLOURISE([yes],[2])])
   AS_ECHO([])
 AS_ECHO([])
+TSU_BAD_PATHS
+AS_IF([test "x$has_bad_paths" = "xyes"],
+  [AS_ECHO([])
+   AS_ECHO(["The following pathnames contain illegal characters, such as spaces:"])
+   AS_ECHO(["$all_bad_paths"])
+   AS_ECHO(["Autotools-based build systems like this one cannot be expected to work"])
+   AS_ECHO(["with such pathnames.  The system will attempt to continue anyway, but it"])
+   AS_ECHO(["is quite likely to fail.  It would be better to eliminate all illegal"])
+   AS_ECHO(["characters from pathnames before continuing."])
+   ])

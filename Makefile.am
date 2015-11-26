@@ -78,7 +78,7 @@ if COND_COLOUR
   am__@andt@v_CC_0=@echo "$(ansi_default)$(ansi_cleareol)  CC    " $@;
   am__@andt@v_CCLD_0=@echo "$(ansi_default)$(ansi_cleareol)  CCLD  " $@;
   am__@andt@v_GEN_0=@echo "$(ansi_default)$(ansi_cleareol)  GEN   " $@;
-  TSU_V_CHOPPER=| $(PERL) -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/\[0m   (.{65})([^\n]+)/\[0m   \1.../'
 else
   ansi_default=
   ansi_red=
@@ -92,7 +92,7 @@ else
   ansi_cleareol=
   ansi_clearescaped=
   ansi_home=
-  TSU_V_CHOPPER=| $(PERL) -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
+  TSU_V_CHOPPER=| '$(PERL)' -pe 's/RM   (.{65})([^\n]+)/RM   \1.../'
 endif
 
 TSU_V_BDF =$(TSU_V_BDF_$(V))
@@ -191,7 +191,7 @@ if COND_DOCS
   MAYBE_MDOCS=$(foreach doc,$(MAINTAINER_DOCS),doc/$(doc).pdf)
 endif
 if COND_EXPECT
-  expect_start= $(if $(AM_V_at),$(EXPECT) -c \
+  expect_start= $(if $(AM_V_at),'$(EXPECT)' -c \
     'log_user 0 ; spawn -noecho sh -c ")
   expect_end= $(if $(AM_V_at), " ; \
     expect -timeout -1 \
@@ -307,7 +307,7 @@ DISTCLEANFILES = \
 
 # KILL EMPTY FILES AND RECORD BUILD START
 
-kill_empty=@$(PERL) \
+kill_empty=@'$(PERL)' \
   -e 'while (<$(1)>) { if (-f && -z _) {' \
   -e 'print "DELETING EMPTY FILE $$_\n"; `rm $$_`; } }'
 
@@ -325,28 +325,28 @@ kill-empty:
 
 DEFAULT_TOK = tsuku
 
-PFBSTAMP:=$(strip $(shell $(GREP) 'AUTODEPS\|input\|BEGINFEATURE' \
+PFBSTAMP:=$(strip $(shell '$(GREP)' 'AUTODEPS\|input\|BEGINFEATURE' \
   $(mvp)/mp/*.mp ./mp/*.mp $(mvp)/fsc/*.fsc | \
-  cat - config.log | $(CHECKSUM)))
+  cat - config.log | '$(CHECKSUM)'))
 
 if COND_PROLOG_ECLIPSE
-  HAMLOG=$(PROLOG) -b $(mvp)/hamlog/ecl-ham.ecl -e ecl_run_hamlog_program --
+  HAMLOG='$(PROLOG)' -b $(mvp)/hamlog/ecl-ham.ecl -e ecl_run_hamlog_program --
   HAMLOG_AFTER=
   HAMLOG_DEPS=hamlog/ecl-ham.ecl
 endif
 if COND_PROLOG_GNU
-  HAMLOG=$(PROLOG) --init-goal \
+  HAMLOG='$(PROLOG)' --init-goal \
     "['$(mvp)/hamlog/gp-ham.pl'],gp_run_hamlog_program" --
-  HAMLOG_AFTER= | $(PERL) -ne 'print if $$f; $$f=1 if /OUTPUT/'
+  HAMLOG_AFTER= | '$(PERL)' -ne 'print if $$f; $$f=1 if /OUTPUT/'
   HAMLOG_DEPS=hamlog/gp-ham.pl
 endif
 if COND_PROLOG_HAMLOG
-  HAMLOG=$(PERL) $(mvp)/hamlog/hamlog
+  HAMLOG='$(PERL)' $(mvp)/hamlog/hamlog
   HAMLOG_AFTER=
   HAMLOG_DEPS=hamlog/hamlog
 endif
 if COND_PROLOG_SWI
-  HAMLOG=$(PROLOG) -f $(mvp)/hamlog/swi-ham.pl -t halt --
+  HAMLOG='$(PROLOG)' -f $(mvp)/hamlog/swi-ham.pl -t halt --
   HAMLOG_AFTER=
   HAMLOG_DEPS=hamlog/swi-ham.pl
 endif
@@ -373,15 +373,15 @@ hamlog/config.hl: tools/make-cfghl \
 	  $(TSU_V_NAPERL) \
 	  echo '% GENERATED FILE, edit Makefile.am instead' \
 	    > hamlog/config.hl ; \
-	  $(PERL) -CSD $(mvp)/tools/make-cfghl char '@enable_chars@' \
+	  '$(PERL)' -CSD $(mvp)/tools/make-cfghl char '@enable_chars@' \
 	    >> hamlog/config.hl ; \
-	  $(PERL) -CSD $(mvp)/tools/make-cfghl style '@enable_styles@' \
+	  '$(PERL)' -CSD $(mvp)/tools/make-cfghl style '@enable_styles@' \
 	    >> hamlog/config.hl ; \
-	  $(PERL) -CSD $(mvp)/tools/make-cfghl feature \
+	  '$(PERL)' -CSD $(mvp)/tools/make-cfghl feature \
 	    '@enable_ot_features@' >> hamlog/config.hl ; \
-	  $(PERL) -CSD $(mvp)/tools/make-cfghl parasite \
+	  '$(PERL)' -CSD $(mvp)/tools/make-cfghl parasite \
 	    '@enable_parasites@' >> hamlog/config.hl ; \
-	  $(PERL) -CSD $(mvp)/tools/make-cfghl early_parasite \
+	  '$(PERL)' -CSD $(mvp)/tools/make-cfghl early_parasite \
 	    '@enable_parasites@' >> hamlog/config.hl ; \
 	  if test "x$(enable_proportional)" = "xyes" ; then \
 	    echo proportional_enabled. >> hamlog/config.hl ; \
@@ -393,11 +393,11 @@ hamlog/config.hl: tools/make-cfghl \
 	    do for b in 0 1 2 3 4 5 6 7 8 9 a b c d e f ; do \
 	      echo mande-$$a$$b.mp ; done ; done ; \
 	    ls $(mvp)/mp/ mp/ ) | \
-	  $(PERL) -CSD -n \
+	  '$(PERL)' -CSD -n \
 	    -e 'print "page_exists($$1,page$$2).\n"' \
 	    -e 'if /^([a-z]{3,7})-([0-9a-f]{2,3})\.mp$$/' \
 	    | sort | uniq >> hamlog/config.hl ; \
-	  $(PERL) -CSD -ne \
+	  '$(PERL)' -CSD -ne \
 	    'print "feature_exists($$1).\n" if /BEGINFEATURE ([a-z0-9_]+)/' \
 	    $(mvp)/fsc/*.fsc >> hamlog/config.hl ; \
 	  echo $(PFBSTAMP) > chl-stamp ; \
@@ -409,19 +409,19 @@ jnames_encode_script:=\
     if (/^\s*(\S+)\t(.*)/) { print "jk_name($$1,$$2).\n"; }'
 hamlog/jnames.hl: txt/jnames.txt hamlog/.dirstamp
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD -ne $(jnames_encode_script) \
+	$(AM_V_at)'$(PERL)' -CSD -ne $(jnames_encode_script) \
 	  $(mvp)/txt/jnames.txt > hamlog/jnames.hl
 
 hamlog/kddata.hl: tools/make-kddata $(KANJIDIC2) hamlog/.dirstamp
 	$(TSU_V_PERL)
-	$(AM_V_at)$(GZIP) -cd $(KANJIDIC2) \
+	$(AM_V_at)'$(GZIP)' -cd $(KANJIDIC2) \
 	  | $(PERL) -CSD $(mvp)/tools/make-kddata \
 	    > hamlog/kddata.hl
 
 hamlog/macdep.ecl: tools/autodep hamlog/.dirstamp \
   $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp))
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/autodep -mkpl $(mvp)/mp/ \
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/autodep -mkpl $(mvp)/mp/ \
 	  $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp)) \
 	  > hamlog/macdep.ecl
 
@@ -546,7 +546,7 @@ makefile-pfb.inc: \
   makefile-vars.inc tools/mpdep mp/.hglstamp \
   $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp)) \
   $(MAYBE_PFB_TICKLER)
-	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -o makefile-pfb.inc \
+	$(AM_V_at)'$(MAKE)' $(AM_MAKEFLAGS) -o makefile-pfb.inc \
 	  makefile-pfb-0.inc makefile-pfb-1.inc \
 	  makefile-pfb-2.inc makefile-pfb-3.inc \
 	  makefile-pfb-4.inc makefile-pfb-5.inc \
@@ -567,23 +567,23 @@ makefile-pfb-%.inc: \
 	  export PROGRESS_MESSAGE="$(ansi_cleareol)@@@$@" ; \
 	  echo '# GENERATED FILE, edit Makefile.am instead' \
 	    > makefile-pfb-$*.inc ; \
-	  $(PERL) -CSD $(mvp)/tools/progress start makefile-pfb-$* \
+	  '$(PERL)' -CSD $(mvp)/tools/progress start makefile-pfb-$* \
 	    `ls $(mvp)/mp/*.mp ./mp/*.mp | \
-	    $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
+	    '$(PERL)' -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
 	    sort | uniq | \
-	    $(PERL) -ne 'print if ($$i++%16%14%8)==$*' | \
+	    '$(PERL)' -ne 'print if ($$i++%16%14%8)==$*' | \
 	    wc -l` ; \
 	  for page in `ls $(mvp)/mp/*.mp ./mp/*.mp | \
-	    $(PERL) -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
+	    '$(PERL)' -ne 'print "$$1\n" if /-([0-9a-f]{2,3})\.mp/;' | \
 	    sort | uniq | \
-	    $(PERL) -ne 'print if ($$i++%16%14%8)==$*'`; do \
+	    '$(PERL)' -ne 'print if ($$i++%16%14%8)==$*'`; do \
 	    for style in $(subst _,-,$(SHORT_STYLES)); do \
 	      echo pfbtmp/$$style-$$page.pfb prf/$$style-$$page.prf: \
 	`$(PERL) -CSD $(mvp)/tools/mpdep $(DEFAULT_TOK) $$style-$$page` \
 	        >> makefile-pfb-$*.inc ; \
 	      echo >> makefile-pfb-$*.inc ; \
 	    done ; \
-	    $(PERL) -CSD $(mvp)/tools/progress count makefile-pfb-$* ; \
+	    '$(PERL)' -CSD $(mvp)/tools/progress count makefile-pfb-$* ; \
 	  done ; \
 	  echo $(PFBSTAMP) > pfb-stamp-$* ; \
 	fi
@@ -670,7 +670,7 @@ txt/.dirstamp:
 
 mp/.hglstamp: mp/.dirstamp tools/make-hglpages
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-hglpages > mp/.hglstamp
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-hglpages > mp/.hglstamp
 
 ############################################################################
 
@@ -683,17 +683,17 @@ pe/make-empty.pe: pe/.dirstamp
 
 sfd/empty.sfd: sfd/.dirstamp pe/make-empty.pe
 	$(AM_V_GEN)
-	$(AM_V_at)$(FONTANVIL) -lang=ff -script \
+	$(AM_V_at)'$(FONTANVIL)' -lang=ff -script \
 	  pe/make-empty.pe $(TSU_V_REDIR)
 
 txt/fontlog.txt: txt/.dirstamp tools/make-flog \
   hamlog/config.hl makefile-vars.inc
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-flog > txt/fontlog.txt
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-flog > txt/fontlog.txt
 
 sfd/flogged.sfd: sfd/empty.sfd txt/fontlog.txt
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/add-flog \
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/add-flog \
 	  sfd/empty.sfd txt/fontlog.txt > sfd/flogged.sfd
 
 ############################################################################
@@ -709,7 +709,7 @@ ALLPSFONTS=$(FWPSFONTS) $(PSPSFONTS)
 ALLPRFS=$(foreach st,$(PROOF_STYLES),$(call PAGEFILES,prf/,$(st),.prf))
 
 pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
-  tools/livecode tools/mp2pf t1asm/t1asm
+  tools/livecode tools/mp2pf t1asm/t1asm$(EXEEXT)
 	$(AM_V_at)CODESTAMP=`$(PERL) -CSD $(mvp)/tools/livecode \
 	  $(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),$(mvp)/mp/$(fn)) \
 	  | $(CHECKSUM)` ; \
@@ -733,13 +733,13 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	      "$(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),input $(fn);)" \
 	      > $*.tmp/$*.mp ; \
 	  fi ; \
-	  (cd $*.tmp ; $(expect_start)$(MPOST) $*.mp$(expect_end) ) ; \
-	  if $(GREP) -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
+	  (cd $*.tmp ; $(expect_start)'$(MPOST)' $*.mp$(expect_end) ) ; \
+	  if '$(GREP)' -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
 	  $(TSU_V_NAPERL) \
-	  $(PERL) -CSD $(mvp)/tools/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
-	  (cd $*.tmp ; ../t1asm/t1asm -b $*.p $*.pfb ) ; \
+	  '$(PERL)' -CSD $(mvp)/tools/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
+	  (cd $*.tmp ; ../t1asm/t1asm$(EXEEXT) -b $*.p $*.pfb ) ; \
 	  if test -r $*.tmp/$*.pfb \
-	    && $(GREP) -q 'output files\? written' $*.tmp/$*.log; then \
+	    && '$(GREP)' -q 'output files\? written' $*.tmp/$*.log; then \
 	    mv -f $*.tmp/$*.pfb pfbtmp/ ; \
 	    echo "$$CODESTAMP" > sum/$*.sum ; \
 	  else \
@@ -756,9 +756,9 @@ pfbtmp/%.pfb prf/%.prf: pfbtmp/.dirstamp prf/.dirstamp sum/.dirstamp \
 	fi
 
 pfb/%.pfb: pfbtmp/%.pfb pfb/.dirstamp sum/.dirstamp pe/rmo.pe tools/livecode
-	$(AM_V_at)CODESTAMP=`$(PERL) -CSD $(mvp)/tools/livecode \
+	$(AM_V_at)CODESTAMP=`'$(PERL)' -CSD $(mvp)/tools/livecode \
 	  $(foreach fn,$(call PFBDEPS,pfbtmp/$*.pfb),$(mvp)/mp/$(fn)) \
-	  | $(CHECKSUM)` ; \
+	  | '$(CHECKSUM)'` ; \
 	if ( test "pfb/$*.pfb" -nt "sum/$*.sum" ) ; then \
 	  $(TSU_V_NASKIP) \
 	  touch pfb/$*.pfb ; \
@@ -791,7 +791,7 @@ pe/assemble-font.pe tsukurimashou.nam: \
   $(sort $(foreach page,$(PAGES),\
     $(wildcard $(mvp)/mp/*-$(page).mp) $(wildcard ./mp/*-$(page).mp)))
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-ass > pe/assemble-font.pe
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-ass > pe/assemble-font.pe
 
 fea/%.fea: \
   fea/.dirstamp fsc/%.fsc tools/make-fea \
@@ -799,7 +799,7 @@ fea/%.fea: \
   fsc/afrc.fsc fsc/misc.fsc fsc/ss01.fsc fsc/ss02.fsc \
   fsc/hangul.fsc fsc/kanapc.fsc fsc/latinpc.fsc
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-fea "$(OT_FEATURES)" \
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-fea "$(OT_FEATURES)" \
 	  $(mvp)/fsc/$*.fsc > fea/$*.fea
 
 fea/bll.fea: fsc/tsuku.fsc
@@ -811,7 +811,7 @@ fea/tsuita.fea: fsc/tsuku.fsc
 define NAME_RECIPE
 fea/$(subst _,-,$1)-name.fea: fea/.dirstamp tools/make-name makefile-vars.inc
 	$$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-name "$(OT_FEATURES)" \
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-name "$(OT_FEATURES)" \
 	  "$(XLAT_$(word 1,$(subst _,$(space),$1)))" \
 	  "$(XLAT_$1)" \
 	  "$(JKXLAT_$1)" \
@@ -830,12 +830,12 @@ otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf: otf/.dirstamp \
   fea/monospace.fea fea/$(subst _,-,$1)-name.fea \
   $(call PAGEFILES,pfb/,$(1),.pfb)
 	$(TSU_V_OTF) otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf
-	$(AM_V_at)$(FONTANVIL) -lang=ff -script pe/assemble-font.pe \
+	$(AM_V_at)'$(FONTANVIL)' -lang=ff -script pe/assemble-font.pe \
 	    $(subst _,-,$1) \
 	    "$(XLAT_$(word 1,$(subst _,$(space),$1)))" \
 	    "$(XLAT_$1)" \
 	  $(if $(AM_V_at), \
-	    2> /dev/null | $(PERL) -CDS $(mvp)/tools/progress stdin \
+	    2> /dev/null | '$(PERL)' -CDS $(mvp)/tools/progress stdin \
 	    otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf \
 	    "$(ansi_cleareol)", \
 	    $(TSU_V_REDIR))
@@ -855,12 +855,12 @@ sfd/$(subst _,-,$1).sfd: \
   fea/$(subst _,-,$1)-name.fea \
   $(call PAGEFILES,pfb/,$(1),.pfb)
 	$(TSU_V_SFD) sfd/$(subst _,-,$1).sfd
-	$(AM_V_at)$(FONTANVIL) -lang=ff -script pe/assemble-font.pe \
+	$(AM_V_at)'$(FONTANVIL)' -lang=ff -script pe/assemble-font.pe \
 	    $(subst _,-,$1) \
 	    "$(XLAT_$(word 1,$(subst _,$(space),$1)))" \
 	    "$(XLAT_$1)" \
 	  $(if $(AM_V_at), \
-	    2> /dev/null | $(PERL) -CDS $(mvp)/tools/progress stdin \
+	    2> /dev/null | '$(PERL)' -CDS $(mvp)/tools/progress stdin \
 	    sfd/$(subst _,-,$1).sfd \
 	    "$(ansi_cleareol)", \
 	    $(TSU_V_REDIR))
@@ -870,7 +870,7 @@ if COND_BMK
 bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf: \
   bdf/.dirstamp pe/bdf.pe sfd/$(subst _,-,$1).sfd
 	$(TSU_V_BDF) bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf
-	$(AM_V_at)$(FONTANVIL) -lang=ff -script $(mvp)/pe/bdf-kludge.pe \
+	$(AM_V_at)'$(FONTANVIL)' -lang=ff -script $(mvp)/pe/bdf-kludge.pe \
 	  $(subst -,,$(subst $(space),,$(XLAT_$1))) $(subst _,-,$1) \
 	  $(TSU_V_REDIR)
 	$(AM_V_at)mv -f \
@@ -880,7 +880,7 @@ else
 bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf: \
   bdf/.dirstamp pe/bdf.pe sfd/$(subst _,-,$1).sfd
 	$(TSU_V_BDF) bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf
-	$(AM_V_at)$(FONTANVIL) -lang=ff -script $(mvp)/pe/bdf.pe \
+	$(AM_V_at)'$(FONTANVIL)' -lang=ff -script $(mvp)/pe/bdf.pe \
 	  $(subst -,,$(subst $(space),,$(XLAT_$1))) $(subst _,-,$1) \
 	  $(TSU_V_REDIR)
 	$(AM_V_at)mv -f \
@@ -891,9 +891,9 @@ endif
 # this rule also, silently, builds the *-bearing.pe script
 fea/$(subst _,-,$1)-ktmp.fea: \
   bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf \
-  kerner/kerner pe/.dirstamp fea/.dirstamp
+  kerner/kerner$(EXEEXT) pe/.dirstamp fea/.dirstamp
 	$(TSU_V_KERN) fea/$(subst _,-,$1)-ktmp.fea
-	$(AM_V_at)kerner/kerner \
+	$(AM_V_at)kerner/kerner$(EXEEXT) \
 	  bdf/$(subst -,,$(subst $(space),,$(XLAT_$1))).bdf \
 	  kerner/kerner.cfg \
 	  pe/$(subst _,-,$1)-bearing.pe \
@@ -906,10 +906,10 @@ fea/$(subst _,-,$1)-kern.fea: \
   sfd/$(subst _,-,$1).sfd \
   pe/getbearings.pe tools/make-gpos
 	$(TSU_V_KERN) fea/$(subst _,-,$1)-kern.fea
-	$(AM_V_at)$(FONTANVIL) -lang=ff -script $(mvp)/pe/getbearings.pe \
+	$(AM_V_at)'$(FONTANVIL)' -lang=ff -script $(mvp)/pe/getbearings.pe \
 	  sfd/$(subst _,-,$1).sfd \
 	  $(TSU_V_REDIR) > $1.bearings 
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-gpos "$(OT_FEATURES)" \
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-gpos "$(OT_FEATURES)" \
 	  $1.bearings pe/$(subst _,-,$1)-bearing.pe \
 	  $(call PAGEFILES,prf/,$(1),.prf) > fea/$(subst _,-,$1)-gpos.fea
 	$(AM_V_at)cat fea/$(word 1,$(subst _,$(space),$1)).fea \
@@ -922,7 +922,7 @@ otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf: otf/.dirstamp \
   pe/kern-font.pe sfd/$(subst _,-,$1).sfd
 	$(TSU_V_OTF) \
 	  otf/$(subst -,,$(subst $(space),,$(XLAT_$1))).otf
-	$(AM_V_at)$(FONTANVIL) -lang=ff -script $(mvp)/pe/kern-font.pe \
+	$(AM_V_at)'$(FONTANVIL)' -lang=ff -script $(mvp)/pe/kern-font.pe \
 	  $(subst _,-,$1) \
 	  "$(XLAT_$(word 1,$(subst _,$(space),$1)))" \
 	  "$(XLAT_$1)" \
@@ -945,14 +945,14 @@ otf: $(foreach style,$(SHORT_STYLES),\
 if COND_PGFWORKAROUND
 doc/pgflibraryshapes.callouts.code.tex:
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD -pe 's/pgf\@test/pgf\@node\@name/g' \
+	$(AM_V_at)'$(PERL)' -CSD -pe 's/pgf\@test/pgf\@node\@name/g' \
 	  `kpsewhich pgflibraryshapes.callouts.code.tex` \
 	  > doc/pgflibraryshapes.callouts.code.tex
 
 MAYBE_PGFLIBSHAPES=doc/pgflibraryshapes.callouts.code.tex
 endif
 
-doc_font_script := $(PERL) -CSD -e \
+doc_font_script := '$(PERL)' -CSD -e \
   'while (<>) { chomp; while (/%\s*$$/) { $$_.=<>; chomp; } if (\
   /(newfontfamily|newfontface|setmainfont|setmonofont).*\{([^{}]+)\}+\s*$$/\
   ) { $$d{"otf/$$2.otf"}=1; } if (/ItalicFont=\{([^{}]+)\}/) {\
@@ -1025,14 +1025,14 @@ doc/version.tex: hamlog/config.hl
 	$(AM_V_at)echo '\def\TsukurimashouVersion{'$(VERSION)'}' \
 	  > doc/version.tex
 	$(AM_V_at)echo '\def\TsukurimashouVWide{'$(VERSION)'}' \
-	  | $(PERL) -CSD -pe \
+	  | '$(PERL)' -CSD -pe \
 	    'tr/0-9./\x{ff10}-\x{ff19}\x{ff0e}/;s/pre/\x{30d7}\x{30ea}/;' \
 	  >> doc/version.tex
 	$(AM_V_at)echo '\def\TsukurimashouReleaseDate{@release_date@}' \
 	  >> doc/version.tex
 	$(AM_V_at)echo '\def\TsukurimashouRDWide{'`@date_parser@ \
 	    "$(nocomma_date)" "+%YX%-mY%-dZ"`'}' \
-	  | $(PERL) -CSD -pe \
+	  | '$(PERL)' -CSD -pe \
 	    'tr/0-9XYZ/\x{ff10}-\x{ff19}\x{5e74}\x{6708}\x{65e5}/' \
 	  >> doc/version.tex
 	$(AM_V_at)for st in $(foreach st,$(SHORT_STYLES), \
@@ -1045,10 +1045,10 @@ doc/%.xdv doc/%.toc doc/%.aux doc/%.log: \
 	$(TSU_V_TEX)
 	$(AM_V_at)(cd doc ; \
 	  rm -f $*.aux $*.out ; \
-	  $(PERL) -e 'print chr(92)."tsukudrafttrue".chr(10);' \
+	  '$(PERL)' -e 'print chr(92)."tsukudrafttrue".chr(10);' \
 	    > $*-draft.tex ; \
 	  export PROGRESS_MESSAGE=$@ ; \
-	  $(expect_start)$(XELATEX) -shell-escape -no-pdf \
+	  $(expect_start)'$(XELATEX)' -shell-escape -no-pdf \
 	    $(realpath $<) $(expect_end) )
 	$(AM_V_at)(cd doc ; \
 	  I=2 ; cp -f $*.xdv $*.bak ; \
@@ -1056,27 +1056,27 @@ doc/%.xdv doc/%.toc doc/%.aux doc/%.log: \
 	  export PROGRESS_MESSAGE="$@($$I)" ; \
 	  case "$$I""$*" in \
 	    $(PROOF_ND_PASS)proofs) \
-	      $(PERL) -e 'print chr(92)."tsukudraftfalse".chr(10);' \
+	      '$(PERL)' -e 'print chr(92)."tsukudraftfalse".chr(10);' \
 	        > $*-draft.tex ;; \
-	    2book*) $(PERL) -e 'print chr(92)."tsukudraftfalse".chr(10);' \
+	    2book*) '$(PERL)' -e 'print chr(92)."tsukudraftfalse".chr(10);' \
 	        > $*-draft.tex ;; \
 	  esac ; \
-	  $(expect_start)$(XELATEX) -shell-escape -no-pdf \
+	  $(expect_start)'$(XELATEX)' -shell-escape -no-pdf \
 	    $(realpath $<) $(expect_end) ; \
-	  test "x`$(GREP) may.have.changed $*.log`" = "x" ; \
+	  test "x`'$(GREP)' may.have.changed $*.log`" = "x" ; \
 	  do cp -f $*.xdv $*.bak; I=$$(($$I+1)) ; done ; \
 	  rm -f $*.bak )
 
 doc/%.pdf: doc/%.xdv
 	$(TSU_V_TEX)
 	$(AM_V_at)(cd doc ; \
-	  $(XDVIPDFMX) $*.xdv $(TSU_V_REDIR) )
+	  '$(XDVIPDFMX)' $*.xdv $(TSU_V_REDIR) )
 
 doc/kanjichart.tex: tools/make-kchart pe/assemble-font.pe \
   txt/tsukurimashou.eids
 	$(TSU_V_PERL)
-	$(AM_V_at)$(GZIP) -cd $(KANJIDIC2) \
-	  | $(PERL) -CSD $(mvp)/tools/make-kchart \
+	$(AM_V_at)'$(GZIP)' -cd $(KANJIDIC2) \
+	  | '$(PERL)' -CSD $(mvp)/tools/make-kchart \
 	  $(mvp)/pe/assemble-font.pe \
 	    > doc/kanjichart.tex
 
@@ -1089,16 +1089,16 @@ pdf-local: $(MAYBE_DOCS) $(MAYBE_MDOCS) $(MAYBE_KANJI_CHART)
 doc/pprinted.tex: tools/make-proof $(ALLPRFS) \
   $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp))
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-proof > doc/pprinted.tex
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-proof > doc/pprinted.tex
 
 doc/pppcount.tex: doc/pprinted.tex
 	$(AM_V_GEN)
-	$(AM_V_at)$(GREP) '\\def\\ProgressCount' \
+	$(AM_V_at)'$(GREP)' '\\def\\ProgressCount' \
 	  doc/pprinted.tex > doc/pppcount.tex
 
 otf/KazoemashouPuruufu.otf: sfd/kazoe-se-ps.sfd
 	$(TSU_V_OTF) otf/KazoemashouPuruufu.otf
-	$(AM_V_at)$(FONTANVIL) -lang=ff -c \
+	$(AM_V_at)'$(FONTANVIL)' -lang=ff -c \
 	'Open("sfd/kazoe-se-ps.sfd");Generate("otf/KazoemashouPuruufu.otf");' \
 	  $(TSU_V_REDIR)
 
@@ -1109,18 +1109,18 @@ doc/proofs.xdv doc/proofs.toc doc/proofs.aux: \
 
 doc/cooked.aux: doc/proofs.aux
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD -ne \
+	$(AM_V_at)'$(PERL)' -CSD -ne \
 	  's/section\*\.\d+//; print if /^\\newlabel/' \
 	  doc/proofs.aux > doc/cooked.aux
 
 doc/book%.tex: tools/make-book doc/cooked.aux
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-book \
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-book \
 	  doc/book $@ doc/proofs.toc
 
 doc/cover%.tex: tools/make-cover doc/book%.log
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-cover \
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-cover \
 	  doc/book$*.log > $@
 
 EIDSPRFS=$(foreach page,$(KANJIPAGES),\
@@ -1129,7 +1129,7 @@ EIDSPRFS=$(foreach page,$(KANJIPAGES),\
 
 txt/tsukurimashou.eids: tools/make-eids $(EIDSPRFS)
 	$(TSU_V_PERL)
-	$(AM_V_at)$(PERL) -CSD $(mvp)/tools/make-eids $(EIDSPRFS) \
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-eids $(EIDSPRFS) \
 	  > txt/tsukurimashou.eids
 
 eids: txt/tsukurimashou.eids
@@ -1144,12 +1144,12 @@ area/%-before.area: area/.dirstamp pfbtmp/%.pfb pe/makepngs.pe sfd/empty.sfd
 	$(AM_V_GEN)
 	$(AM_V_at)$(MKDIR_P) $*.tmp ; \
 	(cd $*.tmp ; \
-	  $(FONTANVIL) -lang=ff -script $(realpath $(mvp))/pe/makepngs.pe \
+	  '$(FONTANVIL)' -lang=ff -script $(realpath $(mvp))/pe/makepngs.pe \
 	     $(realpath .)/pfbtmp/$*.pfb $(TSU_V_REDIR) ; \
 	  for f in *.png ; do printf '%s' "$$f" ; pngtopnm $$f | \
 	    pgmtopbm -threshold | pgmhist | \
 	    grep '^    0' ; echo ' 0 0' ; done | \
-	    $(PERL) -pe \
+	    '$(PERL)' -pe \
 	'$$_="$*-$$_"; s/-([0-9a-f]+)-(.*)\.png\s+0\s+(\d+).*/-$$2 $$3/;' \
 	  | sort -u > $(realpath .)/area/$*-before.area \
 	) ; \
@@ -1166,7 +1166,7 @@ area/%-after.area: area/.dirstamp sfd/%.sfd pe/makepngs.pe sfd/empty.sfd
 	  for f in *.png ; do printf '%s' "$$f" ; pngtopnm $$f | \
 	    pgmtopbm -threshold | pgmhist | \
 	    grep '^    0' ; echo ' 0 0' ; done | \
-	    $(PERL) -pe \
+	    '$(PERL)' -pe \
 	'$$_="$*-$$_"; s/\.png\s+0\s+(\d+).*/ $$1/;' \
 	  | sort -u > $(realpath .)/area/$*-after.area \
 	) ; \
@@ -1183,7 +1183,7 @@ txt/area-problems.txt: \
 	  cat area/$$style-[0-9a-f][0-9a-f]-before.area \
 	    area/$$style-[0-9a-f][0-9a-f][0-9a-f]-before.area | sort | \
 	  join - area/$$style-after.area | \
-	  $(PERL) -nae 'print if $$F[2]>0.8*$$F[1]+100' ; \
+	  '$(PERL)' -nae 'print if $$F[2]>0.8*$$F[1]+100' ; \
 	done ) | sort > txt/area-problems.txt
 
 check-areas: txt/area-problems.txt
@@ -1196,7 +1196,7 @@ check-areas: txt/area-problems.txt
 
 TESTS = $(dist_otf_DATA)
 TEST_EXTENSIONS = .otf
-OTF_LOG_COMPILER = $(FONTANVIL) -lang=ff -script \
+OTF_LOG_COMPILER = '$(FONTANVIL)' -lang=ff -script \
   $(mvp)/pe/fontlint.pe $(FONTLINT_FLAGS)
 
 ############################################################################
