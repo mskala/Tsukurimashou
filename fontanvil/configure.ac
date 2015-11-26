@@ -256,9 +256,12 @@ AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "xno"])
 AC_SEARCH_LIBS([cos],[m])
 #
 PKG_CHECK_MODULES([FREETYPE],[freetype2],
-  [have_freetype2=yes],[have_freetype2=no])
+  [have_freetype2=yes
+   LIBS="$FREETYPE_LIBS $LIBS"
+  ],[have_freetype2=no])
 AC_SEARCH_LIBS([iconv],[iconv])
-PKG_CHECK_MODULES([ZLIB],[zlib],[],[AC_SEARCH_LIBS([inflate],[z])])
+PKG_CHECK_MODULES([ZLIB],[zlib],[LIBS="$ZLIB_LIBS $LIBS"],
+  [AC_SEARCH_LIBS([inflate],[z])])
 #
 AC_ARG_WITH([giflib],
  [AS_HELP_STRING([--with-giflib=PATH],
@@ -314,94 +317,107 @@ AC_ARG_WITH([libxml2],
 # process library enable options
 #
 AC_ARG_VAR([GIFLIB_CFLAGS],[C compiler flags for giflib])
-AC_ARG_VAR([GIFLIB_LIBS],[linker flags for giflib])
-AC_SEARCH_LIBS([DGifOpenFileName],[gif ungif],[],[with_giflib=no])
+AC_ARG_VAR([GIFLIB_LDFLAGS],[linker flags for giflib])
+AS_IF([test '!' "x$with_giflib" = xno],
+  [AC_SEARCH_LIBS([DGifOpenFileName],[gif ungif],[],[with_giflib=no])])
 AM_CONDITIONAL([COND_GIFLIB],[test '!' "x$with_giflib" = xno])
 AC_SUBST([GIFLIB_CFLAGS])
-AC_SUBST([GIFLIB_LIBS])
+AC_SUBST([GIFLIB_LDFLAGS])
 AS_IF([test '!' "x$with_giflib" = xno],
   [],
   [AC_DEFINE([_NO_LIBUNGIF],1,[Define if not using system giflib.])])
 #
 AC_ARG_VAR([LIBJPEG_CFLAGS],[C compiler flags for libjpeg])
-AC_ARG_VAR([LIBJPEG_LIBS],[linker flags for libjpeg])
-AC_SEARCH_LIBS([jpeg_CreateDecompress],[jpeg],[],[with_libjpeg=no])
+AC_ARG_VAR([LIBJPEG_LDFLAGS],[linker flags for libjpeg])
+AS_IF([test '!' "x$with_libjpeg" = xno],
+  [AC_SEARCH_LIBS([jpeg_CreateDecompress],[jpeg],[],[with_libjpeg=no])])
 AM_CONDITIONAL([COND_LIBJPEG],[test '!' "x$with_libjpeg" = xno])
 AC_SUBST([LIBJPEG_CFLAGS])
-AC_SUBST([LIBJPEG_LIBS])
+AC_SUBST([LIBJPEG_LDFLAGS])
 AS_IF([test '!' "x$with_libjpeg" = xno],
   [],
   [AC_DEFINE([_NO_LIBJPEG],1,[Define if not using libjpeg.])])
 #
 AC_ARG_VAR([LIBPNG_CFLAGS],[C compiler flags for libpng])
-AC_ARG_VAR([LIBPNG_LIBS],[linker flags for libpng])
-PKG_CHECK_MODULES([LIBPNG],[libpng],[],[with_libpng=no])
+AC_ARG_VAR([LIBPNG_LDFLAGS],[linker flags for libpng])
+AS_IF([test '!' "x$with_libpng" = xno],
+  [PKG_CHECK_MODULES([LIBPNG],[libpng],
+    [LIBS="$LIBPNG_LIBS $LIBS"],[with_libpng=no])])
 AM_CONDITIONAL([COND_LIBPNG],[test '!' "x$with_libpng" = xno])
 AC_SUBST([LIBPNG_CFLAGS])
-AC_SUBST([LIBPNG_LIBS])
+AC_SUBST([LIBPNG_LDFLAGS])
 AS_IF([test '!' "x$with_libpng" = xno],
   [],
   [AC_DEFINE([_NO_LIBPNG],1,[Define if not using libpng.])])
 #
 AC_ARG_VAR([LIBREADLINE_CFLAGS],[C compiler flags for libreadline])
-AC_ARG_VAR([LIBREADLINE_LIBS],[linker flags for libreadline])
-AC_SEARCH_LIBS([rl_readline_version],[readline],
-  [AC_SEARCH_LIBS([tgetflag],[termcap],[],[])],
-  [with_libreadline=no],[-ltermcap])
+AC_ARG_VAR([LIBREADLINE_LDFLAGS],[linker flags for libreadline])
+AS_IF([test '!' "x$with_libreadline" = xno],
+  [AC_SEARCH_LIBS([rl_readline_version],[readline],
+    [AC_SEARCH_LIBS([tgetflag],[termcap],[],[])],
+    [with_libreadline=no],[-ltermcap])])
 AM_CONDITIONAL([COND_LIBREADLINE],[test '!' "x$with_libreadline" = xno])
 AC_SUBST([LIBREADLINE_CFLAGS])
-AC_SUBST([LIBREADLINE_LIBS])
+AC_SUBST([LIBREADLINE_LDFLAGS])
 AS_IF([test '!' "x$with_libreadline" = xno],
   [AC_CHECK_HEADER([readline/readline.h])],
   [AC_DEFINE([_NO_LIBREADLINE],1,[Define if not using libreadline.])])
 #
 AC_ARG_VAR([LIBSPIRO_CFLAGS],[C compiler flags for libspiro])
-AC_ARG_VAR([LIBSPIRO_LIBS],[linker flags for libspiro])
-AC_SEARCH_LIBS([TaggedSpiroCPsToBezier],[spiro],[],[with_libspiro=no])
+AC_ARG_VAR([LIBSPIRO_LDFLAGS],[linker flags for libspiro])
+AS_IF([test '!' "x$with_libspiro" = xno],
+  [AC_SEARCH_LIBS([TaggedSpiroCPsToBezier],[spiro],[],[with_libspiro=no])])
 AM_CONDITIONAL([COND_LIBSPIRO],[test '!' "x$with_libspiro" = xno])
 AC_SUBST([LIBSPIRO_CFLAGS])
-AC_SUBST([LIBSPIRO_LIBS])
+AC_SUBST([LIBSPIRO_LDFLAGS])
 AS_IF([test '!' "x$with_libspiro" = xno],
   [],
   [AC_DEFINE([_NO_LIBSPIRO],1,[Define if not using libspiro.])])
 #
 AC_ARG_VAR([LIBTIFF_CFLAGS],[C compiler flags for libtiff])
-AC_ARG_VAR([LIBTIFF_LIBS],[linker flags for libtiff])
-PKG_CHECK_MODULES([LIBTIFF],[libtiff-4],[],
-  [AC_SEARCH_LIBS([TIFFClose],[tiff],[],[with_libtiff=no])])
+AC_ARG_VAR([LIBTIFF_LDFLAGS],[linker flags for libtiff])
+AS_IF([test '!' "x$with_libtiff" = xno],
+  [PKG_CHECK_MODULES([LIBTIFF],[libtiff-4],[LIBS="$LIBTIFF_LIBS $LIBS"],
+    [AC_SEARCH_LIBS([TIFFClose],[tiff],[],[with_libtiff=no])])])
 AM_CONDITIONAL([COND_LIBTIFF],[test '!' "x$with_libtiff" = xno])
 AC_SUBST([LIBTIFF_CFLAGS])
-AC_SUBST([LIBTIFF_LIBS])
+AC_SUBST([LIBTIFF_LDFLAGS])
 AS_IF([test '!' "x$with_libtiff" = xno],
   [],
   [AC_DEFINE([_NO_LIBTIFF],1,[Define if not using libtiff.])])
 #
 AC_ARG_VAR([LIBUNICODENAMES_CFLAGS],[C compiler flags for libunicodenames])
-AC_ARG_VAR([LIBUNICODENAMES_LIBS],[linker flags for libunicodenames])
-AC_SEARCH_LIBS([UnicodeNamesAnnot],[unicodenames],[],[with_libunicodenames=no])
+AC_ARG_VAR([LIBUNICODENAMES_LDFLAGS],[linker flags for libunicodenames])
+AS_IF([test '!' "x$with_libunicodenames" = xno],
+  [AC_SEARCH_LIBS([UnicodeNamesAnnot],[unicodenames],[],
+    [with_libunicodenames=no])])
 AM_CONDITIONAL([COND_LIBUNICODENAMES],[test '!' "x$with_libunicodenames" = xno])
 AC_SUBST([LIBUNICODENAMES_CFLAGS])
-AC_SUBST([LIBUNICODENAMES_LIBS])
+AC_SUBST([LIBUNICODENAMES_LDFLAGS])
 AS_IF([test '!' "x$with_libunicodenames" = xno],
   [],
   [AC_DEFINE([_NO_LIBUNICODENAMES],1,[Define if not using libunicodenames.])])
 #
 AC_ARG_VAR([LIBUNINAMESLIST_CFLAGS],[C compiler flags for libuninameslist])
-AC_ARG_VAR([LIBUNINAMESLIST_LIBS],[linker flags for libuninameslist])
-AC_SEARCH_LIBS([UnicodeNamesAnnot],[uninameslist],[],[with_libuninameslist=no])
+AC_ARG_VAR([LIBUNINAMESLIST_LDFLAGS],[linker flags for libuninameslist])
+AS_IF([test '!' "x$with_libuninameslist" = xno],
+  [AC_SEARCH_LIBS([UnicodeNamesAnnot],[uninameslist],[],
+    [with_libuninameslist=no])])
 AM_CONDITIONAL([COND_LIBUNINAMESLIST],[test '!' "x$with_libuninameslist" = xno])
 AC_SUBST([LIBUNINAMESLIST_CFLAGS])
-AC_SUBST([LIBUNINAMESLIST_LIBS])
+AC_SUBST([LIBUNINAMESLIST_LDFLAGS])
 AS_IF([test '!' "x$with_libuninameslist" = xno],
   [],
   [AC_DEFINE([_NO_LIBUNINAMESLIST],1,[Define if not using libuninameslist.])])
 #
 AC_ARG_VAR([LIBXML2_CFLAGS],[C compiler flags for libxml2])
-AC_ARG_VAR([LIBXML2_LIBS],[linker flags for libxml2])
-PKG_CHECK_MODULES([LIBXML2],[libxml-2.0],[],[with_libxml2=no])
+AC_ARG_VAR([LIBXML2_LDFLAGS],[linker flags for libxml2])
+AS_IF([test '!' "x$with_libxml2" = xno],
+  [PKG_CHECK_MODULES([LIBXML2],[libxml-2.0],
+    [LIBS="$LIBXML2_LIBS $LIBS"],[with_libxml2=no])])
 AM_CONDITIONAL([COND_LIBXML2],[test '!' "x$with_libxml2" = xno])
 AC_SUBST([LIBXML2_CFLAGS])
-AC_SUBST([LIBXML2_LIBS])
+AC_SUBST([LIBXML2_LDFLAGS])
 AS_IF([test '!' "x$with_libxml2" = xno],
   [],
   [AC_DEFINE([_NO_LIBXML],1,[Define if not using libxml2.])])
