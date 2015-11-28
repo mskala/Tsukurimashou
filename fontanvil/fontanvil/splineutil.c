@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: splineutil.c 4458 2015-11-28 12:55:01Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3432,9 +3432,12 @@ return( -1 );
 
 extended IterateSplineSolve(const Spline1D * sp, extended tmin, extended tmax,
 			    extended sought) {
-   extended t, low, high, test;
-   Spline1D temp;
+   volatile extended t, low, high, test;
+   volatile Spline1D temp;
 
+   if ((!isfinite(tmin)) || (!isfinite(tmax)))
+     return -1;
+   
    /* Now the closed form CubicSolver can have rounding errors so if we know */
    /*  the spline to be monotonic, an iterative approach is more accurate */
 
@@ -3449,9 +3452,11 @@ extended IterateSplineSolve(const Spline1D * sp, extended tmin, extended tmax,
 
    if (temp.a==0 && temp.b==0 && temp.c != 0) {
       t=-temp.d / (extended) temp.c;
+      if (!isfinite(t))
+	return -1;
       if (t < tmin || t > tmax)
 	 return (-1);
-      return (t);
+      return t;
    }
 
    low=((temp.a * tmin + temp.b) * tmin + temp.c) * tmin + temp.d;
@@ -3467,7 +3472,7 @@ extended IterateSplineSolve(const Spline1D * sp, extended tmin, extended tmax,
 	 if (t==tmax || t==tmin)
 	    return (t);
 	 test=((temp.a * t + temp.b) * t + temp.c) * t + temp.d;
-	 if (test==0)		/* someone complained that this test relied on exact arithmetic. In fact this test will almost never be hit, the real exit test is the line above, when tmin/tmax are so close that there is no space between them in the floating representation */
+	 if (test==0)
 	    return (t);
 	 if ((low < 0 && test < 0) || (low > 0 && test > 0))
 	    tmin=t;
@@ -3484,7 +3489,7 @@ extended IterateSplineSolve(const Spline1D * sp, extended tmin, extended tmax,
 
 extended IterateSplineSolveFixup(const Spline1D * sp, extended tmin,
 				 extended tmax, extended sought) {
-   extended t;
+   volatile extended t;
    bigreal factor;
    extended val, valp, valm;
 

@@ -117,7 +117,7 @@ TSU_V_TEXL_0=echo \
 
 # must go before "filenames for autotools"
 
-TEST_EXTENSIONS = .pe .pl
+TEST_EXTENSIONS = .pe .pl .sh
 if COND_VALGRIND
   PE_LOG_COMPILER = '@VALGRIND@' @VALGRIND_FLAGS@ \
     '$(builddir)/fontanvil/fontanvil$(EXEEXT)'
@@ -127,6 +127,7 @@ endif
 PL_LOG_COMPILER = '@PERL@'
 
 TESTS = \
+  test/rmo-loop2.sh \
   test/arithmetic.pe test/feamerge.pe test/ocrblue.pe test/unilib.pe \
   test/test001.pe test/test002.pe test/test003.pe test/test004.pe \
   test/test005.pe test/test006.pe test/test007.pe test/test008.pe \

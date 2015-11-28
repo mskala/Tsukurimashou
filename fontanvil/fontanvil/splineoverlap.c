@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 4310 2015-10-27 15:29:50Z mskala $ */
+/* $Id: splineoverlap.c 4458 2015-11-28 12:55:01Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1696,8 +1696,8 @@ return;		/* Not interesting. Only intersection is at an endpoint */
 	    int any=false;
 	    if ( doy ) {
                 // We work on y.
-		extended diff, y, x1,x2, x1o,x2o;
-		extended t1,t2, t1o,t2o/*, t1t,t2t */;
+		volatile extended diff, y, x1,x2, x1o,x2o;
+		volatile extended t1,t2, t1o,t2o/*, t1t,t2t */;
 		volatile extended bkp_y;
 
 		diff=(b.maxy-b.miny)/32; // We slice the region into 32nds.
@@ -1744,10 +1744,11 @@ return;		/* Not interesting. Only intersection is at an endpoint */
 		    bkp_y=y+diff;
 		    while (bkp_y==y) { diff *= 2; bkp_y=y+diff; }
 		    /* Someone complained here that ff was depending on "exact" */
-		    /*  arithmetic here. They failed to understand what was going */
-		    /*  on, or even to read the comment above which should explain*/
+		    /* arithmetic here.  They were right, the code is completely */
+		    /* and its author should be ashamed of using the "debugging */
+		    /* by writing a comment saying there is no bug" technique. */
 
-		    // We want t-values that put our two splines at y.
+		    /* We want t-values that put our two splines at y. */
 		    t1=IterateSplineSolveFixup(&m1->s->splines[1],m1->tstart,m1->tend,y);
 		    if ( t1==-1 )
 			t1=IterateSplineSolveFixup(&m1->s->splines[1],m1->tstart-m1->tstart/32,m1->tend+m1->tend/32,y);
