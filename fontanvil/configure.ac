@@ -129,7 +129,7 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.68])
-AC_INIT([FontAnvil],[0.4pre],[mskala@ansuz.sooke.bc.ca],[fontanvil],
+AC_INIT([FontAnvil],[0.4],[mskala@ansuz.sooke.bc.ca],[fontanvil],
   [[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AC_CONFIG_AUX_DIR([config])
@@ -142,7 +142,7 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2014, 2015 Matthew Skala])
-AC_SUBST([release_date],["November 24, 2015"])
+AC_SUBST([release_date],["December 1, 2015"])
 AM_SILENT_RULES
 AC_USE_SYSTEM_EXTENSIONS
 #
@@ -151,11 +151,11 @@ AC_USE_SYSTEM_EXTENSIONS
 # Pass version numbers and dates
 #
 AC_DEFINE([FONTANVIL_VERSION_MAJOR],[0],[FontAnvil Major Version])
-AC_DEFINE([FONTANVIL_VERSION_MINOR],[3],[FontAnvil Minor Version])
+AC_DEFINE([FONTANVIL_VERSION_MINOR],[4],[FontAnvil Minor Version])
 AC_SUBST([VERSION_MAJOR],[0])
-AC_SUBST([VERSION_MINOR],[3])
+AC_SUBST([VERSION_MINOR],[4])
 AC_SUBST([VERSION_PATCH],[0])
-AC_SUBST([FONTANVIL_VERSION],[0.3.0])
+AC_SUBST([FONTANVIL_VERSION],[0.4.0])
 FONTANVIL_MODTIME="`date '+%s'`L"
 FONTANVIL_MODTIME_STR="`date +'%H:%M %Z %e-%b-%Y'`"
 FONTANVIL_VERSIONDATE="`date '+%Y%m%d'`"
@@ -259,7 +259,8 @@ PKG_CHECK_MODULES([FREETYPE],[freetype2],
   [have_freetype2=yes
    LIBS="$FREETYPE_LIBS $LIBS"
   ],[have_freetype2=no])
-AC_SEARCH_LIBS([iconv],[iconv])
+AC_SEARCH_LIBS([iconv_open],[iconv],[],
+  [AC_SEARCH_LIBS([libiconv_open],[iconv])])
 PKG_CHECK_MODULES([ZLIB],[zlib],[LIBS="$ZLIB_LIBS $LIBS"],
   [AC_SEARCH_LIBS([inflate],[z])])
 #
@@ -561,6 +562,7 @@ AC_CONFIG_COMMANDS([fix-makefile],
    Makefile],
   [PERL=$PERL
    ICEMAP=$ICEMAP])
+TSU_BAD_PATHS
 AC_OUTPUT
 #
 ############################################################################
@@ -701,7 +703,6 @@ AS_ECHO_N(["valgrind          "])
     [TSU_COLOURISE([yes],[2])])
   AS_ECHO([])
 AS_ECHO([])
-TSU_BAD_PATHS
 AS_IF([test "x$has_bad_paths" = "xyes"],
   [AS_ECHO([])
    AS_ECHO(["The following pathnames contain illegal characters, such as spaces:"])

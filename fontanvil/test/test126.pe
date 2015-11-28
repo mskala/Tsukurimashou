@@ -1,11 +1,6 @@
 #!/usr/local/bin/fontanvil
 #Needs: fonts/DataURI.sfd
 
-if (GetEnv("distcheck_hack")=="0.3")
-  Print("SKIPPING because distcheck_hack 0.3 is active")
-  Quit(77)
-endif
-
 srcdir=GetEnv("srcdir")
 if (srcdir=="")
   srcdir=""
