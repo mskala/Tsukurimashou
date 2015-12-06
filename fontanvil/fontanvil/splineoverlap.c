@@ -1696,9 +1696,15 @@ return;		/* Not interesting. Only intersection is at an endpoint */
 	    int any=false;
 	    if ( doy ) {
                 // We work on y.
+<<<<<<< HEAD
 		volatile double diff, y, x1,x2, x1o,x2o;
 		volatile double t1,t2, t1o,t2o/*, t1t,t2t */;
 		volatile double bkp_y;
+=======
+		volatile extended diff, y, x1,x2, x1o,x2o;
+		volatile extended t1,t2, t1o,t2o/*, t1t,t2t */;
+		volatile extended bkp_y;
+>>>>>>> 6e81409f4a4fec281bc0b63d1294e56941c7533a
 
 		diff=(b.maxy-b.miny)/32; // We slice the region into 32nds.
 		y=b.miny;
@@ -1744,7 +1750,11 @@ return;		/* Not interesting. Only intersection is at an endpoint */
 		    bkp_y=y+diff;
 		    while (bkp_y==y) { diff *= 2; bkp_y=y+diff; }
 		    /* Someone complained here that ff was depending on "exact" */
+<<<<<<< HEAD
 		    /* arithmetic here.  They were right, the code is completely */
+=======
+		    /* arithmetic here.  They were right, the code is completely broken */
+>>>>>>> 6e81409f4a4fec281bc0b63d1294e56941c7533a
 		    /* and its author should be ashamed of using the "debugging */
 		    /* by writing a comment saying there is no bug" technique. */
 

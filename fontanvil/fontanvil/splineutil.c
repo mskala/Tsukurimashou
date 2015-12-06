@@ -3427,6 +3427,7 @@ return( t );
 return( -1 ); /* FLOATMAGIC */
 }
 
+<<<<<<< HEAD
 double IterateSplineSolve(const Spline1D * sp, double tmin, double tmax,
 			    double sought) {
    volatile double t, low, high, test;
@@ -3434,6 +3435,15 @@ double IterateSplineSolve(const Spline1D * sp, double tmin, double tmax,
 
    if ((!isfinite(tmin)) || (!isfinite(tmax)))
      return -1; /* FLOATMAGIC */
+=======
+extended IterateSplineSolve(const Spline1D * sp, extended tmin, extended tmax,
+			    extended sought) {
+   volatile extended t, low, high, test;
+   volatile Spline1D temp;
+
+   if ((!isfinite(tmin)) || (!isfinite(tmax)))
+     return -1;
+>>>>>>> 6e81409f4a4fec281bc0b63d1294e56941c7533a
    
    /* Now the closed form CubicSolver can have rounding errors so if we know */
    /*  the spline to be monotonic, an iterative approach is more accurate */
@@ -3448,11 +3458,19 @@ double IterateSplineSolve(const Spline1D * sp, double tmin, double tmax,
    temp.d -= sought;
 
    if (temp.a==0 && temp.b==0 && temp.c != 0) {
+<<<<<<< HEAD
       t=-temp.d / (double) temp.c;
       if (!isfinite(t))
 	return -1; /* FLOATMAGIC */
       if (t < tmin || t > tmax)
 	 return (-1); /* FLOATMAGIC */
+=======
+      t=-temp.d / (extended) temp.c;
+      if (!isfinite(t))
+	return -1;
+      if (t < tmin || t > tmax)
+	 return (-1);
+>>>>>>> 6e81409f4a4fec281bc0b63d1294e56941c7533a
       return t;
    }
 
@@ -3484,11 +3502,19 @@ double IterateSplineSolve(const Spline1D * sp, double tmin, double tmax,
    return (-1); /* FLOATMAGIC */
 }
 
+<<<<<<< HEAD
 double IterateSplineSolveFixup(const Spline1D * sp, double tmin,
 				 double tmax, double sought) {
    volatile double t;
    double factor;
    double val, valp, valm;
+=======
+extended IterateSplineSolveFixup(const Spline1D * sp, extended tmin,
+				 extended tmax, extended sought) {
+   volatile extended t;
+   bigreal factor;
+   extended val, valp, valm;
+>>>>>>> 6e81409f4a4fec281bc0b63d1294e56941c7533a
 
    if (tmin > tmax) {
       t=tmin;
