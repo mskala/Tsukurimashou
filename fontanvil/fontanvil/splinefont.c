@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: splinefont.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -455,15 +455,15 @@ static void ScaleBase(struct Base *base,double scale) {
 }
 
 int SFScaleToEm(SplineFont *sf, int as, int des) {
-   bigreal scale;
-   real transform[6];
+   double scale;
+   double transform[6];
    BVTFunc bvts;
    uint8_t *oldselected=sf->fv->selected;
    enum fvtrans_flags trans_flags =
       fvt_alllayers | fvt_round_to_int | fvt_dontsetwidth |
       fvt_scalekernclasses | fvt_scalepstpos | fvt_dogrid;
 
-   scale=(as + des) / (bigreal) (sf->ascent + sf->descent);
+   scale=(as + des) / (double) (sf->ascent + sf->descent);
    sf->pfminfo.hhead_ascent=rint(sf->pfminfo.hhead_ascent * scale);
    sf->pfminfo.hhead_descent=rint(sf->pfminfo.hhead_descent * scale);
    sf->pfminfo.linegap=rint(sf->pfminfo.linegap * scale);
@@ -1377,11 +1377,11 @@ char *SFGetModifiers(SplineFont *sf) {
 
 enum flatness { mt_flat, mt_round, mt_pointy, mt_unknown };
 
-static bigreal SPLMaxHeight(SplineSet *spl,enum flatness *isflat) {
+static double SPLMaxHeight(SplineSet *spl,enum flatness *isflat) {
    enum flatness f=mt_unknown;
-   bigreal max=-1.0e23;
+   double max=-1.0e23;
    Spline *s, *first;
-   extended ts[2];
+   double ts[2];
    int i;
 
    for (; spl != NULL; spl=spl->next) {
@@ -1404,7 +1404,7 @@ static bigreal SPLMaxHeight(SplineSet *spl,enum flatness *isflat) {
 	       SplineFindExtrema(&s->splines[1], &ts[0], &ts[1]);
 	       for (i=0; i < 2; ++i)
 		  if (ts[i] != -1) {
-		     bigreal y =
+		     double y =
 			((s->splines[1].a * ts[i] + s->splines[1].b) * ts[i] +
 			 s->splines[1].c) * ts[i] + s->splines[1].d;
 		     if (y > max) {
@@ -1434,11 +1434,11 @@ static bigreal SPLMaxHeight(SplineSet *spl,enum flatness *isflat) {
    return (max);
 }
 
-static bigreal SCMaxHeight(SplineChar *sc,int layer,enum flatness *isflat) {
+static double SCMaxHeight(SplineChar *sc,int layer,enum flatness *isflat) {
    /* Find the max height of this layer of the glyph. Also find whether that */
    /* max is flat (as in "z", curved as in "o" or pointy as in "A") */
    enum flatness f=mt_unknown, curf;
-   bigreal max=-1.0e23, test;
+   double max=-1.0e23, test;
    RefChar *r;
 
    max=SPLMaxHeight(sc->layers[layer].splines, &curf);
@@ -1454,11 +1454,11 @@ static bigreal SCMaxHeight(SplineChar *sc,int layer,enum flatness *isflat) {
    return (max);
 }
 
-static bigreal SPLMinHeight(SplineSet *spl,enum flatness *isflat) {
+static double SPLMinHeight(SplineSet *spl,enum flatness *isflat) {
    enum flatness f=mt_unknown;
-   bigreal min=1.0e23;
+   double min=1.0e23;
    Spline *s, *first;
-   extended ts[2];
+   double ts[2];
    int i;
 
    for (; spl != NULL; spl=spl->next) {
@@ -1481,7 +1481,7 @@ static bigreal SPLMinHeight(SplineSet *spl,enum flatness *isflat) {
 	       SplineFindExtrema(&s->splines[1], &ts[0], &ts[1]);
 	       for (i=0; i < 2; ++i)
 		  if (ts[i] != -1) {
-		     bigreal y =
+		     double y =
 			((s->splines[1].a * ts[i] + s->splines[1].b) * ts[i] +
 			 s->splines[1].c) * ts[i] + s->splines[1].d;
 		     if (y < min) {
@@ -1511,11 +1511,11 @@ static bigreal SPLMinHeight(SplineSet *spl,enum flatness *isflat) {
    return (min);
 }
 
-static bigreal SCMinHeight(SplineChar *sc,int layer,enum flatness *isflat) {
+static double SCMinHeight(SplineChar *sc,int layer,enum flatness *isflat) {
    /* Find the min height of this layer of the glyph. Also find whether that */
    /* min is flat (as in "z", curved as in "o" or pointy as in "A") */
    enum flatness f=mt_unknown, curf;
-   bigreal min=1.0e23, test;
+   double min=1.0e23, test;
    RefChar *r;
 
    min=SPLMinHeight(sc->layers[layer].splines, &curf);
@@ -1534,11 +1534,11 @@ static bigreal SCMinHeight(SplineChar *sc,int layer,enum flatness *isflat) {
 #define RANGE	0x40ffffff
 
 struct dimcnt {
-   bigreal pos;
+   double pos;
    int cnt;
 };
 
-static int dclist_insert(struct dimcnt *arr,int cnt,bigreal val) {
+static int dclist_insert(struct dimcnt *arr,int cnt,double val) {
    int i;
 
    for (i=0; i < cnt; ++i) {
@@ -1552,14 +1552,14 @@ static int dclist_insert(struct dimcnt *arr,int cnt,bigreal val) {
    return (i + 1);
 }
 
-static bigreal SFStandardHeight(SplineFont *sf,int layer,int do_max,
+static double SFStandardHeight(SplineFont *sf,int layer,int do_max,
 				unichar_t * list) {
    struct dimcnt flats[200], curves[200];
-   bigreal test;
+   double test;
    enum flatness curf;
    int fcnt=0, ccnt=0, cnt, tot, i, useit;
    unichar_t ch, top;
-   bigreal result, bestheight, bestdiff, diff, val;
+   double result, bestheight, bestdiff, diff, val;
    char *blues, *end;
 
    while (*list) {
@@ -1681,39 +1681,39 @@ static unichar_t descender_str[]={ 'g','j','p','q','y',
    0
 };
 
-bigreal SFCapHeight(SplineFont *sf, int layer, int return_error) {
-   bigreal result=SFStandardHeight(sf, layer, true, capheight_str);
+double SFCapHeight(SplineFont *sf, int layer, int return_error) {
+   double result=SFStandardHeight(sf, layer, true, capheight_str);
 
    if (result==-1e23 && !return_error)
       result=(8 * sf->ascent) / 10;
    return (result);
 }
 
-bigreal SFXHeight(SplineFont *sf, int layer, int return_error) {
-   bigreal result=SFStandardHeight(sf, layer, true, xheight_str);
+double SFXHeight(SplineFont *sf, int layer, int return_error) {
+   double result=SFStandardHeight(sf, layer, true, xheight_str);
 
    if (result==-1e23 && !return_error)
       result=(6 * sf->ascent) / 10;
    return (result);
 }
 
-bigreal SFAscender(SplineFont *sf, int layer, int return_error) {
-   bigreal result=SFStandardHeight(sf, layer, true, ascender_str);
+double SFAscender(SplineFont *sf, int layer, int return_error) {
+   double result=SFStandardHeight(sf, layer, true, ascender_str);
 
    if (result==-1e23 && !return_error)
       result=(81 * sf->ascent) / 100;
    return (result);
 }
 
-bigreal SFDescender(SplineFont *sf, int layer, int return_error) {
-   bigreal result=SFStandardHeight(sf, layer, false, descender_str);
+double SFDescender(SplineFont *sf, int layer, int return_error) {
+   double result=SFStandardHeight(sf, layer, false, descender_str);
 
    if (result==1e23 && !return_error)
       result=-sf->descent / 2;
    return (result);
 }
 
-static void arraystring(char *buffer,real *array,int cnt) {
+static void arraystring(char *buffer,double *array,int cnt) {
    int i, ei;
 
    for (ei=cnt; ei > 1 && array[ei - 1]==0; --ei);
@@ -1728,8 +1728,8 @@ static void arraystring(char *buffer,real *array,int cnt) {
    *buffer='\0';
 }
 
-static void SnapSet(struct psdict *private,real stemsnap[12],
-		    real snapcnt[12], char *name1, char *name2, int which) {
+static void SnapSet(struct psdict *private,double stemsnap[12],
+		    double snapcnt[12], char *name1, char *name2, int which) {
    int i, mi;
    char buffer[211];
 
@@ -1753,9 +1753,9 @@ static void SnapSet(struct psdict *private,real stemsnap[12],
 
 int SFPrivateGuess(SplineFont *sf, int layer, struct psdict *private,
 		   char *name, int onlyone) {
-   real bluevalues[14], otherblues[10];
-   real snapcnt[12];
-   real stemsnap[12];
+   double bluevalues[14], otherblues[10];
+   double snapcnt[12];
+   double stemsnap[12];
    char buffer[211];
    char *oldloc;
    int ret;
@@ -1786,7 +1786,7 @@ int SFPrivateGuess(SplineFont *sf, int layer, struct psdict *private,
       SnapSet(private, stemsnap, snapcnt, "StdVW", "StemSnapV",
 	      !onlyone ? 0 : strcmp(name, "StdVW")==0 ? 1 : 0);
    } else if (strcmp(name, "BlueScale")==0) {
-      bigreal val=-1;
+      double val=-1;
 
       if (PSDictFindEntry(private, "BlueValues") != -1) {
 	 /* Can guess BlueScale if we've got a BlueValues */
@@ -1855,8 +1855,8 @@ typedef struct SPLFirstVisitorFoundSoughtDataS {
 typedef struct SPLFirstVisitorFoundSoughtXYDataS {
    int use_x;
    int use_y;
-   real x;
-   real y;
+   double x;
+   double y;
 
    // outputs
    int found;
@@ -1914,7 +1914,7 @@ static void SPLFirstVisitorFoundSoughtXY(SplinePoint *splfirst,
 }
 
 SplinePoint *SplinePointListContainsPointAtX(SplinePointList * container,
-					     real x) {
+					     double x) {
    SplinePointList *spl;
 
    for (spl=container; spl != NULL; spl=spl->next) {

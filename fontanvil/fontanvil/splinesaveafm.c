@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: splinesaveafm.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -109,7 +109,7 @@ int LoadKerningDataFromAfm(SplineFont *sf, char *filename, EncMap * map) {
    int off;
    char name[44], second[44], lig[44], buf2[100];
    PST *liga;
-   bigreal scale=(sf->ascent + sf->descent) / 1000.0;
+   double scale=(sf->ascent + sf->descent) / 1000.0;
 
    if (file==NULL)
       return (0);
@@ -344,7 +344,7 @@ static void tfmDoLigKern(SplineFont *sf,int enc,int lk_index,
 			 struct tfmdata *tfmd, EncMap * map) {
    int enc2, k_index;
    SplineChar *sc1, *sc2, *sc3;
-   real off;
+   double off;
 
    if (enc >= map->enccount || map->map[enc]==-1
        || (sc1=sf->glyphs[map->map[enc]])==NULL)
@@ -377,7 +377,7 @@ static void tfmDoLigKern(SplineFont *sf,int enc,int lk_index,
 	     (tfmd->kerntab[k_index + 1]<<16) +
 	     (tfmd->kerntab[k_index + 2]<<8) + tfmd->kerntab[k_index +
 							       3]) /
-	    (bigreal) 0x100000;
+	    (double) 0x100000;
 	 KPInsert(sc1, sc2, rint(off), false);
       } else if (tfmd->ligkerntab[lk_index * 4 + 2]==0 &&
 		 tfmd->ligkerntab[lk_index * 4 + 3] < map->enccount &&
@@ -497,7 +497,7 @@ static void tfmDoExten(SplineFont *sf,int i,struct tfmdata *tfmd,int left,
    (*gvbase)->parts=calloc(cnt, sizeof(struct gv_part));
    for (j=0; j < cnt; ++j) {
       DBounds b;
-      bigreal len;
+      double len;
 
       SplineCharFindBounds(bats[j], &b);
       if (is_horiz)
@@ -521,7 +521,7 @@ int LoadKerningDataFromTfm(SplineFont *sf, char *filename, EncMap * map) {
    int charlist[256];
    int is_math;
    int width, height, depth;
-   real scale=(sf->ascent + sf->descent) / (bigreal) (1<<20);
+   double scale=(sf->ascent + sf->descent) / (double) (1<<20);
 
    if (file==NULL)
       return (0);
@@ -635,7 +635,7 @@ static void ofmDoLigKern(SplineFont *sf,int enc,int lk_index,
 			 struct tfmdata *tfmd, EncMap * map) {
    int enc2, k_index;
    SplineChar *sc1, *sc2, *sc3;
-   real off;
+   double off;
 
    if (enc >= map->enccount || map->map[enc]==-1
        || (sc1=sf->glyphs[map->map[enc]])==NULL)
@@ -666,7 +666,7 @@ static void ofmDoLigKern(SplineFont *sf,int enc,int lk_index,
 	     (tfmd->kerntab[k_index + 1]<<16) +
 	     (tfmd->kerntab[k_index + 2]<<8) + tfmd->kerntab[k_index +
 							       3]) /
-	    (bigreal) 0x100000;
+	    (double) 0x100000;
 	 KPInsert(sc1, sc2, rint(off), false);
       } else if (LKShort(lk_index, 2)==0 &&
 		 LKShort(lk_index, 3) < map->enccount &&
@@ -740,7 +740,7 @@ static void ofmDoExten(SplineFont *sf,int i,struct tfmdata *tfmd,int left,
    (*gvbase)->parts=calloc(cnt, sizeof(struct gv_part));
    for (j=0; j < cnt; ++j) {
       DBounds b;
-      bigreal len;
+      double len;
 
       SplineCharFindBounds(bats[j], &b);
       if (is_horiz)
@@ -761,7 +761,7 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
    int level, font_dir;
    int is_math;
    int width, height, depth;
-   real scale=(sf->ascent + sf->descent) / (bigreal) (1<<20);
+   double scale=(sf->ascent + sf->descent) / (double) (1<<20);
    struct tfmdata tfmd;
 
    if (file==NULL)
@@ -1147,9 +1147,9 @@ static void AfmSplineFontHeader(AFILE *afm,SplineFont *sf,int formattype,
 				EncMap * map, SplineFont *fullsf,
 				int layer) {
    DBounds b;
-   real width;
+   double width;
    int i, j, cnt, max;
-   bigreal caph, xh, ash, dsh;
+   double caph, xh, ash, dsh;
    int iscid=(formattype==ff_cid || formattype==ff_otfcid);
    int ismm=(formattype==ff_mma || formattype==ff_mmb);
    time_t now;
@@ -1265,7 +1265,7 @@ static void AfmSplineFontHeader(AFILE *afm,SplineFont *sf,int formattype,
 
 struct cc_accents {
    SplineChar *accent;
-   real xoff, yoff;
+   double xoff, yoff;
    struct cc_accents *next;
 };
 
@@ -1587,7 +1587,7 @@ static void AfmComposites(AFILE *afm,SplineFont *sf,struct cc_data *cc,
 			  int cc_cnt) {
    int i;
    struct cc_accents *cca;
-   bigreal em=(sf->ascent + sf->descent);
+   double em=(sf->ascent + sf->descent);
 
    afprintf(afm, "StartComposites %d\n", cc_cnt);
    for (i=0; i < cc_cnt; ++i) {
@@ -3082,7 +3082,7 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
    struct ligkern *o_lkarray=NULL;
    char *familyname;
    int anyITLC;
-   real scale=(1<<20) / (double) (sf->ascent + sf->descent);
+   double scale=(1<<20) / (double) (sf->ascent + sf->descent);
    int toobig_warn=false;
 
    if (maxc==256) {

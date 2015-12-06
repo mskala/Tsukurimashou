@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4308 2015-10-25 12:13:49Z mskala $ */
+/* $Id: dumppfa.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -135,7 +135,7 @@ static int isStdEncoding(char *encoding[256]) {
    return (1);
 }
 
-static void dumpblues(AFILE *f,char *name,real *arr,int len,char *ND) {
+static void dumpblues(AFILE *f,char *name,double *arr,int len,char *ND) {
    int i;
 
    for (--len; len >= 0 && arr[len]==0.0; --len);
@@ -149,7 +149,7 @@ static void dumpblues(AFILE *f,char *name,real *arr,int len,char *ND) {
 }
 
 static void dumpdblmaxarray(AFILE *f,
-			    char *name,real *arr,int len,char *modifiers,
+			    char *name,double *arr,int len,char *modifiers,
 			    char *ND) {
    int i;
 
@@ -344,8 +344,8 @@ static void dumpsplineset(AFILE *f,
    }
 }
 
-static int InvertTransform(real inverse[6],real transform[6]) {
-   real temp[6], val;
+static int InvertTransform(double inverse[6],double transform[6]) {
+   double temp[6], val;
    int i;
 
    for (i=0; i < 6; ++i)
@@ -504,7 +504,7 @@ static void dumpPattern(AFILE *f,
 			int layer, int pdfopers, int isstroke) {
    SplineChar *pattern_sc=SFGetChar(sc->parent, -1, pat->pattern);
    DBounds b;
-   real scale[6], result[6];
+   double scale[6], result[6];
 
    if (pdfopers) {
       char buffer[200];
@@ -822,7 +822,7 @@ void SC_PSDump(AFILE *f,
 	       SplineChar *sc, int refs_to_splines, int pdfopers,
 	       int layer) {
    RefChar *ref;
-   real inverse[6];
+   double inverse[6];
    int i, last, first;
    SplineSet *temp;
 
@@ -1325,8 +1325,8 @@ static double FindMaxDiffOfBlues(char *pt,double max_diff) {
    return (max_diff);
 }
 
-double BlueScaleFigureForced(struct psdict *private_, real bluevalues[],
-			     real otherblues[]) {
+double BlueScaleFigureForced(struct psdict *private_, double bluevalues[],
+			     double otherblues[]) {
    double max_diff=0;
    char *pt;
    int i;
@@ -1366,8 +1366,8 @@ double BlueScaleFigureForced(struct psdict *private_, real bluevalues[],
    return (.99 / max_diff);
 }
 
-double BlueScaleFigure(struct psdict *private_, real bluevalues[],
-		       real otherblues[]) {
+double BlueScaleFigure(struct psdict *private_, double bluevalues[],
+		       double otherblues[]) {
    if (PSDictHasEntry(private_, "BlueScale") != NULL)
       return (-1);
    return BlueScaleFigureForced(private_, bluevalues, otherblues);
@@ -1377,10 +1377,10 @@ static int dumpprivatestuff(AFILE *f,
 			    SplineFont *sf, struct fddata *incid, int flags,
 			    enum fontformat format, EncMap * map, int layer) {
    int cnt, mi;
-   real bluevalues[14], otherblues[10];
-   real snapcnt[12];
-   real stemsnaph[12], stemsnapv[12];
-   real stdhw[1], stdvw[1];
+   double bluevalues[14], otherblues[10];
+   double snapcnt[12];
+   double stemsnaph[12], stemsnapv[12];
+   double stdhw[1], stdvw[1];
    int flex_max;
    int i;
    int hasblue=0, hash=0, hasv =

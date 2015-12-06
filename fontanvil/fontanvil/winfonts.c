@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 4394 2015-11-14 21:44:10Z mskala $ */
+/* $Id: winfonts.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -528,7 +528,7 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    SFDefaultOS2Info(&pfminfo, font->sf, font->sf->fontname);
    widbytes=avgwid + spacesize;
    if (cnt != 0)
-      avgwid=rint(avgwid / (bigreal) cnt);
+      avgwid=rint(avgwid / (double) cnt);
    gid=map->map['X'];
    if (gid!=-1 &&
        font->glyphs[gid] != NULL && font->glyphs[gid]->sc != NULL &&
@@ -567,7 +567,7 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    lputshort(file, 0);		/* internal_leading */
    lputshort(file,		/* external_leading */
 	     rint(pfminfo.linegap * font->pixelsize /
-		  (bigreal) (font->sf->ascent + font->sf->descent)));
+		  (double) (font->sf->ascent + font->sf->descent)));
    if (font->sf->italicangle != 0
        || strstrmatch(font->sf->fontname, "ital") != NULL
        || strstrmatch(font->sf->fontname, "kurs") != NULL

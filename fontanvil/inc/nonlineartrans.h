@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.h 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: nonlineartrans.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -57,16 +57,16 @@ enum operator  {
 struct expr {
    enum operator  operator;
    struct expr *op1, *op2, *op3;
-   real value;
+   double value;
 };
 
 struct context {
    char *start, *cur;
    unsigned int had_error:1;
    enum operator  backed_token;
-   real backed_val;
+   double backed_val;
 
-   real x, y;
+   double x, y;
    struct expr *x_expr, *y_expr;
    SplineChar *sc;
    void *pov;

@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: parsettfvar.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -133,7 +133,7 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
       calloc(instance_count, sizeof(struct tinstance));
    for (i=0; i < instance_count; ++i)
       info->variations->instances[i].coords =
-	 malloc(axis_count * sizeof(real));
+	 malloc(axis_count * sizeof(double));
 
    afseek(ttf, info->fvar_start + data_off, SEEK_SET);
    for (i=0; i < axis_count; ++i) {
@@ -179,8 +179,8 @@ static void parseavar(struct ttfinfo *info,AFILE *ttf) {
       pair_count=getushort(ttf);
       if (pair_count != 0) {
 	 info->variations->axes[i].mapfrom =
-	    malloc(pair_count * sizeof(real));
-	 info->variations->axes[i].mapto=malloc(pair_count * sizeof(real));
+	    malloc(pair_count * sizeof(double));
+	 info->variations->axes[i].mapto=malloc(pair_count * sizeof(double));
 	 for (j=0; j < pair_count; ++j) {
 	    info->variations->axes[i].mapfrom[j]=getushort(ttf) / 16384.0;
 	    info->variations->axes[i].mapto[j]=getushort(ttf) / 16384.0;
@@ -759,8 +759,8 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
 
 	 ti=tupleIndex & 0xfff;
 	 if (tupleIndex & 0x8000) {
-	    real *coords =
-	       malloc(info->variations->axis_count * sizeof(real));
+	    double *coords =
+	       malloc(info->variations->axis_count * sizeof(double));
 	    for (j=0; j < info->variations->axis_count; ++j)
 	       coords[j]=((int16_t) getushort(ttf)) / 16384.0;
 	    for (k=0; k < info->variations->tuple_count; ++k) {

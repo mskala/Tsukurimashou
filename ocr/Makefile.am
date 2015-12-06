@@ -313,6 +313,7 @@ OCRBX.pfb OCRBX.afm OCRBX.ttf OCRBX.otf: \
 # PDF DOCUMENTATION
 
 ocr.pdf: OCRA.otf OCRB.otf ocr.tex
+	$(AM_V_at)rm -f ocr.aux
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
 	  $(mvp)/ocr$(expect_end)
 

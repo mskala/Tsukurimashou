@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: scripting.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -901,7 +901,7 @@ static ItalicInfo default_ii={
 };
 
 static void Reblend(Context *c,int tonew) {
-   real blends[MmMax];
+   double blends[MmMax];
    MMSet *mm=c->curfv->sf->mm;
    int i;
 
@@ -1124,7 +1124,7 @@ static void bAddAnchorPoint(Context *c) {
 static void bAddDHint(Context *c) {
    int i, any, gid;
    BasePoint left, right, unit;
-   real args[6];
+   double args[6];
    double len, width;
    FontViewBase *fv=c->curfv;
    SplineFont *sf=fv->sf;
@@ -1636,7 +1636,7 @@ static void bAddSizeFeature(Context *c) {
 static void FigureSplExt(SplineSet *spl,int pos,int xextrema,
 			 double minmax[2]) {
    Spline *s, *first;
-   extended ts[3];
+   double ts[3];
    int oth=!xextrema, i;
    double val;
 
@@ -1713,7 +1713,7 @@ static void FigureProfile(Context *c,SplineChar *sc,int pos,int xextrema) {
 #   define MAXSECT 100
    SplineSet *spl;
    Spline *s, *first;
-   extended ts[3];
+   double ts[3];
    int oth=!xextrema, i, j=0, l, m;
    double *val=NULL, temp;
    RefChar *r;
@@ -2329,7 +2329,7 @@ static RefChar *FindFirstRef(SplineChar *sc,char **refnames,int *refunis,
 }
 
 static void _bMoveReference(Context *c,int position) {
-   real translate[2], t[6];
+   double translate[2], t[6];
    char **refnames;
    int *refunis;
    FontViewBase *fv;
@@ -2871,7 +2871,7 @@ static void bCompareGlyphs(Context *c) {
    /*  2) Compare that the splines themselves don't get too far appart */
    /*  3) Compare bitmaps                                              */
    /*  4) Compare hints/hintmasks                                      */
-   real pt_err=.5, spline_err=1, bitmaps=-1;
+   double pt_err=.5, spline_err=1, bitmaps=-1;
    int bb_err=2, comp_hints=false, report_errors=true;
 
    if (c->a.argc >= 2) {
@@ -4275,7 +4275,7 @@ static void bGetTeXParam(Context *c) {
 }
 
 static void bHFlip(Context *c) {
-   real trans[6];
+   double trans[6];
    int otype=1;
    BVTFunc bvts[2];
 
@@ -5066,7 +5066,7 @@ if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str)
 }
 
 static void bMove(Context *c) {
-   real trans[6];
+   double trans[6];
    int otype=1;
    BVTFunc bvts[2];
 
@@ -5228,7 +5228,7 @@ static void bNearlyHvCps(Context *c) {
    SplineSet *spl;
    SplineFont *sf=fv->sf;
    EncMap *map=fv->map;
-   real err=.1;
+   double err=.1;
    int gid;
 
    if (c->a.argc > 1) {
@@ -5241,7 +5241,7 @@ static void bNearlyHvCps(Context *c) {
       if (c->a.argc > 2) {
 	 if (c->a.vals[2].type != v_int)
 	    ScriptError(c, "Bad type for argument");
-	 err /= (real) c->a.vals[2].u.ival;
+	 err /= (double) c->a.vals[2].u.ival;
       }
    }
    for (i=0; i < map->enccount; ++i)
@@ -5266,7 +5266,7 @@ static void bNearlyHvLines(Context *c) {
    int i, layer, last, gid;
    SplineSet *spl;
    SplineFont *sf=fv->sf;
-   real err=.1;
+   double err=.1;
 
    if (c->a.argc > 1) {
       if (c->a.vals[1].type==v_int)
@@ -5278,7 +5278,7 @@ static void bNearlyHvLines(Context *c) {
       if (c->a.argc > 2) {
 	 if (c->a.vals[2].type != v_int)
 	    ScriptError(c, "Bad type for argument");
-	 err /= (real) c->a.vals[2].u.ival;
+	 err /= (double) c->a.vals[2].u.ival;
       }
    }
    for (i=0; i < c->curfv->map->enccount; ++i)
@@ -5303,7 +5303,7 @@ static void bNearlyLines(Context *c) {
    int i, layer, last, gid;
    SplineSet *spl;
    SplineFont *sf=fv->sf;
-   real err=1;
+   double err=1;
 
    if (c->a.argc > 1) {
       if (c->a.vals[1].type==v_int)
@@ -5419,7 +5419,7 @@ static void bPasteInto(Context *c) {
 }
 
 static void bPasteWithOffset(Context *c) {
-   real trans[6];
+   double trans[6];
 
    memset(trans, 0, sizeof(trans));
    trans[0]=trans[3]=1;
@@ -5844,7 +5844,7 @@ static void bRevertToBackup(Context *c) {
 }
 
 static void bRotate(Context *c) {
-   real trans[6];
+   double trans[6];
    int otype=1;
    BVTFunc bvts[2];
    double a, ox, oy;
@@ -5949,7 +5949,7 @@ static char *ToString(Val *val) {
 }
 
 static void bRoundToCluster(Context *c) {
-   real within=.1, max=.5;
+   double within=.1, max=.5;
    int i, gid;
    FontViewBase *fv=c->curfv;
    SplineFont *sf=fv->sf;
@@ -5983,7 +5983,7 @@ static void bRoundToCluster(Context *c) {
 }
 
 static void bRoundToInt(Context *c) {
-   real factor=1.0;
+   double factor=1.0;
    int i, gid;
    FontViewBase *fv=c->curfv;
    SplineFont *sf=fv->sf;
@@ -6101,7 +6101,7 @@ static void bSaveTableToFile(Context *c) {
 }
 
 static void bScale(Context *c) {
-   real trans[6];
+   double trans[6];
    int otype=1;
    BVTFunc bvts[2];
    double xfact, yfact;
@@ -7316,7 +7316,7 @@ static void bSkew(Context *c) {
       4 => angle, origin-x, origin-y
       5 => angle-numerator, angle-denom, origin-x, origin-y
     */
-   real trans[6];
+   double trans[6];
    int otype=1;
    BVTFunc bvts[2];
    double a;
@@ -7689,7 +7689,7 @@ static void bToString(Context *c) {
 }
 
 static void bTransform(Context *c) {
-   real trans[6];
+   double trans[6];
    BVTFunc bvts[1];
    int i;
 
@@ -7859,7 +7859,7 @@ static void bUtf8(Context *c) {
 }
 
 static void bVFlip(Context *c) {
-   real trans[6];
+   double trans[6];
    int otype=1;
    BVTFunc bvts[2];
 

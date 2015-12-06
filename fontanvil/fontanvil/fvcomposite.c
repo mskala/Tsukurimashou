@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4394 2015-11-14 21:44:10Z mskala $ */
+/* $Id: fvcomposite.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -940,8 +940,8 @@ unichar_t adobes_pua_alts[0x200][3]={	/* Mapped from 0xf600-0xf7ff */
 /* U+F7FF */ {0xf779, 0x0308, 0}
 };
 
-static real SplineSetQuickTop(SplineSet *ss) {
-   real max=-1e10;
+static double SplineSetQuickTop(SplineSet *ss) {
+   double max=-1e10;
    SplinePoint *sp;
 
    for (; ss != NULL; ss=ss->next) {
@@ -960,9 +960,9 @@ static real SplineSetQuickTop(SplineSet *ss) {
    return (max);
 }
 
-static real SplineCharQuickTop(SplineChar *sc,int layer) {
+static double SplineCharQuickTop(SplineChar *sc,int layer) {
    RefChar *ref;
-   real max, temp;
+   double max, temp;
 
    max=SplineSetQuickTop(sc->layers[layer].splines);
    for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next)
@@ -1393,14 +1393,14 @@ int SFIsSomethingBuildable(SplineFont *sf, SplineChar * sc, int layer,
    return (SFIsRotatable(sf, sc, layer));
 }
 
-static int SPInRange(SplinePoint *sp,real ymin,real ymax) {
+static int SPInRange(SplinePoint *sp,double ymin,double ymax) {
    return (sp->me.y >= ymin && sp->me.y <= ymax);
 }
 
 static void _SplineSetFindXRange(SplinePointList *spl,DBounds *bounds,
-				 real ymin, real ymax, real ia) {
+				 double ymin, double ymax, double ia) {
    Spline *spline;
-   real xadjust, tia=tan(ia);
+   double xadjust, tia=tan(ia);
 
    for (; spl != NULL; spl=spl->next) {
       if (SPInRange(spl->first, ymin, ymax)) {
@@ -1432,12 +1432,12 @@ static void _SplineSetFindXRange(SplinePointList *spl,DBounds *bounds,
    }
 }
 
-static real _SplineSetFindXRangeAtYExtremum(SplinePointList *spl,
+static double _SplineSetFindXRangeAtYExtremum(SplinePointList *spl,
 					    DBounds * bounds, int findymax,
-					    real yextreme, real ia) {
+					    double yextreme, double ia) {
    Spline *spline;
-   extended t0, t1, t2, t3;
-   bigreal y0, y1, y2, y3, x;
+   double t0, t1, t2, t3;
+   double y0, y1, y2, y3, x;
 
    for (; spl != NULL; spl=spl->next) {
       for (spline=spl->first->next; spline != NULL;
@@ -1528,10 +1528,10 @@ static real _SplineSetFindXRangeAtYExtremum(SplinePointList *spl,
 /*  character looks like so that we can do an optical accent placement */
 /* I currently think the best bet is to find the very highest point(s) and */
 /*  center on that. I used to find the bounds of the top quarter of the char */
-static real SCFindTopXRange(SplineChar *sc,int layer,DBounds *bounds,
-			    real ia) {
+static double SCFindTopXRange(SplineChar *sc,int layer,DBounds *bounds,
+			    double ia) {
    RefChar *rf;
-   real yextreme=-0x80000;
+   double yextreme=-0x80000;
 
    /* a char with no splines (ie. a space) must have an lbearing of 0 */
    bounds->minx=bounds->maxx=0;
@@ -1549,10 +1549,10 @@ static real SCFindTopXRange(SplineChar *sc,int layer,DBounds *bounds,
    return (yextreme);
 }
 
-static real SCFindBottomXRange(SplineChar *sc,int layer,DBounds *bounds,
-			       real ia) {
+static double SCFindBottomXRange(SplineChar *sc,int layer,DBounds *bounds,
+			       double ia) {
    RefChar *rf;
-   real yextreme=0x80000;
+   double yextreme=0x80000;
 
    /* a char with no splines (ie. a space) must have an lbearing of 0 */
    bounds->minx=bounds->maxx=0;
@@ -1572,8 +1572,8 @@ static real SCFindBottomXRange(SplineChar *sc,int layer,DBounds *bounds,
 
 /* the cedilla and ogonec accents do not center on the accent itself but on */
 /*  the small part of it that joins at the top */
-static real SCFindTopBounds(SplineChar *sc,int layer,DBounds *bounds,
-			    real ia) {
+static double SCFindTopBounds(SplineChar *sc,int layer,DBounds *bounds,
+			    double ia) {
    RefChar *rf;
    int ymax=bounds->maxy + 1, ymin =
       ymax - (bounds->maxy - bounds->miny) / 20;
@@ -1589,8 +1589,8 @@ static real SCFindTopBounds(SplineChar *sc,int layer,DBounds *bounds,
 }
 
 /* And similarly for the floating hook, and often for grave and acute */
-static real SCFindBottomBounds(SplineChar *sc,int layer,DBounds *bounds,
-			       real ia) {
+static double SCFindBottomBounds(SplineChar *sc,int layer,DBounds *bounds,
+			       double ia) {
    RefChar *rf;
    int ymin=bounds->miny - 1, ymax =
       ymin + (bounds->maxy - bounds->miny) / 20;
@@ -1605,8 +1605,8 @@ static real SCFindBottomBounds(SplineChar *sc,int layer,DBounds *bounds,
    return (ymin);
 }
 
-static real SplineCharFindSlantedBounds(SplineChar *sc,int layer,
-					DBounds * bounds, real ia) {
+static double SplineCharFindSlantedBounds(SplineChar *sc,int layer,
+					DBounds * bounds, double ia) {
    int ymin, ymax;
    RefChar *rf;
    SplineCharFindBounds(sc, bounds);
@@ -1713,7 +1713,7 @@ static int SCStemCheck(SplineFont *sf,int layer,int basech,DBounds *bb,
 }
 
 void _SCAddRef(SplineChar * sc, SplineChar * rsc, int layer,
-	       real transform[6]) {
+	       double transform[6]) {
    RefChar *ref=RefCharCreate();
 
    ref->sc=rsc;
@@ -1722,14 +1722,14 @@ void _SCAddRef(SplineChar * sc, SplineChar * rsc, int layer,
    ref->adobe_enc=getAdobeEnc(rsc->name);
    ref->next=sc->layers[layer].refs;
    sc->layers[layer].refs=ref;
-   memcpy(ref->transform, transform, sizeof(real[6]));
+   memcpy(ref->transform, transform, sizeof(double[6]));
    SCReinstantiateRefChar(sc, ref, layer);
    SCMakeDependent(sc, rsc);
 }
 
-void SCAddRef(SplineChar * sc, SplineChar * rsc, int layer, real xoff,
-	      real yoff) {
-   real transform[6];
+void SCAddRef(SplineChar * sc, SplineChar * rsc, int layer, double xoff,
+	      double yoff) {
+   double transform[6];
 
    transform[0]=transform[3]=1;
    transform[1]=transform[2]=0;
@@ -2079,7 +2079,7 @@ static AnchorClass *AnchorClassCursMatch(SplineChar *sc1,SplineChar *sc2,
 }
 
 static void _BCCenterAccent(BDFFont *bdf,int gid,int rgid,int ch,int basech,int italicoff,uint32_t pos,	/* unicode char position info, see #define for utype2[] in utype.h */
-			    real em) {
+			    double em) {
    BDFChar *bc, *rbc;
    int ixoff, iyoff, ispacing;
    IBounds ibb, irb;
@@ -2136,15 +2136,15 @@ static void _BCCenterAccent(BDFFont *bdf,int gid,int rgid,int ch,int basech,int 
 static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 			    SplineFont *sf,int layer,int ch,
 			    BDFFont *bdf,int disp_only,SplineChar *rsc,
-			    real ia,int basech,
+			    double ia,int basech,
 			    int invert,	/* invert accent, false==0, true!=0 */			    uint32_t pos
 			    /* unicode char position info, see #define for utype2[] in utype.h */
 			   ) {
-   real transform[6];
+   double transform[6];
    DBounds bb, rbb, bbb;
-   real xoff, yoff;
-   real spacing=(sf->ascent + sf->descent) * accent_offset / 100;
-   real ybase, italicoff;
+   double xoff, yoff;
+   double spacing=(sf->ascent + sf->descent) * accent_offset / 100;
+   double ybase, italicoff;
    const unichar_t *temp;
    int baserch=basech;
    int eta;
@@ -2235,7 +2235,7 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 	 SplineChar *common =
 	    SFGetChar(sf, islower(basech) ? 'o' : 'O', NULL);
 	 if (common != NULL) {
-	    real top=SplineCharQuickTop(common, layer);
+	    double top=SplineCharQuickTop(common, layer);
 
 	    if (bb.maxy < top) {
 	       bb.maxx += tan(ia) * (top - bb.maxy);
@@ -2432,7 +2432,7 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 
 static void SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 			   SplineFont *sf, int layer, int ch, BDFFont * bdf,
-			   int disp_only, real ia, int basech, char *dot) {
+			   int disp_only, double ia, int basech, char *dot) {
    int invert=false;		/* invert accent, false==0, true!=0 */
    SplineChar *rsc;
 
@@ -2475,7 +2475,7 @@ static void SCPutRefAfter(SplineChar *sc,SplineFont *sf,int layer,int ch,
    int full=sc->unicodeenc, normal=false, under =
       false /*, stationary=false */ ;
    DBounds bb, rbb;
-   real spacing=(sf->ascent + sf->descent) * accent_offset / 100;
+   double spacing=(sf->ascent + sf->descent) * accent_offset / 100;
    char buffer[300], namebuf[300];
 
    if (bdf==NULL || !disp_only) {
@@ -2539,7 +2539,7 @@ static void BCMakeSpace(BDFFont *bdf,int gid,int width,int em) {
       bc->ymin=0;
       bc->ymax=1;
       bc->bytes_per_line=1;
-      bc->width=rint(width * bdf->pixelsize / (real) em);
+      bc->width=rint(width * bdf->pixelsize / (double) em);
       bc->bitmap =
 	 calloc(bc->bytes_per_line * (bc->ymax - bc->ymin + 1), sizeof(char));
    }
@@ -2632,7 +2632,7 @@ static void DoSpaces(SplineFont *sf,SplineChar *sc,int layer,
    }
 }
 
-static SplinePoint *MakeSP(real x,real y,SplinePoint *last,int order2) {
+static SplinePoint *MakeSP(double x,double y,SplinePoint *last,int order2) {
    SplinePoint *new=chunkalloc(sizeof(SplinePoint));
 
    new->me.x=x;
@@ -2673,7 +2673,7 @@ static void DoRules(SplineFont *sf,SplineChar *sc,int layer,
    int em=sf->ascent + sf->descent;
    SplineChar *tempsc;
    DBounds b;
-   real lbearing, rbearing, height, ypos;
+   double lbearing, rbearing, height, ypos;
    SplinePoint *first, *sp;
 
    switch (uni) {
@@ -2780,7 +2780,7 @@ static void DoRotation(SplineFont *sf,SplineChar *sc,int layer,
    /*  them. Note the rotated and normal characters are often in different */
    /*  subfonts so we can't use references */
    SplineChar *scbase;
-   real transform[6];
+   double transform[6];
    SplineSet *last, *temp;
    RefChar *ref;
    char *end;
@@ -3032,7 +3032,7 @@ static void SCSetReasonableLBearing(SplineChar *sc,SplineChar *base,
    int emsize;
    double xoff;
    RefChar *ref;
-   real transform[6];
+   double transform[6];
 
    /* Hmm. Panov doesn't think this should happen */
    return;
@@ -3067,7 +3067,7 @@ void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
 		     BDFFont * bdf, int disp_only) {
    const unichar_t *pt, *apt;
    unichar_t ch;
-   real ia;
+   double ia;
    char *dot;
 
    /* This does not handle arabic ligatures at all. It would need to reverse */

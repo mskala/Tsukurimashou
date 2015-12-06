@@ -1,4 +1,4 @@
-/* $Id: search.c 4378 2015-11-11 17:09:49Z mskala $ */
+/* $Id: search.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -32,8 +32,8 @@
 #include <utype.h>
 #include "search.h"
 
-static int CoordMatches(real real_off,real search_off,SearchData *s) {
-   real fudge;
+static int CoordMatches(double real_off,double search_off,SearchData *s) {
+   double fudge;
 
    if (real_off >= search_off - s->fudge && real_off <= search_off + s->fudge)
       return (true);
@@ -46,9 +46,9 @@ static int CoordMatches(real real_off,real search_off,SearchData *s) {
 }
 
 static int BPMatches(BasePoint *sc_p1,BasePoint *sc_p2,BasePoint *p_p1,
-		     BasePoint * p_p2, int flip, real rot, real scale,
+		     BasePoint * p_p2, int flip, double rot, double scale,
 		     SearchData * s) {
-   real sxoff, syoff, pxoff, pyoff;
+   double sxoff, syoff, pxoff, pyoff;
 
    sxoff=sc_p1->x - sc_p2->x;
    syoff=sc_p1->y - sc_p2->y;
@@ -73,10 +73,10 @@ static int SPMatchesF(SplinePoint *sp,SearchData *s,SplineSet *path,
 		      SplinePoint * sc_path_first, int substring) {
    SplinePoint *sc_sp, *nsc_sp, *p_sp, *np_sp;
    int flip, flipmax;
-   bigreal rot, scale;
+   double rot, scale;
    int saw_sc_first=false, first_of_path;
    BasePoint p_unit, pend_unit, sc_unit;
-   bigreal len, temp;
+   double len, temp;
 
    s->matched_sp=sp;
    s->matched_rot=0;
@@ -396,7 +396,7 @@ static int SPMatchesF(SplinePoint *sp,SearchData *s,SplineSet *path,
 	       scale =
 		  (np_sp->me.x - p_sp->me.x) / (nsc_sp->me.x - sc_sp->me.x);
 	    else {
-	       real yscale =
+	       double yscale =
 		  (np_sp->me.y - p_sp->me.y) / (nsc_sp->me.y - sc_sp->me.y);
 	       scale =
 		  (np_sp->me.x - p_sp->me.x) / (nsc_sp->me.x - sc_sp->me.x);
@@ -636,8 +636,8 @@ static int SPMatchesO(SplinePoint *sp,SearchData *s,SplineSet *path) {
    return (false);
 }
 
-static void SVBuildTrans(SearchData *s,real transform[6]) {
-   memset(transform, 0, sizeof(real[6]));
+static void SVBuildTrans(SearchData *s,double transform[6]) {
+   memset(transform, 0, sizeof(double[6]));
    transform[0]=transform[3]=1;
    if (s->matched_flip & 1)
       transform[0]=-1;
@@ -655,7 +655,7 @@ static void SVBuildTrans(SearchData *s,real transform[6]) {
 
 static void SVFigureTranslation(SearchData *s,BasePoint *p,
 				SplinePoint * sp) {
-   real transform[6];
+   double transform[6];
    BasePoint res;
 
    SVBuildTrans(s, transform);
@@ -667,7 +667,7 @@ static void SVFigureTranslation(SearchData *s,BasePoint *p,
 
 static int SPMatches(SplinePoint *sp,SearchData *s,SplineSet *path,
 		     SplinePoint * sc_path_first, int oriented) {
-   real transform[6];
+   double transform[6];
    BasePoint *p, res;
 
    if (oriented) {
@@ -834,7 +834,7 @@ static int SCMatchesFull(SplineChar *sc,SearchData *s) {
 static int AdjustBP(BasePoint *changeme,BasePoint *rel,
 		    BasePoint * shouldbe, BasePoint * shouldberel,
 		    BasePoint * fudge, SearchData * s) {
-   real xoff, yoff;
+   double xoff, yoff;
 
    xoff=(shouldbe->x - shouldberel->x);
    yoff=(shouldbe->y - shouldberel->y);
@@ -873,7 +873,7 @@ static SplinePoint *RplInsertSP(SplinePoint *after,SplinePoint *nrpl,
 				SplinePoint * rpl, SearchData * s,
 				BasePoint * fudge) {
    SplinePoint *new=chunkalloc(sizeof(SplinePoint));
-   real transform[6];
+   double transform[6];
 
    SVBuildTrans(s, transform);
    /*transform[4] += fudge->x; transform[5] += fudge->y; */
@@ -917,7 +917,7 @@ static SplinePoint *RplInsertSP(SplinePoint *after,SplinePoint *nrpl,
 static void FudgeFigure(SplineChar *sc,SearchData *s,SplineSet *path,
 			BasePoint * fudge) {
    SplinePoint *search, *searchrel, *found, *foundrel;
-   real xoff, yoff;
+   double xoff, yoff;
 
    fudge->x=fudge->y=0;
    if (path->first->prev != NULL)	/* closed path, should end where it began */
@@ -976,7 +976,7 @@ static void DoReplaceIncomplete(SplineChar *sc,SearchData *s) {
    sc_p=s->matched_sp;
    p_p=path->first, r_p=rpath->first;
    if (s->endpoints) {
-      real xoff, yoff;
+      double xoff, yoff;
 
       memset(&dummy, 0, sizeof(dummy));
       memset(&dummysp, 0, sizeof(dummysp));
@@ -1116,7 +1116,7 @@ static void DoReplaceFull(SplineChar *sc,SearchData *s) {
    int i;
    RefChar *r, *rnext, *new;
    SplinePointList *spl, *snext, *sprev, *temp;
-   real transform[6], subtrans[6];
+   double transform[6], subtrans[6];
    SplinePoint *sp;
    int layer=s->fv->active_layer;
 

@@ -225,6 +225,7 @@ MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
 
 idsgrep.pdf: idsgrep.tex mitsuba.cls mitsuba.cfg idsgrep.bib \
   @with_tsuku_build@/otf/TsukurimashouMincho.otf
+	$(AM_V_at)rm -f idsgrep.aux
 	$(AM_V_at)I=1;$(TSU_V_TEXL) \
 	  $(expect_start)'$(XELATEX)' $(mvp)/idsgrep.tex $(expect_end) ; \
 	export BIBINPUTS=$(mvp) ; bibtex idsgrep.aux $(TSU_V_REDIR) ; \

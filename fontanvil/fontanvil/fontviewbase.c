@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4425 2015-11-21 21:05:38Z mskala $ */
+/* $Id: fontviewbase.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -317,7 +317,7 @@ void FVBuildDuplicate(FontViewBase * fv) {
       }
 }
 
-void TransHints(StemInfo * stem, real mul1, real off1, real mul2, real off2,
+void TransHints(StemInfo * stem, double mul1, double off1, double mul2, double off2,
 		int round_to_int) {
    HintInstance *hi;
 
@@ -350,8 +350,8 @@ void TransHints(StemInfo * stem, real mul1, real off1, real mul2, real off2,
 }
 
 /* added by akryukov 01/01/2008 to enable resizing and flipping DStem hints */
-void TransDStemHints(DStemInfo * ds, real xmul, real xoff, real ymul,
-		     real yoff, int round_to_int) {
+void TransDStemHints(DStemInfo * ds, double xmul, double xoff, double ymul,
+		     double yoff, int round_to_int) {
    HintInstance *hi;
    double dmul, temp;
 
@@ -390,7 +390,7 @@ void TransDStemHints(DStemInfo * ds, real xmul, real xoff, real ymul,
    }
 }
 
-void VrTrans(struct vr *vr, real transform[6]) {
+void VrTrans(struct vr *vr, double transform[6]) {
    /* I'm interested in scaling and skewing. I think translation should */
    /*  not affect these guys (they are offsets, so offsets should be */
    /*  unchanged by translation */
@@ -407,7 +407,7 @@ void VrTrans(struct vr *vr, real transform[6]) {
 }
 
 void BackgroundImageTransform(SplineChar * sc, ImageList * img,
-			      real transform[6]) {
+			      double transform[6]) {
    if (transform[1]==0 && transform[2]==0 && transform[0] > 0
        && transform[3] > 0) {
       img->xoff=transform[0] * img->xoff + transform[4];
@@ -426,7 +426,7 @@ void BackgroundImageTransform(SplineChar * sc, ImageList * img,
    }
 }
 
-static void GV_Trans(struct glyphvariants *gv,real transform[6],int is_v) {
+static void GV_Trans(struct glyphvariants *gv,double transform[6],int is_v) {
    int i;
 
    if (gv==NULL)
@@ -443,7 +443,7 @@ static void GV_Trans(struct glyphvariants *gv,real transform[6],int is_v) {
    }
 }
 
-static void MKV_Trans(struct mathkernvertex *mkv,real transform[6]) {
+static void MKV_Trans(struct mathkernvertex *mkv,double transform[6]) {
    int i;
 
    for (i=0; i < mkv->cnt; ++i) {
@@ -452,7 +452,7 @@ static void MKV_Trans(struct mathkernvertex *mkv,real transform[6]) {
    }
 }
 
-static void MK_Trans(struct mathkern *mk,real transform[6]) {
+static void MK_Trans(struct mathkern *mk,double transform[6]) {
    if (mk==NULL)
       return;
    MKV_Trans(&mk->top_right, transform);
@@ -461,7 +461,7 @@ static void MK_Trans(struct mathkern *mk,real transform[6]) {
    MKV_Trans(&mk->bottom_left, transform);
 }
 
-static void MATH_Trans(struct MATH *math,real transform[6]) {
+static void MATH_Trans(struct MATH *math,double transform[6]) {
    if (math==NULL)
       return;
    math->DelimitedSubFormulaMinHeight =
@@ -579,10 +579,10 @@ static void KCTrans(KernClass *kc,double scale) {
 }
 
 static void SCTransLayer(FontViewBase *fv,SplineChar *sc,int flags,int i,
-			 real transform[6], uint8_t * sel) {
+			 double transform[6], uint8_t * sel) {
    int j;
    RefChar *refs;
-   real t[6];
+   double t[6];
    ImageList *img;
 
    SplinePointListTransform(sc->layers[i].splines, transform, tpt_AllPoints);
@@ -649,7 +649,7 @@ static void SCTransLayer(FontViewBase *fv,SplineChar *sc,int flags,int i,
 /*  of the reference */
 /* If sel is NULL then we transform the reference */
 /* if flags&fvt_partialreftrans then we always just transform the offsets */
-void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
+void FVTrans(FontViewBase * fv, SplineChar * sc, double transform[6],
 	     uint8_t * sel, enum fvtrans_flags flags) {
    AnchorPoint *ap;
    int i, first, last;
@@ -755,10 +755,10 @@ void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
    SCCharChangedUpdate(sc, fv->active_layer, true);
 }
 
-void FVTransFunc(void *_fv, real transform[6], int otype, BVTFunc * bvts,
+void FVTransFunc(void *_fv, double transform[6], int otype, BVTFunc * bvts,
 		 enum fvtrans_flags flags) {
    FontViewBase *fv=_fv;
-   real transx=transform[4], transy=transform[5];
+   double transx=transform[4], transy=transform[5];
    DBounds bb;
    BasePoint base;
    int i, cnt=0, gid;
@@ -1249,7 +1249,7 @@ void FVMetricsCenter(FontViewBase * fv, int docenter) {
    SplineChar *sc;
    DBounds bb;
    IBounds ib;
-   real transform[6], itransform[6];
+   double transform[6], itransform[6];
    BVTFunc bvts[2];
    BDFFont *bdf;
 

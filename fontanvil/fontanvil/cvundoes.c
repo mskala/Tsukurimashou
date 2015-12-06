@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: cvundoes.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1071,11 +1071,11 @@ int SCWasEmpty(SplineChar * sc, int skip_this_layer) {
 
 /* when pasting from the fontview we do a clear first */
 static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
-		       int pasteinto, int layer, real trans[6],
+		       int pasteinto, int layer, double trans[6],
 		       struct sfmergecontext *mc, int *refstate,
 		       int *already_complained) {
    DBounds bb;
-   real transform[6];
+   double transform[6];
    int width, vwidth;
    int xoff=0, yoff=0;
    int was_empty;
@@ -1331,7 +1331,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 }
 
 static void PasteToSC(SplineChar *sc,int layer,Undoes *paster,
-		      FontViewBase * fv, int pasteinto, real trans[6],
+		      FontViewBase * fv, int pasteinto, double trans[6],
 		      struct sfmergecontext *mc, int *refstate,
 		      int *already_complained) {
    if (paster->undotype==ut_layers && sc->parent->multilayer) {
@@ -2026,7 +2026,7 @@ static int copybufferHasLookups(Undoes *cb) {
    return (cb->undotype==ut_statelookup);
 }
 
-void PasteIntoFV(FontViewBase *fv,int pasteinto,real trans[6]) {
+void PasteIntoFV(FontViewBase *fv,int pasteinto,double trans[6]) {
    Undoes *cur=NULL, *bmp;
    BDFFont *bdf;
    int i, j, cnt=0, gid;

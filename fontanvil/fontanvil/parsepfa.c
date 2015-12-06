@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: parsepfa.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1020,7 +1020,7 @@ static void fillintarray(int *array,char *start,int maxentries) {
    }
 }
 
-static void fillrealarray(real *array,char *start,int maxentries) {
+static void fillrealarray(double *array,char *start,int maxentries) {
    int i;
    char *end;
 
@@ -2004,7 +2004,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 if (fp->fd->fontmatrix[0]==0)
 	    fillrealarray(fp->fd->fontmatrix, endtok, 6);
 	 else {
-	    real temp[6];
+	    double temp[6];
 
 	    fillrealarray(temp, endtok, 6);
 	 }

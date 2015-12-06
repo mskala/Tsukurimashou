@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 4299 2015-10-24 10:24:40Z mskala $ */
+/* $Id: baseviews.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -40,13 +40,13 @@ enum fvtrans_flags { fvt_alllayers=1, fvt_round_to_int=2,
 };
 
 typedef struct drect {
-   real x, y;
-   real width, height;
+   double x, y;
+   double width, height;
 } DRect;
 
 typedef struct pressedOn {
    int x, y;			/* screen location of the press */
-   real cx, cy;			/* Translated into character space */
+   double cx, cy;			/* Translated into character space */
    SplinePoint *sp;
    unsigned int nextcp:1;	/* Is the cursor on the "next" control point of */
    unsigned int prevcp:1;	/*  the spline point, or the "prev" control point */
@@ -62,7 +62,7 @@ typedef struct pressedOn {
 						 * spline both selected during the mouse down operation
 						 **/
    Spline *spline;
-   real t;			/* location on the spline where we pressed */
+   double t;			/* location on the spline where we pressed */
    RefChar *ref;
    SplinePointList *spl;	/* containing spline or point */
    ImageList *img;
@@ -313,7 +313,7 @@ enum fvcopy_type { ct_fullcopy, ct_reference, ct_lookups, ct_unlinkrefs };
 
 extern void FVCopy(FontViewBase * fv, enum fvcopy_type copytype);
 
-extern void PasteIntoFV(FontViewBase * fv, int pasteinto, real trans[6]);
+extern void PasteIntoFV(FontViewBase * fv, int pasteinto, double trans[6]);
 
 extern void FVCopyFgtoBg(FontViewBase * fv);
 
@@ -329,9 +329,9 @@ extern void FVJoin(FontViewBase * fv);
 
 extern void FVBuildDuplicate(FontViewBase * fv);
 
-extern void FVTrans(FontViewBase * fv, SplineChar * sc, real transform[6],
+extern void FVTrans(FontViewBase * fv, SplineChar * sc, double transform[6],
 		    uint8_t * sel, enum fvtrans_flags);
-extern void FVTransFunc(void *_fv, real transform[6], int otype,
+extern void FVTransFunc(void *_fv, double transform[6], int otype,
 			BVTFunc * bvts, enum fvtrans_flags);
 
 extern void FVOverlap(FontViewBase * fv, enum overlap_type ot);
@@ -380,22 +380,22 @@ extern int FVBParseSelectByPST(FontViewBase * fv, struct lookup_subtable *sub,
 			       int search_type);
 extern int SFScaleToEm(SplineFont *sf, int ascent, int descent);
 
-extern void TransHints(StemInfo * stem, real mul1, real off1, real mul2,
-		       real off2, int round_to_int);
-extern void TransDStemHints(DStemInfo * ds, real xmul, real xoff, real ymul,
-			    real yoff, int round_to_int);
-extern void VrTrans(struct vr *vr, real transform[6]);
+extern void TransHints(StemInfo * stem, double mul1, double off1, double mul2,
+		       double off2, int round_to_int);
+extern void TransDStemHints(DStemInfo * ds, double xmul, double xoff, double ymul,
+			    double yoff, int round_to_int);
+extern void VrTrans(struct vr *vr, double transform[6]);
 
 extern int SFNLTrans(FontViewBase * fv, char *x_expr, char *y_expr);
 
 extern void FVStrokeItScript(void *fv, StrokeInfo * si, int pointless);
 
-extern void FVOutline(struct fontviewbase *fv, real width);
+extern void FVOutline(struct fontviewbase *fv, double width);
 
-extern void FVInline(struct fontviewbase *fv, real width, real inset);
+extern void FVInline(struct fontviewbase *fv, double width, double inset);
 
-extern void FVShadow(struct fontviewbase *fv, real angle, real outline_width,
-		     real shadow_length, int wireframe);
+extern void FVShadow(struct fontviewbase *fv, double angle, double outline_width,
+		     double shadow_length, int wireframe);
 
 extern void FVEmbolden(struct fontviewbase *fv, enum embolden_type type,
 		       struct lcg_zones *zones);
@@ -499,7 +499,7 @@ extern void BCTrans(BDFFont * bdf, BDFChar * bc, BVTFunc * bvts,
 
 extern void BCTransFunc(BDFChar * bc, enum bvtools type, int xoff, int yoff);
 
-extern void skewselect(BVTFunc * bvtf, real t);
+extern void skewselect(BVTFunc * bvtf, double t);
 
 extern BDFFloat *BDFFloatCopy(BDFFloat * sel);
 
@@ -528,8 +528,8 @@ typedef struct searchdata {
    SplineChar sc_srch, sc_rpl;
    SplineSet *path, *revpath, *replacepath, *revreplace;
    int pointcnt, rpointcnt;
-   real fudge;
-   real fudge_percent;		/* a value of .05 here represents 5% (we don't store the integer) */
+   double fudge;
+   double fudge_percent;		/* a value of .05 here represents 5% (we don't store the integer) */
    unsigned int tryreverse:1;
    unsigned int tryflips:1;
    unsigned int tryrotate:1;
@@ -547,8 +547,8 @@ typedef struct searchdata {
    unsigned int already_complained:1;	/* User has already been alerted to the fact that we've converted splines to refs and lost the instructions */
    SplineSet *matched_spl;
    SplinePoint *matched_sp, *last_sp;
-   real matched_rot, matched_scale;
-   real matched_x, matched_y;
+   double matched_rot, matched_scale;
+   double matched_x, matched_y;
    double matched_co, matched_si;	/* Precomputed sin, cos */
    enum flipset matched_flip;
    unsigned long long matched_refs;	/* Bit map of which refs in the char were matched */
@@ -605,7 +605,7 @@ extern void FVRevertBackup(FontViewBase * fv);
 extern int MMReblend(FontViewBase * fv, MMSet * mm);
 
 extern FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
-					 real blends[MmMax], int tonew);
+					 double blends[MmMax], int tonew);
 
 extern void AutoWidth2(FontViewBase * fv, int separation, int min_side,
 		       int max_side, int chunk_height, int loop_cnt);

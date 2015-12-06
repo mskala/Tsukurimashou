@@ -1,8 +1,8 @@
 #!/usr/local/bin/fontanvil
 #Needs: fonts/MinionPro-Regular.fea
 
-if (GetEnv("distcheck_hack")=="0.3")
-  Print("SKIPPING because distcheck_hack 0.3 is active")
+if (GetEnv("distcheck_hack")=="0.4")
+  Print("SKIPPING because distcheck_hack 0.4 is active")
   Quit(77)
 endif
 

@@ -1,8 +1,8 @@
-/* $Id: autowidth.h 4282 2015-10-20 07:48:12Z mskala $ */
+/* $Id: autowidth.h 4464 2015-11-30 09:57:27Z mskala $ */
 
 struct charone {
-   real lbearing, rmax;
-   real newl, newr;
+   double lbearing, rmax;
+   double newl, newr;
    int baseserif, lefttops, righttops;	/* serif zones which affect this character */
    SplineChar *sc;
    int base, top;		/* bottom of character, number of decimation zones we've got */
@@ -21,15 +21,15 @@ struct charpair {
 };
 
 typedef struct widthinfo {
-   real spacing;		/* desired spacing between letters */
-   real decimation;
-   real serifsize;
-   real seriflength;
-   real caph;
-   real descent;
-   real xheight;
-   real n_stem_exterior_width, n_stem_interior_width;
-   real current_I_spacing;
+   double spacing;		/* desired spacing between letters */
+   double decimation;
+   double serifsize;
+   double seriflength;
+   double caph;
+   double descent;
+   double xheight;
+   double n_stem_exterior_width, n_stem_interior_width;
+   double current_I_spacing;
    int serifs[4][2];		/* Four serif zones: descent, baseline, xheight, cap */
    int lcnt, rcnt;		/* count of left and right chars respectively */
    int real_lcnt, real_rcnt;	/* what the user asked for. We might add I */

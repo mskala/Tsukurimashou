@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: autowidth.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -118,8 +118,8 @@ static void AW_AutoKern(WidthInfo *wi) {
    }
 }
 
-static real SplineFindMinXAtY(Spline *spline,real y,real min) {
-   extended t, t1, t2, tbase, val;
+static double SplineFindMinXAtY(Spline *spline,double y,double min) {
+   double t, t1, t2, tbase, val;
    Spline1D *xsp;
 
    if (y > spline->from->me.y && y > spline->from->nextcp.y &&
@@ -164,7 +164,7 @@ static real SplineFindMinXAtY(Spline *spline,real y,real min) {
    return (min);
 }
 
-static void PtFindEdges(real x,real y,struct charone *ch,WidthInfo *wi) {
+static void PtFindEdges(double x,double y,struct charone *ch,WidthInfo *wi) {
    int i;
 
    i=rint(y / wi->decimation);
@@ -183,7 +183,7 @@ static void PtFindEdges(real x,real y,struct charone *ch,WidthInfo *wi) {
 static void SplineFindEdges(Spline *spline,struct charone *ch,
 			    WidthInfo * wi) {
    Spline1D *xsp, *ysp;
-   extended t1, t2;
+   double t1, t2;
    double t, toff, ymin, ymax;
 
    /* first try the end points */
@@ -227,7 +227,7 @@ static void SplineFindEdges(Spline *spline,struct charone *ch,
    }
 }
 
-static real SSFindMinXAtY(SplineSet *spl,real y,real min) {
+static double SSFindMinXAtY(SplineSet *spl,double y,double min) {
    Spline *sp, *first;
 
    while (spl != NULL) {
@@ -243,10 +243,10 @@ static real SSFindMinXAtY(SplineSet *spl,real y,real min) {
    return (min);
 }
 
-static real SSIsMinXAtYCurved(SplineSet *spl,real y,real oldmin,
+static double SSIsMinXAtYCurved(SplineSet *spl,double y,double oldmin,
 			      int *curved) {
    Spline *sp, *first;
-   real min;
+   double min;
 
    while (spl != NULL) {
       first=NULL;
@@ -280,8 +280,8 @@ static void SSFindEdges(SplineSet *spl,struct charone *ch,WidthInfo *wi) {
    }
 }
 
-static real SCFindMinXAtY(SplineChar *sc,int layer,real y) {
-   real min=NOTREACHED;
+static double SCFindMinXAtY(SplineChar *sc,int layer,double y) {
+   double min=NOTREACHED;
    RefChar *ref;
 
    min=SSFindMinXAtY(sc->layers[layer].splines, y, NOTREACHED);
@@ -290,8 +290,8 @@ static real SCFindMinXAtY(SplineChar *sc,int layer,real y) {
    return (min);
 }
 
-static int SCIsMinXAtYCurved(SplineChar *sc,int layer,real y) {
-   real min=NOTREACHED;
+static int SCIsMinXAtYCurved(SplineChar *sc,int layer,double y) {
+   double min=NOTREACHED;
    int curved=false;
    RefChar *ref;
 
@@ -360,7 +360,7 @@ static void SCFindEdges(struct charone *ch,WidthInfo *wi) {
 /*  that extends around every point on the edge */
 static void PairFindDistance(struct charpair *cp,WidthInfo *wi) {
    int i, j, wasserif, wasseriff;
-   real sum, cnt, min, fudge, minf, temp;
+   double sum, cnt, min, fudge, minf, temp;
    struct charone *left=cp->left, *right=cp->right;
    int fudgerange;
 
@@ -436,7 +436,7 @@ static void AW_FindFontParameters(WidthInfo *wi) {
    DBounds bb;
    SplineFont *sf=wi->sf;
    int i, j, si=-1;
-   real caph, ds, xh, serifsize, angle, ca, seriflength=0;
+   double caph, ds, xh, serifsize, angle, ca, seriflength=0;
    int cnt;
    static unichar_t caps[] =
       { 'A', 'Z', 0x391, 0x3a9, 0x40f, 0x418, 0x41a, 0x42f, 0 };
@@ -455,7 +455,7 @@ static void AW_FindFontParameters(WidthInfo *wi) {
       0x3a0, 0x3a1, 0x40a, 0x412, 0x413, 0x415, 0x41a, 0x41d, 0x41f,
       0x420, 0x428, 0
    };
-   real stemx, testx, y, ytop, ybottom, yorig, topx, bottomx;
+   double stemx, testx, y, ytop, ybottom, yorig, topx, bottomx;
 
    caph=0;
    cnt=0;
@@ -635,10 +635,10 @@ static void AW_FindFontParameters(WidthInfo *wi) {
       wi->space_guess=rint(.184 * (sf->ascent + sf->descent));
 }
 
-real SFGuessItalicAngle(SplineFont *sf) {
+double SFGuessItalicAngle(SplineFont *sf) {
    static char *easyserif="IBDEFHKLNPR";
    int i, si;
-   real as, topx, bottomx;
+   double as, topx, bottomx;
    DBounds bb;
    double angle;
 

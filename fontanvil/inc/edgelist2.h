@@ -1,4 +1,4 @@
-/* $Id: edgelist2.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: edgelist2.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2004-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -36,7 +36,7 @@ typedef struct mlist {
     Spline *s;
     struct monotonic *m;			/* May get slightly munched but will */
 			/* always have right spline. we fix when we need it */
-    extended t;
+    double t;
     int isend;
     BasePoint unit;
     struct mlist *next;
@@ -50,8 +50,8 @@ typedef struct intersection {
  
 typedef struct preintersection {
     BasePoint inter;
-    struct monotonic *m1; bigreal t1;
-    struct monotonic *m2; bigreal t2;
+    struct monotonic *m1; double t1;
+    struct monotonic *m2; double t2;
     unsigned int is_close: 1;
     struct preintersection *next;
 } PreIntersection;    
@@ -60,9 +60,9 @@ typedef struct preintersection {
 
 typedef struct monotonic {
     Spline *s;
-    extended tstart, tend;
+    double tstart, tend;
 #ifdef FF_RELATIONAL_GEOM
-    extended otstart, otend;
+    double otstart, otend;
 #endif
     struct monotonic *next, *prev;	/* along original contour */
     uint8_t xup;				/* increasing t => increasing x */
@@ -74,7 +74,7 @@ typedef struct monotonic {
     struct intersection *start;
     struct intersection *end;
     DBounds b;
-    extended other, t;
+    double other, t;
     struct monotonic *linked;		/* singly linked list of all monotonic*/
     					/*  segments, no contour indication */
     double when_set;			/* Debugging */
@@ -84,6 +84,6 @@ typedef struct monotonic {
 extern void FreeMonotonics(Monotonic *m);
 extern Monotonic *SSsToMContours(SplineSet *spl, enum overlap_type ot);
 	/* overlap_type controls whether we look at selected splinesets or all splinesets */
-extern int MonotonicFindAt(Monotonic *ms,int which, extended test, Monotonic **space );
+extern int MonotonicFindAt(Monotonic *ms,int which, double test, Monotonic **space );
 
 #endif /* _EDGELIST2_H */

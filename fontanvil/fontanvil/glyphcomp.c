@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: glyphcomp.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2006-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -53,7 +53,7 @@ static void GCError3(Context *c,const char *frmt,const char *str,int size,
 /* ************************************************************************** */
 
 static double FindNewT(double pos,const Spline1D *s,double old_t) {
-   extended ts[3];
+   double ts[3];
    int i;
    double closest;
 
@@ -75,7 +75,7 @@ static int NearSplineSet(BasePoint *here,const SplineSet *ss,
 			 const Spline ** last_found, double *last_t,
 			 double err) {
    const Spline *first, *s, *best_s;
-   extended ts[3];
+   double ts[3];
    double dx, dy, adx, ady, best, best_t, t;
    BasePoint test;
    int i, j;
@@ -209,7 +209,7 @@ static int NearSplineSet(BasePoint *here,const SplineSet *ss,
 /* Walk along this contour, moving by 1 em-unit (approximately) each step */
 /*  and checking that the point obtained is close to one on the other contour */
 static int ContourMatch(const SplineSet *ss1,const SplineSet *ss2,
-			real err) {
+			double err) {
    const Spline *s, *first;
    double t, newt;
    const Spline *last_found=NULL;
@@ -293,7 +293,7 @@ static int ContourMatch(const SplineSet *ss1,const SplineSet *ss2,
 }
 
 static int AllPointsMatch(const SplinePoint *start1,
-			  const SplinePoint * start2, real err,
+			  const SplinePoint * start2, double err,
 			  SplinePoint ** _hmfail) {
    double dx, dy;
    const SplinePoint *sp1=start1, *sp2=start2;
@@ -337,7 +337,7 @@ static int AllPointsMatch(const SplinePoint *start1,
 }
 
 static int ContourPointsMatch(const SplineSet *ss1,const SplineSet *ss2,
-			      real err, SplinePoint ** _hmfail) {
+			      double err, SplinePoint ** _hmfail) {
    const SplinePoint *sp2;
 
    /* Does ANY point on the second contour match the start point of the first? */
@@ -353,7 +353,7 @@ static int ContourPointsMatch(const SplineSet *ss1,const SplineSet *ss2,
 }
 
 enum Compare_Ret SSsCompare(const SplineSet * ss1, const SplineSet * ss2,
-			    real pt_err, real spline_err,
+			    double pt_err, double spline_err,
 			    SplinePoint ** _hmfail) {
    int cnt1, cnt2, bestcnt;
    const SplineSet *ss, *s2s, *bestss;
@@ -486,7 +486,7 @@ enum Compare_Ret SSsCompare(const SplineSet * ss1, const SplineSet * ss2,
 
 static int SSRefCompare(const SplineSet *ss1,const SplineSet *ss2,
 			const RefChar * refs1, const RefChar * refs2,
-			real pt_err, real spline_err) {
+			double pt_err, double spline_err) {
    /* Convert all references to contours */
    /* Note: Hintmasks are trashed */
    SplineSet *head1;
@@ -663,7 +663,7 @@ static int RefCheck(const RefChar *ref1,const RefChar *ref2) {
 
 int CompareLayer(Context * c, const SplineSet * ss1, const SplineSet * ss2,
 		 const RefChar * refs1, const RefChar * refs2,
-		 real pt_err, real spline_err, const char *name,
+		 double pt_err, double spline_err, const char *name,
 		 int diffs_are_errors, SplinePoint ** _hmfail) {
    int val, refc;
 
@@ -701,7 +701,7 @@ int CompareLayer(Context * c, const SplineSet * ss1, const SplineSet * ss2,
 }
 
 static int CompareBitmap(Context *c,SplineChar *sc,const Undoes *cur,
-			 real pixel_off_frac, int bb_err,
+			 double pixel_off_frac, int bb_err,
 			 int diffs_are_errors) {
    int ret, err;
    BDFFont *bdf;
@@ -789,11 +789,11 @@ static int CompareHints(SplineChar *sc,const void *_test) {
 }
 
 static int CompareSplines(Context *c,SplineChar *sc,const Undoes *cur,
-			  real pt_err, real spline_err, int comp_hints,
+			  double pt_err, double spline_err, int comp_hints,
 			  int diffs_are_errors) {
    int ret=0, failed=0, temp, ly;
    const Undoes *layer;
-   real err=pt_err > 0 ? pt_err : spline_err;
+   double err=pt_err > 0 ? pt_err : spline_err;
    SplinePoint *hmfail;
 
    switch (cur->undotype) {
@@ -891,8 +891,8 @@ static int CompareSplines(Context *c,SplineChar *sc,const Undoes *cur,
    return (ret);
 }
 
-int CompareGlyphs(Context * c, real pt_err, real spline_err,
-		  real pixel_off_frac, int bb_err, int comp_hints,
+int CompareGlyphs(Context * c, double pt_err, double spline_err,
+		  double pixel_off_frac, int bb_err, int comp_hints,
 		  int diffs_are_errors) {
    FontViewBase *fv=c->curfv;
    SplineFont *sf=fv->sf;

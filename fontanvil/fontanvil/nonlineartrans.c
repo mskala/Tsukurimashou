@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: nonlineartrans.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -65,7 +65,7 @@ void nlt_exprfree(struct expr *e) {
    chunkfree(e, sizeof(*e));
 }
 
-static int gettoken(struct context *c,real *val) {
+static int gettoken(struct context *c,double *val) {
    int ch, i;
    char *end, *pt;
    char buffer[40];
@@ -182,7 +182,7 @@ static int gettoken(struct context *c,real *val) {
       }
 }
 
-static void backup(struct context *c,enum operator  op,real val) {
+static void backup(struct context *c,enum operator  op,double val) {
    if (c->backed_token != op_base) {
       ErrorMsg(2,"Attempt to back up twice.\nnear ...%s\n", c->cur);
       c->had_error=true;
@@ -195,7 +195,7 @@ static void backup(struct context *c,enum operator  op,real val) {
 static struct expr *getexpr(struct context *c);
 
 static struct expr *gete0(struct context *c) {
-   real val=0;
+   double val=0;
    enum operator  op=gettoken(c, &val);
    struct expr *ret;
 
@@ -271,7 +271,7 @@ static struct expr *gete0(struct context *c) {
 }
 
 static struct expr *gete1(struct context *c) {
-   real val=0;
+   double val=0;
    enum operator  op;
    struct expr *ret, *op1;
 
@@ -290,7 +290,7 @@ static struct expr *gete1(struct context *c) {
 }
 
 static struct expr *gete2(struct context *c) {
-   real val=0;
+   double val=0;
    enum operator  op;
    struct expr *ret, *op1;
 
@@ -309,7 +309,7 @@ static struct expr *gete2(struct context *c) {
 }
 
 static struct expr *gete3(struct context *c) {
-   real val=0;
+   double val=0;
    enum operator  op;
    struct expr *ret, *op1;
 
@@ -328,7 +328,7 @@ static struct expr *gete3(struct context *c) {
 }
 
 static struct expr *gete4(struct context *c) {
-   real val=0;
+   double val=0;
    enum operator  op;
    struct expr *ret, *op1;
 
@@ -348,7 +348,7 @@ static struct expr *gete4(struct context *c) {
 }
 
 static struct expr *gete5(struct context *c) {
-   real val=0;
+   double val=0;
    enum operator  op;
    struct expr *ret, *op1;
 
@@ -367,7 +367,7 @@ static struct expr *gete5(struct context *c) {
 }
 
 static struct expr *getexpr(struct context *c) {
-   real val=0;
+   double val=0;
    enum operator  op;
    struct expr *ret, *op1;
 
@@ -410,8 +410,8 @@ struct expr *nlt_parseexpr(struct context *c, char *str) {
    return (ret);
 }
 
-static real evaluate_expr(struct context *c,struct expr *e) {
-   real val1, val2;
+static double evaluate_expr(struct context *c,struct expr *e) {
+   double val1, val2;
 
    switch (e->operator ) {
      case op_value:
@@ -525,8 +525,8 @@ static real evaluate_expr(struct context *c,struct expr *e) {
    }
 }
 
-static real NL_expr(struct context *c,struct expr *e) {
-   real val=evaluate_expr(c, e);
+static double NL_expr(struct context *c,struct expr *e) {
+   double val=evaluate_expr(c, e);
 
    if (isnan(val))
       return (0);
@@ -600,7 +600,7 @@ static void SplineSetNLTrans(SplineSet *ss,struct context *c,
    SplinePoint *first, *last, *next;
    SplinePoint *sp;
    TPoint mids[20];
-   bigreal t;
+   double t;
    int i;
    Spline1D *xsp, *ysp;
 

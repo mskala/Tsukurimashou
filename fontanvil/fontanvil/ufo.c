@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4373 2015-11-10 18:54:41Z mskala $ */
+/* $Id: ufo.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -877,7 +877,6 @@ SplineSet *SplinePointListInterpretGlif(SplineFont *sf, char *filename,
 #      undef iconv_close
 #   endif
 
-#   undef extended		/* used in xlink.h */
 #   include <libxml/parser.h>
 
 #   ifdef __CygWin

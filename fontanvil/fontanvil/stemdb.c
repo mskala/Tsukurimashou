@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 4426 2015-11-21 21:20:17Z mskala $ */
+/* $Id: stemdb.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams and Alexey Kryukov
  * Copyright (C) 2015  Matthew Skala
  *
@@ -656,7 +656,7 @@ static int MonotonicOrder(Spline ** sspace,Spline *line,struct st *stspace) {
    Spline *s;
    int i, j, k, cnt;
    BasePoint pts[9];
-   extended lts[10], sts[10];
+   double lts[10], sts[10];
 
    for (i=j=0; (s=sspace[j]) != NULL; ++j) {
       if (BBoxIntersectsLine(s, line)) {
@@ -2921,7 +2921,7 @@ static void FixupT(struct pointdata *pd,int stemidx,int isnext,int eidx) {
    SplinePoint end1, end2;
    double width, t, sign, len, dot;
    BasePoint pts[9];
-   extended lts[10], sts[10];
+   double lts[10], sts[10];
    BasePoint diff;
    struct stemdata *stem;
 
@@ -2989,9 +2989,9 @@ static int IsSplinePeak(struct glyphdata *gd,struct pointdata *pd,
    int wprev, wnext, i, desired;
    SplinePoint *sp=pd->sp;
 
-   base=((real *) & sp->me.x)[!is_x];
-   nextctl=sp->nonextcp ? base : ((real *) & sp->nextcp.x)[!is_x];
-   prevctl=sp->noprevcp ? base : ((real *) & sp->prevcp.x)[!is_x];
+   base=((double *) & sp->me.x)[!is_x];
+   nextctl=sp->nonextcp ? base : ((double *) & sp->nextcp.x)[!is_x];
+   prevctl=sp->noprevcp ? base : ((double *) & sp->prevcp.x)[!is_x];
    next=prev=base;
    snext=sp->next;
    sprev=sp->prev;
@@ -3005,17 +3005,17 @@ static int IsSplinePeak(struct glyphdata *gd,struct pointdata *pd,
 
    if (flags & 4) {
       while (snext->to->next != NULL && snext->to != sp && next==base) {
-	 next=((real *) & snext->to->me.x)[!is_x];
+	 next=((double *) & snext->to->me.x)[!is_x];
 	 snext=snext->to->next;
       }
 
       while (sprev->from->prev != NULL && sprev->from != sp && prev==base) {
-	 prev=((real *) & sprev->from->me.x)[!is_x];
+	 prev=((double *) & sprev->from->me.x)[!is_x];
 	 sprev=sprev->from->prev;
       }
    } else {
-      next=((real *) & snext->to->me.x)[!is_x];
-      prev=((real *) & sprev->from->me.x)[!is_x];
+      next=((double *) & snext->to->me.x)[!is_x];
+      prev=((double *) & sprev->from->me.x)[!is_x];
    }
 
    if (prev < base && next < base && nextctl <= base && prevctl <= base)
@@ -3025,7 +3025,7 @@ static int IsSplinePeak(struct glyphdata *gd,struct pointdata *pd,
    else
       return (false);
 
-   MonotonicFindAt(gd->ms, is_x, ((real *) & sp->me.x)[is_x], space =
+   MonotonicFindAt(gd->ms, is_x, ((double *) & sp->me.x)[is_x], space =
 		   gd->space);
    wprev=wnext=0;
    for (i=0; space[i] != NULL; ++i) {
@@ -3278,9 +3278,9 @@ static int StemIsActiveAt(struct glyphdata *gd,struct stemdata *stem,
 
    if (IsUnitHV(&stem->unit, true)) {
       which=stem->unit.x==0;
-      MonotonicFindAt(gd->ms, which, ((real *) & pos.x)[which], space =
+      MonotonicFindAt(gd->ms, which, ((double *) & pos.x)[which], space =
 		      gd->space);
-      test=((real *) & pos.x)[!which];
+      test=((double *) & pos.x)[!which];
 
       lmin=(stem->lmax - 2 * dist_error_hv < -dist_error_hv) ?
 	 stem->lmax - 2 * dist_error_hv : -dist_error_hv;
@@ -4399,15 +4399,15 @@ static void FindRefPointsExisting(struct glyphdata *gd,struct stemdata *stem) {
    struct pointdata *pd;
 
    is_x=(int) rint(stem->unit.y);
-   lbase=((real *) & stem->left.x)[!is_x];
-   rbase=((real *) & stem->right.x)[!is_x];
+   lbase=((double *) & stem->left.x)[!is_x];
+   rbase=((double *) & stem->right.x)[!is_x];
 
    for (i=0; i < stem->chunk_cnt; ++i) {
       chunk=&stem->chunks[i];
 
       if (chunk->ltick) {
 	 pd=chunk->l;
-	 pos=((real *) & pd->sp->me.x)[!is_x];
+	 pos=((double *) & pd->sp->me.x)[!is_x];
 	 if (pos==lbase) {
 	    pd->value++;
 	    if (pd->sp->ptindex < gd->realcnt)
@@ -4419,7 +4419,7 @@ static void FindRefPointsExisting(struct glyphdata *gd,struct stemdata *stem) {
 
       if (chunk->rtick) {
 	 pd=chunk->r;
-	 pos=((real *) & pd->sp->me.x)[!is_x];
+	 pos=((double *) & pd->sp->me.x)[!is_x];
 	 if (pos==rbase) {
 	    pd->value++;
 	    if (pd->sp->ptindex < gd->realcnt)
@@ -4442,8 +4442,8 @@ static void FindRefPointsNew(struct glyphdata *gd,struct stemdata *stem) {
    uint8_t *lextr, *rextr;
 
    is_x=(int) rint(stem->unit.y);
-   lpos=((real *) & stem->left.x)[!is_x];
-   rpos=((real *) & stem->right.x)[!is_x];
+   lpos=((double *) & stem->left.x)[!is_x];
+   rpos=((double *) & stem->right.x)[!is_x];
 
    lmost1=rmost1=lmost2=rmost2=NULL;
    llen=prevllen=rlen=prevrlen=0;
@@ -4452,12 +4452,12 @@ static void FindRefPointsNew(struct glyphdata *gd,struct stemdata *stem) {
 
       if (chunk->ltick) {
 	 sp=chunk->l->sp;
-	 pos=((real *) & sp->me.x)[!is_x];
+	 pos=((double *) & sp->me.x)[!is_x];
 	 lval=0;
 	 for (j=0; j < i; j++)
 	    if (stem->chunks[j].ltick) {
 	       tsp=stem->chunks[j].l->sp;
-	       testpos=((real *) & tsp->me.x)[!is_x];
+	       testpos=((double *) & tsp->me.x)[!is_x];
 	       if (pos==testpos) {
 		  lval=stem->chunks[j].l->value;
 		  stem->chunks[j].l->value++;
@@ -4484,12 +4484,12 @@ static void FindRefPointsNew(struct glyphdata *gd,struct stemdata *stem) {
 
       if (chunk->rtick) {
 	 sp=chunk->r->sp;
-	 pos=((real *) & sp->me.x)[!is_x];
+	 pos=((double *) & sp->me.x)[!is_x];
 	 rval=0;
 	 for (j=0; j < i; j++)
 	    if (stem->chunks[j].rtick) {
 	       tsp=stem->chunks[j].r->sp;
-	       testpos=((real *) & tsp->me.x)[!is_x];
+	       testpos=((double *) & tsp->me.x)[!is_x];
 	       if (pos==testpos) {
 		  rval=stem->chunks[j].r->value;
 		  stem->chunks[j].r->value++;
@@ -4960,7 +4960,7 @@ static int AddGhostSegment(struct pointdata *pd,int cnt,double base,
 
 static void FigureGhostActive(struct glyphdata *gd,struct stemdata *stem) {
    int acnt, i;
-   real len=0;
+   double len=0;
    struct segment *activespace=gd->activespace;
    struct pointdata *valid;
 
@@ -5003,7 +5003,7 @@ static void CheckForGhostHints(struct glyphdata *gd) {
    struct stemdata *stem;
    struct stem_chunk *chunk;
    struct pointdata *pd;
-   real base;
+   double base;
    int i, j, leftfound, rightfound, has_h, peak, fuzz;
 
    fuzz=gd->fuzz;

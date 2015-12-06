@@ -1,4 +1,3 @@
-/* -*- related-file-name: "../../liblcdf/clp.c" -*- */
 #ifndef CLP_H
 #define CLP_H
 #ifdef __cplusplus

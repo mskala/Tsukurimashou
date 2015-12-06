@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 4299 2015-10-24 10:24:40Z mskala $ */
+/* $Id: autotrace.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -65,7 +65,7 @@ static SplinePointList *localSplinesFromEntities(Entity *ent,Color bgcol,
    StrokeInfo si;
    DBounds bb, sbb;
    int removed;
-   real fudge;
+   double fudge;
    Layer layers[2];
 
    /* We have a problem. The autotrace program includes contours for the */
@@ -252,7 +252,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    struct _GImage *ib;
    Color bgcol;
    int ispotrace;
-   real transform[6];
+   double transform[6];
    char tempname_in[1025];
    char tempname_out[1025];
    char *prog, *command, *cmd;
@@ -357,7 +357,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    SplineSet *new, *last;
    struct _GImage *ib;
    Color bgcol;
-   real transform[6];
+   double transform[6];
    int changed=false;
    char tempname[1025];
    char *arglist[30];

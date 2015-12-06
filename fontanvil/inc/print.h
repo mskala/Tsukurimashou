@@ -1,4 +1,4 @@
-/* $Id: print.h 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: print.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -87,7 +87,7 @@ typedef struct printinfo {
    int chline;			/* High order bits of characters we're outputting */
    int page;
    int lastbase;
-   real xoff, yoff, scale;
+   double xoff, yoff, scale;
    char *printer;
    int copies;
    int pagewidth, pageheight, printtype;

@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: parsettf.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -383,22 +383,22 @@ static int32_t getoffset(AFILE *ttf,int offsize) {
       return (getlong(ttf));
 }
 
-real getfixed(AFILE *ttf) {
+double getfixed(AFILE *ttf) {
    int32_t val=getlong(ttf);
    int mant=val & 0xffff;
 
    /* This oddity may be needed to deal with the first 16 bits being signed */
    /*  and the low-order bits unsigned */
-   return ((real) (val >> 16) + (mant / 65536.0));
+   return ((double) (val >> 16) + (mant / 65536.0));
 }
 
-real get2dot14(AFILE *ttf) {
+double get2dot14(AFILE *ttf) {
    int32_t val=getushort(ttf);
    int mant=val & 0x3fff;
 
    /* This oddity may be needed to deal with the first 2 bits being signed */
    /*  and the low-order bits unsigned */
-   return ((real) ((val << 16) >> (16 + 14)) + (mant / 16384.0));
+   return ((double) ((val << 16) >> (16 + 14)) + (mant / 16384.0));
 }
 
 static Encoding *enc_from_platspec(int platform,int specific) {
@@ -1868,7 +1868,7 @@ static void FigureControls(SplinePoint *from,SplinePoint *to,
 			   BasePoint * cp, int is_order2) {
    /* What are the control points for 2 cp bezier which will provide the same */
    /*  curve as that for the 1 cp bezier specified above */
-   real b, c, d;
+   double b, c, d;
 
    if (is_order2) {
       from->nextcp=to->prevcp=*cp;
@@ -2850,7 +2850,7 @@ static char *addnibble(char *pt,int nib) {
    return (pt);
 }
 
-static int readcffthing(AFILE *ttf,int *_ival,real *dval,int *operand,
+static int readcffthing(AFILE *ttf,int *_ival,double *dval,int *operand,
 			struct ttfinfo *info) {
    char buffer[50], *pt;
    int ch, ival;
@@ -2944,16 +2944,16 @@ struct topdicts {
    int familyname;		/* SID */
    int weight;			/* SID */
    int isfixedpitch;
-   real italicangle;
-   real underlinepos;
-   real underlinewidth;
+   double italicangle;
+   double underlinepos;
+   double underlinewidth;
    int painttype;
    int charstringtype;
-   real fontmatrix[6];
+   double fontmatrix[6];
    int fontmatrix_set;
    int uniqueid;
-   real fontbb[4];
-   real strokewidth;
+   double fontbb[4];
+   double strokewidth;
    int xuid[20];
    int charsetoff;		/* from start of file */
    int encodingoff;		/* from start of file */
@@ -2965,12 +2965,12 @@ struct topdicts {
    /* synthetic fonts only (whatever they are) */
    int basefontname;		/* SID */
    /* Multiple master/synthetic fonts */
-   real basefontblend[16];	/* delta *//* No description of why this is relevant for mm fonts */
+   double basefontblend[16];	/* delta *//* No description of why this is relevant for mm fonts */
    /* Multiple master fonts only */
    int blendaxistypes[17];	/* SID */
    int nMasters;
    int nAxes;
-   real weightvector[17];
+   double weightvector[17];
    int lenBuildCharArray;	/* No description of what this means */
    int NormalizeDesignVector;	/* SID *//* No description of what this does */
    int ConvertDesignVector;	/* SID *//* No description of what this does */
@@ -2978,7 +2978,7 @@ struct topdicts {
    int ros_registry;		/* SID */
    int ros_ordering;		/* SID */
    int ros_supplement;
-   real cidfontversion;
+   double cidfontversion;
    int cidfontrevision;
    int cidfonttype;
    int cidcount;
@@ -2987,21 +2987,21 @@ struct topdicts {
    int fdselectoff;		/* from start of file */
    int sid_fontname;		/* SID */
 /* Private stuff */
-   real bluevalues[14];
-   real otherblues[10];
-   real familyblues[14];
-   real familyotherblues[10];
-   real bluescale;
-   real blueshift;
-   real bluefuzz;
+   double bluevalues[14];
+   double otherblues[10];
+   double familyblues[14];
+   double familyotherblues[10];
+   double bluescale;
+   double blueshift;
+   double bluefuzz;
    int stdhw;
    int stdvw;
-   real stemsnaph[10];
-   real stemsnapv[10];
+   double stemsnaph[10];
+   double stemsnapv[10];
    int forcebold;
-   real forceboldthreshold;
+   double forceboldthreshold;
    int languagegroup;
-   real expansionfactor;
+   double expansionfactor;
    int initialRandomSeed;
    int subrsoff;		/* from start of this private table */
    int defaultwidthx;
@@ -3073,7 +3073,7 @@ static struct topdicts *readcfftopdict(AFILE *ttf,char *fontname,int len,
    struct topdicts *td=calloc(1, sizeof(struct topdicts));
    long base=aftell(ttf);
    int ival, oval, sp, ret, i;
-   real stack[50];
+   double stack[50];
 
    if (fontname != NULL)
       ValidatePostScriptFontName(info, fontname);
@@ -3147,14 +3147,14 @@ static struct topdicts *readcfftopdict(AFILE *ttf,char *fontname,int len,
 	      break;
 	   case (12 << 8) + 7:
 	      memcpy(td->fontmatrix, stack,
-		     (sp >= 6 ? 6 : sp) * sizeof(real));
+		     (sp >= 6 ? 6 : sp) * sizeof(double));
 	      td->fontmatrix_set=1;
 	      break;
 	   case 13:
 	      td->uniqueid=stack[sp - 1];
 	      break;
 	   case 5:
-	      memcpy(td->fontbb, stack, (sp >= 4 ? 4 : sp) * sizeof(real));
+	      memcpy(td->fontbb, stack, (sp >= 4 ? 4 : sp) * sizeof(double));
 	      break;
 	   case (12 << 8) + 8:
 	      td->strokewidth=stack[sp - 1];
@@ -3195,7 +3195,7 @@ static struct topdicts *readcfftopdict(AFILE *ttf,char *fontname,int len,
 	      info->bad_cff=true;
 	      td->nMasters=stack[0];
 	      td->nAxes=sp - 4;
-	      memcpy(td->weightvector, stack + 1, (sp - 4) * sizeof(real));
+	      memcpy(td->weightvector, stack + 1, (sp - 4) * sizeof(double));
 	      td->lenBuildCharArray=stack[sp - 3];
 	      td->NormalizeDesignVector=stack[sp - 2];	/* These are type2 charstrings, even in type1 fonts */
 	      td->ConvertDesignVector=stack[sp - 1];
@@ -3249,7 +3249,7 @@ static struct topdicts *readcfftopdict(AFILE *ttf,char *fontname,int len,
 static void readcffprivate(AFILE *ttf,struct topdicts *td,
 			   struct ttfinfo *info) {
    int ival, oval, sp, ret, i;
-   real stack[50];
+   double stack[50];
    int32_t end=td->cff_start + td->private_offset + td->private_size;
 
    afseek(ttf, td->cff_start + td->private_offset, SEEK_SET);
@@ -3681,7 +3681,7 @@ static char *intarray2str(int *array,int size) {
    return (ret);
 }
 
-static char *realarray2str(real *array,int size,int must_be_even) {
+static char *realarray2str(double *array,int size,int must_be_even) {
    int i, j;
    char *pt, *ret;
 
@@ -4201,7 +4201,7 @@ static void readttfwidths(AFILE *ttf,struct ttfinfo *info) {
    int check_width_consistency=info->cff_start != 0
       && info->glyph_start==0;
    SplineChar *sc;
-   real trans[6];
+   double trans[6];
 
    memset(trans, 0, sizeof(trans));
    trans[0]=trans[3]=1;
@@ -6022,11 +6022,11 @@ static void MMFillFromVAR(SplineFont *sf,struct ttfinfo *info) {
    mm->axis_count=v->axis_count;
    mm->instance_count=v->tuple_count;
    mm->instances=malloc(v->tuple_count * sizeof(SplineFont *));
-   mm->positions=malloc(v->tuple_count * v->axis_count * sizeof(real));
+   mm->positions=malloc(v->tuple_count * v->axis_count * sizeof(double));
    for (i=0; i < v->tuple_count; ++i)
       for (j=0; j < v->axis_count; ++j)
 	 mm->positions[i * v->axis_count + j]=v->tuples[i].coords[j];
-   mm->defweights=calloc(v->tuple_count, sizeof(real));	/* Doesn't apply */
+   mm->defweights=calloc(v->tuple_count, sizeof(double));	/* Doesn't apply */
    mm->axismaps=calloc(v->axis_count, sizeof(struct axismap));
    for (i=0; i < v->axis_count; ++i) {
       mm->axes[i]=AxisNameConvert(v->axes[i].tag);
@@ -6035,8 +6035,8 @@ static void MMFillFromVAR(SplineFont *sf,struct ttfinfo *info) {
       mm->axismaps[i].max=v->axes[i].max;
       if (v->axes[i].paircount==0) {
 	 mm->axismaps[i].points=3;
-	 mm->axismaps[i].blends=malloc(3 * sizeof(real));
-	 mm->axismaps[i].designs=malloc(3 * sizeof(real));
+	 mm->axismaps[i].blends=malloc(3 * sizeof(double));
+	 mm->axismaps[i].designs=malloc(3 * sizeof(double));
 	 mm->axismaps[i].blends[0]=-1;
 	 mm->axismaps[i].designs[0]=mm->axismaps[i].min;
 	 mm->axismaps[i].blends[1]=0;
@@ -6045,9 +6045,9 @@ static void MMFillFromVAR(SplineFont *sf,struct ttfinfo *info) {
 	 mm->axismaps[i].designs[2]=mm->axismaps[i].max;
       } else {
 	 mm->axismaps[i].points=v->axes[i].paircount;
-	 mm->axismaps[i].blends=malloc(v->axes[i].paircount * sizeof(real));
+	 mm->axismaps[i].blends=malloc(v->axes[i].paircount * sizeof(double));
 	 mm->axismaps[i].designs =
-	    malloc(v->axes[i].paircount * sizeof(real));
+	    malloc(v->axes[i].paircount * sizeof(double));
 	 for (j=0; j < v->axes[i].paircount; ++j) {
 	    if (v->axes[i].mapfrom[j] <= 0) {
 	       mm->axismaps[i].designs[j]=mm->axismaps[i].def +

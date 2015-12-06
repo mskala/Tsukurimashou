@@ -1,4 +1,4 @@
-/* $Id: sd.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: sd.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -37,9 +37,9 @@
 
 struct epattern {
    struct entity *tile;
-   real width, height;
+   double width, height;
    DBounds bbox;
-   real transform[6];
+   double transform[6];
 };
 
 typedef struct entpen {
@@ -66,18 +66,18 @@ struct filledsplines {
    float stroke_width;
    enum linejoin join;
    enum linecap cap;
-   real transform[6];		/* The stroke may be quite different depending on the transformation (ie. ellipse not circle, rotated, etc) */
+   double transform[6];		/* The stroke may be quite different depending on the transformation (ie. ellipse not circle, rotated, etc) */
 };
 
 struct text {
    TextUnit *text;
-   real transform[6];
+   double transform[6];
    struct entity *bound;
 };
 
 struct image {
    GImage *image;
-   real transform[6];
+   double transform[6];
    Color col;			/* that gets poured into imagemasks */
 };
 
@@ -109,7 +109,7 @@ typedef struct entlayer {
 typedef struct tile {
    Entity *tile;
    struct tileinstance {
-      real scale;
+      double scale;
       struct gwindow *pixmap;
       struct tileinstance *next;
    } *instances;
@@ -120,10 +120,10 @@ typedef struct splinedesign {
    int lcnt, lmax, active;
    EntLayer *layers;
 
-   real width, height;		/* in millimeters */
+   double width, height;		/* in millimeters */
    int16_t hpages, vpages;
-   real pwidth, pheight;	/* in millimeters */
-   real units;			/* if user wants to see things in */
+   double pwidth, pheight;	/* in millimeters */
+   double units;			/* if user wants to see things in */
    /* centimeters then units will be 10, if inches then 25.4, if points */
    /* then 25.4/72, if 1/1200" then 25.4/1200, etc. */
    struct dview *dvs;
@@ -166,7 +166,7 @@ enum pstype { ps_void, ps_num, ps_bool, ps_string, ps_instr, ps_lit,
 };
 
 union vals {
-   real val;
+   double val;
    int tf;
    char *str;
    struct pskeydict dict;	/* and for arrays too */
@@ -186,7 +186,7 @@ struct pskeyval {
 typedef struct retstack {
    int max;
    int cnt;
-   real *stack;
+   double *stack;
 } RetStack;
 
 #endif

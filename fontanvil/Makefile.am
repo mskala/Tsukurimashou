@@ -117,7 +117,7 @@ TSU_V_TEXL_0=echo \
 
 # must go before "filenames for autotools"
 
-TEST_EXTENSIONS = .pe .pl
+TEST_EXTENSIONS = .pe .pl .sh
 if COND_VALGRIND
   PE_LOG_COMPILER = '@VALGRIND@' @VALGRIND_FLAGS@ \
     '$(builddir)/fontanvil/fontanvil$(EXEEXT)'
@@ -127,6 +127,7 @@ endif
 PL_LOG_COMPILER = '@PERL@'
 
 TESTS = \
+  test/rmo-loop2.sh \
   test/arithmetic.pe test/feamerge.pe test/ocrblue.pe test/unilib.pe \
   test/test001.pe test/test002.pe test/test003.pe test/test004.pe \
   test/test005.pe test/test006.pe test/test007.pe test/test008.pe \
@@ -138,7 +139,7 @@ TESTS = \
   test/test119.pe test/test120.pe test/test121.pe test/test122.pe \
   test/test123.pe test/test124.pe test/test125.pe test/test126.pe \
   test/test127.pe test/test128.pe \
-  test/coverage.pl test/doccov.pl test/feart.pl
+  test/coverage.pl test/doccov.pl test/feart.pl test/floatuse.pl
 
 test/coverage.log: $(patsubst %.pe,%.log,$(filter test/%.pe,$(TESTS)))
 
@@ -454,6 +455,7 @@ fontanvil/sfddiff: fontanvil/sfddiff.pe
 
 doc/fontanvil.pdf: $(texfiles) doc/mitsuba.cls \
   doc/quixote-dore.jpg doc/quixote-daumier.jpg
+	$(AM_V_at)rm -f fontanvil.aux
 	$(AM_V_at)I=1;$(TSU_V_TEXL) cd doc ; \
 	  '$(PDFLATEX)' fontanvil.tex $(TSU_V_REDIR)
 	$(AM_V_at)cd doc ; makeindex fontanvil.idx $(TSU_V_REDIR)

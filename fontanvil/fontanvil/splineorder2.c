@@ -1,4 +1,4 @@
-/* $Id: splineorder2.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: splineorder2.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -59,14 +59,14 @@
 /* Does the quadratic spline in ttf approximate the cubic spline in ps */
 /*  within one pixel between tmin and tmax (on ps. presumably ttf between 0&1 */
 /* dim is the dimension in which there is the greatest change */
-static int comparespline(Spline *ps,Spline *ttf,real tmin,real tmax,
-			 real err) {
+static int comparespline(Spline *ps,Spline *ttf,double tmin,double tmax,
+			 double err) {
    int dim=0, other;
-   real dx, dy, ddim, dt, t;
-   real d, o;
-   real ttf_t, sq, val;
+   double dx, dy, ddim, dt, t;
+   double d, o;
+   double ttf_t, sq, val;
    DBounds bb;
-   extended ts[3];
+   double ts[3];
    int i;
 
    /* Are all points on ttf near points on ps? */
@@ -189,8 +189,8 @@ static int comparespline(Spline *ps,Spline *ttf,real tmin,real tmax,
    return (true);
 }
 
-static SplinePoint *MakeQuadSpline(SplinePoint *start,Spline *ttf,real x,
-				   real y, real tmax, SplinePoint * oldend) {
+static SplinePoint *MakeQuadSpline(SplinePoint *start,Spline *ttf,double x,
+				   double y, double tmax, SplinePoint * oldend) {
    Spline *new=chunkalloc(sizeof(Spline));
    SplinePoint *end=chunkalloc(sizeof(SplinePoint));
 
@@ -229,10 +229,10 @@ static SplinePoint *MakeQuadSpline(SplinePoint *start,Spline *ttf,real x,
    return (end);
 }
 
-static int buildtestquads(Spline *ttf,real xmin,real ymin,real cx,
-			  real cy, real x, real y, real tmin, real t,
-			  real err, Spline * ps, DBounds * psbb) {
-   real fudge, normal, para;
+static int buildtestquads(Spline *ttf,double xmin,double ymin,double cx,
+			  double cy, double x, double y, double tmin, double t,
+			  double err, Spline * ps, DBounds * psbb) {
+   double fudge, normal, para;
    BasePoint segdir, cpdir;
 
    /* test the control points are reasonable */
@@ -271,8 +271,8 @@ static int buildtestquads(Spline *ttf,real xmin,real ymin,real cx,
    return (false);
 }
 
-static SplinePoint *LinearSpline(Spline *ps,SplinePoint *start,real tmax) {
-   real x, y;
+static SplinePoint *LinearSpline(Spline *ps,SplinePoint *start,double tmax) {
+   double x, y;
    Spline *new=chunkalloc(sizeof(Spline));
    SplinePoint *end=chunkalloc(sizeof(SplinePoint));
 
@@ -307,14 +307,14 @@ static SplinePoint *LinearSpline(Spline *ps,SplinePoint *start,real tmax) {
    return (end);
 }
 
-static SplinePoint *_ttfapprox(Spline *ps,real tmin,real tmax,
+static SplinePoint *_ttfapprox(Spline *ps,double tmin,double tmax,
 			       SplinePoint * start) {
    int dim=0;
-   real dx, dy, ddim, dt, t, err;
-   real x, y, xmin, ymin;
-   real dxdtmin, dydtmin, dxdt, dydt;
+   double dx, dy, ddim, dt, t, err;
+   double x, y, xmin, ymin;
+   double dxdtmin, dydtmin, dxdt, dydt;
    SplinePoint *sp;
-   real cx, cy;
+   double cx, cy;
    Spline ttf;
    int cnt=-1, forceit, unforceable;
    BasePoint end, rend, dend;
@@ -489,9 +489,9 @@ static SplinePoint *_ttfapprox(Spline *ps,real tmin,real tmax,
    goto tail_recursion;
 }
 
-static SplinePoint *__ttfApprox(Spline *ps,real tmin,real tmax,
+static SplinePoint *__ttfApprox(Spline *ps,double tmin,double tmax,
 				SplinePoint * start) {
-   extended inflect[2];
+   double inflect[2];
    int i=0;
    SplinePoint *end;
    Spline *s, *next;
@@ -518,7 +518,7 @@ static SplinePoint *__ttfApprox(Spline *ps,real tmin,real tmax,
       if (RealNearish(inflect[0], inflect[1]))
 	 --i;
       else if (inflect[0] > inflect[1]) {
-	 real temp=inflect[0];
+	 double temp=inflect[0];
 
 	 inflect[0]=inflect[1];
 	 inflect[1]=temp;
@@ -538,14 +538,14 @@ static SplinePoint *__ttfApprox(Spline *ps,real tmin,real tmax,
 typedef struct qpoint {
    BasePoint bp;
    BasePoint cp;
-   bigreal t;
+   double t;
 } QPoint;
 
 static int comparedata(Spline *ps,QPoint *data,int qfirst,int qlast,
 		       int round_to_int, int test_level) {
    Spline ttf;
    int i;
-   bigreal err=round_to_int ? 1.5 : 1;
+   double err=round_to_int ? 1.5 : 1;
 
    if (qfirst==qlast)		/* happened (was a bug) */
       return (false);
@@ -605,7 +605,7 @@ static SplinePoint *CvtDataToSplines(QPoint *data,int qfirst,int qlast,
 
 static int SplineWithWellBehavedControlPoints(Spline *ps) {
    BasePoint splineunit;
-   bigreal splinelen, npos, ppos;
+   double splinelen, npos, ppos;
 
    splineunit.x=ps->to->me.x - ps->from->me.x;
    splineunit.y=ps->to->me.y - ps->from->me.y;
@@ -623,14 +623,14 @@ static int SplineWithWellBehavedControlPoints(Spline *ps) {
    return (npos >= 0 && /* npos<=ppos && */ ppos <= splinelen);
 }
 
-static int PrettyApprox(Spline *ps,bigreal tmin,bigreal tmax,
+static int PrettyApprox(Spline *ps,double tmin,double tmax,
 			QPoint * data, int qcnt, int round_to_int,
 			int test_level) {
    int ptcnt, q, i;
-   bigreal distance, dx, dy, tstart;
+   double distance, dx, dy, tstart;
    BasePoint end, mid, slopemin, slopemid, slopeend;
    BasePoint splineunit, start;
-   bigreal splinelen, midpos, lastpos, lastpos2, cppos;
+   double splinelen, midpos, lastpos, lastpos2, cppos;
    int do_good_spline_check;
    QPoint data2[12];
 
@@ -644,7 +644,7 @@ static int PrettyApprox(Spline *ps,bigreal tmin,bigreal tmax,
       (3 * ps->splines[1].a * tmin + 2 * ps->splines[1].b) * tmin +
       ps->splines[1].c;
    if (slopemin.x==0 && slopemin.y==0) {
-      bigreal t=tmin + (tmax - tmin) / 256;
+      double t=tmin + (tmax - tmin) / 256;
 
       /* If there is no control point for this end point, then the slope is */
       /*  0/0 at the end point. Which isn't useful, it leads to a quadratic */
@@ -672,7 +672,7 @@ static int PrettyApprox(Spline *ps,bigreal tmin,bigreal tmax,
       (3 * ps->splines[1].a * tmax + 2 * ps->splines[1].b) * tmax +
       ps->splines[1].c;
    if (slopemin.x==0 && slopemin.y==0) {
-      bigreal t=tmax - (tmax - tmin) / 256;
+      double t=tmax - (tmax - tmin) / 256;
 
       /* Same problem as above, except at the other end */
       slopeend.x =
@@ -951,7 +951,7 @@ static SplinePoint *AlreadyQuadraticCheck(Spline *ps,SplinePoint *start) {
 }
 
 static SplinePoint *ttfApprox(Spline *ps,SplinePoint *start) {
-   extended magicpoints[6], last;
+   double magicpoints[6], last;
    int cnt, i, j, qcnt, test_level;
    QPoint data[8 * 10];
    int round_to_int =
@@ -1014,7 +1014,7 @@ static SplinePoint *ttfApprox(Spline *ps,SplinePoint *start) {
    for (i=0; i < cnt; ++i)
       for (j=i + 1; j < cnt; ++j) {
 	 if (magicpoints[i] > magicpoints[j]) {
-	    bigreal temp=magicpoints[i];
+	    double temp=magicpoints[i];
 
 	    magicpoints[i]=magicpoints[j];
 	    magicpoints[j]=temp;
@@ -1145,13 +1145,13 @@ SplineSet *SplineSetsTTFApprox(SplineSet * ss) {
    return (head);
 }
 
-static void ImproveB3CPForQuadratic(real from,real *_ncp,real *_pcp,
-				    real to) {
-   real ncp=*_ncp, pcp=*_pcp;
-   real noff, poff;
-   real c, b, best;
+static void ImproveB3CPForQuadratic(double from,double *_ncp,double *_pcp,
+				    double to) {
+   double ncp=*_ncp, pcp=*_pcp;
+   double noff, poff;
+   double c, b, best;
    int err, i, besti;
-   real offs[9];
+   double offs[9];
 
    if ((noff=ncp / 32768.0) < 0)
       noff=-noff;
@@ -1633,7 +1633,7 @@ static int IsHV(Spline *spline,int isfrom) {
 void SplineRefigureFixup(Spline * spline) {
    SplinePoint *from, *to, *prev, *next;
    BasePoint foff, toff, unit, new;
-   bigreal len;
+   double len;
    enum pointtype fpt, tpt;
    int done=false;
    extern int snaptoint;

@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 4308 2015-10-25 12:13:49Z mskala $ */
+/* $Id: cvexport.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -376,7 +376,7 @@ static int ExportGlif(char *filename,SplineChar *sc,int layer) {
    return (ret);
 }
 
-static void FigDumpPt(AFILE *fig,BasePoint *me,real scale,real ascent) {
+static void FigDumpPt(AFILE *fig,BasePoint *me,double scale,double ascent) {
    afprintf(fig, "%d %d ", (int) rint(me->x * scale),
 	   (int) rint(ascent - me->y * scale));
 }
@@ -384,8 +384,8 @@ static void FigDumpPt(AFILE *fig,BasePoint *me,real scale,real ascent) {
 static void FigSplineSet(AFILE *fig,SplineSet *spl,int spmax,int asc) {
    SplinePoint *sp;
    int cnt;
-   real scale=7 * 1200.0 / spmax;
-   real ascent=11 * 1200 * asc / spmax;
+   double scale=7 * 1200.0 / spmax;
+   double ascent=11 * 1200 * asc / spmax;
 
    while (spl != NULL) {
       /* type=3, SPline; sub_type=3, closed interpreted; linestyle=0(solid); thickness=1 */

@@ -1,4 +1,4 @@
-/* $Id: print.c 4299 2015-10-24 10:24:40Z mskala $ */
+/* $Id: print.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -241,7 +241,7 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
    } else if ((pat=brush->pattern) != NULL) {
       SplineChar *pattern_sc=SFGetChar(sc->parent, -1, pat->pattern);
       DBounds b;
-      real scale[6], result[6];
+      double scale[6], result[6];
       int respos, resobj;
       int lenpos, lenstart, len;
 

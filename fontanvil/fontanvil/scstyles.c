@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: scstyles.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -120,7 +120,7 @@ static int IsAnglePoint(SplinePoint *sp) {
 
 static int IsExtremum(SplinePoint *sp,int xdir) {
    SplinePoint *psp, *nsp;
-   real val=(&sp->me.x)[xdir];
+   double val=(&sp->me.x)[xdir];
 
    if (sp->next==NULL || sp->prev==NULL)
       return (false);
@@ -464,9 +464,9 @@ static void StemResize(SplineSet *ss,GlyphData *gd,StemData ** dstems,
    double stem_scale, cntr_scale, stem_add, cntr_add, stroke_add, cntr_new,
       width_new;
    double min_coord=x_dir ? orig_b->minx : orig_b->miny;
-   real *min_new=x_dir ? &new_b->minx : &new_b->miny;
-   real *max_new=x_dir ? &new_b->maxx : &new_b->maxy;
-   real *end, *newstart, *newend, *prevend=NULL, *newprevend=NULL;
+   double *min_new=x_dir ? &new_b->minx : &new_b->miny;
+   double *max_new=x_dir ? &new_b->maxx : &new_b->maxy;
+   double *end, *newstart, *newend, *prevend=NULL, *newprevend=NULL;
    StemData *stem, *prev=NULL;
    StemBundle *bundle=x_dir ? gd->vbundle : gd->hbundle;
    int i, expanded;
@@ -1227,8 +1227,8 @@ static void MovePointToDiag(PointData *pd,StemData *stem,int is_l) {
    }
 }
 
-static void GetDStemBounds(GlyphData *gd,StemData *stem,real *prev,
-			   real * next, int x_dir) {
+static void GetDStemBounds(GlyphData *gd,StemData *stem,double *prev,
+			   double * next, int x_dir) {
    int i, maxact;
    double roff, dstart, dend, hvstart, hvend, temp;
    StemBundle *bundle;
@@ -1792,7 +1792,7 @@ static void FixDStem(GlyphData *gd,StemData *stem,StemData ** dstems,
 
 static void ChangeGlyph(SplineChar *sc_sc,SplineChar *orig_sc,int layer,
 			struct genericchange *genchange) {
-   real scale[6];
+   double scale[6];
    DBounds orig_b, new_b;
    int i, dcnt=0, removeoverlap=true;
    double owidth=orig_sc->width, ratio, add;
@@ -2043,7 +2043,7 @@ static double CaseMajorVerticalStemWidth(SplineFont *sf,int layer,
    char *snaps, *end;
    StemInfo *s;
    double val, diff, bestwidth, bestdiff;
-   real deskew[6];
+   double deskew[6];
 
    memset(deskew, 0, sizeof(deskew));
    deskew[0]=deskew[3]=1;
@@ -3459,7 +3459,7 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
    DBounds b;
    int width;
    double offset;
-   real transform[6];
+   double transform[6];
    int order2=sc->layers[layer].order2;
 
    if (do_undoes)
@@ -3680,7 +3680,7 @@ static void InterpolateControlPointsAndSet(struct ptmoves *ptmoves,int cnt) {
 
 static void CorrectLeftSideBearing(SplineSet *ss_expanded,SplineChar *sc,
 				   int layer) {
-   real transform[6];
+   double transform[6];
    DBounds old, new;
 
    /* Now correct the left side bearing */
@@ -4516,7 +4516,7 @@ static int LikePQ(SplineChar *sc) {
 
 static void ItalicCompress(SplineChar *sc,int layer,struct hsquash *squash) {
    DBounds pre, mid, post;
-   real stemsquash[6], translate[6];
+   double stemsquash[6], translate[6];
    double counter_len;
    int tot;
 
@@ -4770,7 +4770,7 @@ static SplineSet *MakeBottomItalicSerif(double stemwidth,double endx,
 static SplineSet *MakeTopItalicSerif(double stemwidth,double endx,
 				     ItalicInfo * ii, int at_xh) {
    SplineSet *ss=MakeBottomItalicSerif(stemwidth, 0, ii, 0);
-   real trans[6];
+   double trans[6];
 
    memset(trans, 0, sizeof(trans));
    trans[0]=trans[3]=-1;
@@ -4783,10 +4783,10 @@ static SplineSet *MakeItalicDSerif(DStemInfo *d,double stemwidth,
 				   double endx, ItalicInfo * ii,
 				   int seriftype, int top) {
    SplineSet *ss;
-   real trans[6];
+   double trans[6];
    int i;
    double spos, epos, dpos;
-   extended t1, t2;
+   double t1, t2;
    SplinePoint *sp;
    Spline *s;
    double cur_sw;
@@ -5446,7 +5446,7 @@ static SplinePoint *StemMoveBottomEndCarefully(SplinePoint *sp,
 	   (!sp->noprevcp && other->me.y > sp->prevcp.y))) {
 	 /* We need to move sp up, but we can't because it turns down */
 	 /*  So instead, move "other" down to sp */
-	 extended ts[3];
+	 double ts[3];
 
 	 /* Well, we might be able to move it up a little... */
 	 if (sp->prev->from->me.x==sp->me.x) {
@@ -5477,7 +5477,7 @@ static SplinePoint *StemMoveBottomEndCarefully(SplinePoint *sp,
       if (sp->me.y < other->me.y &&
 	  ((sp->nonextcp && other->me.y > sp->next->to->me.y) ||
 	   (!sp->nonextcp && other->me.y > sp->nextcp.y))) {
-	 extended ts[3];
+	 double ts[3];
 
 	 if (sp->next->to->me.x==sp->me.x) {
 	    SplinePoint *newsp=sp->next->to;
@@ -5786,7 +5786,7 @@ static SplinePoint *StemMoveTopEndCarefully(SplinePoint *sp,
 	   (!sp->noprevcp && other->me.y < sp->prevcp.y))) {
 	 /* We need to move sp up, but we can't because it turns down */
 	 /*  So instead, move "other" down to sp */
-	 extended ts[3];
+	 double ts[3];
 
 	 /* Well, we might be able to move it up a little... */
 	 if (sp->prev->from->me.x==sp->me.x) {
@@ -5817,7 +5817,7 @@ static SplinePoint *StemMoveTopEndCarefully(SplinePoint *sp,
       if (sp->me.y > other->me.y &&
 	  ((sp->nonextcp && other->me.y < sp->next->to->me.y) ||
 	   (!sp->nonextcp && other->me.y < sp->nextcp.y))) {
-	 extended ts[3];
+	 double ts[3];
 
 	 if (sp->next->to->me.x==sp->me.x) {
 	    SplinePoint *newsp=sp->next->to;
@@ -6191,7 +6191,7 @@ static void AddDiagonalItalicSerifs(SplineChar *sc,int layer,
    }
 }
 
-static int FFCopyTrans(ItalicInfo *ii,real *transform,
+static int FFCopyTrans(ItalicInfo *ii,double *transform,
 		       SplinePoint ** ff_start1, SplinePoint ** ff_end1,
 		       SplinePoint ** ff_start2, SplinePoint ** ff_end2) {
    SplinePoint *sp, *last, *cur;
@@ -6279,7 +6279,7 @@ static void FigureFFTop(ItalicInfo *ii) {
    double sdiff, ediff;
    DBounds b;
    int i;
-   real trans[6];
+   double trans[6];
 
    if (ii->ff_start1 != NULL)
       return;
@@ -6356,7 +6356,7 @@ static void FFBottomFromTop(SplineChar *sc,int layer,ItalicInfo *ii) {
    StemInfo *h;
    SplinePoint *start[2], *end[2], *f_start[2], *f_end[2];
    SplineSet *ss[2];
-   real transform[6];
+   double transform[6];
    int cnt;
    double bottom_y=0;
    int touches;
@@ -6436,7 +6436,7 @@ static void FFBottomFromTop(SplineChar *sc,int layer,ItalicInfo *ii) {
    SplineSetRefigure(sc->layers[layer].splines);
 }
 
-static void FCopyTrans(ItalicInfo *ii,real *transform,
+static void FCopyTrans(ItalicInfo *ii,double *transform,
 		       SplinePoint ** f_start, SplinePoint ** f_end) {
    SplinePoint *sp, *last, *cur;
 
@@ -6479,7 +6479,7 @@ static void FigureFTop(ItalicInfo *ii) {
    SplineSet *ss;
    double bestsdiff, bestediff, sdiff, ediff;
    DBounds b;
-   real trans[6];
+   double trans[6];
 
    if (ii->f_start != NULL)
       return;
@@ -6549,7 +6549,7 @@ static void FBottomFromTop(SplineChar *sc,int layer,ItalicInfo *ii) {
    StemInfo *h;
    SplinePoint *start, *end, *f_start, *f_end;
    SplineSet *ss;
-   real transform[6];
+   double transform[6];
    int cnt;
    double bottom_y=0;
    DBounds b;
@@ -6653,7 +6653,7 @@ static void CyrilicPhiTop(SplineChar *sc,int layer,ItalicInfo *ii) {
    StemInfo *h;
    SplinePoint *start, *end, *f_start, *f_end;
    SplineSet *ss;
-   real transform[6];
+   double transform[6];
    DBounds b;
 
    FigureFTop(ii);
@@ -6767,7 +6767,7 @@ static void Ital_a_From_d(SplineChar *sc,int layer,ItalicInfo *ii) {
    SplinePoint *start, *end, *ltemp, *rtemp;
    int scnt, left_is_start;
    double stemwidth, drop, min;
-   extended ts[3];
+   double ts[3];
 
    if (d==NULL)
       return;
@@ -6775,7 +6775,7 @@ static void Ital_a_From_d(SplineChar *sc,int layer,ItalicInfo *ii) {
    LayerUnAllSplines(&d->layers[ly_fore]);
 
    if (d->ticked) {
-      real deskew[6];
+      double deskew[6];
 
       memset(deskew, 0, sizeof(deskew));
       deskew[0]=deskew[3]=1;
@@ -6902,7 +6902,7 @@ static void _SCChangeXHeight(SplineChar *sc,int layer,
 }
 
 static void SCMakeItalic(SplineChar *sc,int layer,ItalicInfo *ii) {
-   real skew[6], refpos[6];;
+   double skew[6], refpos[6];;
    RefChar *ref;
    int letter_case;
 

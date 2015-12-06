@@ -1,4 +1,4 @@
-/* $Id: splinesave.c 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: splinesave.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -349,14 +349,14 @@ static void MarkTranslationRefs(SplineFont *sf,int layer) {
 /* ********************** Type1 PostScript CharStrings ********************** */
 /* ************************************************************************** */
 
-static bigreal myround(bigreal pos,int round) {
+static double myround(double pos,int round) {
    if (round)
       return (rint(pos));
    else
       return (rint(pos * 1024.) / 1024.);
 }
 
-static void AddNumber(GrowBuf *gb,real pos,int round) {
+static void AddNumber(GrowBuf *gb,double pos,int round) {
    int dodiv=0;
    int val;
    unsigned char *str;
@@ -419,7 +419,7 @@ static void AddNumber(GrowBuf *gb,real pos,int round) {
 /*  which must all be added, and then a call made to the appropriate blend routine */
 /* This is complicated because all the data may not fit on the stack so we */
 /*  may need to make multiple calls */
-static void AddData(GrowBuf *gb,bigreal data[MmMax][6],int instances,
+static void AddData(GrowBuf *gb,double data[MmMax][6],int instances,
 		    int num_coords, int round) {
    int allsame=true, alls[6];
    int i, j, chunk, min, max, subr;
@@ -481,9 +481,9 @@ int CvtPsStem3(GrowBuf * gb, SplineChar * scs[MmMax], int instance_count,
    StemInfo *h1, *h2, *h3;
 
    StemInfo _h1, _h2, _h3;
-   bigreal data[MmMax][6];
+   double data[MmMax][6];
    int i;
-   real off;
+   double off;
 
    for (i=0; i < instance_count; ++i) {
       if ((ishstem && scs[i]->hconflicts) || (!ishstem && scs[i]->vconflicts))
@@ -555,11 +555,11 @@ int CvtPsStem3(GrowBuf * gb, SplineChar * scs[MmMax], int instance_count,
 
 static void CvtPsHints(GrowBuf *gb,SplineChar *scs[MmMax],
 		       int instance_count, int ishstem, int round, int iscjk,
-		       real * offsets) {
+		       double * offsets) {
    StemInfo *hs[MmMax];
-   bigreal data[MmMax][6];
+   double data[MmMax][6];
    int i;
-   real off;
+   double off;
 
    for (i=0; i < instance_count; ++i)
       hs[i]=ishstem ? scs[i]->hstem : scs[i]->vstem;
@@ -594,7 +594,7 @@ static void CvtPsMasked(GrowBuf *gb,SplineChar *scs[MmMax],
 			int instance_count, int ishstem, int round,
 			uint8_t mask[12]) {
    StemInfo *hs[MmMax];
-   bigreal data[MmMax][6], off;
+   double data[MmMax][6], off;
    int i;
 
    for (i=0; i < instance_count; ++i)
@@ -624,12 +624,12 @@ static void CvtPsMasked(GrowBuf *gb,SplineChar *scs[MmMax],
    }
 }
 
-static int FigureCounters(StemInfo *stems,real *hints,int base,
-			  real offset, int countermask_cnt,
+static int FigureCounters(StemInfo *stems,double *hints,int base,
+			  double offset, int countermask_cnt,
 			  HintMask * counters) {
    StemInfo *h;
    int pos=base + 1, subbase, cnt=0;
-   real last=offset;
+   double last=offset;
    int i;
 
    for (i=0; i < countermask_cnt; ++i) {
@@ -655,7 +655,7 @@ static int FigureCounters(StemInfo *stems,real *hints,int base,
 }
 
 static void CounterHints1(GrowBuf *gb,SplineChar *sc,int round) {
-   real hints[HntMax * 2 + 2];	/* At most 96 hints, no hint used more than once */
+   double hints[HntMax * 2 + 2];	/* At most 96 hints, no hint used more than once */
    int pos, i, j;
 
    if (sc->countermask_cnt==0)
@@ -819,7 +819,7 @@ static void _moveto(GrowBuf *gb,DBasePoint *current,BasePoint *to,
 		    struct hintdb *hdb) {
    BasePoint temp[MmMax];
    int i, samex, samey;
-   bigreal data[MmMax][6];
+   double data[MmMax][6];
 
    if (gb->pt + 18 >= gb->end)
       GrowBuffer(gb);
@@ -947,7 +947,7 @@ static void curveto(GrowBuf *gb,DBasePoint *current,
 		    struct hintdb *hdb) {
    BasePoint temp1[MmMax], temp2[MmMax], temp3[MmMax], *c0[MmMax], *c1[MmMax],
       *s1[MmMax];
-   bigreal data[MmMax][6];
+   double data[MmMax][6];
    int i, op, opcnt;
    int vh, hv;
 
@@ -1046,7 +1046,7 @@ static void flexto(GrowBuf *gb,DBasePoint current[MmMax],
    BasePoint offsets[MmMax][8];
    int i, j;
    BasePoint temp1, temp2, temp3, temp;
-   bigreal data[MmMax][6];
+   double data[MmMax][6];
 
    for (j=0; j < instance_count; ++j) {
       c0=&pspline[j]->from->nextcp;
@@ -1250,7 +1250,7 @@ static int IsSeacable(GrowBuf *gb,SplineChar *scs[MmMax],
    RefChar space, t1, t2;
    DBounds b;
    int i, j, swap;
-   bigreal data[MmMax][6];
+   double data[MmMax][6];
 
    for (j=0; j < instance_count; ++j)
       if (!IsPSSeacable(scs[j], layer))
@@ -1563,7 +1563,7 @@ static unsigned char *SplineChar2PS(SplineChar *sc,int *len,int round,
    BasePoint trans[MmMax];
    int instance_count, i;
    SplineChar *scs[MmMax];
-   bigreal data[MmMax][6];
+   double data[MmMax][6];
    MMSet *mm=sc->parent->mm;
    HintMask *hm[MmMax];
    int fixuphm=false;
@@ -2110,14 +2110,14 @@ struct pschars *CID2ChrsSubrs(SplineFont *cidmaster,
 /* ********************** Type2 PostScript CharStrings ********************** */
 /* ************************************************************************** */
 
-static real myround2(real pos,int round) {
+static double myround2(double pos,int round) {
    if (round)
       return (rint(pos));
 
    return (rint(65536 * pos) / 65536);
 }
 
-static void AddNumber2(GrowBuf *gb,real pos,int round) {
+static void AddNumber2(GrowBuf *gb,double pos,int round) {
    int val, factor;
    unsigned char *str;
 
@@ -2646,7 +2646,7 @@ static void CvtPsSplineSet2(GrowBuf *gb,SplinePointList *spl,
 
 static void DumpHints(GrowBuf *gb,StemInfo *h,int oper,int midoper,
 		      int round) {
-   real last=0, cur;
+   double last=0, cur;
    int cnt;
 
    if (h==NULL)
@@ -2718,10 +2718,10 @@ static void DumpRefsHints(GrowBuf *gb,struct hintdb *hdb,RefChar *cur,
    cnt=0;
    while (h != NULL && h->hintnumber >= 0) {
       /* Horizontal stems are defined by vertical bounds */
-      real pos=(round ? rint(h->start) : h->start) - trans->y;
+      double pos=(round ? rint(h->start) : h->start) - trans->y;
 
       for (rs=cur->sc->hstem; rs != NULL; rs=rs->next) {
-	 real rpos=round ? rint(rs->start) : rs->start;
+	 double rpos=round ? rint(rs->start) : rs->start;
 
 	 if (rpos==pos
 	     && (round ? (rint(rs->width)==rint(h->width))
@@ -2736,10 +2736,10 @@ static void DumpRefsHints(GrowBuf *gb,struct hintdb *hdb,RefChar *cur,
       ++cnt;
    }
    while (v != NULL && v->hintnumber >= 0) {
-      real pos=(round ? rint(v->start) : v->start) - trans->x;
+      double pos=(round ? rint(v->start) : v->start) - trans->x;
 
       for (rs=cur->sc->vstem; rs != NULL; rs=rs->next) {
-	 real rpos=round ? rint(rs->start) : rs->start;
+	 double rpos=round ? rint(rs->start) : rs->start;
 
 	 if (rpos==pos
 	     && (round ? (rint(rs->width)==rint(v->width))

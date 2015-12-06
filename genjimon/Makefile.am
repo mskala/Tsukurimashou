@@ -262,6 +262,7 @@ GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
 
 genjimon.pdf: genjimon.tex mitsuba.cls \
   GenjimonMedium.ttf GenjimonReverse.ttf GenjimonWhite.ttf GenjimonBlack.ttf
+	$(AM_V_at)rm -f genjimon.aux
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
 	  $(mvp)/genjimon$(expect_end)
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \

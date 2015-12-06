@@ -1,4 +1,4 @@
-/* $Id: edgelist.h 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: edgelist.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -31,9 +31,9 @@
 #   include "splinefont.h"
 
 typedef struct hints {
-   real base, width;
-   real b1, b2, e1, e2;
-   real ab, ae;
+   double base, width;
+   double b1, b2, e1, e2;
+   double ab, ae;
    unsigned int adjustb:1;
    unsigned int adjuste:1;
    struct hints *next;
@@ -44,11 +44,11 @@ typedef struct hints {
 /*  at the moment, and other will be the other one. Of course it's */
 /*  consistant accross the datastructure at any given time */
 typedef struct edge {
-   real mmin, mmax;		/* relative to es->mmin */
-   real t_mmin, t_mmax;
-   real tmin, tmax;
-   real o_mmin, o_mmax;
-   real t_cur, o_cur, m_cur;
+   double mmin, mmax;		/* relative to es->mmin */
+   double t_mmin, t_mmax;
+   double tmin, tmax;
+   double o_mmin, o_mmax;
+   double t_cur, o_cur, m_cur;
    unsigned int up:1;		/* line is directed up in the spline list */
    unsigned int max_adjusted:1;	/* by hstem hints */
    unsigned int min_adjusted:1;
@@ -56,15 +56,15 @@ typedef struct edge {
    struct edge *esnext, *aenext;
    struct edge *before, *after;
    int last_opos, last_mpos;
-   real oldt;			/* only used for FindIntersections of RemoveOverlap */
+   double oldt;			/* only used for FindIntersections of RemoveOverlap */
 } Edge;
 
 typedef struct edgelist {
    Edge **edges;
    int cnt;
-   real mmin, mmax;
-   real omin, omax;
-   real scale;
+   double mmin, mmax;
+   double omin, omax;
+   double scale;
    int bytes_per_line;
    uint8_t *bitmap;
    Edge *last, *splinesetfirst;
@@ -82,12 +82,12 @@ typedef struct edgelist {
 
 extern void FreeEdges(EdgeList * es);
 
-extern bigreal TOfNextMajor(Edge * e, EdgeList * es, bigreal sought_y);
+extern double TOfNextMajor(Edge * e, EdgeList * es, double sought_y);
 
 extern void FindEdgesSplineSet(SplinePointList * spl, EdgeList * es,
 			       int ignore_clip);
 
-extern Edge *ActiveEdgesRefigure(EdgeList * es, Edge * active, real i);
+extern Edge *ActiveEdgesRefigure(EdgeList * es, Edge * active, double i);
 
 /* Version which is better for everything other than rasterization */
 /*  (I think) */
@@ -97,9 +97,9 @@ typedef struct edgeinfo {
    /*  If the spline becomes vert/horizontal that will be at one of the */
    /*   end points too */
    Spline *spline;
-   real tmin, tmax;
-   real coordmin[2];
-   real coordmax[2];
+   double tmin, tmax;
+   double coordmin[2];
+   double coordmax[2];
    unsigned int up:1;
    unsigned int hv:1;
    unsigned int hvbottom:1;
@@ -114,8 +114,8 @@ typedef struct edgeinfo {
    unsigned int vertattmax:1;
    unsigned hup:1;
    unsigned vup:1;
-   real tcur;			/* Value of t for current major coord */
-   real ocur;			/* Value of the other coord for current major coord */
+   double tcur;			/* Value of t for current major coord */
+   double ocur;			/* Value of the other coord for current major coord */
    struct edgeinfo *next;
    struct edgeinfo *ordered;
    struct edgeinfo *aenext;
@@ -126,8 +126,8 @@ typedef struct edgeinfo {
 
 typedef struct eilist {
    EI *edges;
-   real coordmin[2];
-   real coordmax[2];
+   double coordmin[2];
+   double coordmax[2];
    int low, high, cnt;
    EI **ordered;
    char *ends;			/* flag to say an edge ends on this line */
@@ -146,14 +146,14 @@ extern void ELFindEdges(SplineChar * sc, EIList * el);
 
 extern void ELOrder(EIList * el, int major);
 
-extern real EITOfNextMajor(EI * e, EIList * el, real sought_m);
+extern double EITOfNextMajor(EI * e, EIList * el, double sought_m);
 
-extern int EISameLine(EI * e, EI * n, real i, int major);
+extern int EISameLine(EI * e, EI * n, double i, int major);
 
-extern int EISkipExtremum(EI * e, real i, int major);
+extern int EISkipExtremum(EI * e, double i, int major);
 
 extern EI *EIActiveListReorder(EI * active, int *change);
 
-extern EI *EIActiveEdgesRefigure(EIList * el, EI * active, real i, int major,
+extern EI *EIActiveEdgesRefigure(EIList * el, EI * active, double i, int major,
 				 int *_change);
 #endif

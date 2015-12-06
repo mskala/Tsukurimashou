@@ -1,6 +1,4 @@
-#                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-#
 
 #
 # Configuration source for Kleknev
@@ -261,6 +259,7 @@ AC_CONFIG_COMMANDS([fix-makefile],
 '\t-\$(A''M_V_at)\1rm -\2f \3#;' \
    Makefile],
   [PERL=$PERL])
+TSU_BAD_PATHS
 AC_OUTPUT
 #
 ############################################################################
@@ -285,7 +284,6 @@ AS_ECHO_N(["XML::Parser       "])
     [TSU_COLOURISE([yes],[2])])
   AS_ECHO([])
 AS_ECHO([])
-TSU_BAD_PATHS
 AS_IF([test "x$has_bad_paths" = "xyes"],
   [AS_ECHO([])
    AS_ECHO(["The following pathnames contain illegal characters, such as spaces:"])

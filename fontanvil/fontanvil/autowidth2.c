@@ -1,4 +1,4 @@
-/* $Id: autowidth2.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: autowidth2.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2009-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -39,8 +39,8 @@
 static int aw2_bbox_separation(AW_Glyph *g1,AW_Glyph *g2,AW_Data *all) {
    int j;
    int imin_y, imax_y;
-   real tot, cnt;
-   real denom;
+   double tot, cnt;
+   double denom;
 
    /* the goal is to give a weighted average that expresses the visual */
    /*  separation between two glyphs when they are placed so their bounding */
@@ -60,8 +60,8 @@ static int aw2_bbox_separation(AW_Glyph *g1,AW_Glyph *g2,AW_Data *all) {
       if (g2->left[j - g2->imin_y] < 32767
 	  && g1->right[j - g1->imin_y] > -32767) {
 	 /* beware of gaps such as those in "i" or "aaccute" */
-	 real sep=g2->left[j - g2->imin_y] - g1->right[j - g1->imin_y];
-	 real weight=1.0 / (sep + denom);
+	 double sep=g2->left[j - g2->imin_y] - g1->right[j - g1->imin_y];
+	 double weight=1.0 / (sep + denom);
 
 	 weight *= weight;
 
@@ -123,10 +123,10 @@ static void aw2_figure_rsb(int left_index,AW_Data *all) {
 static void aw2_figure_all_sidebearing(AW_Data *all) {
    int i, j;
    AW_Glyph *me, *other;
-   real transform[6], half;
+   double transform[6], half;
    int width, changed;
    uint8_t *rsel=calloc(all->fv->map->enccount, sizeof(char));
-   real denom=(all->sf->ascent + all->sf->descent) / DENOM_FACTOR_OF_EMSIZE;
+   double denom=(all->sf->ascent + all->sf->descent) / DENOM_FACTOR_OF_EMSIZE;
    int ldiff, rdiff;
 
    all->denom=denom;
@@ -220,8 +220,8 @@ static double MonotonicFindY(Monotonic *m,double test,double old_t) {
 
 static void aw2_findedges(AW_Glyph *me,AW_Data *all) {
    Monotonic *ms, *m;
-   real ytop, ybottom;
-   real x, xmin, xmax;
+   double ytop, ybottom;
+   double x, xmin, xmax;
    int i;
    double t;
    Spline1D *msp;

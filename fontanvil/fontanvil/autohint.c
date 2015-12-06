@@ -1,4 +1,4 @@
-/* $Id: autohint.c 4424 2015-11-21 16:47:07Z mskala $ */
+/* $Id: autohint.c 4477 2015-12-06 11:35:32Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -51,7 +51,7 @@ This file has routines to figure out at least some of these
 Also other routines to guess at good per-character hints
 */
 
-static void AddBlue(real val,real array[5],int force) {
+static void AddBlue(double val,double array[5],int force) {
    val=rint(val);
    if (!force && (val < array[0] - array[1] || val > array[0] + array[1]))
       return;			/* Outside of one sd */
@@ -63,7 +63,7 @@ static void AddBlue(real val,real array[5],int force) {
       array[3]=val;
 }
 
-static void MergeZones(real zone1[5],real zone2[5]) {
+static void MergeZones(double zone1[5],double zone2[5]) {
    if (zone1[2] != 0 && zone2[2] != 0 &&
        ((zone1[4] + 3 > zone2[3] && zone1[3] <= zone2[3]) ||
 	(zone2[4] + 3 > zone1[3] && zone2[3] <= zone1[3]))) {
@@ -85,8 +85,8 @@ static void MergeZones(real zone1[5],real zone2[5]) {
 /*  the same set of letter shapes and have all evolved together and have */
 /*  various common features (ascenders, descenders, lower case, etc.). Other */
 /*  scripts don't fit */
-void FindBlues(SplineFont *sf,int layer,real blues[14],real otherblues[10]) {
-   real zone[7][5];
+void FindBlues(SplineFont *sf,int layer,double blues[14],double otherblues[10]) {
+   double zone[7][5];
    int i,j,k;
    DBounds b;
    
@@ -102,6 +102,8 @@ void FindBlues(SplineFont *sf,int layer,real blues[14],real otherblues[10]) {
 	int enc,blue_class;
 
 	enc=sf->glyphs[i]->unicodeenc;
+	if ((enc<32) || (enc>0x4E9))
+	  continue; /* FIXME only until Icemap handles ranges properly */
 	blue_class=blue_zone_class_lookup(enc);
 	
 	if (blue_class==0)
@@ -223,7 +225,7 @@ void FindBlues(SplineFont *sf,int layer,real blues[14],real otherblues[10]) {
    for (j=0;j<i;j+=2)
      for (k=j+2;k<i;k+=2) {
 	if (blues[j]>blues[k]) {
-	   real temp;
+	   double temp;
 	   
 	   temp=blues[j];
 	   blues[j]=blues[k];
@@ -238,7 +240,7 @@ void FindBlues(SplineFont *sf,int layer,real blues[14],real otherblues[10]) {
 
 static int PVAddBlues(BlueData *bd,int bcnt,char *pt) {
    char *end;
-   real val1, val2;
+   double val1, val2;
    int i, j;
 
    if (pt==NULL)
@@ -276,11 +278,11 @@ static int PVAddBlues(BlueData *bd,int bcnt,char *pt) {
 /* Quick and dirty (and sometimes wrong) approach to figure out the common */
 /* alignment zones in latin (greek, cyrillic) alphabets */
 void QuickBlues(SplineFont *_sf, int layer, BlueData * bd) {
-   real xheight=-1e10, caph=-1e10, ascent=-1e10, descent =
+   double xheight=-1e10, caph=-1e10, ascent=-1e10, descent =
       1e10, max, min;
-   real xheighttop=-1e10, caphtop=-1e10;
-   real numh=-1e10, numhtop=-1e10;
-   real base=-1e10, basebelow=1e10;
+   double xheighttop=-1e10, caphtop=-1e10;
+   double numh=-1e10, numhtop=-1e10;
+   double base=-1e10, basebelow=1e10;
    SplineFont *sf;
    SplinePoint *sp;
    SplineSet *spl;
@@ -540,11 +542,11 @@ void ElFreeEI(EIList * el) {
    }
 }
 
-static int EIAddEdge(Spline *spline,real tmin,real tmax,EIList *el) {
+static int EIAddEdge(Spline *spline,double tmin,double tmax,EIList *el) {
    EI *new=calloc(1, sizeof(EI));
-   real min, max, temp;
+   double min, max, temp;
    Spline1D *s;
-   real dxdtmin, dxdtmax, dydtmin, dydtmax;
+   double dxdtmin, dxdtmax, dydtmin, dydtmax;
 
    new->spline=spline;
    new->tmin=tmin;
@@ -652,7 +654,7 @@ static int EIAddEdge(Spline *spline,real tmin,real tmax,EIList *el) {
 }
 
 static void EIAddSpline(Spline *spline,EIList *el) {
-   extended ts[6], temp;
+   double ts[6], temp;
    int i, j, base, last;
 
    ts[0]=0;
@@ -716,7 +718,7 @@ void ELFindEdges(SplineChar * sc, EIList * el) {
 
 static int IsBiggerSlope(EI *test,EI *base,int major) {
    int other=!major;
-   real tdo, tdm, bdo, bdm, t;
+   double tdo, tdm, bdo, bdm, t;
 
    if ((major && test->vup) || (!major && test->hup))
       t=test->tmin;
@@ -906,13 +908,13 @@ StemInfo *HintCleanup(StemInfo * stem, int dosort, int instance_count) {
    return (stem);
 }
 
-real EITOfNextMajor(EI * e, EIList * el, real sought_m) {
+double EITOfNextMajor(EI * e, EIList * el, double sought_m) {
    /* We want to find t so that Mspline(t)=sought_m */
    /*  the curve is monotonic */
    Spline1D *msp=&e->spline->splines[el->major];
-   real new_t;
-   real found_m;
-   real t_mmax, t_mmin;
+   double new_t;
+   double found_m;
+   double t_mmax, t_mmin;
 
    if (msp->a==0 && msp->b==0) {
       if (msp->c==0) {
@@ -980,7 +982,7 @@ EI *EIActiveListReorder(EI * active, int *change) {
    return (active);
 }
 
-EI *EIActiveEdgesRefigure(EIList * el, EI * active, real i, int major,
+EI *EIActiveEdgesRefigure(EIList * el, EI * active, double i, int major,
 			  int *_change) {
    EI *apt, *pr, *npt;
    int change=false, subchange;
@@ -1049,7 +1051,7 @@ EI *EIActiveEdgesRefigure(EIList * el, EI * active, real i, int major,
 /* Ah, but also if they are at different intersections and are connected */
 /*  by a series of horizontal/vertical lines (whichever are invisible to major)*/
 /*  then we still should. */
-int EISameLine(EI * e, EI * n, real i, int major) {
+int EISameLine(EI * e, EI * n, double i, int major) {
    EI *t;
 
    if (n != NULL &&		/*n->up==e->up && */
@@ -1086,7 +1088,7 @@ int EISameLine(EI * e, EI * n, real i, int major) {
    return (false);
 }
 
-int EISkipExtremum(EI * e, real i, int major) {
+int EISkipExtremum(EI * e, double i, int major) {
    EI *n=e->aenext, *t;
 
    if (n==NULL)
@@ -1126,7 +1128,7 @@ int EISkipExtremum(EI * e, real i, int major) {
 
 static StemInfo *StemRemoveFlexCandidates(StemInfo *stems) {
    StemInfo *s, *t, *sn;
-   const real BlueShift=7;
+   const double BlueShift=7;
 
    /* Suppose we have something that is a flex candidate */
    /* We might get two hints from it... one from the two end points */
@@ -1153,19 +1155,19 @@ static StemInfo *StemRemoveFlexCandidates(StemInfo *stems) {
    return (stems);
 }
 
-real HIlen(StemInfo * stems) {
+double HIlen(StemInfo * stems) {
    HintInstance *hi;
-   real len=0;
+   double len=0;
 
    for (hi=stems->where; hi != NULL; hi=hi->next)
       len += hi->end - hi->begin;
    return (len);
 }
 
-real HIoverlap(HintInstance * mhi, HintInstance * thi) {
+double HIoverlap(HintInstance * mhi, HintInstance * thi) {
    HintInstance *hi;
-   real len=0;
-   real s, e;
+   double len=0;
+   double s, e;
 
    for (; mhi != NULL; mhi=mhi->next) {
       for (hi=thi; hi != NULL && hi->begin <= mhi->end; hi=hi->next) {
@@ -1214,7 +1216,7 @@ int StemListAnyConflicts(StemInfo * stems) {
    return (any);
 }
 
-HintInstance *HICopyTrans(HintInstance * hi, real mul, real offset) {
+HintInstance *HICopyTrans(HintInstance * hi, double mul, double offset) {
    HintInstance *first=NULL, *last, *cur, *p;
 
    while (hi != NULL) {
@@ -1252,7 +1254,7 @@ static HintInstance *SCGuessHintPoints(SplineChar *sc,int layer,
    SplinePointList *spl;
    SplinePoint *sp, *np;
    int sm, wm, i, j, val;
-   real coord;
+   double coord;
    HintInstance *head, *test, *cur, *prev;
 
    for (spl=sc->layers[layer].splines; spl != NULL; spl=spl->next) {
@@ -1308,11 +1310,11 @@ static HintInstance *StemAddHIFromActive(struct stemdata *stem,int major) {
    int i;
    HintInstance *head=NULL, *cur, *t;
    double mino, maxo;
-   double dir=((real *) & stem->unit.x)[major] < 0 ? -1 : 1;
+   double dir=((double *) & stem->unit.x)[major] < 0 ? -1 : 1;
 
    for (i=0; i < stem->activecnt; ++i) {
-      mino=dir * stem->active[i].start + ((real *) & stem->left.x)[major];
-      maxo=dir * stem->active[i].end + ((real *) & stem->left.x)[major];
+      mino=dir * stem->active[i].start + ((double *) & stem->left.x)[major];
+      maxo=dir * stem->active[i].end + ((double *) & stem->left.x)[major];
       cur=chunkalloc(sizeof(HintInstance));
       if (dir > 0) {
 	 cur->begin=mino;
@@ -1372,7 +1374,7 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
    SplinePointList *spl;
    SplinePoint *sp, *np;
    int sm, wm, off;
-   real ob, oe;
+   double ob, oe;
    HintInstance *s=NULL, *w=NULL, *cur, *p, *t, *n, *w2;
 
    /* We've got a hint (from somewhere, old data, reading in a font, user specified etc.) */
@@ -1422,7 +1424,7 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
 	 if (sm || wm) {
 	    cur=chunkalloc(sizeof(HintInstance));
 	    if (ob > oe) {
-	       real temp=ob;
+	       double temp=ob;
 
 	       ob=oe;
 	       oe=temp;
@@ -1667,12 +1669,12 @@ void SCGuessDHintInstances(SplineChar * sc, int layer, DStemInfo * ds) {
 }
 
 void SCGuessHHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
-				 real guess1, real guess2) {
+				 double guess1, double guess2) {
    SCGuessHVHintInstances(sc, layer, stem, 0);
    sc->hstem=StemInfoAdd(sc->hstem, stem);
    if (stem->where==NULL && guess1 != 0x80000000) {
       if (guess1 > guess2) {
-	 real temp=guess1;
+	 double temp=guess1;
 
 	 guess1=guess2;
 	 guess2=temp;
@@ -1690,12 +1692,12 @@ void SCGuessHHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
 }
 
 void SCGuessVHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
-				 real guess1, real guess2) {
+				 double guess1, double guess2) {
    SCGuessHVHintInstances(sc, layer, stem, 1);
    sc->vstem=StemInfoAdd(sc->vstem, stem);
    if (stem->where==NULL && guess1 != 0x80000000) {
       if (guess1 > guess2) {
-	 real temp=guess1;
+	 double temp=guess1;
 
 	 guess1=guess2;
 	 guess2=temp;
@@ -1850,10 +1852,10 @@ int MergeDStemInfo(SplineFont *sf, DStemInfo ** ds, DStemInfo * test) {
    return (true);
 }
 
-static StemInfo *RefHintsMerge(StemInfo *into,StemInfo *rh,real mul,
-			       real offset, real omul, real oofset) {
+static StemInfo *RefHintsMerge(StemInfo *into,StemInfo *rh,double mul,
+			       double offset, double omul, double oofset) {
    StemInfo *prev, *h, *n;
-   real start, width;
+   double start, width;
 
    for (; rh != NULL; rh=rh->next) {
       start=rh->start * mul + offset;
@@ -1883,8 +1885,8 @@ static StemInfo *RefHintsMerge(StemInfo *into,StemInfo *rh,real mul,
 }
 
 static DStemInfo *RefDHintsMerge(SplineFont *sf,DStemInfo *into,
-				 DStemInfo * rh, real xmul, real xoffset,
-				 real ymul, real yoffset) {
+				 DStemInfo * rh, double xmul, double xoffset,
+				 double ymul, double yoffset) {
    DStemInfo *new;
    double dmul;
 
@@ -2068,7 +2070,7 @@ static void SCFigureSimpleCounterMasks(SplineChar *sc) {
 /*  coordinate) with main */
 static int stemmatches(StemInfo *main) {
    StemInfo *last=main, *test;
-   real mlen, olen;
+   double mlen, olen;
    int cnt;
 
    cnt=1;			/* for the main stem */
@@ -2368,7 +2370,7 @@ static void UntickHints(SplineChar *sc) {
 }
 
 struct coords {
-   real coords[MmMax];
+   double coords[MmMax];
    struct coords *next;
 };
 
@@ -3041,10 +3043,10 @@ void SplineFontAutoHintRefs(SplineFont *_sf, int layer) {
    } while (k < _sf->subfontcnt);
 }
 
-static void FigureStems(SplineFont *sf,real snaps[12],real cnts[12],
+static void FigureStems(SplineFont *sf,double snaps[12],double cnts[12],
 			int which) {
    int i, j, k, cnt, smax=0, smin=2000;
-   real stemwidths[2000];
+   double stemwidths[2000];
    StemInfo *stems, *test;
    int len;
    HintInstance *hi;
@@ -3130,11 +3132,11 @@ static void FigureStems(SplineFont *sf,real snaps[12],real cnts[12],
 	 }
       }
    } else {
-      real firstbiggest=0;
+      double firstbiggest=0;
 
       for (cnt=0; cnt < 12; ++cnt) {
 	 int biggesti=0;
-	 real biggest=0;
+	 double biggest=0;
 
 	 for (i=smin; i <= smax; ++i) {
 	    if (stemwidths[i] > biggest) {
@@ -3165,11 +3167,11 @@ static void FigureStems(SplineFont *sf,real snaps[12],real cnts[12],
    }
 }
 
-void FindHStems(SplineFont *sf, real snaps[12], real cnt[12]) {
+void FindHStems(SplineFont *sf, double snaps[12], double cnt[12]) {
    FigureStems(sf, snaps, cnt, 1);
 }
 
-void FindVStems(SplineFont *sf, real snaps[12], real cnt[12]) {
+void FindVStems(SplineFont *sf, double snaps[12], double cnt[12]) {
    FigureStems(sf, snaps, cnt, 0);
 }
 

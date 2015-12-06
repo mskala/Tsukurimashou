@@ -1,4 +1,4 @@
-/* $Id: freetype.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: freetype.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -82,13 +82,13 @@ void FreeTypeFreeContext(void *freetypecontext) {
 }
 
 struct freetype_raster *FreeType_GetRaster(void *single_glyph_context,
-					   int enc, real ptsizey,
-					   real ptsizex, int dpi, int depth) {
+					   int enc, double ptsizey,
+					   double ptsizex, int dpi, int depth) {
    return (NULL);
 }
 
 SplineSet *FreeType_GridFitChar(void *single_glyph_context,
-				int enc, real ptsizey, real ptsizex, int dpi,
+				int enc, double ptsizey, double ptsizex, int dpi,
 				uint16_t * width, SplineChar * sc, int depth,
 				int scaled) {
    return (NULL);
@@ -458,10 +458,10 @@ static BDFChar *BdfCFromBitmap(FT_Bitmap *bitmap,int bitmap_left,
    if (sc != NULL) {
       bdfc->width =
 	 rint(sc->width * pixelsize /
-	      (real) (sc->parent->ascent + sc->parent->descent));
+	      (double) (sc->parent->ascent + sc->parent->descent));
       bdfc->vwidth =
 	 rint(sc->vwidth * pixelsize /
-	      (real) (sc->parent->ascent + sc->parent->descent));
+	      (double) (sc->parent->ascent + sc->parent->descent));
       bdfc->orig_pos=sc->orig_pos;
    }
    if (metrics != NULL) {
@@ -740,7 +740,7 @@ static FT_Outline_Funcs outlinefuncs={
 };
 
 SplineSet *FreeType_GridFitChar(void *single_glyph_context, int enc,
-				real ptsizey, real ptsizex, int dpi,
+				double ptsizey, double ptsizex, int dpi,
 				uint16_t * width, SplineChar * sc, int depth,
 				int scaled) {
    FT_GlyphSlot slot;
@@ -803,8 +803,8 @@ SplineSet *FreeType_GridFitChar(void *single_glyph_context, int enc,
 }
 
 struct freetype_raster *FreeType_GetRaster(void *single_glyph_context,
-					   int enc, real ptsizey,
-					   real ptsizex, int dpi, int depth) {
+					   int enc, double ptsizey,
+					   double ptsizex, int dpi, int depth) {
    FT_GlyphSlot slot;
    struct freetype_raster *ret;
    FTC *ftc=(FTC *) single_glyph_context;
@@ -847,7 +847,7 @@ struct freetype_raster *FreeType_GetRaster(void *single_glyph_context,
 }
 
 static void FillOutline(SplineSet *spl,FT_Outline *outline,int *pmax,
-			int *cmax, real scale, DBounds * bb, int order2,
+			int *cmax, double scale, DBounds * bb, int order2,
 			int ignore_clip) {
    int k;
    int pcnt, ccnt;
@@ -1115,10 +1115,10 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
    FT_Bitmap bitmap, temp;
    int i;
    int cmax, pmax;
-   real rscale =
+   double rscale =
       (ptsize * dpi) / 72.0 / (double) (sc->parent->ascent +
 					sc->parent->descent);
-   real scale=rscale * (1 << 6);
+   double scale=rscale * (1 << 6);
    BDFChar *bdfc;
    int err=0;
    DBounds b;

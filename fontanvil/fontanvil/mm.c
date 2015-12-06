@@ -1,4 +1,4 @@
-/* $Id: mm.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: mm.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -46,7 +46,7 @@ char *MMAxisAbrev(char *axis_name) {
    return (axis_name);
 }
 
-bigreal MMAxisUnmap(MMSet * mm, int axis, bigreal ncv) {
+double MMAxisUnmap(MMSet * mm, int axis, double ncv) {
    struct axismap *axismap=&mm->axismaps[axis];
    int j;
 
@@ -55,7 +55,7 @@ bigreal MMAxisUnmap(MMSet * mm, int axis, bigreal ncv) {
 
    for (j=1; j < axismap->points; ++j) {
       if (ncv <= axismap->blends[j]) {
-	 bigreal t =
+	 double t =
 	    (ncv - axismap->blends[j - 1]) / (axismap->blends[j] -
 					      axismap->blends[j - 1]);
 	 return (axismap->designs[j - 1] +
@@ -66,7 +66,7 @@ bigreal MMAxisUnmap(MMSet * mm, int axis, bigreal ncv) {
    return (axismap->designs[axismap->points - 1]);
 }
 
-static char *_MMMakeFontname(MMSet *mm,real *normalized,char **fullname) {
+static char *_MMMakeFontname(MMSet *mm,double *normalized,char **fullname) {
    char *pt, *pt2, *hyphen=NULL;
    char *ret=NULL;
    int i, j;
@@ -148,10 +148,10 @@ char *MMMakeMasterFontname(MMSet * mm, int ipos, char **fullname) {
 	   (mm, &mm->positions[ipos * mm->axis_count], fullname));
 }
 
-static char *_MMGuessWeight(MMSet *mm,real *normalized,char *def) {
+static char *_MMGuessWeight(MMSet *mm,double *normalized,char *def) {
    int i;
    char *ret;
-   real design;
+   double design;
 
    for (i=0; i < mm->axis_count; ++i) {
       if (strcmp(mm->axes[i], "Weight")==0)
@@ -329,7 +329,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
    RefChar *refs[MmMax], *ref, *reflast;
    KernPair *kp0, *kptest, *kp, *kplast;
    StemInfo *hs[MmMax], *h, *hlast;
-   real width;
+   double width;
 
    for (i=0; i < mm->instance_count; ++i) {
       if (mm->instances[i]->layers[ly_fore].order2)
@@ -604,7 +604,7 @@ char *MMBlendChar(MMSet * mm, int gid) {
 
 static struct psdict *BlendPrivate(struct psdict *private,MMSet *mm) {
    struct psdict *other;
-   real sum, val;
+   double sum, val;
    char *data;
    int i, j, k, cnt;
    char *values[MmMax], buffer[32], *space, *pt, *end;
@@ -749,7 +749,7 @@ int MMReblend(FontViewBase * fv, MMSet * mm) {
    return (false);
 }
 
-void MMWeightsUnMap(real weights[MmMax], real axiscoords[4], int axis_count) {
+void MMWeightsUnMap(double weights[MmMax], double axiscoords[4], int axis_count) {
 
    if (axis_count==1)
       axiscoords[0]=weights[1];
@@ -773,7 +773,7 @@ void MMWeightsUnMap(real weights[MmMax], real axiscoords[4], int axis_count) {
 }
 
 SplineFont *_MMNewFont(MMSet * mm, int index, char *familyname,
-		       real * normalized) {
+		       double * normalized) {
    SplineFont *sf, *base;
    char *pt1, *pt2;
    int i;
@@ -839,11 +839,11 @@ SplineFont *MMNewFont(MMSet * mm, int index, char *familyname) {
 }
 
 FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
-				  real blends[MmMax], int tonew) {
-   real oldblends[MmMax];
+				  double blends[MmMax], int tonew) {
+   double oldblends[MmMax];
    SplineFont *hold=mm->normal;
    int i;
-   real axispos[4];
+   double axispos[4];
 
    for (i=0; i < mm->instance_count; ++i) {
       oldblends[i]=mm->defweights[i];

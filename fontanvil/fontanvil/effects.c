@@ -1,4 +1,4 @@
-/* $Id: effects.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: effects.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -32,7 +32,7 @@
 #include <math.h>
 #include "edgelist.h"
 
-void FVOutline(FontViewBase * fv, real width) {
+void FVOutline(FontViewBase * fv, double width) {
    StrokeInfo si;
    SplineSet *temp, *spl;
    int i, cnt=0, changed, gid;
@@ -66,7 +66,7 @@ void FVOutline(FontViewBase * fv, real width) {
       }
 }
 
-void FVInline(FontViewBase * fv, real width, real inset) {
+void FVInline(FontViewBase * fv, double width, double inset) {
    StrokeInfo si;
    SplineSet *temp, *spl, *temp2;
    int i, cnt=0, changed, gid;
@@ -109,7 +109,7 @@ void FVInline(FontViewBase * fv, real width, real inset) {
 /**************************************************************************** */
 /* Shadow */
 /**************************************************************************** */
-static SplineSet *SpMove(SplinePoint *sp,real offset,
+static SplineSet *SpMove(SplinePoint *sp,double offset,
 			 SplineSet * cur, SplineSet * lines,
 			 SplineSet * spl) {
    SplinePoint *new;
@@ -212,13 +212,13 @@ static void OrientEdges(SplineSet *base,SplineChar *sc) {
 }
 
 static SplineSet *AddVerticalExtremaAndMove(SplineSet *base,
-					    real shadow_length, int wireframe,
+					    double shadow_length, int wireframe,
 					    SplineChar * sc,
 					    SplineSet ** _lines) {
    SplineSet *spl, *head=NULL, *last=NULL, *cur, *lines=NULL;
    Spline *s, *first;
    SplinePoint *sp, *found, *new;
-   real t[2];
+   double t[2];
    int p;
 
    if (shadow_length==0)
@@ -234,7 +234,7 @@ static SplineSet *AddVerticalExtremaAndMove(SplineSet *base,
 	       first=s;
 	    p=0;
 	    if (s->splines[1].a != 0) {
-	       bigreal d =
+	       double d =
 		  4 * s->splines[1].b * s->splines[1].b -
 		  4 * 3 * s->splines[1].a * s->splines[1].c;
 	       if (d > 0) {
@@ -365,9 +365,9 @@ static void SSCleanup(SplineSet *spl) {
       first=NULL;
       /* look for things which should be horizontal or vertical lines and make them so */
       for (s=spl->first->next; s != NULL && s != first; s=s->to->next) {
-	 real xdiff=s->to->me.x - s->from->me.x, ydiff =
+	 double xdiff=s->to->me.x - s->from->me.x, ydiff =
 	    s->to->me.y - s->from->me.y;
-	 real x, y;
+	 double x, y;
 
 	 if ((xdiff < .01 && xdiff > -.01) && (ydiff < -10 || ydiff > 10)) {
 	    xdiff /= 2;
@@ -449,10 +449,10 @@ static void SSCleanup(SplineSet *spl) {
    }
 }
 
-static bigreal IntersectLine(Spline *spline1,Spline *spline2) {
-   extended t1s[10], t2s[10];
+static double IntersectLine(Spline *spline1,Spline *spline2) {
+   double t1s[10], t2s[10];
    BasePoint pts[9];
-   bigreal mint=1;
+   double mint=1;
    int i;
 
    if (!SplinesIntersect(spline1, spline2, pts, t1s, t2s))
@@ -470,7 +470,7 @@ static bigreal IntersectLine(Spline *spline1,Spline *spline2) {
 }
 
 static int ClipLineTo3D(Spline *line,SplineSet *spl) {
-   bigreal t=-1, cur;
+   double t=-1, cur;
    Spline *s, *first;
 
    while (spl != NULL) {
@@ -499,17 +499,17 @@ static int ClipLineTo3D(Spline *line,SplineSet *spl) {
 
 /* finds all intersections between this spline and all the other splines in the */
 /*  character */
-static extended *BottomFindIntersections(Spline *bottom,SplineSet *lines,
+static double *BottomFindIntersections(Spline *bottom,SplineSet *lines,
 					 SplineSet * spl) {
-   extended *ts;
+   double *ts;
    int tcnt, tmax;
-   extended t1s[26], t2s[26];
+   double t1s[26], t2s[26];
    BasePoint pts[25];
    Spline *first, *s;
    int i, j;
 
    tmax=100;
-   ts=malloc(tmax * sizeof(extended));
+   ts=malloc(tmax * sizeof(double));
    tcnt=0;
 
    while (spl != NULL) {
@@ -520,7 +520,7 @@ static extended *BottomFindIntersections(Spline *bottom,SplineSet *lines,
 	       if (t2s[i] > .001 && t2s[i] < .999) {
 		  if (tcnt >= tmax) {
 		     tmax += 100;
-		     ts=realloc(ts, tmax * sizeof(extended));
+		     ts=realloc(ts, tmax * sizeof(double));
 		  }
 		  ts[tcnt++]=t1s[i];
 	       }
@@ -538,7 +538,7 @@ static extended *BottomFindIntersections(Spline *bottom,SplineSet *lines,
 	       if (t2s[i] > .001 && t2s[i] < .999) {
 		  if (tcnt >= tmax) {
 		     tmax += 100;
-		     ts=realloc(ts, tmax * sizeof(extended));
+		     ts=realloc(ts, tmax * sizeof(double));
 		  }
 		  ts[tcnt++]=t1s[i];
 	       }
@@ -555,7 +555,7 @@ static extended *BottomFindIntersections(Spline *bottom,SplineSet *lines,
    for (i=0; i < tcnt; ++i)
       for (j=i + 1; j < tcnt; ++j) {
 	 if (ts[i] > ts[j]) {
-	    extended temp=ts[i];
+	    double temp=ts[i];
 
 	    ts[i]=ts[j];
 	    ts[j]=temp;
@@ -577,14 +577,14 @@ static int LineAtPointCompletes(SplineSet *lines,BasePoint *pt) {
    return (false);
 }
 
-static SplinePoint *SplinePointMidCreate(Spline *s,bigreal t) {
+static SplinePoint *SplinePointMidCreate(Spline *s,double t) {
    return (SplinePointCreate(((s->splines[0].a * t + s->splines[0].b) * t +
 			      s->splines[0].c) * t + s->splines[0].d,
 			     ((s->splines[1].a * t + s->splines[1].b) * t +
 			      s->splines[1].c) * t + s->splines[1].d));
 }
 
-static int MidLineCompetes(Spline *s,bigreal t,bigreal shadow_length,
+static int MidLineCompetes(Spline *s,double t,double shadow_length,
 			   SplineSet * spl) {
    SplinePoint *to=SplinePointMidCreate(s, t);
    SplinePoint *from=SplinePointCreate(to->me.x - shadow_length, to->me.y);
@@ -598,10 +598,10 @@ static int MidLineCompetes(Spline *s,bigreal t,bigreal shadow_length,
    return (!ret);
 }
 
-static void SplineComplete(SplineSet *cur,Spline *s,bigreal t_of_from,
-			   bigreal t_of_to) {
+static void SplineComplete(SplineSet *cur,Spline *s,double t_of_from,
+			   double t_of_to) {
    SplinePoint *to;
-   bigreal dt=t_of_to - t_of_from;
+   double dt=t_of_to - t_of_from;
    Spline1D x, y;
 
    /* Very similar to SplineBisect */
@@ -677,10 +677,10 @@ static SplineSet *MergeLinesToBottoms(SplineSet *bottoms,SplineSet *lines) {
 }
 
 static SplineSet *ClipBottomTo3D(SplineSet *bottom,SplineSet *lines,
-				 SplineSet * spl, bigreal shadow_length) {
+				 SplineSet * spl, double shadow_length) {
    SplineSet *head=NULL, *last=NULL, *cur, *next;
    Spline *s;
-   extended *ts;
+   double *ts;
    SplinePoint *sp;
    int i;
 
@@ -719,7 +719,7 @@ static SplineSet *ClipBottomTo3D(SplineSet *bottom,SplineSet *lines,
 	       i=1;
 	    }
 	    while (ts[i] != -1) {
-	       bigreal tend=ts[i + 1]==-1 ? 1 : ts[i + 1];
+	       double tend=ts[i + 1]==-1 ? 1 : ts[i + 1];
 
 	       if (MidLineCompetes(s, (ts[i] + tend) / 2, shadow_length, spl)) {
 		  cur=chunkalloc(sizeof(SplineSet));
@@ -747,7 +747,7 @@ static SplineSet *ClipBottomTo3D(SplineSet *bottom,SplineSet *lines,
 }
 
 static SplineSet *ClipTo3D(SplineSet *bottoms,SplineSet *lines,
-			   SplineSet * spl, bigreal shadow_length) {
+			   SplineSet * spl, double shadow_length) {
    SplineSet *temp;
    SplineSet *head;
 
@@ -765,9 +765,9 @@ static SplineSet *ClipTo3D(SplineSet *bottoms,SplineSet *lines,
       return (head);
 }
 
-SplineSet *SSShadow(SplineSet * spl, real angle, real outline_width,
-		    real shadow_length, SplineChar * sc, int wireframe) {
-   real trans[6];
+SplineSet *SSShadow(SplineSet * spl, double angle, double outline_width,
+		    double shadow_length, SplineChar * sc, int wireframe) {
+   double trans[6];
    StrokeInfo si;
    SplineSet *internal, *temp, *bottom, *fatframe, *lines;
    int isfore=spl==sc->layers[ly_fore].splines;
@@ -842,8 +842,8 @@ SplineSet *SSShadow(SplineSet * spl, real angle, real outline_width,
    return (spl);
 }
 
-void FVShadow(FontViewBase * fv, real angle, real outline_width,
-	      real shadow_length, int wireframe) {
+void FVShadow(FontViewBase * fv, double angle, double outline_width,
+	      double shadow_length, int wireframe) {
    int i, cnt=0, gid;
    SplineChar *sc;
    int layer=fv->active_layer;

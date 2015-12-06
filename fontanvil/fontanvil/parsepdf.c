@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: parsepdf.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1164,7 +1164,7 @@ static char *toknames[]={ "m","l","c","v",
    NULL
 };
 
-static int nextpdftoken(AFILE *file,real *val,char *tokbuf,int tbsize) {
+static int nextpdftoken(AFILE *file,double *val,char *tokbuf,int tbsize) {
    int ch, r, i;
    char *pt, *end;
 
@@ -1290,13 +1290,13 @@ static int nextpdftoken(AFILE *file,real *val,char *tokbuf,int tbsize) {
    }
 }
 
-static void Transform(BasePoint *to,BasePoint *from,real trans[6]) {
+static void Transform(BasePoint *to,BasePoint *from,double trans[6]) {
    to->x=trans[0] * from->x + trans[2] * from->y + trans[4];
    to->y=trans[1] * from->x + trans[3] * from->y + trans[5];
 }
 
 static Entity *EntityCreate(SplinePointList *head,int linecap,int linejoin,
-			    real linewidth, real * transform) {
+			    double linewidth, double * transform) {
    Entity *ent=calloc(1, sizeof(Entity));
 
    ent->type=et_splines;
@@ -1308,7 +1308,7 @@ static Entity *EntityCreate(SplinePointList *head,int linecap,int linejoin,
    ent->u.splines.stroke.col=0xffffffff;
    ent->u.splines.fill.opacity=1.0;
    ent->u.splines.stroke.opacity=1.0;
-   memcpy(ent->u.splines.transform, transform, 6 * sizeof(real));
+   memcpy(ent->u.splines.transform, transform, 6 * sizeof(double));
    return (ent);
 }
 
@@ -1352,14 +1352,14 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
    BasePoint current;
    int tok, i, j;
    struct psstack stack[100];
-   real dval;
+   double dval;
    int sp=0;
    SplinePoint *pt;
-   real transform[6], t[6];
+   double transform[6], t[6];
    struct graphicsstate {
-      real transform[6];
+      double transform[6];
       BasePoint current;
-      real linewidth;
+      double linewidth;
       int linecap, linejoin;
       Color fore_stroke, fore_fill;
       DashType dashes[DASH_MAX];
@@ -1367,7 +1367,7 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
    int gsp=0;
    Color fore_stroke=COLOR_INHERITED, fore_fill=COLOR_INHERITED;
    int linecap=lc_inherited, linejoin=lj_inherited;
-   real linewidth=WIDTH_INHERITED;
+   double linewidth=WIDTH_INHERITED;
    DashType dashes[DASH_MAX];
    int dash_offset=0;
    Entity *ent;

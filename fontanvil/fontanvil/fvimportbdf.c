@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4378 2015-11-11 17:09:49Z mskala $ */
+/* $Id: fvimportbdf.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2311,7 +2311,7 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
    if (b==NULL) {
       if (ascent==-1 && descent==-1)
 	 ascent =
-	    rint(pixelsize * sf->ascent / (real) (sf->ascent + sf->descent));
+	    rint(pixelsize * sf->ascent / (double) (sf->ascent + sf->descent));
       if (ascent==-1 && descent != -1)
 	 ascent=pixelsize - descent;
       else if (ascent != -1)
@@ -2546,9 +2546,9 @@ static void SFAddToBackground(SplineFont *sf,BDFFont *bdf) {
    int i;
    SplineChar *sc;
    BDFChar *bdfc;
-   real scale =
+   double scale =
       (sf->ascent + sf->descent) / (double) (bdf->ascent + bdf->descent);
-   real yoff=sf->ascent - bdf->ascent * scale;
+   double yoff=sf->ascent - bdf->ascent * scale;
 
    for (i=0; i < sf->glyphcnt && i < bdf->glyphcnt; ++i) {
       if (bdf->glyphs[i] != NULL) {

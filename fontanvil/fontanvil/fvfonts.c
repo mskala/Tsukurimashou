@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: fvfonts.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1323,7 +1323,7 @@ void MergeFont(FontViewBase * fv, SplineFont *other,
 /* *************************** Font Interpolation *************************** */
 /******************************************************************************/
 
-static RefChar *InterpRefs(RefChar *base,RefChar *other,real amount,
+static RefChar *InterpRefs(RefChar *base,RefChar *other,double amount,
 			   SplineChar * sc) {
    RefChar *head=NULL, *last=NULL, *cur;
    RefChar *test;
@@ -1370,7 +1370,7 @@ static RefChar *InterpRefs(RefChar *base,RefChar *other,real amount,
 }
 
 static void InterpPoint(SplineSet *cur,SplinePoint *base,
-			SplinePoint * other, real amount) {
+			SplinePoint * other, double amount) {
    SplinePoint *p=chunkalloc(sizeof(SplinePoint));
    int order2;
 
@@ -1423,7 +1423,7 @@ static void InterpPoint(SplineSet *cur,SplinePoint *base,
 }
 
 static SplineSet *InterpSplineSet(SplineSet *base,SplineSet *other,
-				  real amount, SplineChar * sc) {
+				  double amount, SplineChar * sc) {
    SplineSet *cur=chunkalloc(sizeof(SplineSet));
    SplinePoint *bp, *op;
 
@@ -1476,7 +1476,7 @@ static SplineSet *InterpSplineSet(SplineSet *base,SplineSet *other,
 }
 
 SplineSet *SplineSetsInterpolate(SplineSet * base, SplineSet * other,
-				 real amount, SplineChar * sc) {
+				 double amount, SplineChar * sc) {
    SplineSet *head=NULL, *last=NULL, *cur;
 
    /* we could do something really complex to try and figure out which spline */
@@ -1503,7 +1503,7 @@ static int SCSameChar(SplineChar *sc1,SplineChar *sc2) {
    return (strcmp(sc1->name, sc2->name)==0);
 }
 
-static KernPair *InterpKerns(KernPair *kp1,KernPair *kp2,real amount,
+static KernPair *InterpKerns(KernPair *kp1,KernPair *kp2,double amount,
 			     SplineFont *new, SplineChar * scnew) {
    KernPair *head=NULL, *last, *nkp, *k;
 
@@ -1531,7 +1531,7 @@ static KernPair *InterpKerns(KernPair *kp1,KernPair *kp2,real amount,
    return (head);
 }
 
-static uint32_t InterpColor(uint32_t col1,uint32_t col2,real amount) {
+static uint32_t InterpColor(uint32_t col1,uint32_t col2,double amount) {
    int r1,g1,b1,r2,b2,g2;
 
    r1=(col1 >> 16) & 0xff;
@@ -1547,7 +1547,7 @@ static uint32_t InterpColor(uint32_t col1,uint32_t col2,real amount) {
 }
 
 static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
-			     real amount, SplineChar * sc, int lc) {
+			     double amount, SplineChar * sc, int lc) {
    /* to already has things set to default values, so when an error occurs */
    /*  I just leave things as the default (and don't need to set it again) */
    if (base->dostroke==other->dostroke)
@@ -1643,7 +1643,7 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
 }
 
 SplineChar *SplineCharInterpolate(SplineChar * base, SplineChar * other,
-				  real amount, SplineFont *newfont) {
+				  double amount, SplineFont *newfont) {
    SplineChar *sc;
    int i;
 
@@ -1701,7 +1701,7 @@ SplineChar *SplineCharInterpolate(SplineChar * base, SplineChar * other,
 
 static void _SplineCharInterpolate(SplineFont *new,int orig_pos,
 				   SplineChar * base, SplineChar * other,
-				   real amount) {
+				   double amount) {
    SplineChar *sc;
 
    sc=SplineCharInterpolate(base, other, amount, new);
@@ -1741,7 +1741,7 @@ static void InterpFixupRefChars(SplineFont *sf) {
 }
 
 SplineFont *InterpolateFont(SplineFont *base, SplineFont *other,
-			    real amount, Encoding * enc) {
+			    double amount, Encoding * enc) {
    SplineFont *new;
    int i, index, lc;
 

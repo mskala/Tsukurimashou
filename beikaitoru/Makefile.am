@@ -346,6 +346,7 @@ $(eval $(call OTF_RECIPES,$(hun),$(uni)))))
 
 beikaitoru.pdf: beikaitoru.tex \
   otf/Beikaitoru406.otf otf/Beikaitoru506.otf
+	$(AM_V_at)rm -f beikaitoru.aux
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
 	  $(mvp)/beikaitoru$(expect_end)
 
@@ -395,9 +396,6 @@ m4/ax_file_escapes.m4: ../m4/ax_file_escapes.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_print_to_file.m4: ../m4/ax_print_to_file.m4
-	$(TSU_V_CP) cp $< $@
-
-m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4

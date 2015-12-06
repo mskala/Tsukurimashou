@@ -1,6 +1,4 @@
-#                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-#
 
 #
 # Configuration source for Genjimon fonts
@@ -199,7 +197,7 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([genjimon-black.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4447 2015-11-26 16:27:44Z mskala $])
+AC_REVISION([$Id: configure.ac 4474 2015-12-03 12:33:00Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012 Matthew Skala])
 AC_SUBST([release_date],["March 7, 2013"])
 AM_SILENT_RULES
@@ -313,6 +311,7 @@ AC_CONFIG_COMMANDS([fix-makefile],
 '\t-\$(A''M_V_at)\1rm -\2f \3#;' \
    Makefile],
   [PERL=$PERL])
+TSU_BAD_PATHS
 AC_OUTPUT
 #
 ############################################################################
@@ -358,7 +357,6 @@ AS_ECHO_N(["XeLaTeX           "])
     [TSU_COLOURISE([yes],[2])])
   AS_ECHO([])
 AS_ECHO([])
-TSU_BAD_PATHS
 AS_IF([test "x$has_bad_paths" = "xyes"],
   [AS_ECHO([])
    AS_ECHO(["The following pathnames contain illegal characters, such as spaces:"])

@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: sfd.c 4465 2015-11-30 11:49:16Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -453,18 +453,6 @@ static void SFDDumpSplineSet(AFILE *sfd,SplineSet *spl) {
    for (; spl != NULL; spl=spl->next) {
       first=NULL;
       for (sp=spl->first;; sp=sp->next->to) {
-#ifndef FONTANVIL_CONFIG_USE_DOUBLE
-	 if (first==NULL)
-	    afprintf(sfd, "%g %g m ", (double) sp->me.x, (double) sp->me.y);
-	 else if (sp->prev->islinear && sp->noprevcp)	/* Don't use known linear here. save control points if there are any */
-	    afprintf(sfd, " %g %g l ", (double) sp->me.x, (double) sp->me.y);
-	 else
-	    afprintf(sfd, " %g %g %g %g %g %g c ",
-		    (double) sp->prev->from->nextcp.x,
-		    (double) sp->prev->from->nextcp.y, (double) sp->prevcp.x,
-		    (double) sp->prevcp.y, (double) sp->me.x,
-		    (double) sp->me.y);
-#else
 	 if (first==NULL)
 	    afprintf(sfd, "%.12g %.12g m ", (double) sp->me.x,
 		    (double) sp->me.y);
@@ -477,7 +465,6 @@ static void SFDDumpSplineSet(AFILE *sfd,SplineSet *spl) {
 		    (double) sp->prev->from->nextcp.y, (double) sp->prevcp.x,
 		    (double) sp->prevcp.y, (double) sp->me.x,
 		    (double) sp->me.y);
-#endif
 	 int ptflags=0;
 
 	 ptflags=sp->pointtype | (sp->selected << 2) |
@@ -2669,7 +2656,7 @@ static int getusint(AFILE *sfd,uint16_t *val) {
    return (ret);
 }
 
-static int getreal(AFILE *sfd,real *val) {
+static int getreal(AFILE *sfd,double *val) {
    char tokbuf[100];
    int ch;
    char *pt=tokbuf, *end=tokbuf + 100 - 2, *nend;
@@ -3175,7 +3162,7 @@ static void SFDGetSpiros(AFILE *sfd,SplineSet *cur) {
 static SplineSet *SFDGetSplineSet(SplineFont *sf,AFILE *sfd,int order2) {
    SplinePointList *cur=NULL, *head=NULL;
    BasePoint current;
-   real stack[100];
+   double stack[100];
    int sp=0;
    SplinePoint *pt=NULL;
    int ch;
@@ -3285,7 +3272,7 @@ static SplineSet *SFDGetSplineSet(SplineFont *sf,AFILE *sfd,int order2) {
 
 	    current.x=stack[sp - 2];
 	    current.y=stack[sp - 1];
-	    real original_current_x=current.x;
+	    double original_current_x=current.x;
 
 	    if (val & SFD_PTFLAG_FORCE_OPEN_PATH) {
 	       // Find somewhere vacant to put the point.x for now
@@ -3293,7 +3280,7 @@ static SplineSet *SFDGetSplineSet(SplineFont *sf,AFILE *sfd,int order2) {
 	       // on the spline and this connect back to that point instead of creating
 	       // an open path
 	       while (1) {
-		  real offset=0.1;
+		  double offset=0.1;
 
 		  current.x += offset;
 		  if (!SplinePointListContainsPointAtX(cur, current.x)) {
@@ -3484,7 +3471,7 @@ static void SFDGetMinimumDistances(AFILE *sfd,SplineChar *sc) {
 
 static HintInstance *SFDReadHintInstances(AFILE *sfd,StemInfo *stem) {
    HintInstance *head=NULL, *last=NULL, *cur;
-   real begin, end;
+   double begin, end;
    int ch;
 
    while ((ch=nlgetc(sfd))==' ' || ch=='\t');
@@ -3514,7 +3501,7 @@ static HintInstance *SFDReadHintInstances(AFILE *sfd,StemInfo *stem) {
 
 static StemInfo *SFDReadHints(AFILE *sfd) {
    StemInfo *head=NULL, *last=NULL, *cur;
-   real start, width;
+   double start, width;
 
    while (getreal(sfd, &start)==1 && getreal(sfd, &width)) {
       cur=chunkalloc(sizeof(StemInfo));
@@ -4262,7 +4249,7 @@ static SplineChar *SFDGetChar(AFILE *sfd,SplineFont *sf,
 	 int layer;
 	 int dofill, dostroke, fillfirst, linejoin, linecap;
 	 uint32_t fillcol, strokecol;
-	 real fillopacity, strokeopacity, strokewidth, trans[4];
+	 double fillopacity, strokeopacity, strokewidth, trans[4];
 	 DashType dashes[DASH_MAX];
 	 int i;
 
@@ -4775,7 +4762,7 @@ static int SFDGetBitmapChar(AFILE *sfd,BDFFont *bdf) {
    bfc->sc=bdf->sf->glyphs[orig];
    bfc->vwidth=vwidth != -1 ? vwidth :
       rint(bfc->sc->vwidth * bdf->pixelsize /
-	   (real) (bdf->sf->ascent + bdf->sf->descent));
+	   (double) (bdf->sf->ascent + bdf->sf->descent));
    if (bdf->clut==NULL) {
       bfc->bytes_per_line=(bfc->xmax - bfc->xmin) / 8 + 1;
       bfc->depth=1;
@@ -5765,7 +5752,7 @@ static void MMInferStuff(MMSet *mm) {
    if (mm->apple) {
       for (i=0; i < mm->axis_count; ++i) {
 	 for (j=0; j < mm->axismaps[i].points; ++j) {
-	    real val=mm->axismaps[i].blends[j];
+	    double val=mm->axismaps[i].blends[j];
 
 	    if (val==-1.)
 	       mm->axismaps[i].min=mm->axismaps[i].designs[j];
@@ -6897,7 +6884,7 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 	    mappos++;
 	 }
       } else if (strmatch(tok, "CIDVersion:")==0) {
-	 real temp;
+	 double temp;
 
 	 getreal(sfd, &temp);
 	 sf->cidversion=temp;
@@ -7109,8 +7096,8 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 	 }
 	 mm->instances=calloc(mm->instance_count, sizeof(SplineFont *));
 	 mm->positions =
-	    malloc(mm->instance_count * mm->axis_count * sizeof(real));
-	 mm->defweights=malloc(mm->instance_count * sizeof(real));
+	    malloc(mm->instance_count * mm->axis_count * sizeof(double));
+	 mm->defweights=malloc(mm->instance_count * sizeof(double));
 	 mm->axismaps=calloc(mm->axis_count, sizeof(struct axismap));
 	 if (mm->named_instance_count != 0)
 	    mm->named_instances =
@@ -7148,8 +7135,8 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 	    getint(sfd, &index);
 	    getint(sfd, &points);
 	    mm->axismaps[index].points=points;
-	    mm->axismaps[index].blends=malloc(points * sizeof(real));
-	    mm->axismaps[index].designs=malloc(points * sizeof(real));
+	    mm->axismaps[index].blends=malloc(points * sizeof(double));
+	    mm->axismaps[index].designs=malloc(points * sizeof(double));
 	    for (i=0; i < points; ++i) {
 	       getreal(sfd, &mm->axismaps[index].blends[i]);
 	       while ((ch=nlgetc(sfd)) != EOF && isspace(ch));
@@ -7171,7 +7158,7 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 
 	    getint(sfd, &index);
 	    mm->named_instances[index].coords =
-	       malloc(mm->axis_count * sizeof(real));
+	       malloc(mm->axis_count * sizeof(double));
 	    for (i=0; i < mm->axis_count; ++i)
 	       getreal(sfd, &mm->named_instances[index].coords[i]);
 	    lastnamedinstance=&mm->named_instances[index];
@@ -7309,7 +7296,7 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 }
 
 static double SFDStartsCorrectly(AFILE *sfd,char *tok) {
-   real dval;
+   double dval;
    int ch;
 
    if (getname(sfd, tok) != 1)

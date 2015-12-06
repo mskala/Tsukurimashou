@@ -1,4 +1,4 @@
-/* $Id: fvmetrics.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: fvmetrics.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,7 +35,7 @@
 
 static void DoChar(SplineChar *sc,CreateWidthData *wd,FontViewBase *fv,
 		   BDFChar * bc) {
-   real transform[6];
+   double transform[6];
    DBounds bb;
    IBounds ib;
    int width=0;

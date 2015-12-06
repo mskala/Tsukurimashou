@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: splinefill.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -73,11 +73,11 @@ void FreeEdges(EdgeList * es) {
    HintsFree(es->vhints);
 }
 
-bigreal TOfNextMajor(Edge * e, EdgeList * es, bigreal sought_m) {
+double TOfNextMajor(Edge * e, EdgeList * es, double sought_m) {
    /* We want to find t so that Mspline(t)=sought_m */
    /*  the curve is monotonic */
    Spline1D *msp=&e->spline->splines[es->major];
-   bigreal new_t;
+   double new_t;
 
    if (es->is_overlap) {
 
@@ -138,9 +138,9 @@ static int SlopeLess(Edge *e,Edge *p,int other) {
    Spline1D *psp=&p->spline->splines[other];
    Spline1D *msp=&e->spline->splines[!other];
    Spline1D *qsp=&p->spline->splines[!other];
-   real os=(3 * osp->a * e->t_cur + 2 * osp->b) * e->t_cur + osp->c,
+   double os=(3 * osp->a * e->t_cur + 2 * osp->b) * e->t_cur + osp->c,
       ps=(3 * psp->a * p->t_cur + 2 * psp->b) * p->t_cur + psp->c;
-   real ms=(3 * msp->a * e->t_cur + 2 * msp->b) * e->t_cur + msp->c,
+   double ms=(3 * msp->a * e->t_cur + 2 * msp->b) * e->t_cur + msp->c,
       qs=(3 * qsp->a * p->t_cur + 2 * qsp->b) * p->t_cur + qsp->c;
    if (ms < .0001 && ms > -.0001)
       ms=0;
@@ -196,9 +196,9 @@ static int SlopeLess(Edge *e,Edge *p,int other) {
    return (os < ps);
 }
 
-static void AddEdge(EdgeList *es,Spline *sp,real tmin,real tmax) {
+static void AddEdge(EdgeList *es,Spline *sp,double tmin,double tmax) {
    Edge *e, *pr;
-   real m1, m2;
+   double m1, m2;
    int mpos;
    Hints *hint;
    Spline1D *msp=&sp->splines[es->major], *osp=&sp->splines[es->other];
@@ -320,7 +320,7 @@ static void AddEdge(EdgeList *es,Spline *sp,real tmin,real tmax) {
 
 static void AddMajorEdge(EdgeList *es,Spline *sp) {
    Edge *e, *pr;
-   real m1;
+   double m1;
    Spline1D *msp=&sp->splines[es->major], *osp=&sp->splines[es->other];
 
    e=calloc(1, sizeof(Edge));
@@ -356,9 +356,9 @@ static void AddMajorEdge(EdgeList *es,Spline *sp) {
 }
 
 static void AddSpline(EdgeList *es,Spline *sp) {
-   real t1=2, t2=2, t;
-   real b2_fourac;
-   real fm, tm;
+   double t1=2, t2=2, t;
+   double b2_fourac;
+   double fm, tm;
    Spline1D *msp=&sp->splines[es->major], *osp=&sp->splines[es->other];
 
    /* Find the points of extrema on the curve discribing y behavior */
@@ -372,7 +372,7 @@ static void AddSpline(EdgeList *es,Spline *sp) {
 	 t1=CheckExtremaForSingleBitErrors(msp, t1, t2);
 	 t2=CheckExtremaForSingleBitErrors(msp, t2, t1);
 	 if (t1 > t2) {
-	    real temp=t1;
+	    double temp=t1;
 
 	    t1=t2;
 	    t2=temp;
@@ -384,7 +384,7 @@ static void AddSpline(EdgeList *es,Spline *sp) {
 	 fm=es->major==1 ? sp->from->me.y : sp->from->me.x;
 	 tm=es->major==1 ? sp->to->me.y : sp->to->me.x;
 	 if (fm==tm) {
-	    real m1, m2, d1, d2;
+	    double m1, m2, d1, d2;
 
 	    m1=m2=fm;
 	    if (t1 > 0 && t1 < 1)
@@ -435,7 +435,7 @@ static void AddSpline(EdgeList *es,Spline *sp) {
    AddEdge(es, sp, t, 1.0);
    if (es->interesting) {
       /* Also store up points of extrema in X as interesting (we got the endpoints, just internals now) */
-      extended ot1, ot2;
+      double ot1, ot2;
       int mpos;
 
       SplineFindExtrema(osp, &ot1, &ot2);
@@ -519,7 +519,7 @@ static Edge *ActiveEdgesInsertNew(EdgeList *es,Edge *active,int i) {
    return (active);
 }
 
-Edge *ActiveEdgesRefigure(EdgeList * es, Edge * active, real i) {
+Edge *ActiveEdgesRefigure(EdgeList * es, Edge * active, double i) {
    Edge *apt, *pr;
    int any;
 
@@ -574,7 +574,7 @@ Edge *ActiveEdgesRefigure(EdgeList * es, Edge * active, real i) {
    return (active);
 }
 
-static Edge *ActiveEdgesFindStem(Edge *apt,Edge ** prev,real i) {
+static Edge *ActiveEdgesFindStem(Edge *apt,Edge ** prev,double i) {
    int cnt=apt->up ? 1 : -1;
    Edge *pr, *e;
 
@@ -610,7 +610,7 @@ static Edge *ActiveEdgesFindStem(Edge *apt,Edge ** prev,real i) {
    return (e);
 }
 
-static int isvstem(EdgeList *es,real stem,int *vval) {
+static int isvstem(EdgeList *es,double stem,int *vval) {
    Hints *hint;
 
    for (hint=es->vhints; hint != NULL; hint=hint->next) {
@@ -707,7 +707,7 @@ static void FillChar(EdgeList *es) {
 static void InitializeHints(SplineChar *sc,EdgeList *es) {
    Hints *hint, *last;
    StemInfo *s;
-   real t1, t2;
+   double t1, t2;
    int k, end, width;
 
    /* we only care about hstem hints, and only if they fail to cross a */
@@ -1046,7 +1046,7 @@ static void StrokeLine(uint8_t *bytemap,IPoint *from,IPoint *to,
    int x1, x2, y1, y2;
    int dx, dy;
    BasePoint vector;
-   bigreal len;
+   double len;
    int xoff, yoff;
 
    x1=from->x - es->omin;
@@ -1173,7 +1173,7 @@ static void StrokeSS(uint8_t *bytemap,EdgeList *es,int width,int grey,
    }
 }
 
-static void StrokeGlyph(uint8_t *bytemap,EdgeList *es,real wid,
+static void StrokeGlyph(uint8_t *bytemap,EdgeList *es,double wid,
 			SplineChar * sc) {
    RefChar *ref;
    int width=rint(wid * es->scale);
@@ -1213,9 +1213,9 @@ static void StrokePaths(uint8_t *bytemap,EdgeList *es,Layer *layer,
    StrokeSS(bytemap, es, width, grey, layer->splines, clipmask);
 }
 
-static int PatternHere(bigreal scale,DBounds *bbox,int iy,int ix,
+static int PatternHere(double scale,DBounds *bbox,int iy,int ix,
 		       struct pattern *pat) {
-   real x, y, tempx;
+   double x, y, tempx;
    int grey;
    BDFChar *bdfc;
 
@@ -1243,11 +1243,11 @@ static int PatternHere(bigreal scale,DBounds *bbox,int iy,int ix,
    return (grey);
 }
 
-int GradientHere(bigreal scale, DBounds * bbox, int iy, int ix,
+int GradientHere(double scale, DBounds * bbox, int iy, int ix,
 		 struct gradient *grad, struct pattern *pat, int defgrey) {
-   real x, y;
+   double x, y;
    BasePoint unit, offset;
-   bigreal len, relpos;
+   double len, relpos;
    int i, col, grey;
 
    if (grad==NULL) {
@@ -1302,7 +1302,7 @@ int GradientHere(bigreal scale, DBounds * bbox, int iy, int ix,
    else if (relpos==grad->grad_stops[i].offset || i==0)
       col=grad->grad_stops[i].col;
    else {
-      bigreal percent =
+      double percent =
 	 (relpos -
 	  grad->grad_stops[i - 1].offset) / (grad->grad_stops[i].offset -
 					     grad->grad_stops[i - 1].offset);
@@ -1332,7 +1332,7 @@ int GradientHere(bigreal scale, DBounds * bbox, int iy, int ix,
    return (255 - grey);
 }
 
-void PatternPrep(SplineChar * sc, struct brush *brush, bigreal scale) {
+void PatternPrep(SplineChar * sc, struct brush *brush, double scale) {
    SplineChar *psc;
    int pixelsize;
    SplineFont *sf;
@@ -1549,7 +1549,7 @@ static int FigureBitmap(EdgeList *es,uint8_t *bytemap,int is_aa) {
 /*  I need more precision and the pixelsize itself is largely irrelevant */
 /*  (I care about the scale though) */
 static BDFChar *_SplineCharRasterize(SplineChar *sc,int layer,
-				     bigreal pixelsize, int is_aa) {
+				     double pixelsize, int is_aa) {
    EdgeList es;
    BDFChar *bdfc;
    int depth=0;
@@ -1569,7 +1569,7 @@ static BDFChar *_SplineCharRasterize(SplineChar *sc,int layer,
       else
 	 SplineCharFindBounds(sc, &es.bbox);
       es.scale =
-	 (pixelsize - .1) / (real) (sc->parent->ascent + sc->parent->descent);
+	 (pixelsize - .1) / (double) (sc->parent->ascent + sc->parent->descent);
       es.mmin=floor(es.bbox.miny * es.scale);
       es.mmax=ceil(es.bbox.maxy * es.scale);
       es.omin=es.bbox.minx * es.scale;
@@ -1634,10 +1634,10 @@ static BDFChar *_SplineCharRasterize(SplineChar *sc,int layer,
    if (sc != NULL) {
       bdfc->width =
 	 rint(sc->width * pixelsize /
-	      (real) (sc->parent->ascent + sc->parent->descent));
+	      (double) (sc->parent->ascent + sc->parent->descent));
       bdfc->vwidth =
 	 rint(sc->vwidth * pixelsize /
-	      (real) (sc->parent->ascent + sc->parent->descent));
+	      (double) (sc->parent->ascent + sc->parent->descent));
       bdfc->orig_pos=sc->orig_pos;
    }
    bdfc->bitmap=es.bitmap;
@@ -1652,14 +1652,14 @@ static BDFChar *_SplineCharRasterize(SplineChar *sc,int layer,
    return (bdfc);
 }
 
-BDFChar *SplineCharRasterize(SplineChar * sc, int layer, bigreal pixelsize) {
+BDFChar *SplineCharRasterize(SplineChar * sc, int layer, double pixelsize) {
    return (_SplineCharRasterize(sc, layer, pixelsize, false));
 }
 
 BDFFont *SplineFontToBDFHeader(SplineFont *_sf, int pixelsize, int indicate) {
    BDFFont *bdf=calloc(1, sizeof(BDFFont));
    int i;
-   real scale;
+   double scale;
    char size[40];
    char aa[200];
    int max;
@@ -1672,7 +1672,7 @@ BDFFont *SplineFontToBDFHeader(SplineFont *_sf, int pixelsize, int indicate) {
       if (sf->glyphcnt > max)
 	 max=sf->glyphcnt;
    }
-   scale=pixelsize / (real) (sf->ascent + sf->descent);
+   scale=pixelsize / (double) (sf->ascent + sf->descent);
 
    if (indicate) {
       sprintf(size,"%d pixels",pixelsize);
@@ -1722,13 +1722,13 @@ void BDFCAntiAlias(BDFChar * bc, int linear_scale) {
       return;
 
    memset(&new, '\0', sizeof(new));
-   new.xmin=floor(((real) bc->xmin) / linear_scale);
-   new.ymin=floor(((real) bc->ymin) / linear_scale);
+   new.xmin=floor(((double) bc->xmin) / linear_scale);
+   new.ymin=floor(((double) bc->ymin) / linear_scale);
    new.xmax =
       new.xmin + (bc->xmax - bc->xmin + linear_scale - 1) / linear_scale;
    new.ymax =
       new.ymin + (bc->ymax - bc->ymin + linear_scale - 1) / linear_scale;
-   new.width=rint(((real) bc->width) / linear_scale);
+   new.width=rint(((double) bc->width) / linear_scale);
 
    new.bytes_per_line=(new.xmax - new.xmin + 1);
    new.orig_pos=bc->orig_pos;
@@ -1820,7 +1820,7 @@ BDFFont *SplineFontAntiAlias(SplineFont *_sf, int layer, int pixelsize,
 			     int linear_scale) {
    BDFFont *bdf;
    int i, k;
-   real scale;
+   double scale;
    char size[40];
    char aa[200];
    int max;
@@ -1837,7 +1837,7 @@ BDFFont *SplineFontAntiAlias(SplineFont *_sf, int layer, int pixelsize,
       if (sf->glyphcnt > max)
 	 max=sf->glyphcnt;
    }
-   scale=pixelsize / (real) (sf->ascent + sf->descent);
+   scale=pixelsize / (double) (sf->ascent + sf->descent);
 
    sprintf(size,"%d pixels",pixelsize);
    strcpy(aa,"Generating anti-alias font");
@@ -1866,7 +1866,7 @@ BDFFont *SplineFontAntiAlias(SplineFont *_sf, int layer, int pixelsize,
 	       if (SCWorthOutputting(sf->glyphs[i]))
 		  break;
 	    }
-	 scale=pixelsize / (real) (sf->ascent + sf->descent);
+	 scale=pixelsize / (double) (sf->ascent + sf->descent);
       }
       bdf->glyphs[i] =
 	 SplineCharRasterize(sf->glyphs[i], layer, pixelsize * linear_scale);
@@ -1962,7 +1962,7 @@ BDFChar *BDFPieceMealCheck(BDFFont * bdf, int index) {
 BDFFont *SplineFontPieceMeal(SplineFont *sf, int layer, int ptsize, int dpi,
 			     int flags, void *ftc) {
    BDFFont *bdf=calloc(1, sizeof(BDFFont));
-   real scale;
+   double scale;
    int pixelsize=(int) rint((ptsize * dpi) / 72.0);
    int truesize=pixelsize;
 
@@ -1988,13 +1988,13 @@ BDFFont *SplineFontPieceMeal(SplineFont *sf, int layer, int ptsize, int dpi,
 	 bb.miny=-2 * (sf->ascent + sf->descent);
       if (bb.minx < -10 * (sf->ascent + sf->descent))
 	 bb.minx=-2 * (sf->ascent + sf->descent);
-      scale=pixelsize / (real) (bb.maxy - bb.miny);
+      scale=pixelsize / (double) (bb.maxy - bb.miny);
       bdf->ascent=rint(bb.maxy * scale);
       truesize=rint((sf->ascent + sf->descent) * scale);
       if (pixelsize != 0)
 	 ptsize=rint(ptsize * (double) truesize / pixelsize);
    } else {
-      scale=pixelsize / (real) (sf->ascent + sf->descent);
+      scale=pixelsize / (double) (sf->ascent + sf->descent);
       bdf->ascent=rint(sf->ascent * scale);
    }
    if (flags & pf_ft_nohints)

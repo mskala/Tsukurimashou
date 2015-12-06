@@ -1,4 +1,4 @@
-/* $Id: views.h 4299 2015-10-24 10:24:40Z mskala $ */
+/* $Id: views.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -180,7 +180,7 @@ typedef struct charview {
 
    int hvoffset;		/* for showalmosthvlines */
    int layers_off_top;
-   real scale;
+   double scale;
    unichar_t ruler_linger_lines[40][80];
    int ruler_linger_num_lines;
    int num_ruler_intersections;
@@ -198,7 +198,7 @@ typedef struct charview {
    BasePoint info;
    SplinePoint *info_sp;
    Spline *info_spline;
-   real info_t;
+   double info_t;
    GPoint e;			/* mouse location */
    GPoint olde;
    BasePoint last_c;
@@ -224,7 +224,7 @@ typedef struct charview {
    struct freehand freehand;
    enum expandedge expandedge;
    BasePoint expandorigin;
-   real expandwidth, expandheight;
+   double expandwidth, expandheight;
    SplinePointList *active_shape;
    SplinePoint joinpos;
    spiro_cp joincp;
@@ -232,8 +232,8 @@ typedef struct charview {
 #   if HANYANG
    struct jamodisplay *jamodisplay;
 #   endif
-   real oldwidth, oldvwidth;
-   real oldlbearing;
+   double oldwidth, oldvwidth;
+   double oldlbearing;
    int16_t oldic, oldtah;
 #   if _ModKeysAutoRepeat
    GTimer *autorpt;
@@ -244,7 +244,7 @@ typedef struct charview {
    int16_t nearcaret;
    /* freetype results display */
    int16_t ft_dpi, ft_ppemy, ft_ppemx, ft_depth;
-   real ft_pointsizey, ft_pointsizex;
+   double ft_pointsizey, ft_pointsizex;
    struct freetype_raster *raster, *oldraster;
    uint32_t mmvisible;
    char *former_names[10];
@@ -274,7 +274,7 @@ typedef struct bitmapview {
    int width, height;
    int infoh, mbh;
    int scale;
-   real scscale;
+   double scscale;
    struct bitmapview *next;
    unsigned int showfore:1;
    unsigned int showoutline:1;
@@ -406,15 +406,15 @@ typedef struct fontview {
 } FontView;
 
 typedef struct findsel {
-   real fudge;			/* One pixel fudge factor */
-   real xl, xh, yl, yh;		/* One pixel fudge factor */
-   real c_xl, c_xh, c_yl, c_yh;	/* fudge rectangle for control points, larger than above if alt is depressed */
+   double fudge;			/* One pixel fudge factor */
+   double xl, xh, yl, yh;		/* One pixel fudge factor */
+   double c_xl, c_xh, c_yl, c_yh;	/* fudge rectangle for control points, larger than above if alt is depressed */
    unsigned int select_controls:1;	/* notice control points */
    unsigned int seek_controls:1;	/* notice control points before base points */
    unsigned int all_controls:1;	/* notice control points even if the base points aren't selected (in truetype point numbering mode where all cps are visible) */
    unsigned int alwaysshowcontrolpoints:1;	/* if the BCP are forced on, then we want the selection code paths
 						 * to also know that so the user can drag the BCP of a non selected splinepoint */
-   real scale;
+   double scale;
    PressedOn *p;
 } FindSel;
 

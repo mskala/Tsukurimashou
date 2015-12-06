@@ -1,4 +1,4 @@
-/* $Id: cvimages.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: cvimages.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -71,7 +71,7 @@ void SCAppendEntityLayers(SplineChar * sc, Entity * ent) {
 	 sc->layers[pos].stroke_pen.linejoin=e->u.splines.join;
 	 sc->layers[pos].stroke_pen.linecap=e->u.splines.cap;
 	 memcpy(sc->layers[pos].stroke_pen.trans, e->u.splines.transform,
-		4 * sizeof(real));
+		4 * sizeof(double));
 	 sc->layers[pos].splines=e->u.splines.splines;
       } else if (e->type==et_image) {
 	 ImageList *ilist=chunkalloc(sizeof(ImageList));
@@ -336,8 +336,8 @@ GImage *ImageAlterClut(GImage * image) {
    return (image);
 }
 
-void SCInsertImage(SplineChar * sc, GImage * image, real scale, real yoff,
-		   real xoff, int layer) {
+void SCInsertImage(SplineChar * sc, GImage * image, double scale, double yoff,
+		   double xoff, int layer) {
    ImageList *im;
 
    SCPreserveLayer(sc, layer, false);
@@ -363,7 +363,7 @@ void SCAddScaleImage(SplineChar * sc, GImage * image, int doclear, int layer) {
    image=ImageAlterClut(image);
    scale =
       (sc->parent->ascent +
-       sc->parent->descent) / (real) GImageGetHeight(image);
+       sc->parent->descent) / (double) GImageGetHeight(image);
    if (doclear) {
       ImageListsFree(sc->layers[layer].images);
       sc->layers[layer].images=NULL;

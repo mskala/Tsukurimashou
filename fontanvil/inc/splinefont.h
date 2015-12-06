@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: splinefont.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -44,18 +44,6 @@
 #  define ICONV_CONST
 # endif
 
-# ifdef FONTANVIL_CONFIG_USE_DOUBLE
-#  define real		double
-#  define bigreal	double
-# else
-#  define real		float
-#  define bigreal	double
-# endif
-
-# define extended	double
-/* Solaris wants to define extended to be unsigned [3] unless we do this */
-# define _EXTENDED
-
 # define CHR(ch1,ch2,ch3,ch4) (((ch1)<<24)|((ch2)<<16)|((ch3)<<8)|(ch4))
 
 # define MmMax		16
@@ -71,29 +59,29 @@ typedef struct ipoint {
 # define IPOINT_EMPTY { 0,0 }
 
 typedef struct basepoint {
-   real x;
-   real y;
+   double x;
+   double y;
 } BasePoint;
-# define BASEPOINT_EMPTY { (real)0.0,(real)0.0 }
+# define BASEPOINT_EMPTY { (double)0.0,(double)0.0 }
 
 typedef struct dbasepoint {
-   bigreal x;
-   bigreal y;
+   double x;
+   double y;
 } DBasePoint;
-# define DBASEPOINT_EMPTY { (bigreal)0.0,(bigreal)0.0 }
+# define DBASEPOINT_EMPTY { (double)0.0,(double)0.0 }
 
 typedef struct tpoint {
-   real x;
-   real y;
-   real t;
+   double x;
+   double y;
+   double t;
 } TPoint;
-# define TPOINT_EMPTY { (real)0.0,(real)0.0,(real)0.0 }
+# define TPOINT_EMPTY { (double)0.0,(double)0.0,(double)0.0 }
 
 typedef struct dbounds {
-   real minx,maxx;
-   real miny,maxy;
+   double minx,maxx;
+   double miny,maxy;
 } DBounds;
-# define DBOUNDS_EMPTY { (real)0.0,(real)0.0,(real)0.0,(real)0.0 }
+# define DBOUNDS_EMPTY { (double)0.0,(double)0.0,(double)0.0,(double)0.0 }
 
 typedef struct ibounds {
    int minx,maxx;
@@ -109,7 +97,7 @@ typedef struct val {
    enum val_type type;
    union {
       int ival;
-      real fval;
+      double fval;
       char *sval;
       struct val *lval;
       struct array *aval;
@@ -155,15 +143,15 @@ enum spreadMethod {
 # define COLOR_INHERITED	0xfffffffe
 
 struct grad_stops {
-   real offset;
+   double offset;
    uint32_t col;
-   real opacity;
+   double opacity;
 };
 
 struct gradient {
    BasePoint start;		/* focal of a radial gradient, start of a linear */
    BasePoint stop;		/* center of a radial gradient, end of a linear */
-   real radius;			/* 0=>linear gradient, else radius of a radial gradient */
+   double radius;			/* 0=>linear gradient, else radius of a radial gradient */
    enum spreadMethod sm;
    int stop_cnt;
    struct grad_stops *grad_stops;
@@ -171,11 +159,11 @@ struct gradient {
 
 struct pattern {
    char *pattern;
-   real width,height;		/* Pattern is scaled to be repeated every width/height (in user coordinates) */
-   real transform[6];
+   double width,height;		/* Pattern is scaled to be repeated every width/height (in user coordinates) */
+   double transform[6];
    /* Used during rasterization process */
    struct bdfchar *pat;
-   real invtrans[6];
+   double invtrans[6];
    int bminx,bminy,bwidth,bheight;	/* of the pattern at bdfchar scale */
 };
 
@@ -197,7 +185,7 @@ struct pen {
    uint8_t linejoin;
    uint8_t linecap;
    float width;
-   real trans[4];
+   double trans[4];
    DashType dashes[DASH_MAX];
 };
 
@@ -207,23 +195,23 @@ enum si_type { si_std,si_caligraphic,si_poly,si_centerline };
 /* If you change this structure you may need to update MakeStrokeDlg */
 /*  and cvpalettes.c both contain statically initialized StrokeInfos */
 typedef struct strokeinfo {
-   real radius;			/* or major axis of pen */
+   double radius;			/* or major axis of pen */
    enum linejoin join;
    enum linecap cap;
    enum si_type stroke_type;
    unsigned int removeinternal:1;
    unsigned int removeexternal:1;
    unsigned int leave_users_center:1;	/* Don't move the pen so its center is at the origin */
-   real penangle;
-   real minorradius;
+   double penangle;
+   double minorradius;
    struct splinepointlist *poly;
-   real resolution;
+   double resolution;
    /* For freehand tool */
-   real radius2;
+   double radius2;
    int pressure1,pressure2;
    /* End freehand tool */
    void *data;
-   bigreal(*factor) (void *data,struct spline *spline,real t);
+   double(*factor) (void *data,struct spline *spline,double t);
 } StrokeInfo;
 
 enum PolyType { Poly_Convex,Poly_Concave,Poly_PointOnEdge,
@@ -244,10 +232,10 @@ enum simpify_flags { sf_cleanup=-1,sf_normal=0,sf_ignoreslopes=1,
 
 struct simplifyinfo {
    int flags;
-   bigreal err;
-   bigreal tan_bounds;
-   bigreal linefixup;
-   bigreal linelenmax;		/* Don't simplify any straight lines longer than this */
+   double err;
+   double tan_bounds;
+   double linefixup;
+   double linelenmax;		/* Don't simplify any straight lines longer than this */
    int set_as_default;
    int check_selected_contours;
 };
@@ -325,14 +313,14 @@ typedef struct italicinfo {
 #   define ITALICINFO_REMAINDER 0,0,0,0,0,0,NULL,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,0,0
 
 typedef struct bluedata {
-   real xheight,xheighttop;	/* height of "x" and "o" (u,v,w,x,y,z) */
-   real caph,caphtop;		/* height of "I" and "O" */
-   real base,basebelow;	/* bottom of "I" and "O" */
-   real ascent;			/* height of "l" */
-   real descent;		/* depth of "p" */
-   real numh,numhtop;		/* height of "7" and "8" *//* numbers with ascenders */
+   double xheight,xheighttop;	/* height of "x" and "o" (u,v,w,x,y,z) */
+   double caph,caphtop;		/* height of "I" and "O" */
+   double base,basebelow;	/* bottom of "I" and "O" */
+   double ascent;			/* height of "l" */
+   double descent;		/* depth of "p" */
+   double numh,numhtop;		/* height of "7" and "8" *//* numbers with ascenders */
    int bluecnt;			/* If the private dica contains bluevalues... */
-   real blues[12][2];		/* 7 pairs from bluevalues, 5 from otherblues */
+   double blues[12][2];		/* 7 pairs from bluevalues, 5 from otherblues */
 } BlueData;
 
 #   define BLUEDATA_EMPTY { \
@@ -1127,7 +1115,7 @@ typedef struct linelist {
 } LineList;
 
 typedef struct linearapprox {
-   real scale;
+   double scale;
    unsigned int oneline:1;
    unsigned int onepoint:1;
    unsigned int any:1;		/* refers to a particular screen */
@@ -1136,7 +1124,7 @@ typedef struct linearapprox {
 } LinearApprox;
 
 typedef struct spline1d {
-   real a, b, c, d;
+   double a, b, c, d;
 } Spline1D;
 
 /*
@@ -1214,8 +1202,8 @@ typedef struct splinepointlist {
 
 typedef struct imagelist {
    struct gimage *image;
-   real xoff, yoff;		/* position in character space of upper left corner of image */
-   real xscale, yscale;		/* scale to convert one pixel of image to one unit of character space */
+   double xoff, yoff;		/* position in character space of upper left corner of image */
+   double xscale, yscale;		/* scale to convert one pixel of image to one unit of character space */
    DBounds bb;
    struct imagelist *next;
    unsigned int selected:1;
@@ -1250,7 +1238,7 @@ typedef struct refchar {
    int16_t adobe_enc;
    int orig_pos;
    int unicode_enc;		/* used by paste */
-   real transform[6];		/* transformation matrix (first 2 rows of a 3x3 matrix, missing row is 0,0,1) */
+   double transform[6];		/* transformation matrix (first 2 rows of a 3x3 matrix, missing row is 0,0,1) */
    struct reflayer *layers;
    int layer_cnt;
    struct refchar *next;
@@ -1264,8 +1252,8 @@ typedef struct refchar {
 /* Serif stems on I which appear at 0, disappear, reappear at top */
 /* Or the major vertical stems on H which disappear at the cross bar */
 typedef struct hintinstance {
-   real begin;			/* location in the non-major direction */
-   real end;			/* width/height in non-major direction */
+   double begin;			/* location in the non-major direction */
+   double end;			/* width/height in non-major direction */
    unsigned int closed:1;
    short int counternumber;
    struct hintinstance *next;
@@ -1273,7 +1261,7 @@ typedef struct hintinstance {
 
 enum hinttypes { ht_unspecified=0, ht_h, ht_v, ht_d };
 
-typedef real _MMArray[2][MmMax];
+typedef double _MMArray[2][MmMax];
 
 typedef struct steminfo {
    struct steminfo *next;
@@ -1306,8 +1294,8 @@ typedef struct steminfo {
       /*  in type2 output */
       _MMArray *unblended /*[2][MmMax] */ ;	/* Used when reading in type1 mm hints */
    } u;
-   real start;			/* location at which the stem starts */
-   real width;			/* or height */
+   double start;			/* location at which the stem starts */
+   double width;			/* or height */
    HintInstance *where;		/* location(s) in the other coord */
 } StemInfo;
 
@@ -1566,7 +1554,7 @@ typedef struct splinechar {
    /*  subtract it from the min components. If extra is 0 then tile_bounds */
    /*  will be used. If tile_bounds is all zeros then the glyph's bbox */
    /*  will be used. */
-   real tile_margin;		/* If the glyph is used as a tile */
+   double tile_margin;		/* If the glyph is used as a tile */
    DBounds tile_bounds;
 } SplineChar;
 
@@ -1808,7 +1796,7 @@ typedef struct splinefont {
    char *filename;		/* sfd name. NULL if we open a font, that's origname */
    char *defbasefilename;
    char *version;
-   real italicangle, upos, uwidth;	/* In font info */
+   double italicangle, upos, uwidth;	/* In font info */
    int ascent, descent;
    int uniqueid;		/* Not copied when reading in!!!! */
    int glyphcnt, glyphmax;	/* allocated size of glyphs array */
@@ -1904,7 +1892,7 @@ typedef struct splinefont {
    struct otfname *fontstyle_name;
    uint16_t design_range_bottom, design_range_top;
    struct otffeatname *feat_names;
-   real strokewidth;
+   double strokewidth;
 /* For GDEF Mark Attachment Class -- used in lookup flags */
 /* As usual, class 0 is unused */
    int mark_class_cnt;
@@ -1941,7 +1929,7 @@ typedef struct splinefont {
 #   define woffUnset		0x4455
    int woffMinor;
    char *woffMetadata;
-   real ufo_ascent, ufo_descent;	/* I don't know what these mean, they don't seem to correspond to any other ascent/descent pair, but retain them so round-trip ufo input/output leaves them unchanged */
+   double ufo_ascent, ufo_descent;	/* I don't know what these mean, they don't seem to correspond to any other ascent/descent pair, but retain them so round-trip ufo input/output leaves them unchanged */
    /* ufo_descent is negative */
 
    struct sfundoes *undoes;
@@ -1949,14 +1937,14 @@ typedef struct splinefont {
 
 struct axismap {
    int points;			/* size of the next two arrays */
-   real *blends;		/* between [0,1] ordered so that blend[0]<blend[1]<... */
-   real *designs;		/* between the design ranges for this axis, typically [1,999] or [6,72] */
-   real min, def, max;		/* For mac */
+   double *blends;		/* between [0,1] ordered so that blend[0]<blend[1]<... */
+   double *designs;		/* between the design ranges for this axis, typically [1,999] or [6,72] */
+   double min, def, max;		/* For mac */
    struct macname *axisnames;	/* For mac */
 };
 
 struct named_instance {		/* For mac */
-   real *coords;		/* array[axis], these are in user units */
+   double *coords;		/* array[axis], these are in user units */
    struct macname *names;
 };
 
@@ -1972,8 +1960,8 @@ typedef struct mmset {
    int instance_count;
    SplineFont **instances;
    SplineFont *normal;
-   real *positions;		/* array[instance][axis] saying where each instance lies on each axis */
-   real *defweights;		/* array[instance] saying how much of each instance makes the normal font */
+   double *positions;		/* array[instance][axis] saying where each instance lies on each axis */
+   double *defweights;		/* array[instance] saying how much of each instance makes the normal font */
    /* for adobe */
    struct axismap *axismaps;	/* array[axis] */
    char *cdv, *ndv;		/* for adobe */
@@ -2261,15 +2249,15 @@ extern void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32_t *sizes);
 extern void ttfdumpbitmapscaling(SplineFont *sf, struct alltabs *at,
 				 int32_t *sizes);
 
-extern int Within4RoundingErrors(bigreal v1, bigreal v2);
-extern int Within16RoundingErrors(bigreal v1, bigreal v2);
-extern int Within64RoundingErrors(bigreal v1, bigreal v2);
+extern int Within4RoundingErrors(double v1, double v2);
+extern int Within16RoundingErrors(double v1, double v2);
+extern int Within64RoundingErrors(double v1, double v2);
 
-extern int RealNear(real a, real b);
-extern int RealNearish(real a, real b);
-extern int RealApprox(real a, real b);
-extern int RealWithin(real a, real b, real fudge);
-extern int RealRatio(real a, real b, real fudge);
+extern int RealNear(double a, double b);
+extern int RealNearish(double a, double b);
+extern int RealApprox(double a, double b);
+extern int RealWithin(double a, double b, double fudge);
+extern int RealRatio(double a, double b, double fudge);
 
 extern int PointsDiagonalable(SplineFont *sf, BasePoint ** bp,
 			      BasePoint *unit);
@@ -2278,7 +2266,7 @@ extern int MergeDStemInfo(SplineFont *sf, DStemInfo ** ds, DStemInfo *test);
 extern void LinearApproxFree(LinearApprox *la);
 extern void SplineFree(Spline *spline);
 
-extern SplinePoint *SplinePointCreate(real x, real y);
+extern SplinePoint *SplinePointCreate(double x, double y);
 extern void SplinePointFree(SplinePoint *sp);
 extern void SplinePointMDFree(SplineChar *sc,SplinePoint *sp);
 extern void SplinePointListFree(SplinePointList *spl);
@@ -2402,10 +2390,10 @@ extern RefChar *RefCharsCopy(RefChar *ref);	/* Still needs to be instantiated an
 
 extern struct altuni *AltUniCopy(struct altuni *altuni,
 				 SplineFont *noconflicts);
-extern void SCAddRef(SplineChar *sc, SplineChar *rsc, int layer, real xoff,
-		     real yoff);
+extern void SCAddRef(SplineChar *sc, SplineChar *rsc, int layer, double xoff,
+		     double yoff);
 extern void _SCAddRef(SplineChar *sc, SplineChar *rsc, int layer,
-		      real transform[6]);
+		      double transform[6]);
 extern KernClass *KernClassCopy(KernClass *kc);
 
 extern void KernClassListFree(KernClass *kc);
@@ -2464,7 +2452,7 @@ extern void SplineRefigure(Spline *spline);
 
 extern Spline *SplineMake3(SplinePoint *from, SplinePoint *to);
 
-extern LinearApprox *SplineApproximate(Spline *spline, real scale);
+extern LinearApprox *SplineApproximate(Spline *spline, double scale);
 
 extern int SplinePointListIsClockwise(const SplineSet *spl);
 
@@ -2502,7 +2490,7 @@ extern SplinePointList *SplinePointListCopy(const SplinePointList *base);
 
 extern ImageList *ImageListCopy(ImageList *cimg);
 
-extern void ApTransform(AnchorPoint *ap, real transform[6]);
+extern void ApTransform(AnchorPoint *ap, double transform[6]);
 
 /* The order of the enum elements below doesn't make much sense, but it's done*/
 /*  this way to preserve binary compatibility */
@@ -2518,11 +2506,11 @@ enum transformPointMask {
 };
 
 extern SplinePointList *SplinePointListTransform(SplinePointList *base,
-						 real transform[6],
+						 double transform[6],
 						 enum transformPointType
 						 allpoints);
 extern SplinePointList *SplinePointListShift(SplinePointList *base,
-					     real xoff,
+					     double xoff,
 					     enum transformPointType
 					     allpoints);
 extern HintMask *HintMaskFromTransformedRef(RefChar *ref, BasePoint *trans,
@@ -2562,13 +2550,13 @@ extern void BCPasteInto(BDFChar *bc, BDFChar *rbc, int ixoff, int iyoff,
 			int invert, int cleartoo);
 extern void BCRotateCharForVert(BDFChar *bc, BDFChar *from,
 				BDFFont *frombdf);
-extern int GradientHere(bigreal scale, DBounds *bbox, int iy, int ix,
+extern int GradientHere(double scale, DBounds *bbox, int iy, int ix,
 			struct gradient *grad, struct pattern *pat,
 			int defgrey);
-extern void PatternPrep(SplineChar *sc, struct brush *brush, bigreal scale);
+extern void PatternPrep(SplineChar *sc, struct brush *brush, double scale);
 
 extern BDFChar *SplineCharRasterize(SplineChar *sc, int layer,
-				    bigreal pixelsize);
+				    double pixelsize);
 extern BDFFont *SplineFontToBDFHeader(SplineFont *_sf, int pixelsize,
 				      int indicate);
 extern BDFFont *SplineFontRasterize(SplineFont *sf, int layer, int pixelsize,
@@ -2677,39 +2665,39 @@ extern void XLFD_CreateComponents(BDFFont *bdf, EncMap *map, int res,
 /* Two quadratics intersect in at most 4 points */
 					       /* Two cubics intersect in at most 9 points *//* Plus an extra space for a trailing -1 */
 extern int SplinesIntersect(const Spline *s1, const Spline *s2,
-			    BasePoint pts[9], extended t1s[10],
-			    extended t2s[10]);
+			    BasePoint pts[9], double t1s[10],
+			    double t2s[10]);
 extern SplineSet *LayerAllSplines(Layer *layer);
 
 extern SplineSet *LayerUnAllSplines(Layer *layer);
 
 extern int SplineSetIntersect(SplineSet *spl, Spline ** _spline,
 			      Spline ** _spline2);
-extern int _CubicSolve(const Spline1D *sp, bigreal sought, extended ts[3]);
+extern int _CubicSolve(const Spline1D *sp, double sought, double ts[3]);
 
-extern int CubicSolve(const Spline1D *sp, bigreal sought, extended ts[3]);
+extern int CubicSolve(const Spline1D *sp, double sought, double ts[3]);
 
 /* Uses an algebraic solution */
-extern extended SplineSolve(const Spline1D *sp, real tmin, real tmax,
-			    extended sought_y);
+extern double SplineSolve(const Spline1D *sp, double tmin, double tmax,
+			    double sought_y);
 /* Tries to fixup rounding errors that crept in to the solution */
-extern extended SplineSolveFixup(const Spline1D *sp, real tmin, real tmax,
-				 extended sought_y);
+extern double SplineSolveFixup(const Spline1D *sp, double tmin, double tmax,
+				 double sought_y);
 /* Uses an iterative approximation */
-extern extended IterateSplineSolve(const Spline1D *sp, extended tmin,
-				   extended tmax, extended sought_y);
+extern double IterateSplineSolve(const Spline1D *sp, double tmin,
+				   double tmax, double sought_y);
 /* Uses an iterative approximation and then tries to fix things up */
-extern extended IterateSplineSolveFixup(const Spline1D *sp, extended tmin,
-					extended tmax, extended sought_y);
-extern void SplineFindExtrema(const Spline1D *sp, extended *_t1,
-			      extended *_t2);
+extern double IterateSplineSolveFixup(const Spline1D *sp, double tmin,
+					double tmax, double sought_y);
+extern void SplineFindExtrema(const Spline1D *sp, double *_t1,
+			      double *_t2);
 
 SplineSet *SplineSetsInterpolate(SplineSet *base, SplineSet *other,
-				 real amount, SplineChar *sc);
+				 double amount, SplineChar *sc);
 SplineChar *SplineCharInterpolate(SplineChar *base, SplineChar *other,
-				  real amount, SplineFont *newfont);
+				  double amount, SplineFont *newfont);
 extern SplineFont *InterpolateFont(SplineFont *base, SplineFont *other,
-				   real amount, Encoding *enc);
+				   double amount, Encoding *enc);
 
 double SFSerifHeight(SplineFont *sf);
 
@@ -2725,21 +2713,21 @@ extern void _SCAutoTrace(SplineChar *sc, int layer, char **args);
 extern char **AutoTraceArgs(int ask);
 
 #   define CURVATURE_ERROR	-1e9
-extern bigreal SplineCurvature(Spline *s, bigreal t);
+extern double SplineCurvature(Spline *s, double t);
 
 extern double CheckExtremaForSingleBitErrors(const Spline1D *sp, double t,
 					     double othert);
-extern int Spline2DFindExtrema(const Spline *sp, extended extrema[4]);
+extern int Spline2DFindExtrema(const Spline *sp, double extrema[4]);
 
-extern int Spline2DFindPointsOfInflection(const Spline *sp, extended poi[2]);
+extern int Spline2DFindPointsOfInflection(const Spline *sp, double poi[2]);
 
-extern void SplineRemoveExtremaTooClose(Spline1D *sp, extended *_t1,
-					extended *_t2);
-extern real SplineNearPoint(Spline *spline, BasePoint *bp, real fudge);
+extern void SplineRemoveExtremaTooClose(Spline1D *sp, double *_t1,
+					double *_t2);
+extern double SplineNearPoint(Spline *spline, BasePoint *bp, double fudge);
 
 extern void SCMakeDependent(SplineChar *dependent, SplineChar *base);
 
-extern SplinePoint *SplineBisect(Spline *spline, extended t);
+extern SplinePoint *SplineBisect(Spline *spline, double t);
 
 extern Spline *ApproximateSplineFromPoints(SplinePoint *from,
 					   SplinePoint *to, TPoint *mid,
@@ -2748,7 +2736,7 @@ extern Spline *ApproximateSplineFromPointsSlopes(SplinePoint *from,
 						 SplinePoint *to,
 						 TPoint *mid, int cnt,
 						 int order2);
-extern bigreal SplineLength(Spline *spline);
+extern double SplineLength(Spline *spline);
 
 extern int SplineIsLinear(Spline *spline);
 
@@ -2765,11 +2753,11 @@ extern void SSRemoveStupidControlPoints(SplineSet *base);
 extern void SplinesRemoveBetween(SplineChar *sc, SplinePoint *from,
 				 SplinePoint *to, int type);
 
-extern void SPLNearlyHvCps(SplineChar *sc, SplineSet *ss, bigreal err);
+extern void SPLNearlyHvCps(SplineChar *sc, SplineSet *ss, double err);
 
-extern void SPLNearlyHvLines(SplineChar *sc, SplineSet *ss, bigreal err);
+extern void SPLNearlyHvLines(SplineChar *sc, SplineSet *ss, double err);
 
-extern int SPLNearlyLines(SplineChar *sc, SplineSet *ss, bigreal err);
+extern int SPLNearlyLines(SplineChar *sc, SplineSet *ss, double err);
 
 extern int SPInterpolate(const SplinePoint *sp);
 
@@ -2785,7 +2773,7 @@ extern void CanonicalContours(SplineChar *sc, int layer);
 
 extern void SplineSetJoinCpFixup(SplinePoint *sp);
 
-extern SplineSet *SplineSetJoin(SplineSet *start, int doall, real fudge,
+extern SplineSet *SplineSetJoin(SplineSet *start, int doall, double fudge,
 				int *changed);
 enum ae_type { ae_all, ae_between_selected, ae_only_good,
       ae_only_good_rm_later };
@@ -2795,8 +2783,8 @@ extern int Spline1DCantExtremeX(const Spline *s);
 
 extern int Spline1DCantExtremeY(const Spline *s);
 
-extern Spline *SplineAddExtrema(Spline *s, int always, real lenbound,
-				real offsetbound, DBounds *b);
+extern Spline *SplineAddExtrema(Spline *s, int always, double lenbound,
+				double offsetbound, DBounds *b);
 extern void SplineSetAddExtrema(SplineChar *sc, SplineSet *ss,
 				enum ae_type between_selected, int emsize);
 extern void SplineCharAddExtrema(SplineChar *sc, SplineSet *head,
@@ -2845,7 +2833,7 @@ extern void SFOrderBitmapList(SplineFont *sf);
 
 extern int KernThreshold(SplineFont *sf, int cnt);
 
-extern real SFGuessItalicAngle(SplineFont *sf);
+extern double SFGuessItalicAngle(SplineFont *sf);
 
 extern SplinePoint *SplineTtfApprox(Spline *ps);
 
@@ -2901,21 +2889,21 @@ extern SplineSet *SplineSetStroke(SplineSet *spl, StrokeInfo *si,
 				  int order2);
 extern SplineSet *SplineSetRemoveOverlap(SplineChar *sc, SplineSet *base,
 					 enum overlap_type);
-extern SplineSet *SSShadow(SplineSet *spl, real angle, real outline_width,
-			   real shadow_length, SplineChar *sc,
+extern SplineSet *SSShadow(SplineSet *spl, double angle, double outline_width,
+			   double shadow_length, SplineChar *sc,
 			   int wireframe);
 
 extern double BlueScaleFigureForced(struct psdict *private_,
-				    real bluevalues[], real otherblues[]);
-extern double BlueScaleFigure(struct psdict *private_, real bluevalues[],
-			      real otherblues[]);
-extern void FindBlues(SplineFont *sf, int layer, real blues[14],
-		      real otherblues[10]);
+				    double bluevalues[], double otherblues[]);
+extern double BlueScaleFigure(struct psdict *private_, double bluevalues[],
+			      double otherblues[]);
+extern void FindBlues(SplineFont *sf, int layer, double blues[14],
+		      double otherblues[10]);
 extern void QuickBlues(SplineFont *sf, int layer, BlueData *bd);
 
-extern void FindHStems(SplineFont *sf, real snaps[12], real cnt[12]);
+extern void FindHStems(SplineFont *sf, double snaps[12], double cnt[12]);
 
-extern void FindVStems(SplineFont *sf, real snaps[12], real cnt[12]);
+extern void FindVStems(SplineFont *sf, double snaps[12], double cnt[12]);
 
 extern double SFStdVW(SplineFont *sf);
 
@@ -2926,39 +2914,39 @@ extern void SCGuessHintInstancesList(SplineChar *sc, int layer,
 extern void SCGuessDHintInstances(SplineChar *sc, int layer, DStemInfo *ds);
 
 extern void SCGuessHHintInstancesAndAdd(SplineChar *sc, int layer,
-					StemInfo *stem, real guess1,
-					real guess2);
+					StemInfo *stem, double guess1,
+					double guess2);
 extern void SCGuessVHintInstancesAndAdd(SplineChar *sc, int layer,
-					StemInfo *stem, real guess1,
-					real guess2);
+					StemInfo *stem, double guess1,
+					double guess2);
 extern void SCGuessHHintInstancesList(SplineChar *sc, int layer);
 
 extern void SCGuessVHintInstancesList(SplineChar *sc, int layer);
 
-extern real HIlen(StemInfo *stems);
+extern double HIlen(StemInfo *stems);
 
-extern real HIoverlap(HintInstance *mhi, HintInstance *thi);
+extern double HIoverlap(HintInstance *mhi, HintInstance *thi);
 
 extern int StemInfoAnyOverlaps(StemInfo *stems);
 
 extern int StemListAnyConflicts(StemInfo *stems);
 
-extern HintInstance *HICopyTrans(HintInstance *hi, real mul, real offset);
+extern HintInstance *HICopyTrans(HintInstance *hi, double mul, double offset);
 
 extern int SFNeedsAutoHint(SplineFont *_sf, int layer);
 
 typedef struct bluezone {
-   real base;
+   double base;
    int cvtindex;
-   real family_base;		/* NaN if none */
+   double family_base;		/* NaN if none */
    int family_cvtindex;
-   real overshoot;		/* relative to baseline, NOT to base */
+   double overshoot;		/* relative to baseline, NOT to base */
    int highest;			/* used in autoinstructing for HStem positioning */
    int lowest;			/* as above */
 } BlueZone;
 
 typedef struct stdstem {
-   real width;			/* -1 if none */
+   double width;			/* -1 if none */
    int cvtindex;
    struct stdstem *snapto;	/* NULL means stem isn't snapped to any other */
    int stopat;			/* at which ppem stop snapping to snapto */
@@ -3211,20 +3199,20 @@ struct pscontext {
    int is_type2;
    int painttype;
    int instance_count;
-   real blend_values[17];
+   double blend_values[17];
    int blend_warn;
 };
 
-extern int UnblendedCompare(real u1[MmMax], real u2[MmMax], int cnt);
+extern int UnblendedCompare(double u1[MmMax], double u2[MmMax], int cnt);
 
 extern SplineChar *PSCharStringToSplines(uint8_t *type1, int len,
 					 struct pscontext *context,
 					 struct pschars *subrs,
 					 struct pschars *gsubrs,
 					 const char *name);
-extern void MatMultiply(real m1[6], real m2[6], real to[6]);
+extern void MatMultiply(double m1[6], double m2[6], double to[6]);
 
-extern int MatIsIdentity(real transform[6]);
+extern int MatIsIdentity(double transform[6]);
 
 extern int NameToEncoding(SplineFont *sf, EncMap *map, const char *uname);
 
@@ -3271,13 +3259,13 @@ extern int SFPrivateGuess(SplineFont *sf, int layer, struct psdict *private,
 			  char *name, int onlyone);
 
 
-extern void SplineSetsRound2Int(SplineSet *spl, real factor, int inspiro,
+extern void SplineSetsRound2Int(SplineSet *spl, double factor, int inspiro,
 				int onlysel);
-extern void SCRound2Int(SplineChar *sc, int layer, real factor);
+extern void SCRound2Int(SplineChar *sc, int layer, double factor);
 
 extern int SCRoundToCluster(SplineChar *sc, int layer, int sel,
-			    bigreal within, bigreal max);
-extern int SplineSetsRemoveAnnoyingExtrema(SplineSet *ss, bigreal err);
+			    double within, double max);
+extern int SplineSetsRemoveAnnoyingExtrema(SplineSet *ss, double err);
 
 extern int hascomposing(SplineFont *sf, int u, SplineChar *sc);
 
@@ -3310,15 +3298,15 @@ int32_t getlong(AFILE *ttf);
 
 int get3byte(AFILE *ttf);
 
-real getfixed(AFILE *ttf);
+double getfixed(AFILE *ttf);
 
-real get2dot14(AFILE *ttf);
+double get2dot14(AFILE *ttf);
 
 void putshort(AFILE *file, int sval);
 
 void putlong(AFILE *file, int val);
 
-void putfixed(AFILE *file, real dval);
+void putfixed(AFILE *file, double dval);
 
 int ttfcopyfile(AFILE *ttf, AFILE *other, int pos, char *table_name);
 
@@ -3340,13 +3328,13 @@ extern BDFChar *SplineCharFreeTypeRasterize(void *freetypecontext, int gid,
 extern void FreeTypeFreeContext(void *freetypecontext);
 
 extern SplineSet *FreeType_GridFitChar(void *single_glyph_context,
-				       int enc, real ptsizey, real ptsizex,
+				       int enc, double ptsizey, double ptsizex,
 				       int dpi, uint16_t *width,
 				       SplineChar *sc, int depth,
 				       int scaled);
 extern struct freetype_raster *FreeType_GetRaster(void *single_glyph_context,
-						  int enc, real ptsizey,
-						  real ptsizex, int dpi,
+						  int enc, double ptsizey,
+						  double ptsizex, int dpi,
 						  int depth);
 extern BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar *sc, int layer,
 						   int ptsize, int dpi,
@@ -3430,7 +3418,7 @@ extern int32_t EncFromUni(int32_t uni, Encoding *encname);
 extern int32_t EncFromName(const char *name, enum uni_interp interp,
 			 Encoding *encname);
 
-extern void MatInverse(real into[6], real orig[6]);
+extern void MatInverse(double into[6], double orig[6]);
 
 extern int BpColinear(BasePoint *first, BasePoint *mid, BasePoint *last);
 
@@ -3491,8 +3479,8 @@ enum Compare_Ret { SS_DiffContourCount=1,
 extern enum Compare_Ret BitmapCompare(BDFChar *bc1, BDFChar *bc2, int err,
 				      int bb_err);
 extern enum Compare_Ret SSsCompare(const SplineSet *ss1,
-				   const SplineSet *ss2, real pt_err,
-				   real spline_err, SplinePoint ** hmfail);
+				   const SplineSet *ss2, double pt_err,
+				   double spline_err, SplinePoint ** hmfail);
 enum font_compare_flags { fcf_outlines=1, fcf_exact =
       2, fcf_warn_not_exact=4,
    fcf_hinting=8, fcf_hintmasks=0x10, fcf_hmonlywithconflicts=0x20,
@@ -3592,18 +3580,18 @@ extern struct opentype_str *ApplyTickedFeatures(SplineFont *sf,
 extern void SFGlyphRenameFixup(SplineFont *sf, char *old, char *new,
 			       int rename_related_glyphs);
 
-extern void SplinePointRound(SplinePoint *, real);
+extern void SplinePointRound(SplinePoint *, double);
 
 extern int KCFindName(char *name, char **classnames, int cnt,
 		      int allow_class0);
 
 extern void SCClearRounds(SplineChar *sc, int layer);
 
-extern void SCSynchronizeWidth(SplineChar *sc, real newwidth, real oldwidth,
+extern void SCSynchronizeWidth(SplineChar *sc, double newwidth, double oldwidth,
 			       struct fontviewbase *fv);
 extern RefChar *HasUseMyMetrics(SplineChar *sc, int layer);
 
-extern void SCSynchronizeLBearing(SplineChar *sc, real off, int layer);
+extern void SCSynchronizeLBearing(SplineChar *sc, double off, int layer);
 
 extern void SFUntickAll(SplineFont *sf);
 
@@ -3622,8 +3610,8 @@ extern void SCImportPDFFile(SplineChar *sc, int layer, AFILE *ps,
 			    int doclear, int flags);
 extern void SCAddScaleImage(SplineChar *sc, struct gimage *image,
 			    int doclear, int layer);
-extern void SCInsertImage(SplineChar *sc, struct gimage *image, real scale,
-			  real yoff, real xoff, int layer);
+extern void SCInsertImage(SplineChar *sc, struct gimage *image, double scale,
+			  double yoff, double xoff, int layer);
 
 extern int _ExportPlate(AFILE *pdf, SplineChar *sc, int layer);
 
@@ -3654,7 +3642,7 @@ extern void SCDoUndo(SplineChar *sc, int layer);
 extern void SCClearBackground(SplineChar *sc);
 
 extern void BackgroundImageTransform(SplineChar *sc, ImageList *img,
-				     real transform[6]);
+				     double transform[6]);
 
 extern void SCClearLayer(SplineChar *sc, int layer);
 
@@ -3711,13 +3699,13 @@ extern int SSHasDrawn(SplineSet *ss);
 
 extern void GradientFree(struct gradient *grad);
 
-extern struct gradient *GradientCopy(struct gradient *old,real transform[6]);
+extern struct gradient *GradientCopy(struct gradient *old,double transform[6]);
 
 extern void PatternFree(struct pattern *pat);
 
 extern void BrushCopy(struct brush *into, struct brush *from,
-		      real transform[6]);
-extern void PenCopy(struct pen *into, struct pen *from, real transform[6]);
+		      double transform[6]);
+extern void PenCopy(struct pen *into, struct pen *from, double transform[6]);
 
 extern void PatternSCBounds(SplineChar *sc, DBounds *b);
 
@@ -3727,13 +3715,13 @@ extern void instrcheck(SplineChar *sc, int layer);
 
 extern void TTFPointMatches(SplineChar *sc, int layer, int top);
 
-extern bigreal SFCapHeight(SplineFont *sf, int layer, int return_error);
+extern double SFCapHeight(SplineFont *sf, int layer, int return_error);
 
-extern bigreal SFXHeight(SplineFont *sf, int layer, int return_error);
+extern double SFXHeight(SplineFont *sf, int layer, int return_error);
 
-extern bigreal SFAscender(SplineFont *sf, int layer, int return_error);
+extern double SFAscender(SplineFont *sf, int layer, int return_error);
 
-extern bigreal SFDescender(SplineFont *sf, int layer, int return_error);
+extern double SFDescender(SplineFont *sf, int layer, int return_error);
 
 /*
  * Visitor for SPLFirstVisitSplines()
@@ -3779,6 +3767,6 @@ extern void SPLFirstVisitSplines(SplinePoint * splfirst,
  * has an x coordinate of 'x'.
  */
 extern SplinePoint *SplinePointListContainsPointAtX(SplinePointList *
-						    container, real x);
+						    container, double x);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: fvmetrics.h 4284 2015-10-20 08:52:37Z mskala $ */
+/* $Id: fvmetrics.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -36,9 +36,9 @@ typedef struct createwidthdata {
    unsigned int done:1;
    void *_fv;
    void (*doit) (struct createwidthdata *);
-   real setto;
-   real scale;
-   real increment;
+   double setto;
+   double scale;
+   double increment;
    enum settype type;
    enum widthtype wtype;
    SplineChar *_sc;

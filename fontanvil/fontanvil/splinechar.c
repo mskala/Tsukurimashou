@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 4287 2015-10-20 11:54:06Z mskala $ */
+/* $Id: splinechar.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -76,7 +76,7 @@ RefChar *HasUseMyMetrics(SplineChar * sc, int layer) {
 /*  ours, and if we are a letter, then change the width on all chars linked */
 /*  to us which had the same width that we used to have (so if we change the */
 /*  width of A, we'll also change that of À and Ä and ... */
-void SCSynchronizeWidth(SplineChar * sc, real newwidth, real oldwidth,
+void SCSynchronizeWidth(SplineChar * sc, double newwidth, double oldwidth,
 			FontViewBase * flagfv) {
    BDFFont *bdf;
    struct splinecharlist *dlist;
@@ -100,7 +100,7 @@ void SCSynchronizeWidth(SplineChar * sc, real newwidth, real oldwidth,
       if (bc != NULL) {
 	 int width =
 	    rint(sc->width * bdf->pixelsize /
-		 (real) (sc->parent->ascent + sc->parent->descent));
+		 (double) (sc->parent->ascent + sc->parent->descent));
 	 if (bc->width != width) {
 	    /*BCPreserveWidth(bc); *//* Bitmaps can't set width, so no undo for it */
 	    bc->width=width;
@@ -140,7 +140,7 @@ void SCSynchronizeWidth(SplineChar * sc, real newwidth, real oldwidth,
 /* Also all vstem hints */
 /* I deliberately don't set undoes in the dependants. The change is not */
 /*  in them, after all */
-void SCSynchronizeLBearing(SplineChar * sc, real off, int layer) {
+void SCSynchronizeLBearing(SplineChar * sc, double off, int layer) {
    struct splinecharlist *dlist;
    RefChar *ref;
    DStemInfo *d;
@@ -539,7 +539,7 @@ void SCCopyLayerToLayer(SplineChar * sc, int from, int to, int doclear) {
 
 int BpColinear(BasePoint * first, BasePoint * mid, BasePoint * last) {
    BasePoint dist_f, unit_f, dist_l, unit_l;
-   bigreal len, off_l, off_f;
+   double len, off_l, off_f;
 
    dist_f.x=first->x - mid->x;
    dist_f.y=first->y - mid->y;
@@ -567,7 +567,7 @@ int BpColinear(BasePoint * first, BasePoint * mid, BasePoint * last) {
 
 int BpWithin(BasePoint * first, BasePoint * mid, BasePoint * last) {
    BasePoint dist_mf, unit_mf, dist_lf, unit_lf;
-   bigreal len, off_lf, off_mf, len2;
+   double len, off_lf, off_mf, len2;
 
    dist_mf.x=mid->x - first->x;
    dist_mf.y=mid->y - first->y;
@@ -594,7 +594,7 @@ int BpWithin(BasePoint * first, BasePoint * mid, BasePoint * last) {
    return (len2 >= 0 && len2 <= len);
 }
 
-void SplinePointRound(SplinePoint * sp, real factor) {
+void SplinePointRound(SplinePoint * sp, double factor) {
    BasePoint noff, poff;
 
    if (sp->prev != NULL && sp->next != NULL && sp->next->order2 &&
@@ -633,12 +633,12 @@ void SplinePointRound(SplinePoint * sp, real factor) {
       sp->noprevcp=true;
 }
 
-static void SpiroRound2Int(spiro_cp *cp,real factor) {
+static void SpiroRound2Int(spiro_cp *cp,double factor) {
    cp->x=rint(cp->x * factor) / factor;
    cp->y=rint(cp->y * factor) / factor;
 }
 
-void SplineSetsRound2Int(SplineSet * spl, real factor, int inspiro,
+void SplineSetsRound2Int(SplineSet * spl, double factor, int inspiro,
 			 int onlysel) {
    SplinePoint *sp;
    int i;
@@ -668,7 +668,7 @@ void SplineSetsRound2Int(SplineSet * spl, real factor, int inspiro,
    }
 }
 
-static void SplineSetsChangeCoord(SplineSet *spl,real old,real new,
+static void SplineSetsChangeCoord(SplineSet *spl,double old,double new,
 				  int isy, int inspiro) {
    SplinePoint *sp;
    int changed;
@@ -730,11 +730,11 @@ static void SplineSetsChangeCoord(SplineSet *spl,real old,real new,
    }
 }
 
-void SCRound2Int(SplineChar * sc, int layer, real factor) {
+void SCRound2Int(SplineChar * sc, int layer, double factor) {
    RefChar *r;
    AnchorPoint *ap;
    StemInfo *stems;
-   real old, new;
+   double old, new;
    int first, last;
 
    for (stems=sc->hstem; stems != NULL; stems=stems->next) {
@@ -1032,7 +1032,7 @@ static int CheckBluePair(char *blues,char *others,int bluefuzz,
       if (*others=='[' || *others=='{')
 	 ++others;
       for (cnt=0;; ++cnt) {
-	 bigreal temp;
+	 double temp;
 
 	 while (*others==' ')
 	    ++others;
@@ -1060,7 +1060,7 @@ static int CheckBluePair(char *blues,char *others,int bluefuzz,
    if (*blues=='{' || *blues=='[')
       ++blues;
    for (cnt=0;; ++cnt) {
-      bigreal temp;
+      double temp;
 
       while (*blues==' ')
 	 ++blues;
@@ -1108,7 +1108,7 @@ static int CheckBluePair(char *blues,char *others,int bluefuzz,
 static int CheckStdW(struct psdict *dict,char *key) {
    char *str_val, *end;
    char oldloc[25];
-   bigreal val;
+   double val;
 
    if ((str_val=PSDictHasEntry(dict, key))==NULL)
       return (true);
@@ -1139,8 +1139,8 @@ static int CheckStdW(struct psdict *dict,char *key) {
 static int CheckStemSnap(struct psdict *dict,char *snapkey,char *stdkey) {
    char *str_val, *end;
    char oldloc[25];
-   bigreal std_val=-1;
-   bigreal stems[12], temp;
+   double std_val=-1;
+   double stems[12], temp;
    int cnt, found;
 
    /* At most 12 double values, in order, must include Std?W value, array */
@@ -1198,7 +1198,7 @@ int ValidatePrivate(SplineFont *sf) {
    char *blues, *bf, *test, *end;
    char oldloc[25];
    int fuzz=1;
-   bigreal bluescale=.039625;
+   double bluescale=.039625;
    int magicpointsize;
 
    if (sf->private==NULL)
@@ -1358,7 +1358,7 @@ StemInfo *SCHintOverlapInMask(SplineChar * sc, HintMask * hm) {
 	    for (hi2=hi1 + 1, h2=h1->next; h2 != NULL && hi2 < HntMax;
 		 ++hi2, h2=h2->next) {
 	       if (hm==NULL || ((*hm)[(hi2 >> 3)] & (0x80 >> (hi2 & 7)))) {
-		  real start1, end1, start2, end2;
+		  double start1, end1, start2, end2;
 
 		  if (h1->width > 0) {
 		     start1=h1->start;
@@ -1396,8 +1396,8 @@ int SCValidate(SplineChar * sc, int layer, int force) {
    int cnt, path_cnt, pt_cnt;
    StemInfo *h;
    SplineSet *base;
-   bigreal len2, bound2, x, y;
-   extended extrema[4];
+   double len2, bound2, x, y;
+   double extrema[4];
    PST *pst;
    struct ttf_table *tab;
    extern int allow_utf8_glyphnames;

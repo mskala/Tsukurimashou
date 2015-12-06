@@ -1,4 +1,4 @@
-/* $Id: ttf.h 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: ttf.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2001-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -41,20 +41,20 @@ struct dup {
 
 struct taxis {
    uint32_t tag;
-   real min, def, max;		/* in user design space */
+   double min, def, max;		/* in user design space */
    int nameid;
    int paircount;
-   real *mapfrom;		/* after conversion from [-1,1] */
-   real *mapto;			/* secondary conversiont to [-1,1] */
+   double *mapfrom;		/* after conversion from [-1,1] */
+   double *mapto;			/* secondary conversiont to [-1,1] */
 };
 
 struct tinstance {
    int nameid;
-   real *coords;		/* Location along axes array[axis_count] */
+   double *coords;		/* Location along axes array[axis_count] */
 };
 
 struct tuples {
-   real *coords;		/* Location along axes array[axis_count] */
+   double *coords;		/* Location along axes array[axis_count] */
    SplineChar **chars;		/* Varied glyphs, array parallels one in info */
    struct ttf_table *cvt;
    KernClass *khead, *klast, *vkhead, *vklast;	/* Varied kern classes */
@@ -116,9 +116,9 @@ struct ttfinfo {
    char *fontname;		/* postscript font name, nameid=6 */
    char *xuid;			/* Only for open type cff fonts */
    int uniqueid;
-   real italicAngle;		/* from post table */
+   double italicAngle;		/* from post table */
    int upos, uwidth;		/* underline pos, width from post table */
-   real strokewidth;
+   double strokewidth;
    int fstype;
    struct psdict *private;	/* Only for open type cff fonts */
    EncMap *map;
@@ -140,7 +140,7 @@ struct ttfinfo {
    BDFFont *bitmaps;
    char *cidregistry, *ordering;
    int supplement;
-   real cidfontversion;
+   double cidfontversion;
    int subfontcnt;
    SplineFont **subfonts;
    char *inuse;			/* What glyphs are used by this font in the ttc */

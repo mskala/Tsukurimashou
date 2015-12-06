@@ -1,4 +1,4 @@
-/* $Id: autowidth2.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: autowidth2.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2009-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -33,7 +33,7 @@ typedef struct aw_glyph {
    SplineChar *sc;
    DBounds bb;
    /*int zero_pos; */
-   /*real min_y, max_y; */
+   /*double min_y, max_y; */
    int imin_y, imax_y;		/* floor(bb.min_y/sub_height) */
    /* Allocate two arrays [min_y/sub_height,max_y/sub_height) */
    /*  normalize so that min_y=sub_height*floor(bb.miny/sub_height) */
@@ -67,7 +67,7 @@ typedef struct aw_data {
    int desired_separation;
    int min_sidebearing, max_sidebearing;
    unsigned int normalize:1;
-   real denom;
+   double denom;
 } AW_Data;
 
 #endif /* _AUTOWIDTH2_H */

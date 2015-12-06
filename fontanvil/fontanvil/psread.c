@@ -1,4 +1,4 @@
-/* $Id: psread.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: psread.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -434,7 +434,7 @@ static int CheckCodePointsComment(IO *wrapper) {
    return (false);
 }
 
-static int nextpstoken(IO *wrapper,real *val,char *tokbuf,int tbsize) {
+static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
    int ch, r, i;
    char *pt, *end;
    float mf2pt_advance_width;
@@ -578,13 +578,13 @@ static int nextpstoken(IO *wrapper,real *val,char *tokbuf,int tbsize) {
    }
 }
 
-static void Transform(BasePoint *to,DBasePoint *from,real trans[6]) {
+static void Transform(BasePoint *to,DBasePoint *from,double trans[6]) {
    to->x=trans[0] * from->x + trans[2] * from->y + trans[4];
    to->y=trans[1] * from->x + trans[3] * from->y + trans[5];
 }
 
-void MatMultiply(real m1[6], real m2[6], real to[6]) {
-   real trans[6];
+void MatMultiply(double m1[6], double m2[6], double to[6]) {
+   double trans[6];
 
    trans[0]=m1[0] * m2[0] + m1[1] * m2[2];
    trans[1]=m1[0] * m2[1] + m1[1] * m2[3];
@@ -595,8 +595,8 @@ void MatMultiply(real m1[6], real m2[6], real to[6]) {
    memcpy(to, trans, sizeof(trans));
 }
 
-void MatInverse(real into[6], real orig[6]) {
-   real det=orig[0] * orig[3] - orig[1] * orig[2];
+void MatInverse(double into[6], double orig[6]) {
+   double det=orig[0] * orig[3] - orig[1] * orig[2];
 
    if (det==0) {
       ErrorMsg(2,"Attempt to invert a singular matrix\n");
@@ -611,7 +611,7 @@ void MatInverse(real into[6], real orig[6]) {
    }
 }
 
-int MatIsIdentity(real transform[6]) {
+int MatIsIdentity(double transform[6]) {
    return (transform[0]==1 && transform[3]==1 && transform[1]==0
 	   && transform[2]==0 && transform[4]==0 && transform[5]==0);
 }
@@ -731,13 +731,13 @@ static void CheckMake(SplinePoint *from,SplinePoint *to) {
    CheckMakeB(&to->me, &to->prevcp);
 }
 
-static void circlearcto(real a1,real a2,real cx,real cy,real r,
-			SplineSet * cur, real * transform) {
+static void circlearcto(double a1,double a2,double cx,double cy,double r,
+			SplineSet * cur, double * transform) {
    SplinePoint *pt;
    DBasePoint temp, base, cp;
-   real cplen;
+   double cplen;
    int sign=1;
-   real s1, s2, c1, c2;
+   double s1, s2, c1, c2;
 
    if (a1==a2)
       return;
@@ -775,10 +775,10 @@ static void circlearcto(real a1,real a2,real cx,real cy,real r,
    cur->last=pt;
 }
 
-static void circlearcsto(real a1,real a2,real cx,real cy,real r,
-			 SplineSet * cur, real * transform, int clockwise) {
+static void circlearcsto(double a1,double a2,double cx,double cy,double r,
+			 SplineSet * cur, double * transform, int clockwise) {
    int a;
-   real last;
+   double last;
 
    while (a1 < 0) {
       a1 += 360;
@@ -938,7 +938,7 @@ static void freestuff(struct psstack *stack,int sp,struct pskeydict *dict,
 }
 
 static void DoMatTransform(int tok,int sp,struct psstack *stack) {
-   real invt[6], t[6];
+   double invt[6], t[6];
 
    if (stack[sp - 1].u.dict.cnt==6
        && stack[sp - 1].u.dict.entries[0].type==ps_num) {
@@ -966,7 +966,7 @@ static void DoMatTransform(int tok,int sp,struct psstack *stack) {
 }
 
 static int DoMatOp(int tok,int sp,struct psstack *stack) {
-   real temp[6], t[6];
+   double temp[6], t[6];
    int nsp=sp;
 
    if (stack[sp - 1].u.dict.cnt==6
@@ -1021,7 +1021,7 @@ static int DoMatOp(int tok,int sp,struct psstack *stack) {
 }
 
 static Entity *EntityCreate(SplinePointList *head,int linecap,int linejoin,
-			    real linewidth, real * transform,
+			    double linewidth, double * transform,
 			    SplineSet * clippath) {
    Entity *ent=calloc(1, sizeof(Entity));
 
@@ -1035,7 +1035,7 @@ static Entity *EntityCreate(SplinePointList *head,int linecap,int linejoin,
    ent->u.splines.fill.opacity=1.0;
    ent->u.splines.stroke.opacity=1.0;
    ent->clippath=SplinePointListCopy(clippath);
-   memcpy(ent->u.splines.transform, transform, 6 * sizeof(real));
+   memcpy(ent->u.splines.transform, transform, 6 * sizeof(double));
    return (ent);
 }
 
@@ -1193,10 +1193,10 @@ static uint8_t *StringToBytes(struct psstack *stackel,int *len) {
 }
 
 static int PSAddImagemask(EntityChar *ec,struct psstack *stack,int sp,
-			  real transform[6], Color fillcol) {
+			  double transform[6], Color fillcol) {
    uint8_t *data;
    int datalen, width, height, polarity;
-   real trans[6];
+   double trans[6];
 
    struct _GImage *base;
    GImage *gi;
@@ -1278,7 +1278,7 @@ static int PSAddImagemask(EntityChar *ec,struct psstack *stack,int sp,
    ent=calloc(1, sizeof(Entity));
    ent->type=et_image;
    ent->u.image.image=gi;
-   memcpy(ent->u.image.transform, transform, sizeof(real[6]));
+   memcpy(ent->u.image.transform, transform, sizeof(double[6]));
    ent->u.image.transform[0] /= width;
    ent->u.image.transform[3] /= height;
    ent->u.image.transform[5] += height;
@@ -1290,10 +1290,10 @@ static int PSAddImagemask(EntityChar *ec,struct psstack *stack,int sp,
 }
 
 static void HandleType3Reference(IO *wrapper,EntityChar *ec,
-				 real transform[6], char *tokbuf,
+				 double transform[6], char *tokbuf,
 				 int toksize) {
    int tok;
-   real dval;
+   double dval;
    char *glyphname;
    RefChar *ref;
 
@@ -1328,15 +1328,15 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
    DBasePoint current, temp;
    int tok, i, j;
    struct psstack stack[100];
-   real dval;
+   double dval;
    int sp=0;
    SplinePoint *pt;
    RefChar *ref, *lastref=NULL;
-   real transform[6], t[6];
+   double transform[6], t[6];
    struct graphicsstate {
-      real transform[6];
+      double transform[6];
       DBasePoint current;
-      real linewidth;
+      double linewidth;
       int linecap, linejoin;
       Color fore;
       DashType dashes[DASH_MAX];
@@ -1349,7 +1349,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
    struct pskeyval *kv;
    Color fore=COLOR_INHERITED;
    int linecap=lc_inherited, linejoin=lj_inherited;
-   real linewidth=WIDTH_INHERITED;
+   double linewidth=WIDTH_INHERITED;
    DashType dashes[DASH_MAX];
    int dash_offset=0;
    Entity *ent;
@@ -1924,7 +1924,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_for:
 	      if (sp >= 4) {
-		 real init, incr, limit;
+		 double init, incr, limit;
 		 char *func;
 		 int cnt;
 
@@ -2249,7 +2249,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_arc:
 	   case pt_arcn:
 	      if (sp >= 5) {
-		 real cx, cy, r, a1, a2;
+		 double cx, cy, r, a1, a2;
 
 		 cx=stack[sp - 5].u.val;
 		 cy=stack[sp - 4].u.val;
@@ -2294,8 +2294,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_arct:
 	   case pt_arcto:
 	      if (sp >= 5) {
-		 real x1, y1, x2, y2, r;
-		 real xt1, xt2, yt1, yt2;
+		 double x1, y1, x2, y2, r;
+		 double xt1, xt2, yt1, yt2;
 
 		 x1=stack[sp - 5].u.val;
 		 y1=stack[sp - 4].u.val;
@@ -2325,18 +2325,18 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		    SplineMake3(cur->last, pt);
 		    cur->last=pt;
 		 } else {
-		    real l1 =
+		    double l1 =
 		       sqrt((current.x - x1) * (current.x - x1) +
 			    (current.y - y1) * (current.y - y1));
-		    real l2 =
+		    double l2 =
 		       sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-		    real dx=((current.x - x1) / l1 + (x2 - x1) / l2);
-		    real dy=((current.y - y1) / l1 + (y2 - y1) / l2);
+		    double dx=((current.x - x1) / l1 + (x2 - x1) / l2);
+		    double dy=((current.y - y1) / l1 + (y2 - y1) / l2);
 
 		    /* the line from (x1,y1) to (x1+dx,y1+dy) contains the center */
-		    real l3=sqrt(dx * dx + dy * dy);
-		    real cx, cy, t, tmid;
-		    real a1, amid, a2;
+		    double l3=sqrt(dx * dx + dy * dy);
+		    double cx, cy, t, tmid;
+		    double a1, amid, a2;
 		    int clockwise=true;
 
 		    dx /= l3;
@@ -2503,7 +2503,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		    int r=fore >> 16, g=(fore >> 8) & 0xff, bl =
 		       fore & 0xff;
 		    int mx, mn;
-		    real h, s, b;
+		    double h, s, b;
 
 		    mx=mn=r;
 		    if (mx > g)
@@ -2517,11 +2517,11 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		    b=mx / 255.;
 		    s=h=0;
 		    if (mx > 0)
-		       s=((real) (mx - mn)) / mx;
+		       s=((double) (mx - mn)) / mx;
 		    if (s != 0) {
-		       real rdiff=((real) (mx - r)) / (mx - mn);
-		       real gdiff=((real) (mx - g)) / (mx - mn);
-		       real bdiff=((real) (mx - bl)) / (mx - mn);
+		       double rdiff=((double) (mx - r)) / (mx - mn);
+		       double gdiff=((double) (mx - g)) / (mx - mn);
+		       double bdiff=((double) (mx - bl)) / (mx - mn);
 
 		       if (rdiff==0)
 			  h=bdiff - gdiff;
@@ -2541,16 +2541,16 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_sethsbcolor:
 	      if (sp >= 3) {
-		 real h=stack[sp - 3].u.val, s=stack[sp - 2].u.val, b =
+		 double h=stack[sp - 3].u.val, s=stack[sp - 2].u.val, b =
 		    stack[sp - 1].u.val;
 		 int r, g, bl;
 
 		 if (s==0)	/* it's grey */
 		    fore=((int) (b * 255)) * 0x010101;
 		 else {
-		    real sextant=(h - floor(h)) * 6;
-		    real mod=sextant - floor(sextant);
-		    real p=b * (1 - s), q=b * (1 - s * mod), t =
+		    double sextant=(h - floor(h)) * 6;
+		    double mod=sextant - floor(sextant);
+		    double p=b * (1 - s), q=b * (1 - s * mod), t =
 		       b * (1 - s * (1 - mod));
 		    switch ((int) sextant) {
 		      case 0:
@@ -2591,7 +2591,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_currentcmykcolor:
 	      if (sp + 3 < sizeof(stack) / sizeof(stack[0])) {
-		 real c, m, y, k;
+		 double c, m, y, k;
 
 		 stack[sp].type=stack[sp + 1].type=stack[sp + 2].type =
 		    stack[sp + 3].type=ps_num;
@@ -2617,7 +2617,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_setcmykcolor:
 	      if (sp >= 4) {
-		 real c=stack[sp - 4].u.val, m=stack[sp - 3].u.val, y =
+		 double c=stack[sp - 4].u.val, m=stack[sp - 3].u.val, y =
 		    stack[sp - 2].u.val, k=stack[sp - 1].u.val;
 		 sp -= 4;
 		 if (k==1)
@@ -3222,7 +3222,7 @@ SplinePointList *SplinesFromEntityChar(EntityChar * ec, int *flags,
    Entity *ent, *next;
    SplinePointList *head=NULL, *last, *new, *nlast, *temp, *each, *transed;
    StrokeInfo si;
-   real inversetrans[6];
+   double inversetrans[6];
 
    /*SplineSet *spl; */
    int handle_eraser=false;
@@ -3396,7 +3396,7 @@ static RefChar *revrefs(RefChar *cur) {
 
 static void SCInterpretPS(AFILE *ps,SplineChar *sc,int *flags) {
    EntityChar ec;
-   real dval;
+   double dval;
    char tokbuf[10];
    IO wrapper;
    int ch;
@@ -3432,7 +3432,7 @@ static void SCInterpretPS(AFILE *ps,SplineChar *sc,int *flags) {
 void PSFontInterpretPS(AFILE *ps, struct charprocs *cp, char **encoding) {
    char tokbuf[100];
    int tok, i, j;
-   real dval;
+   double dval;
    SplineChar *sc;
    EntityChar dummy;
    RefChar *p, *ref, *next;
@@ -3515,7 +3515,7 @@ Encoding *PSSlurpEncodings(AFILE *file) {
    char *encname;
    char tokbuf[200];
    IO wrapper;
-   real dval;
+   double dval;
    int i, max, any, enc, codepointsonly;
    int tok;
 
@@ -3630,7 +3630,7 @@ static void closepath(SplinePointList *cur,int is_type2) {
 
 static void UnblendFree(StemInfo *h) {
    while (h != NULL) {
-      chunkfree(h->u.unblended, sizeof(real[2][MmMax]));
+      chunkfree(h->u.unblended, sizeof(double[2][MmMax]));
       h->u.unblended=NULL;
       h=h->next;
    }
@@ -3694,7 +3694,7 @@ static void HintsRenumber(SplineChar *sc) {
 	 mapping[h->hintnumber]=i;
 	 h->hintnumber=i++;
       }
-      chunkfree(h->u.unblended, sizeof(real[2][MmMax]));
+      chunkfree(h->u.unblended, sizeof(double[2][MmMax]));
       h->u.unblended=NULL;
    }
    for (h=sc->vstem; h != NULL; h=h->next) {
@@ -3702,7 +3702,7 @@ static void HintsRenumber(SplineChar *sc) {
 	 mapping[h->hintnumber]=i;
 	 h->hintnumber=i++;
       }
-      chunkfree(h->u.unblended, sizeof(real[2][MmMax]));
+      chunkfree(h->u.unblended, sizeof(double[2][MmMax]));
       h->u.unblended=NULL;
    }
    max=i;
@@ -3726,7 +3726,7 @@ static void HintsRenumber(SplineChar *sc) {
    }
 }
 
-int UnblendedCompare(real u1[MmMax], real u2[MmMax], int cnt) {
+int UnblendedCompare(double u1[MmMax], double u2[MmMax], int cnt) {
    int i;
 
    for (i=0; i < cnt; ++i) {
@@ -3736,8 +3736,8 @@ int UnblendedCompare(real u1[MmMax], real u2[MmMax], int cnt) {
    return (0);
 }
 
-static StemInfo *SameH(StemInfo *old,real start,real width,
-		       real unblended[2][MmMax], int instance_count) {
+static StemInfo *SameH(StemInfo *old,double start,double width,
+		       double unblended[2][MmMax], int instance_count) {
    StemInfo *sameh;
 
    if (instance_count==0) {
@@ -3765,8 +3765,8 @@ static StemInfo *SameH(StemInfo *old,real start,real width,
    return (sameh);
 }
 
-static real Blend(real u[MmMax],struct pscontext *context) {
-   real sum=u[0];
+static double Blend(double u[MmMax],struct pscontext *context) {
+   double sum=u[0];
    int i;
 
    for (i=1; i < context->instance_count; ++i)
@@ -3786,14 +3786,14 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 				  struct pschars * subrs,
 				  struct pschars * gsubrs, const char *name) {
    int is_type2=context->is_type2;
-   real stack[50];
+   double stack[50];
    int sp=0, v;		/* Type1 stack is about 25 long, Type2 stack is 48 */
-   real transient[32];
+   double transient[32];
    SplineChar *ret=SplineCharCreate(2);
    SplinePointList *cur=NULL, *oldcur=NULL;
    RefChar *r1, *r2, *rlast=NULL;
    DBasePoint current;
-   real dx, dy, dx2, dy2, dx3, dy3, dx4, dy4, dx5, dy5, dx6, dy6;
+   double dx, dy, dx2, dy2, dx3, dy3, dx4, dy4, dx5, dy5, dx6, dy6;
    SplinePoint *pt;
 
    /* subroutines may be nested to a depth of 10 */
@@ -3804,17 +3804,17 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
    } pcstack[11];
    int pcsp=0;
    StemInfo *hint, *hp;
-   real pops[30];
+   double pops[30];
    int popsp=0;
    int base, polarity;
-   real coord;
+   double coord;
    struct pschars *s;
    int hint_cnt=0;
    StemInfo *activeh=NULL, *activev=NULL, *sameh;
    HintMask *pending_hm=NULL;
    HintMask *counters[96];
    int cp=0;
-   real unblended[2][MmMax];
+   double unblended[2][MmMax];
    int last_was_b1=false, old_last_was_b1;
 
    if (!is_type2 && context->instance_count > 1)
@@ -4290,7 +4290,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 			       } else
 				  memcpy(unblended, unblended + 1,
 					 context->instance_count *
-					 sizeof(real));
+					 sizeof(double));
 			       for (j=0; j < context->instance_count; ++j)
 				  unblended[1][j]=stack[sp - 2 - tot + j];
 			    } else if (cnt==2 && !is_type2) {
@@ -4364,7 +4364,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      break;
 	   case 28:		/* exch */
 	      if (sp >= 2) {
-		 real temp=stack[sp - 1];
+		 double temp=stack[sp - 1];
 
 		 stack[sp - 1]=stack[sp - 2];
 		 stack[sp - 2]=temp;
@@ -4391,7 +4391,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 else if (j==0 || N==0)
 		    /* No op */ ;
 		 else {
-		    real *temp=malloc(N * sizeof(real));
+		    double *temp=malloc(N * sizeof(double));
 		    int i;
 
 		    for (i=0; i < N; ++i)
@@ -4436,7 +4436,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      else
 		 dy5=stack[base++];
 	      switch (v) {
-		   real xt, yt;
+		   double xt, yt;
 
 		case 35:	/* flex */
 		   dx6=stack[base++];
@@ -4544,9 +4544,9 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 hint->hintnumber =
 		    sameh != NULL ? sameh->hintnumber : hint_cnt++;
 		 if (!is_type2 && context->instance_count != 0) {
-		    hint->u.unblended=chunkalloc(sizeof(real[2][MmMax]));
+		    hint->u.unblended=chunkalloc(sizeof(double[2][MmMax]));
 		    memcpy(hint->u.unblended, unblended,
-			   sizeof(real[2][MmMax]));
+			   sizeof(double[2][MmMax]));
 		 }
 		 if (activeh==NULL)
 		    activeh=hint;
@@ -4601,9 +4601,9 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		    hint->hintnumber =
 		       sameh != NULL ? sameh->hintnumber : hint_cnt++;
 		    if (!is_type2 && context->instance_count != 0) {
-		       hint->u.unblended=chunkalloc(sizeof(real[2][MmMax]));
+		       hint->u.unblended=chunkalloc(sizeof(double[2][MmMax]));
 		       memcpy(hint->u.unblended, unblended,
-			      sizeof(real[2][MmMax]));
+			      sizeof(double[2][MmMax]));
 		    }
 		    if (!is_type2 && hint->hintnumber < 96) {
 		       if (pending_hm==NULL)

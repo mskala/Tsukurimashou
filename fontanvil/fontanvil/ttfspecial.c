@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: ttfspecial.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -579,7 +579,7 @@ static void pfed_glyph_layer(AFILE *layr,Layer *layer,int do_spiro) {
 }
 
 struct pos_name {
-   real pos;
+   double pos;
    char *name;
 };
 

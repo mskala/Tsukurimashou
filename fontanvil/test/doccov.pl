@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+exit(77) if $ENV{'distcheck_hack'} eq "0.4";
+
 $fail=0;
 
 open(SCC,'fontanvil/scripting.c');

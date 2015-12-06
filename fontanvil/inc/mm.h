@@ -1,4 +1,4 @@
-/* $Id: mm.h 4020 2015-06-14 18:15:09Z mskala $ */
+/* $Id: mm.h 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-extern void MMWeightsUnMap(real weights[MmMax], real axiscoords[4],
+extern void MMWeightsUnMap(double weights[MmMax], double axiscoords[4],
 			   int axis_count);
-extern bigreal MMAxisUnmap(MMSet * mm, int axis, bigreal ncv);
+extern double MMAxisUnmap(MMSet * mm, int axis, double ncv);
 
 extern SplineFont *_MMNewFont(MMSet * mm, int index, char *familyname,
-			      real * normalized);
+			      double * normalized);
 extern SplineFont *MMNewFont(MMSet * mm, int index, char *familyname);

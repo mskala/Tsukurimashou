@@ -1,4 +1,4 @@
-/* $Id: bvedit.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: bvedit.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -30,8 +30,8 @@
 #include <math.h>
 #include "ustring.h"
 
-void skewselect(BVTFunc * bvtf, real t) {
-   real off, bestoff;
+void skewselect(BVTFunc * bvtf, double t) {
+   double off, bestoff;
    int i, best;
 
    bestoff=10;
@@ -817,9 +817,9 @@ void BCUnlinkThisReference(struct fontviewbase *fv, BDFChar * bc) {
 static BDFChar *BCScale(BDFChar *old,int from,int to) {
    BDFChar *new;
    int x, y, ox, oy, oxs, oys, oxend, oyend;
-   real tot, scale;
-   real yscale, xscale;
-   real dto=to;
+   double tot, scale;
+   double yscale, xscale;
+   double dto=to;
 
    if (old==NULL || old->byte_data)
       return (NULL);
@@ -902,10 +902,10 @@ static BDFChar *BCScaleGrey(BDFChar *old,int from,int from_depth,int to,
 			    int to_depth) {
    BDFChar *new;
    int x, y, ox, oy, oxs, oys, oxend, oyend;
-   real tot, scale, bscale;
-   real yscale, xscale;
-   real dto=to;
-   real max=(1 << to_depth);
+   double tot, scale, bscale;
+   double yscale, xscale;
+   double dto=to;
+   double max=(1 << to_depth);
 
    if (old==NULL || !old->byte_data)
       return (NULL);
@@ -984,7 +984,7 @@ static BDFChar *BCScaleGrey(BDFChar *old,int from,int from_depth,int to,
 	    }
 	 }
 	 if (to_depth != 1) {
-	    real temp=tot * max / scale;
+	    double temp=tot * max / scale;
 
 	    if (temp >= max)
 	       temp=max - 1;

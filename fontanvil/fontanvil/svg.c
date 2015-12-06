@@ -1,4 +1,4 @@
-/* $Id: svg.c 4385 2015-11-12 18:54:42Z mskala $ */
+/* $Id: svg.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -377,12 +377,12 @@ static void svg_dumpfill(AFILE *file,struct brush *cbrush,
    }
 }
 
-static SplineSet *TransBy(SplineSet *ss,real trans[4]) {
-   real inversetrans[6], transform[6];
+static SplineSet *TransBy(SplineSet *ss,double trans[4]) {
+   double inversetrans[6], transform[6];
 
    if (trans[0]==1.0 && trans[3]==1.0 && trans[1]==0 && trans[2]==0)
       return (ss);
-   memcpy(transform, trans, 4 * sizeof(real));
+   memcpy(transform, trans, 4 * sizeof(double));
    transform[4]=transform[5]=0;
    MatInverse(inversetrans, transform);
    return (SplinePointListTransform
@@ -1220,7 +1220,6 @@ SplineSet *SplinePointListInterpretSVG(char *filename,char *memory,
 #      undef iconv_close
 #   endif
 
-#   undef extended		/* used in xlink.h */
 #   include <libxml/parser.h>
 
 #   ifdef __CygWin
@@ -2124,7 +2123,7 @@ struct svg_state {
    int isvisible;
    enum linecap lc;
    enum linejoin lj;
-   real transform[6];
+   double transform[6];
    DashType dashes[DASH_MAX];
    SplineSet *clippath;
    uint8_t free_clip;
@@ -2134,7 +2133,7 @@ struct svg_state {
 };
 
 static void SVGFigureTransform(struct svg_state *st,char *name) {
-   real trans[6], res[6];
+   double trans[6], res[6];
    double a, cx, cy;
    char *pt, *paren, *end;
 
@@ -2221,7 +2220,7 @@ static void SVGuseTransform(struct svg_state *st,xmlNodePtr use,
 			    xmlNodePtr symbol) {
    double x, y, uwid, uheight, swid, sheight;
    char *num, *end;
-   real trans[6];
+   double trans[6];
 
    num=(char *) xmlGetProp(use, (xmlChar *) "x");
    if (num != NULL) {
@@ -2274,8 +2273,8 @@ static void SVGuseTransform(struct svg_state *st,xmlNodePtr use,
    }
 }
 
-static real parseGCoord(xmlChar *prop,int bb_units,real bb_low,
-			real bb_high) {
+static double parseGCoord(xmlChar *prop,int bb_units,double bb_low,
+			double bb_high) {
    char *end;
    double val=strtod((char *) prop, &end);
 
@@ -2816,7 +2815,7 @@ static Entity *EntityCreate(SplinePointList *head,struct svg_state *state) {
       state->dostroke ? state->strokecol : 0xffffffff;
    ent->u.splines.fill.opacity=state->fillopacity;
    ent->u.splines.stroke.opacity=state->strokeopacity;
-   memcpy(ent->u.splines.transform, state->transform, 6 * sizeof(real));
+   memcpy(ent->u.splines.transform, state->transform, 6 * sizeof(double));
    ent->clippath=SplinePointListCopy(state->clippath);
    return (ent);
 }

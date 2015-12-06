@@ -152,6 +152,7 @@ MAINTAINERCLEANFILES =
 
 icemap.pdf: icemap.tex mitsuba.cls
 	$(TSU_V_TEX)
+	$(AM_V_at)rm -f icemap.aux
 	$(AM_V_at)I=1;$(TSU_V_TEXL) \
 	  '$(PDFLATEX)' $(mvp)/icemap.tex $(TSU_V_REDIR)
 	$(AM_V_at)makeindex $(mvp)/icemap.idx $(TSU_V_REDIR)

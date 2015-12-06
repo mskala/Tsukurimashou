@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: tottf.c 4464 2015-11-30 09:57:27Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -637,7 +637,7 @@ static void dumpoffset(AFILE *file,int offsize,int val) {
       putlong(file, val);
 }
 
-static void put2d14(AFILE *file,real dval) {
+static void put2d14(AFILE *file,double dval) {
    int val;
    int mant;
 
@@ -647,7 +647,7 @@ static void put2d14(AFILE *file,real dval) {
    putshort(file, val);
 }
 
-void putfixed(AFILE *file, real dval) {
+void putfixed(AFILE *file, double dval) {
    int val;
    int mant;
 
@@ -1786,7 +1786,7 @@ static void dumpsid(AFILE *cfff,struct alltabs *at,char *str,int oper) {
 }
 
 static void DumpStrDouble(char *pt,AFILE *cfff,int oper) {
-   real d;
+   double d;
 
    if (*pt=='[')
       ++pt;			/* For StdHW, StdVW */
@@ -1794,7 +1794,7 @@ static void DumpStrDouble(char *pt,AFILE *cfff,int oper) {
    dumpdbloper(cfff, d, oper);
 }
 
-static void DumpDblArray(real *arr,int n,AFILE *cfff,int oper) {
+static void DumpDblArray(double *arr,int n,AFILE *cfff,int oper) {
    int mi, i;
 
    for (mi=n - 1; mi >= 0 && arr[mi]==0; --mi);
@@ -1807,7 +1807,7 @@ static void DumpDblArray(real *arr,int n,AFILE *cfff,int oper) {
 }
 
 static void DumpStrArray(char *pt,AFILE *cfff,int oper) {
-   real d, last=0;
+   double d, last=0;
    char *end;
 
    while (*pt==' ')
@@ -2099,10 +2099,10 @@ static void dumpcffprivate(SplineFont *sf,struct alltabs *at,int subfont,
    char *pt;
    AFILE *private=subfont==-1 ? at->private : at->fds[subfont].private;
    int mi, i;
-   real bluevalues[14], otherblues[10];
-   real snapcnt[12];
-   real stemsnaph[12], stemsnapv[12];
-   real stdhw[1], stdvw[1];
+   double bluevalues[14], otherblues[10];
+   double snapcnt[12];
+   double stemsnaph[12], stemsnapv[12];
+   double stdhw[1], stdvw[1];
    int hasblue=0, hash=0, hasv=0, bs;
    int nomwid, defwid;
    EncMap *map=at->map;
