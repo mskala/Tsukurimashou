@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: dumppfa.c 4478 2015-12-06 12:27:45Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1363,7 +1363,7 @@ double BlueScaleFigureForced(struct psdict *private_, double bluevalues[],
    if (1 / max_diff > .039625)
       return (-1);
 
-   return (.99 / max_diff);
+   return rint(240.0*0.99/max_diff)/240.0;
 }
 
 double BlueScaleFigure(struct psdict *private_, double bluevalues[],

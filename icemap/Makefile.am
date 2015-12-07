@@ -128,7 +128,7 @@ icemap_SOURCES = icemap.c icemap.h \
   arrays.c arrows.c cascade.c construct.c context.c encode.c fileout.c \
   nodes.c parser.c remap.c rxparse.c
 
-LDADD = @LIBOBJS@ $(PCRE_LIBS) -lbdd
+LDADD = @LIBOBJS@ $(PCRE_LIBS)
 
 dist_pdf_DATA = icemap.pdf
 

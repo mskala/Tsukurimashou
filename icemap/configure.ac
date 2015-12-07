@@ -169,11 +169,20 @@ AM_COND_IF([COND_PARASITE],
 #
 AC_CHECK_LIB([bdd],[bdd_init],[
   AC_CHECK_HEADER([bdd.h],[
-    have_buddy=yes
-    AC_DEFINE([HAVE_BUDDY],[1],
-      [Define to 1 if BuDDy is available])
-  ],[have_buddy=no])],[have_buddy=no])
-AM_CONDITIONAL([COND_BUDDY],[test '!' "$have_buddy" = no])
+    AC_MSG_CHECKING([whether BuDDy works at runtime])
+    LIBS="-lbdd $LIBS"
+    AC_RUN_IFELSE([AC_LANG_PROGRAM(
+        [[#include <stdlib.h>
+          #include <bdd.h>]],
+        [[bdd_init(100000,1562);exit(0);]])],[
+          AC_MSG_RESULT([yes])
+        have_buddy=yes
+        AC_DEFINE([HAVE_BUDDY],[1],
+          [Define to 1 if BuDDy is available])
+        ],[AC_MSG_RESULT([no])
+          have_buddy=no-runtime])],
+      [have_buddy=no-header])],[have_buddy=no-library])
+AM_CONDITIONAL([COND_BUDDY],[test "x$have_buddy" = "xyes"])
 AX_PATH_LIB_PCRE([have_pcre=yes
   AC_DEFINE([HAVE_PCRE],[1],
     [Define to 1 if Perl Compatible Regular Expressions library is available])
@@ -261,8 +270,12 @@ AC_OUTPUT
 #
 # Warn about missing prerequisites
 #
-AS_IF([test "x$have_buddy" = "xyes"],[],
-  [AC_MSG_WARN([BuDDy is missing])])
+AS_IF([test "x$have_buddy" = "xno-library"],[],
+  [AC_MSG_WARN([BuDDy is missing; build will fail! (-lbdd doesn't work)])])
+AS_IF([test "x$have_buddy" = "xno-header"],[],
+  [AC_MSG_WARN([BuDDy is missing; build will fail! (can't find header file)])])
+AS_IF([test "x$have_buddy" = "xno-runtime"],[],
+  [AC_MSG_WARN([BuDDy is missing; build will fail! (can't find library at runtime)])])
 AS_IF([test "x$have_pcre" = "xyes"],[],
   [AC_MSG_WARN([PCRE is missing])])
 AS_IF([test "x$has_bad_paths" = "xyes"],

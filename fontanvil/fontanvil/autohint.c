@@ -1,4 +1,4 @@
-/* $Id: autohint.c 4477 2015-12-06 11:35:32Z mskala $ */
+/* $Id: autohint.c 4479 2015-12-07 11:49:33Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -102,8 +102,6 @@ void FindBlues(SplineFont *sf,int layer,double blues[14],double otherblues[10]) 
 	int enc,blue_class;
 
 	enc=sf->glyphs[i]->unicodeenc;
-	if ((enc<32) || (enc>0x4E9))
-	  continue; /* FIXME only until Icemap handles ranges properly */
 	blue_class=blue_zone_class_lookup(enc);
 	
 	if (blue_class==0)

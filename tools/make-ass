@@ -422,6 +422,7 @@ if (Strstr($1,"-ps")<0)
       endif
     endloop
   endif
+  ClearPrivateEntry("BlueScale");
   if (Strstr(_MFV,"pfed")>=0)
     Generate("otf/"+_CCFileName+".otf","",0x10000020);
   else

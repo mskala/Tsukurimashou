@@ -1,7 +1,7 @@
 #!/usr/local/bin/fontforge
 
 # Script to apply glyph bearings
-# Copyright (C) 2011, 2012, 2014  Matthew Skala
+# Copyright (C) 2011, 2012, 2014, 2015  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ if (Strstr(_MFV,"xpua")>=0)
     endif
   endloop
 endif
+ClearPrivateEntry("BlueScale");
 if (Strstr(_MFV,"pfed")>=0)
   Generate("otf/"+_CCFileName+".otf","",0x10000020);
 else

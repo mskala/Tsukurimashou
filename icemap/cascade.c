@@ -449,22 +449,43 @@ void gen_cascade(CONTEXT *c) {
 "\n",
 	      c->id,ots,maybe_space,c->id,
 	      min_out-1);
-   else
-     of_write(cf,
+   else {
+      of_write(cf,
 "};\n"
 "\n"
 "#define MAP %s_table[search]\n"
 "%s%s%s_lookup(int key) {\n"
 "   int search;\n"
-"\n"
+"\n",
+	       c->id,ots,maybe_space,c->id);
+      if (c->default_policy!=dp_fail) {
+	 of_write(cf,"   if ((key<%d) || (key>%d))\n",
+		  c->am.first_key->x,c->am.last_key->x);
+	 switch (c->default_policy) {
+	  case dp_value:
+	    of_write(cf,"     return %d;\n",c->default_value->x);
+	    break;
+
+	  case dp_any:
+	    of_write(cf,"     return %d;\n",
+		     arrow_map_lookup(&(c->am),c->am.first_key)->x);
+	    break;
+
+	  case dp_null:
+	  default:
+	      of_write(cf,"     return NULL;\n");
+	    break;
+	 }
+      }
+      of_write(cf,
 "   for (search=0;search>=0;)\n"
 "     search=MAP.child[(key>>MAP.bit)&7];\n"
 "   return ((%d)-search);\n"
 "}\n"
 "#undef MAP\n"
 "\n",
-	      c->id,ots,maybe_space,c->id,
-	      min_out-1);
+	       min_out-1);
+   }
    
    /* free data structures */
    for (i=0;i<8;i++) free(child[i]);
@@ -868,23 +889,44 @@ void gen_wide_cascade(CONTEXT *c) {
 "\n",
 	      c->id,ots,maybe_space,c->id,
 	      min_out-1);
-   else
-     of_write(cf,
+   else {
+      of_write(cf,
 "};\n"
 "\n"
 "#define MAP %s_table[search]\n"
 "%s%s%s_lookup(int key) {\n"
 "   int search;\n"
-"\n"
+"\n",
+	       c->id,ots,maybe_space,c->id);
+      if (c->default_policy!=dp_fail) {
+	 of_write(cf,"   if ((key<%d) || (key>%d))\n",
+		  c->am.first_key->x,c->am.last_key->x);
+	 switch (c->default_policy) {
+	  case dp_value:
+	    of_write(cf,"     return %d;\n",c->default_value->x);
+	    break;
+
+	  case dp_any:
+	    of_write(cf,"     return %d;\n",
+		     arrow_map_lookup(&(c->am),c->am.first_key)->x);
+	    break;
+
+	  case dp_null:
+	  default:
+	      of_write(cf,"     return NULL;\n");
+	    break;
+	 }
+      }
+      of_write(cf,
 "   for (search=0;search>=0;)\n"
 "     search=MAP.child[(key>>MAP.bit)&7];\n"
 "   return ((%d)-search);\n"
 "}\n"
 "#undef MAP\n"
 "\n",
-	      c->id,ots,maybe_space,c->id,
-	      min_out-1);
-   
+	       min_out-1);
+   }
+
    /* FIXME free a bunch of storage */
    bdd_done();
 
