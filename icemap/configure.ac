@@ -182,12 +182,20 @@ AC_CHECK_LIB([bdd],[bdd_init],[
         ],[AC_MSG_RESULT([no])
           have_buddy=no-runtime])],
       [have_buddy=no-header])],[have_buddy=no-library])
-AM_CONDITIONAL([COND_BUDDY],[test "x$have_buddy" = "xyes"])
-AX_PATH_LIB_PCRE([have_pcre=yes
-  AC_DEFINE([HAVE_PCRE],[1],
-    [Define to 1 if Perl Compatible Regular Expressions library is available])
-  ],[have_pcre=no])
-AM_CONDITIONAL([COND_PCRE],[test '!' "$have_pcre" = no])
+AX_PATH_LIB_PCRE([
+  AC_CHECK_HEADER([pcre.h],[
+    AC_MSG_CHECKING([whether PCRE works at runtime])
+    AC_RUN_IFELSE([AC_LANG_PROGRAM(
+        [[#include <stdlib.h>
+          #include <pcre.h>]],
+        [[pcre_compile("foo",0,NULL,NULL,NULL);exit(0);]])],[
+          AC_MSG_RESULT([yes])
+        have_pcre=yes
+        AC_DEFINE([HAVE_PCRE],[1],
+          [Define to 1 if Perl Compatible Regular Expressions library is available])
+        ],[AC_MSG_RESULT([no])
+          have_pcre=no-runtime])],
+      [have_pcre=no-header])],[have_pcre=no-library])
 #
 ############################################################################
 #
@@ -270,14 +278,18 @@ AC_OUTPUT
 #
 # Warn about missing prerequisites
 #
-AS_IF([test "x$have_buddy" = "xno-library"],[],
+AS_IF([test "x$have_buddy" = "xno-library"],
   [AC_MSG_WARN([BuDDy is missing; build will fail! (-lbdd doesn't work)])])
-AS_IF([test "x$have_buddy" = "xno-header"],[],
+AS_IF([test "x$have_buddy" = "xno-header"],
   [AC_MSG_WARN([BuDDy is missing; build will fail! (can't find header file)])])
-AS_IF([test "x$have_buddy" = "xno-runtime"],[],
-  [AC_MSG_WARN([BuDDy is missing; build will fail! (can't find library at runtime)])])
-AS_IF([test "x$have_pcre" = "xyes"],[],
-  [AC_MSG_WARN([PCRE is missing])])
+AS_IF([test "x$have_buddy" = "xno-runtime"],
+  [AC_MSG_WARN([BuDDy is missing; build will fail! (can't find rt library)])])
+AS_IF([test "x$have_pcre" = "xno-library"],
+  [AC_MSG_WARN([PCRE is missing; build will fail! (-lpcre doesn't work)])])
+AS_IF([test "x$have_pcre" = "xno-header"],
+  [AC_MSG_WARN([PCRE is missing; build will fail! (can't find header file)])])
+AS_IF([test "x$have_pcre" = "xno-runtime"],
+  [AC_MSG_WARN([PCRE is missing; build will fail! (can't find rt library)])])
 AS_IF([test "x$has_bad_paths" = "xyes"],
   [AS_ECHO([])
    AS_ECHO(["The following pathnames contain illegal characters, such as spaces:"])

@@ -122,13 +122,11 @@ dist_noinst_SCRIPTS= \
 
 bin_PROGRAMS = icemap
 
-AM_CFLAGS := $(MAYBE_COVERAGE) $(PCRE_CFLAGS) $(AM_CFLAGS)
+AM_CFLAGS := $(MAYBE_COVERAGE) $(AM_CFLAGS)
 
 icemap_SOURCES = icemap.c icemap.h \
   arrays.c arrows.c cascade.c construct.c context.c encode.c fileout.c \
   nodes.c parser.c remap.c rxparse.c
-
-LDADD = @LIBOBJS@ $(PCRE_LIBS)
 
 dist_pdf_DATA = icemap.pdf
 
