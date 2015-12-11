@@ -140,7 +140,7 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2014, 2015 Matthew Skala])
-AC_SUBST([release_date],["December 1, 2015"])
+AC_SUBST([release_date],["December 8, 2015"])
 AM_SILENT_RULES
 AC_USE_SYSTEM_EXTENSIONS
 #
@@ -245,6 +245,7 @@ AM_COND_IF([COND_PARASITE],
      [AC_MSG_WARN([Depending on locally-built Icemap])
       ICEMAP=$PWD/../icemap/icemap])],
   [AC_MSG_RESULT([no])])
+AS_IF([test "x$ICEMAP" = "x"],[ICEMAP=no])
 AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "xno"])
 #
 ############################################################################

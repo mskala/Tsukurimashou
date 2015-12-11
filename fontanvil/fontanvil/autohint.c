@@ -1,4 +1,4 @@
-/* $Id: autohint.c 4479 2015-12-07 11:49:33Z mskala $ */
+/* $Id: autohint.c 4485 2015-12-08 14:29:57Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1162,25 +1162,29 @@ double HIlen(StemInfo * stems) {
    return (len);
 }
 
-double HIoverlap(HintInstance * mhi, HintInstance * thi) {
+/* Compute the sum, over all pairs of one HintInstance in the mhi list
+ * and one in the thi list, of the lengths of the intersections of the two
+ * intervals in the pair.  Assume both lists are sorted in increasing
+ * order of interval start. */
+double HIoverlap(HintInstance *mhi,HintInstance *thi) {
    HintInstance *hi;
-   double len=0;
-   double s, e;
+   double len=0.0;
+   double s,e;
 
-   for (; mhi != NULL; mhi=mhi->next) {
-      for (hi=thi; hi != NULL && hi->begin <= mhi->end; hi=hi->next) {
-	 if (hi->end < mhi->begin) {
+   for (;mhi!=NULL;mhi=mhi->next) {
+      for (hi=thi;(hi!=NULL) && (hi->begin<=mhi->end);hi=hi->next) {
+	 if (hi->end<mhi->begin) {
 	    thi=hi;
 	    continue;
 	 }
-	 s=hi->begin < mhi->begin ? mhi->begin : hi->begin;
-	 e=hi->end > mhi->end ? mhi->end : hi->end;
-	 if (e < s)
+	 s=(hi->begin<mhi->begin)?mhi->begin:hi->begin;
+	 e=(hi->end>mhi->end)?mhi->end:hi->end;
+	 if (e<s)
 	    continue;		/* Shouldn't happen */
-	 len += e - s;
+	 len+=(e-s);
       }
    }
-   return (len);
+   return len;
 }
 
 int StemInfoAnyOverlaps(StemInfo * stems) {
@@ -1192,26 +1196,37 @@ int StemInfoAnyOverlaps(StemInfo * stems) {
    return (false);
 }
 
-int StemListAnyConflicts(StemInfo * stems) {
+int StemListAnyConflicts(StemInfo *stems) {
    StemInfo *s;
    int any=false;
-   double end;
+   double w,x,y,z;
 
-   for (s=stems; s != NULL; s=s->next)
+   for (s=stems;s!=NULL;s=s->next)
       s->hasconflicts=false;
-   while (stems != NULL) {
-      end=stems->width < 0 ? stems->start : stems->start + stems->width;
-      for (s=stems->next;
-	   s != NULL
-	   && (s->width > 0 ? s->start : s->start + s->width) <= end;
-	   s=s->next) {
-	 stems->hasconflicts=true;
-	 s->hasconflicts=true;
-	 any=true;
+   for (;stems!=NULL;stems=stems->next) {
+      if (stems->width<0) {
+	 w=stems->start+stems->width;
+	 x=stems->start;
+      } else {
+	 w=stems->start;
+	 x=stems->start+stems->width;
       }
-      stems=stems->next;
+      for (s=stems->next;s!=NULL;s=s->next) {
+	 if (s->width<0) {
+	    y=s->start+s->width;
+	    z=s->start;
+	 } else {
+	    y=s->start;
+	    z=s->start+s->width;
+	 }
+	 if ((w<=z) && (x>=y)) {
+	    stems->hasconflicts=true;
+	    s->hasconflicts=true;
+	    any=true;
+	 }
+      }
    }
-   return (any);
+   return any;
 }
 
 HintInstance *HICopyTrans(HintInstance * hi, double mul, double offset) {
@@ -1313,6 +1328,7 @@ static HintInstance *StemAddHIFromActive(struct stemdata *stem,int major) {
    for (i=0; i < stem->activecnt; ++i) {
       mino=dir * stem->active[i].start + ((double *) & stem->left.x)[major];
       maxo=dir * stem->active[i].end + ((double *) & stem->left.x)[major];
+      ErrorMsg(1,"adding (%f,%f)\n",mino,maxo);
       cur=chunkalloc(sizeof(HintInstance));
       if (dir > 0) {
 	 cur->begin=mino;

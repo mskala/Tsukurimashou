@@ -1,18 +1,11 @@
 #!/usr/local/bin/fontanvil
 #Make sure merge fonts works...
 
-srcdir=GetEnv("srcdir")
-if (srcdir=="")
-  srcdir=""
-else
-  srcdir=srcdir+"/"
-endif
-
-if (FileAccess(srcdir+"test/fonts/cmbsy10.pfb"))
+if (FileAccess("ttmp/cmbsy10.pfb"))
   Print("SKIPPING because we don't have cmbsy10.pfb")
   Quit(77)
 endif
 
 New();
-MergeFonts(srcdir+"test/fonts/cmbsy10.pfb")
+MergeFonts("ttmp/cmbsy10.pfb")
 GetCoverageCounts()

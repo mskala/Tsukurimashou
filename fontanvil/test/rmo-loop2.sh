@@ -3,5 +3,5 @@
 # infinite looping RMO operation on 32-bit Linux
 
 ulimit -t 30
-fontanvil/fontanvil -c 'Open("test/fonts/rmo-loop2.sfd");'\
+fontanvil/fontanvil -c 'Open("'"$srcdir"'/test/fonts/rmo-loop2.sfd");'\
 'SelectAll();RemoveOverlap();'

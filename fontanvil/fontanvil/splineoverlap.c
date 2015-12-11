@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: splineoverlap.c 4489 2015-12-11 09:59:17Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1744,7 +1744,7 @@ return;		/* Not interesting. Only intersection is at an endpoint */
 		    bkp_y=y+diff;
 		    while (bkp_y==y) { diff *= 2; bkp_y=y+diff; }
 		    /* Someone complained here that ff was depending on "exact" */
-		    /* arithmetic here.  They were right, the code is completely */
+		    /* arithmetic here.  They were right, the code is completely broken */
 		    /* and its author should be ashamed of using the "debugging */
 		    /* by writing a comment saying there is no bug" technique. */
 

@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: stemdb.c 4485 2015-12-08 14:29:57Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams and Alexey Kryukov
  * Copyright (C) 2015  Matthew Skala
  *
@@ -33,7 +33,6 @@
 #include <math.h>
 #include <utype.h>
 
-#define GLYPH_DATA_DEBUG 0
 #define PI 3.14159265358979323846264338327
 
 /* A diagonal end is like the top or bottom of a slash. Should we add a vertical stem at the end? */
@@ -3476,9 +3475,10 @@ static int AdjustForImperfectSlopeMatch(SplinePoint *sp,BasePoint *pos,
 
    poff=(pos->x - base->x) * stem->l_to_r.x +
       (pos->y - base->y) * stem->l_to_r.y;
-   if (poff > min && poff < max) {
+   if ((fabs(poff)<1.0e-6) || 
+       ((poff>min) && (poff<max))) {
       *newpos=*pos;
-      return (false);
+      return false;
    } else if (poff <= min)
       err=fabs(min);
    else if (poff >= max)
@@ -3575,6 +3575,7 @@ static int AddLineSegment(struct stemdata *stem,struct segment *space,
       scurved=ecurved;
       ecurved=c;
    }
+   ErrorMsg(1,"Adding a line segment from %f to %f\n",s,e);
    space[cnt].start=s;
    space[cnt].end=e;
    space[cnt].sbase=space[cnt].ebase=b;
@@ -3791,7 +3792,7 @@ static void FigureStemActive(struct glyphdata *gd,struct stemdata *stem) {
 	 }
       }
    }
-#if GLYPH_DATA_DEBUG
+
    ErrorMsg(1,
 	   "Active zones for stem l=%.2f,%.2f r=%.2f,%.2f dir=%.2f,%.2f:\n",
 	   stem->left.x, stem->left.y, stem->right.x, stem->right.y,
@@ -3818,7 +3819,6 @@ static void FigureStemActive(struct glyphdata *gd,struct stemdata *stem) {
 	      bothspace[i].end, bothspace[i].ebase, bothspace[i].ecurved);
    }
    ErrorMsg(1,"\n");
-#endif
 
    err=(stem->unit.x==0 || stem->unit.y==0) ?
       dist_error_hv : dist_error_diag;
@@ -5169,7 +5169,6 @@ static void MarkDStemCorners(struct glyphdata *gd) {
    }
 }
 
-#if GLYPH_DATA_DEBUG
 static void DumpGlyphData(struct glyphdata *gd) {
    int i, j;
    struct stemdata *stem;
@@ -5320,7 +5319,6 @@ static void DumpGlyphData(struct glyphdata *gd) {
       }
    ErrorMsg(1,"\n");
 }
-#endif
 
 static void AssignPointsToStems(struct glyphdata *gd,int startnum,
 				DBounds * bounds) {
@@ -5360,10 +5358,8 @@ static void AssignPointsToStems(struct glyphdata *gd,int startnum,
    gd->rspace=malloc(gd->pcnt * sizeof(struct segment));
    gd->bothspace=malloc(3 * gd->pcnt * sizeof(struct segment));
    gd->activespace=malloc(3 * gd->pcnt * sizeof(struct segment));
-#if GLYPH_DATA_DEBUG
    ErrorMsg(1,"Going to calculate stem active zones for %s\n",
 	   gd->sc->name);
-#endif
    for (i=startnum; i < gd->stemcnt; ++i) {
       stem=&gd->stems[i];
       NormalizeStem(gd, stem);
@@ -5374,9 +5370,7 @@ static void AssignPointsToStems(struct glyphdata *gd,int startnum,
       else
 	 FigureStemActive(gd, &gd->stems[i]);
    }
-#if GLYPH_DATA_DEBUG
    DumpGlyphData(gd);
-#endif
 
    free(gd->lspace);
    gd->lspace=NULL;
@@ -6580,10 +6574,9 @@ struct glyphdata *GlyphDataBuild(SplineChar * sc, int layer, BlueData * bd,
    gd->rspace=malloc(gd->pcnt * sizeof(struct segment));
    gd->bothspace=malloc(3 * gd->pcnt * sizeof(struct segment));
    gd->activespace=malloc(3 * gd->pcnt * sizeof(struct segment));
-#if GLYPH_DATA_DEBUG
    ErrorMsg(1,"Going to calculate stem active zones for %s\n",
 	   gd->sc->name);
-#endif
+
    for (i=0; i < gd->stemcnt; ++i)
       FigureStemActive(gd, &gd->stems[i]);
 
@@ -6636,9 +6629,8 @@ struct glyphdata *GlyphDataBuild(SplineChar * sc, int layer, BlueData * bd,
       }
       FindCounterGroups(gd, true);
    }
-#if GLYPH_DATA_DEBUG
    DumpGlyphData(gd);
-#endif
+
    free(gd->lspace);
    gd->lspace=NULL;
    free(gd->rspace);

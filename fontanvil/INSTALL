@@ -4,15 +4,8 @@ subdirectory; quick start instructions below, but the procedure
 should already be familiar to almost anyone who has a reason to
 use this software.
 
-IF YOU ARE COMPILING FROM A VERSION CONTROL CHECKOUT:
-
-autoreconf
-automake --add-missing
-autoreconf
-./configure
-make
-# as root, or at least enough privilege to write to where you're installing:
-make install
+If something fails, the scripts will usually tell you why.
+Read the error messages.
 
 IF YOU ARE COMPILING FROM AN UNPACKED TARBALL DISTRIBUTION:
 
@@ -21,17 +14,19 @@ make
 # as root:
 make install
 
-OTHER NOTES:
+IF YOU ARE COMPILING FROM A VERSION CONTROL CHECKOUT:
 
-Use "./configure --help" for additional options controlling things like
-installation directories that you can add to configure.  Be aware that
-configure currently does not always properly detect or handle dependencies,
-because a previous build system was summarily replaced in the recent past. 
-On the other hand, some of the dependencies it's looking for are probably
-not actually needed anyway.  The autoreconf/automake/autoreconf shuffle is
-necessary for version control checkouts, at least on my system, because
-autoreconf and automake each require files created by the other.  The first
-autoreconf pushes things far enough before failing for automake to run
-correctly, after which autoreconf (again) can finish creating configure. 
-All these commands are likely to spew error and warning messages, a fact
-which I hope to reduce in the future.
+Icemap is a required dependency for building from version control (only);
+it generates source files that would be included ready-made in a tarball.
+You must have Icemap to build from a version control checkout.  Other
+dependencies specific to version control checkouts include Autotools
+and Flex, for similar reasons.  There are also some files of Unicode
+character data that will need to be downloaded.
+
+autoreconf -i
+./configure
+# this step will connect to the Net
+make download
+make
+# as root, or at least enough privilege to write to where you're installing:
+make install

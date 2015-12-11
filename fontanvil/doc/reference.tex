@@ -37,7 +37,7 @@ FontAnvil will attempt to place the accent in the composite glyph slot, in
 an appropriate position relative to the base.  Without the second argument,
 it will choose that position depending on the Unicode value of the accent. 
 The second argument if specified may be one of the
-following integer flags.  In principle, it could a bitwise OR of more than
+following integer flags.  In principle, it could be a bitwise OR of more than
 one of them, but that makes very little sense.
 
 \begin{tabular}{r|l}
@@ -82,7 +82,7 @@ It is an error to attempt this if no, or more than one, glyph is selected.
 The \textit{name} argument specifies the class, such as was used in
 \textit{AddAnchorClass()}.  The type should be one of \texttt{"mark"},
 \texttt{"basechar"} (syn.\ \texttt{"base"}), \texttt{"baselig"} (syn.\
-\texttt{"ligature"}, \texttt{"basemark"}, \texttt{"cursentry"} (syn.\
+\texttt{"ligature"}), \texttt{"basemark"}, \texttt{"cursentry"} (syn.\
 \texttt{"entry"}, \texttt{"cursexit"} (syn.\ \texttt{"exit"}), or
 \texttt{"default"}.  The \texttt{"default"} choice attempts to guess an
 appropriate type.  The \textit{x} and \textit{y} arguments specify the
@@ -308,7 +308,7 @@ integer; the new strikes will be blank if \textit{rasterized} is zero.
 
 \PEFuncRef{BitmapsRegen}
 
-\texttt{BitmapsRegen(}, \textit{sizes}\texttt{)}
+\texttt{BitmapsRegen(} \textit{sizes}\texttt{)}
 
 Render bitmaps from the splines in the current font.  The list of bitmap
 sizes (and bit depths, in the case of greymap strikes) is specified as an

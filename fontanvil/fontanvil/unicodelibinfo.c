@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.c 4344 2015-11-07 17:08:00Z mskala $ */
+/* $Id: unicodelibinfo.c 4484 2015-12-08 09:59:03Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -212,21 +212,6 @@ static char *unicode_nicer(const char *from) {
    }
 
    return (to);
-}
-
-static int unicode_block_check(int block_i) {
-/* Older uninameslist database needs to be checked from start since we do */
-/* not know which is the last block. Currently this should be around 234. */
-   if (_UnicodeBlock != NULL) {
-      int i;
-
-      for (i = 0; i < block_i; ++i)
-	 if (_UnicodeBlock[i].end >= 0x10ffff)
-	    break;
-      if (i == block_i)
-	 return (i);
-   }
-   return (-1);
 }
 #endif
 

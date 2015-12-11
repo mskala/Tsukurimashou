@@ -11,7 +11,7 @@ else
 endif
 
 Open(srcdir+"test/fonts/BrushScriptX-Italic.pfa")
-MergeKern("test/fonts/BrushScriptX-Italic.tfm")
+MergeKern(srcdir+"test/fonts/BrushScriptX-Italic.tfm")
 Generate("ttmp/ecrm.ttf","",0x200)
 Open("ttmp/ecrm.ttf")
 GetCoverageCounts()

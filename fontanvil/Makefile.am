@@ -146,9 +146,9 @@ test/coverage.log: $(patsubst %.pe,%.log,$(filter test/%.pe,$(TESTS)))
 test/feart.log: test/feamerge.log
 
 if COND_KPSEWHICH
-test/test111.log: test/fonts/cmbsy10.pfb
+test/test111.log: ttmp/cmbsy10.pfb
 
-test/fonts/cmbsy10.pfb:
+ttmp/cmbsy10.pfb:
 	$(AM_V_GEN)
 	$(AM_V_at)cp `$(KPSEWHICH) cmbsy10.pfb` $@
 
@@ -292,12 +292,13 @@ fontanvil_fontanvil_SOURCES = \
    fontanvil/parsettfvar.c fontanvil/print.c fontanvil/psread.c \
    fontanvil/pua.c fontanvil/python.c \
  fontanvil/savefont.c fontanvil/scripting.c fontanvil/scstyles.c \
-   fontanvil/search.c fontanvil/SFMT.c fontanvil/sfd1.c fontanvil/sfd.c \
-   fontanvil/sflayout.c inc/sfundo.h fontanvil/spiro.c \
-   fontanvil/splinechar.c fontanvil/splinefill.c fontanvil/splinefont.c \
-   fontanvil/splineorder2.c fontanvil/splineoverlap.c \
-   fontanvil/splinerefigure.c fontanvil/splinesaveafm.c \
-   fontanvil/splinesave.c fontanvil/splinestroke.c fontanvil/splineutil2.c \
+   fontanvil/scvalid.c fontanvil/search.c fontanvil/SFMT.c \
+   fontanvil/sfd1.c fontanvil/sfd.c fontanvil/sflayout.c inc/sfundo.h \
+   fontanvil/spiro.c fontanvil/splinechar.c fontanvil/splinefill.c \
+   fontanvil/splinefont.c fontanvil/splineorder2.c \
+   fontanvil/splineoverlap.c fontanvil/splinerefigure.c \
+   fontanvil/splinesaveafm.c fontanvil/splinesave.c \
+   fontanvil/splinestroke.c fontanvil/splineutil2.c \
    fontanvil/splineutil.c fontanvil/start.c fontanvil/stemdb.c \
    fontanvil/svg.c \
  fontanvil/tottfaat.c fontanvil/tottfgpos.c fontanvil/tottf.c \
@@ -332,7 +333,7 @@ EXTRA_DIST:= \
   Unicode/README.TXT \
   $(texfiles) doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
   fontanvil/fontimage.pe fontanvil/fontlint.pe fontanvil/sfddiff.pe \
-  $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) share/default-n \
+  $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) $(ICEMAP_INPUTS) share/default-n \
   test/helper107.pe test/helper118A.pe test/helper118B.pe \
   test/fonts/AHBugs.sfd test/fonts/AddExtremumTest.sfd \
   test/fonts/Ambrosia.sfd test/fonts/AmbrosiaBold.sfd \
@@ -346,7 +347,8 @@ EXTRA_DIST:= \
   test/fonts/OmittedCharBugs.sfd test/fonts/OverlapBugs.sfd \
   test/fonts/QuadraticConversionBug.sfd test/fonts/SimplifyBugs.sfd \
   test/fonts/SplineOverlapBug1.sfd test/fonts/VKern.sfd \
-  test/fonts/dvng10a-crash.sfd test/fonts/feta20.pfb
+  test/fonts/dvng10a-crash.sfd test/fonts/feta20.pfb \
+  test/fonts/rmo-loop2.sfd
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
@@ -370,6 +372,7 @@ CFLOW_FLAGS=-i _x --cpp
 
 fontanvil_fontanvil_CFLOW_INPUT= \
   $(fontanvil_fontanvil_OBJECTS:.$(OBJEXT)=.c)
+
 fontanvil/fontanvil.cflow: \
   $(fontanvil_fontanvil_CFLOW_INPUT) Makefile tools/cflow.rc
 	$(TSU_V_GEN)
@@ -378,7 +381,15 @@ fontanvil/fontanvil.cflow: \
 	    $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
 	    $(fontanvil_fontanvil_CFLOW_INPUT) 2> /dev/null
 
-charts: fontanvil/fontanvil.cflow
+fontanvil/fontanvil.rcflow: \
+  $(fontanvil_fontanvil_CFLOW_INPUT) Makefile tools/cflow.rc
+	$(TSU_V_GEN)
+	$(TSU_V_at)CFLOWRC=$(top_srcdir)/tools/cflow.rc \
+	  cflow -o$@ -r -d3 $(CFLOW_FLAGS) $(DEFS) \
+	    $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	    $(fontanvil_fontanvil_CFLOW_INPUT) 2> /dev/null
+
+charts: fontanvil/fontanvil.cflow fontanvil/fontanvil.rcflow
 
 endif
 

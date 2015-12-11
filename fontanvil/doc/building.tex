@@ -1,4 +1,4 @@
-% $Id: building.tex 4451 2015-11-26 21:08:08Z mskala $
+% $Id: building.tex 4482 2015-12-07 20:56:23Z mskala $
 
 \chapter{Building FontAnvil}
 
@@ -24,8 +24,19 @@ before you can build FontAnvil from a version control checkout.} If you have
 checked out the entire project, then Icemap can be found in
 the \texttt{icemap/} subdirectory, sibling to \texttt{fontanvil/}.
 
-If you wish to build from a version control checkout, is probably easiest to
-check out and configure the entire Tsukurimashou Project even if you are
+To go this route you will also need to have all the dependencies of Icemap
+installed, which include but are not limited to BuDDy (available at
+\url{https://sourceforge.net/projects/buddy/}) and PCRE (available at
+\url{http://www.pcre.org}).  It should go without saying that these must be
+installed in such a way that they \emph{actually work}.  I've had reports of
+Arch Linux, in particular, using a nonstandard dynamic linker configuration
+such that installing these libraries in the normal way will allow software
+using them (such as Icemap) to compile but not run.  Icemap's configure
+script will attempt to test for this condition and warn you, but it is not
+foolproof.
+
+If you wish to build from a version control checkout, it is probably easiest
+to check out and configure the entire Tsukurimashou Project even if you are
 primarily interested in FontAnvil.  These instructions assume you have done
 that.  It is also assumed you have a complete installation of the standard
 GNU tools for building C programs, including the gcc compiler, Autoconf,
@@ -40,7 +51,9 @@ autoreconf -i
 This will create configure scripts and other infrastructure for all packages
 in the project.  The \texttt{-i} option tells \texttt{autoreconf} to
 automatically create any missing scripts (notably, the one named
-\texttt{missing}) that it thinks it needs.  The \texttt{autoreconf} command
+\texttt{missing}) that it thinks it needs.
+
+The \texttt{autoreconf} command
 is likely to produce many error and warning messages, but it should work
 nonetheless if the Autotools versions are suitable.  In particular, note
 that when \texttt{autoreconf} runs it may generate repeated ``underquoted
@@ -64,7 +77,7 @@ make
 
 The configure script supports \texttt{-{}-help} and most of the usual
 options; run that and make appropriate modifications if you wish to
-customize the Icemap build.
+customize the Icemap build.  Do not ignore error messages from configure.
 
 After building Icemap, you can build FontAnvil.  The FontAnvil build will
 automatically detect Icemap if it is in the sibling directory created by a
@@ -96,7 +109,7 @@ packages will \emph{usually} be out of date; and as a consequence of
 Murphy's Law, it is usual for me to discover many critical bugs immediately
 after releasing a package.
 
-Building from a package one is much the same as building from a version
+Building from a package is much the same as building from a version
 control checkout, minus the need to run Autotools and Icemap.  Most of the
 automatically generated source files are included in the package, so it is
 not necessary to have Unicode character set files, Icemap, flex, and so on.

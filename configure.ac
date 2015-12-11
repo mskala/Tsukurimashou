@@ -199,7 +199,7 @@ AM_EXTRA_RECURSIVE_TARGETS([download])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4474 2015-12-03 12:33:00Z mskala $])
+AC_REVISION([$Id: configure.ac 4482 2015-12-07 20:56:23Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -296,7 +296,8 @@ AC_CHECK_LIB([bdd],[bdd_init],[
    can_icemap=no])
 PKG_CHECK_MODULES([PCRE],[libpcre],[have_pcre=yes],
   [have_pcre=no
-   can_full_idsgrep=no])
+   can_full_idsgrep=no
+   can_icemap=no])
 #
 ############################################################################
 #
@@ -1047,6 +1048,8 @@ AS_IF([test "x$can_icemap" = "xno" && test "x$local_icemap_kludge" = "xyes"],
    AS_ECHO(["One or more libraries needed by Icemap are missing:"])
    AS_IF([test '!' "$have_buddy" = "yes"],
      [AS_ECHO(["   BuDDy                 https://sourceforge.net/projects/buddy/"])])
+   AS_IF([test '!' "$have_pcre" = "yes"],
+     [AS_ECHO(["   PCRE                  http://www.pcre.org"])])
    AS_ECHO(["Since the current configuration requires Icemap, this blocks the build."])
    ])
 #

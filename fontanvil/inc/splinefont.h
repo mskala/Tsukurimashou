@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: splinefont.h 4483 2015-12-08 08:21:31Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3710,8 +3710,6 @@ extern void PenCopy(struct pen *into, struct pen *from, double transform[6]);
 extern void PatternSCBounds(SplineChar *sc, DBounds *b);
 
 extern void SCClearInstrsOrMark(SplineChar *sc, int layer, int complain);
-
-extern void instrcheck(SplineChar *sc, int layer);
 
 extern void TTFPointMatches(SplineChar *sc, int layer, int top);
 
