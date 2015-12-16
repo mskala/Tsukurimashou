@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: scripting.c 4502 2015-12-16 14:11:53Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3250,11 +3250,11 @@ static void bExpandStroke(Context *c) {
          si.removeoverlapifneeded=true; *//* Obsolete */
    } else if (c->a.argc==5) {
       si.stroke_type=si_caligraphic;
-      si.penangle=3.1415926535897932 * args[2] / 180;
+      si.penangle=M_PI * args[2] / 180;
       si.minorradius=si.radius * args[3] / (double) args[4];
    } else {
       si.stroke_type=si_caligraphic;
-      si.penangle=3.1415926535897932 * args[2] / 180;
+      si.penangle=M_PI * args[2] / 180;
       si.minorradius=si.radius * args[3] / (double) args[4];
       if (c->a.vals[5].type != v_int || c->a.vals[5].u.ival != 0)
 	 ScriptError(c, "If 6 arguments are given, the fifth must be zero");
@@ -5863,7 +5863,7 @@ static void bRotate(Context *c) {
    a=fmod(a, 360.0);
    if (a < 0)
       a += 360;
-   a *= 3.1415926535897932 / 180.;
+   a *= M_PI / 180.;
    trans[0]=trans[3]=cos(a);
    trans[2]=-(trans[1]=sin(a));
    trans[4]=trans[5]=0;
@@ -7225,7 +7225,7 @@ static void bShadow(Context *c) {
       a=c->a.vals[1].u.ival;
    else
       a=c->a.vals[1].u.fval;
-   FVShadow(c->curfv, a * 3.1415926535897932 / 180.0,
+   FVShadow(c->curfv, a * M_PI / 180.0,
 	    c->a.vals[2].u.ival, c->a.vals[3].u.ival, false);
 }
 
@@ -7336,7 +7336,7 @@ static void bSkew(Context *c) {
    a=fmod(a, 360.0);
    if (a < 0)
       a += 360;
-   a=a * 3.1415926535897932 / 180.;
+   a=a * M_PI / 180.;
    trans[0]=trans[3]=1;
    trans[1]=0;
    trans[2]=tan(a);
@@ -7554,7 +7554,9 @@ static void bStrftime(Context *c) {
    if (c->a.argc >= 3)
       isgmt=c->a.vals[2].u.ival;
    if (c->a.argc >= 4)
-      oldloc=setlocale(LC_TIME, c->a.vals[3].u.sval);
+      oldloc=setlocale(LC_TIME,c->a.vals[3].u.sval);
+   else
+      setlocale(LC_ALL,"C");
 
    time(&now);
    if (isgmt)
@@ -7563,8 +7565,8 @@ static void bStrftime(Context *c) {
       tm=localtime(&now);
    strftime(buffer, sizeof(buffer), c->a.vals[1].u.sval, tm);
 
-   if (oldloc != NULL)
-      (void) setlocale(LC_TIME, oldloc);
+   /* take this opportunity to make sure we didn't mess it up elsewhere */
+   setlocale(LC_ALL,"C");
 
    c->return_val.type=v_str;
    c->return_val.u.sval=fastrdup(buffer);
@@ -7914,7 +7916,7 @@ static void bWireframe(Context *c) {
       a=c->a.vals[1].u.ival;
    else
       a=c->a.vals[1].u.fval;
-   FVShadow(c->curfv, a * 3.1415926535897932 / 360.,
+   FVShadow(c->curfv, a * M_PI / 360.,
 	    c->a.vals[2].u.ival, c->a.vals[3].u.ival, true);
 }
 

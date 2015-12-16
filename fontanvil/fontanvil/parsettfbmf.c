@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: parsettfbmf.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -31,7 +31,6 @@
 #include "utype.h"
 #include "ustring.h"
 #include <math.h>
-#include <locale.h>
 #include "ttf.h"
 #include "gimage.h"
 

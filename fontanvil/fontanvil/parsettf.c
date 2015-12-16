@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: parsettf.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -31,7 +31,6 @@
 #include <utype.h>
 #include <ustring.h>
 #include <math.h>
-#include <locale.h>
 #include "ttf.h"
 
 #include "nonmactab.h"
@@ -5658,15 +5657,12 @@ static int LookupListHasFeature(OTLookup *otl,uint32_t tag) {
 }
 
 static int readttf(AFILE *ttf,struct ttfinfo *info,char *filename) {
-   char oldloc[24];
    int i;
 
    if (!readttfheader(ttf, info, filename, &info->chosenname)) {
       return (0);
    }
    /* TrueType doesn't need this but opentype dictionaries do */
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    readttfpreglyph(ttf, info);
 
    /* If font only contains bitmaps, then only read bitmaps */
@@ -5695,16 +5691,13 @@ static int readttf(AFILE *ttf,struct ttfinfo *info,char *filename) {
    } else if (info->cff_start != 0) {
       info->to_order2=(loaded_fonts_same_as_new && new_fonts_are_order2);
       if (!readcffglyphs(ttf, info)) {
-	 setlocale(LC_NUMERIC, oldloc);
 	 return (0);
       }
    } else if (info->typ1_start != 0) {
       if (!readtyp1glyphs(ttf, info)) {
-	 setlocale(LC_NUMERIC, oldloc);
 	 return (0);
       }
    } else {
-      setlocale(LC_NUMERIC, oldloc);
       return (0);
    }
    if (info->bitmapdata_start != 0 && info->bitmaploc_start != 0)
@@ -5714,7 +5707,6 @@ static int readttf(AFILE *ttf,struct ttfinfo *info,char *filename) {
                filename==NULL?"<unknown>":filename);
    if (info->onlystrikes && info->bitmaps==NULL) {
       free(info->chars);
-      setlocale(LC_NUMERIC, oldloc);
       return (0);
    }
    if (info->hmetrics_start != 0)
@@ -5793,7 +5785,6 @@ static int readttf(AFILE *ttf,struct ttfinfo *info,char *filename) {
       tex_read(ttf, info);
    if (info->math_start != 0)
       otf_read_math(ttf, info);
-   setlocale(LC_NUMERIC, oldloc);
    if (!info->onlystrikes && info->glyphlocations_start != 0
        && info->glyph_start != 0)
       ttfFixupReferences(info);

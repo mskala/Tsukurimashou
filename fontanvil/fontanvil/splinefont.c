@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: splinefont.c 4495 2015-12-12 08:15:13Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -37,7 +37,6 @@
 #include <gfile.h>
 #include <time.h>
 #include "psfont.h"
-#include <locale.h>
 
 void SFUntickAll(SplineFont *sf) {
    int i;
@@ -1757,11 +1756,8 @@ int SFPrivateGuess(SplineFont *sf, int layer, struct psdict *private,
    double snapcnt[12];
    double stemsnap[12];
    char buffer[211];
-   char *oldloc;
    int ret;
 
-   oldloc=fastrdup(setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    ret=true;
 
    if (strcmp(name, "BlueValues")==0 || strcmp(name, "OtherBlues")==0) {
@@ -1820,8 +1816,6 @@ int SFPrivateGuess(SplineFont *sf, int layer, struct psdict *private,
    } else
       ret=false;
 
-   setlocale(LC_NUMERIC, oldloc);
-   free(oldloc);
    return (ret);
 }
 

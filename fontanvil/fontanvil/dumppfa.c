@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4478 2015-12-06 12:27:45Z mskala $ */
+/* $Id: dumppfa.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -34,7 +34,6 @@
 #include <ustring.h>
 #include <utype.h>
 #include <unistd.h>
-#include <locale.h>
 #if !defined(__MINGW32__)
 #   include <pwd.h>
 #endif
@@ -2611,7 +2610,6 @@ static int dumpcidstuff(AFILE *out,SplineFont *cidmaster,int flags,
 
 int _WritePSFont(AFILE *out, SplineFont *sf, enum fontformat format,
 		 int flags, EncMap * map, SplineFont *fullsf, int layer) {
-   char oldloc[24];
    int err=false;
    extern const char **othersubrs[];
 
@@ -2620,9 +2618,6 @@ int _WritePSFont(AFILE *out, SplineFont *sf, enum fontformat format,
 	(othersubrs[0][1]==NULL && strcmp(othersubrs[0][0], "{}")==0)))
       flags &= ~ps_flag_noflex;
 
-   /* make sure that all reals get output with '.' for decimal points */
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    if ((format==ff_mma || format==ff_mmb) && sf->mm != NULL)
       sf=sf->mm->normal;
    if (format==ff_cid)
@@ -2634,7 +2629,6 @@ int _WritePSFont(AFILE *out, SplineFont *sf, enum fontformat format,
       if (format==ff_ptype0)
 	 dumptype0stuff(out, sf, map);
    }
-   setlocale(LC_NUMERIC, oldloc);
    if (aferror(out) || err)
       return (0);
 

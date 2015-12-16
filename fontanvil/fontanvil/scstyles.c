@@ -1,4 +1,4 @@
-/* $Id: scstyles.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: scstyles.c 4502 2015-12-16 14:11:53Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2159,7 +2159,7 @@ void SmallCapsFindConstants(struct smallcaps *small, SplineFont *sf,
 
    small->sf=sf;
    small->layer=layer;
-   small->italic_angle=sf->italicangle * 3.1415926535897932 / 180.0;
+   small->italic_angle=sf->italicangle * M_PI / 180.0;
    small->tan_ia=tan(small->italic_angle);
 
    small->lc_stem_width =
@@ -3469,7 +3469,7 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
       memset(transform, 0, sizeof(transform));
       transform[0]=transform[3]=1;
       transform[2] =
-	 tan(sc->parent->italicangle * 3.1415926535897932 / 180.0);
+	 tan(sc->parent->italicangle * M_PI / 180.0);
       SplinePointListTransform(sc->layers[layer].splines, transform,
 			       tpt_AllPoints);
       StemInfosFree(sc->vstem);
@@ -3526,7 +3526,7 @@ void SCCondenseExtend(struct counterinfo *ci, SplineChar * sc, int layer,
       memset(transform, 0, sizeof(transform));
       transform[0]=transform[3]=1;
       transform[2] =
-	 -tan(sc->parent->italicangle * 3.1415926535897932 / 180.0);
+	 -tan(sc->parent->italicangle * M_PI / 180.0);
       SplinePointListTransform(sc->layers[layer].splines, transform,
 			       tpt_AllPoints);
    }
@@ -7070,7 +7070,7 @@ static void InitItalicConstants(SplineFont *sf,int layer,ItalicInfo *ii) {
    int i, cnt;
    double val;
 
-   ii->tan_ia=tan(ii->italic_angle * 3.1415926535897932 / 180.0);
+   ii->tan_ia=tan(ii->italic_angle * M_PI / 180.0);
 
    ii->x_height=SFXHeight(sf, layer, false);
    ii->ascender_height=SFAscender(sf, layer, false);

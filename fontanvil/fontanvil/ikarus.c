@@ -1,4 +1,4 @@
-/* $Id: ikarus.c 4340 2015-11-07 11:56:21Z mskala $ */
+/* $Id: ikarus.c 4503 2015-12-16 14:12:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -30,6 +30,7 @@
 #include <utype.h>
 #include <string.h>
 #include <ustring.h>
+#include <math.h>
 
 /* Ikarus formats defined in Peter Karow's book "Digital formats for typefaces" */
 /*  URW Verlag, Hamburg, 1987. The IK format defined in Appendices G&I */
@@ -660,7 +661,7 @@ SplineFont *SFReadIkarus(char *fontname) {
    /* descender?=*/ getushort(file);
    /* line thickness=*/ getushort(file);
    /* stroke thickness=*/ getushort(file);
-   italic_angle=getushort(file) / 10.0 * 3.1415926535897932 / 180.0;
+   italic_angle=getushort(file) / 10.0 * M_PI / 180.0;
    opt_pt_size=getushort(file);
    /* average char width=*/ getushort(file);
 

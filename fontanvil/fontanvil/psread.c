@@ -1,4 +1,4 @@
-/* $Id: psread.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: psread.c 4502 2015-12-16 14:11:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -28,7 +28,6 @@
  */
 #include "fontanvil.h"
 #include <math.h>
-#include <locale.h>
 #include <ustring.h>
 #include <utype.h>
 #include "psfont.h"
@@ -743,8 +742,8 @@ static void circlearcto(double a1,double a2,double cx,double cy,double r,
       return;
 
    cplen=(a2 - a1) / 90 * r * .552;
-   a1 *= 3.1415926535897932 / 180;
-   a2 *= 3.1415926535897932 / 180;
+   a1 *= M_PI / 180;
+   a2 *= M_PI / 180;
    s1=sin(a1);
    s2=sin(a2);
    c1=cos(a1);
@@ -1353,7 +1352,6 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
    DashType dashes[DASH_MAX];
    int dash_offset=0;
    Entity *ent;
-   char oldloc[25];
    int warned=0;
    struct garbage tofrees;
    SplineSet *clippath=NULL;
@@ -1361,10 +1359,6 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
    const int tokbufsize=2 * 65536 + 10;
 
    tokbuf=malloc(tokbufsize);
-
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
 
    memset(&gb, '\0', sizeof(GrowBuf));
    memset(&dict, '\0', sizeof(dict));
@@ -1862,20 +1856,20 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		  && stack[sp - 2].type==ps_num) {
 		 stack[sp - 2].u.val =
 		    atan2(stack[sp - 2].u.val,
-			  stack[sp - 1].u.val) * 180 / 3.1415926535897932;
+			  stack[sp - 1].u.val) * 180 / M_PI;
 		 --sp;
 	      }
 	      break;
 	   case pt_sin:
 	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
 		 stack[sp - 1].u.val =
-		    sin(stack[sp - 1].u.val * 3.1415926535897932 / 180);
+		    sin(stack[sp - 1].u.val * M_PI / 180);
 	      }
 	      break;
 	   case pt_cos:
 	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
 		 stack[sp - 1].u.val =
-		    cos(stack[sp - 1].u.val * 3.1415926535897932 / 180);
+		    cos(stack[sp - 1].u.val * M_PI / 180);
 	      }
 	      break;
 	   case pt_if:
@@ -2257,8 +2251,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 a1=stack[sp - 2].u.val;
 		 a2=stack[sp - 1].u.val;
 		 sp -= 5;
-		 temp.x=cx + r * cos(a1 / 180 * 3.1415926535897932);
-		 temp.y=cy + r * sin(a1 / 180 * 3.1415926535897932);
+		 temp.x=cx + r * cos(a1 / 180 * M_PI);
+		 temp.y=cy + r * sin(a1 / 180 * M_PI);
 		 if (temp.x != current.x || temp.y != current.y ||
 		     !(cur != NULL && cur->first != NULL
 		       && (cur->first != cur->last
@@ -2286,8 +2280,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 }
 		 circlearcsto(a1, a2, cx, cy, r, cur, transform,
 			      tok==pt_arcn);
-		 current.x=cx + r * cos(a2 / 180 * 3.1415926535897932);
-		 current.y=cy + r * sin(a2 / 180 * 3.1415926535897932);
+		 current.x=cx + r * cos(a2 / 180 * M_PI);
+		 current.y=cy + r * sin(a2 / 180 * M_PI);
 	      } else
 		 sp=0;
 	      break;
@@ -2370,14 +2364,14 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		       SplineMake3(cur->last, pt);
 		       cur->last=pt;
 		    }
-		    a1=3 * 3.1415926535897932 / 2 + a1;
-		    a2=3.1415926535897932 / 2 + a2;
+		    a1=3 * M_PI / 2 + a1;
+		    a2=M_PI / 2 + a2;
 		    if (!clockwise) {
-		       a1 += 3.1415926535897932;
-		       a2 += 3.1415926535897932;
+		       a1 += M_PI;
+		       a2 += M_PI;
 		    }
-		    circlearcsto(a1 * 180 / 3.1415926535897932,
-				 a2 * 180 / 3.1415926535897932, cx, cy, r,
+		    circlearcsto(a1 * 180 / M_PI,
+				 a2 * 180 / M_PI, cx, cy, r,
 				 cur, transform, clockwise);
 		 }
 		 if (tok==pt_arcto) {
@@ -3105,7 +3099,6 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
    ECCategorizePoints(ec);
    if (ec->width==UNDEFINED_WIDTH)
       ec->width=wrapper->advance_width;
-   setlocale(LC_NUMERIC, oldloc);
    free(tokbuf);
 }
 

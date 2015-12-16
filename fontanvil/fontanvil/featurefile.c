@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: featurefile.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -42,7 +42,6 @@
 #include <string.h>
 #include <utype.h>
 #include <ustring.h>
-#include <locale.h>
 
 /* Adobe's opentype feature file */
 /* Which suffers incompatible changes according to Adobe's whim */
@@ -2215,15 +2214,11 @@ static void cleanupnames(SplineFont *sf) {
 }
 
 void FeatDumpFontLookups(AFILE *out, SplineFont *sf) {
-   char oldloc[24];
-
    if (sf->cidmaster != NULL)
       sf=sf->cidmaster;
 
    SFFindUnusedLookups(sf);
 
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    untick_lookups(sf);
    preparenames(sf);
    gdef_markclasscheck(out, sf, NULL);
@@ -2232,7 +2227,6 @@ void FeatDumpFontLookups(AFILE *out, SplineFont *sf) {
    dump_gdef(out, sf);
    dump_base(out, sf);
    cleanupnames(sf);
-   setlocale(LC_NUMERIC, oldloc);
 }
 
 
@@ -7436,7 +7430,6 @@ void SFApplyFeatureFile(SplineFont *sf, AFILE *file, char *filename) {
    struct namedanchor *nap, *napnext;
    struct namedvalue *nvr, *nvrnext;
    int i, j;
-   char oldloc[25];
 
    memset(&tok, 0, sizeof(tok));
    tok.line[0]=1;
@@ -7446,11 +7439,7 @@ void SFApplyFeatureFile(SplineFont *sf, AFILE *file, char *filename) {
       sf=sf->cidmaster;
    tok.sf=sf;
 
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    fea_ParseFeatureFile(&tok);
-   setlocale(LC_NUMERIC, oldloc);
    if (tok.err_count==0) {
       tok.sofar=fea_reverseList(tok.sofar);
       fea_ApplyFile(&tok, tok.sofar);

@@ -1,4 +1,4 @@
-/* $Id: scvalid.c 4484 2015-12-08 09:59:03Z mskala $ */
+/* $Id: scvalid.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -29,7 +29,6 @@
 
 #include "fontanvilvw.h"
 #include <math.h>
-#include <locale.h>
 #include <ustring.h>
 #include <utype.h>
 #include <gresource.h>
@@ -508,11 +507,7 @@ static int CheckBluePair(char *blues,char *others,int bluefuzz,
    int bluevals[10 + 14], cnt, pos=0, maxzoneheight;
    int err=0;
    char *end;
-   char oldloc[25];
 
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    if (others != NULL) {
       while (*others==' ')
 	 ++others;
@@ -587,14 +582,12 @@ static int CheckBluePair(char *blues,char *others,int bluefuzz,
 
    if (maxzoneheight > 0 && (magicpointsize - .49) * maxzoneheight >= 240)
       err |= pds_toobig;
-   setlocale(LC_NUMERIC, oldloc);
 
    return (err);
 }
 
 static int CheckStdW(struct psdict *dict,char *key) {
    char *str_val, *end;
-   char oldloc[25];
    double val;
 
    if ((str_val=PSDictHasEntry(dict, key))==NULL)
@@ -605,11 +598,7 @@ static int CheckStdW(struct psdict *dict,char *key) {
       return (false);
    ++str_val;
 
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    val=strtod(str_val, &end);
-   setlocale(LC_NUMERIC, oldloc);
    while (*end==' ')
       ++end;
    if (*end != ']' && *end != '}')
@@ -625,7 +614,6 @@ static int CheckStdW(struct psdict *dict,char *key) {
 
 static int CheckStemSnap(struct psdict *dict,char *snapkey,char *stdkey) {
    char *str_val, *end;
-   char oldloc[25];
    double std_val=-1;
    double stems[12], temp;
    int cnt, found;
@@ -637,11 +625,7 @@ static int CheckStemSnap(struct psdict *dict,char *snapkey,char *stdkey) {
 	 ++str_val;
       if (*str_val=='[' && *str_val != '{')
 	 ++str_val;
-      strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-      oldloc[24]=0;
-      setlocale(LC_NUMERIC, "C");
       std_val=strtod(str_val, &end);
-      setlocale(LC_NUMERIC, oldloc);
    }
 
    if ((str_val=PSDictHasEntry(dict, snapkey))==NULL)
@@ -658,11 +642,7 @@ static int CheckStemSnap(struct psdict *dict,char *snapkey,char *stdkey) {
 	 ++str_val;
       if (*str_val==']' && *str_val != '}')
 	 break;
-      strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-      oldloc[24]=0;
-      setlocale(LC_NUMERIC, "C");
       temp=strtod(str_val, &end);
-      setlocale(LC_NUMERIC, oldloc);
       if (end==str_val)
 	 return (false);
       str_val=end;
@@ -683,7 +663,6 @@ static int CheckStemSnap(struct psdict *dict,char *snapkey,char *stdkey) {
 int ValidatePrivate(SplineFont *sf) {
    int errs=0;
    char *blues, *bf, *test, *end;
-   char oldloc[25];
    int fuzz=1;
    double bluescale=.039625;
    int magicpointsize;
@@ -698,11 +677,7 @@ int ValidatePrivate(SplineFont *sf) {
    }
 
    if ((test=PSDictHasEntry(sf->private, "BlueScale")) != NULL) {
-      strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-      oldloc[24]=0;
-      setlocale(LC_NUMERIC, "C");
       bluescale=strtod(test, &end);
-      setlocale(LC_NUMERIC, oldloc);
       if (*end != '\0' || end==test || bluescale < 0)
 	 errs |= pds_badbluescale;
    }

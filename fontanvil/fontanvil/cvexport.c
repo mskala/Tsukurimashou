@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: cvexport.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -28,7 +28,6 @@
  */
 #include "fontanvilvw.h"
 #include <math.h>
-#include <locale.h>
 #include <string.h>
 #include "gfile.h"
 #include <time.h>
@@ -79,10 +78,6 @@ int _ExportEPS(AFILE *eps, SplineChar * sc, int layer, int preview) {
    time_t now;
    struct tm *tm;
    int ret;
-   char oldloc[24];
-
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
 
    afprintf(eps, "%%!PS-Adobe-3.0 EPSF-3.0\n");
    SplineCharLayerFindBounds(sc, layer, &b);
@@ -130,7 +125,6 @@ int _ExportEPS(AFILE *eps, SplineChar * sc, int layer, int preview) {
       afprintf(eps, "fill grestore\n");
    afprintf(eps, "%%%%EOF\n");
    ret=!aferror(eps);
-   setlocale(LC_NUMERIC, oldloc);
    return (ret);
 }
 
@@ -153,14 +147,11 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
    time_t now;
    struct tm *tm;
    int ret;
-   char oldloc[24];
    int _objlocs[8], xrefloc, streamstart, streamlength, resid, nextobj;
    int *objlocs=_objlocs;
    int i;
 
    SFUntickAll(sc->parent);
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
 
    afprintf(pdf, "%%PDF-1.4\n%%\201\342\202\203\n");	/* Header comment + binary comment */
    /* Every document contains a catalog which points to a page tree, which */
@@ -276,7 +267,6 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
       free(objlocs);
 
    ret=!aferror(pdf);
-   setlocale(LC_NUMERIC, oldloc);
    return (ret);
 }
 
@@ -295,14 +285,11 @@ static int ExportPDF(char *filename,SplineChar *sc,int layer) {
 
 
 int _ExportPlate(AFILE *plate, SplineChar * sc, int layer) {
-   char oldloc[24];
    int do_open;
    SplineSet *ss;
    spiro_cp *spiros;
    int i, ret;
 
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    /* Output closed contours first, then open. Plate files can only handle */
    /*  one open contour (I think) and it must be at the end */
    afprintf(plate, "(plate\n");
@@ -334,7 +321,6 @@ int _ExportPlate(AFILE *plate, SplineChar * sc, int layer) {
    }
    afprintf(plate, ")\n");
    ret=!aferror(plate);
-   setlocale(LC_NUMERIC, oldloc);
    return (ret);
 }
 

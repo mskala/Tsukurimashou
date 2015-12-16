@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: ufo.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,7 +35,6 @@
 #include <unistd.h>
 #include <math.h>
 #include <time.h>
-#include <locale.h>
 #include <chardata.h>
 #include <gfile.h>
 #include <limits.h>
@@ -1860,7 +1859,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
    xmlChar *keyname, *valname;
    char *stylename=NULL;
    char *temp, *glyphlist, *glyphdir;
-   char oldloc[25], *end;
+   char *end;
    int as=-1, ds=-1, em=-1;
 
    if (!libxml_init_base()) {
@@ -1884,9 +1883,6 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
    }
 
    sf=SplineFontEmpty();
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    for (keys=dict->children; keys != NULL; keys=keys->next) {
       for (value=keys->next;
 	   value != NULL
@@ -2160,7 +2156,6 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
    if (em==-1) {
       ErrorMsg(2,"This font does not specify unitsPerEm\n");
       xmlFreeDoc(doc);
-      setlocale(LC_NUMERIC, oldloc);
       SplineFontFree(sf);
       free(glyphdir);
       return (NULL);
@@ -2405,7 +2400,6 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
    UFOHandleKern(sf, basedir, 0);
    UFOHandleKern(sf, basedir, 1);
 
-   setlocale(LC_NUMERIC, oldloc);
    return (sf);
 }
 
@@ -2413,7 +2407,6 @@ SplineSet *SplinePointListInterpretGlif(SplineFont *sf, char *filename,
 					char *memory, int memlen, int em_size,
 					int ascent, int is_stroked) {
    xmlDocPtr doc;
-   char oldloc[25];
    SplineChar *sc;
    SplineSet *ss;
 
@@ -2428,11 +2421,7 @@ SplineSet *SplinePointListInterpretGlif(SplineFont *sf, char *filename,
    if (doc==NULL)
       return (NULL);
 
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    sc=_UFOLoadGlyph(sf, doc, filename, NULL, NULL, ly_fore);
-   setlocale(LC_NUMERIC, oldloc);
 
    if (sc==NULL)
       return (NULL);

@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: fontviewbase.c 4502 2015-12-16 14:11:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1257,7 +1257,7 @@ void FVMetricsCenter(FontViewBase * fv, int docenter) {
    memset(itransform, 0, sizeof(itransform));
    transform[0]=transform[3]=1.0;
    itransform[0]=itransform[3]=1.0;
-   itransform[2]=tan(fv->sf->italicangle * 3.1415926535897932 / 180.0);
+   itransform[2]=tan(fv->sf->italicangle * M_PI / 180.0);
    bvts[1].func=bvt_none;
    bvts[0].func=bvt_transmove;
    bvts[0].y=0;

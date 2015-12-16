@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: tottf.c 4502 2015-12-16 14:11:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -30,7 +30,6 @@
 #include <math.h>
 #include <unistd.h>
 #include <time.h>
-#include <locale.h>
 #include <utype.h>
 #include <ustring.h>
 #include <chardata.h>
@@ -3132,7 +3131,7 @@ static void sethhead(struct hhead *hhead,struct hhead *vhead,
    else {
       hhead->caretSlopeRise=100;
       hhead->caretSlopeRun =
-	 (int) rint(100 * tan(-sf->italicangle * 3.1415926535897 / 180.));
+	 (int) rint(100 * tan(-sf->italicangle * M_PI / 180.));
    }
 
    vhead->maxwidth=height;
@@ -3206,7 +3205,7 @@ void SFDefaultOS2Simple(struct pfminfo *pfminfo, SplineFont *sf) {
 
 void SFDefaultOS2SubSuper(struct pfminfo *pfminfo, int emsize,
 			  double italic_angle) {
-   double s=sin(italic_angle * 3.1415926535897932 / 180.0);
+   double s=sin(italic_angle * M_PI / 180.0);
 
    pfminfo->os2_supysize=pfminfo->os2_subysize=.7 * emsize;
    pfminfo->os2_supxsize=pfminfo->os2_subxsize=.65 * emsize;
@@ -3807,7 +3806,6 @@ static void redoloca(struct alltabs *at) {
 }
 
 static void dummyloca(struct alltabs *at) {
-
    at->loca=atmpfile();
    if (at->head.locais32) {
       putlong(at->loca, 0);
@@ -6407,13 +6405,7 @@ int _WriteTTFFont(AFILE *ttf, SplineFont *sf, enum fontformat format,
 		  int32_t * bsizes, enum bitmapformat bf, int flags,
 		  EncMap * map, int layer) {
    struct alltabs at;
-   char oldloc[25];
    int i, anyglyphs;
-
-   /* TrueType probably doesn't need this, but OpenType does for floats in dictionaries */
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
 
    if (format==ff_otfcid || format==ff_cffcid) {
       if (sf->cidmaster)
@@ -6458,7 +6450,6 @@ int _WriteTTFFont(AFILE *ttf, SplineFont *sf, enum fontformat format,
       if (initTables(&at, sf, format, bsizes, bf, flags))
 	 dumpttf(ttf, &at, format);
    }
-   setlocale(LC_NUMERIC, oldloc);
    if (at.error || aferror(ttf))
       return (0);
 
@@ -6580,13 +6571,7 @@ static void dumptype42(AFILE *type42,struct alltabs *at,
 int _WriteType42SFNTS(AFILE *type42, SplineFont *sf, enum fontformat format,
 		      int flags, EncMap * map, int layer) {
    struct alltabs at;
-   char oldloc[25];
    int i;
-
-   /* TrueType probably doesn't need this, but OpenType does for floats in dictionaries */
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
 
    if (sf->subfontcnt != 0)
       sf=sf->subfonts[0];
@@ -6604,7 +6589,6 @@ int _WriteType42SFNTS(AFILE *type42, SplineFont *sf, enum fontformat format,
       dumptype42(type42, &at, format);
    free(at.gi.loca);
 
-   setlocale(LC_NUMERIC, oldloc);
    if (at.error || aferror(type42))
       return (0);
 

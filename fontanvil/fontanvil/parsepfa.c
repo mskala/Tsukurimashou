@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: parsepfa.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -36,7 +36,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "psfont.h"
-#include <locale.h>
 
 struct fontparse {
    FontDict *fd, *mainfd;
@@ -2812,7 +2811,6 @@ static void realdecrypt(struct fontparse *fp,AFILE *in,AFILE *temp) {
 FontDict *_ReadPSFont(AFILE *in) {
    AFILE *temp;
    struct fontparse fp;
-   char oldloc[24];
 
    temp=atmpfile();
    if (temp==NULL) {
@@ -2821,14 +2819,11 @@ FontDict *_ReadPSFont(AFILE *in) {
       return (NULL);
    }
 
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    memset(&fp, '\0', sizeof(fp));
    fp.fd=fp.mainfd=PSMakeEmptyFont();
    fp.fdindex=-1;
    realdecrypt(&fp, in, temp);
    free(fp.vbuf);
-   setlocale(LC_NUMERIC, oldloc);
 
    afclose(temp);
 

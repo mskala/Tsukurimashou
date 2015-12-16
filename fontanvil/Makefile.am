@@ -255,7 +255,7 @@ noinst_HEADERS = \
   inc/bezctx_ff.h inc/edgelist.h \
   inc/nonlineartrans.h inc/sd.h \
   inc/bitmapcontrol.h \
-  inc/search.h inc/fffreetype.h \
+  inc/fffreetype.h \
   inc/PfEd.h inc/SFMT.h inc/SFMT-params.h inc/SFMT-params19937.h \
   inc/SFMT-common.h inc/sfd1.h \
   inc/sflayoutP.h inc/print.h inc/splinefont.h \
@@ -336,6 +336,7 @@ EXTRA_DIST:= \
   $(FONTANVILSHARE_FILES) $(HOTKEY_FILES) $(ICEMAP_INPUTS) share/default-n \
   test/helper107.pe test/helper118A.pe test/helper118B.pe \
   test/fonts/AHBugs.sfd test/fonts/AddExtremumTest.sfd \
+  test/fonts/AddExtremaTest2.sfd \
   test/fonts/Ambrosia.sfd test/fonts/AmbrosiaBold.sfd \
   test/fonts/AmbrosiaItalic.sfd \
   test/fonts/BrushScriptX-Italic.pfa test/fonts/BrushScriptX-Italic.tfm \

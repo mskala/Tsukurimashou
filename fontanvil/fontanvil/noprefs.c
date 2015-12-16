@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: noprefs.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -34,7 +34,6 @@
 
 #include <sys/types.h>
 #include <dirent.h>
-#include <locale.h>
 #include <time.h>
 #include <sys/time.h>
 #include <stdlib.h>

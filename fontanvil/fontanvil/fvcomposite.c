@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: fvcomposite.c 4502 2015-12-16 14:11:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3110,7 +3110,7 @@ void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
 
    if ((ia=sf->italicangle)==0)
       ia=SFGuessItalicAngle(sf);
-   ia *= 3.1415926535897932 / 180;	/* convert degrees to radians */
+   ia *= M_PI / 180;	/* convert degrees to radians */
 
    dot=strchr(sc->name, '.');
 
@@ -3197,7 +3197,7 @@ int SCAppendAccent(SplineChar * sc, int layer, char *glyph_name,	/* unicode char
 
    if ((ia=sf->italicangle)==0)
       ia=SFGuessItalicAngle(sf);
-   ia *= 3.1415926535897932 / 180;	/* convert degrees to radians */
+   ia *= M_PI / 180;	/* convert degrees to radians */
 
    SCPreserveLayer(sc, layer, true);
 

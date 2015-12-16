@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4465 2015-11-30 11:49:16Z mskala $ */
+/* $Id: sfd.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,7 +35,6 @@
 #include <math.h>
 #include <utype.h>
 #include <unistd.h>
-#include <locale.h>
 #include <gfile.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -2313,7 +2312,6 @@ static int SFDDump(AFILE *sfd,SplineFont *sf,EncMap *map,EncMap *normal) {
 static int SFDWrite(char *filename,SplineFont *sf,EncMap *map,
 		    EncMap *normal) {
    AFILE *sfd;
-   char oldloc[25];
    int i, gc;
    char *tempfilename=filename;
    int err=false;
@@ -2324,9 +2322,6 @@ static int SFDWrite(char *filename,SplineFont *sf,EncMap *map,
    if (sfd==NULL)
       return (0);
 
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    if (sf->cidmaster != NULL) {
       sf=sf->cidmaster;
       gc=1;
@@ -2338,7 +2333,6 @@ static int SFDWrite(char *filename,SplineFont *sf,EncMap *map,
       EncMapFree(map);
    } else
       err=SFDDump(sfd, sf, map, normal);
-   setlocale(LC_NUMERIC, oldloc);
    if (aferror(sfd))
       err=true;
    if (afclose(sfd))
@@ -7327,19 +7321,15 @@ static double SFDStartsCorrectly(AFILE *sfd,char *tok) {
 
 SplineFont *_SFDRead(char *filename,AFILE *sfd) {
    SplineFont *sf=NULL;
-   char oldloc[25], tok[2000];
+   char tok[2000];
    double version;
 
    if (sfd==NULL)
      sfd=afopen(filename, "r");
    if (sfd==NULL)
       return (NULL);
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    if ((version=SFDStartsCorrectly(sfd, tok)) != -1)
       sf=SFD_GetFont(sfd, NULL, tok, filename, version);
-   setlocale(LC_NUMERIC, oldloc);
    if (sf != NULL) {
       sf->filename=fastrdup(filename);
       if (sf->mm != NULL) {
@@ -7374,15 +7364,12 @@ SplineFont *SFDRead(char *filename) {
 
 char **NamesReadSFD(char *filename) {
    AFILE *sfd=afopen(filename, "r");
-   char oldloc[25], tok[2000];
+   char tok[2000];
    char **ret=NULL;
    int eof;
 
    if (sfd==NULL)
       return (NULL);
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    if (SFDStartsCorrectly(sfd, tok) != -1) {
       while (!afeof(sfd)) {
 	 if ((eof=getname(sfd, tok)) != 1) {
@@ -7400,7 +7387,6 @@ char **NamesReadSFD(char *filename) {
 	 }
       }
    }
-   setlocale(LC_NUMERIC, oldloc);
    afclose(sfd);
    return (ret);
 }

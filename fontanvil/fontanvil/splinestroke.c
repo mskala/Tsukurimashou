@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: splinestroke.c 4502 2015-12-16 14:11:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -29,7 +29,6 @@
 #include "fontanvil.h"
 #include "splinefont.h"
 #include <math.h>
-#define PI      3.1415926535897932
 
 typedef struct strokepoint {
    Spline *sp;
@@ -426,7 +425,7 @@ static void LineCap(StrokeContext *c,int isend) {
 	 *p=done;
 	 p->circle=true;
 	 p->needs_point_left=p->needs_point_right=i==0 || i==cnt;
-	 si=sin((PI / 2.0) * i / (double) cnt);
+	 si=sin((M_PI / 2.0) * i / (double) cnt);
 	 co=sqrt(1 - si * si);
 	 if (isend)
 	    co=-co;

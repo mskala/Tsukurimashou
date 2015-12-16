@@ -21,4 +21,33 @@ CompareGlyphs()
 Copy()
 Simplify()
 CompareGlyphs(-1,3)
+
+Open(srcdir+"test/fonts/AddExtremaTest2.sfd")
+Reencode("Original")
+SelectAll()
+Copy()
+AddExtrema()
+CompareGlyphs(-1,3)
+CompareGlyphs()
+
+Copy()
+Simplify()
+CompareGlyphs(-1,3)
+
+Select("A")
+Copy()
+Select("B")
+if ((CompareGlyphs(-1,3,-1,0,3,0)&192)!=128)
+  Print("A and B compare as matching!")
+  Quit(1)
+endif
+
+Select("A")
+Copy()
+Select("A")
+if ((CompareGlyphs(-1,3,-1,0,3,0)&192)!=64)
+  Print("A and A compare as not matching!")
+  Quit(1)
+endif
+
 GetCoverageCounts()

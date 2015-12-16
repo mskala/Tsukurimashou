@@ -2074,9 +2074,18 @@ This function may be used without a loaded font.
 
 \PEFuncRef{Strftime}
 
-\texttt{Strftime(}\textit{arg}, \textit{arg}, [\textit{arg}]\texttt{)}
+\texttt{Strftime(}\textit{format}, [\textit{isutc}, [\textit{locale}]]\texttt{)}
 
-This function may be used without a loaded font.
+Generate a formatted time string, as the system \texttt{strftime()} function
+would do.  If \textit{isutc} is present and 0, then the local time zone will
+be used; otherwise, it will be UTC.  If \textit{locale} is specified as a
+string, then that locale will be used; otherwise \texttt{strftime()} will be
+called in the portable ``C'' locale.  In this respect FontAnvil differs from
+from \FFdiff FontForge, which uses the current locale configured by
+environment variables as the default.  The change is meant to ensure that
+scripts will behave predictably on all systems unless they explicitly
+require localization and handle it themselves.  This function may be used
+without a loaded font.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

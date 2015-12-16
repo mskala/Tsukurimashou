@@ -1,4 +1,4 @@
-/* $Id: macenc.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: macenc.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -784,44 +784,7 @@ const int32_t *MacEncToUnicode(int script, int lang) {
 }
 
 int MacLangFromLocale(void) {
-   /*const char *loc=setlocale(LC_MESSAGES,NULL); *//* This always returns "C" for me, even when it shouldn't be */
-   const char *loc;
-   static int found=-1;
-   int i;
-
-   if (found != -1)
-      return (found);
-
-   loc=getenv("LC_ALL");
-   if (loc==NULL)
-      loc=getenv("LC_MESSAGES");
-   if (loc==NULL)
-      loc=getenv("LANG");
-
-   if (loc==NULL) {
-      found=0;		/* Default to english */
-      return (found);
-   }
-   if (strncmp(loc, "nl_BE", 5)==0) {
-      found=34;
-      return (found);
-   }
-   for (i=0;
-	i <
-	sizeof(LanguageCodesFromMacLang) /
-	sizeof(LanguageCodesFromMacLang[0]); ++i) {
-      if (LanguageCodesFromMacLang[i] != NULL
-	  && strncmp(loc, LanguageCodesFromMacLang[i],
-		     strlen(LanguageCodesFromMacLang[i]))==0) {
-	 found=i;
-	 return (found);
-      }
-   }
-   if (strncmp(loc, "zh_HK", 2)==0)	/* I think there are other traditional locales than Hong Kong and Taiwan (?Singapore?) so any chinese we don't recognize */
-      found=19;
-   else
-      found=0;
-   return (found);
+   return 0;
 }
 
 char *PickNameFromMacName(struct macname *mn) {

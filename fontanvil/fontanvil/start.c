@@ -1,4 +1,4 @@
-/* $Id: start.c 4300 2015-10-24 13:03:29Z mskala $ */
+/* $Id: start.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -107,7 +107,7 @@ void InitSimpleStuff(void) {
        ("EUC-GB12345", euc_gb12345_to_uni, uni_to_euc_gb12345, 65535))
       ErrorMsg(2,"Failed to add EUC-GB12345\n");
 
-   setlocale(LC_ALL, "");
+   setlocale(LC_ALL,"C");
    localeinfo=*localeconv();
    inituninameannot();		/* Note: unicodenames done after locales set */
    DefaultXUID();

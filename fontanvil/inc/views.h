@@ -1,4 +1,4 @@
-/* $Id: views.h 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: views.h 4501 2015-12-16 13:47:38Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -417,32 +417,6 @@ typedef struct findsel {
    double scale;
    PressedOn *p;
 } FindSel;
-
-typedef struct searchview {
-   struct cvcontainer base;
-   FontView dummy_fv;
-   SplineFont dummy_sf;
-   LayerInfo layerinfo[2];
-   SplineChar *chars[2];
-   EncMap dummy_map;
-   int32_t map[2], backmap[2];
-   uint8_t sel[2];
-   CharView cv_srch, cv_rpl;
-   CharView *lastcv;
-/* ****** */
-   int mbh;
-   int fh, as;
-   int rpl_x, cv_y;
-   int cv_width, cv_height;
-   short button_height, button_width;
-/* ****** */
-   SearchData sd;
-   unsigned int showsfindnext:1;
-   unsigned int findenabled:1;
-   unsigned int rplallenabled:1;
-   unsigned int rplenabled:1;
-   unsigned int isvisible:1;
-} SearchView;
 
 typedef struct mathkernview {
    struct cvcontainer base;

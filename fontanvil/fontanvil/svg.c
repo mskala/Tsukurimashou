@@ -1,4 +1,4 @@
-/* $Id: svg.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: svg.c 4502 2015-12-16 14:11:53Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -30,7 +30,6 @@
 #include <unistd.h>
 #include <math.h>
 #include <time.h>
-#include <locale.h>
 #include <utype.h>
 #include <chardata.h>
 #include <ustring.h>
@@ -1042,12 +1041,7 @@ static int UnformedUni(int uni) {
 
 static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
    int defwid, i, formeduni;
-   char oldloc[25];
    struct altuni *altuni;
-
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
 
    for (i=0; i < sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
@@ -1129,7 +1123,6 @@ static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
    svg_dumpkerns(file, sf, false);
    svg_dumpkerns(file, sf, true);
    svg_outfonttrailer(file, sf);
-   setlocale(LC_NUMERIC, oldloc);
 }
 
 int WriteSVGFont(char *fontname, SplineFont *sf, enum fontformat format,
@@ -1149,7 +1142,7 @@ int WriteSVGFont(char *fontname, SplineFont *sf, enum fontformat format,
 }
 
 int _ExportSVG(AFILE *svg, SplineChar * sc, int layer) {
-   char oldloc[24], *end;
+   char *end;
    int em_size;
    DBounds b;
 
@@ -1164,8 +1157,6 @@ int _ExportSVG(AFILE *svg, SplineChar * sc, int layer) {
    if (b.maxy < em_size)
       b.maxy=em_size;
 
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    afprintf(svg, "<?xml version=\"1.0\" standalone=\"no\"?>\n");
    afprintf(svg,
 	   "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\" >\n");
@@ -1185,7 +1176,6 @@ int _ExportSVG(AFILE *svg, SplineChar * sc, int layer) {
    afprintf(svg, "  </g>\n\n");
    afprintf(svg, "</svg>\n");
 
-   setlocale(LC_NUMERIC, oldloc);
    return (!aferror(svg));
 }
 
@@ -1364,8 +1354,6 @@ static xmlNodePtr SVGPickFont(xmlNodePtr *fonts,char *filename) {
    return (NULL);
 }
 
-#   define PI	3.1415926535897932
-
 /* I don't see where the spec says that the seperator between numbers is */
 /*  comma or whitespace (both is ok too) */
 /* But the style sheet spec says it, so I probably just missed it */
@@ -1434,7 +1422,7 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 	 sqrt((tmpx * tmpx + tmpy * tmpy) * (t2x * t2x + t2y * t2y));
       /* We occasionally got rounding errors near -1 */
       if (delta <= -1)
-	 delta=3.1415926535897932;
+	 delta=M_PI;
       else if (delta >= 1)
 	 delta=0;
       else
@@ -1442,16 +1430,16 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
       if (tmpx * t2y - tmpy * t2x < 0)
 	 delta=-delta;
       if (sweep==0 && delta > 0)
-	 delta -= 2 * PI;
+	 delta -= 2 * M_PI;
       if (sweep && delta < 0)
-	 delta += 2 * PI;
+	 delta += 2 * M_PI;
 
       if (delta > 0) {
 	 i=0;
-	 ia=firstia=floor(startangle / (PI / 2)) + 1;
-	 for (a=ia * (PI / 2), ia += 4;
+	 ia=firstia=floor(startangle / (M_PI / 2)) + 1;
+	 for (a=ia * (M_PI / 2), ia += 4;
 	      a < startangle + delta && !RealNear(a, startangle + delta);
-	      a += PI / 2, ++i, ++ia) {
+	      a += M_PI / 2, ++i, ++ia) {
 	    t2x=rx * cosines[ia];
 	    t2y=ry * sines[ia];
 	    arcp[i].x=cosr * t2x - sinr * t2y + cx;
@@ -1470,10 +1458,10 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 	 }
       } else {
 	 i=0;
-	 ia=firstia=ceil(startangle / (PI / 2)) - 1;
-	 for (a=ia * (PI / 2), ia += 8;
+	 ia=firstia=ceil(startangle / (M_PI / 2)) - 1;
+	 for (a=ia * (M_PI / 2), ia += 8;
 	      a > startangle + delta && !RealNear(a, startangle + delta);
-	      a -= PI / 2, ++i, --ia) {
+	      a -= M_PI / 2, ++i, --ia) {
 	    t2x=rx * cosines[ia];
 	    t2y=ry * sines[ia];
 	    arcp[i].x=cosr * t2x - sinr * t2y + cx;
@@ -1492,7 +1480,7 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 	 }
       }
       if (i != 0) {
-	 double firsta=firstia * PI / 2;
+	 double firsta=firstia * M_PI / 2;
 	 double d=(firsta - startangle) / 2;
 	 double th=startangle + d;
 	 double hypot=1 / cos(d);
@@ -1531,7 +1519,7 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 	    c=cos(th);
 	    s=sin(th);
 	 } else {
-	    double lasta=delta < 0 ? a + PI / 2 : a - PI / 2;
+	    double lasta=delta < 0 ? a + M_PI / 2 : a - M_PI / 2;
 	    double d=(startangle + delta - lasta);
 	    double th=lasta + d / 2;
 
@@ -1792,7 +1780,7 @@ static SplineSet *SVGParsePath(xmlChar *path) {
 	      end=skipcomma(end);
 	      ry=strtod(end, &end);
 	      end=skipcomma(end);
-	      axisrot=strtod(end, &end) * 3.1415926535897932 / 180;
+	      axisrot=strtod(end, &end) * M_PI / 180;
 	      end=skipcomma(end);
 	      large_arc=strtol(end, &end, 10);
 	      end=skipcomma(end);
@@ -2159,7 +2147,7 @@ static void SVGFigureTransform(struct svg_state *st,char *name) {
 	 trans[5]=strtod(skipcomma(end), &end);
       } else if (strncmp(pt, "rotate", paren - pt)==0) {
 	 trans[4]=trans[5]=0;
-	 a=strtod(paren + 1, &end) * 3.1415926535897932 / 180;
+	 a=strtod(paren + 1, &end) * M_PI / 180;
 	 trans[0]=trans[3]=cos(a);
 	 trans[1]=sin(a);
 	 trans[2]=-trans[1];
@@ -2198,11 +2186,11 @@ static void SVGFigureTransform(struct svg_state *st,char *name) {
       } else if (strncmp(pt, "skewX", paren - pt)==0) {
 	 trans[0]=trans[3]=1;
 	 trans[1]=trans[2]=trans[4]=trans[5]=0;
-	 trans[2]=tan(strtod(paren + 1, &end) * 3.1415926535897932 / 180);
+	 trans[2]=tan(strtod(paren + 1, &end) * M_PI / 180);
       } else if (strncmp(pt, "skewY", paren - pt)==0) {
 	 trans[0]=trans[3]=1;
 	 trans[1]=trans[2]=trans[4]=trans[5]=0;
-	 trans[1]=tan(strtod(paren + 1, &end) * 3.1415926535897932 / 180);
+	 trans[1]=tan(strtod(paren + 1, &end) * M_PI / 180);
       } else
 	 break;
       while (isspace(*end))
@@ -3950,7 +3938,6 @@ void SFLSetOrder(SplineFont *sf, int layerdest, int order2) {
 static SplineFont *_SFReadSVG(xmlDocPtr doc,char *filename) {
    xmlNodePtr *fonts, font;
    SplineFont *sf;
-   char oldloc[25];
    char *chosenname=NULL;
 
    fonts=FindSVGFontNodes(doc);
@@ -3971,11 +3958,7 @@ static SplineFont *_SFReadSVG(xmlDocPtr doc,char *filename) {
       }
    }
    free(fonts);
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    sf=SVGParseFont(font);
-   setlocale(LC_NUMERIC, oldloc);
    xmlFreeDoc(doc);
 
    if (sf != NULL) {
@@ -4068,7 +4051,6 @@ Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
 			   int em_size, int ascent) {
    xmlDocPtr doc;
    xmlNodePtr top;
-   char oldloc[25];
    Entity *ret;
    int order2;
 
@@ -4093,11 +4075,7 @@ Entity *EntityInterpretSVG(char *filename, char *memory, int memlen,
       return (NULL);
    }
 
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    ret=SVGParseSVG(top, em_size, ascent);
-   setlocale(LC_NUMERIC, oldloc);
    xmlFreeDoc(doc);
 
    if (loaded_fonts_same_as_new)

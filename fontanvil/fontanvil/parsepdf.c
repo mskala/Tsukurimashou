@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: parsepdf.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -31,7 +31,6 @@
 #include <utype.h>
 #include <ustring.h>
 #include <math.h>
-#include <locale.h>
 #include "psfont.h"
 #include "sd.h"
 
@@ -1371,13 +1370,8 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
    DashType dashes[DASH_MAX];
    int dash_offset=0;
    Entity *ent;
-   char oldloc[25];
    char tokbuf[100];
    const int tokbufsize=100;
-
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
 
    transform[0]=transform[3]=1.0;
    transform[1]=transform[2]=transform[4]=transform[5]=0;
@@ -1711,7 +1705,6 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
       ec->splines=ent;
    }
    ECCategorizePoints(ec);
-   setlocale(LC_NUMERIC, oldloc);
 }
 
 static SplineChar *pdf_InterpretSC(struct pdfcontext *pc,char *glyphname,
@@ -2156,12 +2149,9 @@ static void pcFree(struct pdfcontext *pc) {
 
 char **NamesReadPDF(char *filename) {
    struct pdfcontext pc;
-   char oldloc[24];
    int i;
    char **list;
 
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    memset(&pc, 0, sizeof(pc));
    if ((pc.pdf=afopen(filename, "r"))==NULL)
       return (NULL);
@@ -2184,7 +2174,6 @@ char **NamesReadPDF(char *filename) {
    list[i]=NULL;
    afclose(pc.pdf);
    pcFree(&pc);
-   setlocale(LC_NUMERIC, oldloc);
    return (list);
 
 /* if errors, then free memory, close files, and return a NULL */
@@ -2194,7 +2183,6 @@ char **NamesReadPDF(char *filename) {
  NamesReadPDF_error:
    pcFree(&pc);
    afclose(pc.pdf);
-   setlocale(LC_NUMERIC, oldloc);
    return (NULL);
 }
 
@@ -2203,30 +2191,24 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
    char *select_this_font=NULL, *pt;
    struct pdfcontext pc;
    SplineFont *sf=NULL;
-   char oldloc[24];
    int i;
 
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    memset(&pc, 0, sizeof(pc));
    pc.pdf=pdf;
    pc.openflags=openflags;
    if ((pc.objs=FindObjects(&pc))==NULL) {
       ErrorMsg(2,"Doesn't look like a valid pdf file, couldn't find xref section\n");
       pcFree(&pc);
-      setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pc.encrypted) {
       ErrorMsg(2,"This pdf file contains an /Encrypt dictionary, and FontAnvil does not currently\nsupport pdf encryption\n");
       pcFree(&pc);
-      setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pdf_findfonts(&pc)==0) {
       ErrorMsg(2,"This pdf file has no fonts\n");
       pcFree(&pc);
-      setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    // parse the chosen font name
@@ -2263,7 +2245,6 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
       if (choice != -1)
 	 sf=pdf_loadfont(&pc, choice);
    }
-   setlocale(LC_NUMERIC, oldloc);
    pcFree(&pc);
    free(select_this_font);
    return (sf);
@@ -2285,32 +2266,26 @@ SplineFont *SFReadPdfFont(char *filename, enum openflags openflags) {
 
 Entity *EntityInterpretPDFPage(AFILE *pdf, int select_page) {
    struct pdfcontext pc;
-   char oldloc[24];
    Entity *ent;
    char *ret;
    int choice;
 
-   strcpy(oldloc, setlocale(LC_NUMERIC, NULL));
-   setlocale(LC_NUMERIC, "C");
    memset(&pc, 0, sizeof(pc));
    pc.pdf=pdf;
    pc.openflags=0;
    if ((pc.objs=FindObjects(&pc))==NULL) {
       ErrorMsg(2,"Doesn't look like a valid pdf file, couldn't find xref section\n");
       pcFree(&pc);
-      setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pc.encrypted) {
       ErrorMsg(2,"This pdf file contains an /Encrypt dictionary, and FontAnvil does not currently\nsupport pdf encryption\n");
       pcFree(&pc);
-      setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pdf_findpages(&pc)==0) {
       ErrorMsg(2,"This pdf file has no pages\n");
       pcFree(&pc);
-      setlocale(LC_NUMERIC, oldloc);
       return (NULL);
    }
    if (pc.pcnt==1) {
@@ -2321,7 +2296,6 @@ Entity *EntityInterpretPDFPage(AFILE *pdf, int select_page) {
       choice=0;
       ent=pdf_InterpretEntity(&pc, choice);
    }
-   setlocale(LC_NUMERIC, oldloc);
    pcFree(&pc);
    return (ent);
 }

@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 4484 2015-12-08 09:59:03Z mskala $ */
+/* $Id: splinechar.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -29,7 +29,6 @@
 
 #include "fontanvilvw.h"
 #include <math.h>
-#include <locale.h>
 #include <ustring.h>
 #include <utype.h>
 #include <gresource.h>

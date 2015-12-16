@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4469 2015-12-01 11:35:13Z mskala $ */
+/* $Id: splineutil.c 4494 2015-12-12 08:13:24Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,7 +35,6 @@
 #ifdef HAVE_IEEEFP_H
 #   include <ieeefp.h>		/* Solaris defines isnan in ieeefp rather than math.h */
 #endif
-#include <locale.h>
 
 /*#define DEBUG 1*/
 
@@ -2532,7 +2531,6 @@ static void SplineFontFromType1(SplineFont *sf,FontDict *fd,
 static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 					 struct pscontext *pscontext) {
    char *pt, *end, *origweight;
-   char oldloc[25];
    MMSet *mm;
    int ipos, apos, ppos, item, i;
    double blends[12];		/* At most twelve points/axis in a blenddesignmap */
@@ -2550,9 +2548,6 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
    mm=chunkalloc(sizeof(MMSet));
 
    pt=fd->weightvector;
-   strncpy(oldloc, setlocale(LC_NUMERIC, NULL), 24);
-   oldloc[24]=0;
-   setlocale(LC_NUMERIC, "C");
    while (*pt==' ' || *pt=='[')
       ++pt;
    while (*pt != ']' && *pt != '\0') {
@@ -2744,7 +2739,6 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	    }
 	 }
       }
-      setlocale(LC_NUMERIC, oldloc);
       fd->private->private=PSDictCopy(sf->private);
       if (fd->blendprivate != NULL) {
 	 static char *arrnames[] =

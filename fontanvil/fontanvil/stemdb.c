@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 4485 2015-12-08 14:29:57Z mskala $ */
+/* $Id: stemdb.c 4503 2015-12-16 14:12:49Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams and Alexey Kryukov
  * Copyright (C) 2015  Matthew Skala
  *
@@ -32,8 +32,6 @@
 
 #include <math.h>
 #include <utype.h>
-
-#define PI 3.14159265358979323846264338327
 
 /* A diagonal end is like the top or bottom of a slash. Should we add a vertical stem at the end? */
 /* A diagonal corner is like the bottom of circumflex. Should we add a horizontal stem? */
@@ -75,9 +73,9 @@ static int IsUnitHV(BasePoint *unit,int strict) {
    double angle=atan2(unit->y, unit->x);
    double deviation=(strict) ? stem_slope_error : stub_slope_error;
 
-   if (fabs(angle) >= PI / 2 - deviation && fabs(angle) <= PI / 2 + deviation)
+   if (fabs(angle) >= M_PI / 2 - deviation && fabs(angle) <= M_PI / 2 + deviation)
       return (2);
-   else if (fabs(angle) <= deviation || fabs(angle) >= PI - deviation)
+   else if (fabs(angle) <= deviation || fabs(angle) >= M_PI - deviation)
       return (1);
 
    return (0);
@@ -89,15 +87,15 @@ static int UnitCloserToHV(BasePoint *u1,BasePoint *u2) {
    adiff1=fabs(atan2(u1->y, u1->x));
    adiff2=fabs(atan2(u2->y, u2->x));
 
-   if (adiff1 > PI * .25 && adiff1 < PI * .75)
-      adiff1=fabs(adiff1 - PI * .5);
-   else if (adiff1 >= PI * .75)
-      adiff1=PI - adiff1;
+   if (adiff1 > M_PI * .25 && adiff1 < M_PI * .75)
+      adiff1=fabs(adiff1 - M_PI * .5);
+   else if (adiff1 >= M_PI * .75)
+      adiff1=M_PI - adiff1;
 
-   if (adiff2 > PI * .25 && adiff2 < PI * .75)
-      adiff2=fabs(adiff2 - PI * .5);
-   else if (adiff2 >= PI * .75)
-      adiff2=PI - adiff2;
+   if (adiff2 > M_PI * .25 && adiff2 < M_PI * .75)
+      adiff2=fabs(adiff2 - M_PI * .5);
+   else if (adiff2 >= M_PI * .75)
+      adiff2=M_PI - adiff2;
 
    if (adiff1 < adiff2)
       return (1);
@@ -120,8 +118,8 @@ static int UnitsOrthogonal(BasePoint *u1,BasePoint *u2,int strict) {
 
    angle=GetUnitAngle(u1, u2);
 
-   return (fabs(angle) >= PI / 2 - deviation
-	   && fabs(angle) <= PI / 2 + deviation);
+   return (fabs(angle) >= M_PI / 2 - deviation
+	   && fabs(angle) <= M_PI / 2 + deviation);
 }
 
 int UnitsParallel(BasePoint * u1, BasePoint * u2, int strict) {
@@ -129,7 +127,7 @@ int UnitsParallel(BasePoint * u1, BasePoint * u2, int strict) {
 
    angle=GetUnitAngle(u1, u2);
 
-   return (fabs(angle) <= deviation || fabs(angle) >= PI - deviation);
+   return (fabs(angle) <= deviation || fabs(angle) >= M_PI - deviation);
 }
 
 static int IsInflectionPoint(struct glyphdata *gd,struct pointdata *pd) {
@@ -1340,7 +1338,7 @@ static uint8_t IsStubOrIntersection(struct glyphdata *gd,BasePoint *dir1,
    odir2=(is_next2) ? &pd2->prevunit : &pd2->nextunit;
 
    angle=fabs(GetUnitAngle(dir1, dir2));
-   if (angle > stub_slope_error * 1.5 && angle < PI - stub_slope_error * 1.5)
+   if (angle > stub_slope_error * 1.5 && angle < M_PI - stub_slope_error * 1.5)
       return (0);
 
    /* First check if it is a slightly slanted line or a curve which joins */
@@ -1357,12 +1355,12 @@ static uint8_t IsStubOrIntersection(struct glyphdata *gd,BasePoint *dir1,
    /* of out going-to-be stem should point in the same direction. So */
    /* the following value should be positive */
    opp=dir1->x * dir2->x + dir1->y * dir2->y;
-   if ((angle <= mid_err || angle >= PI - mid_err) &&
+   if ((angle <= mid_err || angle >= M_PI - mid_err) &&
        opp > 0 && norm1 < 0 && norm2 < 0 && UnitsParallel(odir1, odir2, true)
        && (UnitsOrthogonal(dir1, odir1, false)
 	   || UnitsOrthogonal(dir2, odir1, false)))
       return (2);
-   if ((angle <= mid_err || angle >= PI - mid_err) &&
+   if ((angle <= mid_err || angle >= M_PI - mid_err) &&
        opp > 0 && ((norm1 < 0 && pd1->colinear &&
 		    IsUnitHV(dir1, true)
 		    && UnitsOrthogonal(dir1, odir2, false)) || (norm2 < 0
@@ -2040,12 +2038,12 @@ static int ParallelToDir(struct pointdata *pd,int checknext,BasePoint *dir,
    n=(checknext) ? pd->nextunit : pd->prevunit;
 
    angle=fabs(GetUnitAngle(dir, &n));
-   if ((!is_stub && angle > stem_slope_error && angle < PI - stem_slope_error)
+   if ((!is_stub && angle > stem_slope_error && angle < M_PI - stem_slope_error)
        || (is_stub & 1 && angle > stub_slope_error * 1.5
-	   && angle < PI - stub_slope_error * 1.5) || (is_stub & 6
+	   && angle < M_PI - stub_slope_error * 1.5) || (is_stub & 6
 						       && angle > mid_err
 						       && angle <
-						       PI - mid_err))
+						       M_PI - mid_err))
       return (false);
 
    /* Now sp must be on the same side of the spline as opposite */
@@ -6353,8 +6351,8 @@ struct glyphdata *GlyphDataInit(SplineChar * sc, int layer, double em_size,
    if (sc->parent != NULL && sc->parent->italicangle) {
       iangle=(90 + sc->parent->italicangle);
       gd->has_slant=true;
-      gd->slant_unit.x=cos(iangle * (PI / 180));
-      gd->slant_unit.y=sin(iangle * (PI / 180));
+      gd->slant_unit.x=cos(iangle * (M_PI / 180));
+      gd->slant_unit.y=sin(iangle * (M_PI / 180));
    } else {
       gd->has_slant=false;
       gd->slant_unit.x=0;
