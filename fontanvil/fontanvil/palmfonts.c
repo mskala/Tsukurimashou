@@ -1,4 +1,4 @@
-/* $Id: palmfonts.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: palmfonts.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -125,7 +125,7 @@ static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
    fontImage=malloc(2 * imagesize);
    afseek(file, imagepos, SEEK_SET);
    for (i=0; i < imagesize; ++i)
-      fontImage[i]=getushort(file);
+      fontImage[i]=aget_uint16_be(file);
    if (afeof(file)) {
       free(fontImage);
       return;
@@ -200,7 +200,7 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
    SplineFont *sf;
    int maxbit;
 
-   type=getushort(file);
+   type=aget_uint16_be(file);
    if (type==0x0090 || type==0x0092) {
       ErrorMsg(2,"Warning: Byte swapped font mark in palm font.\n");
       type=type << 8;
@@ -208,19 +208,19 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
    if ((type & 0x9000) != 0x9000)
       return (NULL);
    memset(&fn, 0, sizeof(fn));
-   fn.first=getushort(file);
-   fn.last=getushort(file);
-   /* maxWidth=*/ (void) getushort(file);
-   /* kernmax=*/ (void) getushort(file);
-   /* ndescent=*/ (void) getushort(file);
-   frectwidth=getushort(file);
-   fn.frectheight=getushort(file);
+   fn.first=aget_uint16_be(file);
+   fn.last=aget_uint16_be(file);
+   /* maxWidth=*/ (void) aget_uint16_be(file);
+   /* kernmax=*/ (void) aget_uint16_be(file);
+   /* ndescent=*/ (void) aget_uint16_be(file);
+   frectwidth=aget_uint16_be(file);
+   fn.frectheight=aget_uint16_be(file);
    owtloc=aftell(file);
-   owtloc += 2 * getushort(file);
-   fn.ascent=getushort(file);
-   descent=getushort(file);
-   fn.leading=getushort(file);
-   fn.rowwords=getushort(file);
+   owtloc += 2 * aget_uint16_be(file);
+   fn.ascent=aget_uint16_be(file);
+   descent=aget_uint16_be(file);
+   fn.leading=aget_uint16_be(file);
+   fn.rowwords=aget_uint16_be(file);
    if (afeof(file) || aftell(file) >= end || fn.first > fn.last || fn.last > 255
        || pos + (fn.last - fn.first + 2) * 2 +
        2 * fn.rowwords * fn.frectheight > end
@@ -228,14 +228,14 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
       return (NULL);
    dencount=0;
    if (type & 0x200) {
-      if (getushort(file) != 1)	/* Extended data version number */
+      if (aget_uint16_be(file) != 1)	/* Extended data version number */
 	 return (NULL);
-      dencount=getushort(file);
+      dencount=aget_uint16_be(file);
       if (dencount > 6)		/* only a few sizes allowed */
 	 return (NULL);
       for (i=0; i < dencount; ++i) {
-	 density[i].density=getushort(file);
-	 density[i].offset=getlong(file);
+	 density[i].density=aget_uint16_be(file);
+	 density[i].offset=aget_int32_be(file);
 	 if (aftell(file) > end || (density[i].density != 72 && density[i].density != 108 && density[i].density != 144 && density[i].density != 216 &&	/*Documented, but not supported */
 				   density[i].density != 288))	/*Documented, but not supported */
 	    return (NULL);
@@ -249,7 +249,7 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
    /*  two extra entries. One gives loc of .notdef glyph, one points just after it */
    maxbit=fn.rowwords * 16;
    for (i=fn.first; i <= fn.last + 2; ++i) {
-      fn.chars[i].start=getushort(file);
+      fn.chars[i].start=aget_uint16_be(file);
       if (fn.chars[i].start > maxbit
 	  || (i != 0 && fn.chars[i].start < fn.chars[i - 1].start))
 	 return (NULL);
@@ -306,7 +306,7 @@ static SplineFont *PalmTestRecord(AFILE *file,int start,int end,char *name) {
       return (NULL);
 
    afseek(file, start, SEEK_SET);
-   type=getushort(file);
+   type=aget_uint16_be(file);
    if (afeof(file))
       goto ret;
    afseek(file, start, SEEK_SET);
@@ -325,9 +325,9 @@ static SplineFont *PalmTestRecord(AFILE *file,int start,int end,char *name) {
       goto ret;
    if (agetc(file) != 0)		/* not interested in system fonts */
       goto ret;
-   (void) getushort(file);	/* Skip the pixel height */
-   (void) getushort(file);	/* blank bits */
-   size=getlong(file);
+   (void) aget_uint16_be(file);	/* Skip the pixel height */
+   (void) aget_uint16_be(file);	/* blank bits */
+   size=aget_int32_be(file);
    pos=aftell(file);		/* Potential start of font data */
    if (pos + size > end)
       goto ret;
@@ -365,16 +365,16 @@ SplineFont *SFReadPalmPdb(char *filename, int toback) {
       goto fail;
    name[32]=0;
    afseek(file, 0x2c, SEEK_CUR);	/* Find start of record list */
-   num_records=getushort(file);
+   num_records=aget_uint16_be(file);
    if (num_records <= 0)
       goto fail;
-   offset=getlong(file);	/* offset to data */
-   (void) getlong(file);	/* random junk */
+   offset=aget_int32_be(file);	/* offset to data */
+   (void) aget_int32_be(file);	/* random junk */
    if (offset >= file_end)
       goto fail;
    for (i=1; i < num_records; ++i) {
-      next_offset=getlong(file);
-      (void) getlong(file);
+      next_offset=aget_int32_be(file);
+      (void) aget_int32_be(file);
       if (afeof(file) || next_offset < offset || next_offset > file_end)
 	 goto fail;
       sf=PalmTestRecord(file, offset, next_offset, name);

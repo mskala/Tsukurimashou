@@ -1,4 +1,4 @@
-/* $Id: ikarus.c 4503 2015-12-16 14:12:49Z mskala $ */
+/* $Id: ikarus.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -451,49 +451,49 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
    uint8_t *ptype;
    int x, y;
 
-   /* record len of char=*/ getushort(file);
-   /* word len of char=*/ getushort(file);
+   /* record len of char=*/ aget_uint16_be(file);
+   /* word len of char=*/ aget_uint16_be(file);
 
-   n=getushort(file);
-   number=getushort(file);
+   n=aget_uint16_be(file);
+   number=aget_uint16_be(file);
    IkarusNameFromURWNumber(sc, number);
-   following=getushort(file);
+   following=aget_uint16_be(file);
    if (following != 0)
       ErrorMsg(2,"This character (gid=%d) has a following part (%d). I'm not sure what that means, please send me (gww@silcom.com) a copy of this font so I can test with it.\n",
 	       sc->orig_pos, following);
    for (i=3; i < n; ++i)
-      getushort(file);		/* Just in case the name section is bigger now */
+      aget_uint16_be(file);		/* Just in case the name section is bigger now */
 
-   n=getushort(file);
-   /* sort (leter,logo,line graphic,frame etc.)=*/ getushort(file);
-   /* num points=*/ getushort(file);
-   sc->width=getushort(file);
-   /* lsb=*/ getushort(file);
-   /* xmax-xmin=*/ getushort(file);
-   /* rsb=*/ getushort(file);
-   bb.minx=(short) getushort(file);
-   bb.maxx=(short) getushort(file);
-   bb.miny=(short) getushort(file);
-   bb.maxy=(short) getushort(file);
+   n=aget_uint16_be(file);
+   /* sort (leter,logo,line graphic,frame etc.)=*/ aget_uint16_be(file);
+   /* num points=*/ aget_uint16_be(file);
+   sc->width=aget_uint16_be(file);
+   /* lsb=*/ aget_uint16_be(file);
+   /* xmax-xmin=*/ aget_uint16_be(file);
+   /* rsb=*/ aget_uint16_be(file);
+   bb.minx=(short) aget_uint16_be(file);
+   bb.maxx=(short) aget_uint16_be(file);
+   bb.miny=(short) aget_uint16_be(file);
+   bb.maxy=(short) aget_uint16_be(file);
    for (i=12; i < n; ++i)
-      getushort(file);
+      aget_uint16_be(file);
 
-   units=getushort(file);
+   units=aget_uint16_be(file);
    if (units != 1)
       sc->width *= units;
 
-   n=getushort(file) * 2048;
-   n += getushort(file);	/* Length of contour section in words */
+   n=aget_uint16_be(file) * 2048;
+   n += aget_uint16_be(file);	/* Length of contour section in words */
    ncontours=(n - 2) / 6;
    contours=malloc(ncontours * sizeof(struct contour));
    ptmax=0;
    for (i=0; i < ncontours; ++i) {
-      contours[i].offset=getushort(file) * 4096;
-      contours[i].offset += 2 * getushort(file) - 2;
-      contours[i].dir=getushort(file);
-      contours[i].nest=getushort(file);
-      contours[i].col=getushort(file);
-      contours[i].npts=getushort(file);
+      contours[i].offset=aget_uint16_be(file) * 4096;
+      contours[i].offset += 2 * aget_uint16_be(file) - 2;
+      contours[i].dir=aget_uint16_be(file);
+      contours[i].nest=aget_uint16_be(file);
+      contours[i].col=aget_uint16_be(file);
+      contours[i].npts=aget_uint16_be(file);
       if (contours[i].npts > ptmax)
 	 ptmax=contours[i].npts;
    }
@@ -506,8 +506,8 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
    for (i=0; i < ncontours; ++i) {
       afseek(file, base + contours[i].offset, SEEK_SET);
       for (j=0; j < contours[i].npts; ++j) {
-	 x=(short) getushort(file);
-	 y=(short) getushort(file);
+	 x=(short) aget_uint16_be(file);
+	 y=(short) aget_uint16_be(file);
 	 if (x < 0 && y > 0)
 	    ptype[j]=-1;	/* Start point */
 	 else if (x < 0 /* && y<0 */ )
@@ -608,9 +608,9 @@ SplineFont *SFReadIkarus(char *fontname) {
 
    if (file==NULL)
       return (NULL);
-   hlen=getushort(file);	/* Length of font header */
-   ilen=getushort(file);	/* Length of name section */
-   getushort(file);		/* Number on URW list */
+   hlen=aget_uint16_be(file);	/* Length of font header */
+   ilen=aget_uint16_be(file);	/* Length of name section */
+   aget_uint16_be(file);		/* Number on URW list */
    afread(fnam, 1, 12, file);	/* 6 words of filename */
    afread(fullname, 1, 80, file);	/* 40 words of fontname (human readable) */
    fnam[12]=fullname[80]='\0';
@@ -642,7 +642,7 @@ SplineFont *SFReadIkarus(char *fontname) {
 	       ilen);
 
    afseek(file, 2 * ilen + 2, SEEK_SET);
-   jlen=getushort(file);
+   jlen=aget_uint16_be(file);
    if (jlen < 12 || hlen <= jlen + ilen) {
       afclose(file);
       return (NULL);
@@ -650,29 +650,29 @@ SplineFont *SFReadIkarus(char *fontname) {
    if (jlen != 12)
       ErrorMsg(2,"Unexpected size for font info section of URW font (expected 12, got %d)\n",
 	       jlen);
-   if (getushort(file) != 1) {	/* 1=> typeface */
+   if (aget_uint16_be(file) != 1) {	/* 1=> typeface */
       afclose(file);
       return (NULL);
    }
-   numchars=getushort(file);
-   /* cap height=*/ getushort(file);
-   /* body size=*/ getushort(file);
-   /* x-height=*/ getushort(file);
-   /* descender?=*/ getushort(file);
-   /* line thickness=*/ getushort(file);
-   /* stroke thickness=*/ getushort(file);
-   italic_angle=getushort(file) / 10.0 * M_PI / 180.0;
-   opt_pt_size=getushort(file);
-   /* average char width=*/ getushort(file);
+   numchars=aget_uint16_be(file);
+   /* cap height=*/ aget_uint16_be(file);
+   /* body size=*/ aget_uint16_be(file);
+   /* x-height=*/ aget_uint16_be(file);
+   /* descender?=*/ aget_uint16_be(file);
+   /* line thickness=*/ aget_uint16_be(file);
+   /* stroke thickness=*/ aget_uint16_be(file);
+   italic_angle=aget_uint16_be(file) / 10.0 * M_PI / 180.0;
+   opt_pt_size=aget_uint16_be(file);
+   /* average char width=*/ aget_uint16_be(file);
 
    afseek(file, 2 * ilen + 2 * jlen + 2, SEEK_SET);
-   llen=getushort(file);	/* the hierarchy section is unused in font files */
+   llen=aget_uint16_be(file);	/* the hierarchy section is unused in font files */
    if (llen != 1 || hlen <= jlen + ilen + llen) {
       afclose(file);
       return (NULL);
    }
 
-   mlen=getushort(file);
+   mlen=aget_uint16_be(file);
    /* Peter Karow's book documents that hlen==jlen+ilen+llen+mlen+1, but this */
    /*  does not appear to be the case. */
    if (hlen < jlen + ilen + llen + mlen + 1 || mlen < 3 * numchars + 3) {
@@ -680,18 +680,18 @@ SplineFont *SFReadIkarus(char *fontname) {
       return (NULL);
    }
    /* last record */
-   getushort(file);
-   /* last word of last record */ getushort(file);
+   aget_uint16_be(file);
+   /* last word of last record */ aget_uint16_be(file);
 
    offsets=malloc(numchars * sizeof(int32_t));
    numbers=malloc(numchars * sizeof(int32_t));
    maxnum=0;
    for (i=0; i < numchars; ++i) {
-      numbers[i]=getushort(file);
+      numbers[i]=aget_uint16_be(file);
       if (numbers[i] > maxnum)
 	 maxnum=numbers[i];
-      rpos=getushort(file);	/* record pos (1 record=2048 words) */
-      wpos=getushort(file);	/* word pos in record */
+      rpos=aget_uint16_be(file);	/* record pos (1 record=2048 words) */
+      wpos=aget_uint16_be(file);	/* word pos in record */
       offsets[i]=(rpos - 1) * 4096 + 2 * (wpos - 1);
    }
 

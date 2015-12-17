@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: parsettfvar.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -91,17 +91,17 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
    int i, j;
 
    afseek(ttf, info->fvar_start, SEEK_SET);
-   if (getlong(ttf) != 0x00010000)	/* I only understand version 1 */
+   if (aget_int32_be(ttf) != 0x00010000)	/* I only understand version 1 */
       return;
-   data_off=getushort(ttf);
-   cnt=getushort(ttf);
+   data_off=aget_uint16_be(ttf);
+   cnt=aget_uint16_be(ttf);
    if (cnt > 2)
       ErrorMsg(2,"Hmm, this 'fvar' table has more count/size pairs than I expect\n");
    else if (cnt < 2) {
       ErrorMsg(2,"Hmm, this 'fvar' table has too few count/size pairs, I shan't parse it\n");
       return;
    }
-   axis_count=getushort(ttf);
+   axis_count=aget_uint16_be(ttf);
    if (axis_count==0 || axis_count > 4) {
       if (axis_count==0)
 	 ErrorMsg(2,"Hmm, this 'fvar' table has no axes, that doesn't make sense.\n");
@@ -109,12 +109,12 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
 	 ErrorMsg(2,"Hmm, this 'fvar' table has more axes than FontAnvil can handle.\n");
       return;
    }
-   if (getushort(ttf) != 20) {
+   if (aget_uint16_be(ttf) != 20) {
       ErrorMsg(2,"Hmm, this 'fvar' table has an unexpected size for an axis, I shan't parse it\n");
       return;
    }
-   instance_count=getushort(ttf);
-   if (getushort(ttf) != 4 + 4 * axis_count) {
+   instance_count=aget_uint16_be(ttf);
+   if (aget_uint16_be(ttf) != 4 + 4 * axis_count) {
       ErrorMsg(2,"Hmm, this 'fvar' table has an unexpected size for an instance, I shan't parse it\n");
       return;
    }
@@ -138,20 +138,20 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
    for (i=0; i < axis_count; ++i) {
       struct taxis *a=&info->variations->axes[i];
 
-      a->tag=getlong(ttf);
-      a->min=getlong(ttf) / 65536.0;
-      a->def=getlong(ttf) / 65536.0;
-      a->max=getlong(ttf) / 65536.0;
-      /* flags=*/ getushort(ttf);
-      a->nameid=getushort(ttf);
+      a->tag=aget_int32_be(ttf);
+      a->min=aget_int32_be(ttf) / 65536.0;
+      a->def=aget_int32_be(ttf) / 65536.0;
+      a->max=aget_int32_be(ttf) / 65536.0;
+      /* flags=*/ aget_uint16_be(ttf);
+      a->nameid=aget_uint16_be(ttf);
    }
    for (i=0; i < instance_count; ++i) {
       struct tinstance *ti=&info->variations->instances[i];
 
-      ti->nameid=getushort(ttf);
-      /* flags=*/ getushort(ttf);
+      ti->nameid=aget_uint16_be(ttf);
+      /* flags=*/ aget_uint16_be(ttf);
       for (j=0; j < axis_count; ++j)
-	 ti->coords[j]=getlong(ttf) / 65536.0;
+	 ti->coords[j]=aget_int32_be(ttf) / 65536.0;
    }
 }
 
@@ -164,25 +164,25 @@ static void parseavar(struct ttfinfo *info,AFILE *ttf) {
       return;
 
    afseek(ttf, info->avar_start, SEEK_SET);
-   if (getlong(ttf) != 0x00010000) {	/* I only understand version 1 */
+   if (aget_int32_be(ttf) != 0x00010000) {	/* I only understand version 1 */
       VariationFree(info);
       return;
    }
-   axis_count=getlong(ttf);
+   axis_count=aget_int32_be(ttf);
    if (axis_count != info->variations->axis_count) {
       ErrorMsg(2,"Hmm, the axis count in the 'avar' table is different from that in the 'fvar' table.\n");
       VariationFree(info);
       return;
    }
    for (i=0; i < axis_count; ++i) {
-      pair_count=getushort(ttf);
+      pair_count=aget_uint16_be(ttf);
       if (pair_count != 0) {
 	 info->variations->axes[i].mapfrom =
 	    malloc(pair_count * sizeof(double));
 	 info->variations->axes[i].mapto=malloc(pair_count * sizeof(double));
 	 for (j=0; j < pair_count; ++j) {
-	    info->variations->axes[i].mapfrom[j]=getushort(ttf) / 16384.0;
-	    info->variations->axes[i].mapto[j]=getushort(ttf) / 16384.0;
+	    info->variations->axes[i].mapfrom[j]=aget_uint16_be(ttf) / 16384.0;
+	    info->variations->axes[i].mapto[j]=aget_uint16_be(ttf) / 16384.0;
 	 }
       }
    }
@@ -237,7 +237,7 @@ static int *readpackeddeltas(AFILE *ttf,int n) {
       } else if (runcnt & 0x40) {
 	 /* runcnt shorts from the stack */
 	 for (j=0; j <= (runcnt & 0x3f) && i < n; ++j)
-	    deltas[i++]=(int16_t) getushort(ttf);
+	    deltas[i++]=(int16_t) aget_uint16_be(ttf);
       } else {
 	 /* runcnt signed bytes from the stack */
 	 for (j=0; j <= (runcnt & 0x3f) && i < n; ++j)
@@ -272,10 +272,10 @@ static int *readpackedpoints(AFILE *ttf) {
 	 runcnt=agetc(ttf);
 	 if (runcnt & 0x80) {
 	    runcnt=(runcnt & 0x7f);
-	    points[i++]=first=getushort(ttf);
+	    points[i++]=first=aget_uint16_be(ttf);
 	    /* first point not included in runcount */
 	    for (j=0; j < runcnt && i < n; ++j)
-	       points[i++]=(first += getushort(ttf));
+	       points[i++]=(first += aget_uint16_be(ttf));
 	 } else {
 	    points[i++]=first=agetc(ttf);
 	    for (j=0; j < runcnt && i < n; ++j)
@@ -546,21 +546,21 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
    int warned=false;
 
    afseek(ttf, info->gvar_start, SEEK_SET);
-   if (getlong(ttf) != 0x00010000) {	/* I only understand version 1 */
+   if (aget_int32_be(ttf) != 0x00010000) {	/* I only understand version 1 */
       VariationFree(info);
       return;
    }
-   axiscount=getushort(ttf);
+   axiscount=aget_uint16_be(ttf);
    if (axiscount != info->variations->axis_count) {
       ErrorMsg(2,"Hmm, the axis count in the 'gvar' table is different from that in the 'fvar' table.\n");
       VariationFree(info);
       return;
    }
-   globaltc=getushort(ttf);
-   tupoff=getlong(ttf) + info->gvar_start;
-   gc=getushort(ttf);
-   gvarflags=getushort(ttf);
-   dataoff=getlong(ttf) + info->gvar_start;
+   globaltc=aget_uint16_be(ttf);
+   tupoff=aget_int32_be(ttf) + info->gvar_start;
+   gc=aget_uint16_be(ttf);
+   gvarflags=aget_uint16_be(ttf);
+   dataoff=aget_int32_be(ttf) + info->gvar_start;
    if (globaltc==0 || globaltc > AppleMmMax) {
       if (globaltc==0)
 	 ErrorMsg(2,"Hmm, no global tuples specified in the 'gvar' table.\n");
@@ -579,10 +579,10 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
    gvars=malloc((gc + 1) * sizeof(uint32_t));
    if (gvarflags & 1) {		/* 32 bit data */
       for (i=0; i <= gc; ++i)
-	 gvars[i]=getlong(ttf) + dataoff;
+	 gvars[i]=aget_int32_be(ttf) + dataoff;
    } else {
       for (i=0; i <= gc; ++i)
-	 gvars[i]=getushort(ttf) * 2 + dataoff;	/* Undocumented *2 */
+	 gvars[i]=aget_uint16_be(ttf) * 2 + dataoff;	/* Undocumented *2 */
    }
 
    v->tuple_count=globaltc;
@@ -591,7 +591,7 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
    for (i=0; i < globaltc; ++i) {
       v->tuples[i].coords=malloc(axiscount * sizeof(float));
       for (j=0; j < axiscount; ++j)
-	 v->tuples[i].coords[j]=((short) getushort(ttf)) / 16384.0;
+	 v->tuples[i].coords[j]=((short) aget_uint16_be(ttf)) / 16384.0;
       v->tuples[i].chars=InfoCopyGlyphs(info);
    }
 
@@ -602,8 +602,8 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
 	 int *sharedpoints=NULL;
 
 	 afseek(ttf, gvars[g], SEEK_SET);
-	 tc=getushort(ttf);
-	 datoff=gvars[g] + getushort(ttf);
+	 tc=aget_uint16_be(ttf);
+	 datoff=gvars[g] + aget_uint16_be(ttf);
 	 if (tc & 0x8000) {
 	    uint32_t here=aftell(ttf);
 
@@ -615,8 +615,8 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
 	 for (i=0; i < (tc & 0xfff); ++i) {
 	    int tupleDataSize, tupleIndex;
 
-	    tupleDataSize=getushort(ttf);
-	    tupleIndex=getushort(ttf);
+	    tupleDataSize=aget_uint16_be(ttf);
+	    tupleIndex=aget_uint16_be(ttf);
 	    if (tupleIndex & 0xc000) {
 	       if (!warned)
 		  ErrorMsg(2,"Warning: Glyph %d contains either private or intermediate tuple data.\n FontAnvil supports neither.\n",
@@ -717,14 +717,14 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
       return;
 
    afseek(ttf, info->cvar_start, SEEK_SET);
-   if (getlong(ttf) != 0x00010000) {	/* I only understand version 1 */
+   if (aget_int32_be(ttf) != 0x00010000) {	/* I only understand version 1 */
       /* I think I can live without cvt variations... */
       /* So I shan't free the structure */
       return;
    }
 
-   tuplecount=getushort(ttf);
-   offset=info->cvar_start + getushort(ttf);
+   tuplecount=aget_uint16_be(ttf);
+   offset=info->cvar_start + aget_uint16_be(ttf);
    /* The documentation implies there are flags packed into the tuplecount */
    /*  but John Jenkins tells me that shared points don't apply to cvar */
    /*  Might as well parse it just in case */
@@ -739,8 +739,8 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
    for (i=0; i < (tuplecount & 0xfff); ++i) {
       int tupleDataSize, tupleIndex;
 
-      tupleDataSize=getushort(ttf);
-      tupleIndex=getushort(ttf);
+      tupleDataSize=aget_uint16_be(ttf);
+      tupleIndex=aget_uint16_be(ttf);
       /* there is no provision here for a global tuple coordinate section */
       /*  so John says there are no tuple indices. Just embedded tuples */
       if (tupleIndex & 0x4000) {
@@ -761,7 +761,7 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
 	    double *coords =
 	       malloc(info->variations->axis_count * sizeof(double));
 	    for (j=0; j < info->variations->axis_count; ++j)
-	       coords[j]=((int16_t) getushort(ttf)) / 16384.0;
+	       coords[j]=((int16_t) aget_uint16_be(ttf)) / 16384.0;
 	    for (k=0; k < info->variations->tuple_count; ++k) {
 	       for (j=0; j < info->variations->axis_count; ++j)
 		  if (coords[j] != info->variations->tuples[k].coords[j])

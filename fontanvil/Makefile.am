@@ -246,7 +246,7 @@ noinst_HEADERS = \
   inc/views.h \
   inc/flaglist.h \
   inc/autowidth2.h inc/fontanvil.h \
-  inc/libffstamp.h inc/psfont.h inc/stemdb.h \
+  inc/psfont.h inc/stemdb.h \
   inc/autowidth.h inc/fontanvilvw.h \
   inc/savefont.h inc/ttf.h \
   inc/baseviews.h inc/fvmetrics.h inc/mm.h \

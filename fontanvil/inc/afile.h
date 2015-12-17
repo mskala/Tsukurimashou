@@ -1,4 +1,4 @@
-/* $Id: afile.h 4310 2015-10-27 15:29:50Z mskala $ */
+/* $Id: afile.h 4507 2015-12-17 09:42:57Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -69,6 +69,72 @@ int avfprintf(AFILE *,const char * restrict format,va_list);
 int afscanf(AFILE *,const char *,...);
 
 ssize_t agetline(char **,size_t *,AFILE *);
+
+/* any of these reading less than 32 bits return 32-bit -1 on error
+ * never mind that's in-band in the signed case; it's what seems most
+ * compatible with the FontForge routines they replace */
+
+int32_t aget_uint8_be(AFILE *);
+int32_t aget_uint8_le(AFILE *);
+int32_t aget_int8_be(AFILE *);
+int32_t aget_int8_le(AFILE *);
+
+int32_t aget_uint16_be(AFILE *);
+int32_t aget_uint16_le(AFILE *);
+int32_t aget_int16_be(AFILE *);
+int32_t aget_int16_le(AFILE *);
+
+int32_t aget_uint24_be(AFILE *);
+int32_t aget_uint24_le(AFILE *);
+int32_t aget_int24_be(AFILE *);
+int32_t aget_int24_le(AFILE *);
+
+uint32_t aget_uint32_be(AFILE *);
+uint32_t aget_uint32_le(AFILE *);
+int32_t aget_int32_be(AFILE *);
+int32_t aget_int32_le(AFILE *);
+
+uint64_t aget_uint64_be(AFILE *);
+uint64_t aget_uint64_le(AFILE *);
+int64_t aget_int64_be(AFILE *);
+int64_t aget_int64_le(AFILE *);
+
+/* "read" version reads to a pointer, returns -1 on failure, 0 on success */
+
+int aread_uint32_be(AFILE *,uint32_t *);
+int aread_uint32_le(AFILE *,uint32_t *);
+int aread_int32_be(AFILE *,int32_t *);
+int aread_int32_le(AFILE *,int32_t *);
+
+int aread_uint64_be(AFILE *,uint64_t *);
+int aread_uint64_le(AFILE *,uint64_t *);
+int aread_int64_be(AFILE *,int64_t *);
+int aread_int64_le(AFILE *,int64_t *);
+
+int aput_uint8_be(uint8_t,AFILE *);
+int aput_uint8_le(uint8_t,AFILE *);
+int aput_int8_be(int8_t,AFILE *);
+int aput_int8_le(int8_t,AFILE *);
+
+int aput_uint16_be(uint16_t,AFILE *);
+int aput_uint16_le(uint16_t,AFILE *);
+int aput_int16_be(int16_t,AFILE *);
+int aput_int16_le(int16_t,AFILE *);
+
+int aput_uint24_be(uint32_t,AFILE *);
+int aput_uint24_le(uint32_t,AFILE *);
+int aput_int24_be(int32_t,AFILE *);
+int aput_int24_le(int32_t,AFILE *);
+
+int aput_uint32_be(uint32_t,AFILE *);
+int aput_uint32_le(uint32_t,AFILE *);
+int aput_int32_be(int32_t,AFILE *);
+int aput_int32_le(int32_t,AFILE *);
+
+int aput_uint64_be(uint64_t,AFILE *);
+int aput_uint64_le(uint64_t,AFILE *);
+int aput_int64_be(int64_t,AFILE *);
+int aput_int64_le(int64_t,AFILE *);
 
 /*
  * Error message levels:

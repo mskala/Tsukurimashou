@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4483 2015-12-08 08:21:31Z mskala $ */
+/* $Id: splinefont.h 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3291,10 +3291,6 @@ extern int SFFlattenByCMap(SplineFont *sf, char *cmapname);
 
 extern SplineFont *MakeCIDMaster(SplineFont *sf, EncMap *oldmap, int bycmap,
 				 char *cmapfilename, struct cidmap *cidmap);
-
-int getushort(AFILE *ttf);
-
-int32_t getlong(AFILE *ttf);
 
 int get3byte(AFILE *ttf);
 

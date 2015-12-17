@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: fvimportbdf.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -882,7 +882,7 @@ static void gf_skip_noops(AFILE *gf,char *char_name) {
 	      agetc(gf);
 	   break;
 	case gf_xxx4:
-	   val=getlong(gf);
+	   val=aget_int32_be(gf);
 	   for (i=0; i < val; ++i)
 	      agetc(gf);
 	   break;
@@ -917,20 +917,20 @@ static int gf_postamble(AFILE *gf,int *_as,int *_ds,Encoding ** _enc,
       return (-2);
    pos -= 4;
    afseek(gf, pos, SEEK_SET);
-   off=getlong(gf);
+   off=aget_int32_be(gf);
    afseek(gf, off, SEEK_SET);
    ch=agetc(gf);
    if (ch != gf_post)
       return (-2);
-   /* offset to comments */ getlong(gf);
-   design_size=getlong(gf);
-   /* checksum=*/ getlong(gf);
-   pixels_per_point=getlong(gf);
-   /* vert pixels per point=*/ getlong(gf);
-   /* min_col=*/ getlong(gf);
-   /* min_row=*/ getlong(gf);
-   /* max_col=*/ getlong(gf);
-   /* max_row=*/ getlong(gf);
+   /* offset to comments */ aget_int32_be(gf);
+   design_size=aget_int32_be(gf);
+   /* checksum=*/ aget_int32_be(gf);
+   pixels_per_point=aget_int32_be(gf);
+   /* vert pixels per point=*/ aget_int32_be(gf);
+   /* min_col=*/ aget_int32_be(gf);
+   /* min_row=*/ aget_int32_be(gf);
+   /* max_col=*/ aget_int32_be(gf);
+   /* max_row=*/ aget_int32_be(gf);
 
    size =
       (pixels_per_point / (double) (0x10000)) * (design_size /
@@ -966,15 +966,15 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
    ch=agetc(gf);
    if (ch==gf_char_loc) {
       enc=agetc(gf);
-      dx=getlong(gf) >> 16;
-      dy=getlong(gf) >> 16;
-      aw=(getlong(gf) * (sf->ascent + sf->descent)) >> 20;
-      to=getlong(gf);
+      dx=aget_int32_be(gf) >> 16;
+      dy=aget_int32_be(gf) >> 16;
+      aw=(aget_int32_be(gf) * (sf->ascent + sf->descent)) >> 20;
+      to=aget_int32_be(gf);
    } else if (ch==gf_char_loc0) {
       enc=agetc(gf);
       dx=agetc(gf);
-      aw=(getlong(gf) * (sf->ascent + sf->descent)) >> 20;
-      to=getlong(gf);
+      aw=(aget_int32_be(gf) * (sf->ascent + sf->descent)) >> 20;
+      to=aget_int32_be(gf);
    } else
       return (false);
    pos=aftell(gf);
@@ -983,12 +983,12 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
    gf_skip_noops(gf, charname);
    ch=agetc(gf);
    if (ch==gf_boc) {
-      /* encoding=*/ getlong(gf);
-      /* backpointer=*/ getlong(gf);
-      min_c=getlong(gf);
-      max_c=getlong(gf);
-      min_r=getlong(gf);
-      max_r=getlong(gf);
+      /* encoding=*/ aget_int32_be(gf);
+      /* backpointer=*/ aget_int32_be(gf);
+      min_c=aget_int32_be(gf);
+      max_c=aget_int32_be(gf);
+      min_r=aget_int32_be(gf);
+      max_r=aget_int32_be(gf);
    } else if (ch==gf_boc1) {
       /* encoding=*/ agetc(gf);
       w=agetc(gf);
@@ -1036,7 +1036,7 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 else if (ch==gf_paint1b)
 	    cnt=agetc(gf);
 	 else if (ch==gf_paint2b)
-	    cnt=getushort(gf);
+	    cnt=aget_uint16_be(gf);
 	 else
 	    cnt=get3byte(gf);
 	 if (col) {
@@ -1064,7 +1064,7 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 else if (ch==gf_skip1)
 	    r += agetc(gf) + 1;
 	 else if (ch==gf_skip2)
-	    r += getushort(gf) + 1;
+	    r += aget_uint16_be(gf) + 1;
 	 else
 	    r += get3byte(gf) + 1;
       } else if (ch==EOF) {
@@ -1152,10 +1152,10 @@ static int pk_header(AFILE *pk,int *_as,int *_ds,Encoding ** _enc,
    ch=agetc(pk);
    for (i=0; i < ch; ++i)
       agetc(pk);			/* Skip comment. Perhaps that should be the family? */
-   design_size=getlong(pk);
-   /* checksum=*/ getlong(pk);
-   pixels_per_point=getlong(pk);
-   /* vert pixels per point=*/ getlong(pk);
+   design_size=aget_int32_be(pk);
+   /* checksum=*/ aget_int32_be(pk);
+   pixels_per_point=aget_int32_be(pk);
+   /* vert pixels per point=*/ aget_int32_be(pk);
 
    size=(pixels_per_point / 65536.0) * (design_size / (double) (0x100000));
    pixelsize=size + .5;
@@ -1240,28 +1240,28 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
    size_is_2=flag & 4 ? 1 : 0;
 
    if ((flag & 7)==7) {	/* long preamble, 4 byte sizes */
-      pl=getlong(pk);
-      cc=getlong(pk);
+      pl=aget_int32_be(pk);
+      cc=aget_int32_be(pk);
       char_end=aftell(pk) + pl;
-      tfm=getlong(pk);
-      dx=getlong(pk) >> 16;
-      dy=getlong(pk) >> 16;
-      w=getlong(pk);
-      h=getlong(pk);
-      hoff=getlong(pk);
-      voff=getlong(pk);
+      tfm=aget_int32_be(pk);
+      dx=aget_int32_be(pk) >> 16;
+      dy=aget_int32_be(pk) >> 16;
+      w=aget_int32_be(pk);
+      h=aget_int32_be(pk);
+      hoff=aget_int32_be(pk);
+      voff=aget_int32_be(pk);
    } else if (flag & 4) {	/* extended preamble, 2 byte sizes */
-      pl=getushort(pk) + ((flag & 3) << 16);
+      pl=aget_uint16_be(pk) + ((flag & 3) << 16);
       cc=agetc(pk);
       char_end=aftell(pk) + pl;
       tfm=get3byte(pk);
-      dm=getushort(pk);
+      dm=aget_uint16_be(pk);
       dx=dm;
       dy=0;
-      w=getushort(pk);
-      h=getushort(pk);
-      hoff=(short) getushort(pk);
-      voff=(short) getushort(pk);
+      w=aget_uint16_be(pk);
+      h=aget_uint16_be(pk);
+      hoff=(short) aget_uint16_be(pk);
+      voff=(short) aget_uint16_be(pk);
    } else {			/* short, 1 byte sizes */
       pl=agetc(pk) + ((flag & 3) << 8);
       cc=agetc(pk);
@@ -1448,15 +1448,6 @@ struct pcfaccel {
 
 /* Code based on Keith Packard's pcfread.c in the X11 distribution */
 
-static int getint32(AFILE *file) {
-   int val=agetc(file);
-
-   val |= (agetc(file) << 8);
-   val |= (agetc(file) << 16);
-   val |= (agetc(file) << 24);
-   return (val);
-}
-
 static int getformint32(AFILE *file,int format) {
    int val;
 
@@ -1491,15 +1482,15 @@ static struct toc *pcfReadTOC(AFILE *file) {
    int cnt, i;
    struct toc *toc;
 
-   if (getint32(file) != PCF_FILE_VERSION)
+   if (aget_int32_le(file) != PCF_FILE_VERSION)
       return (NULL);
-   cnt=getint32(file);
+   cnt=aget_int32_le(file);
    toc=calloc(cnt + 1, sizeof(struct toc));
    for (i=0; i < cnt; ++i) {
-      toc[i].type=getint32(file);
-      toc[i].format=getint32(file);
-      toc[i].size=getint32(file);
-      toc[i].offset=getint32(file);
+      toc[i].type=aget_int32_le(file);
+      toc[i].format=aget_int32_le(file);
+      toc[i].size=aget_int32_le(file);
+      toc[i].offset=aget_int32_le(file);
    }
 
    return (toc);
@@ -1540,7 +1531,7 @@ static int pcfGetAccel(AFILE *file,struct toc *toc,int which,
 
    if (!pcfSeekToType(file, toc, which))
       return (false);
-   format=getint32(file);
+   format=aget_int32_le(file);
    if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT &&
        (format & PCF_FORMAT_MASK) != PCF_ACCEL_W_INKBOUNDS)
       return (false);
@@ -1590,7 +1581,7 @@ static int pcf_properties(AFILE *file,struct toc *toc,int *_as,int *_ds,
    italic[0]=italic[100]='\0';
    if (!pcfSeekToType(file, toc, PCF_PROPERTIES))
       return (-2);
-   format=getint32(file);
+   format=aget_int32_le(file);
    if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
       return (-2);
    cnt=getformint32(file, format);
@@ -1712,7 +1703,7 @@ static struct pcfmetrics *pcfGetMetricsTable(AFILE *file,struct toc *toc,
 
    if (!pcfSeekToType(file, toc, which))
       return (NULL);
-   format=getint32(file);
+   format=aget_int32_le(file);
    if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT &&
        (format & PCF_FORMAT_MASK) != PCF_COMPRESSED_METRICS)
       return (NULL);
@@ -1804,7 +1795,7 @@ static int PcfReadBitmaps(AFILE *file,struct toc *toc,BDFFont *b) {
 
    if (!pcfSeekToType(file, toc, PCF_BITMAPS))
       return (false);
-   format=getint32(file);
+   format=aget_int32_le(file);
    if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
       return (false);
 
@@ -1870,7 +1861,7 @@ static void PcfReadEncodingsNames(AFILE *file,struct toc *toc,
    memset(encs, -1, b->glyphcnt * sizeof(int));
 
    if (pcfSeekToType(file, toc, PCF_GLYPH_NAMES) &&
-       ((format=getint32(file)) & PCF_FORMAT_MASK)==PCF_DEFAULT_FORMAT &&
+       ((format=aget_int32_le(file)) & PCF_FORMAT_MASK)==PCF_DEFAULT_FORMAT &&
        (cnt=getformint32(file, format))==b->glyphcnt) {
       offsets=malloc(cnt * sizeof(int));
       for (i=0; i < cnt; ++i)
@@ -1880,7 +1871,7 @@ static void PcfReadEncodingsNames(AFILE *file,struct toc *toc,
       afread(string, 1, stringsize, file);
    }
    if (pcfSeekToType(file, toc, PCF_BDF_ENCODINGS) &&
-       ((format=getint32(file)) & PCF_FORMAT_MASK)==PCF_DEFAULT_FORMAT) {
+       ((format=aget_int32_le(file)) & PCF_FORMAT_MASK)==PCF_DEFAULT_FORMAT) {
       int min2, max2, min1, max1, tot, def, glyph;
 
       min2=getformint16(file, format);
@@ -1926,7 +1917,7 @@ static int PcfReadSWidths(AFILE *file,struct toc *toc,BDFFont *b) {
 
    if (!pcfSeekToType(file, toc, PCF_SWIDTHS))
       return (false);
-   format=getint32(file);
+   format=aget_int32_le(file);
    if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
       return (false);
 

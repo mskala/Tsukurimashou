@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4502 2015-12-16 14:11:53Z mskala $ */
+/* $Id: tottf.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1660,7 +1660,7 @@ static int storesid(struct alltabs *at,char *str) {
       news=atmpfile();
       afseek(at->sidh,0,SEEK_SET);
       for (i=0; i < at->sidcnt; ++i)
-	 putlong(news, getushort(at->sidh));
+	 putlong(news, aget_uint16_be(at->sidh));
       afclose(at->sidh);
       at->sidh=news;
    }

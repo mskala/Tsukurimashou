@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: macbinary.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2021,15 +2021,15 @@ static SplineFont *SearchPostScriptResources(AFILE *f,long rlistpos,
    rsrcids=calloc(subcnt, sizeof(short));
    offsets=calloc(subcnt, sizeof(long));
    for (i=0; i < subcnt; ++i) {
-      rsrcids[i]=getushort(f);
-      tmp=(short) getushort(f);
+      rsrcids[i]=aget_uint16_be(f);
+      tmp=(short) aget_uint16_be(f);
       if (rname==-1)
 	 rname=tmp;
       /* flags=*/ agetc(f);
       ch1=agetc(f);
       ch2=agetc(f);
       offsets[i]=rdata_pos + ((ch1 << 16) | (ch2 << 8) | agetc(f));
-      /* mbz=*/ getlong(f);
+      /* mbz=*/ aget_int32_be(f);
    }
 
    pfb=atmpfile();
@@ -2060,7 +2060,7 @@ static SplineFont *SearchPostScriptResources(AFILE *f,long rlistpos,
       }
       id=id + 1;
       afseek(f, offsets[j], SEEK_SET);
-      rlen=getlong(f);
+      rlen=aget_int32_be(f);
       ch1=agetc(f);
       ch2=agetc(f);
       rlen -= 2;		/* those two bytes don't count as real data */
@@ -2151,13 +2151,13 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
    if (subcnt > 1 || (flags & ttf_onlynames)) {
       names=calloc(subcnt + 1, sizeof(char *));
       for (i=0; i < subcnt; ++i) {
-	 /* resource id=*/ getushort(f);
-	 /* rname=(short) */ getushort(f);
+	 /* resource id=*/ aget_uint16_be(f);
+	 /* rname=(short) */ aget_uint16_be(f);
 	 /* flags=*/ agetc(f);
 	 ch1=agetc(f);
 	 ch2=agetc(f);
 	 roff=rdata_pos + ((ch1 << 16) | (ch2 << 8) | agetc(f));
-	 /* mbz=*/ getlong(f);
+	 /* mbz=*/ aget_int32_be(f);
 	 here=aftell(f);
 	 names[i]=TTFGetFontName(f, roff + 4, roff + 4);
 	 if (names[i]==NULL) {
@@ -2212,13 +2212,13 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
    }
 
    for (i=0; i < subcnt; ++i) {
-      /* resource id=*/ getushort(f);
-      rname=(short) getushort(f);
+      /* resource id=*/ aget_uint16_be(f);
+      rname=(short) aget_uint16_be(f);
       /* flags=*/ agetc(f);
       ch1=agetc(f);
       ch2=agetc(f);
       roff=rdata_pos + ((ch1 << 16) | (ch2 << 8) | agetc(f));
-      /* mbz=*/ getlong(f);
+      /* mbz=*/ aget_int32_be(f);
       if (i != which)
 	 continue;
       here=aftell(f);
@@ -2230,7 +2230,7 @@ static SplineFont *SearchTtfResources(AFILE *f,long rlistpos,int subcnt,
       }
 
       afseek(f, roff, SEEK_SET);
-      ilen=rlen=getlong(f);
+      ilen=rlen=aget_int32_be(f);
       if (rlen > 16 * 1024)
 	 ilen=16 * 1024;
       if (ilen > max) {
@@ -2369,13 +2369,13 @@ static FOND *BuildFondList(AFILE *f,long rlistpos,int subcnt,
 
    afseek(f, rlistpos, SEEK_SET);
    for (i=0; i < subcnt; ++i) {
-      /* resource id=*/ getushort(f);
-      rname=(short) getushort(f);
+      /* resource id=*/ aget_uint16_be(f);
+      rname=(short) aget_uint16_be(f);
       /* flags=*/ agetc(f);
       ch1=agetc(f);
       ch2=agetc(f);
       offset=rdata_pos + ((ch1 << 16) | (ch2 << 8) | agetc(f));
-      /* mbz=*/ getlong(f);
+      /* mbz=*/ aget_int32_be(f);
       here=aftell(f);
 
       cur=calloc(1, sizeof(FOND));
@@ -2392,59 +2392,59 @@ static FOND *BuildFondList(AFILE *f,long rlistpos,int subcnt,
 
       offset += 4;
       afseek(f, offset, SEEK_SET);
-      isfixed=getushort(f) & 0x8000 ? 1 : 0;
-      /* family id=*/ getushort(f);
-      cur->first=getushort(f);
-      cur->last=getushort(f);
+      isfixed=aget_uint16_be(f) & 0x8000 ? 1 : 0;
+      /* family id=*/ aget_uint16_be(f);
+      cur->first=aget_uint16_be(f);
+      cur->last=aget_uint16_be(f);
 /* on a 1 point font... */
-      /* ascent=*/ getushort(f);
-      /* descent=(short) */ getushort(f);
-      /* leading=*/ getushort(f);
-      /* widmax=*/ getushort(f);
-      if ((widoff=getlong(f)) != 0)
+      /* ascent=*/ aget_uint16_be(f);
+      /* descent=(short) */ aget_uint16_be(f);
+      /* leading=*/ aget_uint16_be(f);
+      /* widmax=*/ aget_uint16_be(f);
+      if ((widoff=aget_int32_be(f)) != 0)
 	 widoff += offset;
-      if ((kernoff=getlong(f)) != 0)
+      if ((kernoff=aget_int32_be(f)) != 0)
 	 kernoff += offset;
-      if ((styleoff=getlong(f)) != 0)
+      if ((styleoff=aget_int32_be(f)) != 0)
 	 styleoff += offset;
       for (j=0; j < 9; ++j)
-	 getushort(f);
-      /* internal & undefined, for international scripts=*/ getlong(f);
-      /* version=*/ getushort(f);
-      cur->assoc_cnt=getushort(f) + 1;
+	 aget_uint16_be(f);
+      /* internal & undefined, for international scripts=*/ aget_int32_be(f);
+      /* version=*/ aget_uint16_be(f);
+      cur->assoc_cnt=aget_uint16_be(f) + 1;
       cur->assoc=calloc(cur->assoc_cnt, sizeof(struct assoc));
       for (j=0; j < cur->assoc_cnt; ++j) {
-	 cur->assoc[j].size=getushort(f);
-	 cur->assoc[j].style=getushort(f);
-	 cur->assoc[j].id=getushort(f);
+	 cur->assoc[j].size=aget_uint16_be(f);
+	 cur->assoc[j].style=aget_uint16_be(f);
+	 cur->assoc[j].id=aget_uint16_be(f);
       }
       if (widoff != 0) {
 	 afseek(f, widoff, SEEK_SET);
-	 cnt=getushort(f) + 1;
+	 cnt=aget_uint16_be(f) + 1;
 	 cur->stylewidthcnt=cnt;
 	 cur->stylewidths=calloc(cnt, sizeof(struct stylewidths));
 	 for (j=0; j < cnt; ++j) {
-	    cur->stylewidths[j].style=getushort(f);
+	    cur->stylewidths[j].style=aget_uint16_be(f);
 	    cur->stylewidths[j].widthtab =
 	       malloc((cur->last - cur->first + 3) * sizeof(short));
 	    for (k=cur->first; k <= cur->last + 2; ++k)
-	       cur->stylewidths[j].widthtab[k]=getushort(f);
+	       cur->stylewidths[j].widthtab[k]=aget_uint16_be(f);
 	 }
       }
       if (kernoff != 0 && (flags & ttf_onlykerns)) {
 	 afseek(f, kernoff, SEEK_SET);
-	 cnt=getushort(f) + 1;
+	 cnt=aget_uint16_be(f) + 1;
 	 cur->stylekerncnt=cnt;
 	 cur->stylekerns=calloc(cnt, sizeof(struct stylekerns));
 	 for (j=0; j < cnt; ++j) {
-	    cur->stylekerns[j].style=getushort(f);
-	    cur->stylekerns[j].kernpairs=getushort(f);
+	    cur->stylekerns[j].style=aget_uint16_be(f);
+	    cur->stylekerns[j].kernpairs=aget_uint16_be(f);
 	    cur->stylekerns[j].kerns =
 	       malloc(cur->stylekerns[j].kernpairs * sizeof(struct kerns));
 	    for (k=0; k < cur->stylekerns[j].kernpairs; ++k) {
 	       cur->stylekerns[j].kerns[k].ch1=agetc(f);
 	       cur->stylekerns[j].kerns[k].ch2=agetc(f);
-	       cur->stylekerns[j].kerns[k].offset=getushort(f);
+	       cur->stylekerns[j].kerns[k].offset=aget_uint16_be(f);
 	    }
 	 }
       }
@@ -2454,12 +2454,12 @@ static FOND *BuildFondList(AFILE *f,long rlistpos,int subcnt,
 	 char **strings, *pt;
 
 	 afseek(f, styleoff, SEEK_SET);
-	 /* class=*/ getushort(f);
-	 /* glyph encoding offset=*/ getlong(f);
-	 /* reserved=*/ getlong(f);
+	 /* class=*/ aget_uint16_be(f);
+	 /* glyph encoding offset=*/ aget_int32_be(f);
+	 /* reserved=*/ aget_int32_be(f);
 	 for (j=0; j < 48; ++j)
 	    stringoffsets[j]=agetc(f);
-	 strcnt=getushort(f);
+	 strcnt=aget_uint16_be(f);
 	 strings=malloc(strcnt * sizeof(char *));
 	 for (j=0; j < strcnt; ++j) {
 	    stringlen=agetc(f);
@@ -2548,24 +2548,24 @@ static void LoadNFNT(AFILE *f,long offset,SplineFont *sf,int size) {
    offset += 4;			/* skip over the length */
    afseek(f, offset, SEEK_SET);
    memset(&font, '\0', sizeof(struct MacFontRec));
-   font.fontType=getushort(f);
-   font.firstChar=getushort(f);
-   font.lastChar=getushort(f);
-   font.widthMax=getushort(f);
-   font.kernMax=(short) getushort(f);
-   font.Descent=(short) getushort(f);
-   font.fRectWidth=getushort(f);
-   font.fRectHeight=getushort(f);
+   font.fontType=aget_uint16_be(f);
+   font.firstChar=aget_uint16_be(f);
+   font.lastChar=aget_uint16_be(f);
+   font.widthMax=aget_uint16_be(f);
+   font.kernMax=(short) aget_uint16_be(f);
+   font.Descent=(short) aget_uint16_be(f);
+   font.fRectWidth=aget_uint16_be(f);
+   font.fRectHeight=aget_uint16_be(f);
    baseow=aftell(f);
-   ow=getushort(f);
-   font.ascent=getushort(f);
-   font.descent=getushort(f);
+   ow=aget_uint16_be(f);
+   font.ascent=aget_uint16_be(f);
+   font.descent=aget_uint16_be(f);
    if (font.Descent >= 0) {
       ow |= (font.Descent << 16);
       font.Descent=-font.descent;	/* Possibly overkill, but should be safe */
    }
-   font.leading=getushort(f);
-   font.rowWords=getushort(f);
+   font.leading=aget_uint16_be(f);
+   font.rowWords=aget_uint16_be(f);
    if (font.rowWords != 0) {
       font.fontImage =
 	 calloc(font.rowWords * font.fRectHeight, sizeof(short));
@@ -2573,12 +2573,12 @@ static void LoadNFNT(AFILE *f,long offset,SplineFont *sf,int size) {
       font.offsetWidths =
 	 calloc(font.lastChar - font.firstChar + 3, sizeof(short));
       for (i=0; i < font.rowWords * font.fRectHeight; ++i)
-	 font.fontImage[i]=getushort(f);
+	 font.fontImage[i]=aget_uint16_be(f);
       for (i=0; i < font.lastChar - font.firstChar + 3; ++i)
-	 font.locs[i]=getushort(f);
+	 font.locs[i]=aget_uint16_be(f);
       afseek(f, baseow + 2 * ow, SEEK_SET);
       for (i=0; i < font.lastChar - font.firstChar + 3; ++i)
-	 font.offsetWidths[i]=getushort(f);
+	 font.offsetWidths[i]=aget_uint16_be(f);
    }
    afseek(f, here, SEEK_SET);
    if (font.rowWords==0)
@@ -2824,13 +2824,13 @@ static SplineFont *SearchBitmapResources(AFILE *f,long rlistpos,int subcnt,
 
    afseek(f, rlistpos, SEEK_SET);
    for (i=0; i < subcnt; ++i) {
-      res_id=getushort(f);
-      rname=(short) getushort(f);
+      res_id=aget_uint16_be(f);
+      rname=(short) aget_uint16_be(f);
       /* flags=*/ agetc(f);
       ch1=agetc(f);
       ch2=agetc(f);
       roff=rdata_pos + ((ch1 << 16) | (ch2 << 8) | agetc(f));
-      /* mbz=*/ getlong(f);
+      /* mbz=*/ aget_int32_be(f);
       for (j=fond->assoc_cnt - 1; j >= 0; --j)
 	 if ((find_id != -1 && res_id==find_id) ||
 	     (fond->assoc[j].style==style && fond->assoc[j].id==res_id &&
@@ -2981,19 +2981,19 @@ static SplineFont *IsResourceFork(AFILE *f,long offset,char *filename,
 	 if (buffer[i] != buffer2[i])
 	    return (NULL);
    }
-   getlong(f);			/* skip the handle to the next resource map */
-   getushort(f);		/* skip the file resource number */
-   getushort(f);		/* skip the attributes */
-   type_list=map_pos + getushort(f);
-   name_list=map_pos + getushort(f);
+   aget_int32_be(f);			/* skip the handle to the next resource map */
+   aget_uint16_be(f);		/* skip the file resource number */
+   aget_uint16_be(f);		/* skip the attributes */
+   type_list=map_pos + aget_uint16_be(f);
+   name_list=map_pos + aget_uint16_be(f);
 
    afseek(f, type_list, SEEK_SET);
-   cnt=getushort(f) + 1;
+   cnt=aget_uint16_be(f) + 1;
    for (i=0; i < cnt; ++i) {
-      tag=getlong(f);
+      tag=aget_int32_be(f);
       /* printf( "%c%c%c%c\n", tag>>24, (tag>>16)&0xff, (tag>>8)&0xff, tag&0xff ); */
-      subcnt=getushort(f) + 1;
-      rpos=type_list + getushort(f);
+      subcnt=aget_uint16_be(f) + 1;
+      rpos=type_list + aget_uint16_be(f);
       sf=NULL;
       if (tag==CHR('P', 'O', 'S', 'T') && !(flags & (ttf_onlystrikes | ttf_onlykerns)))	/* No FOND */
 	 sf =

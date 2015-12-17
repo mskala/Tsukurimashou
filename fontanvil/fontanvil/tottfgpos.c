@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: tottfgpos.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1287,7 +1287,7 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 	    afseek(gpos,
 		  offset_pos + (seconds[i][0].samewas -
 				start_cnt) * sizeof(uint16_t), SEEK_SET);
-	    offset=getushort(gpos);
+	    offset=aget_uint16_be(gpos);
 	    afseek(gpos, offset_pos + (i - start_cnt) * sizeof(uint16_t),
 		  SEEK_SET);
 	    putshort(gpos, offset);

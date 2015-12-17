@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: ttfspecial.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -946,10 +946,10 @@ static void pfed_readfontcomment(AFILE *ttf,struct ttfinfo *info,
    int use_utf8;
 
    afseek(ttf, base, SEEK_SET);
-   use_utf8=getushort(ttf);
+   use_utf8=aget_uint16_be(ttf);
    if (use_utf8 != 0 && use_utf8 != 1)
       return;			/* Bad version number */
-   len=getushort(ttf);
+   len=aget_uint16_be(ttf);
    start=pt=malloc(len + 1);
 
    end=pt + len;
@@ -958,7 +958,7 @@ static void pfed_readfontcomment(AFILE *ttf,struct ttfinfo *info,
 	 *pt++=agetc(ttf);
    } else {
       while (pt < end)
-	 *pt++=getushort(ttf);
+	 *pt++=aget_uint16_be(ttf);
    }
    *pt='\0';
    if (!use_utf8) {
@@ -1001,10 +1001,10 @@ static char *pfed_read_ucs2_len(AFILE *ttf,uint32_t offset,int len) {
       return (NULL);
    afseek(ttf, offset, SEEK_SET);
    for (i=0; i < len; ++i) {
-      uch=getushort(ttf);
+      uch=aget_uint16_be(ttf);
       if (uch >= 0xd800 && uch < 0xdc00) {
 	 /* Is this a possible utf16 surrogate value? */
-	 uch2=getushort(ttf);
+	 uch2=aget_uint16_be(ttf);
 	 if (uch2 >= 0xdc00 && uch2 < 0xe000)
 	    uch=((uch - 0xd800) << 10) | (uch2 & 0x3ff);
 	 else {
@@ -1039,14 +1039,14 @@ static void pfed_readcvtcomments(AFILE *ttf,struct ttfinfo *info,
    uint16_t *offsets;
 
    afseek(ttf, base, SEEK_SET);
-   if (getushort(ttf) != 0)
+   if (aget_uint16_be(ttf) != 0)
       return;			/* Bad version number */
-   count=getushort(ttf);
+   count=aget_uint16_be(ttf);
 
    offsets=malloc(count * sizeof(uint16_t));
    info->cvt_names=malloc((count + 1) * sizeof(char *));
    for (i=0; i < count; ++i)
-      offsets[i]=getushort(ttf);
+      offsets[i]=aget_uint16_be(ttf);
    for (i=0; i < count; ++i) {
       if (offsets[i]==0)
 	 info->cvt_names[i]=NULL;
@@ -1067,15 +1067,15 @@ static void pfed_readglyphcomments(AFILE *ttf,struct ttfinfo *info,
    int use_utf8;
 
    afseek(ttf, base, SEEK_SET);
-   use_utf8=getushort(ttf);
+   use_utf8=aget_uint16_be(ttf);
    if (use_utf8 != 0 && use_utf8 != 1)
       return;			/* Bad version number */
-   n=getushort(ttf);
+   n=aget_uint16_be(ttf);
    grange=malloc(n * sizeof(struct grange));
    for (i=0; i < n; ++i) {
-      grange[i].start=getushort(ttf);
-      grange[i].end=getushort(ttf);
-      grange[i].offset=getlong(ttf);
+      grange[i].start=aget_uint16_be(ttf);
+      grange[i].end=aget_uint16_be(ttf);
+      grange[i].offset=aget_int32_be(ttf);
       if (grange[i].start > grange[i].end || grange[i].end > info->glyph_cnt) {
 	 ErrorMsg(2,"Bad glyph range specified in glyph comment subtable of PfEd table\n");
 	 grange[i].start=1;
@@ -1088,8 +1088,8 @@ static void pfed_readglyphcomments(AFILE *ttf,struct ttfinfo *info,
 	       base + grange[i].offset + (j -
 					  grange[i].start) * sizeof(uint32_t),
 	       SEEK_SET);
-	 offset=getlong(ttf);
-	 next=getlong(ttf);
+	 offset=aget_int32_be(ttf);
+	 next=aget_int32_be(ttf);
 	 if (use_utf8)
 	    info->chars[j]->comment =
 	       pfed_read_utf8_len(ttf, base + offset, next - offset);
@@ -1109,13 +1109,13 @@ static void pfed_readcolours(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    uint32_t col;
 
    afseek(ttf, base, SEEK_SET);
-   if (getushort(ttf) != 0)
+   if (aget_uint16_be(ttf) != 0)
       return;			/* Bad version number */
-   n=getushort(ttf);
+   n=aget_uint16_be(ttf);
    for (i=0; i < n; ++i) {
-      start=getushort(ttf);
-      end=getushort(ttf);
-      col=getlong(ttf);
+      start=aget_uint16_be(ttf);
+      end=aget_uint16_be(ttf);
+      col=aget_int32_be(ttf);
       if (start > end || end > info->glyph_cnt)
 	 ErrorMsg(2,"Bad glyph range specified in color subtable of PfEd table\n");
       else {
@@ -1136,13 +1136,13 @@ static void pfed_readlookupnames(AFILE *ttf,struct ttfinfo *info,
    } *ls, *ss, *as;
 
    afseek(ttf, base, SEEK_SET);
-   if (getushort(ttf) != 0)
+   if (aget_uint16_be(ttf) != 0)
       return;			/* Bad version number */
-   n=getushort(ttf);
+   n=aget_uint16_be(ttf);
    ls=malloc(n * sizeof(struct lstruct));
    for (i=0; i < n; ++i) {
-      ls[i].name_off=getushort(ttf);
-      ls[i].subs_off=getushort(ttf);
+      ls[i].name_off=aget_uint16_be(ttf);
+      ls[i].subs_off=aget_uint16_be(ttf);
    }
    for (i=0, otl=lookups; i < n && otl != NULL; ++i, otl=otl->next) {
       if (ls[i].name_off != 0) {
@@ -1151,11 +1151,11 @@ static void pfed_readlookupnames(AFILE *ttf,struct ttfinfo *info,
       }
       if (ls[i].subs_off != 0) {
 	 afseek(ttf, base + ls[i].subs_off, SEEK_SET);
-	 s=getushort(ttf);
+	 s=aget_uint16_be(ttf);
 	 ss=malloc(s * sizeof(struct lstruct));
 	 for (j=0; j < s; ++j) {
-	    ss[j].name_off=getushort(ttf);
-	    ss[j].subs_off=getushort(ttf);
+	    ss[j].name_off=aget_uint16_be(ttf);
+	    ss[j].subs_off=aget_uint16_be(ttf);
 	 }
 	 for (j=0, sub=otl->subtables; j < s && sub != NULL;
 	      ++j, sub=sub->next) {
@@ -1169,10 +1169,10 @@ static void pfed_readlookupnames(AFILE *ttf,struct ttfinfo *info,
 		  ErrorMsg(2,"Whoops, attempt to name anchors in a subtable which doesn't contain any\n");
 	       else {
 		  afseek(ttf, base + ss[j].subs_off, SEEK_SET);
-		  a=getushort(ttf);
+		  a=aget_uint16_be(ttf);
 		  as=malloc(a * sizeof(struct lstruct));
 		  for (k=0; k < a; ++k) {
-		     as[k].name_off=getushort(ttf);
+		     as[k].name_off=aget_uint16_be(ttf);
 		  }
 		  k=0;
 		  for (ac=info->ahead; ac != NULL; ac=ac->next) {
@@ -1206,9 +1206,9 @@ static float pfed_get_coord(AFILE *ttf,int mod) {
    if (mod==V_B)
       return ((float) (signed char) agetc(ttf));
    else if (mod==V_S)
-      return ((float) (short) getushort(ttf));
+      return ((float) (short) aget_uint16_be(ttf));
    else if (mod==V_F)
-      return (getlong(ttf) / 256.0);
+      return (aget_int32_be(ttf) / 256.0);
    else {
       ErrorMsg(2,"Bad data type in contour verb in 'PfEd'\n");
       return (0);
@@ -1363,8 +1363,8 @@ static void pfed_read_spiro_contour(AFILE *ttf,SplineSet *ss,
 	    realloc(ss->spiros, (ss->spiro_max += 10) * sizeof(spiro_cp));
       ss->spiros[ss->spiro_cnt].ty=ch;
       if (ch != SPIRO_END) {
-	 ss->spiros[ss->spiro_cnt].x=getlong(ttf) / 256.0;
-	 ss->spiros[ss->spiro_cnt].y=getlong(ttf) / 256.0;
+	 ss->spiros[ss->spiro_cnt].x=aget_int32_be(ttf) / 256.0;
+	 ss->spiros[ss->spiro_cnt].y=aget_int32_be(ttf) / 256.0;
       } else {
 	 ss->spiros[ss->spiro_cnt].x=0;
 	 ss->spiros[ss->spiro_cnt].y=0;
@@ -1398,22 +1398,22 @@ static void pfed_read_glyph_layer(AFILE *ttf,struct ttfinfo *info,
    RefChar *last, *cur;
 
    afseek(ttf, base, SEEK_SET);
-   cc=getushort(ttf);		/* Contours */
+   cc=aget_uint16_be(ttf);		/* Contours */
    rc=0;
    if (version==1)
-      rc=getushort(ttf);	/* References */
-   ic=getushort(ttf);		/* Images */
+      rc=aget_uint16_be(ttf);	/* References */
+   ic=aget_uint16_be(ttf);		/* Images */
    contours=malloc(cc * sizeof(struct contours));
    for (i=0; i < cc; ++i) {
-      contours[i].data_off=getushort(ttf);
-      contours[i].name_off=getushort(ttf);
+      contours[i].data_off=aget_uint16_be(ttf);
+      contours[i].name_off=aget_uint16_be(ttf);
    }
    last=NULL;
    for (i=0; i < rc; ++i) {
       cur=RefCharCreate();
       for (j=0; j < 6; ++j)
-	 cur->transform[j]=getlong(ttf) / 32768.0;
-      gid=getushort(ttf);
+	 cur->transform[j]=aget_int32_be(ttf) / 32768.0;
+      gid=aget_uint16_be(ttf);
       if (gid >= info->glyph_cnt) {
 	 ErrorMsg(2,"Bad glyph reference in layer info.\n");
 	 break;
@@ -1461,13 +1461,13 @@ static void pfed_readguidelines(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    SplineSet *ss;
 
    afseek(ttf, base, SEEK_SET);
-   version=getushort(ttf);
+   version=aget_uint16_be(ttf);
    if (version > 1)
       return;			/* Bad version number */
-   v=getushort(ttf);
-   h=getushort(ttf);
-   (void) getushort(ttf);
-   off=getushort(ttf);
+   v=aget_uint16_be(ttf);
+   h=aget_uint16_be(ttf);
+   (void) aget_uint16_be(ttf);
+   off=aget_uint16_be(ttf);
 
    if (off != 0) {
       pfed_read_glyph_layer(ttf, info, &info->guidelines, base + off,
@@ -1481,12 +1481,12 @@ static void pfed_readguidelines(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
       vs=malloc(v * sizeof(struct npos));
       hs=malloc(h * sizeof(struct npos));
       for (i=0; i < v; ++i) {
-	 vs[i].pos=(short) getushort(ttf);
-	 vs[i].offset=getushort(ttf);
+	 vs[i].pos=(short) aget_uint16_be(ttf);
+	 vs[i].offset=aget_uint16_be(ttf);
       }
       for (i=0; i < h; ++i) {
-	 hs[i].pos=(short) getushort(ttf);
-	 hs[i].offset=getushort(ttf);
+	 hs[i].pos=(short) aget_uint16_be(ttf);
+	 hs[i].offset=aget_uint16_be(ttf);
       }
       for (i=0; i < v; ++i) {
 	 sp=SplinePointCreate(vs[i].pos, -info->emsize);
@@ -1544,17 +1544,17 @@ static void pfed_read_layer(AFILE *ttf,struct ttfinfo *info,int layer,
    } *ranges;
 
    afseek(ttf, start, SEEK_SET);
-   rcnt=getushort(ttf);
+   rcnt=aget_uint16_be(ttf);
    ranges=malloc(rcnt * sizeof(struct range));
    for (i=0; i < rcnt; ++i) {
-      ranges[i].start=getushort(ttf);
-      ranges[i].last=getushort(ttf);
-      ranges[i].offset=getlong(ttf);
+      ranges[i].start=aget_uint16_be(ttf);
+      ranges[i].last=aget_uint16_be(ttf);
+      ranges[i].offset=aget_int32_be(ttf);
    }
    for (i=0; i < rcnt; ++i) {
       afseek(ttf, base + ranges[i].offset, SEEK_SET);
       for (j=ranges[i].start; j <= ranges[i].last; ++j)
-	 loca[j]=getlong(ttf);
+	 loca[j]=aget_int32_be(ttf);
       for (j=ranges[i].start; j <= ranges[i].last; ++j) {
 	 Layer *ly;
 
@@ -1588,15 +1588,15 @@ static void pfed_readotherlayers(AFILE *ttf,struct ttfinfo *info,
    SplineChar *sc;
 
    afseek(ttf, base, SEEK_SET);
-   version=getushort(ttf);
+   version=aget_uint16_be(ttf);
    if (version > 1)
       return;			/* Bad version number */
-   lcnt=getushort(ttf);
+   lcnt=aget_uint16_be(ttf);
    layers=malloc(lcnt * sizeof(struct layer_info));
    for (i=0; i < lcnt; ++i) {
-      layers[i].type=getushort(ttf);
-      layers[i].name_off=getushort(ttf);
-      layers[i].data_off=getlong(ttf);
+      layers[i].type=aget_uint16_be(ttf);
+      layers[i].name_off=aget_uint16_be(ttf);
+      layers[i].data_off=aget_int32_be(ttf);
       layers[i].sf_layer=-1;
    }
    spiro_index=-1;
@@ -1680,14 +1680,14 @@ void pfed_read(AFILE *ttf, struct ttfinfo *info) {
 
    afseek(ttf, info->pfed_start, SEEK_SET);
 
-   if (getlong(ttf) != 0x00010000)
+   if (aget_int32_be(ttf) != 0x00010000)
       return;
-   n=getlong(ttf);
+   n=aget_int32_be(ttf);
    if (n >= MAX_SUBTABLE_TYPES + 30)
       n=MAX_SUBTABLE_TYPES + 30;
    for (i=0; i < n; ++i) {
-      tagoff[i].tag=getlong(ttf);
-      tagoff[i].offset=getlong(ttf);
+      tagoff[i].tag=aget_int32_be(ttf);
+      tagoff[i].offset=aget_int32_be(ttf);
    }
    for (i=0; i < n; ++i)
       switch (tagoff[i].tag) {
@@ -1993,9 +1993,9 @@ static void TeX_readFontParams(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    int32_t val;
 
    afseek(ttf, base, SEEK_SET);
-   if (getushort(ttf) != 0)	/* Don't know how to read this version of the subtable */
+   if (aget_uint16_be(ttf) != 0)	/* Don't know how to read this version of the subtable */
       return;
-   pcnt=getushort(ttf);
+   pcnt=aget_uint16_be(ttf);
    if (pcnt==22)
       info->texdata.type=tex_math;
    else if (pcnt==13)
@@ -2003,8 +2003,8 @@ static void TeX_readFontParams(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    else if (pcnt >= 7)
       info->texdata.type=tex_text;
    for (i=0; i < pcnt; ++i) {
-      tag=getlong(ttf);
-      val=getlong(ttf);
+      tag=aget_int32_be(ttf);
+      val=aget_int32_be(ttf);
       for (j=0; j < 3; ++j) {
 	 for (k=0; alltags[j][k] != 0; ++k)
 	    if (alltags[j][k]==tag)
@@ -2021,14 +2021,14 @@ static void TeX_readHeightDepth(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    int i, gcnt;
 
    afseek(ttf, base, SEEK_SET);
-   if (getushort(ttf) != 0)	/* Don't know how to read this version of the subtable */
+   if (aget_uint16_be(ttf) != 0)	/* Don't know how to read this version of the subtable */
       return;
-   gcnt=getushort(ttf);
+   gcnt=aget_uint16_be(ttf);
    for (i=0; i < gcnt && i < info->glyph_cnt; ++i) {
       int h, d;
 
-      h=getushort(ttf);
-      d=getushort(ttf);
+      h=aget_uint16_be(ttf);
+      d=aget_uint16_be(ttf);
       if (info->chars[i] != NULL) {
 	 info->chars[i]->tex_height=h;
 	 info->chars[i]->tex_depth=d;
@@ -2040,13 +2040,13 @@ static void TeX_readItalicCorr(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    int i, gcnt;
 
    afseek(ttf, base, SEEK_SET);
-   if (getushort(ttf) != 0)	/* Don't know how to read this version of the subtable */
+   if (aget_uint16_be(ttf) != 0)	/* Don't know how to read this version of the subtable */
       return;
-   gcnt=getushort(ttf);
+   gcnt=aget_uint16_be(ttf);
    for (i=0; i < gcnt && i < info->glyph_cnt; ++i) {
       int ital;
 
-      ital=getushort(ttf);
+      ital=aget_uint16_be(ttf);
       if (info->chars[i] != NULL) {
 	 info->chars[i]->italic_correction=ital;
       }
@@ -2061,14 +2061,14 @@ void tex_read(AFILE *ttf, struct ttfinfo *info) {
 
    afseek(ttf, info->tex_start, SEEK_SET);
 
-   if (getlong(ttf) != 0x00010000)
+   if (aget_int32_be(ttf) != 0x00010000)
       return;
-   n=getlong(ttf);
+   n=aget_int32_be(ttf);
    if (n >= MAX_SUBTABLE_TYPES + 30)
       n=MAX_SUBTABLE_TYPES + 30;
    for (i=0; i < n; ++i) {
-      tagoff[i].tag=getlong(ttf);
-      tagoff[i].offset=getlong(ttf);
+      tagoff[i].tag=aget_int32_be(ttf);
+      tagoff[i].offset=aget_int32_be(ttf);
    }
    for (i=0; i < n; ++i)
       switch (tagoff[i].tag) {
@@ -2356,17 +2356,17 @@ void ttf_bdf_read(AFILE *ttf, struct ttfinfo *info) {
    if (info->bdf_start==0)
       return;
    afseek(ttf, info->bdf_start, SEEK_SET);
-   if (getushort(ttf) != 1)
+   if (aget_uint16_be(ttf) != 1)
       return;
-   strike_cnt=getushort(ttf);
-   string_start=getlong(ttf) + info->bdf_start;
+   strike_cnt=aget_uint16_be(ttf);
+   string_start=aget_int32_be(ttf) + info->bdf_start;
 
    bdfinfo=malloc(strike_cnt * sizeof(struct bdfinfo));
    for (i=0; i < strike_cnt; ++i) {
       int ppem, num_items;
 
-      ppem=getushort(ttf);
-      num_items=getushort(ttf);
+      ppem=aget_uint16_be(ttf);
+      num_items=aget_uint16_be(ttf);
       for (bdf=info->bitmaps; bdf != NULL; bdf=bdf->next)
 	 if (bdf->pixelsize==ppem)
 	    break;
@@ -2381,9 +2381,9 @@ void ttf_bdf_read(AFILE *ttf, struct ttfinfo *info) {
 	 bdf->prop_cnt=bdfinfo[i].cnt;
 	 bdf->props=malloc(bdf->prop_cnt * sizeof(BDFProperties));
 	 for (j=k=0; j < bdfinfo[i].cnt; ++j, ++k) {
-	    long name=getlong(ttf);
-	    int type=getushort(ttf);
-	    long value=getlong(ttf);
+	    long name=aget_int32_be(ttf);
+	    int type=aget_uint16_be(ttf);
+	    long value=aget_int32_be(ttf);
 
 	    bdf->props[k].type=type;
 	    bdf->props[k].name=getstring(ttf, string_start + name);

@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: parsettfbmf.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -182,12 +182,12 @@ static void ttfreadbmfglyph(AFILE *ttf,struct ttfinfo *info,
 
    if (imageformat==8 || imageformat==9) {
       /* composite */
-      num=getushort(ttf);
+      num=aget_uint16_be(ttf);
       bdfc->bitmap=calloc(1, sizeof(uint8_t));
       bdfc->bytes_per_line=1;
       for (i=0; i < num; ++i) {
 	 ref=calloc(1, sizeof(BDFRefChar));
-	 ref->gid=getushort(ttf);
+	 ref->gid=aget_uint16_be(ttf);
 	 ref->xoff=(int8_t) agetc(ttf);
 	 ref->yoff=(int8_t) agetc(ttf);
 	 if (prev==NULL)
@@ -395,9 +395,9 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
    afseek(ttf, info->bitmaploc_start + head->indexSubTableArrayOffset,
 	 SEEK_SET);
    for (j=0; j < head->numIndexSubTables; ++j) {
-      first=getushort(ttf);
-      last=getushort(ttf);
-      moreoff=getlong(ttf);
+      first=aget_uint16_be(ttf);
+      last=aget_uint16_be(ttf);
+      moreoff=aget_int32_be(ttf);
       if (last < first) {
 	 ErrorMsg(2,"Bad format of subtable %d (of %d) in bloc/EBLC of strike with pixelsize=%d. First=%d, last=%d.\n",
 		  j, head->numIndexSubTables, bdf->pixelsize, first, last);
@@ -409,18 +409,18 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 	    info->bitmaploc_start + head->indexSubTableArrayOffset + moreoff,
 	    SEEK_SET);
 
-      indexformat=getushort(ttf);
-      imageformat=getushort(ttf);
-      offset=getlong(ttf);
+      indexformat=aget_uint16_be(ttf);
+      imageformat=aget_uint16_be(ttf);
+      offset=aget_int32_be(ttf);
       switch (indexformat) {
 	case 1:
 	case 3:
 	   glyphoffsets=malloc((last - first + 2) * sizeof(int32_t));
 	   for (i=0; i < (last - first + 2); ++i)
 	      glyphoffsets[i] =
-		 indexformat==3 ? getushort(ttf) : getlong(ttf);
+		 indexformat==3 ? aget_uint16_be(ttf) : aget_int32_be(ttf);
 	   if (indexformat==3 && ((last - first) & 1))
-	      getushort(ttf);
+	      aget_uint16_be(ttf);
 	   for (i=0; i <= last - first; ++i) {
 	      if (info->inuse==NULL || info->inuse[i + first])
 		 ttfreadbmfglyph(ttf, info, offset + glyphoffsets[i],
@@ -430,7 +430,7 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 	   free(glyphoffsets);
 	   break;
 	case 2:
-	   size=getlong(ttf);
+	   size=aget_int32_be(ttf);
 	   big.height=agetc(ttf);
 	   big.width=agetc(ttf);
 	   big.hbearingX=(signed char) agetc(ttf);
@@ -451,12 +451,12 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 	   }
 	   break;
 	case 4:
-	   num=getlong(ttf);
+	   num=aget_int32_be(ttf);
 	   glyphoffsets=malloc((num + 1) * sizeof(int32_t));
 	   glyphs=malloc((num + 1) * sizeof(int32_t));
 	   for (g=0; g < num + 1; ++g) {
-	      glyphs[g]=getushort(ttf);
-	      glyphoffsets[g]=getushort(ttf);
+	      glyphs[g]=aget_uint16_be(ttf);
+	      glyphoffsets[g]=aget_uint16_be(ttf);
 	   }
 	   for (i=0, g=0; i <= last - first; ++i, ++g) {
 	      if ((info->inuse==NULL || info->inuse[i + first]) && g < num)
@@ -468,7 +468,7 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 	   free(glyphs);
 	   break;
 	case 5:
-	   size=getlong(ttf);
+	   size=aget_int32_be(ttf);
 	   big.height=agetc(ttf);
 	   big.width=agetc(ttf);
 	   big.hbearingX=(signed char) agetc(ttf);
@@ -477,13 +477,13 @@ static void readttfbitmapfont(AFILE *ttf,struct ttfinfo *info,
 	   big.vbearingX=(signed char) agetc(ttf);
 	   big.vbearingY=(signed char) agetc(ttf);
 	   big.vadvance=agetc(ttf);
-	   num=getlong(ttf);
+	   num=aget_int32_be(ttf);
 	   glyphs=malloc((num + 1) * sizeof(int32_t));
 	   for (g=0; g < num; ++g) {
-	      glyphs[g]=getushort(ttf);
+	      glyphs[g]=aget_uint16_be(ttf);
 	   }
 	   if (num & 1)
-	      getushort(ttf);	/* padding */
+	      aget_uint16_be(ttf);	/* padding */
 	   for (i=first, g=0; i <= last; ++i, ++g) {
 	      if ((info->inuse==NULL || info->inuse[i + first]) && g < num)
 		 ttfreadbmfglyph(ttf, info, offset,
@@ -513,9 +513,9 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
    char buf[300];
 
    afseek(ttf, info->bitmaploc_start, SEEK_SET);
-					/* version=*/ getlong(ttf);
+					/* version=*/ aget_int32_be(ttf);
 					/* Had better be 0x00020000, or 2.0 */
-   cnt=getlong(ttf);
+   cnt=aget_int32_be(ttf);
    sizes=malloc(cnt * sizeof(struct ttfsizehead));
    /* we may not like all the possible bitmaps. Some might be designed for */
    /*  non-square pixels, others might be color, others might be */
@@ -527,10 +527,10 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
 	 break;
       }
       good=true;
-      sizes[j].indexSubTableArrayOffset=getlong(ttf);
-      /* size=*/ getlong(ttf);
-      sizes[j].numIndexSubTables=getlong(ttf);
-      if ( /* colorRef=*/ getlong(ttf) != 0)
+      sizes[j].indexSubTableArrayOffset=aget_int32_be(ttf);
+      /* size=*/ aget_int32_be(ttf);
+      sizes[j].numIndexSubTables=aget_int32_be(ttf);
+      if ( /* colorRef=*/ aget_int32_be(ttf) != 0)
 	 good=false;
       sizes[j].ascent=agetc(ttf);
       sizes[j].descent=agetc(ttf);
@@ -538,8 +538,8 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
 	 agetc(ttf);		/* Horizontal Line Metrics */
       for (k=0; k < 12; ++k)
 	 agetc(ttf);		/* Vertical   Line Metrics */
-      sizes[j].firstglyph=getushort(ttf);
-      sizes[j].endglyph=getushort(ttf);
+      sizes[j].firstglyph=aget_uint16_be(ttf);
+      sizes[j].endglyph=aget_uint16_be(ttf);
       sizes[j].ppem=agetc(ttf);	/* X */
       if ( /* ppemY */ agetc(ttf) != sizes[j].ppem)
 	 good=false;

@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: splinesaveafm.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -525,18 +525,18 @@ int LoadKerningDataFromTfm(SplineFont *sf, char *filename, EncMap * map) {
 
    if (file==NULL)
       return (0);
-   tfmd.file_len=getushort(file);
-   tfmd.head_len=getushort(file);
-   tfmd.first=getushort(file);
-   tfmd.last=getushort(file);
-   tfmd.width_size=getushort(file);
-   tfmd.height_size=getushort(file);
-   tfmd.depth_size=getushort(file);
-   tfmd.italic_size=getushort(file);
-   tfmd.ligkern_size=getushort(file);
-   tfmd.kern_size=getushort(file);
-   tfmd.esize=getushort(file);
-   tfmd.param_size=getushort(file);
+   tfmd.file_len=aget_uint16_be(file);
+   tfmd.head_len=aget_uint16_be(file);
+   tfmd.first=aget_uint16_be(file);
+   tfmd.last=aget_uint16_be(file);
+   tfmd.width_size=aget_uint16_be(file);
+   tfmd.height_size=aget_uint16_be(file);
+   tfmd.depth_size=aget_uint16_be(file);
+   tfmd.italic_size=aget_uint16_be(file);
+   tfmd.ligkern_size=aget_uint16_be(file);
+   tfmd.kern_size=aget_uint16_be(file);
+   tfmd.esize=aget_uint16_be(file);
+   tfmd.param_size=aget_uint16_be(file);
    if (tfmd.first - 1 > tfmd.last || tfmd.last >= 256) {
       afclose(file);
       return (0);
@@ -551,7 +551,7 @@ int LoadKerningDataFromTfm(SplineFont *sf, char *filename, EncMap * map) {
    tfmd.charlist=charlist;
 
    afseek(file, (6 + 1) * sizeof(int32_t), SEEK_SET);
-   sf->design_size=(5 * getlong(file) + (1<<18)) >> 19;	/* TeX stores as <<20, adobe in decipoints */
+   sf->design_size=(5 * aget_int32_be(file) + (1<<18)) >> 19;	/* TeX stores as <<20, adobe in decipoints */
    afseek(file,
 	 (6 + tfmd.head_len + (tfmd.last - tfmd.first + 1)) * sizeof(int32_t),
 	 SEEK_SET);
@@ -563,7 +563,7 @@ int LoadKerningDataFromTfm(SplineFont *sf, char *filename, EncMap * map) {
    afread(tfmd.kerntab, 1, tfmd.kern_size * sizeof(int32_t), file);
    afread(tfmd.ext, 1, tfmd.esize * sizeof(int32_t), file);
    for (i=0; i < 22 && i < tfmd.param_size; ++i)
-      sf->texdata.params[i]=getlong(file);
+      sf->texdata.params[i]=aget_int32_be(file);
    if (tfmd.param_size==22)
       sf->texdata.type=tex_math;
    else if (tfmd.param_size==13)
@@ -769,20 +769,20 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
    /* No one bothered to mention this in the docs, but there appears to be */
    /*  an initial 0 in an ofm file. I wonder if that is the level? */
    /* according to the ofm2opl source, it is the level */
-   level=getlong(file);
-   tfmd.file_len=getlong(file);
-   tfmd.head_len=getlong(file);
-   tfmd.first=getlong(file);
-   tfmd.last=getlong(file);
-   tfmd.width_size=getlong(file);
-   tfmd.height_size=getlong(file);
-   tfmd.depth_size=getlong(file);
-   tfmd.italic_size=getlong(file);
-   tfmd.ligkern_size=getlong(file);
-   tfmd.kern_size=getlong(file);
-   tfmd.esize=getlong(file);
-   tfmd.param_size=getlong(file);
-   font_dir=getlong(file);
+   level=aget_int32_be(file);
+   tfmd.file_len=aget_int32_be(file);
+   tfmd.head_len=aget_int32_be(file);
+   tfmd.first=aget_int32_be(file);
+   tfmd.last=aget_int32_be(file);
+   tfmd.width_size=aget_int32_be(file);
+   tfmd.height_size=aget_int32_be(file);
+   tfmd.depth_size=aget_int32_be(file);
+   tfmd.italic_size=aget_int32_be(file);
+   tfmd.ligkern_size=aget_int32_be(file);
+   tfmd.kern_size=aget_int32_be(file);
+   tfmd.esize=aget_int32_be(file);
+   tfmd.param_size=aget_int32_be(file);
+   font_dir=aget_int32_be(file);
    if (tfmd.first - 1 > tfmd.last || tfmd.last >= 65536) {
       afclose(file);
       return (0);
@@ -796,21 +796,21 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
 	 nkp, nwp;
       int level1=0;
 
-      nco=getlong(file);
-      ncw=getlong(file);
-      npc=getlong(file);
-      nki=getlong(file);
-      nwi=getlong(file);
-      nkf=getlong(file);
-      nwf=getlong(file);
-      nkm=getlong(file);
-      nwm=getlong(file);
-      nkr=getlong(file);
-      nwr=getlong(file);
-      nkg=getlong(file);
-      nwg=getlong(file);
-      nkp=getlong(file);
-      nwp=getlong(file);
+      nco=aget_int32_be(file);
+      ncw=aget_int32_be(file);
+      npc=aget_int32_be(file);
+      nki=aget_int32_be(file);
+      nwi=aget_int32_be(file);
+      nkf=aget_int32_be(file);
+      nwf=aget_int32_be(file);
+      nkm=aget_int32_be(file);
+      nwm=aget_int32_be(file);
+      nkr=aget_int32_be(file);
+      nwr=aget_int32_be(file);
+      nkg=aget_int32_be(file);
+      nwg=aget_int32_be(file);
+      nkp=aget_int32_be(file);
+      nwp=aget_int32_be(file);
       level1 =
 	 tfmd.file_len ==
 	 29 + tfmd.head_len + ncw + tfmd.width_size + tfmd.height_size +
@@ -836,7 +836,7 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
    tfmd.httab=calloc(tfmd.height_size, sizeof(int32_t));
    tfmd.widtab=calloc(tfmd.width_size, sizeof(int32_t));
    afseek(file, (14 + 1) * sizeof(int32_t), SEEK_SET);
-   sf->design_size=(5 * getlong(file) + (1<<18)) >> 19;	/* TeX stores as <<20, adobe in decipoints */
+   sf->design_size=(5 * aget_int32_be(file) + (1<<18)) >> 19;	/* TeX stores as <<20, adobe in decipoints */
    afseek(file,
 	 (14 + tfmd.head_len +
 	  2 * (tfmd.last - tfmd.first + 1)) * sizeof(int32_t), SEEK_SET);
@@ -848,7 +848,7 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
    afread(tfmd.kerntab, 1, tfmd.kern_size * sizeof(int32_t), file);
    afread(tfmd.ext, 1, tfmd.esize * 2 * sizeof(int32_t), file);
    for (i=0; i < 22 && i < tfmd.param_size; ++i)
-      sf->texdata.params[i]=getlong(file);
+      sf->texdata.params[i]=aget_int32_be(file);
    if (tfmd.param_size==22)
       sf->texdata.type=tex_math;
    else if (tfmd.param_size==13)
@@ -864,12 +864,12 @@ int LoadKerningDataFromOfm(SplineFont *sf, char *filename, EncMap * map) {
 
    afseek(file, (14 + tfmd.head_len) * sizeof(int32_t), SEEK_SET);
    for (i=tfmd.first; i <= tfmd.last; ++i) {
-      width=getushort(file);
+      width=aget_uint16_be(file);
       height=agetc(file);
       depth=agetc(file);
       ictag=agetc(file);
       tag=agetc(file) & 0x3;	/* Remaining 6 bytes are "reserved for future use" I think */
-      left=getushort(file);
+      left=aget_uint16_be(file);
       if (tag==1)
 	 ofmDoLigKern(sf, i, left, &tfmd, map);
       else if (tag==2)

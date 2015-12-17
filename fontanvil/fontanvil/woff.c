@@ -1,4 +1,4 @@
-/* $Id: woff.c 4156 2015-09-02 07:51:02Z mskala $ */
+/* $Id: woff.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2010-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -231,33 +231,33 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
    afseek(woff, 0, SEEK_END);
    len=aftell(woff);
    afseek(woff,0,SEEK_SET);
-   if (getlong(woff) != CHR('w', 'O', 'F', 'F')) {
+   if (aget_int32_be(woff) != CHR('w', 'O', 'F', 'F')) {
       ErrorMsg(2,"Bad signature in WOFF\n");
       return (NULL);
    }
-   flavour=getlong(woff);
+   flavour=aget_int32_be(woff);
    iscff=(flavour==CHR('O', 'T', 'T', 'O'));
-   len_stated=getlong(woff);
+   len_stated=aget_int32_be(woff);
    if (len != len_stated) {
       ErrorMsg(2,"File length as specified in the WOFF header does not match the actual file length.\n");
       return (NULL);
    }
 
-   num_tabs=getushort(woff);
-   if (getushort(woff) != 0) {
+   num_tabs=aget_uint16_be(woff);
+   if (aget_uint16_be(woff) != 0) {
       ErrorMsg(2,"Bad WOFF header, a field which must be 0 is not.\n");
       return (NULL);
    }
 
    /* total_uncompressed_sfnt_size=*/
-   getlong(woff);
-   major=getushort(woff);
-   minor=getushort(woff);
-   metaOffset=getlong(woff);
-   metaLenCompressed=getlong(woff);
-   metaLenUncompressed=getlong(woff);
-   privOffset=getlong(woff);
-   privLength=getlong(woff);
+   aget_int32_be(woff);
+   major=aget_uint16_be(woff);
+   minor=aget_uint16_be(woff);
+   metaOffset=aget_int32_be(woff);
+   metaLenCompressed=aget_int32_be(woff);
+   metaLenUncompressed=aget_int32_be(woff);
+   privOffset=aget_int32_be(woff);
+   privLength=aget_int32_be(woff);
 
    sfnt=atmpfile();
    if (sfnt==NULL) {
@@ -278,11 +278,11 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
       putlong(sfnt, 0);
 
    for (i=0; i < num_tabs; ++i) {
-      tag=getlong(woff);
-      offset=getlong(woff);
-      compLen=getlong(woff);
-      uncompLen=getlong(woff);
-      checksum=getlong(woff);
+      tag=aget_int32_be(woff);
+      offset=aget_int32_be(woff);
+      compLen=aget_int32_be(woff);
+      uncompLen=aget_int32_be(woff);
+      checksum=aget_int32_be(woff);
       if (compLen > uncompLen || offset + compLen > len) {
 	 afclose(sfnt);
 	 if (compLen > uncompLen)
@@ -419,14 +419,14 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
    filelen=aftell(sfnt);
    afseek(sfnt,0,SEEK_SET);
 
-   flavour=getlong(sfnt);
+   flavour=aget_int32_be(sfnt);
    /* The woff standard says we should accept all flavours of sfnt, so can't */
    /*  test flavour to make sure we've got a valid sfnt */
    /* But we can test the rest of the header for consistancy */
-   num_tabs=getushort(sfnt);
-   (void) getushort(sfnt);
-   (void) getushort(sfnt);
-   (void) getushort(sfnt);
+   num_tabs=aget_uint16_be(sfnt);
+   (void) aget_uint16_be(sfnt);
+   (void) aget_uint16_be(sfnt);
+   (void) aget_uint16_be(sfnt);
 
    afseek(woff,0,SEEK_SET);
    putlong(woff, CHR('w', 'O', 'F', 'F'));
@@ -448,10 +448,10 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
       putlong(woff, 0);
 
    for (i=0; i < num_tabs; ++i) {
-      tag=getlong(sfnt);
-      checksum=getlong(sfnt);
-      offset=getlong(sfnt);
-      uncompLen=getlong(sfnt);
+      tag=aget_int32_be(sfnt);
+      checksum=aget_int32_be(sfnt);
+      offset=aget_int32_be(sfnt);
+      uncompLen=aget_int32_be(sfnt);
       here=aftell(sfnt);
       newoffset=aftell(woff);
       compLen =

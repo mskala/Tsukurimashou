@@ -1,4 +1,4 @@
-/* $Id: gimage.c 4449 2015-11-26 17:59:06Z mskala $ */
+/* $Id: gimage.c 4506 2015-12-17 09:35:51Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* Copyright (C) 2015  Matthew Skala */
 /*
@@ -44,31 +44,11 @@
 
 /* GENERAL UTILITY FUNCTIONS */
 
-static int getshort(AFILE *fp) {
-   int ch1,ch2;
-
-   if ((ch1=agetc(fp))<0 || (ch2=agetc(fp))<0)
-      return -1;
-   return ((ch2<<8)|ch1);
-}
-
-static long getlong_le(AFILE *fp,int32_t *value) {
-   int ch1,ch2,ch3,ch4;
-
-   if ((ch1=agetc(fp))<0 || (ch2=agetc(fp))<0 ||
-       (ch3=agetc(fp))<0 || (ch4=agetc(fp))<0) {
-      *value=0;
-      return -1;
-   }
-   *value=(long)((ch4<<24)|(ch3<<16)|(ch2<<8)|ch1);
-   return 0;
-}
-
 static int readlongtab(AFILE *fp,uint32_t *tab,int tablen) {
    int i;
 
    for (i=0;i<tablen;i++)
-     if (getlong_le(fp,(int32_t *)&tab[i]))
+     if (aread_int32_le(fp,(int32_t *)&tab[i]))
        return -1;		/* had a read error */
    return 0;			/* read everything okay */
 }
@@ -121,29 +101,29 @@ static int fillbmpheader(AFILE *fp,struct bmpheader *head) {
    uint32_t temp;
 
    if (agetc(fp) != 'B' || agetc(fp) != 'M' ||	/* Bad format */
-       getlong_le(fp, &head->size) ||
-       (head->mbz1=getshort(fp)) < 0 ||
-       (head->mbz2=getshort(fp)) < 0 ||
-       getlong_le(fp, &head->offset) || getlong_le(fp, &head->headersize))
+       aread_int32_le(fp, &head->size) ||
+       (head->mbz1=aget_uint16_le(fp)) < 0 ||
+       (head->mbz2=aget_uint16_le(fp)) < 0 ||
+       aread_int32_le(fp, &head->offset) || aread_int32_le(fp, &head->headersize))
      return -1;
    
    if (head->headersize == 12) {	/* Windows 2.0 format, also OS/2 */
-      if ((head->width=getshort(fp)) < 0 ||
-	  (head->height=getshort(fp)) < 0 ||
-	  (head->planes=getshort(fp)) < 0 ||
-	  (head->bitsperpixel=getshort(fp)) < 0)
+      if ((head->width=aget_uint16_le(fp)) < 0 ||
+	  (head->height=aget_uint16_le(fp)) < 0 ||
+	  (head->planes=aget_uint16_le(fp)) < 0 ||
+	  (head->bitsperpixel=aget_uint16_le(fp)) < 0)
 	return -1;
    } else {
-      if (getlong_le(fp, &head->width) ||
-	  getlong_le(fp, &head->height) ||
-	  (head->planes=getshort(fp)) < 0 ||
-	  (head->bitsperpixel=getshort(fp)) < 0 ||
-	  getlong_le(fp, &head->compression) ||
-	  getlong_le(fp, &head->imagesize) ||
-	  getlong_le(fp, &head->ignore1) ||
-	  getlong_le(fp, &head->ignore2) ||
-	  getlong_le(fp, &head->colorsused) ||
-	  getlong_le(fp, &head->colorsimportant))
+      if (aread_int32_le(fp, &head->width) ||
+	  aread_int32_le(fp, &head->height) ||
+	  (head->planes=aget_uint16_le(fp)) < 0 ||
+	  (head->bitsperpixel=aget_uint16_le(fp)) < 0 ||
+	  aread_int32_le(fp, &head->compression) ||
+	  aread_int32_le(fp, &head->imagesize) ||
+	  aread_int32_le(fp, &head->ignore1) ||
+	  aread_int32_le(fp, &head->ignore2) ||
+	  aread_int32_le(fp, &head->colorsused) ||
+	  aread_int32_le(fp, &head->colorsimportant))
 	return -1;
    }
    if (head->height < 0)
@@ -187,28 +167,28 @@ static int fillbmpheader(AFILE *fp,struct bmpheader *head) {
 	return -1;
    }
    if (head->compression == 3 || head->headersize == 108) {
-      if (getlong_le(fp, &head->red_mask) ||
-	  getlong_le(fp, &head->green_mask) || getlong_le(fp, &head->blue_mask))
+      if (aread_int32_le(fp, &head->red_mask) ||
+	  aread_int32_le(fp, &head->green_mask) || aread_int32_le(fp, &head->blue_mask))
 	return (-1);
       head->red_shift=bitshift(head->red_mask);
       head->green_shift=bitshift(head->green_mask);
       head->blue_shift=bitshift(head->blue_mask);
    }
 
-   if (head->headersize == 108 && (getlong_le(fp, &temp) ||	/* alpha_mask */
-				   getlong_le(fp, &temp) ||	/* color space type */
-				   getlong_le(fp, &temp) ||	/* redx */
-				   getlong_le(fp, &temp) ||	/* redy */
-				   getlong_le(fp, &temp) ||	/* redz */
-				   getlong_le(fp, &temp) ||	/* greenx */
-				   getlong_le(fp, &temp) ||	/* greeny */
-				   getlong_le(fp, &temp) ||	/* greenz */
-				   getlong_le(fp, &temp) ||	/* bluex */
-				   getlong_le(fp, &temp) ||	/* bluey */
-				   getlong_le(fp, &temp) ||	/* bluez */
-				   getlong_le(fp, &temp) ||	/* gammared */
-				   getlong_le(fp, &temp) ||	/* gammagreen */
-				   getlong_le(fp, &temp)) /* gammablue */ )
+   if (head->headersize == 108 && (aread_int32_le(fp, &temp) ||	/* alpha_mask */
+				   aread_int32_le(fp, &temp) ||	/* color space type */
+				   aread_int32_le(fp, &temp) ||	/* redx */
+				   aread_int32_le(fp, &temp) ||	/* redy */
+				   aread_int32_le(fp, &temp) ||	/* redz */
+				   aread_int32_le(fp, &temp) ||	/* greenx */
+				   aread_int32_le(fp, &temp) ||	/* greeny */
+				   aread_int32_le(fp, &temp) ||	/* greenz */
+				   aread_int32_le(fp, &temp) ||	/* bluex */
+				   aread_int32_le(fp, &temp) ||	/* bluey */
+				   aread_int32_le(fp, &temp) ||	/* bluez */
+				   aread_int32_le(fp, &temp) ||	/* gammared */
+				   aread_int32_le(fp, &temp) ||	/* gammagreen */
+				   aread_int32_le(fp, &temp)) /* gammablue */ )
      return -1;
 
    return 0;
@@ -379,7 +359,7 @@ static int readpixels(AFILE *file, struct bmpheader *head) {
       for (i=0; i < head->height;i++) {
 	 ii=i * head->width;
 	 for (j=0; j < head->width;j++) {
-	    int pix=getshort(file);
+	    int pix=aget_uint16_le(file);
 
 	    head->int32_pixels[ii + j] =
 	       COLOR_CREATE((pix & head->red_mask) >> head->red_shift,
@@ -388,14 +368,14 @@ static int readpixels(AFILE *file, struct bmpheader *head) {
 	 }
       }
       if (head->width & 1)
-	 getshort(file);
+	 aget_uint16_le(file);
    } else if (head->bitsperpixel == 32) {
       for (i=0; i < head->height;i++) {
 	 ii=i * head->width;
 	 for (j=0; j < head->width;j++) {
 	    uint32_t pix;
 
-	    if (getlong_le(file, &pix))
+	    if (aread_int32_le(file, &pix))
 	       return (1);
 	    head->int32_pixels[ii + j] =
 	       COLOR_CREATE((pix & head->red_mask) >> head->red_shift,
@@ -1614,13 +1594,13 @@ enum cluts { ClutNone, ClutRGB, ClutRaw };
 
 static int getrasheader(SUNRASTER *head,AFILE *fp) {
 /* Get Header info. Return 0 if read input file okay, -1 if read error	*/
-   if (getlong_le(fp, &head->MagicNumber) ||
+   if (aread_int32_le(fp, &head->MagicNumber) ||
        (head->MagicNumber != SUN_RAS_MAGIC
 	&& head->MagicNumber != LITTLE_ENDIAN_MAGIC)
-       || getlong_le(fp, &head->Width) || getlong_le(fp, &head->Height)
-       || getlong_le(fp, &head->Depth) || getlong_le(fp, &head->Length)
-       || getlong_le(fp, &head->Type) || getlong_le(fp, &head->ColorMapType)
-       || getlong_le(fp, &head->ColorMapLength))
+       || aread_int32_le(fp, &head->Width) || aread_int32_le(fp, &head->Height)
+       || aread_int32_le(fp, &head->Depth) || aread_int32_le(fp, &head->Length)
+       || aread_int32_le(fp, &head->Type) || aread_int32_le(fp, &head->ColorMapType)
+       || aread_int32_le(fp, &head->ColorMapLength))
       return (-1);
 
    /* Check if header information okay (only try Big-Endian for now).  */
@@ -1926,18 +1906,18 @@ struct sgiheader {
 
 static int getsgiheader(struct sgiheader *head,AFILE * fp) {
 /* Get Header info. Return 0 if read input file okay, -1 if read error	*/
-   if ((head->magic=getshort(fp)) < 0 || head->magic != SGI_MAGIC ||
+   if ((head->magic=aget_uint16_le(fp)) < 0 || head->magic != SGI_MAGIC ||
        (head->format=agetc(fp)) < 0 ||
        (head->bpc=agetc(fp)) < 0 ||
-       (head->dim=getshort(fp)) < 0 ||
-       (head->width=getshort(fp)) < 0 ||
-       (head->height=getshort(fp)) < 0 ||
-       (head->chans=getshort(fp)) < 0 ||
-       getlong_le(fp, &head->pixmin) ||
-       getlong_le(fp, &head->pixmax) ||
+       (head->dim=aget_uint16_le(fp)) < 0 ||
+       (head->width=aget_uint16_le(fp)) < 0 ||
+       (head->height=aget_uint16_le(fp)) < 0 ||
+       (head->chans=aget_uint16_le(fp)) < 0 ||
+       aread_int32_le(fp, &head->pixmin) ||
+       aread_int32_le(fp, &head->pixmax) ||
        afread(head->dummy, sizeof(head->dummy), 1, fp) < 1 ||
        afread(head->imagename, sizeof(head->imagename), 1, fp) < 1 ||
-       getlong_le(fp, &head->colormap) ||
+       aread_int32_le(fp, &head->colormap) ||
        afread(head->pad, sizeof(head->pad), 1, fp) < 1)
       return (-1);
 
@@ -1996,18 +1976,18 @@ static int find_scanline(AFILE *fp, struct sgiheader *header, int cur,
       }
    }
    while (header->bpc != 1) {
-      if (getlong_le(fp, &val))
+      if (aread_int32_le(fp, &val))
 	 return (-2);
       if ((cnt=(ch & 0x7f)) == 0)
 	 return (0);
       if (ch & 0x80) {
 	 while (--cnt >= 0) {
-	    if (getlong_le(fp, &val))
+	    if (aread_int32_le(fp, &val))
 	       return (-2);
 	    *pt++=scalecolor(header, val);
 	 }
       } else {
-	 if (getlong_le(fp, &val))
+	 if (aread_int32_le(fp, &val))
 	    return (-2);
 	 val=scalecolor(header, val);
 	 while (--cnt >= 0)
@@ -2132,7 +2112,7 @@ GImage *GImageReadRgb(char *filename) {
 				  (header.height - 1 -
 				   i) * base->bytes_per_line);
 	    for (end=pt + header.width; pt < end;) {
-	       if ((k=getshort(fp)) < 0)
+	       if ((k=aget_uint16_le(fp)) < 0)
 		  goto errorGImageReadRgbFile;
 	       *pt++=(k * 255L) / header.pixmax;
 	    }
@@ -2179,17 +2159,17 @@ GImage *GImageReadRgb(char *filename) {
 	 } else {
 	    for (i=0; i < header.height;i++) {
 	       for (j=0; j < header.width;j++) {
-		  if ((k=getshort(fp)) < 0)
+		  if ((k=aget_uint16_le(fp)) < 0)
 		     goto errorGImageReadRgbFile;
 		  r[j]=k * 255L / header.pixmax;
 	       }
 	       for (j=0; j < header.width;j++) {
-		  if ((k=getshort(fp)) < 0)
+		  if ((k=aget_uint16_le(fp)) < 0)
 		     goto errorGImageReadRgbFile;
 		  g[j]=k * 255L / header.pixmax;
 	       }
 	       for (j=0; j < header.width;j++) {
-		  if ((k=getshort(fp)) < 0)
+		  if ((k=aget_uint16_le(fp)) < 0)
 		     goto errorGImageReadRgbFile;
 		  b[j]=k * 255L / header.pixmax;
 	       }
