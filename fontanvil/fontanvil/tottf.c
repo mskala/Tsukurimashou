@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: tottf.c 4511 2015-12-17 18:00:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -585,19 +585,6 @@ static int uniranges[][3]={
    {0xf0000, 0xffffd, 90},	/* Supplementary Private Use Area-A */
    {0x100000, 0x10fffd, 90},	/* Supplementary Private Use Area-B */
 };
-
-static int32_t getuint32(AFILE *ttf) {
-   int32_t ch1,ch2,ch3,ch4;
-
-   ch1=agetc(ttf);
-   ch2=agetc(ttf);
-   ch3=agetc(ttf);
-   ch4=agetc(ttf);
-
-   if (ch4==EOF)
-      return (EOF);
-   return ((ch1 << 24) | (ch2 << 16) | (ch3 << 8) | ch4);
-}
 
 void putshort(AFILE *file, int sval) {
    if (sval < -32768 || sval > 65535)
@@ -5345,7 +5332,7 @@ int32_t filechecksum(AFILE *file) {
 
    afseek(file,0,SEEK_SET);
    while (1) {
-      chunk=getuint32(file);
+      chunk=aget_uint32_be(file);
       if (afeof(file) || aferror(file))
 	 break;
       sum += chunk;

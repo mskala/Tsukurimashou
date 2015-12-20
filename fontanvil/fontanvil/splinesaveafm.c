@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: splinesaveafm.c 4521 2015-12-20 10:07:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2201,21 +2201,6 @@ void SFKernClassTempDecompose(SplineFont *sf, int isv) {
 /* ************************************************************************** */
 /* **************************** Writing PFM files *************************** */
 /* ************************************************************************** */
-static int getlshort(AFILE *pfm) {
-   int ch1;
-
-   ch1=agetc(pfm);
-   return ((agetc(pfm)<<8) | ch1);
-}
-
-static int getlint(AFILE *pfm) {
-   int ch1, ch2, ch3;
-
-   ch1=agetc(pfm);
-   ch2=agetc(pfm);
-   ch3=agetc(pfm);
-   return ((agetc(pfm)<<24) | (ch3<<16) | (ch2<<8) | ch1);
-}
 
 static void putlshort(short val,AFILE *pfm) {
    aputc(val & 0xff, pfm);
@@ -2600,50 +2585,50 @@ int LoadKerningDataFromPfm(SplineFont *sf, char *filename, EncMap * map) {
 
    if (file==NULL)
       return (0);
-   if (getlshort(file) != 0x100) {
+   if (aget_uint16_le(file) != 0x100) {
       afclose(file);
       return (false);
    }
    /* filesize=*/
-   getlint(file);
+   aget_uint32_le(file);
    for (i=0; i < 60; ++i)
       agetc(file);		/* Skip the copyright */
-   /* flags=*/ getlshort(file);
-   /* ptsize=*/ getlshort(file);
-   /* vertres=*/ getlshort(file);
-   /* horres=*/ getlshort(file);
-   /* ascent=*/ getlshort(file);
-   /* int leading=*/ getlshort(file);
-   /* ext leading=*/ getlshort(file);
+   /* flags=*/ aget_uint16_le(file);
+   /* ptsize=*/ aget_uint16_le(file);
+   /* vertres=*/ aget_uint16_le(file);
+   /* horres=*/ aget_uint16_le(file);
+   /* ascent=*/ aget_uint16_le(file);
+   /* int leading=*/ aget_uint16_le(file);
+   /* ext leading=*/ aget_uint16_le(file);
    /* italic=*/ agetc(file);
    /* underline=*/ agetc(file);
    /* strikeout=*/ agetc(file);
-   /* weight=*/ getlshort(file);
+   /* weight=*/ aget_uint16_le(file);
    encoding=agetc(file);
-   /* width=*/ getlshort(file);
-   /* height=*/ getlshort(file);
+   /* width=*/ aget_uint16_le(file);
+   /* height=*/ aget_uint16_le(file);
    /* family=*/ agetc(file);
-   /* avgwid=*/ getlshort(file);
-   /* maxwid=*/ getlshort(file);
+   /* avgwid=*/ aget_uint16_le(file);
+   /* maxwid=*/ aget_uint16_le(file);
    /* first=*/ agetc(file);
    /* last=*/ agetc(file);
    /* space=*/ agetc(file);
    /* word break=*/ agetc(file);
-   widthbytes=getlshort(file);
-   /* off to devname */ getlint(file);
-   /* off to facename */ getlint(file);
-   /* bitspointer */ getlint(file);
-   /* bitsoffset */ getlint(file);
+   widthbytes=aget_uint16_le(file);
+   /* off to devname */ aget_uint32_le(file);
+   /* off to facename */ aget_uint32_le(file);
+   /* bitspointer */ aget_uint32_le(file);
+   /* bitsoffset */ aget_uint32_le(file);
 
    for (i=0; i < widthbytes; ++i)	/* Ignore the width table */
       agetc(file);
-   if (getlshort(file) < 0x12)
+   if (aget_uint16_le(file) < 0x12)
       kernoff=0;		/* Extensions table is too short to hold a kern pointer */
    else {
-      /* extmetrics=*/ getlint(file);
-      /* exttable=*/ getlint(file);
-      /* origin table=*/ getlint(file);
-      kernoff=getlint(file);
+      /* extmetrics=*/ aget_uint32_le(file);
+      /* exttable=*/ aget_uint32_le(file);
+      /* origin table=*/ aget_uint32_le(file);
+      kernoff=aget_uint32_le(file);
    }
    if (kernoff != 0 && !afeof(file)) {
       afseek(file, kernoff, SEEK_SET);
@@ -2655,13 +2640,13 @@ int LoadKerningDataFromPfm(SplineFont *sf, char *filename, EncMap * map) {
 	 for (i=0; i < 256; ++i)
 	    winmap[i]=-1;
       }
-      kerncnt=getlshort(file);
+      kerncnt=aget_uint16_le(file);
       /* Docs say at most 512 kerning pairs. Not worth posting a progress */
       /*  dlg */
       for (i=0; i < kerncnt; ++i) {
 	 ch1=agetc(file);
 	 ch2=agetc(file);
-	 offset=(short) getlshort(file);
+	 offset=(short) aget_uint16_le(file);
 	 if (!afeof(file) && winmap[ch1] != -1 && winmap[ch2] != -1)
 	    KPInsert(sf->glyphs[winmap[ch1]], sf->glyphs[winmap[ch2]], offset,
 		     false);

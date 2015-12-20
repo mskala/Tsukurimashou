@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: fvimportbdf.c 4511 2015-12-17 18:00:51Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1448,35 +1448,11 @@ struct pcfaccel {
 
 /* Code based on Keith Packard's pcfread.c in the X11 distribution */
 
-static int getformint32(AFILE *file,int format) {
-   int val;
+#define getformint32(a,f) \
+   ((f&PCF_BYTE_MASK)?aget_int32_be(a):aget_int32_le(a))
 
-   if (format & PCF_BYTE_MASK) {
-      val=agetc(file);
-      val=(val << 8) | agetc(file);
-      val=(val << 8) | agetc(file);
-      val=(val << 8) | agetc(file);
-   } else {
-      val=agetc(file);
-      val |= (agetc(file) << 8);
-      val |= (agetc(file) << 16);
-      val |= (agetc(file) << 24);
-   }
-   return (val);
-}
-
-static int getformint16(AFILE *file,int format) {
-   int val;
-
-   if (format & PCF_BYTE_MASK) {
-      val=agetc(file);
-      val=(val << 8) | agetc(file);
-   } else {
-      val=agetc(file);
-      val |= (agetc(file) << 8);
-   }
-   return (val);
-}
+#define getformint16(a,f) \
+   ((f&PCF_BYTE_MASK)?aget_int16_be(a):aget_int16_le(a))
 
 static struct toc *pcfReadTOC(AFILE *file) {
    int cnt, i;

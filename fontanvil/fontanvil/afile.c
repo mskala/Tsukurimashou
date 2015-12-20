@@ -1,4 +1,4 @@
-/* $Id: afile.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: afile.c 4521 2015-12-20 10:07:51Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -701,6 +701,44 @@ int32_t aget_uint16_le(AFILE *f) {
      return ((int32_t)b[1]<<8)|((int32_t)b[0]);
    else
      return -1;
+}
+
+int32_t aget_int16_be(AFILE *f) {
+   uint8_t b[2];
+
+   if (afread(&b,1,2,f)==2)
+     return ((int32_t)(int8_t)b[0]<<8)|((int32_t)b[1]);
+   else
+     return -1;
+}
+
+int32_t aget_int16_le(AFILE *f) {
+   uint8_t b[2];
+
+   if (afread(&b,1,2,f)==2)
+     return ((int32_t)(int8_t)b[1]<<8)|((int32_t)b[0]);
+   else
+     return -1;
+}
+
+uint32_t aget_uint32_be(AFILE *f) {
+   uint8_t b[4];
+
+   if (afread(&b,1,4,f)==4)
+     return ((uint32_t)b[0]<<24)|((uint32_t)b[1]<<16)|
+             ((uint32_t)b[2]<<8)|((uint32_t)b[3]);
+   else
+     return 0xFFFFFFFF;
+}
+
+uint32_t aget_uint32_le(AFILE *f) {
+   uint8_t b[4];
+
+   if (afread(&b,1,4,f)==4)
+     return ((uint32_t)b[3]<<24)|((uint32_t)b[2]<<16)|
+             ((uint32_t)b[1]<<8)|((uint32_t)b[0]);
+   else
+     return 0xFFFFFFFF;
 }
 
 int32_t aget_int32_be(AFILE *f) {
