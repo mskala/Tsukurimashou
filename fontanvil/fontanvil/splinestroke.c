@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: splinestroke.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -81,7 +81,7 @@ typedef struct strokecontext {
    enum linejoin join;		/* Only for circles */
    enum linecap cap;		/* Only for circles */
    double miterlimit;		/* Only for circles if join==lj_miter */
-   /* PostScript uses 1/sin( theta/2 ) as their miterlimit */
+   /* PostScript uses 1/sin(theta/2 ) as their miterlimit */
    /*  I use -cos(theta). (where theta is the angle between the slopes */
    /*  same idea, different implementation */
    int n;			/* For polygon pens */

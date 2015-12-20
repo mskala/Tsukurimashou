@@ -1,4 +1,4 @@
-/* $Id: psread.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: psread.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -4730,7 +4730,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		       break;
 		    }
 		    dx=stack[base++];
-		 } else {	/*if ( (v==7 && !(parity&1)) || (v==6 && (parity&1) || v==4 ) */
+		 } else {	/*if ((v==7 && !(parity&1)) || (v==6 && (parity&1) || v==4 ) */
 
 		    if (sp <= base) {
 		       ErrorMsg(2,"Stack underflow on vlineto/vmoveto in %s\n",
@@ -4863,7 +4863,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		       if (sp==base + 1)
 			  dx3=stack[base++];
 		    }
-		 } else {	/*if ( (v==30 && !(polarity&1)) || (v==31 && (polarity&1)) ) */
+		 } else {	/*if ((v==30 && !(polarity&1)) || (v==31 && (polarity&1)) ) */
 
 		    if (sp < 4 + base) {
 		       ErrorMsg(2,"Stack underflow on vhcurveto in %s\n",

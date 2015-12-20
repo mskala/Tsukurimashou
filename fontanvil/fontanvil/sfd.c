@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: sfd.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -309,7 +309,7 @@ static char *SFDReadUTF7Str(AFILE *sfd) {
 	       prev=ch1 & 0xff;
 	       ch1 >>= 8;
 	       prev_cnt=1;
-	    } else {		/* if ( prev_cnt==1 ) */
+	    } else {		/* if (prev_cnt==1 ) */
 
 	       ch1 |= (prev << 24);
 	       prev=(ch1 & 0xffff);
@@ -2463,7 +2463,7 @@ static char *getquotedeol(AFILE *sfd) {
 	 ch=agetc(sfd);
 	 if (ch=='n')
 	    ch='\n';
-	 /* else if ( ch=='\\' ) ch=='\\'; */ /* second backslash of '\\' */
+	 /* else if (ch=='\\' ) ch=='\\'; */ /* second backslash of '\\' */
 
 	 /* FontAnvil doesn't write other escape sequences in this context. */
 	 /* So any other value of ch is assumed impossible. */
@@ -5054,7 +5054,7 @@ static void SFDFixupRefs(SplineFont *sf) {
 	    /*  unchanged characters will already have been fixed up */
 	    /* Er... maybe not. If the character being recovered is refered to */
 	    /*  by another character then we need to fix up that other char too */
-	    /*if ( isautorecovery && !sc->changed ) */
+	    /*if (isautorecovery && !sc->changed ) */
 	    /*continue; */
 	    for (layer=0; layer < sc->layer_cnt; ++layer) {
 	       rprev=NULL;
@@ -5094,7 +5094,7 @@ static void SFDFixupRefs(SplineFont *sf) {
 	    /* In old sfd files we used a peculiar idiom to represent a multiply */
 	    /*  encoded glyph. Fix it up now. Remove the fake glyph and adjust the */
 	    /*  map */
-	    /*if ( isautorecovery && !sc->changed ) */
+	    /*if (isautorecovery && !sc->changed ) */
 	    /*continue; */
 	    for (isv=0; isv < 2; ++isv) {
 	       for (prev=NULL, kp=isv ? sc->vkerns : sc->kerns;

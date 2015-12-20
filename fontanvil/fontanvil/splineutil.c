@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: splineutil.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1531,7 +1531,7 @@ void ApTransform(AnchorPoint * ap, double transform[6]) {
 static void SPTouchControl(SplinePoint *sp,BasePoint *which, int order2) {
     BasePoint to = *which;
 
-    SPAdjustControl( sp, which, &to, order2 );
+    SPAdjustControl(sp, which, &to, order2 );
 }
 
 static void TransformPointExtended(SplinePoint *sp,double transform[6],
@@ -3221,7 +3221,7 @@ int _CubicSolve(const Spline1D * sp, double sought, double ts[3]) {
       delta2 =
 	 (sb * (double) sb -
 	  3 * (double) sa * sc) / (9 * (double) sa * sa);
-      /*if ( RealWithin(delta2,0,.00000001) ) delta2=0; */
+      /*if (RealWithin(delta2,0,.00000001) ) delta2=0; */
 
       /* the descriminant is yN^2-h^2, but delta might be <0 so avoid using h */
       d=yN * yN - 4 * sa * sa * delta2 * delta2 * delta2;
@@ -3252,14 +3252,14 @@ int _CubicSolve(const Spline1D * sp, double sought, double ts[3]) {
 	       ts[i++]=xN + 2 * delta * cos(4.1887902 + theta);	/* 4*pi/3 FLOATMAGIC */
 	    }
 	 }
-      } else if ( /* d==0 && */ delta2 != 0) {
+      } else if (/* d==0 && */ delta2 != 0) {
 	 delta=yN / (2 * sa);
 	 delta =
 	    delta==0 ? 0 : delta > 0 ? pow(delta, 1. / 3.) : -pow(-delta,
 								    1. / 3.);
 	 ts[i++]=xN + delta;	/* this root twice, but that's irrelevant to me */
 	 ts[i++]=xN - 2 * delta;
-      } else if ( /* d==0 && */ delta2==0) {
+      } else if (/* d==0 && */ delta2==0) {
 	 if (xN >= -0.0001 && xN <= 1.0001) /* FLOATMAGIC */
 	    ts[0]=xN;
       }
@@ -3361,64 +3361,64 @@ double SplineSolveFixup(const Spline1D *sp, double tmin, double tmax, double sou
     double val, valp, valm;
 
     CubicSolve(sp,sought,ts);
-    if ( tmax<tmin ) { t=tmax; tmax=tmin; tmin=t; }
-    for ( i=0; i<3; ++i )
-	if ( ts[i]>=tmin && ts[i]<=tmax )
+    if (tmax<tmin ) { t=tmax; tmax=tmin; tmin=t; }
+    for (i=0; i<3; ++i )
+	if (ts[i]>=tmin && ts[i]<=tmax )
     break;
-    if ( i==3 ) {
+    if (i==3 ) {
 	/* nothing in range, but ... */
 	/* did a rounding error take a solution just outside the bounds? */
 	double bestd=.0001; int besti=-1; /* FLOATMAGIC */
 	double off;
-	for ( i=0; i<3 && ts[i]!=-1; ++i ) {
-	    if ( ts[i]<tmin )
+	for (i=0; i<3 && ts[i]!=-1; ++i ) {
+	    if (ts[i]<tmin )
 		off=tmin-ts[i];
 	    else
 		off=ts[i]-tmax;
-	    if ( off<bestd ) {
+	    if (off<bestd ) {
 		bestd=off;
 		besti=i;
 	    }
 	}
-	if ( besti==-1 ) /* FLOATMAGIC */
-return( -1 ); /* FLOATMAGIC */
+	if (besti==-1 ) /* FLOATMAGIC */
+return(-1 ); /* FLOATMAGIC */
 	i=besti;
     }
     t=ts[i];
 
     if ((val=(((sp->a*t+sp->b)*t+sp->c)*t+sp->d) - sought)<0 )
 	val=-val;
-    if ( val!=0 ) {
-	for ( factor=1024.0*1024.0*1024.0*1024.0*1024.0; /* FLOATMAGIC */
+    if (val!=0 ) {
+	for (factor=1024.0*1024.0*1024.0*1024.0*1024.0; /* FLOATMAGIC */
 	      factor>.5; factor/=2.0 ) {
 	    double tp=t + (factor*t)/D_RE_Factor;
 	    double tm=t - (factor*t)/D_RE_Factor;
-	    if ( (valp=(((sp->a*tp+sp->b)*tp+sp->c)*tp+sp->d) - sought)<0 )
+	    if ((valp=(((sp->a*tp+sp->b)*tp+sp->c)*tp+sp->d) - sought)<0 )
 		valp=-valp;
-	    if ( (valm=(((sp->a*tm+sp->b)*tm+sp->c)*tm+sp->d) - sought)<0 )
+	    if ((valm=(((sp->a*tm+sp->b)*tm+sp->c)*tm+sp->d) - sought)<0 )
 		valm=-valm;
-	    if ( valp<val && valp<valm ) {
-		if ( factor==1024.0*1024.0*1024.0*1024*1024 ) { /* FLOATMAGIC */
+	    if (valp<val && valp<valm ) {
+		if (factor==1024.0*1024.0*1024.0*1024*1024 ) { /* FLOATMAGIC */
 		    double it=IterateSplineSolve(sp,tmin,tmax,sought);
-		    printf( "Used %g: orig-t: %g, new-t: %g iter-t: %g\n", (double) factor, (double) t, (double) tp, (double) it );
+		    printf("Used %g: orig-t: %g, new-t: %g iter-t: %g\n", (double) factor, (double) t, (double) tp, (double) it );
 		}
 		t=tp;
 		val=valp;
-	    } else if ( valm<val ) {
-		if ( factor==1024.0*1024.0*1024.0*1024*1024 ) { /* FLOATMAGIC */
+	    } else if (valm<val ) {
+		if (factor==1024.0*1024.0*1024.0*1024*1024 ) { /* FLOATMAGIC */
 		    double it=IterateSplineSolve(sp,tmin,tmax,sought);
-		    printf( "Used -%g: orig-t: %g, new-t: %g iter-t: %g\n", (double) factor, (double) t, (double) tm, (double) it );
+		    printf("Used -%g: orig-t: %g, new-t: %g iter-t: %g\n", (double) factor, (double) t, (double) tm, (double) it );
 		}
 		t=tm;
 		val=valm;
 	    }
 	}
     }
-    if ( t>=tmin && t<=tmax )
-return( t );
+    if (t>=tmin && t<=tmax )
+return(t );
 
   /* WTF dead code?? */
-return( -1 ); /* FLOATMAGIC */
+return(-1 ); /* FLOATMAGIC */
 }
 
 double IterateSplineSolve(const Spline1D * sp, double tmin, double tmax,
@@ -3630,7 +3630,7 @@ static void _SplineFindExtrema(const Spline1D *sp,double *_t1,
    } else if (sp->b != 0) {
       /* Quadratic, at most one extremum */
       t1=-sp->c / (2.0 * (double) sp->b);
-   } else {			/*if ( sp->c!=0 ) */
+   } else {			/*if (sp->c!=0 ) */
 
       /* linear, no extrema */
    }
@@ -3685,7 +3685,7 @@ void SplineFindExtrema(const Spline1D * sp, double * _t1, double * _t2) {
       t1=-sp->c / (2.0 * (double) sp->b);
       if (t1 <= 0 || t1 >= 1)
 	 t1=-1;
-   } else {			/*if ( sp->c!=0 ) */
+   } else {			/*if (sp->c!=0 ) */
 
       /* linear, no extrema */
    }
@@ -3808,8 +3808,8 @@ int Spline2DFindPointsOfInflection(const Spline * sp, double poi[2]) {
    double a, b, c, b2_fourac, t;
 
    /* A POI happens when d2 y/dx2 is zero. This is not the same as d2y/dt2 / d2x/dt2 */
-   /* d2 y/dx^2=d/dt ( dy/dt / dx/dt ) / dx/dt */
-   /*          =( (dx/dt) * d2 y/dt2 - ((dy/dt) * d2 x/dt2) )/ (dx/dt)^3 */
+   /* d2 y/dx^2=d/dt (dy/dt / dx/dt ) / dx/dt */
+   /*          =((dx/dt) * d2 y/dt2 - ((dy/dt) * d2 x/dt2) )/ (dx/dt)^3 */
    /* (3ax*t^2+2bx*t+cx) * (6ay*t+2by) - (3ay*t^2+2by*t+cy) * (6ax*t+2bx)==0 */
    /* (3ax*t^2+2bx*t+cx) * (3ay*t+by) - (3ay*t^2+2by*t+cy) * (3ax*t+bx)==0 */
    /*   9*ax*ay*t^3 + (3ax*by+6bx*ay)*t^2 + (2bx*by+3cx*ay)*t + cx*by     */

@@ -1,4 +1,4 @@
-/* $Id: dumpbdf.c 4305 2015-10-25 10:51:24Z mskala $ */
+/* $Id: dumpbdf.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -50,30 +50,30 @@ static void calculate_bounding_box(BDFFont *font,
    BDFChar *bdfc;
    int i;
 
-   for (i=0; i < font->glyphcnt; ++i) {
+   for (i=0; i<font->glyphcnt; ++i) {
       if ((bdfc=font->glyphs[i]) != NULL) {
 	 if (minx==0 && maxx==0) {
 	    minx=bdfc->xmin;
 	    maxx=bdfc->xmax;
 	 } else {
-	    if (minx > bdfc->xmin)
+	    if (minx>bdfc->xmin)
 	       minx=bdfc->xmin;
-	    if (maxx < bdfc->xmax)
+	    if (maxx<bdfc->xmax)
 	       maxx=bdfc->xmax;
 	 }
 	 if (miny==0 && maxy==0) {
 	    miny=bdfc->ymin;
 	    maxy=bdfc->ymax;
 	 } else {
-	    if (miny > bdfc->ymin)
+	    if (miny>bdfc->ymin)
 	       miny=bdfc->ymin;
-	    if (maxy < bdfc->ymax)
+	    if (maxy<bdfc->ymax)
 	       maxy=bdfc->ymax;
 	 }
       }
    }
-   *fbb_height=maxy - miny + 1;
-   *fbb_width=maxx - minx + 1;
+   *fbb_height=maxy-miny+1;
+   *fbb_width=maxx-minx+1;
    *fbb_descent=miny;
    *fbb_lbearing=minx;
 }
@@ -93,7 +93,7 @@ static void BDFDumpChar(AFILE *file,BDFFont *font,BDFChar *bdfc,int enc,
 			struct metric_defaults *defs) {
    int r, c;
    int bpl;
-   int em=(font->sf->ascent + font->sf->descent);	/* Just in case em isn't 1000, be prepared to normalize */
+   int em=(font->sf->ascent+font->sf->descent);	/* Just in case em isn't 1000, be prepared to normalize */
    int isdup=false;
 
    BCCompressBitmap(bdfc);
@@ -109,49 +109,49 @@ static void BDFDumpChar(AFILE *file,BDFFont *font,BDFChar *bdfc,int enc,
 
    afprintf(file, "ENCODING %d\n", enc);
    if (!(defs->metricssets & MS_Hor) || bdfc->sc->width != defs->swidth)
-      afprintf(file, "SWIDTH %d 0\n", bdfc->sc->width * 1000 / em);
+      afprintf(file, "SWIDTH %d 0\n", bdfc->sc->width * 1000/em);
    if (!(defs->metricssets & MS_Hor) || bdfc->width != defs->dwidth)
       afprintf(file, "DWIDTH %d 0\n", bdfc->width);
    if (font->sf->hasvmetrics) {
       if (!(defs->metricssets & MS_Vert) || bdfc->sc->vwidth != defs->swidth1)
-	 afprintf(file, "SWIDTH1 %d 0\n", bdfc->sc->vwidth * 1000 / em);
+	 afprintf(file, "SWIDTH1 %d 0\n", bdfc->sc->vwidth * 1000/em);
       if (!(defs->metricssets & MS_Vert) || bdfc->vwidth != defs->dwidth1)
 	 afprintf(file, "DWIDTH1 %d 0\n", bdfc->vwidth);
    }
-   afprintf(file, "BBX %d %d %d %d\n", bdfc->xmax - bdfc->xmin + 1,
-	   bdfc->ymax - bdfc->ymin + 1, bdfc->xmin, bdfc->ymin);
+   afprintf(file, "BBX %d %d %d %d\n", bdfc->xmax-bdfc->xmin+1,
+	   bdfc->ymax-bdfc->ymin+1, bdfc->xmin, bdfc->ymin);
    afprintf(file, "BITMAP\n");
    bpl=bdfc->bytes_per_line;
-   for (r=0; r < bdfc->ymax - bdfc->ymin + 1; ++r) {
-      for (c=0; c < bpl; ++c) {
+   for (r=0; r<bdfc->ymax-bdfc->ymin+1; ++r) {
+      for (c=0; c<bpl; ++c) {
 	 if (font->clut==NULL || font->clut->clut_len==256) {
-	    int n1=bdfc->bitmap[r * bdfc->bytes_per_line + c] >> 4;
-	    int n2=bdfc->bitmap[r * bdfc->bytes_per_line + c] & 0xf;
+	    int n1=bdfc->bitmap[r * bdfc->bytes_per_line+c] >> 4;
+	    int n2=bdfc->bitmap[r * bdfc->bytes_per_line+c] & 0xf;
 
 	    if (n1 >= 10)
-	       aputc(n1 - 10 + 'A', file);
+	       aputc(n1-10+'A', file);
 	    else
-	       aputc(n1 + '0', file);
+	       aputc(n1+'0', file);
 	    if (n2 >= 10)
-	       aputc(n2 - 10 + 'A', file);
+	       aputc(n2-10+'A', file);
 	    else
-	       aputc(n2 + '0', file);
+	       aputc(n2+'0', file);
 	 } else if (font->clut->clut_len==16) {
-	    int n1=bdfc->bitmap[r * bdfc->bytes_per_line + c];
+	    int n1=bdfc->bitmap[r * bdfc->bytes_per_line+c];
 
 	    if (n1 >= 10)
-	       aputc(n1 - 10 + 'A', file);
+	       aputc(n1-10+'A', file);
 	    else
-	       aputc(n1 + '0', file);
+	       aputc(n1+'0', file);
 	 } else {
-	    int n1=bdfc->bitmap[r * bdfc->bytes_per_line + c] << 2;
+	    int n1=bdfc->bitmap[r * bdfc->bytes_per_line+c] << 2;
 
-	    if (c < bpl - 1)
-	       n1 += bdfc->bitmap[r * bdfc->bytes_per_line + ++c];
+	    if (c<bpl-1)
+	       n1 += bdfc->bitmap[r * bdfc->bytes_per_line+++c];
 	    if (n1 >= 10)
-	       aputc(n1 - 10 + 'A', file);
+	       aputc(n1-10+'A', file);
 	    else
-	       aputc(n1 + '0', file);
+	       aputc(n1+'0', file);
 	 }
       }
       if (font->clut != NULL)
@@ -172,21 +172,21 @@ static void figureDefMetrics(BDFFont *font,struct metric_defaults *defs) {
    defs->metricssets=MS_Hor | MS_Vert;
    memset(width, 0, sizeof(width));
    memset(vwidth, 0, sizeof(vwidth));
-   for (i=0; i < font->glyphcnt; ++i)
+   for (i=0; i<font->glyphcnt; ++i)
       if ((bdfc=font->glyphs[i]) != NULL) {
-	 if (bdfc->width < 256) {
+	 if (bdfc->width<256) {
 	    ++width[bdfc->width];
 	    wsc[bdfc->width]=bdfc;
 	 }
-	 if (bdfc->vwidth < 256) {
+	 if (bdfc->vwidth<256) {
 	    ++vwidth[bdfc->vwidth];
 	    vsc[bdfc->vwidth]=bdfc;
 	 }
       }
 
    maxi=-1;
-   for (i=0; i < 256; ++i) {
-      if (maxi==-1 || width[i] > width[maxi])
+   for (i=0; i<256; ++i) {
+      if (maxi==-1 || width[i]>width[maxi])
 	 maxi=i;
    }
    if (maxi != -1) {
@@ -194,12 +194,12 @@ static void figureDefMetrics(BDFFont *font,struct metric_defaults *defs) {
       defs->dwidth=maxi;
       defs->swidth =
 	 rint(wsc[maxi]->sc->width * 1000.0 /
-	      (font->sf->ascent + font->sf->descent));
+	      (font->sf->ascent+font->sf->descent));
    }
 
    maxi=-1;
-   for (i=0; i < 256; ++i) {
-      if (maxi==-1 || vwidth[i] > vwidth[maxi])
+   for (i=0; i<256; ++i) {
+      if (maxi==-1 || vwidth[i]>vwidth[maxi])
 	 maxi=i;
    }
    if (maxi != -1) {
@@ -207,7 +207,7 @@ static void figureDefMetrics(BDFFont *font,struct metric_defaults *defs) {
       defs->dwidth1=maxi;
       defs->swidth1 =
 	 rint(vsc[maxi]->sc->vwidth * 1000.0 /
-	      (font->sf->ascent + font->sf->descent));
+	      (font->sf->ascent+font->sf->descent));
    }
 }
 
@@ -215,7 +215,7 @@ static int BdfPropHasKey(BDFFont *font,const char *key,char *buffer,
 			 int len) {
    int i;
 
-   for (i=0; i < font->prop_cnt; ++i)
+   for (i=0; i<font->prop_cnt; ++i)
       if (strcmp(font->props[i].name, key)==0) {
 	 switch (font->props[i].type & ~prt_property) {
 	   case prt_string:
@@ -238,7 +238,7 @@ static void BPSet(BDFFont *font,char *key,int *val,double scale,
 		  int *metricssets, int flag) {
    int i, value;
 
-   for (i=0; i < font->prop_cnt; ++i)
+   for (i=0; i<font->prop_cnt; ++i)
       if (strcmp(font->props[i].name, key)==0) {
 	 switch (font->props[i].type & ~prt_property) {
 	   case prt_atom:
@@ -262,7 +262,7 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
    char temp[200];
    int fbb_height, fbb_width, fbb_descent, fbb_lbearing;
    int pcnt;
-   int em=font->sf->ascent + font->sf->descent;
+   int em=font->sf->ascent+font->sf->descent;
    int i;
    struct xlfd_components components;
    int old_prop_cnt=font->prop_cnt;
@@ -279,19 +279,19 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
 
    memset(defs, -1, sizeof(*defs));
    defs->metricssets=0;
-   BPSet(font, "SWIDTH", &defs->swidth, 1000.0 / em, &defs->metricssets,
+   BPSet(font, "SWIDTH", &defs->swidth, 1000.0/em, &defs->metricssets,
 	 MS_Hor);
    BPSet(font, "DWIDTH", &defs->dwidth, 1.0, &defs->metricssets, MS_Hor);
-   BPSet(font, "SWIDTH1", &defs->swidth1, 1000.0 / em, &defs->metricssets,
+   BPSet(font, "SWIDTH1", &defs->swidth1, 1000.0/em, &defs->metricssets,
 	 MS_Vert);
    BPSet(font, "DWIDTH1", &defs->dwidth1, 1.0, &defs->metricssets, MS_Vert);
    if (font->sf->hasvmetrics && defs->metricssets==0)
       figureDefMetrics(font, defs);
 
    /* Vertical metrics & metrics specified at top level are 2.2 features */
-   afprintf(file, font->clut != NULL ? "STARTFONT 2.3\n" :
+   afprintf(file, font->clut != NULL?"STARTFONT 2.3\n" :
 	   font->sf->hasvmetrics
-	   || defs->metricssets != 0 ? "STARTFONT 2.2\n" : "STARTFONT 2.1\n");
+	   || defs->metricssets != 0?"STARTFONT 2.2\n":"STARTFONT 2.1\n");
    if (!resolution_mismatch
        && BdfPropHasKey(font, "FONT", temp, sizeof(temp)))
       afprintf(file, "FONT %s\n", temp);
@@ -314,15 +314,15 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
    if (BdfPropHasKey(font, "SIZE", temp, sizeof(temp)))
       afprintf(file, "SIZE %s\n", temp);
    else if (font->clut==NULL)
-      afprintf(file, "SIZE %d %d %d\n", components.point_size / 10,
+      afprintf(file, "SIZE %d %d %d\n", components.point_size/10,
 	      components.res_x, components.res_y);
    else
-      afprintf(file, "SIZE %d %d %d  %d\n", components.point_size / 10,
+      afprintf(file, "SIZE %d %d %d  %d\n", components.point_size/10,
 	      components.res_x, components.res_y,
-	      font->clut->clut_len==256 ? 8 : font->clut->clut_len ==
-	      16 ? 4 : 2);
+	      font->clut->clut_len==256?8:font->clut->clut_len ==
+	      16?4:2);
 #else
-   afprintf(file, "SIZE %d %d %d\n", components.point_size / 10,
+   afprintf(file, "SIZE %d %d %d\n", components.point_size/10,
 	   components.res_x, components.res_y);
 #endif
    calculate_bounding_box(font, &fbb_width, &fbb_height, &fbb_lbearing,
@@ -342,14 +342,14 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
       if (defs->dwidth1 != -1)
 	 afprintf(file, "DWIDTH1 %d 0\n", defs->dwidth1);	/* Default advance vwidth value (pixels) */
       if (font->sf->hasvmetrics || (defs->metricssets & MS_Vert))
-	 afprintf(file, "VVECTOR %d,%d\n", font->pixelsize / 2, font->ascent);
+	 afprintf(file, "VVECTOR %d,%d\n", font->pixelsize/2, font->ascent);
       /* Spec doesn't say if vvector is in afm(S) or pixel(D) units */
       /*  but there is an implication that it is in pixel units */
       /*  offset from horizontal origin to vertical orig */
       if (defs->swidth != -1)
-	 defs->swidth=rint(defs->swidth * em / 1000.0);
+	 defs->swidth=rint(defs->swidth * em/1000.0);
       if (defs->swidth1 != -1)
-	 defs->swidth1=rint(defs->swidth1 * em / 1000.0);
+	 defs->swidth1=rint(defs->swidth1 * em/1000.0);
    }
    /* the 2.2 spec says we can omit SWIDTH/DWIDTH from character metrics if we */
    /* specify it here. That would make monospaced fonts a lot smaller, but */
@@ -358,7 +358,7 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
 
    afprintf(file,
 	   "COMMENT \"Generated by fontanvil, http://fontanvil.osdn.jp/\"\n");
-   for (i=0; i < font->prop_cnt; ++i) {
+   for (i=0; i<font->prop_cnt; ++i) {
       if (strcmp(font->props[i].name, "COMMENT")==0 &&
 	  (font->props[i].type==prt_string
 	   || font->props[i].type==prt_atom))
@@ -366,13 +366,13 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
 	    afprintf(file, "COMMENT \"%s\"\n", font->props[i].u.str);
    }
 
-   for (i=pcnt=0; i < font->prop_cnt; ++i) {
+   for (i=pcnt=0; i<font->prop_cnt; ++i) {
       if (font->props[i].type & prt_property)
 	 ++pcnt;
    }
    if (pcnt != 0) {
       afprintf(file, "STARTPROPERTIES %d\n", pcnt);
-      for (i=pcnt=0; i < font->prop_cnt; ++i) {
+      for (i=pcnt=0; i<font->prop_cnt; ++i) {
 	 if (font->props[i].type & prt_property) {
 	    afprintf(file, "%s ", font->props[i].name);
 	    switch (font->props[i].type & ~prt_property) {
@@ -392,7 +392,7 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
 			  && strcmp(font->props[i].name, "POINT_SIZE")==0)
 		    afprintf(file, "%d\n",
 			    ((font->pixelsize * 72 +
-			      components.res_y / 2) / components.res_y) * 10);
+			      components.res_y/2)/components.res_y) * 10);
 		 else
 		    afprintf(file, "%d\n", font->props[i].u.val);
 		 break;
@@ -400,7 +400,7 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
 	 }
       }
    } else {
-      afprintf(file, "STARTPROPERTIES %d\n", 15 + (font->clut != NULL));
+      afprintf(file, "STARTPROPERTIES %d\n", 15+(font->clut != NULL));
       afprintf(file, "FONTNAME_REGISTRY \"\"\n");
       afprintf(file, "FOUNDRY \"%s\"\n", components.foundry);
       afprintf(file, "FAMILY_NAME \"%s\"\n", components.family);
@@ -426,7 +426,7 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
       /* two encodings */
       int i, cnt=0;
 
-      for (i=0; i < map->enccount; ++i) {
+      for (i=0; i<map->enccount; ++i) {
 	 int gid=map->map[i];
 
 	 if (gid != -1 && !IsntBDFChar(font->glyphs[gid]))
@@ -453,7 +453,7 @@ int BDFFontDump(char *filename, BDFFont * font, EncMap * map, int res) {
    struct metric_defaults defs;
    BDFChar *bdfc;
 
-   for (i=0; i < map->enccount; i++)
+   for (i=0; i<map->enccount; i++)
       if ((gid=map->map[i]) != -1 && (bdfc=font->glyphs[gid]) != NULL)
 	 BCPrepareForOutput(bdfc, true);
    if (filename==NULL) {
@@ -466,7 +466,7 @@ int BDFFontDump(char *filename, BDFFont * font, EncMap * map, int res) {
       ErrorMsg(2,"Can't open %s\n", filename);
    else {
       BDFDumpHeader(file, font, map, res, &defs);
-      for (i=0; i < map->enccount; ++i) {
+      for (i=0; i<map->enccount; ++i) {
 	 gid=map->map[i];
 	 if (gid != -1 && !IsntBDFChar(font->glyphs[gid])) {
 	    enc=i;
@@ -483,7 +483,7 @@ int BDFFontDump(char *filename, BDFFont * font, EncMap * map, int res) {
 	 ret=1;
       afclose(file);
    }
-   for (i=0; i < map->enccount; i++)
+   for (i=0; i<map->enccount; i++)
       if ((gid=map->map[i]) != -1 && (bdfc=font->glyphs[gid]) != NULL)
 	 BCRestoreAfterOutput(bdfc);
    return (ret);

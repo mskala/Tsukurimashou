@@ -1,4 +1,4 @@
-/* $Id: tottfaat.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: tottfaat.c 4524 2015-12-20 19:28:13Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -55,10 +55,10 @@ static void DumpKernClass(AFILE *file,uint16_t *class,int cnt,int add,
       if (class[i] && first==-1)
 	 first=i;
    }
-   putshort(file, first);
-   putshort(file, last - first + 1);
+   aput_int16_be_checked(first,file);
+   aput_int16_be_checked(last - first + 1,file);
    for (i=first; i <= last; ++i)
-      putshort(file, class[i] * mul + add);
+      aput_int16_be_checked(class[i] * mul + add,file);
 }
 
 static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
@@ -212,26 +212,26 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 	 for (b=0; b < bmax; ++b) {
 	    c=bmax==1 ? c : breaks[b];
 	    if (version==0) {
-	       putshort(at->kern, 0);	/* subtable version */
+	       aput_int16_be_checked(0,at->kern);	/* subtable version */
 	       if (c > 10920)
 	          ErrorMsg(2,"Too many kern pairs (%d); "
 	                     "at most 10920 are supported.\n",c);
-	       putshort(at->kern, (7 + 3 * c) * sizeof(uint16_t));	/* subtable length */
-	       putshort(at->kern, !isv);	/* coverage, flags=hor/vert&format=0 */
+	       aput_int16_be_checked((7 + 3 * c) * sizeof(uint16_t),at->kern);	/* subtable length */
+	       aput_int16_be_checked(!isv,at->kern);	/* coverage, flags=hor/vert&format=0 */
 	    } else {
 	       putlong(at->kern, (8 + 3 * c) * sizeof(uint16_t));	/* subtable length */
 	       /* Apple's new format has a completely different coverage format */
-	       putshort(at->kern, (isv ? 0x8000 : 0) |	/* format 0, horizontal/vertical flags (coverage) */
-			tupleMask);
-	       putshort(at->kern, tupleIndex);
+	       aput_int16_be_checked((isv ? 0x8000 : 0) |	/* format 0, horizontal/vertical flags (coverage) */
+			tupleMask,at->kern);
+	       aput_int16_be_checked(tupleIndex,at->kern);
 	    }
-	    putshort(at->kern, c);
+	    aput_int16_be_checked(c,at->kern);
 	    for (i=1, j=0; i <= c; i <<= 1, ++j);
 	    i >>= 1;
 	    --j;
-	    putshort(at->kern, i * 6);	/* binary search headers */
-	    putshort(at->kern, j);
-	    putshort(at->kern, 6 * (c - i));
+	    aput_int16_be_checked(i * 6,at->kern);	/* binary search headers */
+	    aput_int16_be_checked(j,at->kern);
+	    aput_int16_be_checked(6 * (c - i),at->kern);
 
 	    for (tot=0; gid < at->gi.gcnt && tot < c; ++gid)
 	       if (at->gi.bygid[gid] != -1) {
@@ -266,9 +266,9 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 		     }
 		  }
 		  for (j=0; j < m; ++j) {
-		     putshort(at->kern, gid);
-		     putshort(at->kern, glnum[j]);
-		     putshort(at->kern, offsets[j]);
+		     aput_int16_be_checked(gid,at->kern);
+		     aput_int16_be_checked(glnum[j],at->kern);
+		     aput_int16_be_checked(offsets[j],at->kern);
 		  }
 		  tot += m;
 	       }
@@ -301,27 +301,27 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 		  ++first_cnt;
 
 	       putlong(at->kern, 0);	/* subtable length */
-	       putshort(at->kern, (isv ? 0x8002 : 2) |	/* format 2, horizontal/vertical flags (coverage) */
-			tupleMask);
-	       putshort(at->kern, tupleIndex);
+	       aput_int16_be_checked((isv ? 0x8002 : 2) |	/* format 2, horizontal/vertical flags (coverage) */
+			tupleMask,at->kern);
+	       aput_int16_be_checked(tupleIndex,at->kern);
 
-	       putshort(at->kern, sizeof(uint16_t) * kc->second_cnt);
-	       putshort(at->kern, 0);	/* left classes */
-	       putshort(at->kern, 0);	/* right classes */
-	       putshort(at->kern, 16);	/* Offset to array, next byte */
+	       aput_int16_be_checked(sizeof(uint16_t) * kc->second_cnt,at->kern);
+	       aput_int16_be_checked(0,at->kern);	/* left classes */
+	       aput_int16_be_checked(0,at->kern);	/* right classes */
+	       aput_int16_be_checked(16,at->kern);	/* Offset to array, next byte */
 
 	       if (kc->firsts[0] != NULL) {
 		  /* Create a dummy class to correspond to the mac's class 0 */
 		  /*  all entries will be 0 */
 		  for (i=0; i < kc->second_cnt; ++i)
-		     putshort(at->kern, 0);
+		     aput_int16_be_checked(0,at->kern);
 	       }
 	       for (i=0; i < kc->first_cnt * kc->second_cnt; ++i)
-		  putshort(at->kern, kc->offsets[i]);
+		  aput_int16_be_checked(kc->offsets[i],at->kern);
 
 	       pos=aftell(at->kern);
 	       afseek(at->kern, len_pos + 10, SEEK_SET);
-	       putshort(at->kern, pos - len_pos);
+	       aput_int16_be_checked(pos - len_pos,at->kern);
 	       afseek(at->kern, pos, SEEK_SET);
 	       class1 =
 		  ClassesFromNames(sf, kc->firsts, kc->first_cnt,
@@ -332,7 +332,7 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 
 	       pos=aftell(at->kern);
 	       afseek(at->kern, len_pos + 12, SEEK_SET);
-	       putshort(at->kern, pos - len_pos);
+	       aput_int16_be_checked(pos - len_pos,at->kern);
 	       afseek(at->kern, pos, SEEK_SET);
 	       class2 =
 		  ClassesFromNames(sf, kc->seconds, kc->second_cnt,
@@ -355,9 +355,9 @@ static void ttf_dumpsfkerns(struct alltabs *at,SplineFont *sf,
 	       uint32_t len_pos=aftell(at->kern), pos;
 
 	       putlong(at->kern, 0);	/* subtable length */
-	       putshort(at->kern, ((sm->flags & 0x8000) ? 0x8001 : 1) |	/* format 1, horizontal/vertical flags (coverage) */
-			tupleMask);
-	       putshort(at->kern, tupleIndex);
+	       aput_int16_be_checked(((sm->flags & 0x8000) ? 0x8001 : 1) |	/* format 1, horizontal/vertical flags (coverage) */
+			tupleMask,at->kern);
+	       aput_int16_be_checked(tupleIndex,at->kern);
 	       morx_dumpASM(at->kern, sm, at, sf);
 
 	       pos=aftell(at->kern);
@@ -409,8 +409,8 @@ void ttf_dumpkerns(struct alltabs *at, SplineFont *sf) {
       /*  we might as well admit that this table is for apple only and use */
       /*  the new format apple recommends. Otherwise, use the old format */
       /* If we might need to store tuple data, use the new format */
-      putshort(at->kern, 0);	/* version */
-      putshort(at->kern, sum);	/* number of subtables */
+      aput_int16_be_checked(0,at->kern);	/* version */
+      aput_int16_be_checked(sum,at->kern);	/* number of subtables */
       version=0;
    } else {
       putlong(at->kern, 0x00010000);	/* version */
@@ -428,7 +428,7 @@ void ttf_dumpkerns(struct alltabs *at, SplineFont *sf) {
 
    at->kernlen=aftell(at->kern);
    if (at->kernlen & 2)
-      putshort(at->kern, 0);	/* pad it */
+      aput_int16_be_checked(0,at->kern);	/* pad it */
 }
 
 /* ************************************************************************** */
@@ -473,13 +473,13 @@ void aat_dumplcar(struct alltabs *at, SplineFont *sf) {
 	    if (k==1)
 	       tot=0;
 	    else if (k==2) {
-	       putshort(lcar, offset);
+	       aput_int16_be_checked(offset,lcar);
 	       offset += 2 + 2 * LigCaretCnt(sc);
 	    } else if (k==3) {
-	       putshort(lcar, LigCaretCnt(sc));
+	       aput_int16_be_checked(LigCaretCnt(sc),lcar);
 	       for (l=0; l < pst->u.lcaret.cnt; ++l)
 		  if (pst->u.lcaret.carets[l] != 0 || sc->lig_caret_cnt_fixed)
-		     putshort(lcar, pst->u.lcaret.carets[l]);
+		     aput_int16_be_checked(pst->u.lcaret.carets[l],lcar);
 	    }
 	    last=i;
 	    for (j=i + 1, ++tot; j < at->gi.gcnt && at->gi.bygid[j] != -1;
@@ -490,20 +490,20 @@ void aat_dumplcar(struct alltabs *at, SplineFont *sf) {
 	       ++tot;
 	       last=j;
 	       if (k==2) {
-		  putshort(lcar, offset);
+		  aput_int16_be_checked(offset,lcar);
 		  offset += 2 + 2 * LigCaretCnt(sc);
 	       } else if (k==3) {
-		  putshort(lcar, LigCaretCnt(sc));
+		  aput_int16_be_checked(LigCaretCnt(sc),lcar);
 		  for (l=0; l < pst->u.lcaret.cnt; ++l)
 		     if (pst->u.lcaret.carets[l] != 0
 			 || sc->lig_caret_cnt_fixed)
-			putshort(lcar, pst->u.lcaret.carets[l]);
+			aput_int16_be_checked(pst->u.lcaret.carets[l],lcar);
 	       }
 	    }
 	    if (k==1) {
-	       putshort(lcar, last);
-	       putshort(lcar, i);
-	       putshort(lcar, offset);
+	       aput_int16_be_checked(last,lcar);
+	       aput_int16_be_checked(i,lcar);
+	       aput_int16_be_checked(offset,lcar);
 	       offset += 2 * tot;
 	    }
 	    ++seg_cnt;
@@ -514,18 +514,18 @@ void aat_dumplcar(struct alltabs *at, SplineFont *sf) {
 	    return;
 	 lcar=atmpfile();
 	 putlong(lcar, 0x00010000);	/* version */
-	 putshort(lcar, 0);	/* data are distances (not points) */
+	 aput_int16_be_checked(0,lcar);	/* data are distances (not points) */
 
-	 putshort(lcar, 4);	/* Lookup table format 4 */
+	 aput_int16_be_checked(4,lcar);	/* Lookup table format 4 */
 	 /* Binary search header */
-	 putshort(lcar, 6);	/* Entry size */
-	 putshort(lcar, seg_cnt);	/* Number of segments */
+	 aput_int16_be_checked(6,lcar);	/* Entry size */
+	 aput_int16_be_checked(seg_cnt,lcar);	/* Number of segments */
 	 for (j=0, l=1; l <= seg_cnt; l <<= 1, ++j);
 	 --j;
 	 l >>= 1;
-	 putshort(lcar, 6 * l);
-	 putshort(lcar, j);
-	 putshort(lcar, 6 * (seg_cnt - l));
+	 aput_int16_be_checked(6 * l,lcar);
+	 aput_int16_be_checked(j,lcar);
+	 aput_int16_be_checked(6 * (seg_cnt - l),lcar);
 	 offset =
 	    /*4+2+ */ 6 * 2 + seg_cnt * 6 + 6 /* fake segment at end */ ;
 	 /* Offset relative to lookup table, not to lcar_start */
@@ -533,9 +533,9 @@ void aat_dumplcar(struct alltabs *at, SplineFont *sf) {
 	 /*  start working on the data offsets they are relative to */
 	 /*  lcar_start */
       } else if (k==1) {	/* flag entry */
-	 putshort(lcar, 0xffff);
-	 putshort(lcar, 0xffff);
-	 putshort(lcar, 0);
+	 aput_int16_be_checked(0xffff,lcar);
+	 aput_int16_be_checked(0xffff,lcar);
+	 aput_int16_be_checked(0,lcar);
 
 	 offset += 6;		/* Now offsets are relative to lcar_start */
       }
@@ -543,7 +543,7 @@ void aat_dumplcar(struct alltabs *at, SplineFont *sf) {
    at->lcar=lcar;
    at->lcarlen=aftell(at->lcar);
    if (at->lcarlen & 2)
-      putshort(at->lcar, 0);
+      aput_int16_be_checked(0,at->lcar);
 }
 
 /* ************************************************************************** */
@@ -604,8 +604,8 @@ static void mort_classes(AFILE *temp,SplineFont *sf,struct glyphinfo *gi) {
 	 break;
    cnt=last - first + 1;
 
-   putshort(temp, first);
-   putshort(temp, cnt);
+   aput_int16_be_checked(first,temp);
+   aput_int16_be_checked(cnt,temp);
    for (i=first; i <= last; ++i)
       if (gi->bygid[i]==-1)
 	 aputc(1, temp);
@@ -630,7 +630,7 @@ static void morx_lookupmap(AFILE *temp,SplineChar ** glyphs,uint16_t *maps,
 	 if (k==1)
 	    tot=0;
 	 else if (k==2) {
-	    putshort(temp, maps[i]);
+	    aput_int16_be_checked(maps[i],temp);
 	 }
 	 last=i;
 	 for (j=i + 1, ++tot;
@@ -639,36 +639,36 @@ static void morx_lookupmap(AFILE *temp,SplineChar ** glyphs,uint16_t *maps,
 	    ++tot;
 	    last=j;
 	    if (k==2) {
-	       putshort(temp, maps[j]);
+	       aput_int16_be_checked(maps[j],temp);
 	    }
 	 }
 	 if (k==1) {
-	    putshort(temp, glyphs[last]->ttf_glyph);
-	    putshort(temp, glyphs[i]->ttf_glyph);
-	    putshort(temp, offset);
+	    aput_int16_be_checked(glyphs[last]->ttf_glyph,temp);
+	    aput_int16_be_checked(glyphs[i]->ttf_glyph,temp);
+	    aput_int16_be_checked(offset,temp);
 	    offset += 2 * tot;
 	 }
 	 ++seg_cnt;
 	 i=j - 1;
       }
       if (k==0) {
-	 putshort(temp, 4);	/* Lookup table format 4 */
+	 aput_int16_be_checked(4,temp);	/* Lookup table format 4 */
 	 /* Binary search header */
-	 putshort(temp, 6);	/* Entry size */
-	 putshort(temp, seg_cnt);	/* Number of segments */
+	 aput_int16_be_checked(6,temp);	/* Entry size */
+	 aput_int16_be_checked(seg_cnt,temp);	/* Number of segments */
 	 for (j=0, l=1; l <= seg_cnt; l <<= 1, ++j);
 	 --j;
 	 l >>= 1;
-	 putshort(temp, 6 * l);
-	 putshort(temp, j);
-	 putshort(temp, 6 * (seg_cnt - l));
+	 aput_int16_be_checked(6 * l,temp);
+	 aput_int16_be_checked(j,temp);
+	 aput_int16_be_checked(6 * (seg_cnt - l),temp);
 	 if (seg_cnt==0)
 	    return;
 	 offset=6 * 2 + seg_cnt * 6 + 6;
       } else if (k==1) {	/* flag entry */
-	 putshort(temp, 0xffff);
-	 putshort(temp, 0xffff);
-	 putshort(temp, 0);
+	 aput_int16_be_checked(0xffff,temp);
+	 aput_int16_be_checked(0xffff,temp);
+	 aput_int16_be_checked(0,temp);
       }
    }
 }
@@ -733,7 +733,7 @@ static struct feature *aat_dumpmorx_substitutions(struct alltabs *at,
    if ((aftell(temp) - cur->feature_start) & 1)
       aputc('\0', temp);
    if ((aftell(temp) - cur->feature_start) & 2)
-      putshort(temp, 0);
+      aput_int16_be_checked(0,temp);
    cur->feature_len=aftell(temp) - cur->feature_start;
    free(glyphs);
    free(maps);
@@ -959,7 +959,7 @@ static void morx_dumpLigaFeature(AFILE *temp,SplineChar ** glyphs,int gcnt,
    /* Dump out the state machine */
    for (i=0; i < state_cnt; ++i)
       for (j=0; j < class; ++j)
-	 putshort(temp, states[i][j].trans_ent);
+	 aput_int16_be_checked(states[i][j].trans_ent,temp);
 
    /* Now figure out the ligature actions (and all the other tables) */
    actions=malloc(trans_cnt * maxccnt * sizeof(uint32_t));
@@ -996,22 +996,22 @@ static void morx_dumpLigaFeature(AFILE *temp,SplineChar ** glyphs,int gcnt,
 
    /* Now dump the transitions */
    for (i=0; i < trans_cnt; ++i) {
-      putshort(temp, trans[i].next_state);
-      putshort(temp, trans[i].flags);
-      putshort(temp, trans[i].act_index);
+      aput_int16_be_checked(trans[i].next_state,temp);
+      aput_int16_be_checked(trans[i].flags,temp);
+      aput_int16_be_checked(trans[i].act_index,temp);
    }
    /* And the actions */
    for (i=0; i < acnt; ++i)
       putlong(temp, actions[i]);
    /* And the components */
    for (i=0; i < acnt; ++i)
-      putshort(temp, components[i]);
+      aput_int16_be_checked(components[i],temp);
    /* Do A simple check on the validity of what we've done */
    if (here + 6 * trans_cnt + 6 * acnt != aftell(temp))
       ErrorMsg(2,"Offset wrong in morx ligature table\n");
    /* And finally the ligature glyph indices */
    for (i=0; i < lcnt; ++i)
-      putshort(temp, lig_glyphs[i]);
+      aput_int16_be_checked(lig_glyphs[i],temp);
 
    /* clean up */
    free(actions);
@@ -1060,7 +1060,7 @@ static struct feature *aat_dumpmorx_ligatures(struct alltabs *at,
 	 if ((aftell(temp) - cur->feature_start) & 1)
 	    aputc('\0', temp);
 	 if ((aftell(temp) - cur->feature_start) & 2)
-	    putshort(temp, 0);
+	    aput_int16_be_checked(0,temp);
 	 cur->feature_len=aftell(temp) - cur->feature_start;
 	 cur->r2l=sub->lookup->lookup_flags & pst_r2l ? true : false;
       }
@@ -1283,9 +1283,9 @@ static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
 	       off += this->u.kern.kcnt * sizeof(int16_t);
 	       /* kerning values must be output backwards */
 	       for (k=this->u.kern.kcnt - 1; k >= 1; --k)
-		  putshort(kernvalues, this->u.kern.kerns[k] & ~1);
+		  aput_int16_be_checked(this->u.kern.kerns[k] & ~1,kernvalues);
 	       /* And the last one must be odd */
-	       putshort(kernvalues, this->u.kern.kerns[0] | 1);
+	       aput_int16_be_checked(this->u.kern.kerns[0] | 1,kernvalues);
 	    }
 	 }
       }
@@ -1314,11 +1314,11 @@ static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
    /* Output the header */
    start=aftell(temp);
    if (ismort /* old format still used for kerning */ ) {
-      putshort(temp, sm->class_cnt);
-      putshort(temp, 5 * sizeof(uint16_t));	/* class offset */
-      putshort(temp, 0);	/* state offset */
-      putshort(temp, 0);	/* transition entry offset */
-      putshort(temp, 0);	/* kerning values offset */
+      aput_int16_be_checked(sm->class_cnt,temp);
+      aput_int16_be_checked(5 * sizeof(uint16_t),temp);	/* class offset */
+      aput_int16_be_checked(0,temp);	/* state offset */
+      aput_int16_be_checked(0,temp);	/* transition entry offset */
+      aput_int16_be_checked(0,temp);	/* kerning values offset */
       mort_classes(temp, sf, &at->gi);	/* dump the class table */
    } else {
       putlong(temp, sm->class_cnt);
@@ -1341,7 +1341,7 @@ static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
    state_offset=aftell(temp) - start;
    if (ismort) {
       afseek(temp, start + 2 * sizeof(uint16_t), SEEK_SET);
-      putshort(temp, state_offset);	/* Point to start of state arrays */
+      aput_int16_be_checked(state_offset,temp);	/* Point to start of state arrays */
    } else {
       afseek(temp, start + 2 * sizeof(uint32_t), SEEK_SET);
       putlong(temp, state_offset);	/* Point to start of state arrays */
@@ -1355,14 +1355,14 @@ static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
 	 aputc(0, temp);		/* Pad to a word boundry */
    } else {
       for (j=0; j < sm->state_cnt * sm->class_cnt; ++j)
-	 putshort(temp, transdata[j].transition);
+	 aput_int16_be_checked(transdata[j].transition,temp);
    }
    free(transdata);
 
    here=aftell(temp);
    if (ismort) {
       afseek(temp, start + 3 * sizeof(uint16_t), SEEK_SET);
-      putshort(temp, here - start);	/* Point to start of transition arrays */
+      aput_int16_be_checked(here - start,temp);	/* Point to start of transition arrays */
    } else {
       afseek(temp, start + 3 * sizeof(uint32_t), SEEK_SET);
       putlong(temp, here - start);	/* Point to start of transition arrays */
@@ -1374,18 +1374,18 @@ static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
       substable_pos=here + tcnt * 2 * sizeof(int16_t);
       for (i=0; i < tcnt; ++i) {
 	 /* mort tables use an offset rather than the state number */
-	 putshort(temp, trans[i].ns * sm->class_cnt + state_offset);
+	 aput_int16_be_checked(trans[i].ns * sm->class_cnt + state_offset,temp);
 	 if (trans[i].mi != 0xffff)
 	    trans[i].flags |= substable_pos - start + trans[i].mi;
-	 putshort(temp, trans[i].flags);
+	 aput_int16_be_checked(trans[i].flags,temp);
       }
    } else {
       for (i=0; i < tcnt; ++i) {
-	 putshort(temp, trans[i].ns);
-	 putshort(temp, trans[i].flags);
+	 aput_int16_be_checked(trans[i].ns,temp);
+	 aput_int16_be_checked(trans[i].flags,temp);
 	 if (sm->type != asm_indic && sm->type != asm_kern) {
-	    putshort(temp, trans[i].mi);
-	    putshort(temp, trans[i].ci);
+	    aput_int16_be_checked(trans[i].mi,temp);
+	    aput_int16_be_checked(trans[i].ci,temp);
 	 }
       }
    }
@@ -1416,7 +1416,7 @@ static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
 
       for (i=0; i < stcnt; ++i) {
 	 for (j=0; j < subsins[i].len; ++j)
-	    putshort(temp, subsins[i].glyphs[j]);
+	    aput_int16_be_checked(subsins[i].glyphs[j],temp);
 	 free(subsins[i].glyphs);
       }
       free(subsins);
@@ -1424,7 +1424,7 @@ static int morx_dumpASM(AFILE *temp,ASM *sm,struct alltabs *at,
       if (substable_pos != aftell(temp))
 	 ErrorMsg(2,"Kern Values table in wrong place.\n");
       afseek(temp, start + 4 * sizeof(uint16_t), SEEK_SET);
-      putshort(temp, substable_pos - start);	/* Point to start of insertions */
+      aput_int16_be_checked(substable_pos - start,temp);	/* Point to start of insertions */
       afseek(temp, 0, SEEK_END);
       if (!ttfcopyfile(temp, kernvalues, substable_pos, "kern-subtable"))
 	 at->error=true;
@@ -1448,7 +1448,7 @@ static struct feature *aat_dumpmorx_asm(struct alltabs *at,SplineFont *sf,
       if ((aftell(temp) - cur->feature_start) & 1)
 	 aputc('\0', temp);
       if ((aftell(temp) - cur->feature_start) & 2)
-	 putshort(temp, 0);
+	 aput_int16_be_checked(0,temp);
       cur->feature_len=aftell(temp) - cur->feature_start;
    } else
       chunkfree(cur, sizeof(struct feature));
@@ -1778,11 +1778,11 @@ static void aat_dumpfeat(struct alltabs *at,SplineFont *sf,
 	    at->feat_name[fn].smn=smf != NULL ? smf->featname : NULL;
 	    at->feat_name[fn++].strid=strid;
 	 }
-	 putshort(at->feat, 0);
-	 putshort(at->feat, 1);
+	 aput_int16_be_checked(0,at->feat);
+	 aput_int16_be_checked(1,at->feat);
 	 putlong(at->feat, offset);
-	 putshort(at->feat, 0x0000);	/* non exclusive */
-	 putshort(at->feat, strid++);
+	 aput_int16_be_checked(0x0000,at->feat);	/* non exclusive */
+	 aput_int16_be_checked(strid++,at->feat);
 	 offset += 1 * 4;	/* (1 setting, 4 bytes) All Features */
       } else if (k==2) {
 	 /* Setting Name Array for All Typographic Features */
@@ -1793,8 +1793,8 @@ static void aat_dumpfeat(struct alltabs *at,SplineFont *sf,
 	    at->feat_name[fn].smn=sms != NULL ? sms->setname : NULL;
 	    at->feat_name[fn++].strid=strid;
 	 }
-	 putshort(at->feat, 0);
-	 putshort(at->feat, strid++);
+	 aput_int16_be_checked(0,at->feat);
+	 aput_int16_be_checked(strid++,at->feat);
       }
       for (f=feature; f != NULL; f=n) {
 	 cnt=1;
@@ -1821,8 +1821,8 @@ static void aat_dumpfeat(struct alltabs *at,SplineFont *sf,
 			n->sms != NULL ? n->sms->setname : NULL;
 		     at->feat_name[fn++].strid=strid;
 		  }
-		  putshort(at->feat, n->featureSetting);
-		  putshort(at->feat, strid++);
+		  aput_int16_be_checked(n->featureSetting,at->feat);
+		  aput_int16_be_checked(strid++,at->feat);
 		  p=n;
 	       }
 	    }
@@ -1838,13 +1838,13 @@ static void aat_dumpfeat(struct alltabs *at,SplineFont *sf,
 		  f->smf != NULL ? f->smf->featname : NULL;
 	       at->feat_name[fn++].strid=strid;
 	    }
-	    putshort(at->feat, f->featureType);
-	    putshort(at->feat, cnt);
+	    aput_int16_be_checked(f->featureType,at->feat);
+	    aput_int16_be_checked(cnt,at->feat);
 	    putlong(at->feat, offset);
-	    putshort(at->feat, f->mf != NULL
+	    aput_int16_be_checked(f->mf != NULL
 		     && f->mf->ismutex ? (0xc000 | f->mf->
-					  default_setting) : 0);
-	    putshort(at->feat, strid++);
+					  default_setting) : 0,at->feat);
+	    aput_int16_be_checked(strid++,at->feat);
 	    offset += 4 * cnt;
 	 }
       }
@@ -1854,8 +1854,8 @@ static void aat_dumpfeat(struct alltabs *at,SplineFont *sf,
 	 at->feat=atmpfile();
 	 at->feat_name=malloc((fcnt + scnt + 1) * sizeof(struct feat_name));
 	 putlong(at->feat, 0x00010000);
-	 putshort(at->feat, fcnt);
-	 putshort(at->feat, 0);
+	 aput_int16_be_checked(fcnt,at->feat);
+	 aput_int16_be_checked(0,at->feat);
 	 putlong(at->feat, 0);
 	 offset=12 /* header */  + fcnt * 12;
       }
@@ -1865,7 +1865,7 @@ static void aat_dumpfeat(struct alltabs *at,SplineFont *sf,
 
    at->featlen=aftell(at->feat);
    if (at->featlen & 2)
-      putshort(at->feat, 0);
+      aput_int16_be_checked(0,at->feat);
 }
 
 static int featuresAssignFlagsChains(struct feature *features,
@@ -1995,8 +1995,8 @@ static void morxDumpChain(struct alltabs *at,struct feature *features,
    fs_cnt=0;
    for (i=0; i < 32; ++i)
       if (all[i] != NULL) {
-	 putshort(at->morx, all[i]->featureType);
-	 putshort(at->morx, all[i]->featureSetting);
+	 aput_int16_be_checked(all[i]->featureType,at->morx);
+	 aput_int16_be_checked(all[i]->featureSetting,at->morx);
 	 if (all[i]->dummyOff) {
 	    putlong(at->morx, 0);
 	    if (last_f==all[i]->featureType)
@@ -2025,8 +2025,8 @@ static void morxDumpChain(struct alltabs *at,struct feature *features,
 				  all[i]->featureType
 				  || all[i + 1]->featureSetting !=
 				  all[i]->featureSetting + 1)) {
-	    putshort(at->morx, all[i]->featureType);
-	    putshort(at->morx, all[i]->featureSetting + 1);
+	    aput_int16_be_checked(all[i]->featureType,at->morx);
+	    aput_int16_be_checked(all[i]->featureSetting + 1,at->morx);
 	    putlong(at->morx, 0);
 	    putlong(at->morx, all[i]->offFlags & ~all[i]->flag);
 	    ++fs_cnt;
@@ -2035,12 +2035,12 @@ static void morxDumpChain(struct alltabs *at,struct feature *features,
 	 /*  but I should already have put that in the feature list */
       }
    /* The feature list of every chain must end with these two features */
-   putshort(at->morx, 0);	/* All Typo Features */
-   putshort(at->morx, 0);	/* All Features */
+   aput_int16_be_checked(0,at->morx);	/* All Typo Features */
+   aput_int16_be_checked(0,at->morx);	/* All Features */
    putlong(at->morx, 0xffffffff);	/* enable */
    putlong(at->morx, 0xffffffff);	/* disable */
-   putshort(at->morx, 0);	/* All Typo Features */
-   putshort(at->morx, 1);	/* No Features */
+   aput_int16_be_checked(0,at->morx);	/* All Typo Features */
+   aput_int16_be_checked(1,at->morx);	/* No Features */
    putlong(at->morx, 0);	/* enable */
    putlong(at->morx, 0);	/* disable */
    fs_cnt += 2;
@@ -2075,7 +2075,7 @@ static void morxDumpChain(struct alltabs *at,struct feature *features,
    if ((aftell(at->morx) - chain_start) & 1)
       aputc('\0', at->morx);
    if ((aftell(at->morx) - chain_start) & 2)
-      putshort(at->morx, 0);
+      aput_int16_be_checked(0,at->morx);
    end=aftell(at->morx);
    afseek(at->morx, chain_start + 4, SEEK_SET);
    putlong(at->morx, end - chain_start);
@@ -2164,7 +2164,7 @@ void aat_dumpmorx(struct alltabs *at, SplineFont *sf) {
    if (at->morxlen & 1)
       aputc('\0', at->morx);
    if ((at->morxlen + 1) & 2)
-      putshort(at->morx, 0);
+      aput_int16_be_checked(0,at->morx);
 }
 
 /* ************************************************************************** */
@@ -2211,13 +2211,13 @@ void aat_dumpopbd(struct alltabs *at, SplineFont *_sf) {
 	       if (k==1)
 		  tot=0;
 	       else if (k==2) {
-		  putshort(opbd, offset);
+		  aput_int16_be_checked(offset,opbd);
 		  offset += 8;
 	       } else if (k==3) {
-		  putshort(opbd, left != NULL ? -left->u.pos.xoff : 0);
-		  putshort(opbd, 0);	/* top */
-		  putshort(opbd, right != NULL ? -right->u.pos.h_adv_off : 0);
-		  putshort(opbd, 0);	/* bottom */
+		  aput_int16_be_checked(left != NULL ? -left->u.pos.xoff : 0,opbd);
+		  aput_int16_be_checked(0,opbd);	/* top */
+		  aput_int16_be_checked(right != NULL ? -right->u.pos.h_adv_off : 0,opbd);
+		  aput_int16_be_checked(0,opbd);	/* bottom */
 	       }
 	       last=i;
 	       for (j=i + 1, ++tot; j < at->gi.gcnt; ++j) {
@@ -2228,20 +2228,19 @@ void aat_dumpopbd(struct alltabs *at, SplineFont *_sf) {
 		  ++tot;
 		  last=j;
 		  if (k==2) {
-		     putshort(opbd, offset);
+		     aput_int16_be_checked(offset,opbd);
 		     offset += 8;
 		  } else if (k==3) {
-		     putshort(opbd, left != NULL ? -left->u.pos.xoff : 0);
-		     putshort(opbd, 0);	/* top */
-		     putshort(opbd,
-			      right != NULL ? -right->u.pos.h_adv_off : 0);
-		     putshort(opbd, 0);	/* bottom */
+		     aput_int16_be_checked(left != NULL ? -left->u.pos.xoff : 0,opbd);
+		     aput_int16_be_checked(0,opbd);	/* top */
+		     aput_int16_be_checked(right != NULL ? -right->u.pos.h_adv_off : 0,opbd);
+		     aput_int16_be_checked(0,opbd);	/* bottom */
 		  }
 	       }
 	       if (k==1) {
-		  putshort(opbd, last);
-		  putshort(opbd, i);
-		  putshort(opbd, offset);
+		  aput_int16_be_checked(last,opbd);
+		  aput_int16_be_checked(i,opbd);
+		  aput_int16_be_checked(offset,opbd);
 		  offset += 2 * tot;
 	       }
 	       ++seg_cnt;
@@ -2253,31 +2252,31 @@ void aat_dumpopbd(struct alltabs *at, SplineFont *_sf) {
 	    return;
 	 opbd=atmpfile();
 	 putlong(opbd, 0x00010000);	/* version */
-	 putshort(opbd, 0);	/* data are distances (not control points) */
+	 aput_int16_be_checked(0,opbd);	/* data are distances (not control points) */
 
-	 putshort(opbd, 4);	/* Lookup table format 4 */
+	 aput_int16_be_checked(4,opbd);	/* Lookup table format 4 */
 	 /* Binary search header */
-	 putshort(opbd, 6);	/* Entry size */
-	 putshort(opbd, seg_cnt);	/* Number of segments */
+	 aput_int16_be_checked(6,opbd);	/* Entry size */
+	 aput_int16_be_checked(seg_cnt,opbd);	/* Number of segments */
 	 for (j=0, l=1; l <= seg_cnt; l <<= 1, ++j);
 	 --j;
 	 l >>= 1;
-	 putshort(opbd, 6 * l);
-	 putshort(opbd, j);
-	 putshort(opbd, 6 * (seg_cnt - l));
+	 aput_int16_be_checked(6 * l,opbd);
+	 aput_int16_be_checked(j,opbd);
+	 aput_int16_be_checked(6 * (seg_cnt - l),opbd);
 	 /* offset from start of lookup, not table */
 	 offset =
 	    6 * 2 /* format, binsearch */  + seg_cnt * 6 + 6 /*flag entry */ ;
       } else if (k==1) {	/* flag entry */
-	 putshort(opbd, 0xffff);
-	 putshort(opbd, 0xffff);
-	 putshort(opbd, 0);
+	 aput_int16_be_checked(0xffff,opbd);
+	 aput_int16_be_checked(0xffff,opbd);
+	 aput_int16_be_checked(0,opbd);
       }
    }
    at->opbd=opbd;
    at->opbdlen=aftell(at->opbd);
    if (at->opbdlen & 2)
-      putshort(at->opbd, 0);
+      aput_int16_be_checked(0,at->opbd);
 }
 
 /* ************************************************************************** */
@@ -2404,16 +2403,16 @@ void aat_dumpprop(struct alltabs *at, SplineFont *sf) {
 
    at->prop=atmpfile();
    putlong(at->prop, 0x00020000);
-   putshort(at->prop, 1);	/* Lookup data */
-   putshort(at->prop, 0);	/* default property is simple l2r */
-   putshort(at->prop, 2);	/* lookup format 2 => segment single value */
+   aput_int16_be_checked(1,at->prop);	/* Lookup data */
+   aput_int16_be_checked(0,at->prop);	/* default property is simple l2r */
+   aput_int16_be_checked(2,at->prop);	/* lookup format 2 => segment single value */
    /* Binsearch header */
    bin_srch_header=aftell(at->prop);
-   putshort(at->prop, 6);	/* Entry size */
-   putshort(at->prop, 0);	/* fill in later */
-   putshort(at->prop, 0);
-   putshort(at->prop, 0);
-   putshort(at->prop, 0);
+   aput_int16_be_checked(6,at->prop);	/* Entry size */
+   aput_int16_be_checked(0,at->prop);	/* fill in later */
+   aput_int16_be_checked(0,at->prop);
+   aput_int16_be_checked(0,at->prop);
+   aput_int16_be_checked(0,at->prop);
 
    cnt=0;
    for (i=0; i < at->gi.gcnt; ++i) {
@@ -2422,30 +2421,30 @@ void aat_dumpprop(struct alltabs *at, SplineFont *sf) {
       if (i >= at->gi.gcnt)
 	 break;
       for (j=i + 1; j < at->gi.gcnt && props[j]==props[i]; ++j);
-      putshort(at->prop, j - 1);
-      putshort(at->prop, i);
-      putshort(at->prop, props[i]);
+      aput_int16_be_checked(j - 1,at->prop);
+      aput_int16_be_checked(i,at->prop);
+      aput_int16_be_checked(props[i],at->prop);
       i=j - 1;
       ++cnt;
    }
-   putshort(at->prop, 0xffff);	/* Final eof marker */
-   putshort(at->prop, 0xffff);
-   putshort(at->prop, 0x0000);
+   aput_int16_be_checked(0xffff,at->prop);	/* Final eof marker */
+   aput_int16_be_checked(0xffff,at->prop);
+   aput_int16_be_checked(0x0000,at->prop);
 
    afseek(at->prop, bin_srch_header, SEEK_SET);
-   putshort(at->prop, 6);	/* Entry size */
-   putshort(at->prop, cnt);	/* Number of segments */
+   aput_int16_be_checked(6,at->prop);	/* Entry size */
+   aput_int16_be_checked(cnt,at->prop);	/* Number of segments */
    for (j=0, i=1; i <= cnt; i <<= 1, ++j);
    --j;
    i >>= 1;
-   putshort(at->prop, 6 * i);
-   putshort(at->prop, j);
-   putshort(at->prop, 6 * (cnt - i));
+   aput_int16_be_checked(6 * i,at->prop);
+   aput_int16_be_checked(j,at->prop);
+   aput_int16_be_checked(6 * (cnt - i),at->prop);
 
    afseek(at->prop, 0, SEEK_END);
    at->proplen=aftell(at->prop);
    if (at->proplen & 2)
-      putshort(at->prop, 0);
+      aput_int16_be_checked(0,at->prop);
    free(props);
 }
 
@@ -2597,10 +2596,10 @@ void aat_dumpbsln(struct alltabs *at, SplineFont *sf) {
    at->bsln=atmpfile();
    putlong(at->bsln, 0x00010000);	/* Version */
    if (def_baseline & 0x100)	/* Only one baseline in the font */
-      putshort(at->bsln, 0);	/* distanced based (no control point), no per-glyph info */
+      aput_int16_be_checked(0,at->bsln);	/* distanced based (no control point), no per-glyph info */
    else
-      putshort(at->bsln, 1);	/* distanced based (no cp info) with per-glyph info */
-   putshort(at->bsln, def_baseline & 0x1f);	/* Default baseline when no info specified for glyphs */
+      aput_int16_be_checked(1,at->bsln);	/* distanced based (no cp info) with per-glyph info */
+   aput_int16_be_checked(def_baseline & 0x1f,at->bsln);	/* Default baseline when no info specified for glyphs */
 
    /* table of 32 int16_t (the docs say uint16_t, but that must be wrong) giving */
    /*  the offset of the nth baseline from the default baseline. */
@@ -2609,12 +2608,12 @@ void aat_dumpbsln(struct alltabs *at, SplineFont *sf) {
    FigureBaseOffsets(sf, def_baseline & 0x1f, offsets);
 
    for (i=0; i < 32; ++i)
-      putshort(at->bsln, offsets[i]);
+      aput_int16_be_checked(offsets[i],at->bsln);
 
    if (!(def_baseline & 0x100)) {
       def_baseline &= 0x1f;
 
-      putshort(at->bsln, 2);	/* Lookup format 2, segmented array w/ single value */
+      aput_int16_be_checked(2,at->bsln);	/* Lookup format 2, segmented array w/ single value */
 
       cnt=0;
       for (i=0; i < at->gi.gcnt; ++i)
@@ -2630,12 +2629,12 @@ void aat_dumpbsln(struct alltabs *at, SplineFont *sf) {
 	 }
 
       /* Dump out a binary search header */
-      putshort(at->bsln, 6);	/* size of each item */
-      putshort(at->bsln, cnt);	/* number of items */
+      aput_int16_be_checked(6,at->bsln);	/* size of each item */
+      aput_int16_be_checked(cnt,at->bsln);	/* number of items */
       for (j=1, i=0; cnt <= j; j <<= 1, ++i);
-      putshort(at->bsln, 6 * j / 2);	/* j is a power of 2 too big */
-      putshort(at->bsln, i - 1);
-      putshort(at->bsln, 6 * (cnt - (j >> 1)));
+      aput_int16_be_checked(6 * j / 2,at->bsln);	/* j is a power of 2 too big */
+      aput_int16_be_checked(i - 1,at->bsln);
+      aput_int16_be_checked(6 * (cnt - (j >> 1)),at->bsln);
 
       for (i=0; i < at->gi.gcnt; ++i)
 	 if ((gid=at->gi.bygid[i]) != -1) {
@@ -2644,22 +2643,22 @@ void aat_dumpbsln(struct alltabs *at, SplineFont *sf) {
 	       for (j=i;
 		    j < at->gi.gcnt && baselines[at->gi.bygid[i]]==bsln;
 		    ++j);
-	       putshort(at->bsln, j - 1);
-	       putshort(at->bsln, i);
-	       putshort(at->bsln, bsln);
+	       aput_int16_be_checked(j - 1,at->bsln);
+	       aput_int16_be_checked(i,at->bsln);
+	       aput_int16_be_checked(bsln,at->bsln);
 	       i=j - 1;
 	    }
 	 }
 
-      putshort(at->bsln, 0xffff);	/* Final eof marker */
-      putshort(at->bsln, 0xffff);
-      putshort(at->bsln, 0x0000);
+      aput_int16_be_checked(0xffff,at->bsln);	/* Final eof marker */
+      aput_int16_be_checked(0xffff,at->bsln);
+      aput_int16_be_checked(0x0000,at->bsln);
    }
 
    at->bslnlen=aftell(at->bsln);
    /* Only contains 2 & 4 byte quantities, can't have an odd number of bytes */
    if (at->bslnlen & 2)
-      putshort(at->bsln, 0);
+      aput_int16_be_checked(0,at->bsln);
    free(baselines);
 }
 

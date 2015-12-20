@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: splinesaveafm.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -975,7 +975,7 @@ static void AfmSplineCharX(AFILE *afm,SplineChar *sc,int enc,int layer) {
    int em=(sc->parent->ascent + sc->parent->descent);
 
    SplineCharLayerFindBounds(sc, layer, &b);
-   /*afprintf( afm, "CX <%04x> ; WX %d ; N %s ; B %d %d %d %d ;", */
+   /*afprintf(afm, "CX <%04x> ; WX %d ; N %s ; B %d %d %d %d ;", */
    afprintf(afm, "C %d ; WX %d ; ", enc, sc->width * 1000 / em);
    if (sc->parent->hasvmetrics)
       afprintf(afm, "WY %d ; ", sc->vwidth * 1000 / em);
@@ -989,7 +989,7 @@ static void AfmSplineCharX(AFILE *afm,SplineChar *sc,int enc,int layer) {
 }
 
 static void AfmZapfCharX(AFILE *afm,int zi) {
-   /*afprintf( afm, "CX <%04x> ; WX %d ; N %s ; B %d %d %d %d ;\n", */
+   /*afprintf(afm, "CX <%04x> ; WX %d ; N %s ; B %d %d %d %d ;\n", */
    afprintf(afm, "C %d ; WX %d ; N %s ; B %d %d %d %d ;\n",
 	   0x2700 + zi, zapfwx[zi], zapfnomen[zi],
 	   zapfbb[zi][0], zapfbb[zi][1], zapfbb[zi][2], zapfbb[zi][3]);
@@ -2403,7 +2403,7 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
    aputc(0, pfm);		/* strikeout */
    aput_int16_le(sf->pfminfo.weight, pfm);	/* weight */
    aputc(windows_encoding, pfm);	/* Some indication of the encoding */
-   aput_int16_le( /*samewid<0?sf->ascent+sf->descent:samewid */ 0, pfm);	/* width */
+   aput_int16_le(/*samewid<0?sf->ascent+sf->descent:samewid */ 0, pfm);	/* width */
    aput_int16_le(sf->ascent + sf->descent, pfm);	/* height */
    aputc(sf->pfminfo.pfmfamily, pfm);	/* family */
    aput_int16_le(wid, pfm);		/* average width, Docs say "Width of "X", but that's wrong */
@@ -3394,7 +3394,7 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 /* Now output the file */
    /* Table of contents */
    if (maxc==256) {
-      putshort(tfm, 6 +		/* Table of contents size */
+      aput_int16_be_checked(6 +		/* Table of contents size */
 	       18 +		/* header size */
 	       (last - first + 1) +	/* Per glyph data */
 	       widcnt +		/* entries in the width table */
@@ -3404,18 +3404,18 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 	       lkcnt +		/* entries in the lig/kern table */
 	       kcnt +		/* entries in the kern table */
 	       ecnt +		/* No extensible characters here */
-	       pcnt);		/* font parameter words */
-      putshort(tfm, 18);
-      putshort(tfm, first);
-      putshort(tfm, last);
-      putshort(tfm, widcnt);
-      putshort(tfm, hcnt);
-      putshort(tfm, dcnt);
-      putshort(tfm, icnt);
-      putshort(tfm, lkcnt);
-      putshort(tfm, kcnt);
-      putshort(tfm, ecnt);
-      putshort(tfm, pcnt);
+	       pcnt,tfm);		/* font parameter words */
+      aput_int16_be_checked(18,tfm);
+      aput_int16_be_checked(first,tfm);
+      aput_int16_be_checked(last,tfm);
+      aput_int16_be_checked(widcnt,tfm);
+      aput_int16_be_checked(hcnt,tfm);
+      aput_int16_be_checked(dcnt,tfm);
+      aput_int16_be_checked(icnt,tfm);
+      aput_int16_be_checked(lkcnt,tfm);
+      aput_int16_be_checked(kcnt,tfm);
+      aput_int16_be_checked(ecnt,tfm);
+      aput_int16_be_checked(pcnt,tfm);
    } else {
       int font_dir=0;
 
@@ -3473,14 +3473,14 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 		 tags[i]==1 ? lkindex[i] :
 		 tags[i]==2 ? charlistindex[i] : extenindex[i], tfm);
 	 } else {
-	    putshort(tfm, widthindex[i]);
+	    aput_int16_be_checked(widthindex[i],tfm);
 	    aputc(heightindex[i], tfm);
 	    aputc(depthindex[i], tfm);
 	    aputc(italicindex[i], tfm);
 	    aputc(tags[i], tfm);
-	    putshort(tfm, tags[i]==0 ? 0 :
+	    aput_int16_be_checked(tags[i]==0 ? 0 :
 		     tags[i]==1 ? lkindex[i] :
-		     tags[i]==2 ? charlistindex[i] : extenindex[i]);
+		     tags[i]==2 ? charlistindex[i] : extenindex[i],tfm);
 	 }
       } else {
 	 putlong(tfm, 0);
@@ -3507,10 +3507,10 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
 	 putlong(tfm, lkarray[i]);
    } else {
       for (i=0; i < lkcnt; ++i) {
-	 putshort(tfm, o_lkarray[i].skip);
-	 putshort(tfm, o_lkarray[i].other_char);
-	 putshort(tfm, o_lkarray[i].op);
-	 putshort(tfm, o_lkarray[i].remainder);
+	 aput_int16_be_checked(o_lkarray[i].skip,tfm);
+	 aput_int16_be_checked(o_lkarray[i].other_char,tfm);
+	 aput_int16_be_checked(o_lkarray[i].op,tfm);
+	 aput_int16_be_checked(o_lkarray[i].remainder,tfm);
       }
    }
 
@@ -3528,10 +3528,10 @@ static int _OTfmSplineFont(AFILE *tfm,SplineFont *sf,int formattype,
       }
    } else {
       for (i=0; i < ecnt; ++i) {
-	 putshort(tfm, extensions[i].extens[0]);
-	 putshort(tfm, extensions[i].extens[1]);
-	 putshort(tfm, extensions[i].extens[2]);
-	 putshort(tfm, extensions[i].extens[3]);
+	 aput_int16_be_checked(extensions[i].extens[0],tfm);
+	 aput_int16_be_checked(extensions[i].extens[1],tfm);
+	 aput_int16_be_checked(extensions[i].extens[2],tfm);
+	 aput_int16_be_checked(extensions[i].extens[3],tfm);
       }
    }
 

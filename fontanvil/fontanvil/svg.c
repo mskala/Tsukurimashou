@@ -1,4 +1,4 @@
-/* $Id: svg.c 4502 2015-12-16 14:11:53Z mskala $ */
+/* $Id: svg.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -331,7 +331,7 @@ static void svg_dumpstroke(AFILE *file,struct pen *cpen,
       afprintf(file, "\" ");
    } else {
       /* That's the default, don't need to say it */
-      /* afprintf( file, "stroke-dasharray=\"none\" " ) */
+      /* afprintf(file, "stroke-dasharray=\"none\" " ) */
       ;
    }
 }
@@ -421,7 +421,7 @@ static void DataURI_ImageDump(AFILE *file,struct gimage *img) {
    int done=false;
    int threechars[3], fourchars[4], i, ch, ch_on_line;
 
-#if !defined( _NO_LIBJPEG)
+#if !defined(_NO_LIBJPEG)
    struct _GImage *base =
       img->list_len==0 ? img->u.image : img->u.images[0];
 #endif

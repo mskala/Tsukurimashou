@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: tottfgpos.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -549,22 +549,22 @@ static void dumpcoveragetable(AFILE *gpos,SplineChar ** glyphs) {
    if (!(coverageformatsallowed & 2)
        || ((coverageformatsallowed & 1) && i <= 3 * range_cnt)) {
       /* We use less space with a list of glyphs than with a set of ranges */
-      putshort(gpos, 1);	/* Coverage format=1 => glyph list */
-      putshort(gpos, i);	/* count of glyphs */
+      aput_int16_be_checked(1,gpos);	/* Coverage format=1 => glyph list */
+      aput_int16_be_checked(i,gpos);	/* count of glyphs */
       for (i=0; glyphs[i] != NULL; ++i)
-	 putshort(gpos, glyphs[i]->ttf_glyph);	/* array of glyph IDs */
+	 aput_int16_be_checked(glyphs[i]->ttf_glyph,gpos);	/* array of glyph IDs */
    } else {
-      putshort(gpos, 2);	/* Coverage format=2 => range list */
-      putshort(gpos, range_cnt);	/* count of ranges */
+      aput_int16_be_checked(2,gpos);	/* Coverage format=2 => range list */
+      aput_int16_be_checked(range_cnt,gpos);	/* count of ranges */
       last=-2;
       start=-2;		/* start is a index in our glyph array, last is ttf_glyph */
       r=0;
       for (i=0; glyphs[i] != NULL; ++i) {
 	 if (glyphs[i]->ttf_glyph != last + 1) {
 	    if (last != -2) {
-	       putshort(gpos, glyphs[start]->ttf_glyph);	/* start glyph ID */
-	       putshort(gpos, last);	/* end glyph ID */
-	       putshort(gpos, start);	/* coverage index of start glyph */
+	       aput_int16_be_checked(glyphs[start]->ttf_glyph,gpos);	/* start glyph ID */
+	       aput_int16_be_checked(last,gpos);	/* end glyph ID */
+	       aput_int16_be_checked(start,gpos);	/* coverage index of start glyph */
 	       ++r;
 	    }
 	    start=i;
@@ -572,9 +572,9 @@ static void dumpcoveragetable(AFILE *gpos,SplineChar ** glyphs) {
 	 last=glyphs[i]->ttf_glyph;
       }
       if (last != -2) {
-	 putshort(gpos, glyphs[start]->ttf_glyph);	/* start glyph ID */
-	 putshort(gpos, last);	/* end glyph ID */
-	 putshort(gpos, start);	/* coverage index of start glyph */
+	 aput_int16_be_checked(glyphs[start]->ttf_glyph,gpos);	/* start glyph ID */
+	 aput_int16_be_checked(last,gpos);	/* end glyph ID */
+	 aput_int16_be_checked(start,gpos);	/* coverage index of start glyph */
 	 ++r;
       }
       if (r != range_cnt)
@@ -671,13 +671,13 @@ static SplineChar **OrderedGlyphsFromNames(SplineFont *sf,char *names) {
 
 static void gposvrmaskeddump(AFILE *gpos,int vf1,int mask,int offset) {
    if (vf1 & 1)
-      putshort(gpos, mask & 1 ? offset : 0);
+      aput_int16_be_checked(mask & 1 ? offset : 0,gpos);
    if (vf1 & 2)
-      putshort(gpos, mask & 2 ? offset : 0);
+      aput_int16_be_checked(mask & 2 ? offset : 0,gpos);
    if (vf1 & 4)
-      putshort(gpos, mask & 4 ? offset : 0);
+      aput_int16_be_checked(mask & 4 ? offset : 0,gpos);
    if (vf1 & 8)
-      putshort(gpos, mask & 8 ? offset : 0);
+      aput_int16_be_checked(mask & 8 ? offset : 0,gpos);
 }
 
 static int devtaboffsetsize(DeviceTable *dt) {
@@ -699,9 +699,9 @@ static void dumpgposdevicetable(AFILE *gpos,DeviceTable *dt) {
    if (dt==NULL || dt->corrections==NULL)
       return;
    type=devtaboffsetsize(dt);
-   putshort(gpos, dt->first_pixel_size);
-   putshort(gpos, dt->last_pixel_size);
-   putshort(gpos, type);
+   aput_int16_be_checked(dt->first_pixel_size,gpos);
+   aput_int16_be_checked(dt->last_pixel_size,gpos);
+   aput_int16_be_checked(type,gpos);
    cnt=dt->last_pixel_size - dt->first_pixel_size + 1;
    if (type==3) {
       for (i=0; i < cnt; ++i)
@@ -714,7 +714,7 @@ static void dumpgposdevicetable(AFILE *gpos,DeviceTable *dt) {
 
 	 for (b=0; b < 4 && i + b < cnt; ++b)
 	    val |= (dt->corrections[i + b] & 0x000f) << (12 - b * 4);
-	 putshort(gpos, val);
+	 aput_int16_be_checked(val,gpos);
       }
    } else {
       for (i=0; i < cnt; i += 8) {
@@ -722,7 +722,7 @@ static void dumpgposdevicetable(AFILE *gpos,DeviceTable *dt) {
 
 	 for (b=0; b < 8 && i + b < cnt; ++b)
 	    val |= (dt->corrections[i + b] & 0x0003) << (14 - b * 2);
-	 putshort(gpos, val);
+	 aput_int16_be_checked(val,gpos);
       }
    }
 }
@@ -759,33 +759,33 @@ static int gposdumpvaldevtab(AFILE *gpos,ValDevTab *vdt,int bits,
 
    if (bits & 0x10) {
       if (vdt==NULL || vdt->xadjust.corrections==NULL)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       else {
-	 putshort(gpos, next_dev_tab);
+	 aput_int16_be_checked(next_dev_tab,gpos);
 	 next_dev_tab += DevTabLen(&vdt->xadjust);
       }
    }
    if (bits & 0x20) {
       if (vdt==NULL || vdt->yadjust.corrections==NULL)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       else {
-	 putshort(gpos, next_dev_tab);
+	 aput_int16_be_checked(next_dev_tab,gpos);
 	 next_dev_tab += DevTabLen(&vdt->yadjust);
       }
    }
    if (bits & 0x40) {
       if (vdt==NULL || vdt->xadv.corrections==NULL)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       else {
-	 putshort(gpos, next_dev_tab);
+	 aput_int16_be_checked(next_dev_tab,gpos);
 	 next_dev_tab += DevTabLen(&vdt->xadv);
       }
    }
    if (bits & 0x80) {
       if (vdt==NULL || vdt->yadv.corrections==NULL)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       else {
-	 putshort(gpos, next_dev_tab);
+	 aput_int16_be_checked(next_dev_tab,gpos);
 	 next_dev_tab += DevTabLen(&vdt->yadv);
       }
    }
@@ -797,33 +797,33 @@ static int gposmaskeddumpdevtab(AFILE *gpos,DeviceTable *dt,int bits,
 
    if (bits & 0x10) {
       if (!(mask & 0x10) || dt==NULL)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       else {
-	 putshort(gpos, next_dev_tab);
+	 aput_int16_be_checked(next_dev_tab,gpos);
 	 next_dev_tab += DevTabLen(dt);
       }
    }
    if (bits & 0x20) {
       if (!(mask & 0x20) || dt==NULL)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       else {
-	 putshort(gpos, next_dev_tab);
+	 aput_int16_be_checked(next_dev_tab,gpos);
 	 next_dev_tab += DevTabLen(dt);
       }
    }
    if (bits & 0x40) {
       if (!(mask & 0x40) || dt==NULL)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       else {
-	 putshort(gpos, next_dev_tab);
+	 aput_int16_be_checked(next_dev_tab,gpos);
 	 next_dev_tab += DevTabLen(dt);
       }
    }
    if (bits & 0x80) {
       if (!(mask & 0x80) || dt==NULL)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       else {
-	 putshort(gpos, next_dev_tab);
+	 aput_int16_be_checked(next_dev_tab,gpos);
 	 next_dev_tab += DevTabLen(dt);
       }
    }
@@ -928,37 +928,37 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
    if (cnt != cnt2)
       ErrorMsg(2,"Count mismatch in dumpGPOSsimplepos#1 %d vs %d\n", cnt, cnt2);
 
-   putshort(gpos, same ? 1 : 2);	/* 1 means all value records same */
+   aput_int16_be_checked(same ? 1 : 2,gpos);	/* 1 means all value records same */
    coverage_pos=aftell(gpos);
-   putshort(gpos, 0);		/* offset to coverage table */
-   putshort(gpos, bits);
+   aput_int16_be_checked(0,gpos);		/* offset to coverage table */
+   aput_int16_be_checked(bits,gpos);
    if (same) {
       if (bits & 1)
-	 putshort(gpos, first->u.pos.xoff);
+	 aput_int16_be_checked(first->u.pos.xoff,gpos);
       if (bits & 2)
-	 putshort(gpos, first->u.pos.yoff);
+	 aput_int16_be_checked(first->u.pos.yoff,gpos);
       if (bits & 4)
-	 putshort(gpos, first->u.pos.h_adv_off);
+	 aput_int16_be_checked(first->u.pos.h_adv_off,gpos);
       if (bits & 8)
-	 putshort(gpos, first->u.pos.v_adv_off);
+	 aput_int16_be_checked(first->u.pos.v_adv_off,gpos);
       if (bits & 0xf0) {
 	 int next_dev_tab=aftell(gpos) - coverage_pos + 2 +
 	    sizeof(int16_t) * ((bits & 0x10 ? 1 : 0) + (bits & 0x20 ? 1 : 0) +
 			     (bits & 0x40 ? 1 : 0) + (bits & 0x80 ? 1 : 0));
 	 if (bits & 0x10) {
-	    putshort(gpos, next_dev_tab);
+	    aput_int16_be_checked(next_dev_tab,gpos);
 	    next_dev_tab += DevTabLen(&first->u.pos.adjust->xadjust);
 	 }
 	 if (bits & 0x20) {
-	    putshort(gpos, next_dev_tab);
+	    aput_int16_be_checked(next_dev_tab,gpos);
 	    next_dev_tab += DevTabLen(&first->u.pos.adjust->yadjust);
 	 }
 	 if (bits & 0x40) {
-	    putshort(gpos, next_dev_tab);
+	    aput_int16_be_checked(next_dev_tab,gpos);
 	    next_dev_tab += DevTabLen(&first->u.pos.adjust->xadv);
 	 }
 	 if (bits & 0x80) {
-	    putshort(gpos, next_dev_tab);
+	    aput_int16_be_checked(next_dev_tab,gpos);
 	    next_dev_tab += DevTabLen(&first->u.pos.adjust->yadv);
 	 }
 	 if (bits & 0x10)
@@ -980,18 +980,18 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
 			  (bits & 0x40 ? 1 : 0) + (bits & 0x80 ? 1 : 0));
       int next_dev_tab=aftell(gpos) - coverage_pos + 2 + 2 + vr_size * cnt;
 
-      putshort(gpos, cnt);
+      aput_int16_be_checked(cnt,gpos);
       for (cnt2=0; glyphs[cnt2] != NULL; ++cnt2) {
 	 for (pst=glyphs[cnt2]->possub; pst != NULL; pst=pst->next) {
 	    if (pst->subtable==sub && pst->type==pst_position) {
 	       if (bits & 1)
-		  putshort(gpos, pst->u.pos.xoff);
+		  aput_int16_be_checked(pst->u.pos.xoff,gpos);
 	       if (bits & 2)
-		  putshort(gpos, pst->u.pos.yoff);
+		  aput_int16_be_checked(pst->u.pos.yoff,gpos);
 	       if (bits & 4)
-		  putshort(gpos, pst->u.pos.h_adv_off);
+		  aput_int16_be_checked(pst->u.pos.h_adv_off,gpos);
 	       if (bits & 8)
-		  putshort(gpos, pst->u.pos.v_adv_off);
+		  aput_int16_be_checked(pst->u.pos.v_adv_off,gpos);
 	       next_dev_tab=gposdumpvaldevtab(gpos, pst->u.pos.adjust, bits,
 						next_dev_tab);
 	       break;
@@ -1022,7 +1022,7 @@ static void dumpGPOSsimplepos(AFILE *gpos,SplineFont *sf,
    }
    end=aftell(gpos);
    afseek(gpos, coverage_pos, SEEK_SET);
-   putshort(gpos, end - coverage_pos + 2);
+   aput_int16_be_checked(end - coverage_pos + 2,gpos);
    afseek(gpos, end, SEEK_SET);
    dumpcoveragetable(gpos, glyphs);
    afseek(gpos, 0, SEEK_END);
@@ -1268,15 +1268,15 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
       }
 
       start=aftell(gpos);
-      putshort(gpos, 1);	/* 1 means char pairs (ie. not classes) */
+      aput_int16_be_checked(1,gpos);	/* 1 means char pairs (ie. not classes) */
       coverage_pos=aftell(gpos);
-      putshort(gpos, 0);	/* offset to coverage table */
-      putshort(gpos, vf1);
-      putshort(gpos, vf2);
-      putshort(gpos, end_cnt - start_cnt);
+      aput_int16_be_checked(0,gpos);	/* offset to coverage table */
+      aput_int16_be_checked(vf1,gpos);
+      aput_int16_be_checked(vf2,gpos);
+      aput_int16_be_checked(end_cnt - start_cnt,gpos);
       offset_pos=aftell(gpos);
       for (i=start_cnt; i < end_cnt; ++i)
-	 putshort(gpos, 0);	/* Fill in later */
+	 aput_int16_be_checked(0,gpos);	/* Fill in later */
       for (i=start_cnt; i < end_cnt; ++i) {
 	 if (seconds[i][0].samewas >= start_cnt
 	     && seconds[i][0].samewas != 0xffff) {
@@ -1290,7 +1290,7 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 	    offset=aget_uint16_be(gpos);
 	    afseek(gpos, offset_pos + (i - start_cnt) * sizeof(uint16_t),
 		  SEEK_SET);
-	    putshort(gpos, offset);
+	    aput_int16_be_checked(offset,gpos);
 	    afseek(gpos, 0, SEEK_END);
 	    continue;
 	 }
@@ -1325,32 +1325,32 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 	 }
 	 pos=aftell(gpos);
 	 afseek(gpos, offset_pos + (i - start_cnt) * sizeof(uint16_t), SEEK_SET);
-	 putshort(gpos, pos - start);
+	 aput_int16_be_checked(pos - start,gpos);
 	 afseek(gpos, pos, SEEK_SET);
 
-	 putshort(gpos, seconds[i][0].tot);
+	 aput_int16_be_checked(seconds[i][0].tot,gpos);
 	 for (tot=0; tot < seconds[i][0].tot; ++tot) {
-	    putshort(gpos, seconds[i][tot].other_gid);
+	    aput_int16_be_checked(seconds[i][tot].other_gid,gpos);
 	    if ((pst=seconds[i][tot].pst) != NULL) {
 	       if (vf1 & 1)
-		  putshort(gpos, pst->u.pair.vr[0].xoff);
+		  aput_int16_be_checked(pst->u.pair.vr[0].xoff,gpos);
 	       if (vf1 & 2)
-		  putshort(gpos, pst->u.pair.vr[0].yoff);
+		  aput_int16_be_checked(pst->u.pair.vr[0].yoff,gpos);
 	       if (vf1 & 4)
-		  putshort(gpos, pst->u.pair.vr[0].h_adv_off);
+		  aput_int16_be_checked(pst->u.pair.vr[0].h_adv_off,gpos);
 	       if (vf1 & 8)
-		  putshort(gpos, pst->u.pair.vr[0].v_adv_off);
+		  aput_int16_be_checked(pst->u.pair.vr[0].v_adv_off,gpos);
 	       next_dev_tab =
 		  gposdumpvaldevtab(gpos, pst->u.pair.vr[0].adjust, vf1,
 				    next_dev_tab);
 	       if (vf2 & 1)
-		  putshort(gpos, pst->u.pair.vr[1].xoff);
+		  aput_int16_be_checked(pst->u.pair.vr[1].xoff,gpos);
 	       if (vf2 & 2)
-		  putshort(gpos, pst->u.pair.vr[1].yoff);
+		  aput_int16_be_checked(pst->u.pair.vr[1].yoff,gpos);
 	       if (vf2 & 4)
-		  putshort(gpos, pst->u.pair.vr[1].h_adv_off);
+		  aput_int16_be_checked(pst->u.pair.vr[1].h_adv_off,gpos);
 	       if (vf2 & 8)
-		  putshort(gpos, pst->u.pair.vr[1].v_adv_off);
+		  aput_int16_be_checked(pst->u.pair.vr[1].v_adv_off,gpos);
 	       next_dev_tab =
 		  gposdumpvaldevtab(gpos, pst->u.pair.vr[1].adjust, vf2,
 				    next_dev_tab);
@@ -1378,7 +1378,7 @@ static void dumpGPOSpairpos(AFILE *gpos,SplineFont *sf,
 	 ErrorMsg(2,"The size of subtable %s was miscalculated.  "
                     "This means the kerning output is wrong.\n",
                   sub->subtable_name);
-      putshort(gpos, end - start);
+      aput_int16_be_checked(end - start,gpos);
       afseek(gpos, end, SEEK_SET);
       gtemp=glyphs[end_cnt];
       glyphs[end_cnt]=NULL;
@@ -1488,23 +1488,23 @@ static void DumpClass(AFILE *gpos,uint16_t *class,int numGlyphs) {
    if (ranges * 3 + 1 > last - first + 1 + 2 || first==-1) {
       if (first==-1)
 	 first=last=0;
-      putshort(gpos, 1);	/* Format 1, list of all posibilities */
-      putshort(gpos, first);
-      putshort(gpos, last - first + 1);
+      aput_int16_be_checked(1,gpos);	/* Format 1, list of all posibilities */
+      aput_int16_be_checked(first,gpos);
+      aput_int16_be_checked(last - first + 1,gpos);
       for (i=first; i <= last; ++i)
-	 putshort(gpos, class[i]);
+	 aput_int16_be_checked(class[i],gpos);
    } else {
-      putshort(gpos, 2);	/* Format 2, series of ranges */
-      putshort(gpos, ranges);
+      aput_int16_be_checked(2,gpos);	/* Format 2, series of ranges */
+      aput_int16_be_checked(ranges,gpos);
       for (i=0; i < numGlyphs;) {
 	 istart=i;
 	 cur=class[i];
 	 while (i < numGlyphs && class[i]==cur)
 	    ++i;
 	 if (cur != 0) {
-	    putshort(gpos, istart);
-	    putshort(gpos, i - 1);
-	    putshort(gpos, cur);
+	    aput_int16_be_checked(istart,gpos);
+	    aput_int16_be_checked(i - 1,gpos);
+	    aput_int16_be_checked(cur,gpos);
 	 }
       }
    }
@@ -1521,8 +1521,8 @@ static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
    int anydevtab=false;
    int next_devtab;
 
-   putshort(gpos, 2);		/* format 2 of the pair adjustment subtable */
-   putshort(gpos, 0);		/* offset to coverage table */
+   aput_int16_be_checked(2,gpos);		/* format 2 of the pair adjustment subtable */
+   aput_int16_be_checked(0,gpos);		/* offset to coverage table */
    for (i=0; i < kc->first_cnt * kc->second_cnt; ++i) {
       if (kc->adjusts[i].corrections != NULL) {
 	 anydevtab=true;
@@ -1536,11 +1536,11 @@ static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
    if (isv) {
       /* As far as I know there is no "bottom to top" writing direction */
       /*  Oh. There is. Ogham, Runic */
-      putshort(gpos, anydevtab ? 0x0088 : 0x0008);	/* Alter YAdvance of first character */
-      putshort(gpos, 0x0000);	/* leave second char alone */
+      aput_int16_be_checked(anydevtab ? 0x0088 : 0x0008,gpos);	/* Alter YAdvance of first character */
+      aput_int16_be_checked(0x0000,gpos);	/* leave second char alone */
    } else {
-      putshort(gpos, anydevtab ? 0x0044 : 0x0004);	/* Alter XAdvance of first character */
-      putshort(gpos, 0x0000);	/* leave second char alone */
+      aput_int16_be_checked(anydevtab ? 0x0044 : 0x0004,gpos);	/* Alter XAdvance of first character */
+      aput_int16_be_checked(0x0000,gpos);	/* leave second char alone */
    }
    class1 =
       ClassesFromNames(sf, kc->firsts, kc->first_cnt, at->maxp.numGlyphs,
@@ -1549,20 +1549,20 @@ static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
    class2 =
       ClassesFromNames(sf, kc->seconds, kc->second_cnt, at->maxp.numGlyphs,
 		       NULL, false);
-   putshort(gpos, 0);		/* offset to first glyph classes */
-   putshort(gpos, 0);		/* offset to second glyph classes */
-   putshort(gpos, kc->first_cnt);
-   putshort(gpos, kc->second_cnt);
+   aput_int16_be_checked(0,gpos);		/* offset to first glyph classes */
+   aput_int16_be_checked(0,gpos);		/* offset to second glyph classes */
+   aput_int16_be_checked(kc->first_cnt,gpos);
+   aput_int16_be_checked(kc->second_cnt,gpos);
    next_devtab =
       aftell(gpos) - begin_off +
       kc->first_cnt * kc->second_cnt * 2 * sizeof(uint16_t);
    for (i=0; i < kc->first_cnt * kc->second_cnt; ++i) {
-      putshort(gpos, kc->offsets[i]);
+      aput_int16_be_checked(kc->offsets[i],gpos);
       if (anydevtab && kc->adjusts[i].corrections != NULL) {
-	 putshort(gpos, next_devtab);
+	 aput_int16_be_checked(next_devtab,gpos);
 	 next_devtab += DevTabLen(&kc->adjusts[i]);
       } else if (anydevtab)
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
    }
    if (anydevtab) {
       for (i=0; i < kc->first_cnt * kc->second_cnt; ++i) {
@@ -1574,19 +1574,19 @@ static void dumpgposkernclass(AFILE *gpos,SplineFont *sf,
    }
    pos=aftell(gpos);
    afseek(gpos, begin_off + 4 * sizeof(uint16_t), SEEK_SET);
-   putshort(gpos, pos - begin_off);
+   aput_int16_be_checked(pos - begin_off,gpos);
    afseek(gpos, pos, SEEK_SET);
    DumpClass(gpos, class1, at->maxp.numGlyphs);
 
    pos=aftell(gpos);
    afseek(gpos, begin_off + 5 * sizeof(uint16_t), SEEK_SET);
-   putshort(gpos, pos - begin_off);
+   aput_int16_be_checked(pos - begin_off,gpos);
    afseek(gpos, pos, SEEK_SET);
    DumpClass(gpos, class2, at->maxp.numGlyphs);
 
    pos=aftell(gpos);
    afseek(gpos, begin_off + sizeof(uint16_t), SEEK_SET);
-   putshort(gpos, pos - begin_off);
+   aput_int16_be_checked(pos - begin_off,gpos);
    afseek(gpos, pos, SEEK_SET);
    dumpcoveragetable(gpos, glyphs);
 
@@ -1599,22 +1599,22 @@ static void dumpanchor(AFILE *gpos,AnchorPoint *ap,int is_ttf) {
    int base=aftell(gpos);
 
    if (ap->xadjust.corrections != NULL || ap->yadjust.corrections != NULL)
-      putshort(gpos, 3);	/* format 3 w/ device tables */
+      aput_int16_be_checked(3,gpos);	/* format 3 w/ device tables */
    else if (ap->has_ttf_pt && is_ttf)
-      putshort(gpos, 2);	/* format 2 w/ a matching ttf point index */
+      aput_int16_be_checked(2,gpos);	/* format 2 w/ a matching ttf point index */
    else
-      putshort(gpos, 1);	/* Anchor format 1 just location */
-   putshort(gpos, ap->me.x);	/* X coord of attachment */
-   putshort(gpos, ap->me.y);	/* Y coord of attachment */
+      aput_int16_be_checked(1,gpos);	/* Anchor format 1 just location */
+   aput_int16_be_checked(ap->me.x,gpos);	/* X coord of attachment */
+   aput_int16_be_checked(ap->me.y,gpos);	/* Y coord of attachment */
    if (ap->xadjust.corrections != NULL || ap->yadjust.corrections != NULL) {
-      putshort(gpos, ap->xadjust.corrections==NULL ? 0 :
-	       aftell(gpos) - base + 4);
-      putshort(gpos, ap->yadjust.corrections==NULL ? 0 :
-	       aftell(gpos) - base + 2 + DevTabLen(&ap->xadjust));
+      aput_int16_be_checked(ap->xadjust.corrections==NULL ? 0 :
+	       aftell(gpos) - base + 4,gpos);
+      aput_int16_be_checked(ap->yadjust.corrections==NULL ? 0 :
+	       aftell(gpos) - base + 2 + DevTabLen(&ap->xadjust),gpos);
       dumpgposdevicetable(gpos, &ap->xadjust);
       dumpgposdevicetable(gpos, &ap->yadjust);
    } else if (ap->has_ttf_pt && is_ttf)
-      putshort(gpos, ap->ttf_pt_index);
+      aput_int16_be_checked(ap->ttf_pt_index,gpos);
 }
 
 static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
@@ -1649,9 +1649,9 @@ static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
    for (cnt=0; entryexit[cnt] != NULL; ++cnt);
 
    start=aftell(gpos);
-   putshort(gpos, 1);		/* format 1 for this subtable */
-   putshort(gpos, 0);		/* Fill in later, offset to coverage table */
-   putshort(gpos, cnt);		/* number of glyphs */
+   aput_int16_be_checked(1,gpos);		/* format 1 for this subtable */
+   aput_int16_be_checked(0,gpos);		/* Fill in later, offset to coverage table */
+   aput_int16_be_checked(cnt,gpos);		/* number of glyphs */
 
    offset=6 + 2 * 2 * cnt;
    for (j=0; j < cnt; ++j) {
@@ -1663,7 +1663,7 @@ static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
 	    exit=ap;
       }
       if (entry != NULL) {
-	 putshort(gpos, offset);
+	 aput_int16_be_checked(offset,gpos);
 	 offset += 6;
 	 if (entry->xadjust.corrections != NULL
 	     || entry->yadjust.corrections != NULL)
@@ -1672,9 +1672,9 @@ static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
 	 if (gi->is_ttf && entry->has_ttf_pt)
 	    offset += 2;
       } else
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
       if (exit != NULL) {
-	 putshort(gpos, offset);
+	 aput_int16_be_checked(offset,gpos);
 	 offset += 6;
 	 if (exit->xadjust.corrections != NULL
 	     || exit->yadjust.corrections != NULL)
@@ -1683,7 +1683,7 @@ static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
 	 else if (gi->is_ttf && exit->has_ttf_pt)
 	    offset += 2;
       } else
-	 putshort(gpos, 0);
+	 aput_int16_be_checked(0,gpos);
    }
    for (j=0; j < cnt; ++j) {
       entry=exit=NULL;
@@ -1701,7 +1701,7 @@ static void dumpgposCursiveAttach(AFILE *gpos,SplineFont *sf,
    coverage_offset=aftell(gpos);
    dumpcoveragetable(gpos, entryexit);
    afseek(gpos, start + 2, SEEK_SET);
-   putshort(gpos, coverage_offset - start);
+   aput_int16_be_checked(coverage_offset - start,gpos);
    afseek(gpos, 0, SEEK_END);
 
    free(entryexit);
@@ -1752,14 +1752,14 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
    for (cnt=0; base[cnt] != NULL; ++cnt);
 
    subtable_start=aftell(gpos);
-   putshort(gpos, 1);		/* format 1 for this subtable */
-   putshort(gpos, 0);		/* Fill in later, offset to mark coverage table */
-   putshort(gpos, 0);		/* Fill in later, offset to base coverage table */
-   putshort(gpos, classcnt);
-   putshort(gpos, 0);		/* Fill in later, offset to mark array */
-   putshort(gpos, 12);		/* Offset to base array */
+   aput_int16_be_checked(1,gpos);		/* format 1 for this subtable */
+   aput_int16_be_checked(0,gpos);		/* Fill in later, offset to mark coverage table */
+   aput_int16_be_checked(0,gpos);		/* Fill in later, offset to base coverage table */
+   aput_int16_be_checked(classcnt,gpos);
+   aput_int16_be_checked(0,gpos);		/* Fill in later, offset to mark array */
+   aput_int16_be_checked(12,gpos);		/* Offset to base array */
    /* Base array */
-   putshort(gpos, cnt);		/* Number of entries in array */
+   aput_int16_be_checked(cnt,gpos);		/* Number of entries in array */
    if (at==at_basechar || at==at_basemark) {
       offset=2;
       for (l=0; l < 3; ++l) {
@@ -1777,9 +1777,9 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
 		       break;
 		    case 1:
 		       if (ap==NULL)
-			  putshort(gpos, 0);
+			  aput_int16_be_checked(0,gpos);
 		       else {
-			  putshort(gpos, offset);
+			  aput_int16_be_checked(offset,gpos);
 			  offset += 6;
 			  if (ap->xadjust.corrections != NULL
 			      || ap->yadjust.corrections != NULL)
@@ -1803,7 +1803,7 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
       offset=2 + 2 * cnt;
       max=0;
       for (j=0; j < cnt; ++j) {
-	 putshort(gpos, offset);
+	 aput_int16_be_checked(offset,gpos);
 	 pos=tot=0;
 	 for (ap=base[j]->anchor; ap != NULL; ap=ap->next)
 	    for (k=0, ac=_ac; k < classcnt; ac=ac->next)
@@ -1836,14 +1836,14 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
 		  ++k;
 	       }
 	 ++pos;
-	 putshort(gpos, pos);
+	 aput_int16_be_checked(pos,gpos);
 	 offset=2 + 2 * pos * classcnt;
 	 for (l=0; l < pos; ++l) {
 	    for (k=0; k < classcnt; ++k) {
 	       if (aps[k * max + l]==NULL)
-		  putshort(gpos, 0);
+		  aput_int16_be_checked(0,gpos);
 	       else {
-		  putshort(gpos, offset);
+		  aput_int16_be_checked(offset,gpos);
 		  offset += 6;
 		  if (aps[k * max + l]->xadjust.corrections != NULL
 		      || aps[k * max + l]->yadjust.corrections != NULL)
@@ -1867,7 +1867,7 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
    }
    coverage_offset=aftell(gpos);
    afseek(gpos, subtable_start + 4, SEEK_SET);
-   putshort(gpos, coverage_offset - subtable_start);
+   aput_int16_be_checked(coverage_offset - subtable_start,gpos);
    afseek(gpos, 0, SEEK_END);
    dumpcoveragetable(gpos, base);
 
@@ -1878,11 +1878,11 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
    dumpcoveragetable(gpos, markglyphs);
    markarray_offset=aftell(gpos);
    for (cnt=0; markglyphs[cnt] != NULL; ++cnt);
-   putshort(gpos, cnt);
+   aput_int16_be_checked(cnt,gpos);
    offset=2 + 4 * cnt;
    for (j=0; j < cnt; ++j) {
       if (classcnt==0) {
-	 putshort(gpos, 0);	/* Only one class */
+	 aput_int16_be_checked(0,gpos);	/* Only one class */
 	 ap=NULL;
       } else {
 	 for (k=0, ac=_ac; k < classcnt; ac=ac->next) {
@@ -1895,9 +1895,9 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
 	       ++k;
 	    }
 	 }
-	 putshort(gpos, k);
+	 aput_int16_be_checked(k,gpos);
       }
-      putshort(gpos, offset);
+      aput_int16_be_checked(offset,gpos);
       offset += 6;
       if (ap != NULL
 	  && (ap->xadjust.corrections != NULL
@@ -1923,9 +1923,9 @@ static void dumpgposAnchorData(AFILE *gpos,AnchorClass *_ac,
       free(markglyphs);
 
    afseek(gpos, subtable_start + 2, SEEK_SET);	/* mark coverage table offset */
-   putshort(gpos, coverage_offset - subtable_start);
+   aput_int16_be_checked(coverage_offset - subtable_start,gpos);
    afseek(gpos, 4, SEEK_CUR);
-   putshort(gpos, markarray_offset - subtable_start);
+   aput_int16_be_checked(markarray_offset - subtable_start,gpos);
 
    afseek(gpos, 0, SEEK_END);
 }
@@ -1943,16 +1943,16 @@ static void dumpGSUBsimplesubs(AFILE *gsub,SplineFont *sf,
 
    /* delta format may be a problem for vertical writing in XP,
     * so we use list format instead */
-   putshort(gsub,2);	/* glyph list format */
+   aput_int16_be_checked(2,gsub);	/* glyph list format */
    coverage_pos=aftell(gsub);
-   putshort(gsub,0);	/* offset to coverage table */
-   putshort(gsub,cnt);
+   aput_int16_be_checked(0,gsub);	/* offset to coverage table */
+   aput_int16_be_checked(cnt,gsub);
    for (cnt=0;glyphs[cnt]!=NULL;++cnt)
-     putshort(gsub,(*maps[cnt])->ttf_glyph);
+     aput_int16_be_checked((*maps[cnt])->ttf_glyph,gsub);
 
    end=aftell(gsub);
    afseek(gsub,coverage_pos,SEEK_SET);
-   putshort(gsub,end-coverage_pos+2);
+   aput_int16_be_checked(end-coverage_pos+2,gsub);
    afseek(gsub,end,SEEK_SET);
    dumpcoveragetable(gsub,glyphs);
 
@@ -1971,13 +1971,13 @@ static void dumpGSUBmultiplesubs(AFILE *gsub,SplineFont *sf,
    maps=generateMapList(glyphs, sub);
    for (cnt=0; glyphs[cnt] != NULL; ++cnt);
 
-   putshort(gsub, 1);		/* glyph list format */
+   aput_int16_be_checked(1,gsub);		/* glyph list format */
    coverage_pos=aftell(gsub);
-   putshort(gsub, 0);		/* offset to coverage table */
-   putshort(gsub, cnt);
+   aput_int16_be_checked(0,gsub);		/* offset to coverage table */
+   aput_int16_be_checked(cnt,gsub);
    offset=6 + 2 * cnt;
    for (cnt=0; glyphs[cnt] != NULL; ++cnt) {
-      putshort(gsub, offset);
+      aput_int16_be_checked(offset,gsub);
       if (maps[cnt]==NULL) {
 	 ErrorMsg(1,
 		 "maps[%d] is null; glyphs[%d] is \"%s\"; lookup name is \"%s\".\n",
@@ -1989,13 +1989,13 @@ static void dumpGSUBmultiplesubs(AFILE *gsub,SplineFont *sf,
    }
    for (cnt=0; glyphs[cnt] != NULL; ++cnt) {
       for (gc=0; maps[cnt][gc] != NULL; ++gc);
-      putshort(gsub, gc);
+      aput_int16_be_checked(gc,gsub);
       for (gc=0; maps[cnt][gc] != NULL; ++gc)
-	 putshort(gsub, maps[cnt][gc]->ttf_glyph);
+	 aput_int16_be_checked(maps[cnt][gc]->ttf_glyph,gsub);
    }
    end=aftell(gsub);
    afseek(gsub, coverage_pos, SEEK_SET);
-   putshort(gsub, end - coverage_pos + 2);
+   aput_int16_be_checked(end - coverage_pos + 2,gsub);
    afseek(gsub, end, SEEK_SET);
    dumpcoveragetable(gsub, glyphs);
 
@@ -2028,55 +2028,55 @@ static void dumpGSUBligdata(AFILE *gsub,SplineFont *sf,
    if (glyphs != NULL)
       for (; glyphs[cnt] != NULL; ++cnt);
 
-   putshort(gsub, 1);		/* only one format for ligatures */
+   aput_int16_be_checked(1,gsub);		/* only one format for ligatures */
    coverage_pos=aftell(gsub);
-   putshort(gsub, 0);		/* offset to coverage table */
-   putshort(gsub, cnt);
+   aput_int16_be_checked(0,gsub);		/* offset to coverage table */
+   aput_int16_be_checked(cnt,gsub);
    next_val_pos=aftell(gsub);
    if (glyphs != NULL)
       offsets=malloc(cnt * sizeof(int16_t));
    for (i=0; i < cnt; ++i)
-      putshort(gsub, 0);
+      aput_int16_be_checked(0,gsub);
    for (i=0; i < cnt; ++i) {
       offsets[i]=aftell(gsub) - coverage_pos + 2;
       for (pcnt=0, ll=glyphs[i]->ligofme; ll != NULL; ll=ll->next)
 	 if (ll->lig->subtable==sub && AllToBeOutput(ll))
 	    ++pcnt;
-      putshort(gsub, pcnt);
+      aput_int16_be_checked(pcnt,gsub);
       if (pcnt >= max) {
 	 max=pcnt + 100;
 	 ligoffsets=realloc(ligoffsets, max * sizeof(int));
       }
       lig_list_start=aftell(gsub);
       for (j=0; j < pcnt; ++j)
-	 putshort(gsub, 0);	/* Place holders */
+	 aput_int16_be_checked(0,gsub);	/* Place holders */
       for (pcnt=0, ll=glyphs[i]->ligofme; ll != NULL; ll=ll->next) {
 	 if (ll->lig->subtable==sub && AllToBeOutput(ll)) {
 	    ligoffsets[pcnt]=aftell(gsub) - lig_list_start + 2;
-	    putshort(gsub, ll->lig->u.lig.lig->ttf_glyph);
+	    aput_int16_be_checked(ll->lig->u.lig.lig->ttf_glyph,gsub);
 	    for (lcnt=0, scl=ll->components; scl != NULL; scl=scl->next)
 	       ++lcnt;
-	    putshort(gsub, lcnt + 1);
+	    aput_int16_be_checked(lcnt + 1,gsub);
 	    if (lcnt + 1 > at->os2.maxContext)
 	       at->os2.maxContext=lcnt + 1;
 	    for (scl=ll->components; scl != NULL; scl=scl->next)
-	       putshort(gsub, scl->sc->ttf_glyph);
+	       aput_int16_be_checked(scl->sc->ttf_glyph,gsub);
 	    ++pcnt;
 	 }
       }
       afseek(gsub, lig_list_start, SEEK_SET);
       for (j=0; j < pcnt; ++j)
-	 putshort(gsub, ligoffsets[j]);
+	 aput_int16_be_checked(ligoffsets[j],gsub);
       afseek(gsub, 0, SEEK_END);
    }
    free(ligoffsets);
    if (glyphs != NULL) {
       here=aftell(gsub);
       afseek(gsub, coverage_pos, SEEK_SET);
-      putshort(gsub, here - coverage_pos + 2);
+      aput_int16_be_checked(here - coverage_pos + 2,gsub);
       afseek(gsub, next_val_pos, SEEK_SET);
       for (i=0; i < cnt; ++i)
-	 putshort(gsub, offsets[i]);
+	 aput_int16_be_checked(offsets[i],gsub);
       afseek(gsub, here, SEEK_SET);
       dumpcoveragetable(gsub, glyphs);
       free(glyphs);
@@ -2191,11 +2191,11 @@ static void dumpg___ContextChainGlyphs(AFILE *lfile,SplineFont *sf,
    glyphs=OrderedInitialGlyphs(sf, fpst);
    for (cnt=0; glyphs[cnt] != NULL; ++cnt);
 
-   putshort(lfile, 1);		/* Sub format 1 => glyph lists */
-   putshort(lfile, (3 + cnt) * sizeof(short));	/* offset to coverage */
-   putshort(lfile, cnt);
+   aput_int16_be_checked(1,lfile);		/* Sub format 1 => glyph lists */
+   aput_int16_be_checked((3 + cnt) * sizeof(short),lfile);	/* offset to coverage */
+   aput_int16_be_checked(cnt,lfile);
    for (i=0; i < cnt; ++i)
-      putshort(lfile, 0);	/* Offset to rule */
+      aput_int16_be_checked(0,lfile);	/* Offset to rule */
    dumpcoveragetable(lfile, glyphs);
 
    maxcontext=0;
@@ -2204,18 +2204,18 @@ static void dumpg___ContextChainGlyphs(AFILE *lfile,SplineFont *sf,
       uint32_t pos=aftell(lfile);
 
       afseek(lfile, base + (3 + i) * sizeof(short), SEEK_SET);
-      putshort(lfile, pos - base);
+      aput_int16_be_checked(pos - base,lfile);
       afseek(lfile, pos, SEEK_SET);
       subcnt=CntRulesStartingWith(fpst, glyphs[i]);
-      putshort(lfile, subcnt);
+      aput_int16_be_checked(subcnt,lfile);
       for (j=0; j < subcnt; ++j)
-	 putshort(lfile, 0);
+	 aput_int16_be_checked(0,lfile);
       for (j=k=0; k < fpst->rule_cnt; ++k)
 	 if (NamesStartWith(glyphs[i], fpst->rules[k].u.glyph.names)) {
 	    uint32_t subpos=aftell(lfile);
 
 	    afseek(lfile, pos + (1 + j) * sizeof(short), SEEK_SET);
-	    putshort(lfile, subpos - pos);
+	    aput_int16_be_checked(subpos - pos,lfile);
 	    afseek(lfile, subpos, SEEK_SET);
 
 	    for (l=lc=0; l < fpst->rules[k].lookup_cnt; ++l)
@@ -2225,42 +2225,42 @@ static void dumpg___ContextChainGlyphs(AFILE *lfile,SplineFont *sf,
 	       subglyphs =
 		  SFGlyphsFromNames(sf, fpst->rules[k].u.glyph.names);
 	       for (l=0; subglyphs[l] != NULL; ++l);
-	       putshort(lfile, l);
+	       aput_int16_be_checked(l,lfile);
 	       curcontext=l;
-	       putshort(lfile, lc);
+	       aput_int16_be_checked(lc,lfile);
 	       for (l=1; subglyphs[l] != NULL; ++l)
-		  putshort(lfile, subglyphs[l]->ttf_glyph);
+		  aput_int16_be_checked(subglyphs[l]->ttf_glyph,lfile);
 	       free(subglyphs);
 	    } else {
 	       subglyphs=SFGlyphsFromNames(sf, fpst->rules[k].u.glyph.back);
 	       for (l=0; subglyphs[l] != NULL; ++l);
-	       putshort(lfile, l);
+	       aput_int16_be_checked(l,lfile);
 	       curcontext=l;
 	       for (l=0; subglyphs[l] != NULL; ++l)
-		  putshort(lfile, subglyphs[l]->ttf_glyph);
+		  aput_int16_be_checked(subglyphs[l]->ttf_glyph,lfile);
 	       free(subglyphs);
 	       subglyphs =
 		  SFGlyphsFromNames(sf, fpst->rules[k].u.glyph.names);
 	       for (l=0; subglyphs[l] != NULL; ++l);
-	       putshort(lfile, l);
+	       aput_int16_be_checked(l,lfile);
 	       curcontext += l;
 	       for (l=1; subglyphs[l] != NULL; ++l)
-		  putshort(lfile, subglyphs[l]->ttf_glyph);
+		  aput_int16_be_checked(subglyphs[l]->ttf_glyph,lfile);
 	       free(subglyphs);
 	       subglyphs=SFGlyphsFromNames(sf, fpst->rules[k].u.glyph.fore);
 	       for (l=0; subglyphs[l] != NULL; ++l);
-	       putshort(lfile, l);
+	       aput_int16_be_checked(l,lfile);
 	       curcontext += l;
 	       for (l=0; subglyphs[l] != NULL; ++l)
-		  putshort(lfile, subglyphs[l]->ttf_glyph);
+		  aput_int16_be_checked(subglyphs[l]->ttf_glyph,lfile);
 	       free(subglyphs);
-	       putshort(lfile, lc);
+	       aput_int16_be_checked(lc,lfile);
 	    }
 	    for (l=0; l < fpst->rules[k].lookup_cnt; ++l)
 	       if (fpst->rules[k].lookups[l].lookup->lookup_index != -1) {
-		  putshort(lfile, fpst->rules[k].lookups[l].seq);
-		  putshort(lfile,
-			   fpst->rules[k].lookups[l].lookup->lookup_index);
+		  aput_int16_be_checked(fpst->rules[k].lookups[l].seq,lfile);
+		  aput_int16_be_checked(
+			   fpst->rules[k].lookups[l].lookup->lookup_index,lfile);
 	       }
 	    ++j;
 	    if (curcontext > maxcontext)
@@ -2285,20 +2285,20 @@ static void dumpg___ContextChainClass(AFILE *lfile,SplineFont *sf,
    int i, ii, cnt, subcnt, j, k, l, maxcontext, curcontext;
    int lc;
 
-   putshort(lfile, 2);		/* Sub format 2 => class */
-   putshort(lfile, 0);		/* offset to coverage table */
+   aput_int16_be_checked(2,lfile);		/* Sub format 2 => class */
+   aput_int16_be_checked(0,lfile);		/* offset to coverage table */
    if (iscontext)
-      putshort(lfile, 0);	/* offset to input classdef */
+      aput_int16_be_checked(0,lfile);	/* offset to input classdef */
    else {
-      putshort(lfile, 0);	/* offset to backtrack classdef */
-      putshort(lfile, 0);	/* offset to input classdef */
-      putshort(lfile, 0);	/* offset to lookahead classdef */
+      aput_int16_be_checked(0,lfile);	/* offset to backtrack classdef */
+      aput_int16_be_checked(0,lfile);	/* offset to input classdef */
+      aput_int16_be_checked(0,lfile);	/* offset to lookahead classdef */
    }
    initialclasses=FigureInitialClasses(fpst);
-   putshort(lfile, fpst->nccnt);
+   aput_int16_be_checked(fpst->nccnt,lfile);
    rulebase=aftell(lfile);
    for (cnt=0; cnt < fpst->nccnt; ++cnt)
-      putshort(lfile, 0);
+      aput_int16_be_checked(0,lfile);
 
    iclass =
       ClassesFromNames(sf, fpst->nclass, fpst->nccnt, at->maxp.numGlyphs,
@@ -2315,7 +2315,7 @@ static void dumpg___ContextChainClass(AFILE *lfile,SplineFont *sf,
    }
    pos=aftell(lfile);
    afseek(lfile, base + sizeof(uint16_t), SEEK_SET);
-   putshort(lfile, pos - base);
+   aput_int16_be_checked(pos - base,lfile);
    afseek(lfile, pos, SEEK_SET);
    glyphs =
       GlyphsFromInitialClasses(iglyphs, at->maxp.numGlyphs, iclass,
@@ -2329,42 +2329,42 @@ static void dumpg___ContextChainClass(AFILE *lfile,SplineFont *sf,
    if (iscontext) {
       pos=aftell(lfile);
       afseek(lfile, base + 2 * sizeof(uint16_t), SEEK_SET);
-      putshort(lfile, pos - base);
+      aput_int16_be_checked(pos - base,lfile);
       afseek(lfile, pos, SEEK_SET);
       DumpClass(lfile, iclass, at->maxp.numGlyphs);
       free(iclass);
    } else {
       pos=aftell(lfile);
       afseek(lfile, base + 2 * sizeof(uint16_t), SEEK_SET);
-      putshort(lfile, pos - base);
+      aput_int16_be_checked(pos - base,lfile);
       afseek(lfile, pos, SEEK_SET);
       DumpClass(lfile, bclass, at->maxp.numGlyphs);
       if (ClassesMatch(fpst->bccnt, fpst->bclass, fpst->nccnt, fpst->nclass)) {
 	 npos=pos;
 	 afseek(lfile, base + 3 * sizeof(uint16_t), SEEK_SET);
-	 putshort(lfile, npos - base);
+	 aput_int16_be_checked(npos - base,lfile);
 	 afseek(lfile, 0, SEEK_END);
       } else {
 	 npos=aftell(lfile);
 	 afseek(lfile, base + 3 * sizeof(uint16_t), SEEK_SET);
-	 putshort(lfile, npos - base);
+	 aput_int16_be_checked(npos - base,lfile);
 	 afseek(lfile, npos, SEEK_SET);
 	 DumpClass(lfile, iclass, at->maxp.numGlyphs);
       }
       if (ClassesMatch(fpst->fccnt, fpst->fclass, fpst->bccnt, fpst->bclass)) {
 	 afseek(lfile, base + 4 * sizeof(uint16_t), SEEK_SET);
-	 putshort(lfile, pos - base);
+	 aput_int16_be_checked(pos - base,lfile);
 	 afseek(lfile, 0, SEEK_END);
       } else
 	 if (ClassesMatch
 	     (fpst->fccnt, fpst->fclass, fpst->nccnt, fpst->nclass)) {
 	 afseek(lfile, base + 4 * sizeof(uint16_t), SEEK_SET);
-	 putshort(lfile, npos - base);
+	 aput_int16_be_checked(npos - base,lfile);
 	 afseek(lfile, 0, SEEK_END);
       } else {
 	 pos=aftell(lfile);
 	 afseek(lfile, base + 4 * sizeof(uint16_t), SEEK_SET);
-	 putshort(lfile, pos - base);
+	 aput_int16_be_checked(pos - base,lfile);
 	 afseek(lfile, pos, SEEK_SET);
 	 DumpClass(lfile, lclass, at->maxp.numGlyphs);
       }
@@ -2381,44 +2381,44 @@ static void dumpg___ContextChainClass(AFILE *lfile,SplineFont *sf,
 	 ++ii;
 	 pos=aftell(lfile);
 	 afseek(lfile, rulebase + i * sizeof(short), SEEK_SET);
-	 putshort(lfile, pos - base);
+	 aput_int16_be_checked(pos - base,lfile);
 	 afseek(lfile, pos, SEEK_SET);
 	 subcnt=CntRulesStartingWithClass(fpst, i);
-	 putshort(lfile, subcnt);
+	 aput_int16_be_checked(subcnt,lfile);
 	 for (j=0; j < subcnt; ++j)
-	    putshort(lfile, 0);
+	    aput_int16_be_checked(0,lfile);
 	 for (j=k=0; k < fpst->rule_cnt; ++k)
 	    if (i==fpst->rules[k].u.class.nclasses[0]) {
 	       subpos=aftell(lfile);
 	       afseek(lfile, pos + (1 + j) * sizeof(short), SEEK_SET);
-	       putshort(lfile, subpos - pos);
+	       aput_int16_be_checked(subpos - pos,lfile);
 	       afseek(lfile, subpos, SEEK_SET);
 
 	       for (l=lc=0; l < fpst->rules[k].lookup_cnt; ++l)
 		  if (fpst->rules[k].lookups[l].lookup->lookup_index != -1)
 		     ++lc;
 	       if (iscontext) {
-		  putshort(lfile, fpst->rules[k].u.class.ncnt);
-		  putshort(lfile, lc);
+		  aput_int16_be_checked(fpst->rules[k].u.class.ncnt,lfile);
+		  aput_int16_be_checked(lc,lfile);
 		  for (l=1; l < fpst->rules[k].u.class.ncnt; ++l)
-		     putshort(lfile, fpst->rules[k].u.class.nclasses[l]);
+		     aput_int16_be_checked(fpst->rules[k].u.class.nclasses[l],lfile);
 	       } else {
-		  putshort(lfile, fpst->rules[k].u.class.bcnt);
+		  aput_int16_be_checked(fpst->rules[k].u.class.bcnt,lfile);
 		  for (l=0; l < fpst->rules[k].u.class.bcnt; ++l)
-		     putshort(lfile, fpst->rules[k].u.class.bclasses[l]);
-		  putshort(lfile, fpst->rules[k].u.class.ncnt);
+		     aput_int16_be_checked(fpst->rules[k].u.class.bclasses[l],lfile);
+		  aput_int16_be_checked(fpst->rules[k].u.class.ncnt,lfile);
 		  for (l=1; l < fpst->rules[k].u.class.ncnt; ++l)
-		     putshort(lfile, fpst->rules[k].u.class.nclasses[l]);
-		  putshort(lfile, fpst->rules[k].u.class.fcnt);
+		     aput_int16_be_checked(fpst->rules[k].u.class.nclasses[l],lfile);
+		  aput_int16_be_checked(fpst->rules[k].u.class.fcnt,lfile);
 		  for (l=0; l < fpst->rules[k].u.class.fcnt; ++l)
-		     putshort(lfile, fpst->rules[k].u.class.fclasses[l]);
-		  putshort(lfile, lc);
+		     aput_int16_be_checked(fpst->rules[k].u.class.fclasses[l],lfile);
+		  aput_int16_be_checked(lc,lfile);
 	       }
 	       for (l=0; l < fpst->rules[k].lookup_cnt; ++l)
 		  if (fpst->rules[k].lookups[l].lookup->lookup_index != -1) {
-		     putshort(lfile, fpst->rules[k].lookups[l].seq);
-		     putshort(lfile,
-			      fpst->rules[k].lookups[l].lookup->lookup_index);
+		     aput_int16_be_checked(fpst->rules[k].lookups[l].seq,lfile);
+		     aput_int16_be_checked(
+			      fpst->rules[k].lookups[l].lookup->lookup_index,lfile);
 		  }
 	       ++j;
 	    }
@@ -2456,25 +2456,25 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
        && fpst->rules[0].u.rcoverage.always1 != 1)
       ErrorMsg(2,"Bad input count in reverse coverage lookup\n");
 
-   putshort(lfile, 3);		/* Sub format 3 => coverage */
+   aput_int16_be_checked(3,lfile);		/* Sub format 3 => coverage */
    for (l=lc=0; l < fpst->rules[0].lookup_cnt; ++l)
       if (fpst->rules[0].lookups[l].lookup->lookup_index != -1)
 	 ++lc;
    if (iscontext) {
-      putshort(lfile, fpst->rules[0].u.coverage.ncnt);
-      putshort(lfile, lc);
+      aput_int16_be_checked(fpst->rules[0].u.coverage.ncnt,lfile);
+      aput_int16_be_checked(lc,lfile);
       for (i=0; i < fpst->rules[0].u.coverage.ncnt; ++i)
-	 putshort(lfile, 0);
+	 aput_int16_be_checked(0,lfile);
       for (i=0; i < fpst->rules[0].lookup_cnt; ++i)
 	 if (fpst->rules[0].lookups[i].lookup->lookup_index != -1) {
-	    putshort(lfile, fpst->rules[0].lookups[i].seq);
-	    putshort(lfile, fpst->rules[0].lookups[i].lookup->lookup_index);
+	    aput_int16_be_checked(fpst->rules[0].lookups[i].seq,lfile);
+	    aput_int16_be_checked(fpst->rules[0].lookups[i].lookup->lookup_index,lfile);
 	 }
       for (i=0; i < fpst->rules[0].u.coverage.ncnt; ++i) {
 	 uint32_t pos=aftell(lfile);
 
 	 afseek(lfile, base + 6 + 2 * i, SEEK_SET);
-	 putshort(lfile, pos - base);
+	 aput_int16_be_checked(pos - base,lfile);
 	 afseek(lfile, pos, SEEK_SET);
 	 glyphs =
 	    OrderedGlyphsFromNames(sf, fpst->rules[0].u.coverage.ncovers[i]);
@@ -2484,43 +2484,43 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
    } else {
       if (fpst->format==pst_reversecoverage) {
 	 ibase=aftell(lfile);
-	 putshort(lfile, 0);
+	 aput_int16_be_checked(0,lfile);
       }
-      putshort(lfile, fpst->rules[0].u.coverage.bcnt);
+      aput_int16_be_checked(fpst->rules[0].u.coverage.bcnt,lfile);
       bbase=aftell(lfile);
       for (i=0; i < fpst->rules[0].u.coverage.bcnt; ++i)
-	 putshort(lfile, 0);
+	 aput_int16_be_checked(0,lfile);
       if (fpst->format==pst_coverage) {
-	 putshort(lfile, fpst->rules[0].u.coverage.ncnt);
+	 aput_int16_be_checked(fpst->rules[0].u.coverage.ncnt,lfile);
 	 ibase=aftell(lfile);
 	 for (i=0; i < fpst->rules[0].u.coverage.ncnt; ++i)
-	    putshort(lfile, 0);
+	    aput_int16_be_checked(0,lfile);
       }
-      putshort(lfile, fpst->rules[0].u.coverage.fcnt);
+      aput_int16_be_checked(fpst->rules[0].u.coverage.fcnt,lfile);
       lbase=aftell(lfile);
       for (i=0; i < fpst->rules[0].u.coverage.fcnt; ++i)
-	 putshort(lfile, 0);
+	 aput_int16_be_checked(0,lfile);
       if (fpst->format==pst_coverage) {
-	 putshort(lfile, lc);
+	 aput_int16_be_checked(lc,lfile);
 	 for (i=0; i < fpst->rules[0].lookup_cnt; ++i)
 	    if (fpst->rules[0].lookups[i].lookup->lookup_index != -1) {
-	       putshort(lfile, fpst->rules[0].lookups[i].seq);
-	       putshort(lfile,
-			fpst->rules[0].lookups[i].lookup->lookup_index);
+	       aput_int16_be_checked(fpst->rules[0].lookups[i].seq,lfile);
+	       aput_int16_be_checked(
+			fpst->rules[0].lookups[i].lookup->lookup_index,lfile);
 	    }
       } else {			/* reverse coverage */
 	 glyphs =
 	    SFGlyphsFromNames(sf, fpst->rules[0].u.rcoverage.replacements);
 	 for (i=0; glyphs[i] != 0; ++i);
-	 putshort(lfile, i);
+	 aput_int16_be_checked(i,lfile);
 	 for (i=0; glyphs[i] != 0; ++i)
-	    putshort(lfile, glyphs[i]->ttf_glyph);
+	    aput_int16_be_checked(glyphs[i]->ttf_glyph,lfile);
       }
       for (i=0; i < fpst->rules[0].u.coverage.ncnt; ++i) {
 	 uint32_t pos=aftell(lfile);
 
 	 afseek(lfile, ibase + 2 * i, SEEK_SET);
-	 putshort(lfile, pos - base);
+	 aput_int16_be_checked(pos - base,lfile);
 	 afseek(lfile, pos, SEEK_SET);
 	 glyphs =
 	    OrderedGlyphsFromNames(sf, fpst->rules[0].u.coverage.ncovers[i]);
@@ -2531,7 +2531,7 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
 	 uint32_t pos=aftell(lfile);
 
 	 afseek(lfile, bbase + 2 * i, SEEK_SET);
-	 putshort(lfile, pos - base);
+	 aput_int16_be_checked(pos - base,lfile);
 	 afseek(lfile, pos, SEEK_SET);
 	 glyphs =
 	    OrderedGlyphsFromNames(sf, fpst->rules[0].u.coverage.bcovers[i]);
@@ -2542,7 +2542,7 @@ static void dumpg___ContextChainCoverage(AFILE *lfile,SplineFont *sf,
 	 uint32_t pos=aftell(lfile);
 
 	 afseek(lfile, lbase + 2 * i, SEEK_SET);
-	 putshort(lfile, pos - base);
+	 aput_int16_be_checked(pos - base,lfile);
 	 afseek(lfile, pos, SEEK_SET);
 	 glyphs =
 	    OrderedGlyphsFromNames(sf, fpst->rules[0].u.coverage.fcovers[i]);
@@ -3072,12 +3072,12 @@ static void dump_script_table(AFILE *g___,struct scriptset *ss,
       --lcnt;
 
    base=aftell(g___);
-   putshort(g___, 0);		/* fill in later, Default Lang Sys */
-   putshort(g___, lcnt);
+   aput_int16_be_checked(0,g___);		/* fill in later, Default Lang Sys */
+   aput_int16_be_checked(lcnt,g___);
    for (i=0; i < ss->lc; ++i)
       if (i != dflt_lang) {
 	 putlong(g___, ss->langsys[i].lang);	/* Language tag */
-	 putshort(g___, 0);	/* Fill in later, offset to langsys */
+	 aput_int16_be_checked(0,g___);	/* Fill in later, offset to langsys */
       }
 
    for (lcnt=0; lcnt < ss->lc; ++lcnt) {
@@ -3090,7 +3090,7 @@ static void dump_script_table(AFILE *g___,struct scriptset *ss,
       afseek(g___, lcnt==dflt_lang ? base :
 	    lcnt < dflt_lang || dflt_lang==-1 ? base + 4 + lcnt * 6 + 4 :
 	    base + 4 + (lcnt - 1) * 6 + 4, SEEK_SET);
-      putshort(g___, offset - base);
+      aput_int16_be_checked(offset - base,g___);
       afseek(g___, 0, SEEK_END);
       if (ss->langsys[lcnt].same_as==-1) {
 	 req_index=-1;
@@ -3101,13 +3101,13 @@ static void dump_script_table(AFILE *g___,struct scriptset *ss,
 	       break;
 	    }
 	 }
-	 putshort(g___, 0);	/* LookupOrder, always NULL */
-	 putshort(g___, req_index);	/* index of required feature, if any */
-	 putshort(g___, ss->langsys[lcnt].fc - (req_index != -1));
+	 aput_int16_be_checked(0,g___);	/* LookupOrder, always NULL */
+	 aput_int16_be_checked(req_index,g___);	/* index of required feature, if any */
+	 aput_int16_be_checked(ss->langsys[lcnt].fc - (req_index != -1),g___);
 	 /* count of non-required features */
 	 for (j=0; j < ss->langsys[lcnt].fc; ++j)
 	    if (ss->langsys[lcnt].feature_id[j] != req_index)
-	       putshort(g___, ss->langsys[lcnt].feature_id[j]);
+	       aput_int16_be_checked(ss->langsys[lcnt].feature_id[j],g___);
       }
    }
 }
@@ -3185,8 +3185,8 @@ static AFILE *g___FigureExtensionSubTables(OTLookup *all,int startoffset,
 		  if (otf->needs_extension) {
 		     int off=aftell(efile);
 
-		     putshort(efile, 1);	/* exten subtable format (there's only one) */
-		     putshort(efile, otf->lookup_type & 0xff);
+		     aput_int16_be_checked(1,efile);	/* exten subtable format (there's only one) */
+		     aput_int16_be_checked(otf->lookup_type & 0xff,efile);
 		     putlong(efile, sub->extra_subtables[i] - len2);
 		     sub->extra_subtables[i]=off;
 		     len2 += 8;
@@ -3197,8 +3197,8 @@ static AFILE *g___FigureExtensionSubTables(OTLookup *all,int startoffset,
 	       if (otf->needs_extension) {
 		  int off=aftell(efile);
 
-		  putshort(efile, 1);	/* exten subtable format (there's only one) */
-		  putshort(efile, otf->lookup_type & 0xff);
+		  aput_int16_be_checked(1,efile);	/* exten subtable format (there's only one) */
+		  aput_int16_be_checked(otf->lookup_type & 0xff,efile);
 		  putlong(efile, sub->subtable_offset - len2);
 		  sub->subtable_offset=off;
 		  len2 += 8;
@@ -3258,15 +3258,15 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
    g___=atmpfile();
 
    putlong(g___, 0x10000);	/* version number */
-   putshort(g___, 10);		/* offset to script table */
-   putshort(g___, 0);		/* offset to features. Come back for this */
-   putshort(g___, 0);		/* offset to lookups.  Come back for this */
+   aput_int16_be_checked(10,g___);		/* offset to script table */
+   aput_int16_be_checked(0,g___);		/* offset to features. Come back for this */
+   aput_int16_be_checked(0,g___);		/* offset to lookups.  Come back for this */
 /* Now the scripts */
    scripts_start_offset=aftell(g___);
-   putshort(g___, ginfo.sc);
+   aput_int16_be_checked(ginfo.sc,g___);
    for (i=0; i < ginfo.sc; ++i) {
       putlong(g___, ginfo.scripts[i].script);
-      putshort(g___, 0);	/* fix up later */
+      aput_int16_be_checked(0,g___);	/* fix up later */
    }
 
    /* Ok, that was the script_list_table which gives each script an offset */
@@ -3277,7 +3277,7 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
    for (i=0; i < ginfo.sc; ++i) {
       here=aftell(g___);
       afseek(g___, scripts_start_offset + offset, SEEK_SET);
-      putshort(g___, here - scripts_start_offset);
+      aput_int16_be_checked(here - scripts_start_offset,g___);
       offset += 6;
       afseek(g___, here, SEEK_SET);
       dump_script_table(g___, &ginfo.scripts[i], &ginfo);
@@ -3296,13 +3296,13 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
 /* Now the features */
    feature_list_table_start=aftell(g___);
    afseek(g___, 6, SEEK_SET);
-   putshort(g___, feature_list_table_start);
+   aput_int16_be_checked(feature_list_table_start,g___);
    afseek(g___, 0, SEEK_END);
-   putshort(g___, ginfo.fcnt);	/* Number of features */
+   aput_int16_be_checked(ginfo.fcnt,g___);	/* Number of features */
    offset=2 + 6 * ginfo.fcnt;	/* Offset to start of first feature table from beginning of feature_list */
    for (i=0; i < ginfo.fcnt; ++i) {
       putlong(g___, ginfo.feat_lookups[i].tag);
-      putshort(g___, offset);
+      aput_int16_be_checked(offset,g___);
       offset += 4 + 2 * ginfo.feat_lookups[i].lcnt;
    }
    /* for each feature, one feature table */
@@ -3314,10 +3314,10 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
       else if (ginfo.feat_lookups[i].tag >= CHR('s', 's', '0', '1')
 	       && ginfo.feat_lookups[i].tag <= CHR('s', 's', '2', '0'))
 	 ginfo.feat_lookups[i].name_param_ptr=aftell(g___);
-      putshort(g___, 0);	/* No feature params (we'll come back for 'size') */
-      putshort(g___, ginfo.feat_lookups[i].lcnt);	/* this many lookups */
+      aput_int16_be_checked(0,g___);	/* No feature params (we'll come back for 'size') */
+      aput_int16_be_checked(ginfo.feat_lookups[i].lcnt,g___);	/* this many lookups */
       for (j=0; j < ginfo.feat_lookups[i].lcnt; ++j)
-	 putshort(g___, ginfo.feat_lookups[i].lookups[j]->lookup_index);
+	 aput_int16_be_checked(ginfo.feat_lookups[i].lookups[j]->lookup_index,g___);
       /* index of each lookup */
    }
    if (size_params_ptr != 0) {
@@ -3328,19 +3328,19 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
       /*  was relative to the wrong location. They claim (Aug 2006) that */
       /*  this has been fixed. FF used to do what Adobe did. Many programs */
       /*  expect broken sizes tables now, but we don't supply them. */
-      putshort(g___, size_params_loc - size_params_ptr);
+      aput_int16_be_checked(size_params_loc - size_params_ptr,g___);
       afseek(g___, size_params_loc, SEEK_SET);
-      putshort(g___, sf->design_size);
+      aput_int16_be_checked(sf->design_size,g___);
       if (sf->fontstyle_id != 0 || sf->fontstyle_name != NULL) {
-	 putshort(g___, sf->fontstyle_id);
+	 aput_int16_be_checked(sf->fontstyle_id,g___);
 	 at->fontstyle_name_strid=at->next_strid++;
-	 putshort(g___, at->fontstyle_name_strid);
+	 aput_int16_be_checked(at->fontstyle_name_strid,g___);
       } else {
-	 putshort(g___, 0);
-	 putshort(g___, 0);
+	 aput_int16_be_checked(0,g___);
+	 aput_int16_be_checked(0,g___);
       }
-      putshort(g___, sf->design_range_bottom);
-      putshort(g___, sf->design_range_top);
+      aput_int16_be_checked(sf->design_range_bottom,g___);
+      aput_int16_be_checked(sf->design_range_top,g___);
    }
    for (i=0; i < ginfo.fcnt; ++i) {
       if (ginfo.feat_lookups[i].name_param_ptr != 0 &&
@@ -3350,11 +3350,11 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
 	 uint32_t name_param_loc=aftell(g___);
 
 	 afseek(g___, ginfo.feat_lookups[i].name_param_ptr, SEEK_SET);
-	 putshort(g___,
-		  name_param_loc - ginfo.feat_lookups[i].name_param_ptr);
+	 aput_int16_be_checked(
+		  name_param_loc - ginfo.feat_lookups[i].name_param_ptr,g___);
 	 afseek(g___, name_param_loc, SEEK_SET);
-	 putshort(g___, 0);	/* Minor version number */
-	 putshort(g___, fn->nid);
+	 aput_int16_be_checked(0,g___);	/* Minor version number */
+	 aput_int16_be_checked(fn->nid,g___);
       }
    }
    /* And that should finish all the features */
@@ -3372,13 +3372,13 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
    }
    lookup_list_table_start=aftell(g___);
    afseek(g___, 8, SEEK_SET);
-   putshort(g___, lookup_list_table_start);
+   aput_int16_be_checked(lookup_list_table_start,g___);
    afseek(g___, 0, SEEK_END);
-   putshort(g___, cnt);
+   aput_int16_be_checked(cnt,g___);
    offset=2 + 2 * cnt;	/* Offset to start of first lookup table from beginning of lookup list */
    for (otf=all; otf != NULL; otf=otf->next)
       if (otf->lookup_index != -1) {
-	 putshort(g___, offset);
+	 aput_int16_be_checked(offset,g___);
 	 for (scnt=0, sub=otf->subtables; sub != NULL; sub=sub->next) {
 	    if (sub->subtable_offset==-1)
 	       continue;
@@ -3399,18 +3399,18 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
    efile=g___FigureExtensionSubTables(all, offset, is_gpos);
    for (otf=all; otf != NULL; otf=otf->next)
       if (otf->lookup_index != -1) {
-	 putshort(g___, !otf->needs_extension ? (otf->lookup_type & 0xff)
-		  : is_gpos ? 9 : 7);
-	 putshort(g___, (otf->lookup_flags & 0xffff));
-	 putshort(g___, otf->subcnt);
+	 aput_int16_be_checked(!otf->needs_extension ? (otf->lookup_type & 0xff)
+		  : is_gpos ? 9 : 7,g___);
+	 aput_int16_be_checked((otf->lookup_flags & 0xffff),g___);
+	 aput_int16_be_checked(otf->subcnt,g___);
 	 for (sub=otf->subtables; sub != NULL; sub=sub->next) {
 	    if (sub->subtable_offset==-1)
 	       continue;
 	    else if (sub->extra_subtables != NULL) {
 	       for (i=0; sub->extra_subtables[i] != -1; ++i)
-		  putshort(g___, offset + sub->extra_subtables[i]);
+		  aput_int16_be_checked(offset + sub->extra_subtables[i],g___);
 	    } else
-	       putshort(g___, offset + sub->subtable_offset);
+	       aput_int16_be_checked(offset + sub->subtable_offset,g___);
 
 	    /* Offset to lookup data which is in the temp file */
 	    /* we keep adjusting offset so it reflects the distance between */
@@ -3421,7 +3421,7 @@ static AFILE *dumpg___info(struct alltabs *at,SplineFont *sf,int is_gpos) {
 	 }
 	 offset -= 6 + 2 * otf->subcnt;
 	 if (otf->lookup_flags & pst_usemarkfilteringset) {
-	    putshort(g___, otf->lookup_flags >> 16);
+	    aput_int16_be_checked(otf->lookup_flags >> 16,g___);
 	    offset -= 2;
 	 }
       }
@@ -3464,7 +3464,7 @@ void otf_dumpgpos(struct alltabs *at, SplineFont *sf) {
       if (at->gposlen & 1)
 	 aputc('\0', at->gpos);
       if ((at->gposlen + 1) & 2)
-	 putshort(at->gpos, 0);
+	 aput_int16_be_checked(0,at->gpos);
    }
 }
 
@@ -3478,7 +3478,7 @@ void otf_dumpgsub(struct alltabs *at, SplineFont *sf) {
       if (at->gsublen & 1)
 	 aputc('\0', at->gsub);
       if ((at->gsublen + 1) & 2)
-	 putshort(at->gsub, 0);
+	 aput_int16_be_checked(0,at->gsub);
    }
    SFLigatureCleanup(sf);
 }
@@ -3538,16 +3538,16 @@ static void DumpLigCarets(AFILE *gdef,SplineChar *sc) {
 	    }
    }
 
-   putshort(gdef, cnt);		/* this many carets */
+   aput_int16_be_checked(cnt,gdef);		/* this many carets */
    offset=sizeof(uint16_t) + sizeof(uint16_t) * cnt;
    for (i=0; i < cnt; ++i) {
-      putshort(gdef, offset);
+      aput_int16_be_checked(offset,gdef);
       offset += 4;
    }
    for (i=0; i < pst->u.lcaret.cnt; ++i) {
       if (sc->lig_caret_cnt_fixed || pst->u.lcaret.carets[i] != 0) {
-	 putshort(gdef, 1);	/* Format 1 */
-	 putshort(gdef, pst->u.lcaret.carets[i]);
+	 aput_int16_be_checked(1,gdef);	/* Format 1 */
+	 aput_int16_be_checked(pst->u.lcaret.carets[i],gdef);
       }
    }
 }
@@ -3695,11 +3695,11 @@ void otf_dumpgdef(struct alltabs *at, SplineFont *sf) {
       putlong(at->gdef, 0x00010000);	/* Version */
    else
       putlong(at->gdef, 0x00010002);	/* Version with mark sets */
-   putshort(at->gdef, needsclass ? 14 : 0);	/* glyph class defn table */
-   putshort(at->gdef, 0);	/* attachment list table */
-   putshort(at->gdef, 0);	/* ligature caret table (come back and fix up later) */
-   putshort(at->gdef, 0);	/* mark attachment class table */
-   putshort(at->gdef, 0);	/* mark attachment set table only meaningful if version is 0x10002, but doesn't hurt to output always */
+   aput_int16_be_checked(needsclass ? 14 : 0,at->gdef);	/* glyph class defn table */
+   aput_int16_be_checked(0,at->gdef);	/* attachment list table */
+   aput_int16_be_checked(0,at->gdef);	/* ligature caret table (come back and fix up later) */
+   aput_int16_be_checked(0,at->gdef);	/* mark attachment class table */
+   aput_int16_be_checked(0,at->gdef);	/* mark attachment set table only meaningful if version is 0x10002, but doesn't hurt to output always */
 
    /* Glyph class subtable */
    if (needsclass) {
@@ -3725,17 +3725,17 @@ void otf_dumpgdef(struct alltabs *at, SplineFont *sf) {
 		  --i;
 		  if (lastval != 0) {
 		     if (j==1) {
-			putshort(at->gdef, start);
-			putshort(at->gdef, last);
-			putshort(at->gdef, lastval);
+			aput_int16_be_checked(start,at->gdef);
+			aput_int16_be_checked(last,at->gdef);
+			aput_int16_be_checked(lastval,at->gdef);
 		     }
 		     ++cnt;
 		  }
 	       }
 	    }
 	 if (j==0) {
-	    putshort(at->gdef, 2);	/* class format 2, range list by class */
-	    putshort(at->gdef, cnt);
+	    aput_int16_be_checked(2,at->gdef);	/* class format 2, range list by class */
+	    aput_int16_be_checked(cnt,at->gdef);
 	 }
       }
    }
@@ -3743,28 +3743,28 @@ void otf_dumpgdef(struct alltabs *at, SplineFont *sf) {
    /* Ligature caret subtable. Always include this if we have a GDEF */
    pos=aftell(at->gdef);
    afseek(at->gdef, 8, SEEK_SET);	/* location of lig caret table offset */
-   putshort(at->gdef, pos);
+   aput_int16_be_checked(pos,at->gdef);
    afseek(at->gdef, 0, SEEK_END);
    if (lcnt==0) {
       /* It always seems to be present, even if empty */
-      putshort(at->gdef, 4);	/* Offset to (empty) coverage table */
-      putshort(at->gdef, 0);	/* no ligatures */
-      putshort(at->gdef, 2);	/* coverage table format 2 */
-      putshort(at->gdef, 0);	/* no ranges in coverage table */
+      aput_int16_be_checked(4,at->gdef);	/* Offset to (empty) coverage table */
+      aput_int16_be_checked(0,at->gdef);	/* no ligatures */
+      aput_int16_be_checked(2,at->gdef);	/* coverage table format 2 */
+      aput_int16_be_checked(0,at->gdef);	/* no ranges in coverage table */
    } else {
       pos=aftell(at->gdef);	/* coverage location */
-      putshort(at->gdef, 0);	/* Offset to coverage table (fix up later) */
-      putshort(at->gdef, lcnt);
+      aput_int16_be_checked(0,at->gdef);	/* Offset to coverage table (fix up later) */
+      aput_int16_be_checked(lcnt,at->gdef);
       offset=2 * lcnt + 4;
       for (i=0; i < lcnt; ++i) {
-	 putshort(at->gdef, offset);
+	 aput_int16_be_checked(offset,at->gdef);
 	 offset += 2 + 6 * LigCaretCnt(glyphs[i]);
       }
       for (i=0; i < lcnt; ++i)
 	 DumpLigCarets(at->gdef, glyphs[i]);
       offset=aftell(at->gdef);
       afseek(at->gdef, pos, SEEK_SET);
-      putshort(at->gdef, offset - pos);
+      aput_int16_be_checked(offset - pos,at->gdef);
       afseek(at->gdef, 0, SEEK_END);
       dumpcoveragetable(at->gdef, glyphs);
    }
@@ -3776,7 +3776,7 @@ void otf_dumpgdef(struct alltabs *at, SplineFont *sf) {
 			  at->maxp.numGlyphs, NULL, false);
       pos=aftell(at->gdef);
       afseek(at->gdef, 10, SEEK_SET);	/* location of mark attach table offset */
-      putshort(at->gdef, pos);
+      aput_int16_be_checked(pos,at->gdef);
       afseek(at->gdef, 0, SEEK_END);
       DumpClass(at->gdef, mclasses, at->maxp.numGlyphs);
       free(mclasses);
@@ -3786,10 +3786,10 @@ void otf_dumpgdef(struct alltabs *at, SplineFont *sf) {
    if (sf->mark_set_cnt > 0) {
       pos=aftell(at->gdef);
       afseek(at->gdef, 12, SEEK_SET);	/* location of mark attach table offset */
-      putshort(at->gdef, pos);
+      aput_int16_be_checked(pos,at->gdef);
       afseek(at->gdef, 0, SEEK_END);
-      putshort(at->gdef, 1);	/* Version number */
-      putshort(at->gdef, sf->mark_set_cnt);
+      aput_int16_be_checked(1,at->gdef);	/* Version number */
+      aput_int16_be_checked(sf->mark_set_cnt,at->gdef);
       for (i=0; i < sf->mark_set_cnt; ++i)
 	 putlong(at->gdef, 0);
       for (i=0; i < sf->mark_set_cnt; ++i) {
@@ -3808,7 +3808,7 @@ void otf_dumpgdef(struct alltabs *at, SplineFont *sf) {
    if (at->gdeflen & 1)
       aputc('\0', at->gdef);
    if ((at->gdeflen + 1) & 2)
-      putshort(at->gdef, 0);
+      aput_int16_be_checked(0,at->gdef);
 }
 
 /******************************************************************************/
@@ -3873,21 +3873,21 @@ static void ttf_math_dump_italic_top(AFILE *mathf,struct alltabs *at,
    glyphs[len]=NULL;
 
    coverage_pos=aftell(mathf);
-   putshort(mathf, 0);		/* Coverage table, return to this */
-   putshort(mathf, len);
+   aput_int16_be_checked(0,mathf);		/* Coverage table, return to this */
+   aput_int16_be_checked(len,mathf);
    devtab_offset=4 + 4 * len;
    for (i=0; i < len; ++i) {
-      putshort(mathf,
+      aput_int16_be_checked(
 	       is_italic ? glyphs[i]->italic_correction : glyphs[i]->
-	       top_accent_horiz);
+	       top_accent_horiz,mathf);
       devtab =
 	 is_italic ? glyphs[i]->italic_adjusts : glyphs[i]->
 	 top_accent_adjusts;
       if (devtab != NULL) {
-	 putshort(mathf, devtab_offset);
+	 aput_int16_be_checked(devtab_offset,mathf);
 	 devtab_offset += DevTabLen(devtab);
       } else
-	 putshort(mathf, 0);
+	 aput_int16_be_checked(0,mathf);
    }
    for (i=0; i < len; ++i) {
       devtab =
@@ -3902,7 +3902,7 @@ static void ttf_math_dump_italic_top(AFILE *mathf,struct alltabs *at,
 	  aftell(mathf) - coverage_pos);
    coverage_table=aftell(mathf);
    afseek(mathf, coverage_pos, SEEK_SET);
-   putshort(mathf, coverage_table - coverage_pos);
+   aput_int16_be_checked(coverage_table - coverage_pos,mathf);
    afseek(mathf, coverage_table, SEEK_SET);
    dumpcoveragetable(mathf, glyphs);
    free(glyphs);
@@ -3937,23 +3937,23 @@ static int ttf_math_dump_mathkernvertex(AFILE *mathf,
    int i;
    uint32_t here=aftell(mathf);
 
-   putshort(mathf, mkv->cnt - 1);
+   aput_int16_be_checked(mkv->cnt - 1,mathf);
 
    for (i=0; i < mkv->cnt - 1; ++i) {
-      putshort(mathf, mkv->mkd[i].height);
+      aput_int16_be_checked(mkv->mkd[i].height,mathf);
       if (mkv->mkd[i].height_adjusts != NULL) {
-	 putshort(mathf, devtab_pos - here);
+	 aput_int16_be_checked(devtab_pos - here,mathf);
 	 devtab_pos += DevTabLen(mkv->mkd[i].height_adjusts);
       } else
-	 putshort(mathf, 0);
+	 aput_int16_be_checked(0,mathf);
    }
    for (i=0; i < mkv->cnt; ++i) {
-      putshort(mathf, mkv->mkd[i].kern);
+      aput_int16_be_checked(mkv->mkd[i].kern,mathf);
       if (mkv->mkd[i].kern_adjusts != NULL) {
-	 putshort(mathf, devtab_pos - here);
+	 aput_int16_be_checked(devtab_pos - here,mathf);
 	 devtab_pos += DevTabLen(mkv->mkd[i].kern_adjusts);
       } else
-	 putshort(mathf, 0);
+	 aput_int16_be_checked(0,mathf);
    }
    return (devtab_pos);
 }
@@ -3989,34 +3989,34 @@ static void ttf_math_dump_mathkern(AFILE *mathf,struct alltabs *at,
    glyphs[len]=NULL;
 
    coverage_pos=aftell(mathf);
-   putshort(mathf, 0);		/* Coverage table, return to this */
-   putshort(mathf, len);
+   aput_int16_be_checked(0,mathf);		/* Coverage table, return to this */
+   aput_int16_be_checked(len,mathf);
    kr_pos=coverage_pos + 4 + 8 * len;
    for (i=0; i < len; ++i) {
       struct mathkern *mk=glyphs[i]->mathkern;
 
       if (mk->top_right.cnt==0)
-	 putshort(mathf, 0);
+	 aput_int16_be_checked(0,mathf);
       else {
-	 putshort(mathf, kr_pos - coverage_pos);
+	 aput_int16_be_checked(kr_pos - coverage_pos,mathf);
 	 kr_pos += mkv_len(&mk->top_right);
       }
       if (mk->top_left.cnt==0)
-	 putshort(mathf, 0);
+	 aput_int16_be_checked(0,mathf);
       else {
-	 putshort(mathf, kr_pos - coverage_pos);
+	 aput_int16_be_checked(kr_pos - coverage_pos,mathf);
 	 kr_pos += mkv_len(&mk->top_left);
       }
       if (mk->bottom_right.cnt==0)
-	 putshort(mathf, 0);
+	 aput_int16_be_checked(0,mathf);
       else {
-	 putshort(mathf, kr_pos - coverage_pos);
+	 aput_int16_be_checked(kr_pos - coverage_pos,mathf);
 	 kr_pos += mkv_len(&mk->bottom_right);
       }
       if (mk->bottom_left.cnt==0)
-	 putshort(mathf, 0);
+	 aput_int16_be_checked(0,mathf);
       else {
-	 putshort(mathf, kr_pos - coverage_pos);
+	 aput_int16_be_checked(kr_pos - coverage_pos,mathf);
 	 kr_pos += mkv_len(&mk->bottom_left);
       }
    }
@@ -4061,7 +4061,7 @@ static void ttf_math_dump_mathkern(AFILE *mathf,struct alltabs *at,
 
    coverage_table=aftell(mathf);
    afseek(mathf, coverage_pos, SEEK_SET);
-   putshort(mathf, coverage_table - coverage_pos);
+   aput_int16_be_checked(coverage_table - coverage_pos,mathf);
    afseek(mathf, coverage_table, SEEK_SET);
    dumpcoveragetable(mathf, glyphs);
    free(glyphs);
@@ -4110,9 +4110,9 @@ static uint32_t ttf_math_dump_mathglyphconstructiontable(AFILE *mathf,
    uint32_t here=aftell(mathf);
    DBounds b;
 
-   putshort(mathf, gv->part_cnt==0 ? 0 : pos - here);
+   aput_int16_be_checked(gv->part_cnt==0 ? 0 : pos - here,mathf);
    if (gv->variants==NULL) {
-      putshort(mathf, 0);
+      aput_int16_be_checked(0,mathf);
    } else {
       cnt=0;
       for (start=gv->variants;;) {
@@ -4129,7 +4129,7 @@ static uint32_t ttf_math_dump_mathglyphconstructiontable(AFILE *mathf,
 	    ++cnt;
 	 start=pt;
       }
-      putshort(mathf, cnt);
+      aput_int16_be_checked(cnt,mathf);
       for (start=gv->variants;;) {
 	 while (*start==' ')
 	    ++start;
@@ -4141,15 +4141,15 @@ static uint32_t ttf_math_dump_mathglyphconstructiontable(AFILE *mathf,
 	 sc=SFGetChar(sf, -1, start);
 	 *pt=ch;
 	 if (sc != NULL) {
-	    putshort(mathf, sc->ttf_glyph);
+	    aput_int16_be_checked(sc->ttf_glyph,mathf);
 	    SplineCharFindBounds(sc, &b);
 	    /* Don't ask me why I have a plus one here. In the MS font */
 	    /*  CambriaMath all of these values are one more than I would */
 	    /*  expect */
 	    if (is_v)
-	       putshort(mathf, b.maxy - b.miny + 1);
+	       aput_int16_be_checked(b.maxy - b.miny + 1,mathf);
 	    else
-	       putshort(mathf, b.maxx - b.minx + 1);
+	       aput_int16_be_checked(b.maxx - b.minx + 1,mathf);
 	 }
 	 start=pt;
       }
@@ -4167,23 +4167,23 @@ static uint32_t ttf_math_dump_mathglyphassemblytable(AFILE *mathf,
 
    if (gv->part_cnt==0)
       return (devtab_pos);
-   putshort(mathf, gv->italic_correction);
+   aput_int16_be_checked(gv->italic_correction,mathf);
    if (gv->italic_adjusts != NULL) {
-      putshort(mathf, devtab_pos - here);
+      aput_int16_be_checked(devtab_pos - here,mathf);
       devtab_pos += DevTabLen(gv->italic_adjusts);
    } else
-      putshort(mathf, 0);
-   putshort(mathf, gv->part_cnt);
+      aput_int16_be_checked(0,mathf);
+   aput_int16_be_checked(gv->part_cnt,mathf);
    for (i=0; i < gv->part_cnt; ++i) {
       sc=SFGetChar(sf, -1, gv->parts[i].component);
       if (sc==NULL)
-	 putshort(mathf, 0);	/* .notdef */
+	 aput_int16_be_checked(0,mathf);	/* .notdef */
       else
-	 putshort(mathf, sc->ttf_glyph);
-      putshort(mathf, gv->parts[i].startConnectorLength);
-      putshort(mathf, gv->parts[i].endConnectorLength);
-      putshort(mathf, gv->parts[i].fullAdvance);
-      putshort(mathf, gv->parts[i].is_extender);
+	 aput_int16_be_checked(sc->ttf_glyph,mathf);
+      aput_int16_be_checked(gv->parts[i].startConnectorLength,mathf);
+      aput_int16_be_checked(gv->parts[i].endConnectorLength,mathf);
+      aput_int16_be_checked(gv->parts[i].fullAdvance,mathf);
+      aput_int16_be_checked(gv->parts[i].is_extender,mathf);
    }
    return (devtab_pos);
 }
@@ -4215,22 +4215,22 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
    vglyphs[vlen]=NULL;
    hglyphs[hlen]=NULL;
 
-   putshort(mathf,
+   aput_int16_be_checked(
 	    sf->MATH ==
 	    NULL ? (sf->ascent +
-		    sf->descent) / 50 : sf->MATH->MinConnectorOverlap);
+		    sf->descent) / 50 : sf->MATH->MinConnectorOverlap,mathf);
    coverage_pos=aftell(mathf);
-   putshort(mathf, 0);		/* Vertical Coverage table, return to this */
-   putshort(mathf, 0);		/* Horizontal Coverage table, return to this */
-   putshort(mathf, vlen);
-   putshort(mathf, hlen);
+   aput_int16_be_checked(0,mathf);		/* Vertical Coverage table, return to this */
+   aput_int16_be_checked(0,mathf);		/* Horizontal Coverage table, return to this */
+   aput_int16_be_checked(vlen,mathf);
+   aput_int16_be_checked(hlen,mathf);
    offset=5 * 2 + vlen * 2 + hlen * 2;
    for (i=0; i < vlen; ++i) {
-      putshort(mathf, offset);
+      aput_int16_be_checked(offset,mathf);
       offset += gv_len(sf, vglyphs[i]->vert_variants);
    }
    for (i=0; i < hlen; ++i) {
-      putshort(mathf, offset);
+      aput_int16_be_checked(offset,mathf);
       offset += gv_len(sf, hglyphs[i]->horiz_variants);
    }
    assembly_pos=pos=(coverage_pos - 2) + offset;
@@ -4240,7 +4240,7 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
 						     vglyphs[i]->
 						     vert_variants, sf, pos,
 						     true);
-      /*if ( aftell(mathf)-start != gv_len(sf,vglyphs[i]->vert_variants)) */
+      /*if (aftell(mathf)-start != gv_len(sf,vglyphs[i]->vert_variants)) */
       /*ErrorMsg(2,"v gv_len incorrect\n"); */
    }
    for (i=0; i < hlen; ++i) {
@@ -4249,7 +4249,7 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
 						     hglyphs[i]->
 						     horiz_variants, sf, pos,
 						     false);
-      /*if ( aftell(mathf)-start != gv_len(sf,hglyphs[i]->horiz_variants)) */
+      /*if (aftell(mathf)-start != gv_len(sf,hglyphs[i]->horiz_variants)) */
       /*ErrorMsg(2,"h gv_len incorrect: %s\n", hglyphs[i]->name); */
    }
    if (aftell(mathf) != assembly_pos)
@@ -4276,7 +4276,7 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
    if (vlen != 0) {
       coverage_table=aftell(mathf);
       afseek(mathf, coverage_pos, SEEK_SET);
-      putshort(mathf, coverage_table - (coverage_pos - 2));
+      aput_int16_be_checked(coverage_table - (coverage_pos - 2),mathf);
       afseek(mathf, coverage_table, SEEK_SET);
       dumpcoveragetable(mathf, vglyphs);
    }
@@ -4284,7 +4284,7 @@ static void ttf_math_dump_glyphvariant(AFILE *mathf,struct alltabs *at,
    if (hlen != 0) {
       coverage_table=aftell(mathf);
       afseek(mathf, coverage_pos + 2, SEEK_SET);
-      putshort(mathf, coverage_table - (coverage_pos - 2));
+      aput_int16_be_checked(coverage_table - (coverage_pos - 2),mathf);
       afseek(mathf, coverage_table, SEEK_SET);
       dumpcoveragetable(mathf, hglyphs);
    }
@@ -4303,9 +4303,9 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
    at->math=mathf=atmpfile();
 
    putlong(mathf, 0x00010000);	/* Version 1 */
-   putshort(mathf, 10);		/* Offset to constants */
-   putshort(mathf, 0);		/* GlyphInfo, fix later */
-   putshort(mathf, 0);		/* Variants, fix later */
+   aput_int16_be_checked(10,mathf);		/* Offset to constants */
+   aput_int16_be_checked(0,mathf);		/* GlyphInfo, fix later */
+   aput_int16_be_checked(0,mathf);		/* Variants, fix later */
 
    /* Start on constants */
    memset(devtab_offsets, 0, sizeof(devtab_offsets));
@@ -4316,10 +4316,10 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
 		    math_constants_descriptor[i].offset);
       if (pos==(int16_t *) & sf->MATH->MinConnectorOverlap)
 	 continue;		/* Actually lives in the Variant table, not here */
-      putshort(mathf, *pos);
+      aput_int16_be_checked(*pos,mathf);
       if (math_constants_descriptor[i].devtab_offset != -1) {
 	 devtab_offsets[i]=aftell(mathf);
-	 putshort(mathf, 0);	/* Fix up later if we support device tables */
+	 aput_int16_be_checked(0,mathf);	/* Fix up later if we support device tables */
       }
    }
    for (i=0; math_constants_descriptor[i].script_name != NULL; ++i) {
@@ -4335,7 +4335,7 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
 	 uint32_t here=aftell(mathf);
 
 	 afseek(mathf, devtab_offsets[i], SEEK_SET);
-	 putshort(mathf, here - const_start);
+	 aput_int16_be_checked(here - const_start,mathf);
 	 afseek(mathf, here, SEEK_SET);
 	 dumpgposdevicetable(mathf, *devtab);
       }
@@ -4345,18 +4345,18 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
    if (1 /* bits&mb_gi */ ) {
       gi_start=aftell(mathf);
       afseek(mathf, 6, SEEK_SET);
-      putshort(mathf, gi_start);
+      aput_int16_be_checked(gi_start,mathf);
       afseek(mathf, gi_start, SEEK_SET);
 
-      putshort(mathf, 0);	/* Italics correction */
-      putshort(mathf, 0);	/* top accent */
-      putshort(mathf, 0);	/* is extended shape */
-      putshort(mathf, 0);	/* math kern info */
+      aput_int16_be_checked(0,mathf);	/* Italics correction */
+      aput_int16_be_checked(0,mathf);	/* top accent */
+      aput_int16_be_checked(0,mathf);	/* is extended shape */
+      aput_int16_be_checked(0,mathf);	/* math kern info */
 
       if (bits & mb_italic) {
 	 v_start=aftell(mathf);
 	 afseek(mathf, gi_start, SEEK_SET);
-	 putshort(mathf, v_start - gi_start);
+	 aput_int16_be_checked(v_start - gi_start,mathf);
 	 afseek(mathf, v_start, SEEK_SET);
 
 	 ttf_math_dump_italic_top(mathf, at, sf, true);
@@ -4365,7 +4365,7 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
       if (bits & mb_topaccent) {
 	 v_start=aftell(mathf);
 	 afseek(mathf, gi_start + 2, SEEK_SET);
-	 putshort(mathf, v_start - gi_start);
+	 aput_int16_be_checked(v_start - gi_start,mathf);
 	 afseek(mathf, v_start, SEEK_SET);
 
 	 ttf_math_dump_italic_top(mathf, at, sf, false);
@@ -4374,7 +4374,7 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
       if (bits & mb_extended) {
 	 v_start=aftell(mathf);
 	 afseek(mathf, gi_start + 4, SEEK_SET);
-	 putshort(mathf, v_start - gi_start);
+	 aput_int16_be_checked(v_start - gi_start,mathf);
 	 afseek(mathf, v_start, SEEK_SET);
 
 	 ttf_math_dump_extended(mathf, at, sf);
@@ -4383,7 +4383,7 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
       if (bits & mb_mathkern) {
 	 v_start=aftell(mathf);
 	 afseek(mathf, gi_start + 6, SEEK_SET);
-	 putshort(mathf, v_start - gi_start);
+	 aput_int16_be_checked(v_start - gi_start,mathf);
 	 afseek(mathf, v_start, SEEK_SET);
 
 	 ttf_math_dump_mathkern(mathf, at, sf);
@@ -4394,7 +4394,7 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
    if (1 /* bits&mb_gv */ ) {
       v_start=aftell(mathf);
       afseek(mathf, 8, SEEK_SET);
-      putshort(mathf, v_start);
+      aput_int16_be_checked(v_start,mathf);
       afseek(mathf, v_start, SEEK_SET);
 
       ttf_math_dump_glyphvariant(mathf, at, sf);
@@ -4404,7 +4404,7 @@ void otf_dump_math(struct alltabs *at, SplineFont *sf) {
    if (aftell(mathf) & 1)
       aputc('\0', mathf);
    if (aftell(mathf) & 2)
-      putshort(mathf, 0);
+      aput_int16_be_checked(0,mathf);
 }
 
 struct taglist {
@@ -4515,14 +4515,14 @@ static void dump_minmax(AFILE *basef,struct baselangextent *bl) {
    struct baselangextent *fl;
    int fcnt;
 
-   putshort(basef, bl->descent);
-   putshort(basef, bl->ascent);
+   aput_int16_be_checked(bl->descent,basef);
+   aput_int16_be_checked(bl->ascent,basef);
    for (fl=bl->features, fcnt=0; fl != NULL; fl=fl->next, ++fcnt);
-   putshort(basef, fcnt);
+   aput_int16_be_checked(fcnt,basef);
    for (fl=bl->features; fl != NULL; fl=fl->next) {
       putlong(basef, fl->lang);	/* feature tag really */
-      putshort(basef, fl->descent);
-      putshort(basef, fl->ascent);
+      aput_int16_be_checked(fl->descent,basef);
+      aput_int16_be_checked(fl->ascent,basef);
    }
 }
 
@@ -4542,8 +4542,8 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
    at->base=basef=atmpfile();
 
    putlong(basef, 0x00010000);	/* Version 1 */
-   putshort(basef, 0);		/* offset to horizontal baselines, fill in later */
-   putshort(basef, 0);		/* offset to vertical baselines, fill in later */
+   aput_int16_be_checked(0,basef);		/* offset to horizontal baselines, fill in later */
+   aput_int16_be_checked(0,basef);		/* offset to vertical baselines, fill in later */
 
    for (i=0; i < 2; ++i) {
       struct Base *base=i==0 ? sf->horiz_base : sf->vert_base;
@@ -4552,17 +4552,17 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
 	 continue;
       here=aftell(basef);
       afseek(basef, 4 + 2 * i, SEEK_SET);
-      putshort(basef, here - 0);
+      aput_int16_be_checked(here - 0,basef);
       afseek(basef, here, SEEK_SET);
 
       /* axis table */
-      putshort(basef, base->baseline_cnt==0 ? 0 : 4);
-      putshort(basef, base->baseline_cnt==0 ? 4 :
-	       4 + 2 + 4 * base->baseline_cnt);
+      aput_int16_be_checked(base->baseline_cnt==0 ? 0 : 4,basef);
+      aput_int16_be_checked(base->baseline_cnt==0 ? 4 :
+	       4 + 2 + 4 * base->baseline_cnt,basef);
 
       if (base->baseline_cnt != 0) {
 	 /* BaseTagList table */
-	 putshort(basef, base->baseline_cnt);
+	 aput_int16_be_checked(base->baseline_cnt,basef);
 	 for (j=0; j < base->baseline_cnt; ++j)
 	    putlong(basef, base->baseline_tags[j]);
       }
@@ -4570,10 +4570,10 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
       /* BaseScriptList table */
       bsl=aftell(basef);
       for (bs=base->scripts, cnt=0; bs != NULL; bs=bs->next, ++cnt);
-      putshort(basef, cnt);
+      aput_int16_be_checked(cnt,basef);
       for (bs=base->scripts; bs != NULL; bs=bs->next) {
 	 putlong(basef, bs->script);
-	 putshort(basef, 0);
+	 aput_int16_be_checked(0,basef);
       }
 
       /* BaseScript table */
@@ -4581,7 +4581,7 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
 	 uint32_t bst=aftell(basef);
 
 	 afseek(basef, bsl + 2 + 6 * cnt + 4, SEEK_SET);
-	 putshort(basef, bst - bsl);
+	 aput_int16_be_checked(bst - bsl,basef);
 	 afseek(basef, bst, SEEK_SET);
 
 	 for (bl=bs->langs, dflt=NULL, lcnt=0; bl != NULL;
@@ -4592,29 +4592,29 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
 	       ++lcnt;
 	 }
 	 offset=6 + 6 * lcnt;
-	 putshort(basef, base->baseline_cnt==0 ? 0 : offset);
+	 aput_int16_be_checked(base->baseline_cnt==0 ? 0 : offset,basef);
 	 if (base->baseline_cnt != 0)
 	    offset += 4 + 2 * base->baseline_cnt + 4 * base->baseline_cnt;
-	 putshort(basef, dflt==NULL ? 0 : offset);
-	 putshort(basef, lcnt);
+	 aput_int16_be_checked(dflt==NULL ? 0 : offset,basef);
+	 aput_int16_be_checked(lcnt,basef);
 	 for (bl=bs->langs; bl != NULL; bl=bl->next)
 	    if (bl->lang != DEFAULT_LANG) {
 	       putlong(basef, bl->lang);
-	       putshort(basef, 0);
+	       aput_int16_be_checked(0,basef);
 	    }
 
 	 /* Base Values table */
 	 if (base->baseline_cnt != 0) {
 	    offset=4 + 2 * base->baseline_cnt;
-	    putshort(basef, bs->def_baseline);
-	    putshort(basef, base->baseline_cnt);
+	    aput_int16_be_checked(bs->def_baseline,basef);
+	    aput_int16_be_checked(base->baseline_cnt,basef);
 	    for (j=0; j < base->baseline_cnt; ++j) {
-	       putshort(basef, offset);
+	       aput_int16_be_checked(offset,basef);
 	       offset += 2 * 2;
 	    }
 	    for (j=0; j < base->baseline_cnt; ++j) {
-	       putshort(basef, 1);	/* format 1 */
-	       putshort(basef, bs->baseline_pos[j]);
+	       aput_int16_be_checked(1,basef);	/* format 1 */
+	       aput_int16_be_checked(bs->baseline_pos[j],basef);
 	    }
 	 }
 
@@ -4626,7 +4626,7 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
 	       uint32_t here=aftell(basef);
 
 	       afseek(basef, bst + 6 + 6 * lcnt + 4, SEEK_SET);
-	       putshort(basef, here - bst);
+	       aput_int16_be_checked(here - bst,basef);
 	       afseek(basef, here, SEEK_SET);
 	       dump_minmax(basef, bl);
 	    }
@@ -4637,7 +4637,7 @@ void otf_dumpbase(struct alltabs *at, SplineFont *sf) {
    if (aftell(basef) & 1)
       aputc('\0', basef);
    if (aftell(basef) & 2)
-      putshort(basef, 0);
+      aput_int16_be_checked(0,basef);
 }
 
 static int jscriptsort(const void *_s1,const void *_s2) {
@@ -4792,9 +4792,9 @@ static uint32_t jstf_dumplklist(AFILE *jstf,OTLookup ** PS,uint32_t base) {
 
    here=aftell(jstf);
    for (i=0; PS[i] != NULL; ++i);
-   putshort(jstf, i);		/* Lookup cnt */
+   aput_int16_be_checked(i,jstf);		/* Lookup cnt */
    for (i=0; PS[i] != NULL; ++i)
-      putshort(jstf, PS[i]->lookup_index);
+      aput_int16_be_checked(PS[i]->lookup_index,jstf);
    free(PS);
    return (here - base);
 }
@@ -4819,28 +4819,28 @@ static uint32_t jstf_dumpmaxlookups(AFILE *jstf,SplineFont *sf,
    if ((here=aftell(jstf)) < 0)
       return (0);
 
-   putshort(jstf, cnt);
+   aput_int16_be_checked(cnt,jstf);
    for (i=0; maxes[i] != NULL; ++i)
       if (!maxes[i]->unused)
-	 putshort(jstf, 0);
+	 aput_int16_be_checked(0,jstf);
    for (cnt=i=0; maxes[i] != NULL; ++i)
       if (!maxes[i]->unused) {
 	 if ((lbase=aftell(jstf)) < 0)
 	    return (0);
 	 afseek(jstf, here + 2 + 2 * cnt, SEEK_SET);
-	 putshort(jstf, lbase - here);
+	 aput_int16_be_checked(lbase - here,jstf);
 	 afseek(jstf, lbase, SEEK_SET);
 
-	 putshort(jstf, maxes[i]->lookup_type - gpos_start);
-	 putshort(jstf, maxes[i]->lookup_flags);
+	 aput_int16_be_checked(maxes[i]->lookup_type - gpos_start,jstf);
+	 aput_int16_be_checked(maxes[i]->lookup_flags,jstf);
 
 	 for (scnt=0, sub=maxes[i]->subtables; sub != NULL;
 	      sub=sub->next)
 	    if (!sub->unused)
 	       ++scnt;
-	 putshort(jstf, scnt);
+	 aput_int16_be_checked(scnt,jstf);
 	 for (j=0; j < scnt; ++j)
-	    putshort(jstf, 0);
+	    aput_int16_be_checked(0,jstf);
 	 /* I don't think extension lookups get a MarkAttachmentType, I guess */
 	 /*  that inherits from the parent? */
 
@@ -4848,7 +4848,7 @@ static uint32_t jstf_dumpmaxlookups(AFILE *jstf,SplineFont *sf,
 	 afseek(jstf, lbase + 6, SEEK_SET);
 	 for (sub=maxes[i]->subtables; sub != NULL; sub=sub->next)
 	    if (!sub->unused)
-	       putshort(jstf, sub->subtable_offset - lbase);
+	       aput_int16_be_checked(sub->subtable_offset - lbase,jstf);
 	 ++cnt;
       }
 
@@ -4872,10 +4872,10 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
    at->jstf=jstf=atmpfile();
 
    putlong(jstf, 0x00010000);	/* Version 1 */
-   putshort(jstf, cnt);		/* script count */
+   aput_int16_be_checked(cnt,jstf);		/* script count */
    for (jscript=sf->justify; jscript != NULL; jscript=jscript->next) {
       putlong(jstf, jscript->script);
-      putshort(jstf, 0);	/* Come back to this later */
+      aput_int16_be_checked(0,jstf);	/* Come back to this later */
    }
    for (jscript=sf->justify, cnt=0; jscript != NULL;
 	jscript=jscript->next, ++cnt) {
@@ -4883,22 +4883,22 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
       if (base > 0xffff)
 	 ErrorMsg(2,"Offset in JSTF table is too big.  The font will not work.\n");
       afseek(jstf, 6 + 6 * cnt + 4, SEEK_SET);
-      putshort(jstf, base);
+      aput_int16_be_checked(base,jstf);
       afseek(jstf, base, SEEK_SET);
 
-      putshort(jstf, 0);	/* extender glyphs */
-      putshort(jstf, 0);	/* default lang */
+      aput_int16_be_checked(0,jstf);	/* extender glyphs */
+      aput_int16_be_checked(0,jstf);	/* default lang */
       for (jlang=jscript->langs, lcnt=0; jlang != NULL;
 	   jlang=jlang->next, ++lcnt);
       if (lcnt > 0 && jscript->langs->lang==DEFAULT_LANG)
 	 --lcnt;
-      putshort(jstf, lcnt);	/* count of non-default languages */
+      aput_int16_be_checked(lcnt,jstf);	/* count of non-default languages */
       jlang=jscript->langs;
       if (jlang != NULL && jlang->lang==DEFAULT_LANG)
 	 jlang=jlang->next;
       for (; jlang != NULL; jlang=jlang->next) {
 	 putlong(jstf, jlang->lang);
-	 putshort(jstf, 0);	/* Come back to this later */
+	 aput_int16_be_checked(0,jstf);	/* Come back to this later */
       }
 
       if (jscript->extenders != NULL) {
@@ -4907,7 +4907,7 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 
 	 here=aftell(jstf);
 	 afseek(jstf, base, SEEK_SET);
-	 putshort(jstf, here - base);
+	 aput_int16_be_checked(here - base,jstf);
 	 afseek(jstf, here, SEEK_SET);
 
 	 glyphs=OrderedGlyphsFromNames(sf, jscript->extenders);
@@ -4915,9 +4915,9 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 	    gcnt=0;
 	 else
 	    for (gcnt=0; glyphs[gcnt] != NULL; ++gcnt);
-	 putshort(jstf, gcnt);
+	 aput_int16_be_checked(gcnt,jstf);
 	 for (g=0; g < gcnt; ++g)
-	    putshort(jstf, glyphs[g]->ttf_glyph);
+	    aput_int16_be_checked(glyphs[g]->ttf_glyph,jstf);
 	 free(glyphs);
       }
 
@@ -4930,12 +4930,12 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 	    offset=-6;
 	 } else
 	    afseek(jstf, base + offset + 10 + lcnt * 6, SEEK_SET);
-	 putshort(jstf, here - base);
+	 aput_int16_be_checked(here - base,jstf);
 	 afseek(jstf, here, SEEK_SET);
 
-	 putshort(jstf, jlang->cnt);
+	 aput_int16_be_checked(jlang->cnt,jstf);
 	 for (i=0; i < jlang->cnt; ++i)
-	    putshort(jstf, 0);
+	    aput_int16_be_checked(0,jstf);
 	 for (i=0; i < jlang->cnt; ++i) {
 	    OTLookup **enSUB, **enPOS, **disSUB, **disPOS;
 	    uint32_t enSUBoff, enPOSoff, disSUBoff, disPOSoff, maxOff;
@@ -4943,19 +4943,19 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 
 	    pbase=aftell(jstf);
 	    afseek(jstf, here + 2 + i * 2, SEEK_SET);
-	    putshort(jstf, pbase - here);
+	    aput_int16_be_checked(pbase - here,jstf);
 	    afseek(jstf, pbase, SEEK_SET);
 
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
-	    putshort(jstf, 0);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
+	    aput_int16_be_checked(0,jstf);
 
 	    jstf_SplitTables(jlang->prios[i].enableShrink, &enSUB, &enPOS);
 	    jstf_SplitTables(jlang->prios[i].disableShrink, &disSUB, &disPOS);
@@ -4968,11 +4968,11 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 				   pbase);
 
 	    afseek(jstf, pbase, SEEK_SET);
-	    putshort(jstf, enSUBoff);
-	    putshort(jstf, disSUBoff);
-	    putshort(jstf, enPOSoff);
-	    putshort(jstf, disPOSoff);
-	    putshort(jstf, maxOff);
+	    aput_int16_be_checked(enSUBoff,jstf);
+	    aput_int16_be_checked(disSUBoff,jstf);
+	    aput_int16_be_checked(enPOSoff,jstf);
+	    aput_int16_be_checked(disPOSoff,jstf);
+	    aput_int16_be_checked(maxOff,jstf);
 
 	    afseek(jstf, 0, SEEK_END);
 	    jstf_SplitTables(jlang->prios[i].enableExtend, &enSUB, &enPOS);
@@ -4986,11 +4986,11 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
 				   pbase);
 
 	    afseek(jstf, pbase + 10, SEEK_SET);
-	    putshort(jstf, enSUBoff);
-	    putshort(jstf, disSUBoff);
-	    putshort(jstf, enPOSoff);
-	    putshort(jstf, disPOSoff);
-	    putshort(jstf, maxOff);
+	    aput_int16_be_checked(enSUBoff,jstf);
+	    aput_int16_be_checked(disSUBoff,jstf);
+	    aput_int16_be_checked(enPOSoff,jstf);
+	    aput_int16_be_checked(disPOSoff,jstf);
+	    aput_int16_be_checked(maxOff,jstf);
 	    afseek(jstf, 0, SEEK_END);
 	 }
       }
@@ -5001,7 +5001,7 @@ void otf_dumpjstf(struct alltabs *at, SplineFont *sf) {
    if (aftell(jstf) & 1)
       aputc('\0', jstf);
    if (aftell(jstf) & 2)
-      putshort(jstf, 0);
+      aput_int16_be_checked(0,jstf);
 }
 
 void otf_dump_dummydsig(struct alltabs *at, SplineFont *sf) {
@@ -5018,12 +5018,12 @@ void otf_dump_dummydsig(struct alltabs *at, SplineFont *sf) {
 
    at->dsigf=dsigf=atmpfile();
    putlong(dsigf, 0x00000001);	/* Standard version (and why isn't it 0x10000 like everything else?) */
-   putshort(dsigf, 0);		/* No signatures in my signature table */
-   putshort(dsigf, 0);		/* No flags */
+   aput_int16_be_checked(0,dsigf);		/* No signatures in my signature table */
+   aput_int16_be_checked(0,dsigf);		/* No flags */
 
    at->dsiglen=aftell(dsigf);
    if (aftell(dsigf) & 1)
       aputc('\0', dsigf);
    if (aftell(dsigf) & 2)
-      putshort(dsigf, 0);
+      aput_int16_be_checked(0,dsigf);
 }

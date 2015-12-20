@@ -1,4 +1,4 @@
-/* $Id: bitmapcontrol.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: bitmapcontrol.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -35,14 +35,14 @@ int bdfcontrol_lastwhich=bd_selected;
 
 static BDFFont *BDFNew(SplineFont *sf,int pixel_size,int depth) {
    BDFFont *new=chunkalloc(sizeof(BDFFont));
-   int linear_scale=1 << (depth / 2);
+   int linear_scale=1 << (depth/2);
 
    new->sf=sf;
    new->glyphcnt=new->glyphmax=sf->glyphcnt;
    new->glyphs=calloc(new->glyphcnt, sizeof(BDFChar *));
    new->pixelsize=pixel_size;
-   new->ascent=(sf->ascent * pixel_size + .5) / (sf->ascent + sf->descent);
-   new->descent=pixel_size - new->ascent;
+   new->ascent=(sf->ascent * pixel_size+.5)/(sf->ascent+sf->descent);
+   new->descent=pixel_size-new->ascent;
    new->res=-1;
    if (linear_scale != 1)
       BDFClut(new, linear_scale);
@@ -92,7 +92,7 @@ static void SFFigureBitmaps(SplineFont *sf,int32_t *sizes,int usefreetype,
 
    first=true;
    for (i=0; sizes[i] != 0; ++i)
-      if (sizes[i] > 0) {
+      if (sizes[i]>0) {
 	 if (first && autohint_before_generate)
 	    SplineFontAutoHint(sf, layer);
 	 if (first && usefreetype)
@@ -111,7 +111,7 @@ static void SFFigureBitmaps(SplineFont *sf,int32_t *sizes,int usefreetype,
 	 else
 	    bdf =
 	       SplineFontAntiAlias(sf, layer, sizes[i] & 0xffff,
-				   1 << ((sizes[i] >> 16) / 2));
+				   1 << ((sizes[i] >> 16)/2));
 	 bdf->next=sf->bitmaps;
 	 sf->bitmaps=bdf;
 	 sf->changed=true;
@@ -139,7 +139,7 @@ static void FVScaleBitmaps(FontViewBase *fv,int32_t *sizes,int rasterize) {
    int i, cnt=0;
 
    for (i=0; sizes[i] != 0; ++i)
-      if (sizes[i] > 0)
+      if (sizes[i]>0)
 	 ++cnt;
    scale=fv->active_bitmap;
 
@@ -193,7 +193,7 @@ static void ReplaceBDFC(SplineFont *sf,int32_t *sizes,int gid,
 	       SplineCharAutoHint(sf->glyphs[gid], layer, NULL);
 	    bdfc =
 	       SplineCharAntiAlias(sf->glyphs[gid], layer, bdf->pixelsize,
-				   (1 << (BDFDepth(bdf) / 2)));
+				   (1 << (BDFDepth(bdf)/2)));
 	 }
 	 if (bdf->glyphs[gid]==NULL)
 	    bdf->glyphs[gid]=bdfc;
@@ -211,9 +211,9 @@ static void ReplaceBDFC(SplineFont *sf,int32_t *sizes,int gid,
 
 static int FVRegenBitmaps(CreateBitmapData *bd,int32_t *sizes,
 			  int usefreetype) {
-   FontViewBase *fv=bd->fv, *selfv=bd->which==bd_all ? NULL : fv;
+   FontViewBase *fv=bd->fv, *selfv=bd->which==bd_all?NULL:fv;
    SplineFont *sf=bd->sf, *subsf, *bdfsf =
-     sf->cidmaster != NULL ? sf->cidmaster : sf;
+     sf->cidmaster != NULL?sf->cidmaster:sf;
    int i, j;
    BDFFont *bdf;
    void *freetypecontext=NULL;
@@ -239,12 +239,12 @@ static int FVRegenBitmaps(CreateBitmapData *bd,int32_t *sizes,
 	 FreeTypeFreeContext(freetypecontext);
    } else {
       if (bdfsf->subfontcnt != 0 && bd->which==bd_all) {
-	 for (j=0; j < bdfsf->subfontcnt; ++j) {
+	 for (j=0; j<bdfsf->subfontcnt; ++j) {
 	    subsf=bdfsf->subfonts[j];
 	    if (usefreetype && freetypecontext==NULL)
 	      freetypecontext =
 	      FreeTypeFontContext(subsf, NULL, selfv, bd->layer);
-	    for (i=0; i < subsf->glyphcnt; ++i) {
+	    for (i=0; i<subsf->glyphcnt; ++i) {
 	       if (SCWorthOutputting(subsf->glyphs[i])) {
 		  ReplaceBDFC(subsf, sizes, i, freetypecontext, usefreetype,
 			      bd->layer);
@@ -258,7 +258,7 @@ static int FVRegenBitmaps(CreateBitmapData *bd,int32_t *sizes,
 	 if (usefreetype && freetypecontext==NULL)
 	   freetypecontext =
 	   FreeTypeFontContext(sf, NULL, selfv, bd->layer);
-	 for (i=0; i < fv->map->enccount; ++i) {
+	 for (i=0; i<fv->map->enccount; ++i) {
 	    if (fv->selected[i] || bd->which==bd_all) {
 	       ReplaceBDFC(sf, sizes, fv->map->map[i], freetypecontext,
 			   usefreetype, bd->layer);
@@ -289,7 +289,7 @@ static void BDFClearGlyph(BDFFont *bdf,int gid,int pass) {
 static int FVRemoveBitmaps(CreateBitmapData *bd,int32_t *sizes) {
    FontViewBase *fv=bd->fv;
    SplineFont *sf=bd->sf, *bdfsf =
-      sf->cidmaster != NULL ? sf->cidmaster : sf;
+      sf->cidmaster != NULL?sf->cidmaster:sf;
    int i, j, pass;
    BDFFont *bdf;
    int gid;
@@ -297,7 +297,7 @@ static int FVRemoveBitmaps(CreateBitmapData *bd,int32_t *sizes) {
    /* The two passes are because we want to make sure any windows open on */
    /*  these bitmaps will get closed before we free any data. Complicated */
    /*  because the Window manager can delay things */
-   for (pass=0; pass < 2; ++pass) {
+   for (pass=0; pass<2; ++pass) {
       for (i=0; sizes[i] != 0; ++i) {
 	 for (bdf=bdfsf->bitmaps; bdf != NULL &&
 	      (bdf->pixelsize != (sizes[i] & 0xffff)
@@ -306,10 +306,10 @@ static int FVRemoveBitmaps(CreateBitmapData *bd,int32_t *sizes) {
 	    if (bd->which==bd_current && bd->sc != NULL)
 	       BDFClearGlyph(bdf, bd->sc->orig_pos, pass);
 	    else if (bd->which==bd_all) {
-	       for (j=0; j < bdf->glyphcnt; ++j)
+	       for (j=0; j<bdf->glyphcnt; ++j)
 		  BDFClearGlyph(bdf, j, pass);
 	    } else {
-	       for (j=0; j < fv->map->enccount; ++j)
+	       for (j=0; j<fv->map->enccount; ++j)
 		  if (fv->selected[j] && (gid=fv->map->map[j]) != -1)
 		     BDFClearGlyph(bdf, gid, pass);
 	    }

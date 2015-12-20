@@ -1,4 +1,4 @@
-/* $Id: tottfvar.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: tottfvar.c 4524 2015-12-20 19:28:13Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -541,16 +541,16 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
    tuple_size=4 + 2 * mm->axis_count;
    at->cvar=atmpfile();
    putlong(at->cvar, 0x00010000);	/* Format */
-   putshort(at->cvar, cnt);	/* Number of instances with cvt tables (tuple count of interesting tuples) */
-   putshort(at->cvar, 8 + cnt * tuple_size);	/* Offset to data */
+   aput_int16_be_checked(cnt,at->cvar);	/* Number of instances with cvt tables (tuple count of interesting tuples) */
+   aput_int16_be_checked(8 + cnt * tuple_size,at->cvar);	/* Offset to data */
 
    for (i=0; i < mm->instance_count; ++i)
       if (deltas[i] != NULL) {
-	 putshort(at->cvar, 0);	/* tuple data size, figure out later */
-	 putshort(at->cvar, 0xa000);	/* tuple coords follow, private points in data */
+	 aput_int16_be_checked(0,at->cvar);	/* tuple data size, figure out later */
+	 aput_int16_be_checked(0xa000,at->cvar);	/* tuple coords follow, private points in data */
 	 for (j=0; j < mm->axis_count; ++j)
-	    putshort(at->cvar,
-		     rint(16384 * mm->positions[i * mm->axis_count + j]));
+	    aput_int16_be_checked(
+		     rint(16384 * mm->positions[i * mm->axis_count + j]),at->cvar);
       }
    if (aftell(at->cvar) != 8 + cnt * tuple_size)
       ErrorMsg(2,"Data offset wrong\n");
@@ -579,9 +579,9 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
 
 	    aputc((rj - j - 1) | big, at->cvar);
 	    if (big) {
-	       putshort(at->cvar, pts[j]);
+	       aput_int16_be_checked(pts[j],at->cvar);
 	       for (++j; j < rj; ++j)
-		  putshort(at->cvar, pts[j] - pts[j - 1]);
+		  aput_int16_be_checked(pts[j] - pts[j - 1],at->cvar);
 	    } else {
 	       aputc(pts[j], at->cvar);
 	       for (++j; j < rj; ++j)
@@ -602,7 +602,7 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
 	       }
 	       aputc((rj - j - 1) | 0x40, at->cvar);
 	       for (; j < rj; ++j)
-		  putshort(at->cvar, deltas[i][pts[j]]);
+		  aput_int16_be_checked(deltas[i][pts[j]],at->cvar);
 	    } else {
 	       for (rj=j + 1; rj < j + 0x40 && rj < pcnt; ++rj) {
 		  if (deltas[i][pts[rj]] > 0x7f || deltas[i][pts[rj]] < 0x80)
@@ -616,7 +616,7 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
 	 free(pts);
 	 end=aftell(at->cvar);
 	 afseek(at->cvar, 8 + cnt * tuple_size, SEEK_SET);
-	 putshort(at->cvar, end - start);
+	 aput_int16_be_checked(end - start,at->cvar);
 	 afseek(at->cvar, end, SEEK_SET);
 	 ++cnt;
       }
@@ -629,7 +629,7 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
    if (at->cvarlen & 1)
       aputc('\0', at->cvar);
    if (aftell(at->cvar) & 2)
-      putshort(at->cvar, 0);
+      aput_int16_be_checked(0,at->cvar);
 }
 
 static void dumpdeltas(struct alltabs *at,int16_t *deltas,int ptcnt) {
@@ -653,7 +653,7 @@ static void dumpdeltas(struct alltabs *at,int16_t *deltas,int ptcnt) {
 	 }
 	 aputc((rj - j - 1) | 0x40, at->gvar);
 	 for (; j < rj; ++j)
-	    putshort(at->gvar, deltas[j]);
+	    aput_int16_be_checked(deltas[j],at->gvar);
       } else {
 	 for (rj=j + 1; rj < j + 0x40 && rj < ptcnt; ++rj) {
 	    if (deltas[rj] > 0x7f || deltas[rj] < 0x80 ||
@@ -677,12 +677,12 @@ static void ttf_dumpgvar(struct alltabs *at,MMSet *mm) {
 
    at->gvar=atmpfile();
    putlong(at->gvar, 0x00010000);	/* Format */
-   putshort(at->gvar, mm->axis_count);
-   putshort(at->gvar, mm->instance_count);	/* Number of global tuples */
+   aput_int16_be_checked(mm->axis_count,at->gvar);
+   aput_int16_be_checked(mm->instance_count,at->gvar);	/* Number of global tuples */
    gcoordoff=aftell(at->gvar);
    putlong(at->gvar, 0);	/* Offset to global tuples, fix later */
-   putshort(at->gvar, at->maxp.numGlyphs);
-   putshort(at->gvar, 1);	/* always output 32bit offsets */
+   aput_int16_be_checked(at->maxp.numGlyphs,at->gvar);
+   aput_int16_be_checked(1,at->gvar);	/* always output 32bit offsets */
    putlong(at->gvar, aftell(at->gvar) + 4 + (at->maxp.numGlyphs + 1) * 4);
    glyphoffs=aftell(at->gvar);
    for (i=0; i <= at->maxp.numGlyphs; ++i)
@@ -700,11 +700,11 @@ static void ttf_dumpgvar(struct alltabs *at,MMSet *mm) {
 	 for (; last < i; ++last)
 	    putlong(at->gvar, here - start);
 	 afseek(at->gvar, here, SEEK_SET);
-	 putshort(at->gvar, mm->instance_count);
-	 putshort(at->gvar, 4 + 4 * mm->instance_count);	/* offset to data */
+	 aput_int16_be_checked(mm->instance_count,at->gvar);
+	 aput_int16_be_checked(4 + 4 * mm->instance_count,at->gvar);	/* offset to data */
 	 for (j=0; j < mm->instance_count; ++j) {
-	    putshort(at->gvar, 0);	/* tuple data size, fix later */
-	    putshort(at->gvar, 0x2000 | j);	/* private points, tuple i */
+	    aput_int16_be_checked(0,at->gvar);	/* tuple data size, fix later */
+	    aput_int16_be_checked(0x2000 | j,at->gvar);	/* private points, tuple i */
 	 }
 	 for (j=0; j < mm->instance_count; ++j) {
 	    tupledatastart=aftell(at->gvar);
@@ -713,7 +713,7 @@ static void ttf_dumpgvar(struct alltabs *at,MMSet *mm) {
 	    dumpdeltas(at, deltas[2 * j + 1], ptcnt);
 	    tupledataend=aftell(at->gvar);
 	    afseek(at->gvar, here + 4 + 4 * j, SEEK_SET);
-	    putshort(at->gvar, tupledataend - tupledatastart);
+	    aput_int16_be_checked(tupledataend - tupledatastart,at->gvar);
 	    afseek(at->gvar, tupledataend, SEEK_SET);
 	    free(deltas[2 * j]);
 	    free(deltas[2 * j + 1]);
@@ -729,15 +729,15 @@ static void ttf_dumpgvar(struct alltabs *at,MMSet *mm) {
    afseek(at->gvar, here, SEEK_SET);
    for (j=0; j < mm->instance_count; ++j) {
       for (i=0; i < mm->axis_count; ++i)
-	 putshort(at->gvar,
-		  rint(16384 * mm->positions[j * mm->axis_count + i]));
+	 aput_int16_be_checked(
+		  rint(16384 * mm->positions[j * mm->axis_count + i]),at->gvar);
    }
 
    at->gvarlen=aftell(at->gvar);
    if (at->gvarlen & 1)
       aputc('\0', at->gvar);
    if (aftell(at->gvar) & 2)
-      putshort(at->gvar, 0);
+      aput_int16_be_checked(0,at->gvar);
 }
 
 
@@ -755,25 +755,25 @@ static void ttf_dumpavar(struct alltabs *at,MMSet *mm) {
    putlong(at->avar, 0x00010000);	/* Format */
    putlong(at->avar, mm->axis_count);
    for (i=0; i < mm->axis_count; ++i) {
-      putshort(at->avar, mm->axismaps[i].points);
+      aput_int16_be_checked(mm->axismaps[i].points,at->avar);
       for (j=0; j < mm->axismaps[i].points; ++j) {
 	 if (mm->axismaps[i].designs[j] < mm->axismaps[i].def)
-	    putshort(at->avar,
+	    aput_int16_be_checked(
 		     (mm->axismaps[i].designs[j] -
 		      mm->axismaps[i].def) * 16384 / (mm->axismaps[i].def -
-						      mm->axismaps[i].min));
+						      mm->axismaps[i].min),at->avar);
 	 else
-	    putshort(at->avar,
+	    aput_int16_be_checked(
 		     (mm->axismaps[i].designs[j] -
 		      mm->axismaps[i].def) * 16384 / (mm->axismaps[i].max -
-						      mm->axismaps[i].def));
-	 putshort(at->avar, mm->axismaps[i].blends[j] * 16384);
+						      mm->axismaps[i].def),at->avar);
+	 aput_int16_be_checked(mm->axismaps[i].blends[j] * 16384,at->avar);
       }
    }
 
    at->avarlen=aftell(at->avar);
    if (at->avarlen & 2)
-      putshort(at->avar, 0);
+      aput_int16_be_checked(0,at->avar);
 }
 
 static uint32_t AxisNameToTag(char *name) {
@@ -814,12 +814,12 @@ static void ttf_dumpfvar(struct alltabs *at,MMSet *mm) {
 
    at->fvar=atmpfile();
    putlong(at->fvar, 0x00010000);	/* Format */
-   putshort(at->fvar, 16);	/* Offset to first axis data */
-   putshort(at->fvar, 2);	/* Size count pairs */
-   putshort(at->fvar, mm->axis_count);
-   putshort(at->fvar, 20);	/* Size of each axis record */
-   putshort(at->fvar, mm->named_instance_count);
-   putshort(at->fvar, 4 + 4 * mm->axis_count);
+   aput_int16_be_checked(16,at->fvar);	/* Offset to first axis data */
+   aput_int16_be_checked(2,at->fvar);	/* Size count pairs */
+   aput_int16_be_checked(mm->axis_count,at->fvar);
+   aput_int16_be_checked(20,at->fvar);	/* Size of each axis record */
+   aput_int16_be_checked(mm->named_instance_count,at->fvar);
+   aput_int16_be_checked(4 + 4 * mm->axis_count,at->fvar);
 
    /* For each axis ... */
    for (i=0; i < mm->axis_count; ++i) {
@@ -827,21 +827,21 @@ static void ttf_dumpfvar(struct alltabs *at,MMSet *mm) {
       putlong(at->fvar, rint(mm->axismaps[i].min * 65536));
       putlong(at->fvar, rint(mm->axismaps[i].def * 65536));
       putlong(at->fvar, rint(mm->axismaps[i].max * 65536));
-      putshort(at->fvar, 0);	/* No flags defined for axes */
-      putshort(at->fvar, AllocateStrId(at, mm->axismaps[i].axisnames));
+      aput_int16_be_checked(0,at->fvar);	/* No flags defined for axes */
+      aput_int16_be_checked(AllocateStrId(at, mm->axismaps[i].axisnames),at->fvar);
    }
 
    /* For each named font ... */
    for (i=0; i < mm->named_instance_count; ++i) {
-      putshort(at->fvar, AllocateStrId(at, mm->named_instances[i].names));
-      putshort(at->fvar, 0);	/* No flags here either */
+      aput_int16_be_checked(AllocateStrId(at, mm->named_instances[i].names),at->fvar);
+      aput_int16_be_checked(0,at->fvar);	/* No flags here either */
       for (j=0; j < mm->axis_count; ++j)
 	 putlong(at->fvar, rint(65536 * mm->named_instances[i].coords[j]));
    }
 
    at->fvarlen=aftell(at->fvar);
    if (at->fvarlen & 2)		/* I don't think this is ever hit */
-      putshort(at->fvar, 0);
+      aput_int16_be_checked(0,at->fvar);
 }
 
 void ttf_dumpvariations(struct alltabs *at, SplineFont *sf) {

@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: parsettfatt.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -4361,7 +4361,7 @@ static struct statetable *read_statetable(AFILE *ttf,int ent_extras,
 			  mortclass_apply_values, mortclass_apply_value, NULL,
 			  NULL, true);
       for (i=0; i < 65536; ++i) {
-	 if ( /*st->classes2[i]<0 || */ st->classes2[i] >= st->nclasses) {
+	 if (/*st->classes2[i]<0 || */ st->classes2[i] >= st->nclasses) {
 	    if (!error)
 	       ErrorMsg(2,"Bad class in state machine.\n");
 	    info->bad_gx=true;
@@ -4380,7 +4380,7 @@ static struct statetable *read_statetable(AFILE *ttf,int ent_extras,
       st->classes=malloc(st->nglyphs);
       afread(st->classes, 1, st->nglyphs, ttf);
       for (i=0; i < st->nglyphs; ++i) {
-	 if ( /*st->classes[i]<0 || */ st->classes[i] >= st->nclasses) {
+	 if (/*st->classes[i]<0 || */ st->classes[i] >= st->nclasses) {
 	    if (!error)
 	       ErrorMsg(2,"Bad class in state machine.\n");
 	    info->bad_gx=true;

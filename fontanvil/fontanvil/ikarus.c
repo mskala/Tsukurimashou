@@ -1,4 +1,4 @@
-/* $Id: ikarus.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: ikarus.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -512,9 +512,9 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
 	    ptype[j]=-1;	/* Start point */
 	 else if (x < 0 /* && y<0 */ )
 	    ptype[j]=pt_corner;
-	 else if ( /* x>0 && */ y > 0)
+	 else if (/* x>0 && */ y > 0)
 	    ptype[j]=pt_curve;
-	 else			/* if ( x>0 && y<0 ) */
+	 else			/* if (x>0 && y<0 ) */
 	    ptype[j]=pt_tangent;
 	 if (x < 0)
 	    x=-x;

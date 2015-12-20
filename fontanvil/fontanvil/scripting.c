@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: scripting.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -981,7 +981,7 @@ static void bAddAnchorClass(Context *c) {
 			c->a.vals[1].u.sval);
 
    ac->subtable=SFFindLookupSubtable(sf, c->a.vals[3].u.sval);
-   /* if ( ac->subtable==NULL )
+   /* if (ac->subtable==NULL )
       ScriptErrorString(c,"Unknown lookup subtable",c->a.vals[3].u.sval); */
 
    if (strmatch(c->a.vals[2].u.sval, "default")==0
@@ -3246,7 +3246,7 @@ static void bExpandStroke(Context *c) {
 	 si.removeinternal=true;
       else if (c->a.vals[5].u.ival & 2)
 	 si.removeexternal=true;
-      /*if ( c->a.vals[5].u.ival&4 )
+      /*if (c->a.vals[5].u.ival&4 )
          si.removeoverlapifneeded=true; */ /* Obsolete */
    } else if (c->a.argc==5) {
       si.stroke_type=si_caligraphic;
@@ -3264,7 +3264,7 @@ static void bExpandStroke(Context *c) {
 	 si.removeinternal=true;
       else if (c->a.vals[6].u.ival & 2)
 	 si.removeexternal=true;
-      /* if ( c->a.vals[6].u.ival&4 )
+      /* if (c->a.vals[6].u.ival&4 )
          si.removeoverlapifneeded=true; */ /* Obsolete */
    }
    FVStrokeItScript(c->curfv, &si, false);
@@ -6018,7 +6018,7 @@ static void bSave(Context *c) {
 
    /* Grab the optional number of backups that are desired argument */
    if (c->a.argc==3) {
-	/* A call Save( wheretosave, revisioncount ) */
+	/* A call Save(wheretosave, revisioncount ) */
       if (c->a.vals[2].type != v_int)
 	 ScriptError(c,
 		     "The second argument to Save() must be a number of revisions to keep (integer)");
@@ -8771,7 +8771,7 @@ static void handlename(Context *c,Val *val) {
 	       val->u.ival=c->curfv->sf->ascent + c->curfv->sf->descent;
 	    else if (strcmp(name, "$ascent")==0)
 	       val->u.ival=c->curfv->sf->ascent;
-	    else		/* if ( strcmp(name,"$descent")==0 ) */
+	    else		/* if (strcmp(name,"$descent")==0 ) */
 	       val->u.ival=c->curfv->sf->descent;
 	    val->type=v_int;
 	 } else if (strcmp(name, "$curcid")==0

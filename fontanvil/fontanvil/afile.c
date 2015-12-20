@@ -1,4 +1,4 @@
-/* $Id: afile.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: afile.c 4524 2015-12-20 19:28:13Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -781,6 +781,18 @@ int32_t aread_int32_le(AFILE *f,int32_t *x) {
       return 0;
    } else
      return -1;
+}
+
+int aput_int16_be_checked(int32_t x,AFILE *f) {
+   int8_t b[2];
+
+   if ((x<-32768) || (x>65535))
+     ErrorMsg(2,"Attempt to output %d into a 16-bit field.  "
+	      "It will be truncated and the file may not be useful.\n",
+	      x);
+   b[0]=(x>>8)&0xFF;
+   b[1]=x&0xFF;
+   return (afwrite(&b,1,2,f)==2)?0:-1;
 }
 
 int aput_int16_le(int16_t x,AFILE *f) {

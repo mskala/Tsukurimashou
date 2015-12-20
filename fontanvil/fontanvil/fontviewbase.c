@@ -1,4 +1,4 @@
-/* $Id: fontviewbase.c 4502 2015-12-16 14:11:53Z mskala $ */
+/* $Id: fontviewbase.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -744,7 +744,7 @@ void FVTrans(FontViewBase * fv, SplineChar * sc, double transform[6],
 			 transform[5], flags & fvt_round_to_int);
       }
    }
-   /*if ( flags&fvt_round_to_int ) */
+   /*if (flags&fvt_round_to_int ) */
    if ((flags & fvt_round_to_int) && (!sc->inspiro || !hasspiro())) {
       /* Rounding the spiros might be a bad idea. */
       /* Not rounding the spiros is also a bad idea. */

@@ -1,4 +1,4 @@
-/* $Id: autohint.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: autohint.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -53,28 +53,28 @@ Also other routines to guess at good per-character hints
 
 static void AddBlue(double val,double array[5],int force) {
    val=rint(val);
-   if (!force && (val < array[0] - array[1] || val > array[0] + array[1]))
+   if (!force && (val<array[0]-array[1] || val>array[0]+array[1]))
       return;			/* Outside of one sd */
    if (array[3]==0 && array[4]==0)
       array[3]=array[4]=val;
-   else if (val > array[4])
+   else if (val>array[4])
       array[4]=val;
-   else if (val < array[3])
+   else if (val<array[3])
       array[3]=val;
 }
 
 static void MergeZones(double zone1[5],double zone2[5]) {
    if (zone1[2] != 0 && zone2[2] != 0 &&
-       ((zone1[4] + 3 > zone2[3] && zone1[3] <= zone2[3]) ||
-	(zone2[4] + 3 > zone1[3] && zone2[3] <= zone1[3]))) {
-      if ((zone2[0] < zone1[0] - zone1[1] || zone2[0] > zone1[0] + zone1[1])
-	  && (zone1[0] < zone2[0] - zone2[1]
-	      || zone1[0] > zone2[0] + zone2[1]))
+       ((zone1[4]+3>zone2[3] && zone1[3] <= zone2[3]) ||
+	(zone2[4]+3>zone1[3] && zone2[3] <= zone1[3]))) {
+      if ((zone2[0]<zone1[0]-zone1[1] || zone2[0]>zone1[0]+zone1[1])
+	  && (zone1[0]<zone2[0]-zone2[1]
+	      || zone1[0]>zone2[0]+zone2[1]))
 	 /* the means of the zones are too far appart, don't merge em */ ;
       else {
-	 if (zone1[0] < zone2[0])
+	 if (zone1[0]<zone2[0])
 	    zone2[0]=zone1[0];
-	 if (zone1[1] > zone2[1])
+	 if (zone1[1]>zone2[1])
 	    zone2[1]=zone1[1];
       }
       zone1[2]=0;
@@ -254,19 +254,19 @@ static int PVAddBlues(BlueData *bd,int bcnt,char *pt) {
       val2=strtod(pt, &end);
       if (end==pt)
 	 break;
-      if (bcnt==0 || val1 > bd->blues[bcnt - 1][0])
+      if (bcnt==0 || val1>bd->blues[bcnt-1][0])
 	 i=bcnt;
       else {
-	 for (i=0; i < bcnt && val1 > bd->blues[i][0]; ++i);
-	 for (j=bcnt; j > i; --j) {
-	    bd->blues[j][0]=bd->blues[j - 1][0];
-	    bd->blues[j][1]=bd->blues[j - 1][1];
+	 for (i=0; i<bcnt && val1>bd->blues[i][0]; ++i);
+	 for (j=bcnt; j>i; --j) {
+	    bd->blues[j][0]=bd->blues[j-1][0];
+	    bd->blues[j][1]=bd->blues[j-1][1];
 	 }
       }
       bd->blues[i][0]=val1;
       bd->blues[i][1]=val2;
       ++bcnt;
-      if (bcnt >= sizeof(bd->blues) / sizeof(bd->blues[0]))
+      if (bcnt >= sizeof(bd->blues)/sizeof(bd->blues[0]))
 	 break;
       for (pt=end; isspace(*pt); ++pt);
    }
@@ -296,8 +296,8 @@ void QuickBlues(SplineFont *_sf, int layer, BlueData * bd) {
 
    j=0;
    do {
-      sf=(_sf->subfontcnt==0) ? _sf : _sf->subfonts[j];
-      for (i=0; i < sf->glyphcnt; ++i)
+      sf=(_sf->subfontcnt==0)?_sf:_sf->subfonts[j];
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL) {
 	    int enc=sf->glyphs[i]->unicodeenc;
 
@@ -322,9 +322,9 @@ void QuickBlues(SplineFont *_sf, int layer, BlueData * bd) {
 		  for (spl=t->layers[layer].splines; spl != NULL;
 		       spl=spl->next) {
 		     for (sp=spl->first;;) {
-			if (sp->me.y > max)
+			if (sp->me.y>max)
 			   max=sp->me.y;
-			if (sp->me.y < min)
+			if (sp->me.y<min)
 			   min=sp->me.y;
 			if (sp->next==NULL)
 			   break;
@@ -333,63 +333,63 @@ void QuickBlues(SplineFont *_sf, int layer, BlueData * bd) {
 			   break;
 		     }
 		  }
-		  if (enc > 0x400) {
+		  if (enc>0x400) {
 		     /* Only use ascent and descent here if we don't have anything better */
 		     if (enc==0x41f) {
 			caph=max;
 			base=min;
 		     } else if (enc==0x41e) {
-			if (max > caphtop)
+			if (max>caphtop)
 			   caphtop=max;
 			basebelow=min;
 		     } else if (enc==0x410) {
-			if (max > caphtop)
+			if (max>caphtop)
 			   caphtop=max;
-		     } else if (enc==0x43f && xheight < 0)
+		     } else if (enc==0x43f && xheight<0)
 			xheight=max;
-		     else if (enc==0x445 && xheight < 0)
+		     else if (enc==0x445 && xheight<0)
 			xheight=max;
 		     else if (enc==0x43e)
 			xheighttop=max;
-		     else if (enc==0x452 && ascent < 0)
+		     else if (enc==0x452 && ascent<0)
 			ascent=max;
-		     else if (enc==0x440 && descent > 0)
+		     else if (enc==0x440 && descent>0)
 			descent=min;
-		  } else if (enc > 0x300) {
+		  } else if (enc>0x300) {
 		     if (enc==0x399) {
 			caph=max;
 			base=min;
 		     } else if (enc==0x391) {
-			if (max > caphtop)
+			if (max>caphtop)
 			   caphtop=max;
 		     } else if (enc==0x39f) {
-			if (max > caphtop)
+			if (max>caphtop)
 			   caphtop=max;
 			basebelow=min;
-		     } else if (enc==0x3ba && xheight < 0)
+		     } else if (enc==0x3ba && xheight<0)
 			xheight=max;
-		     else if (enc==0x3c7 && xheight < 0)
+		     else if (enc==0x3c7 && xheight<0)
 			xheight=max;
 		     else if (enc==0x3bf)
 			xheighttop=max;
-		     else if (enc==0x3be && ascent < 0)
+		     else if (enc==0x3be && ascent<0)
 			ascent=max;
-		     else if (enc==0x3c1 && descent > 0)
+		     else if (enc==0x3c1 && descent>0)
 			descent=min;
 		  } else {
 		     if (enc=='I') {
 			caph=max;
 			base=min;
 		     } else if (enc=='O') {
-			if (max > caphtop)
+			if (max>caphtop)
 			   caphtop=max;
-			if (basebelow < min)
+			if (basebelow<min)
 			   basebelow=min;
 		     } else if (enc=='V') {
-			if (basebelow < min)
+			if (basebelow<min)
 			   basebelow=min;
 		     } else if (enc=='A') {
-			if (max > caphtop)
+			if (max>caphtop)
 			   caphtop=max;
 		     } else if (enc=='7')
 			numh=max;
@@ -402,9 +402,9 @@ void QuickBlues(SplineFont *_sf, int layer, BlueData * bd) {
 			   xheighttop=max;
 			if (xheight==-1e10)
 			   xheight=max;
-			if (max > xheighttop)
+			if (max>xheighttop)
 			   xheighttop=max;
-			else if (max < xheight && max > 20)
+			else if (max<xheight && max>20)
 			   xheight=max;
 			if (enc=='y' && descent==1e10)
 			   descent=min;
@@ -417,23 +417,23 @@ void QuickBlues(SplineFont *_sf, int layer, BlueData * bd) {
 	    }
 	 }
       ++j;
-   } while (j < _sf->subfontcnt);
+   } while (j<_sf->subfontcnt);
 
    if (basebelow==1e10)
       basebelow=-1e10;
 
-   if (caphtop < caph)
+   if (caphtop<caph)
       caphtop=caph;
    else if (caph==-1e10)
       caph=caphtop;
-   if (basebelow > base)
+   if (basebelow>base)
       basebelow=base;
    else if (base==-1e10)
       base=basebelow;
    if (base==-1e10) {
       base=basebelow=0;
    }
-   if (xheighttop < xheight)
+   if (xheighttop<xheight)
       xheighttop=xheight;
    else if (xheight==-1e10)
       xheight=xheighttop;
@@ -470,30 +470,30 @@ void QuickBlues(SplineFont *_sf, int layer, BlueData * bd) {
 	 numh=numhtop;
       if (numhtop==-1e10)
 	 numhtop=numh;
-      if (numh != -1e10 && (numhtop > caph - 2 && numh < caphtop + 2)) {
-	 if (numh < caph)
+      if (numh != -1e10 && (numhtop>caph-2 && numh<caphtop+2)) {
+	 if (numh<caph)
 	    caph=numh;
-	 if (numhtop > caphtop)
+	 if (numhtop>caphtop)
 	    caphtop=numhtop;
 	 numh=numhtop=-1e10;
       }
-      if (ascent != -1e10 && (ascent > caph - 2 && ascent < caphtop + 2)) {
-	 if (ascent < caph)
+      if (ascent != -1e10 && (ascent>caph-2 && ascent<caphtop+2)) {
+	 if (ascent<caph)
 	    caph=ascent;
-	 if (ascent > caphtop)
+	 if (ascent>caphtop)
 	    caphtop=ascent;
 	 ascent=-1e10;
       }
-      if (ascent != -1e10 && (ascent > numh - 2 && ascent < numhtop + 2)) {
-	 if (ascent < numh)
+      if (ascent != -1e10 && (ascent>numh-2 && ascent<numhtop+2)) {
+	 if (ascent<numh)
 	    numh=ascent;
-	 if (ascent > numhtop)
+	 if (ascent>numhtop)
 	    numhtop=ascent;
 	 ascent=-1e10;
-	 if (numhtop > caph - 2 && numh < caphtop + 2) {
-	    if (numh < caph)
+	 if (numhtop>caph-2 && numh<caphtop+2) {
+	    if (numh<caph)
 	       caph=numh;
-	    if (numhtop > caphtop)
+	    if (numhtop>caphtop)
 	       caphtop=numhtop;
 	    numh=numhtop=-1e10;
 	 }
@@ -551,19 +551,19 @@ static int EIAddEdge(Spline *spline,double tmin,double tmax,EIList *el) {
    new->tmax=tmax;
 
    s=&spline->splines[1];
-   if ((dydtmin=(3 * s->a * tmin + 2 * s->b) * tmin + s->c) < 0)
+   if ((dydtmin=(3 * s->a * tmin+2 * s->b) * tmin+s->c)<0)
       dydtmin=-dydtmin;
-   if ((dydtmax=(3 * s->a * tmax + 2 * s->b) * tmax + s->c) < 0)
+   if ((dydtmax=(3 * s->a * tmax+2 * s->b) * tmax+s->c)<0)
       dydtmax=-dydtmax;
    s=&spline->splines[0];
-   if ((dxdtmin=(3 * s->a * tmin + 2 * s->b) * tmin + s->c) < 0)
+   if ((dxdtmin=(3 * s->a * tmin+2 * s->b) * tmin+s->c)<0)
       dxdtmin=-dxdtmin;
-   if ((dxdtmax=(3 * s->a * tmax + 2 * s->b) * tmax + s->c) < 0)
+   if ((dxdtmax=(3 * s->a * tmax+2 * s->b) * tmax+s->c)<0)
       dxdtmax=-dxdtmax;
 
    /*s=&spline->splines[0]; */
-   min=((s->a * tmin + s->b) * tmin + s->c) * tmin + s->d;
-   max=((s->a * tmax + s->b) * tmax + s->c) * tmax + s->d;
+   min=((s->a * tmin+s->b) * tmin+s->c) * tmin+s->d;
+   max=((s->a * tmax+s->b) * tmax+s->c) * tmax+s->d;
    if (tmax==1)
       max=spline->to->me.x;	/* beware rounding errors */
    if (!el->leavetiny && floor(min)==floor(max)) {	/* If it doesn't cross a pixel boundary then it might as well be vertical */
@@ -576,30 +576,30 @@ static int EIAddEdge(Spline *spline,double tmin,double tmax,EIList *el) {
    }
    if (min==max)
       new->vert=true;
-   else if (min < max)
+   else if (min<max)
       new->hup=true;
    else {
       temp=min;
       min=max;
       max=temp;
    }
-   if (!el->leavetiny && min + 1 > max)
+   if (!el->leavetiny && min+1>max)
       new->almostvert=true;
-   if (40 * dxdtmin < dydtmin)
+   if (40 * dxdtmin<dydtmin)
       new->vertattmin=true;
-   if (40 * dxdtmax < dydtmax)
+   if (40 * dxdtmax<dydtmax)
       new->vertattmax=true;
-   /*if ( new->vertattmin && new->vertattmax && s->a==0 && s->b==0 ) new->almostvert=true; */
+   /*if (new->vertattmin && new->vertattmax && s->a==0 && s->b==0 ) new->almostvert=true; */
    new->coordmin[0]=min;
    new->coordmax[0]=max;
-   if (el->coordmin[0] > min)
+   if (el->coordmin[0]>min)
       el->coordmin[0]=min;
-   if (el->coordmax[0] < max)
+   if (el->coordmax[0]<max)
       el->coordmax[0]=max;
 
    s=&spline->splines[1];
-   min=((s->a * tmin + s->b) * tmin + s->c) * tmin + s->d;
-   max=((s->a * tmax + s->b) * tmax + s->c) * tmax + s->d;
+   min=((s->a * tmin+s->b) * tmin+s->c) * tmin+s->d;
+   max=((s->a * tmax+s->b) * tmax+s->c) * tmax+s->d;
    if (tmax==1)
       max=spline->to->me.y;
    if (!el->leavetiny && floor(min)==floor(max)) {	/* If it doesn't cross a pixel boundary then it might as well be horizontal */
@@ -612,25 +612,25 @@ static int EIAddEdge(Spline *spline,double tmin,double tmax,EIList *el) {
    }
    if (min==max)
       new->hor=true;
-   else if (min < max)
+   else if (min<max)
       new->vup=true;
    else {
       temp=min;
       min=max;
       max=temp;
    }
-   if (!el->leavetiny && min + 1 > max)
+   if (!el->leavetiny && min+1>max)
       new->almosthor=true;
-   if (40 * dydtmin < dxdtmin)
+   if (40 * dydtmin<dxdtmin)
       new->horattmin=true;
-   if (40 * dydtmax < dxdtmax)
+   if (40 * dydtmax<dxdtmax)
       new->horattmax=true;
-   /*if ( new->horattmin && new->horattmax && s->a==0 && s->b==0 ) new->almosthor=true; */
+   /*if (new->horattmin && new->horattmax && s->a==0 && s->b==0 ) new->almosthor=true; */
    new->coordmin[1]=min;
    new->coordmax[1]=max;
-   if (el->coordmin[1] > min)
+   if (el->coordmin[1]>min)
       el->coordmin[1]=min;
-   if (el->coordmax[1] < max)
+   if (el->coordmax[1]<max)
       el->coordmax[1]=max;
 
    if (new->hor && new->vert) {
@@ -662,27 +662,27 @@ static void EIAddSpline(Spline *spline,EIList *el) {
    /* avoid teeny tiny segments, they just confuse us */
    SplineRemoveExtremaTooClose(&spline->splines[0], &ts[1], &ts[2]);
    SplineRemoveExtremaTooClose(&spline->splines[1], &ts[3], &ts[4]);
-   for (i=0; i < 4; ++i)
-      for (j=i + 1; j < 5; ++j) {
-	 if (ts[i] > ts[j]) {
+   for (i=0; i<4; ++i)
+      for (j=i+1; j<5; ++j) {
+	 if (ts[i]>ts[j]) {
 	    temp=ts[i];
 	    ts[i]=ts[j];
 	    ts[j]=temp;
 	 }
       }
    for (base=0; ts[base]==-1; ++base);
-   for (i=5; i > base; --i) {
-      if (ts[i]==ts[i - 1]) {
-	 for (j=i - 1; j > base; --j)
-	    ts[j]=ts[j - 1];
+   for (i=5; i>base; --i) {
+      if (ts[i]==ts[i-1]) {
+	 for (j=i-1; j>base; --j)
+	    ts[j]=ts[j-1];
 	 ts[j]=-1;
 	 ++base;
       }
    }
    last=base;
-   for (i=base; i < 5; ++i)
-      if (EIAddEdge(spline, ts[last], ts[i + 1], el))
-	 last=i + 1;
+   for (i=base; i<5; ++i)
+      if (EIAddEdge(spline, ts[last], ts[i+1], el))
+	 last=i+1;
 }
 
 void ELFindEdges(SplineChar * sc, EIList * el) {
@@ -745,13 +745,13 @@ static int IsBiggerSlope(EI *test,EI *base,int major) {
       base->spline->splines[other].c;
 
    if (tdm==0 && bdm==0)
-      return (tdo > bdo);
+      return (tdo>bdo);
    if (tdo==0)
-      return (tdo > 0);
+      return (tdo>0);
    else if (bdo==0)
-      return (bdo > 0);
+      return (bdo>0);
 
-   return (tdo / tdm > bdo / bdm);
+   return (tdo/tdm>bdo/bdm);
 }
 
 void ELOrder(EIList * el, int major) {
@@ -761,40 +761,40 @@ void ELOrder(EIList * el, int major) {
 
    el->low=floor(el->coordmin[major]);
    el->high=ceil(el->coordmax[major]);
-   el->cnt=el->high - el->low + 1;
+   el->cnt=el->high-el->low+1;
    el->ordered=calloc(el->cnt, sizeof(EI *));
    el->ends=calloc(el->cnt, 1);
 
    for (ei=el->edges; ei != NULL; ei=ei->next) {
-      pos=ceil(ei->coordmax[major]) - el->low;
+      pos=ceil(ei->coordmax[major])-el->low;
       el->ends[pos]=true;
-      pos=floor(ei->coordmin[major]) - el->low;
+      pos=floor(ei->coordmin[major])-el->low;
       ei->ocur =
-	 (ei->hup==ei->vup) ? ei->coordmin[other] : ei->coordmax[other];
+	 (ei->hup==ei->vup)?ei->coordmin[other]:ei->coordmax[other];
       ei->tcur=((major && ei->vup)
-		  || (!major && ei->hup)) ? ei->tmin : ei->tmax;
+		  || (!major && ei->hup))?ei->tmin:ei->tmax;
       if (major) {
 	 ei->up=ei->vup;
 	 ei->hv=(ei->vert || ei->almostvert);
-	 ei->hvbottom=ei->vup ? ei->vertattmin : ei->vertattmax;
-	 ei->hvtop=!ei->vup ? ei->vertattmin : ei->vertattmax;
+	 ei->hvbottom=ei->vup?ei->vertattmin:ei->vertattmax;
+	 ei->hvtop=!ei->vup?ei->vertattmin:ei->vertattmax;
 	 if (ei->hor || ei->almosthor)
 	    continue;
       } else {
 	 ei->up=ei->hup;
 	 ei->hv=(ei->hor || ei->almosthor);
-	 ei->hvbottom=ei->hup ? ei->horattmin : ei->horattmax;
-	 ei->hvtop=!ei->hup ? ei->horattmin : ei->horattmax;
+	 ei->hvbottom=ei->hup?ei->horattmin:ei->horattmax;
+	 ei->hvtop=!ei->hup?ei->horattmin:ei->horattmax;
 	 if (ei->vert || ei->almostvert)
 	    continue;
       }
-      if (el->ordered[pos]==NULL || ei->ocur < el->ordered[pos]->ocur) {
+      if (el->ordered[pos]==NULL || ei->ocur<el->ordered[pos]->ocur) {
 	 ei->ordered=el->ordered[pos];
 	 el->ordered[pos]=ei;
       } else {
 	 for (prev=el->ordered[pos], test=prev->ordered; test != NULL;
 	      prev=test, test=test->ordered) {
-	    if (test->ocur > ei->ocur ||
+	    if (test->ocur>ei->ocur ||
 		(test->ocur==ei->ocur && IsBiggerSlope(test, ei, major)))
 	       break;
 	 }
@@ -808,7 +808,7 @@ static HintInstance *HIMerge(HintInstance *into,HintInstance *hi) {
    HintInstance *n, *first=NULL, *last;
 
    while (into != NULL && hi != NULL) {
-      if (into->begin < hi->begin) {
+      if (into->begin<hi->begin) {
 	 n=into;
 	 into=into->next;
       } else {
@@ -840,20 +840,20 @@ StemInfo *HintCleanup(StemInfo * stem, int dosort, int instance_count) {
    int swap;
 
    for (s=stem; s != NULL; p=s, s=s->next) {
-      if (s->width < 0) {
+      if (s->width<0) {
 	 s->start += s->width;
 	 s->width=-s->width;
 	 s->ghost=true;
       }
       s->reordered=false;
-      if (p != NULL && p->start > s->start)
+      if (p != NULL && p->start>s->start)
 	 dosort=true;
    }
    if (dosort) {
       for (p=NULL, s=stem; s != NULL; p=s, s=sn) {
 	 sn=s->next;
 	 for (pt=s, t=sn; t != NULL; pt=t, t=t->next) {
-	    if (instance_count > 1 &&
+	    if (instance_count>1 &&
 		t->u.unblended != NULL && s->u.unblended != NULL) {
 	       int temp =
 		  UnblendedCompare((*t->u.unblended)[0], (*s->u.unblended)[0],
@@ -863,13 +863,13 @@ StemInfo *HintCleanup(StemInfo * stem, int dosort, int instance_count) {
 		     UnblendedCompare((*t->u.unblended)[1],
 				      (*s->u.unblended)[1], instance_count);
 	       else
-		  swap=temp < 0;
-	    } else if (t->start < s->start)
+		  swap=temp<0;
+	    } else if (t->start<s->start)
 	       swap=true;
-	    else if (t->start > s->start)
+	    else if (t->start>s->start)
 	       swap=false;
 	    else
-	       swap=(t->width < s->width);
+	       swap=(t->width<s->width);
 	    if (swap) {
 	       s->next=t->next;
 	       if (pt==s) {
@@ -919,28 +919,28 @@ double EITOfNextMajor(EI * e, EIList * el, double sought_m) {
 	 ErrorMsg(2,"Hor/Vert line when not expected\n");
 	 return (0);
       }
-      new_t=(sought_m - msp->d) / (msp->c);
+      new_t=(sought_m-msp->d)/(msp->c);
       return (new_t);
    }
 
-   t_mmax=e->up ? e->tmax : e->tmin;
-   t_mmin=e->up ? e->tmin : e->tmax;
+   t_mmax=e->up?e->tmax:e->tmin;
+   t_mmin=e->up?e->tmin:e->tmax;
    /* sought_m += el->low; */
 
    while (1) {
-      new_t=(t_mmin + t_mmax) / 2;
+      new_t=(t_mmin+t_mmax)/2;
       found_m =
-	 (((msp->a * new_t + msp->b) * new_t + msp->c) * new_t + msp->d);
-      if (found_m > sought_m - .001 && found_m < sought_m + .001)
+	 (((msp->a * new_t+msp->b) * new_t+msp->c) * new_t+msp->d);
+      if (found_m>sought_m-.001 && found_m<sought_m+.001)
 	 return (new_t);
-      if (found_m > sought_m) {
+      if (found_m>sought_m) {
 	 t_mmax=new_t;
       } else {
 	 t_mmin=new_t;
       }
       if (t_mmax==t_mmin) {
 	 ErrorMsg(2,"EITOfNextMajor failed! on %s\n",
-		el->sc != NULL ? el->sc->name : "Unknown");
+		el->sc != NULL?el->sc->name:"Unknown");
 	 return (new_t);
       }
    }
@@ -989,7 +989,7 @@ EI *EIActiveEdgesRefigure(EIList * el, EI * active, double i, int major,
    /* first remove any entry which doesn't intersect the new scan line */
    /*  (ie. stopped on last line) */
    for (pr=NULL, apt=active; apt != NULL; apt=apt->aenext) {
-      if (apt->coordmax[major] < i + el->low) {
+      if (apt->coordmax[major]<i+el->low) {
 	 if (pr==NULL)
 	    active=apt->aenext;
 	 else
@@ -1002,9 +1002,9 @@ EI *EIActiveEdgesRefigure(EIList * el, EI * active, double i, int major,
    for (apt=active; apt != NULL; apt=apt->aenext) {
       Spline1D *osp=&apt->spline->splines[other];
 
-      apt->tcur=EITOfNextMajor(apt, el, i + el->low);
+      apt->tcur=EITOfNextMajor(apt, el, i+el->low);
       apt->ocur =
-	 (((osp->a * apt->tcur + osp->b) * apt->tcur + osp->c) * apt->tcur +
+	 (((osp->a * apt->tcur+osp->b) * apt->tcur+osp->c) * apt->tcur +
 	  osp->d);
    }
    /* reorder list */
@@ -1017,7 +1017,7 @@ EI *EIActiveEdgesRefigure(EIList * el, EI * active, double i, int major,
       change=true;
    for (pr=NULL, apt=active, npt=el->ordered[(int) i];
 	apt != NULL && npt != NULL;) {
-      if (npt->ocur < apt->ocur) {
+      if (npt->ocur<apt->ocur) {
 	 npt->aenext=apt;
 	 if (pr==NULL)
 	    active=npt;
@@ -1058,14 +1058,14 @@ int EISameLine(EI * e, EI * n, double i, int major) {
        && (ceil(n->coordmin[major])==i || floor(n->coordmin[major])==i
 	   || floor(n->coordmax[major])==i
 	   || ceil(n->coordmax[major])==i)) {
-      if ((n==e->splinenext && n->tmin==e->tmax && n->tcur < n->tmin + .2
-	   && e->tcur > e->tmax - .2) || (n->splinenext==e
+      if ((n==e->splinenext && n->tmin==e->tmax && n->tcur<n->tmin+.2
+	   && e->tcur>e->tmax-.2) || (n->splinenext==e
 					  && n->tmax==e->tmin
-					  && n->tcur > n->tmax - .2
-					  && e->tcur < e->tmin + .2))
+					  && n->tcur>n->tmax-.2
+					  && e->tcur<e->tmin+.2))
 	 return (true);
       /* can be separated by a horizontal/vertical line in the other direction */
-      if (n->tmax==1 && e->tmin==0 && n->tcur > .8 && e->tcur < .2) {
+      if (n->tmax==1 && e->tmin==0 && n->tcur>.8 && e->tcur<.2) {
 	 t=n;
 	 while ((t=t->splinenext) != e) {
 	    if (t==NULL || t==n ||
@@ -1073,7 +1073,7 @@ int EISameLine(EI * e, EI * n, double i, int major) {
 	       return (false);
 	 }
 	 return (n->up==e->up);
-      } else if (n->tmin==0 && e->tmax==1 && n->tcur < .2 && e->tcur > .8) {
+      } else if (n->tmin==0 && e->tmax==1 && n->tcur<.2 && e->tcur>.8) {
 	 t=e;
 	 while ((t=t->splinenext) != n) {
 	    if (t==NULL || t==e ||
@@ -1096,14 +1096,14 @@ int EISkipExtremum(EI * e, double i, int major) {
        && (ceil(n->coordmin[major])==i || floor(n->coordmin[major])==i
 	   || floor(n->coordmax[major])==i
 	   || ceil(n->coordmax[major])==i)) {
-      if ((n==e->splinenext && n->tmin==e->tmax && n->tcur < n->tmin + .2
-	   && e->tcur > e->tmax - .2) || (n->splinenext==e
+      if ((n==e->splinenext && n->tmin==e->tmax && n->tcur<n->tmin+.2
+	   && e->tcur>e->tmax-.2) || (n->splinenext==e
 					  && n->tmax==e->tmin
-					  && n->tcur > n->tmax - .2
-					  && e->tcur < e->tmin + .2))
+					  && n->tcur>n->tmax-.2
+					  && e->tcur<e->tmin+.2))
 	 return (n->up != e->up);
       /* can be separated by a horizontal/vertical line in the other direction */
-      if (n->tmax==1 && e->tmin==0 && n->tcur > .8 && e->tcur < .2) {
+      if (n->tmax==1 && e->tmin==0 && n->tcur>.8 && e->tcur<.2) {
 	 t=n;
 	 while ((t=t->splinenext) != e) {
 	    if (t==NULL || t==n ||
@@ -1111,7 +1111,7 @@ int EISkipExtremum(EI * e, double i, int major) {
 	       return (false);
 	 }
 	 return (n->up != e->up);
-      } else if (n->tmin==0 && e->tmax==1 && n->tcur < .2 && e->tcur > .8) {
+      } else if (n->tmin==0 && e->tmax==1 && n->tcur<.2 && e->tcur>.8) {
 	 t=e;
 	 while ((t=t->splinenext) != n) {
 	    if (t==NULL || t==e ||
@@ -1136,9 +1136,9 @@ static StemInfo *StemRemoveFlexCandidates(StemInfo *stems) {
       return (NULL);
 
    for (s=stems; (sn=s->next) != NULL; s=sn) {
-      if (s->start + BlueShift > sn->start && s->width > 0 && sn->width > 0 &&
-	  s->start + s->width - BlueShift < sn->start + sn->width &&
-	  s->start + s->width + BlueShift > sn->start + sn->width &&
+      if (s->start+BlueShift>sn->start && s->width>0 && sn->width>0 &&
+	  s->start+s->width-BlueShift<sn->start+sn->width &&
+	  s->start+s->width+BlueShift>sn->start+sn->width &&
 	  s->where != NULL && sn->where != NULL &&
 	  s->where->next != NULL && sn->where->next==NULL) {
 	 t=sn->next;
@@ -1158,7 +1158,7 @@ double HIlen(StemInfo * stems) {
    double len=0;
 
    for (hi=stems->where; hi != NULL; hi=hi->next)
-      len += hi->end - hi->begin;
+      len += hi->end-hi->begin;
    return (len);
 }
 
@@ -1234,23 +1234,23 @@ HintInstance *HICopyTrans(HintInstance * hi, double mul, double offset) {
 
    while (hi != NULL) {
       cur=chunkalloc(sizeof(HintInstance));
-      if (mul > 0) {
-	 cur->begin=hi->begin * mul + offset;
-	 cur->end=hi->end * mul + offset;
+      if (mul>0) {
+	 cur->begin=hi->begin * mul+offset;
+	 cur->end=hi->end * mul+offset;
 	 if (first==NULL)
 	    first=cur;
 	 else
 	    last->next=cur;
 	 last=cur;
       } else {
-	 cur->begin=hi->end * mul + offset;
-	 cur->end=hi->begin * mul + offset;
-	 if (first==NULL || cur->begin < first->begin) {
+	 cur->begin=hi->end * mul+offset;
+	 cur->end=hi->begin * mul+offset;
+	 if (first==NULL || cur->begin<first->begin) {
 	    cur->next=first;
 	    first=cur;
 	 } else {
 	    for (p=first, last=p->next;
-		 last != NULL && cur->begin > last->begin; last=last->next);
+		 last != NULL && cur->begin>last->begin; last=last->next);
 	    p->next=cur;
 	    cur->next=last;
 	 }
@@ -1272,13 +1272,13 @@ static HintInstance *SCGuessHintPoints(SplineChar *sc,int layer,
 
    for (spl=sc->layers[layer].splines; spl != NULL; spl=spl->next) {
       for (sp=spl->first;; sp=np) {
-	 coord=(major ? sp->me.x : sp->me.y);
-	 sm=coord >= stem->start - off && coord <= stem->start + off;
-	 wm=coord >= stem->start + stem->width - off
-	    && coord <= stem->start + stem->width + off;
-	 if (sm && spt < 20)
+	 coord=(major?sp->me.x:sp->me.y);
+	 sm=coord >= stem->start-off && coord <= stem->start+off;
+	 wm=coord >= stem->start+stem->width-off
+	    && coord <= stem->start+stem->width+off;
+	 if (sm && spt<20)
 	    starts[spt++]=sp;
-	 if (wm && ept < 20)
+	 if (wm && ept<20)
 	    ends[ept++]=sp;
 	 if (sp->next==NULL)
 	    break;
@@ -1289,21 +1289,21 @@ static HintInstance *SCGuessHintPoints(SplineChar *sc,int layer,
    }
 
    head=NULL;
-   for (i=0; i < spt; ++i) {
+   for (i=0; i<spt; ++i) {
       val=0x80000000;
-      for (j=0; j < ept; ++j) {
-	 if (major && starts[i]->me.y >= ends[j]->me.y - 1
-	     && starts[i]->me.y <= ends[j]->me.y + 1) {
+      for (j=0; j<ept; ++j) {
+	 if (major && starts[i]->me.y >= ends[j]->me.y-1
+	     && starts[i]->me.y <= ends[j]->me.y+1) {
 	    val=starts[i]->me.y;
 	    break;
-	 } else if (!major && starts[i]->me.x >= ends[j]->me.x - 1
-		    && starts[i]->me.x <= ends[j]->me.x + 1) {
+	 } else if (!major && starts[i]->me.x >= ends[j]->me.x-1
+		    && starts[i]->me.x <= ends[j]->me.x+1) {
 	    val=starts[i]->me.x;
 	    break;
 	 }
       }
       if (val != 0x80000000) {
-	 for (prev=NULL, test=head; test != NULL && val > test->begin;
+	 for (prev=NULL, test=head; test != NULL && val>test->begin;
 	      prev=test, test=test->next);
 	 if (test==NULL || val != test->begin) {
 	    cur=chunkalloc(sizeof(HintInstance));
@@ -1323,14 +1323,14 @@ static HintInstance *StemAddHIFromActive(struct stemdata *stem,int major) {
    int i;
    HintInstance *head=NULL, *cur, *t;
    double mino, maxo;
-   double dir=((double *) & stem->unit.x)[major] < 0 ? -1 : 1;
+   double dir=((double *) & stem->unit.x)[major]<0?-1:1;
 
-   for (i=0; i < stem->activecnt; ++i) {
-      mino=dir * stem->active[i].start + ((double *) & stem->left.x)[major];
-      maxo=dir * stem->active[i].end + ((double *) & stem->left.x)[major];
+   for (i=0; i<stem->activecnt; ++i) {
+      mino=dir * stem->active[i].start+((double *) & stem->left.x)[major];
+      maxo=dir * stem->active[i].end+((double *) & stem->left.x)[major];
       ErrorMsg(1,"adding (%f,%f)\n",mino,maxo);
       cur=chunkalloc(sizeof(HintInstance));
-      if (dir > 0) {
+      if (dir>0) {
 	 cur->begin=mino;
 	 cur->end=maxo;
 	 if (head==NULL)
@@ -1352,7 +1352,7 @@ static HintInstance *DStemAddHIFromActive(struct stemdata *stem) {
    int i;
    HintInstance *head=NULL, *cur, *t;
 
-   for (i=0; i < stem->activecnt; ++i) {
+   for (i=0; i<stem->activecnt; ++i) {
       cur=chunkalloc(sizeof(HintInstance));
       cur->begin=stem->active[i].start;
       cur->end=stem->active[i].end;
@@ -1370,13 +1370,13 @@ static void SCGuessHVHintInstances(SplineChar *sc,int layer,StemInfo *si,
    struct glyphdata *gd;
    struct stemdata *sd;
    double em_size=(sc->parent != NULL) ?
-      sc->parent->ascent + sc->parent->descent : 1000;
+      sc->parent->ascent+sc->parent->descent:1000;
 
    gd=GlyphDataInit(sc, layer, em_size, true);
    if (gd==NULL)
       return;
    StemInfoToStemData(gd, si, is_v);
-   if (gd->stemcnt > 0) {
+   if (gd->stemcnt>0) {
       sd=&gd->stems[0];
       si->where=StemAddHIFromActive(sd, is_v);
    }
@@ -1399,8 +1399,8 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
 
    for (spl=sc->layers[layer].splines; spl != NULL; spl=spl->next) {
       for (sp=spl->first;; sp=np) {
-	 sm=(major ? sp->me.x : sp->me.y)==stem->start;
-	 wm=(major ? sp->me.x : sp->me.y)==stem->start + stem->width;
+	 sm=(major?sp->me.x:sp->me.y)==stem->start;
+	 wm=(major?sp->me.x:sp->me.y)==stem->start+stem->width;
 	 if (sp->next==NULL)
 	    break;
 	 np=sp->next->to;
@@ -1411,12 +1411,12 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
 		  oe=np->me.x;
 	       } else if (sp->nextcp.y==sp->me.y) {
 		  ob=sp->me.x;
-		  oe=(sp->me.x + sp->nextcp.x) / 2;
+		  oe=(sp->me.x+sp->nextcp.x)/2;
 		  if (sp->prevcp.y==sp->me.y)
-		     ob=(sp->prevcp.x + sp->me.x) / 2;
+		     ob=(sp->prevcp.x+sp->me.x)/2;
 	       } else if (sp->prevcp.y==sp->me.y) {
 		  ob=sp->me.x;
-		  oe=(sp->prevcp.x + sp->me.x) / 2;
+		  oe=(sp->prevcp.x+sp->me.x)/2;
 	       } else
 		  sm=wm=false;
 	    } else {
@@ -1425,19 +1425,19 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
 		  oe=np->me.y;
 	       } else if (sp->nextcp.x==sp->me.x) {
 		  ob=sp->me.y;
-		  oe=(sp->nextcp.y + sp->me.y) / 2;
+		  oe=(sp->nextcp.y+sp->me.y)/2;
 		  if (sp->prevcp.x==sp->me.x)
-		     ob=(sp->prevcp.y + sp->me.y) / 2;
+		     ob=(sp->prevcp.y+sp->me.y)/2;
 	       } else if (sp->prevcp.x==sp->me.x) {
 		  ob=sp->me.y;
-		  oe=(sp->prevcp.y + sp->me.y) / 2;
+		  oe=(sp->prevcp.y+sp->me.y)/2;
 	       } else
 		  sm=wm=false;
 	    }
 	 }
 	 if (sm || wm) {
 	    cur=chunkalloc(sizeof(HintInstance));
-	    if (ob > oe) {
+	    if (ob>oe) {
 	       double temp=ob;
 
 	       ob=oe;
@@ -1446,23 +1446,23 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
 	    cur->begin=ob;
 	    cur->end=oe;
 	    if (sm) {
-	       if (s==NULL || s->begin > cur->begin) {
+	       if (s==NULL || s->begin>cur->begin) {
 		  cur->next=s;
 		  s=cur;
 	       } else {
 		  p=s;
-		  for (t=s->next; t != NULL && t->begin < cur->begin;
+		  for (t=s->next; t != NULL && t->begin<cur->begin;
 		       p=t, t=t->next);
 		  p->next=cur;
 		  cur->next=t;
 	       }
 	    } else {
-	       if (w==NULL || w->begin > cur->begin) {
+	       if (w==NULL || w->begin>cur->begin) {
 		  cur->next=w;
 		  w=cur;
 	       } else {
 		  p=w;
-		  for (t=w->next; t != NULL && t->begin < cur->begin;
+		  for (t=w->next; t != NULL && t->begin<cur->begin;
 		       p=t, t=t->next);
 		  p->next=cur;
 		  cur->next=t;
@@ -1486,7 +1486,7 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
    } else
       for (p=NULL, t=s; t != NULL; t=n) {
 	 n=t->next;
-	 for (w2=w; w2 != NULL && w2->begin < t->end; w2=w2->next) {
+	 for (w2=w; w2 != NULL && w2->begin<t->end; w2=w2->next) {
 	    if (w2->end <= t->begin)
 	       continue;
 	    if (w2->begin <= t->begin && w2->end >= t->end) {
@@ -1514,19 +1514,19 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
 
 	    for (w2=w; w2 != NULL; w2=w2->next) {
 	       if (w2->end <= t->begin)
-		  off=t->begin - w2->end;
+		  off=t->begin-w2->end;
 	       else
-		  off=w2->begin - t->end;
-	       if (best==NULL && off < best_off) {
+		  off=w2->begin-t->end;
+	       if (best==NULL && off<best_off) {
 		  best=w2;
 		  best_off=off;
 	       }
 	    }
-	    if (best != NULL && best_off < stem->width) {
+	    if (best != NULL && best_off<stem->width) {
 	       w2=best;
-	       if (w2->begin < t->begin)
+	       if (w2->begin<t->begin)
 		  t->begin=w2->begin;
-	       if (w2->end > t->end)
+	       if (w2->end>t->end)
 		  t->end=w2->end;
 	    }
 	 }
@@ -1552,7 +1552,7 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
    /*  the hint */
    /* Surprisingly many fonts have hints which don't accurately match the */
    /*  points. Perhaps BlueFuzz (default 1) applies here too */
-   for (off=0; off < 1 && s==NULL; ++off)
+   for (off=0; off<1 && s==NULL; ++off)
       s=SCGuessHintPoints(sc, layer, stem, major, off);
 
    stem->where=s;
@@ -1561,7 +1561,7 @@ static void SCGuessHintInstancesLight(SplineChar *sc,int layer,
 static StemInfo *StemInfoAdd(StemInfo *list,StemInfo *new) {
    StemInfo *prev, *test;
 
-   for (prev=NULL, test=list; test != NULL && new->start > test->start;
+   for (prev=NULL, test=list; test != NULL && new->start>test->start;
 	prev=test, test=test->next);
    if (test != NULL && test->start==new->start && test->width==new->width) {
       /* Replace the old with the new */
@@ -1587,7 +1587,7 @@ void SCGuessHintInstancesList(SplineChar * sc, int layer, StemInfo * hstem,
    StemInfo *test;
    DStemInfo *dtest;
    double em_size=(sc->parent != NULL) ?
-      sc->parent->ascent + sc->parent->descent : 1000;
+      sc->parent->ascent+sc->parent->descent:1000;
 
    if (hstem==NULL && vstem==NULL && dstem==NULL)
       return;
@@ -1622,7 +1622,7 @@ void SCGuessHintInstancesList(SplineChar * sc, int layer, StemInfo * hstem,
    cnt=0;
    if (hstem != NULL && hneeds_gd) {
       gd=StemInfoToStemData(gd, hstem, false);
-      for (i=cnt; i < gd->stemcnt; i++) {
+      for (i=cnt; i<gd->stemcnt; i++) {
 	 sd=&gd->stems[i];
 	 if (hstem==NULL)
 	    break;
@@ -1634,7 +1634,7 @@ void SCGuessHintInstancesList(SplineChar * sc, int layer, StemInfo * hstem,
    cnt=gd->stemcnt;
    if (vstem != NULL && vneeds_gd) {
       gd=StemInfoToStemData(gd, vstem, true);
-      for (i=cnt; i < gd->stemcnt; i++) {
+      for (i=cnt; i<gd->stemcnt; i++) {
 	 sd=&gd->stems[i];
 	 if (vstem==NULL)
 	    break;
@@ -1646,7 +1646,7 @@ void SCGuessHintInstancesList(SplineChar * sc, int layer, StemInfo * hstem,
    cnt=gd->stemcnt;
    if (dstem != NULL && dneeds_gd) {
       gd=DStemInfoToStemData(gd, dstem);
-      for (i=cnt; i < gd->stemcnt; i++) {
+      for (i=cnt; i<gd->stemcnt; i++) {
 	 sd=&gd->stems[i];
 	 if (dstem==NULL)
 	    break;
@@ -1665,13 +1665,13 @@ void SCGuessDHintInstances(SplineChar * sc, int layer, DStemInfo * ds) {
    struct glyphdata *gd;
    struct stemdata *sd;
    double em_size=(sc->parent != NULL) ?
-      sc->parent->ascent + sc->parent->descent : 1000;
+      sc->parent->ascent+sc->parent->descent:1000;
 
    gd=GlyphDataInit(sc, layer, em_size, false);
    if (gd==NULL)
       return;
    DStemInfoToStemData(gd, ds);
-   if (gd->stemcnt > 0) {
+   if (gd->stemcnt>0) {
       sd=&gd->stems[0];
       ds->left=sd->left;
       ds->right=sd->right;
@@ -1687,7 +1687,7 @@ void SCGuessHHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
    SCGuessHVHintInstances(sc, layer, stem, 0);
    sc->hstem=StemInfoAdd(sc->hstem, stem);
    if (stem->where==NULL && guess1 != 0x80000000) {
-      if (guess1 > guess2) {
+      if (guess1>guess2) {
 	 double temp=guess1;
 
 	 guess1=guess2;
@@ -1709,7 +1709,7 @@ void SCGuessVHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
    SCGuessHVHintInstances(sc, layer, stem, 1);
    sc->vstem=StemInfoAdd(sc->vstem, stem);
    if (stem->where==NULL && guess1 != 0x80000000) {
-      if (guess1 > guess2) {
+      if (guess1>guess2) {
 	 double temp=guess1;
 
 	 guess1=guess2;
@@ -1761,7 +1761,7 @@ int MergeDStemInfo(SplineFont *sf, DStemInfo ** ds, DStemInfo * test) {
       *ds=test;
       return (true);
    }
-   dist_error_diag=(sf->ascent + sf->descent) * 0.0065;
+   dist_error_diag=(sf->ascent+sf->descent) * 0.0065;
 
    cur=prev=NULL;
    for (dn=*ds; dn != NULL; dn=dn->next) {
@@ -1779,24 +1779,24 @@ int MergeDStemInfo(SplineFont *sf, DStemInfo ** ds, DStemInfo * test) {
 	 DStemInfoFree(test);
 	 return (false);
       }
-      dot=(test->unit.x * dn->unit.y) - (test->unit.y * dn->unit.x);
+      dot=(test->unit.x * dn->unit.y)-(test->unit.y * dn->unit.x);
       if (dot <= -0.5 || dot >= 0.5)
 	 continue;
 
-      loff=(test->left.x - dn->left.x) * dn->unit.y -
-	 (test->left.y - dn->left.y) * dn->unit.x;
-      roff=(test->right.x - dn->right.x) * dn->unit.y -
-	 (test->right.y - dn->right.y) * dn->unit.x;
+      loff=(test->left.x-dn->left.x) * dn->unit.y -
+	 (test->left.y-dn->left.y) * dn->unit.x;
+      roff=(test->right.x-dn->right.x) * dn->unit.y -
+	 (test->right.y-dn->right.y) * dn->unit.x;
       if (loff <= -dist_error_diag || loff >= dist_error_diag ||
 	  roff <= -dist_error_diag || loff >= dist_error_diag)
 	 continue;
-      soff=(test->left.x - dn->left.x) * dn->unit.x +
-	 (test->left.y - dn->left.y) * dn->unit.y;
+      soff=(test->left.x-dn->left.x) * dn->unit.x +
+	 (test->left.y-dn->left.y) * dn->unit.y;
       overlap=false;
       if (dn->where != NULL && test->where != NULL
 	  && test->where->next==NULL) {
-	 ibegin=test->where->begin + soff;
-	 iend=test->where->end + soff;
+	 ibegin=test->where->begin+soff;
+	 iend=test->where->end+soff;
 	 for (hi=dn->where; hi != NULL; hi=hi->next) {
 	    if ((hi->begin <= ibegin && ibegin <= hi->end) ||
 		(hi->begin <= iend && iend <= hi->end) ||
@@ -1835,23 +1835,23 @@ int MergeDStemInfo(SplineFont *sf, DStemInfo ** ds, DStemInfo * test) {
     * by Y if X is the same. The order is arbitrary, but may be essential for
     * things like "W". So we should be sure that the autoinstructor will 
     * process diagonals from left to right. */
-   base=(test->unit.y < 0) ? &test->right : &test->left;
-   nbase=((*ds)->unit.y < 0) ? &(*ds)->right : &(*ds)->left;
+   base=(test->unit.y<0)?&test->right:&test->left;
+   nbase=((*ds)->unit.y<0)?&(*ds)->right:&(*ds)->left;
 
-   if (base->x < nbase->x || (base->x==nbase->x && base->y >= nbase->y)) {
+   if (base->x<nbase->x || (base->x==nbase->x && base->y >= nbase->y)) {
       temp=*ds;
       *ds=test;
       (*ds)->next=temp;
    } else {
       for (dn=*ds; dn != NULL && dn != test; dn=dn->next) {
 	 next=dn->next;
-	 pbase=(dn->unit.y < 0) ? &dn->right : &dn->left;
+	 pbase=(dn->unit.y<0)?&dn->right:&dn->left;
 	 if (next != NULL)
-	    nbase=(next->unit.y < 0) ? &next->right : &next->left;
+	    nbase=(next->unit.y<0)?&next->right:&next->left;
 
-	 if ((pbase->x < base->x ||
+	 if ((pbase->x<base->x ||
 	      (pbase->x==base->x && pbase->y >= base->y)) &&
-	     (next==NULL || base->x < nbase->x ||
+	     (next==NULL || base->x<nbase->x ||
 	      (base->x==nbase->x && base->y >= nbase->y))) {
 
 	    test->next=next;
@@ -1870,15 +1870,15 @@ static StemInfo *RefHintsMerge(StemInfo *into,StemInfo *rh,double mul,
    double start, width;
 
    for (; rh != NULL; rh=rh->next) {
-      start=rh->start * mul + offset;
+      start=rh->start * mul+offset;
       width=rh->width * mul;
-      if (width < 0) {
+      if (width<0) {
 	 start += width;
 	 width=-width;
       }
       for (h=into, prev=NULL;
-	   h != NULL && (start > h->start
-			 || (start==h->start && width > h->width));
+	   h != NULL && (start>h->start
+			 || (start==h->start && width>h->width));
 	   prev=h, h=h->next);
       if (h==NULL || start != h->start || width != h->width) {
 	 n=chunkalloc(sizeof(StemInfo));
@@ -1905,19 +1905,19 @@ static DStemInfo *RefDHintsMerge(SplineFont *sf,DStemInfo *into,
    for (; rh != NULL; rh=rh->next) {
       new=chunkalloc(sizeof(DStemInfo));
       *new=*rh;
-      new->left.x=xmul * new->left.x + xoffset;
-      new->right.x=xmul * new->right.x + xoffset;
-      new->left.y=ymul * new->left.y + yoffset;
-      new->right.y=ymul * new->right.y + yoffset;
+      new->left.x=xmul * new->left.x+xoffset;
+      new->right.x=xmul * new->right.x+xoffset;
+      new->left.y=ymul * new->left.y+yoffset;
+      new->right.y=ymul * new->right.y+yoffset;
       new->next=NULL;
-      if ((xmul < 0 && ymul > 0) || (xmul > 0 && ymul < 0))
+      if ((xmul<0 && ymul>0) || (xmul>0 && ymul<0))
 	 new->unit.y=-new->unit.y;
       new->unit.x *= fabs(xmul);
       new->unit.y *= fabs(ymul);
-      dmul=sqrt(pow(new->unit.x, 2) + pow(new->unit.y, 2));
+      dmul=sqrt(pow(new->unit.x, 2)+pow(new->unit.y, 2));
       new->unit.x /= dmul;
       new->unit.y /= dmul;
-      if (xmul < 0)
+      if (xmul<0)
 	 dmul=-dmul;
       new->where=HICopyTrans(rh->where, dmul, 0);
 
@@ -1943,7 +1943,7 @@ static void AutoHintRefs(SplineChar *sc,int layer,BlueData *bd,
 	       AutoHintRefs(ref->sc, layer, bd, true);
 	 } else if (!ref->sc->manualhints && ref->sc->changedsincelasthinted)
 	    __SplineCharAutoHint(ref->sc, layer, bd);
-	 if (ref->sc->unicodeenc != -1 && ref->sc->unicodeenc < 0x10000 &&
+	 if (ref->sc->unicodeenc != -1 && ref->sc->unicodeenc<0x10000 &&
 	     isalnum(ref->sc->unicodeenc)) {
 	    sc->hstem =
 	       RefHintsMerge(sc->hstem, ref->sc->hstem, ref->transform[3],
@@ -1990,7 +1990,7 @@ void SCClearHints(SplineChar * sc) {
    int any=sc->hstem != NULL || sc->vstem != NULL || sc->dstem != NULL;
    int layer;
 
-   for (layer=ly_fore; layer < sc->layer_cnt; ++layer) {
+   for (layer=ly_fore; layer<sc->layer_cnt; ++layer) {
       SCClearHintMasks(sc, layer, true);
       SCClearRounds(sc, layer);
    }
@@ -2064,8 +2064,8 @@ static void SCFigureSimpleCounterMasks(SplineChar *sc) {
 	 mask[0]=0x80 | 0x40 | 0x20;
       if (hadv3) {
 	 for (h=sc->hstem, vbase=0; h != NULL; h=h->next, ++vbase);
-	 for (i=0; i < 3; ++i) {
-	    int j=i + vbase;
+	 for (i=0; i<3; ++i) {
+	    int j=i+vbase;
 
 	    mask[j >> 3] |= (0x80 >> (j & 7));
 	 }
@@ -2091,11 +2091,11 @@ static int stemmatches(StemInfo *main) {
    for (test=main->next; test != NULL; test=test->next)
       test->tobeused=false;
    for (test=main->next; test != NULL; test=test->next) {
-      if (test->used || last->start + last->width > test->start
+      if (test->used || last->start+last->width>test->start
 	  || test->hintnumber==-1)
 	 continue;
       olen=HIoverlap(main->where, test->where);
-      if (olen > mlen / 3 && olen > HIlen(test) / 3) {
+      if (olen>mlen/3 && olen>HIlen(test)/3) {
 	 test->tobeused=true;
 	 ++cnt;
       }
@@ -2162,7 +2162,7 @@ void SCFigureCounterMasks(SplineChar * sc) {
 
    mc=0;
 
-   while (mc < sizeof(masks) / sizeof(masks[0])) {
+   while (mc<sizeof(masks)/sizeof(masks[0])) {
       memset(masks[mc], '\0', sizeof(HintMask));
       if (!FigureCounters(sc->hstem, masks[mc])
 	  && !FigureCounters(sc->vstem, masks[mc]))
@@ -2172,7 +2172,7 @@ void SCFigureCounterMasks(SplineChar * sc) {
    if (mc != 0) {
       sc->countermask_cnt=mc;
       sc->countermasks=malloc(mc * sizeof(HintMask));
-      for (i=0; i < mc; ++i)
+      for (i=0; i<mc; ++i)
 	 memcpy(sc->countermasks[i], masks[i], sizeof(HintMask));
    }
 }
@@ -2184,12 +2184,12 @@ void SCClearHintMasks(SplineChar * sc, int layer, int counterstoo) {
    if (mm==NULL)
       _SCClearHintMasks(sc, layer, counterstoo);
    else {
-      for (i=0; i < mm->instance_count; ++i) {
-	 if (sc->orig_pos < mm->instances[i]->glyphcnt)
+      for (i=0; i<mm->instance_count; ++i) {
+	 if (sc->orig_pos<mm->instances[i]->glyphcnt)
 	    _SCClearHintMasks(mm->instances[i]->glyphs[sc->orig_pos], layer,
 			      counterstoo);
       }
-      if (sc->orig_pos < mm->normal->glyphcnt)
+      if (sc->orig_pos<mm->normal->glyphcnt)
 	 _SCClearHintMasks(mm->normal->glyphs[sc->orig_pos], layer,
 			   counterstoo);
    }
@@ -2203,9 +2203,9 @@ static StemInfo *OnHHint(SplinePoint *sp,StemInfo *s) {
       return (NULL);
 
    for (; s != NULL; s=s->next) {
-      if (sp->me.y < s->start)
+      if (sp->me.y<s->start)
 	 return (possible);
-      if (s->start==sp->me.y || s->start + s->width==sp->me.y) {
+      if (s->start==sp->me.y || s->start+s->width==sp->me.y) {
 	 if (!s->hasconflicts)
 	    return (s);
 	 for (hi=s->where; hi != NULL; hi=hi->next) {
@@ -2227,9 +2227,9 @@ static StemInfo *OnVHint(SplinePoint *sp,StemInfo *s) {
       return (NULL);
 
    for (; s != NULL; s=s->next) {
-      if (sp->me.x < s->start)
+      if (sp->me.x<s->start)
 	 return (possible);
-      if (s->start==sp->me.x || s->start + s->width==sp->me.x) {
+      if (s->start==sp->me.x || s->start+s->width==sp->me.x) {
 	 if (!s->hasconflicts)
 	    return (s);
 	 for (hi=s->where; hi != NULL; hi=hi->next) {
@@ -2246,8 +2246,8 @@ static StemInfo *OnVHint(SplinePoint *sp,StemInfo *s) {
 /* Does h have a conflict with any of the stems in the list which have bits */
 /*  set in the mask */
 static int ConflictsWithMask(StemInfo *stems,HintMask mask,StemInfo *h) {
-   while (stems != NULL && stems->start <= h->start + h->width) {
-      if (stems->start + stems->width >= h->start && stems != h) {
+   while (stems != NULL && stems->start <= h->start+h->width) {
+      if (stems->start+stems->width >= h->start && stems != h) {
 	 if (stems->hintnumber != -1 &&
 	     (mask[stems->hintnumber >> 3] &
 	      (0x80 >> (stems->hintnumber & 7))))
@@ -2312,7 +2312,7 @@ static void FigureHintMask(SplineChar *scs[MmMax],SplinePoint *to[MmMax],
 	 }
       }
    }
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       if (to[i] != NULL) {
 	 chunkfree(to[i]->hintmask, sizeof(HintMask));
 	 to[i]->hintmask=chunkalloc(sizeof(HintMask));
@@ -2325,7 +2325,7 @@ static int TestHintMask(SplineChar *scs[MmMax],SplinePoint *to[MmMax],
    StemInfo *h=NULL, *v=NULL;
    int i;
 
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       SplineChar *sc=scs[i];
 
       if (sc==NULL || (!sc->hconflicts && !sc->vconflicts))
@@ -2366,9 +2366,9 @@ static int NumberHints(SplineChar *sc) {
    int hcnt=0;
 
    for (h=sc->hstem; h != NULL; h=h->next)
-      h->hintnumber=hcnt >= HntMax ? -1 : hcnt++;
+      h->hintnumber=hcnt >= HntMax?-1:hcnt++;
    for (h=sc->vstem; h != NULL; h=h->next)
-      h->hintnumber=hcnt >= HntMax ? -1 : hcnt++;
+      h->hintnumber=hcnt >= HntMax?-1:hcnt++;
    return (hcnt);
 }
 
@@ -2401,10 +2401,10 @@ static void AddCoord(MMH *mmh,SplinePoint *sps[MmMax],int instance_count,
    coords->next=mmh->where;
    mmh->where=coords;
    if (ish)
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 coords->coords[i]=sps[i]->me.x;
    else
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 coords->coords[i]=sps[i]->me.y;
 }
 
@@ -2413,7 +2413,7 @@ static MMH *AddHintSet(MMH *hints,StemInfo *h[MmMax],int instance_count,
    int i, cnt, bestc;
    MMH *test, *best;
 
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       if (h[i]==NULL)
 	 return (hints);
 
@@ -2421,14 +2421,14 @@ static MMH *AddHintSet(MMH *hints,StemInfo *h[MmMax],int instance_count,
    bestc=0;
    for (test=hints; test != NULL; test=test->next) {
       cnt=0;
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 if (test->hints[i]==h[i])
 	    ++cnt;
       if (cnt==instance_count) {
 	 AddCoord(test, sps, instance_count, ish);
 	 return (hints);
       }
-      if (cnt > bestc) {
+      if (cnt>bestc) {
 	 bestc=cnt;
 	 best=test;
       }
@@ -2436,10 +2436,10 @@ static MMH *AddHintSet(MMH *hints,StemInfo *h[MmMax],int instance_count,
    test=chunkalloc(sizeof(MMH));
    test->next=hints;
    AddCoord(test, sps, instance_count, ish);
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       test->hints[i]=h[i];
    if (bestc != 0) {
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 if (best->hints[i]==h[i]) {
 	    h[i]->hasconflicts=true;
 	    test->map[i]=chunkalloc(sizeof(StemInfo));
@@ -2451,7 +2451,7 @@ static MMH *AddHintSet(MMH *hints,StemInfo *h[MmMax],int instance_count,
 	    test->map[i]=h[i];
       }
    } else {
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 test->map[i]=h[i];
    }
    return (test);
@@ -2465,17 +2465,17 @@ static int CompareMMH(MMH *mmh1,MMH *mmh2,int instance_count) {
    if (mmh2->map[0]==NULL)
       return (-1);
 
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       if (mmh1->map[i]->start != mmh2->map[i]->start) {
-	 if (mmh1->map[i]->start > mmh2->map[i]->start)
+	 if (mmh1->map[i]->start>mmh2->map[i]->start)
 	    return (1);
 	 else
 	    return (-1);
       }
    }
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       if (mmh1->map[i]->width != mmh2->map[i]->width) {
-	 if (mmh1->map[i]->width > mmh2->map[i]->width)
+	 if (mmh1->map[i]->width>mmh2->map[i]->width)
 	    return (1);
 	 else
 	    return (-1);
@@ -2493,7 +2493,7 @@ static MMH *SortMMH(MMH *head,int instance_count) {
       ptest=mmh;
       test=mmh->next;
       while (test != NULL) {
-	 if (CompareMMH(test, smallest, instance_count) < 0) {
+	 if (CompareMMH(test, smallest, instance_count)<0) {
 	    smallest=test;
 	    psmallest=ptest;
 	 }
@@ -2527,7 +2527,7 @@ static int NumberMMH(MMH *mmh,int hstart,int instance_count) {
    struct coords *coords;
 
    while (mmh != NULL) {
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 StemInfo *h=mmh->map[i];
 
 	 if (h==NULL)
@@ -2544,8 +2544,8 @@ static int NumberMMH(MMH *mmh,int hstart,int instance_count) {
 	    hi=chunkalloc(sizeof(HintInstance));
 	    hi->next=h->where;
 	    h->where=hi;
-	    hi->begin=coords->coords[i] - 1;
-	    hi->end=coords->coords[i] + 1;
+	    hi->begin=coords->coords[i]-1;
+	    hi->end=coords->coords[i]+1;
 	 }
       }
       if (mmh->map[0] != NULL)
@@ -2561,8 +2561,8 @@ static void SortMMH2(SplineChar *scs[MmMax],MMH *mmh,int instance_count,
    StemInfo *h, *n;
    MMH *m;
 
-   for (i=0; i < instance_count; ++i) {
-      for (h=ish ? scs[i]->hstem : scs[i]->vstem; h != NULL; h=n) {
+   for (i=0; i<instance_count; ++i) {
+      for (h=ish?scs[i]->hstem:scs[i]->vstem; h != NULL; h=n) {
 	 n=h->next;
 	 if (h->hintnumber==-1)
 	    StemInfoFree(h);
@@ -2609,21 +2609,21 @@ static void SplResolveSplitHints(SplineChar *scs[MmMax],
    int i, anymore;
 
    while (1) {
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 if (spl[i] != NULL)
 	    to[i]=spl[i]->first;
 	 else
 	    to[i]=NULL;
       }
       while (1) {
-	 for (i=0; i < instance_count; ++i) {
+	 for (i=0; i<instance_count; ++i) {
 	    h[i]=OnHHint(to[i], scs[i]->hstem);
 	    v[i]=OnVHint(to[i], scs[i]->vstem);
 	 }
 	 *hs=AddHintSet(*hs, h, instance_count, to, true);
 	 *vs=AddHintSet(*vs, v, instance_count, to, false);
 	 anymore=false;
-	 for (i=0; i < instance_count; ++i)
+	 for (i=0; i<instance_count; ++i)
 	    if (to[i] != NULL) {
 	       if (to[i]->next==NULL)
 		  to[i]=NULL;
@@ -2639,7 +2639,7 @@ static void SplResolveSplitHints(SplineChar *scs[MmMax],
 	    break;
       }
       anymore=false;
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 if (spl[i] != NULL)
 	    spl[i]=spl[i]->next;
 	 if (spl[i] != NULL)
@@ -2663,10 +2663,10 @@ static void ResolveSplitHints(SplineChar *scs[16],int layer,
    int i, hcnt, hmax=0, anymore;
    MMH *hs=NULL, *vs=NULL;
 
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       hcnt=NumberHints(scs[i]);
       UntickHints(scs[i]);
-      if (hcnt > hmax)
+      if (hcnt>hmax)
 	 hmax=hcnt;
       spl[i]=scs[i]->layers[layer].splines;
    }
@@ -2675,17 +2675,17 @@ static void ResolveSplitHints(SplineChar *scs[16],int layer,
 
    SplResolveSplitHints(scs, spl, instance_count, &hs, &vs);
    anymore=false;
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       ref[i]=scs[i]->layers[layer].refs;
       if (ref[i] != NULL)
 	 anymore=true;
    }
    while (anymore) {
-      for (i=0; i < instance_count; ++i)
-	 spl[i]=(ref[i] != NULL) ? ref[i]->layers[0].splines : NULL;
+      for (i=0; i<instance_count; ++i)
+	 spl[i]=(ref[i] != NULL)?ref[i]->layers[0].splines:NULL;
       SplResolveSplitHints(scs, spl, instance_count, &hs, &vs);
       anymore=false;
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 if (ref[i] != NULL) {
 	    ref[i]=ref[i]->next;
 	    if (ref[i] != NULL)
@@ -2694,7 +2694,7 @@ static void ResolveSplitHints(SplineChar *scs[16],int layer,
       }
    }
 
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       UnnumberHints(scs[i]);
    hs=SortMMH(hs, instance_count);
    vs=SortMMH(vs, instance_count);
@@ -2712,7 +2712,7 @@ static int SplFigureHintMasks(SplineChar *scs[MmMax],SplineSet *spl[MmMax],
    int i, anymore;
 
    anymore=false;
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       if (spl[i] != NULL) {
 	 SplineSetReverse(spl[i]);
 	 to[i]=spl[i]->first;
@@ -2728,7 +2728,7 @@ static int SplFigureHintMasks(SplineChar *scs[MmMax],SplineSet *spl[MmMax],
    }
 
    while (1) {
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 if (spl[i] != NULL)
 	    to[i]=spl[i]->first;
 	 else
@@ -2737,7 +2737,7 @@ static int SplFigureHintMasks(SplineChar *scs[MmMax],SplineSet *spl[MmMax],
       while (1) {
 	 TestHintMask(scs, to, instance_count, mask);
 	 anymore=false;
-	 for (i=0; i < instance_count; ++i)
+	 for (i=0; i<instance_count; ++i)
 	    if (to[i] != NULL) {
 	       if (to[i]->next==NULL)
 		  to[i]=NULL;
@@ -2753,7 +2753,7 @@ static int SplFigureHintMasks(SplineChar *scs[MmMax],SplineSet *spl[MmMax],
 	    break;
       }
       anymore=false;
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 if (spl[i] != NULL) {
 	    SplineSetReverse(spl[i]);
 	    spl[i]=spl[i]->next;
@@ -2785,15 +2785,15 @@ void SCFigureHintMasks(SplineChar * sc, int layer) {
       if (mm->apple)
 	 return;
       instance_count=mm->instance_count;
-      for (i=0; i < instance_count; ++i)
-	 if (sc->orig_pos < mm->instances[i]->glyphcnt) {
+      for (i=0; i<instance_count; ++i)
+	 if (sc->orig_pos<mm->instances[i]->glyphcnt) {
 	    scs[i]=mm->instances[i]->glyphs[sc->orig_pos];
 	    SCClearHintMasks(scs[i], layer, false);
 	 }
       ResolveSplitHints(scs, layer, instance_count);
    }
    conflicts=false;
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       NumberHints(scs[i]);
       if (scs[i]->hconflicts || scs[i]->vconflicts)
 	 conflicts=true;
@@ -2803,19 +2803,19 @@ void SCFigureHintMasks(SplineChar * sc, int layer) {
       return;			/* In an MM font we may still need to resolve things like different numbers of hints */
    }
 
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       spl[i]=scs[i]->layers[layer].splines;
       ref[i]=scs[i]->layers[layer].refs;
    }
    inited=SplFigureHintMasks(scs, spl, instance_count, mask, false);
    while (1) {
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 if (ref[i] != NULL)
 	    spl[i]=ref[i]->layers[0].splines;
       }
       inited=SplFigureHintMasks(scs, spl, instance_count, mask, inited);
       anymore=false;
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 if (ref[i] != NULL) {
 	    ref[i]=ref[i]->next;
 	    if (ref[i] != NULL)
@@ -2832,26 +2832,26 @@ void SCFigureHintMasks(SplineChar * sc, int layer) {
 static StemInfo *GDFindStems(struct glyphdata *gd,int major) {
    int i;
    StemInfo *head=NULL, *cur, *p, *t;
-   StemBundle *bundle=major ? gd->vbundle : gd->hbundle;
+   StemBundle *bundle=major?gd->vbundle:gd->hbundle;
    StemData *stem;
    int other=!major;
    double l, r;
 
-   for (i=0; i < bundle->cnt; ++i) {
+   for (i=0; i<bundle->cnt; ++i) {
       stem=bundle->stemlist[i];
       l=(&stem->left.x)[other];
       r=(&stem->right.x)[other];
       cur=chunkalloc(sizeof(StemInfo));
-      if (l < r) {
+      if (l<r) {
 	 cur->start=l;
-	 cur->width=r - l;
-	 cur->haspointleft=stem->lpcnt > 0;
-	 cur->haspointright=stem->rpcnt > 0;
+	 cur->width=r-l;
+	 cur->haspointleft=stem->lpcnt>0;
+	 cur->haspointright=stem->rpcnt>0;
       } else {
 	 cur->start=r;
-	 cur->width=l - r;
-	 cur->haspointleft=stem->rpcnt > 0;
-	 cur->haspointright=stem->lpcnt > 0;
+	 cur->width=l-r;
+	 cur->haspointleft=stem->rpcnt>0;
+	 cur->haspointright=stem->lpcnt>0;
       }
       cur->ghost=stem->ghost;
       for (p=NULL, t=head; t != NULL; p=t, t=t->next) {
@@ -2874,7 +2874,7 @@ static DStemInfo *GDFindDStems(struct glyphdata *gd) {
    DStemInfo *head=NULL, *cur;
    struct stemdata *stem;
 
-   for (i=0; i < gd->stemcnt; ++i) {
+   for (i=0; i<gd->stemcnt; ++i) {
       stem=&gd->stems[i];
       /* A real diagonal stem should consist of one or more continuous
        * ranges. Thus the number of active zones should be less then the
@@ -2886,11 +2886,11 @@ static DStemInfo *GDFindDStems(struct glyphdata *gd) {
       if (stem->toobig)
 	 continue;
 
-      if ((stem->unit.y > -.05 && stem->unit.y < .05) ||
-	  (stem->unit.x > -.05 && stem->unit.x < .05))
+      if ((stem->unit.y>-.05 && stem->unit.y<.05) ||
+	  (stem->unit.x>-.05 && stem->unit.x<.05))
 	 continue;
 
-      if (stem->lpcnt < 2 || stem->rpcnt < 2)
+      if (stem->lpcnt<2 || stem->rpcnt<2)
 	 continue;
       cur=chunkalloc(sizeof(DStemInfo));
       cur->left=stem->left;
@@ -2944,11 +2944,11 @@ static void __SplineCharAutoHint(SplineChar *sc,int layer,BlueData *bd) {
    if (mm==NULL)
       _SplineCharAutoHint(sc, layer, bd, NULL);
    else {
-      for (i=0; i < mm->instance_count; ++i)
-	 if (sc->orig_pos < mm->instances[i]->glyphcnt)
+      for (i=0; i<mm->instance_count; ++i)
+	 if (sc->orig_pos<mm->instances[i]->glyphcnt)
 	    _SplineCharAutoHint(mm->instances[i]->glyphs[sc->orig_pos], layer,
 				NULL, NULL);
-      if (sc->orig_pos < mm->normal->glyphcnt)
+      if (sc->orig_pos<mm->normal->glyphcnt)
 	 _SplineCharAutoHint(mm->normal->glyphs[sc->orig_pos], layer, NULL,
 			     NULL);
    }
@@ -2978,15 +2978,15 @@ int SFNeedsAutoHint(SplineFont *_sf, int layer) {
 
    k=0;
    do {
-      sf=_sf->subfontcnt==0 ? _sf : _sf->subfonts[k];
-      for (i=0; i < sf->glyphcnt; ++i)
+      sf=_sf->subfontcnt==0?_sf:_sf->subfonts[k];
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL) {
 	    if (sf->glyphs[i]->changedsincelasthinted &&
 		!sf->glyphs[i]->manualhints)
 	       return (true);
 	 }
       ++k;
-   } while (k < _sf->subfontcnt);
+   } while (k<_sf->subfontcnt);
    return (false);
 }
 
@@ -3004,24 +3004,24 @@ void SplineFontAutoHint(SplineFont *_sf, int layer) {
    /* Tick the ones we don't want to AH, untick the ones that need AH */
    k=0;
    do {
-      sf=_sf->subfontcnt==0 ? _sf : _sf->subfonts[k];
-      for (i=0; i < sf->glyphcnt; ++i)
+      sf=_sf->subfontcnt==0?_sf:_sf->subfonts[k];
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if ((sc=sf->glyphs[i]) != NULL)
 	    sc->ticked=(!sc->changedsincelasthinted || sc->manualhints);
       ++k;
-   } while (k < _sf->subfontcnt);
+   } while (k<_sf->subfontcnt);
 
    k=0;
    do {
-      sf=_sf->subfontcnt==0 ? _sf : _sf->subfonts[k];
-      for (i=0; i < sf->glyphcnt; ++i)
+      sf=_sf->subfontcnt==0?_sf:_sf->subfonts[k];
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL) {
 	    if (sf->glyphs[i]->changedsincelasthinted &&
 		!sf->glyphs[i]->manualhints)
 	       SFSCAutoHint(sf->glyphs[i], layer, bd);
 	 }
       ++k;
-   } while (k < _sf->subfontcnt);
+   } while (k<_sf->subfontcnt);
 }
 
 void SplineFontAutoHintRefs(SplineFont *_sf, int layer) {
@@ -3037,8 +3037,8 @@ void SplineFontAutoHintRefs(SplineFont *_sf, int layer) {
 
    k=0;
    do {
-      sf=_sf->subfontcnt==0 ? _sf : _sf->subfonts[k];
-      for (i=0; i < sf->glyphcnt; ++i)
+      sf=_sf->subfontcnt==0?_sf:_sf->subfonts[k];
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if ((sc=sf->glyphs[i]) != NULL) {
 	    if (sc->changedsincelasthinted &&
 		!sc->manualhints &&
@@ -3052,7 +3052,7 @@ void SplineFontAutoHintRefs(SplineFont *_sf, int layer) {
 	    }
 	 }
       ++k;
-   } while (k < _sf->subfontcnt);
+   } while (k<_sf->subfontcnt);
 }
 
 static void FigureStems(SplineFont *sf,double snaps[12],double cnts[12],
@@ -3065,23 +3065,23 @@ static void FigureStems(SplineFont *sf,double snaps[12],double cnts[12],
 
    memset(stemwidths, '\0', sizeof(stemwidths));
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 stems=which ? sf->glyphs[i]->hstem : sf->glyphs[i]->vstem;
+	 stems=which?sf->glyphs[i]->hstem:sf->glyphs[i]->vstem;
 	 for (test=stems; test != NULL; test=test->next)
 	    if (!test->ghost) {
-	       if ((j=test->width) < 0)
+	       if ((j=test->width)<0)
 		  j=-j;
-	       if (j < 2000) {
+	       if (j<2000) {
 		  len=0;
 		  for (hi=test->where; hi != NULL; hi=hi->next)
-		     len += hi->end - hi->begin;
+		     len += hi->end-hi->begin;
 		  if (len==0)
 		     len=100;
 		  stemwidths[j] += len;
-		  if (smax < j)
+		  if (smax<j)
 		     smax=j;
-		  if (smin > j)
+		  if (smin>j)
 		     smin=j;
 	       }
 	    }
@@ -3092,21 +3092,21 @@ static void FigureStems(SplineFont *sf,double snaps[12],double cnts[12],
 	 ++cnt;
    }
 
-   if (cnt > 12) {
+   if (cnt>12) {
       /* Merge width windows */
       int windsize=3, j;
 
       for (i=smin; i <= smax; ++i)
 	 if (stemwidths[i] != 0) {
-	    if ((j=i - windsize) < 0)
+	    if ((j=i-windsize)<0)
 	       j=0;
-	    for (; j < smax && j <= i + windsize; ++j)
-	       if (stemwidths[i] < stemwidths[j])
+	    for (; j<smax && j <= i+windsize; ++j)
+	       if (stemwidths[i]<stemwidths[j])
 		  break;
-	    if (j==smax || j > i + windsize) {
-	       if ((j=i - windsize) < 0)
+	    if (j==smax || j>i+windsize) {
+	       if ((j=i-windsize)<0)
 		  j=0;
-	       for (; j < smax && j <= i + windsize; ++j)
+	       for (; j<smax && j <= i+windsize; ++j)
 		  if (j != i) {
 		     stemwidths[i] += stemwidths[j];
 		     stemwidths[j]=0;
@@ -3115,17 +3115,17 @@ static void FigureStems(SplineFont *sf,double snaps[12],double cnts[12],
 	 }
       /* Merge adjacent widths */
       for (i=smin; i <= smax; ++i) {
-	 if (stemwidths[i] != 0 && i <= smax - 1 && stemwidths[i + 1] != 0) {
-	    if (stemwidths[i] > stemwidths[i + 1]) {
-	       stemwidths[i] += stemwidths[i + 1];
-	       stemwidths[i + 1]=0;
+	 if (stemwidths[i] != 0 && i <= smax-1 && stemwidths[i+1] != 0) {
+	    if (stemwidths[i]>stemwidths[i+1]) {
+	       stemwidths[i] += stemwidths[i+1];
+	       stemwidths[i+1]=0;
 	    } else {
-	       if (i <= smax - 2 && stemwidths[i + 2]
-		   && stemwidths[i + 2] < stemwidths[i + 1]) {
-		  stemwidths[i + 1] += stemwidths[i + 2];
-		  stemwidths[i + 2]=0;
+	       if (i <= smax-2 && stemwidths[i+2]
+		   && stemwidths[i+2]<stemwidths[i+1]) {
+		  stemwidths[i+1] += stemwidths[i+2];
+		  stemwidths[i+2]=0;
 	       }
-	       stemwidths[i + 1] += stemwidths[i];
+	       stemwidths[i+1] += stemwidths[i];
 	       stemwidths[i]=0;
 	       ++i;
 	    }
@@ -3146,25 +3146,25 @@ static void FigureStems(SplineFont *sf,double snaps[12],double cnts[12],
    } else {
       double firstbiggest=0;
 
-      for (cnt=0; cnt < 12; ++cnt) {
+      for (cnt=0; cnt<12; ++cnt) {
 	 int biggesti=0;
 	 double biggest=0;
 
 	 for (i=smin; i <= smax; ++i) {
-	    if (stemwidths[i] > biggest) {
+	    if (stemwidths[i]>biggest) {
 	       biggest=stemwidths[i];
 	       biggesti=i;
 	    }
 	 }
 	 /* array must be sorted */
-	 if (biggest < firstbiggest / 6)
+	 if (biggest<firstbiggest/6)
 	    break;
-	 for (j=0; j < cnt; ++j)
-	    if (snaps[j] > biggesti)
+	 for (j=0; j<cnt; ++j)
+	    if (snaps[j]>biggesti)
 	       break;
-	 for (k=cnt - 1; k >= j; --k) {
-	    snaps[k + 1]=snaps[k];
-	    cnts[k + 1]=cnts[k];
+	 for (k=cnt-1; k >= j; --k) {
+	    snaps[k+1]=snaps[k];
+	    cnts[k+1]=cnts[k];
 	 }
 	 snaps[j]=biggesti;
 	 cnts[j]=biggest;
@@ -3173,7 +3173,7 @@ static void FigureStems(SplineFont *sf,double snaps[12],double cnts[12],
 	    firstbiggest=biggest;
       }
    }
-   for (; cnt < 12; ++cnt) {
+   for (; cnt<12; ++cnt) {
       snaps[cnt]=0;
       cnts[cnt]=0;
    }
@@ -3194,15 +3194,15 @@ static int IsFlexSmooth(SplinePoint *sp) {
    if (sp->nonextcp || sp->noprevcp)
       return (false);		/* No continuity of slopes */
 
-   nvec.x=sp->nextcp.x - sp->me.x;
-   nvec.y=sp->nextcp.y - sp->me.y;
-   pvec.x=sp->me.x - sp->prevcp.x;
-   pvec.y=sp->me.y - sp->prevcp.y;
+   nvec.x=sp->nextcp.x-sp->me.x;
+   nvec.y=sp->nextcp.y-sp->me.y;
+   pvec.x=sp->me.x-sp->prevcp.x;
+   pvec.y=sp->me.y-sp->prevcp.y;
 
    /* Avoid cases where the slopes are 180 out of phase */
-   if ((proj_same=nvec.x * pvec.x + nvec.y * pvec.y) <= 0)
+   if ((proj_same=nvec.x * pvec.x+nvec.y * pvec.y) <= 0)
       return (false);
-   if ((proj_normal=nvec.x * pvec.y - nvec.y * pvec.x) < 0)
+   if ((proj_normal=nvec.x * pvec.y-nvec.y * pvec.x)<0)
       proj_normal=-proj_normal;
 
    /* Something is smooth if the normal projection is 0. Let's allow for */
@@ -3262,16 +3262,16 @@ static int _SplineCharIsFlexible(SplineChar *sc,int layer,int blueshift) {
 		!RealNear(np->me.x, sp->me.x) &&
 		(!IsFlexSmooth(pp) || RealNear(pp->nextcp.x, pp->me.x)) &&
 		(!IsFlexSmooth(np) || RealNear(np->prevcp.x, np->me.x)) &&
-		np->me.x - sp->me.x < blueshift &&
-		np->me.x - sp->me.x > -blueshift) {
-	       if ((np->me.x > sp->me.x &&
+		np->me.x-sp->me.x<blueshift &&
+		np->me.x-sp->me.x>-blueshift) {
+	       if ((np->me.x>sp->me.x &&
 		    np->prevcp.x <= np->me.x && np->prevcp.x >= sp->me.x &&
 		    pp->nextcp.x <= pp->me.x && pp->prevcp.x >= sp->me.x) ||
-		   (np->me.x < sp->me.x &&
+		   (np->me.x<sp->me.x &&
 		    np->prevcp.x >= np->me.x && np->prevcp.x <= sp->me.x &&
 		    pp->nextcp.x >= pp->me.x && pp->prevcp.x <= sp->me.x)) {
 		  sp->flexx=true;
-		  val=np->me.x - sp->me.x;
+		  val=np->me.x-sp->me.x;
 	       }
 	    }
 	    if (RealNear(sp->nextcp.y, sp->me.y) &&
@@ -3280,27 +3280,27 @@ static int _SplineCharIsFlexible(SplineChar *sc,int layer,int blueshift) {
 		!RealNear(np->me.y, sp->me.y) &&
 		(!IsFlexSmooth(pp) || RealNear(pp->nextcp.y, pp->me.y)) &&
 		(!IsFlexSmooth(np) || RealNear(np->prevcp.y, np->me.y)) &&
-		np->me.y - sp->me.y < blueshift &&
-		np->me.y - sp->me.y > -blueshift) {
-	       if ((np->me.y > sp->me.y &&
+		np->me.y-sp->me.y<blueshift &&
+		np->me.y-sp->me.y>-blueshift) {
+	       if ((np->me.y>sp->me.y &&
 		    np->prevcp.y <= np->me.y && np->prevcp.y >= sp->me.y &&
 		    pp->nextcp.y <= pp->me.y && pp->nextcp.y >= sp->me.y) ||
-		   (np->me.y < sp->me.y &&
+		   (np->me.y<sp->me.y &&
 		    np->prevcp.y >= np->me.y && np->prevcp.y <= sp->me.y &&
 		    pp->nextcp.y >= pp->me.y && pp->nextcp.y <= sp->me.y)) {
 		  sp->flexy=true;
-		  val=np->me.y - sp->me.y;
+		  val=np->me.y-sp->me.y;
 	       }
 	    }
-	    if (val < 0)
+	    if (val<0)
 	       val=-val;
-	    if (val > max)
+	    if (val>max)
 	       max=val;
 	 }
 	 sp=np;
       } while (sp != spl->first);
    }
-   sc->layers[layer].anyflexes=max > 0;
+   sc->layers[layer].anyflexes=max>0;
    if (max==0)
       for (r=sc->layers[layer].refs; r != NULL; r=r->next)
 	 if (r->sc->layers[layer].anyflexes) {
@@ -3349,7 +3349,7 @@ int SplineFontIsFlexible(SplineFont *sf, int layer, int flags) {
    /*  the splineset */
 
    if (flags & (ps_flag_nohints | ps_flag_noflex)) {
-      for (i=0; i < sf->glyphcnt; ++i)
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL)
 	    SCUnflex(sf->glyphs[i], layer);
       return (0);
@@ -3359,16 +3359,16 @@ int SplineFontIsFlexible(SplineFont *sf, int layer, int flags) {
    blueshift=21;		/* maximum posible flex, not default */
    if (pt != NULL) {
       blueshift=strtol(pt, NULL, 10);
-      if (blueshift > 21)
+      if (blueshift>21)
 	 blueshift=21;
    } else if (PSDictHasEntry(sf->private, "BlueValues") != NULL)
       blueshift=7;		/* The BlueValues array may depend on BlueShift having its default value */
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
 	 if (sf->glyphs[i] != NULL) {
 	    val=_SplineCharIsFlexible(sf->glyphs[i], layer, blueshift);
-	    if (val > max)
+	    if (val>max)
 	       max=val;
 	    if (sf->glyphs[i]->layers[layer].anyflexes)
 	       FlexDependents(sf->glyphs[i], layer);

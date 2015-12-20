@@ -1,4 +1,4 @@
-/* $Id: afile.h 4507 2015-12-17 09:42:57Z mskala $ */
+/* $Id: afile.h 4524 2015-12-20 19:28:13Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -119,6 +119,7 @@ int aput_int8_le(int8_t,AFILE *);
 int aput_uint16_be(uint16_t,AFILE *);
 int aput_uint16_le(uint16_t,AFILE *);
 int aput_int16_be(int16_t,AFILE *);
+int aput_int16_be_checked(int32_t,AFILE *);
 int aput_int16_le(int16_t,AFILE *);
 
 int aput_uint24_be(uint32_t,AFILE *);

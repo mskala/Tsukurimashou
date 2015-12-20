@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 4522 2015-12-20 10:44:17Z mskala $ */
+/* $Id: cvexport.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -45,11 +45,11 @@ static void EpsGeneratePreview(AFILE *eps,SplineChar *sc,int layer,
    /* Try for a preview that fits within a 72x72 box */
    if (b->maxx==b->minx || b->maxy==b->miny)
       return;
-   scale=72.0 / (b->maxx - b->minx);
-   temp=72.0 / (b->maxy - b->miny);
-   if (temp < scale)
+   scale=72.0/(b->maxx-b->minx);
+   temp=72.0/(b->maxy-b->miny);
+   if (temp<scale)
       scale=temp;
-   pixelsize=rint((sc->parent->ascent + sc->parent->descent) * scale);
+   pixelsize=rint((sc->parent->ascent+sc->parent->descent) * scale);
 
    depth=4;
    bdfc=SplineCharFreeTypeRasterizeNoHints(sc, layer, pixelsize, 72, 4);
@@ -59,13 +59,13 @@ static void EpsGeneratePreview(AFILE *eps,SplineChar *sc,int layer,
       return;
 
    afprintf(eps, "%%%%BeginPreview: %d %d %d %d\n",
-	   bdfc->xmax - bdfc->xmin + 1, bdfc->ymax - bdfc->ymin + 1, depth,
-	   bdfc->ymax - bdfc->ymin + 1);
-   for (i=0; i <= bdfc->ymax - bdfc->ymin; ++i) {
+	   bdfc->xmax-bdfc->xmin+1, bdfc->ymax-bdfc->ymin+1, depth,
+	   bdfc->ymax-bdfc->ymin+1);
+   for (i=0; i <= bdfc->ymax-bdfc->ymin; ++i) {
       aputc('%', eps);
-      for (j=0; j <= bdfc->xmax - bdfc->xmin; ++j)
-	 afprintf(eps, "%X", bdfc->bitmap[i * bdfc->bytes_per_line + j]);
-      if (!((bdfc->xmax - bdfc->xmin) & 1))
+      for (j=0; j <= bdfc->xmax-bdfc->xmin; ++j)
+	 afprintf(eps, "%X", bdfc->bitmap[i * bdfc->bytes_per_line+j]);
+      if (!((bdfc->xmax-bdfc->xmin) & 1))
 	 aputc('0', eps);
       aputc('\n', eps);
    }
@@ -89,11 +89,11 @@ int _ExportEPS(AFILE *eps, SplineChar * sc, int layer, int preview) {
    time(&now);
    tm=localtime(&now);
    afprintf(eps, "%%%%CreationDate: %d:%02d %d-%d-%d\n", tm->tm_hour,
-	   tm->tm_min, tm->tm_mday, tm->tm_mon + 1, 1900 + tm->tm_year);
+	   tm->tm_min, tm->tm_mday, tm->tm_mon+1, 1900+tm->tm_year);
    if (sc->parent->multilayer) {
       int ly, had_grad=0, had_pat=0;
 
-      for (ly=ly_fore; ly < sc->layer_cnt; ++ly) {
+      for (ly=ly_fore; ly<sc->layer_cnt; ++ly) {
 	 if (sc->layers[ly].fill_brush.gradient != NULL
 	     || sc->layers[ly].stroke_pen.brush.gradient != NULL) {
 	    had_grad=true;
@@ -153,7 +153,7 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
 
    SFUntickAll(sc->parent);
 
-   afprintf(pdf, "%%PDF-1.4\n%%\201\342\202\203\n");	/* Header comment + binary comment */
+   afprintf(pdf, "%%PDF-1.4\n%%\201\342\202\203\n");	/* Header comment+binary comment */
    /* Every document contains a catalog which points to a page tree, which */
    /*  in our case, points to a single page */
    objlocs[1]=aftell(pdf);
@@ -192,7 +192,7 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
       afprintf(pdf, "%g w S\n", (double) sc->parent->strokewidth);
    else
       afprintf(pdf, "f\n");
-   streamlength=aftell(pdf) - streamstart;
+   streamlength=aftell(pdf)-streamstart;
    afprintf(pdf, " endstream\n");
    afprintf(pdf, "endobj\n");
    objlocs[5]=aftell(pdf);
@@ -208,7 +208,7 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
    time(&now);
    tm=localtime(&now);
    afprintf(pdf, "    /CreationDate (D:%04d%02d%02d%02d%02d%02d",
-	   1900 + tm->tm_year, tm->tm_mon + 1, tm->tm_mday,
+	   1900+tm->tm_year, tm->tm_mon+1, tm->tm_mday,
 	   tm->tm_hour, tm->tm_min, tm->tm_sec);
 #ifdef _NO_TZSET
    afprintf(pdf, "Z)\n");
@@ -217,12 +217,12 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
    if (timezone==0)
       afprintf(pdf, "Z)\n");
    else {
-      if (timezone < 0)		/* fprintf bug - this is a kludge to print +/- in front of a %02d-padded value */
+      if (timezone<0)		/* fprintf bug - this is a kludge to print +/- in front of a %02d-padded value */
 	 afprintf(pdf, "-");
       else
 	 afprintf(pdf, "+");
-      afprintf(pdf, "%02d'%02d')\n", (int) (timezone / 3600),
-	      (int) (timezone / 60 - (timezone / 3600) * 60));
+      afprintf(pdf, "%02d'%02d')\n", (int) (timezone/3600),
+	      (int) (timezone/60-(timezone/3600) * 60));
    }
 #endif
    afprintf(pdf, "    /Title (%s from %s)\n", sc->name, sc->parent->fontname);
@@ -251,7 +251,7 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
    afprintf(pdf, "xref\n");
    afprintf(pdf, " 0 %d\n", nextobj);
    afprintf(pdf, "0000000000 65535 f \n");
-   for (i=1; i < nextobj; ++i)
+   for (i=1; i<nextobj; ++i)
       afprintf(pdf, "%010d %05d n \n", (int) objlocs[i], 0);
    afprintf(pdf, "trailer\n");
    afprintf(pdf, " <<\n");
@@ -293,7 +293,7 @@ int _ExportPlate(AFILE *plate, SplineChar * sc, int layer) {
    /* Output closed contours first, then open. Plate files can only handle */
    /*  one open contour (I think) and it must be at the end */
    afprintf(plate, "(plate\n");
-   for (do_open=0; do_open < 2; ++do_open) {
+   for (do_open=0; do_open<2; ++do_open) {
       for (ss=sc->layers[layer].splines; ss != NULL; ss=ss->next) {
 	 if (ss->first->prev==NULL) {
 	    if (!do_open || ss->first->next==NULL)
@@ -311,7 +311,7 @@ int _ExportPlate(AFILE *plate, SplineChar * sc, int layer) {
 	    else
 	       afprintf(plate, "  (%c ", spiros[i].ty & ~0x80);
 	    /* Raph's plate files have the baseline way up in the air */
-	    afprintf(plate, "%g %g)\n", spiros[i].x, 800. - spiros[i].y);
+	    afprintf(plate, "%g %g)\n", spiros[i].x, 800.-spiros[i].y);
 	 }
 	 if (ss->first->prev != NULL)
 	    afprintf(plate, "  (z)\n");
@@ -364,14 +364,14 @@ static int ExportGlif(char *filename,SplineChar *sc,int layer) {
 
 static void FigDumpPt(AFILE *fig,BasePoint *me,double scale,double ascent) {
    afprintf(fig, "%d %d ", (int) rint(me->x * scale),
-	   (int) rint(ascent - me->y * scale));
+	   (int) rint(ascent-me->y * scale));
 }
 
 static void FigSplineSet(AFILE *fig,SplineSet *spl,int spmax,int asc) {
    SplinePoint *sp;
    int cnt;
-   double scale=7 * 1200.0 / spmax;
-   double ascent=11 * 1200 * asc / spmax;
+   double scale=7 * 1200.0/spmax;
+   double ascent=11 * 1200 * asc/spmax;
 
    while (spl != NULL) {
       /* type=3, SPline; sub_type=3, closed interpreted; linestyle=0(solid); thickness=1 */
@@ -397,7 +397,7 @@ static void FigSplineSet(AFILE *fig,SplineSet *spl,int spmax,int asc) {
 	 ++cnt;
       }
       afprintf(fig, "3 %d 0 1 0 0 0 0 -1 0.0 0 0 0 %d\n",
-	      spl->first->prev==NULL ? 4 : 5, cnt);
+	      spl->first->prev==NULL?4:5, cnt);
       /* line of coordinates pairs */
       sp=spl->first;
       aputc('\t', fig);
@@ -456,7 +456,7 @@ static int ExportFig(char *filename,SplineChar *sc,int layer) {
    AFILE *fig;
    RefChar *rf;
    int ret;
-   int spmax=sc->parent->ascent + sc->parent->descent;
+   int spmax=sc->parent->ascent+sc->parent->descent;
 
    /* This is by no means perfect. but it is a reasonable approximation */
 
@@ -498,14 +498,14 @@ static int BCExportXBM(char *filename, BDFChar * bdfc, int format) {
    if (!bdfc->byte_data) {
       BCRegularizeBitmap(bdfc);
       /* Sigh. Bitmaps use a different defn of set than images do. make it consistant */
-      tot=bdfc->bytes_per_line * (bdfc->ymax - bdfc->ymin + 1);
-      for (pt=bdfc->bitmap, end=pt + tot; pt < end; *pt++ ^= 0xff);
+      tot=bdfc->bytes_per_line * (bdfc->ymax-bdfc->ymin+1);
+      for (pt=bdfc->bitmap, end=pt+tot; pt<end; *pt++ ^= 0xff);
 
       base.image_type=it_mono;
       base.data=bdfc->bitmap;
       base.bytes_per_line=bdfc->bytes_per_line;
-      base.width=bdfc->xmax - bdfc->xmin + 1;
-      base.height=bdfc->ymax - bdfc->ymin + 1;
+      base.width=bdfc->xmax-bdfc->xmin+1;
+      base.height=bdfc->ymax-bdfc->ymin+1;
       base.trans=-1;
       if (format==0)
 	 ret=!GImageWriteXbm(&gi, filename);
@@ -516,22 +516,22 @@ static int BCExportXBM(char *filename, BDFChar * bdfc, int format) {
       else
 	 ret=GImageWriteBmp(&gi, filename);
       /* And back to normal */
-      for (pt=bdfc->bitmap, end=pt + tot; pt < end; *pt++ ^= 0xff);
+      for (pt=bdfc->bitmap, end=pt+tot; pt<end; *pt++ ^= 0xff);
    } else {
       BCRegularizeGreymap(bdfc);
       base.image_type=it_index;
       base.data=bdfc->bitmap;
       base.bytes_per_line=bdfc->bytes_per_line;
-      base.width=bdfc->xmax - bdfc->xmin + 1;
-      base.height=bdfc->ymax - bdfc->ymin + 1;
+      base.width=bdfc->xmax-bdfc->xmin+1;
+      base.height=bdfc->ymax-bdfc->ymin+1;
       base.clut=&clut;
       clut.clut_len=1 << bdfc->depth;
       clut.is_grey=true;
       clut.trans_index=base.trans=-1;
-      scale=255 / ((1 << bdfc->depth) - 1);
+      scale=255/((1 << bdfc->depth)-1);
       scale=COLOR_CREATE(scale, scale, scale);
-      for (i=0; i < 1 << bdfc->depth; ++i)
-	 clut.clut[(1 << bdfc->depth) - 1 - i]=i * scale;
+      for (i=0; i<1 << bdfc->depth; ++i)
+	 clut.clut[(1 << bdfc->depth)-1-i]=i * scale;
 #ifndef _NO_LIBPNG
       if (format==2)
 	 ret=GImageWritePng(&gi, filename, false);
@@ -544,45 +544,45 @@ static int BCExportXBM(char *filename, BDFChar * bdfc, int format) {
 
 static void MakeExportName(char *buffer,int blen,char *format_spec,
 			   SplineChar * sc, EncMap * map) {
-   char *end=buffer + blen - 3;
+   char *end=buffer+blen-3;
    char *pt, *bend;
    char unicode[8];
    int ch;
 
-   while (*format_spec && buffer < end) {
+   while (*format_spec && buffer<end) {
       if (*format_spec != '%')
 	 *buffer++=*format_spec++;
       else {
 	 ++format_spec;
 	 ch=*format_spec++;
-	 if ((bend=buffer + 40) > end)
+	 if ((bend=buffer+40)>end)
 	    bend=end;
 	 if (ch=='n') {
-#if defined( __CygWin ) || defined(__Mac)
+#if defined(__CygWin ) || defined(__Mac)
 	    /* Windows file systems are not case conscious */
 	    /*  nor is the default mac filesystem */
-	    for (pt=sc->name; *pt != '\0' && buffer < bend;) {
+	    for (pt=sc->name; *pt != '\0' && buffer<bend;) {
 	       if (isupper(*pt))
 		  *buffer++='$';
 	       *buffer++=*pt++;
 	    }
 #else
-	    for (pt=sc->name; *pt != '\0' && buffer < bend;)
+	    for (pt=sc->name; *pt != '\0' && buffer<bend;)
 	       *buffer++=*pt++;
 #endif
 	 } else if (ch=='f') {
-	    for (pt=sc->parent->fontname; *pt != '\0' && buffer < bend;)
+	    for (pt=sc->parent->fontname; *pt != '\0' && buffer<bend;)
 	       *buffer++=*pt++;
 	 } else if (ch=='u' || ch=='U') {
 	    if (sc->unicodeenc==-1)
 	       strcpy(unicode, "xxxx");
 	    else
-	       sprintf(unicode, ch=='u' ? "%04x" : "%04X", sc->unicodeenc);
-	    for (pt=unicode; *pt != '\0' && buffer < bend;)
+	       sprintf(unicode, ch=='u'?"%04x":"%04X", sc->unicodeenc);
+	    for (pt=unicode; *pt != '\0' && buffer<bend;)
 	       *buffer++=*pt++;
 	 } else if (ch=='e') {
 	    sprintf(unicode, "%d", (int) map->backmap[sc->orig_pos]);
-	    for (pt=unicode; *pt != '\0' && buffer < bend;)
+	    for (pt=unicode; *pt != '\0' && buffer<bend;)
 	       *buffer++=*pt++;
 	 } else
 	    *buffer++=ch;
@@ -595,7 +595,7 @@ void ScriptExport(SplineFont *sf, BDFFont * bdf, int format, int gid,
 		  char *format_spec, EncMap * map) {
    char buffer[100];
    SplineChar *sc=sf->glyphs[gid];
-   BDFChar *bc=bdf != NULL ? bdf->glyphs[gid] : NULL;
+   BDFChar *bc=bdf != NULL?bdf->glyphs[gid]:NULL;
    int good=true;
 
    if (sc==NULL)
@@ -616,7 +616,7 @@ void ScriptExport(SplineFont *sf, BDFFont * bdf, int format, int gid,
    else if (format==5)
       good=ExportPlate(buffer, sc, ly_fore);
    else if (bc != NULL)
-      good=BCExportXBM(buffer, bc, format - 6);
+      good=BCExportXBM(buffer, bc, format-6);
    if (!good)
       ErrorMsg(2,"Save failed\n");
 }

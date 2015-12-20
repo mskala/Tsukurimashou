@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: cvundoes.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -63,7 +63,7 @@ static uint8_t *bmpcopy(uint8_t *bitmap,int bytes_per_line,int lines) {
 RefChar *RefCharsCopyState(SplineChar * sc, int layer) {
    RefChar *head=NULL, *last=NULL, *new, *crefs;
 
-   if (layer < 0 || sc->layers[layer].refs==NULL)
+   if (layer<0 || sc->layers[layer].refs==NULL)
       return (NULL);
    for (crefs=sc->layers[layer].refs; crefs != NULL; crefs=crefs->next) {
       new=RefCharCreate();
@@ -87,12 +87,12 @@ static SplinePointList *RefCharsCopyUnlinked(SplinePointList *sofar,
    SplinePointList *last=NULL, *new;
    int l;
 
-   if (layer < 0 || sc->layers[layer].refs==NULL)
+   if (layer<0 || sc->layers[layer].refs==NULL)
       return (sofar);
    if (sofar != NULL)
       for (last=sofar; last->next != NULL; last=last->next);
    for (crefs=sc->layers[layer].refs; crefs != NULL; crefs=crefs->next) {
-      for (l=0; l < crefs->layer_cnt; ++l) {
+      for (l=0; l<crefs->layer_cnt; ++l) {
 	 new=SplinePointListCopy(crefs->layers[l].splines);
 	 if (sofar != NULL) {
 	    last->next=new;
@@ -237,7 +237,7 @@ static void FixupRefChars(SplineChar *sc,RefChar *urefs,int layer) {
 
 static void FixupImages(SplineChar *sc,ImageList *uimgs,int layer) {
    ImageList *cimgs =
-      layer==-1 ? sc->parent->grid.images : sc->layers[layer].images, *cend,
+      layer==-1?sc->parent->grid.images:sc->layers[layer].images, *cend,
       *cprev, *unext, *cnext;
 
    cprev=NULL;
@@ -462,7 +462,7 @@ int CVLayer(CharViewBase * cv) {
    if (cv->drawmode==dm_grid)
       return (ly_grid);
 
-   return (cv->layerheads[cv->drawmode] - cv->sc->layers);
+   return (cv->layerheads[cv->drawmode]-cv->sc->layers);
 }
 
 /* This routine does not allow for undoes in scripting */
@@ -476,11 +476,11 @@ Undoes *SCPreserveState(SplineChar * sc, int dohints) {
    int i;
 
    if (sc->parent->multilayer)
-      for (i=ly_fore + 1; i < sc->layer_cnt; ++i)
+      for (i=ly_fore+1; i<sc->layer_cnt; ++i)
 	 SCPreserveLayer(sc, i, false);
    Undoes *ret=SCPreserveLayer(sc, ly_fore, dohints);
 
-/*     collabclient_SCPreserveStateCalled( sc ); */
+/*     collabclient_SCPreserveStateCalled(sc ); */
    return (ret);
 }
 
@@ -540,7 +540,7 @@ static void SCUndoAct(SplineChar *sc,int layer,Undoes *undo) {
      case ut_statehint:
      case ut_statename:{
 	   Layer *head =
-	      layer==ly_grid ? &sc->parent->grid : &sc->layers[layer];
+	      layer==ly_grid?&sc->parent->grid:&sc->layers[layer];
 	   SplinePointList *spl=head->splines;
 
 	   if (layer==ly_fore) {
@@ -749,7 +749,7 @@ int getAdobeEnc(char *name) {
    extern char *AdobeStandardEncoding[256];
    int i;
 
-   for (i=0; i < 256; ++i)
+   for (i=0; i<256; ++i)
       if (strcmp(name, AdobeStandardEncoding[i])==0)
 	 break;
    if (i==256)
@@ -776,7 +776,7 @@ static Undoes *SCCopyAllLayer(SplineChar *sc,enum fvcopy_type full,
       cur->u.state.width=sc->width;
       cur->u.state.vwidth=sc->vwidth;
       if (full==ct_fullcopy || full==ct_unlinkrefs) {
-	 cur->undotype=copymetadata ? ut_statename : ut_statehint;
+	 cur->undotype=copymetadata?ut_statename:ut_statehint;
 	 cur->u.state.splines =
 	    SplinePointListCopy(sc->layers[layer].splines);
 	 if (full==ct_unlinkrefs)
@@ -802,14 +802,14 @@ static Undoes *SCCopyAllLayer(SplineChar *sc,enum fvcopy_type full,
 	    cur->u.state.possub=NULL;
 	 }
       } else {			/* Or just make a reference */
-	 cur->undotype=full==ct_reference ? ut_state : ut_statelookup;
+	 cur->undotype=full==ct_reference?ut_state:ut_statelookup;
 	 cur->u.state.refs=ref=RefCharCreate();
 	 ref->unicode_enc=sc->unicodeenc;
 	 ref->orig_pos=sc->orig_pos;
 	 ref->adobe_enc=getAdobeEnc(sc->name);
 	 ref->transform[0]=ref->transform[3]=1.0;
       }
-      if (layer < sc->layer_cnt) {
+      if (layer<sc->layer_cnt) {
 	 cur->u.state.images=ImageListCopy(sc->layers[layer].images);
 	 BrushCopy(&cur->u.state.fill_brush, &sc->layers[layer].fill_brush,
 		   NULL);
@@ -836,7 +836,7 @@ static Undoes *SCCopyAll(SplineChar *sc,int layer,enum fvcopy_type full) {
 	 ret=SCCopyAllLayer(sc, full, ly_fore);
       } else {
 	 ret->undotype=ut_layers;
-	 for (layer=ly_fore; layer < sc->layer_cnt; ++layer) {
+	 for (layer=ly_fore; layer<sc->layer_cnt; ++layer) {
 	    cur=SCCopyAllLayer(sc, full, layer);
 	    if (ret->u.multiple.mult==NULL)
 	       ret->u.multiple.mult=cur;
@@ -873,14 +873,14 @@ static SplineChar *FindCharacter(SplineFont *into,SplineFont *from,
    if (fromsc != NULL)
       *fromsc=NULL;
 
-   if (from != NULL && rf->orig_pos < from->glyphcnt
+   if (from != NULL && rf->orig_pos<from->glyphcnt
        && from->glyphs[rf->orig_pos] != NULL) {
       fromname=from->glyphs[rf->orig_pos]->name;
       if (fromsc != NULL)
 	 *fromsc=from->glyphs[rf->orig_pos];
    }
 
-   if (rf->orig_pos < into->glyphcnt && into->glyphs[rf->orig_pos] != NULL &&
+   if (rf->orig_pos<into->glyphcnt && into->glyphs[rf->orig_pos] != NULL &&
        ((into->glyphs[rf->orig_pos]->unicodeenc==rf->unicode_enc
 	 && rf->unicode_enc != -1) || (rf->unicode_enc==-1
 				       && fromname != NULL
@@ -933,7 +933,7 @@ static void PasteNonExistantRefCheck(SplineChar *sc,Undoes *paster,
 	    name="<Unknown>";
 	 else
 	    name =
-	       StdGlyphName(buf, ref->unicode_enc, ui_none, (NameList *) - 1);
+	       StdGlyphName(buf, ref->unicode_enc, ui_none, (NameList *)-1);
       }
    } else {
       if (!(*refstate & 0x3)) {
@@ -960,7 +960,7 @@ static double PasteFigureScale(SplineFont *newsf,SplineFont *oldsf) {
    if (!SFIsActive(oldsf))	/* Font we copied from has been closed */
       return (1.0);
 
-   return ((newsf->ascent + newsf->descent) / (double) (oldsf->ascent +
+   return ((newsf->ascent+newsf->descent)/(double) (oldsf->ascent +
 							oldsf->descent));
 }
 
@@ -1053,7 +1053,7 @@ static int InstrsSameParent(SplineChar *sc,SplineFont *copied_from) {
 int SCWasEmpty(SplineChar * sc, int skip_this_layer) {
    int i;
 
-   for (i=ly_fore; i < sc->layer_cnt; ++i)
+   for (i=ly_fore; i<sc->layer_cnt; ++i)
       if (i != skip_this_layer && !sc->layers[i].background) {
 	 if (sc->layers[i].refs != NULL)
 	    return (false);
@@ -1101,7 +1101,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 	   && sc->layers[ly_fore].refs==NULL;
 	if (!pasteinto) {
 	   if (!sc->layers[layer].background &&
-	       SCWasEmpty(sc, pasteinto==0 ? layer : -1)) {
+	       SCWasEmpty(sc, pasteinto==0?layer:-1)) {
 	      if (!sc->parent->onlybitmaps)
 		 SCSynchronizeWidth(sc, width, sc->width, fv);
 	      sc->vwidth=vwidth;
@@ -1134,7 +1134,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 	      sc->vwidth += vwidth;
 	   } else if (SCRightToLeft(sc)) {
 	      xoff=0;
-	      SCSynchronizeWidth(sc, sc->width + width, sc->width, fv);
+	      SCSynchronizeWidth(sc, sc->width+width, sc->width, fv);
 	      transform[0]=transform[3]=1;
 	      transform[1]=transform[2]=transform[5]=0;
 	      transform[4]=width;
@@ -1147,7 +1147,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 	      }
 	   } else {
 	      xoff=sc->width;
-	      SCSynchronizeWidth(sc, sc->width + width, sc->width, fv);
+	      SCSynchronizeWidth(sc, sc->width+width, sc->width, fv);
 	   }
 	} else if (pasteinto==3 && trans != NULL) {
 	   xoff=trans[4];
@@ -1239,7 +1239,7 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 	if (paster->undotype==ut_statename) {
 	   SCSetMetaData(sc, paster->u.state.charname,
 			 paster->u.state.unicodeenc ==
-			 0xffff ? -1 : paster->u.state.unicodeenc,
+			 0xffff?-1:paster->u.state.unicodeenc,
 			 paster->u.state.comment);
 	   if (SFIsActive(paster->copied_from)) {
 	      /* Only copy PSTs if we can find and translate their lookups */
@@ -1264,13 +1264,13 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
 				     paster->copied_from, refs, NULL);
 		 else {
 		    ErrorMsg(2,"Cannot paste a reference here.\n");
-		    rsc=(SplineChar *) - 1;
+		    rsc=(SplineChar *)-1;
 		 }
 	      } else
 		 rsc =
 		    FindCharacter(sc->parent, paster->copied_from, refs,
 				  NULL);
-	      if (rsc==(SplineChar *) - 1)
+	      if (rsc==(SplineChar *)-1)
 		 /* Error above */ ;
 	      else if (rsc != NULL && SCDependsOnSC(rsc, sc))
 		 ErrorMsg(2,"Self-referential glyph.\n");
@@ -1315,14 +1315,14 @@ static void _PasteToSC(SplineChar *sc,Undoes *paster,FontViewBase *fv,
      case ut_rbearing:
 	SCPreserveWidth(sc);
 	SplineCharFindBounds(sc, &bb);
-	SCSynchronizeWidth(sc, bb.maxx + paster->u.rbearing, sc->width, fv);
+	SCSynchronizeWidth(sc, bb.maxx+paster->u.rbearing, sc->width, fv);
 	SCCharChangedUpdate(sc, layer, true);
 	break;
      case ut_lbearing:
 	SplineCharFindBounds(sc, &bb);
 	transform[0]=transform[3]=1.0;
 	transform[1]=transform[2]=transform[5]=0;
-	transform[4]=paster->u.lbearing - bb.minx;
+	transform[4]=paster->u.lbearing-bb.minx;
 	if (transform[4] != 0)
 	   FVTrans(fv, sc, transform, NULL, false);
 	/* FVTrans will preserve the state and update the chars */
@@ -1342,7 +1342,7 @@ static void PasteToSC(SplineChar *sc,int layer,Undoes *paster,
 	   pl=pl->next, ++lc);
       if (!pasteinto) {
 	 start=ly_fore;
-	 for (layer=ly_fore; layer < sc->layer_cnt; ++layer) {
+	 for (layer=ly_fore; layer<sc->layer_cnt; ++layer) {
 	    SplinePointListsFree(sc->layers[layer].splines);
 	    sc->layers[layer].splines=NULL;
 	    ImageListsFree(sc->layers[layer].images);
@@ -1359,15 +1359,15 @@ static void PasteToSC(SplineChar *sc,int layer,Undoes *paster,
 	 }
       } else
 	 start=sc->layer_cnt;
-      if (start + lc > sc->layer_cnt) {
-	 sc->layers=realloc(sc->layers, (start + lc) * sizeof(Layer));
-	 for (layer=sc->layer_cnt; layer < start + lc; ++layer)
+      if (start+lc>sc->layer_cnt) {
+	 sc->layers=realloc(sc->layers, (start+lc) * sizeof(Layer));
+	 for (layer=sc->layer_cnt; layer<start+lc; ++layer)
 	    LayerDefault(&sc->layers[layer]);
-	 sc->layer_cnt=start + lc;
+	 sc->layer_cnt=start+lc;
       }
       for (lc=0, pl=paster->u.multiple.mult; pl != NULL;
 	   pl=pl->next, ++lc)
-	 _PasteToSC(sc, pl, fv, pasteinto, start + lc, trans, mc, refstate,
+	 _PasteToSC(sc, pl, fv, pasteinto, start+lc, trans, mc, refstate,
 		    already_complained);
    } else if (paster->undotype==ut_layers) {
       Undoes *pl;
@@ -1391,33 +1391,33 @@ static void DevTabInto(struct vr *vr) {
    if (adjust.xadjust.corrections != NULL) {
       adjust.xadjust.corrections =
 	 malloc(adjust.xadjust.last_pixel_size -
-		adjust.xadjust.first_pixel_size + 1);
+		adjust.xadjust.first_pixel_size+1);
       memcpy(adjust.xadjust.corrections, vr->adjust->xadjust.corrections,
 	     adjust.xadjust.last_pixel_size -
-	     adjust.xadjust.first_pixel_size + 1);
+	     adjust.xadjust.first_pixel_size+1);
    }
    if (adjust.yadjust.corrections != NULL) {
       adjust.yadjust.corrections =
 	 malloc(adjust.yadjust.last_pixel_size -
-		adjust.yadjust.first_pixel_size + 1);
+		adjust.yadjust.first_pixel_size+1);
       memcpy(adjust.yadjust.corrections, vr->adjust->yadjust.corrections,
 	     adjust.yadjust.last_pixel_size -
-	     adjust.yadjust.first_pixel_size + 1);
+	     adjust.yadjust.first_pixel_size+1);
    }
    if (adjust.xadv.corrections != NULL) {
       adjust.xadv.corrections =
-	 malloc(adjust.xadv.last_pixel_size - adjust.xadv.first_pixel_size +
+	 malloc(adjust.xadv.last_pixel_size-adjust.xadv.first_pixel_size +
 		1);
       memcpy(adjust.xadv.corrections, vr->adjust->xadv.corrections,
-	     adjust.xadv.last_pixel_size - adjust.xadv.first_pixel_size +
+	     adjust.xadv.last_pixel_size-adjust.xadv.first_pixel_size +
 	     1);
    }
    if (adjust.yadv.corrections != NULL) {
       adjust.yadv.corrections =
-	 malloc(adjust.yadv.last_pixel_size - adjust.yadv.first_pixel_size +
+	 malloc(adjust.yadv.last_pixel_size-adjust.yadv.first_pixel_size +
 		1);
       memcpy(adjust.yadv.corrections, vr->adjust->yadv.corrections,
-	     adjust.yadv.last_pixel_size - adjust.yadv.first_pixel_size +
+	     adjust.yadv.last_pixel_size-adjust.yadv.first_pixel_size +
 	     1);
    }
 }
@@ -1473,17 +1473,17 @@ static void APInto(SplineChar *sc,AnchorPoint *ap,AnchorPoint *fromap,
    }
    if (fromap->xadjust.corrections != NULL) {
       ap->xadjust.corrections =
-	 malloc(ap->xadjust.last_pixel_size - ap->xadjust.first_pixel_size +
+	 malloc(ap->xadjust.last_pixel_size-ap->xadjust.first_pixel_size +
 		1);
       memcpy(ap->xadjust.corrections, fromap->xadjust.corrections,
-	     ap->xadjust.last_pixel_size - ap->xadjust.first_pixel_size + 1);
+	     ap->xadjust.last_pixel_size-ap->xadjust.first_pixel_size+1);
    }
    if (fromap->yadjust.corrections != NULL) {
       ap->yadjust.corrections =
-	 malloc(ap->yadjust.last_pixel_size - ap->yadjust.first_pixel_size +
+	 malloc(ap->yadjust.last_pixel_size-ap->yadjust.first_pixel_size +
 		1);
       memcpy(ap->yadjust.corrections, fromap->yadjust.corrections,
-	     ap->yadjust.last_pixel_size - ap->yadjust.first_pixel_size + 1);
+	     ap->yadjust.last_pixel_size-ap->yadjust.first_pixel_size+1);
    }
 }
 
@@ -1565,8 +1565,8 @@ static void SCPasteLookups(SplineChar *sc,SplineChar *fromsc,
       changed=true;
    }
 
-   for (isv=0; isv < 2; ++isv) {
-      for (fromkp=isv ? fromsc->vkerns : fromsc->kerns; fromkp != NULL;
+   for (isv=0; isv<2; ++isv) {
+      for (fromkp=isv?fromsc->vkerns:fromsc->kerns; fromkp != NULL;
 	   fromkp=fromkp->next) {
 	 otl=fromkp->subtable->lookup;
 	 for (i=0; list[i] != NULL && list[i] != otl; ++i);
@@ -1582,7 +1582,7 @@ static void SCPasteLookups(SplineChar *sc,SplineChar *fromsc,
 	       SFGetChar(sc->parent, fromkp->sc->unicodeenc,
 			 fromkp->sc->name);
 	 if (othersc != NULL) {
-	    for (kp=isv ? sc->vkerns : sc->kerns; kp != NULL; kp=kp->next) {
+	    for (kp=isv?sc->vkerns:sc->kerns; kp != NULL; kp=kp->next) {
 	       if (kp->subtable==sub && kp->sc==othersc)
 		  break;
 	    }
@@ -1593,9 +1593,9 @@ static void SCPasteLookups(SplineChar *sc,SplineChar *fromsc,
       if (backpairlist==NULL)
 	 continue;
       fromsf=fromsc->parent;
-      for (gid=fromsf->glyphcnt - 1; gid >= 0; --gid)
+      for (gid=fromsf->glyphcnt-1; gid >= 0; --gid)
 	 if ((test=fromsf->glyphs[gid]) != NULL) {
-	    for (fromkp=isv ? test->vkerns : test->kerns; fromkp != NULL;
+	    for (fromkp=isv?test->vkerns:test->kerns; fromkp != NULL;
 		 fromkp=fromkp->next) {
 	       if (fromkp->sc != fromsc)
 		  continue;
@@ -1611,7 +1611,7 @@ static void SCPasteLookups(SplineChar *sc,SplineChar *fromsc,
 		  test2=SFGetChar(sc->parent, test->unicodeenc, test->name);
 	       if (test2==NULL || sub==NULL)
 		  continue;
-	       for (kp=isv ? test2->vkerns : test2->kerns; kp != NULL;
+	       for (kp=isv?test2->vkerns:test2->kerns; kp != NULL;
 		    kp=kp->next) {
 		  if (kp->subtable==sub && kp->sc==sc)
 		     break;
@@ -1681,15 +1681,15 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
       return (NULL);
    }
    ftot=cnt;
-   choices=malloc((cnt + bcnt + 2) * sizeof(char *));
-   sel=calloc(cnt + bcnt + 1, 1);
+   choices=malloc((cnt+bcnt+2) * sizeof(char *));
+   sel=calloc(cnt+bcnt+1, 1);
    list1=malloc(cnt * sizeof(OTLookup *));
    if (bcnt==0) {
       choices[cnt]=NULL;
       list2=NULL;
    } else {
       choices[cnt]=fastrdup("-");
-      choices[bcnt + cnt + 1]=NULL;
+      choices[bcnt+cnt+1]=NULL;
       list2=malloc(bcnt * sizeof(OTLookup *));
    }
 
@@ -1720,10 +1720,10 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 	      /* GT:  refers to. The "%s" will be filled in with the lookup name */
 	      char *format="Second glyph of %s";
 	      char *space =
-		malloc(strlen(format) + strlen(otl->lookup_name) + 1);
+		malloc(strlen(format)+strlen(otl->lookup_name)+1);
 	      sprintf(space, format, otl->lookup_name);
 	      list2[bcnt]=otl;
-	      choices[ftot + 1 + bcnt++]=space;
+	      choices[ftot+1+bcnt++]=space;
 	   }
 	}
      }
@@ -1735,26 +1735,26 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
    ret=-1;
    list=NULL;
    if (ret >= 0) {
-      for (i=cnt=0; i < ftot; ++i) {
+      for (i=cnt=0; i<ftot; ++i) {
 	 if (sel[i])
 	    ++cnt;
       }
-      list=malloc((cnt + 1) * sizeof(OTLookup *));
-      for (i=cnt=0; i < ftot; ++i) {
+      list=malloc((cnt+1) * sizeof(OTLookup *));
+      for (i=cnt=0; i<ftot; ++i) {
 	 if (sel[i])
 	    list[cnt++]=list1[i];
       }
       list[cnt]=NULL;
       blist=NULL;
       if (bcnt != 0) {
-	 for (i=cnt=0; i < bcnt; ++i) {
-	    if (sel[i + ftot + 1])
+	 for (i=cnt=0; i<bcnt; ++i) {
+	    if (sel[i+ftot+1])
 	       ++cnt;
 	 }
 	 if (cnt != 0) {
-	    blist=malloc((cnt + 1) * sizeof(OTLookup *));
-	    for (i=cnt=0; i < bcnt; ++i) {
-	       if (sel[i + ftot + 1])
+	    blist=malloc((cnt+1) * sizeof(OTLookup *));
+	    for (i=cnt=0; i<bcnt; ++i) {
+	       if (sel[i+ftot+1])
 		  blist[cnt++]=list2[i];
 	    }
 	    blist[cnt]=NULL;
@@ -1795,7 +1795,7 @@ static Undoes *BCCopyAll(BDFChar *bc,int pixelsize,int depth,
 	 cur->u.bmpstate.ymax=bc->ymax;
 	 cur->u.bmpstate.bytes_per_line=bc->bytes_per_line;
 	 cur->u.bmpstate.bitmap=bmpcopy(bc->bitmap, bc->bytes_per_line,
-					  bc->ymax - bc->ymin + 1);
+					  bc->ymax-bc->ymin+1);
 	 cur->u.bmpstate.selection=BDFFloatCopy(bc->selection);
 
 	 for (head=bc->refs; head != NULL; head=head->next) {
@@ -1831,7 +1831,7 @@ static void _PasteToBC(BDFChar *bc,int pixelsize,int depth,
 	BCFlattenFloat(bc);
 	if (clearfirst)
 	   memset(bc->bitmap, '\0',
-		  bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
+		  bc->bytes_per_line * (bc->ymax-bc->ymin+1));
 	bc->selection =
 	   BDFFloatConvert(paster->u.bmpstate.selection, depth,
 			   paster->u.bmpstate.depth);
@@ -1847,7 +1847,7 @@ static void _PasteToBC(BDFChar *bc,int pixelsize,int depth,
 	   }
 	   bc->refs=NULL;
 	   memset(bc->bitmap, 0,
-		  bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
+		  bc->bytes_per_line * (bc->ymax-bc->ymin+1));
 	   bc->width=paster->u.bmpstate.width;
 	}
 	BCPasteInto(bc, &paster->u.bmpstate, 0, 0, false, false);
@@ -1903,7 +1903,7 @@ void FVCopyAnchors(FontViewBase * fv) {
 
    CopyBufferFreeGrab();
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i]) {
 	 any=true;
 	 cur=chunkalloc(sizeof(Undoes));
@@ -1942,16 +1942,16 @@ void FVCopy(FontViewBase * fv, enum fvcopy_type fullcopy) {
    /* If fullcopy==ct_unlinkrefs copy the glyph, but unlink any references it contains */
    /*  so we end up with no references and a bunch of splines */
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i]) {
 	 any=true;
-	 sc=(gid=fv->map->map[i])==-1 ? NULL : fv->sf->glyphs[gid];
+	 sc=(gid=fv->map->map[i])==-1?NULL:fv->sf->glyphs[gid];
 	 if ((onlycopydisplayed && fv->active_bitmap==NULL)
 	     || fullcopy==ct_lookups) {
 	    cur=SCCopyAll(sc, fv->active_layer, fullcopy);
 	 } else if (onlycopydisplayed) {
 	    cur =
-	       BCCopyAll(gid==-1 ? NULL : fv->active_bitmap->glyphs[gid],
+	       BCCopyAll(gid==-1?NULL:fv->active_bitmap->glyphs[gid],
 			 fv->active_bitmap->pixelsize,
 			 BDFDepth(fv->active_bitmap), fullcopy);
 	 } else {
@@ -1959,7 +1959,7 @@ void FVCopy(FontViewBase * fv, enum fvcopy_type fullcopy) {
 	    bhead=NULL;
 	    for (bdf=fv->sf->bitmaps; bdf != NULL; bdf=bdf->next) {
 	       BDFChar *bdfc=gid==-1
-		  || gid >= bdf->glyphcnt ? NULL : bdf->glyphs[gid];
+		  || gid >= bdf->glyphcnt?NULL:bdf->glyphs[gid];
 	       bcur =
 		  BCCopyAll(bdfc, bdf->pixelsize, BDFDepth(bdf), fullcopy);
 	       if (bhead==NULL)
@@ -2000,7 +2000,7 @@ static BDFFont *BitmapCreateCheck(FontViewBase *fv,int *yestoall,int first,
 				  int pixelsize, int depth) {
    int yes=0;
    BDFFont *bdf=NULL;
-   if (*yestoall > 0 && first) {
+   if (*yestoall>0 && first) {
       yes=1;
    }
    if (yes==1 || *yestoall) {
@@ -2011,7 +2011,7 @@ static BDFFont *BitmapCreateCheck(FontViewBase *fv,int *yestoall,int first,
       else
 	 bdf =
 	    SplineFontAntiAlias(fv->sf, fv->active_layer, pixelsize,
-				1 << (depth / 2));
+				1 << (depth/2));
       bdf->next=fv->sf->bitmaps;
       fv->sf->bitmaps=bdf;
       fv->sf->changed=true;
@@ -2044,7 +2044,7 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,double trans[6]) {
    mc.sf_from=copybuffer.copied_from;
 
    cur=&copybuffer;
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i])
 	 ++cnt;
    if (cnt==0) {
@@ -2075,9 +2075,9 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,double trans[6]) {
 	   ++cnt, tot=tot->next);
       fv->selected=malloc(fv->map->enccount);
       memcpy(fv->selected, oldsel, fv->map->enccount);
-      for (i=0; i < fv->map->enccount && !fv->selected[i]; ++i);
-      for (j=0; j < cnt && i + j < fv->map->enccount; ++j)
-	 fv->selected[i + j]=1;
+      for (i=0; i<fv->map->enccount && !fv->selected[i]; ++i);
+      for (j=0; j<cnt && i+j<fv->map->enccount; ++j)
+	 fv->selected[i+j]=1;
       cnt=j;
    }
 
@@ -2093,14 +2093,14 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,double trans[6]) {
        || cur->undotype==ut_statename || (cur->undotype==ut_composit
 					    && cur->u.composit.state !=
 					    NULL)) {
-      for (i=0; i < fv->map->enccount; ++i)
+      for (i=0; i<fv->map->enccount; ++i)
 	 if (fv->selected[i]
 	     && ((gid=fv->map->map[i])==-1 || sf->glyphs[gid]==NULL))
 	    SFMakeChar(sf, fv->map, i);
    }
    cur=NULL;
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i]) {
 	 j=-1;
 	 if (cur==NULL) {
@@ -2200,7 +2200,7 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,double trans[6]) {
    /*  the width of the original referred character, then we should make sure */
    /*  that the new width of the glyph is the same as the current width of   */
    /*  the referred char. We can't do this earlier because of foreward refs.  */
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i]) {
 	 SplineChar *sc=SFMakeChar(sf, fv->map, i);
 

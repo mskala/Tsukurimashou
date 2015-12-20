@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: parsettf.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3930,7 +3930,7 @@ static void cidfigure(struct ttfinfo *info,struct topdicts *dict,
       cid=dict->charset[i];
       if (cid >= sf->glyphcnt)
 	 sf->glyphcnt=sf->glyphmax=cid + 1;
-      /*if ( cid>=encmap->enccount ) encmap->enccount=cid+1; */
+      /*if (cid>=encmap->enccount ) encmap->enccount=cid+1; */
    }
    for (j=0; subdicts[j] != NULL; ++j)
       info->subfonts[j]->glyphs =
@@ -5084,7 +5084,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
 		     }
 		  }
 	       }
-	       /*if ( last==-1 ) last=i; */
+	       /*if (last==-1 ) last=i; */
 	    }
 	 }
 	 free(subheads);
@@ -5684,7 +5684,7 @@ static int readttf(AFILE *ttf,struct ttfinfo *info,char *filename) {
    /* (We've already (probably) set the unicodeencs of the glyphs according */
    /*  to the cidmap files, but we can override that here. Mmm. what about a */
    /*  glyph in cidmap but not in cmap???? */
-   if ( /*info->cidregistry==NULL && */ info->encoding_start != 0)
+   if (/*info->cidregistry==NULL && */ info->encoding_start != 0)
       readttfencodings(ttf, info, git_normal);
    if (info->os2_start != 0)
       readttfos2metrics(ttf, info);

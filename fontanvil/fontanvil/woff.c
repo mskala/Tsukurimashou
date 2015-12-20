@@ -1,4 +1,4 @@
-/* $Id: woff.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: woff.c 4524 2015-12-20 19:28:13Z mskala $ */
 /* Copyright (C) 2010-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -266,11 +266,11 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
    }
 
    putlong(sfnt, flavour);
-   putshort(sfnt, num_tabs);
+   aput_int16_be_checked(num_tabs,sfnt);
    for (i=1, j=0; 2 * i <= num_tabs; i <<= 1, ++j);
-   putshort(sfnt, i * 16);
-   putshort(sfnt, j);
-   putshort(sfnt, (num_tabs - i) * 16);
+   aput_int16_be_checked(i * 16,sfnt);
+   aput_int16_be_checked(j,sfnt);
+   aput_int16_be_checked((num_tabs - i) * 16,sfnt);
 
    /* dummy space for table pointers */
    tab_start=aftell(sfnt);
@@ -321,7 +321,7 @@ SplineFont *_SFReadWOFF(AFILE *woff, int flags, enum openflags openflags,
 	 if (aftell(sfnt) & 1)
 	    aputc('\0', sfnt);
 	 if (aftell(sfnt) & 2)
-	    putshort(sfnt, 0);
+	    aput_int16_be_checked(0,sfnt);
       }
       afseek(woff, here, SEEK_SET);
    }
@@ -432,11 +432,11 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
    putlong(woff, CHR('w', 'O', 'F', 'F'));
    putlong(woff, flavour);
    putlong(woff, 0);		/* Off: 8. total length of file, fill in later */
-   putshort(woff, num_tabs);
-   putshort(woff, 0);		/* Must be zero */
+   aput_int16_be_checked(num_tabs,woff);
+   aput_int16_be_checked(0,woff);		/* Must be zero */
    putlong(woff, filelen);
-   putshort(woff, major);	/* Major and minor version numbers of font */
-   putshort(woff, minor);
+   aput_int16_be_checked(major,woff);	/* Major and minor version numbers of font */
+   aput_int16_be_checked(minor,woff);
    putlong(woff, 0);		/* Off: 24. Offset to metadata table */
    putlong(woff, 0);		/* Off: 28. Length (compressed) of metadata */
    putlong(woff, 0);		/* Off: 32. Length (uncompressed) */
@@ -461,7 +461,7 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 	 if (aftell(woff) & 1)
 	    aputc('\0', woff);
 	 if (aftell(woff) & 2)
-	    putshort(woff, 0);
+	    aput_int16_be_checked(0,woff);
       }
       afseek(sfnt, here, SEEK_SET);
       afseek(woff, tab_start, SEEK_SET);
@@ -489,7 +489,7 @@ int _WriteWOFFFont(AFILE *woff, SplineFont *sf, enum fontformat format,
 	 if (aftell(woff) & 1)
 	    aputc('\0', woff);
 	 if (aftell(woff) & 2)
-	    putshort(woff, 0);
+	    aput_int16_be_checked(0,woff);
       }
       afseek(woff, 24, SEEK_SET);
       putlong(woff, newoffset);

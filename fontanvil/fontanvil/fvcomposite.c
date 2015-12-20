@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: fvcomposite.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2405,7 +2405,7 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 	 xoff += (italicoff=tan(-ia) * (rbb.miny + yoff - ybase));
    }				/* Anchor points */
    transform[4]=xoff;
-   /*if ( invert ) transform[5] -= yoff; else */ transform[5] += yoff;
+   /*if (invert ) transform[5] -= yoff; else */ transform[5] += yoff;
 
    if (bdf==NULL || !disp_only) {
       _SCAddRef(sc, rsc, layer, transform);

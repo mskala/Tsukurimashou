@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: bitmapchar.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -119,7 +119,7 @@ int IsUnsignedBDFKey(char *key) {
 char *BdfPropHasString(BDFFont * font, const char *key, char *def) {
    int i;
 
-   for (i=0; i < font->prop_cnt; ++i)
+   for (i=0; i<font->prop_cnt; ++i)
       if (strcmp(font->props[i].name, key)==0) {
 	 switch (font->props[i].type & ~prt_property) {
 	   case prt_string:
@@ -138,7 +138,7 @@ char *BdfPropHasString(BDFFont * font, const char *key, char *def) {
 int BdfPropHasInt(BDFFont * font, const char *key, int def) {
    int i;
 
-   for (i=0; i < font->prop_cnt; ++i)
+   for (i=0; i<font->prop_cnt; ++i)
       if (strcmp(font->props[i].name, key)==0) {
 	 switch (font->props[i].type & ~prt_property) {
 	   case prt_int:
@@ -157,7 +157,7 @@ static void BDFPropAddString(BDFFont *bdf,char *keyword,char *value,
    if (match_key != NULL && strcmp(keyword, match_key) != 0)
       return;
 
-   for (i=0; i < bdf->prop_cnt; ++i)
+   for (i=0; i<bdf->prop_cnt; ++i)
       if (strcmp(keyword, bdf->props[i].name)==0) {
 	 if ((bdf->props[i].type & ~prt_property)==prt_string ||
 	     (bdf->props[i].type & ~prt_property)==prt_atom)
@@ -188,7 +188,7 @@ static void BDFPropAddInt(BDFFont *bdf,char *keyword,int value,
    if (match_key != NULL && strcmp(keyword, match_key) != 0)
       return;
 
-   for (i=0; i < bdf->prop_cnt; ++i)
+   for (i=0; i<bdf->prop_cnt; ++i)
       if (strcmp(keyword, bdf->props[i].name)==0) {
 	 if ((bdf->props[i].type & ~prt_property)==prt_string ||
 	     (bdf->props[i].type & ~prt_property)==prt_atom)
@@ -219,7 +219,7 @@ static char *AllSame(BDFFont *font,int *avg,int *cnt) {
    /* Return 'P' if a proporitional font */
    /* Return 'C' if an X11 "cell" font (all glyphs within (0,width)x(ascent,desent) & monospace ) */
    /* Return 'M' if monospace (and not a cell) */
-   for (i=0; i < font->glyphcnt; ++i) {
+   for (i=0; i<font->glyphcnt; ++i) {
       if ((bdfc=font->glyphs[i]) != NULL && !IsntBDFChar(bdfc)) {
 	 ++c;
 	 a += bdfc->width;
@@ -230,8 +230,8 @@ static char *AllSame(BDFFont *font,int *avg,int *cnt) {
 	    cell=0;
 	 }
 	 if (cell) {
-	    if (bdfc->xmin < 0 || bdfc->xmax > common
-		|| bdfc->ymax > font->ascent || -bdfc->ymin > font->descent)
+	    if (bdfc->xmin<0 || bdfc->xmax>common
+		|| bdfc->ymax>font->ascent || -bdfc->ymin>font->descent)
 	       cell=0;
 	    else
 	       cell=1;
@@ -241,9 +241,9 @@ static char *AllSame(BDFFont *font,int *avg,int *cnt) {
    if (c==0)
       *avg=0;
    else
-      *avg=(10 * a) / c;
+      *avg=(10 * a)/c;
    *cnt=c;
-   return (common==-2 ? "P" : cell ? "C" : "M");
+   return (common==-2?"P":cell?"C":"M");
 }
 
 static void BDFPropAppendString(BDFFont *bdf,char *keyword,char *value) {
@@ -267,7 +267,7 @@ static int BDFPropReplace(BDFFont *bdf,const char *key,const char *value) {
    int i;
    char *pt;
 
-   for (i=0; i < bdf->prop_cnt; ++i)
+   for (i=0; i<bdf->prop_cnt; ++i)
       if (strcmp(bdf->props[i].name, key)==0) {
 	 switch (bdf->props[i].type & ~prt_property) {
 	   case prt_string:
@@ -282,7 +282,7 @@ static int BDFPropReplace(BDFFont *bdf,const char *key,const char *value) {
 	 if (pt==NULL)
 	    bdf->props[i].u.str=fastrdup(value);
 	 else
-	    bdf->props[i].u.str=copyn(value, pt - value);
+	    bdf->props[i].u.str=copyn(value, pt-value);
 	 return (true);
       }
    return (false);
@@ -347,12 +347,12 @@ void SFReplaceEncodingBDFProps(SplineFont *sf, EncMap * map) {
       BDFPropReplace(bdf, "CHARSET_COLLECTIONS", buffer);
       if ((bpt=BdfPropHasString(bdf, "FONT", NULL)) != NULL) {
 	 strncpy(buffer, bpt, sizeof(buffer));
-	 buffer[sizeof(buffer) - 1]='\0';
+	 buffer[sizeof(buffer)-1]='\0';
 	 pt=strrchr(buffer, '-');
 	 if (pt != NULL)
-	    for (--pt; pt > buffer && *pt != '-'; --pt);
-	 if (pt > buffer) {
-	    sprintf(pt + 1, "%s-%s", reg, enc);
+	    for (--pt; pt>buffer && *pt != '-'; --pt);
+	 if (pt>buffer) {
+	    sprintf(pt+1, "%s-%s", reg, enc);
 	    BDFPropReplace(bdf, "FONT", buffer);
 	 }
       }
@@ -371,7 +371,7 @@ void SFReplaceFontnameBDFProps(SplineFont *sf) {
       BDFPropReplace(bdf, "COPYRIGHT", sf->copyright);
       if ((bpt=BdfPropHasString(bdf, "FONT", NULL)) != NULL) {
 	 if (bpt[0]=='-') {
-	    for (pt=bpt + 1; *pt && *pt != '-'; ++pt);
+	    for (pt=bpt+1; *pt && *pt != '-'; ++pt);
 	    if (*pt=='-') {
 	       *pt='\0';
 	       strcpy(buffer2, bpt);
@@ -416,7 +416,7 @@ void def_Charset_Enc(EncMap * map, char *reg, char *enc) {
       if (pt==NULL)
 	 strcpy(enc, "0");
       else {
-	 strcpy(enc, pt + 1);
+	 strcpy(enc, pt+1);
 	 *pt='\0';
       }
    }
@@ -514,13 +514,13 @@ static void decomposename(BDFFont *font,char *fontname,char *family_name,
    if (sffamily != NULL && *sffamily != '\0')
       strcpy(family_name, sffamily);
    while ((pt=strchr(family_name, '-')) != NULL)
-      strcpy(pt, pt + 1);
+      strcpy(pt, pt+1);
 }
 
 static char *getcomponent(char *xlfd,char *pt,int maxlen) {
-   char *end=pt + maxlen - 1;
+   char *end=pt+maxlen-1;
 
-   while (*xlfd != '-' && *xlfd != '\0' && pt < end)
+   while (*xlfd != '-' && *xlfd != '\0' && pt<end)
       *pt++=*xlfd++;
    while (*xlfd != '-' && *xlfd != '\0')
       ++xlfd;
@@ -535,48 +535,48 @@ void XLFD_GetComponents(char *xlfd, struct xlfd_components *components) {
 
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->foundry,
+	 getcomponent(xlfd+1, components->foundry,
 		      sizeof(components->foundry));
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->family,
+	 getcomponent(xlfd+1, components->family,
 		      sizeof(components->family));
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->weight,
+	 getcomponent(xlfd+1, components->weight,
 		      sizeof(components->weight));
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->slant, sizeof(components->slant));
+	 getcomponent(xlfd+1, components->slant, sizeof(components->slant));
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->setwidth,
+	 getcomponent(xlfd+1, components->setwidth,
 		      sizeof(components->setwidth));
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->add_style,
+	 getcomponent(xlfd+1, components->add_style,
 		      sizeof(components->add_style));
    if (*xlfd=='-')
-      components->pixel_size=strtol(xlfd + 1, &xlfd, 10);
+      components->pixel_size=strtol(xlfd+1, &xlfd, 10);
    if (*xlfd=='-')
-      components->point_size=strtol(xlfd + 1, &xlfd, 10);
+      components->point_size=strtol(xlfd+1, &xlfd, 10);
    if (*xlfd=='-')
-      components->res_x=strtol(xlfd + 1, &xlfd, 10);
+      components->res_x=strtol(xlfd+1, &xlfd, 10);
    if (*xlfd=='-')
-      components->res_y=strtol(xlfd + 1, &xlfd, 10);
+      components->res_y=strtol(xlfd+1, &xlfd, 10);
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->spacing,
+	 getcomponent(xlfd+1, components->spacing,
 		      sizeof(components->spacing));
    if (*xlfd=='-')
-      components->avg_width=strtol(xlfd + 1, &xlfd, 10);
+      components->avg_width=strtol(xlfd+1, &xlfd, 10);
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->cs_reg,
+	 getcomponent(xlfd+1, components->cs_reg,
 		      sizeof(components->cs_reg));
    if (*xlfd=='-')
       xlfd =
-	 getcomponent(xlfd + 1, components->cs_enc,
+	 getcomponent(xlfd+1, components->cs_enc,
 		      sizeof(components->cs_enc));
 }
 
@@ -586,7 +586,7 @@ void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
    char *mono;
    char family_name[80], weight_name[60], slant[10], stylename[40],
       squeeze[40];
-   char *sffn=*font->sf->fontname ? font->sf->fontname : "Untitled";
+   char *sffn=*font->sf->fontname?font->sf->fontname:"Untitled";
    char reg[100], enc[40];
    int old_res;
 
@@ -594,9 +594,9 @@ void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
    old_res=BdfPropHasInt(font, "RESOLUTION_X", -1);
    if (res != -1)
       /* Already set */ ;
-   else if (old_res > 0)
+   else if (old_res>0)
       res=old_res;
-   else if (font->res > 0)
+   else if (font->res>0)
       res=font->res;
    else if (font->pixelsize==33 || font->pixelsize==28
 	    || font->pixelsize==17 || font->pixelsize==14)
@@ -604,7 +604,7 @@ void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
    else
       res=75;
 
-   pnt=((font->pixelsize * 72 + res / 2) / res) * 10;
+   pnt=((font->pixelsize * 72+res/2)/res) * 10;
    if (pnt==230 && res==75)
       pnt=240;
 
@@ -614,8 +614,8 @@ void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
    strncpy(components->foundry,
 	   BdfPropHasString(font, "FOUNDRY",
 			    font->foundry !=
-			    NULL ? font->foundry : BDFFoundry ==
-			    NULL ? "FontAnvil" : BDFFoundry),
+			    NULL?font->foundry:BDFFoundry ==
+			    NULL?"FontAnvil":BDFFoundry),
 	   sizeof(components->foundry));
    strncpy(components->family,
 	   BdfPropHasString(font, "FAMILY_NAME", family_name),
@@ -633,7 +633,7 @@ void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
 	   sizeof(components->add_style));
    components->pixel_size=font->pixelsize;
    components->point_size =
-      res==old_res ? BdfPropHasInt(font, "POINT_SIZE", pnt) : pnt;
+      res==old_res?BdfPropHasInt(font, "POINT_SIZE", pnt):pnt;
    components->res_x=res;
    components->res_y=res;
    strncpy(components->spacing,
@@ -647,15 +647,15 @@ void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
 	   BdfPropHasString(font, "CHARSET_ENCODING", enc),
 	   sizeof(components->cs_enc));
 
-   components->foundry[sizeof(components->foundry) - 1]='\0';
-   components->family[sizeof(components->family) - 1]='\0';
-   components->weight[sizeof(components->weight) - 1]='\0';
-   components->slant[sizeof(components->slant) - 1]='\0';
-   components->setwidth[sizeof(components->setwidth) - 1]='\0';
-   components->add_style[sizeof(components->add_style) - 1]='\0';
-   components->spacing[sizeof(components->spacing) - 1]='\0';
-   components->cs_reg[sizeof(components->cs_reg) - 1]='\0';
-   components->cs_enc[sizeof(components->cs_enc) - 1]='\0';
+   components->foundry[sizeof(components->foundry)-1]='\0';
+   components->family[sizeof(components->family)-1]='\0';
+   components->weight[sizeof(components->weight)-1]='\0';
+   components->slant[sizeof(components->slant)-1]='\0';
+   components->setwidth[sizeof(components->setwidth)-1]='\0';
+   components->add_style[sizeof(components->add_style)-1]='\0';
+   components->spacing[sizeof(components->spacing)-1]='\0';
+   components->cs_reg[sizeof(components->cs_reg)-1]='\0';
+   components->cs_enc[sizeof(components->cs_enc)-1]='\0';
 
    components->char_cnt=cnt;
 }
@@ -684,7 +684,7 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
        && bdf->glyphs[gid] != NULL) {
       x_h=bdf->glyphs[gid]->ymax;
    }
-   if ('X' < map->enccount && (gid=map->map['X']) != -1
+   if ('X'<map->enccount && (gid=map->map['X']) != -1
        && bdf->glyphs[gid] != NULL) {
       cap_h=bdf->glyphs[gid]->ymax;
    }
@@ -732,7 +732,7 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
       if (pt==NULL)
 	 BDFPropAddString(bdf, "COPYRIGHT", bdf->sf->copyright, onlyme);
       else {
-	 new=copyn(bdf->sf->copyright, pt - bdf->sf->copyright);
+	 new=copyn(bdf->sf->copyright, pt-bdf->sf->copyright);
 	 BDFPropAddString(bdf, "COPYRIGHT", new, onlyme);
 	 free(new);
       }
@@ -743,10 +743,10 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
    BDFPropAddInt(bdf, "FONT_DESCENT", bdf->descent, onlyme);
    BDFPropAddInt(bdf, "UNDERLINE_POSITION",
 		 (int) rint((bdf->sf->upos * bdf->pixelsize) /
-			    (bdf->sf->ascent + bdf->sf->descent)), onlyme);
+			    (bdf->sf->ascent+bdf->sf->descent)), onlyme);
    BDFPropAddInt(bdf, "UNDERLINE_THICKNESS",
 		 (int) ceil((bdf->sf->uwidth * bdf->pixelsize) /
-			    (bdf->sf->ascent + bdf->sf->descent)), onlyme);
+			    (bdf->sf->ascent+bdf->sf->descent)), onlyme);
 
    if (x_h != -1)
       BDFPropAddInt(bdf, "X_HEIGHT", x_h, onlyme);
@@ -755,14 +755,14 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
    if (def_ch != -1)
       BDFPropAddInt(bdf, "DEFAULT_CHAR", def_ch, onlyme);
    BDFPropAddInt(bdf, "RAW_ASCENT",
-		 bdf->sf->ascent * 1000 / (bdf->sf->ascent +
+		 bdf->sf->ascent * 1000/(bdf->sf->ascent +
 					   bdf->sf->descent), onlyme);
    BDFPropAddInt(bdf, "RAW_DESCENT",
-		 bdf->sf->descent * 1000 / (bdf->sf->ascent +
+		 bdf->sf->descent * 1000/(bdf->sf->ascent +
 					    bdf->sf->descent), onlyme);
    if (bdf->sf->italicangle != 0)
       BDFPropAddInt(bdf, "ITALIC_ANGLE",
-		    (int) ((90 + bdf->sf->italicangle) * 64), onlyme);
+		    (int) ((90+bdf->sf->italicangle) * 64), onlyme);
 
    if ((gid=SFFindExistingSlot(bdf->sf, ' ', NULL)) != -1
        && bdf->glyphs[gid] != NULL)
@@ -775,13 +775,13 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
       if (components.res_x==components.res_y)
 	 /* Depreciated */
 	 /* This isn't dpi (why not???!), it is 1/100 pixels per point */
-	 BDFPropAddInt(bdf, "RESOLUTION", 7227 / components.res_y, onlyme);
+	 BDFPropAddInt(bdf, "RESOLUTION", 7227/components.res_y, onlyme);
    }
 
    if (bdf->sf->pfminfo.pfmset) {
       /* Only generate these if the user has set them with font info */
       /* OS/2 uses values 0-900. XLFD uses 0-90 */
-      BDFPropAddInt(bdf, "RELATIVE_WEIGHT", bdf->sf->pfminfo.weight / 10,
+      BDFPropAddInt(bdf, "RELATIVE_WEIGHT", bdf->sf->pfminfo.weight/10,
 		    onlyme);
       BDFPropAddInt(bdf, "RELATIVE_SETWIDTH", bdf->sf->pfminfo.width * 10,
 		    onlyme);
@@ -789,22 +789,22 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
    if (bdf->sf->pfminfo.subsuper_set) {
       BDFPropAddInt(bdf, "SUPERSCRIPT_X",
 		    bdf->sf->pfminfo.os2_supxoff * bdf->pixelsize /
-		    (bdf->sf->ascent + bdf->sf->descent), onlyme);
+		    (bdf->sf->ascent+bdf->sf->descent), onlyme);
       BDFPropAddInt(bdf, "SUPERSCRIPT_Y",
 		    bdf->sf->pfminfo.os2_supyoff * bdf->pixelsize /
-		    (bdf->sf->ascent + bdf->sf->descent), onlyme);
+		    (bdf->sf->ascent+bdf->sf->descent), onlyme);
       BDFPropAddInt(bdf, "SUPERSCRIPT_SIZE",
 		    bdf->sf->pfminfo.os2_supysize * bdf->pixelsize /
-		    (bdf->sf->ascent + bdf->sf->descent), onlyme);
+		    (bdf->sf->ascent+bdf->sf->descent), onlyme);
       BDFPropAddInt(bdf, "SUBSCRIPT_X",
 		    bdf->sf->pfminfo.os2_subxoff * bdf->pixelsize /
-		    (bdf->sf->ascent + bdf->sf->descent), onlyme);
+		    (bdf->sf->ascent+bdf->sf->descent), onlyme);
       BDFPropAddInt(bdf, "SUBSCRIPT_Y",
 		    bdf->sf->pfminfo.os2_subyoff * bdf->pixelsize /
-		    (bdf->sf->ascent + bdf->sf->descent), onlyme);
+		    (bdf->sf->ascent+bdf->sf->descent), onlyme);
       BDFPropAddInt(bdf, "SUBSCRIPT_SIZE",
 		    bdf->sf->pfminfo.os2_subysize * bdf->pixelsize /
-		    (bdf->sf->ascent + bdf->sf->descent), onlyme);
+		    (bdf->sf->ascent+bdf->sf->descent), onlyme);
    }
 
    {
@@ -831,26 +831,26 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
       BDFChar *bdfc;
 
       lc_cnt=lc_sum=uc_cnt=uc_sum=0;
-      for (gid=0; gid < bdf->glyphcnt; ++gid)
+      for (gid=0; gid<bdf->glyphcnt; ++gid)
 	 if ((bdfc=bdf->glyphs[gid]) != NULL) {
 	    SplineChar *sc=bdfc->sc;
 
-	    if (sc->unicodeenc != -1 && sc->unicodeenc < 0x10000
+	    if (sc->unicodeenc != -1 && sc->unicodeenc<0x10000
 		&& islower(sc->unicodeenc)) {
 	       ++lc_cnt;
 	       lc_sum += bdfc->width;
 	    }
-	    if (sc->unicodeenc != -1 && sc->unicodeenc < 0x10000
+	    if (sc->unicodeenc != -1 && sc->unicodeenc<0x10000
 		&& isupper(sc->unicodeenc)) {
 	       ++uc_cnt;
 	       uc_sum += bdfc->width;
 	    }
 	 }
       if (lc_cnt != 0)
-	 BDFPropAddInt(bdf, "AVG_LOWERCASE_WIDTH", lc_sum * 10 / lc_cnt,
+	 BDFPropAddInt(bdf, "AVG_LOWERCASE_WIDTH", lc_sum * 10/lc_cnt,
 		       onlyme);
       if (uc_cnt != 0)
-	 BDFPropAddInt(bdf, "AVG_UPPERCASE_WIDTH", uc_sum * 10 / uc_cnt,
+	 BDFPropAddInt(bdf, "AVG_UPPERCASE_WIDTH", uc_sum * 10/uc_cnt,
 		       onlyme);
    }
 
@@ -874,10 +874,10 @@ void BDFDefaultProps(BDFFont * bdf, EncMap * map, int res) {
    if (bdf->sf->copyright != NULL) {
       start=bdf->sf->copyright;
       while ((end=strchr(start, '\n')) != NULL) {
-	 temp=copyn(start, end - start);
+	 temp=copyn(start, end-start);
 	 BDFPropAppendString(bdf, "COMMENT", temp);
 	 free(temp);
-	 start=end + 1;
+	 start=end+1;
       }
       if (*start != '\0')
 	 BDFPropAppendString(bdf, "COMMENT", start);
@@ -901,8 +901,8 @@ BDFChar *BDFMakeGID(BDFFont * bdf, int gid) {
       if (sf->cidmaster)
 	 sf=sf->cidmaster;
       if (j==-1) {
-	 for (j=0; j < sf->subfontcnt; ++j)
-	    if (gid < sf->subfonts[j]->glyphcnt)
+	 for (j=0; j<sf->subfontcnt; ++j)
+	    if (gid<sf->subfonts[j]->glyphcnt)
 	       break;
 	 if (j==sf->subfontcnt)
 	    return (NULL);
@@ -928,7 +928,7 @@ BDFChar *BDFMakeGID(BDFFont * bdf, int gid) {
 	 if (freetype_context != NULL) {
 	    bc=SplineCharFreeTypeRasterize(freetype_context,
 					     sc->orig_pos, bdf->pixelsize, 72,
-					     bdf->clut ? 8 : 1);
+					     bdf->clut?8:1);
 	    FreeTypeFreeContext(freetype_context);
 	 }
       }
@@ -956,8 +956,8 @@ BDFChar *BDFMakeChar(BDFFont * bdf, EncMap * map, int enc) {
 
       sf=sf->cidmaster;
       if (j==-1) {
-	 for (j=0; j < sf->subfontcnt; ++j)
-	    if (enc < sf->subfonts[j]->glyphcnt)
+	 for (j=0; j<sf->subfontcnt; ++j)
+	    if (enc<sf->subfonts[j]->glyphcnt)
 	       break;
 	 if (j==sf->subfontcnt)
 	    return (NULL);
@@ -981,7 +981,7 @@ void BCClearAll(BDFChar * bc) {
    bc->refs=NULL;
 
    BCFlattenFloat(bc);
-   memset(bc->bitmap, '\0', bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
+   memset(bc->bitmap, '\0', bc->bytes_per_line * (bc->ymax-bc->ymin+1));
    BCCompressBitmap(bc);
    bc->xmin=0;
    bc->xmax=0;

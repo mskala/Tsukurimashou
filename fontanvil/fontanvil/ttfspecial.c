@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: ttfspecial.c 4524 2015-12-20 19:28:13Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -69,15 +69,15 @@ static void PfEd_FontComment(SplineFont *sf,struct PfEd_subtabs *pfed,
    pfed->subtabs[pfed->next].tag=tag;
    pfed->subtabs[pfed->next++].data=fcmt=atmpfile();
 
-   putshort(fcmt, 1);		/* sub-table version number */
-   putshort(fcmt, strlen(text));
+   aput_int16_be_checked(1,fcmt);		/* sub-table version number */
+   aput_int16_be_checked(strlen(text),fcmt);
    for (pt=text; *pt; ++pt)
       aputc(*pt, fcmt);
-   putshort(fcmt, 0);
+   aput_int16_be_checked(0,fcmt);
    if (aftell(fcmt) & 1)
       aputc(0, fcmt);
    if (aftell(fcmt) & 2)
-      putshort(fcmt, 0);
+      aput_int16_be_checked(0,fcmt);
 }
 
 static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
@@ -103,7 +103,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
    pfed->subtabs[pfed->next].tag=cmnt_TAG;
    pfed->subtabs[pfed->next++].data=cmnt=atmpfile();
 
-   putshort(cmnt, 1);		/* sub-table version number */
+   aput_int16_be_checked(1,cmnt);		/* sub-table version number */
    /* Version 0 used ucs2, version 1 uses utf8 */
 
    offset=0;
@@ -128,8 +128,8 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
 	       }
 	       ++cnt;
 	       if (j==1) {
-		  putshort(cmnt, i);
-		  putshort(cmnt, last);
+		  aput_int16_be_checked(i,cmnt);
+		  aput_int16_be_checked(last,cmnt);
 		  putlong(cmnt, offset);
 		  offset += sizeof(uint32_t) * (last - i + 2);
 	       } else if (j==2) {
@@ -156,7 +156,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
 	    }
 	 }
       if (j==0) {
-	 putshort(cmnt, cnt);
+	 aput_int16_be_checked(cnt,cmnt);
 	 offset =
 	    2 * sizeof(short) + cnt * (2 * sizeof(short) + sizeof(uint32_t));
       }
@@ -164,7 +164,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
    if (aftell(cmnt) & 1)
       aputc('\0', cmnt);
    if (aftell(cmnt) & 2)
-      putshort(cmnt, 0);
+      aput_int16_be_checked(0,cmnt);
 }
 
 static void PfEd_CvtComments(SplineFont *sf,struct PfEd_subtabs *pfed) {
@@ -178,14 +178,14 @@ static void PfEd_CvtComments(SplineFont *sf,struct PfEd_subtabs *pfed) {
 
    for (i=0; sf->cvt_names[i] != END_CVT_NAMES; ++i);
 
-   putshort(cvtcmt, 0);		/* sub-table version number */
-   putshort(cvtcmt, i);
+   aput_int16_be_checked(0,cvtcmt);		/* sub-table version number */
+   aput_int16_be_checked(i,cvtcmt);
    offset=2 * 2 + i * 2;
    for (i=0; sf->cvt_names[i] != END_CVT_NAMES; ++i) {
       if (sf->cvt_names[i]==NULL)
-	 putshort(cvtcmt, 0);
+	 aput_int16_be_checked(0,cvtcmt);
       else {
-	 putshort(cvtcmt, offset);
+	 aput_int16_be_checked(offset,cvtcmt);
 	 offset += strlen(sf->cvt_names[i]) + 1;
       }
    }
@@ -198,7 +198,7 @@ static void PfEd_CvtComments(SplineFont *sf,struct PfEd_subtabs *pfed) {
    if (aftell(cvtcmt) & 1)
       aputc(0, cvtcmt);
    if (aftell(cvtcmt) & 2)
-      putshort(cvtcmt, 0);
+      aput_int16_be_checked(0,cvtcmt);
 }
 
 static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
@@ -222,7 +222,7 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
    pfed->subtabs[pfed->next].tag=colr_TAG;
    pfed->subtabs[pfed->next++].data=colr=atmpfile();
 
-   putshort(colr, 0);		/* sub-table version number */
+   aput_int16_be_checked(0,colr);		/* sub-table version number */
    cnt=0;
    for (i=0; i < gi->gcnt; ++i)
      if (gi->bygid[i] != -1) {
@@ -241,7 +241,7 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
 	   i=last;
 	}
      }
-   putshort(colr, cnt);
+   aput_int16_be_checked(cnt,colr);
    cnt=0;
    for (i=0; i < gi->gcnt; ++i)
      if (gi->bygid[i] != -1) {
@@ -257,14 +257,14 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
 	      last=k;
 	   }
 	   ++cnt;
-	   putshort(colr, i);
-	   putshort(colr, last);
+	   aput_int16_be_checked(i,colr);
+	   aput_int16_be_checked(last,colr);
 	   putlong(colr, sc->color);
 	   i=last;
 	}
      }
    if (aftell(colr) & 2)
-     putshort(colr, 0);
+     aput_int16_be_checked(0,colr);
 }
 
 static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
@@ -297,17 +297,17 @@ static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
    pfed->subtabs[pfed->next].tag=tag;
    pfed->subtabs[pfed->next++].data=lkf=atmpfile();
 
-   putshort(lkf, 0);		/* Subtable version */
-   putshort(lkf, lcnt);
+   aput_int16_be_checked(0,lkf);		/* Subtable version */
+   aput_int16_be_checked(lcnt,lkf);
 
    sub_info=4 + 4 * lcnt;
    ac_info=sub_info + 2 * lcnt + 4 * scnt;
    name_info=ac_info + 2 * ascnt + 2 * acnt;
    for (otl=lookups; otl != NULL; otl=otl->next)
       if (!otl->unused) {
-	 putshort(lkf, name_info);
+	 aput_int16_be_checked(name_info,lkf);
 	 name_info += strlen(otl->lookup_name) + 1;
-	 putshort(lkf, sub_info);
+	 aput_int16_be_checked(sub_info,lkf);
 	 for (subs=otl->subtables, s=0; subs != NULL; subs=subs->next)
 	    if (!subs->unused)
 	       ++s;
@@ -320,19 +320,19 @@ static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
 	 for (subs=otl->subtables, s=0; subs != NULL; subs=subs->next)
 	    if (!subs->unused)
 	       ++s;
-	 putshort(lkf, s);	/* Subtable count */
+	 aput_int16_be_checked(s,lkf);	/* Subtable count */
 	 for (subs=otl->subtables, s=0; subs != NULL; subs=subs->next)
 	    if (!subs->unused) {
-	       putshort(lkf, name_info);
+	       aput_int16_be_checked(name_info,lkf);
 	       name_info += strlen(subs->subtable_name) + 1;
 	       if (subs->anchor_classes) {
-		  putshort(lkf, ac_info);
+		  aput_int16_be_checked(ac_info,lkf);
 		  for (ac=sf->anchor, a=0; ac != NULL; ac=ac->next)
 		     if (ac->subtable==subs && ac->has_base && ac->has_mark)
 			++a;
 		  ac_info += 2 + 2 * a;
 	       } else
-		  putshort(lkf, 0);
+		  aput_int16_be_checked(0,lkf);
 	    }
       }
    for (otl=lookups; otl != NULL; otl=otl->next)
@@ -343,10 +343,10 @@ static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
 		  for (ac=sf->anchor, a=0; ac != NULL; ac=ac->next)
 		     if (ac->subtable==subs && ac->has_base && ac->has_mark)
 			++a;
-		  putshort(lkf, a);
+		  aput_int16_be_checked(a,lkf);
 		  for (ac=sf->anchor, a=0; ac != NULL; ac=ac->next)
 		     if (ac->subtable==subs && ac->has_base && ac->has_mark) {
-			putshort(lkf, name_info);
+			aput_int16_be_checked(name_info,lkf);
 			name_info += strlen(ac->name) + 1;
 		     }
 	       }
@@ -379,7 +379,7 @@ static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
    if (aftell(lkf) & 1)
       aputc('\0', lkf);
    if (aftell(lkf) & 2)
-      putshort(lkf, 0);
+      aput_int16_be_checked(0,lkf);
 }
 
 static int pfed_mod_type(float val,int last_mod) {
@@ -400,7 +400,7 @@ static void pfed_write_data(AFILE *ttf,float val,int mod) {
    if (mod==V_F)
       putlong(ttf, (int) rint(val * 256.0));
    else if (mod==V_S)
-      putshort(ttf, (int) rint(val));
+      aput_int16_be_checked((int) rint(val),ttf);
    else
       aputc(((int) rint(val)), ttf);
 }
@@ -423,24 +423,24 @@ static void pfed_glyph_layer(AFILE *layr,Layer *layer,int do_spiro) {
       ++ref_cnt;
 
    base=aftell(layr);
-   putshort(layr, contour_cnt);
-   putshort(layr, ref_cnt);
-   putshort(layr, image_cnt);
+   aput_int16_be_checked(contour_cnt,layr);
+   aput_int16_be_checked(ref_cnt,layr);
+   aput_int16_be_checked(image_cnt,layr);
 
    name_off=2 * 3 + 4 * contour_cnt + (4 * 7 + 2) * ref_cnt;
    for (ss=layer->splines; ss != NULL; ss=ss->next) {
-      putshort(layr, 0);	/* fill in later */
+      aput_int16_be_checked(0,layr);	/* fill in later */
       if (ss->contour_name != NULL) {
-	 putshort(layr, name_off);
+	 aput_int16_be_checked(name_off,layr);
 	 name_off += strlen(ss->contour_name) + 1;
       } else {
-	 putshort(layr, 0);
+	 aput_int16_be_checked(0,layr);
       }
    }
    for (ref=layer->refs; ref != NULL; ref=ref->next) {
       for (j=0; j < 6; ++j)
 	 putlong(layr, (int) rint(ref->transform[j] * 32768));
-      putshort(layr, ref->sc->ttf_glyph);
+      aput_int16_be_checked(ref->sc->ttf_glyph,layr);
    }
    for (ss=layer->splines; ss != NULL; ss=ss->next) {
       if (ss->contour_name != NULL) {
@@ -454,7 +454,7 @@ static void pfed_glyph_layer(AFILE *layr,Layer *layer,int do_spiro) {
       uint32_t pos=aftell(layr);
 
       afseek(layr, base + 6 + 4 * contour_cnt, SEEK_SET);
-      putshort(layr, pos - base);
+      aput_int16_be_checked(pos - base,layr);
       afseek(layr, pos, SEEK_SET);
 
       if (!do_spiro) {
@@ -611,12 +611,12 @@ static int pfed_guide_sortuniq(struct pos_name *array,int cnt) {
 
 static int pfed_guide_dump_pos_name(AFILE *guid,struct pos_name *pn,
 				    int namestart) {
-   putshort(guid, (short) rint(pn->pos));
+   aput_int16_be_checked((short) rint(pn->pos),guid);
    if (pn->name != NULL) {
-      putshort(guid, namestart);
+      aput_int16_be_checked(namestart,guid);
       namestart += strlen(pn->name) + 1;
    } else {
-      putshort(guid, 0);
+      aput_int16_be_checked(0,guid);
    }
    return (namestart);
 }
@@ -667,11 +667,11 @@ static void PfEd_Guides(SplineFont *sf,struct PfEd_subtabs *pfed) {
       if (hs[i].name != NULL)
 	 namelen += strlen(hs[i].name) + 1;
 
-   putshort(guid, 1);		/* sub-table version number */
-   putshort(guid, v);
-   putshort(guid, h);
-   putshort(guid, 0);		/* Diagonal lines someday? nothing for now */
-   putshort(guid, nameoff + namelen);	/* full spline output */
+   aput_int16_be_checked(1,guid);		/* sub-table version number */
+   aput_int16_be_checked(v,guid);
+   aput_int16_be_checked(h,guid);
+   aput_int16_be_checked(0,guid);		/* Diagonal lines someday? nothing for now */
+   aput_int16_be_checked(nameoff + namelen,guid);	/* full spline output */
    for (i=0; i < v; ++i)
       nameoff=pfed_guide_dump_pos_name(guid, &vs[i], nameoff);
    for (i=0; i < h; ++i)
@@ -693,7 +693,7 @@ static void PfEd_Guides(SplineFont *sf,struct PfEd_subtabs *pfed) {
    if (aftell(guid) & 1)
       aputc('\0', guid);
    if (aftell(guid) & 2)
-      putshort(guid, 0);
+      aput_int16_be_checked(0,guid);
 }
 
 static int pfed_has_spiros(Layer *layer) {
@@ -750,8 +750,8 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 	       }
 	       ++cnt;
 	       if (j==1) {
-		  putshort(layr, i);
-		  putshort(layr, last);
+		  aput_int16_be_checked(i,layr);
+		  aput_int16_be_checked(last,layr);
 		  putlong(layr, offset);
 		  offset += sizeof(uint32_t) * (last - i + 1);
 	       } else if (j==2) {
@@ -782,7 +782,7 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 	 }
       if (j==0) {
 	 offset += sizeof(short) + cnt * (2 * sizeof(short) + sizeof(uint32_t));
-	 putshort(layr, cnt);
+	 aput_int16_be_checked(cnt,layr);
       }
    }
    free(glyph_data_offset_location);
@@ -828,21 +828,21 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
    pfed->subtabs[pfed->next].tag=layr_TAG;
    pfed->subtabs[pfed->next++].data=layr=atmpfile();
 
-   putshort(layr, 1);		/* sub-table version */
-   putshort(layr, cnt);		/* layer count */
+   aput_int16_be_checked(1,layr);		/* sub-table version */
+   aput_int16_be_checked(cnt,layr);		/* layer count */
 
    name_off=4 + 8 * cnt;
    if (has_spiro) {
-      putshort(layr, 1);	/* spiros */
-      putshort(layr, name_off);
+      aput_int16_be_checked(1,layr);	/* spiros */
+      aput_int16_be_checked(name_off,layr);
       name_off += strlen("Spiro") + 1;
       putlong(layr, 0);		/* Fill in later */
    }
    for (l=0; l < sf->layer_cnt; ++l)
       if (otherlayers[l]) {
-	 putshort(layr, (sf->layers[l].order2 ? 2 : 3) |	/* Quadratic/cubic */
-		  (sf->layers[l].background ? 0 : 0x100));	/* Fore/Back */
-	 putshort(layr, name_off);
+         aput_int16_be_checked((sf->layers[l].order2 ? 2 : 3) |	/* Quadratic/cubic */
+		  (sf->layers[l].background ? 0 : 0x100),layr);	/* Fore/Back */
+	 aput_int16_be_checked(name_off,layr);
 	 if (l==ly_fore)
 	    name_off += strlen("Old_");
 	 name_off += strlen(sf->layers[l].name) + 1;
@@ -884,7 +884,7 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
    if (aftell(layr) & 1)
       aputc('\0', layr);
    if (aftell(layr) & 2)
-      putshort(layr, 0);
+      aput_int16_be_checked(0,layr);
    free(otherlayers);
 }
 
@@ -1844,14 +1844,14 @@ static void TeX_dumpFontParams(SplineFont *sf,struct TeX_subtabs *tex,
    tex->subtabs[tex->next].tag=CHR('f', 't', 'p', 'm');
    tex->subtabs[tex->next++].data=fprm=atmpfile();
 
-   putshort(fprm, 0);		/* sub-table version number */
+   aput_int16_be_checked(0,fprm);		/* sub-table version number */
    pcnt =
       sf->texdata.type==tex_math ? 22 : sf->texdata.type ==
       tex_mathext ? 13 : 7;
    tags =
       sf->texdata.type==tex_math ? tex_math_params : sf->texdata.type ==
       tex_mathext ? tex_mathext_params : tex_text_params;
-   putshort(fprm, pcnt);
+   aput_int16_be_checked(pcnt,fprm);
    for (i=0; i < pcnt; ++i) {
       putlong(fprm, tags[i]);
       putlong(fprm, sf->texdata.params[i]);
@@ -1878,8 +1878,8 @@ static void TeX_dumpHeightDepth(SplineFont *sf,struct TeX_subtabs *tex,
    tex->subtabs[tex->next].tag=CHR('h', 't', 'd', 'p');
    tex->subtabs[tex->next++].data=htdp=atmpfile();
 
-   putshort(htdp, 0);		/* sub-table version number */
-   putshort(htdp, sf->glyphs[gid]->ttf_glyph + 1);	/* data for this many glyphs */
+   aput_int16_be_checked(0,htdp);		/* sub-table version number */
+   aput_int16_be_checked(sf->glyphs[gid]->ttf_glyph + 1,htdp);	/* data for this many glyphs */
 
    last_g=-1;
    for (j=0; j <= i; ++j) {
@@ -1888,14 +1888,14 @@ static void TeX_dumpHeightDepth(SplineFont *sf,struct TeX_subtabs *tex,
 	 SplineChar *sc=sf->glyphs[gid];
 
 	 for (k=last_g + 1; k < sc->ttf_glyph; ++k) {
-	    putshort(htdp, 0);
-	    putshort(htdp, 0);
+	    aput_int16_be_checked(0,htdp);
+	    aput_int16_be_checked(0,htdp);
 	 }
 	 if (sc->tex_depth==TEX_UNDEF || sc->tex_height==TEX_UNDEF)
 	    SplineCharFindBounds(sc, &b);
-	 putshort(htdp,
-		  sc->tex_height==TEX_UNDEF ? b.maxy : sc->tex_height);
-	 putshort(htdp, sc->tex_depth==TEX_UNDEF ? -b.miny : sc->tex_depth);
+	 aput_int16_be_checked(
+		  sc->tex_height==TEX_UNDEF ? b.maxy : sc->tex_height,htdp);
+	 aput_int16_be_checked(sc->tex_depth==TEX_UNDEF ? -b.miny : sc->tex_depth,htdp);
 	 last_g=sc->ttf_glyph;
       }
    }
@@ -1919,8 +1919,8 @@ static void TeX_dumpItalicCorr(SplineFont *sf,struct TeX_subtabs *tex,
    tex->subtabs[tex->next].tag=CHR('i', 't', 'l', 'c');
    tex->subtabs[tex->next++].data=itlc=atmpfile();
 
-   putshort(itlc, 0);		/* sub-table version number */
-   putshort(itlc, sf->glyphs[gid]->ttf_glyph + 1);	/* data for this many glyphs */
+   aput_int16_be_checked(0,itlc);		/* sub-table version number */
+   aput_int16_be_checked(sf->glyphs[gid]->ttf_glyph + 1,itlc);	/* data for this many glyphs */
 
    last_g=-1;
    for (j=0; j <= i; ++j) {
@@ -1929,12 +1929,12 @@ static void TeX_dumpItalicCorr(SplineFont *sf,struct TeX_subtabs *tex,
 	 SplineChar *sc=sf->glyphs[gid];
 
 	 for (k=last_g + 1; k < sc->ttf_glyph; ++k) {
-	    putshort(itlc, 0);
-	    putshort(itlc, 0);
+	    aput_int16_be_checked(0,itlc);
+	    aput_int16_be_checked(0,itlc);
 	 }
-	 putshort(itlc,
+	 aput_int16_be_checked(
 		  sc->italic_correction !=
-		  TEX_UNDEF ? sc->italic_correction : 0);
+		  TEX_UNDEF ? sc->italic_correction : 0,itlc);
 	 last_g=sc->ttf_glyph;
       }
    }
@@ -1975,7 +1975,7 @@ void tex_dump(struct alltabs *at, SplineFont *sf) {
 		  "TeX-subtable");
    }
    if (aftell(file) & 2)
-      putshort(file, 0);
+      aput_int16_be_checked(0,file);
    if (aftell(file) & 3)
       ErrorMsg(2,"'TeX ' table not properly aligned\n");
    at->texlen=aftell(file);
@@ -2206,8 +2206,8 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    at->bdf=atmpfile();
    strings=atmpfile();
 
-   putshort(at->bdf, 0x0001);
-   putshort(at->bdf, spcnt);
+   aput_int16_be_checked(0x0001,at->bdf);
+   aput_int16_be_checked(spcnt,at->bdf);
    putlong(at->bdf, 0);		/* offset to string table */
 
    for (i=0; sizes[i] != 0; ++i) {
@@ -2216,8 +2216,8 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
 			   || BDFDepth(bdf) != (sizes[i] >> 16));
 	   bdf=bdf->next);
       if (bdf != NULL && bdf->prop_cnt != 0) {
-	 putshort(at->bdf, bdf->pixelsize);
-	 putshort(at->bdf, BDFPropCntMergedComments(bdf));
+	 aput_int16_be_checked(bdf->pixelsize,at->bdf);
+	 aput_int16_be_checked(BDFPropCntMergedComments(bdf),at->bdf);
       }
    }
 
@@ -2257,7 +2257,7 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
 	       str=MergeComments(bdf);
 	       saw_comment=true;
 	    }
-	    putshort(at->bdf, bdf->props[j].type);
+	    aput_int16_be_checked(bdf->props[j].type,at->bdf);
 	    if ((bdf->props[j].type & ~prt_property)==prt_string ||
 		(bdf->props[j].type & ~prt_property)==prt_atom) {
 	       putlong(at->bdf, aftell(strings));
@@ -2285,7 +2285,7 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    if (at->bdflen & 1)
       aputc('\0', at->bdf);
    if ((at->bdflen + 1) & 2)
-      putshort(at->bdf, 0);
+      aput_int16_be_checked(0,at->bdf);
 
    return (true);
 }
@@ -2443,6 +2443,6 @@ int ttf_fftm_dump(SplineFont *sf, struct alltabs *at) {
    if ((at->fftmlen & 1) != 0)
       aputc(0, at->fftmf);
    if (((at->fftmlen + 1) & 2) != 0)
-      putshort(at->fftmf, 0);
+      aput_int16_be_checked(0,at->fftmf);
    return (true);
 }

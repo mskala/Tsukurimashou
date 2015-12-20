@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: macbinary.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -435,22 +435,21 @@ static uint32_t BDFToNFNT(AFILE *res,BDFFont *bdf,EncMap *map) {
 
    /* We've finished the bitmap conversion, now save it... */
    putlong(res, 0);		/* Length, to be filled in later */
-   putshort(res, IsMacMonospaced(bdf->sf, map) ? 0xb000 : 0x9000);	/* fontType */
-   putshort(res, 0);
-   putshort(res, 255);
-   putshort(res, widMax);
-   putshort(res, kernMax);
-   putshort(res, -descentMax);
-   putshort(res, rectMax);
-   putshort(res, bdf->pixelsize);
+   aput_int16_be_checked(IsMacMonospaced(bdf->sf, map) ? 0xb000 : 0x9000,res);	/* fontType */
+   aput_int16_be_checked(0,res);
+   aput_int16_be_checked(255,res);
+   aput_int16_be_checked(widMax,res);
+   aput_int16_be_checked(kernMax,res);
+   aput_int16_be_checked(-descentMax,res);
+   aput_int16_be_checked(rectMax,res);
+   aput_int16_be_checked(bdf->pixelsize,res);
    owpos=aftell(res);
-   putshort(res, 0);
-   putshort(res, bdf->ascent);
-   putshort(res, bdf->descent);
-   putshort(res,
-	    (short) (bdf->sf->pfminfo.linegap * bdf->pixelsize /
-		     (bdf->sf->ascent + bdf->sf->descent)));
-   putshort(res, (width + 15) >> 4);
+   aput_int16_be_checked(0,res);
+   aput_int16_be_checked(bdf->ascent,res);
+   aput_int16_be_checked(bdf->descent,res);
+   aput_int16_be_checked(bdf->sf->pfminfo.linegap * bdf->pixelsize /
+		     (bdf->sf->ascent + bdf->sf->descent),res);
+   aput_int16_be_checked((width + 15) >> 4,res);
    /* bitmaps */
    for (k=0; k < bdf->pixelsize; ++k) {
       for (i=0; i < ((width + 15) >> 4); ++i) {
@@ -459,7 +458,7 @@ static uint32_t BDFToNFNT(AFILE *res,BDFFont *bdf,EncMap *map) {
       }
    }
    for (i=0; i < 258; ++i)
-      putshort(res, locs[i]);
+      aput_int16_be_checked(locs[i],res);
    owloc=aftell(res);		/* valgrind reports an error here (but not above). god knows why */
    for (i=0; i < 258; ++i) {
       aputc(lbearings[i], res);
@@ -469,7 +468,7 @@ static uint32_t BDFToNFNT(AFILE *res,BDFFont *bdf,EncMap *map) {
    afseek(res, rlenpos, SEEK_SET);
    putlong(res, end - rlenpos - 4);
    afseek(res, owpos, SEEK_SET);
-   putshort(res, (owloc - owpos) / 2);
+   aput_int16_be_checked((owloc-owpos)/2,res);
    afseek(res, 0, SEEK_END);
 
    for (k=0; k < bdf->pixelsize; ++k)
@@ -506,21 +505,20 @@ static uint32_t DummyNFNT(AFILE *res,BDFFont *bdf,EncMap *map) {
       descentMax=bdf->descent;
 
    putlong(res, 26);		/* Length */
-   putshort(res, SFOneWidth(bdf->sf) != -1 ? 0xf000 : 0xd000);	/* fontType */
-   putshort(res, 0);
-   putshort(res, 255);
-   putshort(res, widMax);
-   putshort(res, kernMax);
-   putshort(res, -descentMax);
-   putshort(res, rectMax);
-   putshort(res, bdf->pixelsize);
-   putshort(res, 0);
-   putshort(res, bdf->ascent);
-   putshort(res, bdf->descent);
-   putshort(res,
-	    (short) (bdf->sf->pfminfo.linegap * bdf->pixelsize /
-		     (bdf->sf->ascent + bdf->sf->descent)));
-   putshort(res, 0);
+   aput_int16_be_checked(SFOneWidth(bdf->sf) != -1 ? 0xf000 : 0xd000,res);	/* fontType */
+   aput_int16_be_checked(0,res);
+   aput_int16_be_checked(255,res);
+   aput_int16_be_checked(widMax,res);
+   aput_int16_be_checked(kernMax,res);
+   aput_int16_be_checked(-descentMax,res);
+   aput_int16_be_checked(rectMax,res);
+   aput_int16_be_checked(bdf->pixelsize,res);
+   aput_int16_be_checked(0,res);
+   aput_int16_be_checked(bdf->ascent,res);
+   aput_int16_be_checked(bdf->descent,res);
+   aput_int16_be_checked((bdf->sf->pfminfo.linegap * bdf->pixelsize /
+		     (bdf->sf->ascent + bdf->sf->descent)),res);
+   aput_int16_be_checked(0,res);
 
    return (rlenpos);
 }
@@ -775,29 +773,25 @@ static uint32_t SFToFOND(AFILE *res,SplineFont *sf,uint32_t id,int dottf,
    /* Fonds are generally marked system heap and sometimes purgeable (resource flags) */
 
    putlong(res, 0);		/* Fill in length later */
-   putshort(res, IsMacMonospaced(sf, map) ? 0x9000 : 0x1000);
-   putshort(res, id);
-   putshort(res, 0);		/* First character */
-   putshort(res, 255);		/* Last character */
-   putshort(res,
-	    (short) ((sf->ascent * (1 << 12)) / (sf->ascent + sf->descent)));
-   putshort(res,
-	    -(short) ((sf->descent * (1 << 12)) /
-		      (sf->ascent + sf->descent)));
-   putshort(res,
-	    (short) ((sf->pfminfo.linegap * (1 << 12)) /
-		     (sf->ascent + sf->descent)));
-   putshort(res,
-	    (short) ((SFMacWidthMax(sf, map) * (1 << 12)) /
-		     (sf->ascent + sf->descent)));
+   aput_int16_be_checked(IsMacMonospaced(sf, map) ? 0x9000 : 0x1000,res);
+   aput_int16_be_checked(id,res);
+   aput_int16_be_checked(0,res);		/* First character */
+   aput_int16_be_checked(255,res);		/* Last character */
+   aput_int16_be_checked(((sf->ascent * (1 << 12)) / (sf->ascent + sf->descent)),res);
+   aput_int16_be_checked(-((sf->descent * (1 << 12)) /
+		      (sf->ascent + sf->descent)),res);
+   aput_int16_be_checked(((sf->pfminfo.linegap * (1 << 12)) /
+		     (sf->ascent + sf->descent)),res);
+   aput_int16_be_checked(((SFMacWidthMax(sf, map) * (1 << 12)) /
+		     (sf->ascent + sf->descent)),res);
    widoffpos=aftell(res);
    putlong(res, 0);		/* Fill in width offset later */
    putlong(res, 0);		/* Fill in kern offset later */
    putlong(res, 0);		/* Fill in style offset later */
    for (i=0; i < 9; ++i)
-      putshort(res, 0);		/* Extra width values */
+      aput_int16_be_checked(0,res);		/* Extra width values */
    putlong(res, 0);		/* Script for international */
-   putshort(res, 2);		/* FOND version */
+   aput_int16_be_checked(2,res);		/* FOND version */
 
    /* Font association table */
    stylecode=realstylecode=MacStyleCode(sf, NULL);
@@ -806,61 +800,59 @@ static uint32_t SFToFOND(AFILE *res,SplineFont *sf,uint32_t id,int dottf,
       if ((sizes[i] >> 16)==1 && (sizes[i] & 0xffff) < 256)
 	 ++j;
    if (dottf) {
-      putshort(res, j + 1 - 1);	/* Number of faces */
-      putshort(res, 0);		/* it's scaleable */
-      putshort(res, stylecode);
-      putshort(res, id);	/* Give it the same ID as the fond */
+      aput_int16_be_checked(j + 1 - 1,res);	/* Number of faces */
+      aput_int16_be_checked(0,res);		/* it's scaleable */
+      aput_int16_be_checked(stylecode,res);
+      aput_int16_be_checked(id,res);	/* Give it the same ID as the fond */
    } else
-      putshort(res, j - 1);	/* Number of faces */
+      aput_int16_be_checked(j - 1,res);	/* Number of faces */
    if (sizes != NULL) {
       for (i=0; sizes[i] != 0; ++i)
 	 if ((sizes[i] >> 16)==1) {
-	    putshort(res, sizes[i] & 0xffff);
-	    putshort(res, stylecode);
-	    putshort(res, id + (sizes[i] & 0xffff));	/* make up a unique ID */
+	    aput_int16_be_checked(sizes[i] & 0xffff,res);
+	    aput_int16_be_checked(stylecode,res);
+	    aput_int16_be_checked(id + (sizes[i] & 0xffff),res);	/* make up a unique ID */
 	 }
    }
 
    /* offset table */
-   putshort(res, 1 - 1);	/* One table */
+   aput_int16_be_checked(1 - 1,res);	/* One table */
    putlong(res, 6);		/* Offset from start of otab to next byte */
 
    /* bounding box table */
-   putshort(res, 1 - 1);	/* One bounding box */
+   aput_int16_be_checked(1 - 1,res);	/* One bounding box */
    SplineFontFindBounds(sf, &b);
-   putshort(res, stylecode);
-   putshort(res, b.minx * (1 << 12) / (sf->ascent + sf->descent));
-   putshort(res, b.miny * (1 << 12) / (sf->ascent + sf->descent));
-   putshort(res, b.maxx * (1 << 12) / (sf->ascent + sf->descent));
-   putshort(res, b.maxy * (1 << 12) / (sf->ascent + sf->descent));
+   aput_int16_be_checked(stylecode,res);
+   aput_int16_be_checked(b.minx * (1 << 12) / (sf->ascent + sf->descent),res);
+   aput_int16_be_checked(b.miny * (1 << 12) / (sf->ascent + sf->descent),res);
+   aput_int16_be_checked(b.maxx * (1 << 12) / (sf->ascent + sf->descent),res);
+   aput_int16_be_checked(b.maxy * (1 << 12) / (sf->ascent + sf->descent),res);
 
    widoffloc=aftell(res);
-   putshort(res, 1 - 1);	/* One style in the width table too */
-   putshort(res, stylecode);
+   aput_int16_be_checked(1 - 1,res);	/* One style in the width table too */
+   aput_int16_be_checked(stylecode,res);
    for (k=0; k <= 256; ++k) {
       if (k >= map->enccount || k==256 || (gid=map->map[k])==-1
 	  || sf->glyphs[gid]==NULL)
-	 putshort(res, 1 << 12);	/* 1 em is default size */
+	 aput_int16_be_checked(1 << 12,res);	/* 1 em is default size */
       else
-	 putshort(res,
-		  sf->glyphs[gid]->width * (1 << 12) / (sf->ascent +
-							sf->descent));
+	 aput_int16_be_checked(sf->glyphs[gid]->width * (1 << 12) / (sf->ascent +
+							sf->descent),res);
    }
 
    kernloc=0;
    if ((cnt=SFMacAnyKerns(sf, map)) > 0) {
       kernloc=aftell(res);
-      putshort(res, 1 - 1);	/* One style in the width table too */
-      putshort(res, stylecode);	/* style */
-      putshort(res, cnt);	/* Count of kerning pairs */
+      aput_int16_be_checked(1 - 1,res);	/* One style in the width table too */
+      aput_int16_be_checked(stylecode,res);	/* style */
+      aput_int16_be_checked(cnt,res);	/* Count of kerning pairs */
       for (k=0; k < 256 && k < map->enccount; ++k) {
 	 if ((gid=map->map[k]) != -1 && sf->glyphs[gid] != NULL) {
 	    for (kp=sf->glyphs[gid]->kerns; kp != NULL; kp=kp->next)
 	       if (map->backmap[kp->sc->orig_pos] < 256) {
 		  aputc(k, res);
 		  aputc(map->backmap[kp->sc->orig_pos], res);
-		  putshort(res,
-			   kp->off * (1 << 12) / (sf->ascent + sf->descent));
+                  aput_int16_be_checked(kp->off * (1 << 12) / (sf->ascent + sf->descent),res);
 	       }
 	 }
       }
@@ -879,7 +871,7 @@ static uint32_t SFToFOND(AFILE *res,SplineFont *sf,uint32_t id,int dottf,
       fontclass |= 0x80;
    if (realstylecode & psf_extend)
       fontclass |= 0x100;
-   putshort(res, fontclass);	/* fontClass */
+   aput_int16_be_checked(fontclass,res);	/* fontClass */
    geoffset=aftell(res);
    putlong(res, 0);		/* Offset to glyph encoding table */ /* Fill in later */
    putlong(res, 0);		/* Reserved, MBZ */
@@ -895,7 +887,7 @@ static uint32_t SFToFOND(AFILE *res,SplineFont *sf,uint32_t id,int dottf,
       strcnt=3;
    for (k=0; k < 48; ++k)
       aputc(strcnt==1 ? 1 : 2, res);	/* All indices point to this font */
-   putshort(res, strcnt);	/* strcnt strings */
+   aput_int16_be_checked(strcnt,res);	/* strcnt strings */
    if (strcnt==1) {
       aputc(strlen(sf->fontname), res);	/* basename is full name */
       /* Mac expects this to be upper case */
@@ -946,7 +938,7 @@ static uint32_t SFToFOND(AFILE *res,SplineFont *sf,uint32_t id,int dottf,
       afseek(res, geoffset, SEEK_SET);
       putlong(res, glyphenc - geoffset + 2);
       afseek(res, glyphenc, SEEK_SET);
-      putshort(res, 0);
+      aput_int16_be_checked(0,res);
    }
 
    end=aftell(res);
@@ -1111,29 +1103,29 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
    sf=faces[0]->sf;
 
    putlong(res, 0);		/* Fill in length later */
-   putshort(res, IsMacMonospaced(sf, faces[0]->map) ? 0x9000 : 0x1000);
-   putshort(res, id);
-   putshort(res, 0);		/* First character */
-   putshort(res, 255);		/* Last character */
-   putshort(res,
-	    (short) ((sf->ascent * (1 << 12)) / (sf->ascent + sf->descent)));
-   putshort(res,
-	    -(short) ((sf->descent * (1 << 12)) /
-		      (sf->ascent + sf->descent)));
-   putshort(res,
-	    (short) ((sf->pfminfo.linegap * (1 << 12)) /
-		     (sf->ascent + sf->descent)));
-   putshort(res,
-	    (short) ((SFMacWidthMax(sf, faces[0]->map) * (1 << 12)) /
-		     (sf->ascent + sf->descent)));
+   aput_int16_be_checked(IsMacMonospaced(sf, faces[0]->map) ? 0x9000 : 0x1000,res);
+   aput_int16_be_checked(id,res);
+   aput_int16_be_checked(0,res);		/* First character */
+   aput_int16_be_checked(255,res);		/* Last character */
+   aput_int16_be_checked(
+	    ((sf->ascent * (1 << 12)) / (sf->ascent + sf->descent)),res);
+   aput_int16_be_checked(
+	    -((sf->descent * (1 << 12)) /
+		      (sf->ascent + sf->descent)),res);
+   aput_int16_be_checked(
+	    ((sf->pfminfo.linegap * (1 << 12)) /
+		     (sf->ascent + sf->descent)),res);
+   aput_int16_be_checked(
+	    ((SFMacWidthMax(sf, faces[0]->map) * (1 << 12)) /
+		     (sf->ascent + sf->descent)),res);
    widoffpos=aftell(res);
    putlong(res, 0);		/* Fill in width offset later */
    putlong(res, 0);		/* Fill in kern offset later */
    putlong(res, 0);		/* Fill in style offset later */
    for (i=0; i < 9; ++i)
-      putshort(res, 0);		/* Extra width values */
+      aput_int16_be_checked(0,res);		/* Extra width values */
    putlong(res, 0);		/* Script for international */
-   putshort(res, 2);		/* FOND version */
+   aput_int16_be_checked(2,res);		/* FOND version */
 
    /* Font association table */
    for (i=cnt=scnt=kcnt=0; i < 96; ++i)
@@ -1147,13 +1139,13 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
 	 if (SFMacAnyKerns(faces[i]->sf, faces[i]->map) > 0)
 	    ++kcnt;
       }
-   putshort(res, cnt - 1);	/* Number of faces */
+   aput_int16_be_checked(cnt - 1,res);	/* Number of faces */
    /* do ttf faces (if any) first */
    for (i=cnt=0; i < 96; ++i)
       if (faces[i] != NULL && faces[i]->id != 0) {
-	 putshort(res, 0);	/* it's scaleable */
-	 putshort(res, i);	/* style */
-	 putshort(res, faces[i]->id);
+	 aput_int16_be_checked(0,res);	/* it's scaleable */
+	 aput_int16_be_checked(i,res);	/* style */
+	 aput_int16_be_checked(faces[i]->id,res);
       }
    /* then do bitmap faces (if any) */ /* Ordered by size damn it */
    for (size=1; size < 256; ++size) {
@@ -1163,64 +1155,64 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
 	       int pointsize =
 		  rint((faces[i]->bdfs[j]->pixelsize * 72.0 / mac_dpi));
 	       if (pointsize==size) {
-		  putshort(res, size);
-		  putshort(res, i);	/* style */
-		  putshort(res, faces[i]->ids[j]);
+		  aput_int16_be_checked(size,res);
+		  aput_int16_be_checked(i,res);	/* style */
+		  aput_int16_be_checked(faces[i]->ids[j],res);
 	       }
 	    }
 	 }
    }
 
    /* offset table */
-   putshort(res, 1 - 1);	/* One table */
+   aput_int16_be_checked(1 - 1,res);	/* One table */
    putlong(res, 6);		/* Offset from start of otab to next byte */
 
    /* bounding box table */
-   putshort(res, scnt - 1);	/* One bounding box per style */
+   aput_int16_be_checked(scnt - 1,res);	/* One bounding box per style */
    for (i=0; i < 96; ++i)
       if (faces[i] != NULL) {
 	 SplineFontFindBounds(faces[i]->sf, &b);
-	 putshort(res, i);	/* style */
-	 putshort(res,
+	 aput_int16_be_checked(i,res);	/* style */
+	 aput_int16_be_checked(
 		  b.minx * (1 << 12) / (faces[i]->sf->ascent +
-					faces[i]->sf->descent));
-	 putshort(res,
+					faces[i]->sf->descent),res);
+	 aput_int16_be_checked(
 		  b.miny * (1 << 12) / (faces[i]->sf->ascent +
-					faces[i]->sf->descent));
-	 putshort(res,
+					faces[i]->sf->descent),res);
+	 aput_int16_be_checked(
 		  b.maxx * (1 << 12) / (faces[i]->sf->ascent +
-					faces[i]->sf->descent));
-	 putshort(res,
+					faces[i]->sf->descent),res);
+	 aput_int16_be_checked(
 		  b.maxy * (1 << 12) / (faces[i]->sf->ascent +
-					faces[i]->sf->descent));
+					faces[i]->sf->descent),res);
       }
 
    widoffloc=aftell(res);
-   putshort(res, scnt - 1);	/* One set of width metrics per style */
+   aput_int16_be_checked(scnt - 1,res);	/* One set of width metrics per style */
    for (i=0; i < 96; ++i)
       if (faces[i] != NULL) {
-	 putshort(res, i);
+	 aput_int16_be_checked(i,res);
 	 for (k=0; k <= 257; ++k) {
 	    if (k >= faces[i]->map->enccount || k >= 256 ||
 		(gid=faces[i]->map->map[k])==-1
 		|| faces[i]->sf->glyphs[gid]==NULL)
-	       putshort(res, 1 << 12);	/* 1 em is default size */
+	       aput_int16_be_checked(1 << 12,res);	/* 1 em is default size */
 	    else
-	       putshort(res,
+	       aput_int16_be_checked(
 			faces[i]->sf->glyphs[gid]->width * (1 << 12) /
-			(faces[i]->sf->ascent + faces[i]->sf->descent));
+			(faces[i]->sf->ascent + faces[i]->sf->descent),res);
 	 }
       }
 
    kernloc=0;
    if (kcnt > 0) {
       kernloc=aftell(res);
-      putshort(res, kcnt - 1);	/* Number of styles with kern pairs */
+      aput_int16_be_checked(kcnt - 1,res);	/* Number of styles with kern pairs */
       for (i=0; i < 96; ++i)
 	 if (faces[i] != NULL
 	     && (cnt=SFMacAnyKerns(faces[i]->sf, faces[i]->map)) > 0) {
-	    putshort(res, i);	/* style */
-	    putshort(res, cnt);	/* Count of kerning pairs */
+	    aput_int16_be_checked(i,res);	/* style */
+	    aput_int16_be_checked(cnt,res);	/* Count of kerning pairs */
 	    for (k=0; k < 256 && k < faces[i]->map->enccount; ++k) {
 	       if ((gid=faces[i]->map->map[k]) != -1
 		   && faces[i]->sf->glyphs[gid] != NULL) {
@@ -1229,9 +1221,9 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
 		     if (faces[i]->map->backmap[kp->sc->orig_pos] < 256) {
 			aputc(k, res);
 			aputc(faces[i]->map->backmap[kp->sc->orig_pos], res);
-			putshort(res,
+			aput_int16_be_checked(
 				 kp->off * (1 << 12) / (sf->ascent +
-							sf->descent));
+							sf->descent),res);
 		     }
 	       }
 	    }
@@ -1278,7 +1270,7 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
       fontclass |= 0x80;
    if (psfaces[psf_extend] != NULL)
       fontclass |= 0x100;
-   putshort(res, fontclass);	/* fontClass */
+   aput_int16_be_checked(fontclass,res);	/* fontClass */
    geoffset=aftell(res);
    putlong(res, 0);		/* Offset to glyph encoding table */ /* Fill in later */
    putlong(res, 0);		/* Reserved, MBZ */
@@ -1293,7 +1285,7 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
 	 aputc(1, res);
       else
 	 aputc(2, res);
-   putshort(res, strcnt);	/* strcnt strings */
+   aput_int16_be_checked(strcnt,res);	/* strcnt strings */
    putpnsstring(res, familyname, famlen);
    if (has_hyphen)
       has_hyphen=pscnt++;	/* Space for hyphen if present */
@@ -1339,7 +1331,7 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
       afseek(res, geoffset, SEEK_SET);
       putlong(res, glyphenc - geoffset + 2);
       afseek(res, glyphenc, SEEK_SET);
-      putshort(res, 0);		/* Greg: an empty Glyph encoding table */
+      aput_int16_be_checked(0,res);		/* Greg: an empty Glyph encoding table */
    }
 
    end=aftell(res);
@@ -1377,28 +1369,28 @@ static void DumpResourceMap(AFILE *res,struct resourcetype *rtypes,
    }
 
    putlong(res, 0);		/* Some mac specific thing I don't understand */
-   putshort(res, 0);		/* another */
-   putshort(res, 0);		/* another */
+   aput_int16_be_checked(0,res);		/* another */
+   aput_int16_be_checked(0,res);		/* another */
 
-   putshort(res, 4 + aftell(res) - rend);	/* Offset to resource types */
-   putshort(res, 0);		/* Don't know where the names go yet */
+   aput_int16_be_checked(4 + aftell(res) - rend,res);	/* Offset to resource types */
+   aput_int16_be_checked(0,res);		/* Don't know where the names go yet */
 
    rtypesstart=aftell(res);
    for (i=0; rtypes[i].tag != 0; ++i);
-   putshort(res, i - 1);	/* Count of different types */
+   aput_int16_be_checked(i - 1,res);	/* Count of different types */
    for (i=0; rtypes[i].tag != 0; ++i) {
       putlong(res, rtypes[i].tag);	/* Resource type */
-      putshort(res, 0);		/* Number of resources of this type */
-      putshort(res, 0);		/* Offset to the resource list */
+      aput_int16_be_checked(0,res);		/* Number of resources of this type */
+      aput_int16_be_checked(0,res);		/* Offset to the resource list */
    }
 
    /* Now the resource lists... */
    for (i=0; rtypes[i].tag != 0; ++i) {
       rtypes[i].resloc=aftell(res);
       for (j=0; rtypes[i].res[j].pos != 0; ++j) {
-	 putshort(res, rtypes[i].res[j].id);
+	 aput_int16_be_checked(rtypes[i].res[j].id,res);
 	 rtypes[i].res[j].nameptloc=aftell(res);
-	 putshort(res, 0xffff);	/* assume no name at first */
+	 aput_int16_be_checked(0xffff,res);	/* assume no name at first */
 	 aputc(rtypes[i].res[j].flags, res);	/* resource flags */
 	 /* three byte resource offset */
 	 aputc(((rtypes[i].res[j].pos - resource_base) >> 16) & 0xff, res);
@@ -1426,15 +1418,15 @@ static void DumpResourceMap(AFILE *res,struct resourcetype *rtypes,
    for (i=0; rtypes[i].tag != 0; ++i) {
       putlong(res, rtypes[i].tag);	/* Resource type */
       for (j=0; rtypes[i].res[j].pos != 0; ++j);
-      putshort(res, j - 1);	/* Number of resources of this type */
-      putshort(res, rtypes[i].resloc - rtypesstart);
+      aput_int16_be_checked(j - 1,res);	/* Number of resources of this type */
+      aput_int16_be_checked(rtypes[i].resloc - rtypesstart,res);
    }
    /* And go back and fixup any name pointers */
    for (i=0; rtypes[i].tag != 0; ++i) {
       for (j=0; rtypes[i].res[j].pos != 0; ++j) {
 	 if (rtypes[i].res[j].name != NULL) {
 	    afseek(res, rtypes[i].res[j].nameptloc, SEEK_SET);
-	    putshort(res, rtypes[i].res[j].nameloc - namestart);
+	    aput_int16_be_checked(rtypes[i].res[j].nameloc - namestart,res);
 	 }
       }
    }
@@ -1452,11 +1444,11 @@ static void DumpResourceMap(AFILE *res,struct resourcetype *rtypes,
    }
 
    putlong(res, 0);		/* Some mac specific thing I don't understand */
-   putshort(res, 0);		/* another */
-   putshort(res, 0);		/* another */
+   aput_int16_be_checked(0,res);		/* another */
+   aput_int16_be_checked(0,res);		/* another */
 
-   putshort(res, 4 + aftell(res) - rend);	/* Offset to resource types */
-   putshort(res, namestart - rend);	/* name section */
+   aput_int16_be_checked(4 + aftell(res) - rend,res);	/* Offset to resource types */
+   aput_int16_be_checked(namestart - rend,res);	/* name section */
 
    afseek(res, rfork_base, SEEK_SET);
    /* Fixup main resource header */
@@ -2991,7 +2983,7 @@ static SplineFont *IsResourceFork(AFILE *f,long offset,char *filename,
    cnt=aget_uint16_be(f) + 1;
    for (i=0; i < cnt; ++i) {
       tag=aget_int32_be(f);
-      /* printf( "%c%c%c%c\n", tag>>24, (tag>>16)&0xff, (tag>>8)&0xff, tag&0xff ); */
+      /* printf("%c%c%c%c\n", tag>>24, (tag>>16)&0xff, (tag>>8)&0xff, tag&0xff ); */
       subcnt=aget_uint16_be(f) + 1;
       rpos=type_list + aget_uint16_be(f);
       sf=NULL;

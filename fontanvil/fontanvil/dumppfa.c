@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: dumppfa.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -75,13 +75,13 @@ static void encodestrout(AFILE *f,unsigned char *value,int len,int leniv) {
    while (leniv>0) {
       plain=randombytes[leniv-- % 10];
       cypher=(plain ^ (r >> 8));
-      r=(cypher + r) * c1 + c2;
+      r=(cypher+r) * c1+c2;
       afwrite(&cypher,1,1,f);
    }
    while (len-->0) {
       plain=*value++;
       cypher=(plain ^ (r >> 8));
-      r=(cypher + r) * c1 + c2;
+      r=(cypher+r) * c1+c2;
       afwrite(&cypher,1,1,f);
    }
 }
@@ -125,7 +125,7 @@ static void dumpascomments(AFILE *f,const char *buf) {
 static int isStdEncoding(char *encoding[256]) {
    int i;
 
-   for (i=0; i < 256; ++i)
+   for (i=0; i<256; ++i)
       if (strcmp(encoding[i], ".notdef")==0)
 	 /* that's ok */ ;
       else if (strcmp(encoding[i], AdobeStandardEncoding[i]) != 0)
@@ -142,7 +142,7 @@ static void dumpblues(AFILE *f,char *name,double *arr,int len,char *ND) {
    if (len & 1)
       ++len;
    afprintf(f,"/%s [",name);
-   for (i=0; i < len; ++i)
+   for (i=0; i<len; ++i)
       afprintf(f,"%g ",(double)arr[i]);
    afprintf(f,"]%s\n",ND);
 }
@@ -155,7 +155,7 @@ static void dumpdblmaxarray(AFILE *f,
    for (--len; len >= 0 && arr[len]==0.0; --len);
    ++len;
    afprintf(f,"/%s [", name);
-   for (i=0; i < len; ++i)
+   for (i=0; i<len; ++i)
       afprintf(f,"%g ", (double) arr[i]);
    afprintf(f,"]%s%s\n", modifiers, ND);
 }
@@ -166,7 +166,7 @@ static void dumpdblarray(AFILE *f,
    int i;
 
    afprintf(f,"/%s %c", name, exec?'{':'[');
-   for (i=0; i < len; ++i)
+   for (i=0; i<len; ++i)
       afprintf(f,"%g ", arr[i]);
    afprintf(f,"%c%sdef\n", exec?'}':']', modifiers);
 }
@@ -183,7 +183,7 @@ struct psdict *PSDictCopy(struct psdict *dict) {
    ret->next=dict->next;
    ret->keys=calloc(ret->cnt, sizeof(char *));
    ret->values=calloc(ret->cnt, sizeof(char *));
-   for (i=0; i < dict->next; ++i) {
+   for (i=0; i<dict->next; ++i) {
       ret->keys[i]=fastrdup(dict->keys[i]);
       ret->values[i]=fastrdup(dict->values[i]);
    }
@@ -197,7 +197,7 @@ int PSDictFindEntry(struct psdict *dict,char *key) {
    if (dict==NULL)
       return (-1);
 
-   for (i=0; i < dict->next; ++i)
+   for (i=0; i<dict->next; ++i)
       if (strcmp(dict->keys[i], key)==0)
 	 return (i);
 
@@ -210,7 +210,7 @@ char *PSDictHasEntry(struct psdict *dict,char *key) {
    if (dict==NULL)
       return (NULL);
 
-   for (i=0; i < dict->next; ++i)
+   for (i=0; i<dict->next; ++i)
       if (strcmp(dict->keys[i], key)==0)
 	 return (dict->values[i]);
 
@@ -223,7 +223,7 @@ int PSDictRemoveEntry(struct psdict *dict,char *key) {
    if (dict==NULL)
       return (false);
 
-   for (i=0; i < dict->next; ++i)
+   for (i=0; i<dict->next; ++i)
       if (strcmp(dict->keys[i], key)==0)
 	 break;
    if (i==dict->next)
@@ -231,9 +231,9 @@ int PSDictRemoveEntry(struct psdict *dict,char *key) {
    free(dict->keys[i]);
    free(dict->values[i]);
    --dict->next;
-   while (i < dict->next) {
-      dict->keys[i]=dict->keys[i + 1];
-      dict->values[i]=dict->values[i + 1];
+   while (i<dict->next) {
+      dict->keys[i]=dict->keys[i+1];
+      dict->values[i]=dict->values[i+1];
       ++i;
    }
 
@@ -246,7 +246,7 @@ int PSDictChangeEntry(struct psdict *dict,char *key,char *newval) {
    if (dict==NULL)
       return (-1);
 
-   for (i=0; i < dict->next; ++i)
+   for (i=0; i<dict->next; ++i)
       if (strcmp(dict->keys[i], key)==0)
 	 break;
    if (i==dict->next) {
@@ -274,8 +274,8 @@ static void dumpsubrs(AFILE *f,SplineFont *sf, struct pschars *subrs) {
    if ((pt=PSDictHasEntry(sf->private, "lenIV")) != NULL)
       leniv=strtol(pt, NULL, 10);
    afprintf(f,"/Subrs %d array\n", subrs->next);
-   for (i=0; i < subrs->next; ++i) {
-      afprintf(f,"dup %d %d RD ", i, subrs->lens[i] + leniv);
+   for (i=0; i<subrs->next; ++i) {
+      afprintf(f,"dup %d %d RD ", i, subrs->lens[i]+leniv);
       encodestrout(f,subrs->values[i],subrs->lens[i],leniv);
       afputs(" NP\n",f);
    }
@@ -293,11 +293,11 @@ static int dumpcharstrings(AFILE *f,
       leniv=strtol(pt, NULL, 10);
    afprintf(f,"2 index /CharStrings %d dict dup begin\n",
 	 chars->cnt);
-   for (i=0; i < chars->next; ++i) {
+   for (i=0; i<chars->next; ++i) {
       if (chars->keys[i]==NULL)
 	 break;
       afprintf(f,"/%s %d RD ", chars->keys[i],
-	    chars->lens[i] + leniv);
+	    chars->lens[i]+leniv);
       encodestrout(f,chars->values[i], chars->lens[i], leniv);
       afputs(" ND\n",f);
    }
@@ -347,7 +347,7 @@ static int InvertTransform(double inverse[6],double transform[6]) {
    double temp[6], val;
    int i;
 
-   for (i=0; i < 6; ++i)
+   for (i=0; i<6; ++i)
       temp[i]=transform[i];
 
    inverse[0]=inverse[3]=1;
@@ -365,7 +365,7 @@ static int InvertTransform(double inverse[6],double transform[6]) {
       inverse[0]=inverse[3]=0;
       inverse[1]=inverse[2]=1;
    }
-   val=1 / temp[0];
+   val=1/temp[0];
    temp[1] *= val;
    inverse[0] *= val;
    inverse[1] *= val;
@@ -379,7 +379,7 @@ static int InvertTransform(double inverse[6],double transform[6]) {
    inverse[5] -= val * inverse[1];
    if (temp[3]==0)
       return (false);
-   val=1 / temp[3];
+   val=1/temp[3];
    inverse[2] *= val;
    inverse[3] *= val;
    val=temp[1];
@@ -422,7 +422,7 @@ static void dumpGradient(AFILE *f,
       afprintf(f,"      /FunctionType 0\n");	/* Iterpolation between samples */
       afprintf(f,"      /Domain [%g %g]\n",
 	    grad->grad_stops[0].offset,
-	    grad->grad_stops[grad->stop_cnt - 1].offset);
+	    grad->grad_stops[grad->stop_cnt-1].offset);
       afprintf(f,"      /Range [0 1.0 0 1.0 0 1.0]\n");
       afprintf(f,"      /Size [%d]\n",
 	    grad->stop_cnt==2?2:101);
@@ -450,23 +450,23 @@ static void dumpGradient(AFILE *f,
 	 for (i=0; i <= 100; ++i) {
 	    int col;
 	    double t=grad->grad_stops[0].offset +
-	       (grad->grad_stops[grad->stop_cnt - 1].offset -
-		grad->grad_stops[0].offset) * i / 100.0;
-	    for (j=0; j < grad->stop_cnt; ++j)
+	       (grad->grad_stops[grad->stop_cnt-1].offset -
+		grad->grad_stops[0].offset) * i/100.0;
+	    for (j=0; j<grad->stop_cnt; ++j)
 	       if (t <= grad->grad_stops[j].offset)
 		  break;
 	    if (j==grad->stop_cnt)
-	       col=grad->grad_stops[j - 1].col;
+	       col=grad->grad_stops[j-1].col;
 	    else if (t==grad->grad_stops[j].offset)
 	       col=grad->grad_stops[j].col;
 	    else {
 	       double percent =
 		  (t -
 		   grad->grad_stops[j -
-				    1].offset) / (grad->grad_stops[j].offset -
+				    1].offset)/(grad->grad_stops[j].offset -
 						  grad->grad_stops[j -
 								   1].offset);
-	       uint32_t col1=grad->grad_stops[j - 1].col;
+	       uint32_t col1=grad->grad_stops[j-1].col;
 	       uint32_t col2=grad->grad_stops[j].col;
 	       int red, green, blue;
 
@@ -475,13 +475,13 @@ static void dumpGradient(AFILE *f,
 	       if (col2==COLOR_INHERITED)
 		  col2=0x000000;
 	       red =
-		  ((col1 >> 16) & 0xff) * (1 - percent) +
+		  ((col1 >> 16) & 0xff) * (1-percent) +
 		  ((col2 >> 16) & 0xff) * percent;
 	       green =
-		  ((col1 >> 8) & 0xff) * (1 - percent) +
+		  ((col1 >> 8) & 0xff) * (1-percent) +
 		  ((col2 >> 8) & 0xff) * percent;
 	       blue =
-		  ((col1) & 0xff) * (1 - percent) + ((col2) & 0xff) * percent;
+		  ((col1) & 0xff) * (1-percent)+((col2) & 0xff) * percent;
 	       col=(red << 16) | (green << 8) | blue;
 	    }
 	    if (col==COLOR_INHERITED)
@@ -526,14 +526,14 @@ static void dumpPattern(AFILE *f,
       afprintf(f,"  /TilingType 1\n");
       afprintf(f,"  /BBox [%g %g %g %g]\n", b.minx, b.miny, b.maxx,
 	    b.maxy);
-      afprintf(f,"  /XStep %g\n", b.maxx - b.minx);
-      afprintf(f,"  /YStep %g\n", b.maxy - b.miny);
+      afprintf(f,"  /XStep %g\n", b.maxx-b.minx);
+      afprintf(f,"  /YStep %g\n", b.maxy-b.miny);
       afprintf(f,"  /PaintProc { begin\n");	/* The begin pops the pattern dictionary off the stack. Don't really use it, but do need the pop */
       SC_PSDump(f,pattern_sc,true,false,ly_all);
       afprintf(f,"  end }\n");
       memset(scale, 0, sizeof(scale));
-      scale[0]=pat->width / (b.maxx - b.minx);
-      scale[3]=pat->height / (b.maxy - b.miny);
+      scale[0]=pat->width/(b.maxx-b.minx);
+      scale[3]=pat->height/(b.maxy-b.miny);
       MatMultiply(scale, pat->transform, result);
       afprintf(f,">> [%g %g %g %g %g %g] makepattern setpattern\n",
 	    result[0], result[1], result[2], result[3], result[4], result[5]);
@@ -584,11 +584,11 @@ static void dumppenbrush(AFILE *f,
       b=(brush->col) & 0xff;
       if (r==g && b==g)
 	 afprintf(f,(pdfopers?"%g G\n":"%g setgray\n"),
-	       r / 255.0);
+	       r/255.0);
       else
 	afprintf(f,(pdfopers?"%g %g %g RG\n":"%g %g %g setrgbcolor\n"),
 		 r/255.0,g/255.0,b/255.0);
-      if (pdfopers && brush->opacity < 1.0 && brush->opacity >= 0)
+      if (pdfopers && brush->opacity<1.0 && brush->opacity >= 0)
 	 afprintf(f,"/gs_stroke_opacity_%g gs\n", brush->opacity);
    }
 }
@@ -618,7 +618,7 @@ static void dumppen(AFILE *f,
 
       aputc('[',f);
       for (i=0;
-	   i < sizeof(pen->dashes) / sizeof(pen->dashes[0])
+	   i<sizeof(pen->dashes)/sizeof(pen->dashes[0])
 	   && pen->dashes[i] != 0; ++i)
 	 afprintf(f,"%d ", pen->dashes[i]);
       afprintf(f,pdfopers?"] 0 d\n":"] 0 setdash\n");
@@ -631,25 +631,25 @@ static void PSDumpBinaryData(AFILE *f,uint8_t *bytes,int rows,
    int i,j,cnt,group_cnt;
    const int max_string=65536;
 
-   if (useful_bytes_per_row * rows < max_string) {
+   if (useful_bytes_per_row * rows<max_string) {
       /* It all fits in one string. Easy peasy */
       afputs("{<~",f);
       ps=base85_afile(f);
       if (bytes_per_row==useful_bytes_per_row)
 	afwrite(bytes,bytes_per_row,rows,f);
       else
-	for (i=0; i < rows; ++i)
+	for (i=0; i<rows; ++i)
 	  afwrite(bytes+i*bytes_per_row,1,useful_bytes_per_row,ps);
       afclose(ps);
       aputc('}',f);
 
    } else {
-      cnt=(max_string - 1) / useful_bytes_per_row;
+      cnt=(max_string-1)/useful_bytes_per_row;
       if (cnt==0)
 	 cnt=1;
       group_cnt=-1;
       for (i=0;i<rows;) {
-	 if (i + cnt >= rows)
+	 if (i+cnt >= rows)
 	    afputs("{currentdict /ff-image-cnt undef <~",f);
 	 else {
 	    afprintf(f,"{{/ff-image-cnt %d def <~",i/cnt);
@@ -661,7 +661,7 @@ static void PSDumpBinaryData(AFILE *f,uint8_t *bytes,int rows,
 	 afclose(ps);
 	 afputs("}\n",f);
       }
-      for (i=group_cnt - 1; i >= 0; --i) {
+      for (i=group_cnt-1; i >= 0; --i) {
 	 afprintf(f,"ff-image-cnt %d eq 3 1 roll ifelse}\n", i);
       }
       afputs("currentdict /ff-image-cnt known not 3 1 roll ifelse}\n",f);
@@ -675,14 +675,14 @@ static void PSDump24BinaryData(AFILE *f, struct _GImage *base) {
    register uint32_t *pt, *end;
    const int max_string=65536;
 
-   if (3 * base->width * base->height < max_string) {
+   if (3 * base->width * base->height<max_string) {
       /* It all fits in one string. Easy peasy */
       afprintf(f,"{<~");
       ps=base85_afile(f);
-      for (i=0; i < base->height; ++i) {
-	 pt=(uint32_t *) (base->data + i * base->bytes_per_line);
-	 end=pt + base->width;
-	 while (pt < end) {
+      for (i=0; i<base->height; ++i) {
+	 pt=(uint32_t *) (base->data+i * base->bytes_per_line);
+	 end=pt+base->width;
+	 while (pt<end) {
 	    val=*pt++;
 	    aputc(COLOR_RED(val),ps);
 	    aputc(COLOR_GREEN(val),ps);
@@ -693,22 +693,22 @@ static void PSDump24BinaryData(AFILE *f, struct _GImage *base) {
       aputc('}',f);
 
    } else {
-      cnt=(max_string - 1) / (3 * base->width);
+      cnt=(max_string-1)/(3 * base->width);
       if (cnt==0)
 	 cnt=1;
       group_cnt=-1;
-      for (i=0; i < base->height;) {
-	 if (i + cnt >= base->height)
+      for (i=0; i<base->height;) {
+	 if (i+cnt >= base->height)
 	    afprintf(f,"{currentdict /ff-image-cnt undef <~");
 	 else {
-	    afprintf(f,"{{/ff-image-cnt %d def <~", i / cnt);
-	    group_cnt=i / cnt;
+	    afprintf(f,"{{/ff-image-cnt %d def <~", i/cnt);
+	    group_cnt=i/cnt;
 	 }
 	 ps=base85_afile(f);
-	 for (j=0; j < cnt && i < base->height; ++i, ++j) {
-	    pt=(uint32_t *) (base->data + i * base->bytes_per_line);
-	    end=pt + base->width;
-	    while (pt < end) {
+	 for (j=0; j<cnt && i<base->height; ++i, ++j) {
+	    pt=(uint32_t *) (base->data+i * base->bytes_per_line);
+	    end=pt+base->width;
+	    while (pt<end) {
 	       val=*pt++;
 	       aputc(COLOR_RED(val),ps);
 	       aputc(COLOR_GREEN(val),ps);
@@ -718,7 +718,7 @@ static void PSDump24BinaryData(AFILE *f, struct _GImage *base) {
 	 afclose(ps);
 	 afprintf(f,"}\n");
       }
-      for (i=group_cnt - 1; i >= 0; --i) {
+      for (i=group_cnt-1; i >= 0; --i) {
 	 afprintf(f,"ff-image-cnt %d eq 3 1 roll ifelse}\n", i);
       }
       afputs("currentdict /ff-image-cnt known not 3 1 roll ifelse}\n",f);
@@ -744,7 +744,7 @@ static void PSDrawMonoImg(AFILE *f,
 static void PSSetIndexColors(AFILE *f,GClut *clut) {
    int i;
 
-   afprintf(f,"[/Indexed /DeviceRGB %d <\n", clut->clut_len - 1);
+   afprintf(f,"[/Indexed /DeviceRGB %d <\n", clut->clut_len-1);
    for (i=0; i<clut->clut_len; ++i)
       afprintf(f,"%02X%02X%02X%s", COLOR_RED(clut->clut[i]),
 	    COLOR_GREEN(clut->clut[i]), COLOR_BLUE(clut->clut[i]),
@@ -795,7 +795,7 @@ static void dumpimage(AFILE *f,
    if (pdfopers) {
       afprintf(f,"  q 1 0 0 1 %g %g cm %g 0 0 %g 0 0 cm\n",
 	    (double) imgl->xoff,
-	    (double) (imgl->yoff - imgl->yscale * base->height),
+	    (double) (imgl->yoff-imgl->yscale * base->height),
 	    (double) (imgl->xscale * base->width),
 	    (double) (imgl->yscale * base->height));
       afprintf(f,"/%s_ly%d_%d_image", sc->name, layer, icnt);
@@ -804,7 +804,7 @@ static void dumpimage(AFILE *f,
    } else {
       afprintf(f,"  gsave %g %g translate %g %g scale\n",
 	    (double) imgl->xoff,
-	    (double) (imgl->yoff - imgl->yscale * base->height),
+	    (double) (imgl->yoff-imgl->yscale * base->height),
 	    (double) (imgl->xscale * base->width),
 	    (double) (imgl->yscale * base->height));
       if (base->image_type==it_mono) {
@@ -832,7 +832,7 @@ void SC_PSDump(AFILE *f,
       first=last=ly_fore;
    if (sc->parent->multilayer) {
       first=ly_fore;
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    }
    for (i=first; i <= last; ++i) {
       if (sc->layers[i].splines != NULL) {
@@ -925,9 +925,9 @@ void SC_PSDump(AFILE *f,
 	       int j;
 
 	       for (ref=sc->layers[i].refs; ref != NULL; ref=ref->next) {
-		  for (j=0; j < ref->layer_cnt; ++j) {
+		  for (j=0; j<ref->layer_cnt; ++j) {
 		     temp=ref->layers[j].splines;
-		     /*if ( sc->layers[i].order2 )
+		     /*if (sc->layers[i].order2 )
 		        temp=SplineSetsPSApprox(temp); */
 		     afputs(pdfopers?"q":"gsave ",f);
 		     dumpsplineset(f, temp, pdfopers,
@@ -951,7 +951,7 @@ void SC_PSDump(AFILE *f,
 			afputs(pdfopers?"S ":"stroke ",f);
 		     }
 		     afputs(pdfopers?"Q\n":"grestore\n",f);
-		     /* if ( sc->layers[layer].order2 )
+		     /* if (sc->layers[layer].order2 )
 		        SplinePointListsFree(temp); */
 		  }
 	       }
@@ -1022,7 +1022,7 @@ static int SCSetsColor(SplineChar *sc) {
    RefChar *r;
    ImageList *img;
 
-   for (l=ly_fore; l < sc->layer_cnt; ++l) {
+   for (l=ly_fore; l<sc->layer_cnt; ++l) {
       if (sc->layers[l].fill_brush.col != COLOR_INHERITED)
 	 return (true);
       if (sc->layers[l].fill_brush.gradient != NULL
@@ -1081,7 +1081,7 @@ static int dumpcharprocs(AFILE *f,
 
    cnt=0;
    notdefpos=SFFindNotdef(sf, -2);
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (SCWorthOutputting(sf->glyphs[i])) {
 	 if (strcmp(sf->glyphs[i]->name, ".notdef") != 0)
 	    ++cnt;
@@ -1095,12 +1095,12 @@ static int dumpcharprocs(AFILE *f,
    else {
       afprintf(f,
 	    "  /.notdef { %d 0 0 0 0 0 setcachedevice } bind def\n",
-	    sf->ascent + sf->descent);
+	    sf->ascent+sf->descent);
       if (sf->glyphs[0] != NULL
 	  && strcmp(sf->glyphs[0]->name, ".notdef")==0)
 	 ++i;
    }
-   for (; i < sf->glyphcnt; ++i)
+   for (; i<sf->glyphcnt; ++i)
       if (i != notdefpos) {
 	 if (SCWorthOutputting(sf->glyphs[i]))
 	    dumpproc(f, sf->glyphs[i]);
@@ -1120,7 +1120,7 @@ static struct pschars *initsubrs(int needsflex,MMSet *mm) {
    sub->cnt=10;
    sub->lens=malloc(10 * sizeof(int));
    sub->values=malloc(10 * sizeof(uint8_t *));
-   for (i=0; i < 5; ++i) {
+   for (i=0; i<5; ++i) {
       ++sub->next;
       sub->values[i]=(uint8_t *) copyn((const char *) subrs[i], subrslens[i]);
       sub->lens[i]=subrslens[i];
@@ -1128,11 +1128,11 @@ static struct pschars *initsubrs(int needsflex,MMSet *mm) {
    sub->next=5;
    if (mm != NULL) {
       static int cnts[]={ 1,2,3,4,6 };
-      for (; i < 10 && cnts[i - 5] * mm->instance_count < 22; ++i) {
+      for (; i<10 && cnts[i-5] * mm->instance_count<22; ++i) {
 	 ++sub->next;
 	 sub->values[i] =
 	    (uint8_t *) copyn((const char *) subrs[i], subrslens[i]);
-	 sub->values[i][0] += cnts[i - 5] * mm->instance_count;
+	 sub->values[i][0] += cnts[i-5] * mm->instance_count;
 	 sub->lens[i]=subrslens[i];
       }
       sub->next=10;
@@ -1174,7 +1174,7 @@ static void dumpothersubrs(AFILE *f,
 	 aputc('\n',f);
       }
       afputs("[ ",f);	/* start array */
-      for (j=0; j < min_subr; ++j)
+      for (j=0; j<min_subr; ++j)
 	 afputs(" {}\n",f);
       for (; j <= max_subr; ++j)
 	 for (i=0; othersubrs[j][i] != NULL; ++i) {
@@ -1192,33 +1192,33 @@ static void dumpothersubrs(AFILE *f,
 	 /*  an example from Adobe (and they don't provide one anyway) */
 	 afprintf(f,"{ %d 1 roll $Blend } bind\n",
 	       mm->instance_count);
-	 if (2 * mm->instance_count < 22)
+	 if (2 * mm->instance_count<22)
 	    afprintf(f,
 		  "{ exch %d %d roll $Blend exch %d 2 roll $Blend } bind\n",
-		  2 * mm->instance_count, 1 - mm->instance_count,
-		  mm->instance_count + 1);
-	 if (3 * mm->instance_count < 22)
+		  2 * mm->instance_count, 1-mm->instance_count,
+		  mm->instance_count+1);
+	 if (3 * mm->instance_count<22)
 	    afprintf(f,
 		  "{ 3 -1 roll %d %d roll $Blend 3 -1 roll %d %d roll $Blend 3 -1 roll %d 2 roll $Blend } bind\n",
-		  3 * mm->instance_count, 1 - mm->instance_count,
-		  2 * mm->instance_count + 1, 1 - mm->instance_count,
-		  mm->instance_count + 2);
-	 if (4 * mm->instance_count < 22)
+		  3 * mm->instance_count, 1-mm->instance_count,
+		  2 * mm->instance_count+1, 1-mm->instance_count,
+		  mm->instance_count+2);
+	 if (4 * mm->instance_count<22)
 	    afprintf(f,
 		  "{ 4 -1 roll %d %d roll $Blend 4 -1 roll %d %d roll $Blend 4 -1 roll %d %d roll $Blend 4 -1 roll %d 3 roll $Blend } bind\n",
-		  4 * mm->instance_count, 1 - mm->instance_count,
-		  3 * mm->instance_count + 1, 1 - mm->instance_count,
-		  2 * mm->instance_count + 2, 1 - mm->instance_count,
-		  mm->instance_count + 3);
-	 if (6 * mm->instance_count < 22)
+		  4 * mm->instance_count, 1-mm->instance_count,
+		  3 * mm->instance_count+1, 1-mm->instance_count,
+		  2 * mm->instance_count+2, 1-mm->instance_count,
+		  mm->instance_count+3);
+	 if (6 * mm->instance_count<22)
 	    afprintf(f,
 		  "{ 6 -1 roll %d %d roll $Blend 6 -1 roll %d %d roll $Blend 6 -1 roll %d %d roll $Blend 6 -1 roll %d %d roll $Blend 6 -1 roll %d %d roll $Blend 6 -1 roll %d 5 roll $Blend } bind\n",
-		  6 * mm->instance_count, 1 - mm->instance_count,
-		  5 * mm->instance_count + 1, 1 - mm->instance_count,
-		  4 * mm->instance_count + 2, 1 - mm->instance_count,
-		  3 * mm->instance_count + 3, 1 - mm->instance_count,
-		  2 * mm->instance_count + 4, 1 - mm->instance_count,
-		  mm->instance_count + 5);
+		  6 * mm->instance_count, 1-mm->instance_count,
+		  5 * mm->instance_count+1, 1-mm->instance_count,
+		  4 * mm->instance_count+2, 1-mm->instance_count,
+		  3 * mm->instance_count+3, 1-mm->instance_count,
+		  2 * mm->instance_count+4, 1-mm->instance_count,
+		  mm->instance_count+5);
       }
       afputs("] ",f);	/* End array */
    }
@@ -1237,24 +1237,24 @@ static void dumpmmprivatearr(AFILE *f,char *privates[16],
 			     int instance_count) {
    int j;
 
-   for (j=0; j < instance_count; ++j)
+   for (j=0; j<instance_count; ++j)
       while (*privates[j]==' ')
 	 ++privates[j];
 
    aputc('[',f);
    if (*privates[0]=='[') {
       /* It's an array */
-      for (j=0; j < instance_count; ++j)
+      for (j=0; j<instance_count; ++j)
 	 ++privates[j];
       while (*privates[0] != ']' && *privates[0] != '\0') {
-	 for (j=0; j < instance_count; ++j)
+	 for (j=0; j<instance_count; ++j)
 	    while (*privates[j]==' ')
 	       ++privates[j];
 	 if (*privates[0]==']' || *privates[0]=='\0')
 	    break;
 	 aputc('[',f);
 	 privates[0]=dumptospace(f, privates[0]);
-	 for (j=1; j < instance_count; ++j) {
+	 for (j=1; j<instance_count; ++j) {
 	    aputc(' ',f);
 	    privates[j]=dumptospace(f, privates[j]);
 	 }
@@ -1263,7 +1263,7 @@ static void dumpmmprivatearr(AFILE *f,char *privates[16],
    } else {
       /* It's not an array */
       afputs(privates[0],f);
-      for (j=1; j < instance_count; ++j) {
+      for (j=1; j<instance_count; ++j) {
 	 aputc(' ',f);
 	 afputs(privates[j],f);
       }
@@ -1281,11 +1281,11 @@ static void dumpmmprivate(AFILE *f,
       return;
 
    afputs("3 index /Blend get /Private get begin\n",f);
-   for (k=0; k < private->next; ++k) {
+   for (k=0; k<private->next; ++k) {
       privates[0]=private->values[k];
       missing=false;
       allsame=true;
-      for (j=1; j < mm->instance_count; ++j) {
+      for (j=1; j<mm->instance_count; ++j) {
 	 privates[j] =
 	    PSDictHasEntry(mm->instances[j]->private, private->keys[k]);
 	 if (privates[j]==NULL) {
@@ -1317,8 +1317,8 @@ static double FindMaxDiffOfBlues(char *pt,double max_diff) {
       p2=strtod(pt, &end);
       if (end==pt)
 	 break;
-      if (p2 - p1 > max_diff)
-	 max_diff=p2 - p1;
+      if (p2-p1>max_diff)
+	 max_diff=p2-p1;
       pt=end;
    }
    return (max_diff);
@@ -1334,10 +1334,10 @@ double BlueScaleFigureForced(struct psdict *private_, double bluevalues[],
    if (pt != NULL) {
       max_diff=FindMaxDiffOfBlues(pt, max_diff);
    } else if (bluevalues != NULL) {
-      for (i=0; i < 14 && (bluevalues[i] != 0 || bluevalues[i + 1]) != 0;
+      for (i=0; i<14 && (bluevalues[i] != 0 || bluevalues[i+1]) != 0;
 	   i += 2) {
-	 if (bluevalues[i + 1] - bluevalues[i] >= max_diff)
-	    max_diff=bluevalues[i + 1] - bluevalues[i];
+	 if (bluevalues[i+1]-bluevalues[i] >= max_diff)
+	    max_diff=bluevalues[i+1]-bluevalues[i];
       }
    }
    pt=PSDictHasEntry(private_, "FamilyBlues");
@@ -1348,10 +1348,10 @@ double BlueScaleFigureForced(struct psdict *private_, double bluevalues[],
    if (pt != NULL)
       max_diff=FindMaxDiffOfBlues(pt, max_diff);
    else if (otherblues != NULL) {
-      for (i=0; i < 10 && (otherblues[i] != 0 || otherblues[i + 1] != 0);
+      for (i=0; i<10 && (otherblues[i] != 0 || otherblues[i+1] != 0);
 	   i += 2) {
-	 if (otherblues[i + 1] - otherblues[i] >= max_diff)
-	    max_diff=otherblues[i + 1] - otherblues[i];
+	 if (otherblues[i+1]-otherblues[i] >= max_diff)
+	    max_diff=otherblues[i+1]-otherblues[i];
       }
    }
    pt=PSDictHasEntry(private_, "FamilyOtherBlues");
@@ -1359,7 +1359,7 @@ double BlueScaleFigureForced(struct psdict *private_, double bluevalues[],
       max_diff=FindMaxDiffOfBlues(pt, max_diff);
    if (max_diff <= 0)
       return (-1);
-   if (1 / max_diff > .039625)
+   if (1/max_diff>.039625)
       return (-1);
 
    return rint(240.0*0.99/max_diff)/240.0;
@@ -1393,7 +1393,7 @@ static int dumpprivatestuff(AFILE *f,
 
    if (incid==NULL) {
       flex_max=SplineFontIsFlexible(sf, layer, flags);
-      if ((subrs=initsubrs(flex_max > 0, mm))==NULL)
+      if ((subrs=initsubrs(flex_max>0, mm))==NULL)
 	 return (false);
       iscjk=SFIsCJK(sf, map);
    } else {
@@ -1434,10 +1434,10 @@ static int dumpprivatestuff(AFILE *f,
    if (!hash) {
       FindHStems(sf, stemsnaph, snapcnt);
       mi=-1;
-      for (i=0; i < 12 && stemsnaph[i] != 0; ++i)
+      for (i=0; i<12 && stemsnaph[i] != 0; ++i)
 	 if (mi==-1)
 	    mi=i;
-	 else if (snapcnt[i] > snapcnt[mi])
+	 else if (snapcnt[i]>snapcnt[mi])
 	    mi=i;
       if (mi != -1)
 	 stdhw[0]=stemsnaph[mi];
@@ -1446,10 +1446,10 @@ static int dumpprivatestuff(AFILE *f,
    if (!hasv) {
       FindVStems(sf, stemsnapv, snapcnt);
       mi=-1;
-      for (i=0; stemsnapv[i] != 0 && i < 12; ++i)
+      for (i=0; stemsnapv[i] != 0 && i<12; ++i)
 	 if (mi==-1)
 	    mi=i;
-	 else if (snapcnt[i] > snapcnt[mi])
+	 else if (snapcnt[i]>snapcnt[mi])
 	    mi=i;
       if (mi != -1)
 	 stdvw[0]=stemsnapv[mi];
@@ -1504,7 +1504,7 @@ static int dumpprivatestuff(AFILE *f,
       cnt += 3;			/* subrmap, etc. */
       ++cnt;			/* Other Subrs */
    }
-   if (flex_max > 0)
+   if (flex_max>0)
       ++cnt;
    if (hasbold || isbold)
       ++cnt;
@@ -1537,7 +1537,7 @@ static int dumpprivatestuff(AFILE *f,
 	 dumpdblmaxarray(f, "StemSnapV", stemsnapv, 12, "", ND);
    }
    if (!hasshift && flex_max >= 7)
-      afprintf(f,"/BlueShift %d def\n", flex_max + 1);
+      afprintf(f,"/BlueShift %d def\n", flex_max+1);
    if (bluescale != -1)
       afprintf(f,"/BlueScale %g def\n", bluescale);
    if (isbold && !hasbold)
@@ -1547,7 +1547,7 @@ static int dumpprivatestuff(AFILE *f,
    if (sf->tempuniqueid != 0 && sf->tempuniqueid != -1 && sf->use_uniqueid)
       afprintf(f,"/UniqueID %d def\n", sf->tempuniqueid);
    if (sf->private != NULL) {
-      for (i=0; i < sf->private->next; ++i) {
+      for (i=0; i<sf->private->next; ++i) {
 	 afprintf(f,"/%s ", sf->private->keys[i]);
 	 afputs(sf->private->values[i],f);
 	 if (strcmp(sf->private->keys[i], "BlueValues")==0 ||
@@ -1565,7 +1565,7 @@ static int dumpprivatestuff(AFILE *f,
    if (mm != NULL)
       dumpmmprivate(f, mm);
 
-   dumpothersubrs(f, incid != NULL, flex_max > 0, iscjk, mm);
+   dumpothersubrs(f, incid != NULL, flex_max>0, iscjk, mm);
    if (incid != NULL) {
       afprintf(f," /SubrMapOffset %d def\n", incid->subrmapoff);
       afprintf(f," /SDBytes %d def\n", incid->sdbytes);
@@ -1610,7 +1610,7 @@ static void dumpfontinfo(AFILE *f,
       /*  em is redundant, we can get that from the fontmatrix */
       /*  given em we only need one of ascent or descent */
       /*  On the off chance that fontlab objects to them let's not generate them */
-      if (sf->ascent != 8 * (sf->ascent + sf->descent) / 10)
+      if (sf->ascent != 8 * (sf->ascent+sf->descent)/10)
 	 ++cnt;			/* ascent */
    }
    if (format==ff_mma || format==ff_mmb)
@@ -1649,10 +1649,10 @@ static void dumpfontinfo(AFILE *f,
       if (format==ff_type42 || format==ff_type42cid) {
 	 if (sf->upos)
 	    afprintf(f," /UnderlinePosition %g def\n",
-		  (double) (sf->upos / (sf->ascent + sf->descent)));
+		  (double) (sf->upos/(sf->ascent+sf->descent)));
 	 if (sf->uwidth)
 	    afprintf(f," /UnderlineThickness %g def\n",
-		  (double) (sf->uwidth / (sf->ascent + sf->descent)));
+		  (double) (sf->uwidth/(sf->ascent+sf->descent)));
       } else {
 	 if (sf->upos)
 	    afprintf(f," /UnderlinePosition %g def\n",
@@ -1661,7 +1661,7 @@ static void dumpfontinfo(AFILE *f,
 	    afprintf(f," /UnderlineThickness %g def\n",
 		  (double) sf->uwidth);
       }
-      if (sf->ascent != 8 * (sf->ascent + sf->descent) / 10)
+      if (sf->ascent != 8 * (sf->ascent+sf->descent)/10)
 	 afprintf(f," /ascent %d def\n", sf->ascent);
    }
    if (format==ff_mma || format==ff_mmb) {
@@ -1669,19 +1669,19 @@ static void dumpfontinfo(AFILE *f,
       int j, k;
 
       afputs(" /BlendDesignPositions [",f);
-      for (j=0; j < mm->instance_count; ++j) {
+      for (j=0; j<mm->instance_count; ++j) {
 	 afputs(" [",f);
-	 for (k=0; k < mm->axis_count; ++k)
+	 for (k=0; k<mm->axis_count; ++k)
 	    afprintf(f,"%g ",
-		  (double) mm->positions[j * mm->axis_count + k]);
+		  (double) mm->positions[j * mm->axis_count+k]);
 	 afputs("]",f);
       }
       afputs(" ] def\n",f);
 
       afputs(" /BlendDesignMap [",f);
-      for (k=0; k < mm->axis_count; ++k) {
+      for (k=0; k<mm->axis_count; ++k) {
 	 afputs(" [",f);
-	 for (j=0; j < mm->axismaps[k].points; ++j)
+	 for (j=0; j<mm->axismaps[k].points; ++j)
 	    afprintf(f,"[%g %g] ",
 		  (double) mm->axismaps[k].designs[j],
 		  (double) mm->axismaps[k].blends[j]);
@@ -1690,7 +1690,7 @@ static void dumpfontinfo(AFILE *f,
       afputs(" ] def\n",f);
 
       afputs(" /BlendAxisTypes [",f);
-      for (k=0; k < mm->axis_count; ++k)
+      for (k=0; k<mm->axis_count; ++k)
 	 afprintf(f,"/%s ", mm->axes[k]);
       afputs(" ] def\n",f);
    }
@@ -1725,9 +1725,9 @@ static void dumpfontcomments(AFILE *f, SplineFont *sf, int format) {
       SplineChar *sc;
       int had_pat=0, had_grad=0;
 
-      for (gid=0; gid < sf->glyphcnt; ++gid)
+      for (gid=0; gid<sf->glyphcnt; ++gid)
 	 if ((sc=sf->glyphs[gid]) != NULL) {
-	    for (ly=ly_fore; ly < sc->layer_cnt; ++ly) {
+	    for (ly=ly_fore; ly<sc->layer_cnt; ++ly) {
 	       if (sc->layers[ly].fill_brush.gradient != NULL
 		   || sc->layers[ly].stroke_pen.brush.gradient != NULL) {
 		  had_grad=true;
@@ -1749,11 +1749,11 @@ static void dumpfontcomments(AFILE *f, SplineFont *sf, int format) {
 
       while (*strt != '\0') {
 	 pt=strt;
-	 while (pt < strt + 60 && *pt) {
+	 while (pt<strt+60 && *pt) {
 	    npt=strpbrk(pt, "\n\t\r ");
 	    if (npt==NULL)
-	       npt=strt + strlen(strt);
-	    if (npt < strt + 60 || pt==strt) {
+	       npt=strt+strlen(strt);
+	    if (npt<strt+60 || pt==strt) {
 	       pt=npt;
 	       if (isspace(*pt)) {
 		  ++pt;
@@ -1840,7 +1840,7 @@ static void dumprequiredfontinfo(AFILE *f, SplineFont *sf, int format,
 
    afprintf(f,"%d dict begin\n", cnt);
    afprintf(f,"/FontType %d def\n", format==ff_ptype3?3:1);
-   fm[0]=fm[3]=1.0 / ((sf->ascent + sf->descent));
+   fm[0]=fm[3]=1.0/((sf->ascent+sf->descent));
    fm[1]=fm[2]=fm[4]=fm[5]=0;
    dumpdblarray(f, "FontMatrix", fm, 6, "readonly ", false);
    if (sf->fontname != NULL)
@@ -1870,7 +1870,7 @@ static void dumprequiredfontinfo(AFILE *f, SplineFont *sf, int format,
       extern const char *mmfindfont[], *makeblendedfont[];
 
       afputs(" /WeightVector [",f);
-      for (j=0; j < mm->instance_count; ++j) {
+      for (j=0; j<mm->instance_count; ++j) {
 	 afprintf(f,"%g ", (double) mm->defweights[j]);
       }
       afputs(" ] def\n",f);
@@ -1880,7 +1880,7 @@ static void dumprequiredfontinfo(AFILE *f, SplineFont *sf, int format,
 	 afprintf(f,"%g mul add", (double) mm->defweights[1]);
       else {
 	 afprintf(f,"%g mul exch", (double) mm->defweights[1]);
-	 for (j=2; j < mm->instance_count - 1; ++j)
+	 for (j=2; j<mm->instance_count-1; ++j)
 	    afprintf(f,"%g mul add exch",
 		  (double) mm->defweights[j]);
 	 afprintf(f,"%g mul add add", (double) mm->defweights[j]);
@@ -1888,12 +1888,12 @@ static void dumprequiredfontinfo(AFILE *f, SplineFont *sf, int format,
       afputs(" } bind def\n",f);
 
       afputs(" /Blend 3 dict dup begin\n",f);
-      for (j=0; j < mm->instance_count; ++j)
+      for (j=0; j<mm->instance_count; ++j)
 	 SplineFontLayerFindBounds(mm->instances[j], layer, &mb[j]);
       afputs("  /FontBBox{",f);
-      for (k=0; k < 4; ++k) {
+      for (k=0; k<4; ++k) {
 	 afputs("{",f);
-	 for (j=0; j < mm->instance_count; ++j)
+	 for (j=0; j<mm->instance_count; ++j)
 	    afprintf(f,"%g ", k==0?floor(mb[j].minx) :
 		  k==1?floor(mb[j].miny) :
 		  k==2?ceil(mb[j].maxx):ceil(mb[j].maxy));
@@ -1902,7 +1902,7 @@ static void dumprequiredfontinfo(AFILE *f, SplineFont *sf, int format,
       afputs("} def\n",f);
 
       afprintf(f,"  /Private %d dict def\n",
-	    sf->private->next + 10);
+	    sf->private->next+10);
       afputs(" end def		%End of Blend dict\n",f);
 
       for (j=0; makeblendedfont[j] != NULL; ++j) {
@@ -1924,12 +1924,12 @@ static void dumprequiredfontinfo(AFILE *f, SplineFont *sf, int format,
       }
    }
 
-   for (i=0; i < 256 && i < map->enccount; ++i)
+   for (i=0; i<256 && i<map->enccount; ++i)
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]]))
 	 encoding[i]=sf->glyphs[map->map[i]]->name;
       else
 	 encoding[i]=".notdef";
-   for (; i < 256; ++i)
+   for (; i<256; ++i)
       encoding[i]=".notdef";
    if (isStdEncoding(encoding))
       afputs("/Encoding StandardEncoding def\n",f);
@@ -1938,7 +1938,7 @@ static void dumprequiredfontinfo(AFILE *f, SplineFont *sf, int format,
       /* older versions of dvipdfm assume the following line is present. */
       /*  Perhaps others do too? */
       afputs(" 0 1 255 { 1 index exch /.notdef put} for\n",f);
-      for (i=0; i < 256; ++i)
+      for (i=0; i<256; ++i)
 	 if (strcmp(encoding[i], ".notdef") != 0)
 	    afprintf(f,"dup %d/%s put\n", i, encoding[i]);
       afputs("readonly def\n",f);
@@ -1992,7 +1992,7 @@ static void dumpfinalascii(AFILE *f,
 
    /* output 512 zeros */
    aputc('\n',f);
-   for (i=0; i < 8; ++i)
+   for (i=0; i<8; ++i)
       afputs("0000000000000000000000000000000000000000000000000000000000000000\n",f);
    afputs("cleartomark\n",f);
    if (format != ff_ptype3 && uniqueid != -1 && sf->use_uniqueid)
@@ -2013,7 +2013,7 @@ static void mkheadercopyfile(AFILE *temp,AFILE *out,int headertype) {
    aputc(((len >> 24) & 0xff), out);
 
    afseek(temp, 0, SEEK_SET);
-   while ((len=afread(buffer, sizeof(char), sizeof(buffer), temp)) > 0)
+   while ((len=afread(buffer, sizeof(char), sizeof(buffer), temp))>0)
       afwrite(buffer, sizeof(char), len, out);
    afclose(temp);		/* deletes the temporary file */
 }
@@ -2081,10 +2081,10 @@ static void dumptype42(AFILE *out,SplineFont *sf,int format,int flags,
 /* The Type42 spec says that the bounding box should be scaled by the */
 /*  1/emsize (to be numbers near 1.0). The example in the spec does not do */
 /*  this and gives numbers you'd expect to see in a type1 font */
-   fm[0]=b.minx / (sf->ascent + sf->descent);
-   fm[1]=b.miny / (sf->ascent + sf->descent);
-   fm[2]=b.maxx / (sf->ascent + sf->descent);
-   fm[3]=b.maxy / (sf->ascent + sf->descent);
+   fm[0]=b.minx/(sf->ascent+sf->descent);
+   fm[1]=b.miny/(sf->ascent+sf->descent);
+   fm[2]=b.maxx/(sf->ascent+sf->descent);
+   fm[3]=b.maxy/(sf->ascent+sf->descent);
    afprintf(out, "  ");
    dumpdblarray(out, "FontBBox", fm, 4, "readonly ", true);
    dumpfontinfo(out, sf, format);
@@ -2106,7 +2106,7 @@ static void dumptype42(AFILE *out,SplineFont *sf,int format,int flags,
       /* older versions of dvipdfm assume the following line is present. */
       /*  Perhaps others do too? */
       afprintf(out, "   0 1 255 { 1 index exch /.notdef put} for\n");
-      for (i=0; i < 256 && i < map->enccount; ++i)
+      for (i=0; i<256 && i<map->enccount; ++i)
 	 if ((gid=map->map[i]) != -1)
 	    if (SCWorthOutputting(sf->glyphs[gid]))
 	       afprintf(out, "    dup %d/%s put\n", i, sf->glyphs[gid]->name);
@@ -2117,20 +2117,20 @@ static void dumptype42(AFILE *out,SplineFont *sf,int format,int flags,
    afprintf(out, "  ] def\n");
    if (format==ff_type42) {
       hasnotdef=false;
-      for (i=cnt=0; i < sf->glyphcnt; ++i) {
+      for (i=cnt=0; i<sf->glyphcnt; ++i) {
 	 if (sf->glyphs[i] != NULL && SCWorthOutputting(sf->glyphs[i])) {
 	    ++cnt;
 	    if (strcmp(sf->glyphs[i]->name, ".notdef")==0)
 	       hasnotdef=true;
 	 }
       }
-      afprintf(out, "  /CharStrings %d dict dup begin\n", cnt + 1);
+      afprintf(out, "  /CharStrings %d dict dup begin\n", cnt+1);
       /* Why check to see if there's a notdef char in the font? If there is */
       /*  we can define the dictionary entry twice */
       /* We can, yes, but FreeType gets confused if we do. So let's check */
       if (!hasnotdef)
 	 afprintf(out, "    /.notdef 0 def\n");
-      for (i=0; i < sf->glyphcnt; ++i)
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL && SCWorthOutputting(sf->glyphs[i]))
 	    afprintf(out, "    /%s %d def\n", sf->glyphs[i]->name,
 		    sf->glyphs[i]->ttf_glyph);
@@ -2138,54 +2138,54 @@ static void dumptype42(AFILE *out,SplineFont *sf,int format,int flags,
       afprintf(out, "FontName currentdict end definefont pop\n");
    } else {
       if (cidmaster != NULL) {
-	 for (i=cnt=0; i < sf->glyphcnt; ++i)
+	 for (i=cnt=0; i<sf->glyphcnt; ++i)
 	    if (sf->glyphs[i] != NULL && SCWorthOutputting(sf->glyphs[i]))
 	       ++cnt;
 	 afprintf(out, "  /CIDMap %d dict dup begin\n", cnt);
-	 for (i=0; i < sf->glyphcnt; ++i)
+	 for (i=0; i<sf->glyphcnt; ++i)
 	    if (sf->glyphs[i] != NULL && SCWorthOutputting(sf->glyphs[i]))
 	       afprintf(out, "    %d %d def\n", i, sf->glyphs[i]->ttf_glyph);
 	 afprintf(out, "  end readonly def\n");
 	 afprintf(out, "  /CIDCount %d def\n", sf->glyphcnt);
-	 afprintf(out, "  /GDBytes %d def\n", sf->glyphcnt > 65535?3:2);
+	 afprintf(out, "  /GDBytes %d def\n", sf->glyphcnt>65535?3:2);
       } else if (flags & ps_flag_identitycidmap) {
-	 for (i=cnt=0; i < sf->glyphcnt; ++i)
-	    if (sf->glyphs[i] != NULL && cnt < sf->glyphs[i]->ttf_glyph)
+	 for (i=cnt=0; i<sf->glyphcnt; ++i)
+	    if (sf->glyphs[i] != NULL && cnt<sf->glyphs[i]->ttf_glyph)
 	       cnt=sf->glyphs[i]->ttf_glyph;
-	 afprintf(out, "  /CIDCount %d def\n", cnt + 1);
-	 afprintf(out, "  /GDBytes %d def\n", cnt + 1 > 65535?3:2);
+	 afprintf(out, "  /CIDCount %d def\n", cnt+1);
+	 afprintf(out, "  /GDBytes %d def\n", cnt+1>65535?3:2);
 	 afprintf(out, "  /CIDMap 0 def\n");
       } else {			/* Use unicode */
 	 int maxu=0;
 
-	 for (i=cnt=0; i < sf->glyphcnt; ++i)
+	 for (i=cnt=0; i<sf->glyphcnt; ++i)
 	    if (sf->glyphs[i] != NULL && SCWorthOutputting(sf->glyphs[i]) &&
 		sf->glyphs[i]->unicodeenc != -1
-		&& sf->glyphs[i]->unicodeenc < 0x10000) {
+		&& sf->glyphs[i]->unicodeenc<0x10000) {
 	       ++cnt;
-	       if (sf->glyphs[i]->unicodeenc > maxu)
+	       if (sf->glyphs[i]->unicodeenc>maxu)
 		  maxu=sf->glyphs[i]->unicodeenc;
 	    }
 	 afprintf(out, "  /CIDMap %d dict dup begin\n", cnt);
 	 afprintf(out, "    0 0 def\n");	/* .notdef doesn't have a unicode enc, will be missed. Needed */
 	 if (map->enc->is_unicodebmp || map->enc->is_unicodefull) {
-	    for (i=0; i < map->enccount && i < 0x10000; ++i)
+	    for (i=0; i<map->enccount && i<0x10000; ++i)
 	       if ((gid=map->map[i]) != -1) {
 		  if (SCWorthOutputting(sf->glyphs[gid]))
 		     afprintf(out, "    %d %d def\n", i,
 			     sf->glyphs[gid]->ttf_glyph);
 	       }
 	 } else {
-	    for (i=0; i < sf->glyphcnt; ++i)
+	    for (i=0; i<sf->glyphcnt; ++i)
 	       if (sf->glyphs[i] != NULL && SCWorthOutputting(sf->glyphs[i])
 		   && sf->glyphs[i]->unicodeenc != -1
-		   && sf->glyphs[i]->unicodeenc < 0x10000)
+		   && sf->glyphs[i]->unicodeenc<0x10000)
 		  afprintf(out, "    %d %d def\n", sf->glyphs[i]->unicodeenc,
 			  sf->glyphs[i]->ttf_glyph);
 	 }
 	 afprintf(out, "  end readonly def\n");
-	 afprintf(out, "  /GDBytes %d def\n", maxu > 65535?3:2);
-	 afprintf(out, "  /CIDCount %d def\n", maxu + 1);
+	 afprintf(out, "  /GDBytes %d def\n", maxu>65535?3:2);
+	 afprintf(out, "  /CIDCount %d def\n", maxu+1);
       }
       afprintf(out,
 	      "currentdict end dup /CIDFontName get exch /CIDFont defineresource pop\nend\n");
@@ -2263,7 +2263,7 @@ static char *dumpnotdefenc(AFILE *out,SplineFont *sf) {
    /*  no notdef. Probably not a good idea for a PS font */
    notdefname=".notdef";
    afprintf(out, "/%sBase /%sNotDef [\n", sf->fontname, sf->fontname);
-   for (i=0; i < 256; ++i)
+   for (i=0; i<256; ++i)
       afprintf(out, " /%s\n", notdefname);
    afprintf(out, "] ReEncode\n\n");
    return (notdefname);
@@ -2272,7 +2272,7 @@ static char *dumpnotdefenc(AFILE *out,SplineFont *sf) {
 static int somecharsused(SplineFont *sf,int bottom,int top,EncMap *map) {
    int i;
 
-   for (i=bottom; i <= top && i < map->enccount; ++i) {
+   for (i=bottom; i <= top && i<map->enccount; ++i) {
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]]))
 	 return (true);
    }
@@ -2287,17 +2287,17 @@ static void dumptype0stuff(AFILE *out,SplineFont *sf,EncMap *map) {
 
    dumpreencodeproc(out);
    notdefname=dumpnotdefenc(out, sf);
-   for (i=1; i < 256; ++i) {
-      if (somecharsused(sf, i << 8, (i << 8) + 0xff, map)) {
+   for (i=1; i<256; ++i) {
+      if (somecharsused(sf, i << 8, (i << 8)+0xff, map)) {
 	 afprintf(out, "/%sBase /%s%d [\n", sf->fontname, sf->fontname, i);
-	 for (j=0; j < 256 && (i << 8) + j < map->enccount; ++j)
-	    if (map->map[(i << 8) + j] != -1
-		&& SCWorthOutputting(sf->glyphs[map->map[(i << 8) + j]]))
+	 for (j=0; j<256 && (i << 8)+j<map->enccount; ++j)
+	    if (map->map[(i << 8)+j] != -1
+		&& SCWorthOutputting(sf->glyphs[map->map[(i << 8)+j]]))
 	       afprintf(out, " /%s\n",
-		       sf->glyphs[map->map[(i << 8) + j]]->name);
+		       sf->glyphs[map->map[(i << 8)+j]]->name);
 	    else
 	       afprintf(out, "/%s\n", notdefname);
-	 for (; j < 256; ++j)
+	 for (; j<256; ++j)
 	    afprintf(out, " /%s\n", notdefname);
 	 afprintf(out, "] ReEncode\n\n");
       } else if (i==0x27
@@ -2323,9 +2323,9 @@ static void dumptype0stuff(AFILE *out,SplineFont *sf,EncMap *map) {
 	 afprintf(out, "{ /%s%d /%sNotDef findfont definefont pop }\n",
 		 sf->fontname, i, sf->fontname);
 	 afprintf(out, " { /ZapfDingbats /%s%d [\n", sf->fontname, i);
-	 for (j=0; j < 0xc0; ++j)
+	 for (j=0; j<0xc0; ++j)
 	    afprintf(out, " /%s\n", zapfexists[j]?zapfnomen[j]:".notdef");
-	 for (; j < 256; ++j)
+	 for (; j<256; ++j)
 	    afprintf(out, " /%s\n", ".notdef");
 	 afprintf(out, "] ReEncode\n\n");
 	 afprintf(out, "  } ifelse\n\n");
@@ -2343,13 +2343,13 @@ static void dumptype0stuff(AFILE *out,SplineFont *sf,EncMap *map) {
    afprintf(out, "/FontMatrix [1 0 0 1 0 0] readonly def\n");
    afprintf(out, "/FMapType 2 def\n");
    afprintf(out, "/Encoding [\n");
-   for (i=0; i < 256; ++i)
+   for (i=0; i<256; ++i)
       afprintf(out, " %d\n", i);
    afprintf(out, "] readonly def\n");
    afprintf(out, "/FDepVector [\n");
    afprintf(out, " /%sBase findfont\n", sf->fontname);
-   for (i=1; i < 256; ++i)
-      if (somecharsused(sf, i << 8, (i << 8) + 0xff, map) ||
+   for (i=1; i<256; ++i)
+      if (somecharsused(sf, i << 8, (i << 8)+0xff, map) ||
 	  (i==0x27
 	   && (map->enc->is_unicodebmp || map->enc->is_unicodefull)))
 	 afprintf(out, " /%s%d findfont\n", sf->fontname, i);
@@ -2394,15 +2394,15 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
    memset(cidbytes, '\0', sizeof(struct cidbytes));
    cidbytes->fdcnt=cidmaster->subfontcnt;
    cidbytes->fds=calloc(cidbytes->fdcnt, sizeof(struct fddata));
-   for (i=0; i < cidbytes->fdcnt; ++i) {
+   for (i=0; i<cidbytes->fdcnt; ++i) {
       sf=cidmaster->subfonts[i];
       fd=&cidbytes->fds[i];
       fd->flexmax=SplineFontIsFlexible(sf, layer, flags);
-      fd->subrs=initsubrs(fd->flexmax > 0, NULL);
+      fd->subrs=initsubrs(fd->flexmax>0, NULL);
       if (fd->subrs==NULL) {
 	 int j;
 
-	 for (j=0; j < i; ++j)
+	 for (j=0; j<i; ++j)
 	    PSCharsFree(cidbytes->fds[j].subrs);
 	 free(cidbytes->fds);
 	 return (NULL);
@@ -2418,22 +2418,22 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
       return (NULL);
 
    chrs=atmpfile();
-   for (i=0; i < chars->next; ++i) {
+   for (i=0; i<chars->next; ++i) {
       if (chars->lens[i] != 0) {
 	 leniv=cidbytes->fds[cidbytes->fdind[i]].leniv;
 	 dumpt1str(chrs, chars->values[i], chars->lens[i], leniv);
-	 if (leniv > 0)
+	 if (leniv>0)
 	    chars->lens[i] += leniv;
       }
    }
    subrs=atmpfile();
    subrtot=0;
-   for (i=0; i < cidbytes->fdcnt; ++i) {
+   for (i=0; i<cidbytes->fdcnt; ++i) {
       fd=&cidbytes->fds[i];
       leniv=fd->leniv;
-      for (j=0; j < fd->subrs->next; ++j) {
+      for (j=0; j<fd->subrs->next; ++j) {
 	 dumpt1str(subrs, fd->subrs->values[j], fd->subrs->lens[j], leniv);
-	 if (leniv > 0)
+	 if (leniv>0)
 	    fd->subrs->lens[j] += leniv;
       }
       fd->subrcnt=j;
@@ -2441,11 +2441,11 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
    }
 
    cidbytes->fdbytes=(cidbytes->fdcnt==1)?0 :
-      (cidbytes->fdcnt < 256)?1:2;
-   if ((cidbytes->cidcnt + 1) * (cidbytes->fdbytes + 3) +	/* size of the CID map region */
-       (subrtot + 1) * 3 +	/* size of the Subr map region */
+      (cidbytes->fdcnt<256)?1:2;
+   if ((cidbytes->cidcnt+1) * (cidbytes->fdbytes+3) +	/* size of the CID map region */
+       (subrtot+1) * 3 +	/* size of the Subr map region */
        aftell(subrs) +		/* size of the subr region */
-       aftell(chrs) < 0x1000000)	/* size of the charstring region */
+       aftell(chrs)<0x1000000)	/* size of the charstring region */
       /* Are all our offsets less than 3 bytes? */
       cidbytes->gdbytes=3;	/* Adobe's convention is to use 3, so don't bother checking for anything less */
    else
@@ -2453,10 +2453,10 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
 
    cidbytes->errors=aferror(chrs) || aferror(subrs);
 
-   offset=(cidbytes->cidcnt + 1) * (cidbytes->fdbytes + cidbytes->gdbytes) +
-      (subrtot + 1) * cidbytes->gdbytes + aftell(subrs);
+   offset=(cidbytes->cidcnt+1) * (cidbytes->fdbytes+cidbytes->gdbytes) +
+      (subrtot+1) * cidbytes->gdbytes+aftell(subrs);
    binary=atmpfile();
-   for (i=0; i < cidbytes->cidcnt; ++i) {
+   for (i=0; i<cidbytes->cidcnt; ++i) {
       dump_index(binary, cidbytes->fdbytes, cidbytes->fdind[i]);
       dump_index(binary, cidbytes->gdbytes, offset);
       offset += chars->lens[i];
@@ -2464,17 +2464,17 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
    dump_index(binary, cidbytes->fdbytes, -1);	/* Adobe says undefined */
    dump_index(binary, cidbytes->gdbytes, offset);
    if (aftell(binary) !=
-       (cidbytes->cidcnt + 1) * (cidbytes->fdbytes + cidbytes->gdbytes))
+       (cidbytes->cidcnt+1) * (cidbytes->fdbytes+cidbytes->gdbytes))
       ErrorMsg(2,"CIDMap section the wrong length\n");
 
-   offset=(cidbytes->cidcnt + 1) * (cidbytes->fdbytes + cidbytes->gdbytes) +
-      (subrtot + 1) * cidbytes->gdbytes;
-   for (i=0; i < cidbytes->fdcnt; ++i) {
+   offset=(cidbytes->cidcnt+1) * (cidbytes->fdbytes+cidbytes->gdbytes) +
+      (subrtot+1) * cidbytes->gdbytes;
+   for (i=0; i<cidbytes->fdcnt; ++i) {
       fd=&cidbytes->fds[i];
       fd->subrmapoff=aftell(binary);
       fd->sdbytes=cidbytes->gdbytes;
       fd->subrcnt=fd->subrs->next;
-      for (j=0; j < fd->subrcnt; ++j) {
+      for (j=0; j<fd->subrcnt; ++j) {
 	 dump_index(binary, fd->sdbytes, offset);
 	 offset += fd->subrs->lens[j];
       }
@@ -2482,19 +2482,19 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
    }
    dump_index(binary, cidbytes->gdbytes, offset);
    if (aftell(binary) !=
-       (cidbytes->cidcnt + 1) * (cidbytes->fdbytes + cidbytes->gdbytes) +
-       (subrtot + 1) * cidbytes->gdbytes)
+       (cidbytes->cidcnt+1) * (cidbytes->fdbytes+cidbytes->gdbytes) +
+       (subrtot+1) * cidbytes->gdbytes)
       ErrorMsg(2,"SubrMap section the wrong length\n");
 
    buffer=malloc(8192);
 
    afseek(subrs,0,SEEK_SET);
-   while ((len=afread(buffer, 1, 8192, subrs)) > 0)
+   while ((len=afread(buffer, 1, 8192, subrs))>0)
       afwrite(buffer, 1, len, binary);
    afclose(subrs);
 
    afseek(chrs,0,SEEK_SET);
-   while ((len=afread(buffer, 1, 8192, chrs)) > 0)
+   while ((len=afread(buffer, 1, 8192, chrs))>0)
       afwrite(buffer, 1, len, binary);
    afclose(chrs);
 
@@ -2519,7 +2519,7 @@ static int dumpcidstuff(AFILE *out,SplineFont *cidmaster,int flags,
 
    afprintf(out, "%%!PS-Adobe-3.0 Resource-CIDFont\n");
    afprintf(out, "%%%%DocumentNeededResources: ProcSet (CIDInit)\n");
-/*  afprintf( out, "%%%%DocumentSuppliedResources: CIDFont (%s)\n", cidmaster->fontname ); */
+/*  afprintf(out, "%%%%DocumentSuppliedResources: CIDFont (%s)\n", cidmaster->fontname ); */
 /* Werner says this is inappropriate */
    afprintf(out, "%%%%IncludeResource: ProcSet (CIDInit)\n");
    afprintf(out, "%%%%BeginResource: CIDFont (%s)\n", cidmaster->fontname);
@@ -2565,7 +2565,7 @@ static int dumpcidstuff(AFILE *out,SplineFont *cidmaster,int flags,
    afprintf(out, "/CIDCount %d def\n\n", cidbytes.cidcnt);
 
    afprintf(out, "/FDArray %d array\n", cidbytes.fdcnt);
-   for (i=0; i < cidbytes.fdcnt; ++i) {
+   for (i=0; i<cidbytes.fdcnt; ++i) {
       double factor;
 
       sf=cidmaster->subfonts[i];
@@ -2577,7 +2577,7 @@ static int dumpcidstuff(AFILE *out,SplineFont *cidmaster,int flags,
       afprintf(out, "15 dict\n  begin\n");
       afprintf(out, "  /FontName /%s def\n", sf->fontname);
       afprintf(out, "  /FontType 1 def\n");
-      factor=1.0 / (sf->ascent + sf->descent);
+      factor=1.0/(sf->ascent+sf->descent);
       afprintf(out, "  /FontMatrix [ %g 0 0 %g 0 0 ] def\n", factor, factor);
       afprintf(out, "/PaintType %d def\n", sf->strokedfont?2:0);
       if (sf->strokedfont)
@@ -2594,11 +2594,11 @@ static int dumpcidstuff(AFILE *out,SplineFont *cidmaster,int flags,
    len=aftell(binary);
    sprintf(buffer, "(Binary) %ld StartData ", len);
    afprintf(out, "%%%%BeginData: %ld Binary Bytes\n",
-	   (long) (len + strlen(buffer)));
+	   (long) (len+strlen(buffer)));
    afputs(buffer, out);
 
    afseek(binary, 0, SEEK_SET);
-   while ((len=afread(buffer, 1, sizeof(buffer), binary)) > 0)
+   while ((len=afread(buffer, 1, sizeof(buffer), binary))>0)
       afwrite(buffer, 1, len, out);
    cidbytes.errors |= aferror(binary);
    afclose(binary);
@@ -2622,7 +2622,7 @@ int _WritePSFont(AFILE *out, SplineFont *sf, enum fontformat format,
       sf=sf->mm->normal;
    if (format==ff_cid)
       err =
-	 !dumpcidstuff(out, sf->subfontcnt > 0?sf:sf->cidmaster, flags,
+	 !dumpcidstuff(out, sf->subfontcnt>0?sf:sf->cidmaster, flags,
 		       map, layer);
    else {
       dumpfontdict(out, sf, format, flags, map, fullsf, layer);
@@ -2650,9 +2650,9 @@ int WritePSFont(char *fontname, SplineFont *sf, enum fontformat format,
 
 static void dumpimageproc(AFILE *file,BDFChar *bdfc,BDFFont *font) {
    SplineFont *sf=font->sf;
-   double scale=(sf->ascent + sf->descent) / font->pixelsize;
-   int width=bdfc->xmax - bdfc->xmin + 1, height =
-      bdfc->ymax - bdfc->ymin + 1;
+   double scale=(sf->ascent+sf->descent)/font->pixelsize;
+   int width=bdfc->xmax-bdfc->xmin+1, height =
+      bdfc->ymax-bdfc->ymin+1;
    int i;
    AFILE *ps;
 
@@ -2660,16 +2660,16 @@ static void dumpimageproc(AFILE *file,BDFChar *bdfc,BDFFont *font) {
    afprintf(file, "  /%s { %d 0 %d %d %d %d setcachedevice \n",
 	   bdfc->sc->name, (int) rint(bdfc->width * scale),
 	   (int) rint(bdfc->xmin * scale), (int) rint(bdfc->ymin * scale),
-	   (int) rint((1 + bdfc->xmax) * scale),
-	   (int) rint((1 + bdfc->ymax) * scale));
+	   (int) rint((1+bdfc->xmax) * scale),
+	   (int) rint((1+bdfc->ymax) * scale));
    afprintf(file, "\t%g %g translate %g %g scale %d %d true [%d 0 0 %d 0 0] {<~\n", bdfc->xmin * scale, bdfc->ymax * scale,	/* tx tx Translate */
 	   width * scale, height * scale,	/* x y Scale */
 	   width, height, width, -height);
    ps=base85_afile(file);
-   if (bdfc->bytes_per_line==(width + 7) / 8)
+   if (bdfc->bytes_per_line==(width+7)/8)
      afwrite(bdfc->bitmap,1,height*bdfc->bytes_per_line,ps);
    else
-      for (i=0; i < height; ++i)
+      for (i=0; i<height; ++i)
        afwrite((bdfc->bitmap+i*bdfc->bytes_per_line),1,(width+7)/8,ps);
    afclose(ps);
    afprintf(file, "} imagemask } bind def\n");
@@ -2690,7 +2690,7 @@ int PSBitmapDump(char *filename, BDFFont * font, EncMap * map) {
    if (file==NULL)
       ErrorMsg(2,"Can't open %s\n", filename);
    else {
-      for (i=0; i < font->glyphcnt; i++)
+      for (i=0; i<font->glyphcnt; i++)
 	 if (font->glyphs[i] != NULL)
 	    BCPrepareForOutput(font->glyphs[i], true);
       dumprequiredfontinfo(file, sf, ff_ptype3, map, NULL,
@@ -2698,7 +2698,7 @@ int PSBitmapDump(char *filename, BDFFont * font, EncMap * map) {
 
       cnt=0;
       notdefpos=SFFindNotdef(sf, -2);
-      for (i=0; i < sf->glyphcnt; ++i)
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (font->glyphs[i] != NULL) {
 	    if (strcmp(font->glyphs[i]->sc->name, ".notdef") != 0)
 	       ++cnt;
@@ -2712,9 +2712,9 @@ int PSBitmapDump(char *filename, BDFFont * font, EncMap * map) {
       else
 	 afprintf(file,
 		 "  /.notdef { %d 0 0 0 0 0 setcachedevice } bind def\n",
-		 sf->ascent + sf->descent);
+		 sf->ascent+sf->descent);
 
-      for (i=0; i < sf->glyphcnt; ++i)
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (i != notdefpos) {
 	    if (font->glyphs[i] != NULL)
 	       dumpimageproc(file, font->glyphs[i], font);
@@ -2724,7 +2724,7 @@ int PSBitmapDump(char *filename, BDFFont * font, EncMap * map) {
       ret=aferror(file)==0;
       if (afclose(file) != 0)
 	 ret=false;
-      for (i=0; i < font->glyphcnt; i++)
+      for (i=0; i<font->glyphcnt; i++)
 	 if (font->glyphs[i] != NULL)
 	    BCRestoreAfterOutput(font->glyphs[i]);
    }

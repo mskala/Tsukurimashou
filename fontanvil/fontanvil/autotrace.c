@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: autotrace.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -88,12 +88,12 @@ static SplinePointList *localSplinesFromEntities(Entity *ent,Color bgcol,
    for (; ent != NULL; ent=enext) {
       enext=ent->next;
       if (ent->type==et_splines) {
-	 if ( /* ent->u.splines.fill.col==0xffffffff && */ ent->u.splines.
+	 if (/* ent->u.splines.fill.col==0xffffffff && */ ent->u.splines.
 	     stroke.col != 0xffffffff) {
 	    memset(&si, '\0', sizeof(si));
 	    si.join=ent->u.splines.join;
 	    si.cap=ent->u.splines.cap;
-	    si.radius=ent->u.splines.stroke_width / 2;
+	    si.radius=ent->u.splines.stroke_width/2;
 	    new=NULL;
 	    for (test=ent->u.splines.splines; test != NULL;
 		 test=test->next) {
@@ -134,12 +134,12 @@ static SplinePointList *localSplinesFromEntities(Entity *ent,Color bgcol,
 	       clockwise=SplinePointListIsClockwise(test)==1;
 	       /* colors may get rounded a little as we convert from RGB to */
 	       /*  a postscript color and back. */
-	       if (COLOR_RED(ent->u.splines.fill.col) >= bgr - 2
-		   && COLOR_RED(ent->u.splines.fill.col) <= bgr + 2
-		   && COLOR_GREEN(ent->u.splines.fill.col) >= bgg - 2
-		   && COLOR_GREEN(ent->u.splines.fill.col) <= bgg + 2
-		   && COLOR_BLUE(ent->u.splines.fill.col) >= bgb - 2
-		   && COLOR_BLUE(ent->u.splines.fill.col) <= bgb + 2) {
+	       if (COLOR_RED(ent->u.splines.fill.col) >= bgr-2
+		   && COLOR_RED(ent->u.splines.fill.col) <= bgr+2
+		   && COLOR_GREEN(ent->u.splines.fill.col) >= bgg-2
+		   && COLOR_GREEN(ent->u.splines.fill.col) <= bgg+2
+		   && COLOR_BLUE(ent->u.splines.fill.col) >= bgb-2
+		   && COLOR_BLUE(ent->u.splines.fill.col) <= bgb+2) {
 		  if (clockwise)
 		     SplineSetReverse(test);
 	       } else {
@@ -162,18 +162,18 @@ static SplinePointList *localSplinesFromEntities(Entity *ent,Color bgcol,
 	 removed=false;
 	 sc.layers[ly_fore].splines=head;
 	 SplineCharFindBounds(&sc, &bb);
-	 fudge=(bb.maxy - bb.miny) / 64;
-	 if ((bb.maxx - bb.minx) / 64 > fudge)
-	    fudge=(bb.maxx - bb.minx) / 64;
+	 fudge=(bb.maxy-bb.miny)/64;
+	 if ((bb.maxx-bb.minx)/64>fudge)
+	    fudge=(bb.maxx-bb.minx)/64;
 	 for (last=head, prev=NULL; last != NULL; last=next) {
 	    next=last->next;
 	    if (SplinePointListIsClockwise(last)==0) {
 	       last->next=NULL;
 	       SplineSetFindBounds(last, &sbb);
 	       last->next=next;
-	       if (sbb.minx <= bb.minx + fudge || sbb.maxx >= bb.maxx - fudge
-		   || sbb.maxy >= bb.maxy - fudge
-		   || sbb.miny <= bb.miny + fudge) {
+	       if (sbb.minx <= bb.minx+fudge || sbb.maxx >= bb.maxx-fudge
+		   || sbb.maxy >= bb.maxy-fudge
+		   || sbb.miny <= bb.miny+fudge) {
 		  if (prev==NULL)
 		     head=next;
 		  else
@@ -217,21 +217,21 @@ static char *mytempdir(void) {
    int tries=0;
 
    if ((dir=getenv("TMPDIR")) != NULL)
-      strncpy(buffer, dir, sizeof(buffer) - 1 - 5);
+      strncpy(buffer, dir, sizeof(buffer)-1-5);
 #   ifndef P_tmpdir
 #      define P_tmpdir	"/tmp"
 #   endif
    else
       strcpy(buffer, P_tmpdir);
    strcat(buffer, "/PfaEd");
-   eon=buffer + strlen(buffer);
+   eon=buffer+strlen(buffer);
    while (1) {
       sprintf(eon, "%04X_mf%d", getpid(), ++cnt);
       if (mkdir(buffer, 0770)==0)
 	 return (fastrdup(buffer));
       else if (errno != EEXIST)
 	 return (NULL);
-      if (++tries > 100)
+      if (++tries>100)
 	 return (NULL);
    }
 }
@@ -269,7 +269,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 	images=images->next) {
       ib =
 	 images->image->list_len ==
-	 0 ? images->image->u.image : images->image->u.images[0];
+	 0?images->image->u.image:images->image->u.images[0];
       if (ib->width==0 || ib->height==0) {
 	 continue;
       }
@@ -320,7 +320,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 	 transform[3]=images->yscale;
 	 transform[1]=transform[2]=0;
 	 transform[4]=images->xoff;
-	 transform[5]=images->yoff - images->yscale * ib->height;
+	 transform[5]=images->yoff-images->yscale * ib->height;
 	 new=SplinePointListTransform(new, transform, tpt_AllPoints);
 	 if (sc->layers[layer].order2) {
 	    SplineSet *o2=SplineSetsTTFApprox(new);
@@ -379,7 +379,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 /*  it happy. */
       ib =
 	 images->image->list_len ==
-	 0 ? images->image->u.image : images->image->u.images[0];
+	 0?images->image->u.image:images->image->u.images[0];
       if (ib->width==0 || ib->height==0) {
 	 /* pk fonts can have 0 sized bitmaps for space characters */
 	 /*  but autotrace gets all snooty about being given an empty image */
@@ -415,15 +415,15 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
       if (args) {
 	 for (i=0;
 	      args[i] != NULL
-	      && ac < sizeof(arglist) / sizeof(arglist[0]) - 2; ++i)
+	      && ac<sizeof(arglist)/sizeof(arglist[0])-2; ++i)
 	    arglist[ac++]=args[i];
       }
 /* On windows potrace is now compiled with MinGW (whatever that is) which */
 /*  means it can't handle cygwin's idea of "/tmp". So cd to /tmp in the child */
 /*  and use the local filename rather than full pathspec. */
       pt =
-	 strrchr(tempname, '/')==NULL ? tempname : strrchr(tempname,
-							     '/') + 1;
+	 strrchr(tempname, '/')==NULL?tempname:strrchr(tempname,
+							     '/')+1;
       arglist[ac++]=pt;
       arglist[ac]=NULL;
       /* We can't use AutoTrace's own "background-color" ignorer because */
@@ -460,7 +460,7 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 	    transform[3]=images->yscale;
 	    transform[1]=transform[2]=0;
 	    transform[4]=images->xoff;
-	    transform[5]=images->yoff - images->yscale * ib->height;
+	    transform[5]=images->yoff-images->yscale * ib->height;
 	    new=SplinePointListTransform(new, transform, tpt_AllPoints);
 	    if (sc->layers[layer].order2) {
 	       SplineSet *o2=SplineSetsTTFApprox(new);
@@ -497,13 +497,13 @@ static char **makevector(const char *str) {
       return (NULL);
 
    vector=NULL;
-   for (i=0; i < 2; ++i) {
+   for (i=0; i<2; ++i) {
       cnt=0;
       for (start=str; isspace(*start); ++start);
       while (*start) {
 	 for (pt=start; !isspace(*pt) && *pt != '\0'; ++pt);
 	 if (vector != NULL)
-	    vector[cnt]=copyn(start, pt - start);
+	    vector[cnt]=copyn(start, pt-start);
 	 ++cnt;
 	 for (start=pt; isspace(*start); ++start);
       }
@@ -513,7 +513,7 @@ static char **makevector(const char *str) {
 	 vector[cnt]=NULL;
 	 return (vector);
       }
-      vector=malloc((cnt + 1) * sizeof(char *));
+      vector=malloc((cnt+1) * sizeof(char *));
    }
    return (NULL);
 }
@@ -526,14 +526,14 @@ static char *flatten(char *const *args) {
       return (NULL);
 
    ret=rpt=NULL;
-   for (i=0; i < 2; ++i) {
+   for (i=0; i<2; ++i) {
       for (j=0, len=0; args[j] != NULL; ++j) {
 	 if (rpt != NULL) {
 	    strcpy(rpt, args[j]);
 	    rpt += strlen(args[j]);
 	    *rpt++=' ';
 	 } else
-	    len += strlen(args[j]) + 1;
+	    len += strlen(args[j])+1;
       }
       if (rpt) {
 	 rpt[-1]='\0';
@@ -582,14 +582,14 @@ void FVAutoTrace(FontViewBase * fv, int ask) {
    args=AutoTraceArgs(ask);
    if (args==(char **) -1)
       return;
-   for (i=cnt=0; i < fv->map->enccount; ++i)
+   for (i=cnt=0; i<fv->map->enccount; ++i)
       if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  fv->sf->glyphs[gid] != NULL &&
 	  fv->sf->glyphs[gid]->layers[ly_back].images)
 	 ++cnt;
 
    SFUntickAll(fv->sf);
-   for (i=cnt=0; i < fv->map->enccount; ++i) {
+   for (i=cnt=0; i<fv->map->enccount; ++i) {
       if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  fv->sf->glyphs[gid] != NULL &&
 	  fv->sf->glyphs[gid]->layers[ly_back].images &&
@@ -608,11 +608,11 @@ char *ProgramExists(char *prog, char *buffer) {
    while (1) {
       pt=strchr(path, ':');
       if (pt==NULL)
-	 pt=path + strlen(path);
-      if (pt - path < 1000) {
-	 strncpy(buffer, path, pt - path);
-	 buffer[pt - path]='\0';
-	 if (pt != path && buffer[pt - path - 1] != '/')
+	 pt=path+strlen(path);
+      if (pt-path<1000) {
+	 strncpy(buffer, path, pt-path);
+	 buffer[pt-path]='\0';
+	 if (pt != path && buffer[pt-path-1] != '/')
 	    strcat(buffer, "/");
 	 strcat(buffer, prog);
 	 /* Under cygwin, applying access to "potrace" will find "potrace.exe" */
@@ -623,7 +623,7 @@ char *ProgramExists(char *prog, char *buffer) {
       }
       if (*pt=='\0')
 	 break;
-      path=pt + 1;
+      path=pt+1;
    }
    return (NULL);
 }
@@ -685,8 +685,8 @@ static char *FindGfFile(char *tempdir) {
       while ((ent=readdir(temp)) != NULL) {
 	 if (strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
 	    continue;
-	 if (strlen(ent->d_name) > 2
-	     && strcmp(ent->d_name + strlen(ent->d_name) - 2, "gf")==0) {
+	 if (strlen(ent->d_name)>2
+	     && strcmp(ent->d_name+strlen(ent->d_name)-2, "gf")==0) {
 	    strcpy(buffer, tempdir);
 	    strcat(buffer, "/");
 	    strcat(buffer, ent->d_name);
@@ -710,7 +710,7 @@ static void cleantempdir(char *tempdir) {
    if (temp != NULL) {
       strcpy(buffer, tempdir);
       strcat(buffer, "/");
-      eod=buffer + strlen(buffer);
+      eod=buffer+strlen(buffer);
       while ((ent=readdir(temp)) != NULL) {
 	 if (strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
 	    continue;
@@ -718,7 +718,7 @@ static void cleantempdir(char *tempdir) {
 	 /* Hmm... doing an unlink right here means changing the dir file */
 	 /*  which might mean we could not read it properly. So save up the */
 	 /*  things we need to delete and trash them later */
-	 if (cnt < 99)
+	 if (cnt<99)
 	    todelete[cnt++]=fastrdup(buffer);
       }
       closedir(temp);
@@ -772,7 +772,7 @@ SplineFont *SFFromMF(char *filename) {
 
    ac=0;
    arglist[ac++]=FindMFName();
-   arglist[ac++]=malloc(strlen(mf_args) + strlen(filename) + 20);
+   arglist[ac++]=malloc(strlen(mf_args)+strlen(filename)+20);
    arglist[ac]=NULL;
    strcpy(arglist[1], mf_args);
    strcat(arglist[1], " ");
@@ -804,7 +804,7 @@ SplineFont *SFFromMF(char *filename) {
 	    sf=SFFromBDF(gffile, 3, true);
 	    free(gffile);
 	    if (sf != NULL) {
-	       for (i=0; i < sf->glyphcnt; ++i) {
+	       for (i=0; i<sf->glyphcnt; ++i) {
 		  if ((sc=sf->glyphs[i]) != NULL
 		      && sc->layers[ly_back].images) {
 		     _SCAutoTrace(sc, ly_fore, args);

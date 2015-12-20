@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: splinechar.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -394,7 +394,7 @@ int SCPointsNumberedProperly(SplineChar * sc, int layer) {
 	 if (sp==ss->first)
 	    break;
       }
-      /* if ( starts_with_cp ) --pnum; */
+      /* if (starts_with_cp ) --pnum; */
    }
    return (true);
 }

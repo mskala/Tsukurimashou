@@ -1,4 +1,4 @@
-/* $Id: effects.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: effects.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -39,7 +39,7 @@ void FVOutline(FontViewBase * fv, double width) {
    SplineChar *sc;
    int layer=fv->active_layer;
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if ((gid=fv->map->map[i]) != -1 && (sc=fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines)
 	 ++cnt;
@@ -50,7 +50,7 @@ void FVOutline(FontViewBase * fv, double width) {
    /*si.removeoverlapifneeded=true; */
 
    SFUntickAll(fv->sf);
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if ((gid=fv->map->map[i]) != -1 && (sc=fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines && !sc->ticked) {
 	 sc->ticked=true;
@@ -73,7 +73,7 @@ void FVInline(FontViewBase * fv, double width, double inset) {
    SplineChar *sc;
    int layer=fv->active_layer;
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if ((gid=fv->map->map[i]) != -1 && (sc=fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines)
 	 ++cnt;
@@ -83,7 +83,7 @@ void FVInline(FontViewBase * fv, double width, double inset) {
    /*si.removeoverlapifneeded=true; */
 
    SFUntickAll(fv->sf);
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if ((gid=fv->map->map[i]) != -1 && (sc=fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines && !sc->ticked) {
 	 sc->ticked=true;
@@ -92,7 +92,7 @@ void FVInline(FontViewBase * fv, double width, double inset) {
 	 temp =
 	    SplineSetStroke(sc->layers[layer].splines, &si,
 			    sc->layers[layer].order2);
-	 si.radius=width + inset;
+	 si.radius=width+inset;
 	 temp2 =
 	    SplineSetStroke(sc->layers[layer].splines, &si,
 			    sc->layers[layer].order2);
@@ -174,7 +174,7 @@ static void OrientEdges(SplineSet *base,SplineChar *sc) {
    if (sc != NULL)
       dummy.name=sc->name;
    ELFindEdges(&dummy, &el);
-   if (el.coordmax[1] - el.coordmin[1] > 1.e6) {
+   if (el.coordmax[1]-el.coordmin[1]>1.e6) {
       ErrorMsg(1,
 	      "Warning: Unreasonably big splines. They will be ignored.\n");
       return;
@@ -183,24 +183,24 @@ static void OrientEdges(SplineSet *base,SplineChar *sc) {
    ELOrder(&el, el.major);
 
    waschange=false;
-   for (i=0; i < el.cnt; ++i) {
+   for (i=0; i<el.cnt; ++i) {
       active=EIActiveEdgesRefigure(&el, active, i, 1, &change);
       if (waschange || change || el.ends[i] || el.ordered[i] != NULL ||
-	  (i != el.cnt - 1
-	   && (el.ends[i + 1] || el.ordered[i + 1] != NULL))) {
+	  (i != el.cnt-1
+	   && (el.ends[i+1] || el.ordered[i+1] != NULL))) {
 	 waschange=change;
 	 continue;
       }
       waschange=change;
       winding=0;
       for (apt=active; apt != NULL; apt=e) {
-	 if (EISkipExtremum(apt, i + el.low, 1)) {
+	 if (EISkipExtremum(apt, i+el.low, 1)) {
 	    e=apt->aenext->aenext;
 	    continue;
 	 }
 	 if (winding==0)
 	    apt->spline->leftedge=true;
-	 winding += apt->up ? 1 : -1;
+	 winding += apt->up?1:-1;
 	 if (winding==0)
 	    apt->spline->rightedge=true;
 	 e=apt->aenext;
@@ -237,24 +237,24 @@ static SplineSet *AddVerticalExtremaAndMove(SplineSet *base,
 	       double d =
 		  4 * s->splines[1].b * s->splines[1].b -
 		  4 * 3 * s->splines[1].a * s->splines[1].c;
-	       if (d > 0) {
+	       if (d>0) {
 		  d=sqrt(d);
 		  t[p++] =
-		     (-2 * s->splines[1].b + d) / (2 * 3 * s->splines[1].a);
+		     (-2 * s->splines[1].b+d)/(2 * 3 * s->splines[1].a);
 		  t[p++] =
-		     (-2 * s->splines[1].b - d) / (2 * 3 * s->splines[1].a);
+		     (-2 * s->splines[1].b-d)/(2 * 3 * s->splines[1].a);
 	       }
 	    } else if (s->splines[1].b != 0)
-	       t[p++]=-s->splines[1].c / (2 * s->splines[1].b);
+	       t[p++]=-s->splines[1].c/(2 * s->splines[1].b);
 	    if (p==2 && (t[1] <= 0.0001 || t[1] >= .9999))
 	       --p;
 	    if (p >= 1 && (t[0] <= 0.0001 || t[0] >= .9999)) {
 	       t[0]=t[1];
 	       --p;
 	    }
-	    if (p==2 && t[0] > t[1])
+	    if (p==2 && t[0]>t[1])
 	       t[0]=t[1];
-	    if (p > 0) {
+	    if (p>0) {
 	       sp=SplineBisect(s, t[0]);
 	       s=sp->prev;
 	       /* If there were any other t values, ignore them here, we'll */
@@ -350,12 +350,12 @@ static void SSCleanup(SplineSet *spl) {
 
    while (spl != NULL) {
       for (sp=spl->first;;) {
-	 sp->me.x=rint(sp->me.x * 64) / 64.;
-	 sp->me.y=rint(sp->me.y * 64) / 64.;
-	 sp->nextcp.x=rint(sp->nextcp.x * 64) / 64.;
-	 sp->nextcp.y=rint(sp->nextcp.y * 64) / 64.;
-	 sp->prevcp.x=rint(sp->prevcp.x * 64) / 64.;
-	 sp->prevcp.y=rint(sp->prevcp.y * 64) / 64.;
+	 sp->me.x=rint(sp->me.x * 64)/64.;
+	 sp->me.y=rint(sp->me.y * 64)/64.;
+	 sp->nextcp.x=rint(sp->nextcp.x * 64)/64.;
+	 sp->nextcp.y=rint(sp->nextcp.y * 64)/64.;
+	 sp->prevcp.x=rint(sp->prevcp.x * 64)/64.;
+	 sp->prevcp.y=rint(sp->prevcp.y * 64)/64.;
 	 if (sp->next==NULL)
 	    break;
 	 sp=sp->next->to;
@@ -365,11 +365,11 @@ static void SSCleanup(SplineSet *spl) {
       first=NULL;
       /* look for things which should be horizontal or vertical lines and make them so */
       for (s=spl->first->next; s != NULL && s != first; s=s->to->next) {
-	 double xdiff=s->to->me.x - s->from->me.x, ydiff =
-	    s->to->me.y - s->from->me.y;
+	 double xdiff=s->to->me.x-s->from->me.x, ydiff =
+	    s->to->me.y-s->from->me.y;
 	 double x, y;
 
-	 if ((xdiff < .01 && xdiff > -.01) && (ydiff < -10 || ydiff > 10)) {
+	 if ((xdiff<.01 && xdiff>-.01) && (ydiff<-10 || ydiff>10)) {
 	    xdiff /= 2;
 	    s->to->me.x=(s->from->me.x += xdiff);
 	    s->from->prevcp.x += xdiff;
@@ -380,8 +380,8 @@ static void SSCleanup(SplineSet *spl) {
 	       s->to->nextcp.x=s->to->me.x;
 	    if (s->to->noprevcp)
 	       s->to->prevcp.x=s->to->me.x;
-	 } else if ((ydiff < .01 && ydiff > -.01)
-		    && (xdiff < -10 || xdiff > 10)) {
+	 } else if ((ydiff<.01 && ydiff>-.01)
+		    && (xdiff<-10 || xdiff>10)) {
 	    ydiff /= 2;
 	    s->to->me.y=(s->from->me.y += ydiff);
 	    s->from->prevcp.y += ydiff;
@@ -393,24 +393,24 @@ static void SSCleanup(SplineSet *spl) {
 	    if (s->to->noprevcp)
 	       s->to->prevcp.y=s->to->me.y;
 	 }
-	 xdiff=s->from->nextcp.x - s->from->me.x;
-	 ydiff=s->from->nextcp.y - s->from->me.y;
-	 if ((xdiff < .01 && xdiff > -.01) && (ydiff < -10 || ydiff > 10))
+	 xdiff=s->from->nextcp.x-s->from->me.x;
+	 ydiff=s->from->nextcp.y-s->from->me.y;
+	 if ((xdiff<.01 && xdiff>-.01) && (ydiff<-10 || ydiff>10))
 	    s->from->nextcp.x=s->from->me.x;
-	 if ((ydiff < .01 && ydiff > -.01) && (xdiff < -10 || xdiff > 10))
+	 if ((ydiff<.01 && ydiff>-.01) && (xdiff<-10 || xdiff>10))
 	    s->from->nextcp.y=s->from->me.y;
-	 xdiff=s->to->prevcp.x - s->to->me.x;
-	 ydiff=s->to->prevcp.y - s->to->me.y;
-	 if ((xdiff < .01 && xdiff > -.01) && (ydiff < -10 || ydiff > 10))
+	 xdiff=s->to->prevcp.x-s->to->me.x;
+	 ydiff=s->to->prevcp.y-s->to->me.y;
+	 if ((xdiff<.01 && xdiff>-.01) && (ydiff<-10 || ydiff>10))
 	    s->to->prevcp.x=s->to->me.x;
-	 if ((ydiff < .01 && ydiff > -.01) && (xdiff < -10 || xdiff > 10))
+	 if ((ydiff<.01 && ydiff>-.01) && (xdiff<-10 || xdiff>10))
 	    s->to->prevcp.y=s->to->me.y;
 	 x=s->from->me.x;
 	 y=s->from->me.y;
 	 if (x==s->from->nextcp.x && x==s->to->prevcp.x
 	     && x==s->to->me.x
 	     &&
-	     ((y < s->to->me.y && s->from->nextcp.y >= y
+	     ((y<s->to->me.y && s->from->nextcp.y >= y
 	       && s->from->nextcp.y <= s->to->prevcp.y
 	       && s->to->prevcp.y <= s->to->me.y) || (y >= s->to->me.y
 						      && s->from->nextcp.y <=
@@ -427,7 +427,7 @@ static void SSCleanup(SplineSet *spl) {
 	 if (y==s->from->nextcp.y && y==s->to->prevcp.y
 	     && y==s->to->me.y
 	     &&
-	     ((x < s->to->me.x && s->from->nextcp.x >= x
+	     ((x<s->to->me.x && s->from->nextcp.x >= x
 	       && s->from->nextcp.x <= s->to->prevcp.x
 	       && s->to->prevcp.x <= s->to->me.x) || (x >= s->to->me.x
 						      && s->from->nextcp.x <=
@@ -457,10 +457,10 @@ static double IntersectLine(Spline *spline1,Spline *spline2) {
 
    if (!SplinesIntersect(spline1, spline2, pts, t1s, t2s))
       return (-1);
-   for (i=0; i < 10 && t1s[i] != -1; ++i) {
-      if (t1s[i] < .001 && t1s[i] > .999)
+   for (i=0; i<10 && t1s[i] != -1; ++i) {
+      if (t1s[i]<.001 && t1s[i]>.999)
 	 /* Too close to end point, ignore it */ ;
-      else if (t1s[i] < mint)
+      else if (t1s[i]<mint)
 	 mint=t1s[i];
    }
    if (mint==1)
@@ -477,7 +477,7 @@ static int ClipLineTo3D(Spline *line,SplineSet *spl) {
       first=NULL;
       for (s=spl->first->next; s != NULL && s != first; s=s->to->next) {
 	 cur=IntersectLine(line, s);
-	 if (cur > .001 && (t==-1 || cur < t))
+	 if (cur>.001 && (t==-1 || cur<t))
 	    t=cur;
 	 if (first==NULL)
 	    first=s;
@@ -516,8 +516,8 @@ static double *BottomFindIntersections(Spline *bottom,SplineSet *lines,
       first=NULL;
       for (s=spl->first->next; s != NULL && s != first; s=s->to->next) {
 	 if (SplinesIntersect(bottom, s, pts, t1s, t2s)) {
-	    for (i=0; i < 25 && t1s[i] != -1; ++i)
-	       if (t2s[i] > .001 && t2s[i] < .999) {
+	    for (i=0; i<25 && t1s[i] != -1; ++i)
+	       if (t2s[i]>.001 && t2s[i]<.999) {
 		  if (tcnt >= tmax) {
 		     tmax += 100;
 		     ts=realloc(ts, tmax * sizeof(double));
@@ -534,8 +534,8 @@ static double *BottomFindIntersections(Spline *bottom,SplineSet *lines,
       first=NULL;
       for (s=lines->first->next; s != NULL && s != first; s=s->to->next) {
 	 if (SplinesIntersect(bottom, s, pts, t1s, t2s)) {
-	    for (i=0; i < 25 && t1s[i] != -1; ++i)
-	       if (t2s[i] > .001 && t2s[i] < .999) {
+	    for (i=0; i<25 && t1s[i] != -1; ++i)
+	       if (t2s[i]>.001 && t2s[i]<.999) {
 		  if (tcnt >= tmax) {
 		     tmax += 100;
 		     ts=realloc(ts, tmax * sizeof(double));
@@ -552,17 +552,17 @@ static double *BottomFindIntersections(Spline *bottom,SplineSet *lines,
       free(ts);
       return (NULL);
    }
-   for (i=0; i < tcnt; ++i)
-      for (j=i + 1; j < tcnt; ++j) {
-	 if (ts[i] > ts[j]) {
+   for (i=0; i<tcnt; ++i)
+      for (j=i+1; j<tcnt; ++j) {
+	 if (ts[i]>ts[j]) {
 	    double temp=ts[i];
 
 	    ts[i]=ts[j];
 	    ts[j]=temp;
 	 }
       }
-   for (i=j=1; i < tcnt; ++i)
-      if (ts[i] != ts[i - 1])
+   for (i=j=1; i<tcnt; ++i)
+      if (ts[i] != ts[i-1])
 	 ts[j++]=ts[i];
    ts[j]=-1;
    return (ts);
@@ -578,16 +578,16 @@ static int LineAtPointCompletes(SplineSet *lines,BasePoint *pt) {
 }
 
 static SplinePoint *SplinePointMidCreate(Spline *s,double t) {
-   return (SplinePointCreate(((s->splines[0].a * t + s->splines[0].b) * t +
-			      s->splines[0].c) * t + s->splines[0].d,
-			     ((s->splines[1].a * t + s->splines[1].b) * t +
-			      s->splines[1].c) * t + s->splines[1].d));
+   return (SplinePointCreate(((s->splines[0].a * t+s->splines[0].b) * t +
+			      s->splines[0].c) * t+s->splines[0].d,
+			     ((s->splines[1].a * t+s->splines[1].b) * t +
+			      s->splines[1].c) * t+s->splines[1].d));
 }
 
 static int MidLineCompetes(Spline *s,double t,double shadow_length,
 			   SplineSet * spl) {
    SplinePoint *to=SplinePointMidCreate(s, t);
-   SplinePoint *from=SplinePointCreate(to->me.x - shadow_length, to->me.y);
+   SplinePoint *from=SplinePointCreate(to->me.x-shadow_length, to->me.y);
    Spline *line=SplineMake(from, to, s->order2);
    int ret;
 
@@ -601,7 +601,7 @@ static int MidLineCompetes(Spline *s,double t,double shadow_length,
 static void SplineComplete(SplineSet *cur,Spline *s,double t_of_from,
 			   double t_of_to) {
    SplinePoint *to;
-   double dt=t_of_to - t_of_from;
+   double dt=t_of_to-t_of_from;
    Spline1D x, y;
 
    /* Very similar to SplineBisect */
@@ -613,20 +613,20 @@ static void SplineComplete(SplineSet *cur,Spline *s,double t_of_from,
       dt * (s->splines[0].c +
 	    t_of_from * (2 * s->splines[0].b +
 			 3 * s->splines[0].a * t_of_from));
-   x.b=dt * dt * (s->splines[0].b + 3 * s->splines[0].a * t_of_from);
+   x.b=dt * dt * (s->splines[0].b+3 * s->splines[0].a * t_of_from);
    x.a=dt * dt * dt * s->splines[0].a;
-   cur->last->nextcp.x=x.c / 3 + x.d;
-   to->prevcp.x=cur->last->nextcp.x + (x.b + x.c) / 3;
+   cur->last->nextcp.x=x.c/3+x.d;
+   to->prevcp.x=cur->last->nextcp.x+(x.b+x.c)/3;
 
    y.d=cur->last->me.y;
    y.c =
       dt * (s->splines[1].c +
 	    t_of_from * (2 * s->splines[1].b +
 			 3 * s->splines[1].a * t_of_from));
-   y.b=dt * dt * (s->splines[1].b + 3 * s->splines[1].a * t_of_from);
+   y.b=dt * dt * (s->splines[1].b+3 * s->splines[1].a * t_of_from);
    y.a=dt * dt * dt * s->splines[1].a;
-   cur->last->nextcp.y=y.c / 3 + y.d;
-   to->prevcp.y=cur->last->nextcp.y + (y.b + y.c) / 3;
+   cur->last->nextcp.y=y.c/3+y.d;
+   to->prevcp.y=cur->last->nextcp.y+(y.b+y.c)/3;
    to->noprevcp=cur->last->nonextcp=false;
 
    SplineMake(cur->last, to, s->order2);
@@ -719,9 +719,9 @@ static SplineSet *ClipBottomTo3D(SplineSet *bottom,SplineSet *lines,
 	       i=1;
 	    }
 	    while (ts[i] != -1) {
-	       double tend=ts[i + 1]==-1 ? 1 : ts[i + 1];
+	       double tend=ts[i+1]==-1?1:ts[i+1];
 
-	       if (MidLineCompetes(s, (ts[i] + tend) / 2, shadow_length, spl)) {
+	       if (MidLineCompetes(s, (ts[i]+tend)/2, shadow_length, spl)) {
 		  cur=chunkalloc(sizeof(SplineSet));
 		  cur->first=cur->last=SplinePointMidCreate(s, ts[i]);
 		  if (head==NULL)
@@ -730,7 +730,7 @@ static SplineSet *ClipBottomTo3D(SplineSet *bottom,SplineSet *lines,
 		     last->next=cur;
 		  last=cur;
 		  SplineComplete(cur, s, ts[i], tend);
-		  if (ts[i + 1]==-1)
+		  if (ts[i+1]==-1)
 		     break;
 		  cur=NULL;
 		  i += 2;
@@ -812,7 +812,7 @@ SplineSet *SSShadow(SplineSet * spl, double angle, double outline_width,
       temp->next=lines;
       if (outline_width != 0) {
 	 memset(&si, 0, sizeof(si));
-	 si.radius=outline_width / 2;
+	 si.radius=outline_width/2;
 	 /*si.removeoverlapifneeded=true; */
 	 fatframe=SplineSetStroke(spl, &si, order2);
 	 SplinePointListsFree(spl);
@@ -831,7 +831,7 @@ SplineSet *SSShadow(SplineSet * spl, double angle, double outline_width,
    SSCleanup(spl);
    if (isfore) {
       sc->width += fabs(trans[0] * shadow_length);
-      if (trans[0] < 0) {
+      if (trans[0]<0) {
 	 trans[4]=-trans[0] * shadow_length;
 	 trans[0]=trans[3]=1;
 	 trans[1]=trans[2]=0;
@@ -848,13 +848,13 @@ void FVShadow(FontViewBase * fv, double angle, double outline_width,
    SplineChar *sc;
    int layer=fv->active_layer;
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if ((gid=fv->map->map[i]) != -1 && (sc=fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines)
 	 ++cnt;
 
    SFUntickAll(fv->sf);
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if ((gid=fv->map->map[i]) != -1 && (sc=fv->sf->glyphs[gid]) != NULL
 	  && fv->selected[i] && sc->layers[layer].splines && !sc->ticked) {
 	 sc->ticked=true;

@@ -1,4 +1,4 @@
-/* $Id: splinefill.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: splinefill.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1271,7 +1271,7 @@ int GradientHere(double scale, DBounds * bbox, int iy, int ix,
       offset.y=y - grad->start.y;
       relpos=unit.x * offset.x + unit.y * offset.y;
       relpos /= len;
-   } else {			/*if ( grad->start.x==grad->stop.x && grad->start.y==grad->stop.y ) */
+   } else {			/*if (grad->start.x==grad->stop.x && grad->start.y==grad->stop.y ) */
 
       offset.x=x - grad->start.x;
       offset.y=y - grad->start.y;

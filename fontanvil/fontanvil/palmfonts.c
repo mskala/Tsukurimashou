@@ -1,4 +1,4 @@
-/* $Id: palmfonts.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: palmfonts.c 4524 2015-12-20 19:28:13Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -425,8 +425,8 @@ static AFILE *MakeFewRecordPdb(char *filename,int cnt) {
       aputc('\0', file);
       ++i;
    }
-   putshort(file, 0);		/* attributes */
-   putshort(file, 0);		/* version */
+   aput_int16_be_checked(0,file);		/* attributes */
+   aput_int16_be_checked(0,file);		/* version */
    now=mactime();
    putlong(file, now);
    putlong(file, now);
@@ -440,7 +440,7 @@ static AFILE *MakeFewRecordPdb(char *filename,int cnt) {
 
    /* Record list */
    putlong(file, 0);		/* next record id */
-   putshort(file, cnt);		/* numRecords */
+   aput_int16_be_checked(cnt,file);		/* numRecords */
 
    putlong(file, aftell(file) + 8 * cnt);	/* offset to data */
    putlong(file, 0);
@@ -726,42 +726,42 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
 	 font_start=aftell(file);
 
 	 fn.fontType=f==0 ? 0x9000 : 0x9200;
-	 putshort(file, fn.fontType);
-	 putshort(file, fn.firstChar);
-	 putshort(file, fn.lastChar);
-	 putshort(file, fn.maxWidth);
-	 putshort(file, fn.kernMax);
-	 putshort(file, fn.nDescent);
-	 putshort(file, fn.fRectWidth);
-	 putshort(file, fn.fRectHeight);
+	 aput_int16_be_checked(fn.fontType,file);
+	 aput_int16_be_checked(fn.firstChar,file);
+	 aput_int16_be_checked(fn.lastChar,file);
+	 aput_int16_be_checked(fn.maxWidth,file);
+	 aput_int16_be_checked(fn.kernMax,file);
+	 aput_int16_be_checked(fn.nDescent,file);
+	 aput_int16_be_checked(fn.fRectWidth,file);
+	 aput_int16_be_checked(fn.fRectHeight,file);
 	 owbase=aftell(file);
-	 putshort(file, fn.owTLoc);
-	 putshort(file, fn.ascent);
-	 putshort(file, fn.descent);
-	 putshort(file, fn.leading);
-	 putshort(file, fn.rowWords);
+	 aput_int16_be_checked(fn.owTLoc,file);
+	 aput_int16_be_checked(fn.ascent,file);
+	 aput_int16_be_checked(fn.descent,file);
+	 aput_int16_be_checked(fn.leading,file);
+	 aput_int16_be_checked(fn.rowWords,file);
 
 	 if (f==0) {
 	    for (i=0; i < fn.fRectHeight * fn.rowWords; ++i)
-	       putshort(file, images[0][i]);
+	       aput_int16_be_checked(images[0][i],file);
 	 } else {
-	    putshort(file, 1);	/* Extended version field */
-	    putshort(file, fonttype==0
-		     || fonttype==2 ? dencnt : dencnt - 1);
+	    aput_int16_be_checked(1,file);	/* Extended version field */
+	    aput_int16_be_checked(fonttype==0
+		     || fonttype==2 ? dencnt : dencnt - 1,file);
 	    density_starts=aftell(file);
 	    for (i=0; i < 4; ++i) {
 	       if (densities[i] != NULL
 		   && (i != 0 || fonttype==0 || fonttype==2)) {
-		  putshort(file, (i + 1) * 72);
+		  aput_int16_be_checked((i + 1) * 72,file);
 		  putlong(file, 0);
 	       }
 	    }
 	 }
 	 for (i=fn.firstChar; i <= fn.lastChar + 2; ++i)
-	    putshort(file, offsets[i - fn.firstChar]);
+	    aput_int16_be_checked(offsets[i - fn.firstChar],file);
 	 owpos=aftell(file);
 	 afseek(file, owbase, SEEK_SET);
-	 putshort(file, (owpos - owbase) / 2);
+	 aput_int16_be_checked((owpos - owbase) / 2,file);
 	 afseek(file, owpos, SEEK_SET);
 	 for (i=fn.firstChar; i <= fn.lastChar; ++i) {
 	    if ((gid=map->map[i])==-1 || base->glyphs[gid]==NULL) {
@@ -787,7 +787,7 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
 		  for (k=0;
 		       k < (i + 1) * (i + 1) * fn.fRectHeight * fn.rowWords;
 		       ++k)
-		     putshort(file, images[i][k]);
+		     aput_int16_be_checked(images[i][k],file);
 		  ++j;
 	       }
 	    }

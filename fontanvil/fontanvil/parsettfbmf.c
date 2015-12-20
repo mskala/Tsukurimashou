@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: parsettfbmf.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -530,7 +530,7 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
       sizes[j].indexSubTableArrayOffset=aget_int32_be(ttf);
       /* size=*/ aget_int32_be(ttf);
       sizes[j].numIndexSubTables=aget_int32_be(ttf);
-      if ( /* colorRef=*/ aget_int32_be(ttf) != 0)
+      if (/* colorRef=*/ aget_int32_be(ttf) != 0)
 	 good=false;
       sizes[j].ascent=agetc(ttf);
       sizes[j].descent=agetc(ttf);
@@ -541,12 +541,12 @@ void TTFLoadBitmaps(AFILE *ttf, struct ttfinfo *info, int onlyone) {
       sizes[j].firstglyph=aget_uint16_be(ttf);
       sizes[j].endglyph=aget_uint16_be(ttf);
       sizes[j].ppem=agetc(ttf);	/* X */
-      if ( /* ppemY */ agetc(ttf) != sizes[j].ppem)
+      if (/* ppemY */ agetc(ttf) != sizes[j].ppem)
 	 good=false;
       if ((sizes[j].depth=agetc(ttf)) != 1 && sizes[j].depth != 2 &&
 	  sizes[j].depth != 4 && sizes[j].depth != 8)
 	 good=false;
-      if ( /* flags */ !(agetc(ttf) & 1))	/* !Horizontal */
+      if (/* flags */ !(agetc(ttf) & 1))	/* !Horizontal */
 	 good=false;
       if (good) {
 	 if (sizes[j].ppem > bigval) {
@@ -898,9 +898,9 @@ static int32_t ttfdumpf8_9bchar(AFILE *bdat,BDFChar *bc,BDFFont *bdf) {
    /* dump component data */
    for (head=bc->refs; head != NULL; head=head->next)
       numc++;
-   putshort(bdat, numc);
+   aput_int16_be_checked(numc,bdat);
    for (head=bc->refs; head != NULL; head=head->next) {
-      putshort(bdat, head->bdfc->sc->ttf_glyph);
+      aput_int16_be_checked(head->bdfc->sc->ttf_glyph,bdat);
       aputc(head->bdfc->xmin - bc->xmin + head->xoff, bdat);
       aputc(bc->ymax - head->bdfc->ymax - head->yoff, bdat);
    }
@@ -967,8 +967,8 @@ static void FillLineMetrics(struct bitmapSizeTable *size,BDFFont *bdf) {
 	    size->hori.maxbeforebl=bc->ymax;
 	    first=false;
 	 } else {
-/*	    if ( bc->ymax+1 > size->hori.ascender ) size->hori.ascender=bc->ymax+1; */
-/*	    if ( bc->ymin < size->hori.descender ) size->hori.descender=bc->ymin;   */
+/*	    if (bc->ymax+1 > size->hori.ascender ) size->hori.ascender=bc->ymax+1; */
+/*	    if (bc->ymin < size->hori.descender ) size->hori.descender=bc->ymin;   */
 	    if (bc->xmax - bc->xmin + 1 > size->hori.widthMax)
 	       size->hori.widthMax=bc->xmax - bc->xmin + 1;
 	    if (bc->xmin < size->hori.minoriginsb)
@@ -1163,7 +1163,7 @@ static struct bitmapSizeTable *ttfdumpstrikelocs(AFILE *bloc,AFILE *bdat,
 	 }
 
 	 if (!bc->widthgroup) {
-	    putshort(subtables, 1);	/* index format, 4byte offset, no metrics here */
+	    aput_int16_be_checked(1,subtables);	/* index format, 4byte offset, no metrics here */
 	    if (bdf->sf->hasvmetrics && bc->ticked)
 	       format=9;	/* data format, big metrics, component data */
 	    else if (bdf->sf->hasvmetrics && depth != 8)
@@ -1176,7 +1176,7 @@ static struct bitmapSizeTable *ttfdumpstrikelocs(AFILE *bloc,AFILE *bdat,
 	       format=2;	/* data format, short metrics, bit aligned */
 	    else
 	       format=1;	/* data format, short metrics, byte aligned */
-	    putshort(subtables, format);
+	    aput_int16_be_checked(format,subtables);
 	    base=aftell(bdat);
 	    putlong(subtables, base);	/* start of glyphs in bdat */
 	    if (bc->ticked)
@@ -1200,8 +1200,8 @@ static struct bitmapSizeTable *ttfdumpstrikelocs(AFILE *bloc,AFILE *bdat,
 	 } else {
 	    mwidth=bc->xmax - bc->xmin + 1;
 	    mheight=bc->ymax - bc->ymin + 1;
-	    putshort(subtables, 2);	/* index format, big metrics, all glyphs same size */
-	    putshort(subtables, 5);	/* data format, bit aligned no metrics */
+	    aput_int16_be_checked(2,subtables);	/* index format, big metrics, all glyphs same size */
+	    aput_int16_be_checked(5,subtables);	/* data format, bit aligned no metrics */
 	    putlong(subtables, aftell(bdat));	/* start of glyphs in bdat */
 	    putlong(subtables,
 		    (mwidth * (bc->ymax - bc->ymin + 1) * depth + 7) / 8);
@@ -1229,8 +1229,8 @@ static struct bitmapSizeTable *ttfdumpstrikelocs(AFILE *bloc,AFILE *bdat,
    startofsubtables=cnt * (2 * sizeof(short) + sizeof(int32_t));
    size->numsubtables=cnt;
    for (cur=head; cur != NULL; cur=cur->next) {
-      putshort(bloc, cur->first);
-      putshort(bloc, cur->last);
+      aput_int16_be_checked(cur->first,bloc);
+      aput_int16_be_checked(cur->last,bloc);
       putlong(bloc, startofsubtables + cur->additionalOffset);
    }
 
@@ -1255,8 +1255,8 @@ static void dumpbitmapSizeTable(AFILE *bloc,struct bitmapSizeTable *size) {
    putlong(bloc, size->colorRef);
    afwrite(&size->hori, 1, sizeof(struct sbitLineMetrics), bloc);
    afwrite(&size->vert, 1, sizeof(struct sbitLineMetrics), bloc);
-   putshort(bloc, size->startGlyph);
-   putshort(bloc, size->endGlyph);
+   aput_int16_be_checked(size->startGlyph,bloc);
+   aput_int16_be_checked(size->endGlyph,bloc);
    aputc(size->ppemX, bloc);
    aputc(size->ppemY, bloc);
    aputc(size->bitdepth, bloc);
@@ -1299,7 +1299,7 @@ void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
       /* and we need to know these new bounding box values in order to be able to */
       /* correctly calculate reference placement in composite glyphs */
       DetectWidthGroups(&at->gi, bdf, at->applebitmaps);
-      /* Apple doesn't support composite bitmaps ( EBDT formats 8 and 9) */
+      /* Apple doesn't support composite bitmaps (EBDT formats 8 and 9) */
       for (j=0; j < at->gi.gcnt; ++j)
 	 if (at->gi.bygid[j] != -1
 	     && (bc=bdf->glyphs[at->gi.bygid[j]]) != NULL)
@@ -1336,14 +1336,14 @@ void ttfdumpbitmap(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    if ((at->bdatlen & 1) != 0)
       aputc(0, at->bdat);
    if (aftell(at->bdat) & 2)
-      putshort(at->bdat, 0);
+      aput_int16_be_checked(0,at->bdat);
 
    afseek(at->bloc, 0, SEEK_END);
    at->bloclen=aftell(at->bloc);
    if ((at->bloclen & 1) != 0)
       aputc(0, at->bloc);
    if (aftell(at->bloc) & 2)
-      putshort(at->bloc, 0);
+      aput_int16_be_checked(0,at->bloc);
 
    ttf_bdf_dump(sf, at, sizes);
 }
@@ -1466,5 +1466,5 @@ void ttfdumpbitmapscaling(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    if ((at->ebsclen & 1) != 0)
       aputc(0, at->ebsc);
    if (aftell(at->ebsc) & 2)
-      putshort(at->ebsc, 0);
+      aput_int16_be_checked(0,at->ebsc);
 }

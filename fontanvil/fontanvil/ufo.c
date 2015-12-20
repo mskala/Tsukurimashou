@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: ufo.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -995,18 +995,18 @@ static StemInfo *GlifParseHints(xmlDocPtr doc,xmlNodePtr dict,
 static AnchorClass *SFFindOrAddAnchorClass(SplineFont *sf,char *name,struct lookup_subtable *sub) {
    AnchorClass *ac;
    int actype = act_unknown;
-   for ( ac=sf->anchor; ac!=NULL; ac=ac->next )
+   for (ac=sf->anchor; ac!=NULL; ac=ac->next )
      if (strcmp(name,ac->name)==0)
        break;
-   if ( ac!=NULL && ( sub==NULL || ac->subtable==sub ) )
-     return( ac );
-   if ( sub!=NULL )
+   if (ac!=NULL && (sub==NULL || ac->subtable==sub ) )
+     return(ac );
+   if (sub!=NULL )
      actype = sub->lookup->lookup_type==gpos_cursive ? act_curs :
      sub->lookup->lookup_type==gpos_mark2base ? act_mark :
      sub->lookup->lookup_type==gpos_mark2ligature ? act_mklg :
      sub->lookup->lookup_type==gpos_mark2mark ? act_mkmk :
      act_unknown;
-   if ( ac==NULL ) {
+   if (ac==NULL ) {
       ac=chunkalloc(sizeof(AnchorClass));
       ac->subtable=sub;
       ac->type=actype;

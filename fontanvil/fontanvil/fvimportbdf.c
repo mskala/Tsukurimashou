@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: fvimportbdf.c 4525 2015-12-20 19:51:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1045,11 +1045,11 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 			  ((c - min_c) >> 3)]
 		  |= (0x80 >> ((c - min_c) & 7));
 	       ++c;
-	       /*if ( c>max_c ) { c-=max_c-min_c; ++r; } */
+	       /*if (c>max_c ) { c-=max_c-min_c; ++r; } */
 	    }
 	 } else {
 	    c += cnt;
-	    /*while ( c>max_c ) { c-=max_c-min_c; ++r; } */
+	    /*while (c>max_c ) { c-=max_c-min_c; ++r; } */
 	 }
 	 col=!col;
       } else if (ch >= gf_newrow_0 && ch <= gf_newrow_164) {
@@ -1213,7 +1213,7 @@ static int pkgetcount(AFILE *pk,struct pkstate *st) {
 	    st->rpt=1;
 	 else
 	    st->rpt=pkgetcount(pk, st);
-	 /*printf( "[%d]", st->rpt ); */
+	 /*printf("[%d]", st->rpt ); */
       }
    }
 }
@@ -1324,7 +1324,7 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
       r=c=0;
       while (r < h) {
 	 cnt=pkgetcount(pk, &st);
-	 /* if ( black ) printf( "%d", cnt ); else printf( "(%d)", cnt ); */
+	 /* if (black ) printf("%d", cnt ); else printf("(%d)", cnt ); */
 	 if (c + cnt >= w && st.rpt != 0) {
 	    if (black) {
 	       while (c < w) {
@@ -1366,7 +1366,7 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
 	       cc, aftell(pk), char_end, aftell(pk) - char_end);
       afseek(pk, char_end, SEEK_SET);
    }
-   /* printf( "\n" ); */
+   /* printf("\n" ); */
    return (1);
 }
 
@@ -1939,7 +1939,7 @@ static int PcfParse(AFILE *file,struct toc *toc,SplineFont *sf,
 	 bc->ymax=bc->ymin - 1;
 	 bc->xmax=bc->xmin - 1;
       }
-      /*if ( metrics[i].ascent==0 ) bc->ymax=0; */ /* ?? */
+      /*if (metrics[i].ascent==0 ) bc->ymax=0; */ /* ?? */
       bc->width=metrics[i].width;
       bc->vwidth=b->pixelsize;	/* pcf doesn't support vmetrics */
       bc->bytes_per_line=((bc->xmax - bc->xmin) >> 3) + 1;
@@ -2239,7 +2239,7 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
       free(toc);
       return (NULL);
    }
-   if ( /* !toback && */ sf->bitmaps==NULL && sf->onlybitmaps) {
+   if (/* !toback && */ sf->bitmaps==NULL && sf->onlybitmaps) {
       /* Loading first bitmap into onlybitmap font sets the name and encoding */
       SFSetFontName(sf, family, mods, full);
       if (fontname[0] != '\0') {
