@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4427 2015-11-22 17:13:49Z mskala $ */
+/* $Id: encoding.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -290,8 +290,8 @@ static Encoding *_FindOrMakeEncoding(const char *name,int make_it) {
 /*	ISO-2022-KR:     \e $ ) C ^N			*/
 /*	ISO-2022-JP:     \e $ B				*/
 /*	ISO-2022-JP-2:   \e $ ( D			*/
-   /*	ISO-2022-JP-3:   \e $ ( O			*//* Capital "O", not zero */
-   /*	ISO-2022-CN-EXT: \e $ ) E ^N			*//* Not sure about this, also uses CN escape */
+   /*	ISO-2022-JP-3:   \e $ ( O			*/ /* Capital "O", not zero */
+   /*	ISO-2022-CN-EXT: \e $ ) E ^N			*/ /* Not sure about this, also uses CN escape */
 
    memset(&temp, 0, sizeof(temp));
    temp.builtin=true;
@@ -677,7 +677,7 @@ int NameUni2CID(struct cidmap *map, int uni, const char *name) {
    if (map==NULL)
       return (-1);
    if (uni != -1) {
-      // Search for a matching code.
+      /* Search for a matching code. */
       for (i=0; i < map->namemax; ++i)
 	 if (map->unicode[i]==uni)
 	    return (i);
@@ -685,7 +685,7 @@ int NameUni2CID(struct cidmap *map, int uni, const char *name) {
 	 if (alts->uni==uni)
 	    return (alts->cid);
    } else {
-      // Search for a matching name.
+      /* Search for a matching name. */
       for (i=0; i < map->namemax; ++i)
 	 if (map->name[i] != NULL && strcmp(map->name[i], name)==0)
 	    return (i);
@@ -2382,8 +2382,8 @@ int32_t UniFromEnc(int enc, Encoding * encname) {
 	 {
 	    printf("UniFromEnc(original ret) enc:%d initial result:%ld\n",
 		   enc, to[0]);
-	    // For whatever reason the mingw32 build seems to always produce
-	    // a result in byte swapped order.
+	    /* For whatever reason the mingw32 build seems to always produce
+	     * a result in byte swapped order. */
 	    unichar_t t=to[0];
 
 	    printf("UniFromEnc(ret1) %ld\n", t);

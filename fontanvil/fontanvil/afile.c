@@ -1,4 +1,4 @@
-/* $Id: afile.c 4521 2015-12-20 10:07:51Z mskala $ */
+/* $Id: afile.c 4523 2015-12-20 12:30:49Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -721,6 +721,15 @@ int32_t aget_int16_le(AFILE *f) {
      return -1;
 }
 
+int32_t aget_uint24_be(AFILE *f) {
+   uint8_t b[3];
+
+   if (afread(&b,1,3,f)==3)
+     return ((int32_t)b[0]<<16)|((int32_t)b[1]<<8)|((int32_t)b[2]);
+   else
+     return -1;
+}
+
 uint32_t aget_uint32_be(AFILE *f) {
    uint8_t b[4];
 
@@ -772,6 +781,24 @@ int32_t aread_int32_le(AFILE *f,int32_t *x) {
       return 0;
    } else
      return -1;
+}
+
+int aput_int16_le(int16_t x,AFILE *f) {
+   int8_t b[2];
+
+   b[0]=x&0xFF;
+   b[1]=(x>>8)&0xFF;
+   return (afwrite(&b,1,2,f)==2)?0:-1;
+}
+
+int aput_int32_le(int32_t x,AFILE *f) {
+   int8_t b[4];
+
+   b[0]=x&0xFF;
+   b[1]=(x>>8)&0xFF;
+   b[2]=(x>>16)&0xFF;
+   b[3]=(x>>24)&0xFF;
+   return (afwrite(&b,1,4,f)==4)?0:-1;
 }
 
 /**********************************************************************/

@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 4502 2015-12-16 14:11:53Z mskala $ */
+/* $Id: splinestroke.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -75,7 +75,7 @@ typedef struct strokecontext {
    int ecur, emax;
    TPoint *tpt;
    int tmax;
-   double resolution;		/* take samples roughly this many em-units *//* radius/16.0? */
+   double resolution;		/* take samples roughly this many em-units */ /* radius/16.0? */
    double radius;
    double radius2;		/* Squared */
    enum linejoin join;		/* Only for circles */
@@ -85,14 +85,14 @@ typedef struct strokecontext {
    /*  I use -cos(theta). (where theta is the angle between the slopes */
    /*  same idea, different implementation */
    int n;			/* For polygon pens */
-   BasePoint *corners;		/* Expressed as an offset from the center of the poly *//* (Where center could mean center of bounding box, or average or all verteces) */
+   BasePoint *corners;		/* Expressed as an offset from the center of the poly */ /* (Where center could mean center of bounding box, or average or all verteces) */
    BasePoint *slopes;		/* slope[0] is unitvector corners[1]-corners[0] */
-   double largest_distance2;	/* The greatest distance from center of poly to a corner *//* Used to speed up hit tests */
+   double largest_distance2;	/* The greatest distance from center of poly to a corner */ /* Used to speed up hit tests */
    double longest_edge;
    unsigned int open:1;		/* Original is an open contour */
    unsigned int remove_inner:1;
    unsigned int remove_outer:1;
-   /* unsigned int rotate_relative_to_direction: 1; *//* Rotate the polygon pen so it maintains the same orientation with respect to the contour's slope */
+   /* unsigned int rotate_relative_to_direction: 1; */ /* Rotate the polygon pen so it maintains the same orientation with respect to the contour's slope */
    /* Um, the above is essentially equivalent to a circular pen. No point in duplicating it */
    unsigned int leave_users_center:1;	/* Don't move the pen so its center is at the origin */
    unsigned int scaled_or_rotated:1;
@@ -484,7 +484,7 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 
    dot=(nslope.x * pslope.x + nslope.y * pslope.y);
    if (dot >= .999)
-      return;			/* Essentially colinear *//* Won't be perfect because control points lie on integers */
+      return;			/* Essentially colinear */ /* Won't be perfect because control points lie on integers */
    /* miterlimit of 6, 18 degrees */
    force_bevel=(c->join==lj_miter && dot < c->miterlimit);
 
@@ -2829,7 +2829,7 @@ static void PointJoint(SplinePoint *base,SplinePoint *other,
    int bad=false;
 
    if (other->next==NULL && other->prev==NULL) {
-      /* Fragments consisting of a single point do happen *//* Unfortunately */
+      /* Fragments consisting of a single point do happen */ /* Unfortunately */
       SplinePointFree(other);
       return;
    }
@@ -3268,7 +3268,7 @@ static SplineSet *RemoveBackForthLine(SplineSet *ss) {
    if (ss->first->prev==NULL)
       return (ss);
    if (ss->first->next->to==ss->first && ss->first->next->knownlinear) {
-      /* Entire splineset is a single point *//* Remove it all */
+      /* Entire splineset is a single point */ /* Remove it all */
       SplinePointListFree(ss);
       return (NULL);
    }

@@ -1,4 +1,4 @@
-/* $Id: splinesaveafm.c 4521 2015-12-20 10:07:51Z mskala $ */
+/* $Id: splinesaveafm.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -418,7 +418,7 @@ static void tfmDoCharList(SplineFont *sf,int i,struct tfmdata *tfmd,
 	  && i <= tfmd->last) {
 	 used[ucnt++]=map->map[i];
 	 len += strlen(sf->glyphs[map->map[i]]->name) + 1;
-	 /*sf->glyphs[map->map[i]]->is_extended_shape=true; *//* MS does not do this in their fonts */
+	 /*sf->glyphs[map->map[i]]->is_extended_shape=true; */ /* MS does not do this in their fonts */
       }
       was=i;
       i=tfmd->charlist[i];
@@ -476,7 +476,7 @@ static void tfmDoExten(SplineFont *sf,int i,struct tfmdata *tfmd,int left,
       if (k != 0 && k < map->enccount && (gid2=map->map[k]) != -1
 	  && sf->glyphs[gid2] != NULL) {
 	 bits[j]=sf->glyphs[gid2];
-	 /* bits[j]->is_extended_shape=true; *//* MS does not do this in their fonts */
+	 /* bits[j]->is_extended_shape=true; */ /* MS does not do this in their fonts */
       }
    }
    /* 0=>bottom, 1=>middle, 2=>top, 3=>extender */
@@ -719,7 +719,7 @@ static void ofmDoExten(SplineFont *sf,int i,struct tfmdata *tfmd,int left,
       if (k != 0 && k < map->enccount && (gid2=map->map[k]) != -1
 	  && sf->glyphs[gid2] != NULL) {
 	 bits[j]=sf->glyphs[gid2];
-	 /* bits[j]->is_extended_shape=true; *//* MS does not do this in their fonts */
+	 /* bits[j]->is_extended_shape=true; */ /* MS does not do this in their fonts */
       }
    }
    /* 0=>bottom, 1=>middle, 2=>top, 3=>extender */
@@ -2202,18 +2202,6 @@ void SFKernClassTempDecompose(SplineFont *sf, int isv) {
 /* **************************** Writing PFM files *************************** */
 /* ************************************************************************** */
 
-static void putlshort(short val,AFILE *pfm) {
-   aputc(val & 0xff, pfm);
-   aputc(val >> 8, pfm);
-}
-
-static void putlint(int val,AFILE *pfm) {
-   aputc(val & 0xff, pfm);
-   aputc((val >> 8) & 0xff, pfm);
-   aputc((val >> 16) & 0xff, pfm);
-   aputc((val >> 24) & 0xff, pfm);
-}
-
 static const unsigned short local_unicode_from_win[]={
    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
@@ -2388,38 +2376,38 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
 
    SFDefaultOS2Info(&sf->pfminfo, sf, sf->fontname);
 
-   putlshort(0x100, pfm);	/* format version number */
+   aput_int16_le(0x100, pfm);	/* format version number */
    size=aftell(pfm);
-   putlint(-1, pfm);		/* file size, fill in later */
+   aput_int32_le(-1, pfm);		/* file size, fill in later */
    i=0;
    if (sf->copyright != NULL)
       for (pt=sf->copyright; *pt && i < 60; ++i, ++pt)
 	 aputc(*pt, pfm);
    for (; i < 60; ++i)
       aputc(' ', pfm);
-   putlshort(0x81, pfm);	/* type flags */
-   putlshort(10, pfm);		/* point size, not really meaningful */
-   putlshort(300, pfm);		/* vert resolution */
-   putlshort(300, pfm);		/* hor resolution */
-   putlshort(ymax, pfm);	/* ascent (Adobe says the "ascent" is the max high in the font's bounding box) */
+   aput_int16_le(0x81, pfm);	/* type flags */
+   aput_int16_le(10, pfm);		/* point size, not really meaningful */
+   aput_int16_le(300, pfm);		/* vert resolution */
+   aput_int16_le(300, pfm);		/* hor resolution */
+   aput_int16_le(ymax, pfm);	/* ascent (Adobe says the "ascent" is the max high in the font's bounding box) */
    if (caph==0)
       caph=ash;
    if (ymax - ymin >= sf->ascent + sf->descent)
-      putlshort(0, pfm);	/* Adobe says so */
+      aput_int16_le(0, pfm);	/* Adobe says so */
    else
-      putlshort(sf->ascent + sf->descent - (ymax - ymin), pfm);	/* Internal leading */
-   putlshort(196 * (sf->ascent + sf->descent) / 1000, pfm);	/* External leading, Adobe says 196 */
+      aput_int16_le(sf->ascent + sf->descent - (ymax - ymin), pfm);	/* Internal leading */
+   aput_int16_le(196 * (sf->ascent + sf->descent) / 1000, pfm);	/* External leading, Adobe says 196 */
    style=MacStyleCode(sf, NULL);
    aputc(style & sf_italic ? 1 : 0, pfm);	/* is italic */
    aputc(0, pfm);		/* underline */
    aputc(0, pfm);		/* strikeout */
-   putlshort(sf->pfminfo.weight, pfm);	/* weight */
+   aput_int16_le(sf->pfminfo.weight, pfm);	/* weight */
    aputc(windows_encoding, pfm);	/* Some indication of the encoding */
-   putlshort( /*samewid<0?sf->ascent+sf->descent:samewid */ 0, pfm);	/* width */
-   putlshort(sf->ascent + sf->descent, pfm);	/* height */
+   aput_int16_le( /*samewid<0?sf->ascent+sf->descent:samewid */ 0, pfm);	/* width */
+   aput_int16_le(sf->ascent + sf->descent, pfm);	/* height */
    aputc(sf->pfminfo.pfmfamily, pfm);	/* family */
-   putlshort(wid, pfm);		/* average width, Docs say "Width of "X", but that's wrong */
-   putlshort(maxwid, pfm);	/* max width */
+   aput_int16_le(wid, pfm);		/* average width, Docs say "Width of "X", but that's wrong */
+   aput_int16_le(maxwid, pfm);	/* max width */
 
    if (first > 255)
       first=last=0;
@@ -2436,35 +2424,35 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
       aputc(0, pfm);		/* default character. I set to space */
       aputc(0, pfm);		/* word break character. I set to space */
    }
-   putlshort(0, pfm);		/* width bytes. Not meaningful for ps */
+   aput_int16_le(0, pfm);		/* width bytes. Not meaningful for ps */
 
    devname=aftell(pfm);
-   putlint(-1, pfm);		/* offset to device name, fill in later */
+   aput_int32_le(-1, pfm);		/* offset to device name, fill in later */
    facename=aftell(pfm);
-   putlint(-1, pfm);		/* offset to face name, fill in later */
-   putlint(0, pfm);		/* bits pointer. not used */
-   putlint(0, pfm);		/* bits offset. not used */
+   aput_int32_le(-1, pfm);		/* offset to face name, fill in later */
+   aput_int32_le(0, pfm);		/* bits pointer. not used */
+   aput_int32_le(0, pfm);		/* bits offset. not used */
 
 /* No width table */
 
 /* extensions */
-   putlshort(0x1e, pfm);	/* size of extensions table */
+   aput_int16_le(0x1e, pfm);	/* size of extensions table */
    extmetrics=aftell(pfm);
-   putlint(-1, pfm);		/* extent metrics. fill in later */
+   aput_int32_le(-1, pfm);		/* extent metrics. fill in later */
    exttable=aftell(pfm);
-   putlint(-1, pfm);		/* extent table. fill in later */
-   putlint(0, pfm);		/* origin table. not used */
+   aput_int32_le(-1, pfm);		/* extent table. fill in later */
+   aput_int32_le(0, pfm);		/* origin table. not used */
    kernpairs=aftell(pfm);
-   putlint(kerncnt==0 ? 0 : -1, pfm);	/* kern pairs. fill in later */
-   putlint(0, pfm);		/* kern track. I don't understand it so I'm leaving it out */
+   aput_int32_le(kerncnt==0 ? 0 : -1, pfm);	/* kern pairs. fill in later */
+   aput_int32_le(0, pfm);		/* kern track. I don't understand it so I'm leaving it out */
    driverinfo=aftell(pfm);
-   putlint(-1, pfm);		/* driver info. fill in later */
-   putlint(0, pfm);		/* reserved. mbz */
+   aput_int32_le(-1, pfm);		/* driver info. fill in later */
+   aput_int32_le(0, pfm);		/* reserved. mbz */
 
 /* devicename */
    pos=aftell(pfm);
    afseek(pfm, devname, SEEK_SET);
-   putlint(pos, pfm);
+   aput_int32_le(pos, pfm);
    afseek(pfm, pos, SEEK_SET);
    for (pt="PostScript" /*"\273PostScript\253" */ ; *pt; ++pt)
       aputc(*pt, pfm);
@@ -2473,7 +2461,7 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
 /* facename */
    pos=aftell(pfm);
    afseek(pfm, facename, SEEK_SET);
-   putlint(pos, pfm);
+   aput_int32_le(pos, pfm);
    afseek(pfm, pos, SEEK_SET);
    if (sf->familyname != NULL) {
       for (pt=sf->familyname; *pt; ++pt)
@@ -2487,51 +2475,51 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
 /* extmetrics */
    pos=aftell(pfm);
    afseek(pfm, extmetrics, SEEK_SET);
-   putlint(pos, pfm);
+   aput_int32_le(pos, pfm);
    afseek(pfm, pos, SEEK_SET);
-   putlshort(0x34, pfm);	/* size */
-   putlshort(240, pfm);		/* 12 point in twentieths of a point */
-   putlshort(0, pfm);		/* any orientation */
-   putlshort(sf->ascent + sf->descent, pfm);	/* master height */
-   putlshort(3, pfm);		/* min scale */
-   putlshort(1000, pfm);	/* max scale */
-   putlshort(sf->ascent + sf->descent, pfm);	/* master units */
-   putlshort(caph, pfm);	/* cap height */
-   putlshort(xh, pfm);		/* x height */
-   putlshort(ash, pfm);		/* lower case ascent height */
-   putlshort(-dsh, pfm);	/* lower case descent height */
-   putlshort((int) (10 * sf->italicangle), pfm);	/* italic angle */
-   putlshort(-xh, pfm);		/* super script */
-   putlshort(xh / 2, pfm);	/* sub script */
-   putlshort(2 * (sf->ascent + sf->descent) / 3, pfm);	/* super size */
-   putlshort(2 * (sf->ascent + sf->descent) / 3, pfm);	/* sub size */
-   putlshort(-sf->upos, pfm);	/* underline pos */
-   putlshort(sf->uwidth, pfm);	/* underline width */
-   putlshort(-sf->upos, pfm);	/* real underline pos */
-   putlshort(-sf->upos + 2 * sf->uwidth, pfm);	/* real underline second line pos */
-   putlshort(sf->uwidth, pfm);	/* underline width */
-   putlshort(sf->uwidth, pfm);	/* underline width */
-   putlshort((xh + sf->uwidth) / 2, pfm);	/* strike out top */
-   putlshort(sf->uwidth, pfm);	/* strike out width */
-   putlshort(kerncnt, pfm);	/* number of kerning pairs <= 512 */
-   putlshort(0, pfm);		/* kerning tracks <= 16 */
+   aput_int16_le(0x34, pfm);	/* size */
+   aput_int16_le(240, pfm);		/* 12 point in twentieths of a point */
+   aput_int16_le(0, pfm);		/* any orientation */
+   aput_int16_le(sf->ascent + sf->descent, pfm);	/* master height */
+   aput_int16_le(3, pfm);		/* min scale */
+   aput_int16_le(1000, pfm);	/* max scale */
+   aput_int16_le(sf->ascent + sf->descent, pfm);	/* master units */
+   aput_int16_le(caph, pfm);	/* cap height */
+   aput_int16_le(xh, pfm);		/* x height */
+   aput_int16_le(ash, pfm);		/* lower case ascent height */
+   aput_int16_le(-dsh, pfm);	/* lower case descent height */
+   aput_int16_le((int) (10 * sf->italicangle), pfm);	/* italic angle */
+   aput_int16_le(-xh, pfm);		/* super script */
+   aput_int16_le(xh / 2, pfm);	/* sub script */
+   aput_int16_le(2 * (sf->ascent + sf->descent) / 3, pfm);	/* super size */
+   aput_int16_le(2 * (sf->ascent + sf->descent) / 3, pfm);	/* sub size */
+   aput_int16_le(-sf->upos, pfm);	/* underline pos */
+   aput_int16_le(sf->uwidth, pfm);	/* underline width */
+   aput_int16_le(-sf->upos, pfm);	/* real underline pos */
+   aput_int16_le(-sf->upos + 2 * sf->uwidth, pfm);	/* real underline second line pos */
+   aput_int16_le(sf->uwidth, pfm);	/* underline width */
+   aput_int16_le(sf->uwidth, pfm);	/* underline width */
+   aput_int16_le((xh + sf->uwidth) / 2, pfm);	/* strike out top */
+   aput_int16_le(sf->uwidth, pfm);	/* strike out width */
+   aput_int16_le(kerncnt, pfm);	/* number of kerning pairs <= 512 */
+   aput_int16_le(0, pfm);		/* kerning tracks <= 16 */
 
 /* extent table */
    pos=aftell(pfm);
    afseek(pfm, exttable, SEEK_SET);
-   putlint(pos, pfm);
+   aput_int32_le(pos, pfm);
    afseek(pfm, pos, SEEK_SET);
    for (ii=first; ii <= last; ++ii) {
       if ((i=winmap[ii])==-1 || sf->glyphs[i]==NULL)
-	 putlshort(0, pfm);
+	 aput_int16_le(0, pfm);
       else
-	 putlshort(sf->glyphs[i]->width, pfm);
+	 aput_int16_le(sf->glyphs[i]->width, pfm);
    }
 
-   /* driver info *//*==ps font name */
+   /* driver info */ /*==ps font name */
    pos=aftell(pfm);
    afseek(pfm, driverinfo, SEEK_SET);
-   putlint(pos, pfm);
+   aput_int32_le(pos, pfm);
    afseek(pfm, pos, SEEK_SET);
    for (pt=sf->fontname; *pt; ++pt)
       aputc(*pt, pfm);
@@ -2541,9 +2529,9 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
    if (kerncnt != 0) {
       pos=aftell(pfm);
       afseek(pfm, kernpairs, SEEK_SET);
-      putlint(pos, pfm);
+      aput_int32_le(pos, pfm);
       afseek(pfm, pos, SEEK_SET);
-      putlshort(kerncnt, pfm);	/* number of kerning pairs <= 512 */
+      aput_int16_le(kerncnt, pfm);	/* number of kerning pairs <= 512 */
       kerncnt=0;
       for (ii=first; ii < last; ++ii)
 	 if ((i=winmap[ii]) != -1 && sf->glyphs[i] != NULL) {
@@ -2553,7 +2541,7 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
 		      && revwinmap(winmap, kp->sc->orig_pos) != -1) {
 		     aputc(ii, pfm);
 		     aputc(revwinmap(winmap, kp->sc->orig_pos), pfm);
-		     putlshort(kp->off, pfm);
+		     aput_int16_le(kp->off, pfm);
 		     ++kerncnt;
 		  }
 	    }
@@ -2566,7 +2554,7 @@ int PfmSplineFont(AFILE *pfm, SplineFont *sf, int type0, EncMap * map,
 /* file size */
    pos=aftell(pfm);
    afseek(pfm, size, SEEK_SET);
-   putlint(pos, pfm);
+   aput_int32_le(pos, pfm);
 
    SFKernCleanup(sf, false);
 

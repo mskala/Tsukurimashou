@@ -1,4 +1,4 @@
-/* $Id: gimage.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: gimage.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* Copyright (C) 2015  Matthew Skala */
 /*
@@ -518,18 +518,6 @@ GImage *GImageReadBmp(char *filename) {
    return ret;
 }
 
-static void myputs(short s,AFILE *file) {
-   aputc(s & 0xff, file);
-   aputc(s >> 8, file);
-}
-
-static void putl(short s,AFILE *file) {
-   aputc(s & 0xff, file);
-   aputc((s >> 8) & 0xff, file);
-   aputc((s >> 16) & 0xff, file);
-   aputc((s >> 24) & 0xff, file);
-}
-
 int GImageWrite_Bmp(GImage *gi,AFILE *file) {
    struct _GImage *base=gi->list_len==0?gi->u.image:gi->u.images[0];
    int headersize=40,preheadersize=14;
@@ -559,21 +547,21 @@ int GImageWrite_Bmp(GImage *gi,AFILE *file) {
 
    aputc('B',file);
    aputc('M',file);
-   putl(filesize,file);	/* filesize */
-   myputs(0,file);		/* mbz1 */
-   myputs(0,file);		/* mbz2 */
-   putl(offset,file);		/* offset */
-   putl(headersize,file);	/* headersize */
-   putl(base->width, file);	/* width */
-   putl(base->height, file);	/* height */
-   myputs(1,file);		/* planes */
-   myputs(bitsperpixel, file);	/* bitsperpixel */
-   putl(0,file);		/* compression */
-   putl(imagesize,file);	/* imagesize */
-   putl(3000,file);		/* horizontal res, pixels/meter */
-   putl(3000,file);		/* vertical res, pixels/meter */
-   putl(ncol,file);		/* colours used */
-   putl(0,file);		/* colours important */
+   aput_int32_le(filesize,file);	/* filesize */
+   aput_int16_le(0,file);		/* mbz1 */
+   aput_int16_le(0,file);		/* mbz2 */
+   aput_int32_le(offset,file);		/* offset */
+   aput_int32_le(headersize,file);	/* headersize */
+   aput_int32_le(base->width, file);	/* width */
+   aput_int32_le(base->height, file);	/* height */
+   aput_int16_le(1,file);		/* planes */
+   aput_int16_le(bitsperpixel, file);	/* bitsperpixel */
+   aput_int32_le(0,file);		/* compression */
+   aput_int32_le(imagesize,file);	/* imagesize */
+   aput_int32_le(3000,file);		/* horizontal res, pixels/meter */
+   aput_int32_le(3000,file);		/* vertical res, pixels/meter */
+   aput_int32_le(ncol,file);		/* colours used */
+   aput_int32_le(0,file);		/* colours important */
 
    if (clutsize!=0) {
       int i;
@@ -633,7 +621,7 @@ int GImageWrite_Bmp(GImage *gi,AFILE *file) {
       if (pad & 1)		/* pad to 4byte boundary */
 	 aputc('\0', file);
       if (pad & 2)
-	 myputs(0, file);
+	 aput_int16_le(0, file);
    }
    i=aferror(file);
    return !i;
@@ -793,13 +781,11 @@ GImage *GImageReadGif(char *filename) {
    GifFileType *gif;
    int i,il;
 
-   //
-   // MIQ: As at mid 2013 giflib version 4 is still the current
-   // version in some environments. Given that this function call
-   // seems to be the only incompatible change in what FontAnvil uses
-   // as at that time, I added a smoother macro here to allow v4 to
-   // still work OK for the time being.
-   // 
+   /* MIQ: As at mid 2013 giflib version 4 is still the current
+    * version in some environments. Given that this function call
+    * seems to be the only incompatible change in what FontAnvil uses
+    * as at that time, I added a smoother macro here to allow v4 to
+    * still work OK for the time being. */
 #   if defined(GIFLIB_MAJOR) && GIFLIB_MAJOR >= 5
    if ((gif=DGifOpenFileName(filename, NULL)) == NULL) {
 #   else
@@ -2225,13 +2211,9 @@ GImage *GImageReadRgb(char *filename) {
 GImage *GImageReadTiff(char *filename) {
 /* Import a TIF image, else return NULL if error  */
    TIFF *tif;
-
    uint32_t w, h, i, j;
-
    uint32_t *ipt, *fpt, *raster=NULL;
-
    GImage *ret=NULL;
-
    struct _GImage *base;
 
    if ((tif=TIFFOpen(filename, "rb")) == NULL) {
@@ -2294,17 +2276,11 @@ static int ConvertXbmByte(int pixels) {
 GImage *GImageReadXbm(char *filename) {
 /* Import an *.xbm image, else return NULL if error */
    FILE *file;
-
    int width, height;
-
    GImage *gi=NULL;
-
    struct _GImage *base;
-
    int ch, i, j, l;
-
    long pixels;
-
    uint8_t *scanline;
 
    if ((file=fopen(filename, "r")) == NULL) {
@@ -2392,15 +2368,10 @@ GImage *GImageReadXbm(char *filename) {
 int GImageWriteXbm(GImage * gi, char *filename) {
 /* Export an *.xbm image, return 0 if all done okay */
    struct _GImage *base=gi->list_len == 0 ? gi->u.image : gi->u.images[0];
-
    FILE *file;
-
    int i, j, val, val2, k;
-
    char stem[256];
-
    char *pt;
-
    uint8_t *scanline;
 
    /* This routine only exports 1-pixel mono-type images */
@@ -2595,7 +2566,6 @@ static int fillupclut(Color * clut, union hash *tab, int index, int nchars) {
 
 static long parsecol(char *start, char *end) {
    long ret=-1;
-
    int ch;
 
    while (!isspace(*start) && *start != '\0')
@@ -2659,7 +2629,6 @@ static char *findnextkey(char *str) {
 
 static long findcol(char *str) {
    char *pt, *end;
-
    char *try_order="cgm";	/* Try in this order to find something */
 
    while (*try_order) {
@@ -2680,9 +2649,7 @@ static union hash *parse_colors(FILE * fp, unsigned char *line, int lsiz,
 				int (*getdata) (unsigned char *, int,
 						FILE *)) {
    union hash *tab;
-
    union hash *sub;
-
    int i, j;
 
    if ((tab=(union hash *) malloc(256 * sizeof(union hash))) == NULL) {
@@ -2718,23 +2685,14 @@ GImage *GImageReadXpm(char *filename) {
 /* Import an *.xpm image, else cleanup and return NULL if error */
 /* TODO: There is an XPM3 library that takes care of all cases. */
    FILE *fp;
-
    GImage *ret=NULL;
-
    struct _GImage *base;
-
    int width, height, cols, nchar;
-
    unsigned char buf[80];
-
    unsigned char *line, *lpt;
-
    int y, j, lsiz;
-
    union hash *tab, *sub;
-
    unsigned char *pt, *end;
-
    unsigned long *ipt;
 
    int (*getdata) (unsigned char *, int, FILE *)=NULL;
@@ -2834,111 +2792,6 @@ GImage *GImageReadXpm(char *filename) {
    return (NULL);
 }
 
-static char *pixname(int i, int ncol) {
-   static char one[2], two[3];
-
-   char *usable =
-      "!#$%&'()*+,-./0123456789;:<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~ ";
-   static int len=0;
-
-   if (len == 0)
-      len=strlen(usable);
-   if (ncol < len) {
-      one[0]=usable[i];
-      return (one);
-   } else {
-      two[0]=usable[i / len];
-      two[1]=usable[i % len];
-      return (two);
-   }
-}
-
-int GImageWriteXpm(GImage * gi, char *filename) {
-/* Export an *.xpm image. Return 0 if all done okay */
-   struct _GImage *base=gi->list_len == 0 ? gi->u.image : gi->u.images[0];
-
-   FILE *file;
-
-   char stem[256];
-
-   char *pt, *color_type;
-
-   uint8_t *scanline;
-
-   int i, j;
-
-   /* This routine only exports mono or color-indexed type images */
-   if (base->image_type == it_mono)
-      color_type="m";
-   else if (base->image_type == it_index) {
-      color_type="c";
-      if (base->clut->is_grey) {
-	 color_type="g";
-	 if (base->clut->clut_len <= 4)
-	    color_type="g4";
-      }
-   } else {
-      fprintf(stderr, "Image must be mono or color-indexed.\n");
-      return (-1);
-   }
-
-   /* get filename stem (255chars max) */
-   if ((pt=strrchr(filename, '/')) != NULL)
-      ++pt;
-   else
-      pt=filename;
-   strncpy(stem, pt, sizeof(stem));
-   stem[255]='\0';
-   if ((pt=strrchr(stem, '.')) != NULL && pt != stem)
-      *pt='\0';
-
-   if ((file=fopen(filename, "w")) == NULL) {
-      fprintf(stderr, "Can't open \"%s\"\n", filename);
-      return (-1);
-   }
-
-   fprintf(file, "/* XPM */\n");
-   fprintf(file, "static char *%s[]={\n", stem);
-   fprintf(file, "/* width height ncolors chars_per_pixel */\n");
-   if (base->image_type == it_mono)
-      fprintf(file, "\"%d %d 2 1\"\n", (int) base->width, (int) base->height);
-   else
-      fprintf(file, "\"%d %d %d %d\"\n", (int) base->width,
-	      (int) base->height, base->clut->clut_len,
-	      base->clut->clut_len > 95 ? 2 : 1);
-   fprintf(file, "/* colors */\n");
-   if (base->image_type == it_mono) {
-      fprintf(file, "\"%s m #%06x\"\n", pixname(0, 2), 0);
-      fprintf(file, "\"%s m #%06x\"\n", pixname(1, 2), 0xffffff);
-   } else {
-      for (i=0; i < base->clut->clut_len;i++)
-	 fprintf(file, "\"%s %s #%06x\"\n", pixname(i, base->clut->clut_len),
-		 color_type, (int) base->clut->clut[i]);
-   }
-   fprintf(file, "/* image */\n");
-   for (i=0; i < base->height;i++) {
-      fprintf(file, "\"");
-      scanline=base->data + i * base->bytes_per_line;
-      if (base->image_type == it_mono)
-	 for (j=0; j < base->width;j++)
-	    fprintf(file, "%s",
-		    pixname((scanline[j >> 3] >> (7 - (j & 7))) & 1, 2));
-      else
-	 for (j=0; j < base->width;j++)
-	    fprintf(file, "%s", pixname(*scanline++, base->clut->clut_len));
-      fprintf(file, "\"%s\n", i == base->height - 1 ? "" : ",");
-   }
-   fprintf(file, "};\n");
-   fflush(file);
-
-   i=ferror(file);
-   fclose(file);
-   return (i);
-}
-/**********************************************************************/
-
-/**********************************************************************/
-
 /**********************************************************************/
 
 /* FORMAT INDEPENDENT */
@@ -2946,7 +2799,6 @@ int GImageWriteXpm(GImage * gi, char *filename) {
 GImage *GImageCreate(enum image_type type, int32_t width, int32_t height) {
 /* Prepare to get a bitmap image. Cleanup and return NULL if not enough memory */
    GImage *gi;
-
    struct _GImage *base;
 
    if (type < it_mono || type > it_rgba)
@@ -2986,7 +2838,6 @@ GImage *GImageCreate(enum image_type type, int32_t width, int32_t height) {
 
 GImage *_GImage_Create(enum image_type type, int32_t width, int32_t height) {
    GImage *gi;
-
    struct _GImage *base;
 
    if (type < it_mono || type > it_rgba)
@@ -3078,7 +2929,6 @@ GImage *GImageCreateAnimation(GImage ** images, int n) {
 
 void GImageDrawRect(GImage * img, GRect * r, Color col) {
    struct _GImage *base;
-
    int i;
 
    base=img->u.image;
@@ -3169,9 +3019,7 @@ void GImageDrawImage(GImage * dest, GImage * src, GRect * junk, int x, int y) {
 /* 32-bit truecolor. Alpha channel of dest must be all opaque.        */
 static void GImageBlendOver(GImage * dest, GImage * src, GRect * from, int x, int y) {
    struct _GImage *sbase, *dbase;
-
    int i, j, a, r, g, b;
-
    uint32_t *dpt, *spt;
 
    dbase=dest->u.image;
@@ -3316,11 +3164,8 @@ static void WriteBase(FILE * file, struct _GImage *base, char *stem,
 /* Write one image in C code which can be compiled into FontAnvil. */
 /* This routine is called and used by GImageWriteGImage() */
    int i, j, k;
-
    uint32_t *ipt;
-
    uint8_t *pt;
-
    long val;
 
    if (base->image_type == it_true) {
@@ -3387,11 +3232,8 @@ static void WriteBase(FILE * file, struct _GImage *base, char *stem,
 int GImageWriteGImage(GImage * gi, char *filename) {
 /* Export a GImage that can be used by FontAnvil. Return 0 if all done okay */
    FILE *file;
-
    int i;
-
    char stem[256];
-
    char *pt;
 
    if (gi == NULL)

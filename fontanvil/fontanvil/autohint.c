@@ -1,4 +1,4 @@
-/* $Id: autohint.c 4485 2015-12-08 14:29:57Z mskala $ */
+/* $Id: autohint.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1699,7 +1699,6 @@ void SCGuessHHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
    }
    sc->hconflicts=StemListAnyConflicts(sc->hstem);
    if (stem->hasconflicts) {
-      /*StemInfoReduceOverlap(sc->hstem,stem); *//* User asked for it, assume he knows what he's doing */
       if (stem->where==NULL)
 	 ErrorMsg(2,"Couldn't figure out where this hint is active\n");
    }
@@ -1722,7 +1721,6 @@ void SCGuessVHintInstancesAndAdd(SplineChar * sc, int layer, StemInfo * stem,
    }
    sc->vconflicts=StemListAnyConflicts(sc->vstem);
    if (stem->hasconflicts) {
-      /*StemInfoReduceOverlap(sc->vstem,stem); *//* User asked for it, assume he knows what he's doing */
       if (stem->where==NULL)
 	 ErrorMsg(2,"Couldn't figure out where this hint is active\n");
    }

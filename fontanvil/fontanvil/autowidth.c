@@ -1,4 +1,4 @@
-/* $Id: autowidth.c 4502 2015-12-16 14:11:53Z mskala $ */
+/* $Id: autowidth.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -686,7 +686,7 @@ static void AW_InitCharPairs(WidthInfo *wi) {
 static void AW_BuildCharPairs(WidthInfo *wi) {
    int i;
 
-   /* FindFontParameters(wi); *//* Moved earlier */
+   /* FindFontParameters(wi); */ /* Moved earlier */
 
    for (i=0; i < wi->lcnt; ++i)
       SCFindEdges(wi->left[i], wi);

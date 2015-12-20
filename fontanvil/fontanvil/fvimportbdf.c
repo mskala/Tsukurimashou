@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4511 2015-12-17 18:00:51Z mskala $ */
+/* $Id: fvimportbdf.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1038,7 +1038,7 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 else if (ch==gf_paint2b)
 	    cnt=aget_uint16_be(gf);
 	 else
-	    cnt=get3byte(gf);
+	    cnt=aget_uint24_be(gf);
 	 if (col) {
 	    for (i=0; i < cnt && c <= max_c; ++i) {
 	       bc->bitmap[(r - min_r) * bc->bytes_per_line +
@@ -1066,7 +1066,7 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 else if (ch==gf_skip2)
 	    r += aget_uint16_be(gf) + 1;
 	 else
-	    r += get3byte(gf) + 1;
+	    r += aget_uint24_be(gf) + 1;
       } else if (ch==EOF) {
 	 ErrorMsg(2,"Unexpected EOF in gf\n");
 	 break;
@@ -1254,7 +1254,7 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
       pl=aget_uint16_be(pk) + ((flag & 3) << 16);
       cc=agetc(pk);
       char_end=aftell(pk) + pl;
-      tfm=get3byte(pk);
+      tfm=aget_uint24_be(pk);
       dm=aget_uint16_be(pk);
       dx=dm;
       dy=0;
@@ -1266,7 +1266,7 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
       pl=agetc(pk) + ((flag & 3) << 8);
       cc=agetc(pk);
       char_end=aftell(pk) + pl;
-      tfm=get3byte(pk);
+      tfm=aget_uint24_be(pk);
       dm=agetc(pk);
       dx=dm;
       dy=0;
@@ -1939,7 +1939,7 @@ static int PcfParse(AFILE *file,struct toc *toc,SplineFont *sf,
 	 bc->ymax=bc->ymin - 1;
 	 bc->xmax=bc->xmin - 1;
       }
-      /*if ( metrics[i].ascent==0 ) bc->ymax=0; *//*?? */
+      /*if ( metrics[i].ascent==0 ) bc->ymax=0; */ /* ?? */
       bc->width=metrics[i].width;
       bc->vwidth=b->pixelsize;	/* pcf doesn't support vmetrics */
       bc->bytes_per_line=((bc->xmax - bc->xmin) >> 3) + 1;

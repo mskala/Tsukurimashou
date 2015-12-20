@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: splineutil.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2472,7 +2472,7 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
 	 sf->glyphs[i]->unicodeenc =
 	    UniFromName(sf->glyphs[i]->name, sf->uni_interp, map->enc);
 	 sf->glyphs[i]->parent=sf;
-	 /* SCLigDefault(sf->glyphs[i]); *//* Also reads from AFM file, but it probably doesn't exist */
+	 /* SCLigDefault(sf->glyphs[i]); */ /* Also reads from AFM file, but it probably doesn't exist */
       }
    }
    SFInstantiateRefs(sf);

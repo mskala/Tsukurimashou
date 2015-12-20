@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: winfonts.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -579,7 +579,7 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    aputc('\0', file);		/* underline */
    aputc('\0', file);		/* strikeout */
    lputshort(file, pfminfo.weight);	/* weight */
-   aputc('\0', file);		/* charset *//* ??? */
+   aputc('\0', file);		/* charset */ /* ??? */
    lputshort(file, samewid > 0 ? samewid : 0);	/* fixed width */
    lputshort(file, maxy - miny + 1);	/* bounding box height */
    aputc(pfminfo.pfmfamily, file);	/* pitchfamily */

@@ -1,4 +1,4 @@
-/* $Id: tottf.c 4511 2015-12-17 18:00:51Z mskala $ */
+/* $Id: tottf.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3235,7 +3235,7 @@ void SFDefaultOS2Info(struct pfminfo *pfminfo, SplineFont *sf,
       pfminfo->pfmfamily=0x10;
       if (samewid > 0) {
 	 pfminfo->pfmfamily=0x30;
-	 /* pfminfo->panose[3]=9; *//* This is done later */
+	 /* pfminfo->panose[3]=9; */ /* This is done later */
       } else if (strstrmatch(fontname, "sans") != NULL)
 	 pfminfo->pfmfamily=0x20;
       else if (strstrmatch(fontname, "script") != NULL) {
@@ -3358,7 +3358,7 @@ void OS2FigureCodePages(SplineFont *sf, uint32_t CodePage[2]) {
 	    if (uni==0xde && has_ascii)
 	       CodePage[0] |= 1 << 0;	/* (ANSI) Latin1 */
 	    else if (uni==0x255a && has_ascii) {
-	       CodePage[1] |= 1U << 30;	/* WE/latin1 *//* Not latin1 at all */
+	       CodePage[1] |= 1U << 30;	/* WE/latin1 */ /* Not latin1 at all */
 	       CodePage[1] |= 1U << 31;	/* US */
 	    } else if (uni==0x13d && has_ascii) {
 	       CodePage[0] |= 1 << 1;	/* latin2 */
@@ -5091,7 +5091,7 @@ static void dumpcmap(struct alltabs *at,SplineFont *sf,
 
    at->cmap=atmpfile();
 
-   /* MacRoman encoding table *//* Not going to bother with making this work for cid fonts */
+   /* MacRoman encoding table */ /* Not going to bother with making this work for cid fonts */
    /* I now see that Apple doesn't restrict us to format 0 sub-tables (as */
    /*  the docs imply) but instead also uses format 6 tables. Wildly in- */
    /*  appropriate as they are for 2byte encodings, but Apple uses them */

@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: splinechar.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -101,7 +101,7 @@ void SCSynchronizeWidth(SplineChar * sc, double newwidth, double oldwidth,
 	    rint(sc->width * bdf->pixelsize /
 		 (double) (sc->parent->ascent + sc->parent->descent));
 	 if (bc->width != width) {
-	    /*BCPreserveWidth(bc); *//* Bitmaps can't set width, so no undo for it */
+	    /*BCPreserveWidth(bc); */ /* Bitmaps can't set width, so no undo for it */
 	    bc->width=width;
 	    BCCharChangedUpdate(bc);
 	 }

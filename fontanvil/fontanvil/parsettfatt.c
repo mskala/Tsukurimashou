@@ -1,4 +1,4 @@
-/* $Id: parsettfatt.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: parsettfatt.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1407,7 +1407,7 @@ static void g___ContextSubTable2(AFILE *ttf,int stoffset,
 
    coverage=aget_uint16_be(ttf);
    classoff=aget_uint16_be(ttf);
-   rcnt=aget_uint16_be(ttf);	/* class count in coverage table *//*==number of top level rules */
+   rcnt=aget_uint16_be(ttf);	/* class count in coverage table */ /*==number of top level rules */
    rules=calloc(rcnt, sizeof(struct rule));
    for (i=0; i < rcnt; ++i)
       rules[i].offsets=aget_uint16_be(ttf) + stoffset;
@@ -1551,7 +1551,7 @@ static void g___ChainingSubTable2(AFILE *ttf,int stoffset,
    bclassoff=aget_uint16_be(ttf);
    classoff=aget_uint16_be(ttf);
    fclassoff=aget_uint16_be(ttf);
-   rcnt=aget_uint16_be(ttf);	/* class count *//*==max number of top level rules */
+   rcnt=aget_uint16_be(ttf);	/* class count */ /*==max number of top level rules */
    rules=calloc(rcnt, sizeof(struct rule));
    for (i=0; i < rcnt; ++i) {
       offset=aget_uint16_be(ttf);
@@ -4812,7 +4812,7 @@ static ASM *readttf_mortx_asm(AFILE *ttf,struct ttfinfo *info,int ismorx,
       /* Apple's docs say the substitutions are offset from the "state   */
       /*  subtable", but it seems much more likely that they are offset  */
       /*  from the substitution table (given that Apple's docs are often */
-      /*  wrong *//* Apple's docs are right. not clear why that offset  */
+      /*  wrong */ /* Apple's docs are right. not clear why that offset  */
       /*  is there */
       uint8_t *classes_subbed=calloc(st->nclasses, 1);
       int lookup_max=-1, index, index_max;
@@ -5464,7 +5464,7 @@ void readmacfeaturemap(AFILE *ttf, struct ttfinfo *info) {
    int featcnt, i, j, flags;
 
    afseek(ttf, info->feat_start, SEEK_SET);
-   /* version=*/ getfixed(ttf);
+   /* version=*/ aget_int32_be(ttf); /* actually fixed-point */
    featcnt=aget_uint16_be(ttf);
    /* reserved */ aget_uint16_be(ttf);
    /* reserved */ aget_int32_be(ttf);

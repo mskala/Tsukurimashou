@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: cvexport.c 4522 2015-12-20 10:44:17Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -482,7 +482,7 @@ static int ExportFig(char *filename,SplineChar *sc,int layer) {
    return (ret);
 }
 
-int BCExportXBM(char *filename, BDFChar * bdfc, int format) {
+static int BCExportXBM(char *filename, BDFChar * bdfc, int format) {
    struct _GImage base;
    GImage gi;
    GClut clut;
@@ -513,10 +513,6 @@ int BCExportXBM(char *filename, BDFChar * bdfc, int format) {
       else if (format==2)
 	 ret=GImageWritePng(&gi, filename, false);
 #endif
-      else if (format==3)
-	 ret=!GImageWriteXpm(&gi, filename);
-      else if (format==4)
-	 ret=!GImageWriteGImage(&gi, filename);
       else
 	 ret=GImageWriteBmp(&gi, filename);
       /* And back to normal */

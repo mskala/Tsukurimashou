@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: featurefile.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -1852,10 +1852,10 @@ static void dump_gdef(AFILE *out,SplineFont *sf) {
    for (i=0; i < lcnt; ++i) {
       PST *pst=glyphs[i].pst;
 
-      afprintf(out, "  LigatureCaretByPos ");	//by position
+      afprintf(out, "  LigatureCaretByPos ");	/* by position */
       dump_glyphname(out, glyphs[i].sc);
       for (k=0; k < pst->u.lcaret.cnt; ++k) {
-	 afprintf(out, " %d", pst->u.lcaret.carets[k]);	//output <caret %d>
+	 afprintf(out, " %d", pst->u.lcaret.carets[k]);	/* output <caret %d> */ 
       }
       afprintf(out, ";\n");
    }
@@ -5758,7 +5758,7 @@ static void fea_ParseTableKeywords(struct parseState *tok,
 
 static void fea_ParseGDEFTable(struct parseState *tok) {
    /* GlyphClassDef <base> <lig> <mark> <component>; */
-   /* Attach <glyph>|<glyph class> <number>+; *//* parse & ignore */
+   /* Attach <glyph>|<glyph class> <number>+; */ /* parse & ignore */
    /* LigatureCaret <glyph>|<glyph class> <caret value>+ */
    int i;
    struct feat_item *item;

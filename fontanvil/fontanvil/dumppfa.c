@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: dumppfa.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2549,7 +2549,7 @@ static int dumpcidstuff(AFILE *out,SplineFont *cidmaster,int flags,
 	      (sfmt_genrand_uint32(&fa_sfmt)&0x3ffff));
       if (cidmaster->xuid != NULL && cidmaster->use_xuid) {
 	 afprintf(out, "/XUID %s def\n", cidmaster->xuid);
-	 /* SFIncrementXUID(cidmaster); *//* Unique ID managment in CID fonts is too complex for this simple trick to work */
+	 /* SFIncrementXUID(cidmaster); */ /* Unique ID managment in CID fonts is too complex for this simple trick to work */
       }
    }
 

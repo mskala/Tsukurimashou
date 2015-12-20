@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: parsepdf.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2211,7 +2211,7 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
       pcFree(&pc);
       return (NULL);
    }
-   // parse the chosen font name
+   /* parse the chosen font name */
    if ((pt=strchr(filename, '(')) != NULL) {
       select_this_font=fastrdup(pt + 1);
       if ((pt=strchr(select_this_font, ')')) != NULL)

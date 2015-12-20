@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: splinefont.h 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3292,12 +3292,6 @@ extern int SFFlattenByCMap(SplineFont *sf, char *cmapname);
 extern SplineFont *MakeCIDMaster(SplineFont *sf, EncMap *oldmap, int bycmap,
 				 char *cmapfilename, struct cidmap *cidmap);
 
-int get3byte(AFILE *ttf);
-
-double getfixed(AFILE *ttf);
-
-double get2dot14(AFILE *ttf);
-
 void putshort(AFILE *file, int sval);
 
 void putlong(AFILE *file, int val);
@@ -3618,8 +3612,6 @@ extern int _ExportEPS(AFILE *eps, SplineChar *sc, int layer,
 extern int _ExportSVG(AFILE *svg, SplineChar *sc, int layer);
 
 extern int _ExportGlif(AFILE *glif, SplineChar *sc, int layer);
-
-extern int BCExportXBM(char *filename, BDFChar *bdfc, int format);
 
 extern void ScriptExport(SplineFont *sf, BDFFont *bdf, int format, int gid,
 			 char *format_spec, EncMap *map);

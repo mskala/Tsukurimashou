@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: ufo.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -201,7 +201,7 @@ static int _GlifDump(AFILE *glif,SplineChar *sc,int layer) {
 	 afprintf(glif, "    <contour>\n");
 	 for (sp=spl->first; sp != NULL;) {
 	    /* Undocumented fact: If a contour contains a series of off-curve points with no on-curve then treat as quadratic even if no qcurve */
-	    // We write the next on-curve point.
+	    /* We write the next on-curve point. */
 	    if (!isquad || sp->ttfindex != 0xffff || !SPInterpolate(sp)
 		|| sp->pointtype != pt_curve || sp->name != NULL)
 	       afprintf(glif,
@@ -215,7 +215,7 @@ static int _GlifDump(AFILE *glif,SplineChar *sc,int layer) {
 		       sp->name ? "\"" : "");
 	    if (sp->next==NULL)
 	       break;
-	    // We write control points.
+	    /* We write control points. */
 	    if (!sp->next->knownlinear)
 	       afprintf(glif, "      <point x=\"%g\" y=\"%g\"/>\n",
 		       (double) sp->nextcp.x, (double) sp->nextcp.y);
@@ -1046,9 +1046,9 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
    free(format);
    tmpname=(char *) xmlGetProp(glyph, (xmlChar *) "name");
    if (glyphname != NULL) {
-      // We use the provided name from the glyph listing since the specification says to trust that one more.
+      /* We use the provided name from the glyph listing since the specification says to trust that one more. */
       name=fastrdup(glyphname);
-      // But we still fetch the internally listed name for verification and fail on a mismatch.
+      /* But we still fetch the internally listed name for verification and fail on a mismatch. */
       if ((name==NULL)
 	  || ((name != NULL) && (tmpname != NULL)
 	      && (strcmp(glyphname, name) != 0))) {
@@ -1084,8 +1084,8 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
       *pt='\0';
    } else if (name==NULL)
       name=fastrdup("nameless");
-   // We assign a placeholder name if no name exists.
-   // We create a new SplineChar 
+   /* We assign a placeholder name if no name exists. */
+   /* We create a new SplineChar  */
    if (existingglyph != NULL) {
       sc=existingglyph;
       free(name);
@@ -1100,7 +1100,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
       return NULL;
    }
    last=NULL;
-   // Check layer availability here.
+   /* Check layer availability here. */
    if (layerdest >= sc->layer_cnt) {
       sc->layers=realloc(sc->layers, (layerdest + 1) * sizeof(Layer));
       memset(sc->layers + sc->layer_cnt, 0,
@@ -1186,12 +1186,12 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 	       SplinePoint *sp2;
 	       BasePoint pre[2], init[4];
 	       int precnt=0, initcnt=0, open=0;
-	       // precnt seems to count control points leading into the next on-curve point. pre stores those points.
-	       // initcnt counts the control points that appear before the first on-curve point. This can get updated at the beginning and/or the end of the list.
-	       // This is important for determining the order of the closing curve.
-	       // A further improvement would be to prefetch the entire list so as to know the declared order of a curve before processing the point.
+	       /* precnt seems to count control points leading into the next on-curve point. pre stores those points. */
+	       /* initcnt counts the control points that appear before the first on-curve point. This can get updated at the beginning and/or the end of the list. */
+	       /* This is important for determining the order of the closing curve. */
+	       /* A further improvement would be to prefetch the entire list so as to know the declared order of a curve before processing the point. */
 
-	       // We now look for anchor points.
+	       /* We now look for anchor points. */
 	       char *sname;
 
 	       for (points=contour->children; points != NULL;
@@ -1203,7 +1203,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		  if (xmlStrcmp(npoints->name, (const xmlChar *) "point") ==
 		      0)
 		     break;
-	       // If the contour has a single point without another point after it, we assume it to be an anchor point.
+	       /* If the contour has a single point without another point after it, we assume it to be an anchor point. */
 	       if (points != NULL && npoints==NULL) {
 		  sname=(char *) xmlGetProp(points, (xmlChar *) "name");
 		  if (sname != NULL) {
@@ -1230,12 +1230,12 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		     free(xs);
 		     free(ys);
 		     free(sname);
-		     continue;	// We stop processing the contour at this point.
+		     continue;	/* We stop processing the contour at this point. */
 		  }
 	       }
-	       // If we have not identified the contour as holding an anchor point, we continue processing it as a rendered shape.
-	       int wasquad=-1;	// This tracks whether we identified the previous curve as quadratic. (-1 means undefined.)
-	       int firstpointsaidquad=-1;	// This tracks the declared order of the curve leading into the first on-curve point.
+	       /* If we have not identified the contour as holding an anchor point, we continue processing it as a rendered shape. */
+	       int wasquad=-1;	/* This tracks whether we identified the previous curve as quadratic. (-1 means undefined.) */
+	       int firstpointsaidquad=-1;	/* This tracks the declared order of the curve leading into the first on-curve point. */
 
 	       ss=chunkalloc(sizeof(SplineSet));
 	       ss->first=NULL;
@@ -1246,10 +1246,10 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		  double x, y;
 		  int smooth=0;
 
-		  // We discard any entities in the splineset that are not points.
+		  /* We discard any entities in the splineset that are not points. */
 		  if (xmlStrcmp(points->name, (const xmlChar *) "point") != 0)
 		     continue;
-		  // Read as strings from xml.
+		  /* Read as strings from xml. */
 		  xs=(char *) xmlGetProp(points, (xmlChar *) "x");
 		  ys=(char *) xmlGetProp(points, (xmlChar *) "y");
 		  type=(char *) xmlGetProp(points, (xmlChar *) "type");
@@ -1286,8 +1286,8 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 				       strcmp(type, "line")==0 ||
 				       strcmp(type, "curve")==0 ||
 				       strcmp(type, "qcurve")==0)) {
-		     // This handles only actual points.
-		     // We create and label the point.
+		     /* This handles only actual points. */
+		     /* We create and label the point. */
 		     sp=SplinePointCreate(x, y);
 		     sp->dontinterpolate=1;
 		     if (pname != NULL) {
@@ -1329,7 +1329,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			wasquad=true;
 			if (precnt > 0 && precnt <= 2) {
 			   if (precnt==2) {
-			      // If we have two cached control points and the end point is quadratic, we need an implied point between the two control points.
+			      /* If we have two cached control points and the end point is quadratic, we need an implied point between the two control points. */
 			      sp2 =
 				 SplinePointCreate((pre[1].x + pre[0].x) / 2,
 						   (pre[1].y + pre[0].y) / 2);
@@ -1339,7 +1339,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			      SplineMake(ss->last, sp2, true);
 			      ss->last=sp2;
 			   }
-			   // Now we connect the real point.
+			   /* Now we connect the real point. */
 			   sp->prevcp=ss->last->nextcp=pre[precnt - 1];
 			   sp->noprevcp=ss->last->nonextcp=false;
 			}
@@ -1348,16 +1348,16 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		     }
 		     precnt=0;
 		  } else {
-		     // This handles non-end-points (control points).
+		     /* This handles non-end-points (control points). */
 		     if (wasquad==-1 && precnt==2) {
-			// We don't know whether the current curve is quadratic or cubic, but, if we're hitting three off-curve points in a row, something is off.
-			// As mentioned below, we assume in this case that we're dealing with a quadratic TrueType curve that needs implied points.
-			// We create those points since they are adjustable in Fontanvil.
-			// There is not a valid case as far as Frank knows in which a cubic curve would have implied points.
+			/* We don't know whether the current curve is quadratic or cubic, but, if we're hitting three off-curve points in a row, something is off. */
+			/* As mentioned below, we assume in this case that we're dealing with a quadratic TrueType curve that needs implied points. */
+			/* We create those points since they are adjustable in Fontanvil. */
+			/* There is not a valid case as far as Frank knows in which a cubic curve would have implied points. */
 			/* Undocumented fact: If there are no on-curve points (and therefore no indication of quadratic/cubic), assume truetype implied points */
 			memcpy(init, pre, sizeof(pre));
 			initcnt=1;
-			// We make the point between the two already cached control points.
+			/* We make the point between the two already cached control points. */
 			sp =
 			   SplinePointCreate((pre[1].x + pre[0].x) / 2,
 					     (pre[1].y + pre[0].y) / 2);
@@ -1368,7 +1368,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			sp->nextcp=pre[1];
 			sp->nonextcp=false;
 			if (ss->first==NULL) {
-			   // This is indeed possible if the first three points are control points.
+			   /* This is indeed possible if the first three points are control points. */
 			   ss->first=sp;
 			   memcpy(init, pre, sizeof(pre));
 			   initcnt=1;
@@ -1379,7 +1379,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			   SplineMake(ss->last, sp, true);
 			}
 			ss->last=sp;
-			// We make the point between the previously cached control point and the new control point.
+			/* We make the point between the previously cached control point and the new control point. */
 			sp =
 			   SplinePointCreate((x + pre[1].x) / 2,
 					     (y + pre[1].y) / 2);
@@ -1393,10 +1393,10 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			precnt=1;
 			wasquad=true;
 		     } else if (wasquad==true && precnt==1 && 0) {
-			// Frank thinks that this might generate false positives for qcurves.
-			// The only case in which this would create a qcurve missed by the previous condition block
-			// and the point type reader would, it seems, be a cubic curve trailing a quadratic curve.
-			// This seems not to be the best way to handle it.
+			/* Frank thinks that this might generate false positives for qcurves. */
+			/* The only case in which this would create a qcurve missed by the previous condition block */
+			/* and the point type reader would, it seems, be a cubic curve trailing a quadratic curve. */
+			/* This seems not to be the best way to handle it. */
 			sp =
 			   SplinePointCreate((x + pre[0].x) / 2,
 					     (y + pre[0].y) / 2);
@@ -1441,10 +1441,10 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		     pname=NULL;
 		  }
 	       }
-	       // We are finished looping, so it's time to close the curve if it is to be closed.
+	       /* We are finished looping, so it's time to close the curve if it is to be closed. */
 	       if (!open) {
-		  // init has a list of control points leading into the first point. pre has a list of control points trailing the last processed on-curve point.
-		  // We merge pre into init and use init as the list of control points between the last processed on-curve point and the first on-curve point.
+		  /* init has a list of control points leading into the first point. pre has a list of control points trailing the last processed on-curve point. */
+		  /* We merge pre into init and use init as the list of control points between the last processed on-curve point and the first on-curve point. */
 		  if (precnt != 0) {
 		     BasePoint temp[2];
 
@@ -1455,11 +1455,11 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		  }
 		  if ((firstpointsaidquad==true && initcnt > 0)
 		      || initcnt==1) {
-		     // If the final curve is declared quadratic or is assumed to be by control point count, we proceed accordingly.
+		     /* If the final curve is declared quadratic or is assumed to be by control point count, we proceed accordingly. */
 		     int i;
 
 		     for (i=0; i < initcnt - 1; ++i) {
-			// If the final curve is declared quadratic but has more than one control point, we add implied points.
+			/* If the final curve is declared quadratic but has more than one control point, we add implied points. */
 			sp =
 			   SplinePointCreate((init[i + 1].x + init[i].x) / 2,
 					     (init[i + 1].y + init[i].y) / 2);
@@ -1482,8 +1482,8 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		  ss->last=ss->first;
 	       }
 	       if (last==NULL) {
-		  // FTODO
-		  // Deal with existing splines somehow.
+		  /* FTODO */
+		  /* Deal with existing splines somehow. */
 		  sc->layers[layerdest].splines=ss;
 	       } else
 		  last->next=ss;
@@ -1552,8 +1552,8 @@ static void UFORefFixup(SplineFont *sf,SplineChar *sc) {
       return;
    sc->ticked=true;
    prev=NULL;
-   // For each reference, attempt to locate the real splinechar matching the name stored in the fake splinechar.
-   // Free the fake splinechar afterwards.
+   /* For each reference, attempt to locate the real splinechar matching the name stored in the fake splinechar. */
+   /* Free the fake splinechar afterwards. */
    for (r=sc->layers[ly_fore].refs; r != NULL; r=r->next) {
       rsc=SFGetChar(sf, -1, r->sc->name);
       if (rsc==NULL) {
@@ -1597,12 +1597,12 @@ static void UFOLoadGlyphs(SplineFont *sf,char *glyphdir,int layerdest) {
       xmlFreeDoc(doc);
       return;
    }
-   // Count glyphs for the benefit of measuring progress.
+   /* Count glyphs for the benefit of measuring progress. */
    for (tot=0, keys=dict->children; keys != NULL; keys=keys->next) {
       if (xmlStrcmp(keys->name, (const xmlChar *) "key")==0)
 	 ++tot;
    }
-   // Start reading in glyph name to file name mappings.
+   /* Start reading in glyph name to file name mappings. */
    for (keys=dict->children; keys != NULL; keys=keys->next) {
       for (value=keys->next;
 	   value != NULL
@@ -2200,14 +2200,14 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
       int layercontentsvaluecount=0;
 
       if ((layercontentsdoc=xmlParseFile(layercontentsname))) {
-	 // The layercontents plist contains an array of double-element arrays. There is no top-level dict. Note that the indices in the layercontents array may not match those in the Fontanvil layers array due to reserved spaces.
+	 /* The layercontents plist contains an array of double-element arrays. There is no top-level dict. Note that the indices in the layercontents array may not match those in the Fontanvil layers array due to reserved spaces. */
 	 if ((layercontentsplist=xmlDocGetRootElement(layercontentsdoc))
 	     && (layercontentsdict =
 		 FindNode(layercontentsplist->children, "array"))) {
 	    layercontentslayercount=0;
 	    layernamesbuffersize=2;
 	    layernames=malloc(2 * sizeof(char *) * layernamesbuffersize);
-	    // Look through the children of the top-level array. Stop if one of them is not an array. (Ignore text objects since these probably just have whitespace.)
+	    /* Look through the children of the top-level array. Stop if one of them is not an array. (Ignore text objects since these probably just have whitespace.) */
 	    for (layercontentslayer=layercontentsdict->children;
 		 (layercontentslayer != NULL)
 		 &&
@@ -2225,7 +2225,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		  xmlChar *layerglyphdirname=NULL;
 
 		  layercontentsvaluecount=0;
-		  // Look through the children (effectively columns) of the layer array (the row). Reject non-string values.
+		  /* Look through the children (effectively columns) of the layer array (the row). Reject non-string values. */
 		  for (layercontentsvalue=layercontentslayer->children;
 		       (layercontentsvalue != NULL)
 		       &&
@@ -2253,17 +2253,17 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 			layercontentsvaluecount++;
 		     }
 		  }
-		  // We need two values (as noted above) per layer entry and ignore any layer lacking those.
+		  /* We need two values (as noted above) per layer entry and ignore any layer lacking those. */
 		  if ((layercontentsvaluecount > 1)
 		      && (layernamesbuffersize < INT_MAX / 2)) {
-		     // Resize the layer names array as necessary.
+		     /* Resize the layer names array as necessary. */
 		     if (layercontentslayercount >= layernamesbuffersize) {
 			layernamesbuffersize *= 2;
 			layernames =
 			   realloc(layernames,
 				   2 * sizeof(char *) * layernamesbuffersize);
 		     }
-		     // Fail silently on allocation failure; it's highly unlikely.
+		     /* Fail silently on allocation failure; it's highly unlikely. */
 		     if (layernames != NULL) {
 			layernames[2 * layercontentslayercount] =
 			   fastrdup((char *) (layerlabel));
@@ -2271,7 +2271,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 			   layernames[(2 * layercontentslayercount) + 1] =
 			      fastrdup((char *) (layerglyphdirname));
 			   if (layernames[(2 * layercontentslayercount) + 1])
-			      layercontentslayercount++;	// We increment only if both pointers are valid so as to avoid read problems later.
+			      layercontentslayercount++;	/* We increment only if both pointers are valid so as to avoid read problems later. */
 			   else
 			      free(layernames[2 * layercontentslayercount]);
 			}
@@ -2294,7 +2294,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 	       int bg=1;
 
 	       if (layercontentslayercount > 0) {
-		  // Start reading layers.
+		  /* Start reading layers. */
 		  for (lcount=0; lcount < layercontentslayercount; lcount++) {
 		     if ((glyphdir =
 			  buildname(basedir, layernames[2 * lcount + 1]))) {
@@ -2303,9 +2303,9 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 			   if (!GFileExists(glyphlist)) {
 			      ErrorMsg(2,"No glyphs directory or no contents file\n");
 			   } else {
-			      // Only public.default gets mapped as a foreground layer.
+			      /* Only public.default gets mapped as a foreground layer. */
 			      bg=1;
-			      // public.default and public.background have fixed mappings. Other layers start at 2.
+			      /* public.default and public.background have fixed mappings. Other layers start at 2. */
 			      if (strcmp
 				  (layernames[2 * lcount],
 				   "public.default")==0) {
@@ -2320,7 +2320,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 				 layerdest=auxpos++;
 			      }
 
-			      // We ensure that the splinefont layer list has sufficient space.
+			      /* We ensure that the splinefont layer list has sufficient space. */
 			      if (layerdest + 1 > sf->layer_cnt) {
 				 sf->layers =
 				    realloc(sf->layers,
@@ -2332,22 +2332,22 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 			      }
 			      sf->layer_cnt=layerdest + 1;
 
-			      // The check is redundant, but it allows us to copy from sfd.c.
+			      /* The check is redundant, but it allows us to copy from sfd.c. */
 			      if ((layerdest < sf->layer_cnt) && sf->layers) {
 				 if (sf->layers[layerdest].name)
 				    free(sf->layers[layerdest].name);
 				 sf->layers[layerdest].name =
 				    layernames[2 * lcount];
 				 sf->layers[layerdest].background=bg;
-				 // Fetch glyphs.
+				 /* Fetch glyphs. */
 				 UFOLoadGlyphs(sf, glyphdir, layerdest);
-				 // Determine layer spline order.
+				 /* Determine layer spline order. */
 				 sf->layers[layerdest].order2 =
 				    SFLFindOrder(sf, layerdest);
-				 // Conform layer spline order (reworking control points if necessary).
+				 /* Conform layer spline order (reworking control points if necessary). */
 				 SFLSetOrder(sf, layerdest,
 					     sf->layers[layerdest].order2);
-				 // Set the grid order to the foreground order if appropriate.
+				 /* Set the grid order to the foreground order if appropriate. */
 				 if (layerdest==ly_fore)
 				    sf->grid.order2 =
 				       sf->layers[layerdest].order2;
@@ -2361,7 +2361,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 	       } else
 		 ErrorMsg(2,"layercontents.plist lists no valid layers.\n");
 
-	       // Free layer names.
+	       /* Free layer names. */
 	       for (lcount=0; lcount < layercontentslayercount; lcount++) {
 		  if (layernames[2 * lcount])
 		     free(layernames[2 * lcount]);

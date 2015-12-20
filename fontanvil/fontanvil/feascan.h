@@ -74,7 +74,7 @@ struct gpos_mark {
       struct gpos_mark *same, *next;
       int name_used; /* Same "markClass" can be used in any mark type lookup,
 		      * or indeed in multiple lookups of the same type */
-} *gpos_mark;
+};
 
 #define MAXT    80
 #define MAXI    5

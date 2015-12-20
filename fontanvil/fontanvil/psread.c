@@ -1,4 +1,4 @@
-/* $Id: psread.c 4502 2015-12-16 14:11:53Z mskala $ */
+/* $Id: psread.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3874,7 +3874,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 			  name);
 	      sp=0;
 	      break;
-	   case 1:		/* vstem3 *//* specifies three v hints zones at once */
+	   case 1:		/* vstem3 */ /* specifies three v hints zones at once */
 	      if (sp < 6)
 		 ErrorMsg(2,"Stack underflow on vstem3 in %s\n", name);
 	      /* according to the standard, if there is a vstem3 there can't */
@@ -3927,7 +3927,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      hp=hp->next->next;
 	      sp=0;
 	      break;
-	   case 2:		/* hstem3 *//* specifies three h hints zones at once */
+	   case 2:		/* hstem3 */ /* specifies three h hints zones at once */
 	      if (sp < 6)
 		 ErrorMsg(2,"Stack underflow on hstem3 in %s\n", name);
 	      if (is_type2)
@@ -3971,7 +3971,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      hp=hp->next->next;
 	      sp=0;
 	      break;
-	   case 6:		/* seac *//* build accented characters */
+	   case 6:		/* seac */ /* build accented characters */
 	    seac:
 	      if (sp < 5)
 		 ErrorMsg(2,"Stack underflow on seac in %s\n", name);
@@ -4016,7 +4016,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      rlast=r2;
 	      sp=0;
 	      break;
-	   case 7:		/* sbw *//* generalized width/sidebearing command */
+	   case 7:		/* sbw */ /* generalized width/sidebearing command */
 	      if (sp < 4)
 		 ErrorMsg(2,"Stack underflow on sbw in %s\n", name);
 	      if (is_type2)

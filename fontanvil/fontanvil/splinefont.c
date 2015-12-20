@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4495 2015-12-12 08:15:13Z mskala $ */
+/* $Id: splinefont.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1831,7 +1831,7 @@ void SPLFirstVisitSplines(SplinePoint * splfirst,
 	   spline=next) {
 	 next=spline->to->next;
 
-	 // callback
+	 /* callback */
 	 f(splfirst, spline, udata);
 
 	 if (first==NULL) {
@@ -1852,7 +1852,7 @@ typedef struct SPLFirstVisitorFoundSoughtXYDataS {
    double x;
    double y;
 
-   // outputs
+   /* outputs */
    int found;
    Spline *spline;
    SplinePoint *sp;

@@ -1,4 +1,4 @@
-/* $Id: stemdb.c 4503 2015-12-16 14:12:49Z mskala $ */
+/* $Id: stemdb.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams and Alexey Kryukov
  * Copyright (C) 2015  Matthew Skala
  *
@@ -6415,7 +6415,7 @@ struct glyphdata *GlyphDataInit(SplineChar * sc, int layer, double em_size,
    }
    gd->pspace=malloc(gd->pcnt * sizeof(struct pointdata *));
 
-   /*gd->ms=SSsToMContours(sc->layers[layer].splines,over_remove); *//* second argument is meaningless here */
+   /*gd->ms=SSsToMContours(sc->layers[layer].splines,over_remove); */ /* second argument is meaningless here */
    for (m=gd->ms, cnt=0; m != NULL; m=m->linked, ++cnt);
    gd->space=malloc((cnt + 2) * sizeof(Monotonic *));
    gd->mcnt=cnt;

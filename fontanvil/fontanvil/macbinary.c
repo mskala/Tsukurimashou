@@ -1,4 +1,4 @@
-/* $Id: macbinary.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: macbinary.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -402,7 +402,7 @@ static uint32_t BDFToNFNT(AFILE *res,BDFFont *bdf,EncMap *map) {
 	  || !SCWorthOutputting(bdf->glyphs[gid]->sc)) {
 	 lbearings[i]=0xff;
 	 widths[i]=0xff;
-	 /*idealwidths[i]=1<<12; *//* 1 em */
+	 /*idealwidths[i]=1<<12; */ /* 1 em */
       } else {
 	 lbearings[i]=bdf->glyphs[gid]->xmin - kernMax;
 	 widths[i]=bdf->glyphs[gid]->width < 0 ? 0 :
@@ -881,7 +881,7 @@ static uint32_t SFToFOND(AFILE *res,SplineFont *sf,uint32_t id,int dottf,
       fontclass |= 0x100;
    putshort(res, fontclass);	/* fontClass */
    geoffset=aftell(res);
-   putlong(res, 0);		/* Offset to glyph encoding table *//* Fill in later */
+   putlong(res, 0);		/* Offset to glyph encoding table */ /* Fill in later */
    putlong(res, 0);		/* Reserved, MBZ */
    if (!sf->familyname
        || strnmatch(sf->familyname, sf->fontname,
@@ -1155,7 +1155,7 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
 	 putshort(res, i);	/* style */
 	 putshort(res, faces[i]->id);
       }
-   /* then do bitmap faces (if any) *//* Ordered by size damn it */
+   /* then do bitmap faces (if any) */ /* Ordered by size damn it */
    for (size=1; size < 256; ++size) {
       for (i=0; i < 96; ++i)
 	 if (faces[i] != NULL && faces[i]->ids != NULL) {
@@ -1280,7 +1280,7 @@ static uint32_t SFsToFOND(AFILE *res,struct sflist *sfs,uint32_t id,int format,
       fontclass |= 0x100;
    putshort(res, fontclass);	/* fontClass */
    geoffset=aftell(res);
-   putlong(res, 0);		/* Offset to glyph encoding table *//* Fill in later */
+   putlong(res, 0);		/* Offset to glyph encoding table */ /* Fill in later */
    putlong(res, 0);		/* Reserved, MBZ */
    strcnt =
       1 /* Family Name */  + pscnt - exact /* count of format strings */  +

@@ -1,4 +1,4 @@
-/* $Id: nowakowskittfinstr.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: nowakowskittfinstr.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012 by
    George Williams, Michal Nowakowski & Alexey Kryukov */
 
@@ -861,79 +861,79 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * could be much simpler.
        * Syntax: PUSHB_3 point cvt_of_blue 0 CALL
        */
-      0xb0,			// PUSHB_1
-      0x00,			//   0
-      0x2c,			// FDEF
-      0xb0,			//   PUSHB_1
-      0x00,			//     0
-      0x13,			//   SZP0
-      0x4b,			//   MPPEM
-      0xb0,			//   PUSHB_1 - under this ppem blues will be specially rounded
+      0xb0,			/* PUSHB_1 */
+      0x00,			/*   0 */
+      0x2c,			/* FDEF */
+      0xb0,			/*   PUSHB_1 */
+      0x00,			/*     0 */
+      0x13,			/*   SZP0 */
+      0x4b,			/*   MPPEM */
+      0xb0,			/*   PUSHB_1 - under this ppem blues will be specially rounded */
       GetBlueScale(gic->sf),
-      0x50,			//   LT
-      0x58,			//   IF
-      0xb0,			//     PUSHB_0
-      0x4a,			//       74
-      0x76,			//     SROUND - round blues a bit up to grid
-      0x59,			//   EIF
-      0xb0,			//   PUSHB_1
-      0x00,			//     0
-      0x23,			//   SWAP
-      0x3f,			//   MIAP[rnd] - blue zone positioned here
-      0x18,			//   RTG - round state for overshoots in monochrome mode
-      0xb0,			//   PUSHB_1
-      0x06,			//     6
-      0x2b,			//   CALL
-      0x58,			//   IF
-      0x3d,			//     RTDG - round state for overshoots in antialiased mode
-      0x59,			//   EIF
-      0x4b,			//   MPPEM
-      0xb0,			//   PUSHB_1 - under following ppem overshoots will be suppressed
+      0x50,			/*   LT */
+      0x58,			/*   IF */
+      0xb0,			/*     PUSHB_0 */
+      0x4a,			/*       74 */
+      0x76,			/*     SROUND - round blues a bit up to grid */
+      0x59,			/*   EIF */
+      0xb0,			/*   PUSHB_1 */
+      0x00,			/*     0 */
+      0x23,			/*   SWAP */
+      0x3f,			/*   MIAP[rnd] - blue zone positioned here */
+      0x18,			/*   RTG - round state for overshoots in monochrome mode */
+      0xb0,			/*   PUSHB_1 */
+      0x06,			/*     6 */
+      0x2b,			/*   CALL */
+      0x58,			/*   IF */
+      0x3d,			/*     RTDG - round state for overshoots in antialiased mode */
+      0x59,			/*   EIF */
+      0x4b,			/*   MPPEM */
+      0xb0,			/*   PUSHB_1 - under following ppem overshoots will be suppressed */
       GetBlueScale(gic->sf),
-      0x50,			//   LT
-      0x58,			//   IF
-      0x7d,			//   RDTG - suppress overshoots
-      0x59,			//   EIF
-      0x20,			//   DUP
-      0xd4,			//   MDRP[rp0,rnd,grey]
-      0xb0,			//   PUSHB_1
-      0x01,			//     1
-      0x13,			//   SZP0
-      0x2e,			//   MDAP[no-rnd]
-      0x18,			//   RTG
-      0x2d,			// ENDF
+      0x50,			/*   LT */
+      0x58,			/*   IF */
+      0x7d,			/*   RDTG - suppress overshoots */
+      0x59,			/*   EIF */
+      0x20,			/*   DUP */
+      0xd4,			/*   MDRP[rp0,rnd,grey] */
+      0xb0,			/*   PUSHB_1 */
+      0x01,			/*     1 */
+      0x13,			/*   SZP0 */
+      0x2e,			/*   MDAP[no-rnd] */
+      0x18,			/*   RTG */
+      0x2d,			/* ENDF */
 
       /* Function 1: Place given point relatively to previous, maintaining the
        * minimum distance. Then call FPGM 12 to check if the point's gridfitted 
        * position is too far from its original position, and correct it, if necessary.
        * Syntax: PUSB_2 point 1 CALL
        */
-      0xb0,			// PUSHB_1
-      0x01,			//   1
-      0x2c,			// FDEF
-      0x20,			//   DUP
-      0xda,			//   MDRP[rp0,min,white]
-      0xb0,			//   PUSHB_1
-      0x0c,			//     12
-      0x2b,			//   CALL
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x01,			/*   1 */
+      0x2c,			/* FDEF */
+      0x20,			/*   DUP */
+      0xda,			/*   MDRP[rp0,min,white] */
+      0xb0,			/*   PUSHB_1 */
+      0x0c,			/*     12 */
+      0x2b,			/*   CALL */
+      0x2d,			/* ENDF */
 
       /* Function 2: Below given ppem, substitute the width with cvt entry.
        * Leave the resulting width on the stack. Used as the first step in
        * normalizing cvt stems, see normalize_stem().
        * Syntax: PUSHX_3 width cvt_index ppem 2 CALL
        */
-      0xb0,			// PUSHB_1
-      0x02,			//   2
-      0x2c,			// FDEF
-      0x4b,			//   MPPEM
-      0x52,			//   GT
-      0x58,			//   IF
-      0x45,			//     RCVT
-      0x23,			//     SWAP
-      0x59,			//   EIF
-      0x21,			//   POP
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x02,			/*   2 */
+      0x2c,			/* FDEF */
+      0x4b,			/*   MPPEM */
+      0x52,			/*   GT */
+      0x58,			/*   IF */
+      0x45,			/*     RCVT */
+      0x23,			/*     SWAP */
+      0x59,			/*   EIF */
+      0x21,			/*   POP */
+      0x2d,			/* ENDF */
 
       /* Function 3: round a stack element as a black distance, respecting
        * minimum distance of 1px. This is used for rounding stems after width
@@ -941,21 +941,21 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * Leaves the rounded width on the stack.
        * Syntax: PUSHX_2 width_to_be_rounded 3 CALL
        */
-      0xb0,			// PUSHB_1
-      0x03,			//   3
-      0x2c,			// FDEF
-      0x69,			//   ROUND[black]
-      0x18,			//   RTG
-      0x20,			//   DUP
-      0xb0,			//   PUSHB_1
-      0x40,			//     64, that's one pixel as F26Dot6
-      0x50,			//   LT
-      0x58,			//   IF
-      0x21,			//     POP
-      0xb0,			//     PUSHB_1
-      0x40,			//       64
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x03,			/*   3 */
+      0x2c,			/* FDEF */
+      0x69,			/*   ROUND[black] */
+      0x18,			/*   RTG */
+      0x20,			/*   DUP */
+      0xb0,			/*   PUSHB_1 */
+      0x40,			/*     64, that's one pixel as F26Dot6 */
+      0x50,			/*   LT */
+      0x58,			/*   IF */
+      0x21,			/*     POP */
+      0xb0,			/*     PUSHB_1 */
+      0x40,			/*       64 */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 4: Position the second edge of a stem that is not normally
        * regularized via cvt (but we snap it to cvt width below given ppem).
@@ -963,126 +963,126 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * (basically, they are shortened by 0.25px before being rounded).
        * Syntax: PUSHX_5 pt cvt_index chg_rp0 ppem 4 CALL
        */
-      0xb0,			// PUSHB_1
-      0x04,			//   4
-      0x2c,			// FDEF
-      0xb0,			//   PUSHB_1
-      0x06,			//     6
-      0x2b,			//   CALL
-      0x58,			//   IF
-      0x21,			//     POP
-      0x23,			//     SWAP
-      0x21,			//     POP
-      0x7a,			//     ROFF
-      0x58,			//     IF
-      0xdd,			//       MDRP[rp0,min,rnd,black]
-      0x1b,			//     ELSE
-      0xcd,			//       MDRP[min,rnd,black]
-      0x59,			//     EIF
-      0x1b,			//   ELSE
-      0x4b,			//     MPPEM
-      0x52,			//     GT
-      0x58,			//     IF
-      0x58,			//       IF
-      0xfd,			//         MIRP[rp0,min,rnd,black]
-      0x1b,			//       ELSE
-      0xed,			//         MIRP[min,rnd,black]
-      0x59,			//       EIF
-      0x1b,			//     ELSE
-      0x23,			//       SWAP
-      0x21,			//       POP
-      0xb0,			//       PUSHB_1
-      0x05,			//         5
-      0x2b,			//       CALL
-      0x58,			//       IF
-      0xb0,			//         PUSHB_1
-      0x46,			//           70
-      0x76,			//         SROUND
-      0x59,			//       EIF
-      0x58,			//       IF
-      0xdd,			//         MDRP[rp0,min,rnd,black]
-      0x1b,			//       ELSE
-      0xcd,			//         MDRP[min,rnd,black]
-      0x59,			//       EIF
-      0x59,			//     EIF
-      0x59,			//   EIF
-      0x18,			//   RTG
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x04,			/*   4 */
+      0x2c,			/* FDEF */
+      0xb0,			/*   PUSHB_1 */
+      0x06,			/*     6 */
+      0x2b,			/*   CALL */
+      0x58,			/*   IF */
+      0x21,			/*     POP */
+      0x23,			/*     SWAP */
+      0x21,			/*     POP */
+      0x7a,			/*     ROFF */
+      0x58,			/*     IF */
+      0xdd,			/*       MDRP[rp0,min,rnd,black] */
+      0x1b,			/*     ELSE */
+      0xcd,			/*       MDRP[min,rnd,black] */
+      0x59,			/*     EIF */
+      0x1b,			/*   ELSE */
+      0x4b,			/*     MPPEM */
+      0x52,			/*     GT */
+      0x58,			/*     IF */
+      0x58,			/*       IF */
+      0xfd,			/*         MIRP[rp0,min,rnd,black] */
+      0x1b,			/*       ELSE */
+      0xed,			/*         MIRP[min,rnd,black] */
+      0x59,			/*       EIF */
+      0x1b,			/*     ELSE */
+      0x23,			/*       SWAP */
+      0x21,			/*       POP */
+      0xb0,			/*       PUSHB_1 */
+      0x05,			/*         5 */
+      0x2b,			/*       CALL */
+      0x58,			/*       IF */
+      0xb0,			/*         PUSHB_1 */
+      0x46,			/*           70 */
+      0x76,			/*         SROUND */
+      0x59,			/*       EIF */
+      0x58,			/*       IF */
+      0xdd,			/*         MDRP[rp0,min,rnd,black] */
+      0x1b,			/*       ELSE */
+      0xcd,			/*         MDRP[min,rnd,black] */
+      0x59,			/*       EIF */
+      0x59,			/*     EIF */
+      0x59,			/*   EIF */
+      0x18,			/*   RTG */
+      0x2d,			/* ENDF */
 
       /* Function 5: determine if we are hinting vertically. The function
        * is crude and its use is limited to conditions set by SVTCA[].
        * Syntax: PUSHB_1 5 CALL; leaves boolean on the stack.
        */
-      0xb0,			// PUSHB_1
-      0x05,			//   5
-      0x2c,			// FDEF
-      0x0d,			//   GFV
-      0x5c,			//   NOT
-      0x5a,			//   AND
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x05,			/*   5 */
+      0x2c,			/* FDEF */
+      0x0d,			/*   GFV */
+      0x5c,			/*   NOT */
+      0x5a,			/*   AND */
+      0x2d,			/* ENDF */
 
       /* Function 6: check if we are hinting in grayscale.
        * CAUTION! Older FreeType versions lie if asked.
        * Syntax: PUSHB_1 6 CALL; leaves boolean on the stack.
        */
-      0xb0,			// PUSHB_1
-      0x06,			//   6
-      0x2c,			// FDEF
-      0xb1,			//   PUSHB_2
-      0x22,			//     34
-      0x01,			//     1
-      0x88,			//   GETINFO
-      0x50,			//   LT
-      0x58,			//   IF
-      0xb0,			//     PUSHB_1
-      0x20,			//       32
-      0x88,			//     GETINFO
-      0x5c,			//     NOT
-      0x5c,			//     NOT
-      0x1b,			//   ELSE
-      0xb0,			//     PUSHB_1
-      0x00,			//       0
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x06,			/*   6 */
+      0x2c,			/* FDEF */
+      0xb1,			/*   PUSHB_2 */
+      0x22,			/*     34 */
+      0x01,			/*     1 */
+      0x88,			/*   GETINFO */
+      0x50,			/*   LT */
+      0x58,			/*   IF */
+      0xb0,			/*     PUSHB_1 */
+      0x20,			/*       32 */
+      0x88,			/*     GETINFO */
+      0x5c,			/*     NOT */
+      0x5c,			/*     NOT */
+      0x1b,			/*   ELSE */
+      0xb0,			/*     PUSHB_1 */
+      0x00,			/*       0 */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 7: check if we are hinting in cleartype.
        * CAUTION! FreeType doesn't support that, as subpixel
        * filtering is usually done by higher level library.
        * Syntax: PUSHB_1 7 CALL; leaves boolean on the stack.
        */
-      0xb0,			// PUSHB_1
-      0x07,			//   7
-      0x2c,			// FDEF
-      0xb1,			//   PUSHB_2
-      0x24,			//     36
-      0x01,			//     1
-      0x88,			//   GETINFO
-      0x50,			//   LT
-      0x58,			//   IF
-      0xb0,			//     PUSHB_1
-      0x40,			//       64
-      0x88,			//     GETINFO
-      0x5c,			//     NOT
-      0x5c,			//     NOT
-      0x1b,			//   ELSE
-      0xb0,			//     PUSHB_1
-      0x00,			//       0
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x07,			/*   7 */
+      0x2c,			/* FDEF */
+      0xb1,			/*   PUSHB_2 */
+      0x24,			/*     36 */
+      0x01,			/*     1 */
+      0x88,			/*   GETINFO */
+      0x50,			/*   LT */
+      0x58,			/*   IF */
+      0xb0,			/*     PUSHB_1 */
+      0x40,			/*       64 */
+      0x88,			/*     GETINFO */
+      0x5c,			/*     NOT */
+      0x5c,			/*     NOT */
+      0x1b,			/*   ELSE */
+      0xb0,			/*     PUSHB_1 */
+      0x00,			/*       0 */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 8: Interpolate a point between
        * two other points and snap it to the grid.
        * Syntax: PUSHX_4 pt_to_ip rp1 rp2 8 CALL;
        */
-      0xb0,			// PUSHB_1
-      0x08,			//   8
-      0x2c,			// FDEF
-      0x12,			//   SRP2
-      0x11,			//   SRP1
-      0x20,			//   DUP
-      0x39,			//   IP
-      0x2f,			//   MDAP[rnd]
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x08,			/*   8 */
+      0x2c,			/* FDEF */
+      0x12,			/*   SRP2 */
+      0x11,			/*   SRP1 */
+      0x20,			/*   DUP */
+      0x39,			/*   IP */
+      0x2f,			/*   MDAP[rnd] */
+      0x2d,			/* ENDF */
 
       /* Function 9: Link a serif-like element edge to the opposite
        * edge of the base stem when rounding down to grid, but ensure
@@ -1090,65 +1090,65 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * the base stem width at least to a specified amount of pixels.
        * Syntax: PUSHX_3 min_dist inner_pt outer_pt CALL;
        */
-      0xb0,			// PUSHB_1
-      0x09,			//   9
-      0x2c,			// FDEF
-      0x20,			//   DUP
-      0x7d,			//   RDTG
-      0xb0,			//   PUSHB_1
-      0x06,			//     6
-      0x2b,			//   CALL
-      0x58,			//   IF
-      0xc4,			//     MDRP[min,grey]
-      0x1b,			//   ELSE
-      0xcd,			//     MDRP[min,rnd,black]
-      0x59,			//   EIF
-      0x20,			//   DUP
-      0xb0,			//   PUSHB_1
-      0x03,			//     3
-      0x25,			//   CINDEX
-      0x49,			//   MD[grid]
-      0x23,			//   SWAP
-      0x20,			//   DUP
-      0xb0,			//   PUSHB_1
-      0x04,			//     4
-      0x26,			//   MINDEX
-      0x4a,			//   MD[orig]
-      0xb0,			//   PUSHB_1
-      0x00,			//     0
-      0x50,			//   LT
-      0x58,			//   IF
-      0x8a,			//     ROLL
-      0x65,			//     NEG
-      0x8a,			//     ROLL
-      0x61,			//     SUB
-      0x20,			//     DUP
-      0xb0,			//     PUSHB_1
-      0x00,			//       0
-      0x50,			//     LT
-      0x58,			//     IF
-      0x38,			//       SHPIX
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x1b,			//   ELSE
-      0x8a,			//     ROLL
-      0x8a,			//     ROLL
-      0x61,			//     SUB
-      0x20,			//     DUP
-      0xb0,			//     PUSHB_1
-      0x00,			//       0
-      0x52,			//     GT
-      0x58,			//     IF
-      0x38,			//       SHPIX
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x59,			//   EIF
-      0x18,			//   RTG
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x09,			/*   9 */
+      0x2c,			/* FDEF */
+      0x20,			/*   DUP */
+      0x7d,			/*   RDTG */
+      0xb0,			/*   PUSHB_1 */
+      0x06,			/*     6 */
+      0x2b,			/*   CALL */
+      0x58,			/*   IF */
+      0xc4,			/*     MDRP[min,grey] */
+      0x1b,			/*   ELSE */
+      0xcd,			/*     MDRP[min,rnd,black] */
+      0x59,			/*   EIF */
+      0x20,			/*   DUP */
+      0xb0,			/*   PUSHB_1 */
+      0x03,			/*     3 */
+      0x25,			/*   CINDEX */
+      0x49,			/*   MD[grid] */
+      0x23,			/*   SWAP */
+      0x20,			/*   DUP */
+      0xb0,			/*   PUSHB_1 */
+      0x04,			/*     4 */
+      0x26,			/*   MINDEX */
+      0x4a,			/*   MD[orig] */
+      0xb0,			/*   PUSHB_1 */
+      0x00,			/*     0 */
+      0x50,			/*   LT */
+      0x58,			/*   IF */
+      0x8a,			/*     ROLL */
+      0x65,			/*     NEG */
+      0x8a,			/*     ROLL */
+      0x61,			/*     SUB */
+      0x20,			/*     DUP */
+      0xb0,			/*     PUSHB_1 */
+      0x00,			/*       0 */
+      0x50,			/*     LT */
+      0x58,			/*     IF */
+      0x38,			/*       SHPIX */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x1b,			/*   ELSE */
+      0x8a,			/*     ROLL */
+      0x8a,			/*     ROLL */
+      0x61,			/*     SUB */
+      0x20,			/*     DUP */
+      0xb0,			/*     PUSHB_1 */
+      0x00,			/*       0 */
+      0x52,			/*     GT */
+      0x58,			/*     IF */
+      0x38,			/*       SHPIX */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x59,			/*   EIF */
+      0x18,			/*   RTG */
+      0x2d,			/* ENDF */
 
       /* Function 10: depending from the hinting mode (grayscale or mono) set
        * rp0 either to pt1 or to pt2. This is used to link serif-like elements
@@ -1156,34 +1156,34 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * left-to-left and right-to-right).
        * Syntax: PUSHX_3 pt2 pt1 10 CALL 
        */
-      0xb0,			// PUSHB_1
-      0x0a,			//   10
-      0x2c,			// FDEF
-      0xb0,			//   PUSHB_1
-      0x06,			//     6
-      0x2b,			//   CALL
-      0x58,			//   IF
-      0x21,			//     POP
-      0x10,			//     SRP0
-      0x1b,			//   ELSE
-      0x10,			//     SRP0
-      0x21,			//     POP
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x0a,			/*   10 */
+      0x2c,			/* FDEF */
+      0xb0,			/*   PUSHB_1 */
+      0x06,			/*     6 */
+      0x2b,			/*   CALL */
+      0x58,			/*   IF */
+      0x21,			/*     POP */
+      0x10,			/*     SRP0 */
+      0x1b,			/*   ELSE */
+      0x10,			/*     SRP0 */
+      0x21,			/*     POP */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 11: similar to FPGM 1, but places a point without
        * maintaining the minimum distance.
        * Syntax: PUSHX_2 point 11 CALL 
        */
-      0xb0,			// PUSHB_1
-      0x0b,			//   11
-      0x2c,			// FDEF
-      0x20,			//   DUP
-      0xd2,			//   MDRP[rp0,white]
-      0xb0,			//   PUSHB_1
-      0x0c,			//     12
-      0x2b,			//   CALL
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x0b,			/*   11 */
+      0x2c,			/* FDEF */
+      0x20,			/*   DUP */
+      0xd2,			/*   MDRP[rp0,white] */
+      0xb0,			/*   PUSHB_1 */
+      0x0c,			/*     12 */
+      0x2b,			/*   CALL */
+      0x2d,			/* ENDF */
 
       /* Function 12: Check if the gridfitted position of the point is too far 
        * from its original position, and shift it, if necessary. The function is 
@@ -1193,37 +1193,37 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * is made at all.
        * Syntax: PUSHX_2 point 12 CALL 
        */
-      0xb0,			// PUSHB_1
-      0x0c,			//   12
-      0x2c,			// FDEF
-      0x20,			//   DUP
-      0x2f,			//   MDAP[rnd], this is needed for grayscale mode
-      0xb0,			//   PUSHB_1
-      0x07,			//     7
-      0x2b,			//   CALL
-      0x5c,			//   NOT
-      0x58,			//   IF
-      0x20,			//     DUP
-      0x20,			//     DUP
-      0x47,			//     GC[cur]
-      0x23,			//     SWAP
-      0x46,			//     GC[orig]
-      0x61,			//     SUB
-      0x6a,			//     ROUND[white]
-      0x20,			//     DUP
-      0x58,			//     IF
-      0x20,			//       DUP
-      0x64,			//       ABS
-      0x62,			//       DIV
-      0x38,			//       SHPIX
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x1b,			//   ELSE
-      0x21,			//     POP
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x0c,			/*   12 */
+      0x2c,			/* FDEF */
+      0x20,			/*   DUP */
+      0x2f,			/*   MDAP[rnd], this is needed for grayscale mode */
+      0xb0,			/*   PUSHB_1 */
+      0x07,			/*     7 */
+      0x2b,			/*   CALL */
+      0x5c,			/*   NOT */
+      0x58,			/*   IF */
+      0x20,			/*     DUP */
+      0x20,			/*     DUP */
+      0x47,			/*     GC[cur] */
+      0x23,			/*     SWAP */
+      0x46,			/*     GC[orig] */
+      0x61,			/*     SUB */
+      0x6a,			/*     ROUND[white] */
+      0x20,			/*     DUP */
+      0x58,			/*     IF */
+      0x20,			/*       DUP */
+      0x64,			/*       ABS */
+      0x62,			/*       DIV */
+      0x38,			/*       SHPIX */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x1b,			/*   ELSE */
+      0x21,			/*     POP */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 13: Interpolate a HStem edge's reference point between two other points 
        * and snap it to the grid. Then compare its new position with the ungridfitted
@@ -1233,58 +1233,58 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * edge below the original coordinate of the bottom edge, shift it one pixel up.
        * Syntax: PUSHX_6 other_edge_refpt pt_to_ip rp1 rp2 13 CALL 
        */
-      0xb0,			// PUSHB_1
-      0x0d,			//   13
-      0x2c,			// FDEF
-      0x12,			//   SRP2
-      0x11,			//   SRP1
-      0x20,			//   DUP
-      0x20,			//   DUP
-      0x39,			//   IP
-      0x2f,			//   MDAP[rnd]
-      0x20,			//   DUP
-      0x8a,			//   ROLL
-      0x20,			//   DUP
-      0x47,			//   GC[orig]
-      0x8a,			//   ROLL
-      0x46,			//   GC[cur]
-      0x61,			//   SUB
-      0x23,			//   SWAP
-      0x8a,			//   ROLL
-      0x20,			//   DUP
-      0x8a,			//   ROLL
-      0x23,			//   SWAP
-      0x4A,			//   MD[orig]
-      0xb0,			//   PUSHB_1
-      0x00,			//     0
-      0x50,			//   LT
-      0x58,			//   IF
-      0x23,			//     SWAP
-      0xb0,			//     PUSHB_1
-      0x00,			//       0
-      0x52,			//     GT
-      0x58,			//     IF
-      0xb0,			//       PUSHB_1
-      0x40,			//         64
-      0x38,			//       SHPIX
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x1b,			//   ELSE
-      0x23,			//     SWAP
-      0xb0,			//     PUSHB_1
-      0x00,			//       0
-      0x50,			//     LT
-      0x58,			//     IF
-      0xb0,			//       PUSHB_1
-      0x40,			//         64
-      0x65,			//       NEG
-      0x38,			//       SHPIX
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x0d,			/*   13 */
+      0x2c,			/* FDEF */
+      0x12,			/*   SRP2 */
+      0x11,			/*   SRP1 */
+      0x20,			/*   DUP */
+      0x20,			/*   DUP */
+      0x39,			/*   IP */
+      0x2f,			/*   MDAP[rnd] */
+      0x20,			/*   DUP */
+      0x8a,			/*   ROLL */
+      0x20,			/*   DUP */
+      0x47,			/*   GC[orig] */
+      0x8a,			/*   ROLL */
+      0x46,			/*   GC[cur] */
+      0x61,			/*   SUB */
+      0x23,			/*   SWAP */
+      0x8a,			/*   ROLL */
+      0x20,			/*   DUP */
+      0x8a,			/*   ROLL */
+      0x23,			/*   SWAP */
+      0x4A,			/*   MD[orig] */
+      0xb0,			/*   PUSHB_1 */
+      0x00,			/*     0 */
+      0x50,			/*   LT */
+      0x58,			/*   IF */
+      0x23,			/*     SWAP */
+      0xb0,			/*     PUSHB_1 */
+      0x00,			/*       0 */
+      0x52,			/*     GT */
+      0x58,			/*     IF */
+      0xb0,			/*       PUSHB_1 */
+      0x40,			/*         64 */
+      0x38,			/*       SHPIX */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x1b,			/*   ELSE */
+      0x23,			/*     SWAP */
+      0xb0,			/*     PUSHB_1 */
+      0x00,			/*       0 */
+      0x50,			/*     LT */
+      0x58,			/*     IF */
+      0xb0,			/*       PUSHB_1 */
+      0x40,			/*         64 */
+      0x65,			/*       NEG */
+      0x38,			/*       SHPIX */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 14: Link two points using MDRP without maintaining
        * the minimum distance. In antialiased mode use rounding to
@@ -1295,45 +1295,45 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * is preserved in the gridfitted outline.
        * Syntax: PUSHX_4 ppem ref_pt base_pt 14 CALL;
        */
-      0xb0,			// PUSHB_1
-      0x0e,			//   14
-      0x2c,			// FDEF
-      0xb0,			//   PUSHB_1
-      0x06,			//     6
-      0x2b,			//   CALL
-      0x58,			//   IF
-      0x3d,			//     RTDG
-      0xd6,			//     MDRP[rp0,rnd,white]
-      0x18,			//     RTG
-      0x21,			//     POP
-      0x21,			//     POP
-      0x1b,			//   ELSE
-      0x20,			//     DUP
-      0xd6,			//     MDRP[rp0,rnd,white]
-      0x8a,			//     ROLL
-      0x4b,			//     MPPEM
-      0x52,			//     GT
-      0x58,			//     IF
-      0x20,			//       DUP
-      0x8a,			//       ROLL
-      0x23,			//       SWAP
-      0x49,			//       MD[grid]
-      0x20,			//       DUP
-      0xb0,			//       PUSHB_1
-      0x00,			//         0
-      0x55,			//       NEQ
-      0x58,			//       IF
-      0x38,			//         SHPIX
-      0x1b,			//       ELSE
-      0x21,			//         POP
-      0x21,			//         POP
-      0x59,			//       EIF
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x0e,			/*   14 */
+      0x2c,			/* FDEF */
+      0xb0,			/*   PUSHB_1 */
+      0x06,			/*     6 */
+      0x2b,			/*   CALL */
+      0x58,			/*   IF */
+      0x3d,			/*     RTDG */
+      0xd6,			/*     MDRP[rp0,rnd,white] */
+      0x18,			/*     RTG */
+      0x21,			/*     POP */
+      0x21,			/*     POP */
+      0x1b,			/*   ELSE */
+      0x20,			/*     DUP */
+      0xd6,			/*     MDRP[rp0,rnd,white] */
+      0x8a,			/*     ROLL */
+      0x4b,			/*     MPPEM */
+      0x52,			/*     GT */
+      0x58,			/*     IF */
+      0x20,			/*       DUP */
+      0x8a,			/*       ROLL */
+      0x23,			/*       SWAP */
+      0x49,			/*       MD[grid] */
+      0x20,			/*       DUP */
+      0xb0,			/*       PUSHB_1 */
+      0x00,			/*         0 */
+      0x55,			/*       NEQ */
+      0x58,			/*       IF */
+      0x38,			/*         SHPIX */
+      0x1b,			/*       ELSE */
+      0x21,			/*         POP */
+      0x21,			/*         POP */
+      0x59,			/*       EIF */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 15: similar to FPGM 1, but used to position a stem
        * relatively to the previous stem preserving the counter width
@@ -1342,87 +1342,87 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * Syntax: PUSHX_6 master_counter_start_pt master_counter_end_pt
        *         current_counter_start_pt current_counter_end_pt ppem 15 CALL;
        */
-      0xb0,			// PUSHB_1
-      0x0f,			//   15
-      0x2c,			// FDEF
-      0x23,			//   SWAP
-      0x20,			//   DUP
-      0xd6,			//   MDRP[rp0,rnd,white]
-      0x20,			//   DUP
-      0x2f,			//   MDAP[rnd], this is needed for grayscale mode
-      0xb0,			//   PUSHB_1
-      0x07,			//     7
-      0x2b,			//   CALL
-      0x5c,			//   NOT
-      0x58,			//   IF
-      0x23,			//     SWAP
-      0x20,			//     DUP
-      0x58,			//     IF
-      0x4b,			//       MPPEM
-      0x53,			//       GTEQ
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0xb0,			//       PUSHB_1
-      0x01,			//         1
-      0x59,			//     EIF
-      0x58,			//     IF
-      0x8a,			//       ROLL
-      0xb0,			//       PUSHB_1
-      0x04,			//         4
-      0x26,			//       MINDEX
-      0x49,			//       MD[grid]
-      0x23,			//       SWAP
-      0x8a,			//       ROLL
-      0x23,			//       SWAP
-      0x20,			//       DUP
-      0x8a,			//       ROLL
-      0x49,			//       MD[grid]
-      0x8a,			//       ROLL
-      0x23,			//       SWAP
-      0x61,			//       SUB
-      0x38,			//       SHPIX
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0x21,			//       POP
-      0x21,			//       POP
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x1b,			//   ELSE
-      0x21,			//     POP
-      0x21,			//     POP
-      0x21,			//     POP
-      0x21,			//     POP
-      0x21,			//     POP
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x0f,			/*   15 */
+      0x2c,			/* FDEF */
+      0x23,			/*   SWAP */
+      0x20,			/*   DUP */
+      0xd6,			/*   MDRP[rp0,rnd,white] */
+      0x20,			/*   DUP */
+      0x2f,			/*   MDAP[rnd], this is needed for grayscale mode */
+      0xb0,			/*   PUSHB_1 */
+      0x07,			/*     7 */
+      0x2b,			/*   CALL */
+      0x5c,			/*   NOT */
+      0x58,			/*   IF */
+      0x23,			/*     SWAP */
+      0x20,			/*     DUP */
+      0x58,			/*     IF */
+      0x4b,			/*       MPPEM */
+      0x53,			/*       GTEQ */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0xb0,			/*       PUSHB_1 */
+      0x01,			/*         1 */
+      0x59,			/*     EIF */
+      0x58,			/*     IF */
+      0x8a,			/*       ROLL */
+      0xb0,			/*       PUSHB_1 */
+      0x04,			/*         4 */
+      0x26,			/*       MINDEX */
+      0x49,			/*       MD[grid] */
+      0x23,			/*       SWAP */
+      0x8a,			/*       ROLL */
+      0x23,			/*       SWAP */
+      0x20,			/*       DUP */
+      0x8a,			/*       ROLL */
+      0x49,			/*       MD[grid] */
+      0x8a,			/*       ROLL */
+      0x23,			/*       SWAP */
+      0x61,			/*       SUB */
+      0x38,			/*       SHPIX */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0x21,			/*       POP */
+      0x21,			/*       POP */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x1b,			/*   ELSE */
+      0x21,			/*     POP */
+      0x21,			/*     POP */
+      0x21,			/*     POP */
+      0x21,			/*     POP */
+      0x21,			/*     POP */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 16: Same as FPGM 1, but calls FPGM 18 rather than FPGM 12
        * and thus takes 3 arguments.
        * Syntax: PUSHX_3 ref_point point 16 CALL 
        */
-      0xb0,			// PUSHB_1
-      0x10,			//   16
-      0x2c,			// FDEF
-      0x20,			//   DUP
-      0xda,			//   MDRP[rp0,min,white]
-      0xb0,			//   PUSHB_1
-      0x12,			//     18
-      0x2b,			//   CALL
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x10,			/*   16 */
+      0x2c,			/* FDEF */
+      0x20,			/*   DUP */
+      0xda,			/*   MDRP[rp0,min,white] */
+      0xb0,			/*   PUSHB_1 */
+      0x12,			/*     18 */
+      0x2b,			/*   CALL */
+      0x2d,			/* ENDF */
 
       /* Function 17: Same as FPGM 11, but calls FPGM 18 rather than FPGM 12
        * and thus takes 3 arguments.
        * Syntax: PUSHX_3 ref_point point 17 CALL 
        */
-      0xb0,			// PUSHB_1
-      0x11,			//   17
-      0x2c,			// FDEF
-      0x20,			//   DUP
-      0xd2,			//   MDRP[rp0,white]
-      0xb0,			//   PUSHB_1
-      0x12,			//     18
-      0x2b,			//   CALL
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x11,			/*   17 */
+      0x2c,			/* FDEF */
+      0x20,			/*   DUP */
+      0xd2,			/*   MDRP[rp0,white] */
+      0xb0,			/*   PUSHB_1 */
+      0x12,			/*     18 */
+      0x2b,			/*   CALL */
+      0x2d,			/* ENDF */
 
       /* Function 18: this is a special version of FPGM 12, used when the counter
        * control is enabled but doesn't directly affect the stem which is going to
@@ -1433,47 +1433,47 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * the current placement of the previous stem. 
        * Syntax: PUSHX_3 ref_point point 18 CALL 
        */
-      0xb0,			// PUSHB_1
-      0x12,			//   18
-      0x2c,			// FDEF
-      0x20,			//   DUP
-      0x2f,			//   MDAP[rnd], this is needed for grayscale mode
-      0xb0,			//   PUSHB_1
-      0x07,			//     7
-      0x2b,			//   CALL
-      0x5c,			//   NOT
-      0x58,			//   IF
-      0x20,			//     DUP
-      0x20,			//     DUP
-      0x47,			//     GC[cur]
-      0x23,			//     SWAP
-      0x46,			//     GC[orig]
-      0x61,			//     SUB
-      0x6a,			//     ROUND[white]
-      0x8a,			//     ROLL
-      0x20,			//     DUP
-      0x47,			//     GC[cur]
-      0x23,			//     SWAP
-      0x46,			//     GC[orig]
-      0x23,			//     SWAP
-      0x61,			//     SUB
-      0x6a,			//     ROUND[white]
-      0x60,			//     ADD
-      0x20,			//     DUP
-      0x58,			//     IF
-      0x20,			//       DUP
-      0x64,			//       ABS
-      0x62,			//       DIV
-      0x38,			//       SHPIX
-      0x1b,			//     ELSE
-      0x21,			//       POP
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x1b,			//   ELSE
-      0x21,			//     POP
-      0x21,			//     POP
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x12,			/*   18 */
+      0x2c,			/* FDEF */
+      0x20,			/*   DUP */
+      0x2f,			/*   MDAP[rnd], this is needed for grayscale mode */
+      0xb0,			/*   PUSHB_1 */
+      0x07,			/*     7 */
+      0x2b,			/*   CALL */
+      0x5c,			/*   NOT */
+      0x58,			/*   IF */
+      0x20,			/*     DUP */
+      0x20,			/*     DUP */
+      0x47,			/*     GC[cur] */
+      0x23,			/*     SWAP */
+      0x46,			/*     GC[orig] */
+      0x61,			/*     SUB */
+      0x6a,			/*     ROUND[white] */
+      0x8a,			/*     ROLL */
+      0x20,			/*     DUP */
+      0x47,			/*     GC[cur] */
+      0x23,			/*     SWAP */
+      0x46,			/*     GC[orig] */
+      0x23,			/*     SWAP */
+      0x61,			/*     SUB */
+      0x6a,			/*     ROUND[white] */
+      0x60,			/*     ADD */
+      0x20,			/*     DUP */
+      0x58,			/*     IF */
+      0x20,			/*       DUP */
+      0x64,			/*       ABS */
+      0x62,			/*       DIV */
+      0x38,			/*       SHPIX */
+      0x1b,			/*     ELSE */
+      0x21,			/*       POP */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x1b,			/*   ELSE */
+      0x21,			/*     POP */
+      0x21,			/*     POP */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 19: used to align a point relatively to a diagonal line,
        * specified by two other points. First we check if the point going
@@ -1485,139 +1485,139 @@ static void init_fpgm(GlobalInstrCt *gic) {
        * points specify slightly different unit vectors.
        * Syntax: point diag_start_point diag_end_point 19 CALL
        */
-      0xb0,			// PUSHB_1
-      0x13,			//   19
-      0x2c,			// FDEF
-      0x20,			//   DUP
-      0x8a,			//   ROLL
-      0x20,			//   DUP
-      0x8a,			//   ROLL
-      0x87,			//   SDPVTL[orthogonal]
-      0x20,			//   DUP
-      0xb0,			//   PUSHB_1
-      0x03,			//     4
-      0x25,			//   CINDEX
-      0x4a,			//   MD[orig]
-      0x64,			//   ABS 
-      0x23,			//   SWAP
-      0x8a,			//   ROLL
-      0x07,			//   SPVTL[orthogonal]
-      0xb0,			//   PUSHB_1
-      0x20,			//     32
-      0x50,			//   LT
-      0x58,			//   IF
-      0x3c,			//     ALIGNRP
-      0x1b,			//   ELSE
-      0xc0,			//     MDRP[grey]
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x13,			/*   19 */
+      0x2c,			/* FDEF */
+      0x20,			/*   DUP */
+      0x8a,			/*   ROLL */
+      0x20,			/*   DUP */
+      0x8a,			/*   ROLL */
+      0x87,			/*   SDPVTL[orthogonal] */
+      0x20,			/*   DUP */
+      0xb0,			/*   PUSHB_1 */
+      0x03,			/*     4 */
+      0x25,			/*   CINDEX */
+      0x4a,			/*   MD[orig] */
+      0x64,			/*   ABS  */
+      0x23,			/*   SWAP */
+      0x8a,			/*   ROLL */
+      0x07,			/*   SPVTL[orthogonal] */
+      0xb0,			/*   PUSHB_1 */
+      0x20,			/*     32 */
+      0x50,			/*   LT */
+      0x58,			/*   IF */
+      0x3c,			/*     ALIGNRP */
+      0x1b,			/*   ELSE */
+      0xc0,			/*     MDRP[grey] */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 20: compute adjustments for X and Y components of projection
        * vector, for aspect ratios different from 1:1, and store them
        * in storage[0] and storage[1] respectively.
        * Syntax: 20 CALL (use it only ONCE, from PREP table).
        */
-      0xb0,			// PUSHB_1
-      0x14,			//   20
-      0x2c,			// FDEF
-      0xb3,			//   PUSHB_4 (we normally need no adjustments)
-      0x00,			//     0
-      0x40,			//     1.0 (F26Dot6)
-      0x01,			//     1
-      0x40,			//     1.0 (F26Dot6)
-      0x42,			//   WS
-      0x42,			//   WS 
-      0x01,			//   SVTCA[x-axis]
-      0x4b,			//   MPPEM
-      0xb8,			//   PUSHW_1
-      0x10,			//     4096
-      0x00,			//     ...still that 4096
-      0x63,			//   MUL (so we have PPEM along X casted to F26Dot6)
-      0x00,			//   SVTCA[y-axis]
-      0x4b,			//   MPPEM
-      0xb8,			//   PUSHW_1
-      0x10,			//     4096
-      0x00,			//     ...still that 4096
-      0x63,			//   MUL (so we have PPEM along Y casted to F26Dot6)
-      0x20,			//   DUP
-      0x8a,			//   ROLL
-      0x20,			//   DUP
-      0x8a,			//   ROLL
-      0x55,			//   NEQ
-      0x58,			//   IF (if PPEM along X != PPEM along Y)
-      0x20,			//     DUP
-      0x8a,			//     ROLL
-      0x20,			//     DUP
-      0x8a,			//     ROLL
-      0x52,			//     GT
-      0x58,			//     IF (if PPEM along X < PPEM along Y)
-      0x23,			//       SWAP
-      0x62,			//       DIV
-      0x20,			//       DUP
-      0xb0,			//       PUSHB_1
-      0x00,			//         0
-      0x23,			//       SWAP
-      0x42,			//       WS
-      0x1b,			//     ELSE (if PPEM along X > PPEM along Y)
-      0x62,			//       DIV
-      0x20,			//       DUP
-      0xb0,			//       PUSHB_1
-      0x01,			//         1
-      0x23,			//       SWAP
-      0x42,			//       WS
-      0x59,			//     EIF
-      0x20,			//     DUP [A LOOP STARTS HERE]
-      0xb0,			//     PUSHB_1
-      0x40,			//       1.0 (F26Dot6)
-      0x52,			//     GT
-      0x58,			//     IF (bigger adjustment is greater than 1.0 => needs fixing)
-      0xb2,			//       PUSHB_3
-      0x00,			//         0
-      0x20,			//         0.5 (F26Dot6)
-      0x00,			//         0
-      0x43,			//       RS
-      0x63,			//       MUL
-      0x42,			//       WS (we halved adjustment for X)
-      0xb2,			//       PUSHB_3
-      0x01,			//         1
-      0x20,			//         0.5 (F26Dot6)
-      0x01,			//         1
-      0x43,			//       RS
-      0x63,			//       MUL
-      0x42,			//       WS (we halved adjustment for Y)
-      0xb0,			//       PUSHB_1
-      0x20,			//         0.5 (F26Dot6)
-      0x63,			//       MUL (we halved the bigger adjustment)
-      0xb0,			//       PUSHB_1
-      0x19,			//         25
-      0x65,			//       NEG
-      0x1c,			//       JMPR (go back to the start of the loop)
-      0x21,			//       POP
-      0x59,			//     EIF
-      0x1b,			//   ELSE (if PPEM along X==PPEM along Y)
-      0x21,			//     POP
-      0x21,			//     POP
-      0x59,			//   EIF
-      0x2d,			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x14,			/*   20 */
+      0x2c,			/* FDEF */
+      0xb3,			/*   PUSHB_4 (we normally need no adjustments) */
+      0x00,			/*     0 */
+      0x40,			/*     1.0 (F26Dot6) */
+      0x01,			/*     1 */
+      0x40,			/*     1.0 (F26Dot6) */
+      0x42,			/*   WS */
+      0x42,			/*   WS  */
+      0x01,			/*   SVTCA[x-axis] */
+      0x4b,			/*   MPPEM */
+      0xb8,			/*   PUSHW_1 */
+      0x10,			/*     4096 */
+      0x00,			/*     ...still that 4096 */
+      0x63,			/*   MUL (so we have PPEM along X casted to F26Dot6) */
+      0x00,			/*   SVTCA[y-axis] */
+      0x4b,			/*   MPPEM */
+      0xb8,			/*   PUSHW_1 */
+      0x10,			/*     4096 */
+      0x00,			/*     ...still that 4096 */
+      0x63,			/*   MUL (so we have PPEM along Y casted to F26Dot6) */
+      0x20,			/*   DUP */
+      0x8a,			/*   ROLL */
+      0x20,			/*   DUP */
+      0x8a,			/*   ROLL */
+      0x55,			/*   NEQ */
+      0x58,			/*   IF (if PPEM along X != PPEM along Y) */
+      0x20,			/*     DUP */
+      0x8a,			/*     ROLL */
+      0x20,			/*     DUP */
+      0x8a,			/*     ROLL */
+      0x52,			/*     GT */
+      0x58,			/*     IF (if PPEM along X < PPEM along Y) */
+      0x23,			/*       SWAP */
+      0x62,			/*       DIV */
+      0x20,			/*       DUP */
+      0xb0,			/*       PUSHB_1 */
+      0x00,			/*         0 */
+      0x23,			/*       SWAP */
+      0x42,			/*       WS */
+      0x1b,			/*     ELSE (if PPEM along X > PPEM along Y) */
+      0x62,			/*       DIV */
+      0x20,			/*       DUP */
+      0xb0,			/*       PUSHB_1 */
+      0x01,			/*         1 */
+      0x23,			/*       SWAP */
+      0x42,			/*       WS */
+      0x59,			/*     EIF */
+      0x20,			/*     DUP [A LOOP STARTS HERE] */
+      0xb0,			/*     PUSHB_1 */
+      0x40,			/*       1.0 (F26Dot6) */
+      0x52,			/*     GT */
+      0x58,			/*     IF (bigger adjustment is greater than 1.0 => needs fixing) */
+      0xb2,			/*       PUSHB_3 */
+      0x00,			/*         0 */
+      0x20,			/*         0.5 (F26Dot6) */
+      0x00,			/*         0 */
+      0x43,			/*       RS */
+      0x63,			/*       MUL */
+      0x42,			/*       WS (we halved adjustment for X) */
+      0xb2,			/*       PUSHB_3 */
+      0x01,			/*         1 */
+      0x20,			/*         0.5 (F26Dot6) */
+      0x01,			/*         1 */
+      0x43,			/*       RS */
+      0x63,			/*       MUL */
+      0x42,			/*       WS (we halved adjustment for Y) */
+      0xb0,			/*       PUSHB_1 */
+      0x20,			/*         0.5 (F26Dot6) */
+      0x63,			/*       MUL (we halved the bigger adjustment) */
+      0xb0,			/*       PUSHB_1 */
+      0x19,			/*         25 */
+      0x65,			/*       NEG */
+      0x1c,			/*       JMPR (go back to the start of the loop) */
+      0x21,			/*       POP */
+      0x59,			/*     EIF */
+      0x1b,			/*   ELSE (if PPEM along X==PPEM along Y) */
+      0x21,			/*     POP */
+      0x21,			/*     POP */
+      0x59,			/*   EIF */
+      0x2d,			/* ENDF */
 
       /* Function 21: call it before SFVFS or SPVFS, so that the vector
        * passed is aspect-ratio corrected.
        * Syntax: x y 21 CALL
        */
-      0xb0,			// PUSHB_1
-      0x15,			//   21
-      0x2c,			// FDEF
-      0xb0,			//   PUSHB_1
-      0x01,			//     1
-      0x43,			//   RS
-      0x63,			//   MUL
-      0x23,			//   SWAP
-      0xb0,			//   PUSHB_1
-      0x00,			//     0
-      0x43,			//   RS
-      0x63,			//   MUL
-      0x23,			//   SWAP
-      0x2d			// ENDF
+      0xb0,			/* PUSHB_1 */
+      0x15,			/*   21 */
+      0x2c,			/* FDEF */
+      0xb0,			/*   PUSHB_1 */
+      0x01,			/*     1 */
+      0x43,			/*   RS */
+      0x63,			/*   MUL */
+      0x23,			/*   SWAP */
+      0xb0,			/*   PUSHB_1 */
+      0x00,			/*     0 */
+      0x43,			/*   RS */
+      0x63,			/*   MUL */
+      0x23,			/*   SWAP */
+      0x2d			/* ENDF */
    };
    struct ttf_table *tab=SFFindTable(gic->sf, CHR('f', 'p', 'g', 'm'));
 
@@ -1706,10 +1706,10 @@ static uint8_t *use_family_blues(uint8_t *prep_head,GlobalInstrCt *gic) {
 
 	 prep_head=pushnum(prep_head, gic->blues[i].cvtindex);
 	 *prep_head++=DUP;
-	 *prep_head++=0x45;	//RCVT
+	 *prep_head++=0x45;	/*RCVT */
 	 prep_head=pushnums(prep_head, 3, callargs);
 	 *prep_head++=CALL;
-	 *prep_head++=0x44;	//WCVTP
+	 *prep_head++=0x44;	/*WCVTP */
       }
    }
 
@@ -1809,9 +1809,9 @@ static uint8_t *normalize_stems(uint8_t *prep_head,int xdir,
    *prep_head++=xdir ? SVTCA_x : SVTCA_y;
    prep_head=pushnum(prep_head, mainstem->cvtindex);
    *prep_head++=DUP;
-   *prep_head++=0x45;		//RCVT
+   *prep_head++=0x45;		/*RCVT */
    prep_head=normalize_stem(prep_head, xdir, mainstem, gic);
-   *prep_head++=0x44;		//WCVTP
+   *prep_head++=0x44;		/*WCVTP */
 
    /* set up other standard widths */
    for (i=0; i < otherstemcnt && otherstems[i].width < mainstem->width;
@@ -1822,18 +1822,18 @@ static uint8_t *normalize_stems(uint8_t *prep_head,int xdir,
       otherstems[i].snapto=i==t ? mainstem : otherstems + i + 1;
       prep_head=pushnum(prep_head, otherstems[i].cvtindex);
       *prep_head++=DUP;
-      *prep_head++=0x45;	//RCVT
+      *prep_head++=0x45;	/*RCVT */
       prep_head=normalize_stem(prep_head, xdir, otherstems + i, gic);
-      *prep_head++=0x44;	//WCVTP
+      *prep_head++=0x44;	/*WCVTP */
    }
 
    for (i=t + 1; i < otherstemcnt; i++) {
       otherstems[i].snapto=i==t + 1 ? mainstem : otherstems + i - 1;
       prep_head=pushnum(prep_head, otherstems[i].cvtindex);
       *prep_head++=DUP;
-      *prep_head++=0x45;	//RCVT
+      *prep_head++=0x45;	/*RCVT */
       prep_head=normalize_stem(prep_head, xdir, otherstems + i, gic);
-      *prep_head++=0x44;	//WCVTP
+      *prep_head++=0x44;	/*WCVTP */
    }
 
    return prep_head;
@@ -1853,49 +1853,49 @@ static uint8_t *normalize_stems(uint8_t *prep_head,int xdir,
 static void init_prep(GlobalInstrCt *gic) {
    uint8_t new_prep_preamble[]={
       /* Enable dropout control. FreeType 2.3.7 need explicit SCANTYPE. */
-      0xb8,			// PUSHW_1
-      0x01,			//   511
-      0xff,			//   ...still that 511
-      0x85,			// SCANCTRL
-      0xb0,			// PUSHB_1
-      0x01,			//   1
-      0x8d,			// SCANTYPE
+      0xb8,			/* PUSHW_1 */
+      0x01,			/*   511 */
+      0xff,			/*   ...still that 511 */
+      0x85,			/* SCANCTRL */
+      0xb0,			/* PUSHB_1 */
+      0x01,			/*   1 */
+      0x8d,			/* SCANTYPE */
 
       /* Measurements are taken along Y axis */
-      0x00,			// SVTCA[y-axis]
+      0x00,			/* SVTCA[y-axis] */
 
       /* Turn hinting off at very small pixel sizes */
-      0x4b,			// MPPEM
-      0xb0,			// PUSHB_1
-      0x08,			//   8 - hinting threshold - should be configurable
-      0x50,			// LT
-      0x58,			// IF
-      0xb1,			//   PUSHB_2
-      0x01,			//     1
-      0x01,			//     1
-      0x8e,			//   INSTCTRL
-      0x59,			// EIF
+      0x4b,			/* MPPEM */
+      0xb0,			/* PUSHB_1 */
+      0x08,			/*   8 - hinting threshold - should be configurable */
+      0x50,			/* LT */
+      0x58,			/* IF */
+      0xb1,			/*   PUSHB_2 */
+      0x01,			/*     1 */
+      0x01,			/*     1 */
+      0x8e,			/*   INSTCTRL */
+      0x59,			/* EIF */
 
       /* Determine the cvt cut-in used */
-      0xb1,			// PUSHB_2
-      0x46,			//   70/64=about 1.094 pixel (that's our default setting)
-      0x06,			//   6
-      0x2b,			// CALL
-      0x58,			// IF
-      0x21,			//   POP
-      0xb0,			//   PUSHB_1
-      0x10,			//     16/64=0.25 pixel (very low cut-in for grayscale mode)
-      0x59,			// EIF
-      0x4b,			// MPPEM
-      0xb0,			// PUSHB_1
-      0x14,			//   20 PPEM - a threshold below which we'll use larger CVT cut-in
-      0x52,			// GT
-      0x58,			// IF
-      0x21,			//   POP
-      0xb0,			//   PUSHB_1
-      0x80,			//     128/64=2 pixels (extreme regularization for small ppems)
-      0x59,			// EIF
-      0x1d			// SCVTCI
+      0xb1,			/* PUSHB_2 */
+      0x46,			/*   70/64=about 1.094 pixel (that's our default setting) */
+      0x06,			/*   6 */
+      0x2b,			/* CALL */
+      0x58,			/* IF */
+      0x21,			/*   POP */
+      0xb0,			/*   PUSHB_1 */
+      0x10,			/*     16/64=0.25 pixel (very low cut-in for grayscale mode) */
+      0x59,			/* EIF */
+      0x4b,			/* MPPEM */
+      0xb0,			/* PUSHB_1 */
+      0x14,			/*   20 PPEM - a threshold below which we'll use larger CVT cut-in */
+      0x52,			/* GT */
+      0x58,			/* IF */
+      0x21,			/*   POP */
+      0xb0,			/*   PUSHB_1 */
+      0x80,			/*     128/64=2 pixels (extreme regularization for small ppems) */
+      0x59,			/* EIF */
+      0x1d			/* SCVTCI */
    };
    int preplen=sizeof(new_prep_preamble);
    int prepmaxlen=preplen;
@@ -1921,11 +1921,11 @@ static void init_prep(GlobalInstrCt *gic) {
       /* Normalize stems (only in monochrome mode) */
       prep_head=pushnum(prep_head, 6);
       *prep_head++=CALL;
-      *prep_head++=0x5c;	// NOT
-      *prep_head++=0x58;	// IF
+      *prep_head++=0x5c;	/* NOT */
+      *prep_head++=0x58;	/* IF */
       prep_head=normalize_stems(prep_head, 0, gic);
       prep_head=normalize_stems(prep_head, 1, gic);
-      *prep_head++=0x59;	// EIF
+      *prep_head++=0x59;	/* EIF */
    }
 
    /* compute adjustments for projection vector */
@@ -3918,7 +3918,7 @@ static void HStemGeninst(InstrCt *ct) {
 	 rp2=-1;
 
 	 for (j=0; j < bluecnt; j++) {
-	    if (blues[j].lowest==-1)	// implies blues[j].highest==-1 too
+	    if (blues[j].lowest==-1)	/* implies blues[j].highest==-1 too */
 	       continue;
 
 	    if (bp[blues[j].lowest].y < hbase)

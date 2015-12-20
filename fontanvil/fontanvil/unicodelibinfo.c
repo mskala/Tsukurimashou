@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.c 4484 2015-12-08 09:59:03Z mskala $ */
+/* $Id: unicodelibinfo.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,6 @@ char *unicode_name(int32_t unienc) {
 
 #if _NO_LIBUNINAMESLIST && _NO_LIBUNICODENAMES
    /* no nameslist library code available to use */
-   //fprintf(stderr,"no library\n");
    return (NULL);
 #else
    /* have nameslist library code available to use */
@@ -117,16 +116,13 @@ char *unicode_name(int32_t unienc) {
 	 copy(_UnicodeNameAnnot[unienc >> 16][(unienc >> 8) & 0xff]
 	      [unienc & 0xff].name);
    }
-   //fprintf(stderr,"use old code library ->%s<-\n",name_data\n");
 #      else
    /* new libuninameslist library code */
    name_data = copy(uniNamesList_name(unienc));
-   //fprintf(stderr,"new library ->%s<-\n",name_data\n");
 #      endif
 #   else
    /* libunicodesnames library code */
    name_data = copy(uninm_name(names_db, (unsigned int) (unienc)));
-   //fprintf(stderr,"libunicodes library ->%s<-\n",name_data\n");
 #   endif
 
    /* George Williams' improvisation on Hangul Syllable range
@@ -222,7 +218,6 @@ char *unicode_annot(int32_t unienc) {
 
 #if _NO_LIBUNINAMESLIST && _NO_LIBUNICODENAMES
    /* no nameslist library code available to use */
-   //fprintf(stderr,"no library - annotation\n");
    return (NULL);
 #else
    /* have nameslist library code available to use */
@@ -241,16 +236,13 @@ char *unicode_annot(int32_t unienc) {
 	 unicode_nicer(_UnicodeNameAnnot[unienc >> 16][(unienc >> 8) & 0xff]
 		       [unienc & 0xff].annot);
    }
-   //fprintf(stderr,"use old code library - annotation ->%s<-\n",annot_data);
 #      else
    /* new libuninameslist library code */
    annot_data = unicode_nicer(uniNamesList_annot(unienc));
-   //fprintf(stderr,"new library - annotation ->%s<-\n",annot_data);
 #      endif
 #   else
    /* libunicodesnames library code */
    annot_data = copy(uninm_annotation(names_db, (unsigned int) (unienc)));
-   //fprintf(stderr,"libunicodes library - annotation ->%s<-\n",annot_data);
 #   endif
 
    return (annot_data);

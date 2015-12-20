@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: sfd.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -473,7 +473,7 @@ static void SFDDumpSplineSet(AFILE *sfd,SplineSet *spl) {
 	    (sp->dontinterpolate << 8) |
 	    ((sp->prev && sp->prev->acceptableextrema) << 9);
 
-	 // Last point in the splineset, and we are an open path.
+	 /* Last point in the splineset, and we are an open path. */
 	 if (!sp->next && spl->first && !spl->first->prev) {
 	    ptflags |= SFD_PTFLAG_FORCE_OPEN_PATH;
 	 }
@@ -2430,7 +2430,7 @@ int SFDWriteBakExtended(char *locfilename,
    sf->filename=locfilename;
 
    if (localRevisionsToRetain < 0) {
-      // If there are no backups, then don't start creating any
+      /* If there are no backups, then don't start creating any */
       if (!SFDDoesAnyBackupExist(sf->filename))
 	 prefRevisionsToRetain=0;
    } else {
@@ -2463,7 +2463,7 @@ static char *getquotedeol(AFILE *sfd) {
 	 ch=agetc(sfd);
 	 if (ch=='n')
 	    ch='\n';
-	 /* else if ( ch=='\\' ) ch=='\\'; *//* second backslash of '\\' */
+	 /* else if ( ch=='\\' ) ch=='\\'; */ /* second backslash of '\\' */
 
 	 /* FontAnvil doesn't write other escape sequences in this context. */
 	 /* So any other value of ch is assumed impossible. */
@@ -2856,7 +2856,7 @@ static ImageList *SFDGetImage(AFILE *sfd) {
    img->bb.miny=img->yoff - GImageGetHeight(img->image) * img->yscale;
    /* In old sfd files I failed to recognize bitmap pngs as bitmap, so put */
    /*  in a little check here that converts things which should be bitmap to */
-   /*  bitmap *//* Eventually it can be removed as all old sfd files get */
+   /*  bitmap */ /* Eventually it can be removed as all old sfd files get */
    /*  converted. 22/10/2002 */
    if (base->image_type==it_index && base->clut != NULL
        && base->clut->clut_len==2)
@@ -3193,7 +3193,7 @@ static SplineSet *SFDGetSplineSet(SplineFont *sf,AFILE *sfd,int order2) {
 
 	 ch2=nlgetc(sfd);	/* : */
 
-	 // We are either fetching a splineset name (Named:) or a point name (NamedP:).
+	 /* We are either fetching a splineset name (Named:) or a point name (NamedP:). */
 	 if (ch2=='P') {
 	    if ((nlgetc(sfd)==':') && (pt != NULL)) {
 	       if (pt->name != NULL) {
@@ -3269,10 +3269,10 @@ static SplineSet *SFDGetSplineSet(SplineFont *sf,AFILE *sfd,int order2) {
 	    double original_current_x=current.x;
 
 	    if (val & SFD_PTFLAG_FORCE_OPEN_PATH) {
-	       // Find somewhere vacant to put the point.x for now
-	       // we need to do this check in case we choose a point that is already
-	       // on the spline and this connect back to that point instead of creating
-	       // an open path
+	       /* Find somewhere vacant to put the point.x for now
+	        * we need to do this check in case we choose a point that is already
+	        * on the spline and this connect back to that point instead of creating
+	        * an open path */
 	       while (1) {
 		  double offset=0.1;
 
@@ -3311,9 +3311,9 @@ static SplineSet *SFDGetSplineSet(SplineFont *sf,AFILE *sfd,int order2) {
 	       pt->me.x=original_current_x;
 	    }
 
-	    // Move the point back to the same location it was
-	    // but do not connect it back to the point that is
-	    // already there.
+	    /* Move the point back to the same location it was
+	     * but do not connect it back to the point that is
+	     * already there. */
 	    if (val & SFD_PTFLAG_FORCE_OPEN_PATH)
 	       current.x=original_current_x;
 
@@ -5102,7 +5102,7 @@ static void SFDFixupRefs(SplineFont *sf) {
 		  int index=(intptr_t) (kp->sc);
 
 		  next=kp->next;
-		  // be impotent if the reference is already to the correct location
+		  /* be impotent if the reference is already to the correct location */
 		  if (!kp->kcid) {	/* It's encoded (old sfds), else orig */
 		     if (index >= map->encmax || map->map[index]==-1)
 			index=sf->glyphcnt;
@@ -6186,8 +6186,7 @@ static int SFD_GetFontMetaData(AFILE *sfd,
    int old;
    char val[2000];
 
-   // This allows us to assume we can dereference d
-   // at all times
+   /* This allows us to assume we can dereference d at all times */
    static SFD_GetFontMetaDataData my_static_d;
    static int my_static_d_is_virgin=1;
 
@@ -6324,20 +6323,20 @@ static int SFD_GetFontMetaData(AFILE *sfd,
       getint(sfd, &temp);
       sf->pfminfo.windescent_add=temp;
    } else if (strmatch(tok, "HHeadAscent:")==0) {
-      // DUPLICATE OF ABOVE
+      /* DUPLICATE OF ABOVE */
       getsint(sfd, &sf->pfminfo.hhead_ascent);
    } else if (strmatch(tok, "HHeadDescent:")==0) {
-      // DUPLICATE OF ABOVE
+      /* DUPLICATE OF ABOVE */
       getsint(sfd, &sf->pfminfo.hhead_descent);
    }
    else if (strmatch(tok, "HHeadAOffset:")==0) {
-      // DUPLICATE OF ABOVE
+      /* DUPLICATE OF ABOVE */
       int temp;
 
       getint(sfd, &temp);
       sf->pfminfo.hheadascent_add=temp;
    } else if (strmatch(tok, "HHeadDOffset:")==0) {
-      // DUPLICATE OF ABOVE
+      /* DUPLICATE OF ABOVE */
       int temp;
 
       getint(sfd, &temp);
@@ -6450,7 +6449,7 @@ static int SFD_GetFontMetaData(AFILE *sfd,
       getint(sfd, &temp);
       sf->changed_since_xuidchanged=temp;
    } else if (strmatch(tok, "VerticalOrigin:")==0) {
-      // this doesn't seem to be written ever.
+      /* this doesn't seem to be written ever. */
       int temp;
 
       getint(sfd, &temp);
@@ -6720,15 +6719,12 @@ static int SFD_GetFontMetaData(AFILE *sfd,
       SFDGetTtTable(sfd, sf, d->lastttf);
    }
 
-   ///////////////////
    else if (strmatch(tok, "ShortTable:")==0) {
-      // only read, not written.
+      /* only read, not written. */
       /* text number format */
       SFDGetShortTable(sfd, sf, d->lastttf);
    } else {
-      //
-      // We didn't have a match ourselves.
-      //
+      /* We didn't have a match ourselves. */
       return false;
    }
    return true;
@@ -6776,8 +6772,8 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 
       had_layer_cnt=d.had_layer_cnt;
       if (wasMetadata) {
-	 // we have handled the token entirely
-	 // inside SFD_GetFontMetaData() move to next token.
+	 /* we have handled the token entirely
+	  * inside SFD_GetFontMetaData() move to next token. */
 	 continue;
       }
 
@@ -6849,7 +6845,6 @@ static SplineFont *SFD_GetFont(AFILE *sfd,SplineFont *cidmaster,char *tok,
 	 sf->cidregistry=fastrdup(tok);
       }
 
-      //////////
       else if (strmatch(tok, "Ordering:")==0) {
 	 geteol(sfd, tok);
 	 sf->ordering=fastrdup(tok);
@@ -7304,7 +7299,7 @@ static double SFDStartsCorrectly(AFILE *sfd,char *tok) {
    /*  this sequence, but I don't yet generate it. I want the parser to */
    /*  perculate through to users before I introduce the new format so there */
    /*  will be fewer complaints when it happens */
-   // MIQ: getreal() can give some funky rounding errors it seems
+   /* MIQ: getreal() can give some funky rounding errors it seems */
    if (dval != 0 && dval != 1 && dval != 2.0 && dval != 3.0
        && !(dval > 3.09 && dval <= 3.11)
        && dval != 4.0) {

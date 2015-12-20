@@ -1,4 +1,4 @@
-/* $Id: tottfgpos.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: tottfgpos.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -104,7 +104,7 @@ static uint32_t scripts[][15]={
 /* Lao */ {CHR('l', 'a', 'o', ' '), 0x0e80, 0x0eff},
 /* Lepcha */ {CHR('l', 'e', 'p', 'c'), 0},
 /* Limbu */ {CHR('l', 'i', 'm', 'b'), 0x1900, 0x194f},
-   /* Linear A *//*{ CHR('l','i','n','a'), 0x10180, 0x102cf }, *//* What happened to linear A? */
+   /* Linear A */ /*{ CHR('l','i','n','a'), 0x10180, 0x102cf }, */ /* What happened to linear A? */
 /* Linear B */ {CHR('l', 'i', 'n', 'b'), 0x10000, 0x100fa},
 /* Lycian */ {CHR('l', 'y', 'c', 'i'), 0},
 /* Lydian */ {CHR('l', 'y', 'd', 'i'), 0},
@@ -324,15 +324,15 @@ static SplineChar **FindSubs(SplineChar *sc,struct lookup_subtable *sub) {
 	 pt=pst->u.subs.variant;
 	 while (1) {
 	    while (*pt==' ')
-	       ++pt;		// Burn leading spaces.
-	    // Start tokenizing the space-delimited list of references.
-	    start=pt;		// Note the beginning of the current item.
-	    pt=strchr(start, ' ');	// Find the end of the current item.
+	       ++pt;		/* Burn leading spaces. */
+	    /* Start tokenizing the space-delimited list of references. */
+	    start=pt;		/* Note the beginning of the current item. */
+	    pt=strchr(start, ' ');	/* Find the end of the current item. */
 	    if (pt != NULL)
-	       *pt='\0';	// Temporarily terminate the item.
-	    subssc=SFGetChar(sc->parent, -1, start);	// Find the corresponding SplineChar.
+	       *pt='\0';	/* Temporarily terminate the item. */
+	    subssc=SFGetChar(sc->parent, -1, start);	/* Find the corresponding SplineChar. */
 	    if (subssc != NULL && subssc->ttf_glyph != -1) {
-	       // Extend the list if necessary.
+	       /* Extend the list if necessary. */
 	       if (cnt >= max) {
 		  if (spc==space) {
 		     space=malloc((max += 30) * sizeof(SplineChar *));
@@ -341,21 +341,21 @@ static SplineChar **FindSubs(SplineChar *sc,struct lookup_subtable *sub) {
 		     space =
 			realloc(space, (max += 30) * sizeof(SplineChar *));
 	       }
-	       // Write the SplineChar to the list.
+	       /* Write the SplineChar to the list. */
 	       space[cnt++]=subssc;
 	    }
 	    if (pt==NULL)
-	       break;		// No more items.
-	    *pt=' ';		// Repair the string from the tokenization process.
+	       break;		/* No more items. */
+	    *pt=' ';		/* Repair the string from the tokenization process. */
 	 }
       }
    }
-   // Returning NULL causes problems and seems to be unnecessary for now.
+   /* Returning NULL causes problems and seems to be unnecessary for now. */
    ret=malloc((cnt + 1) * sizeof(SplineChar *));
    memcpy(ret, space, cnt * sizeof(SplineChar *));
    ret[cnt]=NULL;
    if (space != spc)
-      free(space);		// Free the temp space only if it is dynamically allocated.
+      free(space);		/* Free the temp space only if it is dynamically allocated. */
    return (ret);
 }
 

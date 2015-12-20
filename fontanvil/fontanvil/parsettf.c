@@ -1,4 +1,4 @@
-/* $Id: parsettf.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: parsettf.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -341,37 +341,18 @@ int MSLanguageFromLocale(void) {
 
 /* ************************************************************************** */
 
-int get3byte(AFILE *ttf) {
-   int ch1=agetc(ttf);
-   int ch2=agetc(ttf);
-   int ch3=agetc(ttf);
-
-   if (ch3==EOF)
-      return (EOF);
-   return ((ch1 << 16) | (ch2 << 8) | ch3);
-}
-
 static int32_t getoffset(AFILE *ttf,int offsize) {
    if (offsize==1)
       return (agetc(ttf));
    else if (offsize==2)
       return (aget_uint16_be(ttf));
    else if (offsize==3)
-      return (get3byte(ttf));
+      return (aget_uint24_be(ttf));
    else
       return (aget_int32_be(ttf));
 }
 
-double getfixed(AFILE *ttf) {
-   int32_t val=aget_int32_be(ttf);
-   int mant=val & 0xffff;
-
-   /* This oddity may be needed to deal with the first 16 bits being signed */
-   /*  and the low-order bits unsigned */
-   return ((double) (val >> 16) + (mant / 65536.0));
-}
-
-double get2dot14(AFILE *ttf) {
+static double get2dot14(AFILE *ttf) {
    int32_t val=aget_uint16_be(ttf);
    int mant=val & 0x3fff;
 
@@ -1026,7 +1007,7 @@ static int readttfheader(AFILE *ttf,struct ttfinfo *info,char *filename,
 
    /* Apple says that 'typ1' is a valid code for a type1 font wrapped up in */
    /*  a truetype table structure, but gives no docs on what tables get used */
-   /*  or how *//* Turns out to be pretty simple */
+   /*  or how */ /* Turns out to be pretty simple */
    /* typ1 is used for both type1 fonts and CID type1 fonts, I don't think a version of 'CID ' is actually used */
    if (version==CHR('t', 'y', 'p', '1')
        || version==CHR('C', 'I', 'D', ' ')) {
@@ -2944,15 +2925,15 @@ struct topdicts {
    /* synthetic fonts only (whatever they are) */
    int basefontname;		/* SID */
    /* Multiple master/synthetic fonts */
-   double basefontblend[16];	/* delta *//* No description of why this is relevant for mm fonts */
+   double basefontblend[16];	/* delta */ /* No description of why this is relevant for mm fonts */
    /* Multiple master fonts only */
    int blendaxistypes[17];	/* SID */
    int nMasters;
    int nAxes;
    double weightvector[17];
    int lenBuildCharArray;	/* No description of what this means */
-   int NormalizeDesignVector;	/* SID *//* No description of what this does */
-   int ConvertDesignVector;	/* SID *//* No description of what this does */
+   int NormalizeDesignVector;	/* SID */ /* No description of what this does */
+   int ConvertDesignVector;	/* SID */ /* No description of what this does */
    /* CID fonts only */
    int ros_registry;		/* SID */
    int ros_ordering;		/* SID */
@@ -4446,7 +4427,7 @@ static void ApplyVariationSequenceSubtable(AFILE *ttf,uint32_t vs_map,
    vs_cnt=aget_int32_be(ttf);
    vs_data=malloc(vs_cnt * sizeof(struct vs_data));
    for (i=0; i < vs_cnt; ++i) {
-      vs_data[i].vs=get3byte(ttf);
+      vs_data[i].vs=aget_uint24_be(ttf);
       vs_data[i].def=aget_int32_be(ttf);
       vs_data[i].non_def=aget_int32_be(ttf);
    }
@@ -4456,7 +4437,7 @@ static void ApplyVariationSequenceSubtable(AFILE *ttf,uint32_t vs_map,
 	 afseek(ttf, vs_map + vs_data[i].def, SEEK_SET);
 	 rcnt=aget_int32_be(ttf);
 	 for (j=0; j < rcnt; ++j) {
-	    int start_uni=get3byte(ttf);
+	    int start_uni=aget_uint24_be(ttf);
 	    int cnt=agetc(ttf);
 	    int uni;
 
@@ -4495,7 +4476,7 @@ static void ApplyVariationSequenceSubtable(AFILE *ttf,uint32_t vs_map,
 	 afseek(ttf, vs_map + vs_data[i].non_def, SEEK_SET);
 	 rcnt=aget_int32_be(ttf);
 	 for (j=0; j < rcnt; ++j) {
-	    int uni=get3byte(ttf);
+	    int uni=aget_uint24_be(ttf);
 	    int curgid=aget_uint16_be(ttf);
 
 	    if (justinuse==git_justinuse) {
@@ -4665,7 +4646,7 @@ static void readttfencodings(AFILE *ttf,struct ttfinfo *info,int justinuse) {
    version=aget_uint16_be(ttf);
    nencs=aget_uint16_be(ttf);
    if (version != 0 && nencs==0)
-      nencs=version;		/* Sometimes they are backwards *//* Or was I just confused early on? */
+      nencs=version;		/* Sometimes they are backwards */ /* Or was I just confused early on? */
    cmap_encs=malloc(nencs * sizeof(struct cmap_encs));
    for (i=usable_encs=0; i < nencs; ++i) {
       cmap_encs[usable_encs].platform=aget_uint16_be(ttf);
@@ -5234,7 +5215,7 @@ static void readttfos2metrics(AFILE *ttf,struct ttfinfo *info) {
    info->pfminfo.os2_family_class=aget_uint16_be(ttf);
    for (i=0; i < 10; ++i)
       info->pfminfo.panose[i]=agetc(ttf);
-   info->pfminfo.pfmfamily=info->pfminfo.panose[0]==2 ? 0x11 :	/* might be 0x21 *//* Text & Display maps to either serif 0x11 or sans 0x21 or monospace 0x31 */
+   info->pfminfo.pfmfamily=info->pfminfo.panose[0]==2 ? 0x11 :	/* might be 0x21 */ /* Text & Display maps to either serif 0x11 or sans 0x21 or monospace 0x31 */
       info->pfminfo.panose[0]==3 ? 0x41 :	/* Script */
       info->pfminfo.panose[0]==4 ? 0x51 :	/* Decorative */
       0x51;			/* And pictorial doesn't fit into pfm */
@@ -5306,7 +5287,8 @@ static void readttfpostnames(AFILE *ttf,struct ttfinfo *info) {
    if (info->postscript_start != 0) {
       afseek(ttf, info->postscript_start, SEEK_SET);
       format=aget_int32_be(ttf);
-      info->italicAngle=getfixed(ttf);
+      info->italicAngle=(double)aget_int16_be(ttf);
+      info->italicAngle+=((double)aget_uint16_be(ttf)/65536.0);
       info->upos=(short) aget_uint16_be(ttf);
       info->uwidth=(short) aget_uint16_be(ttf);
       info->upos += info->uwidth / 2;	/* 'post' defn of this field is different from FontInfo defn and I didn't notice */
@@ -5430,7 +5412,7 @@ static void readttfpostnames(AFILE *ttf,struct ttfinfo *info) {
    /* If we have a GSUB table we can give some unencoded glyphs names */
    /*  for example if we have a vrt2 substitution of A to <unencoded> */
    /*  we could name the unencoded "A.vrt2" (though in this case we might */
-   /*  try A.vert instead *//* Werner suggested this */
+   /*  try A.vert instead */ /* Werner suggested this */
    /* We could try this from morx too, except that apple features don't */
    /*  use meaningful ids. That is A.15,3 isn't very readable */
    for (i=info->glyph_cnt - 1; i >= 0; --i)

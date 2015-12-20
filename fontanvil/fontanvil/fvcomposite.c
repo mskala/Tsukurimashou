@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4502 2015-12-16 14:11:53Z mskala $ */
+/* $Id: fvcomposite.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -63,7 +63,7 @@ static const unichar_t accents[][4]={
    {0x2c8, 0x384, 0x30d, '\''},	/* vertical line, tonos */
    {0x30e, '"'},		/* real vertical line */
    {0},				/* real grave */
-   {0},				/* cand... *//* 310 */
+   {0},				/* cand... */ /* 310 */
    {0},				/* inverted breve */
    {0x2bb},			/* turned comma */
    {0x2bc, 0x313, ','},		/* comma above */
@@ -79,7 +79,7 @@ static const unichar_t accents[][4]={
    {0x2d4},			/* up tack */
    {0x2d5},			/* down tack */
    {0x2d6, 0x31f, '+'},		/* plus below */
-   {0x2d7, 0x320, '-'},		/* minus below *//* 320 */
+   {0x2d7, 0x320, '-'},		/* minus below */ /* 320 */
    {0x2b2},			/* hook */
    {0},				/* back hook */
    {0x323, 0x2d9, '.'},		/* dot below */
@@ -87,7 +87,7 @@ static const unichar_t accents[][4]={
    {0x325, 0x2da, 0xb0},	/* ring below */
    {0x326, 0x2bc, ','},		/* comma below */
    {0xb8},			/* cedilla */
-   {0x2db},			/* ogonek *//* 0x328 */
+   {0x2db},			/* ogonek */ /* 0x328 */
    {0x329, 0x2c8, 0x384, '\''},	/* vertical line below */
    {0},				/* bridge below */
    {0},				/* real arch below */
@@ -95,7 +95,7 @@ static const unichar_t accents[][4]={
    {0x32d, 0x2c6, 0x52},	/* circumflex below */
    {0x32e, 0x2d8},		/* breve below */
    {0},				/* inverted breve below */
-   {0x330, 0x2dc, 0x7e},	/* tilde below *//* 0x330 */
+   {0x330, 0x2dc, 0x7e},	/* tilde below */ /* 0x330 */
    {0x331, 0xaf, 0x2c9},	/* macron below */
    {0x332, '_'},		/* low line */
    {0},				/* real low line */
@@ -103,7 +103,7 @@ static const unichar_t accents[][4]={
    {0x335, '-'},		/* line overstrike */
    {0x336, '_'},		/* long line overstrike */
    {0x337, '/'},		/* short solidus overstrike */
-   {0x338, '/'},		/* long solidus overstrike *//* 0x338 */
+   {0x338, '/'},		/* long solidus overstrike */ /* 0x338 */
    {0},
    {0},
    {0},
@@ -111,7 +111,7 @@ static const unichar_t accents[][4]={
    {0},
    {0},
    {0},
-   {0x340, 0x60, 0x2cb},	/* tone mark, left of circumflex *//* 0x340 */
+   {0x340, 0x60, 0x2cb},	/* tone mark, left of circumflex */ /* 0x340 */
    {0x341, 0xb4, 0x2ca},	/* tone mark, right of circumflex */
    {0x342, 0x2dc, 0x7e},	/* perispomeni (tilde) */
    {0x343, 0x2bc, ','},		/* koronis */

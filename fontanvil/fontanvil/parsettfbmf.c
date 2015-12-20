@@ -1,4 +1,4 @@
-/* $Id: parsettfbmf.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: parsettfbmf.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -696,7 +696,7 @@ static struct bdfcharlist *BDFAddDefaultGlyphs(BDFFont *bdf,int format) {
    memset(bl, 0, sizeof(bl));
    if (notdefpos==-1) {
       sc0.name=".notdef";
-      /* sc0.ttf_glyph=0; *//* already done */
+      /* sc0.ttf_glyph=0; */ /* already done */
       sc0.parent=sf;
       if (width < 4)
 	 w=4;

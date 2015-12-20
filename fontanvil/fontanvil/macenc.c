@@ -1,4 +1,4 @@
-/* $Id: macenc.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: macenc.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -107,10 +107,10 @@ static uint8_t _MacScriptFromLanguage[]={
    sm_arabic,			/* Arabic */
    sm_roman,			/* Finnish */
    sm_greek,			/* Greek */
-   sm_roman,			/* Icelandic *//* Modified roman */
+   sm_roman,			/* Icelandic */ /* Modified roman */
    sm_roman,			/* Maltese */
-   sm_roman,			/* Turkish *//* Modified roman */
-   sm_roman,			/* Croatian *//* Modified roman */
+   sm_roman,			/* Turkish */ /* Modified roman */
+   sm_roman,			/* Croatian */ /* Modified roman */
    sm_tradchinese,		/* Traditional Chinese */
 				/*20*/ sm_arabic,
 				/* Urdu (I assume arabic) */
@@ -124,14 +124,14 @@ static uint8_t _MacScriptFromLanguage[]={
    sm_slavic,			/* Latvian */
    sm_roman,			/* Sami (Lappish) */
 				/*30*/ sm_roman,
-				/* Faroese (Icelandic) *//* Modified roman */
-   sm_arabic,			/* Farsi/Persian *//* Modified Arabic */
+				/* Faroese (Icelandic) */ /* Modified roman */
+   sm_arabic,			/* Farsi/Persian */ /* Modified Arabic */
    sm_cyrillic,			/* Russian */
    sm_simpchinese,		/* Simplified Chinese */
    sm_roman,			/* Flemish */
    sm_roman,			/* Irish Gaelic */
    sm_roman,			/* albanian (???) */
-   sm_roman,			/* Romanian *//* Modified roman */
+   sm_roman,			/* Romanian */ /* Modified roman */
    sm_slavic,			/* Czech */
    sm_slavic,			/* Slovak */
 				/*40*/ sm_slavic,
@@ -253,7 +253,7 @@ static uint8_t _MacScriptFromLanguage[]={
    sm_roman,			/* Irish Gaelic (with dot) */
    sm_roman,			/* Tongan */
    sm_greek,			/* Greek (polytonic) */
-   sm_roman,			/* Greenlandic *//* Presumably icelandic? */
+   sm_roman,			/* Greenlandic */ /* Presumably icelandic? */
 				/*150*/ sm_roman,
 				/* Azebaijani (roman) */
    0xff
@@ -422,7 +422,7 @@ static uint16_t _WinLangFromMac[]={
    0x83c,			/* Irish Gaelic (with dot) */
    0xffff,			/* Tongan */
    0xffff,			/* Greek (polytonic) */
-   0xffff,			/* Greenlandic *//* Presumably icelandic? */
+   0xffff,			/* Greenlandic */ /* Presumably icelandic? */
 				/*150*/ 0x42c,
 				/* Azebaijani (roman) */
    0xffff
@@ -449,7 +449,7 @@ static char *LanguageCodesFromMacLang[]={
    "ml",			/* Maltese */
    "tr",			/* Turkish */
    "hr",			/* Croatian */
-   "zh_TW",			/* Traditional Chinese *//* zh_HK */
+   "zh_TW",			/* Traditional Chinese */ /* zh_HK */
 				/*20*/ "ur",
 				/* Urdu */
    "hi",			/* Hindi */
@@ -466,7 +466,7 @@ static char *LanguageCodesFromMacLang[]={
    "fa",			/* Farsi/Persian */
    "ru",			/* Russian */
    "zh_CN",			/* Simplified Chinese */
-   "nl_BE",			/* Flemish *//* Flemish doesn't rate a language code, use dutch */
+   "nl_BE",			/* Flemish */ /* Flemish doesn't rate a language code, use dutch */
    "ga",			/* Irish Gaelic */
    "sq",			/* albanian */
    "ro",			/* Romanian */
@@ -591,7 +591,7 @@ static char *LanguageCodesFromMacLang[]={
    NULL,			/* Irish Gaelic (with dot) */
    "to",			/* Tongan */
    "grc",			/* Greek (polytonic) */
-   "kl",			/* Greenlandic *//* Presumably icelandic? */
+   "kl",			/* Greenlandic */ /* Presumably icelandic? */
 				/*150*/ "az",
 				/* Azebaijani (roman) */
    NULL

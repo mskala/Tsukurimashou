@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4502 2015-12-16 14:11:53Z mskala $ */
+/* $Id: scripting.c 4523 2015-12-20 12:30:49Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -3247,7 +3247,7 @@ static void bExpandStroke(Context *c) {
       else if (c->a.vals[5].u.ival & 2)
 	 si.removeexternal=true;
       /*if ( c->a.vals[5].u.ival&4 )
-         si.removeoverlapifneeded=true; *//* Obsolete */
+         si.removeoverlapifneeded=true; */ /* Obsolete */
    } else if (c->a.argc==5) {
       si.stroke_type=si_caligraphic;
       si.penangle=M_PI * args[2] / 180;
@@ -3265,7 +3265,7 @@ static void bExpandStroke(Context *c) {
       else if (c->a.vals[6].u.ival & 2)
 	 si.removeexternal=true;
       /* if ( c->a.vals[6].u.ival&4 )
-         si.removeoverlapifneeded=true; *//* Obsolete */
+         si.removeoverlapifneeded=true; */ /* Obsolete */
    }
    FVStrokeItScript(c->curfv, &si, false);
 }
@@ -3639,7 +3639,7 @@ static void bGenerateFamily(Context *c) {
    free(locfilename);
    for (cur=sfs; cur != NULL; cur=sfs) {
       sfs=cur->next;
-      /* free(cur->sizes); *//* Done inside GenerateScript */
+      /* free(cur->sizes); */ /* Done inside GenerateScript */
       chunkfree(cur, sizeof(struct sflist));
    }
 }
@@ -6016,11 +6016,9 @@ static void bSave(Context *c) {
    char *locfilename;
    int localRevisionsToRetain=-1;
 
-   // Grab the optional number of backups that are desired argument
+   /* Grab the optional number of backups that are desired argument */
    if (c->a.argc==3) {
-	/**
-	 * A call Save( wheretosave, revisioncount )
-	 */
+	/* A call Save( wheretosave, revisioncount ) */
       if (c->a.vals[2].type != v_int)
 	 ScriptError(c,
 		     "The second argument to Save() must be a number of revisions to keep (integer)");
@@ -6637,7 +6635,7 @@ static void bSetCharName(Context *c) {
       uni=UniFromName(name, c->curfv->sf->uni_interp, c->curfv->map->enc);
    }
    SCSetMetaData(sc, name, uni, comment);
-   /* SCLigDefault(sc); *//* Not appropriate for indic scripts. May not be appropriate anywhere. Seems to confuse people even when it is appropriate */
+   /* SCLigDefault(sc); */ /* Not appropriate for indic scripts. May not be appropriate anywhere. Seems to confuse people even when it is appropriate */
 }
 
 static void bSetFeatureList(Context *c) {

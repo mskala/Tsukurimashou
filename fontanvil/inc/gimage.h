@@ -1,4 +1,4 @@
-/* $Id: gimage.h 4301 2015-10-24 13:35:59Z mskala $ */
+/* $Id: gimage.h 4522 2015-12-20 10:44:17Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -154,8 +154,6 @@ extern GImage *GImageReadBmp(char *filename);
 extern int GImageWriteXbm(GImage * gi, char *filename);
 
 extern GImage *GImageReadXbm(char *filename);
-
-extern int GImageWriteXpm(GImage * gi, char *filename);
 
 extern GImage *GImageReadXpm(char *filename);
 
